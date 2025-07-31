@@ -22,6 +22,29 @@ The `TXT4.0 programs` folder contains the project files of the 4 different TXTs 
 
 The `Node-RED` folder contains the flows of Node-RED as a Json file
 
+### Documentation
+
+For detailed documentation of the Node-RED flows, system architecture, and development guidelines, see the [Orbis Documentation Directory](./docs-orbis/).
+
+- **[Node-RED Documentation](./docs-orbis/node-red/)** - Complete flow analysis, state machine, and development guides
+- **[System Architecture](./docs-orbis/node-red/architecture.md)** - Overall system design and components
+- **[Flows Overview](./docs-orbis/node-red/flows-overview.md)** - Detailed tab and module structure
+- **[State Machine](./docs-orbis/node-red/state-machine.md)** - VDA 5050 compliant state transitions
+
+## 📁 Project Structure
+
+### Original Fischertechnik Content
+- `data/` - Original data files
+- `PLC-programs/` - Original PLC programs  
+- `TXT4.0-programs/` - Original TXT4.0 programs
+- `Node-RED/` - Original Node-RED flows
+- `doc/` - Original documentation
+
+### Orbis Customizations
+- `docs-orbis/` - Orbis documentation and analysis
+- `src-orbis/` - Orbis source code
+- `tests-orbis/` - Orbis tests
+
 ### Raspberry PI Image / Central Control Unit (CCU)
 
 The Raspberry PI image can be found under the following link: https://short.omm.cloud/rpi-v130
