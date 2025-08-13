@@ -1,6 +1,6 @@
-# Orbis Agile Production Simulation - Documentation
+# Orbis Modellfabrik - Documentation
 
-This directory contains comprehensive documentation for the Orbis Agile Production Simulation system, based on the Fischertechnik Agile Production Simulation 24V.
+This directory contains comprehensive documentation for the Orbis Modellfabrik system, based on the Fischertechnik Agile Production Simulation 24V.
 
 ## 📁 Folder Structure
 
