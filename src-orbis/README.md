@@ -30,6 +30,7 @@ python mqtt_test_client.py   # Terminal 2
 - `mqtt_mock.py` - Main mock system for Fischertechnik modules
 - `mqtt_test_client.py` - Test client for sending MQTT messages
 - `setup_mqtt_mock.py` - Setup script for dependencies and broker
+- `check_prerequisites.py` - Check all system requirements
 
 ## 📋 Structure
 

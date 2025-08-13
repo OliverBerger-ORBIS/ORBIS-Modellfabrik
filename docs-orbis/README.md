@@ -34,6 +34,12 @@ This directory contains comprehensive documentation for the Orbis Agile Producti
 - **Testing & Debugging** - Comprehensive testing guide
 - **Integration** - Connect with local or cloud applications
 
+### [Prerequisites](./prerequisites.md)
+- **System Requirements** - All necessary prerequisites
+- **Installation Guide** - Step-by-step installation
+- **Troubleshooting** - Common issues and solutions
+- **Quick Start** - Get up and running fast
+
 ### [PLC Documentation](./plc/)
 - Siemens S7-1200 TIA v18 programs
 - Module-specific PLC configurations
