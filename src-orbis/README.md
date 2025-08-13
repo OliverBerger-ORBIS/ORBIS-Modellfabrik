@@ -13,6 +13,24 @@ This folder contains custom source code developed by Orbis, distinct from the or
 - **Utilities**: Helper functions and tools
 - **Integration**: Code to integrate with the Fischertechnik system
 
+## 🔧 MQTT Mock System
+
+### **Quick Start**
+```bash
+# Setup and run demo
+python setup_mqtt_mock.py --demo
+
+# Or setup manually
+python setup_mqtt_mock.py
+python mqtt_mock.py          # Terminal 1
+python mqtt_test_client.py   # Terminal 2
+```
+
+### **Files**
+- `mqtt_mock.py` - Main mock system for Fischertechnik modules
+- `mqtt_test_client.py` - Test client for sending MQTT messages
+- `setup_mqtt_mock.py` - Setup script for dependencies and broker
+
 ## 📋 Structure
 
 ```

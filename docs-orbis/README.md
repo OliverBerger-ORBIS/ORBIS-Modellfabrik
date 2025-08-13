@@ -27,6 +27,13 @@ This directory contains comprehensive documentation for the Orbis Agile Producti
 - **Troubleshooting** - Common issues and solutions
 - **Development** - Guidelines for customization
 
+### [MQTT Mocking Guide](./mqtt-mocking-guide.md)
+- **Complete MQTT Mock System** - Step-by-step setup and usage
+- **Module Simulation** - Mock all Fischertechnik modules
+- **VDA 5050 State Machine** - Realistic state transitions
+- **Testing & Debugging** - Comprehensive testing guide
+- **Integration** - Connect with local or cloud applications
+
 ### [PLC Documentation](./plc/)
 - Siemens S7-1200 TIA v18 programs
 - Module-specific PLC configurations
