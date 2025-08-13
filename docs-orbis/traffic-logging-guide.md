@@ -13,16 +13,31 @@ Fischertechnik Cloud ←→ MQTT Bridge Logger ←→ TXT 4.0 Controller ←→ 
                     Log Files + Database
 ```
 
+### **Comprehensive Monitoring (Empfohlen):**
+```
+Raspberry Pi Broker (192.168.0.100) ←→ Comprehensive Logger ←→ Alle Nachrichten
+Secondary Broker (192.168.2.189)    ←→ Comprehensive Logger ←→ Alle Nachrichten  
+Docker Broker (host.docker.internal) ←→ Comprehensive Logger ←→ Alle Nachrichten
+Container Broker (mqtt-broker)       ←→ Comprehensive Logger ←→ Alle Nachrichten
+                              ↓
+                    Vollständige Transparenz
+                              ↓
+                    Log Files + Database + Analysis
+```
+
 ### **Vorteile:**
 - ✅ **Vollständige Transparenz** über alle MQTT-Nachrichten
 - ✅ **Non-intrusive** - keine Änderung am bestehenden System
 - ✅ **Real-time Monitoring** mit Statistiken
 - ✅ **Detaillierte Analyse** mit Visualisierungen
 - ✅ **Debugging** von Kommunikationsproblemen
+- ✅ **Alle MQTT-Broker** werden überwacht
+- ✅ **Automatische Klassifizierung** von Nachrichten-Typen
+- ✅ **Broker-spezifische Statistiken**
 
 ## 🔧 **Setup**
 
-### **1. MQTT Bridge Logger starten**
+### **1. MQTT Bridge Logger starten (Einzelner Broker)**
 ```bash
 cd src-orbis
 
@@ -41,6 +56,22 @@ python mqtt_bridge_logger.py \
   --cloud-broker 192.168.0.100 \
   --log-file fischertechnik_traffic.log \
   --db-file fischertechnik_traffic.db
+```
+
+### **2. Comprehensive MQTT Logger starten (Alle Broker)**
+```bash
+cd src-orbis
+
+# Alle bekannten MQTT-Broker überwachen
+python comprehensive_mqtt_logger.py
+
+# Mit custom Log-Dateien
+python comprehensive_mqtt_logger.py \
+  --log-file comprehensive_traffic.log \
+  --db-file comprehensive_traffic.db
+
+# Mit angepasster Statistik-Intervall
+python comprehensive_mqtt_logger.py --stats-interval 30
 ```
 
 ### **2. Traffic Analyzer verwenden**
@@ -65,6 +96,21 @@ python mqtt_traffic_analyzer.py --export-csv traffic_export.csv
 - **QoS** - Quality of Service Level
 - **Retained** - Retained Flag
 
+### **Comprehensive Logger zusätzlich:**
+- **Broker Name** - Welcher MQTT-Broker
+- **Broker Host** - IP-Adresse und Port
+- **Source Type** - Automatische Klassifizierung:
+  - `FISCHERTECHNIK_MODULE` - Module-Kommunikation
+  - `OPC_UA` - OPC-UA Topics
+  - `TXT4_CONTROLLER` - TXT4.0 Controller
+  - `RASPBERRY_PI` - Raspberry Pi System
+  - `DOCKER` - Container-Kommunikation
+  - `SYSTEM` - System-Nachrichten
+  - `STATUS` - Status-Updates
+  - `CONFIGURATION` - Konfiguration
+  - `DEBUG` - Debug-Nachrichten
+  - `ERROR` - Fehler-Nachrichten
+
 ### **Statistiken:**
 - **Message Count** - Gesamtanzahl Nachrichten
 - **Direction Count** - Nachrichten pro Richtung
@@ -74,6 +120,8 @@ python mqtt_traffic_analyzer.py --export-csv traffic_export.csv
 ## 🔍 **Verwendung**
 
 ### **1. Real-time Monitoring**
+
+#### **Bridge Logger (Einzelner Broker):**
 ```bash
 # Bridge Logger starten
 python mqtt_bridge_logger.py --cloud-broker 192.168.0.100
@@ -83,6 +131,20 @@ python mqtt_bridge_logger.py --cloud-broker 192.168.0.100
 #    Payload: {"serialNumber":"FF22-001","orderId":"123","action":{"command":"MILL"}}
 # 📨 LOCAL_TO_CLOUD: module/v1/ff/FF22-001/state
 #    Payload: {"actionState":{"state":"RUNNING"}}
+```
+
+#### **Comprehensive Logger (Alle Broker):**
+```bash
+# Comprehensive Logger starten
+python comprehensive_mqtt_logger.py
+
+# Ausgabe:
+# 📨 RASPBERRY_PI: module/v1/ff/FF22-001/order (FISCHERTECHNIK_MODULE)
+#    Payload: {"serialNumber":"FF22-001","orderId":"123","action":{"command":"MILL"}}
+# 📨 DOCKER: system/status (SYSTEM)
+#    Payload: {"status":"running","uptime":3600}
+# 📨 SECONDARY: opcua/connection (OPC_UA)
+#    Payload: {"endpoint":"192.168.0.40:4840","status":"connected"}
 ```
 
 ### **2. Log-Dateien analysieren**

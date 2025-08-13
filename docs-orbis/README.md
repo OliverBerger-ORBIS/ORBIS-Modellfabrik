@@ -43,6 +43,7 @@ This directory contains comprehensive documentation for the Orbis Agile Producti
 ### [Traffic Logging Guide](./traffic-logging-guide.md)
 - **MQTT Traffic Monitoring** - Complete traffic logging system
 - **Bridge Logger** - Non-intrusive traffic capture
+- **Comprehensive Logger** - Monitor all MQTT brokers simultaneously
 - **Traffic Analysis** - Real-time statistics and visualizations
 - **Debugging Tools** - Comprehensive analysis capabilities
 
