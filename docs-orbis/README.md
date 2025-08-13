@@ -34,6 +34,12 @@ This directory contains comprehensive documentation for the Orbis Agile Producti
 - **Testing & Debugging** - Comprehensive testing guide
 - **Integration** - Connect with local or cloud applications
 
+### [Remote Control Guide](./remote-control-guide.md)
+- **Remote Control from macOS** - Control real Fischertechnik APS
+- **Network Configuration** - Setup for company network
+- **Interactive Commands** - Manual control interface
+- **Security & VPN** - Secure remote access
+
 ### [Prerequisites](./prerequisites.md)
 - **System Requirements** - All necessary prerequisites
 - **Installation Guide** - Step-by-step installation
