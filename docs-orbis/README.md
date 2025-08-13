@@ -40,6 +40,12 @@ This directory contains comprehensive documentation for the Orbis Agile Producti
 - **Interactive Commands** - Manual control interface
 - **Security & VPN** - Secure remote access
 
+### [Traffic Logging Guide](./traffic-logging-guide.md)
+- **MQTT Traffic Monitoring** - Complete traffic logging system
+- **Bridge Logger** - Non-intrusive traffic capture
+- **Traffic Analysis** - Real-time statistics and visualizations
+- **Debugging Tools** - Comprehensive analysis capabilities
+
 ### [Prerequisites](./prerequisites.md)
 - **System Requirements** - All necessary prerequisites
 - **Installation Guide** - Step-by-step installation

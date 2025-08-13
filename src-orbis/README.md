@@ -30,6 +30,8 @@ python mqtt_test_client.py   # Terminal 2
 - `mqtt_mock.py` - Main mock system for Fischertechnik modules
 - `mqtt_test_client.py` - Test client for sending MQTT messages
 - `remote_mqtt_client.py` - Remote client for controlling real Fischertechnik APS
+- `mqtt_bridge_logger.py` - MQTT bridge with traffic logging capabilities
+- `mqtt_traffic_analyzer.py` - Traffic analysis and visualization tool
 - `setup_mqtt_mock.py` - Setup script for dependencies and broker
 - `check_prerequisites.py` - Check all system requirements
 
