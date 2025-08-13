@@ -69,11 +69,17 @@ def check_mosquitto_installation():
     """Check if mosquitto is installed"""
     print("\n📋 Checking mosquitto installation...")
     
+    import platform
     try:
-        result = subprocess.run(["which", "mosquitto"], capture_output=True, text=True)
+        system = platform.system()
+        if system == "Windows":
+            cmd = ["where", "mosquitto"]
+        else:
+            cmd = ["which", "mosquitto"]
+
+        result = subprocess.run(cmd, capture_output=True, text=True)
         if result.returncode == 0:
             print("✅ mosquitto is installed")
-            
             # Check version
             version_result = subprocess.run(["mosquitto", "-h"], capture_output=True, text=True)
             if version_result.returncode == 0:
