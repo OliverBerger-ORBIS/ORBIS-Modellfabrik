@@ -1,0 +1,102 @@
+# Orbis Modellfabrik - Git Ignore Rules
+
+# 🔐 Sensitive Credentials & Configuration
+config/credentials.yml
+config/secrets.yml
+config/passwords.txt
+*.key
+*.pem
+*.p12
+*.pfx
+
+# 📊 Database Files
+*.db
+*.sqlite
+*.sqlite3
+comprehensive_mqtt_traffic.db
+mqtt_traffic.db
+
+# 📝 Log Files
+*.log
+mqtt_traffic.log
+aps_live_traffic.log
+comprehensive_mqtt_traffic.log
+mqtt_bridge.log
+orbis_access.log
+
+# 🖼️ Generated Images & Data
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.csv
+*.xlsx
+*.xls
+aps_live_analysis.png
+aps_live_data.csv
+
+# 🐍 Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# 🏠 Virtual Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# 🔧 IDE & Editor Files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# 📦 Node.js (if using Node-RED locally)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 🐳 Docker
+.dockerignore
+docker-compose.override.yml
+
+# 🔄 Backup Files
+*.bak
+*.backup
+*.old
+*.tmp
+
+# 📋 Temporary Files
+temp/
+tmp/
+*.tmp
+*.temp
+
+# 🔍 Search Indexes
+.search-index/

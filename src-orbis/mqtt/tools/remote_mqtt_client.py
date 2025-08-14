@@ -13,6 +13,9 @@ from typing import Dict, Any, Optional
 import paho.mqtt.client as mqtt
 import logging
 
+# Import working message library
+from mqtt_message_library import MQTTMessageLibrary, create_message_from_template, list_available_templates
+
 # Logging Setup
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
@@ -27,6 +30,9 @@ class RemoteFischertechnikClient:
         self.username = username
         self.password = password
         self.mqtt_client = mqtt.Client()
+        
+        # Initialize message library
+        self.message_library = MQTTMessageLibrary()
         
         # Setup MQTT client
         self._setup_mqtt_client()
@@ -101,31 +107,51 @@ class RemoteFischertechnikClient:
         """MQTT disconnection callback"""
         logger.info("Disconnected from MQTT broker")
     
-    def send_order(self, serial_number: str, command: str, order_id: str = None, 
-                   priority: str = "NORMAL", timeout: int = 300):
-        """Send order to remote module"""
-        if order_id is None:
-            order_id = str(uuid.uuid4())
-        
-        order_data = {
-            "serialNumber": serial_number,
-            "orderId": order_id,
-            "orderUpdateId": 1,
-            "action": {
-                "id": str(uuid.uuid4()),
-                "command": command,
-                "metadata": {
-                    "priority": priority,
-                    "timeout": timeout
-                }
-            }
-        }
-        
-        topic = f"module/v1/ff/{serial_number}/order"
-        self.mqtt_client.publish(topic, json.dumps(order_data), qos=1)
-        
-        logger.info(f"📤 Sent order to {serial_number}: {command}")
-        return order_id
+    def send_order(self, module_name: str, command: str, metadata: dict = None):
+        """Send working order using message library"""
+        try:
+            # Create message using library
+            order_data = self.message_library.create_order_message(module_name, command, metadata)
+            
+            # Get topic
+            topic = self.message_library.get_topic(module_name, "order")
+            
+            # Send message
+            self.mqtt_client.publish(topic, json.dumps(order_data), qos=1)
+            
+            logger.info(f"📤 Sent working order to {module_name}: {command}")
+            logger.info(f"   Topic: {topic}")
+            return order_data["orderId"]
+            
+        except ValueError as e:
+            logger.error(f"❌ Error creating message: {e}")
+            return None
+    
+    def send_template_message(self, template_name: str):
+        """Send a message using a pre-defined template"""
+        try:
+            # Create message from template
+            order_data = create_message_from_template(template_name)
+            
+            # Get template info
+            from mqtt_message_library import get_template_info
+            template_info = get_template_info(template_name)
+            module_name = template_info["module"]
+            
+            # Get topic
+            topic = self.message_library.get_topic(module_name, "order")
+            
+            # Send message
+            self.mqtt_client.publish(topic, json.dumps(order_data), qos=1)
+            
+            logger.info(f"📤 Sent template message: {template_name}")
+            logger.info(f"   Description: {template_info['description']}")
+            logger.info(f"   Topic: {topic}")
+            return order_data["orderId"]
+            
+        except ValueError as e:
+            logger.error(f"❌ Error creating template message: {e}")
+            return None
     
     def send_instant_action(self, serial_number: str, action_type: str):
         """Send instant action to remote module"""
@@ -161,20 +187,28 @@ class RemoteFischertechnikClient:
 def interactive_mode(client: RemoteFischertechnikClient):
     """Interactive mode for manual control"""
     print("\n🎮 Interactive Fischertechnik Control")
-    print("=" * 50)
+    print("=" * 60)
+    
+    # List available modules
     print("Available modules:")
-    print("  FF22-001: MILL")
-    print("  FF22-002: DRILL") 
-    print("  FF22-003: OVEN")
-    print("  FF22-004: AIQS")
-    print("  FF22-005: HBW")
-    print("  FF22-006: DPS")
+    for module_name in client.message_library.list_all_modules():
+        module_info = client.message_library.get_module_info(module_name)
+        working_commands = client.message_library.get_working_commands(module_name)
+        print(f"  {module_name:8} ({module_info['serial']}) - {', '.join(working_commands)}")
+    
+    # List available templates
+    print("\nAvailable templates:")
+    templates = list_available_templates()
+    for template_name in templates:
+        print(f"  {template_name}")
+    
     print("\nCommands:")
-    print("  order <serial> <command>  - Send order")
-    print("  action <serial> <action>  - Send instant action")
-    print("  status <serial>           - Get module status")
-    print("  quit                      - Exit")
-    print("=" * 50)
+    print("  order <module> <command>     - Send working order")
+    print("  template <template_name>     - Send template message")
+    print("  modules                      - List all modules")
+    print("  templates                    - List all templates")
+    print("  quit                         - Exit")
+    print("=" * 60)
     
     while True:
         try:
@@ -186,16 +220,24 @@ def interactive_mode(client: RemoteFischertechnikClient):
             if command[0] == "quit":
                 break
             elif command[0] == "order" and len(command) >= 3:
-                serial, cmd = command[1], command[2]
-                client.send_order(serial, cmd)
-            elif command[0] == "action" and len(command) >= 3:
-                serial, action = command[1], command[2]
-                client.send_instant_action(serial, action)
-            elif command[0] == "status" and len(command) >= 2:
-                serial = command[1]
-                client.get_module_status(serial)
+                module, cmd = command[1].upper(), command[2].upper()
+                client.send_order(module, cmd)
+            elif command[0] == "template" and len(command) >= 2:
+                template_name = command[1]
+                client.send_template_message(template_name)
+            elif command[0] == "modules":
+                print("\n🏭 Available modules:")
+                for module_name in client.message_library.list_all_modules():
+                    module_info = client.message_library.get_module_info(module_name)
+                    working_commands = client.message_library.get_working_commands(module_name)
+                    print(f"  {module_name:8} ({module_info['serial']}) - {', '.join(working_commands)}")
+            elif command[0] == "templates":
+                print("\n📋 Available templates:")
+                templates = list_available_templates()
+                for template_name in templates:
+                    print(f"  {template_name}")
             else:
-                print("❌ Invalid command. Use: order <serial> <command>")
+                print("❌ Invalid command. Use: order <module> <command> or template <template_name>")
                 
         except KeyboardInterrupt:
             break
@@ -208,12 +250,11 @@ def demo_mode(client: RemoteFischertechnikClient):
     
     # Test sequence
     test_sequence = [
-        ("FF22-001", "MILL", "MILL"),
-        ("FF22-002", "DRILL", "DRILL"),
-        ("FF22-003", "OVEN", "HEAT"),
-        ("FF22-004", "AIQS", "CHECK_QUALITY"),
-        ("FF22-005", "HBW", "STORE"),
-        ("FF22-006", "DPS", "PICK")
+        ("SVR3QA2098", "MILL", "MILL"),
+        ("SVR4H76449", "DRILL", "DRILL"),
+        ("SVR4H76530", "AIQS", "CHECK_QUALITY"),
+        ("SVR3QA0022", "HBW", "STORE"),
+        ("SVR4H73275", "DPS", "PICK")
     ]
     
     for serial_number, module_type, command in test_sequence:
@@ -242,8 +283,10 @@ def main():
     parser.add_argument("--password", help="MQTT password")
     parser.add_argument("--mode", choices=["interactive", "demo"], default="interactive",
                        help="Operation mode")
-    parser.add_argument("--order", nargs=2, metavar=("SERIAL", "COMMAND"),
-                       help="Send single order and exit")
+    parser.add_argument("--order", nargs=2, metavar=("MODULE", "COMMAND"),
+                       help="Send single working order and exit")
+    parser.add_argument("--template", metavar="TEMPLATE_NAME",
+                       help="Send single template message and exit")
     parser.add_argument("--action", nargs=2, metavar=("SERIAL", "ACTION"),
                        help="Send single instant action and exit")
     
@@ -263,8 +306,11 @@ def main():
         
         # Handle different modes
         if args.order:
-            serial, command = args.order
-            client.send_order(serial, command)
+            module, command = args.order
+            client.send_order(module.upper(), command.upper())
+            time.sleep(2)
+        elif args.template:
+            client.send_template_message(args.template)
             time.sleep(2)
         elif args.action:
             serial, action = args.action

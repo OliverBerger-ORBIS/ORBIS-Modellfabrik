@@ -53,6 +53,12 @@ This directory contains comprehensive documentation for the Orbis Modellfabrik s
 - **Troubleshooting** - Common issues and solutions
 - **Quick Start** - Get up and running fast
 
+### [Credentials & Access](./credentials.md)
+- **Default Login Credentials** - Access information for all components
+- **Network Configuration** - IP addresses and connectivity
+- **Security Guidelines** - Best practices for production use
+- **Troubleshooting Access** - Solutions for authentication issues
+
 ### [PLC Documentation](./plc/)
 - Siemens S7-1200 TIA v18 programs
 - Module-specific PLC configurations
