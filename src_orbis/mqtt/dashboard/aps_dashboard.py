@@ -16,16 +16,27 @@ import plotly.express as px
 import paho.mqtt.client as mqtt
 from datetime import datetime
 
-# To run this script, ensure the project root directory is on your Python path.
-# You can run it from the project root using:
-# streamlit run src_orbis/mqtt/dashboard/aps_dashboard.py
+# --- Start of Path Correction ---
+# This block ensures that the script can find the 'src_orbis' package,
+# regardless of how the script is run.
 
-# The settings are still in a separate file.
+# Get the absolute path of the directory containing this script.
+_script_dir = os.path.dirname(os.path.abspath(__file__))
+
+# Navigate up to the project root directory (which contains 'src_orbis').
+# .../src_orbis/mqtt/dashboard -> .../src_orbis/mqtt -> .../src_orbis -> .../
+_project_root = os.path.abspath(os.path.join(_script_dir, "..", "..", ".."))
+
+# Add the project root to the Python path if it's not already there.
+if _project_root not in sys.path:
+    sys.path.insert(0, _project_root)
+# --- End of Path Correction ---
+
+
+# Now that the path is correct, we can use absolute imports from 'src_orbis'.
 from src_orbis.mqtt.dashboard.config.settings import APS_MODULES_EXTENDED
 from src_orbis.mqtt.dashboard.utils.data_handling import extract_module_info
 from src_orbis.mqtt.dashboard.components.filters import create_filters
-
-# The MQTT message library is in the 'tools' directory.
 from src_orbis.mqtt.tools.mqtt_message_library import (
     MQTTMessageLibrary,
     create_message_from_template,
@@ -1860,6 +1871,66 @@ class APSDashboard:
 
         except Exception as e:
             st.error(f"❌ Fehler beim Senden der benutzerdefinierten Nachricht: {e}")
+
+    def create_sidebar(self):
+        """Creates the sidebar with navigation and MQTT broker selection."""
+        with st.sidebar:
+            st.title("Navigation")
+
+            # Page navigation
+            page_options = ["📊 Analyse APS", "🎮 MQTT Control", "🏭 Module Overview"]
+            selected_page = st.radio("Seite auswählen:", page_options)
+
+            st.markdown("---")
+
+            # MQTT Broker Selection
+            st.subheader("🔗 MQTT-Verbindung")
+            if not self.broker_configs:
+                st.warning("Keine Broker-Konfigurationen gefunden.")
+                return selected_page
+
+            broker_names = [config["name"] for config in self.broker_configs]
+            selected_broker_name = st.selectbox(
+                "MQTT-Broker auswählen:",
+                broker_names,
+                index=0,
+                key="selected_broker",
+            )
+
+            # Set the selected broker in the dashboard instance
+            if selected_broker_name:
+                self.set_broker(selected_broker_name)
+
+            # Connection status and button
+            if self.mqtt_connected:
+                st.success(f"✅ Verbunden mit {self.mqtt_broker}")
+                if st.button("Trennen"):
+                    self.disconnect_mqtt()
+                    st.rerun()
+            else:
+                st.error("❌ Nicht verbunden")
+                if st.button("🔗 Verbinden"):
+                    self.connect_mqtt()
+                    st.rerun()
+
+            return selected_page
+
+    def run(self):
+        """Main application loop."""
+        selected_page = self.create_sidebar()
+
+        if selected_page == "📊 Analyse APS":
+            if self.connect():
+                df = self.load_data()
+                self.show_aps_analysis(df)
+                self.disconnect()
+        elif selected_page == "🎮 MQTT Control":
+            self.show_mqtt_control()
+        elif selected_page == "🏭 Module Overview":
+            if self.connect():
+                df = self.load_data()
+                self.show_module_overview_dashboard(df)
+                self.disconnect()
 
     def run_dashboard(self):
         """Run the dashboard"""
