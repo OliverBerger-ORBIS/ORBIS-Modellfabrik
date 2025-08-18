@@ -15,6 +15,8 @@ config/passwords.txt
 *.sqlite3
 comprehensive_mqtt_traffic.db
 mqtt_traffic.db
+# Allow default demo files
+!mqtt-data/sessions/default_test_session.db
 
 # 📝 Log Files
 *.log
@@ -23,6 +25,8 @@ aps_live_traffic.log
 comprehensive_mqtt_traffic.log
 mqtt_bridge.log
 orbis_access.log
+# Allow default demo files
+!mqtt-data/sessions/default_test_session.log
 
 # 🖼️ Generated Images & Data
 *.png
