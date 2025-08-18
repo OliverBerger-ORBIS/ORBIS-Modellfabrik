@@ -3,40 +3,30 @@
 APS Interactive Dashboard
 Orbis Development - Interaktives Dashboard für MQTT-Datenanalyse
 """
-
-import streamlit as st
-import sqlite3
-import pandas as pd
-import plotly.express as px
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
-import json
-from datetime import datetime, timedelta
-import numpy as np
-import sys
 import os
+import sys
 import glob
-import paho.mqtt.client as mqtt
-import threading
+import json
 import time
-import warnings
+import sqlite3
 import yaml
+import pandas as pd
+import streamlit as st
+import plotly.express as px
+import paho.mqtt.client as mqtt
+from datetime import datetime
 
-# Make the script runnable as a standalone module by adding the package root to the Python path.
-# This allows relative imports like `.config` to work correctly.
-_package_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-if _package_root not in sys.path:
-    sys.path.insert(0, _package_root)
+# To run this script, ensure the project root directory is on your Python path.
+# You can run it from the project root using:
+# streamlit run src_orbis/mqtt/dashboard/aps_dashboard.py
 
-from mqtt.dashboard.config.settings import APS_MODULES_EXTENDED
-from mqtt.dashboard.components.filters import create_filters
-from mqtt.dashboard.utils.data_handling import extract_module_info
+# The settings are still in a separate file.
+from src_orbis.mqtt.dashboard.config.settings import APS_MODULES_EXTENDED
+from src_orbis.mqtt.dashboard.utils.data_handling import extract_module_info
+from src_orbis.mqtt.dashboard.components.filters import create_filters
 
-# Add path for mqtt_message_library
-_tools_path = os.path.abspath(os.path.join(_package_root, "tools"))
-if _tools_path not in sys.path:
-    sys.path.append(_tools_path)
-from mqtt_message_library import (
+# The MQTT message library is in the 'tools' directory.
+from src_orbis.mqtt.tools.mqtt_message_library import (
     MQTTMessageLibrary,
     create_message_from_template,
     list_available_templates,
