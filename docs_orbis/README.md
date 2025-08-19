@@ -47,6 +47,18 @@ This directory contains comprehensive documentation for the Orbis Modellfabrik s
 - **Traffic Analysis** - Real-time statistics and visualizations
 - **Debugging Tools** - Comprehensive analysis capabilities
 
+### [Dashboard Icon Integration](./mqtt/dashboard-icon-integration.md)
+- **Icon System** - Module, Status und System Icons
+- **Visual Integration** - Dashboard mit intuitiver Icon-Sprache
+- **Status Icons** - Erweiterte Status-Anzeigen für alle Module
+- **Technical Implementation** - Icon-Konfiguration und Integration
+
+### [Project Status](./project-status.md)
+- **Aktuelle Features** - Abgeschlossene Implementierungen
+- **Nächste Schritte** - Roadmap und Prioritäten
+- **Projektstruktur** - Übersicht der Komponenten
+- **Erfolge** - Erreichte Meilensteine
+
 ### [Prerequisites](./prerequisites.md)
 - **System Requirements** - All necessary prerequisites
 - **Installation Guide** - Step-by-step installation

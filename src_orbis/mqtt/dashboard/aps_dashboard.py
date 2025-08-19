@@ -54,6 +54,16 @@ from src_orbis.mqtt.dashboard.config.topic_mapping import (
     get_unmapped_topics
 )
 
+# Icon Configuration imports
+from src_orbis.mqtt.dashboard.config.icon_config import (
+    get_module_icon,
+    get_logo_path,
+    get_module_icon_path,
+    get_status_icon,
+    MODULE_ICONS,
+    STATUS_ICONS
+)
+
 # Page config
 st.set_page_config(
     page_title="APS MQTT Dashboard",
@@ -1296,30 +1306,29 @@ class APSDashboard:
             )
 
             # Connection status - use session state for consistency
-            connection_status = (
-                "🟢 Connected" if st.session_state.get("mqtt_connected", False) else "🔴 Disconnected"
-            )
-
-            # Activity status
-            if availability_status:
-                if availability_status == "AVAILABLE":
-                    activity_display = "🟢 Available"
-                elif availability_status == "BUSY":
-                    activity_display = "🟡 Busy"
-                elif availability_status == "BLOCKED":
-                    activity_display = "🔴 Blocked"
-                else:
-                    activity_display = f"⚪ {availability_status}"
+            if st.session_state.get("mqtt_connected", False):
+                connection_status = f"{get_status_icon('available')} Connected"
             else:
-                if len(recent_messages) > 0:
-                    activity_display = "🟡 Active"
-                else:
-                    activity_display = "⚪ No Data"
+                connection_status = f"{get_status_icon('offline')} Disconnected"
 
+            # Activity status with enhanced icons using new function
+            activity_display = self.get_enhanced_status_display(availability_status, module_info["type"])
+
+            # Get module icon (use emoji for table display)
+            # For table display, prefer emoji over file paths
+            module_key = module_key.upper()
+            icon_from_function = get_module_icon(module_key)
+            
+            # If it's a file path, fallback to emoji from MODULE_ICONS
+            if icon_from_function and ('/' in icon_from_function or '\\' in icon_from_function):
+                icon_display = MODULE_ICONS.get(module_key, "❓")
+            else:
+                icon_display = icon_from_function
+            
             module_table_data.append(
                 {
                     "ID": module_info["id"],
-                    "Name": f"{module_info['icon']} {module_info['name']}",
+                    "Name": f"{icon_display} {module_info['name']}",
                     "Type": module_info["type"],
                     "IP": module_info["ip"],
                     "Connected": connection_status,
@@ -1625,6 +1634,45 @@ class APSDashboard:
         except Exception as e:
             st.warning(f"Error extracting availability status: {e}")
             return None
+
+    def get_enhanced_status_display(self, status_text, module_type=None):
+        """Get enhanced status display with appropriate icons"""
+        if not status_text:
+            return f"{get_status_icon('offline')} No Data"
+        
+        status_lower = status_text.lower()
+        
+        # Module-specific status mappings
+        if module_type:
+            module_upper = module_type.upper()
+            if module_upper == "CHRG" and "charging" in status_lower:
+                return f"{get_status_icon('charging')} Charging"
+            elif module_upper == "FTS" and ("transport" in status_lower or "moving" in status_lower):
+                return f"{get_status_icon('transport')} Transport"
+            elif module_upper in ["MILL", "DRILL"] and "processing" in status_lower:
+                return f"{get_status_icon('processing')} Processing"
+            elif module_upper == "HBW" and "storing" in status_lower:
+                return f"{get_status_icon('ready')} Storing"
+        
+        # General status mappings
+        if "available" in status_lower or "online" in status_lower:
+            return f"{get_status_icon('available')} Available"
+        elif "busy" in status_lower or "processing" in status_lower:
+            return f"{get_status_icon('busy')} Busy"
+        elif "blocked" in status_lower or "error" in status_lower:
+            return f"{get_status_icon('blocked')} Blocked"
+        elif "charging" in status_lower:
+            return f"{get_status_icon('charging')} Charging"
+        elif "transport" in status_lower or "moving" in status_lower:
+            return f"{get_status_icon('transport')} Transport"
+        elif "maintenance" in status_lower:
+            return f"{get_status_icon('maintenance')} Maintenance"
+        elif "idle" in status_lower or "waiting" in status_lower:
+            return f"{get_status_icon('idle')} Idle"
+        elif "ready" in status_lower:
+            return f"{get_status_icon('ready')} Ready"
+        else:
+            return f"⚪ {status_text}"
 
     def create_fts_message(self, command):
         """Create FTS-specific message"""
@@ -2038,8 +2086,25 @@ class APSDashboard:
         # Show each module in a row with control buttons
         for module_key, module_info in self.aps_modules_extended.items():
             with st.container():
-                # Module header
-                st.markdown(f"### {module_info['icon']} {module_info['name']}")
+                # Module header with icon
+                # Use get_module_icon function for proper icon handling
+                module_key_upper = module_key.upper()
+                module_icon = get_module_icon(module_key_upper)
+                
+                # Display module header with icon
+                col1, col2 = st.columns([1, 4])
+                
+                with col1:
+                    # Display icon (image file or emoji)
+                    if module_icon and ('/' in module_icon or '\\' in module_icon):
+                        # It's a file path - display as image
+                        st.image(module_icon, width=48)
+                    else:
+                        # It's an emoji - display as text
+                        st.markdown(f"### {module_icon}")
+                
+                with col2:
+                    st.markdown(f"### {module_info['name']}")
                 
                 # Module info in columns
                 col1, col2, col3, col4 = st.columns([2, 2, 2, 4])
@@ -2050,11 +2115,11 @@ class APSDashboard:
                 
                 with col2:
                     st.markdown(f"**IP:** {module_info['ip']}")
-                    # Connection status
+                    # Connection status with enhanced icons
                     if st.session_state.get("mqtt_connected", False):
-                        st.success("🟢 Online")
+                        st.success(f"{get_status_icon('available')} Online")
                     else:
-                        st.error("🔴 Offline")
+                        st.error(f"{get_status_icon('offline')} Offline")
                 
                 with col3:
                     st.markdown("**Verfügbare Befehle:**")
@@ -2113,7 +2178,7 @@ class APSDashboard:
 
         # Connection status - use session state for consistency
         if not st.session_state.get("mqtt_connected", False):
-            st.warning("⚠️ MQTT-Verbindung erforderlich für Monitoring")
+            st.warning(f"{get_status_icon('offline')} MQTT-Verbindung erforderlich für Monitoring")
             st.info("Verwende die Sidebar zum Verbinden")
             return
 
@@ -2131,7 +2196,10 @@ class APSDashboard:
         
         with col3:
             if dashboard and hasattr(dashboard, 'mqtt_connected'):
-                status = "🟢 Connected" if dashboard.mqtt_connected else "🔴 Disconnected"
+                if dashboard.mqtt_connected:
+                    status = f"{get_status_icon('available')} Connected"
+                else:
+                    status = f"{get_status_icon('offline')} Disconnected"
                 st.metric("🔗 Status", status)
             else:
                 st.metric("🔗 Status", "❓ Unknown")
@@ -2238,7 +2306,7 @@ class APSDashboard:
 
         # Connection status - use session state for consistency
         if not st.session_state.get("mqtt_connected", False):
-            st.warning("⚠️ MQTT-Verbindung erforderlich für Monitoring")
+            st.warning(f"{get_status_icon('offline')} MQTT-Verbindung erforderlich für Monitoring")
             st.info("Verwende die Sidebar zum Verbinden")
             return
 
@@ -2425,7 +2493,13 @@ class APSDashboard:
 
 def main():
     """Main function"""
-    st.sidebar.title("ORBIS-Modellfabrik Dashboard")
+    # ORBIS Logo in Sidebar
+    logo_path = get_logo_path()
+    if os.path.exists(logo_path):
+        st.sidebar.image(logo_path, width=200)
+    else:
+        st.sidebar.markdown("## 🏭 ORBIS-Modellfabrik")
+    st.sidebar.markdown("*APS Dashboard*")
 
     # Navigation in sidebar
     st.sidebar.markdown("---")
@@ -2500,7 +2574,7 @@ def main():
     
     # MQTT Connection status and controls
     if st.session_state.mqtt_connected:
-        st.sidebar.success("✅ Connected")
+        st.sidebar.success(f"{get_status_icon('available')} Connected")
         if st.sidebar.button("🔌 Disconnect", key="disconnect_mqtt_sidebar"):
             # Disconnect MQTT dashboard if exists
             if "mqtt_dashboard" in st.session_state and st.session_state.mqtt_dashboard:
@@ -2509,7 +2583,7 @@ def main():
             st.session_state.mqtt_dashboard = None
             st.rerun()
     else:
-        st.sidebar.error("❌ Not connected")
+        st.sidebar.error(f"{get_status_icon('offline')} Not connected")
         if st.sidebar.button("🔗 Connect", key="connect_mqtt_sidebar"):
             if st.session_state.selected_db:
                 # Create dashboard instance and store in session state

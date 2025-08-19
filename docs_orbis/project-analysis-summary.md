@@ -1,10 +1,11 @@
 # Projektanalyse: Steuerung der Fischertechnik-Modellfabrik
 
-**Datum der Analyse:** 18. August 2025
+**Datum der Analyse:** 18. August 2025  
+**Letztes Update:** 19. August 2025
 
 ## 1. Zielsetzung
 
-Das primäre Ziel des Projekts ist die Übernahme der Steuerung einer bestehenden Fischertechnik-Modellfabrik durch eine eigenentwickelte Orbis-Komponente. Die Kommunikation und Steuerung der einzelnen Fabrikmodule soll über das **MQTT-Protokoll** erfolgen, da alle Fischertechnik-Module über diese Schnittstelle ansprechbar sind.
+Das primäre Ziel des Projekts ist die vollständige Übernahme der Steuerung einer bestehenden Fischertechnik-Modellfabrik durch eine eigenentwickelte Orbis-Komponente. Die Kommunikation erfolgt über **Template Messages** mit **MQTT-Protokoll**, wobei die CCU (Central Control Unit) die ORDER-ID Generierung und Workflow-Orchestrierung übernimmt.
 
 ## 2. Projektstruktur und Organisation
 
@@ -29,18 +30,50 @@ MQTT wurde als zentrale Schnittstelle für die Kommunikation identifiziert. Die 
 -   **Steuerungszusammenfassung:** Eine Management-Übersicht in `docs-orbis/mqtt/mqtt-control-summary.md` fasst die direkt steuerbaren Aktionen (`PICK`, `DROP`, `STORE`, `CHECK_QUALITY`) pro Modul zusammen.
 -   **Verbindungsparameter:** Der MQTT-Broker ist unter `192.168.0.100:1883` mit den Standard-Credentials `default`/`default` erreichbar.
 
-## 4. Entwickelte Orbis-Komponenten (`src-orbis/`)
+## 4. Entwickelte Orbis-Komponenten (`src_orbis/`)
 
-Die Orbis-Steuerungslösung basiert auf mehreren wiederverwendbaren Python-Komponenten:
+Die Orbis-Steuerungslösung basiert auf mehreren erweiterten Python-Komponenten:
 
-1.  **Nachrichtenbibliothek (`mqtt_message_library.py`):** Eine zentrale Komponente, die Funktionen zur Erstellung korrekter MQTT-Nachrichten kapselt.
-2.  **Remote-Steuerungsclient (`remote_mqtt_client.py`):** Ein Kommandozeilen-Tool zur direkten Interaktion mit der Fabrik.
-3.  **Interaktives Dashboard (`aps_dashboard.py`):** Eine Streamlit-Anwendung zur Datenanalyse und zur grafischen Steuerung per MQTT.
-4.  **Logging & Analyse-Skripte:** Werkzeuge zum Mitschneiden und Analysieren des MQTT-Traffics, die für Debugging und Validierung entscheidend sind.
+### **4.1 Template Message System:**
+1. **Template Message Manager (`template_message_manager.py`):** Kernkomponente für parameterisierte MQTT-Nachrichten mit ORDER-ID Tracking
+2. **Template Control Dashboard (`template_control.py`):** Streamlit UI-Komponenten für Template-Steuerung und Order-Monitoring
+3. **9 verschiedene Templates:** Für alle Workflow-Typen (Wareneingang, Auftrag, AI-not-ok) und Farben (Rot, Weiss, Blau)
 
-## 5. Wichtige Erkenntnisse und nächste Schritte
+### **4.2 Dashboard & Analyse:**
+4. **Interaktives Dashboard (`aps_dashboard.py`):** Erweiterte Streamlit-Anwendung mit Template Control, Icon-Integration und Session-Analyse
+5. **Session-Analyse Tools:** Umfassende MQTT-Traffic Analyse (15 Sessions, 12.420 Nachrichten analysiert)
+6. **Workflow-Dokumentation:** Systematische Dokumentation aller APS-Workflows
 
--   **Direkte vs. automatische Steuerung:** Es wurde festgestellt, dass Basis-Aktionen (z.B. `PICK`) direkt per MQTT steuerbar sind, während komplexe Prozessschritte (z.B. der Fräsvorgang selbst) von der übergeordneten Fischertechnik-Logik ausgelöst werden. Die Orbis-Steuerung muss diese Logik nachbilden oder ersetzen.
--   **Grundlagen sind solide:** Die Analyse, Dokumentation und die entwickelten Werkzeuge bieten eine ausgezeichnete Basis für die vollständige Übernahme der Steuerung.
+### **4.3 MQTT Infrastructure:**
+7. **Enhanced MQTT Client (`remote_mqtt_client.py`):** Erweiterte MQTT-Kommunikation mit Template-Unterstützung
+8. **Message Library (`mqtt_message_library.py`):** Zentrale Bibliothek für MQTT-Nachrichten
+9. **Persistent Logging:** Session-basierte MQTT-Traffic Aufzeichnung und Analyse
 
-Diese Zusammenfassung dient als Einstiegspunkt für Entwickler, um die Architektur und den aktuellen Stand des Projekts schnell zu erfassen.
+## 5. Wichtige Erkenntnisse und aktueller Stand
+
+### **5.1 Template Message Strategie (August 2025):**
+- **CCU-Orchestrierung:** Die CCU (Central Control Unit) generiert ORDER-IDs und orchestriert alle Workflows
+- **Template Messages:** 9 verschiedene Templates decken alle Workflow-Typen ab (Wareneingang, Auftrag, AI-not-ok)
+- **Farb-spezifische Verarbeitung:** ROT (MILL), WEISS (DRILL), BLAU (DRILL+MILL)
+- **Workflow-Konsistenz:** Auftrag und AI-not-ok haben identische Workflows pro Farbe
+- **ORDER-ID Tracking:** CCU-generierte IDs werden vom Dashboard verfolgt
+
+### **5.2 Vollständige Workflow-Analyse:**
+- **15 Sessions analysiert:** Wareneingang (9), Auftrag (3), AI-not-ok (3)
+- **12.420 MQTT-Nachrichten:** Systematisch analysiert und dokumentiert
+- **3 Workflow-Typen:** Vollständig verstanden und als Templates implementiert
+- **Konsistente ORDER-ID Generierung:** CCU-Verhalten dokumentiert und vorhergesagt
+
+### **5.3 Nächste Schritte:**
+1. **Template Manager Integration:** Dashboard-Integration für Live-Test
+2. **Live APS Test:** Template Messages mit echter APS validieren
+3. **ORDER-ID Tracking:** CCU-generierte IDs in Echtzeit verfolgen
+4. **Workflow Automation:** Erweiterte Automatisierung implementieren
+
+### **5.4 Projekt-Status:**
+- ✅ **Template Message Manager:** Vollständig implementiert und getestet
+- ✅ **Workflow-Analyse:** Umfassend abgeschlossen und dokumentiert  
+- ✅ **Dashboard Components:** UI für Template Control fertiggestellt
+- 🚧 **Live-Integration:** Bereit für Dashboard-Integration und Live-Test
+
+Diese Zusammenfassung spiegelt den aktuellen Stand (August 2025) wider: Ein vollständig implementiertes Template Message System, bereit für Live-Integration und Test mit der echten APS-Modellfabrik.

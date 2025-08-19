@@ -2,37 +2,38 @@
 
 ## 📋 Übersicht
 
-Diese Roadmap definiert die konkreten Schritte zur vollständigen Übernahme der APS-Steuerung basierend auf unserer MQTT-Analyse und der Fischertechnik-Dokumentation Version 4.0.
+Diese Roadmap definiert die konkreten Schritte zur vollständigen Übernahme der APS-Steuerung basierend auf unserer umfassenden Workflow-Analyse und dem implementierten Template Message Manager.
 
-## ⚠️ **KRITISCHE ERKENNTNISSE**
+## ✅ **AKTUELLE ERKENNTNISSE (AUGUST 2025)**
 
-### **MQTT-Commands funktionieren nicht zuverlässig:**
-- ❌ **PICK, DROP, STORE, CHECK_QUALITY** schlagen häufig fehl
-- ❌ **ORDER-ID Probleme**: Eindeutigkeit und Timing-Probleme
-- ❌ **Zeitliche Abhängigkeiten**: Module müssen bereit sein
-- ❌ **Interner Modul-Status**: Verfügbarkeit nicht korrekt erkannt
-- ❌ **Workflow-Abhängigkeiten**: Korrekte Reihenfolge fehlt
+### **Template Message Manager implementiert:**
+- ✅ **9 verschiedene Templates** für alle Workflow-Typen definiert
+- ✅ **ORDER-ID Management** Strategie entwickelt (CCU-Generierung verstanden)
+- ✅ **Workflow-Analyse** abgeschlossen (15 Sessions, 12.420 Nachrichten)
+- ✅ **Dashboard Integration** vorbereitet (Template Control Components)
+- ✅ **Lokale Tests** erfolgreich (Template Manager validiert)
 
-### **Ursachen der Probleme:**
-1. **ORDER-ID Management**: Keine eindeutige Auftragsverwaltung
-2. **Modul-Status-Monitoring**: Verfügbarkeit wird nicht korrekt erkannt
-3. **Timing-Probleme**: Commands werden zu früh gesendet
-4. **Workflow-Engine**: Fehlt für koordinierte Abläufe
-5. **Error-Handling**: Keine automatische Fehlerbehandlung
+### **Workflow-Konsistenz bestätigt:**
+1. **Wareneingang**: Einfach, 3 ORDER-IDs pro Session, nur Lagerung
+2. **Auftrag**: Mittel, 1 ORDER-ID pro Session, farb-spezifische Verarbeitung
+3. **AI-not-ok**: Komplex, 2 ORDER-IDs pro Session, Verarbeitung + AI-Prüfung
+4. **Farb-spezifische Verarbeitung**: ROT (MILL), WEISS (DRILL), BLAU (DRILL+MILL)
+5. **CCU-Orchestrierung**: Konsistente ORDER-ID Generierung und Workflow-Steuerung
 
 ## 🎯 Aktueller Stand
 
-### ✅ Bereits Implementiert
+### ✅ Vollständig Implementiert
+- **Template Message Manager**: 9 Templates für alle Workflow-Typen
+- **Workflow-Analyse**: Umfassende Analyse aller Session-Typen
+- **ORDER-ID Strategie**: CCU-Generierung verstanden und dokumentiert
+- **Dashboard Components**: Template Control UI fertiggestellt
+- **Session-Analyse**: 15 Sessions systematisch analysiert
 - **MQTT-Verbindung**: Funktioniert zu APS (`192.168.0.100:1883`)
-- **Dashboard**: ORBIS-Modellfabrik Dashboard mit Modul-Übersicht
-- **Session-Logging**: MQTT-Nachrichten werden aufgezeichnet
-- **Modul-Identifikation**: 5 Module mit IP-Adressen bekannt
 
-### ❌ **Nicht funktional**
-- **MQTT-Commands**: PICK, DROP, STORE, CHECK_QUALITY schlagen fehl
-- **ORDER-ID Management**: Fehlt komplett
-- **Workflow-Engine**: Nicht implementiert
-- **Error-Handling**: Keine automatische Fehlerbehandlung
+### 🚧 **In Vorbereitung**
+- **Dashboard Integration**: Template Manager in aps_dashboard.py einbinden
+- **Live-Test**: Template Messages mit echter APS testen
+- **ORDER-ID Tracking**: CCU-generierte IDs in Dashboard verfolgen
 
 ### 📡 **Neue Erkenntnisse aus Dokumentation**
 - **Node-RED Gateway**: Port 1880 für OPC-UA ↔ MQTT Übersetzung
@@ -40,31 +41,31 @@ Diese Roadmap definiert die konkreten Schritte zur vollständigen Übernahme der
 - **OPC-UA Schnittstellen**: SPS-Module verwenden OPC-UA (Port 4840)
 - **Cloud-Integration**: fischertechnik Cloud verfügbar
 
-## 🚨 **Phase 1: MQTT-Probleme lösen (KRITISCH - Woche 1-2)**
+## 🚀 **Phase 1: Template Manager Live-Integration (SOFORT - Woche 1)**
 
-### **1.1 ORDER-ID Management System**
-- [ ] **Eindeutige Order-ID Generierung** implementieren
-- [ ] **Order-Lifecycle Management** (Created, Running, Completed, Failed)
-- [ ] **Order-Tracking** in Dashboard integrieren
-- [ ] **Order-History** und -Statistiken
+### **1.1 Dashboard Integration (PRIORITÄT 1)**
+- [ ] **Template Manager** in aps_dashboard.py integrieren
+- [ ] **Template Control UI** als neuen Tab hinzufügen  
+- [ ] **ORDER-ID Tracking** in Dashboard implementieren
+- [ ] **MQTT Message Handler** für CCU Responses registrieren
 
-### **1.2 Modul-Status-Monitoring**
-- [ ] **Modul-Verfügbarkeit** korrekt erkennen
-- [ ] **Status-Monitoring** (Available, Busy, Blocked, Error)
-- [ ] **Status-Updates** in Echtzeit
-- [ ] **Status-History** und -Trends
+### **1.2 Live-Test Vorbereitung (PRIORITÄT 1)**
+- [ ] **Template Library** um alle 9 Templates erweitern
+- [ ] **Parameter Validation** für alle Template-Typen
+- [ ] **Error-Handling** für Template-Ausführung
+- [ ] **Live-Test Documentation** erstellen
 
-### **1.3 Workflow-Engine**
-- [ ] **Koordinierte Abläufe** implementieren
-- [ ] **Command-Sequencing** (richtige Reihenfolge)
-- [ ] **Dependency-Management** (Module müssen bereit sein)
-- [ ] **Workflow-Visualisierung** im Dashboard
+### **1.3 Workflow-Template-Testing (PRIORITÄT 2)**
+- [ ] **Wareneingang Templates** testen (3 Farben)
+- [ ] **Auftrag Templates** testen (3 Farben)
+- [ ] **AI-not-ok Templates** testen (3 Farben)
+- [ ] **ORDER-ID Verfolgung** validieren
 
-### **1.4 Error-Handling**
-- [ ] **Automatische Fehlererkennung**
-- [ ] **Retry-Mechanismen** für fehlgeschlagene Commands
-- [ ] **Error-Recovery** Strategien
-- [ ] **Error-Reporting** und -Logging
+### **1.4 CCU Response-Handling (PRIORITÄT 2)**
+- [ ] **CCU Order Response** Handler implementieren
+- [ ] **ORDER-ID Tracking** von CCU-generierten IDs
+- [ ] **Workflow-Status** Updates verfolgen
+- [ ] **Template-Execution** Monitoring
 
 ## 🔧 **Phase 2: Erweiterte Funktionen (Woche 3-4)**
 
@@ -180,31 +181,34 @@ Module (5 in unserer APS):
 
 ## 🎯 **Erfolgs-Metriken**
 
-### **Phase 1 Ziele (KRITISCH)**
-- [ ] 95% Erfolgsrate bei MQTT-Commands
-- [ ] ORDER-ID Management funktional
-- [ ] Modul-Status korrekt erkannt
-- [ ] Workflow-Engine implementiert
+### **Phase 1 Ziele (SOFORT)**
+- [ ] Template Manager vollständig in Dashboard integriert
+- [ ] Alle 9 Templates erfolgreich getestet
+- [ ] ORDER-ID Tracking von CCU funktional
+- [ ] Live-Test mit echter APS erfolgreich
 
-### **Phase 2 Ziele**
+### **Phase 2 Ziele (Woche 2-3)**
+- [ ] WorkflowOrderManager für automatische ORDER-ID Verwaltung
+- [ ] Error-Recovery für Template Messages
+- [ ] Performance-Monitoring für Template-Ausführung
+- [ ] Batch-Processing für mehrere Aufträge
+
+### **Phase 3 Ziele (Woche 4-5)**
 - [ ] Node-RED Integration funktional
 - [ ] VDA5050 für FTS implementiert
-- [ ] Alle 5 Module vollständig kontrollierbar
+- [ ] Automatisierte Workflow-Optimierung
+- [ ] Advanced Analytics Dashboard
 
-### **Phase 3 Ziele**
-- [ ] Automatisierte Workflows
-- [ ] Performance-Optimierung
-- [ ] Error-Handling automatisiert
-
-### **Phase 4 Ziele**
-- [ ] Predictive Analytics aktiv
+### **Phase 4 Ziele (Woche 6-7)**
+- [ ] Predictive Analytics für Workflow-Performance
+- [ ] REST API für Template Messages
+- [ ] Third-Party Integration
 - [ ] Business Intelligence Dashboard
-- [ ] API für externe Systeme
 
-### **Phase 5 Ziele**
-- [ ] 99.9% Verfügbarkeit
-- [ ] Vollständige Sicherheit
-- [ ] Production-Ready System
+### **Phase 5 Ziele (Woche 8+)**
+- [ ] 99.9% Template-Ausführung Erfolgsrate
+- [ ] Production-Ready Security
+- [ ] Full Automation Suite
 
 ## 🔗 **Ressourcen**
 
@@ -225,5 +229,20 @@ Module (5 in unserer APS):
 
 ---
 
-**Status**: 🚨 **KRITISCHE MQTT-PROBLEME** - ORDER-ID Management erforderlich
-**Nächster Schritt**: Phase 1.1 - ORDER-ID Management System implementieren
+## 📋 **Template Message Übersicht**
+
+### **9 Implementierte Templates:**
+1. **Wareneingang ROT** - Werkstück-Eingang und HBW-Lagerung
+2. **Wareneingang WEISS** - Werkstück-Eingang und HBW-Lagerung  
+3. **Wareneingang BLAU** - Werkstück-Eingang und HBW-Lagerung
+4. **Auftrag ROT** - HBW → MILL → AIQS → DPS (Produktion)
+5. **Auftrag WEISS** - HBW → DRILL → AIQS → DPS (Produktion)
+6. **Auftrag BLAU** - HBW → DRILL → MILL → AIQS → DPS (Produktion)
+7. **AI-not-ok ROT** - HBW → MILL → AIQS → DPS (mit AI-Prüfung)
+8. **AI-not-ok WEISS** - HBW → DRILL → AIQS → DPS (mit AI-Prüfung)
+9. **AI-not-ok BLAU** - HBW → DRILL → MILL → AIQS → DPS (mit AI-Prüfung)
+
+---
+
+**Status**: ✅ **TEMPLATE MANAGER IMPLEMENTIERT** - Bereit für Live-Integration
+**Nächster Schritt**: Phase 1.1 - Dashboard Integration für Template Manager

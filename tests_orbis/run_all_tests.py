@@ -55,7 +55,10 @@ def main():
         "tests_orbis/test_dashboard_functionality.py",
         "tests_orbis/test_dashboard_runtime.py",
         "tests_orbis/test_default_session.py",
-        "tests_orbis/test_database_structure.py"  # NEUER DATENBANK-STRUKTUR-TEST
+        "tests_orbis/test_database_structure.py",
+        "tests_orbis/test_template_message_manager.py",  # NEUER TEMPLATE MANAGER TEST
+        "tests_orbis/test_icon_configuration.py",  # NEUER ICON CONFIG TEST
+        "tests_orbis/test_template_control_dashboard.py"  # NEUER TEMPLATE CONTROL TEST
     ]
     
     results = []

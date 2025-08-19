@@ -103,7 +103,8 @@ class TestDashboardFunctionality(unittest.TestCase):
                 'show_settings',
                 'connect_mqtt',
                 'disconnect_mqtt',
-                'send_mqtt_message_direct'
+                'send_mqtt_message_direct',
+                'show_template_control'  # NEUE TEMPLATE CONTROL FUNKTIONALITÄT
             ]
             
             for method_name in required_methods:
@@ -114,6 +115,60 @@ class TestDashboardFunctionality(unittest.TestCase):
             
         except Exception as e:
             self.fail(f"❌ Dashboard methods check failed: {e}")
+
+    def test_icon_configuration_integration(self):
+        """Test: Icon Configuration Integration"""
+        try:
+            from src_orbis.mqtt.dashboard.config.icon_config import (
+                MODULE_ICONS, STATUS_ICONS, get_module_icon, get_status_icon
+            )
+            
+            # Check if icon configuration is available
+            self.assertIsNotNone(MODULE_ICONS)
+            self.assertIsNotNone(STATUS_ICONS)
+            self.assertIsNotNone(get_module_icon)
+            self.assertIsNotNone(get_status_icon)
+            
+            # Test icon functions
+            module_icon = get_module_icon('DPS')
+            self.assertIsInstance(module_icon, str)  # Icon is a string (emoji or path)
+            self.assertGreater(len(module_icon), 0)
+            
+            status_icon = get_status_icon('available')
+            self.assertIsInstance(status_icon, str)  # Icon is a string (emoji)
+            self.assertGreater(len(status_icon), 0)
+            
+            print("✅ Icon configuration integration: OK")
+            
+        except Exception as e:
+            self.fail(f"❌ Icon configuration integration failed: {e}")
+
+    def test_template_message_manager_integration(self):
+        """Test: Template Message Manager Integration"""
+        try:
+            from src_orbis.mqtt.tools.template_message_manager import TemplateMessageManager
+            
+            # Initialize template manager
+            template_manager = TemplateMessageManager()
+            
+            # Check if templates are loaded
+            self.assertIsNotNone(template_manager.templates)
+            self.assertIsInstance(template_manager.templates, dict)
+            
+            # Check for required templates
+            required_templates = [
+                'wareneingang_trigger',
+                'dps_drop_template',
+                'hbw_pick_template'
+            ]
+            
+            for template_name in required_templates:
+                self.assertIn(template_name, template_manager.templates)
+            
+            print("✅ Template message manager integration: OK")
+            
+        except Exception as e:
+            self.fail(f"❌ Template message manager integration failed: {e}")
 
 
 if __name__ == "__main__":
