@@ -93,26 +93,13 @@ class APSDashboard:
         self.mqtt_messages_sent = []
         self.mqtt_responses = []
 
-        # MQTT Configuration - will be set by user selection
-        self.selected_broker_config = None
-        self.mqtt_broker = None
-        self.mqtt_port = None
-        self.mqtt_username = None
-        self.mqtt_password = None
+        # MQTT Configuration - fixed for APS Modellfabrik
+        self.mqtt_broker = "192.168.0.100"
+        self.mqtt_port = 1883
+        self.mqtt_username = "default"
+        self.mqtt_password = "default"
 
-    def set_broker(self, broker_name):
-        """Set the MQTT broker based on user selection."""
-        if not self.broker_configs:
-            return
-
-        for config in self.broker_configs:
-            if config["name"] == broker_name:
-                self.selected_broker_config = config
-                self.mqtt_broker = config["host"]
-                self.mqtt_port = config["port"]
-                self.mqtt_username = config.get("username")
-                self.mqtt_password = config.get("password")
-                break
+    # set_broker method removed - using fixed APS Modellfabrik configuration
 
     def connect(self):
         """Connect to database"""
@@ -130,12 +117,6 @@ class APSDashboard:
 
     def setup_mqtt_client(self):
         """Setup MQTT client for sending messages"""
-        if not self.selected_broker_config:
-            st.warning(
-                "Bitte wählen Sie zuerst einen MQTT-Broker in der Seitenleiste aus."
-            )
-            return False
-
         try:
             self.mqtt_client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
             if self.mqtt_username and self.mqtt_password:
@@ -183,12 +164,17 @@ class APSDashboard:
         """MQTT connection callback (VERSION2 API)"""
         if rc == 0:
             self.mqtt_connected = True
+            # Subscribe to module state topics to receive responses
+            for module_name, module_info in self.aps_modules_extended.items():
+                state_topic = f"module/v1/ff/{module_info['id']}/state"
+                client.subscribe(state_topic, qos=1)
+                print(f"Subscribed to: {state_topic}")
             # This callback is in a different thread, so we can't use st.success directly
             # We'll rely on the main thread to show connection status
         else:
             self.mqtt_connected = False
 
-    def _on_mqtt_disconnect(self, client, userdata, rc, properties=None):
+    def _on_mqtt_disconnect(self, client, userdata, rc, properties=None, reasonCode=None):
         """MQTT disconnection callback (VERSION2 API)"""
         self.mqtt_connected = False
         # This callback is in a different thread, we can't use st.info directly
@@ -210,9 +196,16 @@ class APSDashboard:
 
     def send_mqtt_message_direct(self, topic, message):
         """Send MQTT message directly"""
-        if not self.mqtt_connected:
+        # Use session state for MQTT connection status
+        if not st.session_state.get("mqtt_connected", False):
             st.warning("Keine MQTT-Verbindung. Bitte verbinden Sie sich zuerst.")
             return False, "MQTT nicht verbunden"
+
+        # Use stored dashboard instance for MQTT client
+        dashboard = st.session_state.get("mqtt_dashboard")
+        if not dashboard or not dashboard.mqtt_client:
+            st.warning("MQTT-Client nicht verfügbar. Bitte verbinden Sie sich erneut.")
+            return False, "MQTT-Client nicht verfügbar"
 
         try:
             if isinstance(message, dict):
@@ -220,7 +213,7 @@ class APSDashboard:
             else:
                 message_json = str(message)
 
-            result = self.mqtt_client.publish(topic, message_json, qos=1)
+            result = dashboard.mqtt_client.publish(topic, message_json, qos=1)
 
             sent_info = {
                 "timestamp": datetime.now(),
@@ -228,7 +221,9 @@ class APSDashboard:
                 "message": message,
                 "result": result.rc,
             }
-            self.mqtt_messages_sent.append(sent_info)
+            # Store in dashboard instance
+            if hasattr(dashboard, 'mqtt_messages_sent'):
+                dashboard.mqtt_messages_sent.append(sent_info)
 
             if result.rc == mqtt.MQTT_ERR_SUCCESS:
                 return True, "Nachricht erfolgreich gesendet"
@@ -465,6 +460,13 @@ class APSDashboard:
             if not df.empty:
                 min_date = df["date"].min()
                 max_date = df["date"].max()
+                
+                # Reset selected_date if it's outside the current data range
+                if (st.session_state.selected_date and 
+                    (st.session_state.selected_date < min_date or 
+                     st.session_state.selected_date > max_date)):
+                    st.session_state.selected_date = None
+                
                 default_date = (
                     st.session_state.selected_date
                     if st.session_state.selected_date
@@ -848,29 +850,13 @@ class APSDashboard:
 
         st.info(
             """
-        **💡 Neue Sessions aufnehmen:**
+        **💡 Session Recording:**
         
-        Verwende das Session-Logger Script im Terminal:
         ```bash
-        python src-orbis/mqtt/loggers/aps_session_logger.py
+        python src_orbis/mqtt/loggers/aps_session_logger.py --session-label wareneingang-rot --auto-start
         ```
         
-        **Verfügbare Optionen:**
-        - `--session-label <name>` - Custom Session-Bezeichner
-        - `--auto-start` - Automatisch starten
-        - `--process-type <type>` - Prozess-Typ (order_processing, wareneingang, etc.)
-        
-        **Beispiele:**
-        ```bash
-        # Blue Order Session
-        python src-orbis/mqtt/loggers/aps_session_logger.py --session-label order_cloud_blue_ok --auto-start
-        
-        # White Order Session  
-        python src-orbis/mqtt/loggers/aps_session_logger.py --session-label order_cloud_white_ok --auto-start
-        
-        # Wareneingang Session
-        python src-orbis/mqtt/loggers/aps_session_logger.py --session-label wareneingang --auto-start
-        ```
+        **Beispiele:** `wareneingang-rot`, `auftrag-blau`, `ai-not-ok-rot`
         """
         )
 
@@ -946,50 +932,10 @@ class APSDashboard:
         """Show MQTT control interface"""
         st.header("🎮 MQTT Module Control")
         st.markdown("Steuere APS-Module über funktionierende MQTT-Nachrichten")
-
-        # MQTT Connection Status
-        st.subheader("🔗 MQTT Connection Status")
-
-        col1, col2, col3 = st.columns(3)
-
-        with col1:
-            if self.mqtt_connected:
-                st.success("✅ MQTT Verbunden")
-                st.info(f"Broker: {self.mqtt_broker}:{self.mqtt_port}")
-            else:
-                st.error("❌ MQTT Nicht verbunden")
-                if st.button("🔗 MQTT Verbinden"):
-                    self.connect_mqtt()
-
-        with col2:
-            st.metric("Gesendete Nachrichten", len(self.mqtt_messages_sent))
-
-        with col3:
-            st.metric("Empfangene Antworten", len(self.mqtt_responses))
-
-        # Module overview with Serial Numbers
-        st.subheader("🏭 APS Module Overview")
-
-        col1, col2 = st.columns(2)
-
-        with col1:
-            st.markdown("**Verfügbare Module:**")
-            for module_name, serial_number in self.aps_modules.items():
-                working_commands = self.message_library.get_working_commands(
-                    module_name
-                )
-                st.markdown(f"• **{module_name}** (`{serial_number}`)")
-                st.markdown(f"  - Working Commands: {', '.join(working_commands)}")
-
-        with col2:
-            st.markdown("**Module Status:**")
-            if self.mqtt_connected:
-                st.success("✅ Alle Module online und bereit für MQTT-Steuerung")
-            else:
-                st.warning("⚠️ MQTT-Verbindung erforderlich für Steuerung")
-            st.info("🔧 Verwende nur funktionierende Befehle aus der Bibliothek")
-
-        st.markdown("---")
+        
+        # MQTT status info (connection managed in sidebar)
+        if not st.session_state.get("mqtt_connected", False):
+            st.warning("⚠️ MQTT-Verbindung erforderlich - verwende die Sidebar zum Verbinden")
 
         # MQTT Control Interface
         st.subheader("📤 MQTT Message Control")
@@ -997,15 +943,13 @@ class APSDashboard:
         # Control method selection
         control_method = st.selectbox(
             "Steuerungsmethode:",
-            ["Template Message", "Custom Order", "Module Overview", "MQTT Monitor"],
+            ["Module Overview", "Template Message", "MQTT Monitor"],
         )
 
-        if control_method == "Template Message":
+        if control_method == "Module Overview":
+            self.show_module_control_rows()
+        elif control_method == "Template Message":
             self.show_template_control()
-        elif control_method == "Custom Order":
-            self.show_custom_order_control()
-        elif control_method == "Module Overview":
-            self.show_module_overview()
         elif control_method == "MQTT Monitor":
             self.show_mqtt_monitor()
 
@@ -1051,130 +995,58 @@ class APSDashboard:
             if st.button(f"📤 {selected_template} senden", type="primary"):
                 self.send_mqtt_message(selected_template, "template")
 
-    def show_custom_order_control(self):
-        """Show custom order MQTT control"""
-        st.markdown("**Erstelle benutzerdefinierte MQTT-Nachrichten:**")
 
-        col1, col2 = st.columns(2)
-
-        with col1:
-            # Module selection
-            selected_module = st.selectbox(
-                "Modul auswählen:", list(self.aps_modules.keys())
-            )
-
-            if selected_module:
-                # Show module info
-                module_info = self.message_library.get_module_info(selected_module)
-                working_commands = self.message_library.get_working_commands(
-                    selected_module
-                )
-
-                st.markdown(f"**Modul:** {selected_module} (`{module_info['serial']}`)")
-                st.markdown(f"**IP:** {module_info['ip']}")
-                st.markdown(f"**Verfügbare Befehle:** {', '.join(working_commands)}")
-
-        with col2:
-            # Command selection
-            if selected_module:
-                available_commands = self.message_library.get_working_commands(
-                    selected_module
-                )
-                selected_command = st.selectbox("Befehl auswählen:", available_commands)
-
-                # Metadata options
-                st.markdown("**Metadaten:**")
-                workpiece_type = st.selectbox(
-                    "Workpiece Type:", ["WHITE", "BLUE", "RED"]
-                )
-                priority = st.selectbox("Priority:", ["NORMAL", "HIGH", "LOW"])
-                timeout = st.slider("Timeout (Sekunden):", 60, 600, 300)
-
-        # Create and show message
-        if selected_module and selected_command:
-            try:
-                metadata = {
-                    "priority": priority,
-                    "timeout": timeout,
-                    "type": workpiece_type,
-                }
-
-                message = self.message_library.create_order_message(
-                    selected_module, selected_command, metadata
-                )
-
-                st.markdown("**Erstellte MQTT-Nachricht:**")
-                st.json(message)
-
-                # Send button
-                if st.button(
-                    f"📤 {selected_module} {selected_command} senden", type="primary"
-                ):
-                    self.send_custom_mqtt_message(
-                        selected_module, selected_command, metadata
-                    )
-            except Exception as e:
-                st.error(f"Fehler beim Erstellen der MQTT-Nachricht: {e}")
 
     def show_aps_analysis(self, df):
         """Show comprehensive APS data analysis"""
-        st.title("🏭 APS MQTT Dashboard")
-        st.header("📊 Analyse APS")
+        st.header("📊 APS Analyse MQTT")
         st.markdown("Umfassende Analyse der APS-Daten aus den Sessions")
 
-        col1, col2 = st.columns(2)
-        with col1:
-            if st.button("🚀 Dashboard starten"):
-                st.rerun()
-        with col2:
-            if st.button("🔄 Dashboard neu laden"):
-                st.rerun()
-
-        # Database selection section
-        st.subheader("🗄️ Session-Auswahl")
+        # Session management section
+        st.subheader("🗄️ Session-Verwaltung")
+        
         # Get project root (3 levels up from dashboard)
-        project_root = os.path.abspath(
-            os.path.join(os.path.dirname(__file__), "../../..")
-        )
-
+        project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
+        
         # Search in sessions directory only
         db_files = glob.glob(
             os.path.join(project_root, "mqtt-data/sessions/aps_persistent_traffic_*.db")
         )
-
-        if not db_files:
+        
+        if db_files:
+            col1, col2 = st.columns([3, 1])
+            
+            with col1:
+                # Database selection dropdown
+                selected_db = st.selectbox(
+                    "Session auswählen:",
+                    db_files,
+                    index=(
+                        0
+                        if st.session_state.selected_db is None
+                        or st.session_state.selected_db not in db_files
+                        else db_files.index(st.session_state.selected_db)
+                    ),
+                    format_func=lambda x: os.path.basename(x)
+                    .replace("aps_persistent_traffic_", "")
+                    .replace(".db", ""),
+                )
+                
+                if selected_db != st.session_state.selected_db:
+                    st.session_state.selected_db = selected_db
+                    st.rerun()
+            
+            with col2:
+                # Database info
+                if st.session_state.selected_db:
+                    db_size = os.path.getsize(st.session_state.selected_db) / (1024 * 1024)
+                    st.info(f"**Größe:** {db_size:.2f} MB")
+        else:
             st.error("Keine APS-Datenbanken gefunden!")
             st.info(
-                "Führe zuerst den Logger aus: `python src-orbis/mqtt/loggers/aps_session_logger.py`"
+                "Führe zuerst den Logger aus: `python src_orbis/aps_persistent_logger.py`"
             )
             return
-
-        col1, col2 = st.columns(2)
-
-        with col1:
-            # Database selection
-            selected_db = st.selectbox(
-                "Session auswählen:",
-                db_files,
-                index=(
-                    0
-                    if st.session_state.selected_db is None
-                    or st.session_state.selected_db not in db_files
-                    else db_files.index(st.session_state.selected_db)
-                ),
-                format_func=lambda x: os.path.basename(x)
-                .replace("aps_persistent_traffic_", "")
-                .replace(".db", ""),
-            )
-            if selected_db != st.session_state.selected_db:
-                st.session_state.selected_db = selected_db
-                st.rerun()
-
-        with col2:
-            # Database info
-            if st.session_state.selected_db:
-                db_size = os.path.getsize(st.session_state.selected_db) / (1024 * 1024)
-                st.info(f"**Größe:** {db_size:.2f} MB")
 
         # Verbose mode toggle
         verbose_mode = st.checkbox(
@@ -1231,25 +1103,6 @@ class APSDashboard:
         st.header("🏭 Module Overview")
         st.markdown("Übersicht aller APS-Module mit Status und Steuerungsmöglichkeiten")
 
-        # Connection status
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            if self.mqtt_connected:
-                st.success("✅ MQTT Verbunden")
-            else:
-                st.error("❌ MQTT Nicht verbunden")
-                if st.button("🔗 Verbinden", key="connect_mqtt_overview"):
-                    self.connect_mqtt()
-
-        with col2:
-            st.metric("Aktive Module", len(self.aps_modules_extended))
-
-        with col3:
-            total_commands = sum(
-                len(module["commands"]) for module in self.aps_modules_extended.values()
-            )
-            st.metric("Verfügbare Befehle", total_commands)
-
         st.markdown("---")
 
         # Module table
@@ -1264,26 +1117,26 @@ class APSDashboard:
                 recent_messages, module_info["id"]
             )
 
-            # Connection status
+            # Connection status - use session state for consistency
             connection_status = (
-                "🟢 Connected" if self.mqtt_connected else "🔴 Disconnected"
+                "🟢 Connected" if st.session_state.get("mqtt_connected", False) else "🔴 Disconnected"
             )
 
-            # Availability status
+            # Activity status
             if availability_status:
                 if availability_status == "AVAILABLE":
-                    availability_display = "🟢 Available"
+                    activity_display = "🟢 Available"
                 elif availability_status == "BUSY":
-                    availability_display = "🟡 Busy"
+                    activity_display = "🟡 Busy"
                 elif availability_status == "BLOCKED":
-                    availability_display = "🔴 Blocked"
+                    activity_display = "🔴 Blocked"
                 else:
-                    availability_display = f"⚪ {availability_status}"
+                    activity_display = f"⚪ {availability_status}"
             else:
                 if len(recent_messages) > 0:
-                    availability_display = "🟡 Active"
+                    activity_display = "🟡 Active"
                 else:
-                    availability_display = "⚪ No Data"
+                    activity_display = "⚪ No Data"
 
             # Commands as string
             commands_str = ", ".join(module_info["commands"])
@@ -1295,7 +1148,7 @@ class APSDashboard:
                     "Type": module_info["type"],
                     "IP": module_info["ip"],
                     "Connected": connection_status,
-                    "Availability": availability_display,
+                    "Activity Status": activity_display,
                     "Commands": commands_str,
                     "Recent Messages": len(recent_messages),
                 }
@@ -1315,27 +1168,8 @@ class APSDashboard:
             },
         )
 
-        # Module control buttons
-        st.subheader("🎮 Module Control")
-
-        # Create control buttons in a grid
-        for i in range(0, len(module_table_data), 3):
-            cols = st.columns(3)
-            for j in range(3):
-                if i + j < len(module_table_data):
-                    module_data = module_table_data[i + j]
-                    module_key = list(self.aps_modules_extended.keys())[i + j]
-                    module_info = self.aps_modules_extended[module_key]
-
-                    with cols[j]:
-                        st.markdown(f"**{module_data['Name']}**")
-                        for command in module_info["commands"]:
-                            if st.button(
-                                f"▶️ {command}",
-                                key=f"table_cmd_{module_key}_{command}",
-                                use_container_width=True,
-                            ):
-                                self.send_module_command(module_key, command)
+        # Module control moved to MQTT Control tab
+        st.info("🎮 **Module Control** ist jetzt im **MQTT Control** Tab verfügbar")
 
         # Module statistics
         st.markdown("---")
@@ -1513,6 +1347,17 @@ class APSDashboard:
                         recent_messages[["timestamp", "topic", "status"]].head(5),
                         use_container_width=True,
                     )
+
+    def _extract_module_name_from_topic(self, topic):
+        """Extract module name from MQTT topic"""
+        # Extract serial number from topic
+        if '/ff/' in topic:
+            serial = topic.split('/ff/')[1].split('/')[0]
+            # Map serial to module name
+            for module_name, module_info in self.aps_modules_extended.items():
+                if module_info['id'] == serial:
+                    return module_name
+        return "Unknown"
 
     def send_module_command(self, module_key, command):
         """Send command to specific module"""
@@ -1693,28 +1538,9 @@ class APSDashboard:
                 )
 
         with col2:
-            st.subheader("📡 MQTT-Konfiguration")
+            st.subheader("📊 Dashboard-Statistiken")
 
-            # MQTT connection info
-            st.info(f"**Broker:** {self.mqtt_broker}:{self.mqtt_port}")
-            st.info(f"**Username:** {self.mqtt_username}")
-
-            # Connection status
-            if self.mqtt_connected:
-                st.success("✅ MQTT Verbunden")
-            else:
-                st.error("❌ MQTT Nicht verbunden")
-                if st.button("🔗 MQTT Verbinden", key="connect_mqtt_settings"):
-                    self.connect_mqtt()
-
-        st.markdown("---")
-
-        # System information
-        st.subheader("💻 System-Informationen")
-
-        col1, col2, col3 = st.columns(3)
-
-        with col1:
+            # Dashboard statistics
             st.metric("Aktive Module", len(self.aps_modules_extended))
             st.metric(
                 "Verfügbare Befehle",
@@ -1723,87 +1549,149 @@ class APSDashboard:
                     for module in self.aps_modules_extended.values()
                 ),
             )
-
-        with col2:
             st.metric("MQTT-Nachrichten gesendet", len(self.mqtt_messages_sent))
             st.metric("MQTT-Antworten empfangen", len(self.mqtt_responses))
 
-        with col3:
+        st.markdown("---")
+
+        # System information
+        st.subheader("💻 System-Informationen")
+
+        col1, col2 = st.columns(2)
+
+        with col1:
             st.metric(
                 "Datenbank-Dateien",
                 len(glob.glob(os.path.join(os.path.dirname(self.db_file), "*.db"))),
             )
             st.metric("Dashboard-Version", "2.0")
 
-    def show_module_overview(self):
-        """Show detailed module overview"""
-        st.markdown("**Detaillierte Modul-Übersicht:**")
+        with col2:
+            st.metric("Template-Nachrichten", len(list_available_templates()))
+            st.metric("Session-Datenbanken", len(glob.glob(os.path.join(os.path.dirname(self.db_file), "aps_persistent_traffic_*.db"))))
 
-        for module_name, serial_number in self.aps_modules.items():
-            with st.expander(f"🏭 {module_name} ({serial_number})"):
-                module_info = self.message_library.get_module_info(module_name)
-                working_commands = self.message_library.get_working_commands(
-                    module_name
-                )
+    def show_module_control_rows(self):
+        """Show module control in rows with buttons"""
+        st.markdown("**Modul-Steuerung zeilenweise:**")
 
-                col1, col2 = st.columns(2)
-
+        # Show each module in a row with control buttons
+        for module_key, module_info in self.aps_modules_extended.items():
+            with st.container():
+                # Module header
+                st.markdown(f"### {module_info['icon']} {module_info['name']}")
+                
+                # Module info in columns
+                col1, col2, col3, col4 = st.columns([2, 2, 2, 4])
+                
                 with col1:
-                    st.markdown("**Modul-Informationen:**")
-                    st.markdown(f"• **Serial Number:** {module_info['serial']}")
-                    st.markdown(f"• **IP Address:** {module_info['ip']}")
-                    st.markdown(f"• **Working Commands:** {len(working_commands)}")
-
+                    st.markdown(f"**ID:** `{module_info['id']}`")
+                    st.markdown(f"**Typ:** {module_info['type']}")
+                
                 with col2:
+                    st.markdown(f"**IP:** {module_info['ip']}")
+                    # Connection status
+                    if st.session_state.get("mqtt_connected", False):
+                        st.success("🟢 Online")
+                    else:
+                        st.error("🔴 Offline")
+                
+                with col3:
                     st.markdown("**Verfügbare Befehle:**")
-                    for command in working_commands:
-                        st.markdown(f"• `{command}`")
-
-                # Quick send buttons
-                st.markdown("**Schnell-Befehle:**")
-                for command in working_commands:
-                    if st.button(f"📤 {command}", key=f"{module_name}_{command}"):
-                        self.send_custom_mqtt_message(module_name, command)
+                    for command in module_info["commands"]:
+                        st.markdown(f"• {command}")
+                
+                with col4:
+                    st.markdown("**Steuerung:**")
+                    # Control buttons in logical order: PICK -> PROCESS -> DROP
+                    button_order = []
+                    
+                    # Add PICK first
+                    if "PICK" in module_info["commands"]:
+                        button_order.append("PICK")
+                    
+                    # Add PROCESS commands (MILL, DRILL, CHECK_QUALITY)
+                    process_commands = ["MILL", "DRILL", "CHECK_QUALITY"]
+                    for cmd in process_commands:
+                        if cmd in module_info["commands"]:
+                            button_order.append(cmd)
+                    
+                    # Add other commands (STORE, etc.)
+                    for cmd in module_info["commands"]:
+                        if cmd not in button_order:
+                            button_order.append(cmd)
+                    
+                    # Add DROP last
+                    if "DROP" in module_info["commands"]:
+                        if "DROP" in button_order:
+                            button_order.remove("DROP")
+                        button_order.append("DROP")
+                    
+                    # Create buttons in order
+                    for command in button_order:
+                        button_text = f"▶️ {command}"
+                        if command in ["MILL", "DRILL"]:
+                            button_text = f"⚙️ {command}"
+                        elif command == "CHECK_QUALITY":
+                            button_text = f"🔍 {command}"
+                        elif command == "STORE":
+                            button_text = f"📦 {command}"
+                        
+                        if st.button(
+                            button_text,
+                            key=f"control_{module_key}_{command}",
+                            use_container_width=True,
+                        ):
+                            self.send_module_command(module_key, command)
+                
+                st.markdown("---")
 
     def show_mqtt_monitor(self):
         """Show MQTT message monitor"""
         st.markdown("**MQTT Message Monitor:**")
 
-        # Connection status
-        if not self.mqtt_connected:
+        # Connection status - use session state for consistency
+        if not st.session_state.get("mqtt_connected", False):
             st.warning("⚠️ MQTT-Verbindung erforderlich für Monitoring")
-            if st.button("🔗 MQTT Verbinden"):
-                self.connect_mqtt()
+            st.info("Verwende die Sidebar zum Verbinden")
             return
 
-        # Sent messages
+        # Sent messages - use session state dashboard
         st.subheader("📤 Gesendete Nachrichten")
-        if self.mqtt_messages_sent:
-            sent_df = pd.DataFrame(self.mqtt_messages_sent)
+        dashboard = st.session_state.get("mqtt_dashboard")
+        if dashboard and hasattr(dashboard, 'mqtt_messages_sent') and dashboard.mqtt_messages_sent:
+            sent_df = pd.DataFrame(dashboard.mqtt_messages_sent)
             sent_df["timestamp"] = pd.to_datetime(sent_df["timestamp"])
             sent_df = sent_df.sort_values("timestamp", ascending=False)
 
             # Display recent messages
             for idx, row in sent_df.head(5).iterrows():
+                # Extract module name from topic
+                module_name = self._extract_module_name_from_topic(row['topic'])
+                message_type = row['topic'].split('/')[-1]  # 'order' or 'state'
+                
                 with st.expander(
-                    f"📤 {row['timestamp'].strftime('%H:%M:%S')} - {row['topic']}"
+                    f"📤 {row['timestamp'].strftime('%H:%M:%S')} - {module_name}: {message_type}"
                 ):
                     st.json(row["message"])
                     st.info(f"Result: {row['result']}")
         else:
             st.info("Noch keine Nachrichten gesendet")
 
-        # Received responses
+        # Received responses - use session state dashboard
         st.subheader("📨 Empfangene Antworten")
-        if self.mqtt_responses:
-            response_df = pd.DataFrame(self.mqtt_responses)
+        if dashboard and hasattr(dashboard, 'mqtt_responses') and dashboard.mqtt_responses:
+            response_df = pd.DataFrame(dashboard.mqtt_responses)
             response_df["timestamp"] = pd.to_datetime(response_df["timestamp"])
             response_df = response_df.sort_values("timestamp", ascending=False)
 
             # Display recent responses
             for idx, row in response_df.head(5).iterrows():
+                # Extract module name from topic
+                module_name = self._extract_module_name_from_topic(row['topic'])
+                message_type = row['topic'].split('/')[-1]  # 'order' or 'state'
+                
                 with st.expander(
-                    f"📨 {row['timestamp'].strftime('%H:%M:%S')} - {row['topic']}"
+                    f"📨 {row['timestamp'].strftime('%H:%M:%S')} - {module_name}: {message_type}"
                 ):
                     st.json(row["payload"])
                     st.info(f"QoS: {row['qos']}")
@@ -1814,13 +1702,15 @@ class APSDashboard:
         col1, col2 = st.columns(2)
         with col1:
             if st.button("🗑️ Gesendete Nachrichten löschen"):
-                self.mqtt_messages_sent.clear()
+                if dashboard and hasattr(dashboard, 'mqtt_messages_sent'):
+                    dashboard.mqtt_messages_sent.clear()
                 st.success("Gesendete Nachrichten gelöscht")
                 st.rerun()
 
         with col2:
             if st.button("🗑️ Empfangene Antworten löschen"):
-                self.mqtt_responses.clear()
+                if dashboard and hasattr(dashboard, 'mqtt_responses'):
+                    dashboard.mqtt_responses.clear()
                 st.success("Empfangene Antworten gelöscht")
                 st.rerun()
 
@@ -1848,29 +1738,7 @@ class APSDashboard:
         except Exception as e:
             st.error(f"❌ Fehler beim Senden der Template-Nachricht: {e}")
 
-    def send_custom_mqtt_message(self, module_name, command, metadata=None):
-        """Send custom MQTT message"""
-        try:
-            # Create message using library
-            message = self.message_library.create_order_message(
-                module_name, command, metadata
-            )
 
-            # Get topic
-            topic = self.message_library.get_topic(module_name, "order")
-
-            # Send message
-            success, result_message = self.send_mqtt_message_direct(topic, message)
-
-            if success:
-                st.success(f"✅ MQTT-Nachricht gesendet: {module_name} - {command}")
-                st.info(f"📡 Topic: {topic}")
-                st.json(message)
-            else:
-                st.error(f"❌ MQTT-Versand fehlgeschlagen: {result_message}")
-
-        except Exception as e:
-            st.error(f"❌ Fehler beim Senden der benutzerdefinierten Nachricht: {e}")
 
     def create_sidebar(self):
         """Creates the sidebar with navigation and MQTT broker selection."""
@@ -1973,50 +1841,27 @@ def main():
     if "selected_tab" not in st.session_state:
         st.session_state.selected_tab = "🏭 Module Overview"
 
-    # Tab buttons in sidebar
-    if st.sidebar.button(
-        "🏭 Module Overview",
-        use_container_width=True,
-        type=(
-            "primary"
-            if st.session_state.selected_tab == "🏭 Module Overview"
-            else "secondary"
-        ),
-    ):
-        st.session_state.selected_tab = "🏭 Module Overview"
-
-    if st.sidebar.button(
-        "📊 Analyse APS",
-        use_container_width=True,
-        type=(
-            "primary"
-            if st.session_state.selected_tab == "📊 Analyse APS"
-            else "secondary"
-        ),
-    ):
-        st.session_state.selected_tab = "📊 Analyse APS"
-
-    if st.sidebar.button(
-        "🎮 MQTT Control",
-        use_container_width=True,
-        type=(
-            "primary"
-            if st.session_state.selected_tab == "🎮 MQTT Control"
-            else "secondary"
-        ),
-    ):
-        st.session_state.selected_tab = "🎮 MQTT Control"
-
-    if st.sidebar.button(
-        "⚙️ Einstellungen",
-        use_container_width=True,
-        type=(
-            "primary"
-            if st.session_state.selected_tab == "⚙️ Einstellungen"
-            else "secondary"
-        ),
-    ):
-        st.session_state.selected_tab = "⚙️ Einstellungen"
+    # Tab buttons in sidebar with active highlighting
+    tabs = [
+        ("🏭 Module Overview", "🏭 Module Overview"),
+        ("📊 Analyse APS", "📊 Analyse APS"), 
+        ("🎮 MQTT Control", "🎮 MQTT Control"),
+        ("⚙️ Einstellungen", "⚙️ Einstellungen")
+    ]
+    
+    for tab_name, tab_key in tabs:
+        is_active = st.session_state.selected_tab == tab_key
+        
+        if st.sidebar.button(
+            tab_name,
+            use_container_width=True,
+            key=f"nav_{tab_key}",
+            disabled=is_active,
+            type="primary" if is_active else "secondary"
+        ):
+            if not is_active:
+                st.session_state.selected_tab = tab_key
+                st.rerun()
 
     # Initialize session state
     if "dashboard_loaded" not in st.session_state:
@@ -2026,7 +1871,7 @@ def main():
     if "verbose_mode" not in st.session_state:
         st.session_state.verbose_mode = False
 
-    # Database selection
+    # Session management moved to APS Analysis tab
     # Get project root (3 levels up from dashboard)
     project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
 
@@ -2036,11 +1881,51 @@ def main():
     )
 
     if not db_files:
-        st.error("Keine APS-Datenbanken gefunden!")
-        st.info(
+        st.sidebar.error("Keine APS-Datenbanken gefunden!")
+        st.sidebar.info(
             "Führe zuerst den Logger aus: `python src-orbis/aps_persistent_logger.py`"
         )
         return
+
+    # Auto-select first database if none selected
+    if (
+        st.session_state.selected_db is None
+        or st.session_state.selected_db not in db_files
+    ):
+        st.session_state.selected_db = db_files[0] if db_files else None
+    
+    # MQTT Connection status in sidebar
+    st.sidebar.markdown("---")
+    st.sidebar.markdown("**🔗 MQTT-Verbindung**")
+    
+    # Store MQTT connection status in session state
+    if "mqtt_connected" not in st.session_state:
+        st.session_state.mqtt_connected = False
+    
+    # MQTT Connection status and controls
+    if st.session_state.mqtt_connected:
+        st.sidebar.success("✅ Connected")
+        if st.sidebar.button("🔌 Disconnect", key="disconnect_mqtt_sidebar"):
+            # Disconnect MQTT dashboard if exists
+            if "mqtt_dashboard" in st.session_state and st.session_state.mqtt_dashboard:
+                st.session_state.mqtt_dashboard.disconnect_mqtt()
+            st.session_state.mqtt_connected = False
+            st.session_state.mqtt_dashboard = None
+            st.rerun()
+    else:
+        st.sidebar.error("❌ Not connected")
+        if st.sidebar.button("🔗 Connect", key="connect_mqtt_sidebar"):
+            if st.session_state.selected_db:
+                # Create dashboard instance and store in session state
+                dashboard = APSDashboard(st.session_state.selected_db, verbose_mode=st.session_state.verbose_mode)
+                if dashboard.connect_mqtt():
+                    st.session_state.mqtt_connected = True
+                    st.session_state.mqtt_dashboard = dashboard
+                    st.rerun()
+                else:
+                    st.sidebar.error("❌ Connection failed")
+                    st.session_state.mqtt_connected = False
+                    st.session_state.mqtt_dashboard = None
 
     # Auto-select first database if none selected
     if (

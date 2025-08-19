@@ -16,12 +16,12 @@ class MQTTMessageLibrary:
         "MILL": {
             "serial": "SVR3QA2098",
             "ip": "192.168.0.40",
-            "working_commands": ["PICK", "DROP"]  # MILL command not supported directly
+            "working_commands": ["PICK", "DROP", "MILL"]  # MILL command for processing
         },
         "DRILL": {
             "serial": "SVR4H76449", 
             "ip": "192.168.0.50",
-            "working_commands": ["PICK", "DROP"]  # DRILL command not supported directly
+            "working_commands": ["PICK", "DROP", "DRILL"]  # DRILL command for processing
         },
         "AIQS": {
             "serial": "SVR4H76530",
@@ -36,7 +36,7 @@ class MQTTMessageLibrary:
         "DPS": {
             "serial": "SVR4H73275",
             "ip": "192.168.0.90",
-            "working_commands": ["PICK", "DROP"]
+            "working_commands": ["PICK", "DROP", "INPUT_RGB", "RGB_NFC"]
         }
     }
     
@@ -200,6 +200,167 @@ WORKING_MESSAGE_TEMPLATES = {
         },
         "expected_response": "RUNNING",
         "notes": "Expected to work based on module capabilities"
+    },
+    "DRILL_PROCESS_WHITE": {
+        "description": "DRILL module DRILL command for WHITE workpiece processing",
+        "module": "DRILL",
+        "command": "DRILL",
+        "metadata": {
+            "priority": "NORMAL",
+            "timeout": 300,
+            "type": "WHITE",
+            "duration": 30
+        },
+        "expected_response": "RUNNING",
+        "notes": "Processing command - requires workpiece to be picked first"
+    },
+    "MILL_PROCESS_WHITE": {
+        "description": "MILL module MILL command for WHITE workpiece processing",
+        "module": "MILL",
+        "command": "MILL",
+        "metadata": {
+            "priority": "NORMAL",
+            "timeout": 300,
+            "type": "WHITE",
+            "duration": 45
+        },
+        "expected_response": "RUNNING",
+        "notes": "Processing command - requires workpiece to be picked first"
+    },
+    "DRILL_PROCESS_RED": {
+        "description": "DRILL module DRILL command for RED workpiece processing",
+        "module": "DRILL",
+        "command": "DRILL",
+        "metadata": {
+            "priority": "NORMAL",
+            "timeout": 300,
+            "type": "RED",
+            "duration": 30
+        },
+        "expected_response": "RUNNING",
+        "notes": "Processing command - requires workpiece to be picked first"
+    },
+    "MILL_PROCESS_RED": {
+        "description": "MILL module MILL command for RED workpiece processing",
+        "module": "MILL",
+        "command": "MILL",
+        "metadata": {
+            "priority": "NORMAL",
+            "timeout": 300,
+            "type": "RED",
+            "duration": 45
+        },
+        "expected_response": "RUNNING",
+        "notes": "Processing command - requires workpiece to be picked first"
+    },
+    "DRILL_PROCESS_BLUE": {
+        "description": "DRILL module DRILL command for BLUE workpiece processing",
+        "module": "DRILL",
+        "command": "DRILL",
+        "metadata": {
+            "priority": "NORMAL",
+            "timeout": 300,
+            "type": "BLUE",
+            "duration": 30
+        },
+        "expected_response": "RUNNING",
+        "notes": "Processing command - requires workpiece to be picked first"
+    },
+    "MILL_PROCESS_BLUE": {
+        "description": "MILL module MILL command for BLUE workpiece processing",
+        "module": "MILL",
+        "command": "MILL",
+        "metadata": {
+            "priority": "NORMAL",
+            "timeout": 300,
+            "type": "BLUE",
+            "duration": 45
+        },
+        "expected_response": "RUNNING",
+        "notes": "Processing command - requires workpiece to be picked first"
+    },
+    "DPS_INPUT_RGB": {
+        "description": "DPS module INPUT_RGB command for RGB sensor input",
+        "module": "DPS",
+        "command": "INPUT_RGB",
+        "metadata": {
+            "priority": "NORMAL",
+            "timeout": 300
+        },
+        "expected_response": "RUNNING",
+        "notes": "RGB sensor input command for workpiece detection"
+    },
+    "DPS_RGB_NFC_WHITE": {
+        "description": "DPS module RGB_NFC command for WHITE workpiece NFC reading",
+        "module": "DPS",
+        "command": "RGB_NFC",
+        "metadata": {
+            "priority": "NORMAL",
+            "timeout": 300,
+            "type": "WHITE"
+        },
+        "expected_response": "RUNNING",
+        "notes": "NFC reading command for WHITE workpiece identification"
+    },
+    "DPS_RGB_NFC_RED": {
+        "description": "DPS module RGB_NFC command for RED workpiece NFC reading",
+        "module": "DPS",
+        "command": "RGB_NFC",
+        "metadata": {
+            "priority": "NORMAL",
+            "timeout": 300,
+            "type": "RED"
+        },
+        "expected_response": "RUNNING",
+        "notes": "NFC reading command for RED workpiece identification"
+    },
+    "DPS_RGB_NFC_BLUE": {
+        "description": "DPS module RGB_NFC command for BLUE workpiece NFC reading",
+        "module": "DPS",
+        "command": "RGB_NFC",
+        "metadata": {
+            "priority": "NORMAL",
+            "timeout": 300,
+            "type": "BLUE"
+        },
+        "expected_response": "RUNNING",
+        "notes": "NFC reading command for BLUE workpiece identification"
+    },
+    "HBW_STORE_WHITE": {
+        "description": "HBW module STORE command for WHITE workpiece storage",
+        "module": "HBW",
+        "command": "STORE",
+        "metadata": {
+            "priority": "NORMAL",
+            "timeout": 300,
+            "type": "WHITE"
+        },
+        "expected_response": "RUNNING",
+        "notes": "Storage command for WHITE workpiece - requires workpiece to be picked first"
+    },
+    "HBW_STORE_RED": {
+        "description": "HBW module STORE command for RED workpiece storage",
+        "module": "HBW",
+        "command": "STORE",
+        "metadata": {
+            "priority": "NORMAL",
+            "timeout": 300,
+            "type": "RED"
+        },
+        "expected_response": "RUNNING",
+        "notes": "Storage command for RED workpiece - requires workpiece to be picked first"
+    },
+    "HBW_STORE_BLUE": {
+        "description": "HBW module STORE command for BLUE workpiece storage",
+        "module": "HBW",
+        "command": "STORE",
+        "metadata": {
+            "priority": "NORMAL",
+            "timeout": 300,
+            "type": "BLUE"
+        },
+        "expected_response": "RUNNING",
+        "notes": "Storage command for BLUE workpiece - requires workpiece to be picked first"
     }
 }
 
