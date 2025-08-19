@@ -339,6 +339,101 @@ class MQTTSessionAnalyzer:
         print(f"   📊 {len(errors)} Errors gefunden")
         return errors
     
+    def compare_sessions(self, other_session_db_path):
+        """Vergleicht diese Session mit einer anderen Session (Varianz-Analyse)"""
+        print(f"\n🔍 Vergleiche Sessions: {self.session_db_path} vs {other_session_db_path}")
+        
+        try:
+            # Lade andere Session
+            other_analyzer = MQTTSessionAnalyzer(other_session_db_path)
+            if not other_analyzer.load_session_data():
+                return None
+            
+            # Führe Analysen durch
+            other_analyzer.analyze_order_id_patterns()
+            other_analyzer.analyze_module_status_patterns()
+            other_analyzer.analyze_command_patterns()
+            other_analyzer.analyze_error_patterns()
+            
+            # Vergleiche Ergebnisse
+            comparison = {
+                'session_1': self.session_db_path,
+                'session_2': other_session_db_path,
+                'message_count_diff': len(self.df) - len(other_analyzer.df),
+                'order_id_comparison': self._compare_order_ids(other_analyzer),
+                'status_comparison': self._compare_status_patterns(other_analyzer),
+                'command_comparison': self._compare_command_patterns(other_analyzer),
+                'error_comparison': self._compare_error_patterns(other_analyzer),
+                'timing_variance': self._analyze_timing_variance(other_analyzer)
+            }
+            
+            self.analysis_results['variance_analysis'] = comparison
+            print("   📊 Varianz-Analyse abgeschlossen")
+            return comparison
+            
+        except Exception as e:
+            print(f"   ❌ Fehler bei Varianz-Analyse: {e}")
+            return None
+    
+    def _compare_order_ids(self, other_analyzer):
+        """Vergleicht ORDER-ID Muster zwischen Sessions"""
+        ids_1 = set(self.analysis_results.get('order_id_analysis', {}).get('unique_order_ids', []))
+        ids_2 = set(other_analyzer.analysis_results.get('order_id_analysis', {}).get('unique_order_ids', []))
+        
+        return {
+            'unique_to_session_1': list(ids_1 - ids_2),
+            'unique_to_session_2': list(ids_2 - ids_1),
+            'common_ids': list(ids_1 & ids_2),
+            'total_unique_1': len(ids_1),
+            'total_unique_2': len(ids_2)
+        }
+    
+    def _compare_status_patterns(self, other_analyzer):
+        """Vergleicht Status-Muster zwischen Sessions"""
+        status_1 = self.analysis_results.get('status_analysis', {}).get('status_transitions', {})
+        status_2 = other_analyzer.analysis_results.get('status_analysis', {}).get('status_transitions', {})
+        
+        return {
+            'modules_session_1': list(status_1.keys()),
+            'modules_session_2': list(status_2.keys()),
+            'common_modules': list(set(status_1.keys()) & set(status_2.keys())),
+            'status_transitions_diff': len(status_1) - len(status_2)
+        }
+    
+    def _compare_command_patterns(self, other_analyzer):
+        """Vergleicht Command-Muster zwischen Sessions"""
+        freq_1 = self.analysis_results.get('command_analysis', {}).get('command_frequency', {})
+        freq_2 = other_analyzer.analysis_results.get('command_analysis', {}).get('command_frequency', {})
+        
+        return {
+            'commands_session_1': freq_1,
+            'commands_session_2': freq_2,
+            'common_commands': list(set(freq_1.keys()) & set(freq_2.keys())),
+            'unique_commands_1': list(set(freq_1.keys()) - set(freq_2.keys())),
+            'unique_commands_2': list(set(freq_2.keys()) - set(freq_1.keys()))
+        }
+    
+    def _compare_error_patterns(self, other_analyzer):
+        """Vergleicht Error-Muster zwischen Sessions"""
+        errors_1 = self.analysis_results.get('error_analysis', {}).get('error_frequency', {})
+        errors_2 = other_analyzer.analysis_results.get('error_analysis', {}).get('error_frequency', {})
+        
+        return {
+            'errors_session_1': errors_1,
+            'errors_session_2': errors_2,
+            'common_errors': list(set(errors_1.keys()) & set(errors_2.keys())),
+            'unique_errors_1': list(set(errors_1.keys()) - set(errors_2.keys())),
+            'unique_errors_2': list(set(errors_2.keys()) - set(errors_1.keys()))
+        }
+    
+    def _analyze_timing_variance(self, other_analyzer):
+        """Analysiert zeitliche Varianz zwischen Sessions"""
+        # Einfache Timing-Analyse basierend auf Nachrichtenanzahl
+        return {
+            'avg_messages_per_minute_1': len(self.df) / max(1, (self.df['timestamp'].max() - self.df['timestamp'].min()).total_seconds() / 60),
+            'avg_messages_per_minute_2': len(other_analyzer.df) / max(1, (other_analyzer.df['timestamp'].max() - other_analyzer.df['timestamp'].min()).total_seconds() / 60)
+        }
+    
     def _extract_error_info(self, payload, topic):
         """Extrahiert Error-Informationen aus Payload und Topic"""
         error_info = {}
@@ -437,6 +532,7 @@ def main():
     parser.add_argument('session_db', help='Pfad zur Session-Datenbank (.db)')
     parser.add_argument('--output', '-o', help='Ausgabe-Pfad für Report (.json)')
     parser.add_argument('--verbose', '-v', action='store_true', help='Detaillierte Ausgabe')
+    parser.add_argument('--compare', '-c', help='Vergleiche mit anderer Session-DB (Varianz-Analyse)')
     
     args = parser.parse_args()
     
@@ -457,6 +553,13 @@ def main():
     analyzer.analyze_module_status_patterns()
     analyzer.analyze_command_patterns()
     analyzer.analyze_error_patterns()
+    
+    # Varianz-Analyse (optional)
+    if args.compare:
+        if not Path(args.compare).exists():
+            print(f"❌ Vergleichs-Session-DB nicht gefunden: {args.compare}")
+            return 1
+        analyzer.compare_sessions(args.compare)
     
     # Generiere Report
     report = analyzer.generate_analysis_report()

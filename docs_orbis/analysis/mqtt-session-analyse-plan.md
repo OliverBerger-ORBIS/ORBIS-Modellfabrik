@@ -18,9 +18,9 @@ Systematische Analyse der MQTT-Nachrichten während spezifischer Workflows, um M
 6. **MQTT-Session aufnehmen** während des gesamten Prozesses
 
 #### **Session-Labels:**
-- `wareneingang-rot`
-- `wareneingang-weiss`
-- `wareneingang-blau`
+- `wareneingang-rot_1`, `wareneingang-rot_2`, `wareneingang-rot_3`
+- `wareneingang-weiss_1`, `wareneingang-weiss_2`, `wareneingang-weiss_3`
+- `wareneingang-blau_1`, `wareneingang-blau_2`, `wareneingang-blau_3`
 
 #### **Zu analysierende Aspekte:**
 - **ORDER-ID Generierung**: Wie werden eindeutige Order-IDs erstellt?
@@ -40,9 +40,9 @@ Systematische Analyse der MQTT-Nachrichten während spezifischer Workflows, um M
 6. **MQTT-Session aufnehmen** während der Verarbeitung
 
 #### **Session-Labels:**
-- `auftrag-rot`
-- `auftrag-weiss`
-- `auftrag-blau`
+- `auftrag-rot_1`, `auftrag-rot_2`, `auftrag-rot_3`
+- `auftrag-weiss_1`, `auftrag-weiss_2`, `auftrag-weiss_3`
+- `auftrag-blau_1`, `auftrag-blau_2`, `auftrag-blau_3`
 
 #### **Zu analysierende Aspekte:**
 - **Workflow-Sequenz**: Reihenfolge der Module
@@ -62,9 +62,9 @@ Systematische Analyse der MQTT-Nachrichten während spezifischer Workflows, um M
 6. **MQTT-Session aufnehmen** während der Verarbeitung
 
 #### **Session-Labels:**
-- `ai-not-ok-rot`
-- `ai-not-ok-weiss`
-- `ai-not-ok-blau`
+- `ai-not-ok-rot_1`, `ai-not-ok-rot_2`, `ai-not-ok-rot_3`
+- `ai-not-ok-weiss_1`, `ai-not-ok-weiss_2`, `ai-not-ok-weiss_3`
+- `ai-not-ok-blau_1`, `ai-not-ok-blau_2`, `ai-not-ok-blau_3`
 
 #### **Zu analysierende Aspekte:**
 - **Error-Detection**: Wie wird "Not OK" erkannt?
@@ -81,9 +81,9 @@ Systematische Analyse der MQTT-Nachrichten während spezifischer Workflows, um M
 3. **Laden beenden**: Ladevorgang beenden
 
 #### **Session-Labels:**
-- `fts-laden`
-- `fts-dock-dps`
-- `fts-laden-beenden`
+- `fts-laden_1`, `fts-laden_2`, `fts-laden_3`
+- `fts-dock-dps_1`, `fts-dock-dps_2`, `fts-dock-dps_3`
+- `fts-laden-beenden_1`, `fts-laden-beenden_2`, `fts-laden-beenden_3`
 
 #### **Zu analysierende Aspekte:**
 - **VDA5050 Standard**: Wie wird VDA5050 implementiert?
@@ -95,8 +95,10 @@ Systematische Analyse der MQTT-Nachrichten während spezifischer Workflows, um M
 
 ### **1. Session-Recording**
 ```bash
-# Für jede Session manuell
-python src_orbis/mqtt/loggers/aps_session_logger.py --session-label wareneingang-rot --auto-start
+# Für jede Session manuell (3x pro Szenario für Varianz-Analyse)
+python src_orbis/mqtt/loggers/aps_session_logger.py --session-label wareneingang-rot_1 --auto-start
+python src_orbis/mqtt/loggers/aps_session_logger.py --session-label wareneingang-rot_2 --auto-start
+python src_orbis/mqtt/loggers/aps_session_logger.py --session-label wareneingang-rot_3 --auto-start
 ```
 
 ### **2. Daten-Analyse**
@@ -110,6 +112,12 @@ python src_orbis/mqtt/loggers/aps_session_logger.py --session-label wareneingang
 - **Command-Sequences**: Reihenfolge der Commands
 - **Dependency-Patterns**: Abhängigkeiten zwischen Modulen
 - **Error-Patterns**: Häufige Fehlermuster
+
+### **4. Varianz-Analyse (3x pro Szenario)**
+- **Timing-Varianz**: Zeitliche Schwankungen zwischen identischen Workflows
+- **Status-Varianz**: Unterschiedliche Status-Sequenzen
+- **Error-Varianz**: Zufällige vs. systematische Fehler
+- **ORDER-ID Varianz**: Verschiedene Generierungs-Patterns
 
 ## 📊 **Erwartete Erkenntnisse**
 
@@ -155,25 +163,25 @@ python src_orbis/mqtt/loggers/aps_session_logger.py --session-label wareneingang
 
 ## 📋 **Session-Labels (Übersicht)**
 
-### **Wareneingang Sessions:**
-- `wareneingang-rot`
-- `wareneingang-weiss`
-- `wareneingang-blau`
+### **Wareneingang Sessions (3x pro Szenario):**
+- `wareneingang-rot_1`, `wareneingang-rot_2`, `wareneingang-rot_3`
+- `wareneingang-weiss_1`, `wareneingang-weiss_2`, `wareneingang-weiss_3`
+- `wareneingang-blau_1`, `wareneingang-blau_2`, `wareneingang-blau_3`
 
-### **Auftrag Sessions:**
-- `auftrag-rot`
-- `auftrag-weiss`
-- `auftrag-blau`
+### **Auftrag Sessions (3x pro Szenario):**
+- `auftrag-rot_1`, `auftrag-rot_2`, `auftrag-rot_3`
+- `auftrag-weiss_1`, `auftrag-weiss_2`, `auftrag-weiss_3`
+- `auftrag-blau_1`, `auftrag-blau_2`, `auftrag-blau_3`
 
-### **AI-Error Sessions:**
-- `ai-not-ok-rot`
-- `ai-not-ok-weiss`
-- `ai-not-ok-blau`
+### **AI-Error Sessions (3x pro Szenario):**
+- `ai-not-ok-rot_1`, `ai-not-ok-rot_2`, `ai-not-ok-rot_3`
+- `ai-not-ok-weiss_1`, `ai-not-ok-weiss_2`, `ai-not-ok-weiss_3`
+- `ai-not-ok-blau_1`, `ai-not-ok-blau_2`, `ai-not-ok-blau_3`
 
-### **FTS Sessions:**
-- `fts-laden`
-- `fts-dock-dps`
-- `fts-laden-beenden`
+### **FTS Sessions (3x pro Szenario):**
+- `fts-laden_1`, `fts-laden_2`, `fts-laden_3`
+- `fts-dock-dps_1`, `fts-dock-dps_2`, `fts-dock-dps_3`
+- `fts-laden-beenden_1`, `fts-laden-beenden_2`, `fts-laden-beenden_3`
 
 ## 🎯 **Nächste Schritte**
 
