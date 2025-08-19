@@ -218,3 +218,79 @@ Die systematische MQTT-Session-Analyse hat **kritische Probleme** im APS-System 
 4. **Workflow-Koordination** ist nicht vorhanden
 
 **Nächster Schritt:** Implementierung der kritischen Phase 1-Komponenten für ein robustes APS-System.
+
+## 🎯 **Werkstück-Inventar und NFC-ID Mapping**
+
+### **📊 Übersicht: 24 Werkstücke - 8 pro Farbe**
+
+**Erkenntnis:** Jedes Werkstück hat eine **eindeutige NFC-ID** (14-stellige hexadezimale ID).  
+**Bedeutung:** Für Template Message Manager und Live-Testing kritisch.
+
+### **🔴 ROTE Werkstücke (3 von 8 identifiziert)**
+
+| Session | Werkstück-ID | Status |
+|---------|-------------|---------|
+| Wareneingang-rot_1 | `040a8dca341291` | ✅ Identifiziert |
+| Wareneingang-rot_2 | `047f8cca341290` | ✅ Identifiziert |
+| Wareneingang-rot_3 | `04808dca341291` | ✅ Identifiziert |
+| Wareneingang-rot_4 | `???` | 🔍 Nicht in Sessions |
+| Wareneingang-rot_5 | `???` | 🔍 Nicht in Sessions |
+| Wareneingang-rot_6 | `???` | 🔍 Nicht in Sessions |
+| Wareneingang-rot_7 | `???` | 🔍 Nicht in Sessions |
+| Wareneingang-rot_8 | `???` | 🔍 Nicht in Sessions |
+
+### **⚪ WEISSE Werkstücke (3 von 8 identifiziert)**
+
+| Session | Werkstück-ID | Status |
+|---------|-------------|---------|
+| Wareneingang-weiss_1 | `04798eca341290` | ✅ Identifiziert |
+| Wareneingang-weiss_2 | `04ab8bca341290` | ✅ Identifiziert |
+| Wareneingang-weiss_3 | `047c8bca341291` | ✅ Identifiziert |
+| Wareneingang-weiss_4 | `???` | 🔍 Nicht in Sessions |
+| Wareneingang-weiss_5 | `???` | 🔍 Nicht in Sessions |
+| Wareneingang-weiss_6 | `???` | 🔍 Nicht in Sessions |
+| Wareneingang-weiss_7 | `???` | 🔍 Nicht in Sessions |
+| Wareneingang-weiss_8 | `???` | 🔍 Nicht in Sessions |
+
+### **🔵 BLAUE Werkstücke (3 von 8 identifiziert)**
+
+| Session | Werkstück-ID | Status |
+|---------|-------------|---------|
+| Wareneingang-blau_1 | `047389ca341291` | ✅ Identifiziert |
+| Wareneingang-blau_2 | `04c489ca341290` | ✅ Identifiziert |
+| Wareneingang-blau_3 | `048989ca341290` | ✅ Identifiziert |
+| Wareneingang-blau_4 | `???` | 🔍 Nicht in Sessions |
+| Wareneingang-blau_5 | `???` | 🔍 Nicht in Sessions |
+| Wareneingang-blau_6 | `???` | 🔍 Nicht in Sessions |
+| Wareneingang-blau_7 | `???` | 🔍 Nicht in Sessions |
+| Wareneingang-blau_8 | `???` | 🔍 Nicht in Sessions |
+
+### **🔍 Technische Details**
+
+#### **NFC-ID Format:**
+- **Länge:** 14 Zeichen
+- **Format:** Hexadezimal (0-9, a-f)
+- **Beispiel:** `040a8dca341291`
+
+#### **SQL-Abfrage für weitere Analysen:**
+```sql
+SELECT DISTINCT json_extract(payload, '$.workpieceId') as workpieceId 
+FROM mqtt_messages 
+WHERE json_extract(payload, '$.workpieceId') IS NOT NULL 
+  AND json_extract(payload, '$.workpieceId') != '' 
+ORDER BY workpieceId;
+```
+
+### **⚠️ Kritische Erkenntnisse**
+
+1. **Eindeutigkeit:** Jede NFC-ID ist einzigartig - keine Duplikate
+2. **Session-Zuordnung:** Jede Session verwendet genau 1 Werkstück
+3. **Fehlende IDs:** 15 von 24 Werkstück-IDs noch nicht identifiziert
+4. **Template Impact:** Template Message Manager muss echte NFC-IDs verwenden
+
+### **🚀 Nächste Schritte**
+
+1. **Weitere Sessions analysieren** um alle 24 Werkstück-IDs zu identifizieren
+2. **NFC-Reader Integration** für Live-Testing implementieren
+3. **Werkstück-Datenbank** für Template Message Manager erstellen
+4. **Dashboard-Integration** mit dynamischer Werkstück-Auswahl

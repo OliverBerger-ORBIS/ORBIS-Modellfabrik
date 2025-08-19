@@ -39,10 +39,11 @@ from src_orbis.mqtt.dashboard.utils.data_handling import extract_module_info
 from src_orbis.mqtt.dashboard.components.filters import create_filters
 from src_orbis.mqtt.tools.mqtt_message_library import (
     MQTTMessageLibrary,
-    create_message_from_template,
-    list_available_templates,
-    get_template_info,
 )
+
+# Template Message Manager imports
+from src_orbis.mqtt.tools.template_message_manager import TemplateMessageManager
+from src_orbis.mqtt.dashboard.template_control import TemplateControlDashboard
 
 # Node-RED Analysis imports
 from src_orbis.mqtt.tools.node_red_message_analyzer import NodeRedMessageAnalyzer
@@ -100,6 +101,10 @@ class APSDashboard:
 
         # Initialize MQTT message library
         self.message_library = MQTTMessageLibrary()
+
+        # Initialize Template Message Manager
+        self.template_manager = TemplateMessageManager()
+        self.template_control = TemplateControlDashboard(self.template_manager)
 
         # Load broker configurations
         self.broker_configs = load_broker_config()
@@ -166,6 +171,13 @@ class APSDashboard:
 
             # Wait for connection
             time.sleep(1)  # Give a second for the connection to establish
+            
+            # Subscribe to CCU responses for Template Message Manager
+            if self.mqtt_connected and hasattr(self, 'template_manager'):
+                self.mqtt_client.subscribe("ccu/order/response", qos=1)
+                self.mqtt_client.subscribe("ccu/order/status", qos=1)
+                self.mqtt_client.subscribe("module/+/order/response", qos=1)
+            
             return self.mqtt_connected
         except Exception as e:
             st.error(f"MQTT Connection Error: {e}")
@@ -210,6 +222,24 @@ class APSDashboard:
                 "qos": msg.qos,
             }
             self.mqtt_responses.append(response_info)
+            
+            # Handle CCU responses for Template Message Manager
+            if msg.topic == "ccu/order/response" and hasattr(self, 'template_manager'):
+                try:
+                    # Extract order information from CCU response
+                    if isinstance(payload, dict):
+                        order_id = payload.get('orderId')
+                        color = payload.get('type')
+                        workpiece_id = payload.get('workpieceId')
+                        
+                        if order_id and color and workpiece_id:
+                            # Handle CCU response in template manager
+                            self.template_manager.handle_ccu_response(
+                                order_id, color, workpiece_id, payload
+                            )
+                except Exception as e:
+                    print(f"Template Manager CCU Response Error: {e}")
+                    
         except Exception as e:
             # Can't use st.warning here due to thread context
             print(f"MQTT Response Parse Error: {e}")
@@ -1142,46 +1172,38 @@ class APSDashboard:
             self.show_mqtt_monitor()
 
     def show_template_control(self):
-        """Show template-based MQTT control"""
-        st.markdown("**Verwende vordefinierte, funktionierende MQTT-Nachrichten:**")
+        """Show template-based MQTT control with Template Message Manager"""
+        st.header("🎯 Template Message Manager")
+        st.markdown("**Programmatische APS-Steuerung mit 9 Workflow Templates**")
 
-        # Get available templates
-        templates = list_available_templates()
+        # Set MQTT client for template manager
+        if self.mqtt_client:
+            self.template_manager.set_mqtt_client(self.mqtt_client)
+            self.template_control.template_manager = self.template_manager
 
-        if not templates:
-            st.warning("Keine Templates verfügbar!")
-            return
+        # Template Control Tabs
+        tab1, tab2, tab3, tab4, tab5 = st.tabs([
+            "🚀 Wareneingang Control", 
+            "📊 Order Tracking", 
+            "📚 Template Library",
+            "🧪 Template Testing",
+            "⚙️ Custom Templates"
+        ])
 
-        # Template selection
-        selected_template = st.selectbox("Template auswählen:", templates)
+        with tab1:
+            self.template_control.show_wareneingang_control()
 
-        if selected_template:
-            # Show template info
-            template_info = get_template_info(selected_template)
+        with tab2:
+            self.template_control.show_order_tracking()
 
-            col1, col2 = st.columns(2)
+        with tab3:
+            self.template_control.show_template_library()
 
-            with col1:
-                st.markdown("**Template Details:**")
-                st.markdown(f"• **Modul:** {template_info['module']}")
-                st.markdown(f"• **Befehl:** {template_info['command']}")
-                st.markdown(f"• **Beschreibung:** {template_info['description']}")
-                st.markdown(
-                    f"• **Erwartete Antwort:** {template_info['expected_response']}"
-                )
-                st.markdown(f"• **Notizen:** {template_info['notes']}")
+        with tab4:
+            self.template_control.show_template_testing()
 
-            with col2:
-                st.markdown("**MQTT Message:**")
-                try:
-                    message = create_message_from_template(selected_template)
-                    st.json(message)
-                except Exception as e:
-                    st.error(f"Fehler beim Erstellen der Nachricht: {e}")
-
-            # Send button
-            if st.button(f"📤 {selected_template} senden", type="primary"):
-                self.send_mqtt_message(selected_template, "template")
+        with tab5:
+            self.template_control.show_custom_template_creator()
 
 
 
@@ -2001,7 +2023,7 @@ class APSDashboard:
             st.metric("Dashboard-Version", "2.0")
 
         with col2:
-            st.metric("Template-Nachrichten", len(list_available_templates()))
+            st.metric("Template-Nachrichten", len(self.template_manager.templates))
             st.metric("Session-Datenbanken", len(glob.glob(os.path.join(os.path.dirname(self.db_file), "aps_persistent_traffic_*.db"))))
 
         st.markdown("---")
@@ -2370,28 +2392,9 @@ class APSDashboard:
                 st.rerun()
 
     def send_mqtt_message(self, template_name, message_type):
-        """Send MQTT message using template"""
-        try:
-            # Create message from template
-            message = create_message_from_template(template_name)
-            template_info = get_template_info(template_name)
-            module_name = template_info["module"]
-
-            # Get topic
-            topic = self.message_library.get_topic(module_name, "order")
-
-            # Send message
-            success, result_message = self.send_mqtt_message_direct(topic, message)
-
-            if success:
-                st.success(f"✅ MQTT-Nachricht gesendet: {template_name}")
-                st.info(f"📡 Topic: {topic}")
-                st.json(message)
-            else:
-                st.error(f"❌ MQTT-Versand fehlgeschlagen: {result_message}")
-
-        except Exception as e:
-            st.error(f"❌ Fehler beim Senden der Template-Nachricht: {e}")
+        """Send MQTT message using template (DEPRECATED - Use Template Message Manager)"""
+        st.warning("⚠️ Diese Methode ist veraltet. Verwende den Template Message Manager im 'Template Message' Tab.")
+        st.info("🎯 Gehe zu 'MQTT Control' → 'Template Message' für die neue Template-Steuerung.")
 
 
 

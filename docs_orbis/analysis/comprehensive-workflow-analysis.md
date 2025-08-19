@@ -389,6 +389,70 @@ template = get_template(workflow_type, color)
 - **aiInspection:** Boolean (nur AI-not-ok)
 - **productionSteps:** Farb-spezifische Verarbeitungsschritte
 
+### 🎯 **Werkstück-Management für Template Messages**
+
+#### **Kritische Erkenntnis: 24 Werkstücke - 8 pro Farbe**
+Jedes Werkstück hat eine **eindeutige NFC-ID** (14-stellige hexadezimale ID). Diese muss für Template Messages korrekt verwendet werden.
+
+#### **Identifizierte Werkstück-IDs:**
+
+**🔴 ROTE Werkstücke (3 von 8):**
+- `040a8dca341291` (Session 1)
+- `047f8cca341290` (Session 2)
+- `04808dca341291` (Session 3)
+
+**⚪ WEISSE Werkstücke (3 von 8):**
+- `04798eca341290` (Session 1)
+- `04ab8bca341290` (Session 2)
+- `047c8bca341291` (Session 3)
+
+**🔵 BLAUE Werkstücke (3 von 8):**
+- `047389ca341291` (Session 1)
+- `04c489ca341290` (Session 2)
+- `048989ca341290` (Session 3)
+
+#### **Template Message Manager Integration:**
+
+```python
+# Statt fester Default-ID:
+workpiece_id = st.text_input(
+    "Werkstück-ID (NFC):",
+    placeholder="z.B. 040a8dca341291",
+    help="NFC-gelesene Werkstück-ID (14 Zeichen, hex)"
+)
+
+# Mit Validierung:
+if workpiece_id and len(workpiece_id) == 14 and all(c in '0123456789abcdef' for c in workpiece_id.lower()):
+    success = template_manager.send_wareneingang_trigger(color, workpiece_id)
+else:
+    st.error("❌ Bitte gültige 14-stellige hexadezimale NFC-ID eingeben")
+```
+
+#### **Für Live-Testing im Büro:**
+
+1. **NFC-Reader verwenden** um echte Werkstück-IDs zu lesen
+2. **Jedes Werkstück ist einzigartig** - nicht austauschbar!
+3. **24 verschiedene Werkstücke** = 24 verschiedene NFC-IDs
+4. **Korrekte ID ist kritisch** für ORDER-Tracking und Workflow-Ablauf
+
+#### **Dashboard-Integration Empfehlung:**
+
+```python
+# Dropdown mit bekannten IDs (für Tests):
+known_workpieces = {
+    "RED": ["040a8dca341291", "047f8cca341290", "04808dca341291"],
+    "WHITE": ["04798eca341290", "04ab8bca341290", "047c8bca341291"], 
+    "BLUE": ["047389ca341291", "04c489ca341290", "048989ca341290"]
+}
+
+# Oder manuelle Eingabe mit Validierung:
+workpiece_id = st.text_input(
+    "Werkstück-ID (NFC):",
+    placeholder="NFC-ID eingeben oder scannen",
+    help="14-stellige hexadezimale NFC-ID des Werkstücks"
+)
+```
+
 ### 🚀 **Nächste Schritte:**
 1. **Template Message Manager erweitern** um alle 9 Workflow-Templates
 2. **Dashboard Integration** für alle Workflow-Typen
