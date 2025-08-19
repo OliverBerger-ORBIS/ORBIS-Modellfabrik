@@ -15,7 +15,7 @@ APS_MODULES = {
 APS_MODULES_EXTENDED = {
     'MILL': {
         'id': 'SVR3QA2098',
-        'name': 'MILL',
+        'name': 'MILL (Fräse)',
         'icon': '⚙️',
         'type': 'Processing',
         'commands': ['PICK', 'MILL', 'DROP'],
@@ -23,7 +23,7 @@ APS_MODULES_EXTENDED = {
     },
     'DRILL': {
         'id': 'SVR4H76449',
-        'name': 'DRILL',
+        'name': 'DRILL (Bohrer)',
         'icon': '🔧',
         'type': 'Processing',
         'commands': ['PICK', 'DRILL', 'DROP'],
@@ -31,7 +31,7 @@ APS_MODULES_EXTENDED = {
     },
     'AIQS': {
         'id': 'SVR4H76530',
-        'name': 'AIQS',
+        'name': 'AIQS (Qualitätssicherung)',
         'icon': '🔍',
         'type': 'Quality Control',
         'commands': ['PICK', 'DROP', 'CHECK_QUALITY'],
@@ -39,7 +39,7 @@ APS_MODULES_EXTENDED = {
     },
     'HBW': {
         'id': 'SVR3QA0022',
-        'name': 'HBW',
+        'name': 'HBW (Hochregallager)',
         'icon': '📦',
         'type': 'Storage',
         'commands': ['PICK', 'DROP', 'STORE'],
@@ -47,9 +47,9 @@ APS_MODULES_EXTENDED = {
     },
     'DPS': {
         'id': 'SVR4H73275',
-        'name': 'DPS',
-        'icon': '🏭',
-        'type': 'Distribution',
+        'name': 'DPS (Warenein- und -ausgang)',
+        'icon': '🚪',
+        'type': 'Input/Output',
         'commands': ['PICK', 'DROP', 'INPUT_RGB', 'RGB_NFC'],
         'ip': '192.168.0.90'
     },
@@ -63,7 +63,7 @@ APS_MODULES_EXTENDED = {
     },
     'CHRG': {
         'id': 'CHRG0',
-        'name': 'Charging Station',
+        'name': 'CHRG (Ladestation)',
         'icon': '🔋',
         'type': 'Charging',
         'commands': ['start_charging', 'stop_charging', 'get_status'],

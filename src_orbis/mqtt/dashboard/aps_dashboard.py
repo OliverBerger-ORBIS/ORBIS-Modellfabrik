@@ -44,6 +44,16 @@ from src_orbis.mqtt.tools.mqtt_message_library import (
     get_template_info,
 )
 
+# Node-RED Analysis imports
+from src_orbis.mqtt.tools.node_red_message_analyzer import NodeRedMessageAnalyzer
+
+# Topic Mapping imports
+from src_orbis.mqtt.dashboard.config.topic_mapping import (
+    get_friendly_topic_name,
+    get_all_mapped_topics,
+    get_unmapped_topics
+)
+
 # Page config
 st.set_page_config(
     page_title="APS MQTT Dashboard",
@@ -665,9 +675,13 @@ class APSDashboard:
         st.header("📋 Nachrichten-Tabelle")
 
         if not df.empty:
-            # Select columns to display (including serial number)
+            # Add friendly topic names
+            df["friendly_topic"] = df["topic"].apply(get_friendly_topic_name)
+            
+            # Select columns to display (including friendly topic name)
             display_columns = [
                 "timestamp",
+                "friendly_topic",
                 "topic",
                 "module_type",
                 "serial_number",
@@ -685,6 +699,21 @@ class APSDashboard:
 
             # Show total count
             st.info(f"Zeige {min(len(df), 1000)} von {len(df):,} Nachrichten")
+            
+            # Topic mapping info
+            total_topics = df["topic"].nunique()
+            mapped_topics = len([t for t in df["topic"].unique() if get_friendly_topic_name(t) != t])
+            unmapped_topics = total_topics - mapped_topics
+            
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                st.metric("Gesamt Topics", total_topics)
+            with col2:
+                st.metric("Mapped Topics", mapped_topics)
+            with col3:
+                st.metric("Unmapped Topics", unmapped_topics)
+            
+
         else:
             st.warning("Keine Nachrichten mit den gewählten Filtern gefunden.")
 
@@ -693,27 +722,62 @@ class APSDashboard:
         st.header("📡 Topic-Analyse")
 
         if not df.empty:
+            # Add friendly topic names
+            df["friendly_topic"] = df["topic"].apply(get_friendly_topic_name)
+            
             col1, col2 = st.columns(2)
 
             with col1:
-                # Top topics
-                topic_counts = df["topic"].value_counts().head(10)
+                # Top topics with friendly names
+                topic_counts = df["friendly_topic"].value_counts().head(10)
                 fig = px.bar(
                     x=topic_counts.values,
                     y=topic_counts.index,
                     orientation="h",
-                    title="Top 10 Topics",
+                    title="Top 10 Topics (benutzerfreundlich)",
                 )
                 fig.update_layout(xaxis_title="Anzahl", yaxis_title="Topic")
                 st.plotly_chart(fig, use_container_width=True)
 
             with col2:
-                # Topic word cloud (simplified)
-                topic_text = " ".join(df["topic"].astype(str))
-                st.subheader("Topic-Übersicht")
-                st.text_area(
-                    "Alle Topics (erste 1000 Zeichen):", topic_text[:1000], height=200
+                # Topic comparison
+                st.subheader("Topic-Vergleich")
+                
+                # Show both original and friendly names
+                topic_comparison = df[["topic", "friendly_topic"]].drop_duplicates().head(10)
+                st.dataframe(topic_comparison, use_container_width=True)
+                
+                # Topic statistics
+                total_topics = df["topic"].nunique()
+                mapped_topics = df["friendly_topic"].nunique()
+                unmapped_count = len([t for t in df["topic"].unique() if get_friendly_topic_name(t) == t])
+                
+                st.metric("Gesamt Topics", total_topics)
+                st.metric("Mapped Topics", total_topics - unmapped_count)
+                st.metric("Unmapped Topics", unmapped_count)
+            
+            # Topic distribution with friendly names
+            st.subheader("Topic-Verteilung (benutzerfreundlich)")
+            
+            # Group by friendly topic names
+            friendly_topic_counts = df["friendly_topic"].value_counts()
+            
+            col3, col4 = st.columns(2)
+            
+            with col3:
+                # Pie chart of friendly topics
+                fig = px.pie(
+                    values=friendly_topic_counts.values,
+                    names=friendly_topic_counts.index,
+                    title="Topic-Verteilung",
                 )
+                st.plotly_chart(fig, use_container_width=True)
+            
+            with col4:
+                # Topic table with both names
+                topic_summary = df.groupby(["topic", "friendly_topic"]).size().reset_index(name="count")
+                topic_summary = topic_summary.sort_values("count", ascending=False)
+                st.dataframe(topic_summary.head(15), use_container_width=True)
 
     def show_status_analysis(self, df):
         """Show status analysis"""
@@ -795,6 +859,119 @@ class APSDashboard:
         st.header("📦 Payload-Analyse")
 
         if not df.empty:
+            # Add friendly topic names
+            df["friendly_topic"] = df["topic"].apply(get_friendly_topic_name)
+            
+            # Payload overview
+            st.subheader("📊 Payload Übersicht")
+            
+            # Payload statistics
+            total_messages = len(df)
+            messages_with_payload = len(df[df["payload"].notna() & (df["payload"] != "")])
+            json_payloads = 0
+            text_payloads = 0
+            
+            for payload in df["payload"].dropna():
+                if payload:
+                    try:
+                        json.loads(payload)
+                        json_payloads += 1
+                    except:
+                        text_payloads += 1
+            
+            col1, col2, col3, col4 = st.columns(4)
+            with col1:
+                st.metric("Gesamt Nachrichten", total_messages)
+            with col2:
+                st.metric("Mit Payload", messages_with_payload)
+            with col3:
+                st.metric("JSON Payloads", json_payloads)
+            with col4:
+                st.metric("Text Payloads", text_payloads)
+            
+            st.markdown("---")
+            
+            # Payload details with meta information
+            st.subheader("📄 Payload Details mit Meta-Informationen")
+            
+            # Show first 50 messages with payload details
+            for idx, row in df.head(50).iterrows():
+                if pd.notna(row.get('payload')) and row['payload']:
+                    with st.expander(f"📄 Nachricht #{idx + 1} - {row['friendly_topic']}", expanded=False):
+                        col1, col2 = st.columns([1, 2])
+                        
+                        with col1:
+                            st.markdown("**Meta-Informationen:**")
+                            st.markdown(f"• **ID:** #{idx + 1}")
+                            st.markdown(f"• **Timestamp:** {row['timestamp']}")
+                            st.markdown(f"• **Topic:** `{row['topic']}`")
+                            st.markdown(f"• **Friendly Topic:** {row['friendly_topic']}")
+                            
+                            if pd.notna(row.get('module_type')):
+                                st.markdown(f"• **Module:** {row['module_type']}")
+                            if pd.notna(row.get('serial_number')):
+                                st.markdown(f"• **Serial:** {row['serial_number']}")
+                            if pd.notna(row.get('status')):
+                                st.markdown(f"• **Status:** {row['status']}")
+                            if pd.notna(row.get('process_label')):
+                                st.markdown(f"• **Process:** {row['process_label']}")
+                            if pd.notna(row.get('session_label')):
+                                st.markdown(f"• **Session:** {row['session_label']}")
+                            
+                            # Payload type
+                            try:
+                                json.loads(row['payload'])
+                                st.markdown("• **Payload Type:** JSON")
+                            except:
+                                st.markdown("• **Payload Type:** Text")
+                        
+                        with col2:
+                            st.markdown("**Payload:**")
+                            try:
+                                # Try to parse JSON payload
+                                payload_data = json.loads(row['payload'])
+                                st.json(payload_data)
+                            except:
+                                # Show as text if not JSON
+                                st.text_area("Payload (Text):", str(row['payload']), height=200, key=f"payload_text_{idx}")
+                
+                # Show separator for messages without payload
+                else:
+                    with st.expander(f"📄 Nachricht #{idx + 1} - {row['friendly_topic']} (Kein Payload)", expanded=False):
+                        col1, col2 = st.columns([1, 2])
+                        
+                        with col1:
+                            st.markdown("**Meta-Informationen:**")
+                            st.markdown(f"• **ID:** #{idx + 1}")
+                            st.markdown(f"• **Timestamp:** {row['timestamp']}")
+                            st.markdown(f"• **Topic:** `{row['topic']}`")
+                            st.markdown(f"• **Friendly Topic:** {row['friendly_topic']}")
+                            
+                            if pd.notna(row.get('module_type')):
+                                st.markdown(f"• **Module:** {row['module_type']}")
+                            if pd.notna(row.get('serial_number')):
+                                st.markdown(f"• **Serial:** {row['serial_number']}")
+                            if pd.notna(row.get('status')):
+                                st.markdown(f"• **Status:** {row['status']}")
+                            if pd.notna(row.get('process_label')):
+                                st.markdown(f"• **Process:** {row['process_label']}")
+                            if pd.notna(row.get('session_label')):
+                                st.markdown(f"• **Session:** {row['session_label']}")
+                            
+                            st.markdown("• **Payload Type:** Kein Payload")
+                        
+                        with col2:
+                            st.info("Kein Payload vorhanden")
+            
+            # Show info if more messages exist
+            if len(df) > 50:
+                st.info(f"Zeige die ersten 50 von {len(df):,} Nachrichten. Verwende die Filter oben, um spezifische Nachrichten zu finden.")
+            
+            st.markdown("---")
+            
+            # JSON Payload Analysis
+            st.subheader("🔍 JSON Payload Struktur-Analyse")
+            
             # Try to extract JSON data
             json_payloads = []
             for payload in df["payload"].dropna():
@@ -805,10 +982,9 @@ class APSDashboard:
                     continue
 
             if json_payloads:
-                st.subheader("JSON Payload Struktur")
-
                 # Show sample payload
                 sample_payload = json_payloads[0]
+                st.markdown("**Beispiel JSON Payload:**")
                 st.json(sample_payload)
 
                 # Extract common fields
@@ -833,13 +1009,15 @@ class APSDashboard:
                                     common_fields[key] += 1
 
                 if common_fields:
-                    st.subheader("Häufige Felder in JSON Payloads")
+                    st.markdown("**Häufige Felder in JSON Payloads:**")
                     field_df = pd.DataFrame(
                         list(common_fields.items()), columns=["Feld", "Anzahl"]
                     )
                     st.dataframe(field_df.sort_values("Anzahl", ascending=False))
             else:
                 st.info("Keine JSON Payloads gefunden.")
+        else:
+            st.warning("Keine Nachrichten mit den gewählten Filtern gefunden.")
 
     def show_session_analysis(self, df):
         """Show session analysis"""
@@ -999,8 +1177,8 @@ class APSDashboard:
 
     def show_aps_analysis(self, df):
         """Show comprehensive APS data analysis"""
-        st.header("📊 APS Analyse MQTT")
-        st.markdown("Umfassende Analyse der APS-Daten aus den Sessions")
+        st.header("📊 MQTT Analyse")
+        st.markdown("Umfassende Analyse der MQTT-Nachrichten aus den Sessions")
 
         # Session management section
         st.subheader("🗄️ Session-Verwaltung")
@@ -1138,9 +1316,6 @@ class APSDashboard:
                 else:
                     activity_display = "⚪ No Data"
 
-            # Commands as string
-            commands_str = ", ".join(module_info["commands"])
-
             module_table_data.append(
                 {
                     "ID": module_info["id"],
@@ -1149,7 +1324,6 @@ class APSDashboard:
                     "IP": module_info["ip"],
                     "Connected": connection_status,
                     "Activity Status": activity_display,
-                    "Commands": commands_str,
                     "Recent Messages": len(recent_messages),
                 }
             )
@@ -1161,7 +1335,6 @@ class APSDashboard:
             use_container_width=True,
             column_config={
                 "Name": st.column_config.TextColumn("Name", width="medium"),
-                "Commands": st.column_config.TextColumn("Commands", width="large"),
                 "Recent Messages": st.column_config.NumberColumn(
                     "Recent Messages", width="small"
                 ),
@@ -1170,41 +1343,6 @@ class APSDashboard:
 
         # Module control moved to MQTT Control tab
         st.info("🎮 **Module Control** ist jetzt im **MQTT Control** Tab verfügbar")
-
-        # Module statistics
-        st.markdown("---")
-        st.subheader("📊 Module Statistiken")
-
-        col1, col2 = st.columns(2)
-
-        with col1:
-            # Module types
-            module_types = {}
-            for module_info in self.aps_modules_extended.values():
-                module_type = module_info["type"]
-                module_types[module_type] = module_types.get(module_type, 0) + 1
-
-            fig_types = px.pie(
-                values=list(module_types.values()),
-                names=list(module_types.keys()),
-                title="Module nach Typ",
-            )
-            st.plotly_chart(fig_types, use_container_width=True)
-
-        with col2:
-            # Command distribution
-            all_commands = []
-            for module_info in self.aps_modules_extended.values():
-                all_commands.extend(module_info["commands"])
-
-            command_counts = pd.Series(all_commands).value_counts()
-            fig_commands = px.bar(
-                x=command_counts.index,
-                y=command_counts.values,
-                title="Befehls-Verteilung",
-                labels={"x": "Befehl", "y": "Anzahl Module"},
-            )
-            st.plotly_chart(fig_commands, use_container_width=True)
 
     def show_module_row(self, module_key, module_info, df):
         """Show individual module as a row"""
@@ -1503,6 +1641,254 @@ class APSDashboard:
             },
         }
 
+    def show_node_red_analysis(self):
+        """Show Node-RED message analysis"""
+        st.header("🔍 Node-RED Analyse")
+        st.markdown("Analysiert Node-RED Nachrichten aus Session-Daten für ORDER-ID Management")
+        
+        # Session selection
+        session_files = self.get_available_sessions()
+        
+        if not session_files:
+            st.warning("❌ Keine Session-Dateien gefunden")
+            return
+        
+        selected_session = st.selectbox(
+            "Session auswählen:",
+            session_files,
+            format_func=lambda x: x.split('/')[-1].replace('.db', '')
+        )
+        
+        if selected_session and st.button("🔍 Node-RED Nachrichten analysieren"):
+            with st.spinner("Analysiere Node-RED Nachrichten..."):
+                self.analyze_node_red_session(selected_session)
+    
+    def get_available_sessions(self):
+        """Get available session files"""
+        import glob
+        import os
+        
+        # Get project root (3 levels up from dashboard)
+        project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
+        session_pattern = os.path.join(project_root, "mqtt-data/sessions/aps_persistent_traffic_*.db")
+        session_files = glob.glob(session_pattern)
+        session_files.sort()
+        
+        return session_files
+    
+    def analyze_node_red_session(self, session_file):
+        """Analyze Node-RED messages from a session"""
+        try:
+            analyzer = NodeRedMessageAnalyzer(session_file)
+            
+            # Connect to database
+            if not analyzer.connect():
+                st.error("❌ Verbindung zur Session-Datenbank fehlgeschlagen")
+                return
+            
+            # Load Node-RED messages
+            df = analyzer.get_node_red_messages()
+            
+            if df.empty:
+                st.warning("⚠️ Keine Node-RED Nachrichten in dieser Session gefunden")
+                analyzer.disconnect()
+                return
+            
+            # Perform analyses
+            topic_analysis = analyzer.analyze_node_red_topics(df)
+            state_messages = analyzer.extract_node_red_state_messages(df)
+            factsheet_messages = analyzer.extract_factsheet_messages(df)
+            connection_messages = analyzer.extract_connection_messages(df)
+            
+            # Display results
+            self.display_node_red_results(
+                session_file, topic_analysis, state_messages, 
+                factsheet_messages, connection_messages, df
+            )
+            
+            analyzer.disconnect()
+            
+        except Exception as e:
+            st.error(f"❌ Fehler bei der Node-RED Analyse: {e}")
+    
+    def display_node_red_results(self, session_file, topic_analysis, state_messages, 
+                                factsheet_messages, connection_messages, all_messages):
+        """Display Node-RED analysis results"""
+        
+        # Session info
+        st.success(f"✅ Node-RED Analyse abgeschlossen: {session_file.split('/')[-1]}")
+        
+        # Overview metrics
+        col1, col2, col3, col4 = st.columns(4)
+        
+        with col1:
+            st.metric("Gesamt-Nachrichten", topic_analysis.get('total_messages', 0))
+        
+        with col2:
+            st.metric("Node-RED State", len(state_messages))
+        
+        with col3:
+            st.metric("Factsheet", len(factsheet_messages))
+        
+        with col4:
+            st.metric("Connection", len(connection_messages))
+        
+        # Topic distribution
+        st.subheader("📋 Topic Distribution")
+        
+        if 'topic_distribution' in topic_analysis:
+            # Create DataFrame with friendly names
+            topic_df = pd.DataFrame(
+                list(topic_analysis['topic_distribution'].items()),
+                columns=['Topic', 'Count']
+            ).sort_values('Count', ascending=False)
+            
+            # Add friendly topic names
+            topic_df['Friendly_Topic'] = topic_df['Topic'].apply(get_friendly_topic_name)
+            
+            # Show both original and friendly names
+            st.dataframe(topic_df[['Friendly_Topic', 'Topic', 'Count']], use_container_width=True)
+            
+            # Bar chart with friendly names
+            st.bar_chart(topic_df.set_index('Friendly_Topic')['Count'])
+        
+        # Node-RED State Messages
+        if not state_messages.empty:
+            st.subheader("🔍 Node-RED State Messages")
+            
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                st.markdown("**Topics:**")
+                for topic in state_messages['topic'].unique():
+                    friendly_name = get_friendly_topic_name(topic)
+                    st.markdown(f"• **{friendly_name}**")
+                    if friendly_name != topic:
+                        st.markdown(f"  `{topic}`")
+            
+            with col2:
+                st.markdown("**Sample Messages:**")
+                for _, row in state_messages.head(3).iterrows():
+                    with st.expander(f"{row['timestamp']} - {row['topic']}"):
+                        try:
+                            payload = json.loads(row['payload']) if isinstance(row['payload'], str) else row['payload']
+                            st.json(payload)
+                        except:
+                            st.text(str(row['payload']))
+        
+        # Factsheet Messages
+        if not factsheet_messages.empty:
+            st.subheader("📋 Factsheet Messages")
+            
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                st.markdown("**Topics:**")
+                for topic in factsheet_messages['topic'].unique():
+                    friendly_name = get_friendly_topic_name(topic)
+                    st.markdown(f"• **{friendly_name}**")
+                    if friendly_name != topic:
+                        st.markdown(f"  `{topic}`")
+            
+            with col2:
+                st.markdown("**Sample Messages:**")
+                for _, row in factsheet_messages.head(3).iterrows():
+                    with st.expander(f"{row['timestamp']} - {row['topic']}"):
+                        try:
+                            payload = json.loads(row['payload']) if isinstance(row['payload'], str) else row['payload']
+                            st.json(payload)
+                        except:
+                            st.text(str(row['payload']))
+        
+        # Connection Messages
+        if not connection_messages.empty:
+            st.subheader("🔗 Connection Messages")
+            
+            # Connection status timeline
+            connection_timeline = connection_messages.copy()
+            connection_timeline['timestamp'] = pd.to_datetime(connection_timeline['timestamp'])
+            
+            # Parse connection state
+            def extract_connection_state(payload):
+                try:
+                    if isinstance(payload, str):
+                        data = json.loads(payload)
+                    else:
+                        data = payload
+                    return data.get('connectionState', 'unknown')
+                except:
+                    return 'unknown'
+            
+            connection_timeline['connection_state'] = connection_timeline['payload'].apply(extract_connection_state)
+            
+            # Timeline chart
+            st.markdown("**Connection Status Timeline:**")
+            
+            # Group by module and show connection states
+            module_connections = connection_timeline.groupby(['module_type', 'connection_state']).size().unstack(fill_value=0)
+            st.dataframe(module_connections, use_container_width=True)
+            
+            # Sample connection messages
+            st.markdown("**Sample Connection Messages:**")
+            for _, row in connection_messages.head(3).iterrows():
+                friendly_topic = get_friendly_topic_name(row['topic'])
+                with st.expander(f"{row['timestamp']} - {friendly_topic}"):
+                    st.markdown(f"**Original Topic:** `{row['topic']}`")
+                    try:
+                        payload = json.loads(row['payload']) if isinstance(row['payload'], str) else row['payload']
+                        st.json(payload)
+                    except:
+                        st.text(str(row['payload']))
+        
+        # ORDER-ID Management Insights
+        st.subheader("🚨 ORDER-ID Management Insights")
+        
+        # Analyze state messages for ORDER-ID patterns
+        if not state_messages.empty:
+            st.markdown("**🔍 Node-RED State Message Analysis:**")
+            
+            # Look for ORDER-ID related information
+            order_id_insights = []
+            
+            for _, row in state_messages.iterrows():
+                try:
+                    payload = json.loads(row['payload']) if isinstance(row['payload'], str) else row['payload']
+                    
+                    # Check for ORDER-ID related fields
+                    if 'orderId' in payload:
+                        order_id_insights.append({
+                            'timestamp': row['timestamp'],
+                            'topic': row['topic'],
+                            'orderId': payload.get('orderId'),
+                            'orderUpdateId': payload.get('orderUpdateId'),
+                            'status': payload.get('actionState', {}).get('state') if 'actionState' in payload else None
+                        })
+                except:
+                    continue
+            
+            if order_id_insights:
+                st.markdown("**ORDER-ID Patterns gefunden:**")
+                insights_df = pd.DataFrame(order_id_insights)
+                st.dataframe(insights_df, use_container_width=True)
+                
+                # Show ORDER-ID distribution
+                if 'orderId' in insights_df.columns:
+                    order_id_counts = insights_df['orderId'].value_counts()
+                    st.markdown("**ORDER-ID Verteilung:**")
+                    st.bar_chart(order_id_counts.head(10))
+            else:
+                st.info("Keine ORDER-ID Patterns in Node-RED State Messages gefunden")
+        
+        # Connection insights for ORDER-ID Management
+        if not connection_messages.empty:
+            st.markdown("**🔗 Connection Status für ORDER-ID Management:**")
+            
+            # Show module availability
+            module_availability = connection_timeline.groupby('module_type')['connection_state'].value_counts().unstack(fill_value=0)
+            st.dataframe(module_availability, use_container_width=True)
+            
+            st.info("💡 **ORDER-ID Management Tipp:** Module müssen 'connected' sein, bevor ORDER-ID Workflows gestartet werden können")
+
     def show_settings(self):
         """Show dashboard settings"""
         st.header("⚙️ Einstellungen")
@@ -1569,6 +1955,81 @@ class APSDashboard:
         with col2:
             st.metric("Template-Nachrichten", len(list_available_templates()))
             st.metric("Session-Datenbanken", len(glob.glob(os.path.join(os.path.dirname(self.db_file), "aps_persistent_traffic_*.db"))))
+
+        st.markdown("---")
+
+        # Topic Mapping Configuration
+        st.subheader("📋 Topic-Mapping Konfiguration")
+        st.markdown("Benutzerfreundliche Namen für MQTT-Topics")
+
+        # Show current topic mappings
+        all_mappings = get_all_mapped_topics()
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.markdown("**Aktuelle Topic-Mappings:**")
+            
+            # Group mappings by type
+            node_red_mappings = {k: v for k, v in all_mappings.items() if "NodeRed" in k}
+            direct_mappings = {k: v for k, v in all_mappings.items() if "NodeRed" not in k and "module/v1/ff" in k}
+            fts_mappings = {k: v for k, v in all_mappings.items() if "fts/v1/ff" in k}
+            ccu_mappings = {k: v for k, v in all_mappings.items() if k.startswith("ccu/")}
+            
+            with st.expander("Node-RED Topics", expanded=True):
+                for topic, friendly_name in list(node_red_mappings.items())[:10]:
+                    st.markdown(f"• `{topic}` → **{friendly_name}**")
+                if len(node_red_mappings) > 10:
+                    st.markdown(f"... und {len(node_red_mappings) - 10} weitere")
+            
+            with st.expander("Direct Module Topics", expanded=True):
+                for topic, friendly_name in list(direct_mappings.items())[:10]:
+                    st.markdown(f"• `{topic}` → **{friendly_name}**")
+                if len(direct_mappings) > 10:
+                    st.markdown(f"... und {len(direct_mappings) - 10} weitere")
+            
+            with st.expander("FTS Topics", expanded=True):
+                for topic, friendly_name in fts_mappings.items():
+                    st.markdown(f"• `{topic}` → **{friendly_name}**")
+            
+            with st.expander("CCU Topics", expanded=True):
+                for topic, friendly_name in ccu_mappings.items():
+                    st.markdown(f"• `{topic}` → **{friendly_name}**")
+        
+        with col2:
+            st.markdown("**Topic-Mapping Status:**")
+            
+            # Check for unmapped topics in current data
+            if hasattr(self, 'current_df') and self.current_df is not None:
+                unique_topics = self.current_df['topic'].unique().tolist()
+                unmapped_topics = get_unmapped_topics(unique_topics)
+                
+                if unmapped_topics:
+                    st.warning(f"⚠️ {len(unmapped_topics)} unmapped Topics gefunden")
+                    with st.expander("Unmapped Topics"):
+                        for topic in unmapped_topics[:10]:
+                            st.code(topic)
+                        if len(unmapped_topics) > 10:
+                            st.markdown(f"... und {len(unmapped_topics) - 10} weitere")
+                else:
+                    st.success("✅ Alle Topics haben benutzerfreundliche Namen")
+            else:
+                st.info("ℹ️ Lade Daten, um Topic-Mapping zu prüfen")
+            
+            # Topic mapping statistics
+            st.metric("Mapped Topics", len(all_mappings))
+            st.metric("Module Types", len(set([name.split(" : ")[0] for name in all_mappings.values()])))
+            
+            # Show mapping examples
+            st.markdown("**Beispiele:**")
+            examples = [
+                ("module/v1/ff/NodeRed/SVR4H76530/state", "NodeRed → AIQS : state"),
+                ("module/v1/ff/SVR4H73275/factsheet", "DPS : factsheet"),
+                ("fts/v1/ff/5iO4/connection", "FTS : connection"),
+                ("ccu/state/flow", "CCU : state : flow")
+            ]
+            for original, friendly in examples:
+                st.markdown(f"• `{original}` → **{friendly}**")
 
     def show_module_control_rows(self):
         """Show module control in rows with buttons"""
@@ -1645,8 +2106,134 @@ class APSDashboard:
                 
                 st.markdown("---")
 
+    def show_mqtt_monitor_standalone(self):
+        """Show standalone MQTT message monitor"""
+        st.header("📡 MQTT Monitor")
+        st.markdown("Live-Monitoring von MQTT-Nachrichten und Antworten")
+
+        # Connection status - use session state for consistency
+        if not st.session_state.get("mqtt_connected", False):
+            st.warning("⚠️ MQTT-Verbindung erforderlich für Monitoring")
+            st.info("Verwende die Sidebar zum Verbinden")
+            return
+
+        # Overview metrics
+        dashboard = st.session_state.get("mqtt_dashboard")
+        col1, col2, col3, col4 = st.columns(4)
+        
+        with col1:
+            sent_count = len(dashboard.mqtt_messages_sent) if dashboard and hasattr(dashboard, 'mqtt_messages_sent') else 0
+            st.metric("📤 Gesendet", sent_count)
+        
+        with col2:
+            received_count = len(dashboard.mqtt_responses) if dashboard and hasattr(dashboard, 'mqtt_responses') else 0
+            st.metric("📨 Empfangen", received_count)
+        
+        with col3:
+            if dashboard and hasattr(dashboard, 'mqtt_connected'):
+                status = "🟢 Connected" if dashboard.mqtt_connected else "🔴 Disconnected"
+                st.metric("🔗 Status", status)
+            else:
+                st.metric("🔗 Status", "❓ Unknown")
+        
+        with col4:
+            if dashboard and hasattr(dashboard, 'mqtt_broker'):
+                st.metric("🌐 Broker", dashboard.mqtt_broker)
+            else:
+                st.metric("🌐 Broker", "Unknown")
+
+        st.markdown("---")
+
+        # Sent messages - use session state dashboard
+        st.subheader("📤 Gesendete Nachrichten")
+        if dashboard and hasattr(dashboard, 'mqtt_messages_sent') and dashboard.mqtt_messages_sent:
+            sent_df = pd.DataFrame(dashboard.mqtt_messages_sent)
+            sent_df["timestamp"] = pd.to_datetime(sent_df["timestamp"])
+            sent_df = sent_df.sort_values("timestamp", ascending=False)
+
+            # Add friendly topic names
+            sent_df["friendly_topic"] = sent_df["topic"].apply(get_friendly_topic_name)
+
+            # Display recent messages
+            for idx, row in sent_df.head(10).iterrows():
+                # Extract module name from topic
+                module_name = self._extract_module_name_from_topic(row['topic'])
+                message_type = row['topic'].split('/')[-1]  # 'order' or 'state'
+                
+                with st.expander(
+                    f"📤 {row['timestamp'].strftime('%H:%M:%S')} - {row['friendly_topic']}"
+                ):
+                    col1, col2 = st.columns([2, 1])
+                    with col1:
+                        st.markdown(f"**Topic:** `{row['topic']}`")
+                        st.markdown(f"**Module:** {module_name}")
+                        st.markdown(f"**Type:** {message_type}")
+                        st.markdown(f"**Result:** {row['result']}")
+                    with col2:
+                        st.json(row["message"])
+        else:
+            st.info("Noch keine Nachrichten gesendet")
+
+        # Received responses - use session state dashboard
+        st.subheader("📨 Empfangene Antworten")
+        if dashboard and hasattr(dashboard, 'mqtt_responses') and dashboard.mqtt_responses:
+            response_df = pd.DataFrame(dashboard.mqtt_responses)
+            response_df["timestamp"] = pd.to_datetime(response_df["timestamp"])
+            response_df = response_df.sort_values("timestamp", ascending=False)
+
+            # Add friendly topic names
+            response_df["friendly_topic"] = response_df["topic"].apply(get_friendly_topic_name)
+
+            # Display recent responses
+            for idx, row in response_df.head(10).iterrows():
+                # Extract module name from topic
+                module_name = self._extract_module_name_from_topic(row['topic'])
+                message_type = row['topic'].split('/')[-1]  # 'order' or 'state'
+                
+                with st.expander(
+                    f"📨 {row['timestamp'].strftime('%H:%M:%S')} - {row['friendly_topic']}"
+                ):
+                    col1, col2 = st.columns([2, 1])
+                    with col1:
+                        st.markdown(f"**Topic:** `{row['topic']}`")
+                        st.markdown(f"**Module:** {module_name}")
+                        st.markdown(f"**Type:** {message_type}")
+                        st.markdown(f"**QoS:** {row['qos']}")
+                    with col2:
+                        st.json(row["payload"])
+        else:
+            st.info("Noch keine Antworten empfangen")
+
+        # Control buttons
+        st.markdown("---")
+        col1, col2, col3 = st.columns(3)
+        
+        with col1:
+            if st.button("🗑️ Gesendete Nachrichten löschen", use_container_width=True):
+                if dashboard and hasattr(dashboard, 'mqtt_messages_sent'):
+                    dashboard.mqtt_messages_sent.clear()
+                st.success("Gesendete Nachrichten gelöscht")
+                st.rerun()
+
+        with col2:
+            if st.button("🗑️ Empfangene Antworten löschen", use_container_width=True):
+                if dashboard and hasattr(dashboard, 'mqtt_responses'):
+                    dashboard.mqtt_responses.clear()
+                st.success("Empfangene Antworten gelöscht")
+                st.rerun()
+        
+        with col3:
+            if st.button("🔄 Alle löschen", use_container_width=True):
+                if dashboard:
+                    if hasattr(dashboard, 'mqtt_messages_sent'):
+                        dashboard.mqtt_messages_sent.clear()
+                    if hasattr(dashboard, 'mqtt_responses'):
+                        dashboard.mqtt_responses.clear()
+                st.success("Alle Nachrichten gelöscht")
+                st.rerun()
+
     def show_mqtt_monitor(self):
-        """Show MQTT message monitor"""
+        """Show MQTT message monitor (legacy method for MQTT Control tab)"""
         st.markdown("**MQTT Message Monitor:**")
 
         # Connection status - use session state for consistency
@@ -1813,14 +2400,21 @@ class APSDashboard:
             if df is None or df.empty:
                 st.warning("Keine Daten in der ausgewählten Datenbank gefunden.")
                 return
+            
+            # Store current DataFrame for settings
+            self.current_df = df
 
             # Main content - show selected tab
             if st.session_state.selected_tab == "🏭 Module Overview":
                 self.show_module_overview_dashboard(df)
-            elif st.session_state.selected_tab == "📊 Analyse APS":
+            elif st.session_state.selected_tab == "📡 MQTT Monitor":
+                self.show_mqtt_monitor_standalone()
+            elif st.session_state.selected_tab == "📊 MQTT Analyse":
                 self.show_aps_analysis(df)
             elif st.session_state.selected_tab == "🎮 MQTT Control":
                 self.show_mqtt_control()
+            elif st.session_state.selected_tab == "🔍 Node-RED Analyse":
+                self.show_node_red_analysis()
             elif st.session_state.selected_tab == "⚙️ Einstellungen":
                 self.show_settings()
 
@@ -1844,8 +2438,10 @@ def main():
     # Tab buttons in sidebar with active highlighting
     tabs = [
         ("🏭 Module Overview", "🏭 Module Overview"),
-        ("📊 Analyse APS", "📊 Analyse APS"), 
+        ("📡 MQTT Monitor", "📡 MQTT Monitor"),
+        ("📊 MQTT Analyse", "📊 MQTT Analyse"), 
         ("🎮 MQTT Control", "🎮 MQTT Control"),
+        ("🔍 Node-RED Analyse", "🔍 Node-RED Analyse"),
         ("⚙️ Einstellungen", "⚙️ Einstellungen")
     ]
     
