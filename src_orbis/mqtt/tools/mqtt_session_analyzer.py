@@ -18,6 +18,7 @@ from datetime import datetime
 from pathlib import Path
 import sys
 import os
+import glob
 
 # Add src_orbis to path
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..'))
@@ -98,498 +99,328 @@ class MQTTSessionAnalyzer:
             if field in payload:
                 return payload[field]
         
-        # Suche in verschachtelten Objekten
-        if 'action' in payload and isinstance(payload['action'], dict):
-            for field in order_id_fields:
-                if field in payload['action']:
-                    return payload['action'][field]
-        
         return None
     
     def _get_payload_structure(self, payload):
-        """Ermittelt die Struktur eines Payloads"""
-        if not payload:
-            return {}
-        
-        structure = {}
-        for key, value in payload.items():
-            if isinstance(value, dict):
-                structure[key] = 'object'
-            elif isinstance(value, list):
-                structure[key] = 'array'
-            else:
-                structure[key] = type(value).__name__
-        
-        return structure
+        """Ermittelt die Struktur des Payloads"""
+        if isinstance(payload, dict):
+            return list(payload.keys())
+        return []
     
     def analyze_module_status_patterns(self):
-        """Analysiert Modul-Status Muster"""
-        print("\n🔍 Analysiere Modul-Status Muster...")
+        """Analysiert Modul-Status-Muster"""
+        print("\n🏭 Analysiere Modul-Status-Muster...")
         
-        status_updates = []
-        module_statuses = {}
+        module_status = {}
+        status_transitions = []
         
         for _, row in self.df.iterrows():
             if row['payload_json']:
-                # Suche nach Status-Informationen
-                status_info = self._extract_status_info(row['payload_json'], row['topic'])
-                if status_info:
-                    status_updates.append({
+                module_id = self._extract_module_id(row['topic'])
+                status = self._extract_status(row['payload_json'])
+                
+                if module_id and status:
+                    if module_id not in module_status:
+                        module_status[module_id] = []
+                    
+                    module_status[module_id].append({
                         'timestamp': row['timestamp'],
-                        'topic': row['topic'],
-                        'module': status_info.get('module'),
-                        'status': status_info.get('status'),
-                        'details': status_info.get('details')
+                        'status': status,
+                        'topic': row['topic']
                     })
                     
-                    # Track Status pro Modul
-                    module = status_info.get('module')
-                    if module:
-                        if module not in module_statuses:
-                            module_statuses[module] = []
-                        module_statuses[module].append({
-                            'timestamp': row['timestamp'],
-                            'status': status_info.get('status')
-                        })
+                    # Status-Übergänge verfolgen
+                    if len(module_status[module_id]) > 1:
+                        prev_status = module_status[module_id][-2]['status']
+                        if prev_status != status:
+                            status_transitions.append({
+                                'module_id': module_id,
+                                'from_status': prev_status,
+                                'to_status': status,
+                                'timestamp': row['timestamp']
+                            })
         
-        self.analysis_results['status_analysis'] = {
-            'status_updates': status_updates,
-            'module_statuses': module_statuses,
-            'status_transitions': self._analyze_status_transitions(module_statuses)
+        self.analysis_results['module_status_analysis'] = {
+            'module_status': module_status,
+            'status_transitions': status_transitions
         }
         
-        print(f"   📊 {len(status_updates)} Status-Updates gefunden")
-        return status_updates
+        print(f"   📊 {len(module_status)} Module mit Status-Updates")
+        print(f"   🔄 {len(status_transitions)} Status-Übergänge")
+        return module_status
     
-    def _extract_status_info(self, payload, topic):
-        """Extrahiert Status-Informationen aus Payload und Topic"""
-        status_info = {}
-        
-        # Extrahiere Modul aus Topic
-        module_match = re.search(r'/([A-Z]+)/', topic)
-        if module_match:
-            status_info['module'] = module_match.group(1)
-        
-        # Suche nach Status-Feldern
-        status_fields = ['status', 'state', 'availability', 'ready', 'busy', 'error']
+    def _extract_module_id(self, topic):
+        """Extrahiert Module-ID aus Topic"""
+        # Topic-Pattern: .../module_id/...
+        parts = topic.split('/')
+        for part in parts:
+            if part in ['HBW', 'VGR', 'DPS', 'DRILL', 'MILL', 'AIQS', 'FTS']:
+                return part
+        return None
+    
+    def _extract_status(self, payload):
+        """Extrahiert Status aus Payload"""
+        status_fields = ['status', 'state', 'availability', 'activity']
         
         for field in status_fields:
             if field in payload:
-                status_info['status'] = payload[field]
-                status_info['details'] = payload
-                return status_info
-        
-        # Suche in verschachtelten Objekten
-        for key, value in payload.items():
-            if isinstance(value, dict):
-                for field in status_fields:
-                    if field in value:
-                        status_info['status'] = value[field]
-                        status_info['details'] = value
-                        return status_info
+                return payload[field]
         
         return None
     
-    def _analyze_status_transitions(self, module_statuses):
-        """Analysiert Status-Übergänge pro Modul"""
-        transitions = {}
+    def analyze_workflow_patterns(self):
+        """Analysiert Workflow-Muster"""
+        print("\n🔄 Analysiere Workflow-Muster...")
         
-        for module, statuses in module_statuses.items():
-            transitions[module] = []
-            for i in range(1, len(statuses)):
-                prev_status = statuses[i-1]['status']
-                curr_status = statuses[i]['status']
-                if prev_status != curr_status:
-                    transitions[module].append({
-                        'from': prev_status,
-                        'to': curr_status,
-                        'timestamp': statuses[i]['timestamp']
-                    })
-        
-        return transitions
-    
-    def analyze_command_patterns(self):
-        """Analysiert Command-Muster"""
-        print("\n🔍 Analysiere Command-Muster...")
-        
-        commands = []
+        workflow_sequences = []
         command_sequences = []
         
-        for _, row in self.df.iterrows():
-            if row['payload_json']:
-                command_info = self._extract_command_info(row['payload_json'], row['topic'])
-                if command_info:
-                    commands.append({
-                        'timestamp': row['timestamp'],
-                        'topic': row['topic'],
-                        'command': command_info.get('command'),
-                        'module': command_info.get('module'),
-                        'order_id': command_info.get('order_id'),
-                        'metadata': command_info.get('metadata')
-                    })
+        # Gruppiere Nachrichten nach Zeitfenstern
+        self.df['timestamp_dt'] = pd.to_datetime(self.df['timestamp'])
+        self.df = self.df.sort_values('timestamp_dt')
         
-        # Analysiere Command-Sequenzen
-        if commands:
-            command_sequences = self._analyze_command_sequences(commands)
+        # Suche nach Command-Sequenzen
+        for i in range(len(self.df) - 1):
+            current_msg = self.df.iloc[i]
+            next_msg = self.df.iloc[i + 1]
+            
+            time_diff = (next_msg['timestamp_dt'] - current_msg['timestamp_dt']).total_seconds()
+            
+            # Wenn Nachrichten innerhalb von 5 Sekunden sind, könnten sie zusammengehören
+            if time_diff <= 5:
+                command_sequences.append({
+                    'first_topic': current_msg['topic'],
+                    'second_topic': next_msg['topic'],
+                    'time_diff': time_diff,
+                    'first_payload': current_msg['payload_json'],
+                    'second_payload': next_msg['payload_json']
+                })
         
-        self.analysis_results['command_analysis'] = {
-            'commands': commands,
-            'command_sequences': command_sequences,
-            'command_frequency': self._analyze_command_frequency(commands)
+        self.analysis_results['workflow_analysis'] = {
+            'command_sequences': command_sequences
         }
         
-        print(f"   📊 {len(commands)} Commands gefunden")
-        return commands
-    
-    def _extract_command_info(self, payload, topic):
-        """Extrahiert Command-Informationen aus Payload und Topic"""
-        command_info = {}
-        
-        # Extrahiere Modul aus Topic
-        module_match = re.search(r'/([A-Z]+)/', topic)
-        if module_match:
-            command_info['module'] = module_match.group(1)
-        
-        # Suche nach Command-Feldern
-        if 'action' in payload and isinstance(payload['action'], dict):
-            action = payload['action']
-            if 'command' in action:
-                command_info['command'] = action['command']
-                command_info['metadata'] = action.get('metadata', {})
-                command_info['order_id'] = self._extract_order_id(payload)
-                return command_info
-        
-        # Direkte Command-Felder
-        command_fields = ['command', 'cmd', 'action']
-        for field in command_fields:
-            if field in payload:
-                command_info['command'] = payload[field]
-                command_info['metadata'] = payload
-                command_info['order_id'] = self._extract_order_id(payload)
-                return command_info
-        
-        return None
-    
-    def _analyze_command_sequences(self, commands):
-        """Analysiert Command-Sequenzen"""
-        sequences = []
-        current_sequence = []
-        
-        for command in commands:
-            if not current_sequence:
-                current_sequence = [command]
-            else:
-                # Prüfe ob Command zur aktuellen Sequenz gehört (gleiche ORDER-ID)
-                if (command.get('order_id') == current_sequence[0].get('order_id')):
-                    current_sequence.append(command)
-                else:
-                    # Neue Sequenz
-                    if len(current_sequence) > 1:
-                        sequences.append(current_sequence)
-                    current_sequence = [command]
-        
-        # Letzte Sequenz hinzufügen
-        if len(current_sequence) > 1:
-            sequences.append(current_sequence)
-        
-        return sequences
-    
-    def _analyze_command_frequency(self, commands):
-        """Analysiert Command-Häufigkeit"""
-        frequency = {}
-        for command in commands:
-            cmd = command.get('command')
-            if cmd:
-                frequency[cmd] = frequency.get(cmd, 0) + 1
-        return frequency
+        print(f"   📊 {len(command_sequences)} Command-Sequenzen gefunden")
+        return command_sequences
     
     def analyze_error_patterns(self):
         """Analysiert Error-Muster"""
-        print("\n🔍 Analysiere Error-Muster...")
+        print("\n❌ Analysiere Error-Muster...")
         
-        errors = []
-        error_patterns = {}
+        error_messages = []
+        error_topics = []
         
         for _, row in self.df.iterrows():
+            # Suche nach Error-indikatoren in Topics
+            if any(error_term in row['topic'].lower() for error_term in ['error', 'fail', 'nok', 'not_ok']):
+                error_topics.append({
+                    'timestamp': row['timestamp'],
+                    'topic': row['topic'],
+                    'payload': row['payload_json']
+                })
+            
+            # Suche nach Error-indikatoren in Payload
             if row['payload_json']:
-                error_info = self._extract_error_info(row['payload_json'], row['topic'])
-                if error_info:
-                    errors.append({
+                if any(error_term in str(row['payload_json']).lower() for error_term in ['error', 'fail', 'nok', 'not_ok']):
+                    error_messages.append({
                         'timestamp': row['timestamp'],
                         'topic': row['topic'],
-                        'error_type': error_info.get('error_type'),
-                        'error_message': error_info.get('error_message'),
-                        'module': error_info.get('module'),
-                        'details': error_info.get('details')
+                        'payload': row['payload_json']
                     })
         
-        # Gruppiere Errors nach Typ
-        for error in errors:
-            error_type = error.get('error_type', 'unknown')
-            if error_type not in error_patterns:
-                error_patterns[error_type] = []
-            error_patterns[error_type].append(error)
-        
         self.analysis_results['error_analysis'] = {
-            'errors': errors,
-            'error_patterns': error_patterns,
-            'error_frequency': {k: len(v) for k, v in error_patterns.items()}
+            'error_topics': error_topics,
+            'error_messages': error_messages
         }
         
-        print(f"   📊 {len(errors)} Errors gefunden")
-        return errors
+        print(f"   📊 {len(error_topics)} Error-Topics gefunden")
+        print(f"   📊 {len(error_messages)} Error-Nachrichten gefunden")
+        return error_messages
     
-    def compare_sessions(self, other_session_db_path):
-        """Vergleicht diese Session mit einer anderen Session (Varianz-Analyse)"""
-        print(f"\n🔍 Vergleiche Sessions: {self.session_db_path} vs {other_session_db_path}")
-        
-        try:
-            # Lade andere Session
-            other_analyzer = MQTTSessionAnalyzer(other_session_db_path)
-            if not other_analyzer.load_session_data():
-                return None
-            
-            # Führe Analysen durch
-            other_analyzer.analyze_order_id_patterns()
-            other_analyzer.analyze_module_status_patterns()
-            other_analyzer.analyze_command_patterns()
-            other_analyzer.analyze_error_patterns()
-            
-            # Vergleiche Ergebnisse
-            comparison = {
-                'session_1': self.session_db_path,
-                'session_2': other_session_db_path,
-                'message_count_diff': len(self.df) - len(other_analyzer.df),
-                'order_id_comparison': self._compare_order_ids(other_analyzer),
-                'status_comparison': self._compare_status_patterns(other_analyzer),
-                'command_comparison': self._compare_command_patterns(other_analyzer),
-                'error_comparison': self._compare_error_patterns(other_analyzer),
-                'timing_variance': self._analyze_timing_variance(other_analyzer)
-            }
-            
-            self.analysis_results['variance_analysis'] = comparison
-            print("   📊 Varianz-Analyse abgeschlossen")
-            return comparison
-            
-        except Exception as e:
-            print(f"   ❌ Fehler bei Varianz-Analyse: {e}")
-            return None
-    
-    def _compare_order_ids(self, other_analyzer):
-        """Vergleicht ORDER-ID Muster zwischen Sessions"""
-        ids_1 = set(self.analysis_results.get('order_id_analysis', {}).get('unique_order_ids', []))
-        ids_2 = set(other_analyzer.analysis_results.get('order_id_analysis', {}).get('unique_order_ids', []))
-        
-        return {
-            'unique_to_session_1': list(ids_1 - ids_2),
-            'unique_to_session_2': list(ids_2 - ids_1),
-            'common_ids': list(ids_1 & ids_2),
-            'total_unique_1': len(ids_1),
-            'total_unique_2': len(ids_2)
-        }
-    
-    def _compare_status_patterns(self, other_analyzer):
-        """Vergleicht Status-Muster zwischen Sessions"""
-        status_1 = self.analysis_results.get('status_analysis', {}).get('status_transitions', {})
-        status_2 = other_analyzer.analysis_results.get('status_analysis', {}).get('status_transitions', {})
-        
-        return {
-            'modules_session_1': list(status_1.keys()),
-            'modules_session_2': list(status_2.keys()),
-            'common_modules': list(set(status_1.keys()) & set(status_2.keys())),
-            'status_transitions_diff': len(status_1) - len(status_2)
-        }
-    
-    def _compare_command_patterns(self, other_analyzer):
-        """Vergleicht Command-Muster zwischen Sessions"""
-        freq_1 = self.analysis_results.get('command_analysis', {}).get('command_frequency', {})
-        freq_2 = other_analyzer.analysis_results.get('command_analysis', {}).get('command_frequency', {})
-        
-        return {
-            'commands_session_1': freq_1,
-            'commands_session_2': freq_2,
-            'common_commands': list(set(freq_1.keys()) & set(freq_2.keys())),
-            'unique_commands_1': list(set(freq_1.keys()) - set(freq_2.keys())),
-            'unique_commands_2': list(set(freq_2.keys()) - set(freq_1.keys()))
-        }
-    
-    def _compare_error_patterns(self, other_analyzer):
-        """Vergleicht Error-Muster zwischen Sessions"""
-        errors_1 = self.analysis_results.get('error_analysis', {}).get('error_frequency', {})
-        errors_2 = other_analyzer.analysis_results.get('error_analysis', {}).get('error_frequency', {})
-        
-        return {
-            'errors_session_1': errors_1,
-            'errors_session_2': errors_2,
-            'common_errors': list(set(errors_1.keys()) & set(errors_2.keys())),
-            'unique_errors_1': list(set(errors_1.keys()) - set(errors_2.keys())),
-            'unique_errors_2': list(set(errors_2.keys()) - set(errors_1.keys()))
-        }
-    
-    def _analyze_timing_variance(self, other_analyzer):
-        """Analysiert zeitliche Varianz zwischen Sessions"""
-        # Einfache Timing-Analyse basierend auf Nachrichtenanzahl
-        return {
-            'avg_messages_per_minute_1': len(self.df) / max(1, (self.df['timestamp'].max() - self.df['timestamp'].min()).total_seconds() / 60),
-            'avg_messages_per_minute_2': len(other_analyzer.df) / max(1, (other_analyzer.df['timestamp'].max() - other_analyzer.df['timestamp'].min()).total_seconds() / 60)
-        }
-    
-    def _extract_error_info(self, payload, topic):
-        """Extrahiert Error-Informationen aus Payload und Topic"""
-        error_info = {}
-        
-        # Extrahiere Modul aus Topic
-        module_match = re.search(r'/([A-Z]+)/', topic)
-        if module_match:
-            error_info['module'] = module_match.group(1)
-        
-        # Suche nach Error-Feldern
-        error_fields = ['error', 'error_code', 'error_message', 'failed', 'failure']
-        
-        for field in error_fields:
-            if field in payload:
-                error_info['error_type'] = field
-                error_info['error_message'] = str(payload[field])
-                error_info['details'] = payload
-                return error_info
-        
-        # Suche nach Error-Indikatoren in Payload
-        payload_str = json.dumps(payload).lower()
-        error_indicators = ['error', 'failed', 'failure', 'timeout', 'not ok']
-        
-        for indicator in error_indicators:
-            if indicator in payload_str:
-                error_info['error_type'] = 'indicator'
-                error_info['error_message'] = f"Contains '{indicator}'"
-                error_info['details'] = payload
-                return error_info
-        
-        return None
-    
-    def generate_analysis_report(self):
+    def generate_report(self):
         """Generiert einen detaillierten Analyse-Report"""
-        print("\n📊 Generiere Analyse-Report...")
+        print("\n📋 Generiere Analyse-Report...")
         
         report = {
             'session_info': {
-                'database': self.session_db_path,
-                'message_count': len(self.df) if self.df is not None else 0,
-                'analysis_timestamp': datetime.now().isoformat()
+                'session_name': os.path.basename(self.session_db_path),
+                'total_messages': len(self.df),
+                'time_span': {
+                    'start': self.df['timestamp'].min() if len(self.df) > 0 else None,
+                    'end': self.df['timestamp'].max() if len(self.df) > 0 else None
+                }
             },
-            'order_id_analysis': self.analysis_results.get('order_id_analysis', {}),
-            'status_analysis': self.analysis_results.get('status_analysis', {}),
-            'command_analysis': self.analysis_results.get('command_analysis', {}),
-            'error_analysis': self.analysis_results.get('error_analysis', {}),
-            'recommendations': self._generate_recommendations()
+            'analysis_results': self.analysis_results
         }
         
         return report
     
-    def _generate_recommendations(self):
-        """Generiert Empfehlungen basierend auf der Analyse"""
-        recommendations = []
+    def print_summary(self):
+        """Druckt eine Zusammenfassung der Analyse"""
+        print(f"\n📊 Analyse-Zusammenfassung für {os.path.basename(self.session_db_path)}")
+        print("=" * 60)
         
-        # ORDER-ID Empfehlungen
-        order_analysis = self.analysis_results.get('order_id_analysis', {})
-        if order_analysis.get('order_id_count', 0) == 0:
-            recommendations.append("⚠️ Keine ORDER-IDs gefunden - Implementierung erforderlich")
-        elif order_analysis.get('order_id_count', 0) < 5:
-            recommendations.append("📊 Wenige ORDER-IDs - Mehr Sessions für bessere Analyse erforderlich")
+        if 'order_id_analysis' in self.analysis_results:
+            order_analysis = self.analysis_results['order_id_analysis']
+            print(f"🔍 ORDER-IDs: {order_analysis['order_id_count']} eindeutige IDs")
         
-        # Status-Monitoring Empfehlungen
-        status_analysis = self.analysis_results.get('status_analysis', {})
-        if not status_analysis.get('status_updates'):
-            recommendations.append("⚠️ Keine Status-Updates gefunden - Status-Monitoring verbessern")
+        if 'module_status_analysis' in self.analysis_results:
+            status_analysis = self.analysis_results['module_status_analysis']
+            print(f"🏭 Module: {len(status_analysis['module_status'])} Module mit Status-Updates")
+            print(f"🔄 Übergänge: {len(status_analysis['status_transitions'])} Status-Übergänge")
         
-        # Command-Empfehlungen
-        command_analysis = self.analysis_results.get('command_analysis', {})
-        if not command_analysis.get('commands'):
-            recommendations.append("⚠️ Keine Commands gefunden - Command-Monitoring implementieren")
+        if 'workflow_analysis' in self.analysis_results:
+            workflow_analysis = self.analysis_results['workflow_analysis']
+            print(f"🔄 Workflows: {len(workflow_analysis['command_sequences'])} Command-Sequenzen")
         
-        # Error-Empfehlungen
-        error_analysis = self.analysis_results.get('error_analysis', {})
-        if error_analysis.get('errors'):
-            recommendations.append(f"🚨 {len(error_analysis['errors'])} Errors gefunden - Error-Handling verbessern")
-        
-        return recommendations
+        if 'error_analysis' in self.analysis_results:
+            error_analysis = self.analysis_results['error_analysis']
+            print(f"❌ Errors: {len(error_analysis['error_topics'])} Error-Topics, {len(error_analysis['error_messages'])} Error-Nachrichten")
+
+class SystematicSessionAnalyzer:
+    """Systematische Analyse aller verfügbaren Sessions"""
     
-    def save_analysis_report(self, output_path):
-        """Speichert den Analyse-Report als JSON"""
-        report = self.generate_analysis_report()
+    def __init__(self, sessions_directory):
+        """Initialisiert den systematischen Analyzer"""
+        self.sessions_directory = sessions_directory
+        self.session_reports = {}
         
-        try:
-            with open(output_path, 'w', encoding='utf-8') as f:
-                json.dump(report, f, indent=2, ensure_ascii=False)
-            print(f"✅ Analyse-Report gespeichert: {output_path}")
-            return True
-        except Exception as e:
-            print(f"❌ Fehler beim Speichern des Reports: {e}")
-            return False
+    def find_all_sessions(self):
+        """Findet alle verfügbaren Sessions"""
+        db_files = glob.glob(os.path.join(self.sessions_directory, "aps_persistent_traffic_*.db"))
+        return sorted(db_files)
+    
+    def categorize_sessions(self, session_files):
+        """Kategorisiert Sessions nach Typ"""
+        categories = {
+            'wareneingang': [],
+            'auftrag': [],
+            'ai_error': [],
+            'fts': [],
+            'other': []
+        }
+        
+        for session_file in session_files:
+            session_name = os.path.basename(session_file)
+            
+            if 'wareneingang' in session_name:
+                categories['wareneingang'].append(session_file)
+            elif 'auftrag' in session_name:
+                categories['auftrag'].append(session_file)
+            elif 'ai-not-ok' in session_name:
+                categories['ai_error'].append(session_file)
+            elif 'fts' in session_name:
+                categories['fts'].append(session_file)
+            else:
+                categories['other'].append(session_file)
+        
+        return categories
+    
+    def analyze_session_category(self, category_name, session_files):
+        """Analysiert eine Kategorie von Sessions"""
+        print(f"\n🔍 Analysiere {category_name.upper()} Sessions...")
+        print("=" * 50)
+        
+        category_results = []
+        
+        for session_file in session_files:
+            print(f"\n📊 Analysiere: {os.path.basename(session_file)}")
+            
+            analyzer = MQTTSessionAnalyzer(session_file)
+            if analyzer.load_session_data():
+                analyzer.analyze_order_id_patterns()
+                analyzer.analyze_module_status_patterns()
+                analyzer.analyze_workflow_patterns()
+                analyzer.analyze_error_patterns()
+                
+                report = analyzer.generate_report()
+                category_results.append(report)
+                analyzer.print_summary()
+            else:
+                print(f"❌ Konnte Session nicht laden: {session_file}")
+        
+        return category_results
+    
+    def run_systematic_analysis(self):
+        """Führt eine systematische Analyse aller Sessions durch"""
+        print("🚀 Starte systematische MQTT-Session-Analyse")
+        print("=" * 60)
+        
+        # Finde alle Sessions
+        session_files = self.find_all_sessions()
+        print(f"📁 Gefundene Sessions: {len(session_files)}")
+        
+        # Kategorisiere Sessions
+        categories = self.categorize_sessions(session_files)
+        
+        # Analysiere jede Kategorie
+        for category_name, category_sessions in categories.items():
+            if category_sessions:
+                self.session_reports[category_name] = self.analyze_session_category(
+                    category_name, category_sessions
+                )
+        
+        # Generiere Gesamt-Report
+        self.generate_comprehensive_report()
+    
+    def generate_comprehensive_report(self):
+        """Generiert einen umfassenden Report aller Analysen"""
+        print(f"\n📋 Generiere umfassenden Analyse-Report...")
+        print("=" * 60)
+        
+        # Speichere Report in Datei
+        report_file = os.path.join(self.sessions_directory, "systematic_analysis_report.json")
+        
+        with open(report_file, 'w', encoding='utf-8') as f:
+            json.dump(self.session_reports, f, indent=2, default=str)
+        
+        print(f"✅ Umfassender Report gespeichert: {report_file}")
+        
+        # Drucke Zusammenfassung
+        self.print_comprehensive_summary()
+    
+    def print_comprehensive_summary(self):
+        """Druckt eine umfassende Zusammenfassung"""
+        print(f"\n📊 UMFASSENDE ANALYSE-ZUSAMMENFASSUNG")
+        print("=" * 60)
+        
+        for category_name, category_reports in self.session_reports.items():
+            print(f"\n🔍 {category_name.upper()}: {len(category_reports)} Sessions")
+            
+            total_messages = sum(report['session_info']['total_messages'] for report in category_reports)
+            total_order_ids = sum(len(report['analysis_results'].get('order_id_analysis', {}).get('unique_order_ids', [])) for report in category_reports)
+            
+            print(f"   📊 Gesamt-Nachrichten: {total_messages}")
+            print(f"   🔍 Gesamt-ORDER-IDs: {total_order_ids}")
 
 def main():
-    """Hauptfunktion für Command-Line-Interface"""
+    """Hauptfunktion für Kommandozeilen-Interface"""
     parser = argparse.ArgumentParser(description='MQTT Session Analyzer')
-    parser.add_argument('session_db', help='Pfad zur Session-Datenbank (.db)')
-    parser.add_argument('--output', '-o', help='Ausgabe-Pfad für Report (.json)')
-    parser.add_argument('--verbose', '-v', action='store_true', help='Detaillierte Ausgabe')
-    parser.add_argument('--compare', '-c', help='Vergleiche mit anderer Session-DB (Varianz-Analyse)')
+    parser.add_argument('--session', help='Pfad zur Session-Datenbank')
+    parser.add_argument('--sessions-dir', help='Verzeichnis mit allen Sessions für systematische Analyse')
+    parser.add_argument('--compare', help='Vergleiche zwei Sessions')
     
     args = parser.parse_args()
     
-    # Prüfe ob Session-DB existiert
-    if not Path(args.session_db).exists():
-        print(f"❌ Session-Datenbank nicht gefunden: {args.session_db}")
-        return 1
+    if args.sessions_dir:
+        # Systematische Analyse aller Sessions
+        systematic_analyzer = SystematicSessionAnalyzer(args.sessions_dir)
+        systematic_analyzer.run_systematic_analysis()
     
-    # Erstelle Analyzer
-    analyzer = MQTTSessionAnalyzer(args.session_db)
+    elif args.session:
+        # Einzelne Session analysieren
+        analyzer = MQTTSessionAnalyzer(args.session)
+        if analyzer.load_session_data():
+            analyzer.analyze_order_id_patterns()
+            analyzer.analyze_module_status_patterns()
+            analyzer.analyze_workflow_patterns()
+            analyzer.analyze_error_patterns()
+            analyzer.print_summary()
+        else:
+            print("❌ Konnte Session nicht laden")
     
-    # Lade Session-Daten
-    if not analyzer.load_session_data():
-        return 1
-    
-    # Führe Analysen durch
-    analyzer.analyze_order_id_patterns()
-    analyzer.analyze_module_status_patterns()
-    analyzer.analyze_command_patterns()
-    analyzer.analyze_error_patterns()
-    
-    # Varianz-Analyse (optional)
-    if args.compare:
-        if not Path(args.compare).exists():
-            print(f"❌ Vergleichs-Session-DB nicht gefunden: {args.compare}")
-            return 1
-        analyzer.compare_sessions(args.compare)
-    
-    # Generiere Report
-    report = analyzer.generate_analysis_report()
-    
-    # Zeige Zusammenfassung
-    print("\n" + "="*60)
-    print("📊 MQTT-SESSION-ANALYSE ZUSAMMENFASSUNG")
-    print("="*60)
-    print(f"📁 Session-DB: {args.session_db}")
-    print(f"📨 Nachrichten: {report['session_info']['message_count']}")
-    print(f"🆔 ORDER-IDs: {report['order_id_analysis'].get('order_id_count', 0)}")
-    print(f"📊 Status-Updates: {len(report['status_analysis'].get('status_updates', []))}")
-    print(f"⚡ Commands: {len(report['command_analysis'].get('commands', []))}")
-    print(f"🚨 Errors: {len(report['error_analysis'].get('errors', []))}")
-    
-    # Zeige Empfehlungen
-    if report['recommendations']:
-        print("\n💡 EMPFEHLUNGEN:")
-        for rec in report['recommendations']:
-            print(f"   {rec}")
-    
-    # Speichere Report
-    if args.output:
-        analyzer.save_analysis_report(args.output)
     else:
-        # Standard-Ausgabe
-        output_path = f"mqtt_analysis_{datetime.now().strftime('%Y%m%d_%H%M%S')}.json"
-        analyzer.save_analysis_report(output_path)
-    
-    return 0
+        print("❌ Bitte --session oder --sessions-dir angeben")
 
 if __name__ == "__main__":
-    sys.exit(main())
+    main()

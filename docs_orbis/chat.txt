@@ -1,4 +1,0 @@
-@workspace Analysiere das Projekt.
-Der Ursprung ist ein Fischertechnik-Projekt (Verzeichnisse Node-Red, doc, PLC-Programs, TXT4.0 programs). 
-Wir wollen die Steuerung der Fabrik über eine eigene ORBIS-Komponente übernehmen. 
-Die Idee ist dies über MQTT zu machen, da alle Fischertechnik-Module MQTT-Befehle erhalten.

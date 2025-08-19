@@ -18,6 +18,12 @@ mqtt_traffic.db
 # Allow default demo files
 !mqtt-data/sessions/default_test_session.db
 
+# 📈 Analysis Reports (large files)
+systematic_analysis_report.json
+*.json
+# Allow specific JSON files
+!mqtt-data/sessions/default_test_session.json
+
 # 📝 Log Files
 *.log
 mqtt_traffic.log

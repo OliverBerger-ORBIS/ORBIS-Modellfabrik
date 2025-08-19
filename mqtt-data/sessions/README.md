@@ -30,11 +30,12 @@ Eigene Sessions werden als `aps_persistent_traffic_<NAME>_<TIMESTAMP>.db` und `.
 - `<TIMESTAMP>` - Automatischer Zeitstempel
 
 ### 🎙️ Session-Recorder:
-Verwende den Session-Recorder im Dashboard um neue Sessions aufzunehmen:
-1. MQTT-Verbindung aufbauen
-2. Session-Name eingeben
-3. Aufnahme starten/stoppen
-4. Session in der Analyse verwenden
+```bash
+# Manueller Aufruf über Terminal
+python src_orbis/mqtt/loggers/aps_session_logger.py --session-label my-session --auto-start
+
+# Mit "q" beenden
+```
 
 ## 🔧 Technische Details
 

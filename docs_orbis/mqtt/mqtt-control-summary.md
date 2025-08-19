@@ -26,11 +26,11 @@ We have successfully **analyzed, tested, and documented** the MQTT control capab
 
 | Module | Serial Number | Working Commands | Status |
 |--------|---------------|------------------|--------|
-| **MILL** | `SVR3QA2098` | `PICK`, `DROP` | ✅ **WORKING** |
-| **DRILL** | `SVR4H76449` | `PICK`, `DROP` | ✅ **WORKING** |
+| **MILL** | `SVR3QA2098` | `PICK`, `MILL`, `DROP` | ✅ **WORKING** |
+| **DRILL** | `SVR4H76449` | `PICK`, `DRILL`, `DROP` | ✅ **WORKING** |
 | **AIQS** | `SVR4H76530` | `PICK`, `DROP`, `CHECK_QUALITY` | ✅ **WORKING** |
 | **HBW** | `SVR3QA0022` | `PICK`, `DROP`, `STORE` | ✅ **WORKING** |
-| **DPS** | `SVR4H73275` | `PICK`, `DROP` | ✅ **WORKING** |
+| **DPS** | `SVR4H73275` | `PICK`, `DROP`, `INPUT_RGB`, `RGB_NFC` | ✅ **WORKING** |
 
 ## 🔧 Working MQTT Message Examples
 
@@ -102,12 +102,13 @@ python remote_mqtt_client.py --broker 192.168.0.100 --username default --passwor
 4. **Enhanced Controllers**: All features work ✅
 
 ### ⚠️ Partially Working Commands
-1. **DRILL DROP**: Needs valid orderId from previous PICK
-2. **OrderId Dependencies**: Some commands require sequence
+1. **PROCESS Commands**: Need correct `orderUpdateId` sequence
+2. **Workflow Dependencies**: PICK → PROCESS → DROP requires ORDER-ID tracking
+3. **ORDER-ID Management**: `"OrderUpdateId not valid"` errors identified
 
 ### ❌ Non-Working Commands
-1. **MILL Command**: "Command not supported" (automatic control)
-2. **DRILL Command**: "Command not supported" (automatic control)
+1. **Sequential Commands**: Without proper ORDER-ID management
+2. **Workflow Templates**: Need ORDER-ID tracking implementation
 
 ## 🔍 Important Findings
 
@@ -120,6 +121,7 @@ python remote_mqtt_client.py --broker 192.168.0.100 --username default --passwor
 - **Serial Numbers**: Must use exact module serial numbers
 - **Metadata**: Type parameter required for PICK/DROP
 - **OrderIds**: Unique UUIDs for each command
+- **orderUpdateId**: Must increment for sequential commands (1, 2, 3...)
 - **Topics**: Follow pattern `module/v1/ff/{serialNumber}/order`
 
 ### 3. **Authentication & Connection**
@@ -168,13 +170,18 @@ python remote_mqtt_client.py --broker 192.168.0.100 --template DRILL_PICK_WHITE
 - ✅ **Completed**: Documentation updated
 - ✅ **Completed**: Dashboard MQTT integration
 
-### 2. **Future Enhancements**
-- **Sequence Testing**: Test PICK → DROP sequences
+### 2. **Critical Priority - ORDER-ID Management**
+- **🚨 CRITICAL**: Implement ORDER-ID tracking for sequential commands
+- **🚨 CRITICAL**: Fix `orderUpdateId` increment for PICK → PROCESS → DROP workflows
+- **🚨 CRITICAL**: Handle `"OrderUpdateId not valid"` errors
+- **Status**: Identified root cause - need workflow-aware templates
+
+### 3. **Future Enhancements**
+- **Sequence Testing**: Test PICK → PROCESS → DROP sequences
 - **Error Handling**: Implement robust error handling
 - **Integration**: Integrate with main APS control system
 - **Monitoring**: Add real-time status monitoring
-- **OrderId Management**: Implement unique OrderId generation
-- **Message Sequencing**: Handle orderUpdateId increments
+- **Message Sequencing**: Handle orderUpdateId increments properly
 
 ### 3. **Advanced Features**
 - **Workflow Automation**: Create automated sequences

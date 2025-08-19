@@ -18,7 +18,7 @@ APS_MODULES_EXTENDED = {
         'name': 'MILL',
         'icon': '⚙️',
         'type': 'Processing',
-        'commands': ['PICK', 'DROP'],
+        'commands': ['PICK', 'MILL', 'DROP'],
         'ip': '192.168.0.40'
     },
     'DRILL': {
@@ -26,7 +26,7 @@ APS_MODULES_EXTENDED = {
         'name': 'DRILL',
         'icon': '🔧',
         'type': 'Processing',
-        'commands': ['PICK', 'DROP'],
+        'commands': ['PICK', 'DRILL', 'DROP'],
         'ip': '192.168.0.50'
     },
     'AIQS': {
@@ -50,7 +50,7 @@ APS_MODULES_EXTENDED = {
         'name': 'DPS',
         'icon': '🏭',
         'type': 'Distribution',
-        'commands': ['PICK', 'DROP'],
+        'commands': ['PICK', 'DROP', 'INPUT_RGB', 'RGB_NFC'],
         'ip': '192.168.0.90'
     },
     'FTS': {
