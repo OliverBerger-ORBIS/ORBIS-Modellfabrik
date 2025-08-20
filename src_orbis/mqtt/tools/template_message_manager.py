@@ -17,6 +17,9 @@ except ImportError:
     mqtt = None
     MQTT_AVAILABLE = False
 
+# NFC Workpiece Mapping
+from .nfc_workpiece_mapping import create_nfc_mapper, NFCWorkpieceMapper
+
 
 class TemplateMessageManager:
     """Verwaltet Template Messages für MQTT Control"""
@@ -26,6 +29,7 @@ class TemplateMessageManager:
         self.templates = self._load_templates()
         self.active_orders = {}  # orderId -> order_info
         self.order_history = []  # Liste aller abgeschlossenen Orders
+        self.nfc_mapper = create_nfc_mapper()  # NFC Workpiece Mapper
         
     def _load_templates(self) -> Dict[str, Dict]:
         """Lädt die Template Library"""
@@ -117,14 +121,23 @@ class TemplateMessageManager:
             if color not in template["parameters"]["color"]:
                 raise ValueError(f"Ungültige Farbe: {color}. Erlaubt: {template['parameters']['color']}")
             
-            if not workpiece_id or len(workpiece_id) < 10:
+            # NFC-Mapping: Werkstück-ID zu NFC-Code konvertieren
+            actual_workpiece_id = workpiece_id
+            nfc_code = None
+            
+            # Prüfen ob es eine benutzerfreundliche ID ist (R1, W1, B1, etc.)
+            if self.nfc_mapper.is_valid_workpiece_id(workpiece_id):
+                nfc_code = self.nfc_mapper.get_nfc_code(workpiece_id)
+                actual_workpiece_id = nfc_code
+                print(f"🔄 NFC-Mapping: {workpiece_id} → {nfc_code}")
+            elif not workpiece_id or len(workpiece_id) < 10:
                 raise ValueError(f"Ungültige Werkstück-ID: {workpiece_id}")
             
             # Payload erstellen
             payload = template["payload"].copy()
             payload["timestamp"] = datetime.now().isoformat()
             payload["type"] = color
-            payload["workpieceId"] = workpiece_id
+            payload["workpieceId"] = actual_workpiece_id
             
             # MQTT senden
             if self.mqtt_client:

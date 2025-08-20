@@ -14,6 +14,7 @@ MODULE_ICONS = {
     "FTS": "🚗",   # Car for transport system
     "CHRG": "🔋",  # Battery for charger
     "OVEN": "🔥",  # Fire for oven (optional)
+    "CCU": "🎛️",  # Control panel for CCU
 }
 
 # System Icons (for additional components)
@@ -49,6 +50,7 @@ MODULE_ICON_FILES = {
     "FTS": "fts_icon.jpeg",  # Note: JPEG format
     "CHRG": "chrg_icon.png",
     "OVEN": "oven_icon.png",
+    "CCU": "ccu_icon.png",
 }
 
 # System Icon Names (for additional components)
@@ -107,12 +109,8 @@ def get_module_icon(module_name, size="medium"):
     """
     module_upper = module_name.upper()
     
-    # Try to get PNG icon first
-    icon_path = get_module_icon_path(module_name)
-    if icon_path and os.path.exists(icon_path):
-        return icon_path
-    
-    # Fallback to emoji if PNG not available
+    # For now, always use emoji icons to avoid path issues
+    # TODO: Implement PNG icons when assets are available
     if module_upper in MODULE_ICONS:
         return MODULE_ICONS[module_upper]
     

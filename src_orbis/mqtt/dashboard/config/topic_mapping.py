@@ -87,6 +87,34 @@ CCU_TOPIC_MAPPINGS = {
     "ccu/status/health": "CCU : status : health"
 }
 
+# TXT Controller Topics mapping
+TXT_TOPIC_MAPPINGS = {
+    # F-Topics (Function topics)
+    "/j1/txt/1/f/i/stock": "TXT : f : i : stock",
+    "/j1/txt/1/f/o/order": "TXT : f : o : order",
+    "/j1/txt/1/f/i/order": "TXT : f : i : order",
+    "/j1/txt/1/f/o/stock": "TXT : f : o : stock",
+    "/j1/txt/1/f/i/status": "TXT : f : i : status",
+    "/j1/txt/1/f/o/status": "TXT : f : o : status",
+    "/j1/txt/1/f/i/error": "TXT : f : i : error",
+    "/j1/txt/1/f/o/error": "TXT : f : o : error",
+    "/j1/txt/1/f/i/config/hbw": "TXT : f : i : config : hbw",
+    
+    # C-Topics (Control topics)
+    "/j1/txt/1/c/bme680": "TXT : c : bme680",
+    "/j1/txt/1/c/cam": "TXT : c : cam",
+    "/j1/txt/1/c/ldr": "TXT : c : ldr",
+    
+    # I-Topics (Input topics)
+    "/j1/txt/1/i/bme680": "TXT : i : bme680",
+    "/j1/txt/1/i/broadcast": "TXT : i : broadcast",
+    "/j1/txt/1/i/cam": "TXT : i : cam",
+    "/j1/txt/1/i/ldr": "TXT : i : ldr",
+    
+    # O-Topics (Output topics)
+    "/j1/txt/1/o/broadcast": "TXT : o : broadcast",
+}
+
 # Topic patterns for dynamic mapping
 TOPIC_PATTERNS = {
     r"module/v1/ff/NodeRed/([^/]+)/([^/]+)": "NodeRed → {module} : {action}",
@@ -112,6 +140,10 @@ def get_friendly_topic_name(topic: str) -> str:
     # Check CCU mappings
     if topic in CCU_TOPIC_MAPPINGS:
         return CCU_TOPIC_MAPPINGS[topic]
+    
+    # Check TXT mappings
+    if topic in TXT_TOPIC_MAPPINGS:
+        return TXT_TOPIC_MAPPINGS[topic]
     
     # Try pattern matching
     import re
@@ -153,6 +185,37 @@ def get_friendly_topic_name(topic: str) -> str:
         action = match.group(1)
         return f"CHRG : {action}"
     
+    # TXT Controller patterns
+    # F-Topics (Function topics) - /j1/txt/1/f/i/action or /j1/txt/1/f/o/action
+    match = re.match(r"/j1/txt/1/f/([io])/([^/]+)", topic)
+    if match:
+        direction, action = match.groups()
+        return f"TXT : f : {direction} : {action}"
+    
+    # F-Topics with config - /j1/txt/1/f/i/config/hbw
+    match = re.match(r"/j1/txt/1/f/([io])/config/([^/]+)", topic)
+    if match:
+        direction, config = match.groups()
+        return f"TXT : f : {direction} : config : {config}"
+    
+    # C-Topics (Control topics) - /j1/txt/1/c/sensor
+    match = re.match(r"/j1/txt/1/c/([^/]+)", topic)
+    if match:
+        sensor = match.group(1)
+        return f"TXT : c : {sensor}"
+    
+    # I-Topics (Input topics) - /j1/txt/1/i/sensor
+    match = re.match(r"/j1/txt/1/i/([^/]+)", topic)
+    if match:
+        sensor = match.group(1)
+        return f"TXT : i : {sensor}"
+    
+    # O-Topics (Output topics) - /j1/txt/1/o/action
+    match = re.match(r"/j1/txt/1/o/([^/]+)", topic)
+    if match:
+        action = match.group(1)
+        return f"TXT : o : {action}"
+    
     # If no pattern matches, return original topic
     return topic
 
@@ -167,6 +230,9 @@ def get_all_mapped_topics() -> dict:
     
     # Add CCU mappings
     mappings.update(CCU_TOPIC_MAPPINGS)
+    
+    # Add TXT mappings
+    mappings.update(TXT_TOPIC_MAPPINGS)
     
     # Add dynamic mappings for all possible combinations
     for serial, module_name in MODULE_SERIAL_TO_NAME.items():

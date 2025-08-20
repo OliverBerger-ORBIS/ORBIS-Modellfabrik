@@ -22,7 +22,11 @@ class TestTemplateControlDashboard(unittest.TestCase):
         """Setup für Tests"""
         try:
             from src_orbis.mqtt.dashboard.template_control import TemplateControlDashboard
-            self.template_control = TemplateControlDashboard()
+            from src_orbis.mqtt.tools.template_message_manager import TemplateMessageManager
+            
+            # Create a template manager for testing
+            template_manager = TemplateMessageManager()
+            self.template_control = TemplateControlDashboard(template_manager)
         except ImportError as e:
             self.skipTest(f"Template Control Dashboard not available: {e}")
 

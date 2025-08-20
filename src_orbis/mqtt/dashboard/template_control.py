@@ -33,12 +33,27 @@ class TemplateControlDashboard:
                     help="Wähle die Farbe des Werkstücks"
                 )
                 
-                # Werkstück-ID (NFC oder manuell)
-                workpiece_id = st.text_input(
-                    "Werkstück-ID (NFC):",
-                    value="04798eca341290",
-                    help="NFC-gelesene Werkstück-ID oder manuell eingegeben"
-                )
+                # Werkstück-Auswahl mit NFC-Mapping
+                available_workpieces = self.template_manager.nfc_mapper.get_available_workpieces(color)
+                
+                if available_workpieces:
+                    workpiece_id = st.selectbox(
+                        "Werkstück auswählen:",
+                        available_workpieces,
+                        help=f"Verfügbare {color} Werkstücke mit NFC-Mapping"
+                    )
+                    
+                    # NFC-Code anzeigen
+                    nfc_code = self.template_manager.nfc_mapper.get_nfc_code(workpiece_id)
+                    if nfc_code:
+                        st.info(f"🔍 NFC-Code: `{nfc_code}`")
+                else:
+                    # Fallback für manuelle Eingabe
+                    workpiece_id = st.text_input(
+                        "Werkstück-ID (NFC):",
+                        value="04798eca341290",
+                        help="NFC-gelesene Werkstück-ID oder manuell eingegeben"
+                    )
                 
                 # Trigger Button
                 if st.button("🚀 Wareneingang starten", type="primary"):
@@ -53,15 +68,47 @@ class TemplateControlDashboard:
                         st.error("❌ Bitte gültige Werkstück-ID eingeben (mindestens 10 Zeichen)")
             
             with col2:
+                # NFC-Mapping Statistiken
+                nfc_stats = self.template_manager.nfc_mapper.get_statistics()
+                
+                st.info("🏷️ NFC-Mapping Status:")
+                col1, col2, col3, col4 = st.columns(4)
+                with col1:
+                    st.metric("Gesamt", nfc_stats["total_workpieces"])
+                with col2:
+                    st.metric("Verfügbar", nfc_stats["available_workpieces"])
+                with col3:
+                    st.metric("Fehlend", nfc_stats["missing_workpieces"])
+                with col4:
+                    st.metric("Vervollständigung", f"{nfc_stats['completion_percentage']:.1f}%")
+                
+                # Farb-Verteilung
+                st.write("🎨 Verfügbare Werkstücke:")
+                col1, col2, col3 = st.columns(3)
+                with col1:
+                    red_workpieces = self.template_manager.nfc_mapper.get_red_workpieces()
+                    st.write(f"🔴 **Rot:** {len(red_workpieces)}/8")
+                    if red_workpieces:
+                        st.write(f"  {', '.join(red_workpieces)}")
+                with col2:
+                    white_workpieces = self.template_manager.nfc_mapper.get_white_workpieces()
+                    st.write(f"⚪ **Weiß:** {len(white_workpieces)}/8")
+                    if white_workpieces:
+                        st.write(f"  {', '.join(white_workpieces)}")
+                with col3:
+                    blue_workpieces = self.template_manager.nfc_mapper.get_blue_workpieces()
+                    st.write(f"🔵 **Blau:** {len(blue_workpieces)}/8")
+                    if blue_workpieces:
+                        st.write(f"  {', '.join(blue_workpieces)}")
+                
                 # Template Info
                 template_info = self.template_manager.get_template_info("wareneingang_trigger")
                 if template_info:
-                    st.info("📋 Template Info:")
-                    st.write(f"**Topic:** `{template_info['topic']}`")
-                    st.write(f"**Parameter:** {list(template_info['parameters'].keys())}")
-                    
-                    # Parameter Details
-                    with st.expander("🔍 Parameter Details"):
+                    with st.expander("📋 Template Info"):
+                        st.write(f"**Topic:** `{template_info['topic']}`")
+                        st.write(f"**Parameter:** {list(template_info['parameters'].keys())}")
+                        
+                        # Parameter Details
                         for param, details in template_info['parameters'].items():
                             if isinstance(details, list):
                                 st.write(f"**{param}:** {', '.join(details)}")

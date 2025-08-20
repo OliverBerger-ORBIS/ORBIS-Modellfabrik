@@ -58,7 +58,9 @@ def main():
         "tests_orbis/test_database_structure.py",
         "tests_orbis/test_template_message_manager.py",  # NEUER TEMPLATE MANAGER TEST
         "tests_orbis/test_icon_configuration.py",  # NEUER ICON CONFIG TEST
-        "tests_orbis/test_template_control_dashboard.py"  # NEUER TEMPLATE CONTROL TEST
+        "tests_orbis/test_template_control_dashboard.py",  # NEUER TEMPLATE CONTROL TEST
+        "tests_orbis/test_filter_improvements.py",  # NEUER FILTER IMPROVEMENTS TEST
+        "tests_orbis/test_filter_integration.py"  # NEUER FILTER INTEGRATION TEST
     ]
     
     results = []
