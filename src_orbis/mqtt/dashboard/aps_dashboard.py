@@ -10,6 +10,7 @@ import json
 import time
 import sqlite3
 import yaml
+import uuid
 import pandas as pd
 import streamlit as st
 import plotly.express as px
@@ -1176,7 +1177,14 @@ class APSDashboard:
                 connection_status = f"{get_status_icon('offline')} Disconnected"
 
             # Activity status with enhanced icons using new function
-            activity_display = self.get_enhanced_status_display(availability_status, module_info["type"])
+            if availability_status:
+                activity_display = self.get_enhanced_status_display(availability_status, module_info["type"])
+            elif len(recent_messages) > 0:
+                # If we have recent messages but no specific status, show "Active"
+                activity_display = f"{get_status_icon('available')} Active"
+            else:
+                # No recent messages at all
+                activity_display = f"{get_status_icon('offline')} No Data"
 
             # Get module icon (use emoji for table display)
             # For table display, prefer emoji over file paths
@@ -1400,6 +1408,59 @@ class APSDashboard:
             else:
                 st.error(f"❌ Fehler: {result_message}")
 
+        except Exception as e:
+            st.error(f"❌ Fehler beim Senden: {e}")
+
+    def send_drill_sequence_command(self, module_key, command, workpiece_color, nfc_code):
+        """Send DRILL sequence command with proper orderUpdateId management"""
+        try:
+            if not self.mqtt_connected:
+                if not self.connect_mqtt():
+                    st.error("MQTT-Verbindung fehlgeschlagen")
+                    return
+
+            # Get module info
+            module_info = self.aps_modules_extended[module_key]
+            
+            # Initialize or get current orderUpdateId for this module
+            order_update_key = f"order_update_id_{module_key}"
+            if order_update_key not in st.session_state:
+                st.session_state[order_update_key] = 1
+            else:
+                st.session_state[order_update_key] += 1
+            
+            order_update_id = st.session_state[order_update_key]
+            
+            # Create message with proper metadata including NFC code
+            message = {
+                "serialNumber": module_info["id"],
+                "orderId": str(uuid.uuid4()),
+                "orderUpdateId": order_update_id,
+                "action": {
+                    "id": str(uuid.uuid4()),
+                    "command": command,
+                    "metadata": {
+                        "priority": "NORMAL",
+                        "timeout": 300,
+                        "type": workpiece_color,
+                        "workpieceId": nfc_code
+                    }
+                }
+            }
+            
+            topic = f"module/v1/ff/{module_info['id']}/order"
+            
+            # Send message
+            success, result_message = self.send_mqtt_message_direct(topic, message)
+            
+            if success:
+                st.success(f"✅ {command} gesendet für {workpiece_color} Werkstück")
+                st.info(f"📡 Topic: {topic}")
+                st.info(f"🆔 OrderUpdateId: {order_update_id}")
+                st.info(f"🔍 NFC-Code: {nfc_code}")
+            else:
+                st.error(f"❌ Fehler: {result_message}")
+                
         except Exception as e:
             st.error(f"❌ Fehler beim Senden: {e}")
 
@@ -1986,52 +2047,148 @@ class APSDashboard:
                         st.error(f"{get_status_icon('offline')} Offline")
                 
                 with col3:
-                    st.markdown("**Verfügbare Befehle:**")
-                    for command in module_info["commands"]:
-                        st.markdown(f"• {command}")
+                    # Show module status or recent activity
+                    st.markdown("**Status:**")
+                    if st.session_state.get("mqtt_connected", False):
+                        st.success("🟢 Online")
+                    else:
+                        st.error("🔴 Offline")
                 
                 with col4:
                     st.markdown("**Steuerung:**")
-                    # Control buttons in logical order: PICK -> PROCESS -> DROP
-                    button_order = []
                     
-                    # Add PICK first
-                    if "PICK" in module_info["commands"]:
-                        button_order.append("PICK")
-                    
-                    # Add PROCESS commands (MILL, DRILL, CHECK_QUALITY)
-                    process_commands = ["MILL", "DRILL", "CHECK_QUALITY"]
-                    for cmd in process_commands:
-                        if cmd in module_info["commands"]:
-                            button_order.append(cmd)
-                    
-                    # Add other commands (STORE, etc.)
-                    for cmd in module_info["commands"]:
-                        if cmd not in button_order:
-                            button_order.append(cmd)
-                    
-                    # Add DROP last
-                    if "DROP" in module_info["commands"]:
-                        if "DROP" in button_order:
-                            button_order.remove("DROP")
-                        button_order.append("DROP")
-                    
-                    # Create buttons in order
-                    for command in button_order:
-                        button_text = f"▶️ {command}"
-                        if command in ["MILL", "DRILL"]:
-                            button_text = f"⚙️ {command}"
-                        elif command == "CHECK_QUALITY":
-                            button_text = f"🔍 {command}"
-                        elif command == "STORE":
-                            button_text = f"📦 {command}"
+                    # Special sequence control for DRILL, MILL, and AIQS modules
+                    if module_key in ["DRILL", "MILL", "AIQS"]:
+                        if module_key == "DRILL":
+                            st.markdown("**Steuerung DRILL-Sequenz:**")
+                            process_command = "DRILL"
+                            process_icon = "⚙️"
+                        elif module_key == "MILL":
+                            st.markdown("**Steuerung MILL-Sequenz:**")
+                            process_command = "MILL"
+                            process_icon = "⚙️"
+                        elif module_key == "AIQS":
+                            st.markdown("**Steuerung AIQS-Sequenz:**")
+                            process_command = "CHECK_QUALITY"
+                            process_icon = "🔍"
                         
-                        if st.button(
-                            button_text,
-                            key=f"control_{module_key}_{command}",
-                            use_container_width=True,
-                        ):
-                            self.send_module_command(module_key, command)
+                        # Workpiece selection
+                        workpiece_color = st.selectbox(
+                            "Werkstück-Farbe:",
+                            ["WHITE", "RED", "BLUE"],
+                            key=f"{module_key.lower()}_color_{module_key}",
+                            index=0  # Default to WHITE
+                        )
+                        
+                        # Workpiece ID selection based on color
+                        if workpiece_color == "WHITE":
+                            workpiece_options = ["W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8"]
+                            default_index = 0  # W1
+                        elif workpiece_color == "RED":
+                            workpiece_options = ["R1", "R2", "R3", "R4", "R5", "R6", "R7", "R8"]
+                            default_index = 0  # R1
+                        else:  # BLUE
+                            workpiece_options = ["B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8"]
+                            default_index = 0  # B1
+                        
+                        workpiece_id = st.selectbox(
+                            "Werkstück:",
+                            workpiece_options,
+                            key=f"{module_key.lower()}_workpiece_{module_key}",
+                            index=default_index
+                        )
+                        
+                        # Get NFC code for selected workpiece
+                        try:
+                            from src_orbis.mqtt.tools.nfc_workpiece_mapping import NFC_WORKPIECE_MAPPING
+                            nfc_code = NFC_WORKPIECE_MAPPING.get(workpiece_id, "Unknown")
+                        except ImportError:
+                            # Fallback mapping if import fails
+                            fallback_mapping = {
+                                "W1": "04798eca341290", "W2": "047c8bca341291", "W3": "047b8bca341291",
+                                "W4": "04c38bca341290", "W5": "04ab8bca341290", "W6": "04368bca341291",
+                                "W7": "04c090ca341290", "W8": "042c8aca341291",
+                                "R1": "040a8dca341291", "R2": "04d78cca341290", "R3": "04808dca341291",
+                                "R4": "04f08dca341290", "R5": "04158cca341291", "R6": "04fa8cca341290",
+                                "R7": "047f8cca341290", "R8": "048a8cca341290",
+                                "B1": "04a189ca341290", "B2": "048989ca341290", "B3": "047389ca341291",
+                                "B4": "040c89ca341291", "B5": "04a289ca341290", "B6": "04c489ca341290",
+                                "B7": "048089ca341290", "B8": "042c88ca341291"
+                            }
+                            nfc_code = fallback_mapping.get(workpiece_id, "Unknown")
+                        st.info(f"🔍 NFC-Code: `{nfc_code}`")
+                        
+                        # Sequence buttons
+                        col_seq1, col_seq2, col_seq3 = st.columns(3)
+                        
+                        with col_seq1:
+                            if st.button(
+                                "📤 PICK",
+                                key=f"{module_key.lower()}_pick_{module_key}",
+                                use_container_width=True,
+                                type="primary"
+                            ):
+                                self.send_drill_sequence_command(module_key, "PICK", workpiece_color, nfc_code)
+                        
+                        with col_seq2:
+                            if st.button(
+                                f"{process_icon} {process_command}",
+                                key=f"{module_key.lower()}_process_{module_key}",
+                                use_container_width=True,
+                                type="primary"
+                            ):
+                                self.send_drill_sequence_command(module_key, process_command, workpiece_color, nfc_code)
+                        
+                        with col_seq3:
+                            if st.button(
+                                "📥 DROP",
+                                key=f"{module_key.lower()}_drop_{module_key}",
+                                use_container_width=True,
+                                type="primary"
+                            ):
+                                self.send_drill_sequence_command(module_key, "DROP", workpiece_color, nfc_code)
+                    
+                    # Standard control buttons for all other modules (HBW, DPS, etc.)
+                    else:
+                        button_order = []
+                        
+                        # Add PICK first
+                        if "PICK" in module_info["commands"]:
+                            button_order.append("PICK")
+                        
+                        # Add PROCESS commands (MILL, DRILL, CHECK_QUALITY)
+                        process_commands = ["MILL", "DRILL", "CHECK_QUALITY"]
+                        for cmd in process_commands:
+                            if cmd in module_info["commands"]:
+                                button_order.append(cmd)
+                        
+                        # Add other commands (STORE, etc.)
+                        for cmd in module_info["commands"]:
+                            if cmd not in button_order:
+                                button_order.append(cmd)
+                        
+                        # Add DROP last
+                        if "DROP" in module_info["commands"]:
+                            if "DROP" in button_order:
+                                button_order.remove("DROP")
+                            button_order.append("DROP")
+                        
+                        # Create buttons in order
+                        for command in button_order:
+                            button_text = f"▶️ {command}"
+                            if command in ["MILL", "DRILL"]:
+                                button_text = f"⚙️ {command}"
+                            elif command == "CHECK_QUALITY":
+                                button_text = f"🔍 {command}"
+                            elif command == "STORE":
+                                button_text = f"📦 {command}"
+                            
+                            if st.button(
+                                button_text,
+                                key=f"control_{module_key}_{command}",
+                                use_container_width=True,
+                            ):
+                                self.send_module_command(module_key, command)
                 
                 st.markdown("---")
 

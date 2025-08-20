@@ -6,6 +6,7 @@ Streamlit Widgets für Wareneingang und Order Tracking
 
 import streamlit as st
 import json
+import uuid
 from datetime import datetime
 from typing import Dict, Any
 
@@ -243,6 +244,19 @@ class TemplateControlDashboard:
         """Zeigt Template Testing Interface"""
         st.subheader("🧪 Template Testing")
         
+        # Session-basierte orderId-Verwaltung
+        if "current_order_id" not in st.session_state:
+            st.session_state.current_order_id = str(uuid.uuid4())
+        
+        # Order ID Management
+        col1, col2 = st.columns(2)
+        with col1:
+            st.info(f"**Aktuelle Order ID:** `{st.session_state.current_order_id[:8]}...`")
+        with col2:
+            if st.button("🔄 Neue Order ID generieren"):
+                st.session_state.current_order_id = str(uuid.uuid4())
+                st.rerun()
+        
         # Template auswählen
         templates = self.template_manager.list_templates()
         selected_template = st.selectbox("Template auswählen:", templates)
@@ -264,6 +278,13 @@ class TemplateControlDashboard:
                         test_params[param] = st.text_input(f"{param}:", value="04798eca341290")
                     elif details == "ISO 8601":
                         test_params[param] = st.text_input(f"{param}:", value=datetime.now().isoformat())
+                    elif param == "orderId" and details == "UUID v4":
+                        # Use session-based orderId
+                        test_params[param] = st.text_input(f"{param} (session):", value=st.session_state.current_order_id, disabled=True)
+                    elif param == "actionId" and details == "UUID v4":
+                        # Auto-generate actionId
+                        generated_action_id = str(uuid.uuid4())
+                        test_params[param] = st.text_input(f"{param} (auto-generated):", value=generated_action_id, disabled=True)
                     else:
                         test_params[param] = st.text_input(f"{param}:")
                 
@@ -273,17 +294,13 @@ class TemplateControlDashboard:
                 if is_valid:
                     st.success("✅ Parameter sind gültig")
                     
-                    # Test senden (nur für Wareneingang)
-                    if selected_template == "wareneingang_trigger":
-                        if st.button("🚀 Test senden"):
-                            success = self.template_manager.send_wareneingang_trigger(
-                                test_params["color"], 
-                                test_params["workpieceId"]
-                            )
-                            if success:
-                                st.success("✅ Test erfolgreich gesendet!")
-                            else:
-                                st.error("❌ Fehler beim Senden des Tests")
+                    # Test senden
+                    if st.button("🚀 Template senden"):
+                        success = self.template_manager.send_template_message(selected_template, test_params)
+                        if success:
+                            st.success("✅ Template erfolgreich gesendet!")
+                        else:
+                            st.error("❌ Fehler beim Senden des Templates")
                 else:
                     st.error("❌ Parameter sind ungültig")
     

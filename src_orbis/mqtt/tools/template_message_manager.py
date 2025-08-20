@@ -33,7 +33,51 @@ class TemplateMessageManager:
         
     def _load_templates(self) -> Dict[str, Dict]:
         """Lädt die Template Library"""
-        return {
+        # Import MQTT Message Library templates
+        try:
+            from .mqtt_message_library import WORKING_MESSAGE_TEMPLATES
+            mqtt_templates = WORKING_MESSAGE_TEMPLATES
+        except ImportError:
+            mqtt_templates = {}
+        
+        # Convert MQTT templates to our format
+        converted_templates = {}
+        for template_name, template_data in mqtt_templates.items():
+            # Get correct serial number for module
+            module_serial_map = {
+                "DRILL": "SVR4H76449",
+                "MILL": "SVR3QA2098", 
+                "AIQS": "SVR4H76530",
+                "HBW": "SVR3QA0022",
+                "DPS": "SVR4H73275"
+            }
+            
+            module_name = template_data.get("module", "")
+            serial_number = module_serial_map.get(module_name, module_name)
+            
+            converted_templates[template_name] = {
+                "name": template_name,
+                "description": template_data.get("description", ""),
+                "topic": f"module/v1/ff/{serial_number}/order",
+                "payload": {
+                    "serialNumber": serial_number,
+                    "orderId": "{{orderId}}",
+                    "orderUpdateId": 1,
+                    "action": {
+                        "id": "{{actionId}}",
+                        "command": template_data.get("command", ""),
+                        "metadata": template_data.get("metadata", {})
+                    }
+                },
+                "parameters": {
+                    "orderId": "UUID v4",
+                    "actionId": "UUID v4"
+                },
+                "source": "mqtt_library"
+            }
+        
+        # Original templates
+        original_templates = {
             "wareneingang_trigger": {
                 "name": "wareneingang_trigger",
                 "description": "Startet Wareneingang-Prozess",
@@ -107,6 +151,10 @@ class TemplateMessageManager:
                 }
             }
         }
+        
+        # Combine all templates
+        all_templates = {**converted_templates, **original_templates}
+        return all_templates
     
     def set_mqtt_client(self, mqtt_client):
         """Setzt den MQTT Client"""
@@ -326,6 +374,51 @@ class TemplateMessageManager:
             "total_orders": active_count + completed_count,
             "color_distribution": color_stats
         }
+    
+    def send_template_message(self, template_name: str, parameters: Dict[str, Any] = None) -> bool:
+        """Sendet eine Template Message"""
+        try:
+            template = self.templates[template_name]
+            
+            # Auto-generate UUIDs if not provided
+            if parameters is None:
+                parameters = {}
+            
+            if "orderId" not in parameters:
+                parameters["orderId"] = str(uuid.uuid4())
+            if "actionId" not in parameters:
+                parameters["actionId"] = str(uuid.uuid4())
+            
+            # Create payload
+            payload = template["payload"].copy()
+            
+            # Replace placeholders
+            for param, value in parameters.items():
+                payload = self._replace_placeholder(payload, f"{{{{{param}}}}}", value)
+            
+            # Send via MQTT
+            if self.mqtt_client:
+                self.mqtt_client.publish(template["topic"], json.dumps(payload))
+                print(f"✅ Template {template_name} gesendet")
+                return True
+            else:
+                print("❌ MQTT Client nicht verfügbar")
+                return False
+                
+        except Exception as e:
+            print(f"❌ Fehler beim Senden von Template {template_name}: {e}")
+            return False
+    
+    def _replace_placeholder(self, obj, placeholder: str, value: str):
+        """Ersetzt Platzhalter in einem Objekt rekursiv"""
+        if isinstance(obj, dict):
+            return {k: self._replace_placeholder(v, placeholder, value) for k, v in obj.items()}
+        elif isinstance(obj, list):
+            return [self._replace_placeholder(item, placeholder, value) for item in obj]
+        elif isinstance(obj, str):
+            return obj.replace(placeholder, value)
+        else:
+            return obj
 
 
 # Hilfsfunktionen für Dashboard Integration

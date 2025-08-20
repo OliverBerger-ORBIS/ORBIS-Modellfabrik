@@ -142,28 +142,30 @@ class MQTTMessageLibrary:
 # Pre-defined working message templates
 WORKING_MESSAGE_TEMPLATES = {
     "DRILL_PICK_WHITE": {
-        "description": "DRILL module PICK command for WHITE workpiece",
+        "description": "DRILL module PICK command for WHITE workpiece W1",
         "module": "DRILL",
         "command": "PICK",
         "metadata": {
             "priority": "NORMAL",
             "timeout": 300,
-            "type": "WHITE"
+            "type": "WHITE",
+            "workpieceId": "04798eca341290"
         },
         "expected_response": "RUNNING",
-        "notes": "Successfully tested - module accepts PICK command"
+        "notes": "Successfully tested - module accepts PICK command with W1 NFC code"
     },
     "DRILL_DROP_WHITE": {
-        "description": "DRILL module DROP command for WHITE workpiece",
+        "description": "DRILL module DROP command for WHITE workpiece W1",
         "module": "DRILL",
         "command": "DROP",
         "metadata": {
             "priority": "NORMAL",
             "timeout": 300,
-            "type": "WHITE"
+            "type": "WHITE",
+            "workpieceId": "04798eca341290"
         },
         "expected_response": "RUNNING",
-        "notes": "Should work but may need valid orderId"
+        "notes": "Should work but may need valid orderId with W1 NFC code"
     },
     "MILL_PICK_WHITE": {
         "description": "MILL module PICK command for WHITE workpiece",
@@ -202,17 +204,18 @@ WORKING_MESSAGE_TEMPLATES = {
         "notes": "Expected to work based on module capabilities"
     },
     "DRILL_PROCESS_WHITE": {
-        "description": "DRILL module DRILL command for WHITE workpiece processing",
+        "description": "DRILL module DRILL command for WHITE workpiece W1 processing",
         "module": "DRILL",
         "command": "DRILL",
         "metadata": {
             "priority": "NORMAL",
             "timeout": 300,
             "type": "WHITE",
+            "workpieceId": "04798eca341290",
             "duration": 30
         },
         "expected_response": "RUNNING",
-        "notes": "Processing command - requires workpiece to be picked first"
+        "notes": "Processing command - requires workpiece to be picked first with W1 NFC code"
     },
     "MILL_PROCESS_WHITE": {
         "description": "MILL module MILL command for WHITE workpiece processing",
