@@ -3,6 +3,19 @@
 ## 🎯 **Ziel**
 Das Fischertechnik Web-Interface unter `http://192.168.0.100/de/aps/factory/dashboard` analysieren, um zu verstehen, wie Orders und Module-Befehle funktionieren.
 
+## ✅ **Wichtige Erkenntnisse**
+
+### **Browser sendet MQTT direkt!**
+- **Erkenntnis:** Browser sendet MQTT-Nachrichten, nicht HTTP-Requests
+- **Topic:** `/j1/txt/1/f/o/order`
+- **Payload:** `{"type": "COLOR", "ts": "timestamp"}`
+- **Dashboard Integration:** ✅ Erfolgreich implementiert
+
+### **Orchestrierung über CCU**
+- **CCU koordiniert** automatisch alle Module
+- **Keine manuelle Steuerung** einzelner Module nötig
+- **Automatische Produktionskette** wird gestartet
+
 ## 🔍 **Analyse-Methoden**
 
 ### **1. MQTT-Traffic Analyse**
@@ -71,10 +84,15 @@ python src_orbis/mqtt/loggers/aps_session_logger.py --session-label fischertechn
 ## 📊 **Erwartete Erkenntnisse**
 
 ### **Order-Workflow:**
-1. **HTTP-Request** an Fischertechnik-Server
-2. **MQTT-Order** wird generiert
-3. **Module-Befehle** werden gesendet
+1. **Browser sendet MQTT** direkt an `/j1/txt/1/f/o/order`
+2. **CCU empfängt Order** und orchestriert
+3. **Module-Befehle** werden automatisch gesendet
 4. **Status-Updates** werden empfangen
+
+### **Dashboard Integration:**
+- **Unser Dashboard** kann die gleichen MQTT-Nachrichten senden
+- **Browser Order Format** ist identisch
+- **Keine HTTP-Requests** erforderlich
 
 ### **Module-Kontrolle:**
 - **Welche Topics** für Module-Befehle
@@ -89,10 +107,23 @@ python src_orbis/mqtt/loggers/aps_session_logger.py --session-label fischertechn
 ## 🚀 **Nächste Schritte**
 
 Nach der Analyse können wir:
-1. **Exakte Order-Formate** in unser Dashboard integrieren
-2. **Module-Befehle** entsprechend anpassen
-3. **Workflow-Sequenzen** implementieren
-4. **Fehlerbehandlung** verbessern
+1. **✅ Exakte Order-Formate** in unser Dashboard integriert
+2. **✅ Module-Befehle** entsprechend angepasst
+3. **✅ Workflow-Sequenzen** implementiert
+4. **⚠️ Fehlerbehandlung** verbessern
+
+## ✅ **Erfolgreich implementiert**
+
+### **Dashboard Integration:**
+- **Bestellung-Trigger:** Direkte Bestellung ohne HBW-Status
+- **Bestellung mit HBW-Status:** Verfügbarkeitsprüfung (Mock)
+- **Browser Order Format:** Identisch mit Fischertechnik Web-Interface
+- **MQTT Topic:** `/j1/txt/1/f/o/order`
+
+### **Offene Fragen:**
+- **HBW Status:** Wie Werkstück-Positionen abfragen?
+- **DPS Status:** Wie Verfügbarkeit prüfen?
+- **FTS Navigation:** Wie Zielstation bestimmen?
 
 ## 📝 **Notizen**
 

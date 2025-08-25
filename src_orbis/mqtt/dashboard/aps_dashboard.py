@@ -49,6 +49,9 @@ from src_orbis.mqtt.dashboard.template_control import TemplateControlDashboard
 # Node-RED Analysis imports
 from src_orbis.mqtt.tools.node_red_message_analyzer import NodeRedMessageAnalyzer
 
+# APS Analysis imports
+from src_orbis.mqtt.dashboard.components.aps_analysis import APSAnalysis
+
 
 
 # Topic Mapping imports
@@ -108,6 +111,7 @@ class APSDashboard:
         # Initialize Template Message Manager
         self.template_manager = TemplateMessageManager()
         self.template_control = TemplateControlDashboard(self.template_manager)
+        self.aps_analysis = APSAnalysis()
 
         # Load broker configurations
         self.broker_configs = load_broker_config()
@@ -1010,15 +1014,177 @@ class APSDashboard:
         # Control method selection
         control_method = st.selectbox(
             "Steuerungsmethode:",
-            ["Module Overview", "Template Message", "MQTT Monitor"],
+            ["Module Overview", "Bestellung", "Template Message"],
         )
 
         if control_method == "Module Overview":
             self.show_module_control_rows()
+        elif control_method == "Bestellung":
+            self.show_order_control_combined()
         elif control_method == "Template Message":
             self.show_template_control()
-        elif control_method == "MQTT Monitor":
-            self.show_mqtt_monitor()
+
+    def show_order_control_combined(self):
+        """Show combined order control with both trigger and HBW status options"""
+        st.header("📋 Bestellung")
+        
+        if not st.session_state.get("mqtt_connected", False):
+            st.warning("⚠️ MQTT-Verbindung erforderlich")
+            return
+        
+        # Two sections in one method
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.subheader("🚀 Bestellung-Trigger")
+            st.markdown("**Direkte Bestellung ohne HBW-Status-Prüfung**")
+            
+            # Order buttons
+            col1a, col1b, col1c = st.columns(3)
+            
+            with col1a:
+                if st.button("🔴 ROT", type="primary", use_container_width=True):
+                    self.send_browser_order("RED")
+                    st.success("✅ ROT-Bestellung gesendet!")
+            
+            with col1b:
+                if st.button("⚪ WEISS", type="primary", use_container_width=True):
+                    self.send_browser_order("WHITE")
+                    st.success("✅ WEISS-Bestellung gesendet!")
+            
+            with col1c:
+                if st.button("🔵 BLAU", type="primary", use_container_width=True):
+                    self.send_browser_order("BLUE")
+                    st.success("✅ BLAU-Bestellung gesendet!")
+        
+        with col2:
+            st.subheader("📦 Bestellung (mit HBW-Status)")
+            st.markdown("**Bestellung nur für verfügbare Werkstücke**")
+            
+            # Get HBW status
+            hbw_status = self.get_hbw_status()
+            
+            if hbw_status:
+                # Display available workpieces
+                available_workpieces = hbw_status.get('available_workpieces', [])
+                
+                if available_workpieces:
+                    st.success(f"✅ {len(available_workpieces)} Werkstücke verfügbar")
+                    
+                    # Show available workpieces
+                    for workpiece in available_workpieces:
+                        color = workpiece.get('color', 'UNKNOWN')
+                        position = workpiece.get('position', 'UNKNOWN')
+                        st.write(f"📦 {color} - Position: {position}")
+                    
+                    # Order buttons for available workpieces
+                    col2a, col2b, col2c = st.columns(3)
+                    
+                    colors = ['RED', 'WHITE', 'BLUE']
+                    cols = [col2a, col2b, col2c]
+                    
+                    for i, color in enumerate(colors):
+                        with cols[i]:
+                            # Check if color is available
+                            is_available = any(w.get('color') == color for w in available_workpieces)
+                            
+                            if is_available:
+                                if st.button(f"{color} bestellen", type="primary", use_container_width=True):
+                                    self.send_browser_order(color)
+                                    st.success(f"✅ {color}-Bestellung gesendet!")
+                            else:
+                                st.button(f"{color} bestellen", disabled=True, use_container_width=True)
+                                st.caption(f"❌ {color} nicht verfügbar")
+                else:
+                    st.warning("⚠️ Keine Werkstücke im HBW verfügbar")
+            else:
+                st.error("❌ HBW-Status konnte nicht abgerufen werden")
+                st.info("💡 Verwende 'Bestellung-Trigger' für direkte Bestellung")
+        
+        # Order format info (shared)
+        st.subheader("📋 Bestellungs-Format")
+        st.info("""
+        **Browser-Order-Format:**
+        - **Topic:** `/j1/txt/1/f/o/order`
+        - **Payload:** `{"type": "COLOR", "ts": "timestamp"}`
+        - **CCU orchestriert** automatisch alle Module
+        """)
+        
+        # Recent orders
+        if hasattr(self, 'recent_orders') and self.recent_orders:
+            st.subheader("📋 Letzte Bestellungen")
+            for order in self.recent_orders[-5:]:
+                st.write(f"🕐 {order['timestamp']} - {order['type']}")
+
+
+
+    def send_browser_order(self, color):
+        """Send browser order in the correct format"""
+        if not st.session_state.get("mqtt_connected", False):
+            st.error("❌ MQTT-Verbindung erforderlich")
+            return
+        
+        if not hasattr(self, 'mqtt_client') or not self.mqtt_client:
+            st.error("❌ MQTT-Client nicht verfügbar")
+            return
+        
+        try:
+            # Create order message
+            order_data = {
+                "type": color,
+                "ts": datetime.now().isoformat() + "Z"
+            }
+            
+            # Send order
+            topic = "/j1/txt/1/f/o/order"
+            result = self.mqtt_client.publish(topic, json.dumps(order_data))
+            
+            if result.rc == 0:
+                # Store recent order
+                if not hasattr(self, 'recent_orders'):
+                    self.recent_orders = []
+                
+                self.recent_orders.append({
+                    'timestamp': datetime.now().strftime('%H:%M:%S'),
+                    'type': color,
+                    'topic': topic,
+                    'payload': order_data
+                })
+                
+                st.success(f"✅ {color}-Bestellung erfolgreich gesendet!")
+            else:
+                st.error(f"❌ Fehler beim Senden der Bestellung: {result.rc}")
+                
+        except Exception as e:
+            st.error(f"❌ Fehler: {e}")
+
+    def get_hbw_status(self):
+        """Get HBW status and available workpieces"""
+        if not st.session_state.get("mqtt_connected", False):
+            return None
+        
+        if not hasattr(self, 'mqtt_client') or not self.mqtt_client:
+            return None
+        
+        try:
+            # This is a simplified version - in practice you'd need to:
+            # 1. Subscribe to HBW state messages
+            # 2. Request factsheet from HBW
+            # 3. Parse the response for available workpieces
+            
+            # For now, return a mock status
+            # TODO: Implement real HBW status checking
+            return {
+                'available_workpieces': [
+                    {'color': 'RED', 'position': 'B1'},
+                    {'color': 'WHITE', 'position': 'B2'},
+                    {'color': 'BLUE', 'position': 'B3'}
+                ]
+            }
+            
+        except Exception as e:
+            st.error(f"❌ Fehler beim Abrufen des HBW-Status: {e}")
+            return None
 
     def show_template_control(self):
         """Show template-based MQTT control with Template Message Manager"""
@@ -1056,8 +1222,8 @@ class APSDashboard:
 
 
 
-    def show_aps_analysis(self, df):
-        """Show comprehensive APS data analysis"""
+    # def show_aps_analysis(self, df):
+    #     """Show comprehensive APS data analysis - MOVED TO APS ANALYSIS TAB"""
         st.header("📊 MQTT Analyse")
         st.markdown("Umfassende Analyse der MQTT-Nachrichten aus den Sessions")
 
@@ -1832,8 +1998,8 @@ class APSDashboard:
         except Exception as e:
             st.error(f"❌ Fehler beim Senden des FTS-Befehls: {e}")
 
-    def show_node_red_analysis(self):
-        """Show Node-RED message analysis"""
+    # def show_node_red_analysis(self):
+    #     """Show Node-RED message analysis - MOVED TO APS ANALYSIS TAB"""
         st.header("🔍 Node-RED Analyse")
         st.markdown("Analysiert Node-RED Nachrichten aus Session-Daten für ORDER-ID Management")
         
@@ -2781,12 +2947,10 @@ class APSDashboard:
                 self.show_module_overview_dashboard(df)
             elif st.session_state.selected_tab == "📡 MQTT Monitor":
                 self.show_mqtt_monitor_standalone()
-            elif st.session_state.selected_tab == "📊 MQTT Analyse":
-                self.show_aps_analysis(df)
+            elif st.session_state.selected_tab == "🔍 APS Analyse":
+                self.aps_analysis.show_aps_analysis_tab()
             elif st.session_state.selected_tab == "🎮 MQTT Control":
                 self.show_mqtt_control()
-            elif st.session_state.selected_tab == "🔍 Node-RED Analyse":
-                self.show_node_red_analysis()
 
             elif st.session_state.selected_tab == "⚙️ Einstellungen":
                 self.show_settings()
@@ -2818,10 +2982,8 @@ def main():
     tabs = [
         ("🏭 Module Overview", "🏭 Module Overview"),
         ("📡 MQTT Monitor", "📡 MQTT Monitor"),
-        ("📊 MQTT Analyse", "📊 MQTT Analyse"), 
+        ("🔍 APS Analyse", "🔍 APS Analyse"),
         ("🎮 MQTT Control", "🎮 MQTT Control"),
-        ("🔍 Node-RED Analyse", "🔍 Node-RED Analyse"),
-
         ("⚙️ Einstellungen", "⚙️ Einstellungen")
     ]
     

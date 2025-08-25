@@ -37,10 +37,40 @@ Neue Features für die direkte Steuerung der APS-Fabrik über MQTT:
 - ⚠️ **WARNUNG:** Bricht laufende Aufträge ab
 - ⚠️ **WARNUNG:** Mit Storage löscht HBW-Daten
 
-## 2. Order Trigger Script
+## 2. Order Trigger System
 
-### Funktion
-- **Datei:** `src_orbis/mqtt/tools/test_order_trigger.py`
+### Dashboard Integration
+- **Ort:** MQTT Control Tab → Steuerungsmethode "Bestellung"
+- **Zweck:** Direkte Bestellung über Dashboard
+- **MQTT Topic:** `/j1/txt/1/f/o/order` (Browser Format)
+
+### Verwendung im Dashboard
+1. **MQTT-Verbindung herstellen** über Sidebar
+2. **MQTT Control Tab** öffnen
+3. **Steuerungsmethode:** "Bestellung" auswählen
+4. **Zwei Optionen:**
+   - **🚀 Bestellung-Trigger:** Alle Buttons aktiv (ohne HBW-Status)
+   - **📦 Bestellung (mit HBW-Status):** Nur verfügbare Werkstücke
+
+### Browser Order Format
+**MQTT Topic:** `/j1/txt/1/f/o/order`
+**Payload:**
+```json
+{
+  "type": "COLOR",
+  "ts": "2024-01-01T12:00:00.000Z"
+}
+```
+
+**Farben:** RED, WHITE, BLUE
+
+### Orchestrierung
+- **CCU koordiniert** automatisch alle Module
+- **Keine manuelle Steuerung** einzelner Module nötig
+- **Automatische Produktionskette** wird gestartet
+
+### Order Trigger Script (Legacy)
+- **Datei:** `src_orbis/mqtt/tools/test_order_trigger.py` (gelöscht)
 - **Zweck:** Auftragsauslösung über MQTT ohne Dashboard
 - **MQTT Topics:** 
   - `/j1/txt/1/f/i/order` (TXT Controller)

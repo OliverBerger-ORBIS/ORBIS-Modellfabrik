@@ -35,11 +35,22 @@
 - **Dashboard:** MQTT Monitor, Control, Template Manager
 
 ### 🔍 MQTT Explorer Integration
-- **Status:** ✅ Neu implementiert
-- **Features:** thomasnordquist MQTT-Explorer Integration, Live-Analyse, Session Export
-- **Integration:** Dashboard Tab für MQTT-Explorer
-- **Konfiguration:** APS-spezifische Topic-Filter und Broker-Einstellungen
-- **Vorteile:** Echtzeit-Visualisierung, Topic-Hierarchie, JSON-Payload Analyse
+- **Status:** ❌ Entfernt (nicht benötigt)
+- **Grund:** Dashboard bietet bessere Integration
+- **Ersatz:** APS Analyse Tab mit umfassender MQTT-Analyse
+
+### 📋 Bestellung-System
+- **Status:** ✅ Vollständig implementiert
+- **Features:** Browser Order Format, Dashboard Integration, HBW-Status
+- **MQTT Topic:** `/j1/txt/1/f/o/order`
+- **Integration:** MQTT Control Tab mit Bestellung-Trigger und HBW-Status
+- **Orchestrierung:** CCU koordiniert automatisch alle Module
+
+### 🚗 FTS Control
+- **Status:** ✅ Grundfunktionen implementiert
+- **Features:** "Docke an", "FTS laden", "Laden beenden"
+- **Integration:** MQTT Control Tab
+- **Navigation:** ⚠️ Noch nicht implementiert (Zielstation-Bestimmung)
 
 ### 🔧 Core Infrastructure
 - **Status:** ✅ Stabil und erweitert
@@ -60,13 +71,25 @@
 - **Mapping vervollständigen:** Alle 24 Werkstücke zuordnen
 - **Dashboard erweitern:** 100% Werkstück-Verfügbarkeit
 
-### 🎯 Erweiterte Workflow Features (Priorität 2)
+### 🏭 Module Status Management (Priorität 2)
+- **HBW Status:** Werkstück-Positionen abfragen und anzeigen
+- **DPS Status:** Verfügbare Plätze und Werkstücke prüfen
+- **Status Integration:** Dashboard mit Echtzeit-Status-Anzeige
+- **MQTT Topics:** Status-Abfrage Topics identifizieren
+
+### 🚗 FTS Navigation (Priorität 2)
+- **Navigation-Parameter:** Zielstation-Bestimmung implementieren
+- **Routenplanung:** Automatische Routenplanung verstehen
+- **Station-Mapping:** Verfügbare Stationen identifizieren
+- **Dashboard Integration:** FTS Navigation im Control Tab
+
+### 🎯 Erweiterte Workflow Features (Priorität 3)
 - **WorkflowOrderManager:** Automatische ORDER-ID Verwaltung
 - **Error Recovery:** Automatische Fehlerbehandlung für Template Messages
 - **Performance Monitoring:** Template-Ausführung überwachen
 - **Batch Processing:** Mehrere Aufträge gleichzeitig verwalten
 
-### 🚀 Advanced Features (Priorität 3)
+### 🚀 Advanced Features (Priorität 4)
 - **Predictive Analytics:** Workflow-Performance Vorhersagen
 - **API Development:** REST API für Template Messages
 - **Security:** Erweiterte Sicherheitsfeatures für Production
