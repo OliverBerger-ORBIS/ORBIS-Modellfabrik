@@ -2515,24 +2515,8 @@ class APSDashboard:
                             index=default_index
                         )
                         
-                        # Get NFC code for selected workpiece
-                        try:
-                            from src_orbis.mqtt.tools.nfc_workpiece_mapping import NFC_WORKPIECE_MAPPING
-                            nfc_code = NFC_WORKPIECE_MAPPING.get(workpiece_id, "Unknown")
-                        except ImportError:
-                            # Fallback mapping if import fails
-                            fallback_mapping = {
-                                "W1": "04798eca341290", "W2": "047c8bca341291", "W3": "047b8bca341291",
-                                "W4": "04c38bca341290", "W5": "04ab8bca341290", "W6": "04368bca341291",
-                                "W7": "04c090ca341290", "W8": "042c8aca341291",
-                                "R1": "040a8dca341291", "R2": "04d78cca341290", "R3": "04808dca341291",
-                                "R4": "04f08dca341290", "R5": "04158cca341291", "R6": "04fa8cca341290",
-                                "R7": "047f8cca341290", "R8": "048a8cca341290",
-                                "B1": "04a189ca341290", "B2": "048989ca341290", "B3": "047389ca341291",
-                                "B4": "040c89ca341291", "B5": "04a289ca341290", "B6": "04c489ca341290",
-                                "B7": "048089ca341290", "B8": "042c88ca341291"
-                            }
-                            nfc_code = fallback_mapping.get(workpiece_id, "Unknown")
+                        # Workpiece-ID wird direkt als NFC-Code verwendet
+                        nfc_code = workpiece_id
                         st.info(f"🔍 NFC-Code: `{nfc_code}`")
                         
                         # Sequence buttons

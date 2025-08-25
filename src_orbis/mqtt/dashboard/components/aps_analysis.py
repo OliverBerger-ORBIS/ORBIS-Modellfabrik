@@ -204,6 +204,20 @@ class APSAnalysis:
                 df['session_label'] = session_name
                 df['timestamp'] = pd.to_datetime(df['timestamp'])
                 
+                # Add required columns for filters if they don't exist
+                if 'module_type' not in df.columns:
+                    df['module_type'] = 'unknown'
+                if 'status' not in df.columns:
+                    df['status'] = 'unknown'
+                if 'process_label' not in df.columns:
+                    df['process_label'] = 'unknown'
+                if 'serial_number' not in df.columns:
+                    df['serial_number'] = 'unknown'
+                
+                # Extract module information for proper filtering
+                from ..utils.data_handling import extract_module_info
+                df = extract_module_info(df)
+                
                 # Verbose mode toggle for camera filtering
                 verbose_mode = st.checkbox("🔍 Verbose-Modus (Camera-Nachrichten anzeigen)", value=False)
                 
@@ -296,7 +310,7 @@ class APSAnalysis:
         if len(module_messages) > 0:
             # Extract module IDs and map to friendly names
             module_messages = module_messages.copy()
-            module_messages.loc[:, 'module_id'] = module_messages['topic'].str.extract(r'module/v1/ff/([^/]+)')
+            module_messages['module_id'] = module_messages['topic'].str.extract(r'module/v1/ff/([^/]+)')
             
             # Map module IDs to friendly names
             module_name_mapping = {
@@ -306,10 +320,10 @@ class APSAnalysis:
                 'SVR3QA0022': 'AIQS (Qualitätsprüfung)',
                 'SVR4H73275': 'DPS (Warenein- und -ausgang)',
                 '5iO4': 'FTS (Fahrerloses Transportsystem)',
-                'CHRG0': 'OVEN (Ofen)'
+                'CHRG0': 'CHARGING (Ladestation)'
             }
             
-            module_messages.loc[:, 'module_name'] = module_messages['module_id'].map(
+            module_messages['module_name'] = module_messages['module_id'].map(
                 lambda x: module_name_mapping.get(x, x)
             )
             
@@ -336,8 +350,8 @@ class APSAnalysis:
         # Activity heatmap
         st.subheader("🔥 Aktivitäts-Heatmap")
         df = df.copy()
-        df.loc[:, 'hour'] = df['timestamp'].dt.hour
-        df.loc[:, 'minute'] = df['timestamp'].dt.minute
+        df['hour'] = df['timestamp'].dt.hour
+        df['minute'] = df['timestamp'].dt.minute
         
         # Create heatmap data
         heatmap_data = df.groupby(['hour', 'minute']).size().unstack(fill_value=0)
@@ -354,7 +368,7 @@ class APSAnalysis:
         # Add friendly topic names
         from ..config.topic_mapping import get_friendly_topic_name
         df_display = df.copy()
-        df_display.loc[:, 'friendly_topic'] = df_display['topic'].apply(get_friendly_topic_name)
+        df_display['friendly_topic'] = df_display['topic'].apply(get_friendly_topic_name)
         
         # Show recent messages
         recent_messages = df_display[['timestamp', 'friendly_topic', 'payload']].tail(50)
@@ -373,7 +387,7 @@ class APSAnalysis:
         
         # Create analysis DataFrame with friendly topic names
         df_analysis = df[["topic"]].copy()
-        df_analysis.loc[:, "friendly_topic"] = df_analysis["topic"].apply(get_friendly_topic_name)
+        df_analysis["friendly_topic"] = df_analysis["topic"].apply(get_friendly_topic_name)
         
         col1, col2 = st.columns(2)
         
@@ -409,7 +423,7 @@ class APSAnalysis:
         
         # Payload size analysis
         df = df.copy()
-        df.loc[:, 'payload_size'] = df['payload'].str.len()
+        df['payload_size'] = df['payload'].str.len()
         
         col1, col2 = st.columns(2)
         
@@ -464,7 +478,7 @@ class APSAnalysis:
         
         # Group by time intervals
         df = df.copy()
-        df.loc[:, 'time_interval'] = df['timestamp'].dt.floor('1min')
+        df['time_interval'] = df['timestamp'].dt.floor('1min')
         message_flow = df.groupby('time_interval').size()
         
         st.line_chart(message_flow)
@@ -510,6 +524,20 @@ class APSAnalysis:
                 conn = sqlite3.connect(db_path)
                 df = pd.read_sql_query("SELECT * FROM mqtt_messages ORDER BY timestamp", conn)
                 conn.close()
+                
+                # Add required columns for filters if they don't exist
+                if 'module_type' not in df.columns:
+                    df['module_type'] = 'unknown'
+                if 'status' not in df.columns:
+                    df['status'] = 'unknown'
+                if 'process_label' not in df.columns:
+                    df['process_label'] = 'unknown'
+                if 'serial_number' not in df.columns:
+                    df['serial_number'] = 'unknown'
+                
+                # Extract module information for proper filtering
+                from ..utils.data_handling import extract_module_info
+                df = extract_module_info(df)
                 
                 # Filter Node-RED specific messages
                 nodered_messages = df[df['topic'].str.contains('NodeRed|nodered|workflow', na=False)]
@@ -586,6 +614,20 @@ class APSAnalysis:
                 conn = sqlite3.connect(db_path)
                 df = pd.read_sql_query("SELECT * FROM mqtt_messages ORDER BY timestamp", conn)
                 conn.close()
+                
+                # Add required columns for filters if they don't exist
+                if 'module_type' not in df.columns:
+                    df['module_type'] = 'unknown'
+                if 'status' not in df.columns:
+                    df['status'] = 'unknown'
+                if 'process_label' not in df.columns:
+                    df['process_label'] = 'unknown'
+                if 'serial_number' not in df.columns:
+                    df['serial_number'] = 'unknown'
+                
+                # Extract module information for proper filtering
+                from ..utils.data_handling import extract_module_info
+                df = extract_module_info(df)
                 
                 # Filter Web-Server specific messages (MQTT)
                 webserver_messages = df[df['topic'].str.contains('fischertechnik|web|http|api|rest', na=False)]
@@ -726,6 +768,20 @@ class APSAnalysis:
                 conn = sqlite3.connect(db_path)
                 df = pd.read_sql_query("SELECT * FROM mqtt_messages ORDER BY timestamp", conn)
                 conn.close()
+                
+                # Add required columns for filters if they don't exist
+                if 'module_type' not in df.columns:
+                    df['module_type'] = 'unknown'
+                if 'status' not in df.columns:
+                    df['status'] = 'unknown'
+                if 'process_label' not in df.columns:
+                    df['process_label'] = 'unknown'
+                if 'serial_number' not in df.columns:
+                    df['serial_number'] = 'unknown'
+                
+                # Extract module information for proper filtering
+                from ..utils.data_handling import extract_module_info
+                df = extract_module_info(df)
                 
                 # Protocol categorization
                 protocols = {

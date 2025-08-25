@@ -17,8 +17,7 @@ except ImportError:
     mqtt = None
     MQTT_AVAILABLE = False
 
-# NFC Workpiece Mapping
-from .nfc_workpiece_mapping import create_nfc_mapper, NFCWorkpieceMapper
+# NFC Workpiece Mapping - Entfernt, da NFC-Codes direkt verwendet werden
 
 
 class TemplateMessageManager:
@@ -29,7 +28,7 @@ class TemplateMessageManager:
         self.templates = self._load_templates()
         self.active_orders = {}  # orderId -> order_info
         self.order_history = []  # Liste aller abgeschlossenen Orders
-        self.nfc_mapper = create_nfc_mapper()  # NFC Workpiece Mapper
+        # NFC-Mapping entfernt - NFC-Codes werden direkt verwendet
         
     def _load_templates(self) -> Dict[str, Dict]:
         """Lädt die Template Library"""
@@ -169,17 +168,12 @@ class TemplateMessageManager:
             if color not in template["parameters"]["color"]:
                 raise ValueError(f"Ungültige Farbe: {color}. Erlaubt: {template['parameters']['color']}")
             
-            # NFC-Mapping: Werkstück-ID zu NFC-Code konvertieren
-            actual_workpiece_id = workpiece_id
-            nfc_code = None
-            
-            # Prüfen ob es eine benutzerfreundliche ID ist (R1, W1, B1, etc.)
-            if self.nfc_mapper.is_valid_workpiece_id(workpiece_id):
-                nfc_code = self.nfc_mapper.get_nfc_code(workpiece_id)
-                actual_workpiece_id = nfc_code
-                print(f"🔄 NFC-Mapping: {workpiece_id} → {nfc_code}")
-            elif not workpiece_id or len(workpiece_id) < 10:
+            # Workpiece-ID Validierung
+            if not workpiece_id or len(workpiece_id) < 10:
                 raise ValueError(f"Ungültige Werkstück-ID: {workpiece_id}")
+            
+            # Workpiece-ID wird direkt als NFC-Code verwendet
+            actual_workpiece_id = workpiece_id
             
             # Payload erstellen
             payload = template["payload"].copy()

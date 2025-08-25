@@ -34,27 +34,12 @@ class TemplateControlDashboard:
                     help="Wähle die Farbe des Werkstücks"
                 )
                 
-                # Werkstück-Auswahl mit NFC-Mapping
-                available_workpieces = self.template_manager.nfc_mapper.get_available_workpieces(color)
-                
-                if available_workpieces:
-                    workpiece_id = st.selectbox(
-                        "Werkstück auswählen:",
-                        available_workpieces,
-                        help=f"Verfügbare {color} Werkstücke mit NFC-Mapping"
-                    )
-                    
-                    # NFC-Code anzeigen
-                    nfc_code = self.template_manager.nfc_mapper.get_nfc_code(workpiece_id)
-                    if nfc_code:
-                        st.info(f"🔍 NFC-Code: `{nfc_code}`")
-                else:
-                    # Fallback für manuelle Eingabe
-                    workpiece_id = st.text_input(
-                        "Werkstück-ID (NFC):",
-                        value="04798eca341290",
-                        help="NFC-gelesene Werkstück-ID oder manuell eingegeben"
-                    )
+                # Werkstück-ID Eingabe (NFC-Code)
+                workpiece_id = st.text_input(
+                    "Werkstück-ID (NFC-Code):",
+                    value="04798eca341290",
+                    help="NFC-Code des Werkstücks (z.B. 04798eca341290)"
+                )
                 
                 # Trigger Button
                 if st.button("🚀 Wareneingang starten", type="primary"):
@@ -69,38 +54,30 @@ class TemplateControlDashboard:
                         st.error("❌ Bitte gültige Werkstück-ID eingeben (mindestens 10 Zeichen)")
             
             with col2:
-                # NFC-Mapping Statistiken
-                nfc_stats = self.template_manager.nfc_mapper.get_statistics()
-                
-                st.info("🏷️ NFC-Mapping Status:")
-                col1, col2, col3, col4 = st.columns(4)
-                with col1:
-                    st.metric("Gesamt", nfc_stats["total_workpieces"])
-                with col2:
-                    st.metric("Verfügbar", nfc_stats["available_workpieces"])
-                with col3:
-                    st.metric("Fehlend", nfc_stats["missing_workpieces"])
-                with col4:
-                    st.metric("Vervollständigung", f"{nfc_stats['completion_percentage']:.1f}%")
+                # NFC-Code Referenz
+                st.info("🏷️ NFC-Code Referenz:")
+                st.write("**Verfügbare NFC-Codes:**")
                 
                 # Farb-Verteilung
-                st.write("🎨 Verfügbare Werkstücke:")
                 col1, col2, col3 = st.columns(3)
                 with col1:
-                    red_workpieces = self.template_manager.nfc_mapper.get_red_workpieces()
-                    st.write(f"🔴 **Rot:** {len(red_workpieces)}/8")
-                    if red_workpieces:
-                        st.write(f"  {', '.join(red_workpieces)}")
+                    st.write("🔴 **Rote Werkstücke:**")
+                    st.write("`040a8dca341291` (R1)")
+                    st.write("`04d78cca341290` (R2)")
+                    st.write("`04808dca341291` (R3)")
+                    st.write("...")
                 with col2:
-                    white_workpieces = self.template_manager.nfc_mapper.get_white_workpieces()
-                    st.write(f"⚪ **Weiß:** {len(white_workpieces)}/8")
-                    if white_workpieces:
-                        st.write(f"  {', '.join(white_workpieces)}")
+                    st.write("⚪ **Weiße Werkstücke:**")
+                    st.write("`04798eca341290` (W1)")
+                    st.write("`047c8bca341291` (W2)")
+                    st.write("`047b8bca341291` (W3)")
+                    st.write("...")
                 with col3:
-                    blue_workpieces = self.template_manager.nfc_mapper.get_blue_workpieces()
-                    st.write(f"🔵 **Blau:** {len(blue_workpieces)}/8")
-                    if blue_workpieces:
-                        st.write(f"  {', '.join(blue_workpieces)}")
+                    st.write("🔵 **Blaue Werkstücke:**")
+                    st.write("`04a189ca341290` (B1)")
+                    st.write("`048989ca341290` (B2)")
+                    st.write("`047389ca341291` (B3)")
+                    st.write("...")
                 
                 # Template Info
                 template_info = self.template_manager.get_template_info("wareneingang_trigger")

@@ -66,16 +66,18 @@
 - **ORDER-ID Tracking:** CCU-generierte ORDER-IDs verfolgen
 - **Workflow Validation:** Wareneingang, Auftrag und AI-not-ok Workflows testen
 
-### 📱 NFC-Code Auslesung (Priorität 1)
-- **Physische Auslesung:** 14 restliche NFC-Codes auslesen
-- **Mapping vervollständigen:** Alle 24 Werkstücke zuordnen
-- **Dashboard erweitern:** 100% Werkstück-Verfügbarkeit
+### 📱 NFC-Code Integration (Priorität 1)
+- **✅ NFC-Mapping dokumentiert:** Vollständige Zuordnung in Wareneingang-Dokumentation
+- **✅ Direkte NFC-Code Verwendung:** Workpiece-ID = NFC-Code in MQTT-Nachrichten
+- **✅ Dashboard angepasst:** NFC-Code Eingabe statt Mapping
 
 ### 🏭 Module Status Management (Priorität 2)
 - **HBW Status:** Werkstück-Positionen abfragen und anzeigen
 - **DPS Status:** Verfügbare Plätze und Werkstücke prüfen
 - **Status Integration:** Dashboard mit Echtzeit-Status-Anzeige
 - **MQTT Topics:** Status-Abfrage Topics identifizieren
+- **✅ Wareneingang-Workflow:** Vollständig dokumentiert und analysiert
+- **✅ Auftrags-Workflow:** Vollständig dokumentiert und analysiert
 
 ### 🚗 FTS Navigation (Priorität 2)
 - **Navigation-Parameter:** Zielstation-Bestimmung implementieren
@@ -102,6 +104,9 @@ ORBIS-Modellfabrik/
 ├── src_orbis/mqtt/tools/              # MQTT Tools + NFC Mapping
 ├── src_orbis/mqtt/loggers/            # Data Logging
 ├── docs_orbis/                        # Dokumentation
+│   ├── consolidated-workflow-documentation.md  # **Konsolidierte Workflow-Dokumentation**
+│   ├── wareneingang-workflow-documentation.md  # Wareneingang-Analyse
+│   └── auftrag-workflow-documentation.md       # Auftrags-Workflow-Analyse
 ├── tests_orbis/                       # Tests
 └── mqtt-data/                         # Session Data
 ```
@@ -137,18 +142,17 @@ ORBIS-Modellfabrik/
 - **Dashboard:** ✅ Läuft auf http://localhost:8501
 - **Tests:** ✅ 9/9 Tests erfolgreich
 
-## 🏷️ NFC-Mapping Status
+## 🏷️ NFC-Code Integration
 
-### 🔴 Rote Werkstücke: 8/8 (100%)
-- Alle 8 roten Werkstücke mit NFC-Codes gefunden
-- Vollständig für Template Messages verfügbar
+### ✅ Vollständige Dokumentation
+- **24/24 NFC-Codes** in Wareneingang-Dokumentation erfasst
+- **Direkte Verwendung:** NFC-Codes werden als Workpiece-ID in MQTT-Nachrichten verwendet
+- **Dashboard angepasst:** NFC-Code Eingabe statt Mapping-System
 
-### ⚪ Weiße Werkstücke: 2/8 (25%)
-- W1, W2 verfügbar
-- W3-W8: Physische Auslesung erforderlich
-
-### 🔵 Blaue Werkstücke: 0/8 (0%)
-- Alle 8 blauen Werkstücke: Physische Auslesung erforderlich
+### 📋 Verfügbare NFC-Codes
+- **🔴 Rote Werkstücke:** 8/8 (100%) - `040a8dca341291` bis `048a8cca341290`
+- **⚪ Weiße Werkstücke:** 8/8 (100%) - `04798eca341290` bis `042c8aca341291`
+- **🔵 Blaue Werkstücke:** 8/8 (100%) - `04a189ca341290` bis `042c88ca341291`
 
 ---
 
