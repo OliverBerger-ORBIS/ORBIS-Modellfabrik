@@ -49,6 +49,8 @@ from src_orbis.mqtt.dashboard.template_control import TemplateControlDashboard
 # Node-RED Analysis imports
 from src_orbis.mqtt.tools.node_red_message_analyzer import NodeRedMessageAnalyzer
 
+
+
 # Topic Mapping imports
 from src_orbis.mqtt.dashboard.config.topic_mapping import (
     get_friendly_topic_name,
@@ -557,13 +559,9 @@ class APSDashboard:
         st.header("📋 Nachrichten-Tabelle")
 
         if not df.empty:
-            # Add friendly topic names
-            df["friendly_topic"] = df["topic"].apply(get_friendly_topic_name)
-            
-            # Select columns to display (including friendly topic name)
+            # Select columns to display
             display_columns = [
                 "timestamp",
-                "friendly_topic",
                 "topic",
                 "module_type",
                 "serial_number",
@@ -573,14 +571,21 @@ class APSDashboard:
             ]
             available_columns = [col for col in display_columns if col in df.columns]
 
+            # Create display DataFrame with friendly topic names
+            df_display = df[available_columns].copy()
+            df_display["friendly_topic"] = df_display["topic"].apply(get_friendly_topic_name)
+            
+            # Reorder columns to show friendly_topic first
+            display_cols = ["timestamp", "friendly_topic"] + [col for col in available_columns if col != "timestamp"]
+
             # Show table with selected columns
             st.dataframe(
-                df[available_columns].head(1000),  # Limit to 1000 rows
+                df_display[display_cols].head(1000),  # Limit to 1000 rows
                 use_container_width=True,
             )
 
             # Show total count
-            st.info(f"Zeige {min(len(df), 1000)} von {len(df):,} Nachrichten")
+            st.info(f"Zeige {min(len(df_display), 1000)} von {len(df):,} Nachrichten")
             
             # Topic mapping info
             total_topics = df["topic"].nunique()
@@ -604,14 +609,15 @@ class APSDashboard:
         st.header("📡 Topic-Analyse")
 
         if not df.empty:
-            # Add friendly topic names
-            df["friendly_topic"] = df["topic"].apply(get_friendly_topic_name)
+            # Create analysis DataFrame with friendly topic names
+            df_analysis = df[["topic"]].copy()
+            df_analysis["friendly_topic"] = df_analysis["topic"].apply(get_friendly_topic_name)
             
             col1, col2 = st.columns(2)
 
             with col1:
                 # Top topics with friendly names
-                topic_counts = df["friendly_topic"].value_counts().head(10)
+                topic_counts = df_analysis["friendly_topic"].value_counts().head(10)
                 fig = px.bar(
                     x=topic_counts.values,
                     y=topic_counts.index,
@@ -626,12 +632,12 @@ class APSDashboard:
                 st.subheader("Topic-Vergleich")
                 
                 # Show both original and friendly names
-                topic_comparison = df[["topic", "friendly_topic"]].drop_duplicates().head(10)
+                topic_comparison = df_analysis[["topic", "friendly_topic"]].drop_duplicates().head(10)
                 st.dataframe(topic_comparison, use_container_width=True)
                 
                 # Topic statistics
                 total_topics = df["topic"].nunique()
-                mapped_topics = df["friendly_topic"].nunique()
+                mapped_topics = df_analysis["friendly_topic"].nunique()
                 unmapped_count = len([t for t in df["topic"].unique() if get_friendly_topic_name(t) == t])
                 
                 st.metric("Gesamt Topics", total_topics)
@@ -642,7 +648,7 @@ class APSDashboard:
             st.subheader("Topic-Verteilung (benutzerfreundlich)")
             
             # Group by friendly topic names
-            friendly_topic_counts = df["friendly_topic"].value_counts()
+            friendly_topic_counts = df_analysis["friendly_topic"].value_counts()
             
             col3, col4 = st.columns(2)
             
@@ -657,7 +663,7 @@ class APSDashboard:
             
             with col4:
                 # Topic table with both names
-                topic_summary = df.groupby(["topic", "friendly_topic"]).size().reset_index(name="count")
+                topic_summary = df_analysis.groupby(["topic", "friendly_topic"]).size().reset_index(name="count")
                 topic_summary = topic_summary.sort_values("count", ascending=False)
                 st.dataframe(topic_summary.head(15), use_container_width=True)
 
@@ -741,19 +747,20 @@ class APSDashboard:
         st.header("📦 Payload-Analyse")
 
         if not df.empty:
-            # Add friendly topic names
-            df["friendly_topic"] = df["topic"].apply(get_friendly_topic_name)
+            # Create payload DataFrame with friendly topic names
+            df_payload = df[["topic", "payload", "timestamp"]].copy()
+            df_payload["friendly_topic"] = df_payload["topic"].apply(get_friendly_topic_name)
             
             # Payload overview
             st.subheader("📊 Payload Übersicht")
             
             # Payload statistics
-            total_messages = len(df)
-            messages_with_payload = len(df[df["payload"].notna() & (df["payload"] != "")])
+            total_messages = len(df_payload)
+            messages_with_payload = len(df_payload[df_payload["payload"].notna() & (df_payload["payload"] != "")])
             json_payloads = 0
             text_payloads = 0
             
-            for payload in df["payload"].dropna():
+            for payload in df_payload["payload"].dropna():
                 if payload:
                     try:
                         json.loads(payload)
@@ -777,7 +784,7 @@ class APSDashboard:
             st.subheader("📄 Payload Details mit Meta-Informationen")
             
             # Show first 50 messages with payload details
-            for idx, row in df.head(50).iterrows():
+            for idx, row in df_payload.head(50).iterrows():
                 if pd.notna(row.get('payload')) and row['payload']:
                     with st.expander(f"📄 Nachricht #{idx + 1} - {row['friendly_topic']}", expanded=False):
                         col1, col2 = st.columns([1, 2])
@@ -1153,8 +1160,23 @@ class APSDashboard:
 
     def show_module_overview_dashboard(self, df):
         """Show comprehensive module overview dashboard"""
-        st.header("🏭 Module Overview")
-        st.markdown("Übersicht aller APS-Module mit Status und Steuerungsmöglichkeiten")
+        # Header with Factory Reset button
+        col1, col2 = st.columns([3, 1])
+        
+        with col1:
+            st.header("🏭 Module Overview")
+            st.markdown("Übersicht aller APS-Module mit Status und Steuerungsmöglichkeiten")
+        
+        with col2:
+            st.markdown("")  # Spacer
+            st.markdown("")  # Spacer
+            
+            # Factory Reset Icon Button
+            if st.session_state.get("mqtt_connected", False):
+                if st.button("🔄", help="Fabrik zurücksetzen", use_container_width=True):
+                    st.session_state.show_reset_modal = True
+            else:
+                st.button("🔄", help="MQTT-Verbindung erforderlich", disabled=True, use_container_width=True)
 
         st.markdown("---")
 
@@ -1222,6 +1244,48 @@ class APSDashboard:
             },
         )
 
+        # Factory Reset Modal
+        if st.session_state.get("show_reset_modal", False):
+            # Compact reset dialog
+            with st.container():
+                st.markdown("---")
+                
+                # Compact header with close button
+                col_header1, col_header2 = st.columns([4, 1])
+                with col_header1:
+                    st.markdown("**🏭 Fabrik zurücksetzen**")
+                with col_header2:
+                    if st.button("❌", help="Schließen", key="close_reset_modal"):
+                        st.session_state.show_reset_modal = False
+                        st.rerun()
+                
+                # Compact warning
+                st.warning("⚠️ **WARNUNG:** Diese Aktion setzt die gesamte Fabrik zurück!")
+                
+                # Compact options
+                reset_with_storage = st.checkbox("Mit Storage zurücksetzen (HBW-Storage löschen)", value=False, 
+                                               help="Aktivieren um alle HBW-Storage Daten zu löschen")
+                
+                # Compact buttons
+                col_btn1, col_btn2, col_spacer = st.columns([1, 1, 2])
+                
+                with col_btn1:
+                    if st.button("✅ JA - Zurücksetzen", type="primary", use_container_width=True, key="confirm_reset"):
+                        self.send_factory_reset(reset_with_storage)
+                        st.session_state.show_reset_modal = False
+                        st.rerun()
+                
+                with col_btn2:
+                    if st.button("❌ NEIN - Abbrechen", use_container_width=True, key="cancel_reset"):
+                        st.session_state.show_reset_modal = False
+                        st.rerun()
+                
+                with col_spacer:
+                    st.markdown("")
+                    st.markdown("*Klicke 'JA' um die Fabrik zurückzusetzen*")
+                
+                st.markdown("---")
+ 
         # Module control moved to MQTT Control tab
         st.info("🎮 **Module Control** ist jetzt im **MQTT Control** Tab verfügbar")
 
@@ -1464,6 +1528,42 @@ class APSDashboard:
         except Exception as e:
             st.error(f"❌ Fehler beim Senden: {e}")
 
+    def send_factory_reset(self, with_storage=False):
+        """Send factory reset command via MQTT"""
+        try:
+            if not self.mqtt_connected:
+                if not self.connect_mqtt():
+                    st.error("MQTT-Verbindung fehlgeschlagen")
+                    return
+
+            # Create reset message based on session analysis
+            reset_message = {
+                "timestamp": datetime.now().isoformat() + "Z",
+                "withStorage": with_storage
+            }
+            
+            topic = "ccu/set/reset"
+            
+            # Send message
+            success, result_message = self.send_mqtt_message_direct(topic, reset_message)
+            
+            if success:
+                storage_text = "mit Storage-Löschung" if with_storage else "ohne Storage-Löschung"
+                st.success(f"✅ Fabrik-Reset gesendet ({storage_text})")
+                st.info(f"📡 Topic: {topic}")
+                st.info(f"💾 Storage: {with_storage}")
+                
+                # Show warning about consequences
+                if with_storage:
+                    st.warning("⚠️ **ACHTUNG:** HBW-Storage wurde gelöscht!")
+                else:
+                    st.info("ℹ️ HBW-Storage wurde beibehalten")
+            else:
+                st.error(f"❌ Fehler beim Reset: {result_message}")
+                
+        except Exception as e:
+            st.error(f"❌ Fehler beim Senden des Reset-Befehls: {e}")
+
     def extract_availability_status(self, recent_messages, module_id):
         """Extract availability status from recent MQTT messages"""
         try:
@@ -1614,6 +1714,124 @@ class APSDashboard:
             },
         }
 
+    def get_fts_status(self):
+        """Get current FTS status from recent messages"""
+        try:
+            # Query recent FTS state messages
+            query = """
+            SELECT payload, timestamp 
+            FROM mqtt_messages 
+            WHERE topic LIKE '%fts%' OR topic LIKE '%5iO4%'
+            ORDER BY timestamp DESC 
+            LIMIT 10
+            """
+            
+            df = pd.read_sql_query(query, self.conn)
+            
+            if df.empty:
+                return "🟡 Unbekannt"
+            
+            # Look for activity status in recent messages
+            for _, row in df.iterrows():
+                try:
+                    payload = json.loads(row['payload'])
+                    
+                    # Check for activity status
+                    if 'activityStatus' in str(payload):
+                        if 'CHARGING' in str(payload):
+                            return "🔋 Lädt"
+                        elif 'BUSY' in str(payload):
+                            return "🔄 Beschäftigt"
+                        elif 'READY' in str(payload):
+                            return "🟢 Bereit"
+                        elif 'IDLE' in str(payload):
+                            return "🟢 Bereit"
+                            
+                except (json.JSONDecodeError, KeyError):
+                    continue
+            
+            return "🟡 Unbekannt"
+            
+        except Exception as e:
+            return "🔴 Fehler"
+
+    def send_fts_command(self, action_type, metadata):
+        """Send FTS-specific command via CCU"""
+        try:
+            if not self.mqtt_connected:
+                if not self.connect_mqtt():
+                    st.error("MQTT-Verbindung fehlgeschlagen")
+                    return
+
+            import uuid
+            from datetime import datetime
+
+            # FTS control via CCU based on session analysis
+            if action_type == "startCharging":
+                # Send charge command to CCU
+                ccu_message = {
+                    "serialNumber": "5iO4",
+                    "charge": True
+                }
+                topic = "ccu/set/charge"
+                
+            elif action_type == "stopCharging":
+                # Send stop charge command to CCU
+                ccu_message = {
+                    "serialNumber": "5iO4",
+                    "charge": False
+                }
+                topic = "ccu/set/charge"
+                
+            elif action_type == "findInitialDockPosition":
+                # Send pairing command to CCU first, then order
+                ccu_message = {
+                    "serialNumber": "5iO4"
+                }
+                topic = "ccu/pairing/pair_fts"
+                
+            elif action_type == "factsheetRequest":
+                # Direct FTS command for status
+                fts_message = {
+                    "timestamp": datetime.now().isoformat() + "Z",
+                    "serialNumber": "5iO4",
+                    "actions": [
+                        {
+                            "actionId": str(uuid.uuid4()),
+                            "actionType": "factsheetRequest",
+                            "metadata": {}
+                        }
+                    ]
+                }
+                topic = "fts/v1/ff/5iO4/instantAction"
+                
+                # Send message
+                success, result_message = self.send_mqtt_message_direct(topic, fts_message)
+                
+                if success:
+                    st.success(f"✅ FTS Status abgefragt")
+                    st.info(f"📡 Topic: {topic}")
+                else:
+                    st.error(f"❌ Fehler: {result_message}")
+                return
+                
+            else:
+                st.error(f"❌ Unbekannter FTS-Befehl: {action_type}")
+                return
+            
+            # Send CCU message
+            success, result_message = self.send_mqtt_message_direct(topic, ccu_message)
+            
+            if success:
+                st.success(f"✅ FTS Befehl gesendet: {action_type}")
+                st.info(f"📡 Topic: {topic}")
+                st.info(f"📋 CCU Command: {ccu_message}")
+            else:
+                st.error(f"❌ Fehler: {result_message}")
+                
+        except Exception as e:
+            st.error(f"❌ Fehler beim Senden des FTS-Befehls: {e}")
+
     def show_node_red_analysis(self):
         """Show Node-RED message analysis"""
         st.header("🔍 Node-RED Analyse")
@@ -1716,14 +1934,15 @@ class APSDashboard:
                 columns=['Topic', 'Count']
             ).sort_values('Count', ascending=False)
             
-            # Add friendly topic names
-            topic_df['Friendly_Topic'] = topic_df['Topic'].apply(get_friendly_topic_name)
+            # Create display DataFrame with friendly topic names
+            topic_df_display = topic_df[['Topic', 'Count']].copy()
+            topic_df_display['Friendly_Topic'] = topic_df_display['Topic'].apply(get_friendly_topic_name)
             
             # Show both original and friendly names
-            st.dataframe(topic_df[['Friendly_Topic', 'Topic', 'Count']], use_container_width=True)
+            st.dataframe(topic_df_display[['Friendly_Topic', 'Topic', 'Count']], use_container_width=True)
             
             # Bar chart with friendly names
-            st.bar_chart(topic_df.set_index('Friendly_Topic')['Count'])
+            st.bar_chart(topic_df_display.set_index('Friendly_Topic')['Count'])
         
         # Node-RED State Messages
         if not state_messages.empty:
@@ -1861,6 +2080,8 @@ class APSDashboard:
             st.dataframe(module_availability, use_container_width=True)
             
             st.info("💡 **ORDER-ID Management Tipp:** Module müssen 'connected' sein, bevor ORDER-ID Workflows gestartet werden können")
+
+
 
     def show_settings(self):
         """Show dashboard settings"""
@@ -2008,6 +2229,36 @@ class APSDashboard:
         """Show module control in rows with buttons"""
         st.markdown("**Modul-Steuerung zeilenweise:**")
 
+        # Factory Reset Control (before modules)
+        st.markdown("---")
+        st.markdown("**🏭 Factory Reset Control**")
+        
+        # Reset options in columns
+        col_reset1, col_reset2, col_reset3, col_reset4 = st.columns([2, 1, 1, 1])
+        
+        with col_reset1:
+            reset_with_storage = st.checkbox("Mit Storage zurücksetzen (HBW-Storage löschen)", value=False, 
+                                           help="Aktivieren um alle HBW-Storage Daten zu löschen")
+        
+        with col_reset2:
+            if st.session_state.get("mqtt_connected", False):
+                if st.button("✅ JA - Zurücksetzen", type="primary", use_container_width=True, key="confirm_reset_mqtt_control"):
+                    self.send_factory_reset(reset_with_storage)
+                    st.success("🏭 Fabrik wurde erfolgreich zurückgesetzt!")
+                    st.rerun()
+            else:
+                st.button("✅ JA - Zurücksetzen", type="primary", disabled=True, use_container_width=True, key="confirm_reset_mqtt_control_disabled")
+        
+        with col_reset3:
+            st.markdown("")
+            st.markdown("*⚠️ Setzt alle Module zurück*")
+        
+        with col_reset4:
+            st.markdown("")
+            st.markdown("*🔄 System-Reset*")
+        
+        st.markdown("---")
+
         # Show each module in a row with control buttons
         for module_key, module_info in self.aps_modules_extended.items():
             with st.container():
@@ -2148,6 +2399,55 @@ class APSDashboard:
                             ):
                                 self.send_drill_sequence_command(module_key, "DROP", workpiece_color, nfc_code)
                     
+                    # FTS-specific control
+                    elif module_key == "FTS":
+                        st.markdown("**🚗 FTS-Steuerung:**")
+                        
+                        # Simple status display (always available)
+                        st.info(f"**Status:** 🟢 FTS-Steuerung verfügbar")
+                        
+                        # FTS control buttons - all always available for now
+                        col_fts1, col_fts2, col_fts3, col_fts4 = st.columns(4)
+                        
+                        with col_fts1:
+                            if st.button(
+                                "🚗 Docke an",
+                                key=f"fts_dock",
+                                use_container_width=True,
+                                type="primary",
+                                help="FTS fährt zum Wareneingang (Initialisierung)"
+                            ):
+                                self.send_fts_command("findInitialDockPosition", {"nodeId": "SVR4H73275"})
+                        
+                        with col_fts2:
+                            if st.button(
+                                "🔋 FTS laden",
+                                key=f"fts_charge",
+                                use_container_width=True,
+                                type="primary",
+                                help="FTS fährt zur Charging Station"
+                            ):
+                                self.send_fts_command("startCharging", {})
+                        
+                        with col_fts3:
+                            if st.button(
+                                "⏹️ Laden beenden",
+                                key=f"fts_stop_charge",
+                                use_container_width=True,
+                                type="primary",
+                                help="FTS stoppt das Laden"
+                            ):
+                                self.send_fts_command("stopCharging", {})
+                        
+                        with col_fts4:
+                            if st.button(
+                                "🔄 Status abfragen",
+                                key=f"fts_status",
+                                use_container_width=True,
+                                help="FTS Status abfragen"
+                            ):
+                                self.send_fts_command("factsheetRequest", {})
+                    
                     # Standard control buttons for all other modules (HBW, DPS, etc.)
                     else:
                         button_order = []
@@ -2240,11 +2540,12 @@ class APSDashboard:
             sent_df["timestamp"] = pd.to_datetime(sent_df["timestamp"])
             sent_df = sent_df.sort_values("timestamp", ascending=False)
 
-            # Add friendly topic names
-            sent_df["friendly_topic"] = sent_df["topic"].apply(get_friendly_topic_name)
+            # Create display DataFrame with friendly topic names
+            sent_df_display = sent_df[["topic", "timestamp", "message", "result"]].copy()
+            sent_df_display["friendly_topic"] = sent_df_display["topic"].apply(get_friendly_topic_name)
 
             # Display recent messages
-            for idx, row in sent_df.head(10).iterrows():
+            for idx, row in sent_df_display.head(10).iterrows():
                 # Extract module name from topic
                 module_name = self._extract_module_name_from_topic(row['topic'])
                 message_type = row['topic'].split('/')[-1]  # 'order' or 'state'
@@ -2270,11 +2571,12 @@ class APSDashboard:
             response_df["timestamp"] = pd.to_datetime(response_df["timestamp"])
             response_df = response_df.sort_values("timestamp", ascending=False)
 
-            # Add friendly topic names
-            response_df["friendly_topic"] = response_df["topic"].apply(get_friendly_topic_name)
+            # Create display DataFrame with friendly topic names
+            response_df_display = response_df[["topic", "timestamp", "payload", "qos"]].copy()
+            response_df_display["friendly_topic"] = response_df_display["topic"].apply(get_friendly_topic_name)
 
             # Display recent responses
-            for idx, row in response_df.head(10).iterrows():
+            for idx, row in response_df_display.head(10).iterrows():
                 # Extract module name from topic
                 module_name = self._extract_module_name_from_topic(row['topic'])
                 message_type = row['topic'].split('/')[-1]  # 'order' or 'state'
@@ -2485,6 +2787,7 @@ class APSDashboard:
                 self.show_mqtt_control()
             elif st.session_state.selected_tab == "🔍 Node-RED Analyse":
                 self.show_node_red_analysis()
+
             elif st.session_state.selected_tab == "⚙️ Einstellungen":
                 self.show_settings()
 
@@ -2518,6 +2821,7 @@ def main():
         ("📊 MQTT Analyse", "📊 MQTT Analyse"), 
         ("🎮 MQTT Control", "🎮 MQTT Control"),
         ("🔍 Node-RED Analyse", "🔍 Node-RED Analyse"),
+
         ("⚙️ Einstellungen", "⚙️ Einstellungen")
     ]
     
@@ -2542,7 +2846,10 @@ def main():
         st.session_state.selected_db = None
     if "verbose_mode" not in st.session_state:
         st.session_state.verbose_mode = False
+    if "show_reset_modal" not in st.session_state:
+        st.session_state.show_reset_modal = False
 
+ 
     # Session management moved to APS Analysis tab
     # Get project root (3 levels up from dashboard)
     project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))

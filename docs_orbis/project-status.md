@@ -34,6 +34,13 @@
 - **Features:** Message Library, Template Messages, ORDER-ID Tracking
 - **Dashboard:** MQTT Monitor, Control, Template Manager
 
+### 🔍 MQTT Explorer Integration
+- **Status:** ✅ Neu implementiert
+- **Features:** thomasnordquist MQTT-Explorer Integration, Live-Analyse, Session Export
+- **Integration:** Dashboard Tab für MQTT-Explorer
+- **Konfiguration:** APS-spezifische Topic-Filter und Broker-Einstellungen
+- **Vorteile:** Echtzeit-Visualisierung, Topic-Hierarchie, JSON-Payload Analyse
+
 ### 🔧 Core Infrastructure
 - **Status:** ✅ Stabil und erweitert
 - **Features:** Config Management, Data Handling, Error Handling, Session Analysis
