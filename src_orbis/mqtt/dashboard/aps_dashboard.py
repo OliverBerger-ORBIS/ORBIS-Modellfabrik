@@ -2252,82 +2252,117 @@ class APSDashboard:
     def show_settings(self):
         """Show dashboard settings"""
         st.header("⚙️ Einstellungen")
-        st.markdown("Dashboard-Konfiguration und System-Informationen")
-
-        col1, col2 = st.columns(2)
-
+        
+        # Navigation für Einstellungen
+        st.markdown("**📋 Navigation:**")
+        col1, col2, col3, col4, col5 = st.columns(5)
+        
         with col1:
-            st.subheader("🔧 Dashboard-Einstellungen")
+            if st.button("🏠 Dashboard Einstellungen", use_container_width=True):
+                st.session_state.settings_section = "dashboard_settings"
+                st.rerun()
+        
+        with col2:
+            if st.button("📡 Topic-Mapping", use_container_width=True):
+                st.session_state.settings_section = "topic_mapping"
+                st.rerun()
+        
+        with col3:
+            if st.button("🏷️ NFC-Mapping", use_container_width=True):
+                st.session_state.settings_section = "nfc_mapping"
+                st.rerun()
+        
+        with col4:
+            if st.button("🏭 Module-ID Mapping", use_container_width=True):
+                st.session_state.settings_section = "module_mapping"
+                st.rerun()
+        
+        with col5:
+            if st.button("📋 MQTT Templates", use_container_width=True):
+                st.session_state.settings_section = "mqtt_templates"
+                st.rerun()
 
-            # Verbose mode
-            verbose_mode = st.checkbox(
-                "🔍 Verbose-Modus (alle Topics anzeigen)",
-                value=self.verbose_mode,
-                help="Zeigt alle MQTT-Topics an, auch Kamera-Daten",
-            )
+        # Initialize settings section if not set
+        if 'settings_section' not in st.session_state:
+            st.session_state.settings_section = "dashboard_settings"
 
-            # Auto-refresh
-            auto_refresh = st.checkbox(
-                "🔄 Auto-Refresh",
-                value=True,
-                help="Aktualisiert das Dashboard automatisch",
-            )
+        st.markdown("---")
 
-            # Refresh interval
-            if auto_refresh:
-                refresh_interval = st.slider(
-                    "⏱️ Refresh-Intervall (Sekunden)",
-                    min_value=5,
-                    max_value=60,
-                    value=30,
-                    step=5,
+        # Dashboard Settings
+        if st.session_state.settings_section == "dashboard_settings":
+            st.subheader("🏠 Dashboard Einstellungen")
+            st.markdown("Dashboard-Konfiguration und System-Informationen")
+
+            col1, col2 = st.columns(2)
+
+            with col1:
+                st.markdown("**🔧 Dashboard-Einstellungen:**")
+
+                # Verbose mode
+                verbose_mode = st.checkbox(
+                    "🔍 Verbose-Modus (alle Topics anzeigen)",
+                    value=self.verbose_mode,
+                    help="Zeigt alle MQTT-Topics an, auch Kamera-Daten",
                 )
 
-        with col2:
-            st.subheader("📊 Dashboard-Statistiken")
+                # Auto-refresh
+                auto_refresh = st.checkbox(
+                    "🔄 Auto-Refresh",
+                    value=True,
+                    help="Aktualisiert das Dashboard automatisch",
+                )
 
-            # Dashboard statistics
-            st.metric("Aktive Module", len(self.aps_modules_extended))
-            st.metric(
-                "Verfügbare Befehle",
-                sum(
-                    len(module["commands"])
-                    for module in self.aps_modules_extended.values()
-                ),
-            )
-            st.metric("MQTT-Nachrichten gesendet", len(self.mqtt_messages_sent))
-            st.metric("MQTT-Antworten empfangen", len(self.mqtt_responses))
+                # Refresh interval
+                if auto_refresh:
+                    refresh_interval = st.slider(
+                        "⏱️ Refresh-Intervall (Sekunden)",
+                        min_value=5,
+                        max_value=60,
+                        value=30,
+                        step=5,
+                    )
 
-        st.markdown("---")
+            with col2:
+                st.markdown("**📊 Dashboard-Statistiken:**")
 
-        # System information
-        st.subheader("💻 System-Informationen")
+                # Dashboard statistics
+                st.metric("Aktive Module", len(self.aps_modules_extended))
+                st.metric(
+                    "Verfügbare Befehle",
+                    sum(
+                        len(module["commands"])
+                        for module in self.aps_modules_extended.values()
+                    ),
+                )
+                st.metric("MQTT-Nachrichten gesendet", len(self.mqtt_messages_sent))
+                st.metric("MQTT-Antworten empfangen", len(self.mqtt_responses))
 
-        col1, col2 = st.columns(2)
+            st.markdown("---")
 
-        with col1:
-            st.metric(
-                "Datenbank-Dateien",
-                len(glob.glob(os.path.join(os.path.dirname(self.db_file), "*.db"))),
-            )
-            st.metric("Dashboard-Version", "2.0")
+            # System information
+            st.markdown("**💻 System-Informationen:**")
 
-        with col2:
-            st.metric("Template-Nachrichten", len(self.template_manager.templates))
-            st.metric("Session-Datenbanken", len(glob.glob(os.path.join(os.path.dirname(self.db_file), "aps_persistent_traffic_*.db"))))
+            col1, col2 = st.columns(2)
 
-        st.markdown("---")
+            with col1:
+                st.metric(
+                    "Datenbank-Dateien",
+                    len(glob.glob(os.path.join(os.path.dirname(self.db_file), "*.db"))),
+                )
+                st.metric("Dashboard-Version", "2.0")
+
+            with col2:
+                st.metric("Template-Nachrichten", len(self.template_manager.templates))
+                st.metric("Session-Datenbanken", len(glob.glob(os.path.join(os.path.dirname(self.db_file), "aps_persistent_traffic_*.db"))))
 
         # Topic Mapping Configuration
-        st.subheader("📋 Topic-Mapping Konfiguration")
-        st.markdown("Benutzerfreundliche Namen für MQTT-Topics")
+        if st.session_state.settings_section == "topic_mapping":
+            st.subheader("📡 Topic-Mapping Konfiguration")
+            st.markdown("Benutzerfreundliche Namen für MQTT-Topics")
 
-        # Show current topic mappings
-        all_mappings = get_all_mapped_topics()
-        
-        col1, col2 = st.columns(2)
-        
-        with col1:
+            # Show current topic mappings
+            all_mappings = get_all_mapped_topics()
+            
             st.markdown("**Aktuelle Topic-Mappings:**")
             
             # Group mappings by type
@@ -2335,61 +2370,415 @@ class APSDashboard:
             direct_mappings = {k: v for k, v in all_mappings.items() if "NodeRed" not in k and "module/v1/ff" in k}
             fts_mappings = {k: v for k, v in all_mappings.items() if "fts/v1/ff" in k}
             ccu_mappings = {k: v for k, v in all_mappings.items() if k.startswith("ccu/")}
+            txt_mappings = {k: v for k, v in all_mappings.items() if k.startswith("/j1/txt/")}
             
-            with st.expander("Node-RED Topics", expanded=True):
-                for topic, friendly_name in list(node_red_mappings.items())[:10]:
-                    st.markdown(f"• `{topic}` → **{friendly_name}**")
-                if len(node_red_mappings) > 10:
-                    st.markdown(f"... und {len(node_red_mappings) - 10} weitere")
-            
-            with st.expander("Direct Module Topics", expanded=True):
+            # Module Topics (oben)
+            with st.expander("Direct Module Topics", expanded=False):
                 for topic, friendly_name in list(direct_mappings.items())[:10]:
                     st.markdown(f"• `{topic}` → **{friendly_name}**")
                 if len(direct_mappings) > 10:
                     st.markdown(f"... und {len(direct_mappings) - 10} weitere")
             
-            with st.expander("FTS Topics", expanded=True):
+            with st.expander("FTS Topics", expanded=False):
                 for topic, friendly_name in fts_mappings.items():
                     st.markdown(f"• `{topic}` → **{friendly_name}**")
             
-            with st.expander("CCU Topics", expanded=True):
+            with st.expander("CCU Topics", expanded=False):
                 for topic, friendly_name in ccu_mappings.items():
                     st.markdown(f"• `{topic}` → **{friendly_name}**")
-        
-        with col2:
-            st.markdown("**Topic-Mapping Status:**")
             
-            # Check for unmapped topics in current data
-            if hasattr(self, 'current_df') and self.current_df is not None:
-                unique_topics = self.current_df['topic'].unique().tolist()
-                unmapped_topics = get_unmapped_topics(unique_topics)
-                
-                if unmapped_topics:
-                    st.warning(f"⚠️ {len(unmapped_topics)} unmapped Topics gefunden")
-                    with st.expander("Unmapped Topics"):
-                        for topic in unmapped_topics[:10]:
-                            st.code(topic)
-                        if len(unmapped_topics) > 10:
-                            st.markdown(f"... und {len(unmapped_topics) - 10} weitere")
+            # TXT Controller Topics (alphabetisch sortiert und tabellarisch)
+            with st.expander("TXT Controller Topics", expanded=False):
+                if txt_mappings:
+                    # Sort alphabetically by friendly name
+                    sorted_txt_mappings = sorted(txt_mappings.items(), key=lambda x: x[1])
+                    
+                    # Create DataFrame for tabular display
+                    txt_data = []
+                    for topic, friendly_name in sorted_txt_mappings:
+                        txt_data.append({
+                            "Topic": topic,
+                            "Friendly Name": friendly_name
+                        })
+                    
+                    txt_df = pd.DataFrame(txt_data)
+                    st.dataframe(txt_df, use_container_width=True, hide_index=True)
                 else:
-                    st.success("✅ Alle Topics haben benutzerfreundliche Namen")
-            else:
-                st.info("ℹ️ Lade Daten, um Topic-Mapping zu prüfen")
+                    st.info("Keine TXT Controller Topics gefunden")
             
-            # Topic mapping statistics
-            st.metric("Mapped Topics", len(all_mappings))
-            st.metric("Module Types", len(set([name.split(" : ")[0] for name in all_mappings.values()])))
+            # Node-RED Topics (unten)
+            with st.expander("Node-RED Topics", expanded=False):
+                for topic, friendly_name in list(node_red_mappings.items())[:10]:
+                    st.markdown(f"• `{topic}` → **{friendly_name}**")
+                if len(node_red_mappings) > 10:
+                    st.markdown(f"... und {len(node_red_mappings) - 10} weitere")
+
+        # NFC Mapping Configuration
+        elif st.session_state.settings_section == "nfc_mapping":
+            st.subheader("🏷️ NFC-Mapping Konfiguration")
+            st.markdown("Mapping zwischen NFC-Codes und benutzerfreundlichen Werkstück-IDs")
+
+            # NFC Mapping Table
+            nfc_mapping_data = {
+                "NFC-Code": [
+                    "040a8dca341291", "04d78cca341290", "04808dca341291", "04c08dca341291",
+                    "04e08dca341291", "04f08dca341291", "04a08dca341291", "04b08dca341291",
+                    "04798eca341290", "047a8eca341290", "047b8eca341290", "047c8eca341290",
+                    "047d8eca341290", "047e8eca341290", "047f8eca341290", "04708eca341290",
+                    "04718eca341290", "04728eca341290", "04738eca341290", "04748eca341290",
+                    "04758eca341290", "04768eca341290", "04778eca341290", "04788eca341290"
+                ],
+                "Friendly ID": [
+                    "R1", "R2", "R3", "R4", "R5", "R6", "R7", "R8",
+                    "W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8",
+                    "B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8"
+                ],
+                "Farbe": [
+                    "🔴 ROT", "🔴 ROT", "🔴 ROT", "🔴 ROT", "🔴 ROT", "🔴 ROT", "🔴 ROT", "🔴 ROT",
+                    "⚪ WEISS", "⚪ WEISS", "⚪ WEISS", "⚪ WEISS", "⚪ WEISS", "⚪ WEISS", "⚪ WEISS", "⚪ WEISS",
+                    "🔵 BLAU", "🔵 BLAU", "🔵 BLAU", "🔵 BLAU", "🔵 BLAU", "🔵 BLAU", "🔵 BLAU", "🔵 BLAU"
+                ]
+            }
             
-            # Show mapping examples
-            st.markdown("**Beispiele:**")
-            examples = [
-                ("module/v1/ff/NodeRed/SVR4H76530/state", "NodeRed → AIQS : state"),
-                ("module/v1/ff/SVR4H73275/factsheet", "DPS : factsheet"),
-                ("fts/v1/ff/5iO4/connection", "FTS : connection"),
-                ("ccu/state/flow", "CCU : state : flow")
-            ]
-            for original, friendly in examples:
-                st.markdown(f"• `{original}` → **{friendly}**")
+            nfc_df = pd.DataFrame(nfc_mapping_data)
+            st.dataframe(nfc_df, use_container_width=True)
+            
+            st.info("💡 **Hinweis:** NFC-Codes werden direkt als Workpiece-ID in MQTT-Nachrichten verwendet.")
+
+        # Module ID Mapping Configuration
+        elif st.session_state.settings_section == "module_mapping":
+            st.subheader("🏭 Module-ID Mapping Konfiguration")
+            st.markdown("Mapping zwischen Serial Numbers und benutzerfreundlichen Modul-Namen")
+
+            # Module ID Mapping Table
+            module_mapping_data = {
+                "Serial Number": [
+                    "SVR3QA2098", "SVR4H76449", "SVR4H76530", "SVR3QA0022", 
+                    "SVR4H73275", "5iO4", "CHRG0"
+                ],
+                "Abkürzung": [
+                    "MILL", "DRILL", "AIQS", "HBW", "DPS", "FTS", "CHRG"
+                ],
+                "Deutsche Bezeichnung": [
+                    "Fräse", "Bohrer", "KI-Qualitätssicherung", "Hochregallager", 
+                    "Delivery & Pickup Station", "Fahrerloses Transportsystem", "Ladestation"
+                ],
+                "Englische Bezeichnung": [
+                    "Milling Machine", "Drilling Machine", "AI Quality Control", "High Bay Warehouse",
+                    "Delivery & Pickup Station", "Automated Guided Vehicle", "Charging Station"
+                ],
+                "IP-Adresse": [
+                    "192.168.0.40", "192.168.0.50", "192.168.0.70", "192.168.0.80",
+                    "192.168.0.90", "192.168.0.60", "192.168.0.65"
+                ]
+            }
+            
+            module_df = pd.DataFrame(module_mapping_data)
+            st.dataframe(module_df, use_container_width=True)
+            
+            st.info("💡 **Hinweis:** Serial Numbers werden in MQTT-Topics verwendet (z.B. `module/v1/ff/SVR3QA2098/order`).")
+
+        # MQTT Templates Configuration
+        elif st.session_state.settings_section == "mqtt_templates":
+            st.subheader("📋 MQTT Template Analyse")
+            st.markdown("Systematische Analyse von MQTT-Nachrichten zur Template-Erstellung")
+            
+            # Import the TXT template analyzer
+            try:
+                import sys
+                sys.path.append('src_orbis/mqtt/tools')
+                from txt_template_analyzer import TXTTemplateAnalyzer
+                
+                # Initialize analyzer
+                analyzer = TXTTemplateAnalyzer()
+                
+                # Get available sessions
+                sessions = analyzer.get_available_sessions()
+                st.info(f"📁 **{len(sessions)} Sessions verfügbar** für Template-Analyse")
+                
+                # Analysis controls
+                col1, col2 = st.columns(2)
+                
+                with col1:
+                    if st.button("🔍 TXT Templates analysieren", use_container_width=True):
+                        st.session_state.analyzing_txt = True
+                        st.rerun()
+                
+                with col2:
+                    if st.button("📄 Neuesten Report anzeigen", use_container_width=True):
+                        st.session_state.show_latest_report = True
+                        st.rerun()
+                
+                # Show analysis results
+                if st.session_state.get('analyzing_txt', False):
+                    with st.spinner("🔍 Analysiere TXT Controller Topics..."):
+                        results = analyzer.analyze_all_txt_topics()
+                        st.session_state.txt_analysis_results = results
+                        st.session_state.analyzing_txt = False
+                        st.rerun()
+                
+                # Display results
+                if hasattr(st.session_state, 'txt_analysis_results'):
+                    results = st.session_state.txt_analysis_results
+                    
+                    # Summary
+                    total_messages = sum(r['message_count'] for r in results.values())
+                    active_topics = sum(1 for r in results.values() if r['message_count'] > 0)
+                    
+                    st.markdown("**📊 Analyse-Ergebnisse:**")
+                    col1, col2, col3 = st.columns(3)
+                    with col1:
+                        st.metric("Analysierte Topics", len(results))
+                    with col2:
+                        st.metric("Aktive Topics", active_topics)
+                    with col3:
+                        st.metric("Gesamt Nachrichten", total_messages)
+                    
+                    # Function Input Topics (f/i)
+                    st.markdown("**📥 Function Input Topics (f/i):**")
+                    fi_topics = [topic for topic in results.keys() if "/f/i/" in topic]
+                    
+                    for topic in fi_topics:
+                        result = results[topic]
+                        if result['message_count'] > 0:
+                            with st.expander(f"{topic} ({result['message_count']} Nachrichten)", expanded=False):
+                                st.markdown(f"**Sessions:** {len(result['sessions'])}")
+                                
+                                # Detailed Topic Information
+                                if hasattr(result, 'description') and result['description']:
+                                    st.info(f"💡 **Beschreibung:** {result['description']}")
+                                
+                                if hasattr(result, 'usage') and result['usage']:
+                                    st.success(f"🎯 **Verwendung:** {result['usage']}")
+                                
+                                if hasattr(result, 'critical_for') and result['critical_for']:
+                                    st.warning(f"⚠️ **Kritisch für:** {', '.join(result['critical_for'])}")
+                                
+                                if hasattr(result, 'workflow_step') and result['workflow_step']:
+                                    st.info(f"🔄 **Workflow-Schritt:** {result['workflow_step']}")
+                                
+                                # Interactive Documentation Editor
+                                st.markdown("---")
+                                st.markdown("**📝 Dokumentation bearbeiten:**")
+                                
+                                # Create session state keys for this topic
+                                topic_key = topic.replace('/', '_').replace(':', '_')
+                                desc_key = f"desc_{topic_key}"
+                                usage_key = f"usage_{topic_key}"
+                                critical_key = f"critical_{topic_key}"
+                                workflow_key = f"workflow_{topic_key}"
+                                
+                                # Initialize with existing values
+                                if desc_key not in st.session_state:
+                                    st.session_state[desc_key] = result.get('description', '')
+                                if usage_key not in st.session_state:
+                                    st.session_state[usage_key] = result.get('usage', '')
+                                if critical_key not in st.session_state:
+                                    st.session_state[critical_key] = ', '.join(result.get('critical_for', []))
+                                if workflow_key not in st.session_state:
+                                    st.session_state[workflow_key] = result.get('workflow_step', '')
+                                
+                                # Input fields
+                                col1, col2 = st.columns(2)
+                                
+                                with col1:
+                                    st.session_state[desc_key] = st.text_area(
+                                        "💡 Beschreibung:",
+                                        value=st.session_state[desc_key],
+                                        key=f"textarea_{desc_key}",
+                                        height=80,
+                                        help="Wofür wird diese Nachricht verwendet?"
+                                    )
+                                    
+                                    st.session_state[usage_key] = st.text_area(
+                                        "🎯 Verwendung:",
+                                        value=st.session_state[usage_key],
+                                        key=f"textarea_{usage_key}",
+                                        height=60,
+                                        help="Wie wird diese Nachricht im Workflow verwendet?"
+                                    )
+                                
+                                with col2:
+                                    st.session_state[critical_key] = st.text_area(
+                                        "⚠️ Kritisch für:",
+                                        value=st.session_state[critical_key],
+                                        key=f"textarea_{critical_key}",
+                                        height=60,
+                                        help="Komma-getrennte Liste wichtiger Anwendungen"
+                                    )
+                                    
+                                    st.session_state[workflow_key] = st.text_input(
+                                        "🔄 Workflow-Schritt:",
+                                        value=st.session_state[workflow_key],
+                                        key=f"input_{workflow_key}",
+                                        help="Welcher Schritt im Fertigungsprozess?"
+                                    )
+                                
+                                # Save button
+                                if st.button("💾 Dokumentation speichern", key=f"save_{topic_key}"):
+                                    # Here you could save to a file or database
+                                    st.success(f"✅ Dokumentation für {topic} gespeichert!")
+                                
+                                # Template and Example side by side
+                                if result['template'] and result['examples']:
+                                    col1, col2 = st.columns(2)
+                                    
+                                    with col1:
+                                        st.markdown("**📋 Template:**")
+                                        st.json(result['template'])
+                                    
+                                    with col2:
+                                        st.markdown("**📄 Beispiel-Nachricht:**")
+                                        example = result['examples'][0]  # First example
+                                        st.markdown(f"*Session: {example['session']}*")
+                                        st.markdown(f"*Timestamp: {example['timestamp']}*")
+                                        st.json(example['payload'])
+                                else:
+                                    if result['template']:
+                                        st.markdown("**📋 Template:**")
+                                        st.json(result['template'])
+                                
+                                if result['variable_fields']:
+                                    st.markdown(f"**🔧 Variable Felder:** {', '.join(result['variable_fields'])}")
+                                
+                                # Show enum fields if available
+                                if hasattr(result, 'enum_fields') and result['enum_fields']:
+                                    st.markdown("**📋 Enum-Felder:**")
+                                    for field, values in result['enum_fields'].items():
+                                        st.markdown(f"  • **{field}:** `{', '.join(values)}`")
+                    
+                    # Function Output Topics (f/o)
+                    st.markdown("**📤 Function Output Topics (f/o):**")
+                    fo_topics = [topic for topic in results.keys() if "/f/o/" in topic]
+                    
+                    for topic in fo_topics:
+                        result = results[topic]
+                        if result['message_count'] > 0:
+                            with st.expander(f"{topic} ({result['message_count']} Nachrichten)", expanded=False):
+                                st.markdown(f"**Sessions:** {len(result['sessions'])}")
+                                
+                                # Detailed Topic Information
+                                if hasattr(result, 'description') and result['description']:
+                                    st.info(f"💡 **Beschreibung:** {result['description']}")
+                                
+                                if hasattr(result, 'usage') and result['usage']:
+                                    st.success(f"🎯 **Verwendung:** {result['usage']}")
+                                
+                                if hasattr(result, 'critical_for') and result['critical_for']:
+                                    st.warning(f"⚠️ **Kritisch für:** {', '.join(result['critical_for'])}")
+                                
+                                if hasattr(result, 'workflow_step') and result['workflow_step']:
+                                    st.info(f"🔄 **Workflow-Schritt:** {result['workflow_step']}")
+                                
+                                # Interactive Documentation Editor
+                                st.markdown("---")
+                                st.markdown("**📝 Dokumentation bearbeiten:**")
+                                
+                                # Create session state keys for this topic
+                                topic_key = topic.replace('/', '_').replace(':', '_')
+                                desc_key = f"desc_{topic_key}"
+                                usage_key = f"usage_{topic_key}"
+                                critical_key = f"critical_{topic_key}"
+                                workflow_key = f"workflow_{topic_key}"
+                                
+                                # Initialize with existing values
+                                if desc_key not in st.session_state:
+                                    st.session_state[desc_key] = result.get('description', '')
+                                if usage_key not in st.session_state:
+                                    st.session_state[usage_key] = result.get('usage', '')
+                                if critical_key not in st.session_state:
+                                    st.session_state[critical_key] = ', '.join(result.get('critical_for', []))
+                                if workflow_key not in st.session_state:
+                                    st.session_state[workflow_key] = result.get('workflow_step', '')
+                                
+                                # Input fields
+                                col1, col2 = st.columns(2)
+                                
+                                with col1:
+                                    st.session_state[desc_key] = st.text_area(
+                                        "💡 Beschreibung:",
+                                        value=st.session_state[desc_key],
+                                        key=f"textarea_{desc_key}",
+                                        height=80,
+                                        help="Wofür wird diese Nachricht verwendet?"
+                                    )
+                                    
+                                    st.session_state[usage_key] = st.text_area(
+                                        "🎯 Verwendung:",
+                                        value=st.session_state[usage_key],
+                                        key=f"textarea_{usage_key}",
+                                        height=60,
+                                        help="Wie wird diese Nachricht im Workflow verwendet?"
+                                    )
+                                
+                                with col2:
+                                    st.session_state[critical_key] = st.text_area(
+                                        "⚠️ Kritisch für:",
+                                        value=st.session_state[critical_key],
+                                        key=f"textarea_{critical_key}",
+                                        height=60,
+                                        help="Komma-getrennte Liste wichtiger Anwendungen"
+                                    )
+                                    
+                                    st.session_state[workflow_key] = st.text_input(
+                                        "🔄 Workflow-Schritt:",
+                                        value=st.session_state[workflow_key],
+                                        key=f"input_{workflow_key}",
+                                        help="Welcher Schritt im Fertigungsprozess?"
+                                    )
+                                
+                                # Save button
+                                if st.button("💾 Dokumentation speichern", key=f"save_{topic_key}"):
+                                    st.success(f"✅ Dokumentation für {topic} gespeichert!")
+                                
+                                # Template and Example side by side
+                                if result['template'] and result['examples']:
+                                    col1, col2 = st.columns(2)
+                                    
+                                    with col1:
+                                        st.markdown("**📋 Template:**")
+                                        st.json(result['template'])
+                                    
+                                    with col2:
+                                        st.markdown("**📄 Beispiel-Nachricht:**")
+                                        example = result['examples'][0]  # First example
+                                        st.markdown(f"*Session: {example['session']}*")
+                                        st.markdown(f"*Timestamp: {example['timestamp']}*")
+                                        st.json(example['payload'])
+                                else:
+                                    if result['template']:
+                                        st.markdown("**📋 Template:**")
+                                        st.json(result['template'])
+                                
+                                if result['variable_fields']:
+                                    st.markdown(f"**🔧 Variable Felder:** {', '.join(result['variable_fields'])}")
+                                
+                                # Show enum fields if available
+                                if hasattr(result, 'enum_fields') and result['enum_fields']:
+                                    st.markdown("**📋 Enum-Felder:**")
+                                    for field, values in result['enum_fields'].items():
+                                        st.markdown(f"  • **{field}:** `{', '.join(values)}`")
+                
+                # Show latest report
+                if st.session_state.get('show_latest_report', False):
+                    report_files = glob.glob("txt_template_analysis_*.md")
+                    if report_files:
+                        latest_report = max(report_files, key=os.path.getctime)
+                        with open(latest_report, 'r', encoding='utf-8') as f:
+                            report_content = f.read()
+                        
+                        st.markdown("**📄 Neuester Analyse-Report:**")
+                        st.markdown(report_content)
+                    else:
+                        st.warning("Keine Analyse-Reports gefunden. Führe zuerst eine Analyse durch.")
+                    
+                    st.session_state.show_latest_report = False
+                
+            except ImportError as e:
+                st.error(f"❌ Fehler beim Import des TXT Template Analyzers: {e}")
+                st.info("💡 Stelle sicher, dass das Tool verfügbar ist: `src_orbis/mqtt/tools/txt_template_analyzer.py`")
+            except Exception as e:
+                st.error(f"❌ Fehler bei der Template-Analyse: {e}")
 
     def show_module_control_rows(self):
         """Show module control in rows with buttons"""
@@ -2642,6 +3031,159 @@ class APSDashboard:
                 
                 st.markdown("---")
 
+    def _show_replay_controls(self, messages_df, order_data):
+        """Show replay controls for session playback"""
+        st.subheader("🎬 Replay-Steuerung")
+        
+        # Filter out camera messages unless verbose mode is enabled
+        verbose_mode = st.checkbox("🔍 Verbose-Modus (Camera-Nachrichten anzeigen)", value=False)
+        
+        if not verbose_mode:
+            # Filter out camera messages
+            original_count = len(messages_df)
+            messages_df = messages_df[~messages_df['topic'].str.contains('j1/txt/1/i/cam', na=False)]
+            filtered_count = len(messages_df)
+            if original_count != filtered_count:
+                st.info(f"📷 {original_count - filtered_count} Camera-Nachrichten ausgeblendet (Verbose-Modus deaktiviert)")
+        
+        # Initialize replay state
+        if 'replay_playing' not in st.session_state:
+            st.session_state.replay_playing = False
+        if 'replay_message_index' not in st.session_state:
+            st.session_state.replay_message_index = 0
+        if 'replay_speed' not in st.session_state:
+            st.session_state.replay_speed = 1.0
+        
+        # Get message count
+        total_messages = len(messages_df)
+        
+        if total_messages == 0:
+            st.warning("Keine relevanten Nachrichten in der Session gefunden.")
+            return
+        
+        # Replay controls
+        col1, col2, col3, col4, col5 = st.columns(5)
+        
+        with col1:
+            if st.button("⏮️ Erste"):
+                st.session_state.replay_message_index = 0
+                st.session_state.replay_playing = False
+        
+        with col2:
+            if st.button("◀️ Vorherige"):
+                if st.session_state.replay_message_index > 0:
+                    st.session_state.replay_message_index -= 1
+                st.session_state.replay_playing = False
+        
+        with col3:
+            if st.button("▶️ Play" if not st.session_state.replay_playing else "⏸️ Pause"):
+                st.session_state.replay_playing = not st.session_state.replay_playing
+        
+        with col4:
+            if st.button("▶️ Nächste"):
+                if st.session_state.replay_message_index < total_messages - 1:
+                    st.session_state.replay_message_index += 1
+                st.session_state.replay_playing = False
+        
+        with col5:
+            if st.button("⏭️ Letzte"):
+                st.session_state.replay_message_index = total_messages - 1
+                st.session_state.replay_playing = False
+        
+        # Speed control
+        st.session_state.replay_speed = st.selectbox(
+            "Geschwindigkeit:",
+            [0.5, 1.0, 2.0, 5.0],
+            index=1,
+            format_func=lambda x: f"{x}x"
+        )
+        
+        # Message navigation slider
+        message_index = st.slider(
+            "Nachricht:",
+            min_value=0,
+            max_value=total_messages - 1,
+            value=st.session_state.replay_message_index
+        )
+        
+        # Show message count
+        st.write(f"Nachricht {message_index + 1} von {total_messages}")
+        
+        # Update message index
+        st.session_state.replay_message_index = message_index
+        
+        # Get current message
+        current_message = messages_df.iloc[message_index]
+        current_time = current_message['timestamp']
+        
+        # Show current message info
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.metric("Nachricht", f"{message_index + 1}/{total_messages}")
+        with col2:
+            st.metric("Zeit", current_time.strftime('%H:%M:%S'))
+        with col3:
+            st.metric("Topic", current_message['topic'].split('/')[-1])
+        
+        # Progress bar
+        progress = (message_index + 1) / total_messages
+        st.progress(progress)
+        
+        # Auto-play functionality
+        if st.session_state.replay_playing:
+            # Auto-advance to next message
+            if st.session_state.replay_message_index < total_messages - 1:
+                st.session_state.replay_message_index += 1
+                time.sleep(1.0 / st.session_state.replay_speed)
+                st.rerun()
+            else:
+                st.session_state.replay_playing = False
+        
+        # Show current message details
+        st.subheader(f"📨 Aktuelle Nachricht ({message_index + 1}/{total_messages})")
+        
+        # Message details
+        col1, col2 = st.columns([1, 2])
+        
+        with col1:
+            st.write("**Zeitstempel:**")
+            st.write(current_time.strftime('%Y-%m-%d %H:%M:%S'))
+            
+            st.write("**Topic:**")
+            st.write(current_message['topic'])
+            
+            # Determine message relevance
+            relevance = self._determine_message_relevance(current_message)
+            st.write("**Relevanz:**")
+            if relevance['is_relevant']:
+                st.success(f"✅ {relevance['description']}")
+            else:
+                st.info(f"ℹ️ {relevance['description']}")
+        
+        with col2:
+            st.write("**Payload:**")
+            try:
+                payload = json.loads(current_message['payload'])
+                st.json(payload)
+            except:
+                st.code(current_message['payload'][:500] + "..." if len(current_message['payload']) > 500 else current_message['payload'])
+        
+        # Show messages up to current point
+        messages_up_to_current = messages_df.iloc[:message_index + 1]
+        
+        # Update production steps based on messages up to current point
+        if 'selected_order' in st.session_state and st.session_state.selected_order:
+            workpiece_type = st.session_state.selected_order['type']
+            production_steps = self._get_production_steps_for_type(workpiece_type)
+            
+            # Update steps based on current messages
+            updated_steps = self._update_production_steps_from_messages(
+                production_steps, messages_up_to_current, current_time
+            )
+            
+            # Store updated steps for display
+            st.session_state.current_production_steps = updated_steps
+
     def show_mqtt_monitor_standalone(self):
         """Show standalone MQTT message monitor"""
         st.header("📡 MQTT Monitor")
@@ -2847,7 +3389,527 @@ class APSDashboard:
         st.warning("⚠️ Diese Methode ist veraltet. Verwende den Template Message Manager im 'Template Message' Tab.")
         st.info("🎯 Gehe zu 'MQTT Control' → 'Template Message' für die neue Template-Steuerung.")
 
+    def show_order_tab(self, df):
+        """Show Order tracking and management tab"""
+        st.header("📋 Order Management")
+        st.markdown("**Aktuelle Aufträge und Produktionsschritt-Tracking**")
+        
+        # Initialize session state for orders
+        if 'erp_orders' not in st.session_state:
+            st.session_state.erp_orders = {}
+        if 'ft_orders' not in st.session_state:
+            st.session_state.ft_orders = {}
+        if 'current_orders' not in st.session_state:
+            st.session_state.current_orders = []
+        if 'selected_order' not in st.session_state:
+            st.session_state.selected_order = None
+        
+        # 1. Aktuelle Aufträge (Replay/Simulation)
+        st.subheader("1️⃣ Aktuelle Aufträge")
+        
+        # Replay/Simulation from existing sessions
+        replay_options = ["Demo-Aufträge", "Session-Replay"]
+        replay_mode = st.selectbox("Replay-Modus:", replay_options, key="replay_mode")
+        
+        if replay_mode == "Demo-Aufträge":
+            # Demo orders for testing
+            demo_orders = [
+                {"id": "cd79c66f-b565-49e0-b6da-b6599b015811", "type": "BLUE", "status": "In Bearbeitung", "timestamp": "26.08.25, 09:49"},
+                {"id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890", "type": "RED", "status": "Geplant", "timestamp": "26.08.25, 10:15"}
+            ]
+            
+            # Order selection
+            if demo_orders:
+                order_options = [f"{order['id'][:8]}... ({order['type']}) - {order['status']}" for order in demo_orders]
+                selected_order_index = st.selectbox(
+                    "Auftrag auswählen:",
+                    range(len(order_options)),
+                    format_func=lambda x: order_options[x],
+                    key="order_selection"
+                )
+                
+                if selected_order_index is not None:
+                    st.session_state.selected_order = demo_orders[selected_order_index]
+                    st.success(f"✅ Auftrag ausgewählt: {st.session_state.selected_order['id'][:8]}...")
+        
+        elif replay_mode == "Session-Replay":
+            # Get available sessions
+            sessions_dir = os.path.join(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..")), "mqtt-data/sessions")
+            available_sessions = []
+            
+            if os.path.exists(sessions_dir):
+                for file in os.listdir(sessions_dir):
+                    if file.endswith('.db') and 'aps_persistent_traffic_' in file:
+                        session_name = file.replace('aps_persistent_traffic_', '').replace('.db', '')
+                        available_sessions.append(session_name)
+            
+            if available_sessions:
+                # Sort sessions by name
+                available_sessions.sort()
+                
+                selected_session = st.selectbox(
+                    "Session auswählen:",
+                    available_sessions,
+                    key="session_selection"
+                )
+                
+                if selected_session:
+                    # Load session messages for replay
+                    messages_df = self._load_session_messages_for_replay(selected_session)
+                    if messages_df is not None:
+                        # Store messages in session state for replay
+                        st.session_state.replay_messages = messages_df
+                        st.session_state.replay_session = selected_session
+                        
+                        # Try to load order from selected session
+                        order_data = self._load_order_from_session(selected_session, "UNKNOWN")
+                        if order_data:
+                            st.session_state.selected_order = order_data
+                            st.success(f"✅ Session geladen: {selected_session} - {order_data['id'][:8]}...")
+                            
+                            # Show replay controls
+                            self._show_replay_controls(messages_df, order_data)
+                        else:
+                            st.warning(f"⚠️ Keine Order-Daten in Session '{selected_session}' gefunden")
+                    else:
+                        st.error(f"❌ Session '{selected_session}' konnte nicht geladen werden")
+            else:
+                st.info("💡 Keine Sessions verfügbar. Starte eine Session über die Kommandozeile.")
+        
+        # Show current order info
+        if st.session_state.selected_order:
+            st.info(f"📋 Aktueller Auftrag: {st.session_state.selected_order['id'][:8]}... ({st.session_state.selected_order['type']}) - {st.session_state.selected_order['status']}")
+        
+        # 2. Fertigungsschritte (nur für ausgewählten Auftrag)
+        if st.session_state.selected_order:
+            st.subheader(f"2️⃣ Fertigungsschritte - Auftrag {st.session_state.selected_order['id'][:8]}... ({st.session_state.selected_order['type']})")
+            
+            # Define color-specific production steps
+            workpiece_type = st.session_state.selected_order['type']
+            
+            if workpiece_type == "BLUE":
+                # BLUE: DRILL + MILL + AIQS + DPS
+                production_steps = [
+                    {"step": 1, "module": "FTS", "action": "FTS → Hochregallager", "icon": "🚚"},
+                    {"step": 2, "module": "HBW", "action": "Hochregallager: PICK(DRILL)", "icon": "🏗️"},
+                    {"step": 3, "module": "FTS", "action": "FTS → Bohrer", "icon": "🚚"},
+                    {"step": 4, "module": "DRILL", "action": "Bohrer: DRILL(DRILL)", "icon": "🔧"},
+                    {"step": 5, "module": "DRILL", "action": "Bohrer: DROP(DRILL)", "icon": "🔧"},
+                    {"step": 6, "module": "FTS", "action": "FTS → Hochregallager", "icon": "🚚"},
+                    {"step": 7, "module": "HBW", "action": "Hochregallager: PICK(MILL)", "icon": "🏗️"},
+                    {"step": 8, "module": "FTS", "action": "FTS → Fräse", "icon": "🚚"},
+                    {"step": 9, "module": "MILL", "action": "Fräse: MILL(MILL)", "icon": "⚙️"},
+                    {"step": 10, "module": "MILL", "action": "Fräse: DROP(MILL)", "icon": "⚙️"},
+                    {"step": 11, "module": "FTS", "action": "FTS → KI-Qualitätssicherung", "icon": "🚚"},
+                    {"step": 12, "module": "AIQS", "action": "KI-Qualitätssicherung: Qualitätsprüfung", "icon": "🔍"},
+                    {"step": 13, "module": "FTS", "action": "FTS → Warenein- und -ausgang", "icon": "🚚"},
+                    {"step": 14, "module": "DPS", "action": "Warenein- und -ausgang: DROP", "icon": "📦"}
+                ]
+            elif workpiece_type == "RED":
+                # RED: MILL + AIQS + DPS
+                production_steps = [
+                    {"step": 1, "module": "FTS", "action": "FTS → Hochregallager", "icon": "🚚"},
+                    {"step": 2, "module": "HBW", "action": "Hochregallager: PICK(MILL)", "icon": "🏗️"},
+                    {"step": 3, "module": "FTS", "action": "FTS → Fräse", "icon": "🚚"},
+                    {"step": 4, "module": "MILL", "action": "Fräse: MILL(MILL)", "icon": "⚙️"},
+                    {"step": 5, "module": "MILL", "action": "Fräse: DROP(MILL)", "icon": "⚙️"},
+                    {"step": 6, "module": "FTS", "action": "FTS → KI-Qualitätssicherung", "icon": "🚚"},
+                    {"step": 7, "module": "AIQS", "action": "KI-Qualitätssicherung: Qualitätsprüfung", "icon": "🔍"},
+                    {"step": 8, "module": "FTS", "action": "FTS → Warenein- und -ausgang", "icon": "🚚"},
+                    {"step": 9, "module": "DPS", "action": "Warenein- und -ausgang: DROP", "icon": "📦"}
+                ]
+            elif workpiece_type == "WHITE":
+                # WHITE: DRILL + AIQS + DPS
+                production_steps = [
+                    {"step": 1, "module": "FTS", "action": "FTS → Hochregallager", "icon": "🚚"},
+                    {"step": 2, "module": "HBW", "action": "Hochregallager: PICK(DRILL)", "icon": "🏗️"},
+                    {"step": 3, "module": "FTS", "action": "FTS → Bohrer", "icon": "🚚"},
+                    {"step": 4, "module": "DRILL", "action": "Bohrer: DRILL(DRILL)", "icon": "🔧"},
+                    {"step": 5, "module": "DRILL", "action": "Bohrer: DROP(DRILL)", "icon": "🔧"},
+                    {"step": 6, "module": "FTS", "action": "FTS → KI-Qualitätssicherung", "icon": "🚚"},
+                    {"step": 7, "module": "AIQS", "action": "KI-Qualitätssicherung: Qualitätsprüfung", "icon": "🔍"},
+                    {"step": 8, "module": "FTS", "action": "FTS → Warenein- und -ausgang", "icon": "🚚"},
+                    {"step": 9, "module": "DPS", "action": "Warenein- und -ausgang: DROP", "icon": "📦"}
+                ]
+            else:
+                # Unknown type - show generic steps
+                production_steps = [
+                    {"step": 1, "module": "FTS", "action": "FTS → Hochregallager", "icon": "🚚"},
+                    {"step": 2, "module": "HBW", "action": "Hochregallager: PICK", "icon": "🏗️"},
+                    {"step": 3, "module": "FTS", "action": "FTS → Produktionsmodul", "icon": "🚚"},
+                    {"step": 4, "module": "PROD", "action": "Produktion", "icon": "⚙️"},
+                    {"step": 5, "module": "FTS", "action": "FTS → KI-Qualitätssicherung", "icon": "🚚"},
+                    {"step": 6, "module": "AIQS", "action": "KI-Qualitätssicherung: Qualitätsprüfung", "icon": "🔍"},
+                    {"step": 7, "module": "FTS", "action": "FTS → Warenein- und -ausgang", "icon": "🚚"},
+                    {"step": 8, "module": "DPS", "action": "Warenein- und -ausgang: DROP", "icon": "📦"}
+                ]
+            
+            # Use dynamic production steps if available (from replay), otherwise use static
+            if 'current_production_steps' in st.session_state and st.session_state.current_production_steps:
+                production_steps = st.session_state.current_production_steps
+            else:
+                # Add status to static steps
+                for step in production_steps:
+                    step['status'] = 'geplant'
+            
+            # Create production steps display
+            for step in production_steps:
+                col1, col2, col3 = st.columns([1, 3, 1])
+                with col1:
+                    st.write(f"**{step['step']:2d}.**")
+                with col2:
+                    st.write(f"{step['icon']} {step['action']}")
+                with col3:
+                    # Status indicator with dynamic updates
+                    if step['status'] == 'abgeschlossen':
+                        status = "✅ abgeschlossen"
+                        status_color = "green"
+                    elif step['status'] == 'in_bearbeitung':
+                        status = "🔄 in Bearbeitung"
+                        status_color = "orange"
+                    else:
+                        status = "⏳ geplant"
+                        status_color = "gray"
+                    
+                    st.markdown(f"<div style='color: {status_color};'>{status}</div>", unsafe_allow_html=True)
+        else:
+            st.info("Wähle einen Auftrag aus, um die Fertigungsschritte anzuzeigen")
+        
+        # 3. Auftragsinformationen (nur für ausgewählten Auftrag)
+        if st.session_state.selected_order:
+            st.subheader(f"3️⃣ Auftragsinformationen - {st.session_state.selected_order['id'][:8]}...")
+            
+            # Create order info table
+            order_info = {
+                "Auftragsnummer": st.session_state.selected_order['id'],
+                "Auftragsstatus": st.session_state.selected_order['status'],
+                "Werkstück-Typ": st.session_state.selected_order['type'],
+                "Bestelldatum": st.session_state.selected_order['timestamp'],
+                "Auftragseingang": st.session_state.selected_order['timestamp'],
+                "Start der Bearbeitung": st.session_state.selected_order['timestamp']
+            }
+            
+            # Display as table
+            order_info_df = pd.DataFrame(list(order_info.items()), columns=['Feld', 'Wert'])
+            st.dataframe(order_info_df, use_container_width=True)
+        else:
+            st.info("Wähle einen Auftrag aus, um die Auftragsinformationen anzuzeigen")
+        
+        # ERP Order-ID Mapping Section
+        st.markdown("---")
+        st.subheader("🔗 ERP Order-ID Mapping")
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.write("**ERP Order-ID hinzufügen:**")
+            erp_order_id = st.text_input("ERP Order-ID:", key="erp_order_input")
+            ft_order_id = st.text_input("FT Order-ID:", key="ft_order_input")
+            
+            if st.button("Mapping hinzufügen"):
+                if erp_order_id and ft_order_id:
+                    st.session_state.erp_orders[erp_order_id] = ft_order_id
+                    st.session_state.ft_orders[ft_order_id] = erp_order_id
+                    st.success(f"Mapping hinzugefügt: {erp_order_id} ↔ {ft_order_id}")
+                    st.rerun()
+        
+        with col2:
+            st.write("**Aktuelle Mappings:**")
+            if st.session_state.erp_orders:
+                for erp_id, ft_id in st.session_state.erp_orders.items():
+                    st.write(f"📋 {erp_id} ↔ {ft_id}")
+            else:
+                st.info("Keine Mappings vorhanden")
 
+    def _load_order_from_session(self, session_name, expected_type):
+        """Load order information from existing session database"""
+        try:
+            # Get project root
+            project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
+            db_path = os.path.join(project_root, "mqtt-data/sessions", f"aps_persistent_traffic_{session_name}.db")
+            
+            if not os.path.exists(db_path):
+                return None
+            
+            # Connect to database
+            conn = sqlite3.connect(db_path)
+            
+            # Load MQTT messages
+            df = pd.read_sql_query("SELECT * FROM mqtt_messages ORDER BY timestamp", conn)
+            conn.close()
+            
+            if df.empty:
+                return None
+            
+            # Find order messages
+            order_messages = df[df['topic'].str.contains('order', na=False)]
+            
+            if order_messages.empty:
+                return None
+            
+            # Extract order information from the first order message
+            first_order = order_messages.iloc[0]
+            
+            # Try to parse JSON payload
+            try:
+                payload = json.loads(first_order['payload'])
+                if isinstance(payload, dict):
+                    order_id = payload.get('orderId', f"order-{session_name}")
+                    order_type = payload.get('type', expected_type)
+                else:
+                    order_id = f"order-{session_name}"
+                    order_type = expected_type
+            except:
+                # Fallback if JSON parsing fails
+                order_id = f"order-{session_name}"
+                order_type = expected_type
+            
+            # Get timestamp
+            try:
+                timestamp = pd.to_datetime(first_order['timestamp'])
+                timestamp_str = timestamp.strftime('%d.%m.%y, %H:%M')
+            except:
+                timestamp_str = "26.08.25, 09:49"
+            
+            # Determine status based on message flow
+            status = "Abgeschlossen"  # Since it's from a completed session
+            
+            return {
+                "id": order_id,
+                "type": order_type,
+                "status": status,
+                "timestamp": timestamp_str,
+                "session_name": session_name,
+                "messages_df": df  # Store all messages for replay
+            }
+                
+        except Exception as e:
+            return None
+
+    def _load_session_messages_for_replay(self, session_name):
+        """Load all messages from a session for replay functionality"""
+        try:
+            # Get project root
+            project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
+            db_path = os.path.join(project_root, "mqtt-data/sessions", f"aps_persistent_traffic_{session_name}.db")
+            
+            if not os.path.exists(db_path):
+                return None
+            
+            # Connect to database
+            conn = sqlite3.connect(db_path)
+            
+            # Load MQTT messages
+            df = pd.read_sql_query("SELECT * FROM mqtt_messages ORDER BY timestamp", conn)
+            conn.close()
+            
+            if df.empty:
+                return None
+            
+            # Convert timestamp to datetime
+            df['timestamp'] = pd.to_datetime(df['timestamp'])
+            
+            return df
+                
+        except Exception as e:
+            return None
+
+    def _get_production_steps_for_type(self, workpiece_type):
+        """Get production steps for a specific workpiece type"""
+        if workpiece_type == "BLUE":
+            return [
+                {"step": 1, "module": "FTS", "action": "FTS → Hochregallager", "icon": "🚚", "status": "geplant"},
+                {"step": 2, "module": "HBW", "action": "Hochregallager: PICK(DRILL)", "icon": "🏗️", "status": "geplant"},
+                {"step": 3, "module": "FTS", "action": "FTS → Bohrer", "icon": "🚚", "status": "geplant"},
+                {"step": 4, "module": "DRILL", "action": "Bohrer: DRILL(DRILL)", "icon": "🔧", "status": "geplant"},
+                {"step": 5, "module": "DRILL", "action": "Bohrer: DROP(DRILL)", "icon": "🔧", "status": "geplant"},
+                {"step": 6, "module": "FTS", "action": "FTS → Hochregallager", "icon": "🚚", "status": "geplant"},
+                {"step": 7, "module": "HBW", "action": "Hochregallager: PICK(MILL)", "icon": "🏗️", "status": "geplant"},
+                {"step": 8, "module": "FTS", "action": "FTS → Fräse", "icon": "🚚", "status": "geplant"},
+                {"step": 9, "module": "MILL", "action": "Fräse: MILL(MILL)", "icon": "⚙️", "status": "geplant"},
+                {"step": 10, "module": "MILL", "action": "Fräse: DROP(MILL)", "icon": "⚙️", "status": "geplant"},
+                {"step": 11, "module": "FTS", "action": "FTS → KI-Qualitätssicherung", "icon": "🚚", "status": "geplant"},
+                {"step": 12, "module": "AIQS", "action": "KI-Qualitätssicherung: Qualitätsprüfung", "icon": "🔍", "status": "geplant"},
+                {"step": 13, "module": "FTS", "action": "FTS → Warenein- und -ausgang", "icon": "🚚", "status": "geplant"},
+                {"step": 14, "module": "DPS", "action": "Warenein- und -ausgang: DROP", "icon": "📦", "status": "geplant"}
+            ]
+        elif workpiece_type == "RED":
+            return [
+                {"step": 1, "module": "FTS", "action": "FTS → Hochregallager", "icon": "🚚", "status": "geplant"},
+                {"step": 2, "module": "HBW", "action": "Hochregallager: PICK(MILL)", "icon": "🏗️", "status": "geplant"},
+                {"step": 3, "module": "FTS", "action": "FTS → Fräse", "icon": "🚚", "status": "geplant"},
+                {"step": 4, "module": "MILL", "action": "Fräse: MILL(MILL)", "icon": "⚙️", "status": "geplant"},
+                {"step": 5, "module": "MILL", "action": "Fräse: DROP(MILL)", "icon": "⚙️", "status": "geplant"},
+                {"step": 6, "module": "FTS", "action": "FTS → KI-Qualitätssicherung", "icon": "🚚", "status": "geplant"},
+                {"step": 7, "module": "AIQS", "action": "KI-Qualitätssicherung: Qualitätsprüfung", "icon": "🔍", "status": "geplant"},
+                {"step": 8, "module": "FTS", "action": "FTS → Warenein- und -ausgang", "icon": "🚚", "status": "geplant"},
+                {"step": 9, "module": "DPS", "action": "Warenein- und -ausgang: DROP", "icon": "📦", "status": "geplant"}
+            ]
+        elif workpiece_type == "WHITE":
+            return [
+                {"step": 1, "module": "FTS", "action": "FTS → Hochregallager", "icon": "🚚", "status": "geplant"},
+                {"step": 2, "module": "HBW", "action": "Hochregallager: PICK(AIQS)", "icon": "🏗️", "status": "geplant"},
+                {"step": 3, "module": "FTS", "action": "FTS → KI-Qualitätssicherung", "icon": "🚚", "status": "geplant"},
+                {"step": 4, "module": "AIQS", "action": "KI-Qualitätssicherung: Qualitätsprüfung", "icon": "🔍", "status": "geplant"},
+                {"step": 5, "module": "FTS", "action": "FTS → Warenein- und -ausgang", "icon": "🚚", "status": "geplant"},
+                {"step": 6, "module": "DPS", "action": "Warenein- und -ausgang: DROP", "icon": "📦", "status": "geplant"}
+            ]
+        else:
+            return []
+
+    def _update_production_steps_from_messages(self, steps, messages_df, current_time):
+        """Update production steps status based on messages up to current time"""
+        # Filter messages up to current time
+        current_messages = messages_df[messages_df['timestamp'] <= current_time]
+        
+        # Create a copy of steps to modify
+        updated_steps = steps.copy()
+        
+        # Analyze messages to determine step completion
+        for i, step in enumerate(updated_steps):
+            module = step['module']
+            
+            # Check for module state changes or action completions
+            module_messages = current_messages[
+                current_messages['topic'].str.contains(f'module/v1/ff/', na=False) &
+                current_messages['topic'].str.contains(module, na=False)
+            ]
+            
+            # Check for FTS messages
+            if module == "FTS":
+                fts_messages = current_messages[
+                    current_messages['topic'].str.contains('fts/', na=False)
+                ]
+                if len(fts_messages) > 0:
+                    # FTS activity detected
+                    step['status'] = 'abgeschlossen'
+                    continue
+            
+            # Check for specific module actions
+            if module == "HBW":
+                hbw_messages = current_messages[
+                    current_messages['topic'].str.contains('SVR3QA2098', na=False)
+                ]
+                if len(hbw_messages) > 0:
+                    step['status'] = 'abgeschlossen'
+                    continue
+            
+            elif module == "MILL":
+                mill_messages = current_messages[
+                    current_messages['topic'].str.contains('SVR4H76449', na=False)
+                ]
+                if len(mill_messages) > 0:
+                    step['status'] = 'abgeschlossen'
+                    continue
+            
+            elif module == "DRILL":
+                drill_messages = current_messages[
+                    current_messages['topic'].str.contains('SVR4H76530', na=False)
+                ]
+                if len(drill_messages) > 0:
+                    step['status'] = 'abgeschlossen'
+                    continue
+            
+            elif module == "AIQS":
+                aiqs_messages = current_messages[
+                    current_messages['topic'].str.contains('SVR3QA0022', na=False)
+                ]
+                if len(aiqs_messages) > 0:
+                    step['status'] = 'abgeschlossen'
+                    continue
+            
+            elif module == "DPS":
+                dps_messages = current_messages[
+                    current_messages['topic'].str.contains('SVR4H73275', na=False)
+                ]
+                if len(dps_messages) > 0:
+                    step['status'] = 'abgeschlossen'
+                    continue
+        
+        return updated_steps
+
+    def _determine_message_relevance(self, message):
+        """Determine if a message is relevant for production workflow"""
+        topic = message['topic']
+        payload = message['payload']
+        
+        # Check for order-related messages
+        if 'order' in topic.lower():
+            return {
+                'is_relevant': True,
+                'description': 'Order-Nachricht (Auftrag)'
+            }
+        
+        # Check for module state changes
+        if 'module/v1/ff/' in topic and '/state' in topic:
+            return {
+                'is_relevant': True,
+                'description': 'Module Status-Änderung'
+            }
+        
+        # Check for FTS messages
+        if 'fts/' in topic:
+            return {
+                'is_relevant': True,
+                'description': 'FTS-Nachricht (Transport)'
+            }
+        
+        # Check for CCU messages
+        if 'ccu/' in topic:
+            return {
+                'is_relevant': True,
+                'description': 'CCU-Nachricht (Zentrale Steuerung)'
+            }
+        
+        # Check for action messages
+        if 'action' in topic.lower():
+            return {
+                'is_relevant': True,
+                'description': 'Action-Nachricht (Aktion)'
+            }
+        
+        # Check for camera messages
+        if 'cam' in topic.lower():
+            return {
+                'is_relevant': False,
+                'description': 'Camera-Nachricht (nicht relevant)'
+            }
+        
+        # Check for status messages
+        if 'status' in topic.lower():
+            return {
+                'is_relevant': True,
+                'description': 'Status-Nachricht'
+            }
+        
+        # Check payload for relevant content
+        try:
+            payload_data = json.loads(payload)
+            if isinstance(payload_data, dict):
+                # Check for orderId, actionId, etc.
+                if 'orderId' in payload_data:
+                    return {
+                        'is_relevant': True,
+                        'description': 'Enthält Order-ID'
+                    }
+                if 'actionId' in payload_data:
+                    return {
+                        'is_relevant': True,
+                        'description': 'Enthält Action-ID'
+                    }
+                if 'state' in payload_data:
+                    return {
+                        'is_relevant': True,
+                        'description': 'Enthält Status-Information'
+                    }
+        except:
+            pass
+        
+        # Default: not very relevant
+        return {
+            'is_relevant': False,
+            'description': 'Allgemeine Nachricht'
+        }
 
     def create_sidebar(self):
         """Creates the sidebar with navigation and MQTT broker selection."""
@@ -2855,7 +3917,7 @@ class APSDashboard:
             st.title("Navigation")
 
             # Page navigation
-            page_options = ["📊 Analyse APS", "🎮 MQTT Control", "🏭 Module Overview"]
+            page_options = ["📊 Analyse APS", "🎮 MQTT Control", "🏭 Module Overview", "📋 Order"]
             selected_page = st.radio("Seite auswählen:", page_options)
 
             st.markdown("---")
@@ -2908,6 +3970,11 @@ class APSDashboard:
                 df = self.load_data()
                 self.show_module_overview_dashboard(df)
                 self.disconnect()
+        elif selected_page == "📋 Order":
+            if self.connect():
+                df = self.load_data()
+                self.show_order_tab(df)
+                self.disconnect()
 
     def run_dashboard(self):
         """Run the dashboard"""
@@ -2935,7 +4002,8 @@ class APSDashboard:
                 self.aps_analysis.show_aps_analysis_tab()
             elif st.session_state.selected_tab == "🎮 MQTT Control":
                 self.show_mqtt_control()
-
+            elif st.session_state.selected_tab == "📋 Order":
+                self.show_order_tab(df)
             elif st.session_state.selected_tab == "⚙️ Einstellungen":
                 self.show_settings()
 
@@ -2968,6 +4036,7 @@ def main():
         ("📡 MQTT Monitor", "📡 MQTT Monitor"),
         ("🔍 APS Analyse", "🔍 APS Analyse"),
         ("🎮 MQTT Control", "🎮 MQTT Control"),
+        ("📋 Order", "📋 Order"),
         ("⚙️ Einstellungen", "⚙️ Einstellungen")
     ]
     

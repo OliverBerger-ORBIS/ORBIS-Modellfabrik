@@ -139,7 +139,77 @@ class MQTTMessageLibrary:
         else:
             raise ValueError(f"Unknown message type: {message_type}")
 
-# Pre-defined working message templates
+# Dynamic template generation instead of static templates
+def create_dynamic_template(module: str, command: str, color: str = None, workpiece_id: str = None) -> Dict[str, Any]:
+    """Create a dynamic template based on module, command, and color"""
+    
+    # Module configuration
+    module_config = MQTTMessageLibrary.APS_MODULES.get(module)
+    if not module_config:
+        raise ValueError(f"Unknown module: {module}")
+    
+    # Check if command is supported
+    if command not in module_config["working_commands"]:
+        raise ValueError(f"Command '{command}' not supported for module '{module}'")
+    
+    # Base metadata
+    metadata = {
+        "priority": "NORMAL",
+        "timeout": 300
+    }
+    
+    # Add color if provided
+    if color:
+        metadata["type"] = color
+    
+    # Add workpiece ID if provided
+    if workpiece_id:
+        metadata["workpieceId"] = workpiece_id
+    
+    # Add duration for processing commands (if they were supported)
+    if command in ["MILL", "DRILL"]:
+        metadata["duration"] = 30 if module == "DRILL" else 45
+    
+    return {
+        "description": f"{module} module {command} command{f' for {color} workpiece' if color else ''}",
+        "module": module,
+        "command": command,
+        "metadata": metadata,
+        "expected_response": "RUNNING",
+        "notes": f"Dynamic template for {module} {command} command"
+    }
+
+def get_available_templates() -> Dict[str, Dict[str, Any]]:
+    """Get all available dynamic templates"""
+    templates = {}
+    
+    # Available modules and their working commands
+    modules = {
+        "DRILL": ["PICK", "DROP"],
+        "MILL": ["PICK", "DROP"], 
+        "AIQS": ["PICK", "DROP", "CHECK_QUALITY"],
+        "HBW": ["PICK", "DROP", "STORE"],
+        "DPS": ["PICK", "DROP", "INPUT_RGB", "RGB_NFC"]
+    }
+    
+    # Available colors
+    colors = ["RED", "WHITE", "BLUE"]
+    
+    # Generate templates for each module and command
+    for module, commands in modules.items():
+        for command in commands:
+            # Create template without color
+            template_key = f"{module}_{command}"
+            templates[template_key] = create_dynamic_template(module, command)
+            
+            # Create templates with colors
+            for color in colors:
+                template_key = f"{module}_{command}_{color}"
+                templates[template_key] = create_dynamic_template(module, command, color)
+    
+    return templates
+
+# Legacy static templates (only the working ones)
 WORKING_MESSAGE_TEMPLATES = {
     "DRILL_PICK_WHITE": {
         "description": "DRILL module PICK command for WHITE workpiece W1",
@@ -203,85 +273,6 @@ WORKING_MESSAGE_TEMPLATES = {
         "expected_response": "RUNNING",
         "notes": "Expected to work based on module capabilities"
     },
-    "DRILL_PROCESS_WHITE": {
-        "description": "DRILL module DRILL command for WHITE workpiece W1 processing",
-        "module": "DRILL",
-        "command": "DRILL",
-        "metadata": {
-            "priority": "NORMAL",
-            "timeout": 300,
-            "type": "WHITE",
-            "workpieceId": "04798eca341290",
-            "duration": 30
-        },
-        "expected_response": "RUNNING",
-        "notes": "Processing command - requires workpiece to be picked first with W1 NFC code"
-    },
-    "MILL_PROCESS_WHITE": {
-        "description": "MILL module MILL command for WHITE workpiece processing",
-        "module": "MILL",
-        "command": "MILL",
-        "metadata": {
-            "priority": "NORMAL",
-            "timeout": 300,
-            "type": "WHITE",
-            "duration": 45
-        },
-        "expected_response": "RUNNING",
-        "notes": "Processing command - requires workpiece to be picked first"
-    },
-    "DRILL_PROCESS_RED": {
-        "description": "DRILL module DRILL command for RED workpiece processing",
-        "module": "DRILL",
-        "command": "DRILL",
-        "metadata": {
-            "priority": "NORMAL",
-            "timeout": 300,
-            "type": "RED",
-            "duration": 30
-        },
-        "expected_response": "RUNNING",
-        "notes": "Processing command - requires workpiece to be picked first"
-    },
-    "MILL_PROCESS_RED": {
-        "description": "MILL module MILL command for RED workpiece processing",
-        "module": "MILL",
-        "command": "MILL",
-        "metadata": {
-            "priority": "NORMAL",
-            "timeout": 300,
-            "type": "RED",
-            "duration": 45
-        },
-        "expected_response": "RUNNING",
-        "notes": "Processing command - requires workpiece to be picked first"
-    },
-    "DRILL_PROCESS_BLUE": {
-        "description": "DRILL module DRILL command for BLUE workpiece processing",
-        "module": "DRILL",
-        "command": "DRILL",
-        "metadata": {
-            "priority": "NORMAL",
-            "timeout": 300,
-            "type": "BLUE",
-            "duration": 30
-        },
-        "expected_response": "RUNNING",
-        "notes": "Processing command - requires workpiece to be picked first"
-    },
-    "MILL_PROCESS_BLUE": {
-        "description": "MILL module MILL command for BLUE workpiece processing",
-        "module": "MILL",
-        "command": "MILL",
-        "metadata": {
-            "priority": "NORMAL",
-            "timeout": 300,
-            "type": "BLUE",
-            "duration": 45
-        },
-        "expected_response": "RUNNING",
-        "notes": "Processing command - requires workpiece to be picked first"
-    },
     "DPS_INPUT_RGB": {
         "description": "DPS module INPUT_RGB command for RGB sensor input",
         "module": "DPS",
@@ -292,78 +283,6 @@ WORKING_MESSAGE_TEMPLATES = {
         },
         "expected_response": "RUNNING",
         "notes": "RGB sensor input command for workpiece detection"
-    },
-    "DPS_RGB_NFC_WHITE": {
-        "description": "DPS module RGB_NFC command for WHITE workpiece NFC reading",
-        "module": "DPS",
-        "command": "RGB_NFC",
-        "metadata": {
-            "priority": "NORMAL",
-            "timeout": 300,
-            "type": "WHITE"
-        },
-        "expected_response": "RUNNING",
-        "notes": "NFC reading command for WHITE workpiece identification"
-    },
-    "DPS_RGB_NFC_RED": {
-        "description": "DPS module RGB_NFC command for RED workpiece NFC reading",
-        "module": "DPS",
-        "command": "RGB_NFC",
-        "metadata": {
-            "priority": "NORMAL",
-            "timeout": 300,
-            "type": "RED"
-        },
-        "expected_response": "RUNNING",
-        "notes": "NFC reading command for RED workpiece identification"
-    },
-    "DPS_RGB_NFC_BLUE": {
-        "description": "DPS module RGB_NFC command for BLUE workpiece NFC reading",
-        "module": "DPS",
-        "command": "RGB_NFC",
-        "metadata": {
-            "priority": "NORMAL",
-            "timeout": 300,
-            "type": "BLUE"
-        },
-        "expected_response": "RUNNING",
-        "notes": "NFC reading command for BLUE workpiece identification"
-    },
-    "HBW_STORE_WHITE": {
-        "description": "HBW module STORE command for WHITE workpiece storage",
-        "module": "HBW",
-        "command": "STORE",
-        "metadata": {
-            "priority": "NORMAL",
-            "timeout": 300,
-            "type": "WHITE"
-        },
-        "expected_response": "RUNNING",
-        "notes": "Storage command for WHITE workpiece - requires workpiece to be picked first"
-    },
-    "HBW_STORE_RED": {
-        "description": "HBW module STORE command for RED workpiece storage",
-        "module": "HBW",
-        "command": "STORE",
-        "metadata": {
-            "priority": "NORMAL",
-            "timeout": 300,
-            "type": "RED"
-        },
-        "expected_response": "RUNNING",
-        "notes": "Storage command for RED workpiece - requires workpiece to be picked first"
-    },
-    "HBW_STORE_BLUE": {
-        "description": "HBW module STORE command for BLUE workpiece storage",
-        "module": "HBW",
-        "command": "STORE",
-        "metadata": {
-            "priority": "NORMAL",
-            "timeout": 300,
-            "type": "BLUE"
-        },
-        "expected_response": "RUNNING",
-        "notes": "Storage command for BLUE workpiece - requires workpiece to be picked first"
     }
 }
 

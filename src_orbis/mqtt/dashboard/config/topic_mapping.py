@@ -99,20 +99,36 @@ TXT_TOPIC_MAPPINGS = {
     "/j1/txt/1/f/i/error": "TXT : f : i : error",
     "/j1/txt/1/f/o/error": "TXT : f : o : error",
     "/j1/txt/1/f/i/config/hbw": "TXT : f : i : config : hbw",
+    "/j1/txt/1/f/i/config/dps": "TXT : f : i : config : dps",
+    "/j1/txt/1/f/i/config/aiqs": "TXT : f : i : config : aiqs",
+    "/j1/txt/1/f/i/config/mill": "TXT : f : i : config : mill",
+    "/j1/txt/1/f/i/config/drill": "TXT : f : i : config : drill",
     
     # C-Topics (Control topics)
     "/j1/txt/1/c/bme680": "TXT : c : bme680",
     "/j1/txt/1/c/cam": "TXT : c : cam",
     "/j1/txt/1/c/ldr": "TXT : c : ldr",
+    "/j1/txt/1/c/ultrasonic": "TXT : c : ultrasonic",
+    "/j1/txt/1/c/color": "TXT : c : color",
+    "/j1/txt/1/c/nfc": "TXT : c : nfc",
     
     # I-Topics (Input topics)
     "/j1/txt/1/i/bme680": "TXT : i : bme680",
     "/j1/txt/1/i/broadcast": "TXT : i : broadcast",
     "/j1/txt/1/i/cam": "TXT : i : cam",
     "/j1/txt/1/i/ldr": "TXT : i : ldr",
+    "/j1/txt/1/i/ultrasonic": "TXT : i : ultrasonic",
+    "/j1/txt/1/i/color": "TXT : i : color",
+    "/j1/txt/1/i/nfc": "TXT : i : nfc",
+    "/j1/txt/1/i/button": "TXT : i : button",
+    "/j1/txt/1/i/switch": "TXT : i : switch",
     
     # O-Topics (Output topics)
     "/j1/txt/1/o/broadcast": "TXT : o : broadcast",
+    "/j1/txt/1/o/led": "TXT : o : led",
+    "/j1/txt/1/o/motor": "TXT : o : motor",
+    "/j1/txt/1/o/servo": "TXT : o : servo",
+    "/j1/txt/1/o/display": "TXT : o : display",
 }
 
 # Topic patterns for dynamic mapping

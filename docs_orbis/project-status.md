@@ -96,6 +96,34 @@
 - **API Development:** REST API für Template Messages
 - **Security:** Erweiterte Sicherheitsfeatures für Production
 
+## 📋 ToDo-Liste
+
+### 🔄 Dynamische Template-Generierung (später)
+- [ ] **Dynamische Template-Funktion** implementieren
+- [ ] **Module + Command + Color** Kombinationen generieren
+- [ ] **Dashboard-Integration** mit dynamischer Auswahl
+- [ ] **Status-Anzeige** für Test-Status (getestet/erwartet/nicht getestet)
+
+### 🏭 Fertigungsschritt-Verwaltung (Priorität 2)
+- [ ] **Fertigungsschritt-Tracking** implementieren
+- [ ] **Replay-Dashboard** in APS-Dashboard integrieren
+- [ ] **Workflow-Visualisierung** für Fertigungsschritte
+- [ ] **Schritt-für-Schritt Replay** von Fertigungsprozessen
+
+### 🔗 ERP-Integration (Priorität 3)
+- [ ] **ERP-Order-ID ↔ FT-Order-ID Mapping** implementieren
+- [ ] **APS-Dashboard verwaltetes Mapping** für Order-IDs
+- [ ] **ERP-Integration-Test und Dokumentation** löschen (nicht funktional)
+- [ ] **Alternative Lösung** über Dashboard-basiertes Mapping
+
+## ❌ Fehlgeschlagene/Entfernte Features
+
+### 🔗 ERP-Integration Test
+- **Status:** ❌ **FEHLGESCHLAGEN** - Nicht funktional
+- **Grund:** Technische Probleme bei der ERP-Integration
+- **Lösung:** APS-Dashboard verwaltetes Mapping von ERP-Order-ID ↔ FT-Order-ID
+- **Aktion:** ERP-Integration-Test und zugehörige Dokumentation löschen
+
 ## 📁 Projektstruktur
 
 ```
