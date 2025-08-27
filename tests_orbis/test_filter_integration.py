@@ -129,18 +129,19 @@ class TestFilterIntegration(unittest.TestCase):
         except Exception as e:
             self.fail(f"❌ Filter component with real data failed: {e}")
 
-    def test_topic_mapping_with_real_topics(self):
-        """Test: Topic-Mapping funktioniert mit echten Topics"""
+    def test_topic_manager_with_real_topics(self):
+        """Test: Topic-Manager funktioniert mit echten Topics"""
         try:
-            from src_orbis.mqtt.dashboard.config.topic_mapping import get_friendly_topic_name
+            from src_orbis.mqtt.tools.topic_manager import get_topic_manager
             
             # Get real topics from database
             query = "SELECT DISTINCT topic FROM mqtt_messages"
             topics = pd.read_sql_query(query, self.conn)['topic'].tolist()
             
             # Test mapping for each topic
+            topic_manager = get_topic_manager()
             for topic in topics:
-                friendly_name = get_friendly_topic_name(topic)
+                friendly_name = topic_manager.get_friendly_name(topic)
                 
                 # Check that mapping produces readable names
                 self.assertIsInstance(friendly_name, str)

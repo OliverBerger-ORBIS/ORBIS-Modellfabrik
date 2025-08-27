@@ -26,10 +26,13 @@ The `Node-RED` folder contains the flows of Node-RED as a Json file
 
 For detailed documentation of the Node-RED flows, system architecture, and development guidelines, see the [Orbis Documentation Directory](./docs-orbis/).
 
+- **[Project Status](./docs-orbis/project-status.md)** - Aktueller Projektstand und Features
 - **[Node-RED Documentation](./docs-orbis/node-red/)** - Complete flow analysis, state machine, and development guides
 - **[System Architecture](./docs-orbis/node-red/architecture.md)** - Overall system design and components
 - **[Flows Overview](./docs-orbis/node-red/flows-overview.md)** - Detailed tab and module structure
 - **[State Machine](./docs-orbis/node-red/state-machine.md)** - VDA 5050 compliant state transitions
+- **[Topic Configuration Guide](./docs-orbis/topic-configuration-guide.md)** - Zentrale MQTT Topic-Konfiguration
+- **[Module Configuration Guide](./docs-orbis/module-configuration-guide.md)** - Zentrale Modul-Konfiguration
 
 ## 📁 Project Structure
 

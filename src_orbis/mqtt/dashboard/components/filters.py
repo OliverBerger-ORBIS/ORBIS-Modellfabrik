@@ -4,7 +4,7 @@ UI Components for the APS Dashboard
 import streamlit as st
 from datetime import datetime, timedelta
 import pandas as pd
-from ..config.topic_mapping import get_friendly_topic_name
+from ...tools.topic_manager import get_topic_manager
 from ..config.icon_config import get_module_icon
 
 def create_filters(df, single_session_mode=False):
@@ -209,7 +209,8 @@ def create_filters(df, single_session_mode=False):
         
         # Create friendly topic mappings
         for topic in topics:
-            friendly_name = get_friendly_topic_name(topic)
+            topic_manager = get_topic_manager()
+            friendly_name = topic_manager.get_friendly_name(topic)
             friendly_topics[friendly_name] = topic
         
         # Sort friendly names alphabetically
@@ -219,7 +220,7 @@ def create_filters(df, single_session_mode=False):
             "📡 Topic", 
             sorted_friendly_names, 
             index=0 if st.session_state.selected_topic == 'Alle' 
-            else sorted_friendly_names.index(get_friendly_topic_name(st.session_state.selected_topic)) 
+            else sorted_friendly_names.index(get_topic_manager().get_friendly_name(st.session_state.selected_topic)) 
             if st.session_state.selected_topic in topics else 0
         )
         

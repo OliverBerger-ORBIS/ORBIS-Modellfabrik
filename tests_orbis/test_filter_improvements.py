@@ -57,11 +57,12 @@ class TestFilterImprovements(unittest.TestCase):
         except Exception as e:
             self.fail(f"❌ Filter component import failed: {e}")
 
-    def test_topic_mapping_import(self):
-        """Test: Topic-Mapping kann importiert werden"""
+    def test_topic_manager_import(self):
+        """Test: Topic-Manager kann importiert werden"""
         try:
-            from src_orbis.mqtt.dashboard.config.topic_mapping import get_friendly_topic_name
-            self.assertTrue(callable(get_friendly_topic_name))
+            from src_orbis.mqtt.tools.topic_manager import get_topic_manager
+            topic_manager = get_topic_manager()
+            self.assertTrue(callable(topic_manager.get_friendly_name))
             print("✅ Topic mapping import: OK")
         except Exception as e:
             self.fail(f"❌ Topic mapping import failed: {e}")
@@ -78,7 +79,9 @@ class TestFilterImprovements(unittest.TestCase):
     def test_friendly_topic_names(self):
         """Test: Friendly Topic Names funktionieren korrekt"""
         try:
-            from src_orbis.mqtt.dashboard.config.topic_mapping import get_friendly_topic_name
+            from src_orbis.mqtt.tools.topic_manager import get_topic_manager
+            
+            topic_manager = get_topic_manager()
             
             # Test cases
             test_cases = [
@@ -91,7 +94,7 @@ class TestFilterImprovements(unittest.TestCase):
             ]
             
             for topic, expected in test_cases:
-                friendly_name = get_friendly_topic_name(topic)
+                friendly_name = topic_manager.get_friendly_name(topic)
                 self.assertEqual(friendly_name, expected, 
                                f"Topic '{topic}' should map to '{expected}', got '{friendly_name}'")
             
@@ -308,7 +311,9 @@ class TestFilterImprovements(unittest.TestCase):
     def test_friendly_topic_integration(self):
         """Test: Friendly Topic Integration in Dropdown"""
         try:
-            from src_orbis.mqtt.dashboard.config.topic_mapping import get_friendly_topic_name
+            from src_orbis.mqtt.tools.topic_manager import get_topic_manager
+            
+            topic_manager = get_topic_manager()
             
             # Test friendly topic mapping creation
             topics = [
@@ -319,7 +324,7 @@ class TestFilterImprovements(unittest.TestCase):
             
             friendly_topics = {}
             for topic in topics:
-                friendly_name = get_friendly_topic_name(topic)
+                friendly_name = topic_manager.get_friendly_name(topic)
                 friendly_topics[friendly_name] = topic
             
             # Check mapping
