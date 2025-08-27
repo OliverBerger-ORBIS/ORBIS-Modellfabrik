@@ -2551,15 +2551,37 @@ class APSDashboard:
                     st.error(f"❌ Fehler beim Speichern: {e}")
 
     def show_settings(self):
-        """Show dashboard settings"""
+        """Show dashboard settings with sub-navigation"""
         st.header("⚙️ Einstellungen")
         st.markdown("Dashboard-Konfiguration und System-Informationen")
+
+        # Sub-navigation for settings
+        settings_tab1, settings_tab2, settings_tab3, settings_tab4 = st.tabs([
+            "🔧 Dashboard",
+            "📋 Topic-Mappings", 
+            "🏷️ NFC-Codes",
+            "📚 MQTT-Templates"
+        ])
+
+        with settings_tab1:
+            self.show_dashboard_settings()
+
+        with settings_tab2:
+            self.show_topic_mapping_settings()
+
+        with settings_tab3:
+            self.show_nfc_mapping_settings()
+
+        with settings_tab4:
+            self.show_mqtt_template_settings()
+
+    def show_dashboard_settings(self):
+        """Show dashboard configuration settings"""
+            st.subheader("🔧 Dashboard-Einstellungen")
 
         col1, col2 = st.columns(2)
 
         with col1:
-            st.subheader("🔧 Dashboard-Einstellungen")
-
             # Verbose mode
             verbose_mode = st.checkbox(
                 "🔍 Verbose-Modus (alle Topics anzeigen)",
@@ -2617,9 +2639,8 @@ class APSDashboard:
             st.metric("Template-Nachrichten", len(self.template_manager.templates))
             st.metric("Session-Datenbanken", len(glob.glob(os.path.join(os.path.dirname(self.db_file), "aps_persistent_traffic_*.db"))))
 
-        st.markdown("---")
-
-        # Topic Mapping Configuration
+    def show_topic_mapping_settings(self):
+        """Show topic mapping configuration"""
         st.subheader("📋 Topic-Mapping Konfiguration")
         st.markdown("Benutzerfreundliche Namen für MQTT-Topics")
 
@@ -2691,6 +2712,99 @@ class APSDashboard:
             ]
             for original, friendly in examples:
                 st.markdown(f"• `{original}` → **{friendly}**")
+
+    def show_nfc_mapping_settings(self):
+        """Show NFC code mapping configuration"""
+        st.subheader("🏷️ NFC-Code Mapping")
+        st.markdown("Mapping von NFC-Codes zu Werkstücken und Modulen")
+
+        # NFC Code Management
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.markdown("**📋 Bekannte NFC-Codes:**")
+            
+            # Example NFC codes (from our sessions)
+            nfc_codes = [
+                {"code": "040a8dca341291", "type": "RED", "description": "Roter Werkstoff"},
+                {"code": "04798eca341290", "type": "WHITE", "description": "Weißer Werkstoff"},
+                {"code": "047389ca341291", "type": "BLUE", "description": "Blauer Werkstoff"},
+                {"code": "047f8cca341290", "type": "RED", "description": "Roter Werkstoff"},
+                {"code": "04808dca341291", "type": "RED", "description": "Roter Werkstoff"},
+                {"code": "04ab8bca341290", "type": "WHITE", "description": "Weißer Werkstoff"}
+            ]
+            
+            for nfc in nfc_codes:
+                with st.expander(f"🏷️ {nfc['code']} ({nfc['type']})", expanded=False):
+                    st.markdown(f"**Typ:** {nfc['type']}")
+                    st.markdown(f"**Beschreibung:** {nfc['description']}")
+                    st.markdown(f"**Code:** `{nfc['code']}`")
+        
+        with col2:
+            st.markdown("**🔧 NFC-Code Verwaltung:**")
+            
+            # Add new NFC code
+            st.markdown("**Neuen NFC-Code hinzufügen:**")
+            new_code = st.text_input("NFC-Code:", placeholder="040a8dca341291")
+            new_type = st.selectbox("Werkstoff-Typ:", ["RED", "WHITE", "BLUE"])
+            new_description = st.text_input("Beschreibung:", placeholder="Roter Werkstoff")
+            
+            if st.button("➕ NFC-Code hinzufügen"):
+                if new_code and new_type:
+                    st.success(f"✅ NFC-Code {new_code} hinzugefügt")
+                else:
+                    st.error("❌ Bitte alle Felder ausfüllen")
+            
+            st.markdown("---")
+            
+            # NFC Statistics
+            st.metric("Bekannte NFC-Codes", len(nfc_codes))
+            st.metric("RED Werkstoffe", len([n for n in nfc_codes if n['type'] == 'RED']))
+            st.metric("WHITE Werkstoffe", len([n for n in nfc_codes if n['type'] == 'WHITE']))
+            st.metric("BLUE Werkstoffe", len([n for n in nfc_codes if n['type'] == 'BLUE']))
+
+    def show_mqtt_template_settings(self):
+        """Show MQTT template configuration"""
+        st.subheader("📚 MQTT-Template Konfiguration")
+        st.markdown("Template-Nachrichten und Analyse-Einstellungen")
+
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.markdown("**📋 Verfügbare Templates:**")
+            
+            # Template categories
+            template_categories = {
+                "TXT": "TXT Controller Templates",
+                "CCU": "CCU Templates", 
+                "MODUL": "Module Templates",
+                "Node-RED": "Node-RED Templates",
+                "FTS": "FTS Templates"
+            }
+            
+            for category, description in template_categories.items():
+                with st.expander(f"📂 {category} - {description}", expanded=False):
+                    st.markdown(f"**Beschreibung:** {description}")
+                    st.markdown("**Status:** ⏳ Noch nicht analysiert")
+                    st.markdown("**Aktion:** Verwende separate Analyse-Tools")
+        
+        with col2:
+            st.markdown("**🔧 Analyse-Einstellungen:**")
+            
+            # Analysis configuration
+            st.markdown("**Separate Analyse-Tools:**")
+            st.code("TXT: python3 src_orbis/mqtt/tools/txt_template_analyzer.py")
+            st.code("CCU: python3 src_orbis/mqtt/tools/ccu_template_analyzer.py")
+            st.code("MODUL: python3 src_orbis/mqtt/tools/module_template_analyzer.py")
+            st.code("Node-RED: python3 src_orbis/mqtt/tools/node_red_template_analyzer.py")
+            st.code("FTS: python3 src_orbis/mqtt/tools/fts_template_analyzer.py")
+            
+            st.markdown("---")
+            
+            # Template statistics
+            st.metric("Template-Kategorien", len(template_categories))
+            st.metric("Analysierte Templates", 0)  # Will be updated when analysis is done
+            st.metric("Template Library", "Bereit")
 
     def show_module_control_rows(self):
         """Show module control in rows with buttons"""
@@ -2905,7 +3019,7 @@ class APSDashboard:
                     
                     # Ensure button_order is always initialized
                     if 'button_order' not in locals():
-                    button_order = []
+                        button_order = []
                     
                     # Add PICK first
                     if "PICK" in module_info["commands"]:
