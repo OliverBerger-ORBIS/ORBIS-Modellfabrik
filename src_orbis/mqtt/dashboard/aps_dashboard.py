@@ -46,6 +46,9 @@ from src_orbis.mqtt.tools.mqtt_message_library import (
 from src_orbis.mqtt.tools.template_message_manager import TemplateMessageManager
 from src_orbis.mqtt.dashboard.template_control import TemplateControlDashboard
 
+# Module Mapping imports
+from src_orbis.mqtt.tools.module_mapping_utils import ModuleMappingUtils
+
 # Node-RED Analysis imports
 from src_orbis.mqtt.tools.node_red_message_analyzer import NodeRedMessageAnalyzer
 
@@ -112,6 +115,9 @@ class APSDashboard:
         self.template_manager = TemplateMessageManager()
         self.template_control = TemplateControlDashboard(self.template_manager)
         self.aps_analysis = APSAnalysis()
+        
+        # Initialize Module Mapping Utilities
+        self.module_mapping = ModuleMappingUtils()
 
         # Load broker configurations
         self.broker_configs = load_broker_config()
@@ -1330,8 +1336,8 @@ class APSDashboard:
         col1, col2 = st.columns([3, 1])
         
         with col1:
-            st.header("🏭 Module Overview")
-            st.markdown("Übersicht aller APS-Module mit Status und Steuerungsmöglichkeiten")
+        st.header("🏭 Module Overview")
+        st.markdown("Übersicht aller APS-Module mit Status und Steuerungsmöglichkeiten")
         
         with col2:
             st.markdown("")  # Spacer
@@ -1366,7 +1372,7 @@ class APSDashboard:
 
             # Activity status with enhanced icons using new function
             if availability_status:
-                activity_display = self.get_enhanced_status_display(availability_status, module_info["type"])
+            activity_display = self.get_enhanced_status_display(availability_status, module_info["type"])
             elif len(recent_messages) > 0:
                 # If we have recent messages but no specific status, show "Active"
                 activity_display = f"{get_status_icon('available')} Active"
@@ -1451,7 +1457,7 @@ class APSDashboard:
                     st.markdown("*Klicke 'JA' um die Fabrik zurückzusetzen*")
                 
                 st.markdown("---")
- 
+
         # Module control moved to MQTT Control tab
         st.info("🎮 **Module Control** ist jetzt im **MQTT Control** Tab verfügbar")
 
@@ -2249,6 +2255,301 @@ class APSDashboard:
 
 
 
+    def show_template_library(self):
+        """Show template library with analysis results"""
+        st.header("📚 Template Library")
+        st.markdown("MQTT Template-Analyse und Dokumentation")
+        
+        # Load template analysis results
+        template_library_dir = "mqtt-data/template_library"
+        
+        if not os.path.exists(template_library_dir):
+            st.warning("📁 Template Library Verzeichnis nicht gefunden!")
+            st.info("Führe zuerst die Template-Analyzer aus:")
+            st.code("python3 src_orbis/mqtt/tools/txt_template_analyzer.py")
+            st.code("python3 src_orbis/mqtt/tools/ccu_template_analyzer.py")
+            return
+        
+        # Load analysis files
+        txt_file = os.path.join(template_library_dir, "txt_template_analysis.json")
+        ccu_file = os.path.join(template_library_dir, "ccu_template_analysis.json")
+        
+        all_templates = {}
+        
+        if os.path.exists(txt_file):
+            try:
+                with open(txt_file, 'r', encoding='utf-8') as f:
+                    txt_data = json.load(f)
+                    all_templates.update(txt_data.get('templates', {}))
+            except Exception as e:
+                st.error(f"❌ Fehler beim Laden der TXT-Analyse: {e}")
+        
+        if os.path.exists(ccu_file):
+            try:
+                with open(ccu_file, 'r', encoding='utf-8') as f:
+                    ccu_data = json.load(f)
+                    all_templates.update(ccu_data.get('templates', {}))
+            except Exception as e:
+                st.error(f"❌ Fehler beim Laden der CCU-Analyse: {e}")
+        
+        if not all_templates:
+            st.warning("📄 Keine Template-Analysen gefunden!")
+            return
+        
+        # Category filter
+        categories = list(set(template.get('category', 'Unknown') for template in all_templates.values()))
+        selected_category = st.selectbox(
+            "📂 Kategorie auswählen:",
+            ["Alle"] + categories,
+            key="template_category_filter"
+        )
+        
+        # Filter templates by category
+        if selected_category == "Alle":
+            filtered_templates = all_templates
+        else:
+            filtered_templates = {
+                topic: template for topic, template in all_templates.items()
+                if template.get('category') == selected_category
+            }
+        
+        st.markdown(f"**📊 {len(filtered_templates)} Templates gefunden**")
+        
+        # Display each template
+        for topic, template in filtered_templates.items():
+            with st.expander(f"📋 {topic}", expanded=False):
+                self._display_template_details(template)
+    
+    def _display_template_details(self, template):
+        """Display detailed template information with improved layout"""
+        category = template.get('category', 'Unknown')
+        stats = template.get('statistics', {})
+        template_structure = template.get('template_structure', {})
+        examples = template.get('examples', [])
+        
+        # Header with category and topic
+        st.markdown(f"**Kategorie:** {category} | **Topic:** {template.get('topic', 'Unknown')}")
+        
+        # Top section: Meta-Info + Template Structure Description | Documentation
+        col1, col2 = st.columns([2, 1])
+        
+        with col1:
+            # Meta information in one line
+            st.markdown("### 📊 Meta-Information")
+            st.markdown(f"📈 **Nachrichten:** {stats.get('total_messages', 0)} | "
+                       f"📁 **Sessions:** {stats.get('sessions', 0)} | "
+                       f"🔄 **Variable Felder:** {stats.get('variable_fields', 0)} | "
+                       f"🎯 **Enum-Felder:** {stats.get('enum_fields', 0)}")
+            
+            st.markdown("")
+            st.markdown("### 📋 Template-Struktur Beschreibung")
+            if template_structure:
+                self._display_hierarchical_structure(template_structure, indent=1)
+            else:
+                st.markdown("*Keine Template-Struktur verfügbar*")
+        
+        with col2:
+            # Documentation section (3 fields stacked)
+            st.markdown("### 📝 Dokumentation (editierbar)")
+            
+            description = st.text_area(
+                "💡 Beschreibung:",
+                value=template.get('documentation', {}).get('description', ''),
+                key=f"desc_{template.get('topic', 'unknown')}",
+                height=80
+            )
+            
+            usage = st.text_area(
+                "🎯 Verwendung:",
+                value=template.get('documentation', {}).get('usage', ''),
+                key=f"usage_{template.get('topic', 'unknown')}",
+                height=80
+            )
+            
+            info = st.text_area(
+                "📋 Info zur Template Struktur, Elemente,...:",
+                value=template.get('documentation', {}).get('info', ''),
+                key=f"info_{template.get('topic', 'unknown')}",
+                height=80
+            )
+            
+            # Save button
+            if st.button("💾 Dokumentation speichern", key=f"save_{template.get('topic', 'unknown')}"):
+                self._save_template_documentation(template.get('topic', 'unknown'), {
+                    'description': description,
+                    'usage': usage,
+                    'info': info
+                })
+                st.success("✅ Dokumentation gespeichert!")
+        
+        # Visual separator between top and bottom sections
+        st.markdown("---")
+        
+        # Bottom section: Template Structure | Examples (both as tabs)
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            # Template structure as tab
+            if template_structure:
+                template_tab = st.tabs(["Template"])
+                with template_tab[0]:
+                    topic_name = template.get('topic', 'Unknown')
+                    st.markdown(f"**{topic_name}**")
+                    
+                    # Display hierarchical template structure as code (same format as examples)
+                    template_lines = self._generate_hierarchical_json(template_structure)
+                    template_json = "{\n" + "\n".join(template_lines) + "\n}"
+                    try:
+                        # Validate JSON first
+                        json.loads(template_json)
+                        # Use st.code for consistent formatting with examples
+                        st.code(template_json, language="json")
+                    except json.JSONDecodeError:
+                        # Fallback to code display if JSON is invalid
+                        st.code(template_json, language="json")
+            else:
+                st.markdown("*Keine Template-Struktur verfügbar*")
+        
+        with col2:
+            # Example tabs
+            if examples:
+                # Create tabs for examples
+                example_tabs = st.tabs([f"Beispiel {i+1}" for i in range(len(examples))])
+                
+                for i, tab in enumerate(example_tabs):
+                    with tab:
+                        example = examples[i]
+                        
+                        # Display example with session info on same line
+                        st.markdown(f"**Session:** {template.get('session_name', 'Unknown')} | "
+                                   f"**Timestamp:** {template.get('timestamp', 'Unknown')}")
+                        
+                        # Display example as JSON starting with {, with friendly NFC code names
+                        formatted_example = self._format_example_for_display(example)
+                        st.json(formatted_example)
+            else:
+                st.markdown("*Keine Beispiele verfügbar*")
+    
+    def _display_hierarchical_structure(self, template_structure, indent=0):
+        """Display template structure with proper hierarchical indentation and icons"""
+        indent_str = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" * indent
+        
+        for field, placeholder in template_structure.items():
+            if isinstance(placeholder, dict):
+                # Nested object
+                st.markdown(f"{indent_str}📦 **{field}**: Objekt", unsafe_allow_html=True)
+                self._display_hierarchical_structure(placeholder, indent + 1)
+            elif isinstance(placeholder, list):
+                # Array
+                st.markdown(f"{indent_str}📋 **{field}**: Array mit {len(placeholder)} Elementen", unsafe_allow_html=True)
+                if placeholder and isinstance(placeholder[0], dict):
+                    # Array of objects - show first element structure
+                    self._display_hierarchical_structure(placeholder[0], indent + 1)
+            elif isinstance(placeholder, str):
+                if placeholder.startswith('['):
+                    # ENUM field
+                    st.markdown(f"{indent_str}🎯 **{field}**: {placeholder} (ENUM)", unsafe_allow_html=True)
+                elif placeholder.startswith('<'):
+                    # Placeholder field
+                    if 'nfcCode' in placeholder:
+                        st.markdown(f"{indent_str}🏷️ **{field}**: {placeholder} (NFC Code)", unsafe_allow_html=True)
+                    elif 'ts' in placeholder:
+                        st.markdown(f"{indent_str}⏰ **{field}**: {placeholder} (Timestamp)", unsafe_allow_html=True)
+                    elif 'moduleId' in placeholder:
+                        st.markdown(f"{indent_str}🔧 **{field}**: {placeholder} (Module ID)", unsafe_allow_html=True)
+                    else:
+                        st.markdown(f"{indent_str}📝 **{field}**: {placeholder} (Platzhalter)", unsafe_allow_html=True)
+                else:
+                    # Simple field
+                    st.markdown(f"{indent_str}📄 **{field}**: {placeholder}", unsafe_allow_html=True)
+            else:
+                # Other types
+                st.markdown(f"{indent_str}❓ **{field}**: {placeholder}", unsafe_allow_html=True)
+    
+    def _format_example_for_display(self, example_data):
+        """Format example data for display, replacing NFC codes with friendly names"""
+        if isinstance(example_data, dict):
+            formatted = {}
+            for key, value in example_data.items():
+                if isinstance(value, str) and len(value) == 14 and value.startswith('04'):
+                    # Replace NFC code with friendly name for display
+                    friendly_name = self.module_mapping.get_nfc_friendly_name(value)
+                    formatted[key] = f"{friendly_name} ({value})"
+                elif isinstance(value, dict):
+                    formatted[key] = self._format_example_for_display(value)
+                elif isinstance(value, list):
+                    formatted[key] = [self._format_example_for_display(item) if isinstance(item, dict) else item for item in value]
+                else:
+                    formatted[key] = value
+            return formatted
+        return example_data
+    def _generate_hierarchical_json(self, template_structure, indent=2):
+        """Generate hierarchical JSON representation of template structure with proper formatting"""
+        lines = []
+        fields = list(template_structure.items())
+        
+        for i, (field, placeholder) in enumerate(fields):
+            indent_str = " " * indent
+            is_last = i == len(fields) - 1
+            
+            if isinstance(placeholder, dict):
+                # Nested object
+                lines.append(f'{indent_str}"{field}": {{')
+                nested_lines = self._generate_hierarchical_json(placeholder, indent + 2)
+                lines.extend(nested_lines)
+                lines.append(f"{indent_str}}},")
+            elif isinstance(placeholder, list):
+                # Array
+                lines.append(f'{indent_str}"{field}": [')
+                if placeholder and isinstance(placeholder[0], dict):
+                    # Array of objects
+                    lines.append(f'{indent_str}  {{')
+                    nested_lines = self._generate_hierarchical_json(placeholder[0], indent + 4)
+                    lines.extend(nested_lines)
+                    lines.append(f'{indent_str}  }}')
+                else:
+                    lines.append(f'{indent_str}  "{placeholder[0] if placeholder else "element"}"')
+                lines.append(f"{indent_str}],")
+            else:
+                # Simple field - always use quotes for consistency
+                if isinstance(placeholder, str):
+                    lines.append(f'{indent_str}"{field}": "{placeholder}",')
+                else:
+                    lines.append(f'{indent_str}"{field}": "{placeholder}",')
+        
+        # Remove trailing comma from last line
+        if lines and lines[-1].endswith(','):
+            lines[-1] = lines[-1].rstrip(',')
+        
+        return lines
+    
+    def _save_template_documentation(self, topic, documentation):
+        """Save template documentation to analysis JSON"""
+        template_library_dir = "mqtt-data/template_library"
+        
+        # Find which file contains this topic
+        txt_file = os.path.join(template_library_dir, "txt_template_analysis.json")
+        ccu_file = os.path.join(template_library_dir, "ccu_template_analysis.json")
+        
+        for file_path in [txt_file, ccu_file]:
+            if os.path.exists(file_path):
+                try:
+                    with open(file_path, 'r', encoding='utf-8') as f:
+                        data = json.load(f)
+                    
+                    # Update documentation for the topic
+                    if 'templates' in data and topic in data['templates']:
+                        if 'documentation' not in data['templates'][topic]:
+                            data['templates'][topic]['documentation'] = {}
+                        data['templates'][topic]['documentation'].update(documentation)
+                        
+                        # Save back to file
+                        with open(file_path, 'w', encoding='utf-8') as f:
+                            json.dump(data, f, indent=2, ensure_ascii=False)
+                        break
+                except Exception as e:
+                    st.error(f"❌ Fehler beim Speichern: {e}")
+
     def show_settings(self):
         """Show dashboard settings"""
         st.header("⚙️ Einstellungen")
@@ -2601,44 +2902,51 @@ class APSDashboard:
                     # Standard control buttons for all other modules (HBW, DPS, etc.)
                     else:
                         button_order = []
+                    
+                    # Ensure button_order is always initialized
+                    if 'button_order' not in locals():
+                    button_order = []
+                    
+                    # Add PICK first
+                    if "PICK" in module_info["commands"]:
+                        button_order.append("PICK")
+                    
+                    # Add PROCESS commands (MILL, DRILL, CHECK_QUALITY)
+                    process_commands = ["MILL", "DRILL", "CHECK_QUALITY"]
+                    for cmd in process_commands:
+                        if cmd in module_info["commands"] and cmd not in button_order:
+                            button_order.append(cmd)
+                    
+                    # Add other commands (STORE, etc.)
+                    for cmd in module_info["commands"]:
+                        if cmd not in button_order:
+                            button_order.append(cmd)
+                    
+                    # Add DROP last
+                    if "DROP" in module_info["commands"]:
+                        if "DROP" in button_order:
+                            button_order.remove("DROP")
+                        button_order.append("DROP")
+                    
+                    # Ensure unique commands only
+                    button_order = list(dict.fromkeys(button_order))  # Remove duplicates while preserving order
+                    
+                    # Create buttons in order
+                    for command in button_order:
+                        button_text = f"▶️ {command}"
+                        if command in ["MILL", "DRILL"]:
+                            button_text = f"⚙️ {command}"
+                        elif command == "CHECK_QUALITY":
+                            button_text = f"🔍 {command}"
+                        elif command == "STORE":
+                            button_text = f"📦 {command}"
                         
-                        # Add PICK first
-                        if "PICK" in module_info["commands"]:
-                            button_order.append("PICK")
-                        
-                        # Add PROCESS commands (MILL, DRILL, CHECK_QUALITY)
-                        process_commands = ["MILL", "DRILL", "CHECK_QUALITY"]
-                        for cmd in process_commands:
-                            if cmd in module_info["commands"]:
-                                button_order.append(cmd)
-                        
-                        # Add other commands (STORE, etc.)
-                        for cmd in module_info["commands"]:
-                            if cmd not in button_order:
-                                button_order.append(cmd)
-                        
-                        # Add DROP last
-                        if "DROP" in module_info["commands"]:
-                            if "DROP" in button_order:
-                                button_order.remove("DROP")
-                            button_order.append("DROP")
-                        
-                        # Create buttons in order
-                        for command in button_order:
-                            button_text = f"▶️ {command}"
-                            if command in ["MILL", "DRILL"]:
-                                button_text = f"⚙️ {command}"
-                            elif command == "CHECK_QUALITY":
-                                button_text = f"🔍 {command}"
-                            elif command == "STORE":
-                                button_text = f"📦 {command}"
-                            
-                            if st.button(
-                                button_text,
-                                key=f"control_{module_key}_{command}",
-                                use_container_width=True,
-                            ):
-                                self.send_module_command(module_key, command)
+                        if st.button(
+                            button_text,
+                            key=f"control_{module_key}_{command}",
+                            use_container_width=True,
+                        ):
+                            self.send_module_command(module_key, command)
                 
                 st.markdown("---")
 
@@ -2935,7 +3243,8 @@ class APSDashboard:
                 self.aps_analysis.show_aps_analysis_tab()
             elif st.session_state.selected_tab == "🎮 MQTT Control":
                 self.show_mqtt_control()
-
+            elif st.session_state.selected_tab == "📚 Template Library":
+                self.show_template_library()
             elif st.session_state.selected_tab == "⚙️ Einstellungen":
                 self.show_settings()
 
@@ -2968,6 +3277,7 @@ def main():
         ("📡 MQTT Monitor", "📡 MQTT Monitor"),
         ("🔍 APS Analyse", "🔍 APS Analyse"),
         ("🎮 MQTT Control", "🎮 MQTT Control"),
+        ("📚 Template Library", "📚 Template Library"),
         ("⚙️ Einstellungen", "⚙️ Einstellungen")
     ]
     
@@ -2995,7 +3305,7 @@ def main():
     if "show_reset_modal" not in st.session_state:
         st.session_state.show_reset_modal = False
 
- 
+
     # Session management moved to APS Analysis tab
     # Get project root (3 levels up from dashboard)
     project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
