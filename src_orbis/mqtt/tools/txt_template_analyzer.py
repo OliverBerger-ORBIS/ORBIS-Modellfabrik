@@ -9,7 +9,7 @@ import sqlite3
 import json
 import pandas as pd
 from datetime import datetime
-from typing import Dict, List, Tuple, Any
+from typing import List, Tuple, Any
 import glob
 
 class TXTTemplateAnalyzer:
@@ -43,7 +43,7 @@ class TXTTemplateAnalyzer:
             sessions.append(session_name)
         return sorted(sessions)
     
-    def load_topic_messages(self, topic: str) -> List[Dict[str, Any]]:
+    def load_topic_messages(self, topic: str) -> List[dict[str, Any]]:
         """Load all messages for a specific topic from all sessions"""
         messages = []
         
@@ -83,7 +83,7 @@ class TXTTemplateAnalyzer:
                 
         return messages
     
-    def analyze_topic_structure(self, topic: str) -> Dict[str, Any]:
+    def analyze_topic_structure(self, topic: str) -> dict[str, Any]:
         """Analyze message structure for a specific topic"""
         messages = self.load_topic_messages(topic)
         
@@ -105,12 +105,19 @@ class TXTTemplateAnalyzer:
         for msg in messages:
             payload = msg['payload']
             if isinstance(payload, dict):
-                payload_structures.append(payload)
-                examples.append({
-                    'session': msg['session'],
-                    'timestamp': msg['timestamp'],
-                    'payload': payload
-                })
+                # Add as example if it contains real data (not just empty strings)
+                if self.contains_real_data(payload):
+                    # Store the original message with metadata
+                    examples.append({
+                        'session': msg['session'],
+                        'timestamp': msg['timestamp'],
+                        'payload': payload
+                    })
+                
+                # Create a deep copy for template analysis (to avoid modifying original)
+                import copy
+                payload_copy = copy.deepcopy(payload)
+                payload_structures.append(payload_copy)
                 
                 # Identify potential variable fields
                 for key, value in payload.items():
@@ -174,7 +181,7 @@ class TXTTemplateAnalyzer:
             'examples': examples[:5]  # First 5 examples
         }
     
-    def create_template(self, payloads: List[Dict], variable_fields: set) -> Dict[str, Any]:
+    def create_template(self, payloads: List[dict], variable_fields: set) -> dict[str, Any]:
         """Create a template from multiple payloads"""
         if not payloads:
             return {}
@@ -228,7 +235,7 @@ class TXTTemplateAnalyzer:
         
         return template
     
-    def create_stock_item_template(self, stock_item: Dict) -> Dict[str, Any]:
+    def create_stock_item_template(self, stock_item: dict) -> dict[str, Any]:
         """Create a template for a stock item"""
         template_item = stock_item.copy()
         
@@ -260,6 +267,45 @@ class TXTTemplateAnalyzer:
             template_item['hbw'] = "<hbwId>"
         
         return template_item
+    
+    def is_real_message(self, payload: dict) -> bool:
+        """Check if a payload is a real message (not a template placeholder)"""
+        def contains_template_placeholders(obj):
+            if isinstance(obj, str):
+                # Check for template placeholder patterns - expanded list
+                placeholder_patterns = [
+                    '<nfcCode>', '<workpieceType:', '<state:', '<location:', '<hbwId>',
+                    '<RED>', '<WHITE>', '<BLUE>', '<RAW>', '<timestamp>', '<status:',
+                    '<workpieceType: RED, WHITE, BLUE>', '<state: RAW>', '<location: A1, A2, A3, B1, B2, B3, C1, C2, C3>',
+                    '<workpieceType: BLUE, RED, WHITE>', '<status: IN_PROCESS, WAITING_FOR_ORDER>'
+                ]
+                return any(pattern in obj for pattern in placeholder_patterns)
+            elif isinstance(obj, dict):
+                return any(contains_template_placeholders(v) for v in obj.values())
+            elif isinstance(obj, list):
+                return any(contains_template_placeholders(item) for item in obj)
+            return False
+        
+        return not contains_template_placeholders(payload)
+    
+    def contains_real_data(self, payload: dict) -> bool:
+        """Check if a payload contains real data (not just empty strings or template placeholders)"""
+        def has_real_data(obj):
+            if isinstance(obj, str):
+                # Check if string contains real data (not empty or just whitespace)
+                return obj.strip() != "" and not any(pattern in obj for pattern in [
+                    '<nfcCode>', '<workpieceType:', '<state:', '<location:', '<hbwId>',
+                    '<RED>', '<WHITE>', '<BLUE>', '<RAW>', '<timestamp>', '<status:'
+                ])
+            elif isinstance(obj, dict):
+                return any(has_real_data(v) for v in obj.values())
+            elif isinstance(obj, list):
+                return any(has_real_data(item) for item in obj)
+            elif isinstance(obj, (int, float)):
+                return True
+            return False
+        
+        return has_real_data(payload)
     
     def get_placeholder_for_field(self, field_name: str, values: List[Any]) -> str:
         """Get appropriate placeholder for a field based on its values"""
@@ -305,7 +351,7 @@ class TXTTemplateAnalyzer:
             # Generic placeholder
             return f"<{field_name}>"
     
-    def analyze_all_txt_topics(self) -> Dict[str, Any]:
+    def analyze_all_txt_topics(self) -> dict[str, Any]:
         """Analyze all TXT f/i and f/o topics"""
         results = {}
         
@@ -317,7 +363,7 @@ class TXTTemplateAnalyzer:
         
         return results
     
-    def generate_report(self, results: Dict[str, Any]) -> str:
+    def generate_report(self, results: dict[str, Any]) -> str:
         """Generate a formatted report of the analysis"""
         report = []
         report.append("# TXT Controller Template Analysis Report")
@@ -364,7 +410,7 @@ class TXTTemplateAnalyzer:
         
         return "\n".join(report)
     
-    def save_report(self, results: Dict[str, Any], filename: str = None):
+    def save_report(self, results: dict[str, Any], filename: str = None):
         """Save analysis report to file"""
         if filename is None:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")

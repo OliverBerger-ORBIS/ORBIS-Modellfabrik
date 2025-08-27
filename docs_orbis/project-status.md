@@ -57,6 +57,13 @@
 - **Features:** Config Management, Data Handling, Error Handling, Session Analysis
 - **Testing:** ✅ Unit Tests, Integration Tests, Template Tests (9/9 Tests erfolgreich)
 
+### 📚 Separate Analyse-Architektur
+- **Status:** ✅ Neu implementiert
+- **Features:** TXT und CCU Template Analyzer als separate Tools
+- **Dashboard:** Bereinigt, fokussiert auf Template Library Anzeige
+- **Template Library:** Persistente Speicherung aller Analyse-Ergebnisse
+- **Vorteile:** Bessere Performance, einfachere Wartung, klare Trennung
+
 ## 🚧 Nächste Schritte
 
 ### 🔗 Live APS Integration (Priorität 1)

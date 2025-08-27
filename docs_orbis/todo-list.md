@@ -10,9 +10,15 @@
 
 ### 🔄 In Arbeit
 - [ ] **Live MQTT Test** - Template Messages mit echter APS testen
-- [ ] **CCU-Nachrichten** - CCU-Templates implementieren
+- [x] **CCU-Nachrichten** - CCU-Templates implementiert (separates Tool)
 - [ ] **ORDER-ID Tracking** - CCU-generierte ORDER-IDs verfolgen
 - [ ] **Workflow Validation** - Wareneingang, Auftrag und AI-not-ok Workflows testen
+
+### Separate Analyse-Architektur
+- [x] **TXT Template Analyzer** - Als separates Tool implementiert
+- [x] **CCU Template Analyzer** - Als separates Tool implementiert
+- [x] **Dashboard bereinigt** - Analyse-Buttons entfernt
+- [x] **Template Library fokussiert** - Nur noch Anzeige und Verwaltung
 
 ### 📱 NFC-Code Integration
 - [ ] **Physische NFC-Code Auslesung** - 14 restliche Codes auslesen
@@ -84,7 +90,7 @@
 
 ## 📊 Fortschritt
 
-### ✅ Abgeschlossen (15/25 Tasks)
+### ✅ Abgeschlossen (16/25 Tasks)
 - Template Message Manager ✅
 - Dashboard Integration ✅
 - NFC-Mapping ✅
@@ -98,6 +104,7 @@
 - Status Icons ✅
 - Bestellung-System ✅
 - FTS Control (Grundfunktionen) ✅
+- Template Library Manager ✅
 - Core Infrastructure ✅
 - Testing Framework ✅
 
