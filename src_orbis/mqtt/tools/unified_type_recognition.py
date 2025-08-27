@@ -6,10 +6,12 @@ Provides consistent type recognition across all analyzers (TXT, CCU, MODUL, etc.
 
 import re
 from typing import Set, Any, Dict, List
-from module_mapping_utils import ModuleMappingUtils
+from module_manager import get_module_manager
 
 class UnifiedTypeRecognition:
-    def __init__(self, module_mapping: ModuleMappingUtils):
+    def __init__(self, module_mapping=None):
+        if module_mapping is None:
+            module_mapping = get_module_manager()
         self.module_mapping = module_mapping
         
         # Regex patterns for type recognition
@@ -96,8 +98,10 @@ class UnifiedTypeRecognition:
         if module_id_values and len(module_id_values) == len(simple_values):
             return "<moduleId>"
         
-        # 6. Check for NFC codes (regex)
-        nfc_values = {v for v in str_values if re.match(self.nfc_code_pattern, v)}
+        # 6. Check for NFC codes (regex + YAML config)
+        from nfc_code_manager import get_nfc_manager
+        nfc_manager = get_nfc_manager()
+        nfc_values = {v for v in str_values if nfc_manager.is_nfc_code(v)}
         if nfc_values and len(nfc_values) == len(simple_values):
             return "<nfcCode>"
         
@@ -195,7 +199,7 @@ class UnifiedTypeRecognition:
 
 def main():
     """Test the unified type recognition"""
-    module_mapping = ModuleMappingUtils()
+    module_mapping = get_module_manager()
     type_recognition = UnifiedTypeRecognition(module_mapping)
     
     print("🧪 Unified Type Recognition Test")

@@ -58,26 +58,35 @@ class TemplateControlDashboard:
                 st.info("🏷️ NFC-Code Referenz:")
                 st.write("**Verfügbare NFC-Codes:**")
                 
-                # Farb-Verteilung
+                # Farb-Verteilung aus YAML-Konfiguration
+                from src_orbis.mqtt.tools.nfc_code_manager import get_nfc_manager
+                nfc_manager = get_nfc_manager()
+                
                 col1, col2, col3 = st.columns(3)
                 with col1:
                     st.write("🔴 **Rote Werkstücke:**")
-                    st.write("`040a8dca341291` (R1)")
-                    st.write("`04d78cca341290` (R2)")
-                    st.write("`04808dca341291` (R3)")
-                    st.write("...")
+                    red_codes = nfc_manager.get_nfc_codes_by_color("RED")
+                    for code in red_codes[:4]:  # Zeige erste 4
+                        friendly_name = nfc_manager.get_friendly_name(code)
+                        st.write(f"`{code}` ({friendly_name})")
+                    if len(red_codes) > 4:
+                        st.write("...")
                 with col2:
                     st.write("⚪ **Weiße Werkstücke:**")
-                    st.write("`04798eca341290` (W1)")
-                    st.write("`047c8bca341291` (W2)")
-                    st.write("`047b8bca341291` (W3)")
-                    st.write("...")
+                    white_codes = nfc_manager.get_nfc_codes_by_color("WHITE")
+                    for code in white_codes[:4]:  # Zeige erste 4
+                        friendly_name = nfc_manager.get_friendly_name(code)
+                        st.write(f"`{code}` ({friendly_name})")
+                    if len(white_codes) > 4:
+                        st.write("...")
                 with col3:
                     st.write("🔵 **Blaue Werkstücke:**")
-                    st.write("`04a189ca341290` (B1)")
-                    st.write("`048989ca341290` (B2)")
-                    st.write("`047389ca341291` (B3)")
-                    st.write("...")
+                    blue_codes = nfc_manager.get_nfc_codes_by_color("BLUE")
+                    for code in blue_codes[:4]:  # Zeige erste 4
+                        friendly_name = nfc_manager.get_friendly_name(code)
+                        st.write(f"`{code}` ({friendly_name})")
+                    if len(blue_codes) > 4:
+                        st.write("...")
                 
                 # Template Info
                 template_info = self.template_manager.get_template_info("wareneingang_trigger")

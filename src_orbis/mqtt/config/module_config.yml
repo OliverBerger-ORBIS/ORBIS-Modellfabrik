@@ -1,0 +1,197 @@
+# Module Configuration
+# Zentrale Konfigurationsdatei für Modul-Mappings
+# Verwendet in Analysatoren und Dashboard
+
+metadata:
+  version: "2.0"
+  description: "Modul Mapping mit erweiterten Informationen"
+  last_updated: "2025-08-27"
+  author: "Orbis Development Team"
+
+# Modul-Konfigurationen
+modules:
+  # HBW - Hochregallager
+  "SVR3QA0022":
+    id: "SVR3QA0022"
+    name: "HBW"
+    name_lang_en: "High Bay Warehouse"
+    name_lang_de: "Hochregallager"
+    type: "Storage"
+    ip_range: "192.168.0.80-83"
+    ip_addresses: ["192.168.0.80", "192.168.0.81", "192.168.0.82", "192.168.0.83"]
+    description: "Hochregallager für Werkstück-Lagerung und -Entnahme"
+    commands: ["PICK", "DROP", "STORE"]
+    sub_type: "HBW"
+    
+  # DRILL - Bohrer
+  "SVR4H76449":
+    id: "SVR4H76449"
+    name: "DRILL"
+    name_lang_en: "Drill"
+    name_lang_de: "Bohrer"
+    type: "Processing"
+    ip_range: "192.168.0.50-55"
+    ip_addresses: ["192.168.0.50", "192.168.0.51", "192.168.0.52", "192.168.0.53", "192.168.0.54", "192.168.0.55"]
+    description: "Bohrmodul für Werkstück-Bearbeitung"
+    commands: ["PICK", "DRILL", "DROP"]
+    sub_type: "DRILL"
+    
+  # MILL - Fräse
+  "SVR3QA2098":
+    id: "SVR3QA2098"
+    name: "MILL"
+    name_lang_en: "Mill"
+    name_lang_de: "Fräse"
+    type: "Processing"
+    ip_range: "192.168.0.40-45"
+    ip_addresses: ["192.168.0.40", "192.168.0.41", "192.168.0.42", "192.168.0.43", "192.168.0.44", "192.168.0.45"]
+    description: "Fräsmodul für Werkstück-Bearbeitung"
+    commands: ["PICK", "MILL", "DROP"]
+    sub_type: "MILL"
+    
+  # AIQS - Qualitätsprüfung
+  "SVR4H76530":
+    id: "SVR4H76530"
+    name: "AIQS"
+    name_lang_en: "Quality Inspection"
+    name_lang_de: "Qualitätsprüfung"
+    type: "Quality-Control"
+    ip_range: "192.168.0.70-75"
+    ip_addresses: ["192.168.0.70", "192.168.0.71", "192.168.0.72", "192.168.0.73", "192.168.0.74", "192.168.0.75"]
+    description: "KI-basierte Qualitätsprüfung"
+    commands: ["PICK", "DROP", "CHECK_QUALITY"]
+    sub_type: "AIQS"
+    
+  # DPS - Warenein- und Ausgang
+  "SVR4H73275":
+    id: "SVR4H73275"
+    name: "DPS"
+    name_lang_en: "Delivery and Pickup Station"
+    name_lang_de: "Warenein- und Ausgang"
+    type: "Input/Output"
+    ip_range: "192.168.0.90"
+    ip_addresses: ["192.168.0.90"]
+    description: "Warenein- und Ausgangsstation"
+    commands: ["PICK", "DROP", "INPUT_RGB", "RGB_NFC"]
+    sub_type: "DPS"
+    
+  # CHRG - Ladestation
+  "CHRG0":
+    id: "CHRG0"
+    name: "CHRG"
+    name_lang_en: "Charging Station"
+    name_lang_de: "Ladestation"
+    type: "Charging"
+    ip_range: "192.168.0.65"
+    ip_addresses: ["192.168.0.65"]
+    description: "Ladestation für FTS-Akkus"
+    commands: ["start_charging", "stop_charging", "get_status"]
+    sub_type: "CHRG"
+
+# Transport-Systeme
+transports:
+  "5iO4":
+    id: "5iO4"
+    name: "FTS"
+    name_lang_en: "Automated Guided Vehicle"
+    name_lang_de: "Fahrerloses Transportsystem"
+    type: "Transport"
+    ip_range: "192.168.0.100"
+    ip_addresses: ["192.168.0.100"]
+    description: "Fahrerloses Transportsystem für Werkstück-Transport"
+    commands: ["NAVIGATE", "PICK", "DROP"]
+    sub_type: "FTS"
+
+# Modul-Typen
+module_types:
+  - "Processing"
+  - "Quality-Control"
+  - "Storage"
+  - "Input/Output"
+  - "Charging"
+  - "Transport"
+
+# Verfügbare Befehle
+commands:
+  - "PICK"
+  - "DROP"
+  - "STORE"
+  - "MILL"
+  - "DRILL"
+  - "CHECK_QUALITY"
+  - "INPUT_RGB"
+  - "RGB_NFC"
+  - "NAVIGATE"
+  - "start_charging"
+  - "stop_charging"
+  - "get_status"
+
+# Verfügbare Status
+availability_status:
+  - "READY"
+  - "BUSY"
+  - "ERROR"
+  - "OFFLINE"
+
+# ENUM-Werte für Template-Analyse
+enums:
+  workpiece_types:
+    "RED": "Rotes Werkstück"
+    "WHITE": "Weißes Werkstück"
+    "BLUE": "Blaues Werkstück"
+  
+  workpiece_states:
+    "RAW": "Rohling"
+    "IN_PROCESS": "In Bearbeitung"
+    "WAITING_FOR_ORDER": "Wartet auf Auftrag"
+    "COMPLETED": "Fertiggestellt"
+    "FINISHED": "Abgeschlossen"
+    "RESERVED": "Reserviert"
+  
+  order_types:
+    "STORAGE": "Lagerung"
+    "PRODUCTION": "Produktion"
+  
+  action_types:
+    "NAVIGATION": "Navigation"
+    "MANUFACTURE": "Bearbeitung"
+  
+  action_states:
+    "IN_PROGRESS": "In Bearbeitung"
+    "ENQUEUED": "In Warteschlange"
+    "COMPLETED": "Fertiggestellt"
+    "FINISHED": "Abgeschlossen"
+  
+  locations:
+    "A1": "Position A1"
+    "A2": "Position A2"
+    "A3": "Position A3"
+    "B1": "Position B1"
+    "B2": "Position B2"
+    "B3": "Position B3"
+    "C1": "Position C1"
+    "C2": "Position C2"
+    "C3": "Position C3"
+  
+  module_sub_types:
+    "HBW": "Hochregallager"
+    "DRILL": "Bohrer"
+    "MILL": "Fräse"
+    "AIQS": "Qualitätsprüfung"
+    "DPS": "Warenein- und Ausgang"
+    "FTS": "Fahrerloses Transportsystem"
+    "CHRG": "Ladestation"
+
+# Template-Integration
+template_placeholders:
+  module_id: "<moduleId>"
+  module_name: "<moduleName>"
+  module_type: "<moduleType>"
+  ip_range: "<ipRange>"
+
+# MQTT-Topic-Pfade für Module
+mqtt_paths:
+  - ["moduleId"]
+  - ["id"]
+  - ["source"]
+  - ["target"]

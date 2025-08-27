@@ -35,19 +35,18 @@ if _project_root not in sys.path:
 
 
 # Now that the path is correct, we can use absolute imports from 'src_orbis'.
-from src_orbis.mqtt.dashboard.config.settings import APS_MODULES_EXTENDED
 from src_orbis.mqtt.dashboard.utils.data_handling import extract_module_info
 from src_orbis.mqtt.dashboard.components.filters import create_filters
-from src_orbis.mqtt.tools.mqtt_message_library import (
-    MQTTMessageLibrary,
-)
 
 # Template Message Manager imports
 from src_orbis.mqtt.tools.template_message_manager import TemplateMessageManager
 from src_orbis.mqtt.dashboard.template_control import TemplateControlDashboard
 
 # Module Mapping imports
-from src_orbis.mqtt.tools.module_mapping_utils import ModuleMappingUtils
+from src_orbis.mqtt.tools.module_manager import get_module_manager
+
+# Topic Manager imports
+from src_orbis.mqtt.tools.topic_manager import get_topic_manager
 
 # Node-RED Analysis imports
 from src_orbis.mqtt.tools.node_red_message_analyzer import NodeRedMessageAnalyzer
@@ -57,12 +56,8 @@ from src_orbis.mqtt.dashboard.components.aps_analysis import APSAnalysis
 
 
 
-# Topic Mapping imports
-from src_orbis.mqtt.dashboard.config.topic_mapping import (
-    get_friendly_topic_name,
-    get_all_mapped_topics,
-    get_unmapped_topics
-)
+# Topic Mapping imports (using TopicManager)
+from src_orbis.mqtt.tools.topic_manager import get_topic_manager
 
 # Icon Configuration imports
 from src_orbis.mqtt.dashboard.config.icon_config import (
@@ -76,7 +71,7 @@ from src_orbis.mqtt.dashboard.config.icon_config import (
 
 # Page config
 st.set_page_config(
-    page_title="APS MQTT Dashboard",
+    page_title="ORBIS Modellfabrik Dashboard",
     page_icon="🏭",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -108,22 +103,19 @@ class APSDashboard:
         self.conn = None
         self.verbose_mode = verbose_mode
 
-        # Initialize MQTT message library
-        self.message_library = MQTTMessageLibrary()
-
         # Initialize Template Message Manager
         self.template_manager = TemplateMessageManager()
         self.template_control = TemplateControlDashboard(self.template_manager)
         self.aps_analysis = APSAnalysis()
         
         # Initialize Module Mapping Utilities
-        self.module_mapping = ModuleMappingUtils()
+        self.module_mapping = get_module_manager()
+        
+        # Initialize Topic Manager
+        self.topic_manager = get_topic_manager()
 
         # Load broker configurations
         self.broker_configs = load_broker_config()
-
-        # Set module definitions from config
-        self.aps_modules_extended = APS_MODULES_EXTENDED
 
         # MQTT Client setup
         self.mqtt_client = None
@@ -210,7 +202,8 @@ class APSDashboard:
         if rc == 0:
             self.mqtt_connected = True
             # Subscribe to module state topics to receive responses
-            for module_name, module_info in self.aps_modules_extended.items():
+            all_modules = self.module_mapping.get_all_modules()
+            for module_id, module_info in all_modules.items():
                 state_topic = f"module/v1/ff/{module_info['id']}/state"
                 client.subscribe(state_topic, qos=1)
                 print(f"Subscribed to: {state_topic}")
@@ -583,7 +576,7 @@ class APSDashboard:
 
             # Create display DataFrame with friendly topic names
             df_display = df[available_columns].copy()
-            df_display["friendly_topic"] = df_display["topic"].apply(get_friendly_topic_name)
+            df_display["friendly_topic"] = df_display["topic"].apply(lambda x: self.topic_manager.get_friendly_name(x))
             
             # Reorder columns to show friendly_topic first
             display_cols = ["timestamp", "friendly_topic"] + [col for col in available_columns if col != "timestamp"]
@@ -599,7 +592,7 @@ class APSDashboard:
             
             # Topic mapping info
             total_topics = df["topic"].nunique()
-            mapped_topics = len([t for t in df["topic"].unique() if get_friendly_topic_name(t) != t])
+            mapped_topics = len([t for t in df["topic"].unique() if self.topic_manager.get_friendly_name(t) != t])
             unmapped_topics = total_topics - mapped_topics
             
             col1, col2, col3 = st.columns(3)
@@ -621,7 +614,7 @@ class APSDashboard:
         if not df.empty:
             # Create analysis DataFrame with friendly topic names
             df_analysis = df[["topic"]].copy()
-            df_analysis["friendly_topic"] = df_analysis["topic"].apply(get_friendly_topic_name)
+            df_analysis["friendly_topic"] = df_analysis["topic"].apply(lambda x: self.topic_manager.get_friendly_name(x))
             
             col1, col2 = st.columns(2)
 
@@ -648,7 +641,7 @@ class APSDashboard:
                 # Topic statistics
                 total_topics = df["topic"].nunique()
                 mapped_topics = df_analysis["friendly_topic"].nunique()
-                unmapped_count = len([t for t in df["topic"].unique() if get_friendly_topic_name(t) == t])
+                unmapped_count = len([t for t in df["topic"].unique() if self.topic_manager.get_friendly_name(t) == t])
                 
                 st.metric("Gesamt Topics", total_topics)
                 st.metric("Mapped Topics", total_topics - unmapped_count)
@@ -759,7 +752,7 @@ class APSDashboard:
         if not df.empty:
             # Create payload DataFrame with friendly topic names
             df_payload = df[["topic", "payload", "timestamp"]].copy()
-            df_payload["friendly_topic"] = df_payload["topic"].apply(get_friendly_topic_name)
+            df_payload["friendly_topic"] = df_payload["topic"].apply(lambda x: self.topic_manager.get_friendly_name(x))
             
             # Payload overview
             st.subheader("📊 Payload Übersicht")
@@ -1020,10 +1013,10 @@ class APSDashboard:
         # Control method selection
         control_method = st.selectbox(
             "Steuerungsmethode:",
-            ["Module Overview", "Bestellung", "Template Message"],
+            ["Overview", "Bestellung", "Template Message"],
         )
 
-        if control_method == "Module Overview":
+        if control_method == "Overview":
             self.show_module_control_rows()
         elif control_method == "Bestellung":
             self.show_order_control_combined()
@@ -1228,107 +1221,7 @@ class APSDashboard:
 
 
 
-    # def show_aps_analysis(self, df):
-    #     """Show comprehensive APS data analysis - MOVED TO APS ANALYSIS TAB"""
-        st.header("📊 MQTT Analyse")
-        st.markdown("Umfassende Analyse der MQTT-Nachrichten aus den Sessions")
 
-        # Session management section
-        st.subheader("🗄️ Session-Verwaltung")
-        
-        # Get project root (3 levels up from dashboard)
-        project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
-        
-        # Search in sessions directory only
-        db_files = sorted(glob.glob(
-            os.path.join(project_root, "mqtt-data/sessions/aps_persistent_traffic_*.db")
-        ))
-        
-        if db_files:
-            col1, col2 = st.columns([3, 1])
-            
-            with col1:
-                # Database selection dropdown
-                selected_db = st.selectbox(
-                    "Session auswählen:",
-                    db_files,
-                    index=(
-                        0
-                        if st.session_state.selected_db is None
-                        or st.session_state.selected_db not in db_files
-                        else db_files.index(st.session_state.selected_db)
-                    ),
-                    format_func=lambda x: os.path.basename(x)
-                    .replace("aps_persistent_traffic_", "")
-                    .replace(".db", ""),
-                )
-                
-                if selected_db != st.session_state.selected_db:
-                    st.session_state.selected_db = selected_db
-                    st.rerun()
-            
-            with col2:
-                # Database info
-                if st.session_state.selected_db:
-                    db_size = os.path.getsize(st.session_state.selected_db) / (1024 * 1024)
-                    st.info(f"**Größe:** {db_size:.2f} MB")
-        else:
-            st.error("Keine APS-Datenbanken gefunden!")
-            st.info(
-                "Führe zuerst den Logger aus: `python src_orbis/aps_persistent_logger.py`"
-            )
-            return
-
-        # Verbose mode toggle
-        verbose_mode = st.checkbox(
-            "🔍 Verbose-Modus (alle Topics anzeigen)", value=self.verbose_mode
-        )
-        if verbose_mode != self.verbose_mode:
-            self.verbose_mode = verbose_mode
-            st.rerun()
-
-        # Create filters - check if we're analyzing a single session
-        single_session_mode = len(df['session_label'].unique()) == 1 if not df.empty else False
-        df_filtered = self.create_filters(df, single_session_mode)
-
-        st.markdown("---")
-
-        # Analysis sub-tabs
-        (
-            analysis_tab1,
-            analysis_tab2,
-            analysis_tab3,
-            analysis_tab4,
-            analysis_tab5,
-            analysis_tab6,
-        ) = st.tabs(
-            [
-                "📊 Übersicht",
-                "⏰ Timeline",
-                "📋 Nachrichten",
-                "📡 Topics",
-                "📦 Payload",
-                "🏷️ Sessions",
-            ]
-        )
-
-        with analysis_tab1:
-            self.show_overview(df_filtered)
-
-        with analysis_tab2:
-            self.show_timeline(df_filtered)
-
-        with analysis_tab3:
-            self.show_message_table(df_filtered)
-
-        with analysis_tab4:
-            self.show_topic_analysis(df_filtered)
-
-        with analysis_tab5:
-            self.show_payload_analysis(df_filtered)
-
-        with analysis_tab6:
-            self.show_session_analysis(df_filtered)
 
     def show_module_overview_dashboard(self, df):
         """Show comprehensive module overview dashboard"""
@@ -1336,7 +1229,7 @@ class APSDashboard:
         col1, col2 = st.columns([3, 1])
         
         with col1:
-        st.header("🏭 Module Overview")
+            st.header("🏭 ORBIS Modellfabrik Overview")
         st.markdown("Übersicht aller APS-Module mit Status und Steuerungsmöglichkeiten")
         
         with col2:
@@ -1352,12 +1245,22 @@ class APSDashboard:
 
         st.markdown("---")
 
-        # Module table
-        st.subheader("📋 Module Status")
+        # Sub-navigation for overview
+        overview_tab1, overview_tab2, overview_tab3, overview_tab4 = st.tabs([
+            "📋 Module Status",
+            "📦 Bestellung",
+            "📋 Bestellung Rohware",
+            "📊 Lagerbestand"
+        ])
+
+        with overview_tab1:
+            # Module table
+            st.subheader("📋 Module Status")
 
         # Create module table data
         module_table_data = []
-        for module_key, module_info in self.aps_modules_extended.items():
+        all_modules = self.module_mapping.get_all_modules()
+        for module_id, module_info in all_modules.items():
             # Get availability status
             recent_messages = df[df["topic"].str.contains(module_info["id"], na=False)]
             availability_status = self.extract_availability_status(
@@ -1372,7 +1275,7 @@ class APSDashboard:
 
             # Activity status with enhanced icons using new function
             if availability_status:
-            activity_display = self.get_enhanced_status_display(availability_status, module_info["type"])
+                activity_display = self.get_enhanced_status_display(availability_status, module_info["type"])
             elif len(recent_messages) > 0:
                 # If we have recent messages but no specific status, show "Active"
                 activity_display = f"{get_status_icon('available')} Active"
@@ -1382,21 +1285,26 @@ class APSDashboard:
 
             # Get module icon (use emoji for table display)
             # For table display, prefer emoji over file paths
-            module_key = module_key.upper()
-            icon_from_function = get_module_icon(module_key)
+            module_name = module_info.get('name', module_id)
+            module_key_upper = module_name.upper()
+            icon_from_function = get_module_icon(module_key_upper)
             
             # If it's a file path, fallback to emoji from MODULE_ICONS
             if icon_from_function and ('/' in icon_from_function or '\\' in icon_from_function):
-                icon_display = MODULE_ICONS.get(module_key, "❓")
+                icon_display = MODULE_ICONS.get(module_key_upper, "❓")
             else:
                 icon_display = icon_from_function
             
+            # Get first available IP address from ip_addresses list
+            ip_addresses = module_info.get('ip_addresses', [])
+            current_ip = ip_addresses[0] if ip_addresses else "Unknown"
+            
             module_table_data.append(
                 {
+                    "Name": f"{icon_display} {module_info.get('name', module_id)}",
                     "ID": module_info["id"],
-                    "Name": f"{icon_display} {module_info['name']}",
-                    "Type": module_info["type"],
-                    "IP": module_info["ip"],
+                    "Type": module_info.get("type", "Unknown"),
+                    "IP": current_ip,  # First available IP address (ToBeDone: from MQTT messages)
                     "Connected": connection_status,
                     "Activity Status": activity_display,
                     "Recent Messages": len(recent_messages),
@@ -1410,11 +1318,42 @@ class APSDashboard:
             use_container_width=True,
             column_config={
                 "Name": st.column_config.TextColumn("Name", width="medium"),
+                "ID": st.column_config.TextColumn("ID", width="medium"),
                 "Recent Messages": st.column_config.NumberColumn(
                     "Recent Messages", width="small"
                 ),
             },
         )
+
+        with overview_tab2:
+            st.subheader("📦 Bestellung")
+            st.info("💡 Bestellungs-Funktionalität wird hier implementiert")
+            st.markdown("""
+            **Geplante Features:**
+            - Bestellungs-Übersicht
+            - Bestellungs-Status
+            - Bestellungs-Historie
+            """)
+
+        with overview_tab3:
+            st.subheader("📋 Bestellung Rohware")
+            st.info("💡 Rohware-Bestellungs-Funktionalität wird hier implementiert")
+            st.markdown("""
+            **Geplante Features:**
+            - Rohware-Bestellungs-Übersicht
+            - Rohware-Status
+            - Rohware-Lieferungen
+            """)
+
+        with overview_tab4:
+            st.subheader("📊 Lagerbestand")
+            st.info("💡 Lagerbestands-Funktionalität wird hier implementiert")
+            st.markdown("""
+            **Geplante Features:**
+            - Lagerbestands-Übersicht
+            - Werkstück-Positionen
+            - Lagerbestands-Historie
+            """)
 
         # Factory Reset Modal
         if st.session_state.get("show_reset_modal", False):
@@ -1461,7 +1400,7 @@ class APSDashboard:
         # Module control moved to MQTT Control tab
         st.info("🎮 **Module Control** ist jetzt im **MQTT Control** Tab verfügbar")
 
-    def show_module_row(self, module_key, module_info, df):
+    def show_module_row(self, module_id, module_info, df):
         """Show individual module as a row"""
         with st.container():
             # Module header with border
@@ -1528,10 +1467,10 @@ class APSDashboard:
                 for command in module_info["commands"]:
                     if st.button(
                         f"▶️ {command}",
-                        key=f"cmd_{module_key}_{command}",
+                        key=f"cmd_{module_id}_{command}",
                         use_container_width=True,
                     ):
-                        self.send_module_command(module_key, command)
+                        self.send_module_command(module_id, command)
 
             with col5:
                 # Recent activity count
@@ -1547,7 +1486,7 @@ class APSDashboard:
 
             st.markdown("---")
 
-    def show_module_card(self, module_key, module_info, df):
+    def show_module_card(self, module_id, module_info, df):
         """Show individual module card (legacy method)"""
         with st.container():
             st.markdown(
@@ -1590,8 +1529,8 @@ class APSDashboard:
                 with col1:
                     st.markdown(f"• {command}")
                 with col2:
-                    if st.button(f"▶️", key=f"cmd_{module_key}_{command}"):
-                        self.send_module_command(module_key, command)
+                    if st.button(f"▶️", key=f"cmd_{module_id}_{command}"):
+                        self.send_module_command(module_id, command)
 
             # Recent activity
             if len(recent_messages) > 0:
@@ -1608,13 +1547,14 @@ class APSDashboard:
         # Extract serial number from topic
         if '/ff/' in topic:
             serial = topic.split('/ff/')[1].split('/')[0]
-            # Map serial to module name
-            for module_name, module_info in self.aps_modules_extended.items():
+            # Map serial to module name using ModuleManager
+            all_modules = self.module_mapping.get_all_modules()
+            for module_id, module_info in all_modules.items():
                 if module_info['id'] == serial:
-                    return module_name
+                    return module_info['name']
         return "Unknown"
 
-    def send_module_command(self, module_key, command):
+    def send_module_command(self, module_id, command):
         """Send command to specific module"""
         try:
             if not self.mqtt_connected:
@@ -1623,23 +1563,39 @@ class APSDashboard:
                     return
 
             # Get module info
-            module_info = self.aps_modules_extended[module_key]
+            all_modules = self.module_mapping.get_all_modules()
+            module_info = all_modules.get(module_id)
+            if not module_info:
+                st.error(f"Modul {module_id} nicht gefunden")
+                return
 
             # Create message based on module type
-            if module_key == "FTS":
+            if module_id == "FTS":
                 # Special handling for FTS commands
                 message = self.create_fts_message(command)
                 topic = f"module/v1/ff/{module_info['id']}/order"
             else:
-                # Standard APS module commands
-                message = self.message_library.create_order_message(module_key, command)
-                topic = self.message_library.get_topic(module_key, "order")
+                # Standard APS module commands - simplified since message_library is removed
+                message = {
+                    "serialNumber": module_info["id"],
+                    "orderId": str(uuid.uuid4()),
+                    "orderUpdateId": 1,
+                    "action": {
+                        "id": str(uuid.uuid4()),
+                        "command": command,
+                        "metadata": {
+                            "priority": "NORMAL",
+                            "timeout": 300
+                        }
+                    }
+                }
+                topic = f"module/v1/ff/{module_info['id']}/order"
 
             # Send message
             success, result_message = self.send_mqtt_message_direct(topic, message)
 
             if success:
-                st.success(f"✅ Befehl gesendet: {module_key} - {command}")
+                st.success(f"✅ Befehl gesendet: {module_id} - {command}")
                 st.info(f"📡 Topic: {topic}")
             else:
                 st.error(f"❌ Fehler: {result_message}")
@@ -1647,7 +1603,7 @@ class APSDashboard:
         except Exception as e:
             st.error(f"❌ Fehler beim Senden: {e}")
 
-    def send_drill_sequence_command(self, module_key, command, workpiece_color, nfc_code):
+    def send_drill_sequence_command(self, module_id, command, workpiece_color, nfc_code):
         """Send DRILL sequence command with proper orderUpdateId management"""
         try:
             if not self.mqtt_connected:
@@ -1656,10 +1612,14 @@ class APSDashboard:
                     return
 
             # Get module info
-            module_info = self.aps_modules_extended[module_key]
+            all_modules = self.module_mapping.get_all_modules()
+            module_info = all_modules.get(module_id)
+            if not module_info:
+                st.error(f"Modul {module_id} nicht gefunden")
+                return
             
             # Initialize or get current orderUpdateId for this module
-            order_update_key = f"order_update_id_{module_key}"
+            order_update_key = f"order_update_id_{module_id}"
             if order_update_key not in st.session_state:
                 st.session_state[order_update_key] = 1
             else:
@@ -2108,7 +2068,7 @@ class APSDashboard:
             
             # Create display DataFrame with friendly topic names
             topic_df_display = topic_df[['Topic', 'Count']].copy()
-            topic_df_display['Friendly_Topic'] = topic_df_display['Topic'].apply(get_friendly_topic_name)
+            topic_df_display['Friendly_Topic'] = topic_df_display['Topic'].apply(lambda x: self.topic_manager.get_friendly_name(x))
             
             # Show both original and friendly names
             st.dataframe(topic_df_display[['Friendly_Topic', 'Topic', 'Count']], use_container_width=True)
@@ -2125,7 +2085,7 @@ class APSDashboard:
             with col1:
                 st.markdown("**Topics:**")
                 for topic in state_messages['topic'].unique():
-                    friendly_name = get_friendly_topic_name(topic)
+                    friendly_name = self.topic_manager.get_friendly_name(topic)
                     st.markdown(f"• **{friendly_name}**")
                     if friendly_name != topic:
                         st.markdown(f"  `{topic}`")
@@ -2149,7 +2109,7 @@ class APSDashboard:
             with col1:
                 st.markdown("**Topics:**")
                 for topic in factsheet_messages['topic'].unique():
-                    friendly_name = get_friendly_topic_name(topic)
+                    friendly_name = self.topic_manager.get_friendly_name(topic)
                     st.markdown(f"• **{friendly_name}**")
                     if friendly_name != topic:
                         st.markdown(f"  `{topic}`")
@@ -2195,7 +2155,7 @@ class APSDashboard:
             # Sample connection messages
             st.markdown("**Sample Connection Messages:**")
             for _, row in connection_messages.head(3).iterrows():
-                friendly_topic = get_friendly_topic_name(row['topic'])
+                friendly_topic = self.topic_manager.get_friendly_name(row['topic'])
                 with st.expander(f"{row['timestamp']} - {friendly_topic}"):
                     st.markdown(f"**Original Topic:** `{row['topic']}`")
                     try:
@@ -2473,7 +2433,9 @@ class APSDashboard:
             for key, value in example_data.items():
                 if isinstance(value, str) and len(value) == 14 and value.startswith('04'):
                     # Replace NFC code with friendly name for display
-                    friendly_name = self.module_mapping.get_nfc_friendly_name(value)
+                    from src_orbis.mqtt.tools.nfc_code_manager import get_nfc_manager
+                    nfc_manager = get_nfc_manager()
+                    friendly_name = nfc_manager.get_friendly_name(value)
                     formatted[key] = f"{friendly_name} ({value})"
                 elif isinstance(value, dict):
                     formatted[key] = self._format_example_for_display(value)
@@ -2556,10 +2518,11 @@ class APSDashboard:
         st.markdown("Dashboard-Konfiguration und System-Informationen")
 
         # Sub-navigation for settings
-        settings_tab1, settings_tab2, settings_tab3, settings_tab4 = st.tabs([
+        settings_tab1, settings_tab2, settings_tab3, settings_tab4, settings_tab5 = st.tabs([
             "🔧 Dashboard",
-            "📋 Topic-Mappings", 
+            "🏭 Module",
             "🏷️ NFC-Codes",
+            "📡 Topic-Konfiguration",
             "📚 MQTT-Templates"
         ])
 
@@ -2567,17 +2530,20 @@ class APSDashboard:
             self.show_dashboard_settings()
 
         with settings_tab2:
-            self.show_topic_mapping_settings()
+            self.show_module_settings()
 
         with settings_tab3:
             self.show_nfc_mapping_settings()
 
         with settings_tab4:
+            self.show_topic_configuration_settings()
+
+        with settings_tab5:
             self.show_mqtt_template_settings()
 
     def show_dashboard_settings(self):
         """Show dashboard configuration settings"""
-            st.subheader("🔧 Dashboard-Einstellungen")
+        st.subheader("🔧 Dashboard-Einstellungen")
 
         col1, col2 = st.columns(2)
 
@@ -2610,12 +2576,13 @@ class APSDashboard:
             st.subheader("📊 Dashboard-Statistiken")
 
             # Dashboard statistics
-            st.metric("Aktive Module", len(self.aps_modules_extended))
+            all_modules = self.module_mapping.get_all_modules()
+            st.metric("Aktive Module", len(all_modules))
             st.metric(
                 "Verfügbare Befehle",
                 sum(
-                    len(module["commands"])
-                    for module in self.aps_modules_extended.values()
+                    len(module.get("commands", []))
+                    for module in all_modules.values()
                 ),
             )
             st.metric("MQTT-Nachrichten gesendet", len(self.mqtt_messages_sent))
@@ -2639,129 +2606,384 @@ class APSDashboard:
             st.metric("Template-Nachrichten", len(self.template_manager.templates))
             st.metric("Session-Datenbanken", len(glob.glob(os.path.join(os.path.dirname(self.db_file), "aps_persistent_traffic_*.db"))))
 
-    def show_topic_mapping_settings(self):
-        """Show topic mapping configuration"""
-        st.subheader("📋 Topic-Mapping Konfiguration")
-        st.markdown("Benutzerfreundliche Namen für MQTT-Topics")
 
-        # Show current topic mappings
-        all_mappings = get_all_mapped_topics()
-        
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            st.markdown("**Aktuelle Topic-Mappings:**")
-            
-            # Group mappings by type
-            node_red_mappings = {k: v for k, v in all_mappings.items() if "NodeRed" in k}
-            direct_mappings = {k: v for k, v in all_mappings.items() if "NodeRed" not in k and "module/v1/ff" in k}
-            fts_mappings = {k: v for k, v in all_mappings.items() if "fts/v1/ff" in k}
-            ccu_mappings = {k: v for k, v in all_mappings.items() if k.startswith("ccu/")}
-            
-            with st.expander("Node-RED Topics", expanded=True):
-                for topic, friendly_name in list(node_red_mappings.items())[:10]:
-                    st.markdown(f"• `{topic}` → **{friendly_name}**")
-                if len(node_red_mappings) > 10:
-                    st.markdown(f"... und {len(node_red_mappings) - 10} weitere")
-            
-            with st.expander("Direct Module Topics", expanded=True):
-                for topic, friendly_name in list(direct_mappings.items())[:10]:
-                    st.markdown(f"• `{topic}` → **{friendly_name}**")
-                if len(direct_mappings) > 10:
-                    st.markdown(f"... und {len(direct_mappings) - 10} weitere")
-            
-            with st.expander("FTS Topics", expanded=True):
-                for topic, friendly_name in fts_mappings.items():
-                    st.markdown(f"• `{topic}` → **{friendly_name}**")
-            
-            with st.expander("CCU Topics", expanded=True):
-                for topic, friendly_name in ccu_mappings.items():
-                    st.markdown(f"• `{topic}` → **{friendly_name}**")
-        
-        with col2:
-            st.markdown("**Topic-Mapping Status:**")
-            
-            # Check for unmapped topics in current data
-            if hasattr(self, 'current_df') and self.current_df is not None:
-                unique_topics = self.current_df['topic'].unique().tolist()
-                unmapped_topics = get_unmapped_topics(unique_topics)
-                
-                if unmapped_topics:
-                    st.warning(f"⚠️ {len(unmapped_topics)} unmapped Topics gefunden")
-                    with st.expander("Unmapped Topics"):
-                        for topic in unmapped_topics[:10]:
-                            st.code(topic)
-                        if len(unmapped_topics) > 10:
-                            st.markdown(f"... und {len(unmapped_topics) - 10} weitere")
-                else:
-                    st.success("✅ Alle Topics haben benutzerfreundliche Namen")
-            else:
-                st.info("ℹ️ Lade Daten, um Topic-Mapping zu prüfen")
-            
-            # Topic mapping statistics
-            st.metric("Mapped Topics", len(all_mappings))
-            st.metric("Module Types", len(set([name.split(" : ")[0] for name in all_mappings.values()])))
-            
-            # Show mapping examples
-            st.markdown("**Beispiele:**")
-            examples = [
-                ("module/v1/ff/NodeRed/SVR4H76530/state", "NodeRed → AIQS : state"),
-                ("module/v1/ff/SVR4H73275/factsheet", "DPS : factsheet"),
-                ("fts/v1/ff/5iO4/connection", "FTS : connection"),
-                ("ccu/state/flow", "CCU : state : flow")
-            ]
-            for original, friendly in examples:
-                st.markdown(f"• `{original}` → **{friendly}**")
 
     def show_nfc_mapping_settings(self):
-        """Show NFC code mapping configuration"""
+        """Show NFC code mapping configuration from YAML file"""
         st.subheader("🏷️ NFC-Code Mapping")
-        st.markdown("Mapping von NFC-Codes zu Werkstücken und Modulen")
-
-        # NFC Code Management
-        col1, col2 = st.columns(2)
+        st.markdown("Zentrale Konfiguration der NFC-Codes aus `nfc_code_config.yml`")
+        
+        # Load NFC configuration from YAML
+        nfc_config = self.load_nfc_config()
+        
+        if not nfc_config:
+            st.error("❌ NFC-Konfiguration konnte nicht geladen werden")
+            return
+        
+        # Display NFC codes organized by color
+        colors = ["RED", "WHITE", "BLUE"]
+        color_icons = {"RED": "🔴", "WHITE": "⚪", "BLUE": "🔵"}
+        
+        for color in colors:
+            color_codes = {code: info for code, info in nfc_config['nfc_codes'].items() 
+                          if info['color'] == color}
+            
+            if color_codes:
+                with st.expander(f"{color_icons[color]} {color} Werkstücke ({len(color_codes)} Codes)", expanded=True):
+                    # Create table data
+                    table_data = []
+                    for nfc_code, info in color_codes.items():
+                        table_data.append({
+                            "NFC-Code": nfc_code,
+                            "Friendly-ID": info['friendly_id'],
+                            "Quality-Check": info['quality_check'],
+                            "Beschreibung": info['description']
+                        })
+                    
+                    # Display as table
+                    if table_data:
+                        df = pd.DataFrame(table_data)
+                        st.dataframe(
+                            df,
+                            use_container_width=True,
+                            column_config={
+                                "NFC-Code": st.column_config.TextColumn("NFC-Code", width="medium"),
+                                "Friendly-ID": st.column_config.TextColumn("Friendly-ID", width="small"),
+                                "Quality-Check": st.column_config.SelectboxColumn(
+                                    "Quality-Check",
+                                    options=["OK", "NOT-OK", "PENDING", "FAILED"],
+                                    width="small"
+                                ),
+                                "Beschreibung": st.column_config.TextColumn("Beschreibung", width="large")
+                            }
+                        )
+        
+        # Statistics
+        st.markdown("---")
+        col1, col2, col3, col4 = st.columns(4)
         
         with col1:
-            st.markdown("**📋 Bekannte NFC-Codes:**")
-            
-            # Example NFC codes (from our sessions)
-            nfc_codes = [
-                {"code": "040a8dca341291", "type": "RED", "description": "Roter Werkstoff"},
-                {"code": "04798eca341290", "type": "WHITE", "description": "Weißer Werkstoff"},
-                {"code": "047389ca341291", "type": "BLUE", "description": "Blauer Werkstoff"},
-                {"code": "047f8cca341290", "type": "RED", "description": "Roter Werkstoff"},
-                {"code": "04808dca341291", "type": "RED", "description": "Roter Werkstoff"},
-                {"code": "04ab8bca341290", "type": "WHITE", "description": "Weißer Werkstoff"}
-            ]
-            
-            for nfc in nfc_codes:
-                with st.expander(f"🏷️ {nfc['code']} ({nfc['type']})", expanded=False):
-                    st.markdown(f"**Typ:** {nfc['type']}")
-                    st.markdown(f"**Beschreibung:** {nfc['description']}")
-                    st.markdown(f"**Code:** `{nfc['code']}`")
-        
+            st.metric("Gesamt NFC-Codes", len(nfc_config['nfc_codes']))
         with col2:
-            st.markdown("**🔧 NFC-Code Verwaltung:**")
+            red_count = len([c for c in nfc_config['nfc_codes'].values() if c['color'] == 'RED'])
+            st.metric("🔴 RED", red_count)
+        with col3:
+            white_count = len([c for c in nfc_config['nfc_codes'].values() if c['color'] == 'WHITE'])
+            st.metric("⚪ WHITE", white_count)
+        with col4:
+            blue_count = len([c for c in nfc_config['nfc_codes'].values() if c['color'] == 'BLUE'])
+            st.metric("🔵 BLUE", blue_count)
+        
+        # Info about usage
+        st.info("ℹ️ **Hinweis:** Friendly-IDs werden nur für die Dashboard-Anzeige verwendet. In MQTT-Nachrichten werden immer die echten NFC-Codes verwendet.")
+
+    def show_module_settings(self):
+        """Show module configuration settings from YAML file"""
+        st.subheader("🏭 Modul-Konfiguration")
+        st.markdown("Zentrale Konfiguration der Module aus `module_config.yml`")
+        
+        # Load module configuration from ModuleManager
+        module_manager = self.module_mapping
+        all_modules = module_manager.get_all_modules()
+        
+        if not all_modules:
+            st.error("❌ Modul-Konfiguration konnte nicht geladen werden")
+            return
+        
+        # Create table data for all modules in one table
+        table_data = []
+        type_icons = {
+            "Processing": "⚙️",
+            "Quality-Control": "🔍", 
+            "Storage": "📦",
+            "Input/Output": "🚪",
+            "Charging": "🔋",
+            "Transport": "🚗"
+        }
+        
+        for module_id, info in all_modules.items():
+            # Get module type icon
+            module_type = info.get('type', 'Unknown')
+            icon = type_icons.get(module_type, "🏭")
             
-            # Add new NFC code
-            st.markdown("**Neuen NFC-Code hinzufügen:**")
-            new_code = st.text_input("NFC-Code:", placeholder="040a8dca341291")
-            new_type = st.selectbox("Werkstoff-Typ:", ["RED", "WHITE", "BLUE"])
-            new_description = st.text_input("Beschreibung:", placeholder="Roter Werkstoff")
+            # Get commands
+            commands = info.get('commands', [])
+            commands_display = ", ".join(commands) if commands else "Keine Befehle"
             
-            if st.button("➕ NFC-Code hinzufügen"):
-                if new_code and new_type:
-                    st.success(f"✅ NFC-Code {new_code} hinzugefügt")
-                else:
-                    st.error("❌ Bitte alle Felder ausfüllen")
+            table_data.append({
+                "Icon + Modul": f"{icon} {info.get('name', '')}",
+                "Modul-ID": module_id,
+                "Name (DE)": info.get('name_lang_de', ''),
+                "Name (EN)": info.get('name_lang_en', ''),
+                "Modul-Type": module_type,
+                "IP-Range": info.get('ip_range', ''),
+                "Befehle": commands_display,
+                "Beschreibung": info.get('description', '')
+            })
+        
+        # Display as single table
+        if table_data:
+            df = pd.DataFrame(table_data)
+            st.dataframe(
+                df,
+                use_container_width=True,
+                column_config={
+                    "Icon + Modul": st.column_config.TextColumn("Icon + Modul", width="medium"),
+                    "Modul-ID": st.column_config.TextColumn("Modul-ID", width="medium"),
+                    "Name (DE)": st.column_config.TextColumn("Name (DE)", width="medium"),
+                    "Name (EN)": st.column_config.TextColumn("Name (EN)", width="medium"),
+                    "Modul-Type": st.column_config.TextColumn("Modul-Type", width="small"),
+                    "IP-Range": st.column_config.TextColumn("IP-Range", width="small"),
+                    "Befehle": st.column_config.TextColumn("Befehle", width="large"),
+                    "Beschreibung": st.column_config.TextColumn("Beschreibung", width="large")
+                }
+            )
+        
+        # Statistics
+        st.markdown("---")
+        col1, col2, col3, col4 = st.columns(4)
+        
+        with col1:
+            st.metric("Gesamt Module", len(all_modules))
+        with col2:
+            processing_count = len(module_manager.get_modules_by_type("Processing"))
+            st.metric("⚙️ Processing", processing_count)
+        with col3:
+            storage_count = len(module_manager.get_modules_by_type("Storage"))
+            st.metric("📦 Storage", storage_count)
+        with col4:
+            other_count = len(all_modules) - processing_count - storage_count
+            st.metric("🏭 Andere", other_count)
+        
+        # IP-Range Overview
+        st.markdown("---")
+        st.subheader("🌐 IP-Range Übersicht")
+        
+        ip_overview_data = []
+        for module_id, info in all_modules.items():
+            ip_range = info.get('ip_range', '')
+            ip_addresses = info.get('ip_addresses', [])
+            ip_count = len(ip_addresses)
             
+            ip_overview_data.append({
+                "Modul": info.get('name', module_id),
+                "Modul-ID": module_id,
+                "IP-Range": ip_range,
+                "Anzahl IPs": ip_count,
+                "IP-Adressen": ", ".join(ip_addresses) if ip_addresses else "Keine"
+            })
+        
+        if ip_overview_data:
+            ip_df = pd.DataFrame(ip_overview_data)
+            st.dataframe(
+                ip_df,
+                use_container_width=True,
+                column_config={
+                    "Modul": st.column_config.TextColumn("Modul", width="small"),
+                    "Modul-ID": st.column_config.TextColumn("Modul-ID", width="medium"),
+                    "IP-Range": st.column_config.TextColumn("IP-Range", width="small"),
+                    "Anzahl IPs": st.column_config.NumberColumn("Anzahl IPs", width="small"),
+                    "IP-Adressen": st.column_config.TextColumn("IP-Adressen", width="large")
+                }
+            )
+        
+        # Info about usage
+        st.info("ℹ️ **Hinweis:** Diese Konfiguration wird von allen Analysatoren und dem Dashboard verwendet. Änderungen müssen in der `module_config.yml` Datei vorgenommen werden.")
+
+    def show_topic_configuration_settings(self):
+        """Show topic configuration settings from YAML file"""
+        st.subheader("📡 Topic-Konfiguration")
+        st.markdown("Zentrale Konfiguration der MQTT-Topics aus `topic_config.yml`")
+        
+        # Load topic configuration from TopicManager
+        topic_manager = self.topic_manager
+        all_topics = topic_manager.get_all_topics()
+        categories = topic_manager.get_categories()
+        
+        if not all_topics:
+            st.error("❌ Topic-Konfiguration konnte nicht geladen werden")
+            return
+        
+        # Display topics by category in collapsible sections
+        for category_name, category_info in categories.items():
+            category_icon = category_info.get('icon', '📋')
+            category_description = category_info.get('description', '')
+            
+            # Get topics for this category
+            category_topics = topic_manager.get_topics_by_category(category_name)
+            
+            if category_topics:
+                with st.expander(f"{category_icon} {category_name} ({len(category_topics)} Topics)", expanded=False):
+                    st.markdown(f"**Beschreibung:** {category_description}")
+                    
+                    # Check if this category has modules (MODULE or Node-RED)
+                    has_modules = category_name in ["MODULE", "Node-RED"]
+                    has_sub_categories = any(info.get('sub_category') for info in category_topics.values())
+                    
+                    if has_modules or has_sub_categories:
+                        # Get unique modules for this category (if applicable)
+                        modules = set()
+                        if has_modules:
+                            for topic, info in category_topics.items():
+                                module = info.get('module', '')
+                                if module:
+                                    modules.add(module)
+                        
+                        # Get unique sub-categories for this category
+                        sub_categories = set()
+                        for topic, info in category_topics.items():
+                            sub_category = info.get('sub_category', '')
+                            if sub_category:
+                                sub_categories.add(sub_category)
+                        
+                        # Create filter columns
+                        if has_modules:
+                            col1, col2 = st.columns([1, 3])
+                            with col1:
+                                selected_module = st.selectbox(
+                                    "Modul filtern:",
+                                    ["Alle"] + sorted(list(modules)),
+                                    key=f"module_filter_{category_name}"
+                                )
+                            
+                            with col2:
+                                selected_sub_category = st.selectbox(
+                                    "Sub-Kategorie filtern:",
+                                    ["Alle"] + sorted(list(sub_categories)),
+                                    key=f"sub_category_filter_{category_name}"
+                                )
+                        else:
+                            # Only sub-category filter for categories without modules
+                            selected_module = "Alle"
+                            selected_sub_category = st.selectbox(
+                                "Sub-Kategorie filtern:",
+                                ["Alle"] + sorted(list(sub_categories)),
+                                key=f"sub_category_filter_{category_name}"
+                            )
+                        
+                        # Filter topics based on selection
+                        filtered_topics = {}
+                        for topic, info in category_topics.items():
+                            module = info.get('module', '')
+                            sub_category = info.get('sub_category', '')
+                            
+                            # Apply module filter (only for categories with modules)
+                            if has_modules and selected_module != "Alle" and module != selected_module:
+                                continue
+                            
+                            # Apply sub-category filter
+                            if selected_sub_category != "Alle" and sub_category != selected_sub_category:
+                                continue
+                            
+                            filtered_topics[topic] = info
+                        
+                        category_topics = filtered_topics
+                    
+                    # Create table data for this category
+                    table_data = []
+                    for topic, info in category_topics.items():
+                        # Get sub-category info for modules
+                        sub_category = info.get('sub_category', '')
+                        module = info.get('module', '')
+                        
+                        # Format sub-category display
+                        sub_category_display = ""
+                        if sub_category:
+                            sub_category_icon = topic_manager.get_sub_category_icon(sub_category)
+                            sub_category_description = topic_manager.get_sub_category_description(sub_category)
+                            sub_category_display = f"{sub_category_icon} {sub_category}"
+                        
+                        # Format module display
+                        module_display = f"({module})" if module else ""
+                        
+                        table_data.append({
+                            "Topic": topic,
+                            "Friendly-Name": info.get('friendly_name', topic),
+                            "Sub-Kategorie": sub_category_display,
+                            "Modul": module_display,
+                            "Beschreibung": info.get('description', '')
+                        })
+                    
+                    # Display as table
+                    if table_data:
+                        df = pd.DataFrame(table_data)
+                        st.dataframe(
+                            df,
+                            use_container_width=True,
+                            column_config={
+                                "Topic": st.column_config.TextColumn("Topic", width="large"),
+                                "Friendly-Name": st.column_config.TextColumn("Friendly-Name", width="medium"),
+                                "Sub-Kategorie": st.column_config.TextColumn("Sub-Kategorie", width="small"),
+                                "Modul": st.column_config.TextColumn("Modul", width="small"),
+                                "Beschreibung": st.column_config.TextColumn("Beschreibung", width="large")
+                            }
+                        )
+                    else:
+                        st.info("Keine Topics mit den gewählten Filtern gefunden.")
+        
+        # Statistics
+        st.markdown("---")
+        stats = topic_manager.get_statistics()
+        
+        col1, col2, col3, col4 = st.columns(4)
+        
+        with col1:
+            st.metric("Gesamt Topics", stats['total_topics'])
+        with col2:
+            st.metric("Kategorien", stats['total_categories'])
+        with col3:
+            module_topics = len(topic_manager.get_topics_by_category("MODULE"))
+            st.metric("⚙️ Module Topics", module_topics)
+        with col4:
+            other_topics = stats['total_topics'] - module_topics
+            st.metric("📡 Andere Topics", other_topics)
+        
+        # Sub-category statistics for modules
+        if stats['sub_category_counts']:
             st.markdown("---")
+            st.subheader("📊 Modul-Sub-Kategorien")
             
-            # NFC Statistics
-            st.metric("Bekannte NFC-Codes", len(nfc_codes))
-            st.metric("RED Werkstoffe", len([n for n in nfc_codes if n['type'] == 'RED']))
-            st.metric("WHITE Werkstoffe", len([n for n in nfc_codes if n['type'] == 'WHITE']))
-            st.metric("BLUE Werkstoffe", len([n for n in nfc_codes if n['type'] == 'BLUE']))
+            sub_category_data = []
+            for sub_category, count in stats['sub_category_counts'].items():
+                icon = topic_manager.get_sub_category_icon(sub_category)
+                description = topic_manager.get_sub_category_description(sub_category)
+                
+                sub_category_data.append({
+                    "Sub-Kategorie": f"{icon} {sub_category}",
+                    "Anzahl Topics": count,
+                    "Beschreibung": description
+                })
+            
+            if sub_category_data:
+                sub_df = pd.DataFrame(sub_category_data)
+                st.dataframe(
+                    sub_df,
+                    use_container_width=True,
+                    column_config={
+                        "Sub-Kategorie": st.column_config.TextColumn("Sub-Kategorie", width="medium"),
+                        "Anzahl Topics": st.column_config.NumberColumn("Anzahl Topics", width="small"),
+                        "Beschreibung": st.column_config.TextColumn("Beschreibung", width="large")
+                    }
+                )
+        
+        # Info about usage
+        st.info("ℹ️ **Hinweis:** Diese Konfiguration wird für Topic-Mappings und Friendly-Names im Dashboard verwendet. Änderungen müssen in der `topic_config.yml` Datei vorgenommen werden.")
+
+    def load_nfc_config(self):
+        """Load NFC configuration from YAML file"""
+        try:
+            config_path = os.path.join(
+                os.path.dirname(__file__), "../config/nfc_code_config.yml"
+            )
+            with open(config_path, "r", encoding="utf-8") as f:
+                import yaml
+                return yaml.safe_load(f)
+        except FileNotFoundError:
+            st.error(f"❌ NFC-Konfigurationsdatei nicht gefunden: {config_path}")
+            return None
+        except Exception as e:
+            st.error(f"❌ Fehler beim Laden der NFC-Konfiguration: {e}")
+            return None
 
     def show_mqtt_template_settings(self):
         """Show MQTT template configuration"""
@@ -2841,11 +3063,13 @@ class APSDashboard:
         st.markdown("---")
 
         # Show each module in a row with control buttons
-        for module_key, module_info in self.aps_modules_extended.items():
+        all_modules = self.module_mapping.get_all_modules()
+        for module_id, module_info in all_modules.items():
             with st.container():
                 # Module header with icon
                 # Use get_module_icon function for proper icon handling
-                module_key_upper = module_key.upper()
+                module_name = module_info.get('name', module_id)
+                module_key_upper = module_name.upper()
                 module_icon = get_module_icon(module_key_upper)
                 
                 # Display module header with icon
@@ -2871,7 +3095,10 @@ class APSDashboard:
                     st.markdown(f"**Typ:** {module_info['type']}")
                 
                 with col2:
-                    st.markdown(f"**IP:** {module_info['ip']}")
+                    # Get first available IP address from ip_addresses list
+                    ip_addresses = module_info.get('ip_addresses', [])
+                    current_ip = ip_addresses[0] if ip_addresses else "Unknown"
+                    st.markdown(f"**IP:** {current_ip}")
                     # Connection status with enhanced icons
                     if st.session_state.get("mqtt_connected", False):
                         st.success(f"{get_status_icon('available')} Online")
@@ -2890,16 +3117,17 @@ class APSDashboard:
                     st.markdown("**Steuerung:**")
                     
                     # Special sequence control for DRILL, MILL, and AIQS modules
-                    if module_key in ["DRILL", "MILL", "AIQS"]:
-                        if module_key == "DRILL":
+                    module_name = module_info.get('name', module_id)
+                    if module_name in ["DRILL", "MILL", "AIQS"]:
+                        if module_name == "DRILL":
                             st.markdown("**Steuerung DRILL-Sequenz:**")
                             process_command = "DRILL"
                             process_icon = "⚙️"
-                        elif module_key == "MILL":
+                        elif module_name == "MILL":
                             st.markdown("**Steuerung MILL-Sequenz:**")
                             process_command = "MILL"
                             process_icon = "⚙️"
-                        elif module_key == "AIQS":
+                        elif module_name == "AIQS":
                             st.markdown("**Steuerung AIQS-Sequenz:**")
                             process_command = "CHECK_QUALITY"
                             process_icon = "🔍"
@@ -2908,7 +3136,7 @@ class APSDashboard:
                         workpiece_color = st.selectbox(
                             "Werkstück-Farbe:",
                             ["WHITE", "RED", "BLUE"],
-                            key=f"{module_key.lower()}_color_{module_key}",
+                            key=f"{module_name.lower()}_color_{module_id}",
                             index=0  # Default to WHITE
                         )
                         
@@ -2926,7 +3154,7 @@ class APSDashboard:
                         workpiece_id = st.selectbox(
                             "Werkstück:",
                             workpiece_options,
-                            key=f"{module_key.lower()}_workpiece_{module_key}",
+                            key=f"{module_name.lower()}_workpiece_{module_id}",
                             index=default_index
                         )
                         
@@ -2940,32 +3168,32 @@ class APSDashboard:
                         with col_seq1:
                             if st.button(
                                 "📤 PICK",
-                                key=f"{module_key.lower()}_pick_{module_key}",
+                                key=f"{module_name.lower()}_pick_{module_id}",
                                 use_container_width=True,
                                 type="primary"
                             ):
-                                self.send_drill_sequence_command(module_key, "PICK", workpiece_color, nfc_code)
+                                self.send_drill_sequence_command(module_id, "PICK", workpiece_color, nfc_code)
                         
                         with col_seq2:
                             if st.button(
                                 f"{process_icon} {process_command}",
-                                key=f"{module_key.lower()}_process_{module_key}",
+                                key=f"{module_name.lower()}_process_{module_id}",
                                 use_container_width=True,
                                 type="primary"
                             ):
-                                self.send_drill_sequence_command(module_key, process_command, workpiece_color, nfc_code)
+                                self.send_drill_sequence_command(module_id, process_command, workpiece_color, nfc_code)
                         
                         with col_seq3:
                             if st.button(
                                 "📥 DROP",
-                                key=f"{module_key.lower()}_drop_{module_key}",
+                                key=f"{module_name.lower()}_drop_{module_id}",
                                 use_container_width=True,
                                 type="primary"
                             ):
-                                self.send_drill_sequence_command(module_key, "DROP", workpiece_color, nfc_code)
+                                self.send_drill_sequence_command(module_id, "DROP", workpiece_color, nfc_code)
                     
                     # FTS-specific control
-                    elif module_key == "FTS":
+                    elif module_name == "FTS":
                         st.markdown("**🚗 FTS-Steuerung:**")
                         
                         # Simple status display (always available)
@@ -3057,10 +3285,10 @@ class APSDashboard:
                         
                         if st.button(
                             button_text,
-                            key=f"control_{module_key}_{command}",
+                            key=f"control_{module_id}_{command}",
                             use_container_width=True,
                         ):
-                            self.send_module_command(module_key, command)
+                            self.send_module_command(module_id, command)
                 
                 st.markdown("---")
 
@@ -3114,7 +3342,7 @@ class APSDashboard:
 
             # Create display DataFrame with friendly topic names
             sent_df_display = sent_df[["topic", "timestamp", "message", "result"]].copy()
-            sent_df_display["friendly_topic"] = sent_df_display["topic"].apply(get_friendly_topic_name)
+            sent_df_display["friendly_topic"] = sent_df_display["topic"].apply(lambda x: self.topic_manager.get_friendly_name(x))
 
             # Display recent messages
             for idx, row in sent_df_display.head(10).iterrows():
@@ -3145,7 +3373,7 @@ class APSDashboard:
 
             # Create display DataFrame with friendly topic names
             response_df_display = response_df[["topic", "timestamp", "payload", "qos"]].copy()
-            response_df_display["friendly_topic"] = response_df_display["topic"].apply(get_friendly_topic_name)
+            response_df_display["friendly_topic"] = response_df_display["topic"].apply(lambda x: self.topic_manager.get_friendly_name(x))
 
             # Display recent responses
             for idx, row in response_df_display.head(10).iterrows():
@@ -3277,7 +3505,7 @@ class APSDashboard:
             st.title("Navigation")
 
             # Page navigation
-            page_options = ["📊 Analyse APS", "🎮 MQTT Control", "🏭 Module Overview"]
+            page_options = ["📊 Analyse APS", "🎮 MQTT Control", "🏭 Overview"]
             selected_page = st.radio("Seite auswählen:", page_options)
 
             st.markdown("---")
@@ -3325,7 +3553,7 @@ class APSDashboard:
                 self.disconnect()
         elif selected_page == "🎮 MQTT Control":
             self.show_mqtt_control()
-        elif selected_page == "🏭 Module Overview":
+        elif selected_page == "🏭 Overview":
             if self.connect():
                 df = self.load_data()
                 self.show_module_overview_dashboard(df)
@@ -3349,7 +3577,7 @@ class APSDashboard:
             self.current_df = df
 
             # Main content - show selected tab
-            if st.session_state.selected_tab == "🏭 Module Overview":
+            if st.session_state.selected_tab == "🏭 Overview":
                 self.show_module_overview_dashboard(df)
             elif st.session_state.selected_tab == "📡 MQTT Monitor":
                 self.show_mqtt_monitor_standalone()
@@ -3375,7 +3603,7 @@ def main():
         st.sidebar.image(logo_path, width=200)
     else:
         st.sidebar.markdown("## 🏭 ORBIS-Modellfabrik")
-    st.sidebar.markdown("*APS Dashboard*")
+    st.sidebar.markdown("*Modellfabrik-Dashboard*")
 
     # Navigation in sidebar
     st.sidebar.markdown("---")
@@ -3383,11 +3611,11 @@ def main():
 
     # Initialize selected tab in session state
     if "selected_tab" not in st.session_state:
-        st.session_state.selected_tab = "🏭 Module Overview"
+        st.session_state.selected_tab = "🏭 Overview"
 
     # Tab buttons in sidebar with active highlighting
     tabs = [
-        ("🏭 Module Overview", "🏭 Module Overview"),
+        ("🏭 Overview", "🏭 Overview"),
         ("📡 MQTT Monitor", "📡 MQTT Monitor"),
         ("🔍 APS Analyse", "🔍 APS Analyse"),
         ("🎮 MQTT Control", "🎮 MQTT Control"),

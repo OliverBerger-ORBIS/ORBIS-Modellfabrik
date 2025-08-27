@@ -11,14 +11,14 @@ import glob
 import re
 from datetime import datetime
 from typing import Dict, List, Any, Set
-from module_mapping_utils import ModuleMappingUtils
+from module_manager import get_module_manager
 import copy
 import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
 
-from src_orbis.mqtt.tools.nfc_code_mapping import ALL_NFC_CODES
-from src_orbis.mqtt.dashboard.config.topic_mapping import MODULE_SERIAL_TO_NAME
+from src_orbis.mqtt.tools.nfc_code_manager import get_nfc_manager
+from src_orbis.mqtt.tools.module_manager import get_module_manager
 
 class TXTTemplateAnalyzer:
     def __init__(self):
@@ -38,7 +38,7 @@ class TXTTemplateAnalyzer:
         ]
         
         # Initialize module mapping utilities
-        self.module_mapping = ModuleMappingUtils()
+        self.module_mapping = get_module_manager()
         # Get project root (3 levels up from tools directory)
         project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
         
@@ -100,8 +100,9 @@ class TXTTemplateAnalyzer:
         if module_id_values and len(module_id_values) == len(simple_values):
             return "<moduleId>"
         
-        # 6. Check for NFC codes (regex)
-        nfc_values = {v for v in str_values if re.match(r'^04[0-9a-f]{12}$', v)}
+        # 6. Check for NFC codes (regex + YAML config)
+        nfc_manager = get_nfc_manager()
+        nfc_values = {v for v in str_values if nfc_manager.is_nfc_code(v)}
         if nfc_values and len(nfc_values) == len(simple_values):
             return "<nfcCode>"
         

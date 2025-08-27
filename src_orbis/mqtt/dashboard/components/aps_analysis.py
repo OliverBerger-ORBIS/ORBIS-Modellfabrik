@@ -6,6 +6,7 @@ import os
 from datetime import datetime
 import subprocess
 import sys
+from ...tools.topic_manager import get_topic_manager
 
 class APSAnalysis:
     """Comprehensive APS Analysis Component for Multi-Protocol Analysis."""
@@ -232,7 +233,6 @@ class APSAnalysis:
                 
                 # Import and use the filter component
                 from ..components.filters import create_filters
-                from ..config.topic_mapping import get_friendly_topic_name
                 
                 # Create filters
                 df_filtered = create_filters(df, single_session_mode=True)
@@ -298,9 +298,9 @@ class APSAnalysis:
         
         # Topic distribution with friendly names
         st.subheader("📡 Topic-Verteilung")
-        from ..config.topic_mapping import get_friendly_topic_name
+        topic_manager = get_topic_manager()
         df_topic = df.copy()
-        df_topic.loc[:, 'friendly_topic'] = df_topic['topic'].apply(get_friendly_topic_name)
+        df_topic.loc[:, 'friendly_topic'] = df_topic['topic'].apply(lambda x: topic_manager.get_friendly_name(x))
         topic_counts = df_topic['friendly_topic'].value_counts().head(10)
         st.bar_chart(topic_counts)
         
@@ -366,9 +366,9 @@ class APSAnalysis:
         st.subheader("📋 Nachrichten-Tabelle")
         
         # Add friendly topic names
-        from ..config.topic_mapping import get_friendly_topic_name
+        topic_manager = get_topic_manager()
         df_display = df.copy()
-        df_display['friendly_topic'] = df_display['topic'].apply(get_friendly_topic_name)
+        df_display['friendly_topic'] = df_display['topic'].apply(lambda x: topic_manager.get_friendly_name(x))
         
         # Show recent messages
         recent_messages = df_display[['timestamp', 'friendly_topic', 'payload']].tail(50)
@@ -383,11 +383,11 @@ class APSAnalysis:
         st.subheader("📡 Topic-Analyse")
         
         # Import friendly topic mapping
-        from ..config.topic_mapping import get_friendly_topic_name
+        topic_manager = get_topic_manager()
         
         # Create analysis DataFrame with friendly topic names
         df_analysis = df[["topic"]].copy()
-        df_analysis["friendly_topic"] = df_analysis["topic"].apply(get_friendly_topic_name)
+        df_analysis["friendly_topic"] = df_analysis["topic"].apply(lambda x: topic_manager.get_friendly_name(x))
         
         col1, col2 = st.columns(2)
         
@@ -407,7 +407,7 @@ class APSAnalysis:
             # Topic statistics
             total_topics = df["topic"].nunique()
             mapped_topics = df_analysis["friendly_topic"].nunique()
-            unmapped_count = len([t for t in df["topic"].unique() if get_friendly_topic_name(t) == t])
+            unmapped_count = len([t for t in df["topic"].unique() if topic_manager.get_friendly_name(t) == t])
             
             st.metric("Gesamt Topics", total_topics)
             st.metric("Mapped Topics", total_topics - unmapped_count)
