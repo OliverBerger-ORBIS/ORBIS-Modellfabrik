@@ -1,39 +1,33 @@
 # ORBIS Modellfabrik - Projekt Status
 
+**Letztes Update:** 28. August 2025
+
 ## ✅ Abgeschlossene Features
 
-### 🏭 Module Template Analyzer
+### 🏭 Zentrale Konfigurations-Manager
 - **Status:** ✅ Vollständig implementiert und getestet
-- **Features:** MODULE Topics Analyse, Sub-Kategorie-Erkennung, Template-Struktur-Extraktion
-- **Topics:** 30 MODULE Topics analysiert mit 1490 Nachrichten
-- **Sub-Kategorien:** Connection, State, Order, Factsheet, InstantAction, Status
-- **Integration:** ✅ Dashboard-Integration mit Modul-Namen-Filterung
-- **Tests:** ✅ Unit Tests erfolgreich (14/14 Tests)
+- **NFC Code Manager:** Zentrale YAML-Konfiguration aller NFC-Codes mit Friendly-IDs
+- **Module Manager:** Konfiguration aller APS-Module (ID, Name, Typ, IP-Range)
+- **Topic Manager:** Topic-Mappings und Friendly-Names für alle MQTT-Topics
+- **Message Template Manager:** YAML-basierte MQTT-Templates mit UI-Konfiguration
+- **Integration:** ✅ Vollständig in Dashboard integriert
 
-### 🔄 Node-RED Template Analyzer
-- **Status:** ✅ Vollständig implementiert und getestet
-- **Features:** Node-RED Topics Analyse, Flow/Dashboard/UI-Erkennung, Template-Struktur-Extraktion
-- **Topics:** 11 Node-RED Topics analysiert mit 1490 Nachrichten
-- **Sub-Kategorien:** Connection, State, Order, Factsheet, InstantAction, Status, Flows, Dashboard, UI
-- **Integration:** ✅ Dashboard-Integration mit erweiterten Filtern
-- **Tests:** ✅ Unit Tests erfolgreich (14/14 Tests)
+### 📊 Dashboard Modernisierung
+- **Status:** ✅ Vollständig modernisiert und bereinigt
+- **Template-basierte Steuerung:** Alle Module (DRILL, MILL, AIQS, FTS) über Message Templates
+- **Factory Reset Integration:** Template-basierte Factory Reset Funktionalität
+- **Order Management:** ROT, WEISS, BLAU Bestellungen vollständig integriert
+- **Zentrale Konfiguration:** Alle Einstellungen über Dashboard-Tabs verwaltbar
+- **Node-RED Integration:** Eigener Tab für Node-RED Analyse
+- **Bereinigte Struktur:** Veraltete Tabs und Komponenten entfernt
 
-### 📊 Dashboard Template Management
-- **Status:** ✅ Vollständig erweitert und optimiert
-- **Features:** 4-stufige Filterung (Kategorie → Sub-Kategorie → Modul → Template)
-- **Kategorien:** CCU (16), TXT (12), MODULE (20), Node-RED (19) - 67 Topics insgesamt
-- **Modul-Filterung:** Benutzerfreundliche Modul-Namen (DRILL, AIQS, HBW, MILL, DPS, CHRG)
-- **Template-Anzeige:** Vollständige Strukturen mit Beispielen und Validierungsregeln
-- **UI/UX:** Zweispaltige Layout, Modul-Namen-Anzeige, erweiterte Navigation
-
-### 🎯 Template Message Manager
+### 🎯 Template Message System
 - **Status:** ✅ Vollständig implementiert und erweitert
-- **Features:** Template Library, ORDER-ID Tracking, Workflow Management, Unified Type Recognition
-- **Integration:** ✅ Dashboard mit Template Control, Order Tracking, Settings-Tabs
+- **Features:** Template Library, ORDER-ID Tracking, Workflow Management
+- **Integration:** ✅ Dashboard mit Template Control, Order Tracking
 - **Test:** ✅ Lokal getestet, bereit für Live-Test
-- **Dashboard:** ✅ 5 Tabs implementiert (Wareneingang, Order Tracking, Library, Testing, Custom)
-- **Neue Features:** ✅ Settings-Tabs (Dashboard, Topic-Mappings, NFC-Codes, MQTT-Templates)
-- **Analyzer:** ✅ TXT und CCU Analyzer mit einheitlicher Type Recognition Strategy
+- **Dashboard:** ✅ Template-basierte Steuerung für alle Module
+- **Neue Features:** ✅ Settings-Tabs mit zentraler Konfiguration
 
 ### 🏷️ NFC Workpiece Mapping (Zentrale YAML-Konfiguration)
 - **Status:** ✅ Vollständig implementiert und erweitert
@@ -47,7 +41,7 @@
 - **Status:** ✅ Umfassende Analyse abgeschlossen
 - **Workflow-Typen:** Wareneingang, Auftrag, AI-not-ok (alle 3 Farben)
 - **ORDER-ID Management:** CCU-Generierung verstanden und dokumentiert
-- **Template Strategy:** 9 verschiedene Templates definiert
+- **Template Strategy:** Vollständige YAML-basierte Template-Bibliothek
 
 ### 🎨 Dashboard Integration
 - **Status:** ✅ Vollständig implementiert und erweitert
@@ -62,16 +56,11 @@
 - **Features:** Message Library, Template Messages, ORDER-ID Tracking
 - **Dashboard:** MQTT Monitor, Control, Template Manager
 
-### 🔍 MQTT Explorer Integration
-- **Status:** ❌ Entfernt (nicht benötigt)
-- **Grund:** Dashboard bietet bessere Integration
-- **Ersatz:** APS Analyse Tab mit umfassender MQTT-Analyse
-
 ### 📋 Bestellung-System
 - **Status:** ✅ Vollständig implementiert
 - **Features:** Browser Order Format, Dashboard Integration, HBW-Status
 - **MQTT Topic:** `/j1/txt/1/f/o/order`
-- **Integration:** MQTT Control Tab mit Bestellung-Trigger und HBW-Status
+- **Integration:** Overview Tab mit Bestellung-Trigger und HBW-Status
 - **Orchestrierung:** CCU koordiniert automatisch alle Module
 
 ### 🚗 FTS Control
@@ -83,166 +72,67 @@
 ### 🔧 Core Infrastructure
 - **Status:** ✅ Stabil und erweitert
 - **Features:** Config Management, Data Handling, Error Handling, Session Analysis
-- **Testing:** ✅ Unit Tests, Integration Tests, Template Tests (9/9 Tests erfolgreich)
+- **Testing:** ✅ Unit Tests, Integration Tests, Template Tests erfolgreich
 
-### 🧠 Unified Type Recognition System
-- **Status:** ✅ Neu implementiert und getestet
-- **Features:** Einheitliche Type Recognition Strategy für alle Analyzer
-- **Priority Order:** Booleans > Numbers > Datetime > UUIDs > Module IDs > NFC Codes > Specific ENUMs > Generic ENUMs > String
-- **Integration:** ✅ TXT und CCU Analyzer verwenden einheitliche Strategie
-- **Testing:** ✅ Unit Tests für Type Recognition (alle Tests erfolgreich)
-- **Tools:** ✅ Template Validator, NFC Code Mapping, Hierarchical Template Creator
+### 🧠 Template Analyzer
+- **Status:** ✅ Vollständig implementiert und getestet
+- **CCU Analyzer:** CCU Topics Analyse mit Template-Struktur-Extraktion
+- **TXT Analyzer:** TXT Controller Topics Analyse
+- **Module Analyzer:** MODULE Topics Analyse mit Sub-Kategorie-Erkennung
+- **Node-RED Analyzer:** Node-RED Topics Analyse
+- **Integration:** ✅ Separate Analyse-Tools für Entwickler
+
+## 🗑️ Bereinigte Komponenten
+
+### ❌ Entfernte veraltete Komponenten:
+- **TemplateMessageManager:** Ersetzt durch MessageTemplateManager
+- **TemplateControlDashboard:** Funktionalität in aps_dashboard.py integriert
+- **MQTT-Templates Tab:** Redundant, entfernt aus Dashboard
+- **Veraltete Tool-Dateien:** 13 obsolete Dateien aus src_orbis/mqtt/tools/ entfernt
+- **Veraltete Test-Dateien:** 2 obsolete Test-Dateien entfernt
+- **Veraltete Root-Scripts:** 6 obsolete Scripts entfernt
+- **Veraltete Analyse-Dateien:** 8 obsolete Analyse-Dateien entfernt
+
+### ❌ Entfernte veraltete Dokumentation:
+- **Template Library Dokumentation:** Ersetzt durch aktuelle Architektur
+- **Separate Analysis Dokumentation:** Ersetzt durch Template Analyzer
+- **Workflow Dokumentation:** Konsolidiert in aktuelle Architektur
+- **Order ID Dokumentation:** Integriert in aktuelle Systeme
 
 ## 🚧 Nächste Schritte
 
 ### 🔗 Live APS Integration (Priorität 1)
-- **Template Manager Integration:** ✅ Dashboard-Integration für alle 9 Templates
+- **Template Manager Integration:** ✅ Dashboard-Integration für alle Templates
 - **NFC-Mapping Integration:** ✅ Benutzerfreundliche Werkstück-IDs verfügbar
-- **Live MQTT Test:** Template Messages mit echter APS testen
-- **ORDER-ID Tracking:** CCU-generierte ORDER-IDs verfolgen
-- **Workflow Validation:** Wareneingang, Auftrag und AI-not-ok Workflows testen
+- **Live Test:** Template Messages mit echter APS validieren
+- **ORDER-ID Tracking:** CCU-generierte IDs in Echtzeit verfolgen
 
-### 📤 Template Export (Priorität 2)
-- **Template Export Tab:** Bulk-Export-Funktionen für verschiedene Formate
-- **Inline-Export-Buttons:** Schnell-Export für einzelne Templates
-- **Export-Formate:** JSON Schema, TypeScript, Python, OpenAPI/Swagger
-- **Download-Funktionen:** Direkter Export der Template-Dateien
+### 🔧 System-Optimierung (Priorität 2)
+- **Performance:** Dashboard-Performance optimieren
+- **Error Handling:** Erweiterte Fehlerbehandlung implementieren
+- **Logging:** Erweiterte Logging-Funktionalität
 
-### 📊 Template Library Erweiterung (Priorität 1) - ✅ ABGESCHLOSSEN
-- **✅ MODUL Analyzer:** Vollständig implementiert (`module_template_analyzer.py`)
-- **✅ Node-RED Analyzer:** Vollständig implementiert (`nodered_template_analyzer.py`)
-- **✅ Template Library:** Alle Kategorien (TXT, CCU, MODUL, Node-RED) analysiert und verfügbar
-- **✅ Einheitliche Darstellung:** Konsistente UI für alle Analyzer-Ergebnisse
-- **✅ Dashboard-Integration:** Vollständige Filterung nach Kategorie, Sub-Kategorie und Modul
-- **✅ Unit Tests:** Umfassende Tests für alle Analyzer (14/14 Tests erfolgreich)
-- **📊 Statistiken:** 67 Topics insgesamt (CCU: 16, TXT: 12, MODULE: 20, Node-RED: 19)
+### 📈 Erweiterte Features (Priorität 3)
+- **Workflow Automation:** Erweiterte Automatisierung implementieren
+- **Advanced Analytics:** Erweiterte Analyse-Funktionen
+- **Integration:** Weitere System-Integrationen
 
-### 📱 NFC-Code Integration (Priorität 1) - ZENTRALE YAML-KONFIGURATION
-- **✅ Zentrale Konfiguration:** Vollständige YAML-Konfiguration mit erweiterten Metadaten
-- **✅ NFCCodeManager:** Einheitliche Verwaltung für alle Tools und Dashboard
-- **✅ Dashboard-Integration:** Tabellarische Darstellung mit Quality-Check-Status
-- **✅ Template-Analysatoren:** Verwenden zentrale YAML-Konfiguration
-- **✅ Backward Compatibility:** Bestehende Funktionen bleiben verfügbar
+## 📊 Aktuelle Architektur
 
-### 🏭 Module Configuration (Priorität 1) - ✅ ZENTRALISIERT UND BEREINIGT
-- **✅ Zentrale YAML-Konfiguration:** Vollständige Modul-Konfiguration mit IP-Ranges
-- **✅ ModuleManager:** Einheitliche Verwaltung für alle Tools und Dashboard
-- **✅ Dashboard-Integration:** Neuer "Module" Tab unter "Einstellungen"
-- **✅ Vollständige IP-Ranges:** 10 Adressen pro Modul dokumentiert
-- **✅ Bereinigung:** Obsolete Dateien und Dokumentationen entfernt
-- **✅ Modul-Namen-Filterung:** Dashboard-Filterung nach Modul-Namen (DRILL, AIQS, HBW, etc.)
-- **✅ Dashboard UI/Navigation:** Haupttitel zu "ORBIS-LOGO Modellfabrik Dashboard" geändert
-- **✅ Overview Tab:** "Module Overview" zu "Overview" mit Unter-Tabs erweitert
-- **✅ Module Status Tab:** Optimierte Spaltenreihenfolge und IP-Anzeige
+### 🏗️ Zentrale Konfiguration:
+- **YAML-basierte Konfiguration:** Alle Einstellungen zentral verwaltet
+- **Manager-Pattern:** Separate Manager für verschiedene Bereiche
+- **Dashboard-Integration:** Vollständige Integration aller Konfigurationen
 
-### 📡 Topic Configuration (Priorität 1) - ZENTRALISIERT UND MIGRIERT
-- **✅ Zentrale YAML-Konfiguration:** Vollständige Topic-Konfiguration mit 67 Topics
-- **✅ TopicManager:** Einheitliche Verwaltung für alle Tools und Dashboard
-- **✅ Dashboard-Integration:** Neuer "Topic-Konfiguration" Tab unter "Einstellungen"
-- **✅ 4 Kategorien:** CCU, TXT, MODULE, Node-RED mit Icons und Beschreibungen
-- **✅ Modul-Sub-Kategorien:** Connection, State, Order, Factsheet für alle Module
-- **✅ FTS als Modul:** Korrekt als Modul behandelt (nicht als eigene Kategorie)
-- **✅ Backward Compatibility:** Alte Topic-Mapping-Funktionen funktionieren weiterhin
-- **✅ Migration abgeschlossen:** Dashboard, Filter, Tests auf TopicManager umgestellt
-- **✅ Alte Dateien gelöscht:** `topic_mapping.py` entfernt
-- **✅ Tab-Reihenfolge optimiert:** Topic-Mappings Tab entfernt, neue Sortierung implementiert
-- **✅ Migration:** Alle Tools verwenden ModuleManager
-- **✅ Universelle Filterung:** Sub-Kategorie-Filter für alle Kategorien, Modul-Filter für Module und Node-RED
-- **✅ Vollständige Sub-Kategorien:** CCU (State, Control, Status), TXT (Function Input/Output, Control, Input, Output)
-- **✅ Fehlerbehebung:** Alle NameError und Import-Fehler behoben
-- **✅ Dashboard Navigation:** Alle Tabs funktionieren korrekt ohne Fehler
+### 🎯 Template System:
+- **Message Template Manager:** YAML-basierte MQTT-Templates
+- **Template Analyzer:** Separate Analyse-Tools für Entwickler
+- **Dashboard-Integration:** Template-basierte Steuerung
 
-### 🏭 Module Status Management (Priorität 2)
-- **HBW Status:** Werkstück-Positionen abfragen und anzeigen
-- **DPS Status:** Verfügbare Plätze und Werkstücke prüfen
-- **Status Integration:** Dashboard mit Echtzeit-Status-Anzeige
-- **MQTT Topics:** Status-Abfrage Topics identifizieren
-- **✅ Wareneingang-Workflow:** Vollständig dokumentiert und analysiert
-- **✅ Auftrags-Workflow:** Vollständig dokumentiert und analysiert
+### 📱 Dashboard:
+- **Moderne UI:** Streamlit-basiertes Dashboard
+- **Template Control:** Template-basierte Modul-Steuerung
+- **Zentrale Konfiguration:** Alle Einstellungen über Dashboard
+- **Bereinigte Struktur:** Fokus auf Funktionalität
 
-### 🚗 FTS Navigation (Priorität 2)
-- **Navigation-Parameter:** Zielstation-Bestimmung implementieren
-- **Routenplanung:** Automatische Routenplanung verstehen
-- **Station-Mapping:** Verfügbare Stationen identifizieren
-- **Dashboard Integration:** FTS Navigation im Control Tab
-
-### 🎯 Erweiterte Workflow Features (Priorität 3)
-- **WorkflowOrderManager:** Automatische ORDER-ID Verwaltung
-- **Error Recovery:** Automatische Fehlerbehandlung für Template Messages
-- **Performance Monitoring:** Template-Ausführung überwachen
-- **Batch Processing:** Mehrere Aufträge gleichzeitig verwalten
-
-### 🚀 Advanced Features (Priorität 4)
-- **Predictive Analytics:** Workflow-Performance Vorhersagen
-- **API Development:** REST API für Template Messages
-- **Security:** Erweiterte Sicherheitsfeatures für Production
-
-## 📁 Projektstruktur
-
-```
-ORBIS-Modellfabrik/
-├── src_orbis/mqtt/dashboard/          # Dashboard mit Icons
-├── src_orbis/mqtt/tools/              # MQTT Tools + NFC Mapping
-├── src_orbis/mqtt/loggers/            # Data Logging
-├── docs_orbis/                        # Dokumentation
-│   ├── consolidated-workflow-documentation.md  # **Konsolidierte Workflow-Dokumentation**
-│   ├── wareneingang-workflow-documentation.md  # Wareneingang-Analyse
-│   └── auftrag-workflow-documentation.md       # Auftrags-Workflow-Analyse
-├── tests_orbis/                       # Tests
-└── mqtt-data/                         # Session Data
-```
-
-## 🎯 Aktuelle Prioritäten
-
-1. **✅ Template Manager Live-Testing** - Dashboard läuft und bereit für MQTT Verbindung
-2. **✅ Dashboard Navigation** - Alle Tabs funktionieren korrekt ohne Fehler
-3. **✅ Topic Configuration** - Vollständig zentralisiert und migriert
-4. **✅ Module Configuration** - Vollständig zentralisiert und bereinigt
-5. **📱 NFC-Code Auslesung** - 14 restliche Codes physisch auslesen
-6. **Wareneingang Templates** - Live-Test mit echten Werkstücken
-7. **Order Tracking** - Validierung der CCU Response Verarbeitung
-
-## 📈 Erfolge
-
-- ✅ Template Message Manager vollständig implementiert und integriert
-- ✅ NFC Workpiece Mapping implementiert (10/24 Codes gefunden)
-- ✅ Umfassende Workflow-Analyse (15 Sessions, 12.420 Nachrichten)
-- ✅ 9 verschiedene Template Messages definiert und implementiert
-- ✅ ORDER-ID Management-Strategie entwickelt und implementiert
-- ✅ Dashboard mit Icon-Integration und Template Control (5 Tabs)
-- ✅ Robuste Session-Analyse und Dokumentation
-- ✅ CCU Response Handling und Order Tracking implementiert
-- ✅ **Dashboard läuft erfolgreich auf Port 8501**
-- ✅ **Alle Tests erfolgreich (9/9 Tests passed)**
-- ✅ **Topic Configuration vollständig zentralisiert und migriert**
-- ✅ **Module Configuration vollständig zentralisiert und bereinigt**
-- ✅ **Dashboard Navigation vollständig funktionsfähig ohne Fehler**
-
-## 📊 **Aktueller Stand:**
-
-- **15 Sessions analysiert:** Wareneingang (9), Auftrag (3), AI-not-ok (3)
-- **9 Template Messages:** 3 Workflow-Typen × 3 Farben
-- **ORDER-ID Konsistenz:** CCU-Generierung vollständig verstanden
-- **Template Manager:** ✅ Vollständig integriert, bereit für Live-Testing
-- **NFC-Mapping:** ✅ 10/24 Codes gefunden (41.7% vollständig)
-- **Dashboard:** ✅ Läuft auf http://localhost:8501
-- **Tests:** ✅ 9/9 Tests erfolgreich
-- **Topic Configuration:** ✅ 67 Topics, 4 Kategorien, 12 Sub-Kategorien
-- **Module Configuration:** ✅ 6 Module, IP-Ranges, zentrale Verwaltung
-- **Dashboard Navigation:** ✅ Alle Tabs funktionsfähig, keine Fehler
-
-## 🏷️ NFC-Code Integration
-
-### ✅ Vollständige Dokumentation
-- **24/24 NFC-Codes** in Wareneingang-Dokumentation erfasst
-- **Direkte Verwendung:** NFC-Codes werden als Workpiece-ID in MQTT-Nachrichten verwendet
-- **Dashboard angepasst:** NFC-Code Eingabe statt Mapping-System
-
-### 📋 Verfügbare NFC-Codes
-- **🔴 Rote Werkstücke:** 8/8 (100%) - `040a8dca341291` bis `048a8cca341290`
-- **⚪ Weiße Werkstücke:** 8/8 (100%) - `04798eca341290` bis `042c8aca341291`
-- **🔵 Blaue Werkstücke:** 8/8 (100%) - `04a189ca341290` bis `042c88ca341291`
-
----
-
-*Status: ✅ **NFC-MAPPING IMPLEMENTIERT** - Template Message Manager mit benutzerfreundlichen Werkstück-IDs - Bereit für Live-Test im Büro!* 🚀✨
+Das System ist jetzt vollständig modernisiert und bereit für Live-Integration mit der APS-Modellfabrik.

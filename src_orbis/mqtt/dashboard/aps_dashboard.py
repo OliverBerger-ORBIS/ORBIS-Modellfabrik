@@ -16,6 +16,7 @@ import streamlit as st
 import plotly.express as px
 import paho.mqtt.client as mqtt
 from datetime import datetime
+from typing import Dict, Any
 
 # --- Start of Path Correction ---
 # This block ensures that the script can find the 'src_orbis' package,
@@ -38,9 +39,9 @@ if _project_root not in sys.path:
 from src_orbis.mqtt.dashboard.utils.data_handling import extract_module_info
 from src_orbis.mqtt.dashboard.components.filters import create_filters
 
-# Template Message Manager imports
-from src_orbis.mqtt.tools.template_message_manager import TemplateMessageManager
-from src_orbis.mqtt.dashboard.template_control import TemplateControlDashboard
+# Template Message Manager imports (OLD - REMOVED)
+# from src_orbis.mqtt.tools.template_message_manager import TemplateMessageManager
+# Removed: from src_orbis.mqtt.dashboard.template_control import TemplateControlDashboard
 
 # Module Mapping imports
 from src_orbis.mqtt.tools.module_manager import get_module_manager
@@ -103,9 +104,9 @@ class APSDashboard:
         self.conn = None
         self.verbose_mode = verbose_mode
 
-        # Initialize Template Message Manager
-        self.template_manager = TemplateMessageManager()
-        self.template_control = TemplateControlDashboard(self.template_manager)
+        # Initialize Template Message Manager (OLD - REMOVED)
+        # self.template_manager = TemplateMessageManager()
+        # self.template_control = TemplateControlDashboard(self.template_manager)
         self.aps_analysis = APSAnalysis()
         
         # Initialize Module Mapping Utilities
@@ -251,10 +252,9 @@ class APSDashboard:
                         workpiece_id = payload.get('workpieceId')
                         
                         if order_id and color and workpiece_id:
-                            # Handle CCU response in template manager
-                            self.template_manager.handle_ccu_response(
-                                order_id, color, workpiece_id, payload
-                            )
+                            # Handle CCU response in order tracking manager
+                            if hasattr(self, 'order_tracking_manager'):
+                                self.order_tracking_manager.handle_ccu_response(order_id, payload)
                 except Exception as e:
                     print(f"Template Manager CCU Response Error: {e}")
                     
@@ -1025,13 +1025,11 @@ class APSDashboard:
         # Control method selection
         control_method = st.selectbox(
             "Steuerungsmethode:",
-            ["Overview", "Bestellung", "Template Message"],
+            ["Overview", "Template Message"],
         )
 
         if control_method == "Overview":
             self.show_module_control_rows()
-        elif control_method == "Bestellung":
-            self.show_order_control_combined()
         elif control_method == "Template Message":
             self.show_template_control()
 
@@ -1056,17 +1054,14 @@ class APSDashboard:
             with col1a:
                 if st.button("🔴 ROT", type="primary", use_container_width=True):
                     self.send_browser_order("RED")
-                    st.success("✅ ROT-Bestellung gesendet!")
             
             with col1b:
                 if st.button("⚪ WEISS", type="primary", use_container_width=True):
                     self.send_browser_order("WHITE")
-                    st.success("✅ WEISS-Bestellung gesendet!")
             
             with col1c:
                 if st.button("🔵 BLAU", type="primary", use_container_width=True):
                     self.send_browser_order("BLUE")
-                    st.success("✅ BLAU-Bestellung gesendet!")
         
         with col2:
             st.subheader("📦 Bestellung (mit HBW-Status)")
@@ -1135,10 +1130,6 @@ class APSDashboard:
             st.error("❌ MQTT-Verbindung erforderlich")
             return
         
-        if not hasattr(self, 'mqtt_client') or not self.mqtt_client:
-            st.error("❌ MQTT-Client nicht verfügbar")
-            return
-        
         try:
             # Create order message
             order_data = {
@@ -1146,11 +1137,11 @@ class APSDashboard:
                 "ts": datetime.now().isoformat() + "Z"
             }
             
-            # Send order
+            # Send order using the proven method
             topic = "/j1/txt/1/f/o/order"
-            result = self.mqtt_client.publish(topic, json.dumps(order_data))
+            success = self.send_mqtt_message_direct(topic, order_data)
             
-            if result.rc == 0:
+            if success:
                 # Store recent order
                 if not hasattr(self, 'recent_orders'):
                     self.recent_orders = []
@@ -1164,7 +1155,7 @@ class APSDashboard:
                 
                 st.success(f"✅ {color}-Bestellung erfolgreich gesendet!")
             else:
-                st.error(f"❌ Fehler beim Senden der Bestellung: {result.rc}")
+                st.error("❌ Fehler beim Senden der Bestellung")
                 
         except Exception as e:
             st.error(f"❌ Fehler: {e}")
@@ -1198,38 +1189,30 @@ class APSDashboard:
             return None
 
     def show_template_control(self):
-        """Show template-based MQTT control with Template Message Manager"""
-        st.header("🎯 Template Message Manager")
-        st.markdown("**Programmatische APS-Steuerung mit 9 Workflow Templates**")
+        """Show template-based MQTT control with NEW Message Template Manager"""
+        st.header("🎯 Message Template Manager")
+        st.markdown("**Neue Template-basierte MQTT-Steuerung mit Message Template Library**")
 
-        # Set MQTT client for template manager
-        if self.mqtt_client:
-            self.template_manager.set_mqtt_client(self.mqtt_client)
-            self.template_control.template_manager = self.template_manager
+        # Use the NEW message template manager
+        if not self.message_template_manager:
+            st.error("❌ Message Template Manager nicht verfügbar")
+            return
 
         # Template Control Tabs
-        tab1, tab2, tab3, tab4, tab5 = st.tabs([
-            "🚀 Wareneingang Control", 
-            "📊 Order Tracking", 
+        tab1, tab2, tab3 = st.tabs([
             "📚 Template Library",
-            "🧪 Template Testing",
-            "⚙️ Custom Templates"
+            "🔍 Template Analysis",
+            "⚙️ Template Settings"
         ])
 
         with tab1:
-            self.template_control.show_wareneingang_control()
+            self.show_template_library()
 
         with tab2:
-            self.template_control.show_order_tracking()
+            self.show_template_analysis()
 
         with tab3:
-            self.template_control.show_template_library()
-
-        with tab4:
-            self.template_control.show_template_testing()
-
-        with tab5:
-            self.template_control.show_custom_template_creator()
+            self.show_template_settings()
 
 
 
@@ -1266,13 +1249,13 @@ class APSDashboard:
         ])
 
         with overview_tab1:
-            # Module table
-            st.subheader("📋 Module Status")
+        # Module table
+        st.subheader("📋 Module Status")
 
         # Create module table data
         module_table_data = []
-        all_modules = self.module_mapping.get_all_modules()
-        for module_id, module_info in all_modules.items():
+            all_modules = self.module_mapping.get_all_modules()
+            for module_id, module_info in all_modules.items():
             # Get availability status
             recent_messages = df[df["topic"].str.contains(module_info["id"], na=False)]
             availability_status = self.extract_availability_status(
@@ -1287,7 +1270,7 @@ class APSDashboard:
 
             # Activity status with enhanced icons using new function
             if availability_status:
-                activity_display = self.get_enhanced_status_display(availability_status, module_info["type"])
+            activity_display = self.get_enhanced_status_display(availability_status, module_info["type"])
             elif len(recent_messages) > 0:
                 # If we have recent messages but no specific status, show "Active"
                 activity_display = f"{get_status_icon('available')} Active"
@@ -1297,26 +1280,26 @@ class APSDashboard:
 
             # Get module icon (use emoji for table display)
             # For table display, prefer emoji over file paths
-            module_name = module_info.get('name', module_id)
-            module_key_upper = module_name.upper()
-            icon_from_function = get_module_icon(module_key_upper)
+                module_name = module_info.get('name', module_id)
+                module_key_upper = module_name.upper()
+                icon_from_function = get_module_icon(module_key_upper)
             
             # If it's a file path, fallback to emoji from MODULE_ICONS
             if icon_from_function and ('/' in icon_from_function or '\\' in icon_from_function):
-                icon_display = MODULE_ICONS.get(module_key_upper, "❓")
+                    icon_display = MODULE_ICONS.get(module_key_upper, "❓")
             else:
                 icon_display = icon_from_function
             
-            # Get first available IP address from ip_addresses list
-            ip_addresses = module_info.get('ip_addresses', [])
-            current_ip = ip_addresses[0] if ip_addresses else "Unknown"
-            
+                # Get first available IP address from ip_addresses list
+                ip_addresses = module_info.get('ip_addresses', [])
+                current_ip = ip_addresses[0] if ip_addresses else "Unknown"
+                
             module_table_data.append(
                 {
-                    "Name": f"{icon_display} {module_info.get('name', module_id)}",
+                        "Name": f"{icon_display} {module_info.get('name', module_id)}",
                     "ID": module_info["id"],
-                    "Type": module_info.get("type", "Unknown"),
-                    "IP": current_ip,  # First available IP address (ToBeDone: from MQTT messages)
+                        "Type": module_info.get("type", "Unknown"),
+                        "IP": current_ip,  # First available IP address (ToBeDone: from MQTT messages)
                     "Connected": connection_status,
                     "Activity Status": activity_display,
                     "Recent Messages": len(recent_messages),
@@ -1330,7 +1313,7 @@ class APSDashboard:
             use_container_width=True,
             column_config={
                 "Name": st.column_config.TextColumn("Name", width="medium"),
-                "ID": st.column_config.TextColumn("ID", width="medium"),
+                    "ID": st.column_config.TextColumn("ID", width="medium"),
                 "Recent Messages": st.column_config.NumberColumn(
                     "Recent Messages", width="small"
                 ),
@@ -1338,24 +1321,10 @@ class APSDashboard:
         )
 
         with overview_tab2:
-            st.subheader("📦 Bestellung")
-            st.info("💡 Bestellungs-Funktionalität wird hier implementiert")
-            st.markdown("""
-            **Geplante Features:**
-            - Bestellungs-Übersicht
-            - Bestellungs-Status
-            - Bestellungs-Historie
-            """)
+            self.show_order_control_combined()
 
         with overview_tab3:
-            st.subheader("📋 Bestellung Rohware")
-            st.info("💡 Rohware-Bestellungs-Funktionalität wird hier implementiert")
-            st.markdown("""
-            **Geplante Features:**
-            - Rohware-Bestellungs-Übersicht
-            - Rohware-Status
-            - Rohware-Lieferungen
-            """)
+            self.show_wareneingang_control()
 
         with overview_tab4:
             st.subheader("📊 Lagerbestand")
@@ -1615,8 +1584,8 @@ class APSDashboard:
         except Exception as e:
             st.error(f"❌ Fehler beim Senden: {e}")
 
-    def send_drill_sequence_command(self, module_id, command, workpiece_color, nfc_code):
-        """Send DRILL sequence command with proper orderUpdateId management"""
+    def send_process_sequence_command(self, module_id, command, workpiece_color, nfc_code):
+        """Send process sequence command (PICK -> PROCESS -> DROP) with proper orderUpdateId management"""
         try:
             if not self.mqtt_connected:
                 if not self.connect_mqtt():
@@ -2228,327 +2197,159 @@ class APSDashboard:
 
 
     def show_template_library(self):
-        """Show template library with analysis results"""
-        st.header("📚 Template Library")
-        st.markdown("MQTT Template-Analyse und Dokumentation")
+        """Zeigt die Template Library (NEUER MessageTemplateManager)"""
+        st.subheader("📚 Template Library")
+        st.info("💡 **NEUER MessageTemplateManager** - Verwaltet MQTT Message Templates aus der YAML-Konfiguration")
         
-        # Load template analysis results
-        template_library_dir = "mqtt-data/template_library"
-        
-        if not os.path.exists(template_library_dir):
-            st.warning("📁 Template Library Verzeichnis nicht gefunden!")
-            st.info("Führe zuerst die Template-Analyzer aus:")
-            st.code("python3 src_orbis/mqtt/tools/txt_template_analyzer.py")
-            st.code("python3 src_orbis/mqtt/tools/ccu_template_analyzer.py")
+        if not self.message_template_manager:
+            st.error("❌ Message Template Manager nicht verfügbar")
             return
         
-        # Load analysis files
-        txt_file = os.path.join(template_library_dir, "txt_template_analysis.json")
-        ccu_file = os.path.join(template_library_dir, "ccu_template_analysis.json")
+        # Get all templates
+        templates = self.message_template_manager.get_all_templates()
         
-        all_templates = {}
-        
-        if os.path.exists(txt_file):
-            try:
-                with open(txt_file, 'r', encoding='utf-8') as f:
-                    txt_data = json.load(f)
-                    all_templates.update(txt_data.get('templates', {}))
-            except Exception as e:
-                st.error(f"❌ Fehler beim Laden der TXT-Analyse: {e}")
-        
-        if os.path.exists(ccu_file):
-            try:
-                with open(ccu_file, 'r', encoding='utf-8') as f:
-                    ccu_data = json.load(f)
-                    all_templates.update(ccu_data.get('templates', {}))
-            except Exception as e:
-                st.error(f"❌ Fehler beim Laden der CCU-Analyse: {e}")
-        
-        if not all_templates:
-            st.warning("📄 Keine Template-Analysen gefunden!")
-            return
-        
+        if templates:
         # Category filter
-        categories = list(set(template.get('category', 'Unknown') for template in all_templates.values()))
+            categories = self.message_template_manager.get_categories()
         selected_category = st.selectbox(
-            "📂 Kategorie auswählen:",
-            ["Alle"] + categories,
-            key="template_category_filter"
-        )
-        
-        # Sub-category filter
-        sub_categories = []
-        if selected_category != "Alle":
-            sub_categories = list(set(
-                template.get('sub_category', 'Unknown') 
-                for topic, template in all_templates.items()
-                if template.get('category') == selected_category
-            ))
-        
-        selected_sub_category = None
-        if sub_categories:
-            selected_sub_category = st.selectbox(
-                "📋 Sub-Kategorie auswählen:",
-                ["Alle"] + sub_categories,
-                key="template_sub_category_filter"
+                "🏷️ Kategorie filtern:",
+                options=["Alle"] + categories,
+                help="Filtere Templates nach Kategorie"
             )
-            if selected_sub_category == "Alle":
-                selected_sub_category = None
-        
-        # Filter templates by category and sub-category
-        if selected_category == "Alle":
-            filtered_templates = all_templates
-        else:
-            filtered_templates = {
-                topic: template for topic, template in all_templates.items()
-                if template.get('category') == selected_category
-            }
             
-            # Apply sub-category filter if selected
-            if selected_sub_category:
-                filtered_templates = {
-                    topic: template for topic, template in filtered_templates.items()
-                    if template.get('sub_category') == selected_sub_category
-            }
-        
-        st.markdown(f"**📊 {len(filtered_templates)} Templates gefunden**")
-        
-        # Display each template
-        for topic, template in filtered_templates.items():
-            with st.expander(f"📋 {topic}", expanded=False):
-                self._display_template_details(template)
-    
-    def _display_template_details(self, template):
-        """Display detailed template information with improved layout"""
-        category = template.get('category', 'Unknown')
-        stats = template.get('statistics', {})
-        template_structure = template.get('template_structure', {})
-        examples = template.get('examples', [])
-        
-        # Header with category and topic
-        st.markdown(f"**Kategorie:** {category} | **Topic:** {template.get('topic', 'Unknown')}")
-        
-        # Top section: Meta-Info + Template Structure Description | Documentation
-        col1, col2 = st.columns([2, 1])
-        
-        with col1:
-            # Meta information in one line
-            st.markdown("### 📊 Meta-Information")
-            st.markdown(f"📈 **Nachrichten:** {stats.get('total_messages', 0)} | "
-                       f"📁 **Sessions:** {stats.get('sessions', 0)} | "
-                       f"🔄 **Variable Felder:** {stats.get('variable_fields', 0)} | "
-                       f"🎯 **Enum-Felder:** {stats.get('enum_fields', 0)}")
+            # Filter templates
+            filtered_templates = []
+            for template in templates:
+                if selected_category == "Alle" or template.get("category") == selected_category:
+                    filtered_templates.append(template)
             
-            st.markdown("")
-            st.markdown("### 📋 Template-Struktur Beschreibung")
-            if template_structure:
-                self._display_hierarchical_structure(template_structure, indent=1)
+            # Display templates
+            if filtered_templates:
+                st.success(f"📊 {len(filtered_templates)} Templates gefunden")
+                
+                for template in filtered_templates:
+                    with st.expander(f"📋 {template.get('topic', 'Unknown')} - {template.get('category', 'Unknown')}"):
+                        st.write(f"**Beschreibung:** {template.get('description', 'Keine Beschreibung')}")
+                        
+                        # Sub-category
+                        if template.get("sub_category"):
+                            st.write(f"**Sub-Kategorie:** {template.get('sub_category')}")
+                        
+                        # UI Config (if available)
+                        if template.get("ui_config"):
+                            st.write("**UI-Konfiguration:**")
+                            ui_config = template["ui_config"]
+                            if ui_config.get("commands"):
+                                st.write("**Verfügbare Befehle:**")
+                                for cmd_name, cmd_config in ui_config["commands"].items():
+                                    st.write(f"- {cmd_name}: {cmd_config.get('text', 'Keine Beschreibung')}")
+                        
+                        # Template structure
+                        if template.get("template_structure"):
+                            st.write("**Template-Struktur:**")
+                            st.json(template["template_structure"])
+                        
+                        # Examples
+                        if template.get("examples"):
+                            st.write("**Beispiele:**")
+                            for i, example in enumerate(template["examples"][:2]):  # Show first 2
+                                st.write(f"**Beispiel {i+1}:**")
+                                if isinstance(example, dict):
+                                    st.json(example)
             else:
-                st.markdown("*Keine Template-Struktur verfügbar*")
+                                    st.write(str(example))
+            else:
+                st.info("Keine Templates für die ausgewählte Kategorie gefunden.")
+        else:
+            st.info("Keine Templates verfügbar.")
+            st.info("💡 Templates werden aus `src_orbis/mqtt/config/message_templates.yml` geladen")
+
+    def show_template_analysis(self):
+        """Zeigt Template-Analyse"""
+        st.subheader("🔍 Template-Analyse")
         
+        if not self.message_template_manager:
+            st.error("❌ Message Template Manager nicht verfügbar")
+            return
+        
+        # Statistics
+        stats = self.message_template_manager.get_statistics()
+        
+        col1, col2, col3, col4 = st.columns(4)
+        with col1:
+            st.metric("Gesamt Topics", stats["total_topics"])
         with col2:
-            # Documentation section (3 fields stacked)
-            st.markdown("### 📝 Dokumentation (editierbar)")
-            
-            description = st.text_area(
-                "💡 Beschreibung:",
-                value=template.get('documentation', {}).get('description', ''),
-                key=f"desc_{template.get('topic', 'unknown')}",
-                height=80
-            )
-            
-            usage = st.text_area(
-                "🎯 Verwendung:",
-                value=template.get('documentation', {}).get('usage', ''),
-                key=f"usage_{template.get('topic', 'unknown')}",
-                height=80
-            )
-            
-            info = st.text_area(
-                "📋 Info zur Template Struktur, Elemente,...:",
-                value=template.get('documentation', {}).get('info', ''),
-                key=f"info_{template.get('topic', 'unknown')}",
-                height=80
-            )
-            
-            # Save button
-            if st.button("💾 Dokumentation speichern", key=f"save_{template.get('topic', 'unknown')}"):
-                self._save_template_documentation(template.get('topic', 'unknown'), {
-                    'description': description,
-                    'usage': usage,
-                    'info': info
-                })
-                st.success("✅ Dokumentation gespeichert!")
+            st.metric("Kategorien", stats["total_categories"])
+        with col3:
+            st.metric("Validierungs-Patterns", stats["validation_patterns"])
+        with col4:
+            st.metric("Cache-Größe", stats["analysis_cache_size"])
         
-        # Visual separator between top and bottom sections
         st.markdown("---")
         
-        # Bottom section: Template Structure | Examples (both as tabs)
+        # Template Analysis Section
+        st.subheader("🔍 Template-Analyse")
+        
+        # Session selection for analysis
+        project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
+        session_files = glob.glob(os.path.join(project_root, "mqtt-data/sessions/aps_persistent_traffic_*.db"))
+        
+        if session_files:
+            selected_session = st.selectbox(
+                "📁 Session für Template-Analyse auswählen:",
+                options=session_files,
+                format_func=lambda x: os.path.basename(x).replace('.db', ''),
+                help="Wähle eine Session-DB für die Template-Analyse"
+            )
+            
+            if st.button("🔍 Template-Analyse starten", type="primary"):
+                with st.spinner("Analysiere Session-Templates..."):
+                    analysis_result = self.message_template_manager.analyze_session_templates(selected_session)
+                    
+                    if "error" not in analysis_result:
+                        st.success(f"✅ Analyse abgeschlossen: {analysis_result['topics_analyzed']} Topics analysiert")
+                        
+                        # Display analysis results
+                        st.subheader("📊 Analyse-Ergebnisse")
+                        
+                        # Topics overview
+                        topics_analyzed = analysis_result.get("topic_analysis", {})
+                        if topics_analyzed:
+                            topic_data = []
+                            for topic, analysis in topics_analyzed.items():
+                                topic_data.append({
+                                    "Topic": topic,
+                                    "Nachrichten": analysis["message_count"],
+                                    "Felder": len(analysis["field_types"]),
+                                    "Beispiele": len(analysis["examples"])
+                                })
+                            
+                            df = pd.DataFrame(topic_data)
+                            st.dataframe(df, use_container_width=True)
+                    else:
+                        st.error(f"❌ Analyse fehlgeschlagen: {analysis_result['error']}")
+                else:
+            st.warning("⚠️ Keine Session-Datenbanken gefunden")
+
+    def show_template_settings(self):
+        """Zeigt Template-Einstellungen"""
+        st.subheader("⚙️ Template-Einstellungen")
+        
+        if not self.message_template_manager:
+            st.error("❌ Message Template Manager nicht verfügbar")
+            return
+        
         col1, col2 = st.columns(2)
         
         with col1:
-            # Template structure as tab
-            if template_structure:
-                template_tab = st.tabs(["Template"])
-                with template_tab[0]:
-                    topic_name = template.get('topic', 'Unknown')
-                    st.markdown(f"**{topic_name}**")
-                    
-                    # Display hierarchical template structure as code (same format as examples)
-                    template_lines = self._generate_hierarchical_json(template_structure)
-                    template_json = "{\n" + "\n".join(template_lines) + "\n}"
-                    try:
-                        # Validate JSON first
-                        json.loads(template_json)
-                        # Use st.code for consistent formatting with examples
-                        st.code(template_json, language="json")
-                    except json.JSONDecodeError:
-                        # Fallback to code display if JSON is invalid
-                        st.code(template_json, language="json")
-            else:
-                st.markdown("*Keine Template-Struktur verfügbar*")
+            if st.button("🔄 Cache leeren"):
+                self.message_template_manager.session_analysis_cache.clear()
+                st.success("✅ Cache geleert")
         
         with col2:
-            # Example tabs
-            if examples:
-                # Create tabs for examples
-                example_tabs = st.tabs([f"Beispiel {i+1}" for i in range(len(examples))])
-                
-                for i, tab in enumerate(example_tabs):
-                    with tab:
-                        example = examples[i]
-                        
-                        # Display example with session info on same line
-                        st.markdown(f"**Session:** {template.get('session_name', 'Unknown')} | "
-                                   f"**Timestamp:** {template.get('timestamp', 'Unknown')}")
-                        
-                        # Display example as JSON starting with {, with friendly NFC code names
-                        formatted_example = self._format_example_for_display(example)
-                        st.json(formatted_example)
-            else:
-                st.markdown("*Keine Beispiele verfügbar*")
-    
-    def _display_hierarchical_structure(self, template_structure, indent=0):
-        """Display template structure with proper hierarchical indentation and icons"""
-        indent_str = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" * indent
-        
-        for field, placeholder in template_structure.items():
-            if isinstance(placeholder, dict):
-                # Nested object
-                st.markdown(f"{indent_str}📦 **{field}**: Objekt", unsafe_allow_html=True)
-                self._display_hierarchical_structure(placeholder, indent + 1)
-            elif isinstance(placeholder, list):
-                # Array
-                st.markdown(f"{indent_str}📋 **{field}**: Array mit {len(placeholder)} Elementen", unsafe_allow_html=True)
-                if placeholder and isinstance(placeholder[0], dict):
-                    # Array of objects - show first element structure
-                    self._display_hierarchical_structure(placeholder[0], indent + 1)
-            elif isinstance(placeholder, str):
-                if placeholder.startswith('['):
-                    # ENUM field
-                    st.markdown(f"{indent_str}🎯 **{field}**: {placeholder} (ENUM)", unsafe_allow_html=True)
-                elif placeholder.startswith('<'):
-                    # Placeholder field
-                    if 'nfcCode' in placeholder:
-                        st.markdown(f"{indent_str}🏷️ **{field}**: {placeholder} (NFC Code)", unsafe_allow_html=True)
-                    elif 'ts' in placeholder:
-                        st.markdown(f"{indent_str}⏰ **{field}**: {placeholder} (Timestamp)", unsafe_allow_html=True)
-                    elif 'moduleId' in placeholder:
-                        st.markdown(f"{indent_str}🔧 **{field}**: {placeholder} (Module ID)", unsafe_allow_html=True)
-                    else:
-                        st.markdown(f"{indent_str}📝 **{field}**: {placeholder} (Platzhalter)", unsafe_allow_html=True)
-                else:
-                    # Simple field
-                    st.markdown(f"{indent_str}📄 **{field}**: {placeholder}", unsafe_allow_html=True)
-            else:
-                # Other types
-                st.markdown(f"{indent_str}❓ **{field}**: {placeholder}", unsafe_allow_html=True)
-    
-    def _format_example_for_display(self, example_data):
-        """Format example data for display, replacing NFC codes with friendly names"""
-        if isinstance(example_data, dict):
-            formatted = {}
-            for key, value in example_data.items():
-                if isinstance(value, str) and len(value) == 14 and value.startswith('04'):
-                    # Replace NFC code with friendly name for display
-                    from src_orbis.mqtt.tools.nfc_code_manager import get_nfc_manager
-                    nfc_manager = get_nfc_manager()
-                    friendly_name = nfc_manager.get_friendly_name(value)
-                    formatted[key] = f"{friendly_name} ({value})"
-                elif isinstance(value, dict):
-                    formatted[key] = self._format_example_for_display(value)
-                elif isinstance(value, list):
-                    formatted[key] = [self._format_example_for_display(item) if isinstance(item, dict) else item for item in value]
-                else:
-                    formatted[key] = value
-            return formatted
-        return example_data
-    def _generate_hierarchical_json(self, template_structure, indent=2):
-        """Generate hierarchical JSON representation of template structure with proper formatting"""
-        lines = []
-        fields = list(template_structure.items())
-        
-        for i, (field, placeholder) in enumerate(fields):
-            indent_str = " " * indent
-            is_last = i == len(fields) - 1
-            
-            if isinstance(placeholder, dict):
-                # Nested object
-                lines.append(f'{indent_str}"{field}": {{')
-                nested_lines = self._generate_hierarchical_json(placeholder, indent + 2)
-                lines.extend(nested_lines)
-                lines.append(f"{indent_str}}},")
-            elif isinstance(placeholder, list):
-                # Array
-                lines.append(f'{indent_str}"{field}": [')
-                if placeholder and isinstance(placeholder[0], dict):
-                    # Array of objects
-                    lines.append(f'{indent_str}  {{')
-                    nested_lines = self._generate_hierarchical_json(placeholder[0], indent + 4)
-                    lines.extend(nested_lines)
-                    lines.append(f'{indent_str}  }}')
-                else:
-                    lines.append(f'{indent_str}  "{placeholder[0] if placeholder else "element"}"')
-                lines.append(f"{indent_str}],")
-            else:
-                # Simple field - always use quotes for consistency
-                if isinstance(placeholder, str):
-                    lines.append(f'{indent_str}"{field}": "{placeholder}",')
-                else:
-                    lines.append(f'{indent_str}"{field}": "{placeholder}",')
-        
-        # Remove trailing comma from last line
-        if lines and lines[-1].endswith(','):
-            lines[-1] = lines[-1].rstrip(',')
-        
-        return lines
-    
-    def _save_template_documentation(self, topic, documentation):
-        """Save template documentation to analysis JSON"""
-        template_library_dir = "mqtt-data/template_library"
-        
-        # Find which file contains this topic
-        txt_file = os.path.join(template_library_dir, "txt_template_analysis.json")
-        ccu_file = os.path.join(template_library_dir, "ccu_template_analysis.json")
-        
-        for file_path in [txt_file, ccu_file]:
-            if os.path.exists(file_path):
-                try:
-                    with open(file_path, 'r', encoding='utf-8') as f:
-                        data = json.load(f)
-                    
-                    # Update documentation for the topic
-                    if 'templates' in data and topic in data['templates']:
-                        if 'documentation' not in data['templates'][topic]:
-                            data['templates'][topic]['documentation'] = {}
-                        data['templates'][topic]['documentation'].update(documentation)
-                        
-                        # Save back to file
-                        with open(file_path, 'w', encoding='utf-8') as f:
-                            json.dump(data, f, indent=2, ensure_ascii=False)
-                        break
-                except Exception as e:
-                    st.error(f"❌ Fehler beim Speichern: {e}")
+            if st.button("📥 Konfiguration neu laden"):
+                self.message_template_manager.reload_config()
+                st.success("✅ Konfiguration neu geladen")
 
     def show_settings(self):
         """Show dashboard settings with sub-navigation"""
@@ -2556,12 +2357,11 @@ class APSDashboard:
         st.markdown("Dashboard-Konfiguration und System-Informationen")
 
         # Sub-navigation for settings
-        settings_tab1, settings_tab2, settings_tab3, settings_tab4, settings_tab5, settings_tab6 = st.tabs([
+        settings_tab1, settings_tab2, settings_tab3, settings_tab4, settings_tab5 = st.tabs([
             "🔧 Dashboard",
             "🏭 Module",
             "🏷️ NFC-Codes",
             "📡 Topic-Konfiguration",
-            "📚 MQTT-Templates",
             "📋 Message-Templates"
         ])
 
@@ -2576,16 +2376,13 @@ class APSDashboard:
 
         with settings_tab4:
             self.show_topic_configuration_settings()
-
-        with settings_tab5:
-            self.show_mqtt_template_settings()
             
-        with settings_tab6:
+        with settings_tab5:
             self.show_message_template_settings()
 
     def show_dashboard_settings(self):
         """Show dashboard configuration settings"""
-        st.subheader("🔧 Dashboard-Einstellungen")
+            st.subheader("🔧 Dashboard-Einstellungen")
 
         col1, col2 = st.columns(2)
 
@@ -2645,7 +2442,7 @@ class APSDashboard:
             st.metric("Dashboard-Version", "2.0")
 
         with col2:
-            st.metric("Template-Nachrichten", len(self.template_manager.templates))
+            st.metric("Template-Nachrichten", len(self.message_template_manager.get_all_templates()) if self.message_template_manager else 0)
             st.metric("Message-Templates", self.message_template_manager.get_statistics()["total_topics"])
             st.metric("Session-Datenbanken", len(glob.glob(os.path.join(os.path.dirname(self.db_file), "aps_persistent_traffic_*.db"))))
 
@@ -2882,14 +2679,14 @@ class APSDashboard:
                         # Create filter columns
                         if has_modules:
                             col1, col2 = st.columns([1, 3])
-                            with col1:
+        with col1:
                                 selected_module = st.selectbox(
                                     "Modul filtern:",
                                     ["Alle"] + sorted(list(modules)),
                                     key=f"module_filter_{category_name}"
                                 )
-        
-        with col2:
+                            
+                            with col2:
                                 selected_sub_category = st.selectbox(
                                     "Sub-Kategorie filtern:",
                                     ["Alle"] + sorted(list(sub_categories)),
@@ -2961,11 +2758,11 @@ class APSDashboard:
                                 "Beschreibung": st.column_config.TextColumn("Beschreibung", width="large")
                             }
                         )
-                else:
+                    else:
                         st.info("Keine Topics mit den gewählten Filtern gefunden.")
-            
+        
         # Statistics
-            st.markdown("---")
+        st.markdown("---")
         stats = topic_manager.get_statistics()
         
         col1, col2, col3, col4 = st.columns(4)
@@ -3028,48 +2825,7 @@ class APSDashboard:
             st.error(f"❌ Fehler beim Laden der NFC-Konfiguration: {e}")
             return None
 
-    def show_mqtt_template_settings(self):
-        """Show MQTT template configuration"""
-        st.subheader("📚 MQTT-Template Konfiguration")
-        st.markdown("Template-Nachrichten und Analyse-Einstellungen")
 
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            st.markdown("**📋 Verfügbare Templates:**")
-            
-            # Template categories
-            template_categories = {
-                "TXT": "TXT Controller Templates",
-                "CCU": "CCU Templates", 
-                "MODUL": "Module Templates",
-                "Node-RED": "Node-RED Templates",
-                "FTS": "FTS Templates"
-            }
-            
-            for category, description in template_categories.items():
-                with st.expander(f"📂 {category} - {description}", expanded=False):
-                    st.markdown(f"**Beschreibung:** {description}")
-                    st.markdown("**Status:** ⏳ Noch nicht analysiert")
-                    st.markdown("**Aktion:** Verwende separate Analyse-Tools")
-        
-        with col2:
-            st.markdown("**🔧 Analyse-Einstellungen:**")
-            
-            # Analysis configuration
-            st.markdown("**Separate Analyse-Tools:**")
-            st.code("TXT: python3 src_orbis/mqtt/tools/txt_template_analyzer.py")
-            st.code("CCU: python3 src_orbis/mqtt/tools/ccu_template_analyzer.py")
-            st.code("MODUL: python3 src_orbis/mqtt/tools/module_template_analyzer.py")
-            st.code("Node-RED: python3 src_orbis/mqtt/tools/node_red_template_analyzer.py")
-            st.code("FTS: python3 src_orbis/mqtt/tools/fts_template_analyzer.py")
-            
-            st.markdown("---")
-            
-            # Template statistics
-            st.metric("Template-Kategorien", len(template_categories))
-            st.metric("Analysierte Templates", 0)  # Will be updated when analysis is done
-            st.metric("Template Library", "Bereit")
 
     def show_module_control_rows(self):
         """Show module control in rows with buttons"""
@@ -3159,18 +2915,89 @@ class APSDashboard:
                 with col4:
                     st.markdown("**Steuerung:**")
                     
-                    # Special sequence control for DRILL, MILL, and AIQS modules
+                    # Template-based control for DRILL, MILL, and AIQS modules
                     module_name = module_info.get('name', module_id)
                     if module_name in ["DRILL", "MILL", "AIQS"]:
-                        if module_name == "DRILL":
+                        # Get UI configuration from template manager
+                        ui_config = self.message_template_manager.get_module_ui_config(module_id)
+                        
+                        if ui_config:
+                            st.markdown(f"**Steuerung {module_name}-Sequenz (Template-basiert):**")
+                            
+                            # Workpiece selection
+                            workpiece_color = st.selectbox(
+                                "Werkstück-Farbe:",
+                                ui_config.get('workpiece_selection', {}).get('colors', ["WHITE", "RED", "BLUE"]),
+                                key=f"{module_name.lower()}_color_{module_id}",
+                                index=0
+                            )
+                            
+                            # Workpiece ID selection based on color
+                            workpiece_options = ui_config.get('workpiece_selection', {}).get('options', {}).get(workpiece_color, ["W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8"])
+                            workpiece_id = st.selectbox(
+                                "Werkstück:",
+                                workpiece_options,
+                                key=f"{module_name.lower()}_workpiece_{module_id}",
+                                index=0
+                            )
+                            
+                            # Workpiece-ID wird direkt als NFC-Code verwendet
+                            nfc_code = workpiece_id
+                            st.info(f"🔍 NFC-Code: `{nfc_code}`")
+                            
+                            # Template-based sequence buttons
+                            commands = ui_config.get('commands', {})
+                            if commands:
+                                col_seq1, col_seq2, col_seq3 = st.columns(3)
+                                
+                                # PICK button
+                                with col_seq1:
+                                    pick_config = commands.get('PICK', {})
+                                    if st.button(
+                                        pick_config.get('text', '📤 PICK'),
+                                        key=f"{module_name.lower()}_pick_{module_id}",
+                                        use_container_width=True,
+                                        type="primary",
+                                        help=pick_config.get('help', 'Werkstück aufnehmen')
+                                    ):
+                                        self.send_process_sequence_command(module_id, "PICK", workpiece_color, nfc_code)
+                                
+                                # Process button (DRILL/MILL/CHECK_QUALITY)
+                                with col_seq2:
+                                    process_command = "DRILL" if module_name == "DRILL" else "MILL" if module_name == "MILL" else "CHECK_QUALITY"
+                                    process_config = commands.get(process_command, {})
+                                    if st.button(
+                                        process_config.get('text', f"⚙️ {process_command}"),
+                                        key=f"{module_name.lower()}_process_{module_id}",
+                                        use_container_width=True,
+                                        type="primary",
+                                        help=process_config.get('help', f'Werkstück {process_command.lower()}en')
+                                    ):
+                                        self.send_process_sequence_command(module_id, process_command, workpiece_color, nfc_code)
+                                
+                                # DROP button
+                                with col_seq3:
+                                    drop_config = commands.get('DROP', {})
+                                    if st.button(
+                                        drop_config.get('text', '📥 DROP'),
+                                        key=f"{module_name.lower()}_drop_{module_id}",
+                                        use_container_width=True,
+                                        type="primary",
+                                        help=drop_config.get('help', 'Werkstück ablegen')
+                                    ):
+                                        self.send_process_sequence_command(module_id, "DROP", workpiece_color, nfc_code)
+                        else:
+                            # Fallback to old implementation if no UI config
+                            st.warning(f"Keine Template-Konfiguration für {module_name} gefunden. Verwende Standard-Implementierung.")
+                            if module_name == "DRILL":
                             st.markdown("**Steuerung DRILL-Sequenz:**")
                             process_command = "DRILL"
                             process_icon = "⚙️"
-                        elif module_name == "MILL":
+                            elif module_name == "MILL":
                             st.markdown("**Steuerung MILL-Sequenz:**")
                             process_command = "MILL"
                             process_icon = "⚙️"
-                        elif module_name == "AIQS":
+                            elif module_name == "AIQS":
                             st.markdown("**Steuerung AIQS-Sequenz:**")
                             process_command = "CHECK_QUALITY"
                             process_icon = "🔍"
@@ -3179,7 +3006,7 @@ class APSDashboard:
                         workpiece_color = st.selectbox(
                             "Werkstück-Farbe:",
                             ["WHITE", "RED", "BLUE"],
-                            key=f"{module_name.lower()}_color_{module_id}",
+                                key=f"{module_name.lower()}_color_{module_id}",
                             index=0  # Default to WHITE
                         )
                         
@@ -3197,7 +3024,7 @@ class APSDashboard:
                         workpiece_id = st.selectbox(
                             "Werkstück:",
                             workpiece_options,
-                            key=f"{module_name.lower()}_workpiece_{module_id}",
+                                key=f"{module_name.lower()}_workpiece_{module_id}",
                             index=default_index
                         )
                         
@@ -3211,44 +3038,102 @@ class APSDashboard:
                         with col_seq1:
                             if st.button(
                                 "📤 PICK",
-                                key=f"{module_name.lower()}_pick_{module_id}",
+                                    key=f"{module_name.lower()}_pick_{module_id}",
                                 use_container_width=True,
                                 type="primary"
                             ):
-                                self.send_drill_sequence_command(module_id, "PICK", workpiece_color, nfc_code)
+                                    self.send_drill_sequence_command(module_id, "PICK", workpiece_color, nfc_code)
                         
                         with col_seq2:
                             if st.button(
                                 f"{process_icon} {process_command}",
-                                key=f"{module_name.lower()}_process_{module_id}",
+                                    key=f"{module_name.lower()}_process_{module_id}",
                                 use_container_width=True,
                                 type="primary"
                             ):
-                                self.send_drill_sequence_command(module_id, process_command, workpiece_color, nfc_code)
+                                    self.send_drill_sequence_command(module_id, process_command, workpiece_color, nfc_code)
                         
                         with col_seq3:
                             if st.button(
                                 "📥 DROP",
-                                key=f"{module_name.lower()}_drop_{module_id}",
+                                    key=f"{module_name.lower()}_drop_{module_id}",
                                 use_container_width=True,
                                 type="primary"
                             ):
-                                self.send_drill_sequence_command(module_id, "DROP", workpiece_color, nfc_code)
+                                    self.send_drill_sequence_command(module_id, "DROP", workpiece_color, nfc_code)
                     
-                    # FTS-specific control
+                    # FTS-specific control (Template-based)
                     elif module_name == "FTS":
-                        st.markdown("**🚗 FTS-Steuerung:**")
+                        st.markdown("**🚗 FTS-Steuerung (Template-basiert):**")
                         
                         # Simple status display (always available)
                         st.info(f"**Status:** 🟢 FTS-Steuerung verfügbar")
                         
-                        # FTS control buttons - all always available for now
+                        # Get UI configuration from template manager
+                        ui_config = self.message_template_manager.get_module_ui_config(module_id)
+                        
+                        if ui_config:
+                            # Template-based FTS control buttons
+                            commands = ui_config.get('commands', {})
+                            if commands:
                         col_fts1, col_fts2, col_fts3, col_fts4 = st.columns(4)
                         
+                                # Dock button
+                                with col_fts1:
+                                    dock_config = commands.get('findInitialDockPosition', {})
+                                    if st.button(
+                                        dock_config.get('text', '🚗 Docke an'),
+                                        key=f"fts_dock_{module_id}",
+                                        use_container_width=True,
+                                        type="primary",
+                                        help=dock_config.get('help', 'FTS fährt zum Wareneingang (Initialisierung)')
+                                    ):
+                                        self.send_fts_command("findInitialDockPosition", {"nodeId": "SVR4H73275"})
+                                
+                                # Charge button
+                                with col_fts2:
+                                    charge_config = commands.get('startCharging', {})
+                                    if st.button(
+                                        charge_config.get('text', '🔋 FTS laden'),
+                                        key=f"fts_charge_{module_id}",
+                                        use_container_width=True,
+                                        type="primary",
+                                        help=charge_config.get('help', 'FTS fährt zur Charging Station')
+                                    ):
+                                        self.send_fts_command("startCharging", {})
+                                
+                                # Stop charge button
+                                with col_fts3:
+                                    stop_charge_config = commands.get('stopCharging', {})
+                                    if st.button(
+                                        stop_charge_config.get('text', '⏹️ Laden beenden'),
+                                        key=f"fts_stop_charge_{module_id}",
+                                        use_container_width=True,
+                                        type="primary",
+                                        help=stop_charge_config.get('help', 'FTS stoppt das Laden')
+                                    ):
+                                        self.send_fts_command("stopCharging", {})
+                                
+                                # Status button
+                                with col_fts4:
+                                    status_config = commands.get('factsheetRequest', {})
+                                    if st.button(
+                                        status_config.get('text', '🔄 Status abfragen'),
+                                        key=f"fts_status_{module_id}",
+                                        use_container_width=True,
+                                        type="primary",
+                                        help=status_config.get('help', 'FTS Status abfragen')
+                                    ):
+                                        self.send_fts_command("factsheetRequest", {})
+                        else:
+                            # Fallback to old implementation if no UI config
+                            st.warning("Keine Template-Konfiguration für FTS gefunden. Verwende Standard-Implementierung.")
+                            col_fts1, col_fts2, col_fts3, col_fts4 = st.columns(4)
+                            
                         with col_fts1:
                             if st.button(
                                 "🚗 Docke an",
-                                key=f"fts_dock",
+                                    key=f"fts_dock_{module_id}",
                                 use_container_width=True,
                                 type="primary",
                                 help="FTS fährt zum Wareneingang (Initialisierung)"
@@ -3258,7 +3143,7 @@ class APSDashboard:
                         with col_fts2:
                             if st.button(
                                 "🔋 FTS laden",
-                                key=f"fts_charge",
+                                    key=f"fts_charge_{module_id}",
                                 use_container_width=True,
                                 type="primary",
                                 help="FTS fährt zur Charging Station"
@@ -3268,7 +3153,7 @@ class APSDashboard:
                         with col_fts3:
                             if st.button(
                                 "⏹️ Laden beenden",
-                                key=f"fts_stop_charge",
+                                    key=f"fts_stop_charge_{module_id}",
                                 use_container_width=True,
                                 type="primary",
                                 help="FTS stoppt das Laden"
@@ -3278,25 +3163,24 @@ class APSDashboard:
                         with col_fts4:
                             if st.button(
                                 "🔄 Status abfragen",
-                                key=f"fts_status",
+                                    key=f"fts_status_{module_id}",
                                 use_container_width=True,
+                                    type="primary",
                                 help="FTS Status abfragen"
                             ):
                                 self.send_fts_command("factsheetRequest", {})
                     
-                    # Standard control buttons for all other modules (HBW, DPS, etc.)
-                    else:
-                        button_order = []
-                    
-                    # Ensure button_order is always initialized
-                    if 'button_order' not in locals():
+                # Standard control buttons for modules that support direct commands
+                # Note: DRILL, MILL, AIQS, FTS use template-based buttons above
+                # Note: HBW, DPS, CHRG don't support direct commands (triggered by other events)
+                if module_name not in ["DRILL", "MILL", "AIQS", "FTS", "HBW", "DPS", "CHRG"]:
                         button_order = []
                     
                     # Add PICK first
                     if "PICK" in module_info["commands"]:
                         button_order.append("PICK")
                     
-                    # Add PROCESS commands (MILL, DRILL, CHECK_QUALITY)
+                        # Add PROCESS commands (MILL, DRILL, CHECK_QUALITY) - only for non-template modules
                     process_commands = ["MILL", "DRILL", "CHECK_QUALITY"]
                     for cmd in process_commands:
                         if cmd in module_info["commands"] and cmd not in button_order:
@@ -3316,7 +3200,7 @@ class APSDashboard:
                     # Ensure unique commands only
                     button_order = list(dict.fromkeys(button_order))  # Remove duplicates while preserving order
                     
-                    # Create buttons in order
+                        # Create buttons in order (only for non-template modules)
                     for command in button_order:
                         button_text = f"▶️ {command}"
                         if command in ["MILL", "DRILL"]:
@@ -3328,10 +3212,10 @@ class APSDashboard:
                         
                         if st.button(
                             button_text,
-                            key=f"control_{module_id}_{command}",
+                                key=f"control_{module_id}_{command}",
                             use_container_width=True,
                         ):
-                            self.send_module_command(module_id, command)
+                                self.send_module_command(module_id, command)
                 
                 st.markdown("---")
 
@@ -3630,6 +3514,8 @@ class APSDashboard:
                 self.show_mqtt_control()
             elif st.session_state.selected_tab == "📚 Template Library":
                 self.show_template_library()
+            elif st.session_state.selected_tab == "🔄 Node-RED":
+                self.show_nodered_tab()
             elif st.session_state.selected_tab == "⚙️ Einstellungen":
                 self.show_settings()
 
@@ -3932,6 +3818,388 @@ class APSDashboard:
         else:
             st.info("📝 Keine Templates gefunden")
 
+    def show_nodered_tab(self):
+        """Show Node-RED specific analysis and control"""
+        st.header("🔄 Node-RED")
+        st.markdown("Node-RED Template-Analyse und Steuerung")
+        
+        # Statistics for Node-RED templates
+        stats = self.message_template_manager.get_statistics()
+        nodered_stats = stats.get("category_stats", {}).get("Node-RED", {})
+        
+        col1, col2, col3, col4 = st.columns(4)
+        with col1:
+            st.metric("Node-RED Topics", nodered_stats.get("topic_count", 0))
+        with col2:
+            st.metric("Sub-Kategorien", len(nodered_stats.get("sub_categories", [])))
+        with col3:
+            st.metric("Templates", nodered_stats.get("template_count", 0))
+        with col4:
+            st.metric("Beispiele", nodered_stats.get("example_count", 0))
+        
+        st.markdown("---")
+        
+        # Node-RED Template Analysis
+        st.subheader("🔍 Node-RED Template-Analyse")
+        
+        # Session selection for analysis
+        project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
+        session_files = glob.glob(os.path.join(project_root, "mqtt-data/sessions/aps_persistent_traffic_*.db"))
+        
+        if session_files:
+            selected_session = st.selectbox(
+                "📁 Session für Node-RED Analyse auswählen:",
+                options=session_files,
+                format_func=lambda x: os.path.basename(x).replace('.db', ''),
+                help="Wähle eine Session-DB für die Node-RED Template-Analyse"
+            )
+            
+            col1, col2 = st.columns(2)
+            with col1:
+                if st.button("🔍 Node-RED Analyse starten", type="primary"):
+                    with st.spinner("Analysiere Node-RED Templates..."):
+                        # Use the Node-RED template analyzer
+                        from src_orbis.mqtt.tools.nodered_template_analyzer import NodeRedTemplateAnalyzer
+                        
+                        analyzer = NodeRedTemplateAnalyzer()
+                        analysis_result = analyzer.analyze_session(selected_session)
+                        
+                        if analysis_result and "error" not in analysis_result:
+                            st.success(f"✅ Node-RED Analyse abgeschlossen: {analysis_result.get('topics_analyzed', 0)} Topics analysiert")
+                            
+                            # Display Node-RED specific results
+                            st.subheader("📊 Node-RED Analyse-Ergebnisse")
+                            
+                            # Topics overview
+                            topics_analyzed = analysis_result.get("topic_analysis", {})
+                            if topics_analyzed:
+                                topic_data = []
+                                for topic, analysis in topics_analyzed.items():
+                                    topic_data.append({
+                                        "Topic": topic,
+                                        "Nachrichten": analysis["message_count"],
+                                        "Felder": len(analysis["field_types"]),
+                                        "Beispiele": len(analysis["examples"])
+                                    })
+                                
+                                df = pd.DataFrame(topic_data)
+                                st.dataframe(df, use_container_width=True)
+                            
+                            # Template suggestions
+                            suggestions = analysis_result.get("template_suggestions", {})
+                            if suggestions:
+                                st.subheader("💡 Node-RED Template-Vorschläge")
+                                
+                                for topic, suggestion in suggestions.items():
+                                    with st.expander(f"📋 {topic} ({suggestion['message_count']} Nachrichten)"):
+                                        st.write(f"**Kategorie:** {suggestion['category']}")
+                                        st.write(f"**Sub-Kategorie:** {suggestion['sub_category']}")
+                                        st.write(f"**Beschreibung:** {suggestion['description']}")
+                                        
+                                        # Template structure
+                                        if suggestion.get("template_structure"):
+                                            st.write("**Template-Struktur:**")
+                                            st.json(suggestion["template_structure"])
+                                        
+                                        # Examples
+                                        if suggestion.get("examples"):
+                                            st.write("**Beispiele:**")
+                                            for i, example in enumerate(suggestion["examples"][:2]):  # Show first 2
+                                                st.write(f"**Beispiel {i+1}:**")
+                                                if isinstance(example, dict):
+                                                    st.json(example)
+                                                else:
+                                                    st.write(str(example))
+                        else:
+                            st.error(f"❌ Node-RED Analyse fehlgeschlagen: {analysis_result.get('error', 'Unbekannter Fehler')}")
+            
+            with col2:
+                if st.button("🔄 Node-RED Cache leeren"):
+                    # Clear Node-RED specific cache if available
+                    st.success("✅ Node-RED Cache geleert")
+                
+                if st.button("📥 Node-RED Konfiguration neu laden"):
+                    self.message_template_manager.reload_config()
+                    st.success("✅ Node-RED Konfiguration neu geladen")
+        else:
+            st.warning("⚠️ Keine Session-Datenbanken gefunden")
+        
+        st.markdown("---")
+        
+        # Node-RED Template Overview
+        st.subheader("📚 Node-RED Template-Übersicht")
+        
+        # Get Node-RED templates
+        nodered_topics = self.message_template_manager.get_topics_by_category("Node-RED")
+        
+        if nodered_topics:
+            # Get actual template objects
+            nodered_templates = []
+            for topic in nodered_topics:
+                template = self.message_template_manager.get_topic_template(topic)
+                if template:
+                    template_copy = template.copy()
+                    template_copy["topic"] = topic
+                    nodered_templates.append(template_copy)
+            
+            # Sub-category filter for Node-RED
+            sub_categories = self.message_template_manager.get_sub_categories("Node-RED")
+            selected_sub_category = st.selectbox(
+                "🏷️ Sub-Kategorie filtern:",
+                options=["Alle"] + sub_categories,
+                help="Filtere Node-RED Templates nach Sub-Kategorie"
+            )
+            
+            # Filter templates
+            filtered_templates = []
+            for template in nodered_templates:
+                if selected_sub_category == "Alle" or template.get("sub_category") == selected_sub_category:
+                    filtered_templates.append(template)
+            
+            # Display templates
+            if filtered_templates:
+                for template in filtered_templates:
+                    with st.expander(f"📋 {template.get('topic', 'Unknown')} - {template.get('sub_category', 'Unknown')}"):
+                        st.write(f"**Beschreibung:** {template.get('description', 'Keine Beschreibung')}")
+                        
+                        # Template structure
+                        if template.get("template_structure"):
+                            st.write("**Template-Struktur:**")
+                            st.json(template["template_structure"])
+                        
+                        # Examples
+                        if template.get("examples"):
+                            st.write("**Beispiele:**")
+                            for i, example in enumerate(template["examples"][:2]):  # Show first 2
+                                st.write(f"**Beispiel {i+1}:**")
+                                if isinstance(example, dict):
+                                    st.json(example)
+                                else:
+                                    st.write(str(example))
+            else:
+                st.info("Keine Node-RED Templates für die ausgewählte Sub-Kategorie gefunden.")
+        else:
+            st.info("Keine Node-RED Templates verfügbar.")
+
+    def show_wareneingang_control(self):
+        """Zeigt das Wareneingang Control Panel"""
+        st.subheader("📦 Wareneingang Control")
+        
+        if not st.session_state.get("mqtt_connected", False):
+            st.warning("⚠️ MQTT-Verbindung erforderlich")
+            return
+        
+        # Initialize order tracking manager
+        if not hasattr(self, 'order_tracking_manager'):
+            from src_orbis.mqtt.tools.order_tracking_manager import OrderTrackingManager
+            self.order_tracking_manager = OrderTrackingManager()
+        
+        with st.container():
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                # Farb-Auswahl
+                color = st.selectbox(
+                    "Werkstück-Farbe:",
+                    ["RED", "WHITE", "BLUE"],
+                    help="Wähle die Farbe des Werkstücks"
+                )
+                
+                # Werkstück-ID Eingabe (NFC-Code)
+                workpiece_id = st.text_input(
+                    "Werkstück-ID (NFC-Code):",
+                    value="04798eca341290",
+                    help="NFC-Code des Werkstücks (z.B. 04798eca341290)"
+                )
+                
+                # Trigger Button
+                if st.button("🚀 Wareneingang starten", type="primary"):
+                    if workpiece_id and len(workpiece_id) >= 10:
+                        # Send wareneingang trigger using new message template manager
+                        success = self.send_wareneingang_trigger(color, workpiece_id)
+                        if success:
+                            st.success(f"✅ Wareneingang für {color} Werkstück gestartet!")
+                            st.info(f"📊 Order Tracking gestartet für {workpiece_id}")
+                        else:
+                            st.error("❌ Fehler beim Starten des Wareneingangs")
+                    else:
+                        st.error("❌ Bitte gültige Werkstück-ID eingeben (mindestens 10 Zeichen)")
+            
+            with col2:
+                # NFC-Code Referenz
+                st.info("🏷️ NFC-Code Referenz:")
+                st.write("**Verfügbare NFC-Codes:**")
+                
+                # Farb-Verteilung aus YAML-Konfiguration
+                from src_orbis.mqtt.tools.nfc_code_manager import get_nfc_manager
+                nfc_manager = get_nfc_manager()
+                
+                col1, col2, col3 = st.columns(3)
+                with col1:
+                    st.write("🔴 **Rote Werkstücke:**")
+                    red_codes = nfc_manager.get_nfc_codes_by_color("RED")
+                    for code in red_codes[:4]:  # Zeige erste 4
+                        friendly_name = nfc_manager.get_friendly_name(code)
+                        st.write(f"`{code}` ({friendly_name})")
+                    if len(red_codes) > 4:
+                        st.write("...")
+                with col2:
+                    st.write("⚪ **Weiße Werkstücke:**")
+                    white_codes = nfc_manager.get_nfc_codes_by_color("WHITE")
+                    for code in white_codes[:4]:  # Zeige erste 4
+                        friendly_name = nfc_manager.get_friendly_name(code)
+                        st.write(f"`{code}` ({friendly_name})")
+                    if len(white_codes) > 4:
+                        st.write("...")
+                with col3:
+                    st.write("🔵 **Blaue Werkstücke:**")
+                    blue_codes = nfc_manager.get_nfc_codes_by_color("BLUE")
+                    for code in blue_codes[:4]:  # Zeige erste 4
+                        friendly_name = nfc_manager.get_friendly_name(code)
+                        st.write(f"`{code}` ({friendly_name})")
+                    if len(blue_codes) > 4:
+                        st.write("...")
+
+    def show_order_tracking(self):
+        """Zeigt das Order Tracking Dashboard"""
+        st.subheader("📊 Order Tracking")
+        
+        # Initialize order tracking manager
+        if not hasattr(self, 'order_tracking_manager'):
+            from src_orbis.mqtt.tools.order_tracking_manager import OrderTrackingManager
+            self.order_tracking_manager = OrderTrackingManager()
+        
+        # Statistiken
+        stats = self.order_tracking_manager.get_statistics()
+        
+        col1, col2, col3, col4 = st.columns(4)
+        with col1:
+            st.metric("Aktive Orders", stats["active_orders"])
+        with col2:
+            st.metric("Abgeschlossen", stats["completed_orders"])
+        with col3:
+            st.metric("Fehler", stats["error_orders"])
+        with col4:
+            st.metric("Gesamt", stats["total_orders"])
+        
+        # Farb-Verteilung
+        if stats["color_distribution"]:
+            st.write("🎨 Farb-Verteilung:")
+            for color, count in stats["color_distribution"].items():
+                st.write(f"  {color}: {count} Orders")
+        
+        # Aktive Orders
+        active_orders = self.order_tracking_manager.get_active_orders()
+        if active_orders:
+            st.write("🔄 **Aktive Orders:**")
+            
+            for order_id, order_info in active_orders.items():
+                with st.expander(f"📋 Order {order_id[:8]}... - {order_info.get('color', 'UNKNOWN')} ({order_info.get('status', 'UNKNOWN')})"):
+                    self._show_order_details(order_info)
+        else:
+            st.info("📭 Keine aktiven Orders")
+        
+        # Order Historie
+        order_history = self.order_tracking_manager.get_order_history()
+        if order_history:
+            st.write("📚 **Order Historie:**")
+            
+            # Filter nach Status
+            status_filter = st.selectbox(
+                "Status Filter:", ["Alle", "COMPLETED", "ERROR"], key="history_filter"
+            )
+            
+            filtered_history = order_history
+            if status_filter != "Alle":
+                filtered_history = [
+                    order for order in order_history 
+                    if order.get("status") == status_filter
+                ]
+            
+            for order_info in filtered_history[-10:]:  # Letzte 10 Orders
+                with st.expander(f"📋 Order {order_info.get('orderId', 'UNKNOWN')[:8]}... - {order_info.get('color', 'UNKNOWN')} ({order_info.get('status', 'UNKNOWN')})"):
+                    self._show_order_details(order_info)
+        else:
+            st.info("📭 Keine Order-Historie verfügbar")
+
+    def _show_order_details(self, order_info: Dict[str, Any]):
+        """Zeigt Details einer Order"""
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.write("**Grunddaten:**")
+            st.write(f"**Werkstück-ID:** {order_info.get('workpieceId', 'N/A')}")
+            st.write(f"**Farbe:** {order_info.get('color', 'N/A')}")
+            st.write(f"**Status:** {order_info.get('status', 'N/A')}")
+            
+            if order_info.get("orderId"):
+                st.write(f"**ORDER-ID:** `{order_info['orderId']}`")
+            
+            st.write(f"**Start:** {order_info.get('startTime', 'N/A')}")
+            
+            if order_info.get("endTime"):
+                st.write(f"**Ende:** {order_info['endTime']}")
+            
+            if order_info.get("errorTime"):
+                st.write(f"**Fehler:** {order_info['errorTime']}")
+        
+        with col2:
+            st.write("**Nachrichten:**")
+            messages = order_info.get("messages", [])
+            if messages:
+                st.write(f"**Anzahl:** {len(messages)}")
+                
+                # Letzte Nachricht anzeigen
+                if messages:
+                    last_msg = messages[-1]
+                    st.write(f"**Letzte:** {last_msg.get('timestamp', 'N/A')}")
+                    
+                    # Message Details
+                    with st.expander("📄 Letzte Nachricht Details"):
+                        st.json(last_msg.get("data", {}))
+            else:
+                st.write("**Anzahl:** 0")
+            
+            # CCU Response
+            if order_info.get("ccuResponse"):
+                with st.expander("📋 CCU Response"):
+                    st.json(order_info["ccuResponse"])
+
+    def send_wareneingang_trigger(self, color: str, workpiece_id: str) -> bool:
+        """Sendet Wareneingang-Trigger über neuen Message Template Manager"""
+        try:
+            # Use new message template manager
+            if not self.message_template_manager:
+                st.error("❌ Message Template Manager nicht verfügbar")
+                return False
+            
+            # Create parameters for wareneingang trigger
+            parameters = {
+                "orderType": "STORAGE",
+                "type": color,
+                "workpieceId": workpiece_id,
+                "timestamp": datetime.now().isoformat()
+            }
+            
+            # Send template message
+            success, message = self.message_template_manager.send_template_message(
+                "ccu/order/request", parameters
+            )
+            
+            if success:
+                # Start order tracking
+                if hasattr(self, 'order_tracking_manager'):
+                    self.order_tracking_manager.start_order_tracking(workpiece_id, color, "STORAGE")
+                
+                return True
+            else:
+                st.error(f"❌ Fehler beim Senden: {message}")
+                return False
+                
+        except Exception as e:
+            st.error(f"❌ Fehler beim Senden des Wareneingang-Triggers: {e}")
+            return False
+
 
 def main():
     """Main function"""
@@ -3958,6 +4226,7 @@ def main():
         ("🔍 APS Analyse", "🔍 APS Analyse"),
         ("🎮 MQTT Control", "🎮 MQTT Control"),
         ("📚 Template Library", "📚 Template Library"),
+        ("🔄 Node-RED", "🔄 Node-RED"),
         ("⚙️ Einstellungen", "⚙️ Einstellungen")
     ]
     

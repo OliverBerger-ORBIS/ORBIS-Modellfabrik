@@ -12,6 +12,9 @@ categories:
       State:
         description: Systemstatus und Zustandsinformationen
         icon: 📊
+      Wareneingang:
+        description: Wareneingang-Trigger und -Verarbeitung
+        icon: 📦
   MODULE:
     description: Module - APS Module (HBW, VGR, DPS, MILL, OVEN, CHRG)
     icon: 🏭
@@ -91,8 +94,8 @@ metadata:
   author: ORBIS Modellfabrik Team
   ccu_analysis_completed: true
   description: MQTT Message Templates für ORBIS Modellfabrik
-  last_updated: '2025-08-28T07:49:16.424988'
-  version: '1.0'
+  last_updated: '2025-08-28T14:10:00.000000'
+  version: '1.1'
 topics:
   /j1/txt/1/c/bme680:
     category: TXT
@@ -2476,7 +2479,7 @@ topics:
     validation_rules: []
   ccu/order/request:
     category: CCU
-    description: Auto-analyzed template for ccu/order/request
+    description: CCU Order Request - Bestellungen und Wareneingang
     examples:
     - orderType: PRODUCTION
       timestamp: '2025-08-19T09:16:14.336Z'
@@ -2491,6 +2494,17 @@ topics:
     sub_category: Order
     template_structure: {}
     validation_rules: []
+    ui_config:
+      commands:
+        wareneingang_trigger:
+          text: "📦 Wareneingang starten"
+          help: "Startet Wareneingang-Prozess für Werkstück"
+          parameters:
+            orderType: "STORAGE"
+            type: ["RED", "WHITE", "BLUE"]
+            workpieceId: "string (NFC)"
+            timestamp: "ISO 8601"
+      success_message: "Wareneingang erfolgreich gestartet"
   ccu/order/response:
     category: CCU
     description: Auto-analyzed template for ccu/order/response
@@ -6020,6 +6034,33 @@ topics:
   module/v1/ff/SVR3QA2098/order:
     category: MODULE
     description: Module SVR3QA2098 Order
+    ui_config:
+      module_id: "SVR3QA2098"
+      module_name: "MILL"
+      commands:
+        PICK:
+          text: "📤 PICK"
+          icon: "📤"
+          color: "primary"
+          help: "Werkstück aufnehmen"
+        MILL:
+          text: "⚙️ MILL"
+          icon: "⚙️"
+          color: "primary"
+          help: "Werkstück fräsen"
+        DROP:
+          text: "📥 DROP"
+          icon: "📥"
+          color: "primary"
+          help: "Werkstück ablegen"
+      workpiece_selection:
+        colors: ["WHITE", "RED", "BLUE"]
+        default_color: "WHITE"
+        options:
+          WHITE: ["W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8"]
+          RED: ["R1", "R2", "R3", "R4", "R5", "R6", "R7", "R8"]
+          BLUE: ["B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8"]
+      success_message: "MILL-Befehl erfolgreich gesendet mit orderUpdateId: {orderUpdateId}"
     examples:
     - action:
         command: DROP
@@ -7517,6 +7558,33 @@ topics:
   module/v1/ff/SVR4H76449/order:
     category: MODULE
     description: Module SVR4H76449 Order
+    ui_config:
+      module_id: "SVR4H76449"
+      module_name: "DRILL"
+      commands:
+        PICK:
+          text: "📤 PICK"
+          icon: "📤"
+          color: "primary"
+          help: "Werkstück aufnehmen"
+        DRILL:
+          text: "⚙️ DRILL"
+          icon: "⚙️"
+          color: "primary"
+          help: "Werkstück bohren"
+        DROP:
+          text: "📥 DROP"
+          icon: "📥"
+          color: "primary"
+          help: "Werkstück ablegen"
+      workpiece_selection:
+        colors: ["WHITE", "RED", "BLUE"]
+        default_color: "WHITE"
+        options:
+          WHITE: ["W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8"]
+          RED: ["R1", "R2", "R3", "R4", "R5", "R6", "R7", "R8"]
+          BLUE: ["B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8"]
+      success_message: "DRILL-Befehl erfolgreich gesendet mit orderUpdateId: {orderUpdateId}"
     examples:
     - action:
         command: DROP
@@ -8280,6 +8348,33 @@ topics:
   module/v1/ff/SVR4H76530/order:
     category: MODULE
     description: Module SVR4H76530 Order
+    ui_config:
+      module_id: "SVR4H76530"
+      module_name: "AIQS"
+      commands:
+        PICK:
+          text: "📤 PICK"
+          icon: "📤"
+          color: "primary"
+          help: "Werkstück aufnehmen"
+        CHECK_QUALITY:
+          text: "🔍 CHECK_QUALITY"
+          icon: "🔍"
+          color: "primary"
+          help: "Qualität prüfen"
+        DROP:
+          text: "📥 DROP"
+          icon: "📥"
+          color: "primary"
+          help: "Werkstück ablegen"
+      workpiece_selection:
+        colors: ["WHITE", "RED", "BLUE"]
+        default_color: "WHITE"
+        options:
+          WHITE: ["W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8"]
+          RED: ["R1", "R2", "R3", "R4", "R5", "R6", "R7", "R8"]
+          BLUE: ["B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8"]
+      success_message: "AIQS-Befehl erfolgreich gesendet mit orderUpdateId: {orderUpdateId}"
     examples:
     - action:
         command: DROP
@@ -8499,6 +8594,74 @@ topics:
     - ui_status muss in [ready] sein
     - component_count muss in [3] sein
     - timestamp muss ISO 8601 Format haben
+
+  # FTS Templates
+  fts/v1/ff/5iO4/order:
+    category: MODULE
+    description: FTS Navigation Commands
+    ui_config:
+      module_id: "5iO4"
+      module_name: "FTS"
+      commands:
+        findInitialDockPosition:
+          text: "🚗 Docke an"
+          icon: "🚗"
+          color: "primary"
+          help: "FTS fährt zum Wareneingang (Initialisierung)"
+        startCharging:
+          text: "🔋 FTS laden"
+          icon: "🔋"
+          color: "primary"
+          help: "FTS fährt zur Charging Station"
+        stopCharging:
+          text: "⏹️ Laden beenden"
+          icon: "⏹️"
+          color: "primary"
+          help: "FTS stoppt das Laden"
+        factsheetRequest:
+          text: "🔄 Status abfragen"
+          icon: "🔄"
+          color: "secondary"
+          help: "FTS Status abfragen"
+      success_message: "FTS-Befehl erfolgreich gesendet"
+      # FTS State Machine Notes:
+      # - "findInitialDockPosition": Nur nach Initialisierung verfügbar, wird danach deaktiviert
+      # - "startCharging" / "stopCharging": Gegenseitig ausschließend (Zustandsautomat)
+      # - Status-Verwaltung: Später implementieren für dynamische Button-Aktivierung
+      state_machine_notes: |
+        FTS verwendet einen Zustandsautomaten:
+        - Docke an: Nur nach Initialisierung verfügbar
+        - Laden/Laden beenden: Gegenseitig ausschließend
+        - Status-Abfrage: Für dynamische Button-Aktivierung (später)
+    examples:
+    - action:
+        command: findInitialDockPosition
+        id: 12345678-1234-1234-1234-123456789abc
+        metadata:
+          nodeId: SVR4H73275
+      orderId: 87654321-4321-4321-4321-cba987654321
+      orderUpdateId: 1
+      serialNumber: 5iO4
+      timestamp: '2025-08-28T12:00:00.000Z'
+    - action:
+        command: startCharging
+        id: 23456789-2345-2345-2345-234567890bcd
+        metadata: {}
+      orderId: 98765432-5432-5432-5432-dcb098765432
+      orderUpdateId: 2
+      serialNumber: 5iO4
+      timestamp: '2025-08-28T12:01:00.000Z'
+    module: 5iO4
+    sub_category: Order
+    template_structure:
+      action: <string>
+      orderId: <string>
+      orderUpdateId: <string>
+      serialNumber: '[5iO4]'
+      timestamp: <datetime>
+    validation_rules:
+    - timestamp muss ISO 8601 Format haben
+    - serialNumber muss in [5iO4] sein
 validation_patterns:
   ISO_8601: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?Z$
   NFC_CODE: ^[0-9a-fA-F]{14}$

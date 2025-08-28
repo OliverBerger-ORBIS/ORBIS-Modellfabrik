@@ -106,7 +106,7 @@ nfc_code = get_nfc_code("R1")
 - ✅ `txt_template_analyzer.py` - Verwendet NFCCodeManager
 - ✅ `unified_type_recognition.py` - Verwendet NFCCodeManager
 - ✅ `module_mapping_utils.py` - NFC-Funktionen verwenden NFCCodeManager
-- ✅ `template_control.py` - Lädt NFC-Codes aus YAML-Konfiguration
+- ✅ `aps_dashboard.py` - Lädt NFC-Codes aus YAML-Konfiguration (integriert)
 
 ## 🧪 Tests
 

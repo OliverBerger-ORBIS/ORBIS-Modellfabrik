@@ -18,6 +18,18 @@ This directory contains comprehensive documentation for the Orbis Modellfabrik s
 
 ## 📚 Documentation Structure
 
+### [Project Analysis Summary](./project-analysis-summary.md)
+- **System Overview** - Complete project analysis and architecture
+- **Core Technology** - MQTT-based communication system
+- **Orbis Components** - Central configuration managers and dashboard
+- **Current Status** - Modern YAML-based architecture
+
+### [Project Status](./project-status.md)
+- **Completed Features** - Central configuration managers, dashboard modernization
+- **Cleaned Components** - Removed obsolete components and documentation
+- **Next Steps** - Live APS integration roadmap
+- **Current Architecture** - YAML-based configuration system
+
 ### [Node-RED Documentation](./node-red/)
 - **System Architecture** - Overall system design and components
 - **Flows Overview** - Tab structure and module organization
@@ -27,37 +39,16 @@ This directory contains comprehensive documentation for the Orbis Modellfabrik s
 - **Troubleshooting** - Common issues and solutions
 - **Development** - Guidelines for customization
 
-### [MQTT Mocking Guide](./mqtt-mocking-guide.md)
-- **Complete MQTT Mock System** - Step-by-step setup and usage
-- **Module Simulation** - Mock all Fischertechnik modules
-- **VDA 5050 State Machine** - Realistic state transitions
-- **Testing & Debugging** - Comprehensive testing guide
-- **Integration** - Connect with local or cloud applications
+### [MQTT Documentation](./mqtt/)
+- **Dashboard MQTT Integration** - Template-based control system
+- **MQTT Control Summary** - Module control and commands
+- **State Machine Notes** - FTS and module state management
+- **Setup Guides** - Remote control and traffic logging
 
-### [Remote Control Guide](./remote-control-guide.md)
-- **Remote Control from macOS** - Control real Fischertechnik APS
-- **Network Configuration** - Setup for company network
-- **Interactive Commands** - Manual control interface
-- **Security & VPN** - Secure remote access
-
-### [Traffic Logging Guide](./traffic-logging-guide.md)
-- **MQTT Traffic Monitoring** - Complete traffic logging system
-- **Bridge Logger** - Non-intrusive traffic capture
-- **Comprehensive Logger** - Monitor all MQTT brokers simultaneously
-- **Traffic Analysis** - Real-time statistics and visualizations
-- **Debugging Tools** - Comprehensive analysis capabilities
-
-### [Dashboard Icon Integration](./mqtt/dashboard-icon-integration.md)
-- **Icon System** - Module, Status und System Icons
-- **Visual Integration** - Dashboard mit intuitiver Icon-Sprache
-- **Status Icons** - Erweiterte Status-Anzeigen für alle Module
-- **Technical Implementation** - Icon-Konfiguration und Integration
-
-### [Project Status](./project-status.md)
-- **Aktuelle Features** - Abgeschlossene Implementierungen
-- **Nächste Schritte** - Roadmap und Prioritäten
-- **Projektstruktur** - Übersicht der Komponenten
-- **Erfolge** - Erreichte Meilensteine
+### [Configuration Guides]
+- **[NFC Code Configuration](./nfc-code-configuration-guide.md)** - Central NFC code management
+- **[Module Configuration](./module-configuration-guide.md)** - APS module configuration
+- **[Topic Configuration](./topic-configuration-guide.md)** - MQTT topic mappings
 
 ### [Prerequisites](./prerequisites.md)
 - **System Requirements** - All necessary prerequisites
@@ -71,39 +62,52 @@ This directory contains comprehensive documentation for the Orbis Modellfabrik s
 - **Security Guidelines** - Best practices for production use
 - **Troubleshooting Access** - Solutions for authentication issues
 
-### [PLC Documentation](./plc/)
-- Siemens S7-1200 TIA v18 programs
-- Module-specific PLC configurations
-- Exercise solutions
-
-### [TXT4.0 Documentation](./txt4.0/)
-- Fischertechnik controller programs
-- Configuration and programming guidelines
-
-### [API Documentation](./api/)
-- VDA 5050 specification implementation
-- Communication protocols and standards
+### [Analysis Documentation](./analysis/)
+- **Session Analysis** - MQTT session analysis results
+- **Workflow Analysis** - Comprehensive workflow documentation
+- **PDF Analysis** - Documentation analysis results
 
 ## 🚀 Quick Start
 
-1. **System Overview**: Start with [Node-RED Architecture](./node-red/architecture.md)
-2. **Module Structure**: Review [Flows Overview](./node-red/flows-overview.md)
-3. **State Management**: Understand [State Machine](./node-red/state-machine.md)
-4. **Development**: Follow [Development Guidelines](./node-red/development.md)
+1. **System Overview**: Start with [Project Analysis Summary](./project-analysis-summary.md)
+2. **Current Status**: Review [Project Status](./project-status.md)
+3. **Configuration**: Set up [NFC Codes](./nfc-code-configuration-guide.md) and [Modules](./module-configuration-guide.md)
+4. **Dashboard**: Launch the modern Streamlit dashboard
 
 ## 🔧 System Components
 
-- **25 Production Modules** (MILL, DRILL, OVEN, AIQS, HBW)
+### Modern Architecture (August 2025)
+- **Central Configuration Managers** - YAML-based configuration for all components
+- **Template Message System** - MQTT template-based control
+- **Modern Dashboard** - Streamlit-based interface with template control
+- **Session Analysis Tools** - Template analyzers for CCU, TXT, Module, Node-RED
+
+### Production Modules
+- **25 Production Modules** (MILL, DRILL, OVEN, AIQS, HBW, FTS, CHRG)
 - **Central Control Unit** (Raspberry Pi with Node-RED)
 - **PLC Network** (Siemens S7-1200)
 - **TXT4.0 Controllers** (Fischertechnik)
 - **OPC-UA Communication** (Industrial IoT)
-- **MQTT Messaging** (Inter-module communication)
 
-## 📖 Original Documentation
+## 🎯 Key Features
 
-For the original Fischertechnik documentation, see the [main README](../README.md) and the original `doc/` folder.
+### Central Configuration
+- **NFC Code Manager** - Central YAML configuration for all NFC codes
+- **Module Manager** - APS module configuration (ID, Name, Type, IP-Range)
+- **Topic Manager** - MQTT topic mappings and friendly names
+- **Message Template Manager** - YAML-based MQTT templates with UI configuration
 
----
+### Dashboard Integration
+- **Template-based Control** - All modules controlled via message templates
+- **Factory Reset Integration** - Template-based factory reset functionality
+- **Order Management** - ROT, WEISS, BLAU order processing
+- **Central Configuration** - All settings manageable via dashboard tabs
+- **Node-RED Integration** - Dedicated tab for Node-RED analysis
 
-*Documentation maintained by Orbis Development Team* 
+### Session Analysis
+- **Template Analyzers** - Separate analysis tools for developers
+- **15 Sessions Analyzed** - Wareneingang (9), Auftrag (3), AI-not-ok (3)
+- **12,420 MQTT Messages** - Systematically analyzed and documented
+- **3 Workflow Types** - Fully understood and implemented as templates
+
+The system is now fully modernized and ready for live integration with the APS model factory. 

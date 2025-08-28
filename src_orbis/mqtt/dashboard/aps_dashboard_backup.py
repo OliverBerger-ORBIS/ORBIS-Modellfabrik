@@ -35,16 +35,18 @@ if _project_root not in sys.path:
 
 
 # Now that the path is correct, we can use absolute imports from 'src_orbis'.
-from src_orbis.mqtt.dashboard.config.settings import APS_MODULES_EXTENDED
 from src_orbis.mqtt.dashboard.utils.data_handling import extract_module_info
 from src_orbis.mqtt.dashboard.components.filters import create_filters
-from src_orbis.mqtt.tools.mqtt_message_library import (
-    MQTTMessageLibrary,
-)
 
 # Template Message Manager imports
 from src_orbis.mqtt.tools.template_message_manager import TemplateMessageManager
 from src_orbis.mqtt.dashboard.template_control import TemplateControlDashboard
+
+# Module Mapping imports
+from src_orbis.mqtt.tools.module_manager import get_module_manager
+
+# Topic Manager imports
+from src_orbis.mqtt.tools.topic_manager import get_topic_manager
 
 # Node-RED Analysis imports
 from src_orbis.mqtt.tools.node_red_message_analyzer import NodeRedMessageAnalyzer
@@ -54,12 +56,8 @@ from src_orbis.mqtt.dashboard.components.aps_analysis import APSAnalysis
 
 
 
-# Topic Mapping imports
-from src_orbis.mqtt.dashboard.config.topic_mapping import (
-    get_friendly_topic_name,
-    get_all_mapped_topics,
-    get_unmapped_topics
-)
+# Topic Mapping imports (using TopicManager)
+from src_orbis.mqtt.tools.topic_manager import get_topic_manager
 
 # Icon Configuration imports
 from src_orbis.mqtt.dashboard.config.icon_config import (
@@ -73,7 +71,7 @@ from src_orbis.mqtt.dashboard.config.icon_config import (
 
 # Page config
 st.set_page_config(
-    page_title="APS MQTT Dashboard",
+    page_title="ORBIS Modellfabrik Dashboard",
     page_icon="🏭",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -105,28 +103,31 @@ class APSDashboard:
         self.conn = None
         self.verbose_mode = verbose_mode
 
-        # Initialize MQTT message library
-        self.message_library = MQTTMessageLibrary()
-
         # Initialize Template Message Manager
         self.template_manager = TemplateMessageManager()
         self.template_control = TemplateControlDashboard(self.template_manager)
         self.aps_analysis = APSAnalysis()
         
-        # Initialize Template Library Manager
+        # Initialize Module Mapping Utilities
+        self.module_mapping = get_module_manager()
+        
+        # Initialize Topic Manager
+        self.topic_manager = get_topic_manager()
+        
+        # Initialize Message Template Manager (YAML-based, no analysis at startup)
         try:
-            import sys
-            sys.path.append('src_orbis/mqtt/tools')
-            from template_library_manager import TemplateLibraryManager
-            self.template_library = TemplateLibraryManager()
+            from ..tools.message_template_manager import get_message_template_manager
+            self.message_template_manager = get_message_template_manager()
         except ImportError:
-            self.template_library = None
+            # Fallback for direct execution
+            import sys
+            import os
+            sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'tools'))
+            from message_template_manager import get_message_template_manager
+            self.message_template_manager = get_message_template_manager()
 
         # Load broker configurations
         self.broker_configs = load_broker_config()
-
-        # Set module definitions from config
-        self.aps_modules_extended = APS_MODULES_EXTENDED
 
         # MQTT Client setup
         self.mqtt_client = None
@@ -207,17 +208,14 @@ class APSDashboard:
                 self.mqtt_client.disconnect()
             except Exception as e:
                 st.warning(f"MQTT Disconnect Warning: {e}")
-    
-    # CCU analysis method removed - now handled by separate tool: ccu_template_analyzer.py
-    
-    # Template filtering method removed - now handled by separate tools
 
     def _on_mqtt_connect(self, client, userdata, flags, rc, properties=None):
         """MQTT connection callback (VERSION2 API)"""
         if rc == 0:
             self.mqtt_connected = True
             # Subscribe to module state topics to receive responses
-            for module_name, module_info in self.aps_modules_extended.items():
+            all_modules = self.module_mapping.get_all_modules()
+            for module_id, module_info in all_modules.items():
                 state_topic = f"module/v1/ff/{module_info['id']}/state"
                 client.subscribe(state_topic, qos=1)
                 print(f"Subscribed to: {state_topic}")
@@ -590,7 +588,7 @@ class APSDashboard:
 
             # Create display DataFrame with friendly topic names
             df_display = df[available_columns].copy()
-            df_display["friendly_topic"] = df_display["topic"].apply(get_friendly_topic_name)
+            df_display["friendly_topic"] = df_display["topic"].apply(lambda x: self.topic_manager.get_friendly_name(x))
             
             # Reorder columns to show friendly_topic first
             display_cols = ["timestamp", "friendly_topic"] + [col for col in available_columns if col != "timestamp"]
@@ -606,7 +604,7 @@ class APSDashboard:
             
             # Topic mapping info
             total_topics = df["topic"].nunique()
-            mapped_topics = len([t for t in df["topic"].unique() if get_friendly_topic_name(t) != t])
+            mapped_topics = len([t for t in df["topic"].unique() if self.topic_manager.get_friendly_name(t) != t])
             unmapped_topics = total_topics - mapped_topics
             
             col1, col2, col3 = st.columns(3)
@@ -628,7 +626,7 @@ class APSDashboard:
         if not df.empty:
             # Create analysis DataFrame with friendly topic names
             df_analysis = df[["topic"]].copy()
-            df_analysis["friendly_topic"] = df_analysis["topic"].apply(get_friendly_topic_name)
+            df_analysis["friendly_topic"] = df_analysis["topic"].apply(lambda x: self.topic_manager.get_friendly_name(x))
             
             col1, col2 = st.columns(2)
 
@@ -655,7 +653,7 @@ class APSDashboard:
                 # Topic statistics
                 total_topics = df["topic"].nunique()
                 mapped_topics = df_analysis["friendly_topic"].nunique()
-                unmapped_count = len([t for t in df["topic"].unique() if get_friendly_topic_name(t) == t])
+                unmapped_count = len([t for t in df["topic"].unique() if self.topic_manager.get_friendly_name(t) == t])
                 
                 st.metric("Gesamt Topics", total_topics)
                 st.metric("Mapped Topics", total_topics - unmapped_count)
@@ -766,7 +764,7 @@ class APSDashboard:
         if not df.empty:
             # Create payload DataFrame with friendly topic names
             df_payload = df[["topic", "payload", "timestamp"]].copy()
-            df_payload["friendly_topic"] = df_payload["topic"].apply(get_friendly_topic_name)
+            df_payload["friendly_topic"] = df_payload["topic"].apply(lambda x: self.topic_manager.get_friendly_name(x))
             
             # Payload overview
             st.subheader("📊 Payload Übersicht")
@@ -1027,10 +1025,10 @@ class APSDashboard:
         # Control method selection
         control_method = st.selectbox(
             "Steuerungsmethode:",
-            ["Module Overview", "Bestellung", "Template Message"],
+            ["Overview", "Bestellung", "Template Message"],
         )
 
-        if control_method == "Module Overview":
+        if control_method == "Overview":
             self.show_module_control_rows()
         elif control_method == "Bestellung":
             self.show_order_control_combined()
@@ -1235,107 +1233,7 @@ class APSDashboard:
 
 
 
-    # def show_aps_analysis(self, df):
-    #     """Show comprehensive APS data analysis - MOVED TO APS ANALYSIS TAB"""
-        st.header("📊 MQTT Analyse")
-        st.markdown("Umfassende Analyse der MQTT-Nachrichten aus den Sessions")
 
-        # Session management section
-        st.subheader("🗄️ Session-Verwaltung")
-        
-        # Get project root (3 levels up from dashboard)
-        project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
-        
-        # Search in sessions directory only
-        db_files = sorted(glob.glob(
-            os.path.join(project_root, "mqtt-data/sessions/aps_persistent_traffic_*.db")
-        ))
-        
-        if db_files:
-            col1, col2 = st.columns([3, 1])
-            
-            with col1:
-                # Database selection dropdown
-                selected_db = st.selectbox(
-                    "Session auswählen:",
-                    db_files,
-                    index=(
-                        0
-                        if st.session_state.selected_db is None
-                        or st.session_state.selected_db not in db_files
-                        else db_files.index(st.session_state.selected_db)
-                    ),
-                    format_func=lambda x: os.path.basename(x)
-                    .replace("aps_persistent_traffic_", "")
-                    .replace(".db", ""),
-                )
-                
-                if selected_db != st.session_state.selected_db:
-                    st.session_state.selected_db = selected_db
-                    st.rerun()
-            
-            with col2:
-                # Database info
-                if st.session_state.selected_db:
-                    db_size = os.path.getsize(st.session_state.selected_db) / (1024 * 1024)
-                    st.info(f"**Größe:** {db_size:.2f} MB")
-        else:
-            st.error("Keine APS-Datenbanken gefunden!")
-            st.info(
-                "Führe zuerst den Logger aus: `python src_orbis/aps_persistent_logger.py`"
-            )
-            return
-
-        # Verbose mode toggle
-        verbose_mode = st.checkbox(
-            "🔍 Verbose-Modus (alle Topics anzeigen)", value=self.verbose_mode
-        )
-        if verbose_mode != self.verbose_mode:
-            self.verbose_mode = verbose_mode
-            st.rerun()
-
-        # Create filters - check if we're analyzing a single session
-        single_session_mode = len(df['session_label'].unique()) == 1 if not df.empty else False
-        df_filtered = self.create_filters(df, single_session_mode)
-
-        st.markdown("---")
-
-        # Analysis sub-tabs
-        (
-            analysis_tab1,
-            analysis_tab2,
-            analysis_tab3,
-            analysis_tab4,
-            analysis_tab5,
-            analysis_tab6,
-        ) = st.tabs(
-            [
-                "📊 Übersicht",
-                "⏰ Timeline",
-                "📋 Nachrichten",
-                "📡 Topics",
-                "📦 Payload",
-                "🏷️ Sessions",
-            ]
-        )
-
-        with analysis_tab1:
-            self.show_overview(df_filtered)
-
-        with analysis_tab2:
-            self.show_timeline(df_filtered)
-
-        with analysis_tab3:
-            self.show_message_table(df_filtered)
-
-        with analysis_tab4:
-            self.show_topic_analysis(df_filtered)
-
-        with analysis_tab5:
-            self.show_payload_analysis(df_filtered)
-
-        with analysis_tab6:
-            self.show_session_analysis(df_filtered)
 
     def show_module_overview_dashboard(self, df):
         """Show comprehensive module overview dashboard"""
@@ -1343,8 +1241,8 @@ class APSDashboard:
         col1, col2 = st.columns([3, 1])
         
         with col1:
-            st.header("🏭 Module Overview")
-            st.markdown("Übersicht aller APS-Module mit Status und Steuerungsmöglichkeiten")
+            st.header("🏭 ORBIS Modellfabrik Overview")
+        st.markdown("Übersicht aller APS-Module mit Status und Steuerungsmöglichkeiten")
         
         with col2:
             st.markdown("")  # Spacer
@@ -1359,12 +1257,22 @@ class APSDashboard:
 
         st.markdown("---")
 
-        # Module table
-        st.subheader("📋 Module Status")
+        # Sub-navigation for overview
+        overview_tab1, overview_tab2, overview_tab3, overview_tab4 = st.tabs([
+            "📋 Module Status",
+            "📦 Bestellung",
+            "📋 Bestellung Rohware",
+            "📊 Lagerbestand"
+        ])
+
+        with overview_tab1:
+            # Module table
+            st.subheader("📋 Module Status")
 
         # Create module table data
         module_table_data = []
-        for module_key, module_info in self.aps_modules_extended.items():
+        all_modules = self.module_mapping.get_all_modules()
+        for module_id, module_info in all_modules.items():
             # Get availability status
             recent_messages = df[df["topic"].str.contains(module_info["id"], na=False)]
             availability_status = self.extract_availability_status(
@@ -1389,21 +1297,26 @@ class APSDashboard:
 
             # Get module icon (use emoji for table display)
             # For table display, prefer emoji over file paths
-            module_key = module_key.upper()
-            icon_from_function = get_module_icon(module_key)
+            module_name = module_info.get('name', module_id)
+            module_key_upper = module_name.upper()
+            icon_from_function = get_module_icon(module_key_upper)
             
             # If it's a file path, fallback to emoji from MODULE_ICONS
             if icon_from_function and ('/' in icon_from_function or '\\' in icon_from_function):
-                icon_display = MODULE_ICONS.get(module_key, "❓")
+                icon_display = MODULE_ICONS.get(module_key_upper, "❓")
             else:
                 icon_display = icon_from_function
             
+            # Get first available IP address from ip_addresses list
+            ip_addresses = module_info.get('ip_addresses', [])
+            current_ip = ip_addresses[0] if ip_addresses else "Unknown"
+            
             module_table_data.append(
                 {
+                    "Name": f"{icon_display} {module_info.get('name', module_id)}",
                     "ID": module_info["id"],
-                    "Name": f"{icon_display} {module_info['name']}",
-                    "Type": module_info["type"],
-                    "IP": module_info["ip"],
+                    "Type": module_info.get("type", "Unknown"),
+                    "IP": current_ip,  # First available IP address (ToBeDone: from MQTT messages)
                     "Connected": connection_status,
                     "Activity Status": activity_display,
                     "Recent Messages": len(recent_messages),
@@ -1417,11 +1330,42 @@ class APSDashboard:
             use_container_width=True,
             column_config={
                 "Name": st.column_config.TextColumn("Name", width="medium"),
+                "ID": st.column_config.TextColumn("ID", width="medium"),
                 "Recent Messages": st.column_config.NumberColumn(
                     "Recent Messages", width="small"
                 ),
             },
         )
+
+        with overview_tab2:
+            st.subheader("📦 Bestellung")
+            st.info("💡 Bestellungs-Funktionalität wird hier implementiert")
+            st.markdown("""
+            **Geplante Features:**
+            - Bestellungs-Übersicht
+            - Bestellungs-Status
+            - Bestellungs-Historie
+            """)
+
+        with overview_tab3:
+            st.subheader("📋 Bestellung Rohware")
+            st.info("💡 Rohware-Bestellungs-Funktionalität wird hier implementiert")
+            st.markdown("""
+            **Geplante Features:**
+            - Rohware-Bestellungs-Übersicht
+            - Rohware-Status
+            - Rohware-Lieferungen
+            """)
+
+        with overview_tab4:
+            st.subheader("📊 Lagerbestand")
+            st.info("💡 Lagerbestands-Funktionalität wird hier implementiert")
+            st.markdown("""
+            **Geplante Features:**
+            - Lagerbestands-Übersicht
+            - Werkstück-Positionen
+            - Lagerbestands-Historie
+            """)
 
         # Factory Reset Modal
         if st.session_state.get("show_reset_modal", False):
@@ -1464,11 +1408,11 @@ class APSDashboard:
                     st.markdown("*Klicke 'JA' um die Fabrik zurückzusetzen*")
                 
                 st.markdown("---")
- 
+
         # Module control moved to MQTT Control tab
         st.info("🎮 **Module Control** ist jetzt im **MQTT Control** Tab verfügbar")
 
-    def show_module_row(self, module_key, module_info, df):
+    def show_module_row(self, module_id, module_info, df):
         """Show individual module as a row"""
         with st.container():
             # Module header with border
@@ -1535,10 +1479,10 @@ class APSDashboard:
                 for command in module_info["commands"]:
                     if st.button(
                         f"▶️ {command}",
-                        key=f"cmd_{module_key}_{command}",
+                        key=f"cmd_{module_id}_{command}",
                         use_container_width=True,
                     ):
-                        self.send_module_command(module_key, command)
+                        self.send_module_command(module_id, command)
 
             with col5:
                 # Recent activity count
@@ -1554,7 +1498,7 @@ class APSDashboard:
 
             st.markdown("---")
 
-    def show_module_card(self, module_key, module_info, df):
+    def show_module_card(self, module_id, module_info, df):
         """Show individual module card (legacy method)"""
         with st.container():
             st.markdown(
@@ -1597,8 +1541,8 @@ class APSDashboard:
                 with col1:
                     st.markdown(f"• {command}")
                 with col2:
-                    if st.button(f"▶️", key=f"cmd_{module_key}_{command}"):
-                        self.send_module_command(module_key, command)
+                    if st.button(f"▶️", key=f"cmd_{module_id}_{command}"):
+                        self.send_module_command(module_id, command)
 
             # Recent activity
             if len(recent_messages) > 0:
@@ -1615,13 +1559,14 @@ class APSDashboard:
         # Extract serial number from topic
         if '/ff/' in topic:
             serial = topic.split('/ff/')[1].split('/')[0]
-            # Map serial to module name
-            for module_name, module_info in self.aps_modules_extended.items():
+            # Map serial to module name using ModuleManager
+            all_modules = self.module_mapping.get_all_modules()
+            for module_id, module_info in all_modules.items():
                 if module_info['id'] == serial:
-                    return module_name
+                    return module_info['name']
         return "Unknown"
 
-    def send_module_command(self, module_key, command):
+    def send_module_command(self, module_id, command):
         """Send command to specific module"""
         try:
             if not self.mqtt_connected:
@@ -1630,23 +1575,39 @@ class APSDashboard:
                     return
 
             # Get module info
-            module_info = self.aps_modules_extended[module_key]
+            all_modules = self.module_mapping.get_all_modules()
+            module_info = all_modules.get(module_id)
+            if not module_info:
+                st.error(f"Modul {module_id} nicht gefunden")
+                return
 
             # Create message based on module type
-            if module_key == "FTS":
+            if module_id == "FTS":
                 # Special handling for FTS commands
                 message = self.create_fts_message(command)
                 topic = f"module/v1/ff/{module_info['id']}/order"
             else:
-                # Standard APS module commands
-                message = self.message_library.create_order_message(module_key, command)
-                topic = self.message_library.get_topic(module_key, "order")
+                # Standard APS module commands - simplified since message_library is removed
+                message = {
+                    "serialNumber": module_info["id"],
+                    "orderId": str(uuid.uuid4()),
+                    "orderUpdateId": 1,
+                    "action": {
+                        "id": str(uuid.uuid4()),
+                        "command": command,
+                        "metadata": {
+                            "priority": "NORMAL",
+                            "timeout": 300
+                        }
+                    }
+                }
+                topic = f"module/v1/ff/{module_info['id']}/order"
 
             # Send message
             success, result_message = self.send_mqtt_message_direct(topic, message)
 
             if success:
-                st.success(f"✅ Befehl gesendet: {module_key} - {command}")
+                st.success(f"✅ Befehl gesendet: {module_id} - {command}")
                 st.info(f"📡 Topic: {topic}")
             else:
                 st.error(f"❌ Fehler: {result_message}")
@@ -1654,7 +1615,7 @@ class APSDashboard:
         except Exception as e:
             st.error(f"❌ Fehler beim Senden: {e}")
 
-    def send_drill_sequence_command(self, module_key, command, workpiece_color, nfc_code):
+    def send_drill_sequence_command(self, module_id, command, workpiece_color, nfc_code):
         """Send DRILL sequence command with proper orderUpdateId management"""
         try:
             if not self.mqtt_connected:
@@ -1663,10 +1624,14 @@ class APSDashboard:
                     return
 
             # Get module info
-            module_info = self.aps_modules_extended[module_key]
+            all_modules = self.module_mapping.get_all_modules()
+            module_info = all_modules.get(module_id)
+            if not module_info:
+                st.error(f"Modul {module_id} nicht gefunden")
+                return
             
             # Initialize or get current orderUpdateId for this module
-            order_update_key = f"order_update_id_{module_key}"
+            order_update_key = f"order_update_id_{module_id}"
             if order_update_key not in st.session_state:
                 st.session_state[order_update_key] = 1
             else:
@@ -2115,7 +2080,7 @@ class APSDashboard:
             
             # Create display DataFrame with friendly topic names
             topic_df_display = topic_df[['Topic', 'Count']].copy()
-            topic_df_display['Friendly_Topic'] = topic_df_display['Topic'].apply(get_friendly_topic_name)
+            topic_df_display['Friendly_Topic'] = topic_df_display['Topic'].apply(lambda x: self.topic_manager.get_friendly_name(x))
             
             # Show both original and friendly names
             st.dataframe(topic_df_display[['Friendly_Topic', 'Topic', 'Count']], use_container_width=True)
@@ -2132,7 +2097,7 @@ class APSDashboard:
             with col1:
                 st.markdown("**Topics:**")
                 for topic in state_messages['topic'].unique():
-                    friendly_name = get_friendly_topic_name(topic)
+                    friendly_name = self.topic_manager.get_friendly_name(topic)
                     st.markdown(f"• **{friendly_name}**")
                     if friendly_name != topic:
                         st.markdown(f"  `{topic}`")
@@ -2156,7 +2121,7 @@ class APSDashboard:
             with col1:
                 st.markdown("**Topics:**")
                 for topic in factsheet_messages['topic'].unique():
-                    friendly_name = get_friendly_topic_name(topic)
+                    friendly_name = self.topic_manager.get_friendly_name(topic)
                     st.markdown(f"• **{friendly_name}**")
                     if friendly_name != topic:
                         st.markdown(f"  `{topic}`")
@@ -2202,7 +2167,7 @@ class APSDashboard:
             # Sample connection messages
             st.markdown("**Sample Connection Messages:**")
             for _, row in connection_messages.head(3).iterrows():
-                friendly_topic = get_friendly_topic_name(row['topic'])
+                friendly_topic = self.topic_manager.get_friendly_name(row['topic'])
                 with st.expander(f"{row['timestamp']} - {friendly_topic}"):
                     st.markdown(f"**Original Topic:** `{row['topic']}`")
                     try:
@@ -2262,719 +2227,849 @@ class APSDashboard:
 
 
 
-    def show_settings(self):
-        """Show dashboard settings"""
-        st.header("⚙️ Einstellungen")
+    def show_template_library(self):
+        """Show template library with analysis results"""
+        st.header("📚 Template Library")
+        st.markdown("MQTT Template-Analyse und Dokumentation")
         
-        # Navigation für Einstellungen
-        st.markdown("**📋 Navigation:**")
-        col1, col2, col3, col4, col5 = st.columns(5)
+        # Load template analysis results
+        template_library_dir = "mqtt-data/template_library"
+        
+        if not os.path.exists(template_library_dir):
+            st.warning("📁 Template Library Verzeichnis nicht gefunden!")
+            st.info("Führe zuerst die Template-Analyzer aus:")
+            st.code("python3 src_orbis/mqtt/tools/txt_template_analyzer.py")
+            st.code("python3 src_orbis/mqtt/tools/ccu_template_analyzer.py")
+            return
+        
+        # Load analysis files
+        txt_file = os.path.join(template_library_dir, "txt_template_analysis.json")
+        ccu_file = os.path.join(template_library_dir, "ccu_template_analysis.json")
+        
+        all_templates = {}
+        
+        if os.path.exists(txt_file):
+            try:
+                with open(txt_file, 'r', encoding='utf-8') as f:
+                    txt_data = json.load(f)
+                    all_templates.update(txt_data.get('templates', {}))
+            except Exception as e:
+                st.error(f"❌ Fehler beim Laden der TXT-Analyse: {e}")
+        
+        if os.path.exists(ccu_file):
+            try:
+                with open(ccu_file, 'r', encoding='utf-8') as f:
+                    ccu_data = json.load(f)
+                    all_templates.update(ccu_data.get('templates', {}))
+            except Exception as e:
+                st.error(f"❌ Fehler beim Laden der CCU-Analyse: {e}")
+        
+        if not all_templates:
+            st.warning("📄 Keine Template-Analysen gefunden!")
+            return
+        
+        # Category filter
+        categories = list(set(template.get('category', 'Unknown') for template in all_templates.values()))
+        selected_category = st.selectbox(
+            "📂 Kategorie auswählen:",
+            ["Alle"] + categories,
+            key="template_category_filter"
+        )
+        
+        # Sub-category filter
+        sub_categories = []
+        if selected_category != "Alle":
+            sub_categories = list(set(
+                template.get('sub_category', 'Unknown') 
+                for topic, template in all_templates.items()
+                if template.get('category') == selected_category
+            ))
+        
+        selected_sub_category = None
+        if sub_categories:
+            selected_sub_category = st.selectbox(
+                "📋 Sub-Kategorie auswählen:",
+                ["Alle"] + sub_categories,
+                key="template_sub_category_filter"
+            )
+            if selected_sub_category == "Alle":
+                selected_sub_category = None
+        
+        # Filter templates by category and sub-category
+        if selected_category == "Alle":
+            filtered_templates = all_templates
+        else:
+            filtered_templates = {
+                topic: template for topic, template in all_templates.items()
+                if template.get('category') == selected_category
+            }
+            
+            # Apply sub-category filter if selected
+            if selected_sub_category:
+                filtered_templates = {
+                    topic: template for topic, template in filtered_templates.items()
+                    if template.get('sub_category') == selected_sub_category
+            }
+        
+        st.markdown(f"**📊 {len(filtered_templates)} Templates gefunden**")
+        
+        # Display each template
+        for topic, template in filtered_templates.items():
+            with st.expander(f"📋 {topic}", expanded=False):
+                self._display_template_details(template)
+    
+    def _display_template_details(self, template):
+        """Display detailed template information with improved layout"""
+        category = template.get('category', 'Unknown')
+        stats = template.get('statistics', {})
+        template_structure = template.get('template_structure', {})
+        examples = template.get('examples', [])
+        
+        # Header with category and topic
+        st.markdown(f"**Kategorie:** {category} | **Topic:** {template.get('topic', 'Unknown')}")
+        
+        # Top section: Meta-Info + Template Structure Description | Documentation
+        col1, col2 = st.columns([2, 1])
         
         with col1:
-            if st.button("🏠 Dashboard Einstellungen", use_container_width=True):
-                st.session_state.settings_section = "dashboard_settings"
-                st.rerun()
+            # Meta information in one line
+            st.markdown("### 📊 Meta-Information")
+            st.markdown(f"📈 **Nachrichten:** {stats.get('total_messages', 0)} | "
+                       f"📁 **Sessions:** {stats.get('sessions', 0)} | "
+                       f"🔄 **Variable Felder:** {stats.get('variable_fields', 0)} | "
+                       f"🎯 **Enum-Felder:** {stats.get('enum_fields', 0)}")
+            
+            st.markdown("")
+            st.markdown("### 📋 Template-Struktur Beschreibung")
+            if template_structure:
+                self._display_hierarchical_structure(template_structure, indent=1)
+            else:
+                st.markdown("*Keine Template-Struktur verfügbar*")
         
         with col2:
-            if st.button("📡 Topic-Mapping", use_container_width=True):
-                st.session_state.settings_section = "topic_mapping"
-                st.rerun()
+            # Documentation section (3 fields stacked)
+            st.markdown("### 📝 Dokumentation (editierbar)")
+            
+            description = st.text_area(
+                "💡 Beschreibung:",
+                value=template.get('documentation', {}).get('description', ''),
+                key=f"desc_{template.get('topic', 'unknown')}",
+                height=80
+            )
+            
+            usage = st.text_area(
+                "🎯 Verwendung:",
+                value=template.get('documentation', {}).get('usage', ''),
+                key=f"usage_{template.get('topic', 'unknown')}",
+                height=80
+            )
+            
+            info = st.text_area(
+                "📋 Info zur Template Struktur, Elemente,...:",
+                value=template.get('documentation', {}).get('info', ''),
+                key=f"info_{template.get('topic', 'unknown')}",
+                height=80
+            )
+            
+            # Save button
+            if st.button("💾 Dokumentation speichern", key=f"save_{template.get('topic', 'unknown')}"):
+                self._save_template_documentation(template.get('topic', 'unknown'), {
+                    'description': description,
+                    'usage': usage,
+                    'info': info
+                })
+                st.success("✅ Dokumentation gespeichert!")
         
-        with col3:
-            if st.button("🏷️ NFC-Mapping", use_container_width=True):
-                st.session_state.settings_section = "nfc_mapping"
-                st.rerun()
+        # Visual separator between top and bottom sections
+        st.markdown("---")
         
-        with col4:
-            if st.button("🏭 Module-ID Mapping", use_container_width=True):
-                st.session_state.settings_section = "module_mapping"
-                st.rerun()
+        # Bottom section: Template Structure | Examples (both as tabs)
+        col1, col2 = st.columns(2)
         
-        with col5:
-            if st.button("📋 MQTT Templates", use_container_width=True):
-                st.session_state.settings_section = "mqtt_templates"
-                st.rerun()
+        with col1:
+            # Template structure as tab
+            if template_structure:
+                template_tab = st.tabs(["Template"])
+                with template_tab[0]:
+                    topic_name = template.get('topic', 'Unknown')
+                    st.markdown(f"**{topic_name}**")
+                    
+                    # Display hierarchical template structure as code (same format as examples)
+                    template_lines = self._generate_hierarchical_json(template_structure)
+                    template_json = "{\n" + "\n".join(template_lines) + "\n}"
+                    try:
+                        # Validate JSON first
+                        json.loads(template_json)
+                        # Use st.code for consistent formatting with examples
+                        st.code(template_json, language="json")
+                    except json.JSONDecodeError:
+                        # Fallback to code display if JSON is invalid
+                        st.code(template_json, language="json")
+            else:
+                st.markdown("*Keine Template-Struktur verfügbar*")
+        
+        with col2:
+            # Example tabs
+            if examples:
+                # Create tabs for examples
+                example_tabs = st.tabs([f"Beispiel {i+1}" for i in range(len(examples))])
+                
+                for i, tab in enumerate(example_tabs):
+                    with tab:
+                        example = examples[i]
+                        
+                        # Display example with session info on same line
+                        st.markdown(f"**Session:** {template.get('session_name', 'Unknown')} | "
+                                   f"**Timestamp:** {template.get('timestamp', 'Unknown')}")
+                        
+                        # Display example as JSON starting with {, with friendly NFC code names
+                        formatted_example = self._format_example_for_display(example)
+                        st.json(formatted_example)
+            else:
+                st.markdown("*Keine Beispiele verfügbar*")
+    
+    def _display_hierarchical_structure(self, template_structure, indent=0):
+        """Display template structure with proper hierarchical indentation and icons"""
+        indent_str = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" * indent
+        
+        for field, placeholder in template_structure.items():
+            if isinstance(placeholder, dict):
+                # Nested object
+                st.markdown(f"{indent_str}📦 **{field}**: Objekt", unsafe_allow_html=True)
+                self._display_hierarchical_structure(placeholder, indent + 1)
+            elif isinstance(placeholder, list):
+                # Array
+                st.markdown(f"{indent_str}📋 **{field}**: Array mit {len(placeholder)} Elementen", unsafe_allow_html=True)
+                if placeholder and isinstance(placeholder[0], dict):
+                    # Array of objects - show first element structure
+                    self._display_hierarchical_structure(placeholder[0], indent + 1)
+            elif isinstance(placeholder, str):
+                if placeholder.startswith('['):
+                    # ENUM field
+                    st.markdown(f"{indent_str}🎯 **{field}**: {placeholder} (ENUM)", unsafe_allow_html=True)
+                elif placeholder.startswith('<'):
+                    # Placeholder field
+                    if 'nfcCode' in placeholder:
+                        st.markdown(f"{indent_str}🏷️ **{field}**: {placeholder} (NFC Code)", unsafe_allow_html=True)
+                    elif 'ts' in placeholder:
+                        st.markdown(f"{indent_str}⏰ **{field}**: {placeholder} (Timestamp)", unsafe_allow_html=True)
+                    elif 'moduleId' in placeholder:
+                        st.markdown(f"{indent_str}🔧 **{field}**: {placeholder} (Module ID)", unsafe_allow_html=True)
+                    else:
+                        st.markdown(f"{indent_str}📝 **{field}**: {placeholder} (Platzhalter)", unsafe_allow_html=True)
+                else:
+                    # Simple field
+                    st.markdown(f"{indent_str}📄 **{field}**: {placeholder}", unsafe_allow_html=True)
+            else:
+                # Other types
+                st.markdown(f"{indent_str}❓ **{field}**: {placeholder}", unsafe_allow_html=True)
+    
+    def _format_example_for_display(self, example_data):
+        """Format example data for display, replacing NFC codes with friendly names"""
+        if isinstance(example_data, dict):
+            formatted = {}
+            for key, value in example_data.items():
+                if isinstance(value, str) and len(value) == 14 and value.startswith('04'):
+                    # Replace NFC code with friendly name for display
+                    from src_orbis.mqtt.tools.nfc_code_manager import get_nfc_manager
+                    nfc_manager = get_nfc_manager()
+                    friendly_name = nfc_manager.get_friendly_name(value)
+                    formatted[key] = f"{friendly_name} ({value})"
+                elif isinstance(value, dict):
+                    formatted[key] = self._format_example_for_display(value)
+                elif isinstance(value, list):
+                    formatted[key] = [self._format_example_for_display(item) if isinstance(item, dict) else item for item in value]
+                else:
+                    formatted[key] = value
+            return formatted
+        return example_data
+    def _generate_hierarchical_json(self, template_structure, indent=2):
+        """Generate hierarchical JSON representation of template structure with proper formatting"""
+        lines = []
+        fields = list(template_structure.items())
+        
+        for i, (field, placeholder) in enumerate(fields):
+            indent_str = " " * indent
+            is_last = i == len(fields) - 1
+            
+            if isinstance(placeholder, dict):
+                # Nested object
+                lines.append(f'{indent_str}"{field}": {{')
+                nested_lines = self._generate_hierarchical_json(placeholder, indent + 2)
+                lines.extend(nested_lines)
+                lines.append(f"{indent_str}}},")
+            elif isinstance(placeholder, list):
+                # Array
+                lines.append(f'{indent_str}"{field}": [')
+                if placeholder and isinstance(placeholder[0], dict):
+                    # Array of objects
+                    lines.append(f'{indent_str}  {{')
+                    nested_lines = self._generate_hierarchical_json(placeholder[0], indent + 4)
+                    lines.extend(nested_lines)
+                    lines.append(f'{indent_str}  }}')
+                else:
+                    lines.append(f'{indent_str}  "{placeholder[0] if placeholder else "element"}"')
+                lines.append(f"{indent_str}],")
+            else:
+                # Simple field - always use quotes for consistency
+                if isinstance(placeholder, str):
+                    lines.append(f'{indent_str}"{field}": "{placeholder}",')
+                else:
+                    lines.append(f'{indent_str}"{field}": "{placeholder}",')
+        
+        # Remove trailing comma from last line
+        if lines and lines[-1].endswith(','):
+            lines[-1] = lines[-1].rstrip(',')
+        
+        return lines
+    
+    def _save_template_documentation(self, topic, documentation):
+        """Save template documentation to analysis JSON"""
+        template_library_dir = "mqtt-data/template_library"
+        
+        # Find which file contains this topic
+        txt_file = os.path.join(template_library_dir, "txt_template_analysis.json")
+        ccu_file = os.path.join(template_library_dir, "ccu_template_analysis.json")
+        
+        for file_path in [txt_file, ccu_file]:
+            if os.path.exists(file_path):
+                try:
+                    with open(file_path, 'r', encoding='utf-8') as f:
+                        data = json.load(f)
+                    
+                    # Update documentation for the topic
+                    if 'templates' in data and topic in data['templates']:
+                        if 'documentation' not in data['templates'][topic]:
+                            data['templates'][topic]['documentation'] = {}
+                        data['templates'][topic]['documentation'].update(documentation)
+                        
+                        # Save back to file
+                        with open(file_path, 'w', encoding='utf-8') as f:
+                            json.dump(data, f, indent=2, ensure_ascii=False)
+                        break
+                except Exception as e:
+                    st.error(f"❌ Fehler beim Speichern: {e}")
 
-        # Initialize settings section if not set
-        if 'settings_section' not in st.session_state:
-            st.session_state.settings_section = "dashboard_settings"
+    def show_settings(self):
+        """Show dashboard settings with sub-navigation"""
+        st.header("⚙️ Einstellungen")
+        st.markdown("Dashboard-Konfiguration und System-Informationen")
+
+        # Sub-navigation for settings
+        settings_tab1, settings_tab2, settings_tab3, settings_tab4, settings_tab5, settings_tab6 = st.tabs([
+            "🔧 Dashboard",
+            "🏭 Module",
+            "🏷️ NFC-Codes",
+            "📡 Topic-Konfiguration",
+            "📚 MQTT-Templates",
+            "📋 Message-Templates"
+        ])
+
+        with settings_tab1:
+            self.show_dashboard_settings()
+
+        with settings_tab2:
+            self.show_module_settings()
+
+        with settings_tab3:
+            self.show_nfc_mapping_settings()
+
+        with settings_tab4:
+            self.show_topic_configuration_settings()
+
+        with settings_tab5:
+            self.show_mqtt_template_settings()
+            
+        with settings_tab6:
+            self.show_message_template_settings()
+
+    def show_dashboard_settings(self):
+        """Show dashboard configuration settings"""
+        st.subheader("🔧 Dashboard-Einstellungen")
+
+        col1, col2 = st.columns(2)
+
+        with col1:
+            # Verbose mode
+            verbose_mode = st.checkbox(
+                "🔍 Verbose-Modus (alle Topics anzeigen)",
+                value=self.verbose_mode,
+                help="Zeigt alle MQTT-Topics an, auch Kamera-Daten",
+            )
+
+            # Auto-refresh
+            auto_refresh = st.checkbox(
+                "🔄 Auto-Refresh",
+                value=True,
+                help="Aktualisiert das Dashboard automatisch",
+            )
+
+            # Refresh interval
+            if auto_refresh:
+                refresh_interval = st.slider(
+                    "⏱️ Refresh-Intervall (Sekunden)",
+                    min_value=5,
+                    max_value=60,
+                    value=30,
+                    step=5,
+                )
+
+        with col2:
+            st.subheader("📊 Dashboard-Statistiken")
+
+            # Dashboard statistics
+            all_modules = self.module_mapping.get_all_modules()
+            st.metric("Aktive Module", len(all_modules))
+            st.metric(
+                "Verfügbare Befehle",
+                sum(
+                    len(module.get("commands", []))
+                    for module in all_modules.values()
+                ),
+            )
+            st.metric("MQTT-Nachrichten gesendet", len(self.mqtt_messages_sent))
+            st.metric("MQTT-Antworten empfangen", len(self.mqtt_responses))
 
         st.markdown("---")
 
-        # Dashboard Settings
-        if st.session_state.settings_section == "dashboard_settings":
-            st.subheader("🏠 Dashboard Einstellungen")
-            st.markdown("Dashboard-Konfiguration und System-Informationen")
+        # System information
+        st.subheader("💻 System-Informationen")
 
-            col1, col2 = st.columns(2)
+        col1, col2 = st.columns(2)
 
-            with col1:
-                st.markdown("**🔧 Dashboard-Einstellungen:**")
+        with col1:
+            st.metric(
+                "Datenbank-Dateien",
+                len(glob.glob(os.path.join(os.path.dirname(self.db_file), "*.db"))),
+            )
+            st.metric("Dashboard-Version", "2.0")
 
-                # Verbose mode
-                verbose_mode = st.checkbox(
-                    "🔍 Verbose-Modus (alle Topics anzeigen)",
-                    value=self.verbose_mode,
-                    help="Zeigt alle MQTT-Topics an, auch Kamera-Daten",
-                )
+        with col2:
+            st.metric("Template-Nachrichten", len(self.template_manager.templates))
+            st.metric("Message-Templates", self.message_template_manager.get_statistics()["total_topics"])
+            st.metric("Session-Datenbanken", len(glob.glob(os.path.join(os.path.dirname(self.db_file), "aps_persistent_traffic_*.db"))))
 
-                # Auto-refresh
-                auto_refresh = st.checkbox(
-                    "🔄 Auto-Refresh",
-                    value=True,
-                    help="Aktualisiert das Dashboard automatisch",
-                )
 
-                # Refresh interval
-                if auto_refresh:
-                    refresh_interval = st.slider(
-                        "⏱️ Refresh-Intervall (Sekunden)",
-                        min_value=5,
-                        max_value=60,
-                        value=30,
-                        step=5,
-                    )
 
-            with col2:
-                st.markdown("**📊 Dashboard-Statistiken:**")
-
-                # Dashboard statistics
-                st.metric("Aktive Module", len(self.aps_modules_extended))
-                st.metric(
-                    "Verfügbare Befehle",
-                    sum(
-                        len(module["commands"])
-                        for module in self.aps_modules_extended.values()
-                    ),
-                )
-                st.metric("MQTT-Nachrichten gesendet", len(self.mqtt_messages_sent))
-                st.metric("MQTT-Antworten empfangen", len(self.mqtt_responses))
-
-            st.markdown("---")
-
-            # System information
-            st.markdown("**💻 System-Informationen:**")
-
-            col1, col2 = st.columns(2)
-
-            with col1:
-                st.metric(
-                    "Datenbank-Dateien",
-                    len(glob.glob(os.path.join(os.path.dirname(self.db_file), "*.db"))),
-                )
-                st.metric("Dashboard-Version", "2.0")
-
-            with col2:
-                st.metric("Template-Nachrichten", len(self.template_manager.templates))
-                st.metric("Session-Datenbanken", len(glob.glob(os.path.join(os.path.dirname(self.db_file), "aps_persistent_traffic_*.db"))))
-
-        # Topic Mapping Configuration
-        if st.session_state.settings_section == "topic_mapping":
-            st.subheader("📡 Topic-Mapping Konfiguration")
-            st.markdown("Benutzerfreundliche Namen für MQTT-Topics")
-
-            # Show current topic mappings
-            all_mappings = get_all_mapped_topics()
+    def show_nfc_mapping_settings(self):
+        """Show NFC code mapping configuration from YAML file"""
+        st.subheader("🏷️ NFC-Code Mapping")
+        st.markdown("Zentrale Konfiguration der NFC-Codes aus `nfc_code_config.yml`")
+        
+        # Load NFC configuration from YAML
+        nfc_config = self.load_nfc_config()
+        
+        if not nfc_config:
+            st.error("❌ NFC-Konfiguration konnte nicht geladen werden")
+            return
+        
+        # Display NFC codes organized by color
+        colors = ["RED", "WHITE", "BLUE"]
+        color_icons = {"RED": "🔴", "WHITE": "⚪", "BLUE": "🔵"}
+        
+        for color in colors:
+            color_codes = {code: info for code, info in nfc_config['nfc_codes'].items() 
+                          if info['color'] == color}
             
-            st.markdown("**Aktuelle Topic-Mappings:**")
-            
-            # Group mappings by type
-            node_red_mappings = {k: v for k, v in all_mappings.items() if "NodeRed" in k}
-            direct_mappings = {k: v for k, v in all_mappings.items() if "NodeRed" not in k and "module/v1/ff" in k}
-            fts_mappings = {k: v for k, v in all_mappings.items() if "fts/v1/ff" in k}
-            ccu_mappings = {k: v for k, v in all_mappings.items() if k.startswith("ccu/")}
-            txt_mappings = {k: v for k, v in all_mappings.items() if k.startswith("/j1/txt/")}
-            
-            # Module Topics (oben)
-            with st.expander("Direct Module Topics", expanded=False):
-                for topic, friendly_name in list(direct_mappings.items())[:10]:
-                    st.markdown(f"• `{topic}` → **{friendly_name}**")
-                if len(direct_mappings) > 10:
-                    st.markdown(f"... und {len(direct_mappings) - 10} weitere")
-            
-            with st.expander("FTS Topics", expanded=False):
-                for topic, friendly_name in fts_mappings.items():
-                    st.markdown(f"• `{topic}` → **{friendly_name}**")
-            
-            with st.expander("CCU Topics", expanded=False):
-                for topic, friendly_name in ccu_mappings.items():
-                    st.markdown(f"• `{topic}` → **{friendly_name}**")
-            
-            # TXT Controller Topics (alphabetisch sortiert und tabellarisch)
-            with st.expander("TXT Controller Topics", expanded=False):
-                if txt_mappings:
-                    # Sort alphabetically by friendly name
-                    sorted_txt_mappings = sorted(txt_mappings.items(), key=lambda x: x[1])
-                    
-                    # Create DataFrame for tabular display
-                    txt_data = []
-                    for topic, friendly_name in sorted_txt_mappings:
-                        txt_data.append({
-                            "Topic": topic,
-                            "Friendly Name": friendly_name
+            if color_codes:
+                with st.expander(f"{color_icons[color]} {color} Werkstücke ({len(color_codes)} Codes)", expanded=True):
+                    # Create table data
+                    table_data = []
+                    for nfc_code, info in color_codes.items():
+                        table_data.append({
+                            "NFC-Code": nfc_code,
+                            "Friendly-ID": info['friendly_id'],
+                            "Quality-Check": info['quality_check'],
+                            "Beschreibung": info['description']
                         })
                     
-                    txt_df = pd.DataFrame(txt_data)
-                    st.dataframe(txt_df, use_container_width=True, hide_index=True)
+                    # Display as table
+                    if table_data:
+                        df = pd.DataFrame(table_data)
+                        st.dataframe(
+                            df,
+                            use_container_width=True,
+                            column_config={
+                                "NFC-Code": st.column_config.TextColumn("NFC-Code", width="medium"),
+                                "Friendly-ID": st.column_config.TextColumn("Friendly-ID", width="small"),
+                                "Quality-Check": st.column_config.SelectboxColumn(
+                                    "Quality-Check",
+                                    options=["OK", "NOT-OK", "PENDING", "FAILED"],
+                                    width="small"
+                                ),
+                                "Beschreibung": st.column_config.TextColumn("Beschreibung", width="large")
+                            }
+                        )
+        
+        # Statistics
+        st.markdown("---")
+        col1, col2, col3, col4 = st.columns(4)
+        
+        with col1:
+            st.metric("Gesamt NFC-Codes", len(nfc_config['nfc_codes']))
+        with col2:
+            red_count = len([c for c in nfc_config['nfc_codes'].values() if c['color'] == 'RED'])
+            st.metric("🔴 RED", red_count)
+        with col3:
+            white_count = len([c for c in nfc_config['nfc_codes'].values() if c['color'] == 'WHITE'])
+            st.metric("⚪ WHITE", white_count)
+        with col4:
+            blue_count = len([c for c in nfc_config['nfc_codes'].values() if c['color'] == 'BLUE'])
+            st.metric("🔵 BLUE", blue_count)
+        
+        # Info about usage
+        st.info("ℹ️ **Hinweis:** Friendly-IDs werden nur für die Dashboard-Anzeige verwendet. In MQTT-Nachrichten werden immer die echten NFC-Codes verwendet.")
+
+    def show_module_settings(self):
+        """Show module configuration settings from YAML file"""
+        st.subheader("🏭 Modul-Konfiguration")
+        st.markdown("Zentrale Konfiguration der Module aus `module_config.yml`")
+        
+        # Load module configuration from ModuleManager
+        module_manager = self.module_mapping
+        all_modules = module_manager.get_all_modules()
+        
+        if not all_modules:
+            st.error("❌ Modul-Konfiguration konnte nicht geladen werden")
+            return
+        
+        # Create table data for all modules in one table
+        table_data = []
+        type_icons = {
+            "Processing": "⚙️",
+            "Quality-Control": "🔍", 
+            "Storage": "📦",
+            "Input/Output": "🚪",
+            "Charging": "🔋",
+            "Transport": "🚗"
+        }
+        
+        for module_id, info in all_modules.items():
+            # Get module type icon
+            module_type = info.get('type', 'Unknown')
+            icon = type_icons.get(module_type, "🏭")
+            
+            # Get commands
+            commands = info.get('commands', [])
+            commands_display = ", ".join(commands) if commands else "Keine Befehle"
+            
+            table_data.append({
+                "Icon + Modul": f"{icon} {info.get('name', '')}",
+                "Modul-ID": module_id,
+                "Name (DE)": info.get('name_lang_de', ''),
+                "Name (EN)": info.get('name_lang_en', ''),
+                "Modul-Type": module_type,
+                "IP-Range": info.get('ip_range', ''),
+                "Befehle": commands_display,
+                "Beschreibung": info.get('description', '')
+            })
+        
+        # Display as single table
+        if table_data:
+            df = pd.DataFrame(table_data)
+            st.dataframe(
+                df,
+                use_container_width=True,
+                column_config={
+                    "Icon + Modul": st.column_config.TextColumn("Icon + Modul", width="medium"),
+                    "Modul-ID": st.column_config.TextColumn("Modul-ID", width="medium"),
+                    "Name (DE)": st.column_config.TextColumn("Name (DE)", width="medium"),
+                    "Name (EN)": st.column_config.TextColumn("Name (EN)", width="medium"),
+                    "Modul-Type": st.column_config.TextColumn("Modul-Type", width="small"),
+                    "IP-Range": st.column_config.TextColumn("IP-Range", width="small"),
+                    "Befehle": st.column_config.TextColumn("Befehle", width="large"),
+                    "Beschreibung": st.column_config.TextColumn("Beschreibung", width="large")
+                }
+            )
+        
+        # Statistics
+        st.markdown("---")
+        col1, col2, col3, col4 = st.columns(4)
+        
+        with col1:
+            st.metric("Gesamt Module", len(all_modules))
+        with col2:
+            processing_count = len(module_manager.get_modules_by_type("Processing"))
+            st.metric("⚙️ Processing", processing_count)
+        with col3:
+            storage_count = len(module_manager.get_modules_by_type("Storage"))
+            st.metric("📦 Storage", storage_count)
+        with col4:
+            other_count = len(all_modules) - processing_count - storage_count
+            st.metric("🏭 Andere", other_count)
+        
+        # IP-Range Overview
+        st.markdown("---")
+        st.subheader("🌐 IP-Range Übersicht")
+        
+        ip_overview_data = []
+        for module_id, info in all_modules.items():
+            ip_range = info.get('ip_range', '')
+            ip_addresses = info.get('ip_addresses', [])
+            ip_count = len(ip_addresses)
+            
+            ip_overview_data.append({
+                "Modul": info.get('name', module_id),
+                "Modul-ID": module_id,
+                "IP-Range": ip_range,
+                "Anzahl IPs": ip_count,
+                "IP-Adressen": ", ".join(ip_addresses) if ip_addresses else "Keine"
+            })
+        
+        if ip_overview_data:
+            ip_df = pd.DataFrame(ip_overview_data)
+            st.dataframe(
+                ip_df,
+                use_container_width=True,
+                column_config={
+                    "Modul": st.column_config.TextColumn("Modul", width="small"),
+                    "Modul-ID": st.column_config.TextColumn("Modul-ID", width="medium"),
+                    "IP-Range": st.column_config.TextColumn("IP-Range", width="small"),
+                    "Anzahl IPs": st.column_config.NumberColumn("Anzahl IPs", width="small"),
+                    "IP-Adressen": st.column_config.TextColumn("IP-Adressen", width="large")
+                }
+            )
+        
+        # Info about usage
+        st.info("ℹ️ **Hinweis:** Diese Konfiguration wird von allen Analysatoren und dem Dashboard verwendet. Änderungen müssen in der `module_config.yml` Datei vorgenommen werden.")
+
+    def show_topic_configuration_settings(self):
+        """Show topic configuration settings from YAML file"""
+        st.subheader("📡 Topic-Konfiguration")
+        st.markdown("Zentrale Konfiguration der MQTT-Topics aus `topic_config.yml`")
+        
+        # Load topic configuration from TopicManager
+        topic_manager = self.topic_manager
+        all_topics = topic_manager.get_all_topics()
+        categories = topic_manager.get_categories()
+        
+        if not all_topics:
+            st.error("❌ Topic-Konfiguration konnte nicht geladen werden")
+            return
+        
+        # Display topics by category in collapsible sections
+        for category_name, category_info in categories.items():
+            category_icon = category_info.get('icon', '📋')
+            category_description = category_info.get('description', '')
+            
+            # Get topics for this category
+            category_topics = topic_manager.get_topics_by_category(category_name)
+            
+            if category_topics:
+                with st.expander(f"{category_icon} {category_name} ({len(category_topics)} Topics)", expanded=False):
+                    st.markdown(f"**Beschreibung:** {category_description}")
+                    
+                    # Check if this category has modules (MODULE or Node-RED)
+                    has_modules = category_name in ["MODULE", "Node-RED"]
+                    has_sub_categories = any(info.get('sub_category') for info in category_topics.values())
+                    
+                    if has_modules or has_sub_categories:
+                        # Get unique modules for this category (if applicable)
+                        modules = set()
+                        if has_modules:
+                            for topic, info in category_topics.items():
+                                module = info.get('module', '')
+                                if module:
+                                    modules.add(module)
+                        
+                        # Get unique sub-categories for this category
+                        sub_categories = set()
+                        for topic, info in category_topics.items():
+                            sub_category = info.get('sub_category', '')
+                            if sub_category:
+                                sub_categories.add(sub_category)
+                        
+                        # Create filter columns
+                        if has_modules:
+                            col1, col2 = st.columns([1, 3])
+                            with col1:
+                                selected_module = st.selectbox(
+                                    "Modul filtern:",
+                                    ["Alle"] + sorted(list(modules)),
+                                    key=f"module_filter_{category_name}"
+                                )
+        
+        with col2:
+                                selected_sub_category = st.selectbox(
+                                    "Sub-Kategorie filtern:",
+                                    ["Alle"] + sorted(list(sub_categories)),
+                                    key=f"sub_category_filter_{category_name}"
+                                )
+                        else:
+                            # Only sub-category filter for categories without modules
+                            selected_module = "Alle"
+                            selected_sub_category = st.selectbox(
+                                "Sub-Kategorie filtern:",
+                                ["Alle"] + sorted(list(sub_categories)),
+                                key=f"sub_category_filter_{category_name}"
+                            )
+                        
+                        # Filter topics based on selection
+                        filtered_topics = {}
+                        for topic, info in category_topics.items():
+                            module = info.get('module', '')
+                            sub_category = info.get('sub_category', '')
+                            
+                            # Apply module filter (only for categories with modules)
+                            if has_modules and selected_module != "Alle" and module != selected_module:
+                                continue
+                            
+                            # Apply sub-category filter
+                            if selected_sub_category != "Alle" and sub_category != selected_sub_category:
+                                continue
+                            
+                            filtered_topics[topic] = info
+                        
+                        category_topics = filtered_topics
+                    
+                    # Create table data for this category
+                    table_data = []
+                    for topic, info in category_topics.items():
+                        # Get sub-category info for modules
+                        sub_category = info.get('sub_category', '')
+                        module = info.get('module', '')
+                        
+                        # Format sub-category display
+                        sub_category_display = ""
+                        if sub_category:
+                            sub_category_icon = topic_manager.get_sub_category_icon(sub_category)
+                            sub_category_description = topic_manager.get_sub_category_description(sub_category)
+                            sub_category_display = f"{sub_category_icon} {sub_category}"
+                        
+                        # Format module display
+                        module_display = f"({module})" if module else ""
+                        
+                        table_data.append({
+                            "Topic": topic,
+                            "Friendly-Name": info.get('friendly_name', topic),
+                            "Sub-Kategorie": sub_category_display,
+                            "Modul": module_display,
+                            "Beschreibung": info.get('description', '')
+                        })
+                    
+                    # Display as table
+                    if table_data:
+                        df = pd.DataFrame(table_data)
+                        st.dataframe(
+                            df,
+                            use_container_width=True,
+                            column_config={
+                                "Topic": st.column_config.TextColumn("Topic", width="large"),
+                                "Friendly-Name": st.column_config.TextColumn("Friendly-Name", width="medium"),
+                                "Sub-Kategorie": st.column_config.TextColumn("Sub-Kategorie", width="small"),
+                                "Modul": st.column_config.TextColumn("Modul", width="small"),
+                                "Beschreibung": st.column_config.TextColumn("Beschreibung", width="large")
+                            }
+                        )
                 else:
-                    st.info("Keine TXT Controller Topics gefunden")
+                        st.info("Keine Topics mit den gewählten Filtern gefunden.")
             
-            # Node-RED Topics (unten)
-            with st.expander("Node-RED Topics", expanded=False):
-                for topic, friendly_name in list(node_red_mappings.items())[:10]:
-                    st.markdown(f"• `{topic}` → **{friendly_name}**")
-                if len(node_red_mappings) > 10:
-                    st.markdown(f"... und {len(node_red_mappings) - 10} weitere")
+        # Statistics
+            st.markdown("---")
+        stats = topic_manager.get_statistics()
+        
+        col1, col2, col3, col4 = st.columns(4)
+        
+        with col1:
+            st.metric("Gesamt Topics", stats['total_topics'])
+        with col2:
+            st.metric("Kategorien", stats['total_categories'])
+        with col3:
+            module_topics = len(topic_manager.get_topics_by_category("MODULE"))
+            st.metric("⚙️ Module Topics", module_topics)
+        with col4:
+            other_topics = stats['total_topics'] - module_topics
+            st.metric("📡 Andere Topics", other_topics)
+        
+        # Sub-category statistics for modules
+        if stats['sub_category_counts']:
+            st.markdown("---")
+            st.subheader("📊 Modul-Sub-Kategorien")
+            
+            sub_category_data = []
+            for sub_category, count in stats['sub_category_counts'].items():
+                icon = topic_manager.get_sub_category_icon(sub_category)
+                description = topic_manager.get_sub_category_description(sub_category)
+                
+                sub_category_data.append({
+                    "Sub-Kategorie": f"{icon} {sub_category}",
+                    "Anzahl Topics": count,
+                    "Beschreibung": description
+                })
+            
+            if sub_category_data:
+                sub_df = pd.DataFrame(sub_category_data)
+                st.dataframe(
+                    sub_df,
+                    use_container_width=True,
+                    column_config={
+                        "Sub-Kategorie": st.column_config.TextColumn("Sub-Kategorie", width="medium"),
+                        "Anzahl Topics": st.column_config.NumberColumn("Anzahl Topics", width="small"),
+                        "Beschreibung": st.column_config.TextColumn("Beschreibung", width="large")
+                    }
+                )
+        
+        # Info about usage
+        st.info("ℹ️ **Hinweis:** Diese Konfiguration wird für Topic-Mappings und Friendly-Names im Dashboard verwendet. Änderungen müssen in der `topic_config.yml` Datei vorgenommen werden.")
 
-        # NFC Mapping Configuration
-        elif st.session_state.settings_section == "nfc_mapping":
-            st.subheader("🏷️ NFC-Mapping Konfiguration")
-            st.markdown("Mapping zwischen NFC-Codes und benutzerfreundlichen Werkstück-IDs")
+    def load_nfc_config(self):
+        """Load NFC configuration from YAML file"""
+        try:
+            config_path = os.path.join(
+                os.path.dirname(__file__), "../config/nfc_code_config.yml"
+            )
+            with open(config_path, "r", encoding="utf-8") as f:
+                import yaml
+                return yaml.safe_load(f)
+        except FileNotFoundError:
+            st.error(f"❌ NFC-Konfigurationsdatei nicht gefunden: {config_path}")
+            return None
+        except Exception as e:
+            st.error(f"❌ Fehler beim Laden der NFC-Konfiguration: {e}")
+            return None
 
-            # NFC Mapping Table
-            nfc_mapping_data = {
-                "NFC-Code": [
-                    "040a8dca341291", "04d78cca341290", "04808dca341291", "04c08dca341291",
-                    "04e08dca341291", "04f08dca341291", "04a08dca341291", "04b08dca341291",
-                    "04798eca341290", "047a8eca341290", "047b8eca341290", "047c8eca341290",
-                    "047d8eca341290", "047e8eca341290", "047f8eca341290", "04708eca341290",
-                    "04718eca341290", "04728eca341290", "04738eca341290", "04748eca341290",
-                    "04758eca341290", "04768eca341290", "04778eca341290", "04788eca341290"
-                ],
-                "Friendly ID": [
-                    "R1", "R2", "R3", "R4", "R5", "R6", "R7", "R8",
-                    "W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8",
-                    "B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8"
-                ],
-                "Farbe": [
-                    "🔴 ROT", "🔴 ROT", "🔴 ROT", "🔴 ROT", "🔴 ROT", "🔴 ROT", "🔴 ROT", "🔴 ROT",
-                    "⚪ WEISS", "⚪ WEISS", "⚪ WEISS", "⚪ WEISS", "⚪ WEISS", "⚪ WEISS", "⚪ WEISS", "⚪ WEISS",
-                    "🔵 BLAU", "🔵 BLAU", "🔵 BLAU", "🔵 BLAU", "🔵 BLAU", "🔵 BLAU", "🔵 BLAU", "🔵 BLAU"
-                ]
+    def show_mqtt_template_settings(self):
+        """Show MQTT template configuration"""
+        st.subheader("📚 MQTT-Template Konfiguration")
+        st.markdown("Template-Nachrichten und Analyse-Einstellungen")
+
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.markdown("**📋 Verfügbare Templates:**")
+            
+            # Template categories
+            template_categories = {
+                "TXT": "TXT Controller Templates",
+                "CCU": "CCU Templates", 
+                "MODUL": "Module Templates",
+                "Node-RED": "Node-RED Templates",
+                "FTS": "FTS Templates"
             }
             
-            nfc_df = pd.DataFrame(nfc_mapping_data)
-            st.dataframe(nfc_df, use_container_width=True)
+            for category, description in template_categories.items():
+                with st.expander(f"📂 {category} - {description}", expanded=False):
+                    st.markdown(f"**Beschreibung:** {description}")
+                    st.markdown("**Status:** ⏳ Noch nicht analysiert")
+                    st.markdown("**Aktion:** Verwende separate Analyse-Tools")
+        
+        with col2:
+            st.markdown("**🔧 Analyse-Einstellungen:**")
             
-            st.info("💡 **Hinweis:** NFC-Codes werden direkt als Workpiece-ID in MQTT-Nachrichten verwendet.")
-
-        # Module ID Mapping Configuration
-        elif st.session_state.settings_section == "module_mapping":
-            st.subheader("🏭 Module-ID Mapping Konfiguration")
-            st.markdown("Mapping zwischen Serial Numbers und benutzerfreundlichen Modul-Namen")
-
-            # Module ID Mapping Table
-            module_mapping_data = {
-                "Serial Number": [
-                    "SVR3QA2098", "SVR4H76449", "SVR4H76530", "SVR3QA0022", 
-                    "SVR4H73275", "5iO4", "CHRG0"
-                ],
-                "Abkürzung": [
-                    "MILL", "DRILL", "AIQS", "HBW", "DPS", "FTS", "CHRG"
-                ],
-                "Deutsche Bezeichnung": [
-                    "Fräse", "Bohrer", "KI-Qualitätssicherung", "Hochregallager", 
-                    "Delivery & Pickup Station", "Fahrerloses Transportsystem", "Ladestation"
-                ],
-                "Englische Bezeichnung": [
-                    "Milling Machine", "Drilling Machine", "AI Quality Control", "High Bay Warehouse",
-                    "Delivery & Pickup Station", "Automated Guided Vehicle", "Charging Station"
-                ],
-                "IP-Adresse": [
-                    "192.168.0.40", "192.168.0.50", "192.168.0.70", "192.168.0.80",
-                    "192.168.0.90", "192.168.0.60", "192.168.0.65"
-                ]
-            }
-            
-            module_df = pd.DataFrame(module_mapping_data)
-            st.dataframe(module_df, use_container_width=True)
-            
-            st.info("💡 **Hinweis:** Serial Numbers werden in MQTT-Topics verwendet (z.B. `module/v1/ff/SVR3QA2098/order`).")
-
-        # MQTT Templates Configuration
-        elif st.session_state.settings_section == "mqtt_templates":
-            st.subheader("📋 MQTT Template Library")
-            st.markdown("Persistente Template-Bibliothek mit Analyse-Ergebnissen und Dokumentation")
-            
-            # Check if template library is available
-            if not self.template_library:
-                st.error("❌ Template Library Manager nicht verfügbar")
-                st.info("💡 Stelle sicher, dass `template_library_manager.py` vorhanden ist.")
-                return
-            
-            # Template Library Overview
-            library_stats = self.template_library.get_library_stats()
-            
-            col1, col2, col3, col4 = st.columns(4)
-            with col1:
-                st.metric("📋 Templates", sum(count['count'] for count in library_stats['template_counts']))
-            with col2:
-                st.metric("📨 Nachrichten", library_stats['total_messages'])
-            with col3:
-                txt_count = next((count['count'] for count in library_stats['template_counts'] if count['template_type'] == 'txt'), 0)
-                st.metric("🔍 TXT Templates", txt_count)
-            with col4:
-                ccu_count = next((count['count'] for count in library_stats['template_counts'] if count['template_type'] == 'ccu'), 0)
-                st.metric("🏭 CCU Templates", ccu_count)
-            
-            # Analysis History
-            analysis_sessions = self.template_library.get_analysis_sessions()
-            if analysis_sessions:
-                st.markdown("**📈 Letzte Analysen:**")
-                for session in analysis_sessions[:3]:  # Show last 3 sessions
-                    st.info(f"**{session['analysis_type'].upper()}:** {session['session_name']} "
-                           f"({session['topics_count']} Topics, {session['messages_count']} Nachrichten) "
-                           f"- {session['created_at']}")
+            # Analysis configuration
+            st.markdown("**Separate Analyse-Tools:**")
+            st.code("TXT: python3 src_orbis/mqtt/tools/txt_template_analyzer.py")
+            st.code("CCU: python3 src_orbis/mqtt/tools/ccu_template_analyzer.py")
+            st.code("MODUL: python3 src_orbis/mqtt/tools/module_template_analyzer.py")
+            st.code("Node-RED: python3 src_orbis/mqtt/tools/node_red_template_analyzer.py")
+            st.code("FTS: python3 src_orbis/mqtt/tools/fts_template_analyzer.py")
             
             st.markdown("---")
-            st.info("💡 Alle analysierten Templates werden in der Template Library gespeichert und angezeigt")
-                                st.markdown("---")
-                                st.markdown("**📝 Dokumentation bearbeiten:**")
-                                
-                                # Create session state keys for this topic
-                                topic_key = topic.replace('/', '_').replace(':', '_')
-                                desc_key = f"desc_{topic_key}"
-                                usage_key = f"usage_{topic_key}"
-                                critical_key = f"critical_{topic_key}"
-                                workflow_key = f"workflow_{topic_key}"
-                                
-                                # Initialize with existing values
-                                if desc_key not in st.session_state:
-                                    st.session_state[desc_key] = result.get('description', '')
-                                if usage_key not in st.session_state:
-                                    st.session_state[usage_key] = result.get('usage', '')
-                                if critical_key not in st.session_state:
-                                    st.session_state[critical_key] = ', '.join(result.get('critical_for', []))
-                                if workflow_key not in st.session_state:
-                                    st.session_state[workflow_key] = result.get('workflow_step', '')
-                                
-                                # Input fields
-                                col1, col2 = st.columns(2)
-                                
-                                with col1:
-                                    st.session_state[desc_key] = st.text_area(
-                                        "💡 Beschreibung:",
-                                        value=st.session_state[desc_key],
-                                        key=f"textarea_{desc_key}",
-                                        height=80,
-                                        help="Wofür wird diese Nachricht verwendet?"
-                                    )
-                                    
-                                    st.session_state[usage_key] = st.text_area(
-                                        "🎯 Verwendung:",
-                                        value=st.session_state[usage_key],
-                                        key=f"textarea_{usage_key}",
-                                        height=60,
-                                        help="Wie wird diese Nachricht im Workflow verwendet?"
-                                    )
-                                
-                                with col2:
-                                    st.session_state[critical_key] = st.text_area(
-                                        "⚠️ Kritisch für:",
-                                        value=st.session_state[critical_key],
-                                        key=f"textarea_{critical_key}",
-                                        height=60,
-                                        help="Komma-getrennte Liste wichtiger Anwendungen"
-                                    )
-                                    
-                                    st.session_state[workflow_key] = st.text_input(
-                                        "🔄 Workflow-Schritt:",
-                                        value=st.session_state[workflow_key],
-                                        key=f"input_{workflow_key}",
-                                        help="Welcher Schritt im Fertigungsprozess?"
-                                    )
-                                
-                                # Save button
-                                if st.button("💾 Dokumentation speichern", key=f"save_{topic_key}"):
-                                    # Here you could save to a file or database
-                                    st.success(f"✅ Dokumentation für {topic} gespeichert!")
-                                
-                                # Template and Example side by side
-                                if result['template'] and result['examples']:
-                                    col1, col2 = st.columns(2)
-                                    
-                                    with col1:
-                                        st.markdown("**📋 Template:**")
-                                        st.json(result['template'])
-                                    
-                                    with col2:
-                                        st.markdown("**📄 Beispiel-Nachricht:**")
-                                        example = result['examples'][0]  # First example
-                                        st.markdown(f"*Session: {example['session']}*")
-                                        st.markdown(f"*Timestamp: {example['timestamp']}*")
-                                        st.json(example['payload'])
-                                else:
-                                    if result['template']:
-                                        st.markdown("**📋 Template:**")
-                                        st.json(result['template'])
-                                
-                                if result['variable_fields']:
-                                    st.markdown(f"**🔧 Variable Felder:** {', '.join(result['variable_fields'])}")
-                                
-                                # Show enum fields if available
-                                if hasattr(result, 'enum_fields') and result['enum_fields']:
-                                    st.markdown("**📋 Enum-Felder:**")
-                                    for field, values in result['enum_fields'].items():
-                                        st.markdown(f"  • **{field}:** `{', '.join(values)}`")
-                    
-                    # Function Output Topics (f/o)
-                    st.markdown("**📤 Function Output Topics (f/o):**")
-                    fo_topics = [topic for topic in results.keys() if "/f/o/" in topic]
-                    
-                    for topic in fo_topics:
-                        result = results[topic]
-                        if result['message_count'] > 0:
-                            with st.expander(f"{topic} ({result['message_count']} Nachrichten)", expanded=False):
-                                st.markdown(f"**Sessions:** {len(result['sessions'])}")
-                                
-                                # Detailed Topic Information
-                                if hasattr(result, 'description') and result['description']:
-                                    st.info(f"💡 **Beschreibung:** {result['description']}")
-                                
-                                if hasattr(result, 'usage') and result['usage']:
-                                    st.success(f"🎯 **Verwendung:** {result['usage']}")
-                                
-                                if hasattr(result, 'critical_for') and result['critical_for']:
-                                    st.warning(f"⚠️ **Kritisch für:** {', '.join(result['critical_for'])}")
-                                
-                                if hasattr(result, 'workflow_step') and result['workflow_step']:
-                                    st.info(f"🔄 **Workflow-Schritt:** {result['workflow_step']}")
-                                
-                                # Interactive Documentation Editor
-                                st.markdown("---")
-                                st.markdown("**📝 Dokumentation bearbeiten:**")
-                                
-                                # Create session state keys for this topic
-                                topic_key = topic.replace('/', '_').replace(':', '_')
-                                desc_key = f"desc_{topic_key}"
-                                usage_key = f"usage_{topic_key}"
-                                critical_key = f"critical_{topic_key}"
-                                workflow_key = f"workflow_{topic_key}"
-                                
-                                # Initialize with existing values
-                                if desc_key not in st.session_state:
-                                    st.session_state[desc_key] = result.get('description', '')
-                                if usage_key not in st.session_state:
-                                    st.session_state[usage_key] = result.get('usage', '')
-                                if critical_key not in st.session_state:
-                                    st.session_state[critical_key] = ', '.join(result.get('critical_for', []))
-                                if workflow_key not in st.session_state:
-                                    st.session_state[workflow_key] = result.get('workflow_step', '')
-                                
-                                # Input fields
-                                col1, col2 = st.columns(2)
-                                
-                                with col1:
-                                    st.session_state[desc_key] = st.text_area(
-                                        "💡 Beschreibung:",
-                                        value=st.session_state[desc_key],
-                                        key=f"textarea_{desc_key}",
-                                        height=80,
-                                        help="Wofür wird diese Nachricht verwendet?"
-                                    )
-                                    
-                                    st.session_state[usage_key] = st.text_area(
-                                        "🎯 Verwendung:",
-                                        value=st.session_state[usage_key],
-                                        key=f"textarea_{usage_key}",
-                                        height=60,
-                                        help="Wie wird diese Nachricht im Workflow verwendet?"
-                                    )
-                                
-                                with col2:
-                                    st.session_state[critical_key] = st.text_area(
-                                        "⚠️ Kritisch für:",
-                                        value=st.session_state[critical_key],
-                                        key=f"textarea_{critical_key}",
-                                        height=60,
-                                        help="Komma-getrennte Liste wichtiger Anwendungen"
-                                    )
-                                    
-                                    st.session_state[workflow_key] = st.text_input(
-                                        "🔄 Workflow-Schritt:",
-                                        value=st.session_state[workflow_key],
-                                        key=f"input_{workflow_key}",
-                                        help="Welcher Schritt im Fertigungsprozess?"
-                                    )
-                                
-                                # Save button
-                                if st.button("💾 Dokumentation speichern", key=f"save_{topic_key}"):
-                                    st.success(f"✅ Dokumentation für {topic} gespeichert!")
-                                
-                                # Template and Example side by side
-                                if result['template'] and result['examples']:
-                                    col1, col2 = st.columns(2)
-                                    
-                                    with col1:
-                                        st.markdown("**📋 Template:**")
-                                        st.json(result['template'])
-                                    
-                                    with col2:
-                                        st.markdown("**📄 Beispiel-Nachricht:**")
-                                        example = result['examples'][0]  # First example
-                                        st.markdown(f"*Session: {example['session']}*")
-                                        st.markdown(f"*Timestamp: {example['timestamp']}*")
-                                        st.json(example['payload'])
-                                else:
-                                    if result['template']:
-                                        st.markdown("**📋 Template:**")
-                                        st.json(result['template'])
-                                
-                                if result['variable_fields']:
-                                    st.markdown(f"**🔧 Variable Felder:** {', '.join(result['variable_fields'])}")
-                                
-                                # Show enum fields if available
-                                if hasattr(result, 'enum_fields') and result['enum_fields']:
-                                    st.markdown("**📋 Enum-Felder:**")
-                                    for field, values in result['enum_fields'].items():
-                                        st.markdown(f"  • **{field}:** `{', '.join(values)}`")
-                
-                # Display CCU analysis results
-                if hasattr(st.session_state, 'ccu_analysis_results'):
-                    st.markdown("---")
-                    st.markdown("**🏭 CCU Template Analyse:**")
-                    
-                    ccu_results = st.session_state.ccu_analysis_results
-                    
-                    # CCU Summary
-                    ccu_total_messages = sum(r['message_count'] for r in ccu_results.values())
-                    ccu_active_topics = sum(1 for r in ccu_results.values() if r['message_count'] > 0)
-                    
-                    col1, col2, col3 = st.columns(3)
-                    with col1:
-                        st.metric("CCU Topics", len(ccu_results))
-                    with col2:
-                        st.metric("Aktive CCU Topics", ccu_active_topics)
-                    with col3:
-                        st.metric("CCU Nachrichten", ccu_total_messages)
-                    
-                    # CCU Topics by category
-                    order_topics = [topic for topic in ccu_results.keys() if "order" in topic]
-                    state_topics = [topic for topic in ccu_results.keys() if "state" in topic]
-                    pairing_topics = [topic for topic in ccu_results.keys() if "pairing" in topic]
-                    other_topics = [topic for topic in ccu_results.keys() if "order" not in topic and "state" not in topic and "pairing" not in topic]
-                    
-                    # Order Topics
-                    if order_topics:
-                        st.markdown("**📋 Order Management Topics:**")
-                        for topic in order_topics:
-                            result = ccu_results[topic]
-                            if result['message_count'] > 0:
-                                with st.expander(f"{topic} ({result['message_count']} Nachrichten)", expanded=False):
-                                    st.markdown(f"**Sessions:** {len(result['sessions'])}")
-                                    st.info(f"💡 **Beschreibung:** {result['description']}")
-                                    
-                                    if result['template']:
-                                        st.markdown("**📋 Template:**")
-                                        st.json(result['template'])
-                                    
-                                    if result['variable_fields']:
-                                        st.markdown(f"**🔧 Variable Felder:** {', '.join(result['variable_fields'])}")
-                                    
-                                    if result['examples']:
-                                        st.markdown("**📄 Beispiel-Nachricht:**")
-                                        example = result['examples'][0]
-                                        st.json(example)
-                    
-                    # State Topics
-                    if state_topics:
-                        st.markdown("**🏭 State Management Topics:**")
-                        for topic in state_topics:
-                            result = ccu_results[topic]
-                            if result['message_count'] > 0:
-                                with st.expander(f"{topic} ({result['message_count']} Nachrichten)", expanded=False):
-                                    st.markdown(f"**Sessions:** {len(result['sessions'])}")
-                                    st.info(f"💡 **Beschreibung:** {result['description']}")
-                                    
-                                    if result['template']:
-                                        st.markdown("**📋 Template:**")
-                                        st.json(result['template'])
-                                    
-                                    if result['variable_fields']:
-                                        st.markdown(f"**🔧 Variable Felder:** {', '.join(result['variable_fields'])}")
-                    
-                    # Other Topics
-                    if other_topics:
-                        st.markdown("**🔧 Andere CCU Topics:**")
-                        for topic in other_topics:
-                            result = ccu_results[topic]
-                            if result['message_count'] > 0:
-                                with st.expander(f"{topic} ({result['message_count']} Nachrichten)", expanded=False):
-                                    st.markdown(f"**Sessions:** {len(result['sessions'])}")
-                                    st.info(f"💡 **Beschreibung:** {result['description']}")
-                                    
-                                    if result['template']:
-                                        st.markdown("**📋 Template:**")
-                                        st.json(result['template'])
-                                    
-                                    if result['variable_fields']:
-                                        st.markdown(f"**🔧 Variable Felder:** {', '.join(result['variable_fields'])}")
-                
-                # Display Template Library
-                st.markdown("---")
-                st.markdown("**📚 Template Library (Persistente Templates):**")
-                
-                # Get all templates from library
-                all_templates = self.template_library.get_all_templates()
-                
-                if all_templates:
-                    # Filter options
-                    col1, col2 = st.columns(2)
-                    with col1:
-                        template_type_filter = st.selectbox(
-                            "Template-Typ filtern:",
-                            ["Alle", "txt", "ccu"],
-                            key="template_type_filter"
-                        )
-                    
-                    with col2:
-                        search_term = st.text_input("Template suchen:", key="template_search")
-                    
-                    # Filter templates
-                    filtered_templates = all_templates
-                    if template_type_filter != "Alle":
-                        filtered_templates = [t for t in filtered_templates if t['template_type'] == template_type_filter]
-                    
-                    if search_term:
-                        filtered_templates = [t for t in filtered_templates 
-                                           if search_term.lower() in t['template_name'].lower() 
-                                           or search_term.lower() in t['topic'].lower()]
-                    
-                    # Display templates
-                    for template in filtered_templates:
-                        with st.expander(f"📋 {template['template_name']} ({template['topic']})", expanded=False):
-                            col1, col2 = st.columns([2, 1])
-                            
-                            with col1:
-                                st.markdown(f"**Topic:** `{template['topic']}`")
-                                st.markdown(f"**Typ:** {template['template_type'].upper()}")
-                                st.markdown(f"**Nachrichten:** {template['message_count']}")
-                                st.markdown(f"**Sessions:** {template['sessions_count']}")
-                                
-                                # Template data
-                                if template['template_data'].get('template'):
-                                    st.markdown("**📋 Template:**")
-                                    st.json(template['template_data']['template'])
-                                
-                                # Variable fields
-                                if template['template_data'].get('variable_fields'):
-                                    st.markdown(f"**🔧 Variable Felder:** {', '.join(template['template_data']['variable_fields'])}")
-                                
-                                # Examples - Show only payload content in visually separated area
-                                if template['template_data'].get('examples'):
-                                    st.markdown("---")
-                                    st.markdown("**📄 Beispielnachrichten:**")
-                                    for i, example in enumerate(template['template_data']['examples'][:2]):
-                                        with st.container():
-                                            st.markdown(f"**Beispiel {i+1}:**")
-                                            
-                                            # Extract metadata if available
-                                            metadata = {}
-                                            if isinstance(example, dict) and 'session' in example:
-                                                metadata['session'] = example['session']
-                                                example = example.get('payload', example)
-                                            if isinstance(example, dict) and 'timestamp' in example:
-                                                metadata['timestamp'] = example['timestamp']
-                                                example = example.get('payload', example)
-                                            
-                                            # Create a visually separated area for examples
-                                            st.markdown("""
-                                            <div style="
-                                                background-color: #f0f2f6; 
-                                                border: 1px solid #e0e0e0; 
-                                                border-radius: 5px; 
-                                                padding: 10px; 
-                                                margin: 5px 0;
-                                                font-family: monospace;
-                                                font-size: 12px;
-                                            ">
-                                            """, unsafe_allow_html=True)
-                                            
-                                            # Show metadata in gray area if available
-                                            if metadata:
-                                                st.markdown("**📋 Meta-Informationen:**")
-                                                for key, value in metadata.items():
-                                                    st.markdown(f"*{key}:* {value}")
-                                                st.markdown("---")
-                                            
-                                            # Show only the payload
-                                            st.markdown("**📄 Payload:**")
-                                            st.json(example)
-                                            st.markdown("</div>", unsafe_allow_html=True)
-                            
-                            with col2:
-                                st.markdown("**📝 Dokumentation:**")
-                                
-                                # Documentation editor
-                                doc = template['documentation']
-                                
-                                # Description
-                                new_desc = st.text_area(
-                                    "💡 Beschreibung:",
-                                    value=doc.get('description', ''),
-                                    key=f"desc_{template['template_name']}",
-                                    height=80
-                                )
-                                
-                                # Usage
-                                new_usage = st.text_area(
-                                    "🎯 Verwendung:",
-                                    value=doc.get('usage', ''),
-                                    key=f"usage_{template['template_name']}",
-                                    height=60
-                                )
-                                
-                                # Critical for
-                                new_critical = st.text_input(
-                                    "⚠️ Kritisch für:",
-                                    value=', '.join(doc.get('critical_for', [])),
-                                    key=f"critical_{template['template_name']}"
-                                )
-                                
-                                # Workflow step
-                                new_workflow = st.text_input(
-                                    "🔄 Workflow-Schritt:",
-                                    value=doc.get('workflow_step', ''),
-                                    key=f"workflow_{template['template_name']}"
-                                )
-                                
-                                # Save documentation button
-                                if st.button("💾 Dokumentation speichern", key=f"save_{template['template_name']}"):
-                                    updated_doc = {
-                                        'description': new_desc,
-                                        'usage': new_usage,
-                                        'critical_for': [x.strip() for x in new_critical.split(',') if x.strip()],
-                                        'workflow_step': new_workflow
-                                    }
-                                    self.template_library.update_template_documentation(template['template_name'], updated_doc)
-                                    st.success("✅ Dokumentation gespeichert!")
-                                    st.rerun()
-                                
-                                st.markdown(f"**📅 Erstellt:** {template['created_at']}")
-                                st.markdown(f"**🔄 Aktualisiert:** {template['updated_at']}")
-                else:
-                    st.info("📚 Keine Templates in der Library vorhanden. Führe zuerst eine Analyse durch.")
-                
-                # Show latest report
-                if st.session_state.get('show_latest_report', False):
-                    report_files = glob.glob("txt_template_analysis_*.md")
-                    if report_files:
-                        latest_report = max(report_files, key=os.path.getctime)
-                        with open(latest_report, 'r', encoding='utf-8') as f:
-                            report_content = f.read()
-                        
-                        st.markdown("**📄 Neuester Analyse-Report:**")
-                        st.markdown(report_content)
-                    else:
-                        st.warning("Keine Analyse-Reports gefunden. Führe zuerst eine Analyse durch.")
-                    
-                    st.session_state.show_latest_report = False
-                
-            except ImportError as e:
-                st.error(f"❌ Fehler beim Import des TXT Template Analyzers: {e}")
-                st.info("💡 Stelle sicher, dass das Tool verfügbar ist: `src_orbis/mqtt/tools/txt_template_analyzer.py`")
-            except Exception as e:
-                st.error(f"❌ Fehler bei der Template-Analyse: {e}")
+            
+            # Template statistics
+            st.metric("Template-Kategorien", len(template_categories))
+            st.metric("Analysierte Templates", 0)  # Will be updated when analysis is done
+            st.metric("Template Library", "Bereit")
 
     def show_module_control_rows(self):
         """Show module control in rows with buttons"""
@@ -3011,11 +3106,13 @@ class APSDashboard:
         st.markdown("---")
 
         # Show each module in a row with control buttons
-        for module_key, module_info in self.aps_modules_extended.items():
+        all_modules = self.module_mapping.get_all_modules()
+        for module_id, module_info in all_modules.items():
             with st.container():
                 # Module header with icon
                 # Use get_module_icon function for proper icon handling
-                module_key_upper = module_key.upper()
+                module_name = module_info.get('name', module_id)
+                module_key_upper = module_name.upper()
                 module_icon = get_module_icon(module_key_upper)
                 
                 # Display module header with icon
@@ -3041,7 +3138,10 @@ class APSDashboard:
                     st.markdown(f"**Typ:** {module_info['type']}")
                 
                 with col2:
-                    st.markdown(f"**IP:** {module_info['ip']}")
+                    # Get first available IP address from ip_addresses list
+                    ip_addresses = module_info.get('ip_addresses', [])
+                    current_ip = ip_addresses[0] if ip_addresses else "Unknown"
+                    st.markdown(f"**IP:** {current_ip}")
                     # Connection status with enhanced icons
                     if st.session_state.get("mqtt_connected", False):
                         st.success(f"{get_status_icon('available')} Online")
@@ -3060,16 +3160,17 @@ class APSDashboard:
                     st.markdown("**Steuerung:**")
                     
                     # Special sequence control for DRILL, MILL, and AIQS modules
-                    if module_key in ["DRILL", "MILL", "AIQS"]:
-                        if module_key == "DRILL":
+                    module_name = module_info.get('name', module_id)
+                    if module_name in ["DRILL", "MILL", "AIQS"]:
+                        if module_name == "DRILL":
                             st.markdown("**Steuerung DRILL-Sequenz:**")
                             process_command = "DRILL"
                             process_icon = "⚙️"
-                        elif module_key == "MILL":
+                        elif module_name == "MILL":
                             st.markdown("**Steuerung MILL-Sequenz:**")
                             process_command = "MILL"
                             process_icon = "⚙️"
-                        elif module_key == "AIQS":
+                        elif module_name == "AIQS":
                             st.markdown("**Steuerung AIQS-Sequenz:**")
                             process_command = "CHECK_QUALITY"
                             process_icon = "🔍"
@@ -3078,7 +3179,7 @@ class APSDashboard:
                         workpiece_color = st.selectbox(
                             "Werkstück-Farbe:",
                             ["WHITE", "RED", "BLUE"],
-                            key=f"{module_key.lower()}_color_{module_key}",
+                            key=f"{module_name.lower()}_color_{module_id}",
                             index=0  # Default to WHITE
                         )
                         
@@ -3096,7 +3197,7 @@ class APSDashboard:
                         workpiece_id = st.selectbox(
                             "Werkstück:",
                             workpiece_options,
-                            key=f"{module_key.lower()}_workpiece_{module_key}",
+                            key=f"{module_name.lower()}_workpiece_{module_id}",
                             index=default_index
                         )
                         
@@ -3110,32 +3211,32 @@ class APSDashboard:
                         with col_seq1:
                             if st.button(
                                 "📤 PICK",
-                                key=f"{module_key.lower()}_pick_{module_key}",
+                                key=f"{module_name.lower()}_pick_{module_id}",
                                 use_container_width=True,
                                 type="primary"
                             ):
-                                self.send_drill_sequence_command(module_key, "PICK", workpiece_color, nfc_code)
+                                self.send_drill_sequence_command(module_id, "PICK", workpiece_color, nfc_code)
                         
                         with col_seq2:
                             if st.button(
                                 f"{process_icon} {process_command}",
-                                key=f"{module_key.lower()}_process_{module_key}",
+                                key=f"{module_name.lower()}_process_{module_id}",
                                 use_container_width=True,
                                 type="primary"
                             ):
-                                self.send_drill_sequence_command(module_key, process_command, workpiece_color, nfc_code)
+                                self.send_drill_sequence_command(module_id, process_command, workpiece_color, nfc_code)
                         
                         with col_seq3:
                             if st.button(
                                 "📥 DROP",
-                                key=f"{module_key.lower()}_drop_{module_key}",
+                                key=f"{module_name.lower()}_drop_{module_id}",
                                 use_container_width=True,
                                 type="primary"
                             ):
-                                self.send_drill_sequence_command(module_key, "DROP", workpiece_color, nfc_code)
+                                self.send_drill_sequence_command(module_id, "DROP", workpiece_color, nfc_code)
                     
                     # FTS-specific control
-                    elif module_key == "FTS":
+                    elif module_name == "FTS":
                         st.markdown("**🚗 FTS-Steuerung:**")
                         
                         # Simple status display (always available)
@@ -3186,199 +3287,53 @@ class APSDashboard:
                     # Standard control buttons for all other modules (HBW, DPS, etc.)
                     else:
                         button_order = []
+                    
+                    # Ensure button_order is always initialized
+                    if 'button_order' not in locals():
+                        button_order = []
+                    
+                    # Add PICK first
+                    if "PICK" in module_info["commands"]:
+                        button_order.append("PICK")
+                    
+                    # Add PROCESS commands (MILL, DRILL, CHECK_QUALITY)
+                    process_commands = ["MILL", "DRILL", "CHECK_QUALITY"]
+                    for cmd in process_commands:
+                        if cmd in module_info["commands"] and cmd not in button_order:
+                            button_order.append(cmd)
+                    
+                    # Add other commands (STORE, etc.)
+                    for cmd in module_info["commands"]:
+                        if cmd not in button_order:
+                            button_order.append(cmd)
+                    
+                    # Add DROP last
+                    if "DROP" in module_info["commands"]:
+                        if "DROP" in button_order:
+                            button_order.remove("DROP")
+                        button_order.append("DROP")
+                    
+                    # Ensure unique commands only
+                    button_order = list(dict.fromkeys(button_order))  # Remove duplicates while preserving order
+                    
+                    # Create buttons in order
+                    for command in button_order:
+                        button_text = f"▶️ {command}"
+                        if command in ["MILL", "DRILL"]:
+                            button_text = f"⚙️ {command}"
+                        elif command == "CHECK_QUALITY":
+                            button_text = f"🔍 {command}"
+                        elif command == "STORE":
+                            button_text = f"📦 {command}"
                         
-                        # Add PICK first
-                        if "PICK" in module_info["commands"]:
-                            button_order.append("PICK")
-                        
-                        # Add PROCESS commands (MILL, DRILL, CHECK_QUALITY)
-                        process_commands = ["MILL", "DRILL", "CHECK_QUALITY"]
-                        for cmd in process_commands:
-                            if cmd in module_info["commands"]:
-                                button_order.append(cmd)
-                        
-                        # Add other commands (STORE, etc.)
-                        for cmd in module_info["commands"]:
-                            if cmd not in button_order:
-                                button_order.append(cmd)
-                        
-                        # Add DROP last
-                        if "DROP" in module_info["commands"]:
-                            if "DROP" in button_order:
-                                button_order.remove("DROP")
-                            button_order.append("DROP")
-                        
-                        # Create buttons in order
-                        for command in button_order:
-                            button_text = f"▶️ {command}"
-                            if command in ["MILL", "DRILL"]:
-                                button_text = f"⚙️ {command}"
-                            elif command == "CHECK_QUALITY":
-                                button_text = f"🔍 {command}"
-                            elif command == "STORE":
-                                button_text = f"📦 {command}"
-                            
-                            if st.button(
-                                button_text,
-                                key=f"control_{module_key}_{command}",
-                                use_container_width=True,
-                            ):
-                                self.send_module_command(module_key, command)
+                        if st.button(
+                            button_text,
+                            key=f"control_{module_id}_{command}",
+                            use_container_width=True,
+                        ):
+                            self.send_module_command(module_id, command)
                 
                 st.markdown("---")
-
-    def _show_replay_controls(self, messages_df, order_data):
-        """Show replay controls for session playback"""
-        st.subheader("🎬 Replay-Steuerung")
-        
-        # Filter out camera messages unless verbose mode is enabled
-        verbose_mode = st.checkbox("🔍 Verbose-Modus (Camera-Nachrichten anzeigen)", value=False)
-        
-        if not verbose_mode:
-            # Filter out camera messages
-            original_count = len(messages_df)
-            messages_df = messages_df[~messages_df['topic'].str.contains('j1/txt/1/i/cam', na=False)]
-            filtered_count = len(messages_df)
-            if original_count != filtered_count:
-                st.info(f"📷 {original_count - filtered_count} Camera-Nachrichten ausgeblendet (Verbose-Modus deaktiviert)")
-        
-        # Initialize replay state
-        if 'replay_playing' not in st.session_state:
-            st.session_state.replay_playing = False
-        if 'replay_message_index' not in st.session_state:
-            st.session_state.replay_message_index = 0
-        if 'replay_speed' not in st.session_state:
-            st.session_state.replay_speed = 1.0
-        
-        # Get message count
-        total_messages = len(messages_df)
-        
-        if total_messages == 0:
-            st.warning("Keine relevanten Nachrichten in der Session gefunden.")
-            return
-        
-        # Replay controls
-        col1, col2, col3, col4, col5 = st.columns(5)
-        
-        with col1:
-            if st.button("⏮️ Erste"):
-                st.session_state.replay_message_index = 0
-                st.session_state.replay_playing = False
-        
-        with col2:
-            if st.button("◀️ Vorherige"):
-                if st.session_state.replay_message_index > 0:
-                    st.session_state.replay_message_index -= 1
-                st.session_state.replay_playing = False
-        
-        with col3:
-            if st.button("▶️ Play" if not st.session_state.replay_playing else "⏸️ Pause"):
-                st.session_state.replay_playing = not st.session_state.replay_playing
-        
-        with col4:
-            if st.button("▶️ Nächste"):
-                if st.session_state.replay_message_index < total_messages - 1:
-                    st.session_state.replay_message_index += 1
-                st.session_state.replay_playing = False
-        
-        with col5:
-            if st.button("⏭️ Letzte"):
-                st.session_state.replay_message_index = total_messages - 1
-                st.session_state.replay_playing = False
-        
-        # Speed control
-        st.session_state.replay_speed = st.selectbox(
-            "Geschwindigkeit:",
-            [0.5, 1.0, 2.0, 5.0],
-            index=1,
-            format_func=lambda x: f"{x}x"
-        )
-        
-        # Message navigation slider
-        message_index = st.slider(
-            "Nachricht:",
-            min_value=0,
-            max_value=total_messages - 1,
-            value=st.session_state.replay_message_index
-        )
-        
-        # Show message count
-        st.write(f"Nachricht {message_index + 1} von {total_messages}")
-        
-        # Update message index
-        st.session_state.replay_message_index = message_index
-        
-        # Get current message
-        current_message = messages_df.iloc[message_index]
-        current_time = current_message['timestamp']
-        
-        # Show current message info
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            st.metric("Nachricht", f"{message_index + 1}/{total_messages}")
-        with col2:
-            st.metric("Zeit", current_time.strftime('%H:%M:%S'))
-        with col3:
-            st.metric("Topic", current_message['topic'].split('/')[-1])
-        
-        # Progress bar
-        progress = (message_index + 1) / total_messages
-        st.progress(progress)
-        
-        # Auto-play functionality
-        if st.session_state.replay_playing:
-            # Auto-advance to next message
-            if st.session_state.replay_message_index < total_messages - 1:
-                st.session_state.replay_message_index += 1
-                time.sleep(1.0 / st.session_state.replay_speed)
-                st.rerun()
-            else:
-                st.session_state.replay_playing = False
-        
-        # Show current message details
-        st.subheader(f"📨 Aktuelle Nachricht ({message_index + 1}/{total_messages})")
-        
-        # Message details
-        col1, col2 = st.columns([1, 2])
-        
-        with col1:
-            st.write("**Zeitstempel:**")
-            st.write(current_time.strftime('%Y-%m-%d %H:%M:%S'))
-            
-            st.write("**Topic:**")
-            st.write(current_message['topic'])
-            
-            # Determine message relevance
-            relevance = self._determine_message_relevance(current_message)
-            st.write("**Relevanz:**")
-            if relevance['is_relevant']:
-                st.success(f"✅ {relevance['description']}")
-            else:
-                st.info(f"ℹ️ {relevance['description']}")
-        
-        with col2:
-            st.write("**Payload:**")
-            try:
-                payload = json.loads(current_message['payload'])
-                st.json(payload)
-            except:
-                st.code(current_message['payload'][:500] + "..." if len(current_message['payload']) > 500 else current_message['payload'])
-        
-        # Show messages up to current point
-        messages_up_to_current = messages_df.iloc[:message_index + 1]
-        
-        # Update production steps based on messages up to current point
-        if 'selected_order' in st.session_state and st.session_state.selected_order:
-            workpiece_type = st.session_state.selected_order['type']
-            production_steps = self._get_production_steps_for_type(workpiece_type)
-            
-            # Update steps based on current messages
-            updated_steps = self._update_production_steps_from_messages(
-                production_steps, messages_up_to_current, current_time
-            )
-            
-            # Store updated steps for display
-            st.session_state.current_production_steps = updated_steps
 
     def show_mqtt_monitor_standalone(self):
         """Show standalone MQTT message monitor"""
@@ -3430,7 +3385,7 @@ class APSDashboard:
 
             # Create display DataFrame with friendly topic names
             sent_df_display = sent_df[["topic", "timestamp", "message", "result"]].copy()
-            sent_df_display["friendly_topic"] = sent_df_display["topic"].apply(get_friendly_topic_name)
+            sent_df_display["friendly_topic"] = sent_df_display["topic"].apply(lambda x: self.topic_manager.get_friendly_name(x))
 
             # Display recent messages
             for idx, row in sent_df_display.head(10).iterrows():
@@ -3461,7 +3416,7 @@ class APSDashboard:
 
             # Create display DataFrame with friendly topic names
             response_df_display = response_df[["topic", "timestamp", "payload", "qos"]].copy()
-            response_df_display["friendly_topic"] = response_df_display["topic"].apply(get_friendly_topic_name)
+            response_df_display["friendly_topic"] = response_df_display["topic"].apply(lambda x: self.topic_manager.get_friendly_name(x))
 
             # Display recent responses
             for idx, row in response_df_display.head(10).iterrows():
@@ -3585,527 +3540,7 @@ class APSDashboard:
         st.warning("⚠️ Diese Methode ist veraltet. Verwende den Template Message Manager im 'Template Message' Tab.")
         st.info("🎯 Gehe zu 'MQTT Control' → 'Template Message' für die neue Template-Steuerung.")
 
-    def show_order_tab(self, df):
-        """Show Order tracking and management tab"""
-        st.header("📋 Order Management")
-        st.markdown("**Aktuelle Aufträge und Produktionsschritt-Tracking**")
-        
-        # Initialize session state for orders
-        if 'erp_orders' not in st.session_state:
-            st.session_state.erp_orders = {}
-        if 'ft_orders' not in st.session_state:
-            st.session_state.ft_orders = {}
-        if 'current_orders' not in st.session_state:
-            st.session_state.current_orders = []
-        if 'selected_order' not in st.session_state:
-            st.session_state.selected_order = None
-        
-        # 1. Aktuelle Aufträge (Replay/Simulation)
-        st.subheader("1️⃣ Aktuelle Aufträge")
-        
-        # Replay/Simulation from existing sessions
-        replay_options = ["Demo-Aufträge", "Session-Replay"]
-        replay_mode = st.selectbox("Replay-Modus:", replay_options, key="replay_mode")
-        
-        if replay_mode == "Demo-Aufträge":
-            # Demo orders for testing
-            demo_orders = [
-                {"id": "cd79c66f-b565-49e0-b6da-b6599b015811", "type": "BLUE", "status": "In Bearbeitung", "timestamp": "26.08.25, 09:49"},
-                {"id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890", "type": "RED", "status": "Geplant", "timestamp": "26.08.25, 10:15"}
-            ]
-            
-            # Order selection
-            if demo_orders:
-                order_options = [f"{order['id'][:8]}... ({order['type']}) - {order['status']}" for order in demo_orders]
-                selected_order_index = st.selectbox(
-                    "Auftrag auswählen:",
-                    range(len(order_options)),
-                    format_func=lambda x: order_options[x],
-                    key="order_selection"
-                )
-                
-                if selected_order_index is not None:
-                    st.session_state.selected_order = demo_orders[selected_order_index]
-                    st.success(f"✅ Auftrag ausgewählt: {st.session_state.selected_order['id'][:8]}...")
-        
-        elif replay_mode == "Session-Replay":
-            # Get available sessions
-            sessions_dir = os.path.join(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../..")), "mqtt-data/sessions")
-            available_sessions = []
-            
-            if os.path.exists(sessions_dir):
-                for file in os.listdir(sessions_dir):
-                    if file.endswith('.db') and 'aps_persistent_traffic_' in file:
-                        session_name = file.replace('aps_persistent_traffic_', '').replace('.db', '')
-                        available_sessions.append(session_name)
-            
-            if available_sessions:
-                # Sort sessions by name
-                available_sessions.sort()
-                
-                selected_session = st.selectbox(
-                    "Session auswählen:",
-                    available_sessions,
-                    key="session_selection"
-                )
-                
-                if selected_session:
-                    # Load session messages for replay
-                    messages_df = self._load_session_messages_for_replay(selected_session)
-                    if messages_df is not None:
-                        # Store messages in session state for replay
-                        st.session_state.replay_messages = messages_df
-                        st.session_state.replay_session = selected_session
-                        
-                        # Try to load order from selected session
-                        order_data = self._load_order_from_session(selected_session, "UNKNOWN")
-                        if order_data:
-                            st.session_state.selected_order = order_data
-                            st.success(f"✅ Session geladen: {selected_session} - {order_data['id'][:8]}...")
-                            
-                            # Show replay controls
-                            self._show_replay_controls(messages_df, order_data)
-                        else:
-                            st.warning(f"⚠️ Keine Order-Daten in Session '{selected_session}' gefunden")
-                    else:
-                        st.error(f"❌ Session '{selected_session}' konnte nicht geladen werden")
-            else:
-                st.info("💡 Keine Sessions verfügbar. Starte eine Session über die Kommandozeile.")
-        
-        # Show current order info
-        if st.session_state.selected_order:
-            st.info(f"📋 Aktueller Auftrag: {st.session_state.selected_order['id'][:8]}... ({st.session_state.selected_order['type']}) - {st.session_state.selected_order['status']}")
-        
-        # 2. Fertigungsschritte (nur für ausgewählten Auftrag)
-        if st.session_state.selected_order:
-            st.subheader(f"2️⃣ Fertigungsschritte - Auftrag {st.session_state.selected_order['id'][:8]}... ({st.session_state.selected_order['type']})")
-            
-            # Define color-specific production steps
-            workpiece_type = st.session_state.selected_order['type']
-            
-            if workpiece_type == "BLUE":
-                # BLUE: DRILL + MILL + AIQS + DPS
-                production_steps = [
-                    {"step": 1, "module": "FTS", "action": "FTS → Hochregallager", "icon": "🚚"},
-                    {"step": 2, "module": "HBW", "action": "Hochregallager: PICK(DRILL)", "icon": "🏗️"},
-                    {"step": 3, "module": "FTS", "action": "FTS → Bohrer", "icon": "🚚"},
-                    {"step": 4, "module": "DRILL", "action": "Bohrer: DRILL(DRILL)", "icon": "🔧"},
-                    {"step": 5, "module": "DRILL", "action": "Bohrer: DROP(DRILL)", "icon": "🔧"},
-                    {"step": 6, "module": "FTS", "action": "FTS → Hochregallager", "icon": "🚚"},
-                    {"step": 7, "module": "HBW", "action": "Hochregallager: PICK(MILL)", "icon": "🏗️"},
-                    {"step": 8, "module": "FTS", "action": "FTS → Fräse", "icon": "🚚"},
-                    {"step": 9, "module": "MILL", "action": "Fräse: MILL(MILL)", "icon": "⚙️"},
-                    {"step": 10, "module": "MILL", "action": "Fräse: DROP(MILL)", "icon": "⚙️"},
-                    {"step": 11, "module": "FTS", "action": "FTS → KI-Qualitätssicherung", "icon": "🚚"},
-                    {"step": 12, "module": "AIQS", "action": "KI-Qualitätssicherung: Qualitätsprüfung", "icon": "🔍"},
-                    {"step": 13, "module": "FTS", "action": "FTS → Warenein- und -ausgang", "icon": "🚚"},
-                    {"step": 14, "module": "DPS", "action": "Warenein- und -ausgang: DROP", "icon": "📦"}
-                ]
-            elif workpiece_type == "RED":
-                # RED: MILL + AIQS + DPS
-                production_steps = [
-                    {"step": 1, "module": "FTS", "action": "FTS → Hochregallager", "icon": "🚚"},
-                    {"step": 2, "module": "HBW", "action": "Hochregallager: PICK(MILL)", "icon": "🏗️"},
-                    {"step": 3, "module": "FTS", "action": "FTS → Fräse", "icon": "🚚"},
-                    {"step": 4, "module": "MILL", "action": "Fräse: MILL(MILL)", "icon": "⚙️"},
-                    {"step": 5, "module": "MILL", "action": "Fräse: DROP(MILL)", "icon": "⚙️"},
-                    {"step": 6, "module": "FTS", "action": "FTS → KI-Qualitätssicherung", "icon": "🚚"},
-                    {"step": 7, "module": "AIQS", "action": "KI-Qualitätssicherung: Qualitätsprüfung", "icon": "🔍"},
-                    {"step": 8, "module": "FTS", "action": "FTS → Warenein- und -ausgang", "icon": "🚚"},
-                    {"step": 9, "module": "DPS", "action": "Warenein- und -ausgang: DROP", "icon": "📦"}
-                ]
-            elif workpiece_type == "WHITE":
-                # WHITE: DRILL + AIQS + DPS
-                production_steps = [
-                    {"step": 1, "module": "FTS", "action": "FTS → Hochregallager", "icon": "🚚"},
-                    {"step": 2, "module": "HBW", "action": "Hochregallager: PICK(DRILL)", "icon": "🏗️"},
-                    {"step": 3, "module": "FTS", "action": "FTS → Bohrer", "icon": "🚚"},
-                    {"step": 4, "module": "DRILL", "action": "Bohrer: DRILL(DRILL)", "icon": "🔧"},
-                    {"step": 5, "module": "DRILL", "action": "Bohrer: DROP(DRILL)", "icon": "🔧"},
-                    {"step": 6, "module": "FTS", "action": "FTS → KI-Qualitätssicherung", "icon": "🚚"},
-                    {"step": 7, "module": "AIQS", "action": "KI-Qualitätssicherung: Qualitätsprüfung", "icon": "🔍"},
-                    {"step": 8, "module": "FTS", "action": "FTS → Warenein- und -ausgang", "icon": "🚚"},
-                    {"step": 9, "module": "DPS", "action": "Warenein- und -ausgang: DROP", "icon": "📦"}
-                ]
-            else:
-                # Unknown type - show generic steps
-                production_steps = [
-                    {"step": 1, "module": "FTS", "action": "FTS → Hochregallager", "icon": "🚚"},
-                    {"step": 2, "module": "HBW", "action": "Hochregallager: PICK", "icon": "🏗️"},
-                    {"step": 3, "module": "FTS", "action": "FTS → Produktionsmodul", "icon": "🚚"},
-                    {"step": 4, "module": "PROD", "action": "Produktion", "icon": "⚙️"},
-                    {"step": 5, "module": "FTS", "action": "FTS → KI-Qualitätssicherung", "icon": "🚚"},
-                    {"step": 6, "module": "AIQS", "action": "KI-Qualitätssicherung: Qualitätsprüfung", "icon": "🔍"},
-                    {"step": 7, "module": "FTS", "action": "FTS → Warenein- und -ausgang", "icon": "🚚"},
-                    {"step": 8, "module": "DPS", "action": "Warenein- und -ausgang: DROP", "icon": "📦"}
-                ]
-            
-            # Use dynamic production steps if available (from replay), otherwise use static
-            if 'current_production_steps' in st.session_state and st.session_state.current_production_steps:
-                production_steps = st.session_state.current_production_steps
-            else:
-                # Add status to static steps
-                for step in production_steps:
-                    step['status'] = 'geplant'
-            
-            # Create production steps display
-            for step in production_steps:
-                col1, col2, col3 = st.columns([1, 3, 1])
-                with col1:
-                    st.write(f"**{step['step']:2d}.**")
-                with col2:
-                    st.write(f"{step['icon']} {step['action']}")
-                with col3:
-                    # Status indicator with dynamic updates
-                    if step['status'] == 'abgeschlossen':
-                        status = "✅ abgeschlossen"
-                        status_color = "green"
-                    elif step['status'] == 'in_bearbeitung':
-                        status = "🔄 in Bearbeitung"
-                        status_color = "orange"
-                    else:
-                        status = "⏳ geplant"
-                        status_color = "gray"
-                    
-                    st.markdown(f"<div style='color: {status_color};'>{status}</div>", unsafe_allow_html=True)
-        else:
-            st.info("Wähle einen Auftrag aus, um die Fertigungsschritte anzuzeigen")
-        
-        # 3. Auftragsinformationen (nur für ausgewählten Auftrag)
-        if st.session_state.selected_order:
-            st.subheader(f"3️⃣ Auftragsinformationen - {st.session_state.selected_order['id'][:8]}...")
-            
-            # Create order info table
-            order_info = {
-                "Auftragsnummer": st.session_state.selected_order['id'],
-                "Auftragsstatus": st.session_state.selected_order['status'],
-                "Werkstück-Typ": st.session_state.selected_order['type'],
-                "Bestelldatum": st.session_state.selected_order['timestamp'],
-                "Auftragseingang": st.session_state.selected_order['timestamp'],
-                "Start der Bearbeitung": st.session_state.selected_order['timestamp']
-            }
-            
-            # Display as table
-            order_info_df = pd.DataFrame(list(order_info.items()), columns=['Feld', 'Wert'])
-            st.dataframe(order_info_df, use_container_width=True)
-        else:
-            st.info("Wähle einen Auftrag aus, um die Auftragsinformationen anzuzeigen")
-        
-        # ERP Order-ID Mapping Section
-        st.markdown("---")
-        st.subheader("🔗 ERP Order-ID Mapping")
-        
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            st.write("**ERP Order-ID hinzufügen:**")
-            erp_order_id = st.text_input("ERP Order-ID:", key="erp_order_input")
-            ft_order_id = st.text_input("FT Order-ID:", key="ft_order_input")
-            
-            if st.button("Mapping hinzufügen"):
-                if erp_order_id and ft_order_id:
-                    st.session_state.erp_orders[erp_order_id] = ft_order_id
-                    st.session_state.ft_orders[ft_order_id] = erp_order_id
-                    st.success(f"Mapping hinzugefügt: {erp_order_id} ↔ {ft_order_id}")
-                    st.rerun()
-        
-        with col2:
-            st.write("**Aktuelle Mappings:**")
-            if st.session_state.erp_orders:
-                for erp_id, ft_id in st.session_state.erp_orders.items():
-                    st.write(f"📋 {erp_id} ↔ {ft_id}")
-            else:
-                st.info("Keine Mappings vorhanden")
 
-    def _load_order_from_session(self, session_name, expected_type):
-        """Load order information from existing session database"""
-        try:
-            # Get project root
-            project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
-            db_path = os.path.join(project_root, "mqtt-data/sessions", f"aps_persistent_traffic_{session_name}.db")
-            
-            if not os.path.exists(db_path):
-                return None
-            
-            # Connect to database
-            conn = sqlite3.connect(db_path)
-            
-            # Load MQTT messages
-            df = pd.read_sql_query("SELECT * FROM mqtt_messages ORDER BY timestamp", conn)
-            conn.close()
-            
-            if df.empty:
-                return None
-            
-            # Find order messages
-            order_messages = df[df['topic'].str.contains('order', na=False)]
-            
-            if order_messages.empty:
-                return None
-            
-            # Extract order information from the first order message
-            first_order = order_messages.iloc[0]
-            
-            # Try to parse JSON payload
-            try:
-                payload = json.loads(first_order['payload'])
-                if isinstance(payload, dict):
-                    order_id = payload.get('orderId', f"order-{session_name}")
-                    order_type = payload.get('type', expected_type)
-                else:
-                    order_id = f"order-{session_name}"
-                    order_type = expected_type
-            except:
-                # Fallback if JSON parsing fails
-                order_id = f"order-{session_name}"
-                order_type = expected_type
-            
-            # Get timestamp
-            try:
-                timestamp = pd.to_datetime(first_order['timestamp'])
-                timestamp_str = timestamp.strftime('%d.%m.%y, %H:%M')
-            except:
-                timestamp_str = "26.08.25, 09:49"
-            
-            # Determine status based on message flow
-            status = "Abgeschlossen"  # Since it's from a completed session
-            
-            return {
-                "id": order_id,
-                "type": order_type,
-                "status": status,
-                "timestamp": timestamp_str,
-                "session_name": session_name,
-                "messages_df": df  # Store all messages for replay
-            }
-                
-        except Exception as e:
-            return None
-
-    def _load_session_messages_for_replay(self, session_name):
-        """Load all messages from a session for replay functionality"""
-        try:
-            # Get project root
-            project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
-            db_path = os.path.join(project_root, "mqtt-data/sessions", f"aps_persistent_traffic_{session_name}.db")
-            
-            if not os.path.exists(db_path):
-                return None
-            
-            # Connect to database
-            conn = sqlite3.connect(db_path)
-            
-            # Load MQTT messages
-            df = pd.read_sql_query("SELECT * FROM mqtt_messages ORDER BY timestamp", conn)
-            conn.close()
-            
-            if df.empty:
-                return None
-            
-            # Convert timestamp to datetime
-            df['timestamp'] = pd.to_datetime(df['timestamp'])
-            
-            return df
-                
-        except Exception as e:
-            return None
-
-    def _get_production_steps_for_type(self, workpiece_type):
-        """Get production steps for a specific workpiece type"""
-        if workpiece_type == "BLUE":
-            return [
-                {"step": 1, "module": "FTS", "action": "FTS → Hochregallager", "icon": "🚚", "status": "geplant"},
-                {"step": 2, "module": "HBW", "action": "Hochregallager: PICK(DRILL)", "icon": "🏗️", "status": "geplant"},
-                {"step": 3, "module": "FTS", "action": "FTS → Bohrer", "icon": "🚚", "status": "geplant"},
-                {"step": 4, "module": "DRILL", "action": "Bohrer: DRILL(DRILL)", "icon": "🔧", "status": "geplant"},
-                {"step": 5, "module": "DRILL", "action": "Bohrer: DROP(DRILL)", "icon": "🔧", "status": "geplant"},
-                {"step": 6, "module": "FTS", "action": "FTS → Hochregallager", "icon": "🚚", "status": "geplant"},
-                {"step": 7, "module": "HBW", "action": "Hochregallager: PICK(MILL)", "icon": "🏗️", "status": "geplant"},
-                {"step": 8, "module": "FTS", "action": "FTS → Fräse", "icon": "🚚", "status": "geplant"},
-                {"step": 9, "module": "MILL", "action": "Fräse: MILL(MILL)", "icon": "⚙️", "status": "geplant"},
-                {"step": 10, "module": "MILL", "action": "Fräse: DROP(MILL)", "icon": "⚙️", "status": "geplant"},
-                {"step": 11, "module": "FTS", "action": "FTS → KI-Qualitätssicherung", "icon": "🚚", "status": "geplant"},
-                {"step": 12, "module": "AIQS", "action": "KI-Qualitätssicherung: Qualitätsprüfung", "icon": "🔍", "status": "geplant"},
-                {"step": 13, "module": "FTS", "action": "FTS → Warenein- und -ausgang", "icon": "🚚", "status": "geplant"},
-                {"step": 14, "module": "DPS", "action": "Warenein- und -ausgang: DROP", "icon": "📦", "status": "geplant"}
-            ]
-        elif workpiece_type == "RED":
-            return [
-                {"step": 1, "module": "FTS", "action": "FTS → Hochregallager", "icon": "🚚", "status": "geplant"},
-                {"step": 2, "module": "HBW", "action": "Hochregallager: PICK(MILL)", "icon": "🏗️", "status": "geplant"},
-                {"step": 3, "module": "FTS", "action": "FTS → Fräse", "icon": "🚚", "status": "geplant"},
-                {"step": 4, "module": "MILL", "action": "Fräse: MILL(MILL)", "icon": "⚙️", "status": "geplant"},
-                {"step": 5, "module": "MILL", "action": "Fräse: DROP(MILL)", "icon": "⚙️", "status": "geplant"},
-                {"step": 6, "module": "FTS", "action": "FTS → KI-Qualitätssicherung", "icon": "🚚", "status": "geplant"},
-                {"step": 7, "module": "AIQS", "action": "KI-Qualitätssicherung: Qualitätsprüfung", "icon": "🔍", "status": "geplant"},
-                {"step": 8, "module": "FTS", "action": "FTS → Warenein- und -ausgang", "icon": "🚚", "status": "geplant"},
-                {"step": 9, "module": "DPS", "action": "Warenein- und -ausgang: DROP", "icon": "📦", "status": "geplant"}
-            ]
-        elif workpiece_type == "WHITE":
-            return [
-                {"step": 1, "module": "FTS", "action": "FTS → Hochregallager", "icon": "🚚", "status": "geplant"},
-                {"step": 2, "module": "HBW", "action": "Hochregallager: PICK(AIQS)", "icon": "🏗️", "status": "geplant"},
-                {"step": 3, "module": "FTS", "action": "FTS → KI-Qualitätssicherung", "icon": "🚚", "status": "geplant"},
-                {"step": 4, "module": "AIQS", "action": "KI-Qualitätssicherung: Qualitätsprüfung", "icon": "🔍", "status": "geplant"},
-                {"step": 5, "module": "FTS", "action": "FTS → Warenein- und -ausgang", "icon": "🚚", "status": "geplant"},
-                {"step": 6, "module": "DPS", "action": "Warenein- und -ausgang: DROP", "icon": "📦", "status": "geplant"}
-            ]
-        else:
-            return []
-
-    def _update_production_steps_from_messages(self, steps, messages_df, current_time):
-        """Update production steps status based on messages up to current time"""
-        # Filter messages up to current time
-        current_messages = messages_df[messages_df['timestamp'] <= current_time]
-        
-        # Create a copy of steps to modify
-        updated_steps = steps.copy()
-        
-        # Analyze messages to determine step completion
-        for i, step in enumerate(updated_steps):
-            module = step['module']
-            
-            # Check for module state changes or action completions
-            module_messages = current_messages[
-                current_messages['topic'].str.contains(f'module/v1/ff/', na=False) &
-                current_messages['topic'].str.contains(module, na=False)
-            ]
-            
-            # Check for FTS messages
-            if module == "FTS":
-                fts_messages = current_messages[
-                    current_messages['topic'].str.contains('fts/', na=False)
-                ]
-                if len(fts_messages) > 0:
-                    # FTS activity detected
-                    step['status'] = 'abgeschlossen'
-                    continue
-            
-            # Check for specific module actions
-            if module == "HBW":
-                hbw_messages = current_messages[
-                    current_messages['topic'].str.contains('SVR3QA2098', na=False)
-                ]
-                if len(hbw_messages) > 0:
-                    step['status'] = 'abgeschlossen'
-                    continue
-            
-            elif module == "MILL":
-                mill_messages = current_messages[
-                    current_messages['topic'].str.contains('SVR4H76449', na=False)
-                ]
-                if len(mill_messages) > 0:
-                    step['status'] = 'abgeschlossen'
-                    continue
-            
-            elif module == "DRILL":
-                drill_messages = current_messages[
-                    current_messages['topic'].str.contains('SVR4H76530', na=False)
-                ]
-                if len(drill_messages) > 0:
-                    step['status'] = 'abgeschlossen'
-                    continue
-            
-            elif module == "AIQS":
-                aiqs_messages = current_messages[
-                    current_messages['topic'].str.contains('SVR3QA0022', na=False)
-                ]
-                if len(aiqs_messages) > 0:
-                    step['status'] = 'abgeschlossen'
-                    continue
-            
-            elif module == "DPS":
-                dps_messages = current_messages[
-                    current_messages['topic'].str.contains('SVR4H73275', na=False)
-                ]
-                if len(dps_messages) > 0:
-                    step['status'] = 'abgeschlossen'
-                    continue
-        
-        return updated_steps
-
-    def _determine_message_relevance(self, message):
-        """Determine if a message is relevant for production workflow"""
-        topic = message['topic']
-        payload = message['payload']
-        
-        # Check for order-related messages
-        if 'order' in topic.lower():
-            return {
-                'is_relevant': True,
-                'description': 'Order-Nachricht (Auftrag)'
-            }
-        
-        # Check for module state changes
-        if 'module/v1/ff/' in topic and '/state' in topic:
-            return {
-                'is_relevant': True,
-                'description': 'Module Status-Änderung'
-            }
-        
-        # Check for FTS messages
-        if 'fts/' in topic:
-            return {
-                'is_relevant': True,
-                'description': 'FTS-Nachricht (Transport)'
-            }
-        
-        # Check for CCU messages
-        if 'ccu/' in topic:
-            return {
-                'is_relevant': True,
-                'description': 'CCU-Nachricht (Zentrale Steuerung)'
-            }
-        
-        # Check for action messages
-        if 'action' in topic.lower():
-            return {
-                'is_relevant': True,
-                'description': 'Action-Nachricht (Aktion)'
-            }
-        
-        # Check for camera messages
-        if 'cam' in topic.lower():
-            return {
-                'is_relevant': False,
-                'description': 'Camera-Nachricht (nicht relevant)'
-            }
-        
-        # Check for status messages
-        if 'status' in topic.lower():
-            return {
-                'is_relevant': True,
-                'description': 'Status-Nachricht'
-            }
-        
-        # Check payload for relevant content
-        try:
-            payload_data = json.loads(payload)
-            if isinstance(payload_data, dict):
-                # Check for orderId, actionId, etc.
-                if 'orderId' in payload_data:
-                    return {
-                        'is_relevant': True,
-                        'description': 'Enthält Order-ID'
-                    }
-                if 'actionId' in payload_data:
-                    return {
-                        'is_relevant': True,
-                        'description': 'Enthält Action-ID'
-                    }
-                if 'state' in payload_data:
-                    return {
-                        'is_relevant': True,
-                        'description': 'Enthält Status-Information'
-                    }
-        except:
-            pass
-        
-        # Default: not very relevant
-        return {
-            'is_relevant': False,
-            'description': 'Allgemeine Nachricht'
-        }
 
     def create_sidebar(self):
         """Creates the sidebar with navigation and MQTT broker selection."""
@@ -4113,7 +3548,7 @@ class APSDashboard:
             st.title("Navigation")
 
             # Page navigation
-            page_options = ["📊 Analyse APS", "🎮 MQTT Control", "🏭 Module Overview", "📋 Order"]
+            page_options = ["📊 Analyse APS", "🎮 MQTT Control", "🏭 Overview"]
             selected_page = st.radio("Seite auswählen:", page_options)
 
             st.markdown("---")
@@ -4161,15 +3596,10 @@ class APSDashboard:
                 self.disconnect()
         elif selected_page == "🎮 MQTT Control":
             self.show_mqtt_control()
-        elif selected_page == "🏭 Module Overview":
+        elif selected_page == "🏭 Overview":
             if self.connect():
                 df = self.load_data()
                 self.show_module_overview_dashboard(df)
-                self.disconnect()
-        elif selected_page == "📋 Order":
-            if self.connect():
-                df = self.load_data()
-                self.show_order_tab(df)
                 self.disconnect()
 
     def run_dashboard(self):
@@ -4190,7 +3620,7 @@ class APSDashboard:
             self.current_df = df
 
             # Main content - show selected tab
-            if st.session_state.selected_tab == "🏭 Module Overview":
+            if st.session_state.selected_tab == "🏭 Overview":
                 self.show_module_overview_dashboard(df)
             elif st.session_state.selected_tab == "📡 MQTT Monitor":
                 self.show_mqtt_monitor_standalone()
@@ -4198,14 +3628,309 @@ class APSDashboard:
                 self.aps_analysis.show_aps_analysis_tab()
             elif st.session_state.selected_tab == "🎮 MQTT Control":
                 self.show_mqtt_control()
-            elif st.session_state.selected_tab == "📋 Order":
-                self.show_order_tab(df)
+            elif st.session_state.selected_tab == "📚 Template Library":
+                self.show_template_library()
             elif st.session_state.selected_tab == "⚙️ Einstellungen":
                 self.show_settings()
 
         finally:
             self.disconnect()
             self.disconnect_mqtt()
+
+    def show_message_template_settings(self):
+        """Show Message Template configuration and analysis"""
+        st.subheader("📋 Message Template Verwaltung")
+        st.markdown("Zentrale Verwaltung der MQTT Message Templates und Template-Analyse")
+        
+        # Statistics
+        stats = self.message_template_manager.get_statistics()
+        
+        col1, col2, col3, col4 = st.columns(4)
+        with col1:
+            st.metric("Gesamt Topics", stats["total_topics"])
+        with col2:
+            st.metric("Kategorien", stats["total_categories"])
+        with col3:
+            st.metric("Validierungs-Patterns", stats["validation_patterns"])
+        with col4:
+            st.metric("Cache-Größe", stats["analysis_cache_size"])
+        
+        st.markdown("---")
+        
+        # Template Analysis Section
+        st.subheader("🔍 Template-Analyse")
+        
+        # Session selection for analysis
+        project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
+        session_files = glob.glob(os.path.join(project_root, "mqtt-data/sessions/aps_persistent_traffic_*.db"))
+        
+        if session_files:
+            selected_session = st.selectbox(
+                "📁 Session für Template-Analyse auswählen:",
+                options=session_files,
+                format_func=lambda x: os.path.basename(x).replace('.db', ''),
+                help="Wähle eine Session-DB für die Template-Analyse"
+            )
+            
+            col1, col2 = st.columns(2)
+            with col1:
+                if st.button("🔍 Template-Analyse starten", type="primary"):
+                    with st.spinner("Analysiere Session-Templates..."):
+                        analysis_result = self.message_template_manager.analyze_session_templates(selected_session)
+                        
+                        if "error" not in analysis_result:
+                            st.success(f"✅ Analyse abgeschlossen: {analysis_result['topics_analyzed']} Topics analysiert")
+                            
+                            # Display analysis results
+                            st.subheader("📊 Analyse-Ergebnisse")
+                            
+                            # Topics overview
+                            topics_analyzed = analysis_result.get("topic_analysis", {})
+                            if topics_analyzed:
+                                topic_data = []
+                                for topic, analysis in topics_analyzed.items():
+                                    topic_data.append({
+                                        "Topic": topic,
+                                        "Nachrichten": analysis["message_count"],
+                                        "Felder": len(analysis["field_types"]),
+                                        "Beispiele": len(analysis["examples"])
+                                    })
+                                
+                                df = pd.DataFrame(topic_data)
+                                st.dataframe(df, use_container_width=True)
+                            
+                            # Template suggestions
+                            suggestions = analysis_result.get("template_suggestions", {})
+                            if suggestions:
+                                st.subheader("💡 Template-Vorschläge")
+                                
+                                for topic, suggestion in suggestions.items():
+                                    with st.expander(f"📋 {topic} ({suggestion['message_count']} Nachrichten)"):
+                                        st.write(f"**Kategorie:** {suggestion['category']}")
+                                        st.write(f"**Sub-Kategorie:** {suggestion['sub_category']}")
+                                        st.write(f"**Beschreibung:** {suggestion['description']}")
+                                        
+                                        # Template structure
+                                        if suggestion.get("template_structure"):
+                                            st.write("**Template-Struktur:**")
+                                            st.json(suggestion["template_structure"])
+                                        
+                                        # Validation rules
+                                        if suggestion.get("validation_rules"):
+                                            st.write("**Validierungsregeln:**")
+                                            for rule in suggestion["validation_rules"]:
+                                                st.write(f"• {rule}")
+                                        
+                                        # Examples
+                                        if suggestion.get("examples"):
+                                            st.write("**Beispiele:**")
+                                            for i, example in enumerate(suggestion["examples"][:2]):  # Show first 2
+                                                st.write(f"**Beispiel {i+1}:**")
+                                                # Handle different example formats
+                                                if isinstance(example, dict):
+                                                    if "payload" in example:
+                                                        st.json(example["payload"])
+                                                    else:
+                                                        st.json(example)
+                                                elif isinstance(example, list):
+                                                    st.json(example)
+                                                else:
+                                                    st.write(str(example))
+                        else:
+                            st.error(f"❌ Analyse fehlgeschlagen: {analysis_result['error']}")
+            
+            with col2:
+                if st.button("🔄 Cache leeren"):
+                    self.message_template_manager.session_analysis_cache.clear()
+                    st.success("✅ Cache geleert")
+                
+                if st.button("📥 Konfiguration neu laden"):
+                    self.message_template_manager.reload_config()
+                    st.success("✅ Konfiguration neu geladen")
+        else:
+            st.warning("⚠️ Keine Session-Datenbanken gefunden")
+        
+        st.markdown("---")
+        
+        # Template Overview Section
+        st.subheader("📚 Template-Übersicht")
+        
+        # Category filter
+        categories = self.message_template_manager.get_categories()
+        selected_category = st.selectbox(
+            "🏷️ Kategorie filtern:",
+            options=["Alle"] + categories,
+            help="Filtere Templates nach Kategorie"
+        )
+        
+        # Sub-category filter
+        sub_categories = []
+        if selected_category != "Alle":
+            sub_categories = self.message_template_manager.get_sub_categories(selected_category)
+        
+        selected_sub_category = None
+        if sub_categories:
+            selected_sub_category = st.selectbox(
+                "📋 Sub-Kategorie filtern:",
+                options=["Alle"] + sub_categories,
+                help="Filtere Templates nach Sub-Kategorie"
+            )
+            if selected_sub_category == "Alle":
+                selected_sub_category = None
+        
+        # Module name filter (only for MODULE category)
+        module_names = []
+        if selected_category == "MODULE":
+            # Get module names from module config
+            try:
+                module_config_file = os.path.join(os.path.dirname(__file__), '..', 'config', 'module_config.yml')
+                if os.path.exists(module_config_file):
+                    import yaml
+                    with open(module_config_file, 'r', encoding='utf-8') as f:
+                        module_config = yaml.safe_load(f)
+                    
+                    # Extract module names
+                    modules = module_config.get('modules', {})
+                    module_names = list(set(module.get('name', '') for module in modules.values() if module.get('name')))
+                    module_names.sort()
+            except Exception as e:
+                st.warning(f"⚠️ Fehler beim Laden der Modul-Konfiguration: {e}")
+        
+        selected_module_name = None
+        if module_names:
+            selected_module_name = st.selectbox(
+                "🏭 Modul filtern:",
+                options=["Alle"] + module_names,
+                help="Filtere Templates nach Modul-Namen"
+            )
+            if selected_module_name == "Alle":
+                selected_module_name = None
+        
+        # Get templates
+        if selected_category == "Alle":
+            templates = self.message_template_manager.templates.get("topics", {})
+        else:
+            topic_list = self.message_template_manager.get_topics_by_category(selected_category)
+            templates = {topic: self.message_template_manager.templates["topics"][topic] 
+                        for topic in topic_list if topic in self.message_template_manager.templates["topics"]}
+            
+            # Apply sub-category filter if selected
+            if selected_sub_category:
+                templates = {
+                    topic: template for topic, template in templates.items()
+                    if template.get('sub_category') == selected_sub_category
+                }
+            
+            # Apply module name filter if selected
+            if selected_module_name:
+                # Get module ID for the selected module name
+                try:
+                    module_config_file = os.path.join(os.path.dirname(__file__), '..', 'config', 'module_config.yml')
+                    if os.path.exists(module_config_file):
+                        import yaml
+                        with open(module_config_file, 'r', encoding='utf-8') as f:
+                            module_config = yaml.safe_load(f)
+                        
+                        # Find module ID for the selected name
+                        modules = module_config.get('modules', {})
+                        module_id = None
+                        for module_id_key, module_info in modules.items():
+                            if module_info.get('name') == selected_module_name:
+                                module_id = module_id_key
+                                break
+                        
+                        if module_id:
+                            # Filter templates by module ID
+                            templates = {
+                                topic: template for topic, template in templates.items()
+                                if module_id in topic
+                            }
+                except Exception as e:
+                    st.warning(f"⚠️ Fehler beim Filtern nach Modul: {e}")
+        
+        if templates:
+            for topic, template in templates.items():
+                # Get module name for display
+                module_name = "N/A"
+                if template.get('category') == 'MODULE':
+                    try:
+                        module_config_file = os.path.join(os.path.dirname(__file__), '..', 'config', 'module_config.yml')
+                        if os.path.exists(module_config_file):
+                            import yaml
+                            with open(module_config_file, 'r', encoding='utf-8') as f:
+                                module_config = yaml.safe_load(f)
+                            
+                            # Find module name for the topic
+                            modules = module_config.get('modules', {})
+                            for module_id, module_info in modules.items():
+                                if module_id in topic:
+                                    module_name = module_info.get('name', module_id)
+                                    break
+                    except Exception:
+                        pass
+                
+                with st.expander(f"📋 {topic}", expanded=False):
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        st.write(f"**Kategorie:** {template.get('category', 'N/A')}")
+                        st.write(f"**Sub-Kategorie:** {template.get('sub_category', 'N/A')}")
+                    with col2:
+                        if template.get('category') == 'MODULE':
+                            st.write(f"**Modul:** {module_name}")
+                        st.write(f"**Beschreibung:** {template.get('description', 'N/A')}")
+                    
+                    # Template structure
+                    if template.get("template_structure"):
+                        st.write("**Template-Struktur:**")
+                        structure_data = []
+                        for field, field_info in template["template_structure"].items():
+                            # Handle different field_info formats
+                            if isinstance(field_info, dict):
+                                field_type = field_info.get("type", "N/A")
+                                is_required = field_info.get("required", False)
+                                field_format = field_info.get("format", "N/A")
+                                enum_values = field_info.get("enum", [])
+                            else:
+                                # Handle string format (TXT templates)
+                                field_type = str(field_info)
+                                is_required = False
+                                field_format = "N/A"
+                                enum_values = []
+                            
+                            structure_data.append({
+                                "Feld": field,
+                                "Typ": field_type,
+                                "Erforderlich": "✅" if is_required else "❌",
+                                "Format": field_format,
+                                "Enum": str(enum_values) if enum_values else "N/A"
+                            })
+                        
+                        df = pd.DataFrame(structure_data)
+                        st.dataframe(df, use_container_width=True)
+                    
+                    # Examples
+                    if template.get("examples"):
+                        st.write("**Beispiele:**")
+                        for i, example in enumerate(template["examples"][:2]):  # Show first 2
+                            with st.expander(f"Beispiel {i+1}"):
+                                # Handle different example formats
+                                if isinstance(example, dict):
+                                    if "payload" in example:
+                                        st.json(example["payload"])
+                                    else:
+                                        st.json(example)
+                                elif isinstance(example, list):
+                                    st.json(example)
+                                else:
+                                    st.write(str(example))
+                    
+                    # Validation rules
+                    if template.get("validation_rules"):
+                        st.write("**Validierungsregeln:**")
+                        for rule in template["validation_rules"]:
+                            st.write(f"• {rule}")
+        else:
+            st.info("📝 Keine Templates gefunden")
 
 
 def main():
@@ -4216,7 +3941,7 @@ def main():
         st.sidebar.image(logo_path, width=200)
     else:
         st.sidebar.markdown("## 🏭 ORBIS-Modellfabrik")
-    st.sidebar.markdown("*APS Dashboard*")
+    st.sidebar.markdown("*Modellfabrik-Dashboard*")
 
     # Navigation in sidebar
     st.sidebar.markdown("---")
@@ -4224,15 +3949,15 @@ def main():
 
     # Initialize selected tab in session state
     if "selected_tab" not in st.session_state:
-        st.session_state.selected_tab = "🏭 Module Overview"
+        st.session_state.selected_tab = "🏭 Overview"
 
     # Tab buttons in sidebar with active highlighting
     tabs = [
-        ("🏭 Module Overview", "🏭 Module Overview"),
+        ("🏭 Overview", "🏭 Overview"),
         ("📡 MQTT Monitor", "📡 MQTT Monitor"),
         ("🔍 APS Analyse", "🔍 APS Analyse"),
         ("🎮 MQTT Control", "🎮 MQTT Control"),
-        ("📋 Order", "📋 Order"),
+        ("📚 Template Library", "📚 Template Library"),
         ("⚙️ Einstellungen", "⚙️ Einstellungen")
     ]
     
@@ -4260,7 +3985,7 @@ def main():
     if "show_reset_modal" not in st.session_state:
         st.session_state.show_reset_modal = False
 
- 
+
     # Session management moved to APS Analysis tab
     # Get project root (3 levels up from dashboard)
     project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
