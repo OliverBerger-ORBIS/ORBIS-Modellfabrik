@@ -2309,7 +2309,7 @@ class APSDashboard:
                 filtered_templates = {
                     topic: template for topic, template in filtered_templates.items()
                     if template.get('sub_category') == selected_sub_category
-                }
+            }
         
         st.markdown(f"**📊 {len(filtered_templates)} Templates gefunden**")
         
@@ -2888,8 +2888,8 @@ class APSDashboard:
                                     ["Alle"] + sorted(list(modules)),
                                     key=f"module_filter_{category_name}"
                                 )
-                            
-                            with col2:
+        
+        with col2:
                                 selected_sub_category = st.selectbox(
                                     "Sub-Kategorie filtern:",
                                     ["Alle"] + sorted(list(sub_categories)),
@@ -2961,11 +2961,11 @@ class APSDashboard:
                                 "Beschreibung": st.column_config.TextColumn("Beschreibung", width="large")
                             }
                         )
-                    else:
+                else:
                         st.info("Keine Topics mit den gewählten Filtern gefunden.")
-        
+            
         # Statistics
-        st.markdown("---")
+            st.markdown("---")
         stats = topic_manager.get_statistics()
         
         col1, col2, col3, col4 = st.columns(4)
