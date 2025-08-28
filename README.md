@@ -33,6 +33,23 @@ For detailed documentation of the Node-RED flows, system architecture, and devel
 - **[State Machine](./docs-orbis/node-red/state-machine.md)** - VDA 5050 compliant state transitions
 - **[Topic Configuration Guide](./docs-orbis/topic-configuration-guide.md)** - Zentrale MQTT Topic-Konfiguration
 - **[Module Configuration Guide](./docs-orbis/module-configuration-guide.md)** - Zentrale Modul-Konfiguration
+- **[MQTT Template Analysis](./docs-orbis/mqtt-template-analysis.md)** - Template-Analyse und -Management
+
+### 🚀 Dashboard
+
+Das **ORBIS Modellfabrik Dashboard** bietet umfassende MQTT-Template-Analyse und -Verwaltung:
+
+- **📊 Template Library**: 67 analysierte MQTT-Topics (CCU, TXT, MODULE, Node-RED)
+- **🔍 4-stufige Filterung**: Kategorie → Sub-Kategorie → Modul → Template
+- **🏭 Modul-Namen-Filterung**: Benutzerfreundliche Namen (DRILL, AIQS, HBW, MILL, DPS, CHRG)
+- **📋 Template-Strukturen**: Vollständige Analyse mit Beispielen und Validierungsregeln
+- **⚙️ Zentrale Konfiguration**: YAML-basierte Verwaltung aller Templates
+
+**Dashboard starten:**
+```bash
+source .venv/bin/activate
+streamlit run src_orbis/mqtt/dashboard/aps_dashboard.py --server.port 8501
+```
 
 ## 📁 Project Structure
 

@@ -9,9 +9,19 @@ import sqlite3
 import os
 import glob
 import re
+import yaml
 from datetime import datetime
 from typing import Dict, List, Any, Set
-from module_manager import get_module_manager
+from pathlib import Path
+try:
+    from .module_manager import get_module_manager
+    from .message_template_manager import get_message_template_manager
+except ImportError:
+    import sys
+    import os
+    sys.path.append(os.path.dirname(__file__))
+    from module_manager import get_module_manager
+    from message_template_manager import get_message_template_manager
 import copy
 import sys
 import os
@@ -39,6 +49,8 @@ class TXTTemplateAnalyzer:
         
         # Initialize module mapping utilities
         self.module_mapping = get_module_manager()
+        # Initialize message template manager
+        self.message_template_manager = get_message_template_manager()
         # Get project root (3 levels up from tools directory)
         project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
         
@@ -572,6 +584,136 @@ class TXTTemplateAnalyzer:
         
         print(f"💾 Ergebnisse gespeichert in: {output_file}")
         return output_file
+    
+    def save_results_to_yaml(self, results: Dict):
+        """Save analysis results to YAML file"""
+        output_file = f"{self.output_dir}/txt_analysis_results.yml"
+        
+        # Convert results to YAML format
+        yaml_data = {
+            "metadata": {
+                "analyzer": "TXT Template Analyzer",
+                "timestamp": datetime.now().isoformat(),
+                "version": "1.0",
+                "total_topics": len(results),
+                "total_messages": sum(template['statistics']['total_messages'] for template in results.values())
+            },
+            "templates": {}
+        }
+        
+        for topic, template in results.items():
+            yaml_data["templates"][topic] = {
+                "category": "TXT",
+                "sub_category": self._determine_sub_category(topic),
+                "description": f"TXT Controller {topic}",
+                "template_structure": template["template_structure"],
+                "examples": template["examples"],
+                "validation_rules": self._generate_validation_rules(template["template_structure"]),
+                "statistics": template["statistics"]
+            }
+        
+        # Save to YAML file
+        with open(output_file, 'w', encoding='utf-8') as f:
+            yaml.dump(yaml_data, f, default_flow_style=False, allow_unicode=True, indent=2)
+        
+        print(f"💾 YAML-Ergebnisse gespeichert in: {output_file}")
+        return output_file
+    
+    def update_message_templates_yaml(self, results: Dict):
+        """Update the main message_templates.yml with TXT analysis results"""
+        try:
+            # Load existing message templates
+            config_file = Path(__file__).parent.parent / "config" / "message_templates.yml"
+            
+            if config_file.exists():
+                with open(config_file, 'r', encoding='utf-8') as f:
+                    templates_data = yaml.safe_load(f)
+            else:
+                templates_data = {
+                    "metadata": {"version": "1.0"},
+                    "topics": {},
+                    "categories": {},
+                    "validation_patterns": {}
+                }
+            
+            # Update with TXT templates
+            for topic, template in results.items():
+                templates_data["topics"][topic] = {
+                    "category": "TXT",
+                    "sub_category": self._determine_sub_category(topic),
+                    "description": f"TXT Controller {topic}",
+                    "template_structure": template["template_structure"],
+                    "examples": template["examples"],
+                    "validation_rules": self._generate_validation_rules(template["template_structure"])
+                }
+            
+            # Save updated templates
+            with open(config_file, 'w', encoding='utf-8') as f:
+                yaml.dump(templates_data, f, default_flow_style=False, allow_unicode=True, indent=2)
+            
+            print(f"✅ Message Templates YAML aktualisiert: {config_file}")
+            
+        except Exception as e:
+            print(f"❌ Fehler beim Aktualisieren der YAML-Datei: {e}")
+    
+    def _determine_sub_category(self, topic: str) -> str:
+        """Determine sub-category based on topic"""
+        if "i/stock" in topic:
+            return "Input"
+        elif "i/order" in topic:
+            return "Input"
+        elif "i/config" in topic:
+            return "Input"
+        elif "o/order" in topic:
+            return "Output"
+        elif "c/bme680" in topic:
+            return "Control"
+        elif "c/cam" in topic:
+            return "Control"
+        elif "c/ldr" in topic:
+            return "Control"
+        elif "i/bme680" in topic:
+            return "Function Input"
+        elif "i/broadcast" in topic:
+            return "Function Input"
+        elif "i/cam" in topic:
+            return "Function Input"
+        elif "i/ldr" in topic:
+            return "Function Input"
+        elif "o/broadcast" in topic:
+            return "Function Output"
+        else:
+            return "General"
+    
+    def _generate_validation_rules(self, template_structure: Dict) -> List[str]:
+        """Generate validation rules for template structure"""
+        rules = []
+        
+        def add_rules_for_structure(structure, prefix=""):
+            for field, placeholder in structure.items():
+                field_path = f"{prefix}.{field}" if prefix else field
+                
+                if isinstance(placeholder, str):
+                    if placeholder.startswith("["):
+                        # ENUM validation
+                        enum_values = placeholder[1:-1].split(", ")
+                        rules.append(f"{field} muss in {placeholder} sein")
+                    elif placeholder == "<datetime>":
+                        rules.append(f"{field} muss ISO 8601 Format haben")
+                    elif placeholder == "<uuid>":
+                        rules.append(f"{field} muss UUID Format haben")
+                    elif placeholder == "<nfcCode>":
+                        rules.append(f"{field} muss gültiger NFC-Code sein")
+                    elif placeholder == "<moduleId>":
+                        rules.append(f"{field} muss gültige Modul-ID sein")
+                elif isinstance(placeholder, dict):
+                    add_rules_for_structure(placeholder, field_path)
+                elif isinstance(placeholder, list):
+                    if placeholder and isinstance(placeholder[0], dict):
+                        add_rules_for_structure(placeholder[0], f"{field_path}[0]")
+        
+        add_rules_for_structure(template_structure)
+        return rules
 
     def run_analysis(self):
         """Run complete analysis"""
@@ -590,6 +732,12 @@ class TXTTemplateAnalyzer:
             # Save results
             output_file = self.save_results(results)
             
+            # Save to YAML
+            yaml_file = self.save_results_to_yaml(results)
+            
+            # Update main message templates
+            self.update_message_templates_yaml(results)
+            
             # Print summary
             print("\n" + "=" * 60)
             print("📊 ANALYSE ZUSAMMENFASSUNG")
@@ -600,7 +748,8 @@ class TXTTemplateAnalyzer:
             
             print(f"✅ Erfolgreich analysiert: {total_topics} Topics")
             print(f"📨 Gesamt Nachrichten: {total_messages}")
-            print(f"💾 Ergebnisse: {output_file}")
+            print(f"💾 JSON-Ergebnisse: {output_file}")
+            print(f"💾 YAML-Ergebnisse: {yaml_file}")
             
             for topic, template in results.items():
                 stats = template['statistics']

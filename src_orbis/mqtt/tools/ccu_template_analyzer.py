@@ -9,9 +9,20 @@ import sqlite3
 import os
 import glob
 import re
+import yaml
 from datetime import datetime
 from typing import Dict, List, Any, Set
-from module_manager import get_module_manager
+from pathlib import Path
+try:
+    from .module_manager import get_module_manager
+    from .message_template_manager import get_message_template_manager
+except ImportError:
+    # Fallback for direct execution
+    import sys
+    import os
+    sys.path.append(os.path.dirname(__file__))
+    from module_manager import get_module_manager
+    from message_template_manager import get_message_template_manager
 import copy
 import sys
 import os
@@ -40,6 +51,10 @@ class CCUTemplateAnalyzer:
         
         # Initialize module mapping utilities
         self.module_mapping = get_module_manager()
+        
+        # Initialize Message Template Manager
+        self.message_template_manager = get_message_template_manager()
+        
         # Get project root (3 levels up from tools directory)
         project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
         
@@ -53,6 +68,7 @@ class CCUTemplateAnalyzer:
         print("🔧 CCU Template Analyzer initialisiert")
         print(f"📁 Ausgabe-Verzeichnis: {self.output_dir}")
         print(f"📁 Session-Verzeichnis: {self.session_dir}")
+        print(f"📋 Message Template Manager: {self.message_template_manager.get_statistics()}")
 
     def get_placeholder_for_field(self, field_name: str, values: Set) -> str:
         """Generate placeholder for field based on values using unified type recognition"""
@@ -556,6 +572,171 @@ class CCUTemplateAnalyzer:
         print(f"💾 Ergebnisse gespeichert in: {output_file}")
         return output_file
 
+    def save_results_to_yaml(self, results: Dict, output_file: str = None):
+        """Save analysis results to YAML file"""
+        if output_file is None:
+            output_file = f"{self.output_dir}/ccu_analysis_results.yml"
+        
+        # Convert results to YAML format
+        yaml_data = {
+            "metadata": {
+                "analyzer": "CCU Template Analyzer",
+                "timestamp": datetime.now().isoformat(),
+                "version": "1.0",
+                "total_topics": len(results),
+                "total_messages": sum(template['statistics']['total_messages'] for template in results.values())
+            },
+            "topics": {}
+        }
+        
+        # Convert each topic result to YAML format
+        for topic, template_data in results.items():
+            yaml_data["topics"][topic] = {
+                "category": "CCU",
+                "sub_category": self._determine_sub_category(topic),
+                "description": f"Auto-analyzed template for {topic}",
+                "template_structure": {},
+                "examples": [],
+                "validation_rules": [],
+                "statistics": template_data.get("statistics", {})
+            }
+            
+            # Convert template structure
+            for field, field_info in template_data.get("structure", {}).items():
+                yaml_data["topics"][topic]["template_structure"][field] = {
+                    "type": field_info.get("type", "string"),
+                    "description": f"Field: {field}",
+                    "required": True
+                }
+                
+                # Add enum values if available
+                if "enum_values" in field_info and field_info["enum_values"]:
+                    yaml_data["topics"][topic]["template_structure"][field]["enum"] = field_info["enum_values"]
+                
+                # Add format if available
+                if "format" in field_info:
+                    yaml_data["topics"][topic]["template_structure"][field]["format"] = field_info["format"]
+            
+            # Add examples (limit to 3 for YAML readability)
+            examples = template_data.get("examples", [])
+            yaml_data["topics"][topic]["examples"] = examples[:3]
+            
+            # Add validation rules
+            validation_rules = []
+            for field, field_info in template_data.get("structure", {}).items():
+                if "enum_values" in field_info and field_info["enum_values"]:
+                    validation_rules.append(f"{field} muss in {field_info['enum_values']} sein")
+                if "format" in field_info:
+                    validation_rules.append(f"{field} muss Format {field_info['format']} haben")
+            
+            yaml_data["topics"][topic]["validation_rules"] = validation_rules
+        
+        # Save to YAML file
+        try:
+            with open(output_file, 'w', encoding='utf-8') as f:
+                yaml.dump(yaml_data, f, default_flow_style=False, allow_unicode=True, indent=2)
+            
+            print(f"💾 YAML-Ergebnisse gespeichert in: {output_file}")
+            return output_file
+            
+        except Exception as e:
+            print(f"❌ Fehler beim Speichern der YAML-Datei: {e}")
+            return None
+
+    def update_message_templates_yaml(self, results: Dict):
+        """Update the main message_templates.yml with analysis results"""
+        try:
+            # Load current YAML
+            yaml_file = Path(__file__).parent.parent / "config" / "message_templates.yml"
+            
+            if yaml_file.exists():
+                with open(yaml_file, 'r', encoding='utf-8') as f:
+                    current_data = yaml.safe_load(f)
+            else:
+                current_data = {
+                    "metadata": {
+                        "version": "1.0",
+                        "description": "MQTT Message Templates für ORBIS Modellfabrik",
+                        "last_updated": datetime.now().isoformat(),
+                        "author": "ORBIS Modellfabrik Team"
+                    },
+                    "topics": {},
+                    "categories": {
+                        "CCU": {
+                            "description": "Central Control Unit - Zentrale Steuerungseinheit",
+                            "icon": "🏭",
+                            "sub_categories": {
+                                "Order": {"description": "Bestellungsverwaltung und -verarbeitung", "icon": "📋"},
+                                "State": {"description": "Systemstatus und Zustandsinformationen", "icon": "📊"},
+                                "Control": {"description": "Steuerungsbefehle und -antworten", "icon": "🎮"},
+                                "Pairing": {"description": "FTS-Pairing und -Verbindung", "icon": "🔗"},
+                                "Settings": {"description": "System-Einstellungen", "icon": "⚙️"}
+                            }
+                        }
+                    },
+                    "validation_patterns": {
+                        "ISO_8601": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d{3})?Z$",
+                        "UUID": "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$",
+                        "NFC_CODE": "^[0-9a-fA-F]{14}$"
+                    }
+                }
+            
+            # Update topics with analysis results
+            for topic, template_data in results.items():
+                current_data["topics"][topic] = {
+                    "category": "CCU",
+                    "sub_category": self._determine_sub_category(topic),
+                    "description": f"Auto-analyzed template for {topic}",
+                    "template_structure": {},
+                    "examples": [],
+                    "validation_rules": []
+                }
+                
+                # Convert template structure
+                for field, field_info in template_data.get("structure", {}).items():
+                    current_data["topics"][topic]["template_structure"][field] = {
+                        "type": field_info.get("type", "string"),
+                        "description": f"Field: {field}",
+                        "required": True
+                    }
+                    
+                    # Add enum values if available
+                    if "enum_values" in field_info and field_info["enum_values"]:
+                        current_data["topics"][topic]["template_structure"][field]["enum"] = field_info["enum_values"]
+                    
+                    # Add format if available
+                    if "format" in field_info:
+                        current_data["topics"][topic]["template_structure"][field]["format"] = field_info["format"]
+                
+                # Add examples (limit to 3 for YAML readability)
+                examples = template_data.get("examples", [])
+                current_data["topics"][topic]["examples"] = examples[:3]
+                
+                # Add validation rules
+                validation_rules = []
+                for field, field_info in template_data.get("structure", {}).items():
+                    if "enum_values" in field_info and field_info["enum_values"]:
+                        validation_rules.append(f"{field} muss in {field_info['enum_values']} sein")
+                    if "format" in field_info:
+                        validation_rules.append(f"{field} muss Format {field_info['format']} haben")
+                
+                current_data["topics"][topic]["validation_rules"] = validation_rules
+            
+            # Update metadata
+            current_data["metadata"]["last_updated"] = datetime.now().isoformat()
+            current_data["metadata"]["ccu_analysis_completed"] = True
+            
+            # Save updated YAML
+            with open(yaml_file, 'w', encoding='utf-8') as f:
+                yaml.dump(current_data, f, default_flow_style=False, allow_unicode=True, indent=2)
+            
+            print(f"✅ Message Templates YAML aktualisiert: {yaml_file}")
+            return yaml_file
+            
+        except Exception as e:
+            print(f"❌ Fehler beim Aktualisieren der YAML-Datei: {e}")
+            return None
+
     def run_analysis(self):
         """Run complete analysis"""
         print("=" * 60)
@@ -570,8 +751,17 @@ class CCUTemplateAnalyzer:
                 print("❌ Keine Ergebnisse erstellt!")
                 return False
             
-            # Save results
-            output_file = self.save_results(results)
+            # Save results to JSON (original format)
+            json_output_file = self.save_results(results)
+            
+            # Save results to YAML (new format)
+            yaml_output_file = self.save_results_to_yaml(results)
+            
+            # Update main message_templates.yml
+            main_yaml_file = self.update_message_templates_yaml(results)
+            
+            # Update Message Template Manager with analysis results
+            self._update_template_manager(results)
             
             # Print summary
             print("\n" + "=" * 60)
@@ -583,7 +773,9 @@ class CCUTemplateAnalyzer:
             
             print(f"✅ Erfolgreich analysiert: {total_topics} Topics")
             print(f"📨 Gesamt Nachrichten: {total_messages}")
-            print(f"💾 Ergebnisse: {output_file}")
+            print(f"💾 JSON-Ergebnisse: {json_output_file}")
+            print(f"💾 YAML-Ergebnisse: {yaml_output_file}")
+            print(f"💾 Haupt-YAML aktualisiert: {main_yaml_file}")
             
             for topic, template in results.items():
                 stats = template['statistics']
@@ -595,6 +787,79 @@ class CCUTemplateAnalyzer:
         except Exception as e:
             print(f"❌ Fehler bei der Analyse: {e}")
             return False
+    
+    def _update_template_manager(self, results: Dict):
+        """Update Message Template Manager with analysis results"""
+        try:
+            print("\n🔄 Aktualisiere Message Template Manager...")
+            
+            # Get current templates
+            current_templates = self.message_template_manager.templates.get("topics", {})
+            
+            # Update with analysis results
+            for topic, template_data in results.items():
+                if topic not in current_templates:
+                    # Create new template entry
+                    current_templates[topic] = {
+                        "category": "CCU",
+                        "sub_category": self._determine_sub_category(topic),
+                        "description": f"Auto-analyzed template for {topic}",
+                        "template_structure": {},
+                        "examples": [],
+                        "validation_rules": []
+                    }
+                
+                # Update template structure
+                template_structure = {}
+                for field, field_info in template_data.get("structure", {}).items():
+                    template_structure[field] = {
+                        "type": field_info.get("type", "string"),
+                        "description": f"Field: {field}",
+                        "required": True
+                    }
+                    
+                    # Add enum values if available
+                    if "enum_values" in field_info and field_info["enum_values"]:
+                        template_structure[field]["enum"] = field_info["enum_values"]
+                    
+                    # Add format if available
+                    if "format" in field_info:
+                        template_structure[field]["format"] = field_info["format"]
+                
+                current_templates[topic]["template_structure"] = template_structure
+                
+                # Add examples
+                current_templates[topic]["examples"] = template_data.get("examples", [])
+                
+                # Add validation rules
+                validation_rules = []
+                for field, field_info in template_data.get("structure", {}).items():
+                    if "enum_values" in field_info and field_info["enum_values"]:
+                        validation_rules.append(f"{field} muss in {field_info['enum_values']} sein")
+                    if "format" in field_info:
+                        validation_rules.append(f"{field} muss Format {field_info['format']} haben")
+                
+                current_templates[topic]["validation_rules"] = validation_rules
+            
+            print(f"✅ Message Template Manager aktualisiert mit {len(results)} Topics")
+            
+        except Exception as e:
+            print(f"⚠️ Fehler beim Aktualisieren des Template Managers: {e}")
+    
+    def _determine_sub_category(self, topic: str) -> str:
+        """Determine sub-category based on topic"""
+        if "order" in topic:
+            return "Order"
+        elif "state" in topic:
+            return "State"
+        elif "control" in topic or "command" in topic:
+            return "Control"
+        elif "pairing" in topic:
+            return "Pairing"
+        elif "set" in topic:
+            return "Settings"
+        else:
+            return "General"
 
 def main():
     """Main function"""

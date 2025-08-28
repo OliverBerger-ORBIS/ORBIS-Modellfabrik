@@ -113,6 +113,18 @@ class APSDashboard:
         
         # Initialize Topic Manager
         self.topic_manager = get_topic_manager()
+        
+        # Initialize Message Template Manager (YAML-based, no analysis at startup)
+        try:
+            from ..tools.message_template_manager import get_message_template_manager
+            self.message_template_manager = get_message_template_manager()
+        except ImportError:
+            # Fallback for direct execution
+            import sys
+            import os
+            sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'tools'))
+            from message_template_manager import get_message_template_manager
+            self.message_template_manager = get_message_template_manager()
 
         # Load broker configurations
         self.broker_configs = load_broker_config()
@@ -2264,7 +2276,26 @@ class APSDashboard:
             key="template_category_filter"
         )
         
-        # Filter templates by category
+        # Sub-category filter
+        sub_categories = []
+        if selected_category != "Alle":
+            sub_categories = list(set(
+                template.get('sub_category', 'Unknown') 
+                for topic, template in all_templates.items()
+                if template.get('category') == selected_category
+            ))
+        
+        selected_sub_category = None
+        if sub_categories:
+            selected_sub_category = st.selectbox(
+                "📋 Sub-Kategorie auswählen:",
+                ["Alle"] + sub_categories,
+                key="template_sub_category_filter"
+            )
+            if selected_sub_category == "Alle":
+                selected_sub_category = None
+        
+        # Filter templates by category and sub-category
         if selected_category == "Alle":
             filtered_templates = all_templates
         else:
@@ -2272,6 +2303,13 @@ class APSDashboard:
                 topic: template for topic, template in all_templates.items()
                 if template.get('category') == selected_category
             }
+            
+            # Apply sub-category filter if selected
+            if selected_sub_category:
+                filtered_templates = {
+                    topic: template for topic, template in filtered_templates.items()
+                    if template.get('sub_category') == selected_sub_category
+                }
         
         st.markdown(f"**📊 {len(filtered_templates)} Templates gefunden**")
         
@@ -2518,12 +2556,13 @@ class APSDashboard:
         st.markdown("Dashboard-Konfiguration und System-Informationen")
 
         # Sub-navigation for settings
-        settings_tab1, settings_tab2, settings_tab3, settings_tab4, settings_tab5 = st.tabs([
+        settings_tab1, settings_tab2, settings_tab3, settings_tab4, settings_tab5, settings_tab6 = st.tabs([
             "🔧 Dashboard",
             "🏭 Module",
             "🏷️ NFC-Codes",
             "📡 Topic-Konfiguration",
-            "📚 MQTT-Templates"
+            "📚 MQTT-Templates",
+            "📋 Message-Templates"
         ])
 
         with settings_tab1:
@@ -2540,6 +2579,9 @@ class APSDashboard:
 
         with settings_tab5:
             self.show_mqtt_template_settings()
+            
+        with settings_tab6:
+            self.show_message_template_settings()
 
     def show_dashboard_settings(self):
         """Show dashboard configuration settings"""
@@ -2604,6 +2646,7 @@ class APSDashboard:
 
         with col2:
             st.metric("Template-Nachrichten", len(self.template_manager.templates))
+            st.metric("Message-Templates", self.message_template_manager.get_statistics()["total_topics"])
             st.metric("Session-Datenbanken", len(glob.glob(os.path.join(os.path.dirname(self.db_file), "aps_persistent_traffic_*.db"))))
 
 
@@ -3593,6 +3636,301 @@ class APSDashboard:
         finally:
             self.disconnect()
             self.disconnect_mqtt()
+
+    def show_message_template_settings(self):
+        """Show Message Template configuration and analysis"""
+        st.subheader("📋 Message Template Verwaltung")
+        st.markdown("Zentrale Verwaltung der MQTT Message Templates und Template-Analyse")
+        
+        # Statistics
+        stats = self.message_template_manager.get_statistics()
+        
+        col1, col2, col3, col4 = st.columns(4)
+        with col1:
+            st.metric("Gesamt Topics", stats["total_topics"])
+        with col2:
+            st.metric("Kategorien", stats["total_categories"])
+        with col3:
+            st.metric("Validierungs-Patterns", stats["validation_patterns"])
+        with col4:
+            st.metric("Cache-Größe", stats["analysis_cache_size"])
+        
+        st.markdown("---")
+        
+        # Template Analysis Section
+        st.subheader("🔍 Template-Analyse")
+        
+        # Session selection for analysis
+        project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
+        session_files = glob.glob(os.path.join(project_root, "mqtt-data/sessions/aps_persistent_traffic_*.db"))
+        
+        if session_files:
+            selected_session = st.selectbox(
+                "📁 Session für Template-Analyse auswählen:",
+                options=session_files,
+                format_func=lambda x: os.path.basename(x).replace('.db', ''),
+                help="Wähle eine Session-DB für die Template-Analyse"
+            )
+            
+            col1, col2 = st.columns(2)
+            with col1:
+                if st.button("🔍 Template-Analyse starten", type="primary"):
+                    with st.spinner("Analysiere Session-Templates..."):
+                        analysis_result = self.message_template_manager.analyze_session_templates(selected_session)
+                        
+                        if "error" not in analysis_result:
+                            st.success(f"✅ Analyse abgeschlossen: {analysis_result['topics_analyzed']} Topics analysiert")
+                            
+                            # Display analysis results
+                            st.subheader("📊 Analyse-Ergebnisse")
+                            
+                            # Topics overview
+                            topics_analyzed = analysis_result.get("topic_analysis", {})
+                            if topics_analyzed:
+                                topic_data = []
+                                for topic, analysis in topics_analyzed.items():
+                                    topic_data.append({
+                                        "Topic": topic,
+                                        "Nachrichten": analysis["message_count"],
+                                        "Felder": len(analysis["field_types"]),
+                                        "Beispiele": len(analysis["examples"])
+                                    })
+                                
+                                df = pd.DataFrame(topic_data)
+                                st.dataframe(df, use_container_width=True)
+                            
+                            # Template suggestions
+                            suggestions = analysis_result.get("template_suggestions", {})
+                            if suggestions:
+                                st.subheader("💡 Template-Vorschläge")
+                                
+                                for topic, suggestion in suggestions.items():
+                                    with st.expander(f"📋 {topic} ({suggestion['message_count']} Nachrichten)"):
+                                        st.write(f"**Kategorie:** {suggestion['category']}")
+                                        st.write(f"**Sub-Kategorie:** {suggestion['sub_category']}")
+                                        st.write(f"**Beschreibung:** {suggestion['description']}")
+                                        
+                                        # Template structure
+                                        if suggestion.get("template_structure"):
+                                            st.write("**Template-Struktur:**")
+                                            st.json(suggestion["template_structure"])
+                                        
+                                        # Validation rules
+                                        if suggestion.get("validation_rules"):
+                                            st.write("**Validierungsregeln:**")
+                                            for rule in suggestion["validation_rules"]:
+                                                st.write(f"• {rule}")
+                                        
+                                        # Examples
+                                        if suggestion.get("examples"):
+                                            st.write("**Beispiele:**")
+                                            for i, example in enumerate(suggestion["examples"][:2]):  # Show first 2
+                                                st.write(f"**Beispiel {i+1}:**")
+                                                # Handle different example formats
+                                                if isinstance(example, dict):
+                                                    if "payload" in example:
+                                                        st.json(example["payload"])
+                                                    else:
+                                                        st.json(example)
+                                                elif isinstance(example, list):
+                                                    st.json(example)
+                                                else:
+                                                    st.write(str(example))
+                        else:
+                            st.error(f"❌ Analyse fehlgeschlagen: {analysis_result['error']}")
+            
+            with col2:
+                if st.button("🔄 Cache leeren"):
+                    self.message_template_manager.session_analysis_cache.clear()
+                    st.success("✅ Cache geleert")
+                
+                if st.button("📥 Konfiguration neu laden"):
+                    self.message_template_manager.reload_config()
+                    st.success("✅ Konfiguration neu geladen")
+        else:
+            st.warning("⚠️ Keine Session-Datenbanken gefunden")
+        
+        st.markdown("---")
+        
+        # Template Overview Section
+        st.subheader("📚 Template-Übersicht")
+        
+        # Category filter
+        categories = self.message_template_manager.get_categories()
+        selected_category = st.selectbox(
+            "🏷️ Kategorie filtern:",
+            options=["Alle"] + categories,
+            help="Filtere Templates nach Kategorie"
+        )
+        
+        # Sub-category filter
+        sub_categories = []
+        if selected_category != "Alle":
+            sub_categories = self.message_template_manager.get_sub_categories(selected_category)
+        
+        selected_sub_category = None
+        if sub_categories:
+            selected_sub_category = st.selectbox(
+                "📋 Sub-Kategorie filtern:",
+                options=["Alle"] + sub_categories,
+                help="Filtere Templates nach Sub-Kategorie"
+            )
+            if selected_sub_category == "Alle":
+                selected_sub_category = None
+        
+        # Module name filter (only for MODULE category)
+        module_names = []
+        if selected_category == "MODULE":
+            # Get module names from module config
+            try:
+                module_config_file = os.path.join(os.path.dirname(__file__), '..', 'config', 'module_config.yml')
+                if os.path.exists(module_config_file):
+                    import yaml
+                    with open(module_config_file, 'r', encoding='utf-8') as f:
+                        module_config = yaml.safe_load(f)
+                    
+                    # Extract module names
+                    modules = module_config.get('modules', {})
+                    module_names = list(set(module.get('name', '') for module in modules.values() if module.get('name')))
+                    module_names.sort()
+            except Exception as e:
+                st.warning(f"⚠️ Fehler beim Laden der Modul-Konfiguration: {e}")
+        
+        selected_module_name = None
+        if module_names:
+            selected_module_name = st.selectbox(
+                "🏭 Modul filtern:",
+                options=["Alle"] + module_names,
+                help="Filtere Templates nach Modul-Namen"
+            )
+            if selected_module_name == "Alle":
+                selected_module_name = None
+        
+        # Get templates
+        if selected_category == "Alle":
+            templates = self.message_template_manager.templates.get("topics", {})
+        else:
+            topic_list = self.message_template_manager.get_topics_by_category(selected_category)
+            templates = {topic: self.message_template_manager.templates["topics"][topic] 
+                        for topic in topic_list if topic in self.message_template_manager.templates["topics"]}
+            
+            # Apply sub-category filter if selected
+            if selected_sub_category:
+                templates = {
+                    topic: template for topic, template in templates.items()
+                    if template.get('sub_category') == selected_sub_category
+                }
+            
+            # Apply module name filter if selected
+            if selected_module_name:
+                # Get module ID for the selected module name
+                try:
+                    module_config_file = os.path.join(os.path.dirname(__file__), '..', 'config', 'module_config.yml')
+                    if os.path.exists(module_config_file):
+                        import yaml
+                        with open(module_config_file, 'r', encoding='utf-8') as f:
+                            module_config = yaml.safe_load(f)
+                        
+                        # Find module ID for the selected name
+                        modules = module_config.get('modules', {})
+                        module_id = None
+                        for module_id_key, module_info in modules.items():
+                            if module_info.get('name') == selected_module_name:
+                                module_id = module_id_key
+                                break
+                        
+                        if module_id:
+                            # Filter templates by module ID
+                            templates = {
+                                topic: template for topic, template in templates.items()
+                                if module_id in topic
+                            }
+                except Exception as e:
+                    st.warning(f"⚠️ Fehler beim Filtern nach Modul: {e}")
+        
+        if templates:
+            for topic, template in templates.items():
+                # Get module name for display
+                module_name = "N/A"
+                if template.get('category') == 'MODULE':
+                    try:
+                        module_config_file = os.path.join(os.path.dirname(__file__), '..', 'config', 'module_config.yml')
+                        if os.path.exists(module_config_file):
+                            import yaml
+                            with open(module_config_file, 'r', encoding='utf-8') as f:
+                                module_config = yaml.safe_load(f)
+                            
+                            # Find module name for the topic
+                            modules = module_config.get('modules', {})
+                            for module_id, module_info in modules.items():
+                                if module_id in topic:
+                                    module_name = module_info.get('name', module_id)
+                                    break
+                    except Exception:
+                        pass
+                
+                with st.expander(f"📋 {topic}", expanded=False):
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        st.write(f"**Kategorie:** {template.get('category', 'N/A')}")
+                        st.write(f"**Sub-Kategorie:** {template.get('sub_category', 'N/A')}")
+                    with col2:
+                        if template.get('category') == 'MODULE':
+                            st.write(f"**Modul:** {module_name}")
+                        st.write(f"**Beschreibung:** {template.get('description', 'N/A')}")
+                    
+                    # Template structure
+                    if template.get("template_structure"):
+                        st.write("**Template-Struktur:**")
+                        structure_data = []
+                        for field, field_info in template["template_structure"].items():
+                            # Handle different field_info formats
+                            if isinstance(field_info, dict):
+                                field_type = field_info.get("type", "N/A")
+                                is_required = field_info.get("required", False)
+                                field_format = field_info.get("format", "N/A")
+                                enum_values = field_info.get("enum", [])
+                            else:
+                                # Handle string format (TXT templates)
+                                field_type = str(field_info)
+                                is_required = False
+                                field_format = "N/A"
+                                enum_values = []
+                            
+                            structure_data.append({
+                                "Feld": field,
+                                "Typ": field_type,
+                                "Erforderlich": "✅" if is_required else "❌",
+                                "Format": field_format,
+                                "Enum": str(enum_values) if enum_values else "N/A"
+                            })
+                        
+                        df = pd.DataFrame(structure_data)
+                        st.dataframe(df, use_container_width=True)
+                    
+                    # Examples
+                    if template.get("examples"):
+                        st.write("**Beispiele:**")
+                        for i, example in enumerate(template["examples"][:2]):  # Show first 2
+                            with st.expander(f"Beispiel {i+1}"):
+                                # Handle different example formats
+                                if isinstance(example, dict):
+                                    if "payload" in example:
+                                        st.json(example["payload"])
+                                    else:
+                                        st.json(example)
+                                elif isinstance(example, list):
+                                    st.json(example)
+                                else:
+                                    st.write(str(example))
+                    
+                    # Validation rules
+                    if template.get("validation_rules"):
+                        st.write("**Validierungsregeln:**")
+                        for rule in template["validation_rules"]:
+                            st.write(f"• {rule}")
+        else:
+            st.info("📝 Keine Templates gefunden")
 
 
 def main():
