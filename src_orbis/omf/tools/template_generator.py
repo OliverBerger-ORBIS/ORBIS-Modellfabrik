@@ -17,14 +17,10 @@ class TemplateGenerator:
     def __init__(self, module_config_path: str = None, templates_dir: str = None):
         """Initialisiert den Template Generator"""
         if module_config_path is None:
-            module_config_path = os.path.join(
-                os.path.dirname(__file__), "..", "config", "module_config.yml"
-            )
+            module_config_path = os.path.join(os.path.dirname(__file__), "..", "config", "module_config.yml")
 
         if templates_dir is None:
-            templates_dir = os.path.join(
-                os.path.dirname(__file__), "..", "config", "message_templates"
-            )
+            templates_dir = os.path.join(os.path.dirname(__file__), "..", "config", "message_templates")
 
         self.module_config_path = Path(module_config_path)
         self.templates_dir = Path(templates_dir)
@@ -34,20 +30,16 @@ class TemplateGenerator:
         """Lädt die Module-Konfiguration"""
         try:
             if self.module_config_path.exists():
-                with open(self.module_config_path, "r", encoding="utf-8") as f:
+                with open(self.module_config_path, encoding="utf-8") as f:
                     return yaml.safe_load(f)
             else:
-                print(
-                    f"⚠️ Module-Konfiguration nicht gefunden: {self.module_config_path}"
-                )
+                print(f"⚠️ Module-Konfiguration nicht gefunden: {self.module_config_path}")
                 return {}
         except Exception as e:
             print(f"❌ Fehler beim Laden der Module-Konfiguration: {e}")
             return {}
 
-    def generate_module_templates(
-        self, template_type: str = "connection"
-    ) -> Dict[str, Any]:
+    def generate_module_templates(self, template_type: str = "connection") -> Dict[str, Any]:
         """Generiert Module-spezifische Templates"""
         if not self.module_config:
             return {}
@@ -69,9 +61,7 @@ class TemplateGenerator:
             elif template_type == "factsheet":
                 template = self._generate_factsheet_template(module_id, module_info)
             else:
-                template = self._generate_generic_template(
-                    module_id, module_info, template_type
-                )
+                template = self._generate_generic_template(module_id, module_info, template_type)
 
             if template:
                 topic = f"module/v1/ff/{module_id}/{template_type}"
@@ -79,9 +69,7 @@ class TemplateGenerator:
 
         return generated_templates
 
-    def _generate_connection_template(
-        self, module_id: str, module_info: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    def _generate_connection_template(self, module_id: str, module_info: Dict[str, Any]) -> Dict[str, Any]:
         """Generiert Connection Template für ein Modul"""
         ip_addresses = module_info.get("ip_addresses", [])
         primary_ip = ip_addresses[0] if ip_addresses else "192.168.0.0"
@@ -121,9 +109,7 @@ class TemplateGenerator:
             ],
         }
 
-    def _generate_state_template(
-        self, module_id: str, module_info: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    def _generate_state_template(self, module_id: str, module_info: Dict[str, Any]) -> Dict[str, Any]:
         """Generiert State Template für ein Modul"""
         return {
             "category": "MODULE",
@@ -149,9 +135,7 @@ class TemplateGenerator:
             ],
         }
 
-    def _generate_order_template(
-        self, module_id: str, module_info: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    def _generate_order_template(self, module_id: str, module_info: Dict[str, Any]) -> Dict[str, Any]:
         """Generiert Order Template für ein Modul"""
         commands = module_info.get("commands", [])
 
@@ -181,9 +165,7 @@ class TemplateGenerator:
             ],
         }
 
-    def _generate_factsheet_template(
-        self, module_id: str, module_info: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    def _generate_factsheet_template(self, module_id: str, module_info: Dict[str, Any]) -> Dict[str, Any]:
         """Generiert Factsheet Template für ein Modul"""
         return {
             "category": "MODULE",
@@ -231,9 +213,7 @@ class TemplateGenerator:
         return {
             "category": "MODULE",
             "description": f"Module {module_id} {template_type.title()}",
-            "examples": [
-                {"module_id": module_id, "timestamp": "2025-08-19T09:13:34.483Z"}
-            ],
+            "examples": [{"module_id": module_id, "timestamp": "2025-08-19T09:13:34.483Z"}],
             "module": module_id,
             "sub_category": template_type.title(),
             "template_structure": {
@@ -246,17 +226,10 @@ class TemplateGenerator:
             ],
         }
 
-    def save_generated_templates(
-        self, templates: Dict[str, Any], template_type: str
-    ) -> bool:
+    def save_generated_templates(self, templates: Dict[str, Any], template_type: str) -> bool:
         """Speichert generierte Templates in eine YAML-Datei"""
         try:
-            output_file = (
-                self.templates_dir
-                / "templates"
-                / "module"
-                / f"{template_type}_generated.yml"
-            )
+            output_file = self.templates_dir / "templates" / "module" / f"{template_type}_generated.yml"
             output_file.parent.mkdir(parents=True, exist_ok=True)
 
             template_data = {
@@ -282,9 +255,7 @@ class TemplateGenerator:
                     indent=2,
                 )
 
-            print(
-                f"✅ {len(templates)} generierte Templates in {output_file} gespeichert"
-            )
+            print(f"✅ {len(templates)} generierte Templates in {output_file} gespeichert")
             return True
 
         except Exception as e:

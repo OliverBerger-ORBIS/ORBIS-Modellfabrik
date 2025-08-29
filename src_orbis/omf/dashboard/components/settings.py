@@ -39,9 +39,7 @@ def show_dashboard_settings():
 
     with col2:
         # Auto Refresh
-        auto_refresh = st.checkbox(
-            "🔄 Auto Refresh", value=config.get("dashboard.auto_refresh", True)
-        )
+        auto_refresh = st.checkbox("🔄 Auto Refresh", value=config.get("dashboard.auto_refresh", True))
 
         # Refresh Interval
         if auto_refresh:
@@ -80,12 +78,8 @@ def show_module_config():
         module_data = []
         for module_id, module_info in all_modules.items():
             icon = module_info.get("icon", "🏭")
-            short_name = module_info.get(
-                "name", module_id
-            )  # Kurzname wie HBW, FTS, etc.
-            name_de = module_info.get(
-                "name_lang_de", module_info.get("name", module_id)
-            )
+            short_name = module_info.get("name", module_id)  # Kurzname wie HBW, FTS, etc.
+            name_de = module_info.get("name_lang_de", module_info.get("name", module_id))
             module_type = module_info.get("type", "Unknown")
             ip_range = module_info.get("ip_range", "Unknown")
             enabled = module_info.get("enabled", True)
@@ -106,20 +100,12 @@ def show_module_config():
             st.dataframe(
                 module_data,
                 column_config={
-                    "Modul": st.column_config.TextColumn(
-                        "Modul", width="medium"
-                    ),
-                    "Name": st.column_config.TextColumn(
-                        "Name", width="medium"
-                    ),
+                    "Modul": st.column_config.TextColumn("Modul", width="medium"),
+                    "Name": st.column_config.TextColumn("Name", width="medium"),
                     "ID": st.column_config.TextColumn("ID", width="medium"),
                     "Typ": st.column_config.TextColumn("Typ", width="medium"),
-                    "IP Range": st.column_config.TextColumn(
-                        "IP Range", width="medium"
-                    ),
-                    "Aktiviert": st.column_config.TextColumn(
-                        "Status", width="small"
-                    ),
+                    "IP Range": st.column_config.TextColumn("IP Range", width="medium"),
+                    "Aktiviert": st.column_config.TextColumn("Status", width="small"),
                 },
                 hide_index=True,
             )
@@ -131,18 +117,13 @@ def show_module_config():
         selected_module = st.selectbox(
             "🏭 Modul auswählen",
             options=list(all_modules.keys()),
-            format_func=lambda x: (
-                f"{all_modules[x].get('name_lang_de', all_modules[x].get('name', x))} "
-                f"({x})"
-            ),
+            format_func=lambda x: (f"{all_modules[x].get('name_lang_de', all_modules[x].get('name', x))} " f"({x})"),
         )
 
         if selected_module:
             module_info = all_modules[selected_module]
             icon = module_info.get("icon", "🏭")
-            name_de = module_info.get(
-                "name_lang_de", module_info.get("name", selected_module)
-            )
+            name_de = module_info.get("name_lang_de", module_info.get("name", selected_module))
 
             st.markdown(f"**{icon} {name_de}**")
 
@@ -157,9 +138,7 @@ def show_module_config():
 
             with col2:
                 if st.button("💾 Änderungen speichern"):
-                    module_manager.update_module(
-                        selected_module, {"enabled": enabled}
-                    )
+                    module_manager.update_module(selected_module, {"enabled": enabled})
                     st.success(f"✅ {name_de} aktualisiert!")
 
         # Reload Button
@@ -178,9 +157,7 @@ def show_module_config():
         modules = config.get("modules", {})
 
         for module_id, module_config in modules.items():
-            with st.expander(
-                f"🏭 {module_config.get('name', module_id.upper())}"
-            ):
+            with st.expander(f"🏭 {module_config.get('name', module_id.upper())}"):
                 col1, col2 = st.columns(2)
 
                 with col1:
@@ -242,21 +219,11 @@ def show_nfc_config():
                     st.dataframe(
                         red_data,
                         column_config={
-                            "Werkstück": st.column_config.TextColumn(
-                                "Werkstück", width="medium"
-                            ),
-                            "NFC Code": st.column_config.TextColumn(
-                                "NFC Code", width="medium"
-                            ),
-                            "Qualität": st.column_config.TextColumn(
-                                "Qualität", width="small"
-                            ),
-                            "Beschreibung": st.column_config.TextColumn(
-                                "Beschreibung", width="medium"
-                            ),
-                            "Status": st.column_config.TextColumn(
-                                "Status", width="small"
-                            ),
+                            "Werkstück": st.column_config.TextColumn("Werkstück", width="medium"),
+                            "NFC Code": st.column_config.TextColumn("NFC Code", width="medium"),
+                            "Qualität": st.column_config.TextColumn("Qualität", width="small"),
+                            "Beschreibung": st.column_config.TextColumn("Beschreibung", width="medium"),
+                            "Status": st.column_config.TextColumn("Status", width="small"),
                         },
                         hide_index=True,
                     )
@@ -286,21 +253,11 @@ def show_nfc_config():
                     st.dataframe(
                         white_data,
                         column_config={
-                            "Werkstück": st.column_config.TextColumn(
-                                "Werkstück", width="medium"
-                            ),
-                            "NFC Code": st.column_config.TextColumn(
-                                "NFC Code", width="medium"
-                            ),
-                            "Qualität": st.column_config.TextColumn(
-                                "Qualität", width="small"
-                            ),
-                            "Beschreibung": st.column_config.TextColumn(
-                                "Beschreibung", width="medium"
-                            ),
-                            "Status": st.column_config.TextColumn(
-                                "Status", width="small"
-                            ),
+                            "Werkstück": st.column_config.TextColumn("Werkstück", width="medium"),
+                            "NFC Code": st.column_config.TextColumn("NFC Code", width="medium"),
+                            "Qualität": st.column_config.TextColumn("Qualität", width="small"),
+                            "Beschreibung": st.column_config.TextColumn("Beschreibung", width="medium"),
+                            "Status": st.column_config.TextColumn("Status", width="small"),
                         },
                         hide_index=True,
                     )
@@ -330,21 +287,11 @@ def show_nfc_config():
                     st.dataframe(
                         blue_data,
                         column_config={
-                            "Werkstück": st.column_config.TextColumn(
-                                "Werkstück", width="medium"
-                            ),
-                            "NFC Code": st.column_config.TextColumn(
-                                "NFC Code", width="medium"
-                            ),
-                            "Qualität": st.column_config.TextColumn(
-                                "Qualität", width="small"
-                            ),
-                            "Beschreibung": st.column_config.TextColumn(
-                                "Beschreibung", width="medium"
-                            ),
-                            "Status": st.column_config.TextColumn(
-                                "Status", width="small"
-                            ),
+                            "Werkstück": st.column_config.TextColumn("Werkstück", width="medium"),
+                            "NFC Code": st.column_config.TextColumn("NFC Code", width="medium"),
+                            "Qualität": st.column_config.TextColumn("Qualität", width="small"),
+                            "Beschreibung": st.column_config.TextColumn("Beschreibung", width="medium"),
+                            "Status": st.column_config.TextColumn("Status", width="small"),
                         },
                         hide_index=True,
                     )
@@ -358,6 +305,32 @@ def show_mqtt_config():
     """Zeigt die MQTT-Broker Konfiguration an"""
     st.markdown("### 🔗 MQTT-Broker Konfiguration")
     st.markdown("MQTT-Broker Einstellungen und Verbindungsverwaltung")
+    
+    # MQTT Mock-Option mit sofortiger Aktualisierung
+    previous_mock_state = st.session_state.get("mqtt_mock_enabled", False)
+    
+    mqtt_mock_enabled = st.checkbox(
+        "🧪 MQTT Mock aktivieren (für Tests)", 
+        value=previous_mock_state,
+        help="Simuliert MQTT-Verbindung für Tests ohne echte Verbindung",
+        key="mqtt_mock_checkbox"
+    )
+    
+    # Mock-Status in Session State speichern
+    st.session_state.mqtt_mock_enabled = mqtt_mock_enabled
+    
+    # Sofortige Aktualisierung wenn sich der Status geändert hat
+    if mqtt_mock_enabled != previous_mock_state:
+        st.rerun()
+    
+    # Status-Anzeige
+    if mqtt_mock_enabled:
+        st.success("✅ MQTT Mock aktiviert - Alle MQTT-Operationen werden simuliert")
+        st.info("💡 Buttons in der Steuerung sind jetzt aktiv, auch ohne echte MQTT-Verbindung")
+    else:
+        st.info("ℹ️ MQTT Mock deaktiviert - Normale MQTT-Verbindung erforderlich")
+    
+    st.markdown("---")
 
     try:
         import os
@@ -393,10 +366,7 @@ def show_mqtt_config():
         with col2:
             # Statistiken
             stats = mqtt_client.get_statistics()
-            st.metric(
-                "📨 Nachrichten empfangen", 
-                stats.get("messages_received", 0)
-            )
+            st.metric("📨 Nachrichten empfangen", stats.get("messages_received", 0))
             st.metric("📤 Nachrichten gesendet", stats.get("messages_sent", 0))
 
         st.markdown("---")
@@ -470,13 +440,9 @@ def show_mqtt_config():
             try:
                 import yaml
 
-                config_path = os.path.join(
-                    tools_path, "..", "config", "mqtt_config.yml"
-                )
+                config_path = os.path.join(tools_path, "..", "config", "mqtt_config.yml")
                 with open(config_path, "w", encoding="utf-8") as f:
-                    yaml.dump(
-                        config, f, default_flow_style=False, allow_unicode=True
-                    )
+                    yaml.dump(config, f, default_flow_style=False, allow_unicode=True)
                 st.success("✅ Broker-Konfiguration gespeichert!")
             except Exception as e:
                 st.error(f"❌ Fehler beim Speichern: {e}")
@@ -524,29 +490,19 @@ def show_topic_config():
             # Zeige Topics nach Kategorie
             categories = ["CCU", "TXT", "MODULE", "Node-RED"]
             for category in categories:
-                category_topics = {
-                    k: v for k, v in all_topics.items() if v.get("category") == category
-                }
+                category_topics = {k: v for k, v in all_topics.items() if v.get("category") == category}
                 if category_topics:
                     st.markdown(f"**{category} Topics ({len(category_topics)}):**")
-                    for topic, info in list(category_topics.items())[
-                        :3
-                    ]:  # Zeige erste 3 pro Kategorie
+                    for topic, info in list(category_topics.items())[:3]:  # Zeige erste 3 pro Kategorie
                         st.markdown(f"  - **{topic}:**")
-                        st.markdown(
-                            f"    - Template: `{info.get('template', 'Kein Template')}`"
-                        )
-                        st.markdown(
-                            f"    - Direction: `{info.get('template_direction', 'N/A')}`"
-                        )
+                        st.markdown(f"    - Template: `{info.get('template', 'Kein Template')}`")
+                        st.markdown(f"    - Direction: `{info.get('template_direction', 'N/A')}`")
                         st.markdown(f"    - Category: `{info.get('category', 'N/A')}`")
                     st.markdown("---")
 
         # Modul Filter
         st.markdown("#### 🔍 Modul Filter")
-        all_modules = list(
-            topic_manager.get_statistics().get("module_counts", {}).keys()
-        )
+        all_modules = list(topic_manager.get_statistics().get("module_counts", {}).keys())
         selected_module = st.selectbox(
             "🔗 Modul filtern (nur für MODULE-Kategorie relevant)",
             options=["Alle"] + all_modules,
@@ -578,9 +534,7 @@ def show_topic_config():
                         filtered_topics[topic] = info
 
                     if filtered_topics:
-                        st.markdown(
-                            f"**Topics ({len(filtered_topics)} von {len(category_topics)}):**"
-                        )
+                        st.markdown(f"**Topics ({len(filtered_topics)} von " f"{len(category_topics)}):**")
                         topic_data = []
                         for topic, info in filtered_topics.items():
                             friendly_name = info.get("friendly_name", topic)
@@ -601,12 +555,8 @@ def show_topic_config():
                             )
 
                         # Debug: Zeige Template-Zuordnungen
-                        templates_with_mapping = [
-                            t for t in topic_data if t["Template"] != "Kein Template"
-                        ]
-                        templates_without_mapping = [
-                            t for t in topic_data if t["Template"] == "Kein Template"
-                        ]
+                        templates_with_mapping = [t for t in topic_data if t["Template"] != "Kein Template"]
+                        templates_without_mapping = [t for t in topic_data if t["Template"] == "Kein Template"]
 
                         # Debug: Zeige erste paar Topics mit Details
                         with st.expander("🔍 Debug: Topic-Details", expanded=False):
@@ -614,9 +564,7 @@ def show_topic_config():
                                 st.markdown(f"**{topic['Topic']}:**")
                                 st.markdown(f"  - Template: `{topic['Template']}`")
                                 st.markdown(f"  - Direction: `{topic['Direction']}`")
-                                st.markdown(
-                                    f"  - Category: `{topic.get('Sub-Kategorie', 'N/A')}`"
-                                )
+                                st.markdown(f"  - Category: `{topic.get('Sub-Kategorie', 'N/A')}`")
                                 st.markdown("---")
 
                         # Zeige Template-Statistiken
@@ -628,41 +576,21 @@ def show_topic_config():
 
                         # Debug: Zeige alle Topics ohne Template
                         if templates_without_mapping:
-                            with st.expander(
-                                "⚠️ Topics ohne Template-Zuordnung", expanded=False
-                            ):
-                                st.markdown(
-                                    f"**{len(templates_without_mapping)} Topics ohne Template:**"
-                                )
+                            with st.expander("⚠️ Topics ohne Template-Zuordnung", expanded=False):
+                                st.markdown(f"**{len(templates_without_mapping)} Topics ohne Template:**")
                                 for topic in templates_without_mapping:
-                                    st.markdown(
-                                        f"- **{topic['Topic']}** (Kategorie: {topic.get('Kategorie', 'N/A')})"
-                                    )
+                                    st.markdown(f"- **{topic['Topic']}** (Kategorie: {topic.get('Kategorie', 'N/A')})")
 
                         st.dataframe(
                             topic_data,
                             column_config={
-                                "Topic": st.column_config.TextColumn(
-                                    "Topic", width="medium"
-                                ),
-                                "Friendly Name": st.column_config.TextColumn(
-                                    "Friendly Name", width="medium"
-                                ),
-                                "Beschreibung": st.column_config.TextColumn(
-                                    "Beschreibung", width="large"
-                                ),
-                                "Sub-Kategorie": st.column_config.TextColumn(
-                                    "Sub-Kategorie", width="small"
-                                ),
-                                "Modul": st.column_config.TextColumn(
-                                    "Modul", width="small"
-                                ),
-                                "Template": st.column_config.TextColumn(
-                                    "Template", width="medium"
-                                ),
-                                "Direction": st.column_config.TextColumn(
-                                    "Direction", width="small"
-                                ),
+                                "Topic": st.column_config.TextColumn("Topic", width="medium"),
+                                "Friendly Name": st.column_config.TextColumn("Friendly Name", width="medium"),
+                                "Beschreibung": st.column_config.TextColumn("Beschreibung", width="large"),
+                                "Sub-Kategorie": st.column_config.TextColumn("Sub-Kategorie", width="small"),
+                                "Modul": st.column_config.TextColumn("Modul", width="small"),
+                                "Template": st.column_config.TextColumn("Template", width="medium"),
+                                "Direction": st.column_config.TextColumn("Direction", width="small"),
                             },
                             hide_index=True,
                         )
@@ -696,9 +624,7 @@ def show_topic_config():
                         filtered_topics[topic] = info
 
                     if filtered_topics:
-                        st.markdown(
-                            f"**Topics ({len(filtered_topics)} von {len(sub_cat_topics)}):**"
-                        )
+                        st.markdown(f"**Topics ({len(filtered_topics)} von {len(sub_cat_topics)}):**")
                         topic_data = []
                         for topic, info in filtered_topics.items():
                             friendly_name = info.get("friendly_name", topic)
@@ -717,18 +643,10 @@ def show_topic_config():
                         st.dataframe(
                             topic_data,
                             column_config={
-                                "Topic": st.column_config.TextColumn(
-                                    "Topic", width="medium"
-                                ),
-                                "Friendly Name": st.column_config.TextColumn(
-                                    "Friendly Name", width="medium"
-                                ),
-                                "Beschreibung": st.column_config.TextColumn(
-                                    "Beschreibung", width="large"
-                                ),
-                                "Modul": st.column_config.TextColumn(
-                                    "Modul", width="small"
-                                ),
+                                "Topic": st.column_config.TextColumn("Topic", width="medium"),
+                                "Friendly Name": st.column_config.TextColumn("Friendly Name", width="medium"),
+                                "Beschreibung": st.column_config.TextColumn("Beschreibung", width="large"),
+                                "Modul": st.column_config.TextColumn("Modul", width="small"),
                             },
                             hide_index=True,
                         )
@@ -747,12 +665,8 @@ def show_topic_config():
                 st.markdown(f"**Version:** {metadata.get('version', 'Unbekannt')}")
                 st.markdown(f"**Autor:** {metadata.get('author', 'Unbekannt')}")
             with col2:
-                st.markdown(
-                    f"**Letzte Aktualisierung:** {metadata.get('last_updated', 'Unbekannt')}"
-                )
-                st.markdown(
-                    f"**Beschreibung:** {metadata.get('description', 'Keine Beschreibung')}"
-                )
+                st.markdown(f"**Letzte Aktualisierung:** {metadata.get('last_updated', 'Unbekannt')}")
+                st.markdown(f"**Beschreibung:** {metadata.get('description', 'Keine Beschreibung')}")
 
     except ImportError:
         st.error("Topic Manager konnte nicht importiert werden.")
@@ -864,24 +778,18 @@ def show_messages_templates():
 
             # Verzeichnis-Inhalt anzeigen
             if selected_category == "Node-RED":
-                template_dir = Path(
-                    "src_orbis/omf/config/message_templates/templates/node_red"
-                )
+                template_dir = Path("src_orbis/omf/config/message_templates/templates/node_red")
             else:
-                template_dir = Path(
-                    f"src_orbis/omf/config/message_templates/templates/{selected_category.lower()}"
-                )
+                template_dir = Path(f"src_orbis/omf/config/message_templates/templates/{selected_category.lower()}")
             if template_dir.exists():
                 yaml_files = list(template_dir.glob("*.yml"))
-                st.info(
-                    f"**Verzeichnis-Inhalt:** {len(yaml_files)} YAML-Dateien gefunden"
-                )
+                st.info(f"**Verzeichnis-Inhalt:** {len(yaml_files)} YAML-Dateien gefunden")
                 with st.expander("📁 Alle YAML-Dateien im Verzeichnis", expanded=False):
                     for yaml_file in yaml_files:
                         st.markdown(f"- `{yaml_file.name}`")
 
             if template_path.exists():
-                with open(template_path, "r", encoding="utf-8") as f:
+                with open(template_path, encoding="utf-8") as f:
                     template_data = yaml.safe_load(f)
 
                 template = template_data.get("template", {})
@@ -896,25 +804,17 @@ def show_messages_templates():
                         len(template.get("structure", {}).get("required_fields", [])),
                     )
                 with col3:
-                    st.metric(
-                        "Validation Rules", len(template.get("validation_rules", []))
-                    )
+                    st.metric("Validation Rules", len(template.get("validation_rules", [])))
 
                 # Template-Details
                 with st.expander("📋 Template Details", expanded=True):
-                    st.markdown(
-                        f"**Beschreibung:** {template.get('description', 'N/A')}"
-                    )
-                    st.markdown(
-                        f"**Semantischer Zweck:** {template.get('semantic_purpose', 'N/A')}"
-                    )
+                    st.markdown(f"**Beschreibung:** {template.get('description', 'N/A')}")
+                    st.markdown(f"**Semantischer Zweck:** {template.get('semantic_purpose', 'N/A')}")
 
                     # MQTT Integration
                     mqtt_info = template.get("mqtt", {})
                     st.markdown("**MQTT Integration:**")
-                    st.markdown(
-                        f"- Topic Pattern: `{mqtt_info.get('topic_pattern', 'N/A')}`"
-                    )
+                    st.markdown(f"- Topic Pattern: `{mqtt_info.get('topic_pattern', 'N/A')}`")
                     st.markdown(f"- Direction: {mqtt_info.get('direction', 'N/A')}")
                     st.markdown(f"- QoS: {mqtt_info.get('qos', 'N/A')}")
 
@@ -941,15 +841,9 @@ def show_messages_templates():
                     for field_name, field_info in field_defs.items():
                         with st.expander(f"`{field_name}`", expanded=False):
                             st.markdown(f"- **Type:** {field_info.get('type', 'N/A')}")
-                            st.markdown(
-                                f"- **Pattern:** {field_info.get('pattern', 'N/A')}"
-                            )
-                            st.markdown(
-                                f"- **Description:** {field_info.get('description', 'N/A')}"
-                            )
-                            st.markdown(
-                                f"- **Validation:** {field_info.get('validation', 'N/A')}"
-                            )
+                            st.markdown(f"- **Pattern:** {field_info.get('pattern', 'N/A')}")
+                            st.markdown(f"- **Description:** {field_info.get('description', 'N/A')}")
+                            st.markdown(f"- **Validation:** {field_info.get('validation', 'N/A')}")
 
                 # Validation Rules
                 with st.expander("✅ Validation Rules", expanded=False):
@@ -963,9 +857,7 @@ def show_messages_templates():
                     for field_name, field_info in variable_fields.items():
                         with st.expander(f"`{field_name}`", expanded=False):
                             st.markdown(f"- **Type:** {field_info.get('type', 'N/A')}")
-                            st.markdown(
-                                f"- **Description:** {field_info.get('description', 'N/A')}"
-                            )
+                            st.markdown(f"- **Description:** {field_info.get('description', 'N/A')}")
 
                             values = field_info.get("values", [])
                             if values:
@@ -973,9 +865,7 @@ def show_messages_templates():
                                 if len(values) <= 10:
                                     st.markdown(f"  - {', '.join(values)}")
                                 else:
-                                    st.markdown(
-                                        f"  - {', '.join(values[:5])}... ({len(values)} total)"
-                                    )
+                                    st.markdown(f"  - {', '.join(values[:5])}... ({len(values)} total)")
 
                 # Usage Examples
                 with st.expander("📦 Usage Examples", expanded=False):
@@ -985,21 +875,13 @@ def show_messages_templates():
 
                         # Tabs für mehrere Beispiele
                         if len(usage_examples) > 1:
-                            tab_names = [
-                                f"Beispiel {i + 1}" for i in range(len(usage_examples))
-                            ]
+                            tab_names = [f"Beispiel {i + 1}" for i in range(len(usage_examples))]
                             tabs = st.tabs(tab_names)
 
-                            for i, (tab, example) in enumerate(
-                                zip(tabs, usage_examples)
-                            ):
+                            for _i, (tab, example) in enumerate(zip(tabs, usage_examples)):
                                 with tab:
-                                    st.markdown(
-                                        f"**{example.get('description', 'N/A')}**"
-                                    )
-                                    st.markdown(
-                                        f"**Topic:** `{example.get('topic', 'N/A')}`"
-                                    )
+                                    st.markdown(f"**{example.get('description', 'N/A')}**")
+                                    st.markdown(f"**Topic:** `{example.get('topic', 'N/A')}`")
                                     st.markdown("**Payload:**")
                                     st.json(example.get("payload", {}))
                         else:

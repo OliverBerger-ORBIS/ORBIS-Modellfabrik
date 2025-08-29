@@ -114,10 +114,8 @@ class TestMessageGenerator(unittest.TestCase):
         # Assert
         self.assertIsNotNone(result)
         payload = result["payload"]
-        order_update_id = payload["orderUpdateId"]
-
-        # Check if orderUpdateId is valid according to template
-        # orderUpdateId is now in parameters
+        
+        # Check if orderUpdateId is in parameters (new structure)
         if "parameters" in payload and "orderUpdateId" in payload["parameters"]:
             order_update_id = payload["parameters"]["orderUpdateId"]
             print(f"✅ orderUpdateId in parameters: {order_update_id}")

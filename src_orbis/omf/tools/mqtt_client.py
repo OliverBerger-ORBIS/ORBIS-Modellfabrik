@@ -22,9 +22,7 @@ class OMFMQTTClient:
     def __init__(self, config_path: str = None):
         """Initialize OMF MQTT Client"""
         if config_path is None:
-            config_path = os.path.join(
-                os.path.dirname(__file__), "..", "config", "mqtt_config.yml"
-            )
+            config_path = os.path.join(os.path.dirname(__file__), "..", "config", "mqtt_config.yml")
 
         self.config_path = config_path
         self.config = self._load_config()
@@ -35,11 +33,7 @@ class OMFMQTTClient:
         self.connection_thread = None
 
         # Message handling
-        self.message_queue = Queue(
-            maxsize=self.config.get("performance", {})
-            .get("queue", {})
-            .get("max_size", 1000)
-        )
+        self.message_queue = Queue(maxsize=self.config.get("performance", {}).get("queue", {}).get("max_size", 1000))
         self.message_handlers: Dict[str, List[Callable]] = {}
         self.message_history: List[Dict] = []
 
@@ -61,7 +55,7 @@ class OMFMQTTClient:
     def _load_config(self) -> Dict[str, Any]:
         """Load MQTT configuration"""
         try:
-            with open(self.config_path, "r", encoding="utf-8") as f:
+            with open(self.config_path, encoding="utf-8") as f:
                 return yaml.safe_load(f)
         except Exception as e:
             print(f"Error loading MQTT config: {e}")
@@ -71,9 +65,7 @@ class OMFMQTTClient:
         """Setup logging for MQTT client"""
         log_config = self.config.get("connection", {}).get("logging", {})
         log_level = getattr(logging, log_config.get("level", "INFO"))
-        log_format = log_config.get(
-            "format", "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-        )
+        log_format = log_config.get("format", "%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 
         logging.basicConfig(
             level=log_level,
@@ -89,12 +81,8 @@ class OMFMQTTClient:
         """Initialize MQTT client"""
         try:
             self.client = mqtt.Client(
-                client_id=self.config.get("broker", {})
-                .get("aps", {})
-                .get("client_id", "omf_dashboard"),
-                clean_session=self.config.get("broker", {})
-                .get("aps", {})
-                .get("clean_session", True),
+                client_id=self.config.get("broker", {}).get("aps", {}).get("client_id", "omf_dashboard"),
+                clean_session=self.config.get("broker", {}).get("aps", {}).get("clean_session", True),
             )
 
             # Set callbacks
@@ -107,9 +95,7 @@ class OMFMQTTClient:
             # Set username/password if provided
             broker_config = self.config.get("broker", {}).get("aps", {})
             if broker_config.get("username"):
-                self.client.username_pw_set(
-                    broker_config.get("username"), broker_config.get("password")
-                )
+                self.client.username_pw_set(broker_config.get("username"), broker_config.get("password"))
 
             self.logger.info("MQTT Client initialized")
 
@@ -184,7 +170,7 @@ class OMFMQTTClient:
         """Subscribe to configured topics"""
         subscriptions = self.config.get("subscriptions", {})
 
-        for category, topics in subscriptions.items():
+        for _category, topics in subscriptions.items():
             for topic in topics:
                 try:
                     result = self.client.subscribe(topic, qos=1)
@@ -214,9 +200,7 @@ class OMFMQTTClient:
                     try:
                         handler(message)
                     except Exception as e:
-                        self.logger.error(
-                            f"Error in pattern handler for {pattern}: {e}"
-                        )
+                        self.logger.error(f"Error in pattern handler for {pattern}: {e}")
 
     def _topic_matches_pattern(self, topic: str, pattern: str) -> bool:
         """Check if topic matches pattern (simple wildcard matching)"""
@@ -263,9 +247,7 @@ class OMFMQTTClient:
 
             if result == mqtt.MQTT_ERR_SUCCESS:
                 # Start network loop in separate thread
-                self.connection_thread = threading.Thread(
-                    target=self.client.loop_forever, daemon=True
-                )
+                self.connection_thread = threading.Thread(target=self.client.loop_forever, daemon=True)
                 self.connection_thread.start()
 
                 # Wait for connection
@@ -291,9 +273,7 @@ class OMFMQTTClient:
             self.connected = False
             self.logger.info("Disconnected from MQTT broker")
 
-    def publish(
-        self, topic: str, payload: Any, qos: int = None, retain: bool = None
-    ) -> bool:
+    def publish(self, topic: str, payload: Any, qos: int = None, retain: bool = None) -> bool:
         """Publish message to topic"""
         if not self.connected:
             self.logger.warning("Not connected to broker")
@@ -310,11 +290,7 @@ class OMFMQTTClient:
             if qos is None:
                 qos = self.config.get("connection", {}).get("message", {}).get("qos", 1)
             if retain is None:
-                retain = (
-                    self.config.get("connection", {})
-                    .get("message", {})
-                    .get("retain", False)
-                )
+                retain = self.config.get("connection", {}).get("message", {}).get("retain", False)
 
             # Publish message
             result = self.client.publish(topic, payload, qos=qos, retain=retain)

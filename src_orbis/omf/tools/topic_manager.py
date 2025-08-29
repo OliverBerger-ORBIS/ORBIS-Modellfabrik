@@ -17,9 +17,7 @@ class OMFTopicManager:
         """Initialize OMFTopicManager with YAML configuration"""
         if config_path is None:
             # Default path: config/topic_config.yml relative to this file
-            config_path = os.path.join(
-                os.path.dirname(__file__), "..", "config", "topic_config.yml"
-            )
+            config_path = os.path.join(os.path.dirname(__file__), "..", "config", "topic_config.yml")
 
         self.config_path = config_path
         self.config = None
@@ -28,7 +26,7 @@ class OMFTopicManager:
     def load_yaml_config(self) -> bool:
         """Load topic configuration from YAML file"""
         try:
-            with open(self.config_path, "r", encoding="utf-8") as f:
+            with open(self.config_path, encoding="utf-8") as f:
                 self.config = yaml.safe_load(f)
             return True
         except FileNotFoundError:
@@ -96,31 +94,17 @@ class OMFTopicManager:
     def get_topics_by_category(self, category: str) -> Dict[str, Dict[str, Any]]:
         """Get all topics for a specific category"""
         all_topics = self.get_all_topics()
-        return {
-            topic: info
-            for topic, info in all_topics.items()
-            if info.get("category") == category
-        }
+        return {topic: info for topic, info in all_topics.items() if info.get("category") == category}
 
     def get_topics_by_module(self, module: str) -> Dict[str, Dict[str, Any]]:
         """Get all topics for a specific module"""
         all_topics = self.get_all_topics()
-        return {
-            topic: info
-            for topic, info in all_topics.items()
-            if info.get("module") == module
-        }
+        return {topic: info for topic, info in all_topics.items() if info.get("module") == module}
 
-    def get_topics_by_sub_category(
-        self, sub_category: str
-    ) -> Dict[str, Dict[str, Any]]:
+    def get_topics_by_sub_category(self, sub_category: str) -> Dict[str, Dict[str, Any]]:
         """Get all topics for a specific sub-category"""
         all_topics = self.get_all_topics()
-        return {
-            topic: info
-            for topic, info in all_topics.items()
-            if info.get("sub_category") == sub_category
-        }
+        return {topic: info for topic, info in all_topics.items() if info.get("sub_category") == sub_category}
 
     def get_categories(self) -> Dict[str, Dict[str, Any]]:
         """Get all categories with descriptions"""
@@ -170,10 +154,7 @@ class OMFTopicManager:
     def get_all_friendly_names(self) -> Dict[str, str]:
         """Get all topic to friendly name mappings"""
         all_topics = self.get_all_topics()
-        return {
-            topic: info.get("friendly_name", topic)
-            for topic, info in all_topics.items()
-        }
+        return {topic: info.get("friendly_name", topic) for topic, info in all_topics.items()}
 
     def get_template_placeholders(self) -> Dict[str, str]:
         """Get template placeholders"""
@@ -196,25 +177,23 @@ class OMFTopicManager:
 
         # Count topics by category
         category_counts = {}
-        for topic, info in all_topics.items():
+        for _topic, info in all_topics.items():
             category = info.get("category", "Unknown")
             category_counts[category] = category_counts.get(category, 0) + 1
 
         # Count topics by module
         module_counts = {}
-        for topic, info in all_topics.items():
+        for _topic, info in all_topics.items():
             module = info.get("module", "")
             if module:
                 module_counts[module] = module_counts.get(module, 0) + 1
 
         # Count topics by sub-category
         sub_category_counts = {}
-        for topic, info in all_topics.items():
+        for _topic, info in all_topics.items():
             sub_category = info.get("sub_category", "")
             if sub_category:
-                sub_category_counts[sub_category] = (
-                    sub_category_counts.get(sub_category, 0) + 1
-                )
+                sub_category_counts[sub_category] = sub_category_counts.get(sub_category, 0) + 1
 
         return {
             "total_topics": len(all_topics),

@@ -22,7 +22,7 @@ class SemanticTemplateGenerator:
     def load_module_config(self) -> Dict[str, Any]:
         """Lädt Module-Konfiguration"""
         try:
-            with open(self.module_config_path, "r", encoding="utf-8") as f:
+            with open(self.module_config_path, encoding="utf-8") as f:
                 return yaml.safe_load(f)
         except Exception as e:
             print(f"❌ Fehler beim Laden der Module-Konfiguration: {e}")
@@ -54,9 +54,7 @@ class SemanticTemplateGenerator:
         # Extrahiere Module aus der korrekten Struktur
         modules = module_config.get("modules", {})
         enabled_modules = {
-            module_id: module_info
-            for module_id, module_info in modules.items()
-            if module_info.get("enabled", True)
+            module_id: module_info for module_id, module_info in modules.items() if module_info.get("enabled", True)
         }
 
         # Connection Template (generisch für alle Module)
@@ -448,7 +446,7 @@ class SemanticTemplateGenerator:
         for module_info in module_config.values():
             if isinstance(module_info, dict) and "ip_addresses" in module_info:
                 ips.update(module_info["ip_addresses"])
-        return sorted(list(ips))
+        return sorted(ips)
 
     def _get_all_module_versions(self, module_config: Dict[str, Any]) -> List[str]:
         """Extrahiert alle Versionen aus Module-Config"""
@@ -456,7 +454,7 @@ class SemanticTemplateGenerator:
         for module_info in module_config.values():
             if isinstance(module_info, dict) and "version" in module_info:
                 versions.add(module_info["version"])
-        return sorted(list(versions))
+        return sorted(versions)
 
     def _get_all_module_commands(self, module_config: Dict[str, Any]) -> List[str]:
         """Extrahiert alle Commands aus Module-Config"""
@@ -464,7 +462,7 @@ class SemanticTemplateGenerator:
         for module_info in module_config.values():
             if isinstance(module_info, dict) and "commands" in module_info:
                 commands.update(module_info["commands"])
-        return sorted(list(commands))
+        return sorted(commands)
 
     def save_semantic_templates(self, templates: Dict[str, Any]) -> None:
         """Speichert semantische Templates in YAML-Dateien"""
@@ -495,9 +493,7 @@ class SemanticTemplateGenerator:
                     indent=2,
                 )
 
-            print(
-                f"✅ {len(category_templates)} semantische {category.title()}-Templates in {file_path} gespeichert"
-            )
+            print(f"✅ {len(category_templates)} semantische {category.title()}-Templates in {file_path} gespeichert")
 
 
 def main():

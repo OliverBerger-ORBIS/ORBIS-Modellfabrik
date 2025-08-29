@@ -103,7 +103,7 @@ def main():
             # Connection Status (inkl. Mock-Support)
             # Mock-Modus prüfen
             mock_enabled = st.session_state.get("mqtt_mock_enabled", False)
-            
+
             if mock_enabled:
                 st.success("🧪 MQTT MOCK")
                 col_btn1, col_btn2 = st.columns(2)
@@ -119,7 +119,9 @@ def main():
                 st.success("🔗 MQTT Connected")
                 col_btn1, col_btn2 = st.columns(2)
                 with col_btn1:
-                    if st.button("🔌 Disconnect", key="mqtt_disconnect", use_container_width=True):
+                    if st.button(
+                        "🔌 Disconnect", key="mqtt_disconnect", use_container_width=True
+                    ):
                         mqtt_client.disconnect()
                         st.rerun()
                 with col_btn2:
@@ -134,7 +136,9 @@ def main():
                 st.error("❌ MQTT Disconnected")
                 col_btn1, col_btn2 = st.columns(2)
                 with col_btn1:
-                    if st.button("🔗 Connect", key="mqtt_connect", use_container_width=True):
+                    if st.button(
+                        "🔗 Connect", key="mqtt_connect", use_container_width=True
+                    ):
                         if mqtt_client.connect():
                             st.success("✅ Connected successfully!")
                         else:
@@ -194,7 +198,9 @@ def main():
         st.header("📋 Aufträge")
 
         # Sub-tabs for Orders
-        orders_tab1, orders_tab2 = st.tabs(["📋 Auftragsverwaltung", "🔄 Laufende Aufträge"])
+        orders_tab1, orders_tab2 = st.tabs(
+            ["📋 Auftragsverwaltung", "🔄 Laufende Aufträge"]
+        )
 
         with orders_tab1:
             st.subheader("📋 Auftragsverwaltung")

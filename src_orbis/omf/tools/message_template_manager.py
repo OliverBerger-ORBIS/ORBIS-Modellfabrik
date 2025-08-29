@@ -17,9 +17,7 @@ class OMFMessageTemplateManager:
     def __init__(self, templates_dir: str = None):
         """Initialisiert den OMF Message Template Manager"""
         if templates_dir is None:
-            templates_dir = os.path.join(
-                os.path.dirname(__file__), "..", "config", "message_templates"
-            )
+            templates_dir = os.path.join(os.path.dirname(__file__), "..", "config", "message_templates")
 
         self.templates_dir = Path(templates_dir)
         self.metadata = self._load_metadata()
@@ -32,7 +30,7 @@ class OMFMessageTemplateManager:
         metadata_file = self.templates_dir / "metadata.yml"
         try:
             if metadata_file.exists():
-                with open(metadata_file, "r", encoding="utf-8") as f:
+                with open(metadata_file, encoding="utf-8") as f:
                     return yaml.safe_load(f)
             else:
                 print(f"⚠️ Metadaten-Datei nicht gefunden: {metadata_file}")
@@ -46,7 +44,7 @@ class OMFMessageTemplateManager:
         categories_file = self.templates_dir / "categories.yml"
         try:
             if categories_file.exists():
-                with open(categories_file, "r", encoding="utf-8") as f:
+                with open(categories_file, encoding="utf-8") as f:
                     return yaml.safe_load(f)
             else:
                 print(f"⚠️ Kategorien-Datei nicht gefunden: {categories_file}")
@@ -75,7 +73,7 @@ class OMFMessageTemplateManager:
     def _load_template_file(self, file_path: Path):
         """Lädt eine einzelne Template-Datei"""
         try:
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 template_data = yaml.safe_load(f)
 
             if template_data and "templates" in template_data:
@@ -83,18 +81,12 @@ class OMFMessageTemplateManager:
                 for topic, template in template_data["templates"].items():
                     # Füge Metadaten hinzu
                     template["file_path"] = str(file_path)
-                    template["category"] = template_data.get("metadata", {}).get(
-                        "category"
-                    )
-                    template["sub_category"] = template_data.get("metadata", {}).get(
-                        "sub_category"
-                    )
+                    template["category"] = template_data.get("metadata", {}).get("category")
+                    template["sub_category"] = template_data.get("metadata", {}).get("sub_category")
 
                     self.templates[topic] = template
 
-                print(
-                    f"✅ {len(template_data['templates'])} Templates aus {file_path.name} geladen"
-                )
+                print(f"✅ {len(template_data['templates'])} Templates aus {file_path.name} geladen")
 
         except Exception as e:
             print(f"❌ Fehler beim Laden von {file_path}: {e}")
@@ -155,14 +147,12 @@ class OMFMessageTemplateManager:
         category_counts = {}
         sub_category_counts = {}
 
-        for topic, template in self.templates.items():
+        for _topic, template in self.templates.items():
             category = template.get("category", "Unknown")
             sub_category = template.get("sub_category", "Unknown")
 
             category_counts[category] = category_counts.get(category, 0) + 1
-            sub_category_counts[sub_category] = (
-                sub_category_counts.get(sub_category, 0) + 1
-            )
+            sub_category_counts[sub_category] = sub_category_counts.get(sub_category, 0) + 1
 
         return {
             "total_templates": total_templates,
@@ -206,9 +196,7 @@ class OMFMessageTemplateManager:
                 value = message[field]
                 if expected_type == "<string>" and not isinstance(value, str):
                     errors.append(f"Feld '{field}' muss String sein")
-                elif expected_type == "<number>" and not isinstance(
-                    value, (int, float)
-                ):
+                elif expected_type == "<number>" and not isinstance(value, (int, float)):
                     errors.append(f"Feld '{field}' muss Zahl sein")
                 elif expected_type == "<boolean>" and not isinstance(value, bool):
                     errors.append(f"Feld '{field}' muss Boolean sein")

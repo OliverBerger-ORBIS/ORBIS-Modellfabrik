@@ -97,7 +97,7 @@ class OMFConfig:
         """Lädt die Konfiguration aus Datei oder erstellt Standard"""
         try:
             if self.config_file.exists():
-                with open(self.config_file, "r", encoding="utf-8") as f:
+                with open(self.config_file, encoding="utf-8") as f:
                     return yaml.safe_load(f)
             else:
                 return DEFAULT_CONFIG.copy()
@@ -110,9 +110,7 @@ class OMFConfig:
         try:
             self.config_file.parent.mkdir(parents=True, exist_ok=True)
             with open(self.config_file, "w", encoding="utf-8") as f:
-                yaml.dump(
-                    self.config, f, default_flow_style=False, allow_unicode=True
-                )
+                yaml.dump(self.config, f, default_flow_style=False, allow_unicode=True)
             return True
         except Exception as e:
             print(f"❌ Konfiguration konnte nicht gespeichert werden: {e}")
