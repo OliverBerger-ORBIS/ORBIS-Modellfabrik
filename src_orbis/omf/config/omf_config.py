@@ -110,7 +110,9 @@ class OMFConfig:
         try:
             self.config_file.parent.mkdir(parents=True, exist_ok=True)
             with open(self.config_file, "w", encoding="utf-8") as f:
-                yaml.dump(self.config, f, default_flow_style=False, allow_unicode=True)
+                yaml.dump(
+                    self.config, f, default_flow_style=False, allow_unicode=True
+                )
             return True
         except Exception as e:
             print(f"❌ Konfiguration konnte nicht gespeichert werden: {e}")

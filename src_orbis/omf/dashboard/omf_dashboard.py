@@ -101,7 +101,9 @@ def main():
                 col_btn1, col_btn2 = st.columns(2)
                 with col_btn1:
                     if st.button(
-                        "🔌 Disconnect", key="mqtt_disconnect", use_container_width=True
+                        "🔌 Disconnect", 
+                        key="mqtt_disconnect", 
+                        use_container_width=True
                     ):
                         mqtt_client.disconnect()
                         st.rerun()
@@ -118,7 +120,9 @@ def main():
                 col_btn1, col_btn2 = st.columns(2)
                 with col_btn1:
                     if st.button(
-                        "🔗 Connect", key="mqtt_connect", use_container_width=True
+                        "🔗 Connect", 
+                        key="mqtt_connect", 
+                        use_container_width=True
                     ):
                         if mqtt_client.connect():
                             st.success("✅ Connected successfully!")
@@ -155,7 +159,12 @@ def main():
 
         # Sub-tabs for Overview
         overview_tab1, overview_tab2, overview_tab3, overview_tab4 = st.tabs(
-            ["🏭 Modul-Status", "📦 Bestellung", "🔧 Bestellung-Rohware", "📚 Lagerbestand"]
+            [
+                "🏭 Modul-Status", 
+                "📦 Bestellung", 
+                "🔧 Bestellung-Rohware", 
+                "📚 Lagerbestand"
+            ]
         )
 
         with overview_tab1:

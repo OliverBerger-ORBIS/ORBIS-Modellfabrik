@@ -106,12 +106,20 @@ def show_module_config():
             st.dataframe(
                 module_data,
                 column_config={
-                    "Modul": st.column_config.TextColumn("Modul", width="medium"),
-                    "Name": st.column_config.TextColumn("Name", width="medium"),
+                    "Modul": st.column_config.TextColumn(
+                        "Modul", width="medium"
+                    ),
+                    "Name": st.column_config.TextColumn(
+                        "Name", width="medium"
+                    ),
                     "ID": st.column_config.TextColumn("ID", width="medium"),
                     "Typ": st.column_config.TextColumn("Typ", width="medium"),
-                    "IP Range": st.column_config.TextColumn("IP Range", width="medium"),
-                    "Aktiviert": st.column_config.TextColumn("Status", width="small"),
+                    "IP Range": st.column_config.TextColumn(
+                        "IP Range", width="medium"
+                    ),
+                    "Aktiviert": st.column_config.TextColumn(
+                        "Status", width="small"
+                    ),
                 },
                 hide_index=True,
             )
@@ -123,7 +131,10 @@ def show_module_config():
         selected_module = st.selectbox(
             "🏭 Modul auswählen",
             options=list(all_modules.keys()),
-            format_func=lambda x: f"{all_modules[x].get('name_lang_de', all_modules[x].get('name', x))} ({x})",
+            format_func=lambda x: (
+                f"{all_modules[x].get('name_lang_de', all_modules[x].get('name', x))} "
+                f"({x})"
+            ),
         )
 
         if selected_module:
@@ -146,7 +157,9 @@ def show_module_config():
 
             with col2:
                 if st.button("💾 Änderungen speichern"):
-                    module_manager.update_module(selected_module, {"enabled": enabled})
+                    module_manager.update_module(
+                        selected_module, {"enabled": enabled}
+                    )
                     st.success(f"✅ {name_de} aktualisiert!")
 
         # Reload Button
@@ -165,7 +178,9 @@ def show_module_config():
         modules = config.get("modules", {})
 
         for module_id, module_config in modules.items():
-            with st.expander(f"🏭 {module_config.get('name', module_id.upper())}"):
+            with st.expander(
+                f"🏭 {module_config.get('name', module_id.upper())}"
+            ):
                 col1, col2 = st.columns(2)
 
                 with col1:
@@ -378,7 +393,10 @@ def show_mqtt_config():
         with col2:
             # Statistiken
             stats = mqtt_client.get_statistics()
-            st.metric("📨 Nachrichten empfangen", stats.get("messages_received", 0))
+            st.metric(
+                "📨 Nachrichten empfangen", 
+                stats.get("messages_received", 0)
+            )
             st.metric("📤 Nachrichten gesendet", stats.get("messages_sent", 0))
 
         st.markdown("---")
@@ -456,7 +474,9 @@ def show_mqtt_config():
                     tools_path, "..", "config", "mqtt_config.yml"
                 )
                 with open(config_path, "w", encoding="utf-8") as f:
-                    yaml.dump(config, f, default_flow_style=False, allow_unicode=True)
+                    yaml.dump(
+                        config, f, default_flow_style=False, allow_unicode=True
+                    )
                 st.success("✅ Broker-Konfiguration gespeichert!")
             except Exception as e:
                 st.error(f"❌ Fehler beim Speichern: {e}")
@@ -845,7 +865,7 @@ def show_messages_templates():
             # Verzeichnis-Inhalt anzeigen
             if selected_category == "Node-RED":
                 template_dir = Path(
-                    f"src_orbis/omf/config/message_templates/templates/node_red"
+                    "src_orbis/omf/config/message_templates/templates/node_red"
                 )
             else:
                 template_dir = Path(
@@ -966,7 +986,7 @@ def show_messages_templates():
                         # Tabs für mehrere Beispiele
                         if len(usage_examples) > 1:
                             tab_names = [
-                                f"Beispiel {i+1}" for i in range(len(usage_examples))
+                                f"Beispiel {i + 1}" for i in range(len(usage_examples))
                             ]
                             tabs = st.tabs(tab_names)
 

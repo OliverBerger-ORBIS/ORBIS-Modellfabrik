@@ -4,10 +4,9 @@ Template Migration Tool - Migration von alter YAML zu modularer Struktur
 Version: 3.0.0
 """
 
-import json
 import os
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict
 
 import yaml
 

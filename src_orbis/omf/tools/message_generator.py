@@ -325,7 +325,7 @@ class MessageGenerator:
         if not template:
             return [f"Template '{template_name}' nicht gefunden"]
 
-        validation_rules = template.get("validation_rules", [])
+        # validation_rules = template.get("validation_rules", [])  # TODO: Implement validation
         errors = []
 
         # Implementiere Validierungslogik hier
