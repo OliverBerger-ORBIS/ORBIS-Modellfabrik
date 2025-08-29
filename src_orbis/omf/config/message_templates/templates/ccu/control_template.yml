@@ -1,0 +1,126 @@
+metadata:
+  category: CCU
+  description: CCU Control Message Template
+  template_type: "message_structure_definition"
+  last_updated: "2025-08-29"
+  version: 3.0.0
+
+# TEMPLATE: Message-Struktur-Definition
+template:
+  name: "ccu/control"
+  description: "CCU Control - Message Structure Definition"
+  semantic_purpose: "Befehle an die CCU senden"
+  
+  # SYNTAX: Struktur der Nachricht
+  structure:
+    required_fields:
+      - command
+      - timestamp
+    optional_fields:
+      - parameters
+      - priority
+    
+    field_definitions:
+      command:
+        type: "string"
+        pattern: "enum"
+        description: "CCU-Befehl"
+        validation: "must be valid CCU command"
+        
+      parameters:
+        type: "object"
+        description: "Parameter für den Befehl"
+        validation: "optional object with command parameters"
+        
+      priority:
+        type: "number"
+        description: "Priorität des Befehls"
+        validation: "optional number (1-10)"
+        
+      timestamp:
+        type: "string"
+        pattern: "iso8601"
+        description: "Zeitstempel"
+        validation: "must be ISO 8601 format"
+  
+  # SEMANTICS: Validierungsregeln
+  validation_rules:
+    - "timestamp muss ISO 8601 Format haben"
+    - "command muss gültiger CCU-Befehl sein"
+    - "parameters ist optional"
+    - "priority ist optional (1-10)"
+  
+  # VARIABLE FIELDS: Enum-Werte für Generierung
+  variable_fields:
+    command:
+      type: "enum"
+      values: ["start", "stop", "reset", "pause", "resume", "emergency_stop"]
+      description: "CCU-Befehl"
+  
+  # MQTT INTEGRATION
+  mqtt:
+    topic_pattern: "ccu/control"
+    direction: "outbound"
+    qos: 1
+    retain: false
+    
+  # USAGE EXAMPLES (mehrere Beispiele für ENUM-Werte)
+  usage_examples:
+    - description: "CCU starten (start)"
+      topic: "ccu/control"
+      payload:
+        command: "start"
+        parameters:
+          mode: "normal"
+          modules: ["SVR3QA0022", "SVR3QA2098"]
+        priority: 8
+        timestamp: "2025-08-29T10:00:00Z"
+        
+    - description: "CCU stoppen (stop)"
+      topic: "ccu/control"
+      payload:
+        command: "stop"
+        parameters:
+          graceful: true
+          timeout: 30
+        priority: 7
+        timestamp: "2025-08-29T10:05:00Z"
+        
+    - description: "CCU zurücksetzen (reset)"
+      topic: "ccu/control"
+      payload:
+        command: "reset"
+        parameters:
+          reset_type: "soft"
+          clear_cache: true
+        priority: 9
+        timestamp: "2025-08-29T10:10:00Z"
+        
+    - description: "CCU pausieren (pause)"
+      topic: "ccu/control"
+      payload:
+        command: "pause"
+        parameters:
+          reason: "maintenance"
+          estimated_duration: "2 hours"
+        priority: 6
+        timestamp: "2025-08-29T10:15:00Z"
+        
+    - description: "CCU fortsetzen (resume)"
+      topic: "ccu/control"
+      payload:
+        command: "resume"
+        parameters:
+          mode: "normal"
+        priority: 6
+        timestamp: "2025-08-29T10:20:00Z"
+        
+    - description: "Notfall-Stopp (emergency_stop)"
+      topic: "ccu/control"
+      payload:
+        command: "emergency_stop"
+        parameters:
+          reason: "safety_violation"
+          location: "module_area"
+        priority: 10
+        timestamp: "2025-08-29T10:25:00Z"

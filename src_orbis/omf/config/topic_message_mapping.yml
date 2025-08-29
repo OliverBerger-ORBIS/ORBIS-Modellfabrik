@@ -1,0 +1,143 @@
+# OMF Topic-Message Mapping
+# Verknüpft MQTT-Topics mit Message-Templates für semantische Nachrichten
+# Version: 3.0.0
+
+metadata:
+  version: "3.0.0"
+  description: "Mapping zwischen MQTT-Topics und Message-Templates"
+  last_updated: "2025-08-29"
+  author: "OMF Development Team"
+
+# Topic-Message Mappings
+topic_mappings:
+  # CCU Topics
+  "ccu/control":
+    template: "ccu/control"
+    direction: "outbound"
+    description: "CCU-Befehle senden"
+    semantic_purpose: "Steuerung der CCU"
+    
+  "ccu/state/config":
+    template: "ccu/state/config"
+    direction: "inbound"
+    description: "CCU-Konfigurationsstatus empfangen"
+    semantic_purpose: "CCU-Konfiguration überwachen"
+    
+  "ccu/state/status":
+    template: "ccu/state/status"
+    direction: "inbound"
+    description: "CCU-Status empfangen"
+    semantic_purpose: "CCU-Status überwachen"
+
+  # Module Topics - Generische Mappings
+  "module/v1/ff/{module_id}/connection":
+    template: "module/connection"
+    direction: "bidirectional"
+    description: "Modul-Verbindungsstatus"
+    semantic_purpose: "Modul-Verbindung überwachen"
+    variable_fields:
+      module_id: "<module_serial_number>"
+    
+  "module/v1/ff/{module_id}/state":
+    template: "module/state"
+    direction: "bidirectional"
+    description: "Modul-Zustand"
+    semantic_purpose: "Modul-Zustand überwachen"
+    variable_fields:
+      module_id: "<module_serial_number>"
+    
+  "module/v1/ff/{module_id}/order":
+    template: "module/order"
+    direction: "outbound"
+    description: "Modul-Befehle senden"
+    semantic_purpose: "Modul steuern"
+    variable_fields:
+      module_id: "<module_serial_number>"
+    
+  "module/v1/ff/{module_id}/factsheet":
+    template: "module/factsheet"
+    direction: "inbound"
+    description: "Modul-Konfiguration empfangen"
+    semantic_purpose: "Modul-Konfiguration abrufen"
+    variable_fields:
+      module_id: "<module_serial_number>"
+
+  # TXT Topics
+  "/j1/txt/1/f/i/order":
+    template: "txt/order_input"
+    direction: "inbound"
+    description: "TXT-Auftragseingang empfangen"
+    semantic_purpose: "Auftragseingang überwachen"
+    
+  "/j1/txt/1/f/i/stock":
+    template: "txt/stock_input"
+    direction: "inbound"
+    description: "TXT-Lagerbestand empfangen"
+    semantic_purpose: "Lagerbestand überwachen"
+    
+  "/j1/txt/1/c/bme680":
+    template: "txt/sensor_control"
+    direction: "outbound"
+    description: "TXT-Sensor-Steuerung senden"
+    semantic_purpose: "Sensoren steuern"
+
+  # Node-RED Topics
+  "ccu/state/dashboard":
+    template: "node_red/dashboard_state"
+    direction: "inbound"
+    description: "Node-RED Dashboard-Status empfangen"
+    semantic_purpose: "Dashboard-Status überwachen"
+    
+  "module/v1/ff/NodeRed/{module_id}/connection":
+    template: "node_red/module_connection"
+    direction: "bidirectional"
+    description: "Node-RED Modul-Verbindung"
+    semantic_purpose: "Node-RED Modul-Verbindung überwachen"
+    variable_fields:
+      module_id: "<module_serial_number>"
+
+# Template-Kategorien für Dashboard-Gruppierung
+template_categories:
+  MODULE_CONTROL:
+    description: "Modul-Steuerung"
+    templates: ["module/order", "module/state", "module/connection"]
+    icon: "⚙️"
+    
+  MODULE_MONITORING:
+    description: "Modul-Überwachung"
+    templates: ["module/state", "module/connection", "module/factsheet"]
+    icon: "📊"
+    
+  CCU_CONTROL:
+    description: "CCU-Steuerung"
+    templates: ["ccu/control", "ccu/state/config", "ccu/state/status"]
+    icon: "🏭"
+    
+  TXT_CONTROL:
+    description: "TXT-Steuerung"
+    templates: ["txt/order_input", "txt/stock_input", "txt/sensor_control"]
+    icon: "🎛️"
+    
+  NODE_RED_MONITORING:
+    description: "Node-RED Überwachung"
+    templates: ["node_red/dashboard_state", "node_red/module_connection"]
+    icon: "🔄"
+
+# Validierungsregeln für Topic-Template Mappings
+validation_rules:
+  required_fields:
+    - "template"
+    - "direction"
+    - "description"
+    - "semantic_purpose"
+  
+  direction_values:
+    - "inbound"
+    - "outbound"
+    - "bidirectional"
+  
+  template_patterns:
+    - "module/{sub_category}"
+    - "ccu/{sub_category}"
+    - "txt/{sub_category}"
+    - "node_red/{sub_category}"

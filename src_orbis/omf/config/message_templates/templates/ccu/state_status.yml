@@ -1,0 +1,48 @@
+metadata:
+  category: CCU
+  description: CCU State Status Templates
+  generated: false
+  icon: "🏭"
+  last_updated: "2025-08-29"
+  sub_category: State
+  version: 3.0.0
+
+templates:
+  ccu/state/status:
+    category: CCU
+    description: CCU State Status - Generisch
+    semantic_purpose: CCU-Status überwachen
+    mqtt_topic_pattern: "ccu/state/status"
+    template_structure:
+      status: "<string>"
+      health: "<string>"
+      active_modules: "<number>"
+      timestamp: "<datetime>"
+    variable_fields:
+      status:
+        type: enum
+        description: "CCU-Status"
+        values: ["running", "stopped", "error", "maintenance"]
+      health:
+        type: enum
+        description: "CCU-Gesundheit"
+        values: ["good", "warning", "critical"]
+      active_modules:
+        type: number
+        description: "Anzahl aktiver Module"
+      timestamp:
+        type: datetime
+        description: "Timestamp"
+    validation_rules:
+      - timestamp muss ISO 8601 Format haben
+      - status muss gültiger CCU-Status sein
+      - health muss gültiger Gesundheitsstatus sein
+      - active_modules muss positive Zahl sein
+    mqtt_control_usage:
+      description: CCU-Status abfragen
+      example_topic: "ccu/state/status"
+      example_payload:
+        status: "running"
+        health: "good"
+        active_modules: 5
+        timestamp: "2025-08-29T10:00:00Z"

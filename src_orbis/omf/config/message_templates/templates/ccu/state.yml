@@ -1,0 +1,605 @@
+metadata:
+  category: CCU
+  description: CCU State Templates
+  icon: 📊
+  last_updated: '2025-08-29'
+  sub_category: State
+  version: 3.0.0
+templates:
+  ccu/pairing/state:
+    category: CCU
+    description: Auto-analyzed template for ccu/pairing/state
+    examples:
+    - modules:
+      - assigned: false
+        available: READY
+        connected: true
+        hasCalibration: true
+        ip: 192.168.0.80
+        lastSeen: '2025-08-19T09:15:49.399Z'
+        pairedSince: '2025-08-19T09:08:25.855Z'
+        serialNumber: SVR3QA0022
+        subType: HBW
+        type: MODULE
+        version: 1.3.0
+      - assigned: false
+        available: READY
+        connected: true
+        hasCalibration: false
+        ip: 192.168.0.50
+        lastSeen: '2025-08-19T09:15:49.030Z'
+        pairedSince: '2025-08-19T09:08:25.855Z'
+        productionDuration: 5
+        serialNumber: SVR4H76449
+        subType: DRILL
+        type: MODULE
+        version: 1.3.0
+      - assigned: false
+        available: READY
+        connected: true
+        hasCalibration: false
+        ip: 192.168.0.40
+        lastSeen: '2025-08-19T09:15:48.986Z'
+        pairedSince: '2025-08-19T09:08:25.855Z'
+        productionDuration: 5
+        serialNumber: SVR3QA2098
+        subType: MILL
+        type: MODULE
+        version: 1.3.0
+      - assigned: false
+        available: READY
+        connected: true
+        hasCalibration: true
+        ip: 192.168.0.90
+        lastSeen: '2025-08-19T09:15:49.512Z'
+        pairedSince: '2025-08-19T09:08:25.855Z'
+        serialNumber: SVR4H73275
+        subType: DPS
+        type: MODULE
+        version: 1.6.0
+      - assigned: false
+        available: READY
+        connected: true
+        hasCalibration: true
+        ip: 192.168.0.70
+        lastSeen: '2025-08-19T09:15:49.206Z'
+        pairedSince: '2025-08-19T09:08:25.855Z'
+        serialNumber: SVR4H76530
+        subType: AIQS
+        type: MODULE
+        version: 1.3.0
+      - assigned: false
+        available: READY
+        connected: true
+        pairedSince: '2025-08-19T09:08:25.855Z'
+        serialNumber: CHRG0
+        subType: CHRG
+        type: MODULE
+      transports:
+      - available: READY
+        batteryPercentage: 92
+        batteryVoltage: 9
+        charging: false
+        connected: true
+        ip: 192.168.0.104
+        lastLoadPosition: '2'
+        lastModuleSerialNumber: SVR4H73275
+        lastNodeId: SVR4H73275
+        lastSeen: '2025-08-19T09:15:11.637Z'
+        pairedSince: '2025-08-19T09:15:38.745Z'
+        serialNumber: 5iO4
+        type: FTS
+        version: 1.1.0+git250d287
+    - modules:
+      - assigned: false
+        available: READY
+        connected: true
+        hasCalibration: true
+        ip: 192.168.0.80
+        lastSeen: '2025-08-19T09:15:49.399Z'
+        pairedSince: '2025-08-19T09:08:25.855Z'
+        serialNumber: SVR3QA0022
+        subType: HBW
+        type: MODULE
+        version: 1.3.0
+      - assigned: false
+        available: READY
+        connected: true
+        hasCalibration: false
+        ip: 192.168.0.50
+        lastSeen: '2025-08-19T09:15:49.030Z'
+        pairedSince: '2025-08-19T09:08:25.855Z'
+        productionDuration: 5
+        serialNumber: SVR4H76449
+        subType: DRILL
+        type: MODULE
+        version: 1.3.0
+      - assigned: false
+        available: READY
+        connected: true
+        hasCalibration: false
+        ip: 192.168.0.40
+        lastSeen: '2025-08-19T09:16:03.965Z'
+        pairedSince: '2025-08-19T09:08:25.855Z'
+        productionDuration: 5
+        serialNumber: SVR3QA2098
+        subType: MILL
+        type: MODULE
+        version: 1.3.0
+      - assigned: false
+        available: READY
+        connected: true
+        hasCalibration: true
+        ip: 192.168.0.90
+        lastSeen: '2025-08-19T09:15:49.512Z'
+        pairedSince: '2025-08-19T09:08:25.855Z'
+        serialNumber: SVR4H73275
+        subType: DPS
+        type: MODULE
+        version: 1.6.0
+      - assigned: false
+        available: READY
+        connected: true
+        hasCalibration: true
+        ip: 192.168.0.70
+        lastSeen: '2025-08-19T09:15:49.206Z'
+        pairedSince: '2025-08-19T09:08:25.855Z'
+        serialNumber: SVR4H76530
+        subType: AIQS
+        type: MODULE
+        version: 1.3.0
+      - assigned: false
+        available: READY
+        connected: true
+        pairedSince: '2025-08-19T09:08:25.855Z'
+        serialNumber: CHRG0
+        subType: CHRG
+        type: MODULE
+      transports:
+      - available: READY
+        batteryPercentage: 92
+        batteryVoltage: 9
+        charging: false
+        connected: true
+        ip: 192.168.0.104
+        lastLoadPosition: '2'
+        lastModuleSerialNumber: SVR4H73275
+        lastNodeId: SVR4H73275
+        lastSeen: '2025-08-19T09:15:11.637Z'
+        pairedSince: '2025-08-19T09:15:38.745Z'
+        serialNumber: 5iO4
+        type: FTS
+        version: 1.1.0+git250d287
+    - modules:
+      - assigned: false
+        available: READY
+        connected: true
+        hasCalibration: true
+        ip: 192.168.0.80
+        lastSeen: '2025-08-19T09:15:49.399Z'
+        pairedSince: '2025-08-19T09:08:25.855Z'
+        serialNumber: SVR3QA0022
+        subType: HBW
+        type: MODULE
+        version: 1.3.0
+      - assigned: false
+        available: READY
+        connected: true
+        hasCalibration: false
+        ip: 192.168.0.50
+        lastSeen: '2025-08-19T09:16:04.069Z'
+        pairedSince: '2025-08-19T09:08:25.855Z'
+        productionDuration: 5
+        serialNumber: SVR4H76449
+        subType: DRILL
+        type: MODULE
+        version: 1.3.0
+      - assigned: false
+        available: READY
+        connected: true
+        hasCalibration: false
+        ip: 192.168.0.40
+        lastSeen: '2025-08-19T09:16:03.965Z'
+        pairedSince: '2025-08-19T09:08:25.855Z'
+        productionDuration: 5
+        serialNumber: SVR3QA2098
+        subType: MILL
+        type: MODULE
+        version: 1.3.0
+      - assigned: false
+        available: READY
+        connected: true
+        hasCalibration: true
+        ip: 192.168.0.90
+        lastSeen: '2025-08-19T09:15:49.512Z'
+        pairedSince: '2025-08-19T09:08:25.855Z'
+        serialNumber: SVR4H73275
+        subType: DPS
+        type: MODULE
+        version: 1.6.0
+      - assigned: false
+        available: READY
+        connected: true
+        hasCalibration: true
+        ip: 192.168.0.70
+        lastSeen: '2025-08-19T09:15:49.206Z'
+        pairedSince: '2025-08-19T09:08:25.855Z'
+        serialNumber: SVR4H76530
+        subType: AIQS
+        type: MODULE
+        version: 1.3.0
+      - assigned: false
+        available: READY
+        connected: true
+        pairedSince: '2025-08-19T09:08:25.855Z'
+        serialNumber: CHRG0
+        subType: CHRG
+        type: MODULE
+      transports:
+      - available: READY
+        batteryPercentage: 92
+        batteryVoltage: 9
+        charging: false
+        connected: true
+        ip: 192.168.0.104
+        lastLoadPosition: '2'
+        lastModuleSerialNumber: SVR4H73275
+        lastNodeId: SVR4H73275
+        lastSeen: '2025-08-19T09:15:11.637Z'
+        pairedSince: '2025-08-19T09:15:38.745Z'
+        serialNumber: 5iO4
+        type: FTS
+        version: 1.1.0+git250d287
+    sub_category: State
+    template_structure: {}
+    validation_rules: []
+  ccu/state/config:
+    category: CCU
+    description: Auto-analyzed template for ccu/state/config
+    examples:
+    - ftsSettings:
+        chargeThresholdPercent: 10
+      productionDurations:
+        BLUE: 550
+        RED: 560
+        WHITE: 580
+      productionSettings:
+        maxParallelOrders: 4
+    sub_category: State
+    template_structure: {}
+    validation_rules: []
+  ccu/state/layout:
+    category: CCU
+    description: Auto-analyzed template for ccu/state/layout
+    examples:
+    - intersections:
+      - id: '1'
+      - id: '2'
+      - id: '3'
+      - id: '4'
+      modules:
+      - placeholder: false
+        serialNumber: SVR3QA0022
+        type: HBW
+      - placeholder: false
+        serialNumber: SVR4H76449
+        type: DRILL
+      - placeholder: false
+        serialNumber: SVR3QA2098
+        type: MILL
+      - placeholder: false
+        serialNumber: SVR4H73275
+        type: DPS
+      - placeholder: false
+        serialNumber: SVR4H76530
+        type: AIQS
+      - serialNumber: CHRG0
+        type: CHRG
+      roads:
+      - direction: EAST
+        from: '1'
+        length: 360
+        to: '2'
+      - direction: NORTH
+        from: '3'
+        length: 360
+        to: '1'
+      - direction: EAST
+        from: '3'
+        length: 360
+        to: '4'
+      - direction: NORTH
+        from: '4'
+        length: 360
+        to: '2'
+      - direction: EAST
+        from: SVR3QA0022
+        length: 380
+        to: '1'
+      - direction: EAST
+        from: SVR4H76449
+        length: 380
+        to: '3'
+      - direction: SOUTH
+        from: SVR3QA2098
+        length: 380
+        to: '1'
+      - direction: WEST
+        from: SVR4H73275
+        length: 380
+        to: '2'
+      - direction: SOUTH
+        from: SVR4H76530
+        length: 380
+        to: '2'
+      - direction: WEST
+        from: CHRG0
+        length: 430
+        to: '4'
+    sub_category: State
+    template_structure: {}
+    validation_rules: []
+  ccu/state/status:
+    category: CCU
+    description: Aktueller Status der CCU
+    examples:
+    - description: CCU läuft mit verfügbaren Werkstücken
+      payload:
+        activeOrders: 2
+        availableWorkpieces:
+        - position: A1
+          type: RED
+          workpieceId: 040a8dca341291
+        - position: B2
+          type: BLUE
+          workpieceId: 040a8dca341292
+        systemStatus: RUNNING
+        timestamp: '2025-08-27T10:30:00.123Z'
+    - description: CCU im Wartungsmodus
+      payload:
+        activeOrders: 0
+        errorMessages:
+        - Maintenance mode activated
+        systemStatus: MAINTENANCE
+        timestamp: '2025-08-27T10:30:00.123Z'
+    sub_category: State
+    template_structure:
+      activeOrders:
+        description: Anzahl aktiver Bestellungen
+        minimum: 0
+        required: true
+        type: integer
+      availableWorkpieces:
+        description: Liste verfügbarer Werkstücke
+        items:
+          properties:
+            position:
+              description: Position im Lager
+              type: string
+            type:
+              enum:
+              - RED
+              - WHITE
+              - BLUE
+              type: string
+            workpieceId:
+              format: NFC_CODE
+              type: string
+          type: object
+        required: false
+        type: array
+      errorMessages:
+        description: Liste von Fehlermeldungen
+        items:
+          type: string
+        required: false
+        type: array
+      systemStatus:
+        description: Systemstatus der CCU
+        enum:
+        - RUNNING
+        - STOPPED
+        - ERROR
+        - MAINTENANCE
+        required: true
+        type: string
+      timestamp:
+        description: Zeitstempel des Status
+        format: ISO 8601
+        required: true
+        type: string
+    validation_rules:
+    - systemStatus muss in [RUNNING, STOPPED, ERROR, MAINTENANCE] sein
+    - activeOrders muss >= 0 sein
+    - availableWorkpieces muss Array von Werkstück-Objekten sein
+  ccu/state/stock:
+    category: CCU
+    description: Auto-analyzed template for ccu/state/stock
+    examples:
+    - stockItems:
+      - hbw: SVR3QA0022
+        location: A3
+        workpiece:
+          id: ''
+          state: RAW
+          type: ''
+      - hbw: SVR3QA0022
+        location: B3
+        workpiece:
+          id: ''
+          state: RAW
+          type: ''
+      - hbw: SVR3QA0022
+        location: C3
+        workpiece:
+          id: ''
+          state: RAW
+          type: ''
+      - hbw: SVR3QA0022
+        location: A1
+        workpiece:
+          id: 040a8dca341291
+          state: RAW
+          type: RED
+      - hbw: SVR3QA0022
+        location: B1
+        workpiece:
+          id: 04798eca341290
+          state: RAW
+          type: WHITE
+      - hbw: SVR3QA0022
+        location: C1
+        workpiece:
+          id: 047389ca341291
+          state: RAW
+          type: BLUE
+      - hbw: SVR3QA0022
+        location: A2
+        workpiece:
+          id: 047f8cca341290
+          state: RAW
+          type: RED
+      - hbw: SVR3QA0022
+        location: B2
+        workpiece:
+          id: 04808dca341291
+          state: RAW
+          type: RED
+      - hbw: SVR3QA0022
+        location: C2
+        workpiece:
+          id: 04ab8bca341290
+          state: RAW
+          type: WHITE
+      ts: '2025-08-19T09:13:34.583Z'
+    - stockItems:
+      - hbw: SVR3QA0022
+        location: A3
+        workpiece:
+          id: ''
+          state: RAW
+          type: ''
+      - hbw: SVR3QA0022
+        location: B3
+        workpiece:
+          id: ''
+          state: RAW
+          type: ''
+      - hbw: SVR3QA0022
+        location: C3
+        workpiece:
+          id: ''
+          state: RAW
+          type: ''
+      - hbw: SVR3QA0022
+        location: A1
+        workpiece:
+          id: 040a8dca341291
+          state: RESERVED
+          type: RED
+      - hbw: SVR3QA0022
+        location: B1
+        workpiece:
+          id: 04798eca341290
+          state: RAW
+          type: WHITE
+      - hbw: SVR3QA0022
+        location: C1
+        workpiece:
+          id: 047389ca341291
+          state: RAW
+          type: BLUE
+      - hbw: SVR3QA0022
+        location: A2
+        workpiece:
+          id: 047f8cca341290
+          state: RAW
+          type: RED
+      - hbw: SVR3QA0022
+        location: B2
+        workpiece:
+          id: 04808dca341291
+          state: RAW
+          type: RED
+      - hbw: SVR3QA0022
+        location: C2
+        workpiece:
+          id: 04ab8bca341290
+          state: RAW
+          type: WHITE
+      ts: '2025-08-19T09:16:14.686Z'
+    - stockItems:
+      - hbw: SVR3QA0022
+        location: A3
+        workpiece:
+          id: ''
+          state: RAW
+          type: ''
+      - hbw: SVR3QA0022
+        location: B3
+        workpiece:
+          id: ''
+          state: RAW
+          type: ''
+      - hbw: SVR3QA0022
+        location: C3
+        workpiece:
+          id: ''
+          state: RAW
+          type: ''
+      - hbw: SVR3QA0022
+        location: A1
+        workpiece:
+          id: 040a8dca341291
+          state: RESERVED
+          type: RED
+      - hbw: SVR3QA0022
+        location: B1
+        workpiece:
+          id: 04798eca341290
+          state: RAW
+          type: WHITE
+      - hbw: SVR3QA0022
+        location: C1
+        workpiece:
+          id: 047389ca341291
+          state: RAW
+          type: BLUE
+      - hbw: SVR3QA0022
+        location: A2
+        workpiece:
+          id: 047f8cca341290
+          state: RAW
+          type: RED
+      - hbw: SVR3QA0022
+        location: B2
+        workpiece:
+          id: 04808dca341291
+          state: RAW
+          type: RED
+      - hbw: SVR3QA0022
+        location: C2
+        workpiece:
+          id: 04ab8bca341290
+          state: RAW
+          type: WHITE
+      ts: '2025-08-19T09:16:26.880Z'
+    sub_category: State
+    template_structure: {}
+    validation_rules: []
+  ccu/state/version-mismatch:
+    category: CCU
+    description: Auto-analyzed template for ccu/state/version-mismatch
+    examples:
+    - ccuVersion: 1.3.0
+      mismatchedModules: []
+      timestamp: '2025-08-19T09:08:26.080Z'
+    - ccuVersion: 1.3.0
+      mismatchedModules: []
+      timestamp: '2025-08-20T07:12:20.107Z'
+    - ccuVersion: 1.3.0
+      mismatchedModules: []
+      timestamp: '2025-08-25T06:46:39.626Z'
+    sub_category: State
+    template_structure: {}
+    validation_rules: []

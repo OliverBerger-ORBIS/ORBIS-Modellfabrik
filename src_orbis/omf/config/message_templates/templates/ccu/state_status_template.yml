@@ -1,0 +1,158 @@
+metadata:
+  category: CCU
+  description: CCU State Status Message Template
+  template_type: "message_structure_definition"
+  last_updated: "2025-08-29"
+  version: 3.0.0
+
+# TEMPLATE: Message-Struktur-Definition
+template:
+  name: "ccu/state/status"
+  description: "CCU State Status - Message Structure Definition"
+  semantic_purpose: "CCU-Status überwachen"
+  
+  # SYNTAX: Struktur der Nachricht
+  structure:
+    required_fields:
+      - status
+      - health
+      - timestamp
+    optional_fields:
+      - details
+      - metrics
+    
+    field_definitions:
+      status:
+        type: "string"
+        pattern: "enum"
+        description: "Aktueller CCU-Status"
+        validation: "must be valid CCU status"
+        
+      health:
+        type: "string"
+        pattern: "enum"
+        description: "Gesundheitsstatus der CCU"
+        validation: "must be valid health status"
+        
+      details:
+        type: "object"
+        description: "Detaillierte Status-Informationen"
+        validation: "optional object with status details"
+        
+      metrics:
+        type: "object"
+        description: "System-Metriken"
+        validation: "optional object with system metrics"
+        
+      timestamp:
+        type: "string"
+        pattern: "iso8601"
+        description: "Zeitstempel"
+        validation: "must be ISO 8601 format"
+  
+  # SEMANTICS: Validierungsregeln
+  validation_rules:
+    - "timestamp muss ISO 8601 Format haben"
+    - "status muss gültiger CCU-Status sein"
+    - "health muss gültiger Gesundheitsstatus sein"
+    - "details ist optional"
+    - "metrics ist optional"
+  
+  # VARIABLE FIELDS: Enum-Werte für Generierung
+  variable_fields:
+    status:
+      type: "enum"
+      values: ["RUNNING", "STOPPED", "PAUSED", "ERROR", "MAINTENANCE", "STARTING", "STOPPING"]
+      description: "Aktueller CCU-Status"
+      
+    health:
+      type: "enum"
+      values: ["GOOD", "WARNING", "CRITICAL", "UNKNOWN"]
+      description: "Gesundheitsstatus der CCU"
+  
+  # MQTT INTEGRATION
+  mqtt:
+    topic_pattern: "ccu/state/status"
+    direction: "inbound"
+    qos: 1
+    retain: true
+    
+  # USAGE EXAMPLES (mehrere Beispiele für ENUM-Werte)
+  usage_examples:
+    - description: "CCU läuft normal (RUNNING + GOOD)"
+      topic: "ccu/state/status"
+      payload:
+        status: "RUNNING"
+        health: "GOOD"
+        details:
+          uptime: "2 hours 15 minutes"
+          active_modules: 5
+          current_workflow: "production"
+        metrics:
+          cpu_usage: 45.2
+          memory_usage: 67.8
+          temperature: 42.1
+        timestamp: "2025-08-29T10:00:00Z"
+        
+    - description: "CCU gestoppt (STOPPED + GOOD)"
+      topic: "ccu/state/status"
+      payload:
+        status: "STOPPED"
+        health: "GOOD"
+        details:
+          uptime: "0 minutes"
+          active_modules: 0
+          last_workflow: "maintenance"
+        metrics:
+          cpu_usage: 12.5
+          memory_usage: 23.4
+          temperature: 38.9
+        timestamp: "2025-08-29T10:05:00Z"
+        
+    - description: "CCU mit Warnung (RUNNING + WARNING)"
+      topic: "ccu/state/status"
+      payload:
+        status: "RUNNING"
+        health: "WARNING"
+        details:
+          uptime: "1 hour 30 minutes"
+          active_modules: 4
+          current_workflow: "production"
+          warning_message: "High temperature detected"
+        metrics:
+          cpu_usage: 78.9
+          memory_usage: 85.2
+          temperature: 58.7
+        timestamp: "2025-08-29T10:10:00Z"
+        
+    - description: "CCU kritisch (ERROR + CRITICAL)"
+      topic: "ccu/state/status"
+      payload:
+        status: "ERROR"
+        health: "CRITICAL"
+        details:
+          uptime: "45 minutes"
+          active_modules: 2
+          error_code: "E001"
+          error_message: "Communication failure with module SVR3QA0022"
+        metrics:
+          cpu_usage: 95.1
+          memory_usage: 92.8
+          temperature: 65.3
+        timestamp: "2025-08-29T10:15:00Z"
+        
+    - description: "CCU in Wartung (MAINTENANCE + WARNING)"
+      topic: "ccu/state/status"
+      payload:
+        status: "MAINTENANCE"
+        health: "WARNING"
+        details:
+          uptime: "30 minutes"
+          active_modules: 1
+          maintenance_type: "scheduled"
+          estimated_duration: "2 hours"
+        metrics:
+          cpu_usage: 25.6
+          memory_usage: 45.3
+          temperature: 41.2
+        timestamp: "2025-08-29T10:20:00Z"

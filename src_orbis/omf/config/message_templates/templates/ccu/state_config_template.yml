@@ -1,0 +1,129 @@
+metadata:
+  category: CCU
+  description: CCU State Config Message Template
+  template_type: "message_structure_definition"
+  last_updated: "2025-08-29"
+  version: 3.0.0
+
+# TEMPLATE: Message-Struktur-Definition
+template:
+  name: "ccu/state/config"
+  description: "CCU State Config - Message Structure Definition"
+  semantic_purpose: "CCU-Konfigurationsstatus abrufen"
+  
+  # SYNTAX: Struktur der Nachricht
+  structure:
+    required_fields:
+      - config_version
+      - modules_enabled
+      - timestamp
+    optional_fields:
+      - settings
+      - status
+    
+    field_definitions:
+      config_version:
+        type: "string"
+        pattern: "semver"
+        description: "Version der Konfiguration"
+        validation: "must be valid semantic version"
+        
+      modules_enabled:
+        type: "array"
+        description: "Liste der aktivierten Module"
+        validation: "array of module serial numbers"
+        
+      settings:
+        type: "object"
+        description: "CCU-Einstellungen"
+        validation: "optional object with configuration settings"
+        
+      status:
+        type: "string"
+        pattern: "enum"
+        description: "Konfigurationsstatus"
+        validation: "must be valid status"
+        
+      timestamp:
+        type: "string"
+        pattern: "iso8601"
+        description: "Zeitstempel"
+        validation: "must be ISO 8601 format"
+  
+  # SEMANTICS: Validierungsregeln
+  validation_rules:
+    - "timestamp muss ISO 8601 Format haben"
+    - "config_version muss gültige semantische Version sein"
+    - "modules_enabled muss Array von Modul-Serial-Numbers sein"
+    - "status muss gültiger Status sein"
+    - "settings ist optional"
+  
+  # VARIABLE FIELDS: Enum-Werte für Generierung
+  variable_fields:
+    config_version:
+      type: "enum"
+      values: ["1.0.0", "1.1.0", "1.2.0", "1.3.0"]
+      description: "Version der Konfiguration"
+      
+    modules_enabled:
+      type: "enum"
+      values: ["SVR3QA0022", "SVR4H76449", "SVR3QA2098", "SVR4H76530", "SVR4H73275", "CHRG0"]
+      description: "Aktivierte Module"
+      
+    status:
+      type: "enum"
+      values: ["ACTIVE", "INACTIVE", "ERROR", "MAINTENANCE"]
+      description: "Konfigurationsstatus"
+  
+  # MQTT INTEGRATION
+  mqtt:
+    topic_pattern: "ccu/state/config"
+    direction: "inbound"
+    qos: 1
+    retain: true
+    
+  # USAGE EXAMPLES (mehrere Beispiele für ENUM-Werte)
+  usage_examples:
+    - description: "Aktive Konfiguration (ACTIVE)"
+      topic: "ccu/state/config"
+      payload:
+        config_version: "1.3.0"
+        modules_enabled: ["SVR3QA0022", "SVR3QA2098", "SVR4H76449"]
+        status: "ACTIVE"
+        settings:
+          auto_start: true
+          safety_mode: "normal"
+        timestamp: "2025-08-29T10:00:00Z"
+        
+    - description: "Inaktive Konfiguration (INACTIVE)"
+      topic: "ccu/state/config"
+      payload:
+        config_version: "1.2.0"
+        modules_enabled: []
+        status: "INACTIVE"
+        settings:
+          auto_start: false
+          safety_mode: "strict"
+        timestamp: "2025-08-29T10:05:00Z"
+        
+    - description: "Fehlerhafte Konfiguration (ERROR)"
+      topic: "ccu/state/config"
+      payload:
+        config_version: "1.1.0"
+        modules_enabled: ["SVR3QA0022"]
+        status: "ERROR"
+        settings:
+          auto_start: false
+          safety_mode: "emergency"
+        timestamp: "2025-08-29T10:10:00Z"
+        
+    - description: "Wartungsmodus (MAINTENANCE)"
+      topic: "ccu/state/config"
+      payload:
+        config_version: "1.3.0"
+        modules_enabled: ["SVR4H76530", "CHRG0"]
+        status: "MAINTENANCE"
+        settings:
+          auto_start: false
+          safety_mode: "maintenance"
+        timestamp: "2025-08-29T10:15:00Z"

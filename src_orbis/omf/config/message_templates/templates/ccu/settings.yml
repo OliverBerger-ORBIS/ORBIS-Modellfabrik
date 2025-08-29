@@ -1,0 +1,28 @@
+metadata:
+  category: CCU
+  description: CCU Settings Templates
+  icon: 📁
+  last_updated: '2025-08-29'
+  sub_category: Settings
+  version: 3.0.0
+templates:
+  ccu/set/charge:
+    category: CCU
+    description: Auto-analyzed template for ccu/set/charge
+    examples:
+    - charge: true
+      serialNumber: 5iO4
+    - charge: false
+      serialNumber: 5iO4
+    sub_category: Settings
+    template_structure: {}
+    validation_rules: []
+  ccu/set/reset:
+    category: CCU
+    description: Auto-analyzed template for ccu/set/reset
+    examples:
+    - timestamp: '2025-08-25T07:39:05.581Z'
+      withStorage: false
+    sub_category: Settings
+    template_structure: {}
+    validation_rules: []

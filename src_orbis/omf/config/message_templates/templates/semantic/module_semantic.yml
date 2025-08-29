@@ -1,0 +1,198 @@
+metadata:
+  category: MODULE
+  description: Semantic Module Templates
+  generated: true
+  last_updated: '2025-08-29'
+  semantic: true
+  version: 3.0.0
+templates:
+  module/connection:
+    category: MODULE
+    description: Module Connection Status - Generisch für alle Module
+    mqtt_control_usage:
+      description: Verbindungsstatus eines spezifischen Moduls abfragen
+      example_payload:
+        connected: true
+        ip: 192.168.0.80
+        module_id: SVR3QA0022
+        serialNumber: SVR3QA0022
+        timestamp: '2025-08-29T10:00:00Z'
+        version: 1.3.0
+      example_topic: module/v1/ff/SVR3QA0022/connection
+    mqtt_topic_pattern: module/v1/ff/{module_id}/connection
+    semantic_purpose: Verbindungsstatus eines Moduls überwachen
+    template_structure:
+      connected: <boolean>
+      ip: <ip_address>
+      module_id: <module_serial_number>
+      serialNumber: <module_serial_number>
+      timestamp: <datetime>
+      version: <module_version>
+    validation_rules:
+    - timestamp muss ISO 8601 Format haben
+    - connected muss boolean sein
+    - module_id muss gültige Serial Number sein
+    - ip muss gültige IP-Adresse sein
+    - version muss gültige Versionsnummer sein
+    variable_fields:
+      ip:
+        description: IP-Adresse des Moduls
+        type: enum
+        values:
+        - 192.168.0.40
+        - 192.168.0.41
+        - 192.168.0.42
+        - 192.168.0.43
+        - 192.168.0.44
+        - 192.168.0.45
+        - 192.168.0.50
+        - 192.168.0.51
+        - 192.168.0.52
+        - 192.168.0.53
+        - 192.168.0.54
+        - 192.168.0.55
+        - 192.168.0.65
+        - 192.168.0.70
+        - 192.168.0.71
+        - 192.168.0.72
+        - 192.168.0.73
+        - 192.168.0.74
+        - 192.168.0.75
+        - 192.168.0.80
+        - 192.168.0.81
+        - 192.168.0.82
+        - 192.168.0.83
+        - 192.168.0.90
+      module_id:
+        description: Serial Number des Moduls
+        type: enum
+        values:
+        - SVR3QA0022
+        - SVR4H76449
+        - SVR3QA2098
+        - SVR4H76530
+        - SVR4H73275
+        - CHRG0
+      serialNumber:
+        description: Serial Number des Moduls
+        type: enum
+        values:
+        - SVR3QA0022
+        - SVR4H76449
+        - SVR3QA2098
+        - SVR4H76530
+        - SVR4H73275
+        - CHRG0
+      version:
+        description: Version des Moduls
+        type: enum
+        values: []
+  module/order:
+    category: MODULE
+    description: Module Order - Generisch für alle Module
+    mqtt_control_usage:
+      description: Auftrag an ein spezifisches Modul senden
+      example_payload:
+        command: PICK
+        module_id: SVR3QA0022
+        order_id: ORDER_001
+        parameters:
+          position: A1
+        timestamp: '2025-08-29T10:00:00Z'
+      example_topic: module/v1/ff/SVR3QA0022/order
+    mqtt_topic_pattern: module/v1/ff/{module_id}/order
+    semantic_purpose: Auftrag an ein Modul senden
+    template_structure:
+      command: <module_command>
+      module_id: <module_serial_number>
+      order_id: <order_id>
+      parameters: <command_parameters>
+      timestamp: <datetime>
+    validation_rules:
+    - timestamp muss ISO 8601 Format haben
+    - module_id muss gültige Serial Number sein
+    - command muss gültiger Befehl für das Modul sein
+    - order_id muss eindeutig sein
+    variable_fields:
+      command:
+        description: Befehl für das Modul
+        type: enum
+        values:
+        - CHECK_QUALITY
+        - DRILL
+        - DROP
+        - INPUT_RGB
+        - MILL
+        - PICK
+        - RGB_NFC
+        - STORE
+        - get_status
+        - start_charging
+        - stop_charging
+      module_id:
+        description: Serial Number des Moduls
+        type: enum
+        values:
+        - SVR3QA0022
+        - SVR4H76449
+        - SVR3QA2098
+        - SVR4H76530
+        - SVR4H73275
+        - CHRG0
+      order_id:
+        description: Eindeutige Auftrags-ID
+        type: string
+      parameters:
+        description: Parameter für den Befehl (modulspezifisch)
+        type: object
+  module/state:
+    category: MODULE
+    description: Module State - Generisch für alle Module
+    mqtt_control_usage:
+      description: Zustand eines spezifischen Moduls abfragen
+      example_payload:
+        module_id: SVR3QA0022
+        state: IDLE
+        status: OK
+        timestamp: '2025-08-29T10:00:00Z'
+      example_topic: module/v1/ff/SVR3QA0022/state
+    mqtt_topic_pattern: module/v1/ff/{module_id}/state
+    semantic_purpose: Aktuellen Zustand eines Moduls abfragen
+    template_structure:
+      module_id: <module_serial_number>
+      state: <module_state>
+      status: <module_status>
+      timestamp: <datetime>
+    validation_rules:
+    - timestamp muss ISO 8601 Format haben
+    - module_id muss gültige Serial Number sein
+    - state muss gültiger Modul-Zustand sein
+    - status muss gültiger Status sein
+    variable_fields:
+      module_id:
+        description: Serial Number des Moduls
+        type: enum
+        values:
+        - SVR3QA0022
+        - SVR4H76449
+        - SVR3QA2098
+        - SVR4H76530
+        - SVR4H73275
+        - CHRG0
+      state:
+        description: Aktueller Zustand des Moduls
+        type: enum
+        values:
+        - IDLE
+        - BUSY
+        - ERROR
+        - MAINTENANCE
+        - OFFLINE
+      status:
+        description: Status des Moduls
+        type: enum
+        values:
+        - OK
+        - WARNING
+        - ERROR
+        - UNKNOWN

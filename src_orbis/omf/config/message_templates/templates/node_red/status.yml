@@ -1,0 +1,23 @@
+metadata:
+  category: Node-RED
+  description: Node-RED Status Templates
+  icon: 📊
+  last_updated: '2025-08-29'
+  sub_category: Status
+  version: 3.0.0
+templates:
+  module/v1/ff/NodeRed/status:
+    category: Node-RED
+    description: Node-RED NodeRed Status
+    examples:
+    - connectionState: ONLINE
+    - connectionState: ONLINE
+    - connectionState: ONLINE
+    - connectionState: ONLINE
+    - connectionState: ONLINE
+    module: NodeRed
+    sub_category: Status
+    template_structure:
+      connectionState: '[OFFLINE, ONLINE]'
+    validation_rules:
+    - connectionState muss in [OFFLINE, ONLINE] sein

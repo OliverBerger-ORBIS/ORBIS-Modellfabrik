@@ -1,0 +1,152 @@
+# OMF MQTT Broker Configuration
+# Version: 3.0.0
+
+metadata:
+  version: "3.0.0"
+  description: "MQTT-Broker Konfiguration für ORBIS Modellfabrik"
+  last_updated: "2025-08-29"
+  author: "OMF Development Team"
+
+# MQTT Broker Settings
+broker:
+  # APS MQTT Broker (Hauptbroker)
+  aps:
+    host: "192.168.178.100"
+    port: 1883
+    username: "aps_user"
+    password: "aps_password"
+    client_id: "omf_dashboard"
+    keepalive: 60
+    timeout: 10
+    clean_session: True
+    auto_reconnect: True
+    max_reconnect_delay: 60
+    
+  # Local MQTT Broker (für Tests)
+  local:
+    host: "localhost"
+    port: 1883
+    username: ""
+    password: ""
+    client_id: "omf_dashboard_local"
+    keepalive: 60
+    timeout: 10
+    clean_session: True
+    auto_reconnect: True
+    max_reconnect_delay: 60
+
+# Topic Subscriptions
+subscriptions:
+  # CCU Topics
+  ccu:
+    - "ccu/state/#"
+    - "ccu/control/#"
+    - "ccu/status/#"
+    
+  # TXT Controller Topics
+  txt:
+    - "/j1/txt/1/f/i/#"
+    - "/j1/txt/1/f/o/#"
+    - "/j1/txt/1/c/#"
+    - "/j1/txt/1/i/#"
+    - "/j1/txt/1/o/#"
+    
+  # Module Topics (alle Module)
+  modules:
+    - "module/v1/ff/+/connection"
+    - "module/v1/ff/+/state"
+    - "module/v1/ff/+/order"
+    - "module/v1/ff/+/factsheet"
+    
+  # Node-RED Gateway Topics
+  node_red:
+    - "module/v1/ff/NodeRed/+/connection"
+    - "module/v1/ff/NodeRed/+/state"
+    - "module/v1/ff/NodeRed/+/factsheet"
+    - "module/v1/ff/NodeRed/status"
+    
+  # FTS Topics
+  fts:
+    - "fts/v1/ff/+/connection"
+    - "fts/v1/ff/+/state"
+    - "fts/v1/ff/+/order"
+    - "fts/v1/ff/+/factsheet"
+
+# Connection Settings
+connection:
+  # Default broker to use
+  default_broker: "aps"
+  
+  # Connection retry settings
+  retry:
+    max_attempts: 5
+    initial_delay: 1
+    max_delay: 30
+    backoff_factor: 2
+    
+  # Message handling
+  message:
+    qos: 1
+    retain: False
+    
+  # Logging
+  logging:
+    level: "INFO"
+    format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    file: "omf_mqtt.log"
+    max_size: "10MB"
+    backup_count: 5
+
+# Security Settings
+security:
+  # SSL/TLS settings
+  ssl:
+    enabled: False
+    ca_certs: ""
+    certfile: ""
+    keyfile: ""
+    cert_reqs: "CERT_NONE"
+    tls_version: "PROTOCOL_TLSv1_2"
+    
+  # Authentication
+  auth:
+    method: "username_password"  # username_password, certificate, none
+    timeout: 30
+
+# Performance Settings
+performance:
+  # Message queue
+  queue:
+    max_size: 1000
+    timeout: 5
+    
+  # Threading
+  threading:
+    max_workers: 4
+    timeout: 30
+    
+  # Memory management
+  memory:
+    max_messages: 10000
+    cleanup_interval: 300  # seconds
+
+# Monitoring Settings
+monitoring:
+  # Health checks
+  health_check:
+    enabled: True
+    interval: 30  # seconds
+    timeout: 10
+    
+  # Metrics
+  metrics:
+    enabled: True
+    interval: 60  # seconds
+    
+  # Alerts
+  alerts:
+    connection_lost: True
+    high_latency: True
+    message_drops: True
+    threshold_latency: 1000  # milliseconds
+    threshold_drops: 10  # messages

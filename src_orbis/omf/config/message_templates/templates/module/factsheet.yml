@@ -1,0 +1,77 @@
+metadata:
+  category: MODULE
+  description: Module Factsheet Templates
+  generated: false
+  icon: "📋"
+  last_updated: "2025-08-29"
+  sub_category: Factsheet
+  version: 3.0.0
+
+templates:
+  module/factsheet:
+    category: MODULE
+    description: Module Factsheet - Generisch für alle Module
+    semantic_purpose: Modul-Konfigurationsdaten abrufen
+    mqtt_topic_pattern: "module/v1/ff/{module_id}/factsheet"
+    template_structure:
+      module_id: "<module_serial_number>"
+      name: "<module_name>"
+      type: "<module_type>"
+      sub_type: "<module_sub_type>"
+      description: "<string>"
+      ip_addresses: "<array>"
+      commands: "<array>"
+      enabled: "<boolean>"
+      timestamp: "<datetime>"
+    variable_fields:
+      module_id:
+        type: enum
+        description: "Serial Number des Moduls"
+        values: ["SVR3QA0022", "SVR4H76449", "SVR3QA2098", "SVR4H76530", "SVR4H73275", "CHRG0"]
+      name:
+        type: enum
+        description: "Name des Moduls"
+        values: ["HBW", "DRILL", "MILL", "AIQS", "DPS", "CHRG"]
+      type:
+        type: enum
+        description: "Typ des Moduls"
+        values: ["Storage", "Processing", "Quality-Control", "Input/Output", "Charging"]
+      sub_type:
+        type: enum
+        description: "Sub-Typ des Moduls"
+        values: ["HBW", "DRILL", "MILL", "AIQS", "DPS", "CHRG"]
+      description:
+        type: string
+        description: "Beschreibung des Moduls"
+      ip_addresses:
+        type: array
+        description: "IP-Adressen des Moduls"
+      commands:
+        type: array
+        description: "Verfügbare Commands"
+      enabled:
+        type: boolean
+        description: "Modul aktiviert"
+      timestamp:
+        type: datetime
+        description: "Timestamp"
+    validation_rules:
+      - timestamp muss ISO 8601 Format haben
+      - module_id muss gültige Serial Number sein
+      - name muss gültiger Modul-Name sein
+      - type muss gültiger Modul-Typ sein
+      - sub_type muss gültiger Sub-Typ sein
+      - enabled muss boolean sein
+    mqtt_control_usage:
+      description: Modul-Konfigurationsdaten abrufen
+      example_topic: "module/v1/ff/SVR3QA0022/factsheet"
+      example_payload:
+        module_id: "SVR3QA0022"
+        name: "HBW"
+        type: "Storage"
+        sub_type: "HBW"
+        description: "Hochregallager für Werkstück-Lagerung und -Entnahme"
+        ip_addresses: ["192.168.0.80", "192.168.0.81", "192.168.0.82", "192.168.0.83"]
+        commands: ["PICK", "DROP", "STORE"]
+        enabled: true
+        timestamp: "2025-08-29T10:00:00Z"

@@ -1,0 +1,150 @@
+metadata:
+  category: MODULE
+  description: Module Order Message Template
+  template_type: "message_structure_definition"
+  last_updated: "2025-08-29"
+  version: 3.0.0
+
+# TEMPLATE: Message-Struktur-Definition
+template:
+  name: "module/order"
+  description: "Module Order - Message Structure Definition"
+  semantic_purpose: "Auftrag an ein Modul senden"
+  
+  # SYNTAX: Struktur der Nachricht
+  structure:
+    required_fields:
+      - module_id
+      - command
+      - order_id
+      - timestamp
+    optional_fields:
+      - parameters
+      - priority
+    
+    field_definitions:
+      module_id:
+        type: "string"
+        pattern: "enum"
+        description: "Serial Number des Moduls"
+        validation: "must be valid module serial number"
+        
+      command:
+        type: "string"
+        pattern: "enum"
+        description: "Befehl für das Modul"
+        validation: "must be valid command for the module"
+        
+      parameters:
+        type: "object"
+        description: "Parameter für den Befehl"
+        validation: "optional object with command parameters"
+        
+      order_id:
+        type: "string"
+        pattern: "uuid"
+        description: "Eindeutige Auftrags-ID"
+        validation: "must be unique order identifier"
+        
+      priority:
+        type: "number"
+        description: "Priorität des Auftrags"
+        validation: "optional number (1-10)"
+        
+      timestamp:
+        type: "string"
+        pattern: "iso8601"
+        description: "Zeitstempel"
+        validation: "must be ISO 8601 format"
+  
+  # SEMANTICS: Validierungsregeln
+  validation_rules:
+    - "timestamp muss ISO 8601 Format haben"
+    - "module_id muss gültige Serial Number sein"
+    - "command muss gültiger Befehl für das Modul sein"
+    - "order_id muss eindeutig sein"
+    - "parameters ist optional"
+    - "priority ist optional (1-10)"
+  
+  # VARIABLE FIELDS: Enum-Werte für Generierung
+  variable_fields:
+    module_id:
+      type: "enum"
+      values: ["SVR3QA0022", "SVR4H76449", "SVR3QA2098", "SVR4H76530", "SVR4H73275", "CHRG0"]
+      description: "Serial Number des Moduls"
+      
+    command:
+      type: "enum"
+      values: ["PICK", "DROP", "STORE", "MILL", "DRILL", "CHECK_QUALITY", "INPUT_RGB", "RGB_NFC", "start_charging", "stop_charging", "get_status"]
+      description: "Befehl für das Modul"
+  
+  # MQTT INTEGRATION
+  mqtt:
+    topic_pattern: "module/v1/ff/{module_id}/order"
+    direction: "outbound"
+    qos: 1
+    retain: false
+    
+  # USAGE EXAMPLES (mehrere Beispiele für ENUM-Werte)
+  usage_examples:
+    - description: "HBW - Werkstück aufnehmen (PICK)"
+      topic: "module/v1/ff/SVR3QA0022/order"
+      payload:
+        module_id: "SVR3QA0022"
+        command: "PICK"
+        parameters:
+          position: "A1"
+          workpiece_type: "RED"
+        order_id: "ORDER_001"
+        priority: 5
+        timestamp: "2025-08-29T10:00:00Z"
+        
+    - description: "MILL - Werkstück fräsen (MILL)"
+      topic: "module/v1/ff/SVR3QA2098/order"
+      payload:
+        module_id: "SVR3QA2098"
+        command: "MILL"
+        parameters:
+          operation: "face_milling"
+          depth: 2.5
+          speed: 1000
+        order_id: "ORDER_002"
+        priority: 8
+        timestamp: "2025-08-29T10:05:00Z"
+        
+    - description: "DRILL - Werkstück bohren (DRILL)"
+      topic: "module/v1/ff/SVR4H76449/order"
+      payload:
+        module_id: "SVR4H76449"
+        command: "DRILL"
+        parameters:
+          diameter: 8.0
+          depth: 15.0
+          position: "B3"
+        order_id: "ORDER_003"
+        priority: 7
+        timestamp: "2025-08-29T10:10:00Z"
+        
+    - description: "AIQS - Qualitätsprüfung (CHECK_QUALITY)"
+      topic: "module/v1/ff/SVR4H76530/order"
+      payload:
+        module_id: "SVR4H76530"
+        command: "CHECK_QUALITY"
+        parameters:
+          inspection_type: "visual"
+          tolerance: 0.1
+        order_id: "ORDER_004"
+        priority: 6
+        timestamp: "2025-08-29T10:15:00Z"
+        
+    - description: "CHRG - Ladestation starten (start_charging)"
+      topic: "module/v1/ff/CHRG0/order"
+      payload:
+        module_id: "CHRG0"
+        command: "start_charging"
+        parameters:
+          charging_mode: "fast"
+          target_voltage: 24.0
+        order_id: "ORDER_005"
+        priority: 3
+        timestamp: "2025-08-29T10:20:00Z"

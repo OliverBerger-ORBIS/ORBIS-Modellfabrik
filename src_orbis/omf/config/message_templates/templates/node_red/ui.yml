@@ -1,0 +1,42 @@
+metadata:
+  category: Node-RED
+  description: Node-RED UI Templates
+  icon: 🖥️
+  last_updated: '2025-08-29'
+  sub_category: UI
+  version: 3.0.0
+templates:
+  ui/default/config:
+    category: Node-RED
+    description: Node-RED UI UI
+    examples:
+    - layout: grid
+      timestamp: '2024-01-01T12:00:00Z'
+      ui_config: default
+    module: UI
+    sub_category: UI
+    template_structure:
+      layout: '[grid]'
+      timestamp: <datetime>
+      ui_config: '[default]'
+    validation_rules:
+    - ui_config muss in [default] sein
+    - layout muss in [grid] sein
+    - timestamp muss ISO 8601 Format haben
+  ui/default/status:
+    category: Node-RED
+    description: Node-RED UI UI
+    examples:
+    - component_count: 3
+      timestamp: '2024-01-01T12:00:00Z'
+      ui_status: ready
+    module: UI
+    sub_category: UI
+    template_structure:
+      component_count: '[3]'
+      timestamp: <datetime>
+      ui_status: '[ready]'
+    validation_rules:
+    - ui_status muss in [ready] sein
+    - component_count muss in [3] sein
+    - timestamp muss ISO 8601 Format haben

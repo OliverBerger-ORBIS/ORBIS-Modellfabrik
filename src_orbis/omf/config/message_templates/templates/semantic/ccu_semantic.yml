@@ -1,0 +1,115 @@
+metadata:
+  category: CCU
+  description: Semantic Ccu Templates
+  generated: true
+  last_updated: '2025-08-29'
+  semantic: true
+  version: 3.0.0
+templates:
+  ccu/control:
+    category: CCU
+    description: CCU Control Commands - Generisch
+    mqtt_control_usage:
+      description: CCU-Befehl senden
+      example_payload:
+        command: start
+        parameters:
+          module: SVR3QA0022
+        timestamp: '2025-08-29T10:00:00Z'
+      example_topic: ccu/control
+    mqtt_topic_pattern: ccu/control
+    semantic_purpose: Befehle an die CCU senden
+    template_structure:
+      command: <ccu_command>
+      parameters: <command_parameters>
+      timestamp: <datetime>
+    validation_rules:
+    - timestamp muss ISO 8601 Format haben
+    - command muss gültiger CCU-Befehl sein
+    - parameters muss gültiges JSON-Objekt sein
+    variable_fields:
+      command:
+        description: CCU-Befehl
+        type: enum
+        values:
+        - start
+        - stop
+        - reset
+        - pause
+        - resume
+        - emergency_stop
+      parameters:
+        description: Parameter für den Befehl
+        type: object
+  ccu/state/config:
+    category: CCU
+    description: CCU State Config - Generisch
+    mqtt_control_usage:
+      description: CCU-Konfigurationsstatus abfragen
+      example_payload:
+        modules:
+        - SVR3QA2098
+        - SVR4H73275
+        - SVR4H76530
+        timestamp: '2025-08-29T10:00:00Z'
+        version: 1.0.0
+      example_topic: ccu/state/config
+    mqtt_topic_pattern: ccu/state/config
+    semantic_purpose: CCU-Konfigurationsstatus überwachen
+    template_structure:
+      modules: <array>
+      timestamp: <datetime>
+      version: <string>
+    validation_rules:
+    - timestamp muss ISO 8601 Format haben
+    - version muss gültige Versionsnummer sein
+    - modules muss Array von Module-IDs sein
+    variable_fields:
+      modules:
+        description: Verfügbare Module
+        type: array
+      version:
+        description: CCU-Version
+        type: string
+  ccu/state/status:
+    category: CCU
+    description: CCU State Status - Generisch
+    mqtt_control_usage:
+      description: CCU-Status abfragen
+      example_payload:
+        active_modules: 5
+        health: good
+        status: running
+        timestamp: '2025-08-29T10:00:00Z'
+      example_topic: ccu/state/status
+    mqtt_topic_pattern: ccu/state/status
+    semantic_purpose: CCU-Status überwachen
+    template_structure:
+      active_modules: <number>
+      health: <string>
+      status: <string>
+      timestamp: <datetime>
+    validation_rules:
+    - timestamp muss ISO 8601 Format haben
+    - status muss gültiger CCU-Status sein
+    - health muss gültiger Gesundheitsstatus sein
+    - active_modules muss positive Zahl sein
+    variable_fields:
+      active_modules:
+        description: Anzahl aktiver Module
+        type: number
+      health:
+        description: CCU-Gesundheit
+        type: enum
+        values:
+        - good
+        - warning
+        - critical
+      status:
+        description: CCU-Status
+        type: enum
+        values:
+        - running
+        - stopped
+        - error
+        - maintenance

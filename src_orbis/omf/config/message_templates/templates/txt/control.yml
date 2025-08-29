@@ -1,0 +1,74 @@
+metadata:
+  category: TXT
+  description: TXT Control Templates
+  icon: 🎮
+  last_updated: '2025-08-29'
+  sub_category: Control
+  version: 3.0.0
+templates:
+  /j1/txt/1/c/bme680:
+    category: TXT
+    description: TXT Controller /j1/txt/1/c/bme680
+    examples:
+    - period: 60
+      ts: '2025-08-20T09:57:49.496Z'
+    - period: 60
+      ts: '2025-08-20T09:57:49.626Z'
+    - period: 60
+      ts: '2025-08-25T09:07:09.093Z'
+    - period: 3
+      ts: '2025-08-25T09:07:40.367Z'
+    - period: 60
+      ts: '2025-08-25T09:07:40.929Z'
+    sub_category: Control
+    template_structure:
+      period: <number>
+      ts: <datetime>
+    validation_rules:
+    - ts muss ISO 8601 Format haben
+  /j1/txt/1/c/cam:
+    category: TXT
+    description: TXT Controller /j1/txt/1/c/cam
+    examples:
+    - fps: 2
+      'on': true
+      ts: '2025-08-20T09:57:49.445Z'
+    - fps: 2
+      'on': true
+      ts: '2025-08-20T09:57:49.626Z'
+    - fps: 2
+      'on': true
+      ts: '2025-08-25T09:07:09.092Z'
+    - fps: 2
+      'on': false
+      ts: '2025-08-25T09:07:40.367Z'
+    - fps: 2
+      'on': true
+      ts: '2025-08-25T09:07:40.915Z'
+    sub_category: Control
+    template_structure:
+      fps: <number>
+      'on': <boolean>
+      ts: <datetime>
+    validation_rules:
+    - ts muss ISO 8601 Format haben
+  /j1/txt/1/c/ldr:
+    category: TXT
+    description: TXT Controller /j1/txt/1/c/ldr
+    examples:
+    - period: 60
+      ts: '2025-08-20T09:57:49.495Z'
+    - period: 60
+      ts: '2025-08-20T09:57:49.626Z'
+    - period: 60
+      ts: '2025-08-25T09:07:09.093Z'
+    - period: 3
+      ts: '2025-08-25T09:07:40.366Z'
+    - period: 60
+      ts: '2025-08-25T09:07:40.929Z'
+    sub_category: Control
+    template_structure:
+      period: <number>
+      ts: <datetime>
+    validation_rules:
+    - ts muss ISO 8601 Format haben

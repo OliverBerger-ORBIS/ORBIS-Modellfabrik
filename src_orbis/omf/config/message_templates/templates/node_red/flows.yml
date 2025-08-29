@@ -1,0 +1,42 @@
+metadata:
+  category: Node-RED
+  description: Node-RED Flows Templates
+  icon: 🔄
+  last_updated: '2025-08-29'
+  sub_category: Flows
+  version: 3.0.0
+templates:
+  flows/default/config:
+    category: Node-RED
+    description: Node-RED Flow Flows
+    examples:
+    - flow_config: active
+      timestamp: '2024-01-01T12:00:00Z'
+      version: '1.0'
+    module: Flow
+    sub_category: Flows
+    template_structure:
+      flow_config: '[active]'
+      timestamp: <datetime>
+      version: '[1.0]'
+    validation_rules:
+    - flow_config muss in [active] sein
+    - version muss in [1.0] sein
+    - timestamp muss ISO 8601 Format haben
+  flows/default/status:
+    category: Node-RED
+    description: Node-RED Flow Flows
+    examples:
+    - flow_status: running
+      node_count: 10
+      timestamp: '2024-01-01T12:00:00Z'
+    module: Flow
+    sub_category: Flows
+    template_structure:
+      flow_status: '[running]'
+      node_count: '[10]'
+      timestamp: <datetime>
+    validation_rules:
+    - flow_status muss in [running] sein
+    - node_count muss in [10] sein
+    - timestamp muss ISO 8601 Format haben

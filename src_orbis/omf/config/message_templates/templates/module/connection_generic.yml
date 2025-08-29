@@ -1,0 +1,68 @@
+# Generic Module Connection Template
+# Version: 3.0.0
+
+metadata:
+  version: "3.0.0"
+  last_updated: "2025-08-29"
+  description: "Generic Module Connection Template - Dynamisch basierend auf Module-Config"
+  category: "MODULE"
+  sub_category: "Connection"
+  icon: "🔗"
+  generic: true
+
+templates:
+  module/v1/ff/{module_id}/connection:
+    description: "Generic Module Connection Template"
+    structure:
+      connectionState: <string>
+      headerId: <number>
+      ip: <string>
+      manufacturer: <string>
+      serialNumber: <string>
+      timestamp: <datetime>
+      version: <string>
+    examples:
+      - connectionState: "ONLINE"
+        headerId: 26
+        ip: "192.168.0.80"
+        manufacturer: "Fischertechnik"
+        serialNumber: "SVR3QA0022"
+        timestamp: "2025-08-19T09:13:34.483Z"
+        version: "1.3.0"
+      - connectionState: "ONLINE"
+        headerId: 30
+        ip: "192.168.0.40"
+        manufacturer: "Fischertechnik"
+        serialNumber: "SVR3QA2098"
+        timestamp: "2025-08-19T09:13:34.136Z"
+        version: "1.3.0"
+      - connectionState: "ONLINE"
+        headerId: 239
+        ip: "192.168.0.90"
+        manufacturer: "Fischertechnik"
+        serialNumber: "SVR4H73275"
+        timestamp: "2025-08-19T09:13:34.606Z"
+        version: "1.6.0"
+    validation_rules:
+      - "connectionState muss 'ONLINE' oder 'OFFLINE' sein"
+      - "headerId muss positive Zahl sein"
+      - "ip muss gültige IP-Adresse sein"
+      - "manufacturer muss 'Fischertechnik' sein"
+      - "serialNumber muss gültige Module-ID sein"
+      - "timestamp muss ISO 8601 Format haben"
+      - "version muss gültige Versionsnummer sein"
+    
+    # Dynamische Validierung basierend auf Module-Config
+    dynamic_validation:
+      serialNumber: "MUSS in module_config.yml existieren"
+      ip: "MUSS mit module_config.yml IP-Adresse übereinstimmen"
+      version: "MUSS mit module_config.yml Version übereinstimmen"
+    
+    # Template-Generierung
+    template_generation:
+      source: "module_config.yml"
+      method: "Für jedes Modul in module_config.yml ein spezifisches Template generieren"
+      parameters:
+        - "module_id: aus module_config.yml"
+        - "ip: aus module_config.yml ip_addresses"
+        - "version: aus module_config.yml (falls verfügbar)"

@@ -1,0 +1,43 @@
+metadata:
+  category: TXT
+  description: TXT Stock Input Templates
+  generated: false
+  icon: "📦"
+  last_updated: "2025-08-29"
+  sub_category: Input
+  version: 3.0.0
+
+templates:
+  txt/stock_input:
+    category: TXT
+    description: TXT Stock Input - Generisch
+    semantic_purpose: Lagerbestand über TXT-Controller abfragen
+    mqtt_topic_pattern: "/j1/txt/1/f/i/stock"
+    template_structure:
+      stockItems: "<array>"
+      ts: "<datetime>"
+    variable_fields:
+      stockItems:
+        type: array
+        description: "Lagerbestand-Items"
+        values: []
+      ts:
+        type: datetime
+        description: "Timestamp"
+    validation_rules:
+      - ts muss ISO 8601 Format haben
+      - stockItems muss Array sein
+    mqtt_control_usage:
+      description: Lagerbestand über TXT-Controller abfragen
+      example_topic: "/j1/txt/1/f/i/stock"
+      example_payload:
+        stockItems:
+          - id: "RED_001"
+            type: "RED"
+            position: "A1"
+            available: true
+          - id: "WHITE_001"
+            type: "WHITE"
+            position: "B2"
+            available: true
+        ts: "2025-08-29T10:00:00Z"

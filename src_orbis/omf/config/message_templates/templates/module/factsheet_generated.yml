@@ -1,0 +1,245 @@
+metadata:
+  category: MODULE
+  description: Generated factsheet Templates
+  generated: true
+  icon: 🔗
+  last_updated: '2025-08-29'
+  source: module_config.yml
+  sub_category: Factsheet
+  version: 3.0.0
+templates:
+  module/v1/ff/CHRG0/factsheet:
+    category: MODULE
+    description: Module CHRG0 Factsheet
+    examples:
+    - commands:
+      - start_charging
+      - stop_charging
+      - get_status
+      description: Ladestation für FTS-Akkus
+      enabled: true
+      ip_addresses:
+      - 192.168.0.65
+      module_id: CHRG0
+      name: CHRG
+      sub_type: CHRG
+      timestamp: '2025-08-19T09:13:34.483Z'
+      type: Charging
+    module: CHRG0
+    sub_category: Factsheet
+    template_structure:
+      commands: <array>
+      description: <string>
+      enabled: <boolean>
+      ip_addresses: <array>
+      module_id: '[CHRG0]'
+      name: '[CHRG]'
+      sub_type: '[CHRG]'
+      timestamp: <datetime>
+      type: '[Charging]'
+    validation_rules:
+    - timestamp muss ISO 8601 Format haben
+    - module_id muss in [CHRG0] sein
+    - name muss in [CHRG] sein
+    - type muss in [Charging] sein
+    - sub_type muss in [CHRG] sein
+    - enabled muss boolean sein
+  module/v1/ff/SVR3QA0022/factsheet:
+    category: MODULE
+    description: Module SVR3QA0022 Factsheet
+    examples:
+    - commands:
+      - PICK
+      - DROP
+      - STORE
+      description: Hochregallager für Werkstück-Lagerung und -Entnahme
+      enabled: true
+      ip_addresses:
+      - 192.168.0.80
+      - 192.168.0.81
+      - 192.168.0.82
+      - 192.168.0.83
+      module_id: SVR3QA0022
+      name: HBW
+      sub_type: HBW
+      timestamp: '2025-08-19T09:13:34.483Z'
+      type: Storage
+    module: SVR3QA0022
+    sub_category: Factsheet
+    template_structure:
+      commands: <array>
+      description: <string>
+      enabled: <boolean>
+      ip_addresses: <array>
+      module_id: '[SVR3QA0022]'
+      name: '[HBW]'
+      sub_type: '[HBW]'
+      timestamp: <datetime>
+      type: '[Storage]'
+    validation_rules:
+    - timestamp muss ISO 8601 Format haben
+    - module_id muss in [SVR3QA0022] sein
+    - name muss in [HBW] sein
+    - type muss in [Storage] sein
+    - sub_type muss in [HBW] sein
+    - enabled muss boolean sein
+  module/v1/ff/SVR3QA2098/factsheet:
+    category: MODULE
+    description: Module SVR3QA2098 Factsheet
+    examples:
+    - commands:
+      - PICK
+      - MILL
+      - DROP
+      description: Fräsmodul für Werkstück-Bearbeitung
+      enabled: true
+      ip_addresses:
+      - 192.168.0.40
+      - 192.168.0.41
+      - 192.168.0.42
+      - 192.168.0.43
+      - 192.168.0.44
+      - 192.168.0.45
+      module_id: SVR3QA2098
+      name: MILL
+      sub_type: MILL
+      timestamp: '2025-08-19T09:13:34.483Z'
+      type: Processing
+    module: SVR3QA2098
+    sub_category: Factsheet
+    template_structure:
+      commands: <array>
+      description: <string>
+      enabled: <boolean>
+      ip_addresses: <array>
+      module_id: '[SVR3QA2098]'
+      name: '[MILL]'
+      sub_type: '[MILL]'
+      timestamp: <datetime>
+      type: '[Processing]'
+    validation_rules:
+    - timestamp muss ISO 8601 Format haben
+    - module_id muss in [SVR3QA2098] sein
+    - name muss in [MILL] sein
+    - type muss in [Processing] sein
+    - sub_type muss in [MILL] sein
+    - enabled muss boolean sein
+  module/v1/ff/SVR4H73275/factsheet:
+    category: MODULE
+    description: Module SVR4H73275 Factsheet
+    examples:
+    - commands:
+      - PICK
+      - DROP
+      - INPUT_RGB
+      - RGB_NFC
+      description: Warenein- und Ausgangsstation
+      enabled: true
+      ip_addresses:
+      - 192.168.0.90
+      module_id: SVR4H73275
+      name: DPS
+      sub_type: DPS
+      timestamp: '2025-08-19T09:13:34.483Z'
+      type: Input/Output
+    module: SVR4H73275
+    sub_category: Factsheet
+    template_structure:
+      commands: <array>
+      description: <string>
+      enabled: <boolean>
+      ip_addresses: <array>
+      module_id: '[SVR4H73275]'
+      name: '[DPS]'
+      sub_type: '[DPS]'
+      timestamp: <datetime>
+      type: '[Input/Output]'
+    validation_rules:
+    - timestamp muss ISO 8601 Format haben
+    - module_id muss in [SVR4H73275] sein
+    - name muss in [DPS] sein
+    - type muss in [Input/Output] sein
+    - sub_type muss in [DPS] sein
+    - enabled muss boolean sein
+  module/v1/ff/SVR4H76449/factsheet:
+    category: MODULE
+    description: Module SVR4H76449 Factsheet
+    examples:
+    - commands:
+      - PICK
+      - DRILL
+      - DROP
+      description: Bohrmodul für Werkstück-Bearbeitung
+      enabled: true
+      ip_addresses:
+      - 192.168.0.50
+      - 192.168.0.51
+      - 192.168.0.52
+      - 192.168.0.53
+      - 192.168.0.54
+      - 192.168.0.55
+      module_id: SVR4H76449
+      name: DRILL
+      sub_type: DRILL
+      timestamp: '2025-08-19T09:13:34.483Z'
+      type: Processing
+    module: SVR4H76449
+    sub_category: Factsheet
+    template_structure:
+      commands: <array>
+      description: <string>
+      enabled: <boolean>
+      ip_addresses: <array>
+      module_id: '[SVR4H76449]'
+      name: '[DRILL]'
+      sub_type: '[DRILL]'
+      timestamp: <datetime>
+      type: '[Processing]'
+    validation_rules:
+    - timestamp muss ISO 8601 Format haben
+    - module_id muss in [SVR4H76449] sein
+    - name muss in [DRILL] sein
+    - type muss in [Processing] sein
+    - sub_type muss in [DRILL] sein
+    - enabled muss boolean sein
+  module/v1/ff/SVR4H76530/factsheet:
+    category: MODULE
+    description: Module SVR4H76530 Factsheet
+    examples:
+    - commands:
+      - PICK
+      - DROP
+      - CHECK_QUALITY
+      description: KI-basierte Qualitätsprüfung
+      enabled: true
+      ip_addresses:
+      - 192.168.0.70
+      - 192.168.0.71
+      - 192.168.0.72
+      - 192.168.0.73
+      - 192.168.0.74
+      - 192.168.0.75
+      module_id: SVR4H76530
+      name: AIQS
+      sub_type: AIQS
+      timestamp: '2025-08-19T09:13:34.483Z'
+      type: Quality-Control
+    module: SVR4H76530
+    sub_category: Factsheet
+    template_structure:
+      commands: <array>
+      description: <string>
+      enabled: <boolean>
+      ip_addresses: <array>
+      module_id: '[SVR4H76530]'
+      name: '[AIQS]'
+      sub_type: '[AIQS]'
+      timestamp: <datetime>
+      type: '[Quality-Control]'
+    validation_rules:
+    - timestamp muss ISO 8601 Format haben
+    - module_id muss in [SVR4H76530] sein
+    - name muss in [AIQS] sein
+    - type muss in [Quality-Control] sein
+    - sub_type muss in [AIQS] sein
+    - enabled muss boolean sein

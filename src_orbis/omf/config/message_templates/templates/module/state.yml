@@ -1,0 +1,838 @@
+metadata:
+  category: MODULE
+  description: MODULE State Templates
+  icon: 📊
+  last_updated: '2025-08-29'
+  sub_category: State
+  version: 3.0.0
+templates:
+  module/v1/ff/SVR3QA0022/state:
+    category: MODULE
+    description: Module SVR3QA0022 State
+    examples:
+    - actionState:
+        command: DROP
+        id: 2ecc8911-1ce4-44d4-bc1a-d9574ef62464
+        metadata:
+          type: RED
+        result: 040a8dca341291
+        state: FINISHED
+      errors: []
+      headerId: 16
+      information: []
+      loads:
+      - loadId: 047f8cca341290
+        loadPosition: A2
+        loadTimestamp: 1755593570385
+        loadType: RED
+      - loadId: ''
+        loadPosition: A3
+        loadTimestamp: 0
+        loadType: ''
+      - loadId: 04798eca341290
+        loadPosition: B1
+        loadTimestamp: 1755593289564
+        loadType: WHITE
+      - loadId: 04808dca341291
+        loadPosition: B2
+        loadTimestamp: 1755593714435
+        loadType: RED
+      - loadId: ''
+        loadPosition: B3
+        loadTimestamp: 0
+        loadType: ''
+      - loadId: 047389ca341291
+        loadPosition: C1
+        loadTimestamp: 1755593429137
+        loadType: BLUE
+      - loadId: 04ab8bca341290
+        loadPosition: C2
+        loadTimestamp: 1755593863714
+        loadType: WHITE
+      - loadId: ''
+        loadPosition: C3
+        loadTimestamp: 0
+        loadType: ''
+      - loadId: ''
+        loadPosition: A1
+        loadTimestamp: 0
+        loadType: ''
+      metadata:
+        opcuaState: connected
+      operatingMode: AUTOMATIC
+      orderId: 8ae07a6e-d058-48de-9b4d-8d0176622abc
+      orderUpdateId: 1
+      paused: false
+      serialNumber: SVR3QA0022
+      timestamp: '2025-08-19T09:17:08.257Z'
+    - actionState:
+        command: DROP
+        id: 2ecc8911-1ce4-44d4-bc1a-d9574ef62464
+        metadata:
+          type: RED
+        state: RUNNING
+      errors: []
+      headerId: 12
+      information: []
+      loads:
+      - loadId: 047f8cca341290
+        loadPosition: A2
+        loadTimestamp: 1755593570385
+        loadType: RED
+      - loadId: ''
+        loadPosition: A3
+        loadTimestamp: 0
+        loadType: ''
+      - loadId: 04798eca341290
+        loadPosition: B1
+        loadTimestamp: 1755593289564
+        loadType: WHITE
+      - loadId: 04808dca341291
+        loadPosition: B2
+        loadTimestamp: 1755593714435
+        loadType: RED
+      - loadId: ''
+        loadPosition: B3
+        loadTimestamp: 0
+        loadType: ''
+      - loadId: 047389ca341291
+        loadPosition: C1
+        loadTimestamp: 1755593429137
+        loadType: BLUE
+      - loadId: 04ab8bca341290
+        loadPosition: C2
+        loadTimestamp: 1755593863714
+        loadType: WHITE
+      - loadId: ''
+        loadPosition: C3
+        loadTimestamp: 0
+        loadType: ''
+      - loadId: 040a8dca341291
+        loadPosition: A1
+        loadTimestamp: 1755593140416
+        loadType: RED
+      metadata:
+        opcuaState: connected
+      operatingMode: AUTOMATIC
+      orderId: 8ae07a6e-d058-48de-9b4d-8d0176622abc
+      orderUpdateId: 1
+      paused: false
+      serialNumber: SVR3QA0022
+      timestamp: '2025-08-19T09:16:26.818Z'
+    - actionState: null
+      errors: []
+      headerId: 0
+      information: []
+      loads:
+      - loadId: 047f8cca341290
+        loadPosition: A2
+        loadTimestamp: 1755593570385
+        loadType: RED
+      - loadId: ''
+        loadPosition: A3
+        loadTimestamp: 0
+        loadType: ''
+      - loadId: 04798eca341290
+        loadPosition: B1
+        loadTimestamp: 1755593289564
+        loadType: WHITE
+      - loadId: 04808dca341291
+        loadPosition: B2
+        loadTimestamp: 1755593714435
+        loadType: RED
+      - loadId: ''
+        loadPosition: B3
+        loadTimestamp: 0
+        loadType: ''
+      - loadId: 047389ca341291
+        loadPosition: C1
+        loadTimestamp: 1755593429137
+        loadType: BLUE
+      - loadId: 04ab8bca341290
+        loadPosition: C2
+        loadTimestamp: 1755593863714
+        loadType: WHITE
+      - loadId: ''
+        loadPosition: C3
+        loadTimestamp: 0
+        loadType: ''
+      - loadId: 040a8dca341291
+        loadPosition: A1
+        loadTimestamp: 1755593140416
+        loadType: RED
+      metadata:
+        opcuaState: connected
+      operatingMode: AUTOMATIC
+      orderId: ''
+      orderUpdateId: 0
+      paused: false
+      serialNumber: SVR3QA0022
+      timestamp: '2025-08-19T09:13:34.483Z'
+    - actionState: null
+      errors: []
+      headerId: 0
+      information: []
+      loads:
+      - loadId: 047f8cca341290
+        loadPosition: A2
+        loadTimestamp: 1755593570385
+        loadType: RED
+      - loadId: ''
+        loadPosition: A3
+        loadTimestamp: 0
+        loadType: ''
+      - loadId: 04798eca341290
+        loadPosition: B1
+        loadTimestamp: 1755593289564
+        loadType: WHITE
+      - loadId: 04808dca341291
+        loadPosition: B2
+        loadTimestamp: 1755593714435
+        loadType: RED
+      - loadId: ''
+        loadPosition: B3
+        loadTimestamp: 0
+        loadType: ''
+      - loadId: 047389ca341291
+        loadPosition: C1
+        loadTimestamp: 1755593429137
+        loadType: BLUE
+      - loadId: 04ab8bca341290
+        loadPosition: C2
+        loadTimestamp: 1755593863714
+        loadType: WHITE
+      - loadId: ''
+        loadPosition: C3
+        loadTimestamp: 0
+        loadType: ''
+      - loadId: 040a8dca341291
+        loadPosition: A1
+        loadTimestamp: 1755593140416
+        loadType: RED
+      metadata:
+        opcuaState: connected
+      operatingMode: AUTOMATIC
+      orderId: ''
+      orderUpdateId: 0
+      paused: false
+      serialNumber: SVR3QA0022
+      timestamp: '2025-08-19T09:13:34.483Z'
+    - actionState:
+        command: DROP
+        id: 536f525c-ecf8-49af-a418-847ac2d4166c
+        metadata:
+          type: BLUE
+        result: 047389ca341291
+        state: FINISHED
+      errors: []
+      headerId: 493
+      information: []
+      loads:
+      - loadId: ''
+        loadPosition: A1
+        loadTimestamp: 0
+        loadType: ''
+      - loadId: 040a8dca341291
+        loadPosition: A2
+        loadTimestamp: 1755680770464
+        loadType: RED
+      - loadId: 04798eca341290
+        loadPosition: A3
+        loadTimestamp: 1755681446656
+        loadType: WHITE
+      - loadId: ''
+        loadPosition: B1
+        loadTimestamp: 0
+        loadType: ''
+      - loadId: 04d78cca341290
+        loadPosition: B2
+        loadTimestamp: 1755680843476
+        loadType: RED
+      - loadId: 047c8bca341291
+        loadPosition: B3
+        loadTimestamp: 1755681534067
+        loadType: WHITE
+      - loadId: ''
+        loadPosition: C1
+        loadTimestamp: 0
+        loadType: ''
+      - loadId: 04808dca341291
+        loadPosition: C2
+        loadTimestamp: 1755680918785
+        loadType: RED
+      - loadId: 047b8bca341291
+        loadPosition: C3
+        loadTimestamp: 1755681606993
+        loadType: WHITE
+      metadata:
+        opcuaState: connected
+      operatingMode: AUTOMATIC
+      orderId: 6bb6f7a4-90f7-4ba2-bb60-e0be0202d014
+      orderUpdateId: 1
+      paused: false
+      serialNumber: SVR3QA0022
+      timestamp: '2025-08-20T10:00:09.511Z'
+    module: SVR3QA0022
+    sub_category: State
+    template_structure:
+      actionState: <string>
+      errors: '[[], [{''errorType'': ''Validation'', ''errorLevel'': ''WARNING'',
+        ''errorReferences'': [{''topic'': ''order''}, {''headerId'': 1727}, {''orderId'':
+        ''a0e2fd2e-2b19-416f-b878-b7955096de30''}, {''orderUpdateId'': 1}], ''errorMessage'':
+        ''Module is not IDLE''}]]'
+      headerId: <string>
+      information: '[[]]'
+      loads: <string>
+      metadata: '[{''opcuaState'': ''connected''}]'
+      operatingMode: '[AUTOMATIC]'
+      orderId: <string>
+      orderUpdateId: '[0, 1, 3]'
+      paused: '[False]'
+      serialNumber: '[SVR3QA0022]'
+      timestamp: <datetime>
+    validation_rules:
+    - serialNumber muss in [SVR3QA0022] sein
+    - timestamp muss ISO 8601 Format haben
+    - 'errors muss in [[], [{''errorType'': ''Validation'', ''errorLevel'': ''WARNING'',
+      ''errorReferences'': [{''topic'': ''order''}, {''headerId'': 1727}, {''orderId'':
+      ''a0e2fd2e-2b19-416f-b878-b7955096de30''}, {''orderUpdateId'': 1}], ''errorMessage'':
+      ''Module is not IDLE''}]] sein'
+    - orderUpdateId muss in [0, 1, 3] sein
+    - paused muss in [False] sein
+    - operatingMode muss in [AUTOMATIC] sein
+    - 'metadata muss in [{''opcuaState'': ''connected''}] sein'
+    - information muss in [[]] sein
+  module/v1/ff/SVR3QA2098/state:
+    category: MODULE
+    description: Module SVR3QA2098 State
+    examples:
+    - actionState:
+        command: DROP
+        duration: 5
+        id: ea84b176-0945-4609-8c17-ddcebb69b4fe
+        state: FINISHED
+      errors: []
+      headerId: 23
+      loads: []
+      metadata:
+        opcuaState: connected
+      orderId: 8ae07a6e-d058-48de-9b4d-8d0176622abc
+      orderUpdateId: 5
+      paused: false
+      serialNumber: SVR3QA2098
+      timestamp: '2025-08-19T09:17:53.802Z'
+    - actionState:
+        command: DROP
+        duration: 5
+        id: ea84b176-0945-4609-8c17-ddcebb69b4fe
+        state: RUNNING
+      errors: []
+      headerId: 21
+      loads:
+      - duration: 5
+        loadType: RED
+      metadata:
+        opcuaState: connected
+      orderId: 8ae07a6e-d058-48de-9b4d-8d0176622abc
+      orderUpdateId: 5
+      paused: false
+      serialNumber: SVR3QA2098
+      timestamp: '2025-08-19T09:17:44.997Z'
+    - actionState:
+        command: MILL
+        duration: 5
+        id: 3c1ea434-2ab5-477a-9b52-a436518b9cb8
+        state: FINISHED
+      errors: []
+      headerId: 20
+      loads:
+      - duration: 5
+        loadType: RED
+      metadata:
+        opcuaState: connected
+      orderId: 8ae07a6e-d058-48de-9b4d-8d0176622abc
+      orderUpdateId: 4
+      paused: false
+      serialNumber: SVR3QA2098
+      timestamp: '2025-08-19T09:17:44.855Z'
+    - actionState:
+        command: MILL
+        duration: 5
+        id: 3c1ea434-2ab5-477a-9b52-a436518b9cb8
+        state: RUNNING
+      errors: []
+      headerId: 19
+      loads:
+      - duration: 5
+        loadType: RED
+      metadata:
+        opcuaState: connected
+      orderId: 8ae07a6e-d058-48de-9b4d-8d0176622abc
+      orderUpdateId: 4
+      paused: false
+      serialNumber: SVR3QA2098
+      timestamp: '2025-08-19T09:17:34.821Z'
+    - actionState:
+        command: PICK
+        id: 683a526a-bf99-4d5a-be21-4efd3c88792f
+        state: FINISHED
+      errors: []
+      headerId: 18
+      loads:
+      - loadType: RED
+      metadata:
+        opcuaState: connected
+      orderId: 8ae07a6e-d058-48de-9b4d-8d0176622abc
+      orderUpdateId: 3
+      paused: false
+      serialNumber: SVR3QA2098
+      timestamp: '2025-08-19T09:17:34.701Z'
+    module: SVR3QA2098
+    sub_category: State
+    template_structure:
+      actionState: <string>
+      errors: '[[], [{''timestamp'': ''2025-08-14T12:31:08.415Z'', ''errorType'':
+        ''PICK_failed'', ''errorMessage'': ''PICK failed'', ''errorLevel'': ''FATAL'',
+        ''errorReferences'': [{''topic'': ''order''}, {''headerId'': 1705}, {''orderId'':
+        ''fe2ddece-206c-4629-aca8-6bc70abf45dd''}, {''orderUpdateId'': 1}]}, {''errorType'':
+        ''Validation'', ''errorLevel'': ''WARNING'', ''errorReferences'': [{''topic'':
+        ''order''}, {''headerId'': 1972}, {''orderId'': ''eaa56670-b1b7-4ba1-af69-9cc694fd4843''},
+        {''orderUpdateId'': 1}], ''errorMessage'': ''OrderUpdateId not valid''}],
+        [{''timestamp'': ''2025-08-20T14:13:11.821Z'', ''errorType'': ''PICK_failed'',
+        ''errorMessage'': ''PICK failed'', ''errorLevel'': ''FATAL'', ''errorReferences'':
+        [{''topic'': ''order''}, {''headerId'': 1520}, {''orderId'': ''05af64c5-9b92-4414-b342-b81908fa8522''},
+        {''orderUpdateId'': 1}]}]]'
+      headerId: <string>
+      loads: <string>
+      metadata: '[{''opcuaState'': ''connected''}]'
+      orderId: <string>
+      orderUpdateId: <string>
+      paused: '[False]'
+      serialNumber: '[SVR3QA2098]'
+      timestamp: <datetime>
+    validation_rules:
+    - serialNumber muss in [SVR3QA2098] sein
+    - timestamp muss ISO 8601 Format haben
+    - 'errors muss in [[], [{''timestamp'': ''2025-08-14T12:31:08.415Z'', ''errorType'':
+      ''PICK_failed'', ''errorMessage'': ''PICK failed'', ''errorLevel'': ''FATAL'',
+      ''errorReferences'': [{''topic'': ''order''}, {''headerId'': 1705}, {''orderId'':
+      ''fe2ddece-206c-4629-aca8-6bc70abf45dd''}, {''orderUpdateId'': 1}]}, {''errorType'':
+      ''Validation'', ''errorLevel'': ''WARNING'', ''errorReferences'': [{''topic'':
+      ''order''}, {''headerId'': 1972}, {''orderId'': ''eaa56670-b1b7-4ba1-af69-9cc694fd4843''},
+      {''orderUpdateId'': 1}], ''errorMessage'': ''OrderUpdateId not valid''}], [{''timestamp'':
+      ''2025-08-20T14:13:11.821Z'', ''errorType'': ''PICK_failed'', ''errorMessage'':
+      ''PICK failed'', ''errorLevel'': ''FATAL'', ''errorReferences'': [{''topic'':
+      ''order''}, {''headerId'': 1520}, {''orderId'': ''05af64c5-9b92-4414-b342-b81908fa8522''},
+      {''orderUpdateId'': 1}]}]] sein'
+    - paused muss in [False] sein
+    - 'metadata muss in [{''opcuaState'': ''connected''}] sein'
+  module/v1/ff/SVR4H73275/state:
+    category: MODULE
+    description: Module SVR4H73275 State
+    examples:
+    - actionState:
+        command: PICK
+        id: 327784cd-6abc-4a0b-870e-713694fdb1dd
+        result: PASSED
+        state: FINISHED
+        timestamp: '2025-08-19T09:19:03.473043Z'
+      actionStates:
+      - command: PICK
+        id: 327784cd-6abc-4a0b-870e-713694fdb1dd
+        metadata:
+          workpiece:
+            history:
+            - code: 400
+              ts: 1755595028336
+            - code: 600
+              ts: 1755595064912
+            - code: 200
+              ts: 1755595103032
+            state: PROCESSED
+            type: RED
+            workpieceId: 040a8dca341291
+        result: PASSED
+        state: FINISHED
+        timestamp: '2025-08-19T09:19:03.473043Z'
+      batteryState: {}
+      errors: []
+      headerId: 15
+      information: []
+      operatingMode: AUTOMATIC
+      orderId: 8ae07a6e-d058-48de-9b4d-8d0176622abc
+      orderUpdateId: 11
+      paused: false
+      serialNumber: SVR4H73275
+      timestamp: '2025-08-19T09:19:03.477244Z'
+    - actionState:
+        id: 327784cd-6abc-4a0b-870e-713694fdb1dd
+        state: RUNNING
+      errors: []
+      headerId: 213
+      loads: []
+      metadata:
+        opcuaState: connected
+      orderId: 8ae07a6e-d058-48de-9b4d-8d0176622abc
+      orderUpdateId: 0
+      paused: false
+      serialNumber: SVR4H73275
+      timestamp: '2025-08-19T09:18:41.204Z'
+    - actionState: null
+      errors: []
+      headerId: 2
+      loads: []
+      metadata:
+        opcuaState: connected
+      orderUpdateId: 0
+      paused: false
+      serialNumber: SVR4H73275
+      timestamp: '2025-08-19T09:13:34.606Z'
+    - actionState: null
+      errors: []
+      headerId: 2
+      loads: []
+      metadata:
+        opcuaState: connected
+      orderUpdateId: 0
+      paused: false
+      serialNumber: SVR4H73275
+      timestamp: '2025-08-19T09:13:34.606Z'
+    - actionState:
+        command: PICK
+        id: 7d18d976-8a7d-4e81-9387-afa21020c25e
+        result: PASSED
+        state: FINISHED
+        timestamp: '2025-08-20T10:07:16.829673Z'
+      actionStates:
+      - command: PICK
+        id: 7d18d976-8a7d-4e81-9387-afa21020c25e
+        metadata:
+          workpiece:
+            history:
+            - code: 400
+              ts: 1755684009575
+            - code: 700
+              ts: 1755684133967
+            - code: 600
+              ts: 1755684243218
+            - code: 200
+              ts: 1755684356607
+            - code: 100
+              ts: 1755680183643
+            - code: 300
+              ts: 1755680212526
+            state: PROCESSED
+            type: BLUE
+            workpieceId: 047389ca341291
+        result: PASSED
+        state: FINISHED
+        timestamp: '2025-08-20T10:07:16.829673Z'
+      batteryState: {}
+      errors: []
+      headerId: 224
+      information: []
+      operatingMode: AUTOMATIC
+      orderId: 6bb6f7a4-90f7-4ba2-bb60-e0be0202d014
+      orderUpdateId: 18
+      paused: false
+      serialNumber: SVR4H73275
+      timestamp: '2025-08-20T10:07:16.829992Z'
+    module: SVR4H73275
+    sub_category: State
+    template_structure:
+      actionState: <string>
+      actionStates: <string>
+      batteryState: '[{}]'
+      errors: '[[], [{''errorLevel'': ''WARNING'', ''errorType'': ''validationError'',
+        ''errorReferences'': [{''topic'': ''order''}, {''headerId'': None}, {''orderId'':
+        ''3ad5d0b4-50b8-4b52-8be5-2664a5f9c06f''}, {''orderUpdateId'': 1}]}], [{}]]'
+      headerId: <string>
+      information: '[[]]'
+      loads: '[[], [{''loadType'': ''UNKNOWN''}], [{''type'': ''BLUE''}], [{''type'':
+        ''RED''}], [{''type'': ''WHITE''}]]'
+      metadata: '[{''opcuaState'': ''connected''}]'
+      operatingMode: '[AUTOMATIC]'
+      orderId: <string>
+      orderUpdateId: <string>
+      paused: '[False]'
+      serialNumber: '[SVR4H73275]'
+      timestamp: <datetime>
+    validation_rules:
+    - information muss in [[]] sein
+    - operatingMode muss in [AUTOMATIC] sein
+    - serialNumber muss in [SVR4H73275] sein
+    - timestamp muss ISO 8601 Format haben
+    - paused muss in [False] sein
+    - batteryState muss in [{}] sein
+    - 'errors muss in [[], [{''errorLevel'': ''WARNING'', ''errorType'': ''validationError'',
+      ''errorReferences'': [{''topic'': ''order''}, {''headerId'': None}, {''orderId'':
+      ''3ad5d0b4-50b8-4b52-8be5-2664a5f9c06f''}, {''orderUpdateId'': 1}]}], [{}]]
+      sein'
+    - 'loads muss in [[], [{''loadType'': ''UNKNOWN''}], [{''type'': ''BLUE''}], [{''type'':
+      ''RED''}], [{''type'': ''WHITE''}]] sein'
+    - 'metadata muss in [{''opcuaState'': ''connected''}] sein'
+  module/v1/ff/SVR4H76449/state:
+    category: MODULE
+    description: Module SVR4H76449 State
+    examples:
+    - actionState: null
+      errors: []
+      headerId: 0
+      loads: []
+      metadata:
+        opcuaState: connected
+      orderId: ''
+      orderUpdateId: 0
+      paused: false
+      serialNumber: SVR4H76449
+      timestamp: '2025-08-19T09:13:34.155Z'
+    - actionState: null
+      errors: []
+      headerId: 0
+      loads: []
+      metadata:
+        opcuaState: connected
+      orderId: ''
+      orderUpdateId: 0
+      paused: false
+      serialNumber: SVR4H76449
+      timestamp: '2025-08-19T09:13:34.155Z'
+    - actionState:
+        command: DROP
+        duration: 5
+        id: c4c9e23a-3d77-4c4e-9cbb-36987eb10d76
+        state: FINISHED
+      errors: []
+      headerId: 498
+      loads: []
+      metadata:
+        opcuaState: connected
+      orderId: 6bb6f7a4-90f7-4ba2-bb60-e0be0202d014
+      orderUpdateId: 6
+      paused: false
+      serialNumber: SVR4H76449
+      timestamp: '2025-08-20T10:02:56.035Z'
+    - actionState:
+        command: DROP
+        duration: 5
+        id: c4c9e23a-3d77-4c4e-9cbb-36987eb10d76
+        state: RUNNING
+      errors: []
+      headerId: 497
+      loads:
+      - duration: 5
+        loadType: BLUE
+      metadata:
+        opcuaState: connected
+      orderId: 6bb6f7a4-90f7-4ba2-bb60-e0be0202d014
+      orderUpdateId: 6
+      paused: false
+      serialNumber: SVR4H76449
+      timestamp: '2025-08-20T10:02:46.410Z'
+    - actionState:
+        command: DRILL
+        duration: 5
+        id: 1a75e423-c60d-4db8-9f82-9b1e448798f6
+        state: FINISHED
+      errors: []
+      headerId: 494
+      loads:
+      - duration: 5
+        loadType: BLUE
+      metadata:
+        opcuaState: connected
+      orderId: 6bb6f7a4-90f7-4ba2-bb60-e0be0202d014
+      orderUpdateId: 4
+      paused: false
+      serialNumber: SVR4H76449
+      timestamp: '2025-08-20T10:02:13.919Z'
+    module: SVR4H76449
+    sub_category: State
+    template_structure:
+      actionState: <string>
+      errors: '[[], [{''errorType'': ''Validation'', ''errorLevel'': ''WARNING'',
+        ''errorReferences'': [{''topic'': ''order''}, {''headerId'': 1504}, {''orderId'':
+        ''a789eee0-9472-49da-b99f-965a1fdd8e92''}, {''orderUpdateId'': 1}], ''errorMessage'':
+        ''OrderId "a789eee0-9472-49da-b99f-965a1fdd8e92" not valid''}, {''timestamp'':
+        ''2025-08-14T11:33:57.747Z'', ''errorType'': ''PICK_failed'', ''errorMessage'':
+        ''PICK failed'', ''errorLevel'': ''FATAL'', ''errorReferences'': [{''topic'':
+        ''order''}, {''headerId'': 1505}, {''orderId'': ''46e58c3b-1775-44e7-a0cc-91be48f0f09a''},
+        {''orderUpdateId'': 1}]}, {''errorType'': ''Validation'', ''errorLevel'':
+        ''WARNING'', ''errorReferences'': [{''topic'': ''order''}, {''headerId'':
+        1537}, {''orderId'': ''315b5f37-cdee-495c-bd1c-f262b9c8e85b''}, {''orderUpdateId'':
+        1}], ''errorMessage'': ''OrderUpdateId not valid''}, {''errorType'': ''Validation'',
+        ''errorLevel'': ''WARNING'', ''errorReferences'': [{''topic'': ''order''},
+        {''headerId'': 1650}, {''orderId'': ''873d4d38-9d32-4bc0-9195-8c24bba37802''},
+        {''orderUpdateId'': 1}], ''errorMessage'': ''OrderUpdateId not valid''}, {''errorType'':
+        ''Validation'', ''errorLevel'': ''WARNING'', ''errorReferences'': [{''topic'':
+        ''order''}, {''headerId'': 2000}, {''orderId'': ''fa912733-a841-4829-949b-60fc7b2d6f4a''},
+        {''orderUpdateId'': 1}], ''errorMessage'': ''OrderUpdateId not valid''}, {''errorType'':
+        ''Validation'', ''errorLevel'': ''WARNING'', ''errorReferences'': [{''topic'':
+        ''order''}, {''headerId'': 2002}, {''orderId'': ''fd9f1e2c-7a3a-425a-bd64-5fced83365a3''},
+        {''orderUpdateId'': 1}], ''errorMessage'': ''OrderUpdateId not valid''}, {''errorType'':
+        ''Validation'', ''errorLevel'': ''WARNING'', ''errorReferences'': [{''topic'':
+        ''order''}, {''headerId'': 2041}, {''orderId'': ''4eec8015-1cf7-4eba-8ba3-3cc338cc5cdc''},
+        {''orderUpdateId'': 1}], ''errorMessage'': ''OrderUpdateId not valid''}]]'
+      headerId: <string>
+      loads: '[[], [{''loadType'': ''BLUE'', ''duration'': 5}], [{''loadType'': ''BLUE''}],
+        [{''loadType'': ''WHITE'', ''duration'': 5}], [{''loadType'': ''WHITE''}]]'
+      metadata: '[{''opcuaState'': ''connected''}]'
+      orderId: <string>
+      orderUpdateId: <string>
+      paused: '[False]'
+      serialNumber: '[SVR4H76449]'
+      timestamp: <datetime>
+    validation_rules:
+    - 'loads muss in [[], [{''loadType'': ''BLUE'', ''duration'': 5}], [{''loadType'':
+      ''BLUE''}], [{''loadType'': ''WHITE'', ''duration'': 5}], [{''loadType'': ''WHITE''}]]
+      sein'
+    - serialNumber muss in [SVR4H76449] sein
+    - timestamp muss ISO 8601 Format haben
+    - 'errors muss in [[], [{''errorType'': ''Validation'', ''errorLevel'': ''WARNING'',
+      ''errorReferences'': [{''topic'': ''order''}, {''headerId'': 1504}, {''orderId'':
+      ''a789eee0-9472-49da-b99f-965a1fdd8e92''}, {''orderUpdateId'': 1}], ''errorMessage'':
+      ''OrderId "a789eee0-9472-49da-b99f-965a1fdd8e92" not valid''}, {''timestamp'':
+      ''2025-08-14T11:33:57.747Z'', ''errorType'': ''PICK_failed'', ''errorMessage'':
+      ''PICK failed'', ''errorLevel'': ''FATAL'', ''errorReferences'': [{''topic'':
+      ''order''}, {''headerId'': 1505}, {''orderId'': ''46e58c3b-1775-44e7-a0cc-91be48f0f09a''},
+      {''orderUpdateId'': 1}]}, {''errorType'': ''Validation'', ''errorLevel'': ''WARNING'',
+      ''errorReferences'': [{''topic'': ''order''}, {''headerId'': 1537}, {''orderId'':
+      ''315b5f37-cdee-495c-bd1c-f262b9c8e85b''}, {''orderUpdateId'': 1}], ''errorMessage'':
+      ''OrderUpdateId not valid''}, {''errorType'': ''Validation'', ''errorLevel'':
+      ''WARNING'', ''errorReferences'': [{''topic'': ''order''}, {''headerId'': 1650},
+      {''orderId'': ''873d4d38-9d32-4bc0-9195-8c24bba37802''}, {''orderUpdateId'':
+      1}], ''errorMessage'': ''OrderUpdateId not valid''}, {''errorType'': ''Validation'',
+      ''errorLevel'': ''WARNING'', ''errorReferences'': [{''topic'': ''order''}, {''headerId'':
+      2000}, {''orderId'': ''fa912733-a841-4829-949b-60fc7b2d6f4a''}, {''orderUpdateId'':
+      1}], ''errorMessage'': ''OrderUpdateId not valid''}, {''errorType'': ''Validation'',
+      ''errorLevel'': ''WARNING'', ''errorReferences'': [{''topic'': ''order''}, {''headerId'':
+      2002}, {''orderId'': ''fd9f1e2c-7a3a-425a-bd64-5fced83365a3''}, {''orderUpdateId'':
+      1}], ''errorMessage'': ''OrderUpdateId not valid''}, {''errorType'': ''Validation'',
+      ''errorLevel'': ''WARNING'', ''errorReferences'': [{''topic'': ''order''}, {''headerId'':
+      2041}, {''orderId'': ''4eec8015-1cf7-4eba-8ba3-3cc338cc5cdc''}, {''orderUpdateId'':
+      1}], ''errorMessage'': ''OrderUpdateId not valid''}]] sein'
+    - paused muss in [False] sein
+    - 'metadata muss in [{''opcuaState'': ''connected''}] sein'
+  module/v1/ff/SVR4H76530/state:
+    category: MODULE
+    description: Module SVR4H76530 State
+    examples:
+    - actionState:
+        command: DROP
+        id: 6d9c53fd-c911-407e-be14-1e0d0a93b5bc
+        metadata:
+          type: RED
+          workpieceId: 040a8dca341291
+        state: FINISHED
+      errors: []
+      headerId: 25
+      loads: []
+      metadata:
+        opcuaState: connected
+      orderId: 8ae07a6e-d058-48de-9b4d-8d0176622abc
+      orderUpdateId: 0
+      paused: false
+      serialNumber: SVR4H76530
+      timestamp: '2025-08-19T09:18:31.856Z'
+    - actionState:
+        command: DROP
+        id: 6d9c53fd-c911-407e-be14-1e0d0a93b5bc
+        metadata:
+          type: RED
+          workpieceId: 040a8dca341291
+        state: RUNNING
+      errors: []
+      headerId: 24
+      loads:
+      - loadType: RED
+      metadata:
+        opcuaState: connected
+      orderId: 8ae07a6e-d058-48de-9b4d-8d0176622abc
+      orderUpdateId: 0
+      paused: false
+      serialNumber: SVR4H76530
+      timestamp: '2025-08-19T09:18:23.100Z'
+    - actionState:
+        command: CHECK_QUALITY
+        id: 7b25fdfb-4a9e-419d-836c-c4348d9d9fd3
+        metadata:
+          type: RED
+          workpieceId: 040a8dca341291
+        result: PASSED
+        state: FINISHED
+      errors: []
+      headerId: 23
+      loads:
+      - loadType: RED
+      metadata:
+        opcuaState: connected
+      orderId: 8ae07a6e-d058-48de-9b4d-8d0176622abc
+      orderUpdateId: 0
+      paused: false
+      serialNumber: SVR4H76530
+      timestamp: '2025-08-19T09:18:22.979Z'
+    - actionState:
+        command: CHECK_QUALITY
+        id: 7b25fdfb-4a9e-419d-836c-c4348d9d9fd3
+        metadata:
+          type: RED
+          workpieceId: 040a8dca341291
+        state: RUNNING
+      errors: []
+      headerId: 21
+      loads:
+      - loadType: RED
+      metadata:
+        opcuaState: connected
+      orderId: 8ae07a6e-d058-48de-9b4d-8d0176622abc
+      orderUpdateId: 0
+      paused: false
+      serialNumber: SVR4H76530
+      timestamp: '2025-08-19T09:18:14.932Z'
+    - actionState:
+        command: PICK
+        id: 35d69089-2162-41b1-8d14-ef4d3e06347a
+        metadata:
+          type: RED
+          workpieceId: 040a8dca341291
+        state: FINISHED
+      errors: []
+      headerId: 20
+      loads:
+      - loadType: RED
+      metadata:
+        opcuaState: connected
+      orderId: 8ae07a6e-d058-48de-9b4d-8d0176622abc
+      orderUpdateId: 0
+      paused: false
+      serialNumber: SVR4H76530
+      timestamp: '2025-08-19T09:18:14.796Z'
+    module: SVR4H76530
+    sub_category: State
+    template_structure:
+      actionState: <string>
+      errors: '[[], [{''errorType'': ''Validation'', ''errorLevel'': ''WARNING'',
+        ''errorReferences'': [{''topic'': ''order''}, {''headerId'': 1999}, {''orderId'':
+        ''6be7ef45-6105-4ba7-8dc6-1bc2fa69aa02''}, {''orderUpdateId'': 0}], ''errorMessage'':
+        ''Internal modulestate accepts only PICK ''}]]'
+      headerId: <string>
+      loads: '[[], [{''loadType'': ''BLUE''}], [{''loadType'': ''RED''}], [{''loadType'':
+        ''WHITE''}]]'
+      metadata: '[{''opcuaState'': ''connected''}]'
+      orderId: <string>
+      orderUpdateId: '[0]'
+      paused: '[False]'
+      serialNumber: '[SVR4H76530]'
+      timestamp: <datetime>
+    validation_rules:
+    - 'loads muss in [[], [{''loadType'': ''BLUE''}], [{''loadType'': ''RED''}], [{''loadType'':
+      ''WHITE''}]] sein'
+    - serialNumber muss in [SVR4H76530] sein
+    - timestamp muss ISO 8601 Format haben
+    - 'errors muss in [[], [{''errorType'': ''Validation'', ''errorLevel'': ''WARNING'',
+      ''errorReferences'': [{''topic'': ''order''}, {''headerId'': 1999}, {''orderId'':
+      ''6be7ef45-6105-4ba7-8dc6-1bc2fa69aa02''}, {''orderUpdateId'': 0}], ''errorMessage'':
+      ''Internal modulestate accepts only PICK ''}]] sein'
+    - orderUpdateId muss in [0] sein
+    - paused muss in [False] sein
+    - 'metadata muss in [{''opcuaState'': ''connected''}] sein'

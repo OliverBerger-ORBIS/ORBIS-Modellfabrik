@@ -1,0 +1,16 @@
+metadata:
+  category: CCU
+  description: CCU Pairing Templates
+  icon: 📁
+  last_updated: '2025-08-29'
+  sub_category: Pairing
+  version: 3.0.0
+templates:
+  ccu/pairing/pair_fts:
+    category: CCU
+    description: Auto-analyzed template for ccu/pairing/pair_fts
+    examples:
+    - serialNumber: 5iO4
+    sub_category: Pairing
+    template_structure: {}
+    validation_rules: []
