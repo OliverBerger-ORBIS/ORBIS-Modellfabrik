@@ -126,13 +126,13 @@ templates:
     template_structure:
       action: <string>
       orderId: <string>
-      orderUpdateId: '[1, 3]'
+      orderUpdateId: <string>
       serialNumber: '[SVR3QA0022]'
       timestamp: <datetime>
     validation_rules:
     - timestamp muss ISO 8601 Format haben
     - serialNumber muss in [SVR3QA0022] sein
-    - orderUpdateId muss in [1, 3] sein
+    - orderUpdateId muss eine positive Zahl sein
   module/v1/ff/SVR3QA2098/order:
     category: MODULE
     description: Module SVR3QA2098 Order

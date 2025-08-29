@@ -21,6 +21,7 @@ try:
         show_nfc_config,
         show_topic_config,
     )
+    from components.steering import show_steering
 except ImportError:
     # Fallback für Import-Fehler
     def show_dashboard_settings():
@@ -46,6 +47,10 @@ except ImportError:
     def show_mqtt_config():
         st.subheader("🔗 MQTT-Config")
         st.info("MQTT-Konfiguration wird hier angezeigt")
+
+    def show_steering():
+        st.subheader("🎮 Steuerung")
+        st.info("Steuerung wird hier angezeigt")
 
 
 def main():
@@ -95,16 +100,26 @@ def main():
 
             mqtt_client = get_omf_mqtt_client()
 
-            # Connection Status
-            if mqtt_client.is_connected():
+            # Connection Status (inkl. Mock-Support)
+            # Mock-Modus prüfen
+            mock_enabled = st.session_state.get("mqtt_mock_enabled", False)
+            
+            if mock_enabled:
+                st.success("🧪 MQTT MOCK")
+                col_btn1, col_btn2 = st.columns(2)
+                with col_btn1:
+                    st.info("🧪 Mock aktiv")
+                with col_btn2:
+                    st.metric(
+                        "🧪",
+                        "MOCK",
+                        help="MQTT Mock-Modus aktiv",
+                    )
+            elif mqtt_client.is_connected():
                 st.success("🔗 MQTT Connected")
                 col_btn1, col_btn2 = st.columns(2)
                 with col_btn1:
-                    if st.button(
-                        "🔌 Disconnect", 
-                        key="mqtt_disconnect", 
-                        use_container_width=True
-                    ):
+                    if st.button("🔌 Disconnect", key="mqtt_disconnect", use_container_width=True):
                         mqtt_client.disconnect()
                         st.rerun()
                 with col_btn2:
@@ -119,11 +134,7 @@ def main():
                 st.error("❌ MQTT Disconnected")
                 col_btn1, col_btn2 = st.columns(2)
                 with col_btn1:
-                    if st.button(
-                        "🔗 Connect", 
-                        key="mqtt_connect", 
-                        use_container_width=True
-                    ):
+                    if st.button("🔗 Connect", key="mqtt_connect", use_container_width=True):
                         if mqtt_client.connect():
                             st.success("✅ Connected successfully!")
                         else:
@@ -148,7 +159,7 @@ def main():
             "📊 Overview",
             "📋 Aufträge",
             "📡 Messages-Monitor",
-            "🎮 Message-Controls",
+            "🎮 Steuerung",
             "⚙️ Settings",
         ]
     )
@@ -159,12 +170,7 @@ def main():
 
         # Sub-tabs for Overview
         overview_tab1, overview_tab2, overview_tab3, overview_tab4 = st.tabs(
-            [
-                "🏭 Modul-Status", 
-                "📦 Bestellung", 
-                "🔧 Bestellung-Rohware", 
-                "📚 Lagerbestand"
-            ]
+            ["🏭 Modul-Status", "📦 Bestellung", "🔧 Bestellung-Rohware", "📚 Lagerbestand"]
         )
 
         with overview_tab1:
@@ -188,9 +194,7 @@ def main():
         st.header("📋 Aufträge")
 
         # Sub-tabs for Orders
-        orders_tab1, orders_tab2 = st.tabs(
-            ["📋 Auftragsverwaltung", "🔄 Laufende Aufträge"]
-        )
+        orders_tab1, orders_tab2 = st.tabs(["📋 Auftragsverwaltung", "🔄 Laufende Aufträge"])
 
         with orders_tab1:
             st.subheader("📋 Auftragsverwaltung")
@@ -205,10 +209,9 @@ def main():
         st.header("📡 Messages-Monitor")
         st.info("MQTT-Messages werden hier angezeigt")
 
-    # Tab 4: Message-Controls
+    # Tab 4: Steuerung (Kommando-Zentrale)
     with tab4:
-        st.header("🎮 Message-Controls")
-        st.info("Fabrik/Module-Steuerung wird hier angezeigt")
+        show_steering()
 
     # Tab 5: Settings
     with tab5:

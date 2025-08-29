@@ -30,7 +30,7 @@ class MessageGenerator:
     def _load_module_config(self) -> Dict[str, Any]:
         """Lädt Module-Konfiguration"""
         try:
-            with open(self.module_config_path, "r", encoding="utf-8") as f:
+            with open(self.module_config_path, encoding="utf-8") as f:
                 return yaml.safe_load(f)
         except Exception as e:
             print(f"❌ Fehler beim Laden der Module-Konfiguration: {e}")
@@ -39,7 +39,7 @@ class MessageGenerator:
     def _load_topic_config(self) -> Dict[str, Any]:
         """Lädt Topic-Konfiguration"""
         try:
-            with open(self.topic_config_path, "r", encoding="utf-8") as f:
+            with open(self.topic_config_path, encoding="utf-8") as f:
                 return yaml.safe_load(f)
         except Exception as e:
             print(f"❌ Fehler beim Laden der Topic-Konfiguration: {e}")
@@ -53,7 +53,7 @@ class MessageGenerator:
         if semantic_dir.exists():
             for file_path in semantic_dir.glob("*_semantic.yml"):
                 try:
-                    with open(file_path, "r", encoding="utf-8") as f:
+                    with open(file_path, encoding="utf-8") as f:
                         data = yaml.safe_load(f)
                         if "templates" in data:
                             templates.update(data["templates"])
@@ -65,11 +65,7 @@ class MessageGenerator:
     def get_available_modules(self) -> List[str]:
         """Gibt verfügbare Module zurück"""
         modules = self.module_config.get("modules", {})
-        return [
-            module_id
-            for module_id, module_info in modules.items()
-            if module_info.get("enabled", True)
-        ]
+        return [module_id for module_id, module_info in modules.items() if module_info.get("enabled", True)]
 
     def get_module_commands(self, module_id: str) -> List[str]:
         """Gibt verfügbare Commands für ein Modul zurück"""
@@ -85,9 +81,7 @@ class MessageGenerator:
         """Gibt Template-Informationen zurück"""
         return self.semantic_templates.get(template_name)
 
-    def generate_message(
-        self, template_name: str, **parameters
-    ) -> Tuple[str, Dict[str, Any]]:
+    def generate_message(self, template_name: str, **parameters) -> Tuple[str, Dict[str, Any]]:
         """
         Generiert eine MQTT-Nachricht basierend auf Template und Parametern
 
@@ -110,9 +104,157 @@ class MessageGenerator:
 
         return topic, payload
 
-    def _generate_topic(
-        self, template: Dict[str, Any], parameters: Dict[str, Any]
-    ) -> str:
+    def generate_factory_reset_message(
+        self, with_storage: bool = False, clear_storage: bool = False
+    ) -> Optional[Dict[str, Any]]:
+        """Generiert Factory Reset Message"""
+        try:
+            # Factory Reset Template verwenden
+            template_name = "ccu/factory_reset"
+            template = self.semantic_templates.get(template_name)
+
+            if not template:
+                # Fallback: Erweiterte Factory Reset Message
+                return {
+                    "topic": "ccu/factory/reset",
+                    "payload": {
+                        "withStorage": with_storage,
+                        "clearStorage": clear_storage,
+                        "timestamp": datetime.now().isoformat(),
+                        "orderId": str(uuid.uuid4()),
+                    },
+                }
+
+            # Verwende Template-basierte Generierung
+            topic, payload = self.generate_message(template_name, withStorage=with_storage, clearStorage=clear_storage)
+            return {"topic": topic, "payload": payload}
+
+        except Exception as e:
+            print(f"❌ Fehler beim Generieren der Factory Reset Message: {e}")
+            return None
+
+    def generate_module_sequence_message(
+        self, module: str, step: str, step_number: int = 1, order_id: str = None
+    ) -> Optional[Dict[str, Any]]:
+        """Generiert Message für Modul-Sequenz-Schritt mit WorkflowOrderManager"""
+        try:
+            # Modul-spezifische Serial Number
+            module_serial = self._get_module_serial(module)
+            if not module_serial:
+                print(f"❌ Keine Serial Number für Modul {module} gefunden")
+                return None
+
+            # Command aus Step extrahieren
+            command = step.split("(")[0] if "(" in step else step
+
+            # WorkflowOrderManager für ORDER-ID Management
+            try:
+                from .workflow_order_manager import get_workflow_order_manager
+            except ImportError:
+                from workflow_order_manager import get_workflow_order_manager
+            workflow_manager = get_workflow_order_manager()
+
+            # ORDER-ID und orderUpdateId verwalten
+            if order_id is None:
+                # Neuer Workflow starten
+                commands = ["PICK", "PROCESS", "DROP"]
+                order_id = workflow_manager.start_workflow(module, commands)
+
+            # Nächste orderUpdateId holen
+            workflow_info = workflow_manager.execute_command(order_id, command)
+            order_update_id = workflow_info["orderUpdateId"]
+
+            # Template verwenden
+            template_name = "module/order"
+            template = self.semantic_templates.get(template_name)
+
+            if not template:
+                # Fallback: Einfache Module Order Message
+                return {
+                    "topic": f"module/v1/ff/{module_serial}/order",
+                    "payload": {
+                        "module_id": module_serial,
+                        "command": command,
+                        "order_id": order_id,
+                        "parameters": {
+                            "orderUpdateId": order_update_id,
+                            "subActionId": step_number,
+                        },
+                        "timestamp": datetime.now().isoformat(),
+                    },
+                }
+
+            # Verwende Template-basierte Generierung
+            topic, payload = self.generate_message(
+                template_name,
+                module_id=module_serial,
+                command=command,
+                order_id=order_id,
+                parameters={
+                    "orderUpdateId": order_update_id,
+                    "subActionId": step_number,
+                },
+            )
+
+            return {"topic": topic, "payload": payload}
+
+        except Exception as e:
+            print(f"❌ Fehler beim Generieren der Modul-Sequenz Message: {e}")
+            return None
+
+    def generate_fts_command_message(self, command: str) -> Optional[Dict[str, Any]]:
+        """Generiert FTS-Command Message"""
+        try:
+            # FTS Serial Number
+            fts_serial = "5iO4"  # FTS Serial Number
+
+            # Template verwenden
+            template_name = "fts/command"
+            template = self.semantic_templates.get(template_name)
+
+            if not template:
+                # Fallback: Einfache FTS Command Message
+                return {
+                    "topic": f"fts/v1/ff/{fts_serial}/command",
+                    "payload": {
+                        "serialNumber": fts_serial,
+                        "orderId": str(uuid.uuid4()),
+                        "orderUpdateId": 1,
+                        "action": {
+                            "id": str(uuid.uuid4()),
+                            "command": command.upper(),
+                            "metadata": {
+                                "priority": "NORMAL",
+                                "timeout": 300,
+                                "type": "TRANSPORT",
+                            },
+                        },
+                        "timestamp": datetime.now().isoformat(),
+                    },
+                }
+
+            # Verwende Template-basierte Generierung
+            topic, payload = self.generate_message(template_name, command=command)
+            return {"topic": topic, "payload": payload}
+
+        except Exception as e:
+            print(f"❌ Fehler beim Generieren der FTS Command Message: {e}")
+            return None
+
+    def _get_module_serial(self, module: str) -> Optional[str]:
+        """Gibt Serial Number für ein Modul zurück"""
+        modules = self.module_config.get("modules", {})
+
+        # Suche nach Modul-Namen in allen Modulen
+        for _module_id, module_info in modules.items():
+            if module_info.get("name") == module:
+                return module_info.get("id")
+
+        # Fallback: Direkte Suche nach ID
+        module_info = modules.get(module, {})
+        return module_info.get("id")
+
+    def _generate_topic(self, template: Dict[str, Any], parameters: Dict[str, Any]) -> str:
         """Generiert MQTT-Topic aus Template-Pattern"""
         topic_pattern = template.get("mqtt_topic_pattern", "")
 
@@ -125,9 +267,7 @@ class MessageGenerator:
 
         return topic
 
-    def _generate_payload(
-        self, template: Dict[str, Any], parameters: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    def _generate_payload(self, template: Dict[str, Any], parameters: Dict[str, Any]) -> Dict[str, Any]:
         """Generiert MQTT-Payload aus Template-Struktur"""
         template_structure = template.get("template_structure", {})
         variable_fields = template.get("variable_fields", {})
@@ -141,9 +281,7 @@ class MessageGenerator:
                 payload[field_name] = parameters[field_name]
             else:
                 # Generiere Standard-Wert basierend auf Feld-Typ
-                payload[field_name] = self._generate_default_value(
-                    field_name, field_type, variable_fields
-                )
+                payload[field_name] = self._generate_default_value(field_name, field_type, variable_fields)
 
         # Füge Timestamp hinzu falls nicht vorhanden
         if "timestamp" not in payload:
@@ -151,9 +289,7 @@ class MessageGenerator:
 
         return payload
 
-    def _generate_default_value(
-        self, field_name: str, field_type: str, variable_fields: Dict[str, Any]
-    ) -> Any:
+    def _generate_default_value(self, field_name: str, field_type: str, variable_fields: Dict[str, Any]) -> Any:
         """Generiert Standard-Werte für Felder"""
         field_info = variable_fields.get(field_name, {})
 
@@ -201,7 +337,8 @@ class MessageGenerator:
         elif field_type == "<order_id>":
             return f"ORDER_{uuid.uuid4().hex[:8].upper()}"
         elif field_type == "<command_parameters>":
-            return {}
+            # Standard-Parameter für Module-Commands
+            return {"orderUpdateId": 1, "subActionId": 1}
         else:
             # Fallback für unbekannte Typen
             return ""
@@ -240,9 +377,7 @@ class MessageGenerator:
 
         return self.generate_message("module/order", **parameters)
 
-    def generate_module_connection_message(
-        self, module_id: str, connected: bool = True
-    ) -> Tuple[str, Dict[str, Any]]:
+    def generate_module_connection_message(self, module_id: str, connected: bool = True) -> Tuple[str, Dict[str, Any]]:
         """
         Generiert eine Modul-Connection-Nachricht
 
@@ -291,9 +426,7 @@ class MessageGenerator:
 
         return self.generate_message("module/state", **parameters)
 
-    def generate_ccu_control_message(
-        self, command: str, **parameters
-    ) -> Tuple[str, Dict[str, Any]]:
+    def generate_ccu_control_message(self, command: str, **parameters) -> Tuple[str, Dict[str, Any]]:
         """
         Generiert eine CCU-Control-Nachricht
 
@@ -308,9 +441,52 @@ class MessageGenerator:
 
         return self.generate_message("ccu/control", **params)
 
-    def validate_message(
-        self, template_name: str, payload: Dict[str, Any]
-    ) -> List[str]:
+    def generate_ccu_order_request_message(
+        self,
+        color: str,
+        order_type: str,
+        workpiece_id: str,
+        ai_inspection: bool = False,
+    ) -> Tuple[str, Dict[str, Any]]:
+        """
+        Generiert eine CCU-Order-Request-Nachricht
+
+        Args:
+            color: Werkstück-Farbe (RED, WHITE, BLUE)
+            order_type: Auftragstyp (STORAGE, PRODUCTION)
+            workpiece_id: Werkstück-ID (NFC-ID)
+            ai_inspection: AI-Qualitätsprüfung aktiviert
+
+        Returns:
+            Tuple von (topic, payload)
+        """
+        # Template verwenden
+        template_name = "ccu/order/request"
+        template = self.semantic_templates.get(template_name)
+
+        if not template:
+            # Fallback: Einfache CCU Order Request Message
+            payload = {
+                "type": color,
+                "workpieceId": workpiece_id,
+                "orderType": order_type,
+                "timestamp": datetime.now().isoformat(),
+            }
+
+            if ai_inspection:
+                payload["aiInspection"] = True
+
+            return ("ccu/order/request", payload)
+
+        # Template-basierte Generierung
+        params = {"type": color, "workpieceId": workpiece_id, "orderType": order_type}
+
+        if ai_inspection:
+            params["aiInspection"] = True
+
+        return self.generate_message(template_name, **params)
+
+    def validate_message(self, template_name: str, payload: Dict[str, Any]) -> List[str]:
         """
         Validiert eine Nachricht gegen Template-Regeln
 
@@ -334,6 +510,18 @@ class MessageGenerator:
         return errors
 
 
+# Singleton-Instanz
+_message_generator = None
+
+
+def get_omf_message_generator() -> MessageGenerator:
+    """Gibt die Singleton-Instanz des MessageGenerator zurück"""
+    global _message_generator
+    if _message_generator is None:
+        _message_generator = MessageGenerator()
+    return _message_generator
+
+
 def main():
     """Hauptfunktion für Tests"""
     print("\n🔧 Message Generator")
@@ -350,9 +538,7 @@ def main():
         command = "PICK"
 
         print(f"\n🧪 Test: Modul-Order für {module_id} mit Command {command}")
-        topic, payload = generator.generate_module_order_message(
-            module_id, command, position="A1"
-        )
+        topic, payload = generator.generate_module_order_message(module_id, command, position="A1")
 
         print(f"📡 Topic: {topic}")
         print(f"📦 Payload: {json.dumps(payload, indent=2)}")
@@ -363,9 +549,7 @@ def main():
     # Test: Modul-Connection-Nachricht
     try:
         print(f"\n🧪 Test: Modul-Connection für {module_id}")
-        topic, payload = generator.generate_module_connection_message(
-            module_id, connected=True
-        )
+        topic, payload = generator.generate_module_connection_message(module_id, connected=True)
 
         print(f"📡 Topic: {topic}")
         print(f"📦 Payload: {json.dumps(payload, indent=2)}")
