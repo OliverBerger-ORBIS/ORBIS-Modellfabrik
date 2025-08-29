@@ -7,7 +7,6 @@ Prüft ob Datenbanken die richtige Struktur und Daten haben
 import sys
 import unittest
 import sqlite3
-import os
 from pathlib import Path
 
 # Add project root to path

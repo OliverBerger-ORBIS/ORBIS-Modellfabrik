@@ -11,7 +11,7 @@ import glob
 import re
 import yaml
 from datetime import datetime
-from typing import Dict, List, Any, Set
+from typing import Dict, List, Set
 from pathlib import Path
 
 try:
@@ -24,7 +24,6 @@ except ImportError:
     sys.path.append(os.path.dirname(__file__))
     from module_manager import get_module_manager
     from message_template_manager import get_message_template_manager
-import copy
 import sys
 import os
 
@@ -32,7 +31,6 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
 
 from src_orbis.mqtt.tools.nfc_code_manager import get_nfc_manager
 import sqlite3
-import pandas as pd
 
 
 class NodeRedTemplateAnalyzer:
@@ -87,7 +85,7 @@ class NodeRedTemplateAnalyzer:
         # Add NodeRed as a special module
         self.module_ids.append("NodeRed")
 
-        print(f"🔧 Node-RED Template Analyzer initialisiert")
+        print("🔧 Node-RED Template Analyzer initialisiert")
         print(f"   📁 Session-Verzeichnis: {self.session_dir}")
         print(f"   📁 Ausgabe-Verzeichnis: {self.output_dir}")
         print(f"   🏭 Module-IDs: {len(self.module_ids)} gefunden")

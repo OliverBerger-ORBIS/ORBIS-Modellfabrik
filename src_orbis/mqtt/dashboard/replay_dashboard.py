@@ -10,7 +10,6 @@ import time
 import sqlite3
 import pandas as pd
 import streamlit as st
-from datetime import datetime
 
 # Path correction
 _script_dir = os.path.dirname(os.path.abspath(__file__))

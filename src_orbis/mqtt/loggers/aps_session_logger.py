@@ -4,7 +4,6 @@ APS Session Logger - Fischertechnik APS
 Organized session-based MQTT logging for different processes
 """
 
-import os
 import sys
 import signal
 import logging

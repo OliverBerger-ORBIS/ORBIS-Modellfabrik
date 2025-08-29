@@ -6,8 +6,7 @@ Replaces topic_mapping.py with enhanced functionality
 
 import os
 import yaml
-from typing import Dict, List, Any, Optional
-from datetime import datetime
+from typing import Dict, List, Any
 
 
 class TopicManager:
@@ -281,7 +280,7 @@ if __name__ == "__main__":
 
     # Test topic functionality
     all_topics = manager.get_all_topics()
-    print(f"\n📊 Topics by Category:")
+    print("\n📊 Topics by Category:")
     for topic, info in all_topics.items():
         category = info.get("category", "Unknown")
         friendly_name = info.get("friendly_name", topic)
@@ -289,7 +288,7 @@ if __name__ == "__main__":
 
     # Test statistics
     stats = manager.get_statistics()
-    print(f"\n📈 Statistics:")
+    print("\n📈 Statistics:")
     print(f"  Total Topics: {stats['total_topics']}")
     print(f"  Categories: {stats['categories']}")
     print(f"  Category Counts: {stats['category_counts']}")

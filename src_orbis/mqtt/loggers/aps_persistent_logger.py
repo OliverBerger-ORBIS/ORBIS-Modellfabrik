@@ -10,7 +10,6 @@ import time
 import logging
 import threading
 from datetime import datetime
-from pathlib import Path
 import sqlite3
 import queue
 import signal

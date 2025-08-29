@@ -5,7 +5,6 @@ Orbis Development - Sichere Verwaltung von Credentials
 """
 
 import yaml
-import os
 import logging
 from pathlib import Path
 from typing import Dict, Any, Optional
@@ -28,7 +27,7 @@ class SecureConfigLoader:
         # Ensure config directory exists
         self.config_dir.mkdir(exist_ok=True)
 
-        logger.info(f"Secure Config Loader initialized")
+        logger.info("Secure Config Loader initialized")
         logger.info(f"Config directory: {self.config_dir}")
 
     def load_credentials(self) -> Optional[Dict[str, Any]]:

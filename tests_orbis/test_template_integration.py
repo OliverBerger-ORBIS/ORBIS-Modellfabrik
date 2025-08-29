@@ -7,13 +7,10 @@ Testet die Integration von Template-UI-Config mit bewährten send_drill_sequence
 import unittest
 import tempfile
 import yaml
-import json
-from unittest.mock import Mock, patch, MagicMock
-from datetime import datetime
+from unittest.mock import Mock, patch
 
 # Import der zu testenden Klassen
 from src_orbis.mqtt.tools.message_template_manager import MessageTemplateManager
-from src_orbis.mqtt.dashboard.aps_dashboard import APSDashboard
 
 
 class TestTemplateIntegration(unittest.TestCase):

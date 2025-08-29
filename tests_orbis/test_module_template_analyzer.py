@@ -9,7 +9,7 @@ import os
 import json
 import sqlite3
 import yaml
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
 import sys
 import shutil
 
@@ -457,19 +457,19 @@ class TestModuleTemplateAnalyzerIntegration(unittest.TestCase):
             # Insert different messages for each session
             messages = [
                 (
-                    f"module/HBW/state/status",
+                    "module/HBW/state/status",
                     '{{"status": "IDLE", "timestamp": "2025-08-28T10:00:00Z", "session": {i}}}',
                     "2025-08-28T10:00:00Z",
                     f"session_{i}",
                 ),
                 (
-                    f"module/VGR/connection/status",
+                    "module/VGR/connection/status",
                     '{{"connected": true, "timestamp": "2025-08-28T10:01:00Z", "session": {i}}}',
                     "2025-08-28T10:01:00Z",
                     f"session_{i}",
                 ),
                 (
-                    f"module/DPS/order/request",
+                    "module/DPS/order/request",
                     '{{"order_id": "12345", "action": "STORE", "timestamp": "2025-08-28T10:02:00Z", "session": {i}}}',
                     "2025-08-28T10:02:00Z",
                     f"session_{i}",

@@ -16,7 +16,6 @@ import os
 import json
 import sqlite3
 import yaml
-from unittest.mock import patch, MagicMock
 import sys
 import shutil
 

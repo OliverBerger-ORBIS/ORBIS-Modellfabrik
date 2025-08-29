@@ -6,9 +6,7 @@ Prüft ob Default-Session korrekt geladen wird
 
 import sys
 import unittest
-import os
 import tempfile
-import shutil
 from pathlib import Path
 
 # Add project root to path

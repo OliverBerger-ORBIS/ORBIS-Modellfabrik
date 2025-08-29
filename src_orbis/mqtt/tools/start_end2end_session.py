@@ -9,7 +9,6 @@ Startet eine Session für einen vollständigen End-to-End Test mit:
 """
 
 import subprocess
-import sys
 import os
 from datetime import datetime
 
@@ -24,7 +23,7 @@ def start_end2end_session():
     print("=" * 50)
     print(f"📋 Session-Name: {session_name}")
     print(f"⏰ Start-Zeit: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    print(f"🏷️ Werkstücke: W1 (WEISS), B1 (BLAU), R1 (ROT)")
+    print("🏷️ Werkstücke: W1 (WEISS), B1 (BLAU), R1 (ROT)")
     print("=" * 50)
 
     # APS Session Logger starten

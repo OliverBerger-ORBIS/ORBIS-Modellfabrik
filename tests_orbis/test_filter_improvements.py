@@ -10,10 +10,9 @@ Prüft alle neuen Filter-Funktionen:
 """
 
 import sys
-import os
 import unittest
 import pandas as pd
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
 
 # Add project root to path
@@ -283,7 +282,6 @@ class TestFilterImprovements(unittest.TestCase):
         """Test: Filter-State-Management funktioniert"""
         try:
             # Test that filter states are properly initialized
-            from src_orbis.mqtt.dashboard.components.filters import create_filters
 
             # This would normally test Streamlit session state
             # For unit testing, we just verify the function doesn't crash
@@ -400,7 +398,7 @@ def run_filter_tests():
 
     # Print summary
     print("=" * 50)
-    print(f"📊 Test Results:")
+    print("📊 Test Results:")
     print(f"   Tests run: {result.testsRun}")
     print(f"   Failures: {len(result.failures)}")
     print(f"   Errors: {len(result.errors)}")

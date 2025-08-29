@@ -482,7 +482,7 @@ class MessageTemplateManager:
                 return True, f"Nachricht gesendet: {json.dumps(message, indent=2)}"
             else:
                 # Fallback: Nur Rückgabe der Nachricht
-                return True, f"FTS-Befehl erfolgreich gesendet"
+                return True, "FTS-Befehl erfolgreich gesendet"
                 
         except Exception as e:
             return False, f"Fehler: {str(e)}"

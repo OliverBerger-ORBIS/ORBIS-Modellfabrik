@@ -7,14 +7,11 @@ Testet alle Funktionen des MessageTemplateManager
 import unittest
 import tempfile
 import os
-import json
 import yaml
-from unittest.mock import Mock, patch, MagicMock
-from datetime import datetime
+from unittest.mock import patch
 
 # Import the module to test
 import sys
-import os
 
 sys.path.append(
     os.path.join(os.path.dirname(__file__), "..", "src_orbis", "mqtt", "tools")
@@ -577,7 +574,7 @@ def run_comprehensive_test():
     result = runner.run(test_suite)
 
     # Print summary
-    print(f"\n📊 Test-Zusammenfassung:")
+    print("\n📊 Test-Zusammenfassung:")
     print(
         f"  ✅ Erfolgreich: {result.testsRun - len(result.failures) - len(result.errors)}"
     )

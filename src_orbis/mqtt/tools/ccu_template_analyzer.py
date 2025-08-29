@@ -11,7 +11,7 @@ import glob
 import re
 import yaml
 from datetime import datetime
-from typing import Dict, List, Any, Set
+from typing import Dict, List, Set
 from pathlib import Path
 
 try:
@@ -25,7 +25,6 @@ except ImportError:
     sys.path.append(os.path.dirname(__file__))
     from module_manager import get_module_manager
     from message_template_manager import get_message_template_manager
-import copy
 import sys
 import os
 

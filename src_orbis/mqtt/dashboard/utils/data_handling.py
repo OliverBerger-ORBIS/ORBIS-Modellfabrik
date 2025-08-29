@@ -129,7 +129,7 @@ def extract_module_info(df):
 
                     return "unknown"
 
-            except Exception as e:
+            except Exception:
                 return "unknown"
 
         # Apply extraction
@@ -160,6 +160,6 @@ def extract_module_info(df):
 
         return df
 
-    except Exception as e:
+    except Exception:
         # In case of an error, return the original dataframe
         return df

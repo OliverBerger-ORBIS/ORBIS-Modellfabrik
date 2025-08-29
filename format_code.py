@@ -6,7 +6,6 @@ Automatische Formatierung und Syntax-Prüfung
 
 import subprocess
 import sys
-import os
 from pathlib import Path
 
 def run_command(command, description):

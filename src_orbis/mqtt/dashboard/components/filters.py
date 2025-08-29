@@ -3,7 +3,7 @@ UI Components for the APS Dashboard
 """
 
 import streamlit as st
-from datetime import datetime, timedelta
+from datetime import datetime
 import pandas as pd
 from ...tools.topic_manager import get_topic_manager
 from ..config.icon_config import get_module_icon

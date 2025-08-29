@@ -10,7 +10,7 @@ import pandas as pd
 from datetime import datetime
 import argparse
 import os
-from typing import Dict, List, Optional
+from typing import Dict, Optional
 
 
 class NodeRedMessageAnalyzer:
@@ -217,13 +217,13 @@ class NodeRedMessageAnalyzer:
 
         # Overview
         overview = report["overview"]
-        print(f"\n📊 OVERVIEW:")
+        print("\n📊 OVERVIEW:")
         print(f"   Gesamt-Nachrichten: {overview.get('total_messages', 0)}")
         print(f"   Eindeutige Topics: {overview.get('unique_topics', 0)}")
 
         # Topic Distribution
         if "topic_distribution" in overview:
-            print(f"\n📋 TOPIC DISTRIBUTION:")
+            print("\n📋 TOPIC DISTRIBUTION:")
             for topic, count in list(overview["topic_distribution"].items())[:10]:
                 print(f"   {topic}: {count}")
 
@@ -247,7 +247,7 @@ class NodeRedMessageAnalyzer:
 
         # Payload Analysis
         if report["payload_analysis"]:
-            print(f"\n📦 PAYLOAD STRUCTURES:")
+            print("\n📦 PAYLOAD STRUCTURES:")
             for structure, info in list(report["payload_analysis"].items())[:5]:
                 print(f"   {structure}: {info['count']} Nachrichten")
                 print(f"     Topics: {', '.join(info['topics'][:3])}")

@@ -9,7 +9,7 @@ import os
 import unittest
 import pandas as pd
 import sqlite3
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
 
 # Add project root to path
@@ -179,7 +179,6 @@ class TestFilterIntegration(unittest.TestCase):
     def test_filter_component_with_real_data(self):
         """Test: Filter-Komponente funktioniert mit echten Daten"""
         try:
-            from src_orbis.mqtt.dashboard.components.filters import create_filters
 
             # Load data
             query = "SELECT * FROM mqtt_messages ORDER BY timestamp"
@@ -346,7 +345,7 @@ def run_integration_tests():
 
     # Print summary
     print("=" * 50)
-    print(f"📊 Integration Test Results:")
+    print("📊 Integration Test Results:")
     print(f"   Tests run: {result.testsRun}")
     print(f"   Failures: {len(result.failures)}")
     print(f"   Errors: {len(result.errors)}")
