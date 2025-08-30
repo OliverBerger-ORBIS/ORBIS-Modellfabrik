@@ -13,6 +13,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "..", ".."))
 
 # Import settings components
 try:
+    from components.message_center import show_message_center
     from components.settings import (
         show_dashboard_settings,
         show_messages_templates,
@@ -52,14 +53,18 @@ except ImportError:
         st.subheader("🎮 Steuerung")
         st.info("Steuerung wird hier angezeigt")
 
+    def show_message_center():
+        st.subheader("📡 Nachrichtenzentrale")
+        st.info("Nachrichtenzentrale wird hier angezeigt")
+
 
 def main():
     """Hauptfunktion des OMF Dashboards"""
 
     # Page config
     st.set_page_config(
-        page_title="ORBIS Modellfabrik Dashboard",
-        page_icon="🔵",
+        page_title="Modellfabrik Dashboard",
+        page_icon="🏭",
         layout="wide",
         initial_sidebar_state="collapsed",
     )
@@ -69,24 +74,54 @@ def main():
 
     with col1:
         try:
-            logo_path = os.path.join(
-                os.path.dirname(__file__),
-                "..",
-                "..",
-                "mqtt",
-                "dashboard",
-                "assets",
-                "orbis_logo.png",
-            )
-            if os.path.exists(logo_path):
-                st.image(logo_path, width=100)
-            else:
-                st.markdown("🔵")
-        except Exception:
-            st.markdown("🔵")
+            # Versuche ORBIS-Logo zu laden - OMF-Struktur
+            possible_paths = [
+                # Variante 1: OMF Assets-Verzeichnis (neue Struktur)
+                os.path.join(
+                    os.path.dirname(__file__),
+                    "assets",
+                    "orbis_logo.png",
+                ),
+                # Variante 2: Fallback auf alte Struktur
+                os.path.join(
+                    os.path.dirname(__file__),
+                    "..",
+                    "..",
+                    "mqtt",
+                    "dashboard",
+                    "assets",
+                    "orbis_logo.png",
+                ),
+                # Variante 3: Absoluter Pfad vom Projekt-Root
+                os.path.join(
+                    os.getcwd(),
+                    "src_orbis",
+                    "omf",
+                    "dashboard",
+                    "assets",
+                    "orbis_logo.png",
+                ),
+            ]
+
+            logo_found = False
+            for logo_path in possible_paths:
+                if os.path.exists(logo_path):
+                    st.image(logo_path, width=100)
+                    logo_found = True
+                    break
+
+            if not logo_found:
+                # Fallback: Schönes Fabrik-Logo als Emoji
+                st.markdown("🏭")
+                st.caption("Modellfabrik")
+
+        except Exception as e:
+            # Fallback bei Fehlern: Schönes Fabrik-Logo
+            st.markdown("🏭")
+            st.caption("Modellfabrik")
 
     with col2:
-        st.title("ORBIS Modellfabrik Dashboard")
+        st.title("Modellfabrik Dashboard")
 
     with col3:
         # MQTT Connection Status
@@ -100,8 +135,8 @@ def main():
 
             mqtt_client = get_omf_mqtt_client()
 
-            # Connection Status (inkl. Mock-Support)
-            # Mock-Modus prüfen
+            # Connection Status (inkl. Modus-Support)
+            mqtt_mode = st.session_state.get("mqtt_mode", "live")
             mock_enabled = st.session_state.get("mqtt_mock_enabled", False)
 
             if mock_enabled:
@@ -115,6 +150,32 @@ def main():
                         "MOCK",
                         help="MQTT Mock-Modus aktiv",
                     )
+            elif mqtt_mode == "replay":
+                if mqtt_client.is_connected():
+                    st.success("🎬 REPLAY STATION")
+                    col_btn1, col_btn2 = st.columns(2)
+                    with col_btn1:
+                        st.info("🎬 Replay aktiv")
+                    with col_btn2:
+                        stats = mqtt_client.get_statistics()
+                        st.metric(
+                            "📨",
+                            stats.get("messages_received", 0),
+                            help="Replay-Nachrichten empfangen",
+                        )
+                else:
+                    st.error("🎬 REPLAY STATION")
+                    col_btn1, col_btn2 = st.columns(2)
+                    with col_btn1:
+                        if st.button(
+                            "🔗 Connect", key="replay_connect", use_container_width=True
+                        ):
+                            if mqtt_client.connect_to_broker("replay"):
+                                st.success("✅ Connected to Replay Station!")
+                            else:
+                                st.error("❌ Connection failed!")
+                    with col_btn2:
+                        st.info("localhost:1884")
             elif mqtt_client.is_connected():
                 st.success("🔗 MQTT Connected")
                 col_btn1, col_btn2 = st.columns(2)
@@ -139,7 +200,7 @@ def main():
                     if st.button(
                         "🔗 Connect", key="mqtt_connect", use_container_width=True
                     ):
-                        if mqtt_client.connect():
+                        if mqtt_client.connect_to_broker():
                             st.success("✅ Connected successfully!")
                         else:
                             st.error("❌ Connection failed!")
@@ -162,7 +223,7 @@ def main():
         [
             "📊 Overview",
             "📋 Aufträge",
-            "📡 Messages-Monitor",
+            "📡 Nachrichtenzentrale",
             "🎮 Steuerung",
             "⚙️ Settings",
         ]
@@ -210,10 +271,9 @@ def main():
             st.subheader("🔄 Laufende Aufträge")
             st.info("Laufende Aufträge werden hier angezeigt")
 
-    # Tab 3: Messages-Monitor
+    # Tab 3: Nachrichtenzentrale
     with tab3:
-        st.header("📡 Messages-Monitor")
-        st.info("MQTT-Messages werden hier angezeigt")
+        show_message_center()
 
     # Tab 4: Steuerung (Kommando-Zentrale)
     with tab4:

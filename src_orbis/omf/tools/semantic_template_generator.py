@@ -54,7 +54,9 @@ class SemanticTemplateGenerator:
         # Extrahiere Module aus der korrekten Struktur
         modules = module_config.get("modules", {})
         enabled_modules = {
-            module_id: module_info for module_id, module_info in modules.items() if module_info.get("enabled", True)
+            module_id: module_info
+            for module_id, module_info in modules.items()
+            if module_info.get("enabled", True)
         }
 
         # Connection Template (generisch für alle Module)
@@ -493,7 +495,9 @@ class SemanticTemplateGenerator:
                     indent=2,
                 )
 
-            print(f"✅ {len(category_templates)} semantische {category.title()}-Templates in {file_path} gespeichert")
+            print(
+                f"✅ {len(category_templates)} semantische {category.title()}-Templates in {file_path} gespeichert"
+            )
 
 
 def main():
