@@ -106,7 +106,7 @@ nfc_code = get_nfc_code("R1")
 - ✅ `txt_template_analyzer.py` - Verwendet NFCCodeManager
 - ✅ `unified_type_recognition.py` - Verwendet NFCCodeManager
 - ✅ `module_mapping_utils.py` - NFC-Funktionen verwenden NFCCodeManager
-- ✅ `aps_dashboard.py` - Lädt NFC-Codes aus YAML-Konfiguration (integriert)
+- ✅ `aps_dashboard.py` - Lädt NFC-Codes aus YAML-Konfiguration (integriert) ⚠️ **VERALTET: Wurde durch OMF Dashboard ersetzt**
 
 ## 🧪 Tests
 

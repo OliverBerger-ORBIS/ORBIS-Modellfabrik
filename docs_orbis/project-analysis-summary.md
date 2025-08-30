@@ -41,7 +41,7 @@ Die Orbis-Steuerungslösung basiert auf mehreren erweiterten Python-Komponenten 
 4. **Message Template Manager (`message_template_manager.py`):** YAML-basierte MQTT-Templates mit UI-Konfiguration
 
 ### **4.2 Dashboard & Analyse:**
-5. **Interaktives Dashboard (`aps_dashboard.py`):** Modernisierte Streamlit-Anwendung mit:
+5. **Interaktives Dashboard (`aps_dashboard.py`):** Modernisierte Streamlit-Anwendung mit: ⚠️ **VERALTET: Wurde durch OMF Dashboard ersetzt**
    - Template-basierte Modul-Steuerung (DRILL, MILL, AIQS, FTS)
    - Factory Reset Integration
    - Order Management (ROT, WEISS, BLAU)

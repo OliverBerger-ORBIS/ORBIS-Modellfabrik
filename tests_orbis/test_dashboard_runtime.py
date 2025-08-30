@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """
-Test für Dashboard Runtime-Fehler
-Prüft auch Runtime-Fehler wie Datenbankverbindungen
+Test für OMF Dashboard Runtime-Fehler
+Prüft Runtime-Fehler und Komponenten-Integration
 """
 
-import sys
-import unittest
-import tempfile
 import os
+import sys
+import tempfile
+import unittest
 from pathlib import Path
 
 # Add project root to path
@@ -16,111 +16,160 @@ sys.path.insert(0, str(project_root))
 
 
 class TestDashboardRuntime(unittest.TestCase):
-    """Test Dashboard Runtime-Fehler"""
+    """Test OMF Dashboard Runtime-Fehler"""
 
-    def test_dashboard_without_database(self):
-        """Test: Dashboard kann ohne Datenbank gestartet werden"""
+    def test_message_center_component(self):
+        """Test: Message Center Komponente kann geladen werden"""
         try:
-            from src_orbis.mqtt.dashboard.aps_dashboard import APSDashboard
+            from src_orbis.omf.dashboard.components.message_center import MessageMonitorService
 
-            # Test with None database file
-            dashboard = APSDashboard(None)
-
-            # Test connect method
-            result = dashboard.connect()
-            self.assertTrue(result, "Dashboard sollte ohne Datenbank verbinden können")
-
-            # Test load_data method
-            df = dashboard.load_data()
-            self.assertIsNotNone(df, "load_data sollte DataFrame zurückgeben")
-            self.assertTrue(df.empty, "DataFrame sollte leer sein ohne Datenbank")
-
-            print("✅ Dashboard ohne Datenbank: OK")
-
-        except Exception as e:
-            self.fail(f"❌ Dashboard ohne Datenbank failed: {e}")
-
-    def test_dashboard_with_invalid_database(self):
-        """Test: Dashboard mit ungültiger Datenbank"""
-        try:
-            from src_orbis.mqtt.dashboard.aps_dashboard import APSDashboard
-
-            # Test with non-existent database file
-            dashboard = APSDashboard("/path/to/nonexistent.db")
-
-            # Test connect method should handle gracefully
-            result = dashboard.connect()
-            self.assertFalse(
-                result, "Dashboard sollte bei ungültiger DB False zurückgeben"
+            # Test MessageMonitorService initialization
+            service = MessageMonitorService()
+            self.assertIsNotNone(
+                service, "MessageMonitorService sollte initialisiert werden können"
             )
 
-            print("✅ Dashboard mit ungültiger DB: OK")
+            # Test basic methods with proper arguments
+            messages = service.get_filtered_messages([], {})
+            self.assertIsInstance(
+                messages, list, "get_filtered_messages sollte Liste zurückgeben"
+            )
+
+            print("✅ Message Center Komponente: OK")
 
         except Exception as e:
-            self.fail(f"❌ Dashboard mit ungültiger DB failed: {e}")
+            self.fail(f"❌ Message Center Komponente failed: {e}")
 
-    def test_dashboard_with_valid_database(self):
-        """Test: Dashboard mit gültiger Datenbank"""
+    def test_mqtt_client_component(self):
+        """Test: MQTT Client Komponente kann geladen werden"""
         try:
-            from src_orbis.mqtt.dashboard.aps_dashboard import APSDashboard
+            from src_orbis.omf.tools.mqtt_client import OMFMQTTClient
 
-            # Create a temporary database file
-            with tempfile.NamedTemporaryFile(suffix=".db", delete=False) as tmp_file:
-                tmp_db_path = tmp_file.name
+            # Test MQTT Client initialization
+            client = OMFMQTTClient()
+            self.assertIsNotNone(
+                client, "OMFMQTTClient sollte initialisiert werden können"
+            )
 
-            try:
-                # Test with valid database file
-                dashboard = APSDashboard(tmp_db_path)
+            # Test basic methods
+            self.assertIsInstance(
+                client.get_statistics(), dict, "get_statistics sollte Dict zurückgeben"
+            )
+            self.assertIsInstance(
+                client.is_connected(), bool, "is_connected sollte Boolean zurückgeben"
+            )
 
-                # Test connect method
-                result = dashboard.connect()
-                self.assertTrue(
-                    result, "Dashboard sollte mit gültiger DB verbinden können"
-                )
-
-                # Test load_data method
-                df = dashboard.load_data()
-                self.assertIsNotNone(df, "load_data sollte DataFrame zurückgeben")
-
-                print("✅ Dashboard mit gültiger DB: OK")
-
-            finally:
-                # Clean up
-                if os.path.exists(tmp_db_path):
-                    os.unlink(tmp_db_path)
+            print("✅ MQTT Client Komponente: OK")
 
         except Exception as e:
-            self.fail(f"❌ Dashboard mit gültiger DB failed: {e}")
+            self.fail(f"❌ MQTT Client Komponente failed: {e}")
 
-    def test_session_recorder_methods(self):
-        """Test: Session-Recorder Methoden existieren"""
+    def test_replay_station_component(self):
+        """Test: Replay Station Komponente kann geladen werden"""
         try:
-            from src_orbis.mqtt.dashboard.aps_dashboard import APSDashboard
+            from src_orbis.omf.replay_station.replay_station import SessionPlayer
 
-            dashboard = APSDashboard(None)
+            # Test SessionPlayer initialization
+            player = SessionPlayer()
+            self.assertIsNotNone(
+                player, "SessionPlayer sollte initialisiert werden können"
+            )
 
-            # Check if methods exist
+            # Test basic methods
+            self.assertIsInstance(player.messages, list, "messages sollte Liste sein")
+            self.assertIsInstance(
+                player.is_playing, bool, "is_playing sollte Boolean sein"
+            )
+
+            print("✅ Replay Station Komponente: OK")
+
+        except Exception as e:
+            self.fail(f"❌ Replay Station Komponente failed: {e}")
+
+    def test_dashboard_settings_component(self):
+        """Test: Dashboard Settings Komponente kann geladen werden"""
+        try:
+            from src_orbis.omf.dashboard.components.settings import show_dashboard_settings
+
+            # Test that function exists
             self.assertTrue(
-                hasattr(dashboard, "start_session_recorder"),
-                "start_session_recorder Methode fehlt",
-            )
-            self.assertTrue(
-                hasattr(dashboard, "stop_session_recorder"),
-                "stop_session_recorder Methode fehlt",
+                callable(show_dashboard_settings),
+                "show_dashboard_settings sollte aufrufbar sein",
             )
 
-            print("✅ Session-Recorder Methoden: OK")
+            print("✅ Dashboard Settings Komponente: OK")
 
         except Exception as e:
-            self.fail(f"❌ Session-Recorder Methoden failed: {e}")
+            self.fail(f"❌ Dashboard Settings Komponente failed: {e}")
+
+    def test_steering_component(self):
+        """Test: Steering Komponente kann geladen werden"""
+        try:
+            from src_orbis.omf.dashboard.components.steering import show_steering
+
+            # Test that function exists
+            self.assertTrue(
+                callable(show_steering), "show_steering sollte aufrufbar sein"
+            )
+
+            print("✅ Steering Komponente: OK")
+
+        except Exception as e:
+            self.fail(f"❌ Steering Komponente failed: {e}")
+
+    def test_session_validation(self):
+        """Test: Session-Validierung funktioniert"""
+        try:
+            from src_orbis.omf.replay_station.replay_station import SessionPlayer
+
+            player = SessionPlayer()
+
+            # Test with empty session
+            result = player.load_sqlite_session("nonexistent.db")
+            self.assertFalse(result, "Ungültige Session sollte False zurückgeben")
+
+            # Test with valid session structure
+            self.assertIsInstance(player.messages, list, "messages sollte Liste sein")
+            self.assertIsInstance(
+                player.current_index, int, "current_index sollte Integer sein"
+            )
+
+            print("✅ Session-Validierung: OK")
+
+        except Exception as e:
+            self.fail(f"❌ Session-Validierung failed: {e}")
+
+    def test_message_filtering(self):
+        """Test: Nachrichten-Filterung funktioniert"""
+        try:
+            from src_orbis.omf.dashboard.components.message_center import MessageMonitorService
+
+            service = MessageMonitorService()
+
+            # Test filtering methods with proper arguments
+            messages = service.get_filtered_messages([], {})
+            self.assertIsInstance(
+                messages, list, "get_filtered_messages sollte Liste zurückgeben"
+            )
+
+            # Test priority filtering
+            filtered = service._filter_by_priority([], 3)
+            self.assertIsInstance(
+                filtered, list, "_filter_by_priority sollte Liste zurückgeben"
+            )
+
+            print("✅ Nachrichten-Filterung: OK")
+
+        except Exception as e:
+            self.fail(f"❌ Nachrichten-Filterung failed: {e}")
 
 
 if __name__ == "__main__":
-    print("🧪 Testing Dashboard Runtime...")
+    print("🧪 Testing OMF Dashboard Runtime...")
     print("=" * 50)
 
     # Run tests
     unittest.main(verbosity=2, exit=False)
 
     print("=" * 50)
-    print("🎯 Runtime test completed!")
+    print("🎯 OMF Dashboard Runtime test completed!")

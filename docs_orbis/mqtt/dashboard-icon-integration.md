@@ -1,8 +1,10 @@
-# Dashboard Icon Integration
+# Dashboard Icon Integration ⚠️ **VERALTET - APS Dashboard**
 
-## Übersicht
+## Übersicht ⚠️ **VERALTET**
 
 Das APS Dashboard wurde mit umfassenden Icon-Features erweitert, um eine intuitive und visuell ansprechende Benutzeroberfläche zu bieten.
+
+⚠️ **HINWEIS:** Diese Dokumentation bezieht sich auf das veraltete APS Dashboard. Die Icon-Integration wurde in das neue OMF Dashboard übernommen.
 
 ## Implementierte Features
 
@@ -52,9 +54,9 @@ Das APS Dashboard wurde mit umfassenden Icon-Features erweitert, um eine intuiti
 
 ## Technische Implementierung
 
-### Dateien
-- `src_orbis/mqtt/dashboard/config/icon_config.py` - Icon-Konfiguration
-- `src_orbis/mqtt/dashboard/aps_dashboard.py` - Dashboard mit Icon-Integration
+### Dateien ⚠️ **VERALTET**
+- `src_orbis/mqtt/dashboard/config/icon_config.py` - Icon-Konfiguration ⚠️ **VERALTET**
+- `src_orbis/mqtt/dashboard/aps_dashboard.py` - Dashboard mit Icon-Integration ⚠️ **VERALTET**
 
 ### Funktionen
 - `get_module_icon()` - Modul-Icons abrufen

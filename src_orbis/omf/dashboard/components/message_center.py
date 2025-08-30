@@ -5,7 +5,7 @@ Version: 3.0.0
 """
 
 import json
-import time
+
 from datetime import datetime, timedelta
 from typing import Dict, List
 
@@ -62,6 +62,10 @@ class MessageMonitorService:
         """Nachrichten nach Filtern filtern"""
         filtered = messages
 
+        # Prioritäten-Filter (neue Funktion)
+        if filters.get("min_priority"):
+            filtered = self._filter_by_priority(filtered, filters["min_priority"])
+
         # Modul-Filter
         if filters.get("modules"):
             filtered = [
@@ -84,7 +88,7 @@ class MessageMonitorService:
             ]
 
         # Zeitraum-Filter
-        if filters.get("time_range"):
+        if filters.get("time_range") and filters["time_range"] != "all":
             cutoff_time = self._get_cutoff_time(filters["time_range"])
             filtered = [m for m in filtered if m["timestamp"] >= cutoff_time]
 
@@ -94,6 +98,54 @@ class MessageMonitorService:
             filtered = [m for m in filtered if pattern in m["topic"].lower()]
 
         return filtered
+
+    def _filter_by_priority(
+        self, messages: List[Dict], min_priority: int
+    ) -> List[Dict]:
+        """Filtere Nachrichten nach Priorität (niedrigere Zahlen = höhere Priorität)"""
+        # Topic-Prioritäten Mapping
+        topic_priorities = {
+            # Priority 1: Critical Control (höchste Priorität)
+            "module/+/+/+/order": 1,  # Modul-Befehle
+            "ccu/order/request": 1,  # CCU-Bestellungen
+            "ccu/order/active": 1,  # Aktive Bestellungen
+            # Priority 2: Important Status
+            "module/+/+/+/state": 2,  # Modul-Status
+            "module/+/+/+/connection": 2,  # Modul-Verbindungen
+            "ccu/pairing/state": 2,  # CCU-Pairing
+            "fts/+/+/+/state": 2,  # FTS-Status
+            # Priority 3: Normal Info (Default)
+            "module/+/+/+/+": 3,  # Alle anderen Modul-Topics
+            "ccu/+/+": 3,  # Alle anderen CCU-Topics
+            "fts/+/+/+/+": 3,  # Alle anderen FTS-Topics
+            # Priority 4: NodeRED Topics
+            "module/+/+/NodeRed/+/+": 4,  # NodeRED-spezifische Topics
+            # Priority 5: High Frequency (niedrigste Priorität)
+            "/j1/txt/+/i/cam": 5,  # Kamera-Daten
+            "/j1/txt/+/i/bme680": 5,  # Sensor-Daten
+        }
+
+        def get_topic_priority(topic: str) -> int:
+            """Ermittle Priorität für ein Topic"""
+            for pattern, priority in topic_priorities.items():
+                if self._topic_matches_pattern(topic, pattern):
+                    return priority
+            return 3  # Default: Normal Info
+
+        # Filtere Nachrichten: Zeige alle mit Priorität <= min_priority (niedrigere Zahlen = höhere Priorität)
+        return [m for m in messages if get_topic_priority(m["topic"]) <= min_priority]
+
+    def _topic_matches_pattern(self, topic: str, pattern: str) -> bool:
+        """Prüfe ob Topic einem Pattern entspricht"""
+        import re
+
+        # Konvertiere MQTT-Wildcards zu Regex
+        regex_pattern = pattern.replace("+", "[^/]+").replace("#", ".*")
+
+        try:
+            return bool(re.match(regex_pattern, topic))
+        except:
+            return topic == pattern
 
     def _get_cutoff_time(self, time_range: str) -> datetime:
         """Cutoff-Zeit für Zeitraum-Filter berechnen"""
@@ -109,11 +161,65 @@ class MessageMonitorService:
             return now - timedelta(hours=1)  # Default: 1 Stunde
 
 
+def _capture_sent_messages(message_monitor):
+    """Erfasst gesendete Nachrichten aus der Steuerung"""
+    try:
+        # Prüfe ob gesendete Nachrichten in der Session gespeichert sind
+        sent_messages = st.session_state.get("sent_messages", [])
+
+        for msg in sent_messages:
+            # Prüfen ob Nachricht bereits vorhanden (Topic + Timestamp Kombination)
+            existing_messages = [
+                (m["topic"], m["timestamp"]) for m in message_monitor.sent_messages
+            ]
+            msg_key = (msg.get("topic", ""), msg.get("timestamp", datetime.now()))
+            if msg_key not in existing_messages:
+                message_monitor.add_sent_message(
+                    topic=msg.get("topic", ""),
+                    payload=msg.get("payload", ""),
+                    timestamp=msg.get("timestamp", datetime.now()),
+                )
+
+        # Gesendete Nachrichten aus Session löschen (verhindert Duplikate)
+        if sent_messages:
+            st.session_state.sent_messages = []
+
+    except Exception:
+        # Fehler still behandeln - nicht kritisch für Nachrichtenzentrale
+        pass
+
+
 def show_message_filters() -> Dict:
     """Filter-Bereich für Nachrichten anzeigen"""
     st.markdown("### 🔍 Filter")
 
     filters = {}
+
+    # Prioritäten-Filter (neue Zeile)
+    priority_levels = {
+        1: "Critical Control",
+        2: "Important Status",
+        3: "Normal Info",
+        4: "NodeRED Topics",
+        5: "High Frequency",
+    }
+
+    # Lade gespeicherte Prioritäten-Einstellung
+    try:
+        from omf.config.omf_config import config
+
+        default_priority = config.get("dashboard.min_priority", 3)
+    except:
+        default_priority = 3
+
+    min_priority = st.selectbox(
+        "📊 Maximale Priorität:",
+        [1, 2, 3, 4, 5],
+        index=default_priority - 1,  # Index ist 0-basiert
+        format_func=lambda x: f"Prio {x}: {priority_levels[x]}",
+        help="Zeige Nachrichten mit Priorität 1 bis zur ausgewählten Priorität",
+    )
+    filters["min_priority"] = min_priority
 
     col1, col2, col3 = st.columns(3)
 
@@ -165,9 +271,22 @@ def show_message_filters() -> Dict:
     return filters
 
 
-def format_timestamp(timestamp: datetime) -> str:
+def format_timestamp(timestamp) -> str:
     """Timestamp für Anzeige formatieren"""
-    return timestamp.strftime("%H:%M:%S")
+    try:
+        # Handle both datetime objects and float timestamps
+        if isinstance(timestamp, float):
+            from datetime import datetime
+
+            timestamp = datetime.fromtimestamp(timestamp)
+        elif isinstance(timestamp, str):
+            from datetime import datetime
+
+            timestamp = datetime.fromisoformat(timestamp.replace("Z", "+00:00"))
+
+        return timestamp.strftime("%H:%M:%S")
+    except Exception:
+        return str(timestamp)
 
 
 def format_payload(payload: str) -> str:
@@ -250,6 +369,9 @@ def show_message_center():
 
     message_monitor = st.session_state.message_monitor
 
+    # Gesendete Nachrichten aus der Steuerung erfassen
+    _capture_sent_messages(message_monitor)
+
     # MQTT-Client Integration
     try:
         from mqtt_client import get_omf_mqtt_client
@@ -263,11 +385,13 @@ def show_message_center():
 
             # Neue Nachrichten zum Message Monitor hinzufügen
             for msg in mqtt_messages:
-                # Prüfen ob Nachricht bereits vorhanden
-                existing_topics = [
-                    m["topic"] for m in message_monitor.received_messages
+                # Prüfen ob Nachricht bereits vorhanden (Topic + Timestamp Kombination)
+                existing_messages = [
+                    (m["topic"], m["timestamp"])
+                    for m in message_monitor.received_messages
                 ]
-                if msg.get("topic") not in existing_topics:
+                msg_key = (msg.get("topic", ""), msg.get("timestamp", datetime.now()))
+                if msg_key not in existing_messages:
                     message_monitor.add_received_message(
                         topic=msg.get("topic", ""),
                         payload=msg.get("payload", ""),
@@ -283,11 +407,17 @@ def show_message_center():
 
     except ImportError:
         st.warning("⚠️ MQTT-Client nicht verfügbar")
-    except Exception as e:
-        st.error(f"❌ Fehler bei MQTT-Integration: {e}")
+    except Exception:
+        st.error("❌ Fehler bei MQTT-Integration")
 
     # Filter anzeigen
     filters = show_message_filters()
+
+    # Manueller Refresh-Button
+    col1, col2, col3 = st.columns([1, 3, 1])
+    with col2:
+        if st.button("🔄 Nachrichten aktualisieren", type="primary"):
+            st.rerun()
 
     # Tab-Navigation (Empfangene Nachrichten zuerst)
     tab1, tab2 = st.tabs(["📥 Empfangene Nachrichten", "📤 Gesendete Nachrichten"])
@@ -305,11 +435,3 @@ def show_message_center():
             message_monitor.sent_messages, filters
         )
         show_messages_table(filtered_sent, "📤 Gesendete Nachrichten")
-
-    # Auto-Refresh für MQTT-Updates (nur wenn verbunden)
-    try:
-        if mqtt_client and mqtt_client.is_connected():
-            time.sleep(1)  # Kurze Pause für Updates
-            st.rerun()
-    except Exception:
-        pass  # Ignoriere Refresh-Fehler

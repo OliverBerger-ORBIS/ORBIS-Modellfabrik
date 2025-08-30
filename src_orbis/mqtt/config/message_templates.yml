@@ -2493,18 +2493,21 @@ topics:
       workpieceId: 04c489ca341290
     sub_category: Order
     template_structure: {}
-    validation_rules: []
     ui_config:
       commands:
         wareneingang_trigger:
-          text: "📦 Wareneingang starten"
-          help: "Startet Wareneingang-Prozess für Werkstück"
+          help: Startet Wareneingang-Prozess für Werkstück
           parameters:
-            orderType: "STORAGE"
-            type: ["RED", "WHITE", "BLUE"]
-            workpieceId: "string (NFC)"
-            timestamp: "ISO 8601"
-      success_message: "Wareneingang erfolgreich gestartet"
+            orderType: STORAGE
+            timestamp: ISO 8601
+            type:
+            - RED
+            - WHITE
+            - BLUE
+            workpieceId: string (NFC)
+          text: 📦 Wareneingang starten
+      success_message: Wareneingang erfolgreich gestartet
+    validation_rules: []
   ccu/order/response:
     category: CCU
     description: Auto-analyzed template for ccu/order/response
@@ -3040,81 +3043,19 @@ topics:
     category: Node-RED
     description: Node-RED CCU State
     examples:
-    - BLUE:
-        steps:
-        - DRILL
-        - MILL
-        - AIQS
-      RED:
-        steps:
-        - MILL
-        - AIQS
-      WHITE:
-        steps:
-        - DRILL
-        - AIQS
-    - BLUE:
-        steps:
-        - DRILL
-        - MILL
-        - AIQS
-      RED:
-        steps:
-        - MILL
-        - AIQS
-      WHITE:
-        steps:
-        - DRILL
-        - AIQS
-    - BLUE:
-        steps:
-        - DRILL
-        - MILL
-        - AIQS
-      RED:
-        steps:
-        - MILL
-        - AIQS
-      WHITE:
-        steps:
-        - DRILL
-        - AIQS
-    - BLUE:
-        steps:
-        - DRILL
-        - MILL
-        - AIQS
-      RED:
-        steps:
-        - MILL
-        - AIQS
-      WHITE:
-        steps:
-        - DRILL
-        - AIQS
-    - BLUE:
-        steps:
-        - DRILL
-        - MILL
-        - AIQS
-      RED:
-        steps:
-        - MILL
-        - AIQS
-      WHITE:
-        steps:
-        - DRILL
-        - AIQS
+    - flow_count: 5
+      status: online
+      timestamp: '2024-01-01T12:00:00Z'
     module: CCU
     sub_category: State
     template_structure:
-      BLUE: '[{''steps'': [''DRILL'', ''MILL'', ''AIQS'']}]'
-      RED: '[{''steps'': [''MILL'', ''AIQS'']}]'
-      WHITE: '[{''steps'': [''DRILL'', ''AIQS'']}]'
+      flow_count: '[5]'
+      status: '[online]'
+      timestamp: <datetime>
     validation_rules:
-    - 'BLUE muss in [{''steps'': [''DRILL'', ''MILL'', ''AIQS'']}] sein'
-    - 'RED muss in [{''steps'': [''MILL'', ''AIQS'']}] sein'
-    - 'WHITE muss in [{''steps'': [''DRILL'', ''AIQS'']}] sein'
+    - status muss in [online] sein
+    - flow_count muss in [5] sein
+    - timestamp muss ISO 8601 Format haben
   ccu/state/layout:
     category: CCU
     description: Auto-analyzed template for ccu/state/layout
@@ -3535,930 +3476,171 @@ topics:
     - flow_status muss in [running] sein
     - node_count muss in [10] sein
     - timestamp muss ISO 8601 Format haben
-  module/v1/ff/NodeRed/SVR4H73275/connection:
-    category: Node-RED
-    description: Node-RED SVR4H73275 Connection
-    examples:
-    - connectionState: ONLINE
-      headerId: 2
-      ip: '-1'
-      manufacturer: Fischertechnik
-      serialNumber: SVR4H73275
-      timestamp: '2025-08-19T09:08:58.660990Z'
-      version: 1.6.0+gitc321c85
-    - connectionState: ONLINE
-      headerId: 2
-      ip: '-1'
-      manufacturer: Fischertechnik
-      serialNumber: SVR4H73275
-      timestamp: '2025-08-19T09:08:58.660990Z'
-      version: 1.6.0+gitc321c85
-    - connectionState: ONLINE
-      headerId: 2
-      ip: '-1'
-      manufacturer: Fischertechnik
-      serialNumber: SVR4H73275
-      timestamp: '2025-08-20T07:12:55.735613Z'
-      version: 1.6.0+gitc321c85
-    - connectionState: ONLINE
-      headerId: 2
-      ip: '-1'
-      manufacturer: Fischertechnik
-      serialNumber: SVR4H73275
-      timestamp: '2025-08-20T07:12:55.735613Z'
-      version: 1.6.0+gitc321c85
-    - connectionState: ONLINE
-      headerId: 2
-      ip: '-1'
-      manufacturer: Fischertechnik
-      serialNumber: SVR4H73275
-      timestamp: '2025-08-25T06:47:13.691731Z'
-      version: 1.6.0+gitc321c85
-    module: SVR4H73275
-    sub_category: Connection
-    template_structure:
-      connectionState: '[ONLINE]'
-      headerId: '[2]'
-      ip: '[-1]'
-      manufacturer: '[Fischertechnik]'
-      serialNumber: '[SVR4H73275]'
-      timestamp: <datetime>
-      version: '[1.6.0+gitc321c85]'
-    validation_rules:
-    - headerId muss in [2] sein
-    - timestamp muss ISO 8601 Format haben
-    - version muss in [1.6.0+gitc321c85] sein
-    - manufacturer muss in [Fischertechnik] sein
-    - serialNumber muss in [SVR4H73275] sein
-    - connectionState muss in [ONLINE] sein
-    - ip muss in [-1] sein
-  module/v1/ff/NodeRed/SVR4H73275/factsheet:
-    category: Node-RED
-    description: Node-RED SVR4H73275 Factsheet
-    examples:
-    - headerId: 1
-      loadSpecification:
-        loadSets:
-        - loadType: WHITE
-          setName: WHITES
-        - loadType: RED
-          setName: REDS
-        - loadType: BLUE
-          setName: BLUES
-      localizationParameters: {}
-      manufacturer: Fischertechnik
-      physicalParameters: {}
-      protocolFeatures:
-        moduleActions:
-        - actionParameters:
-          - parameterDescription: The load type to input
-            parameterName: type
-            parameterType: string
-          actionType: DROP
-        - actionParameters:
-          - parameterDescription: The load type to output
-            parameterName: type
-            parameterType: string
-          actionType: PICK
-        - actionScopes:
-          - INSTANT
-          actionType: startCalibration
-        - actionScopes:
-          - INSTANT
-          actionType: stopCalibration
-        - actionParameters:
-          - parameterDescription: Array of ReferenceValues objects with referenceKey
-              and referenceValue
-            parameterName: references
-            parameterType: array
-          actionScopes:
-          - INSTANT
-          actionType: setCalibrationValues
-        - actionParameters:
-          - isOptional: true
-            parameterDescription: Array of ReferenceValues objects with referenceKey
-              and referenceValue
-            parameterName: references
-            parameterType: array
-          actionScopes:
-          - INSTANT
-          actionType: storeCalibrationValues
-        - actionParameters:
-          - parameterDescription: Position to select
-            parameterName: position
-            parameterType: string
-          actionScopes:
-          - INSTANT
-          actionType: selectCalibrationPosition
-        - actionParameters:
-          - parameterDescription: Position to test
-            parameterName: position
-            parameterType: string
-          actionScopes:
-          - INSTANT
-          actionType: testCalibrationPosition
-        - actionParameters:
-          - isOptional: true
-            parameterDescription: Reset to factory defaults
-            parameterName: factory
-            parameterType: boolean
-          actionScopes:
-          - INSTANT
-          actionType: resetCalibration
-        - actionParameters:
-          - parameterDescription: The orderId that will deliver the workpiece to output
-            parameterName: orderId
-            parameterType: string
-          actionScopes:
-          - INSTANT
-          actionType: announceOutput
-        - actionScopes:
-          - INSTANT
-          actionType: cancelStorageOrder
-        moduleParameters:
-          clearModuleOnPick: true
-      protocolLimits: {}
-      serialNumber: SVR4H73275
-      timestamp: '2025-08-19T09:13:34.529266Z'
-      typeSpecification:
-        moduleClass: DPS
-        seriesName: MOD-FF22+DPS
-      version: 1.6.0+gitc321c85
-    - headerId: 1
-      loadSpecification:
-        loadSets:
-        - loadType: WHITE
-          setName: WHITES
-        - loadType: RED
-          setName: REDS
-        - loadType: BLUE
-          setName: BLUES
-      localizationParameters: {}
-      manufacturer: Fischertechnik
-      physicalParameters: {}
-      protocolFeatures:
-        moduleActions:
-        - actionParameters:
-          - parameterDescription: The load type to input
-            parameterName: type
-            parameterType: string
-          actionType: DROP
-        - actionParameters:
-          - parameterDescription: The load type to output
-            parameterName: type
-            parameterType: string
-          actionType: PICK
-        - actionScopes:
-          - INSTANT
-          actionType: startCalibration
-        - actionScopes:
-          - INSTANT
-          actionType: stopCalibration
-        - actionParameters:
-          - parameterDescription: Array of ReferenceValues objects with referenceKey
-              and referenceValue
-            parameterName: references
-            parameterType: array
-          actionScopes:
-          - INSTANT
-          actionType: setCalibrationValues
-        - actionParameters:
-          - isOptional: true
-            parameterDescription: Array of ReferenceValues objects with referenceKey
-              and referenceValue
-            parameterName: references
-            parameterType: array
-          actionScopes:
-          - INSTANT
-          actionType: storeCalibrationValues
-        - actionParameters:
-          - parameterDescription: Position to select
-            parameterName: position
-            parameterType: string
-          actionScopes:
-          - INSTANT
-          actionType: selectCalibrationPosition
-        - actionParameters:
-          - parameterDescription: Position to test
-            parameterName: position
-            parameterType: string
-          actionScopes:
-          - INSTANT
-          actionType: testCalibrationPosition
-        - actionParameters:
-          - isOptional: true
-            parameterDescription: Reset to factory defaults
-            parameterName: factory
-            parameterType: boolean
-          actionScopes:
-          - INSTANT
-          actionType: resetCalibration
-        - actionParameters:
-          - parameterDescription: The orderId that will deliver the workpiece to output
-            parameterName: orderId
-            parameterType: string
-          actionScopes:
-          - INSTANT
-          actionType: announceOutput
-        - actionScopes:
-          - INSTANT
-          actionType: cancelStorageOrder
-        moduleParameters:
-          clearModuleOnPick: true
-      protocolLimits: {}
-      serialNumber: SVR4H73275
-      timestamp: '2025-08-19T09:13:34.529266Z'
-      typeSpecification:
-        moduleClass: DPS
-        seriesName: MOD-FF22+DPS
-      version: 1.6.0+gitc321c85
-    - headerId: 1
-      loadSpecification:
-        loadSets:
-        - loadType: WHITE
-          setName: WHITES
-        - loadType: RED
-          setName: REDS
-        - loadType: BLUE
-          setName: BLUES
-      localizationParameters: {}
-      manufacturer: Fischertechnik
-      physicalParameters: {}
-      protocolFeatures:
-        moduleActions:
-        - actionParameters:
-          - parameterDescription: The load type to input
-            parameterName: type
-            parameterType: string
-          actionType: DROP
-        - actionParameters:
-          - parameterDescription: The load type to output
-            parameterName: type
-            parameterType: string
-          actionType: PICK
-        - actionScopes:
-          - INSTANT
-          actionType: startCalibration
-        - actionScopes:
-          - INSTANT
-          actionType: stopCalibration
-        - actionParameters:
-          - parameterDescription: Array of ReferenceValues objects with referenceKey
-              and referenceValue
-            parameterName: references
-            parameterType: array
-          actionScopes:
-          - INSTANT
-          actionType: setCalibrationValues
-        - actionParameters:
-          - isOptional: true
-            parameterDescription: Array of ReferenceValues objects with referenceKey
-              and referenceValue
-            parameterName: references
-            parameterType: array
-          actionScopes:
-          - INSTANT
-          actionType: storeCalibrationValues
-        - actionParameters:
-          - parameterDescription: Position to select
-            parameterName: position
-            parameterType: string
-          actionScopes:
-          - INSTANT
-          actionType: selectCalibrationPosition
-        - actionParameters:
-          - parameterDescription: Position to test
-            parameterName: position
-            parameterType: string
-          actionScopes:
-          - INSTANT
-          actionType: testCalibrationPosition
-        - actionParameters:
-          - isOptional: true
-            parameterDescription: Reset to factory defaults
-            parameterName: factory
-            parameterType: boolean
-          actionScopes:
-          - INSTANT
-          actionType: resetCalibration
-        - actionParameters:
-          - parameterDescription: The orderId that will deliver the workpiece to output
-            parameterName: orderId
-            parameterType: string
-          actionScopes:
-          - INSTANT
-          actionType: announceOutput
-        - actionScopes:
-          - INSTANT
-          actionType: cancelStorageOrder
-        moduleParameters:
-          clearModuleOnPick: true
-      protocolLimits: {}
-      serialNumber: SVR4H73275
-      timestamp: '2025-08-20T08:02:41.947452Z'
-      typeSpecification:
-        moduleClass: DPS
-        seriesName: MOD-FF22+DPS
-      version: 1.6.0+gitc321c85
-    - headerId: 1
-      loadSpecification:
-        loadSets:
-        - loadType: WHITE
-          setName: WHITES
-        - loadType: RED
-          setName: REDS
-        - loadType: BLUE
-          setName: BLUES
-      localizationParameters: {}
-      manufacturer: Fischertechnik
-      physicalParameters: {}
-      protocolFeatures:
-        moduleActions:
-        - actionParameters:
-          - parameterDescription: The load type to input
-            parameterName: type
-            parameterType: string
-          actionType: DROP
-        - actionParameters:
-          - parameterDescription: The load type to output
-            parameterName: type
-            parameterType: string
-          actionType: PICK
-        - actionScopes:
-          - INSTANT
-          actionType: startCalibration
-        - actionScopes:
-          - INSTANT
-          actionType: stopCalibration
-        - actionParameters:
-          - parameterDescription: Array of ReferenceValues objects with referenceKey
-              and referenceValue
-            parameterName: references
-            parameterType: array
-          actionScopes:
-          - INSTANT
-          actionType: setCalibrationValues
-        - actionParameters:
-          - isOptional: true
-            parameterDescription: Array of ReferenceValues objects with referenceKey
-              and referenceValue
-            parameterName: references
-            parameterType: array
-          actionScopes:
-          - INSTANT
-          actionType: storeCalibrationValues
-        - actionParameters:
-          - parameterDescription: Position to select
-            parameterName: position
-            parameterType: string
-          actionScopes:
-          - INSTANT
-          actionType: selectCalibrationPosition
-        - actionParameters:
-          - parameterDescription: Position to test
-            parameterName: position
-            parameterType: string
-          actionScopes:
-          - INSTANT
-          actionType: testCalibrationPosition
-        - actionParameters:
-          - isOptional: true
-            parameterDescription: Reset to factory defaults
-            parameterName: factory
-            parameterType: boolean
-          actionScopes:
-          - INSTANT
-          actionType: resetCalibration
-        - actionParameters:
-          - parameterDescription: The orderId that will deliver the workpiece to output
-            parameterName: orderId
-            parameterType: string
-          actionScopes:
-          - INSTANT
-          actionType: announceOutput
-        - actionScopes:
-          - INSTANT
-          actionType: cancelStorageOrder
-        moduleParameters:
-          clearModuleOnPick: true
-      protocolLimits: {}
-      serialNumber: SVR4H73275
-      timestamp: '2025-08-20T08:02:41.947452Z'
-      typeSpecification:
-        moduleClass: DPS
-        seriesName: MOD-FF22+DPS
-      version: 1.6.0+gitc321c85
-    - headerId: 1
-      loadSpecification:
-        loadSets:
-        - loadType: WHITE
-          setName: WHITES
-        - loadType: RED
-          setName: REDS
-        - loadType: BLUE
-          setName: BLUES
-      localizationParameters: {}
-      manufacturer: Fischertechnik
-      physicalParameters: {}
-      protocolFeatures:
-        moduleActions:
-        - actionParameters:
-          - parameterDescription: The load type to input
-            parameterName: type
-            parameterType: string
-          actionType: DROP
-        - actionParameters:
-          - parameterDescription: The load type to output
-            parameterName: type
-            parameterType: string
-          actionType: PICK
-        - actionScopes:
-          - INSTANT
-          actionType: startCalibration
-        - actionScopes:
-          - INSTANT
-          actionType: stopCalibration
-        - actionParameters:
-          - parameterDescription: Array of ReferenceValues objects with referenceKey
-              and referenceValue
-            parameterName: references
-            parameterType: array
-          actionScopes:
-          - INSTANT
-          actionType: setCalibrationValues
-        - actionParameters:
-          - isOptional: true
-            parameterDescription: Array of ReferenceValues objects with referenceKey
-              and referenceValue
-            parameterName: references
-            parameterType: array
-          actionScopes:
-          - INSTANT
-          actionType: storeCalibrationValues
-        - actionParameters:
-          - parameterDescription: Position to select
-            parameterName: position
-            parameterType: string
-          actionScopes:
-          - INSTANT
-          actionType: selectCalibrationPosition
-        - actionParameters:
-          - parameterDescription: Position to test
-            parameterName: position
-            parameterType: string
-          actionScopes:
-          - INSTANT
-          actionType: testCalibrationPosition
-        - actionParameters:
-          - isOptional: true
-            parameterDescription: Reset to factory defaults
-            parameterName: factory
-            parameterType: boolean
-          actionScopes:
-          - INSTANT
-          actionType: resetCalibration
-        - actionParameters:
-          - parameterDescription: The orderId that will deliver the workpiece to output
-            parameterName: orderId
-            parameterType: string
-          actionScopes:
-          - INSTANT
-          actionType: announceOutput
-        - actionScopes:
-          - INSTANT
-          actionType: cancelStorageOrder
-        moduleParameters:
-          clearModuleOnPick: true
-      protocolLimits: {}
-      serialNumber: SVR4H73275
-      timestamp: '2025-08-25T06:47:38.255414Z'
-      typeSpecification:
-        moduleClass: DPS
-        seriesName: MOD-FF22+DPS
-      version: 1.6.0+gitc321c85
-    module: SVR4H73275
-    sub_category: Factsheet
-    template_structure:
-      headerId: '[1]'
-      loadSpecification: '[{''loadSets'': [{''loadType'': ''WHITE'', ''setName'':
-        ''WHITES''}, {''loadType'': ''RED'', ''setName'': ''REDS''}, {''loadType'':
-        ''BLUE'', ''setName'': ''BLUES''}]}, {''loadSets'': [{''setName'': ''WHITES'',
-        ''loadType'': ''WHITE''}, {''setName'': ''REDS'', ''loadType'': ''RED''},
-        {''setName'': ''BLUES'', ''loadType'': ''BLUE''}]}]'
-      localizationParameters: '[{}]'
-      manufacturer: '[Fischertechnik]'
-      physicalParameters: '[{}]'
-      protocolFeatures: <string>
-      protocolLimits: '[{}]'
-      serialNumber: '[SVR4H73275]'
-      timestamp: <datetime>
-      typeSpecification: '[{''moduleClass'': ''DPS'', ''seriesName'': ''MOD-FF22+DPS''},
-        {''seriesName'': ''MOD-FF22+DPS'', ''moduleClass'': ''DPS''}]'
-      version: '[1.6.0+gitc321c85]'
-    validation_rules:
-    - timestamp muss ISO 8601 Format haben
-    - physicalParameters muss in [{}] sein
-    - 'loadSpecification muss in [{''loadSets'': [{''loadType'': ''WHITE'', ''setName'':
-      ''WHITES''}, {''loadType'': ''RED'', ''setName'': ''REDS''}, {''loadType'':
-      ''BLUE'', ''setName'': ''BLUES''}]}, {''loadSets'': [{''setName'': ''WHITES'',
-      ''loadType'': ''WHITE''}, {''setName'': ''REDS'', ''loadType'': ''RED''}, {''setName'':
-      ''BLUES'', ''loadType'': ''BLUE''}]}] sein'
-    - protocolLimits muss in [{}] sein
-    - localizationParameters muss in [{}] sein
-    - 'typeSpecification muss in [{''moduleClass'': ''DPS'', ''seriesName'': ''MOD-FF22+DPS''},
-      {''seriesName'': ''MOD-FF22+DPS'', ''moduleClass'': ''DPS''}] sein'
-    - serialNumber muss in [SVR4H73275] sein
-    - manufacturer muss in [Fischertechnik] sein
-    - headerId muss in [1] sein
-    - version muss in [1.6.0+gitc321c85] sein
-  module/v1/ff/NodeRed/SVR4H73275/instantAction:
-    category: Node-RED
-    description: Node-RED SVR4H73275 InstantAction
-    examples:
-    - actions:
-      - actionId: 17c6074e-ecb0-4324-a01c-3a736a7f2c09
-        actionType: reset
-      serialNumber: SVR4H73275
-      timestamp: '2025-08-25T07:39:05.727Z'
-    - actions:
-      - actionId: 532c42ff-458c-4899-bb47-1808e9dbf8c0
-        actionType: cancelStorageOrder
-      serialNumber: SVR4H73275
-      timestamp: '2025-08-26T15:10:41.135Z'
-    - actions:
-      - actionId: fc991e0d-2a17-4965-9dc0-eba2b6744041
-        actionType: cancelStorageOrder
-      serialNumber: SVR4H73275
-      timestamp: '2025-08-26T15:09:40.541Z'
-    - actions:
-      - actionId: 75413fb8-df90-4bc9-9172-d0908c86fe85
-        actionType: cancelStorageOrder
-      serialNumber: SVR4H73275
-      timestamp: '2025-08-26T14:49:28.263Z'
-    - actions:
-      - actionId: 1c0e0e8b-f685-4525-bf07-358e68d3a814
-        actionType: cancelStorageOrder
-      serialNumber: SVR4H73275
-      timestamp: '2025-08-20T09:01:12.580Z'
-    module: SVR4H73275
-    sub_category: InstantAction
-    template_structure:
-      actions: <string>
-      serialNumber: '[SVR4H73275]'
-      timestamp: <datetime>
-    validation_rules:
-    - serialNumber muss in [SVR4H73275] sein
-    - timestamp muss ISO 8601 Format haben
-  module/v1/ff/NodeRed/SVR4H73275/order:
-    category: Node-RED
-    description: Node-RED SVR4H73275 Order
+  fts/v1/ff/5iO4/order:
+    category: MODULE
+    description: FTS Navigation Commands
     examples:
     - action:
-        command: PICK
-        id: 327784cd-6abc-4a0b-870e-713694fdb1dd
+        command: findInitialDockPosition
+        id: 12345678-1234-1234-1234-123456789abc
         metadata:
-          workpiece:
-            history:
-            - code: 400
-              ts: 1755595028336
-            - code: 600
-              ts: 1755595064912
-            - code: 200
-              ts: 1755595103032
-            state: PROCESSED
-            type: RED
-            workpieceId: 040a8dca341291
-      orderId: 8ae07a6e-d058-48de-9b4d-8d0176622abc
-      orderUpdateId: 11
-      serialNumber: SVR4H73275
-      timestamp: '2025-08-19T09:18:41.187Z'
+          nodeId: SVR4H73275
+      orderId: 87654321-4321-4321-4321-cba987654321
+      orderUpdateId: 1
+      serialNumber: 5iO4
+      timestamp: '2025-08-28T12:00:00.000Z'
     - action:
-        command: PICK
-        id: 7d18d976-8a7d-4e81-9387-afa21020c25e
-        metadata:
-          workpiece:
-            history:
-            - code: 400
-              ts: 1755684009575
-            - code: 700
-              ts: 1755684133967
-            - code: 600
-              ts: 1755684243218
-            - code: 200
-              ts: 1755684356607
-            - code: 100
-              ts: 1755680183643
-            - code: 300
-              ts: 1755680212526
-            state: PROCESSED
-            type: BLUE
-            workpieceId: 047389ca341291
-      orderId: 6bb6f7a4-90f7-4ba2-bb60-e0be0202d014
-      orderUpdateId: 18
-      serialNumber: SVR4H73275
-      timestamp: '2025-08-20T10:06:47.500Z'
-    - action:
-        command: PICK
-        id: fbb6bd63-3eb1-4ef2-8618-f9036d468429
-        metadata:
-          workpiece:
-            history:
-            - code: 400
-              ts: 1755683962675
-            - code: 700
-              ts: 1755684076008
-            - code: 600
-              ts: 1755684164181
-            - code: 200
-              ts: 1755684273420
-            - code: 100
-              ts: 1755680106493
-            - code: 300
-              ts: 1755680137522
-            state: PROCESSED
-            type: BLUE
-            workpieceId: 048989ca341290
-      orderId: b0c9a823-255d-458a-a409-1052cc725aac
-      orderUpdateId: 18
-      serialNumber: SVR4H73275
-      timestamp: '2025-08-20T10:05:56.739Z'
-    - action:
-        command: PICK
-        id: a940bc49-c77d-4269-948e-88e933adeb8e
-        metadata:
-          workpiece:
-            history:
-            - code: 400
-              ts: 1755683914567
-            - code: 700
-              ts: 1755684043123
-            - code: 600
-              ts: 1755684097304
-            - code: 200
-              ts: 1755684209410
-            - code: 100
-              ts: 1755680030880
-            - code: 300
-              ts: 1755680061499
-            state: PROCESSED
-            type: BLUE
-            workpieceId: 04a189ca341290
-      orderId: a73e60cf-a116-4dcf-b2d1-3797b6f96912
-      orderUpdateId: 17
-      serialNumber: SVR4H73275
-      timestamp: '2025-08-20T10:04:58.236Z'
-    - action:
-        command: PICK
-        id: 5692d8a0-bbc4-43a4-8d4f-d86f0c896abf
-        metadata:
-          workpiece:
-            history:
-            - code: 400
-              ts: 1755595760241
-            - code: 700
-              ts: 1755595793651
-            - code: 600
-              ts: 1755595834892
-            - code: 200
-              ts: 1755595873063
-            state: PROCESSED
-            type: BLUE
-            workpieceId: 047389ca341291
-      orderId: 598cba14-5cb5-43e7-b8cc-530d87d2cfa3
-      orderUpdateId: 15
-      serialNumber: SVR4H73275
-      timestamp: '2025-08-19T09:31:30.940Z'
-    module: SVR4H73275
+        command: startCharging
+        id: 23456789-2345-2345-2345-234567890bcd
+        metadata: {}
+      orderId: 98765432-5432-5432-5432-dcb098765432
+      orderUpdateId: 2
+      serialNumber: 5iO4
+      timestamp: '2025-08-28T12:01:00.000Z'
+    module: 5iO4
     sub_category: Order
     template_structure:
       action: <string>
       orderId: <string>
       orderUpdateId: <string>
-      serialNumber: '[SVR4H73275]'
+      serialNumber: '[5iO4]'
       timestamp: <datetime>
+    ui_config:
+      commands:
+        factsheetRequest:
+          color: secondary
+          help: FTS Status abfragen
+          icon: 🔄
+          text: 🔄 Status abfragen
+        findInitialDockPosition:
+          color: primary
+          help: FTS fährt zum Wareneingang (Initialisierung)
+          icon: 🚗
+          text: 🚗 Docke an
+        startCharging:
+          color: primary
+          help: FTS fährt zur Charging Station
+          icon: 🔋
+          text: 🔋 FTS laden
+        stopCharging:
+          color: primary
+          help: FTS stoppt das Laden
+          icon: ⏹️
+          text: ⏹️ Laden beenden
+      module_id: 5iO4
+      module_name: FTS
+      state_machine_notes: 'FTS verwendet einen Zustandsautomaten:
+
+        - Docke an: Nur nach Initialisierung verfügbar
+
+        - Laden/Laden beenden: Gegenseitig ausschließend
+
+        - Status-Abfrage: Für dynamische Button-Aktivierung (später)
+
+        '
+      success_message: FTS-Befehl erfolgreich gesendet
     validation_rules:
     - timestamp muss ISO 8601 Format haben
-    - serialNumber muss in [SVR4H73275] sein
+    - serialNumber muss in [5iO4] sein
+  module/v1/ff/NodeRed/SVR4H73275/connection:
+    category: Node-RED
+    description: Node-RED SVR4H73275 Connection
+    examples:
+    - connected: true
+      module_id: SVR4H73275
+      timestamp: '2024-01-01T12:00:00Z'
+    module: SVR4H73275
+    sub_category: Connection
+    template_structure:
+      connected: '[True]'
+      module_id: <moduleId>
+      timestamp: <datetime>
+    validation_rules:
+    - connected muss in [True] sein
+    - module_id muss gültige Modul-ID sein
+    - timestamp muss ISO 8601 Format haben
+  module/v1/ff/NodeRed/SVR4H73275/factsheet:
+    category: Node-RED
+    description: Node-RED SVR4H73275 Factsheet
+    examples:
+    - description: Warenein- und Ausgang
+      module_id: SVR4H73275
+      type: DPS
+    module: SVR4H73275
+    sub_category: Factsheet
+    template_structure:
+      description: '[Warenein- und Ausgang]'
+      module_id: <moduleId>
+      type: '[DPS]'
+    validation_rules:
+    - module_id muss gültige Modul-ID sein
+    - type muss in [DPS] sein
+    - description muss in [Warenein- und Ausgang] sein
+  module/v1/ff/NodeRed/SVR4H73275/instantAction:
+    category: Node-RED
+    description: Node-RED SVR4H73275 InstantAction
+    examples:
+    - action: reset
+      module_id: SVR4H73275
+    module: SVR4H73275
+    sub_category: InstantAction
+    template_structure:
+      action: '[reset]'
+      module_id: <moduleId>
+    validation_rules:
+    - action muss in [reset] sein
+    - module_id muss gültige Modul-ID sein
+  module/v1/ff/NodeRed/SVR4H73275/order:
+    category: Node-RED
+    description: Node-RED SVR4H73275 Order
+    examples:
+    - module_id: SVR4H73275
+      order_id: ORD001
+      status: pending
+    module: SVR4H73275
+    sub_category: Order
+    template_structure:
+      module_id: <moduleId>
+      order_id: '[ORD001]'
+      status: '[pending]'
+    validation_rules:
+    - order_id muss in [ORD001] sein
+    - status muss in [pending] sein
+    - module_id muss gültige Modul-ID sein
   module/v1/ff/NodeRed/SVR4H73275/state:
     category: Node-RED
     description: Node-RED SVR4H73275 State
     examples:
-    - actionState:
-        command: PICK
-        id: 327784cd-6abc-4a0b-870e-713694fdb1dd
-        result: PASSED
-        state: FINISHED
-        timestamp: '2025-08-19T09:19:03.473043Z'
-      actionStates:
-      - command: PICK
-        id: 327784cd-6abc-4a0b-870e-713694fdb1dd
-        metadata:
-          workpiece:
-            history:
-            - code: 400
-              ts: 1755595028336
-            - code: 600
-              ts: 1755595064912
-            - code: 200
-              ts: 1755595103032
-            state: PROCESSED
-            type: RED
-            workpieceId: 040a8dca341291
-        result: PASSED
-        state: FINISHED
-        timestamp: '2025-08-19T09:19:03.473043Z'
-      batteryState: {}
-      errors: []
-      headerId: 15
-      information: []
-      operatingMode: AUTOMATIC
-      orderId: 8ae07a6e-d058-48de-9b4d-8d0176622abc
-      orderUpdateId: 11
-      paused: false
-      serialNumber: SVR4H73275
-      timestamp: '2025-08-19T09:19:03.477244Z'
-    - actionState:
-        command: PICK
-        id: 327784cd-6abc-4a0b-870e-713694fdb1dd
-        state: RUNNING
-        timestamp: '2025-08-19T09:18:41.734745Z'
-      actionStates:
-      - command: PICK
-        id: 327784cd-6abc-4a0b-870e-713694fdb1dd
-        metadata:
-          workpiece:
-            history:
-            - code: 400
-              ts: 1755595028336
-            - code: 600
-              ts: 1755595064912
-            - code: 200
-              ts: 1755595103032
-            state: PROCESSED
-            type: RED
-            workpieceId: 040a8dca341291
-        state: RUNNING
-        timestamp: '2025-08-19T09:18:41.734745Z'
-      batteryState: {}
-      errors: []
-      headerId: 14
-      information: []
-      operatingMode: AUTOMATIC
-      orderId: 8ae07a6e-d058-48de-9b4d-8d0176622abc
-      orderUpdateId: 11
-      paused: false
-      serialNumber: SVR4H73275
-      timestamp: '2025-08-19T09:18:41.735070Z'
-    - actionState:
-        command: PICK
-        id: 327784cd-6abc-4a0b-870e-713694fdb1dd
-        state: WAITIING
-        timestamp: '2025-08-19T09:18:41.260691Z'
-      actionStates:
-      - command: PICK
-        id: 327784cd-6abc-4a0b-870e-713694fdb1dd
-        metadata:
-          workpiece:
-            history:
-            - code: 400
-              ts: 1755595028336
-            - code: 600
-              ts: 1755595064912
-            - code: 200
-              ts: 1755595103032
-            state: PROCESSED
-            type: RED
-            workpieceId: 040a8dca341291
-        state: WAITIING
-        timestamp: '2025-08-19T09:18:41.260691Z'
-      batteryState: {}
-      errors: []
-      headerId: 13
-      information: []
-      operatingMode: AUTOMATIC
-      orderId: 8ae07a6e-d058-48de-9b4d-8d0176622abc
-      orderUpdateId: 11
-      paused: false
-      serialNumber: SVR4H73275
-      timestamp: '2025-08-19T09:18:41.261033Z'
-    - actionState:
-        command: factsheetRequest
-        id: SOME_ID
-        state: FINISHED
-        timestamp: '2025-08-19T09:13:34.536843Z'
-      actionStates:
-      - command: factsheetRequest
-        id: SOME_ID
-        state: FINISHED
-      batteryState: {}
-      errors:
-      - errorLevel: WARNING
-        errorReferences:
-        - orderId: null
-        errorType: RESET_WARNING
-      headerId: 12
-      information: []
-      operatingMode: AUTOMATIC
-      orderId: ''
-      orderUpdateId: 0
-      paused: false
-      serialNumber: SVR4H73275
-      timestamp: '2025-08-19T09:13:34.533327Z'
-    - actionState:
-        command: factsheetRequest
-        id: SOME_ID
-        state: FINISHED
-        timestamp: '2025-08-19T09:13:34.536843Z'
-      actionStates:
-      - command: factsheetRequest
-        id: SOME_ID
-        state: FINISHED
-      batteryState: {}
-      errors:
-      - errorLevel: WARNING
-        errorReferences:
-        - orderId: null
-        errorType: RESET_WARNING
-      headerId: 12
-      information: []
-      operatingMode: AUTOMATIC
-      orderId: ''
-      orderUpdateId: 0
-      paused: false
-      serialNumber: SVR4H73275
-      timestamp: '2025-08-19T09:13:34.533327Z'
+    - module_id: SVR4H73275
+      status: idle
+      timestamp: '2024-01-01T12:00:00Z'
     module: SVR4H73275
     sub_category: State
     template_structure:
-      actionState: <string>
-      actionStates: <string>
-      batteryState: '[{}]'
-      errors: <string>
-      headerId: <string>
-      information: '[[]]'
-      operatingMode: '[AUTOMATIC]'
-      orderId: <string>
-      orderUpdateId: <string>
-      paused: '[False]'
-      serialNumber: '[SVR4H73275]'
+      module_id: <moduleId>
+      status: '[idle]'
       timestamp: <datetime>
     validation_rules:
-    - information muss in [[]] sein
-    - operatingMode muss in [AUTOMATIC] sein
-    - serialNumber muss in [SVR4H73275] sein
+    - status muss in [idle] sein
+    - module_id muss gültige Modul-ID sein
     - timestamp muss ISO 8601 Format haben
-    - paused muss in [False] sein
-    - batteryState muss in [{}] sein
   module/v1/ff/NodeRed/SVR4H76530/connection:
     category: Node-RED
     description: Node-RED SVR4H76530 Connection
     examples:
-    - connectionState: ONLINE
-      headerId: 2
-      manufacturer: Fischertechnik
-      serialNumber: SVR4H76530
-      timestamp: '2025-08-19T08:52:32.608107Z'
-      version: 1.0.0
-    - connectionState: ONLINE
-      headerId: 2
-      manufacturer: Fischertechnik
-      serialNumber: SVR4H76530
-      timestamp: '2025-08-19T08:52:32.608107Z'
-      version: 1.0.0
-    - connectionState: ONLINE
-      headerId: 2
-      manufacturer: Fischertechnik
-      serialNumber: SVR4H76530
-      timestamp: '2025-08-19T16:21:51.154051Z'
-      version: 1.0.0
-    - connectionState: ONLINE
-      headerId: 2
-      manufacturer: Fischertechnik
-      serialNumber: SVR4H76530
-      timestamp: '2025-08-19T16:21:51.154051Z'
-      version: 1.0.0
-    - connectionState: ONLINE
-      headerId: 2
-      manufacturer: Fischertechnik
-      serialNumber: SVR4H76530
-      timestamp: '2025-08-22T16:12:52.175710Z'
-      version: 1.0.0
+    - connected: true
+      module_id: SVR4H76530
+      timestamp: '2024-01-01T12:00:00Z'
     module: SVR4H76530
     sub_category: Connection
     template_structure:
-      connectionState: '[ONLINE]'
-      headerId: '[2]'
-      manufacturer: '[Fischertechnik]'
-      serialNumber: '[SVR4H76530]'
+      connected: '[True]'
+      module_id: <moduleId>
       timestamp: <datetime>
-      version: '[1.0.0]'
     validation_rules:
-    - headerId muss in [2] sein
+    - connected muss in [True] sein
+    - module_id muss gültige Modul-ID sein
     - timestamp muss ISO 8601 Format haben
-    - version muss in [1.0.0] sein
-    - manufacturer muss in [Fischertechnik] sein
-    - serialNumber muss in [SVR4H76530] sein
-    - connectionState muss in [ONLINE] sein
   module/v1/ff/NodeRed/SVR4H76530/factsheet:
     category: Node-RED
     description: Node-RED SVR4H76530 Factsheet
@@ -4665,107 +3847,36 @@ topics:
     category: Node-RED
     description: Node-RED SVR4H76530 State
     examples:
-    - actionState:
-        command: CHECK_QUALITY
-        id: 7b25fdfb-4a9e-419d-836c-c4348d9d9fd3
-        result: PASSED
-        state: FINISHED
-        timestamp: '2025-08-19T09:18:22.005833Z'
-      batteryState: {}
-      errors: []
-      headerId: 7
-      orderId: 8ae07a6e-d058-48de-9b4d-8d0176622abc
-      orderUpdateId: 10
-      paused: false
-      serialNumber: SVR4H76530
-      timestamp: '2025-08-19T09:18:22.006119Z'
-    - actionState:
-        command: CHECK_QUALITY
-        id: 7b25fdfb-4a9e-419d-836c-c4348d9d9fd3
-        result: PASSED
-        state: RUNNING
-        timestamp: '2025-08-19T09:18:18.525120Z'
-      batteryState: {}
-      errors: []
-      headerId: 6
-      orderId: 8ae07a6e-d058-48de-9b4d-8d0176622abc
-      orderUpdateId: 10
-      paused: false
-      serialNumber: SVR4H76530
-      timestamp: '2025-08-19T09:18:21.999763Z'
-    - actionState:
-        command: CHECK_QUALITY
-        id: 7b25fdfb-4a9e-419d-836c-c4348d9d9fd3
-        state: RUNNING
-        timestamp: '2025-08-19T09:18:18.525120Z'
-      batteryState: {}
-      errors: []
-      headerId: 5
-      orderId: 8ae07a6e-d058-48de-9b4d-8d0176622abc
-      orderUpdateId: 10
-      paused: false
-      serialNumber: SVR4H76530
-      timestamp: '2025-08-19T09:18:18.525402Z'
-    - actionState:
-        command: CHECK_QUALITY
-        id: 7b25fdfb-4a9e-419d-836c-c4348d9d9fd3
-        state: WAITING
-        timestamp: '2025-08-19T09:18:17.950441Z'
-      batteryState: {}
-      errors: []
-      headerId: 4
-      orderId: 8ae07a6e-d058-48de-9b4d-8d0176622abc
-      orderUpdateId: 10
-      paused: false
-      serialNumber: SVR4H76530
-      timestamp: '2025-08-19T09:18:17.950873Z'
-    - actionState:
-        command: factsheetRequest
-        id: SOME_ID
-        state: FINISHED
-        timestamp: '2025-08-19T09:13:34.250080Z'
-      batteryState: {}
-      errors: []
-      headerId: 3
-      orderId: ''
-      orderUpdateId: 0
-      paused: false
-      serialNumber: SVR4H76530
-      timestamp: '2025-08-19T09:13:34.249652Z'
+    - module_id: SVR4H76530
+      status: processing
+      timestamp: '2024-01-01T12:00:00Z'
     module: SVR4H76530
     sub_category: State
     template_structure:
-      actionState: <string>
-      batteryState: '[{}]'
-      errors: '[[]]'
-      headerId: <string>
-      orderId: <string>
-      orderUpdateId: '[0, 10]'
-      paused: '[False]'
-      serialNumber: '[SVR4H76530]'
+      module_id: <moduleId>
+      status: '[processing]'
       timestamp: <datetime>
     validation_rules:
-    - serialNumber muss in [SVR4H76530] sein
-    - batteryState muss in [{}] sein
-    - orderUpdateId muss in [0, 10] sein
+    - status muss in [processing] sein
+    - module_id muss gültige Modul-ID sein
     - timestamp muss ISO 8601 Format haben
-    - errors muss in [[]] sein
-    - paused muss in [False] sein
   module/v1/ff/NodeRed/status:
     category: Node-RED
     description: Node-RED NodeRed Status
     examples:
-    - connectionState: ONLINE
-    - connectionState: ONLINE
-    - connectionState: ONLINE
-    - connectionState: ONLINE
-    - connectionState: ONLINE
+    - active_modules: 5
+      overall_status: healthy
+      timestamp: '2024-01-01T12:00:00Z'
     module: NodeRed
     sub_category: Status
     template_structure:
-      connectionState: '[OFFLINE, ONLINE]'
+      active_modules: '[5]'
+      overall_status: '[healthy]'
+      timestamp: <datetime>
     validation_rules:
-    - connectionState muss in [OFFLINE, ONLINE] sein
+    - overall_status muss in [healthy] sein
+    - active_modules muss in [5] sein
+    - timestamp muss ISO 8601 Format haben
   module/v1/ff/SVR3QA0022/connection:
     category: MODULE
     description: Module SVR3QA0022 Connection
@@ -6034,33 +5145,6 @@ topics:
   module/v1/ff/SVR3QA2098/order:
     category: MODULE
     description: Module SVR3QA2098 Order
-    ui_config:
-      module_id: "SVR3QA2098"
-      module_name: "MILL"
-      commands:
-        PICK:
-          text: "📤 PICK"
-          icon: "📤"
-          color: "primary"
-          help: "Werkstück aufnehmen"
-        MILL:
-          text: "⚙️ MILL"
-          icon: "⚙️"
-          color: "primary"
-          help: "Werkstück fräsen"
-        DROP:
-          text: "📥 DROP"
-          icon: "📥"
-          color: "primary"
-          help: "Werkstück ablegen"
-      workpiece_selection:
-        colors: ["WHITE", "RED", "BLUE"]
-        default_color: "WHITE"
-        options:
-          WHITE: ["W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8"]
-          RED: ["R1", "R2", "R3", "R4", "R5", "R6", "R7", "R8"]
-          BLUE: ["B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8"]
-      success_message: "MILL-Befehl erfolgreich gesendet mit orderUpdateId: {orderUpdateId}"
     examples:
     - action:
         command: DROP
@@ -6120,6 +5204,60 @@ topics:
       orderUpdateId: <string>
       serialNumber: '[SVR3QA2098]'
       timestamp: <datetime>
+    ui_config:
+      commands:
+        DROP:
+          color: primary
+          help: Werkstück ablegen
+          icon: 📥
+          text: 📥 DROP
+        MILL:
+          color: primary
+          help: Werkstück fräsen
+          icon: ⚙️
+          text: ⚙️ MILL
+        PICK:
+          color: primary
+          help: Werkstück aufnehmen
+          icon: 📤
+          text: 📤 PICK
+      module_id: SVR3QA2098
+      module_name: MILL
+      success_message: 'MILL-Befehl erfolgreich gesendet mit orderUpdateId: {orderUpdateId}'
+      workpiece_selection:
+        colors:
+        - WHITE
+        - RED
+        - BLUE
+        default_color: WHITE
+        options:
+          BLUE:
+          - B1
+          - B2
+          - B3
+          - B4
+          - B5
+          - B6
+          - B7
+          - B8
+          RED:
+          - R1
+          - R2
+          - R3
+          - R4
+          - R5
+          - R6
+          - R7
+          - R8
+          WHITE:
+          - W1
+          - W2
+          - W3
+          - W4
+          - W5
+          - W6
+          - W7
+          - W8
     validation_rules:
     - timestamp muss ISO 8601 Format haben
     - serialNumber muss in [SVR3QA2098] sein
@@ -7558,33 +6696,6 @@ topics:
   module/v1/ff/SVR4H76449/order:
     category: MODULE
     description: Module SVR4H76449 Order
-    ui_config:
-      module_id: "SVR4H76449"
-      module_name: "DRILL"
-      commands:
-        PICK:
-          text: "📤 PICK"
-          icon: "📤"
-          color: "primary"
-          help: "Werkstück aufnehmen"
-        DRILL:
-          text: "⚙️ DRILL"
-          icon: "⚙️"
-          color: "primary"
-          help: "Werkstück bohren"
-        DROP:
-          text: "📥 DROP"
-          icon: "📥"
-          color: "primary"
-          help: "Werkstück ablegen"
-      workpiece_selection:
-        colors: ["WHITE", "RED", "BLUE"]
-        default_color: "WHITE"
-        options:
-          WHITE: ["W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8"]
-          RED: ["R1", "R2", "R3", "R4", "R5", "R6", "R7", "R8"]
-          BLUE: ["B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8"]
-      success_message: "DRILL-Befehl erfolgreich gesendet mit orderUpdateId: {orderUpdateId}"
     examples:
     - action:
         command: DROP
@@ -7644,6 +6755,60 @@ topics:
       orderUpdateId: '[3, 4, 5, 6]'
       serialNumber: '[SVR4H76449]'
       timestamp: <datetime>
+    ui_config:
+      commands:
+        DRILL:
+          color: primary
+          help: Werkstück bohren
+          icon: ⚙️
+          text: ⚙️ DRILL
+        DROP:
+          color: primary
+          help: Werkstück ablegen
+          icon: 📥
+          text: 📥 DROP
+        PICK:
+          color: primary
+          help: Werkstück aufnehmen
+          icon: 📤
+          text: 📤 PICK
+      module_id: SVR4H76449
+      module_name: DRILL
+      success_message: 'DRILL-Befehl erfolgreich gesendet mit orderUpdateId: {orderUpdateId}'
+      workpiece_selection:
+        colors:
+        - WHITE
+        - RED
+        - BLUE
+        default_color: WHITE
+        options:
+          BLUE:
+          - B1
+          - B2
+          - B3
+          - B4
+          - B5
+          - B6
+          - B7
+          - B8
+          RED:
+          - R1
+          - R2
+          - R3
+          - R4
+          - R5
+          - R6
+          - R7
+          - R8
+          WHITE:
+          - W1
+          - W2
+          - W3
+          - W4
+          - W5
+          - W6
+          - W7
+          - W8
     validation_rules:
     - timestamp muss ISO 8601 Format haben
     - serialNumber muss in [SVR4H76449] sein
@@ -8348,33 +7513,6 @@ topics:
   module/v1/ff/SVR4H76530/order:
     category: MODULE
     description: Module SVR4H76530 Order
-    ui_config:
-      module_id: "SVR4H76530"
-      module_name: "AIQS"
-      commands:
-        PICK:
-          text: "📤 PICK"
-          icon: "📤"
-          color: "primary"
-          help: "Werkstück aufnehmen"
-        CHECK_QUALITY:
-          text: "🔍 CHECK_QUALITY"
-          icon: "🔍"
-          color: "primary"
-          help: "Qualität prüfen"
-        DROP:
-          text: "📥 DROP"
-          icon: "📥"
-          color: "primary"
-          help: "Werkstück ablegen"
-      workpiece_selection:
-        colors: ["WHITE", "RED", "BLUE"]
-        default_color: "WHITE"
-        options:
-          WHITE: ["W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8"]
-          RED: ["R1", "R2", "R3", "R4", "R5", "R6", "R7", "R8"]
-          BLUE: ["B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8"]
-      success_message: "AIQS-Befehl erfolgreich gesendet mit orderUpdateId: {orderUpdateId}"
     examples:
     - action:
         command: DROP
@@ -8434,6 +7572,60 @@ topics:
       orderUpdateId: <string>
       serialNumber: '[SVR4H76530]'
       timestamp: <datetime>
+    ui_config:
+      commands:
+        CHECK_QUALITY:
+          color: primary
+          help: Qualität prüfen
+          icon: 🔍
+          text: 🔍 CHECK_QUALITY
+        DROP:
+          color: primary
+          help: Werkstück ablegen
+          icon: 📥
+          text: 📥 DROP
+        PICK:
+          color: primary
+          help: Werkstück aufnehmen
+          icon: 📤
+          text: 📤 PICK
+      module_id: SVR4H76530
+      module_name: AIQS
+      success_message: 'AIQS-Befehl erfolgreich gesendet mit orderUpdateId: {orderUpdateId}'
+      workpiece_selection:
+        colors:
+        - WHITE
+        - RED
+        - BLUE
+        default_color: WHITE
+        options:
+          BLUE:
+          - B1
+          - B2
+          - B3
+          - B4
+          - B5
+          - B6
+          - B7
+          - B8
+          RED:
+          - R1
+          - R2
+          - R3
+          - R4
+          - R5
+          - R6
+          - R7
+          - R8
+          WHITE:
+          - W1
+          - W2
+          - W3
+          - W4
+          - W5
+          - W6
+          - W7
+          - W8
     validation_rules:
     - timestamp muss ISO 8601 Format haben
     - serialNumber muss in [SVR4H76530] sein
@@ -8594,74 +7786,6 @@ topics:
     - ui_status muss in [ready] sein
     - component_count muss in [3] sein
     - timestamp muss ISO 8601 Format haben
-
-  # FTS Templates
-  fts/v1/ff/5iO4/order:
-    category: MODULE
-    description: FTS Navigation Commands
-    ui_config:
-      module_id: "5iO4"
-      module_name: "FTS"
-      commands:
-        findInitialDockPosition:
-          text: "🚗 Docke an"
-          icon: "🚗"
-          color: "primary"
-          help: "FTS fährt zum Wareneingang (Initialisierung)"
-        startCharging:
-          text: "🔋 FTS laden"
-          icon: "🔋"
-          color: "primary"
-          help: "FTS fährt zur Charging Station"
-        stopCharging:
-          text: "⏹️ Laden beenden"
-          icon: "⏹️"
-          color: "primary"
-          help: "FTS stoppt das Laden"
-        factsheetRequest:
-          text: "🔄 Status abfragen"
-          icon: "🔄"
-          color: "secondary"
-          help: "FTS Status abfragen"
-      success_message: "FTS-Befehl erfolgreich gesendet"
-      # FTS State Machine Notes:
-      # - "findInitialDockPosition": Nur nach Initialisierung verfügbar, wird danach deaktiviert
-      # - "startCharging" / "stopCharging": Gegenseitig ausschließend (Zustandsautomat)
-      # - Status-Verwaltung: Später implementieren für dynamische Button-Aktivierung
-      state_machine_notes: |
-        FTS verwendet einen Zustandsautomaten:
-        - Docke an: Nur nach Initialisierung verfügbar
-        - Laden/Laden beenden: Gegenseitig ausschließend
-        - Status-Abfrage: Für dynamische Button-Aktivierung (später)
-    examples:
-    - action:
-        command: findInitialDockPosition
-        id: 12345678-1234-1234-1234-123456789abc
-        metadata:
-          nodeId: SVR4H73275
-      orderId: 87654321-4321-4321-4321-cba987654321
-      orderUpdateId: 1
-      serialNumber: 5iO4
-      timestamp: '2025-08-28T12:00:00.000Z'
-    - action:
-        command: startCharging
-        id: 23456789-2345-2345-2345-234567890bcd
-        metadata: {}
-      orderId: 98765432-5432-5432-5432-dcb098765432
-      orderUpdateId: 2
-      serialNumber: 5iO4
-      timestamp: '2025-08-28T12:01:00.000Z'
-    module: 5iO4
-    sub_category: Order
-    template_structure:
-      action: <string>
-      orderId: <string>
-      orderUpdateId: <string>
-      serialNumber: '[5iO4]'
-      timestamp: <datetime>
-    validation_rules:
-    - timestamp muss ISO 8601 Format haben
-    - serialNumber muss in [5iO4] sein
 validation_patterns:
   ISO_8601: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?Z$
   NFC_CODE: ^[0-9a-fA-F]{14}$

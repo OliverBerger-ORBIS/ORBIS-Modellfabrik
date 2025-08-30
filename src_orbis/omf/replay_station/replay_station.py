@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
-Einfache OMF Replay Station
+OMF Replay Station
 Sendet Nachrichten an den MQTT Broker (ohne eigenen Broker zu starten)
 """
 
-import json
+
 import logging
 import sqlite3
 import subprocess
@@ -20,8 +20,8 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-class SimpleSessionPlayer:
-    """Einfacher Session-Player der nur Nachrichten sendet"""
+class SessionPlayer:
+    """Session-Player der Nachrichten an den MQTT Broker sendet"""
 
     def __init__(self, broker_host="localhost", broker_port=1884):
         self.broker_host = broker_host
@@ -56,16 +56,26 @@ class SimpleSessionPlayer:
             self.messages = []
             for row in rows:
                 topic, payload, timestamp = row
-                self.messages.append(
-                    {"topic": topic, "payload": payload, "timestamp": timestamp}
-                )
+                if topic and payload:  # Nur gültige Nachrichten
+                    self.messages.append(
+                        {"topic": topic, "payload": payload, "timestamp": timestamp}
+                    )
 
             conn.close()
-            st.success(f"✅ {len(self.messages)} Nachrichten aus SQLite geladen")
-            return True
 
-        except Exception as e:
-            st.error(f"❌ Fehler beim Laden der SQLite Session: {e}")
+            if len(self.messages) == 0:
+                st.warning(f"⚠️ Session {file_path} enthält keine gültigen Nachrichten")
+                st.info("💡 Mögliche Ursachen:")
+                st.info("   - Session wurde ohne MQTT-Traffic aufgenommen")
+                st.info("   - Alle Nachrichten sind leer oder ungültig")
+                st.info("   - Session-Datei ist beschädigt")
+                return False
+            else:
+                st.success(f"✅ {len(self.messages)} Nachrichten aus SQLite geladen")
+                return True
+
+        except Exception:
+            st.error("❌ Fehler beim Laden der SQLite Session")
             return False
 
     def load_log_session(self, file_path: str) -> bool:
@@ -81,21 +91,32 @@ class SimpleSessionPlayer:
                             parts = line.split("|", 2)
                             if len(parts) == 3:
                                 timestamp, topic, payload = parts
-                                self.messages.append(
-                                    {
-                                        "topic": topic.strip(),
-                                        "payload": payload.strip(),
-                                        "timestamp": timestamp.strip(),
-                                    }
-                                )
+                                if (
+                                    topic.strip() and payload.strip()
+                                ):  # Nur gültige Nachrichten
+                                    self.messages.append(
+                                        {
+                                            "topic": topic.strip(),
+                                            "payload": payload.strip(),
+                                            "timestamp": timestamp.strip(),
+                                        }
+                                    )
                         except:
                             continue
 
-            st.success(f"✅ {len(self.messages)} Nachrichten aus Log geladen")
-            return True
+            if len(self.messages) == 0:
+                st.warning(f"⚠️ Session {file_path} enthält keine gültigen Nachrichten")
+                st.info("💡 Mögliche Ursachen:")
+                st.info("   - Session wurde ohne MQTT-Traffic aufgenommen")
+                st.info("   - Alle Nachrichten sind leer oder ungültig")
+                st.info("   - Log-Format ist nicht korrekt")
+                return False
+            else:
+                st.success(f"✅ {len(self.messages)} Nachrichten aus Log geladen")
+                return True
 
-        except Exception as e:
-            st.error(f"❌ Fehler beim Laden der Log Session: {e}")
+        except Exception:
+            st.error("❌ Fehler beim Laden der Log Session")
             return False
 
     def send_message(self, topic: str, payload: str) -> bool:
@@ -140,7 +161,10 @@ class SimpleSessionPlayer:
         self.speed = speed
         self.loop = loop
         self.is_playing = True
-        self.current_index = 0
+
+        # Nur von vorne starten wenn current_index am Ende ist
+        if self.current_index >= len(self.messages):
+            self.current_index = 0
 
         # Replay in separatem Thread
         self.replay_thread = threading.Thread(target=self._replay_worker)
@@ -148,6 +172,25 @@ class SimpleSessionPlayer:
         self.replay_thread.start()
 
         st.success("▶️ Replay gestartet")
+
+    def resume_replay(self):
+        """Replay fortsetzen"""
+        if not self.messages:
+            st.warning("⚠️ Keine Nachrichten zum Abspielen")
+            return
+
+        if self.current_index >= len(self.messages):
+            st.warning("⚠️ Replay ist bereits beendet")
+            return
+
+        self.is_playing = True
+
+        # Replay in separatem Thread
+        self.replay_thread = threading.Thread(target=self._replay_worker)
+        self.replay_thread.daemon = True
+        self.replay_thread.start()
+
+        st.success("▶️ Replay fortgesetzt")
 
     def _replay_worker(self):
         """Replay Worker Thread"""
@@ -203,6 +246,13 @@ class SimpleSessionPlayer:
         self.current_index = 0
         st.info("⏹️ Replay gestoppt")
 
+    def reset_controls(self):
+        """Kontrollen zurücksetzen (für neue Session)"""
+        self.is_playing = False
+        self.current_index = 0
+        self.speed = 1.0
+        self.loop = False
+
     def get_progress(self) -> float:
         """Fortschritt in Prozent"""
         if not self.messages:
@@ -211,16 +261,14 @@ class SimpleSessionPlayer:
 
 
 def main():
-    st.set_page_config(
-        page_title="🎬 OMF Simple Replay Station", page_icon="🎬", layout="wide"
-    )
+    st.set_page_config(page_title="🎬 OMF Replay Station", page_icon="🎬", layout="wide")
 
-    st.title("🎬 OMF Simple Replay Station")
+    st.title("🎬 OMF Replay Station")
     st.markdown("Sendet Nachrichten an den MQTT Broker (Port 1884)")
 
     # Session-Player initialisieren
     if "session_player" not in st.session_state:
-        st.session_state.session_player = SimpleSessionPlayer()
+        st.session_state.session_player = SessionPlayer()
 
     session_player = st.session_state.session_player
 
@@ -257,13 +305,27 @@ def main():
         st.info("💡 Legen Sie Session-Dateien in `mqtt-data/sessions/` ab")
         return
 
-    # Session-Auswahl
+    # Session-Auswahl mit Vorschau
     selected_session = st.selectbox(
         "Session auswählen:", session_files, format_func=lambda x: x.name
     )
 
+    # Session-Info anzeigen
+    if selected_session:
+        st.info(f"📁 Ausgewählte Session: {selected_session.name}")
+
+        # Session-Größe anzeigen
+        try:
+            file_size = selected_session.stat().st_size
+            st.text(f"📊 Dateigröße: {file_size:,} Bytes")
+        except:
+            pass
+
     if selected_session and st.button("📂 Session laden"):
         with st.spinner("🔄 Session wird geladen..."):
+            # Kontrollen zurücksetzen vor dem Laden der neuen Session
+            session_player.reset_controls()
+
             if selected_session.suffix == ".db":
                 success = session_player.load_sqlite_session(str(selected_session))
             else:
@@ -271,6 +333,12 @@ def main():
 
             if success:
                 st.session_state.current_session = selected_session
+                st.success(f"✅ Session '{selected_session.name}' erfolgreich geladen!")
+                st.info("🔄 Kontrollen wurden zurückgesetzt - bereit für neuen Replay!")
+            else:
+                st.error(
+                    f"❌ Session '{selected_session.name}' konnte nicht geladen werden"
+                )
 
     # Replay-Kontrollen
     if session_player.messages:
@@ -279,18 +347,42 @@ def main():
         col1, col2, col3 = st.columns(3)
 
         with col1:
-            if st.button("▶️ Play", disabled=session_player.is_playing):
+            # Play/Resume Button - je nach Status
+            if session_player.is_playing:
+                button_text = "▶️ Playing..."
+                button_disabled = True
+            elif (
+                session_player.current_index > 0
+                and session_player.current_index < len(session_player.messages)
+            ):
+                button_text = "▶️ Resume"
+                button_disabled = False
+            else:
+                button_text = "▶️ Play"
+                button_disabled = False
+
+            if st.button(button_text, disabled=button_disabled):
                 speed = st.session_state.get("replay_speed", 1.0)
                 loop = st.session_state.get("replay_loop", False)
-                session_player.start_replay(speed, loop)
+
+                if (
+                    session_player.current_index > 0
+                    and session_player.current_index < len(session_player.messages)
+                ):
+                    session_player.resume_replay()
+                else:
+                    session_player.start_replay(speed, loop)
+                st.rerun()  # Sofortige UI-Aktualisierung
 
         with col2:
             if st.button("⏸️ Pause", disabled=not session_player.is_playing):
                 session_player.pause_replay()
+                st.rerun()  # Sofortige UI-Aktualisierung
 
         with col3:
             if st.button("⏹️ Stop"):
                 session_player.stop_replay()
+                st.rerun()  # Sofortige UI-Aktualisierung
 
         # Replay-Einstellungen
         st.markdown("#### ⚙️ Replay-Einstellungen")
@@ -305,12 +397,21 @@ def main():
             loop = st.checkbox("🔄 Loop", value=False)
             st.session_state.replay_loop = loop
 
-        # Fortschritt
+        # Fortschrittsbalken
         progress = session_player.get_progress()
         st.progress(progress / 100.0)
         st.text(
-            f"Fortschritt: {progress:.1f}% ({session_player.current_index}/{len(session_player.messages)})"
+            f"📊 Fortschritt: {progress:.1f}% ({session_player.current_index}/{len(session_player.messages)})"
         )
+
+        # Debug-Informationen
+        st.info(
+            f"🔍 Debug: is_playing={session_player.is_playing}, current_index={session_player.current_index}, total_messages={len(session_player.messages)}"
+        )
+
+        # Manueller Refresh-Button für Live-Updates
+        if st.button("🔄 Status aktualisieren"):
+            st.rerun()
 
     # Dashboard-Integration Info
     st.markdown("---")
@@ -318,12 +419,12 @@ def main():
 
     st.info(
         """
-    **So verbinden Sie das OMF Dashboard mit der Replay-Station:**
+    **So verbinden Sie das OMF Dashboard mit dem Replay-Broker:**
     
     1. **MQTT Broker läuft bereits** auf Port 1884 ✅
     
     2. **Dashboard konfigurieren:**
-       - MQTT-Modus: "Replay-Station"
+       - MQTT-Modus: "Replay-Broker"
        - Host: `localhost`
        - Port: `1884`
     

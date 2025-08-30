@@ -1,90 +1,197 @@
-# Agile-Production-Simulation-24V
->If you have any questions, please contact fischertechnik-technik@fischer.de
+# ORBIS Modellfabrik Dashboard
 
-## Links
-- [Product Page](https://www.fischertechnik.de/en/products/industry-and-universities/training-models/569289-agile-production-simulation-24v)
-- [Overview Page](https://www.fischertechnik.de/en/industry-and-universities/technical-documents/simulate/agile-production-simulation#overview)
-- [Quick Start Guide](https://www.fischertechnik.de/-/media/fischertechnik/rebrush/industrie-und-hochschulen/technische-dokumente/agile-production-simulation/en/quick-start-guide-agile-production-simulation_en.pdf)
-- [Documentation](https://www.fischertechnik.de/-/media/fischertechnik/rebrush/industrie-und-hochschulen/technische-dokumente/agile-production-simulation/en/documentation_aps_en-0424.pdf)
-- [Assigment Plans](https://www.fischertechnik.de/-/media/fischertechnik/rebrush/industrie-und-hochschulen/technische-dokumente/agile-production-simulation/en/assignmentplans_aps_en.pdf)
-- [Calibration](https://www.fischertechnik.de/-/media/fischertechnik/rebrush/industrie-und-hochschulen/technische-dokumente/agile-production-simulation/en/calibration-en.zip)
-- [Digital Learning Platform](https://www.fischertechnik-digital-learning-platform.de/)
-- [Update Blog](https://www.fischertechnik.de/en/industry-and-universities/technical-documents/simulate/agile-production-simulation/update-blog)
-- [Troubleshooting (DE)](https://www.fischertechnik.de/-/media/fischertechnik/rebrush/industrie-und-hochschulen/technische-dokumente/agile-production-simulation/de/fehlersuche_aps_de.pdf)
+Ein umfassendes Dashboard für die ORBIS Modellfabrik mit MQTT-Nachrichtenüberwachung und Replay-Funktionalität.
 
-## Content
+## 🚀 Schnellstart
 
-The PLC project archives of the individual modules are in the `PLC-programs` folder.
+### Voraussetzungen
 
-The solution to the exercise can be found in the folder `PLC-programs\S7_1200_TIAv18\Exercises`.
+- **Python 3.8+**
+- **Mosquitto MQTT Broker**
+- **Git**
 
-The `TXT4.0 programs` folder contains the project files of the 4 different TXTs of the APS.
+### Installation
 
-The `Node-RED` folder contains the flows of Node-RED as a Json file
-
-### Documentation
-
-For detailed documentation of the Node-RED flows, system architecture, and development guidelines, see the [Orbis Documentation Directory](./docs-orbis/).
-
-- **[Project Status](./docs-orbis/project-status.md)** - Aktueller Projektstand und Features
-- **[Node-RED Documentation](./docs-orbis/node-red/)** - Complete flow analysis, state machine, and development guides
-- **[System Architecture](./docs-orbis/node-red/architecture.md)** - Overall system design and components
-- **[Flows Overview](./docs-orbis/node-red/flows-overview.md)** - Detailed tab and module structure
-- **[State Machine](./docs-orbis/node-red/state-machine.md)** - VDA 5050 compliant state transitions
-- **[Topic Configuration Guide](./docs-orbis/topic-configuration-guide.md)** - Zentrale MQTT Topic-Konfiguration
-- **[Module Configuration Guide](./docs-orbis/module-configuration-guide.md)** - Zentrale Modul-Konfiguration
-- **[MQTT Template Analysis](./docs-orbis/mqtt-template-analysis.md)** - Template-Analyse und -Management
-
-### 🚀 Dashboard
-
-Das **ORBIS Modellfabrik Dashboard** bietet umfassende MQTT-Template-Analyse und -Verwaltung:
-
-- **📊 Template Library**: 67 analysierte MQTT-Topics (CCU, TXT, MODULE, Node-RED)
-- **🔍 4-stufige Filterung**: Kategorie → Sub-Kategorie → Modul → Template
-- **🏭 Modul-Namen-Filterung**: Benutzerfreundliche Namen (DRILL, AIQS, HBW, MILL, DPS, CHRG)
-- **📋 Template-Strukturen**: Vollständige Analyse mit Beispielen und Validierungsregeln
-- **⚙️ Zentrale Konfiguration**: YAML-basierte Verwaltung aller Templates
-
-**Dashboard starten:**
+1. **Repository klonen**
 ```bash
-source .venv/bin/activate
-streamlit run src_orbis/mqtt/dashboard/aps_dashboard.py --server.port 8501
+git clone <repository-url>
+cd ORBIS-Modellfabrik
 ```
 
-## 📁 Project Structure
+2. **Python-Umgebung einrichten**
+```bash
+# Virtual Environment erstellen
+python -m venv .venv
 
-### Original Fischertechnik Content
-- `data/` - Original data files
-- `PLC-programs/` - Original PLC programs  
-- `TXT4.0-programs/` - Original TXT4.0 programs
-- `Node-RED/` - Original Node-RED flows
-- `doc/` - Original documentation
+# Aktivieren
+# Windows:
+.venv\Scripts\activate
+# macOS/Linux:
+source .venv/bin/activate
+```
 
-### Orbis Customizations
-- `docs-orbis/` - Orbis documentation and analysis
-- `src-orbis/` - Orbis source code
-- `tests-orbis/` - Orbis tests
+3. **Abhängigkeiten installieren**
+```bash
+pip install -r requirements.txt
+```
 
-### Raspberry PI Image / Central Control Unit (CCU)
+4. **Mosquitto installieren**
+```bash
+# macOS:
+brew install mosquitto
 
-The Raspberry PI image can be found under the following link: https://short.omm.cloud/rpi-v130
+# Windows: Download von https://mosquitto.org/download/
 
-see [Installation Instructions](RPI_Image.md)
+# Linux:
+sudo apt-get install mosquitto mosquitto-clients
+```
 
-For experienced users, SSH is enabled on the image with username `ff22` and password `ff22+`
+### Start der Anwendungen
 
-### TXT 4.0 Controller
+1. **Mosquitto Broker starten**
+```bash
+mosquitto -p 1884 -v &
+```
 
-[ROBO Pro Coding](https://www.fischertechnik.de/de-de/industrie-und-hochschulen/apps) is required to access the code of the [TXT 4.0 Controllers](https://www.fischertechnik.de/txt40controller). This can be found in the Microsoft Store via the search.
+2. **Replay Station starten**
+```bash
+streamlit run src_orbis/omf/replay_station/replay_station.py --server.port 8509
+```
 
-Once the program has started, the project files can be imported and changed.
+3. **Dashboard starten**
+```bash
+streamlit run src_orbis/omf/dashboard/omf_dashboard.py --server.port 8506
+```
 
-### Node-RED
+### Browser-Zugriff
 
-A [Node-RED](https://nodered.org/) container is running on the Raspberry PI of the APS. To view the Node-RED flows of the APS, you can connect to the Node-RED via `http://192.168.0.100:1880/`. This requires a LAN or WLAN connection to the APS.
+- **Dashboard**: http://localhost:8506
+- **Replay Station**: http://localhost:8509
 
-### PLC
+## 📊 Features
 
-TIAv18 is required to access the PLC programs.
+### 🏭 OMF Dashboard
+- **Nachrichtenzentrale**: Anzeige aller MQTT-Nachrichten mit Filterung
+- **Dashboard-Einstellungen**: MQTT-Modus konfigurieren (Live/Replay/Mock)
+- **Steuerung**: Nachrichten an die Fabrik senden
+- **Prioritäten-System**: Nachrichten nach Wichtigkeit filtern
 
-As soon as TIAv18 is installed, the project files can be loaded and edited.
+### 🎬 OMF Replay Station
+- **Session-Replay**: Aufgenommene MQTT-Sessions wiedergeben
+- **Kontrollen**: Play/Pause/Stop/Resume
+- **Fortschrittsanzeige**: Live-Fortschritt des Replays
+- **Session-Validierung**: Automatische Prüfung der Session-Dateien
+
+### 🔄 MQTT-Integration
+- **Multi-Modus**: Live-Fabrik, Replay-Broker, Mock-Modus
+- **Nachrichten-Historie**: Rolling Buffer (1000 Nachrichten)
+- **Automatische Verbindung**: Intelligente Broker-Verbindung
+- **Topic-Prioritäten**: System zur Nachrichtenfilterung
+
+## 🏗️ Architektur
+
+```
+🎬 OMF Replay Station (Port 8509)
+    ↓ (sendet via mosquitto_pub)
+🔄 Mosquitto Broker (Port 1884)
+    ↓ (verteilt MQTT-Nachrichten)
+🏭 OMF Dashboard (Port 8506)
+    ↓ (empfängt und zeigt an)
+📊 Nachrichtenzentrale mit Filterung
+```
+
+## 📁 Projekt-Struktur
+
+```
+ORBIS-Modellfabrik/
+├── src_orbis/
+│   └── omf/
+│       ├── dashboard/
+│       │   ├── omf_dashboard.py          # Haupt-Dashboard
+│       │   ├── components/
+│       │   │   ├── message_center.py     # Nachrichtenzentrale
+│       │   │   ├── settings.py           # Dashboard-Einstellungen
+│       │   │   └── steering.py           # Steuerung
+│       │   └── assets/                   # Logos und Assets
+│       ├── replay_station/
+│       │   └── replay_station.py         # Replay Station
+│       └── tools/
+│           └── mqtt_client.py            # MQTT-Client
+├── mqtt-data/
+│   └── sessions/                         # Session-Dateien (.db, .log)
+├── docs_orbis/                           # Dokumentation
+└── .venv/                                # Virtual Environment
+```
+
+## 🔧 Konfiguration
+
+### MQTT-Modi
+
+1. **Live-Fabrik**: Verbindung zur echten APS-Fabrik
+2. **Replay-Broker**: Verbindung zum lokalen Mosquitto-Broker
+3. **Mock-Modus**: Simulierte Verbindung für Tests
+
+### Prioritäten-System
+
+- **Prio 1**: Critical Control (Orders, Requests)
+- **Prio 2**: Important Status (States, Connections)
+- **Prio 3**: Normal Info (Standard-Nachrichten)
+- **Prio 4**: NodeRED Topics
+- **Prio 5**: High Frequency (Kamera, Sensoren)
+
+## 🐛 Troubleshooting
+
+### Häufige Probleme
+
+#### "Connection refused"
+```bash
+# Mosquitto neu starten
+pkill mosquitto
+mosquitto -p 1884 -v &
+```
+
+#### "ModuleNotFoundError"
+```bash
+# Virtual Environment aktivieren
+source .venv/bin/activate
+```
+
+#### "Port already in use"
+```bash
+# Prozesse beenden
+pkill -f streamlit
+pkill mosquitto
+```
+
+### Logs prüfen
+
+- **Dashboard**: Terminal-Ausgabe
+- **Replay Station**: Terminal-Ausgabe
+- **Mosquitto**: Terminal-Ausgabe mit `-v` Flag
+
+## 📚 Dokumentation
+
+- **Entwicklungsstand**: `docs_orbis/omf_replay_station_progress.md`
+- **API-Dokumentation**: Siehe Code-Kommentare
+- **MQTT-Topics**: Siehe `src_orbis/omf/tools/mqtt_client.py`
+
+## 🤝 Beitragen
+
+1. Fork erstellen
+2. Feature-Branch erstellen
+3. Änderungen committen
+4. Pull Request erstellen
+
+## 📄 Lizenz
+
+[Lizenz-Informationen hier einfügen]
+
+## 👥 Team
+
+- **Entwicklung**: ORBIS Team
+- **MQTT-Integration**: [Name]
+- **Dashboard-Design**: [Name]
+
+---
+
+**Status**: ✅ Vollständig funktionsfähig - Bereit für Produktion

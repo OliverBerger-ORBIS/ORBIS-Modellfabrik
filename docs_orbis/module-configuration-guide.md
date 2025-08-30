@@ -100,9 +100,9 @@ class TemplateAnalyzer:
         # ... weitere Analyse
 ```
 
-### **2. Im Dashboard:**
+### **2. Im Dashboard:** ⚠️ **VERALTET**
 ```python
-# Automatisch integriert in aps_dashboard.py
+# Automatisch integriert in aps_dashboard.py - ⚠️ VERALTET: Wurde durch OMF Dashboard ersetzt
 def show_module_settings(self):
     module_manager = self.module_mapping
     all_modules = module_manager.get_all_modules()
@@ -145,8 +145,8 @@ locations = module_mapping.get_locations()
 
 ## 🔄 Migration
 
-### **Migrierte Dateien:**
-1. ✅ `src_orbis/mqtt/dashboard/aps_dashboard.py`
+### **Migrierte Dateien:** ⚠️ **VERALTET**
+1. ✅ `src_orbis/mqtt/dashboard/aps_dashboard.py` ⚠️ **VERALTET: Wurde durch OMF Dashboard ersetzt**
 2. ✅ `src_orbis/mqtt/tools/txt_template_analyzer.py`
 3. ✅ `src_orbis/mqtt/tools/ccu_template_analyzer.py`
 4. ✅ `src_orbis/mqtt/tools/unified_type_recognition.py`
@@ -178,13 +178,12 @@ python src_orbis/mqtt/tools/test_unified_type_recognition.py
 python src_orbis/mqtt/tools/txt_template_analyzer.py
 python src_orbis/mqtt/tools/ccu_template_analyzer.py
 
-# Dashboard Tests (bereinigt)
-python -c "from src_orbis.mqtt.dashboard.aps_dashboard import APSDashboard; print('Dashboard import successful')"
-```
+# Dashboard Tests (bereinigt) ⚠️ **VERALTET**
+python -c "from src_orbis.mqtt.dashboard.aps_dashboard import APSDashboard; print('Dashboard import successful')" ⚠️ **VERALTET**
 
-### **Dashboard Test:**
+### **Dashboard Test:** ⚠️ **VERALTET**
 ```bash
-# Dashboard starten
+# Dashboard starten ⚠️ **VERALTET: Wurde durch OMF Dashboard ersetzt**
 streamlit run src_orbis/mqtt/dashboard/aps_dashboard.py
 
 # Neuen "Module" Tab unter "Einstellungen" testen

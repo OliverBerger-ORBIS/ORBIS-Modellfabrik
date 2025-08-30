@@ -158,11 +158,11 @@ class WorkflowTemplateManager:
 
 ---
 
-## 🛠️ **Dashboard Integration**
+## 🛠️ **Dashboard Integration** ⚠️ **VERALTET - APS Dashboard**
 
-### **1. WorkflowOrderManager im Dashboard**
+### **1. WorkflowOrderManager im Dashboard** ⚠️ **VERALTET**
 ```python
-# In aps_dashboard.py
+# In aps_dashboard.py - ⚠️ VERALTET: Wurde durch OMF Dashboard ersetzt
 class APSDashboard:
     def __init__(self, db_file, verbose_mode=False):
         # ... existing code ...

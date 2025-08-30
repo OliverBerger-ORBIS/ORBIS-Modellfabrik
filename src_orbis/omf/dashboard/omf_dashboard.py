@@ -124,7 +124,7 @@ def main():
         st.title("Modellfabrik Dashboard")
 
     with col3:
-        # MQTT Connection Status
+        # Platzsparende MQTT Connection Status
         try:
             # Füge den tools-Pfad hinzu
             tools_path = os.path.join(os.path.dirname(__file__), "..", "tools")
@@ -139,80 +139,50 @@ def main():
             mqtt_mode = st.session_state.get("mqtt_mode", "live")
             mock_enabled = st.session_state.get("mqtt_mock_enabled", False)
 
+            # Automatische Verbindung für Replay-Modus
+            if mqtt_mode == "replay" and not mqtt_client.is_connected():
+                if mqtt_client.connect("replay"):
+                    st.success("✅ Auto-Connect Replay-Broker")
+                else:
+                    st.warning("⚠️ Auto-Connect fehlgeschlagen")
+
+            # Platzsparende Anzeige
             if mock_enabled:
-                st.success("🧪 MQTT MOCK")
-                col_btn1, col_btn2 = st.columns(2)
-                with col_btn1:
-                    st.info("🧪 Mock aktiv")
-                with col_btn2:
-                    st.metric(
-                        "🧪",
-                        "MOCK",
-                        help="MQTT Mock-Modus aktiv",
-                    )
+                st.success("🧪 MOCK")
+                stats = mqtt_client.get_statistics()
+                st.metric("📨", stats.get("messages_received", 0), "Empfangen")
             elif mqtt_mode == "replay":
                 if mqtt_client.is_connected():
-                    st.success("🎬 REPLAY STATION")
-                    col_btn1, col_btn2 = st.columns(2)
-                    with col_btn1:
-                        st.info("🎬 Replay aktiv")
-                    with col_btn2:
-                        stats = mqtt_client.get_statistics()
-                        st.metric(
-                            "📨",
-                            stats.get("messages_received", 0),
-                            help="Replay-Nachrichten empfangen",
-                        )
+                    st.success("🎬 REPLAY-BROKER")
+                    stats = mqtt_client.get_statistics()
+                    st.metric("📨", stats.get("messages_received", 0), "Empfangen")
                 else:
-                    st.error("🎬 REPLAY STATION")
-                    col_btn1, col_btn2 = st.columns(2)
-                    with col_btn1:
-                        if st.button(
-                            "🔗 Connect", key="replay_connect", use_container_width=True
-                        ):
-                            if mqtt_client.connect_to_broker("replay"):
-                                st.success("✅ Connected to Replay Station!")
-                            else:
-                                st.error("❌ Connection failed!")
-                    with col_btn2:
-                        st.info("localhost:1884")
-            elif mqtt_client.is_connected():
-                st.success("🔗 MQTT Connected")
-                col_btn1, col_btn2 = st.columns(2)
-                with col_btn1:
+                    st.error("🎬 REPLAY-BROKER")
                     if st.button(
-                        "🔌 Disconnect", key="mqtt_disconnect", use_container_width=True
+                        "🔗 Connect", key="replay_connect", use_container_width=True
                     ):
-                        mqtt_client.disconnect()
-                        st.rerun()
-                with col_btn2:
-                    # Statistiken anzeigen
-                    stats = mqtt_client.get_statistics()
-                    st.metric(
-                        "📨",
-                        stats.get("messages_received", 0),
-                        help="Empfangene Nachrichten",
-                    )
-            else:
-                st.error("❌ MQTT Disconnected")
-                col_btn1, col_btn2 = st.columns(2)
-                with col_btn1:
-                    if st.button(
-                        "🔗 Connect", key="mqtt_connect", use_container_width=True
-                    ):
-                        if mqtt_client.connect_to_broker():
-                            st.success("✅ Connected successfully!")
+                        if mqtt_client.connect("replay"):
+                            st.success("✅ Connected!")
                         else:
-                            st.error("❌ Connection failed!")
+                            st.error("❌ Failed!")
                         st.rerun()
-                with col_btn2:
-                    # Verbindungsversuche anzeigen
-                    stats = mqtt_client.get_statistics()
-                    st.metric(
-                        "🔄",
-                        stats.get("connection_attempts", 0),
-                        help="Verbindungsversuche",
-                    )
+            elif mqtt_client.is_connected():
+                st.success("🔗 LIVE-FABRIK")
+                stats = mqtt_client.get_statistics()
+                st.metric("📨", stats.get("messages_received", 0), "Empfangen")
+                if st.button(
+                    "🔌 Disconnect", key="mqtt_disconnect", use_container_width=True
+                ):
+                    mqtt_client.disconnect()
+                    st.rerun()
+            else:
+                st.error("❌ DISCONNECTED")
+                if st.button("🔗 Connect", key="mqtt_connect", use_container_width=True):
+                    if mqtt_client.connect():
+                        st.success("✅ Connected!")
+                    else:
+                        st.error("❌ Failed!")
+                    st.rerun()
         except ImportError:
             st.warning("⚠️ MQTT Client nicht verfügbar")
 

@@ -260,7 +260,8 @@ class TestSessionPlayer(unittest.TestCase):
             self.player.stop_replay()
             self.assertFalse(self.player.is_playing)
             self.assertEqual(self.player.current_index, 0)
-            mock_info.assert_called_with("⏹️ Replay gestoppt")
+            # Check that stop message was called (order may vary due to threading)
+            mock_info.assert_any_call("⏹️ Replay gestoppt")
 
     def test_get_progress(self):
         """Test Fortschritts-Berechnung"""

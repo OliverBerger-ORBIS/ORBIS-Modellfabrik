@@ -15,6 +15,74 @@ from typing import Any, Callable, Dict, List, Optional
 import paho.mqtt.client as mqtt
 import yaml
 
+# Konfiguration
+DEFAULT_CONFIG = {
+    "broker": {
+        "aps": {
+            "host": "192.168.0.100",
+            "port": 1883,
+            "client_id": "omf_dashboard_aps",
+            "clean_session": True,
+            "username": None,
+            "password": None,
+        },
+        "replay": {
+            "host": "localhost",
+            "port": 1884,
+            "client_id": "omf_dashboard_replay",
+            "clean_session": True,
+            "username": None,
+            "password": None,
+        },
+        "mock": {
+            "host": "mock",
+            "port": 0,
+            "client_id": "omf_dashboard_mock",
+            "clean_session": True,
+            "username": None,
+            "password": None,
+        },
+    },
+    "priority_system": {
+        "levels": {
+            1: "Critical Control",  # Modul-Befehle, CCU-Orders
+            2: "Important Status",  # Modul-Status, Connection
+            3: "Normal Info",  # Standard-Nachrichten (Default)
+            4: "NodeRED Topics",  # NodeRED-spezifische Nachrichten
+            5: "High Frequency",  # Kamera, Sensor-Daten
+        },
+        "topic_priorities": {
+            # Priority 1: Critical Control
+            "module/+/+/+/order": 1,  # Modul-Befehle
+            "ccu/order/request": 1,  # CCU-Bestellungen
+            "ccu/order/active": 1,  # Aktive Bestellungen
+            # Priority 2: Important Status
+            "module/+/+/+/state": 2,  # Modul-Status
+            "module/+/+/+/connection": 2,  # Modul-Verbindungen
+            "ccu/pairing/state": 2,  # CCU-Pairing
+            "fts/+/+/+/state": 2,  # FTS-Status
+            # Priority 3: Normal Info (Default)
+            "module/+/+/+/+": 3,  # Alle anderen Modul-Topics
+            "ccu/+/+": 3,  # Alle anderen CCU-Topics
+            "fts/+/+/+/+": 3,  # Alle anderen FTS-Topics
+            # Priority 4: NodeRED Topics
+            "module/+/+/NodeRed/+/+": 4,  # NodeRED-spezifische Topics
+            # Priority 5: High Frequency
+            "/j1/txt/+/i/cam": 5,  # Kamera-Daten
+            "/j1/txt/+/i/bme680": 5,  # Sensor-Daten
+        },
+        "filter_settings": {
+            "default_min_priority": 3,  # Default: Zeige Priority 3+
+            "enable_receive_filtering": True,  # Hochfrequente Nachrichten ausfiltern
+            "exclude_patterns": [  # Immer ausfiltern
+                "/j1/txt/+/i/cam",
+                "/j1/txt/+/i/bme680",
+            ],
+        },
+    },
+    "performance": {"history": {"max_size": 1000}},
+}
+
 
 class OMFMQTTClient:
     """Zentrale MQTT-Client für OMF Dashboard"""
@@ -145,10 +213,15 @@ class OMFMQTTClient:
     def connect_to_broker(self, mode: str = "live") -> bool:
         """Connect to MQTT broker with specified mode"""
         try:
-            broker_config = self.get_broker_config(mode)
+            # Disconnect existing connection first
+            if self.connected:
+                self.disconnect()
+                time.sleep(0.5)  # Kurze Pause für saubere Trennung
 
+            broker_config = self.get_broker_config(mode)
             host = broker_config.get("host", "192.168.0.100")
             port = broker_config.get("port", 1883)
+            client_id = broker_config.get("client_id", "omf_dashboard")
 
             if mode == "replay":
                 self.logger.info(f"🎬 Connecting to Replay Station: {host}:{port}")
@@ -161,11 +234,39 @@ class OMFMQTTClient:
             else:
                 self.logger.info(f"🔗 Connecting to Live Factory: {host}:{port}")
 
+            # Create new client instance for clean connection
+            if self.client:
+                self.client.loop_stop()
+                self.client.disconnect()
+
+            self.client = mqtt.Client(client_id=client_id, clean_session=True)
+            self.client.on_connect = self._on_connect
+            self.client.on_disconnect = self._on_disconnect
+            self.client.on_message = self._on_message
+            self.client.on_publish = self._on_publish
+            self.client.on_subscribe = self._on_subscribe
+
             result = self.client.connect(host, port, 60)
 
             if result == mqtt.MQTT_ERR_SUCCESS:
-                self.client.loop_start()
-                return True
+                # Start network loop in separate thread
+                self.connection_thread = threading.Thread(
+                    target=self.client.loop_forever, daemon=True
+                )
+                self.connection_thread.start()
+
+                # Wait for connection to be established
+                timeout = 10  # 10 seconds timeout
+                start_time = time.time()
+
+                while not self.connected and (time.time() - start_time) < timeout:
+                    time.sleep(0.1)
+
+                if self.connected:
+                    return True
+                else:
+                    self.logger.error("Connection timeout")
+                    return False
             else:
                 self.logger.error(f"Failed to connect: {result}")
                 return False
@@ -207,6 +308,9 @@ class OMFMQTTClient:
                 "timestamp": time.time(),
             }
 
+            # Check for unknown topics
+            self._check_unknown_topic(msg.topic)
+
             # Try to parse JSON payload
             try:
                 message["payload_json"] = json.loads(message["payload"])
@@ -240,6 +344,37 @@ class OMFMQTTClient:
 
         except Exception as e:
             self.logger.error(f"Error handling message: {e}")
+
+    def _check_unknown_topic(self, topic: str):
+        """Check if topic is unknown and log it"""
+        # Known topic patterns
+        known_patterns = [
+            "module/+/+/+/+",  # Modul-Topics
+            "ccu/+/+",  # CCU-Topics
+            "fts/+/+/+/+",  # FTS-Topics
+            "/j1/txt/+/+/+/+",  # TXT-Topics
+            "/j1/txt/+/i/+",  # TXT-Input-Topics
+            "/j1/txt/+/f/+",  # TXT-Function-Topics
+        ]
+
+        # Check if topic matches any known pattern
+        topic_known = False
+        for pattern in known_patterns:
+            if self._topic_matches_pattern(topic, pattern):
+                topic_known = True
+                break
+
+        # If topic is unknown, log it (but only once per session)
+        if not topic_known:
+            if not hasattr(self, "_unknown_topics"):
+                self._unknown_topics = set()
+
+            if topic not in self._unknown_topics:
+                self._unknown_topics.add(topic)
+                self.logger.warning(f"🔍 Unbekanntes Topic empfangen: {topic}")
+                self.logger.info(
+                    f"💡 Bitte prüfen Sie, ob dieses Topic zu den Prioritäten hinzugefügt werden sollte"
+                )
 
     def _on_publish(self, client, userdata, mid):
         """Callback for successful publish"""
@@ -313,46 +448,9 @@ class OMFMQTTClient:
 
         return False
 
-    def connect(self, broker_name: str = None) -> bool:
-        """Connect to MQTT broker"""
-        if broker_name is None:
-            broker_name = self.config.get("connection", {}).get("default_broker", "aps")
-
-        broker_config = self.config.get("broker", {}).get(broker_name, {})
-
-        try:
-            self.stats["connection_attempts"] += 1
-            self.logger.info(f"Connecting to broker: {broker_name}")
-
-            # Connect to broker
-            result = self.client.connect(
-                broker_config.get("host", "localhost"),
-                broker_config.get("port", 1883),
-                broker_config.get("keepalive", 60),
-            )
-
-            if result == mqtt.MQTT_ERR_SUCCESS:
-                # Start network loop in separate thread
-                self.connection_thread = threading.Thread(
-                    target=self.client.loop_forever, daemon=True
-                )
-                self.connection_thread.start()
-
-                # Wait for connection
-                timeout = broker_config.get("timeout", 10)
-                start_time = time.time()
-
-                while not self.connected and (time.time() - start_time) < timeout:
-                    time.sleep(0.1)
-
-                return self.connected
-            else:
-                self.logger.error(f"Failed to connect to broker: {result}")
-                return False
-
-        except Exception as e:
-            self.logger.error(f"Error connecting to broker: {str(e)}")
-            return False
+    def connect(self, mode: str = "live") -> bool:
+        """Connect to MQTT broker with specified mode (alias for connect_to_broker)"""
+        return self.connect_to_broker(mode)
 
     def disconnect(self):
         """Disconnect from MQTT broker"""

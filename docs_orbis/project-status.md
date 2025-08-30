@@ -86,7 +86,7 @@
 
 ### ❌ Entfernte veraltete Komponenten:
 - **TemplateMessageManager:** Ersetzt durch MessageTemplateManager
-- **TemplateControlDashboard:** Funktionalität in aps_dashboard.py integriert
+- **TemplateControlDashboard:** Funktionalität in aps_dashboard.py integriert ⚠️ **VERALTET: Wurde durch OMF Dashboard ersetzt**
 - **MQTT-Templates Tab:** Redundant, entfernt aus Dashboard
 - **Veraltete Tool-Dateien:** 13 obsolete Dateien aus src_orbis/mqtt/tools/ entfernt
 - **Veraltete Test-Dateien:** 2 obsolete Test-Dateien entfernt
