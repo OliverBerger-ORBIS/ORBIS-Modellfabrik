@@ -19,9 +19,7 @@ class OMFModuleManager:
         self.config = self.load_yaml_config()
 
         if not self.config:
-            raise ValueError(
-                f"Could not load module configuration from {self.config_path}"
-            )
+            raise ValueError(f"Could not load module configuration from {self.config_path}")
 
     def _get_default_config_path(self) -> str:
         """Get default path to module configuration YAML file"""
@@ -97,11 +95,7 @@ class OMFModuleManager:
     def get_module_description(self, module_id: str, language: str = "de") -> str:
         """Get description for module ID"""
         module_info = self.get_module_info(module_id)
-        return (
-            module_info.get("description", "No description")
-            if module_info
-            else "No description"
-        )
+        return module_info.get("description", "No description") if module_info else "No description"
 
     def is_module_enabled(self, module_id: str) -> bool:
         """Check if module is enabled"""

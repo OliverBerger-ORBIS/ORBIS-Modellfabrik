@@ -2,9 +2,11 @@
 UI Components for the APS Dashboard
 """
 
-import streamlit as st
 from datetime import datetime
+
 import pandas as pd
+import streamlit as st
+
 from ...tools.topic_manager import get_topic_manager
 from ..config.icon_config import get_module_icon
 
@@ -96,18 +98,9 @@ def create_filters(df, single_session_mode=False):
                             and min_time_dt.year > 2000
                             and max_time_dt.year > 2000
                         ):
-
                             # Calculate time range in seconds for numeric slider
-                            min_seconds = (
-                                min_time_dt.hour * 3600
-                                + min_time_dt.minute * 60
-                                + min_time_dt.second
-                            )
-                            max_seconds = (
-                                max_time_dt.hour * 3600
-                                + max_time_dt.minute * 60
-                                + max_time_dt.second
-                            )
+                            min_seconds = min_time_dt.hour * 3600 + min_time_dt.minute * 60 + min_time_dt.second
+                            max_seconds = max_time_dt.hour * 3600 + max_time_dt.minute * 60 + max_time_dt.second
 
                             # Calculate relative seconds (starting from 0)
                             total_duration = max_seconds - min_seconds
@@ -177,10 +170,7 @@ def create_filters(df, single_session_mode=False):
                         st.session_state.selected_time_range = time_range
 
                         # Filter by time range
-                        df_filtered = df[
-                            (df["timestamp"] >= time_range[0])
-                            & (df["timestamp"] <= time_range[1])
-                        ]
+                        df_filtered = df[(df["timestamp"] >= time_range[0]) & (df["timestamp"] <= time_range[1])]
                 else:
                     st.warning("⚠️ Ungültige Zeitstempel in den Daten gefunden")
                     df_filtered = df
@@ -203,9 +193,7 @@ def create_filters(df, single_session_mode=False):
             )
             st.session_state.selected_session = selected_session
             if selected_session != "Alle":
-                df_filtered = df_filtered[
-                    df_filtered["session_label"] == selected_session
-                ]
+                df_filtered = df_filtered[df_filtered["session_label"] == selected_session]
 
         # Process filter (alphabetically sorted)
         processes = ["Alle"] + sorted(list(df["process_label"].unique()))
@@ -301,11 +289,7 @@ def create_filters(df, single_session_mode=False):
                 0
                 if st.session_state.selected_topic == "Alle"
                 else (
-                    sorted_friendly_names.index(
-                        get_topic_manager().get_friendly_name(
-                            st.session_state.selected_topic
-                        )
-                    )
+                    sorted_friendly_names.index(get_topic_manager().get_friendly_name(st.session_state.selected_topic))
                     if st.session_state.selected_topic in topics
                     else 0
                 )
@@ -338,8 +322,6 @@ def create_filters(df, single_session_mode=False):
 
     if len(df_filtered) == 0:
         st.warning("⚠️ Keine Nachrichten mit den gewählten Filtern gefunden!")
-        st.info(
-            "💡 Tipp: Versuche andere Filter-Kombinationen oder aktiviere den Verbose-Modus"
-        )
+        st.info("💡 Tipp: Versuche andere Filter-Kombinationen oder aktiviere den Verbose-Modus")
 
     return df_filtered

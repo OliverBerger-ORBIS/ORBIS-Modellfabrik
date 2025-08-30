@@ -15,9 +15,7 @@ class WorkflowOrderManager:
         self.active_workflows: Dict[str, Dict] = {}
         self.workflow_history: List[Dict] = []
 
-    def start_workflow(
-        self, module: str, commands: List[str], workpiece_type: str = "WHITE"
-    ) -> str:
+    def start_workflow(self, module: str, commands: List[str], workpiece_type: str = "WHITE") -> str:
         """Startet einen neuen Workflow und gibt orderId zurück"""
         order_id = str(uuid.uuid4())
 

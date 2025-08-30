@@ -1,4 +1,3 @@
-
 #!/usr/bin/env python3
 """
 Fix common indentation/whitespace issues that cause IndentationError after cross-platform checkouts.
@@ -21,38 +20,41 @@ If [path] is omitted, it runs on the current working directory recursively.
 """
 
 from __future__ import annotations
+
+import ast
+import re
 import sys
 from pathlib import Path
-import re
-import ast
 
-ZERO_WIDTH = ''.join(chr(c) for c in [0x200B, 0x200C, 0x200D, 0xFEFF])
+ZERO_WIDTH = "".join(chr(c) for c in [0x200B, 0x200C, 0x200D, 0xFEFF])
 ZW_RE = re.compile(f"[{re.escape(ZERO_WIDTH)}]")
+
 
 def normalize_text(s: str) -> str:
     # Normalize CRLF/CR to LF
-    s = s.replace('\r\n', '\n').replace('\r', '\n')
+    s = s.replace("\r\n", "\n").replace("\r", "\n")
     # Strip BOM at start
-    if s.startswith('\ufeff'):
-        s = s.lstrip('\ufeff')
+    if s.startswith("\ufeff"):
+        s = s.lstrip("\ufeff")
     # Replace non-breaking space with normal space
-    s = s.replace('\u00A0', ' ')
+    s = s.replace("\u00A0", " ")
     # Remove zero-width chars
-    s = ZW_RE.sub('', s)
+    s = ZW_RE.sub("", s)
     # Replace tabs with 4 spaces
     s = s.expandtabs(4)
     # Trim trailing whitespace per line
-    s = '\n'.join(line.rstrip() for line in s.split('\n'))
+    s = "\n".join(line.rstrip() for line in s.split("\n"))
     # Ensure single trailing newline
-    if not s.endswith('\n'):
-        s += '\n'
+    if not s.endswith("\n"):
+        s += "\n"
     return s
 
+
 def process_file(p: Path) -> dict:
-    original = p.read_text(encoding='utf-8', errors='replace')
+    original = p.read_text(encoding="utf-8", errors="replace")
     normalized = normalize_text(original)
 
-    changed = (normalized != original)
+    changed = normalized != original
     result = {
         "path": str(p),
         "changed": changed,
@@ -79,16 +81,17 @@ def process_file(p: Path) -> dict:
         # Backup before overwriting
         bak = p.with_suffix(p.suffix + ".bak")
         if not bak.exists():
-            bak.write_text(original, encoding='utf-8')
+            bak.write_text(original, encoding="utf-8")
         # If parsing after failed, still write normalized as .normalized for inspection
         if not result["ast_ok_after"]:
             norm_path = p.with_suffix(p.suffix + ".normalized")
-            norm_path.write_text(normalized, encoding='utf-8')
+            norm_path.write_text(normalized, encoding="utf-8")
         else:
             # overwrite only if AST is OK
-            p.write_text(normalized, encoding='utf-8')
+            p.write_text(normalized, encoding="utf-8")
 
     return result
+
 
 def main():
     root = Path(sys.argv[1]) if len(sys.argv) > 1 else Path.cwd()
@@ -113,6 +116,7 @@ def main():
             print(f" - {r['path']}: {r.get('error_after')} (kept .bak and .normalized)")
     else:
         print("All normalized files parse OK.")
+
 
 if __name__ == "__main__":
     main()

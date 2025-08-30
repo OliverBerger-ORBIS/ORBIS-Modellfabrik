@@ -14,10 +14,7 @@ import yaml
 # Add src_orbis to path
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "src_orbis"))
 
-from omf.tools.message_template_manager import (
-    OMFMessageTemplateManager,
-    get_omf_message_template_manager,
-)
+from omf.tools.message_template_manager import OMFMessageTemplateManager, get_omf_message_template_manager
 
 
 class TestOMFMessageTemplateManager(unittest.TestCase):
@@ -106,9 +103,7 @@ class TestOMFMessageTemplateManager(unittest.TestCase):
                 "ccu/control": {
                     "description": "CCU Control Command",
                     "structure": {"command": "<string>", "timestamp": "<datetime>"},
-                    "examples": [
-                        {"command": "start", "timestamp": "2025-08-29T10:00:00Z"}
-                    ],
+                    "examples": [{"command": "start", "timestamp": "2025-08-29T10:00:00Z"}],
                     "validation_rules": ["command muss gültiger Befehl sein"],
                 }
             },
@@ -146,9 +141,7 @@ class TestOMFMessageTemplateManager(unittest.TestCase):
     def test_load_metadata(self):
         """Test metadata loading"""
         self.assertIsNotNone(self.manager.metadata)
-        self.assertEqual(
-            self.manager.metadata.get("metadata", {}).get("version"), "3.0.0"
-        )
+        self.assertEqual(self.manager.metadata.get("metadata", {}).get("version"), "3.0.0")
 
     def test_load_categories(self):
         """Test categories loading"""

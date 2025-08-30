@@ -1,11 +1,10 @@
-import streamlit as st
-import pandas as pd
-import sqlite3
 import json
 import os
-from datetime import datetime
-import subprocess
-import sys
+import sqlite3
+
+import pandas as pd
+import streamlit as st
+
 from ...tools.topic_manager import get_topic_manager
 
 
@@ -53,17 +52,17 @@ class APSAnalysis:
         st.info(
             """
         **💡 Session-Management über Kommandozeile:**
-        
+
         **Session starten:**
         ```bash
         python src_orbis/mqtt/tools/start_aps_analysis_session.py --session SESSION_NAME
         ```
-        
+
         **Session stoppen:**
         ```bash
         python src_orbis/mqtt/tools/stop_aps_analysis_session.py
         ```
-        
+
         **Oder direkt mit APS Session Logger:**
         ```bash
         python src_orbis/mqtt/loggers/aps_session_logger.py --session-label SESSION_NAME --process-type custom --auto-start
@@ -85,9 +84,7 @@ class APSAnalysis:
             if selected_session:
                 self._show_session_overview(selected_session)
         else:
-            st.info(
-                "Keine Sessions verfügbar. Starte eine neue Session über die Kommandozeile."
-            )
+            st.info("Keine Sessions verfügbar. Starte eine neue Session über die Kommandozeile.")
 
     def _show_mqtt_analysis(self):
         """MQTT Analysis Sub-Section."""
@@ -131,15 +128,11 @@ class APSAnalysis:
 
     def _start_analysis_session(self, session_name):
         """Start comprehensive analysis session."""
-        st.info(
-            "Session-Management erfolgt über die Kommandozeile. Siehe Anweisungen oben."
-        )
+        st.info("Session-Management erfolgt über die Kommandozeile. Siehe Anweisungen oben.")
 
     def _stop_analysis_session(self):
         """Stop analysis session."""
-        st.info(
-            "Session-Management erfolgt über die Kommandozeile. Siehe Anweisungen oben."
-        )
+        st.info("Session-Management erfolgt über die Kommandozeile. Siehe Anweisungen oben.")
 
     def _get_available_sessions(self):
         """Get list of available sessions."""
@@ -147,17 +140,13 @@ class APSAnalysis:
         if os.path.exists(self.sessions_dir):
             for file in os.listdir(self.sessions_dir):
                 if file.endswith(".db") and "aps_persistent_traffic_" in file:
-                    session_name = file.replace("aps_persistent_traffic_", "").replace(
-                        ".db", ""
-                    )
+                    session_name = file.replace("aps_persistent_traffic_", "").replace(".db", "")
                     sessions.append(session_name)
         return sorted(sessions, reverse=True)
 
     def _get_session_info(self, session_name):
         """Get basic session information."""
-        db_path = os.path.join(
-            self.sessions_dir, f"aps_persistent_traffic_{session_name}.db"
-        )
+        db_path = os.path.join(self.sessions_dir, f"aps_persistent_traffic_{session_name}.db")
         try:
             conn = sqlite3.connect(db_path)
             df = pd.read_sql_query("SELECT COUNT(*) as count FROM mqtt_messages", conn)
@@ -171,16 +160,12 @@ class APSAnalysis:
         """Show session overview."""
         st.session_state.selected_session = session_name
 
-        db_path = os.path.join(
-            self.sessions_dir, f"aps_persistent_traffic_{session_name}.db"
-        )
+        db_path = os.path.join(self.sessions_dir, f"aps_persistent_traffic_{session_name}.db")
 
         if os.path.exists(db_path):
             try:
                 conn = sqlite3.connect(db_path)
-                df = pd.read_sql_query(
-                    "SELECT * FROM mqtt_messages ORDER BY timestamp", conn
-                )
+                df = pd.read_sql_query("SELECT * FROM mqtt_messages ORDER BY timestamp", conn)
                 conn.close()
 
                 col1, col2, col3, col4 = st.columns(4)
@@ -212,16 +197,12 @@ class APSAnalysis:
         """Analyze MQTT session data."""
         st.write("### MQTT Protokoll Analyse")
 
-        db_path = os.path.join(
-            self.sessions_dir, f"aps_persistent_traffic_{session_name}.db"
-        )
+        db_path = os.path.join(self.sessions_dir, f"aps_persistent_traffic_{session_name}.db")
 
         if os.path.exists(db_path):
             try:
                 conn = sqlite3.connect(db_path)
-                df = pd.read_sql_query(
-                    "SELECT * FROM mqtt_messages ORDER BY timestamp", conn
-                )
+                df = pd.read_sql_query("SELECT * FROM mqtt_messages ORDER BY timestamp", conn)
                 conn.close()
 
                 # Add session_label column for compatibility
@@ -244,9 +225,7 @@ class APSAnalysis:
                 df = extract_module_info(df)
 
                 # Verbose mode toggle for camera filtering
-                verbose_mode = st.checkbox(
-                    "🔍 Verbose-Modus (Camera-Nachrichten anzeigen)", value=False
-                )
+                verbose_mode = st.checkbox("🔍 Verbose-Modus (Camera-Nachrichten anzeigen)", value=False)
 
                 # Filter camera topics if not in verbose mode
                 original_count = len(df)
@@ -330,9 +309,7 @@ class APSAnalysis:
         st.subheader("📡 Topic-Verteilung")
         topic_manager = get_topic_manager()
         df_topic = df.copy()
-        df_topic.loc[:, "friendly_topic"] = df_topic["topic"].apply(
-            lambda x: topic_manager.get_friendly_name(x)
-        )
+        df_topic.loc[:, "friendly_topic"] = df_topic["topic"].apply(lambda x: topic_manager.get_friendly_name(x))
         topic_counts = df_topic["friendly_topic"].value_counts().head(10)
         st.bar_chart(topic_counts)
 
@@ -342,9 +319,7 @@ class APSAnalysis:
         if len(module_messages) > 0:
             # Extract module IDs and map to friendly names
             module_messages = module_messages.copy()
-            module_messages["module_id"] = module_messages["topic"].str.extract(
-                r"module/v1/ff/([^/]+)"
-            )
+            module_messages["module_id"] = module_messages["topic"].str.extract(r"module/v1/ff/([^/]+)")
 
             # Map module IDs to friendly names
             module_name_mapping = {
@@ -357,9 +332,7 @@ class APSAnalysis:
                 "CHRG0": "CHARGING (Ladestation)",
             }
 
-            module_messages["module_name"] = module_messages["module_id"].map(
-                lambda x: module_name_mapping.get(x, x)
-            )
+            module_messages["module_name"] = module_messages["module_id"].map(lambda x: module_name_mapping.get(x, x))
 
             module_counts = module_messages["module_name"].value_counts()
             st.bar_chart(module_counts)
@@ -402,14 +375,10 @@ class APSAnalysis:
         # Add friendly topic names
         topic_manager = get_topic_manager()
         df_display = df.copy()
-        df_display["friendly_topic"] = df_display["topic"].apply(
-            lambda x: topic_manager.get_friendly_name(x)
-        )
+        df_display["friendly_topic"] = df_display["topic"].apply(lambda x: topic_manager.get_friendly_name(x))
 
         # Show recent messages
-        recent_messages = df_display[["timestamp", "friendly_topic", "payload"]].tail(
-            50
-        )
+        recent_messages = df_display[["timestamp", "friendly_topic", "payload"]].tail(50)
         st.dataframe(recent_messages, use_container_width=True)
 
     def _show_mqtt_topic_analysis(self, df):
@@ -425,9 +394,7 @@ class APSAnalysis:
 
         # Create analysis DataFrame with friendly topic names
         df_analysis = df[["topic"]].copy()
-        df_analysis["friendly_topic"] = df_analysis["topic"].apply(
-            lambda x: topic_manager.get_friendly_name(x)
-        )
+        df_analysis["friendly_topic"] = df_analysis["topic"].apply(lambda x: topic_manager.get_friendly_name(x))
 
         col1, col2 = st.columns(2)
 
@@ -441,21 +408,13 @@ class APSAnalysis:
             st.subheader("Topic-Vergleich")
 
             # Show both original and friendly names
-            topic_comparison = (
-                df_analysis[["topic", "friendly_topic"]].drop_duplicates().head(10)
-            )
+            topic_comparison = df_analysis[["topic", "friendly_topic"]].drop_duplicates().head(10)
             st.dataframe(topic_comparison, use_container_width=True)
 
             # Topic statistics
             total_topics = df["topic"].nunique()
             mapped_topics = df_analysis["friendly_topic"].nunique()
-            unmapped_count = len(
-                [
-                    t
-                    for t in df["topic"].unique()
-                    if topic_manager.get_friendly_name(t) == t
-                ]
-            )
+            unmapped_count = len([t for t in df["topic"].unique() if topic_manager.get_friendly_name(t) == t])
 
             st.metric("Gesamt Topics", total_topics)
             st.metric("Mapped Topics", total_topics - unmapped_count)
@@ -482,9 +441,7 @@ class APSAnalysis:
 
         with col2:
             st.subheader("Payload-Statistiken")
-            st.metric(
-                "Durchschnittliche Größe", f"{df['payload_size'].mean():.0f} Zeichen"
-            )
+            st.metric("Durchschnittliche Größe", f"{df['payload_size'].mean():.0f} Zeichen")
             st.metric("Maximale Größe", f"{df['payload_size'].max()} Zeichen")
             st.metric("Minimale Größe", f"{df['payload_size'].min()} Zeichen")
 
@@ -546,9 +503,7 @@ class APSAnalysis:
             "CCU": df[df["topic"].str.contains("ccu/", na=False)],
             "TXT": df[df["topic"].str.contains("j1/txt/", na=False)],
             "FTS": df[df["topic"].str.contains("fts/", na=False)],
-            "Other": df[
-                ~df["topic"].str.contains("module/v1/ff/|ccu/|j1/txt/|fts/", na=False)
-            ],
+            "Other": df[~df["topic"].str.contains("module/v1/ff/|ccu/|j1/txt/|fts/", na=False)],
         }
 
         # Protocol overview
@@ -569,16 +524,12 @@ class APSAnalysis:
         """Analyze Node-RED session data."""
         st.write("### Node-RED Protokoll Analyse")
 
-        db_path = os.path.join(
-            self.sessions_dir, f"aps_persistent_traffic_{session_name}.db"
-        )
+        db_path = os.path.join(self.sessions_dir, f"aps_persistent_traffic_{session_name}.db")
 
         if os.path.exists(db_path):
             try:
                 conn = sqlite3.connect(db_path)
-                df = pd.read_sql_query(
-                    "SELECT * FROM mqtt_messages ORDER BY timestamp", conn
-                )
+                df = pd.read_sql_query("SELECT * FROM mqtt_messages ORDER BY timestamp", conn)
                 conn.close()
 
                 # Add required columns for filters if they don't exist
@@ -597,14 +548,10 @@ class APSAnalysis:
                 df = extract_module_info(df)
 
                 # Filter Node-RED specific messages
-                nodered_messages = df[
-                    df["topic"].str.contains("NodeRed|nodered|workflow", na=False)
-                ]
+                nodered_messages = df[df["topic"].str.contains("NodeRed|nodered|workflow", na=False)]
 
                 if len(nodered_messages) > 0:
-                    st.success(
-                        f"✅ {len(nodered_messages)} Node-RED Nachrichten gefunden"
-                    )
+                    st.success(f"✅ {len(nodered_messages)} Node-RED Nachrichten gefunden")
 
                     # Node-RED Topic Analysis
                     nodered_topics = nodered_messages["topic"].value_counts()
@@ -615,9 +562,7 @@ class APSAnalysis:
                     st.write("**Node-RED Nachrichten-Typen:**")
 
                     # Status messages
-                    status_messages = nodered_messages[
-                        nodered_messages["topic"].str.contains("/status", na=False)
-                    ]
+                    status_messages = nodered_messages[nodered_messages["topic"].str.contains("/status", na=False)]
                     if len(status_messages) > 0:
                         st.write(f"📊 Status: {len(status_messages)} Nachrichten")
 
@@ -626,14 +571,10 @@ class APSAnalysis:
                         nodered_messages["topic"].str.contains("/connection", na=False)
                     ]
                     if len(connection_messages) > 0:
-                        st.write(
-                            f"🔗 Connection: {len(connection_messages)} Nachrichten"
-                        )
+                        st.write(f"🔗 Connection: {len(connection_messages)} Nachrichten")
 
                     # Order messages
-                    order_messages = nodered_messages[
-                        nodered_messages["topic"].str.contains("order", na=False)
-                    ]
+                    order_messages = nodered_messages[nodered_messages["topic"].str.contains("order", na=False)]
                     if len(order_messages) > 0:
                         st.write(f"📋 Orders: {len(order_messages)} Nachrichten")
 
@@ -649,9 +590,7 @@ class APSAnalysis:
                                 st.code(row["payload"])
 
                     # Workflow messages
-                    workflow_messages = nodered_messages[
-                        nodered_messages["topic"].str.contains("workflow", na=False)
-                    ]
+                    workflow_messages = nodered_messages[nodered_messages["topic"].str.contains("workflow", na=False)]
                     if len(workflow_messages) > 0:
                         st.write(f"🔄 Workflow: {len(workflow_messages)} Nachrichten")
 
@@ -667,9 +606,7 @@ class APSAnalysis:
                                 st.code(row["payload"])
 
                 else:
-                    st.warning(
-                        "⚠️ Keine Node-RED Nachrichten in dieser Session gefunden"
-                    )
+                    st.warning("⚠️ Keine Node-RED Nachrichten in dieser Session gefunden")
 
             except Exception as e:
                 st.error(f"Fehler bei Node-RED-Analyse: {e}")
@@ -680,16 +617,12 @@ class APSAnalysis:
         """Analyze Web-Server session data."""
         st.write("### Web-Server Protokoll Analyse")
 
-        db_path = os.path.join(
-            self.sessions_dir, f"aps_persistent_traffic_{session_name}.db"
-        )
+        db_path = os.path.join(self.sessions_dir, f"aps_persistent_traffic_{session_name}.db")
 
         if os.path.exists(db_path):
             try:
                 conn = sqlite3.connect(db_path)
-                df = pd.read_sql_query(
-                    "SELECT * FROM mqtt_messages ORDER BY timestamp", conn
-                )
+                df = pd.read_sql_query("SELECT * FROM mqtt_messages ORDER BY timestamp", conn)
                 conn.close()
 
                 # Add required columns for filters if they don't exist
@@ -708,27 +641,17 @@ class APSAnalysis:
                 df = extract_module_info(df)
 
                 # Filter Web-Server specific messages (MQTT)
-                webserver_messages = df[
-                    df["topic"].str.contains(
-                        "fischertechnik|web|http|api|rest", na=False
-                    )
-                ]
+                webserver_messages = df[df["topic"].str.contains("fischertechnik|web|http|api|rest", na=False)]
 
                 # Also check for HTTP traffic database
-                http_db_path = os.path.join(
-                    self.sessions_dir, f"http_traffic_{session_name}.db"
-                )
+                http_db_path = os.path.join(self.sessions_dir, f"http_traffic_{session_name}.db")
                 if os.path.exists(http_db_path):
                     try:
                         conn = sqlite3.connect(http_db_path)
-                        http_df = pd.read_sql_query(
-                            "SELECT * FROM http_requests ORDER BY timestamp", conn
-                        )
+                        http_df = pd.read_sql_query("SELECT * FROM http_requests ORDER BY timestamp", conn)
                         conn.close()
 
-                        st.success(
-                            f"✅ HTTP Traffic Database gefunden: {len(http_df)} Requests"
-                        )
+                        st.success(f"✅ HTTP Traffic Database gefunden: {len(http_df)} Requests")
 
                         # HTTP Traffic Analysis
                         st.write("**🌐 HTTP Traffic Analyse:**")
@@ -744,28 +667,20 @@ class APSAnalysis:
                         st.bar_chart(status_counts)
 
                         # Order-related requests
-                        order_requests = http_df[
-                            http_df["url"].str.contains("order", na=False)
-                        ]
+                        order_requests = http_df[http_df["url"].str.contains("order", na=False)]
                         if len(order_requests) > 0:
                             st.write(f"📋 Order HTTP Requests: {len(order_requests)}")
 
                             # Show order requests
                             st.write("**Order HTTP Requests:**")
                             for idx, row in order_requests.iterrows():
-                                st.write(
-                                    f"**{row['timestamp']}** - {row['method']} {row['url']}"
-                                )
+                                st.write(f"**{row['timestamp']}** - {row['method']} {row['url']}")
                                 if row["body"]:
                                     try:
                                         body_data = json.loads(row["body"])
                                         st.json(body_data)
                                     except:
-                                        st.code(
-                                            row["body"][:200] + "..."
-                                            if len(row["body"]) > 200
-                                            else row["body"]
-                                        )
+                                        st.code(row["body"][:200] + "..." if len(row["body"]) > 200 else row["body"])
                                 st.write("---")
 
                         # API endpoints
@@ -776,14 +691,10 @@ class APSAnalysis:
                     except Exception as e:
                         st.error(f"Fehler beim Laden der HTTP Traffic Daten: {e}")
                 else:
-                    st.info(
-                        "💡 HTTP Traffic Database nicht gefunden. Starte Session mit HTTP Logger."
-                    )
+                    st.info("💡 HTTP Traffic Database nicht gefunden. Starte Session mit HTTP Logger.")
 
                 if len(webserver_messages) > 0:
-                    st.success(
-                        f"✅ {len(webserver_messages)} Web-Server Nachrichten gefunden"
-                    )
+                    st.success(f"✅ {len(webserver_messages)} Web-Server Nachrichten gefunden")
 
                     # Web-Server Topic Analysis
                     webserver_topics = webserver_messages["topic"].value_counts()
@@ -795,14 +706,10 @@ class APSAnalysis:
 
                     # Fischertechnik messages
                     fischertech_messages = webserver_messages[
-                        webserver_messages["topic"].str.contains(
-                            "fischertechnik", na=False
-                        )
+                        webserver_messages["topic"].str.contains("fischertechnik", na=False)
                     ]
                     if len(fischertech_messages) > 0:
-                        st.write(
-                            f"🏭 Fischertechnik: {len(fischertech_messages)} Nachrichten"
-                        )
+                        st.write(f"🏭 Fischertechnik: {len(fischertech_messages)} Nachrichten")
 
                         # Show recent fischertechnik messages
                         st.write("**Letzte Fischertechnik-Nachrichten:**")
@@ -817,9 +724,7 @@ class APSAnalysis:
 
                     # HTTP/API messages
                     http_messages = webserver_messages[
-                        webserver_messages["topic"].str.contains(
-                            "http|api|rest", na=False
-                        )
+                        webserver_messages["topic"].str.contains("http|api|rest", na=False)
                     ]
                     if len(http_messages) > 0:
                         st.write(f"🌐 HTTP/API: {len(http_messages)} Nachrichten")
@@ -837,9 +742,7 @@ class APSAnalysis:
 
                     # Web interface messages
                     web_messages = webserver_messages[
-                        webserver_messages["topic"].str.contains(
-                            "web|dashboard", na=False
-                        )
+                        webserver_messages["topic"].str.contains("web|dashboard", na=False)
                     ]
                     if len(web_messages) > 0:
                         st.write(f"🖥️ Web Interface: {len(web_messages)} Nachrichten")
@@ -856,13 +759,11 @@ class APSAnalysis:
                                 st.code(row["payload"])
 
                 else:
-                    st.warning(
-                        "⚠️ Keine Web-Server Nachrichten in dieser Session gefunden"
-                    )
+                    st.warning("⚠️ Keine Web-Server Nachrichten in dieser Session gefunden")
                     st.info(
                         """
                     **💡 Tipp:** Web-Server Nachrichten können auch über HTTP-Logs oder Browser Developer Tools erfasst werden.
-                    
+
                     **Mögliche Topics:**
                     - `fischertechnik/order/start`
                     - `web/interface/order`
@@ -879,16 +780,12 @@ class APSAnalysis:
         """Analyze multi-protocol session data."""
         st.write("### Multi-Protokoll Korrelations-Analyse")
 
-        db_path = os.path.join(
-            self.sessions_dir, f"aps_persistent_traffic_{session_name}.db"
-        )
+        db_path = os.path.join(self.sessions_dir, f"aps_persistent_traffic_{session_name}.db")
 
         if os.path.exists(db_path):
             try:
                 conn = sqlite3.connect(db_path)
-                df = pd.read_sql_query(
-                    "SELECT * FROM mqtt_messages ORDER BY timestamp", conn
-                )
+                df = pd.read_sql_query("SELECT * FROM mqtt_messages ORDER BY timestamp", conn)
                 conn.close()
 
                 # Add required columns for filters if they don't exist
@@ -908,17 +805,9 @@ class APSAnalysis:
 
                 # Protocol categorization
                 protocols = {
-                    "MQTT": df[
-                        df["topic"].str.contains("module/v1/ff/|ccu/|txt/", na=False)
-                    ],
-                    "Node-RED": df[
-                        df["topic"].str.contains("NodeRed|nodered|workflow", na=False)
-                    ],
-                    "Web-Server": df[
-                        df["topic"].str.contains(
-                            "fischertechnik|web|http|api|rest", na=False
-                        )
-                    ],
+                    "MQTT": df[df["topic"].str.contains("module/v1/ff/|ccu/|txt/", na=False)],
+                    "Node-RED": df[df["topic"].str.contains("NodeRed|nodered|workflow", na=False)],
+                    "Web-Server": df[df["topic"].str.contains("fischertechnik|web|http|api|rest", na=False)],
                     "Other": df[
                         ~df["topic"].str.contains(
                             "module/v1/ff/|ccu/|txt/|NodeRed|nodered|workflow|fischertechnik|web|http|api|rest",
@@ -947,18 +836,12 @@ class APSAnalysis:
                     "protocol",
                 ] = "Node-RED"
                 df.loc[
-                    df["topic"].str.contains(
-                        "fischertechnik|web|http|api|rest", na=False
-                    ),
+                    df["topic"].str.contains("fischertechnik|web|http|api|rest", na=False),
                     "protocol",
                 ] = "Web-Server"
 
                 # Timeline by protocol
-                timeline_data = (
-                    df.groupby([df["timestamp"].dt.floor("1s"), "protocol"])
-                    .size()
-                    .unstack(fill_value=0)
-                )
+                timeline_data = df.groupby([df["timestamp"].dt.floor("1s"), "protocol"]).size().unstack(fill_value=0)
                 st.line_chart(timeline_data)
 
                 # Order correlation analysis
@@ -977,14 +860,12 @@ class APSAnalysis:
 
                     # Show order sequence
                     st.write("**📋 Order-Sequenz über Protokolle:**")
-                    order_sequence = order_messages[
-                        ["timestamp", "topic", "protocol", "payload"]
-                    ].sort_values("timestamp")
+                    order_sequence = order_messages[["timestamp", "topic", "protocol", "payload"]].sort_values(
+                        "timestamp"
+                    )
 
                     for idx, row in order_sequence.iterrows():
-                        st.write(
-                            f"**{row['timestamp']}** - {row['protocol']} - {row['topic']}"
-                        )
+                        st.write(f"**{row['timestamp']}** - {row['protocol']} - {row['topic']}")
                         try:
                             payload = json.loads(row["payload"])
                             if isinstance(payload, dict) and "orderId" in payload:
@@ -1002,29 +883,19 @@ class APSAnalysis:
                 st.write("**🏭 Module-Interaktion über Protokolle:**")
 
                 # Find module-related messages
-                module_messages = df[
-                    df["topic"].str.contains("module/v1/ff/", na=False)
-                ]
+                module_messages = df[df["topic"].str.contains("module/v1/ff/", na=False)]
 
                 if len(module_messages) > 0:
                     # Extract module IDs
-                    module_messages["module_id"] = module_messages["topic"].str.extract(
-                        r"module/v1/ff/([^/]+)"
-                    )
+                    module_messages["module_id"] = module_messages["topic"].str.extract(r"module/v1/ff/([^/]+)")
 
                     # Module activity by protocol
-                    module_activity = (
-                        module_messages.groupby("module_id")
-                        .size()
-                        .sort_values(ascending=False)
-                    )
+                    module_activity = module_messages.groupby("module_id").size().sort_values(ascending=False)
                     st.write("**Module-Aktivität:**")
                     st.bar_chart(module_activity.head(10))
 
                     # Module state changes
-                    state_messages = module_messages[
-                        module_messages["topic"].str.contains("/state", na=False)
-                    ]
+                    state_messages = module_messages[module_messages["topic"].str.contains("/state", na=False)]
                     if len(state_messages) > 0:
                         st.write(f"📊 {len(state_messages)} Module State-Änderungen")
 
@@ -1048,14 +919,10 @@ class APSAnalysis:
                 for pattern in common_patterns:
                     pattern_messages = df[df["payload"].str.contains(pattern, na=False)]
                     if len(pattern_messages) > 0:
-                        st.write(
-                            f"**{pattern}** - {len(pattern_messages)} Nachrichten über Protokolle"
-                        )
+                        st.write(f"**{pattern}** - {len(pattern_messages)} Nachrichten über Protokolle")
 
                         # Show distribution
-                        pattern_by_protocol = pattern_messages.groupby(
-                            "protocol"
-                        ).size()
+                        pattern_by_protocol = pattern_messages.groupby("protocol").size()
                         st.bar_chart(pattern_by_protocol)
 
             except Exception as e:

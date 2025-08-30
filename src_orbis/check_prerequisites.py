@@ -4,10 +4,10 @@ Prerequisites Check für MQTT Mock System
 Orbis Development - System Requirements Check
 """
 
-import sys
-import subprocess
 import importlib
 import socket
+import subprocess
+import sys
 
 
 def check_python_version():
@@ -19,9 +19,7 @@ def check_python_version():
         print(f"✅ Python {version.major}.{version.minor}.{version.micro} - OK")
         return True
     else:
-        print(
-            f"❌ Python {version.major}.{version.minor}.{version.micro} - Too old (need 3.7+)"
-        )
+        print(f"❌ Python {version.major}.{version.minor}.{version.micro} - Too old (need 3.7+)")
         return False
 
 
@@ -88,9 +86,7 @@ def check_mosquitto_installation():
         if result.returncode == 0:
             print("✅ mosquitto is installed")
             # Check version
-            version_result = subprocess.run(
-                ["mosquitto", "-h"], capture_output=True, text=True
-            )
+            version_result = subprocess.run(["mosquitto", "-h"], capture_output=True, text=True)
             if version_result.returncode == 0:
                 print("✅ mosquitto is working")
                 return True

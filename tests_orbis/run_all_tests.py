@@ -4,9 +4,9 @@ ORBIS Dashboard - Complete Test Suite
 Führt alle Tests aus und gibt einen Überblick
 """
 
-import sys
-import subprocess
 import os
+import subprocess
+import sys
 from pathlib import Path
 
 # Add project root to path

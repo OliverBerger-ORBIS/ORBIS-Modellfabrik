@@ -40,26 +40,20 @@ class SessionPlayer:
             cursor = conn.cursor()
 
             # Prüfen ob Tabelle existiert
-            cursor.execute(
-                "SELECT name FROM sqlite_master WHERE type='table' AND name='mqtt_messages'"
-            )
+            cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='mqtt_messages'")
             if not cursor.fetchone():
                 st.error(f"❌ Tabelle 'mqtt_messages' nicht gefunden in {file_path}")
                 return False
 
             # Nachrichten laden
-            cursor.execute(
-                "SELECT topic, payload, timestamp FROM mqtt_messages ORDER BY timestamp"
-            )
+            cursor.execute("SELECT topic, payload, timestamp FROM mqtt_messages ORDER BY timestamp")
             rows = cursor.fetchall()
 
             self.messages = []
             for row in rows:
                 topic, payload, timestamp = row
                 if topic and payload:  # Nur gültige Nachrichten
-                    self.messages.append(
-                        {"topic": topic, "payload": payload, "timestamp": timestamp}
-                    )
+                    self.messages.append({"topic": topic, "payload": payload, "timestamp": timestamp})
 
             conn.close()
 
@@ -82,7 +76,7 @@ class SessionPlayer:
         """Log Session laden"""
         try:
             self.messages = []
-            with open(file_path, "r") as f:
+            with open(file_path) as f:
                 for line in f:
                     line = line.strip()
                     if line and "|" in line:
@@ -91,9 +85,7 @@ class SessionPlayer:
                             parts = line.split("|", 2)
                             if len(parts) == 3:
                                 timestamp, topic, payload = parts
-                                if (
-                                    topic.strip() and payload.strip()
-                                ):  # Nur gültige Nachrichten
+                                if topic.strip() and payload.strip():  # Nur gültige Nachrichten
                                     self.messages.append(
                                         {
                                             "topic": topic.strip(),
@@ -211,12 +203,8 @@ class SessionPlayer:
 
                 try:
                     # Zeitdifferenz berechnen
-                    current_time = datetime.fromisoformat(
-                        current_msg["timestamp"].replace("Z", "+00:00")
-                    )
-                    next_time = datetime.fromisoformat(
-                        next_msg["timestamp"].replace("Z", "+00:00")
-                    )
+                    current_time = datetime.fromisoformat(current_msg["timestamp"].replace("Z", "+00:00"))
+                    next_time = datetime.fromisoformat(next_msg["timestamp"].replace("Z", "+00:00"))
                     time_diff = (next_time - current_time).total_seconds()
 
                     # Mit Speed-Faktor warten
@@ -306,9 +294,7 @@ def main():
         return
 
     # Session-Auswahl mit Vorschau
-    selected_session = st.selectbox(
-        "Session auswählen:", session_files, format_func=lambda x: x.name
-    )
+    selected_session = st.selectbox("Session auswählen:", session_files, format_func=lambda x: x.name)
 
     # Session-Info anzeigen
     if selected_session:
@@ -336,9 +322,7 @@ def main():
                 st.success(f"✅ Session '{selected_session.name}' erfolgreich geladen!")
                 st.info("🔄 Kontrollen wurden zurückgesetzt - bereit für neuen Replay!")
             else:
-                st.error(
-                    f"❌ Session '{selected_session.name}' konnte nicht geladen werden"
-                )
+                st.error(f"❌ Session '{selected_session.name}' konnte nicht geladen werden")
 
     # Replay-Kontrollen
     if session_player.messages:
@@ -351,10 +335,7 @@ def main():
             if session_player.is_playing:
                 button_text = "▶️ Playing..."
                 button_disabled = True
-            elif (
-                session_player.current_index > 0
-                and session_player.current_index < len(session_player.messages)
-            ):
+            elif session_player.current_index > 0 and session_player.current_index < len(session_player.messages):
                 button_text = "▶️ Resume"
                 button_disabled = False
             else:
@@ -365,10 +346,7 @@ def main():
                 speed = st.session_state.get("replay_speed", 1.0)
                 loop = st.session_state.get("replay_loop", False)
 
-                if (
-                    session_player.current_index > 0
-                    and session_player.current_index < len(session_player.messages)
-                ):
+                if session_player.current_index > 0 and session_player.current_index < len(session_player.messages):
                     session_player.resume_replay()
                 else:
                     session_player.start_replay(speed, loop)
@@ -400,9 +378,7 @@ def main():
         # Fortschrittsbalken
         progress = session_player.get_progress()
         st.progress(progress / 100.0)
-        st.text(
-            f"📊 Fortschritt: {progress:.1f}% ({session_player.current_index}/{len(session_player.messages)})"
-        )
+        st.text(f"📊 Fortschritt: {progress:.1f}% ({session_player.current_index}/{len(session_player.messages)})")
 
         # Debug-Informationen
         st.info(
@@ -420,16 +396,16 @@ def main():
     st.info(
         """
     **So verbinden Sie das OMF Dashboard mit dem Replay-Broker:**
-    
+
     1. **MQTT Broker läuft bereits** auf Port 1884 ✅
-    
+
     2. **Dashboard konfigurieren:**
        - MQTT-Modus: "Replay-Broker"
        - Host: `localhost`
        - Port: `1884`
-    
+
     3. **Session laden und Replay starten** (oben)
-    
+
     4. **Dashboard zeigt Replay-Nachrichten** in der Nachrichtenzentrale
     """
     )

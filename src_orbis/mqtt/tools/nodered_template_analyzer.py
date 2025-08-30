@@ -6,31 +6,34 @@ Analyzes MQTT message templates for Node-RED topics from session data.
 Extracts template structures, examples, and validation rules.
 """
 
-import json
 import glob
+import json
 import re
-import yaml
 from datetime import datetime
-from typing import Dict, List, Set
 from pathlib import Path
+from typing import Dict, List, Set
+
+import yaml
 
 try:
-    from .module_manager import get_module_manager
     from .message_template_manager import get_message_template_manager
+    from .module_manager import get_module_manager
 except ImportError:
-    import sys
     import os
+    import sys
 
     sys.path.append(os.path.dirname(__file__))
-    from module_manager import get_module_manager
     from message_template_manager import get_message_template_manager
-import sys
+    from module_manager import get_module_manager
+
 import os
+import sys
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
 
-from src_orbis.mqtt.tools.nfc_code_manager import get_nfc_manager
 import sqlite3
+
+from src_orbis.mqtt.tools.nfc_code_manager import get_nfc_manager
 
 
 class NodeRedTemplateAnalyzer:
@@ -109,9 +112,7 @@ class NodeRedTemplateAnalyzer:
             return "Dashboard"
         elif "ui" in topic:
             return "UI"
-        elif "status" in topic and not any(
-            x in topic for x in ["connection", "state", "order", "factsheet"]
-        ):
+        elif "status" in topic and not any(x in topic for x in ["connection", "state", "order", "factsheet"]):
             return "Status"
         else:
             return "General"
@@ -150,9 +151,7 @@ class NodeRedTemplateAnalyzer:
 
         return "unknown"
 
-    def _get_placeholder_for_field(
-        self, field_name: str, values: Set[str], module_id: str = None
-    ) -> str:
+    def _get_placeholder_for_field(self, field_name: str, values: Set[str], module_id: str = None) -> str:
         """Generate placeholder for field based on values and field name"""
         if not values:
             return "<string>"
@@ -305,9 +304,7 @@ class NodeRedTemplateAnalyzer:
                 cursor = conn.cursor()
 
                 # Check if table exists and has data
-                cursor.execute(
-                    "SELECT name FROM sqlite_master WHERE type='table' AND name='mqtt_messages'"
-                )
+                cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='mqtt_messages'")
                 if cursor.fetchone():
                     cursor.execute("SELECT COUNT(*) FROM mqtt_messages")
                     count = cursor.fetchone()[0]
@@ -333,8 +330,8 @@ class NodeRedTemplateAnalyzer:
                 # Get messages for this topic
                 cursor.execute(
                     """
-                    SELECT topic, payload, timestamp 
-                    FROM mqtt_messages 
+                    SELECT topic, payload, timestamp
+                    FROM mqtt_messages
                     WHERE topic = ?
                     ORDER BY timestamp DESC
                     LIMIT 100
@@ -346,9 +343,7 @@ class NodeRedTemplateAnalyzer:
                 for msg in messages:
                     try:
                         payload = json.loads(msg[1]) if msg[1] else {}
-                        all_messages.append(
-                            {"topic": msg[0], "payload": payload, "timestamp": msg[2]}
-                        )
+                        all_messages.append({"topic": msg[0], "payload": payload, "timestamp": msg[2]})
                     except json.JSONDecodeError:
                         continue
 
@@ -401,10 +396,7 @@ class NodeRedTemplateAnalyzer:
                 "timestamp": datetime.now().isoformat(),
                 "version": "1.0",
                 "total_topics": len(results),
-                "total_messages": sum(
-                    template["statistics"]["total_messages"]
-                    for template in results.values()
-                ),
+                "total_messages": sum(template["statistics"]["total_messages"] for template in results.values()),
             },
             "templates": results,
         }
@@ -426,10 +418,7 @@ class NodeRedTemplateAnalyzer:
                 "timestamp": datetime.now().isoformat(),
                 "version": "1.0",
                 "total_topics": len(results),
-                "total_messages": sum(
-                    template["statistics"]["total_messages"]
-                    for template in results.values()
-                ),
+                "total_messages": sum(template["statistics"]["total_messages"] for template in results.values()),
             },
             "templates": {},
         }
@@ -442,17 +431,13 @@ class NodeRedTemplateAnalyzer:
                 "description": f"Node-RED {self._determine_module_id(topic)} {self._determine_sub_category(topic)}",
                 "template_structure": template["template_structure"],
                 "examples": template["examples"],
-                "validation_rules": self._generate_validation_rules(
-                    template["template_structure"]
-                ),
+                "validation_rules": self._generate_validation_rules(template["template_structure"]),
                 "statistics": template["statistics"],
             }
 
         # Save to YAML file
         with open(output_file, "w", encoding="utf-8") as f:
-            yaml.dump(
-                yaml_data, f, default_flow_style=False, allow_unicode=True, indent=2
-            )
+            yaml.dump(yaml_data, f, default_flow_style=False, allow_unicode=True, indent=2)
 
         print(f"💾 YAML-Ergebnisse gespeichert in: {output_file}")
         return output_file
@@ -461,12 +446,10 @@ class NodeRedTemplateAnalyzer:
         """Update the main message_templates.yml with Node-RED analysis results"""
         try:
             # Load existing message templates
-            config_file = (
-                Path(__file__).parent.parent / "config" / "message_templates.yml"
-            )
+            config_file = Path(__file__).parent.parent / "config" / "message_templates.yml"
 
             if config_file.exists():
-                with open(config_file, "r", encoding="utf-8") as f:
+                with open(config_file, encoding="utf-8") as f:
                     templates_data = yaml.safe_load(f)
             else:
                 templates_data = {
@@ -485,9 +468,7 @@ class NodeRedTemplateAnalyzer:
                     "description": f"Node-RED {self._determine_module_id(topic)} {self._determine_sub_category(topic)}",
                     "template_structure": template["template_structure"],
                     "examples": template["examples"],
-                    "validation_rules": self._generate_validation_rules(
-                        template["template_structure"]
-                    ),
+                    "validation_rules": self._generate_validation_rules(template["template_structure"]),
                 }
 
             # Save updated templates
@@ -529,17 +510,9 @@ class NodeRedTemplateAnalyzer:
             self.update_message_templates_yaml(results)
 
             # Print summary
-            total_messages = sum(
-                template["statistics"]["total_messages"]
-                for template in results.values()
-            )
-            total_enum_fields = sum(
-                template["statistics"]["enum_fields"] for template in results.values()
-            )
-            total_variable_fields = sum(
-                template["statistics"]["variable_fields"]
-                for template in results.values()
-            )
+            total_messages = sum(template["statistics"]["total_messages"] for template in results.values())
+            total_enum_fields = sum(template["statistics"]["enum_fields"] for template in results.values())
+            total_variable_fields = sum(template["statistics"]["variable_fields"] for template in results.values())
 
             print("\n" + "=" * 60)
             print("📊 NODE-RED TEMPLATE ANALYSE ABGESCHLOSSEN")
@@ -558,9 +531,7 @@ class NodeRedTemplateAnalyzer:
                 module_id = self._determine_module_id(topic)
                 sub_category = self._determine_sub_category(topic)
                 msg_count = template["statistics"]["total_messages"]
-                print(
-                    f"   • {topic} ({module_id}/{sub_category}): {msg_count} Nachrichten"
-                )
+                print(f"   • {topic} ({module_id}/{sub_category}): {msg_count} Nachrichten")
         else:
             print("❌ Keine Node-RED Topics mit Daten gefunden!")
 

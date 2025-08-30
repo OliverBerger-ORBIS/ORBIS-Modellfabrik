@@ -7,10 +7,11 @@ Verwaltet MQTT Message Templates und analysiert Session-Daten
 import json
 import re
 import sqlite3
-import yaml
 from datetime import datetime
-from typing import Dict, List, Optional, Any, Tuple
 from pathlib import Path
+from typing import Any, Dict, List, Optional, Tuple
+
+import yaml
 
 
 class MessageTemplateManager:
@@ -19,9 +20,7 @@ class MessageTemplateManager:
     def __init__(self, config_file: str = None):
         """Initialisiert den Message Template Manager"""
         if config_file is None:
-            config_file = (
-                Path(__file__).parent.parent / "config" / "message_templates.yml"
-            )
+            config_file = Path(__file__).parent.parent / "config" / "message_templates.yml"
 
         self.config_file = Path(config_file)
         self.templates = self._load_yaml_templates()
@@ -32,7 +31,7 @@ class MessageTemplateManager:
         """Lädt die YAML-Template-Konfiguration"""
         try:
             if self.config_file.exists():
-                with open(self.config_file, "r", encoding="utf-8") as f:
+                with open(self.config_file, encoding="utf-8") as f:
                     return yaml.safe_load(f)
             else:
                 print(f"⚠️ Template-Konfiguration nicht gefunden: {self.config_file}")
@@ -86,8 +85,8 @@ class MessageTemplateManager:
             # Hole alle MQTT-Nachrichten
             cursor.execute(
                 """
-                SELECT topic, payload, timestamp 
-                FROM mqtt_messages 
+                SELECT topic, payload, timestamp
+                FROM mqtt_messages
                 ORDER BY timestamp
             """
             )
@@ -114,9 +113,7 @@ class MessageTemplateManager:
                 try:
                     payload_data = json.loads(payload) if payload else {}
                     topic_analysis[topic]["payloads"].append(payload_data)
-                    topic_analysis[topic]["examples"].append(
-                        {"timestamp": timestamp, "payload": payload_data}
-                    )
+                    topic_analysis[topic]["examples"].append({"timestamp": timestamp, "payload": payload_data})
 
                     # Analysiere Struktur
                     self._analyze_payload_structure(payload_data, topic_analysis[topic])
@@ -127,9 +124,7 @@ class MessageTemplateManager:
             # Erstelle Template-Vorschläge
             template_suggestions = {}
             for topic, analysis in topic_analysis.items():
-                template_suggestions[topic] = self._generate_template_suggestion(
-                    topic, analysis
-                )
+                template_suggestions[topic] = self._generate_template_suggestion(topic, analysis)
 
             result = {
                 "session_db": session_db,
@@ -151,9 +146,7 @@ class MessageTemplateManager:
                 "analysis_timestamp": datetime.now().isoformat(),
             }
 
-    def _analyze_payload_structure(
-        self, payload: Dict[str, Any], analysis: Dict[str, Any]
-    ):
+    def _analyze_payload_structure(self, payload: Dict[str, Any], analysis: Dict[str, Any]):
         """Analysiert die Struktur eines Payloads"""
         for field, value in payload.items():
             # Bestimme Feldtyp
@@ -175,9 +168,7 @@ class MessageTemplateManager:
             # Prüfe spezielle String-Formate
             if re.match(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}", value):
                 return "ISO_8601"
-            elif re.match(
-                r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$", value
-            ):
+            elif re.match(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$", value):
                 return "UUID"
             elif re.match(r"^[0-9a-fA-F]{14}$", value):
                 return "NFC_CODE"
@@ -198,9 +189,7 @@ class MessageTemplateManager:
         else:
             return "unknown"
 
-    def _generate_template_suggestion(
-        self, topic: str, analysis: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    def _generate_template_suggestion(self, topic: str, analysis: Dict[str, Any]) -> Dict[str, Any]:
         """Generiert Template-Vorschlag basierend auf Analyse"""
         template_structure = {}
         validation_rules = []
@@ -224,28 +213,19 @@ class MessageTemplateManager:
                     validation_rules.append(f"{field} muss in {unique_values} sein")
                 else:
                     # Prüfe auf spezielle Formate
-                    if any(
-                        re.match(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}", str(v))
-                        for v in unique_values
-                    ):
+                    if any(re.match(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}", str(v)) for v in unique_values):
                         field_info["format"] = "ISO_8601"
                         validation_rules.append(f"{field} muss ISO 8601 Format haben")
-                    elif any(
-                        re.match(r"^[0-9a-fA-F]{14}$", str(v)) for v in unique_values
-                    ):
+                    elif any(re.match(r"^[0-9a-fA-F]{14}$", str(v)) for v in unique_values):
                         field_info["format"] = "NFC_CODE"
                         validation_rules.append(f"{field} muss gültiger NFC-Code sein")
 
             elif primary_type == "integer":
-                values = [
-                    v for v in analysis["field_values"][field] if isinstance(v, int)
-                ]
+                values = [v for v in analysis["field_values"][field] if isinstance(v, int)]
                 if values:
                     field_info["minimum"] = min(values)
                     field_info["maximum"] = max(values)
-                    validation_rules.append(
-                        f"{field} muss zwischen {min(values)} und {max(values)} sein"
-                    )
+                    validation_rules.append(f"{field} muss zwischen {min(values)} und {max(values)} sein")
 
             template_structure[field] = field_info
 
@@ -288,9 +268,7 @@ class MessageTemplateManager:
         else:
             return "General"
 
-    def validate_message(
-        self, topic: str, message: Dict[str, Any]
-    ) -> Tuple[bool, List[str]]:
+    def validate_message(self, topic: str, message: Dict[str, Any]) -> Tuple[bool, List[str]]:
         """Validiert eine Nachricht gegen das Template"""
         template = self.get_topic_template(topic)
         if not template:
@@ -310,32 +288,22 @@ class MessageTemplateManager:
                 # Typ-Validierung
                 expected_type = field_info.get("type")
                 if not self._validate_field_type(value, expected_type):
-                    errors.append(
-                        f"Feld {field} hat falschen Typ. Erwartet: {expected_type}"
-                    )
+                    errors.append(f"Feld {field} hat falschen Typ. Erwartet: {expected_type}")
 
                 # Enum-Validierung
                 if "enum" in field_info and value not in field_info["enum"]:
-                    errors.append(
-                        f"Feld {field} hat ungültigen Wert. Erlaubt: {field_info['enum']}"
-                    )
+                    errors.append(f"Feld {field} hat ungültigen Wert. Erlaubt: {field_info['enum']}")
 
                 # Format-Validierung
                 if "format" in field_info:
                     if not self._validate_format(value, field_info["format"]):
-                        errors.append(
-                            f"Feld {field} hat falsches Format. Erwartet: {field_info['format']}"
-                        )
+                        errors.append(f"Feld {field} hat falsches Format. Erwartet: {field_info['format']}")
 
                 # Range-Validierung
                 if "minimum" in field_info and value < field_info["minimum"]:
-                    errors.append(
-                        f"Feld {field} ist zu klein. Minimum: {field_info['minimum']}"
-                    )
+                    errors.append(f"Feld {field} ist zu klein. Minimum: {field_info['minimum']}")
                 if "maximum" in field_info and value > field_info["maximum"]:
-                    errors.append(
-                        f"Feld {field} ist zu groß. Maximum: {field_info['maximum']}"
-                    )
+                    errors.append(f"Feld {field} ist zu groß. Maximum: {field_info['maximum']}")
 
         return len(errors) == 0, errors
 
@@ -368,9 +336,7 @@ class MessageTemplateManager:
 
         return True  # Kein Pattern - keine Validierung
 
-    def generate_valid_message(
-        self, topic: str, parameters: Dict[str, Any] = None
-    ) -> Optional[Dict[str, Any]]:
+    def generate_valid_message(self, topic: str, parameters: Dict[str, Any] = None) -> Optional[Dict[str, Any]]:
         """Generiert eine gültige Nachricht basierend auf dem Template"""
         template = self.get_topic_template(topic)
         if not template:
@@ -436,12 +402,12 @@ class MessageTemplateManager:
         topics = self.templates.get("topics", {})
         categories = self.templates.get("categories", {})
         validation_patterns = self.templates.get("validation_patterns", {})
-        
+
         return {
             "total_topics": len(topics),
             "total_categories": len(categories),
             "validation_patterns": len(validation_patterns),
-            "analysis_cache_size": len(self.session_analysis_cache)
+            "analysis_cache_size": len(self.session_analysis_cache),
         }
 
     def reload_config(self):
@@ -454,13 +420,13 @@ class MessageTemplateManager:
         try:
             # Suche nach Modul-Templates
             for topic, template_info in self.templates.get("topics", {}).items():
-                if 'ui_config' in template_info:
-                    ui_config = template_info['ui_config']
-                    if ui_config.get('module_id') == module_id:
+                if "ui_config" in template_info:
+                    ui_config = template_info["ui_config"]
+                    if ui_config.get("module_id") == module_id:
                         return ui_config
-            
+
             return None
-            
+
         except Exception as e:
             print(f"❌ Fehler beim Laden der UI-Konfiguration für {module_id}: {e}")
             return None
@@ -472,18 +438,18 @@ class MessageTemplateManager:
             template_info = self.templates.get("topics", {}).get(template_name)
             if not template_info:
                 return False, f"Template '{template_name}' nicht gefunden"
-            
+
             # Baue Nachricht aus Template
             message = self._build_message_from_template(template_info, parameters or {})
-            
+
             # Sende über MQTT (wenn MQTT Client verfügbar)
-            if hasattr(self, 'mqtt_client') and self.mqtt_client:
+            if hasattr(self, "mqtt_client") and self.mqtt_client:
                 self.mqtt_client.publish(template_name, json.dumps(message))
                 return True, f"Nachricht gesendet: {json.dumps(message, indent=2)}"
             else:
                 # Fallback: Nur Rückgabe der Nachricht
                 return True, "FTS-Befehl erfolgreich gesendet"
-                
+
         except Exception as e:
             return False, f"Fehler: {str(e)}"
 
@@ -491,34 +457,40 @@ class MessageTemplateManager:
         """Baut eine Nachricht aus einem Template und Parametern"""
         import uuid
         from datetime import datetime
-        
+
         # Basis-Nachricht aus Template
         message = {
             "action": {
                 "command": parameters.get("command", ""),
                 "id": str(uuid.uuid4()),
-                "metadata": parameters.get("metadata", {})
+                "metadata": parameters.get("metadata", {}),
             },
             "orderId": str(uuid.uuid4()),
             "orderUpdateId": self._get_next_order_update_id(parameters.get("module_id", "default")),
             "serialNumber": template.get("module", ""),
-            "timestamp": datetime.now().isoformat() + "Z"
+            "timestamp": datetime.now().isoformat() + "Z",
         }
-        
+
         return message
 
     def _get_next_order_update_id(self, module_id: str) -> int:
         """Gibt die nächste orderUpdateId für ein Modul zurück"""
-        if not hasattr(self, 'order_update_ids'):
+        if not hasattr(self, "order_update_ids"):
             self.order_update_ids = {}
-        
+
         if module_id not in self.order_update_ids:
             self.order_update_ids[module_id] = 0
-        
+
         self.order_update_ids[module_id] += 1
         return self.order_update_ids[module_id]
 
-    def send_module_command(self, module_id: str, command: str, workpiece_color: str = "WHITE", nfc_code: str = None) -> Tuple[bool, str]:
+    def send_module_command(
+        self,
+        module_id: str,
+        command: str,
+        workpiece_color: str = "WHITE",
+        nfc_code: str = None,
+    ) -> Tuple[bool, str]:
         """Sendet einen Modul-Befehl mit Template-basierter Nachricht"""
         try:
             # Finde das passende Template für das Modul
@@ -527,23 +499,23 @@ class MessageTemplateManager:
                 if template_info.get("module") == module_id:
                     module_topic = topic
                     break
-            
+
             if not module_topic:
                 return False, f"Kein Template für Modul {module_id} gefunden"
-            
+
             # Baue Parameter für die Nachricht
             parameters = {
                 "command": command,
                 "module_id": module_id,
                 "metadata": {
                     "type": workpiece_color,
-                    "workpieceId": nfc_code or "040a8dca341291"  # Fallback NFC-Code
-                }
+                    "workpieceId": nfc_code or "040a8dca341291",  # Fallback NFC-Code
+                },
             }
-            
+
             # Sende Template-Nachricht
             return self.send_template_message(module_topic, parameters)
-            
+
         except Exception as e:
             return False, f"Fehler beim Senden des Modul-Befehls: {str(e)}"
 

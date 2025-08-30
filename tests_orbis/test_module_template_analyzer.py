@@ -3,15 +3,16 @@
 Unit tests for Module Template Analyzer
 """
 
-import unittest
-import tempfile
-import os
 import json
-import sqlite3
-import yaml
-from unittest.mock import Mock
-import sys
+import os
 import shutil
+import sqlite3
+import sys
+import tempfile
+import unittest
+from unittest.mock import Mock
+
+import yaml
 
 # Add src_orbis to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src_orbis"))
@@ -36,9 +37,7 @@ class TestModuleTemplateAnalyzer(unittest.TestCase):
         self.create_test_database()
 
         # Initialize analyzer with test directories
-        self.analyzer = ModuleTemplateAnalyzer(
-            session_dir=self.session_dir, output_dir=self.output_dir
-        )
+        self.analyzer = ModuleTemplateAnalyzer(session_dir=self.session_dir, output_dir=self.output_dir)
 
         # Mock managers
         self.analyzer.nfc_manager = Mock()
@@ -168,12 +167,8 @@ class TestModuleTemplateAnalyzer(unittest.TestCase):
             self.analyzer._determine_sub_category("module/HBW/connection/status"),
             "Connection",
         )
-        self.assertEqual(
-            self.analyzer._determine_sub_category("module/VGR/state/position"), "State"
-        )
-        self.assertEqual(
-            self.analyzer._determine_sub_category("module/DPS/order/request"), "Order"
-        )
+        self.assertEqual(self.analyzer._determine_sub_category("module/VGR/state/position"), "State")
+        self.assertEqual(self.analyzer._determine_sub_category("module/DPS/order/request"), "Order")
         self.assertEqual(
             self.analyzer._determine_sub_category("module/MILL/factsheet/info"),
             "Factsheet",
@@ -185,27 +180,17 @@ class TestModuleTemplateAnalyzer(unittest.TestCase):
 
     def test_determine_module_id(self):
         """Test module ID extraction"""
-        self.assertEqual(
-            self.analyzer._determine_module_id("module/HBW/state/status"), "HBW"
-        )
-        self.assertEqual(
-            self.analyzer._determine_module_id("module/VGR/connection/heartbeat"), "VGR"
-        )
-        self.assertEqual(
-            self.analyzer._determine_module_id("module/DPS/order/response"), "DPS"
-        )
-        self.assertEqual(
-            self.analyzer._determine_module_id("module/UNKNOWN/state/status"), "unknown"
-        )
+        self.assertEqual(self.analyzer._determine_module_id("module/HBW/state/status"), "HBW")
+        self.assertEqual(self.analyzer._determine_module_id("module/VGR/connection/heartbeat"), "VGR")
+        self.assertEqual(self.analyzer._determine_module_id("module/DPS/order/response"), "DPS")
+        self.assertEqual(self.analyzer._determine_module_id("module/UNKNOWN/state/status"), "unknown")
         self.assertEqual(self.analyzer._determine_module_id("invalid/topic"), "unknown")
 
     def test_get_placeholder_for_field(self):
         """Test placeholder generation"""
         # Test timestamp fields
         self.assertEqual(
-            self.analyzer._get_placeholder_for_field(
-                "timestamp", {"2025-08-28T10:00:00Z"}
-            ),
+            self.analyzer._get_placeholder_for_field("timestamp", {"2025-08-28T10:00:00Z"}),
             "<datetime>",
         )
         self.assertEqual(
@@ -214,12 +199,8 @@ class TestModuleTemplateAnalyzer(unittest.TestCase):
         )
 
         # Test ID fields
-        self.assertEqual(
-            self.analyzer._get_placeholder_for_field("id", {"12345", "67890"}), "<uuid>"
-        )
-        self.assertEqual(
-            self.analyzer._get_placeholder_for_field("uuid", {"abc-123"}), "<uuid>"
-        )
+        self.assertEqual(self.analyzer._get_placeholder_for_field("id", {"12345", "67890"}), "<uuid>")
+        self.assertEqual(self.analyzer._get_placeholder_for_field("uuid", {"abc-123"}), "<uuid>")
 
         # Test NFC fields
         self.assertEqual(
@@ -227,9 +208,7 @@ class TestModuleTemplateAnalyzer(unittest.TestCase):
             "<nfcCode>",
         )
         self.assertEqual(
-            self.analyzer._get_placeholder_for_field(
-                "workpiece_id", {"040a8dca341291"}
-            ),
+            self.analyzer._get_placeholder_for_field("workpiece_id", {"040a8dca341291"}),
             "<nfcCode>",
         )
 
@@ -259,15 +238,11 @@ class TestModuleTemplateAnalyzer(unittest.TestCase):
 
         # Test generic string fields
         self.assertEqual(
-            self.analyzer._get_placeholder_for_field(
-                "message", {"test1", "test2", "test3"}
-            ),
+            self.analyzer._get_placeholder_for_field("message", {"test1", "test2", "test3"}),
             "<message>",
         )
         self.assertEqual(
-            self.analyzer._get_placeholder_for_field(
-                "description", {"Station 1", "Station 2"}
-            ),
+            self.analyzer._get_placeholder_for_field("description", {"Station 1", "Station 2"}),
             "[Station 1, Station 2]",
         )
 
@@ -284,9 +259,7 @@ class TestModuleTemplateAnalyzer(unittest.TestCase):
             {"payload": {"status": "BUSY", "timestamp": "2025-08-28T10:01:00Z"}},
         ]
 
-        result = self.analyzer._analyze_topic_structure(
-            "module/HBW/state/status", messages
-        )
+        result = self.analyzer._analyze_topic_structure("module/HBW/state/status", messages)
         self.assertEqual(result["statistics"]["total_messages"], 2)
         self.assertIn("status", result["template_structure"])
         self.assertIn("timestamp", result["template_structure"])
@@ -320,9 +293,7 @@ class TestModuleTemplateAnalyzer(unittest.TestCase):
     def test_analyze_topic_structure_from_db(self):
         """Test topic analysis from database"""
         sessions = self.analyzer.load_all_sessions()
-        result = self.analyzer.analyze_topic_structure(
-            "module/HBW/state/status", sessions
-        )
+        result = self.analyzer.analyze_topic_structure("module/HBW/state/status", sessions)
 
         self.assertIsInstance(result, dict)
         self.assertIn("template_structure", result)
@@ -363,7 +334,7 @@ class TestModuleTemplateAnalyzer(unittest.TestCase):
         self.assertTrue(os.path.exists(output_file))
 
         # Check file content
-        with open(output_file, "r") as f:
+        with open(output_file) as f:
             data = json.load(f)
 
         self.assertIn("metadata", data)
@@ -391,7 +362,7 @@ class TestModuleTemplateAnalyzer(unittest.TestCase):
         self.assertTrue(os.path.exists(output_file))
 
         # Check file content
-        with open(output_file, "r") as f:
+        with open(output_file) as f:
             data = yaml.safe_load(f)
 
         self.assertIn("metadata", data)
@@ -420,9 +391,7 @@ class TestModuleTemplateAnalyzerIntegration(unittest.TestCase):
         self.create_test_databases()
 
         # Initialize analyzer
-        self.analyzer = ModuleTemplateAnalyzer(
-            session_dir=self.session_dir, output_dir=self.output_dir
-        )
+        self.analyzer = ModuleTemplateAnalyzer(session_dir=self.session_dir, output_dir=self.output_dir)
 
         # Mock managers
         self.analyzer.nfc_manager = Mock()
@@ -499,7 +468,7 @@ class TestModuleTemplateAnalyzerIntegration(unittest.TestCase):
 
         # Check JSON content if file exists
         if os.path.exists(json_file):
-            with open(json_file, "r") as f:
+            with open(json_file) as f:
                 json_data = json.load(f)
 
             self.assertIn("metadata", json_data)
@@ -509,7 +478,7 @@ class TestModuleTemplateAnalyzerIntegration(unittest.TestCase):
 
         # Check YAML content if file exists
         if os.path.exists(yaml_file):
-            with open(yaml_file, "r") as f:
+            with open(yaml_file) as f:
                 yaml_data = yaml.safe_load(f)
 
             self.assertIn("metadata", yaml_data)

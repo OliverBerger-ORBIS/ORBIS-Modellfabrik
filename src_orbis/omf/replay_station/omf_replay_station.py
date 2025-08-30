@@ -4,16 +4,14 @@ OMF Replay Station - Lokaler MQTT-Broker für Session-Replay
 Version: 3.0.0
 """
 
-import asyncio
-import json
 import logging
 import os
 import sqlite3
 import threading
 import time
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Dict
 
 import paho.mqtt.client as mqtt_client
 import streamlit as st
@@ -71,8 +69,8 @@ class SessionPlayer:
             # Nachrichten mit Timestamps laden
             cursor.execute(
                 """
-                SELECT topic, payload, timestamp 
-                FROM mqtt_messages 
+                SELECT topic, payload, timestamp
+                FROM mqtt_messages
                 ORDER BY timestamp ASC
             """
             )
@@ -105,7 +103,7 @@ class SessionPlayer:
         """Log-Session laden"""
         try:
             self.messages = []
-            with open(session_file, "r", encoding="utf-8") as f:
+            with open(session_file, encoding="utf-8") as f:
                 for line in f:
                     if line.strip():
                         # Einfaches Log-Format: timestamp|topic|payload
@@ -148,9 +146,7 @@ class SessionPlayer:
         thread.daemon = True
         thread.start()
 
-        st.success(
-            f"▶️ Replay gestartet ({len(self.messages)} Nachrichten, Speed: {speed}x)"
-        )
+        st.success(f"▶️ Replay gestartet ({len(self.messages)} Nachrichten, Speed: {speed}x)")
 
     def _replay_thread(self):
         """Replay-Thread für asynchrone Nachrichten-Wiedergabe"""
@@ -165,9 +161,7 @@ class SessionPlayer:
                 current_msg = self.messages[self.current_index]
                 previous_msg = self.messages[self.current_index - 1]
 
-                time_diff = (
-                    current_msg["timestamp"] - previous_msg["timestamp"]
-                ).total_seconds()
+                time_diff = (current_msg["timestamp"] - previous_msg["timestamp"]).total_seconds()
                 adjusted_time = time_diff / self.speed
 
                 time.sleep(adjusted_time)
@@ -247,9 +241,7 @@ class LocalMQTTBroker:
                 return True
 
             # Mosquitto-Broker starten
-            self.broker_process = subprocess.Popen(
-                ["mosquitto", "-p", str(self.port), "-v"]  # Verbose logging
-            )
+            self.broker_process = subprocess.Popen(["mosquitto", "-p", str(self.port), "-v"])  # Verbose logging
 
             # Kurz warten, bis Broker gestartet ist
             time.sleep(3)
@@ -259,7 +251,7 @@ class LocalMQTTBroker:
                 logging.info(f"✅ MQTT-Broker gestartet auf Port {self.port}")
                 return True
             else:
-                logging.error(f"❌ MQTT-Broker konnte nicht gestartet werden")
+                logging.error("❌ MQTT-Broker konnte nicht gestartet werden")
                 return False
 
         except Exception as e:
@@ -349,9 +341,7 @@ def show_replay_controls(session_player: SessionPlayer):
     if session_player.messages:
         progress = session_player.get_progress()
         st.progress(progress / 100.0)
-        st.info(
-            f"📊 Fortschritt: {progress:.1f}% ({session_player.current_index}/{len(session_player.messages)})"
-        )
+        st.info(f"📊 Fortschritt: {progress:.1f}% ({session_player.current_index}/{len(session_player.messages)})")
 
 
 def main():
@@ -404,15 +394,11 @@ def main():
 
     if not session_files:
         st.warning("❌ Keine Session-Dateien gefunden")
-        st.info(
-            "💡 Legen Sie Session-Dateien in `mqtt-data/sessions/` oder `mqtt-data/logs/` ab"
-        )
+        st.info("💡 Legen Sie Session-Dateien in `mqtt-data/sessions/` oder `mqtt-data/logs/` ab")
         return
 
     # Session-Auswahl
-    selected_session = st.selectbox(
-        "Session auswählen:", session_files, format_func=lambda x: x.name
-    )
+    selected_session = st.selectbox("Session auswählen:", session_files, format_func=lambda x: x.name)
 
     if selected_session and st.button("📂 Session laden"):
         with st.spinner("🔄 Session wird geladen..."):
@@ -429,9 +415,7 @@ def main():
             show_replay_controls(session_player)
         else:
             st.warning("⚠️ Keine Nachrichten in der geladenen Session gefunden")
-            st.info(
-                "💡 Versuchen Sie eine andere Session oder prüfen Sie das Session-Format"
-            )
+            st.info("💡 Versuchen Sie eine andere Session oder prüfen Sie das Session-Format")
     else:
         st.info("📂 Laden Sie zuerst eine Session, um Replay-Kontrollen zu sehen")
 
@@ -454,9 +438,7 @@ def main():
             st.metric("Nachrichten", 0)
 
     with col3:
-        st.metric(
-            "Replay-Status", "▶️ Aktiv" if session_player.is_playing else "⏸️ Pausiert"
-        )
+        st.metric("Replay-Status", "▶️ Aktiv" if session_player.is_playing else "⏸️ Pausiert")
 
     # Dashboard-Integration Info
     st.markdown("---")
@@ -465,15 +447,15 @@ def main():
     st.info(
         """
     **So verbinden Sie das OMF Dashboard mit der Replay-Station:**
-    
+
     1. **MQTT-Client im Dashboard konfigurieren:**
        - Host: `localhost`
        - Port: `1884`
-    
+
     2. **Replay-Station starten** (diese Anwendung)
-    
+
     3. **Session laden und Replay starten**
-    
+
     4. **Dashboard zeigt Replay-Nachrichten** wie echte MQTT-Nachrichten
     """
     )

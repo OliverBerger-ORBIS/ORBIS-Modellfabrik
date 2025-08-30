@@ -17,9 +17,7 @@ class OMFMessageTemplateManager:
     def __init__(self, templates_dir: str = None):
         """Initialisiert den OMF Message Template Manager"""
         if templates_dir is None:
-            templates_dir = os.path.join(
-                os.path.dirname(__file__), "..", "config", "message_templates"
-            )
+            templates_dir = os.path.join(os.path.dirname(__file__), "..", "config", "message_templates")
 
         self.templates_dir = Path(templates_dir)
         self.metadata = self._load_metadata()
@@ -83,18 +81,12 @@ class OMFMessageTemplateManager:
                 for topic, template in template_data["templates"].items():
                     # Füge Metadaten hinzu
                     template["file_path"] = str(file_path)
-                    template["category"] = template_data.get("metadata", {}).get(
-                        "category"
-                    )
-                    template["sub_category"] = template_data.get("metadata", {}).get(
-                        "sub_category"
-                    )
+                    template["category"] = template_data.get("metadata", {}).get("category")
+                    template["sub_category"] = template_data.get("metadata", {}).get("sub_category")
 
                     self.templates[topic] = template
 
-                print(
-                    f"✅ {len(template_data['templates'])} Templates aus {file_path.name} geladen"
-                )
+                print(f"✅ {len(template_data['templates'])} Templates aus {file_path.name} geladen")
 
         except Exception as e:
             print(f"❌ Fehler beim Laden von {file_path}: {e}")
@@ -160,9 +152,7 @@ class OMFMessageTemplateManager:
             sub_category = template.get("sub_category", "Unknown")
 
             category_counts[category] = category_counts.get(category, 0) + 1
-            sub_category_counts[sub_category] = (
-                sub_category_counts.get(sub_category, 0) + 1
-            )
+            sub_category_counts[sub_category] = sub_category_counts.get(sub_category, 0) + 1
 
         return {
             "total_templates": total_templates,
@@ -206,9 +196,7 @@ class OMFMessageTemplateManager:
                 value = message[field]
                 if expected_type == "<string>" and not isinstance(value, str):
                     errors.append(f"Feld '{field}' muss String sein")
-                elif expected_type == "<number>" and not isinstance(
-                    value, (int, float)
-                ):
+                elif expected_type == "<number>" and not isinstance(value, (int, float)):
                     errors.append(f"Feld '{field}' muss Zahl sein")
                 elif expected_type == "<boolean>" and not isinstance(value, bool):
                     errors.append(f"Feld '{field}' muss Boolean sein")

@@ -4,10 +4,11 @@ Notfall-Dashboard-Reparatur
 Repariert kaputte Dashboard-Datei mit Backup
 """
 
-import shutil
 import os
+import shutil
 import subprocess
 import sys
+
 
 def emergency_fix():
     """Notfall-Reparatur des Dashboards"""
@@ -21,11 +22,14 @@ def emergency_fix():
         print("📦 Erstelle Backup...")
         try:
             # Suche nach funktionierender Version in Git
-            result = subprocess.run([
-                "git", "show", "787f463:src_orbis/mqtt/dashboard/aps_dashboard.py"
-            ], capture_output=True, text=True, check=True)
+            result = subprocess.run(
+                ["git", "show", "787f463:src_orbis/mqtt/dashboard/aps_dashboard.py"],
+                capture_output=True,
+                text=True,
+                check=True,
+            )
 
-            with open(backup_file, 'w') as f:
+            with open(backup_file, "w") as f:
                 f.write(result.stdout)
             print("✅ Backup erstellt")
         except:
@@ -44,12 +48,17 @@ def emergency_fix():
     # 3. Teste ob es funktioniert
     print("🧪 Teste repariertes Dashboard...")
     try:
-        subprocess.run([sys.executable, "-m", "py_compile", dashboard_file], check=True, capture_output=True)
+        subprocess.run(
+            [sys.executable, "-m", "py_compile", dashboard_file],
+            check=True,
+            capture_output=True,
+        )
         print("✅ Dashboard funktioniert wieder!")
         return True
     except subprocess.CalledProcessError:
         print("❌ Dashboard immer noch kaputt")
         return False
+
 
 def main():
     """Hauptfunktion"""
@@ -62,6 +71,6 @@ def main():
         print("🚨 Manuelle Reparatur erforderlich")
         sys.exit(1)
 
+
 if __name__ == "__main__":
     main()
-

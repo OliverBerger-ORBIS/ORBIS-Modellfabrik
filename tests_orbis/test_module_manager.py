@@ -4,10 +4,11 @@ Unit Tests for Module Manager
 Tests the ModuleManager class functionality
 """
 
-import unittest
 import os
 import sys
 import tempfile
+import unittest
+
 import yaml
 
 # Add src_orbis to path
@@ -122,9 +123,7 @@ class TestModuleManager(unittest.TestCase):
         }
 
         # Create temporary file
-        self.temp_file = tempfile.NamedTemporaryFile(
-            mode="w", suffix=".yml", delete=False
-        )
+        self.temp_file = tempfile.NamedTemporaryFile(mode="w", suffix=".yml", delete=False)
         yaml.dump(self.test_config, self.temp_file)
         self.temp_file.close()
 
@@ -344,21 +343,15 @@ class TestModuleManager(unittest.TestCase):
     def test_format_module_display_name(self):
         """Test formatting module name for display"""
         # Test with ID included
-        display_name = self.manager.format_module_display_name(
-            "SVR3QA0022", include_id=True
-        )
+        display_name = self.manager.format_module_display_name("SVR3QA0022", include_id=True)
         self.assertEqual(display_name, "HBW (SVR3QA0022)")
 
         # Test without ID
-        display_name = self.manager.format_module_display_name(
-            "SVR3QA0022", include_id=False
-        )
+        display_name = self.manager.format_module_display_name("SVR3QA0022", include_id=False)
         self.assertEqual(display_name, "HBW")
 
         # Test invalid ID
-        display_name = self.manager.format_module_display_name(
-            "invalid_id", include_id=True
-        )
+        display_name = self.manager.format_module_display_name("invalid_id", include_id=True)
         self.assertEqual(display_name, "invalid_id")
 
     def test_get_module_types(self):
@@ -486,9 +479,7 @@ class TestModuleManagerBackwardCompatibility(unittest.TestCase):
         }
 
         # Create temporary file
-        self.temp_file = tempfile.NamedTemporaryFile(
-            mode="w", suffix=".yml", delete=False
-        )
+        self.temp_file = tempfile.NamedTemporaryFile(mode="w", suffix=".yml", delete=False)
         yaml.dump(self.test_config, self.temp_file)
         self.temp_file.close()
 
@@ -499,12 +490,7 @@ class TestModuleManagerBackwardCompatibility(unittest.TestCase):
 
     def test_backward_compatibility_functions(self):
         """Test backward compatibility functions"""
-        from mqtt.tools.module_manager import (
-            get_module_info,
-            get_module_name,
-            get_module_type,
-            validate_module_id,
-        )
+        from mqtt.tools.module_manager import get_module_info, get_module_name, get_module_type, validate_module_id
 
         # Test backward compatibility functions
         module_info = get_module_info("SVR3QA0022")

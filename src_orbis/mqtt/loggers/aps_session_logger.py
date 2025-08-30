@@ -4,10 +4,10 @@ APS Session Logger - Fischertechnik APS
 Organized session-based MQTT logging for different processes
 """
 
-import sys
-import signal
-import logging
 import argparse
+import logging
+import signal
+import sys
 from datetime import datetime
 from pathlib import Path
 
@@ -17,9 +17,7 @@ sys.path.append(str(Path(__file__).parent.parent.parent))
 from mqtt.loggers.aps_persistent_logger import APSPersistentLogger
 
 # Configure logging
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 
@@ -195,9 +193,7 @@ def main():
                 print(f"\n🛑 Logger wird beendet für Session: {session_label}")
                 break
             elif user_input == "s":
-                print(
-                    f"📊 Status: {logger_instance.message_count} Nachrichten empfangen"
-                )
+                print(f"📊 Status: {logger_instance.message_count} Nachrichten empfangen")
             elif user_input == "h":
                 print("📋 Befehle:")
                 print("   q - Logger beenden")
@@ -215,9 +211,7 @@ def main():
         # Graceful shutdown
         if hasattr(logger_instance, "stop"):
             logger_instance.stop()
-            print(
-                f"✅ Logger ordnungsgemäß beendet - {logger_instance.message_count} Nachrichten gespeichert"
-            )
+            print(f"✅ Logger ordnungsgemäß beendet - {logger_instance.message_count} Nachrichten gespeichert")
 
 
 if __name__ == "__main__":

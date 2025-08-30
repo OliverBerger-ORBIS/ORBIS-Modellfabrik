@@ -4,33 +4,35 @@ TXT Template Analyzer
 Analyzes TXT controller MQTT messages and generates templates
 """
 
-import json
-import sqlite3
-import os
 import glob
+import json
+import os
 import re
-import yaml
+import sqlite3
 from datetime import datetime
-from typing import Dict, List, Set
 from pathlib import Path
+from typing import Dict, List, Set
+
+import yaml
 
 try:
-    from .module_manager import get_module_manager
     from .message_template_manager import get_message_template_manager
+    from .module_manager import get_module_manager
 except ImportError:
-    import sys
     import os
+    import sys
 
     sys.path.append(os.path.dirname(__file__))
-    from module_manager import get_module_manager
     from message_template_manager import get_message_template_manager
-import sys
+    from module_manager import get_module_manager
+
 import os
+import sys
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
 
-from src_orbis.mqtt.tools.nfc_code_manager import get_nfc_manager
 from src_orbis.mqtt.tools.module_manager import get_module_manager
+from src_orbis.mqtt.tools.nfc_code_manager import get_nfc_manager
 
 
 class TXTTemplateAnalyzer:
@@ -55,9 +57,7 @@ class TXTTemplateAnalyzer:
         # Initialize message template manager
         self.message_template_manager = get_message_template_manager()
         # Get project root (3 levels up from tools directory)
-        project_root = os.path.abspath(
-            os.path.join(os.path.dirname(__file__), "..", "..", "..")
-        )
+        project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
 
         # Set paths relative to project root
         self.output_dir = os.path.join(project_root, "mqtt-data/template_library")
@@ -103,8 +103,7 @@ class TXTTemplateAnalyzer:
         numeric_values = {
             v
             for v in simple_values
-            if isinstance(v, (int, float))
-            or (isinstance(v, str) and v.replace(".", "").replace("-", "").isdigit())
+            if isinstance(v, (int, float)) or (isinstance(v, str) and v.replace(".", "").replace("-", "").isdigit())
         }
         if numeric_values and len(numeric_values) == len(simple_values):
             return "<number>"
@@ -122,8 +121,7 @@ class TXTTemplateAnalyzer:
             "date",
         }
         if field_name in datetime_fields or any(
-            re.match(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$", v)
-            for v in str_values
+            re.match(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$", v) for v in str_values
         ):
             return "<datetime>"
 
@@ -139,10 +137,7 @@ class TXTTemplateAnalyzer:
             "transactionId",
         }
         if field_name in uuid_fields or any(
-            re.match(
-                r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$", v
-            )
-            for v in str_values
+            re.match(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$", v) for v in str_values
         ):
             return "<uuid>"
 
@@ -204,25 +199,15 @@ class TXTTemplateAnalyzer:
                 # Only treat as ENUM if ALL values are of the same type
                 if all_strings and not all_numbers:
                     # Check if these are actually mixed types (numbers as strings + text)
-                    numeric_strings = {
-                        v
-                        for v in str_values
-                        if v.replace(".", "").replace("-", "").isdigit()
-                    }
+                    numeric_strings = {v for v in str_values if v.replace(".", "").replace("-", "").isdigit()}
                     text_strings = str_values - numeric_strings
 
                     # Check if these are boolean-like mixed values
                     boolean_like = {v.lower() for v in str_values}
-                    boolean_strings = {
-                        v
-                        for v in str_values
-                        if v.lower() in ["true", "false", "1", "0"]
-                    }
+                    boolean_strings = {v for v in str_values if v.lower() in ["true", "false", "1", "0"]}
                     non_boolean_strings = str_values - boolean_strings
 
-                    if (numeric_strings and text_strings) or (
-                        boolean_strings and non_boolean_strings
-                    ):
+                    if (numeric_strings and text_strings) or (boolean_strings and non_boolean_strings):
                         # Mixed types - treat as string
                         return "<string>"
                     else:
@@ -236,9 +221,7 @@ class TXTTemplateAnalyzer:
         # 9. Default to string
         return "<string>"
 
-    def _check_specific_enums(
-        self, field_name: str, str_values: Set[str], context_values: Set[tuple]
-    ) -> str:
+    def _check_specific_enums(self, field_name: str, str_values: Set[str], context_values: Set[tuple]) -> str:
         """Check for specific ENUMs based on field name and module mapping"""
 
         # TXT-specific ENUMs
@@ -276,9 +259,7 @@ class TXTTemplateAnalyzer:
                 # Nested object
                 nested_template = {}
                 for sub_key, sub_value in value.items():
-                    nested_template[sub_key] = self._get_field_placeholder(
-                        sub_key, sub_value, payloads
-                    )
+                    nested_template[sub_key] = self._get_field_placeholder(sub_key, sub_value, payloads)
                 template[key] = nested_template
             elif isinstance(value, list) and value:
                 # Array
@@ -287,24 +268,18 @@ class TXTTemplateAnalyzer:
                     # Array of objects
                     element_template = {}
                     for sub_key, sub_value in first_element.items():
-                        element_template[sub_key] = self._get_field_placeholder(
-                            sub_key, sub_value, payloads
-                        )
+                        element_template[sub_key] = self._get_field_placeholder(sub_key, sub_value, payloads)
                     template[key] = [element_template]
                 else:
                     # Array of simple values
-                    template[key] = [
-                        self._get_field_placeholder(key, first_element, payloads)
-                    ]
+                    template[key] = [self._get_field_placeholder(key, first_element, payloads)]
             else:
                 # Simple value
                 template[key] = self._get_field_placeholder(key, value, payloads)
 
         return template
 
-    def _get_field_placeholder(
-        self, field_name: str, value, all_payloads: List[Dict]
-    ) -> str:
+    def _get_field_placeholder(self, field_name: str, value, all_payloads: List[Dict]) -> str:
         """Get placeholder for a specific field"""
         # Collect all values for this field across all payloads
         all_values = set()
@@ -325,17 +300,13 @@ class TXTTemplateAnalyzer:
         # Use the improved placeholder logic
         return self.get_placeholder_for_field(field_name, all_values)
 
-    def _analyze_field_structure(
-        self, field_name: str, value, all_payloads: List[Dict]
-    ) -> any:
+    def _analyze_field_structure(self, field_name: str, value, all_payloads: List[Dict]) -> any:
         """Analyze structure of a specific field across all payloads"""
         if isinstance(value, dict):
             # Nested object - analyze recursively
             nested_template = {}
             for sub_key, sub_value in value.items():
-                nested_template[sub_key] = self._analyze_field_structure(
-                    sub_key, sub_value, all_payloads
-                )
+                nested_template[sub_key] = self._analyze_field_structure(sub_key, sub_value, all_payloads)
             return nested_template
         elif isinstance(value, list) and value:
             # Array - analyze first element
@@ -344,17 +315,11 @@ class TXTTemplateAnalyzer:
                 # Array of objects
                 element_template = {}
                 for sub_key, sub_value in first_element.items():
-                    element_template[sub_key] = self._analyze_field_structure(
-                        sub_key, sub_value, all_payloads
-                    )
+                    element_template[sub_key] = self._analyze_field_structure(sub_key, sub_value, all_payloads)
                 return [element_template]  # Return as list with one element template
             else:
                 # Array of simple values
-                return [
-                    self._analyze_field_structure(
-                        field_name, first_element, all_payloads
-                    )
-                ]
+                return [self._analyze_field_structure(field_name, first_element, all_payloads)]
         else:
             # Simple value - collect all values for this field across all payloads
             all_values = set()
@@ -383,9 +348,7 @@ class TXTTemplateAnalyzer:
 
             return self.get_placeholder_for_field(field_name, all_values)
 
-    def _collect_values_for_field(
-        self, field_name: str, all_payloads: List[Dict]
-    ) -> set:
+    def _collect_values_for_field(self, field_name: str, all_payloads: List[Dict]) -> set:
         """Collect all values for a specific field across all payloads"""
         all_values = set()
 
@@ -458,21 +421,13 @@ class TXTTemplateAnalyzer:
                     description_lines.append(f"{field}: Objekt")
                     for sub_field, sub_placeholder in placeholder.items():
                         if sub_placeholder.startswith("["):
-                            description_lines.append(
-                                f"  {sub_field}: {sub_placeholder} (ENUM)"
-                            )
+                            description_lines.append(f"  {sub_field}: {sub_placeholder} (ENUM)")
                         elif sub_placeholder.startswith("<"):
-                            description_lines.append(
-                                f"  {sub_field}: {sub_placeholder} (Platzhalter)"
-                            )
+                            description_lines.append(f"  {sub_field}: {sub_placeholder} (Platzhalter)")
                         else:
-                            description_lines.append(
-                                f"  {sub_field}: {sub_placeholder}"
-                            )
+                            description_lines.append(f"  {sub_field}: {sub_placeholder}")
                 elif isinstance(placeholder, list):
-                    description_lines.append(
-                        f"{field}: Array mit {len(placeholder)} Elementen"
-                    )
+                    description_lines.append(f"{field}: Array mit {len(placeholder)} Elementen")
                 else:
                     description_lines.append(f"{field}: {placeholder}")
 
@@ -584,12 +539,8 @@ class TXTTemplateAnalyzer:
             "message_count": len(messages),
             "template_structure": template_structure,
             "examples": examples,
-            "session_name": (
-                messages[0].get("session_name", "Unknown") if messages else "Unknown"
-            ),
-            "timestamp": (
-                messages[0].get("timestamp", "Unknown") if messages else "Unknown"
-            ),
+            "session_name": (messages[0].get("session_name", "Unknown") if messages else "Unknown"),
+            "timestamp": (messages[0].get("timestamp", "Unknown") if messages else "Unknown"),
             "statistics": {
                 "total_messages": len(messages),
                 "valid_payloads": len(payloads),
@@ -619,8 +570,8 @@ class TXTTemplateAnalyzer:
                 placeholders = ",".join(["?" for _ in self.target_topics])
                 cursor.execute(
                     f"""
-                    SELECT topic, payload, timestamp, session_label 
-                    FROM mqtt_messages 
+                    SELECT topic, payload, timestamp, session_label
+                    FROM mqtt_messages
                     WHERE topic IN ({placeholders})
                     ORDER BY timestamp
                 """,
@@ -645,9 +596,7 @@ class TXTTemplateAnalyzer:
             except Exception as e:
                 print(f"  ❌ Fehler beim Laden von {session_file}: {e}")
 
-        print(
-            f"📊 Insgesamt {len(all_messages)} Nachrichten aus allen Sessions geladen"
-        )
+        print(f"📊 Insgesamt {len(all_messages)} Nachrichten aus allen Sessions geladen")
         return all_messages
 
     def analyze_all_topics(self) -> Dict:
@@ -678,9 +627,7 @@ class TXTTemplateAnalyzer:
                 messages = topic_messages[topic]
                 result = self.analyze_topic_structure(topic, messages)
                 results[topic] = result
-                print(
-                    f"  ✅ Template erstellt mit {len(result['examples'])} Beispielen"
-                )
+                print(f"  ✅ Template erstellt mit {len(result['examples'])} Beispielen")
             else:
                 print(f"  ⚠️  Keine Nachrichten für Topic: {topic}")
 
@@ -718,10 +665,7 @@ class TXTTemplateAnalyzer:
                 "timestamp": datetime.now().isoformat(),
                 "version": "1.0",
                 "total_topics": len(results),
-                "total_messages": sum(
-                    template["statistics"]["total_messages"]
-                    for template in results.values()
-                ),
+                "total_messages": sum(template["statistics"]["total_messages"] for template in results.values()),
             },
             "templates": {},
         }
@@ -733,17 +677,13 @@ class TXTTemplateAnalyzer:
                 "description": f"TXT Controller {topic}",
                 "template_structure": template["template_structure"],
                 "examples": template["examples"],
-                "validation_rules": self._generate_validation_rules(
-                    template["template_structure"]
-                ),
+                "validation_rules": self._generate_validation_rules(template["template_structure"]),
                 "statistics": template["statistics"],
             }
 
         # Save to YAML file
         with open(output_file, "w", encoding="utf-8") as f:
-            yaml.dump(
-                yaml_data, f, default_flow_style=False, allow_unicode=True, indent=2
-            )
+            yaml.dump(yaml_data, f, default_flow_style=False, allow_unicode=True, indent=2)
 
         print(f"💾 YAML-Ergebnisse gespeichert in: {output_file}")
         return output_file
@@ -752,12 +692,10 @@ class TXTTemplateAnalyzer:
         """Update the main message_templates.yml with TXT analysis results"""
         try:
             # Load existing message templates
-            config_file = (
-                Path(__file__).parent.parent / "config" / "message_templates.yml"
-            )
+            config_file = Path(__file__).parent.parent / "config" / "message_templates.yml"
 
             if config_file.exists():
-                with open(config_file, "r", encoding="utf-8") as f:
+                with open(config_file, encoding="utf-8") as f:
                     templates_data = yaml.safe_load(f)
             else:
                 templates_data = {
@@ -775,9 +713,7 @@ class TXTTemplateAnalyzer:
                     "description": f"TXT Controller {topic}",
                     "template_structure": template["template_structure"],
                     "examples": template["examples"],
-                    "validation_rules": self._generate_validation_rules(
-                        template["template_structure"]
-                    ),
+                    "validation_rules": self._generate_validation_rules(template["template_structure"]),
                 }
 
             # Save updated templates
@@ -883,10 +819,7 @@ class TXTTemplateAnalyzer:
             print("=" * 60)
 
             total_topics = len(results)
-            total_messages = sum(
-                template["statistics"]["total_messages"]
-                for template in results.values()
-            )
+            total_messages = sum(template["statistics"]["total_messages"] for template in results.values())
 
             print(f"✅ Erfolgreich analysiert: {total_topics} Topics")
             print(f"📨 Gesamt Nachrichten: {total_messages}")

@@ -6,8 +6,9 @@ Replaces module_mapping_utils.py with enhanced functionality
 """
 
 import os
+from typing import Any, Dict, List, Optional
+
 import yaml
-from typing import Dict, List, Optional, Any
 
 
 class ModuleManager:
@@ -19,9 +20,7 @@ class ModuleManager:
         self.config = self.load_yaml_config()
 
         if not self.config:
-            raise ValueError(
-                f"Could not load module configuration from {self.config_path}"
-            )
+            raise ValueError(f"Could not load module configuration from {self.config_path}")
 
     def _get_default_config_path(self) -> str:
         """Get default path to module configuration YAML file"""
@@ -34,7 +33,7 @@ class ModuleManager:
     def load_yaml_config(self) -> Optional[Dict[str, Any]]:
         """Load module configuration from YAML file"""
         try:
-            with open(self.config_path, "r", encoding="utf-8") as f:
+            with open(self.config_path, encoding="utf-8") as f:
                 return yaml.safe_load(f)
         except FileNotFoundError:
             print(f"❌ Module configuration file not found: {self.config_path}")
@@ -127,11 +126,7 @@ class ModuleManager:
     def get_modules_by_type(self, module_type: str) -> Dict[str, Dict[str, Any]]:
         """Get all modules of a specific type"""
         all_modules = self.get_all_modules()
-        return {
-            module_id: info
-            for module_id, info in all_modules.items()
-            if info.get("type") == module_type
-        }
+        return {module_id: info for module_id, info in all_modules.items() if info.get("type") == module_type}
 
     def get_all_module_ids(self) -> List[str]:
         """Get all module IDs"""
@@ -164,9 +159,7 @@ class ModuleManager:
                 return module_id
         return None
 
-    def format_module_display_name(
-        self, module_id: str, include_id: bool = True
-    ) -> str:
+    def format_module_display_name(self, module_id: str, include_id: bool = True) -> str:
         """Format module name for display (e.g., 'HBW (SVR3QA0022)')"""
         module_name = self.get_module_name(module_id)
         if include_id and module_name != module_id:
@@ -336,9 +329,7 @@ if __name__ == "__main__":
     print(f"📋 Total Modules: {len(manager.get_all_modules())}")
     print(f"🏭 Processing Modules: {len(manager.get_modules_by_type('Processing'))}")
     print(f"📦 Storage Modules: {len(manager.get_modules_by_type('Storage'))}")
-    print(
-        f"🔍 Quality-Control Modules: {len(manager.get_modules_by_type('Quality-Control'))}"
-    )
+    print(f"🔍 Quality-Control Modules: {len(manager.get_modules_by_type('Quality-Control'))}")
 
     # Test module info
     test_module_id = "SVR3QA0022"

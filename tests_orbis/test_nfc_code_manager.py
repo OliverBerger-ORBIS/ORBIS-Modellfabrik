@@ -4,10 +4,11 @@ Unit Tests for NFC Code Manager
 Tests the NFCCodeManager class functionality
 """
 
-import unittest
 import os
 import sys
 import tempfile
+import unittest
+
 import yaml
 
 # Add src_orbis to path
@@ -66,9 +67,7 @@ class TestNFCCodeManager(unittest.TestCase):
         }
 
         # Create temporary file
-        self.temp_file = tempfile.NamedTemporaryFile(
-            mode="w", suffix=".yml", delete=False
-        )
+        self.temp_file = tempfile.NamedTemporaryFile(mode="w", suffix=".yml", delete=False)
         yaml.dump(self.test_config, self.temp_file)
         self.temp_file.close()
 
@@ -220,21 +219,15 @@ class TestNFCCodeManager(unittest.TestCase):
     def test_format_nfc_display_name(self):
         """Test formatting NFC code for display"""
         # Test with code included
-        display_name = self.manager.format_nfc_display_name(
-            "040a8dca341291", include_code=True
-        )
+        display_name = self.manager.format_nfc_display_name("040a8dca341291", include_code=True)
         self.assertEqual(display_name, "R1 (040a8dca341291)")
 
         # Test without code
-        display_name = self.manager.format_nfc_display_name(
-            "040a8dca341291", include_code=False
-        )
+        display_name = self.manager.format_nfc_display_name("040a8dca341291", include_code=False)
         self.assertEqual(display_name, "R1")
 
         # Test invalid code
-        display_name = self.manager.format_nfc_display_name(
-            "invalid_code", include_code=True
-        )
+        display_name = self.manager.format_nfc_display_name("invalid_code", include_code=True)
         self.assertEqual(display_name, "invalid_code")
 
     def test_get_mqtt_paths(self):
@@ -325,9 +318,7 @@ class TestNFCCodeManagerBackwardCompatibility(unittest.TestCase):
         }
 
         # Create temporary file
-        self.temp_file = tempfile.NamedTemporaryFile(
-            mode="w", suffix=".yml", delete=False
-        )
+        self.temp_file = tempfile.NamedTemporaryFile(mode="w", suffix=".yml", delete=False)
         yaml.dump(self.test_config, self.temp_file)
         self.temp_file.close()
 
@@ -339,11 +330,11 @@ class TestNFCCodeManagerBackwardCompatibility(unittest.TestCase):
     def test_backward_compatibility_functions(self):
         """Test backward compatibility functions"""
         from mqtt.tools.nfc_code_manager import (
+            get_all_nfc_codes,
             get_friendly_name,
             get_nfc_code,
-            is_nfc_code,
             get_nfc_codes_by_color,
-            get_all_nfc_codes,
+            is_nfc_code,
         )
 
         # Test backward compatibility functions

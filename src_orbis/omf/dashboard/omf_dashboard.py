@@ -115,7 +115,7 @@ def main():
                 st.markdown("🏭")
                 st.caption("Modellfabrik")
 
-        except Exception as e:
+        except Exception:
             # Fallback bei Fehlern: Schönes Fabrik-Logo
             st.markdown("🏭")
             st.caption("Modellfabrik")
@@ -158,9 +158,7 @@ def main():
                     st.metric("📨", stats.get("messages_received", 0), "Empfangen")
                 else:
                     st.error("🎬 REPLAY-BROKER")
-                    if st.button(
-                        "🔗 Connect", key="replay_connect", use_container_width=True
-                    ):
+                    if st.button("🔗 Connect", key="replay_connect", use_container_width=True):
                         if mqtt_client.connect("replay"):
                             st.success("✅ Connected!")
                         else:
@@ -170,9 +168,7 @@ def main():
                 st.success("🔗 LIVE-FABRIK")
                 stats = mqtt_client.get_statistics()
                 st.metric("📨", stats.get("messages_received", 0), "Empfangen")
-                if st.button(
-                    "🔌 Disconnect", key="mqtt_disconnect", use_container_width=True
-                ):
+                if st.button("🔌 Disconnect", key="mqtt_disconnect", use_container_width=True):
                     mqtt_client.disconnect()
                     st.rerun()
             else:
@@ -229,9 +225,7 @@ def main():
         st.header("📋 Aufträge")
 
         # Sub-tabs for Orders
-        orders_tab1, orders_tab2 = st.tabs(
-            ["📋 Auftragsverwaltung", "🔄 Laufende Aufträge"]
-        )
+        orders_tab1, orders_tab2 = st.tabs(["📋 Auftragsverwaltung", "🔄 Laufende Aufträge"])
 
         with orders_tab1:
             st.subheader("📋 Auftragsverwaltung")

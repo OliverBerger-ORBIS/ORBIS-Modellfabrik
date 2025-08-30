@@ -4,21 +4,20 @@ APS Persistent MQTT Logger
 Orbis Development - Robuster Logger mit Persistierung ohne SQLite-Probleme
 """
 
-import paho.mqtt.client as mqtt
 import json
-import time
 import logging
-import threading
-from datetime import datetime
-import sqlite3
 import queue
 import signal
+import sqlite3
 import sys
+import threading
+import time
+from datetime import datetime
+
+import paho.mqtt.client as mqtt
 
 # Logging Setup
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 
@@ -39,9 +38,7 @@ class APSPersistentLogger:
         self.password = password
 
         # Session labeling
-        self.session_label = (
-            session_label or f"session_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
-        )
+        self.session_label = session_label or f"session_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
 
         # Logging Setup - Use absolute paths
         import os
@@ -54,12 +51,8 @@ class APSPersistentLogger:
         sessions_dir = os.path.join(project_root, "mqtt-data/sessions")
         os.makedirs(sessions_dir, exist_ok=True)
 
-        self.log_file = os.path.join(
-            sessions_dir, f"aps_persistent_traffic_{self.session_label}.log"
-        )
-        self.db_file = os.path.join(
-            sessions_dir, f"aps_persistent_traffic_{self.session_label}.db"
-        )
+        self.log_file = os.path.join(sessions_dir, f"aps_persistent_traffic_{self.session_label}.log")
+        self.db_file = os.path.join(sessions_dir, f"aps_persistent_traffic_{self.session_label}.db")
 
         # Thread-safe Queue für Datenbank-Operationen
         self.db_queue = queue.Queue()
@@ -157,7 +150,7 @@ class APSPersistentLogger:
 
                 cursor.execute(
                     """
-                    INSERT INTO mqtt_messages 
+                    INSERT INTO mqtt_messages
                     (timestamp, topic, payload, qos, retain, message_type, module_type, serial_number, status, session_label, process_label)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
@@ -270,8 +263,7 @@ class APSPersistentLogger:
 
             # Storage
             if any(
-                keyword in topic_lower or keyword in payload_lower
-                for keyword in ["storage", "hbw", "store", "lager"]
+                keyword in topic_lower or keyword in payload_lower for keyword in ["storage", "hbw", "store", "lager"]
             ):
                 return "storage"
 
@@ -382,9 +374,7 @@ class APSPersistentLogger:
             if self.message_count % 100 == 0:
                 elapsed = time.time() - self.start_time
                 rate = self.message_count / elapsed if elapsed > 0 else 0
-                logger.info(
-                    f"📊 Received {self.message_count} messages ({rate:.1f} msg/s)"
-                )
+                logger.info(f"📊 Received {self.message_count} messages ({rate:.1f} msg/s)")
 
         except Exception as e:
             logger.error(f"Error processing message: {e}")

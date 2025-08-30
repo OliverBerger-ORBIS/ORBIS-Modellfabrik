@@ -6,8 +6,9 @@ Replaces nfc_code_mapping.py with enhanced functionality
 """
 
 import os
+from typing import Any, Dict, List, Optional
+
 import yaml
-from typing import Dict, List, Optional, Any
 
 
 class NFCCodeManager:
@@ -19,9 +20,7 @@ class NFCCodeManager:
         self.config = self.load_yaml_config()
 
         if not self.config:
-            raise ValueError(
-                f"Could not load NFC configuration from {self.config_path}"
-            )
+            raise ValueError(f"Could not load NFC configuration from {self.config_path}")
 
     def _get_default_config_path(self) -> str:
         """Get default path to NFC configuration YAML file"""
@@ -34,7 +33,7 @@ class NFCCodeManager:
     def load_yaml_config(self) -> Optional[Dict[str, Any]]:
         """Load NFC configuration from YAML file"""
         try:
-            with open(self.config_path, "r", encoding="utf-8") as f:
+            with open(self.config_path, encoding="utf-8") as f:
                 return yaml.safe_load(f)
         except FileNotFoundError:
             print(f"❌ NFC configuration file not found: {self.config_path}")
@@ -75,11 +74,7 @@ class NFCCodeManager:
             return []
 
         color = color.upper()
-        return [
-            code
-            for code, info in self.config["nfc_codes"].items()
-            if info.get("color") == color
-        ]
+        return [code for code, info in self.config["nfc_codes"].items() if info.get("color") == color]
 
     def get_nfc_codes_by_quality(self, quality: str) -> List[str]:
         """Get all NFC codes with specific quality check status"""
@@ -87,11 +82,7 @@ class NFCCodeManager:
             return []
 
         quality = quality.upper()
-        return [
-            code
-            for code, info in self.config["nfc_codes"].items()
-            if info.get("quality_check") == quality
-        ]
+        return [code for code, info in self.config["nfc_codes"].items() if info.get("quality_check") == quality]
 
     def get_all_nfc_codes(self) -> List[str]:
         """Get all NFC codes"""
@@ -119,9 +110,7 @@ class NFCCodeManager:
         if not self.config or "nfc_codes" not in self.config:
             return False
 
-        friendly_names = [
-            info.get("friendly_id") for info in self.config["nfc_codes"].values()
-        ]
+        friendly_names = [info.get("friendly_id") for info in self.config["nfc_codes"].values()]
         return value in friendly_names
 
     def validate_nfc_code(self, nfc_code: str) -> bool:

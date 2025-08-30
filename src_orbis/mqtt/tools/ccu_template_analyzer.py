@@ -4,29 +4,31 @@ CCU Template Analyzer
 Analyzes CCU (Central Control Unit) MQTT messages and generates templates
 """
 
-import json
-import sqlite3
-import os
 import glob
+import json
+import os
 import re
-import yaml
+import sqlite3
 from datetime import datetime
-from typing import Dict, List, Set
 from pathlib import Path
+from typing import Dict, List, Set
+
+import yaml
 
 try:
-    from .module_manager import get_module_manager
     from .message_template_manager import get_message_template_manager
+    from .module_manager import get_module_manager
 except ImportError:
     # Fallback for direct execution
-    import sys
     import os
+    import sys
 
     sys.path.append(os.path.dirname(__file__))
-    from module_manager import get_module_manager
     from message_template_manager import get_message_template_manager
-import sys
+    from module_manager import get_module_manager
+
 import os
+import sys
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
 
@@ -59,9 +61,7 @@ class CCUTemplateAnalyzer:
         self.message_template_manager = get_message_template_manager()
 
         # Get project root (3 levels up from tools directory)
-        project_root = os.path.abspath(
-            os.path.join(os.path.dirname(__file__), "..", "..", "..")
-        )
+        project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
 
         # Set paths relative to project root
         self.output_dir = os.path.join(project_root, "mqtt-data/template_library")
@@ -73,9 +73,7 @@ class CCUTemplateAnalyzer:
         print("🔧 CCU Template Analyzer initialisiert")
         print(f"📁 Ausgabe-Verzeichnis: {self.output_dir}")
         print(f"📁 Session-Verzeichnis: {self.session_dir}")
-        print(
-            f"📋 Message Template Manager: {self.message_template_manager.get_statistics()}"
-        )
+        print(f"📋 Message Template Manager: {self.message_template_manager.get_statistics()}")
 
     def get_placeholder_for_field(self, field_name: str, values: Set) -> str:
         """Generate placeholder for field based on values using unified type recognition"""
@@ -110,8 +108,7 @@ class CCUTemplateAnalyzer:
         numeric_values = {
             v
             for v in simple_values
-            if isinstance(v, (int, float))
-            or (isinstance(v, str) and v.replace(".", "").replace("-", "").isdigit())
+            if isinstance(v, (int, float)) or (isinstance(v, str) and v.replace(".", "").replace("-", "").isdigit())
         }
         if numeric_values and len(numeric_values) == len(simple_values):
             return "<number>"
@@ -129,8 +126,7 @@ class CCUTemplateAnalyzer:
             "date",
         }
         if field_name in datetime_fields or any(
-            re.match(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$", v)
-            for v in str_values
+            re.match(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$", v) for v in str_values
         ):
             return "<datetime>"
 
@@ -146,10 +142,7 @@ class CCUTemplateAnalyzer:
             "transactionId",
         }
         if field_name in uuid_fields or any(
-            re.match(
-                r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$", v
-            )
-            for v in str_values
+            re.match(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$", v) for v in str_values
         ):
             return "<uuid>"
 
@@ -211,25 +204,15 @@ class CCUTemplateAnalyzer:
                 # Only treat as ENUM if ALL values are of the same type
                 if all_strings and not all_numbers:
                     # Check if these are actually mixed types (numbers as strings + text)
-                    numeric_strings = {
-                        v
-                        for v in str_values
-                        if v.replace(".", "").replace("-", "").isdigit()
-                    }
+                    numeric_strings = {v for v in str_values if v.replace(".", "").replace("-", "").isdigit()}
                     text_strings = str_values - numeric_strings
 
                     # Check if these are boolean-like mixed values
                     boolean_like = {v.lower() for v in str_values}
-                    boolean_strings = {
-                        v
-                        for v in str_values
-                        if v.lower() in ["true", "false", "1", "0"]
-                    }
+                    boolean_strings = {v for v in str_values if v.lower() in ["true", "false", "1", "0"]}
                     non_boolean_strings = str_values - boolean_strings
 
-                    if (numeric_strings and text_strings) or (
-                        boolean_strings and non_boolean_strings
-                    ):
+                    if (numeric_strings and text_strings) or (boolean_strings and non_boolean_strings):
                         # Mixed types - treat as string
                         return "<string>"
                     else:
@@ -243,9 +226,7 @@ class CCUTemplateAnalyzer:
         # 9. Default to string
         return "<string>"
 
-    def _check_specific_enums(
-        self, field_name: str, str_values: Set[str], context_values: Set[tuple]
-    ) -> str:
+    def _check_specific_enums(self, field_name: str, str_values: Set[str], context_values: Set[tuple]) -> str:
         """Check for specific ENUMs based on field name and module mapping"""
 
         # CCU-specific ENUMs
@@ -258,26 +239,18 @@ class CCUTemplateAnalyzer:
         # Context-aware type field (CCU)
         if field_name == "type" and context_values:
             # Extract values by context
-            production_step_types = {
-                v[1] for v in context_values if "productionSteps" in v[0]
-            }
-            top_level_types = {
-                v[1] for v in context_values if "productionSteps" not in v[0]
-            }
+            production_step_types = {v[1] for v in context_values if "productionSteps" in v[0]}
+            top_level_types = {v[1] for v in context_values if "productionSteps" not in v[0]}
 
             if production_step_types:
                 production_type_values = {v.upper() for v in production_step_types}
-                valid_action_types = set(
-                    self.module_mapping.get_enum_values("actionTypes")
-                )
+                valid_action_types = set(self.module_mapping.get_enum_values("actionTypes"))
                 if production_type_values.issubset(valid_action_types):
                     return f"[{', '.join(sorted(valid_action_types))}]"
 
             if top_level_types:
                 top_type_values = {v.upper() for v in top_level_types}
-                valid_workpiece_types = set(
-                    self.module_mapping.get_enum_values("workpieceTypes")
-                )
+                valid_workpiece_types = set(self.module_mapping.get_enum_values("workpieceTypes"))
                 if top_type_values.issubset(valid_workpiece_types):
                     return f"[{', '.join(sorted(valid_workpiece_types))}]"
 
@@ -299,18 +272,14 @@ class CCUTemplateAnalyzer:
         # Module types
         if field_name == "moduleType":
             module_values = {v.upper() for v in str_values}
-            valid_module_types = set(
-                self.module_mapping.get_enum_values("moduleSubTypes")
-            )
+            valid_module_types = set(self.module_mapping.get_enum_values("moduleSubTypes"))
             if module_values.issubset(valid_module_types):
                 return f"[{', '.join(sorted(valid_module_types))}]"
 
         # Sources/targets
         if field_name in ["source", "target"]:
             location_values = {v.upper() for v in str_values}
-            valid_locations = set(
-                self.module_mapping.get_enum_values("moduleSubTypes")
-            ) | {"START"}
+            valid_locations = set(self.module_mapping.get_enum_values("moduleSubTypes")) | {"START"}
             if location_values.issubset(valid_locations):
                 return f"[{', '.join(sorted(valid_locations))}]"
 
@@ -333,9 +302,7 @@ class CCUTemplateAnalyzer:
 
             if first_dict:
                 # Analyze the structure of the first dictionary
-                return self._analyze_field_structure(
-                    "array_element", first_dict, payloads
-                )
+                return self._analyze_field_structure("array_element", first_dict, payloads)
 
         # Handle regular dictionary payloads
         first_payload = payloads[0] if payloads else {}
@@ -346,9 +313,7 @@ class CCUTemplateAnalyzer:
                 # Nested object
                 nested_template = {}
                 for sub_key, sub_value in value.items():
-                    nested_template[sub_key] = self._analyze_field_structure(
-                        sub_key, sub_value, payloads
-                    )
+                    nested_template[sub_key] = self._analyze_field_structure(sub_key, sub_value, payloads)
                 template[key] = nested_template
             elif isinstance(value, list) and value:
                 # Array
@@ -357,32 +322,24 @@ class CCUTemplateAnalyzer:
                     # Array of objects
                     element_template = {}
                     for sub_key, sub_value in first_element.items():
-                        element_template[sub_key] = self._analyze_field_structure(
-                            sub_key, sub_value, payloads
-                        )
+                        element_template[sub_key] = self._analyze_field_structure(sub_key, sub_value, payloads)
                     template[key] = [element_template]
                 else:
                     # Array of simple values
-                    template[key] = [
-                        self._analyze_field_structure(key, first_element, payloads)
-                    ]
+                    template[key] = [self._analyze_field_structure(key, first_element, payloads)]
             else:
                 # Simple value
                 template[key] = self._analyze_field_structure(key, value, payloads)
 
         return template
 
-    def _analyze_field_structure(
-        self, field_name: str, value, all_payloads: List[Dict]
-    ) -> any:
+    def _analyze_field_structure(self, field_name: str, value, all_payloads: List[Dict]) -> any:
         """Analyze structure of a specific field across all payloads"""
         if isinstance(value, dict):
             # Nested object - analyze recursively
             nested_template = {}
             for sub_key, sub_value in value.items():
-                nested_template[sub_key] = self._analyze_field_structure(
-                    sub_key, sub_value, all_payloads
-                )
+                nested_template[sub_key] = self._analyze_field_structure(sub_key, sub_value, all_payloads)
             return nested_template
         elif isinstance(value, list) and value:
             # Array - analyze first element
@@ -391,17 +348,11 @@ class CCUTemplateAnalyzer:
                 # Array of objects
                 element_template = {}
                 for sub_key, sub_value in first_element.items():
-                    element_template[sub_key] = self._analyze_field_structure(
-                        sub_key, sub_value, all_payloads
-                    )
+                    element_template[sub_key] = self._analyze_field_structure(sub_key, sub_value, all_payloads)
                 return [element_template]  # Return as list with one element template
             else:
                 # Array of simple values
-                return [
-                    self._analyze_field_structure(
-                        field_name, first_element, all_payloads
-                    )
-                ]
+                return [self._analyze_field_structure(field_name, first_element, all_payloads)]
         else:
             # Simple value - collect all values for this field across all payloads
             all_values = set()
@@ -417,9 +368,7 @@ class CCUTemplateAnalyzer:
                     for item in payload:
                         if isinstance(item, dict):
                             # Extract values from nested objects with context
-                            self._extract_values_from_nested(
-                                item, field_name, all_values
-                            )
+                            self._extract_values_from_nested(item, field_name, all_values)
                         elif field_name in item:
                             field_value = item[field_name]
                             if isinstance(field_value, (list, dict)):
@@ -429,9 +378,7 @@ class CCUTemplateAnalyzer:
 
             return self.get_placeholder_for_field(field_name, all_values)
 
-    def _extract_values_from_nested(
-        self, obj: dict, target_field: str, all_values: set, field_path: str = ""
-    ):
+    def _extract_values_from_nested(self, obj: dict, target_field: str, all_values: set, field_path: str = ""):
         """Recursively extract values for a specific field from nested structures with context"""
         current_path = f"{field_path}.{target_field}" if field_path else target_field
 
@@ -443,15 +390,11 @@ class CCUTemplateAnalyzer:
                     # Store value with context path
                     all_values.add((current_path, value))
             elif isinstance(value, dict):
-                self._extract_values_from_nested(
-                    value, target_field, all_values, current_path
-                )
+                self._extract_values_from_nested(value, target_field, all_values, current_path)
             elif isinstance(value, list):
                 for item in value:
                     if isinstance(item, dict):
-                        self._extract_values_from_nested(
-                            item, target_field, all_values, current_path
-                        )
+                        self._extract_values_from_nested(item, target_field, all_values, current_path)
 
     def analyze_topic_structure(self, topic: str, messages: List[Dict]) -> Dict:
         """Analyze structure for a specific topic"""
@@ -583,12 +526,8 @@ class CCUTemplateAnalyzer:
             "message_count": len(messages),
             "template_structure": template_structure,
             "examples": examples,
-            "session_name": (
-                messages[0].get("session_name", "Unknown") if messages else "Unknown"
-            ),
-            "timestamp": (
-                messages[0].get("timestamp", "Unknown") if messages else "Unknown"
-            ),
+            "session_name": (messages[0].get("session_name", "Unknown") if messages else "Unknown"),
+            "timestamp": (messages[0].get("timestamp", "Unknown") if messages else "Unknown"),
             "statistics": {
                 "total_messages": len(messages),
                 "valid_payloads": len(payloads),
@@ -618,8 +557,8 @@ class CCUTemplateAnalyzer:
                 placeholders = ",".join(["?" for _ in self.target_topics])
                 cursor.execute(
                     f"""
-                    SELECT topic, payload, timestamp, session_label 
-                    FROM mqtt_messages 
+                    SELECT topic, payload, timestamp, session_label
+                    FROM mqtt_messages
                     WHERE topic IN ({placeholders})
                     ORDER BY timestamp
                 """,
@@ -644,9 +583,7 @@ class CCUTemplateAnalyzer:
             except Exception as e:
                 print(f"  ❌ Fehler beim Laden von {session_file}: {e}")
 
-        print(
-            f"📊 Insgesamt {len(all_messages)} Nachrichten aus allen Sessions geladen"
-        )
+        print(f"📊 Insgesamt {len(all_messages)} Nachrichten aus allen Sessions geladen")
         return all_messages
 
     def analyze_all_topics(self) -> Dict:
@@ -677,9 +614,7 @@ class CCUTemplateAnalyzer:
                 messages = topic_messages[topic]
                 result = self.analyze_topic_structure(topic, messages)
                 results[topic] = result
-                print(
-                    f"  ✅ Template erstellt mit {len(result['examples'])} Beispielen"
-                )
+                print(f"  ✅ Template erstellt mit {len(result['examples'])} Beispielen")
             else:
                 print(f"  ⚠️  Keine Nachrichten für Topic: {topic}")
 
@@ -718,10 +653,7 @@ class CCUTemplateAnalyzer:
                 "timestamp": datetime.now().isoformat(),
                 "version": "1.0",
                 "total_topics": len(results),
-                "total_messages": sum(
-                    template["statistics"]["total_messages"]
-                    for template in results.values()
-                ),
+                "total_messages": sum(template["statistics"]["total_messages"] for template in results.values()),
             },
             "topics": {},
         }
@@ -748,15 +680,11 @@ class CCUTemplateAnalyzer:
 
                 # Add enum values if available
                 if "enum_values" in field_info and field_info["enum_values"]:
-                    yaml_data["topics"][topic]["template_structure"][field]["enum"] = (
-                        field_info["enum_values"]
-                    )
+                    yaml_data["topics"][topic]["template_structure"][field]["enum"] = field_info["enum_values"]
 
                 # Add format if available
                 if "format" in field_info:
-                    yaml_data["topics"][topic]["template_structure"][field][
-                        "format"
-                    ] = field_info["format"]
+                    yaml_data["topics"][topic]["template_structure"][field]["format"] = field_info["format"]
 
             # Add examples (limit to 3 for YAML readability)
             examples = template_data.get("examples", [])
@@ -766,22 +694,16 @@ class CCUTemplateAnalyzer:
             validation_rules = []
             for field, field_info in template_data.get("structure", {}).items():
                 if "enum_values" in field_info and field_info["enum_values"]:
-                    validation_rules.append(
-                        f"{field} muss in {field_info['enum_values']} sein"
-                    )
+                    validation_rules.append(f"{field} muss in {field_info['enum_values']} sein")
                 if "format" in field_info:
-                    validation_rules.append(
-                        f"{field} muss Format {field_info['format']} haben"
-                    )
+                    validation_rules.append(f"{field} muss Format {field_info['format']} haben")
 
             yaml_data["topics"][topic]["validation_rules"] = validation_rules
 
         # Save to YAML file
         try:
             with open(output_file, "w", encoding="utf-8") as f:
-                yaml.dump(
-                    yaml_data, f, default_flow_style=False, allow_unicode=True, indent=2
-                )
+                yaml.dump(yaml_data, f, default_flow_style=False, allow_unicode=True, indent=2)
 
             print(f"💾 YAML-Ergebnisse gespeichert in: {output_file}")
             return output_file
@@ -794,12 +716,10 @@ class CCUTemplateAnalyzer:
         """Update the main message_templates.yml with analysis results"""
         try:
             # Load current YAML
-            yaml_file = (
-                Path(__file__).parent.parent / "config" / "message_templates.yml"
-            )
+            yaml_file = Path(__file__).parent.parent / "config" / "message_templates.yml"
 
             if yaml_file.exists():
-                with open(yaml_file, "r", encoding="utf-8") as f:
+                with open(yaml_file, encoding="utf-8") as f:
                     current_data = yaml.safe_load(f)
             else:
                 current_data = {
@@ -866,15 +786,11 @@ class CCUTemplateAnalyzer:
 
                     # Add enum values if available
                     if "enum_values" in field_info and field_info["enum_values"]:
-                        current_data["topics"][topic]["template_structure"][field][
-                            "enum"
-                        ] = field_info["enum_values"]
+                        current_data["topics"][topic]["template_structure"][field]["enum"] = field_info["enum_values"]
 
                     # Add format if available
                     if "format" in field_info:
-                        current_data["topics"][topic]["template_structure"][field][
-                            "format"
-                        ] = field_info["format"]
+                        current_data["topics"][topic]["template_structure"][field]["format"] = field_info["format"]
 
                 # Add examples (limit to 3 for YAML readability)
                 examples = template_data.get("examples", [])
@@ -884,13 +800,9 @@ class CCUTemplateAnalyzer:
                 validation_rules = []
                 for field, field_info in template_data.get("structure", {}).items():
                     if "enum_values" in field_info and field_info["enum_values"]:
-                        validation_rules.append(
-                            f"{field} muss in {field_info['enum_values']} sein"
-                        )
+                        validation_rules.append(f"{field} muss in {field_info['enum_values']} sein")
                     if "format" in field_info:
-                        validation_rules.append(
-                            f"{field} muss Format {field_info['format']} haben"
-                        )
+                        validation_rules.append(f"{field} muss Format {field_info['format']} haben")
 
                 current_data["topics"][topic]["validation_rules"] = validation_rules
 
@@ -947,10 +859,7 @@ class CCUTemplateAnalyzer:
             print("=" * 60)
 
             total_topics = len(results)
-            total_messages = sum(
-                template["statistics"]["total_messages"]
-                for template in results.values()
-            )
+            total_messages = sum(template["statistics"]["total_messages"] for template in results.values())
 
             print(f"✅ Erfolgreich analysiert: {total_topics} Topics")
             print(f"📨 Gesamt Nachrichten: {total_messages}")
@@ -977,9 +886,7 @@ class CCUTemplateAnalyzer:
             print("\n🔄 Aktualisiere Message Template Manager...")
 
             # Get current templates
-            current_templates = self.message_template_manager.templates.get(
-                "topics", {}
-            )
+            current_templates = self.message_template_manager.templates.get("topics", {})
 
             # Update with analysis results
             for topic, template_data in results.items():
@@ -1020,13 +927,9 @@ class CCUTemplateAnalyzer:
                 validation_rules = []
                 for field, field_info in template_data.get("structure", {}).items():
                     if "enum_values" in field_info and field_info["enum_values"]:
-                        validation_rules.append(
-                            f"{field} muss in {field_info['enum_values']} sein"
-                        )
+                        validation_rules.append(f"{field} muss in {field_info['enum_values']} sein")
                     if "format" in field_info:
-                        validation_rules.append(
-                            f"{field} muss Format {field_info['format']} haben"
-                        )
+                        validation_rules.append(f"{field} muss Format {field_info['format']} haben")
 
                 current_templates[topic]["validation_rules"] = validation_rules
 

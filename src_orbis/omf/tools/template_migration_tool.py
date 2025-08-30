@@ -27,9 +27,7 @@ class TemplateMigrationTool:
             )
 
         if new_templates_dir is None:
-            new_templates_dir = os.path.join(
-                os.path.dirname(__file__), "..", "config", "message_templates"
-            )
+            new_templates_dir = os.path.join(os.path.dirname(__file__), "..", "config", "message_templates")
 
         self.old_yaml_path = Path(old_yaml_path)
         self.new_templates_dir = Path(new_templates_dir)
@@ -133,32 +131,20 @@ class TemplateMigrationTool:
         for category, sub_categories in grouped_templates.items():
             for sub_category, templates in sub_categories.items():
                 if dry_run:
-                    print(
-                        f"📁 Würde erstellen: {category}/{sub_category}.yml ({len(templates)} Templates)"
-                    )
-                    migration_report["created_files"].append(
-                        f"{category}/{sub_category}.yml"
-                    )
+                    print(f"📁 Würde erstellen: {category}/{sub_category}.yml ({len(templates)} Templates)")
+                    migration_report["created_files"].append(f"{category}/{sub_category}.yml")
                     migration_report["migrated_topics"] += len(templates)
                 else:
-                    success = self._create_template_file(
-                        category, sub_category, templates
-                    )
+                    success = self._create_template_file(category, sub_category, templates)
                     if success:
                         migration_report["migrated_topics"] += len(templates)
-                        migration_report["created_files"].append(
-                            f"{category}/{sub_category}.yml"
-                        )
+                        migration_report["created_files"].append(f"{category}/{sub_category}.yml")
                     else:
-                        migration_report["errors"].append(
-                            f"Fehler bei {category}/{sub_category}"
-                        )
+                        migration_report["errors"].append(f"Fehler bei {category}/{sub_category}")
 
         return migration_report
 
-    def _create_template_file(
-        self, category: str, sub_category: str, templates: Dict[str, Any]
-    ) -> bool:
+    def _create_template_file(self, category: str, sub_category: str, templates: Dict[str, Any]) -> bool:
         """Erstellt eine Template-Datei für eine Kategorie/Sub-Kategorie"""
         try:
             # Erstelle Verzeichnis

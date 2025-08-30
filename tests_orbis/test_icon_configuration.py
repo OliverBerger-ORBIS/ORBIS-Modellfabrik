@@ -4,8 +4,8 @@ Test für Icon Configuration System
 Prüft die Icon-Konfiguration und -Verwaltung
 """
 
-import sys
 import os
+import sys
 import unittest
 from pathlib import Path
 
@@ -92,9 +92,7 @@ class TestIconConfiguration(unittest.TestCase):
 
             for module in test_modules:
                 icon_info = get_module_icon(module)
-                self.assertIsInstance(
-                    icon_info, str
-                )  # Icon is a string (emoji or path)
+                self.assertIsInstance(icon_info, str)  # Icon is a string (emoji or path)
                 self.assertGreater(len(icon_info), 0)  # Icon should not be empty
 
             # Test with invalid module (should return default)
@@ -133,19 +131,14 @@ class TestIconConfiguration(unittest.TestCase):
     def test_icon_paths_exist(self):
         """Test: Icon-Pfade existieren (falls Icons als Dateien)"""
         try:
-            from src_orbis.mqtt.dashboard.config.icon_config import (
-                MODULE_ICONS,
-                STATUS_ICONS,
-            )
+            from src_orbis.mqtt.dashboard.config.icon_config import MODULE_ICONS, STATUS_ICONS
 
             # Check if icon paths exist (if they are file paths)
             all_icons = list(MODULE_ICONS.values()) + list(STATUS_ICONS.values())
 
             for icon_info in all_icons:
                 # Icons are strings, check if they look like file paths
-                if isinstance(icon_info, str) and (
-                    "/" in icon_info or "\\" in icon_info
-                ):
+                if isinstance(icon_info, str) and ("/" in icon_info or "\\" in icon_info):
                     if os.path.isfile(icon_info):
                         self.assertTrue(os.path.exists(icon_info))
 
@@ -157,10 +150,7 @@ class TestIconConfiguration(unittest.TestCase):
     def test_icon_colors_are_valid(self):
         """Test: Icon-Farben sind gültige CSS-Farben"""
         try:
-            from src_orbis.mqtt.dashboard.config.icon_config import (
-                MODULE_ICONS,
-                STATUS_ICONS,
-            )
+            from src_orbis.mqtt.dashboard.config.icon_config import MODULE_ICONS, STATUS_ICONS
 
             # Icons are emojis, so no color validation needed
             # This test is kept for future use if colors are added

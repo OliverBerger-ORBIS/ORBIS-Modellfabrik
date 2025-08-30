@@ -19,9 +19,7 @@ class OMFNFCManager:
         self.config = self.load_yaml_config()
 
         if not self.config:
-            raise ValueError(
-                f"Could not load NFC configuration from {self.config_path}"
-            )
+            raise ValueError(f"Could not load NFC configuration from {self.config_path}")
 
     def _get_default_config_path(self) -> str:
         """Get default path to NFC configuration YAML file"""
@@ -82,11 +80,7 @@ class OMFNFCManager:
     def get_description(self, nfc_code: str) -> str:
         """Get description for NFC code"""
         nfc_info = self.get_nfc_info(nfc_code)
-        return (
-            nfc_info.get("description", "No description")
-            if nfc_info
-            else "No description"
-        )
+        return nfc_info.get("description", "No description") if nfc_info else "No description"
 
     def is_enabled(self, nfc_code: str) -> bool:
         """Check if NFC code is enabled"""

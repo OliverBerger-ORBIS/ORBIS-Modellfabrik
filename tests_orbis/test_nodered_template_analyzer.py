@@ -10,14 +10,15 @@ Tests the Node-RED template analysis functionality including:
 - Validation rule generation
 """
 
-import unittest
-import tempfile
-import os
 import json
-import sqlite3
-import yaml
-import sys
+import os
 import shutil
+import sqlite3
+import sys
+import tempfile
+import unittest
+
+import yaml
 
 # Add src_orbis to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src_orbis"))
@@ -37,9 +38,7 @@ class TestNodeRedTemplateAnalyzer(unittest.TestCase):
         os.makedirs(self.output_dir, exist_ok=True)
 
         # Create test analyzer
-        self.analyzer = NodeRedTemplateAnalyzer(
-            session_dir=self.session_dir, output_dir=self.output_dir
-        )
+        self.analyzer = NodeRedTemplateAnalyzer(session_dir=self.session_dir, output_dir=self.output_dir)
 
     def tearDown(self):
         """Clean up test environment"""
@@ -416,7 +415,7 @@ class TestNodeRedTemplateAnalyzer(unittest.TestCase):
         self.assertTrue(os.path.exists(output_file))
 
         # Check file content
-        with open(output_file, "r", encoding="utf-8") as f:
+        with open(output_file, encoding="utf-8") as f:
             data = json.load(f)
 
         self.assertIn("metadata", data)
@@ -442,7 +441,7 @@ class TestNodeRedTemplateAnalyzer(unittest.TestCase):
         self.assertTrue(os.path.exists(output_file))
 
         # Check file content
-        with open(output_file, "r", encoding="utf-8") as f:
+        with open(output_file, encoding="utf-8") as f:
             data = yaml.safe_load(f)
 
         self.assertIn("metadata", data)
@@ -462,9 +461,7 @@ class TestNodeRedTemplateAnalyzerIntegration(unittest.TestCase):
         os.makedirs(self.output_dir, exist_ok=True)
 
         # Create test analyzer
-        self.analyzer = NodeRedTemplateAnalyzer(
-            session_dir=self.session_dir, output_dir=self.output_dir
-        )
+        self.analyzer = NodeRedTemplateAnalyzer(session_dir=self.session_dir, output_dir=self.output_dir)
 
     def tearDown(self):
         """Clean up integration test environment"""
@@ -606,7 +603,7 @@ class TestNodeRedTemplateAnalyzerIntegration(unittest.TestCase):
         self.assertTrue(os.path.exists(yaml_file))
 
         # Check JSON content
-        with open(json_file, "r", encoding="utf-8") as f:
+        with open(json_file, encoding="utf-8") as f:
             json_data = json.load(f)
 
         self.assertIn("metadata", json_data)
@@ -614,7 +611,7 @@ class TestNodeRedTemplateAnalyzerIntegration(unittest.TestCase):
         self.assertGreater(len(json_data["templates"]), 0)
 
         # Check YAML content
-        with open(yaml_file, "r", encoding="utf-8") as f:
+        with open(yaml_file, encoding="utf-8") as f:
             yaml_data = yaml.safe_load(f)
 
         self.assertIn("metadata", yaml_data)

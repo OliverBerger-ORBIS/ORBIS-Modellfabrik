@@ -2,8 +2,9 @@
 Utility functions for data handling in the APS Dashboard
 """
 
-import pandas as pd
 import json
+
+import pandas as pd
 
 
 def extract_module_info(df):
@@ -145,9 +146,7 @@ def extract_module_info(df):
         df.loc[df["serial_number"] == "unknown", "serial_number"] = df.loc[
             df["serial_number"] == "unknown", "serial_number_extracted"
         ]
-        df.loc[df["status"] == "unknown", "status"] = df.loc[
-            df["status"] == "unknown", "status_extracted"
-        ]
+        df.loc[df["status"] == "unknown", "status"] = df.loc[df["status"] == "unknown", "status_extracted"]
 
         # Rename session labels
         df["session_label"] = df["session_label"].apply(rename_session_label)

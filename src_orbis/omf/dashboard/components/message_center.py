@@ -5,7 +5,6 @@ Version: 3.0.0
 """
 
 import json
-
 from datetime import datetime, timedelta
 from typing import Dict, List
 
@@ -36,9 +35,7 @@ class MessageMonitorService:
         self.sent_messages.insert(0, message)  # Neueste zuerst
         self._trim_messages(self.sent_messages)
 
-    def add_received_message(
-        self, topic: str, payload: str, timestamp: datetime = None
-    ):
+    def add_received_message(self, topic: str, payload: str, timestamp: datetime = None):
         """Empfangene Nachricht hinzufügen"""
         if timestamp is None:
             timestamp = datetime.now()
@@ -69,23 +66,12 @@ class MessageMonitorService:
         # Modul-Filter
         if filters.get("modules"):
             filtered = [
-                m
-                for m in filtered
-                if any(
-                    module.lower() in m["topic"].lower()
-                    for module in filters["modules"]
-                )
+                m for m in filtered if any(module.lower() in m["topic"].lower() for module in filters["modules"])
             ]
 
         # Kategorie-Filter
         if filters.get("categories"):
-            filtered = [
-                m
-                for m in filtered
-                if any(
-                    cat.lower() in m["topic"].lower() for cat in filters["categories"]
-                )
-            ]
+            filtered = [m for m in filtered if any(cat.lower() in m["topic"].lower() for cat in filters["categories"])]
 
         # Zeitraum-Filter
         if filters.get("time_range") and filters["time_range"] != "all":
@@ -99,9 +85,7 @@ class MessageMonitorService:
 
         return filtered
 
-    def _filter_by_priority(
-        self, messages: List[Dict], min_priority: int
-    ) -> List[Dict]:
+    def _filter_by_priority(self, messages: List[Dict], min_priority: int) -> List[Dict]:
         """Filtere Nachrichten nach Priorität (niedrigere Zahlen = höhere Priorität)"""
         # Topic-Prioritäten Mapping
         topic_priorities = {
@@ -169,9 +153,7 @@ def _capture_sent_messages(message_monitor):
 
         for msg in sent_messages:
             # Prüfen ob Nachricht bereits vorhanden (Topic + Timestamp Kombination)
-            existing_messages = [
-                (m["topic"], m["timestamp"]) for m in message_monitor.sent_messages
-            ]
+            existing_messages = [(m["topic"], m["timestamp"]) for m in message_monitor.sent_messages]
             msg_key = (msg.get("topic", ""), msg.get("timestamp", datetime.now()))
             if msg_key not in existing_messages:
                 message_monitor.add_sent_message(
@@ -262,9 +244,7 @@ def show_message_filters() -> Dict:
             filters["time_range"] = time_range
 
     # Topic-Pattern-Filter
-    topic_pattern = st.text_input(
-        "🔍 Topic-Suche", help="Nachrichten mit bestimmten Topic-Patterns suchen"
-    )
+    topic_pattern = st.text_input("🔍 Topic-Suche", help="Nachrichten mit bestimmten Topic-Patterns suchen")
     if topic_pattern:
         filters["topic_pattern"] = topic_pattern
 
@@ -386,10 +366,7 @@ def show_message_center():
             # Neue Nachrichten zum Message Monitor hinzufügen
             for msg in mqtt_messages:
                 # Prüfen ob Nachricht bereits vorhanden (Topic + Timestamp Kombination)
-                existing_messages = [
-                    (m["topic"], m["timestamp"])
-                    for m in message_monitor.received_messages
-                ]
+                existing_messages = [(m["topic"], m["timestamp"]) for m in message_monitor.received_messages]
                 msg_key = (msg.get("topic", ""), msg.get("timestamp", datetime.now()))
                 if msg_key not in existing_messages:
                     message_monitor.add_received_message(
@@ -399,9 +376,7 @@ def show_message_center():
                     )
 
             # Status anzeigen
-            st.success(
-                f"🔗 Verbunden mit MQTT-Broker - {len(mqtt_messages)} Nachrichten verfügbar"
-            )
+            st.success(f"🔗 Verbunden mit MQTT-Broker - {len(mqtt_messages)} Nachrichten verfügbar")
         else:
             st.warning("⚠️ Nicht mit MQTT-Broker verbunden")
 
@@ -424,14 +399,10 @@ def show_message_center():
 
     with tab1:
         # Empfangene Nachrichten filtern und anzeigen
-        filtered_received = message_monitor.get_filtered_messages(
-            message_monitor.received_messages, filters
-        )
+        filtered_received = message_monitor.get_filtered_messages(message_monitor.received_messages, filters)
         show_messages_table(filtered_received, "📥 Empfangene Nachrichten")
 
     with tab2:
         # Gesendete Nachrichten filtern und anzeigen
-        filtered_sent = message_monitor.get_filtered_messages(
-            message_monitor.sent_messages, filters
-        )
+        filtered_sent = message_monitor.get_filtered_messages(message_monitor.sent_messages, filters)
         show_messages_table(filtered_sent, "📤 Gesendete Nachrichten")

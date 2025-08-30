@@ -3,11 +3,12 @@
 APS Replay Dashboard
 Separates Dashboard für Session-Replay mit lesefreundlichen Anzeigen
 """
-import os
-import sys
 import json
-import time
+import os
 import sqlite3
+import sys
+import time
+
 import pandas as pd
 import streamlit as st
 
@@ -76,9 +77,7 @@ class ReplayDashboard:
         available_sessions = self._get_available_sessions()
 
         if not available_sessions:
-            st.warning(
-                "❌ Keine Sessions verfügbar. Starte eine Session über die Kommandozeile."
-            )
+            st.warning("❌ Keine Sessions verfügbar. Starte eine Session über die Kommandozeile.")
             return
 
         # Session selection
@@ -90,9 +89,7 @@ class ReplayDashboard:
 
         if selected_session:
             # Check if session changed
-            session_changed = selected_session != st.session_state.get(
-                "selected_session", None
-            )
+            session_changed = selected_session != st.session_state.get("selected_session", None)
 
             st.session_state.selected_session = selected_session
 
@@ -107,9 +104,7 @@ class ReplayDashboard:
                     st.session_state.replay_playing = False
                     st.session_state.replay_speed = 1.0
 
-                st.success(
-                    f"✅ Session geladen: {selected_session} ({len(messages_df)} Nachrichten)"
-                )
+                st.success(f"✅ Session geladen: {selected_session} ({len(messages_df)} Nachrichten)")
             else:
                 st.error(f"❌ Fehler beim Laden der Session: {selected_session}")
 
@@ -119,17 +114,13 @@ class ReplayDashboard:
         if os.path.exists(self.sessions_dir):
             for file in os.listdir(self.sessions_dir):
                 if file.endswith(".db") and "aps_persistent_traffic_" in file:
-                    session_name = file.replace("aps_persistent_traffic_", "").replace(
-                        ".db", ""
-                    )
+                    session_name = file.replace("aps_persistent_traffic_", "").replace(".db", "")
                     sessions.append(session_name)
         return sorted(sessions, reverse=True)
 
     def _get_session_info(self, session_name):
         """Get basic session information"""
-        db_path = os.path.join(
-            self.sessions_dir, f"aps_persistent_traffic_{session_name}.db"
-        )
+        db_path = os.path.join(self.sessions_dir, f"aps_persistent_traffic_{session_name}.db")
         try:
             conn = sqlite3.connect(db_path)
             df = pd.read_sql_query("SELECT COUNT(*) as count FROM mqtt_messages", conn)
@@ -142,17 +133,13 @@ class ReplayDashboard:
     def _load_session_messages(self, session_name):
         """Load messages from session database"""
         try:
-            db_path = os.path.join(
-                self.sessions_dir, f"aps_persistent_traffic_{session_name}.db"
-            )
+            db_path = os.path.join(self.sessions_dir, f"aps_persistent_traffic_{session_name}.db")
 
             if not os.path.exists(db_path):
                 return None
 
             conn = sqlite3.connect(db_path)
-            df = pd.read_sql_query(
-                "SELECT * FROM mqtt_messages ORDER BY timestamp", conn
-            )
+            df = pd.read_sql_query("SELECT * FROM mqtt_messages ORDER BY timestamp", conn)
             conn.close()
 
             if df.empty:
@@ -209,9 +196,7 @@ class ReplayDashboard:
 
         with col2:
             # Verbose mode toggle
-            verbose_mode = st.checkbox(
-                "🔍 Verbose-Modus (Camera-Nachrichten anzeigen)", value=False
-            )
+            verbose_mode = st.checkbox("🔍 Verbose-Modus (Camera-Nachrichten anzeigen)", value=False)
 
         # Filter messages
         filtered_df = self._filter_messages(messages_df, verbose_mode)
@@ -219,11 +204,7 @@ class ReplayDashboard:
         # Show filtered camera messages info
         if not verbose_mode:
             original_count = len(messages_df)
-            camera_count = len(
-                messages_df[
-                    messages_df["topic"].str.contains("j1/txt/1/i/cam", na=False)
-                ]
-            )
+            camera_count = len(messages_df[messages_df["topic"].str.contains("j1/txt/1/i/cam", na=False)])
             if camera_count > 0:
                 st.info(f"📷 {camera_count} Camera-Nachrichten ausgeblendet")
 
@@ -241,19 +222,14 @@ class ReplayDashboard:
 
     def _show_production_workflow(self):
         """Show production workflow steps with live updates."""
-        if (
-            "messages_df" not in st.session_state
-            or st.session_state.messages_df is None
-        ):
+        if "messages_df" not in st.session_state or st.session_state.messages_df is None:
             st.info("Keine Session geladen.")
             return
 
         messages_df = st.session_state.messages_df
 
         # Filter camera messages for workflow analysis
-        filtered_df = messages_df[
-            ~messages_df["topic"].str.contains("j1/txt/1/i/cam", na=False)
-        ]
+        filtered_df = messages_df[~messages_df["topic"].str.contains("j1/txt/1/i/cam", na=False)]
 
         # Get current message index
         current_index = st.session_state.get("replay_message_index", 0)
@@ -271,9 +247,7 @@ class ReplayDashboard:
             production_steps = self._get_production_steps_for_type(workpiece_type)
 
             # Update steps based on messages up to current time
-            updated_steps = self._update_production_steps_from_messages(
-                production_steps, messages_up_to_current
-            )
+            updated_steps = self._update_production_steps_from_messages(production_steps, messages_up_to_current)
 
             # Display production steps with status
             st.write("**📋 Fertigungsschritte:**")
@@ -318,9 +292,7 @@ class ReplayDashboard:
             return None
 
         # Look for order messages with workpiece type information
-        order_messages = messages_df[
-            messages_df["topic"].str.contains("order", na=False)
-        ]
+        order_messages = messages_df[messages_df["topic"].str.contains("order", na=False)]
 
         for _, message in order_messages.iterrows():
             try:
@@ -331,9 +303,7 @@ class ReplayDashboard:
                         return payload["type"].upper()
 
                     # Check for workpiece information
-                    if "workpiece" in payload and isinstance(
-                        payload["workpiece"], dict
-                    ):
+                    if "workpiece" in payload and isinstance(payload["workpiece"], dict):
                         if "type" in payload["workpiece"]:
                             return payload["workpiece"]["type"].upper()
             except:
@@ -370,9 +340,7 @@ class ReplayDashboard:
                 st.session_state.replay_playing = False
 
         with col3:
-            play_button_text = (
-                "⏸️ Pause" if st.session_state.replay_playing else "▶️ Play"
-            )
+            play_button_text = "⏸️ Pause" if st.session_state.replay_playing else "▶️ Play"
             if st.button(play_button_text):
                 st.session_state.replay_playing = not st.session_state.replay_playing
 
@@ -400,9 +368,7 @@ class ReplayDashboard:
         # Update message index if changed by slider
         if message_index != st.session_state.replay_message_index:
             st.session_state.replay_message_index = message_index
-            st.session_state.replay_playing = (
-                False  # Stop playing when manually navigating
-            )
+            st.session_state.replay_playing = False  # Stop playing when manually navigating
 
         # Progress bar - only show if total_messages > 0
         if total_messages > 0:
@@ -429,9 +395,7 @@ class ReplayDashboard:
 
         current_message = filtered_df.iloc[st.session_state.replay_message_index]
 
-        st.subheader(
-            f"📨 Aktuelle Nachricht ({st.session_state.replay_message_index + 1}/{len(filtered_df)})"
-        )
+        st.subheader(f"📨 Aktuelle Nachricht ({st.session_state.replay_message_index + 1}/{len(filtered_df)})")
 
         # Message details with friendly names
         col1, col2 = st.columns([1, 2])
@@ -512,9 +476,7 @@ class ReplayDashboard:
 
                     # Check for sequence or steps information
                     if "sequence" in payload:
-                        workflow_info.append(
-                            f"Sequence: {len(payload['sequence'])} steps"
-                        )
+                        workflow_info.append(f"Sequence: {len(payload['sequence'])} steps")
 
                     if "steps" in payload:
                         workflow_info.append(f"Steps: {len(payload['steps'])} planned")
@@ -595,9 +557,7 @@ class ReplayDashboard:
         st.subheader("🏭 Fertigungsschritte-Analyse")
 
         # Get messages up to current point
-        messages_up_to_current = filtered_df.iloc[
-            : st.session_state.replay_message_index + 1
-        ]
+        messages_up_to_current = filtered_df.iloc[: st.session_state.replay_message_index + 1]
 
         # Show detected production steps (simplified, no order message analysis)
         detected_steps = self._detect_production_steps(messages_up_to_current)
@@ -667,9 +627,7 @@ class ReplayDashboard:
         steps = []
 
         # Look for order messages to determine type
-        order_messages = messages_df[
-            messages_df["topic"].str.contains("order", na=False)
-        ]
+        order_messages = messages_df[messages_df["topic"].str.contains("order", na=False)]
         order_type = None
 
         for _, order_msg in order_messages.iterrows():
@@ -698,44 +656,32 @@ class ReplayDashboard:
 
         # Check for module activity
         if module == "FTS":
-            fts_messages = messages_df[
-                messages_df["topic"].str.contains("fts/", na=False)
-            ]
+            fts_messages = messages_df[messages_df["topic"].str.contains("fts/", na=False)]
             if len(fts_messages) > 0:
                 return "done"
 
         elif module == "HBW":
-            hbw_messages = messages_df[
-                messages_df["topic"].str.contains("SVR3QA2098", na=False)
-            ]
+            hbw_messages = messages_df[messages_df["topic"].str.contains("SVR3QA2098", na=False)]
             if len(hbw_messages) > 0:
                 return "done"
 
         elif module == "MILL":
-            mill_messages = messages_df[
-                messages_df["topic"].str.contains("SVR4H76449", na=False)
-            ]
+            mill_messages = messages_df[messages_df["topic"].str.contains("SVR4H76449", na=False)]
             if len(mill_messages) > 0:
                 return "done"
 
         elif module == "DRILL":
-            drill_messages = messages_df[
-                messages_df["topic"].str.contains("SVR4H76530", na=False)
-            ]
+            drill_messages = messages_df[messages_df["topic"].str.contains("SVR4H76530", na=False)]
             if len(drill_messages) > 0:
                 return "done"
 
         elif module == "AIQS":
-            aiqs_messages = messages_df[
-                messages_df["topic"].str.contains("SVR3QA0022", na=False)
-            ]
+            aiqs_messages = messages_df[messages_df["topic"].str.contains("SVR3QA0022", na=False)]
             if len(aiqs_messages) > 0:
                 return "done"
 
         elif module == "DPS":
-            dps_messages = messages_df[
-                messages_df["topic"].str.contains("SVR4H73275", na=False)
-            ]
+            dps_messages = messages_df[messages_df["topic"].str.contains("SVR4H73275", na=False)]
             if len(dps_messages) > 0:
                 return "done"
 
@@ -1056,9 +1002,7 @@ class ReplayDashboard:
         else:
             return []
 
-    def _update_production_steps_from_messages(
-        self, steps, messages_df, current_time=None
-    ):
+    def _update_production_steps_from_messages(self, steps, messages_df, current_time=None):
         """Update production steps status based on specific message patterns."""
         if messages_df.empty:
             return steps
@@ -1075,23 +1019,19 @@ class ReplayDashboard:
             payload = message["payload"]
 
             try:
-                payload_data = (
-                    json.loads(payload) if isinstance(payload, str) else payload
-                )
+                payload_data = json.loads(payload) if isinstance(payload, str) else payload
             except:
                 payload_data = {}
 
             # HBW PICK and DROP (SVR3QA2098) - for all workflows
             if "SVR3QA2098" in topic:
                 if "/pick" in topic.lower() or (
-                    "action" in payload_data
-                    and "pick" in str(payload_data.get("action", "")).lower()
+                    "action" in payload_data and "pick" in str(payload_data.get("action", "")).lower()
                 ):
                     completed_steps.add(1)  # HBW PICK (all workflows)
                     completed_steps.add(8)  # HBW PICK (BLUE - second cycle)
                 elif "/drop" in topic.lower() or (
-                    "action" in payload_data
-                    and "drop" in str(payload_data.get("action", "")).lower()
+                    "action" in payload_data and "drop" in str(payload_data.get("action", "")).lower()
                 ):
                     completed_steps.add(2)  # HBW DROP (all workflows)
                     completed_steps.add(9)  # HBW DROP (BLUE - second cycle)
@@ -1099,20 +1039,17 @@ class ReplayDashboard:
             # MILL PICK, MILL, DROP (SVR4H76449) - for RED and BLUE workflows
             elif "SVR4H76449" in topic:
                 if "/pick" in topic.lower() or (
-                    "action" in payload_data
-                    and "pick" in str(payload_data.get("action", "")).lower()
+                    "action" in payload_data and "pick" in str(payload_data.get("action", "")).lower()
                 ):
                     completed_steps.add(4)  # MILL PICK (RED)
                     completed_steps.add(11)  # MILL PICK (BLUE)
                 elif "/mill" in topic.lower() or (
-                    "action" in payload_data
-                    and "mill" in str(payload_data.get("action", "")).lower()
+                    "action" in payload_data and "mill" in str(payload_data.get("action", "")).lower()
                 ):
                     completed_steps.add(5)  # MILL MILL (RED)
                     completed_steps.add(12)  # MILL MILL (BLUE)
                 elif "/drop" in topic.lower() or (
-                    "action" in payload_data
-                    and "drop" in str(payload_data.get("action", "")).lower()
+                    "action" in payload_data and "drop" in str(payload_data.get("action", "")).lower()
                 ):
                     completed_steps.add(6)  # MILL DROP (RED)
                     completed_steps.add(13)  # MILL DROP (BLUE)
@@ -1120,20 +1057,17 @@ class ReplayDashboard:
             # DRILL PICK, DRILL, DROP (SVR4H76530) - for WHITE and BLUE workflows
             elif "SVR4H76530" in topic:
                 if "/pick" in topic.lower() or (
-                    "action" in payload_data
-                    and "pick" in str(payload_data.get("action", "")).lower()
+                    "action" in payload_data and "pick" in str(payload_data.get("action", "")).lower()
                 ):
                     completed_steps.add(4)  # DRILL PICK (WHITE)
                     completed_steps.add(4)  # DRILL PICK (BLUE)
                 elif "/drill" in topic.lower() or (
-                    "action" in payload_data
-                    and "drill" in str(payload_data.get("action", "")).lower()
+                    "action" in payload_data and "drill" in str(payload_data.get("action", "")).lower()
                 ):
                     completed_steps.add(5)  # DRILL DRILL (WHITE)
                     completed_steps.add(5)  # DRILL DRILL (BLUE)
                 elif "/drop" in topic.lower() or (
-                    "action" in payload_data
-                    and "drop" in str(payload_data.get("action", "")).lower()
+                    "action" in payload_data and "drop" in str(payload_data.get("action", "")).lower()
                 ):
                     completed_steps.add(6)  # DRILL DROP (WHITE)
                     completed_steps.add(6)  # DRILL DROP (BLUE)
@@ -1141,14 +1075,12 @@ class ReplayDashboard:
             # AIQS PICK and DROP (SVR3QA0022) - for RED, WHITE, and BLUE workflows
             elif "SVR3QA0022" in topic:
                 if "/pick" in topic.lower() or (
-                    "action" in payload_data
-                    and "pick" in str(payload_data.get("action", "")).lower()
+                    "action" in payload_data and "pick" in str(payload_data.get("action", "")).lower()
                 ):
                     completed_steps.add(8)  # AIQS PICK (RED/WHITE)
                     completed_steps.add(15)  # AIQS PICK (BLUE)
                 elif "/drop" in topic.lower() or (
-                    "action" in payload_data
-                    and "drop" in str(payload_data.get("action", "")).lower()
+                    "action" in payload_data and "drop" in str(payload_data.get("action", "")).lower()
                 ):
                     completed_steps.add(10)  # AIQS DROP (RED/WHITE)
                     completed_steps.add(17)  # AIQS DROP (BLUE)
@@ -1156,8 +1088,7 @@ class ReplayDashboard:
             # DPS DROP (SVR4H73275) - for RED, WHITE, and BLUE workflows
             elif "SVR4H73275" in topic:
                 if "/drop" in topic.lower() or (
-                    "action" in payload_data
-                    and "drop" in str(payload_data.get("action", "")).lower()
+                    "action" in payload_data and "drop" in str(payload_data.get("action", "")).lower()
                 ):
                     completed_steps.add(12)  # DPS DROP (RED/WHITE)
                     completed_steps.add(19)  # DPS DROP (BLUE)

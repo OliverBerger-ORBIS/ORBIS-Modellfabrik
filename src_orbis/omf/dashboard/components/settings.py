@@ -6,13 +6,12 @@ import os
 import sys
 
 import streamlit as st
-
-# Add src_orbis to path for imports
-sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
-
 from omf.config.omf_config import config
 from omf.tools.module_manager import get_omf_module_manager
 from omf.tools.nfc_manager import get_omf_nfc_manager
+
+# Add src_orbis to path for imports
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
 
 
 def show_dashboard_settings():
@@ -58,7 +57,7 @@ def show_dashboard_settings():
                     st.success("🟢 Replay Station läuft (Port 8509)")
                 else:
                     st.error("🔴 Replay Station nicht erreichbar")
-            except:
+            except Exception:
                 st.error("🔴 Replay Station nicht erreichbar")
 
             # Prüfe ob Mosquitto-Broker läuft
@@ -72,7 +71,7 @@ def show_dashboard_settings():
                 else:
                     st.error("🔴 Mosquitto-Broker nicht erreichbar")
                     st.info("💡 Starten Sie: `mosquitto -p 1884 -v &`")
-            except:
+            except Exception:
                 st.error("🔴 Mosquitto-Broker nicht erreichbar")
 
         with col2:
@@ -90,29 +89,29 @@ def show_dashboard_settings():
             st.markdown(
                 """
             **Schritt-für-Schritt Anleitung:**
-            
+
             0. **🔧 Mosquitto-Broker starten (WICHTIG!):**
                - Öffnen Sie ein Terminal
                - Führen Sie aus: `mosquitto -p 1884 -v &`
                - Broker läuft dann auf localhost:1884
-            
+
             1. **🚀 Replay Station starten:**
                - Klicken Sie auf "Replay Station öffnen" oben
                - Oder öffnen Sie: `http://localhost:8509`
-            
+
             2. **📂 Session auswählen:**
                - Wählen Sie eine Session-Datei aus dem Dropdown
                - Verfügbare Sessions: `mqtt-data/sessions/`
-            
+
             3. **📂 Session laden:**
                - Klicken Sie auf "Session laden"
                - Warten Sie bis "✅ X Nachrichten geladen" erscheint
-            
+
             4. **▶️ Replay starten:**
                - Klicken Sie auf "Play" oder "Resume"
                - Beobachten Sie den Fortschrittsbalken
                - Verwenden Sie Pause/Stop bei Bedarf
-            
+
             5. **📊 Nachrichten beobachten:**
                - Wechseln Sie zurück zum OMF Dashboard
                - Öffnen Sie die "Nachrichtenzentrale"
@@ -124,19 +123,19 @@ def show_dashboard_settings():
             st.markdown(
                 """
             **Automatisches Monitoring:**
-            
+
             ✅ **Alle Nachrichten werden empfangen** - auch unbekannte Topics
-            
+
             🔍 **Unbekannte Topics werden erkannt:**
             - Automatische Erkennung in der Konsole
             - Warnung: `🔍 Unbekanntes Topic empfangen: topic_name`
             - Hinweis zur Prioritäten-Anpassung
-            
+
             📊 **Was passiert bei unbekannten Topics:**
             - Nachrichten werden **normal empfangen und angezeigt**
             - **Keine Nachrichten gehen verloren**
             - Nur **Warnung in der Konsole** für neue Topics
-            
+
             💡 **Empfehlung:**
             - Prüfen Sie die Konsole auf unbekannte Topics
             - Fügen Sie wichtige Topics zu den Prioritäten hinzu
@@ -158,24 +157,20 @@ def show_dashboard_settings():
                 import subprocess
 
                 try:
-                    result = subprocess.run(
-                        ["lsof", "-i", ":1884"], capture_output=True, text=True
-                    )
+                    result = subprocess.run(["lsof", "-i", ":1884"], capture_output=True, text=True)
                     if result.returncode == 0:
                         st.success("✅ Mosquitto läuft auf Port 1884")
                     else:
                         st.error("❌ Mosquitto nicht gefunden")
                         st.info("💡 Starten Sie: `mosquitto -p 1884 -v &`")
-                except:
+                except Exception:
                     st.error("❌ Konnte Mosquitto-Status nicht prüfen")
 
     elif mqtt_mode == "Mock-Modus":
         st.session_state.mqtt_mode = "mock"
         st.session_state.mqtt_mock_enabled = True
         st.success("🧪 Mock-Modus: Simulierte MQTT-Verbindung für Tests")
-        st.info(
-            "💡 Buttons in der Steuerung sind jetzt aktiv, auch ohne echte MQTT-Verbindung"
-        )
+        st.info("💡 Buttons in der Steuerung sind jetzt aktiv, auch ohne echte MQTT-Verbindung")
 
     st.markdown("---")
 
@@ -258,9 +253,7 @@ def show_dashboard_settings():
 
     with col2:
         # Auto Refresh
-        auto_refresh = st.checkbox(
-            "🔄 Auto Refresh", value=config.get("dashboard.auto_refresh", True)
-        )
+        auto_refresh = st.checkbox("🔄 Auto Refresh", value=config.get("dashboard.auto_refresh", True))
 
         # Refresh Interval
         if auto_refresh:
@@ -305,12 +298,8 @@ def show_module_config():
         module_data = []
         for module_id, module_info in all_modules.items():
             icon = module_info.get("icon", "🏭")
-            short_name = module_info.get(
-                "name", module_id
-            )  # Kurzname wie HBW, FTS, etc.
-            name_de = module_info.get(
-                "name_lang_de", module_info.get("name", module_id)
-            )
+            short_name = module_info.get("name", module_id)  # Kurzname wie HBW, FTS, etc.
+            name_de = module_info.get("name_lang_de", module_info.get("name", module_id))
             module_type = module_info.get("type", "Unknown")
             ip_range = module_info.get("ip_range", "Unknown")
             enabled = module_info.get("enabled", True)
@@ -348,18 +337,13 @@ def show_module_config():
         selected_module = st.selectbox(
             "🏭 Modul auswählen",
             options=list(all_modules.keys()),
-            format_func=lambda x: (
-                f"{all_modules[x].get('name_lang_de', all_modules[x].get('name', x))} "
-                f"({x})"
-            ),
+            format_func=lambda x: (f"{all_modules[x].get('name_lang_de', all_modules[x].get('name', x))} " f"({x})"),
         )
 
         if selected_module:
             module_info = all_modules[selected_module]
             icon = module_info.get("icon", "🏭")
-            name_de = module_info.get(
-                "name_lang_de", module_info.get("name", selected_module)
-            )
+            name_de = module_info.get("name_lang_de", module_info.get("name", selected_module))
 
             st.markdown(f"**{icon} {name_de}**")
 
@@ -455,21 +439,11 @@ def show_nfc_config():
                     st.dataframe(
                         red_data,
                         column_config={
-                            "Werkstück": st.column_config.TextColumn(
-                                "Werkstück", width="medium"
-                            ),
-                            "NFC Code": st.column_config.TextColumn(
-                                "NFC Code", width="medium"
-                            ),
-                            "Qualität": st.column_config.TextColumn(
-                                "Qualität", width="small"
-                            ),
-                            "Beschreibung": st.column_config.TextColumn(
-                                "Beschreibung", width="medium"
-                            ),
-                            "Status": st.column_config.TextColumn(
-                                "Status", width="small"
-                            ),
+                            "Werkstück": st.column_config.TextColumn("Werkstück", width="medium"),
+                            "NFC Code": st.column_config.TextColumn("NFC Code", width="medium"),
+                            "Qualität": st.column_config.TextColumn("Qualität", width="small"),
+                            "Beschreibung": st.column_config.TextColumn("Beschreibung", width="medium"),
+                            "Status": st.column_config.TextColumn("Status", width="small"),
                         },
                         hide_index=True,
                     )
@@ -499,21 +473,11 @@ def show_nfc_config():
                     st.dataframe(
                         white_data,
                         column_config={
-                            "Werkstück": st.column_config.TextColumn(
-                                "Werkstück", width="medium"
-                            ),
-                            "NFC Code": st.column_config.TextColumn(
-                                "NFC Code", width="medium"
-                            ),
-                            "Qualität": st.column_config.TextColumn(
-                                "Qualität", width="small"
-                            ),
-                            "Beschreibung": st.column_config.TextColumn(
-                                "Beschreibung", width="medium"
-                            ),
-                            "Status": st.column_config.TextColumn(
-                                "Status", width="small"
-                            ),
+                            "Werkstück": st.column_config.TextColumn("Werkstück", width="medium"),
+                            "NFC Code": st.column_config.TextColumn("NFC Code", width="medium"),
+                            "Qualität": st.column_config.TextColumn("Qualität", width="small"),
+                            "Beschreibung": st.column_config.TextColumn("Beschreibung", width="medium"),
+                            "Status": st.column_config.TextColumn("Status", width="small"),
                         },
                         hide_index=True,
                     )
@@ -543,21 +507,11 @@ def show_nfc_config():
                     st.dataframe(
                         blue_data,
                         column_config={
-                            "Werkstück": st.column_config.TextColumn(
-                                "Werkstück", width="medium"
-                            ),
-                            "NFC Code": st.column_config.TextColumn(
-                                "NFC Code", width="medium"
-                            ),
-                            "Qualität": st.column_config.TextColumn(
-                                "Qualität", width="small"
-                            ),
-                            "Beschreibung": st.column_config.TextColumn(
-                                "Beschreibung", width="medium"
-                            ),
-                            "Status": st.column_config.TextColumn(
-                                "Status", width="small"
-                            ),
+                            "Werkstück": st.column_config.TextColumn("Werkstück", width="medium"),
+                            "NFC Code": st.column_config.TextColumn("NFC Code", width="medium"),
+                            "Qualität": st.column_config.TextColumn("Qualität", width="small"),
+                            "Beschreibung": st.column_config.TextColumn("Beschreibung", width="medium"),
+                            "Status": st.column_config.TextColumn("Status", width="small"),
                         },
                         hide_index=True,
                     )
@@ -580,12 +534,8 @@ def show_mqtt_config():
         "mock": "🧪 Mock-Modus",
     }.get(current_mode, current_mode)
 
-    st.info(
-        f"**Aktueller Modus:** {mode_display} (Einstellung in Dashboard-Einstellungen)"
-    )
-    st.markdown(
-        "💡 **Hinweis:** Der MQTT-Verbindungsmodus wird in den Dashboard-Einstellungen konfiguriert."
-    )
+    st.info(f"**Aktueller Modus:** {mode_display} (Einstellung in Dashboard-Einstellungen)")
+    st.markdown("💡 **Hinweis:** Der MQTT-Verbindungsmodus wird in den Dashboard-Einstellungen konfiguriert.")
 
     st.markdown("---")
 
@@ -681,9 +631,7 @@ def show_mqtt_config():
                 port_disabled = False
                 st.info("🏭 **Live-Fabrik:** Konfigurierbare Einstellungen")
 
-            host = st.text_input(
-                "🌐 Host", value=host_value, key="mqtt_host", disabled=host_disabled
-            )
+            host = st.text_input("🌐 Host", value=host_value, key="mqtt_host", disabled=host_disabled)
 
             port = st.number_input(
                 "🔌 Port",
@@ -740,9 +688,7 @@ def show_mqtt_config():
             try:
                 import yaml
 
-                config_path = os.path.join(
-                    tools_path, "..", "config", "mqtt_config.yml"
-                )
+                config_path = os.path.join(tools_path, "..", "config", "mqtt_config.yml")
                 with open(config_path, "w", encoding="utf-8") as f:
                     yaml.dump(config, f, default_flow_style=False, allow_unicode=True)
                 st.success("✅ Broker-Konfiguration gespeichert!")
@@ -792,29 +738,19 @@ def show_topic_config():
             # Zeige Topics nach Kategorie
             categories = ["CCU", "TXT", "MODULE", "Node-RED"]
             for category in categories:
-                category_topics = {
-                    k: v for k, v in all_topics.items() if v.get("category") == category
-                }
+                category_topics = {k: v for k, v in all_topics.items() if v.get("category") == category}
                 if category_topics:
                     st.markdown(f"**{category} Topics ({len(category_topics)}):**")
-                    for topic, info in list(category_topics.items())[
-                        :3
-                    ]:  # Zeige erste 3 pro Kategorie
+                    for topic, info in list(category_topics.items())[:3]:  # Zeige erste 3 pro Kategorie
                         st.markdown(f"  - **{topic}:**")
-                        st.markdown(
-                            f"    - Template: `{info.get('template', 'Kein Template')}`"
-                        )
-                        st.markdown(
-                            f"    - Direction: `{info.get('template_direction', 'N/A')}`"
-                        )
+                        st.markdown(f"    - Template: `{info.get('template', 'Kein Template')}`")
+                        st.markdown(f"    - Direction: `{info.get('template_direction', 'N/A')}`")
                         st.markdown(f"    - Category: `{info.get('category', 'N/A')}`")
                     st.markdown("---")
 
         # Modul Filter
         st.markdown("#### 🔍 Modul Filter")
-        all_modules = list(
-            topic_manager.get_statistics().get("module_counts", {}).keys()
-        )
+        all_modules = list(topic_manager.get_statistics().get("module_counts", {}).keys())
         selected_module = st.selectbox(
             "🔗 Modul filtern (nur für MODULE-Kategorie relevant)",
             options=["Alle"] + all_modules,
@@ -846,10 +782,7 @@ def show_topic_config():
                         filtered_topics[topic] = info
 
                     if filtered_topics:
-                        st.markdown(
-                            f"**Topics ({len(filtered_topics)} von "
-                            f"{len(category_topics)}):**"
-                        )
+                        st.markdown(f"**Topics ({len(filtered_topics)} von " f"{len(category_topics)}):**")
                         topic_data = []
                         for topic, info in filtered_topics.items():
                             friendly_name = info.get("friendly_name", topic)
@@ -870,12 +803,8 @@ def show_topic_config():
                             )
 
                         # Debug: Zeige Template-Zuordnungen
-                        templates_with_mapping = [
-                            t for t in topic_data if t["Template"] != "Kein Template"
-                        ]
-                        templates_without_mapping = [
-                            t for t in topic_data if t["Template"] == "Kein Template"
-                        ]
+                        templates_with_mapping = [t for t in topic_data if t["Template"] != "Kein Template"]
+                        templates_without_mapping = [t for t in topic_data if t["Template"] == "Kein Template"]
 
                         # Debug: Zeige erste paar Topics mit Details
                         with st.expander("🔍 Debug: Topic-Details", expanded=False):
@@ -883,9 +812,7 @@ def show_topic_config():
                                 st.markdown(f"**{topic['Topic']}:**")
                                 st.markdown(f"  - Template: `{topic['Template']}`")
                                 st.markdown(f"  - Direction: `{topic['Direction']}`")
-                                st.markdown(
-                                    f"  - Category: `{topic.get('Sub-Kategorie', 'N/A')}`"
-                                )
+                                st.markdown(f"  - Category: `{topic.get('Sub-Kategorie', 'N/A')}`")
                                 st.markdown("---")
 
                         # Zeige Template-Statistiken
@@ -897,41 +824,21 @@ def show_topic_config():
 
                         # Debug: Zeige alle Topics ohne Template
                         if templates_without_mapping:
-                            with st.expander(
-                                "⚠️ Topics ohne Template-Zuordnung", expanded=False
-                            ):
-                                st.markdown(
-                                    f"**{len(templates_without_mapping)} Topics ohne Template:**"
-                                )
+                            with st.expander("⚠️ Topics ohne Template-Zuordnung", expanded=False):
+                                st.markdown(f"**{len(templates_without_mapping)} Topics ohne Template:**")
                                 for topic in templates_without_mapping:
-                                    st.markdown(
-                                        f"- **{topic['Topic']}** (Kategorie: {topic.get('Kategorie', 'N/A')})"
-                                    )
+                                    st.markdown(f"- **{topic['Topic']}** (Kategorie: {topic.get('Kategorie', 'N/A')})")
 
                         st.dataframe(
                             topic_data,
                             column_config={
-                                "Topic": st.column_config.TextColumn(
-                                    "Topic", width="medium"
-                                ),
-                                "Friendly Name": st.column_config.TextColumn(
-                                    "Friendly Name", width="medium"
-                                ),
-                                "Beschreibung": st.column_config.TextColumn(
-                                    "Beschreibung", width="large"
-                                ),
-                                "Sub-Kategorie": st.column_config.TextColumn(
-                                    "Sub-Kategorie", width="small"
-                                ),
-                                "Modul": st.column_config.TextColumn(
-                                    "Modul", width="small"
-                                ),
-                                "Template": st.column_config.TextColumn(
-                                    "Template", width="medium"
-                                ),
-                                "Direction": st.column_config.TextColumn(
-                                    "Direction", width="small"
-                                ),
+                                "Topic": st.column_config.TextColumn("Topic", width="medium"),
+                                "Friendly Name": st.column_config.TextColumn("Friendly Name", width="medium"),
+                                "Beschreibung": st.column_config.TextColumn("Beschreibung", width="large"),
+                                "Sub-Kategorie": st.column_config.TextColumn("Sub-Kategorie", width="small"),
+                                "Modul": st.column_config.TextColumn("Modul", width="small"),
+                                "Template": st.column_config.TextColumn("Template", width="medium"),
+                                "Direction": st.column_config.TextColumn("Direction", width="small"),
                             },
                             hide_index=True,
                         )
@@ -965,9 +872,7 @@ def show_topic_config():
                         filtered_topics[topic] = info
 
                     if filtered_topics:
-                        st.markdown(
-                            f"**Topics ({len(filtered_topics)} von {len(sub_cat_topics)}):**"
-                        )
+                        st.markdown(f"**Topics ({len(filtered_topics)} von {len(sub_cat_topics)}):**")
                         topic_data = []
                         for topic, info in filtered_topics.items():
                             friendly_name = info.get("friendly_name", topic)
@@ -986,18 +891,10 @@ def show_topic_config():
                         st.dataframe(
                             topic_data,
                             column_config={
-                                "Topic": st.column_config.TextColumn(
-                                    "Topic", width="medium"
-                                ),
-                                "Friendly Name": st.column_config.TextColumn(
-                                    "Friendly Name", width="medium"
-                                ),
-                                "Beschreibung": st.column_config.TextColumn(
-                                    "Beschreibung", width="large"
-                                ),
-                                "Modul": st.column_config.TextColumn(
-                                    "Modul", width="small"
-                                ),
+                                "Topic": st.column_config.TextColumn("Topic", width="medium"),
+                                "Friendly Name": st.column_config.TextColumn("Friendly Name", width="medium"),
+                                "Beschreibung": st.column_config.TextColumn("Beschreibung", width="large"),
+                                "Modul": st.column_config.TextColumn("Modul", width="small"),
                             },
                             hide_index=True,
                         )
@@ -1016,12 +913,8 @@ def show_topic_config():
                 st.markdown(f"**Version:** {metadata.get('version', 'Unbekannt')}")
                 st.markdown(f"**Autor:** {metadata.get('author', 'Unbekannt')}")
             with col2:
-                st.markdown(
-                    f"**Letzte Aktualisierung:** {metadata.get('last_updated', 'Unbekannt')}"
-                )
-                st.markdown(
-                    f"**Beschreibung:** {metadata.get('description', 'Keine Beschreibung')}"
-                )
+                st.markdown(f"**Letzte Aktualisierung:** {metadata.get('last_updated', 'Unbekannt')}")
+                st.markdown(f"**Beschreibung:** {metadata.get('description', 'Keine Beschreibung')}")
 
     except ImportError:
         st.error("Topic Manager konnte nicht importiert werden.")
@@ -1133,18 +1026,12 @@ def show_messages_templates():
 
             # Verzeichnis-Inhalt anzeigen
             if selected_category == "Node-RED":
-                template_dir = Path(
-                    "src_orbis/omf/config/message_templates/templates/node_red"
-                )
+                template_dir = Path("src_orbis/omf/config/message_templates/templates/node_red")
             else:
-                template_dir = Path(
-                    f"src_orbis/omf/config/message_templates/templates/{selected_category.lower()}"
-                )
+                template_dir = Path(f"src_orbis/omf/config/message_templates/templates/{selected_category.lower()}")
             if template_dir.exists():
                 yaml_files = list(template_dir.glob("*.yml"))
-                st.info(
-                    f"**Verzeichnis-Inhalt:** {len(yaml_files)} YAML-Dateien gefunden"
-                )
+                st.info(f"**Verzeichnis-Inhalt:** {len(yaml_files)} YAML-Dateien gefunden")
                 with st.expander("📁 Alle YAML-Dateien im Verzeichnis", expanded=False):
                     for yaml_file in yaml_files:
                         st.markdown(f"- `{yaml_file.name}`")
@@ -1165,25 +1052,17 @@ def show_messages_templates():
                         len(template.get("structure", {}).get("required_fields", [])),
                     )
                 with col3:
-                    st.metric(
-                        "Validation Rules", len(template.get("validation_rules", []))
-                    )
+                    st.metric("Validation Rules", len(template.get("validation_rules", [])))
 
                 # Template-Details
                 with st.expander("📋 Template Details", expanded=True):
-                    st.markdown(
-                        f"**Beschreibung:** {template.get('description', 'N/A')}"
-                    )
-                    st.markdown(
-                        f"**Semantischer Zweck:** {template.get('semantic_purpose', 'N/A')}"
-                    )
+                    st.markdown(f"**Beschreibung:** {template.get('description', 'N/A')}")
+                    st.markdown(f"**Semantischer Zweck:** {template.get('semantic_purpose', 'N/A')}")
 
                     # MQTT Integration
                     mqtt_info = template.get("mqtt", {})
                     st.markdown("**MQTT Integration:**")
-                    st.markdown(
-                        f"- Topic Pattern: `{mqtt_info.get('topic_pattern', 'N/A')}`"
-                    )
+                    st.markdown(f"- Topic Pattern: `{mqtt_info.get('topic_pattern', 'N/A')}`")
                     st.markdown(f"- Direction: {mqtt_info.get('direction', 'N/A')}")
                     st.markdown(f"- QoS: {mqtt_info.get('qos', 'N/A')}")
 
@@ -1210,15 +1089,9 @@ def show_messages_templates():
                     for field_name, field_info in field_defs.items():
                         with st.expander(f"`{field_name}`", expanded=False):
                             st.markdown(f"- **Type:** {field_info.get('type', 'N/A')}")
-                            st.markdown(
-                                f"- **Pattern:** {field_info.get('pattern', 'N/A')}"
-                            )
-                            st.markdown(
-                                f"- **Description:** {field_info.get('description', 'N/A')}"
-                            )
-                            st.markdown(
-                                f"- **Validation:** {field_info.get('validation', 'N/A')}"
-                            )
+                            st.markdown(f"- **Pattern:** {field_info.get('pattern', 'N/A')}")
+                            st.markdown(f"- **Description:** {field_info.get('description', 'N/A')}")
+                            st.markdown(f"- **Validation:** {field_info.get('validation', 'N/A')}")
 
                 # Validation Rules
                 with st.expander("✅ Validation Rules", expanded=False):
@@ -1232,9 +1105,7 @@ def show_messages_templates():
                     for field_name, field_info in variable_fields.items():
                         with st.expander(f"`{field_name}`", expanded=False):
                             st.markdown(f"- **Type:** {field_info.get('type', 'N/A')}")
-                            st.markdown(
-                                f"- **Description:** {field_info.get('description', 'N/A')}"
-                            )
+                            st.markdown(f"- **Description:** {field_info.get('description', 'N/A')}")
 
                             values = field_info.get("values", [])
                             if values:
@@ -1242,9 +1113,7 @@ def show_messages_templates():
                                 if len(values) <= 10:
                                     st.markdown(f"  - {', '.join(values)}")
                                 else:
-                                    st.markdown(
-                                        f"  - {', '.join(values[:5])}... ({len(values)} total)"
-                                    )
+                                    st.markdown(f"  - {', '.join(values[:5])}... ({len(values)} total)")
 
                 # Usage Examples
                 with st.expander("📦 Usage Examples", expanded=False):
@@ -1254,21 +1123,13 @@ def show_messages_templates():
 
                         # Tabs für mehrere Beispiele
                         if len(usage_examples) > 1:
-                            tab_names = [
-                                f"Beispiel {i + 1}" for i in range(len(usage_examples))
-                            ]
+                            tab_names = [f"Beispiel {i + 1}" for i in range(len(usage_examples))]
                             tabs = st.tabs(tab_names)
 
-                            for _i, (tab, example) in enumerate(
-                                zip(tabs, usage_examples)
-                            ):
+                            for _i, (tab, example) in enumerate(zip(tabs, usage_examples)):
                                 with tab:
-                                    st.markdown(
-                                        f"**{example.get('description', 'N/A')}**"
-                                    )
-                                    st.markdown(
-                                        f"**Topic:** `{example.get('topic', 'N/A')}`"
-                                    )
+                                    st.markdown(f"**{example.get('description', 'N/A')}**")
+                                    st.markdown(f"**Topic:** `{example.get('topic', 'N/A')}`")
                                     st.markdown("**Payload:**")
                                     st.json(example.get("payload", {}))
                         else:

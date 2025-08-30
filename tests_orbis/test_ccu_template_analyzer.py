@@ -4,20 +4,18 @@ Unit Tests für CCU Template Analyzer
 Testet alle Funktionen des CCUTemplateAnalyzer
 """
 
-import unittest
-import tempfile
-import os
 import json
+import os
 import sqlite3
-from unittest.mock import Mock, patch
-from datetime import datetime
 
 # Import the module to test
 import sys
+import tempfile
+import unittest
+from datetime import datetime
+from unittest.mock import Mock, patch
 
-sys.path.append(
-    os.path.join(os.path.dirname(__file__), "..", "src_orbis", "mqtt", "tools")
-)
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", "src_orbis", "mqtt", "tools"))
 from ccu_template_analyzer import CCUTemplateAnalyzer
 
 
@@ -141,9 +139,7 @@ class TestCCUTemplateAnalyzer(unittest.TestCase):
 
         # Test datetime values
         datetime_values = {"2025-08-28T10:00:00Z", "2025-08-28T11:00:00Z"}
-        placeholder = self.analyzer.get_placeholder_for_field(
-            "timestamp", datetime_values
-        )
+        placeholder = self.analyzer.get_placeholder_for_field("timestamp", datetime_values)
         self.assertIsInstance(placeholder, str)
 
         # Test UUID values
@@ -156,9 +152,7 @@ class TestCCUTemplateAnalyzer(unittest.TestCase):
 
         # Test string values
         string_values = {"test1", "test2", "test3"}
-        placeholder = self.analyzer.get_placeholder_for_field(
-            "description", string_values
-        )
+        placeholder = self.analyzer.get_placeholder_for_field("description", string_values)
         self.assertIsInstance(placeholder, str)
 
     def test_analyze_topic_structure(self):
@@ -227,9 +221,7 @@ class TestCCUTemplateAnalyzer(unittest.TestCase):
                     "timestamp": "<datetime>",
                     "orderType": "[STORAGE, PROCESSING]",
                 },
-                "examples": [
-                    {"timestamp": "2025-08-28T10:00:00Z", "payload": {"test": "data"}}
-                ],
+                "examples": [{"timestamp": "2025-08-28T10:00:00Z", "payload": {"test": "data"}}],
                 "statistics": {
                     "total_messages": 2,
                     "enum_fields": 1,
@@ -244,7 +236,7 @@ class TestCCUTemplateAnalyzer(unittest.TestCase):
         self.assertTrue(os.path.exists(output_file))
 
         # Check JSON content
-        with open(output_file, "r", encoding="utf-8") as f:
+        with open(output_file, encoding="utf-8") as f:
             data = json.load(f)
 
         self.assertIn("metadata", data)
@@ -253,24 +245,12 @@ class TestCCUTemplateAnalyzer(unittest.TestCase):
 
     def test_determine_sub_category(self):
         """Test: Sub-Kategorie bestimmen"""
-        self.assertEqual(
-            self.analyzer._determine_sub_category("ccu/order/request"), "Order"
-        )
-        self.assertEqual(
-            self.analyzer._determine_sub_category("ccu/state/status"), "State"
-        )
-        self.assertEqual(
-            self.analyzer._determine_sub_category("ccu/control/command"), "Control"
-        )
-        self.assertEqual(
-            self.analyzer._determine_sub_category("ccu/pairing/state"), "State"
-        )
-        self.assertEqual(
-            self.analyzer._determine_sub_category("ccu/set/charge"), "Settings"
-        )
-        self.assertEqual(
-            self.analyzer._determine_sub_category("ccu/unknown/topic"), "General"
-        )
+        self.assertEqual(self.analyzer._determine_sub_category("ccu/order/request"), "Order")
+        self.assertEqual(self.analyzer._determine_sub_category("ccu/state/status"), "State")
+        self.assertEqual(self.analyzer._determine_sub_category("ccu/control/command"), "Control")
+        self.assertEqual(self.analyzer._determine_sub_category("ccu/pairing/state"), "State")
+        self.assertEqual(self.analyzer._determine_sub_category("ccu/set/charge"), "Settings")
+        self.assertEqual(self.analyzer._determine_sub_category("ccu/unknown/topic"), "General")
 
     def test_update_template_manager(self):
         """Test: Template Manager aktualisieren"""
@@ -285,9 +265,7 @@ class TestCCUTemplateAnalyzer(unittest.TestCase):
                     "timestamp": "<datetime>",
                     "orderType": "[STORAGE, PROCESSING]",
                 },
-                "examples": [
-                    {"timestamp": "2025-08-28T10:00:00Z", "payload": {"test": "data"}}
-                ],
+                "examples": [{"timestamp": "2025-08-28T10:00:00Z", "payload": {"test": "data"}}],
                 "statistics": {
                     "total_messages": 2,
                     "enum_fields": 1,
@@ -380,9 +358,7 @@ class TestCCUTemplateAnalyzerIntegration(unittest.TestCase):
         ]
 
         for session_name, messages in sessions:
-            db_path = os.path.join(
-                self.session_dir, f"aps_persistent_traffic_{session_name}.db"
-            )
+            db_path = os.path.join(self.session_dir, f"aps_persistent_traffic_{session_name}.db")
             conn = sqlite3.connect(db_path)
             cursor = conn.cursor()
 
@@ -428,7 +404,7 @@ class TestCCUTemplateAnalyzerIntegration(unittest.TestCase):
         self.assertTrue(os.path.exists(output_file))
 
         # Load and verify results
-        with open(output_file, "r", encoding="utf-8") as f:
+        with open(output_file, encoding="utf-8") as f:
             data = json.load(f)
 
         self.assertIn("metadata", data)
@@ -448,12 +424,8 @@ def run_comprehensive_test():
     test_suite = unittest.TestSuite()
 
     # Add test classes
-    test_suite.addTest(
-        unittest.TestLoader().loadTestsFromTestCase(TestCCUTemplateAnalyzer)
-    )
-    test_suite.addTest(
-        unittest.TestLoader().loadTestsFromTestCase(TestCCUTemplateAnalyzerIntegration)
-    )
+    test_suite.addTest(unittest.TestLoader().loadTestsFromTestCase(TestCCUTemplateAnalyzer))
+    test_suite.addTest(unittest.TestLoader().loadTestsFromTestCase(TestCCUTemplateAnalyzerIntegration))
 
     # Run tests
     runner = unittest.TextTestRunner(verbosity=2)
@@ -461,9 +433,7 @@ def run_comprehensive_test():
 
     # Print summary
     print("\n📊 Test-Zusammenfassung:")
-    print(
-        f"  ✅ Erfolgreich: {result.testsRun - len(result.failures) - len(result.errors)}"
-    )
+    print(f"  ✅ Erfolgreich: {result.testsRun - len(result.failures) - len(result.errors)}")
     print(f"  ❌ Fehler: {len(result.failures)}")
     print(f"  ⚠️  Ausnahmen: {len(result.errors)}")
     print(f"  📋 Gesamt: {result.testsRun}")

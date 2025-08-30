@@ -3,20 +3,21 @@
 APS Interactive Dashboard
 Orbis Development - Interaktives Dashboard für MQTT-Datenanalyse
 """
-import os
-import sys
 import glob
 import json
-import time
+import os
 import sqlite3
-import yaml
+import sys
+import time
 import uuid
-import pandas as pd
-import streamlit as st
-import plotly.express as px
-import paho.mqtt.client as mqtt
 from datetime import datetime
-from typing import Dict, Any
+from typing import Any, Dict
+
+import paho.mqtt.client as mqtt
+import pandas as pd
+import plotly.express as px
+import streamlit as st
+import yaml
 
 # --- Start of Path Correction ---
 # This block ensures that the script can find the 'src_orbis' package,
@@ -35,40 +36,44 @@ if _project_root not in sys.path:
 # --- End of Path Correction ---
 
 
+# APS Analysis imports
+from src_orbis.mqtt.dashboard.components.aps_analysis import APSAnalysis
+from src_orbis.mqtt.dashboard.components.filters import create_filters
+
+# Icon Configuration imports
+from src_orbis.mqtt.dashboard.config.icon_config import (
+    MODULE_ICONS,
+    STATUS_ICONS,
+    get_logo_path,
+    get_module_icon,
+    get_module_icon_path,
+    get_status_icon,
+)
+
 # Now that the path is correct, we can use absolute imports from 'src_orbis'.
 from src_orbis.mqtt.dashboard.utils.data_handling import extract_module_info
-from src_orbis.mqtt.dashboard.components.filters import create_filters
+
+# Module Mapping imports
+from src_orbis.mqtt.tools.module_manager import get_module_manager
+
+# Node-RED Analysis imports
+from src_orbis.mqtt.tools.node_red_message_analyzer import NodeRedMessageAnalyzer
+
+# Topic Mapping imports (using TopicManager)
+# Topic Manager imports
+from src_orbis.mqtt.tools.topic_manager import get_topic_manager
 
 # Template Message Manager imports (OLD - REMOVED)
 # from src_orbis.mqtt.tools.template_message_manager import TemplateMessageManager
 # Removed: from src_orbis.mqtt.dashboard.template_control import TemplateControlDashboard
 
-# Module Mapping imports
-from src_orbis.mqtt.tools.module_manager import get_module_manager
-
-# Topic Manager imports
-from src_orbis.mqtt.tools.topic_manager import get_topic_manager
-
-# Node-RED Analysis imports
-from src_orbis.mqtt.tools.node_red_message_analyzer import NodeRedMessageAnalyzer
-
-# APS Analysis imports
-from src_orbis.mqtt.dashboard.components.aps_analysis import APSAnalysis
 
 
 
-# Topic Mapping imports (using TopicManager)
-from src_orbis.mqtt.tools.topic_manager import get_topic_manager
 
-# Icon Configuration imports
-from src_orbis.mqtt.dashboard.config.icon_config import (
-    get_module_icon,
-    get_logo_path,
-    get_module_icon_path,
-    get_status_icon,
-    MODULE_ICONS,
-    STATUS_ICONS
-)
+
+
+
 
 # Page config
 st.set_page_config(
@@ -108,21 +113,21 @@ class APSDashboard:
         # self.template_manager = TemplateMessageManager()
         # self.template_control = TemplateControlDashboard(self.template_manager)
         self.aps_analysis = APSAnalysis()
-        
+
         # Initialize Module Mapping Utilities
         self.module_mapping = get_module_manager()
-        
+
         # Initialize Topic Manager
         self.topic_manager = get_topic_manager()
-        
+
         # Initialize Message Template Manager (YAML-based, no analysis at startup)
         try:
             from ..tools.message_template_manager import get_message_template_manager
             self.message_template_manager = get_message_template_manager()
         except ImportError:
             # Fallback for direct execution
-            import sys
             import os
+            import sys
             sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'tools'))
             from message_template_manager import get_message_template_manager
             self.message_template_manager = get_message_template_manager()
@@ -189,13 +194,13 @@ class APSDashboard:
 
             # Wait for connection
             time.sleep(1)  # Give a second for the connection to establish
-            
+
             # Subscribe to CCU responses for Template Message Manager
             if self.mqtt_connected and hasattr(self, 'template_manager'):
                 self.mqtt_client.subscribe("ccu/order/response", qos=1)
                 self.mqtt_client.subscribe("ccu/order/status", qos=1)
                 self.mqtt_client.subscribe("module/+/order/response", qos=1)
-            
+
             return self.mqtt_connected
         except Exception as e:
             st.error(f"MQTT Connection Error: {e}")
@@ -241,7 +246,7 @@ class APSDashboard:
                 "qos": msg.qos,
             }
             self.mqtt_responses.append(response_info)
-            
+
             # Handle CCU responses for Template Message Manager
             if msg.topic == "ccu/order/response" and hasattr(self, 'template_manager'):
                 try:
@@ -250,14 +255,14 @@ class APSDashboard:
                         order_id = payload.get('orderId')
                         color = payload.get('type')
                         workpiece_id = payload.get('workpieceId')
-                        
+
                         if order_id and color and workpiece_id:
                             # Handle CCU response in order tracking manager
                             if hasattr(self, 'order_tracking_manager'):
                                 self.order_tracking_manager.handle_ccu_response(order_id, payload)
                 except Exception as e:
                     print(f"Template Manager CCU Response Error: {e}")
-                    
+
         except Exception as e:
             # Can't use st.warning here due to thread context
             print(f"MQTT Response Parse Error: {e}")
@@ -305,7 +310,7 @@ class APSDashboard:
         """Load all data from database"""
         try:
             query = """
-                SELECT timestamp, topic, payload, qos, retain, 
+                SELECT timestamp, topic, payload, qos, retain,
                        message_type, module_type, serial_number, status,
                        session_label, process_label
                 FROM mqtt_messages
@@ -589,7 +594,7 @@ class APSDashboard:
             # Create display DataFrame with friendly topic names
             df_display = df[available_columns].copy()
             df_display["friendly_topic"] = df_display["topic"].apply(lambda x: self.topic_manager.get_friendly_name(x))
-            
+
             # Reorder columns to show friendly_topic first
             display_cols = ["timestamp", "friendly_topic"] + [col for col in available_columns if col != "timestamp"]
 
@@ -601,12 +606,12 @@ class APSDashboard:
 
             # Show total count
             st.info(f"Zeige {min(len(df_display), 1000)} von {len(df):,} Nachrichten")
-            
+
             # Topic mapping info
             total_topics = df["topic"].nunique()
             mapped_topics = len([t for t in df["topic"].unique() if self.topic_manager.get_friendly_name(t) != t])
             unmapped_topics = total_topics - mapped_topics
-            
+
             col1, col2, col3 = st.columns(3)
             with col1:
                 st.metric("Gesamt Topics", total_topics)
@@ -614,7 +619,7 @@ class APSDashboard:
                 st.metric("Mapped Topics", mapped_topics)
             with col3:
                 st.metric("Unmapped Topics", unmapped_topics)
-            
+
 
         else:
             st.warning("Keine Nachrichten mit den gewählten Filtern gefunden.")
@@ -627,7 +632,7 @@ class APSDashboard:
             # Create analysis DataFrame with friendly topic names
             df_analysis = df[["topic"]].copy()
             df_analysis["friendly_topic"] = df_analysis["topic"].apply(lambda x: self.topic_manager.get_friendly_name(x))
-            
+
             col1, col2 = st.columns(2)
 
             with col1:
@@ -645,28 +650,28 @@ class APSDashboard:
             with col2:
                 # Topic comparison
                 st.subheader("Topic-Vergleich")
-                
+
                 # Show both original and friendly names
                 topic_comparison = df_analysis[["topic", "friendly_topic"]].drop_duplicates().head(10)
                 st.dataframe(topic_comparison, use_container_width=True)
-                
+
                 # Topic statistics
                 total_topics = df["topic"].nunique()
                 mapped_topics = df_analysis["friendly_topic"].nunique()
                 unmapped_count = len([t for t in df["topic"].unique() if self.topic_manager.get_friendly_name(t) == t])
-                
+
                 st.metric("Gesamt Topics", total_topics)
                 st.metric("Mapped Topics", total_topics - unmapped_count)
                 st.metric("Unmapped Topics", unmapped_count)
-            
+
             # Topic distribution with friendly names
             st.subheader("Topic-Verteilung (benutzerfreundlich)")
-            
+
             # Group by friendly topic names
             friendly_topic_counts = df_analysis["friendly_topic"].value_counts()
-            
+
             col3, col4 = st.columns(2)
-            
+
             with col3:
                 # Pie chart of friendly topics
                 fig = px.pie(
@@ -675,7 +680,7 @@ class APSDashboard:
                     title="Topic-Verteilung",
                 )
                 st.plotly_chart(fig, use_container_width=True)
-            
+
             with col4:
                 # Topic table with both names
                 topic_summary = df_analysis.groupby(["topic", "friendly_topic"]).size().reset_index(name="count")
@@ -765,16 +770,16 @@ class APSDashboard:
             # Create payload DataFrame with friendly topic names
             df_payload = df[["topic", "payload", "timestamp"]].copy()
             df_payload["friendly_topic"] = df_payload["topic"].apply(lambda x: self.topic_manager.get_friendly_name(x))
-            
+
             # Payload overview
             st.subheader("📊 Payload Übersicht")
-            
+
             # Payload statistics
             total_messages = len(df_payload)
             messages_with_payload = len(df_payload[df_payload["payload"].notna() & (df_payload["payload"] != "")])
             json_payloads = 0
             text_payloads = 0
-            
+
             for payload in df_payload["payload"].dropna():
                 if payload:
                     try:
@@ -782,7 +787,7 @@ class APSDashboard:
                         json_payloads += 1
                     except:
                         text_payloads += 1
-            
+
             col1, col2, col3, col4 = st.columns(4)
             with col1:
                 st.metric("Gesamt Nachrichten", total_messages)
@@ -792,25 +797,25 @@ class APSDashboard:
                 st.metric("JSON Payloads", json_payloads)
             with col4:
                 st.metric("Text Payloads", text_payloads)
-            
+
             st.markdown("---")
-            
+
             # Payload details with meta information
             st.subheader("📄 Payload Details mit Meta-Informationen")
-            
+
             # Show first 50 messages with payload details
             for idx, row in df_payload.head(50).iterrows():
                 if pd.notna(row.get('payload')) and row['payload']:
                     with st.expander(f"📄 Nachricht #{idx + 1} - {row['friendly_topic']}", expanded=False):
                         col1, col2 = st.columns([1, 2])
-                        
+
                         with col1:
                             st.markdown("**Meta-Informationen:**")
                             st.markdown(f"• **ID:** #{idx + 1}")
                             st.markdown(f"• **Timestamp:** {row['timestamp']}")
                             st.markdown(f"• **Topic:** `{row['topic']}`")
                             st.markdown(f"• **Friendly Topic:** {row['friendly_topic']}")
-                            
+
                             if pd.notna(row.get('module_type')):
                                 st.markdown(f"• **Module:** {row['module_type']}")
                             if pd.notna(row.get('serial_number')):
@@ -821,14 +826,14 @@ class APSDashboard:
                                 st.markdown(f"• **Process:** {row['process_label']}")
                             if pd.notna(row.get('session_label')):
                                 st.markdown(f"• **Session:** {row['session_label']}")
-                            
+
                             # Payload type
                             try:
                                 json.loads(row['payload'])
                                 st.markdown("• **Payload Type:** JSON")
                             except:
                                 st.markdown("• **Payload Type:** Text")
-                        
+
                         with col2:
                             st.markdown("**Payload:**")
                             try:
@@ -838,19 +843,19 @@ class APSDashboard:
                             except:
                                 # Show as text if not JSON
                                 st.text_area("Payload (Text):", str(row['payload']), height=200, key=f"payload_text_{idx}")
-                
+
                 # Show separator for messages without payload
                 else:
                     with st.expander(f"📄 Nachricht #{idx + 1} - {row['friendly_topic']} (Kein Payload)", expanded=False):
                         col1, col2 = st.columns([1, 2])
-                        
+
                         with col1:
                             st.markdown("**Meta-Informationen:**")
                             st.markdown(f"• **ID:** #{idx + 1}")
                             st.markdown(f"• **Timestamp:** {row['timestamp']}")
                             st.markdown(f"• **Topic:** `{row['topic']}`")
                             st.markdown(f"• **Friendly Topic:** {row['friendly_topic']}")
-                            
+
                             if pd.notna(row.get('module_type')):
                                 st.markdown(f"• **Module:** {row['module_type']}")
                             if pd.notna(row.get('serial_number')):
@@ -861,21 +866,21 @@ class APSDashboard:
                                 st.markdown(f"• **Process:** {row['process_label']}")
                             if pd.notna(row.get('session_label')):
                                 st.markdown(f"• **Session:** {row['session_label']}")
-                            
+
                             st.markdown("• **Payload Type:** Kein Payload")
-                        
+
                         with col2:
                             st.info("Kein Payload vorhanden")
-            
+
             # Show info if more messages exist
             if len(df) > 50:
                 st.info(f"Zeige die ersten 50 von {len(df):,} Nachrichten. Verwende die Filter oben, um spezifische Nachrichten zu finden.")
-            
+
             st.markdown("---")
-            
+
             # JSON Payload Analysis
             st.subheader("🔍 JSON Payload Struktur-Analyse")
-            
+
             # Try to extract JSON data
             json_payloads = []
             for payload in df["payload"].dropna():
@@ -933,11 +938,11 @@ class APSDashboard:
         st.info(
             """
         **💡 Session Recording:**
-        
+
         ```bash
         python src_orbis/mqtt/loggers/aps_session_logger.py --session-label wareneingang-rot --auto-start
         ```
-        
+
         **Beispiele:** `wareneingang-rot`, `auftrag-blau`, `ai-not-ok-rot`
         """
         )
@@ -1014,7 +1019,7 @@ class APSDashboard:
         """Show MQTT control interface"""
         st.header("🎮 MQTT Module Control")
         st.markdown("Steuere APS-Module über funktionierende MQTT-Nachrichten")
-        
+
         # MQTT status info (connection managed in sidebar)
         if not st.session_state.get("mqtt_connected", False):
             st.warning("⚠️ MQTT-Verbindung erforderlich - verwende die Sidebar zum Verbinden")
@@ -1036,64 +1041,64 @@ class APSDashboard:
     def show_order_control_combined(self):
         """Show combined order control with both trigger and HBW status options"""
         st.header("📋 Bestellung")
-        
+
         if not st.session_state.get("mqtt_connected", False):
             st.warning("⚠️ MQTT-Verbindung erforderlich")
             return
-        
+
         # Two sections in one method
         col1, col2 = st.columns(2)
-        
+
         with col1:
             st.subheader("🚀 Bestellung-Trigger")
             st.markdown("**Direkte Bestellung ohne HBW-Status-Prüfung**")
-            
+
             # Order buttons
             col1a, col1b, col1c = st.columns(3)
-            
+
             with col1a:
                 if st.button("🔴 ROT", type="primary", use_container_width=True):
                     self.send_browser_order("RED")
-            
+
             with col1b:
                 if st.button("⚪ WEISS", type="primary", use_container_width=True):
                     self.send_browser_order("WHITE")
-            
+
             with col1c:
                 if st.button("🔵 BLAU", type="primary", use_container_width=True):
                     self.send_browser_order("BLUE")
-        
+
         with col2:
             st.subheader("📦 Bestellung (mit HBW-Status)")
             st.markdown("**Bestellung nur für verfügbare Werkstücke**")
-            
+
             # Get HBW status
             hbw_status = self.get_hbw_status()
-            
+
             if hbw_status:
                 # Display available workpieces
                 available_workpieces = hbw_status.get('available_workpieces', [])
-                
+
                 if available_workpieces:
                     st.success(f"✅ {len(available_workpieces)} Werkstücke verfügbar")
-                    
+
                     # Show available workpieces
                     for workpiece in available_workpieces:
                         color = workpiece.get('color', 'UNKNOWN')
                         position = workpiece.get('position', 'UNKNOWN')
                         st.write(f"📦 {color} - Position: {position}")
-                    
+
                     # Order buttons for available workpieces
                     col2a, col2b, col2c = st.columns(3)
-                    
+
                     colors = ['RED', 'WHITE', 'BLUE']
                     cols = [col2a, col2b, col2c]
-                    
+
                     for i, color in enumerate(colors):
                         with cols[i]:
                             # Check if color is available
                             is_available = any(w.get('color') == color for w in available_workpieces)
-                            
+
                             if is_available:
                                 if st.button(f"{color} bestellen", type="primary", use_container_width=True):
                                     self.send_browser_order(color)
@@ -1106,7 +1111,7 @@ class APSDashboard:
             else:
                 st.error("❌ HBW-Status konnte nicht abgerufen werden")
                 st.info("💡 Verwende 'Bestellung-Trigger' für direkte Bestellung")
-        
+
         # Order format info (shared)
         st.subheader("📋 Bestellungs-Format")
         st.info("""
@@ -1115,7 +1120,7 @@ class APSDashboard:
         - **Payload:** `{"type": "COLOR", "ts": "timestamp"}`
         - **CCU orchestriert** automatisch alle Module
         """)
-        
+
         # Recent orders
         if hasattr(self, 'recent_orders') and self.recent_orders:
             st.subheader("📋 Letzte Bestellungen")
@@ -1129,34 +1134,34 @@ class APSDashboard:
         if not st.session_state.get("mqtt_connected", False):
             st.error("❌ MQTT-Verbindung erforderlich")
             return
-        
+
         try:
             # Create order message
             order_data = {
                 "type": color,
                 "ts": datetime.now().isoformat() + "Z"
             }
-            
+
             # Send order using the proven method
             topic = "/j1/txt/1/f/o/order"
             success = self.send_mqtt_message_direct(topic, order_data)
-            
+
             if success:
                 # Store recent order
                 if not hasattr(self, 'recent_orders'):
                     self.recent_orders = []
-                
+
                 self.recent_orders.append({
                     'timestamp': datetime.now().strftime('%H:%M:%S'),
                     'type': color,
                     'topic': topic,
                     'payload': order_data
                 })
-                
+
                 st.success(f"✅ {color}-Bestellung erfolgreich gesendet!")
             else:
                 st.error("❌ Fehler beim Senden der Bestellung")
-                
+
         except Exception as e:
             st.error(f"❌ Fehler: {e}")
 
@@ -1164,16 +1169,16 @@ class APSDashboard:
         """Get HBW status and available workpieces"""
         if not st.session_state.get("mqtt_connected", False):
             return None
-        
+
         if not hasattr(self, 'mqtt_client') or not self.mqtt_client:
             return None
-        
+
         try:
             # This is a simplified version - in practice you'd need to:
             # 1. Subscribe to HBW state messages
             # 2. Request factsheet from HBW
             # 3. Parse the response for available workpieces
-            
+
             # For now, return a mock status
             # TODO: Implement real HBW status checking
             return {
@@ -1183,7 +1188,7 @@ class APSDashboard:
                     {'color': 'BLUE', 'position': 'B3'}
                 ]
             }
-            
+
         except Exception as e:
             st.error(f"❌ Fehler beim Abrufen des HBW-Status: {e}")
             return None
@@ -1222,15 +1227,15 @@ class APSDashboard:
         """Show comprehensive module overview dashboard"""
         # Header with Factory Reset button
         col1, col2 = st.columns([3, 1])
-        
+
         with col1:
             st.header("🏭 ORBIS Modellfabrik Overview")
         st.markdown("Übersicht aller APS-Module mit Status und Steuerungsmöglichkeiten")
-        
+
         with col2:
             st.markdown("")  # Spacer
             st.markdown("")  # Spacer
-            
+
             # Factory Reset Icon Button
             if st.session_state.get("mqtt_connected", False):
                 if st.button("🔄", help="Fabrik zurücksetzen", use_container_width=True):
@@ -1283,17 +1288,17 @@ class APSDashboard:
                 module_name = module_info.get('name', module_id)
                 module_key_upper = module_name.upper()
                 icon_from_function = get_module_icon(module_key_upper)
-            
+
             # If it's a file path, fallback to emoji from MODULE_ICONS
             if icon_from_function and ('/' in icon_from_function or '\\' in icon_from_function):
                     icon_display = MODULE_ICONS.get(module_key_upper, "❓")
             else:
                 icon_display = icon_from_function
-            
+
                 # Get first available IP address from ip_addresses list
                 ip_addresses = module_info.get('ip_addresses', [])
                 current_ip = ip_addresses[0] if ip_addresses else "Unknown"
-                
+
             module_table_data.append(
                 {
                         "Name": f"{icon_display} {module_info.get('name', module_id)}",
@@ -1341,7 +1346,7 @@ class APSDashboard:
             # Compact reset dialog
             with st.container():
                 st.markdown("---")
-                
+
                 # Compact header with close button
                 col_header1, col_header2 = st.columns([4, 1])
                 with col_header1:
@@ -1350,32 +1355,32 @@ class APSDashboard:
                     if st.button("❌", help="Schließen", key="close_reset_modal"):
                         st.session_state.show_reset_modal = False
                         st.rerun()
-                
+
                 # Compact warning
                 st.warning("⚠️ **WARNUNG:** Diese Aktion setzt die gesamte Fabrik zurück!")
-                
+
                 # Compact options
-                reset_with_storage = st.checkbox("Mit Storage zurücksetzen (HBW-Storage löschen)", value=False, 
+                reset_with_storage = st.checkbox("Mit Storage zurücksetzen (HBW-Storage löschen)", value=False,
                                                help="Aktivieren um alle HBW-Storage Daten zu löschen")
-                
+
                 # Compact buttons
                 col_btn1, col_btn2, col_spacer = st.columns([1, 1, 2])
-                
+
                 with col_btn1:
                     if st.button("✅ JA - Zurücksetzen", type="primary", use_container_width=True, key="confirm_reset"):
                         self.send_factory_reset(reset_with_storage)
                         st.session_state.show_reset_modal = False
                         st.rerun()
-                
+
                 with col_btn2:
                     if st.button("❌ NEIN - Abbrechen", use_container_width=True, key="cancel_reset"):
                         st.session_state.show_reset_modal = False
                         st.rerun()
-                
+
                 with col_spacer:
                     st.markdown("")
                     st.markdown("*Klicke 'JA' um die Fabrik zurückzusetzen*")
-                
+
                 st.markdown("---")
 
         # Module control moved to MQTT Control tab
@@ -1598,16 +1603,16 @@ class APSDashboard:
             if not module_info:
                 st.error(f"Modul {module_id} nicht gefunden")
                 return
-            
+
             # Initialize or get current orderUpdateId for this module
             order_update_key = f"order_update_id_{module_id}"
             if order_update_key not in st.session_state:
                 st.session_state[order_update_key] = 1
             else:
                 st.session_state[order_update_key] += 1
-            
+
             order_update_id = st.session_state[order_update_key]
-            
+
             # Create message with proper metadata including NFC code
             message = {
                 "serialNumber": module_info["id"],
@@ -1624,12 +1629,12 @@ class APSDashboard:
                     }
                 }
             }
-            
+
             topic = f"module/v1/ff/{module_info['id']}/order"
-            
+
             # Send message
             success, result_message = self.send_mqtt_message_direct(topic, message)
-            
+
             if success:
                 st.success(f"✅ {command} gesendet für {workpiece_color} Werkstück")
                 st.info(f"📡 Topic: {topic}")
@@ -1637,7 +1642,7 @@ class APSDashboard:
                 st.info(f"🔍 NFC-Code: {nfc_code}")
             else:
                 st.error(f"❌ Fehler: {result_message}")
-                
+
         except Exception as e:
             st.error(f"❌ Fehler beim Senden: {e}")
 
@@ -1654,18 +1659,18 @@ class APSDashboard:
                 "timestamp": datetime.now().isoformat() + "Z",
                 "withStorage": with_storage
             }
-            
+
             topic = "ccu/set/reset"
-            
+
             # Send message
             success, result_message = self.send_mqtt_message_direct(topic, reset_message)
-            
+
             if success:
                 storage_text = "mit Storage-Löschung" if with_storage else "ohne Storage-Löschung"
                 st.success(f"✅ Fabrik-Reset gesendet ({storage_text})")
                 st.info(f"📡 Topic: {topic}")
                 st.info(f"💾 Storage: {with_storage}")
-                
+
                 # Show warning about consequences
                 if with_storage:
                     st.warning("⚠️ **ACHTUNG:** HBW-Storage wurde gelöscht!")
@@ -1673,7 +1678,7 @@ class APSDashboard:
                     st.info("ℹ️ HBW-Storage wurde beibehalten")
             else:
                 st.error(f"❌ Fehler beim Reset: {result_message}")
-                
+
         except Exception as e:
             st.error(f"❌ Fehler beim Senden des Reset-Befehls: {e}")
 
@@ -1777,9 +1782,9 @@ class APSDashboard:
         """Get enhanced status display with appropriate icons"""
         if not status_text:
             return f"{get_status_icon('offline')} No Data"
-        
+
         status_lower = status_text.lower()
-        
+
         # Module-specific status mappings
         if module_type:
             module_upper = module_type.upper()
@@ -1791,7 +1796,7 @@ class APSDashboard:
                 return f"{get_status_icon('processing')} Processing"
             elif module_upper == "HBW" and "storing" in status_lower:
                 return f"{get_status_icon('ready')} Storing"
-        
+
         # General status mappings
         if "available" in status_lower or "online" in status_lower:
             return f"{get_status_icon('available')} Available"
@@ -1832,23 +1837,23 @@ class APSDashboard:
         try:
             # Query recent FTS state messages
             query = """
-            SELECT payload, timestamp 
-            FROM mqtt_messages 
+            SELECT payload, timestamp
+            FROM mqtt_messages
             WHERE topic LIKE '%fts%' OR topic LIKE '%5iO4%'
-            ORDER BY timestamp DESC 
+            ORDER BY timestamp DESC
             LIMIT 10
             """
-            
+
             df = pd.read_sql_query(query, self.conn)
-            
+
             if df.empty:
                 return "🟡 Unbekannt"
-            
+
             # Look for activity status in recent messages
             for _, row in df.iterrows():
                 try:
                     payload = json.loads(row['payload'])
-                    
+
                     # Check for activity status
                     if 'activityStatus' in str(payload):
                         if 'CHARGING' in str(payload):
@@ -1859,12 +1864,12 @@ class APSDashboard:
                             return "🟢 Bereit"
                         elif 'IDLE' in str(payload):
                             return "🟢 Bereit"
-                            
+
                 except (json.JSONDecodeError, KeyError):
                     continue
-            
+
             return "🟡 Unbekannt"
-            
+
         except Exception as e:
             return "🔴 Fehler"
 
@@ -1887,7 +1892,7 @@ class APSDashboard:
                     "charge": True
                 }
                 topic = "ccu/set/charge"
-                
+
             elif action_type == "stopCharging":
                 # Send stop charge command to CCU
                 ccu_message = {
@@ -1895,14 +1900,14 @@ class APSDashboard:
                     "charge": False
                 }
                 topic = "ccu/set/charge"
-                
+
             elif action_type == "findInitialDockPosition":
                 # Send pairing command to CCU first, then order
                 ccu_message = {
                     "serialNumber": "5iO4"
                 }
                 topic = "ccu/pairing/pair_fts"
-                
+
             elif action_type == "factsheetRequest":
                 # Direct FTS command for status
                 fts_message = {
@@ -1917,31 +1922,31 @@ class APSDashboard:
                     ]
                 }
                 topic = "fts/v1/ff/5iO4/instantAction"
-                
+
                 # Send message
                 success, result_message = self.send_mqtt_message_direct(topic, fts_message)
-                
+
                 if success:
                     st.success(f"✅ FTS Status abgefragt")
                     st.info(f"📡 Topic: {topic}")
                 else:
                     st.error(f"❌ Fehler: {result_message}")
                 return
-                
+
             else:
                 st.error(f"❌ Unbekannter FTS-Befehl: {action_type}")
                 return
-            
+
             # Send CCU message
             success, result_message = self.send_mqtt_message_direct(topic, ccu_message)
-            
+
             if success:
                 st.success(f"✅ FTS Befehl gesendet: {action_type}")
                 st.info(f"📡 Topic: {topic}")
                 st.info(f"📋 CCU Command: {ccu_message}")
             else:
                 st.error(f"❌ Fehler: {result_message}")
-                
+
         except Exception as e:
             st.error(f"❌ Fehler beim Senden des FTS-Befehls: {e}")
 
@@ -1949,120 +1954,120 @@ class APSDashboard:
     #     """Show Node-RED message analysis - MOVED TO APS ANALYSIS TAB"""
         st.header("🔍 Node-RED Analyse")
         st.markdown("Analysiert Node-RED Nachrichten aus Session-Daten für ORDER-ID Management")
-        
+
         # Session selection
         session_files = self.get_available_sessions()
-        
+
         if not session_files:
             st.warning("❌ Keine Session-Dateien gefunden")
             return
-        
+
         selected_session = st.selectbox(
             "Session auswählen:",
             session_files,
             format_func=lambda x: x.split('/')[-1].replace('.db', '')
         )
-        
+
         if selected_session and st.button("🔍 Node-RED Nachrichten analysieren"):
             with st.spinner("Analysiere Node-RED Nachrichten..."):
                 self.analyze_node_red_session(selected_session)
-    
+
     def get_available_sessions(self):
         """Get available session files"""
         import glob
         import os
-        
+
         # Get project root (3 levels up from dashboard)
         project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
         session_pattern = os.path.join(project_root, "mqtt-data/sessions/aps_persistent_traffic_*.db")
         session_files = glob.glob(session_pattern)
         session_files.sort()
-        
+
         return session_files
-    
+
     def analyze_node_red_session(self, session_file):
         """Analyze Node-RED messages from a session"""
         try:
             analyzer = NodeRedMessageAnalyzer(session_file)
-            
+
             # Connect to database
             if not analyzer.connect():
                 st.error("❌ Verbindung zur Session-Datenbank fehlgeschlagen")
                 return
-            
+
             # Load Node-RED messages
             df = analyzer.get_node_red_messages()
-            
+
             if df.empty:
                 st.warning("⚠️ Keine Node-RED Nachrichten in dieser Session gefunden")
                 analyzer.disconnect()
                 return
-            
+
             # Perform analyses
             topic_analysis = analyzer.analyze_node_red_topics(df)
             state_messages = analyzer.extract_node_red_state_messages(df)
             factsheet_messages = analyzer.extract_factsheet_messages(df)
             connection_messages = analyzer.extract_connection_messages(df)
-            
+
             # Display results
             self.display_node_red_results(
-                session_file, topic_analysis, state_messages, 
+                session_file, topic_analysis, state_messages,
                 factsheet_messages, connection_messages, df
             )
-            
+
             analyzer.disconnect()
-            
+
         except Exception as e:
             st.error(f"❌ Fehler bei der Node-RED Analyse: {e}")
-    
-    def display_node_red_results(self, session_file, topic_analysis, state_messages, 
+
+    def display_node_red_results(self, session_file, topic_analysis, state_messages,
                                 factsheet_messages, connection_messages, all_messages):
         """Display Node-RED analysis results"""
-        
+
         # Session info
         st.success(f"✅ Node-RED Analyse abgeschlossen: {session_file.split('/')[-1]}")
-        
+
         # Overview metrics
         col1, col2, col3, col4 = st.columns(4)
-        
+
         with col1:
             st.metric("Gesamt-Nachrichten", topic_analysis.get('total_messages', 0))
-        
+
         with col2:
             st.metric("Node-RED State", len(state_messages))
-        
+
         with col3:
             st.metric("Factsheet", len(factsheet_messages))
-        
+
         with col4:
             st.metric("Connection", len(connection_messages))
-        
+
         # Topic distribution
         st.subheader("📋 Topic Distribution")
-        
+
         if 'topic_distribution' in topic_analysis:
             # Create DataFrame with friendly names
             topic_df = pd.DataFrame(
                 list(topic_analysis['topic_distribution'].items()),
                 columns=['Topic', 'Count']
             ).sort_values('Count', ascending=False)
-            
+
             # Create display DataFrame with friendly topic names
             topic_df_display = topic_df[['Topic', 'Count']].copy()
             topic_df_display['Friendly_Topic'] = topic_df_display['Topic'].apply(lambda x: self.topic_manager.get_friendly_name(x))
-            
+
             # Show both original and friendly names
             st.dataframe(topic_df_display[['Friendly_Topic', 'Topic', 'Count']], use_container_width=True)
-            
+
             # Bar chart with friendly names
             st.bar_chart(topic_df_display.set_index('Friendly_Topic')['Count'])
-        
+
         # Node-RED State Messages
         if not state_messages.empty:
             st.subheader("🔍 Node-RED State Messages")
-            
+
             col1, col2 = st.columns(2)
-            
+
             with col1:
                 st.markdown("**Topics:**")
                 for topic in state_messages['topic'].unique():
@@ -2070,7 +2075,7 @@ class APSDashboard:
                     st.markdown(f"• **{friendly_name}**")
                     if friendly_name != topic:
                         st.markdown(f"  `{topic}`")
-            
+
             with col2:
                 st.markdown("**Sample Messages:**")
                 for _, row in state_messages.head(3).iterrows():
@@ -2080,13 +2085,13 @@ class APSDashboard:
                             st.json(payload)
                         except:
                             st.text(str(row['payload']))
-        
+
         # Factsheet Messages
         if not factsheet_messages.empty:
             st.subheader("📋 Factsheet Messages")
-            
+
             col1, col2 = st.columns(2)
-            
+
             with col1:
                 st.markdown("**Topics:**")
                 for topic in factsheet_messages['topic'].unique():
@@ -2094,7 +2099,7 @@ class APSDashboard:
                     st.markdown(f"• **{friendly_name}**")
                     if friendly_name != topic:
                         st.markdown(f"  `{topic}`")
-            
+
             with col2:
                 st.markdown("**Sample Messages:**")
                 for _, row in factsheet_messages.head(3).iterrows():
@@ -2104,15 +2109,15 @@ class APSDashboard:
                             st.json(payload)
                         except:
                             st.text(str(row['payload']))
-        
+
         # Connection Messages
         if not connection_messages.empty:
             st.subheader("🔗 Connection Messages")
-            
+
             # Connection status timeline
             connection_timeline = connection_messages.copy()
             connection_timeline['timestamp'] = pd.to_datetime(connection_timeline['timestamp'])
-            
+
             # Parse connection state
             def extract_connection_state(payload):
                 try:
@@ -2123,16 +2128,16 @@ class APSDashboard:
                     return data.get('connectionState', 'unknown')
                 except:
                     return 'unknown'
-            
+
             connection_timeline['connection_state'] = connection_timeline['payload'].apply(extract_connection_state)
-            
+
             # Timeline chart
             st.markdown("**Connection Status Timeline:**")
-            
+
             # Group by module and show connection states
             module_connections = connection_timeline.groupby(['module_type', 'connection_state']).size().unstack(fill_value=0)
             st.dataframe(module_connections, use_container_width=True)
-            
+
             # Sample connection messages
             st.markdown("**Sample Connection Messages:**")
             for _, row in connection_messages.head(3).iterrows():
@@ -2144,21 +2149,21 @@ class APSDashboard:
                         st.json(payload)
                     except:
                         st.text(str(row['payload']))
-        
+
         # ORDER-ID Management Insights
         st.subheader("🚨 ORDER-ID Management Insights")
-        
+
         # Analyze state messages for ORDER-ID patterns
         if not state_messages.empty:
             st.markdown("**🔍 Node-RED State Message Analysis:**")
-            
+
             # Look for ORDER-ID related information
             order_id_insights = []
-            
+
             for _, row in state_messages.iterrows():
                 try:
                     payload = json.loads(row['payload']) if isinstance(row['payload'], str) else row['payload']
-                    
+
                     # Check for ORDER-ID related fields
                     if 'orderId' in payload:
                         order_id_insights.append({
@@ -2170,12 +2175,12 @@ class APSDashboard:
                         })
                 except:
                     continue
-            
+
             if order_id_insights:
                 st.markdown("**ORDER-ID Patterns gefunden:**")
                 insights_df = pd.DataFrame(order_id_insights)
                 st.dataframe(insights_df, use_container_width=True)
-                
+
                 # Show ORDER-ID distribution
                 if 'orderId' in insights_df.columns:
                     order_id_counts = insights_df['orderId'].value_counts()
@@ -2183,15 +2188,15 @@ class APSDashboard:
                     st.bar_chart(order_id_counts.head(10))
             else:
                 st.info("Keine ORDER-ID Patterns in Node-RED State Messages gefunden")
-        
+
         # Connection insights for ORDER-ID Management
         if not connection_messages.empty:
             st.markdown("**🔗 Connection Status für ORDER-ID Management:**")
-            
+
             # Show module availability
             module_availability = connection_timeline.groupby('module_type')['connection_state'].value_counts().unstack(fill_value=0)
             st.dataframe(module_availability, use_container_width=True)
-            
+
             st.info("💡 **ORDER-ID Management Tipp:** Module müssen 'connected' sein, bevor ORDER-ID Workflows gestartet werden können")
 
 
@@ -2200,14 +2205,14 @@ class APSDashboard:
         """Zeigt die Template Library (NEUER MessageTemplateManager)"""
         st.subheader("📚 Template Library")
         st.info("💡 **NEUER MessageTemplateManager** - Verwaltet MQTT Message Templates aus der YAML-Konfiguration")
-        
+
         if not self.message_template_manager:
             st.error("❌ Message Template Manager nicht verfügbar")
             return
-        
+
         # Get all templates
         templates = self.message_template_manager.get_all_templates()
-        
+
         if templates:
         # Category filter
             categories = self.message_template_manager.get_categories()
@@ -2216,25 +2221,25 @@ class APSDashboard:
                 options=["Alle"] + categories,
                 help="Filtere Templates nach Kategorie"
             )
-            
+
             # Filter templates
             filtered_templates = []
             for template in templates:
                 if selected_category == "Alle" or template.get("category") == selected_category:
                     filtered_templates.append(template)
-            
+
             # Display templates
             if filtered_templates:
                 st.success(f"📊 {len(filtered_templates)} Templates gefunden")
-                
+
                 for template in filtered_templates:
                     with st.expander(f"📋 {template.get('topic', 'Unknown')} - {template.get('category', 'Unknown')}"):
                         st.write(f"**Beschreibung:** {template.get('description', 'Keine Beschreibung')}")
-                        
+
                         # Sub-category
                         if template.get("sub_category"):
                             st.write(f"**Sub-Kategorie:** {template.get('sub_category')}")
-                        
+
                         # UI Config (if available)
                         if template.get("ui_config"):
                             st.write("**UI-Konfiguration:**")
@@ -2243,12 +2248,12 @@ class APSDashboard:
                                 st.write("**Verfügbare Befehle:**")
                                 for cmd_name, cmd_config in ui_config["commands"].items():
                                     st.write(f"- {cmd_name}: {cmd_config.get('text', 'Keine Beschreibung')}")
-                        
+
                         # Template structure
                         if template.get("template_structure"):
                             st.write("**Template-Struktur:**")
                             st.json(template["template_structure"])
-                        
+
                         # Examples
                         if template.get("examples"):
                             st.write("**Beispiele:**")
@@ -2267,14 +2272,14 @@ class APSDashboard:
     def show_template_analysis(self):
         """Zeigt Template-Analyse"""
         st.subheader("🔍 Template-Analyse")
-        
+
         if not self.message_template_manager:
             st.error("❌ Message Template Manager nicht verfügbar")
             return
-        
+
         # Statistics
         stats = self.message_template_manager.get_statistics()
-        
+
         col1, col2, col3, col4 = st.columns(4)
         with col1:
             st.metric("Gesamt Topics", stats["total_topics"])
@@ -2284,16 +2289,16 @@ class APSDashboard:
             st.metric("Validierungs-Patterns", stats["validation_patterns"])
         with col4:
             st.metric("Cache-Größe", stats["analysis_cache_size"])
-        
+
         st.markdown("---")
-        
+
         # Template Analysis Section
         st.subheader("🔍 Template-Analyse")
-        
+
         # Session selection for analysis
         project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
         session_files = glob.glob(os.path.join(project_root, "mqtt-data/sessions/aps_persistent_traffic_*.db"))
-        
+
         if session_files:
             selected_session = st.selectbox(
                 "📁 Session für Template-Analyse auswählen:",
@@ -2301,17 +2306,17 @@ class APSDashboard:
                 format_func=lambda x: os.path.basename(x).replace('.db', ''),
                 help="Wähle eine Session-DB für die Template-Analyse"
             )
-            
+
             if st.button("🔍 Template-Analyse starten", type="primary"):
                 with st.spinner("Analysiere Session-Templates..."):
                     analysis_result = self.message_template_manager.analyze_session_templates(selected_session)
-                    
+
                     if "error" not in analysis_result:
                         st.success(f"✅ Analyse abgeschlossen: {analysis_result['topics_analyzed']} Topics analysiert")
-                        
+
                         # Display analysis results
                         st.subheader("📊 Analyse-Ergebnisse")
-                        
+
                         # Topics overview
                         topics_analyzed = analysis_result.get("topic_analysis", {})
                         if topics_analyzed:
@@ -2323,7 +2328,7 @@ class APSDashboard:
                                     "Felder": len(analysis["field_types"]),
                                     "Beispiele": len(analysis["examples"])
                                 })
-                            
+
                             df = pd.DataFrame(topic_data)
                             st.dataframe(df, use_container_width=True)
                     else:
@@ -2334,18 +2339,18 @@ class APSDashboard:
     def show_template_settings(self):
         """Zeigt Template-Einstellungen"""
         st.subheader("⚙️ Template-Einstellungen")
-        
+
         if not self.message_template_manager:
             st.error("❌ Message Template Manager nicht verfügbar")
             return
-        
+
         col1, col2 = st.columns(2)
-        
+
         with col1:
             if st.button("🔄 Cache leeren"):
                 self.message_template_manager.session_analysis_cache.clear()
                 st.success("✅ Cache geleert")
-        
+
         with col2:
             if st.button("📥 Konfiguration neu laden"):
                 self.message_template_manager.reload_config()
@@ -2376,7 +2381,7 @@ class APSDashboard:
 
         with settings_tab4:
             self.show_topic_configuration_settings()
-            
+
         with settings_tab5:
             self.show_message_template_settings()
 
@@ -2452,22 +2457,22 @@ class APSDashboard:
         """Show NFC code mapping configuration from YAML file"""
         st.subheader("🏷️ NFC-Code Mapping")
         st.markdown("Zentrale Konfiguration der NFC-Codes aus `nfc_code_config.yml`")
-        
+
         # Load NFC configuration from YAML
         nfc_config = self.load_nfc_config()
-        
+
         if not nfc_config:
             st.error("❌ NFC-Konfiguration konnte nicht geladen werden")
             return
-        
+
         # Display NFC codes organized by color
         colors = ["RED", "WHITE", "BLUE"]
         color_icons = {"RED": "🔴", "WHITE": "⚪", "BLUE": "🔵"}
-        
+
         for color in colors:
-            color_codes = {code: info for code, info in nfc_config['nfc_codes'].items() 
+            color_codes = {code: info for code, info in nfc_config['nfc_codes'].items()
                           if info['color'] == color}
-            
+
             if color_codes:
                 with st.expander(f"{color_icons[color]} {color} Werkstücke ({len(color_codes)} Codes)", expanded=True):
                     # Create table data
@@ -2479,7 +2484,7 @@ class APSDashboard:
                             "Quality-Check": info['quality_check'],
                             "Beschreibung": info['description']
                         })
-                    
+
                     # Display as table
                     if table_data:
                         df = pd.DataFrame(table_data)
@@ -2497,11 +2502,11 @@ class APSDashboard:
                                 "Beschreibung": st.column_config.TextColumn("Beschreibung", width="large")
                             }
                         )
-        
+
         # Statistics
         st.markdown("---")
         col1, col2, col3, col4 = st.columns(4)
-        
+
         with col1:
             st.metric("Gesamt NFC-Codes", len(nfc_config['nfc_codes']))
         with col2:
@@ -2513,7 +2518,7 @@ class APSDashboard:
         with col4:
             blue_count = len([c for c in nfc_config['nfc_codes'].values() if c['color'] == 'BLUE'])
             st.metric("🔵 BLUE", blue_count)
-        
+
         # Info about usage
         st.info("ℹ️ **Hinweis:** Friendly-IDs werden nur für die Dashboard-Anzeige verwendet. In MQTT-Nachrichten werden immer die echten NFC-Codes verwendet.")
 
@@ -2521,35 +2526,35 @@ class APSDashboard:
         """Show module configuration settings from YAML file"""
         st.subheader("🏭 Modul-Konfiguration")
         st.markdown("Zentrale Konfiguration der Module aus `module_config.yml`")
-        
+
         # Load module configuration from ModuleManager
         module_manager = self.module_mapping
         all_modules = module_manager.get_all_modules()
-        
+
         if not all_modules:
             st.error("❌ Modul-Konfiguration konnte nicht geladen werden")
             return
-        
+
         # Create table data for all modules in one table
         table_data = []
         type_icons = {
             "Processing": "⚙️",
-            "Quality-Control": "🔍", 
+            "Quality-Control": "🔍",
             "Storage": "📦",
             "Input/Output": "🚪",
             "Charging": "🔋",
             "Transport": "🚗"
         }
-        
+
         for module_id, info in all_modules.items():
             # Get module type icon
             module_type = info.get('type', 'Unknown')
             icon = type_icons.get(module_type, "🏭")
-            
+
             # Get commands
             commands = info.get('commands', [])
             commands_display = ", ".join(commands) if commands else "Keine Befehle"
-            
+
             table_data.append({
                 "Icon + Modul": f"{icon} {info.get('name', '')}",
                 "Modul-ID": module_id,
@@ -2560,7 +2565,7 @@ class APSDashboard:
                 "Befehle": commands_display,
                 "Beschreibung": info.get('description', '')
             })
-        
+
         # Display as single table
         if table_data:
             df = pd.DataFrame(table_data)
@@ -2578,11 +2583,11 @@ class APSDashboard:
                     "Beschreibung": st.column_config.TextColumn("Beschreibung", width="large")
                 }
             )
-        
+
         # Statistics
         st.markdown("---")
         col1, col2, col3, col4 = st.columns(4)
-        
+
         with col1:
             st.metric("Gesamt Module", len(all_modules))
         with col2:
@@ -2594,17 +2599,17 @@ class APSDashboard:
         with col4:
             other_count = len(all_modules) - processing_count - storage_count
             st.metric("🏭 Andere", other_count)
-        
+
         # IP-Range Overview
         st.markdown("---")
         st.subheader("🌐 IP-Range Übersicht")
-        
+
         ip_overview_data = []
         for module_id, info in all_modules.items():
             ip_range = info.get('ip_range', '')
             ip_addresses = info.get('ip_addresses', [])
             ip_count = len(ip_addresses)
-            
+
             ip_overview_data.append({
                 "Modul": info.get('name', module_id),
                 "Modul-ID": module_id,
@@ -2612,7 +2617,7 @@ class APSDashboard:
                 "Anzahl IPs": ip_count,
                 "IP-Adressen": ", ".join(ip_addresses) if ip_addresses else "Keine"
             })
-        
+
         if ip_overview_data:
             ip_df = pd.DataFrame(ip_overview_data)
             st.dataframe(
@@ -2626,7 +2631,7 @@ class APSDashboard:
                     "IP-Adressen": st.column_config.TextColumn("IP-Adressen", width="large")
                 }
             )
-        
+
         # Info about usage
         st.info("ℹ️ **Hinweis:** Diese Konfiguration wird von allen Analysatoren und dem Dashboard verwendet. Änderungen müssen in der `module_config.yml` Datei vorgenommen werden.")
 
@@ -2634,32 +2639,32 @@ class APSDashboard:
         """Show topic configuration settings from YAML file"""
         st.subheader("📡 Topic-Konfiguration")
         st.markdown("Zentrale Konfiguration der MQTT-Topics aus `topic_config.yml`")
-        
+
         # Load topic configuration from TopicManager
         topic_manager = self.topic_manager
         all_topics = topic_manager.get_all_topics()
         categories = topic_manager.get_categories()
-        
+
         if not all_topics:
             st.error("❌ Topic-Konfiguration konnte nicht geladen werden")
             return
-        
+
         # Display topics by category in collapsible sections
         for category_name, category_info in categories.items():
             category_icon = category_info.get('icon', '📋')
             category_description = category_info.get('description', '')
-            
+
             # Get topics for this category
             category_topics = topic_manager.get_topics_by_category(category_name)
-            
+
             if category_topics:
                 with st.expander(f"{category_icon} {category_name} ({len(category_topics)} Topics)", expanded=False):
                     st.markdown(f"**Beschreibung:** {category_description}")
-                    
+
                     # Check if this category has modules (MODULE or Node-RED)
                     has_modules = category_name in ["MODULE", "Node-RED"]
                     has_sub_categories = any(info.get('sub_category') for info in category_topics.values())
-                    
+
                     if has_modules or has_sub_categories:
                         # Get unique modules for this category (if applicable)
                         modules = set()
@@ -2668,14 +2673,14 @@ class APSDashboard:
                                 module = info.get('module', '')
                                 if module:
                                     modules.add(module)
-                        
+
                         # Get unique sub-categories for this category
                         sub_categories = set()
                         for topic, info in category_topics.items():
                             sub_category = info.get('sub_category', '')
                             if sub_category:
                                 sub_categories.add(sub_category)
-                        
+
                         # Create filter columns
                         if has_modules:
                             col1, col2 = st.columns([1, 3])
@@ -2685,7 +2690,7 @@ class APSDashboard:
                                     ["Alle"] + sorted(list(modules)),
                                     key=f"module_filter_{category_name}"
                                 )
-                            
+
                             with col2:
                                 selected_sub_category = st.selectbox(
                                     "Sub-Kategorie filtern:",
@@ -2700,42 +2705,42 @@ class APSDashboard:
                                 ["Alle"] + sorted(list(sub_categories)),
                                 key=f"sub_category_filter_{category_name}"
                             )
-                        
+
                         # Filter topics based on selection
                         filtered_topics = {}
                         for topic, info in category_topics.items():
                             module = info.get('module', '')
                             sub_category = info.get('sub_category', '')
-                            
+
                             # Apply module filter (only for categories with modules)
                             if has_modules and selected_module != "Alle" and module != selected_module:
                                 continue
-                            
+
                             # Apply sub-category filter
                             if selected_sub_category != "Alle" and sub_category != selected_sub_category:
                                 continue
-                            
+
                             filtered_topics[topic] = info
-                        
+
                         category_topics = filtered_topics
-                    
+
                     # Create table data for this category
                     table_data = []
                     for topic, info in category_topics.items():
                         # Get sub-category info for modules
                         sub_category = info.get('sub_category', '')
                         module = info.get('module', '')
-                        
+
                         # Format sub-category display
                         sub_category_display = ""
                         if sub_category:
                             sub_category_icon = topic_manager.get_sub_category_icon(sub_category)
                             sub_category_description = topic_manager.get_sub_category_description(sub_category)
                             sub_category_display = f"{sub_category_icon} {sub_category}"
-                        
+
                         # Format module display
                         module_display = f"({module})" if module else ""
-                        
+
                         table_data.append({
                             "Topic": topic,
                             "Friendly-Name": info.get('friendly_name', topic),
@@ -2743,7 +2748,7 @@ class APSDashboard:
                             "Modul": module_display,
                             "Beschreibung": info.get('description', '')
                         })
-                    
+
                     # Display as table
                     if table_data:
                         df = pd.DataFrame(table_data)
@@ -2760,13 +2765,13 @@ class APSDashboard:
                         )
                     else:
                         st.info("Keine Topics mit den gewählten Filtern gefunden.")
-        
+
         # Statistics
         st.markdown("---")
         stats = topic_manager.get_statistics()
-        
+
         col1, col2, col3, col4 = st.columns(4)
-        
+
         with col1:
             st.metric("Gesamt Topics", stats['total_topics'])
         with col2:
@@ -2777,23 +2782,23 @@ class APSDashboard:
         with col4:
             other_topics = stats['total_topics'] - module_topics
             st.metric("📡 Andere Topics", other_topics)
-        
+
         # Sub-category statistics for modules
         if stats['sub_category_counts']:
             st.markdown("---")
             st.subheader("📊 Modul-Sub-Kategorien")
-            
+
             sub_category_data = []
             for sub_category, count in stats['sub_category_counts'].items():
                 icon = topic_manager.get_sub_category_icon(sub_category)
                 description = topic_manager.get_sub_category_description(sub_category)
-                
+
                 sub_category_data.append({
                     "Sub-Kategorie": f"{icon} {sub_category}",
                     "Anzahl Topics": count,
                     "Beschreibung": description
                 })
-            
+
             if sub_category_data:
                 sub_df = pd.DataFrame(sub_category_data)
                 st.dataframe(
@@ -2805,7 +2810,7 @@ class APSDashboard:
                         "Beschreibung": st.column_config.TextColumn("Beschreibung", width="large")
                     }
                 )
-        
+
         # Info about usage
         st.info("ℹ️ **Hinweis:** Diese Konfiguration wird für Topic-Mappings und Friendly-Names im Dashboard verwendet. Änderungen müssen in der `topic_config.yml` Datei vorgenommen werden.")
 
@@ -2834,14 +2839,14 @@ class APSDashboard:
         # Factory Reset Control (before modules)
         st.markdown("---")
         st.markdown("**🏭 Factory Reset Control**")
-        
+
         # Reset options in columns
         col_reset1, col_reset2, col_reset3, col_reset4 = st.columns([2, 1, 1, 1])
-        
+
         with col_reset1:
-            reset_with_storage = st.checkbox("Mit Storage zurücksetzen (HBW-Storage löschen)", value=False, 
+            reset_with_storage = st.checkbox("Mit Storage zurücksetzen (HBW-Storage löschen)", value=False,
                                            help="Aktivieren um alle HBW-Storage Daten zu löschen")
-        
+
         with col_reset2:
             if st.session_state.get("mqtt_connected", False):
                 if st.button("✅ JA - Zurücksetzen", type="primary", use_container_width=True, key="confirm_reset_mqtt_control"):
@@ -2850,15 +2855,15 @@ class APSDashboard:
                     st.rerun()
             else:
                 st.button("✅ JA - Zurücksetzen", type="primary", disabled=True, use_container_width=True, key="confirm_reset_mqtt_control_disabled")
-        
+
         with col_reset3:
             st.markdown("")
             st.markdown("*⚠️ Setzt alle Module zurück*")
-        
+
         with col_reset4:
             st.markdown("")
             st.markdown("*🔄 System-Reset*")
-        
+
         st.markdown("---")
 
         # Show each module in a row with control buttons
@@ -2870,10 +2875,10 @@ class APSDashboard:
                 module_name = module_info.get('name', module_id)
                 module_key_upper = module_name.upper()
                 module_icon = get_module_icon(module_key_upper)
-                
+
                 # Display module header with icon
                 col1, col2 = st.columns([1, 4])
-                
+
                 with col1:
                     # Display icon (image file or emoji)
                     if module_icon and ('/' in module_icon or '\\' in module_icon):
@@ -2882,17 +2887,17 @@ class APSDashboard:
                     else:
                         # It's an emoji - display as text
                         st.markdown(f"### {module_icon}")
-                
+
                 with col2:
                     st.markdown(f"### {module_info['name']}")
-                
+
                 # Module info in columns
                 col1, col2, col3, col4 = st.columns([2, 2, 2, 4])
-                
+
                 with col1:
                     st.markdown(f"**ID:** `{module_info['id']}`")
                     st.markdown(f"**Typ:** {module_info['type']}")
-                
+
                 with col2:
                     # Get first available IP address from ip_addresses list
                     ip_addresses = module_info.get('ip_addresses', [])
@@ -2903,7 +2908,7 @@ class APSDashboard:
                         st.success(f"{get_status_icon('available')} Online")
                     else:
                         st.error(f"{get_status_icon('offline')} Offline")
-                
+
                 with col3:
                     # Show module status or recent activity
                     st.markdown("**Status:**")
@@ -2911,19 +2916,19 @@ class APSDashboard:
                         st.success("🟢 Online")
                     else:
                         st.error("🔴 Offline")
-                
+
                 with col4:
                     st.markdown("**Steuerung:**")
-                    
+
                     # Template-based control for DRILL, MILL, and AIQS modules
                     module_name = module_info.get('name', module_id)
                     if module_name in ["DRILL", "MILL", "AIQS"]:
                         # Get UI configuration from template manager
                         ui_config = self.message_template_manager.get_module_ui_config(module_id)
-                        
+
                         if ui_config:
                             st.markdown(f"**Steuerung {module_name}-Sequenz (Template-basiert):**")
-                            
+
                             # Workpiece selection
                             workpiece_color = st.selectbox(
                                 "Werkstück-Farbe:",
@@ -2931,7 +2936,7 @@ class APSDashboard:
                                 key=f"{module_name.lower()}_color_{module_id}",
                                 index=0
                             )
-                            
+
                             # Workpiece ID selection based on color
                             workpiece_options = ui_config.get('workpiece_selection', {}).get('options', {}).get(workpiece_color, ["W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8"])
                             workpiece_id = st.selectbox(
@@ -2940,16 +2945,16 @@ class APSDashboard:
                                 key=f"{module_name.lower()}_workpiece_{module_id}",
                                 index=0
                             )
-                            
+
                             # Workpiece-ID wird direkt als NFC-Code verwendet
                             nfc_code = workpiece_id
                             st.info(f"🔍 NFC-Code: `{nfc_code}`")
-                            
+
                             # Template-based sequence buttons
                             commands = ui_config.get('commands', {})
                             if commands:
                                 col_seq1, col_seq2, col_seq3 = st.columns(3)
-                                
+
                                 # PICK button
                                 with col_seq1:
                                     pick_config = commands.get('PICK', {})
@@ -2961,7 +2966,7 @@ class APSDashboard:
                                         help=pick_config.get('help', 'Werkstück aufnehmen')
                                     ):
                                         self.send_process_sequence_command(module_id, "PICK", workpiece_color, nfc_code)
-                                
+
                                 # Process button (DRILL/MILL/CHECK_QUALITY)
                                 with col_seq2:
                                     process_command = "DRILL" if module_name == "DRILL" else "MILL" if module_name == "MILL" else "CHECK_QUALITY"
@@ -2974,7 +2979,7 @@ class APSDashboard:
                                         help=process_config.get('help', f'Werkstück {process_command.lower()}en')
                                     ):
                                         self.send_process_sequence_command(module_id, process_command, workpiece_color, nfc_code)
-                                
+
                                 # DROP button
                                 with col_seq3:
                                     drop_config = commands.get('DROP', {})
@@ -3001,7 +3006,7 @@ class APSDashboard:
                             st.markdown("**Steuerung AIQS-Sequenz:**")
                             process_command = "CHECK_QUALITY"
                             process_icon = "🔍"
-                        
+
                         # Workpiece selection
                         workpiece_color = st.selectbox(
                             "Werkstück-Farbe:",
@@ -3009,7 +3014,7 @@ class APSDashboard:
                                 key=f"{module_name.lower()}_color_{module_id}",
                             index=0  # Default to WHITE
                         )
-                        
+
                         # Workpiece ID selection based on color
                         if workpiece_color == "WHITE":
                             workpiece_options = ["W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8"]
@@ -3020,21 +3025,21 @@ class APSDashboard:
                         else:  # BLUE
                             workpiece_options = ["B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8"]
                             default_index = 0  # B1
-                        
+
                         workpiece_id = st.selectbox(
                             "Werkstück:",
                             workpiece_options,
                                 key=f"{module_name.lower()}_workpiece_{module_id}",
                             index=default_index
                         )
-                        
+
                         # Workpiece-ID wird direkt als NFC-Code verwendet
                         nfc_code = workpiece_id
                         st.info(f"🔍 NFC-Code: `{nfc_code}`")
-                        
+
                         # Sequence buttons
                         col_seq1, col_seq2, col_seq3 = st.columns(3)
-                        
+
                         with col_seq1:
                             if st.button(
                                 "📤 PICK",
@@ -3043,7 +3048,7 @@ class APSDashboard:
                                 type="primary"
                             ):
                                     self.send_drill_sequence_command(module_id, "PICK", workpiece_color, nfc_code)
-                        
+
                         with col_seq2:
                             if st.button(
                                 f"{process_icon} {process_command}",
@@ -3052,7 +3057,7 @@ class APSDashboard:
                                 type="primary"
                             ):
                                     self.send_drill_sequence_command(module_id, process_command, workpiece_color, nfc_code)
-                        
+
                         with col_seq3:
                             if st.button(
                                 "📥 DROP",
@@ -3061,23 +3066,23 @@ class APSDashboard:
                                 type="primary"
                             ):
                                     self.send_drill_sequence_command(module_id, "DROP", workpiece_color, nfc_code)
-                    
+
                     # FTS-specific control (Template-based)
                     elif module_name == "FTS":
                         st.markdown("**🚗 FTS-Steuerung (Template-basiert):**")
-                        
+
                         # Simple status display (always available)
                         st.info(f"**Status:** 🟢 FTS-Steuerung verfügbar")
-                        
+
                         # Get UI configuration from template manager
                         ui_config = self.message_template_manager.get_module_ui_config(module_id)
-                        
+
                         if ui_config:
                             # Template-based FTS control buttons
                             commands = ui_config.get('commands', {})
                             if commands:
                         col_fts1, col_fts2, col_fts3, col_fts4 = st.columns(4)
-                        
+
                                 # Dock button
                                 with col_fts1:
                                     dock_config = commands.get('findInitialDockPosition', {})
@@ -3089,7 +3094,7 @@ class APSDashboard:
                                         help=dock_config.get('help', 'FTS fährt zum Wareneingang (Initialisierung)')
                                     ):
                                         self.send_fts_command("findInitialDockPosition", {"nodeId": "SVR4H73275"})
-                                
+
                                 # Charge button
                                 with col_fts2:
                                     charge_config = commands.get('startCharging', {})
@@ -3101,7 +3106,7 @@ class APSDashboard:
                                         help=charge_config.get('help', 'FTS fährt zur Charging Station')
                                     ):
                                         self.send_fts_command("startCharging", {})
-                                
+
                                 # Stop charge button
                                 with col_fts3:
                                     stop_charge_config = commands.get('stopCharging', {})
@@ -3113,7 +3118,7 @@ class APSDashboard:
                                         help=stop_charge_config.get('help', 'FTS stoppt das Laden')
                                     ):
                                         self.send_fts_command("stopCharging", {})
-                                
+
                                 # Status button
                                 with col_fts4:
                                     status_config = commands.get('factsheetRequest', {})
@@ -3129,7 +3134,7 @@ class APSDashboard:
                             # Fallback to old implementation if no UI config
                             st.warning("Keine Template-Konfiguration für FTS gefunden. Verwende Standard-Implementierung.")
                             col_fts1, col_fts2, col_fts3, col_fts4 = st.columns(4)
-                            
+
                         with col_fts1:
                             if st.button(
                                 "🚗 Docke an",
@@ -3139,7 +3144,7 @@ class APSDashboard:
                                 help="FTS fährt zum Wareneingang (Initialisierung)"
                             ):
                                 self.send_fts_command("findInitialDockPosition", {"nodeId": "SVR4H73275"})
-                        
+
                         with col_fts2:
                             if st.button(
                                 "🔋 FTS laden",
@@ -3149,7 +3154,7 @@ class APSDashboard:
                                 help="FTS fährt zur Charging Station"
                             ):
                                 self.send_fts_command("startCharging", {})
-                        
+
                         with col_fts3:
                             if st.button(
                                 "⏹️ Laden beenden",
@@ -3159,7 +3164,7 @@ class APSDashboard:
                                 help="FTS stoppt das Laden"
                             ):
                                 self.send_fts_command("stopCharging", {})
-                        
+
                         with col_fts4:
                             if st.button(
                                 "🔄 Status abfragen",
@@ -3169,37 +3174,37 @@ class APSDashboard:
                                 help="FTS Status abfragen"
                             ):
                                 self.send_fts_command("factsheetRequest", {})
-                    
+
                 # Standard control buttons for modules that support direct commands
                 # Note: DRILL, MILL, AIQS, FTS use template-based buttons above
                 # Note: HBW, DPS, CHRG don't support direct commands (triggered by other events)
                 if module_name not in ["DRILL", "MILL", "AIQS", "FTS", "HBW", "DPS", "CHRG"]:
                         button_order = []
-                    
+
                     # Add PICK first
                     if "PICK" in module_info["commands"]:
                         button_order.append("PICK")
-                    
+
                         # Add PROCESS commands (MILL, DRILL, CHECK_QUALITY) - only for non-template modules
                     process_commands = ["MILL", "DRILL", "CHECK_QUALITY"]
                     for cmd in process_commands:
                         if cmd in module_info["commands"] and cmd not in button_order:
                             button_order.append(cmd)
-                    
+
                     # Add other commands (STORE, etc.)
                     for cmd in module_info["commands"]:
                         if cmd not in button_order:
                             button_order.append(cmd)
-                    
+
                     # Add DROP last
                     if "DROP" in module_info["commands"]:
                         if "DROP" in button_order:
                             button_order.remove("DROP")
                         button_order.append("DROP")
-                    
+
                     # Ensure unique commands only
                     button_order = list(dict.fromkeys(button_order))  # Remove duplicates while preserving order
-                    
+
                         # Create buttons in order (only for non-template modules)
                     for command in button_order:
                         button_text = f"▶️ {command}"
@@ -3209,14 +3214,14 @@ class APSDashboard:
                             button_text = f"🔍 {command}"
                         elif command == "STORE":
                             button_text = f"📦 {command}"
-                        
+
                         if st.button(
                             button_text,
                                 key=f"control_{module_id}_{command}",
                             use_container_width=True,
                         ):
                                 self.send_module_command(module_id, command)
-                
+
                 st.markdown("---")
 
     def show_mqtt_monitor_standalone(self):
@@ -3233,15 +3238,15 @@ class APSDashboard:
         # Overview metrics
         dashboard = st.session_state.get("mqtt_dashboard")
         col1, col2, col3, col4 = st.columns(4)
-        
+
         with col1:
             sent_count = len(dashboard.mqtt_messages_sent) if dashboard and hasattr(dashboard, 'mqtt_messages_sent') else 0
             st.metric("📤 Gesendet", sent_count)
-        
+
         with col2:
             received_count = len(dashboard.mqtt_responses) if dashboard and hasattr(dashboard, 'mqtt_responses') else 0
             st.metric("📨 Empfangen", received_count)
-        
+
         with col3:
             if dashboard and hasattr(dashboard, 'mqtt_connected'):
                 if dashboard.mqtt_connected:
@@ -3251,7 +3256,7 @@ class APSDashboard:
                 st.metric("🔗 Status", status)
             else:
                 st.metric("🔗 Status", "❓ Unknown")
-        
+
         with col4:
             if dashboard and hasattr(dashboard, 'mqtt_broker'):
                 st.metric("🌐 Broker", dashboard.mqtt_broker)
@@ -3276,7 +3281,7 @@ class APSDashboard:
                 # Extract module name from topic
                 module_name = self._extract_module_name_from_topic(row['topic'])
                 message_type = row['topic'].split('/')[-1]  # 'order' or 'state'
-                
+
                 with st.expander(
                     f"📤 {row['timestamp'].strftime('%H:%M:%S')} - {row['friendly_topic']}"
                 ):
@@ -3307,7 +3312,7 @@ class APSDashboard:
                 # Extract module name from topic
                 module_name = self._extract_module_name_from_topic(row['topic'])
                 message_type = row['topic'].split('/')[-1]  # 'order' or 'state'
-                
+
                 with st.expander(
                     f"📨 {row['timestamp'].strftime('%H:%M:%S')} - {row['friendly_topic']}"
                 ):
@@ -3325,7 +3330,7 @@ class APSDashboard:
         # Control buttons
         st.markdown("---")
         col1, col2, col3 = st.columns(3)
-        
+
         with col1:
             if st.button("🗑️ Gesendete Nachrichten löschen", use_container_width=True):
                 if dashboard and hasattr(dashboard, 'mqtt_messages_sent'):
@@ -3339,7 +3344,7 @@ class APSDashboard:
                     dashboard.mqtt_responses.clear()
                 st.success("Empfangene Antworten gelöscht")
                 st.rerun()
-        
+
         with col3:
             if st.button("🔄 Alle löschen", use_container_width=True):
                 if dashboard:
@@ -3373,7 +3378,7 @@ class APSDashboard:
                 # Extract module name from topic
                 module_name = self._extract_module_name_from_topic(row['topic'])
                 message_type = row['topic'].split('/')[-1]  # 'order' or 'state'
-                
+
                 with st.expander(
                     f"📤 {row['timestamp'].strftime('%H:%M:%S')} - {module_name}: {message_type}"
                 ):
@@ -3394,7 +3399,7 @@ class APSDashboard:
                 # Extract module name from topic
                 module_name = self._extract_module_name_from_topic(row['topic'])
                 message_type = row['topic'].split('/')[-1]  # 'order' or 'state'
-                
+
                 with st.expander(
                     f"📨 {row['timestamp'].strftime('%H:%M:%S')} - {module_name}: {message_type}"
                 ):
@@ -3499,7 +3504,7 @@ class APSDashboard:
             if df is None or df.empty:
                 st.warning("Keine Daten in der ausgewählten Datenbank gefunden.")
                 return
-            
+
             # Store current DataFrame for settings
             self.current_df = df
 
@@ -3527,10 +3532,10 @@ class APSDashboard:
         """Show Message Template configuration and analysis"""
         st.subheader("📋 Message Template Verwaltung")
         st.markdown("Zentrale Verwaltung der MQTT Message Templates und Template-Analyse")
-        
+
         # Statistics
         stats = self.message_template_manager.get_statistics()
-        
+
         col1, col2, col3, col4 = st.columns(4)
         with col1:
             st.metric("Gesamt Topics", stats["total_topics"])
@@ -3540,16 +3545,16 @@ class APSDashboard:
             st.metric("Validierungs-Patterns", stats["validation_patterns"])
         with col4:
             st.metric("Cache-Größe", stats["analysis_cache_size"])
-        
+
         st.markdown("---")
-        
+
         # Template Analysis Section
         st.subheader("🔍 Template-Analyse")
-        
+
         # Session selection for analysis
         project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
         session_files = glob.glob(os.path.join(project_root, "mqtt-data/sessions/aps_persistent_traffic_*.db"))
-        
+
         if session_files:
             selected_session = st.selectbox(
                 "📁 Session für Template-Analyse auswählen:",
@@ -3557,19 +3562,19 @@ class APSDashboard:
                 format_func=lambda x: os.path.basename(x).replace('.db', ''),
                 help="Wähle eine Session-DB für die Template-Analyse"
             )
-            
+
             col1, col2 = st.columns(2)
             with col1:
                 if st.button("🔍 Template-Analyse starten", type="primary"):
                     with st.spinner("Analysiere Session-Templates..."):
                         analysis_result = self.message_template_manager.analyze_session_templates(selected_session)
-                        
+
                         if "error" not in analysis_result:
                             st.success(f"✅ Analyse abgeschlossen: {analysis_result['topics_analyzed']} Topics analysiert")
-                            
+
                             # Display analysis results
                             st.subheader("📊 Analyse-Ergebnisse")
-                            
+
                             # Topics overview
                             topics_analyzed = analysis_result.get("topic_analysis", {})
                             if topics_analyzed:
@@ -3581,32 +3586,32 @@ class APSDashboard:
                                         "Felder": len(analysis["field_types"]),
                                         "Beispiele": len(analysis["examples"])
                                     })
-                                
+
                                 df = pd.DataFrame(topic_data)
                                 st.dataframe(df, use_container_width=True)
-                            
+
                             # Template suggestions
                             suggestions = analysis_result.get("template_suggestions", {})
                             if suggestions:
                                 st.subheader("💡 Template-Vorschläge")
-                                
+
                                 for topic, suggestion in suggestions.items():
                                     with st.expander(f"📋 {topic} ({suggestion['message_count']} Nachrichten)"):
                                         st.write(f"**Kategorie:** {suggestion['category']}")
                                         st.write(f"**Sub-Kategorie:** {suggestion['sub_category']}")
                                         st.write(f"**Beschreibung:** {suggestion['description']}")
-                                        
+
                                         # Template structure
                                         if suggestion.get("template_structure"):
                                             st.write("**Template-Struktur:**")
                                             st.json(suggestion["template_structure"])
-                                        
+
                                         # Validation rules
                                         if suggestion.get("validation_rules"):
                                             st.write("**Validierungsregeln:**")
                                             for rule in suggestion["validation_rules"]:
                                                 st.write(f"• {rule}")
-                                        
+
                                         # Examples
                                         if suggestion.get("examples"):
                                             st.write("**Beispiele:**")
@@ -3624,23 +3629,23 @@ class APSDashboard:
                                                     st.write(str(example))
                         else:
                             st.error(f"❌ Analyse fehlgeschlagen: {analysis_result['error']}")
-            
+
             with col2:
                 if st.button("🔄 Cache leeren"):
                     self.message_template_manager.session_analysis_cache.clear()
                     st.success("✅ Cache geleert")
-                
+
                 if st.button("📥 Konfiguration neu laden"):
                     self.message_template_manager.reload_config()
                     st.success("✅ Konfiguration neu geladen")
         else:
             st.warning("⚠️ Keine Session-Datenbanken gefunden")
-        
+
         st.markdown("---")
-        
+
         # Template Overview Section
         st.subheader("📚 Template-Übersicht")
-        
+
         # Category filter
         categories = self.message_template_manager.get_categories()
         selected_category = st.selectbox(
@@ -3648,12 +3653,12 @@ class APSDashboard:
             options=["Alle"] + categories,
             help="Filtere Templates nach Kategorie"
         )
-        
+
         # Sub-category filter
         sub_categories = []
         if selected_category != "Alle":
             sub_categories = self.message_template_manager.get_sub_categories(selected_category)
-        
+
         selected_sub_category = None
         if sub_categories:
             selected_sub_category = st.selectbox(
@@ -3663,7 +3668,7 @@ class APSDashboard:
             )
             if selected_sub_category == "Alle":
                 selected_sub_category = None
-        
+
         # Module name filter (only for MODULE category)
         module_names = []
         if selected_category == "MODULE":
@@ -3674,14 +3679,14 @@ class APSDashboard:
                     import yaml
                     with open(module_config_file, 'r', encoding='utf-8') as f:
                         module_config = yaml.safe_load(f)
-                    
+
                     # Extract module names
                     modules = module_config.get('modules', {})
                     module_names = list(set(module.get('name', '') for module in modules.values() if module.get('name')))
                     module_names.sort()
             except Exception as e:
                 st.warning(f"⚠️ Fehler beim Laden der Modul-Konfiguration: {e}")
-        
+
         selected_module_name = None
         if module_names:
             selected_module_name = st.selectbox(
@@ -3691,22 +3696,22 @@ class APSDashboard:
             )
             if selected_module_name == "Alle":
                 selected_module_name = None
-        
+
         # Get templates
         if selected_category == "Alle":
             templates = self.message_template_manager.templates.get("topics", {})
         else:
             topic_list = self.message_template_manager.get_topics_by_category(selected_category)
-            templates = {topic: self.message_template_manager.templates["topics"][topic] 
+            templates = {topic: self.message_template_manager.templates["topics"][topic]
                         for topic in topic_list if topic in self.message_template_manager.templates["topics"]}
-            
+
             # Apply sub-category filter if selected
             if selected_sub_category:
                 templates = {
                     topic: template for topic, template in templates.items()
                     if template.get('sub_category') == selected_sub_category
                 }
-            
+
             # Apply module name filter if selected
             if selected_module_name:
                 # Get module ID for the selected module name
@@ -3716,7 +3721,7 @@ class APSDashboard:
                         import yaml
                         with open(module_config_file, 'r', encoding='utf-8') as f:
                             module_config = yaml.safe_load(f)
-                        
+
                         # Find module ID for the selected name
                         modules = module_config.get('modules', {})
                         module_id = None
@@ -3724,7 +3729,7 @@ class APSDashboard:
                             if module_info.get('name') == selected_module_name:
                                 module_id = module_id_key
                                 break
-                        
+
                         if module_id:
                             # Filter templates by module ID
                             templates = {
@@ -3733,7 +3738,7 @@ class APSDashboard:
                             }
                 except Exception as e:
                     st.warning(f"⚠️ Fehler beim Filtern nach Modul: {e}")
-        
+
         if templates:
             for topic, template in templates.items():
                 # Get module name for display
@@ -3745,7 +3750,7 @@ class APSDashboard:
                             import yaml
                             with open(module_config_file, 'r', encoding='utf-8') as f:
                                 module_config = yaml.safe_load(f)
-                            
+
                             # Find module name for the topic
                             modules = module_config.get('modules', {})
                             for module_id, module_info in modules.items():
@@ -3754,7 +3759,7 @@ class APSDashboard:
                                     break
                     except Exception:
                         pass
-                
+
                 with st.expander(f"📋 {topic}", expanded=False):
                     col1, col2 = st.columns(2)
                     with col1:
@@ -3764,7 +3769,7 @@ class APSDashboard:
                         if template.get('category') == 'MODULE':
                             st.write(f"**Modul:** {module_name}")
                         st.write(f"**Beschreibung:** {template.get('description', 'N/A')}")
-                    
+
                     # Template structure
                     if template.get("template_structure"):
                         st.write("**Template-Struktur:**")
@@ -3782,7 +3787,7 @@ class APSDashboard:
                                 is_required = False
                                 field_format = "N/A"
                                 enum_values = []
-                            
+
                             structure_data.append({
                                 "Feld": field,
                                 "Typ": field_type,
@@ -3790,10 +3795,10 @@ class APSDashboard:
                                 "Format": field_format,
                                 "Enum": str(enum_values) if enum_values else "N/A"
                             })
-                        
+
                         df = pd.DataFrame(structure_data)
                         st.dataframe(df, use_container_width=True)
-                    
+
                     # Examples
                     if template.get("examples"):
                         st.write("**Beispiele:**")
@@ -3809,7 +3814,7 @@ class APSDashboard:
                                     st.json(example)
                                 else:
                                     st.write(str(example))
-                    
+
                     # Validation rules
                     if template.get("validation_rules"):
                         st.write("**Validierungsregeln:**")
@@ -3822,11 +3827,11 @@ class APSDashboard:
         """Show Node-RED specific analysis and control"""
         st.header("🔄 Node-RED")
         st.markdown("Node-RED Template-Analyse und Steuerung")
-        
+
         # Statistics for Node-RED templates
         stats = self.message_template_manager.get_statistics()
         nodered_stats = stats.get("category_stats", {}).get("Node-RED", {})
-        
+
         col1, col2, col3, col4 = st.columns(4)
         with col1:
             st.metric("Node-RED Topics", nodered_stats.get("topic_count", 0))
@@ -3836,16 +3841,16 @@ class APSDashboard:
             st.metric("Templates", nodered_stats.get("template_count", 0))
         with col4:
             st.metric("Beispiele", nodered_stats.get("example_count", 0))
-        
+
         st.markdown("---")
-        
+
         # Node-RED Template Analysis
         st.subheader("🔍 Node-RED Template-Analyse")
-        
+
         # Session selection for analysis
         project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
         session_files = glob.glob(os.path.join(project_root, "mqtt-data/sessions/aps_persistent_traffic_*.db"))
-        
+
         if session_files:
             selected_session = st.selectbox(
                 "📁 Session für Node-RED Analyse auswählen:",
@@ -3853,23 +3858,23 @@ class APSDashboard:
                 format_func=lambda x: os.path.basename(x).replace('.db', ''),
                 help="Wähle eine Session-DB für die Node-RED Template-Analyse"
             )
-            
+
             col1, col2 = st.columns(2)
             with col1:
                 if st.button("🔍 Node-RED Analyse starten", type="primary"):
                     with st.spinner("Analysiere Node-RED Templates..."):
                         # Use the Node-RED template analyzer
                         from src_orbis.mqtt.tools.nodered_template_analyzer import NodeRedTemplateAnalyzer
-                        
+
                         analyzer = NodeRedTemplateAnalyzer()
                         analysis_result = analyzer.analyze_session(selected_session)
-                        
+
                         if analysis_result and "error" not in analysis_result:
                             st.success(f"✅ Node-RED Analyse abgeschlossen: {analysis_result.get('topics_analyzed', 0)} Topics analysiert")
-                            
+
                             # Display Node-RED specific results
                             st.subheader("📊 Node-RED Analyse-Ergebnisse")
-                            
+
                             # Topics overview
                             topics_analyzed = analysis_result.get("topic_analysis", {})
                             if topics_analyzed:
@@ -3881,26 +3886,26 @@ class APSDashboard:
                                         "Felder": len(analysis["field_types"]),
                                         "Beispiele": len(analysis["examples"])
                                     })
-                                
+
                                 df = pd.DataFrame(topic_data)
                                 st.dataframe(df, use_container_width=True)
-                            
+
                             # Template suggestions
                             suggestions = analysis_result.get("template_suggestions", {})
                             if suggestions:
                                 st.subheader("💡 Node-RED Template-Vorschläge")
-                                
+
                                 for topic, suggestion in suggestions.items():
                                     with st.expander(f"📋 {topic} ({suggestion['message_count']} Nachrichten)"):
                                         st.write(f"**Kategorie:** {suggestion['category']}")
                                         st.write(f"**Sub-Kategorie:** {suggestion['sub_category']}")
                                         st.write(f"**Beschreibung:** {suggestion['description']}")
-                                        
+
                                         # Template structure
                                         if suggestion.get("template_structure"):
                                             st.write("**Template-Struktur:**")
                                             st.json(suggestion["template_structure"])
-                                        
+
                                         # Examples
                                         if suggestion.get("examples"):
                                             st.write("**Beispiele:**")
@@ -3912,26 +3917,26 @@ class APSDashboard:
                                                     st.write(str(example))
                         else:
                             st.error(f"❌ Node-RED Analyse fehlgeschlagen: {analysis_result.get('error', 'Unbekannter Fehler')}")
-            
+
             with col2:
                 if st.button("🔄 Node-RED Cache leeren"):
                     # Clear Node-RED specific cache if available
                     st.success("✅ Node-RED Cache geleert")
-                
+
                 if st.button("📥 Node-RED Konfiguration neu laden"):
                     self.message_template_manager.reload_config()
                     st.success("✅ Node-RED Konfiguration neu geladen")
         else:
             st.warning("⚠️ Keine Session-Datenbanken gefunden")
-        
+
         st.markdown("---")
-        
+
         # Node-RED Template Overview
         st.subheader("📚 Node-RED Template-Übersicht")
-        
+
         # Get Node-RED templates
         nodered_topics = self.message_template_manager.get_topics_by_category("Node-RED")
-        
+
         if nodered_topics:
             # Get actual template objects
             nodered_templates = []
@@ -3941,7 +3946,7 @@ class APSDashboard:
                     template_copy = template.copy()
                     template_copy["topic"] = topic
                     nodered_templates.append(template_copy)
-            
+
             # Sub-category filter for Node-RED
             sub_categories = self.message_template_manager.get_sub_categories("Node-RED")
             selected_sub_category = st.selectbox(
@@ -3949,24 +3954,24 @@ class APSDashboard:
                 options=["Alle"] + sub_categories,
                 help="Filtere Node-RED Templates nach Sub-Kategorie"
             )
-            
+
             # Filter templates
             filtered_templates = []
             for template in nodered_templates:
                 if selected_sub_category == "Alle" or template.get("sub_category") == selected_sub_category:
                     filtered_templates.append(template)
-            
+
             # Display templates
             if filtered_templates:
                 for template in filtered_templates:
                     with st.expander(f"📋 {template.get('topic', 'Unknown')} - {template.get('sub_category', 'Unknown')}"):
                         st.write(f"**Beschreibung:** {template.get('description', 'Keine Beschreibung')}")
-                        
+
                         # Template structure
                         if template.get("template_structure"):
                             st.write("**Template-Struktur:**")
                             st.json(template["template_structure"])
-                        
+
                         # Examples
                         if template.get("examples"):
                             st.write("**Beispiele:**")
@@ -3984,19 +3989,19 @@ class APSDashboard:
     def show_wareneingang_control(self):
         """Zeigt das Wareneingang Control Panel"""
         st.subheader("📦 Wareneingang Control")
-        
+
         if not st.session_state.get("mqtt_connected", False):
             st.warning("⚠️ MQTT-Verbindung erforderlich")
             return
-        
+
         # Initialize order tracking manager
         if not hasattr(self, 'order_tracking_manager'):
             from src_orbis.mqtt.tools.order_tracking_manager import OrderTrackingManager
             self.order_tracking_manager = OrderTrackingManager()
-        
+
         with st.container():
             col1, col2 = st.columns(2)
-            
+
             with col1:
                 # Farb-Auswahl
                 color = st.selectbox(
@@ -4004,14 +4009,14 @@ class APSDashboard:
                     ["RED", "WHITE", "BLUE"],
                     help="Wähle die Farbe des Werkstücks"
                 )
-                
+
                 # Werkstück-ID Eingabe (NFC-Code)
                 workpiece_id = st.text_input(
                     "Werkstück-ID (NFC-Code):",
                     value="04798eca341290",
                     help="NFC-Code des Werkstücks (z.B. 04798eca341290)"
                 )
-                
+
                 # Trigger Button
                 if st.button("🚀 Wareneingang starten", type="primary"):
                     if workpiece_id and len(workpiece_id) >= 10:
@@ -4024,16 +4029,16 @@ class APSDashboard:
                             st.error("❌ Fehler beim Starten des Wareneingangs")
                     else:
                         st.error("❌ Bitte gültige Werkstück-ID eingeben (mindestens 10 Zeichen)")
-            
+
             with col2:
                 # NFC-Code Referenz
                 st.info("🏷️ NFC-Code Referenz:")
                 st.write("**Verfügbare NFC-Codes:**")
-                
+
                 # Farb-Verteilung aus YAML-Konfiguration
                 from src_orbis.mqtt.tools.nfc_code_manager import get_nfc_manager
                 nfc_manager = get_nfc_manager()
-                
+
                 col1, col2, col3 = st.columns(3)
                 with col1:
                     st.write("🔴 **Rote Werkstücke:**")
@@ -4063,15 +4068,15 @@ class APSDashboard:
     def show_order_tracking(self):
         """Zeigt das Order Tracking Dashboard"""
         st.subheader("📊 Order Tracking")
-        
+
         # Initialize order tracking manager
         if not hasattr(self, 'order_tracking_manager'):
             from src_orbis.mqtt.tools.order_tracking_manager import OrderTrackingManager
             self.order_tracking_manager = OrderTrackingManager()
-        
+
         # Statistiken
         stats = self.order_tracking_manager.get_statistics()
-        
+
         col1, col2, col3, col4 = st.columns(4)
         with col1:
             st.metric("Aktive Orders", stats["active_orders"])
@@ -4081,41 +4086,41 @@ class APSDashboard:
             st.metric("Fehler", stats["error_orders"])
         with col4:
             st.metric("Gesamt", stats["total_orders"])
-        
+
         # Farb-Verteilung
         if stats["color_distribution"]:
             st.write("🎨 Farb-Verteilung:")
             for color, count in stats["color_distribution"].items():
                 st.write(f"  {color}: {count} Orders")
-        
+
         # Aktive Orders
         active_orders = self.order_tracking_manager.get_active_orders()
         if active_orders:
             st.write("🔄 **Aktive Orders:**")
-            
+
             for order_id, order_info in active_orders.items():
                 with st.expander(f"📋 Order {order_id[:8]}... - {order_info.get('color', 'UNKNOWN')} ({order_info.get('status', 'UNKNOWN')})"):
                     self._show_order_details(order_info)
         else:
             st.info("📭 Keine aktiven Orders")
-        
+
         # Order Historie
         order_history = self.order_tracking_manager.get_order_history()
         if order_history:
             st.write("📚 **Order Historie:**")
-            
+
             # Filter nach Status
             status_filter = st.selectbox(
                 "Status Filter:", ["Alle", "COMPLETED", "ERROR"], key="history_filter"
             )
-            
+
             filtered_history = order_history
             if status_filter != "Alle":
                 filtered_history = [
-                    order for order in order_history 
+                    order for order in order_history
                     if order.get("status") == status_filter
                 ]
-            
+
             for order_info in filtered_history[-10:]:  # Letzte 10 Orders
                 with st.expander(f"📋 Order {order_info.get('orderId', 'UNKNOWN')[:8]}... - {order_info.get('color', 'UNKNOWN')} ({order_info.get('status', 'UNKNOWN')})"):
                     self._show_order_details(order_info)
@@ -4125,41 +4130,41 @@ class APSDashboard:
     def _show_order_details(self, order_info: Dict[str, Any]):
         """Zeigt Details einer Order"""
         col1, col2 = st.columns(2)
-        
+
         with col1:
             st.write("**Grunddaten:**")
             st.write(f"**Werkstück-ID:** {order_info.get('workpieceId', 'N/A')}")
             st.write(f"**Farbe:** {order_info.get('color', 'N/A')}")
             st.write(f"**Status:** {order_info.get('status', 'N/A')}")
-            
+
             if order_info.get("orderId"):
                 st.write(f"**ORDER-ID:** `{order_info['orderId']}`")
-            
+
             st.write(f"**Start:** {order_info.get('startTime', 'N/A')}")
-            
+
             if order_info.get("endTime"):
                 st.write(f"**Ende:** {order_info['endTime']}")
-            
+
             if order_info.get("errorTime"):
                 st.write(f"**Fehler:** {order_info['errorTime']}")
-        
+
         with col2:
             st.write("**Nachrichten:**")
             messages = order_info.get("messages", [])
             if messages:
                 st.write(f"**Anzahl:** {len(messages)}")
-                
+
                 # Letzte Nachricht anzeigen
                 if messages:
                     last_msg = messages[-1]
                     st.write(f"**Letzte:** {last_msg.get('timestamp', 'N/A')}")
-                    
+
                     # Message Details
                     with st.expander("📄 Letzte Nachricht Details"):
                         st.json(last_msg.get("data", {}))
             else:
                 st.write("**Anzahl:** 0")
-            
+
             # CCU Response
             if order_info.get("ccuResponse"):
                 with st.expander("📋 CCU Response"):
@@ -4172,7 +4177,7 @@ class APSDashboard:
             if not self.message_template_manager:
                 st.error("❌ Message Template Manager nicht verfügbar")
                 return False
-            
+
             # Create parameters for wareneingang trigger
             parameters = {
                 "orderType": "STORAGE",
@@ -4180,22 +4185,22 @@ class APSDashboard:
                 "workpieceId": workpiece_id,
                 "timestamp": datetime.now().isoformat()
             }
-            
+
             # Send template message
             success, message = self.message_template_manager.send_template_message(
                 "ccu/order/request", parameters
             )
-            
+
             if success:
                 # Start order tracking
                 if hasattr(self, 'order_tracking_manager'):
                     self.order_tracking_manager.start_order_tracking(workpiece_id, color, "STORAGE")
-                
+
                 return True
             else:
                 st.error(f"❌ Fehler beim Senden: {message}")
                 return False
-                
+
         except Exception as e:
             st.error(f"❌ Fehler beim Senden des Wareneingang-Triggers: {e}")
             return False
@@ -4229,10 +4234,10 @@ def main():
         ("🔄 Node-RED", "🔄 Node-RED"),
         ("⚙️ Einstellungen", "⚙️ Einstellungen")
     ]
-    
+
     for tab_name, tab_key in tabs:
         is_active = st.session_state.selected_tab == tab_key
-        
+
         if st.sidebar.button(
             tab_name,
             use_container_width=True,
@@ -4277,15 +4282,15 @@ def main():
         or st.session_state.selected_db not in db_files
     ):
         st.session_state.selected_db = db_files[0] if db_files else None
-    
+
     # MQTT Connection status in sidebar
     st.sidebar.markdown("---")
     st.sidebar.markdown("**🔗 MQTT-Verbindung**")
-    
+
     # Store MQTT connection status in session state
     if "mqtt_connected" not in st.session_state:
         st.session_state.mqtt_connected = False
-    
+
     # MQTT Connection status and controls
     if st.session_state.mqtt_connected:
         st.sidebar.success(f"{get_status_icon('available')} Connected")

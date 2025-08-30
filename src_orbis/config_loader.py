@@ -4,15 +4,14 @@ Secure Configuration Loader für Orbis Modellfabrik
 Orbis Development - Sichere Verwaltung von Credentials
 """
 
-import yaml
 import logging
 from pathlib import Path
-from typing import Dict, Any, Optional
+from typing import Any, Dict, Optional
+
+import yaml
 
 # Logging Setup
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 
@@ -35,22 +34,16 @@ class SecureConfigLoader:
         try:
             if not self.credentials_file.exists():
                 logger.warning(f"Credentials file not found: {self.credentials_file}")
-                logger.info(
-                    f"Please copy {self.example_file} to {self.credentials_file} and fill in your credentials"
-                )
+                logger.info(f"Please copy {self.example_file} to {self.credentials_file} and fill in your credentials")
                 return None
 
             # Check file permissions (should be 600)
             stat = self.credentials_file.stat()
             if stat.st_mode & 0o777 != 0o600:
-                logger.warning(
-                    f"Credentials file has insecure permissions: {oct(stat.st_mode)}"
-                )
-                logger.info(
-                    "Consider setting permissions to 600: chmod 600 config/credentials.yml"
-                )
+                logger.warning(f"Credentials file has insecure permissions: {oct(stat.st_mode)}")
+                logger.info("Consider setting permissions to 600: chmod 600 config/credentials.yml")
 
-            with open(self.credentials_file, "r") as f:
+            with open(self.credentials_file) as f:
                 credentials = yaml.safe_load(f)
 
             logger.info("✅ Credentials loaded successfully")
@@ -159,12 +152,12 @@ mqtt:
     port: 1883
     ssl: false
     keepalive: 60
-  
+
   authentication:
     enabled: true
     username: ""  # Fill in when discovered
     password: ""  # Fill in when discovered
-  
+
   topics:
     - "module/v1/ff/#"
     - "fischertechnik/#"
@@ -247,9 +240,7 @@ def main():
             # Show MQTT config
             mqtt_config = loader.get_mqtt_config()
             if mqtt_config:
-                print(
-                    f"📡 MQTT Broker: {mqtt_config['broker']['host']}:{mqtt_config['broker']['port']}"
-                )
+                print(f"📡 MQTT Broker: {mqtt_config['broker']['host']}:{mqtt_config['broker']['port']}")
 
             # Show network config
             network_config = loader.get_network_config()

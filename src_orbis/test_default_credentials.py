@@ -4,14 +4,13 @@ Test Default Credentials für APS Modellfabrik
 Orbis Development - Test der Default-Login-Daten
 """
 
-import paho.mqtt.client as mqtt
-import time
 import logging
+import time
+
+import paho.mqtt.client as mqtt
 
 # Logging Setup
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 

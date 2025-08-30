@@ -35,15 +35,13 @@ def _store_sent_message(topic: str, payload: str):
 
         sent_message = {
             "topic": topic,
-            "payload": json.dumps(payload)
-            if isinstance(payload, dict)
-            else str(payload),
+            "payload": json.dumps(payload) if isinstance(payload, dict) else str(payload),
             "timestamp": datetime.now(),
         }
 
         st.session_state.sent_messages.append(sent_message)
 
-    except Exception as e:
+    except Exception:
         # Fehler still behandeln - nicht kritisch für Steuerung
         pass
 
@@ -58,9 +56,7 @@ def show_steering_dashboard():
     col1, col2, col3 = st.columns(3)
 
     with col1:
-        st.metric(
-            "MQTT Status", "Connected" if _check_mqtt_connection() else "Disconnected"
-        )
+        st.metric("MQTT Status", "Connected" if _check_mqtt_connection() else "Disconnected")
 
     with col2:
         st.metric("Verfügbare Templates", _count_available_templates())
@@ -141,9 +137,7 @@ def _send_factory_reset_message(with_storage: bool, clear_storage: bool = False)
         message_generator = MessageGenerator()
 
         # Factory Reset Template verwenden
-        reset_message = message_generator.generate_factory_reset_message(
-            with_storage, clear_storage
-        )
+        reset_message = message_generator.generate_factory_reset_message(with_storage, clear_storage)
 
         if reset_message:
             topic = reset_message.get("topic", "ccu/factory/reset")
@@ -154,9 +148,7 @@ def _send_factory_reset_message(with_storage: bool, clear_storage: bool = False)
             st.json({"topic": topic, "payload": payload})
 
             # MQTT-Verbindung prüfen (inkl. Mock-Support)
-            if mqtt_client.is_connected() or st.session_state.get(
-                "mqtt_mock_enabled", False
-            ):
+            if mqtt_client.is_connected() or st.session_state.get("mqtt_mock_enabled", False):
                 if st.session_state.get("mqtt_mock_enabled", False):
                     st.success(
                         f"✅ Factory Reset Message simuliert: withStorage={with_storage}, clearStorage={clear_storage}"
@@ -164,19 +156,13 @@ def _send_factory_reset_message(with_storage: bool, clear_storage: bool = False)
                     st.info("🧪 Mock-Modus: Message wurde nicht wirklich gesendet")
                 else:
                     mqtt_client.publish(topic, payload)
-                    _store_sent_message(
-                        topic, payload
-                    )  # Für Nachrichtenzentrale speichern
+                    _store_sent_message(topic, payload)  # Für Nachrichtenzentrale speichern
                     st.success(
                         f"✅ Factory Reset Message gesendet: withStorage={with_storage}, clearStorage={clear_storage}"
                     )
             else:
-                st.warning(
-                    "⚠️ MQTT nicht verbunden - Message nur generiert (nicht gesendet)"
-                )
-                st.info(
-                    "💡 Message wird gesendet sobald MQTT-Verbindung hergestellt ist"
-                )
+                st.warning("⚠️ MQTT nicht verbunden - Message nur generiert (nicht gesendet)")
+                st.info("💡 Message wird gesendet sobald MQTT-Verbindung hergestellt ist")
         else:
             st.error("❌ Factory Reset Template nicht gefunden")
 
@@ -234,9 +220,7 @@ def _send_single_module_step(module: str, step: str, step_number: int):
 
             # Aktive Workflows für dieses Modul finden
             active_workflows = workflow_manager.get_active_workflows()
-            module_workflows = {
-                k: v for k, v in active_workflows.items() if v["module"] == module
-            }
+            module_workflows = {k: v for k, v in active_workflows.items() if v["module"] == module}
 
             # ORDER-ID für diesen Schritt verwenden oder neue erstellen
             if module_workflows:
@@ -254,9 +238,7 @@ def _send_single_module_step(module: str, step: str, step_number: int):
             order_id = str(uuid.uuid4())
 
         # Message für einzelnen Schritt generieren (mit ORDER-ID)
-        message = message_generator.generate_module_sequence_message(
-            module, step, step_number, order_id
-        )
+        message = message_generator.generate_module_sequence_message(module, step, step_number, order_id)
 
         if message:
             topic = message.get("topic", f"module/v1/ff/{module}/order")
@@ -271,10 +253,7 @@ def _send_single_module_step(module: str, step: str, step_number: int):
                     )
 
                     # orderUpdateId in Payload anzeigen
-                    if (
-                        "parameters" in payload
-                        and "orderUpdateId" in payload["parameters"]
-                    ):
+                    if "parameters" in payload and "orderUpdateId" in payload["parameters"]:
                         st.success(
                             f"✅ **orderUpdateId:** {payload['parameters']['orderUpdateId']} in Nachricht übernommen"
                         )
@@ -288,25 +267,17 @@ def _send_single_module_step(module: str, step: str, step_number: int):
             st.json({"topic": topic, "payload": payload})
 
             # MQTT-Verbindung prüfen (inkl. Mock-Support)
-            if mqtt_client.is_connected() or st.session_state.get(
-                "mqtt_mock_enabled", False
-            ):
+            if mqtt_client.is_connected() or st.session_state.get("mqtt_mock_enabled", False):
                 if st.session_state.get("mqtt_mock_enabled", False):
                     st.success(f"✅ {module} {step} simuliert (Step {step_number})")
                     st.info("🧪 Mock-Modus: Message wurde nicht wirklich gesendet")
                 else:
                     mqtt_client.publish(topic, payload)
-                    _store_sent_message(
-                        topic, payload
-                    )  # Für Nachrichtenzentrale speichern
+                    _store_sent_message(topic, payload)  # Für Nachrichtenzentrale speichern
                     st.success(f"✅ {module} {step} gesendet (Step {step_number})")
             else:
-                st.warning(
-                    "⚠️ MQTT nicht verbunden - Message nur generiert (nicht gesendet)"
-                )
-                st.info(
-                    "💡 Message wird gesendet sobald MQTT-Verbindung hergestellt ist"
-                )
+                st.warning("⚠️ MQTT nicht verbunden - Message nur generiert (nicht gesendet)")
+                st.info("💡 Message wird gesendet sobald MQTT-Verbindung hergestellt ist")
         else:
             st.error(f"❌ Template für Modul-Schritt nicht gefunden: {module} {step}")
 
@@ -350,25 +321,17 @@ def _send_fts_command(command: str):
             st.json({"topic": topic, "payload": payload})
 
             # MQTT-Verbindung prüfen (inkl. Mock-Support)
-            if mqtt_client.is_connected() or st.session_state.get(
-                "mqtt_mock_enabled", False
-            ):
+            if mqtt_client.is_connected() or st.session_state.get("mqtt_mock_enabled", False):
                 if st.session_state.get("mqtt_mock_enabled", False):
                     st.success(f"✅ FTS-Befehl simuliert: {command}")
                     st.info("🧪 Mock-Modus: Message wurde nicht wirklich gesendet")
                 else:
                     mqtt_client.publish(topic, payload)
-                    _store_sent_message(
-                        topic, payload
-                    )  # Für Nachrichtenzentrale speichern
+                    _store_sent_message(topic, payload)  # Für Nachrichtenzentrale speichern
                     st.success(f"✅ FTS-Befehl gesendet: {command}")
             else:
-                st.warning(
-                    "⚠️ MQTT nicht verbunden - Message nur generiert (nicht gesendet)"
-                )
-                st.info(
-                    "💡 Message wird gesendet sobald MQTT-Verbindung hergestellt ist"
-                )
+                st.warning("⚠️ MQTT nicht verbunden - Message nur generiert (nicht gesendet)")
+                st.info("💡 Message wird gesendet sobald MQTT-Verbindung hergestellt ist")
         else:
             st.error(f"❌ FTS-Command Template nicht gefunden: {command}")
 
@@ -408,9 +371,7 @@ def show_factory_reset():
                 )
             else:
                 clear_storage = False
-                st.info(
-                    "ℹ️ Lager löschen ist nur verfügbar wenn 'Mit Lagerung' deaktiviert ist"
-                )
+                st.info("ℹ️ Lager löschen ist nur verfügbar wenn 'Mit Lagerung' deaktiviert ist")
 
             col1, col2, col3 = st.columns(3)
 
@@ -423,9 +384,7 @@ def show_factory_reset():
                     key="confirm_factory_reset",
                     disabled=not mqtt_connected,
                 ):
-                    _send_factory_reset_message(
-                        with_storage=with_storage, clear_storage=clear_storage
-                    )
+                    _send_factory_reset_message(with_storage=with_storage, clear_storage=clear_storage)
                     if mqtt_connected:
                         st.success("Factory Reset ausgeführt")
                     st.session_state.show_factory_reset_dialog = False
@@ -467,16 +426,12 @@ def _show_module_control_box(module: str, icon: str, name: str):
 
         # Aktive Workflows für dieses Modul anzeigen
         active_workflows = workflow_manager.get_active_workflows()
-        module_workflows = {
-            k: v for k, v in active_workflows.items() if v["module"] == module
-        }
+        module_workflows = {k: v for k, v in active_workflows.items() if v["module"] == module}
 
         if module_workflows:
             st.info(f"🔄 {len(module_workflows)} aktive Workflow(s) für {name}")
             for order_id, workflow in module_workflows.items():
-                st.markdown(
-                    f"**ORDER-ID:** `{order_id[:8]}...` | **Update-ID:** {workflow['orderUpdateId']}"
-                )
+                st.markdown(f"**ORDER-ID:** `{order_id[:8]}...` | **Update-ID:** {workflow['orderUpdateId']}")
     except Exception as e:
         st.warning(f"⚠️ WorkflowOrderManager nicht verfügbar: {e}")
 
@@ -508,9 +463,7 @@ def _show_module_control_box(module: str, icon: str, name: str):
     st.markdown(f"**Status:** {module_status}")
 
     # Sequenz-Info
-    st.markdown(
-        f"**Sequenz:** {' → '.join([step.split('(')[0] for step in sequence_steps])}"
-    )
+    st.markdown(f"**Sequenz:** {' → '.join([step.split('(')[0] for step in sequence_steps])}")
 
 
 def show_fts_control():
@@ -523,9 +476,7 @@ def show_fts_control():
 
     # Status-basierte Button-Aktivierung
     is_charging = "charging" in fts_status.lower() or "laden" in fts_status.lower()
-    is_at_charging_station = (
-        "charging" in fts_status.lower() or "ladestation" in fts_status.lower()
-    )
+    is_at_charging_station = "charging" in fts_status.lower() or "ladestation" in fts_status.lower()
 
     # MQTT-Verbindung prüfen
     mqtt_connected = _check_mqtt_connection()
@@ -534,9 +485,7 @@ def show_fts_control():
     col1, col2 = st.columns(2)
 
     with col1:
-        if st.button(
-            "🔌 Laden", key="fts_charge", disabled=is_charging or not mqtt_connected
-        ):
+        if st.button("🔌 Laden", key="fts_charge", disabled=is_charging or not mqtt_connected):
             _send_fts_command("charge")
             if mqtt_connected:
                 st.success("FTS-Ladebefehl gesendet")
@@ -556,9 +505,7 @@ def show_fts_control():
             if mqtt_connected:
                 st.success("FTS-Laden-Beenden-Befehl gesendet")
 
-        if st.button(
-            "📊 Status abfragen", key="fts_get_status", disabled=not mqtt_connected
-        ):
+        if st.button("📊 Status abfragen", key="fts_get_status", disabled=not mqtt_connected):
             _send_fts_command("get_status")
             if mqtt_connected:
                 st.info("FTS-Status-Abfrage gesendet")
@@ -589,13 +536,9 @@ def show_message_generator():
                 topic_info = topic_manager.get_topic_info(selected_topic)
                 if topic_info:
                     st.markdown(f"**📡 Topic: {selected_topic}**")
-                    st.info(
-                        f"**Beschreibung:** {topic_info.get('description', 'Keine Beschreibung')}"
-                    )
+                    st.info(f"**Beschreibung:** {topic_info.get('description', 'Keine Beschreibung')}")
                     st.info(f"**Richtung:** {topic_info.get('direction', 'Unbekannt')}")
-                    st.info(
-                        f"**Zweck:** {topic_info.get('semantic_purpose', 'Unbekannt')}"
-                    )
+                    st.info(f"**Zweck:** {topic_info.get('semantic_purpose', 'Unbekannt')}")
 
                 # Template für Topic finden
                 template_name = topic_manager.get_template_for_topic(selected_topic)
@@ -608,14 +551,10 @@ def show_message_generator():
                         message_generator = get_omf_message_generator()
 
                         # Topic-spezifische Parameter generieren
-                        example_params = _generate_topic_specific_params(
-                            selected_topic, topic_info
-                        )
+                        example_params = _generate_topic_specific_params(selected_topic, topic_info)
 
                         # Beispiel-Nachricht generieren
-                        example_message = message_generator.generate_message(
-                            template_name, **example_params
-                        )
+                        example_message = message_generator.generate_message(template_name, **example_params)
 
                         if example_message:
                             topic, payload = example_message
@@ -624,18 +563,12 @@ def show_message_generator():
                             st.markdown("**📝 Beispiel-Nachricht (editierbar):**")
 
                             # Topic editieren (mit Resolved-Variablen)
-                            resolved_topic = _resolve_topic_variables(
-                                selected_topic, example_params
-                            )
-                            edited_topic = st.text_input(
-                                "MQTT Topic:", value=resolved_topic, key="edit_topic"
-                            )
+                            resolved_topic = _resolve_topic_variables(selected_topic, example_params)
+                            edited_topic = st.text_input("MQTT Topic:", value=resolved_topic, key="edit_topic")
 
                             # Payload editieren
                             st.markdown("**Payload (JSON):**")
-                            payload_json = json.dumps(
-                                payload, indent=2, ensure_ascii=False
-                            )
+                            payload_json = json.dumps(payload, indent=2, ensure_ascii=False)
                             edited_payload = st.text_area(
                                 "Payload:",
                                 value=payload_json,
@@ -669,42 +602,28 @@ def show_message_generator():
                                                     edited_topic, parsed_payload
                                                 )  # Für Nachrichtenzentrale speichern
 
-                                                if st.session_state.get(
-                                                    "mqtt_mock_enabled", False
-                                                ):
-                                                    st.success(
-                                                        "🧪 Message simuliert gesendet!"
-                                                    )
+                                                if st.session_state.get("mqtt_mock_enabled", False):
+                                                    st.success("🧪 Message simuliert gesendet!")
                                                 else:
-                                                    st.success(
-                                                        "✅ Message erfolgreich gesendet!"
-                                                    )
+                                                    st.success("✅ Message erfolgreich gesendet!")
 
                                             except Exception as e:
                                                 st.error(f"❌ Fehler beim Senden: {e}")
                                         else:
-                                            st.warning(
-                                                "⚠️ MQTT nicht verbunden - Message nicht gesendet"
-                                            )
+                                            st.warning("⚠️ MQTT nicht verbunden - Message nicht gesendet")
 
                                 with col2:
-                                    st.info(
-                                        "ℹ️ Nachricht wird an das ausgewählte Topic gesendet"
-                                    )
+                                    st.info("ℹ️ Nachricht wird an das ausgewählte Topic gesendet")
 
                             except json.JSONDecodeError as e:
                                 st.error(f"❌ Ungültiges JSON: {e}")
                                 st.info("ℹ️ Bitte korrigieren Sie das JSON-Format")
 
                         else:
-                            st.warning(
-                                "⚠️ Konnte keine Beispiel-Nachricht für dieses Template generieren"
-                            )
+                            st.warning("⚠️ Konnte keine Beispiel-Nachricht für dieses Template generieren")
 
                     except Exception as e:
-                        st.error(
-                            f"❌ Fehler beim Generieren der Beispiel-Nachricht: {e}"
-                        )
+                        st.error(f"❌ Fehler beim Generieren der Beispiel-Nachricht: {e}")
                         st.info("ℹ️ Template nicht gefunden oder ungültig")
                 else:
                     st.warning("⚠️ Kein Template für dieses Topic gefunden")
@@ -734,9 +653,7 @@ def _generate_topic_specific_params(topic: str, topic_info: dict) -> dict:
         base_params.update({"module_id": "SVR3QA2098", "status": "IDLE"})
     elif "module/v1/ff/" in topic and "/connection" in topic:
         # Module Connection Topic
-        base_params.update(
-            {"module_id": "SVR3QA2098", "connected": True, "ip": "192.168.0.40"}
-        )
+        base_params.update({"module_id": "SVR3QA2098", "connected": True, "ip": "192.168.0.40"})
     elif "ccu/state/stock" in topic:
         # CCU Stock State Topic
         base_params.update(
@@ -757,9 +674,7 @@ def _generate_topic_specific_params(topic: str, topic_info: dict) -> dict:
         )
     elif "ccu/order" in topic:
         # CCU Order Topic
-        base_params.update(
-            {"type": "RED", "workpieceId": "040a8dca341291", "orderType": "PRODUCTION"}
-        )
+        base_params.update({"type": "RED", "workpieceId": "040a8dca341291", "orderType": "PRODUCTION"})
     elif "fts" in topic:
         # FTS Topic
         base_params.update({"serialNumber": "5iO4", "command": "PICK"})
@@ -794,9 +709,7 @@ def show_order_request():
         color = st.selectbox(
             "🎨 Werkstück-Farbe:",
             ["RED", "WHITE", "BLUE"],
-            format_func=lambda x: {"RED": "🔴 Rot", "WHITE": "⚪ Weiß", "BLUE": "🔵 Blau"}[
-                x
-            ],
+            format_func=lambda x: {"RED": "🔴 Rot", "WHITE": "⚪ Weiß", "BLUE": "🔵 Blau"}[x],
         )
 
         # Workflow-Typ auswählen (nur Produktion macht Sinn für Bestellungen)
@@ -871,23 +784,17 @@ def _send_order_request(color: str, order_type: str, workpiece_id: str = ""):
             st.json({"topic": topic, "payload": payload})
 
             # MQTT-Verbindung prüfen (inkl. Mock-Support)
-            if mqtt_client.is_connected() or st.session_state.get(
-                "mqtt_mock_enabled", False
-            ):
+            if mqtt_client.is_connected() or st.session_state.get("mqtt_mock_enabled", False):
                 if st.session_state.get("mqtt_mock_enabled", False):
                     st.success(f"✅ Bestellung simuliert: {color} {order_type}")
                     st.info("🧪 Mock-Modus: Nachricht wurde nicht wirklich gesendet")
                 else:
                     mqtt_client.publish(topic, payload)
-                    _store_sent_message(
-                        topic, payload
-                    )  # Für Nachrichtenzentrale speichern
+                    _store_sent_message(topic, payload)  # Für Nachrichtenzentrale speichern
                     st.success(f"✅ Bestellung gesendet: {color} {order_type}")
                     st.info(f"🆔 Werkstück-ID: {workpiece_id}")
             else:
-                st.warning(
-                    "⚠️ MQTT nicht verbunden - Bestellung nur generiert (nicht gesendet)"
-                )
+                st.warning("⚠️ MQTT nicht verbunden - Bestellung nur generiert (nicht gesendet)")
         else:
             st.error("❌ Template für Bestellung nicht gefunden: ccu/order/request")
 

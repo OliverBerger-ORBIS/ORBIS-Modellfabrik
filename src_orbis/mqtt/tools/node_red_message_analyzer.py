@@ -4,13 +4,14 @@ Node-RED Message Analyzer
 Analysiert Node-RED Nachrichten aus MQTT Session-Daten
 """
 
-import sqlite3
-import json
-import pandas as pd
-from datetime import datetime
 import argparse
+import json
 import os
+import sqlite3
+from datetime import datetime
 from typing import Dict, Optional
+
+import pandas as pd
 
 
 class NodeRedMessageAnalyzer:
@@ -37,9 +38,9 @@ class NodeRedMessageAnalyzer:
         """Node-RED Nachrichten aus der Datenbank extrahieren"""
         query = """
         SELECT timestamp, topic, payload, message_type, module_type, serial_number, status, process_label
-        FROM mqtt_messages 
-        WHERE topic LIKE '%NodeRed%' 
-           OR topic LIKE '%factsheet%' 
+        FROM mqtt_messages
+        WHERE topic LIKE '%NodeRed%'
+           OR topic LIKE '%factsheet%'
            OR topic LIKE '%connection%'
         ORDER BY timestamp DESC
         """
@@ -116,9 +117,7 @@ class NodeRedMessageAnalyzer:
                 payload_analysis[key_str]["topics"].add(row["topic"])
 
                 if len(payload_analysis[key_str]["examples"]) < 3:
-                    payload_analysis[key_str]["examples"].append(
-                        {"topic": row["topic"], "payload": payload}
-                    )
+                    payload_analysis[key_str]["examples"].append({"topic": row["topic"], "payload": payload})
 
         # Sets zu Listen konvertieren für JSON-Serialisierung
         for key in payload_analysis:
@@ -154,41 +153,21 @@ class NodeRedMessageAnalyzer:
             "overview": topic_analysis,
             "node_red_state_messages": {
                 "count": len(state_messages),
-                "topics": (
-                    state_messages["topic"].unique().tolist()
-                    if not state_messages.empty
-                    else []
-                ),
-                "sample_messages": (
-                    state_messages.head(5).to_dict("records")
-                    if not state_messages.empty
-                    else []
-                ),
+                "topics": (state_messages["topic"].unique().tolist() if not state_messages.empty else []),
+                "sample_messages": (state_messages.head(5).to_dict("records") if not state_messages.empty else []),
             },
             "factsheet_messages": {
                 "count": len(factsheet_messages),
-                "topics": (
-                    factsheet_messages["topic"].unique().tolist()
-                    if not factsheet_messages.empty
-                    else []
-                ),
+                "topics": (factsheet_messages["topic"].unique().tolist() if not factsheet_messages.empty else []),
                 "sample_messages": (
-                    factsheet_messages.head(5).to_dict("records")
-                    if not factsheet_messages.empty
-                    else []
+                    factsheet_messages.head(5).to_dict("records") if not factsheet_messages.empty else []
                 ),
             },
             "connection_messages": {
                 "count": len(connection_messages),
-                "topics": (
-                    connection_messages["topic"].unique().tolist()
-                    if not connection_messages.empty
-                    else []
-                ),
+                "topics": (connection_messages["topic"].unique().tolist() if not connection_messages.empty else []),
                 "sample_messages": (
-                    connection_messages.head(5).to_dict("records")
-                    if not connection_messages.empty
-                    else []
+                    connection_messages.head(5).to_dict("records") if not connection_messages.empty else []
                 ),
             },
             "payload_analysis": payload_analysis,

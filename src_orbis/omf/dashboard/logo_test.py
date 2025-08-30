@@ -197,11 +197,11 @@ def main():
     st.info(
         """
     **Für das Dashboard empfehle ich:**
-    
+
     🥇 **ORBIS_RGB_BIG.png** - Gute Qualität, moderate Größe, RGB-fähig
     🥈 **ORBIS_WWW_4C.png** - Web-optimiert, 4C, gute Größe
     🥉 **ORBIS_4C.png** - Höchste Qualität, aber größere Datei
-    
+
     **Fallback:** Fabrik-Emoji 🏭 für maximale Kompatibilität
     """
     )
