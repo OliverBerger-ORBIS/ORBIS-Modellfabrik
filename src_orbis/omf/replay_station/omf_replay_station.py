@@ -155,7 +155,7 @@ class SessionPlayer:
                 # Erste Nachricht sofort senden
                 self._send_message(self.messages[0])
                 self.current_index = 1
-                last_timestamp = self.messages[0]["timestamp"]
+                # last_timestamp = self.messages[0]["timestamp"]  # Nicht verwendet
             else:
                 # Zeitliche Abstände zwischen Nachrichten berechnen
                 current_msg = self.messages[self.current_index]

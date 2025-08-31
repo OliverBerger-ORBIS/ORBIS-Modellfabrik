@@ -128,7 +128,7 @@ class MessageMonitorService:
 
         try:
             return bool(re.match(regex_pattern, topic))
-        except:
+        except Exception:
             return topic == pattern
 
     def _get_cutoff_time(self, time_range: str) -> datetime:
@@ -191,7 +191,7 @@ def show_message_filters() -> Dict:
         from omf.config.omf_config import config
 
         default_priority = config.get("dashboard.min_priority", 3)
-    except:
+    except Exception:
         default_priority = 3
 
     min_priority = st.selectbox(

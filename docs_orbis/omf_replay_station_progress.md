@@ -16,7 +16,7 @@
 - **MQTT-Integration**: Automatische Anzeige von Nachrichten aus dem MQTT-Client
 - **Performance-Optimierung**: Entfernung von `st.rerun()` für stabilere WebSocket-Verbindungen
 
-#### 2. **MQTT-Client Erweiterungen**
+#### 3. **MQTT-Client Erweiterungen**
 - **Dynamische Broker-Konfiguration** für verschiedene Modi:
   - `Live-Fabrik`: localhost:1883
   - `Replay-Station`: localhost:1884
@@ -24,7 +24,7 @@
 - **Message History**: Speicherung empfangener Nachrichten für Dashboard-Anzeige
 - **Import-Fehler behoben**: `mqtt.MQTT_ERR_SUCCESS` statt `mqtt_client.MQTT_ERR_SUCCESS`
 
-#### 3. **Dashboard Settings Integration**
+#### 4. **Dashboard Settings Integration**
 - **Zentrale MQTT-Modus-Auswahl** in "Dashboard-Einstellungen":
   - Live-Fabrik
   - Replay-Station (Standard)
@@ -32,23 +32,36 @@
 - **Erweiterte Status-Anzeige**: Zeigt aktuellen Verbindungsmodus an
 - **Replay-Station Quick-Links**: Direkte Links zu Replay-Station (Port 8509) und Session-Verzeichnis
 
-#### 4. **Simple Replay Station**
+#### 5. **Simple Replay Station**
 - **Neue Architektur "Option A"**: Separater MQTT-Broker als Service
 - **`simple_replay_station.py`**: Vereinfachte Replay-Station als MQTT-Client
 - **Session-Loading**: Unterstützung für SQLite- und Log-Dateien
 - **Message Publishing**: Verwendung von `mosquitto_pub` für Nachrichtenversand
 - **Threaded Replay**: Asynchrone Wiedergabe mit Pause/Stop-Funktionalität
 
-#### 5. **Asset-Management**
+#### 6. **Asset-Management**
 - **Neue Asset-Struktur**: `src_orbis/omf/dashboard/assets/`
 - **ORBIS Logo Update**: `ORBIS_WWW_4C.png` als neues Standard-Logo
 - **Robuste Logo-Ladung**: Multiple Pfad-Varianten mit Fallback auf "🏭" Emoji
 - **Browser-Icon**: "🏭" statt generischem blauen Kreis
 
-#### 6. **Unit Tests**
+#### 7. **Unit Tests**
 - **`test_message_center.py`**: Umfassende Tests für MessageMonitorService
 - **`test_replay_station.py`**: Tests für LocalMQTTBroker und SessionPlayer
 - **Case-insensitive Filtering**: Korrektur der Filter-Logik
+- **Modul-Status Tab** mit vollständiger Funktionalität:
+  - **7 APS-Module**: MILL, DRILL, AIQS, HBW, DPS, FTS, CHRG (OVEN entfernt)
+  - **Statische Module-Info** aus Settings/Modul-Config (Module Manager)
+  - **Dynamische Status-Info** aus Nachrichtenzentrale-Daten
+  - **Modul-Tabelle** mit Name, ID, Typ, IP, Verbindungsstatus, Aktivitätsstatus, Nachrichtenanzahl
+  - **Modul-Icons** für jeden Modultyp (⚙️, 🔩, 🤖, 🏬, 📦, 🚗, 🔋)
+  - **Status-Icons** für verschiedene Zustände (🟢, 🟡, 🔴, ⚡, 🚗, 🔧, 😴, 🎯)
+  - **Metriken**: Gesamt Module, Verbunden, Aktiv, Nachrichten
+  - **MQTT-Integration**: Zeigt echte Modul-Status aus MQTT-Nachrichten
+  - **Intelligente Status-Erkennung**: Extrahiert Available, Busy, Blocked aus MQTT-Payloads
+  - **Deaktivierte Module**: Werden automatisch ausgeblendet
+  - **Datenquelle-Info**: Zeigt Herkunft der statischen und dynamischen Daten
+- **Platzhalter für andere Tabs**: Bestellung, Bestellung-Rohware, Lagerbestand (bereit für Implementierung)
 
 ### 🔧 Technische Verbesserungen
 
@@ -306,6 +319,15 @@ streamlit run src_orbis/omf/dashboard/omf_dashboard.py --server.port 8506 &
 6. ✅ Gesendete Nachrichten werden erfasst und angezeigt
 7. ✅ Browser Tab Titel und Beschreibungen korrigiert
 
+## ⚠️ WICHTIGER HINWEIS: Lagerbestandsverwaltung funktioniert noch nicht
+
+**Status der Overview-Tabs:**
+- ✅ **🏭 Modul-Status:** Funktioniert korrekt - zeigt dynamische Informationen an
+- ❌ **📚 Lagerbestand:** Funktioniert NICHT - Tab bleibt leer trotz implementierter OrderManager-Klasse
+- 🔄 **📦 Bestellung & 🔧 Bestellung-Rohware:** Noch nicht implementiert (Placeholder)
+
+**Problem:** Obwohl die OrderManager-Klasse implementiert ist und HBW-Topics korrekt verarbeitet werden, wird der Lagerbestand im Dashboard nicht angezeigt. Das Dashboard hat den Stand des alten APS-Dashboards erreicht, aber die Lagerbestandsfunktionalität muss noch debuggt werden.
+
 ## 📝 Commit Message Vorschlag
 
 ```
@@ -386,3 +408,6 @@ TESTED: End-to-end replay functionality working correctly
 
 **Alle Beschreibungen und Browser-Tabs sind jetzt technisch korrekt!** 🎯
 
+ kann dann ignoriert werden
+ ja
+ 

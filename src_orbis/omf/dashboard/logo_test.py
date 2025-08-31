@@ -23,14 +23,14 @@ def main():
     st.title("🎨 ORBIS Logo Test")
     st.markdown("Vergleich der verschiedenen ORBIS-Logos für das Dashboard")
 
-    # Logo-Dateien
-    logo_files = [
-        "orbis_logo.png",  # Aktuelles Logo
-        "ORBIS_4C.png",  # Neues Logo 1
-        "ORBIS_RGB_BIG.png",  # Neues Logo 2
-        "ORBIS_Weiss.png",  # Neues Logo 3
-        "ORBIS_WWW_4C.png",  # Neues Logo 4
-    ]
+    # Logo-Dateien (nicht verwendet, aber für Referenz behalten)
+    # logo_files = [
+    #     "orbis_logo.png",  # Aktuelles Logo
+    #     "ORBIS_4C.png",  # Neues Logo 1
+    #     "ORBIS_RGB_BIG.png",  # Neues Logo 2
+    #     "ORBIS_Weiss.png",  # Neues Logo 3
+    #     "ORBIS_WWW_4C.png",  # Neues Logo 4
+    # ]
 
     # Assets-Verzeichnis
     assets_dir = os.path.join(os.path.dirname(__file__), "assets")

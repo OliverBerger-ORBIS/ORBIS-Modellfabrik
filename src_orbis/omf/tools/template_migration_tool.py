@@ -297,7 +297,8 @@ def main():
     migration_report = migration_tool.migrate_templates(dry_run=True)
 
     print(
-        f"✅ {migration_report.get('migrated_topics', 0)} von {migration_report.get('total_topics', 0)} Topics würden migriert"
+        f"✅ {migration_report.get('migrated_topics', 0)} von "
+        f"{migration_report.get('total_topics', 0)} Topics würden migriert"
     )
     print(f"✅ {len(migration_report.get('created_files', []))} Dateien würden erstellt")
 

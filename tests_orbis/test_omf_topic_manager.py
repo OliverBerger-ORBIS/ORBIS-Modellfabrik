@@ -10,7 +10,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
 import unittest
 
-from src_orbis.omf.tools.topic_manager import OMFTopicManager, get_omf_topic_manager
+from src_orbis.omf.tools.topic_manager import get_omf_topic_manager
 
 
 class TestOMFTopicManager(unittest.TestCase):
@@ -50,7 +50,7 @@ class TestOMFTopicManager(unittest.TestCase):
         self.assertGreater(len(ccu_topics), 0)
 
         # Prüfe dass alle CCU Topics die richtige Kategorie haben
-        for topic, info in ccu_topics.items():
+        for _topic, info in ccu_topics.items():
             self.assertEqual(info.get("category"), "CCU")
 
     def test_get_friendly_name(self):
@@ -103,7 +103,7 @@ class TestOMFTopicManager(unittest.TestCase):
         self.assertIsInstance(mill_topics, dict)
 
         # Prüfe dass alle MILL Topics das richtige Modul haben
-        for topic, info in mill_topics.items():
+        for _topic, info in mill_topics.items():
             self.assertEqual(info.get("module"), "MILL")
 
     def test_is_known_topic(self):

@@ -93,7 +93,7 @@ class SessionPlayer:
                                             "timestamp": timestamp.strip(),
                                         }
                                     )
-                        except:
+                        except Exception:
                             continue
 
             if len(self.messages) == 0:
@@ -212,7 +212,7 @@ class SessionPlayer:
                     if sleep_time > 0:
                         time.sleep(sleep_time)
 
-                except:
+                except Exception:
                     # Fallback: 1 Sekunde warten
                     time.sleep(1.0 / self.speed)
 
@@ -304,7 +304,7 @@ def main():
         try:
             file_size = selected_session.stat().st_size
             st.text(f"📊 Dateigröße: {file_size:,} Bytes")
-        except:
+        except Exception:
             pass
 
     if selected_session and st.button("📂 Session laden"):
@@ -382,7 +382,9 @@ def main():
 
         # Debug-Informationen
         st.info(
-            f"🔍 Debug: is_playing={session_player.is_playing}, current_index={session_player.current_index}, total_messages={len(session_player.messages)}"
+            f"🔍 Debug: is_playing={session_player.is_playing}, "
+            f"current_index={session_player.current_index}, "
+            f"total_messages={len(session_player.messages)}"
         )
 
         # Manueller Refresh-Button für Live-Updates

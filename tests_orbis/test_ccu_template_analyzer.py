@@ -15,7 +15,7 @@ import unittest
 from datetime import datetime
 from unittest.mock import Mock, patch
 
-sys.path.append(os.path.join(os.path.dirname(__file__), "..", "src_orbis", "mqtt", "tools"))
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", "src_orbis", "analysis_tools", "template_analyzers"))
 from ccu_template_analyzer import CCUTemplateAnalyzer
 
 
@@ -91,12 +91,14 @@ class TestCCUTemplateAnalyzer(unittest.TestCase):
             (
                 "2025-08-28T10:00:00Z",
                 "ccu/order/request",
-                '{"timestamp": "2025-08-28T10:00:00Z", "orderType": "STORAGE", "type": "RED", "workpieceId": "040a8dca341291"}',
+                '{"timestamp": "2025-08-28T10:00:00Z", "orderType": "STORAGE", '
+                '"type": "RED", "workpieceId": "040a8dca341291"}',
             ),
             (
                 "2025-08-28T10:01:00Z",
                 "ccu/order/request",
-                '{"timestamp": "2025-08-28T10:01:00Z", "orderType": "PROCESSING", "type": "BLUE", "workpieceId": "040a8dca341292"}',
+                '{"timestamp": "2025-08-28T10:01:00Z", "orderType": "PROCESSING", '
+                '"type": "BLUE", "workpieceId": "040a8dca341292"}',
             ),
             (
                 "2025-08-28T10:02:00Z",
@@ -161,12 +163,14 @@ class TestCCUTemplateAnalyzer(unittest.TestCase):
         messages = [
             {
                 "topic": "ccu/order/request",
-                "payload": '{"timestamp": "2025-08-28T10:00:00Z", "orderType": "STORAGE", "type": "RED", "workpieceId": "040a8dca341291"}',
+                "payload": '{"timestamp": "2025-08-28T10:00:00Z", "orderType": "STORAGE", '
+                '"type": "RED", "workpieceId": "040a8dca341291"}',
                 "timestamp": "2025-08-28T10:00:00Z",
             },
             {
                 "topic": "ccu/order/request",
-                "payload": '{"timestamp": "2025-08-28T10:01:00Z", "orderType": "PROCESSING", "type": "BLUE", "workpieceId": "040a8dca341292"}',
+                "payload": '{"timestamp": "2025-08-28T10:01:00Z", "orderType": "PROCESSING", '
+                '"type": "BLUE", "workpieceId": "040a8dca341292"}',
                 "timestamp": "2025-08-28T10:01:00Z",
             },
         ]

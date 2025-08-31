@@ -14,6 +14,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "..", ".."))
 # Import settings components
 try:
     from components.message_center import show_message_center
+    from components.overview import show_overview_tabs
     from components.settings import (
         show_dashboard_settings,
         show_messages_templates,
@@ -56,6 +57,10 @@ except ImportError:
     def show_message_center():
         st.subheader("📡 Nachrichtenzentrale")
         st.info("Nachrichtenzentrale wird hier angezeigt")
+
+    def show_overview_tabs():
+        st.subheader("📊 Overview")
+        st.info("Overview wird hier angezeigt")
 
 
 def main():
@@ -197,28 +202,7 @@ def main():
 
     # Tab 1: Overview
     with tab1:
-        st.header("📊 Overview")
-
-        # Sub-tabs for Overview
-        overview_tab1, overview_tab2, overview_tab3, overview_tab4 = st.tabs(
-            ["🏭 Modul-Status", "📦 Bestellung", "🔧 Bestellung-Rohware", "📚 Lagerbestand"]
-        )
-
-        with overview_tab1:
-            st.subheader("🏭 Modul-Status")
-            st.info("Modul-Status wird hier angezeigt")
-
-        with overview_tab2:
-            st.subheader("📦 Bestellung")
-            st.info("Bestellungen werden hier angezeigt")
-
-        with overview_tab3:
-            st.subheader("🔧 Bestellung-Rohware")
-            st.info("Bestellung-Rohware wird hier angezeigt")
-
-        with overview_tab4:
-            st.subheader("📚 Lagerbestand")
-            st.info("Lagerbestand wird hier angezeigt")
+        show_overview_tabs()
 
     # Tab 2: Aufträge
     with tab2:

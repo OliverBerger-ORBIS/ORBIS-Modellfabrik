@@ -119,7 +119,7 @@ class TestSessionPlayer(unittest.TestCase):
             conn.close()
 
             # Test Session laden
-            with patch("streamlit.success") as mock_success:
+            with patch("streamlit.success") as _mock_success:
                 result = self.player.load_session(db_path)
                 self.assertTrue(result)
                 self.assertEqual(len(self.player.messages), 3)
@@ -175,7 +175,7 @@ class TestSessionPlayer(unittest.TestCase):
                 f.write("\n".join(test_log_content))
 
             # Test Session laden
-            with patch("streamlit.success") as mock_success:
+            with patch("streamlit.success") as _mock_success:
                 result = self.player.load_session(log_path)
                 self.assertTrue(result)
                 self.assertEqual(len(self.player.messages), 3)
@@ -207,7 +207,7 @@ class TestSessionPlayer(unittest.TestCase):
                 f.write("\n".join(test_log_content))
 
             # Test Session laden
-            with patch("streamlit.success") as mock_success:
+            with patch("streamlit.success") as _mock_success:
                 result = self.player.load_session(log_path)
                 self.assertTrue(result)  # Sollte trotzdem funktionieren
                 # Prüfe ob gültige Nachrichten geladen wurden (könnte 0 oder mehr sein)
@@ -282,7 +282,7 @@ class TestSessionPlayer(unittest.TestCase):
         mock_result.rc = 0  # Success
         self.player.broker_client.publish.return_value = mock_result
 
-        with patch("logging.info") as mock_log:
+        with patch("logging.info") as _mock_log:
             self.player._send_message(test_message)
             # Prüfe ob publish aufgerufen wurde
             self.player.broker_client.publish.assert_called_once_with("test/topic", '{"test": "data"}', qos=1)
@@ -413,7 +413,7 @@ class TestReplayStationErrorHandling(unittest.TestCase):
                 f.write("This is not a valid log file\n")
                 f.write("Invalid format line\n")
 
-            with patch("streamlit.success") as mock_success:
+            with patch("streamlit.success") as _mock_success:
                 result = self.player.load_session(log_path)
                 self.assertTrue(result)  # Sollte trotzdem funktionieren
                 self.assertEqual(len(self.player.messages), 0)  # Aber keine Nachrichten laden
