@@ -12,10 +12,7 @@ import sys
 import tempfile
 import unittest
 from datetime import datetime
-from pathlib import Path
 from unittest.mock import Mock, patch
-
-import streamlit as st
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "src_orbis"))
 
@@ -288,9 +285,7 @@ class TestSessionPlayer(unittest.TestCase):
         with patch("logging.info") as mock_log:
             self.player._send_message(test_message)
             # Prüfe ob publish aufgerufen wurde
-            self.player.broker_client.publish.assert_called_once_with(
-                "test/topic", '{"test": "data"}', qos=1
-            )
+            self.player.broker_client.publish.assert_called_once_with("test/topic", '{"test": "data"}', qos=1)
 
 
 class TestReplayStationIntegration(unittest.TestCase):
@@ -421,9 +416,7 @@ class TestReplayStationErrorHandling(unittest.TestCase):
             with patch("streamlit.success") as mock_success:
                 result = self.player.load_session(log_path)
                 self.assertTrue(result)  # Sollte trotzdem funktionieren
-                self.assertEqual(
-                    len(self.player.messages), 0
-                )  # Aber keine Nachrichten laden
+                self.assertEqual(len(self.player.messages), 0)  # Aber keine Nachrichten laden
 
         finally:
             if os.path.exists(log_path):

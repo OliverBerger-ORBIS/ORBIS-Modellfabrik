@@ -83,9 +83,7 @@ class TestMessageMonitorService(unittest.TestCase):
         self.monitor.add_sent_message("other/topic", "payload3")
 
         filters = {"modules": ["HBW"]}
-        filtered = self.monitor.get_filtered_messages(
-            self.monitor.sent_messages, filters
-        )
+        filtered = self.monitor.get_filtered_messages(self.monitor.sent_messages, filters)
 
         self.assertEqual(len(filtered), 1)
         self.assertEqual(filtered[0]["topic"], "hbw/status")
@@ -98,9 +96,7 @@ class TestMessageMonitorService(unittest.TestCase):
         self.monitor.add_sent_message("other/topic", "payload3")
 
         filters = {"categories": ["CCU"]}
-        filtered = self.monitor.get_filtered_messages(
-            self.monitor.sent_messages, filters
-        )
+        filtered = self.monitor.get_filtered_messages(self.monitor.sent_messages, filters)
 
         self.assertEqual(len(filtered), 1)
         self.assertEqual(filtered[0]["topic"], "ccu/status")
@@ -115,9 +111,7 @@ class TestMessageMonitorService(unittest.TestCase):
         self.monitor.add_sent_message("topic2", "payload2")
 
         filters = {"time_range": "1h"}
-        filtered = self.monitor.get_filtered_messages(
-            self.monitor.sent_messages, filters
-        )
+        filtered = self.monitor.get_filtered_messages(self.monitor.sent_messages, filters)
 
         self.assertEqual(len(filtered), 1)
         self.assertEqual(filtered[0]["topic"], "topic2")
@@ -130,9 +124,7 @@ class TestMessageMonitorService(unittest.TestCase):
         self.monitor.add_sent_message("fts/status", "payload3")
 
         filters = {"topic_pattern": "hbw"}
-        filtered = self.monitor.get_filtered_messages(
-            self.monitor.sent_messages, filters
-        )
+        filtered = self.monitor.get_filtered_messages(self.monitor.sent_messages, filters)
 
         self.assertEqual(len(filtered), 2)
         self.assertTrue(all("hbw" in msg["topic"] for msg in filtered))

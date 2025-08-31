@@ -141,30 +141,18 @@ class TestOMFMQTTClient(unittest.TestCase):
     def test_topic_matches_pattern(self):
         """Test Topic Pattern Matching"""
         # Exakte Übereinstimmung
-        self.assertTrue(
-            self.mqtt_client._topic_matches_pattern("test/topic", "test/topic")
-        )
+        self.assertTrue(self.mqtt_client._topic_matches_pattern("test/topic", "test/topic"))
 
         # Wildcard +
-        self.assertTrue(
-            self.mqtt_client._topic_matches_pattern("test/123/topic", "test/+/topic")
-        )
-        self.assertFalse(
-            self.mqtt_client._topic_matches_pattern("test/123/topic", "test/+/other")
-        )
+        self.assertTrue(self.mqtt_client._topic_matches_pattern("test/123/topic", "test/+/topic"))
+        self.assertFalse(self.mqtt_client._topic_matches_pattern("test/123/topic", "test/+/other"))
 
         # Wildcard #
-        self.assertTrue(
-            self.mqtt_client._topic_matches_pattern("test/123/topic", "test/#")
-        )
-        self.assertTrue(
-            self.mqtt_client._topic_matches_pattern("test/123/456/topic", "test/#")
-        )
+        self.assertTrue(self.mqtt_client._topic_matches_pattern("test/123/topic", "test/#"))
+        self.assertTrue(self.mqtt_client._topic_matches_pattern("test/123/456/topic", "test/#"))
 
         # Keine Übereinstimmung
-        self.assertFalse(
-            self.mqtt_client._topic_matches_pattern("test/topic", "other/topic")
-        )
+        self.assertFalse(self.mqtt_client._topic_matches_pattern("test/topic", "other/topic"))
 
     def test_publish_not_connected(self):
         """Test Publish ohne Verbindung"""

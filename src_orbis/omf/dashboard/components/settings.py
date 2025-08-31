@@ -193,7 +193,7 @@ def show_dashboard_settings():
         min_priority = st.selectbox(
             "Maximale Priorität anzeigen:",
             [1, 2, 3, 4, 5],
-            index=2,  # Default: Priority 3
+            index=4,  # Default: Priority 5 (alle Topics anzeigen)
             format_func=lambda x: f"Prio {x}: {priority_levels[x]}",
             help="Zeige Nachrichten mit Priorität 1 bis zur ausgewählten Priorität",
         )
@@ -227,9 +227,9 @@ def show_dashboard_settings():
         st.markdown("**💡 Empfehlungen:**")
         st.markdown("• **Prio 1:** Nur kritische Steuerung")
         st.markdown("• **Prio 2:** Steuerung + wichtige Status")
-        st.markdown("• **Prio 3:** Standard-Betrieb (Default)")
+        st.markdown("• **Prio 3:** Standard-Betrieb")
         st.markdown("• **Prio 4:** + NodeRED Topics")
-        st.markdown("• **Prio 5:** Alle Nachrichten (inkl. Kamera)")
+        st.markdown("• **Prio 5:** Alle Nachrichten (inkl. Kamera) - **NEUER STANDARD**")
 
     st.markdown("---")
 

@@ -88,9 +88,7 @@ class TestMessageGenerator(unittest.TestCase):
         process_payload = result_process["payload"]
         drop_payload = result_drop["payload"]
 
-        self.assertEqual(
-            pick_payload["order_id"], order_id
-        )  # Template verwendet Unterstrich
+        self.assertEqual(pick_payload["order_id"], order_id)  # Template verwendet Unterstrich
         self.assertEqual(process_payload["order_id"], order_id)
         self.assertEqual(drop_payload["order_id"], order_id)
 
@@ -101,9 +99,7 @@ class TestMessageGenerator(unittest.TestCase):
 
         print("✅ Workflow sequence:")
         print(f"   PICK: orderUpdateId={pick_payload['parameters']['orderUpdateId']}")
-        print(
-            f"   PROCESS: orderUpdateId={process_payload['parameters']['orderUpdateId']}"
-        )
+        print(f"   PROCESS: orderUpdateId={process_payload['parameters']['orderUpdateId']}")
         print(f"   DROP: orderUpdateId={drop_payload['parameters']['orderUpdateId']}")
 
     def test_order_update_id_template_validation(self):
@@ -113,9 +109,7 @@ class TestMessageGenerator(unittest.TestCase):
         step = "PICK"
 
         # Act
-        result = self.message_generator.generate_module_sequence_message(
-            module=module, step=step, step_number=1
-        )
+        result = self.message_generator.generate_module_sequence_message(module=module, step=step, step_number=1)
 
         # Assert
         self.assertIsNotNone(result)
@@ -165,9 +159,7 @@ class TestMessageGenerator(unittest.TestCase):
             print(f"   Template-Struktur: {template.get('template_structure', {})}")
 
             # Check orderUpdateId constraint
-            order_update_constraint = template.get("template_structure", {}).get(
-                "orderUpdateId"
-            )
+            order_update_constraint = template.get("template_structure", {}).get("orderUpdateId")
             if order_update_constraint:
                 print(f"   orderUpdateId Constraint: {order_update_constraint}")
 
@@ -180,9 +172,7 @@ class TestMessageGenerator(unittest.TestCase):
     def test_factory_reset_message(self):
         """Test: Factory Reset Message Generierung"""
         # Act
-        result = self.message_generator.generate_factory_reset_message(
-            with_storage=False, clear_storage=True
-        )
+        result = self.message_generator.generate_factory_reset_message(with_storage=False, clear_storage=True)
 
         # Assert
         self.assertIsNotNone(result)
@@ -237,9 +227,7 @@ class TestWorkflowOrderManager(unittest.TestCase):
     def test_start_workflow(self):
         """Test: Workflow starten"""
         # Act
-        order_id = self.workflow_manager.start_workflow(
-            "MILL", ["PICK", "PROCESS", "DROP"]
-        )
+        order_id = self.workflow_manager.start_workflow("MILL", ["PICK", "PROCESS", "DROP"])
 
         # Assert
         self.assertIsNotNone(order_id)
@@ -256,9 +244,7 @@ class TestWorkflowOrderManager(unittest.TestCase):
     def test_execute_command_sequence(self):
         """Test: Command-Sequenz ausführen"""
         # Arrange
-        order_id = self.workflow_manager.start_workflow(
-            "DRILL", ["PICK", "PROCESS", "DROP"]
-        )
+        order_id = self.workflow_manager.start_workflow("DRILL", ["PICK", "PROCESS", "DROP"])
 
         # Act
         workflow_info_1 = self.workflow_manager.execute_command(order_id, "PICK")
@@ -282,9 +268,7 @@ class TestWorkflowOrderManager(unittest.TestCase):
     def test_complete_workflow(self):
         """Test: Workflow abschließen"""
         # Arrange
-        order_id = self.workflow_manager.start_workflow(
-            "AIQS", ["PICK", "PROCESS", "DROP"]
-        )
+        order_id = self.workflow_manager.start_workflow("AIQS", ["PICK", "PROCESS", "DROP"])
         self.workflow_manager.execute_command(order_id, "PICK")
         self.workflow_manager.execute_command(order_id, "PROCESS")
         self.workflow_manager.execute_command(order_id, "DROP")
@@ -317,14 +301,10 @@ def run_tests():
     test_suite = unittest.TestSuite()
 
     # Add MessageGenerator tests
-    test_suite.addTest(
-        unittest.TestLoader().loadTestsFromTestCase(TestMessageGenerator)
-    )
+    test_suite.addTest(unittest.TestLoader().loadTestsFromTestCase(TestMessageGenerator))
 
     # Add WorkflowOrderManager tests
-    test_suite.addTest(
-        unittest.TestLoader().loadTestsFromTestCase(TestWorkflowOrderManager)
-    )
+    test_suite.addTest(unittest.TestLoader().loadTestsFromTestCase(TestWorkflowOrderManager))
 
     # Run tests
     runner = unittest.TextTestRunner(verbosity=2)

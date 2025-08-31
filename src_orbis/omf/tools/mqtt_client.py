@@ -335,6 +335,9 @@ class OMFMQTTClient:
             "/j1/txt/+/+/+/+",  # TXT-Topics
             "/j1/txt/+/i/+",  # TXT-Input-Topics
             "/j1/txt/+/f/+",  # TXT-Function-Topics
+            "/j1/txt/+/i/config/+",  # TXT-Config-Topics (inkl. HBW)
+            "/j1/txt/+/o/+",  # TXT-Output-Topics
+            "/j1/txt/+/c/+",  # TXT-Control-Topics
         ]
 
         # Check if topic matches any known pattern

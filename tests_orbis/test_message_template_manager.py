@@ -14,9 +14,7 @@ from unittest.mock import patch
 
 import yaml
 
-sys.path.append(
-    os.path.join(os.path.dirname(__file__), "..", "src_orbis", "mqtt", "tools")
-)
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", "src_orbis", "mqtt", "tools"))
 from message_template_manager import MessageTemplateManager, get_message_template_manager
 
 
@@ -99,9 +97,7 @@ class TestMessageTemplateManager(unittest.TestCase):
                             "payload": {"systemStatus": "RUNNING", "activeOrders": 5},
                         }
                     ],
-                    "validation_rules": [
-                        "systemStatus muss in ['RUNNING', 'STOPPED'] sein"
-                    ],
+                    "validation_rules": ["systemStatus muss in ['RUNNING', 'STOPPED'] sein"],
                 },
             },
             "categories": {
@@ -208,16 +204,12 @@ class TestMessageTemplateManager(unittest.TestCase):
         """Test: Feldtyp-Bestimmung"""
         # String types
         self.assertEqual(self.manager._determine_field_type("test"), "string")
-        self.assertEqual(
-            self.manager._determine_field_type("2025-08-28T10:00:00Z"), "ISO_8601"
-        )
+        self.assertEqual(self.manager._determine_field_type("2025-08-28T10:00:00Z"), "ISO_8601")
         self.assertEqual(
             self.manager._determine_field_type("550e8400-e29b-41d4-a716-446655440000"),
             "UUID",
         )
-        self.assertEqual(
-            self.manager._determine_field_type("040a8dca341291"), "NFC_CODE"
-        )
+        self.assertEqual(self.manager._determine_field_type("040a8dca341291"), "NFC_CODE")
 
         # Other types
         self.assertEqual(self.manager._determine_field_type(123), "integer")
@@ -282,14 +274,8 @@ class TestMessageTemplateManager(unittest.TestCase):
     def test_validate_format(self):
         """Test: Format-Validierung"""
         # Valid formats
-        self.assertTrue(
-            self.manager._validate_format("2025-08-28T10:00:00Z", "ISO_8601")
-        )
-        self.assertTrue(
-            self.manager._validate_format(
-                "550e8400-e29b-41d4-a716-446655440000", "UUID"
-            )
-        )
+        self.assertTrue(self.manager._validate_format("2025-08-28T10:00:00Z", "ISO_8601"))
+        self.assertTrue(self.manager._validate_format("550e8400-e29b-41d4-a716-446655440000", "UUID"))
         self.assertTrue(self.manager._validate_format("040a8dca341291", "NFC_CODE"))
 
         # Invalid formats
@@ -306,9 +292,7 @@ class TestMessageTemplateManager(unittest.TestCase):
         self.assertIn("workpieceId", message)
 
         # Test mit Parametern
-        message = self.manager.generate_valid_message(
-            "ccu/order/request", {"orderType": "PROCESSING"}
-        )
+        message = self.manager.generate_valid_message("ccu/order/request", {"orderType": "PROCESSING"})
         self.assertEqual(message["orderType"], "PROCESSING")
 
     def test_generate_valid_message_nonexistent_topic(self):
@@ -333,33 +317,19 @@ class TestMessageTemplateManager(unittest.TestCase):
     def test_suggest_category(self):
         """Test: Kategorie-Vorschlag basierend auf Topic"""
         self.assertEqual(self.manager._suggest_category("ccu/order/request"), "CCU")
-        self.assertEqual(
-            self.manager._suggest_category("module/v1/ff/123/order"), "MODULE"
-        )
+        self.assertEqual(self.manager._suggest_category("module/v1/ff/123/order"), "MODULE")
         self.assertEqual(self.manager._suggest_category("txt/input/status"), "TXT")
-        self.assertEqual(
-            self.manager._suggest_category("node-red/flow/status"), "Node-RED"
-        )
+        self.assertEqual(self.manager._suggest_category("node-red/flow/status"), "Node-RED")
         self.assertEqual(self.manager._suggest_category("unknown/topic"), "UNKNOWN")
 
     def test_suggest_sub_category(self):
         """Test: Sub-Kategorie-Vorschlag basierend auf Topic"""
-        self.assertEqual(
-            self.manager._suggest_sub_category("ccu/order/request"), "Order"
-        )
-        self.assertEqual(
-            self.manager._suggest_sub_category("ccu/state/status"), "State"
-        )
-        self.assertEqual(
-            self.manager._suggest_sub_category("ccu/control/command"), "Control"
-        )
+        self.assertEqual(self.manager._suggest_sub_category("ccu/order/request"), "Order")
+        self.assertEqual(self.manager._suggest_sub_category("ccu/state/status"), "State")
+        self.assertEqual(self.manager._suggest_sub_category("ccu/control/command"), "Control")
         self.assertEqual(self.manager._suggest_sub_category("ccu/input/data"), "Input")
-        self.assertEqual(
-            self.manager._suggest_sub_category("ccu/output/result"), "Output"
-        )
-        self.assertEqual(
-            self.manager._suggest_sub_category("ccu/unknown/topic"), "General"
-        )
+        self.assertEqual(self.manager._suggest_sub_category("ccu/output/result"), "Output")
+        self.assertEqual(self.manager._suggest_sub_category("ccu/unknown/topic"), "General")
 
     def test_get_statistics(self):
         """Test: Statistiken abrufen"""
@@ -426,9 +396,7 @@ class TestMessageTemplateManager(unittest.TestCase):
                 "orderType": ["STORAGE", "PROCESSING"],
                 "count": [5, 10, 15],
             },
-            "examples": [
-                {"timestamp": "2025-08-28T10:00:00Z", "payload": {"test": "data"}}
-            ],
+            "examples": [{"timestamp": "2025-08-28T10:00:00Z", "payload": {"test": "data"}}],
             "message_count": 1,
         }
 
@@ -453,12 +421,7 @@ class TestMessageTemplateManager(unittest.TestCase):
         # Check validation rules (order may vary)
         rules = suggestion["validation_rules"]
         self.assertTrue(
-            any(
-                "orderType muss in" in rule
-                and "STORAGE" in rule
-                and "PROCESSING" in rule
-                for rule in rules
-            ),
+            any("orderType muss in" in rule and "STORAGE" in rule and "PROCESSING" in rule for rule in rules),
             "orderType validation rule should be present",
         )
         # Note: Format validation might not be generated for all fields
@@ -549,9 +512,7 @@ class TestMessageTemplateManagerIntegration(unittest.TestCase):
         """Test: Fehlerbehandlung"""
         # Test with invalid message
         invalid_message = {"invalid_field": "value"}
-        is_valid, errors = self.manager.validate_message(
-            "integration/test", invalid_message
-        )
+        is_valid, errors = self.manager.validate_message("integration/test", invalid_message)
         self.assertFalse(is_valid)
         self.assertGreater(len(errors), 0)
 
@@ -568,17 +529,9 @@ def run_comprehensive_test():
     test_suite = unittest.TestSuite()
 
     # Add test classes
-    test_suite.addTest(
-        unittest.TestLoader().loadTestsFromTestCase(TestMessageTemplateManager)
-    )
-    test_suite.addTest(
-        unittest.TestLoader().loadTestsFromTestCase(TestMessageTemplateManagerSingleton)
-    )
-    test_suite.addTest(
-        unittest.TestLoader().loadTestsFromTestCase(
-            TestMessageTemplateManagerIntegration
-        )
-    )
+    test_suite.addTest(unittest.TestLoader().loadTestsFromTestCase(TestMessageTemplateManager))
+    test_suite.addTest(unittest.TestLoader().loadTestsFromTestCase(TestMessageTemplateManagerSingleton))
+    test_suite.addTest(unittest.TestLoader().loadTestsFromTestCase(TestMessageTemplateManagerIntegration))
 
     # Run tests
     runner = unittest.TextTestRunner(verbosity=2)
@@ -586,9 +539,7 @@ def run_comprehensive_test():
 
     # Print summary
     print("\n📊 Test-Zusammenfassung:")
-    print(
-        f"  ✅ Erfolgreich: {result.testsRun - len(result.failures) - len(result.errors)}"
-    )
+    print(f"  ✅ Erfolgreich: {result.testsRun - len(result.failures) - len(result.errors)}")
     print(f"  ❌ Fehler: {len(result.failures)}")
     print(f"  ⚠️  Ausnahmen: {len(result.errors)}")
     print(f"  📋 Gesamt: {result.testsRun}")

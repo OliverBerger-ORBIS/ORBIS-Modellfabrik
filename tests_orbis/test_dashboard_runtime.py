@@ -4,9 +4,7 @@ Test für OMF Dashboard Runtime-Fehler
 Prüft Runtime-Fehler und Komponenten-Integration
 """
 
-import os
 import sys
-import tempfile
 import unittest
 from pathlib import Path
 
@@ -25,15 +23,11 @@ class TestDashboardRuntime(unittest.TestCase):
 
             # Test MessageMonitorService initialization
             service = MessageMonitorService()
-            self.assertIsNotNone(
-                service, "MessageMonitorService sollte initialisiert werden können"
-            )
+            self.assertIsNotNone(service, "MessageMonitorService sollte initialisiert werden können")
 
             # Test basic methods with proper arguments
             messages = service.get_filtered_messages([], {})
-            self.assertIsInstance(
-                messages, list, "get_filtered_messages sollte Liste zurückgeben"
-            )
+            self.assertIsInstance(messages, list, "get_filtered_messages sollte Liste zurückgeben")
 
             print("✅ Message Center Komponente: OK")
 
@@ -47,17 +41,11 @@ class TestDashboardRuntime(unittest.TestCase):
 
             # Test MQTT Client initialization
             client = OMFMQTTClient()
-            self.assertIsNotNone(
-                client, "OMFMQTTClient sollte initialisiert werden können"
-            )
+            self.assertIsNotNone(client, "OMFMQTTClient sollte initialisiert werden können")
 
             # Test basic methods
-            self.assertIsInstance(
-                client.get_statistics(), dict, "get_statistics sollte Dict zurückgeben"
-            )
-            self.assertIsInstance(
-                client.is_connected(), bool, "is_connected sollte Boolean zurückgeben"
-            )
+            self.assertIsInstance(client.get_statistics(), dict, "get_statistics sollte Dict zurückgeben")
+            self.assertIsInstance(client.is_connected(), bool, "is_connected sollte Boolean zurückgeben")
 
             print("✅ MQTT Client Komponente: OK")
 
@@ -71,15 +59,11 @@ class TestDashboardRuntime(unittest.TestCase):
 
             # Test SessionPlayer initialization
             player = SessionPlayer()
-            self.assertIsNotNone(
-                player, "SessionPlayer sollte initialisiert werden können"
-            )
+            self.assertIsNotNone(player, "SessionPlayer sollte initialisiert werden können")
 
             # Test basic methods
             self.assertIsInstance(player.messages, list, "messages sollte Liste sein")
-            self.assertIsInstance(
-                player.is_playing, bool, "is_playing sollte Boolean sein"
-            )
+            self.assertIsInstance(player.is_playing, bool, "is_playing sollte Boolean sein")
 
             print("✅ Replay Station Komponente: OK")
 
@@ -108,9 +92,7 @@ class TestDashboardRuntime(unittest.TestCase):
             from src_orbis.omf.dashboard.components.steering import show_steering
 
             # Test that function exists
-            self.assertTrue(
-                callable(show_steering), "show_steering sollte aufrufbar sein"
-            )
+            self.assertTrue(callable(show_steering), "show_steering sollte aufrufbar sein")
 
             print("✅ Steering Komponente: OK")
 
@@ -130,9 +112,7 @@ class TestDashboardRuntime(unittest.TestCase):
 
             # Test with valid session structure
             self.assertIsInstance(player.messages, list, "messages sollte Liste sein")
-            self.assertIsInstance(
-                player.current_index, int, "current_index sollte Integer sein"
-            )
+            self.assertIsInstance(player.current_index, int, "current_index sollte Integer sein")
 
             print("✅ Session-Validierung: OK")
 
@@ -148,15 +128,11 @@ class TestDashboardRuntime(unittest.TestCase):
 
             # Test filtering methods with proper arguments
             messages = service.get_filtered_messages([], {})
-            self.assertIsInstance(
-                messages, list, "get_filtered_messages sollte Liste zurückgeben"
-            )
+            self.assertIsInstance(messages, list, "get_filtered_messages sollte Liste zurückgeben")
 
             # Test priority filtering
             filtered = service._filter_by_priority([], 3)
-            self.assertIsInstance(
-                filtered, list, "_filter_by_priority sollte Liste zurückgeben"
-            )
+            self.assertIsInstance(filtered, list, "_filter_by_priority sollte Liste zurückgeben")
 
             print("✅ Nachrichten-Filterung: OK")
 
