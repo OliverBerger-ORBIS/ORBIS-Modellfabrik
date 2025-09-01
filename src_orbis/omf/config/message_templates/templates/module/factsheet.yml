@@ -56,7 +56,7 @@ templates:
         type: datetime
         description: "Timestamp"
     validation_rules:
-      - timestamp muss ISO 8601 Format haben
+    - timestamp muss ISO 8601 Format haben
       - module_id muss gültige Serial Number sein
       - name muss gültiger Modul-Name sein
       - type muss gültiger Modul-Typ sein

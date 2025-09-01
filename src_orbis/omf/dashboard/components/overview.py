@@ -505,57 +505,87 @@ def get_static_module_info():
 
 
 def get_dynamic_module_status(module_id, module_info):
-    """Get dynamic status information from message center data"""
-    # Get recent messages for this module from message monitor (same as message center)
+    """Get dynamic status information from message center data using template-based extraction"""
+    # Get recent messages for this module from message monitor
     recent_messages = []
 
-    # Try to get messages from message monitor (same source as message center)
+    # Try to get messages from message monitor
     if "message_monitor" in st.session_state:
         message_monitor = st.session_state.message_monitor
-        # Use received_messages from message monitor (same as message center)
-        recent_messages = [
-            msg for msg in message_monitor.received_messages if module_info["id"] in msg.get("topic", "")
-        ]
-
+        recent_messages = message_monitor.received_messages
     # Fallback: try old mqtt_messages key (for backward compatibility)
     elif "mqtt_messages" in st.session_state:
-        recent_messages = [msg for msg in st.session_state.mqtt_messages if module_info["id"] in msg.get("topic", "")]
+        recent_messages = st.session_state.mqtt_messages
+
+    # Extract connection status from module connection topics using template
+    connection_status = extract_connection_status_from_template(recent_messages, module_id)
 
     # Extract availability status from recent messages
     availability_status = extract_availability_status(
         pd.DataFrame(recent_messages) if recent_messages else pd.DataFrame(), module_info["id"]
     )
 
-    # Check MQTT connection status
-    mqtt_connected = st.session_state.get("mqtt_connected", False)
-
-    # Connection status
-    if mqtt_connected:
-        connection_status = f"{get_status_icon('available')} Connected"
+    # Connection status with template-based extraction
+    if connection_status == "ONLINE":
+        connection_display = f"{get_status_icon('available')} Connected"
     else:
-        connection_status = f"{get_status_icon('offline')} Disconnected"
+        connection_display = f"{get_status_icon('offline')} Disconnected"
 
-    # Activity status with enhanced icons
+    # Availability status with enhanced icons and default "Not Available"
     if availability_status:
-        activity_display = get_enhanced_status_display(availability_status, module_info["type"])
+        availability_display = get_enhanced_status_display(availability_status, module_info["type"])
     elif recent_messages:
-        # If we have recent messages but no specific status, show "Active"
-        activity_display = f"{get_status_icon('available')} Active"
+        # If we have recent messages but no specific status, show "Not Available"
+        availability_display = f"{get_status_icon('offline')} Not Available"
     else:
         # No recent messages at all
-        activity_display = f"{get_status_icon('offline')} No Data"
+        availability_display = f"{get_status_icon('offline')} Not Available"
 
     return {
-        "connection_status": connection_status,
-        "activity_status": activity_display,
+        "connection_status": connection_display,
+        "availability_status": availability_display,  # Renamed from activity_status
         "recent_messages": len(recent_messages),
     }
+
+
+def extract_connection_status_from_template(messages, module_id):
+    """Extract connection status from module connection topics using connection.yml template"""
+    if not messages:
+        return None
+
+    # Look for module connection topics
+    connection_topic_pattern = f"module/v1/ff/{module_id}/connection"
+
+    for msg in messages:
+        try:
+            topic = msg.get("topic", "")
+            if connection_topic_pattern in topic:
+                payload = msg.get("payload", {})
+                if isinstance(payload, str):
+                    payload = json.loads(payload)
+
+                # Extract connectionState according to connection.yml template
+                if isinstance(payload, dict) and "connectionState" in payload:
+                    return payload["connectionState"]
+
+        except (json.JSONDecodeError, KeyError, AttributeError):
+            continue
+
+    return None
 
 
 def show_module_status():
     """Show module status overview"""
     st.subheader("🏭 Modul-Status")
     st.markdown("Übersicht aller APS-Module mit Status und Verbindungsinformationen")
+
+    # Refresh button
+    col1, col2 = st.columns([1, 4])
+    with col1:
+        if st.button("🔄 Aktualisieren", type="primary"):
+            st.rerun()
+    with col2:
+        st.markdown("💡 Klicken Sie auf 'Aktualisieren' um die neuesten Modul-Status zu laden")
 
     # Get static module information
     all_modules = get_static_module_info()
@@ -588,7 +618,7 @@ def show_module_status():
                 "Type": module_info.get("type", "Unknown"),
                 "IP": module_info.get("ip_range", "Unknown"),
                 "Connected": dynamic_status["connection_status"],
-                "Activity Status": dynamic_status["activity_status"],
+                "Availability Status": dynamic_status["availability_status"],
                 "Recent Messages": dynamic_status["recent_messages"],
             }
         )
@@ -613,7 +643,7 @@ def show_module_status():
                 [
                     m
                     for m in module_table_data
-                    if "Active" in m["Activity Status"] or "Available" in m["Activity Status"]
+                    if "Active" in m["Availability Status"] or "Available" in m["Availability Status"]
                 ]
             )
             st.metric("Aktiv", active_modules)
@@ -632,7 +662,7 @@ def show_module_status():
                 "Type": st.column_config.TextColumn("Type", width="medium"),
                 "IP": st.column_config.TextColumn("IP", width="medium"),
                 "Connected": st.column_config.TextColumn("Connected", width="medium"),
-                "Activity Status": st.column_config.TextColumn("Activity Status", width="medium"),
+                "Availability Status": st.column_config.TextColumn("Availability Status", width="medium"),
                 "Recent Messages": st.column_config.NumberColumn("Recent Messages", width="small"),
             },
         )
