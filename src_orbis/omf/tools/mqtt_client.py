@@ -79,13 +79,19 @@ DEFAULT_CONFIG = {
 class OMFMQTTClient:
     """Zentrale MQTT-Client für OMF Dashboard"""
 
-    def __init__(self, config_path: str = None):
-        """Initialize OMF MQTT Client"""
+    def __init__(self, config_path: str = None, mode: str = "full"):
+        """Initialize OMF MQTT Client
+
+        Args:
+            config_path: Path to MQTT config file
+            mode: "full" (default), "sender_only", or "receiver_only"
+        """
         if config_path is None:
             config_path = os.path.join(os.path.dirname(__file__), "..", "config", "mqtt_config.yml")
 
         self.config_path = config_path
         self.config = self._load_config()
+        self.mode = mode  # Neue Mode-Property
 
         # MQTT Client
         self.client = None
@@ -138,10 +144,18 @@ class OMFMQTTClient:
         self.logger = logging.getLogger("OMFMQTTClient")
 
     def _init_client(self):
-        """Initialize MQTT client"""
+        """Initialize MQTT client based on mode"""
         try:
+            # Different client IDs for different modes
+            if self.mode == "sender_only":
+                client_id = f"{self.config.get('broker', {}).get('aps', {}).get('client_id', 'omf_dashboard')}_sender"
+            elif self.mode == "receiver_only":
+                client_id = f"{self.config.get('broker', {}).get('aps', {}).get('client_id', 'omf_dashboard')}_receiver"
+            else:
+                client_id = self.config.get("broker", {}).get("aps", {}).get("client_id", "omf_dashboard")
+
             self.client = mqtt.Client(
-                client_id=self.config.get("broker", {}).get("aps", {}).get("client_id", "omf_dashboard"),
+                client_id=client_id,
                 clean_session=self.config.get("broker", {}).get("aps", {}).get("clean_session", True),
             )
 
@@ -157,7 +171,7 @@ class OMFMQTTClient:
             if broker_config.get("username"):
                 self.client.username_pw_set(broker_config.get("username"), broker_config.get("password"))
 
-            self.logger.info("MQTT Client initialized")
+            self.logger.info(f"MQTT Client initialized in {self.mode} mode with ID: {client_id}")
 
         except Exception as e:
             self.logger.error(f"Error initializing MQTT client: {e}")
@@ -366,7 +380,11 @@ class OMFMQTTClient:
         self.logger.info(f"Subscribed with QoS: {granted_qos}")
 
     def _subscribe_to_topics(self):
-        """Subscribe to configured topics"""
+        """Subscribe to configured topics based on mode"""
+        if self.mode == "sender_only":
+            self.logger.info("🔇 Sender-only mode: No topic subscriptions")
+            return
+
         subscriptions = self.config.get("subscriptions", {})
 
         for _category, topics in subscriptions.items():

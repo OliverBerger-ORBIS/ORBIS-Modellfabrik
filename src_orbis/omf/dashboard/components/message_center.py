@@ -8,196 +8,240 @@ import json
 from datetime import datetime, timedelta
 from typing import Dict, List
 
+import paho.mqtt.client as mqtt
 import pandas as pd
 import streamlit as st
 
 
 class MessageMonitorService:
-    """Service für Message-Monitoring und -Verwaltung"""
+    """Service für das Monitoring und Management von MQTT-Nachrichten"""
 
     def __init__(self):
+        """Initialize MessageMonitorService ohne eigenen MQTT-Client"""
         self.sent_messages = []
         self.received_messages = []
-        self.max_messages = 1000  # Maximale Anzahl gespeicherter Nachrichten
+        self.max_messages = 1000
+
+    def send_message(self, topic: str, payload: dict, qos: int = 1, retain: bool = False) -> bool:
+        """Sende Nachricht über Dashboard MQTT-Client und speichere sie lokal"""
+        try:
+            # Verwende Dashboard MQTT-Client
+            if "mqtt_client" not in st.session_state or not st.session_state.mqtt_client.connected:
+                st.warning("⚠️ Dashboard MQTT-Client nicht verbunden")
+                return False
+
+            # Sende Nachricht über Dashboard MQTT-Client
+            result = st.session_state.mqtt_client.client.publish(topic, json.dumps(payload), qos=qos, retain=retain)
+
+            if result.rc == mqtt.MQTT_ERR_SUCCESS:
+                # Speichere gesendete Nachricht
+                message = {
+                    "topic": topic,
+                    "payload": payload,
+                    "timestamp": datetime.now().isoformat(),
+                    "qos": qos,
+                    "retain": retain,
+                    "type": "sent",
+                }
+                self.sent_messages.append(message)
+
+                st.success(f"✅ Nachricht erfolgreich gesendet und gespeichert: {topic}")
+                return True
+            else:
+                st.error(f"❌ MQTT-Publish fehlgeschlagen: {result.rc}")
+                return False
+
+        except Exception as e:
+            st.error(f"❌ Fehler beim Senden der Nachricht: {e}")
+            return False
 
     def add_sent_message(self, topic: str, payload: str, timestamp: datetime = None):
         """Gesendete Nachricht hinzufügen"""
         if timestamp is None:
             timestamp = datetime.now()
 
-        message = {
-            "timestamp": timestamp,
-            "topic": topic,
-            "payload": payload,
-            "direction": "sent",
-        }
+        message = {"topic": topic, "payload": payload, "timestamp": timestamp.isoformat(), "type": "sent"}
 
-        self.sent_messages.insert(0, message)  # Neueste zuerst
-        self._trim_messages(self.sent_messages)
+        self.sent_messages.append(message)
+        self._trim_messages()
 
     def add_received_message(self, topic: str, payload: str, timestamp: datetime = None):
         """Empfangene Nachricht hinzufügen"""
         if timestamp is None:
             timestamp = datetime.now()
 
-        message = {
-            "timestamp": timestamp,
-            "topic": topic,
-            "payload": payload,
-            "direction": "received",
-        }
+        message = {"topic": topic, "payload": payload, "timestamp": timestamp.isoformat(), "type": "received"}
 
-        self.received_messages.insert(0, message)  # Neueste zuerst
-        self._trim_messages(self.received_messages)
+        self.received_messages.append(message)
+        self._trim_messages()
 
-    def send_message(self, topic: str, payload: dict) -> bool:
-        """Nachricht über MQTT senden und in gesendete Nachrichten speichern"""
-        try:
-            # Den bereits existierenden MQTT-Client direkt aus dem Dashboard verwenden
-            mqtt_client = None
-
-            # Versuche den MQTT-Client aus dem Dashboard Session-State zu holen
-            if "mqtt_client" in st.session_state:
-                mqtt_client = st.session_state.mqtt_client
-                st.info("🔍 Verwende MQTT-Client aus Dashboard Session-State")
-            else:
-                # Fallback: Über get_omf_mqtt_client
-                try:
-                    from ..tools.mqtt_client import get_omf_mqtt_client
-
-                    mqtt_client = get_omf_mqtt_client()
-                    st.info("🔍 Verwende MQTT-Client über get_omf_mqtt_client")
-                except ImportError:
-                    from src_orbis.omf.tools.mqtt_client import get_omf_mqtt_client
-
-                    mqtt_client = get_omf_mqtt_client()
-                    st.info("🔍 Verwende MQTT-Client über absoluten Import")
-
-            # Debug: MQTT-Client Status anzeigen
-            st.info(f"🔍 MQTT-Client Status: connected={mqtt_client.is_connected() if mqtt_client else 'None'}")
-
-            # MQTT-Verbindung prüfen
-            if mqtt_client and mqtt_client.is_connected():
-                # Nachricht über MQTT senden
-                st.info(f"📤 Sende Nachricht über MQTT: {topic}")
-                success = mqtt_client.publish(topic, payload)
-
-                if success:
-                    # Nachricht in gesendete Nachrichten speichern
-                    self.add_sent_message(topic, json.dumps(payload) if isinstance(payload, dict) else str(payload))
-                    st.success(f"✅ Nachricht erfolgreich über MQTT gesendet: {topic}")
-                    return True
-                else:
-                    st.error(f"❌ Fehler beim MQTT-Versand: {topic}")
-                    return False
-            else:
-                # Mock-Modus: Nachricht nur lokal speichern
-                self.add_sent_message(topic, json.dumps(payload) if isinstance(payload, dict) else str(payload))
-                st.warning(f"⚠️ MQTT nicht verbunden - Nachricht nur lokal gespeichert: {topic}")
-                return True
-
-        except Exception as e:
-            st.error(f"❌ Fehler beim Senden der Nachricht: {e}")
-            return False
-
-    def _trim_messages(self, messages: List[Dict]):
+    def _trim_messages(self):
         """Nachrichten auf maximale Anzahl beschränken"""
-        if len(messages) > self.max_messages:
-            messages[:] = messages[: self.max_messages]
+        if len(self.sent_messages) > self.max_messages:
+            self.sent_messages = self.sent_messages[-self.max_messages :]
 
-    def get_filtered_messages(self, messages: List[Dict], filters: Dict) -> List[Dict]:
-        """Nachrichten nach Filtern filtern"""
-        filtered = messages
+        if len(self.received_messages) > self.max_messages:
+            self.received_messages = self.received_messages[-self.max_messages :]
 
-        # Prioritäten-Filter (neue Funktion)
-        if filters.get("min_priority"):
-            filtered = self._filter_by_priority(filtered, filters["min_priority"])
+    def get_messages_by_time_range(self, time_range: str = "1h") -> tuple:
+        """Nachrichten nach Zeitraum filtern"""
+        cutoff_time = self._get_cutoff_time(time_range)
 
-        # Modul-Filter
-        if filters.get("modules"):
-            filtered = [
-                m for m in filtered if any(module.lower() in m["topic"].lower() for module in filters["modules"])
-            ]
+        sent_filtered = [msg for msg in self.sent_messages if datetime.fromisoformat(msg["timestamp"]) >= cutoff_time]
 
-        # Kategorie-Filter
-        if filters.get("categories"):
-            filtered = [m for m in filtered if any(cat.lower() in m["topic"].lower() for cat in filters["categories"])]
+        received_filtered = [
+            msg for msg in self.received_messages if datetime.fromisoformat(msg["timestamp"]) >= cutoff_time
+        ]
 
-        # Zeitraum-Filter
-        if filters.get("time_range") and filters["time_range"] != "all":
-            cutoff_time = self._get_cutoff_time(filters["time_range"])
-            filtered = [m for m in filtered if m["timestamp"] >= cutoff_time]
-
-        # Topic-Pattern-Filter
-        if filters.get("topic_pattern"):
-            pattern = filters["topic_pattern"].lower()
-            filtered = [m for m in filtered if pattern in m["topic"].lower()]
-
-        return filtered
-
-    def _filter_by_priority(self, messages: List[Dict], min_priority: int) -> List[Dict]:
-        """Filtere Nachrichten nach Priorität (niedrigere Zahlen = höhere Priorität)"""
-        # Topic-Prioritäten Mapping
-        topic_priorities = {
-            # Priority 1: Critical Control (höchste Priorität)
-            "module/+/+/+/order": 1,  # Modul-Befehle
-            "ccu/order/request": 1,  # CCU-Bestellungen
-            "ccu/order/active": 1,  # Aktive Bestellungen
-            # Priority 2: Important Status
-            "module/+/+/+/state": 2,  # Modul-Status
-            "module/+/+/+/connection": 2,  # Modul-Verbindungen
-            "ccu/pairing/state": 2,  # CCU-Pairing
-            "fts/+/+/+/state": 2,  # FTS-Status
-            # Priority 3: Normal Info (Default)
-            "module/+/+/+/+": 3,  # Alle anderen Modul-Topics
-            "ccu/+/+": 3,  # Alle anderen CCU-Topics
-            "fts/+/+/+/+": 3,  # Alle anderen FTS-Topics
-            # Priority 4: NodeRED Topics
-            "module/+/+/NodeRed/+/+": 4,  # NodeRED-spezifische Topics
-            # Priority 5: High Frequency (niedrigste Priorität)
-            "/j1/txt/+/i/cam": 5,  # Kamera-Daten
-            "/j1/txt/+/i/bme680": 5,  # Sensor-Daten
-        }
-
-        def get_topic_priority(topic: str) -> int:
-            """Ermittle Priorität für ein Topic"""
-            for pattern, priority in topic_priorities.items():
-                if self._topic_matches_pattern(topic, pattern):
-                    return priority
-            return 3  # Default: Normal Info
-
-        # Filtere Nachrichten: Zeige alle mit Priorität <= min_priority (niedrigere Zahlen = höhere Priorität)
-        return [m for m in messages if get_topic_priority(m["topic"]) <= min_priority]
-
-    def _topic_matches_pattern(self, topic: str, pattern: str) -> bool:
-        """Prüfe ob Topic einem Pattern entspricht"""
-        import re
-
-        # Konvertiere MQTT-Wildcards zu Regex
-        regex_pattern = pattern.replace("+", "[^/]+").replace("#", ".*")
-
-        try:
-            return bool(re.match(regex_pattern, topic))
-        except Exception:
-            return topic == pattern
+        return sent_filtered, received_filtered
 
     def _get_cutoff_time(self, time_range: str) -> datetime:
         """Cutoff-Zeit für Zeitraum-Filter berechnen"""
         now = datetime.now()
 
-        if time_range == "1h":
+        if time_range == "15m":
+            return now - timedelta(minutes=15)
+        elif time_range == "1h":
             return now - timedelta(hours=1)
-        elif time_range == "1d":
+        elif time_range == "6h":
+            return now - timedelta(hours=6)
+        elif time_range == "24h":
             return now - timedelta(days=1)
-        elif time_range == "1w":
-            return now - timedelta(weeks=1)
+        elif time_range == "7d":
+            return now - timedelta(days=7)
         else:
             return now - timedelta(hours=1)  # Default: 1 Stunde
 
+    def get_sent_messages(self) -> List[Dict]:
+        """Gesendete Nachrichten abrufen"""
+        return self.sent_messages
+
+    def get_received_messages(self) -> List[Dict]:
+        """Empfangene Nachrichten abrufen"""
+        return self.received_messages
+
+    def clear_sent_messages(self):
+        """Gesendete Nachrichten löschen"""
+        self.sent_messages.clear()
+
+    def clear_received_messages(self):
+        """Empfangene Nachrichten löschen"""
+        self.received_messages.clear()
+
+    def get_message_stats(self) -> Dict:
+        """Statistiken über Nachrichten abrufen"""
+        return {
+            "sent_count": len(self.sent_messages),
+            "received_count": len(self.received_messages),
+            "total_count": len(self.sent_messages) + len(self.received_messages),
+        }
+
+    def get_filtered_messages(self, messages: List[Dict], filters: Dict) -> List[Dict]:
+        """Nachrichten nach Filtern filtern"""
+        filtered = messages
+
+        # Modul-Filter
+        if "modules" in filters:
+            module_patterns = [f"module/v1/ff/+/+/{module.lower()}" for module in filters["modules"]]
+            filtered = [
+                msg
+                for msg in filtered
+                if any(self._topic_matches_pattern(msg["topic"], pattern) for pattern in module_patterns)
+            ]
+
+        # Kategorie-Filter
+        if "categories" in filters:
+            category_patterns = []
+            for category in filters["categories"]:
+                if category == "CCU":
+                    category_patterns.append("ccu/#")
+                elif category == "TXT":
+                    category_patterns.append("/j1/txt/#")
+                elif category == "MODULE":
+                    category_patterns.append("module/v1/ff/#")
+                elif category == "Node-RED":
+                    category_patterns.append("node_red/#")
+
+            filtered = [
+                msg
+                for msg in filtered
+                if any(self._topic_matches_pattern(msg["topic"], pattern) for pattern in category_patterns)
+            ]
+
+        # Zeitraum-Filter
+        if "time_range" in filters:
+            cutoff_time = self._get_cutoff_time(filters["time_range"])
+            filtered = [msg for msg in filtered if datetime.fromisoformat(msg["timestamp"]) >= cutoff_time]
+
+        # Topic-Pattern-Filter
+        if "topic_pattern" in filters:
+            pattern = filters["topic_pattern"]
+            filtered = [msg for msg in filtered if self._topic_matches_pattern(msg["topic"], pattern)]
+
+        return filtered
+
+    def _topic_matches_pattern(self, topic: str, pattern: str) -> bool:
+        """Prüft ob Topic dem Pattern entspricht (einfache Wildcard-Unterstützung)"""
+        try:
+            # Einfache Wildcard-Implementierung
+            if "*" in pattern:
+                # Konvertiere Wildcard-Pattern zu Regex
+                import re
+
+                regex_pattern = pattern.replace("*", ".*")
+                return re.match(regex_pattern, topic) is not None
+            else:
+                return topic == pattern
+        except Exception:
+            return topic == pattern
+
+    def test_fts_charge(self) -> bool:
+        """Test-Methode für FTS-Charge mit Dashboard MQTT-Client"""
+        try:
+            # Verwende Dashboard MQTT-Client
+            if "mqtt_client" not in st.session_state or not st.session_state.mqtt_client.connected:
+                st.warning("⚠️ Dashboard MQTT-Client nicht verbunden")
+                return False
+
+            # FTS-Charge Nachricht erstellen
+            payload = {
+                "serialNumber": "5iO4",
+                "orderId": "test-order-123",
+                "orderUpdateId": 1,
+                "action": {
+                    "id": "test-action-456",
+                    "command": "CHARGE",
+                    "metadata": {"priority": "NORMAL", "timeout": 300, "type": "TRANSPORT"},
+                },
+                "timestamp": datetime.now().isoformat(),
+            }
+
+            topic = "fts/v1/ff/5iO4/command"
+
+            # Sende Nachricht über Dashboard MQTT-Client
+            return self.send_message(topic, payload)
+
+        except Exception as e:
+            st.error(f"❌ Fehler beim FTS-Charge Test: {e}")
+            return False
+
 
 def _capture_sent_messages(message_monitor):
-    """Diese Funktion wird nicht mehr benötigt - Nachrichten werden direkt über send_message() gesendet"""
-    pass
+    """Callback-Funktion für gesendete Nachrichten"""
+
+    def on_message_sent(topic, payload, qos=1, retain=False):
+        message_monitor.add_sent_message(topic, payload)
+
+    return on_message_sent
+
+
+def _capture_received_messages(message_monitor):
+    """Callback-Funktion für empfangene Nachrichten"""
+
+    def on_message_received(topic, payload):
+        message_monitor.add_received_message(topic, payload)
+
+    return on_message_received
 
 
 def show_message_filters() -> Dict:

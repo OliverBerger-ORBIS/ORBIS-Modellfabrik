@@ -65,14 +65,51 @@ except ImportError:
 
 def main():
     """Hauptfunktion des OMF Dashboards"""
+    st.set_page_config(page_title="OMF Dashboard", page_icon="🏭", layout="wide", initial_sidebar_state="expanded")
 
-    # Page config
-    st.set_page_config(
-        page_title="Modellfabrik Dashboard",
-        page_icon="🏭",
-        layout="wide",
-        initial_sidebar_state="collapsed",
-    )
+    # Initialize MessageMonitorService in session state
+    if "message_monitor" not in st.session_state:
+        try:
+            from components.message_center import MessageMonitorService
+
+            st.session_state.message_monitor = MessageMonitorService()
+        except Exception as e:
+            st.error(f"❌ Fehler beim Initialisieren der MessageMonitorService: {e}")
+            st.session_state.message_monitor = None
+
+    # Initialize MQTT client in session state
+    if "mqtt_client" not in st.session_state:
+        try:
+            # Add the tools path to sys.path
+            tools_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "tools"))
+            if tools_path not in sys.path:
+                sys.path.append(tools_path)
+
+            from mqtt_client import OMFMQTTClient
+
+            st.session_state.mqtt_client = OMFMQTTClient()
+
+            # Verbinde MQTT-Client mit MessageMonitorService für empfangene Nachrichten
+            if st.session_state.message_monitor:
+                # Setze Callback für empfangene Nachrichten
+                def on_message_received(client, userdata, msg):
+                    try:
+                        # Parse JSON payload
+                        payload = msg.payload.decode("utf-8")
+                        topic = msg.topic
+
+                        # Speichere empfangene Nachricht in MessageMonitorService
+                        st.session_state.message_monitor.add_received_message(topic, payload)
+
+                    except Exception as e:
+                        st.error(f"❌ Fehler beim Verarbeiten empfangener Nachricht: {e}")
+
+                # Registriere Callback
+                st.session_state.mqtt_client.client.on_message = on_message_received
+
+        except Exception as e:
+            st.error(f"❌ Fehler beim Initialisieren des MQTT-Clients: {e}")
+            st.session_state.mqtt_client = None
 
     # Main title with ORBIS logo and MQTT connection status
     col1, col2, col3 = st.columns([1, 3, 1])

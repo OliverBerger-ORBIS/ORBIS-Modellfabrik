@@ -286,7 +286,6 @@ def _get_fts_status() -> str:
 def _send_fts_command(command: str):
     """Sendet FTS-Befehl"""
     try:
-        mqtt_client = get_omf_mqtt_client()
         message_generator = MessageGenerator()
 
         # FTS-Command Template verwenden
@@ -300,17 +299,20 @@ def _send_fts_command(command: str):
             st.markdown(f"**📤 Generierte MQTT-Nachricht für FTS {command}:**")
             st.json({"topic": topic, "payload": payload})
 
-            # MQTT-Verbindung prüfen (inkl. Mock-Support)
-            if mqtt_client.is_connected() or st.session_state.get("mqtt_mock_enabled", False):
-                if st.session_state.get("mqtt_mock_enabled", False):
-                    st.success(f"✅ FTS-Befehl simuliert: {command}")
-                    st.info("🧪 Mock-Modus: Message wurde nicht wirklich gesendet")
-                else:
-                    mqtt_client.publish(topic, payload)
-                    st.success(f"✅ FTS-Befehl gesendet: {command}")
+            # Nachricht an Nachrichtenzentrale weiterleiten
+            from .message_center import MessageMonitorService
+
+            # Gemeinsamen MessageMonitorService über Session-State verwenden
+            if "message_monitor" not in st.session_state:
+                st.session_state.message_monitor = MessageMonitorService()
+
+            message_monitor = st.session_state.message_monitor
+            success = message_monitor.send_message(topic, payload)
+
+            if success:
+                st.success(f"✅ FTS-Befehl {command} erfolgreich an Nachrichtenzentrale weitergeleitet")
             else:
-                st.warning("⚠️ MQTT nicht verbunden - Message nur generiert (nicht gesendet)")
-                st.info("💡 Message wird gesendet sobald MQTT-Verbindung hergestellt ist")
+                st.warning(f"⚠️ FTS-Befehl {command} konnte nicht weitergeleitet werden")
         else:
             st.error(f"❌ FTS-Command Template nicht gefunden: {command}")
 
@@ -483,6 +485,12 @@ def show_fts_control():
             _send_fts_command("get_status")
             if mqtt_connected:
                 st.info("FTS-Status-Abfrage gesendet")
+
+            # Test-Button für korrekten FTS-Laden-Befehl
+        st.markdown("---")
+        st.markdown("### 🧪 Test: Korrekter FTS-Laden-Befehl")
+        if st.button("🔌 TEST: FTS startCharging (korrekte Struktur)", key="fts_test_start_charging"):
+            st.info("🧪 Test-Button: Verwende den normalen '🔌 FTS Laden' Button oben!")
 
     # MQTT-Status anzeigen
     if not mqtt_connected:
@@ -785,7 +793,187 @@ def show_factory_control():
         show_order_request()
 
 
+def _show_factory_reset_section():
+    """Zeigt die Factory Reset Sektion an"""
+    st.markdown("**🔄 Factory Reset**")
+    st.markdown("Fabrik zurücksetzen:")
+
+    if st.button("🏭 Factory Reset ausführen", key="factory_reset_button"):
+        _send_factory_reset_message()
+
+
+def _show_module_sequences_section():
+    """Zeigt die Modul-Sequenzen Sektion an"""
+    st.markdown("**🔧 Modul-Sequenzen ausführen:**")
+
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        if st.button("🤖 AIQS Sequenz", key="aiqs_sequence_button"):
+            _send_module_sequence("AIQS")
+
+    with col2:
+        if st.button("⚙️ MILL Sequenz", key="mill_sequence_button"):
+            _send_module_sequence("MILL")
+
+    with col3:
+        if st.button("🔨 DRILL Sequenz", key="drill_sequence_button"):
+            _send_module_sequence("DRILL")
+
+
+def _show_fts_commands_section():
+    """Zeige FTS-Befehle Sektion"""
+    st.subheader("🚚 FTS (Fahrerloses Transportsystem) Steuerung")
+
+    # FTS Status anzeigen
+    if "mqtt_client" in st.session_state and st.session_state.mqtt_client.connected:
+        st.success("🟢 FTS-Steuerung verfügbar")
+    else:
+        st.warning("🟡 FTS-Steuerung nicht verfügbar - MQTT nicht verbunden")
+
+    # Test-Button für FTS-Charge
+    if st.button("🧪 Test FTS-Charge", type="primary"):
+        if "message_monitor" in st.session_state:
+            success = st.session_state.message_monitor.test_fts_charge()
+            if success:
+                st.success("✅ FTS-Charge Test erfolgreich ausgeführt!")
+            else:
+                st.error("❌ FTS-Charge Test fehlgeschlagen!")
+        else:
+            st.error("❌ MessageMonitorService nicht verfügbar")
+
+    st.divider()
+
+    # Einzelne FTS-Befehle
+    col1, col2 = st.columns(2)
+
+    with col1:
+        if st.button("📦 FTS-Laden", type="secondary"):
+            _send_fts_command("charge")
+
+        if st.button("🚪 FTS-Dock zu DPS", type="secondary"):
+            _send_fts_command("dock_to_dps")
+
+    with col2:
+        if st.button("🔓 FTS-Undock von DPS", type="secondary"):
+            _send_fts_command("undock_from_dps")
+
+        if st.button("🎯 FTS-Ziel erreicht", type="secondary"):
+            _send_fts_command("target_reached")
+
+
+def _show_order_commands_section():
+    """Zeigt die Auftrags-Befehle Sektion an"""
+    st.markdown("**📋 Auftrags-Befehle:**")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        if st.button("📥 Auftrag annehmen", key="order_accept_button"):
+            _send_order_command("accept")
+        if st.button("📤 Auftrag senden", key="order_send_button"):
+            _send_order_command("send")
+
+    with col2:
+        if st.button("❌ Auftrag abbrechen", key="order_cancel_button"):
+            _send_order_command("cancel")
+        if st.button("✅ Auftrag bestätigen", key="order_confirm_button"):
+            _send_order_command("confirm")
+
+
+def _send_order_command(command: str):
+    """Sendet Auftrags-Befehl"""
+    try:
+        # TODO: Implement order command logic
+        st.info(f"📋 Auftrags-Befehl {command} wird implementiert...")
+
+    except Exception as e:
+        st.error(f"❌ Fehler beim Senden des Auftrags-Befehls: {e}")
+
+
 # Export functions
 def show_steering():
-    """Hauptexport-Funktion"""
-    show_steering_dashboard()
+    """Zeigt die Steuerungskomponente an"""
+    st.header("🎮 Kommando-Zentrale")
+    st.markdown("Übernahme der Steuerung der Modellfabrik über MQTT-Messages")
+
+    # Debug-Button für MQTT-Status
+    if st.button("🔍 Debug: MQTT-Status prüfen"):
+        _debug_mqtt_status()
+
+    # MQTT Status anzeigen
+    mqtt_connected = _check_mqtt_connection()
+    if mqtt_connected:
+        st.success("✅ MQTT Status Connected")
+    else:
+        st.error("❌ MQTT Status Disconnected")
+
+    # Verfügbare Templates zählen
+    template_count = _count_available_templates()
+    st.info(f"Verfügbare Templates {template_count}")
+
+    # Aktive Module zählen
+    active_modules = _count_active_modules()
+    st.info(f"Aktive Module {active_modules}")
+
+    # Factory Reset Section
+    st.subheader("🏭 Factory Steuerung")
+    _show_factory_reset_section()
+
+    # Module Sequences Section
+    st.subheader("🔧 Modul-Sequenzen")
+    _show_module_sequences_section()
+
+    # FTS Commands Section
+    st.subheader("🚗 FTS (Fahrerloses Transportsystem) Steuerung")
+    _show_fts_commands_section()
+
+    # Order Commands Section
+    st.subheader("📋 Auftrags-Befehle")
+    _show_order_commands_section()
+
+    # Message Generator Section
+    with st.expander("📝 Nachricht erstellen", expanded=False):
+        show_message_generator()
+
+
+def _debug_mqtt_status():
+    """Debug-Funktion für MQTT-Status"""
+    st.subheader("🔍 MQTT-Status Debug-Informationen")
+
+    try:
+        # Session State prüfen
+        st.write("**Session State:**")
+        if "message_monitor" in st.session_state:
+            st.success("✅ message_monitor in Session State vorhanden")
+            message_monitor = st.session_state.message_monitor
+
+            # MessageMonitorService Status prüfen
+            st.write("**MessageMonitorService Status:**")
+            if hasattr(message_monitor, "mqtt_client"):
+                if message_monitor.mqtt_client:
+                    if message_monitor.mqtt_client.connected:
+                        st.success("✅ MQTT-Client verbunden")
+                        st.write(f"   - Client: {type(message_monitor.mqtt_client.client)}")
+                        st.write(f"   - Connected: {message_monitor.mqtt_client.connected}")
+                    else:
+                        st.error("❌ MQTT-Client nicht verbunden")
+                else:
+                    st.error("❌ MQTT-Client ist None")
+            else:
+                st.error("❌ MessageMonitorService hat kein mqtt_client Attribut")
+
+        else:
+            st.error("❌ message_monitor nicht in Session State")
+
+        # _check_mqtt_connection() Ergebnis
+        st.write("**Connection Check Ergebnis:**")
+        connection_result = _check_mqtt_connection()
+        if connection_result:
+            st.success(f"✅ _check_mqtt_connection() = {connection_result}")
+        else:
+            st.error(f"❌ _check_mqtt_connection() = {connection_result}")
+
+    except Exception as e:
+        st.error(f"❌ Fehler beim Debug: {e}")
+        st.exception(e)

@@ -46,12 +46,24 @@ class MessageGenerator:
             return {}
 
     def _load_semantic_templates(self) -> Dict[str, Any]:
-        """Lädt semantische Templates"""
-        semantic_dir = self.template_dir / "semantic"
+        """Lädt semantische Templates und normale Templates"""
         templates = {}
 
+        # Lade semantische Templates
+        semantic_dir = self.template_dir / "semantic"
         if semantic_dir.exists():
             for file_path in semantic_dir.glob("*_semantic.yml"):
+                try:
+                    with open(file_path, encoding="utf-8") as f:
+                        data = yaml.safe_load(f)
+                        if "templates" in data:
+                            templates.update(data["templates"])
+                except Exception as e:
+                    print(f"❌ Fehler beim Laden von {file_path}: {e}")
+
+        # Lade normale Templates (für FTS, Module, etc.)
+        for file_path in self.template_dir.glob("**/*.yml"):
+            if "_semantic.yml" not in file_path.name:  # Überspringe semantische Templates
                 try:
                     with open(file_path, encoding="utf-8") as f:
                         data = yaml.safe_load(f)
@@ -107,23 +119,14 @@ class MessageGenerator:
     def generate_factory_reset_message(self, with_storage: bool = False) -> Optional[Dict[str, Any]]:
         """Generiert Factory Reset Message mit dem bewährten Template"""
         try:
-            # Verwende das bewährte Template ccu/set/reset
-            template_name = "ccu/set/reset"
-            template = self.semantic_templates.get(template_name)
-
-            if not template:
-                # Fallback: Bewährte Factory Reset Message
-                return {
-                    "topic": "ccu/set/reset",
-                    "payload": {
-                        "timestamp": datetime.now().isoformat().replace("+00:00", "Z"),
-                        "withStorage": with_storage,
-                    },
-                }
-
-            # Verwende Template-basierte Generierung
-            topic, payload = self.generate_message(template_name, withStorage=with_storage)
-            return {"topic": topic, "payload": payload}
+            # Bewährte Factory Reset Message (funktioniert)
+            return {
+                "topic": "ccu/set/reset",
+                "payload": {
+                    "timestamp": datetime.now().isoformat().replace("+00:00", "Z"),
+                    "withStorage": with_storage,
+                },
+            }
 
         except Exception as e:
             print(f"❌ Fehler beim Generieren der Factory Reset Message: {e}")
@@ -204,34 +207,25 @@ class MessageGenerator:
             # FTS Serial Number
             fts_serial = "5iO4"  # FTS Serial Number
 
-            # Template verwenden
-            template_name = "fts/command"
-            template = self.semantic_templates.get(template_name)
-
-            if not template:
-                # Fallback: Einfache FTS Command Message
-                return {
-                    "topic": f"fts/v1/ff/{fts_serial}/command",
-                    "payload": {
-                        "serialNumber": fts_serial,
-                        "orderId": str(uuid.uuid4()),
-                        "orderUpdateId": 1,
-                        "action": {
-                            "id": str(uuid.uuid4()),
-                            "command": command.upper(),
-                            "metadata": {
-                                "priority": "NORMAL",
-                                "timeout": 300,
-                                "type": "TRANSPORT",
-                            },
+            # Fallback: Einfache FTS Command Message (bewährte Struktur)
+            return {
+                "topic": f"fts/v1/ff/{fts_serial}/command",
+                "payload": {
+                    "serialNumber": fts_serial,
+                    "orderId": str(uuid.uuid4()),
+                    "orderUpdateId": 1,
+                    "action": {
+                        "id": str(uuid.uuid4()),
+                        "command": command.upper(),
+                        "metadata": {
+                            "priority": "NORMAL",
+                            "timeout": 300,
+                            "type": "TRANSPORT",
                         },
-                        "timestamp": datetime.now().isoformat(),
                     },
-                }
-
-            # Verwende Template-basierte Generierung
-            topic, payload = self.generate_message(template_name, command=command)
-            return {"topic": topic, "payload": payload}
+                    "timestamp": datetime.now().isoformat(),
+                },
+            }
 
         except Exception as e:
             print(f"❌ Fehler beim Generieren der FTS Command Message: {e}")
