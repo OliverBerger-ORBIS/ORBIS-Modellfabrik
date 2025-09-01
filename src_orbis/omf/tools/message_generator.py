@@ -104,29 +104,25 @@ class MessageGenerator:
 
         return topic, payload
 
-    def generate_factory_reset_message(
-        self, with_storage: bool = False, clear_storage: bool = False
-    ) -> Optional[Dict[str, Any]]:
-        """Generiert Factory Reset Message"""
+    def generate_factory_reset_message(self, with_storage: bool = False) -> Optional[Dict[str, Any]]:
+        """Generiert Factory Reset Message mit dem bewährten Template"""
         try:
-            # Factory Reset Template verwenden
-            template_name = "ccu/factory_reset"
+            # Verwende das bewährte Template ccu/set/reset
+            template_name = "ccu/set/reset"
             template = self.semantic_templates.get(template_name)
 
             if not template:
-                # Fallback: Erweiterte Factory Reset Message
+                # Fallback: Bewährte Factory Reset Message
                 return {
-                    "topic": "ccu/factory/reset",
+                    "topic": "ccu/set/reset",
                     "payload": {
+                        "timestamp": datetime.now().isoformat().replace("+00:00", "Z"),
                         "withStorage": with_storage,
-                        "clearStorage": clear_storage,
-                        "timestamp": datetime.now().isoformat(),
-                        "orderId": str(uuid.uuid4()),
                     },
                 }
 
             # Verwende Template-basierte Generierung
-            topic, payload = self.generate_message(template_name, withStorage=with_storage, clearStorage=clear_storage)
+            topic, payload = self.generate_message(template_name, withStorage=with_storage)
             return {"topic": topic, "payload": payload}
 
         except Exception as e:

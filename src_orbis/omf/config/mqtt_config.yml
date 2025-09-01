@@ -11,10 +11,10 @@ metadata:
 broker:
   # APS MQTT Broker (Hauptbroker)
   aps:
-    host: "192.168.178.100"
+    host: "192.168.0.100"
     port: 1883
-    username: "aps_user"
-    password: "aps_password"
+    username: "default"
+    password: "default"
     client_id: "omf_dashboard"
     keepalive: 60
     timeout: 10

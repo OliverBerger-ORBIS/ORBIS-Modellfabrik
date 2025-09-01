@@ -24,7 +24,7 @@ def show_dashboard_settings():
     mqtt_mode = st.selectbox(
         "Verbindungsmodus:",
         ["Live-Fabrik", "Replay-Broker", "Mock-Modus"],
-        index=1,  # Default: Replay-Broker (Index 1)
+        index=0,  # Default: Live-Fabrik (Index 0)
         help="Wählen Sie den MQTT-Verbindungsmodus",
         key="mqtt_mode_select",
     )

@@ -26,24 +26,7 @@ except ImportError as e:
     st.info("Steering-Komponente kann nicht geladen werden")
 
 
-def _store_sent_message(topic: str, payload: str):
-    """Speichert eine gesendete Nachricht in der Session für die Nachrichtenzentrale"""
-    try:
-        # Gesendete Nachrichten in Session speichern
-        if "sent_messages" not in st.session_state:
-            st.session_state.sent_messages = []
-
-        sent_message = {
-            "topic": topic,
-            "payload": json.dumps(payload) if isinstance(payload, dict) else str(payload),
-            "timestamp": datetime.now(),
-        }
-
-        st.session_state.sent_messages.append(sent_message)
-
-    except Exception:
-        # Fehler still behandeln - nicht kritisch für Steuerung
-        pass
+# Diese Funktion wird nicht mehr benötigt - Nachrichten werden direkt über die Nachrichtenzentrale gesendet
 
 
 def show_steering_dashboard():
@@ -130,39 +113,38 @@ def _count_active_modules() -> int:
         return 0
 
 
-def _send_factory_reset_message(with_storage: bool, clear_storage: bool = False):
-    """Sendet Factory Reset Message"""
+def _send_factory_reset_message(with_storage: bool = False):
+    """Sendet Factory Reset Message über die Nachrichtenzentrale mit dem bewährten Template"""
     try:
-        mqtt_client = get_omf_mqtt_client()
         message_generator = MessageGenerator()
 
-        # Factory Reset Template verwenden
-        reset_message = message_generator.generate_factory_reset_message(with_storage, clear_storage)
+        # Factory Reset Template verwenden (nur withStorage Parameter)
+        reset_message = message_generator.generate_factory_reset_message(with_storage)
 
         if reset_message:
-            topic = reset_message.get("topic", "ccu/factory/reset")
+            topic = reset_message.get("topic", "ccu/set/reset")
             payload = reset_message.get("payload", {})
 
             # Generierte Nachricht anzeigen
             st.markdown("**📤 Generierte MQTT-Nachricht:**")
             st.json({"topic": topic, "payload": payload})
 
-            # MQTT-Verbindung prüfen (inkl. Mock-Support)
-            if mqtt_client.is_connected() or st.session_state.get("mqtt_mock_enabled", False):
-                if st.session_state.get("mqtt_mock_enabled", False):
-                    st.success(
-                        f"✅ Factory Reset Message simuliert: withStorage={with_storage}, clearStorage={clear_storage}"
-                    )
-                    st.info("🧪 Mock-Modus: Message wurde nicht wirklich gesendet")
-                else:
-                    mqtt_client.publish(topic, payload)
-                    _store_sent_message(topic, payload)  # Für Nachrichtenzentrale speichern
-                    st.success(
-                        f"✅ Factory Reset Message gesendet: withStorage={with_storage}, clearStorage={clear_storage}"
-                    )
+            # Nachricht an Nachrichtenzentrale weiterleiten
+            from .message_center import MessageMonitorService
+
+            # Gemeinsamen MessageMonitorService über Session-State verwenden
+            if "message_monitor" not in st.session_state:
+                st.session_state.message_monitor = MessageMonitorService()
+
+            message_monitor = st.session_state.message_monitor
+            success = message_monitor.send_message(topic, payload)
+
+            if success:
+                st.success(
+                    f"✅ Factory Reset Message an Nachrichtenzentrale weitergeleitet: " f"withStorage={with_storage}"
+                )
             else:
-                st.warning("⚠️ MQTT nicht verbunden - Message nur generiert (nicht gesendet)")
-                st.info("💡 Message wird gesendet sobald MQTT-Verbindung hergestellt ist")
+                st.warning("⚠️ Message konnte nicht weitergeleitet werden - siehe Fehlermeldungen oben")
         else:
             st.error("❌ Factory Reset Template nicht gefunden")
 
@@ -198,7 +180,6 @@ def _send_module_sequence(module: str):
                 payload = message.get("payload", {})
 
                 mqtt_client.publish(topic, payload)
-                _store_sent_message(topic, payload)  # Für Nachrichtenzentrale speichern
                 st.info(f"Sequenz-Schritt gesendet: {step}")
             else:
                 st.error(f"Template für Sequenz-Schritt nicht gefunden: {step}")
@@ -273,7 +254,6 @@ def _send_single_module_step(module: str, step: str, step_number: int):
                     st.info("🧪 Mock-Modus: Message wurde nicht wirklich gesendet")
                 else:
                     mqtt_client.publish(topic, payload)
-                    _store_sent_message(topic, payload)  # Für Nachrichtenzentrale speichern
                     st.success(f"✅ {module} {step} gesendet (Step {step_number})")
             else:
                 st.warning("⚠️ MQTT nicht verbunden - Message nur generiert (nicht gesendet)")
@@ -327,7 +307,6 @@ def _send_fts_command(command: str):
                     st.info("🧪 Mock-Modus: Message wurde nicht wirklich gesendet")
                 else:
                     mqtt_client.publish(topic, payload)
-                    _store_sent_message(topic, payload)  # Für Nachrichtenzentrale speichern
                     st.success(f"✅ FTS-Befehl gesendet: {command}")
             else:
                 st.warning("⚠️ MQTT nicht verbunden - Message nur generiert (nicht gesendet)")
@@ -364,13 +343,8 @@ def show_factory_reset():
 
             # Lager löschen Option (nur wenn withStorage=false)
             if not with_storage:
-                clear_storage = st.checkbox(
-                    "Lager löschen",
-                    value=False,
-                    help="Wenn aktiviert, werden alle Werkstücke aus dem HBW entfernt (clearStorage=true)",
-                )
+                st.info("ℹ️ Lager löschen ist verfügbar wenn 'Mit Lagerung' deaktiviert ist")
             else:
-                clear_storage = False
                 st.info("ℹ️ Lager löschen ist nur verfügbar wenn 'Mit Lagerung' deaktiviert ist")
 
             col1, col2, col3 = st.columns(3)
@@ -384,7 +358,7 @@ def show_factory_reset():
                     key="confirm_factory_reset",
                     disabled=not mqtt_connected,
                 ):
-                    _send_factory_reset_message(with_storage=with_storage, clear_storage=clear_storage)
+                    _send_factory_reset_message(with_storage=with_storage)
                     if mqtt_connected:
                         st.success("Factory Reset ausgeführt")
                     st.session_state.show_factory_reset_dialog = False
@@ -400,7 +374,7 @@ def show_factory_reset():
                     key="clear_storage_only",
                     disabled=not mqtt_connected,
                 ):
-                    _send_factory_reset_message(with_storage=False, clear_storage=True)
+                    _send_factory_reset_message(with_storage=False)
                     if mqtt_connected:
                         st.success("Lager gelöscht")
                     st.session_state.show_factory_reset_dialog = False
@@ -598,9 +572,6 @@ def show_message_generator():
                                                     edited_topic,
                                                     json.dumps(parsed_payload),
                                                 )
-                                                _store_sent_message(
-                                                    edited_topic, parsed_payload
-                                                )  # Für Nachrichtenzentrale speichern
 
                                                 if st.session_state.get("mqtt_mock_enabled", False):
                                                     st.success("🧪 Message simuliert gesendet!")
@@ -790,7 +761,6 @@ def _send_order_request(color: str, order_type: str, workpiece_id: str = ""):
                     st.info("🧪 Mock-Modus: Nachricht wurde nicht wirklich gesendet")
                 else:
                     mqtt_client.publish(topic, payload)
-                    _store_sent_message(topic, payload)  # Für Nachrichtenzentrale speichern
                     st.success(f"✅ Bestellung gesendet: {color} {order_type}")
                     st.info(f"🆔 Werkstück-ID: {workpiece_id}")
             else:

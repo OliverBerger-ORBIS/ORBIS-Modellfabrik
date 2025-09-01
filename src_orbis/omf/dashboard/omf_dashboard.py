@@ -140,16 +140,27 @@ def main():
 
             mqtt_client = get_omf_mqtt_client()
 
+            # MQTT-Client im Session-State speichern für andere Komponenten
+            st.session_state.mqtt_client = mqtt_client
+
             # Connection Status (inkl. Modus-Support)
             mqtt_mode = st.session_state.get("mqtt_mode", "live")
             mock_enabled = st.session_state.get("mqtt_mock_enabled", False)
 
-            # Automatische Verbindung für Replay-Modus
-            if mqtt_mode == "replay" and not mqtt_client.is_connected():
-                if mqtt_client.connect("replay"):
-                    st.success("✅ Auto-Connect Replay-Broker")
-                else:
-                    st.warning("⚠️ Auto-Connect fehlgeschlagen")
+            # Automatische Verbindung je nach Modus
+            if not mqtt_client.is_connected():
+                if mqtt_mode == "replay":
+                    if mqtt_client.connect("replay"):
+                        st.success("✅ Auto-Connect Replay-Broker")
+                    else:
+                        st.warning("⚠️ Auto-Connect fehlgeschlagen")
+                elif mqtt_mode == "live":
+                    if mqtt_client.connect("live"):
+                        st.success("✅ Auto-Connect Live-Fabrik")
+                    else:
+                        st.warning("⚠️ Auto-Connect Live-Fabrik fehlgeschlagen")
+                elif mqtt_mode == "mock":
+                    st.success("🧪 Mock-Modus aktiv")
 
             # Platzsparende Anzeige
             if mock_enabled:

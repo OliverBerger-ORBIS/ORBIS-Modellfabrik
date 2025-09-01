@@ -50,6 +50,56 @@ class MessageMonitorService:
         self.received_messages.insert(0, message)  # Neueste zuerst
         self._trim_messages(self.received_messages)
 
+    def send_message(self, topic: str, payload: dict) -> bool:
+        """Nachricht über MQTT senden und in gesendete Nachrichten speichern"""
+        try:
+            # Den bereits existierenden MQTT-Client direkt aus dem Dashboard verwenden
+            mqtt_client = None
+
+            # Versuche den MQTT-Client aus dem Dashboard Session-State zu holen
+            if "mqtt_client" in st.session_state:
+                mqtt_client = st.session_state.mqtt_client
+                st.info("🔍 Verwende MQTT-Client aus Dashboard Session-State")
+            else:
+                # Fallback: Über get_omf_mqtt_client
+                try:
+                    from ..tools.mqtt_client import get_omf_mqtt_client
+
+                    mqtt_client = get_omf_mqtt_client()
+                    st.info("🔍 Verwende MQTT-Client über get_omf_mqtt_client")
+                except ImportError:
+                    from src_orbis.omf.tools.mqtt_client import get_omf_mqtt_client
+
+                    mqtt_client = get_omf_mqtt_client()
+                    st.info("🔍 Verwende MQTT-Client über absoluten Import")
+
+            # Debug: MQTT-Client Status anzeigen
+            st.info(f"🔍 MQTT-Client Status: connected={mqtt_client.is_connected() if mqtt_client else 'None'}")
+
+            # MQTT-Verbindung prüfen
+            if mqtt_client and mqtt_client.is_connected():
+                # Nachricht über MQTT senden
+                st.info(f"📤 Sende Nachricht über MQTT: {topic}")
+                success = mqtt_client.publish(topic, payload)
+
+                if success:
+                    # Nachricht in gesendete Nachrichten speichern
+                    self.add_sent_message(topic, json.dumps(payload) if isinstance(payload, dict) else str(payload))
+                    st.success(f"✅ Nachricht erfolgreich über MQTT gesendet: {topic}")
+                    return True
+                else:
+                    st.error(f"❌ Fehler beim MQTT-Versand: {topic}")
+                    return False
+            else:
+                # Mock-Modus: Nachricht nur lokal speichern
+                self.add_sent_message(topic, json.dumps(payload) if isinstance(payload, dict) else str(payload))
+                st.warning(f"⚠️ MQTT nicht verbunden - Nachricht nur lokal gespeichert: {topic}")
+                return True
+
+        except Exception as e:
+            st.error(f"❌ Fehler beim Senden der Nachricht: {e}")
+            return False
+
     def _trim_messages(self, messages: List[Dict]):
         """Nachrichten auf maximale Anzahl beschränken"""
         if len(messages) > self.max_messages:
@@ -146,29 +196,8 @@ class MessageMonitorService:
 
 
 def _capture_sent_messages(message_monitor):
-    """Erfasst gesendete Nachrichten aus der Steuerung"""
-    try:
-        # Prüfe ob gesendete Nachrichten in der Session gespeichert sind
-        sent_messages = st.session_state.get("sent_messages", [])
-
-        for msg in sent_messages:
-            # Prüfen ob Nachricht bereits vorhanden (Topic + Timestamp Kombination)
-            existing_messages = [(m["topic"], m["timestamp"]) for m in message_monitor.sent_messages]
-            msg_key = (msg.get("topic", ""), msg.get("timestamp", datetime.now()))
-            if msg_key not in existing_messages:
-                message_monitor.add_sent_message(
-                    topic=msg.get("topic", ""),
-                    payload=msg.get("payload", ""),
-                    timestamp=msg.get("timestamp", datetime.now()),
-                )
-
-        # Gesendete Nachrichten aus Session löschen (verhindert Duplikate)
-        if sent_messages:
-            st.session_state.sent_messages = []
-
-    except Exception:
-        # Fehler still behandeln - nicht kritisch für Nachrichtenzentrale
-        pass
+    """Diese Funktion wird nicht mehr benötigt - Nachrichten werden direkt über send_message() gesendet"""
+    pass
 
 
 def show_message_filters() -> Dict:

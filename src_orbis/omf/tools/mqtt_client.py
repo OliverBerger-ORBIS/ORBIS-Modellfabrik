@@ -15,17 +15,9 @@ from typing import Any, Callable, Dict, List, Optional
 import paho.mqtt.client as mqtt
 import yaml
 
-# Konfiguration
+# Konfiguration - Nur noch YAML-Datei wird verwendet
 DEFAULT_CONFIG = {
     "broker": {
-        "aps": {
-            "host": "192.168.0.100",
-            "port": 1883,
-            "client_id": "omf_dashboard_aps",
-            "clean_session": True,
-            "username": None,
-            "password": None,
-        },
         "replay": {
             "host": "localhost",
             "port": 1884,
@@ -231,6 +223,13 @@ class OMFMQTTClient:
             self.client.on_message = self._on_message
             self.client.on_publish = self._on_publish
             self.client.on_subscribe = self._on_subscribe
+
+            # Set username/password if provided
+            username = broker_config.get("username")
+            password = broker_config.get("password")
+            if username and password:
+                self.client.username_pw_set(username, password)
+                self.logger.info(f"🔐 Using authentication: {username}")
 
             result = self.client.connect(host, port, 60)
 
