@@ -17,6 +17,12 @@ topic_mappings:
     description: "CCU-Befehle senden"
     semantic_purpose: "Steuerung der CCU"
     
+  "ccu/set/reset":
+    template: "ccu/control"
+    direction: "outbound"
+    description: "CCU-Factory-Reset senden"
+    semantic_purpose: "Factory-Reset der Fabrik"
+    
   "ccu/state/config":
     template: "ccu/state/config"
     direction: "inbound"

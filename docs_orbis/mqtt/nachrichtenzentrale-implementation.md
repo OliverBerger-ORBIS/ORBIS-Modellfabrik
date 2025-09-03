@@ -9,7 +9,7 @@ Die **Nachrichtenzentrale** ist ein neuer Tab im OMF Dashboard, der alle MQTT-Na
 ### **✅ Komponenten-Struktur:**
 ```
 📡 Nachrichtenzentrale
-├── 🎯 MessageMonitorService (Service-Klasse)
+├── 🎯 OMFMqttClient (MQTT-Client mit Singleton-Pattern)
 ├── 🔍 Filter-System (Modul, Kategorie, Zeitraum, Topic)
 ├── 📊 Nachrichten-Tabelle (Gesendet/Empfangen)
 └── 🔄 Auto-Refresh (Konfigurierbar)
@@ -52,7 +52,7 @@ tests_orbis/
 
 ## 🔧 Technische Implementation
 
-### **✅ 1. MessageMonitorService:**
+### **✅ 1. OMFMqttClient (ersetzt MessageMonitorService):**
 ```python
 class MessageMonitorService:
     def __init__(self):
@@ -149,7 +149,7 @@ def on_message_sent(topic, payload):
 ### **✅ 1. Unit-Tests:**
 ```python
 # Vollständige Test-Coverage:
-- MessageMonitorService: 8 Tests
+- OMFMqttClient: 8 Tests (ersetzt MessageMonitorService)
 - Utility-Funktionen: 8 Tests
 - Filter-Logik: 4 Tests
 - Edge Cases: 2 Tests

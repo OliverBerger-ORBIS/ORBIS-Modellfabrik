@@ -46,7 +46,7 @@
 - **Browser-Icon**: "🏭" statt generischem blauen Kreis
 
 #### 7. **Unit Tests**
-- **`test_message_center.py`**: Umfassende Tests für MessageMonitorService
+- **`test_message_center.py`**: Umfassende Tests für Message Center (MessageMonitorService wurde durch OMFMqttClient ersetzt)
 - **`test_replay_station.py`**: Tests für LocalMQTTBroker und SessionPlayer
 - **Case-insensitive Filtering**: Korrektur der Filter-Logik
 - **Modul-Status Tab** mit vollständiger Funktionalität:

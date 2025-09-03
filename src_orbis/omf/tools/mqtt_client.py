@@ -26,7 +26,7 @@ class MqttConfig:
 
 
 class OMFMqttClient:
-    def __init__(self, cfg: MqttConfig, on_message: Callable[[dict], None] | None = None, history_size: int = 1000):
+    def __init__(self, cfg: MqttConfig, on_message: Callable[[dict], None] | None = None, history_size: int = 10000):
         self.cfg = cfg
         # Konfiguration für Settings-Tab kompatibel machen
         self.config = {
@@ -129,6 +129,18 @@ class OMFMqttClient:
         # Schnapper für UI - Kopie erstellen um Race Conditions zu vermeiden
         return list(self._history)
 
+    def clear_history(self):
+        """Löscht alle Nachrichten aus der Historie"""
+        self._history.clear()
+
+    def get_history_stats(self) -> dict:
+        """Gibt Statistiken über die Nachrichten-Historie zurück"""
+        history_copy = list(self._history)
+        received = len([msg for msg in history_copy if msg.get("type") == "received"])
+        sent = len([msg for msg in history_copy if msg.get("type") == "sent"])
+
+        return {"total": len(history_copy), "received": received, "sent": sent, "max_capacity": self._history.maxlen}
+
     def get_connection_status(self) -> dict:
         """Gibt Connection-Status und Statistiken zurück"""
         stats = {"messages_received": 0, "messages_sent": 0}
@@ -161,5 +173,5 @@ def get_omf_mqtt_client(cfg_dict: dict) -> OMFMqttClient:
     """Singleton pro (konfigurationsgleicher) Session."""
     cfg = MqttConfig(**cfg_dict)
     client = OMFMqttClient(cfg)
-    st.session_state["mqtt_client"] = client  # Convenience
+    # NICHT in session_state überschreiben - das macht der Aufrufer
     return client

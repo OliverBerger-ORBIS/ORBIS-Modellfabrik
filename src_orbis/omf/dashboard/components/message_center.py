@@ -192,14 +192,60 @@ def show_message_center():
     mqtt_client = st.session_state.get("mqtt_client")
     if not mqtt_client:
         st.error("❌ MQTT Client nicht verfügbar")
-        return
+        st.warning("💡 Bitte warten Sie, bis die MQTT-Verbindung hergestellt ist")
+        # NICHT return - UI-Elemente trotzdem anzeigen
 
     # Status wird automatisch aktualisiert - keine UI-Elemente nötig
     st.info("💡 **Nachrichten werden automatisch aus MQTT-Nachrichten geladen**")
 
     # Filter-Optionen
     st.subheader("🔍 Filter & Einstellungen")
-    col1, col2, col3, col4 = st.columns([2, 2, 2, 1])
+    col1, col2, col3, col4, col5 = st.columns([2, 2, 2, 1, 1])
+
+    with col5:
+        if st.button("🗑️ Historie löschen", type="secondary", key="clear_history"):
+            # Debug: Session State analysieren
+            st.info("🔍 **Debug: Session State Analyse**")
+            st.info(f"   - Session State Keys: {list(st.session_state.keys())}")
+            st.info(f"   - mqtt_client in session_state: {'mqtt_client' in st.session_state}")
+
+            # MQTT-Client neu holen (könnte sich geändert haben)
+            current_mqtt_client = st.session_state.get("mqtt_client")
+            st.info(f"   - current_mqtt_client: {current_mqtt_client}")
+
+            if current_mqtt_client:
+                st.info(f"   - Client Type: {type(current_mqtt_client).__name__}")
+                st.info(f"   - Client ID: {id(current_mqtt_client)}")
+                st.info(f"   - Hat clear_history: {hasattr(current_mqtt_client, 'clear_history')}")
+                st.info(f"   - Hat drain: {hasattr(current_mqtt_client, 'drain')}")
+                st.info(f"   - Hat publish: {hasattr(current_mqtt_client, 'publish')}")
+
+                # Erweiterter Debug: Alle verfügbaren Methoden
+                st.info("🔍 **Erweiterter Debug: Alle verfügbaren Methoden**")
+                all_methods = [method for method in dir(current_mqtt_client) if not method.startswith("_")]
+                st.info(f"   - Alle Methoden: {all_methods}")
+
+                # Spezifische Methoden prüfen
+                st.info("🔍 **Spezifische Methoden-Prüfung**")
+                st.info(
+                    f"   - getattr clear_history: {getattr(current_mqtt_client, 'clear_history', 'NICHT_VERFÜGBAR')}"
+                )
+                st.info(f"   - callable clear_history: {callable(getattr(current_mqtt_client, 'clear_history', None))}")
+
+                if hasattr(current_mqtt_client, "clear_history"):
+                    st.info("   ✅ clear_history gefunden - versuche aufzurufen")
+                    try:
+                        current_mqtt_client.clear_history()
+                        st.success("✅ Nachrichten-Historie gelöscht")
+                        st.rerun()
+                    except Exception as e:
+                        st.error(f"❌ Fehler beim Aufrufen von clear_history: {e}")
+                else:
+                    st.error("❌ MQTT-Client hat keine clear_history Methode")
+                    st.info("💡 Das ist ein Code-Problem - die Methode sollte existieren")
+            else:
+                st.error("❌ MQTT-Client nicht verfügbar")
+                st.info("💡 Versuchen Sie es in einigen Sekunden erneut")
 
     with col1:
         # Nachrichten-Typ Filter
@@ -223,20 +269,23 @@ def show_message_center():
     _ensure_store()
 
     # Nur NEUE Nachrichten seit letztem Run einarbeiten
-    try:
-        all_messages = mqtt_client.drain()
-        start_idx = st.session_state["message_last_count"]
-        new_messages = all_messages[start_idx:] if start_idx < len(all_messages) else []
+    if mqtt_client:  # Nur wenn MQTT-Client verfügbar ist
+        try:
+            all_messages = mqtt_client.drain()
+            start_idx = st.session_state["message_last_count"]
+            new_messages = all_messages[start_idx:] if start_idx < len(all_messages) else []
 
-        # Neue Nachrichten verarbeiten
-        for msg_data in new_messages:
-            _apply_message(st.session_state["message_store"], msg_data)
+            # Neue Nachrichten verarbeiten
+            for msg_data in new_messages:
+                _apply_message(st.session_state["message_store"], msg_data)
 
-        st.session_state["message_last_count"] = len(all_messages)
+            st.session_state["message_last_count"] = len(all_messages)
 
-    except Exception as e:
-        st.error(f"❌ Fehler beim Laden der Nachrichten: {e}")
-        return
+        except Exception as e:
+            st.error(f"❌ Fehler beim Laden der Nachrichten: {e}")
+            st.info("💡 MQTT-Verbindung wird im Hintergrund wiederhergestellt")
+    else:
+        st.warning("⚠️ MQTT-Client nicht verfügbar - Nachrichten werden nicht aktualisiert")
 
     # Nachrichten filtern
     filtered_messages = []

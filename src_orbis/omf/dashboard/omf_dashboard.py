@@ -80,12 +80,34 @@ def main():
         "Umgebung", ["live", "replay"], index=0 if st.session_state["env"] == "live" else 1, horizontal=True
     )
     if env != st.session_state["env"]:
+        # MQTT-Client sichern bevor Cache gelöscht wird
+        old_mqtt_client = st.session_state.get("mqtt_client")
+
         st.session_state["env"] = env
         st.cache_resource.clear()
+
+        # MQTT-Client wiederherstellen
+        if old_mqtt_client:
+            st.session_state.mqtt_client = old_mqtt_client
+
         st.rerun()
 
     cfg = LIVE_CFG if st.session_state["env"] == "live" else REPLAY_CFG
-    client = get_omf_mqtt_client(cfg)
+
+    # MQTT-Client nur einmal initialisieren (Singleton)
+    if "mqtt_client" not in st.session_state:
+        st.info("🔍 **Debug: Erstelle neuen MQTT-Client**")
+        client = get_omf_mqtt_client(cfg)
+        st.session_state.mqtt_client = client
+        st.info(f"   - Neuer Client erstellt: {type(client).__name__}")
+        st.info(f"   - Client ID: {id(client)}")
+        st.info(f"   - Hat clear_history: {hasattr(client, 'clear_history')}")
+    else:
+        st.info("🔍 **Debug: Verwende bestehenden MQTT-Client**")
+        client = st.session_state.mqtt_client
+        st.info(f"   - Bestehender Client: {type(client).__name__}")
+        st.info(f"   - Client ID: {id(client)}")
+        st.info(f"   - Hat clear_history: {hasattr(client, 'clear_history')}")
 
     # Automatisch verbinden wenn nicht verbunden
     if not client.connected:
@@ -103,9 +125,6 @@ def main():
         client.subscribe("#", qos=1)
     except Exception:
         pass
-
-    # MQTT Client ist bereits initialisiert - verwende den ersten Client
-    st.session_state.mqtt_client = client
 
     # Main title with ORBIS logo and MQTT connection status
     col1, col2, col3 = st.columns([1, 3, 1])
@@ -162,6 +181,35 @@ def main():
         st.title("Modellfabrik Dashboard")
 
     with col3:
+        # Debug-Button für MQTT-Client Status
+        if st.button("🔍 Debug: MQTT-Client Status", key="debug_mqtt_status"):
+            st.info("🔍 **Debug: MQTT-Client Status**")
+            mqtt_client = st.session_state.get("mqtt_client")
+            if mqtt_client:
+                st.info(f"   - Client Type: {type(mqtt_client).__name__}")
+                st.info(f"   - Client ID: {id(mqtt_client)}")
+                st.info(f"   - Connected: {getattr(mqtt_client, 'connected', 'N/A')}")
+                st.info(f"   - Hat clear_history: {hasattr(mqtt_client, 'clear_history')}")
+                st.info(f"   - Hat drain: {hasattr(mqtt_client, 'drain')}")
+                st.info(f"   - Hat publish: {hasattr(mqtt_client, 'publish')}")
+
+                # Erweiterter Debug: Alle verfügbaren Methoden
+                st.info("🔍 **Erweiterter Debug: Alle verfügbaren Methoden**")
+                all_methods = [method for method in dir(mqtt_client) if not method.startswith("_")]
+                st.info(f"   - Alle Methoden: {all_methods}")
+
+                # Spezifische Methoden prüfen
+                st.info("🔍 **Spezifische Methoden-Prüfung**")
+                st.info(f"   - getattr clear_history: {getattr(mqtt_client, 'clear_history', 'NICHT_VERFÜGBAR')}")
+                st.info(f"   - callable clear_history: {callable(getattr(mqtt_client, 'clear_history', None))}")
+
+                # Session State Info
+                st.info(f"   - Session State Keys: {list(st.session_state.keys())}")
+                st.info(f"   - mqtt_client in session_state: {'mqtt_client' in st.session_state}")
+            else:
+                st.error("❌ Kein MQTT-Client in session_state gefunden")
+                st.info(f"   - Session State Keys: {list(st.session_state.keys())}")
+
         # Platz für zukünftige Status-Anzeigen
         st.info("🔗 MQTT-Status in Sidebar")
 

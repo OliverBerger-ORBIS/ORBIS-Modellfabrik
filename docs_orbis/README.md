@@ -76,11 +76,11 @@ This directory contains comprehensive documentation for the Orbis Modellfabrik s
 
 ## 🔧 System Components
 
-### Modern Architecture (August 2025)
+### Modern Architecture (Januar 2025)
 - **Central Configuration Managers** - YAML-based configuration for all components
-- **Template Message System** - MQTT template-based control
-- **Modern Dashboard** - Streamlit-based interface with template control
-- **Session Analysis Tools** - Template analyzers for CCU, TXT, Module, Node-RED
+- **MQTT Client System** - OMFMqttClient mit Singleton-Pattern
+- **Modern Dashboard** - Streamlit-based interface mit funktionierenden Commands
+- **Session Analysis Tools** - Template analyzers für CCU, TXT, Module, Node-RED
 
 ### Production Modules
 - **25 Production Modules** (MILL, DRILL, OVEN, AIQS, HBW, FTS, CHRG)
@@ -95,11 +95,11 @@ This directory contains comprehensive documentation for the Orbis Modellfabrik s
 - **NFC Code Manager** - Central YAML configuration for all NFC codes
 - **Module Manager** - APS module configuration (ID, Name, Type, IP-Range)
 - **Topic Manager** - MQTT topic mappings and friendly names
-- **Message Template Manager** - YAML-based MQTT templates with UI configuration
+- **MQTT Client Manager** - OMFMqttClient mit Singleton-Pattern für zuverlässige Verbindungen
 
 ### Dashboard Integration
-- **Template-based Control** - All modules controlled via message templates
-- **Factory Reset Integration** - Template-based factory reset functionality
+- **Factory Control** - All modules controlled via hardcoded working commands
+- **Factory Reset Integration** - Direct factory reset functionality
 - **Order Management** - ROT, WEISS, BLAU order processing
 - **Central Configuration** - All settings manageable via dashboard tabs
 - **Node-RED Integration** - Dedicated tab for Node-RED analysis
@@ -110,4 +110,4 @@ This directory contains comprehensive documentation for the Orbis Modellfabrik s
 - **12,420 MQTT Messages** - Systematically analyzed and documented
 - **3 Workflow Types** - Fully understood and implemented as templates
 
-The system is now fully modernized and ready for live integration with the APS model factory. 
+The system is now functional for basic factory control and ready for MessageGenerator integration in the next phase. 

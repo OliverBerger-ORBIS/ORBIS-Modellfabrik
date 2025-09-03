@@ -85,6 +85,14 @@ topics:
     template: "ccu/control"
     template_direction: "outbound"
     
+  "ccu/set/reset":
+    category: "CCU"
+    sub_category: "Control"
+    friendly_name: "CCU : set : reset"
+    description: "CCU-Factory-Reset-Befehl"
+    template: "ccu/control"
+    template_direction: "outbound"
+    
   "ccu/status":
     category: "CCU"
     sub_category: "Status"
