@@ -19,6 +19,7 @@ from omf.tools.mqtt_client import get_omf_mqtt_client  # noqa: E402
 try:
     from components.message_center import show_message_center
     from components.overview import show_overview_tabs
+    from components.order2 import show_order2
     from components.settings import (
         show_dashboard_settings,
         show_messages_templates,
@@ -28,7 +29,7 @@ try:
         show_topic_config,
     )
     from components.steering import show_steering
-    from components.test_buttons import show_test_buttons
+
 except ImportError:
     # Fallback für Import-Fehler
     def show_dashboard_settings():
@@ -276,13 +277,12 @@ def main():
         st.info("Verwende die Tabs oben für die verschiedenen Bereiche")
 
     # Tab structure
-    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(
+    tab1, tab2, tab3, tab4, tab5 = st.tabs(
         [
             "📊 Overview",
             "📋 Aufträge",
             "📡 Nachrichtenzentrale",
             "🎮 Steuerung",
-            "🧪 Test-Bereich",
             "⚙️ Settings",
         ]
     )
@@ -293,18 +293,7 @@ def main():
 
     # Tab 2: Aufträge
     with tab2:
-        st.header("📋 Aufträge")
-
-        # Sub-tabs for Orders
-        orders_tab1, orders_tab2 = st.tabs(["📋 Auftragsverwaltung", "🔄 Laufende Aufträge"])
-
-        with orders_tab1:
-            st.subheader("📋 Auftragsverwaltung")
-            st.info("Auftragsverwaltung wird hier angezeigt")
-
-        with orders_tab2:
-            st.subheader("🔄 Laufende Aufträge")
-            st.info("Laufende Aufträge werden hier angezeigt")
+        show_order2()
 
     # Tab 3: Nachrichtenzentrale
     with tab3:
@@ -314,12 +303,8 @@ def main():
     with tab4:
         show_steering()
 
-    # Tab 5: Test-Bereich
+    # Tab 5: Settings
     with tab5:
-        show_test_buttons()
-
-    # Tab 6: Settings
-    with tab6:
         st.header("⚙️ Settings")
 
         # Sub-tabs for Settings

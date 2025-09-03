@@ -2,7 +2,7 @@
 
 ## 🎯 **Übersicht**
 
-Das OMF Dashboard ist aktuell in einem funktionalen Zustand für die grundlegenden Steuerungsfunktionen, aber es gibt noch einige bekannte Probleme und unvollständige Features.
+Das OMF Dashboard ist aktuell in einem funktionalen Zustand für die grundlegenden Steuerungsfunktionen. **NEU (Januar 2025):** Das Dashboard wurde erfolgreich refaktoriert zu einer **modularen, hierarchischen Architektur** (Dashboard2) mit exakten 1:1 Kopien aller Funktionalitäten.
 
 ## ✅ **Was funktioniert:**
 
@@ -58,17 +58,27 @@ Das OMF Dashboard ist aktuell in einem funktionalen Zustand für die grundlegend
 
 ## 🚀 **Nächste Schritte:**
 
-### **Phase 1: Nachrichten-Zentrale reparieren**
+### **Phase 1: Dashboard2 Funktionalitätstests** 🔄 **AKTUELL**
+1. Dashboard2 mit Live-Fabrik testen
+2. Alle Sub-Tabs auf Funktionalität prüfen
+3. MQTT-Integration in modularen Komponenten testen
+
+### **Phase 2: Order2 Implementierung** 📋 **GEPLANT**
+1. Auftragsverwaltung implementieren
+2. Laufende Aufträge implementieren
+3. Integration mit bestehenden Systemen
+
+### **Phase 3: Nachrichten-Zentrale reparieren**
 1. Gesendete Nachrichten korrekt anzeigen
 2. History löschen funktional machen
 3. Message Monitoring reparieren
 
-### **Phase 2: MessageGenerator Integration**
+### **Phase 4: MessageGenerator Integration**
 1. YAML-Templates in `generic_steering` implementieren
 2. `factory_steering` auf MessageGenerator umstellen
 3. Template-basierte Message-Generierung
 
-### **Phase 3: Erweiterte Features**
+### **Phase 5: Erweiterte Features**
 1. Topic-getriebener Ansatz
 2. Message-getriebener Ansatz
 3. Template Management

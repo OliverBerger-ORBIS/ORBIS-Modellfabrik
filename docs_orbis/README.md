@@ -80,6 +80,7 @@ This directory contains comprehensive documentation for the Orbis Modellfabrik s
 - **Central Configuration Managers** - YAML-based configuration for all components
 - **MQTT Client System** - OMFMqttClient mit Singleton-Pattern
 - **Modern Dashboard** - Streamlit-based interface mit funktionierenden Commands
+- **Dashboard Refactoring** - Modulare Architektur (Dashboard2) in Testphase
 - **Session Analysis Tools** - Template analyzers für CCU, TXT, Module, Node-RED
 
 ### Production Modules
