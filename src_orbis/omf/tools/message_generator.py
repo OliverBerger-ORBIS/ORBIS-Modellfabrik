@@ -168,18 +168,22 @@ class MessageGenerator:
             template = self.semantic_templates.get(template_name)
 
             if not template:
-                # Fallback: Einfache Module Order Message
+                # Fallback: Einfache Module Order Message (exakt wie in funktionierendem Commit)
                 return {
                     "topic": f"module/v1/ff/{module_serial}/order",
                     "payload": {
-                        "module_id": module_serial,
-                        "command": command,
-                        "order_id": order_id,
-                        "parameters": {
-                            "orderUpdateId": order_update_id,
-                            "subActionId": step_number,
+                        "serialNumber": module_serial,
+                        "orderId": order_id,
+                        "orderUpdateId": order_update_id,
+                        "action": {
+                            "id": str(uuid.uuid4()),
+                            "command": command,
+                            "metadata": {
+                                "priority": "NORMAL",
+                                "timeout": 300,
+                                "type": "WHITE",  # Default workpiece type
+                            },
                         },
-                        "timestamp": datetime.now().isoformat(),
                     },
                 }
 

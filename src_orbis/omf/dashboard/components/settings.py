@@ -18,271 +18,12 @@ def show_dashboard_settings():
     """Zeigt Dashboard-Einstellungen"""
     st.subheader("⚙️ Dashboard-Einstellungen")
 
-    # MQTT-Verbindungsmodus (zentraler Toggle)
-    st.markdown("#### 🔗 MQTT-Verbindungsmodus")
+    # MQTT-Verbindungsmodus wird jetzt über Sidebar verwaltet
+    st.info("💡 **MQTT-Verbindungsmodus wird über die Sidebar konfiguriert**")
 
-    mqtt_mode = st.selectbox(
-        "Verbindungsmodus:",
-        ["Live-Fabrik", "Replay-Broker", "Mock-Modus"],
-        index=0,  # Default: Live-Fabrik (Index 0)
-        help="Wählen Sie den MQTT-Verbindungsmodus",
-        key="mqtt_mode_select",
-    )
-
-    # Modus-spezifische Einstellungen
-    if mqtt_mode == "Live-Fabrik":
-        st.session_state.mqtt_mode = "live"
-        st.session_state.mqtt_mock_enabled = False
-        st.success("✅ Live-Modus: Verbindung zur echten APS-Modellfabrik")
-
-    elif mqtt_mode == "Replay-Broker":
-        st.session_state.mqtt_mode = "replay"
-        st.session_state.mqtt_mock_enabled = False
-        st.info("🎬 Replay-Modus: Verbindung zum Mosquitto-Broker (localhost:1884)")
-
-        # Replay Station Status prüfen
-        col1, col2 = st.columns(2)
-        with col1:
-            st.markdown("**Replay Station Status:**")
-
-            # Prüfe ob Replay Station läuft
-            import socket
-
-            try:
-                sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                result = sock.connect_ex(("localhost", 8509))
-                sock.close()
-
-                if result == 0:
-                    st.success("🟢 Replay Station läuft (Port 8509)")
-                else:
-                    st.error("🔴 Replay Station nicht erreichbar")
-            except Exception:
-                st.error("🔴 Replay Station nicht erreichbar")
-
-            # Prüfe ob Mosquitto-Broker läuft
-            try:
-                sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                result = sock.connect_ex(("localhost", 1884))
-                sock.close()
-
-                if result == 0:
-                    st.success("🟢 Mosquitto-Broker läuft (Port 1884)")
-                else:
-                    st.error("🔴 Mosquitto-Broker nicht erreichbar")
-                    st.info("💡 Starten Sie: `mosquitto -p 1884 -v &`")
-            except Exception:
-                st.error("🔴 Mosquitto-Broker nicht erreichbar")
-
-        with col2:
-            st.markdown("**Empfohlene Schritte:**")
-            st.markdown("1. Mosquitto-Broker starten")
-            st.markdown("2. Replay Station starten")
-            st.markdown("3. Session laden")
-            st.markdown("4. Replay starten")
-
-        # Anleitung für Replay Station
-        st.markdown("---")
-        st.markdown("**📋 Anleitung für Replay Station:**")
-
-        with st.expander("🎬 Wie verwende ich die Replay Station?"):
-            st.markdown(
-                """
-            **Schritt-für-Schritt Anleitung:**
-
-            0. **🔧 Mosquitto-Broker starten (WICHTIG!):**
-               - Öffnen Sie ein Terminal
-               - Führen Sie aus: `mosquitto -p 1884 -v &`
-               - Broker läuft dann auf localhost:1884
-
-            1. **🚀 Replay Station starten:**
-               - Klicken Sie auf "Replay Station öffnen" oben
-               - Oder öffnen Sie: `http://localhost:8509`
-
-            2. **📂 Session auswählen:**
-               - Wählen Sie eine Session-Datei aus dem Dropdown
-               - Verfügbare Sessions: `mqtt-data/sessions/`
-
-            3. **📂 Session laden:**
-               - Klicken Sie auf "Session laden"
-               - Warten Sie bis "✅ X Nachrichten geladen" erscheint
-
-            4. **▶️ Replay starten:**
-               - Klicken Sie auf "Play" oder "Resume"
-               - Beobachten Sie den Fortschrittsbalken
-               - Verwenden Sie Pause/Stop bei Bedarf
-
-            5. **📊 Nachrichten beobachten:**
-               - Wechseln Sie zurück zum OMF Dashboard
-               - Öffnen Sie die "Nachrichtenzentrale"
-               - Nachrichten sollten automatisch ankommen
-            """
-            )
-
-        with st.expander("🔍 Unbekannte Topics - Was passiert?"):
-            st.markdown(
-                """
-            **Automatisches Monitoring:**
-
-            ✅ **Alle Nachrichten werden empfangen** - auch unbekannte Topics
-
-            🔍 **Unbekannte Topics werden erkannt:**
-            - Automatische Erkennung in der Konsole
-            - Warnung: `🔍 Unbekanntes Topic empfangen: topic_name`
-            - Hinweis zur Prioritäten-Anpassung
-
-            📊 **Was passiert bei unbekannten Topics:**
-            - Nachrichten werden **normal empfangen und angezeigt**
-            - **Keine Nachrichten gehen verloren**
-            - Nur **Warnung in der Konsole** für neue Topics
-
-            💡 **Empfehlung:**
-            - Prüfen Sie die Konsole auf unbekannte Topics
-            - Fügen Sie wichtige Topics zu den Prioritäten hinzu
-            - Unwichtige Topics können ignoriert werden
-            """
-            )
-
-        # Replay Station Quick-Links
-        st.markdown("**🔗 Quick-Links:**")
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            if st.button("🚀 Replay Station öffnen", key="open_replay_station"):
-                st.markdown("**Öffnen Sie:** http://localhost:8509")
-        with col2:
-            if st.button("📁 Session-Verzeichnis öffnen", key="open_session_dir"):
-                st.markdown("**Verzeichnis:** `mqtt-data/sessions/`")
-        with col3:
-            if st.button("🔧 Mosquitto-Status prüfen", key="check_mosquitto"):
-                import subprocess
-
-                try:
-                    result = subprocess.run(["lsof", "-i", ":1884"], capture_output=True, text=True)
-                    if result.returncode == 0:
-                        st.success("✅ Mosquitto läuft auf Port 1884")
-                    else:
-                        st.error("❌ Mosquitto nicht gefunden")
-                        st.info("💡 Starten Sie: `mosquitto -p 1884 -v &`")
-                except Exception:
-                    st.error("❌ Konnte Mosquitto-Status nicht prüfen")
-
-    elif mqtt_mode == "Mock-Modus":
-        st.session_state.mqtt_mode = "mock"
-        st.session_state.mqtt_mock_enabled = True
-        st.success("🧪 Mock-Modus: Simulierte MQTT-Verbindung für Tests")
-        st.info("💡 Buttons in der Steuerung sind jetzt aktiv, auch ohne echte MQTT-Verbindung")
-
-    st.markdown("---")
-
-    # Nachrichten-Prioritäten & Filterung
-    st.markdown("#### 📊 Nachrichten-Prioritäten & Filterung")
-
-    # Priority-Levels Definition
-    priority_levels = {
-        1: "Critical Control",  # Modul-Befehle, CCU-Orders
-        2: "Important Status",  # Modul-Status, Connection
-        3: "Normal Info",  # Standard-Nachrichten (Default)
-        4: "NodeRED Topics",  # NodeRED-spezifische Nachrichten
-        5: "High Frequency",  # Kamera, Sensor-Daten
-    }
-
-    col1, col2 = st.columns(2)
-
-    with col1:
-        st.markdown("**🔍 Nachrichten-Filterung:**")
-        min_priority = st.selectbox(
-            "Maximale Priorität anzeigen:",
-            [1, 2, 3, 4, 5],
-            index=4,  # Default: Priority 5 (alle Topics anzeigen)
-            format_func=lambda x: f"Prio {x}: {priority_levels[x]}",
-            help="Zeige Nachrichten mit Priorität 1 bis zur ausgewählten Priorität",
-        )
-
-        st.info(f"📊 Zeige Nachrichten mit Priorität 1 bis {min_priority}")
-
-        # Performance-Einstellungen
-        st.markdown("**⚡ Performance-Einstellungen:**")
-        enable_receive_filtering = st.checkbox(
-            "Empfangs-Filterung aktivieren",
-            value=True,
-            help="Hochfrequente Nachrichten (Prio 5) beim Empfang ausfiltern",
-        )
-
-        max_messages = st.slider(
-            "Max. Nachrichten speichern:",
-            min_value=100,
-            max_value=5000,
-            value=1000,
-            step=100,
-            help="Maximale Anzahl gespeicherter Nachrichten",
-        )
-
-    with col2:
-        st.markdown("**📋 Prioritäten-Übersicht:**")
-        for prio, description in priority_levels.items():
-            status = "✅" if prio <= min_priority else "❌"
-            st.markdown(f"{status} **Prio {prio}:** {description}")
-
-        st.markdown("---")
-        st.markdown("**💡 Empfehlungen:**")
-        st.markdown("• **Prio 1:** Nur kritische Steuerung")
-        st.markdown("• **Prio 2:** Steuerung + wichtige Status")
-        st.markdown("• **Prio 3:** Standard-Betrieb")
-        st.markdown("• **Prio 4:** + NodeRED Topics")
-        st.markdown("• **Prio 5:** Alle Nachrichten (inkl. Kamera) - **NEUER STANDARD**")
-
-    st.markdown("---")
-
-    col1, col2 = st.columns(2)
-
-    with col1:
-        # Sprache
-        language = st.selectbox(
-            "🌐 Sprache / Language",
-            options=["de", "en"],
-            index=0 if config.get("dashboard.language") == "de" else 1,
-            format_func=lambda x: "Deutsch" if x == "de" else "English",
-        )
-
-        # Theme
-        theme = st.selectbox(
-            "🎨 Theme",
-            options=["light", "dark"],
-            index=0 if config.get("dashboard.theme") == "light" else 1,
-        )
-
-    with col2:
-        # Auto Refresh
-        auto_refresh = st.checkbox("🔄 Auto Refresh", value=config.get("dashboard.auto_refresh", True))
-
-        # Refresh Interval
-        if auto_refresh:
-            refresh_interval = st.slider(
-                "⏱️ Refresh Interval (Sekunden)",
-                min_value=1,
-                max_value=60,
-                value=config.get("dashboard.refresh_interval", 5),
-            )
-        else:
-            refresh_interval = config.get("dashboard.refresh_interval", 5)
-
-    # Speichern Button
-    if st.button("💾 Einstellungen speichern"):
-        config.set("dashboard.language", language)
-        config.set("dashboard.theme", theme)
-        config.set("dashboard.auto_refresh", auto_refresh)
-        config.set("dashboard.refresh_interval", refresh_interval)
-
-        # Neue Prioritäten-Einstellungen
-        config.set("dashboard.min_priority", min_priority)
-        config.set("dashboard.enable_receive_filtering", enable_receive_filtering)
-        config.set("dashboard.max_messages", max_messages)
-
-        if config.save_config():
-            st.success("✅ Einstellungen gespeichert!")
-            st.info("🔄 Prioritäten-Filterung wird beim nächsten Refresh aktiviert")
-        else:
-            st.error("❌ Fehler beim Speichern!")
+    # Weitere Dashboard-Einstellungen können hier hinzugefügt werden
+    st.markdown("#### 📊 Dashboard-Konfiguration")
+    st.info("Weitere Einstellungen werden hier angezeigt...")
 
 
 def show_module_config():
@@ -534,8 +275,8 @@ def show_mqtt_config():
         "mock": "🧪 Mock-Modus",
     }.get(current_mode, current_mode)
 
-    st.info(f"**Aktueller Modus:** {mode_display} (Einstellung in Dashboard-Einstellungen)")
-    st.markdown("💡 **Hinweis:** Der MQTT-Verbindungsmodus wird in den Dashboard-Einstellungen konfiguriert.")
+    st.info(f"**Aktueller Modus:** {mode_display} (Einstellung über Sidebar)")
+    st.markdown("💡 **Hinweis:** Der MQTT-Verbindungsmodus wird über die Sidebar konfiguriert.")
 
     st.markdown("---")
 
@@ -548,9 +289,8 @@ def show_mqtt_config():
         if tools_path not in sys.path:
             sys.path.append(tools_path)
 
-        from mqtt_client import get_omf_mqtt_client
-
-        mqtt_client = get_omf_mqtt_client()
+        # Verwende Dashboard MQTT-Client
+        mqtt_client = st.session_state.get("mqtt_client")
 
         # Connection Status mit Modus-Anzeige
         col1, col2 = st.columns(2)
@@ -562,7 +302,7 @@ def show_mqtt_config():
                 "mock": "🧪 Mock-Modus",
             }.get(current_mode, current_mode)
 
-            if mqtt_client.is_connected():
+            if mqtt_client.connected:
                 st.success(f"🔗 Verbunden ({mode_display})")
                 if st.button("🔌 Trennen", key="settings_mqtt_disconnect"):
                     mqtt_client.disconnect()
@@ -572,16 +312,18 @@ def show_mqtt_config():
                 if st.button("🔗 Verbinden", key="settings_mqtt_connect"):
                     # Verwende den gewählten Modus für die Verbindung
                     mode = st.session_state.get("mqtt_mode", "live")
-                    if mqtt_client.connect(mode):
+                    # Ändere den Modus des bestehenden Clients
+                    mqtt_client.mode = mode
+                    if mqtt_client.connect():
                         st.success(f"✅ Verbunden im {mode_display}-Modus!")
                     else:
                         st.error("❌ Verbindung fehlgeschlagen!")
 
         with col2:
             # Statistiken
-            stats = mqtt_client.get_statistics()
-            st.metric("📨 Nachrichten empfangen", stats.get("messages_received", 0))
-            st.metric("📤 Nachrichten gesendet", stats.get("messages_sent", 0))
+            stats = mqtt_client.get_connection_status()
+            st.metric("📨 Nachrichten empfangen", stats.get("stats", {}).get("messages_received", 0))
+            st.metric("📤 Nachrichten gesendet", stats.get("stats", {}).get("messages_sent", 0))
 
         st.markdown("---")
 

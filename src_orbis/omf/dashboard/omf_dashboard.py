@@ -11,6 +11,10 @@ import streamlit as st
 # Add src_orbis to path for imports
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", ".."))
 
+# Relative imports für lokale Entwicklung
+from omf.config.config import LIVE_CFG, REPLAY_CFG  # noqa: E402
+from omf.tools.mqtt_client import get_omf_mqtt_client  # noqa: E402
+
 # Import settings components
 try:
     from components.message_center import show_message_center
@@ -24,6 +28,7 @@ try:
         show_topic_config,
     )
     from components.steering import show_steering
+    from components.test_buttons import show_test_buttons
 except ImportError:
     # Fallback für Import-Fehler
     def show_dashboard_settings():
@@ -67,49 +72,40 @@ def main():
     """Hauptfunktion des OMF Dashboards"""
     st.set_page_config(page_title="OMF Dashboard", page_icon="🏭", layout="wide", initial_sidebar_state="expanded")
 
-    # Initialize MessageMonitorService in session state
-    if "message_monitor" not in st.session_state:
-        try:
-            from components.message_center import MessageMonitorService
+    # Default = live
+    if "env" not in st.session_state:
+        st.session_state["env"] = "live"
 
-            st.session_state.message_monitor = MessageMonitorService()
-        except Exception as e:
-            st.error(f"❌ Fehler beim Initialisieren der MessageMonitorService: {e}")
-            st.session_state.message_monitor = None
+    env = st.sidebar.radio(
+        "Umgebung", ["live", "replay"], index=0 if st.session_state["env"] == "live" else 1, horizontal=True
+    )
+    if env != st.session_state["env"]:
+        st.session_state["env"] = env
+        st.cache_resource.clear()
+        st.rerun()
 
-    # Initialize MQTT client in session state
-    if "mqtt_client" not in st.session_state:
-        try:
-            # Add the tools path to sys.path
-            tools_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "tools"))
-            if tools_path not in sys.path:
-                sys.path.append(tools_path)
+    cfg = LIVE_CFG if st.session_state["env"] == "live" else REPLAY_CFG
+    client = get_omf_mqtt_client(cfg)
 
-            from mqtt_client import OMFMQTTClient
+    # Automatisch verbinden wenn nicht verbunden
+    if not client.connected:
+        # Der Client verbindet sich automatisch im __init__
+        # Warten auf Verbindung
+        import time
 
-            st.session_state.mqtt_client = OMFMQTTClient()
+        for _ in range(10):  # Max 10 Sekunden warten
+            if client.connected:
+                break
+            time.sleep(0.1)
 
-            # Verbinde MQTT-Client mit MessageMonitorService für empfangene Nachrichten
-            if st.session_state.message_monitor:
-                # Setze Callback für empfangene Nachrichten
-                def on_message_received(client, userdata, msg):
-                    try:
-                        # Parse JSON payload
-                        payload = msg.payload.decode("utf-8")
-                        topic = msg.topic
+    st.sidebar.write("MQTT:", "🟢" if client.connected else "🔴", f"{cfg['host']}:{cfg['port']}")
+    try:
+        client.subscribe("#", qos=1)
+    except Exception:
+        pass
 
-                        # Speichere empfangene Nachricht in MessageMonitorService
-                        st.session_state.message_monitor.add_received_message(topic, payload)
-
-                    except Exception as e:
-                        st.error(f"❌ Fehler beim Verarbeiten empfangener Nachricht: {e}")
-
-                # Registriere Callback
-                st.session_state.mqtt_client.client.on_message = on_message_received
-
-        except Exception as e:
-            st.error(f"❌ Fehler beim Initialisieren des MQTT-Clients: {e}")
-            st.session_state.mqtt_client = None
+    # MQTT Client ist bereits initialisiert - verwende den ersten Client
+    st.session_state.mqtt_client = client
 
     # Main title with ORBIS logo and MQTT connection status
     col1, col2, col3 = st.columns([1, 3, 1])
@@ -166,84 +162,79 @@ def main():
         st.title("Modellfabrik Dashboard")
 
     with col3:
-        # Platzsparende MQTT Connection Status
-        try:
-            # Füge den tools-Pfad hinzu
-            tools_path = os.path.join(os.path.dirname(__file__), "..", "tools")
-            if tools_path not in sys.path:
-                sys.path.append(tools_path)
-
-            from mqtt_client import get_omf_mqtt_client
-
-            mqtt_client = get_omf_mqtt_client()
-
-            # MQTT-Client im Session-State speichern für andere Komponenten
-            st.session_state.mqtt_client = mqtt_client
-
-            # Connection Status (inkl. Modus-Support)
-            mqtt_mode = st.session_state.get("mqtt_mode", "live")
-            mock_enabled = st.session_state.get("mqtt_mock_enabled", False)
-
-            # Automatische Verbindung je nach Modus
-            if not mqtt_client.is_connected():
-                if mqtt_mode == "replay":
-                    if mqtt_client.connect("replay"):
-                        st.success("✅ Auto-Connect Replay-Broker")
-                    else:
-                        st.warning("⚠️ Auto-Connect fehlgeschlagen")
-                elif mqtt_mode == "live":
-                    if mqtt_client.connect("live"):
-                        st.success("✅ Auto-Connect Live-Fabrik")
-                    else:
-                        st.warning("⚠️ Auto-Connect Live-Fabrik fehlgeschlagen")
-                elif mqtt_mode == "mock":
-                    st.success("🧪 Mock-Modus aktiv")
-
-            # Platzsparende Anzeige
-            if mock_enabled:
-                st.success("🧪 MOCK")
-                stats = mqtt_client.get_statistics()
-                st.metric("📨", stats.get("messages_received", 0), "Empfangen")
-            elif mqtt_mode == "replay":
-                if mqtt_client.is_connected():
-                    st.success("🎬 REPLAY-BROKER")
-                    stats = mqtt_client.get_statistics()
-                    st.metric("📨", stats.get("messages_received", 0), "Empfangen")
-                else:
-                    st.error("🎬 REPLAY-BROKER")
-                    if st.button("🔗 Connect", key="replay_connect", use_container_width=True):
-                        if mqtt_client.connect("replay"):
-                            st.success("✅ Connected!")
-                        else:
-                            st.error("❌ Failed!")
-                        st.rerun()
-            elif mqtt_client.is_connected():
-                st.success("🔗 LIVE-FABRIK")
-                stats = mqtt_client.get_statistics()
-                st.metric("📨", stats.get("messages_received", 0), "Empfangen")
-                if st.button("🔌 Disconnect", key="mqtt_disconnect", use_container_width=True):
-                    mqtt_client.disconnect()
-                    st.rerun()
-            else:
-                st.error("❌ DISCONNECTED")
-                if st.button("🔗 Connect", key="mqtt_connect", use_container_width=True):
-                    if mqtt_client.connect():
-                        st.success("✅ Connected!")
-                    else:
-                        st.error("❌ Failed!")
-                    st.rerun()
-        except ImportError:
-            st.warning("⚠️ MQTT Client nicht verfügbar")
+        # Platz für zukünftige Status-Anzeigen
+        st.info("🔗 MQTT-Status in Sidebar")
 
     st.markdown("---")
 
+    # Sidebar mit MQTT Connection Management
+    with st.sidebar:
+        st.title("🏭 OMF Dashboard")
+        st.markdown("---")
+
+        # MQTT Connection Management
+        st.subheader("🔗 MQTT Connection Management")
+
+        try:
+            mqtt_client = st.session_state.get("mqtt_client")
+            if mqtt_client:
+                # Connection Status
+                if mqtt_client.connected:
+                    st.success("✅ CONNECTED")
+
+                    # Connection Info
+                    connection_info = mqtt_client.get_connection_status()
+                    broker_info = connection_info.get("broker", {})
+
+                    st.info(f"**Broker:** {broker_info.get('host', 'Unknown')}:{broker_info.get('port', 'Unknown')}")
+                    st.info(f"**Client ID:** {connection_info.get('client_id', 'Unknown')}")
+                    st.info(f"**Mode:** {connection_info.get('mode', 'Unknown')}")
+
+                    # Disconnect Button
+                    if st.button("🔌 Disconnect", key="mqtt_disconnect", use_container_width=True):
+                        mqtt_client.disconnect()
+                        st.rerun()
+
+                else:
+                    st.error("❌ DISCONNECTED")
+
+                    # Connection Status Info
+                    st.info("**Verbindung wird über den Dashboard-Hauptclient verwaltet**")
+                    st.info("**Keine manuellen Verbindungen nötig**")
+            else:
+                st.warning("⚠️ MQTT Client nicht verfügbar")
+
+        except Exception as e:
+            st.error(f"❌ Fehler beim MQTT-Status: {e}")
+
+        st.markdown("---")
+
+        # Quick Stats
+        st.subheader("📊 Quick Stats")
+        try:
+            if mqtt_client:
+                stats = mqtt_client.get_connection_status().get("stats", {})
+                st.metric("📨 Messages Sent", stats.get("messages_sent", 0))
+                st.metric("📥 Messages Received", stats.get("messages_received", 0))
+            else:
+                st.info("Keine Statistiken verfügbar")
+        except Exception:
+            st.info("Statistiken nicht verfügbar")
+
+        st.markdown("---")
+
+        # Navigation
+        st.subheader("🧭 Navigation")
+        st.info("Verwende die Tabs oben für die verschiedenen Bereiche")
+
     # Tab structure
-    tab1, tab2, tab3, tab4, tab5 = st.tabs(
+    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(
         [
             "📊 Overview",
             "📋 Aufträge",
             "📡 Nachrichtenzentrale",
             "🎮 Steuerung",
+            "🧪 Test-Bereich",
             "⚙️ Settings",
         ]
     )
@@ -275,8 +266,12 @@ def main():
     with tab4:
         show_steering()
 
-    # Tab 5: Settings
+    # Tab 5: Test-Bereich
     with tab5:
+        show_test_buttons()
+
+    # Tab 6: Settings
+    with tab6:
         st.header("⚙️ Settings")
 
         # Sub-tabs for Settings

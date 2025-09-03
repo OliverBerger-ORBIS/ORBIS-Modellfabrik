@@ -18,7 +18,8 @@ if str(tools_path) not in sys.path:
 try:
     from message_generator import MessageGenerator, get_omf_message_generator
     from message_template_manager import get_omf_message_template_manager
-    from mqtt_client import get_omf_mqtt_client
+
+    # MQTT-Client wird über st.session_state.mqtt_client verwendet
     from topic_mapping_manager import get_omf_topic_mapping_manager
     from workflow_order_manager import get_workflow_order_manager
 except ImportError as e:
@@ -82,15 +83,10 @@ def show_steering_dashboard():
 
 
 def _check_mqtt_connection() -> bool:
-    """Prüft MQTT-Verbindung (inkl. Mock-Support)"""
+    """Prüft MQTT-Verbindung über Wrapper"""
     try:
-        # Mock-Modus prüfen
-        if st.session_state.get("mqtt_mock_enabled", False):
-            return True
-
-        # Echte MQTT-Verbindung prüfen
-        mqtt_client = get_omf_mqtt_client()
-        return mqtt_client.is_connected()
+        mqtt_client = st.session_state.get("mqtt_client")
+        return mqtt_client and mqtt_client.connected
     except Exception:
         return False
 
@@ -129,15 +125,15 @@ def _send_factory_reset_message(with_storage: bool = False):
             st.markdown("**📤 Generierte MQTT-Nachricht:**")
             st.json({"topic": topic, "payload": payload})
 
-            # Nachricht an Nachrichtenzentrale weiterleiten
-            from .message_center import MessageMonitorService
+            # Nachricht direkt über MQTT-Client senden
 
-            # Gemeinsamen MessageMonitorService über Session-State verwenden
-            if "message_monitor" not in st.session_state:
-                st.session_state.message_monitor = MessageMonitorService()
-
-            message_monitor = st.session_state.message_monitor
-            success = message_monitor.send_message(topic, payload)
+            # Direkt über MQTT-Client Wrapper senden
+            mqtt_client = st.session_state.get("mqtt_client")
+            if mqtt_client:
+                result = mqtt_client.publish(topic, payload, qos=1, retain=False)
+                success = result
+            else:
+                success = False
 
             if success:
                 st.success(
@@ -162,10 +158,16 @@ def _get_module_sequence_steps(module: str) -> list:
     return sequences.get(module, [])
 
 
+def _get_module_serial_number(module: str) -> str:
+    """Gibt die korrekte Seriennummer für ein Modul zurück (aus funktionierendem Commit)"""
+    module_serials = {"AIQS": "SVR4H76530", "MILL": "SVR3QA2098", "DRILL": "SVR4H76449", "HBW": "SVR3QA0022"}
+    return module_serials.get(module, module)
+
+
 def _send_module_sequence(module: str):
     """Sendet eine komplette Modul-Sequenz"""
     try:
-        mqtt_client = get_omf_mqtt_client()
+        mqtt_client = st.session_state.get("mqtt_client")
         message_generator = MessageGenerator()
 
         # Sequenz-Schritte
@@ -176,11 +178,13 @@ def _send_module_sequence(module: str):
             message = message_generator.generate_module_sequence_message(module, step)
 
             if message:
-                topic = message.get("topic", f"module/v1/ff/{module}/order")
+                # Korrekte Seriennummer für das Modul verwenden
+                serial_number = _get_module_serial_number(module)
+                topic = message.get("topic", f"module/v1/ff/{serial_number}/order")
                 payload = message.get("payload", {})
 
                 mqtt_client.publish(topic, payload)
-                st.info(f"Sequenz-Schritt gesendet: {step}")
+                st.info(f"Sequenz-Schritt gesendet: {step} an {serial_number}")
             else:
                 st.error(f"Template für Sequenz-Schritt nicht gefunden: {step}")
 
@@ -191,7 +195,7 @@ def _send_module_sequence(module: str):
 def _send_single_module_step(module: str, step: str, step_number: int):
     """Sendet einen einzelnen Modul-Schritt mit WorkflowOrderManager"""
     try:
-        mqtt_client = get_omf_mqtt_client()
+        mqtt_client = st.session_state.get("mqtt_client")
         message_generator = MessageGenerator()
 
         # WorkflowOrderManager mit Fallback
@@ -222,7 +226,9 @@ def _send_single_module_step(module: str, step: str, step_number: int):
         message = message_generator.generate_module_sequence_message(module, step, step_number, order_id)
 
         if message:
-            topic = message.get("topic", f"module/v1/ff/{module}/order")
+            # Korrekte Seriennummer für das Modul verwenden
+            serial_number = _get_module_serial_number(module)
+            topic = message.get("topic", f"module/v1/ff/{serial_number}/order")
             payload = message.get("payload", {})
 
             # Workflow-Info anzeigen (mit Fallback)
@@ -248,7 +254,7 @@ def _send_single_module_step(module: str, step: str, step_number: int):
             st.json({"topic": topic, "payload": payload})
 
             # MQTT-Verbindung prüfen (inkl. Mock-Support)
-            if mqtt_client.is_connected() or st.session_state.get("mqtt_mock_enabled", False):
+            if mqtt_client.connected or st.session_state.get("mqtt_mock_enabled", False):
                 if st.session_state.get("mqtt_mock_enabled", False):
                     st.success(f"✅ {module} {step} simuliert (Step {step_number})")
                     st.info("🧪 Mock-Modus: Message wurde nicht wirklich gesendet")
@@ -299,15 +305,15 @@ def _send_fts_command(command: str):
             st.markdown(f"**📤 Generierte MQTT-Nachricht für FTS {command}:**")
             st.json({"topic": topic, "payload": payload})
 
-            # Nachricht an Nachrichtenzentrale weiterleiten
-            from .message_center import MessageMonitorService
+            # Nachricht direkt über MQTT-Client senden
 
-            # Gemeinsamen MessageMonitorService über Session-State verwenden
-            if "message_monitor" not in st.session_state:
-                st.session_state.message_monitor = MessageMonitorService()
-
-            message_monitor = st.session_state.message_monitor
-            success = message_monitor.send_message(topic, payload)
+            # Direkt über MQTT-Client Wrapper senden
+            mqtt_client = st.session_state.get("mqtt_client")
+            if mqtt_client:
+                result = mqtt_client.publish(topic, payload, qos=1, retain=False)
+                success = result
+            else:
+                success = False
 
             if success:
                 st.success(f"✅ FTS-Befehl {command} erfolgreich an Nachrichtenzentrale weitergeleitet")
@@ -573,7 +579,7 @@ def show_message_generator():
                                         if mqtt_connected:
                                             try:
                                                 # MQTT Client holen
-                                                mqtt_client = get_omf_mqtt_client()
+                                                mqtt_client = st.session_state.get("mqtt_client")
 
                                                 # Message senden
                                                 mqtt_client.publish(
@@ -737,7 +743,7 @@ def show_order_request():
 def _send_order_request(color: str, order_type: str, workpiece_id: str = ""):
     """Sendet Bestellungs-Request"""
     try:
-        mqtt_client = get_omf_mqtt_client()
+        mqtt_client = st.session_state.get("mqtt_client")
         message_generator = MessageGenerator()
 
         # Werkstück-ID generieren falls nicht angegeben
@@ -763,7 +769,7 @@ def _send_order_request(color: str, order_type: str, workpiece_id: str = ""):
             st.json({"topic": topic, "payload": payload})
 
             # MQTT-Verbindung prüfen (inkl. Mock-Support)
-            if mqtt_client.is_connected() or st.session_state.get("mqtt_mock_enabled", False):
+            if mqtt_client.connected or st.session_state.get("mqtt_mock_enabled", False):
                 if st.session_state.get("mqtt_mock_enabled", False):
                     st.success(f"✅ Bestellung simuliert: {color} {order_type}")
                     st.info("🧪 Mock-Modus: Nachricht wurde nicht wirklich gesendet")
@@ -806,19 +812,51 @@ def _show_module_sequences_section():
     """Zeigt die Modul-Sequenzen Sektion an"""
     st.markdown("**🔧 Modul-Sequenzen ausführen:**")
 
-    col1, col2, col3 = st.columns(3)
+    # MQTT-Verbindung prüfen
+    mqtt_connected = _check_mqtt_connection()
 
-    with col1:
-        if st.button("🤖 AIQS Sequenz", key="aiqs_sequence_button"):
-            _send_module_sequence("AIQS")
+    if not mqtt_connected:
+        st.warning("⚠️ MQTT nicht verbunden - Sequenzen können nicht ausgeführt werden")
+        return
 
-    with col2:
-        if st.button("⚙️ MILL Sequenz", key="mill_sequence_button"):
-            _send_module_sequence("MILL")
+    # Drei Module separat mit Icons auflisten
+    modules = [
+        {"id": "AIQS", "icon": "🤖", "name": "AI Quality System", "color": "🔵"},
+        {"id": "MILL", "icon": "⚙️", "name": "Milling Machine", "color": "🟢"},
+        {"id": "DRILL", "icon": "🔨", "name": "Drilling Machine", "color": "🟡"},
+    ]
 
-    with col3:
-        if st.button("🔨 DRILL Sequenz", key="drill_sequence_button"):
-            _send_module_sequence("DRILL")
+    # Jedes Modul in einer eigenen Box
+    for module in modules:
+        with st.container():
+            st.markdown(f"### {module['icon']} {module['name']} ({module['id']})")
+
+            # Sequenz-Schritte für dieses Modul
+            sequence_steps = _get_module_sequence_steps(module["id"])
+
+            # Drei Befehle in einer Sequenz (hintereinander)
+            col1, col2, col3 = st.columns(3)
+
+            with col1:
+                step_name = sequence_steps[0] if len(sequence_steps) > 0 else "PICK"
+                if st.button(f"📥 {step_name}", key=f"{module['id']}_step1", disabled=not mqtt_connected):
+                    _send_single_module_step(module["id"], step_name, 1)
+
+            with col2:
+                step_name = sequence_steps[1] if len(sequence_steps) > 1 else "PROCESS"
+                if st.button(f"⚙️ {step_name}", key=f"{module['id']}_step2", disabled=not mqtt_connected):
+                    _send_single_module_step(module["id"], step_name, 2)
+
+            with col3:
+                step_name = sequence_steps[2] if len(sequence_steps) > 2 else "DROP"
+                if st.button(f"📤 {step_name}", key=f"{module['id']}_step3", disabled=not mqtt_connected):
+                    _send_single_module_step(module["id"], step_name, 3)
+
+            # Komplette Sequenz ausführen
+            if st.button(f"🔄 Komplette {module['id']}-Sequenz", key=f"{module['id']}_full_sequence", type="primary"):
+                _send_module_sequence(module["id"])
+
+            st.divider()
 
 
 def _show_fts_commands_section():
@@ -833,14 +871,7 @@ def _show_fts_commands_section():
 
     # Test-Button für FTS-Charge
     if st.button("🧪 Test FTS-Charge", type="primary"):
-        if "message_monitor" in st.session_state:
-            success = st.session_state.message_monitor.test_fts_charge()
-            if success:
-                st.success("✅ FTS-Charge Test erfolgreich ausgeführt!")
-            else:
-                st.error("❌ FTS-Charge Test fehlgeschlagen!")
-        else:
-            st.error("❌ MessageMonitorService nicht verfügbar")
+        st.info("🧪 FTS-Charge Test wird implementiert...")
 
     st.divider()
 
@@ -944,27 +975,19 @@ def _debug_mqtt_status():
     try:
         # Session State prüfen
         st.write("**Session State:**")
-        if "message_monitor" in st.session_state:
-            st.success("✅ message_monitor in Session State vorhanden")
-            message_monitor = st.session_state.message_monitor
 
-            # MessageMonitorService Status prüfen
-            st.write("**MessageMonitorService Status:**")
-            if hasattr(message_monitor, "mqtt_client"):
-                if message_monitor.mqtt_client:
-                    if message_monitor.mqtt_client.connected:
-                        st.success("✅ MQTT-Client verbunden")
-                        st.write(f"   - Client: {type(message_monitor.mqtt_client.client)}")
-                        st.write(f"   - Connected: {message_monitor.mqtt_client.connected}")
-                    else:
-                        st.error("❌ MQTT-Client nicht verbunden")
-                else:
-                    st.error("❌ MQTT-Client ist None")
+        # MQTT Client Status prüfen
+        st.write("**MQTT Client Status:**")
+        mqtt_client = st.session_state.get("mqtt_client")
+        if mqtt_client:
+            if mqtt_client.connected:
+                st.success("✅ MQTT-Client verbunden")
+                st.write(f"   - Client: {type(mqtt_client)}")
+                st.write(f"   - Connected: {mqtt_client.connected}")
             else:
-                st.error("❌ MessageMonitorService hat kein mqtt_client Attribut")
-
+                st.error("❌ MQTT-Client nicht verbunden")
         else:
-            st.error("❌ message_monitor nicht in Session State")
+            st.error("❌ MQTT-Client nicht in Session State")
 
         # _check_mqtt_connection() Ergebnis
         st.write("**Connection Check Ergebnis:**")

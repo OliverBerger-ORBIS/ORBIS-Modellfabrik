@@ -1,481 +1,329 @@
 #!/usr/bin/env python3
 """
 OMF Dashboard - Nachrichtenzentrale Component
-Version: 3.0.0
+Version: 3.0.0 - Ressourcenschonend mit Topic-Kategorien
 """
 
 import json
-from datetime import datetime, timedelta
-from typing import Dict, List
+import re
+import time
+from dataclasses import dataclass
+from typing import Any, Dict, List
 
-import paho.mqtt.client as mqtt
 import pandas as pd
 import streamlit as st
 
+# --- Konfiguration ---
+SITE = "ff"  # falls variabel: z. B. aus Settings nehmen
 
-class MessageMonitorService:
-    """Service für das Monitoring und Management von MQTT-Nachrichten"""
+# Topic-Patterns basierend auf topic_config.yml
+TOPIC_PATTERNS = {
+    "CCU": [
+        "ccu/state",
+        "ccu/state/flow",
+        "ccu/state/status",
+        "ccu/state/error",
+        "ccu/control",
+        "ccu/control/command",
+        "ccu/control/order",
+        "ccu/status",
+        "ccu/status/connection",
+        "ccu/status/health",
+    ],
+    "MODULE": [
+        f"module/v1/{SITE}/+/connection",
+        f"module/v1/{SITE}/+/state",
+        f"module/v1/{SITE}/+/order",
+        f"module/v1/{SITE}/+/factsheet",
+    ],
+    "TXT": [
+        "/j1/txt/1/f/i/order",
+        "/j1/txt/1/f/i/stock",
+        "/j1/txt/1/f/o/order",
+        "/j1/txt/1/f/o/stock",
+        "/j1/txt/1/c/bme680",
+        "/j1/txt/1/i/order",
+        "/j1/txt/1/o/order",
+    ],
+    "Node-RED": [
+        f"module/v1/{SITE}/NodeRed/+/connection",
+        f"module/v1/{SITE}/NodeRed/+/state",
+        f"module/v1/{SITE}/NodeRed/+/factsheet",
+        f"module/v1/{SITE}/NodeRed/status",
+    ],
+    "FTS": ["fts/v1/ff/+/connection", "fts/v1/ff/+/state", "fts/v1/ff/+/order", "fts/v1/ff/+/factsheet"],
+}
 
-    def __init__(self):
-        """Initialize MessageMonitorService ohne eigenen MQTT-Client"""
-        self.sent_messages = []
-        self.received_messages = []
-        self.max_messages = 1000
+# Regex für Topic-Parsing
+TOPIC_RE = re.compile(r"^(?P<category>ccu|module|txt|fts|node-red)/.*")
 
-    def send_message(self, topic: str, payload: dict, qos: int = 1, retain: bool = False) -> bool:
-        """Sende Nachricht über Dashboard MQTT-Client und speichere sie lokal"""
-        try:
-            # Verwende Dashboard MQTT-Client
-            if "mqtt_client" not in st.session_state or not st.session_state.mqtt_client.connected:
-                st.warning("⚠️ Dashboard MQTT-Client nicht verbunden")
-                return False
 
-            # Sende Nachricht über Dashboard MQTT-Client
-            result = st.session_state.mqtt_client.client.publish(topic, json.dumps(payload), qos=qos, retain=retain)
+@dataclass
+class MessageRow:
+    """Repräsentiert eine Nachricht mit allen relevanten Informationen"""
 
-            if result.rc == mqtt.MQTT_ERR_SUCCESS:
-                # Speichere gesendete Nachricht
-                message = {
-                    "topic": topic,
-                    "payload": payload,
-                    "timestamp": datetime.now().isoformat(),
-                    "qos": qos,
-                    "retain": retain,
-                    "type": "sent",
-                }
-                self.sent_messages.append(message)
+    topic: str
+    payload: Any
+    message_type: str  # "received" oder "sent"
+    timestamp: float
+    qos: int = 0
+    retain: bool = False
 
-                st.success(f"✅ Nachricht erfolgreich gesendet und gespeichert: {topic}")
-                return True
+    def get_category(self) -> str:
+        """Ermittelt die Kategorie basierend auf dem Topic"""
+        topic_lower = self.topic.lower()
+
+        if topic_lower.startswith("ccu/"):
+            return "CCU"
+        elif topic_lower.startswith("module/v1/ff/"):
+            if "nodered" in topic_lower:
+                return "Node-RED"
             else:
-                st.error(f"❌ MQTT-Publish fehlgeschlagen: {result.rc}")
-                return False
-
-        except Exception as e:
-            st.error(f"❌ Fehler beim Senden der Nachricht: {e}")
-            return False
-
-    def add_sent_message(self, topic: str, payload: str, timestamp: datetime = None):
-        """Gesendete Nachricht hinzufügen"""
-        if timestamp is None:
-            timestamp = datetime.now()
-
-        message = {"topic": topic, "payload": payload, "timestamp": timestamp.isoformat(), "type": "sent"}
-
-        self.sent_messages.append(message)
-        self._trim_messages()
-
-    def add_received_message(self, topic: str, payload: str, timestamp: datetime = None):
-        """Empfangene Nachricht hinzufügen"""
-        if timestamp is None:
-            timestamp = datetime.now()
-
-        message = {"topic": topic, "payload": payload, "timestamp": timestamp.isoformat(), "type": "received"}
-
-        self.received_messages.append(message)
-        self._trim_messages()
-
-    def _trim_messages(self):
-        """Nachrichten auf maximale Anzahl beschränken"""
-        if len(self.sent_messages) > self.max_messages:
-            self.sent_messages = self.sent_messages[-self.max_messages :]
-
-        if len(self.received_messages) > self.max_messages:
-            self.received_messages = self.received_messages[-self.max_messages :]
-
-    def get_messages_by_time_range(self, time_range: str = "1h") -> tuple:
-        """Nachrichten nach Zeitraum filtern"""
-        cutoff_time = self._get_cutoff_time(time_range)
-
-        sent_filtered = [msg for msg in self.sent_messages if datetime.fromisoformat(msg["timestamp"]) >= cutoff_time]
-
-        received_filtered = [
-            msg for msg in self.received_messages if datetime.fromisoformat(msg["timestamp"]) >= cutoff_time
-        ]
-
-        return sent_filtered, received_filtered
-
-    def _get_cutoff_time(self, time_range: str) -> datetime:
-        """Cutoff-Zeit für Zeitraum-Filter berechnen"""
-        now = datetime.now()
-
-        if time_range == "15m":
-            return now - timedelta(minutes=15)
-        elif time_range == "1h":
-            return now - timedelta(hours=1)
-        elif time_range == "6h":
-            return now - timedelta(hours=6)
-        elif time_range == "24h":
-            return now - timedelta(days=1)
-        elif time_range == "7d":
-            return now - timedelta(days=7)
+                return "MODULE"
+        elif topic_lower.startswith("/j1/txt/"):
+            return "TXT"
+        elif topic_lower.startswith("fts/"):
+            return "FTS"
         else:
-            return now - timedelta(hours=1)  # Default: 1 Stunde
+            return "Sonstige"
 
-    def get_sent_messages(self) -> List[Dict]:
-        """Gesendete Nachrichten abrufen"""
-        return self.sent_messages
+    def get_sub_category(self) -> str:
+        """Ermittelt die Sub-Kategorie basierend auf dem Topic"""
+        topic_lower = self.topic.lower()
 
-    def get_received_messages(self) -> List[Dict]:
-        """Empfangene Nachrichten abrufen"""
-        return self.received_messages
-
-    def clear_sent_messages(self):
-        """Gesendete Nachrichten löschen"""
-        self.sent_messages.clear()
-
-    def clear_received_messages(self):
-        """Empfangene Nachrichten löschen"""
-        self.received_messages.clear()
-
-    def get_message_stats(self) -> Dict:
-        """Statistiken über Nachrichten abrufen"""
-        return {
-            "sent_count": len(self.sent_messages),
-            "received_count": len(self.received_messages),
-            "total_count": len(self.sent_messages) + len(self.received_messages),
-        }
-
-    def get_filtered_messages(self, messages: List[Dict], filters: Dict) -> List[Dict]:
-        """Nachrichten nach Filtern filtern"""
-        filtered = messages
-
-        # Modul-Filter
-        if "modules" in filters:
-            module_patterns = [f"module/v1/ff/+/+/{module.lower()}" for module in filters["modules"]]
-            filtered = [
-                msg
-                for msg in filtered
-                if any(self._topic_matches_pattern(msg["topic"], pattern) for pattern in module_patterns)
-            ]
-
-        # Kategorie-Filter
-        if "categories" in filters:
-            category_patterns = []
-            for category in filters["categories"]:
-                if category == "CCU":
-                    category_patterns.append("ccu/#")
-                elif category == "TXT":
-                    category_patterns.append("/j1/txt/#")
-                elif category == "MODULE":
-                    category_patterns.append("module/v1/ff/#")
-                elif category == "Node-RED":
-                    category_patterns.append("node_red/#")
-
-            filtered = [
-                msg
-                for msg in filtered
-                if any(self._topic_matches_pattern(msg["topic"], pattern) for pattern in category_patterns)
-            ]
-
-        # Zeitraum-Filter
-        if "time_range" in filters:
-            cutoff_time = self._get_cutoff_time(filters["time_range"])
-            filtered = [msg for msg in filtered if datetime.fromisoformat(msg["timestamp"]) >= cutoff_time]
-
-        # Topic-Pattern-Filter
-        if "topic_pattern" in filters:
-            pattern = filters["topic_pattern"]
-            filtered = [msg for msg in filtered if self._topic_matches_pattern(msg["topic"], pattern)]
-
-        return filtered
-
-    def _topic_matches_pattern(self, topic: str, pattern: str) -> bool:
-        """Prüft ob Topic dem Pattern entspricht (einfache Wildcard-Unterstützung)"""
-        try:
-            # Einfache Wildcard-Implementierung
-            if "*" in pattern:
-                # Konvertiere Wildcard-Pattern zu Regex
-                import re
-
-                regex_pattern = pattern.replace("*", ".*")
-                return re.match(regex_pattern, topic) is not None
-            else:
-                return topic == pattern
-        except Exception:
-            return topic == pattern
-
-    def test_fts_charge(self) -> bool:
-        """Test-Methode für FTS-Charge mit Dashboard MQTT-Client"""
-        try:
-            # Verwende Dashboard MQTT-Client
-            if "mqtt_client" not in st.session_state or not st.session_state.mqtt_client.connected:
-                st.warning("⚠️ Dashboard MQTT-Client nicht verbunden")
-                return False
-
-            # FTS-Charge Nachricht erstellen
-            payload = {
-                "serialNumber": "5iO4",
-                "orderId": "test-order-123",
-                "orderUpdateId": 1,
-                "action": {
-                    "id": "test-action-456",
-                    "command": "CHARGE",
-                    "metadata": {"priority": "NORMAL", "timeout": 300, "type": "TRANSPORT"},
-                },
-                "timestamp": datetime.now().isoformat(),
-            }
-
-            topic = "fts/v1/ff/5iO4/command"
-
-            # Sende Nachricht über Dashboard MQTT-Client
-            return self.send_message(topic, payload)
-
-        except Exception as e:
-            st.error(f"❌ Fehler beim FTS-Charge Test: {e}")
-            return False
+        if "connection" in topic_lower:
+            return "Connection"
+        elif "state" in topic_lower:
+            return "State"
+        elif "order" in topic_lower:
+            return "Order"
+        elif "factsheet" in topic_lower:
+            return "Factsheet"
+        elif "control" in topic_lower:
+            return "Control"
+        elif "status" in topic_lower:
+            return "Status"
+        else:
+            return "General"
 
 
-def _capture_sent_messages(message_monitor):
-    """Callback-Funktion für gesendete Nachrichten"""
-
-    def on_message_sent(topic, payload, qos=1, retain=False):
-        message_monitor.add_sent_message(topic, payload)
-
-    return on_message_sent
-
-
-def _capture_received_messages(message_monitor):
-    """Callback-Funktion für empfangene Nachrichten"""
-
-    def on_message_received(topic, payload):
-        message_monitor.add_received_message(topic, payload)
-
-    return on_message_received
+def _ensure_store():
+    """Stellt sicher, dass der Message-Store existiert"""
+    if "message_store" not in st.session_state:
+        st.session_state["message_store"]: List[MessageRow] = []
+    if "message_last_count" not in st.session_state:
+        st.session_state["message_last_count"] = 0
 
 
-def show_message_filters() -> Dict:
-    """Filter-Bereich für Nachrichten anzeigen"""
-    st.markdown("### 🔍 Filter")
-
-    filters = {}
-
-    # Prioritäten-Filter (neue Zeile)
-    priority_levels = {
-        1: "Critical Control",
-        2: "Important Status",
-        3: "Normal Info",
-        4: "NodeRED Topics",
-        5: "High Frequency",
-    }
-
-    # Lade gespeicherte Prioritäten-Einstellung
-    try:
-        from omf.config.omf_config import config
-
-        default_priority = config.get("dashboard.min_priority", 3)
-    except Exception:
-        default_priority = 3
-
-    min_priority = st.selectbox(
-        "📊 Maximale Priorität:",
-        [1, 2, 3, 4, 5],
-        index=default_priority - 1,  # Index ist 0-basiert
-        format_func=lambda x: f"Prio {x}: {priority_levels[x]}",
-        help="Zeige Nachrichten mit Priorität 1 bis zur ausgewählten Priorität",
-    )
-    filters["min_priority"] = min_priority
-
-    col1, col2, col3 = st.columns(3)
-
-    with col1:
-        # Modul-Filter
-        available_modules = ["HBW", "FTS", "MILL", "DRILL", "AIQS", "OVEN"]
-        selected_modules = st.multiselect(
-            "🏭 Module",
-            available_modules,
-            help="Nachrichten von bestimmten Modulen anzeigen",
-        )
-        if selected_modules:
-            filters["modules"] = selected_modules
-
-    with col2:
-        # Kategorie-Filter
-        available_categories = ["CCU", "TXT", "MODULE", "Node-RED"]
-        selected_categories = st.multiselect(
-            "📂 Kategorien",
-            available_categories,
-            help="Nachrichten von bestimmten Kategorien anzeigen",
-        )
-        if selected_categories:
-            filters["categories"] = selected_categories
-
-    with col3:
-        # Zeitraum-Filter
-        time_range = st.selectbox(
-            "⏰ Zeitraum",
-            ["all", "1h", "1d", "1w"],
-            format_func=lambda x: {
-                "all": "Alle Nachrichten",
-                "1h": "Letzte Stunde",
-                "1d": "Letzter Tag",
-                "1w": "Letzte Woche",
-            }[x],
-            help="Zeitraum für Nachrichten-Filterung",
-        )
-        if time_range != "all":
-            filters["time_range"] = time_range
-
-    # Topic-Pattern-Filter
-    topic_pattern = st.text_input("🔍 Topic-Suche", help="Nachrichten mit bestimmten Topic-Patterns suchen")
-    if topic_pattern:
-        filters["topic_pattern"] = topic_pattern
-
-    return filters
-
-
-def format_timestamp(timestamp) -> str:
-    """Timestamp für Anzeige formatieren"""
-    try:
-        # Handle both datetime objects and float timestamps
-        if isinstance(timestamp, float):
-            from datetime import datetime
-
-            timestamp = datetime.fromtimestamp(timestamp)
-        elif isinstance(timestamp, str):
-            from datetime import datetime
-
-            timestamp = datetime.fromisoformat(timestamp.replace("Z", "+00:00"))
-
-        return timestamp.strftime("%H:%M:%S")
-    except Exception:
-        return str(timestamp)
-
-
-def format_payload(payload: str) -> str:
-    """Payload für Anzeige formatieren"""
-    try:
-        # Versuche JSON zu parsen
-        parsed = json.loads(payload)
-        return json.dumps(parsed, indent=2, ensure_ascii=False)
-    except (json.JSONDecodeError, TypeError):
-        # Fallback: Raw payload
-        return str(payload)[:200] + "..." if len(str(payload)) > 200 else str(payload)
-
-
-def get_topic_friendly_name(topic: str) -> str:
-    """Friendly Name für Topic generieren"""
-    # Einfache Topic-zu-Name Mapping
-    topic_mappings = {
-        "ccu": "CCU",
-        "txt": "TXT",
-        "hbw": "HBW",
-        "fts": "FTS",
-        "mill": "MILL",
-        "drill": "DRILL",
-        "aiqs": "AIQS",
-        "oven": "OVEN",
-    }
-
-    topic_lower = topic.lower()
-    for key, name in topic_mappings.items():
-        if key in topic_lower:
-            return f"{name}: {topic}"
-
-    return topic
-
-
-def show_messages_table(messages: List[Dict], title: str):
-    """Nachrichten-Tabelle anzeigen"""
-    st.markdown(f"### {title}")
-
+def _flatten_for_df(messages: List[MessageRow]) -> pd.DataFrame:
+    """Konvertiert MessageRow-Objekte in ein DataFrame"""
     if not messages:
-        st.info("Keine Nachrichten vorhanden")
-        return
+        return pd.DataFrame()
 
-    # DataFrame erstellen
-    df_data = []
+    data = []
     for msg in messages:
-        df_data.append(
+        # Timestamp formatieren
+        try:
+            from datetime import datetime
+
+            timestamp = datetime.fromtimestamp(msg.timestamp).strftime("%H:%M:%S")
+        except Exception:
+            timestamp = str(msg.timestamp)
+
+        # Payload kürzen
+        payload_str = str(msg.payload)
+        if len(payload_str) > 100:
+            payload_str = payload_str[:100] + "..."
+
+        # Topic kürzen
+        topic_short = msg.topic
+        if len(topic_short) > 50:
+            topic_short = topic_short[:50] + "..."
+
+        data.append(
             {
-                "Zeit": format_timestamp(msg["timestamp"]),
-                "Topic": get_topic_friendly_name(msg["topic"]),
-                "Payload": format_payload(msg["payload"]),
+                "⏰": timestamp,
+                "📨": msg.message_type,
+                "🏷️": msg.get_category(),
+                "📋": msg.get_sub_category(),
+                "📡": topic_short,
+                "📄": payload_str,
+                "🔢": msg.qos,
+                "💾": "✓" if msg.retain else "✗",
             }
         )
 
-    df = pd.DataFrame(df_data)
+    df = pd.DataFrame(data)
+    if not df.empty:
+        # Nach Zeit sortieren (neueste zuerst)
+        df = df.sort_values("⏰", ascending=False)
 
-    # Tabelle anzeigen
-    st.dataframe(
-        df,
-        column_config={
-            "Zeit": st.column_config.TextColumn("Zeit", width="small"),
-            "Topic": st.column_config.TextColumn("Topic", width="medium"),
-            "Payload": st.column_config.TextColumn("Payload", width="large"),
-        },
-        hide_index=True,
-        use_container_width=True,
-    )
+    return df
 
-    # Anzahl anzeigen
-    st.info(f"Zeige {len(messages)} Nachrichten")
+
+def _apply_message(message_store: List[MessageRow], msg_data: Dict[str, Any]):
+    """Fügt eine neue Nachricht zum Store hinzu"""
+    try:
+        message_row = MessageRow(
+            topic=msg_data.get("topic", ""),
+            payload=msg_data.get("payload", ""),
+            message_type=msg_data.get("type", "unknown"),
+            timestamp=msg_data.get("ts", time.time()),
+            qos=msg_data.get("qos", 0),
+            retain=msg_data.get("retain", False),
+        )
+
+        # Alle Nachrichten speichern (sowohl received als auch sent)
+        message_store.append(message_row)
+
+        # Store auf maximale Größe begrenzen (1000 Nachrichten)
+        if len(message_store) > 1000:
+            message_store.pop(0)
+
+    except Exception as e:
+        st.error(f"Fehler beim Verarbeiten der Nachricht: {e}")
 
 
 def show_message_center():
-    """Haupt-Komponente für Nachrichtenzentrale"""
+    """Nachrichtenzentrale anzeigen - ressourcenschonend mit Topic-Kategorien"""
     st.header("📡 Nachrichtenzentrale")
 
-    # Message Monitor Service initialisieren
-    if "message_monitor" not in st.session_state:
-        st.session_state.message_monitor = MessageMonitorService()
+    # Get MQTT client from session state
+    mqtt_client = st.session_state.get("mqtt_client")
+    if not mqtt_client:
+        st.error("❌ MQTT Client nicht verfügbar")
+        return
 
-    message_monitor = st.session_state.message_monitor
+    # Status wird automatisch aktualisiert - keine UI-Elemente nötig
+    st.info("💡 **Nachrichten werden automatisch aus MQTT-Nachrichten geladen**")
 
-    # Gesendete Nachrichten aus der Steuerung erfassen
-    _capture_sent_messages(message_monitor)
+    # Filter-Optionen
+    st.subheader("🔍 Filter & Einstellungen")
+    col1, col2, col3, col4 = st.columns([2, 2, 2, 1])
 
-    # MQTT-Client Integration
-    try:
-        from mqtt_client import get_omf_mqtt_client
+    with col1:
+        # Nachrichten-Typ Filter
+        message_type_filter = st.selectbox("📨 Nachrichten-Typ", options=["Alle", "received", "sent"], index=0)
 
-        mqtt_client = get_omf_mqtt_client()
-
-        # Nachrichten aus MQTT-Client in Message Monitor übertragen
-        if mqtt_client and mqtt_client.is_connected():
-            # Empfangene Nachrichten aus MQTT-Client holen
-            mqtt_messages = mqtt_client.get_message_history()
-
-            # Neue Nachrichten zum Message Monitor hinzufügen
-            for msg in mqtt_messages:
-                # Prüfen ob Nachricht bereits vorhanden (Topic + Timestamp Kombination)
-                existing_messages = [(m["topic"], m["timestamp"]) for m in message_monitor.received_messages]
-                msg_key = (msg.get("topic", ""), msg.get("timestamp", datetime.now()))
-                if msg_key not in existing_messages:
-                    message_monitor.add_received_message(
-                        topic=msg.get("topic", ""),
-                        payload=msg.get("payload", ""),
-                        timestamp=msg.get("timestamp", datetime.now()),
-                    )
-
-            # Status anzeigen
-            st.success(f"🔗 Verbunden mit MQTT-Broker - {len(mqtt_messages)} Nachrichten verfügbar")
-        else:
-            st.warning("⚠️ Nicht mit MQTT-Broker verbunden")
-
-    except ImportError:
-        st.warning("⚠️ MQTT-Client nicht verfügbar")
-    except Exception:
-        st.error("❌ Fehler bei MQTT-Integration")
-
-    # Filter anzeigen
-    filters = show_message_filters()
-
-    # Manueller Refresh-Button
-    col1, col2, col3 = st.columns([1, 3, 1])
     with col2:
-        if st.button("🔄 Nachrichten aktualisieren", type="primary"):
-            st.rerun()
+        # Topic-Kategorie Filter
+        topic_categories = ["Alle", "CCU", "MODULE", "TXT", "Node-RED", "FTS"]
+        category_filter = st.selectbox("🏷️ Kategorie", options=topic_categories, index=0)
 
-    # Tab-Navigation (Empfangene Nachrichten zuerst)
-    tab1, tab2 = st.tabs(["📥 Empfangene Nachrichten", "📤 Gesendete Nachrichten"])
+    with col3:
+        # Sub-Kategorie Filter
+        sub_categories = ["Alle", "Connection", "State", "Order", "Factsheet", "Control", "Status"]
+        sub_category_filter = st.selectbox("📋 Sub-Kategorie", options=sub_categories, index=0)
 
-    with tab1:
-        # Empfangene Nachrichten filtern und anzeigen
-        filtered_received = message_monitor.get_filtered_messages(message_monitor.received_messages, filters)
-        show_messages_table(filtered_received, "📥 Empfangene Nachrichten")
+    with col4:
+        # Anzahl Nachrichten
+        max_messages = st.number_input("📊 Max", min_value=10, max_value=1000, value=200, step=10)
 
-    with tab2:
-        # Gesendete Nachrichten filtern und anzeigen
-        filtered_sent = message_monitor.get_filtered_messages(message_monitor.sent_messages, filters)
-        show_messages_table(filtered_sent, "📤 Gesendete Nachrichten")
+    # Message Store initialisieren
+    _ensure_store()
+
+    # Nur NEUE Nachrichten seit letztem Run einarbeiten
+    try:
+        all_messages = mqtt_client.drain()
+        start_idx = st.session_state["message_last_count"]
+        new_messages = all_messages[start_idx:] if start_idx < len(all_messages) else []
+
+        # Neue Nachrichten verarbeiten
+        for msg_data in new_messages:
+            _apply_message(st.session_state["message_store"], msg_data)
+
+        st.session_state["message_last_count"] = len(all_messages)
+
+    except Exception as e:
+        st.error(f"❌ Fehler beim Laden der Nachrichten: {e}")
+        return
+
+    # Nachrichten filtern
+    filtered_messages = []
+    for msg in st.session_state["message_store"]:
+        # Typ-Filter
+        if message_type_filter != "Alle" and msg.message_type != message_type_filter:
+            continue
+
+        # Kategorie-Filter
+        if category_filter != "Alle" and msg.get_category() != category_filter:
+            continue
+
+        # Sub-Kategorie-Filter
+        if sub_category_filter != "Alle" and msg.get_sub_category() != sub_category_filter:
+            continue
+
+        filtered_messages.append(msg)
+
+    # Nach Anzahl begrenzen
+    filtered_messages = filtered_messages[-max_messages:]
+
+    # Nachrichten anzeigen
+    st.subheader("📨 Nachrichten")
+
+    if filtered_messages:
+        # Kompakte Tabellen-Darstellung
+        df = _flatten_for_df(filtered_messages)
+
+        # Statistiken
+        col1, col2, col3, col4 = st.columns(4)
+        with col1:
+            st.metric("📊 Gesamt", len(st.session_state["message_store"]))
+        with col2:
+            st.metric("🔍 Gefiltert", len(filtered_messages))
+        with col3:
+            received_count = len([m for m in filtered_messages if m.message_type == "received"])
+            st.metric("📥 Empfangen", received_count)
+        with col4:
+            sent_count = len([m for m in filtered_messages if m.message_type == "sent"])
+            st.metric("📤 Gesendet", sent_count)
+
+        # Tabelle anzeigen
+        st.dataframe(
+            df,
+            use_container_width=True,
+            column_config={
+                "⏰": st.column_config.TextColumn("Zeit", width="small"),
+                "📨": st.column_config.TextColumn("Typ", width="small"),
+                "🏷️": st.column_config.TextColumn("Kategorie", width="small"),
+                "📋": st.column_config.TextColumn("Sub-Kat", width="small"),
+                "📡": st.column_config.TextColumn("Topic", width="medium"),
+                "📄": st.column_config.TextColumn("Payload", width="large"),
+                "🔢": st.column_config.NumberColumn("QoS", width="small"),
+                "💾": st.column_config.TextColumn("Retain", width="small"),
+            },
+            hide_index=True,
+            height=400,
+        )
+
+        # Filter-Info
+        filter_info = (
+            f"📊 **{len(filtered_messages)} von {len(st.session_state['message_store'])} "
+            f"Nachrichten angezeigt** (gefiltert nach: {message_type_filter}, "
+            f"{category_filter}, {sub_category_filter})"
+        )
+        st.info(filter_info)
+
+    else:
+        st.warning("⚠️ Keine Nachrichten entsprechen den aktuellen Filtern")
+
+    # Test section
+    st.markdown("---")
+    st.subheader("🧪 Test-Bereich")
+    with st.form("publish_form", clear_on_submit=False):
+        topic = st.text_input("Topic", value="aps/control/example")
+        payload = st.text_area("Payload (Text oder JSON)", value='{"cmd": "ping"}', height=120)
+        qos = st.selectbox("QoS", options=[0, 1, 2], index=0)
+        retain = st.checkbox("Retain", value=False)
+        submitted = st.form_submit_button("Senden")
+        if submitted:
+            data = payload
+            try:
+                data = json.loads(payload)
+            except Exception:
+                pass
+            result = mqtt_client.publish(topic, data, qos=int(qos), retain=retain)
+            if result:
+                st.success(f"Nachricht gesendet: {topic}")
+        else:
+            st.error("Senden fehlgeschlagen.")

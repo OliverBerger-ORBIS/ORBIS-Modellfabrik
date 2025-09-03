@@ -4,6 +4,8 @@ Version: 3.0.0
 """
 
 import json
+import re
+import time
 from datetime import datetime
 
 import pandas as pd
@@ -512,7 +514,11 @@ def get_dynamic_module_status(module_id, module_info):
     # Try to get messages from message monitor
     if "message_monitor" in st.session_state:
         message_monitor = st.session_state.message_monitor
-        recent_messages = message_monitor.received_messages
+        try:
+            # Use new API to get recent messages
+            recent_messages = message_monitor.get_messages_by_time_range("1h")[1]  # [1] = received messages
+        except Exception:
+            recent_messages = []
     # Fallback: try old mqtt_messages key (for backward compatibility)
     elif "mqtt_messages" in st.session_state:
         recent_messages = st.session_state.mqtt_messages
@@ -575,17 +581,18 @@ def extract_connection_status_from_template(messages, module_id):
 
 
 def show_module_status():
-    """Show module status overview"""
+    """Show module status overview - Ressourcenschonend mit OMFMqttClient"""
     st.subheader("🏭 Modul-Status")
     st.markdown("Übersicht aller APS-Module mit Status und Verbindungsinformationen")
 
-    # Refresh button
-    col1, col2 = st.columns([1, 4])
-    with col1:
-        if st.button("🔄 Aktualisieren", type="primary"):
-            st.rerun()
-    with col2:
-        st.markdown("💡 Klicken Sie auf 'Aktualisieren' um die neuesten Modul-Status zu laden")
+    # Get MQTT client from session state
+    mqtt_client = st.session_state.get("mqtt_client")
+    if not mqtt_client:
+        st.error("❌ MQTT Client nicht verfügbar")
+        return
+
+    # Status wird automatisch aktualisiert - kein Button nötig
+    st.info("💡 **Status wird automatisch aus MQTT-Nachrichten aktualisiert**")
 
     # Get static module information
     all_modules = get_static_module_info()
@@ -594,7 +601,24 @@ def show_module_status():
         st.error("❌ Keine Module konfiguriert")
         return
 
-    # Create module table data
+    # Initialize module status store in session state
+    if "module_status_store" not in st.session_state:
+        st.session_state["module_status_store"] = {}
+    if "module_status_last_count" not in st.session_state:
+        st.session_state["module_status_last_count"] = 0
+
+    # Get recent messages from MQTT client
+    try:
+        messages = mqtt_client.drain()
+        if messages:
+            # Process new messages for module status
+            _process_module_messages(messages, st.session_state["module_status_store"])
+            st.session_state["module_status_last_count"] = len(messages)
+    except Exception as e:
+        st.warning(f"⚠️ Fehler beim Laden der MQTT-Nachrichten: {e}")
+        messages = []
+
+    # Create module table data with real-time status
     module_table_data = []
 
     for module_id, module_info in all_modules.items():
@@ -602,8 +626,8 @@ def show_module_status():
         if not module_info.get("enabled", True):
             continue
 
-        # Get dynamic status information
-        dynamic_status = get_dynamic_module_status(module_id, module_info)
+        # Get real-time status from store
+        real_time_status = _get_module_real_time_status(module_id, st.session_state["module_status_store"])
 
         # Get module icon
         icon_display = module_info.get("icon", get_module_icon(module_id))
@@ -611,15 +635,29 @@ def show_module_status():
         # Get display name
         display_name = module_info.get("name_lang_de", module_info.get("name", module_id))
 
+        # Status indicators
+        connection_status = real_time_status.get("connection", "OFFLINE")
+        connection_display = (
+            f"{get_status_icon('available')} Connected"
+            if connection_status == "ONLINE"
+            else f"{get_status_icon('offline')} Disconnected"
+        )
+
+        module_state = real_time_status.get("state", "Unknown")
+        availability_display = get_enhanced_status_display(module_state, module_info["type"])
+
+        recent_messages = real_time_status.get("message_count", 0)
+
         module_table_data.append(
             {
                 "Name": f"{icon_display} {display_name}",
                 "ID": module_info["id"],
                 "Type": module_info.get("type", "Unknown"),
                 "IP": module_info.get("ip_range", "Unknown"),
-                "Connected": dynamic_status["connection_status"],
-                "Availability Status": dynamic_status["availability_status"],
-                "Recent Messages": dynamic_status["recent_messages"],
+                "Connected": connection_display,
+                "Availability Status": availability_display,
+                "Recent Messages": recent_messages,
+                "Last Update": real_time_status.get("last_update", "Never"),
             }
         )
 
@@ -664,65 +702,85 @@ def show_module_status():
                 "Connected": st.column_config.TextColumn("Connected", width="medium"),
                 "Availability Status": st.column_config.TextColumn("Availability Status", width="medium"),
                 "Recent Messages": st.column_config.NumberColumn("Recent Messages", width="small"),
+                "Last Update": st.column_config.TextColumn("Last Update", width="medium"),
             },
         )
 
-        # Connection status summary
-        st.markdown("---")
-        st.markdown("**📊 Verbindungsstatus Zusammenfassung:**")
-
-        mqtt_connected = st.session_state.get("mqtt_connected", False)
-        if mqtt_connected:
-            st.success("🟢 MQTT-Broker verbunden - Alle Module können überwacht werden")
-        else:
-            st.warning("🟡 MQTT-Broker nicht verbunden - Modul-Status basiert auf gespeicherten Daten")
-
-        # Data source info
-        st.info(
-            "💡 **Datenquelle:** Statische Module-Info aus Settings/Modul-Config, "
-            "dynamische Status aus Nachrichtenzentrale"
-        )
-
-        # Debug info for testing
-        if st.checkbox("🔍 Debug-Info anzeigen", key="show_debug_info"):
-            st.markdown("**📊 Debug-Informationen:**")
-
-            # Show MQTT connection status
-            mqtt_connected = st.session_state.get("mqtt_connected", False)
-            st.markdown(f"**MQTT Connected:** {mqtt_connected}")
-
-            # Show message count from message monitor (same as message center)
-            if "message_monitor" in st.session_state:
-                message_monitor = st.session_state.message_monitor
-                total_messages = len(message_monitor.received_messages)
-                st.markdown(f"**Nachrichten in Message Monitor:** {total_messages}")
-
-                # Show sample messages for each module
-                if total_messages > 0:
-                    st.markdown("**📋 Beispiele für Module-Nachrichten:**")
-                    for module_id, module_info in all_modules.items():
-                        if module_info.get("enabled", True):
-                            recent_messages = [
-                                msg
-                                for msg in message_monitor.received_messages
-                                if module_info["id"] in msg.get("topic", "")
-                            ]
-                            if recent_messages:
-                                st.markdown(f"**{module_id}:** {len(recent_messages)} Nachrichten")
-                                # Show first message as example
-                                if recent_messages:
-                                    with st.expander(f"Erste Nachricht für {module_id}"):
-                                        st.json(recent_messages[0])
-            else:
-                st.warning("⚠️ Message Monitor nicht verfügbar")
-
-            # Show session state keys
-            st.markdown("**🔑 Session State Keys:**")
-            session_keys = list(st.session_state.keys())
-            st.markdown(f"Verfügbare Keys: {', '.join(session_keys)}")
+        # Status wird automatisch aktualisiert
+        st.success("✅ **Modul-Status wird automatisch aus MQTT-Nachrichten aktualisiert**")
 
     else:
-        st.info("📋 Keine aktiven Module konfiguriert")
+        st.warning("⚠️ Keine aktiven Module gefunden")
+
+
+def _process_module_messages(messages, module_status_store):
+    """Process MQTT messages to update module status store"""
+
+    # Topic patterns for module status
+    connection_pattern = re.compile(r"^module/v1/ff/(?P<module_id>[^/]+)/connection$")
+    state_pattern = re.compile(r"^module/v1/ff/(?P<module_id>[^/]+)/state$")
+    factsheet_pattern = re.compile(r"^module/v1/ff/(?P<module_id>[^/]+)/factsheet$")
+
+    for msg in messages:
+        try:
+            topic = msg.get("topic", "")
+            payload = msg.get("payload", {})
+            ts = msg.get("ts", time.time())
+
+            if isinstance(payload, str):
+                payload = json.loads(payload)
+
+            # Process connection messages
+            connection_match = connection_pattern.match(topic)
+            if connection_match:
+                module_id = connection_match.group("module_id")
+                if module_id not in module_status_store:
+                    module_status_store[module_id] = {}
+
+                connection_state = payload.get("connectionState", "OFFLINE")
+                module_status_store[module_id]["connection"] = connection_state
+                module_status_store[module_id]["last_update"] = datetime.fromtimestamp(ts).strftime("%H:%M:%S")
+                module_status_store[module_id]["message_count"] = (
+                    module_status_store[module_id].get("message_count", 0) + 1
+                )
+
+            # Process state messages
+            state_match = state_pattern.match(topic)
+            if state_match:
+                module_id = state_match.group("module_id")
+                if module_id not in module_status_store:
+                    module_status_store[module_id] = {}
+
+                module_state = payload.get("state", "Unknown")
+                module_status_store[module_id]["state"] = module_state
+                module_status_store[module_id]["last_update"] = datetime.fromtimestamp(ts).strftime("%H:%M:%S")
+                module_status_store[module_id]["message_count"] = (
+                    module_status_store[module_id].get("message_count", 0) + 1
+                )
+
+            # Process factsheet messages
+            factsheet_match = factsheet_pattern.match(topic)
+            if factsheet_match:
+                module_id = factsheet_match.group("module_id")
+                if module_id not in module_status_store:
+                    module_status_store[module_id] = {}
+
+                module_status_store[module_id]["factsheet"] = payload
+                module_status_store[module_id]["last_update"] = datetime.fromtimestamp(ts).strftime("%H:%M:%S")
+                module_status_store[module_id]["message_count"] = (
+                    module_status_store[module_id].get("message_count", 0) + 1
+                )
+
+        except Exception:
+            continue
+
+
+def _get_module_real_time_status(module_id, module_status_store):
+    """Get real-time status for a specific module"""
+    if module_id not in module_status_store:
+        return {"connection": "OFFLINE", "state": "Unknown", "message_count": 0, "last_update": "Never"}
+
+    return module_status_store[module_id]
 
 
 def show_overview_tabs():
