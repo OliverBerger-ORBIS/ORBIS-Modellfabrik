@@ -65,33 +65,41 @@ Das OMF Dashboard ist aktuell in einem funktionalen Zustand für die grundlegend
 
 ## 🚀 **Nächste Schritte:**
 
-### **Phase 1: Dashboard2 Funktionalitätstests** 🔄 **AKTUELL**
-1. Dashboard2 mit Live-Fabrik testen
-2. Alle Sub-Tabs auf Funktionalität prüfen
-3. MQTT-Integration in modularen Komponenten testen
+### **Phase 1: Dashboard2 Funktionalitätstests** ✅ **ABGESCHLOSSEN**
+1. ✅ Dashboard2 mit Live-Fabrik testen - **ERFOLGREICH**
+2. ✅ Alle Sub-Tabs auf Funktionalität prüfen - **ALLE FUNKTIONIEREN**
+3. ✅ MQTT-Integration in modularen Komponenten testen - **FUNKTIONIERT**
 
-### **Phase 2: Order2 Implementierung** 📋 **GEPLANT**
+### **Phase 2: Dashboard Migration** 🔄 **AKTUELL**
+1. **Finaler Commit** - Letzte Version mit Dashboard und Dashboard2
+2. **Original Dashboard löschen** - Alle Original-Dateien entfernen
+3. **Dashboard2 → Dashboard umbenennen** - Finale Migration
+4. **Imports und Referenzen aktualisieren** - Alle Pfade korrigieren
+
+### **Phase 3: Problem-Fixes** 🔧 **GEPLANT**
+1. **Module Status Updates reparieren** - Availability=BLOCKED Anzeige
+2. **Sent Messages Display reparieren** - Vollständige Nachrichten-Anzeige
+3. **Nachrichten-Zentrale reparieren** - History löschen funktional machen
+
+### **Phase 4: Order2 Implementierung** 📋 **GEPLANT**
 1. Auftragsverwaltung implementieren
 2. Laufende Aufträge implementieren
 3. Integration mit bestehenden Systemen
 
-### **Phase 3: Nachrichten-Zentrale reparieren**
-1. Gesendete Nachrichten korrekt anzeigen
-2. History löschen funktional machen
-3. Message Monitoring reparieren
-
-### **Phase 4: MessageGenerator Integration**
+### **Phase 5: MessageGenerator Integration**
 1. YAML-Templates in `generic_steering` implementieren
 2. `factory_steering` auf MessageGenerator umstellen
 3. Template-basierte Message-Generierung
 
-### **Phase 5: Erweiterte Features**
+### **Phase 6: Erweiterte Features**
 1. Topic-getriebener Ansatz
 2. Message-getriebener Ansatz
 3. Template Management
 
 ## 📅 **Letzte Änderungen:**
-- **Overview Modul-Status:** Korrekte Availability-Status aus `ccu/pairing/state` implementiert (Januar 2025)
+- **Dashboard2 Live-Test:** Erfolgreich mit echter Fabrik getestet (Januar 2025)
+- **Modulare Architektur:** 18 neue Komponenten als exakte 1:1 Kopien implementiert
+- **Overview Modul-Status:** Korrekte Availability-Status aus `ccu/pairing/state` implementiert
 - **Topic-Config:** `ccu/pairing/state` zur Konfiguration hinzugefügt
 - **Message-Templates:** Erweiterte Template-Struktur mit BUSY/BLOCKED Beispielen
 - **FTS Commands:** Korrekte Topics und Payloads implementiert
