@@ -260,11 +260,11 @@ def _process_module_messages(messages, module_status_store):
                     serial_number = module.get("serialNumber", "")
                     if not serial_number:
                         continue
-                    
+
                     # Initialize module in store if not exists
                     if serial_number not in module_status_store:
                         module_status_store[serial_number] = {}
-                    
+
                     # Update module status with real data from ccu/pairing/state
                     module_status_store[serial_number]["connected"] = module.get("connected", False)
                     module_status_store[serial_number]["available"] = module.get("available", "Unknown")
@@ -278,18 +278,18 @@ def _process_module_messages(messages, module_status_store):
                     module_status_store[serial_number]["message_count"] = (
                         module_status_store[serial_number].get("message_count", 0) + 1
                     )
-                
+
                 # Also process transports if available
                 transports = payload.get("transports", [])
                 for transport in transports:
                     serial_number = transport.get("serialNumber", "")
                     if not serial_number:
                         continue
-                    
+
                     # Initialize transport in store if not exists
                     if serial_number not in module_status_store:
                         module_status_store[serial_number] = {}
-                    
+
                     # Update transport status
                     module_status_store[serial_number]["connected"] = transport.get("connected", False)
                     module_status_store[serial_number]["available"] = transport.get("available", "Unknown")
@@ -381,9 +381,7 @@ def show_overview_module_status():
         # Status indicators - NEU: Verwende echte Daten aus ccu/pairing/state
         connected = real_time_status.get("connected", False)
         connection_display = (
-            f"{get_status_icon('available')} Connected"
-            if connected
-            else f"{get_status_icon('offline')} Disconnected"
+            f"{get_status_icon('available')} Connected" if connected else f"{get_status_icon('offline')} Disconnected"
         )
 
         # Availability-Status aus ccu/pairing/state

@@ -7,11 +7,11 @@ import streamlit as st
 
 # Import der Unterkomponenten
 from .settings_dashboard import show_dashboard_settings
-from .settings_modul_config import show_module_config
-from .settings_nfc_config import show_nfc_config
-from .settings_mqtt_config import show_mqtt_config
-from .settings_topic_config import show_topic_config
 from .settings_message_templates import show_messages_templates
+from .settings_modul_config import show_module_config
+from .settings_mqtt_config import show_mqtt_config
+from .settings_nfc_config import show_nfc_config
+from .settings_topic_config import show_topic_config
 
 
 def show_settings2():

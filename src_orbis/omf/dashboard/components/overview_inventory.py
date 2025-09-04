@@ -4,6 +4,7 @@ Exakte Kopie der show_inventory_grid() Funktion aus overview.py
 """
 
 import json
+
 import streamlit as st
 
 

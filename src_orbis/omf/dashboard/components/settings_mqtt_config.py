@@ -20,7 +20,9 @@ def show_mqtt_config():
     }.get(current_mode, current_mode)
 
     st.info(f"**Aktueller Modus:** {mode_display} (Einstellung über Sidebar)")
-    st.markdown("💡 **Hinweis:** Der MQTT-Verbindungsmodus wird über die Sidebar-Umgebungsauswahl (Live/Replay) konfiguriert.")
+    st.markdown(
+        "💡 **Hinweis:** Der MQTT-Verbindungsmodus wird über die Sidebar-Umgebungsauswahl (Live/Replay) konfiguriert."
+    )
 
     st.markdown("---")
 
@@ -35,7 +37,6 @@ def show_mqtt_config():
 
         # Verwende Dashboard MQTT-Client
         mqtt_client = st.session_state.get("mqtt_client")
-
 
         # Broker Konfiguration
         st.markdown("#### 🌐 Broker Einstellungen")

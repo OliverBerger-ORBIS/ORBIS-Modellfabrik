@@ -18,8 +18,8 @@ from omf.tools.mqtt_client import get_omf_mqtt_client  # noqa: E402
 # Import settings components
 try:
     from components.message_center import show_message_center
-    from components.overview import show_overview_tabs
     from components.order2 import show_order2
+    from components.overview import show_overview_tabs
     from components.settings import (
         show_dashboard_settings,
         show_messages_templates,

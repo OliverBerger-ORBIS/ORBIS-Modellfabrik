@@ -79,7 +79,7 @@ def show_free_mode():
             st.success("✅ JSON ist gültig")
 
             # Debug: Zeige die aktuellen Session State Werte
-            st.info(f"🔍 **Session State Werte:**")
+            st.info("🔍 **Session State Werte:**")
             st.info(f"🔍 Topic (Session): {st.session_state.free_mode_topic}")
             st.info(f"🔍 Payload (Session): {st.session_state.free_mode_payload}")
             st.info(f"🔍 Topic (Input): {st.session_state.free_mode_topic_input}")
@@ -89,7 +89,7 @@ def show_free_mode():
             mqtt_client = st.session_state.get("mqtt_client")
             if mqtt_client and mqtt_client.connected:
                 # Debug: Zeige die tatsächlich gesendete Payload
-                st.info(f"🔍 **Wird gesendet:**")
+                st.info("🔍 **Wird gesendet:**")
                 st.info(f"🔍 Topic: {topic}")
                 st.info(f"🔍 Payload: {json.dumps(parsed_payload, indent=2)}")
                 st.info(f"🔍 Retain: {retain_option}")

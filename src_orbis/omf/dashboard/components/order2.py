@@ -5,9 +5,10 @@ Hauptkomponente für alle Auftragsfunktionen mit Untertabs
 
 import streamlit as st
 
+from .order_current import show_order_current
+
 # Import der Unterkomponenten
 from .order_management import show_order_management
-from .order_current import show_order_current
 
 
 def show_order2():

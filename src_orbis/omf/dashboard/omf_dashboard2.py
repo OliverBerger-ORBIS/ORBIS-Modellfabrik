@@ -18,8 +18,8 @@ from omf.tools.mqtt_client import get_omf_mqtt_client  # noqa: E402
 # Import settings components - NEUE VERSION mit settings2, steering2, order2 und overview2
 try:
     from components.message_center2 import show_message_center2
-    from components.overview2 import show_overview2  # NEU: overview2 statt overview
     from components.order2 import show_order2  # NEU: order2
+    from components.overview2 import show_overview2  # NEU: overview2 statt overview
     from components.settings2 import show_settings2  # NEU: settings2 statt einzelne Funktionen
     from components.steering2 import show_steering2  # NEU: steering2 statt steering
 
@@ -86,9 +86,9 @@ def main():
         st.info(f"   - Bestehender Client: {type(client).__name__}")
         st.info(f"   - Client ID: {id(client)}")
         st.info(f"   - Hat clear_history: {hasattr(client, 'clear_history')}")
-        
+
         # WICHTIG: Client-Konfiguration bei Umgebungswechsel aktualisieren
-        if hasattr(client, 'config') and client.config != cfg:
+        if hasattr(client, "config") and client.config != cfg:
             st.info("🔄 **Debug: Aktualisiere Client-Konfiguration**")
             client.config = cfg
             # Client neu initialisieren mit neuer Konfiguration
@@ -110,19 +110,19 @@ def main():
     # Erweiterte MQTT-Informationen in der Sidebar
     st.sidebar.markdown("---")
     st.sidebar.markdown("### 🔗 MQTT Status")
-    
+
     # Verbindungsstatus
     if client.connected:
         st.sidebar.success(f"🟢 Verbunden: {cfg['host']}:{cfg['port']}")
     else:
         st.sidebar.error(f"🔴 Nicht verbunden: {cfg['host']}:{cfg['port']}")
-    
+
     # MQTT-Statistiken
     try:
         stats = client.get_connection_status()
         messages_received = stats.get("stats", {}).get("messages_received", 0)
         messages_sent = stats.get("stats", {}).get("messages_sent", 0)
-        
+
         col1, col2 = st.sidebar.columns(2)
         with col1:
             st.sidebar.metric("📨 Empfangen", messages_received)
@@ -130,7 +130,7 @@ def main():
             st.sidebar.metric("📤 Gesendet", messages_sent)
     except Exception:
         st.sidebar.info("📊 Statistiken nicht verfügbar")
-    
+
     # Subscribe zu allen Topics
     try:
         client.subscribe("#", qos=1)
@@ -200,13 +200,9 @@ def main():
             st.error("❌ MQTT Nicht verbunden")
 
     # Tabs
-    tab1, tab2, tab3, tab4, tab5 = st.tabs([
-        "📊 Übersicht",
-        "📋 Aufträge",
-        "📡 Nachrichten-Zentrale",
-        "🎮 Steuerung",
-        "⚙️ Einstellungen"
-    ])
+    tab1, tab2, tab3, tab4, tab5 = st.tabs(
+        ["📊 Übersicht", "📋 Aufträge", "📡 Nachrichten-Zentrale", "🎮 Steuerung", "⚙️ Einstellungen"]
+    )
 
     # Tab 1: Übersicht
     with tab1:
