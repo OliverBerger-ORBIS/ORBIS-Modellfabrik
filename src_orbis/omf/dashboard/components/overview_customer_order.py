@@ -1,5 +1,5 @@
 """
-OMF Dashboard Overview - Bestellungen
+OMF Dashboard Overview - Kundenaufträge (Customer Orders)
 Kopiert aus overview_inventory.py - Sektion 2: Bestellungen
 """
 
@@ -109,8 +109,8 @@ class OrderManager:
 
 
 def show_overview_order():
-    """Zeigt die Bestellungen - Kopiert aus overview_inventory.py"""
-    st.subheader("📋 Bestellungen")
+    """Zeigt die Kundenaufträge (Customer Orders) - Kopiert aus overview_inventory.py"""
+    st.subheader("📋 Kundenaufträge (Customer Orders)")
 
     # OrderManager initialisieren
     order_manager = OrderManager()

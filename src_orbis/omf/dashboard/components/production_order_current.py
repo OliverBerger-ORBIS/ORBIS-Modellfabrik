@@ -1,5 +1,5 @@
 """
-OMF Dashboard Order - Laufende Aufträge
+OMF Dashboard Production Order - Laufende Production Orders
 """
 
 import os
@@ -18,13 +18,13 @@ except ImportError as e:
     st.error(f"❌ Templates nicht verfügbar: {e}")
 
 
-def show_order_current():
-    """Zeigt die laufenden Aufträge"""
-    st.subheader("🔄 Laufende Aufträge")
+def show_production_order_current():
+    """Zeigt die laufenden Production Orders"""
+    st.subheader("🔄 Laufende Fertigungsaufträge (Production Orders)")
 
     # Template-Test
     if TEMPLATES_AVAILABLE:
-        st.markdown("### 🧪 Template-Test in Order Current")
+        st.markdown("### 🧪 Template-Test in Laufende Fertigungsaufträge")
         st.markdown(get_test_template(), unsafe_allow_html=True)
 
         st.markdown("### 🏭 Modul-Karten-Test")
@@ -46,4 +46,4 @@ def show_order_current():
 
         st.markdown("---")
     else:
-        st.info("Laufende Aufträge werden hier angezeigt")
+        st.info("Laufende Fertigungsaufträge (Production Orders) werden hier angezeigt")

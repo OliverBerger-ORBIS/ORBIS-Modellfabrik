@@ -30,10 +30,12 @@
 - **Authentifizierung**: Optional über Username/Password
 
 ## 4) Funktionale Anforderungen
-### 4.1) Übersicht
-- **Modul-Status** in Echtzeit anzeigen aus den bereitgestellten Infos der Mqtt-Nachrichten. Statische Info wird aus den Einstellungen gezogen module.yml
-- **Lagerbestand** Ansicht der aktuellen Lager-Belegung (Nachricht vom HBW Modul)
-- **Bestellung** Auslösen einer Bestellung von (ROT/WEISS/BLAU) bei Bestellung wird die Produktion gestartet
+### 4.1) Übersicht - ✅ IMPLEMENTIERT
+- **Modul-Status** in Echtzeit anzeigen aus den bereitgestellten Infos der Mqtt-Nachrichten. Statische Info wird aus den Einstellungen gezogen module.yml ✅
+- **Lagerbestand** Ansicht der aktuellen Lager-Belegung (Nachricht vom HBW Modul) ✅
+- **Kundenaufträge** Auslösen einer Bestellung von (ROT/WEISS/BLAU) bei Bestellung wird die Produktion gestartet ✅
+- **Rohmaterial-Bestellungen** Übersicht über benötigte und verfügbare Rohmaterialien ✅
+- **Status:** Vollständig funktional mit HTML-Templates für visuelle Darstellung
 
 #### **Begriffliche Unterscheidungen - Order-Typen**
 
@@ -47,16 +49,16 @@
 | Interner Fertigungsauftrag | **Production Order** | `/production_order` |
 | Rohmaterialbeschaffung | **Purchase Order** | `/purchase_order` |
 
-#### **Geplante Komponenten-Namensersetzungen**
+#### **✅ Implementierte Komponenten-Namensersetzungen**
 
 **Overview-Komponenten:**
-- `overview_order` → `overview_customer_order`
-- `overview_order_raw` → `overview_purchase_order`
+- `overview_order` → `overview_customer_order` ✅ **IMPLEMENTIERT**
+- `overview_order_raw` → `overview_purchase_order` ✅ **IMPLEMENTIERT**
 
 **Order-Komponenten:**
-- `order` → `production_order`
-- `order_current` → `production_order_current`
-- `order_management` → `production_order_management`
+- `order` → `production_order` ✅ **IMPLEMENTIERT**
+- `order_current` → `production_order_current` ✅ **IMPLEMENTIERT**
+- `order_management` → `production_order_management` ✅ **IMPLEMENTIERT**
 
 #### **Tab-Namen mit klarer Bedeutung**
 
@@ -64,12 +66,12 @@
 |--------------|---------------|
 | **Kundenaufträge (Customer Orders)** | Kundenbestellungen |
 | **Fertigungsaufträge (Production Orders)** | Was aktuell produziert werden soll |
-| **Rohmaterialbestellungen (Purchase Orders)** | Bestellungen bei Lieferanten |
+| **Rohmaterial-Bestellungen (Purchase Orders)** | Bestellungen bei Lieferanten |
 
-> **📋 TODO nach Commit:** Implementierung der Namensersetzungen für klare begriffliche Unterscheidungen
+> **✅ ABGESCHLOSSEN:** Alle Namensersetzungen wurden erfolgreich implementiert
 
 
-### 4.2) Produktions-Aufträge (Production Orders) - TBD
+### 4.2) Produktions-Aufträge (Production Orders) - 🔄 IN ENTWICKLUNG
 
 #### **Funktionalitäten:**
 - **Auftragsverfolgung** über den gesamten Produktionsprozess
@@ -117,13 +119,13 @@
 - ****Prozess Weiß****: HBW -> DRILL -> AIQS -> DPS (Ausgang)
 
 
-### 4.3) Nachrichten-Zentrale - 🔄 TEILWEISE IMPLEMENTIERT
+### 4.3) Nachrichten-Zentrale - ✅ IMPLEMENTIERT
 - **Empfangene Nachrichten** von allen Modulen ✅
-- **Gesendete Nachrichten** Nachrichten vom OMF-Dashboard (aus der Steuerung) an den APS-Broker an ❌
+- **Gesendete Nachrichten** Nachrichten vom OMF-Dashboard (aus der Steuerung) an den APS-Broker ✅
 - **Nachrichtenfilterung** nach Zeit, Topic, Richtung ✅
 - **SQLite-Persistierung** für Audit-Trail ✅
-- **Status:** Empfangene Nachrichten funktionieren, gesendete Nachrichten werden nicht angezeigt
-- **Bekanntes Problem:** History löschen funktioniert nicht korrekt
+- **Status:** Vollständig funktional - sowohl empfangene als auch gesendete Nachrichten werden korrekt angezeigt
+- **Hinweis:** History löschen wurde implementiert und funktioniert
 
 ### 4.4) Steuerung
 **Haupt-Tab mit zwei Untertabs für bessere Übersichtlichkeit:**
@@ -154,6 +156,7 @@
   - Dazugehöriges Topic wird in Auswahlbox angeboten ❌
   - Messages können editiert und versendet werden ❌
 - **Status:** Nur "Freier Modus" funktional, YAML-Integration noch nicht implementiert
+- **Hinweis:** Diese Funktionalitäten sind für zukünftige Erweiterungen geplant
 
 #### 4.4.3) Architektur
 - **Tab-Struktur**: Haupt-Tab "Steuerung" mit zwei Untertabs
@@ -161,13 +164,14 @@
 - **Saubere Trennung**: Factory-Funktionen und Generic-Funktionen getrennt
 - **Einheitliche API**: Beide Untertabs verwenden den gleichen MQTT-Client
 
-### 4.5) Einstellungen
-- **MQTT-Broker Konfiguration** (Host, Port, Credentials)
-- **Dashboard-Parameter** (Refresh-Rate, Anzeige-Optionen)
-- **Debug-Informationen** für Entwickler
-- **Modul-Config** mit Angaben zu den Modulen
-- **Topic-Config** mit Anaben zu identifizierten Topics
-- **MessageTemplates** Yml Beschreibung der NAchrichtenstrukturen
+### 4.5) Einstellungen - ✅ IMPLEMENTIERT
+- **MQTT-Broker Konfiguration** (Host, Port, Credentials) ✅
+- **Dashboard-Parameter** (Refresh-Rate, Anzeige-Optionen) ✅
+- **Debug-Informationen** für Entwickler ✅
+- **Modul-Config** mit Angaben zu den Modulen ✅
+- **Topic-Config** mit Anaben zu identifizierten Topics ✅
+- **MessageTemplates** Yml Beschreibung der NAchrichtenstrukturen ✅
+- **Status:** Vollständig funktional mit allen Konfigurationsmöglichkeiten
 
 
 ## 5) Nichtziele (MVP)

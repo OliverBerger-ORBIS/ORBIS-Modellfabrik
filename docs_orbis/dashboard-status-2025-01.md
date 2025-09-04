@@ -86,9 +86,9 @@ Das OMF Dashboard ist aktuell in einem funktionalen Zustand für die grundlegend
 2. ✅ **OrderManager-Integration** - Zentrale Datenquelle implementiert
 3. ✅ **Button-Key-Management** - Duplicate-Key-Fehler behoben
 
-### **Phase 5: Order2 Implementierung** 📋 **GEPLANT**
-1. Auftragsverwaltung implementieren
-2. Laufende Aufträge implementieren
+### **Phase 5: Production Order Implementierung** 📋 **GEPLANT**
+1. Production Order Management implementieren
+2. Laufende Production Orders implementieren
 3. Integration mit bestehenden Systemen
 
 ### **Phase 6: MessageGenerator Integration**
@@ -104,7 +104,7 @@ Das OMF Dashboard ist aktuell in einem funktionalen Zustand für die grundlegend
 ## 📅 **Letzte Änderungen:**
 - **Dashboard Migration:** Dashboard2 erfolgreich zu Dashboard umbenannt (Januar 2025)
 - **Problem-Fixes:** Replay-Broker und Nachrichtenzentrale repariert
-- **Overview-Sektionen-Refactoring:** overview_inventory.py in 3 separate Dateien aufgeteilt
+- **Overview-Sektionen-Refactoring:** overview_inventory.py in 3 separate Dateien aufgeteilt (overview_customer_order.py, overview_purchase_order.py)
 - **OrderManager-Integration:** Zentrale Datenquelle für alle Overview-Komponenten
 - **HBW-Topics-Analyse:** Vollständige Dokumentation der Lagerbestand-Topics
 - **Dashboard2 Live-Test:** Erfolgreich mit echter Fabrik getestet

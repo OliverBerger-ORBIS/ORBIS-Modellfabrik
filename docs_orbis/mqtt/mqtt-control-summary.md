@@ -168,7 +168,7 @@ python remote_mqtt_client.py --broker 192.168.0.100 --template DRILL_PICK_WHITE
 - ✅ **Completed**: Working message library created
 - ✅ **Completed**: Enhanced controllers implemented
 - ✅ **Completed**: Documentation updated
-- ✅ **Completed**: Dashboard MQTT integration
+- ✅ **Completed**: OMF Dashboard MQTT integration
 
 ### 2. **Critical Priority - ORDER-ID Management**
 - **🚨 CRITICAL**: Implement ORDER-ID tracking for sequential commands
@@ -197,7 +197,7 @@ python remote_mqtt_client.py --broker 192.168.0.100 --template DRILL_PICK_WHITE
 - ✅ **Message Library Created**: Reusable templates
 - ✅ **Tools Updated**: All controllers use working messages
 - ✅ **Documentation Complete**: Comprehensive guides created
-- ✅ **Dashboard Integration**: Real MQTT sending from GUI
+- ✅ **OMF Dashboard Integration**: Real MQTT sending from GUI
 - ✅ **Live Monitoring**: Message tracking and response monitoring
 - ✅ **Module Control**: Direct control via Dashboard interface
 

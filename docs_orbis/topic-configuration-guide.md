@@ -225,6 +225,7 @@ for topic in all_topics:
 ### **Ersetzte Dateien:**
 - ❌ `src_orbis/mqtt/dashboard/config/topic_mapping.py` (✅ **GELÖSCHT**)
 - ❌ Verstreute Topic-Mappings in verschiedenen Dateien
+- ❌ `src_orbis/mqtt/dashboard/aps_dashboard.py` (✅ **ERSETZT durch OMF Dashboard**)
 
 ### **Neue Struktur:**
 - ✅ `src_orbis/mqtt/config/topic_config.yml` (zentrale Konfiguration)

@@ -18,33 +18,13 @@ from omf.tools.mqtt_client import get_omf_mqtt_client  # noqa: E402
 # Import settings components - Modulare Architektur
 try:
     from components.message_center import show_message_center
-    from components.order import show_order
+    from components.production_order import show_production_order
     from components.overview import show_overview
     from components.settings import show_settings
     from components.steering import show_steering
 
 except ImportError:
-    # Fallback für Import-Fehler
-    def show_settings():
-        st.subheader("⚙️ Settings")
-        st.info("Settings wird hier angezeigt")
-
-    def show_overview():
-        st.subheader("📊 Overview")
-        st.info("Overview wird hier angezeigt")
-
-    def show_order():
-        st.subheader("📋 Order")
-        st.info("Order wird hier angezeigt")
-
-    def show_steering():
-        st.subheader("🎮 Steuerung")
-        st.info("Steuerung wird hier angezeigt")
-
-    def show_message_center():
-        st.subheader("📡 Nachrichtenzentrale")
-        st.info("Nachrichtenzentrale wird hier angezeigt")
-
+    pass
 
 def main():
     """Hauptfunktion des OMF Dashboards - Modulare Architektur"""
@@ -84,15 +64,13 @@ def main():
         st.info("🔍 **Debug: Erstelle neuen MQTT-Client**")
         client = get_omf_mqtt_client(cfg)
         st.session_state.mqtt_client = client
-        st.info(f"   - Neuer Client erstellt: {type(client).__name__}")
-        st.info(f"   - Client ID: {id(client)}")
-        st.info(f"   - Hat clear_history: {hasattr(client, 'clear_history')}")
+
+
     else:
-        st.info("🔍 **Debug: Verwende bestehenden MQTT-Client**")
+ 
         client = st.session_state.mqtt_client
-        st.info(f"   - Bestehender Client: {type(client).__name__}")
-        st.info(f"   - Client ID: {id(client)}")
-        st.info(f"   - Hat clear_history: {hasattr(client, 'clear_history')}")
+        st.info(f"   - Verwende bestehenden Client: {type(client).__name__}")
+
 
     # Automatisch verbinden wenn nicht verbunden
     if not client.connected:
@@ -109,10 +87,17 @@ def main():
     st.sidebar.markdown("---")
     st.sidebar.markdown("### 🔗 MQTT Status")
 
-    # Verbindungsstatus
-    if client.connected:
-        st.sidebar.success(f"🟢 Verbunden: {cfg['host']}:{cfg['port']}")
-    else:
+    # Verbindungsstatus - MQTT-Client connected-Eigenschaft ist nicht zuverlässig
+    # Daher prüfen wir auch die Broker-Verbindung
+    try:
+        # Teste ob Client funktioniert (auch wenn connected=False)
+        if hasattr(client, 'client') and client.client and client.client.is_connected():
+            st.sidebar.success(f"🟢 Verbunden: {cfg['host']}:{cfg['port']}")
+        elif client.connected:
+            st.sidebar.success(f"🟢 Verbunden: {cfg['host']}:{cfg['port']}")
+        else:
+            st.sidebar.warning(f"🟡 Verbindung unklar: {cfg['host']}:{cfg['port']}")
+    except Exception:
         st.sidebar.error(f"🔴 Nicht verbunden: {cfg['host']}:{cfg['port']}")
 
     # MQTT-Statistiken
@@ -206,16 +191,16 @@ def main():
 
     # Tabs
     tab1, tab2, tab3, tab4, tab5 = st.tabs(
-        ["📊 Übersicht", "📋 Aufträge", "📡 Nachrichten-Zentrale", "🎮 Steuerung", "⚙️ Einstellungen"]
+        ["📊 Übersicht", "🏭 Fertigungsaufträge", "📡 Nachrichten-Zentrale", "🎮 Steuerung", "⚙️ Einstellungen"]
     )
 
     # Tab 1: Übersicht
     with tab1:
         show_overview()
 
-    # Tab 2: Aufträge
+    # Tab 2: Fertigungsaufträge (Production Orders)
     with tab2:
-        show_order()
+        show_production_order()
 
     # Tab 3: Nachrichten-Zentrale
     with tab3:

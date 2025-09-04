@@ -1,5 +1,5 @@
 """
-OMF Dashboard Overview - Rohstoff-Bestellung
+OMF Dashboard Overview - Rohmaterial-Bestellungen (Purchase Orders)
 Kopiert aus overview_inventory.py - Sektion 3: Bestellung von Rohmaterial
 """
 
@@ -108,8 +108,8 @@ class OrderManager:
 
 
 def show_overview_order_raw():
-    """Zeigt die Rohstoff-Bestellung - Kopiert aus overview_inventory.py"""
-    st.subheader("📊 Bestellung von Rohmaterial")
+    """Zeigt die Rohmaterial-Bestellungen (Purchase Orders) - Kopiert aus overview_inventory.py"""
+    st.subheader("📊 Rohmaterial-Bestellungen (Purchase Orders)")
     st.info("🔄 Im Lager ist Platz für drei rohe Werkstücke jeder Farbe")
 
     # OrderManager initialisieren

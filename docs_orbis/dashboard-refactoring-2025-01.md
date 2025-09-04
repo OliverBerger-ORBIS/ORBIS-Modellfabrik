@@ -9,33 +9,33 @@ Das OMF Dashboard wurde erfolgreich von einer monolithischen Struktur zu einer *
 ### **Dashboard2 - Neue modulare Struktur**
 
 **Haupt-Tabs (in korrekter Reihenfolge):**
-1. **📊 Übersicht** → `overview2.py`
-2. **📋 Aufträge** → `order2.py` 
-3. **📡 Nachrichten-Zentrale** → `message_center2.py`
-4. **🎮 Steuerung** → `steering2.py`
-5. **⚙️ Einstellungen** → `settings2.py`
+1. **📊 Übersicht** → `overview.py`
+2. **🏭 Fertigungsaufträge** → `production_order.py` 
+3. **📡 Nachrichten-Zentrale** → `message_center.py`
+4. **🎮 Steuerung** → `steering.py`
+5. **⚙️ Einstellungen** → `settings.py`
 
 **Entfernt:** `MQTT-Monitor` Tab (redundant mit Nachrichten-Zentrale)
 
 ## 🏗️ **Komponenten-Architektur**
 
-### **Overview2 - Modulare Übersicht**
-**Wrapper:** `overview2.py` mit 4 Sub-Tabs
+### **Overview - Modulare Übersicht**
+**Wrapper:** `overview.py` mit 4 Sub-Tabs
 
 **Sub-Komponenten (alle exakte Kopien):**
 - ✅ **overview_module_status.py** → **Exakte Kopie** der `show_module_status()` Funktion
-- ✅ **overview_order.py** → **Exakte Kopie** der Bestellungs-Funktionalität  
-- ✅ **overview_order_raw.py** → **Exakte Kopie** der Rohware-Bestellungs-Funktionalität
+- ✅ **overview_customer_order.py** → **Exakte Kopie** der Kundenauftrags-Funktionalität  
+- ✅ **overview_purchase_order.py** → **Exakte Kopie** der Rohmaterial-Bestellungs-Funktionalität
 - ✅ **overview_inventory.py** → **Exakte Kopie** der `show_inventory_grid()` Funktion
 
 **Sub-Tabs:**
 - 🏭 **Modul Status** - Echtzeit-Modul-Status mit MQTT-Integration
-- 📦 **Bestellung** - Bestellungs-Trigger (ROT, WEISS, BLAU)
-- 🔧 **Bestellung-Rohware** - Wareneingang-Steuerung
+- 📋 **Kundenaufträge** - Kundenauftrags-Trigger (ROT, WEISS, BLAU)
+- 📊 **Rohmaterial-Bestellungen** - Rohmaterial-Bestellungs-Steuerung
 - 📚 **Lagerbestand** - 3x3 HBW-Lagerbestand mit OrderManager
 
-### **Settings2 - Modulare Einstellungen**
-**Wrapper:** `settings2.py` mit 6 Sub-Tabs
+### **Settings - Modulare Einstellungen**
+**Wrapper:** `settings.py` mit 6 Sub-Tabs
 
 **Sub-Komponenten (alle exakte Kopien):**
 - ✅ **settings_dashboard.py** → **Exakte Kopie** der `show_dashboard_settings()` Funktion
@@ -53,8 +53,8 @@ Das OMF Dashboard wurde erfolgreich von einer monolithischen Struktur zu einer *
 - 📡 **Topics** - Topic-Konfiguration mit Topic Manager
 - 📋 **Templates** - Message Template-Konfiguration
 
-### **Steering2 - Modulare Steuerung**
-**Wrapper:** `steering2.py` mit 2 Sub-Tabs
+### **Steering - Modulare Steuerung**
+**Wrapper:** `steering.py` mit 2 Sub-Tabs
 
 **Sub-Komponenten (alle exakte Kopien):**
 - ✅ **steering_factory.py** → **Exakte Kopie** von `factory_steering.py`
@@ -64,21 +64,21 @@ Das OMF Dashboard wurde erfolgreich von einer monolithischen Struktur zu einer *
 - 🏭 **Factory-Steuerung** - Traditionelle Steuerungsfunktionen
 - 🔧 **Generische Steuerung** - Erweiterte MQTT-Steuerung
 
-### **Order2 - Modulare Aufträge**
-**Wrapper:** `order2.py` mit 2 Sub-Tabs
+### **Production Order - Modulare Fertigungsaufträge**
+**Wrapper:** `production_order.py` mit 2 Sub-Tabs
 
 **Sub-Komponenten (leere Hüllen für zukünftige Implementierung):**
-- ✅ **order_management.py** → **Leere Hülle** für "Auftragsverwaltung"
-- ✅ **order_current.py** → **Leere Hülle** für "Laufende Aufträge"
+- ✅ **production_order_management.py** → **Leere Hülle** für "Fertigungsauftrags-Verwaltung"
+- ✅ **production_order_current.py** → **Leere Hülle** für "Laufende Fertigungsaufträge"
 
 **Sub-Tabs:**
-- 📋 **Auftragsverwaltung** - (zu implementieren)
-- 🔄 **Laufende Aufträge** - (zu implementieren)
+- 📋 **Fertigungsauftrags-Verwaltung** - (zu implementieren)
+- 🔄 **Laufende Fertigungsaufträge** - (zu implementieren)
 
-### **Message_center2 - Exakte Kopie**
-**Komponente:** `message_center2.py` (keine Sub-Tabs)
+### **Message Center - Exakte Kopie**
+**Komponente:** `message_center.py` (keine Sub-Tabs)
 
-- ✅ **message_center2.py** → **Exakte Kopie** von `message_center.py`
+- ✅ **message_center.py** → **Exakte Kopie** der ursprünglichen Nachrichten-Zentrale
 
 ## 🔧 **Technische Details**
 
@@ -98,39 +98,43 @@ Das OMF Dashboard wurde erfolgreich von einer monolithischen Struktur zu einer *
 
 ### **Import-Struktur**
 ```python
-# Dashboard2 Haupt-Imports
-from components.overview2 import show_overview2
-from components.order2 import show_order2
-from components.message_center2 import show_message_center2
-from components.steering2 import show_steering2
-from components.settings2 import show_settings2
+# Dashboard Haupt-Imports
+from components.overview import show_overview
+from components.production_order import show_production_order
+from components.message_center import show_message_center
+from components.steering import show_steering
+from components.settings import show_settings
 
 # Sub-Komponenten-Imports (innerhalb der Wrapper)
 from .overview_module_status import show_overview_module_status
+from .overview_customer_order import show_overview_customer_order
+from .overview_purchase_order import show_overview_purchase_order
+from .production_order_management import show_production_order_management
+from .production_order_current import show_production_order_current
 from .settings_modul_config import show_module_config
 # etc.
 ```
 
 ## 📁 **Datei-Struktur**
 
-### **Neue Dateien (Dashboard2)**
+### **Neue Dateien (Dashboard)**
 ```
 src_orbis/omf/dashboard/
-├── omf_dashboard2.py                    # Neues Haupt-Dashboard
+├── omf_dashboard.py                     # Haupt-Dashboard
 └── components/
-    ├── overview2.py                     # Overview-Wrapper
+    ├── overview.py                      # Overview-Wrapper
     ├── overview_module_status.py        # Modul-Status (exakte Kopie)
-    ├── overview_order.py                # Bestellung (exakte Kopie)
-    ├── overview_order_raw.py            # Rohware-Bestellung (exakte Kopie)
+    ├── overview_customer_order.py       # Kundenaufträge (exakte Kopie)
+    ├── overview_purchase_order.py       # Rohmaterial-Bestellungen (exakte Kopie)
     ├── overview_inventory.py            # Lagerbestand (exakte Kopie)
-    ├── order2.py                        # Order-Wrapper
-    ├── order_management.py              # Auftragsverwaltung (leere Hülle)
-    ├── order_current.py                 # Laufende Aufträge (leere Hülle)
-    ├── message_center2.py               # Nachrichten-Zentrale (exakte Kopie)
-    ├── steering2.py                     # Steering-Wrapper
+    ├── production_order.py              # Production Order-Wrapper
+    ├── production_order_management.py   # Fertigungsauftrags-Verwaltung (leere Hülle)
+    ├── production_order_current.py      # Laufende Fertigungsaufträge (leere Hülle)
+    ├── message_center.py                # Nachrichten-Zentrale (exakte Kopie)
+    ├── steering.py                      # Steering-Wrapper
     ├── steering_factory.py              # Factory-Steuerung (exakte Kopie)
     ├── steering_generic.py              # Generische Steuerung (exakte Kopie)
-    ├── settings2.py                     # Settings-Wrapper
+    ├── settings.py                      # Settings-Wrapper
     ├── settings_dashboard.py            # Dashboard-Einstellungen (exakte Kopie)
     ├── settings_modul_config.py         # Modul-Konfiguration (exakte Kopie)
     ├── settings_nfc_config.py           # NFC-Konfiguration (exakte Kopie)
@@ -139,16 +143,18 @@ src_orbis/omf/dashboard/
     └── settings_message_templates.py    # Message Templates (exakte Kopie)
 ```
 
-### **Original-Dateien (unverändert)**
+### **Migration abgeschlossen**
 ```
 src_orbis/omf/dashboard/
-├── omf_dashboard.py                     # Original-Dashboard (unverändert)
+├── omf_dashboard.py                     # Haupt-Dashboard (migriert von Dashboard2)
 └── components/
-    ├── overview.py                      # Original-Overview (unverändert)
-    ├── settings.py                      # Original-Settings (unverändert)
-    ├── factory_steering.py              # Original-Factory-Steuerung (unverändert)
-    ├── generic_steering.py              # Original-Generische-Steuerung (unverändert)
-    └── message_center.py                # Original-Nachrichten-Zentrale (unverändert)
+    ├── overview.py                      # Overview-Wrapper (migriert)
+    ├── production_order.py              # Production Order-Wrapper (migriert)
+    ├── message_center.py                # Nachrichten-Zentrale (migriert)
+    ├── steering.py                      # Steering-Wrapper (migriert)
+    ├── settings.py                      # Settings-Wrapper (migriert)
+    ├── factory_steering.py              # Factory-Steuerung (unverändert)
+    └── generic_steering.py              # Generische-Steuerung (unverändert)
 ```
 
 ## 🚀 **Migration-Plan**
@@ -178,9 +184,9 @@ src_orbis/omf/dashboard/
 - ✅ OrderManager-Integration implementiert
 - ✅ Button-Key-Management verbessert
 
-### **Phase 6: Order2 Implementierung** 📋 **GEPLANT**
-- Auftragsverwaltung implementieren
-- Laufende Aufträge implementieren
+### **Phase 6: Production Order Implementierung** 📋 **GEPLANT**
+- Fertigungsauftrags-Verwaltung implementieren
+- Laufende Fertigungsaufträge implementieren
 - Integration mit bestehenden Systemen
 
 ## 🎯 **Qualitätssicherung**
@@ -212,12 +218,12 @@ omf_dashboard.py
 
 ### **Nachher (Modular)**
 ```
-omf_dashboard2.py
-├── show_overview2()          # Wrapper mit 4 Sub-Tabs
-├── show_order2()             # Wrapper mit 2 Sub-Tabs
-├── show_message_center2()    # Exakte Kopie
-├── show_steering2()          # Wrapper mit 2 Sub-Tabs
-└── show_settings2()          # Wrapper mit 6 Sub-Tabs
+omf_dashboard.py
+├── show_overview()           # Wrapper mit 4 Sub-Tabs
+├── show_production_order()   # Wrapper mit 2 Sub-Tabs
+├── show_message_center()     # Exakte Kopie
+├── show_steering()           # Wrapper mit 2 Sub-Tabs
+└── show_settings()           # Wrapper mit 6 Sub-Tabs
 
 + 18 Sub-Komponenten (exakte Kopien)
 ```
@@ -232,7 +238,7 @@ Das **Dashboard Refactoring** wurde erfolgreich abgeschlossen:
 - **Bessere Wartbarkeit** erreicht
 - **Keine Funktionsverluste** - 100% Kompatibilität
 
-Das **Dashboard2** ist bereit für den produktiven Einsatz und bietet eine **saubere, modulare Basis** für zukünftige Entwicklungen.
+Das **Dashboard** ist bereit für den produktiven Einsatz und bietet eine **saubere, modulare Basis** für zukünftige Entwicklungen.
 
 ## ✅ **Phase 6: Topic-Dokumentation - ABGESCHLOSSEN**
 

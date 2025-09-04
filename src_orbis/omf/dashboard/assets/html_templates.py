@@ -60,31 +60,10 @@ def get_bucket_template(position: str, workpiece_type: str = None) -> str:
         }
         color_config = colors.get(workpiece_type, colors["WHITE"])
 
-        return f"""
-        <div style="width: 140px; height: 140px; margin: 8px auto; position: relative;">
-            <!-- Werkstück-Rechteck (ragt über Bucket hinaus) -->
-            <div style="width: 120px; height: 80px; background-color: {color_config['bg']}; border: 2px solid {color_config['border']}; border-radius: 4px; position: absolute; bottom: 8px; left: 8px; display: flex; align-items: center; justify-content: center; z-index: 2;">
-                <div style="color: {color_config['text']}; font-weight: bold; font-size: 14px;">{workpiece_type}</div>
-            </div>
-            <!-- Bucket Container (hinter dem Werkstück) -->
-            <div style="width: 140px; height: 60px; border: 4px solid #000000; border-top: none; background-color: #f0f0f0; border-radius: 0 0 12px 12px; position: absolute; bottom: 0; left: 0; z-index: 1;">
-            </div>
-            <!-- Position Label unterhalb -->
-            <div style="text-align: center; font-size: 16px; font-weight: bold; color: #333; margin-top: 4px; position: absolute; bottom: -25px; left: 0; right: 0;">{position}</div>
-        </div>
-        """
+        return f'<div style="width: 140px; height: 140px; margin: 8px auto; position: relative;"><div style="width: 120px; height: 80px; background-color: {color_config["bg"]}; border: 2px solid {color_config["border"]}; border-radius: 4px; position: absolute; bottom: 8px; left: 8px; display: flex; align-items: center; justify-content: center; z-index: 2;"><div style="color: {color_config["text"]}; font-weight: bold; font-size: 14px;">{workpiece_type}</div></div><div style="width: 140px; height: 60px; border: 4px solid #000000; border-top: none; background-color: #f0f0f0; border-radius: 0 0 12px 12px; position: absolute; bottom: 0; left: 0; z-index: 1;"></div><div style="text-align: center; font-size: 16px; font-weight: bold; color: #333; margin-top: 4px; position: absolute; bottom: -25px; left: 0; right: 0;">{position}</div></div>'
     else:
         # Leerer Bucket
-        return f"""
-        <div style="width: 140px; height: 140px; margin: 8px auto; position: relative;">
-            <!-- Bucket Container -->
-            <div style="width: 140px; height: 60px; border: 4px solid #000000; border-top: none; background-color: #f9f9f9; border-radius: 0 0 12px 12px; position: absolute; bottom: 0; left: 0;">
-                <!-- Leerer Bucket - nur Hintergrund -->
-            </div>
-            <!-- Position Label unterhalb -->
-            <div style="text-align: center; font-size: 16px; font-weight: bold; color: #999; margin-top: 4px; position: absolute; bottom: -25px; left: 0; right: 0;">{position}</div>
-        </div>
-        """
+        return f'<div style="width: 140px; height: 140px; margin: 8px auto; position: relative;"><div style="width: 140px; height: 60px; border: 4px solid #000000; border-top: none; background-color: #f9f9f9; border-radius: 0 0 12px 12px; position: absolute; bottom: 0; left: 0;"></div><div style="text-align: center; font-size: 16px; font-weight: bold; color: #999; margin-top: 4px; position: absolute; bottom: -25px; left: 0; right: 0;">{position}</div></div>'
 
 
 def get_status_badge_template(status: str, status_type: str = "info") -> str:

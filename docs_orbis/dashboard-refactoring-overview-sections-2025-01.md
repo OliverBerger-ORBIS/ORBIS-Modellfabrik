@@ -25,13 +25,13 @@ overview_inventory.py:
 ├── 🏗️ Lagerpositionen (A1-C3) - 3x3 Raster
 └── 🔍 Debug-Info
 
-overview_order.py:
-├── 📋 Bestellungen (Header)
-├── 🛒 Bestellungen - 3 Werkstück-Boxen (ROT/BLUE/WHITE)
+overview_customer_order.py:
+├── 📋 Kundenaufträge (Header)
+├── 🛒 Kundenaufträge - 3 Werkstück-Boxen (ROT/BLUE/WHITE)
 └── OrderManager mit MQTT-Integration
 
-overview_order_raw.py:
-├── 📊 Bestellung von Rohmaterial
+overview_purchase_order.py:
+├── 📊 Rohmaterial-Bestellungen
 ├── 🔴 Rote Werkstücke (Bedarfsberechnung)
 ├── 🔵 Blaue Werkstücke (Bedarfsberechnung)
 └── ⚪ Weiße Werkstücke (Bedarfsberechnung)
@@ -49,11 +49,11 @@ overview_order_raw.py:
 - **Eindeutige Keys:** Vermeidung von `StreamlitDuplicateElementKey` Fehlern
 - **Strukturierte Namensgebung:**
   - `overview_inventory.py`: Keine Bestellungs-Buttons mehr
-  - `overview_order.py`: `order_inventory_order_*`
-  - `overview_order_raw.py`: `order_raw_*`
+  - `overview_customer_order.py`: `order_inventory_order_*`
+  - `overview_purchase_order.py`: `order_raw_*`
 
 #### **UI-Verbesserungen**
-- **Linksbündige Ausrichtung:** Werkstück-Boxen in `overview_order.py`
+- **Linksbündige Ausrichtung:** Werkstück-Boxen in `overview_customer_order.py`
 - **HTML-Rendering:** Korrekte Darstellung leerer Buckets
 - **Responsive Layout:** Flexbox-basierte Spalten
 
@@ -130,17 +130,17 @@ white_need = MAX_CAPACITY - white_count
 
 Alle Änderungen wurden mit Backups gesichert:
 - `overview_inventory.py.backup`
-- `overview_order.py.backup`
-- `overview_order_raw.py.backup`
+- `overview_customer_order.py.backup`
+- `overview_purchase_order.py.backup`
 
 **Recovery-Befehle:**
 ```bash
 cp src_orbis/omf/dashboard/components/overview_inventory.py.backup src_orbis/omf/dashboard/components/overview_inventory.py
-cp src_orbis/omf/dashboard/components/overview_order.py.backup src_orbis/omf/dashboard/components/overview_order.py
-cp src_orbis/omf/dashboard/components/overview_order_raw.py.backup src_orbis/omf/dashboard/components/overview_order_raw.py
+cp src_orbis/omf/dashboard/components/overview_customer_order.py.backup src_orbis/omf/dashboard/components/overview_customer_order.py
+cp src_orbis/omf/dashboard/components/overview_purchase_order.py.backup src_orbis/omf/dashboard/components/overview_purchase_order.py
 ```
 
 ---
 
 **Status:** ✅ Refactoring erfolgreich abgeschlossen  
-**Nächster Schritt:** Implementierung der Bestellungs-Funktionalität
+**Nächster Schritt:** Implementierung der Kundenauftrags-Funktionalität

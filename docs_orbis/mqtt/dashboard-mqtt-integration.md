@@ -254,8 +254,8 @@ except Exception as e:
 
 ## 📄 Files
 
-### **Modified Files:** ⚠️ **VERALTET**
-- **`aps_dashboard.py`**: Haupt-Dashboard mit MQTT-Integration ⚠️ **VERALTET: Wurde durch OMF Dashboard ersetzt**
+### **Modified Files:** ✅ **AKTUELL**
+- **`omf_dashboard.py`**: Haupt-Dashboard mit MQTT-Integration ✅ **AKTUELL: OMF Dashboard**
 
 ### **New Features:**
 - **MQTT Client**: Vollständiger MQTT-Client
