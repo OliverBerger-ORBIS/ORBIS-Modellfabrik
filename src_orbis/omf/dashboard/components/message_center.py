@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
-OMF Dashboard - Nachrichtenzentrale Component
+OMF Dashboard - Nachrichtenzentrale Component2
+Exakte Kopie von message_center.py
 Version: 3.0.0 - Ressourcenschonend mit Topic-Kategorien
 """
 

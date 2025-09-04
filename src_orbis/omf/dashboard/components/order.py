@@ -11,16 +11,13 @@ from .order_current import show_order_current
 from .order_management import show_order_management
 
 
-def show_order2():
+def show_order():
     """Hauptfunktion für die Aufträge mit Untertabs"""
     st.header("📋 Aufträge")
     st.markdown("Alle Auftragsfunktionen der ORBIS Modellfabrik")
 
     # Untertabs für verschiedene Auftragsbereiche
-    order_tab1, order_tab2 = st.tabs([
-        "📋 Auftragsverwaltung",
-        "🔄 Laufende Aufträge"
-    ])
+    order_tab1, order_tab2 = st.tabs(["📋 Auftragsverwaltung", "🔄 Laufende Aufträge"])
 
     # Tab 1: Auftragsverwaltung
     with order_tab1:
