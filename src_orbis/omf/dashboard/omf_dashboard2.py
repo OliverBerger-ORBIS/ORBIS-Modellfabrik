@@ -86,6 +86,15 @@ def main():
         st.info(f"   - Bestehender Client: {type(client).__name__}")
         st.info(f"   - Client ID: {id(client)}")
         st.info(f"   - Hat clear_history: {hasattr(client, 'clear_history')}")
+        
+        # WICHTIG: Client-Konfiguration bei Umgebungswechsel aktualisieren
+        if hasattr(client, 'config') and client.config != cfg:
+            st.info("🔄 **Debug: Aktualisiere Client-Konfiguration**")
+            client.config = cfg
+            # Client neu initialisieren mit neuer Konfiguration
+            if not client.connected:
+                client = get_omf_mqtt_client(cfg)
+                st.session_state.mqtt_client = client
 
     # Automatisch verbinden wenn nicht verbunden
     if not client.connected:
@@ -98,7 +107,31 @@ def main():
                 break
             time.sleep(0.1)
 
-    st.sidebar.write("MQTT:", "🟢" if client.connected else "🔴", f"{cfg['host']}:{cfg['port']}")
+    # Erweiterte MQTT-Informationen in der Sidebar
+    st.sidebar.markdown("---")
+    st.sidebar.markdown("### 🔗 MQTT Status")
+    
+    # Verbindungsstatus
+    if client.connected:
+        st.sidebar.success(f"🟢 Verbunden: {cfg['host']}:{cfg['port']}")
+    else:
+        st.sidebar.error(f"🔴 Nicht verbunden: {cfg['host']}:{cfg['port']}")
+    
+    # MQTT-Statistiken
+    try:
+        stats = client.get_connection_status()
+        messages_received = stats.get("stats", {}).get("messages_received", 0)
+        messages_sent = stats.get("stats", {}).get("messages_sent", 0)
+        
+        col1, col2 = st.sidebar.columns(2)
+        with col1:
+            st.sidebar.metric("📨 Empfangen", messages_received)
+        with col2:
+            st.sidebar.metric("📤 Gesendet", messages_sent)
+    except Exception:
+        st.sidebar.info("📊 Statistiken nicht verfügbar")
+    
+    # Subscribe zu allen Topics
     try:
         client.subscribe("#", qos=1)
     except Exception:

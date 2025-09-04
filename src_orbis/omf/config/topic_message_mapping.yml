@@ -34,6 +34,12 @@ topic_mappings:
     direction: "inbound"
     description: "CCU-Status empfangen"
     semantic_purpose: "CCU-Status überwachen"
+    
+  "ccu/pairing/state":
+    template: "ccu/state"
+    direction: "inbound"
+    description: "Modul-Pairing-Status mit Availability, Connection und IP-Adressen empfangen"
+    semantic_purpose: "Modul-Verfügbarkeit und Verbindungsstatus überwachen"
 
   # Module Topics - Generische Mappings
   "module/v1/ff/{module_id}/connection":

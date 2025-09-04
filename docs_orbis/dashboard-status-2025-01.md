@@ -24,6 +24,13 @@ Das OMF Dashboard ist aktuell in einem funktionalen Zustand für die grundlegend
 - ✅ **Publishing:** Nachrichten werden erfolgreich gesendet
 - ✅ **Singleton Pattern:** Implementiert und funktioniert
 
+### **Overview Modul-Status (NEU - Januar 2025)**
+- ✅ **Availability-Status:** Korrekte Anzeige von READY, BUSY, BLOCKED aus `ccu/pairing/state`
+- ✅ **Connection-Status:** Echte Verbindungsdaten aus MQTT-Nachrichten
+- ✅ **IP-Adressen:** Dynamische IP-Adressen aus `ccu/pairing/state`
+- ✅ **Modul-Informationen:** Vollständige Daten (Version, Kalibrierung, etc.)
+- ✅ **Real-time Updates:** Automatische Aktualisierung über MQTT-Subscribe
+
 ## ❌ **Was NICHT funktioniert:**
 
 ### **Nachrichten-Zentrale (message_center.py)**
@@ -84,6 +91,9 @@ Das OMF Dashboard ist aktuell in einem funktionalen Zustand für die grundlegend
 3. Template Management
 
 ## 📅 **Letzte Änderungen:**
+- **Overview Modul-Status:** Korrekte Availability-Status aus `ccu/pairing/state` implementiert (Januar 2025)
+- **Topic-Config:** `ccu/pairing/state` zur Konfiguration hinzugefügt
+- **Message-Templates:** Erweiterte Template-Struktur mit BUSY/BLOCKED Beispielen
 - **FTS Commands:** Korrekte Topics und Payloads implementiert
 - **Order Commands:** Korrekte Topics und Payloads implementiert
 - **Module Sequences:** Bereits funktional

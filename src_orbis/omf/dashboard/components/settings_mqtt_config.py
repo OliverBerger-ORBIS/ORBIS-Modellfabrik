@@ -20,7 +20,7 @@ def show_mqtt_config():
     }.get(current_mode, current_mode)
 
     st.info(f"**Aktueller Modus:** {mode_display} (Einstellung über Sidebar)")
-    st.markdown("💡 **Hinweis:** Der MQTT-Verbindungsmodus wird über die Sidebar konfiguriert.")
+    st.markdown("💡 **Hinweis:** Der MQTT-Verbindungsmodus wird über die Sidebar-Umgebungsauswahl (Live/Replay) konfiguriert.")
 
     st.markdown("---")
 
@@ -36,46 +36,12 @@ def show_mqtt_config():
         # Verwende Dashboard MQTT-Client
         mqtt_client = st.session_state.get("mqtt_client")
 
-        # Connection Status mit Modus-Anzeige
-        col1, col2 = st.columns(2)
-        with col1:
-            current_mode = st.session_state.get("mqtt_mode", "live")
-            mode_display = {
-                "live": "🏭 Live-Fabrik",
-                "replay": "🎬 Replay-Station",
-                "mock": "🧪 Mock-Modus",
-            }.get(current_mode, current_mode)
-
-            if mqtt_client.connected:
-                st.success(f"🔗 Verbunden ({mode_display})")
-                if st.button("🔌 Trennen", key="settings_mqtt_disconnect"):
-                    mqtt_client.disconnect()
-                    st.success("✅ Getrennt!")
-            else:
-                st.error(f"❌ Nicht verbunden ({mode_display})")
-                if st.button("🔗 Verbinden", key="settings_mqtt_connect"):
-                    # Verwende den gewählten Modus für die Verbindung
-                    mode = st.session_state.get("mqtt_mode", "live")
-                    # Ändere den Modus des bestehenden Clients
-                    mqtt_client.mode = mode
-                    if mqtt_client.connect():
-                        st.success(f"✅ Verbunden im {mode_display}-Modus!")
-                    else:
-                        st.error("❌ Verbindung fehlgeschlagen!")
-
-        with col2:
-            # Statistiken
-            stats = mqtt_client.get_connection_status()
-            st.metric("📨 Nachrichten empfangen", stats.get("stats", {}).get("messages_received", 0))
-            st.metric("📤 Nachrichten gesendet", stats.get("stats", {}).get("messages_sent", 0))
-
-        st.markdown("---")
 
         # Broker Konfiguration
         st.markdown("#### 🌐 Broker Einstellungen")
 
-        # Aktuelle Broker-Konfiguration basierend auf Modus
-        current_mode = st.session_state.get("mqtt_mode", "live")
+        # Aktuelle Broker-Konfiguration basierend auf Sidebar-Modus
+        current_mode = st.session_state.get("env", "live")
         mode_display = {
             "live": "🏭 Live-Fabrik",
             "replay": "🎬 Replay-Broker",

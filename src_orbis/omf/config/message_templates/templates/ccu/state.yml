@@ -250,9 +250,176 @@ templates:
         serialNumber: 5iO4
         type: FTS
         version: 1.1.0+git250d287
+    - modules:
+      - assigned: true
+        available: BUSY
+        connected: true
+        hasCalibration: true
+        ip: 192.168.0.80
+        lastSeen: '2025-08-14T14:14:49.535Z'
+        pairedSince: '2025-08-14T05:27:49.409Z'
+        serialNumber: SVR3QA0022
+        subType: HBW
+        type: MODULE
+        version: 1.3.0
+      - assigned: false
+        available: BLOCKED
+        connected: true
+        hasCalibration: false
+        ip: 192.168.0.50
+        lastSeen: '2025-08-14T14:14:49.165Z'
+        pairedSince: '2025-08-14T05:27:49.409Z'
+        productionDuration: 5
+        serialNumber: SVR4H76449
+        subType: DRILL
+        type: MODULE
+        version: 1.3.0
+      - assigned: false
+        available: BLOCKED
+        connected: true
+        hasCalibration: false
+        ip: 192.168.0.40
+        lastSeen: '2025-08-14T14:14:49.165Z'
+        pairedSince: '2025-08-14T05:27:49.409Z'
+        productionDuration: 5
+        serialNumber: SVR3QA2098
+        subType: MILL
+        type: MODULE
+        version: 1.3.0
+      transports:
+      - available: READY
+        batteryPercentage: 85
+        batteryVoltage: 8.5
+        charging: false
+        connected: true
+        ip: 192.168.0.104
+        lastLoadPosition: '1'
+        lastModuleSerialNumber: SVR3QA0022
+        lastNodeId: SVR3QA0022
+        lastSeen: '2025-08-14T14:14:45.123Z'
+        pairedSince: '2025-08-14T05:27:49.409Z'
+        serialNumber: 5iO4
+        type: FTS
+        version: 1.1.0+git250d287
     sub_category: State
-    template_structure: {}
-    validation_rules: []
+    template_structure:
+      modules:
+        type: array
+        description: "Liste aller gepaarten Module"
+        items:
+          type: object
+          properties:
+            serialNumber:
+              type: string
+              description: "Eindeutige Seriennummer des Moduls"
+              example: "SVR3QA0022"
+            type:
+              type: string
+              enum: ["MODULE"]
+              description: "Typ des Geräts"
+            connected:
+              type: boolean
+              description: "Verbindungsstatus zum Modul"
+            available:
+              type: string
+              enum: ["READY", "BUSY", "BLOCKED"]
+              description: "Verfügbarkeitsstatus des Moduls"
+            assigned:
+              type: boolean
+              description: "Ob das Modul einem Auftrag zugewiesen ist"
+            subType:
+              type: string
+              enum: ["HBW", "DRILL", "MILL", "DPS", "AIQS", "CHRG"]
+              description: "Spezifischer Modultyp"
+            ip:
+              type: string
+              format: ipv4
+              description: "IP-Adresse des Moduls"
+            version:
+              type: string
+              description: "Firmware-Version des Moduls"
+            hasCalibration:
+              type: boolean
+              description: "Ob das Modul kalibriert ist"
+            lastSeen:
+              type: string
+              format: date-time
+              description: "Letzter Kontakt mit dem Modul"
+            pairedSince:
+              type: string
+              format: date-time
+              description: "Seit wann das Modul gepaart ist"
+            productionDuration:
+              type: integer
+              description: "Produktionsdauer in Sekunden (nur für Produktionsmodule)"
+              minimum: 1
+              maximum: 3600
+      transports:
+        type: array
+        description: "Liste aller Transportfahrzeuge"
+        items:
+          type: object
+          properties:
+            serialNumber:
+              type: string
+              description: "Eindeutige Seriennummer des Transportfahrzeugs"
+              example: "5iO4"
+            type:
+              type: string
+              enum: ["FTS"]
+              description: "Typ des Transportfahrzeugs"
+            connected:
+              type: boolean
+              description: "Verbindungsstatus zum Transportfahrzeug"
+            available:
+              type: string
+              enum: ["READY", "BUSY", "BLOCKED"]
+              description: "Verfügbarkeitsstatus des Transportfahrzeugs"
+            ip:
+              type: string
+              format: ipv4
+              description: "IP-Adresse des Transportfahrzeugs"
+            version:
+              type: string
+              description: "Firmware-Version des Transportfahrzeugs"
+            batteryPercentage:
+              type: integer
+              description: "Akkustand in Prozent"
+              minimum: 0
+              maximum: 100
+            batteryVoltage:
+              type: number
+              description: "Akkuspannung in Volt"
+              minimum: 0
+              maximum: 15
+            charging:
+              type: boolean
+              description: "Ob das Transportfahrzeug gerade lädt"
+            lastSeen:
+              type: string
+              format: date-time
+              description: "Letzter Kontakt mit dem Transportfahrzeug"
+            pairedSince:
+              type: string
+              format: date-time
+              description: "Seit wann das Transportfahrzeug gepaart ist"
+            lastLoadPosition:
+              type: string
+              description: "Letzte Lade-Position"
+            lastModuleSerialNumber:
+              type: string
+              description: "Seriennummer des zuletzt transportierten Moduls"
+            lastNodeId:
+              type: string
+              description: "Letzte Node-ID"
+    validation_rules:
+    - "available muss in [READY, BUSY, BLOCKED] sein"
+    - "connected muss boolean sein"
+    - "assigned muss boolean sein"
+    - "ip muss gültige IPv4-Adresse sein"
+    - "batteryPercentage muss zwischen 0 und 100 liegen"
+    - "batteryVoltage muss zwischen 0 und 15 liegen"
+    - "productionDuration muss zwischen 1 und 3600 Sekunden liegen"
   ccu/state/config:
     category: CCU
     description: Auto-analyzed template for ccu/state/config

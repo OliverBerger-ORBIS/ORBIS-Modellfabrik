@@ -199,6 +199,7 @@ def _process_module_messages(messages, module_status_store):
     connection_pattern = re.compile(r"^module/v1/ff/(?P<module_id>[^/]+)/connection$")
     state_pattern = re.compile(r"^module/v1/ff/(?P<module_id>[^/]+)/state$")
     factsheet_pattern = re.compile(r"^module/v1/ff/(?P<module_id>[^/]+)/factsheet$")
+    pairing_pattern = re.compile(r"^ccu/pairing/state$")
 
     for msg in messages:
         try:
@@ -250,6 +251,60 @@ def _process_module_messages(messages, module_status_store):
                     module_status_store[module_id].get("message_count", 0) + 1
                 )
 
+            # Process ccu/pairing/state messages (NEU - korrekte Availability-Daten)
+            pairing_match = pairing_pattern.match(topic)
+            if pairing_match:
+                # Parse ccu/pairing/state payload
+                modules = payload.get("modules", [])
+                for module in modules:
+                    serial_number = module.get("serialNumber", "")
+                    if not serial_number:
+                        continue
+                    
+                    # Initialize module in store if not exists
+                    if serial_number not in module_status_store:
+                        module_status_store[serial_number] = {}
+                    
+                    # Update module status with real data from ccu/pairing/state
+                    module_status_store[serial_number]["connected"] = module.get("connected", False)
+                    module_status_store[serial_number]["available"] = module.get("available", "Unknown")
+                    module_status_store[serial_number]["assigned"] = module.get("assigned", False)
+                    module_status_store[serial_number]["ip"] = module.get("ip", "Unknown")
+                    module_status_store[serial_number]["subType"] = module.get("subType", "Unknown")
+                    module_status_store[serial_number]["version"] = module.get("version", "Unknown")
+                    module_status_store[serial_number]["hasCalibration"] = module.get("hasCalibration", False)
+                    module_status_store[serial_number]["lastSeen"] = module.get("lastSeen", "")
+                    module_status_store[serial_number]["last_update"] = datetime.fromtimestamp(ts).strftime("%H:%M:%S")
+                    module_status_store[serial_number]["message_count"] = (
+                        module_status_store[serial_number].get("message_count", 0) + 1
+                    )
+                
+                # Also process transports if available
+                transports = payload.get("transports", [])
+                for transport in transports:
+                    serial_number = transport.get("serialNumber", "")
+                    if not serial_number:
+                        continue
+                    
+                    # Initialize transport in store if not exists
+                    if serial_number not in module_status_store:
+                        module_status_store[serial_number] = {}
+                    
+                    # Update transport status
+                    module_status_store[serial_number]["connected"] = transport.get("connected", False)
+                    module_status_store[serial_number]["available"] = transport.get("available", "Unknown")
+                    module_status_store[serial_number]["ip"] = transport.get("ip", "Unknown")
+                    module_status_store[serial_number]["subType"] = "FTS"
+                    module_status_store[serial_number]["version"] = transport.get("version", "Unknown")
+                    module_status_store[serial_number]["batteryPercentage"] = transport.get("batteryPercentage", 0)
+                    module_status_store[serial_number]["batteryVoltage"] = transport.get("batteryVoltage", 0)
+                    module_status_store[serial_number]["charging"] = transport.get("charging", False)
+                    module_status_store[serial_number]["lastSeen"] = transport.get("lastSeen", "")
+                    module_status_store[serial_number]["last_update"] = datetime.fromtimestamp(ts).strftime("%H:%M:%S")
+                    module_status_store[serial_number]["message_count"] = (
+                        module_status_store[serial_number].get("message_count", 0) + 1
+                    )
+
         except Exception:
             continue
 
@@ -289,6 +344,12 @@ def show_overview_module_status():
     if "module_status_last_count" not in st.session_state:
         st.session_state["module_status_last_count"] = 0
 
+    # Subscribe to ccu/pairing/state for real-time module status
+    try:
+        mqtt_client.subscribe("ccu/pairing/state", qos=1)
+    except Exception as e:
+        st.warning(f"⚠️ Fehler beim Subscribe zu ccu/pairing/state: {e}")
+
     # Get recent messages from MQTT client
     try:
         messages = mqtt_client.drain()
@@ -317,25 +378,36 @@ def show_overview_module_status():
         # Get display name
         display_name = module_info.get("name_lang_de", module_info.get("name", module_id))
 
-        # Status indicators
-        connection_status = real_time_status.get("connection", "OFFLINE")
+        # Status indicators - NEU: Verwende echte Daten aus ccu/pairing/state
+        connected = real_time_status.get("connected", False)
         connection_display = (
             f"{get_status_icon('available')} Connected"
-            if connection_status == "ONLINE"
+            if connected
             else f"{get_status_icon('offline')} Disconnected"
         )
 
-        module_state = real_time_status.get("state", "Unknown")
-        availability_display = get_enhanced_status_display(module_state, module_info["type"])
+        # Availability-Status aus ccu/pairing/state
+        available = real_time_status.get("available", "Unknown")
+        if available == "READY":
+            availability_display = f"{get_status_icon('available')} Verfügbar"
+        elif available == "BUSY":
+            availability_display = f"{get_status_icon('busy')} Beschäftigt"
+        elif available == "BLOCKED":
+            availability_display = f"{get_status_icon('blocked')} Blockiert"
+        else:
+            availability_display = f"⚪ {available}"
 
         recent_messages = real_time_status.get("message_count", 0)
+
+        # IP-Adresse aus echten Daten oder Fallback
+        ip_address = real_time_status.get("ip", module_info.get("ip_range", "Unknown"))
 
         module_table_data.append(
             {
                 "Name": f"{icon_display} {display_name}",
                 "ID": module_info["id"],
                 "Type": module_info.get("type", "Unknown"),
-                "IP": module_info.get("ip_range", "Unknown"),
+                "IP": ip_address,
                 "Connected": connection_display,
                 "Availability Status": availability_display,
                 "Recent Messages": recent_messages,

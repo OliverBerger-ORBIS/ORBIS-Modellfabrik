@@ -109,6 +109,14 @@ topics:
     template: "ccu/state/status"
     template_direction: "inbound"
     
+  "ccu/pairing/state":
+    category: "CCU"
+    sub_category: "State"
+    friendly_name: "CCU : pairing : state"
+    description: "Modul-Pairing-Status mit Availability, Connection und IP-Adressen"
+    template: "ccu/state"
+    template_direction: "inbound"
+    
   "ccu/status/health":
     category: "CCU"
     sub_category: "Status"
