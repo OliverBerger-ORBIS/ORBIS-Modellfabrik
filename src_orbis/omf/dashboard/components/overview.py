@@ -5,11 +5,11 @@ Hauptkomponente für alle Übersichtsfunktionen mit Untertabs
 
 import streamlit as st
 
+from .overview_customer_order import show_overview_order
 from .overview_inventory import show_overview_inventory
 
 # Import der Unterkomponenten
 from .overview_module_status import show_overview_module_status
-from .overview_customer_order import show_overview_order
 from .overview_purchase_order import show_overview_order_raw
 
 

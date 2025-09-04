@@ -25,25 +25,27 @@
 - **Session-Daten** organisiert ablegen
 - **Git-freundlich** (große Dateien ignorieren)
 
-## **📋 Dashboard-Tab-Struktur (Einfach)**
+## **📋 Dashboard-Tab-Struktur (Aktuell)**
 
 ### **Produktiv-Dashboard (OMF)**
-1. **Overview**
+1. **Übersicht**
    - Modul-Status
-   - Bestellung
-   - Bestellung-Rohware
    - Lagerbestand
-2. **Aufträge (Orders)**
-   - Auftragsverwaltung
-   - Laufende Aufträge
-3. **Messages-Monitor**
+   - Kundenaufträge
+   - Rohmaterial-Bestellungen
+2. **Fertigungsaufträge**
+   - Fertigungsauftrags-Verwaltung
+   - Laufende Fertigungsaufträge
+3. **Nachrichtenzentrale**
    - MQTT-Messages anzeigen
-4. **Message-Controls**
-   - Fabrik/Module steuern
-5. **Settings**
+4. **Steuerung**
+   - Factory-Steuerung
+   - Generic-Steuerung
+5. **Einstellungen**
    - Dashboard-Settings
    - Modul-Config
    - NFC-Config
+   - MQTT-Config
    - Topic-Config
    - Messages-Templates
 
@@ -61,22 +63,29 @@
 - [x] Basis-Tab-Struktur
 - [x] Konfiguration
 
-### **Phase 2: Komponenten-Migration**
+### **Phase 2: Komponenten-Migration** ✅
 - [x] Module Status aus V2.0.0 übernehmen
-- [ ] MessageTemplate Manager integrieren
-- [ ] MQTT-Integration
+- [x] MessageTemplate Manager integrieren
+- [x] MQTT-Integration
+- [x] Dashboard2 → Dashboard Migration
 
-### **Phase 3: Neue Features**
-- [ ] Order Management
-- [ ] Session Management
-- [ ] Analysis-Tools
+### **Phase 3: Neue Features** ✅
+- [x] Overview Components (Lagerbestand, Kundenaufträge, Rohmaterial-Bestellungen)
+- [x] Production Order Components (Auftragsverwaltung, Laufende Aufträge)
+- [x] HTML Templates für visuelle Darstellung
+- [x] Namenskonvention (Customer/Purchase/Production Orders)
+
+### **Phase 4: Aktuelle Entwicklung** 🔄
+- [ ] Production Order Management vollständig implementieren
+- [ ] Production Order Current vollständig implementieren
+- [ ] Topic-Dokumentation für alle Module
+- [ ] Advanced Workflow Management
 
 ## **🧪 Test-Strategie**
 
 ### **Nach jeder Änderung:**
 ```bash
 python -m py_compile src_orbis/omf/dashboard/omf_dashboard.py
-python test_dashboard_before_commit.py
 streamlit run src_orbis/omf/dashboard/omf_dashboard.py --server.port=8506
 ```
 
@@ -99,5 +108,5 @@ streamlit run src_orbis/omf/dashboard/omf_dashboard.py --server.port=8506
 
 ---
 
-**Status:** ✅ Regeln definiert
-**Nächster Schritt:** Einfaches Dashboard-Grundgerüst erstellen
+**Status:** ✅ Regeln definiert und aktualisiert
+**Nächster Schritt:** Production Order Management vollständig implementieren

@@ -123,24 +123,3 @@ def get_module_card_template(module_name: str, status: str, ip_address: str = No
     """
 
 
-def get_test_template() -> str:
-    """
-    Einfaches Test-Template zum Testen der Template-Funktionalität
-
-    Returns:
-        HTML-String für Test-Template
-    """
-    return """
-    <div style="border: 2px solid #4CAF50; border-radius: 8px; padding: 20px; margin: 10px; background-color: #f1f8e9;">
-        <h3 style="color: #2e7d32; margin-top: 0;">🎉 HTML-Template erfolgreich geladen!</h3>
-        <p style="color: #388e3c;">Dieses Template wurde aus <code>assets/html_templates.py</code> geladen.</p>
-        <div style="background-color: #e8f5e8; padding: 10px; border-radius: 4px; margin-top: 10px;">
-            <strong>Template-Status:</strong> ✅ Funktional<br>
-            <strong>Import-Pfad:</strong> assets.html_templates<br>
-            <strong>Zeitstempel:</strong> <span id="timestamp"></span>
-        </div>
-        <script>
-            document.getElementById('timestamp').textContent = new Date().toLocaleString();
-        </script>
-    </div>
-    """

@@ -6,13 +6,19 @@ Das `components` Verzeichnis enthält alle UI-Komponenten für das OMF Dashboard
 
 ## Components
 
-### Steering Component
+### Steering Components
 
+#### Main Steering Component
 **Datei:** `steering.py`
 
-Implementiert die Steuerungs-Funktionalität für die ORBIS Modellfabrik über MQTT-Nachrichten.
+Haupt-Tab für die Steuerungs-Funktionalität der ORBIS Modellfabrik.
 
-#### Features:
+#### Factory Steering Component
+**Datei:** `steering_factory.py`
+
+Implementiert die Factory-Steuerung über MQTT-Nachrichten.
+
+##### Features:
 
 ##### 🏭 Factory Steuerung
 - **Factory Reset:** Zurücksetzen der Fabrik mit `withStorage` und `clearStorage` Optionen
@@ -30,6 +36,13 @@ Implementiert die Steuerungs-Funktionalität für die ORBIS Modellfabrik über M
 - **Docke an:** FTS an Lade-Station andocken
 - **Status abfragen:** Aktuellen FTS-Status abrufen
 
+#### Generic Steering Component
+**Datei:** `steering_generic.py`
+
+Implementiert den generischen Message-Generator für MQTT-Nachrichten.
+
+##### Features:
+
 ##### 📡 Message-Generator
 - **Topic-basierte Auswahl:** User wählt MQTT-Topic statt Template
 - **Template-Mapping:** Automatisches Laden des passenden Templates
@@ -44,16 +57,10 @@ def show_steering():
     """Hauptfunktion für Steuerung-Tab"""
     
     # Factory Steuerung
-    show_factory_control()
+    show_factory_steering()
     
-    # Modul-Steuerung
-    show_module_sequence_control()
-    
-    # FTS-Steuerung
-    show_fts_control()
-    
-    # Message-Generator
-    show_message_generator()
+    # Generic Steuerung
+    show_generic_steering()
 ```
 
 #### Key Functions:
@@ -70,14 +77,108 @@ def show_steering():
 - `_get_module_status()`: Modul-Status abrufen
 
 ##### FTS Control:
-- `show_fts_control()`: FTS-Steuerung mit Status-abhängigen Buttons
+- `show_fts_steering()`: FTS-Steuerung mit Status-abhängigen Buttons
 - `_send_fts_command()`: FTS-Befehl senden
 - `_get_fts_status()`: FTS-Status abrufen
 
 ##### Message Generator:
-- `show_message_generator()`: Topic-basierte Template-Auswahl
+- `show_generic_steering()`: Topic-basierte Template-Auswahl
 - `_generate_topic_specific_params()`: Topic-spezifische Parameter generieren
 - `_resolve_topic_variables()`: Variable in Topic-Patterns auflösen
+
+### Overview Components
+
+#### Overview Inventory Component
+**Datei:** `overview_inventory.py`
+
+Zeigt den aktuellen Lagerbestand der HBW-Module mit visueller Darstellung.
+
+##### Features:
+- **Lagerbestand-Anzeige:** Aktuelle Werkstück-Verfügbarkeit
+- **Visuelle Darstellung:** HTML-Templates für Buckets und Werkstücke
+- **Auto-Refresh:** Automatische Aktualisierung der Bestände
+- **Manual Refresh:** Manuelle Aktualisierung über Sidebar
+
+#### Overview Customer Order Component
+**Datei:** `overview_customer_order.py`
+
+Implementiert Kundenaufträge mit direkter MQTT-Integration.
+
+##### Features:
+- **Direkte Bestellung:** Werkstück-Bestellungen direkt an Factory
+- **Farb-Auswahl:** Rot, Weiß, Blau Werkstücke
+- **MQTT-Integration:** Direkter Versand über MQTT
+- **Status-Feedback:** Erfolgs-/Fehlermeldungen
+
+#### Overview Purchase Order Component
+**Datei:** `overview_purchase_order.py`
+
+Zeigt Rohmaterial-Bestellungen mit visueller Darstellung.
+
+##### Features:
+- **Rohmaterial-Bedarf:** Anzeige des aktuellen Bedarfs
+- **Visuelle Templates:** HTML-Templates für Buckets
+- **Bedarf-Tracking:** Verfolgung von Bestellungen
+
+### Production Order Components
+
+#### Production Order Management Component
+**Datei:** `production_order_management.py`
+
+Verwaltung von Fertigungsaufträgen (in Entwicklung).
+
+##### Features:
+- **Auftragserstellung:** Neue Fertigungsaufträge anlegen
+- **Auftragsverfolgung:** Status und Fortschritt überwachen
+- **Auftragshistorie:** Vergangene Aufträge einsehen
+- **Prioritätsverwaltung:** Aufträge nach Priorität sortieren
+- **Ressourcenplanung:** Verfügbare Module berücksichtigen
+
+#### Production Order Current Component
+**Datei:** `production_order_current.py`
+
+Anzeige laufender Fertigungsaufträge (in Entwicklung).
+
+##### Features:
+- **Aktive Aufträge:** Anzeige aller laufenden Fertigungsaufträge
+- **Fortschrittsanzeige:** Visueller Fortschritt der Produktionsschritte
+- **Modul-Status:** Welche Module sind aktuell beschäftigt
+- **Werkstück-Verfolgung:** Position der Werkstücke in der Fabrik
+- **Echtzeit-Updates:** Live-Aktualisierung der Auftragsstatus
+
+### Message Center Component
+**Datei:** `message_center.py`
+
+Zentrale Anzeige aller MQTT-Nachrichten mit Filter- und Suchfunktionen.
+
+##### Features:
+- **Nachrichten-Historie:** Alle empfangenen und gesendeten Nachrichten
+- **Filter-Funktionen:** Nach Topic, Richtung, Zeitraum filtern
+- **Suchfunktion:** Volltext-Suche in Nachrichten
+- **Live-Updates:** Echtzeit-Anzeige neuer Nachrichten
+- **Export-Funktionen:** Nachrichten exportieren
+
+### Settings Component
+**Datei:** `settings.py`
+
+Konfigurations-Interface für das OMF Dashboard.
+
+#### Features:
+- **Modul-Konfiguration:** Aktivierung/Deaktivierung von Modulen
+- **NFC-Konfiguration:** Werkstück-Konfiguration nach Farben
+- **Topic-Konfiguration:** MQTT-Topic-Verwaltung
+- **MQTT-Broker:** Broker-Konfiguration und Verbindung
+- **MQTT-Mock:** Mock-Modus für Tests
+
+### HTML Templates
+**Datei:** `assets/html_templates.py`
+
+Wiederverwendbare HTML-Templates für UI-Elemente.
+
+##### Features:
+- **Bucket-Templates:** Visuelle Darstellung von Lager-Buckets
+- **Werkstück-Templates:** Farbige Werkstück-Darstellung
+- **Responsive Design:** Anpassbare Größen und Layouts
 
 #### MQTT Integration:
 
@@ -120,24 +221,12 @@ st.session_state.mqtt_mock_enabled = True
 ##### Unit Tests:
 - `tests_orbis/test_message_generator.py`: Message-Generator Tests
 - `tests_orbis/test_topic_mapping_manager.py`: Topic-Mapping Tests
+- `tests_orbis/test_dashboard_mqtt_integration.py`: Dashboard MQTT Tests
 
 ##### Integration Tests:
 - Dashboard-Integration getestet
 - MQTT-Mock-Modus funktioniert
 - Template-Mapping korrekt
-
-## Settings Component
-
-**Datei:** `settings.py`
-
-Konfigurations-Interface für das OMF Dashboard.
-
-#### Features:
-- **Modul-Konfiguration:** Aktivierung/Deaktivierung von Modulen
-- **NFC-Konfiguration:** Werkstück-Konfiguration nach Farben
-- **Topic-Konfiguration:** MQTT-Topic-Verwaltung
-- **MQTT-Broker:** Broker-Konfiguration und Verbindung
-- **MQTT-Mock:** Mock-Modus für Tests
 
 ## Future Enhancements
 
@@ -147,3 +236,4 @@ Konfigurations-Interface für das OMF Dashboard.
 - **History Tracking:** Nachrichten-Historie und Logs
 - **Performance Monitoring:** System-Performance-Überwachung
 - **User Management:** Benutzer-Rollen und Berechtigungen
+- **Production Order Implementation:** Vollständige Fertigungsauftrags-Verwaltung

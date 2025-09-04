@@ -11,9 +11,20 @@ OMF Dashboard
 ├── Frontend (Streamlit)
 │   ├── Main Dashboard (omf_dashboard.py)
 │   └── Components
+│       ├── Overview Components
+│       │   ├── overview_inventory.py      # Lagerbestand
+│       │   ├── overview_customer_order.py # Kundenaufträge
+│       │   └── overview_purchase_order.py # Rohmaterial-Bestellungen
+│       ├── Production Order Components
+│       │   ├── production_order_management.py # Auftragsverwaltung
+│       │   └── production_order_current.py    # Laufende Aufträge
+│       ├── Steering Components
+│       │   ├── steering_factory.py       # Factory-Steuerung
+│       │   └── steering_generic.py       # Generic-Steuerung
+│       ├── Message Center (message_center.py)
 │       ├── Settings (settings.py)
-│       ├── Steering (steering.py) ✨ NEW
-│       └── Overview (overview.py)
+│       └── Assets
+│           └── html_templates.py         # HTML-Templates
 ├── Business Logic (tools/)
 │   ├── MessageGenerator ✨ ENHANCED
 │   ├── TopicMappingManager ✨ NEW
@@ -32,20 +43,76 @@ OMF Dashboard
 **Main Entry Point:** `src_orbis/omf/dashboard/omf_dashboard.py`
 
 #### Tab Structure:
-- **Overview:** System-Übersicht und Status
-- **Settings:** Konfiguration und Einstellungen
-- **Steuerung:** ✨ **NEW** - Factory, Module und Message-Generator
-- **Message-Templates:** Template-Verwaltung
-- **Analysis:** Analyse-Tools (separat)
+- **Übersicht:** Modul-Status, Lagerbestand, Kundenaufträge, Rohmaterial-Bestellungen
+- **Fertigungsaufträge:** Auftragsverwaltung und laufende Fertigungsaufträge
+- **Nachrichtenzentrale:** MQTT-Nachrichten mit Filterung
+- **Steuerung:** Factory-, Modul- und FTS-Steuerung mit Message-Generator
+- **Einstellungen:** Dashboard-, Modul-, NFC-, MQTT-, Topic- und Template-Konfiguration
 
-### 2. Steering Component ✨ NEW
+### 2. Overview Components ✨ NEW
 
-**File:** `src_orbis/omf/dashboard/components/steering.py`
+#### Overview Inventory Component
+**File:** `src_orbis/omf/dashboard/components/overview_inventory.py`
+
+#### Features:
+- **Lagerbestand-Anzeige:** Aktuelle Werkstück-Verfügbarkeit
+- **Visuelle Darstellung:** HTML-Templates für Buckets und Werkstücke
+- **Auto-Refresh:** Automatische Aktualisierung der Bestände
+- **Manual Refresh:** Manuelle Aktualisierung über Sidebar
+
+#### Overview Customer Order Component
+**File:** `src_orbis/omf/dashboard/components/overview_customer_order.py`
+
+#### Features:
+- **Direkte Bestellung:** Werkstück-Bestellungen direkt an Factory
+- **Farb-Auswahl:** Rot, Weiß, Blau Werkstücke
+- **MQTT-Integration:** Direkter Versand über MQTT
+- **Status-Feedback:** Erfolgs-/Fehlermeldungen
+
+#### Overview Purchase Order Component
+**File:** `src_orbis/omf/dashboard/components/overview_purchase_order.py`
+
+#### Features:
+- **Rohmaterial-Bedarf:** Anzeige des aktuellen Bedarfs
+- **Visuelle Templates:** HTML-Templates für Buckets
+- **Bedarf-Tracking:** Verfolgung von Bestellungen
+
+### 3. Production Order Components ✨ NEW
+
+#### Production Order Management Component
+**File:** `src_orbis/omf/dashboard/components/production_order_management.py`
+
+#### Features:
+- **Auftragserstellung:** Neue Fertigungsaufträge anlegen
+- **Auftragsverfolgung:** Status und Fortschritt überwachen
+- **Auftragshistorie:** Vergangene Aufträge einsehen
+- **Prioritätsverwaltung:** Aufträge nach Priorität sortieren
+- **Ressourcenplanung:** Verfügbare Module berücksichtigen
+
+#### Production Order Current Component
+**File:** `src_orbis/omf/dashboard/components/production_order_current.py`
+
+#### Features:
+- **Aktive Aufträge:** Anzeige aller laufenden Fertigungsaufträge
+- **Fortschrittsanzeige:** Visueller Fortschritt der Produktionsschritte
+- **Modul-Status:** Welche Module sind aktuell beschäftigt
+- **Werkstück-Verfolgung:** Position der Werkstücke in der Fabrik
+- **Echtzeit-Updates:** Live-Aktualisierung der Auftragsstatus
+
+### 4. Steering Components ✨ NEW
+
+#### Factory Steering Component
+**File:** `src_orbis/omf/dashboard/components/steering_factory.py`
 
 #### Features:
 - **Factory Control:** Reset und Bestellungen
 - **Module Control:** MILL, DRILL, AIQS Sequenz-Steuerung
 - **FTS Control:** Status-abhängige FTS-Steuerung
+
+#### Generic Steering Component
+**File:** `src_orbis/omf/dashboard/components/steering_generic.py`
+
+#### Features:
 - **Message Generator:** Topic-basierte Template-Auswahl
 
 #### Key Innovations:
@@ -54,7 +121,16 @@ OMF Dashboard
 - **MQTT Mock:** Test-Modus ohne echte MQTT-Verbindung
 - **Variable Resolution:** `{module_id}` → konkrete Seriennummern
 
-### 3. Business Logic Layer
+### 5. HTML Templates ✨ NEW
+
+**File:** `src_orbis/omf/dashboard/assets/html_templates.py`
+
+#### Features:
+- **Bucket-Templates:** Visuelle Darstellung von Lager-Buckets
+- **Werkstück-Templates:** Farbige Werkstück-Darstellung
+- **Responsive Design:** Anpassbare Größen und Layouts
+
+### 6. Business Logic Layer
 
 #### MessageGenerator ✨ ENHANCED
 **File:** `src_orbis/omf/tools/message_generator.py`
@@ -87,7 +163,7 @@ OMF Dashboard
 - **Workflow History:** Abgeschlossene Workflows speichern
 - **Singleton Pattern:** Globale Workflow-Verwaltung
 
-### 4. Configuration Management
+### 7. Configuration Management
 
 #### Topic-Message Mapping ✨ NEW
 **File:** `src_orbis/omf/config/topic_message_mapping.yml`

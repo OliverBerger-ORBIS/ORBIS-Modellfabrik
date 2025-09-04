@@ -18,13 +18,14 @@ from omf.tools.mqtt_client import get_omf_mqtt_client  # noqa: E402
 # Import settings components - Modulare Architektur
 try:
     from components.message_center import show_message_center
-    from components.production_order import show_production_order
     from components.overview import show_overview
+    from components.production_order import show_production_order
     from components.settings import show_settings
     from components.steering import show_steering
 
 except ImportError:
     pass
+
 
 def main():
     """Hauptfunktion des OMF Dashboards - Modulare Architektur"""
@@ -65,12 +66,10 @@ def main():
         client = get_omf_mqtt_client(cfg)
         st.session_state.mqtt_client = client
 
-
     else:
- 
+
         client = st.session_state.mqtt_client
         st.info(f"   - Verwende bestehenden Client: {type(client).__name__}")
-
 
     # Automatisch verbinden wenn nicht verbunden
     if not client.connected:
@@ -91,7 +90,7 @@ def main():
     # Daher prüfen wir auch die Broker-Verbindung
     try:
         # Teste ob Client funktioniert (auch wenn connected=False)
-        if hasattr(client, 'client') and client.client and client.client.is_connected():
+        if hasattr(client, "client") and client.client and client.client.is_connected():
             st.sidebar.success(f"🟢 Verbunden: {cfg['host']}:{cfg['port']}")
         elif client.connected:
             st.sidebar.success(f"🟢 Verbunden: {cfg['host']}:{cfg['port']}")

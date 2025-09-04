@@ -71,10 +71,11 @@ streamlit run src_orbis/omf/dashboard/omf_dashboard.py --server.port 8506
 ## 📊 Features
 
 ### 🏭 OMF Dashboard
+- **Übersicht**: Modul-Status, Lagerbestand, Kundenaufträge, Rohmaterial-Bestellungen
+- **Fertigungsaufträge**: Auftragsverwaltung und laufende Fertigungsaufträge
 - **Nachrichtenzentrale**: Anzeige aller MQTT-Nachrichten mit Filterung
-- **Dashboard-Einstellungen**: MQTT-Modus konfigurieren (Live/Replay/Mock)
-- **Steuerung**: Nachrichten an die Fabrik senden
-- **Prioritäten-System**: Nachrichten nach Wichtigkeit filtern
+- **Steuerung**: Factory-, Modul- und FTS-Steuerung mit Message-Generator
+- **Einstellungen**: Dashboard-, Modul-, NFC-, MQTT-, Topic- und Template-Konfiguration
 
 ### 🎬 OMF Replay Station
 - **Session-Replay**: Aufgenommene MQTT-Sessions wiedergeben
@@ -109,9 +110,17 @@ ORBIS-Modellfabrik/
 │       ├── dashboard/
 │       │   ├── omf_dashboard.py          # Haupt-Dashboard
 │       │   ├── components/
+│       │   │   ├── overview_inventory.py      # Lagerbestand
+│       │   │   ├── overview_customer_order.py # Kundenaufträge
+│       │   │   ├── overview_purchase_order.py # Rohmaterial-Bestellungen
+│       │   │   ├── production_order_management.py # Auftragsverwaltung
+│       │   │   ├── production_order_current.py    # Laufende Aufträge
 │       │   │   ├── message_center.py     # Nachrichtenzentrale
+│       │   │   ├── steering_factory.py   # Factory-Steuerung
+│       │   │   ├── steering_generic.py   # Generic-Steuerung
 │       │   │   ├── settings.py           # Dashboard-Einstellungen
-│       │   │   └── steering.py           # Steuerung
+│       │   │   └── assets/
+│       │   │       └── html_templates.py # HTML-Templates
 │       │   └── assets/                   # Logos und Assets
 │       ├── replay_station/
 │       │   └── replay_station.py         # Replay Station
@@ -171,7 +180,11 @@ pkill mosquitto
 
 ## 📚 Dokumentation
 
-- **Entwicklungsstand**: `docs_orbis/omf_replay_station_progress.md`
+- **Dashboard-Status**: `docs_orbis/dashboard-status-2025-01.md`
+- **Dashboard-Refactoring**: `docs_orbis/dashboard-refactoring-2025-01.md`
+- **Requirements**: `docs_orbis/requirements_dashboard.md`
+- **Architektur**: `OMF_ARCHITECTURE.md`
+- **Entwicklungsregeln**: `OMF_DEVELOPMENT_RULES.md`
 - **API-Dokumentation**: Siehe Code-Kommentare
 - **MQTT-Topics**: Siehe `src_orbis/omf/tools/mqtt_client.py`
 
