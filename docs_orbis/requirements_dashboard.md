@@ -35,9 +35,87 @@
 - **Lagerbestand** Ansicht der aktuellen Lager-Belegung (Nachricht vom HBW Modul)
 - **Bestellung** Auslösen einer Bestellung von (ROT/WEISS/BLAU) bei Bestellung wird die Produktion gestartet
 
-### 4.2) Produktions-Aufträge (TBD)
+#### **Begriffliche Unterscheidungen - Order-Typen**
+
+**Problem:** Aktuell verwenden wir unklare Begriffe wie "order" oder "order_raw" für verschiedene Konzepte.
+
+**Lösung:** Klare Trennung von Aufträgen und Bestellungen:
+
+| **Zweck** | **Bezeichnung (Englisch)** | **URL-Pfad** |
+|-----------|----------------------------|--------------|
+| Kundenauftrag | **Customer Order** | `/customer_order` |
+| Interner Fertigungsauftrag | **Production Order** | `/production_order` |
+| Rohmaterialbeschaffung | **Purchase Order** | `/purchase_order` |
+
+#### **Geplante Komponenten-Namensersetzungen**
+
+**Overview-Komponenten:**
+- `overview_order` → `overview_customer_order`
+- `overview_order_raw` → `overview_purchase_order`
+
+**Order-Komponenten:**
+- `order` → `production_order`
+- `order_current` → `production_order_current`
+- `order_management` → `production_order_management`
+
+#### **Tab-Namen mit klarer Bedeutung**
+
+| **Tab-Name** | **Bedeutung** |
+|--------------|---------------|
+| **Kundenaufträge (Customer Orders)** | Kundenbestellungen |
+| **Fertigungsaufträge (Production Orders)** | Was aktuell produziert werden soll |
+| **Rohmaterialbestellungen (Purchase Orders)** | Bestellungen bei Lieferanten |
+
+> **📋 TODO nach Commit:** Implementierung der Namensersetzungen für klare begriffliche Unterscheidungen
+
+
+### 4.2) Produktions-Aufträge (Production Orders) - TBD
+
+#### **Funktionalitäten:**
 - **Auftragsverfolgung** über den gesamten Produktionsprozess
+- **Ongoing Orders** - Gibt es welche, wenn ja, dann Auflistung
+- **Aktuelle Produktionsschritte pro Ongoing Auftrag** - Aktualisierung der Info. Darstellung des Prozesses als Liste. Mit Status: geplant, in Arbeit, abgeschlossen
+
+#### **Beispiel: Production Order für ROTES Werkstück**
+
+**Production Order ID:** `PO-2025-001-RED`  
+**Werkstück-Typ:** RED  
+**Status:** IN_PROGRESS  
+**Erstellt:** 2025-01-04T10:30:00Z  
+
+**Produktionsschritte:**
+
+| **Schritt** | **Aktion** | **Modul** | **Status** | **Zeitstempel** |
+|-------------|------------|-----------|------------|-----------------|
+| 1 | Werkstück aus HBW holen | HBW → FTS | ✅ Abgeschlossen | 10:30:15 |
+| 2 | FTS zu MILL transportieren | FTS | ✅ Abgeschlossen | 10:30:45 |
+| 3 | Werkstück in MILL laden | MILL | ✅ Abgeschlossen | 10:31:00 |
+| 4 | **Fräsen** | MILL | 🔄 **In Arbeit** | 10:31:15 |
+| 5 | Werkstück aus MILL laden | MILL → FTS | ⏳ Geplant | - |
+| 6 | FTS zu AIQS transportieren | FTS | ⏳ Geplant | - |
+| 7 | Werkstück in AIQS laden | AIQS | ⏳ Geplant | - |
+| 8 | Qualitätsprüfung | AIQS | ⏳ Geplant | - |
+| 9 | Werkstück aus AIQS laden | AIQS → FTS | ⏳ Geplant | - |
+| 10 | FTS zu DPS transportieren | FTS | ⏳ Geplant | - |
+| 11 | Werkstück in DPS entladen | DPS | ⏳ Geplant | - |
+
+**🎯 Current Production Step:** Schritt 4 - Fräsen in MILL  
+**📍 Werkstück-Position:** MILL (grafische Hervorhebung in Fabrik-Landschaft)
+
+#### **Order Information:**
+- **Auftrags-ID:** `PO-2025-001-RED`
+- **Werkstück-ID:** `RED-047f8cca341290`
+- **Priorität:** Normal
+- **Geschätzte Fertigstellung:** 10:35:00
+
+#### **Weitere Funktionalitäten:**
 - **Auftragshistorie** mit Zeitstempel und Status
+- **Grafische Hervorhebung** der aktuellen Werkstück-Position in der Fabrik-Landschaft
+- ***ProduktionsProzess-Definition***
+- ****Prozess Blau****: HBW -> MILL > DRILL -> AIQS -> DPS (Ausgang)
+- ****Prozess Rot****: HBW -> MILL -> AIQS -> DPS (Ausgang)
+- ****Prozess Weiß****: HBW -> DRILL -> AIQS -> DPS (Ausgang)
+
 
 ### 4.3) Nachrichten-Zentrale - 🔄 TEILWEISE IMPLEMENTIERT
 - **Empfangene Nachrichten** von allen Modulen ✅

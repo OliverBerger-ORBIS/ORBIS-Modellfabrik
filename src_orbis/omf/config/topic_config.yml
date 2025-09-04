@@ -386,42 +386,183 @@ topics:
     template: "module/factsheet"
     template_direction: "inbound"
 
-  # Module Topics - HBW
+  # Module Topics - HBW (Hochregallager) - Erweitert mit Lagerbestand-Details
   "module/v1/ff/SVR3QA0022/connection":
     category: "MODULE"
     sub_category: "Connection"
     module: "HBW"
     friendly_name: "HBW : connection"
-    description: "HBW-Verbindungsstatus"
+    description: "HBW-Verbindungsstatus - Verfügbarkeit und Verbindungsqualität"
     template: "module/connection"
     template_direction: "bidirectional"
+    payload_examples:
+      connected:
+        description: "HBW erfolgreich verbunden"
+        payload: |
+          {
+            "status": "CONNECTED",
+            "availability": "READY",
+            "lastSeen": "2025-01-04T10:30:00Z",
+            "connectionQuality": "excellent"
+          }
+      disconnected:
+        description: "HBW-Verbindung unterbrochen"
+        payload: |
+          {
+            "status": "DISCONNECTED",
+            "availability": "OFFLINE",
+            "lastSeen": "2025-01-04T10:25:00Z",
+            "connectionQuality": "none"
+          }
+    update_patterns:
+      frequency: "on_connection_change"
+      triggers: ["connection_established", "connection_lost", "availability_change"]
     
   "module/v1/ff/SVR3QA0022/state":
     category: "MODULE"
     sub_category: "State"
     module: "HBW"
     friendly_name: "HBW : state"
-    description: "HBW-Modul-Status"
+    description: "HBW Lagerbestand Status - Aktuelle Belegung aller 9 Positionen (A1-C3)"
     template: "module/state"
-    template_direction: "bidirectional"
+    template_direction: "inbound"
+    payload_examples:
+      initial_state:
+        description: "Erste Nachricht mit vollständigem Lagerbestand"
+        payload: |
+          {
+            "loads": [
+              {"loadType": "RED", "loadPosition": "A1", "loadId": "red_001"},
+              {"loadType": "BLUE", "loadPosition": "A2", "loadId": "blue_001"},
+              {"loadType": "WHITE", "loadPosition": "A3", "loadId": "white_001"},
+              {"loadType": "RED", "loadPosition": "B1", "loadId": "red_002"},
+              {"loadType": "BLUE", "loadPosition": "B2", "loadId": "blue_002"},
+              {"loadType": "WHITE", "loadPosition": "B3", "loadId": "white_002"},
+              {"loadType": "RED", "loadPosition": "C1", "loadId": "red_003"},
+              {"loadType": "BLUE", "loadPosition": "C2", "loadId": "blue_003"},
+              {"loadType": "WHITE", "loadPosition": "C3", "loadId": "white_003"}
+            ]
+          }
+      delta_update:
+        description: "Folge-Nachrichten mit Änderungen"
+        payload: |
+          {
+            "loads": [
+              {"loadType": "RED", "loadPosition": "A1", "loadId": "red_001"},
+              {"loadType": "BLUE", "loadPosition": "A2", "loadId": "blue_001"}
+            ]
+          }
+      empty_warehouse:
+        description: "Leeres Lager"
+        payload: |
+          {
+            "loads": []
+          }
+    update_patterns:
+      frequency: "on_inventory_change"
+      triggers: ["workpiece_stored", "workpiece_retrieved", "warehouse_reset"]
+      temporal_dependencies:
+        first_message: "Vollständiger Lagerbestand als Basis-Zustand"
+        subsequent_messages: "Nur geänderte Positionen (Delta-Updates)"
+        timestamp_format: "Unix timestamp (z.B. 1756980963.7231271)"
+    inventory_management:
+      supported_workpiece_types: ["RED", "BLUE", "WHITE"]
+      position_count: 9
+      positions: ["A1", "A2", "A3", "B1", "B2", "B3", "C1", "C2", "C3"]
+      max_capacity_per_type: 3
+      load_id_format: "{workpiece_type}_{sequence_number}"
     
   "module/v1/ff/SVR3QA0022/order":
     category: "MODULE"
     sub_category: "Order"
     module: "HBW"
     friendly_name: "HBW : order"
-    description: "HBW-Befehle/Aufträge"
+    description: "HBW Bestellungen senden - Werkstück-Einlagerung oder -Auslagerung"
     template: "module/order"
     template_direction: "outbound"
+    payload_examples:
+      storage_order:
+        description: "Werkstück einlagern"
+        payload: |
+          {
+            "orderType": "STORAGE",
+            "workpieceType": "RED",
+            "quantity": 1,
+            "priority": "normal",
+            "targetPosition": "A1"
+          }
+      retrieval_order:
+        description: "Werkstück auslagern"
+        payload: |
+          {
+            "orderType": "RETRIEVAL",
+            "workpieceType": "BLUE",
+            "quantity": 1,
+            "priority": "normal"
+          }
+      bulk_storage:
+        description: "Mehrere Werkstücke einlagern"
+        payload: |
+          {
+            "orderType": "STORAGE",
+            "workpieceType": "WHITE",
+            "quantity": 3,
+            "priority": "high",
+            "targetPositions": ["A1", "A2", "A3"]
+          }
+    order_types:
+      STORAGE:
+        description: "Werkstück im HBW einlagern"
+        required_fields: ["orderType", "workpieceType", "quantity"]
+        optional_fields: ["targetPosition", "priority"]
+      RETRIEVAL:
+        description: "Werkstück aus HBW auslagern"
+        required_fields: ["orderType", "workpieceType", "quantity"]
+        optional_fields: ["priority"]
+    error_handling:
+      timeout: "30_seconds"
+      retry_attempts: 3
+      error_topics: ["module/v1/ff/SVR3QA0022/error"]
+      success_confirmation: "module/v1/ff/SVR3QA0022/state"
     
   "module/v1/ff/SVR3QA0022/factsheet":
     category: "MODULE"
     sub_category: "Factsheet"
     module: "HBW"
     friendly_name: "HBW : factsheet"
-    description: "HBW-Konfigurationsdaten"
+    description: "HBW Modul-Informationen - Konfiguration und Fähigkeiten"
     template: "module/factsheet"
     template_direction: "inbound"
+    payload_examples:
+      standard_factsheet:
+        description: "Standard HBW-Konfiguration"
+        payload: |
+          {
+            "moduleId": "SVR3QA0022",
+            "moduleType": "HBW",
+            "moduleName": "Hochregallager",
+            "capabilities": ["STORAGE", "RETRIEVAL", "POSITION_MANAGEMENT"],
+            "supportedWorkpieceTypes": ["RED", "BLUE", "WHITE"],
+            "positionCount": 9,
+            "positions": ["A1", "A2", "A3", "B1", "B2", "B3", "C1", "C2", "C3"],
+            "maxCapacityPerType": 3,
+            "operationalStatus": "READY",
+            "firmwareVersion": "1.2.3",
+            "lastMaintenance": "2025-01-01T00:00:00Z"
+          }
+    module_specifications:
+      physical_dimensions:
+        width: "300mm"
+        height: "400mm"
+        depth: "200mm"
+      storage_capacity:
+        total_positions: 9
+        max_workpieces_per_position: 1
+        supported_workpiece_types: 3
+      operational_parameters:
+        storage_time: "< 5_seconds"
+        retrieval_time: "< 5_seconds"
+        accuracy: "±1mm"
 
   # Node-RED Topics (mit Sub-Kategorien wie Module)
   "module/v1/ff/NodeRed/SVR4H76530/connection":

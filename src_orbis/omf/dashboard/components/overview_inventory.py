@@ -1,15 +1,28 @@
 """
 OMF Dashboard Overview - Lagerbestand
-Exakte Kopie der show_inventory_grid() Funktion aus overview.py
+Verwendet OrderManager für zentrale Verwaltung aller Dashboard-relevanten Informationen
 """
 
 import json
+import os
+import sys
+from datetime import datetime
 
 import streamlit as st
 
+# Template-Import hinzufügen
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", "assets"))
+try:
+    from html_templates import get_bucket_template
+
+    TEMPLATES_AVAILABLE = True
+except ImportError as e:
+    TEMPLATES_AVAILABLE = False
+    st.error(f"❌ Templates nicht verfügbar: {e}")
+
 
 class OrderManager:
-    """Manager für Bestellungen und Lagerbestand"""
+    """Zentraler Manager für alle Dashboard-relevanten Informationen (Bestellungen, Lagerbestand, etc.)"""
 
     def __init__(self):
         self.inventory = {
@@ -23,51 +36,79 @@ class OrderManager:
             "C2": None,
             "C3": None,
         }
-        self.workpiece_types = ["ROT", "BLAU", "WEISS"]
+        self.workpiece_types = ["RED", "BLUE", "WHITE"]  # Korrekte Farben aus HBW-Nachrichten
         self.orders = []
+        self.last_update_timestamp = None
 
-    def update_inventory_from_messages(self, messages):
-        """Lagerbestand aus MQTT-Nachrichten aktualisieren"""
-        for msg in messages:
-            try:
-                payload = msg.get("payload", "")
-                if isinstance(payload, str):
-                    payload = json.loads(payload)
-
-                # HBW-spezifische Nachrichten verarbeiten
-                if "hbw" in msg.get("topic", "").lower():
-                    self._process_hbw_message(payload)
-
-            except (json.JSONDecodeError, KeyError, AttributeError):
-                continue
-
-    def _process_hbw_message(self, payload):
-        """HBW-Nachricht verarbeiten und Lagerbestand aktualisieren"""
-        if not isinstance(payload, dict):
+    def update_inventory_from_mqtt_client(self, mqtt_client):
+        """Lagerbestand aus MQTT-Client-Nachrichten aktualisieren"""
+        if not mqtt_client:
             return
 
-        # Verschiedene HBW-Nachrichtenformate verarbeiten
-        if "positions" in payload:
-            # Format: {"positions": {"A1": "ROT", "B2": "BLAU", ...}}
-            for position, workpiece in payload["positions"].items():
-                if position in self.inventory:
-                    self.inventory[position] = workpiece if workpiece else None
+        try:
+            # Alle Nachrichten aus MQTT-Client holen
+            all_messages = mqtt_client.drain()
 
-        elif "position" in payload and "workpiece" in payload:
-            # Format: {"position": "A1", "workpiece": "ROT"}
-            position = payload.get("position")
-            workpiece = payload.get("workpiece")
-            if position in self.inventory:
-                self.inventory[position] = workpiece if workpiece else None
+            # Nach HBW-relevanten Topics filtern
+            hbw_messages = [
+                msg for msg in all_messages if msg.get("topic", "").startswith("module/v1/ff/SVR3QA0022/state")
+            ]
 
-        elif "status" in payload:
-            # Format: {"status": "A1:ROT,B2:BLAU,C3:WEISS"}
-            status_str = payload.get("status", "")
-            for pos_workpiece in status_str.split(","):
-                if ":" in pos_workpiece:
-                    pos, wp = pos_workpiece.split(":", 1)
-                    if pos in self.inventory:
-                        self.inventory[pos] = wp if wp else None
+            # Neueste HBW-Nachricht verarbeiten
+            if hbw_messages:
+                latest_hbw_msg = max(hbw_messages, key=lambda x: x.get("ts", 0))
+                self._process_hbw_state_message(latest_hbw_msg)
+
+        except Exception as e:
+            st.error(f"❌ Fehler beim Aktualisieren des Lagerbestands: {e}")
+
+    def _process_hbw_state_message(self, message):
+        """HBW-Modul-Status-Nachricht verarbeiten (primäre Quelle für Lagerbestand)"""
+        try:
+            payload = message.get("payload", {})
+            if isinstance(payload, str):
+                payload = json.loads(payload)
+
+            if not isinstance(payload, dict):
+                return
+
+            # HBW-Modul-Status verarbeiten: {"loads": [{"loadType": "RED", "loadPosition": "A1", ...}]}
+            loads = payload.get("loads", [])
+
+            # Alle Positionen erst auf leer setzen
+            for position in self.inventory:
+                self.inventory[position] = None
+
+            # Belegte Positionen aktualisieren
+            for load in loads:
+                load_type = load.get("loadType", "")
+                load_position = load.get("loadPosition", "")
+
+                if load_type and load_position in self.inventory:
+                    # Farben von HBW-Format zu Display-Format konvertieren
+                    if load_type == "RED":
+                        self.inventory[load_position] = "RED"
+                    elif load_type == "BLUE":
+                        self.inventory[load_position] = "BLUE"
+                    elif load_type == "WHITE":
+                        self.inventory[load_position] = "WHITE"
+
+            self.last_update_timestamp = message.get("ts", 0)
+
+        except (json.JSONDecodeError, KeyError, AttributeError) as e:
+            st.warning(f"⚠️ Fehler beim Verarbeiten der HBW-Nachricht: {e}")
+
+    def get_formatted_timestamp(self):
+        """Timestamp in lesbares Format konvertieren"""
+        if not self.last_update_timestamp:
+            return "Nie aktualisiert"
+
+        try:
+            # Unix-Timestamp zu datetime konvertieren
+            dt = datetime.fromtimestamp(self.last_update_timestamp)
+            return dt.strftime("%d.%m.%Y %H:%M:%S")
+        except (ValueError, OSError):
+            return f"Timestamp: {self.last_update_timestamp}"
 
     def get_available_workpieces(self):
         """Verfügbare Werkstücke für Bestellungen zurückgeben"""
@@ -79,8 +120,25 @@ class OrderManager:
         return available
 
 
+def _create_large_bucket_display(position, workpiece_type):
+    """Erstellt eine große Bucket-Darstellung für eine Lagerposition - Verwendet Template"""
+    if TEMPLATES_AVAILABLE:
+        # Template verwenden
+        return get_bucket_template(position, workpiece_type)
+    else:
+        # Fallback: Einfache Darstellung
+        return f"""
+        <div style="width: 140px; height: 140px; margin: 8px auto; position: relative; border: 2px solid #ccc; border-radius: 8px; background-color: #f9f9f9; display: flex; align-items: center; justify-content: center;">
+            <div style="text-align: center;">
+                <div style="font-size: 12px; color: #666;">{position}</div>
+                <div style="font-size: 10px; color: #999;">{workpiece_type or 'Leer'}</div>
+            </div>
+        </div>
+        """
+
+
 def show_overview_inventory():
-    """3x3 Lagerbestand-Raster anzeigen - Exakte Kopie von show_inventory_grid() aus overview.py"""
+    """3x3 Lagerbestand-Raster anzeigen - Verwendet MQTT-Client für Live-Updates"""
     st.subheader("📚 Lagerbestand - HBW Übersicht")
     st.markdown("Aktuelle Belegung des Hochregallagers (3x3 Raster)")
 
@@ -90,10 +148,30 @@ def show_overview_inventory():
 
     order_manager = st.session_state.order_manager
 
-    # Lagerbestand aus Nachrichten aktualisieren
-    if "message_monitor" in st.session_state:
-        message_monitor = st.session_state.message_monitor
-        order_manager.update_inventory_from_messages(message_monitor.received_messages)
+    # Auto-Refresh aus Settings (global)
+    auto_refresh = st.session_state.get("auto_refresh_enabled", False)
+    refresh_interval = st.session_state.get("auto_refresh_interval", 10)
+
+    # Auto-Refresh Timer (nur wenn aktiviert)
+    if auto_refresh:
+        import time
+
+        time.sleep(refresh_interval)
+        st.rerun()
+
+    # Lagerbestand aus MQTT-Client aktualisieren
+    mqtt_client = st.session_state.get("mqtt_client")
+    if mqtt_client:
+        order_manager.update_inventory_from_mqtt_client(mqtt_client)
+
+        # Status-Anzeige
+        if order_manager.last_update_timestamp:
+            formatted_time = order_manager.get_formatted_timestamp()
+            st.success(f"✅ Lagerbestand aktualisiert: {formatted_time}")
+        else:
+            st.info("ℹ️ Keine HBW-Nachrichten empfangen")
+    else:
+        st.warning("⚠️ MQTT-Client nicht verfügbar - Lagerbestand wird nicht aktualisiert")
 
     # 3x3 Raster erstellen
     st.markdown("### 🏗️ Lagerpositionen (A1-C3)")
@@ -101,156 +179,59 @@ def show_overview_inventory():
     # Grid-Layout mit 3 Spalten
     col1, col2, col3 = st.columns(3)
 
-    # Zeile A
+    # Zeile A - Große Bucket-Darstellung
     with col1:
-        st.markdown("**A1**")
         a1_status = order_manager.inventory["A1"]
-        if a1_status:
-            if a1_status == "ROT":
-                st.markdown("🔴 ROT")
-            elif a1_status == "BLAU":
-                st.markdown("🔵 BLAU")
-            elif a1_status == "WEISS":
-                st.markdown("⚪ WEISS")
-        else:
-            st.markdown("⬜ Leer")
+        bucket_html = _create_large_bucket_display("A1", a1_status)
+        st.markdown(bucket_html, unsafe_allow_html=True)
 
     with col2:
-        st.markdown("**A2**")
         a2_status = order_manager.inventory["A2"]
-        if a2_status:
-            if a2_status == "ROT":
-                st.markdown("🔴 ROT")
-            elif a2_status == "BLAU":
-                st.markdown("🔵 BLAU")
-            elif a2_status == "WEISS":
-                st.markdown("⚪ WEISS")
-        else:
-            st.markdown("⬜ Leer")
+        bucket_html = _create_large_bucket_display("A2", a2_status)
+        st.markdown(bucket_html, unsafe_allow_html=True)
 
     with col3:
-        st.markdown("**A3**")
         a3_status = order_manager.inventory["A3"]
-        if a3_status:
-            if a3_status == "ROT":
-                st.markdown("🔴 ROT")
-            elif a3_status == "BLAU":
-                st.markdown("🔵 BLAU")
-            elif a3_status == "WEISS":
-                st.markdown("⚪ WEISS")
-        else:
-            st.markdown("⬜ Leer")
+        bucket_html = _create_large_bucket_display("A3", a3_status)
+        st.markdown(bucket_html, unsafe_allow_html=True)
 
-    # Zeile B
+    # Zeile B - Große Bucket-Darstellung
     with col1:
-        st.markdown("**B1**")
         b1_status = order_manager.inventory["B1"]
-        if b1_status:
-            if b1_status == "ROT":
-                st.markdown("🔴 ROT")
-            elif b1_status == "BLAU":
-                st.markdown("🔵 BLAU")
-            elif b1_status == "WEISS":
-                st.markdown("⚪ WEISS")
-        else:
-            st.markdown("⬜ Leer")
+        bucket_html = _create_large_bucket_display("B1", b1_status)
+        st.markdown(bucket_html, unsafe_allow_html=True)
 
     with col2:
-        st.markdown("**B2**")
         b2_status = order_manager.inventory["B2"]
-        if b2_status:
-            if b2_status == "ROT":
-                st.markdown("🔴 ROT")
-            elif b2_status == "BLAU":
-                st.markdown("🔵 BLAU")
-            elif b2_status == "WEISS":
-                st.markdown("⚪ WEISS")
-        else:
-            st.markdown("⬜ Leer")
+        bucket_html = _create_large_bucket_display("B2", b2_status)
+        st.markdown(bucket_html, unsafe_allow_html=True)
 
     with col3:
-        st.markdown("**B3**")
         b3_status = order_manager.inventory["B3"]
-        if b3_status:
-            if b3_status == "ROT":
-                st.markdown("🔴 ROT")
-            elif b3_status == "BLAU":
-                st.markdown("🔵 BLAU")
-            elif b3_status == "WEISS":
-                st.markdown("⚪ WEISS")
-        else:
-            st.markdown("⬜ Leer")
+        bucket_html = _create_large_bucket_display("B3", b3_status)
+        st.markdown(bucket_html, unsafe_allow_html=True)
 
-    # Zeile C
+    # Zeile C - Große Bucket-Darstellung
     with col1:
-        st.markdown("**C1**")
         c1_status = order_manager.inventory["C1"]
-        if c1_status:
-            if c1_status == "ROT":
-                st.markdown("🔴 ROT")
-            elif c1_status == "BLAU":
-                st.markdown("🔵 BLAU")
-            elif c1_status == "WEISS":
-                st.markdown("⚪ WEISS")
-        else:
-            st.markdown("⬜ Leer")
+        bucket_html = _create_large_bucket_display("C1", c1_status)
+        st.markdown(bucket_html, unsafe_allow_html=True)
 
     with col2:
-        st.markdown("**C2**")
         c2_status = order_manager.inventory["C2"]
-        if c2_status:
-            if c2_status == "ROT":
-                st.markdown("🔴 ROT")
-            elif c2_status == "BLAU":
-                st.markdown("🔵 BLAU")
-            elif c2_status == "WEISS":
-                st.markdown("⚪ WEISS")
-        else:
-            st.markdown("⬜ Leer")
+        bucket_html = _create_large_bucket_display("C2", c2_status)
+        st.markdown(bucket_html, unsafe_allow_html=True)
 
     with col3:
-        st.markdown("**C3**")
         c3_status = order_manager.inventory["C3"]
-        if c3_status:
-            if c3_status == "ROT":
-                st.markdown("🔴 ROT")
-            elif c3_status == "BLAU":
-                st.markdown("🔵 BLAU")
-            elif c3_status == "WEISS":
-                st.markdown("⚪ WEISS")
-        else:
-            st.markdown("⬜ Leer")
-
-    # Zusammenfassung
-    st.markdown("---")
-    st.markdown("### 📊 Lagerbestand Zusammenfassung")
-
-    available_workpieces = order_manager.get_available_workpieces()
-
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        st.metric("🔴 ROT verfügbar", available_workpieces.get("ROT", 0))
-    with col2:
-        st.metric("🔵 BLAU verfügbar", available_workpieces.get("BLAU", 0))
-    with col3:
-        st.metric("⚪ WEISS verfügbar", available_workpieces.get("WEISS", 0))
-
-    # Bestellungen
-    st.markdown("### 🛒 Bestellungen")
-
-    if order_manager.orders:
-        for order in order_manager.orders:
-            with st.expander(f"📋 {order['id']} - {order['workpiece_type']} x{order['quantity']}"):
-                st.markdown(f"**Status:** {order['status']}")
-                st.markdown(f"**Zeitstempel:** {order['timestamp'].strftime('%H:%M:%S')}")
-                st.markdown(f"**Positionen:** {', '.join(order['positions'])}")
-    else:
-        st.info("📋 Keine aktiven Bestellungen")
+        bucket_html = _create_large_bucket_display("C3", c3_status)
+        st.markdown(bucket_html, unsafe_allow_html=True)
 
     # Debug-Info
     if st.checkbox("🔍 Lagerbestand Debug-Info", key="show_inventory_debug"):
         st.markdown("**🔍 Debug-Informationen:**")
         st.markdown("**Aktueller Lagerbestand:**")
         st.json(order_manager.inventory)
+        available_workpieces = order_manager.get_available_workpieces()
         st.markdown("**Verfügbare Werkstücke:**")
         st.json(available_workpieces)

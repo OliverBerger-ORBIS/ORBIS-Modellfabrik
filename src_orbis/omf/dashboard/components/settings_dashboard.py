@@ -13,6 +13,34 @@ def show_dashboard_settings():
     # MQTT-Verbindungsmodus wird jetzt über Sidebar verwaltet
     st.info("💡 **MQTT-Verbindungsmodus wird über die Sidebar konfiguriert**")
 
+    # Auto-Refresh-Einstellungen (global für alle Seiten)
+    st.markdown("#### 🔄 Auto-Refresh-Einstellungen")
+
+    col1, col2 = st.columns([1, 1])
+
+    with col1:
+        auto_refresh_enabled = st.checkbox(
+            "🔄 Auto-Refresh aktivieren",
+            value=st.session_state.get("auto_refresh_enabled", False),
+            key="settings_auto_refresh_enabled",
+            help="Aktiviert automatische Aktualisierung aller Dashboard-Seiten",
+        )
+        st.session_state["auto_refresh_enabled"] = auto_refresh_enabled
+
+    with col2:
+        if auto_refresh_enabled:
+            refresh_interval = st.selectbox(
+                "⏰ Aktualisierungsintervall",
+                options=[5, 10, 30, 60],
+                index=1,  # Default: 10 Sekunden
+                key="settings_auto_refresh_interval",
+                help="Intervall für automatische Aktualisierung in Sekunden",
+            )
+            st.session_state["auto_refresh_interval"] = refresh_interval
+            st.caption(f"📊 Aktualisierung alle {refresh_interval} Sekunden")
+        else:
+            st.info("ℹ️ Auto-Refresh deaktiviert")
+
     # Weitere Dashboard-Einstellungen können hier hinzugefügt werden
     st.markdown("#### 📊 Dashboard-Konfiguration")
     st.info("Weitere Einstellungen werden hier angezeigt...")

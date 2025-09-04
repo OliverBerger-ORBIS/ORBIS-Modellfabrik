@@ -129,6 +129,13 @@ def main():
     except Exception:
         st.sidebar.info("📊 Statistiken nicht verfügbar")
 
+    # Genereller Aktualisieren-Button in Sidebar (für alle Seiten)
+    st.sidebar.markdown("---")
+    st.sidebar.markdown("### 🔄 Aktualisierung")
+
+    if st.sidebar.button("🔄 Seite aktualisieren", type="primary", key="sidebar_refresh_page"):
+        st.rerun()
+
     # Subscribe zu allen Topics
     try:
         client.subscribe("#", qos=1)

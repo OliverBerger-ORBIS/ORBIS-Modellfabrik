@@ -74,6 +74,110 @@ topic_mappings:
     variable_fields:
       module_id: "<module_serial_number>"
 
+  # HBW (Hochregallager) - Spezifische Topics für Lagerbestand
+  "module/v1/ff/SVR3QA0022/state":
+    template: "module/state"
+    direction: "inbound"
+    description: "HBW Lagerbestand Status - Aktuelle Belegung aller 9 Positionen (A1-C3)"
+    semantic_purpose: "Lagerbestand überwachen und Dashboard aktualisieren"
+    payload_structure:
+      loads:
+        - loadType: "RED|BLUE|WHITE"
+        - loadPosition: "A1|A2|A3|B1|B2|B3|C1|C2|C3"
+        - loadId: "unique_identifier"
+    update_frequency: "on_change"
+    dependencies: ["initial_state", "order_processing"]
+    examples:
+      initial_state:
+        description: "Erste Nachricht mit vollständigem Lagerbestand"
+        payload: |
+          {
+            "loads": [
+              {"loadType": "RED", "loadPosition": "A1", "loadId": "red_001"},
+              {"loadType": "BLUE", "loadPosition": "A2", "loadId": "blue_001"},
+              {"loadType": "WHITE", "loadPosition": "A3", "loadId": "white_001"},
+              {"loadType": "RED", "loadPosition": "B1", "loadId": "red_002"},
+              {"loadType": "BLUE", "loadPosition": "B2", "loadId": "blue_002"},
+              {"loadType": "WHITE", "loadPosition": "B3", "loadId": "white_002"},
+              {"loadType": "RED", "loadPosition": "C1", "loadId": "red_003"},
+              {"loadType": "BLUE", "loadPosition": "C2", "loadId": "blue_003"},
+              {"loadType": "WHITE", "loadPosition": "C3", "loadId": "white_003"}
+            ]
+          }
+      delta_update:
+        description: "Folge-Nachrichten mit Änderungen"
+        payload: |
+          {
+            "loads": [
+              {"loadType": "RED", "loadPosition": "A1", "loadId": "red_001"},
+              {"loadType": "BLUE", "loadPosition": "A2", "loadId": "blue_001"}
+            ]
+          }
+    temporal_dependencies:
+      first_message: "Vollständiger Lagerbestand als Basis-Zustand"
+      subsequent_messages: "Nur geänderte Positionen (Delta-Updates)"
+      timestamp_format: "Unix timestamp (z.B. 1756980963.7231271)"
+
+  "module/v1/ff/SVR3QA0022/order":
+    template: "module/order"
+    direction: "outbound"
+    description: "HBW Bestellungen senden - Werkstück-Einlagerung oder -Auslagerung"
+    semantic_purpose: "HBW-Modul steuern für Lagerbestand-Management"
+    payload_structure:
+      orderType: "STORAGE|RETRIEVAL"
+      workpieceType: "RED|BLUE|WHITE"
+      quantity: "integer"
+      priority: "normal|high|urgent"
+      targetPosition: "A1|A2|A3|B1|B2|B3|C1|C2|C3"  # Optional für STORAGE
+    examples:
+      storage_order:
+        description: "Werkstück einlagern"
+        payload: |
+          {
+            "orderType": "STORAGE",
+            "workpieceType": "RED",
+            "quantity": 1,
+            "priority": "normal",
+            "targetPosition": "A1"
+          }
+      retrieval_order:
+        description: "Werkstück auslagern"
+        payload: |
+          {
+            "orderType": "RETRIEVAL",
+            "workpieceType": "BLUE",
+            "quantity": 1,
+            "priority": "normal"
+          }
+    error_handling:
+      timeout: "30_seconds"
+      retry_attempts: 3
+      error_topics: ["module/v1/ff/SVR3QA0022/error"]
+
+  "module/v1/ff/SVR3QA0022/connection":
+    template: "module/connection"
+    direction: "bidirectional"
+    description: "HBW Verbindungsstatus - Verfügbarkeit und Verbindungsqualität"
+    semantic_purpose: "HBW-Modul-Verbindung überwachen"
+    payload_structure:
+      status: "CONNECTED|DISCONNECTED|ERROR"
+      availability: "READY|BUSY|ERROR|OFFLINE"
+      lastSeen: "ISO_timestamp"
+      connectionQuality: "excellent|good|poor|none"
+
+  "module/v1/ff/SVR3QA0022/factsheet":
+    template: "module/factsheet"
+    direction: "inbound"
+    description: "HBW Modul-Informationen - Konfiguration und Fähigkeiten"
+    semantic_purpose: "HBW-Modul-Konfiguration abrufen"
+    payload_structure:
+      moduleId: "SVR3QA0022"
+      moduleType: "HBW"
+      capabilities: ["STORAGE", "RETRIEVAL", "POSITION_MANAGEMENT"]
+      supportedWorkpieceTypes: ["RED", "BLUE", "WHITE"]
+      positionCount: 9
+      positions: ["A1", "A2", "A3", "B1", "B2", "B3", "C1", "C2", "C3"]
+
   # TXT Topics
   "/j1/txt/1/f/i/order":
     template: "txt/order_input"
