@@ -58,15 +58,22 @@ def main():
         "Umgebung", ["live", "replay"], index=0 if st.session_state["env"] == "live" else 1, horizontal=True
     )
     if env != st.session_state["env"]:
-        # MQTT-Client sichern bevor Cache gelöscht wird
+        # MQTT-Client bei Umgebungswechsel komplett neu initialisieren
         old_mqtt_client = st.session_state.get("mqtt_client")
+
+        # Alten Client schließen
+        if old_mqtt_client:
+            try:
+                old_mqtt_client.close()
+            except Exception:
+                pass
 
         st.session_state["env"] = env
         st.cache_resource.clear()
 
-        # MQTT-Client wiederherstellen
-        if old_mqtt_client:
-            st.session_state.mqtt_client = old_mqtt_client
+        # MQTT-Client aus session_state entfernen - wird neu erstellt
+        if "mqtt_client" in st.session_state:
+            del st.session_state["mqtt_client"]
 
         st.rerun()
 
@@ -86,15 +93,6 @@ def main():
         st.info(f"   - Bestehender Client: {type(client).__name__}")
         st.info(f"   - Client ID: {id(client)}")
         st.info(f"   - Hat clear_history: {hasattr(client, 'clear_history')}")
-
-        # WICHTIG: Client-Konfiguration bei Umgebungswechsel aktualisieren
-        if hasattr(client, "config") and client.config != cfg:
-            st.info("🔄 **Debug: Aktualisiere Client-Konfiguration**")
-            client.config = cfg
-            # Client neu initialisieren mit neuer Konfiguration
-            if not client.connected:
-                client = get_omf_mqtt_client(cfg)
-                st.session_state.mqtt_client = client
 
     # Automatisch verbinden wenn nicht verbunden
     if not client.connected:
