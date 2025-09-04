@@ -70,34 +70,44 @@ Das OMF Dashboard ist aktuell in einem funktionalen Zustand für die grundlegend
 2. ✅ Alle Sub-Tabs auf Funktionalität prüfen - **ALLE FUNKTIONIEREN**
 3. ✅ MQTT-Integration in modularen Komponenten testen - **FUNKTIONIERT**
 
-### **Phase 2: Dashboard Migration** 🔄 **AKTUELL**
-1. **Finaler Commit** - Letzte Version mit Dashboard und Dashboard2
-2. **Original Dashboard löschen** - Alle Original-Dateien entfernen
-3. **Dashboard2 → Dashboard umbenennen** - Finale Migration
-4. **Imports und Referenzen aktualisieren** - Alle Pfade korrigieren
+### **Phase 2: Dashboard Migration** ✅ **ABGESCHLOSSEN**
+1. ✅ **Finaler Commit** - Letzte Version mit Dashboard und Dashboard2
+2. ✅ **Original Dashboard löschen** - Alle Original-Dateien entfernt
+3. ✅ **Dashboard2 → Dashboard umbenennen** - Finale Migration
+4. ✅ **Imports und Referenzen aktualisieren** - Alle Pfade korrigiert
 
-### **Phase 3: Problem-Fixes** 🔧 **GEPLANT**
-1. **Module Status Updates reparieren** - Availability=BLOCKED Anzeige
-2. **Sent Messages Display reparieren** - Vollständige Nachrichten-Anzeige
-3. **Nachrichten-Zentrale reparieren** - History löschen funktional machen
+### **Phase 3: Problem-Fixes** ✅ **ABGESCHLOSSEN**
+1. ✅ **Module Status Updates reparieren** - Availability=BLOCKED Anzeige
+2. ✅ **Sent Messages Display reparieren** - Vollständige Nachrichten-Anzeige
+3. ✅ **Nachrichten-Zentrale reparieren** - History löschen funktional
 
-### **Phase 4: Order2 Implementierung** 📋 **GEPLANT**
+### **Phase 4: Overview-Sektionen-Refactoring** ✅ **ABGESCHLOSSEN**
+1. ✅ **Sektionen-Aufteilung** - overview_inventory.py in 3 Dateien aufgeteilt
+2. ✅ **OrderManager-Integration** - Zentrale Datenquelle implementiert
+3. ✅ **Button-Key-Management** - Duplicate-Key-Fehler behoben
+
+### **Phase 5: Order2 Implementierung** 📋 **GEPLANT**
 1. Auftragsverwaltung implementieren
 2. Laufende Aufträge implementieren
 3. Integration mit bestehenden Systemen
 
-### **Phase 5: MessageGenerator Integration**
+### **Phase 6: MessageGenerator Integration**
 1. YAML-Templates in `generic_steering` implementieren
 2. `factory_steering` auf MessageGenerator umstellen
 3. Template-basierte Message-Generierung
 
-### **Phase 6: Erweiterte Features**
+### **Phase 7: Erweiterte Features**
 1. Topic-getriebener Ansatz
 2. Message-getriebener Ansatz
 3. Template Management
 
 ## 📅 **Letzte Änderungen:**
-- **Dashboard2 Live-Test:** Erfolgreich mit echter Fabrik getestet (Januar 2025)
+- **Dashboard Migration:** Dashboard2 erfolgreich zu Dashboard umbenannt (Januar 2025)
+- **Problem-Fixes:** Replay-Broker und Nachrichtenzentrale repariert
+- **Overview-Sektionen-Refactoring:** overview_inventory.py in 3 separate Dateien aufgeteilt
+- **OrderManager-Integration:** Zentrale Datenquelle für alle Overview-Komponenten
+- **HBW-Topics-Analyse:** Vollständige Dokumentation der Lagerbestand-Topics
+- **Dashboard2 Live-Test:** Erfolgreich mit echter Fabrik getestet
 - **Modulare Architektur:** 18 neue Komponenten als exakte 1:1 Kopien implementiert
 - **Overview Modul-Status:** Korrekte Availability-Status aus `ccu/pairing/state` implementiert
 - **Topic-Config:** `ccu/pairing/state` zur Konfiguration hinzugefügt
