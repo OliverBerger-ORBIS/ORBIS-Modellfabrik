@@ -86,22 +86,33 @@ Das OMF Dashboard ist aktuell in einem funktionalen Zustand für die grundlegend
 2. ✅ **OrderManager-Integration** - Zentrale Datenquelle implementiert
 3. ✅ **Button-Key-Management** - Duplicate-Key-Fehler behoben
 
-### **Phase 5: Production Order Implementierung** 📋 **GEPLANT**
+### **Phase 5: Message-Processor Pattern** ✅ **ABGESCHLOSSEN**
+1. ✅ **Message-Processor Pattern implementiert** - Zentrale Message-Verarbeitung
+2. ✅ **MQTT-Loop-Fixes** - Subscribe-Loop und Processing-Loop behoben
+3. ✅ **Alle Overview-Komponenten migriert** - overview_inventory, overview_customer_order, overview_purchase_order, overview_module_status
+4. ✅ **Performance-Optimierung** - Nur neue Nachrichten werden verarbeitet
+5. ✅ **Skalierbare Architektur** - Einfache Integration neuer Komponenten
+
+### **Phase 6: Production Order Implementierung** 📋 **GEPLANT**
 1. Production Order Management implementieren
 2. Laufende Production Orders implementieren
 3. Integration mit bestehenden Systemen
 
-### **Phase 6: MessageGenerator Integration**
+### **Phase 7: MessageGenerator Integration**
 1. YAML-Templates in `generic_steering` implementieren
 2. `factory_steering` auf MessageGenerator umstellen
 3. Template-basierte Message-Generierung
 
-### **Phase 7: Erweiterte Features**
+### **Phase 8: Erweiterte Features**
 1. Topic-getriebener Ansatz
 2. Message-getriebener Ansatz
 3. Template Management
 
 ## 📅 **Letzte Änderungen:**
+- **Message-Processor Pattern:** Alle Overview-Komponenten auf neues Pattern migriert (Januar 2025)
+- **MQTT-Loop-Fixes:** Subscribe-Loop und Processing-Loop behoben
+- **Performance-Optimierung:** Nur neue Nachrichten werden verarbeitet
+- **Skalierbare Architektur:** Message-Processor für zukünftige Komponenten
 - **Dashboard Migration:** Dashboard2 erfolgreich zu Dashboard umbenannt (Januar 2025)
 - **Problem-Fixes:** Replay-Broker und Nachrichtenzentrale repariert
 - **Overview-Sektionen-Refactoring:** overview_inventory.py in 3 separate Dateien aufgeteilt (overview_customer_order.py, overview_purchase_order.py)

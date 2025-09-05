@@ -11,6 +11,8 @@ from datetime import datetime
 import pandas as pd
 import streamlit as st
 
+from .message_processor import create_topic_filter, get_message_processor
+
 # Import module manager for static module info
 try:
     from omf.tools.module_manager import get_omf_module_manager
@@ -350,16 +352,22 @@ def show_overview_module_status():
     except Exception as e:
         st.warning(f"⚠️ Fehler beim Subscribe zu ccu/pairing/state: {e}")
 
-    # Get recent messages from MQTT client
+    # NEUES PATTERN: Message-Processor für Modul-Status
     try:
-        messages = mqtt_client.drain()
-        if messages:
-            # Process new messages for module status
-            _process_module_messages(messages, st.session_state["module_status_store"])
-            st.session_state["module_status_last_count"] = len(messages)
+        # Message-Processor erstellen (nur einmal)
+        processor = get_message_processor(
+            component_name="overview_module_status",
+            message_filter=create_topic_filter(
+                ["module/v1/ff/+/state", "module/v1/ff/+/connection", "ccu/pairing/state"]
+            ),
+            processor_function=lambda msgs: _process_module_messages(msgs, st.session_state["module_status_store"]),
+        )
+
+        # Nachrichten verarbeiten (nur neue)
+        processor.process_messages(mqtt_client)
+
     except Exception as e:
         st.warning(f"⚠️ Fehler beim Laden der MQTT-Nachrichten: {e}")
-        messages = []
 
     # Create module table data with real-time status
     module_table_data = []

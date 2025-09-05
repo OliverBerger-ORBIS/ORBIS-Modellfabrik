@@ -20,6 +20,9 @@ except ImportError as e:
     TEMPLATES_AVAILABLE = False
     st.error(f"❌ Templates nicht verfügbar: {e}")
 
+# Message-Processor Import
+from .message_processor import create_topic_filter, get_message_processor
+
 
 class OrderManager:
     """Zentraler Manager für alle Dashboard-relevanten Informationen (Bestellungen, Lagerbestand, etc.)"""
@@ -41,26 +44,9 @@ class OrderManager:
         self.last_update_timestamp = None
 
     def update_inventory_from_mqtt_client(self, mqtt_client):
-        """Lagerbestand aus MQTT-Client-Nachrichten aktualisieren"""
-        if not mqtt_client:
-            return
-
-        try:
-            # Alle Nachrichten aus MQTT-Client holen
-            all_messages = mqtt_client.drain()
-
-            # Nach HBW-relevanten Topics filtern
-            hbw_messages = [
-                msg for msg in all_messages if msg.get("topic", "").startswith("module/v1/ff/SVR3QA0022/state")
-            ]
-
-            # Neueste HBW-Nachricht verarbeiten
-            if hbw_messages:
-                latest_hbw_msg = max(hbw_messages, key=lambda x: x.get("ts", 0))
-                self._process_hbw_state_message(latest_hbw_msg)
-
-        except Exception as e:
-            st.error(f"❌ Fehler beim Aktualisieren des Lagerbestands: {e}")
+        """Lagerbestand aus MQTT-Client-Nachrichten aktualisieren - DEPRECATED"""
+        # Diese Methode wird durch das neue Message-Processor Pattern ersetzt
+        pass
 
     def _process_hbw_state_message(self, message):
         """HBW-Modul-Status-Nachricht verarbeiten (primäre Quelle für Lagerbestand)"""
@@ -120,6 +106,21 @@ class OrderManager:
         return available
 
 
+def process_inventory_messages(messages):
+    """Verarbeitet neue HBW-Nachrichten für den Lagerbestand"""
+    if not messages:
+        return
+
+    # Neueste HBW-Nachricht finden
+    hbw_messages = [msg for msg in messages if msg.get("topic", "").startswith("module/v1/ff/SVR3QA0022/state")]
+
+    if hbw_messages:
+        latest_hbw_msg = max(hbw_messages, key=lambda x: x.get("ts", 0))
+        order_manager = st.session_state.get("order_manager")
+        if order_manager:
+            order_manager._process_hbw_state_message(latest_hbw_msg)
+
+
 def _create_large_bucket_display(position, workpiece_type):
     """Erstellt eine große Bucket-Darstellung für eine Lagerposition - Verwendet Template"""
     if TEMPLATES_AVAILABLE:
@@ -159,10 +160,18 @@ def show_overview_inventory():
         time.sleep(refresh_interval)
         st.rerun()
 
-    # Lagerbestand aus MQTT-Client aktualisieren
+    # NEUES PATTERN: Message-Processor für Lagerbestand
     mqtt_client = st.session_state.get("mqtt_client")
     if mqtt_client:
-        order_manager.update_inventory_from_mqtt_client(mqtt_client)
+        # Message-Processor erstellen (nur einmal)
+        processor = get_message_processor(
+            component_name="overview_inventory",
+            message_filter=create_topic_filter("module/v1/ff/SVR3QA0022/state"),
+            processor_function=process_inventory_messages,
+        )
+
+        # Nachrichten verarbeiten (nur neue)
+        processor.process_messages(mqtt_client)
 
         # Status-Anzeige
         if order_manager.last_update_timestamp:

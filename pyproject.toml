@@ -64,6 +64,7 @@ ignore = [
 "tests/*" = ["E501", "F401", "E402"]
 "tests_orbis/*" = ["E501", "F401", "E402"]
 "src_orbis/analysis_tools/*" = ["E501", "F401", "E402", "F811", "C414", "E722", "F841"]
+"src_orbis/omf/dashboard/components/*" = ["E501"]  # HTML template strings
 
 [tool.isort]
 profile = "black"

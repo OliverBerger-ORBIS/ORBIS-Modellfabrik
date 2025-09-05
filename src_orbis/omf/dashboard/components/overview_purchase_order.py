@@ -18,6 +18,9 @@ except ImportError as e:
     TEMPLATES_AVAILABLE = False
     st.error(f"❌ Templates nicht verfügbar: {e}")
 
+# Message-Processor Import
+from .message_processor import create_topic_filter, get_message_processor
+
 
 class OrderManager:
     """Zentraler Manager für alle Dashboard-relevanten Informationen (Bestellungen, Lagerbestand, etc.)"""
@@ -39,26 +42,9 @@ class OrderManager:
         self.last_update_timestamp = None
 
     def update_inventory_from_mqtt_client(self, mqtt_client):
-        """Aktualisiert den Lagerbestand basierend auf MQTT-Nachrichten"""
-        if not mqtt_client:
-            return
-
-        try:
-            # Alle Nachrichten aus dem MQTT-Client holen
-            all_messages = mqtt_client.drain()
-
-            # HBW-Nachrichten filtern
-            hbw_messages = [
-                msg for msg in all_messages if msg.get("topic", "").startswith("module/v1/ff/SVR3QA0022/state")
-            ]
-
-            if hbw_messages:
-                # Neueste HBW-Nachricht verwenden
-                latest_hbw_msg = max(hbw_messages, key=lambda x: x.get("ts", 0))
-                self._process_hbw_state_message(latest_hbw_msg)
-
-        except Exception as e:
-            st.error(f"❌ Fehler beim Aktualisieren des Lagerbestands: {e}")
+        """Aktualisiert den Lagerbestand basierend auf MQTT-Nachrichten - DEPRECATED"""
+        # Diese Methode wird durch das neue Message-Processor Pattern ersetzt
+        pass
 
     def _process_hbw_state_message(self, message):
         """Verarbeitet eine HBW State-Nachricht und aktualisiert den Lagerbestand"""
@@ -84,14 +70,44 @@ class OrderManager:
         except Exception as e:
             st.error(f"❌ Fehler beim Verarbeiten der HBW-Nachricht: {e}")
 
+    def get_formatted_timestamp(self):
+        """Timestamp in lesbares Format konvertieren"""
+        if not self.last_update_timestamp:
+            return "Nie aktualisiert"
+
+        try:
+            # Unix-Timestamp zu datetime konvertieren
+            from datetime import datetime
+
+            dt = datetime.fromtimestamp(self.last_update_timestamp)
+            return dt.strftime("%d.%m.%Y %H:%M:%S")
+        except (ValueError, OSError):
+            return f"Timestamp: {self.last_update_timestamp}"
+
     def get_available_workpieces(self):
-        """Gibt die verfügbaren Werkstücke zurück"""
+        """Verfügbare Werkstücke für Bestellungen zurückgeben"""
         available = {}
         for workpiece_type in self.workpiece_types:
-            count = sum(1 for pos_type in self.inventory.values() if pos_type == workpiece_type)
+            count = sum(1 for pos, wp in self.inventory.items() if wp == workpiece_type)
             if count > 0:
                 available[workpiece_type] = count
         return available
+
+
+def process_purchase_order_messages(messages):
+    """Verarbeitet neue HBW-Nachrichten für Rohmaterial-Bestellungen"""
+    if not messages:
+        return
+
+    # Neueste HBW-Nachricht finden
+    hbw_messages = [msg for msg in messages if msg.get("topic", "").startswith("module/v1/ff/SVR3QA0022/state")]
+
+    if hbw_messages:
+        latest_hbw_msg = max(hbw_messages, key=lambda x: x.get("ts", 0))
+        # OrderManager aus Session-State holen (sollte bereits existieren)
+        order_manager = st.session_state.get("order_manager")
+        if order_manager:
+            order_manager._process_hbw_state_message(latest_hbw_msg)
 
     def get_formatted_timestamp(self):
         """Gibt den formatierten Zeitstempel zurück"""
@@ -112,13 +128,23 @@ def show_overview_order_raw():
     st.subheader("📊 Rohmaterial-Bestellungen (Purchase Orders)")
     st.info("🔄 Im Lager ist Platz für drei rohe Werkstücke jeder Farbe")
 
-    # OrderManager initialisieren
-    order_manager = OrderManager()
+    # OrderManager aus Session-State holen oder erstellen
+    if "order_manager" not in st.session_state:
+        st.session_state["order_manager"] = OrderManager()
+    order_manager = st.session_state["order_manager"]
 
-    # Lagerbestand aus MQTT-Client aktualisieren
+    # NEUES PATTERN: Message-Processor für Rohmaterial-Bestellungen
     mqtt_client = st.session_state.get("mqtt_client")
     if mqtt_client:
-        order_manager.update_inventory_from_mqtt_client(mqtt_client)
+        # Message-Processor erstellen (nur einmal)
+        processor = get_message_processor(
+            component_name="overview_purchase_order",
+            message_filter=create_topic_filter("module/v1/ff/SVR3QA0022/state"),
+            processor_function=process_purchase_order_messages,
+        )
+
+        # Nachrichten verarbeiten (nur neue)
+        processor.process_messages(mqtt_client)
 
         # Status-Anzeige
         if order_manager.last_update_timestamp:

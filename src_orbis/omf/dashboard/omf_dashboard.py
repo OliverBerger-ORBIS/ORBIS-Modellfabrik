@@ -120,11 +120,19 @@ def main():
     if st.sidebar.button("🔄 Seite aktualisieren", type="primary", key="sidebar_refresh_page"):
         st.rerun()
 
-    # Subscribe zu allen Topics
-    try:
-        client.subscribe("#", qos=1)
-    except Exception:
-        pass
+    # Subscribe zu allen Topics - nur einmal pro Broker-Verbindung
+    broker_key = f"{cfg['host']}:{cfg['port']}"
+    subscribed_key = f"mqtt_subscribed_{broker_key}"
+
+    if not st.session_state.get(subscribed_key, False):
+        try:
+            client.subscribe("#", qos=1)
+            st.session_state[subscribed_key] = True
+            st.sidebar.info(f"📡 Subscribed zu allen Topics auf {broker_key}")
+        except Exception as e:
+            st.sidebar.error(f"❌ Subscribe-Fehler: {e}")
+    else:
+        st.sidebar.info(f"✅ Bereits subscribed zu {broker_key}")
 
     # Main title with ORBIS logo and MQTT connection status
     col1, col2, col3 = st.columns([1, 3, 1])
