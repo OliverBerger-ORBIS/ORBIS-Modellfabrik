@@ -1,0 +1,52 @@
+metadata:
+  category: FTS
+  description: FTS Connection Templates
+  icon: 🔗
+  last_updated: '2025-01-19'
+  sub_category: Connection
+  version: 1.0.0
+
+templates:
+  fts/v1/ff/5iO4/connection:
+    category: FTS
+    description: FTS Connection Information
+    examples:
+    - connectionState: "ONLINE"
+      serialNumber: "5iO4"
+      version: "1.1.0+git250d287"
+      manufacturer: "FTS Manufacturer"
+      ip: "192.168.0.104"
+      timestamp: "2025-08-19T09:16:19.395Z"
+      headerId: "12345"
+    - connectionState: "OFFLINE"
+      serialNumber: "5iO4"
+      version: "1.1.0+git250d287"
+      manufacturer: "FTS Manufacturer"
+      ip: "192.168.0.104"
+      timestamp: "2025-08-19T09:15:11.637Z"
+      headerId: "12344"
+    - connectionState: "CONNECTING"
+      serialNumber: "5iO4"
+      version: "1.1.0+git250d287"
+      manufacturer: "FTS Manufacturer"
+      ip: "192.168.0.104"
+      timestamp: "2025-08-19T09:14:30.000Z"
+      headerId: "12343"
+    module: FTS
+    sub_category: Connection
+    template_structure:
+      connectionState: <string>
+      serialNumber: <string>
+      version: <string>
+      manufacturer: <string>
+      ip: <string>
+      timestamp: <datetime>
+      headerId: <string>
+    validation_rules:
+    - connectionState muss in [ONLINE, OFFLINE, CONNECTING, DISCONNECTED] sein
+    - serialNumber muss String sein
+    - version muss String sein
+    - manufacturer muss String sein
+    - ip muss gültige IP-Adresse sein
+    - timestamp muss ISO 8601 Format haben
+    - headerId muss String sein

@@ -14,6 +14,8 @@ import streamlit as st
 
 # Add src_orbis to path for imports
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", ".."))
+# Add components directory to path for imports
+sys.path.append(os.path.join(os.path.dirname(__file__), "components"))
 
 # Import settings components - Modulare Architektur
 # Fehlertolerante Imports mit Dummy-Komponenten
@@ -64,11 +66,25 @@ def setup_page_config():
     st.set_page_config(page_title="OMF Dashboard", page_icon="🏭", layout="wide", initial_sidebar_state="expanded")
 
 
+def get_default_broker_mode():
+    """Holt den Default-Broker-Modus aus den Settings"""
+    # Default = replay (für Testing ohne reale Fabrik)
+    # TODO: In 2 Tagen wieder auf "live" umstellen
+    return "replay"
+
+
 def handle_environment_switch():
     """Behandelt den Wechsel zwischen Live- und Replay-Umgebung"""
-    # Default = live
+    # Default aus Settings holen
     if "env" not in st.session_state:
-        st.session_state["env"] = "live"
+        st.session_state["env"] = get_default_broker_mode()
+
+    # Default-Modus Info
+    default_mode = get_default_broker_mode()
+    if default_mode == "replay":
+        st.sidebar.info("🔄 **Default:** Replay-Modus (Testing)")
+    else:
+        st.sidebar.success("🏭 **Default:** Live-Modus (Produktion)")
 
     env = st.sidebar.radio(
         "Umgebung", ["live", "replay"], index=0 if st.session_state["env"] == "live" else 1, horizontal=True

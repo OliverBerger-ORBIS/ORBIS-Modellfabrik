@@ -330,8 +330,29 @@ def show_replay_controls(session_player: SessionPlayer):
     col_speed, col_loop = st.columns(2)
 
     with col_speed:
-        speed = st.slider("🏃 Speed", 0.1, 5.0, 1.0, 0.1)
+        # Speed-Auswahl mit festen Stufen
+        speed_options = {"1-fach": 1.0, "2-fach": 2.0, "3-fach": 3.0, "5-fach": 5.0, "10-fach": 10.0, "Maximal": 20.0}
+
+        # Aktuelle Geschwindigkeit als Index finden
+        current_speed = st.session_state.get("replay_speed", 1.0)
+        current_index = 0
+        for i, (_label, value) in enumerate(speed_options.items()):
+            if value == current_speed:
+                current_index = i
+                break
+
+        selected_label = st.selectbox(
+            "🏃 Geschwindigkeit",
+            options=list(speed_options.keys()),
+            index=current_index,
+            help="Wiedergabegeschwindigkeit der MQTT-Nachrichten",
+        )
+
+        speed = speed_options[selected_label]
         st.session_state.replay_speed = speed
+
+        # Geschwindigkeitsanzeige
+        st.caption(f"📊 Aktuell: {speed}x Geschwindigkeit")
 
     with col_loop:
         loop = st.checkbox("🔄 Loop", value=False)

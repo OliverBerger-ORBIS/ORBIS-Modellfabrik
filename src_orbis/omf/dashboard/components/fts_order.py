@@ -13,11 +13,15 @@ from .message_processor import create_topic_filter, get_message_processor
 
 # MessageTemplate Bibliothek Import
 try:
-    import omf.tools.message_template_manager  # noqa: F401
+    from omf.tools.message_template_manager import get_message_template_manager
 
     TEMPLATE_MANAGER_AVAILABLE = True
-except ImportError:
+except ImportError as e:
     TEMPLATE_MANAGER_AVAILABLE = False
+    print(f"❌ MessageTemplate Import-Fehler: {e}")
+except Exception as e:
+    TEMPLATE_MANAGER_AVAILABLE = False
+    print(f"❌ MessageTemplate Fehler: {e}")
 
 
 def process_fts_order_messages(messages):
@@ -140,6 +144,34 @@ def analyze_fts_order_data(order_data):
             else:
                 analysis["route_summary"] = f"{analysis['node_count']} Nodes, {distance}mm"
 
+        # Template-Validierung (falls verfügbar)
+        template_validation = None
+        if TEMPLATE_MANAGER_AVAILABLE:
+            try:
+                template_manager = get_message_template_manager()
+                # Versuche FTS-Order-Topic zu validieren
+                validation_result = template_manager.validate_message("fts/v1/ff/5iO4/order", order_data)
+                if validation_result.get("valid", False):
+                    template_validation = {
+                        "valid": True,
+                        "topic": "fts/v1/ff/5iO4/order",
+                        "template": validation_result.get("template", {}),
+                    }
+                else:
+                    template_validation = {
+                        "valid": False,
+                        "topic": "fts/v1/ff/5iO4/order",
+                        "errors": validation_result.get("errors", []),
+                        "template": validation_result.get("template", {}),
+                        "error": validation_result.get("error", "Unknown error"),
+                    }
+            except Exception as e:
+                template_validation = {
+                    "valid": False,
+                    "error": f"Template-Validierung fehlgeschlagen: {e}",
+                }
+
+        analysis["template_validation"] = template_validation
         return analysis
 
     except Exception as e:
@@ -258,12 +290,28 @@ def show_fts_order():
             else:
                 st.info("ℹ️ Keine Aktionen in dieser Order")
 
-            # MessageTemplate Info (falls verfügbar)
-            if TEMPLATE_MANAGER_AVAILABLE:
-                st.markdown("### 📋 MessageTemplate Bibliothek")
-                st.info("✅ MessageTemplate Bibliothek verfügbar - Semantische Analyse aktiv")
+            # Template-Validierung
+            template_validation = analysis.get("template_validation")
+            st.markdown("### 📋 MessageTemplate Validierung")
+
+            if template_validation:
+                if template_validation.get("valid", False):
+                    st.success(f"✅ **Template gültig:** {template_validation.get('topic', 'Unknown')}")
+                    template = template_validation.get("template", {})
+                    if template:
+                        st.write(f"**Template:** {template.get('description', 'N/A')}")
+                        st.write(f"**Kategorie:** {template.get('category', 'N/A')}")
+                else:
+                    st.error("❌ **Template-Validierung fehlgeschlagen**")
+                    error = template_validation.get("error", "Unknown error")
+                    st.write(f"**Fehler:** {error}")
+                    errors = template_validation.get("errors", [])
+                    if errors:
+                        st.write("**Validierungsfehler:**")
+                        for error in errors:
+                            st.write(f"- {error}")
             else:
-                st.warning("⚠️ MessageTemplate Bibliothek nicht verfügbar - Fallback-Analyse")
+                st.warning("⚠️ **Template-Validierung nicht verfügbar**")
 
             # Raw Data (erweiterbar)
             with st.expander("🔍 Raw Order Data"):

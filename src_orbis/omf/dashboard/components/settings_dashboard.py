@@ -10,7 +10,31 @@ def show_dashboard_settings():
     """Zeigt Dashboard-Einstellungen"""
     st.subheader("⚙️ Dashboard-Einstellungen")
 
+    # Default Broker-Connection-Modus
+    st.markdown("#### 🔗 Default Broker-Connection")
+
+    col1, col2 = st.columns([2, 1])
+
+    with col1:
+        default_broker_mode = st.selectbox(
+            "🌐 Default Broker-Modus",
+            options=["live", "replay"],
+            index=1,  # Default: replay (für Testing)
+            key="settings_default_broker_mode",
+            help="Standard-Broker-Modus beim Dashboard-Start",
+        )
+
+        if default_broker_mode == "replay":
+            st.info("🔄 **Replay-Modus:** Für Testing ohne reale Fabrik")
+        else:
+            st.success("🏭 **Live-Modus:** Verbindung zur realen Fabrik")
+
+    with col2:
+        st.markdown("#### 📅 Zeitplan")
+        st.info("⏰ **In 2 Tagen:** Wieder auf Live-Modus umstellen")
+
     # MQTT-Verbindungsmodus wird jetzt über Sidebar verwaltet
+    st.markdown("#### 🔄 Aktuelle Verbindung")
     st.info("💡 **MQTT-Verbindungsmodus wird über die Sidebar konfiguriert**")
 
     # Auto-Refresh-Einstellungen (global für alle Seiten)

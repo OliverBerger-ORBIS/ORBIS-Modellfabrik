@@ -1,7 +1,0 @@
-# Konzept
-ein kleiner, generischer Sequencer: Ein Baustein, der
-eine Rezeptur (Recipe) aus Schritten ausführt (Publish/Wait/Sleep),
-Kontext-Variablen (ctx) über Schritte hinweg mitträgt (IDs übernehmen, Zähler inkrementieren),
-Acks/Ereignisse per Topic/JSON-Match abwartet (mit Timeout/Retry),
-und sauber im Hintergrund-Thread läuft (Streamlit blockiert nicht).
-Unten bekommst du eine minimal-abhängige Umsetzung passend zu eurer Architektur (OMFMqttClient-Singleton).

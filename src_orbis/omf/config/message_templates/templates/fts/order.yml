@@ -1,0 +1,57 @@
+metadata:
+  category: FTS
+  description: FTS Order Templates
+  icon: 📋
+  last_updated: '2025-01-19'
+  sub_category: Order
+  version: 1.0.0
+
+templates:
+  fts/v1/ff/5iO4/order:
+    category: FTS
+    description: FTS Navigation Commands
+    examples:
+    - action:
+        command: findInitialDockPosition
+        id: 12345678-1234-1234-1234-123456789abc
+        metadata:
+          nodeId: SVR4H73275
+      orderId: 87654321-4321-4321-4321-cba987654321
+      orderUpdateId: 1
+      serialNumber: 5iO4
+      timestamp: '2025-08-28T12:00:00.000Z'
+    - action:
+        command: startCharging
+        id: 23456789-2345-2345-2345-234567890bcd
+        metadata: {}
+      orderId: 98765432-5432-5432-5432-dcb098765432
+      orderUpdateId: 2
+      serialNumber: 5iO4
+      timestamp: '2025-08-28T12:01:00.000Z'
+    - action:
+        command: DOCK
+        id: 34567890-3456-3456-3456-345678901cde
+        metadata:
+          nodeId: SVR3QA0022
+      orderId: 09876543-6543-6543-6543-edc098765432
+      orderUpdateId: 0
+      serialNumber: 5iO4
+      timestamp: '2025-08-28T12:02:00.000Z'
+    module: FTS
+    sub_category: Order
+    template_structure:
+      action:
+        command: <string>
+        id: <string>
+        metadata: <object>
+      orderId: <string>
+      orderUpdateId: <number>
+      serialNumber: '[5iO4]'
+      timestamp: <datetime>
+    validation_rules:
+    - timestamp muss ISO 8601 Format haben
+    - serialNumber muss in [5iO4] sein
+    - orderUpdateId muss Number sein
+    - command muss String sein
+    - id muss String sein (UUID Format)
+    - metadata muss Object sein

@@ -48,6 +48,45 @@ def get_formatted_timestamp(timestamp):
         return f"Timestamp: {timestamp}"
 
 
+def analyze_ccu_control_data(control_data):
+    """Analysiert CCU-Control-Daten semantisch basierend auf RAW-Data-Struktur"""
+    if not control_data:
+        return {}
+
+    try:
+        import json
+
+        if isinstance(control_data, str):
+            control_data = json.loads(control_data)
+
+        # Semantische Analyse basierend auf CCU-Control-Templates
+        analysis = {
+            # Grundinformationen
+            "command_type": control_data.get("command_type", "UNKNOWN"),
+            "command_id": control_data.get("command_id", "N/A"),
+            "timestamp": control_data.get("timestamp", "N/A"),
+            "status": control_data.get("status", "UNKNOWN"),
+            # Steuerungsbefehle
+            "action": control_data.get("action", "N/A"),
+            "target_module": control_data.get("target_module", "N/A"),
+            "parameters": control_data.get("parameters", {}),
+            # Auftragssteuerung
+            "order_id": control_data.get("order_id", "N/A"),
+            "order_type": control_data.get("order_type", "N/A"),
+            "priority": control_data.get("priority", "NORMAL"),
+            # System-Status
+            "execution_status": control_data.get("execution_status", "PENDING"),
+            "error_message": control_data.get("error_message", None),
+            "has_error": control_data.get("error_message") is not None,
+        }
+
+        return analysis
+
+    except Exception as e:
+        st.warning(f"⚠️ Fehler bei der CCU-Control-Analyse: {e}")
+        return {}
+
+
 def show_ccu_control():
     """Zeigt CCU-Control-Informationen"""
     st.subheader("🎮 CCU Control")
@@ -79,8 +118,89 @@ def show_ccu_control():
     control_data = st.session_state.get("ccu_control_data")
 
     if control_data:
-        st.info("🚧 CCU Control-Komponente - In Entwicklung")
-        st.write("**Raw Data:**")
-        st.json(control_data)
+        # Semantische Analyse der CCU-Control-Daten
+        analysis = analyze_ccu_control_data(control_data)
+
+        if analysis:
+            # Command-Informationen
+            col1, col2 = st.columns(2)
+
+            with col1:
+                st.markdown("### 🎮 Command-Info")
+                command_type = analysis.get("command_type", "UNKNOWN")
+                if command_type == "START":
+                    st.success(f"✅ **Command:** {command_type}")
+                elif command_type == "STOP":
+                    st.error(f"❌ **Command:** {command_type}")
+                elif command_type == "RESET":
+                    st.warning(f"🔄 **Command:** {command_type}")
+                else:
+                    st.info(f"ℹ️ **Command:** {command_type}")
+
+                action = analysis.get("action", "N/A")
+                st.write(f"**Action:** {action}")
+
+                target_module = analysis.get("target_module", "N/A")
+                if target_module != "N/A":
+                    st.write(f"**Target Module:** {target_module}")
+
+            with col2:
+                st.markdown("### 📋 Order-Info")
+                order_id = analysis.get("order_id", "N/A")
+                if order_id != "N/A":
+                    st.write(f"**Order ID:** {order_id}")
+
+                order_type = analysis.get("order_type", "N/A")
+                st.write(f"**Order Type:** {order_type}")
+
+                priority = analysis.get("priority", "NORMAL")
+                if priority == "HIGH":
+                    st.warning(f"🔴 **Priority:** {priority}")
+                elif priority == "LOW":
+                    st.info(f"🔵 **Priority:** {priority}")
+                else:
+                    st.write(f"**Priority:** {priority}")
+
+            # Execution-Status
+            st.markdown("### ⚡ Execution-Status")
+            execution_status = analysis.get("execution_status", "PENDING")
+            if execution_status == "EXECUTING":
+                st.info(f"🔄 **Status:** {execution_status}")
+            elif execution_status == "COMPLETED":
+                st.success(f"✅ **Status:** {execution_status}")
+            elif execution_status == "FAILED":
+                st.error(f"❌ **Status:** {execution_status}")
+            else:
+                st.write(f"**Status:** {execution_status}")
+
+            # Error-Status
+            has_error = analysis.get("has_error", False)
+            if has_error:
+                st.markdown("### ❌ Error-Status")
+                error_message = analysis.get("error_message", "Unknown error")
+                st.error(f"🔴 **Error:** {error_message}")
+
+            # Parameters (falls vorhanden)
+            parameters = analysis.get("parameters", {})
+            if parameters:
+                st.markdown("### ⚙️ Parameters")
+                for key, value in parameters.items():
+                    st.write(f"**{key}:** {value}")
+
+            # MessageTemplate Info (falls verfügbar)
+            if TEMPLATE_MANAGER_AVAILABLE:
+                st.markdown("### 📋 MessageTemplate Bibliothek")
+                st.info("✅ MessageTemplate Bibliothek verfügbar - Semantische Analyse aktiv")
+            else:
+                st.warning("⚠️ MessageTemplate Bibliothek nicht verfügbar - Fallback-Analyse")
+
+            # Raw Data (erweiterbar)
+            with st.expander("🔍 Raw CCU Control Data"):
+                st.json(control_data)
+
+        else:
+            st.error("❌ Fehler bei der semantischen Analyse der CCU-Control-Daten")
+            st.write("**Raw Data:**")
+            st.write(control_data)
     else:
         st.write("**MQTT-Topics:** `ccu/control`, `ccu/control/command`, `ccu/control/order`")

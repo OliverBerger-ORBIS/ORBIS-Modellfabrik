@@ -1,0 +1,89 @@
+metadata:
+  category: FTS
+  description: FTS State Templates
+  icon: 🚛
+  last_updated: '2025-01-19'
+  sub_category: State
+  version: 1.0.0
+
+templates:
+  fts/v1/ff/5iO4/state:
+    category: FTS
+    description: FTS State Information
+    examples:
+    - lastNodeId: "SVR3QA0022"
+      driving: false
+      paused: false
+      batteryState:
+        batteryPercentage: 84
+        batteryVoltage: 8.9
+        charging: false
+      load:
+        loadHandling:
+          loaded: true
+          loadPositions:
+            "1":
+              loadId: "040a8dca341291"
+              loadType: "RED"
+      actionState:
+        command: "DOCK"
+        state: "FINISHED"
+        id: "some-action-id"
+        timestamp: "2025-08-19T09:18:14.861Z"
+      errors: []
+      waitingForLoadHandling: false
+      timestamp: "2025-08-19T09:18:14.861Z"
+    - lastNodeId: "SVR4H73275"
+      driving: true
+      paused: false
+      batteryState:
+        batteryPercentage: 78
+        batteryVoltage: 8.7
+        charging: false
+      load:
+        loadHandling:
+          loaded: false
+          loadPositions: {}
+      actionState:
+        command: "TURN"
+        state: "RUNNING"
+        id: "turn-action-id"
+        timestamp: "2025-08-19T09:17:45.123Z"
+      errors: []
+      waitingForLoadHandling: false
+      timestamp: "2025-08-19T09:17:45.123Z"
+    module: FTS
+    sub_category: State
+    template_structure:
+      lastNodeId: <string>
+      driving: <boolean>
+      paused: <boolean>
+      batteryState:
+        batteryPercentage: <number>
+        batteryVoltage: <number>
+        charging: <boolean>
+      load:
+        loadHandling:
+          loaded: <boolean>
+          loadPositions: <object>
+      actionState:
+        command: <string>
+        state: <string>
+        id: <string>
+        timestamp: <datetime>
+      errors: <array>
+      waitingForLoadHandling: <boolean>
+      timestamp: <datetime>
+    validation_rules:
+    - lastNodeId muss String sein
+    - driving muss Boolean sein
+    - paused muss Boolean sein
+    - batteryPercentage muss Number zwischen 0-100 sein
+    - batteryVoltage muss Number sein
+    - charging muss Boolean sein
+    - loaded muss Boolean sein
+    - command muss String sein
+    - state muss in [RUNNING, FINISHED, WAITING, FAILED] sein
+    - errors muss Array sein
+    - waitingForLoadHandling muss Boolean sein
+    - timestamp muss ISO 8601 Format haben

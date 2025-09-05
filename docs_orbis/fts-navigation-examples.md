@@ -1,5 +1,36 @@
 # FTS Navigation Examples
 
+## 🗺️ **FTS Grid-Layout (4x3 Raster):**
+
+```
+[EMPTY]    [MILL]    [AIQS]    [EMPTY]
+              |         |
+[HBW] ------[1]-------[2]-------[DPS]
+              |         |
+[DRILL] -----[3]-------[4]-------[CHRG0]
+```
+
+### **📊 Grid-Details:**
+
+#### **Module-Positionen (6):**
+- **HBW:** Links unten
+- **DRILL:** Links unten (zweite Reihe)
+- **MILL:** Oben Mitte
+- **AIQS:** Oben rechts
+- **DPS:** Rechts Mitte
+- **CHRG0:** Rechts unten
+
+#### **Kreuzungspunkte/Intersections (4):**
+- **1:** Mitte links (HBW ↔ MILL)
+- **2:** Mitte rechts (MILL ↔ AIQS ↔ DPS)
+- **3:** Unten links (DRILL ↔ HBW)
+- **4:** Unten rechts (DRILL ↔ CHRG0 ↔ DPS)
+
+### **🎯 Navigation-Logik:**
+- **Navigation:** Position → Position
+- **Kreuzungspunkte:** LINKS, RECHTS, PASS-THROUGH je nach Ziel
+- **Grid-basierte Navigation** mit 10 Positionen (6 Module + 4 Intersections)
+
 ## 🚛 **Funktionierende FTS-Navigation: DPS → HBW**
 
 ### **Topic:**
@@ -71,15 +102,26 @@ fts/v1/ff/5iO4/order
 
 ## 🎯 **Route-Details:**
 1. **Start:** SVR4H73275 (DPS)
-2. **Knoten 2:** PASS (durchfahren)
-3. **Knoten 1:** PASS (durchfahren)
+2. **Knoten 2:** PASS (durch Kreuzungspunkt 2)
+3. **Knoten 1:** PASS (durch Kreuzungspunkt 1)
 4. **Ziel:** SVR3QA0022 (HBW)
+
+### **🗺️ Route im Grid:**
+```
+DPS → [2] → [1] → HBW
+```
+- **DPS** (Rechts Mitte)
+- **Kreuzungspunkt 2** (PASS - durchfahren)
+- **Kreuzungspunkt 1** (PASS - durchfahren)
+- **HBW** (Links unten)
 
 ## 📋 **Wichtige Erkenntnisse:**
 - **FTS-Steuerung erfolgt über:** `fts/v1/ff/5iO4/order`
-- **Beide Zwischenknoten sind PASS** (keine TURN-Befehle)
+- **Grid-basierte Navigation** mit 10 Positionen (6 Module + 4 Intersections)
+- **Kreuzungspunkte:** LINKS, RECHTS, PASS-THROUGH je nach Ziel
 - **Route basiert auf:** Session "wareneingang-weiss" (Zeile 250)
 - **Funktioniert zuverlässig** für DPS → HBW Navigation
+- **Befehle sind zuverlässig** - es geht um korrekte Grid-Navigation
 
 ## 🔄 **FTS-Reset-Befehle:**
 
@@ -107,6 +149,41 @@ fts/v1/ff/5iO4/instantAction
   ]
 }
 ```
+
+## 🗺️ **Weitere Navigationsbeispiele:**
+
+### **Route: HBW → DRILL**
+```
+HBW → [1] → [3] → DRILL
+```
+- **HBW** (Links unten)
+- **Kreuzungspunkt 1** (PASS - durchfahren)
+- **Kreuzungspunkt 3** (PASS - durchfahren)
+- **DRILL** (Links unten, zweite Reihe)
+
+### **Route: DRILL → AIQS**
+```
+DRILL → [3] → [1] → [2] → AIQS
+```
+- **DRILL** (Links unten, zweite Reihe)
+- **Kreuzungspunkt 3** (PASS - durchfahren)
+- **Kreuzungspunkt 1** (PASS - durchfahren)
+- **Kreuzungspunkt 2** (PASS - durchfahren)
+- **AIQS** (Oben rechts)
+
+### **Route: MILL → DPS**
+```
+MILL → [2] → DPS
+```
+- **MILL** (Oben Mitte)
+- **Kreuzungspunkt 2** (PASS - durchfahren)
+- **DPS** (Rechts Mitte)
+
+## 🎯 **Navigation-Regeln:**
+- **Direkte Verbindungen:** Module zu benachbarten Kreuzungspunkten
+- **Kreuzungspunkte:** Verbinden Module über das Grid
+- **PASS:** Durchfahren ohne Richtungsänderung
+- **LINKS/RECHTS:** Richtungsänderung an Kreuzungspunkten (je nach Ziel)
 
 ## 📅 **Erstellt:** 2025-01-19
 ## ✅ **Status:** Getestet und funktionsfähig

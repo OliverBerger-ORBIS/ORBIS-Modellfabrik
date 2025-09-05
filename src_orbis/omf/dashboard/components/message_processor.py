@@ -24,6 +24,7 @@ class MessageProcessor:
         self.last_processed_key = f"{self.component_name}_last_processed_count"
         self.last_count_key = f"{self.component_name}_last_count"
         self.store_key = f"{self.component_name}_store"
+        self.validation_errors_key = f"{self.component_name}_validation_errors"
 
     def process_messages(self, mqtt_client) -> List[Dict]:
         """
@@ -78,6 +79,32 @@ class MessageProcessor:
         except Exception as e:
             st.warning(f"⚠️ {self.component_name}: Fehler beim Verarbeiten der MQTT-Nachrichten: {e}")
             return []
+
+    def add_validation_error(self, topic: str, error: str, message_data: Dict):
+        """Fügt einen Template-Validierungsfehler zur Historie hinzu"""
+        if self.validation_errors_key not in st.session_state:
+            st.session_state[self.validation_errors_key] = []
+
+        error_entry = {
+            "timestamp": message_data.get("timestamp", "N/A"),
+            "topic": topic,
+            "error": error,
+            "message_data": message_data,
+        }
+
+        # Fehler zur Historie hinzufügen (max. 10 Einträge)
+        st.session_state[self.validation_errors_key].append(error_entry)
+        if len(st.session_state[self.validation_errors_key]) > 10:
+            st.session_state[self.validation_errors_key] = st.session_state[self.validation_errors_key][-10:]
+
+    def get_validation_errors(self) -> List[Dict]:
+        """Gibt alle Template-Validierungsfehler zurück"""
+        return st.session_state.get(self.validation_errors_key, [])
+
+    def clear_validation_errors(self):
+        """Löscht alle Template-Validierungsfehler"""
+        if self.validation_errors_key in st.session_state:
+            del st.session_state[self.validation_errors_key]
 
     def get_message_count(self) -> int:
         """Gibt die Anzahl der verarbeiteten Nachrichten zurück"""

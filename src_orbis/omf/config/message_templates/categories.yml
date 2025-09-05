@@ -142,3 +142,32 @@ categories:
         description: "UI-Status und -Konfiguration"
         icon: "🖥️"
         template_file: "templates/node_red/ui.yml"
+
+  FTS:
+    description: "FTS - Fahrerloses Transportsystem (AGV)"
+    icon: "🚛"
+    sub_categories:
+      Connection:
+        description: "Verbindungsstatus und Heartbeat"
+        icon: "🔗"
+        template_file: "templates/fts/connection.yml"
+        
+      Factsheet:
+        description: "FTS-Informationen und Konfiguration"
+        icon: "📄"
+        template_file: "templates/fts/factsheet.yml"
+        
+      InstantAction:
+        description: "Sofortige Aktionen und Befehle"
+        icon: "⚡"
+        template_file: "templates/fts/instantaction.yml"
+        
+      Order:
+        description: "FTS-Navigation und Bestellungsverarbeitung"
+        icon: "📋"
+        template_file: "templates/fts/order.yml"
+        
+      State:
+        description: "FTS-Status und Zustandsinformationen"
+        icon: "📊"
+        template_file: "templates/fts/state.yml"
