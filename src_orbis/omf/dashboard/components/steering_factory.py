@@ -8,6 +8,17 @@ from datetime import datetime, timezone
 
 import streamlit as st
 
+# WorkflowOrderManager für korrekte orderId/orderUpdateId Verwaltung
+try:
+    from omf.tools.workflow_order_manager import get_workflow_order_manager
+except ImportError:
+    # Fallback für direkte Imports
+    import sys
+    from pathlib import Path
+
+    sys.path.append(str(Path(__file__).parent.parent.parent.parent))
+    from omf.tools.workflow_order_manager import get_workflow_order_manager
+
 
 def show_factory_steering():
     """Hauptfunktion für die Factory Steuerung"""
@@ -58,20 +69,20 @@ def _show_module_sequences_section():
     col1, col2, col3, col4 = st.columns(4)
 
     with col1:
+        if st.button("🔄 Komplette Sequenz", key="aiqs_sequence", type="primary"):
+            _prepare_module_sequence_message("AIQS")
+
+    with col2:
         if st.button("📥 PICK", key="aiqs_pick"):
             _prepare_module_step_message("AIQS", "PICK")
 
-    with col2:
+    with col3:
         if st.button("🔍 CHECK", key="aiqs_check"):
             _prepare_module_step_message("AIQS", "CHECK_QUALITY")
 
-    with col3:
+    with col4:
         if st.button("📤 DROP", key="aiqs_drop"):
             _prepare_module_step_message("AIQS", "DROP")
-
-    with col4:
-        if st.button("🔄 Komplette Sequenz", key="aiqs_sequence"):
-            _prepare_module_sequence_message("AIQS")
 
     # Nachricht anzeigen und Send-Button für AIQS
     _show_message_and_send_button("aiqs")
@@ -81,20 +92,20 @@ def _show_module_sequences_section():
     col1, col2, col3, col4 = st.columns(4)
 
     with col1:
+        if st.button("🔄 Komplette Sequenz", key="mill_sequence", type="primary"):
+            _prepare_module_sequence_message("MILL")
+
+    with col2:
         if st.button("📥 PICK", key="mill_pick"):
             _prepare_module_step_message("MILL", "PICK")
 
-    with col2:
+    with col3:
         if st.button("⚙️ MILL", key="mill_mill"):
             _prepare_module_step_message("MILL", "MILL")
 
-    with col3:
+    with col4:
         if st.button("📤 DROP", key="mill_drop"):
             _prepare_module_step_message("MILL", "DROP")
-
-    with col4:
-        if st.button("🔄 Komplette Sequenz", key="mill_sequence"):
-            _prepare_module_sequence_message("MILL")
 
     # Nachricht anzeigen und Send-Button für MILL
     _show_message_and_send_button("mill")
@@ -104,20 +115,20 @@ def _show_module_sequences_section():
     col1, col2, col3, col4 = st.columns(4)
 
     with col1:
+        if st.button("🔄 Komplette Sequenz", key="drill_sequence", type="primary"):
+            _prepare_module_sequence_message("DRILL")
+
+    with col2:
         if st.button("📥 PICK", key="drill_pick"):
             _prepare_module_step_message("DRILL", "PICK")
 
-    with col2:
+    with col3:
         if st.button("🔩 DRILL", key="drill_drill"):
             _prepare_module_step_message("DRILL", "DRILL")
 
-    with col3:
+    with col4:
         if st.button("📤 DROP", key="drill_drop"):
             _prepare_module_step_message("DRILL", "DROP")
-
-    with col4:
-        if st.button("🔄 Komplette Sequenz", key="drill_sequence"):
-            _prepare_module_sequence_message("DRILL")
 
     # Nachricht anzeigen und Send-Button für DRILL
     _show_message_and_send_button("drill")
@@ -182,6 +193,12 @@ def _prepare_factory_reset_message():
     st.session_state["pending_message"] = {"topic": "ccu/set/reset", "payload": payload, "type": "factory_reset"}
 
 
+def _get_module_serial(module_name: str) -> str:
+    """Hilfsfunktion um Module-Serials zu bekommen"""
+    module_serials = {"AIQS": "SVR3QA2098", "MILL": "SVR4H76449", "DRILL": "SVR4H76530"}
+    return module_serials.get(module_name, "UNKNOWN")
+
+
 def _prepare_module_step_message(module_name: str, step: str):
     """Bereitet Modul-Schritt Nachricht vor"""
     # Modul-spezifische Serial Numbers
@@ -218,11 +235,207 @@ def _prepare_module_step_message(module_name: str, step: str):
 
 
 def _prepare_module_sequence_message(module_name: str):
-    """Bereitet komplette Modul-Sequenz Nachricht vor"""
-    # Für Sequenzen zeigen wir nur den ersten Schritt an
-    _prepare_module_step_message(module_name, "PICK")
-    # Hinweis hinzufügen
-    st.session_state["pending_message"]["note"] = f"Komplette Sequenz: PICK → PROCESS → DROP für {module_name}"
+    """Startet generische Sequenz mit flexiblen Message-Topic-Kombinationen"""
+    # WorkflowOrderManager verwenden
+    workflow_manager = get_workflow_order_manager()
+
+    # Generische Sequenz-Definitionen (Topic + Message-Struktur)
+    sequence_definitions = {
+        "AIQS": [
+            {
+                "name": "PICK",
+                "topic": f"module/v1/ff/{_get_module_serial('AIQS')}/order",
+                "message_template": {
+                    "serialNumber": _get_module_serial("AIQS"),
+                    "action": {"command": "PICK", "metadata": {"priority": "NORMAL", "timeout": 300, "type": "WHITE"}},
+                },
+                "icon": "📥",
+            },
+            {
+                "name": "CHECK_QUALITY",
+                "topic": f"module/v1/ff/{_get_module_serial('AIQS')}/order",
+                "message_template": {
+                    "serialNumber": _get_module_serial("AIQS"),
+                    "action": {
+                        "command": "CHECK_QUALITY",
+                        "metadata": {"priority": "NORMAL", "timeout": 300, "type": "WHITE"},
+                    },
+                },
+                "icon": "🔍",
+            },
+            {
+                "name": "DROP",
+                "topic": f"module/v1/ff/{_get_module_serial('AIQS')}/order",
+                "message_template": {
+                    "serialNumber": _get_module_serial("AIQS"),
+                    "action": {"command": "DROP", "metadata": {"priority": "NORMAL", "timeout": 300, "type": "WHITE"}},
+                },
+                "icon": "📤",
+            },
+        ],
+        "MILL": [
+            {
+                "name": "PICK",
+                "topic": f"module/v1/ff/{_get_module_serial('MILL')}/order",
+                "message_template": {
+                    "serialNumber": _get_module_serial("MILL"),
+                    "action": {"command": "PICK", "metadata": {"priority": "NORMAL", "timeout": 300, "type": "WHITE"}},
+                },
+                "icon": "📥",
+            },
+            {
+                "name": "MILL",
+                "topic": f"module/v1/ff/{_get_module_serial('MILL')}/order",
+                "message_template": {
+                    "serialNumber": _get_module_serial("MILL"),
+                    "action": {"command": "MILL", "metadata": {"priority": "NORMAL", "timeout": 300, "type": "WHITE"}},
+                },
+                "icon": "⚙️",
+            },
+            {
+                "name": "DROP",
+                "topic": f"module/v1/ff/{_get_module_serial('MILL')}/order",
+                "message_template": {
+                    "serialNumber": _get_module_serial("MILL"),
+                    "action": {"command": "DROP", "metadata": {"priority": "NORMAL", "timeout": 300, "type": "WHITE"}},
+                },
+                "icon": "📤",
+            },
+        ],
+        "DRILL": [
+            {
+                "name": "PICK",
+                "topic": f"module/v1/ff/{_get_module_serial('DRILL')}/order",
+                "message_template": {
+                    "serialNumber": _get_module_serial("DRILL"),
+                    "action": {"command": "PICK", "metadata": {"priority": "NORMAL", "timeout": 300, "type": "WHITE"}},
+                },
+                "icon": "📥",
+            },
+            {
+                "name": "DRILL",
+                "topic": f"module/v1/ff/{_get_module_serial('DRILL')}/order",
+                "message_template": {
+                    "serialNumber": _get_module_serial("DRILL"),
+                    "action": {"command": "DRILL", "metadata": {"priority": "NORMAL", "timeout": 300, "type": "WHITE"}},
+                },
+                "icon": "🔩",
+            },
+            {
+                "name": "DROP",
+                "topic": f"module/v1/ff/{_get_module_serial('DRILL')}/order",
+                "message_template": {
+                    "serialNumber": _get_module_serial("DRILL"),
+                    "action": {"command": "DROP", "metadata": {"priority": "NORMAL", "timeout": 300, "type": "WHITE"}},
+                },
+                "icon": "📤",
+            },
+        ],
+    }
+
+    sequence_steps = sequence_definitions.get(module_name, [])
+    if not sequence_steps:
+        st.error(f"Keine Sequenz-Definition für Modul {module_name} gefunden")
+        return
+
+    # ✅ Workflow starten - gibt orderId zurück
+    order_id = workflow_manager.start_workflow(module_name, [step["name"] for step in sequence_steps])
+
+    # Transaktions-Status initialisieren
+    st.session_state["sequence_transaction"] = {
+        "module": module_name,
+        "sequence_definition": sequence_steps,  # Vollständige Sequenz-Definition
+        "current_step": 0,
+        "completed_steps": [],
+        "active": True,
+        "order_id": order_id,  # ✅ GLEICHE orderId für alle Schritte
+        "workflow_manager": workflow_manager,
+        "show_topic_and_message": True,  # Flag für Payload-Anzeige
+    }
+
+    # Ersten Schritt vorbereiten
+    _prepare_next_sequence_step(module_name)
+
+
+def _prepare_next_sequence_step(module_name: str):
+    """Bereitet den nächsten Schritt in der Sequenz vor"""
+    if "sequence_transaction" not in st.session_state:
+        return
+
+    transaction = st.session_state["sequence_transaction"]
+    if not transaction["active"] or transaction["module"] != module_name:
+        return
+
+    current_step = transaction["current_step"]
+    sequence_definition = transaction["sequence_definition"]
+
+    if current_step >= len(sequence_definition):
+        # Sequenz abgeschlossen
+        transaction["active"] = False
+        return
+
+    # Aktuellen Schritt aus der Sequenz-Definition holen
+    step_definition = sequence_definition[current_step]
+
+    # ✅ WorkflowOrderManager verwenden
+    workflow_manager = transaction["workflow_manager"]
+    order_id = transaction["order_id"]
+
+    # WorkflowOrderManager für korrekte orderId/orderUpdateId
+    workflow_info = workflow_manager.execute_command(order_id, step_definition["name"])
+
+    # Message-Template kopieren und IDs hinzufügen
+    payload = step_definition["message_template"].copy()
+    payload["orderId"] = workflow_info["orderId"]  # ✅ GLEICHE orderId
+    payload["orderUpdateId"] = workflow_info["orderUpdateId"]  # ✅ Inkrementiert
+    payload["action"]["id"] = str(uuid.uuid4())
+
+    # Pending Message setzen
+    st.session_state["pending_message"] = {
+        "topic": step_definition["topic"],
+        "payload": payload,
+        "type": f"{module_name.lower()}_sequence_step_{current_step}",
+        "note": (
+            f"Sequenz-Schritt {current_step + 1}/{len(sequence_definition)}: "
+            f"{step_definition['name']} für {module_name} "
+            f"(orderId: {workflow_info['orderId'][:8]}..., orderUpdateId: {workflow_info['orderUpdateId']})"
+        ),
+    }
+
+
+def _complete_sequence_step(module_name: str):
+    """Markiert aktuellen Sequenz-Schritt als abgeschlossen und bereitet nächsten vor"""
+    if "sequence_transaction" not in st.session_state:
+        return
+
+    transaction = st.session_state["sequence_transaction"]
+    if not transaction["active"] or transaction["module"] != module_name:
+        return
+
+    # Aktuellen Schritt als abgeschlossen markieren
+    current_step = transaction["current_step"]
+    transaction["completed_steps"].append(current_step)
+    transaction["current_step"] += 1
+
+    # Nächsten Schritt vorbereiten
+    _prepare_next_sequence_step(module_name)
+
+
+def _cancel_sequence_transaction():
+    """Bricht die aktuelle Sequenz-Transaktion ab"""
+    if "sequence_transaction" in st.session_state:
+        transaction = st.session_state["sequence_transaction"]
+        transaction["active"] = False
+
+        # Workflow im WorkflowOrderManager abschließen falls vorhanden
+        if "workflow_manager" in transaction and "order_id" in transaction:
+            try:
+                transaction["workflow_manager"].complete_workflow(transaction["order_id"])
+            except Exception as e:
+                print(f"⚠️ Fehler beim Abschließen des Workflows: {e}")
+
+    if "pending_message" in st.session_state:
+        del st.session_state["pending_message"]
 
 
 def _prepare_fts_message(command: str):
@@ -291,31 +504,126 @@ def _show_message_and_send_button(message_type: str):
     if not pending["type"].startswith(message_type):
         return
 
-    st.markdown("---")
+    # Transaktions-Header anzeigen falls aktive Sequenz
+    if "sequence_transaction" in st.session_state and st.session_state["sequence_transaction"]["active"]:
+        transaction = st.session_state["sequence_transaction"]
+        module_name = transaction["module"]
+        sequence_definition = transaction["sequence_definition"]
+        total_steps = len(sequence_definition)
+        current_step = transaction["current_step"]
+
+        st.markdown(f"### 🔄 **Beginne Transaktion: Sequenz {module_name}**")
+        st.markdown(f"**Fortschritt:** {current_step + 1}/{total_steps} Schritte")
+        st.markdown("*(Sequenz Transaktion kann abgebrochen werden)*")
+
+        # Visuelle Sequenz-Anzeige mit generischen Definitionen
+        st.markdown("#### 📋 **Sequenz-Ablauf (Manuelle Steuerung):**")
+
+        # Sequenz als Pfeile anzeigen mit generischen Definitionen
+        sequence_display = []
+        for i, step_def in enumerate(sequence_definition):
+            icon = step_def["icon"]
+            name = step_def["name"]
+            if i == current_step:
+                # Aktueller Schritt - hervorgehoben
+                sequence_display.append(f"**{icon} {name}(SEND)**")
+            elif i < current_step:
+                # Abgeschlossener Schritt - grau
+                sequence_display.append(f"~~{icon} {name}(✓)~~")
+            else:
+                # Zukünftiger Schritt - normal
+                sequence_display.append(f"{icon} {name}(WARTEN)")
+
+        # Sequenz mit Pfeilen verbinden
+        sequence_text = " → ".join(sequence_display)
+        st.markdown(f"**{sequence_text}**")
+
+        # Anweisung für User
+        current_step_def = sequence_definition[current_step]
+        st.info(
+            f"**Anweisung:** Klicken Sie auf 'Senden' für **{current_step_def['name']}** - "
+            f"dann wird automatisch der nächste Schritt vorbereitet."
+        )
+
+        # Option: Payload-Anzeige ein/ausschalten
+        col1, col2 = st.columns([3, 1])
+        with col1:
+            st.markdown("**Sequenz-Optionen:**")
+        with col2:
+            show_payload = st.checkbox(
+                "Payload anzeigen",
+                value=transaction.get("show_topic_and_message", True),
+                key="sequence_show_payload",
+                help="Zeigt die vollständige MQTT-Nachricht an",
+            )
+            # Flag in der Transaktion aktualisieren
+            transaction["show_topic_and_message"] = show_payload
+
+        # Fortschrittsbalken
+        progress = (current_step + 1) / total_steps
+        st.progress(progress)
+
+        st.markdown("---")
+
     st.markdown("### 📤 Zu sendende Nachricht:")
 
     # Topic anzeigen
     st.markdown(f"**Topic:** `{pending['topic']}`")
 
-    # Payload anzeigen
-    st.markdown("**Payload:**")
-    st.json(pending["payload"])
+    # Optional: Command hervorheben (falls vorhanden)
+    if "action" in pending["payload"] and "command" in pending["payload"]["action"]:
+        command = pending["payload"]["action"]["command"]
+        st.markdown(f"**🎯 Command:** `{command}`")
+
+    # Optional: Payload anzeigen (über Flag gesteuert)
+    if "sequence_transaction" in st.session_state and st.session_state["sequence_transaction"]["active"]:
+        show_details = st.session_state["sequence_transaction"].get("show_topic_and_message", True)
+        if show_details:
+            st.markdown("**Payload:**")
+            st.json(pending["payload"])
+    else:
+        # Für einzelne Schritte immer anzeigen
+        st.markdown("**Payload:**")
+        st.json(pending["payload"])
 
     # Hinweis anzeigen falls vorhanden
     if "note" in pending:
         st.info(pending["note"])
 
-    # Send-Button
-    col1, col2 = st.columns([1, 3])
+    # Send-Button mit Transaktions-Logik
+    col1, col2, col3 = st.columns([1, 1, 2])
+
     with col1:
         if st.button("📤 Senden", type="primary", key=f"send_{pending['type']}"):
             _send_pending_message()
 
     with col2:
         if st.button("❌ Abbrechen", key=f"cancel_{pending['type']}"):
-            if "pending_message" in st.session_state:
-                del st.session_state["pending_message"]
+            if "sequence_transaction" in st.session_state and st.session_state["sequence_transaction"]["active"]:
+                _cancel_sequence_transaction()
+            else:
+                if "pending_message" in st.session_state:
+                    del st.session_state["pending_message"]
             st.rerun()
+
+    # Transaktions-Ende anzeigen falls Sequenz abgeschlossen
+    if "sequence_transaction" in st.session_state and not st.session_state["sequence_transaction"]["active"]:
+        st.markdown("---")
+        st.success("✅ **Ende Transaktion** - Sequenz erfolgreich abgeschlossen!")
+
+        # Workflow im WorkflowOrderManager abschließen
+        transaction = st.session_state["sequence_transaction"]
+        if "workflow_manager" in transaction and "order_id" in transaction:
+            try:
+                transaction["workflow_manager"].complete_workflow(transaction["order_id"])
+            except Exception as e:
+                print(f"⚠️ Fehler beim Abschließen des Workflows: {e}")
+
+        # Cleanup
+        if "pending_message" in st.session_state:
+            del st.session_state["pending_message"]
+        if "sequence_transaction" in st.session_state:
+            del st.session_state["sequence_transaction"]
 
 
 def _send_pending_message():
@@ -333,8 +641,16 @@ def _send_pending_message():
 
             if result:
                 st.success(f"✅ Nachricht erfolgreich gesendet an {pending['topic']}!")
-                # Nachricht aus session_state entfernen
-                del st.session_state["pending_message"]
+
+                # Transaktions-Logik: Nächsten Schritt vorbereiten falls aktive Sequenz
+                if "sequence_transaction" in st.session_state and st.session_state["sequence_transaction"]["active"]:
+                    transaction = st.session_state["sequence_transaction"]
+                    module_name = transaction["module"]
+                    _complete_sequence_step(module_name)
+                else:
+                    # Normale Nachricht: Aus session_state entfernen
+                    del st.session_state["pending_message"]
+
                 st.rerun()
             else:
                 st.error("❌ Fehler beim Senden der Nachricht")
