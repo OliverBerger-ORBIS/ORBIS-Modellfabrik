@@ -195,7 +195,7 @@ def _prepare_factory_reset_message():
 
 def _get_module_serial(module_name: str) -> str:
     """Hilfsfunktion um Module-Serials zu bekommen"""
-    module_serials = {"AIQS": "SVR3QA2098", "MILL": "SVR4H76449", "DRILL": "SVR4H76530"}
+    module_serials = {"AIQS": "SVR4H76530", "MILL": "SVR3QA2098", "DRILL": "SVR4H76449"}
     return module_serials.get(module_name, "UNKNOWN")
 
 

@@ -1,7 +1,11 @@
 """
-ORBIS Modellfabrik Dashboard (OMF) - Einfaches Grundgerüst - Version 2
-Version: 3.0.0 - Settings2 Test Version
+ORBIS Modellfabrik Dashboard (OMF) - Modulare Architektur - Version 3.1.1
+Version: 3.1.1 - Refactored
 """
+
+# =============================================================================
+# IMPORTS & CONFIGURATION
+# =============================================================================
 
 import os
 import sys
@@ -11,26 +15,57 @@ import streamlit as st
 # Add src_orbis to path for imports
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", ".."))
 
+# Import settings components - Modulare Architektur
+# Fehlertolerante Imports mit Dummy-Komponenten
+from components.dummy_component import show_dummy_component
+
 # Relative imports für lokale Entwicklung
 from omf.config.config import LIVE_CFG, REPLAY_CFG  # noqa: E402
 from omf.tools.mqtt_client import get_omf_mqtt_client  # noqa: E402
 
-# Import settings components - Modulare Architektur
-try:
-    from components.message_center import show_message_center
-    from components.overview import show_overview
-    from components.production_order import show_production_order
-    from components.settings import show_settings
-    from components.steering import show_steering
+# =============================================================================
+# COMPONENT LOADING - FAULT TOLERANT
+# =============================================================================
 
-except ImportError:
-    pass
+# Komponenten-Imports mit Fehlerbehandlung
+components = {}
 
 
-def main():
-    """Hauptfunktion des OMF Dashboards - Modulare Architektur"""
+def load_component(component_name, import_path, display_name=None):
+    """Lädt eine Komponente fehlertolerant"""
+    if display_name is None:
+        display_name = component_name.replace("_", " ").title()
+
+    try:
+        module = __import__(import_path, fromlist=[f"show_{component_name}"])
+        show_function = getattr(module, f"show_{component_name}")
+        components[component_name] = show_function
+    except ImportError as e:
+        error_msg = str(e)
+        components[component_name] = lambda: show_dummy_component(display_name, error_msg)
+
+
+# Komponenten laden
+load_component("message_center", "components.message_center", "Message Center")
+load_component("overview", "components.overview", "Overview")
+load_component("production_order", "components.production_order", "Production Order")
+load_component("settings", "components.settings", "Settings")
+load_component("steering", "components.steering", "Steering")
+load_component("fts", "components.fts", "FTS")
+load_component("ccu", "components.ccu", "CCU")
+
+# =============================================================================
+# HELPER FUNCTIONS
+# =============================================================================
+
+
+def setup_page_config():
+    """Konfiguriert die Streamlit-Seite"""
     st.set_page_config(page_title="OMF Dashboard", page_icon="🏭", layout="wide", initial_sidebar_state="expanded")
 
+
+def handle_environment_switch():
+    """Behandelt den Wechsel zwischen Live- und Replay-Umgebung"""
     # Default = live
     if "env" not in st.session_state:
         st.session_state["env"] = "live"
@@ -38,6 +73,7 @@ def main():
     env = st.sidebar.radio(
         "Umgebung", ["live", "replay"], index=0 if st.session_state["env"] == "live" else 1, horizontal=True
     )
+
     if env != st.session_state["env"]:
         # MQTT-Client bei Umgebungswechsel komplett neu initialisieren
         old_mqtt_client = st.session_state.get("mqtt_client")
@@ -58,16 +94,19 @@ def main():
 
         st.rerun()
 
-    cfg = LIVE_CFG if st.session_state["env"] == "live" else REPLAY_CFG
+    return env
+
+
+def initialize_mqtt_client(env):
+    """Initialisiert den MQTT-Client"""
+    cfg = LIVE_CFG if env == "live" else REPLAY_CFG
 
     # MQTT-Client nur einmal initialisieren (Singleton)
     if "mqtt_client" not in st.session_state:
         st.info("🔍 **Debug: Erstelle neuen MQTT-Client**")
         client = get_omf_mqtt_client(cfg)
         st.session_state.mqtt_client = client
-
     else:
-
         client = st.session_state.mqtt_client
         st.info(f"   - Verwende bestehenden Client: {type(client).__name__}")
 
@@ -82,6 +121,28 @@ def main():
                 break
             time.sleep(0.1)
 
+    return client, cfg
+
+
+def setup_mqtt_subscription(client, cfg):
+    """Richtet MQTT-Subscription ein"""
+    # Subscribe zu allen Topics - nur einmal pro Broker-Verbindung
+    broker_key = f"{cfg['host']}:{cfg['port']}"
+    subscribed_key = f"mqtt_subscribed_{broker_key}"
+
+    if not st.session_state.get(subscribed_key, False):
+        try:
+            client.subscribe("#", qos=1)
+            st.session_state[subscribed_key] = True
+            st.sidebar.info(f"📡 Subscribed zu allen Topics auf {broker_key}")
+        except Exception as e:
+            st.sidebar.error(f"❌ Subscribe-Fehler: {e}")
+    else:
+        st.sidebar.info(f"✅ Bereits subscribed zu {broker_key}")
+
+
+def display_mqtt_status(client, cfg):
+    """Zeigt MQTT-Status in der Sidebar"""
     # Erweiterte MQTT-Informationen in der Sidebar
     st.sidebar.markdown("---")
     st.sidebar.markdown("### 🔗 MQTT Status")
@@ -113,6 +174,9 @@ def main():
     except Exception:
         st.sidebar.info("📊 Statistiken nicht verfügbar")
 
+
+def display_refresh_button():
+    """Zeigt den Aktualisieren-Button in der Sidebar"""
     # Genereller Aktualisieren-Button in Sidebar (für alle Seiten)
     st.sidebar.markdown("---")
     st.sidebar.markdown("### 🔄 Aktualisierung")
@@ -120,20 +184,9 @@ def main():
     if st.sidebar.button("🔄 Seite aktualisieren", type="primary", key="sidebar_refresh_page"):
         st.rerun()
 
-    # Subscribe zu allen Topics - nur einmal pro Broker-Verbindung
-    broker_key = f"{cfg['host']}:{cfg['port']}"
-    subscribed_key = f"mqtt_subscribed_{broker_key}"
 
-    if not st.session_state.get(subscribed_key, False):
-        try:
-            client.subscribe("#", qos=1)
-            st.session_state[subscribed_key] = True
-            st.sidebar.info(f"📡 Subscribed zu allen Topics auf {broker_key}")
-        except Exception as e:
-            st.sidebar.error(f"❌ Subscribe-Fehler: {e}")
-    else:
-        st.sidebar.info(f"✅ Bereits subscribed zu {broker_key}")
-
+def display_header(client):
+    """Zeigt den Dashboard-Header mit Logo und Status"""
     # Main title with ORBIS logo and MQTT connection status
     col1, col2, col3 = st.columns([1, 3, 1])
 
@@ -142,30 +195,11 @@ def main():
             # Versuche ORBIS-Logo zu laden - OMF-Struktur
             possible_paths = [
                 # Variante 1: OMF Assets-Verzeichnis (neue Struktur)
-                os.path.join(
-                    os.path.dirname(__file__),
-                    "assets",
-                    "orbis_logo.png",
-                ),
+                os.path.join(os.path.dirname(__file__), "assets", "orbis_logo.png"),
                 # Variante 2: Fallback auf alte Struktur
-                os.path.join(
-                    os.path.dirname(__file__),
-                    "..",
-                    "..",
-                    "mqtt",
-                    "dashboard",
-                    "assets",
-                    "orbis_logo.png",
-                ),
+                os.path.join(os.path.dirname(__file__), "..", "..", "mqtt", "dashboard", "assets", "orbis_logo.png"),
                 # Variante 3: Absoluter Pfad vom Projekt-Root
-                os.path.join(
-                    os.getcwd(),
-                    "src_orbis",
-                    "omf",
-                    "dashboard",
-                    "assets",
-                    "orbis_logo.png",
-                ),
+                os.path.join(os.getcwd(), "src_orbis", "omf", "dashboard", "assets", "orbis_logo.png"),
             ]
 
             logo_found = False
@@ -196,31 +230,80 @@ def main():
         else:
             st.error("❌ MQTT Nicht verbunden")
 
+
+def display_tabs():
+    """Zeigt die Dashboard-Tabs und deren Inhalte"""
     # Tabs
-    tab1, tab2, tab3, tab4, tab5 = st.tabs(
-        ["📊 Übersicht", "🏭 Fertigungsaufträge", "📡 Nachrichten-Zentrale", "🎮 Steuerung", "⚙️ Einstellungen"]
+    tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(
+        [
+            "📊 Übersicht",
+            "🏭 Fertigungsaufträge",
+            "📡 Nachrichten-Zentrale",
+            "🎮 Steuerung",
+            "🚛 FTS",
+            "🏢 CCU",
+            "⚙️ Einstellungen",
+        ]
     )
 
-    # Tab 1: Übersicht
+    # Tab-Inhalte
     with tab1:
-        show_overview()
+        components["overview"]()
 
-    # Tab 2: Fertigungsaufträge (Production Orders)
     with tab2:
-        show_production_order()
+        components["production_order"]()
 
-    # Tab 3: Nachrichten-Zentrale
     with tab3:
-        show_message_center()
+        components["message_center"]()
 
-    # Tab 4: Steuerung
     with tab4:
-        show_steering()
+        components["steering"]()
 
-    # Tab 5: Einstellungen
     with tab5:
-        show_settings()
+        components["fts"]()
 
+    with tab6:
+        components["ccu"]()
+
+    with tab7:
+        components["settings"]()
+
+
+# =============================================================================
+# MAIN FUNCTION
+# =============================================================================
+
+
+def main():
+    """Hauptfunktion des OMF Dashboards - Modulare Architektur"""
+    # 1. Seite konfigurieren
+    setup_page_config()
+
+    # 2. Umgebung handhaben
+    env = handle_environment_switch()
+
+    # 3. MQTT-Client initialisieren
+    client, cfg = initialize_mqtt_client(env)
+
+    # 4. MQTT-Subscription einrichten
+    setup_mqtt_subscription(client, cfg)
+
+    # 5. MQTT-Status anzeigen
+    display_mqtt_status(client, cfg)
+
+    # 6. Aktualisieren-Button anzeigen
+    display_refresh_button()
+
+    # 7. Header anzeigen
+    display_header(client)
+
+    # 8. Tabs anzeigen
+    display_tabs()
+
+
+# =============================================================================
+# ENTRY POINT
+# =============================================================================
 
 if __name__ == "__main__":
     main()

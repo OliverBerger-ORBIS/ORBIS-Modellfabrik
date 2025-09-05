@@ -93,17 +93,23 @@ Das OMF Dashboard ist aktuell in einem funktionalen Zustand für die grundlegend
 4. ✅ **Performance-Optimierung** - Nur neue Nachrichten werden verarbeitet
 5. ✅ **Skalierbare Architektur** - Einfache Integration neuer Komponenten
 
-### **Phase 6: Production Order Implementierung** 📋 **GEPLANT**
+### **Phase 6: Critical Bug Fixes** ✅ **ABGESCHLOSSEN**
+1. ✅ **Kritischer Module-ID-Mapping Bug behoben** - DRILL-PICK löste AIQS-PICK aus
+2. ✅ **Module-Sequenz PICK → PROCESS → DROP repariert** - Korrekte Seriennummer-Zuordnung
+3. ✅ **Unit-Tests für Module-Mapping hinzugefügt** - Prävention zukünftiger Bugs
+4. ✅ **FTS-Navigation erfolgreich getestet** - DPS → HBW Route funktioniert
+
+### **Phase 7: Production Order Implementierung** 📋 **GEPLANT**
 1. Production Order Management implementieren
 2. Laufende Production Orders implementieren
 3. Integration mit bestehenden Systemen
 
-### **Phase 7: MessageGenerator Integration**
+### **Phase 8: MessageGenerator Integration**
 1. YAML-Templates in `generic_steering` implementieren
 2. `factory_steering` auf MessageGenerator umstellen
 3. Template-basierte Message-Generierung
 
-### **Phase 8: Erweiterte Features**
+### **Phase 9: Erweiterte Features**
 1. Topic-getriebener Ansatz
 2. Message-getriebener Ansatz
 3. Template Management

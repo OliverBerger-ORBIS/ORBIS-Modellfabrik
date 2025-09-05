@@ -61,9 +61,13 @@ class MessageProcessor:
                 st.session_state[self.last_processed_key] = len(all_messages)
                 st.session_state[self.last_count_key] = len(all_messages)
 
-                # Debug-Info (optional)
+                # Debug-Info (optional) - PERFORMANCE-FIX: Debug-Spam reduziert
                 if filtered_messages:
-                    st.sidebar.info(f"📊 {self.component_name}: {len(filtered_messages)} neue Nachrichten verarbeitet")
+                    # Nur bei vielen Nachrichten anzeigen, um Sidebar-Spam zu vermeiden
+                    if len(filtered_messages) > 5:
+                        st.sidebar.info(
+                            f"📊 {self.component_name}: {len(filtered_messages)} neue Nachrichten verarbeitet"
+                        )
 
             else:
                 # Keine neuen Nachrichten

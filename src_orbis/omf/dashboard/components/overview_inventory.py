@@ -149,16 +149,16 @@ def show_overview_inventory():
 
     order_manager = st.session_state.order_manager
 
-    # Auto-Refresh aus Settings (global)
+    # Auto-Refresh aus Settings (global) - DEAKTIVIERT für Performance
     auto_refresh = st.session_state.get("auto_refresh_enabled", False)
-    refresh_interval = st.session_state.get("auto_refresh_interval", 10)
 
-    # Auto-Refresh Timer (nur wenn aktiviert)
+    # Auto-Refresh Timer (nur wenn aktiviert) - PERFORMANCE-PROBLEM BEHOBEN
     if auto_refresh:
-        import time
-
-        time.sleep(refresh_interval)
-        st.rerun()
+        # PERFORMANCE-FIX: Auto-Refresh deaktiviert, da es das UI blockiert
+        st.warning("⚠️ Auto-Refresh ist deaktiviert (Performance-Grund)")
+        # import time
+        # time.sleep(refresh_interval)  # BLOCKIERT DAS UI!
+        # st.rerun()  # ENDLOS-SCHLEIFE!
 
     # NEUES PATTERN: Message-Processor für Lagerbestand
     mqtt_client = st.session_state.get("mqtt_client")
