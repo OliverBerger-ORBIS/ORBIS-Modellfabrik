@@ -8,6 +8,7 @@ Version: 3.0.0 - Ressourcenschonend mit Topic-Kategorien
 import json
 import re
 from dataclasses import dataclass
+from datetime import datetime
 from typing import Any, List
 
 import pandas as pd
@@ -125,10 +126,9 @@ def _flatten_for_df(messages: List[MessageRow]) -> pd.DataFrame:
         except Exception:
             timestamp = str(msg.timestamp)
 
-        # Payload kürzen
+        # Payload vollständig anzeigen
         payload_str = str(msg.payload)
-        if len(payload_str) > 100:
-            payload_str = payload_str[:100] + "..."
+        # Nicht kürzen - vollständigen Payload anzeigen
 
         # Topic kürzen
         topic_short = msg.topic
@@ -287,13 +287,29 @@ def show_message_center():
                 "🏷️": st.column_config.TextColumn("Kategorie", width="small"),
                 "📋": st.column_config.TextColumn("Sub-Kat", width="small"),
                 "📡": st.column_config.TextColumn("Topic", width="medium"),
-                "📄": st.column_config.TextColumn("Payload", width="large"),
+                "📄": st.column_config.TextColumn("Payload", width="extra-large"),
                 "🔢": st.column_config.NumberColumn("QoS", width="small"),
                 "💾": st.column_config.TextColumn("Retain", width="small"),
             },
             hide_index=True,
             height=400,
         )
+
+        # Erweiterte Payload-Anzeige für die letzten 5 Nachrichten
+        st.subheader("🔍 Detaillierte Payload-Ansicht (letzte 5 Nachrichten)")
+        recent_messages = filtered_messages[-5:] if len(filtered_messages) >= 5 else filtered_messages
+
+        for i, msg in enumerate(reversed(recent_messages)):
+            with st.expander(f"📄 Nachricht {len(recent_messages) - i}: {msg.topic}", expanded=False):
+                col1, col2 = st.columns([1, 2])
+                with col1:
+                    st.write(f"**Zeit:** {datetime.fromtimestamp(msg.timestamp).strftime('%H:%M:%S')}")
+                    st.write(f"**Typ:** {msg.message_type}")
+                    st.write(f"**QoS:** {msg.qos}")
+                    st.write(f"**Retain:** {msg.retain}")
+                with col2:
+                    st.write("**Vollständiger Payload:**")
+                    st.code(json.dumps(msg.payload, indent=2, ensure_ascii=False), language="json")
 
         # Filter-Info
         filter_info = (

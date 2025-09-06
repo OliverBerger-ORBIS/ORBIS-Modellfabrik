@@ -1,0 +1,53 @@
+context:
+  module_serial: SVR3QA2098
+  module_type: MILL
+description: 'Komplette MILL-Sequenz: PICK → MILL → DROP'
+name: mill_complete_sequence
+steps:
+- name: PICK
+  payload:
+    serialNumber: '{{module_serial}}'
+    orderId: '{{orderId}}'
+    orderUpdateId: '{{orderUpdateId}}'
+    action:
+      id: '{{action_id}}'
+      command: PICK
+      metadata:
+        priority: NORMAL
+        timeout: 300
+        type: WHITE
+  topic: module/v1/ff/{{module_serial}}/order
+  wait_condition:
+    payload_contains:
+      actionState: IDLE
+    topic: module/v1/ff/{{module_serial}}/state
+- name: MILL
+  payload:
+    serialNumber: '{{module_serial}}'
+    orderId: '{{orderId}}'
+    orderUpdateId: '{{orderUpdateId}}'
+    action:
+      id: '{{action_id}}'
+      command: MILL
+      metadata:
+        priority: NORMAL
+        timeout: 300
+        type: WHITE
+  topic: module/v1/ff/{{module_serial}}/order
+  wait_condition:
+    payload_contains:
+      actionState: IDLE
+    topic: module/v1/ff/{{module_serial}}/state
+- name: DROP
+  payload:
+    serialNumber: '{{module_serial}}'
+    orderId: '{{orderId}}'
+    orderUpdateId: '{{orderUpdateId}}'
+    action:
+      id: '{{action_id}}'
+      command: DROP
+      metadata:
+        priority: NORMAL
+        timeout: 300
+        type: WHITE
+  topic: module/v1/ff/{{module_serial}}/order
