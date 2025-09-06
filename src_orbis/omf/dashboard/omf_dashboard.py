@@ -92,9 +92,9 @@ import os
 import sys
 
 import streamlit as st
-from components.dummy_component import show_dummy_component
-from omf.config.config import LIVE_CFG, REPLAY_CFG
-from omf.tools.mqtt_client import get_omf_mqtt_client
+from src_orbis.omf.dashboard.components.dummy_component import show_dummy_component
+from src_orbis.omf.config.config import LIVE_CFG, REPLAY_CFG
+from src_orbis.omf.tools.mqtt_client import get_omf_mqtt_client
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", ".."))
 sys.path.append(os.path.join(os.path.dirname(__file__), "components"))

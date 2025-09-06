@@ -16,7 +16,7 @@ from unittest.mock import Mock, patch
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "src_orbis"))
 
-from omf.replay_station.omf_replay_station import LocalMQTTBroker, SessionPlayer
+from src_orbis.omf.replay_station.omf_replay_station import LocalMQTTBroker, SessionPlayer
 
 
 class TestLocalMQTTBroker(unittest.TestCase):

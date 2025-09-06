@@ -24,7 +24,7 @@ class TestDashboardMqttIntegration(unittest.TestCase):
     def test_dashboard_mqtt_client_flow(self):
         """Simuliert den Dashboard MQTT-Client Flow"""
         try:
-            from omf.tools.mqtt_client import get_omf_mqtt_client
+            from src_orbis.omf.tools.mqtt_client import get_omf_mqtt_client
 
             print("🔍 Dashboard MQTT-Client Flow Simulation:")
             print("=" * 50)
@@ -87,7 +87,7 @@ class TestDashboardMqttIntegration(unittest.TestCase):
     def test_session_state_persistence(self):
         """Testet Session State Persistenz"""
         try:
-            from omf.tools.mqtt_client import get_omf_mqtt_client
+            from src_orbis.omf.tools.mqtt_client import get_omf_mqtt_client
 
             print("\n🔍 Session State Persistenz Test:")
             print("=" * 50)

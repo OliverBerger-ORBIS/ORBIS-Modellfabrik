@@ -22,7 +22,7 @@ import os
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "src_orbis"))
 
-from omf.dashboard.components.factory_steering import (
+from src_orbis.omf.dashboard.components.steering_factory import (
     _prepare_module_step_message,
     _prepare_module_sequence_message,
     _prepare_fts_message,

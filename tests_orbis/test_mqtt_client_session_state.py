@@ -24,7 +24,7 @@ class TestMqttClientSessionState(unittest.TestCase):
     def test_mqtt_client_creation(self):
         """Testet MQTT Client Erstellung"""
         try:
-            from omf.tools.mqtt_client import get_omf_mqtt_client, MqttConfig
+            from src_orbis.omf.tools.mqtt_client import get_omf_mqtt_client, MqttConfig
 
             # Test-Konfiguration
             test_config = {
@@ -56,7 +56,7 @@ class TestMqttClientSessionState(unittest.TestCase):
     def test_mqtt_client_methods(self):
         """Testet MQTT Client Methoden"""
         try:
-            from omf.tools.mqtt_client import get_omf_mqtt_client
+            from src_orbis.omf.tools.mqtt_client import get_omf_mqtt_client
 
             # Test-Konfiguration
             test_config = {

@@ -14,8 +14,7 @@ from unittest.mock import patch
 
 import yaml
 
-sys.path.append(os.path.join(os.path.dirname(__file__), "..", "src_orbis", "mqtt", "tools"))
-from message_template_manager import MessageTemplateManager, get_message_template_manager
+from src_orbis.omf.tools.message_template_manager import OMFMessageTemplateManager, get_message_template_manager
 
 
 class TestMessageTemplateManager(unittest.TestCase):
@@ -122,7 +121,8 @@ class TestMessageTemplateManager(unittest.TestCase):
             yaml.dump(self.test_config, f, default_flow_style=False, allow_unicode=True)
 
         # Create manager instance
-        self.manager = MessageTemplateManager(self.config_file)
+
+    self.manager = OMFMessageTemplateManager(self.config_file)
 
     def tearDown(self):
         """Cleanup nach jedem Test"""
@@ -143,7 +143,7 @@ class TestMessageTemplateManager(unittest.TestCase):
     def test_init_without_config_file(self):
         """Test: Initialisierung ohne Konfigurationsdatei"""
         with patch("builtins.print") as mock_print:
-            manager = MessageTemplateManager("nonexistent_file.yml")
+            manager = OMFMessageTemplateManager("nonexistent_file.yml")
             self.assertIsNotNone(manager)
             self.assertEqual(manager.templates["topics"], {})
             mock_print.assert_called()
@@ -479,7 +479,7 @@ class TestMessageTemplateManagerIntegration(unittest.TestCase):
         with open(self.config_file, "w", encoding="utf-8") as f:
             yaml.dump(self.test_config, f)
 
-        self.manager = MessageTemplateManager(self.config_file)
+    self.manager = OMFMessageTemplateManager(self.config_file)
 
     def tearDown(self):
         """Cleanup"""

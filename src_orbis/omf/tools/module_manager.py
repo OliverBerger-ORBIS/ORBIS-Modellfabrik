@@ -42,7 +42,15 @@ class OMFModuleManager:
             return None
 
     def get_module_info(self, module_id: str) -> Optional[Dict[str, Any]]:
-        """Get complete module information"""
+        """
+        Get complete module information for a given module ID.
+
+        Args:
+            module_id (str): The ID of the module.
+
+        Returns:
+            Optional[Dict[str, Any]]: Dictionary with module information, or None if not found.
+        """
         if not self.config:
             return None
 
@@ -57,7 +65,16 @@ class OMFModuleManager:
         return None
 
     def get_module_name(self, module_id: str, language: str = "de") -> str:
-        """Get module name for module ID"""
+        """
+        Get module name for a given module ID and language.
+
+        Args:
+            module_id (str): The ID of the module.
+            language (str, optional): Language code ('de' or 'en'). Defaults to 'de'.
+
+        Returns:
+            str: The name of the module in the requested language, or the module ID if not found.
+        """
         module_info = self.get_module_info(module_id)
         if not module_info:
             return module_id
@@ -103,7 +120,12 @@ class OMFModuleManager:
         return module_info.get("enabled", True) if module_info else False
 
     def get_all_modules(self) -> Dict[str, Dict[str, Any]]:
-        """Get all modules"""
+        """
+        Get all modules from configuration.
+
+        Returns:
+            Dict[str, Dict[str, Any]]: Dictionary of all modules and their information.
+        """
         modules = {}
         if "modules" in self.config:
             modules.update(self.config["modules"])
@@ -112,7 +134,12 @@ class OMFModuleManager:
         return modules
 
     def get_enabled_modules(self) -> Dict[str, Dict[str, Any]]:
-        """Get only enabled modules"""
+        """
+        Get only enabled modules from configuration.
+
+        Returns:
+            Dict[str, Dict[str, Any]]: Dictionary of enabled modules and their information.
+        """
         all_modules = self.get_all_modules()
         return {k: v for k, v in all_modules.items() if v.get("enabled", True)}
 
@@ -134,7 +161,12 @@ class OMFModuleManager:
         return module_id in self.get_all_modules()
 
     def get_module_statistics(self) -> Dict[str, Any]:
-        """Get module statistics"""
+        """
+        Get statistics about enabled modules (counts by type and command).
+
+        Returns:
+            Dict[str, Any]: Statistics including total_modules, type_counts, command_counts, module_types, commands.
+        """
         all_modules = self.get_enabled_modules()
         total_modules = len(all_modules)
 

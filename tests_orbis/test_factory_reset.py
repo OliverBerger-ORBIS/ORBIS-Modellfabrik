@@ -1,3 +1,8 @@
+# Ermöglicht das direkte Ausführen der Tests mit Python
+if __name__ == "__main__":
+    import unittest
+
+    unittest.main()
 #!/usr/bin/env python3
 """
 Unit Test für Factory Reset Funktionalität
@@ -13,10 +18,12 @@ import unittest
 from datetime import datetime
 from unittest.mock import Mock, patch
 
+# Unused Mock import removed
+
 # Add src_orbis to path for imports
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src_orbis"))
 
-from omf.tools.message_generator import MessageGenerator
+from src_orbis.omf.tools.message_generator import MessageGenerator
 
 
 class TestFactoryReset(unittest.TestCase):
