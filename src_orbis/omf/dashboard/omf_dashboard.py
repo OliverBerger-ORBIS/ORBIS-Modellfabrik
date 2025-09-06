@@ -1,29 +1,103 @@
+class MockMqttClient:
+    def drain(self, *args, **kwargs):
+        print("[MOCK] drain called")
+        return getattr(self, "published_messages", [])
+
+    def __init__(self, cfg=None, *args, **kwargs):
+        self.connected = True
+        self.cfg = cfg or {}
+        self.config = {
+            "broker": {
+                "aps": {
+                    "host": "mock",
+                    "port": 0,
+                    "client_id": "mock_client",
+                    "username": "",
+                    "password": "",
+                    "keepalive": 60,
+                }
+            },
+            "subscriptions": {},
+        }
+
+    def close(self, *args, **kwargs):
+        print("[MOCK] Close called")
+        self._closed = True
+        return True
+
+    def connect(self, *args, **kwargs):
+        self.connected = True
+        print("[MOCK] Connect called")
+        return True
+
+    def disconnect(self, *args, **kwargs):
+        self.connected = False
+        print("[MOCK] Disconnect called")
+        return True
+
+    def loop_start(self, *args, **kwargs):
+        self._loop_running = True
+        print("[MOCK] loop_start called")
+        return True
+
+    def loop_stop(self, *args, **kwargs):
+        self._loop_running = False
+        print("[MOCK] loop_stop called")
+        return True
+
+    def is_connected(self, *args, **kwargs):
+        return self.connected
+
+    def get_client_id(self, *args, **kwargs):
+        return self._client_id
+
+    def get_broker(self, *args, **kwargs):
+        return self._broker
+
+    def get_port(self, *args, **kwargs):
+        return self._port
+
+    def get_last_error(self, *args, **kwargs):
+        return self._last_error
+
+    def get_subscriptions(self, *args, **kwargs):
+        return self._subscriptions.copy()
+
+    def get_published_messages(self, *args, **kwargs):
+        return self.published_messages.copy()
+
+    def get_messages(self, *args, **kwargs):
+        return self._messages.copy()
+
+    def __str__(self):
+        return f"<MockMqttClient id={self._client_id} broker={self._broker}:{self._port} connected={self.connected}>"
+
+    def get_connection_status(self):
+        return {"stats": {"messages_received": 0, "messages_sent": 0}}
+
+    @property
+    def client(self):
+        return None
+
+
 """
 ORBIS Modellfabrik Dashboard (OMF) - Modulare Architektur - Version 3.1.1
 Version: 3.1.1 - Refactored
 """
 
-# =============================================================================
-# IMPORTS & CONFIGURATION
-# =============================================================================
 
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", ".."))
+sys.path.append(os.path.join(os.path.dirname(__file__), "components"))
 import os
 import sys
 
 import streamlit as st
-
-# Add src_orbis to path for imports
-sys.path.append(os.path.join(os.path.dirname(__file__), "..", ".."))
-# Add components directory to path for imports
-sys.path.append(os.path.join(os.path.dirname(__file__), "components"))
-
-# Import settings components - Modulare Architektur
-# Fehlertolerante Imports mit Dummy-Komponenten
 from components.dummy_component import show_dummy_component
+from omf.config.config import LIVE_CFG, REPLAY_CFG
+from omf.tools.mqtt_client import get_omf_mqtt_client
 
-# Relative imports für lokale Entwicklung
-from omf.config.config import LIVE_CFG, REPLAY_CFG  # noqa: E402
-from omf.tools.mqtt_client import get_omf_mqtt_client  # noqa: E402
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", ".."))
+sys.path.append(os.path.join(os.path.dirname(__file__), "components"))
 
 # =============================================================================
 # COMPONENT LOADING - FAULT TOLERANT
@@ -86,9 +160,8 @@ def handle_environment_switch():
     else:
         st.sidebar.success("🏭 **Default:** Live-Modus (Produktion)")
 
-    env = st.sidebar.radio(
-        "Umgebung", ["live", "replay"], index=0 if st.session_state["env"] == "live" else 1, horizontal=True
-    )
+    env_options = ["live", "replay", "mock"]
+    env = st.sidebar.radio("Umgebung", env_options, index=env_options.index(st.session_state["env"]), horizontal=True)
 
     if env != st.session_state["env"]:
         # MQTT-Client bei Umgebungswechsel komplett neu initialisieren
@@ -115,29 +188,32 @@ def handle_environment_switch():
 
 def initialize_mqtt_client(env):
     """Initialisiert den MQTT-Client"""
-    cfg = LIVE_CFG if env == "live" else REPLAY_CFG
+    if env == "live":
+        cfg = LIVE_CFG
+    elif env == "replay":
+        cfg = REPLAY_CFG
+    else:
+        cfg = {"host": "mock", "port": 0}
 
     # MQTT-Client nur einmal initialisieren (Singleton)
     if "mqtt_client" not in st.session_state:
         st.info("🔍 **Debug: Erstelle neuen MQTT-Client**")
-        client = get_omf_mqtt_client(cfg)
+        if env == "mock":
+            client = MockMqttClient(cfg)
+        else:
+            client = get_omf_mqtt_client(cfg)
         st.session_state.mqtt_client = client
     else:
         client = st.session_state.mqtt_client
         st.info(f"   - Verwende bestehenden Client: {type(client).__name__}")
 
-    # Automatisch verbinden wenn nicht verbunden
-    if not client.connected:
-        # Der Client verbindet sich automatisch im __init__
-        # Warten auf Verbindung
-        import time
+    # Automatisch verbinden wenn nicht verbunden (nur für echte Clients)
+    if env != "mock" and not client.connected:
 
-        for _ in range(10):  # Max 10 Sekunden warten
-            if client.connected:
-                break
-            time.sleep(0.1)
+    # ...Imports stehen bereits am Anfang des Files...
 
-    return client, cfg
+        sys.path.append(os.path.join(os.path.dirname(__file__), "..", ".."))
+        sys.path.append(os.path.join(os.path.dirname(__file__), "components"))
 
 
 def setup_mqtt_subscription(client, cfg):
