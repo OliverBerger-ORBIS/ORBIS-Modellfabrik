@@ -1,0 +1,37 @@
+# Beispiel-Recipe für MILL-Sequenz
+name: MILL_SEQUENCE
+module: MILL-01
+steps:
+  - name: PICK
+    type: command
+    topic: module/v1/ff/{{module}}/order
+    payload:
+      action: PICK
+      orderId: '{{orderId}}'
+      orderUpdateId: '{{orderUpdateId}}'
+  - name: WAIT_PICK
+    type: wait
+    topic: module/v1/ff/{{module}}/status
+    match:
+      action: PICK_DONE
+      orderId: '{{orderId}}'
+  - name: MILL
+    type: command
+    topic: module/v1/ff/{{module}}/order
+    payload:
+      action: MILL
+      orderId: '{{orderId}}'
+      orderUpdateId: '{{orderUpdateId}}'
+  - name: WAIT_MILL
+    type: wait
+    topic: module/v1/ff/{{module}}/status
+    match:
+      action: MILL_DONE
+      orderId: '{{orderId}}'
+  - name: DROP
+    type: command
+    topic: module/v1/ff/{{module}}/order
+    payload:
+      action: DROP
+      orderId: '{{orderId}}'
+      orderUpdateId: '{{orderUpdateId}}'

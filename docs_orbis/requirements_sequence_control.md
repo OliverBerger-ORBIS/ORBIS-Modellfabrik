@@ -21,11 +21,14 @@ Die ORBIS Modellfabrik benötigt ein System zur **sequenziellen Ausführung von 
 - **Manuelle Kontrolle**: User klickt selbst die Send-Buttons (keine Automatik)
 - **Abbruch-Möglichkeit**: Sequenz kann jederzeit abgebrochen werden
 
-### **3. Generische Sequenz-Definition**
+
+### **3. Generische Sequenz-Definition (YML & Python)**
 - **Flexible Message-Topic-Kombinationen**: Nicht nur "command"-basiert
 - **Template-System**: Variablen in Topics und Payloads (z.B. `{{module_id}}`)
 - **Modul-spezifische Rezepte**: Verschiedene Sequenzen für MILL, DRILL, AIQS
 - **Kontext-Variablen**: IDs und Werte werden zwischen Schritten durchgereicht
+- **YML und Python gleichwertig**: Sequenzen können als YML-Datei oder Python-Script definiert werden
+- **Individuelle Logik**: Python-Sequenzen erlauben komplexe Bedingungen, dynamische Payloads, Callbacks
 
 ### **4. Wait-Schritte zwischen Commands**
 - **Event-Waiting**: Automatisches Warten auf Bestätigungen zwischen Commands
@@ -49,10 +52,16 @@ Die ORBIS Modellfabrik benötigt ein System zur **sequenziellen Ausführung von 
 - **ID-Management**: Konsistente `orderId`/`orderUpdateId` Verwaltung
 - **Session-State**: Sequenz-Status in Streamlit Session gespeichert
 
+
 ### **7. UI/UX-Anforderungen**
 - **Sofortige Anzeige**: Nachrichten werden unmittelbar nach Button-Klick angezeigt
+- **Sequenz-Status**: "Sequenz gestartet", "Sequenz beendet", "Sequenz abgebrochen" werden klar angezeigt
+- **Schritt-Darstellung**: Schritte sind vertikal ausgerichtet und mit 60px eingerückt
+- **Nummerierung**: Jeder Schritt ist durchnummeriert und mit Statussymbol versehen
+- **Abbruch jederzeit**: "Sequenz abbrechen" ist bis zum letzten Schritt aktiv
+- **Abschlussanzeige**: Abschluss erscheint auf Höhe des Start-Buttons
+- **Step-Details**: Optional einblendbare Context- und Payload-Infos pro Schritt, Expander standardmäßig geschlossen
 - **Keine Trennlinien**: Keine `---` zwischen Message und Button
-- **Payload-Option**: Ein-/Ausschaltbare Anzeige der vollständigen MQTT-Nachricht
 - **Einfaches Design**: Kein Over-Engineering, klare und intuitive Bedienung
 
 ### **8. Testbarkeit**
@@ -91,17 +100,20 @@ Die ORBIS Modellfabrik benötigt ein System zur **sequenziellen Ausführung von 
 
 ## ** Akzeptanzkriterien**
 
+
 ### **✅ Must-Have**
 - [ ] Sequenz-Fenster öffnet sich bei Sequenz-Start
 - [ ] Sequenz bleibt offen bis Ende oder Abbruch
 - [ ] Manuelle Send-Button-Kontrolle (keine Automatik)
 - [ ] Konsistente `orderId`/`orderUpdateId` Verwaltung
-- [ ] Visuelle Fortschrittsanzeige
+- [ ] Visuelle Fortschrittsanzeige mit Nummerierung und Symbolen
 - [ ] Abbruch-Möglichkeit jederzeit
 - [ ] Wait-Schritte zwischen Commands
 - [ ] OMFMqttClient-Singleton Verwendung
 - [ ] MQTT-Message-Versand für Steuerungsbefehle
 - [ ] Unit-Tests ohne Dashboard-Start möglich
+- [ ] Step-Details (Context/Payload) optional pro Schritt
+- [ ] Sequenzdefinitionen als YML und Python möglich
 
 ### **✅ Could-Have**
 - [ ] Generische Topic/Message-Template-Definition

@@ -210,7 +210,7 @@ def initialize_mqtt_client(env):
     # Automatisch verbinden wenn nicht verbunden (nur für echte Clients)
     if env != "mock" and not client.connected:
 
-    # ...Imports stehen bereits am Anfang des Files...
+        # ...Imports stehen bereits am Anfang des Files...
 
         sys.path.append(os.path.join(os.path.dirname(__file__), "..", ".."))
         sys.path.append(os.path.join(os.path.dirname(__file__), "components"))
