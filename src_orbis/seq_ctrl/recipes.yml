@@ -1,0 +1,29 @@
+BeispielSequenz:
+  - name: Schritt A
+    topic: start
+    payload: {step: 1}
+  - name: Schritt B
+    topic: weiter
+    payload: {step: 2}
+  - name: Schritt C
+    topic: ende
+    payload: {step: 3}
+
+MeineNeueSequenz:
+  - name: Vorbereiten
+    topic: prep
+    payload: {step: "prep"}
+  - name: Ausführen
+    topic: execute
+    payload: {step: "run"}
+  - name: Abschließen
+    topic: finish
+    payload: {step: "done"}
+
+TestSequenz:
+  - name: Test Schritt 1
+    topic: test1
+    payload: {step: "t1"}
+  - name: Test Schritt 2
+    topic: test2
+    payload: {step: "t2"}
