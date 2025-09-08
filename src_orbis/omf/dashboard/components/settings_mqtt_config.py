@@ -12,7 +12,7 @@ def show_mqtt_config():
     st.markdown("MQTT-Broker Einstellungen und Verbindungsverwaltung")
 
     # Aktueller Modus-Status anzeigen
-    current_mode = st.session_state.get("mqtt_mode", "live")
+    current_mode = st.session_state.get("env", "live")
     mode_display = {
         "live": "🏭 Live-Fabrik",
         "replay": "🎬 Replay-Station",
@@ -21,16 +21,16 @@ def show_mqtt_config():
 
     st.info(f"**Aktueller Modus:** {mode_display} (Einstellung über Sidebar)")
     st.markdown(
-        "💡 **Hinweis:** Der MQTT-Verbindungsmodus wird über die Sidebar-Umgebungsauswahl (Live/Replay) konfiguriert."
+        "💡 **Hinweis:** Der MQTT-Verbindungsmodus wird über die Sidebar-Umgebungsauswahl (Live/Replay/Mock) konfiguriert."
     )
 
     st.markdown("---")
 
     try:
+        # Füge den tools-Pfad hinzu
         import os
         import sys
 
-        # Füge den tools-Pfad hinzu
         tools_path = os.path.join(os.path.dirname(__file__), "..", "..", "tools")
         if tools_path not in sys.path:
             sys.path.append(tools_path)
@@ -73,7 +73,7 @@ def show_mqtt_config():
                 st.info("🎬 **Replay-Broker:** Automatische Konfiguration")
             elif current_mode == "mock":
                 host_value = "mock"
-                port_value = 0
+                port_value = 1  # Port muss >= 1 sein für Streamlit
                 host_disabled = True
                 port_disabled = True
                 st.info("🧪 **Mock-Modus:** Keine echte Verbindung")
