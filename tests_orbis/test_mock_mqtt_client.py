@@ -1,5 +1,5 @@
 # Datei verschoben nach tests_orbis/test_mock_mqtt_client.py
-from src_orbis.mock_mqtt_client import MockMqttClient
+from src_orbis.omf.tools.mock_mqtt_client import MockMqttClient
 
 
 def test_mock_mqtt_client_publish():

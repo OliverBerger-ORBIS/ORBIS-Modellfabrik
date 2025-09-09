@@ -4,11 +4,10 @@ Unit Tests für Order Commands
 Basierend auf erfolgreichen Tests der Live-Fabrik
 """
 
-import unittest
 import json
-import uuid
+import unittest
 from datetime import datetime, timezone
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock
 
 
 class TestOrderCommands(unittest.TestCase):
@@ -130,7 +129,7 @@ class TestOrderCommands(unittest.TestCase):
         # Timestamp sollte Z-Zeitzone haben (UTC)
         self.assertTrue(timestamp.endswith("Z") or "+" in timestamp or "-" in timestamp)
 
-    def test_order_type_validation(self):
+    def test_order_type_validation_by_value(self):
         """Test: OrderType Validierung"""
 
         # OrderType muss "PRODUCTION" sein
@@ -188,13 +187,16 @@ class TestOrderCommands(unittest.TestCase):
         for invalid_message in invalid_messages:
             # Prüfen ob Pflichtfelder fehlen
             if "type" not in invalid_message:
-                self.assertRaises(KeyError, lambda: invalid_message["type"])
+                with self.assertRaises(KeyError):
+                    _ = invalid_message["type"]
 
             if "timestamp" not in invalid_message:
-                self.assertRaises(KeyError, lambda: invalid_message["timestamp"])
+                with self.assertRaises(KeyError):
+                    _ = invalid_message["timestamp"]
 
             if "orderType" not in invalid_message:
-                self.assertRaises(KeyError, lambda: invalid_message["orderType"])
+                with self.assertRaises(KeyError):
+                    _ = invalid_message["orderType"]
 
     def test_order_response_handling(self):
         """Test: Order Response Handling"""

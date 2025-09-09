@@ -201,7 +201,7 @@ def show_overview_order_raw():
                 # Fallback: Einfache Darstellung
                 empty_buckets = ""
                 for _i in range(red_need):
-                    empty_buckets += '<div style="width: 140px; height: 140px; border: 2px solid #ccc; border-top: none; background-color: #f9f9f9; border-radius: 0 0 8px 8px; display: inline-block; margin: 8px;"></div>'
+                    empty_buckets += '<div style="width: 140px; height: 140px; border: 2px solid #ccc; border-top: none; background-color: #f9f9f9; border-radius: 0 0 8px 8px; display: inline-block; margin: 8px;"></div>'  # noqa: E501
                 st.markdown(
                     f'<div style="display: flex; gap: 10px; flex-wrap: wrap;">{empty_buckets}</div>',
                     unsafe_allow_html=True,
@@ -244,7 +244,7 @@ def show_overview_order_raw():
                 # Fallback: Einfache Darstellung
                 empty_buckets = ""
                 for _i in range(blue_need):
-                    empty_buckets += '<div style="width: 140px; height: 140px; border: 2px solid #ccc; border-top: none; background-color: #f9f9f9; border-radius: 0 0 8px 8px; display: inline-block; margin: 8px;"></div>'
+                    empty_buckets += '<div style="width: 140px; height: 140px; border: 2px solid #ccc; border-top: none; background-color: #f9f9f9; border-radius: 0 0 8px 8px; display: inline-block; margin: 8px;"></div>'  # noqa: E501
                 st.markdown(
                     f'<div style="display: flex; gap: 10px; flex-wrap: wrap;">{empty_buckets}</div>',
                     unsafe_allow_html=True,

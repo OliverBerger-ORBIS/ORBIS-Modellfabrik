@@ -4,8 +4,8 @@ Debug Script: Dashboard MQTT Problem
 Simuliert das echte Problem aus dem Dashboard
 """
 
-import sys
 import os
+import sys
 
 # Add src_orbis to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src_orbis"))
@@ -19,8 +19,8 @@ def debug_dashboard_problem():
 
     try:
         # Import der Dashboard-Komponenten
-        from omf.tools.mqtt_client import get_omf_mqtt_client
         from omf.config.config import LIVE_CFG
+        from omf.tools.mqtt_client import get_omf_mqtt_client
 
         print("✅ Imports erfolgreich")
         print(f"   - LIVE_CFG: {LIVE_CFG}")
@@ -62,7 +62,7 @@ def debug_dashboard_problem():
 
         # Ersten Client in Session State setzen
         session_state["mqtt_client"] = client1
-        print(f"      ✅ Client1 in Session State gesetzt")
+        print("      ✅ Client1 in Session State gesetzt")
 
         # Client aus Session State holen
         retrieved_client1 = session_state.get("mqtt_client")
@@ -72,7 +72,7 @@ def debug_dashboard_problem():
         # Zweiten Client in Session State setzen (Dashboard-Problem)
         print("\n   📋 Schritt 4: Zweiten Client in Session State setzen (Dashboard-Problem)")
         session_state["mqtt_client"] = client2
-        print(f"      ✅ Client2 in Session State gesetzt")
+        print("      ✅ Client2 in Session State gesetzt")
 
         # Client aus Session State holen
         retrieved_client2 = session_state.get("mqtt_client")
@@ -83,7 +83,7 @@ def debug_dashboard_problem():
         # Schritt 5: clear_history testen
         print("\n   📋 Schritt 5: clear_history testen")
         if retrieved_client2 and hasattr(retrieved_client2, "clear_history"):
-            print(f"      ✅ clear_history verfügbar")
+            print("      ✅ clear_history verfügbar")
 
             # Nachrichten zählen
             if hasattr(retrieved_client2, "_history"):

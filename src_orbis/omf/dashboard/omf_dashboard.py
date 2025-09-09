@@ -1,103 +1,21 @@
-class MockMqttClient:
-    def drain(self, *args, **kwargs):
-        print("[MOCK] drain called")
-        return getattr(self, "published_messages", [])
-
-    def __init__(self, cfg=None, *args, **kwargs):
-        self.connected = True
-        self.cfg = cfg or {}
-        self.config = {
-            "broker": {
-                "aps": {
-                    "host": "mock",
-                    "port": 0,
-                    "client_id": "mock_client",
-                    "username": "",
-                    "password": "",
-                    "keepalive": 60,
-                }
-            },
-            "subscriptions": {},
-        }
-
-    def close(self, *args, **kwargs):
-        print("[MOCK] Close called")
-        self._closed = True
-        return True
-
-    def connect(self, *args, **kwargs):
-        self.connected = True
-        print("[MOCK] Connect called")
-        return True
-
-    def disconnect(self, *args, **kwargs):
-        self.connected = False
-        print("[MOCK] Disconnect called")
-        return True
-
-    def loop_start(self, *args, **kwargs):
-        self._loop_running = True
-        print("[MOCK] loop_start called")
-        return True
-
-    def loop_stop(self, *args, **kwargs):
-        self._loop_running = False
-        print("[MOCK] loop_stop called")
-        return True
-
-    def is_connected(self, *args, **kwargs):
-        return self.connected
-
-    def get_client_id(self, *args, **kwargs):
-        return self._client_id
-
-    def get_broker(self, *args, **kwargs):
-        return self._broker
-
-    def get_port(self, *args, **kwargs):
-        return self._port
-
-    def get_last_error(self, *args, **kwargs):
-        return self._last_error
-
-    def get_subscriptions(self, *args, **kwargs):
-        return self._subscriptions.copy()
-
-    def get_published_messages(self, *args, **kwargs):
-        return self.published_messages.copy()
-
-    def get_messages(self, *args, **kwargs):
-        return self._messages.copy()
-
-    def __str__(self):
-        return f"<MockMqttClient id={self._client_id} broker={self._broker}:{self._port} connected={self.connected}>"
-
-    def get_connection_status(self):
-        return {"stats": {"messages_received": 0, "messages_sent": 0}}
-
-    @property
-    def client(self):
-        return None
-
-
-"""
-ORBIS Modellfabrik Dashboard (OMF) - Modulare Architektur - Version 3.1.1
-Version: 3.1.1 - Refactored
-"""
-
-
-sys.path.append(os.path.join(os.path.dirname(__file__), "..", ".."))
-sys.path.append(os.path.join(os.path.dirname(__file__), "components"))
 import os
 import sys
 
 import streamlit as st
-from components.dummy_component import show_dummy_component
-from omf.config.config import LIVE_CFG, REPLAY_CFG
-from omf.tools.mqtt_client import get_omf_mqtt_client
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", ".."))
 sys.path.append(os.path.join(os.path.dirname(__file__), "components"))
+
+from components.dummy_component import show_dummy_component
+from omf.config.config import LIVE_CFG, REPLAY_CFG
+from omf.tools.mock_mqtt_client import MockMqttClient
+from omf.tools.omf_mqtt_client import OMFMqttClient
+
+"""
+ORBIS Modellfabrik Dashboard (OMF) - Modulare Architektur - Version 3.2.0
+Version: 3.2.0 - Refactored
+"""
+
 
 # =============================================================================
 # COMPONENT LOADING - FAULT TOLERANT
@@ -198,10 +116,12 @@ def initialize_mqtt_client(env):
     # MQTT-Client nur einmal initialisieren (Singleton)
     if "mqtt_client" not in st.session_state:
         st.info("🔍 **Debug: Erstelle neuen MQTT-Client**")
+        from omf.tools.mqtt_config import MqttConfig
+
         if env == "mock":
-            client = MockMqttClient(cfg)
+            client = MockMqttClient(MqttConfig(**cfg))
         else:
-            client = get_omf_mqtt_client(cfg)
+            client = OMFMqttClient(MqttConfig(**cfg))
         st.session_state.mqtt_client = client
     else:
         client = st.session_state.mqtt_client
@@ -209,11 +129,10 @@ def initialize_mqtt_client(env):
 
     # Automatisch verbinden wenn nicht verbunden (nur für echte Clients)
     if env != "mock" and not client.connected:
-
-        # ...Imports stehen bereits am Anfang des Files...
-
         sys.path.append(os.path.join(os.path.dirname(__file__), "..", ".."))
         sys.path.append(os.path.join(os.path.dirname(__file__), "components"))
+
+    return client, cfg
 
 
 def setup_mqtt_subscription(client, cfg):
@@ -243,7 +162,7 @@ def display_mqtt_status(client, cfg):
     # Daher prüfen wir auch die Broker-Verbindung
     try:
         # Teste ob Client funktioniert (auch wenn connected=False)
-        if hasattr(client, "client") and client.client and client.client.is_connected():
+        if hasattr(client, "client") and client.client and client.connected:
             st.sidebar.success(f"🟢 Verbunden: {cfg['host']}:{cfg['port']}")
         elif client.connected:
             st.sidebar.success(f"🟢 Verbunden: {cfg['host']}:{cfg['port']}")
@@ -280,47 +199,39 @@ def display_refresh_button():
 def display_header(client):
     """Zeigt den Dashboard-Header mit Logo und Status"""
     # Main title with ORBIS logo and MQTT connection status
-    col1, col2, col3 = st.columns([1, 3, 1])
+    col1 = st.columns(1)[0]
 
     with col1:
         try:
-            # Versuche ORBIS-Logo zu laden - OMF-Struktur
-            possible_paths = [
-                # Variante 1: OMF Assets-Verzeichnis (neue Struktur)
-                os.path.join(os.path.dirname(__file__), "assets", "orbis_logo.png"),
-                # Variante 2: Fallback auf alte Struktur
-                os.path.join(os.path.dirname(__file__), "..", "..", "mqtt", "dashboard", "assets", "orbis_logo.png"),
-                # Variante 3: Absoluter Pfad vom Projekt-Root
-                os.path.join(os.getcwd(), "src_orbis", "omf", "dashboard", "assets", "orbis_logo.png"),
-            ]
-
-            logo_found = False
-            for logo_path in possible_paths:
-                if os.path.exists(logo_path):
-                    st.image(logo_path, width=100)
-                    logo_found = True
-                    break
-
-            if not logo_found:
-                # Fallback: Schönes Fabrik-Logo als Emoji
+            # Nur ORBIS_LOGO.png im Header anzeigen
+            logo_path = os.path.join(os.path.dirname(__file__), "assets", "ORBIS_LOGO.png")
+            if os.path.exists(logo_path):
+                st.image(logo_path, width=100, caption="ORBIS Logo")
+            else:
                 st.markdown("🏭")
                 st.caption("Modellfabrik")
-
         except Exception:
-            # Fallback bei Fehlern: Schönes Fabrik-Logo
             st.markdown("🏭")
             st.caption("Modellfabrik")
 
-    with col2:
-        st.title("🏭 ORBIS Modellfabrik Dashboard")
-        st.markdown("**Version:** 3.0.0 - Settings2 Test Version")
 
-    with col3:
-        # MQTT Status
-        if client.connected:
-            st.success("🔗 MQTT Verbunden")
-        else:
-            st.error("❌ MQTT Nicht verbunden")
+# =============================================================================
+# MODULE LOGO HELPER
+# =============================================================================
+def get_module_logo(module_name):
+    """Gibt den Pfad zum Modul-Icon zurück, falls vorhanden, sonst None."""
+    # Prüfe PNG und JPEG
+    icon_filename_png = f"{module_name.upper()}_ICON.png"
+    icon_filename_jpeg = f"{module_name.upper()}_ICON.jpeg"
+    assets_dir = os.path.join(os.path.dirname(__file__), "assets")
+    icon_path_png = os.path.join(assets_dir, icon_filename_png)
+    icon_path_jpeg = os.path.join(assets_dir, icon_filename_jpeg)
+    if os.path.exists(icon_path_png):
+        return icon_path_png
+    elif os.path.exists(icon_path_jpeg):
+        return icon_path_jpeg
+    else:
+        return None
 
 
 def display_tabs():

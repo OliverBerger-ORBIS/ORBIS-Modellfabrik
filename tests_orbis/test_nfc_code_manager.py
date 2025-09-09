@@ -14,7 +14,7 @@ import yaml
 # Add src_orbis to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src_orbis"))
 
-from mqtt.tools.nfc_code_manager import NFCCodeManager
+from src_orbis.analysis_tools.nfc_code_manager import NFCCodeManager
 
 
 class TestNFCCodeManager(unittest.TestCase):
@@ -329,7 +329,7 @@ class TestNFCCodeManagerBackwardCompatibility(unittest.TestCase):
 
     def test_backward_compatibility_functions(self):
         """Test backward compatibility functions"""
-        from mqtt.tools.nfc_code_manager import (
+        from src_orbis.analysis_tools.nfc_code_manager import (
             get_all_nfc_codes,
             get_friendly_name,
             get_nfc_code,

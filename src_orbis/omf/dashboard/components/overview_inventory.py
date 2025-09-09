@@ -129,7 +129,7 @@ def _create_large_bucket_display(position, workpiece_type):
     else:
         # Fallback: Einfache Darstellung
         return f"""
-        <div style="width: 140px; height: 140px; margin: 8px auto; position: relative; border: 2px solid #ccc; border-radius: 8px; background-color: #f9f9f9; display: flex; align-items: center; justify-content: center;">
+    <div style="width: 140px; height: 140px; margin: 8px auto; position: relative; border: 2px solid #ccc; border-radius: 8px; background-color: #f9f9f9; display: flex; align-items: center; justify-content: center;">  # noqa: E501
             <div style="text-align: center;">
                 <div style="font-size: 12px; color: #666;">{position}</div>
                 <div style="font-size: 10px; color: #999;">{workpiece_type or 'Leer'}</div>

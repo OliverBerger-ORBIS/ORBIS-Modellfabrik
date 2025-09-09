@@ -1,3 +1,5 @@
+from src_orbis.omf.tools.module_manager import get_omf_module_manager
+
 #!/usr/bin/env python3
 """
 Node-RED Template Analyzer for ORBIS Modellfabrik
@@ -8,32 +10,21 @@ Extracts template structures, examples, and validation rules.
 
 import glob
 import json
+import os
 import re
+import sys
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Set
 
 import yaml
 
-try:
-    from .message_template_manager import get_message_template_manager
-    from .module_manager import get_module_manager
-except ImportError:
-    import os
-    import sys
-
-    sys.path.append(os.path.dirname(__file__))
-    from message_template_manager import get_message_template_manager
-    from module_manager import get_module_manager
-
-import os
-import sys
+from src_orbis.analysis_tools.nfc_code_manager import get_nfc_manager
+from src_orbis.omf.tools.message_template_manager import get_message_template_manager
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
 
 import sqlite3
-
-from src_orbis.mqtt.tools.nfc_code_manager import get_nfc_manager
 
 
 class NodeRedTemplateAnalyzer:
@@ -53,7 +44,7 @@ class NodeRedTemplateAnalyzer:
 
         # Initialize managers
         self.nfc_manager = get_nfc_manager()
-        self.module_mapping = get_module_manager()
+        self.module_mapping = get_omf_module_manager()
         self.message_template_manager = get_message_template_manager()
 
         # Node-RED topic patterns (based on actual session data)

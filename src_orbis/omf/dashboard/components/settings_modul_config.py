@@ -133,4 +133,3 @@ def show_module_config():
                 st.success("✅ Modul-Konfiguration gespeichert!")
             else:
                 st.error("❌ Fehler beim Speichern!")
-

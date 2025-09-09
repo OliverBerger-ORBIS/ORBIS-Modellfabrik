@@ -121,5 +121,3 @@ def get_module_card_template(module_name: str, status: str, ip_address: str = No
         {ip_info}
     </div>
     """
-
-

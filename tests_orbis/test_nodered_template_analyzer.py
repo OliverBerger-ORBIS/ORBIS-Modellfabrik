@@ -23,7 +23,7 @@ import yaml
 # Add src_orbis to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src_orbis"))
 
-from src_orbis.mqtt.tools.nodered_template_analyzer import NodeRedTemplateAnalyzer
+from src_orbis.analysis_tools.template_analyzers.nodered_template_analyzer import NodeRedTemplateAnalyzer
 
 
 class TestNodeRedTemplateAnalyzer(unittest.TestCase):

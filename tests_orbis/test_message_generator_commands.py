@@ -14,7 +14,6 @@ import os
 import sys
 import unittest
 from datetime import datetime
-from unittest.mock import Mock, patch
 
 # Add src_orbis to path for imports
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src_orbis"))
@@ -128,26 +127,34 @@ class TestMessageGeneratorCommands(unittest.TestCase):
 
     def test_module_sequence_mill(self):
         """Test: MILL Module Sequence"""
-        test_order_id = "test-order-123"
+        # Starte einen neuen Workflow, damit die orderId existiert
+        from omf.tools.workflow_order_manager import get_workflow_order_manager
+
+        workflow_manager = get_workflow_order_manager()
+        order_id = workflow_manager.start_workflow("MILL", ["PICK", "MILL", "DROP"])
 
         for step_num, step in enumerate(["PICK", "MILL", "DROP"], 1):
-            message = self.message_generator.generate_module_sequence_message("MILL", step, step_num, test_order_id)
+            message = self.message_generator.generate_module_sequence_message("MILL", step, step_num, order_id)
 
             self.assertIsNotNone(message, f"MILL {step} Message darf nicht None sein")
             self.assertIn("module/v1/ff/", message["topic"], "Topic muss Modul-Format haben")
 
             payload = message["payload"]
             self.assertEqual(payload["command"], step, f"Command muss '{step}' sein")
-            self.assertEqual(payload["order_id"], test_order_id, "order_id muss übereinstimmen")
+            self.assertEqual(payload["order_id"], order_id, "order_id muss übereinstimmen")
             self.assertIn("orderUpdateId", payload["parameters"], "orderUpdateId muss vorhanden sein")
             self.assertEqual(payload["parameters"]["subActionId"], step_num, f"subActionId muss {step_num} sein")
 
     def test_module_sequence_aiqs(self):
         """Test: AIQS Module Sequence"""
-        test_order_id = "test-order-456"
+        # Starte einen neuen Workflow, damit die orderId existiert
+        from omf.tools.workflow_order_manager import get_workflow_order_manager
+
+        workflow_manager = get_workflow_order_manager()
+        order_id = workflow_manager.start_workflow("AIQS", ["PICK", "CHECK_QUALITY", "DROP"])
 
         for step_num, step in enumerate(["PICK", "CHECK_QUALITY", "DROP"], 1):
-            message = self.message_generator.generate_module_sequence_message("AIQS", step, step_num, test_order_id)
+            message = self.message_generator.generate_module_sequence_message("AIQS", step, step_num, order_id)
 
             self.assertIsNotNone(message, f"AIQS {step} Message darf nicht None sein")
             payload = message["payload"]
@@ -155,10 +162,14 @@ class TestMessageGeneratorCommands(unittest.TestCase):
 
     def test_module_sequence_drill(self):
         """Test: DRILL Module Sequence"""
-        test_order_id = "test-order-789"
+        # Starte einen neuen Workflow, damit die orderId existiert
+        from omf.tools.workflow_order_manager import get_workflow_order_manager
+
+        workflow_manager = get_workflow_order_manager()
+        order_id = workflow_manager.start_workflow("DRILL", ["PICK", "DRILL", "DROP"])
 
         for step_num, step in enumerate(["PICK", "DRILL", "DROP"], 1):
-            message = self.message_generator.generate_module_sequence_message("DRILL", step, step_num, test_order_id)
+            message = self.message_generator.generate_module_sequence_message("DRILL", step, step_num, order_id)
 
             self.assertIsNotNone(message, f"DRILL {step} Message darf nicht None sein")
             payload = message["payload"]

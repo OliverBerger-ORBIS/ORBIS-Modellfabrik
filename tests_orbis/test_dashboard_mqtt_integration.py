@@ -4,10 +4,9 @@ Unit Test: Dashboard MQTT Integration Problem
 Simuliert das echte Problem aus dem Dashboard
 """
 
-import unittest
-import sys
 import os
-from unittest.mock import Mock, patch, MagicMock
+import sys
+import unittest
 
 # Add src_orbis to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src_orbis"))
@@ -24,7 +23,7 @@ class TestDashboardMqttIntegration(unittest.TestCase):
     def test_dashboard_mqtt_client_flow(self):
         """Simuliert den Dashboard MQTT-Client Flow"""
         try:
-            from omf.tools.mqtt_client import get_omf_mqtt_client
+            from src_orbis.omf.tools.omf_mqtt_factory import get_omf_mqtt_client
 
             print("🔍 Dashboard MQTT-Client Flow Simulation:")
             print("=" * 50)
@@ -47,7 +46,7 @@ class TestDashboardMqttIntegration(unittest.TestCase):
             # Schritt 2: Client in Session State setzen (wie im Dashboard)
             print("\n📋 Schritt 2: Client in Session State setzen")
             self.mock_session_state["mqtt_client"] = client
-            print(f"   ✅ Client in Session State gesetzt")
+            print("   ✅ Client in Session State gesetzt")
 
             # Schritt 3: Client aus Session State holen (wie in Message Center)
             print("\n📋 Schritt 3: Client aus Session State holen")
@@ -87,7 +86,7 @@ class TestDashboardMqttIntegration(unittest.TestCase):
     def test_session_state_persistence(self):
         """Testet Session State Persistenz"""
         try:
-            from omf.tools.mqtt_client import get_omf_mqtt_client
+            from src_orbis.omf.tools.omf_mqtt_factory import get_omf_mqtt_client
 
             print("\n🔍 Session State Persistenz Test:")
             print("=" * 50)
@@ -136,7 +135,7 @@ class TestDashboardMqttIntegration(unittest.TestCase):
     def test_multiple_client_creation(self):
         """Testet mehrfache Client-Erstellung (Dashboard-Problem)"""
         try:
-            from omf.tools.mqtt_client import get_omf_mqtt_client
+            from src_orbis.omf.tools.omf_mqtt_factory import get_omf_mqtt_client
 
             print("\n🔍 Mehrfache Client-Erstellung Test:")
             print("=" * 50)
@@ -192,7 +191,7 @@ class TestDashboardMqttIntegration(unittest.TestCase):
     def test_clear_history_integration(self):
         """Testet clear_history Integration"""
         try:
-            from omf.tools.mqtt_client import get_omf_mqtt_client
+            from src_orbis.omf.tools.omf_mqtt_factory import get_omf_mqtt_client
 
             print("\n🔍 clear_history Integration Test:")
             print("=" * 50)

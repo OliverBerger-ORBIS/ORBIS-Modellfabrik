@@ -32,15 +32,17 @@ class TestDashboardRuntime(unittest.TestCase):
     def test_mqtt_client_component(self):
         """Test: MQTT Client Komponente kann geladen werden"""
         try:
-            from src_orbis.omf.tools.mqtt_client import OMFMQTTClient
+            from src_orbis.omf.tools.mqtt_config import MqttConfig
+            from src_orbis.omf.tools.omf_mqtt_client import OMFMqttClient
 
-            # Test MQTT Client initialization
-            client = OMFMQTTClient()
-            self.assertIsNotNone(client, "OMFMQTTClient sollte initialisiert werden können")
+            # Test MQTT Client initialization mit minimaler Konfiguration
+            cfg = MqttConfig(host="localhost")
+            client = OMFMqttClient(cfg)
+            self.assertIsNotNone(client, "OMFMqttClient sollte initialisiert werden können")
 
             # Test basic methods
-            self.assertIsInstance(client.get_statistics(), dict, "get_statistics sollte Dict zurückgeben")
-            self.assertIsInstance(client.is_connected(), bool, "is_connected sollte Boolean zurückgeben")
+            self.assertIsInstance(client.get_history_stats(), dict, "get_history_stats sollte Dict zurückgeben")
+            self.assertIsInstance(client.connected, bool, "connected sollte Boolean zurückgeben")
 
             print("✅ MQTT Client Komponente: OK")
 
@@ -84,7 +86,7 @@ class TestDashboardRuntime(unittest.TestCase):
     def test_factory_steering_component(self):
         """Test: Factory Steering Komponente kann geladen werden"""
         try:
-            from src_orbis.omf.dashboard.components.factory_steering import show_factory_steering
+            from src_orbis.omf.dashboard.components.steering_factory import show_factory_steering
 
             # Test that function exists
             self.assertTrue(callable(show_factory_steering), "show_factory_steering sollte aufrufbar sein")

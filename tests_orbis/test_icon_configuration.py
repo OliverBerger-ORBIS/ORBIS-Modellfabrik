@@ -5,17 +5,34 @@ Prüft die Icon-Konfiguration und -Verwaltung
 """
 
 import os
-import sys
 import unittest
-from pathlib import Path
-
-# Add project root to path
-project_root = Path(__file__).parent.parent
-sys.path.insert(0, str(project_root))
 
 
 class TestIconConfiguration(unittest.TestCase):
-    """Test Icon Configuration System"""
+    def test_module_icon_files_exist(self):
+        """Test: Alle erwarteten Modul-Icon-Dateien existieren im assets-Ordner (ohne ORBIS)"""
+        dashboard_dir = os.path.join(os.path.dirname(__file__), "..", "src_orbis", "omf", "dashboard")
+        assets_dir = os.path.join(dashboard_dir, "assets")
+        expected_modules = ["MILL", "DRILL", "AIQS", "HBW", "DPS", "FTS", "CHRG"]
+        missing = []
+        for module in expected_modules:
+            icon_file_png = f"{module}_ICON.png"
+            icon_file_jpeg = f"{module}_ICON.jpeg"
+            icon_path_png = os.path.join(assets_dir, icon_file_png)
+            icon_path_jpeg = os.path.join(assets_dir, icon_file_jpeg)
+            if not (os.path.exists(icon_path_png) or os.path.exists(icon_path_jpeg)):
+                missing.append(f"{module}_ICON.(png|jpeg)")
+        self.assertFalse(missing, f"Fehlende Modul-Icons: {missing}")
+
+    def test_orbis_logo_file_exists(self):
+        """Test: ORBIS_LOGO.png existiert im assets-Ordner"""
+        dashboard_dir = os.path.join(os.path.dirname(__file__), "..", "src_orbis", "omf", "dashboard")
+        assets_dir = os.path.join(dashboard_dir, "assets")
+        logo_file = "ORBIS_LOGO.png"
+        logo_path = os.path.join(assets_dir, logo_file)
+        self.assertTrue(os.path.exists(logo_path), "ORBIS_LOGO.png fehlt im assets-Ordner")
+
+    # Test Icon Configuration System
 
     def test_icon_config_import(self):
         """Test: Icon Config kann importiert werden"""
@@ -27,14 +44,11 @@ class TestIconConfiguration(unittest.TestCase):
                 get_status_icon,
             )
 
-            # Check if imports are successful
             self.assertIsNotNone(MODULE_ICONS)
             self.assertIsNotNone(STATUS_ICONS)
             self.assertIsNotNone(get_module_icon)
             self.assertIsNotNone(get_status_icon)
-
             print("✅ Icon config import: OK")
-
         except ImportError as e:
             self.fail(f"❌ Icon config import failed: {e}")
 
@@ -57,7 +71,7 @@ class TestIconConfiguration(unittest.TestCase):
 
             print("✅ Module icons structure: OK")
 
-        except Exception as e:
+        except ImportError as e:
             self.fail(f"❌ Module icons structure failed: {e}")
 
     def test_status_icons_structure(self):
@@ -79,7 +93,7 @@ class TestIconConfiguration(unittest.TestCase):
 
             print("✅ Status icons structure: OK")
 
-        except Exception as e:
+        except ImportError as e:
             self.fail(f"❌ Status icons structure failed: {e}")
 
     def test_get_module_icon_function(self):
@@ -102,7 +116,7 @@ class TestIconConfiguration(unittest.TestCase):
 
             print("✅ get_module_icon function: OK")
 
-        except Exception as e:
+        except ImportError as e:
             self.fail(f"❌ get_module_icon function failed: {e}")
 
     def test_get_status_icon_function(self):
@@ -125,7 +139,7 @@ class TestIconConfiguration(unittest.TestCase):
 
             print("✅ get_status_icon function: OK")
 
-        except Exception as e:
+        except ImportError as e:
             self.fail(f"❌ get_status_icon function failed: {e}")
 
     def test_icon_paths_exist(self):
@@ -144,7 +158,7 @@ class TestIconConfiguration(unittest.TestCase):
 
             print("✅ Icon paths validation: OK")
 
-        except Exception as e:
+        except ImportError as e:
             self.fail(f"❌ Icon paths validation failed: {e}")
 
     def test_icon_colors_are_valid(self):
@@ -164,7 +178,7 @@ class TestIconConfiguration(unittest.TestCase):
 
             print("✅ Icon colors validation: OK")
 
-        except Exception as e:
+        except ImportError as e:
             self.fail(f"❌ Icon colors validation failed: {e}")
 
 

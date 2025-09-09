@@ -9,33 +9,22 @@ import json
 import os
 import re
 import sqlite3
+import sys
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Set
 
 import yaml
 
-try:
-    from .message_template_manager import get_message_template_manager
-    from .module_manager import get_module_manager
-except ImportError:
-    # Fallback for direct execution
-    import os
-    import sys
-
-    sys.path.append(os.path.dirname(__file__))
-    from message_template_manager import get_message_template_manager
-    from module_manager import get_module_manager
-
-import os
-import sys
+from src_orbis.analysis_tools.nfc_code_manager import get_nfc_manager
+from src_orbis.omf.tools.message_template_manager import get_message_template_manager
+from src_orbis.omf.tools.module_manager import OMFModuleManager
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
 
-from src_orbis.mqtt.tools.nfc_code_manager import get_nfc_manager
-
 
 class CCUTemplateAnalyzer:
+
     def __init__(self):
         self.target_topics = [
             "ccu/global",
@@ -53,23 +42,17 @@ class CCUTemplateAnalyzer:
             "ccu/state/stock",
             "ccu/state/version-mismatch",
         ]
-
         # Initialize module mapping utilities
-        self.module_mapping = get_module_manager()
-
+        self.module_mapping = OMFModuleManager()
         # Initialize Message Template Manager
         self.message_template_manager = get_message_template_manager()
-
         # Get project root (3 levels up from tools directory)
         project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
-
         # Set paths relative to project root
         self.output_dir = os.path.join(project_root, "mqtt-data/template_library")
         self.session_dir = os.path.join(project_root, "mqtt-data/sessions")
-
         # Ensure output directory exists
         os.makedirs(self.output_dir, exist_ok=True)
-
         print("🔧 CCU Template Analyzer initialisiert")
         print(f"📁 Ausgabe-Verzeichnis: {self.output_dir}")
         print(f"📁 Session-Verzeichnis: {self.session_dir}")

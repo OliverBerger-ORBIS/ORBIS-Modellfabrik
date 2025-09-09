@@ -11,6 +11,10 @@ import yaml
 
 
 class OMFModuleManager:
+    def get_all_module_ids(self) -> list:
+        """Get all module IDs (keys) from all modules."""
+        return list(self.get_all_modules().keys())
+
     """OMF Module Manager using YAML configuration"""
 
     def __init__(self, config_path: Optional[str] = None):
@@ -57,15 +61,11 @@ class OMFModuleManager:
         return None
 
     def get_module_name(self, module_id: str, language: str = "de") -> str:
-        """Get module name for module ID"""
+        """Get module short name for module ID (immer 'name' aus YAML)"""
         module_info = self.get_module_info(module_id)
         if not module_info:
             return module_id
-
-        if language == "en":
-            return module_info.get("name_lang_en", module_info.get("name", module_id))
-        else:
-            return module_info.get("name_lang_de", module_info.get("name", module_id))
+        return module_info.get("name", module_id)
 
     def get_module_type(self, module_id: str) -> str:
         """Get module type for module ID"""

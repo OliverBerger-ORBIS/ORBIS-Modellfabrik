@@ -4,11 +4,9 @@ Unit Tests für Charge Commands
 Basierend auf erfolgreichen Tests der Live-Fabrik
 """
 
-import unittest
 import json
-import uuid
-from datetime import datetime, timezone
-from unittest.mock import patch, MagicMock
+import unittest
+from unittest.mock import MagicMock
 
 
 class TestChargeCommands(unittest.TestCase):
@@ -21,9 +19,6 @@ class TestChargeCommands(unittest.TestCase):
 
     def test_charge_start_structure(self):
         """Test: Korrekte Nachrichtenstruktur für Charge Start"""
-
-        # Aktuelle Zeit für Timestamp
-        current_time = datetime.now(timezone.utc)
 
         # Erfolgreiche Charge-Start-Nachricht
         charge_start_message = {"serialNumber": self.serial_number, "charge": True}
@@ -143,10 +138,12 @@ class TestChargeCommands(unittest.TestCase):
         for invalid_message in invalid_messages:
             # Prüfen ob Pflichtfelder fehlen
             if "serialNumber" not in invalid_message:
-                self.assertRaises(KeyError, lambda: invalid_message["serialNumber"])
+                with self.assertRaises(KeyError):
+                    _ = invalid_message["serialNumber"]
 
             if "charge" not in invalid_message:
-                self.assertRaises(KeyError, lambda: invalid_message["charge"])
+                with self.assertRaises(KeyError):
+                    _ = invalid_message["charge"]
 
 
 if __name__ == "__main__":

@@ -18,7 +18,8 @@ Konzeption und DEsign by guthub-copilot.
 
 Tests liegen im Ordner `tests_orbis/seq_ctrl` und können mit `pytest` ausgeführt werden:
 ```bash
-pytest tests_orbis/seq_ctrl
+$env:PYTHONPATH = "."
+pytest .\tests_orbis\seq_ctrl\
 ```
 
 ## Schnelleinstieg

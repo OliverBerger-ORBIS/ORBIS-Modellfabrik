@@ -11,7 +11,7 @@ import os
 import sys
 import unittest
 from datetime import datetime
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 
 # Add src_orbis to path for imports
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src_orbis"))

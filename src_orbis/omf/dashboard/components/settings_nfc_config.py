@@ -126,4 +126,3 @@ def show_nfc_config():
     except Exception as e:
         st.error(f"❌ Fehler beim Laden der NFC-Konfiguration: {e}")
         st.info("📋 NFC-Konfiguration konnte nicht geladen werden.")
-

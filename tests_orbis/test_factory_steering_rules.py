@@ -2,7 +2,7 @@
 """
 Unit Tests für Factory Steering Regeln
 
-Diese Tests validieren die aktuellen Regeln in factory_steering.py:
+Diese Tests validieren die aktuellen Regeln in steering_factory.py:
 - Topic-Konformität (korrekte MQTT-Topics)
 - Message-Struktur (UUIDs, orderUpdateId, etc.)
 - Sequenz-Regeln (orderId bleibt konstant, orderUpdateId zählt hoch)
@@ -10,27 +10,25 @@ Diese Tests validieren die aktuellen Regeln in factory_steering.py:
 WICHTIG: Diese Tests testen die AKTUELLE Implementierung, nicht historische Commits!
 """
 
-import json
-import unittest
-import uuid
-from datetime import datetime
-from unittest.mock import Mock, patch
+import os
 
 # Import der aktuellen factory_steering Komponente
 import sys
-import os
+import unittest
+import uuid
+from unittest.mock import patch
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "src_orbis"))
 
-from omf.dashboard.components.factory_steering import (
-    _prepare_module_step_message,
-    _prepare_module_sequence_message,
+from src_orbis.omf.dashboard.components.steering_factory import (
     _prepare_fts_message,
+    _prepare_module_sequence_message,
+    _prepare_module_step_message,
 )
 
 
 class TestFactorySteeringRules(unittest.TestCase):
-    """Testet die aktuellen Regeln in factory_steering.py"""
+    """Testet die aktuellen Regeln in steering_factory.py"""
 
     def setUp(self):
         """Test-Setup"""
@@ -39,7 +37,7 @@ class TestFactorySteeringRules(unittest.TestCase):
 
         # Patch st.session_state
         self.session_state_patcher = patch(
-            "omf.dashboard.components.factory_steering.st.session_state", self.mock_session_state
+            "omf.dashboard.components.steering_factory.st.session_state", self.mock_session_state
         )
         self.session_state_patcher.start()
 
@@ -56,7 +54,7 @@ class TestFactorySteeringRules(unittest.TestCase):
             ("DRILL", "SVR4H76449", "module/v1/ff/SVR4H76449/order"),
         ]
 
-        for module_name, expected_serial, expected_topic in test_cases:
+        for module_name, _, expected_topic in test_cases:
             with self.subTest(module_name=module_name):
                 # Nachricht vorbereiten
                 _prepare_module_step_message(module_name, "PICK")
@@ -72,8 +70,7 @@ class TestFactorySteeringRules(unittest.TestCase):
 
         # Topic prüfen
         actual_topic = self.mock_session_state["pending_message"]["topic"]
-        expected_topic = "fts/v1/ff/5iO4/order"
-
+        expected_topic = "fts/v1/ff/5iO4/instantAction"
         self.assertEqual(actual_topic, expected_topic, "FTS-Topic ist falsch")
 
     def test_order_id_is_uuid(self):
@@ -169,24 +166,27 @@ class TestFactorySteeringRules(unittest.TestCase):
             self.assertIn(field, metadata, f"Metadata-Feld {field} fehlt")
 
     def test_fts_message_structure_compliance(self):
-        """Test: FTS-Message-Struktur muss den Regeln entsprechen"""
+        """Test: FTS-Message-Struktur muss den im Dashboard erzeugten Payloads entsprechen"""
         # FTS-Nachricht vorbereiten
         _prepare_fts_message("findInitialDockPosition")
 
         payload = self.mock_session_state["pending_message"]["payload"]
 
-        # Pflichtfelder prüfen
-        required_fields = ["serialNumber", "orderId", "orderUpdateId", "action", "timestamp"]
+        # Pflichtfelder prüfen (entsprechend Dashboard-Logik)
+        required_fields = ["serialNumber", "timestamp", "actions"]
         for field in required_fields:
             self.assertIn(field, payload, f"FTS-Pflichtfeld {field} fehlt")
 
         # SerialNumber muss korrekt sein
         self.assertEqual(payload["serialNumber"], "5iO4", "FTS serialNumber ist falsch")
 
-        # Action-Struktur prüfen
-        action = payload["action"]
-        self.assertIn("command", action, "FTS action.command fehlt")
-        self.assertEqual(action["command"], "findInitialDockPosition", "FTS command ist falsch")
+        # Actions-Struktur prüfen
+        self.assertIsInstance(payload["actions"], list, "FTS actions sollte eine Liste sein")
+        self.assertGreater(len(payload["actions"]), 0, "FTS actions sollte mindestens ein Element enthalten")
+        action = payload["actions"][0]
+        self.assertIn("actionType", action, "FTS actions[0] actionType fehlt")
+        self.assertEqual(action["actionType"].lower(), "findinitialdockposition", "FTS actionType ist falsch")
+        self.assertIn("actionId", action, "FTS actions[0] actionId fehlt")
 
 
 class TestModuleSequenceRules(unittest.TestCase):
@@ -196,7 +196,7 @@ class TestModuleSequenceRules(unittest.TestCase):
         """Test-Setup"""
         self.mock_session_state = {}
         self.session_state_patcher = patch(
-            "omf.dashboard.components.factory_steering.st.session_state", self.mock_session_state
+            "omf.dashboard.components.steering_factory.st.session_state", self.mock_session_state
         )
         self.session_state_patcher.start()
 

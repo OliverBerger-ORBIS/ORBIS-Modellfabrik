@@ -24,11 +24,10 @@ class NFCCodeManager:
 
     def _get_default_config_path(self) -> str:
         """Get default path to NFC configuration YAML file"""
-        # Get the directory of this file
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        # Navigate to config directory
-        config_dir = os.path.join(current_dir, "../config")
-        return os.path.join(config_dir, "nfc_code_config.yml")
+        # Always use the omf/config directory
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        omf_config_path = os.path.join(base_dir, "..", "omf", "config", "nfc_config.yml")
+        return os.path.abspath(omf_config_path)
 
     def load_yaml_config(self) -> Optional[Dict[str, Any]]:
         """Load NFC configuration from YAML file"""

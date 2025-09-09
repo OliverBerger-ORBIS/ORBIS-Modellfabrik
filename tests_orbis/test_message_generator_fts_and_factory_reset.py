@@ -16,7 +16,7 @@ import json
 import unittest
 import uuid
 from datetime import datetime
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
 
 
 # Import der funktionierenden MQTT-Nachrichten-Strukturen

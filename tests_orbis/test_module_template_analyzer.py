@@ -17,7 +17,7 @@ import yaml
 # Add src_orbis to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src_orbis"))
 
-from mqtt.tools.module_template_analyzer import ModuleTemplateAnalyzer
+from src_orbis.analysis_tools.template_analyzers.module_template_analyzer import ModuleTemplateAnalyzer
 
 
 class TestModuleTemplateAnalyzer(unittest.TestCase):

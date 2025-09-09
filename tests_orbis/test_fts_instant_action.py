@@ -4,11 +4,10 @@ Unit Tests für FTS Instant Action Commands
 Basierend auf erfolgreichen Tests der Live-Fabrik
 """
 
-import unittest
 import json
+import unittest
 import uuid
 from datetime import datetime, timezone
-from unittest.mock import patch, MagicMock
 
 
 class TestFTSInstantAction(unittest.TestCase):
@@ -107,7 +106,7 @@ class TestFTSInstantAction(unittest.TestCase):
         # Format validieren
         self.assertIsInstance(timestamp, str)
         self.assertIn("T", timestamp)  # ISO Format hat T zwischen Datum und Zeit
-        self.assertIn("Z", timestamp)  # UTC Endung
+        self.assertTrue(timestamp.endswith("Z") or timestamp.endswith("+00:00"))  # UTC Endung
 
         # Parsing testen
         parsed_time = datetime.fromisoformat(timestamp.replace("Z", "+00:00"))

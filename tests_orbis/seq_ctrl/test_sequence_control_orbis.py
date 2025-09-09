@@ -1,7 +1,10 @@
 import os
 import sys
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..")))
+# Workspace-Root zum sys.path hinzufügen, damit src_orbis als Package gefunden wird
+WORKSPACE_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
+if WORKSPACE_ROOT not in sys.path:
+    sys.path.insert(0, WORKSPACE_ROOT)
 import pytest
 
 from src_orbis.seq_ctrl.sequence_control_orbis import WorkflowOrderManager
