@@ -16,12 +16,12 @@ class TestIconConfiguration(unittest.TestCase):
         expected_modules = ["MILL", "DRILL", "AIQS", "HBW", "DPS", "FTS", "CHRG"]
         missing = []
         for module in expected_modules:
-            icon_file_png = f"{module}_ICON.png"
-            icon_file_jpeg = f"{module}_ICON.jpeg"
+            icon_file_png = f"{module.lower()}_icon.png"
+            icon_file_jpeg = f"{module.lower()}_icon.jpeg"
             icon_path_png = os.path.join(assets_dir, icon_file_png)
             icon_path_jpeg = os.path.join(assets_dir, icon_file_jpeg)
             if not (os.path.exists(icon_path_png) or os.path.exists(icon_path_jpeg)):
-                missing.append(f"{module}_ICON.(png|jpeg)")
+                missing.append(f"{module.lower()}_icon.(png|jpeg)")
         self.assertFalse(missing, f"Fehlende Modul-Icons: {missing}")
 
     def test_orbis_logo_file_exists(self):

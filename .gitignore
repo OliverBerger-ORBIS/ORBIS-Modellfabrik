@@ -45,6 +45,11 @@ orbis_access.log
 aps_live_analysis.png
 aps_live_data.csv
 
+# Allow Dashboard Icons (required for UI)
+!src_orbis/omf/dashboard/assets/*_icon.png
+!src_orbis/omf/dashboard/assets/*_icon.jpeg
+!src_orbis/omf/dashboard/assets/orbis_logo.png
+
 # 🐍 Python
 __pycache__/
 *.py[cod]

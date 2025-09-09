@@ -199,12 +199,12 @@ def display_refresh_button():
 def display_header(client):
     """Zeigt den Dashboard-Header mit Logo und Status"""
     # Main title with ORBIS logo and MQTT connection status
-    col1 = st.columns(1)[0]
+    col1, col2, col3 = st.columns([1, 3, 1])
 
     with col1:
         try:
-            # Nur ORBIS_LOGO.png im Header anzeigen
-            logo_path = os.path.join(os.path.dirname(__file__), "assets", "ORBIS_LOGO.png")
+            # ORBIS Logo im Header anzeigen (allLowercase Variante)
+            logo_path = os.path.join(os.path.dirname(__file__), "assets", "orbis_logo.png")
             if os.path.exists(logo_path):
                 st.image(logo_path, width=100, caption="ORBIS Logo")
             else:
@@ -214,15 +214,26 @@ def display_header(client):
             st.markdown("🏭")
             st.caption("Modellfabrik")
 
+    with col2:
+        # Haupttitel und Status
+        st.markdown("# 🏭 ORBIS Modellfabrik Dashboard")
+
+    with col3:
+        # Status
+        if client.connected:
+            st.success("🟢 MQTT Verbindung aktiv")
+        else:
+            st.error("🔴 MQTT Verbindung getrennt")
+
 
 # =============================================================================
 # MODULE LOGO HELPER
 # =============================================================================
 def get_module_logo(module_name):
     """Gibt den Pfad zum Modul-Icon zurück, falls vorhanden, sonst None."""
-    # Prüfe PNG und JPEG
-    icon_filename_png = f"{module_name.upper()}_ICON.png"
-    icon_filename_jpeg = f"{module_name.upper()}_ICON.jpeg"
+    # Prüfe PNG und JPEG mit lowercase Namen (wie in asset_manager.py)
+    icon_filename_png = f"{module_name.lower()}_icon.png"
+    icon_filename_jpeg = f"{module_name.lower()}_icon.jpeg"
     assets_dir = os.path.join(os.path.dirname(__file__), "assets")
     icon_path_png = os.path.join(assets_dir, icon_filename_png)
     icon_path_jpeg = os.path.join(assets_dir, icon_filename_jpeg)
