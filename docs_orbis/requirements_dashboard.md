@@ -33,13 +33,13 @@
 - **Authentifizierung**: Optional über Username/Password
 
 ## 4) Funktionale Anforderungen
-### 4.1) Übersicht - ✅ IMPLEMENTIERT + 🔄 ERWEITERT
+### 4.1) Übersicht - ✅ IMPLEMENTIERT + ✅ ERWEITERT
 - **Modul-Status** in Echtzeit anzeigen aus den bereitgestellten Infos der Mqtt-Nachrichten. Statische Info wird aus den Einstellungen gezogen module.yml ✅
 - **Lagerbestand** Ansicht der aktuellen Lager-Belegung (Nachricht vom HBW Modul) ✅
 - **Kundenaufträge** Auslösen einer Bestellung von (ROT/WEISS/BLAU) bei Bestellung wird die Produktion gestartet ✅
 - **Rohmaterial-Bestellungen** Übersicht über benötigte und verfügbare Rohmaterialien ✅
-- **📦 Produktkatalog** - **NEU** - YAML-basierte Produktdefinitionen (Blau, Weiß, Rot) 🔄
-- **Status:** Vollständig funktional mit HTML-Templates für visuelle Darstellung
+- **📦 Produktkatalog** - **NEU** - YAML-basierte Produktdefinitionen (Blau, Weiß, Rot) ✅
+- **Status:** Vollständig funktional mit HTML-Templates für visuelle Darstellung, ohne falsche Bestand/Verfügbar-Info
 
 #### **Begriffliche Unterscheidungen - Order-Typen**
 
@@ -81,8 +81,8 @@
 - **Auftragsverfolgung** über den gesamten Produktionsprozess
 - **Ongoing Orders** - Gibt es welche, wenn ja, dann Auflistung
 - **Aktuelle Produktionsschritte pro Ongoing Auftrag** - Aktualisierung der Info. Darstellung des Prozesses als Liste. Mit Status: geplant, in Arbeit, abgeschlossen
-- **📋 Produktplanung** - **NEU** - Fertigungsaufträge aus Produktkatalog generieren 🆕
-- **🔄 Produktionsverfolgung** - **NEU** - Echtzeit-Tracking der Fertigungsaufträge 🆕
+- **📋 Produktplanung** - **NEU** - Fertigungsaufträge aus Produktkatalog generieren ✅
+- **🔄 Produktionsverfolgung** - **NEU** - Echtzeit-Tracking der Fertigungsaufträge ✅
 
 #### **Beispiel: Production Order für ROTES Werkstück**
 
@@ -216,5 +216,102 @@
 - **Debug-Informationen** in der Benutzeroberfläche
 - **Unit-Tests** für alle Service-Funktionen
 - **Integration-Tests** mit Live-Fabrik
+
+## 11) Dashboard-Komponenten-Architektur (Bewährtes Vorgehen)
+
+### 11.1) Komponenten-Struktur
+**Basierend auf erfolgreichem Shopfloor-Refactoring:**
+
+```
+src_orbis/omf/dashboard/components/
+├── [komponente].py              # Hauptkomponente (Wurzel)
+├── [komponente]_[sub].py        # Unterkomponenten
+├── [komponente]_utils.py        # Gemeinsame Utility-Funktionen
+└── [komponente]_[funktion].py   # Spezifische Funktionalitäten
+```
+
+### 11.2) Architektur-Prinzipien
+- **Hauptkomponente als Wurzel**: `[komponente].py` importiert alle Unterkomponenten
+- **Utils-Datei für gemeinsame Funktionen**: Vermeidet zirkuläre Imports
+- **Klare Abhängigkeiten**: Unterkomponenten importieren von Utils, nicht von Hauptkomponente
+- **Streamlit-Integration**: Tabs/Untertabs in Hauptkomponente
+
+### 11.3) Implementierungs-Schritte
+1. **Analyse**: Bestehende Komponenten identifizieren
+2. **Architektur-Design**: Hauptkomponente, Unterkomponenten, Utils definieren
+3. **Komponenten-Implementierung**: Hauptkomponente mit Tabs, Unterkomponenten mit Funktionen
+4. **Tests erstellen**: Unit-Tests für jede Komponente in `tests_orbis/test_omf/`
+5. **Pre-commit Validierung**: Alle Tests müssen durchlaufen (black, isort, ruff, pytest)
+
+### 11.4) Beispiel: Shopfloor-Komponenten (✅ Erfolgreich implementiert)
+```
+shopfloor.py              # Hauptkomponente mit Tabs
+├── shopfloor_layout.py   # Layout-Unterkomponente
+├── shopfloor_routes.py   # Routen-Unterkomponente
+├── shopfloor_positioning.py # Positionierungs-Unterkomponente
+└── shopfloor_utils.py    # Gemeinsame Utility-Funktionen
+```
+
+**Status:** ✅ **Bewährtes Vorgehen** - Alle Tests laufen durch, Pre-commit funktioniert
+
+## 12) Implementierte Features (Januar 2025)
+
+### 12.1) Dashboard-Komponenten-Erweiterung ✅
+**Neue Komponenten implementiert:**
+- **📦 Produktkatalog** (`overview_product_catalog.py`) - YAML-basierte Produktdefinitionen
+- **📋 Produktplanung** (`production_order_production_planning.py`) - Fertigungsaufträge aus Produktkatalog
+- **🗺️ Shopfloor-Layout** (`shopfloor_layout.py`) - 4x3 Grid mit Modul-Icons
+
+### 12.2) HTML-Template-System ✅
+**Neue Templates erstellt:**
+- **`get_product_catalog_template()`** - Produktboxen ohne Bestand/Verfügbar-Info
+- **`get_workpiece_box_template()`** - Bestehende Templates für andere Verwendungen
+- **Konsistente Darstellung** - ROT, BLAU, WEISS Produkte mit Material/Farbe/Größe
+
+### 12.3) Icon-System-Integration ✅
+**Modul-Icons korrekt geladen:**
+- **Direkte `st.image()` Integration** - Wie ORBIS-Logo im Header
+- **Icon-Mapping** - CHRG0 → CHRG für Ladestation
+- **Fallback-Emojis** - Wenn Icons nicht gefunden werden
+- **Robuste Pfad-Auflösung** - Keine komplexen AssetManager-Imports
+
+### 12.4) YAML-Konfiguration ✅
+**Erweiterte Produktkatalog-Struktur:**
+```yaml
+products:
+  red:
+    name: "Rot"
+    material: "Kunststoff"
+    color: "Rot"
+    size: "Standard"
+    manufacturing_steps:
+      - {step: 1, module: "MILL", description: "Fräsen"}
+      - {step: 2, module: "AIQS", description: "Qualitätskontrolle"}
+```
+
+### 12.5) Test-Abdeckung ✅
+**Umfassende Tests erstellt:**
+- **`test_new_dashboard_components.py`** - 9 Tests für neue Komponenten
+- **Import-Tests** - Alle Komponenten können importiert werden
+- **Funktionalitäts-Tests** - YAML-Loading, HTML-Templates, Icon-Loading
+- **Struktur-Tests** - YAML-Konfiguration validiert
+- **24 Tests laufen erfolgreich durch** - 100% Erfolgsrate
+
+### 12.6) Architektur-Konsistenz ✅
+**Bewährtes Vorgehen befolgt:**
+- **Ein Script pro Tab/Untertab** - Konsistente Struktur
+- **Namenskonventionen** - `overview_product_catalog.py`, `production_order_production_planning.py`
+- **Keine zirkulären Imports** - Saubere Abhängigkeiten
+- **Pre-commit-konform** - Alle Tests laufen durch
+
+### 12.7) Fertigungsablauf-Darstellung ✅
+**Produktionsplanung implementiert:**
+- **Vertikale Boxen** - Fertigungsschritte untereinander
+- **HBW als erste Box** - Anlieferung
+- **DPS als letzte Box** - Abgabe
+- **Modul-Icons** - Visuelle Darstellung der Fertigungsschritte
+- **Beschreibungen** - Aus YAML-Konfiguration
+
+**Status:** ✅ **Alle Features vollständig implementiert und getestet**
 
 

@@ -9,6 +9,7 @@ from .production_order_current import show_production_order_current
 
 # Import der Unterkomponenten
 from .production_order_management import show_production_order_management
+from .production_order_production_planning import show_production_order_production_planning
 
 
 def show_production_order():
@@ -17,12 +18,18 @@ def show_production_order():
     st.markdown("Interne Fertigungsaufträge der ORBIS Modellfabrik")
 
     # Untertabs für verschiedene Production Order-Bereiche
-    order_tab1, order_tab2 = st.tabs(["📋 Fertigungsauftrags-Verwaltung", "🔄 Laufende Fertigungsaufträge"])
+    order_tab1, order_tab2, order_tab3 = st.tabs(
+        ["📋 Produktplanung", "📋 Fertigungsauftrags-Verwaltung", "🔄 Laufende Fertigungsaufträge"]
+    )
 
-    # Tab 1: Fertigungsauftrags-Verwaltung (Production Order Management)
+    # Tab 1: Produktplanung
     with order_tab1:
+        show_production_order_production_planning()
+
+    # Tab 2: Fertigungsauftrags-Verwaltung (Production Order Management)
+    with order_tab2:
         show_production_order_management()
 
-    # Tab 2: Laufende Fertigungsaufträge (Production Orders)
-    with order_tab2:
+    # Tab 3: Laufende Fertigungsaufträge (Production Orders)
+    with order_tab3:
         show_production_order_current()

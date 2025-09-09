@@ -17,6 +17,8 @@ products:
     name_lang_en: "Blue Product"
     name_lang_de: "Produkt Blau"
     color: "#0066CC"
+    material: "Kunststoff"
+    size: "Standard"
     description: "Komplette Bearbeitung: Bohren → Fräsen → Qualitätssicherung"
     manufacturing_steps:
       - step: 1
@@ -60,6 +62,8 @@ products:
     name_lang_en: "White Product"
     name_lang_de: "Produkt Weiß"
     color: "#FFFFFF"
+    material: "Kunststoff"
+    size: "Standard"
     description: "Bohren → Qualitätssicherung"
     manufacturing_steps:
       - step: 1
@@ -94,6 +98,8 @@ products:
     name_lang_en: "Red Product"
     name_lang_de: "Produkt Rot"
     color: "#CC0000"
+    material: "Kunststoff"
+    size: "Standard"
     description: "Fräsen → Qualitätssicherung"
     manufacturing_steps:
       - step: 1

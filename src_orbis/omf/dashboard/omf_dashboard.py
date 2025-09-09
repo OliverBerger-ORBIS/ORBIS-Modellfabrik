@@ -46,6 +46,7 @@ load_component("settings", "components.settings", "Settings")
 load_component("steering", "components.steering", "Steering")
 load_component("fts", "components.fts", "FTS")
 load_component("ccu", "components.ccu", "CCU")
+load_component("shopfloor", "components.shopfloor", "Shopfloor")
 
 # =============================================================================
 # HELPER FUNCTIONS
@@ -249,12 +250,13 @@ def get_module_logo(module_name):
 def display_tabs():
     """Zeigt die Dashboard-Tabs und deren Inhalte"""
     # Tabs
-    tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(
+    tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs(
         [
             "📊 Übersicht",
             "🏭 Fertigungsaufträge",
             "📡 Nachrichten-Zentrale",
             "🎮 Steuerung",
+            "🏗️ Shopfloor",
             "🚛 FTS",
             "🏢 CCU",
             "⚙️ Einstellungen",
@@ -275,12 +277,15 @@ def display_tabs():
         components["steering"]()
 
     with tab5:
-        components["fts"]()
+        components["shopfloor"]()
 
     with tab6:
-        components["ccu"]()
+        components["fts"]()
 
     with tab7:
+        components["ccu"]()
+
+    with tab8:
         components["settings"]()
 
 

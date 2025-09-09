@@ -40,6 +40,34 @@ def get_workpiece_box_template(workpiece_type: str, count: int, available: bool)
     """
 
 
+def get_product_catalog_template(workpiece_type: str) -> str:
+    """
+    Template für Produktkatalog-Boxen (ROT, BLUE, WHITE) - OHNE Bestand/Verfügbar-Info
+
+    Args:
+        workpiece_type: RED, BLUE, WHITE
+
+    Returns:
+        HTML-String für die Produktkatalog-Box
+    """
+    # Farben definieren
+    colors = {
+        "RED": {"bg": "#ff0000", "border": "#cc0000", "text": "white"},
+        "BLUE": {"bg": "#0066ff", "border": "#0044cc", "text": "white"},
+        "WHITE": {"bg": "#e0e0e0", "border": "#b0b0b0", "text": "black"},
+    }
+
+    color_config = colors.get(workpiece_type, colors["WHITE"])
+
+    return f"""
+    <div style="display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start; height: 100%; text-align: left; margin: 10px;">
+        <div style="width: 120px; height: 80px; background-color: {color_config['bg']}; border: 2px solid {color_config['border']}; border-radius: 4px; margin: 0 0 10px 0; display: flex; align-items: center; justify-content: center;">
+            <div style="color: {color_config['text']}; font-weight: bold; font-size: 14px;">{workpiece_type}</div>
+        </div>
+    </div>
+    """
+
+
 def get_bucket_template(position: str, workpiece_type: str = None) -> str:
     """
     Template für Lager-Buckets (A1-C3)

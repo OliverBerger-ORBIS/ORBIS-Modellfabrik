@@ -3,46 +3,110 @@ OMF Dashboard Shopfloor Layout - 4x3 Grid Layout Anzeige
 Visualisierung des Shopfloor-Layouts mit Modul-Positionen
 """
 
+# Direkter Icon-Pfad (wie ORBIS-Logo)
+import os
+from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 import pandas as pd
 import streamlit as st
+import yaml
 
-# Zirkulärer Import vermieden - Funktionen werden direkt implementiert
-from ..assets.asset_manager import get_asset_manager
+
+def get_module_icon_path(module_id):
+    """Gibt den Pfad zum Modul-Icon zurück (wie ORBIS-Logo)"""
+    # Assets-Verzeichnis
+    assets_dir = os.path.join(os.path.dirname(__file__), "..", "assets")
+
+    # Icon-Mapping
+    icon_mapping = {
+        "HBW": "hbw_icon.png",
+        "DRILL": "drill_icon.png",
+        "MILL": "mill_icon.png",
+        "AIQS": "aiqs_icon.png",
+        "DPS": "dps_icon.png",
+        "CHRG": "chrg_icon.png",
+        "CHRG0": "chrg_icon.png",  # CHRG0 -> CHRG mapping
+        "FTS": "fts_icon.jpeg",
+        "TXT": "txt_icon.png",
+        "RPI": "rpi_icon.png",
+    }
+
+    icon_file = icon_mapping.get(module_id, "machine_icon.png")
+    return os.path.join(assets_dir, icon_file)
+
+
+def display_module_icon(module_id, width=60, caption=""):
+    """Zeigt ein Modul-Icon an (wie ORBIS-Logo)"""
+    icon_path = get_module_icon_path(module_id)
+    if os.path.exists(icon_path):
+        st.image(icon_path, width=width, caption=caption or module_id)
+    else:
+        # Fallback zu Emoji
+        st.markdown(f"🔧 {module_id}")
+        if caption:
+            st.caption(caption)
 
 
 def show_shopfloor_layout():
     """Zeigt das 4x3 Grid Layout des Shopfloors"""
     st.subheader("🗺️ Shopfloor-Layout (4x3 Grid)")
 
-    # Metadaten anzeigen
-    metadata = get_shopfloor_metadata()
-    col1, col2, col3, col4 = st.columns(4)
+    # Shopfloor Grid anzeigen
+    show_shopfloor_grid()
 
-    with col1:
-        st.metric("Version", metadata.get("version", "3.3.0"))
-    with col2:
-        st.metric("Grid-Größe", metadata.get("grid_size", "4x3"))
-    with col3:
-        st.metric("Positionen", metadata.get("total_positions", 12))
-    with col4:
-        st.metric("FTS-Serial", metadata.get("fts_serial", "5iO4"))
 
-    st.divider()
+def show_shopfloor_grid():
+    """Zeigt das 4x3 Grid mit Modulen aus layout.yml"""
 
-    # Grid-Layout visualisieren
-    show_grid_visualization()
+    # Layout aus YAML laden
+    layout_data = load_shopfloor_layout()
+    if not layout_data:
+        st.error("❌ Fehler beim Laden des Shopfloor-Layouts")
+        return
 
-    st.divider()
+    # Grid basierend auf layout.yml generieren
+    positions = layout_data.get("positions", [])
 
-    # Modul-Details
-    show_module_details()
+    # Grid-Array erstellen (3 Zeilen x 4 Spalten)
+    grid = [[None for _ in range(4)] for _ in range(3)]
 
-    st.divider()
+    # Positionen in Grid eintragen
+    for pos in positions:
+        row, col = pos["position"]
+        if 0 <= row < 3 and 0 <= col < 4:
+            grid[row][col] = pos
 
-    # Statistiken
-    show_shopfloor_statistics()
+    # Streamlit Grid anzeigen
+    for row in range(3):
+        cols = st.columns(4)
+        for col in range(4):
+            with cols[col]:
+                cell_data = grid[row][col]
+
+                if cell_data and cell_data.get("type") == "MODULE":
+                    module_id = cell_data.get("id", "")
+                    module_name = cell_data.get("name_lang_de", cell_data.get("name", ""))
+                    module_serial = cell_data.get("module_serial", "")
+
+                    # Icon direkt anzeigen (wie ORBIS-Logo)
+                    display_module_icon(module_id, width=60, caption=module_name)
+
+                    st.write(f"**{module_name}**")
+                    st.caption(f"ID: {module_serial}")
+                else:
+                    st.info("Leer")
+
+
+def load_shopfloor_layout():
+    """Lädt das Shopfloor-Layout aus der YAML-Datei"""
+    try:
+        config_path = Path(__file__).parent.parent.parent.parent / "omf" / "config" / "shopfloor" / "layout.yml"
+        with open(config_path, encoding="utf-8") as file:
+            return yaml.safe_load(file)
+    except Exception as e:
+        st.error(f"❌ Fehler beim Laden des Shopfloor-Layouts: {e}")
+        return None
 
 
 def show_grid_visualization():
@@ -50,11 +114,10 @@ def show_grid_visualization():
     st.subheader("📊 Grid-Visualisierung")
 
     positions = get_module_positions()
-    asset_manager = get_asset_manager()
 
     # Zeige Grid mit Icons
     st.subheader("🎨 Grid mit Modul-Icons")
-    show_grid_with_icons(positions, asset_manager)
+    show_grid_with_icons(positions)
 
     # Erstelle Grid-Matrix
     grid_matrix = create_grid_matrix(positions)
@@ -96,7 +159,7 @@ def create_grid_matrix(positions: List[Dict[str, Any]]) -> List[List[str]]:
     return matrix
 
 
-def show_grid_with_icons(positions: List[Dict[str, Any]], asset_manager):
+def show_grid_with_icons(positions: List[Dict[str, Any]]):
     """Zeigt das Grid mit Modul-Icons"""
     # Erstelle 3x4 Grid
     for row in range(3):
@@ -112,7 +175,7 @@ def show_grid_with_icons(positions: List[Dict[str, Any]], asset_manager):
                     module_name = module.get("name", module_id)
 
                     if module_type == "MODULE":
-                        asset_manager.display_module_icon(module_id, width=60, caption=module_name)
+                        display_module_icon(module_id, width=60, caption=module_name)
                     elif module_type == "INTERSECTION":
                         st.markdown(f"➕ {module_name}")
                     else:
@@ -178,8 +241,6 @@ def show_module_specific_details(modules: List[Dict[str, Any]]):
     """Zeigt spezifische Details für jedes Modul"""
     st.subheader("🔧 Modul-spezifische Details")
 
-    asset_manager = get_asset_manager()
-
     for module in modules:
         module_id = module.get("id", "UNKNOWN")
         module_name = module.get("name", "UNKNOWN")
@@ -189,7 +250,7 @@ def show_module_specific_details(modules: List[Dict[str, Any]]):
 
             with col1:
                 # Zeige Modul-Icon
-                asset_manager.display_module_icon(module_id, width=80, caption=module_name)
+                display_module_icon(module_id, width=80, caption=module_name)
 
             with col2:
                 st.write(f"**Position:** [{module.get('position', [0, 0])[0]}, {module.get('position', [0, 0])[1]}]")
