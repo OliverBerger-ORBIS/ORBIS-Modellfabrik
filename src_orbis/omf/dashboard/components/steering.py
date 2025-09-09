@@ -8,6 +8,7 @@ import streamlit as st
 # Import der Unterkomponenten
 from .steering_factory import show_factory_steering
 from .steering_generic import show_generic_steering
+from .steering_sequence import show_sequence_steering
 
 
 def show_steering():
@@ -16,7 +17,9 @@ def show_steering():
     st.markdown("Alle Steuerungsfunktionen der ORBIS Modellfabrik")
 
     # Untertabs für verschiedene Steuerungsarten
-    steering_tab1, steering_tab2 = st.tabs(["🏭 Factory-Steuerung", "🔧 Generische Steuerung"])
+    steering_tab1, steering_tab2, steering_tab3 = st.tabs(
+        ["🏭 Factory-Steuerung", "🔧 Generische Steuerung", "🎯 Sequenz-Steuerung"]
+    )
 
     # Tab 1: Factory-Steuerung (Kommando-Zentrale)
     with steering_tab1:
@@ -25,3 +28,7 @@ def show_steering():
     # Tab 2: Generische Steuerung
     with steering_tab2:
         show_generic_steering()
+
+    # Tab 3: Sequenz-Steuerung
+    with steering_tab3:
+        show_sequence_steering()

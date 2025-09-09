@@ -430,7 +430,7 @@ def _cancel_sequence_transaction():
         # Workflow im WorkflowOrderManager abschließen falls vorhanden
         if "workflow_manager" in transaction and "order_id" in transaction:
             try:
-                transaction["workflow_manager"].complete_workflow(transaction["order_id"])
+                transaction["workflow_manager"].complete_order(transaction["order_id"])
             except Exception as e:
                 print(f"⚠️ Fehler beim Abschließen des Workflows: {e}")
 
@@ -615,7 +615,7 @@ def _show_message_and_send_button(message_type: str):
         transaction = st.session_state["sequence_transaction"]
         if "workflow_manager" in transaction and "order_id" in transaction:
             try:
-                transaction["workflow_manager"].complete_workflow(transaction["order_id"])
+                transaction["workflow_manager"].complete_order(transaction["order_id"])
             except Exception as e:
                 print(f"⚠️ Fehler beim Abschließen des Workflows: {e}")
 
