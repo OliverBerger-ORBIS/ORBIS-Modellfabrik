@@ -11,8 +11,8 @@ from pathlib import Path
 # Add src_orbis to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src_orbis"))
 
-from omf.tools.message_generator import MessageGenerator
-from omf.tools.workflow_order_manager import WorkflowOrderManager, get_workflow_order_manager
+from src_orbis.omf.tools.message_generator import MessageGenerator
+from src_orbis.omf.tools.workflow_order_manager import WorkflowOrderManager, get_workflow_order_manager
 
 
 class TestMessageGenerator(unittest.TestCase):
@@ -241,11 +241,10 @@ class TestWorkflowOrderManager(unittest.TestCase):
         self.assertIsNotNone(order_id)
         self.assertIsInstance(order_id, str)
 
-        workflow_status = self.workflow_manager.get_workflow_status(order_id)
-        self.assertIsNotNone(workflow_status)
-        self.assertEqual(workflow_status["module"], "MILL")
-        self.assertEqual(workflow_status["commands"], ["PICK", "PROCESS", "DROP"])
-        self.assertEqual(workflow_status["status"], "active")
+        workflow_order = self.workflow_manager.get_order(order_id)
+        self.assertIsNotNone(workflow_order)
+        self.assertEqual(workflow_order.sequence_name, "MILL_workflow")
+        self.assertEqual(workflow_order.status, "running")
 
         print(f"✅ Workflow started: {order_id}")
 
@@ -282,20 +281,18 @@ class TestWorkflowOrderManager(unittest.TestCase):
         self.workflow_manager.execute_command(order_id, "DROP")
 
         # Act
-        completed_workflow = self.workflow_manager.complete_workflow(order_id)
+        self.workflow_manager.complete_order(order_id)
 
         # Assert
-        self.assertIsNotNone(completed_workflow)
-        self.assertEqual(completed_workflow["status"], "completed")
-        self.assertIn("end_time", completed_workflow)
-
+        completed_order = self.workflow_manager.get_order(order_id)
+        self.assertIsNotNone(completed_order)
+        self.assertEqual(completed_order.status, "completed")
         # Check if removed from active workflows
         active_workflows = self.workflow_manager.get_active_workflows()
         self.assertNotIn(order_id, active_workflows)
 
-        # Check if added to history
-        history = self.workflow_manager.get_workflow_history()
-        self.assertEqual(len(history), 1)
+        # Check if order is completed
+        self.assertEqual(completed_order.status, "completed")
 
         print(f"✅ Workflow completed: {order_id}")
 

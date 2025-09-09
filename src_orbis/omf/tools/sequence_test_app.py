@@ -8,8 +8,9 @@ import os
 import sys
 
 import streamlit as st
-from sequence_definition import create_example_python_sequence, create_example_sequences
-from sequence_ui import create_sequence_ui_app
+
+from .sequence_definition import create_example_python_sequence, create_example_sequences
+from .sequence_ui import create_sequence_ui_app
 
 # Pfad für Imports hinzufügen
 current_dir = os.path.dirname(os.path.abspath(__file__))

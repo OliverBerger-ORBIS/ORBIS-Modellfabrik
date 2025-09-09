@@ -7,9 +7,9 @@ Führt die Test-App aus ohne Streamlit-UI
 import os
 import sys
 
-from sequence_definition import SequenceDefinitionLoader
-from sequence_executor import SequenceExecutor
-from workflow_order_manager import workflow_order_manager
+from .sequence_definition import SequenceDefinitionLoader
+from .sequence_executor import SequenceExecutor
+from .workflow_order_manager import workflow_order_manager
 
 # Pfad für Imports hinzufügen
 current_dir = os.path.dirname(os.path.abspath(__file__))

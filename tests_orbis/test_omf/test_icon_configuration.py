@@ -11,7 +11,7 @@ import unittest
 class TestIconConfiguration(unittest.TestCase):
     def test_module_icon_files_exist(self):
         """Test: Alle erwarteten Modul-Icon-Dateien existieren im assets-Ordner (ohne ORBIS)"""
-        dashboard_dir = os.path.join(os.path.dirname(__file__), "..", "src_orbis", "omf", "dashboard")
+        dashboard_dir = os.path.join(os.path.dirname(__file__), "..", "..", "src_orbis", "omf", "dashboard")
         assets_dir = os.path.join(dashboard_dir, "assets")
         expected_modules = ["MILL", "DRILL", "AIQS", "HBW", "DPS", "FTS", "CHRG"]
         missing = []
@@ -25,12 +25,12 @@ class TestIconConfiguration(unittest.TestCase):
         self.assertFalse(missing, f"Fehlende Modul-Icons: {missing}")
 
     def test_orbis_logo_file_exists(self):
-        """Test: ORBIS_LOGO.png existiert im assets-Ordner"""
-        dashboard_dir = os.path.join(os.path.dirname(__file__), "..", "src_orbis", "omf", "dashboard")
+        """Test: orbis_logo.png existiert im assets-Ordner"""
+        dashboard_dir = os.path.join(os.path.dirname(__file__), "..", "..", "src_orbis", "omf", "dashboard")
         assets_dir = os.path.join(dashboard_dir, "assets")
-        logo_file = "ORBIS_LOGO.png"
+        logo_file = "orbis_logo.png"
         logo_path = os.path.join(assets_dir, logo_file)
-        self.assertTrue(os.path.exists(logo_path), "ORBIS_LOGO.png fehlt im assets-Ordner")
+        self.assertTrue(os.path.exists(logo_path), "orbis_logo.png fehlt im assets-Ordner")
 
     # Test Icon Configuration System
 

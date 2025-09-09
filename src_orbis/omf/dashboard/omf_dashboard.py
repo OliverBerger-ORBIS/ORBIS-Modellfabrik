@@ -12,8 +12,7 @@ from omf.tools.mock_mqtt_client import MockMqttClient
 from omf.tools.omf_mqtt_client import OMFMqttClient
 
 """
-ORBIS Modellfabrik Dashboard (OMF) - Modulare Architektur - Version 3.2.0
-Version: 3.2.0 - Refactored
+ORBIS Modellfabrik Dashboard (OMF) - Modulare Architektur
 """
 
 
@@ -125,7 +124,6 @@ def initialize_mqtt_client(env):
         st.session_state.mqtt_client = client
     else:
         client = st.session_state.mqtt_client
-        st.info(f"   - Verwende bestehenden Client: {type(client).__name__}")
 
     # Automatisch verbinden wenn nicht verbunden (nur für echte Clients)
     if env != "mock" and not client.connected:
@@ -215,15 +213,18 @@ def display_header(client):
             st.caption("Modellfabrik")
 
     with col2:
-        # Haupttitel und Status
-        st.markdown("# 🏭 ORBIS Modellfabrik Dashboard")
+        # Haupttitel (linksbündig ohne Symbol)
+        st.markdown("# Modellfabrik Dashboard")
 
     with col3:
-        # Status
+        # MQTT-Verbindung und Versions-Info
         if client.connected:
             st.success("🟢 MQTT Verbindung aktiv")
         else:
             st.error("🔴 MQTT Verbindung getrennt")
+
+        # Versions-Info
+        st.caption("Version 3.3.0")
 
 
 # =============================================================================

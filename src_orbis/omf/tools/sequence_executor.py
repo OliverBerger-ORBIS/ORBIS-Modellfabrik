@@ -239,13 +239,8 @@ class SequenceExecutor:
 
                 # Reihenfolge der Payload-Elemente korrigieren (wie Factory-Steuerung)
                 if isinstance(payload, dict):
-                    ordered_payload = {
-                        "serialNumber": payload.get("serialNumber"),
-                        "action": payload.get("action"),
-                        "orderId": payload.get("orderId"),
-                        "orderUpdateId": order_update_id,  # Integer, nicht String
-                    }
-                    payload = ordered_payload
+                    # Alle ursprünglichen Felder beibehalten, aber orderUpdateId korrigieren
+                    payload["orderUpdateId"] = order_update_id  # Integer, nicht String
 
                 # MQTT-Nachricht senden (Payload als Dictionary, wie Factory-Steuerung)
                 print(f"📤 Sende Nachricht: {topic}")

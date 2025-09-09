@@ -16,12 +16,15 @@
 - **Hinweis:** MessageMonitorService wurde durch OMFMqttClient ersetzt
 
 ### 2.1) Dashboard Tab-Struktur
-- **Übersicht**: Modul-Status und Lagerbestand
-- **Nachrichten-Zentrale**: Empfangene und gesendete MQTT-Nachrichten
-- **Steuerung**: Haupt-Tab mit zwei Untertabs
+- **📊 Übersicht**: Modul-Status, Lagerbestand, **Produktkatalog** (Blau, Weiß, Rot)
+- **📡 Nachrichten-Zentrale**: Empfangene und gesendete MQTT-Nachrichten
+- **🏭 Fertigungsaufträge**: **ERWEITERT** um Produktplanung & Produktionsverfolgung
+- **🎮 Steuerung**: Haupt-Tab mit drei Untertabs
   - **Factory Steuerung**: Traditionelle Steuerungsfunktionen (Factory Reset, Module, FTS, Orders)
   - **Generic Steuerung**: Erweiterte MQTT-Steuerung (Freier Modus, Topic-getrieben, Message-getrieben)
-- **Einstellungen**: MQTT-Konfiguration und Dashboard-Parameter
+  - **🎯 Sequenz-Steuerung**: Automatisierte Sequenz-Ausführung mit WAIT-Steps
+- **🏗️ Shopfloor**: **NEU** - Routenplanung, Positionierung, Shopfloor-Layout (4x3-Grid)
+- **⚙️ Einstellungen**: MQTT-Konfiguration und Dashboard-Parameter
 
 ## 3) Broker, Topics, Rechte
 - **Live-Fabrik**: 192.168.0.100:1883 (Standard)
@@ -30,11 +33,12 @@
 - **Authentifizierung**: Optional über Username/Password
 
 ## 4) Funktionale Anforderungen
-### 4.1) Übersicht - ✅ IMPLEMENTIERT
+### 4.1) Übersicht - ✅ IMPLEMENTIERT + 🔄 ERWEITERT
 - **Modul-Status** in Echtzeit anzeigen aus den bereitgestellten Infos der Mqtt-Nachrichten. Statische Info wird aus den Einstellungen gezogen module.yml ✅
 - **Lagerbestand** Ansicht der aktuellen Lager-Belegung (Nachricht vom HBW Modul) ✅
 - **Kundenaufträge** Auslösen einer Bestellung von (ROT/WEISS/BLAU) bei Bestellung wird die Produktion gestartet ✅
 - **Rohmaterial-Bestellungen** Übersicht über benötigte und verfügbare Rohmaterialien ✅
+- **📦 Produktkatalog** - **NEU** - YAML-basierte Produktdefinitionen (Blau, Weiß, Rot) 🔄
 - **Status:** Vollständig funktional mit HTML-Templates für visuelle Darstellung
 
 #### **Begriffliche Unterscheidungen - Order-Typen**
@@ -71,12 +75,14 @@
 > **✅ ABGESCHLOSSEN:** Alle Namensersetzungen wurden erfolgreich implementiert
 
 
-### 4.2) Produktions-Aufträge (Production Orders) - 🔄 IN ENTWICKLUNG
+### 4.2) Fertigungsaufträge (Production Orders) - 🔄 IN ENTWICKLUNG + 🆕 ERWEITERT
 
 #### **Funktionalitäten:**
 - **Auftragsverfolgung** über den gesamten Produktionsprozess
 - **Ongoing Orders** - Gibt es welche, wenn ja, dann Auflistung
 - **Aktuelle Produktionsschritte pro Ongoing Auftrag** - Aktualisierung der Info. Darstellung des Prozesses als Liste. Mit Status: geplant, in Arbeit, abgeschlossen
+- **📋 Produktplanung** - **NEU** - Fertigungsaufträge aus Produktkatalog generieren 🆕
+- **🔄 Produktionsverfolgung** - **NEU** - Echtzeit-Tracking der Fertigungsaufträge 🆕
 
 #### **Beispiel: Production Order für ROTES Werkstück**
 

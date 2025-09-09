@@ -1,0 +1,130 @@
+# OMF Product Catalog Configuration
+# Zentrale Konfigurationsdatei für Produktdefinitionen
+# Version: 3.0.0
+
+metadata:
+  version: "3.3.0"
+  description: "OMF Produktkatalog mit Fertigungsrouten"
+  last_updated: "2025-09-09"
+  author: "OMF Development Team"
+
+# Produktdefinitionen
+products:
+  # Produkt Blau - Komplette Bearbeitung
+  blue:
+    id: "BLUE"
+    name: "Produkt Blau"
+    name_lang_en: "Blue Product"
+    name_lang_de: "Produkt Blau"
+    color: "#0066CC"
+    description: "Komplette Bearbeitung: Bohren → Fräsen → Qualitätssicherung"
+    manufacturing_steps:
+      - step: 1
+        action: "DRILL"
+        module: "DRILL"
+        module_serial: "SVR4H76449"
+        description: "Werkstück bohren"
+        estimated_duration: 30  # Sekunden
+      - step: 2
+        action: "MILL"
+        module: "MILL"
+        module_serial: "SVR3QA2098"
+        description: "Werkstück fräsen"
+        estimated_duration: 45  # Sekunden
+      - step: 3
+        action: "CHECK_QUALITY"
+        module: "AIQS"
+        module_serial: "SVR4H76530"
+        description: "Qualitätsprüfung"
+        estimated_duration: 20  # Sekunden
+    fts_route:
+      - from: "HBW"
+        to: "DRILL"
+        via: ["1", "3"]
+      - from: "DRILL"
+        to: "MILL"
+        via: ["3", "1"]
+      - from: "MILL"
+        to: "AIQS"
+        via: ["1", "2"]
+      - from: "AIQS"
+        to: "DPS"
+        via: ["2"]
+    enabled: true
+    icon: "🔵"
+
+  # Produkt Weiß - Bohren + Qualitätssicherung
+  white:
+    id: "WHITE"
+    name: "Produkt Weiß"
+    name_lang_en: "White Product"
+    name_lang_de: "Produkt Weiß"
+    color: "#FFFFFF"
+    description: "Bohren → Qualitätssicherung"
+    manufacturing_steps:
+      - step: 1
+        action: "DRILL"
+        module: "DRILL"
+        module_serial: "SVR4H76449"
+        description: "Werkstück bohren"
+        estimated_duration: 30  # Sekunden
+      - step: 2
+        action: "CHECK_QUALITY"
+        module: "AIQS"
+        module_serial: "SVR4H76530"
+        description: "Qualitätsprüfung"
+        estimated_duration: 20  # Sekunden
+    fts_route:
+      - from: "HBW"
+        to: "DRILL"
+        via: ["1", "3"]
+      - from: "DRILL"
+        to: "AIQS"
+        via: ["3", "1", "2"]
+      - from: "AIQS"
+        to: "DPS"
+        via: ["2"]
+    enabled: true
+    icon: "⚪"
+
+  # Produkt Rot - Fräsen + Qualitätssicherung
+  red:
+    id: "RED"
+    name: "Produkt Rot"
+    name_lang_en: "Red Product"
+    name_lang_de: "Produkt Rot"
+    color: "#CC0000"
+    description: "Fräsen → Qualitätssicherung"
+    manufacturing_steps:
+      - step: 1
+        action: "MILL"
+        module: "MILL"
+        module_serial: "SVR3QA2098"
+        description: "Werkstück fräsen"
+        estimated_duration: 45  # Sekunden
+      - step: 2
+        action: "CHECK_QUALITY"
+        module: "AIQS"
+        module_serial: "SVR4H76530"
+        description: "Qualitätsprüfung"
+        estimated_duration: 20  # Sekunden
+    fts_route:
+      - from: "HBW"
+        to: "MILL"
+        via: ["1"]
+      - from: "MILL"
+        to: "AIQS"
+        via: ["1", "2"]
+      - from: "AIQS"
+        to: "DPS"
+        via: ["2"]
+    enabled: true
+    icon: "🔴"
+
+# Produktkatalog-Metadaten
+catalog_metadata:
+  total_products: 3
+  enabled_products: 3
+  default_product: "blue"
+  manufacturing_modules: ["DRILL", "MILL", "AIQS"]
+  transport_modules: ["FTS", "HBW", "DPS"]

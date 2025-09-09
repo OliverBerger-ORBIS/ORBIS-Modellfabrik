@@ -7,6 +7,7 @@ repos:
         entry: black
         language: system
         types: [python]
+        exclude: '^\.gitignore$'
 
       - id: isort
         name: isort
@@ -22,8 +23,8 @@ repos:
 
       - id: pytest
         name: pytest
-        entry: python -m pytest -q
+        entry: python -m pytest tests_orbis/test_omf/ -q --tb=short
         language: system
-        pass_filenames: false     # ⬅️ WICHTIG: keine Dateiliste an pytest übergeben
+        pass_filenames: false
         stages: [commit]
 

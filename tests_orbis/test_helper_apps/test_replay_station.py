@@ -16,7 +16,7 @@ from unittest.mock import Mock, patch
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "src_orbis"))
 
-from src_orbis.omf.replay_station.omf_replay_station import LocalMQTTBroker, SessionPlayer
+from src_orbis.helper_apps.replay_station.omf_replay_station import LocalMQTTBroker, SessionPlayer
 
 
 @unittest.skipIf(os.name == "nt", "Test wird unter Windows wegen WinError 32 übersprungen")

@@ -16,7 +16,7 @@ from unittest.mock import patch
 # Add src_orbis to path for imports
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src_orbis"))
 
-from omf.tools.message_generator import MessageGenerator
+from src_orbis.omf.tools.message_generator import MessageGenerator
 
 
 class TestFactoryReset(unittest.TestCase):

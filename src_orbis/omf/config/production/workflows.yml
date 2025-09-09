@@ -1,0 +1,295 @@
+# OMF Production Workflows Configuration
+# Produktions-Workflows basierend auf Produktkatalog
+# Version: 3.0.0
+
+metadata:
+  version: "3.3.0"
+  description: "OMF Produktions-Workflows für Fertigungsaufträge"
+  last_updated: "2025-01-19"
+  author: "OMF Development Team"
+  workflow_engine: "MQTT-based"
+
+# Workflow-Definitionen
+workflows:
+  # Workflow für Produkt Blau
+  blue_workflow:
+    workflow_id: "BLUE_WORKFLOW"
+    product_id: "BLUE"
+    name: "Blau Workflow"
+    description: "Komplette Bearbeitung: Bohren → Fräsen → Qualitätssicherung"
+    steps:
+      - step_id: "BLUE_STEP_1"
+        step_number: 1
+        action: "PICK"
+        module: "HBW"
+        module_serial: "SVR3QA0022"
+        description: "Werkstück aus HBW holen"
+        estimated_duration: 10
+        mqtt_topic: "module/v1/ff/SVR3QA0022/order"
+        mqtt_payload_template: "hbw_pick"
+        enabled: true
+        
+      - step_id: "BLUE_STEP_2"
+        step_number: 2
+        action: "TRANSPORT"
+        module: "FTS"
+        module_serial: "5iO4"
+        description: "FTS zu DRILL transportieren"
+        estimated_duration: 15
+        mqtt_topic: "fts/v1/ff/5iO4/order"
+        mqtt_payload_template: "fts_transport_hbw_to_drill"
+        enabled: true
+        
+      - step_id: "BLUE_STEP_3"
+        step_number: 3
+        action: "DRILL"
+        module: "DRILL"
+        module_serial: "SVR4H76449"
+        description: "Werkstück bohren"
+        estimated_duration: 30
+        mqtt_topic: "module/v1/ff/SVR4H76449/order"
+        mqtt_payload_template: "drill_process"
+        enabled: true
+        
+      - step_id: "BLUE_STEP_4"
+        step_number: 4
+        action: "TRANSPORT"
+        module: "FTS"
+        module_serial: "5iO4"
+        description: "FTS zu MILL transportieren"
+        estimated_duration: 15
+        mqtt_topic: "fts/v1/ff/5iO4/order"
+        mqtt_payload_template: "fts_transport_drill_to_mill"
+        enabled: true
+        
+      - step_id: "BLUE_STEP_5"
+        step_number: 5
+        action: "MILL"
+        module: "MILL"
+        module_serial: "SVR3QA2098"
+        description: "Werkstück fräsen"
+        estimated_duration: 45
+        mqtt_topic: "module/v1/ff/SVR3QA2098/order"
+        mqtt_payload_template: "mill_process"
+        enabled: true
+        
+      - step_id: "BLUE_STEP_6"
+        step_number: 6
+        action: "TRANSPORT"
+        module: "FTS"
+        module_serial: "5iO4"
+        description: "FTS zu AIQS transportieren"
+        estimated_duration: 7
+        mqtt_topic: "fts/v1/ff/5iO4/order"
+        mqtt_payload_template: "fts_transport_mill_to_aiqs"
+        enabled: true
+        
+      - step_id: "BLUE_STEP_7"
+        step_number: 7
+        action: "CHECK_QUALITY"
+        module: "AIQS"
+        module_serial: "SVR4H76530"
+        description: "Qualitätsprüfung"
+        estimated_duration: 20
+        mqtt_topic: "module/v1/ff/SVR4H76530/order"
+        mqtt_payload_template: "aiqs_quality_check"
+        enabled: true
+        
+      - step_id: "BLUE_STEP_8"
+        step_number: 8
+        action: "TRANSPORT"
+        module: "FTS"
+        module_serial: "5iO4"
+        description: "FTS zu DPS transportieren"
+        estimated_duration: 7
+        mqtt_topic: "fts/v1/ff/5iO4/order"
+        mqtt_payload_template: "fts_transport_aiqs_to_dps"
+        enabled: true
+        
+      - step_id: "BLUE_STEP_9"
+        step_number: 9
+        action: "DROP"
+        module: "DPS"
+        module_serial: "SVR4H73275"
+        description: "Werkstück in DPS entladen"
+        estimated_duration: 10
+        mqtt_topic: "module/v1/ff/SVR4H73275/order"
+        mqtt_payload_template: "dps_drop"
+        enabled: true
+
+  # Workflow für Produkt Weiß
+  white_workflow:
+    workflow_id: "WHITE_WORKFLOW"
+    product_id: "WHITE"
+    name: "Weiß Workflow"
+    description: "Bohren → Qualitätssicherung"
+    steps:
+      - step_id: "WHITE_STEP_1"
+        step_number: 1
+        action: "PICK"
+        module: "HBW"
+        module_serial: "SVR3QA0022"
+        description: "Werkstück aus HBW holen"
+        estimated_duration: 10
+        mqtt_topic: "module/v1/ff/SVR3QA0022/order"
+        mqtt_payload_template: "hbw_pick"
+        enabled: true
+        
+      - step_id: "WHITE_STEP_2"
+        step_number: 2
+        action: "TRANSPORT"
+        module: "FTS"
+        module_serial: "5iO4"
+        description: "FTS zu DRILL transportieren"
+        estimated_duration: 15
+        mqtt_topic: "fts/v1/ff/5iO4/order"
+        mqtt_payload_template: "fts_transport_hbw_to_drill"
+        enabled: true
+        
+      - step_id: "WHITE_STEP_3"
+        step_number: 3
+        action: "DRILL"
+        module: "DRILL"
+        module_serial: "SVR4H76449"
+        description: "Werkstück bohren"
+        estimated_duration: 30
+        mqtt_topic: "module/v1/ff/SVR4H76449/order"
+        mqtt_payload_template: "drill_process"
+        enabled: true
+        
+      - step_id: "WHITE_STEP_4"
+        step_number: 4
+        action: "TRANSPORT"
+        module: "FTS"
+        module_serial: "5iO4"
+        description: "FTS zu AIQS transportieren"
+        estimated_duration: 22
+        mqtt_topic: "fts/v1/ff/5iO4/order"
+        mqtt_payload_template: "fts_transport_drill_to_aiqs"
+        enabled: true
+        
+      - step_id: "WHITE_STEP_5"
+        step_number: 5
+        action: "CHECK_QUALITY"
+        module: "AIQS"
+        module_serial: "SVR4H76530"
+        description: "Qualitätsprüfung"
+        estimated_duration: 20
+        mqtt_topic: "module/v1/ff/SVR4H76530/order"
+        mqtt_payload_template: "aiqs_quality_check"
+        enabled: true
+        
+      - step_id: "WHITE_STEP_6"
+        step_number: 6
+        action: "TRANSPORT"
+        module: "FTS"
+        module_serial: "5iO4"
+        description: "FTS zu DPS transportieren"
+        estimated_duration: 7
+        mqtt_topic: "fts/v1/ff/5iO4/order"
+        mqtt_payload_template: "fts_transport_aiqs_to_dps"
+        enabled: true
+        
+      - step_id: "WHITE_STEP_7"
+        step_number: 7
+        action: "DROP"
+        module: "DPS"
+        module_serial: "SVR4H73275"
+        description: "Werkstück in DPS entladen"
+        estimated_duration: 10
+        mqtt_topic: "module/v1/ff/SVR4H73275/order"
+        mqtt_payload_template: "dps_drop"
+        enabled: true
+
+  # Workflow für Produkt Rot
+  red_workflow:
+    workflow_id: "RED_WORKFLOW"
+    product_id: "RED"
+    name: "Rot Workflow"
+    description: "Fräsen → Qualitätssicherung"
+    steps:
+      - step_id: "RED_STEP_1"
+        step_number: 1
+        action: "PICK"
+        module: "HBW"
+        module_serial: "SVR3QA0022"
+        description: "Werkstück aus HBW holen"
+        estimated_duration: 10
+        mqtt_topic: "module/v1/ff/SVR3QA0022/order"
+        mqtt_payload_template: "hbw_pick"
+        enabled: true
+        
+      - step_id: "RED_STEP_2"
+        step_number: 2
+        action: "TRANSPORT"
+        module: "FTS"
+        module_serial: "5iO4"
+        description: "FTS zu MILL transportieren"
+        estimated_duration: 8
+        mqtt_topic: "fts/v1/ff/5iO4/order"
+        mqtt_payload_template: "fts_transport_hbw_to_mill"
+        enabled: true
+        
+      - step_id: "RED_STEP_3"
+        step_number: 3
+        action: "MILL"
+        module: "MILL"
+        module_serial: "SVR3QA2098"
+        description: "Werkstück fräsen"
+        estimated_duration: 45
+        mqtt_topic: "module/v1/ff/SVR3QA2098/order"
+        mqtt_payload_template: "mill_process"
+        enabled: true
+        
+      - step_id: "RED_STEP_4"
+        step_number: 4
+        action: "TRANSPORT"
+        module: "FTS"
+        module_serial: "5iO4"
+        description: "FTS zu AIQS transportieren"
+        estimated_duration: 7
+        mqtt_topic: "fts/v1/ff/5iO4/order"
+        mqtt_payload_template: "fts_transport_mill_to_aiqs"
+        enabled: true
+        
+      - step_id: "RED_STEP_5"
+        step_number: 5
+        action: "CHECK_QUALITY"
+        module: "AIQS"
+        module_serial: "SVR4H76530"
+        description: "Qualitätsprüfung"
+        estimated_duration: 20
+        mqtt_topic: "module/v1/ff/SVR4H76530/order"
+        mqtt_payload_template: "aiqs_quality_check"
+        enabled: true
+        
+      - step_id: "RED_STEP_6"
+        step_number: 6
+        action: "TRANSPORT"
+        module: "FTS"
+        module_serial: "5iO4"
+        description: "FTS zu DPS transportieren"
+        estimated_duration: 7
+        mqtt_topic: "fts/v1/ff/5iO4/order"
+        mqtt_payload_template: "fts_transport_aiqs_to_dps"
+        enabled: true
+        
+      - step_id: "RED_STEP_7"
+        step_number: 7
+        action: "DROP"
+        module: "DPS"
+        module_serial: "SVR4H73275"
+        description: "Werkstück in DPS entladen"
+        estimated_duration: 10
+        mqtt_topic: "module/v1/ff/SVR4H73275/order"
+        mqtt_payload_template: "dps_drop"
+        enabled: true
+
+# Workflow-Metadaten
+workflow_metadata:
+  total_workflows: 3
+  enabled_workflows: 3
+  total_steps: 23
+  workflow_engine: "MQTT-based"
+  supported_actions: ["PICK", "DROP", "DRILL", "MILL", "CHECK_QUALITY", "TRANSPORT"]
+  supported_modules: ["HBW", "DRILL", "MILL", "AIQS", "DPS", "FTS"]

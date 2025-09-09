@@ -8,10 +8,13 @@ import os
 import sys
 import unittest
 
+import pytest
+
 # Add src_orbis to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src_orbis"))
 
 
+@pytest.mark.streamlit
 class TestDashboardMqttIntegration(unittest.TestCase):
     """Testet Dashboard MQTT Integration Probleme"""
 
