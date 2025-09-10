@@ -3,15 +3,12 @@ OMF Dashboard Overview - Rohmaterial-Bestellungen (Purchase Orders)
 Kopiert aus overview_inventory.py - Sektion 3: Bestellung von Rohmaterial
 """
 
-import os
-import sys
-
 import streamlit as st
 
 # Template-Import hinzufügen
-sys.path.append(os.path.join(os.path.dirname(__file__), "..", "assets"))
+# sys.path.append(os.path.join(os.path.dirname(__file__), "..", "assets"))  # Nicht mehr nötig nach pip install -e .
 try:
-    from html_templates import get_bucket_template, get_workpiece_box_template
+    from src_orbis.omf.dashboard.assets.html_templates import get_bucket_template, get_workpiece_box_template
 
     TEMPLATES_AVAILABLE = True
 except ImportError as e:

@@ -4,16 +4,14 @@ Verwendet OrderManager für zentrale Verwaltung aller Dashboard-relevanten Infor
 """
 
 import json
-import os
-import sys
 from datetime import datetime
 
 import streamlit as st
 
 # Template-Import hinzufügen
-sys.path.append(os.path.join(os.path.dirname(__file__), "..", "assets"))
+# sys.path.append(os.path.join(os.path.dirname(__file__), "..", "assets"))  # Nicht mehr nötig nach pip install -e .
 try:
-    from html_templates import get_bucket_template
+    from src_orbis.omf.dashboard.assets.html_templates import get_bucket_template
 
     TEMPLATES_AVAILABLE = True
 except ImportError as e:

@@ -201,7 +201,7 @@ Beispiel Python-Sequenz-Definition für AIQS
 Demonstriert komplexe Logik und dynamische Payloads
 """
 
-from ..sequence_executor import SequenceDefinition, SequenceStep
+from src_orbis.omf.tools.sequence_executor import SequenceDefinition, SequenceStep
 
 
 def get_sequence_definition():

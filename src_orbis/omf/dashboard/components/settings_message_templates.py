@@ -3,13 +3,10 @@ OMF Dashboard Settings - Message Templates
 Exakte Kopie der show_messages_templates() Funktion aus settings.py
 """
 
-import os
-import sys
-
 import streamlit as st
 
 # Add src_orbis to path for imports
-sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
+# sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", ".."))  # Nicht mehr nötig nach pip install -e .
 
 
 def show_messages_templates():

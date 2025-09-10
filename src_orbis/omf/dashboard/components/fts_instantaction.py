@@ -13,7 +13,7 @@ from .message_processor import create_topic_filter, get_message_processor
 
 # MessageTemplate Bibliothek Import
 try:
-    from omf.tools.message_template_manager import get_message_template_manager
+    from src_orbis.omf.tools.message_template_manager import get_message_template_manager
 
     TEMPLATE_MANAGER_AVAILABLE = True
 except ImportError as e:

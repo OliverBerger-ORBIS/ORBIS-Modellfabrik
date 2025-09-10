@@ -3,15 +3,13 @@ OMF Dashboard Settings - Modul-Konfiguration
 Exakte Kopie der show_module_config() Funktion aus settings.py
 """
 
-import os
-import sys
-
 import streamlit as st
-from omf.config.omf_config import config
-from omf.tools.module_manager import get_omf_module_manager
+
+from src_orbis.omf.config.omf_config import config
+from src_orbis.omf.tools.module_manager import get_omf_module_manager
 
 # Add src_orbis to path for imports
-sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
+# sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", ".."))  # Nicht mehr nötig nach pip install -e .
 
 
 def show_module_config():

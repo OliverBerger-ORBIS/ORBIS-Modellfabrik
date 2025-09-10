@@ -12,7 +12,7 @@ if src_orbis_path not in sys.path:
     sys.path.insert(0, src_orbis_path)
 
 try:
-    from omf.config.config_loader import OMFConfig
+    from src_orbis.omf.config.config_loader import OMFConfig
 except ImportError:
     # Fallback für Tests
     class OMFConfig:

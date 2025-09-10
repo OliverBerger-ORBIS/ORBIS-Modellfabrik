@@ -14,7 +14,6 @@ dependencies = [
     "paho-mqtt>=1.6.1",
     "pandas>=2.0.0",
     "pyyaml>=6.0",
-    "sqlite3",
 ]
 
 [project.optional-dependencies]
@@ -25,22 +24,21 @@ dev = [
     "pre-commit>=3.2.0",
 ]
 
+[tool.setuptools]
+# Wir benutzen „flat layout“: Packages im Repo-Root finden (kein special 'src/')
+# und nehmen alle, die mit 'src_orbis' anfangen.
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src_orbis*"]
+
 [tool.black]
 line-length = 120
 target-version = ['py38']
-include = '\.pyi?$'
-extend-exclude = '''
-/(
-  # directories
-  \.eggs
-  | \.git
-  | \.hg
-  | \.mypy_cache
-  | \.tox
-  | \.venv
-  | build
-  | dist
-)/
+skip-string-normalization = true
+# Wichtig: force-exclude wirkt auch dann, wenn Black per pre-commit einzelne Dateien übergeben bekommt
+force-exclude = '''
+(?x)
+  src_orbis[\\/]+omf[\\/]+config[\\/]+sequence_definitions[\\/]+aiqs_sequence\.py$
 '''
 [tool.ruff]
 line-length = 120
@@ -78,3 +76,8 @@ ignore = [
 profile = "black"
 line_length = 120
 multi_line_output = 3
+known_first_party = ["src_orbis"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests_orbis"]          # nur hier sammelt Pytest Tests
+addopts = "-q"

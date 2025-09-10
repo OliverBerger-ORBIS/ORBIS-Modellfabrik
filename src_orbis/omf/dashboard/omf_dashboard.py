@@ -1,15 +1,14 @@
 import os
-import sys
 
 import streamlit as st
 
-sys.path.append(os.path.join(os.path.dirname(__file__), "..", ".."))
-sys.path.append(os.path.join(os.path.dirname(__file__), "components"))
+from src_orbis.omf.config.config import LIVE_CFG, REPLAY_CFG
 
-from components.dummy_component import show_dummy_component
-from omf.config.config import LIVE_CFG, REPLAY_CFG
-from omf.tools.mock_mqtt_client import MockMqttClient
-from omf.tools.omf_mqtt_client import OMFMqttClient
+# sys.path.append(os.path.join(os.path.dirname(__file__), "..", ".."))  # Nicht mehr nötig nach pip install -e .
+# sys.path.append(os.path.join(os.path.dirname(__file__), "components"))  # Nicht mehr nötig nach pip install -e .
+from src_orbis.omf.dashboard.components.dummy_component import show_dummy_component
+from src_orbis.omf.tools.mock_mqtt_client import MockMqttClient
+from src_orbis.omf.tools.omf_mqtt_client import OMFMqttClient
 
 """
 ORBIS Modellfabrik Dashboard (OMF) - Modulare Architektur
@@ -116,7 +115,7 @@ def initialize_mqtt_client(env):
     # MQTT-Client nur einmal initialisieren (Singleton)
     if "mqtt_client" not in st.session_state:
         st.info("🔍 **Debug: Erstelle neuen MQTT-Client**")
-        from omf.tools.mqtt_config import MqttConfig
+        from src_orbis.omf.tools.mqtt_config import MqttConfig
 
         if env == "mock":
             client = MockMqttClient(MqttConfig(**cfg))
@@ -128,8 +127,7 @@ def initialize_mqtt_client(env):
 
     # Automatisch verbinden wenn nicht verbunden (nur für echte Clients)
     if env != "mock" and not client.connected:
-        sys.path.append(os.path.join(os.path.dirname(__file__), "..", ".."))
-        sys.path.append(os.path.join(os.path.dirname(__file__), "components"))
+        pass  # Placeholder für zukünftige Verbindungslogik
 
     return client, cfg
 

@@ -9,11 +9,12 @@ repos:
         types: [python]
         exclude: '^\.gitignore$'
 
-      - id: isort
-        name: isort
-        entry: isort
-        language: system
-        types: [python]
+# isort entfernt - verursacht Import-Probleme
+      # - id: isort
+      #   name: isort
+      #   entry: isort
+      #   language: system
+      #   types: [python]
 
       - id: ruff
         name: ruff
@@ -23,7 +24,7 @@ repos:
 
       - id: pytest
         name: pytest
-        entry: python -m pytest tests_orbis/test_omf/ -q --tb=short
+        entry: python -m pytest -q
         language: system
         pass_filenames: false
         stages: [commit]

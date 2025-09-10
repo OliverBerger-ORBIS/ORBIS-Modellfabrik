@@ -3,17 +3,15 @@ OMF Dashboard Overview - Produktkatalog
 Komponente für die Anzeige des Produktkatalogs mit HTML-Templates
 """
 
-import os
-import sys
 from pathlib import Path
 
 import streamlit as st
 import yaml
 
 # Template-Import hinzufügen
-sys.path.append(os.path.join(os.path.dirname(__file__), "..", "assets"))
+# sys.path.append(os.path.join(os.path.dirname(__file__), "..", "assets"))  # Nicht mehr nötig nach pip install -e .
 try:
-    from html_templates import get_product_catalog_template
+    from src_orbis.omf.dashboard.assets.html_templates import get_product_catalog_template
 
     TEMPLATES_AVAILABLE = True
 except ImportError as e:

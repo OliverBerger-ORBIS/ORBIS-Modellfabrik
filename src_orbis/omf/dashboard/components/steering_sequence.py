@@ -6,16 +6,14 @@ UI für die Workflow-Sequenz-Steuerung mit Status-Anzeige
 import os
 
 # Import der Sequenz-Tools
-import sys
-
 import streamlit as st
 
 tools_path = os.path.join(os.path.dirname(__file__), "..", "..", "tools")
-sys.path.append(tools_path)
+# sys.path.append(tools_path)  # Nicht mehr nötig nach pip install -e .
 
 try:
-    from sequence_executor import SequenceExecutor
-    from sequence_ui import SequenceUI
+    from src_orbis.omf.tools.sequence_executor import SequenceExecutor
+    from src_orbis.omf.tools.sequence_ui import SequenceUI
 except ImportError as e:
     st.error(f"❌ Fehler beim Import der Sequenz-Tools: {e}")
     st.info(f"ℹ️ Tools-Pfad: {tools_path}")

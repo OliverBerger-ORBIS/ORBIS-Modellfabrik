@@ -10,14 +10,12 @@ import streamlit as st
 
 # WorkflowOrderManager für korrekte orderId/orderUpdateId Verwaltung
 try:
-    from omf.tools.workflow_order_manager import get_workflow_order_manager
+    from src_orbis.omf.tools.workflow_order_manager import get_workflow_order_manager
 except ImportError:
     # Fallback für direkte Imports
-    import sys
-    from pathlib import Path
 
-    sys.path.append(str(Path(__file__).parent.parent.parent.parent))
-    from omf.tools.workflow_order_manager import get_workflow_order_manager
+    # sys.path.append(str(Path(__file__).parent.parent.parent.parent))  # Nicht mehr nötig nach pip install -e .
+    from src_orbis.omf.tools.workflow_order_manager import get_workflow_order_manager
 
 
 def show_factory_steering():

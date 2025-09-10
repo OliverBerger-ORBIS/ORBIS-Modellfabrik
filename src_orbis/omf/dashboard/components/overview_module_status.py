@@ -15,7 +15,7 @@ from .message_processor import create_topic_filter, get_message_processor
 
 # Import module manager for static module info
 try:
-    from omf.tools.module_manager import get_omf_module_manager
+    from src_orbis.omf.tools.module_manager import get_omf_module_manager
 except ImportError:
     # Fallback if module manager not available
     get_omf_module_manager = None

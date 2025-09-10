@@ -12,6 +12,9 @@ import glob
 import json
 import os
 import re
+
+# sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", ".."))  # Nicht mehr nötig nach pip install -e .
+import sqlite3
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -19,13 +22,8 @@ from typing import Dict, List, Set
 
 import yaml
 
-from src_orbis.omf.tools.message_template_manager import get_message_template_manager
-
-sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
-
-import sqlite3
-
 from src_orbis.analysis_tools.nfc_code_manager import get_nfc_manager
+from src_orbis.omf.tools.message_template_manager import get_message_template_manager
 
 
 class ModuleTemplateAnalyzer:

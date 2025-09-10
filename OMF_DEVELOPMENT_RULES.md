@@ -22,7 +22,15 @@
 - **Klare Import-Pfade** und Abhängigkeiten
 - **Zweisprachigkeit:** Source-Namen EN, UI-Namen DE
 
-### **4. Datenstruktur**
+### **4. Import-Standards (ZENTRALE ENTWICKLUNGSREGEL)**
+- **NUR absolute Imports verwenden:** `from src_orbis.omf.module import Class`
+- **KEINE relativen Imports:** `from ..module import Class` ❌
+- **KEINE sys.path.append Hacks:** `sys.path.append(...)` ❌
+- **KEINE lokalen Imports:** `from module import Class` ❌
+- **Immer vollständige Pfade:** `from src_orbis.omf.tools.sequence_executor import SequenceExecutor`
+- **Konsistente Namenskonvention:** Alle Imports beginnen mit `src_orbis.`
+
+### **5. Datenstruktur**
 - **Neue `omf-data/`** Struktur verwenden
 - **Session-Daten** organisiert ablegen
 - **Git-freundlich** (große Dateien ignorieren)

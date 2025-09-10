@@ -33,7 +33,8 @@ def show_mqtt_config():
 
         tools_path = os.path.join(os.path.dirname(__file__), "..", "..", "tools")
         if tools_path not in sys.path:
-            sys.path.append(tools_path)
+            # sys.path.append(tools_path)  # Nicht mehr nötig nach pip install -e .
+            pass
 
         # Verwende Dashboard MQTT-Client
         mqtt_client = st.session_state.get("mqtt_client")

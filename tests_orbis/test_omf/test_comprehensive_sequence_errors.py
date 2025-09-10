@@ -8,7 +8,7 @@ import unittest
 from unittest.mock import Mock, patch
 
 # Pfad für Imports
-sys.path.append(os.path.join(os.path.dirname(__file__), "..", "src_orbis"))
+# sys.path.append(os.path.join(os.path.dirname(__file__), "..", "src_orbis"))  # Nicht mehr nötig nach pip install -e .
 
 
 class TestComprehensiveSequenceErrors(unittest.TestCase):
@@ -23,9 +23,9 @@ class TestComprehensiveSequenceErrors(unittest.TestCase):
     def test_all_sequence_definition_usage(self):
         """Test: Alle Verwendungen von SequenceDefinition sind sicher"""
         try:
-            from omf.tools.sequence_executor import SequenceDefinition, SequenceExecutor, SequenceStep
-            from omf.tools.sequence_ui import SequenceUI
-            from omf.tools.workflow_order_manager import get_workflow_order_manager
+            from src_orbis.omf.tools.sequence_executor import SequenceDefinition, SequenceExecutor, SequenceStep
+            from src_orbis.omf.tools.sequence_ui import SequenceUI
+            from src_orbis.omf.tools.workflow_order_manager import get_workflow_order_manager
 
             executor = SequenceExecutor(self.mock_mqtt_client)
             _ui = SequenceUI(executor)
@@ -70,7 +70,7 @@ class TestComprehensiveSequenceErrors(unittest.TestCase):
     def test_sequence_loader_all_sequences(self):
         """Test: Alle Sequenzen aus dem Loader sind sicher"""
         try:
-            from omf.tools.sequence_definition import SequenceDefinitionLoader
+            from src_orbis.omf.tools.sequence_definition import SequenceDefinitionLoader
 
             loader = SequenceDefinitionLoader()
             sequences = loader.get_all_sequences()
@@ -98,7 +98,7 @@ class TestComprehensiveSequenceErrors(unittest.TestCase):
     def test_running_sequences_structure(self):
         """Test: running_sequences Struktur ist korrekt"""
         try:
-            from omf.tools.sequence_executor import SequenceDefinition, SequenceExecutor, SequenceStep
+            from src_orbis.omf.tools.sequence_executor import SequenceDefinition, SequenceExecutor, SequenceStep
 
             executor = SequenceExecutor(self.mock_mqtt_client)
 
@@ -136,8 +136,8 @@ class TestComprehensiveSequenceErrors(unittest.TestCase):
     def test_sequence_ui_all_methods_with_mocks(self):
         """Test: Alle SequenceUI Methoden mit Streamlit-Mocks"""
         try:
-            from omf.tools.sequence_executor import SequenceDefinition, SequenceExecutor, SequenceStep
-            from omf.tools.sequence_ui import SequenceUI
+            from src_orbis.omf.tools.sequence_executor import SequenceDefinition, SequenceExecutor, SequenceStep
+            from src_orbis.omf.tools.sequence_ui import SequenceUI
 
             executor = SequenceExecutor(self.mock_mqtt_client)
             _ui = SequenceUI(executor)
@@ -192,8 +192,8 @@ class TestComprehensiveSequenceErrors(unittest.TestCase):
     def test_aiqs_sequence_safety(self):
         """Test: AIQS-Sequenz ist sicher"""
         try:
-            from omf.config.sequence_definitions.aiqs_sequence import get_sequence_definition
-            from omf.tools.sequence_executor import SequenceDefinition
+            from src_orbis.omf.sequences.aiqs_sequence import get_sequence_definition
+            from src_orbis.omf.tools.sequence_executor import SequenceDefinition
 
             sequence = get_sequence_definition()
 
@@ -219,7 +219,7 @@ class TestComprehensiveSequenceErrors(unittest.TestCase):
     def test_yml_sequences_safety(self):
         """Test: YML-Sequenzen sind sicher"""
         try:
-            from omf.tools.sequence_definition import SequenceDefinitionLoader
+            from src_orbis.omf.tools.sequence_definition import SequenceDefinitionLoader
 
             loader = SequenceDefinitionLoader()
             sequences = loader.get_all_sequences()
