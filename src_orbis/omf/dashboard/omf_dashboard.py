@@ -125,9 +125,16 @@ def initialize_mqtt_client(env):
     else:
         client = st.session_state.mqtt_client
 
-    # Automatisch verbinden wenn nicht verbunden (nur für echte Clients)
-    if env != "mock" and not client.connected:
-        pass  # Placeholder für zukünftige Verbindungslogik
+    # Automatisch verbinden wenn nicht verbunden
+    if not client.connected:
+        # Der Client verbindet sich automatisch im __init__
+        # Warten auf Verbindung
+        import time
+
+        for _ in range(10):  # Max 10 Sekunden warten
+            if client.connected:
+                break
+            time.sleep(0.1)
 
     return client, cfg
 
