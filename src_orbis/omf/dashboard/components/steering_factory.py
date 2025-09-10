@@ -23,113 +23,124 @@ def show_factory_steering():
     st.subheader("🏭 Factory Steuerung")
     st.markdown("**Traditionelle Steuerungsfunktionen für die Modellfabrik:**")
 
-    # Factory Reset Section
-    st.markdown("### 🏭 Factory Steuerung")
-    _show_factory_reset_section()
+    # Factory Reset Section - Aufklappbare Box
+    with st.expander("🏭 Factory Reset", expanded=False):
+        _show_factory_reset_section()
 
-    # Module Sequences Section
-    st.markdown("### 🔧 Modul-Sequenzen")
-    _show_module_sequences_section()
+    # Module Sequences Section - Aufklappbare Box
+    with st.expander("🔧 Modul-Sequenzen", expanded=False):
+        _show_module_sequences_section()
 
-    # FTS Commands Section
-    st.markdown("### 🚗 FTS (Fahrerloses Transportsystem) Steuerung")
-    _show_fts_commands_section()
+    # FTS Commands Section - Aufklappbare Box
+    with st.expander("🚗 FTS (Fahrerloses Transportsystem) Steuerung", expanded=False):
+        _show_fts_commands_section()
 
-    # Order Commands Section
-    st.markdown("### 📋 Auftrags-Befehle")
-    _show_order_commands_section()
+    # Order Commands Section - Aufklappbare Box
+    with st.expander("📋 Auftrags-Befehle", expanded=False):
+        _show_order_commands_section()
+
+    # Navigation Commands Section - Aufklappbare Box
+    with st.expander("🗺️ Navigation", expanded=False):
+        _show_navigation_commands_section()
 
 
 def _show_factory_reset_section():
     """Zeigt Factory Reset Funktionalität"""
     st.markdown("**Factory Reset der gesamten Modellfabrik:**")
+    st.info("ℹ️ Setzt alle Module in den Ausgangszustand zurück")
 
-    col1, col2 = st.columns([1, 2])
+    col1, col2 = st.columns([1, 1])
 
     with col1:
         if st.button("🏭 Factory Reset", type="primary", key="factory_reset"):
             # Nachricht vorbereiten und anzeigen
             _prepare_factory_reset_message()
+            st.rerun()
 
     with col2:
-        st.info("ℹ️ Setzt alle Module in den Ausgangszustand zurück")
-
-    # Nachricht anzeigen und Send-Button
-    _show_message_and_send_button("factory_reset")
+        # Nachricht anzeigen und Send-Button direkt hier
+        if "pending_message" in st.session_state and st.session_state["pending_message"]["type"] == "factory_reset":
+            _show_message_and_send_button_inline("factory_reset")
 
 
 def _show_module_sequences_section():
     """Zeigt Modul-Sequenzen für AIQS, MILL, DRILL"""
     st.markdown("**Einzelne Module steuern:**")
 
-    # AIQS
-    st.markdown("#### 🔍 AIQS (Qualitätsprüfung)")
-    col1, col2, col3, col4 = st.columns(4)
+    # AIQS Box
+    with st.expander("🔍 AIQS (Qualitätsprüfung)", expanded=False):
+        col1, col2, col3, col4 = st.columns(4)
 
-    with col1:
-        if st.button("🔄 Komplette Sequenz", key="aiqs_sequence", type="primary"):
-            _prepare_module_sequence_message("AIQS")
+        with col1:
+            if st.button("🔄 Komplette Sequenz", key="aiqs_sequence", type="primary"):
+                _prepare_module_sequence_message("AIQS")
 
-    with col2:
-        if st.button("📥 PICK", key="aiqs_pick"):
-            _prepare_module_step_message("AIQS", "PICK")
+        with col2:
+            if st.button("📥 PICK", key="aiqs_pick"):
+                _prepare_module_step_message("AIQS", "PICK")
 
-    with col3:
-        if st.button("🔍 CHECK", key="aiqs_check"):
-            _prepare_module_step_message("AIQS", "CHECK_QUALITY")
+        with col3:
+            if st.button("🔍 CHECK", key="aiqs_check"):
+                _prepare_module_step_message("AIQS", "CHECK_QUALITY")
 
-    with col4:
-        if st.button("📤 DROP", key="aiqs_drop"):
-            _prepare_module_step_message("AIQS", "DROP")
+        with col4:
+            if st.button("📤 DROP", key="aiqs_drop"):
+                _prepare_module_step_message("AIQS", "DROP")
 
-    # Nachricht anzeigen und Send-Button für AIQS
-    _show_message_and_send_button("aiqs")
+        # Nachricht anzeigen und Send-Button für AIQS (inline)
+        if "pending_message" in st.session_state and st.session_state["pending_message"]["type"].startswith("aiqs"):
+            st.markdown("---")
+            _show_message_and_send_button_inline("aiqs")
 
-    # MILL
-    st.markdown("#### ⚙️ MILL (Fräsen)")
-    col1, col2, col3, col4 = st.columns(4)
+    # MILL Box
+    with st.expander("⚙️ MILL (Fräsen)", expanded=False):
+        col1, col2, col3, col4 = st.columns(4)
 
-    with col1:
-        if st.button("🔄 Komplette Sequenz", key="mill_sequence", type="primary"):
-            _prepare_module_sequence_message("MILL")
+        with col1:
+            if st.button("🔄 Komplette Sequenz", key="mill_sequence", type="primary"):
+                _prepare_module_sequence_message("MILL")
 
-    with col2:
-        if st.button("📥 PICK", key="mill_pick"):
-            _prepare_module_step_message("MILL", "PICK")
+        with col2:
+            if st.button("📥 PICK", key="mill_pick"):
+                _prepare_module_step_message("MILL", "PICK")
 
-    with col3:
-        if st.button("⚙️ MILL", key="mill_mill"):
-            _prepare_module_step_message("MILL", "MILL")
+        with col3:
+            if st.button("⚙️ MILL", key="mill_mill"):
+                _prepare_module_step_message("MILL", "MILL")
 
-    with col4:
-        if st.button("📤 DROP", key="mill_drop"):
-            _prepare_module_step_message("MILL", "DROP")
+        with col4:
+            if st.button("📤 DROP", key="mill_drop"):
+                _prepare_module_step_message("MILL", "DROP")
 
-    # Nachricht anzeigen und Send-Button für MILL
-    _show_message_and_send_button("mill")
+        # Nachricht anzeigen und Send-Button für MILL (inline)
+        if "pending_message" in st.session_state and st.session_state["pending_message"]["type"].startswith("mill"):
+            st.markdown("---")
+            _show_message_and_send_button_inline("mill")
 
-    # DRILL
-    st.markdown("#### 🔩 DRILL (Bohren)")
-    col1, col2, col3, col4 = st.columns(4)
+    # DRILL Box
+    with st.expander("🔩 DRILL (Bohren)", expanded=False):
+        col1, col2, col3, col4 = st.columns(4)
 
-    with col1:
-        if st.button("🔄 Komplette Sequenz", key="drill_sequence", type="primary"):
-            _prepare_module_sequence_message("DRILL")
+        with col1:
+            if st.button("🔄 Komplette Sequenz", key="drill_sequence", type="primary"):
+                _prepare_module_sequence_message("DRILL")
 
-    with col2:
-        if st.button("📥 PICK", key="drill_pick"):
-            _prepare_module_step_message("DRILL", "PICK")
+        with col2:
+            if st.button("📥 PICK", key="drill_pick"):
+                _prepare_module_step_message("DRILL", "PICK")
 
-    with col3:
-        if st.button("🔩 DRILL", key="drill_drill"):
-            _prepare_module_step_message("DRILL", "DRILL")
+        with col3:
+            if st.button("🔩 DRILL", key="drill_drill"):
+                _prepare_module_step_message("DRILL", "DRILL")
 
-    with col4:
-        if st.button("📤 DROP", key="drill_drop"):
-            _prepare_module_step_message("DRILL", "DROP")
+        with col4:
+            if st.button("📤 DROP", key="drill_drop"):
+                _prepare_module_step_message("DRILL", "DROP")
 
-    # Nachricht anzeigen und Send-Button für DRILL
-    _show_message_and_send_button("drill")
+        # Nachricht anzeigen und Send-Button für DRILL (inline)
+        if "pending_message" in st.session_state and st.session_state["pending_message"]["type"].startswith("drill"):
+            st.markdown("---")
+            _show_message_and_send_button_inline("drill")
 
 
 def _show_fts_commands_section():
@@ -141,25 +152,32 @@ def _show_fts_commands_section():
     with col1:
         if st.button("🚗 Docke an", key="fts_dock"):
             _prepare_fts_message("DOCK")
+            st.rerun()
 
     with col2:
         if st.button("🔋 FTS laden", key="fts_charge"):
             _prepare_fts_message("CHARGE")
+            st.rerun()
 
     with col3:
         if st.button("⏹️ Laden beenden", key="fts_stop_charging"):
             _prepare_fts_message("STOP")
+            st.rerun()
 
     with col4:
         if st.button("🔄 Status abfragen", key="fts_status"):
             _prepare_fts_message("STATUS")
+            st.rerun()
 
     with col5:
         if st.button("⏸️ Stop", key="fts_stop"):
             _prepare_fts_message("STOP")
+            st.rerun()
 
-    # Nachricht anzeigen und Send-Button für FTS
-    _show_message_and_send_button("fts")
+    # Nachricht anzeigen und Send-Button für FTS (inline)
+    if "pending_message" in st.session_state and st.session_state["pending_message"]["type"].startswith("fts"):
+        st.markdown("---")
+        _show_message_and_send_button_inline("fts")
 
 
 def _show_order_commands_section():
@@ -171,17 +189,105 @@ def _show_order_commands_section():
     with col1:
         if st.button("🔴 ROT", key="order_red"):
             _prepare_order_message("RED")
+            st.rerun()
 
     with col2:
         if st.button("⚪ WEISS", key="order_white"):
             _prepare_order_message("WHITE")
+            st.rerun()
 
     with col3:
         if st.button("🔵 BLAU", key="order_blue"):
             _prepare_order_message("BLUE")
+            st.rerun()
 
-    # Nachricht anzeigen und Send-Button für Orders
-    _show_message_and_send_button("order")
+    # Nachricht anzeigen und Send-Button für Orders (inline)
+    if "pending_message" in st.session_state and st.session_state["pending_message"]["type"].startswith("order"):
+        st.markdown("---")
+        _show_message_and_send_button_inline("order")
+
+
+def _show_navigation_commands_section():
+    """Zeigt Navigations-Befehle"""
+    st.markdown("**FTS-Navigation zu spezifischen Positionen:**")
+
+    # Basis-Routen (DPS-HBW und HBW-DPS)
+    st.markdown("#### 🚛 Basis-Routen")
+    col1, col2 = st.columns(2)
+
+    with col1:
+        if st.button("🚛 DPS-HBW", key="nav_dps_hbw", help="Von DPS zu HBW"):
+            _prepare_navigation_message("DPS-HBW")
+            st.rerun()
+
+    with col2:
+        if st.button("🏭 HBW-DPS", key="nav_hbw_dps", help="Von HBW zu DPS"):
+            _prepare_navigation_message("HBW-DPS")
+            st.rerun()
+
+    # Produktions-Routen
+    st.markdown("#### 🎨 Produktions-Routen")
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        if st.button("🔴 RED-Prod", key="nav_red_prod", help="Produktions-Route ROT"):
+            _prepare_navigation_message("RED-Prod")
+            st.rerun()
+
+    with col2:
+        if st.button("🔵 BLUE-Prod", key="nav_blue_prod", help="Produktions-Route BLAU"):
+            _prepare_navigation_message("BLUE-Prod")
+            st.rerun()
+
+    with col3:
+        if st.button("⚪ WHITE-Prod", key="nav_white_prod", help="Produktions-Route WEISS"):
+            _prepare_navigation_message("WHITE-Prod")
+            st.rerun()
+
+    # Nachricht anzeigen und Send-Button für Navigation (inline)
+    if "pending_message" in st.session_state and st.session_state["pending_message"]["type"] == "navigation":
+        st.markdown("---")
+        _show_message_and_send_button_inline("navigation")
+
+
+def _prepare_navigation_message(navigation_type: str):
+    """Bereitet Navigations-Nachricht vor"""
+    # Prüfen ob MQTT-Client verfügbar ist
+    mqtt_client = st.session_state.get("mqtt_client")
+    if not mqtt_client:
+        st.error("❌ MQTT-Client nicht verfügbar. Bitte wählen Sie zuerst eine Umgebung in der Sidebar.")
+        return
+    
+    # MessageGenerator verwenden
+    from src_orbis.omf.tools.message_generator import get_omf_message_generator
+    
+    generator = get_omf_message_generator()
+    
+    # Route-Typ mapping
+    route_mapping = {
+        "DPS-HBW": "DPS_HBW",
+        "HBW-DPS": "HBW_DPS",
+        "RED-Prod": "DPS_HBW",  # Placeholder - später erweitern
+        "BLUE-Prod": "DPS_HBW",  # Placeholder - später erweitern
+        "WHITE-Prod": "DPS_HBW"  # Placeholder - später erweitern
+    }
+    
+    route_type = route_mapping.get(navigation_type, "DPS_HBW")
+    
+    # Navigation Message generieren
+    message = generator.generate_fts_navigation_message(
+        route_type=route_type,
+        load_type="WHITE"  # Default, später dynamisch
+    )
+    
+    if message:
+        st.session_state["pending_message"] = {
+            "topic": message["topic"], 
+            "payload": message["payload"], 
+            "type": "navigation"
+        }
+    else:
+        st.error(f"❌ Fehler beim Generieren der Navigation-Nachricht für {navigation_type}")
 
 
 def _prepare_factory_reset_message():
@@ -489,6 +595,38 @@ def _prepare_order_message(color: str):
     }
 
     st.session_state["pending_message"] = {"topic": topic, "payload": payload, "type": f"order_{color.lower()}"}
+
+
+def _show_message_and_send_button_inline(message_type: str):
+    """Zeigt vorbereitete Nachricht und Send-Button inline (kompakt)"""
+    if "pending_message" not in st.session_state:
+        return
+
+    pending = st.session_state["pending_message"]
+
+    # Nur anzeigen wenn es der richtige Typ ist
+    if not pending["type"].startswith(message_type):
+        return
+
+    st.markdown("**📤 Zu sendende Nachricht:**")
+    st.markdown(f"**Topic:** `{pending['topic']}`")
+    
+    # Kompakte Payload-Anzeige
+    with st.expander("📋 Payload anzeigen", expanded=False):
+        st.json(pending["payload"])
+
+    # Send-Button
+    col1, col2 = st.columns([1, 1])
+    
+    with col1:
+        if st.button("📤 Senden", type="primary", key=f"send_{pending['type']}"):
+            _send_pending_message()
+    
+    with col2:
+        if st.button("❌ Abbrechen", key=f"cancel_{pending['type']}"):
+            if "pending_message" in st.session_state:
+                del st.session_state["pending_message"]
+            st.rerun()
 
 
 def _show_message_and_send_button(message_type: str):
