@@ -147,15 +147,20 @@ src_orbis/omf/dashboard/components/
 
 ## 📋 Nächste Schritte
 
-### Geplante Features
+### 🔧 Technische Verbesserungen (Priorität 1)
+- **Windows allUppercase Problem** - Dateinamen-Konventionen zwischen Systemen harmonisieren
+- **Sequenz-Systeme konsolidieren** - Doppelte Implementierungen vereinheitlichen
+- **Helper-Apps Struktur** - Klare Trennung zu aktiven Sourcen optimieren
+
+### 🚀 Geplante Features (Priorität 2)
 - **Produktionsverfolgung** - Echtzeit-Tracking der Fertigungsaufträge
 - **Erweiterte Analytics** - Produktionsstatistiken
 - **Workflow-Engine** - Automatisierte Produktionsabläufe
 
-### Technische Verbesserungen
+### 📚 Dokumentation & Tests (Priorität 3)
 - **Performance-Optimierung** - Icon-Caching
 - **Erweiterte Tests** - Integration-Tests mit Live-Fabrik
-- **Dokumentation** - API-Dokumentation für neue Komponenten
+- **API-Dokumentation** - Für neue Komponenten
 
 ## 🎉 Fazit
 

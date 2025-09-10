@@ -31,8 +31,8 @@ import sys
 
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
 
-from src_orbis.mqtt.tools.module_manager import get_module_manager
-from src_orbis.mqtt.tools.nfc_code_manager import get_nfc_manager
+from src_orbis.omf.tools.module_manager import get_omf_module_manager as get_module_manager
+from src_orbis.omf.tools.nfc_manager import get_omf_nfc_manager as get_nfc_manager
 
 
 class TXTTemplateAnalyzer:

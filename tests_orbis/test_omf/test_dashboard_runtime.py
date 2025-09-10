@@ -52,7 +52,7 @@ class TestDashboardRuntime(unittest.TestCase):
     def test_replay_station_component(self):
         """Test: Replay Station Komponente kann geladen werden"""
         try:
-            from src_orbis.helper_apps.replay_station.replay_station import SessionPlayer
+            from src_orbis.helper_apps.replay_station.replay_station_dashboard import SessionPlayer
 
             # Test SessionPlayer initialization
             player = SessionPlayer()
@@ -99,7 +99,7 @@ class TestDashboardRuntime(unittest.TestCase):
     def test_session_validation(self):
         """Test: Session-Validierung funktioniert"""
         try:
-            from src_orbis.helper_apps.replay_station.replay_station import SessionPlayer
+            from src_orbis.helper_apps.replay_station.replay_station_dashboard import SessionPlayer
 
             player = SessionPlayer()
 

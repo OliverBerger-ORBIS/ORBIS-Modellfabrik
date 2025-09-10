@@ -1,14 +1,15 @@
-# Dashboard v3.2.0 Release Notes
+# OMF Dashboard v3.2.0 - Release Notes
 
-**Release Date:** 2025-09-05  
-**Version:** dashboardv3.2.0  
+**Datum:** 5. September 2025  
+**Version:** 3.2.0  
+**Codename:** "FTS & CCU Monitoring"  
 **Status:** ✅ Released
 
-## 🎯 Overview
+## 🎯 Übersicht
 
 Dashboard v3.2.0 introduces comprehensive FTS and CCU monitoring capabilities with robust template validation, enhanced message processing, and improved user experience.
 
-## 🚛 New Features
+## ✨ Neue Features
 
 ### FTS (Fahrerloses Transportsystem) Tab
 - **Complete FTS monitoring** with 5 sub-tabs:

@@ -39,9 +39,9 @@ python mqtt_test_client.py   # Terminal 2
 ## 📋 Structure
 
 ```
-src-orbis/
+src_orbis/
 ├── README.md           # This file
-├── simulation/         # Simulation engine code
+├── omf/               # OMF Dashboard and tools
 ├── analysis/          # Data analysis tools
 ├── integration/       # Integration with Fischertechnik
 └── utils/            # Utility functions

@@ -6,16 +6,9 @@ name: mill_complete_sequence
 steps:
 - name: PICK
   payload:
-    serialNumber: '{{module_serial}}'
+    action: PICK
     orderId: '{{orderId}}'
     orderUpdateId: '{{orderUpdateId}}'
-    action:
-      id: '{{action_id}}'
-      command: PICK
-      metadata:
-        priority: NORMAL
-        timeout: 300
-        type: WHITE
   topic: module/v1/ff/{{module_serial}}/order
   wait_condition:
     payload_contains:
@@ -23,16 +16,9 @@ steps:
     topic: module/v1/ff/{{module_serial}}/state
 - name: MILL
   payload:
-    serialNumber: '{{module_serial}}'
+    action: MILL
     orderId: '{{orderId}}'
     orderUpdateId: '{{orderUpdateId}}'
-    action:
-      id: '{{action_id}}'
-      command: MILL
-      metadata:
-        priority: NORMAL
-        timeout: 300
-        type: WHITE
   topic: module/v1/ff/{{module_serial}}/order
   wait_condition:
     payload_contains:
@@ -40,14 +26,7 @@ steps:
     topic: module/v1/ff/{{module_serial}}/state
 - name: DROP
   payload:
-    serialNumber: '{{module_serial}}'
+    action: DROP
     orderId: '{{orderId}}'
     orderUpdateId: '{{orderUpdateId}}'
-    action:
-      id: '{{action_id}}'
-      command: DROP
-      metadata:
-        priority: NORMAL
-        timeout: 300
-        type: WHITE
   topic: module/v1/ff/{{module_serial}}/order

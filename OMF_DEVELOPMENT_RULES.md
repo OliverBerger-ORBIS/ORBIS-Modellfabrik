@@ -15,7 +15,9 @@
 - **Immer funktionierenden Stand** haben
 
 ### **3. Saubere Architektur**
-- **Trennung:** Produktiv-Dashboard vs. Analysis-Tools
+- **Trennung:** Aktive Sourcen vs. Helper-Apps
+  - **Aktive Sourcen:** `src_orbis/omf/dashboard/` (Produktiv-Dashboard)
+  - **Helper-Apps:** `src_orbis/helper_apps/`, `src_orbis/analysis_tools/` (Separate Anwendungen)
 - **Modulare Komponenten** in separaten Dateien
 - **Klare Import-Pfade** und Abhängigkeiten
 - **Zweisprachigkeit:** Source-Namen EN, UI-Namen DE
@@ -49,10 +51,12 @@
    - Topic-Config
    - Messages-Templates
 
-### **Analysis-Tools (Separate Anwendung)**
-- Session Analyse
-- Template-Analyse
-- Replay-Tool
+### **Helper-Apps (Separate Anwendungen)**
+- **`src_orbis/helper_apps/`** - Replay-Station, Test-Apps, Sequenz-Systeme
+  - **`seq_ctrl_copilot/`** - GitHub Copilot Sequenz-System
+  - **`sequence_control_vscode/`** - VSCode KI Sequenz-System
+  - **`seq_ctrl_cursor/`** - Cursor AI Sequenz-System (nutzt OMF Tools)
+- **`src_orbis/analysis_tools/`** - Session-Analyse, Template-Analyse
 
 ## **🔧 Entwicklungsphasen**
 
@@ -76,10 +80,14 @@
 - [x] Namenskonvention (Customer/Purchase/Production Orders)
 
 ### **Phase 4: Aktuelle Entwicklung** 🔄
-- [ ] Production Order Management vollständig implementieren
-- [ ] Production Order Current vollständig implementieren
-- [ ] Topic-Dokumentation für alle Module
-- [ ] Advanced Workflow Management
+- [x] Production Order Management vollständig implementieren
+- [x] Production Order Current vollständig implementieren
+- [x] Shopfloor 3x4-Grid System implementiert
+- [x] FTS Route Generator implementiert
+- [x] Produktkatalog-System implementiert
+- [x] Sequenz-Systeme in helper_apps verschieben
+- [ ] Windows allUppercase Dateinamen-Problem lösen
+- [ ] Helper-Apps Struktur optimieren
 
 ## **🧪 Test-Strategie**
 
@@ -98,13 +106,15 @@ streamlit run src_orbis/omf/dashboard/omf_dashboard.py --server.port=8506
 - **Überladung** mit nicht notwendiger Funktionalität
 - **Komplexe Abhängigkeiten** ohne Tests
 - **Große Änderungen** ohne Zwischencommits
-- **Analysis-Tools** ins Haupt-Dashboard
+- **Helper-Apps** ins Haupt-Dashboard integrieren
+- **Doppelte Systeme** parallel entwickeln
 
 ## **✅ Was machen:**
 - **Einfaches Grundgerüst** erstellen
 - **Schritt-für-Schritt** entwickeln
 - **Tests nach jeder Änderung**
 - **Saubere Komponenten-Trennung**
+- **Release-Notes bei Dashboard-Änderungen** aktualisieren (siehe `docs_orbis/RELEASE_NOTES_PROCEDURE.md`)
 
 ---
 

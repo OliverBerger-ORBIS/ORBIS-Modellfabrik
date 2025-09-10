@@ -133,9 +133,38 @@ broker:
 - **Real-time:** Minimale Latenz
 - **Scalable:** Große Session-Dateien
 
+## 🔧 Voraussetzungen für Replay Station
+
+### **System-Anforderungen:**
+- **Python 3.8+** mit Streamlit
+- **Mosquitto MQTT Broker** auf Port 1884
+- **OMF Dashboard** (Streamlit-App)
+- **Replay Station** (Streamlit-App)
+
+### **Installation:**
+```bash
+# 1. Mosquitto installieren (macOS)
+brew install mosquitto
+
+# 2. Mosquitto auf Port 1884 starten
+mosquitto -p 1884
+
+# 3. OMF Dashboard starten
+streamlit run src_orbis/omf/dashboard/omf_dashboard.py
+
+# 4. Replay Station starten
+streamlit run src_orbis/helper_apps/replay_station/replay_station_dashboard.py
+```
+
+### **Verwendung:**
+1. **Dashboard** auf Replay-Modus umstellen (Settings → MQTT-Modus → Replay-Broker)
+2. **Replay Station** öffnen und Session-Datei laden
+3. **Replay starten** - Nachrichten werden an **Port 1884** gesendet
+4. **Dashboard** empfängt Nachrichten vom **gleichen Mosquitto-Broker (Port 1884)**
+
 ## 🎯 Nächste Schritte
 
-1. **Nachrichtenzentrale** im Dashboard implementieren
-2. **OMF Replay Station** als separate Anwendung entwickeln
-3. **Integration** zwischen beiden Systemen
-4. **Testing** mit echten Session-Daten
+1. **Nachrichtenzentrale** im Dashboard implementieren ✅
+2. **OMF Replay Station** als separate Anwendung entwickeln ✅
+3. **Integration** zwischen beiden Systemen ✅
+4. **Testing** mit echten Session-Daten ✅

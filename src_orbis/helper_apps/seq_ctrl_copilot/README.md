@@ -7,7 +7,7 @@ Konzeption und DEsign by guthub-copilot.
 
 - **sequence_control_orbis.py**  
   Kernlogik für die Verwaltung von Sequenzen (Start, Weiter, Abbruch, Status).
-- **ui_sequence_orbis.py**  
+- **sequence_control_dashboard.py**  
   Streamlit-basierte Benutzeroberfläche für die Steuerung und Visualisierung von Sequenzen.
 - **recipes_orbis.py**  
   Laden von Sequenz-Rezepten aus YAML-Dateien.
@@ -16,10 +16,10 @@ Konzeption und DEsign by guthub-copilot.
 
 ## Tests
 
-Tests liegen im Ordner `tests_orbis/seq_ctrl` und können mit `pytest` ausgeführt werden:
+Tests liegen im Ordner `tests_orbis/test_omf/helper_apps/seq_ctrl_copilot` und können mit `pytest` ausgeführt werden:
 ```bash
 $env:PYTHONPATH = "."
-pytest .\tests_orbis\seq_ctrl\
+pytest .\tests_orbis\test_omf\helper_apps\seq_ctrl_copilot\
 ```
 
 ## Schnelleinstieg
@@ -27,7 +27,7 @@ pytest .\tests_orbis\seq_ctrl\
 1. Rezepte in `src_orbis/recipes.yml` anlegen.
 2. Streamlit-App starten:
     ```bash
-    streamlit run src_orbis/seq_ctrl/ui_sequence_orbis.py
+    streamlit run src_orbis/helper_apps/seq_ctrl_copilot/sequence_control_dashboard.py
     ```
 3. Sequenz im Dashboard auswählen und ausführen.
 
@@ -49,7 +49,7 @@ Du kannst eine Sequenz auch direkt im Python-Code anlegen und starten, ohne ein 
 ### Beispiel
 
 ```python
-from src_orbis.seq_ctrl.sequence_control_orbis import WorkflowOrderManager
+from src_orbis.helper_apps.seq_ctrl_copilot.sequence_control_orbis import WorkflowOrderManager
 
 # Sequenz als Liste von Schritten anlegen
 custom_sequence = [

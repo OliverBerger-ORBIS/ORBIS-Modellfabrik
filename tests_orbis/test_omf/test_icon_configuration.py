@@ -37,15 +37,13 @@ class TestIconConfiguration(unittest.TestCase):
     def test_icon_config_import(self):
         """Test: Icon Config kann importiert werden"""
         try:
-            from src_orbis.mqtt.dashboard.config.icon_config import (
+            from src_orbis.omf.dashboard.components.overview_module_status import (
                 MODULE_ICONS,
-                STATUS_ICONS,
                 get_module_icon,
                 get_status_icon,
             )
 
             self.assertIsNotNone(MODULE_ICONS)
-            self.assertIsNotNone(STATUS_ICONS)
             self.assertIsNotNone(get_module_icon)
             self.assertIsNotNone(get_status_icon)
             print("✅ Icon config import: OK")
@@ -55,7 +53,7 @@ class TestIconConfiguration(unittest.TestCase):
     def test_module_icons_structure(self):
         """Test: MODULE_ICONS Struktur ist korrekt"""
         try:
-            from src_orbis.mqtt.dashboard.config.icon_config import MODULE_ICONS
+            from src_orbis.omf.dashboard.components.overview_module_status import MODULE_ICONS
 
             # Check if it's a dictionary
             self.assertIsInstance(MODULE_ICONS, dict)
@@ -75,21 +73,21 @@ class TestIconConfiguration(unittest.TestCase):
             self.fail(f"❌ Module icons structure failed: {e}")
 
     def test_status_icons_structure(self):
-        """Test: STATUS_ICONS Struktur ist korrekt"""
+        """Test: get_status_icon Funktion funktioniert"""
         try:
-            from src_orbis.mqtt.dashboard.config.icon_config import STATUS_ICONS
+            from src_orbis.omf.dashboard.components.overview_module_status import get_status_icon
 
-            # Check if it's a dictionary
-            self.assertIsInstance(STATUS_ICONS, dict)
+            # Check if function works
+            self.assertIsNotNone(get_status_icon)
 
             # Check for required statuses (using actual status names from config)
             required_statuses = ["available", "busy", "error", "idle", "offline"]
 
             for status in required_statuses:
-                self.assertIn(status, STATUS_ICONS)
-                icon_info = STATUS_ICONS[status]
-                self.assertIsInstance(icon_info, str)  # Icons are strings (emojis)
-                self.assertGreater(len(icon_info), 0)  # Icon should not be empty
+                icon = get_status_icon(status)
+                self.assertIsNotNone(icon)
+                self.assertIsInstance(icon, str)  # Icons are strings (emojis)
+                self.assertGreater(len(icon), 0)  # Icon should not be empty
 
             print("✅ Status icons structure: OK")
 
@@ -99,7 +97,7 @@ class TestIconConfiguration(unittest.TestCase):
     def test_get_module_icon_function(self):
         """Test: get_module_icon Funktion"""
         try:
-            from src_orbis.mqtt.dashboard.config.icon_config import get_module_icon
+            from src_orbis.omf.dashboard.components.overview_module_status import get_module_icon
 
             # Test with valid modules
             test_modules = ["DPS", "HBW", "MILL", "DRILL", "AIQS", "FTS"]
@@ -122,7 +120,7 @@ class TestIconConfiguration(unittest.TestCase):
     def test_get_status_icon_function(self):
         """Test: get_status_icon Funktion"""
         try:
-            from src_orbis.mqtt.dashboard.config.icon_config import get_status_icon
+            from src_orbis.omf.dashboard.components.overview_module_status import get_status_icon
 
             # Test with valid statuses
             test_statuses = ["available", "busy", "error", "idle", "offline"]
@@ -145,10 +143,10 @@ class TestIconConfiguration(unittest.TestCase):
     def test_icon_paths_exist(self):
         """Test: Icon-Pfade existieren (falls Icons als Dateien)"""
         try:
-            from src_orbis.mqtt.dashboard.config.icon_config import MODULE_ICONS, STATUS_ICONS
+            from src_orbis.omf.dashboard.components.overview_module_status import MODULE_ICONS, get_status_icon
 
             # Check if icon paths exist (if they are file paths)
-            all_icons = list(MODULE_ICONS.values()) + list(STATUS_ICONS.values())
+            all_icons = list(MODULE_ICONS.values())
 
             for icon_info in all_icons:
                 # Icons are strings, check if they look like file paths
@@ -164,12 +162,12 @@ class TestIconConfiguration(unittest.TestCase):
     def test_icon_colors_are_valid(self):
         """Test: Icon-Farben sind gültige CSS-Farben"""
         try:
-            from src_orbis.mqtt.dashboard.config.icon_config import MODULE_ICONS, STATUS_ICONS
+            from src_orbis.omf.dashboard.components.overview_module_status import MODULE_ICONS, get_status_icon
 
             # Icons are emojis, so no color validation needed
             # This test is kept for future use if colors are added
 
-            all_icons = list(MODULE_ICONS.values()) + list(STATUS_ICONS.values())
+            all_icons = list(MODULE_ICONS.values())
 
             # Check that all icons are valid strings
             for icon_info in all_icons:

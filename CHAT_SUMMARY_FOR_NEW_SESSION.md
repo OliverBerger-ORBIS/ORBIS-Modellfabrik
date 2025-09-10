@@ -31,9 +31,10 @@ src_orbis/omf/config/
 ```
 
 ### 🎯 Nächste Schritte
-1. **Windows allUppercase Analyse** - Dateinamen-Konventionen zwischen Systemen harmonisieren
-2. **Kompatibilitätstests** - Sicherstellen dass alle YAML-Dateien korrekt geladen werden
-3. **Produktionsplanung-Komponenten** - Noch ausstehende Dashboard-Komponenten implementieren
+1. **Windows allUppercase Problem** - Dateinamen-Konventionen zwischen Systemen harmonisieren
+2. **Sequenz-Systeme konsolidieren** - Doppelte Implementierungen vereinheitlichen
+3. **Helper-Apps Struktur** - Klare Trennung zu aktiven Sourcen optimieren
+4. **Architektur-Dokumentation** - Integriert in `docs_orbis/README.md`
 
 ### 💾 Wichtige Erinnerungen
 - **Zentrales Konzept**: MessageGenerator als Herzstück verwenden [[memory:8530341]]

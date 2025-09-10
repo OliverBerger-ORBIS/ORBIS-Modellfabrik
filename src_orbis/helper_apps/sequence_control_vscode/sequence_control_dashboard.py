@@ -1,9 +1,9 @@
 import streamlit as st
 
-from src_orbis.sequence_control.python_sequences import python_sequence
-from src_orbis.sequence_control.workflow_sequence_manager import get_workflow_sequence_manager
+from .python_sequences import python_sequence
+from .workflow_sequence_manager import get_workflow_sequence_manager
 
-RECIPES_DIR = "src_orbis/sequence_control/recipes"
+RECIPES_DIR = "src_orbis/helper_apps/sequence_control_vscode/recipes"
 sequence_manager = get_workflow_sequence_manager(RECIPES_DIR)
 
 st.title("Sequenzielle Steuerung")

@@ -70,7 +70,7 @@ pip install seaborn
 
 ### **Automatischer Check:**
 ```bash
-cd src-orbis
+cd src_orbis
 python check_prerequisites.py
 ```
 
@@ -172,7 +172,7 @@ python3 -c "import paho.mqtt.client; print('OK')"
 
 ### **1. Voraussetzungen prüfen:**
 ```bash
-cd src-orbis
+cd src_orbis
 python check_prerequisites.py
 ```
 

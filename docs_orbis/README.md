@@ -12,9 +12,9 @@ This directory contains comprehensive documentation for the Orbis Modellfabrik s
 - `doc/` - Original documentation
 
 ### Orbis Customizations
-- `docs-orbis/` - Orbis documentation (this folder)
-- `src-orbis/` - Orbis source code
-- `tests-orbis/` - Orbis tests
+- `docs_orbis/` - Orbis documentation (this folder)
+- `src_orbis/` - Orbis source code
+- `tests_orbis/` - Orbis tests
 
 ## 📚 Documentation Structure
 
@@ -83,6 +83,11 @@ This directory contains comprehensive documentation for the Orbis Modellfabrik s
 - **Dashboard Refactoring** - Modulare Architektur (Dashboard2) in Testphase
 - **Session Analysis Tools** - Template analyzers für CCU, TXT, Module, Node-RED
 
+### Source Code Architecture
+- **Active Sources** (`src_orbis/omf/dashboard/`) - Produktiv-Dashboard mit UI-Komponenten und Business Logic
+- **Helper Apps** (`src_orbis/helper_apps/`, `src_orbis/analysis_tools/`) - Separate Anwendungen für Tests, Analyse und Experimente
+- **Trennung-Prinzip** - Stabile Produktiv-Features vs. experimentelle Helper-Apps
+
 ### Production Modules
 - **25 Production Modules** (MILL, DRILL, OVEN, AIQS, HBW, FTS, CHRG)
 - **Central Control Unit** (Raspberry Pi with Node-RED)
@@ -97,6 +102,12 @@ This directory contains comprehensive documentation for the Orbis Modellfabrik s
 - **Module Manager** - APS module configuration (ID, Name, Type, IP-Range)
 - **Topic Manager** - MQTT topic mappings and friendly names
 - **MQTT Client Manager** - OMFMqttClient mit Singleton-Pattern für zuverlässige Verbindungen
+
+### MQTT Broker Connection Modes
+- **Live Mode** - Direkte Verbindung zum APS-MQTT-Broker (192.168.0.100:1883)
+- **Replay Mode** - Verbindung zum lokalen Replay-Broker (localhost:1884) für Session-Tests
+- **Mock Mode** - Simulierte Verbindung für Entwicklung ohne echte Hardware
+- **Replay Station** - Separate Anwendung zum Abspielen aufgezeichneter Sessions (siehe [Replay Station Konzept](./helper_apps/omf-replay-station-concept.md))
 
 ### Dashboard Integration
 - **Factory Control** - All modules controlled via hardcoded working commands

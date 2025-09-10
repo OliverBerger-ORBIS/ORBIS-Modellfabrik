@@ -3,9 +3,9 @@ import sys
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 import streamlit as st
-from sequence_control_orbis import WorkflowOrderManager
 
-from src_orbis.seq_ctrl.recipes_orbis import get_recipe_names, load_sequence_recipe
+from .recipes_orbis import get_recipe_names, load_sequence_recipe
+from .sequence_control_orbis import WorkflowOrderManager
 
 
 def show_sequence_window(order_id: str):

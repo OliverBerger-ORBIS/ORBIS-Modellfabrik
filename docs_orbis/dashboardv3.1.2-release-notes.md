@@ -1,8 +1,9 @@
-# Release Notes: Dashboard v3.1.2
+# OMF Dashboard v3.1.2 - Release Notes
 
-**Release Date:** 2025-01-19  
-**Version:** dashboardv3.1.2  
-**Type:** Critical Bug Fix Release  
+**Datum:** 19. Januar 2025  
+**Version:** 3.1.2  
+**Codename:** "Critical Module-ID Fix"  
+**Status:** 🚨 Critical Fix  
 
 ## 🚨 **Critical Bug Fixes**
 

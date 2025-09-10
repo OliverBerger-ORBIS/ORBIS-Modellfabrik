@@ -20,7 +20,7 @@ src_orbis/omf/tools/
 ├── workflow_order_manager.py      # ID-Management
 ├── sequence_executor.py           # Sequenz-Ausführung
 ├── sequence_definition.py         # YML/Python Definitionen
-├── sequence_ui.py                 # Streamlit UI
+├── sequence_ui.py                 # Streamlit UI (in helper_apps)
 ├── sequence_test_app.py           # Test-App
 └── run_sequence_test.py           # Einfacher Test
 
