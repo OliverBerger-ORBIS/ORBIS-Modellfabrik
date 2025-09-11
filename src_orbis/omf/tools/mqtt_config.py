@@ -14,3 +14,27 @@ class MqttConfig:
     clean_session: bool = True
     protocol: int = mqtt.MQTTv311  # passt i.d.R. für Mosquitto v2
     tls: bool = False
+
+
+def cfg_for(env: str) -> MqttConfig:
+    """
+    Erstellt MqttConfig basierend auf Umgebung.
+
+    Args:
+        env: Umgebung ("live", "replay", "mock")
+
+    Returns:
+        MqttConfig: Konfiguration für die angegebene Umgebung
+    """
+    if env == "live":
+        from src_orbis.omf.config.config import LIVE_CFG
+
+        return MqttConfig(**LIVE_CFG)
+    elif env == "replay":
+        from src_orbis.omf.config.config import REPLAY_CFG
+
+        return MqttConfig(**REPLAY_CFG)
+    elif env == "mock":
+        return MqttConfig(host="mock", port=0, client_id="omf_dashboard_mock")
+    else:
+        raise ValueError(f"Unbekannte Umgebung: {env}")

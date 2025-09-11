@@ -12,7 +12,7 @@ import unittest
 # Pfad für Import hinzufügen
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src_orbis"))
 
-from omf.dashboard.components.steering_factory import _get_module_serial
+from src_orbis.omf.dashboard.components.steering_factory import _get_module_serial
 
 
 class TestModuleIdMapping(unittest.TestCase):

@@ -8,30 +8,23 @@ from datetime import datetime, timezone
 
 import streamlit as st
 
-# WorkflowOrderManager für korrekte orderId/orderUpdateId Verwaltung
-try:
-    from src_orbis.omf.tools.workflow_order_manager import get_workflow_order_manager
-except ImportError:
-    # Fallback für direkte Imports
-
-    # sys.path.append(str(Path(__file__).parent.parent.parent.parent))  # Nicht mehr nötig nach pip install -e .
-    from src_orbis.omf.tools.workflow_order_manager import get_workflow_order_manager
-
 # MessageGateway für sauberes Publishing
 from src_orbis.omf.tools.mqtt_gateway import MessageGateway
+
+# WorkflowOrderManager für korrekte orderId/orderUpdateId Verwaltung
 
 
 def show_factory_steering():
     """Hauptfunktion für die Factory Steuerung"""
     st.subheader("🏭 Factory Steuerung")
     st.markdown("**Traditionelle Steuerungsfunktionen für die Modellfabrik:**")
-    
+
     # MessageGateway initialisieren
     mqtt_client = st.session_state.get("mqtt_client")
     if not mqtt_client:
         st.error("❌ MQTT-Client nicht verfügbar")
         return
-    
+
     gateway = MessageGateway(mqtt_client)
 
     # Factory Reset Section - Aufklappbare Box
@@ -69,7 +62,7 @@ def _show_factory_reset_section(gateway: MessageGateway):
                 success = gateway.send(
                     topic="ccu/set/reset",
                     builder=lambda: {"timestamp": datetime.now(timezone.utc).isoformat(), "withStorage": False},
-                    ensure_order_id=True
+                    ensure_order_id=True,
                 )
                 if success:
                     st.success("✅ Factory Reset erfolgreich gesendet!")
@@ -165,11 +158,11 @@ def _show_fts_commands_section(gateway: MessageGateway):
                             {
                                 "actionType": "findInitialDockPosition",
                                 "actionId": str(uuid.uuid4()),
-                                "metadata": {"nodeId": "SVR4H73275"}
+                                "metadata": {"nodeId": "SVR4H73275"},
                             }
-                        ]
+                        ],
                     },
-                    ensure_order_id=True
+                    ensure_order_id=True,
                 )
                 if success:
                     st.success("✅ FTS Dock-Befehl erfolgreich gesendet!")
@@ -184,7 +177,7 @@ def _show_fts_commands_section(gateway: MessageGateway):
                 success = gateway.send(
                     topic="ccu/set/charge",
                     builder=lambda: {"serialNumber": "5iO4", "charge": True},
-                    ensure_order_id=True
+                    ensure_order_id=True,
                 )
                 if success:
                     st.success("✅ FTS Lade-Befehl erfolgreich gesendet!")
@@ -199,7 +192,7 @@ def _show_fts_commands_section(gateway: MessageGateway):
                 success = gateway.send(
                     topic="ccu/set/charge",
                     builder=lambda: {"serialNumber": "5iO4", "charge": False},
-                    ensure_order_id=True
+                    ensure_order_id=True,
                 )
                 if success:
                     st.success("✅ FTS Lade-Stop erfolgreich gesendet!")
@@ -216,9 +209,9 @@ def _show_fts_commands_section(gateway: MessageGateway):
                     builder=lambda: {
                         "timestamp": datetime.now(timezone.utc).isoformat(),
                         "serialNumber": "5iO4",
-                        "actions": [{"actionType": "status", "actionId": str(uuid.uuid4())}]
+                        "actions": [{"actionType": "status", "actionId": str(uuid.uuid4())}],
                     },
-                    ensure_order_id=True
+                    ensure_order_id=True,
                 )
                 if success:
                     st.success("✅ FTS Status-Abfrage erfolgreich gesendet!")
@@ -235,9 +228,9 @@ def _show_fts_commands_section(gateway: MessageGateway):
                     builder=lambda: {
                         "timestamp": datetime.now(timezone.utc).isoformat(),
                         "serialNumber": "5iO4",
-                        "actions": [{"actionType": "stop", "actionId": str(uuid.uuid4())}]
+                        "actions": [{"actionType": "stop", "actionId": str(uuid.uuid4())}],
                     },
-                    ensure_order_id=True
+                    ensure_order_id=True,
                 )
                 if success:
                     st.success("✅ FTS Stop-Befehl erfolgreich gesendet!")
@@ -263,9 +256,9 @@ def _show_order_commands_section(gateway: MessageGateway):
                     builder=lambda: {
                         "type": "RED",
                         "timestamp": datetime.now(timezone.utc).isoformat(),
-                        "orderType": "PRODUCTION"
+                        "orderType": "PRODUCTION",
                     },
-                    ensure_order_id=True
+                    ensure_order_id=True,
                 )
                 if success:
                     st.success("✅ ROT Auftrag erfolgreich gesendet!")
@@ -282,9 +275,9 @@ def _show_order_commands_section(gateway: MessageGateway):
                     builder=lambda: {
                         "type": "WHITE",
                         "timestamp": datetime.now(timezone.utc).isoformat(),
-                        "orderType": "PRODUCTION"
+                        "orderType": "PRODUCTION",
                     },
-                    ensure_order_id=True
+                    ensure_order_id=True,
                 )
                 if success:
                     st.success("✅ WEISS Auftrag erfolgreich gesendet!")
@@ -301,9 +294,9 @@ def _show_order_commands_section(gateway: MessageGateway):
                     builder=lambda: {
                         "type": "BLUE",
                         "timestamp": datetime.now(timezone.utc).isoformat(),
-                        "orderType": "PRODUCTION"
+                        "orderType": "PRODUCTION",
                     },
-                    ensure_order_id=True
+                    ensure_order_id=True,
                 )
                 if success:
                     st.success("✅ BLAU Auftrag erfolgreich gesendet!")
@@ -320,7 +313,7 @@ def _send_module_command(gateway: MessageGateway, module_name: str, command: str
     # Modul-spezifische Serial Numbers
     module_serials = {"AIQS": "SVR4H76530", "MILL": "SVR3QA2098", "DRILL": "SVR4H76449"}
     serial_number = module_serials.get(module_name, "UNKNOWN")
-    
+
     try:
         success = gateway.send(
             topic=f"module/v1/ff/{serial_number}/order",
@@ -331,10 +324,10 @@ def _send_module_command(gateway: MessageGateway, module_name: str, command: str
                 "action": {
                     "id": str(uuid.uuid4()),
                     "command": command,
-                    "metadata": {"priority": "NORMAL", "timeout": 300, "type": "WHITE"}
-                }
+                    "metadata": {"priority": "NORMAL", "timeout": 300, "type": "WHITE"},
+                },
             },
-            ensure_order_id=True
+            ensure_order_id=True,
         )
         if success:
             st.success(f"✅ {module_name} {command} erfolgreich gesendet!")
@@ -364,11 +357,11 @@ def _show_navigation_commands_section(gateway: MessageGateway):
                             {
                                 "actionType": "navigateToPosition",
                                 "actionId": str(uuid.uuid4()),
-                                "metadata": {"route": "DPS_HBW", "loadType": "WHITE"}
+                                "metadata": {"route": "DPS_HBW", "loadType": "WHITE"},
                             }
-                        ]
+                        ],
                     },
-                    ensure_order_id=True
+                    ensure_order_id=True,
                 )
                 if success:
                     st.success("✅ DPS-HBW Navigation erfolgreich gesendet!")
@@ -389,11 +382,11 @@ def _show_navigation_commands_section(gateway: MessageGateway):
                             {
                                 "actionType": "navigateToPosition",
                                 "actionId": str(uuid.uuid4()),
-                                "metadata": {"route": "HBW_DPS", "loadType": "WHITE"}
+                                "metadata": {"route": "HBW_DPS", "loadType": "WHITE"},
                             }
-                        ]
+                        ],
                     },
-                    ensure_order_id=True
+                    ensure_order_id=True,
                 )
                 if success:
                     st.success("✅ HBW-DPS Navigation erfolgreich gesendet!")
@@ -418,11 +411,11 @@ def _show_navigation_commands_section(gateway: MessageGateway):
                             {
                                 "actionType": "navigateToPosition",
                                 "actionId": str(uuid.uuid4()),
-                                "metadata": {"route": "RED_Prod", "loadType": "RED"}
+                                "metadata": {"route": "RED_Prod", "loadType": "RED"},
                             }
-                        ]
+                        ],
                     },
-                    ensure_order_id=True
+                    ensure_order_id=True,
                 )
                 if success:
                     st.success("✅ RED-Prod Navigation erfolgreich gesendet!")
@@ -443,11 +436,11 @@ def _show_navigation_commands_section(gateway: MessageGateway):
                             {
                                 "actionType": "navigateToPosition",
                                 "actionId": str(uuid.uuid4()),
-                                "metadata": {"route": "BLUE_Prod", "loadType": "BLUE"}
+                                "metadata": {"route": "BLUE_Prod", "loadType": "BLUE"},
                             }
-                        ]
+                        ],
                     },
-                    ensure_order_id=True
+                    ensure_order_id=True,
                 )
                 if success:
                     st.success("✅ BLUE-Prod Navigation erfolgreich gesendet!")
@@ -468,11 +461,11 @@ def _show_navigation_commands_section(gateway: MessageGateway):
                             {
                                 "actionType": "navigateToPosition",
                                 "actionId": str(uuid.uuid4()),
-                                "metadata": {"route": "WHITE_Prod", "loadType": "WHITE"}
+                                "metadata": {"route": "WHITE_Prod", "loadType": "WHITE"},
                             }
-                        ]
+                        ],
                     },
-                    ensure_order_id=True
+                    ensure_order_id=True,
                 )
                 if success:
                     st.success("✅ WHITE-Prod Navigation erfolgreich gesendet!")
@@ -484,4 +477,53 @@ def _show_navigation_commands_section(gateway: MessageGateway):
     st.info("💡 Navigation-Befehle werden direkt gesendet (keine Vorschau)")
 
 
-# Alte Funktionen entfernt - verwenden jetzt MessageGateway
+# Hilfsfunktionen für Tests und Legacy-Support
+def _get_module_serial(module_name: str) -> str:
+    """Gibt die Seriennummer für ein Modul zurück"""
+    module_serials = {"AIQS": "SVR4H76530", "MILL": "SVR3QA2098", "DRILL": "SVR4H76449"}
+    return module_serials.get(module_name, "UNKNOWN")
+
+
+def _prepare_fts_message(action_type: str, metadata: dict = None) -> dict:
+    """Erstellt eine FTS-Nachricht für Tests"""
+    return {
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "serialNumber": "5iO4",
+        "actions": [{"actionType": action_type, "actionId": str(uuid.uuid4()), "metadata": metadata or {}}],
+    }
+
+
+def _prepare_module_sequence_message(module_name: str, sequence: list) -> dict:
+    """Erstellt eine Modul-Sequenz-Nachricht für Tests"""
+    serial_number = _get_module_serial(module_name)
+    return {"serialNumber": serial_number, "orderId": str(uuid.uuid4()), "orderUpdateId": 1, "sequence": sequence}
+
+
+def _prepare_module_step_message(module_name: str, command: str) -> dict:
+    """Erstellt eine einzelne Modul-Schritt-Nachricht für Tests"""
+    serial_number = _get_module_serial(module_name)
+    return {
+        "serialNumber": serial_number,
+        "orderId": str(uuid.uuid4()),
+        "orderUpdateId": 1,
+        "action": {
+            "id": str(uuid.uuid4()),
+            "command": command,
+            "metadata": {"priority": "NORMAL", "timeout": 300, "type": "WHITE"},
+        },
+    }
+
+
+def _prepare_navigation_message(route: str, load_type: str = "WHITE") -> dict:
+    """Erstellt eine Navigation-Nachricht für Tests"""
+    return {
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "serialNumber": "5iO4",
+        "actions": [
+            {
+                "actionType": "navigateToPosition",
+                "actionId": str(uuid.uuid4()),
+                "metadata": {"route": route, "loadType": load_type}
+            }
+        ]
+    }

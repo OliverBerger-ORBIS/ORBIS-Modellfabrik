@@ -15,7 +15,7 @@ import pandas as pd
 import streamlit as st
 
 # Import für Prioritäts-basierte Subscriptions
-from src_orbis.omf.dashboard.config.mc_priority import get_priority_filters
+from src_orbis.omf.dashboard.config.mc_priority import get_all_priority_filters
 
 # --- Konfiguration ---
 SITE = "ff"  # falls variabel: z. B. aus Settings nehmen
@@ -55,12 +55,7 @@ TOPIC_PATTERNS = {
         f"module/v1/{SITE}/NodeRed/+/factsheet",
         f"module/v1/{SITE}/NodeRed/status",
     ],
-    "FTS": [
-        "fts/v1/ff/+/connection", 
-        "fts/v1/ff/+/state",
-        "fts/v1/ff/+/order",
-        "fts/v1/ff/+/factsheet"
-    ],
+    "FTS": ["fts/v1/ff/+/connection", "fts/v1/ff/+/state", "fts/v1/ff/+/order", "fts/v1/ff/+/factsheet"],
 }
 
 # Regex für Topic-Parsing
@@ -217,25 +212,36 @@ def show_message_center():
     with col4:
         # Anzahl Nachrichten
         max_messages = st.number_input("📊 Max", min_value=10, max_value=1000, value=200, step=10)
-    
+
     with col6:
         # Prioritäts-Slider für Message Center
-        priority_level = st.slider("🎯 Priorität", min_value=1, max_value=5, value=5, 
-                                 help="1=Kritisch, 2=Wichtig, 3=Normal, 4=TXT/Node-RED, 5=Alle")
+        priority_level = st.slider(
+            "🎯 Priorität",
+            min_value=1,
+            max_value=6,
+            value=6,
+            help="1=Kritisch, 2=Wichtig, 3=Normal, 4=TXT/Node-RED, 5=Spezifisch, 6=Alle",
+        )
 
-    # NEUES PATTERN: Prioritäts-basierte Subscriptions für Message Center
+    # Prioritäts-basierte MQTT-Subscription für Message Center
     if mqtt_client:  # Nur wenn MQTT-Client verfügbar ist
         try:
-            # Prioritäts-basierte Subscriptions setzen
-            from src_orbis.omf.tools.mqtt_topics import PRIORITY_FILTERS
-            mqtt_client.set_message_center_priority(priority_level, PRIORITY_FILTERS)
-            
-            # Abonniere die Prioritäts-Filter (alle Filter bis zur gewählten Stufe)
-            from src_orbis.omf.tools.mqtt_topics import flatten_filters
-            priority_filters = flatten_filters(priority_level)
-            mqtt_client.subscribe_many(priority_filters)
-            
-            # Nachrichten aus der globalen History holen (Prioritäts-basiert)
+            # Für Prioritätsstufe 6: Alle Topics (Wildcard)
+            if priority_level >= 6:
+                mqtt_client.subscribe("#", qos=1)
+                st.success("✅ Alle Topics abonniert (Prioritätsstufe 6)")
+            else:
+                # Für niedrigere Prioritäten: Spezifische Filter
+                priority_filters = get_all_priority_filters(priority_level)
+                if priority_filters:
+                    mqtt_client.subscribe_many(priority_filters, qos=1)
+                    st.success(f"✅ Prioritätsstufe {priority_level} aktiv - {len(priority_filters)} Topics abonniert")
+                else:
+                    # Fallback: Alle Topics
+                    mqtt_client.subscribe("#", qos=1)
+                    st.success("✅ Alle Topics abonniert (Fallback)")
+
+            # Nachrichten aus der globalen History holen
             all_messages = list(mqtt_client._history)  # Direkter Zugriff auf _history
 
             # Nachrichten in MessageRow-Format konvertieren
@@ -250,9 +256,9 @@ def show_message_center():
                     retain=msg_data.get("retain", False),
                 )
                 message_rows.append(message_row)
-            
+
             # Status-Anzeige
-            st.success(f"✅ Prioritätsstufe {priority_level} aktiv - {len(priority_filters)} Topics abonniert")
+            st.success(f"✅ MQTT-Client verbunden - {len(all_messages)} Nachrichten empfangen")
 
         except Exception as e:
             st.error(f"❌ Fehler beim Laden der Nachrichten: {e}")

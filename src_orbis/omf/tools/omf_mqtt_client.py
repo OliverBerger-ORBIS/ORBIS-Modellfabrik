@@ -1,9 +1,9 @@
 import contextlib
+import fnmatch
 import json
 import time
-from collections import deque, defaultdict
-from typing import Callable, Dict, List, Set, Any, Deque
-import fnmatch
+from collections import defaultdict, deque
+from typing import Any, Callable, Deque, Dict, List, Set
 
 import paho.mqtt.client as mqtt
 
@@ -37,14 +37,22 @@ class OMFMqttClient:
         self._topics = set()
         self._history = deque(maxlen=history_size)
         self._user_on_message = on_message
-        
+
         # Neue Buffer-Architektur für per-Topic-Puffer
         self._buffers: Dict[str, Deque[Dict[str, Any]]] = defaultdict(lambda: deque(maxlen=1000))
         self._subscribed: Set[str] = set()
-        
+
         self.client.reconnect_delay_set(min_delay=1, max_delay=30)
         self.client.loop_start()
         self.client.connect_async(cfg.host, cfg.port, keepalive=cfg.keepalive)
+
+        # Warten auf Verbindung
+        import time
+
+        for _ in range(50):  # Max 5 Sekunden warten
+            if self.connected:
+                break
+            time.sleep(0.1)
 
     def _on_connect(self, client, userdata, flags, rc, properties=None):
         self.connected = rc == 0
@@ -68,17 +76,17 @@ class OMFMqttClient:
             "ts": time.time(),
         }
         self._history.append(message_record)
-        
+
         # Neue Buffer-Architektur: In per-Topic-Buffer schreiben
         topic = msg.topic
         payload = self._decode(msg.payload)
         record = {"topic": topic, "payload": payload, "ts": time.time()}
-        
+
         # Alle passenden Filter finden und in entsprechende Buffer schreiben
         for filt in list(self._subscribed):
             if self._matches_topic(topic, filt):
                 self._buffers[filt].append(record)
-        
+
         if self._user_on_message:
             try:
                 self._user_on_message(message_record)
@@ -97,6 +105,7 @@ class OMFMqttClient:
 
     def subscribe(self, topic: str, qos: int = 1):
         self._topics.add((topic, qos))
+        self._subscribed.add(topic)  # Auch zu _subscribed hinzufügen
         if self.connected:
             self.client.subscribe(topic, qos)
 
@@ -152,15 +161,15 @@ class OMFMqttClient:
                 self.client.disconnect()
 
     # ---------- Neue Buffer-Architektur Methoden ----------
-    
+
     def _matches_topic(self, topic: str, pattern: str) -> bool:
         """
         Prüft ob ein Topic einem Wildcard-Pattern entspricht.
-        
+
         Args:
             topic: MQTT Topic
             pattern: Wildcard-Pattern mit + und #
-            
+
         Returns:
             True wenn Topic dem Pattern entspricht
         """
@@ -173,7 +182,7 @@ class OMFMqttClient:
     def subscribe_many(self, filters: List[str], qos: int = 0) -> None:
         """
         Abonniert mehrere Topic-Filter idempotent.
-        
+
         Args:
             filters: Liste von Topic-Filtern
             qos: MQTT QoS Level
@@ -181,7 +190,7 @@ class OMFMqttClient:
         new_ones = [f for f in filters if f not in self._subscribed]
         if not new_ones:
             return
-        
+
         for f in new_ones:
             self.client.subscribe(f, qos=qos)
             self._subscribed.add(f)
@@ -189,11 +198,11 @@ class OMFMqttClient:
     def get_buffer(self, filt: str, *, maxlen: int | None = None) -> Deque[Dict[str, Any]]:
         """
         Gibt den Buffer für einen Topic-Filter zurück.
-        
+
         Args:
             filt: Topic-Filter
             maxlen: Maximale Buffer-Größe (optional)
-            
+
         Returns:
             Deque mit Nachrichten für diesen Filter
         """
@@ -206,13 +215,13 @@ class OMFMqttClient:
     def publish_json(self, topic: str, payload: dict, qos: int = 1, retain: bool = False) -> bool:
         """
         Publiziert eine JSON-Payload.
-        
+
         Args:
             topic: MQTT Topic
             payload: Dictionary das als JSON serialisiert wird
             qos: MQTT QoS Level
             retain: MQTT Retain Flag
-            
+
         Returns:
             True wenn erfolgreich publiziert
         """
@@ -226,7 +235,7 @@ class OMFMqttClient:
     def connect(self) -> bool:
         """
         Verbindet zum MQTT-Broker.
-        
+
         Returns:
             True wenn Verbindung erfolgreich
         """
@@ -254,10 +263,10 @@ class OMFMqttClient:
     def reconnect(self, new_cfg: MqttConfig) -> bool:
         """
         Reconnectet mit neuer Konfiguration.
-        
+
         Args:
             new_cfg: Neue MQTT-Konfiguration
-            
+
         Returns:
             True wenn Reconnect erfolgreich
         """
@@ -265,7 +274,7 @@ class OMFMqttClient:
             # Alte Verbindung sauber trennen
             self.client.loop_stop()
             self.client.disconnect()
-            
+
             # Neue Konfiguration setzen
             self.cfg = new_cfg
             self.config = {
@@ -282,20 +291,22 @@ class OMFMqttClient:
                 "subscriptions": {},
                 "mode": "live",
             }
-            
+
             # Neuen Client erstellen
-            self.client = mqtt.Client(client_id=new_cfg.client_id, clean_session=new_cfg.clean_session, protocol=new_cfg.protocol)
+            self.client = mqtt.Client(
+                client_id=new_cfg.client_id, clean_session=new_cfg.clean_session, protocol=new_cfg.protocol
+            )
             if new_cfg.username:
                 self.client.username_pw_set(new_cfg.username, new_cfg.password or "")
             self.client.on_connect = self._on_connect
             self.client.on_disconnect = self._on_disconnect
             self.client.on_message = self._on_message
-            
+
             # Verbinden
             self.client.reconnect_delay_set(min_delay=1, max_delay=30)
             self.client.loop_start()
             self.client.connect_async(new_cfg.host, new_cfg.port, keepalive=new_cfg.keepalive)
-            
+
             return True
         except Exception as e:
             print(f"MQTT reconnect failed: {e}")
@@ -304,7 +315,7 @@ class OMFMqttClient:
     def set_message_center_priority(self, level: int, prio_map: Dict[int, List[str]], history_maxlen: int = 5000):
         """
         Setzt die Priorität für die Nachrichten-Zentrale.
-        
+
         Args:
             level: Prioritätsstufe (1-5)
             prio_map: Mapping von Prioritätsstufen zu Topic-Filtern
@@ -313,12 +324,12 @@ class OMFMqttClient:
         want: Set[str] = set()
         for n in range(1, level + 1):
             want.update(prio_map.get(n, []))
-        
+
         # History begrenzen
         if not isinstance(self._history, deque):
             self._history = deque(self._history, maxlen=history_maxlen)
         else:
             self._history = deque(self._history, maxlen=history_maxlen)
-        
+
         # Neue Subscriptions setzen
         self.subscribe_many(list(want), qos=1)

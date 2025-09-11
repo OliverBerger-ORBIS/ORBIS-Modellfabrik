@@ -3,9 +3,6 @@ import os
 import streamlit as st
 
 from src_orbis.omf.config.config import LIVE_CFG, REPLAY_CFG
-
-# sys.path.append(os.path.join(os.path.dirname(__file__), "..", ".."))  # Nicht mehr nötig nach pip install -e .
-# sys.path.append(os.path.join(os.path.dirname(__file__), "components"))  # Nicht mehr nötig nach pip install -e .
 from src_orbis.omf.dashboard.components.dummy_component import show_dummy_component
 from src_orbis.omf.tools.omf_mqtt_factory import ensure_dashboard_client
 
@@ -65,7 +62,7 @@ def get_default_broker_mode():
 def handle_environment_switch():
     """
     Behandelt den Wechsel zwischen Live- und Replay-Umgebung.
-    
+
     Erweiterte Features basierend auf ChatGPT-Vorschlägen:
     - Prioritäts-Sidebar für Nachrichten-Zentrale
     - Verbesserte Umgebungswechsel-Logik
@@ -87,28 +84,31 @@ def handle_environment_switch():
     # Prioritäts-Sidebar (ChatGPT-Vorschlag)
     st.sidebar.markdown("---")
     st.sidebar.markdown("### 📊 Nachrichten-Zentrale")
-    
+
     # Prioritäts-Slider
-    current_priority = st.session_state.get("mc_priority", 5)
+    current_priority = st.session_state.get("mc_priority", 6)
     priority = st.sidebar.select_slider(
         "Priorität",
-        options=[1, 2, 3, 4, 5],
+        options=[1, 2, 3, 4, 5, 6],
         value=current_priority,
-        help="1=Kritisch, 2=Wichtig, 3=Normal, 4=UI, 5=Alle"
+        help="1=Kritisch, 2=Wichtig, 3=Normal, 4=UI, 5=Spezifisch, 6=Alle",
     )
-    
+
     # Debug: Client-ID anzeigen (falls verfügbar)
     client = st.session_state.get("mqtt_client")
     if client:
         st.sidebar.caption(f"🆔 Client ID: `{id(client)}`")
     else:
         st.sidebar.caption("🆔 Client ID: Noch nicht initialisiert")
-    
+
     # Priorität anwenden wenn geändert
     if priority != current_priority:
         st.session_state["mc_priority"] = priority
         # Reset Subscription-Status für neue Priorität
-        broker_key = f"{st.session_state.get('mqtt_client', {}).cfg.host if hasattr(st.session_state.get('mqtt_client'), 'cfg') else 'unknown'}:{st.session_state.get('mqtt_client', {}).cfg.port if hasattr(st.session_state.get('mqtt_client'), 'cfg') else 'unknown'}"
+        mqtt_client = st.session_state.get('mqtt_client', {})
+        host = mqtt_client.cfg.host if hasattr(mqtt_client, 'cfg') else 'unknown'
+        port = mqtt_client.cfg.port if hasattr(mqtt_client, 'cfg') else 'unknown'
+        broker_key = f"{host}:{port}"
         subscribed_key = f"mqtt_subscribed_{broker_key}"
         if subscribed_key in st.session_state:
             del st.session_state[subscribed_key]
@@ -126,7 +126,7 @@ def handle_environment_switch():
 def initialize_mqtt_client(env):
     """
     Initialisiert den MQTT-Client über die kontrollierte Factory.
-    
+
     Verwendet ensure_dashboard_client() für Singleton-Verhalten:
     - Ein Client pro Session
     - Reconnect bei Umgebungswechsel
@@ -134,7 +134,7 @@ def initialize_mqtt_client(env):
     """
     # Verwende die kontrollierte Factory
     client = ensure_dashboard_client(env, st.session_state)
-    
+
     # Automatisch verbinden wenn nicht verbunden
     if not client.connected:
         # Der Client verbindet sich automatisch im __init__
@@ -159,30 +159,25 @@ def initialize_mqtt_client(env):
 
 def setup_mqtt_subscription(client, cfg):
     """
-    Richtet MQTT-Subscription ein mit erweiterten Features.
-    
-    Erweiterte Features basierend auf ChatGPT-Vorschlägen:
-    - Prioritäts-basierte Subscriptions für Nachrichten-Zentrale
-    - Fallback auf alle Topics wenn Prioritäten nicht verfügbar
-    - Robuste Fehlerbehandlung
+    Richtet MQTT-Subscription ein mit Prioritäts-basierter Logik.
+
+    Subscribiert zu Topics basierend auf der gewählten Prioritätsstufe.
     """
-    # Subscribe zu allen Topics - nur einmal pro Broker-Verbindung
+    # Subscribe zu Topics - nur einmal pro Broker-Verbindung
     broker_key = f"{cfg['host']}:{cfg['port']}"
     subscribed_key = f"mqtt_subscribed_{broker_key}"
 
     if not st.session_state.get(subscribed_key, False):
         try:
-            # Versuche Prioritäts-basierte Subscriptions (ChatGPT-Vorschlag)
-            if hasattr(client, "subscribe_many") and hasattr(client, "set_message_center_priority"):
-                # Lade Prioritäts-Konfiguration
+            # Prioritäts-basierte Subscriptions
+            if hasattr(client, "subscribe_many"):
                 try:
-                    from src_orbis.omf.dashboard.config.mc_priority import PRIORITY_TOPICS
-                    from src_orbis.omf.dashboard.config.mc_priority import get_priority_filters
-                    
-                    # Standard-Priorität 5 (alle Topics)
-                    default_priority = st.session_state.get("mc_priority", 5)
-                    priority_filters = get_priority_filters(default_priority)
-                    
+                    from src_orbis.omf.dashboard.config.mc_priority import get_all_priority_filters
+
+                    # Standard-Priorität 6 (alle Topics)
+                    default_priority = st.session_state.get("mc_priority", 6)
+                    priority_filters = get_all_priority_filters(default_priority)
+
                     if priority_filters:
                         client.subscribe_many(priority_filters, qos=1)
                         st.sidebar.info(f"📡 Subscribed zu Priorität {default_priority} Topics auf {broker_key}")
@@ -191,21 +186,21 @@ def setup_mqtt_subscription(client, cfg):
                         # Fallback: Alle Topics
                         client.subscribe("#", qos=1)
                         st.sidebar.info(f"📡 Subscribed zu allen Topics auf {broker_key}")
-                        
+
                 except ImportError:
                     # Fallback: Alle Topics wenn Prioritäts-Konfiguration nicht verfügbar
                     client.subscribe("#", qos=1)
                     st.sidebar.info(f"📡 Subscribed zu allen Topics auf {broker_key}")
                     st.sidebar.caption("ℹ️ Prioritäts-Filter nicht verfügbar")
-                    
+
             else:
                 # Fallback: Standard-Subscription
                 client.subscribe("#", qos=1)
                 st.sidebar.info(f"📡 Subscribed zu allen Topics auf {broker_key}")
                 st.sidebar.caption("ℹ️ Erweiterte Features nicht verfügbar")
-                
+
             st.session_state[subscribed_key] = True
-            
+
         except Exception as e:
             st.sidebar.error(f"❌ Subscribe-Fehler: {e}")
     else:
