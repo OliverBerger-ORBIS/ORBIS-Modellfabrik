@@ -9,22 +9,22 @@ from pathlib import Path
 
 import streamlit as st
 
-# MessageGateway für sauberes Publishing
-from src_orbis.omf.tools.mqtt_gateway import MessageGateway
+# MqttGateway für sauberes Publishing
+from src_orbis.omf.tools.mqtt_gateway import MqttGateway
 
 
 def show_generic_steering():
     """Hauptfunktion für die Generic Steuerung"""
     st.subheader("🔧 Generic Steuerung")
     st.markdown("**Erweiterte Steuerungsmöglichkeiten für direkte MQTT-Nachrichten:**")
-    
+
     # MessageGateway initialisieren
     mqtt_client = st.session_state.get("mqtt_client")
     if not mqtt_client:
         st.error("❌ MQTT-Client nicht verfügbar")
         return
-    
-    gateway = MessageGateway(mqtt_client)
+
+    gateway = MqttGateway(mqtt_client)
 
     # Freier Modus
     st.markdown("### 📝 Freier Modus")
@@ -44,7 +44,7 @@ def show_generic_steering():
     st.info("🔄 Diese Funktion wird in der nächsten Version implementiert")
 
 
-def show_free_mode(gateway: MessageGateway):
+def show_free_mode(gateway: MqttGateway):
     """Zeigt Freien Modus für direkte MQTT-Nachrichten"""
     # Session State für Topic und Payload
     if "free_mode_topic" not in st.session_state:
@@ -83,21 +83,18 @@ def show_free_mode(gateway: MessageGateway):
     retain_option = st.checkbox("💾 Retain Message", value=False, key="free_mode_retain")
 
     # Senden-Button (unabhängig von Form)
-    if st.button("📤 Versenden mit MessageGateway", key="free_mode_send"):
+    if st.button("📤 Versenden mit MqttGateway", key="free_mode_send"):
         # JSON Validierung
         try:
             parsed_payload = json.loads(payload_json)
             st.success("✅ JSON ist gültig")
 
-            # Über MessageGateway senden
+            # Über MqttGateway senden
             try:
                 success = gateway.send(
-                    topic=topic,
-                    builder=lambda: parsed_payload,
-                    ensure_order_id=True,
-                    retain=retain_option
+                    topic=topic, builder=lambda: parsed_payload, ensure_order_id=True, retain=retain_option
                 )
-                
+
                 if success:
                     st.success(f"✅ Message erfolgreich gesendet an {topic}")
                     st.info(f"📄 Payload: {json.dumps(parsed_payload, indent=2)}")
@@ -111,7 +108,7 @@ def show_free_mode(gateway: MessageGateway):
             st.info("ℹ️ Bitte korrigieren Sie das JSON-Format")
 
 
-def show_topic_driven_mode(gateway: MessageGateway):
+def show_topic_driven_mode(gateway: MqttGateway):
     """Zeigt Topic-getriebenen Modus mit YAML-Integration"""
     try:
         # Alle Topics aus topic-config.yml laden
@@ -228,16 +225,16 @@ def show_topic_driven_mode(gateway: MessageGateway):
                         # Retain-Option VOR dem Senden anzeigen
                         retain_option = st.checkbox("💾 Retain Message", value=False, key="retain_topic_driven")
 
-                        if st.button("📤 Versenden mit MessageGateway", key="send_topic_driven_message"):
-                            # Über MessageGateway senden
+                        if st.button("📤 Versenden mit MqttGateway", key="send_topic_driven_message"):
+                            # Über MqttGateway senden
                             try:
                                 success = gateway.send(
                                     topic=selected_topic,
                                     builder=lambda: parsed_payload,
                                     ensure_order_id=True,
-                                    retain=retain_option
+                                    retain=retain_option,
                                 )
-                                
+
                                 if success:
                                     st.success(f"✅ Message erfolgreich gesendet an {selected_topic}")
                                     st.info(f"📄 Payload: {json.dumps(parsed_payload, indent=2)}")

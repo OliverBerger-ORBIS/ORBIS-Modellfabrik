@@ -94,12 +94,12 @@ def show_ccu_control():
     if mqtt_client:
         # CCU-Control-Topics abonnieren
         mqtt_client.subscribe_many(["ccu/control", "ccu/control/command", "ccu/control/order"])
-        
+
         # Nachrichten aus Per-Topic-Buffer holen (alle CCU-Control-Topics)
         control_messages = []
         for topic in ["ccu/control", "ccu/control/command", "ccu/control/order"]:
             control_messages.extend(list(mqtt_client.get_buffer(topic)))
-        
+
         # Nachrichten verarbeiten
         process_ccu_control_messages_from_buffers(control_messages)
 

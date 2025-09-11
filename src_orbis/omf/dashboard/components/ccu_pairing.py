@@ -223,10 +223,10 @@ def show_ccu_pairing():
     if mqtt_client:
         # CCU-Pairing-Topic abonnieren
         mqtt_client.subscribe_many(["ccu/pairing/state"])
-        
+
         # Nachrichten aus Per-Topic-Buffer holen
         pairing_messages = list(mqtt_client.get_buffer("ccu/pairing/state"))
-        
+
         # Nachrichten verarbeiten
         process_ccu_pairing_messages_from_buffers(pairing_messages)
 

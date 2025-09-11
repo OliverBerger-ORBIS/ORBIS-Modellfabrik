@@ -24,7 +24,7 @@ class TestOMFMQTTClient(unittest.TestCase):
         # testen wir stattdessen die Funktionalität
         client1 = ensure_dashboard_client("replay", {})
         client2 = ensure_dashboard_client("replay", {})
-        
+
         # Beide Clients sollten funktional sein
         self.assertIsNotNone(client1)
         self.assertIsNotNone(client2)

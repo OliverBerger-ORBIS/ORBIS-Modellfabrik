@@ -155,10 +155,10 @@ def show_fts_state():
     if mqtt_client:
         # FTS-State-Topic abonnieren
         mqtt_client.subscribe_many(["fts/v1/ff/5iO4/state"])
-        
+
         # Nachrichten aus Per-Topic-Buffer holen
         state_messages = list(mqtt_client.get_buffer("fts/v1/ff/5iO4/state"))
-        
+
         # Nachrichten verarbeiten
         process_fts_state_messages_from_buffers(state_messages)
 

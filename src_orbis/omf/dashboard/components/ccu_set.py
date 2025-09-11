@@ -89,10 +89,10 @@ def show_ccu_set():
     if mqtt_client:
         # CCU-Set-Topic abonnieren
         mqtt_client.subscribe_many(["ccu/set/reset"])
-        
+
         # Nachrichten aus Per-Topic-Buffer holen
         set_messages = list(mqtt_client.get_buffer("ccu/set/reset"))
-        
+
         # Nachrichten verarbeiten
         process_ccu_set_messages_from_buffers(set_messages)
 

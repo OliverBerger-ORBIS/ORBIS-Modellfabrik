@@ -186,10 +186,10 @@ def show_fts_order():
     if mqtt_client:
         # FTS-Order-Topic abonnieren
         mqtt_client.subscribe_many(["fts/v1/ff/5iO4/order"])
-        
+
         # Nachrichten aus Per-Topic-Buffer holen
         order_messages = list(mqtt_client.get_buffer("fts/v1/ff/5iO4/order"))
-        
+
         # Nachrichten verarbeiten
         process_fts_order_messages_from_buffers(order_messages)
 

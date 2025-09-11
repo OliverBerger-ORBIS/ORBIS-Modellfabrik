@@ -250,12 +250,12 @@ def show_ccu_state():
     if mqtt_client:
         # CCU-State-Topics abonnieren
         mqtt_client.subscribe_many(["ccu/state", "ccu/state/flow", "ccu/state/status", "ccu/state/error"])
-        
+
         # Nachrichten aus Per-Topic-Buffer holen (alle CCU-State-Topics)
         state_messages = []
         for topic in ["ccu/state", "ccu/state/flow", "ccu/state/status", "ccu/state/error"]:
             state_messages.extend(list(mqtt_client.get_buffer(topic)))
-        
+
         # Nachrichten verarbeiten
         process_ccu_state_messages_from_buffers(state_messages)
 

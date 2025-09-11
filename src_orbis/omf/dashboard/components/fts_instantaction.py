@@ -167,10 +167,10 @@ def show_fts_instantaction():
     if mqtt_client:
         # FTS-InstantAction-Topic abonnieren
         mqtt_client.subscribe_many(["fts/v1/ff/5iO4/instantAction"])
-        
+
         # Nachrichten aus Per-Topic-Buffer holen
         instantaction_messages = list(mqtt_client.get_buffer("fts/v1/ff/5iO4/instantAction"))
-        
+
         # Nachrichten verarbeiten
         process_fts_instantaction_messages_from_buffers(instantaction_messages)
 

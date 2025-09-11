@@ -1,269 +1,357 @@
-# 🔗 MQTT Integration - APS Dashboard
+# 🔗 MQTT Integration - OMF Dashboard
 
 ## 📋 Overview
 
-Das **APS Dashboard** wurde erfolgreich um **echten MQTT-Versand** erweitert. Alle MQTT-Nachrichten werden jetzt **direkt aus dem Dashboard** an die APS-Module gesendet.
+Das **OMF Dashboard** verwendet die **Per-Topic-Buffer Architektur** für MQTT-Nachrichtenverarbeitung. Diese moderne Architektur kombiniert das **MQTT-Singleton Pattern** mit effizienten **Per-Topic-Buffers** für optimale Performance und Einfachheit.
 
-## ✅ Neue MQTT Features
+## ✅ Aktuelle MQTT Architektur
 
-### 1. **Echte MQTT-Verbindung**
+### 1. **MQTT-Singleton Pattern**
+- **Eine MQTT-Client-Instanz** pro Streamlit-Session
+- **Zentraler Zugriff** über `st.session_state["mqtt_client"]`
 - **Automatische Verbindung** beim Dashboard-Start
-- **Broker**: `192.168.0.100:1883`
-- **Credentials**: `default`/`default`
-- **QoS Level**: 1 (At least once delivery)
+- **Umgebungswechsel** (live/mock/replay) ohne Verbindungsabbruch
 
-### 2. **MQTT Control Interface**
-- **Connection Status**: Live-Verbindungsstatus
-- **Message Counter**: Gesendete Nachrichten und Antworten
-- **Real-time Monitoring**: Live-Überwachung der MQTT-Kommunikation
+### 2. **Per-Topic-Buffer System**
+- **Topic-spezifische Buffer** für jede MQTT-Subscription
+- **Automatische Nachrichtensammlung** in separaten Buffers
+- **Effiziente Verarbeitung** ohne Message-Processor Overhead
+- **Direkte Buffer-Zugriffe** für optimale Performance
 
-### 3. **Direkter MQTT-Versand**
-- **Template Messages**: Vordefinierte Nachrichten senden
-- **Custom Orders**: Benutzerdefinierte Befehle senden
-- **Module Overview**: Schnell-Befehle für alle Module
+### 3. **Hybrid-Architektur für Publishing**
+- **MessageGenerator** für Payload-Erstellung
+- **Session State** für Preview/Edit-Funktionalität
+- **MqttGateway** für finales Publishing
+- **WorkflowOrderManager** für orderId/orderUpdateId Verwaltung
 
-## 🎮 MQTT Control Tab Features
+## 🎮 Dashboard MQTT Features
 
 ### **1. Connection Status**
 ```
 🔗 MQTT Connection Status
 ├── ✅ MQTT Verbunden / ❌ MQTT Nicht verbunden
-├── Broker: 192.168.0.100:1883
-├── Gesendete Nachrichten: X
-└── Empfangene Antworten: Y
+├── Broker: 192.168.0.100:1883 (live) / localhost:1883 (replay)
+├── Environment: live/mock/replay
+└── Session: Singleton-Instanz
 ```
 
-### **2. Steuerungsmethoden**
-- **Template Message**: Vordefinierte, funktionierende Nachrichten
-- **Custom Order**: Benutzerdefinierte Befehle mit Metadaten
-- **Module Overview**: Detaillierte Modul-Informationen
-- **MQTT Monitor**: Live-Überwachung der Kommunikation
+### **2. Message Center**
+- **Priority-based Subscriptions**: PRIO 1-6 für verschiedene Topic-Filter
+- **Per-Topic-Buffer**: Effiziente Nachrichtenverarbeitung
+- **Live Message Display**: Echtzeit-Anzeige empfangener Nachrichten
+- **Test-Bereich**: MQTT-Nachrichten senden und testen
 
-## 📤 MQTT Message Sending
+### **3. Factory Steering**
+- **FTS Navigation**: DPS-HBW, HBW-DPS, Produktions-Routen
+- **Module Sequences**: AIQS, MILL, DRILL mit Sequenzklammer
+- **Factory Reset**: Kompletter Factory-Reset
+- **Order Commands**: ROT, WEISS, BLAU Aufträge
 
-### **Template Message Control**
+## 📤 MQTT Message Processing
+
+### **Per-Topic-Buffer Pattern**
 ```python
-# Automatische Nachrichten-Erstellung
-message = create_message_from_template("DRILL_PICK_WHITE")
-topic = self.message_library.get_topic("DRILL", "order")
-success = self.send_mqtt_message_direct(topic, message)
+# 1. Topics subscriben
+client.subscribe_many([
+    "module/v1/ff/+/state",
+    "module/v1/ff/+/connection", 
+    "ccu/pairing/state",
+    "module/v1/ff/+/factsheet"
+])
+
+# 2. Per-Topic-Buffer abrufen
+state_messages = list(client.get_buffer("module/v1/ff/+/state"))
+connection_messages = list(client.get_buffer("module/v1/ff/+/connection"))
+pairing_messages = list(client.get_buffer("ccu/pairing/state"))
+factsheet_messages = list(client.get_buffer("module/v1/ff/+/factsheet"))
+
+# 3. Nachrichten verarbeiten
+_process_module_messages(state_messages, connection_messages, pairing_messages, factsheet_messages)
 ```
 
-### **Custom Order Control**
+### **Hybrid Publishing Pattern**
 ```python
-# Benutzerdefinierte Nachrichten
-metadata = {
-    "priority": "NORMAL",
-    "timeout": 300,
-    "type": "WHITE"
+# 1. MessageGenerator für Payload
+generator = get_omf_message_generator()
+message = generator.generate_fts_navigation_message(route_type="DPS_HBW", load_type="WHITE")
+
+# 2. Session State für Preview
+st.session_state["pending_message"] = {
+    "topic": message["topic"],
+    "payload": message["payload"], 
+    "type": "navigation"
 }
-message = self.message_library.create_order_message("DRILL", "PICK", metadata)
-topic = self.message_library.get_topic("DRILL", "order")
-success = self.send_mqtt_message_direct(topic, message)
+
+# 3. MqttGateway für Publishing
+gateway = MqttGateway(mqtt_client)
+success = gateway.send(
+    topic=message["topic"],
+    builder=lambda: message["payload"],
+    ensure_order_id=True
+)
 ```
 
-### **Message Format**
-```json
-{
-  "serialNumber": "SVR4H76449",
-  "orderId": "993e21ec-88b5-4e50-a478-a3f64a43097b",
-  "orderUpdateId": 1,
-  "action": {
-    "id": "5f5f2fe2-1bdd-4f0e-84c6-33c44d75f07e",
-    "command": "PICK",
-    "metadata": {
-      "priority": "NORMAL",
-      "timeout": 300,
-      "type": "WHITE"
+## 📊 Message Center Features
+
+### **Priority-based Subscriptions**
+- **PRIO 1**: Module-spezifische Topics
+- **PRIO 2**: FTS-spezifische Topics  
+- **PRIO 3**: Order-spezifische Topics
+- **PRIO 4**: System-spezifische Topics
+- **PRIO 5**: Erweiterte Topics
+- **PRIO 6**: Alle Topics (`#`)
+
+### **Per-Topic-Buffer Verarbeitung**
+```python
+def show_message_center():
+    # Priority-basierte Subscriptions
+    priority_level = st.session_state.get("mc_priority", 1)
+    
+    if priority_level >= 6:
+        # Alle Topics
+        client.subscribe("#")
+    else:
+        # Spezifische Topics basierend auf Priority
+        filters = get_priority_filters(priority_level)
+        client.subscribe_many(filters)
+    
+    # Per-Topic-Buffer abrufen und verarbeiten
+    for topic_filter in active_filters:
+        messages = list(client.get_buffer(topic_filter))
+        _display_messages(messages)
+```
+
+## 🏭 Factory Steering Features
+
+### **FTS Navigation**
+```python
+def _prepare_navigation_message(navigation_type: str):
+    # MessageGenerator verwenden
+    generator = get_omf_message_generator()
+    
+    # Route-Typ mapping
+    route_mapping = {
+        "DPS-HBW": "DPS_HBW",
+        "HBW-DPS": "HBW_DPS", 
+        "RED-Prod": "RED_Prod",
+        "BLUE-Prod": "BLUE_Prod",
+        "WHITE-Prod": "WHITE_Prod"
     }
-  }
-}
+    
+    # Navigation Message generieren
+    message = generator.generate_fts_navigation_message(
+        route_type=route_mapping[navigation_type],
+        load_type=load_type_mapping[navigation_type]
+    )
+    
+    # Session State für Preview
+    st.session_state["pending_message"] = {
+        "topic": message["topic"],
+        "payload": message["payload"],
+        "type": "navigation"
+    }
 ```
 
-## 📊 MQTT Monitor
-
-### **Gesendete Nachrichten**
-- **Zeitstempel**: Wann wurde gesendet
-- **Topic**: MQTT-Topic der Nachricht
-- **Message**: Vollständige JSON-Nachricht
-- **Result**: Send-Status (0 = Erfolg)
-
-### **Empfangene Antworten**
-- **Zeitstempel**: Wann wurde empfangen
-- **Topic**: MQTT-Topic der Antwort
-- **Payload**: Antwort-Payload (JSON)
-- **QoS**: Quality of Service Level
-
-### **Monitor Features**
-- **Live Updates**: Echtzeit-Aktualisierung
-- **Expandable Details**: Vollständige Nachrichten anzeigen
-- **Clear Functions**: Nachrichten und Antworten löschen
-- **Recent History**: Letzte 5 Nachrichten/Antworten
+### **Module Sequences**
+```python
+def _prepare_module_sequence(module_name: str, commands: list):
+    # Sequenz-Messages erstellen
+    sequence_messages = []
+    order_id = str(uuid.uuid4())
+    
+    for i, command in enumerate(commands, 1):
+        message = {
+            "topic": f"module/v1/ff/{serial_number}/order",
+            "payload": {
+                "serialNumber": serial_number,
+                "orderId": order_id,
+                "orderUpdateId": i,  # Inkrementierend
+                "action": {
+                    "id": str(uuid.uuid4()),
+                    "command": command,
+                    "metadata": {"priority": "NORMAL", "timeout": 300, "type": "WHITE"},
+                },
+            },
+            "step": i,
+            "command": command,
+            "module": module_name
+        }
+        sequence_messages.append(message)
+    
+    # Im Session State speichern
+    st.session_state["module_sequence"] = {
+        "module": module_name,
+        "order_id": order_id,
+        "messages": sequence_messages,
+        "total_steps": len(commands)
+    }
+```
 
 ## 🔧 Technische Implementation
 
-### **1. MQTT Client Setup**
+### **1. MQTT-Singleton Factory**
 ```python
-def setup_mqtt_client(self):
-    self.mqtt_client = mqtt.Client()
-    self.mqtt_client.username_pw_set(self.mqtt_username, self.mqtt_password)
-    self.mqtt_client.on_connect = self._on_mqtt_connect
-    self.mqtt_client.on_disconnect = self._on_mqtt_disconnect
-    self.mqtt_client.on_message = self._on_mqtt_message
+def ensure_dashboard_client(environment: str, config: dict) -> OMFMqttClient:
+    """Erstellt oder gibt existierenden MQTT-Client zurück (Singleton)"""
+    if "mqtt_client" not in st.session_state:
+        st.session_state["mqtt_client"] = OMFMqttClient(environment, config)
+    return st.session_state["mqtt_client"]
 ```
 
-### **2. Connection Management**
+### **2. Per-Topic-Buffer System**
 ```python
-def connect_mqtt(self):
-    self.mqtt_client.connect(self.mqtt_broker, self.mqtt_port, 60)
-    self.mqtt_client.loop_start()
-    time.sleep(1)  # Wait for connection
-    return self.mqtt_connected
+class OMFMqttClient:
+    def __init__(self, environment: str, config: dict):
+        self._buffers = {}  # Per-Topic-Buffer
+        self._connected = False
+        
+    def subscribe_many(self, topics: list):
+        """Subscribe zu mehreren Topics"""
+        for topic in topics:
+            self.subscribe(topic)
+            
+    def get_buffer(self, topic_filter: str) -> list:
+        """Gibt Buffer für Topic-Filter zurück"""
+        return self._buffers.get(topic_filter, [])
 ```
 
-### **3. Message Sending**
+### **3. MqttGateway**
 ```python
-def send_mqtt_message_direct(self, topic, message):
-    if not self.mqtt_connected:
-        self.connect_mqtt()
-    
-    message_json = json.dumps(message) if isinstance(message, dict) else str(message)
-    result = self.mqtt_client.publish(topic, message_json, qos=1)
-    
-    # Store sent message
-    sent_info = {
-        'timestamp': datetime.now(),
-        'topic': topic,
-        'message': message,
-        'result': result.rc
-    }
-    self.mqtt_messages_sent.append(sent_info)
-    
-    return result.rc == mqtt.MQTT_ERR_SUCCESS
-```
-
-### **4. Response Handling**
-```python
-def _on_mqtt_message(self, client, userdata, msg):
-    payload = json.loads(msg.payload.decode())
-    response_info = {
-        'timestamp': datetime.now(),
-        'topic': msg.topic,
-        'payload': payload,
-        'qos': msg.qos
-    }
-    self.mqtt_responses.append(response_info)
+class MqttGateway:
+    def __init__(self, mqtt_client: OMFMqttClient):
+        self.mqtt_client = mqtt_client
+        
+    def send(self, topic: str, builder: callable, ensure_order_id: bool = False) -> bool:
+        """Sendet Nachricht über MQTT-Client"""
+        payload = builder()
+        
+        if ensure_order_id:
+            payload = self._ensure_order_id(payload)
+            
+        return self.mqtt_client.publish_json(topic, payload, qos=1, retain=False)
 ```
 
 ## 🚀 Usage Examples
 
-### **1. Template Message Senden**
-1. **Tab öffnen**: "🎮 MQTT Control"
-2. **Methode wählen**: "Template Message"
-3. **Template auswählen**: `DRILL_PICK_WHITE`
-4. **Message senden**: Button klicken
-5. **Ergebnis**: Live-Feedback und JSON-Anzeige
+### **1. Message Center nutzen**
+1. **Tab öffnen**: "📨 Nachrichten-Zentrale"
+2. **Priority wählen**: Slider für Topic-Filter
+3. **Messages anzeigen**: Per-Topic-Buffer wird angezeigt
+4. **Test-Bereich**: Eigene Nachrichten senden
 
-### **2. Custom Order Erstellen**
-1. **Methode wählen**: "Custom Order"
-2. **Modul auswählen**: DRILL
-3. **Befehl wählen**: PICK
-4. **Metadaten konfigurieren**: Type, Priority, Timeout
-5. **Message senden**: Button klicken
+### **2. Factory Steering nutzen**
+1. **Tab öffnen**: "🎮 Steering" → "Factory Steering"
+2. **Navigation**: FTS-Routen auswählen und senden
+3. **Module Sequences**: AIQS/MILL/DRILL Sequenzen
+4. **Factory Reset**: Kompletter Reset
 
-### **3. MQTT Monitor Nutzen**
-1. **Methode wählen**: "MQTT Monitor"
-2. **Gesendete Nachrichten**: Anzeige der letzten 5 Nachrichten
-3. **Empfangene Antworten**: Anzeige der letzten 5 Antworten
-4. **Clear Functions**: Nachrichten/Antworten löschen
+### **3. Overview Module Status**
+1. **Tab öffnen**: "📊 Übersicht" → "🏭 Modul Status"
+2. **Per-Topic-Buffer**: Automatische Verarbeitung
+3. **Live Updates**: Echtzeit-Status-Anzeige
 
 ## 📈 Performance Features
 
-### **1. Connection Management**
-- **Automatic Reconnection**: Automatische Wiederverbindung
-- **Connection Status**: Live-Status-Anzeige
-- **Error Handling**: Robuste Fehlerbehandlung
+### **1. Per-Topic-Buffer Vorteile**
+- **Keine Message-Processor Overhead**
+- **Direkte Buffer-Zugriffe**
+- **Effiziente Topic-Filterung**
+- **Einfache Erweiterung**
 
-### **2. Message Tracking**
-- **Message History**: Gesendete Nachrichten speichern
-- **Response Monitoring**: Empfangene Antworten tracken
-- **Real-time Updates**: Live-Aktualisierung der Anzeige
+### **2. MQTT-Singleton Vorteile**
+- **Eine Client-Instanz** pro Session
+- **Stabile Verbindungen**
+- **Umgebungswechsel** ohne Probleme
+- **Konsistente Architektur**
 
-### **3. User Experience**
-- **Loading Indicators**: Spinner während Verbindungsaufbau
-- **Success/Error Messages**: Klare Feedback-Nachrichten
-- **JSON Preview**: Vollständige Nachrichten-Anzeige
+### **3. Hybrid-Architektur Vorteile**
+- **MessageGenerator** für korrekte Payloads
+- **Session State** für Preview/Edit
+- **MqttGateway** für sauberes Publishing
+- **WorkflowOrderManager** für ID-Management
 
 ## 🔒 Security & Reliability
 
-### **1. Authentication**
-- **Username/Password**: `default`/`default`
-- **Secure Connection**: MQTT über TCP
-- **Error Handling**: Sichere Fehlerbehandlung
+### **1. MQTT-Singleton Pattern**
+- **Eine Client-Instanz** pro Session
+- **Keine Verletzung** des Singleton-Patterns
+- **Stabile Verbindungen**
+- **Konsistente Architektur**
 
-### **2. Message Reliability**
-- **QoS Level 1**: At least once delivery
-- **Message Validation**: JSON-Validierung
-- **Error Recovery**: Automatische Wiederholung
+### **2. Per-Topic-Buffer Reliability**
+- **Topic-spezifische Buffer**
+- **Automatische Nachrichtensammlung**
+- **Effiziente Verarbeitung**
+- **Robuste Error-Handling**
 
-### **3. Connection Stability**
-- **Keep-Alive**: 60 Sekunden
-- **Reconnection Logic**: Automatische Wiederverbindung
-- **Graceful Shutdown**: Ordentliches Beenden
+### **3. MqttGateway Security**
+- **Payload-Validierung**
+- **Order-ID Management**
+- **QoS Level 1** (At least once delivery)
+- **Error Recovery**
 
 ## 📝 Error Handling
 
-### **1. Connection Errors**
+### **1. MQTT Connection Errors**
 ```python
-if not self.connect_mqtt():
-    st.error("MQTT-Verbindung fehlgeschlagen")
-    return False
+if not mqtt_client.connected:
+    st.error("❌ MQTT nicht verbunden")
+    return
 ```
 
-### **2. Message Send Errors**
-```python
-success, result_message = self.send_mqtt_message_direct(topic, message)
-if not success:
-    st.error(f"MQTT-Versand fehlgeschlagen: {result_message}")
-```
-
-### **3. JSON Parse Errors**
+### **2. Buffer Access Errors**
 ```python
 try:
-    payload = json.loads(msg.payload.decode())
+    messages = list(client.get_buffer("topic"))
+    if not messages:
+        st.warning("⚠️ Keine Nachrichten im Buffer")
+        return
 except Exception as e:
-    st.warning(f"MQTT Response Parse Error: {e}")
+    st.error(f"❌ Buffer-Fehler: {e}")
 ```
 
-## 🔄 Future Enhancements
+### **3. Message Send Errors**
+```python
+success = gateway.send(topic, builder, ensure_order_id=True)
+if not success:
+    st.error("❌ Fehler beim Senden der Nachricht")
+```
 
-### **1. Advanced Monitoring**
-- **Message Statistics**: Detaillierte Statistiken
-- **Performance Metrics**: Ausführungszeiten
-- **Error Tracking**: Erweiterte Fehlerprotokollierung
+## 🔄 Architecture Patterns
 
-### **2. Enhanced Control**
-- **Batch Operations**: Mehrere Nachrichten gleichzeitig
-- **Scheduled Messages**: Geplante Nachrichten
-- **Conditional Logic**: Bedingte Nachrichten
+### **1. Per-Topic-Buffer Pattern**
+- **Subscription**: `client.subscribe_many(topics)`
+- **Buffer Access**: `client.get_buffer(topic_filter)`
+- **Processing**: Direkte Verarbeitung der Buffer
 
-### **3. Integration Features**
-- **Database Logging**: MQTT-Nachrichten in DB speichern
-- **Export Functions**: Nachrichten exportieren
-- **API Integration**: REST-API für externe Steuerung
+### **2. Hybrid Publishing Pattern**
+- **Payload Generation**: `MessageGenerator`
+- **Preview/Edit**: `Session State`
+- **Publishing**: `MqttGateway`
+
+### **3. MQTT-Singleton Pattern**
+- **Client Creation**: `ensure_dashboard_client()`
+- **Session Storage**: `st.session_state["mqtt_client"]`
+- **Consistent Access**: Eine Instanz pro Session
 
 ## 📄 Files
 
-### **Modified Files:** ✅ **AKTUELL**
-- **`omf_dashboard.py`**: Haupt-Dashboard mit MQTT-Integration ✅ **AKTUELL: OMF Dashboard**
+### **Core Architecture:**
+- **`omf_mqtt_factory.py`**: MQTT-Singleton Factory
+- **`omf_mqtt_client.py`**: Per-Topic-Buffer Client
+- **`message_gateway.py`**: Hybrid Publishing Gateway
+- **`message_generator.py`**: Payload Generation
 
-### **New Features:**
-- **MQTT Client**: Vollständiger MQTT-Client
-- **Connection Management**: Automatische Verbindungsverwaltung
-- **Message Sending**: Echter MQTT-Versand
-- **Response Monitoring**: Live-Antwort-Überwachung
-- **Error Handling**: Robuste Fehlerbehandlung
+### **Dashboard Components:**
+- **`message_center.py`**: Priority-based Subscriptions
+- **`steering_factory.py`**: Factory Steering mit Hybrid-Architektur
+- **`overview_module_status.py`**: Per-Topic-Buffer Verarbeitung
+- **`fts_instantaction.py`**: FTS-spezifische Buffer-Verarbeitung
+
+### **Configuration:**
+- **`mqtt_config.py`**: MQTT-Konfiguration
+- **`mqtt_topics.py`**: Topic-Definitionen und Priority-Filter
 
 ---
 
-**Status**: ✅ **COMPLETED** - Echter MQTT-Versand erfolgreich integriert
+**Status**: ✅ **COMPLETED** - Per-Topic-Buffer Architektur erfolgreich implementiert

@@ -236,21 +236,26 @@ class MessageGenerator:
             return None
 
     def generate_fts_navigation_message(
-        self, route_type: str, order_id: str = None, order_update_id: int = 0, load_type: str = "WHITE", load_id: str = None
+        self,
+        route_type: str,
+        order_id: str = None,
+        order_update_id: int = 0,
+        load_type: str = "WHITE",
+        load_id: str = None,
     ) -> Optional[Dict[str, Any]]:
         """Generiert FTS-Navigation Message basierend auf Route-Typ"""
         try:
             # FTS Serial Number
             fts_serial = "5iO4"
-            
+
             # Order-ID generieren falls nicht vorhanden
             if order_id is None:
                 order_id = f"fts-navigation-{route_type.lower()}-{uuid.uuid4().hex[:8]}"
-            
+
             # Load-ID generieren falls nicht vorhanden
             if load_id is None:
                 load_id = f"04{uuid.uuid4().hex[:12]}"
-            
+
             # Route-Definitionen basierend auf Session-Analyse
             route_definitions = {
                 "DPS_HBW": {
@@ -259,12 +264,12 @@ class MessageGenerator:
                         {
                             "id": "2",
                             "linkedEdges": ["SVR4H73275-2", "2-1"],
-                            "action": {"id": str(uuid.uuid4()), "type": "PASS"}
+                            "action": {"id": str(uuid.uuid4()), "type": "PASS"},
                         },
                         {
                             "id": "1",
                             "linkedEdges": ["2-1", "1-SVR3QA0022"],
-                            "action": {"id": str(uuid.uuid4()), "type": "PASS"}
+                            "action": {"id": str(uuid.uuid4()), "type": "PASS"},
                         },
                         {
                             "id": "SVR3QA0022",
@@ -272,19 +277,15 @@ class MessageGenerator:
                             "action": {
                                 "type": "DOCK",
                                 "id": str(uuid.uuid4()),
-                                "metadata": {
-                                    "loadId": load_id,
-                                    "loadType": load_type,
-                                    "loadPosition": "1"
-                                }
-                            }
-                        }
+                                "metadata": {"loadId": load_id, "loadType": load_type, "loadPosition": "1"},
+                            },
+                        },
                     ],
                     "edges": [
                         {"id": "SVR4H73275-2", "length": 380, "linkedNodes": ["SVR4H73275", "2"]},
                         {"id": "2-1", "length": 360, "linkedNodes": ["2", "1"]},
-                        {"id": "1-SVR3QA0022", "length": 380, "linkedNodes": ["1", "SVR3QA0022"]}
-                    ]
+                        {"id": "1-SVR3QA0022", "length": 380, "linkedNodes": ["1", "SVR3QA0022"]},
+                    ],
                 },
                 "HBW_DPS": {
                     "nodes": [
@@ -292,12 +293,12 @@ class MessageGenerator:
                         {
                             "id": "1",
                             "linkedEdges": ["SVR3QA0022-1", "1-2"],
-                            "action": {"id": str(uuid.uuid4()), "type": "PASS"}
+                            "action": {"id": str(uuid.uuid4()), "type": "PASS"},
                         },
                         {
                             "id": "2",
                             "linkedEdges": ["1-2", "2-SVR4H73275"],
-                            "action": {"id": str(uuid.uuid4()), "type": "PASS"}
+                            "action": {"id": str(uuid.uuid4()), "type": "PASS"},
                         },
                         {
                             "id": "SVR4H73275",
@@ -305,28 +306,111 @@ class MessageGenerator:
                             "action": {
                                 "type": "DOCK",
                                 "id": str(uuid.uuid4()),
-                                "metadata": {
-                                    "loadId": load_id,
-                                    "loadType": load_type,
-                                    "loadPosition": "1"
-                                }
-                            }
-                        }
+                                "metadata": {"loadId": load_id, "loadType": load_type, "loadPosition": "1"},
+                            },
+                        },
                     ],
                     "edges": [
                         {"id": "SVR3QA0022-1", "length": 380, "linkedNodes": ["SVR3QA0022", "1"]},
                         {"id": "1-2", "length": 360, "linkedNodes": ["1", "2"]},
-                        {"id": "2-SVR4H73275", "length": 380, "linkedNodes": ["2", "SVR4H73275"]}
-                    ]
-                }
+                        {"id": "2-SVR4H73275", "length": 380, "linkedNodes": ["2", "SVR4H73275"]},
+                    ],
+                },
+                "RED_Prod": {
+                    "nodes": [
+                        {"id": "SVR4H73275", "linkedEdges": ["SVR4H73275-2"]},
+                        {
+                            "id": "2",
+                            "linkedEdges": ["SVR4H73275-2", "2-1"],
+                            "action": {"id": str(uuid.uuid4()), "type": "PASS"},
+                        },
+                        {
+                            "id": "1",
+                            "linkedEdges": ["2-1", "1-SVR3QA0022"],
+                            "action": {"id": str(uuid.uuid4()), "type": "PASS"},
+                        },
+                        {
+                            "id": "SVR3QA0022",
+                            "linkedEdges": ["1-SVR3QA0022"],
+                            "action": {
+                                "type": "DOCK",
+                                "id": str(uuid.uuid4()),
+                                "metadata": {"loadId": load_id, "loadType": "RED", "loadPosition": "1"},
+                            },
+                        },
+                    ],
+                    "edges": [
+                        {"id": "SVR4H73275-2", "length": 380, "linkedNodes": ["SVR4H73275", "2"]},
+                        {"id": "2-1", "length": 360, "linkedNodes": ["2", "1"]},
+                        {"id": "1-SVR3QA0022", "length": 380, "linkedNodes": ["1", "SVR3QA0022"]},
+                    ],
+                },
+                "BLUE_Prod": {
+                    "nodes": [
+                        {"id": "SVR4H73275", "linkedEdges": ["SVR4H73275-2"]},
+                        {
+                            "id": "2",
+                            "linkedEdges": ["SVR4H73275-2", "2-1"],
+                            "action": {"id": str(uuid.uuid4()), "type": "PASS"},
+                        },
+                        {
+                            "id": "1",
+                            "linkedEdges": ["2-1", "1-SVR3QA0022"],
+                            "action": {"id": str(uuid.uuid4()), "type": "PASS"},
+                        },
+                        {
+                            "id": "SVR3QA0022",
+                            "linkedEdges": ["1-SVR3QA0022"],
+                            "action": {
+                                "type": "DOCK",
+                                "id": str(uuid.uuid4()),
+                                "metadata": {"loadId": load_id, "loadType": "BLUE", "loadPosition": "1"},
+                            },
+                        },
+                    ],
+                    "edges": [
+                        {"id": "SVR4H73275-2", "length": 380, "linkedNodes": ["SVR4H73275", "2"]},
+                        {"id": "2-1", "length": 360, "linkedNodes": ["2", "1"]},
+                        {"id": "1-SVR3QA0022", "length": 380, "linkedNodes": ["1", "SVR3QA0022"]},
+                    ],
+                },
+                "WHITE_Prod": {
+                    "nodes": [
+                        {"id": "SVR4H73275", "linkedEdges": ["SVR4H73275-2"]},
+                        {
+                            "id": "2",
+                            "linkedEdges": ["SVR4H73275-2", "2-1"],
+                            "action": {"id": str(uuid.uuid4()), "type": "PASS"},
+                        },
+                        {
+                            "id": "1",
+                            "linkedEdges": ["2-1", "1-SVR3QA0022"],
+                            "action": {"id": str(uuid.uuid4()), "type": "PASS"},
+                        },
+                        {
+                            "id": "SVR3QA0022",
+                            "linkedEdges": ["1-SVR3QA0022"],
+                            "action": {
+                                "type": "DOCK",
+                                "id": str(uuid.uuid4()),
+                                "metadata": {"loadId": load_id, "loadType": "WHITE", "loadPosition": "1"},
+                            },
+                        },
+                    ],
+                    "edges": [
+                        {"id": "SVR4H73275-2", "length": 380, "linkedNodes": ["SVR4H73275", "2"]},
+                        {"id": "2-1", "length": 360, "linkedNodes": ["2", "1"]},
+                        {"id": "1-SVR3QA0022", "length": 380, "linkedNodes": ["1", "SVR3QA0022"]},
+                    ],
+                },
             }
-            
+
             # Route-Definition holen
             route_def = route_definitions.get(route_type)
             if not route_def:
                 print(f"❌ Unbekannte Route: {route_type}")
                 return None
-            
+
             # Navigation Message generieren
             return {
                 "topic": f"fts/v1/ff/{fts_serial}/order",
@@ -336,8 +420,8 @@ class MessageGenerator:
                     "orderUpdateId": order_update_id,
                     "nodes": route_def["nodes"],
                     "edges": route_def["edges"],
-                    "serialNumber": fts_serial
-                }
+                    "serialNumber": fts_serial,
+                },
             }
 
         except Exception as e:

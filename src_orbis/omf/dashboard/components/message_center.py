@@ -373,8 +373,8 @@ def show_message_center():
     st.markdown("---")
     st.subheader("🧪 Test-Bereich")
     with st.form("publish_form", clear_on_submit=False):
-        topic = st.text_input("Topic", value="aps/control/example")
-        payload = st.text_area("Payload (Text oder JSON)", value='{"cmd": "ping"}', height=120)
+        topic = st.text_input("Topic", value="omf/control/example")
+        payload = st.text_area("Payload (Text oder JSON)", value='{"cmd": "do what we want"}', height=120)
         qos = st.selectbox("QoS", options=[0, 1, 2], index=0)
         retain = st.checkbox("Retain", value=False)
         submitted = st.form_submit_button("Senden")
@@ -387,5 +387,5 @@ def show_message_center():
             result = mqtt_client.publish(topic, data, qos=int(qos), retain=retain)
             if result:
                 st.success(f"Nachricht gesendet: {topic}")
-        else:
-            st.error("Senden fehlgeschlagen.")
+            else:
+                st.error("Senden fehlgeschlagen.")

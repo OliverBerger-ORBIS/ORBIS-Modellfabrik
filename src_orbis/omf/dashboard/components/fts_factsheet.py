@@ -118,10 +118,10 @@ def show_fts_factsheet():
     if mqtt_client:
         # FTS-Factsheet-Topic abonnieren
         mqtt_client.subscribe_many(["fts/v1/ff/5iO4/factsheet"])
-        
+
         # Nachrichten aus Per-Topic-Buffer holen
         factsheet_messages = list(mqtt_client.get_buffer("fts/v1/ff/5iO4/factsheet"))
-        
+
         # Nachrichten verarbeiten
         process_fts_factsheet_messages_from_buffers(factsheet_messages)
 

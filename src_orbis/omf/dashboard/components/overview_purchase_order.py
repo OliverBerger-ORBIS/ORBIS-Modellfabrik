@@ -102,7 +102,6 @@ def process_purchase_order_messages_from_buffers(hbw_messages, order_manager):
             order_manager._process_hbw_state_message(latest_hbw_msg)
 
 
-
 def show_overview_order_raw():
     """Zeigt die Rohmaterial-Bestellungen (Purchase Orders) - Kopiert aus overview_inventory.py"""
     st.subheader("📊 Rohmaterial-Bestellungen (Purchase Orders)")
@@ -117,21 +116,19 @@ def show_overview_order_raw():
     mqtt_client = st.session_state.get("mqtt_client")
     if mqtt_client:
         # Abonniere die benötigten Topics für Per-Topic-Buffer
-        mqtt_client.subscribe_many([
-            "module/v1/ff/SVR3QA0022/state"  # HBW State für Lagerbestand
-        ])
-        
+        mqtt_client.subscribe_many(["module/v1/ff/SVR3QA0022/state"])  # HBW State für Lagerbestand
+
         # NEUES PATTERN: Per-Topic-Buffer für HBW-Status
         try:
             # Hole die letzten Nachrichten aus dem Per-Topic-Buffer
             hbw_messages = list(mqtt_client.get_buffer("module/v1/ff/SVR3QA0022/state"))
-            
+
             if hbw_messages:
                 st.info(f"📊 **{len(hbw_messages)} HBW-Nachrichten in Buffer**")
-                
+
                 # Verarbeite die Nachrichten aus dem Buffer
                 process_purchase_order_messages_from_buffers(hbw_messages, order_manager)
-                
+
                 # Status-Anzeige
                 if order_manager.last_update_timestamp:
                     formatted_time = order_manager.get_formatted_timestamp()
@@ -140,7 +137,7 @@ def show_overview_order_raw():
                     st.info("ℹ️ Keine HBW-Nachrichten verarbeitet")
             else:
                 st.info("ℹ️ Keine HBW-Nachrichten empfangen")
-                
+
         except Exception as e:
             st.warning(f"⚠️ Fehler beim Zugriff auf Per-Topic-Buffer: {e}")
     else:

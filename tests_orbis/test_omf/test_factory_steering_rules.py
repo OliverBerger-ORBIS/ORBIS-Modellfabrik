@@ -37,7 +37,7 @@ class TestFactorySteeringRules(unittest.TestCase):
 
         # Patch st.session_state
         self.session_state_patcher = patch(
-            "omf.dashboard.components.steering_factory.st.session_state", self.mock_session_state
+            "src_orbis.omf.dashboard.components.steering_factory.st.session_state", self.mock_session_state
         )
         self.session_state_patcher.start()
 
@@ -107,8 +107,8 @@ class TestFactorySteeringRules(unittest.TestCase):
 
         self.assertTrue(is_valid_uuid, f"action.id ist kein gültiger UUID: {action_id}")
 
-    def test_order_update_id_increments(self):
-        """Test: orderUpdateId muss hochzählen"""
+    def test_order_update_id_consistency(self):
+        """Test: orderUpdateId muss konsistent sein (einzelne Befehle haben immer 1)"""
         # Mehrere Nachrichten nacheinander vorbereiten
         _prepare_module_step_message("AIQS", "PICK")
         first_update_id = self.mock_session_state["pending_message"]["payload"]["orderUpdateId"]
@@ -119,15 +119,15 @@ class TestFactorySteeringRules(unittest.TestCase):
         _prepare_module_step_message("AIQS", "DROP")
         third_update_id = self.mock_session_state["pending_message"]["payload"]["orderUpdateId"]
 
-        # orderUpdateId muss hochzählen
+        # orderUpdateId ist immer 1 für einzelne Befehle (keine Sequenz)
         self.assertEqual(first_update_id, 1, "Erster orderUpdateId muss 1 sein")
-        self.assertEqual(second_update_id, 2, "Zweiter orderUpdateId muss 2 sein")
-        self.assertEqual(third_update_id, 3, "Dritter orderUpdateId muss 3 sein")
+        self.assertEqual(second_update_id, 1, "Zweiter orderUpdateId muss 1 sein (einzelne Befehle)")
+        self.assertEqual(third_update_id, 1, "Dritter orderUpdateId muss 1 sein (einzelne Befehle)")
 
     def test_sequence_order_id_consistency(self):
         """Test: orderId muss in einer Sequenz konstant bleiben"""
         # Sequenz vorbereiten
-        _prepare_module_sequence_message("DRILL")
+        _prepare_module_sequence_message("DRILL", ["PICK", "DRILL", "DROP"])
 
         # orderId aus der Sequenz extrahieren
         sequence_order_id = self.mock_session_state["pending_message"]["payload"]["orderId"]
@@ -140,6 +140,32 @@ class TestFactorySteeringRules(unittest.TestCase):
             is_valid_uuid = False
 
         self.assertTrue(is_valid_uuid, f"Sequenz orderId ist kein gültiger UUID: {sequence_order_id}")
+
+    def test_sequence_order_update_id_increments(self):
+        """Test: orderUpdateId muss in einer Sequenz inkrementiert werden (1, 2, 3...)"""
+        # Import der echten Sequenz-Funktion
+        from src_orbis.omf.dashboard.components.steering_factory import _prepare_module_sequence
+
+        # Sequenz vorbereiten (echte Funktion)
+        _prepare_module_sequence("AIQS", ["PICK", "CHECK_QUALITY", "DROP"])
+
+        # Sequenz aus session_state abrufen
+        sequence = self.mock_session_state.get("module_sequence")
+        self.assertIsNotNone(sequence, "Sequenz muss im session_state gespeichert sein")
+
+        # orderUpdateId muss inkrementiert werden
+        messages = sequence["messages"]
+        self.assertEqual(len(messages), 3, "Sequenz muss 3 Messages haben")
+
+        # Prüfe orderUpdateId Inkrementierung
+        self.assertEqual(messages[0]["payload"]["orderUpdateId"], 1, "Erste Message: orderUpdateId muss 1 sein")
+        self.assertEqual(messages[1]["payload"]["orderUpdateId"], 2, "Zweite Message: orderUpdateId muss 2 sein")
+        self.assertEqual(messages[2]["payload"]["orderUpdateId"], 3, "Dritte Message: orderUpdateId muss 3 sein")
+
+        # orderId muss in allen Messages gleich sein
+        order_id = messages[0]["payload"]["orderId"]
+        for i, message in enumerate(messages):
+            self.assertEqual(message["payload"]["orderId"], order_id, f"Message {i+1}: orderId muss konstant bleiben")
 
     def test_message_structure_compliance(self):
         """Test: Message-Struktur muss den Regeln entsprechen"""
@@ -196,7 +222,7 @@ class TestModuleSequenceRules(unittest.TestCase):
         """Test-Setup"""
         self.mock_session_state = {}
         self.session_state_patcher = patch(
-            "omf.dashboard.components.steering_factory.st.session_state", self.mock_session_state
+            "src_orbis.omf.dashboard.components.steering_factory.st.session_state", self.mock_session_state
         )
         self.session_state_patcher.start()
 
@@ -207,7 +233,7 @@ class TestModuleSequenceRules(unittest.TestCase):
     def test_drill_sequence_compliance(self):
         """Test: DRILL-Sequenz muss allen Regeln entsprechen"""
         # DRILL-Sequenz vorbereiten
-        _prepare_module_sequence_message("DRILL")
+        _prepare_module_sequence_message("DRILL", ["PICK", "DRILL", "DROP"])
 
         message = self.mock_session_state["pending_message"]
 
@@ -218,12 +244,11 @@ class TestModuleSequenceRules(unittest.TestCase):
         # Message-Regel prüfen
         payload = message["payload"]
         self.assertEqual(payload["serialNumber"], "SVR4H76449", "DRILL serialNumber ist falsch")
-        self.assertEqual(payload["action"]["command"], "PICK", "DRILL-Sequenz startet mit PICK")
+        self.assertEqual(payload["sequence"], ["PICK", "DRILL", "DROP"], "DRILL-Sequenz ist falsch")
 
         # UUID-Regel prüfen
         try:
             uuid.UUID(payload["orderId"])
-            uuid.UUID(payload["action"]["id"])
             uuids_valid = True
         except ValueError:
             uuids_valid = False
@@ -233,7 +258,7 @@ class TestModuleSequenceRules(unittest.TestCase):
     def test_mill_sequence_compliance(self):
         """Test: MILL-Sequenz muss allen Regeln entsprechen"""
         # MILL-Sequenz vorbereiten
-        _prepare_module_sequence_message("MILL")
+        _prepare_module_sequence_message("MILL", ["PICK", "MILL", "DROP"])
 
         message = self.mock_session_state["pending_message"]
 
@@ -244,12 +269,11 @@ class TestModuleSequenceRules(unittest.TestCase):
         # Message-Regel prüfen
         payload = message["payload"]
         self.assertEqual(payload["serialNumber"], "SVR3QA2098", "MILL serialNumber ist falsch")
-        self.assertEqual(payload["action"]["command"], "PICK", "MILL-Sequenz startet mit PICK")
+        self.assertEqual(payload["sequence"], ["PICK", "MILL", "DROP"], "MILL-Sequenz ist falsch")
 
         # UUID-Regel prüfen
         try:
             uuid.UUID(payload["orderId"])
-            uuid.UUID(payload["action"]["id"])
             uuids_valid = True
         except ValueError:
             uuids_valid = False
@@ -259,7 +283,7 @@ class TestModuleSequenceRules(unittest.TestCase):
     def test_aiqs_sequence_compliance(self):
         """Test: AIQS-Sequenz muss allen Regeln entsprechen"""
         # AIQS-Sequenz vorbereiten
-        _prepare_module_sequence_message("AIQS")
+        _prepare_module_sequence_message("AIQS", ["PICK", "CHECK_QUALITY", "DROP"])
 
         message = self.mock_session_state["pending_message"]
 
@@ -270,12 +294,11 @@ class TestModuleSequenceRules(unittest.TestCase):
         # Message-Regel prüfen
         payload = message["payload"]
         self.assertEqual(payload["serialNumber"], "SVR4H76530", "AIQS serialNumber ist falsch")
-        self.assertEqual(payload["action"]["command"], "PICK", "AIQS-Sequenz startet mit PICK")
+        self.assertEqual(payload["sequence"], ["PICK", "CHECK_QUALITY", "DROP"], "AIQS-Sequenz ist falsch")
 
         # UUID-Regel prüfen
         try:
             uuid.UUID(payload["orderId"])
-            uuid.UUID(payload["action"]["id"])
             uuids_valid = True
         except ValueError:
             uuids_valid = False

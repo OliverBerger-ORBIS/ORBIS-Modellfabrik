@@ -3,10 +3,11 @@ Unit Tests für FTS Navigation Message Generator
 Testet generate_fts_navigation_message() und Dashboard Integration
 """
 
-import pytest
 import uuid
 from datetime import datetime, timezone
-from unittest.mock import Mock, patch
+from unittest.mock import MagicMock, Mock, patch
+
+import pytest
 
 from src_orbis.omf.tools.message_generator import MessageGenerator
 
@@ -24,33 +25,31 @@ class TestFTSNavigationGenerator:
         route_type = "DPS_HBW"
         load_type = "WHITE"
         load_id = "04798eca341290"
-        
+
         # Act
         message = self.generator.generate_fts_navigation_message(
-            route_type=route_type,
-            load_type=load_type,
-            load_id=load_id
+            route_type=route_type, load_type=load_type, load_id=load_id
         )
-        
+
         # Assert
         assert message is not None
         assert message["topic"] == "fts/v1/ff/5iO4/order"
         assert "orderId" in message["payload"]
         assert message["payload"]["serialNumber"] == "5iO4"
         assert message["payload"]["orderUpdateId"] == 0
-        
+
         # Nodes prüfen
         nodes = message["payload"]["nodes"]
         assert len(nodes) == 4
         assert nodes[0]["id"] == "SVR4H73275"  # DPS
         assert nodes[-1]["id"] == "SVR3QA0022"  # HBW
-        
+
         # Edges prüfen
         edges = message["payload"]["edges"]
         assert len(edges) == 3
         assert edges[0]["id"] == "SVR4H73275-2"
         assert edges[0]["length"] == 380
-        
+
         # DOCK Action prüfen
         dock_action = nodes[-1]["action"]
         assert dock_action["type"] == "DOCK"
@@ -62,23 +61,20 @@ class TestFTSNavigationGenerator:
         # Arrange
         route_type = "HBW_DPS"
         load_type = "RED"
-        
+
         # Act
-        message = self.generator.generate_fts_navigation_message(
-            route_type=route_type,
-            load_type=load_type
-        )
-        
+        message = self.generator.generate_fts_navigation_message(route_type=route_type, load_type=load_type)
+
         # Assert
         assert message is not None
         assert message["topic"] == "fts/v1/ff/5iO4/order"
-        
+
         # Nodes prüfen (umgekehrte Route)
         nodes = message["payload"]["nodes"]
         assert len(nodes) == 4
         assert nodes[0]["id"] == "SVR3QA0022"  # HBW
         assert nodes[-1]["id"] == "SVR4H73275"  # DPS
-        
+
         # DOCK Action prüfen
         dock_action = nodes[-1]["action"]
         assert dock_action["type"] == "DOCK"
@@ -88,10 +84,10 @@ class TestFTSNavigationGenerator:
         """Test: Unbekannte Route"""
         # Arrange
         route_type = "UNKNOWN_ROUTE"
-        
+
         # Act
         message = self.generator.generate_fts_navigation_message(route_type=route_type)
-        
+
         # Assert
         assert message is None
 
@@ -99,18 +95,18 @@ class TestFTSNavigationGenerator:
         """Test: UUID-Generierung für orderId und action.id"""
         # Arrange
         route_type = "DPS_HBW"
-        
+
         # Act
         message = self.generator.generate_fts_navigation_message(route_type=route_type)
-        
+
         # Assert
         assert message is not None
-        
+
         # orderId prüfen
         order_id = message["payload"]["orderId"]
         assert order_id.startswith("fts-navigation-dps_hbw-")
         assert len(order_id) == len("fts-navigation-dps_hbw-") + 8  # 8 hex chars
-        
+
         # action.id prüfen (alle Actions haben UUID)
         nodes = message["payload"]["nodes"]
         for node in nodes:
@@ -125,13 +121,10 @@ class TestFTSNavigationGenerator:
         # Arrange
         route_type = "DPS_HBW"
         custom_order_id = "custom-order-123"
-        
+
         # Act
-        message = self.generator.generate_fts_navigation_message(
-            route_type=route_type,
-            order_id=custom_order_id
-        )
-        
+        message = self.generator.generate_fts_navigation_message(route_type=route_type, order_id=custom_order_id)
+
         # Assert
         assert message is not None
         assert message["payload"]["orderId"] == custom_order_id
@@ -141,13 +134,10 @@ class TestFTSNavigationGenerator:
         # Arrange
         route_type = "DPS_HBW"
         custom_load_id = "04custom123456"
-        
+
         # Act
-        message = self.generator.generate_fts_navigation_message(
-            route_type=route_type,
-            load_id=custom_load_id
-        )
-        
+        message = self.generator.generate_fts_navigation_message(route_type=route_type, load_id=custom_load_id)
+
         # Assert
         assert message is not None
         nodes = message["payload"]["nodes"]
@@ -158,10 +148,10 @@ class TestFTSNavigationGenerator:
         """Test: Timestamp Format (ISO 8601 mit Z)"""
         # Arrange
         route_type = "DPS_HBW"
-        
+
         # Act
         message = self.generator.generate_fts_navigation_message(route_type=route_type)
-        
+
         # Assert
         assert message is not None
         timestamp = message["payload"]["timestamp"]
@@ -173,14 +163,14 @@ class TestFTSNavigationGenerator:
         """Test: Edge-Struktur (length, linkedNodes)"""
         # Arrange
         route_type = "DPS_HBW"
-        
+
         # Act
         message = self.generator.generate_fts_navigation_message(route_type=route_type)
-        
+
         # Assert
         assert message is not None
         edges = message["payload"]["edges"]
-        
+
         for edge in edges:
             assert "id" in edge
             assert "length" in edge
@@ -193,19 +183,19 @@ class TestFTSNavigationGenerator:
         """Test: Node-Struktur (id, linkedEdges, action)"""
         # Arrange
         route_type = "DPS_HBW"
-        
+
         # Act
         message = self.generator.generate_fts_navigation_message(route_type=route_type)
-        
+
         # Assert
         assert message is not None
         nodes = message["payload"]["nodes"]
-        
+
         for node in nodes:
             assert "id" in node
             assert "linkedEdges" in node
             assert isinstance(node["linkedEdges"], list)
-            
+
             # Action prüfen (nur bei bestimmten Nodes)
             if "action" in node:
                 action = node["action"]
@@ -218,14 +208,11 @@ class TestFTSNavigationGenerator:
         # Arrange
         route_type = "DPS_HBW"
         load_types = ["RED", "BLUE", "WHITE"]
-        
+
         # Act & Assert
         for load_type in load_types:
-            message = self.generator.generate_fts_navigation_message(
-                route_type=route_type,
-                load_type=load_type
-            )
-            
+            message = self.generator.generate_fts_navigation_message(route_type=route_type, load_type=load_type)
+
             assert message is not None
             nodes = message["payload"]["nodes"]
             dock_action = nodes[-1]["action"]
@@ -241,11 +228,17 @@ class TestFTSNavigationDashboardIntegration:
         # Arrange
         mock_session_state = {}
         mock_st.session_state = mock_session_state
-        
+
+        # Mock MQTT Client
+        mock_mqtt_client = MagicMock()
+        mock_mqtt_client.connected = True
+        mock_session_state["mqtt_client"] = mock_mqtt_client
+
         # Act
         from src_orbis.omf.dashboard.components.steering_factory import _prepare_navigation_message
+
         _prepare_navigation_message("DPS-HBW")
-        
+
         # Assert
         assert "pending_message" in mock_session_state
         message = mock_session_state["pending_message"]
@@ -259,16 +252,21 @@ class TestFTSNavigationDashboardIntegration:
         # Arrange
         mock_session_state = {}
         mock_st.session_state = mock_session_state
-        
+
+        # Mock MQTT Client
+        mock_mqtt_client = MagicMock()
+        mock_mqtt_client.connected = True
+        mock_session_state["mqtt_client"] = mock_mqtt_client
+
         # Act
         from src_orbis.omf.dashboard.components.steering_factory import _prepare_navigation_message
-        
+
         # Test verschiedene Navigation-Typen
         navigation_types = ["DPS-HBW", "RED-Prod", "BLUE-Prod", "WHITE-Prod"]
-        
+
         for nav_type in navigation_types:
             _prepare_navigation_message(nav_type)
-            
+
             # Assert
             assert "pending_message" in mock_session_state
             message = mock_session_state["pending_message"]

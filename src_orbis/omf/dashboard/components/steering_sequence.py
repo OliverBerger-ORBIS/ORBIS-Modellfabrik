@@ -14,16 +14,26 @@ tools_path = os.path.join(os.path.dirname(__file__), "..", "..", "tools")
 try:
     from src_orbis.omf.tools.sequence_executor import SequenceExecutor
     from src_orbis.omf.tools.sequence_ui import SequenceUI
+
+    SEQUENCE_TOOLS_AVAILABLE = True
 except ImportError as e:
-    st.error(f"❌ Fehler beim Import der Sequenz-Tools: {e}")
-    st.info(f"ℹ️ Tools-Pfad: {tools_path}")
-    st.info("ℹ️ Bitte überprüfen Sie, ob die Sequenz-Tools korrekt installiert sind")
+    SEQUENCE_TOOLS_AVAILABLE = False
+    print(f"❌ Sequenz-Tools nicht verfügbar: {e}")
 
 
 def show_sequence_steering():
     """Hauptfunktion für die Sequenz-Steuerung"""
     st.subheader("🎯 Sequenz-Steuerung")
     st.markdown("**Automatisierte Workflow-Sequenzen für Module:**")
+
+    # Prüfe ob Sequenz-Tools verfügbar sind
+    if not SEQUENCE_TOOLS_AVAILABLE:
+        st.warning("⚠️ Sequenz-Steuerung temporär nicht verfügbar")
+        st.info("💡 Verwenden Sie die Factory-Steuerung für manuelle Modul-Sequenzen")
+        st.error("❌ Sequenz-Tools nicht verfügbar")
+        st.info(f"ℹ️ Tools-Pfad: {tools_path}")
+        st.info("ℹ️ Bitte überprüfen Sie, ob die Sequenz-Tools korrekt installiert sind")
+        return
 
     try:
         # MQTT-Client aus Session State holen
@@ -50,4 +60,4 @@ def show_sequence_steering():
 
     except Exception as e:
         st.error(f"❌ Fehler in der Sequenz-Steuerung: {e}")
-        st.exception(e)
+        st.info("ℹ️ Bitte überprüfen Sie die Konfiguration und MQTT-Verbindung")

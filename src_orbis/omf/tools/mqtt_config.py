@@ -35,6 +35,6 @@ def cfg_for(env: str) -> MqttConfig:
 
         return MqttConfig(**REPLAY_CFG)
     elif env == "mock":
-        return MqttConfig(host="mock", port=0, client_id="omf_dashboard_mock")
+        return MqttConfig(host="localhost", port=1883, client_id="omf_dashboard_mock")
     else:
         raise ValueError(f"Unbekannte Umgebung: {env}")

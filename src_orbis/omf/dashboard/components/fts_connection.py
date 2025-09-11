@@ -117,10 +117,10 @@ def show_fts_connection():
     if mqtt_client:
         # FTS-Connection-Topic abonnieren
         mqtt_client.subscribe_many(["fts/v1/ff/5iO4/connection"])
-        
+
         # Nachrichten aus Per-Topic-Buffer holen
         connection_messages = list(mqtt_client.get_buffer("fts/v1/ff/5iO4/connection"))
-        
+
         # Nachrichten verarbeiten
         process_fts_connection_messages_from_buffers(connection_messages)
 
