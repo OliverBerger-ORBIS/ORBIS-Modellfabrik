@@ -10,7 +10,7 @@ import paho.mqtt.client as mqtt
 from .mqtt_config import MqttConfig
 
 
-class OMFMqttClient:
+class OmfMqttClient:
     def __init__(self, cfg: MqttConfig, on_message: Callable[[dict], None] | None = None, history_size: int = 10000):
         self.cfg = cfg
         self.config = {

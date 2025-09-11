@@ -18,7 +18,7 @@ import yaml
 
 from src_orbis.analysis_tools.nfc_code_manager import get_nfc_manager
 from src_orbis.omf.tools.message_template_manager import get_message_template_manager
-from src_orbis.omf.tools.module_manager import OMFModuleManager
+from src_orbis.omf.tools.module_manager import OmfModuleManager
 
 # sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", ".."))  # Nicht mehr nötig nach pip install -e .
 
@@ -43,7 +43,7 @@ class CCUTemplateAnalyzer:
             "ccu/state/version-mismatch",
         ]
         # Initialize module mapping utilities
-        self.module_mapping = OMFModuleManager()
+        self.module_mapping = OmfModuleManager()
         # Initialize Message Template Manager
         self.message_template_manager = get_message_template_manager()
         # Get project root (3 levels up from tools directory)

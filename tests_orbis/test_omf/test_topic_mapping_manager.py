@@ -9,7 +9,7 @@ import yaml
 # Add the src_orbis directory to the Python path
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "src_orbis"))
 
-from omf.tools.topic_mapping_manager import TopicMappingManager
+from src_orbis.omf.tools.topic_mapping_manager import TopicMappingManager
 
 
 class TestTopicMappingManager(unittest.TestCase):
@@ -79,9 +79,9 @@ class TestTopicMappingManager(unittest.TestCase):
                 return self.temp_dir
 
         # Mock in TopicMappingManager injizieren
-        import omf.tools.topic_mapping_manager
+        import src_orbis.omf.tools.topic_mapping_manager
 
-        omf.tools.topic_mapping_manager.OMFConfig = lambda: MockOMFConfig(self.temp_dir)
+        src_orbis.omf.tools.topic_mapping_manager.OmfConfig = lambda: MockOMFConfig(self.temp_dir)
 
     def tearDown(self):
         """Test-Cleanup"""

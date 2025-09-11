@@ -8,7 +8,7 @@ import unittest
 
 import yaml
 
-from src_orbis.omf.tools.message_template_manager import OMFMessageTemplateManager
+from src_orbis.omf.tools.message_template_manager import OmfMessageTemplateManager
 
 
 class TestMessageTemplateManagerIntegration(unittest.TestCase):
@@ -34,7 +34,7 @@ class TestMessageTemplateManagerIntegration(unittest.TestCase):
         }
         with open(os.path.join(self.temp_dir, "templates", "test", "integration.yml"), "w") as f:
             yaml.dump(topic_yaml, f)
-        self.manager = OMFMessageTemplateManager(self.temp_dir)
+        self.manager = OmfMessageTemplateManager(self.temp_dir)
 
     def tearDown(self):
         shutil.rmtree(self.temp_dir)

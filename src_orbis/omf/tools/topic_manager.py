@@ -10,7 +10,7 @@ from typing import Any, Dict, List
 import yaml
 
 
-class OMFTopicManager:
+class OmfTopicManager:
     """Zentrale Verwaltung der MQTT-Topic-Konfiguration für OMF Dashboard"""
 
     def __init__(self, config_path: str = None):
@@ -215,15 +215,15 @@ class OMFTopicManager:
 _topic_manager_instance = None
 
 
-def get_omf_topic_manager() -> OMFTopicManager:
+def get_omf_topic_manager() -> OmfTopicManager:
     """Get singleton instance of OMFTopicManager"""
     global _topic_manager_instance
     if _topic_manager_instance is None:
-        _topic_manager_instance = OMFTopicManager()
+        _topic_manager_instance = OmfTopicManager()
     return _topic_manager_instance
 
 
 # Backward compatibility functions
-def get_topic_manager() -> OMFTopicManager:
+def get_topic_manager() -> OmfTopicManager:
     """Backward compatibility function"""
     return get_omf_topic_manager()

@@ -8,7 +8,7 @@ from src_orbis.omf.config.config import LIVE_CFG, REPLAY_CFG
 # sys.path.append(os.path.join(os.path.dirname(__file__), "components"))  # Nicht mehr nötig nach pip install -e .
 from src_orbis.omf.dashboard.components.dummy_component import show_dummy_component
 from src_orbis.omf.tools.mock_mqtt_client import MockMqttClient
-from src_orbis.omf.tools.omf_mqtt_client import OMFMqttClient
+from src_orbis.omf.tools.omf_mqtt_client import OmfMqttClient
 
 """
 ORBIS Modellfabrik Dashboard (OMF) - Modulare Architektur
@@ -119,7 +119,7 @@ def initialize_mqtt_client(env):
         if env == "mock":
             client = MockMqttClient(MqttConfig(**cfg))
         else:
-            client = OMFMqttClient(MqttConfig(**cfg))
+            client = OmfMqttClient(MqttConfig(**cfg))
         st.session_state.mqtt_client = client
     else:
         client = st.session_state.mqtt_client

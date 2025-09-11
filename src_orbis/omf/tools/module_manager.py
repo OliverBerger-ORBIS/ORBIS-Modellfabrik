@@ -10,7 +10,7 @@ from typing import Any, Dict, List, Optional
 import yaml
 
 
-class OMFModuleManager:
+class OmfModuleManager:
     def get_all_module_ids(self) -> list:
         """Get all module IDs (keys) from all modules."""
         return list(self.get_all_modules().keys())
@@ -198,11 +198,11 @@ class OMFModuleManager:
 _omf_module_manager = None
 
 
-def get_omf_module_manager() -> OMFModuleManager:
+def get_omf_module_manager() -> OmfModuleManager:
     """Get global OMF module manager instance"""
     global _omf_module_manager
     if _omf_module_manager is None:
-        _omf_module_manager = OMFModuleManager()
+        _omf_module_manager = OmfModuleManager()
     return _omf_module_manager
 
 
@@ -233,7 +233,7 @@ def validate_module_id(module_id: str) -> bool:
 
 if __name__ == "__main__":
     """Test the OMF Module Manager"""
-    manager = OMFModuleManager()
+    manager = OmfModuleManager()
 
     print("🔧 OMF Module Manager Test")
     print("=" * 50)

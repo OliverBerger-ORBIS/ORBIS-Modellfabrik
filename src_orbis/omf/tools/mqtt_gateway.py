@@ -10,7 +10,7 @@ from datetime import datetime, timezone
 from typing import Any, Callable
 
 from . import message_generator as mg
-from .omf_mqtt_client import OMFMqttClient
+from .omf_mqtt_client import OmfMqttClient
 
 
 def utc_iso() -> str:
@@ -26,7 +26,7 @@ class MqttGateway:
     - Gateway ergänzt (wo sinnvoll) timestamp/orderId, published via client.publish_json().
     """
 
-    def __init__(self, client: OMFMqttClient, id_start: int = 1000) -> None:
+    def __init__(self, client: OmfMqttClient, id_start: int = 1000) -> None:
         self.client = client
         self._order_id = id_start
 

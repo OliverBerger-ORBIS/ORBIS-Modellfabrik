@@ -12,10 +12,10 @@ if src_orbis_path not in sys.path:
     sys.path.insert(0, src_orbis_path)
 
 try:
-    from src_orbis.omf.config.config_loader import OMFConfig
+    from src_orbis.omf.config.config_loader import OmfConfig
 except ImportError:
     # Fallback für Tests
-    class OMFConfig:
+    class OmfConfig:
         def get_config_path(self):
             return os.path.join(os.path.dirname(__file__), "..", "config")
 
@@ -24,7 +24,7 @@ class TopicMappingManager:
     """Verwaltet das Mapping zwischen MQTT-Topics und Message-Templates"""
 
     def __init__(self):
-        self.config = OMFConfig()
+        self.config = OmfConfig()
         self.topic_mappings = {}
         self.template_categories = {}
         self._load_topic_mappings()

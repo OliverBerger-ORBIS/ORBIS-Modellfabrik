@@ -86,7 +86,7 @@ TRANSLATIONS = {
 }
 
 
-class OMFConfig:
+class OmfConfig:
     """OMF Dashboard Konfigurationsklasse"""
 
     def __init__(self, config_file=None):
@@ -149,4 +149,4 @@ class OMFConfig:
 
 
 # Globale Konfigurationsinstanz
-config = OMFConfig()
+config = OmfConfig()

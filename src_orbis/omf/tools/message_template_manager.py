@@ -11,7 +11,7 @@ from typing import Any, Dict, List, Optional
 import yaml
 
 
-class OMFMessageTemplateManager:
+class OmfMessageTemplateManager:
     """Verwaltet modulare MQTT Message Templates"""
 
     def __init__(self, templates_dir: str = None):
@@ -210,15 +210,15 @@ class OMFMessageTemplateManager:
 _template_manager_instance = None
 
 
-def get_omf_message_template_manager() -> OMFMessageTemplateManager:
+def get_omf_message_template_manager() -> OmfMessageTemplateManager:
     """Get singleton instance of OMFMessageTemplateManager"""
     global _template_manager_instance
     if _template_manager_instance is None:
-        _template_manager_instance = OMFMessageTemplateManager()
+        _template_manager_instance = OmfMessageTemplateManager()
     return _template_manager_instance
 
 
 # Backward compatibility functions
-def get_message_template_manager() -> OMFMessageTemplateManager:
+def get_message_template_manager() -> OmfMessageTemplateManager:
     """Backward compatibility function"""
     return get_omf_message_template_manager()

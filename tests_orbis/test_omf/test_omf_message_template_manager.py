@@ -14,7 +14,7 @@ import yaml
 # Add src_orbis to path
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "src_orbis"))
 
-from omf.tools.message_template_manager import OMFMessageTemplateManager, get_omf_message_template_manager
+from omf.tools.message_template_manager import OmfMessageTemplateManager, get_omf_message_template_manager
 
 
 class TestOMFMessageTemplateManager(unittest.TestCase):
@@ -36,7 +36,7 @@ class TestOMFMessageTemplateManager(unittest.TestCase):
         self._create_test_templates()
 
         # Initialize manager
-        self.manager = OMFMessageTemplateManager(str(self.templates_dir))
+        self.manager = OmfMessageTemplateManager(str(self.templates_dir))
 
     def tearDown(self):
         """Clean up test fixtures"""

@@ -33,12 +33,12 @@ class TestDashboardRuntime(unittest.TestCase):
         """Test: MQTT Client Komponente kann geladen werden"""
         try:
             from src_orbis.omf.tools.mqtt_config import MqttConfig
-            from src_orbis.omf.tools.omf_mqtt_client import OMFMqttClient
+            from src_orbis.omf.tools.omf_mqtt_client import OmfMqttClient
 
             # Test MQTT Client initialization mit minimaler Konfiguration
             cfg = MqttConfig(host="localhost")
-            client = OMFMqttClient(cfg)
-            self.assertIsNotNone(client, "OMFMqttClient sollte initialisiert werden können")
+            client = OmfMqttClient(cfg)
+            self.assertIsNotNone(client, "OmfMqttClient sollte initialisiert werden können")
 
             # Test basic methods
             self.assertIsInstance(client.get_history_stats(), dict, "get_history_stats sollte Dict zurückgeben")

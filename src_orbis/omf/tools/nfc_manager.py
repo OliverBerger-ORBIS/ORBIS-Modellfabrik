@@ -10,7 +10,7 @@ from typing import Any, Dict, Optional
 import yaml
 
 
-class OMFNFCManager:
+class OmfNfcManager:
     """OMF NFC Manager using YAML configuration"""
 
     def __init__(self, config_path: Optional[str] = None):
@@ -171,11 +171,11 @@ class OMFNFCManager:
 _omf_nfc_manager = None
 
 
-def get_omf_nfc_manager() -> OMFNFCManager:
+def get_omf_nfc_manager() -> OmfNfcManager:
     """Get global OMF NFC manager instance"""
     global _omf_nfc_manager
     if _omf_nfc_manager is None:
-        _omf_nfc_manager = OMFNFCManager()
+        _omf_nfc_manager = OmfNfcManager()
     return _omf_nfc_manager
 
 
@@ -200,7 +200,7 @@ def validate_nfc_code(nfc_code: str) -> bool:
 
 if __name__ == "__main__":
     """Test the OMF NFC Manager"""
-    manager = OMFNFCManager()
+    manager = OmfNfcManager()
 
     print("📱 OMF NFC Manager Test")
     print("=" * 50)
