@@ -9,17 +9,15 @@ from datetime import datetime
 
 import streamlit as st
 
-from .message_processor import create_topic_filter, get_message_processor
+# MessageProcessor entfernt - verwenden jetzt Per-Topic-Buffer
 
 
-def process_ccu_set_messages(messages):
-    """Verarbeitet neue CCU-Set-Nachrichten"""
-    if not messages:
+def process_ccu_set_messages_from_buffers(set_messages):
+    """Verarbeitet CCU-Set-Nachrichten aus Per-Topic-Buffer"""
+    if not set_messages:
         return
 
     # Neueste CCU-Set-Nachricht finden
-    set_messages = [msg for msg in messages if msg.get("topic", "").startswith("ccu/set")]
-
     if set_messages:
         latest_set_msg = max(set_messages, key=lambda x: x.get("ts", 0))
         # Set-Daten in Session-State speichern
@@ -86,18 +84,17 @@ def show_ccu_set():
     """Zeigt CCU-Set-Informationen"""
     st.subheader("⚙️ CCU Set")
 
-    # Message-Processor für CCU-Set
+    # MQTT-Client für Per-Topic-Buffer
     mqtt_client = st.session_state.get("mqtt_client")
     if mqtt_client:
-        # Message-Processor erstellen (nur einmal)
-        processor = get_message_processor(
-            component_name="ccu_set",
-            message_filter=create_topic_filter("ccu/set"),
-            processor_function=process_ccu_set_messages,
-        )
-
-        # Nachrichten verarbeiten (nur neue)
-        processor.process_messages(mqtt_client)
+        # CCU-Set-Topic abonnieren
+        mqtt_client.subscribe_many(["ccu/set/reset"])
+        
+        # Nachrichten aus Per-Topic-Buffer holen
+        set_messages = list(mqtt_client.get_buffer("ccu/set/reset"))
+        
+        # Nachrichten verarbeiten
+        process_ccu_set_messages_from_buffers(set_messages)
 
         # Status-Anzeige
         last_update_timestamp = st.session_state.get("ccu_set_last_update")

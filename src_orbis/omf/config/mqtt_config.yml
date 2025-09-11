@@ -2,6 +2,6 @@ client_id: omf_dashboard_replay
 host: localhost
 keepalive: 45
 password: ''
-port: 1884
+port: 1883
 tls: false
 username: ''

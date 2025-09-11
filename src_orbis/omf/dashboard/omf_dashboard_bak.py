@@ -7,7 +7,8 @@ from src_orbis.omf.config.config import LIVE_CFG, REPLAY_CFG
 # sys.path.append(os.path.join(os.path.dirname(__file__), "..", ".."))  # Nicht mehr nötig nach pip install -e .
 # sys.path.append(os.path.join(os.path.dirname(__file__), "components"))  # Nicht mehr nötig nach pip install -e .
 from src_orbis.omf.dashboard.components.dummy_component import show_dummy_component
-from src_orbis.omf.tools.omf_mqtt_factory import ensure_dashboard_client
+from src_orbis.omf.tools.mock_mqtt_client import MockMqttClient
+from src_orbis.omf.tools.omf_mqtt_client import OMFMqttClient
 
 """
 ORBIS Modellfabrik Dashboard (OMF) - Modulare Architektur
@@ -59,17 +60,11 @@ def setup_page_config():
 def get_default_broker_mode():
     """Holt den Default-Broker-Modus aus den Settings"""
     # Default = live (für Produktionsumgebung)
-    return "replay"
+    return "live"
 
 
 def handle_environment_switch():
-    """
-    Behandelt den Wechsel zwischen Live- und Replay-Umgebung.
-    
-    Erweiterte Features basierend auf ChatGPT-Vorschlägen:
-    - Prioritäts-Sidebar für Nachrichten-Zentrale
-    - Verbesserte Umgebungswechsel-Logik
-    """
+    """Behandelt den Wechsel zwischen Live- und Replay-Umgebung"""
     # Default aus Settings holen
     if "env" not in st.session_state:
         st.session_state["env"] = get_default_broker_mode()
@@ -84,57 +79,51 @@ def handle_environment_switch():
     env_options = ["live", "replay", "mock"]
     env = st.sidebar.radio("Umgebung", env_options, index=env_options.index(st.session_state["env"]), horizontal=True)
 
-    # Prioritäts-Sidebar (ChatGPT-Vorschlag)
-    st.sidebar.markdown("---")
-    st.sidebar.markdown("### 📊 Nachrichten-Zentrale")
-    
-    # Prioritäts-Slider
-    current_priority = st.session_state.get("mc_priority", 5)
-    priority = st.sidebar.select_slider(
-        "Priorität",
-        options=[1, 2, 3, 4, 5],
-        value=current_priority,
-        help="1=Kritisch, 2=Wichtig, 3=Normal, 4=UI, 5=Alle"
-    )
-    
-    # Debug: Client-ID anzeigen (falls verfügbar)
-    client = st.session_state.get("mqtt_client")
-    if client:
-        st.sidebar.caption(f"🆔 Client ID: `{id(client)}`")
-    else:
-        st.sidebar.caption("🆔 Client ID: Noch nicht initialisiert")
-    
-    # Priorität anwenden wenn geändert
-    if priority != current_priority:
-        st.session_state["mc_priority"] = priority
-        # Reset Subscription-Status für neue Priorität
-        broker_key = f"{st.session_state.get('mqtt_client', {}).cfg.host if hasattr(st.session_state.get('mqtt_client'), 'cfg') else 'unknown'}:{st.session_state.get('mqtt_client', {}).cfg.port if hasattr(st.session_state.get('mqtt_client'), 'cfg') else 'unknown'}"
-        subscribed_key = f"mqtt_subscribed_{broker_key}"
-        if subscribed_key in st.session_state:
-            del st.session_state[subscribed_key]
-        st.rerun()
-
     if env != st.session_state["env"]:
-        # Umgebungswechsel - Factory kümmert sich um Reconnect
+        # MQTT-Client bei Umgebungswechsel komplett neu initialisieren
+        old_mqtt_client = st.session_state.get("mqtt_client")
+
+        # Alten Client schließen
+        if old_mqtt_client:
+            try:
+                old_mqtt_client.close()
+            except Exception:
+                pass
+
         st.session_state["env"] = env
         st.cache_resource.clear()
+
+        # MQTT-Client aus session_state entfernen - wird neu erstellt
+        if "mqtt_client" in st.session_state:
+            del st.session_state["mqtt_client"]
+
         st.rerun()
 
     return env
 
 
 def initialize_mqtt_client(env):
-    """
-    Initialisiert den MQTT-Client über die kontrollierte Factory.
-    
-    Verwendet ensure_dashboard_client() für Singleton-Verhalten:
-    - Ein Client pro Session
-    - Reconnect bei Umgebungswechsel
-    - Robuste Fehlerbehandlung
-    """
-    # Verwende die kontrollierte Factory
-    client = ensure_dashboard_client(env, st.session_state)
-    
+    """Initialisiert den MQTT-Client"""
+    if env == "live":
+        cfg = LIVE_CFG
+    elif env == "replay":
+        cfg = REPLAY_CFG
+    else:
+        cfg = {"host": "mock", "port": 0}
+
+    # MQTT-Client nur einmal initialisieren (Singleton)
+    if "mqtt_client" not in st.session_state:
+        st.info("🔍 **Debug: Erstelle neuen MQTT-Client**")
+        from src_orbis.omf.tools.mqtt_config import MqttConfig
+
+        if env == "mock":
+            client = MockMqttClient(MqttConfig(**cfg))
+        else:
+            client = OMFMqttClient(MqttConfig(**cfg))
+        st.session_state.mqtt_client = client
+    else:
+        client = st.session_state.mqtt_client
+
     # Automatisch verbinden wenn nicht verbunden
     if not client.connected:
         # Der Client verbindet sich automatisch im __init__
@@ -146,66 +135,20 @@ def initialize_mqtt_client(env):
                 break
             time.sleep(0.1)
 
-    # Konfiguration für Rückwärtskompatibilität
-    if env == "live":
-        cfg = LIVE_CFG
-    elif env == "replay":
-        cfg = REPLAY_CFG
-    else:
-        cfg = {"host": "mock", "port": 0}
-
     return client, cfg
 
 
 def setup_mqtt_subscription(client, cfg):
-    """
-    Richtet MQTT-Subscription ein mit erweiterten Features.
-    
-    Erweiterte Features basierend auf ChatGPT-Vorschlägen:
-    - Prioritäts-basierte Subscriptions für Nachrichten-Zentrale
-    - Fallback auf alle Topics wenn Prioritäten nicht verfügbar
-    - Robuste Fehlerbehandlung
-    """
+    """Richtet MQTT-Subscription ein"""
     # Subscribe zu allen Topics - nur einmal pro Broker-Verbindung
     broker_key = f"{cfg['host']}:{cfg['port']}"
     subscribed_key = f"mqtt_subscribed_{broker_key}"
 
     if not st.session_state.get(subscribed_key, False):
         try:
-            # Versuche Prioritäts-basierte Subscriptions (ChatGPT-Vorschlag)
-            if hasattr(client, "subscribe_many") and hasattr(client, "set_message_center_priority"):
-                # Lade Prioritäts-Konfiguration
-                try:
-                    from src_orbis.omf.dashboard.config.mc_priority import PRIORITY_TOPICS
-                    from src_orbis.omf.dashboard.config.mc_priority import get_priority_filters
-                    
-                    # Standard-Priorität 5 (alle Topics)
-                    default_priority = st.session_state.get("mc_priority", 5)
-                    priority_filters = get_priority_filters(default_priority)
-                    
-                    if priority_filters:
-                        client.subscribe_many(priority_filters, qos=1)
-                        st.sidebar.info(f"📡 Subscribed zu Priorität {default_priority} Topics auf {broker_key}")
-                        st.sidebar.caption(f"📋 {len(priority_filters)} Filter aktiv")
-                    else:
-                        # Fallback: Alle Topics
-                        client.subscribe("#", qos=1)
-                        st.sidebar.info(f"📡 Subscribed zu allen Topics auf {broker_key}")
-                        
-                except ImportError:
-                    # Fallback: Alle Topics wenn Prioritäts-Konfiguration nicht verfügbar
-                    client.subscribe("#", qos=1)
-                    st.sidebar.info(f"📡 Subscribed zu allen Topics auf {broker_key}")
-                    st.sidebar.caption("ℹ️ Prioritäts-Filter nicht verfügbar")
-                    
-            else:
-                # Fallback: Standard-Subscription
-                client.subscribe("#", qos=1)
-                st.sidebar.info(f"📡 Subscribed zu allen Topics auf {broker_key}")
-                st.sidebar.caption("ℹ️ Erweiterte Features nicht verfügbar")
-                
+            client.subscribe("#", qos=1)
             st.session_state[subscribed_key] = True
-            
+            st.sidebar.info(f"📡 Subscribed zu allen Topics auf {broker_key}")
         except Exception as e:
             st.sidebar.error(f"❌ Subscribe-Fehler: {e}")
     else:

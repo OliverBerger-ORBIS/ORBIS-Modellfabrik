@@ -14,7 +14,7 @@ LIVE_CFG = {
 # Replay (optional, z. B. lokaler Mosquitto auf 1884, wenn keine APS-Verbindung verfügbar ist)
 REPLAY_CFG = {
     "host": os.getenv("OMF_REPLAY_HOST", "localhost"),
-    "port": int(os.getenv("OMF_REPLAY_PORT", "1884")),
+    "port": int(os.getenv("OMF_REPLAY_PORT", "1883")),
     "username": os.getenv("OMF_REPLAY_USER", ""),
     "password": os.getenv("OMF_REPLAY_PASS", ""),
     "client_id": "omf_dashboard_replay",

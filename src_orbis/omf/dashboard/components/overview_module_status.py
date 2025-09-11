@@ -11,7 +11,7 @@ from datetime import datetime
 import pandas as pd
 import streamlit as st
 
-from .message_processor import create_topic_filter, get_message_processor
+# Alte message_processor Imports entfernt - verwenden jetzt Per-Topic-Buffer
 
 # Import module manager for static module info
 try:
@@ -194,16 +194,18 @@ def get_static_module_info():
         return {}
 
 
-def _process_module_messages(messages, module_status_store):
-    """Process MQTT messages to update module status store"""
+def _process_module_messages_from_buffers(state_messages, connection_messages, pairing_messages, module_status_store):
+    """Process MQTT messages from Per-Topic-Buffers to update module status store"""
 
     # Topic patterns for module status
     connection_pattern = re.compile(r"^module/v1/ff/(?P<module_id>[^/]+)/connection$")
     state_pattern = re.compile(r"^module/v1/ff/(?P<module_id>[^/]+)/state$")
-    factsheet_pattern = re.compile(r"^module/v1/ff/(?P<module_id>[^/]+)/factsheet$")
     pairing_pattern = re.compile(r"^ccu/pairing/state$")
 
-    for msg in messages:
+    # Process all message types
+    all_messages = state_messages + connection_messages + pairing_messages
+    
+    for msg in all_messages:
         try:
             topic = msg.get("topic", "")
             payload = msg.get("payload", {})
@@ -325,10 +327,17 @@ def show_overview_module_status():
     st.markdown("Übersicht aller APS-Module mit Status und Verbindungsinformationen")
 
     # Get MQTT client from session state
-    mqtt_client = st.session_state.get("mqtt_client")
-    if not mqtt_client:
+    client = st.session_state.get("mqtt_client")
+    if not client:
         st.error("❌ MQTT Client nicht verfügbar")
         return
+    
+    # Abonniere die benötigten Topics für Per-Topic-Buffer
+    client.subscribe_many([
+        "module/v1/ff/+/state",
+        "module/v1/ff/+/connection", 
+        "ccu/pairing/state"
+    ])
 
     # Status wird automatisch aktualisiert - kein Button nötig
     st.info("💡 **Status wird automatisch aus MQTT-Nachrichten aktualisiert**")
@@ -347,27 +356,29 @@ def show_overview_module_status():
         st.session_state["module_status_last_count"] = 0
 
     # Subscribe to ccu/pairing/state for real-time module status
+    # Alte Subscribe-Aufrufe entfernt - verwenden jetzt subscribe_many()
+
+    # NEUES PATTERN: Per-Topic-Buffer für Modul-Status
     try:
-        mqtt_client.subscribe("ccu/pairing/state", qos=1)
+        # Hole die letzten Nachrichten aus den Per-Topic-Buffern
+        state_messages = list(client.get_buffer("module/v1/ff/+/state"))
+        connection_messages = list(client.get_buffer("module/v1/ff/+/connection"))
+        pairing_messages = list(client.get_buffer("ccu/pairing/state"))
+        
+        total_messages = len(state_messages) + len(connection_messages) + len(pairing_messages)
+        if total_messages > 0:
+            st.info(f"📊 **{total_messages} Nachrichten in Buffern** (State: {len(state_messages)}, Connection: {len(connection_messages)}, Pairing: {len(pairing_messages)})")
+            
+            # Verarbeite die Nachrichten aus den Buffern
+            _process_module_messages_from_buffers(
+                state_messages, 
+                connection_messages, 
+                pairing_messages, 
+                st.session_state["module_status_store"]
+            )
+
     except Exception as e:
-        st.warning(f"⚠️ Fehler beim Subscribe zu ccu/pairing/state: {e}")
-
-    # NEUES PATTERN: Message-Processor für Modul-Status
-    try:
-        # Message-Processor erstellen (nur einmal)
-        processor = get_message_processor(
-            component_name="overview_module_status",
-            message_filter=create_topic_filter(
-                ["module/v1/ff/+/state", "module/v1/ff/+/connection", "ccu/pairing/state"]
-            ),
-            processor_function=lambda msgs: _process_module_messages(msgs, st.session_state["module_status_store"]),
-        )
-
-        # Nachrichten verarbeiten (nur neue)
-        processor.process_messages(mqtt_client)
-
-    except Exception as e:
-        st.warning(f"⚠️ Fehler beim Laden der MQTT-Nachrichten: {e}")
+        st.warning(f"⚠️ Fehler beim Zugriff auf Per-Topic-Buffer: {e}")
 
     # Create module table data with real-time status
     module_table_data = []

@@ -9,17 +9,15 @@ from datetime import datetime
 
 import streamlit as st
 
-from .message_processor import create_topic_filter, get_message_processor
+# MessageProcessor entfernt - verwenden jetzt Per-Topic-Buffer
 
 
-def process_ccu_status_messages(messages):
-    """Verarbeitet neue CCU-Status-Nachrichten"""
-    if not messages:
+def process_ccu_status_messages_from_buffers(status_messages):
+    """Verarbeitet CCU-Status-Nachrichten aus Per-Topic-Buffer"""
+    if not status_messages:
         return
 
     # Neueste CCU-Status-Nachricht finden
-    status_messages = [msg for msg in messages if msg.get("topic", "").startswith("ccu/status")]
-
     if status_messages:
         latest_status_msg = max(status_messages, key=lambda x: x.get("ts", 0))
         # Status-Daten in Session-State speichern
@@ -87,27 +85,19 @@ def show_ccu_status():
     """Zeigt CCU-Status-Informationen"""
     st.subheader("🔗 CCU Status")
 
-    # Message-Processor für CCU-Status
+    # MQTT-Client für Per-Topic-Buffer
     mqtt_client = st.session_state.get("mqtt_client")
     if mqtt_client:
-        # Message-Processor erstellen (nur einmal)
-        processor = get_message_processor(
-            component_name="ccu_status",
-            message_filter=create_topic_filter("ccu/status"),
-            processor_function=process_ccu_status_messages,
-        )
-
-        # Nachrichten verarbeiten (nur neue)
-        processor.process_messages(mqtt_client)
-
-        # Debug: Zeige verfügbare Topics
-        if mqtt_client and hasattr(mqtt_client, "get_recent_topics"):
-            recent_topics = mqtt_client.get_recent_topics()
-            ccu_topics = [topic for topic in recent_topics if "ccu" in topic]
-            if ccu_topics:
-                st.info(f"🔍 **Debug:** Gefundene CCU-Topics: {', '.join(ccu_topics[:5])}")
-            else:
-                st.warning("⚠️ **Debug:** Keine CCU-Topics in den letzten Nachrichten gefunden")
+        # CCU-Status-Topics abonnieren
+        mqtt_client.subscribe_many(["ccu/status", "ccu/status/connection", "ccu/status/health"])
+        
+        # Nachrichten aus Per-Topic-Buffer holen (alle CCU-Status-Topics)
+        status_messages = []
+        for topic in ["ccu/status", "ccu/status/connection", "ccu/status/health"]:
+            status_messages.extend(list(mqtt_client.get_buffer(topic)))
+        
+        # Nachrichten verarbeiten
+        process_ccu_status_messages_from_buffers(status_messages)
 
         # Status-Anzeige
         last_update_timestamp = st.session_state.get("ccu_status_last_update")

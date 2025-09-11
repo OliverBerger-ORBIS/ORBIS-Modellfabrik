@@ -15,8 +15,7 @@ except ImportError as e:
     TEMPLATES_AVAILABLE = False
     st.error(f"❌ Templates nicht verfügbar: {e}")
 
-# Message-Processor Import
-from .message_processor import create_topic_filter, get_message_processor
+# Alte message_processor Imports entfernt - verwenden jetzt Per-Topic-Buffer
 
 
 class OrderManager:
@@ -91,33 +90,17 @@ class OrderManager:
         return available
 
 
-def process_purchase_order_messages(messages):
-    """Verarbeitet neue HBW-Nachrichten für Rohmaterial-Bestellungen"""
-    if not messages:
+def process_purchase_order_messages_from_buffers(hbw_messages, order_manager):
+    """Verarbeitet HBW-Nachrichten aus Per-Topic-Buffer für Rohmaterial-Bestellungen"""
+    if not hbw_messages:
         return
 
     # Neueste HBW-Nachricht finden
-    hbw_messages = [msg for msg in messages if msg.get("topic", "").startswith("module/v1/ff/SVR3QA0022/state")]
-
     if hbw_messages:
         latest_hbw_msg = max(hbw_messages, key=lambda x: x.get("ts", 0))
-        # OrderManager aus Session-State holen (sollte bereits existieren)
-        order_manager = st.session_state.get("order_manager")
         if order_manager:
             order_manager._process_hbw_state_message(latest_hbw_msg)
 
-    def get_formatted_timestamp(self):
-        """Gibt den formatierten Zeitstempel zurück"""
-        if not self.last_update_timestamp:
-            return "Nie aktualisiert"
-
-        try:
-            from datetime import datetime
-
-            dt = datetime.fromtimestamp(self.last_update_timestamp)
-            return dt.strftime("%d.%m.%Y %H:%M:%S")
-        except (ValueError, OSError):
-            return f"Timestamp: {self.last_update_timestamp}"
 
 
 def show_overview_order_raw():
@@ -130,25 +113,36 @@ def show_overview_order_raw():
         st.session_state["order_manager"] = OrderManager()
     order_manager = st.session_state["order_manager"]
 
-    # NEUES PATTERN: Message-Processor für Rohmaterial-Bestellungen
+    # NEUES PATTERN: Per-Topic-Buffer für Rohmaterial-Bestellungen
     mqtt_client = st.session_state.get("mqtt_client")
     if mqtt_client:
-        # Message-Processor erstellen (nur einmal)
-        processor = get_message_processor(
-            component_name="overview_purchase_order",
-            message_filter=create_topic_filter("module/v1/ff/SVR3QA0022/state"),
-            processor_function=process_purchase_order_messages,
-        )
-
-        # Nachrichten verarbeiten (nur neue)
-        processor.process_messages(mqtt_client)
-
-        # Status-Anzeige
-        if order_manager.last_update_timestamp:
-            formatted_time = order_manager.get_formatted_timestamp()
-            st.success(f"✅ Lagerbestand aktualisiert: {formatted_time}")
-        else:
-            st.info("ℹ️ Keine HBW-Nachrichten empfangen")
+        # Abonniere die benötigten Topics für Per-Topic-Buffer
+        mqtt_client.subscribe_many([
+            "module/v1/ff/SVR3QA0022/state"  # HBW State für Lagerbestand
+        ])
+        
+        # NEUES PATTERN: Per-Topic-Buffer für HBW-Status
+        try:
+            # Hole die letzten Nachrichten aus dem Per-Topic-Buffer
+            hbw_messages = list(mqtt_client.get_buffer("module/v1/ff/SVR3QA0022/state"))
+            
+            if hbw_messages:
+                st.info(f"📊 **{len(hbw_messages)} HBW-Nachrichten in Buffer**")
+                
+                # Verarbeite die Nachrichten aus dem Buffer
+                process_purchase_order_messages_from_buffers(hbw_messages, order_manager)
+                
+                # Status-Anzeige
+                if order_manager.last_update_timestamp:
+                    formatted_time = order_manager.get_formatted_timestamp()
+                    st.success(f"✅ Lagerbestand aktualisiert: {formatted_time}")
+                else:
+                    st.info("ℹ️ Keine HBW-Nachrichten verarbeitet")
+            else:
+                st.info("ℹ️ Keine HBW-Nachrichten empfangen")
+                
+        except Exception as e:
+            st.warning(f"⚠️ Fehler beim Zugriff auf Per-Topic-Buffer: {e}")
     else:
         st.warning("⚠️ MQTT-Client nicht verfügbar - Lagerbestand wird nicht aktualisiert")
 

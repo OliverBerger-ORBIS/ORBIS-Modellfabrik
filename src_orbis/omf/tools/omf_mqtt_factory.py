@@ -1,17 +1,82 @@
-__all__ = ["get_omf_mqtt_client"]
-import streamlit as st
+from __future__ import annotations
 
-from .mqtt_config import MqttConfig
+__all__ = ["ensure_dashboard_client", "create_ephemeral", "get_omf_mqtt_client"]
+from typing import MutableMapping
+
+from .mqtt_config import MqttConfig, cfg_for
 from .omf_mqtt_client import OMFMqttClient
 
 
-@st.cache_resource(show_spinner=False)
+def ensure_dashboard_client(env: str, store: MutableMapping) -> OMFMqttClient:
+    """
+    Liefert genau EINEN MQTT-Client pro Streamlit-Session.
+    Verwendung NUR im omf_dashboard.py. Nicht in Komponenten aufrufen.
+    
+    Args:
+        env: Umgebung ("live", "replay", "mock")
+        store: MutableMapping (z.B. st.session_state)
+        
+    Returns:
+        OMFMqttClient: Singleton-Client für die Session
+    """
+    cfg = cfg_for(env)
+    cli = store.get("mqtt_client")
+
+    if cli is None:
+        # Erstinitialisierung
+        cli = OMFMqttClient(cfg)
+        cli.connect()
+        store["mqtt_client"] = cli
+        store["mqtt_env"] = env
+        return cli
+
+    # Umgebung gewechselt -> sauberer Reconnect statt Neuaufbau
+    if store.get("mqtt_env") != env:
+        try:
+            cli.reconnect(cfg)
+            store["mqtt_env"] = env
+            # Optional: Verlauf leeren
+            if hasattr(cli, "clear_history"):
+                try:
+                    cli.clear_history()
+                except Exception:
+                    pass
+        except Exception as e:
+            # Fallback: Neuen Client erstellen
+            cli = OMFMqttClient(cfg)
+            cli.connect()
+            store["mqtt_client"] = cli
+            store["mqtt_env"] = env
+    
+    return cli
+
+
+def create_ephemeral(env: str) -> OMFMqttClient:
+    """
+    Für Tests/Tools außerhalb der Streamlit-App: separater, kurzfristiger Client.
+    In der App NICHT verwenden, sonst drohen Doppelverbindungen.
+    
+    Args:
+        env: Umgebung ("live", "replay", "mock")
+        
+    Returns:
+        OMFMqttClient: Ephemeraler Client für Tests/Tools
+    """
+    cfg = cfg_for(env)
+    cli = OMFMqttClient(cfg)
+    cli.connect()
+    return cli
+
+
+# Legacy-Funktion für Rückwärtskompatibilität (nur für Tests/Tools)
 def get_omf_mqtt_client(cfg_dict: dict = None) -> OMFMqttClient:
-    """Singleton pro (konfigurationsgleicher) Session."""
+    """
+    Legacy-Funktion für Tests/Tools außerhalb der Streamlit-App.
+    
+    WARNUNG: In der Streamlit-App NICHT verwenden!
+    Verwende stattdessen ensure_dashboard_client() im omf_dashboard.py.
+    """
     if cfg_dict is None:
-        # Default-Konfiguration, kann angepasst werden
         cfg_dict = {"host": "localhost", "port": 1883}
     cfg = MqttConfig(**cfg_dict)
-    client = OMFMqttClient(cfg)
-    # NICHT in session_state überschreiben - das macht der Aufrufer
-    return client
+    return create_ephemeral("live")  # Fallback auf live

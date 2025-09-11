@@ -9,7 +9,7 @@ from datetime import datetime
 
 import streamlit as st
 
-from .message_processor import create_topic_filter, get_message_processor
+# MessageProcessor entfernt - verwenden jetzt Per-Topic-Buffer
 
 # MessageTemplate Bibliothek Import
 try:
@@ -24,14 +24,12 @@ except Exception as e:
     print(f"❌ MessageTemplate Fehler: {e}")
 
 
-def process_fts_connection_messages(messages):
-    """Verarbeitet neue FTS-Connection-Nachrichten"""
-    if not messages:
+def process_fts_connection_messages_from_buffers(connection_messages):
+    """Verarbeitet FTS-Connection-Nachrichten aus Per-Topic-Buffer"""
+    if not connection_messages:
         return
 
     # Neueste FTS-Connection-Nachricht finden
-    connection_messages = [msg for msg in messages if msg.get("topic", "").startswith("fts/v1/ff/5iO4/connection")]
-
     if connection_messages:
         latest_connection_msg = max(connection_messages, key=lambda x: x.get("ts", 0))
         # Connection-Daten in Session-State speichern
@@ -114,20 +112,19 @@ def show_fts_connection():
     """Zeigt FTS-Connection-Informationen"""
     st.subheader("🔗 FTS Connection")
 
-    # Message-Processor für FTS-Connection
+    # MQTT-Client für Per-Topic-Buffer
     mqtt_client = st.session_state.get("mqtt_client")
     if mqtt_client:
-        # Message-Processor erstellen (nur einmal)
-        processor = get_message_processor(
-            component_name="fts_connection",
-            message_filter=create_topic_filter("fts/v1/ff/5iO4/connection"),
-            processor_function=process_fts_connection_messages,
-        )
+        # FTS-Connection-Topic abonnieren
+        mqtt_client.subscribe_many(["fts/v1/ff/5iO4/connection"])
+        
+        # Nachrichten aus Per-Topic-Buffer holen
+        connection_messages = list(mqtt_client.get_buffer("fts/v1/ff/5iO4/connection"))
+        
+        # Nachrichten verarbeiten
+        process_fts_connection_messages_from_buffers(connection_messages)
 
-        # Nachrichten verarbeiten (nur neue)
-        processor.process_messages(mqtt_client)
-
-        # Status-Anzeige (wie in overview_inventory)
+        # Status-Anzeige
         last_update_timestamp = st.session_state.get("fts_connection_last_update")
         if last_update_timestamp:
             formatted_time = get_formatted_timestamp(last_update_timestamp)

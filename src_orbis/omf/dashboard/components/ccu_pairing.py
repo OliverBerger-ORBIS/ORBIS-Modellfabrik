@@ -9,7 +9,7 @@ from datetime import datetime
 
 import streamlit as st
 
-from .message_processor import create_topic_filter, get_message_processor
+# MessageProcessor entfernt - verwenden jetzt Per-Topic-Buffer
 from .validation_error_tracker import get_validation_tracker
 
 # MessageTemplate Bibliothek Import
@@ -25,14 +25,12 @@ except Exception as e:
     print(f"❌ MessageTemplate Fehler: {e}")
 
 
-def process_ccu_pairing_messages(messages):
-    """Verarbeitet neue CCU-Pairing-Nachrichten"""
-    if not messages:
+def process_ccu_pairing_messages_from_buffers(pairing_messages):
+    """Verarbeitet CCU-Pairing-Nachrichten aus Per-Topic-Buffer"""
+    if not pairing_messages:
         return
 
     # Neueste CCU-Pairing-Nachricht finden
-    pairing_messages = [msg for msg in messages if msg.get("topic", "").startswith("ccu/pairing")]
-
     if pairing_messages:
         latest_pairing_msg = max(pairing_messages, key=lambda x: x.get("ts", 0))
         # Pairing-Daten in Session-State speichern
@@ -220,18 +218,17 @@ def show_ccu_pairing():
     """Zeigt CCU-Pairing-Informationen"""
     st.subheader("🔗 CCU Pairing")
 
-    # Message-Processor für CCU-Pairing
+    # MQTT-Client für Per-Topic-Buffer
     mqtt_client = st.session_state.get("mqtt_client")
     if mqtt_client:
-        # Message-Processor erstellen (nur einmal)
-        processor = get_message_processor(
-            component_name="ccu_pairing",
-            message_filter=create_topic_filter("ccu/pairing/state"),
-            processor_function=process_ccu_pairing_messages,
-        )
-
-        # Nachrichten verarbeiten (nur neue)
-        processor.process_messages(mqtt_client)
+        # CCU-Pairing-Topic abonnieren
+        mqtt_client.subscribe_many(["ccu/pairing/state"])
+        
+        # Nachrichten aus Per-Topic-Buffer holen
+        pairing_messages = list(mqtt_client.get_buffer("ccu/pairing/state"))
+        
+        # Nachrichten verarbeiten
+        process_ccu_pairing_messages_from_buffers(pairing_messages)
 
         # Status-Anzeige
         last_update_timestamp = st.session_state.get("ccu_pairing_last_update")

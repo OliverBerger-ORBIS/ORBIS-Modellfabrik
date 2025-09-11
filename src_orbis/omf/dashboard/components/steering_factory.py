@@ -17,34 +17,45 @@ except ImportError:
     # sys.path.append(str(Path(__file__).parent.parent.parent.parent))  # Nicht mehr nötig nach pip install -e .
     from src_orbis.omf.tools.workflow_order_manager import get_workflow_order_manager
 
+# MessageGateway für sauberes Publishing
+from src_orbis.omf.tools.mqtt_gateway import MessageGateway
+
 
 def show_factory_steering():
     """Hauptfunktion für die Factory Steuerung"""
     st.subheader("🏭 Factory Steuerung")
     st.markdown("**Traditionelle Steuerungsfunktionen für die Modellfabrik:**")
+    
+    # MessageGateway initialisieren
+    mqtt_client = st.session_state.get("mqtt_client")
+    if not mqtt_client:
+        st.error("❌ MQTT-Client nicht verfügbar")
+        return
+    
+    gateway = MessageGateway(mqtt_client)
 
     # Factory Reset Section - Aufklappbare Box
     with st.expander("🏭 Factory Reset", expanded=False):
-        _show_factory_reset_section()
+        _show_factory_reset_section(gateway)
 
     # Module Sequences Section - Aufklappbare Box
     with st.expander("🔧 Modul-Sequenzen", expanded=False):
-        _show_module_sequences_section()
+        _show_module_sequences_section(gateway)
 
     # FTS Commands Section - Aufklappbare Box
     with st.expander("🚗 FTS (Fahrerloses Transportsystem) Steuerung", expanded=False):
-        _show_fts_commands_section()
+        _show_fts_commands_section(gateway)
 
     # Order Commands Section - Aufklappbare Box
     with st.expander("📋 Auftrags-Befehle", expanded=False):
-        _show_order_commands_section()
+        _show_order_commands_section(gateway)
 
     # Navigation Commands Section - Aufklappbare Box
     with st.expander("🗺️ Navigation", expanded=False):
-        _show_navigation_commands_section()
+        _show_navigation_commands_section(gateway)
 
 
-def _show_factory_reset_section():
+def _show_factory_reset_section(gateway: MessageGateway):
     """Zeigt Factory Reset Funktionalität"""
     st.markdown("**Factory Reset der gesamten Modellfabrik:**")
     st.info("ℹ️ Setzt alle Module in den Ausgangszustand zurück")
@@ -53,17 +64,25 @@ def _show_factory_reset_section():
 
     with col1:
         if st.button("🏭 Factory Reset", type="primary", key="factory_reset"):
-            # Nachricht vorbereiten und anzeigen
-            _prepare_factory_reset_message()
-            st.rerun()
+            # Direkt über MessageGateway senden
+            try:
+                success = gateway.send(
+                    topic="ccu/set/reset",
+                    builder=lambda: {"timestamp": datetime.now(timezone.utc).isoformat(), "withStorage": False},
+                    ensure_order_id=True
+                )
+                if success:
+                    st.success("✅ Factory Reset erfolgreich gesendet!")
+                else:
+                    st.error("❌ Fehler beim Senden des Factory Reset")
+            except Exception as e:
+                st.error(f"❌ Fehler beim Factory Reset: {e}")
 
     with col2:
-        # Nachricht anzeigen und Send-Button direkt hier
-        if "pending_message" in st.session_state and st.session_state["pending_message"]["type"] == "factory_reset":
-            _show_message_and_send_button_inline("factory_reset")
+        st.info("💡 Factory Reset wird direkt gesendet (keine Vorschau)")
 
 
-def _show_module_sequences_section():
+def _show_module_sequences_section(gateway: MessageGateway):
     """Zeigt Modul-Sequenzen für AIQS, MILL, DRILL"""
     st.markdown("**Einzelne Module steuern:**")
 
@@ -73,24 +92,19 @@ def _show_module_sequences_section():
 
         with col1:
             if st.button("🔄 Komplette Sequenz", key="aiqs_sequence", type="primary"):
-                _prepare_module_sequence_message("AIQS")
+                st.info("💡 Sequenzen werden in zukünftiger Version über MessageGateway implementiert")
 
         with col2:
             if st.button("📥 PICK", key="aiqs_pick"):
-                _prepare_module_step_message("AIQS", "PICK")
+                _send_module_command(gateway, "AIQS", "PICK")
 
         with col3:
             if st.button("🔍 CHECK", key="aiqs_check"):
-                _prepare_module_step_message("AIQS", "CHECK_QUALITY")
+                _send_module_command(gateway, "AIQS", "CHECK_QUALITY")
 
         with col4:
             if st.button("📤 DROP", key="aiqs_drop"):
-                _prepare_module_step_message("AIQS", "DROP")
-
-        # Nachricht anzeigen und Send-Button für AIQS (inline)
-        if "pending_message" in st.session_state and st.session_state["pending_message"]["type"].startswith("aiqs"):
-            st.markdown("---")
-            _show_message_and_send_button_inline("aiqs")
+                _send_module_command(gateway, "AIQS", "DROP")
 
     # MILL Box
     with st.expander("⚙️ MILL (Fräsen)", expanded=False):
@@ -98,24 +112,19 @@ def _show_module_sequences_section():
 
         with col1:
             if st.button("🔄 Komplette Sequenz", key="mill_sequence", type="primary"):
-                _prepare_module_sequence_message("MILL")
+                st.info("💡 Sequenzen werden in zukünftiger Version über MessageGateway implementiert")
 
         with col2:
             if st.button("📥 PICK", key="mill_pick"):
-                _prepare_module_step_message("MILL", "PICK")
+                _send_module_command(gateway, "MILL", "PICK")
 
         with col3:
             if st.button("⚙️ MILL", key="mill_mill"):
-                _prepare_module_step_message("MILL", "MILL")
+                _send_module_command(gateway, "MILL", "MILL")
 
         with col4:
             if st.button("📤 DROP", key="mill_drop"):
-                _prepare_module_step_message("MILL", "DROP")
-
-        # Nachricht anzeigen und Send-Button für MILL (inline)
-        if "pending_message" in st.session_state and st.session_state["pending_message"]["type"].startswith("mill"):
-            st.markdown("---")
-            _show_message_and_send_button_inline("mill")
+                _send_module_command(gateway, "MILL", "DROP")
 
     # DRILL Box
     with st.expander("🔩 DRILL (Bohren)", expanded=False):
@@ -123,27 +132,22 @@ def _show_module_sequences_section():
 
         with col1:
             if st.button("🔄 Komplette Sequenz", key="drill_sequence", type="primary"):
-                _prepare_module_sequence_message("DRILL")
+                st.info("💡 Sequenzen werden in zukünftiger Version über MessageGateway implementiert")
 
         with col2:
             if st.button("📥 PICK", key="drill_pick"):
-                _prepare_module_step_message("DRILL", "PICK")
+                _send_module_command(gateway, "DRILL", "PICK")
 
         with col3:
             if st.button("🔩 DRILL", key="drill_drill"):
-                _prepare_module_step_message("DRILL", "DRILL")
+                _send_module_command(gateway, "DRILL", "DRILL")
 
         with col4:
             if st.button("📤 DROP", key="drill_drop"):
-                _prepare_module_step_message("DRILL", "DROP")
-
-        # Nachricht anzeigen und Send-Button für DRILL (inline)
-        if "pending_message" in st.session_state and st.session_state["pending_message"]["type"].startswith("drill"):
-            st.markdown("---")
-            _show_message_and_send_button_inline("drill")
+                _send_module_command(gateway, "DRILL", "DROP")
 
 
-def _show_fts_commands_section():
+def _show_fts_commands_section(gateway: MessageGateway):
     """Zeigt FTS-Steuerung"""
     st.markdown("**Fahrerloses Transportsystem (FTS) steuern:**")
 
@@ -151,36 +155,101 @@ def _show_fts_commands_section():
 
     with col1:
         if st.button("🚗 Docke an", key="fts_dock"):
-            _prepare_fts_message("DOCK")
-            st.rerun()
+            try:
+                success = gateway.send(
+                    topic="fts/v1/ff/5iO4/instantAction",
+                    builder=lambda: {
+                        "timestamp": datetime.now(timezone.utc).isoformat(),
+                        "serialNumber": "5iO4",
+                        "actions": [
+                            {
+                                "actionType": "findInitialDockPosition",
+                                "actionId": str(uuid.uuid4()),
+                                "metadata": {"nodeId": "SVR4H73275"}
+                            }
+                        ]
+                    },
+                    ensure_order_id=True
+                )
+                if success:
+                    st.success("✅ FTS Dock-Befehl erfolgreich gesendet!")
+                else:
+                    st.error("❌ Fehler beim Senden des FTS Dock-Befehls")
+            except Exception as e:
+                st.error(f"❌ Fehler beim FTS Dock: {e}")
 
     with col2:
         if st.button("🔋 FTS laden", key="fts_charge"):
-            _prepare_fts_message("CHARGE")
-            st.rerun()
+            try:
+                success = gateway.send(
+                    topic="ccu/set/charge",
+                    builder=lambda: {"serialNumber": "5iO4", "charge": True},
+                    ensure_order_id=True
+                )
+                if success:
+                    st.success("✅ FTS Lade-Befehl erfolgreich gesendet!")
+                else:
+                    st.error("❌ Fehler beim Senden des FTS Lade-Befehls")
+            except Exception as e:
+                st.error(f"❌ Fehler beim FTS Laden: {e}")
 
     with col3:
         if st.button("⏹️ Laden beenden", key="fts_stop_charging"):
-            _prepare_fts_message("STOP")
-            st.rerun()
+            try:
+                success = gateway.send(
+                    topic="ccu/set/charge",
+                    builder=lambda: {"serialNumber": "5iO4", "charge": False},
+                    ensure_order_id=True
+                )
+                if success:
+                    st.success("✅ FTS Lade-Stop erfolgreich gesendet!")
+                else:
+                    st.error("❌ Fehler beim Senden des FTS Lade-Stops")
+            except Exception as e:
+                st.error(f"❌ Fehler beim FTS Lade-Stop: {e}")
 
     with col4:
         if st.button("🔄 Status abfragen", key="fts_status"):
-            _prepare_fts_message("STATUS")
-            st.rerun()
+            try:
+                success = gateway.send(
+                    topic="fts/v1/ff/5iO4/instantAction",
+                    builder=lambda: {
+                        "timestamp": datetime.now(timezone.utc).isoformat(),
+                        "serialNumber": "5iO4",
+                        "actions": [{"actionType": "status", "actionId": str(uuid.uuid4())}]
+                    },
+                    ensure_order_id=True
+                )
+                if success:
+                    st.success("✅ FTS Status-Abfrage erfolgreich gesendet!")
+                else:
+                    st.error("❌ Fehler beim Senden der FTS Status-Abfrage")
+            except Exception as e:
+                st.error(f"❌ Fehler bei FTS Status: {e}")
 
     with col5:
         if st.button("⏸️ Stop", key="fts_stop"):
-            _prepare_fts_message("STOP")
-            st.rerun()
+            try:
+                success = gateway.send(
+                    topic="fts/v1/ff/5iO4/instantAction",
+                    builder=lambda: {
+                        "timestamp": datetime.now(timezone.utc).isoformat(),
+                        "serialNumber": "5iO4",
+                        "actions": [{"actionType": "stop", "actionId": str(uuid.uuid4())}]
+                    },
+                    ensure_order_id=True
+                )
+                if success:
+                    st.success("✅ FTS Stop-Befehl erfolgreich gesendet!")
+                else:
+                    st.error("❌ Fehler beim Senden des FTS Stop-Befehls")
+            except Exception as e:
+                st.error(f"❌ Fehler bei FTS Stop: {e}")
 
-    # Nachricht anzeigen und Send-Button für FTS (inline)
-    if "pending_message" in st.session_state and st.session_state["pending_message"]["type"].startswith("fts"):
-        st.markdown("---")
-        _show_message_and_send_button_inline("fts")
+    st.info("💡 FTS-Befehle werden direkt gesendet (keine Vorschau)")
 
 
-def _show_order_commands_section():
+def _show_order_commands_section(gateway: MessageGateway):
     """Zeigt Auftrags-Befehle"""
     st.markdown("**Aufträge für spezifische Farben senden:**")
 
@@ -188,26 +257,94 @@ def _show_order_commands_section():
 
     with col1:
         if st.button("🔴 ROT", key="order_red"):
-            _prepare_order_message("RED")
-            st.rerun()
+            try:
+                success = gateway.send(
+                    topic="ccu/order/request",
+                    builder=lambda: {
+                        "type": "RED",
+                        "timestamp": datetime.now(timezone.utc).isoformat(),
+                        "orderType": "PRODUCTION"
+                    },
+                    ensure_order_id=True
+                )
+                if success:
+                    st.success("✅ ROT Auftrag erfolgreich gesendet!")
+                else:
+                    st.error("❌ Fehler beim Senden des ROT Auftrags")
+            except Exception as e:
+                st.error(f"❌ Fehler beim ROT Auftrag: {e}")
 
     with col2:
         if st.button("⚪ WEISS", key="order_white"):
-            _prepare_order_message("WHITE")
-            st.rerun()
+            try:
+                success = gateway.send(
+                    topic="ccu/order/request",
+                    builder=lambda: {
+                        "type": "WHITE",
+                        "timestamp": datetime.now(timezone.utc).isoformat(),
+                        "orderType": "PRODUCTION"
+                    },
+                    ensure_order_id=True
+                )
+                if success:
+                    st.success("✅ WEISS Auftrag erfolgreich gesendet!")
+                else:
+                    st.error("❌ Fehler beim Senden des WEISS Auftrags")
+            except Exception as e:
+                st.error(f"❌ Fehler beim WEISS Auftrag: {e}")
 
     with col3:
         if st.button("🔵 BLAU", key="order_blue"):
-            _prepare_order_message("BLUE")
-            st.rerun()
+            try:
+                success = gateway.send(
+                    topic="ccu/order/request",
+                    builder=lambda: {
+                        "type": "BLUE",
+                        "timestamp": datetime.now(timezone.utc).isoformat(),
+                        "orderType": "PRODUCTION"
+                    },
+                    ensure_order_id=True
+                )
+                if success:
+                    st.success("✅ BLAU Auftrag erfolgreich gesendet!")
+                else:
+                    st.error("❌ Fehler beim Senden des BLAU Auftrags")
+            except Exception as e:
+                st.error(f"❌ Fehler beim BLAU Auftrag: {e}")
 
-    # Nachricht anzeigen und Send-Button für Orders (inline)
-    if "pending_message" in st.session_state and st.session_state["pending_message"]["type"].startswith("order"):
-        st.markdown("---")
-        _show_message_and_send_button_inline("order")
+    st.info("💡 Aufträge werden direkt gesendet (keine Vorschau)")
 
 
-def _show_navigation_commands_section():
+def _send_module_command(gateway: MessageGateway, module_name: str, command: str):
+    """Sendet einen einzelnen Modul-Befehl über MessageGateway"""
+    # Modul-spezifische Serial Numbers
+    module_serials = {"AIQS": "SVR4H76530", "MILL": "SVR3QA2098", "DRILL": "SVR4H76449"}
+    serial_number = module_serials.get(module_name, "UNKNOWN")
+    
+    try:
+        success = gateway.send(
+            topic=f"module/v1/ff/{serial_number}/order",
+            builder=lambda: {
+                "serialNumber": serial_number,
+                "orderId": str(uuid.uuid4()),
+                "orderUpdateId": 1,  # Vereinfacht für einzelne Befehle
+                "action": {
+                    "id": str(uuid.uuid4()),
+                    "command": command,
+                    "metadata": {"priority": "NORMAL", "timeout": 300, "type": "WHITE"}
+                }
+            },
+            ensure_order_id=True
+        )
+        if success:
+            st.success(f"✅ {module_name} {command} erfolgreich gesendet!")
+        else:
+            st.error(f"❌ Fehler beim Senden von {module_name} {command}")
+    except Exception as e:
+        st.error(f"❌ Fehler bei {module_name} {command}: {e}")
+
+
+def _show_navigation_commands_section(gateway: MessageGateway):
     """Zeigt Navigations-Befehle"""
     st.markdown("**FTS-Navigation zu spezifischen Positionen:**")
 
@@ -217,13 +354,53 @@ def _show_navigation_commands_section():
 
     with col1:
         if st.button("🚛 DPS-HBW", key="nav_dps_hbw", help="Von DPS zu HBW"):
-            _prepare_navigation_message("DPS-HBW")
-            st.rerun()
+            try:
+                success = gateway.send(
+                    topic="fts/v1/ff/5iO4/instantAction",
+                    builder=lambda: {
+                        "timestamp": datetime.now(timezone.utc).isoformat(),
+                        "serialNumber": "5iO4",
+                        "actions": [
+                            {
+                                "actionType": "navigateToPosition",
+                                "actionId": str(uuid.uuid4()),
+                                "metadata": {"route": "DPS_HBW", "loadType": "WHITE"}
+                            }
+                        ]
+                    },
+                    ensure_order_id=True
+                )
+                if success:
+                    st.success("✅ DPS-HBW Navigation erfolgreich gesendet!")
+                else:
+                    st.error("❌ Fehler beim Senden der DPS-HBW Navigation")
+            except Exception as e:
+                st.error(f"❌ Fehler bei DPS-HBW Navigation: {e}")
 
     with col2:
         if st.button("🏭 HBW-DPS", key="nav_hbw_dps", help="Von HBW zu DPS"):
-            _prepare_navigation_message("HBW-DPS")
-            st.rerun()
+            try:
+                success = gateway.send(
+                    topic="fts/v1/ff/5iO4/instantAction",
+                    builder=lambda: {
+                        "timestamp": datetime.now(timezone.utc).isoformat(),
+                        "serialNumber": "5iO4",
+                        "actions": [
+                            {
+                                "actionType": "navigateToPosition",
+                                "actionId": str(uuid.uuid4()),
+                                "metadata": {"route": "HBW_DPS", "loadType": "WHITE"}
+                            }
+                        ]
+                    },
+                    ensure_order_id=True
+                )
+                if success:
+                    st.success("✅ HBW-DPS Navigation erfolgreich gesendet!")
+                else:
+                    st.error("❌ Fehler beim Senden der HBW-DPS Navigation")
+            except Exception as e:
+                st.error(f"❌ Fehler bei HBW-DPS Navigation: {e}")
 
     # Produktions-Routen
     st.markdown("#### 🎨 Produktions-Routen")
@@ -231,566 +408,80 @@ def _show_navigation_commands_section():
 
     with col1:
         if st.button("🔴 RED-Prod", key="nav_red_prod", help="Produktions-Route ROT"):
-            _prepare_navigation_message("RED-Prod")
-            st.rerun()
+            try:
+                success = gateway.send(
+                    topic="fts/v1/ff/5iO4/instantAction",
+                    builder=lambda: {
+                        "timestamp": datetime.now(timezone.utc).isoformat(),
+                        "serialNumber": "5iO4",
+                        "actions": [
+                            {
+                                "actionType": "navigateToPosition",
+                                "actionId": str(uuid.uuid4()),
+                                "metadata": {"route": "RED_Prod", "loadType": "RED"}
+                            }
+                        ]
+                    },
+                    ensure_order_id=True
+                )
+                if success:
+                    st.success("✅ RED-Prod Navigation erfolgreich gesendet!")
+                else:
+                    st.error("❌ Fehler beim Senden der RED-Prod Navigation")
+            except Exception as e:
+                st.error(f"❌ Fehler bei RED-Prod Navigation: {e}")
 
     with col2:
         if st.button("🔵 BLUE-Prod", key="nav_blue_prod", help="Produktions-Route BLAU"):
-            _prepare_navigation_message("BLUE-Prod")
-            st.rerun()
+            try:
+                success = gateway.send(
+                    topic="fts/v1/ff/5iO4/instantAction",
+                    builder=lambda: {
+                        "timestamp": datetime.now(timezone.utc).isoformat(),
+                        "serialNumber": "5iO4",
+                        "actions": [
+                            {
+                                "actionType": "navigateToPosition",
+                                "actionId": str(uuid.uuid4()),
+                                "metadata": {"route": "BLUE_Prod", "loadType": "BLUE"}
+                            }
+                        ]
+                    },
+                    ensure_order_id=True
+                )
+                if success:
+                    st.success("✅ BLUE-Prod Navigation erfolgreich gesendet!")
+                else:
+                    st.error("❌ Fehler beim Senden der BLUE-Prod Navigation")
+            except Exception as e:
+                st.error(f"❌ Fehler bei BLUE-Prod Navigation: {e}")
 
     with col3:
         if st.button("⚪ WHITE-Prod", key="nav_white_prod", help="Produktions-Route WEISS"):
-            _prepare_navigation_message("WHITE-Prod")
-            st.rerun()
-
-    # Nachricht anzeigen und Send-Button für Navigation (inline)
-    if "pending_message" in st.session_state and st.session_state["pending_message"]["type"] == "navigation":
-        st.markdown("---")
-        _show_message_and_send_button_inline("navigation")
-
-
-def _prepare_navigation_message(navigation_type: str):
-    """Bereitet Navigations-Nachricht vor"""
-    # Prüfen ob MQTT-Client verfügbar ist
-    mqtt_client = st.session_state.get("mqtt_client")
-    if not mqtt_client:
-        st.error("❌ MQTT-Client nicht verfügbar. Bitte wählen Sie zuerst eine Umgebung in der Sidebar.")
-        return
-    
-    # MessageGenerator verwenden
-    from src_orbis.omf.tools.message_generator import get_omf_message_generator
-    
-    generator = get_omf_message_generator()
-    
-    # Route-Typ mapping
-    route_mapping = {
-        "DPS-HBW": "DPS_HBW",
-        "HBW-DPS": "HBW_DPS",
-        "RED-Prod": "DPS_HBW",  # Placeholder - später erweitern
-        "BLUE-Prod": "DPS_HBW",  # Placeholder - später erweitern
-        "WHITE-Prod": "DPS_HBW"  # Placeholder - später erweitern
-    }
-    
-    route_type = route_mapping.get(navigation_type, "DPS_HBW")
-    
-    # Navigation Message generieren
-    message = generator.generate_fts_navigation_message(
-        route_type=route_type,
-        load_type="WHITE"  # Default, später dynamisch
-    )
-    
-    if message:
-        st.session_state["pending_message"] = {
-            "topic": message["topic"], 
-            "payload": message["payload"], 
-            "type": "navigation"
-        }
-    else:
-        st.error(f"❌ Fehler beim Generieren der Navigation-Nachricht für {navigation_type}")
-
-
-def _prepare_factory_reset_message():
-    """Bereitet Factory Reset Nachricht vor"""
-    payload = {"timestamp": datetime.now().isoformat(), "withStorage": False}
-
-    st.session_state["pending_message"] = {"topic": "ccu/set/reset", "payload": payload, "type": "factory_reset"}
-
-
-def _get_module_serial(module_name: str) -> str:
-    """Hilfsfunktion um Module-Serials zu bekommen"""
-    module_serials = {"AIQS": "SVR4H76530", "MILL": "SVR3QA2098", "DRILL": "SVR4H76449"}
-    return module_serials.get(module_name, "UNKNOWN")
-
-
-def _prepare_module_step_message(module_name: str, step: str):
-    """Bereitet Modul-Schritt Nachricht vor"""
-    # Modul-spezifische Serial Numbers
-    module_serials = {"AIQS": "SVR4H76530", "MILL": "SVR3QA2098", "DRILL": "SVR4H76449"}
-
-    serial_number = module_serials.get(module_name, "UNKNOWN")
-
-    # Topic generieren - KORRIGIERT: Verwende korrekten Modul-Topic aus YAMLs
-    topic = f"module/v1/ff/{serial_number}/order"
-
-    # OrderUpdateId-Logik: Für Sequenzen hochzählen
-    if "order_update_counter" not in st.session_state:
-        st.session_state["order_update_counter"] = 1
-    else:
-        st.session_state["order_update_counter"] += 1
-
-    # Payload generieren
-    payload = {
-        "serialNumber": serial_number,
-        "orderId": str(uuid.uuid4()),
-        "orderUpdateId": st.session_state["order_update_counter"],
-        "action": {
-            "id": str(uuid.uuid4()),
-            "command": step,
-            "metadata": {"priority": "NORMAL", "timeout": 300, "type": "WHITE"},
-        },
-    }
-
-    st.session_state["pending_message"] = {
-        "topic": topic,
-        "payload": payload,
-        "type": f"{module_name.lower()}_{step.lower()}",
-    }
-
-
-def _prepare_module_sequence_message(module_name: str):
-    """Startet generische Sequenz mit flexiblen Message-Topic-Kombinationen"""
-    # WorkflowOrderManager verwenden
-    workflow_manager = get_workflow_order_manager()
-
-    # Generische Sequenz-Definitionen (Topic + Message-Struktur)
-    sequence_definitions = {
-        "AIQS": [
-            {
-                "name": "PICK",
-                "topic": f"module/v1/ff/{_get_module_serial('AIQS')}/order",
-                "message_template": {
-                    "serialNumber": _get_module_serial("AIQS"),
-                    "action": {"command": "PICK", "metadata": {"priority": "NORMAL", "timeout": 300, "type": "WHITE"}},
-                },
-                "icon": "📥",
-            },
-            {
-                "name": "CHECK_QUALITY",
-                "topic": f"module/v1/ff/{_get_module_serial('AIQS')}/order",
-                "message_template": {
-                    "serialNumber": _get_module_serial("AIQS"),
-                    "action": {
-                        "command": "CHECK_QUALITY",
-                        "metadata": {"priority": "NORMAL", "timeout": 300, "type": "WHITE"},
+            try:
+                success = gateway.send(
+                    topic="fts/v1/ff/5iO4/instantAction",
+                    builder=lambda: {
+                        "timestamp": datetime.now(timezone.utc).isoformat(),
+                        "serialNumber": "5iO4",
+                        "actions": [
+                            {
+                                "actionType": "navigateToPosition",
+                                "actionId": str(uuid.uuid4()),
+                                "metadata": {"route": "WHITE_Prod", "loadType": "WHITE"}
+                            }
+                        ]
                     },
-                },
-                "icon": "🔍",
-            },
-            {
-                "name": "DROP",
-                "topic": f"module/v1/ff/{_get_module_serial('AIQS')}/order",
-                "message_template": {
-                    "serialNumber": _get_module_serial("AIQS"),
-                    "action": {"command": "DROP", "metadata": {"priority": "NORMAL", "timeout": 300, "type": "WHITE"}},
-                },
-                "icon": "📤",
-            },
-        ],
-        "MILL": [
-            {
-                "name": "PICK",
-                "topic": f"module/v1/ff/{_get_module_serial('MILL')}/order",
-                "message_template": {
-                    "serialNumber": _get_module_serial("MILL"),
-                    "action": {"command": "PICK", "metadata": {"priority": "NORMAL", "timeout": 300, "type": "WHITE"}},
-                },
-                "icon": "📥",
-            },
-            {
-                "name": "MILL",
-                "topic": f"module/v1/ff/{_get_module_serial('MILL')}/order",
-                "message_template": {
-                    "serialNumber": _get_module_serial("MILL"),
-                    "action": {"command": "MILL", "metadata": {"priority": "NORMAL", "timeout": 300, "type": "WHITE"}},
-                },
-                "icon": "⚙️",
-            },
-            {
-                "name": "DROP",
-                "topic": f"module/v1/ff/{_get_module_serial('MILL')}/order",
-                "message_template": {
-                    "serialNumber": _get_module_serial("MILL"),
-                    "action": {"command": "DROP", "metadata": {"priority": "NORMAL", "timeout": 300, "type": "WHITE"}},
-                },
-                "icon": "📤",
-            },
-        ],
-        "DRILL": [
-            {
-                "name": "PICK",
-                "topic": f"module/v1/ff/{_get_module_serial('DRILL')}/order",
-                "message_template": {
-                    "serialNumber": _get_module_serial("DRILL"),
-                    "action": {"command": "PICK", "metadata": {"priority": "NORMAL", "timeout": 300, "type": "WHITE"}},
-                },
-                "icon": "📥",
-            },
-            {
-                "name": "DRILL",
-                "topic": f"module/v1/ff/{_get_module_serial('DRILL')}/order",
-                "message_template": {
-                    "serialNumber": _get_module_serial("DRILL"),
-                    "action": {"command": "DRILL", "metadata": {"priority": "NORMAL", "timeout": 300, "type": "WHITE"}},
-                },
-                "icon": "🔩",
-            },
-            {
-                "name": "DROP",
-                "topic": f"module/v1/ff/{_get_module_serial('DRILL')}/order",
-                "message_template": {
-                    "serialNumber": _get_module_serial("DRILL"),
-                    "action": {"command": "DROP", "metadata": {"priority": "NORMAL", "timeout": 300, "type": "WHITE"}},
-                },
-                "icon": "📤",
-            },
-        ],
-    }
-
-    sequence_steps = sequence_definitions.get(module_name, [])
-    if not sequence_steps:
-        st.error(f"Keine Sequenz-Definition für Modul {module_name} gefunden")
-        return
-
-    # ✅ Workflow starten - gibt orderId zurück
-    order_id = workflow_manager.start_workflow(module_name, [step["name"] for step in sequence_steps])
-
-    # Transaktions-Status initialisieren
-    st.session_state["sequence_transaction"] = {
-        "module": module_name,
-        "sequence_definition": sequence_steps,  # Vollständige Sequenz-Definition
-        "current_step": 0,
-        "completed_steps": [],
-        "active": True,
-        "order_id": order_id,  # ✅ GLEICHE orderId für alle Schritte
-        "workflow_manager": workflow_manager,
-        "show_topic_and_message": True,  # Flag für Payload-Anzeige
-    }
-
-    # Ersten Schritt vorbereiten
-    _prepare_next_sequence_step(module_name)
-
-
-def _prepare_next_sequence_step(module_name: str):
-    """Bereitet den nächsten Schritt in der Sequenz vor"""
-    if "sequence_transaction" not in st.session_state:
-        return
-
-    transaction = st.session_state["sequence_transaction"]
-    if not transaction["active"] or transaction["module"] != module_name:
-        return
-
-    current_step = transaction["current_step"]
-    sequence_definition = transaction["sequence_definition"]
-
-    if current_step >= len(sequence_definition):
-        # Sequenz abgeschlossen
-        transaction["active"] = False
-        return
-
-    # Aktuellen Schritt aus der Sequenz-Definition holen
-    step_definition = sequence_definition[current_step]
-
-    # ✅ WorkflowOrderManager verwenden
-    workflow_manager = transaction["workflow_manager"]
-    order_id = transaction["order_id"]
-
-    # WorkflowOrderManager für korrekte orderId/orderUpdateId
-    workflow_info = workflow_manager.execute_command(order_id, step_definition["name"])
-
-    # Message-Template kopieren und IDs hinzufügen
-    payload = step_definition["message_template"].copy()
-    payload["orderId"] = workflow_info["orderId"]  # ✅ GLEICHE orderId
-    payload["orderUpdateId"] = workflow_info["orderUpdateId"]  # ✅ Inkrementiert
-    payload["action"]["id"] = str(uuid.uuid4())
-
-    # Pending Message setzen
-    st.session_state["pending_message"] = {
-        "topic": step_definition["topic"],
-        "payload": payload,
-        "type": f"{module_name.lower()}_sequence_step_{current_step}",
-        "note": (
-            f"Sequenz-Schritt {current_step + 1}/{len(sequence_definition)}: "
-            f"{step_definition['name']} für {module_name} "
-            f"(orderId: {workflow_info['orderId'][:8]}..., orderUpdateId: {workflow_info['orderUpdateId']})"
-        ),
-    }
-
-
-def _complete_sequence_step(module_name: str):
-    """Markiert aktuellen Sequenz-Schritt als abgeschlossen und bereitet nächsten vor"""
-    if "sequence_transaction" not in st.session_state:
-        return
-
-    transaction = st.session_state["sequence_transaction"]
-    if not transaction["active"] or transaction["module"] != module_name:
-        return
-
-    # Aktuellen Schritt als abgeschlossen markieren
-    current_step = transaction["current_step"]
-    transaction["completed_steps"].append(current_step)
-    transaction["current_step"] += 1
-
-    # Nächsten Schritt vorbereiten
-    _prepare_next_sequence_step(module_name)
-
-
-def _cancel_sequence_transaction():
-    """Bricht die aktuelle Sequenz-Transaktion ab"""
-    if "sequence_transaction" in st.session_state:
-        transaction = st.session_state["sequence_transaction"]
-        transaction["active"] = False
-
-        # Workflow im WorkflowOrderManager abschließen falls vorhanden
-        if "workflow_manager" in transaction and "order_id" in transaction:
-            try:
-                transaction["workflow_manager"].complete_order(transaction["order_id"])
-            except Exception as e:
-                print(f"⚠️ Fehler beim Abschließen des Workflows: {e}")
-
-    if "pending_message" in st.session_state:
-        del st.session_state["pending_message"]
-
-
-def _prepare_fts_message(command: str):
-    """Bereitet FTS-Nachricht vor"""
-    # FUNKTIONIERENDE TOPICS UND PAYLOADS AUS DEN SESSIONS
-
-    if command == "DOCK":
-        # Docke an - funktioniert!
-        topic = "fts/v1/ff/5iO4/instantAction"
-        payload = {
-            "timestamp": datetime.now(timezone.utc).isoformat(),
-            "serialNumber": "5iO4",
-            "actions": [
-                {
-                    "actionType": "findInitialDockPosition",
-                    "actionId": str(uuid.uuid4()),
-                    "metadata": {"nodeId": "SVR4H73275"},  # DPS-Modul
-                }
-            ],
-        }
-    elif command == "CHARGE":
-        # Charge Start - funktioniert!
-        topic = "ccu/set/charge"
-        payload = {"serialNumber": "5iO4", "charge": True}
-    elif command == "STOP":
-        # Charge Stop - funktioniert!
-        topic = "ccu/set/charge"
-        payload = {"serialNumber": "5iO4", "charge": False}
-    else:
-        # Fallback für unbekannte Commands
-        topic = "fts/v1/ff/5iO4/instantAction"
-        payload = {
-            "timestamp": datetime.now(timezone.utc).isoformat(),
-            "serialNumber": "5iO4",
-            "actions": [{"actionType": command.lower(), "actionId": str(uuid.uuid4())}],
-        }
-
-    st.session_state["pending_message"] = {"topic": topic, "payload": payload, "type": f"fts_{command.lower()}"}
-
-
-def _prepare_order_message(color: str):
-    """Bereitet Auftrags-Nachricht vor"""
-    # FUNKTIONIERENDE TOPICS UND PAYLOADS AUS DEN SESSIONS
-
-    # Korrekter Topic aus den Sessions
-    topic = "ccu/order/request"
-
-    # Payload-Struktur aus den funktionierenden Sessions
-    payload = {
-        "type": color,  # RED, WHITE, BLUE
-        "timestamp": datetime.now(timezone.utc).isoformat(),
-        "orderType": "PRODUCTION",
-    }
-
-    st.session_state["pending_message"] = {"topic": topic, "payload": payload, "type": f"order_{color.lower()}"}
-
-
-def _show_message_and_send_button_inline(message_type: str):
-    """Zeigt vorbereitete Nachricht und Send-Button inline (kompakt)"""
-    if "pending_message" not in st.session_state:
-        return
-
-    pending = st.session_state["pending_message"]
-
-    # Nur anzeigen wenn es der richtige Typ ist
-    if not pending["type"].startswith(message_type):
-        return
-
-    st.markdown("**📤 Zu sendende Nachricht:**")
-    st.markdown(f"**Topic:** `{pending['topic']}`")
-    
-    # Kompakte Payload-Anzeige
-    with st.expander("📋 Payload anzeigen", expanded=False):
-        st.json(pending["payload"])
-
-    # Send-Button
-    col1, col2 = st.columns([1, 1])
-    
-    with col1:
-        if st.button("📤 Senden", type="primary", key=f"send_{pending['type']}"):
-            _send_pending_message()
-    
-    with col2:
-        if st.button("❌ Abbrechen", key=f"cancel_{pending['type']}"):
-            if "pending_message" in st.session_state:
-                del st.session_state["pending_message"]
-            st.rerun()
-
-
-def _show_message_and_send_button(message_type: str):
-    """Zeigt vorbereitete Nachricht und Send-Button an"""
-    if "pending_message" not in st.session_state:
-        return
-
-    pending = st.session_state["pending_message"]
-
-    # Nur anzeigen wenn es der richtige Typ ist
-    if not pending["type"].startswith(message_type):
-        return
-
-    # Transaktions-Header anzeigen falls aktive Sequenz
-    if "sequence_transaction" in st.session_state and st.session_state["sequence_transaction"]["active"]:
-        transaction = st.session_state["sequence_transaction"]
-        module_name = transaction["module"]
-        sequence_definition = transaction["sequence_definition"]
-        total_steps = len(sequence_definition)
-        current_step = transaction["current_step"]
-
-        st.markdown(f"### 🔄 **Beginne Transaktion: Sequenz {module_name}**")
-        st.markdown(f"**Fortschritt:** {current_step + 1}/{total_steps} Schritte")
-        st.markdown("*(Sequenz Transaktion kann abgebrochen werden)*")
-
-        # Visuelle Sequenz-Anzeige mit generischen Definitionen
-        st.markdown("#### 📋 **Sequenz-Ablauf (Manuelle Steuerung):**")
-
-        # Sequenz als Pfeile anzeigen mit generischen Definitionen
-        sequence_display = []
-        for i, step_def in enumerate(sequence_definition):
-            icon = step_def["icon"]
-            name = step_def["name"]
-            if i == current_step:
-                # Aktueller Schritt - hervorgehoben
-                sequence_display.append(f"**{icon} {name}(SEND)**")
-            elif i < current_step:
-                # Abgeschlossener Schritt - grau
-                sequence_display.append(f"~~{icon} {name}(✓)~~")
-            else:
-                # Zukünftiger Schritt - normal
-                sequence_display.append(f"{icon} {name}(WARTEN)")
-
-        # Sequenz mit Pfeilen verbinden
-        sequence_text = " → ".join(sequence_display)
-        st.markdown(f"**{sequence_text}**")
-
-        # Anweisung für User
-        current_step_def = sequence_definition[current_step]
-        st.info(
-            f"**Anweisung:** Klicken Sie auf 'Senden' für **{current_step_def['name']}** - "
-            f"dann wird automatisch der nächste Schritt vorbereitet."
-        )
-
-        # Option: Payload-Anzeige ein/ausschalten
-        col1, col2 = st.columns([3, 1])
-        with col1:
-            st.markdown("**Sequenz-Optionen:**")
-        with col2:
-            show_payload = st.checkbox(
-                "Payload anzeigen",
-                value=transaction.get("show_topic_and_message", True),
-                key="sequence_show_payload",
-                help="Zeigt die vollständige MQTT-Nachricht an",
-            )
-            # Flag in der Transaktion aktualisieren
-            transaction["show_topic_and_message"] = show_payload
-
-        # Fortschrittsbalken
-        progress = (current_step + 1) / total_steps
-        st.progress(progress)
-
-        st.markdown("---")
-
-    st.markdown("### 📤 Zu sendende Nachricht:")
-
-    # Topic anzeigen
-    st.markdown(f"**Topic:** `{pending['topic']}`")
-
-    # Optional: Command hervorheben (falls vorhanden)
-    if "action" in pending["payload"] and "command" in pending["payload"]["action"]:
-        command = pending["payload"]["action"]["command"]
-        st.markdown(f"**🎯 Command:** `{command}`")
-
-    # Optional: Payload anzeigen (über Flag gesteuert)
-    if "sequence_transaction" in st.session_state and st.session_state["sequence_transaction"]["active"]:
-        show_details = st.session_state["sequence_transaction"].get("show_topic_and_message", True)
-        if show_details:
-            st.markdown("**Payload:**")
-            st.json(pending["payload"])
-    else:
-        # Für einzelne Schritte immer anzeigen
-        st.markdown("**Payload:**")
-        st.json(pending["payload"])
-
-    # Hinweis anzeigen falls vorhanden
-    if "note" in pending:
-        st.info(pending["note"])
-
-    # Send-Button mit Transaktions-Logik
-    col1, col2, col3 = st.columns([1, 1, 2])
-
-    with col1:
-        if st.button("📤 Senden", type="primary", key=f"send_{pending['type']}"):
-            _send_pending_message()
-
-    with col2:
-        if st.button("❌ Abbrechen", key=f"cancel_{pending['type']}"):
-            if "sequence_transaction" in st.session_state and st.session_state["sequence_transaction"]["active"]:
-                _cancel_sequence_transaction()
-            else:
-                if "pending_message" in st.session_state:
-                    del st.session_state["pending_message"]
-            st.rerun()
-
-    # Transaktions-Ende anzeigen falls Sequenz abgeschlossen
-    if "sequence_transaction" in st.session_state and not st.session_state["sequence_transaction"]["active"]:
-        st.markdown("---")
-        st.success("✅ **Ende Transaktion** - Sequenz erfolgreich abgeschlossen!")
-
-        # Workflow im WorkflowOrderManager abschließen
-        transaction = st.session_state["sequence_transaction"]
-        if "workflow_manager" in transaction and "order_id" in transaction:
-            try:
-                transaction["workflow_manager"].complete_order(transaction["order_id"])
-            except Exception as e:
-                print(f"⚠️ Fehler beim Abschließen des Workflows: {e}")
-
-        # Cleanup
-        if "pending_message" in st.session_state:
-            del st.session_state["pending_message"]
-        if "sequence_transaction" in st.session_state:
-            del st.session_state["sequence_transaction"]
-
-
-def _send_pending_message():
-    """Sendet die vorbereitete Nachricht"""
-    if "pending_message" not in st.session_state:
-        st.error("❌ Keine Nachricht zum Senden vorbereitet")
-        return
-
-    pending = st.session_state["pending_message"]
-
-    try:
-        mqtt_client = st.session_state.get("mqtt_client")
-        if mqtt_client and mqtt_client.connected:
-            result = mqtt_client.publish(pending["topic"], pending["payload"], qos=1, retain=False)
-
-            if result:
-                st.success(f"✅ Nachricht erfolgreich gesendet an {pending['topic']}!")
-
-                # Transaktions-Logik: Nächsten Schritt vorbereiten falls aktive Sequenz
-                if "sequence_transaction" in st.session_state and st.session_state["sequence_transaction"]["active"]:
-                    transaction = st.session_state["sequence_transaction"]
-                    module_name = transaction["module"]
-                    _complete_sequence_step(module_name)
+                    ensure_order_id=True
+                )
+                if success:
+                    st.success("✅ WHITE-Prod Navigation erfolgreich gesendet!")
                 else:
-                    # Normale Nachricht: Aus session_state entfernen
-                    del st.session_state["pending_message"]
+                    st.error("❌ Fehler beim Senden der WHITE-Prod Navigation")
+            except Exception as e:
+                st.error(f"❌ Fehler bei WHITE-Prod Navigation: {e}")
 
-                st.rerun()
-            else:
-                st.error("❌ Fehler beim Senden der Nachricht")
-        else:
-            st.error("❌ MQTT nicht verbunden")
-    except Exception as e:
-        st.error(f"❌ Fehler beim Senden: {e}")
+    st.info("💡 Navigation-Befehle werden direkt gesendet (keine Vorschau)")
+
+
+# Alte Funktionen entfernt - verwenden jetzt MessageGateway

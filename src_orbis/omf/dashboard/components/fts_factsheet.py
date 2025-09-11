@@ -9,7 +9,7 @@ from datetime import datetime
 
 import streamlit as st
 
-from .message_processor import create_topic_filter, get_message_processor
+# MessageProcessor entfernt - verwenden jetzt Per-Topic-Buffer
 
 # MessageTemplate Bibliothek Import
 try:
@@ -24,14 +24,12 @@ except Exception as e:
     print(f"❌ MessageTemplate Fehler: {e}")
 
 
-def process_fts_factsheet_messages(messages):
-    """Verarbeitet neue FTS-Factsheet-Nachrichten"""
-    if not messages:
+def process_fts_factsheet_messages_from_buffers(factsheet_messages):
+    """Verarbeitet FTS-Factsheet-Nachrichten aus Per-Topic-Buffer"""
+    if not factsheet_messages:
         return
 
     # Neueste FTS-Factsheet-Nachricht finden
-    factsheet_messages = [msg for msg in messages if msg.get("topic", "").startswith("fts/v1/ff/5iO4/factsheet")]
-
     if factsheet_messages:
         latest_factsheet_msg = max(factsheet_messages, key=lambda x: x.get("ts", 0))
         # Factsheet-Daten in Session-State speichern
@@ -115,20 +113,19 @@ def show_fts_factsheet():
     """Zeigt FTS-Factsheet-Informationen"""
     st.subheader("📄 FTS Factsheet")
 
-    # Message-Processor für FTS-Factsheet
+    # MQTT-Client für Per-Topic-Buffer
     mqtt_client = st.session_state.get("mqtt_client")
     if mqtt_client:
-        # Message-Processor erstellen (nur einmal)
-        processor = get_message_processor(
-            component_name="fts_factsheet",
-            message_filter=create_topic_filter("fts/v1/ff/5iO4/factsheet"),
-            processor_function=process_fts_factsheet_messages,
-        )
+        # FTS-Factsheet-Topic abonnieren
+        mqtt_client.subscribe_many(["fts/v1/ff/5iO4/factsheet"])
+        
+        # Nachrichten aus Per-Topic-Buffer holen
+        factsheet_messages = list(mqtt_client.get_buffer("fts/v1/ff/5iO4/factsheet"))
+        
+        # Nachrichten verarbeiten
+        process_fts_factsheet_messages_from_buffers(factsheet_messages)
 
-        # Nachrichten verarbeiten (nur neue)
-        processor.process_messages(mqtt_client)
-
-        # Status-Anzeige (wie in overview_inventory)
+        # Status-Anzeige
         last_update_timestamp = st.session_state.get("fts_factsheet_last_update")
         if last_update_timestamp:
             formatted_time = get_formatted_timestamp(last_update_timestamp)

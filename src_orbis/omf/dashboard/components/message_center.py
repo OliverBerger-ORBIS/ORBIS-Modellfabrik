@@ -14,6 +14,9 @@ from typing import Any, List
 import pandas as pd
 import streamlit as st
 
+# Import für Prioritäts-basierte Subscriptions
+from src_orbis.omf.dashboard.config.mc_priority import get_priority_filters
+
 # --- Konfiguration ---
 SITE = "ff"  # falls variabel: z. B. aus Settings nehmen
 
@@ -52,7 +55,12 @@ TOPIC_PATTERNS = {
         f"module/v1/{SITE}/NodeRed/+/factsheet",
         f"module/v1/{SITE}/NodeRed/status",
     ],
-    "FTS": ["fts/v1/ff/+/connection", "fts/v1/ff/+/state", "fts/v1/ff/+/order", "fts/v1/ff/+/factsheet"],
+    "FTS": [
+        "fts/v1/ff/+/connection", 
+        "fts/v1/ff/+/state",
+        "fts/v1/ff/+/order",
+        "fts/v1/ff/+/factsheet"
+    ],
 }
 
 # Regex für Topic-Parsing
@@ -175,7 +183,7 @@ def show_message_center():
 
     # Filter-Optionen
     st.subheader("🔍 Filter & Einstellungen")
-    col1, col2, col3, col4, col5 = st.columns([2, 2, 2, 1, 1])
+    col1, col2, col3, col4, col5, col6 = st.columns([2, 2, 2, 1, 1, 1])
 
     with col5:
         if st.button("🗑️ Historie löschen", type="secondary", key="clear_history"):
@@ -209,12 +217,26 @@ def show_message_center():
     with col4:
         # Anzahl Nachrichten
         max_messages = st.number_input("📊 Max", min_value=10, max_value=1000, value=200, step=10)
+    
+    with col6:
+        # Prioritäts-Slider für Message Center
+        priority_level = st.slider("🎯 Priorität", min_value=1, max_value=5, value=5, 
+                                 help="1=Kritisch, 2=Wichtig, 3=Normal, 4=TXT/Node-RED, 5=Alle")
 
-    # Direkt aus MQTT-Client _history lesen (REPARIERT)
+    # NEUES PATTERN: Prioritäts-basierte Subscriptions für Message Center
     if mqtt_client:  # Nur wenn MQTT-Client verfügbar ist
         try:
-            # Direkt alle Nachrichten aus MQTT-Client _history holen
-            all_messages = mqtt_client.drain()
+            # Prioritäts-basierte Subscriptions setzen
+            from src_orbis.omf.tools.mqtt_topics import PRIORITY_FILTERS
+            mqtt_client.set_message_center_priority(priority_level, PRIORITY_FILTERS)
+            
+            # Abonniere die Prioritäts-Filter (alle Filter bis zur gewählten Stufe)
+            from src_orbis.omf.tools.mqtt_topics import flatten_filters
+            priority_filters = flatten_filters(priority_level)
+            mqtt_client.subscribe_many(priority_filters)
+            
+            # Nachrichten aus der globalen History holen (Prioritäts-basiert)
+            all_messages = list(mqtt_client._history)  # Direkter Zugriff auf _history
 
             # Nachrichten in MessageRow-Format konvertieren
             message_rows = []
@@ -228,6 +250,9 @@ def show_message_center():
                     retain=msg_data.get("retain", False),
                 )
                 message_rows.append(message_row)
+            
+            # Status-Anzeige
+            st.success(f"✅ Prioritätsstufe {priority_level} aktiv - {len(priority_filters)} Topics abonniert")
 
         except Exception as e:
             st.error(f"❌ Fehler beim Laden der Nachrichten: {e}")
@@ -309,7 +334,23 @@ def show_message_center():
                     st.write(f"**Retain:** {msg.retain}")
                 with col2:
                     st.write("**Vollständiger Payload:**")
-                    st.code(json.dumps(msg.payload, indent=2, ensure_ascii=False), language="json")
+                    # Payload dekodieren falls es bytes ist
+                    if isinstance(msg.payload, bytes):
+                        try:
+                            payload_str = msg.payload.decode('utf-8')
+                            # Versuche JSON zu parsen
+                            try:
+                                payload_json = json.loads(payload_str)
+                                st.code(json.dumps(payload_json, indent=2, ensure_ascii=False), language="json")
+                            except json.JSONDecodeError:
+                                # Falls kein JSON, zeige als Text
+                                st.code(payload_str, language="text")
+                        except UnicodeDecodeError:
+                            # Falls nicht UTF-8, zeige als hex
+                            st.code(msg.payload.hex(), language="text")
+                    else:
+                        # Falls bereits ein Python-Objekt
+                        st.code(json.dumps(msg.payload, indent=2, ensure_ascii=False), language="json")
 
         # Filter-Info
         filter_info = (

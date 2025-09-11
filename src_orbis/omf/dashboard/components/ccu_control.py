@@ -9,7 +9,7 @@ from datetime import datetime
 
 import streamlit as st
 
-from .message_processor import create_topic_filter, get_message_processor
+# MessageProcessor entfernt - verwenden jetzt Per-Topic-Buffer
 
 # MessageTemplate Bibliothek Import
 try:
@@ -20,14 +20,12 @@ except ImportError:
     TEMPLATE_MANAGER_AVAILABLE = False
 
 
-def process_ccu_control_messages(messages):
-    """Verarbeitet neue CCU-Control-Nachrichten"""
-    if not messages:
+def process_ccu_control_messages_from_buffers(control_messages):
+    """Verarbeitet CCU-Control-Nachrichten aus Per-Topic-Buffer"""
+    if not control_messages:
         return
 
     # Neueste CCU-Control-Nachricht finden
-    control_messages = [msg for msg in messages if msg.get("topic", "").startswith("ccu/control")]
-
     if control_messages:
         latest_control_msg = max(control_messages, key=lambda x: x.get("ts", 0))
         # Control-Daten in Session-State speichern
@@ -91,18 +89,19 @@ def show_ccu_control():
     """Zeigt CCU-Control-Informationen"""
     st.subheader("🎮 CCU Control")
 
-    # Message-Processor für CCU-Control
+    # MQTT-Client für Per-Topic-Buffer
     mqtt_client = st.session_state.get("mqtt_client")
     if mqtt_client:
-        # Message-Processor erstellen (nur einmal)
-        processor = get_message_processor(
-            component_name="ccu_control",
-            message_filter=create_topic_filter("ccu/control"),
-            processor_function=process_ccu_control_messages,
-        )
-
-        # Nachrichten verarbeiten (nur neue)
-        processor.process_messages(mqtt_client)
+        # CCU-Control-Topics abonnieren
+        mqtt_client.subscribe_many(["ccu/control", "ccu/control/command", "ccu/control/order"])
+        
+        # Nachrichten aus Per-Topic-Buffer holen (alle CCU-Control-Topics)
+        control_messages = []
+        for topic in ["ccu/control", "ccu/control/command", "ccu/control/order"]:
+            control_messages.extend(list(mqtt_client.get_buffer(topic)))
+        
+        # Nachrichten verarbeiten
+        process_ccu_control_messages_from_buffers(control_messages)
 
         # Status-Anzeige
         last_update_timestamp = st.session_state.get("ccu_control_last_update")

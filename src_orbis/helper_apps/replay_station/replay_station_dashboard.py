@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 class SessionPlayer:
     """Session-Player der Nachrichten an den MQTT Broker sendet"""
 
-    def __init__(self, broker_host="localhost", broker_port=1884):
+    def __init__(self, broker_host="localhost", broker_port=1883):
         self.broker_host = broker_host
         self.broker_port = broker_port
         self.messages = []
@@ -252,7 +252,7 @@ def main():
     st.set_page_config(page_title="🎬 OMF Replay Station", page_icon="🎬", layout="wide")
 
     st.title("🎬 OMF Replay Station")
-    st.markdown("Sendet Nachrichten an den MQTT Broker (Port 1884)")
+    st.markdown("Sendet Nachrichten an den MQTT Broker (Port 1883)")
 
     # Session-Player initialisieren
     if "session_player" not in st.session_state:
@@ -264,7 +264,7 @@ def main():
     col1, col2, col3 = st.columns(3)
 
     with col1:
-        st.metric("MQTT Broker", "🟢 localhost:1884")
+        st.metric("MQTT Broker", "🟢 localhost:1883")
 
     with col2:
         st.metric("Nachrichten", len(session_player.messages))
@@ -427,12 +427,12 @@ def main():
         """
     **So verbinden Sie das OMF Dashboard mit dem Replay-Broker:**
 
-    1. **MQTT Broker läuft bereits** auf Port 1884 ✅
+    1. **MQTT Broker läuft bereits** auf Port 1883 ✅
 
     2. **Dashboard konfigurieren:**
        - MQTT-Modus: "Replay-Broker"
        - Host: `localhost`
-       - Port: `1884`
+       - Port: `1883`
 
     3. **Session laden und Replay starten** (oben)
 

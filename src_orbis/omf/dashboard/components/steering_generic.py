@@ -9,22 +9,33 @@ from pathlib import Path
 
 import streamlit as st
 
+# MessageGateway für sauberes Publishing
+from src_orbis.omf.tools.mqtt_gateway import MessageGateway
+
 
 def show_generic_steering():
     """Hauptfunktion für die Generic Steuerung"""
     st.subheader("🔧 Generic Steuerung")
     st.markdown("**Erweiterte Steuerungsmöglichkeiten für direkte MQTT-Nachrichten:**")
+    
+    # MessageGateway initialisieren
+    mqtt_client = st.session_state.get("mqtt_client")
+    if not mqtt_client:
+        st.error("❌ MQTT-Client nicht verfügbar")
+        return
+    
+    gateway = MessageGateway(mqtt_client)
 
     # Freier Modus
     st.markdown("### 📝 Freier Modus")
     st.markdown("**Direkte Eingabe von Topic und Message-Payload:**")
-    show_free_mode()
+    show_free_mode(gateway)
 
     # Topic-getriebener Ansatz
     st.markdown("---")
     st.markdown("### 📡 Topic-getriebener Ansatz")
     st.markdown("**Topic auswählen und passende Message-Templates verwenden:**")
-    show_topic_driven_mode()
+    show_topic_driven_mode(gateway)
 
     # Message-getriebener Ansatz (Platzhalter)
     st.markdown("---")
@@ -33,7 +44,7 @@ def show_generic_steering():
     st.info("🔄 Diese Funktion wird in der nächsten Version implementiert")
 
 
-def show_free_mode():
+def show_free_mode(gateway: MessageGateway):
     """Zeigt Freien Modus für direkte MQTT-Nachrichten"""
     # Session State für Topic und Payload
     if "free_mode_topic" not in st.session_state:
@@ -72,59 +83,35 @@ def show_free_mode():
     retain_option = st.checkbox("💾 Retain Message", value=False, key="free_mode_retain")
 
     # Senden-Button (unabhängig von Form)
-    if st.button("📤 Versenden mit MQTT-Client", key="free_mode_send"):
+    if st.button("📤 Versenden mit MessageGateway", key="free_mode_send"):
         # JSON Validierung
         try:
             parsed_payload = json.loads(payload_json)
             st.success("✅ JSON ist gültig")
 
-            # Debug: Zeige die aktuellen Session State Werte
-            st.info("🔍 **Session State Werte:**")
-            st.info(f"🔍 Topic (Session): {st.session_state.free_mode_topic}")
-            st.info(f"🔍 Payload (Session): {st.session_state.free_mode_payload}")
-            st.info(f"🔍 Topic (Input): {st.session_state.free_mode_topic_input}")
-            st.info(f"🔍 Payload (Input): {st.session_state.free_mode_payload_input}")
-
-            # Direkt über MQTT-Client senden
-            mqtt_client = st.session_state.get("mqtt_client")
-            if mqtt_client and mqtt_client.connected:
-                # Debug: Zeige die tatsächlich gesendete Payload
-                st.info("🔍 **Wird gesendet:**")
-                st.info(f"🔍 Topic: {topic}")
-                st.info(f"🔍 Payload: {json.dumps(parsed_payload, indent=2)}")
-                st.info(f"🔍 Retain: {retain_option}")
-
-                # Nachrichten vor dem Senden zählen
-                messages_before = len(mqtt_client.drain())
-                st.info(f"🔍 Nachrichten vor dem Senden: {messages_before}")
-
-                result = mqtt_client.publish(topic, parsed_payload, qos=1, retain=retain_option)
-
-                # Nachrichten nach dem Senden zählen
-                messages_after = len(mqtt_client.drain())
-                st.info(f"🔍 Nachrichten nach dem Senden: {messages_after}")
-                st.info(f"🔍 Neue Nachrichten: {messages_after - messages_before}")
-
-                if result:
+            # Über MessageGateway senden
+            try:
+                success = gateway.send(
+                    topic=topic,
+                    builder=lambda: parsed_payload,
+                    ensure_order_id=True,
+                    retain=retain_option
+                )
+                
+                if success:
                     st.success(f"✅ Message erfolgreich gesendet an {topic}")
                     st.info(f"📄 Payload: {json.dumps(parsed_payload, indent=2)}")
-
-                    # Debug: Alle Nachrichten anzeigen
-                    all_messages = mqtt_client.drain()
-                    sent_messages = [msg for msg in all_messages if msg.get("type") == "sent"]
-                    st.info(f"🔍 Gesendete Nachrichten im Client: {len(sent_messages)}")
-
                 else:
                     st.error("❌ Fehler beim Senden der Message")
-            else:
-                st.error("❌ MQTT nicht verbunden")
+            except Exception as e:
+                st.error(f"❌ Fehler beim Senden: {e}")
 
         except json.JSONDecodeError as e:
             st.error(f"❌ Ungültiges JSON: {e}")
             st.info("ℹ️ Bitte korrigieren Sie das JSON-Format")
 
 
-def show_topic_driven_mode():
+def show_topic_driven_mode(gateway: MessageGateway):
     """Zeigt Topic-getriebenen Modus mit YAML-Integration"""
     try:
         # Alle Topics aus topic-config.yml laden
@@ -241,20 +228,23 @@ def show_topic_driven_mode():
                         # Retain-Option VOR dem Senden anzeigen
                         retain_option = st.checkbox("💾 Retain Message", value=False, key="retain_topic_driven")
 
-                        if st.button("📤 Versenden mit MQTT-Client", key="send_topic_driven_message"):
-                            # Direkt über MQTT-Client senden
-                            mqtt_client = st.session_state.get("mqtt_client")
-                            if mqtt_client and mqtt_client.connected:
-                                result = mqtt_client.publish(
-                                    selected_topic, parsed_payload, qos=1, retain=retain_option
+                        if st.button("📤 Versenden mit MessageGateway", key="send_topic_driven_message"):
+                            # Über MessageGateway senden
+                            try:
+                                success = gateway.send(
+                                    topic=selected_topic,
+                                    builder=lambda: parsed_payload,
+                                    ensure_order_id=True,
+                                    retain=retain_option
                                 )
-                                if result:
+                                
+                                if success:
                                     st.success(f"✅ Message erfolgreich gesendet an {selected_topic}")
                                     st.info(f"📄 Payload: {json.dumps(parsed_payload, indent=2)}")
                                 else:
                                     st.error("❌ Fehler beim Senden der Message")
-                            else:
-                                st.error("❌ MQTT nicht verbunden")
+                            except Exception as e:
+                                st.error(f"❌ Fehler beim Senden: {e}")
                     else:
                         st.warning("⚠️ JSON muss gültig sein, bevor gesendet werden kann")
         else:

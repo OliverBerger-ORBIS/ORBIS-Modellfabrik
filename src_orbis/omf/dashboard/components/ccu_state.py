@@ -9,7 +9,7 @@ from datetime import datetime
 
 import streamlit as st
 
-from .message_processor import create_topic_filter, get_message_processor
+# MessageProcessor entfernt - verwenden jetzt Per-Topic-Buffer
 from .validation_error_tracker import get_validation_tracker
 
 # MessageTemplate Bibliothek Import
@@ -25,14 +25,12 @@ except Exception as e:
     print(f"❌ MessageTemplate Fehler: {e}")
 
 
-def process_ccu_state_messages(messages):
-    """Verarbeitet neue CCU-State-Nachrichten"""
-    if not messages:
+def process_ccu_state_messages_from_buffers(state_messages):
+    """Verarbeitet CCU-State-Nachrichten aus Per-Topic-Buffer"""
+    if not state_messages:
         return
 
     # Neueste CCU-State-Nachricht finden
-    state_messages = [msg for msg in messages if msg.get("topic", "").startswith("ccu/state")]
-
     if state_messages:
         latest_state_msg = max(state_messages, key=lambda x: x.get("ts", 0))
         # State-Daten in Session-State speichern
@@ -247,20 +245,21 @@ def show_ccu_state():
     """Zeigt CCU-State-Informationen"""
     st.subheader("📊 CCU State")
 
-    # Message-Processor für CCU-State
+    # MQTT-Client für Per-Topic-Buffer
     mqtt_client = st.session_state.get("mqtt_client")
     if mqtt_client:
-        # Message-Processor erstellen (nur einmal)
-        processor = get_message_processor(
-            component_name="ccu_state",
-            message_filter=create_topic_filter("ccu/state"),
-            processor_function=process_ccu_state_messages,
-        )
+        # CCU-State-Topics abonnieren
+        mqtt_client.subscribe_many(["ccu/state", "ccu/state/flow", "ccu/state/status", "ccu/state/error"])
+        
+        # Nachrichten aus Per-Topic-Buffer holen (alle CCU-State-Topics)
+        state_messages = []
+        for topic in ["ccu/state", "ccu/state/flow", "ccu/state/status", "ccu/state/error"]:
+            state_messages.extend(list(mqtt_client.get_buffer(topic)))
+        
+        # Nachrichten verarbeiten
+        process_ccu_state_messages_from_buffers(state_messages)
 
-        # Nachrichten verarbeiten (nur neue)
-        processor.process_messages(mqtt_client)
-
-        # Status-Anzeige (wie in overview_inventory)
+        # Status-Anzeige
         last_update_timestamp = st.session_state.get("ccu_state_last_update")
         if last_update_timestamp:
             formatted_time = get_formatted_timestamp(last_update_timestamp)

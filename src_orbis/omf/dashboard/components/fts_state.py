@@ -9,7 +9,7 @@ from datetime import datetime
 
 import streamlit as st
 
-from .message_processor import create_topic_filter, get_message_processor
+# MessageProcessor entfernt - verwenden jetzt Per-Topic-Buffer
 
 # MessageTemplate Bibliothek Import
 try:
@@ -24,14 +24,12 @@ except Exception as e:
     print(f"❌ MessageTemplate Fehler: {e}")
 
 
-def process_fts_state_messages(messages):
-    """Verarbeitet neue FTS-State-Nachrichten"""
-    if not messages:
+def process_fts_state_messages_from_buffers(state_messages):
+    """Verarbeitet FTS-State-Nachrichten aus Per-Topic-Buffer"""
+    if not state_messages:
         return
 
     # Neueste FTS-State-Nachricht finden
-    state_messages = [msg for msg in messages if msg.get("topic", "").startswith("fts/v1/ff/5iO4/state")]
-
     if state_messages:
         latest_state_msg = max(state_messages, key=lambda x: x.get("ts", 0))
         # State-Daten in Session-State speichern
@@ -152,20 +150,19 @@ def show_fts_state():
     """Zeigt FTS-State-Informationen"""
     st.subheader("📊 FTS State")
 
-    # Message-Processor für FTS-State
+    # MQTT-Client für Per-Topic-Buffer
     mqtt_client = st.session_state.get("mqtt_client")
     if mqtt_client:
-        # Message-Processor erstellen (nur einmal)
-        processor = get_message_processor(
-            component_name="fts_state",
-            message_filter=create_topic_filter("fts/v1/ff/5iO4/state"),
-            processor_function=process_fts_state_messages,
-        )
+        # FTS-State-Topic abonnieren
+        mqtt_client.subscribe_many(["fts/v1/ff/5iO4/state"])
+        
+        # Nachrichten aus Per-Topic-Buffer holen
+        state_messages = list(mqtt_client.get_buffer("fts/v1/ff/5iO4/state"))
+        
+        # Nachrichten verarbeiten
+        process_fts_state_messages_from_buffers(state_messages)
 
-        # Nachrichten verarbeiten (nur neue)
-        processor.process_messages(mqtt_client)
-
-        # Status-Anzeige (wie in overview_inventory)
+        # Status-Anzeige
         last_update_timestamp = st.session_state.get("fts_state_last_update")
         if last_update_timestamp:
             formatted_time = get_formatted_timestamp(last_update_timestamp)
