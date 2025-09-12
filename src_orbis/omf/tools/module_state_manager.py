@@ -17,7 +17,7 @@ from .mqtt_gateway import MqttGateway
 from .omf_mqtt_client import OmfMqttClient
 
 # Logging konfigurieren
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("omf.module_state_manager")
 
 
 class ModuleState(Enum):

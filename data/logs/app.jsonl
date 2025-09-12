@@ -1,0 +1,9 @@
+Test-Log mit Standard-Logging
+Test-Warning
+Test-Error
+Test-Log für Verzeichnis-Test
+Test-Warning
+Test-Error
+{"app": "omf_dashboard", "level": "INFO", "logger": "test", "msg": "Test-Log mit JSON-Format", "timestamp": "2025-09-12 18:25:12,018"}
+{"app": "omf_dashboard", "level": "WARNING", "logger": "test", "msg": "Test-Warning mit JSON", "timestamp": "2025-09-12 18:25:12,018"}
+{"app": "omf_dashboard", "level": "ERROR", "logger": "test", "msg": "Test-Error mit JSON", "timestamp": "2025-09-12 18:25:12,018"}

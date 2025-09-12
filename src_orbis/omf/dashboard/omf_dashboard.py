@@ -4,7 +4,10 @@ import streamlit as st
 
 from src_orbis.omf.config.config import LIVE_CFG, REPLAY_CFG
 from src_orbis.omf.dashboard.components.dummy_component import show_dummy_component
+from src_orbis.omf.tools.logging_config import init_logging_once
 from src_orbis.omf.tools.omf_mqtt_factory import ensure_dashboard_client
+from src_orbis.omf.tools.streamlit_log_buffer import add_buffer_handler, create_log_buffer
+from src_orbis.omf.tools.structlog_config import configure_structlog
 
 """
 ORBIS Modellfabrik Dashboard (OMF) - Modulare Architektur
@@ -40,9 +43,37 @@ load_component("production_order", "components.production_order", "Production Or
 load_component("settings", "components.settings", "Settings")
 load_component("steering", "components.steering", "Steering")
 load_component("module_state_control", "components.module_state_control", "Module Control")
+load_component("logs", "components.logs", "Logs")
 load_component("fts", "components.fts", "FTS")
 load_component("ccu", "components.ccu", "CCU")
 load_component("shopfloor", "components.shopfloor", "Shopfloor")
+
+# =============================================================================
+# LOGGING INITIALIZATION
+# =============================================================================
+
+
+def _init_logging_once():
+    """Initialisiert Logging einmal pro Streamlit-Session"""
+    if st.session_state.get("_log_init"):
+        return
+
+    # Logging konfigurieren
+    root, listener = init_logging_once(st.session_state)
+
+    # Structlog konfigurieren (optional)
+    try:
+        configure_structlog()
+    except Exception:
+        pass
+
+    # Log-Buffer für Live-Logs im Dashboard
+    if "log_buffer" not in st.session_state:
+        st.session_state.log_buffer = create_log_buffer(maxlen=1000)
+        add_buffer_handler(root, st.session_state.log_buffer, level=20)  # INFO
+
+    st.session_state["_log_init"] = True
+
 
 # =============================================================================
 # HELPER FUNCTIONS
@@ -353,13 +384,16 @@ def display_tabs():
 
 def main():
     """Hauptfunktion des OMF Dashboards - Modulare Architektur"""
-    # 1. Seite konfigurieren
+    # 1. Logging initialisieren (einmal pro Session)
+    _init_logging_once()
+
+    # 2. Seite konfigurieren
     setup_page_config()
 
-    # 2. Umgebung handhaben
+    # 3. Umgebung handhaben
     env = handle_environment_switch()
 
-    # 3. MQTT-Client initialisieren
+    # 4. MQTT-Client initialisieren
     client, cfg = initialize_mqtt_client(env)
 
     # 4. MQTT-Subscription einrichten
