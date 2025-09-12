@@ -29,3 +29,10 @@ repos:
         pass_filenames: false
         stages: [commit]
 
+      - id: validate-project-structure
+        name: validate-project-structure
+        entry: python src_orbis/scripts/validate_project_structure.py
+        language: system
+        pass_filenames: false
+        stages: [commit]
+

@@ -29,7 +29,7 @@ python src_orbis/mqtt/loggers/aps_session_logger.py --session-label wareneingang
 
 #### **Schritt 3: Session beenden**
 - **"q" drücken** um Session zu stoppen
-- **Session-DB prüfen** in `mqtt-data/sessions/`
+- **Session-DB prüfen** in `data/mqtt-data/sessions/`
 
 ### **📋 Session-Plan (Flexibel - Basis + Varianz bei Bedarf)**
 
@@ -105,22 +105,22 @@ python src_orbis/mqtt/loggers/aps_session_logger.py --session-label fts-laden-be
 #### **Session-Status prüfen**
 ```bash
 # Verfügbare Sessions anzeigen
-ls -la mqtt-data/sessions/
+ls -la data/mqtt-data/sessions/
 
 # Session-DB Größe prüfen
-du -h mqtt-data/sessions/*.db
+du -h data/mqtt-data/sessions/*.db
 ```
 
 #### **Session-Analyse**
 ```bash
 # Einzelne Session analysieren
-python src_orbis/mqtt/tools/mqtt_session_analyzer.py mqtt-data/sessions/wareneingang-rot.db
+python src_orbis/mqtt/tools/mqtt_session_analyzer.py data/mqtt-data/sessions/wareneingang-rot.db
 
 # Varianz-Analyse (optional - nur bei Bedarf)
-python src_orbis/mqtt/tools/mqtt_session_analyzer.py mqtt-data/sessions/wareneingang-rot.db --compare mqtt-data/sessions/wareneingang-rot_2.db
+python src_orbis/mqtt/tools/mqtt_session_analyzer.py data/mqtt-data/sessions/wareneingang-rot.db --compare data/mqtt-data/sessions/wareneingang-rot_2.db
 
 # Alle Sessions einer Phase analysieren
-for db in mqtt-data/sessions/wareneingang-*.db; do
+for db in data/mqtt-data/sessions/wareneingang-*.db; do
     echo "Analysiere: $db"
     python src_orbis/mqtt/tools/mqtt_session_analyzer.py "$db"
 done

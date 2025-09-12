@@ -1,0 +1,37 @@
+name: Projekt-Struktur Validierung
+
+on:
+  push:
+    branches: [ main, helper/* ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  validate-structure:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    
+    - name: Validate project structure
+      run: |
+        python src_orbis/scripts/validate_project_structure.py
+    
+    - name: Run tests
+      run: |
+        python -m pytest tests_orbis/ -v
+    
+    - name: Check code formatting
+      run: |
+        black --check src_orbis/ tests_orbis/
+        ruff check src_orbis/ tests_orbis/

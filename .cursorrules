@@ -1,0 +1,48 @@
+# OMF Modellfabrik - Cursor AI Regeln
+
+## 🎯 ZENTRALE ENTWICKLUNGSREGELN
+
+### Import-Standards (KRITISCH)
+- **NUR absolute Imports:** `from src_orbis.omf.module import Class`
+- **KEINE relativen Imports:** `from ..module import Class` ❌
+- **KEINE sys.path.append Hacks:** `sys.path.append(...)` ❌
+- **KEINE lokalen Imports:** `from module import Class` ❌
+
+### Projekt-Struktur
+- **Aktive Sourcen:** `src_orbis/omf/dashboard/` (Produktiv-Dashboard)
+- **Helper-Apps:** `src_orbis/helper_apps/`, `src_orbis/analysis_tools/` (Separate Anwendungen)
+- **Dokumentation:** `docs_orbis/` (Alle Projekt-Dokumente)
+- **Session-Daten:** `data/mqtt-data/sessions/` (SQLite + Log-Dateien)
+- **Log-Dateien:** `data/logs/` (nicht mehr ins Projekt-Root)
+
+### Code-Qualität
+- **Black:** Line-length 120, Ruff ignoriert E501
+- **Pre-commit Hooks:** Immer befolgen, nie mit --no-verify überspringen
+- **Tests:** Nach jeder Änderung ausführen
+- **Commits:** Häufig und mit funktionierendem Stand
+
+### Test-Standards
+- **Test-Verzeichnis:** `tests_orbis/` (Alle Tests hier)
+- **Test-Struktur:** `tests_orbis/test_omf/`, `tests_orbis/test_helper_apps/`
+- **Test-Imports:** Absolute Imports auch in Tests verwenden
+- **Test-Namen:** `test_*.py` oder `*_test.py`
+- **Test-Ausführung:** `python -m pytest tests_orbis/`
+
+### Branch-spezifische Test-Regeln
+- **Helper-Branches:** Nur `tests_orbis/test_helper_apps/` ausführen
+- **Main-Branch:** Alle Tests in `tests_orbis/` ausführen
+- **Helper-Test-Befehl:** `python -m pytest tests_orbis/test_helper_apps/`
+- **Automatische Ausführung:** `python run_tests_by_branch.py`
+
+### Entwicklungsprozess-Regeln
+- **Neue Anforderungen:** Erst Analyse, dann Zusammenfassung, dann Implementierung
+- **Analyse-Phase:** Codebase durchsuchen, bestehende Komponenten verstehen
+- **Zusammenfassung:** Kurze Übersicht der geplanten Änderungen
+- **Freigabe:** Warten auf explizite Bestätigung vor Implementierung
+- **Keine direkte Implementierung** ohne vorherige Analyse und Freigabe
+
+### Vollständige Regeln
+Siehe: `docs_orbis/DEVELOPMENT_RULES.md` für detaillierte Regeln.
+
+## 🚨 WICHTIG
+Bei jeder Code-Änderung diese Regeln befolgen!

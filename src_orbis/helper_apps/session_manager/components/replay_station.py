@@ -3,82 +3,94 @@ Replay Station Komponente
 Funktionalität wie alte Replay Station - MQTT-Nachrichten für Tests senden
 """
 
-import streamlit as st
 import json
-import subprocess
-from datetime import datetime
-import time
-import sqlite3
-import re
-from pathlib import Path
-import threading
 import logging
+import re
+import sqlite3
+import subprocess
+import time
+from datetime import datetime
+from pathlib import Path
+
+import streamlit as st
 
 # Logging konfigurieren
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler('session_manager.log'),
-        logging.StreamHandler()
-    ]
+    handlers=[logging.FileHandler('data/logs/session_manager.log'), logging.StreamHandler()],
 )
 logger = logging.getLogger(__name__)
 
+
 def show_replay_station():
-    """Replay Station Tab - Sofort testbar"""
-    
+    """Replay Station Tab - Fokussiert auf wesentliche Funktionen"""
+
     logger.info("🎬 Replay Station Tab geladen")
     st.header("📡 Replay Station")
-    st.markdown("MQTT-Nachrichten für Tests senden (wie alte Replay Station)")
-    
-    # MQTT Konfiguration
+    st.markdown("MQTT-Nachrichten für Tests senden - **MQTT-Konfiguration in ⚙️ Einstellungen**")
+
+    # Konfiguration aus Settings laden
+    from src_orbis.helper_apps.session_manager.components.settings_manager import SettingsManager
+
+    settings_manager = SettingsManager()
+    mqtt_settings = settings_manager.get_mqtt_broker_settings()
+    session_directory = settings_manager.get_session_directory()
+
+    # Verbindungsstatus anzeigen
     col1, col2 = st.columns(2)
-    
+
     with col1:
-        st.subheader("MQTT Konfiguration")
-        mqtt_host = st.text_input("MQTT Broker Host", value="localhost")
-        mqtt_port = st.number_input("MQTT Broker Port", value=1883, min_value=1, max_value=65535)
-        mqtt_client_id = st.text_input("Client ID", value="session_manager_replay")
-    
-    with col2:
-        st.subheader("Verbindungsstatus")
+        st.subheader("🔌 MQTT Verbindung")
+        st.info(f"**Broker:** {mqtt_settings['host']}:{mqtt_settings['port']}")
+        st.info(f"**QoS:** {mqtt_settings['qos']} | **Timeout:** {mqtt_settings['timeout']}s")
+
         if 'mqtt_connected' not in st.session_state:
             st.session_state.mqtt_connected = False
-        
+
         if st.session_state.mqtt_connected:
             st.success("✅ Verbunden")
         else:
             st.error("❌ Nicht verbunden")
-    
+
+    with col2:
+        st.subheader("⚙️ Konfiguration")
+        st.info(f"**Session-Verzeichnis:** `{session_directory}`")
+        st.markdown("**MQTT-Einstellungen** in den ⚙️ Einstellungen ändern")
+        if st.button("⚙️ Zu Einstellungen"):
+            st.switch_page("⚙️ Einstellungen")
+
     # Connection controls
     col1, col2 = st.columns(2)
-    
+
     with col1:
         if st.button("🔌 Verbindung testen", key="test_mqtt"):
             logger.info("🔌 User klickt: Verbindung testen")
-            test_mqtt_connection(mqtt_host, mqtt_port)
-    
+            test_mqtt_connection(mqtt_settings['host'], mqtt_settings['port'])
+
     with col2:
         if st.button("🔌 Verbindung trennen", key="disconnect_mqtt"):
             logger.info("🔌 User klickt: Verbindung trennen")
             disconnect_mqtt()
-    
+
     # Session State für MQTT Parameter speichern
-    st.session_state.mqtt_host = mqtt_host
-    st.session_state.mqtt_port = mqtt_port
-    
+    st.session_state.mqtt_host = mqtt_settings['host']
+    st.session_state.mqtt_port = mqtt_settings['port']
+
     st.markdown("---")
-    
+
     # Sektion 1: Session Replay
     st.subheader("📁 Session Replay")
-    
+
     # Session-Verzeichnis analysieren
-    session_files = get_session_files()
-    
+    logger.info(f"🔍 Replay Station: Suche Sessions in: {session_directory}")
+    session_files = get_session_files(session_directory)
+    logger.info(f"📁 Gefundene Session-Dateien: {len(session_files)}")
+
     if not session_files:
         st.warning("❌ Keine Session-Dateien gefunden")
-        st.info("💡 Legen Sie Session-Dateien in `mqtt-data/sessions/` ab")
+        st.info(f"💡 Legen Sie SQLite-Dateien (.db) in `{session_directory}/` ab")
+        st.info("ℹ️ **Hinweis:** Nur .db Dateien werden für Replay unterstützt")
     else:
         # Regex-Filter
         col1, col2 = st.columns([2, 1])
@@ -89,47 +101,46 @@ def show_replay_station():
                 logger.info(f"🔍 User klickt: Filtern mit '{regex_filter}'")
                 st.session_state.session_filter = regex_filter
                 st.rerun()
-        
+
         # Session-Liste filtern
         filtered_sessions = filter_sessions(session_files, st.session_state.get("session_filter", ""))
-        
+
         if filtered_sessions:
             # Session-Auswahl
-            selected_session = st.selectbox(
-                "📂 Session auswählen:", 
-                filtered_sessions, 
-                format_func=lambda x: x.name
-            )
-            
+            selected_session = st.selectbox("📂 Session auswählen:", filtered_sessions, format_func=lambda x: x.name)
+
             if selected_session:
                 # Session-Info
                 st.info(f"📁 Ausgewählte Session: {selected_session.name}")
-                
+
                 # Session laden
                 if st.button("📂 Session laden"):
                     logger.info(f"📂 User klickt: Session laden - {selected_session.name}")
                     load_session(selected_session)
-                
+
                 # Replay-Kontrollen (wenn Session geladen)
                 if 'loaded_session' in st.session_state and st.session_state.loaded_session:
                     show_replay_controls()
         else:
             st.warning("❌ Keine Sessions gefunden (Regex-Filter)")
-    
+
     st.markdown("---")
-    
+
     # Sektion 2: Test Messages (sofort testbar)
     st.subheader("🧪 Test Messages")
     st.markdown("Sofort testbare MQTT-Nachrichten senden")
-    
+
     # Test Message 1
     col1, col2 = st.columns([3, 1])
     with col1:
         st.text_input("Topic", value="test/session_manager", key="test_topic_1")
     with col2:
         if st.button("📤 Senden", key="send_test_1"):
-            send_test_message("test/session_manager", {"message": "Hello from Session Manager!", "timestamp": datetime.now().isoformat()})
-    
+            send_test_message(
+                "test/session_manager",
+                {"message": "Hello from Session Manager!", "timestamp": datetime.now().isoformat()},
+            )
+
     # Test Message 2
     col1, col2 = st.columns([3, 1])
     with col1:
@@ -137,31 +148,34 @@ def show_replay_station():
     with col2:
         if st.button("📤 Senden", key="send_test_2"):
             send_test_message("module/v1/ff/SVR3QA0022/order", {"command": "PICK", "workpiece": "RED"})
-    
+
     # Schnelltest-Buttons
     st.markdown("#### 🚀 Schnelltest-Nachrichten")
     col1, col2, col3 = st.columns(3)
-    
+
     with col1:
         if st.button("📡 Test 1", key="quick_test_1"):
             send_test_message("test/quick/1", {"id": 1, "status": "active"})
-    
+
     with col2:
         if st.button("📡 Test 2", key="quick_test_2"):
             send_test_message("test/quick/2", {"id": 2, "value": 123.45})
-    
+
     with col3:
         if st.button("📡 Test 3", key="quick_test_3"):
             send_test_message("test/quick/3", {"id": 3, "data": "Hello World"})
 
+
 def test_mqtt_connection(host, port):
     """MQTT Verbindung testen mit mosquitto_pub"""
     try:
-        result = subprocess.run([
-            "mosquitto_pub", "-h", host, "-p", str(port), 
-            "-t", "test/connection", "-m", "test", "-q", "1"
-        ], capture_output=True, text=True, timeout=5)
-        
+        result = subprocess.run(
+            ["mosquitto_pub", "-h", host, "-p", str(port), "-t", "test/connection", "-m", "test", "-q", "1"],
+            capture_output=True,
+            text=True,
+            timeout=5,
+        )
+
         if result.returncode == 0:
             st.session_state.mqtt_connected = True
             st.success(f"✅ MQTT Broker erreichbar: {host}:{port}")
@@ -178,21 +192,36 @@ def test_mqtt_connection(host, port):
         st.rerun()  # UI sofort aktualisieren
         return False
 
+
 def disconnect_mqtt():
     """MQTT Verbindung trennen"""
     st.session_state.mqtt_connected = False
     st.success("✅ Verbindung getrennt")
     st.rerun()  # UI sofort aktualisieren
 
+
 def send_test_message(topic, payload):
     """Test-Nachricht mit mosquitto_pub senden"""
     try:
-        result = subprocess.run([
-            "mosquitto_pub", "-h", st.session_state.mqtt_host, 
-            "-p", str(st.session_state.mqtt_port), "-t", topic, 
-            "-m", json.dumps(payload), "-q", "1"
-        ], capture_output=True, text=True, timeout=5)
-        
+        result = subprocess.run(
+            [
+                "mosquitto_pub",
+                "-h",
+                st.session_state.mqtt_host,
+                "-p",
+                str(st.session_state.mqtt_port),
+                "-t",
+                topic,
+                "-m",
+                json.dumps(payload),
+                "-q",
+                "1",
+            ],
+            capture_output=True,
+            text=True,
+            timeout=5,
+        )
+
         if result.returncode == 0:
             st.session_state.mqtt_connected = True  # Verbindung bestätigen
             st.success(f"📤 Nachricht gesendet: {topic}")
@@ -203,30 +232,41 @@ def send_test_message(topic, payload):
         st.session_state.mqtt_connected = False
         st.error(f"❌ Fehler beim Senden: {e}")
 
+
 # Session Replay Funktionen
-def get_session_files():
-    """Session-Dateien aus mqtt-data/sessions/ laden"""
-    session_dir = Path("mqtt-data/sessions")
+def get_session_files(session_directory: str = "data/omf-data/sessions"):
+    """Session-Dateien aus konfiguriertem Verzeichnis laden - nur .db Dateien"""
+    logger.info(f"🔍 get_session_files: Suche in {session_directory}")
+    session_dir = Path(session_directory)
+    logger.info(f"📁 Verzeichnis existiert: {session_dir.exists()}")
+
     if not session_dir.exists():
+        logger.warning(f"❌ Verzeichnis existiert nicht: {session_directory}")
         return []
-    
-    # SQLite und Log-Dateien finden
-    session_files = []
-    session_files.extend(list(session_dir.glob("aps_persistent_traffic_*.db")))
-    session_files.extend(list(session_dir.glob("aps_persistent_traffic_*.log")))
-    
+
+    # Nur SQLite-Dateien finden (Replay Station kann nur .db Dateien verarbeiten)
+    session_files = list(session_dir.glob("*.db"))
+
+    logger.info(f"📊 Gefundene .db Dateien: {len(session_files)}")
+
+    logger.info(f"📁 Gesamt Session-Dateien: {len(session_files)}")
+    for f in session_files:
+        logger.info(f"  - {f.name}")
+
     return sorted(session_files, key=lambda x: x.name)
+
 
 def filter_sessions(session_files, regex_filter):
     """Sessions nach Regex-Filter filtern"""
     if not regex_filter:
         return session_files
-    
+
     try:
         pattern = re.compile(regex_filter, re.IGNORECASE)
         return [f for f in session_files if pattern.search(f.name)]
     except re.error:
         return session_files
+
 
 def load_session(session_file):
     """Session laden und in Session State speichern"""
@@ -235,7 +275,7 @@ def load_session(session_file):
             messages = load_sqlite_session(session_file)
         else:
             messages = load_log_session(session_file)
-        
+
         if messages:
             st.session_state.loaded_session = {
                 "file": session_file,
@@ -243,7 +283,7 @@ def load_session(session_file):
                 "current_index": 0,
                 "is_playing": False,
                 "speed": 1.0,
-                "loop": False
+                "loop": False,
             }
             st.success(f"✅ Session '{session_file.name}' geladen ({len(messages)} Nachrichten)")
         else:
@@ -251,25 +291,27 @@ def load_session(session_file):
     except Exception as e:
         st.error(f"❌ Fehler beim Laden: {e}")
 
+
 def load_sqlite_session(session_file):
     """SQLite Session laden"""
     try:
         conn = sqlite3.connect(session_file)
         cursor = conn.cursor()
-        
+
         cursor.execute("SELECT topic, payload, timestamp FROM mqtt_messages ORDER BY timestamp")
         rows = cursor.fetchall()
-        
+
         messages = []
         for row in rows:
             topic, payload, timestamp = row
             if topic and payload:
                 messages.append({"topic": topic, "payload": payload, "timestamp": timestamp})
-        
+
         conn.close()
         return messages
     except Exception:
         return []
+
 
 def load_log_session(session_file):
     """Log Session laden"""
@@ -283,21 +325,20 @@ def load_log_session(session_file):
                     if len(parts) == 3:
                         timestamp, topic, payload = parts
                         if topic.strip() and payload.strip():
-                            messages.append({
-                                "topic": topic.strip(),
-                                "payload": payload.strip(),
-                                "timestamp": timestamp.strip()
-                            })
+                            messages.append(
+                                {"topic": topic.strip(), "payload": payload.strip(), "timestamp": timestamp.strip()}
+                            )
         return messages
     except Exception:
         return []
 
+
 def show_replay_controls():
     """Replay-Kontrollen anzeigen"""
     session = st.session_state.loaded_session
-    
+
     st.markdown("#### 🎮 Replay-Kontrollen")
-    
+
     # Status-Anzeige
     col1, col2, col3 = st.columns(3)
     with col1:
@@ -307,10 +348,10 @@ def show_replay_controls():
     with col3:
         status = "▶️ Aktiv" if session["is_playing"] else "⏸️ Pausiert"
         st.metric("Status", status)
-    
+
     # Kontroll-Buttons
     col1, col2, col3, col4 = st.columns(4)
-    
+
     with col1:
         # Play/Resume Button - je nach Status
         if session["is_playing"]:
@@ -322,45 +363,66 @@ def show_replay_controls():
         else:
             button_text = "▶️ Play"
             button_disabled = False
-        
+
         if st.button(button_text, disabled=button_disabled, key="play_resume_btn"):
-            session_name = session.get('file', {}).get('name', 'Unknown') if isinstance(session.get('file'), dict) else str(session.get('file', 'Unknown'))
+            session_name = (
+                session.get('file', {}).get('name', 'Unknown')
+                if isinstance(session.get('file'), dict)
+                else str(session.get('file', 'Unknown'))
+            )
             logger.info(f"▶️ User klickt: {button_text} - Session: {session_name}")
             start_replay()
             st.rerun()  # Sofortige UI-Aktualisierung
-    
+
     with col2:
         if st.button("⏸️ Pause", disabled=not session["is_playing"], key="pause_btn"):
-            session_name = session.get('file', {}).get('name', 'Unknown') if isinstance(session.get('file'), dict) else str(session.get('file', 'Unknown'))
+            session_name = (
+                session.get('file', {}).get('name', 'Unknown')
+                if isinstance(session.get('file'), dict)
+                else str(session.get('file', 'Unknown'))
+            )
             logger.info(f"⏸️ User klickt: Pause - Session: {session_name}")
             pause_replay()
             st.rerun()  # Sofortige UI-Aktualisierung
-    
+
     with col3:
         if st.button("⏹️ Stop", key="stop_btn"):
-            session_name = session.get('file', {}).get('name', 'Unknown') if isinstance(session.get('file'), dict) else str(session.get('file', 'Unknown'))
+            session_name = (
+                session.get('file', {}).get('name', 'Unknown')
+                if isinstance(session.get('file'), dict)
+                else str(session.get('file', 'Unknown'))
+            )
             logger.info(f"⏹️ User klickt: Stop - Session: {session_name}")
             stop_replay()
             st.rerun()  # Sofortige UI-Aktualisierung
-    
+
     with col4:
         if st.button("🔄 Reset", key="reset_btn"):
-            session_name = session.get('file', {}).get('name', 'Unknown') if isinstance(session.get('file'), dict) else str(session.get('file', 'Unknown'))
+            session_name = (
+                session.get('file', {}).get('name', 'Unknown')
+                if isinstance(session.get('file'), dict)
+                else str(session.get('file', 'Unknown'))
+            )
             logger.info(f"🔄 User klickt: Reset - Session: {session_name}")
             reset_replay()
             st.rerun()  # Sofortige UI-Aktualisierung
-    
+
     # Einstellungen
     col1, col2 = st.columns(2)
-    
+
     with col1:
-        speed = st.selectbox("🏃 Geschwindigkeit", [0.2, 0.33, 0.5, 1.0, 2.0, 3.0, 5.0], index=3, format_func=lambda x: f"{x}x" if x >= 1 else f"1/{int(1/x)}x")
+        speed = st.selectbox(
+            "🏃 Geschwindigkeit",
+            [0.2, 0.33, 0.5, 1.0, 2.0, 3.0, 5.0],
+            index=3,
+            format_func=lambda x: f"{x}x" if x >= 1 else f"1/{int(1/x)}x",
+        )
         session["speed"] = speed
-    
+
     with col2:
         loop = st.checkbox("🔄 Loop", value=False)
         session["loop"] = loop
-    
+
     # Fortschrittsbalken
     if len(session["messages"]) > 0:
         progress = (session["current_index"] / len(session["messages"])) * 100
@@ -369,29 +431,29 @@ def show_replay_controls():
     else:
         st.progress(0.0)
         st.text("📊 Fortschritt: 0.0% (0/0)")
-    
+
     # Replay Logic (ohne Threading)
     if session["is_playing"] and session["current_index"] < len(session["messages"]):
         # Nächste Nachricht senden
         msg = session["messages"][session["current_index"]]
         logger.info(f"📤 Sende Nachricht {session['current_index'] + 1}/{len(session['messages'])}: {msg['topic']}")
-        
+
         if send_replay_message(msg["topic"], msg["payload"]):
             session["current_index"] += 1
             logger.info(f"✅ Nachricht {session['current_index']}/{len(session['messages'])} gesendet")
-            
+
             # Original Timing basierend auf Geschwindigkeit
             if session["current_index"] < len(session["messages"]):
                 current_msg = session["messages"][session["current_index"]]
                 prev_msg = session["messages"][session["current_index"] - 1]
-                
+
                 # Zeitdifferenz zwischen Nachrichten berechnen
                 if "timestamp" in current_msg and "timestamp" in prev_msg:
                     try:
                         # Verschiedene Timestamp-Formate unterstützen
                         current_ts_str = current_msg["timestamp"]
                         prev_ts_str = prev_msg["timestamp"]
-                        
+
                         # ISO Format mit Z
                         if current_ts_str.endswith('Z'):
                             current_ts = datetime.fromisoformat(current_ts_str.replace('Z', '+00:00'))
@@ -400,13 +462,13 @@ def show_replay_controls():
                             # Standard ISO Format
                             current_ts = datetime.fromisoformat(current_ts_str)
                             prev_ts = datetime.fromisoformat(prev_ts_str)
-                        
+
                         time_diff = (current_ts - prev_ts).total_seconds()
-                        
+
                         # Geschwindigkeit anwenden
                         speed = session.get("speed", 1.0)
                         wait_time = time_diff / speed
-                        
+
                         if wait_time > 0:
                             logger.info(f"⏳ Warte {wait_time:.3f}s bis zur nächsten Nachricht")
                             time.sleep(wait_time)
@@ -421,11 +483,12 @@ def show_replay_controls():
         else:
             logger.error(f"❌ Fehler beim Senden von Nachricht {session['current_index'] + 1}")
             session["is_playing"] = False
-    
+
     # Auto-Refresh für Live-Updates
     if session["is_playing"]:
         time.sleep(0.1)  # Kürzere Wartezeit für bessere Responsivität
         st.rerun()
+
 
 def start_replay():
     """Replay starten"""
@@ -433,15 +496,22 @@ def start_replay():
         logger.error("❌ Start Replay: Keine Session geladen")
         st.error("❌ Keine Session geladen")
         return
-    
+
     session = st.session_state.loaded_session
     session["is_playing"] = True
-    session_name = session.get('file', {}).get('name', 'Unknown') if isinstance(session.get('file'), dict) else str(session.get('file', 'Unknown'))
-    logger.info(f"▶️ Start Replay: Session={session_name}, Index={session['current_index']}, Messages={len(session['messages'])}")
-    
+    session_name = (
+        session.get('file', {}).get('name', 'Unknown')
+        if isinstance(session.get('file'), dict)
+        else str(session.get('file', 'Unknown'))
+    )
+    logger.info(
+        f"▶️ Start Replay: Session={session_name}, Index={session['current_index']}, Messages={len(session['messages'])}"
+    )
+
     # Einfache Lösung: Replay direkt starten (ohne Threading)
     st.success("▶️ Replay gestartet")
     logger.info("▶️ Replay gestartet")
+
 
 def pause_replay():
     """Replay pausieren"""
@@ -449,6 +519,7 @@ def pause_replay():
         st.session_state.loaded_session["is_playing"] = False
         logger.info("⏸️ Replay pausiert")
         st.info("⏸️ Replay pausiert")
+
 
 def stop_replay():
     """Replay stoppen"""
@@ -459,6 +530,7 @@ def stop_replay():
         logger.info("⏹️ Replay gestoppt")
         st.info("⏹️ Replay gestoppt")
 
+
 def reset_replay():
     """Replay zurücksetzen"""
     if 'loaded_session' in st.session_state:
@@ -468,6 +540,7 @@ def reset_replay():
         logger.info("🔄 Replay zurückgesetzt")
         st.info("🔄 Replay zurückgesetzt")
 
+
 def replay_worker(session_data):
     """Replay Worker Thread"""
     # Session-Daten als Parameter übergeben (Thread-sicher)
@@ -475,13 +548,13 @@ def replay_worker(session_data):
     current_index = session_data["current_index"]
     speed = session_data["speed"]
     loop = session_data["loop"]
-    
+
     logger.info(f"🚀 Replay Worker gestartet: {len(messages)} Nachrichten, Index: {current_index}, Speed: {speed}x")
-    
+
     while current_index < len(messages):
         msg = messages[current_index]
         logger.info(f"📤 Sende Nachricht {current_index + 1}/{len(messages)}: {msg['topic']}")
-        
+
         # Nachricht senden
         if send_replay_message(msg["topic"], msg["payload"]):
             current_index += 1
@@ -489,7 +562,7 @@ def replay_worker(session_data):
         else:
             logger.error(f"❌ Fehler beim Senden von Nachricht {current_index + 1}")
             break
-        
+
         # Warten bis zur nächsten Nachricht
         if current_index < len(messages):
             try:
@@ -497,7 +570,7 @@ def replay_worker(session_data):
                 next_msg = messages[current_index]
                 next_time = datetime.fromisoformat(next_msg["timestamp"].replace("Z", "+00:00"))
                 time_diff = (next_time - current_time).total_seconds()
-                
+
                 sleep_time = time_diff / speed
                 if sleep_time > 0:
                     logger.info(f"⏳ Warte {sleep_time:.2f}s bis zur nächsten Nachricht")
@@ -505,9 +578,9 @@ def replay_worker(session_data):
             except Exception as e:
                 logger.warning(f"⏳ Fallback Wartezeit: {e}")
                 time.sleep(1.0 / speed)
-    
+
     logger.info(f"🏁 Replay Worker beendet: {current_index}/{len(messages)} Nachrichten gesendet")
-    
+
     # Loop oder beenden
     try:
         if 'loaded_session' in st.session_state:
@@ -522,19 +595,21 @@ def replay_worker(session_data):
         logger.error(f"❌ Loop/Ende Fehler: {e}")
         pass
 
+
 def send_replay_message(topic, payload):
     """Replay-Nachricht senden"""
     try:
         # MQTT-Parameter aus Session State holen
         mqtt_host = st.session_state.get('mqtt_host', 'localhost')
         mqtt_port = st.session_state.get('mqtt_port', 1883)
-        
-        result = subprocess.run([
-            "mosquitto_pub", "-h", mqtt_host,
-            "-p", str(mqtt_port), "-t", topic,
-            "-m", payload, "-q", "1"
-        ], capture_output=True, text=True, timeout=5)
-        
+
+        result = subprocess.run(
+            ["mosquitto_pub", "-h", mqtt_host, "-p", str(mqtt_port), "-t", topic, "-m", payload, "-q", "1"],
+            capture_output=True,
+            text=True,
+            timeout=5,
+        )
+
         if result.returncode == 0:
             logger.info(f"✅ Replay: {topic} → {payload[:50]}...")
             return True

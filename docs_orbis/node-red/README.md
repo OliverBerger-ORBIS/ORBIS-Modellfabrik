@@ -4,47 +4,16 @@ This section contains comprehensive documentation for the Node-RED flows that po
 
 ## 📋 Documentation Index
 
-### [System Architecture](./architecture.md)
-- Overall system design and component relationships
-- Network topology and communication patterns
-- Data flow and message routing
-
 ### [Flows Overview](./flows-overview.md)
 - Tab structure and organization
 - Module-specific flows (MILL, DRILL, OVEN, AIQS, HBW, DPS)
 - Flow grouping and organization
-
-### [Subflows](./subflows.md)
-- Reusable components and their functions
-- `handle-actions` - Central order processing
-- `load-factsheet` - Configuration management
-- `get-opcua-address` - Endpoint resolution
-- `update-rack-position` - Storage management
-- `update-calibration` - Calibration handling
 
 ### [State Machine](./state-machine.md)
 - VDA 5050 compliant state transitions
 - Action states: PENDING → RUNNING → FINISHED/FAILED
 - Connection states: ONLINE/OFFLINE/CONNECTIONBROKEN
 - Error handling and recovery
-
-### [Communication](./communication.md)
-- MQTT protocol implementation
-- OPC-UA integration
-- Message formats and topics
-- Network configuration
-
-### [Troubleshooting](./troubleshooting.md)
-- Common issues and solutions
-- Debug procedures
-- Error codes and meanings
-- Performance optimization
-
-### [Development](./development.md)
-- Guidelines for customization
-- Adding new modules
-- Modifying existing flows
-- Best practices
 
 ## 🔧 Quick Reference
 

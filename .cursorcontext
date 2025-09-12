@@ -1,0 +1,56 @@
+# ORBIS Modellfabrik - Cursor AI Kontext
+
+## Projekt-Ziel
+Entwicklung einer eigenen Steuerungsanwendung für die APS Fischertechnik Miniatur-Fabrik durch Analyse der bestehenden Nachrichten-Kommunikation.
+
+## Aktuelle Phase: Session-Analyse
+- **Fokus:** Verstehen der MQTT-Nachrichten-Semantik
+- **Tool:** Session Manager (Helper App)
+- **Status:** Timeline-Visualisierung und Filterung implementiert
+
+## Wichtige Konzepte
+- **APS-Fischertechnik:** Reale Miniatur-Fabrik mit Modulen
+- **MQTT-Kommunikation:** Nachrichten zwischen Fabrik-Komponenten
+- **Session-Recording:** Aufnahme der realen Nachrichten-Ströme
+- **OMF Dashboard:** Hauptanwendung für Fabrik-Steuerung
+- **Session Manager:** Unabhängige Helper-App für Session-Replay
+
+## System-Architektur
+- **OMF Dashboard**: Hauptanwendung (Port 8503)
+- **Session Manager**: Unabhängige Helper-App (Port 8507)
+- **Keine direkte Kopplung**: Beide Systeme arbeiten unabhängig
+- **Replay-Funktionalität**: Session Manager spielt Sessions über lokalen MQTT-Broker ab
+
+## Technische Architektur
+- **Session-Format:** JSON-basierte Logs
+- **Topic-Struktur:** Hierarchische MQTT-Topics
+- **Filter-System:** Vorfilter + Kategorie/Sub-Kategorie-Filter
+- **Settings:** Persistente Konfiguration für Vorfilter-Topics
+
+## Entwicklungsregeln
+- Absolute Imports: `from src_orbis.omf.module import Class`
+- Tests in `tests_orbis/` mit branch-spezifischer Ausführung
+- Pre-commit Hooks: Black (120 Zeilen), Ruff (E501 ignoriert)
+- Keine relativen Imports oder sys.path Manipulation
+
+## Aktuelle Session Manager Features
+- ✅ Session Loading (JSON + Legacy Format)
+- ✅ Timeline-Visualisierung (Plotly)
+- ✅ Topic-Filterung (4 Modi)
+- ✅ Vorfilter-System mit Settings
+- ✅ Zeitfilter (Slider)
+- ✅ Payload-Details
+- 🔄 Template-Analyse (geplant)
+- 🔄 Replay-Station (geplant)
+
+## Nächste Schritte
+1. Template-Analyse für Message-Generator
+2. Replay-Station für Dashboard-Tests
+3. OMF Dashboard Funktionalitäts-Erweiterung
+4. MessageGenerator Entwicklung
+
+## Wichtige Hinweise
+- **Keine Integration**: OMF Dashboard und Session Manager sind unabhängig
+- **Replay-Zweck**: Session Manager dient nur zum Abspielen von Sessions
+- **Lokaler MQTT**: Replay erfolgt über lokalen Mosquitto-Broker
+- **Separate Entwicklung**: Beide Systeme werden unabhängig weiterentwickelt

@@ -1,60 +1,98 @@
 """
-Session Analyse Komponente
-Analyse einer ausgewählten Session (aps_persistent_traffic)
+Session Analysis - Main controller for session analysis functionality
+Refactored version with separated components
 """
+
+import logging
 
 import streamlit as st
 
+from src_orbis.helper_apps.session_manager.components.session_analyzer import SessionAnalyzer
+from src_orbis.helper_apps.session_manager.components.timeline_visualizer import TimelineVisualizer
+from src_orbis.helper_apps.session_manager.components.ui_components import SessionAnalysisUI
+
+logger = logging.getLogger(__name__)
+
+
 def show_session_analysis():
-    """Session Analyse Tab"""
-    
-    st.header("📊 Session Analyse")
-    st.markdown("Analyse einer ausgewählten Session")
-    
-    st.info("🚧 **In Entwicklung** - Diese Funktion wird in Phase 2 implementiert")
-    
-    # Placeholder content
-    st.subheader("Geplante Features:")
-    st.markdown("""
-    - Session-Auswahl aus Database
-    - Timeline-Visualisierung
-    - Message-Statistiken
-    - Topic-Filterung
-    - Export-Funktionen
-    """)
-    
-    # Mock data for demonstration
-    if st.button("📊 Demo-Daten anzeigen"):
-        st.subheader("Demo Session Data")
-        
-        # Mock session data
-        session_data = {
-            "session_id": "demo_session_001",
-            "start_time": "2024-01-15 10:30:00",
-            "end_time": "2024-01-15 11:45:00",
-            "duration": "1h 15m",
-            "message_count": 156,
-            "topics": [
-                "ccu/state/status",
-                "module/v1/ff/SVR3QA0022/state",
-                "module/v1/ff/SVR3QA0022/order"
-            ]
-        }
-        
-        col1, col2, col3 = st.columns(3)
-        
-        with col1:
-            st.metric("Session ID", session_data["session_id"])
-            st.metric("Dauer", session_data["duration"])
-        
-        with col2:
-            st.metric("Start", session_data["start_time"])
-            st.metric("Nachrichten", session_data["message_count"])
-        
-        with col3:
-            st.metric("Ende", session_data["end_time"])
-            st.metric("Topics", len(session_data["topics"]))
-        
-        st.subheader("Topics in dieser Session:")
-        for topic in session_data["topics"]:
-            st.code(topic)
+    """Hauptfunktion für Session-Analyse (Refactored)"""
+
+    # Session State initialisieren (nur einmal)
+    if 'session_analyzer' not in st.session_state:
+        logger.info("Initialisiere Session State")
+        st.session_state.session_analyzer = SessionAnalyzer()
+        st.session_state.session_loaded = False
+        st.session_state.current_session = None
+        st.session_state.show_all_topics = False  # Vorfilter aktiv
+        st.session_state.topic_filter_reset = False  # Filter-Reset
+        st.session_state.time_range_reset = False  # Zeitfilter-Reset
+        st.session_state.selected_categories = []  # Ausgewählte Kategorien
+        st.session_state.selected_subcategories = []  # Ausgewählte Sub-Kategorien
+        st.session_state.selected_friendly_topics = []  # Ausgewählte Friendly Topics
+        st.session_state.selected_topic_names = []  # Ausgewählte Topic Names
+        st.session_state.prefilter_topics = []  # Gefilterte Topics für Anzeige
+    else:
+        logger.debug(
+            f"Session State: loaded={st.session_state.session_loaded}, current={st.session_state.current_session}"
+        )
+
+    # Komponenten initialisieren
+    analyzer = st.session_state.session_analyzer
+    visualizer = TimelineVisualizer()
+    ui = SessionAnalysisUI()
+
+    # Session-Auswahl
+    selected_session = ui.render_session_selection()
+
+    if selected_session:
+        # Session laden
+        if analyzer.load_session_data(selected_session):
+            st.session_state.session_loaded = True
+            st.session_state.current_session = selected_session
+            st.success(f"✅ Session erfolgreich geladen: {selected_session}")
+        else:
+            st.error("❌ Fehler beim Laden der Session")
+            return
+
+    # Session-Analyse anzeigen
+    if st.session_state.session_loaded:
+        # Topic-Filter
+        filter_mode, selected_topics = ui.render_topic_filters(analyzer)
+
+        # Timeline-Visualisierung mit Zeitfilter
+        if selected_topics:
+            logger.info(f"Erstelle Timeline mit ausgewählten Topics: {selected_topics}")
+            st.subheader("⏱️ Timeline-Visualisierung")
+
+            # Zeitfilter
+            messages = analyzer.session_data["messages"]
+            time_range = ui.render_timeline_controls(messages)
+
+            # Messages nach Zeitbereich filtern
+            filtered_messages = messages
+            if time_range and time_range[0] and time_range[1]:
+                filtered_messages = [msg for msg in messages if time_range[0] <= msg["timestamp"] <= time_range[1]]
+                logger.debug(f"Zeitfilter: {len(filtered_messages)} von {len(messages)} Messages")
+
+            # Timeline erstellen
+            try:
+                fig = visualizer.create_timeline_visualization(filtered_messages, selected_topics)
+                if fig.data:  # Prüfe ob Figure Daten hat
+                    logger.info("Timeline-Plot erfolgreich erstellt, zeige Chart")
+                    st.plotly_chart(fig, use_container_width=True)
+                    logger.info("Timeline-Chart erfolgreich angezeigt")
+                else:
+                    st.warning("Keine Daten für Timeline verfügbar")
+            except Exception as e:
+                logger.error(f"Fehler beim Erstellen der Timeline: {e}")
+                st.error(f"Fehler beim Erstellen der Timeline: {e}")
+
+            # Payload-Details
+            ui.render_payload_display(filtered_messages, selected_topics)
+
+            # Statistiken
+            ui.render_statistics(analyzer, filtered_messages)
+        else:
+            st.warning("Bitte wählen Sie Topics für die Visualisierung aus")
+    else:
+        st.info("Bitte laden Sie zuerst eine Session")

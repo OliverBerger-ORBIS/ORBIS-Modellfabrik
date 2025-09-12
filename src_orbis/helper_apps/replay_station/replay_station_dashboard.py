@@ -279,18 +279,18 @@ def main():
     # Verfügbare Sessions finden
     session_files = []
 
-    # SQLite-Sessions aus mqtt-data/sessions
-    sqlite_dir = Path("mqtt-data/sessions")
+    # SQLite-Sessions aus data/mqtt-data/sessions
+    sqlite_dir = Path("data/mqtt-data/sessions")
     if sqlite_dir.exists():
         session_files.extend(list(sqlite_dir.glob("aps_persistent_traffic_*.db")))
 
-    # Log-Sessions aus mqtt-data/sessions
+    # Log-Sessions aus data/mqtt-data/sessions
     if sqlite_dir.exists():
         session_files.extend(list(sqlite_dir.glob("aps_persistent_traffic_*.log")))
 
     if not session_files:
         st.warning("❌ Keine Session-Dateien gefunden")
-        st.info("💡 Legen Sie Session-Dateien in `mqtt-data/sessions/` ab")
+        st.info("💡 Legen Sie Session-Dateien in `data/mqtt-data/sessions/` ab")
         return
 
     # Session-Auswahl mit Vorschau

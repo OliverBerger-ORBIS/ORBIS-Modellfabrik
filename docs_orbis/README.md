@@ -18,17 +18,17 @@ This directory contains comprehensive documentation for the Orbis Modellfabrik s
 
 ## 📚 Documentation Structure
 
-### [Project Analysis Summary](./project-analysis-summary.md)
+### [Project Overview](./PROJECT_OVERVIEW.md)
 - **System Overview** - Complete project analysis and architecture
 - **Core Technology** - MQTT-based communication system
 - **Orbis Components** - Central configuration managers and dashboard
 - **Current Status** - Modern YAML-based architecture
 
-### [Project Status](./project-status.md)
-- **Completed Features** - Central configuration managers, dashboard modernization
-- **Cleaned Components** - Removed obsolete components and documentation
-- **Next Steps** - Live APS integration roadmap
-- **Current Architecture** - YAML-based configuration system
+### [Development Rules](./DEVELOPMENT_RULES.md)
+- **Import Standards** - Absolute imports only
+- **Code Quality** - Black, Ruff, Pre-commit hooks
+- **Test Standards** - Branch-specific test execution
+- **Architecture** - Separation of concerns
 
 ### [Node-RED Documentation](./node-red/)
 - **System Architecture** - Overall system design and components
@@ -39,16 +39,16 @@ This directory contains comprehensive documentation for the Orbis Modellfabrik s
 - **Troubleshooting** - Common issues and solutions
 - **Development** - Guidelines for customization
 
-### [MQTT Documentation](./mqtt/)
-- **Dashboard MQTT Integration** - Template-based control system
+### [MQTT Documentation](./guides/communication/)
+- **[MQTT Integration Guide](./guides/communication/MQTT_INTEGRATION_GUIDE.md)** - Complete MQTT setup and usage
 - **MQTT Control Summary** - Module control and commands
 - **State Machine Notes** - FTS and module state management
 - **Setup Guides** - Remote control and traffic logging
 
-### [Configuration Guides]
-- **[NFC Code Configuration](./nfc-code-configuration-guide.md)** - Central NFC code management
-- **[Module Configuration](./module-configuration-guide.md)** - APS module configuration
-- **[Topic Configuration](./topic-configuration-guide.md)** - MQTT topic mappings
+### [Configuration Guides](./guides/configuration/)
+- **[NFC Code Configuration](./guides/configuration/nfc-code-configuration-guide.md)** - Central NFC code management
+- **[Module Configuration](./guides/configuration/module-configuration-guide.md)** - APS module configuration
+- **[Topic Configuration](./guides/configuration/topic-configuration-guide.md)** - MQTT topic mappings
 
 ### [Prerequisites](./prerequisites.md)
 - **System Requirements** - All necessary prerequisites
@@ -67,12 +67,28 @@ This directory contains comprehensive documentation for the Orbis Modellfabrik s
 - **Workflow Analysis** - Comprehensive workflow documentation
 - **PDF Analysis** - Documentation analysis results
 
+### [Troubleshooting](./guides/troubleshooting/)
+- **Common Issues** - Black/Ruff problems, Import errors
+- **Bug Fixes** - Critical fixes and solutions
+- **Performance** - Optimization guides
+
+### [Releases](./releases/)
+- **Changelog** - Complete version history
+- **Release Notes** - Detailed release information
+- **Migration Guides** - Upgrade instructions
+
 ## 🚀 Quick Start
 
-1. **System Overview**: Start with [Project Analysis Summary](./project-analysis-summary.md)
-2. **Current Status**: Review [Project Status](./project-status.md)
-3. **Configuration**: Set up [NFC Codes](./nfc-code-configuration-guide.md) and [Modules](./module-configuration-guide.md)
-4. **Dashboard**: Launch the modern Streamlit dashboard
+1. **System Overview**: Start with [Project Overview](./PROJECT_OVERVIEW.md)
+2. **Development Rules**: Review [Development Rules](./DEVELOPMENT_RULES.md)
+3. **Configuration**: Set up [NFC Codes](./guides/configuration/nfc-code-configuration-guide.md) and [Modules](./guides/configuration/module-configuration-guide.md)
+4. **MQTT Setup**: Follow [MQTT Integration Guide](./guides/communication/MQTT_INTEGRATION_GUIDE.md)
+5. **Dashboard**: Launch the modern Streamlit dashboard
+
+## 📚 Dokumentationsindex
+
+**Interaktive Suche:** [INDEX.html](./INDEX.html) - Volltext-Suche durch alle 50 Dokumente
+**JSON-Index:** [INDEX.json](./INDEX.json) - Maschinenlesbarer Index für Tools
 
 ## 🔧 System Components
 

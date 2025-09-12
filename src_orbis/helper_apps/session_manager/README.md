@@ -3,6 +3,21 @@
 ## Übersicht
 Neue Streamlit-Anwendung zur Verwaltung und Analyse von MQTT-Sessions für die ORBIS Modellfabrik.
 
+## 🎯 Zweck im Gesamtprojekt
+
+Der Session Manager ist ein **unabhängiger Helper App** zur Analyse der APS Fischertechnik Miniatur-Fabrik. Er dient dem Verständnis der Nachrichten-Semantik und -Funktionsweise für die Entwicklung einer eigenen Steuerungsanwendung.
+
+### 🏭 Kontext: APS-Fischertechnik
+- **Reale Miniatur-Fabrik** mit verschiedenen Modulen
+- **MQTT-Kommunikation** zwischen Fabrik-Komponenten
+- **Ziel:** Verstehen der Nachrichten-Ströme für eigene Steuerung
+
+### 🔗 System-Architektur
+- **Status:** Unabhängige Helper-Anwendung
+- **Keine Integration:** Vollständig unabhängig vom OMF Dashboard
+- **Replay-Zweck:** Abspielen von Sessions über lokalen MQTT-Broker
+- **Separate Entwicklung:** Unabhängige Wartung und Weiterentwicklung
+
 ## Architektur
 - **Name:** Session Manager
 - **Framework:** Streamlit (wie omf_dashboard)
@@ -23,7 +38,7 @@ Neue Streamlit-Anwendung zur Verwaltung und Analyse von MQTT-Sessions für die O
 - **QoS:** Level 1 für zuverlässige Übertragung
 
 #### 1.2 Session-Management
-- **Session-Verzeichnis:** `mqtt-data/sessions/aps_persistent_traffic-...`
+- **Session-Verzeichnis:** `data/mqtt-data/sessions/aps_persistent_traffic-...`
 - **Unterstützte Formate:** SQLite (.db) + Log (.log) Dateien
 - **Regex-Filter:** Dateiname-Filterung (z.B. "Waren" für Wareneingang-Sessions)
 - **Session-Auswahl:** Dropdown mit gefilterten Sessions
@@ -79,7 +94,7 @@ Neue Streamlit-Anwendung zur Verwaltung und Analyse von MQTT-Sessions für die O
 1. **Zusammenfassung der Anforderungen** ✅
 2. **Komponenten anlegen** (Session Manager Dashboard)
 3. **Replay Station Tab** - Sofort testbar implementieren
-4. **Session-Verzeichnis** - Verwendung der Sessions in mqtt-data/sessions/  (später ggf anderes Verzeichnis wählen)
+4. **Session-Verzeichnis** - Verwendung der Sessions in data/mqtt-data/sessions/  (später ggf anderes Verzeichnis wählen)
 
 ### Phase 2: Erweiterte Features
 4. **Session Analyse Tab**
@@ -100,49 +115,60 @@ Neue Streamlit-Anwendung zur Verwaltung und Analyse von MQTT-Sessions für die O
 1. **Zusammenfassung der Anforderungen** ✅
 2. **Komponenten anlegen** (Session Manager Dashboard) ✅
 3. **Replay Station Tab** - Sofort testbar implementieren ✅
-4. **Session-Verzeichnis** - Verwendung der Sessions in mqtt-data/sessions/ ✅
+4. **Session-Verzeichnis** - Verwendung der Sessions in data/omf-data/sessions/ ✅
 
-### 🔧 Phase 1.1: Replay Station Verbesserungen (IN ARBEIT)
-1. **MQTT Integration** ✅ - mosquitto_pub subprocess calls
-2. **Session Loading** ✅ - SQLite + Log file support
-3. **Replay Controls** ✅ - Play/Pause/Stop/Reset
-4. **Progress Display** ✅ - Progress bar + message count
-5. **Logging System** ✅ - Detailliertes Logging für Debugging
-6. **UI State Management** ✅ - st.rerun() für sofortige Updates
+### 🔄 Phase 2: Alle Komponenten (IN ENTWICKLUNG)
+1. **Session Recorder** ✅ - MQTT-Aufnahme, SQLite/Log-Speicherung, manueller Refresh
+2. **Session Analyse** 🔄 - Timeline-Visualisierung ✅, Graph-Visualisierung ❌
+3. **Replay Station** ✅ - Session-Replay, Geschwindigkeitskontrolle, nur .db Dateien
+4. **Template Analyse** 🔄 - Integration der bestehenden template_analyzers ❌
+5. **Settings Management** ✅ - Zentralisierte Konfiguration aller Komponenten
 
-### ✅ Phase 1.2: Bekannte Probleme (BEHOBEN)
-1. **Replay Controls:** Play-Button sendet keine Nachrichten ✅
-2. **Progress Bar:** Bleibt bei 0% stehen ✅
-3. **Button States:** Pause-Button bleibt aktiv nach Pause ✅
-4. **Threading:** Replay Worker Thread-Probleme ✅
-5. **Original Timing:** Echte Zeitdifferenzen aus Session-Timestamps ✅
-6. **Geschwindigkeiten:** 1/5x, 1/3x, 1/2x, 1x, 2x, 3x, 5x ✅
+### ✅ Phase 3: Architektur & Qualität (ABGESCHLOSSEN)
+1. **Tab-Unabhängigkeit** ✅ - Jeder Tab vollständig unabhängig
+2. **Settings-Integration** ✅ - Einheitliche Konfiguration
+3. **Thread-Sicherheit** ✅ - Sichere MQTT-Callbacks
+4. **Performance-Optimierung** ✅ - Keine unnötigen st.rerun() Calls
+5. **Code-Qualität** ✅ - Debug-Logs entfernt, sauberer Code
 
-### 📋 Phase 2: Erweiterte Features (GEPLANT)
-1. **Session Analyse Tab** - Timeline-Visualisierung
-2. **Session Recorder Tab** - Live-Aufnahme
-3. **Template Analyse Tab** - Pattern-Analyse
+## Status: IN ENTWICKLUNG 🔄
 
-## Next Steps
+### ✅ Funktional verfügbar
+- **Session Recorder:** MQTT-Aufnahme mit SQLite/Log-Speicherung
+- **Replay Station:** Session-Replay mit Geschwindigkeitskontrolle
+- **Settings Management:** Zentralisierte Konfiguration
 
-### ✅ Sofort verfügbar
-- **Replay Station:** Vollständig funktionsfähig und getestet
-- **Original Timing:** Echte Zeitdifferenzen aus Session-Timestamps
-- **Geschwindigkeiten:** 1/5x bis 5x mit korrekter Skalierung
-- **MQTT Integration:** mosquitto_pub subprocess calls
-- **Session Management:** SQLite + Log file support
+### 🔄 In Entwicklung
+- **Session Analyse:** Timeline-Visualisierung ✅, Graph-Visualisierung ❌
+- **Template Analyse:** Integration der bestehenden template_analyzers ❌
 
-### 🔧 Nächste Schritte
-1. **Tests implementieren** für Session Manager Komponenten
-2. **Session Analyse Tab** entwickeln
-3. **Session Recorder Tab** implementieren
-4. **Template Analyse Tab** erstellen
-5. **CI/CD Integration** mit pre-commit hooks
+### 🎯 Nächste Schritte: Graph-Visualisierung & Template-Integration
+- **Graph-Visualisierung:** Message-Ketten basierend auf Meta-Daten (orderID, workpieceId, nfcCode)
+- **Template-Integration:** Bestehende `analysis_tools/template_analyzers` nutzen
+- **Message-Ketten-Analyse:** Identifikation der Verbindungen zwischen Messages
 
-### 🚀 Deployment
-- **Branch:** `helper/session-manager` erstellt
-- **Status:** Bereit für Commit und Push
-- **Testing:** Manuelle Tests erfolgreich durchgeführt
+## Geplante Features
+
+### 📊 Session Analyse - Graph-Visualisierung
+**Ziel:** Gerichteter Graph aus Message-Ketten basierend auf Meta-Informationen
+- **Wurzel-Message:** Startpunkt (z.B. CCU-Nachricht mit orderID)
+- **Verbindungen:** Anhand von orderID, workpieceId, nfcCode, etc.
+- **Visualisierung:** Graphische Darstellung der Message-Abhängigkeiten
+- **Erkenntnis:** Welche Komponenten in welcher Reihenfolge beteiligt sind
+- **Technologie:** NetworkX + Plotly für interaktive Graphen
+
+### 🔍 Template Analyse - Message-Struktur-Bibliothek
+**Ziel:** Template-Bibliothek für MessageGenerator
+- **Bestehende Basis:** `analysis_tools/template_analyzers` nutzen
+- **Verfügbare Analyzer:**
+  - `ccu_template_analyzer.py` - CCU-Nachrichten analysieren
+  - `module_template_analyzer.py` - Modul-Nachrichten analysieren
+  - `node_red_message_analyzer.py` - Node-RED Nachrichten analysieren
+  - `nodered_template_analyzer.py` - Node-RED Templates analysieren
+  - `txt_template_analyzer.py` - TXT-Nachrichten analysieren
+- **Funktion:** Messages generieren und parsen
+- **Output:** YAML-Templates für MessageGenerator
+- **UI:** Template-Bibliothek mit Vorschau und Validierung
 
 ## Technische Details
 
@@ -154,7 +180,7 @@ Neue Streamlit-Anwendung zur Verwaltung und Analyse von MQTT-Sessions für die O
 
 ### Session Management
 - **Formate:** SQLite (.db) + Log (.log) Dateien
-- **Verzeichnis:** mqtt-data/sessions/
+- **Verzeichnis:** data/mqtt-data/sessions/
 - **Filtering:** Regex-basierte Session-Auswahl
 - **Loading:** Automatische Format-Erkennung
 
