@@ -23,25 +23,29 @@ Verständnis der Funktionsweise der APS Fischertechnik Anwendung, um eine eigene
 - **Nächster Schritt:** Graph-Visualisierung und Template-Integration
 
 ### Phase 3: Steuerungs-Entwicklung 🚀 **AKTUELLER FOKUS**
-- **Ziel:** Anwendung für Befehle/Messages an Fabrik-Komponenten
-- **Tool:** OMF Dashboard
-- **Funktion:** Senden von Messages für Aufgaben-Erfüllung
+- **Ziel:** Node-RED Flows ersetzen und komplette Produktionssteuerung übernehmen
+- **Tool:** OMF Dashboard + DSP (Distributed Shopfloor Processing)
+- **Funktion:** Automatische Produktionssteuerung mit Timing-Management
 
 #### Nächste Schritte:
-1. **OMF Dashboard Analyse** 📊
-   - Aktuellen Stand des OMF Dashboards analysieren
-   - Fehlende funktionale Teile identifizieren
-   - Architektur-Review gegen Dokumentation
+1. **Timing-Management implementieren** ⏱️
+   - ModuleStateManager für automatische Sequenz-Ausführung
+   - Status-Subscription für alle Module
+   - Automatisches PICK → PROCESS → DROP Timing
 
-2. **Message-Template Integration** 🔧
-   - MessageGenerator in OMF Dashboard integrieren
-   - Template-basierte Message-Erstellung
-   - Validierung der generierten Messages
+2. **OPC-UA Integration über DSP** 🔌
+   - Direkte SPS-Kommunikation über DSP RPI
+   - Node-ID Mapping (ns=4;i=5 = pick, ns=4;i=6 = drop)
+   - MQTT-Bridge zwischen OMF Dashboard und DSP
 
-3. **Fabrik-Steuerung implementieren** 🏭
-   - Module-spezifische Steuerungsbefehle
-   - Workflow-Management für Produktionsprozesse
-   - Integration mit Replay Station für Tests
+3. **Node-RED schrittweise ersetzen** 🔄
+   - Parallel-Entwicklung mit Command-Vergleich
+   - Einzelne Modul-Tabs deaktivieren
+   - Vollständige Übernahme der Produktionssteuerung
+
+#### Detaillierte Strategie:
+- **Dokumentation:** `docs_orbis/analysis/node-red-replacement-strategy.md`
+- **Status:** 📋 **STRATEGIE DEFINIERT** - Bereit für Implementierung
 
 ## 🏗️ Teilprojekte
 

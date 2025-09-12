@@ -123,6 +123,52 @@ Zeigt Rohmaterial-Bestellungen mit visueller Darstellung.
 ### Production Order Components
 
 #### Production Order Management Component
+
+### Node-RED Replacement Components
+
+#### Module State Manager (Geplant)
+**Datei:** `module_state_manager.py` (zu erstellen)
+
+Implementiert automatisches Timing-Management für Modul-Sequenzen.
+
+##### Features:
+
+##### ⏱️ Timing-Management
+- **Modul-Status-Tracking:** IDLE → PICKBUSY → WAITING_AFTER_PICK → MILLBUSY → etc.
+- **Automatische Sequenz-Ausführung:** PICK → PROCESS → DROP ohne manuelle Sichtkontrolle
+- **Status-Subscription:** MQTT-Status-Updates für alle Module
+- **Timeout-Handling:** Automatische Fehlerbehandlung bei Timeouts
+
+##### 🔌 OPC-UA Integration (Geplant)
+**Datei:** `opcua_manager.py` (zu erstellen)
+
+Direkte SPS-Kommunikation über DSP (Distributed Shopfloor Processing).
+
+##### Features:
+
+##### 📡 SPS-Kommunikation
+- **Node-ID Mapping:** ns=4;i=5 = pick, ns=4;i=6 = drop, ns=4;i=4 = mill
+- **Write-Operations:** Direkte SPS-Steuerung über DSP RPI
+- **Read-Operations:** Status-Updates von SPS-Modulen
+- **Error-Handling:** Verbindungsfehler und Timeout-Behandlung
+
+#### Workflow Engine (Erweitern)
+**Datei:** `workflow_engine.py` (zu erweitern)
+
+Koordinierte Abläufe zwischen Modulen für komplexe Produktionsaufträge.
+
+##### Features:
+
+##### 🏭 Produktions-Workflows
+- **ROT-Workflow:** HBW → MILL → AIQS → DPS
+- **WEISS-Workflow:** HBW → DRILL → AIQS → DPS
+- **BLAU-Workflow:** HBW → DRILL → MILL → AIQS → DPS
+- **FTS-Integration:** Koordinierte Transport-Abläufe
+- **Error-Recovery:** Automatische Fehlerbehandlung und Recovery
+
+### Production Order Components
+
+#### Production Order Management Component
 **Datei:** `production_order_management.py`
 
 Verwaltung von Fertigungsaufträgen (in Entwicklung).

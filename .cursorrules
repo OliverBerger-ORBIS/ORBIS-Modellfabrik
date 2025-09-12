@@ -41,8 +41,18 @@
 - **Freigabe:** Warten auf explizite Bestätigung vor Implementierung
 - **Keine direkte Implementierung** ohne vorherige Analyse und Freigabe
 
+### Dashboard-Komponenten-Regeln (KRITISCH)
+- **Wrapper-Komponenten:** `show_<component_name>()` mit Tabs
+- **Unterkomponenten:** `show_<specific_function>()` mit expandable sections
+- **Private Funktionen:** `_show_<function>_section()` mit `_` Prefix
+- **MQTT-Singleton:** `st.session_state.get("mqtt_client")` verwenden
+- **Per-topic subscription:** `subscribe_many()` und `get_buffer()` verwenden
+- **Error-Handling:** Try-catch für alle Gateway-Calls
+- **UI-Standards:** Icons, expandable sections, Spalten-Layout
+
 ### Vollständige Regeln
-Siehe: `docs_orbis/DEVELOPMENT_RULES.md` für detaillierte Regeln.
+- **Allgemein:** `docs_orbis/DEVELOPMENT_RULES.md`
+- **Dashboard-Komponenten:** `docs_orbis/development/dashboard-component-rules.md`
 
 ## 🚨 WICHTIG
 Bei jeder Code-Änderung diese Regeln befolgen!

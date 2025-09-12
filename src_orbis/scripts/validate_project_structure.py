@@ -57,6 +57,17 @@ class ProjectStructureValidator:
             ".github",  # GitHub Actions workflows
         }
 
+        # Automatisch zu bereinigende Ordner
+        self.auto_cleanup_dirs = {
+            "__pycache__",  # Python-Cache-Ordner
+        }
+
+        # Dateien, die automatisch ins data/ Verzeichnis verschoben werden sollen
+        self.auto_move_to_data = {
+            "nonexistent.db",
+            "non_existent_file.db",
+        }
+
         # Verbotene Dateien im Root (sollten in Unterordnern sein)
         self.forbidden_root_patterns = [
             "*.py",  # Python-Dateien außer __init__.py
@@ -80,23 +91,56 @@ class ProjectStructureValidator:
         errors = []
 
         # Prüfe Root-Dateien
-        root_files = [f.name for f in self.project_root.iterdir() if f.is_file()]
-        for file in root_files:
-            if file not in self.allowed_root_files:
+        root_files = [f for f in self.project_root.iterdir() if f.is_file()]
+        for file_path in root_files:
+            file_name = file_path.name
+
+            # Automatisches Verschieben bestimmter Dateien nach data/
+            if file_name in self.auto_move_to_data:
+                try:
+                    data_dir = self.project_root / "data"
+                    data_dir.mkdir(exist_ok=True)
+                    target_path = data_dir / file_name
+
+                    # Nur verschieben wenn Ziel nicht existiert oder kleiner ist
+                    if not target_path.exists() or file_path.stat().st_size > target_path.stat().st_size:
+                        file_path.rename(target_path)
+                        print(f"  ✅ {file_name} → data/")
+                    else:
+                        file_path.unlink()  # Löschen wenn bereits bessere Version in data/ existiert
+                        print(f"  🗑️ {file_name} gelöscht (bereits in data/ vorhanden)")
+                except Exception as e:
+                    print(f"  ❌ Fehler beim Verschieben von {file_name}: {e}")
+                continue
+
+            if file_name not in self.allowed_root_files:
                 # Prüfe ob es eine erlaubte Ausnahme ist
                 is_exception = False
                 for pattern, exceptions in self.allowed_exceptions.items():
-                    if any(file.endswith(ext.replace("*", "")) for ext in pattern.split(",")):
-                        if file in exceptions:
+                    if any(file_name.endswith(ext.replace("*", "")) for ext in pattern.split(",")):
+                        if file_name in exceptions:
                             is_exception = True
                             break
 
                 if not is_exception:
-                    errors.append(f"Unerlaubte Datei im Root: {file}")
+                    errors.append(f"Unerlaubte Datei im Root: {file_name}")
 
         # Prüfe Root-Ordner
-        root_dirs = [d.name for d in self.project_root.iterdir() if d.is_dir()]
-        for dir_name in root_dirs:
+        root_dirs = [d for d in self.project_root.iterdir() if d.is_dir()]
+        for dir_path in root_dirs:
+            dir_name = dir_path.name
+
+            # Automatische Bereinigung für bestimmte Ordner
+            if dir_name in self.auto_cleanup_dirs:
+                try:
+                    import shutil
+
+                    shutil.rmtree(dir_path)
+                    print(f"  ✅ Automatisch bereinigt: {dir_name}")
+                except Exception as e:
+                    print(f"  ❌ Fehler beim Bereinigen von {dir_name}: {e}")
+                continue
+
             if dir_name not in self.allowed_root_dirs:
                 errors.append(f"Unerlaubter Ordner im Root: {dir_name}")
 
@@ -163,7 +207,8 @@ class ProjectStructureValidator:
                 print(f"  {i}. {error}")
             print()
             print(
-                "💡 Tipp: Verwende 'python src_orbis/scripts/validate_project_structure.py --fix' für automatische Korrekturen"
+                "💡 Tipp: Verwende 'python src_orbis/scripts/validate_project_structure.py --fix' "
+                "für automatische Korrekturen"
             )
             return False
 
