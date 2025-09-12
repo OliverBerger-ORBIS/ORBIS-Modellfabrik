@@ -26,11 +26,11 @@ class SessionAnalyzer:
     def load_session_data(self, session_file_path: str) -> bool:
         """Lädt Session-Daten aus einer Log-Datei"""
         try:
-            logger.info(f"Lade Session-Daten: {session_file_path}")
+            logger.debug(f"Lade Session-Daten: {session_file_path}")
             # Lade Session-Daten (vereinfacht für Demo)
             # In der echten Implementierung würde hier die Session-Datenbank abgefragt
             self.session_data = self._parse_session_file(session_file_path)
-            logger.info(f"Session-Daten erfolgreich geladen: {len(self.session_data['messages'])} Messages")
+            logger.debug(f"Session-Daten erfolgreich geladen: {len(self.session_data['messages'])} Messages")
             return True
         except Exception as e:
             logger.error(f"Fehler beim Laden der Session-Daten: {e}", exc_info=True)
@@ -39,7 +39,7 @@ class SessionAnalyzer:
 
     def _parse_session_file(self, file_path: str) -> Dict:
         """Parst eine Session-Log-Datei (JSON-Format)"""
-        logger.info(f"Parse Session-Datei: {file_path}")
+        logger.debug(f"Parse Session-Datei: {file_path}")
 
         if file_path == "demo":
             # Mock-Daten für Demo
@@ -124,7 +124,7 @@ class SessionAnalyzer:
                 logger.warning("Keine gültigen Messages gefunden, verwende Mock-Daten")
                 return self._generate_mock_messages()
 
-            logger.info(f"Session geparst: {len(messages)} Messages, {start_time} bis {end_time}")
+            logger.debug(f"Session geparst: {len(messages)} Messages, {start_time} bis {end_time}")
 
             return {
                 "session_id": session_path.stem,
@@ -181,7 +181,7 @@ class SessionAnalyzer:
             prefilter_topics = self._get_prefilter_topics()
             topics = topics - set(prefilter_topics)
 
-        return sorted(list(topics))
+        return sorted(topics)
 
     def _get_prefilter_topics(self) -> List[str]:
         """Gibt die Vorfilter-Topics zurück (uninteressante Topics)"""
@@ -191,7 +191,7 @@ class SessionAnalyzer:
 
             if hasattr(st.session_state, 'settings_manager'):
                 return st.session_state.settings_manager.get_prefilter_topics()
-        except:
+        except Exception:
             pass
 
         # Fallback zu Standard-Topics

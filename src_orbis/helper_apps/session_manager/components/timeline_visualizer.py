@@ -82,7 +82,7 @@ class TimelineVisualizer:
                             name=topic,  # Original Topic-Name statt Friendly Name
                             text=hover_texts,
                             hovertemplate="%{text}<extra></extra>",
-                            marker=dict(size=8, opacity=0.7),
+                            marker={"size": 8, "opacity": 0.7},
                             customdata=topic_messages[["topic", "payload", "timestamp"]].values,  # Für Click-Events
                         )
                     )
@@ -111,7 +111,7 @@ class TimelineVisualizer:
             except Exception as e:
                 logger.error(f"Fehler beim Anpassen der Y-Achse: {e}")
 
-            logger.info("Timeline-Visualisierung erfolgreich erstellt")
+            logger.debug("Timeline-Visualisierung erfolgreich erstellt")
             return fig
 
         except Exception as e:

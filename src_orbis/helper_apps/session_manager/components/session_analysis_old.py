@@ -37,11 +37,11 @@ class SessionAnalyzer:
     def load_session_data(self, session_file_path: str) -> bool:
         """Lädt Session-Daten aus einer Log-Datei"""
         try:
-            logger.info(f"Lade Session-Daten: {session_file_path}")
+            logger.debug(f"Lade Session-Daten: {session_file_path}")
             # Lade Session-Daten (vereinfacht für Demo)
             # In der echten Implementierung würde hier die Session-Datenbank abgefragt
             self.session_data = self._parse_session_file(session_file_path)
-            logger.info(f"Session-Daten erfolgreich geladen: {len(self.session_data['messages'])} Messages")
+            logger.debug(f"Session-Daten erfolgreich geladen: {len(self.session_data['messages'])} Messages")
             return True
         except Exception as e:
             logger.error(f"Fehler beim Laden der Session-Daten: {e}", exc_info=True)
@@ -50,7 +50,7 @@ class SessionAnalyzer:
 
     def _parse_session_file(self, file_path: str) -> Dict:
         """Parst eine Session-Log-Datei (JSON-Format)"""
-        logger.info(f"Parse Session-Datei: {file_path}")
+        logger.debug(f"Parse Session-Datei: {file_path}")
 
         if file_path == "demo":
             # Mock-Daten für Demo
@@ -135,7 +135,7 @@ class SessionAnalyzer:
                 logger.warning("Keine gültigen Messages gefunden, verwende Mock-Daten")
                 return self._generate_mock_messages()
 
-            logger.info(f"Session geparst: {len(messages)} Messages, {start_time} bis {end_time}")
+            logger.debug(f"Session geparst: {len(messages)} Messages, {start_time} bis {end_time}")
 
             return {
                 "session_id": session_path.stem,
@@ -192,7 +192,7 @@ class SessionAnalyzer:
             prefilter_topics = self._get_prefilter_topics()
             topics = topics - set(prefilter_topics)
 
-        return sorted(list(topics))
+        return sorted(topics)
 
     def _get_prefilter_topics(self) -> List[str]:
         """Gibt die Vorfilter-Topics zurück (uninteressante Topics)"""
@@ -388,7 +388,7 @@ class SessionAnalyzer:
                             name=topic,  # Original Topic-Name statt Friendly Name
                             text=hover_texts,
                             hovertemplate="%{text}<extra></extra>",
-                            marker=dict(size=8, opacity=0.7),
+                            marker={'size': 8, 'opacity': 0.7},
                             customdata=topic_messages[["topic", "payload", "timestamp"]].values,  # Für Click-Events
                         )
                     )
@@ -417,7 +417,7 @@ class SessionAnalyzer:
             except Exception as e:
                 logger.error(f"Fehler beim Anpassen der Y-Achse: {e}")
 
-            logger.info("Timeline-Visualisierung erfolgreich erstellt")
+            logger.debug("Timeline-Visualisierung erfolgreich erstellt")
             return fig
 
         except Exception as e:
@@ -454,7 +454,7 @@ def show_session_analysis():
 
     # Session State initialisieren
     if 'session_analyzer' not in st.session_state:
-        logger.info("Initialisiere Session State")
+        logger.debug("Initialisiere Session State")
         st.session_state.session_analyzer = SessionAnalyzer()
         st.session_state.session_loaded = False
         st.session_state.current_session = None
@@ -680,7 +680,7 @@ def show_session_analysis():
                 st.markdown("**Verfügbare Sub-Kategorien:**")
                 for category, subcats in subcategories.items():
                     with st.expander(f"**{category}**"):
-                        for subcat, topics in subcats.items():
+                        for subcat, _topics in subcats.items():
                             with st.expander(f"{subcat} ({len(topics)} Topics)", expanded=False):
                                 for topic in topics:
                                     friendly_name = analyzer.topic_manager.get_friendly_name(topic)
@@ -691,7 +691,7 @@ def show_session_analysis():
                 # Sub-Kategorie-Auswahl
                 all_subcategories = []
                 for category, subcats in subcategories.items():
-                    for subcat, topics in subcats.items():
+                    for subcat, _topics in subcats.items():
                         all_subcategories.append(f"{category} → {subcat}")
 
                 # Sub-Kategorie-Auswahl mit Session State
@@ -770,7 +770,7 @@ def show_session_analysis():
 
         # Timeline-Visualisierung mit Zeitfilter
         if selected_topics:
-            logger.info(f"Erstelle Timeline mit ausgewählten Topics: {selected_topics}")
+            logger.debug(f"Erstelle Timeline mit ausgewählten Topics: {selected_topics}")
             st.subheader("⏱️ Timeline-Visualisierung")
             st.markdown("**Zeit vs Topic-Name** - Jeder Punkt repräsentiert eine MQTT-Nachricht")
             st.markdown("💡 **Tipp:** Klicken Sie auf einen Datenpunkt, um die Payload-Details anzuzeigen")
@@ -846,11 +846,11 @@ def show_session_analysis():
                     # Timeline mit gefilterten Messages erstellen
                     try:
                         timeline_fig = analyzer.create_timeline_visualization(selected_topics, filtered_messages)
-                        logger.info("Timeline-Plot erfolgreich erstellt, zeige Chart")
+                        logger.debug("Timeline-Plot erfolgreich erstellt, zeige Chart")
 
                         # Plot anzeigen
                         st.plotly_chart(timeline_fig, use_container_width=True)
-                        logger.info("Timeline-Chart erfolgreich angezeigt")
+                        logger.debug("Timeline-Chart erfolgreich angezeigt")
 
                     except Exception as e:
                         logger.error(f"Fehler beim Erstellen der Timeline: {e}")
@@ -861,11 +861,11 @@ def show_session_analysis():
                 # Fallback ohne Zeitfilter
                 try:
                     timeline_fig = analyzer.create_timeline_visualization(selected_topics)
-                    logger.info("Timeline-Plot erfolgreich erstellt, zeige Chart")
+                    logger.debug("Timeline-Plot erfolgreich erstellt, zeige Chart")
 
                     # Plot anzeigen
                     st.plotly_chart(timeline_fig, use_container_width=True)
-                    logger.info("Timeline-Chart erfolgreich angezeigt")
+                    logger.debug("Timeline-Chart erfolgreich angezeigt")
 
                 except Exception as e:
                     logger.error(f"Fehler beim Erstellen der Timeline: {e}")
@@ -887,7 +887,7 @@ def show_session_analysis():
 
                 selected_topic_for_payload = st.selectbox(
                     "Topic für Payload-Anzeige auswählen:",
-                    options=sorted(list(all_topics_in_session)),
+                    options=sorted(all_topics_in_session),
                     help="Wählen Sie ein Topic aus, um die Payloads anzuzeigen",
                 )
 
@@ -938,7 +938,7 @@ def show_session_analysis():
                     else:
                         st.warning("Keine Messages für das ausgewählte Topic gefunden.")
 
-                logger.info("Timeline-Chart erfolgreich angezeigt")
+                logger.debug("Timeline-Chart erfolgreich angezeigt")
 
             # Topic-Statistiken
             st.subheader("📊 Topic-Statistiken")

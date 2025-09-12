@@ -68,7 +68,7 @@ class SettingsManager:
         try:
             with open(self.settings_file, 'w', encoding='utf-8') as f:
                 json.dump(self.settings, f, indent=2, ensure_ascii=False)
-            logger.info(f"Einstellungen gespeichert: {self.settings_file}")
+            logger.debug(f"Einstellungen gespeichert: {self.settings_file}")
         except Exception as e:
             logger.error(f"Fehler beim Speichern der Einstellungen: {e}")
 
@@ -143,7 +143,7 @@ class SettingsManager:
     def get_session_directory(self) -> str:
         """Gibt das Session-Verzeichnis zurück"""
         directory = self.settings.get("replay_station", {}).get("session_directory", "data/omf-data/sessions")
-        logger.info(f"🔍 Settings: get_session_directory() = {directory}")
+        logger.debug(f"🔍 Settings: get_session_directory() = {directory}")
         return directory
 
     def update_session_directory(self, directory: str):

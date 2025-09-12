@@ -7,6 +7,7 @@ import logging
 
 import streamlit as st
 
+from src_orbis.helper_apps.session_manager.components.graph_visualizer import GraphVisualizer
 from src_orbis.helper_apps.session_manager.components.session_analyzer import SessionAnalyzer
 from src_orbis.helper_apps.session_manager.components.timeline_visualizer import TimelineVisualizer
 from src_orbis.helper_apps.session_manager.components.ui_components import SessionAnalysisUI
@@ -19,7 +20,7 @@ def show_session_analysis():
 
     # Session State initialisieren (nur einmal)
     if 'session_analyzer' not in st.session_state:
-        logger.info("Initialisiere Session State")
+        logger.debug("Initialisiere Session State")
         st.session_state.session_analyzer = SessionAnalyzer()
         st.session_state.session_loaded = False
         st.session_state.current_session = None
@@ -40,6 +41,7 @@ def show_session_analysis():
     analyzer = st.session_state.session_analyzer
     visualizer = TimelineVisualizer()
     ui = SessionAnalysisUI()
+    graph_visualizer = GraphVisualizer()
 
     # Session-Auswahl
     selected_session = ui.render_session_selection()
@@ -61,7 +63,7 @@ def show_session_analysis():
 
         # Timeline-Visualisierung mit Zeitfilter
         if selected_topics:
-            logger.info(f"Erstelle Timeline mit ausgewählten Topics: {selected_topics}")
+            logger.debug(f"Erstelle Timeline mit ausgewählten Topics: {selected_topics}")
             st.subheader("⏱️ Timeline-Visualisierung")
 
             # Zeitfilter
@@ -78,9 +80,9 @@ def show_session_analysis():
             try:
                 fig = visualizer.create_timeline_visualization(filtered_messages, selected_topics)
                 if fig.data:  # Prüfe ob Figure Daten hat
-                    logger.info("Timeline-Plot erfolgreich erstellt, zeige Chart")
+                    logger.debug("Timeline-Plot erfolgreich erstellt, zeige Chart")
                     st.plotly_chart(fig, use_container_width=True)
-                    logger.info("Timeline-Chart erfolgreich angezeigt")
+                    logger.debug("Timeline-Chart erfolgreich angezeigt")
                 else:
                     st.warning("Keine Daten für Timeline verfügbar")
             except Exception as e:
@@ -92,6 +94,10 @@ def show_session_analysis():
 
             # Statistiken
             ui.render_statistics(analyzer, filtered_messages)
+
+            # Graph-Visualisierung
+            st.markdown("---")
+            graph_visualizer.render_graph_analysis(analyzer.session_data)
         else:
             st.warning("Bitte wählen Sie Topics für die Visualisierung aus")
     else:

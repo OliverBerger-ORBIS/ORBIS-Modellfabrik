@@ -146,7 +146,7 @@ def configure_structlog() -> object | None:
                 structlog.processors.JSONRenderer(ensure_ascii=False),  # ergibt JSON-Dict
             ],
             context_class=dict,
-            wrapper_class=structlog.make_filtering_bound_logger(20),  # INFO
+            wrapper_class=structlog.make_filtering_bound_logger(30),  # WARNING
             cache_logger_on_first_use=True,
         )
         return structlog.get_logger()
@@ -169,7 +169,7 @@ def init_logging_once(session_state: dict) -> tuple[logging.Logger, QueueListene
 
     # Logging konfigurieren
     root, listener = configure_logging(
-        app_name="omf_dashboard", level=logging.INFO, log_dir="data/logs", console_pretty=True
+        app_name="omf_dashboard", level=logging.WARNING, log_dir="data/logs", console_pretty=True
     )
 
     # Structlog konfigurieren (optional)

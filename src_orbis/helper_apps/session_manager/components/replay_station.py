@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 def show_replay_station():
     """Replay Station Tab - Fokussiert auf wesentliche Funktionen"""
 
-    logger.info("🎬 Replay Station Tab geladen")
+    logger.debug("🎬 Replay Station Tab geladen")
     st.header("📡 Replay Station")
     st.markdown("MQTT-Nachrichten für Tests senden - **MQTT-Konfiguration in ⚙️ Einstellungen**")
 
@@ -65,12 +65,12 @@ def show_replay_station():
 
     with col1:
         if st.button("🔌 Verbindung testen", key="test_mqtt"):
-            logger.info("🔌 User klickt: Verbindung testen")
+            logger.debug("🔌 User klickt: Verbindung testen")
             test_mqtt_connection(mqtt_settings['host'], mqtt_settings['port'])
 
     with col2:
         if st.button("🔌 Verbindung trennen", key="disconnect_mqtt"):
-            logger.info("🔌 User klickt: Verbindung trennen")
+            logger.debug("🔌 User klickt: Verbindung trennen")
             disconnect_mqtt()
 
     # Session State für MQTT Parameter speichern
@@ -83,9 +83,9 @@ def show_replay_station():
     st.subheader("📁 Session Replay")
 
     # Session-Verzeichnis analysieren
-    logger.info(f"🔍 Replay Station: Suche Sessions in: {session_directory}")
+    logger.debug(f"🔍 Replay Station: Suche Sessions in: {session_directory}")
     session_files = get_session_files(session_directory)
-    logger.info(f"📁 Gefundene Session-Dateien: {len(session_files)}")
+    logger.debug(f"📁 Gefundene Session-Dateien: {len(session_files)}")
 
     if not session_files:
         st.warning("❌ Keine Session-Dateien gefunden")
@@ -98,7 +98,7 @@ def show_replay_station():
             regex_filter = st.text_input("🔍 Regex-Filter", placeholder="z.B. 'Waren' für Wareneingang-Sessions")
         with col2:
             if st.button("🔍 Filtern"):
-                logger.info(f"🔍 User klickt: Filtern mit '{regex_filter}'")
+                logger.debug(f"🔍 User klickt: Filtern mit '{regex_filter}'")
                 st.session_state.session_filter = regex_filter
                 st.rerun()
 
@@ -115,7 +115,7 @@ def show_replay_station():
 
                 # Session laden
                 if st.button("📂 Session laden"):
-                    logger.info(f"📂 User klickt: Session laden - {selected_session.name}")
+                    logger.debug(f"📂 User klickt: Session laden - {selected_session.name}")
                     load_session(selected_session)
 
                 # Replay-Kontrollen (wenn Session geladen)
@@ -236,9 +236,9 @@ def send_test_message(topic, payload):
 # Session Replay Funktionen
 def get_session_files(session_directory: str = "data/omf-data/sessions"):
     """Session-Dateien aus konfiguriertem Verzeichnis laden - nur .db Dateien"""
-    logger.info(f"🔍 get_session_files: Suche in {session_directory}")
+    logger.debug(f"🔍 get_session_files: Suche in {session_directory}")
     session_dir = Path(session_directory)
-    logger.info(f"📁 Verzeichnis existiert: {session_dir.exists()}")
+    logger.debug(f"📁 Verzeichnis existiert: {session_dir.exists()}")
 
     if not session_dir.exists():
         logger.warning(f"❌ Verzeichnis existiert nicht: {session_directory}")
@@ -247,11 +247,11 @@ def get_session_files(session_directory: str = "data/omf-data/sessions"):
     # Nur SQLite-Dateien finden (Replay Station kann nur .db Dateien verarbeiten)
     session_files = list(session_dir.glob("*.db"))
 
-    logger.info(f"📊 Gefundene .db Dateien: {len(session_files)}")
+    logger.debug(f"📊 Gefundene .db Dateien: {len(session_files)}")
 
-    logger.info(f"📁 Gesamt Session-Dateien: {len(session_files)}")
+    logger.debug(f"📁 Gesamt Session-Dateien: {len(session_files)}")
     for f in session_files:
-        logger.info(f"  - {f.name}")
+        logger.debug(f"  - {f.name}")
 
     return sorted(session_files, key=lambda x: x.name)
 
@@ -370,7 +370,7 @@ def show_replay_controls():
                 if isinstance(session.get('file'), dict)
                 else str(session.get('file', 'Unknown'))
             )
-            logger.info(f"▶️ User klickt: {button_text} - Session: {session_name}")
+            logger.debug(f"▶️ User klickt: {button_text} - Session: {session_name}")
             start_replay()
             st.rerun()  # Sofortige UI-Aktualisierung
 
@@ -381,7 +381,7 @@ def show_replay_controls():
                 if isinstance(session.get('file'), dict)
                 else str(session.get('file', 'Unknown'))
             )
-            logger.info(f"⏸️ User klickt: Pause - Session: {session_name}")
+            logger.debug(f"⏸️ User klickt: Pause - Session: {session_name}")
             pause_replay()
             st.rerun()  # Sofortige UI-Aktualisierung
 
@@ -392,7 +392,7 @@ def show_replay_controls():
                 if isinstance(session.get('file'), dict)
                 else str(session.get('file', 'Unknown'))
             )
-            logger.info(f"⏹️ User klickt: Stop - Session: {session_name}")
+            logger.debug(f"⏹️ User klickt: Stop - Session: {session_name}")
             stop_replay()
             st.rerun()  # Sofortige UI-Aktualisierung
 
@@ -403,7 +403,7 @@ def show_replay_controls():
                 if isinstance(session.get('file'), dict)
                 else str(session.get('file', 'Unknown'))
             )
-            logger.info(f"🔄 User klickt: Reset - Session: {session_name}")
+            logger.debug(f"🔄 User klickt: Reset - Session: {session_name}")
             reset_replay()
             st.rerun()  # Sofortige UI-Aktualisierung
 
@@ -436,11 +436,11 @@ def show_replay_controls():
     if session["is_playing"] and session["current_index"] < len(session["messages"]):
         # Nächste Nachricht senden
         msg = session["messages"][session["current_index"]]
-        logger.info(f"📤 Sende Nachricht {session['current_index'] + 1}/{len(session['messages'])}: {msg['topic']}")
+        logger.debug(f"📤 Sende Nachricht {session['current_index'] + 1}/{len(session['messages'])}: {msg['topic']}")
 
         if send_replay_message(msg["topic"], msg["payload"]):
             session["current_index"] += 1
-            logger.info(f"✅ Nachricht {session['current_index']}/{len(session['messages'])} gesendet")
+            logger.debug(f"✅ Nachricht {session['current_index']}/{len(session['messages'])} gesendet")
 
             # Original Timing basierend auf Geschwindigkeit
             if session["current_index"] < len(session["messages"]):
@@ -470,7 +470,7 @@ def show_replay_controls():
                         wait_time = time_diff / speed
 
                         if wait_time > 0:
-                            logger.info(f"⏳ Warte {wait_time:.3f}s bis zur nächsten Nachricht")
+                            logger.debug(f"⏳ Warte {wait_time:.3f}s bis zur nächsten Nachricht")
                             time.sleep(wait_time)
                         else:
                             # Negative Zeitdifferenz = Nachrichten zur gleichen Zeit
@@ -504,20 +504,20 @@ def start_replay():
         if isinstance(session.get('file'), dict)
         else str(session.get('file', 'Unknown'))
     )
-    logger.info(
+    logger.debug(
         f"▶️ Start Replay: Session={session_name}, Index={session['current_index']}, Messages={len(session['messages'])}"
     )
 
     # Einfache Lösung: Replay direkt starten (ohne Threading)
     st.success("▶️ Replay gestartet")
-    logger.info("▶️ Replay gestartet")
+    logger.debug("▶️ Replay gestartet")
 
 
 def pause_replay():
     """Replay pausieren"""
     if 'loaded_session' in st.session_state:
         st.session_state.loaded_session["is_playing"] = False
-        logger.info("⏸️ Replay pausiert")
+        logger.debug("⏸️ Replay pausiert")
         st.info("⏸️ Replay pausiert")
 
 
@@ -527,7 +527,7 @@ def stop_replay():
         session = st.session_state.loaded_session
         session["is_playing"] = False
         session["current_index"] = 0
-        logger.info("⏹️ Replay gestoppt")
+        logger.debug("⏹️ Replay gestoppt")
         st.info("⏹️ Replay gestoppt")
 
 
@@ -537,7 +537,7 @@ def reset_replay():
         session = st.session_state.loaded_session
         session["is_playing"] = False
         session["current_index"] = 0
-        logger.info("🔄 Replay zurückgesetzt")
+        logger.debug("🔄 Replay zurückgesetzt")
         st.info("🔄 Replay zurückgesetzt")
 
 
@@ -549,16 +549,16 @@ def replay_worker(session_data):
     speed = session_data["speed"]
     loop = session_data["loop"]
 
-    logger.info(f"🚀 Replay Worker gestartet: {len(messages)} Nachrichten, Index: {current_index}, Speed: {speed}x")
+    logger.debug(f"🚀 Replay Worker gestartet: {len(messages)} Nachrichten, Index: {current_index}, Speed: {speed}x")
 
     while current_index < len(messages):
         msg = messages[current_index]
-        logger.info(f"📤 Sende Nachricht {current_index + 1}/{len(messages)}: {msg['topic']}")
+        logger.debug(f"📤 Sende Nachricht {current_index + 1}/{len(messages)}: {msg['topic']}")
 
         # Nachricht senden
         if send_replay_message(msg["topic"], msg["payload"]):
             current_index += 1
-            logger.info(f"✅ Nachricht {current_index}/{len(messages)} gesendet")
+            logger.debug(f"✅ Nachricht {current_index}/{len(messages)} gesendet")
         else:
             logger.error(f"❌ Fehler beim Senden von Nachricht {current_index + 1}")
             break
@@ -573,23 +573,23 @@ def replay_worker(session_data):
 
                 sleep_time = time_diff / speed
                 if sleep_time > 0:
-                    logger.info(f"⏳ Warte {sleep_time:.2f}s bis zur nächsten Nachricht")
+                    logger.debug(f"⏳ Warte {sleep_time:.2f}s bis zur nächsten Nachricht")
                     time.sleep(sleep_time)
             except Exception as e:
                 logger.warning(f"⏳ Fallback Wartezeit: {e}")
                 time.sleep(1.0 / speed)
 
-    logger.info(f"🏁 Replay Worker beendet: {current_index}/{len(messages)} Nachrichten gesendet")
+    logger.debug(f"🏁 Replay Worker beendet: {current_index}/{len(messages)} Nachrichten gesendet")
 
     # Loop oder beenden
     try:
         if 'loaded_session' in st.session_state:
             if loop and st.session_state.loaded_session.get("is_playing", False):
-                logger.info("🔄 Loop: Starte von vorne")
+                logger.debug("🔄 Loop: Starte von vorne")
                 st.session_state.loaded_session["current_index"] = 0
                 replay_worker()
             else:
-                logger.info("⏹️ Replay beendet")
+                logger.debug("⏹️ Replay beendet")
                 st.session_state.loaded_session["is_playing"] = False
     except Exception as e:
         logger.error(f"❌ Loop/Ende Fehler: {e}")
@@ -611,7 +611,7 @@ def send_replay_message(topic, payload):
         )
 
         if result.returncode == 0:
-            logger.info(f"✅ Replay: {topic} → {payload[:50]}...")
+            logger.debug(f"✅ Replay: {topic} → {payload[:50]}...")
             return True
         else:
             logger.error(f"❌ Replay Fehler: {result.stderr}")

@@ -127,9 +127,9 @@ class SessionAnalysisUI:
 
             # Debug: Zeige alle Topics in Session vs. Vorfilter
             if analyzer.session_data:
-                all_session_topics = set(msg["topic"] for msg in analyzer.session_data["messages"])
+                all_session_topics = {msg["topic"] for msg in analyzer.session_data["messages"]}
                 actually_filtered_topics = all_session_topics.intersection(set(prefilter_topics))
-                logger.info(
+                logger.debug(
                     f"Debug Vorfilter: {len(prefilter_topics)} konfiguriert, {len(all_session_topics)} in Session, {len(actually_filtered_topics)} tatsächlich gefiltert"
                 )
 
@@ -188,7 +188,7 @@ class SessionAnalysisUI:
 
                 # Zusätzliche Debug-Informationen
                 if analyzer.session_data and prefilter_topics:
-                    all_session_topics = set(msg["topic"] for msg in analyzer.session_data["messages"])
+                    all_session_topics = {msg["topic"] for msg in analyzer.session_data["messages"]}
                     configured_but_not_in_session = set(prefilter_topics) - all_session_topics
                     if configured_but_not_in_session:
                         st.info(
@@ -304,14 +304,14 @@ class SessionAnalysisUI:
             st.info("**Verfügbare Sub-Kategorien:**")
             for category, subcats in subcategories.items():
                 st.text(f"**{category}:**")
-                for subcat, topics in subcats.items():
-                    st.text(f"  • {subcat}: {len(topics)} Topics")
+                for subcat, _topics in subcats.items():
+                    st.text(f"  • {subcat}: {len(_topics)} Topics")
 
         with col2:
             # Alle Sub-Kategorien als Liste
             all_subcategories = []
             for category, subcats in subcategories.items():
-                for subcat, topics in subcats.items():
+                for subcat, _topics in subcats.items():
                     all_subcategories.append(f"{category} → {subcat}")
 
             # Sub-Kategorie-Auswahl mit Session State
