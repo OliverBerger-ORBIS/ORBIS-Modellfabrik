@@ -36,3 +36,10 @@ repos:
         pass_filenames: false
         stages: [commit]
 
+      - id: validate-dashboard-rules
+        name: validate-dashboard-rules
+        entry: python src_orbis/scripts/validate_dashboard_rules.py --include-dashboard --loose
+        language: system
+        pass_filenames: false
+        stages: [commit]
+

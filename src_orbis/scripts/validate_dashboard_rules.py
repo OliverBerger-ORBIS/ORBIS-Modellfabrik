@@ -1,205 +1,241 @@
 #!/usr/bin/env python3
 """
-Dashboard-Regeln-Validator
+Minimaler Validator für das Streamlit-Dashboard.
 
-Prüft automatisch, ob Dashboard-Komponenten die Regeln befolgen:
-- MQTT-Singleton-Pattern
-- Per-Topic Subscription
-- Kein st.rerun() in MQTT-Kontext
-- Absolute Imports
+Prüft in den Komponenten:
+- Keine Client-Erzeugung in Komponenten (OmfMqttClient, mqtt.Client)
+- Keine Factory-/Callback-Verdrahtung in Komponenten
+- Keine subscribe("#") und keine super-breiten Abos
+- Kein st.rerun() in Komponenten
+- Optional: render_* muss einen Parameter "client" oder "mqtt_client" haben
+
+Anpassen (falls Pfade anders sind):
+  COMPONENTS_DIR, DASHBOARD_ENTRY
 """
 
+from __future__ import annotations
+
+import argparse
 import ast
+from dataclasses import dataclass
 from pathlib import Path
 
+# --- Projektpfade (falls nötig anpassen) ---
+COMPONENTS_DIR = Path("src_orbis/omf/dashboard/components")
+DASHBOARD_ENTRY = Path("src_orbis/omf/dashboard/omf_dashboard.py")
 
-class DashboardRulesValidator:
-    """Validiert Dashboard-Komponenten gegen die Regeln"""
+# --- Feste Namensregeln (keine Config nötig) ---
+CLIENT_CLASS_NAME = "OmfMqttClient"
+PAHO_CLIENT_FULL = {"mqtt.Client", "paho.mqtt.client.Client"}
+FORBIDDEN_TOPICS = {"#"}
+BROAD_PATTERNS = ("module/#", "fts/#", "/j1/txt/1/#", "ccu/#")  # sehr grob, reicht i.d.R.
+FACTORY_HINTS = ("omf_mqtt_factory", "mqtt_factory", "session_manager", "ensure_dashboard_client", "create_log_buffer")
 
-    def __init__(self, project_root: Path):
-        self.project_root = project_root
-        # Nur OMF-Dashboard prüfen, nicht Session Manager
-        self.dashboard_path = project_root / "src_orbis" / "omf" / "dashboard"
-        self.violations = []
+ALLOWED_RENDER_PARAM_NAMES = {"client", "mqtt_client"}  # erzwingen wir optional
 
-    def validate_all(self) -> bool:
-        """Validiert alle Dashboard-Komponenten"""
-        print("🔍 Validiere Dashboard-Regeln...")
 
-        # Finde alle Python-Dateien im Dashboard
-        python_files = list(self.dashboard_path.rglob("*.py"))
+@dataclass
+class Violation:
+    kind: str  # ERROR | WARN
+    code: str  # Regelcode
+    file: str
+    line: int
+    message: str
+    line_txt: str | None = None
 
-        for file_path in python_files:
-            if file_path.name.startswith("__"):
-                continue
 
-            print(f"  📄 {file_path.relative_to(self.project_root)}")
-            self._validate_file(file_path)
+def _read(path: Path) -> str:
+    return path.read_text(encoding="utf-8")
 
-        # Zeige Ergebnisse
-        self._show_results()
-        return len(self.violations) == 0
 
-    def _validate_file(self, file_path: Path):
-        """Validiert eine einzelne Datei"""
-        try:
-            with open(file_path, encoding='utf-8') as f:
-                content = f.read()
+def _call_qualname(node: ast.AST) -> str:
+    if isinstance(node, ast.Name):
+        return node.id
+    if isinstance(node, ast.Attribute):
+        return f"{_call_qualname(node.value)}.{node.attr}"
+    return node.__class__.__name__
 
-            # Parse AST
-            tree = ast.parse(content)
 
-            # Validiere verschiedene Regeln
-            self._check_mqtt_singleton_pattern(tree, file_path)
-            self._check_per_topic_subscription(tree, file_path)
-            self._check_no_rerun_in_mqtt_context(tree, file_path)
-            self._check_absolute_imports(tree, file_path)
-            self._check_private_function_naming(tree, file_path)
+class Checker(ast.NodeVisitor):
+    def __init__(self, filename: Path, source: str, enforce_render_param: bool):
+        self.filename = filename
+        self.source = source
+        self.lines = source.splitlines()
+        self.violations: list[Violation] = []
+        self.enforce_render_param = enforce_render_param
+        self.func_defs: list[ast.FunctionDef] = []
+        self.import_map: dict[str, str] = {}
 
-        except Exception as e:
-            self.violations.append(
-                {
-                    'file': str(file_path.relative_to(self.project_root)),
-                    'rule': 'FILE_PARSE_ERROR',
-                    'line': 0,
-                    'message': f"Datei konnte nicht geparst werden: {e}",
-                }
+    def add(self, kind: str, code: str, node: ast.AST, msg: str):
+        ln = getattr(node, "lineno", 1)
+        txt = self.lines[ln - 1].strip() if 1 <= ln <= len(self.lines) else None
+        self.violations.append(Violation(kind, code, str(self.filename), ln, msg, txt))
+
+    # --- Imports (nur für simple Alias-Auflösung) ---
+    def visit_Import(self, node: ast.Import):
+        for a in node.names:
+            self.import_map[a.asname or a.name] = a.name
+        self.generic_visit(node)
+
+    def visit_ImportFrom(self, node: ast.ImportFrom):
+        # R014: Relative Imports (generell)
+        if node.level > 0:
+            self.add(
+                "WARN",
+                "R014",
+                node,
+                "Relativer Import erkannt - verwende absolute Imports: from src_orbis.module import Class",
             )
 
-    def _check_mqtt_singleton_pattern(self, tree: ast.AST, file_path: Path):
-        """Prüft MQTT-Singleton-Pattern"""
-        for node in ast.walk(tree):
-            if isinstance(node, ast.Call):
-                # Prüfe auf OmfMqttClient() Aufrufe
-                if isinstance(node.func, ast.Name) and node.func.id == "OmfMqttClient":
-                    self.violations.append(
-                        {
-                            'file': str(file_path.relative_to(self.project_root)),
-                            'rule': 'MQTT_SINGLETON_VIOLATION',
-                            'line': node.lineno,
-                            'message': "❌ FALSCH: Neuen MQTT-Client erstellen - "
-                            "verwende st.session_state.get('mqtt_client')",
-                        }
-                    )
+        mod = node.module or ""
+        for a in node.names:
+            name = a.asname or a.name
+            full = f"{mod}.{a.name}" if mod else a.name
+            self.import_map[name] = full
+        self.generic_visit(node)
 
-    def _check_per_topic_subscription(self, tree: ast.AST, file_path: Path):
-        """Prüft Per-Topic Subscription Pattern"""
-        for node in ast.walk(tree):
-            if isinstance(node, ast.Call):
-                # Prüfe auf get_messages() Aufrufe
-                if isinstance(node.func, ast.Attribute) and node.func.attr == "get_messages":
-                    self.violations.append(
-                        {
-                            'file': str(file_path.relative_to(self.project_root)),
-                            'rule': 'PER_TOPIC_SUBSCRIPTION_VIOLATION',
-                            'line': node.lineno,
-                            'message': "❌ FALSCH: get_messages() verwenden - "
-                            "verwende get_buffer() mit subscribe_many()",
-                        }
-                    )
+    def visit_FunctionDef(self, node: ast.FunctionDef):
+        self.func_defs.append(node)
+        self.generic_visit(node)
 
-    def _check_no_rerun_in_mqtt_context(self, tree: ast.AST, file_path: Path):
-        """Prüft auf st.rerun() in MQTT-Kontext (nur OMF-Dashboard)"""
-        # Prüfe ob es eine OMF-Dashboard-Datei ist
-        if "session_manager" in str(file_path):
-            return  # Session Manager: st.rerun() ist erlaubt
+    def visit_Call(self, node: ast.Call):
+        callee = _call_qualname(node.func)
+        # Alias-Auflösung (nur eine Ebene)
+        callee_root = callee.split(".")[0]
+        callee = self.import_map.get(callee_root, callee_root) + (
+            "" if "." not in callee else callee[callee.find(".") :]
+        )
 
-        for node in ast.walk(tree):
-            if isinstance(node, ast.Call):
-                # Prüfe auf st.rerun() Aufrufe
-                if (
-                    isinstance(node.func, ast.Attribute)
-                    and isinstance(node.func.value, ast.Name)
-                    and node.func.value.id == "st"
-                    and node.func.attr == "rerun"
-                ):
-                    self.violations.append(
-                        {
-                            'file': str(file_path.relative_to(self.project_root)),
-                            'rule': 'RERUN_VIOLATION',
-                            'line': node.lineno,
-                            'message': "❌ FALSCH: st.rerun() zerstört MQTT-Subscriptions - entferne st.rerun()",
-                        }
-                    )
+        # R001: Client-Erzeugung in Komponenten (OmfMqttClient)
+        if callee.split(".")[-1] == CLIENT_CLASS_NAME:
+            self.add("ERROR", "R001", node, f"{CLIENT_CLASS_NAME} darf in Komponenten nicht instanziiert werden.")
 
-    def _check_absolute_imports(self, tree: ast.AST, file_path: Path):
-        """Prüft absolute Imports"""
-        for node in ast.walk(tree):
-            if isinstance(node, ast.ImportFrom):
-                # Prüfe auf relative Imports
-                if node.level > 0:
-                    self.violations.append(
-                        {
-                            'file': str(file_path.relative_to(self.project_root)),
-                            'rule': 'RELATIVE_IMPORT_VIOLATION',
-                            'line': node.lineno,
-                            'message': "❌ FALSCH: Relativer Import - "
-                            "verwende absolute Imports: from src_orbis.omf.tools.module import Class",
-                        }
-                    )
+        # R002: paho.mqtt.client.Client in Komponenten
+        if callee in PAHO_CLIENT_FULL:
+            self.add("ERROR", "R002", node, "paho.mqtt.client.Client darf in Komponenten nicht instanziiert werden.")
 
-    def _check_private_function_naming(self, tree: ast.AST, file_path: Path):
-        """Prüft private Funktionen-Naming"""
-        for node in ast.walk(tree):
-            if isinstance(node, ast.FunctionDef):
-                # Prüfe auf private Funktionen ohne _ Prefix
-                if (
-                    node.name.startswith('_')
-                    and not node.name.startswith('__')
-                    and not node.name.startswith('_show_')
-                    and not node.name.startswith('_send_')
-                    and not node.name.startswith('_get_')
-                    and not node.name.startswith('_check_')
-                ):
-                    self.violations.append(
-                        {
-                            'file': str(file_path.relative_to(self.project_root)),
-                            'rule': 'PRIVATE_FUNCTION_NAMING_VIOLATION',
-                            'line': node.lineno,
-                            'message': f"❌ FALSCH: Private Funktion '{node.name}' sollte "
-                            f"_show_<function>_section() oder _send_<action>_command() heißen",
-                        }
-                    )
+        # R003: Factory-/Session-Manager-Hinweise (heuristisch, einfach)
+        if any(h in callee for h in FACTORY_HINTS):
+            self.add("ERROR", "R003", node, f"Factory/Session-Manager-Aufruf in Komponente erkannt: {callee}")
 
-    def _show_results(self):
-        """Zeigt Validierungsergebnisse"""
-        if not self.violations:
-            print("✅ Alle Dashboard-Regeln eingehalten!")
+        # R005: Direkte connect/reconnect-Aufrufe
+        if callee.endswith(".connect") or callee.endswith(".reconnect"):
+            self.add("WARN", "R005", node, f"Direkter Aufruf {callee} in Komponente vermeiden.")
+
+        # R006/R012/R009: subscribe / subscribe_many
+        short = callee.split(".")[-1]
+        if short in {"subscribe", "subscribe_many"}:
+            # erster Parameter als String?
+            if node.args:
+                a0 = node.args[0]
+                # subscribe("topic")
+                if isinstance(a0, ast.Constant) and isinstance(a0.value, str):
+                    topic = a0.value.strip()
+                    if topic in FORBIDDEN_TOPICS:
+                        self.add("ERROR", "R006", node, "subscribe('#') ist verboten.")
+                    elif topic.endswith("/#") or any(bp in topic for bp in BROAD_PATTERNS):
+                        self.add("WARN", "R012", node, f"Sehr breiter Subscribe erkannt: '{topic}'")
+                # subscribe_many([...])
+                if isinstance(a0, (ast.List, ast.Tuple)):
+                    for el in a0.elts:
+                        if isinstance(el, ast.Constant) and isinstance(el.value, str):
+                            t = el.value.strip()
+                            if t in FORBIDDEN_TOPICS:
+                                self.add("ERROR", "R006", node, "subscribe_many mit '#' ist verboten.")
+                            elif t.endswith("/#") or any(bp in t for bp in BROAD_PATTERNS):
+                                self.add("WARN", "R012", node, f"Sehr breiter Subscribe erkannt: '{t}'")
+            # generelle Warnung
+            self.add("WARN", "R009", node, "subscribe in Komponenten gefunden (besser: Interesse/Buffer deklarieren).")
+
+        # R008: Callback-Wiring in Komponenten
+        if callee.endswith(".message_callback_add") or callee.endswith(".message_callback_remove"):
+            self.add("ERROR", "R008", node, f"{callee} darf in Komponenten nicht verwendet werden.")
+
+        self.generic_visit(node)
+
+    def visit_Attribute(self, node: ast.Attribute):
+        # R007: st.rerun()
+        if isinstance(node.value, ast.Name) and node.value.id == "st" and node.attr == "rerun":
+            self.add("ERROR", "R007", node, "st.rerun() darf in Komponenten nicht verwendet werden.")
+        self.generic_visit(node)
+
+    def post_check_renderer_params(self):
+        if not self.enforce_render_param:
             return
+        for fn in self.func_defs:
+            if fn.name.startswith("render_"):
+                names = [a.arg for a in fn.args.args]
+                if not any(n in ALLOWED_RENDER_PARAM_NAMES for n in names):
+                    self.add(
+                        "ERROR", "R013", fn, f"'{fn.name}' sollte einen Parameter 'client' oder 'mqtt_client' besitzen."
+                    )
 
-        print(f"\n❌ {len(self.violations)} Regelverstöße gefunden:")
-        print("=" * 60)
 
-        # Gruppiere nach Regel
-        by_rule = {}
-        for violation in self.violations:
-            rule = violation['rule']
-            if rule not in by_rule:
-                by_rule[rule] = []
-            by_rule[rule].append(violation)
+def scan(path: Path, include_dashboard: bool, enforce_render_param: bool) -> list[Violation]:
+    py_files = list(path.rglob("*.py"))
+    if include_dashboard and DASHBOARD_ENTRY.exists():
+        py_files.append(DASHBOARD_ENTRY)
 
-        for rule, violations in by_rule.items():
-            print(f"\n🔴 {rule} ({len(violations)} Verstöße):")
-            for violation in violations:
-                print(f"  📄 {violation['file']}:{violation['line']}")
-                print(f"     {violation['message']}")
-
-        print("\n" + "=" * 60)
-        print("💡 Tipp: Siehe docs_orbis/development/dashboard-component-rules.md")
+    all_v: list[Violation] = []
+    for f in sorted(py_files):
+        if "__pycache__" in str(f):
+            continue
+        try:
+            src = _read(f)
+            tree = ast.parse(src, filename=str(f))
+        except Exception as e:
+            all_v.append(Violation("ERROR", "PARSE", str(f), 1, f"Syntax/Read-Fehler: {e}"))
+            continue
+        chk = Checker(f, src, enforce_render_param)
+        chk.visit(tree)
+        # Fallback-Stringcheck für st.rerun(
+        for i, line in enumerate(src.splitlines(), start=1):
+            if "st.rerun(" in line.replace(" ", ""):
+                chk.violations.append(Violation("ERROR", "R007", str(f), i, "st.rerun() gefunden.", line.strip()))
+        chk.post_check_renderer_params()
+        all_v.extend(chk.violations)
+    return all_v
 
 
 def main():
-    """Hauptfunktion"""
-    project_root = Path(__file__).parent.parent.parent
-    validator = DashboardRulesValidator(project_root)
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--path", default=str(COMPONENTS_DIR), help="Komponenten-Basisordner")
+    ap.add_argument("--include-dashboard", action="store_true", help=f"Auch {DASHBOARD_ENTRY} prüfen")
+    ap.add_argument("--strict", action="store_true", help="WARN als Fehler werten (Exit 1)")
+    ap.add_argument("--loose", action="store_true", help="ERROR als WARN werten (nur WARN blockiert)")
+    ap.add_argument("--no-render-param-check", action="store_true", help="render_* Param-Pflicht abschalten")
+    args = ap.parse_args()
 
-    success = validator.validate_all()
+    comp_dir = Path(args.path)
+    if not comp_dir.exists():
+        print(f"[validate] Pfad nicht gefunden: {comp_dir}")
+        raise SystemExit(2)
 
-    if not success:
-        print("\n🚨 Dashboard-Regeln verletzt!")
-        exit(1)
+    violations = scan(
+        comp_dir, include_dashboard=args.include_dashboard, enforce_render_param=not args.no_render_param_check
+    )
+
+    # --loose: ERROR als WARN behandeln
+    if args.loose:
+        for v in violations:
+            if v.kind == "ERROR":
+                v.kind = "WARN"
+
+    errors = [v for v in violations if v.kind == "ERROR"]
+    warns = [v for v in violations if v.kind == "WARN"]
+
+    if not violations:
+        print("✔ Keine Verstöße gefunden.")
     else:
-        print("\n🎉 Alle Dashboard-Regeln eingehalten!")
+        print("=== Dashboard Rules Report ===")
+        for v in violations:
+            print(f"[{v.kind}] {v.code} {v.file}:{v.line} :: {v.message}")
+            if v.line_txt:
+                print(f"   {v.line_txt}")
+        print(f"\nSummary: {len(errors)} Fehler, {len(warns)} Warnungen")
+
+    exit_nonzero = bool(errors or (args.strict and warns))
+    raise SystemExit(1 if exit_nonzero else 0)
 
 
 if __name__ == "__main__":

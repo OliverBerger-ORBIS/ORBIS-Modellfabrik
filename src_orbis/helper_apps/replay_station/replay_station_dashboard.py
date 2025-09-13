@@ -219,7 +219,10 @@ class SessionPlayer:
         # Loop oder beenden
         if self.loop and self.is_playing:
             self.current_index = 0
-            self._replay_worker()
+            # Replay in separatem Thread
+            self.replay_thread = threading.Thread(target=self._replay_worker)
+            self.replay_thread.daemon = True
+            self.replay_thread.start()
         else:
             self.is_playing = False
 
