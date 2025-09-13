@@ -1,0 +1,74 @@
+Topic: module/v1/ff/SVR4H76449/order
+Payload: 
+{
+  "serialNumber": "SVR4H76449",
+  "orderId": "ORDER_DRILL_PICK_001",
+  "orderUpdateId": 1,
+  "action": {
+    "id": "action_drill_pick_001",
+    "command": "PICK",
+    "metadata": {
+      "priority": "NORMAL",
+      "timeout": 300,
+      "type": "WHITE"
+    }
+  }
+}
+
+{
+  "serialNumber": "SVR4H76449",
+  "orderId": "ORDER_DRILL_DRILL_002",
+  "orderUpdateId": 2,
+  "action": {
+    "id": "action_drill_drill_002",
+    "command": "DRILL",
+    "metadata": {
+      "priority": "NORMAL",
+      "timeout": 300,
+      "type": "WHITE",
+      "duration": 10
+    }
+  }
+}
+
+{
+  "serialNumber": "SVR4H76449",
+  "orderId": "ORDER_DRILL_DROP_003",
+  "orderUpdateId": 3,
+  "action": {
+    "id": "action_drill_drop_003",
+    "command": "DROP",
+    "metadata": {
+      "priority": "NORMAL",
+      "timeout": 300,
+      "type": "WHITE"
+    }
+  }
+}
+# FTS dockt korrekt an
+fts/v1/ff/5iO4/instantAction
+{
+    "timestamp": "2025-08-19T09:59:46.658Z",
+    "serialNumber": "5iO4",
+    "actions": [
+      {
+        "actionType": "findInitialDockPosition",
+        "actionId": "64fa7010-4184-497c-b071-2d6b5955dcbe",
+        "metadata": {
+          "nodeId": "SVR4H73275"
+        }
+      }
+    ]
+  }
+
+
+# erfolgreiches Charge-Kommando
+  ccu/set/charge + {"serialNumber":"5iO4","charge":true}
+
+  # erfolgreiches ResetStop-Charge-Kommando
+  ccu/set/charge + {"serialNumber":"5iO4","charge":false}
+
+  # erfolgreiches Order-Request-Kommando ?
+  ccu/order/request
+Payload: {"type":"RED","timestamp":"2025-08-19T09:16:14.336Z","orderType":"PRODUCTION"}
+

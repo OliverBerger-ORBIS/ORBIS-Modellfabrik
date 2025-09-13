@@ -87,8 +87,10 @@ This directory contains comprehensive documentation for the Orbis Modellfabrik s
 
 ## 📚 Dokumentationsindex
 
-**Interaktive Suche:** [INDEX.html](./INDEX.html) - Volltext-Suche durch alle 50 Dokumente
+**Interaktive Suche:** [INDEX.html](./INDEX.html) - Volltext-Suche durch alle 55 Dokumente
 **JSON-Index:** [INDEX.json](./INDEX.json) - Maschinenlesbarer Index für Tools
+
+> **Hinweis:** Beide Index-Dateien sind jetzt implementiert und funktionsfähig!
 
 ## 🔧 System Components
 

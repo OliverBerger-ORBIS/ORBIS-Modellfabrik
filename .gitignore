@@ -16,13 +16,19 @@ config/passwords.txt
 comprehensive_mqtt_traffic.db
 mqtt_traffic.db
 # Allow default demo files
-!data/mqtt-data/sessions/default_test_session.db
+!data/omf-data/sessions/default_test_session.db
 
 # 📈 Analysis Reports (large files)
 systematic_analysis_report.json
-*.json
-# Allow specific JSON files
-!data/mqtt-data/sessions/default_test_session.json
+# Ignore specific large JSON files, not all JSON files
+data/**/analysis_*.json
+data/**/session_*.json
+data/**/traffic_*.json
+# Allow important JSON files
+!config/*.json
+!docs_orbis/*.json
+!mqtt-data/template_library/*.json
+!data/omf-data/sessions/default_test_session.json
 
 # 📝 Log Files
 *.log
@@ -32,9 +38,9 @@ comprehensive_mqtt_traffic.log
 mqtt_bridge.log
 orbis_access.log
 # Allow default demo files
-!data/mqtt-data/sessions/default_test_session.log
-# Allow log files in data/logs/
-!data/logs/*.log
+!data/omf-data/sessions/default_test_session.log
+# Log files should NOT be in git - they are large and change frequently
+# data/logs/*.log
 
 # 🖼️ Generated Images & Data
 *.png

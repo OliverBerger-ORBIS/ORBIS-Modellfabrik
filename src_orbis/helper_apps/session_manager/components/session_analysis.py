@@ -73,7 +73,29 @@ def show_session_analysis():
             # Messages nach Zeitbereich filtern
             filtered_messages = messages
             if time_range and time_range[0] and time_range[1]:
-                filtered_messages = [msg for msg in messages if time_range[0] <= msg["timestamp"] <= time_range[1]]
+                # Konvertiere String-Timestamps zu pandas Timestamps für Vergleich
+                import pandas as pd
+
+                filtered_messages = []
+                for msg in messages:
+                    try:
+                        # Konvertiere String-Timestamp zu pandas Timestamp
+                        msg_timestamp = pd.to_datetime(msg["timestamp"])
+                        
+                        # Stelle sicher, dass beide Timestamps den gleichen Timezone-Status haben
+                        if msg_timestamp.tz is None and time_range[0].tz is not None:
+                            # msg_timestamp ist timezone-naive, time_range ist timezone-aware
+                            msg_timestamp = msg_timestamp.tz_localize('UTC')
+                        elif msg_timestamp.tz is not None and time_range[0].tz is None:
+                            # msg_timestamp ist timezone-aware, time_range ist timezone-naive
+                            msg_timestamp = msg_timestamp.tz_localize(None)
+                        
+                        if time_range[0] <= msg_timestamp <= time_range[1]:
+                            filtered_messages.append(msg)
+                    except Exception as e:
+                        logger.warning(f"Fehler beim Parsen von Timestamp: {msg['timestamp']} - {e}")
+                        # Bei Fehlern: Message trotzdem hinzufügen
+                        filtered_messages.append(msg)
                 logger.debug(f"Zeitfilter: {len(filtered_messages)} von {len(messages)} Messages")
 
             # Timeline erstellen
