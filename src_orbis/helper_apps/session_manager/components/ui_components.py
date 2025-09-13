@@ -130,7 +130,9 @@ class SessionAnalysisUI:
                 all_session_topics = {msg["topic"] for msg in analyzer.session_data["messages"]}
                 actually_filtered_topics = all_session_topics.intersection(set(prefilter_topics))
                 logger.debug(
-                    f"Debug Vorfilter: {len(prefilter_topics)} konfiguriert, {len(all_session_topics)} in Session, {len(actually_filtered_topics)} tatsächlich gefiltert"
+                    f"Debug Vorfilter: {len(prefilter_topics)} konfiguriert, "
+                    f"{len(all_session_topics)} in Session, "
+                    f"{len(actually_filtered_topics)} tatsächlich gefiltert"
                 )
 
                 # Metriken anzeigen
@@ -146,7 +148,8 @@ class SessionAnalysisUI:
                 # Detaillierte Vorfilter-Statistik
                 if filtered_count > 0:
                     st.success(
-                        f"✅ {filtered_count} Topics werden vom Vorfilter ausgefiltert ({total_filtered_messages} Messages)"
+                        f"✅ {filtered_count} Topics werden vom Vorfilter ausgefiltert "
+                        f"({total_filtered_messages} Messages)"
                     )
 
                     # Gefilterte Topics mit Message-Counts anzeigen
@@ -170,7 +173,8 @@ class SessionAnalysisUI:
                     # Zeige alle konfigurierten Vorfilter-Topics (auch wenn nicht in Session)
                     if prefilter_topics:
                         st.info(
-                            f"ℹ️ {len(prefilter_topics)} Vorfilter-Topics konfiguriert, aber nicht in dieser Session vorhanden"
+                            f"ℹ️ {len(prefilter_topics)} Vorfilter-Topics konfiguriert, "
+                            f"aber nicht in dieser Session vorhanden"
                         )
 
                         with st.expander(
@@ -192,12 +196,14 @@ class SessionAnalysisUI:
                     configured_but_not_in_session = set(prefilter_topics) - all_session_topics
                     if configured_but_not_in_session:
                         st.info(
-                            f"🔍 **Debug:** {len(configured_but_not_in_session)} konfigurierte Vorfilter-Topics sind nicht in dieser Session vorhanden"
+                            f"🔍 **Debug:** {len(configured_but_not_in_session)} "
+                            f"konfigurierte Vorfilter-Topics sind nicht in dieser Session vorhanden"
                         )
 
                 # Link zu Settings
                 st.markdown(
-                    "💡 **Tipp:** Vorfilter-Topics können in den [⚙️ Einstellungen](?tab=⚙️+Einstellungen) konfiguriert werden"
+                    "💡 **Tipp:** Vorfilter-Topics können in den "
+                    "[⚙️ Einstellungen](?tab=⚙️+Einstellungen) konfiguriert werden"
                 )
 
         # Eigentliche Analyse - Nach Vorfilter
@@ -282,7 +288,8 @@ class SessionAnalysisUI:
                 "Kategorien auswählen:",
                 options=list(categories.keys()),
                 default=default_categories,
-                help="Wählen Sie Kategorien für die Timeline-Visualisierung aus. Mit 'X' können Sie Kategorien entfernen.",
+                help="Wählen Sie Kategorien für die Timeline-Visualisierung aus. "
+                "Mit 'X' können Sie Kategorien entfernen.",
             )
 
             # Session State aktualisieren
@@ -320,7 +327,8 @@ class SessionAnalysisUI:
                 "Sub-Kategorien auswählen:",
                 options=all_subcategories,
                 default=default_subcategories,
-                help="Wählen Sie Sub-Kategorien für die Timeline-Visualisierung aus. Mit 'X' können Sie Sub-Kategorien entfernen.",
+                help="Wählen Sie Sub-Kategorien für die Timeline-Visualisierung aus. "
+                "Mit 'X' können Sie Sub-Kategorien entfernen.",
             )
 
             # Session State aktualisieren
@@ -433,7 +441,8 @@ class SessionAnalysisUI:
 
             # Zeige gewählten Zeitbereich an
             st.info(
-                f"📊 **Gewählter Zeitbereich:** {time_range[0].strftime('%H:%M:%S')} - {time_range[1].strftime('%H:%M:%S')}"
+                f"📊 **Gewählter Zeitbereich:** "
+                f"{time_range[0].strftime('%H:%M:%S')} - {time_range[1].strftime('%H:%M:%S')}"
             )
 
         with col2:
@@ -517,11 +526,15 @@ class SessionAnalysisUI:
         # Gefilterte Messages
         if messages:
             st.success(
-                f"✅ **Gefilterte Messages:** {len(messages)} von {stats.get('total_messages', 0)} ({len(messages)/stats.get('total_messages', 1)*100:.1f}%)"
+                f"✅ **Gefilterte Messages:** {len(messages)} von "
+                f"{stats.get('total_messages', 0)} "
+                f"({len(messages)/stats.get('total_messages', 1)*100:.1f}%)"
             )
 
         # Zeitbereich
         if stats.get("start_time") and stats.get("end_time"):
             st.info(
-                f"🕐 **Zeitbereich:** {stats['start_time'].strftime('%H:%M:%S')} - {stats['end_time'].strftime('%H:%M:%S')}"
+                f"🕐 **Zeitbereich:** "
+                f"{stats['start_time'].strftime('%H:%M:%S')} - "
+                f"{stats['end_time'].strftime('%H:%M:%S')}"
             )

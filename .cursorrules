@@ -12,7 +12,7 @@
 - **Aktive Sourcen:** `src_orbis/omf/dashboard/` (Produktiv-Dashboard)
 - **Helper-Apps:** `src_orbis/helper_apps/`, `src_orbis/analysis_tools/` (Separate Anwendungen)
 - **Dokumentation:** `docs_orbis/` (Alle Projekt-Dokumente)
-- **Session-Daten:** `data/mqtt-data/sessions/` (SQLite + Log-Dateien)
+- **Session-Daten:** `data/omf-data/sessions/` (SQLite + Log-Dateien)
 - **Log-Dateien:** `data/logs/` (nicht mehr ins Projekt-Root)
 
 ### Code-Qualität

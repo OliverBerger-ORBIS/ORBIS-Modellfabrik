@@ -154,38 +154,57 @@ class DocumentationIndexer:
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ORBIS-Modellfabrik - Dokumentationsindex</title>
     <style>
-        body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; margin: 0; padding: 20px; background: #f5f5f5; }}
-        .container {{ max-width: 1200px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }}
+        body {{
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            margin: 0; padding: 20px; background: #f5f5f5;
+        }}
+        .container {{
+            max-width: 1200px; margin: 0 auto; background: white;
+            padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }}
         h1 {{ color: #2c3e50; border-bottom: 3px solid #3498db; padding-bottom: 10px; }}
         .search-box {{ margin: 20px 0; padding: 15px; background: #ecf0f1; border-radius: 5px; }}
-        .search-box input {{ width: 100%; padding: 10px; border: 1px solid #bdc3c7; border-radius: 5px; font-size: 16px; }}
+        .search-box input {{
+            width: 100%; padding: 10px; border: 1px solid #bdc3c7;
+            border-radius: 5px; font-size: 16px;
+        }}
         .category {{ margin: 30px 0; }}
         .category h2 {{ color: #34495e; background: #ecf0f1; padding: 10px; border-radius: 5px; }}
-        .documents {{ display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; margin-top: 15px; }}
+        .documents {{
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px; margin-top: 15px;
+        }}
         .document {{ background: #f8f9fa; padding: 15px; border-radius: 5px; border-left: 4px solid #3498db; }}
         .document h3 {{ margin: 0 0 10px 0; color: #2c3e50; }}
         .document p {{ margin: 5px 0; color: #7f8c8d; font-size: 14px; }}
         .document a {{ color: #3498db; text-decoration: none; }}
         .document a:hover {{ text-decoration: underline; }}
         .keywords {{ margin-top: 10px; }}
-        .keyword {{ display: inline-block; background: #e74c3c; color: white; padding: 2px 8px; border-radius: 12px; font-size: 12px; margin: 2px; }}
+        .keyword {{
+            display: inline-block; background: #e74c3c; color: white;
+            padding: 2px 8px; border-radius: 12px; font-size: 12px; margin: 2px;
+        }}
         .stats {{ background: #2ecc71; color: white; padding: 15px; border-radius: 5px; margin-bottom: 20px; }}
     </style>
 </head>
 <body>
     <div class="container">
         <h1>📚 ORBIS-Modellfabrik - Dokumentationsindex</h1>
-        
+
         <div class="stats">
             <strong>📊 Statistiken:</strong>
-            {self.index['metadata']['total_documents']} Dokumente in {self.index['metadata']['total_categories']} Kategorien
+            {self.index['metadata']['total_documents']} Dokumente in "
+            f"{self.index['metadata']['total_categories']} Kategorien
             | Generiert am {datetime.now().strftime('%d.%m.%Y %H:%M')}
         </div>
-        
+
         <div class="search-box">
-            <input type="text" id="searchInput" placeholder="🔍 Dokumentation durchsuchen..." onkeyup="searchDocuments()">
+            <input type="text" id="searchInput"
+                   placeholder="🔍 Dokumentation durchsuchen..."
+                   onkeyup="searchDocuments()">
         </div>
-        
+
         <div id="categories">
 """
 
@@ -206,7 +225,8 @@ class DocumentationIndexer:
                         <h3><a href="{doc['file_path']}">{doc['title']}</a></h3>
                         <p>{doc['description']}</p>
                         <p><strong>📁 Pfad:</strong> {doc['file_path']}</p>
-                        <p><strong>📊 Größe:</strong> {doc['file_size']:,} Bytes | <strong>Wörter:</strong> {doc['word_count']}</p>
+                        <p><strong>📊 Größe:</strong> {doc['file_size']:,} Bytes | "
+                        f"<strong>Wörter:</strong> {doc['word_count']}</p>
                         <div class="keywords">{keywords_html}</div>
                     </div>
 """
@@ -219,12 +239,12 @@ class DocumentationIndexer:
         html += """
         </div>
     </div>
-    
+
     <script>
         function searchDocuments() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             const documents = document.querySelectorAll('.document');
-            
+
             documents.forEach(doc => {
                 const searchableContent = doc.getAttribute('data-searchable');
                 if (searchableContent.includes(searchTerm) || searchTerm === '') {

@@ -22,7 +22,7 @@ def run_tests(test_path):
     """Tests ausführen"""
     print(f"🧪 Führe Tests aus: {test_path}")
     try:
-        result = subprocess.run(["python", "-m", "pytest", test_path], check=True)
+        subprocess.run(["python", "-m", "pytest", test_path], check=True)
         print("✅ Tests erfolgreich ausgeführt")
         return True
     except subprocess.CalledProcessError:

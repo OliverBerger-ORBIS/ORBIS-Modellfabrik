@@ -4,16 +4,7 @@ Session Manager - Streamlit Dashboard
 Verwaltung und Analyse von MQTT-Sessions für die ORBIS Modellfabrik
 """
 
-import sys
-from pathlib import Path
-
 import streamlit as st
-
-# Add src_orbis to path for imports
-current_dir = Path(__file__).parent
-src_orbis_path = current_dir.parent.parent.parent
-if str(src_orbis_path) not in sys.path:
-    sys.path.insert(0, str(src_orbis_path))
 
 # Import components
 from src_orbis.helper_apps.session_manager.components.replay_station import show_replay_station

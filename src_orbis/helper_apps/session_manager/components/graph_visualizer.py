@@ -208,7 +208,7 @@ class GraphVisualizer:
             layout_name = st.selectbox("Layout Algorithm", list(self.layout_algorithms.keys()))
             show_labels = st.checkbox("Show Labels", value=True)
             node_size = st.slider("Node Size", 5, 30, 15)
-            
+
             # Debug-Informationen
             if st.checkbox("🔍 Debug-Info anzeigen"):
                 st.write("**Gefundene Meta-Informationen:**")
@@ -216,7 +216,7 @@ class GraphVisualizer:
                 workpiece_ids = set()
                 nfc_codes = set()
                 module_ids = set()
-                
+
                 for msg in self.analyzer.messages:
                     if msg.order_id:
                         order_ids.add(msg.order_id)
@@ -226,12 +226,12 @@ class GraphVisualizer:
                         nfc_codes.add(msg.nfc_code)
                     if msg.module_id:
                         module_ids.add(msg.module_id)
-                
+
                 st.write(f"Order IDs: {len(order_ids)} - {list(order_ids)[:5]}")
                 st.write(f"Workpiece IDs: {len(workpiece_ids)} - {list(workpiece_ids)[:5]}")
                 st.write(f"NFC Codes: {len(nfc_codes)} - {list(nfc_codes)[:5]}")
                 st.write(f"Module IDs: {len(module_ids)} - {list(module_ids)[:5]}")
-                
+
                 # Message-Ketten Debug
                 chains = self.analyzer.get_message_chains(2)
                 st.write(f"Message Chains (min 2): {len(chains)}")

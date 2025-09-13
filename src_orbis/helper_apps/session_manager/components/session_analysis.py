@@ -81,7 +81,7 @@ def show_session_analysis():
                     try:
                         # Konvertiere String-Timestamp zu pandas Timestamp
                         msg_timestamp = pd.to_datetime(msg["timestamp"])
-                        
+
                         # Stelle sicher, dass beide Timestamps den gleichen Timezone-Status haben
                         if msg_timestamp.tz is None and time_range[0].tz is not None:
                             # msg_timestamp ist timezone-naive, time_range ist timezone-aware
@@ -89,7 +89,7 @@ def show_session_analysis():
                         elif msg_timestamp.tz is not None and time_range[0].tz is None:
                             # msg_timestamp ist timezone-aware, time_range ist timezone-naive
                             msg_timestamp = msg_timestamp.tz_localize(None)
-                        
+
                         if time_range[0] <= msg_timestamp <= time_range[1]:
                             filtered_messages.append(msg)
                     except Exception as e:
