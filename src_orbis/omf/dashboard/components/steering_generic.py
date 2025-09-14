@@ -114,8 +114,8 @@ def show_topic_driven_mode(gateway: MqttGateway):
         # Alle Topics aus topic-config.yml laden
         import yaml
 
-        topic_config_path = Path(__file__).parent.parent.parent / "config" / "topic_config.yml"
-        topic_mapping_path = Path(__file__).parent.parent.parent / "config" / "topic_message_mapping.yml"
+        topic_config_path = Path(__file__).parent.parent.parent.parent / "config" / "topic_config.yml"
+        topic_mapping_path = Path(__file__).parent.parent.parent.parent / "config" / "topic_message_mapping.yml"
 
         # Topic-Konfiguration laden
         with open(topic_config_path, encoding="utf-8") as f:

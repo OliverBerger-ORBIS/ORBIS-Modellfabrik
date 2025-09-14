@@ -8,6 +8,7 @@ import logging
 import streamlit as st
 
 from src_orbis.helper_apps.session_manager.components.settings_manager import SettingsManager
+from src_orbis.omf.dashboard.utils.ui_refresh import RerunController
 
 logger = logging.getLogger(__name__)
 
@@ -17,9 +18,11 @@ class SettingsUI:
 
     def __init__(self, settings_manager: SettingsManager):
         self.settings_manager = settings_manager
+        self.rerun_controller = RerunController()
 
     def render_settings_page(self):
         """Rendert die komplette Settings-Seite"""
+        logger.info("⚙️ Settings Tab geladen")
         st.title("⚙️ Einstellungen")
         st.markdown("Zentrale Konfiguration für alle Session Manager Tabs")
 
@@ -48,6 +51,23 @@ class SettingsUI:
         """Rendert die Session Analyse Einstellungen"""
         st.subheader("📊 Session Analyse Einstellungen")
 
+        # Session-Verzeichnis
+        st.markdown("**📁 Session-Verzeichnis**")
+        st.markdown("Verzeichnis in dem die Session-Dateien gespeichert sind")
+
+        current_directory = self.settings_manager.get_session_directory("session_analysis")
+        new_directory = st.text_input(
+            "Session-Verzeichnis:", value=current_directory, help="Pfad zum Verzeichnis mit Session-Dateien (.log)"
+        )
+
+        if new_directory != current_directory:
+            if st.button("💾 Verzeichnis speichern", key="save_session_dir"):
+                self.settings_manager.set_setting("session_analysis", "session_directory", new_directory)
+                st.success(f"Session-Verzeichnis gespeichert: {new_directory}")
+                self.rerun_controller.request_rerun()
+
+        st.markdown("---")
+
         # Vorfilter-Topics
         st.markdown("**🔧 Vorfilter-Topics**")
         st.markdown("Topics die standardmäßig aus der Timeline ausgefiltert werden")
@@ -62,7 +82,7 @@ class SettingsUI:
             if st.button("➕ Hinzufügen", key="add_topic"):
                 if new_topic and new_topic not in current_topics:
                     self.settings_manager.add_prefilter_topic(new_topic)
-                    st.rerun()
+                    self.rerun_controller.request_rerun()
 
         # Vorfilter-Topics mit Aktiv/Nicht-Aktiv Buttons
         st.markdown("**Aktivierte Vorfilter-Topics:**")
@@ -92,12 +112,12 @@ class SettingsUI:
                             self.settings_manager.remove_prefilter_topic(topic)
                         else:
                             self.settings_manager.add_prefilter_topic(topic)
-                        st.rerun()
+                        self.rerun_controller.request_rerun()
                 with col3:
                     if topic not in common_topics:  # Nur benutzerdefinierte Topics können gelöscht werden
                         if st.button("🗑️", key=f"delete_topic_{i}"):
                             self.settings_manager.remove_prefilter_topic(topic)
-                            st.rerun()
+                            self.rerun_controller.request_rerun()
         else:
             st.info("Keine Vorfilter-Topics konfiguriert")
 
@@ -376,7 +396,7 @@ class SettingsUI:
             if st.button("🔄 Auf Standard zurücksetzen"):
                 self.settings_manager.reset_to_defaults()
                 st.success("Einstellungen auf Standard zurückgesetzt!")
-                st.rerun()
+                self.rerun_controller.request_rerun()
 
         with col2:
             if st.button("💾 Einstellungen speichern"):

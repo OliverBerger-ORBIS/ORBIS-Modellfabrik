@@ -14,12 +14,19 @@ logger = logging.getLogger(__name__)
 class SettingsManager:
     """Zentrale Verwaltung aller Session Manager Einstellungen"""
 
-    def __init__(self, settings_file: str = "src_orbis/helper_apps/session_manager/session_manager_settings.json"):
-        self.settings_file = Path(settings_file)
+    def __init__(self, settings_file: str = "session_manager_settings.json"):
+        # Absoluten Pfad verwenden, relativ zum Projekt-Root
+        if not Path(settings_file).is_absolute():
+            # Gehe 4 Ebenen hoch vom aktuellen Verzeichnis zum Projekt-Root
+            project_root = Path(__file__).parent.parent.parent.parent.parent
+            self.settings_file = project_root / settings_file
+        else:
+            self.settings_file = Path(settings_file)
         self.settings = self._load_settings()
 
     def _load_settings(self) -> Dict[str, Any]:
         """Lädt die Einstellungen aus der JSON-Datei"""
+        logger.debug(f"Lade Einstellungen aus: {self.settings_file}")
         if self.settings_file.exists():
             try:
                 with open(self.settings_file, encoding='utf-8') as f:
@@ -34,6 +41,7 @@ class SettingsManager:
         """Gibt die Standard-Einstellungen zurück"""
         return {
             "session_analysis": {
+                "session_directory": "data/omf-data/sessions",
                 "prefilter_topics": [
                     "/j1/txt/1/i/cam",  # Kamera-Daten
                     "/j1/txt/1/i/bme",  # BME680-Sensor-Daten
@@ -140,10 +148,13 @@ class SettingsManager:
         self.settings["replay_station"]["mqtt_broker"] = {"host": host, "port": port, "qos": qos, "timeout": timeout}
         self.save_settings()
 
-    def get_session_directory(self) -> str:
+    def get_session_directory(self, section: str = "replay_station") -> str:
         """Gibt das Session-Verzeichnis zurück"""
-        directory = self.settings.get("replay_station", {}).get("session_directory", "data/omf-data/sessions")
-        logger.debug(f"🔍 Settings: get_session_directory() = {directory}")
+        if section == "session_analysis":
+            directory = self.settings.get("session_analysis", {}).get("session_directory", "data/omf-data/sessions")
+        else:
+            directory = self.settings.get("replay_station", {}).get("session_directory", "data/omf-data/sessions")
+        logger.debug(f"🔍 Settings: get_session_directory({section}) = {directory}")
         return directory
 
     def update_session_directory(self, directory: str):
@@ -160,7 +171,7 @@ class SettingsManager:
 
     def get_session_recorder_directory(self) -> str:
         """Gibt das Session-Verzeichnis für Recorder zurück"""
-        return self.settings.get("session_recorder", {}).get("session_directory", "data/mqtt-data/sessions")
+        return self.settings.get("session_recorder", {}).get("session_directory", "data/omf-data/sessions")
 
     def get_session_recorder_mqtt_settings(self) -> Dict[str, Any]:
         """Gibt die MQTT Broker Einstellungen für Recorder zurück"""

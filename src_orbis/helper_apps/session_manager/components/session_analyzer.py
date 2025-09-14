@@ -23,14 +23,30 @@ class SessionAnalyzer:
         self.session_data = None
         self.messages_df = None
 
-    def load_session_data(self, session_file_path: str) -> bool:
+    def load_session_data(self, session_file_path: str, session_directory: str = None) -> bool:
         """Lädt Session-Daten aus einer Log-Datei"""
         try:
-            logger.debug(f"Lade Session-Daten: {session_file_path}")
+            logger.info(f"Lade Session-Daten: {session_file_path}")
+
+            # Session-Verzeichnis verwenden falls angegeben (absoluten Pfad verwenden)
+            if session_directory and not Path(session_file_path).is_absolute():
+                if not Path(session_directory).is_absolute():
+                    project_root = Path(__file__).parent.parent.parent.parent.parent
+                    full_path = project_root / session_directory / session_file_path
+                else:
+                    full_path = Path(session_directory) / session_file_path
+                logger.debug(f"Verwende absoluten Pfad: {full_path}")
+            else:
+                full_path = Path(session_file_path)
+                logger.debug(f"Verwende relativen Pfad: {full_path}")
+
             # Lade Session-Daten (vereinfacht für Demo)
             # In der echten Implementierung würde hier die Session-Datenbank abgefragt
-            self.session_data = self._parse_session_file(session_file_path)
-            logger.debug(f"Session-Daten erfolgreich geladen: {len(self.session_data['messages'])} Messages")
+            self.session_data = self._parse_session_file(str(full_path))
+            if isinstance(self.session_data, dict) and 'messages' in self.session_data:
+                logger.debug(f"Session-Daten erfolgreich geladen: {len(self.session_data['messages'])} Messages")
+            else:
+                logger.debug(f"Session-Daten erfolgreich geladen: {len(self.session_data)} Messages")
             return True
         except Exception as e:
             logger.error(f"Fehler beim Laden der Session-Daten: {e}", exc_info=True)
@@ -55,7 +71,12 @@ class SessionAnalyzer:
             session_path = Path(file_path)
             if not session_path.exists():
                 logger.error(f"Session-Datei nicht gefunden: {file_path}")
-                return self._generate_mock_messages()
+                return {
+                    "session_id": "not_found",
+                    "start_time": datetime.now(),
+                    "end_time": datetime.now(),
+                    "messages": self._generate_mock_messages(),
+                }
 
             messages = []
             start_time = None

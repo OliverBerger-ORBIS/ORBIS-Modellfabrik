@@ -18,7 +18,7 @@ class TopicFilterManager:
 
     def get_topic_categories(self, topics: List[str]) -> Dict[str, List[str]]:
         """Gruppiert Topics nach Kategorien basierend auf OMF Config"""
-        logger.debug(f"Verfügbare Topics: {topics}")
+        logger.info(f"Verfügbare Topics: {topics}")
         categories = {}
 
         for topic in topics:

@@ -38,7 +38,7 @@ Der Session Manager ist ein **unabhängiger Helper App** zur Analyse der APS Fis
 - **QoS:** Level 1 für zuverlässige Übertragung
 
 #### 1.2 Session-Management
-- **Session-Verzeichnis:** `data/mqtt-data/sessions/aps_persistent_traffic-...`
+- **Session-Verzeichnis:** `data/omf-data/sessions/aps_persistent_traffic-...`
 - **Unterstützte Formate:** SQLite (.db) + Log (.log) Dateien
 - **Regex-Filter:** Dateiname-Filterung (z.B. "Waren" für Wareneingang-Sessions)
 - **Session-Auswahl:** Dropdown mit gefilterten Sessions
@@ -94,7 +94,7 @@ Der Session Manager ist ein **unabhängiger Helper App** zur Analyse der APS Fis
 1. **Zusammenfassung der Anforderungen** ✅
 2. **Komponenten anlegen** (Session Manager Dashboard)
 3. **Replay Station Tab** - Sofort testbar implementieren
-4. **Session-Verzeichnis** - Verwendung der Sessions in data/mqtt-data/sessions/  (später ggf anderes Verzeichnis wählen)
+4. **Session-Verzeichnis** - Verwendung der Sessions in data/omf-data/sessions/  (später ggf anderes Verzeichnis wählen)
 
 ### Phase 2: Erweiterte Features
 4. **Session Analyse Tab**
@@ -180,7 +180,7 @@ Der Session Manager ist ein **unabhängiger Helper App** zur Analyse der APS Fis
 
 ### Session Management
 - **Formate:** SQLite (.db) + Log (.log) Dateien
-- **Verzeichnis:** data/mqtt-data/sessions/
+- **Verzeichnis:** data/omf-data/sessions/
 - **Filtering:** Regex-basierte Session-Auswahl
 - **Loading:** Automatische Format-Erkennung
 

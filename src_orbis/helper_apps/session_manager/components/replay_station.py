@@ -14,11 +14,17 @@ from pathlib import Path
 
 import streamlit as st
 
-# Logging konfigurieren
+from src_orbis.omf.dashboard.utils.ui_refresh import RerunController
+
+# Logging konfigurieren - Verzeichnis sicherstellen
+# Log-Verzeichnis erstellen falls nicht vorhanden
+log_dir = Path("data/logs")
+log_dir.mkdir(parents=True, exist_ok=True)
+
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[logging.FileHandler('data/logs/session_manager.log'), logging.StreamHandler()],
+    handlers=[logging.FileHandler(log_dir / 'session_manager.log'), logging.StreamHandler()],
 )
 logger = logging.getLogger(__name__)
 
@@ -26,7 +32,11 @@ logger = logging.getLogger(__name__)
 def show_replay_station():
     """Replay Station Tab - Fokussiert auf wesentliche Funktionen"""
 
-    logger.debug("🎬 Replay Station Tab geladen")
+    logger.info("📡 Replay Station Tab geladen")
+
+    # RerunController initialisieren
+    rerun_controller = RerunController()
+
     st.header("📡 Replay Station")
     st.markdown("MQTT-Nachrichten für Tests senden - **MQTT-Konfiguration in ⚙️ Einstellungen**")
 
@@ -66,12 +76,12 @@ def show_replay_station():
     with col1:
         if st.button("🔌 Verbindung testen", key="test_mqtt"):
             logger.debug("🔌 User klickt: Verbindung testen")
-            test_mqtt_connection(mqtt_settings['host'], mqtt_settings['port'])
+            test_mqtt_connection(mqtt_settings['host'], mqtt_settings['port'], rerun_controller)
 
     with col2:
         if st.button("🔌 Verbindung trennen", key="disconnect_mqtt"):
             logger.debug("🔌 User klickt: Verbindung trennen")
-            disconnect_mqtt()
+            disconnect_mqtt(rerun_controller)
 
     # Session State für MQTT Parameter speichern
     st.session_state.mqtt_host = mqtt_settings['host']
@@ -100,7 +110,7 @@ def show_replay_station():
             if st.button("🔍 Filtern"):
                 logger.debug(f"🔍 User klickt: Filtern mit '{regex_filter}'")
                 st.session_state.session_filter = regex_filter
-                st.rerun()
+                rerun_controller.request_rerun()
 
         # Session-Liste filtern
         filtered_sessions = filter_sessions(session_files, st.session_state.get("session_filter", ""))
@@ -120,7 +130,7 @@ def show_replay_station():
 
                 # Replay-Kontrollen (wenn Session geladen)
                 if 'loaded_session' in st.session_state and st.session_state.loaded_session:
-                    show_replay_controls()
+                    show_replay_controls(rerun_controller)
         else:
             st.warning("❌ Keine Sessions gefunden (Regex-Filter)")
 
@@ -166,7 +176,7 @@ def show_replay_station():
             send_test_message("test/quick/3", {"id": 3, "data": "Hello World"})
 
 
-def test_mqtt_connection(host, port):
+def test_mqtt_connection(host, port, rerun_controller: RerunController):
     """MQTT Verbindung testen mit mosquitto_pub"""
     try:
         result = subprocess.run(
@@ -179,25 +189,25 @@ def test_mqtt_connection(host, port):
         if result.returncode == 0:
             st.session_state.mqtt_connected = True
             st.success(f"✅ MQTT Broker erreichbar: {host}:{port}")
-            st.rerun()  # UI sofort aktualisieren
+            rerun_controller.request_rerun()  # UI sofort aktualisieren
             return True
         else:
             st.error(f"❌ MQTT Broker nicht erreichbar: {result.stderr}")
             st.session_state.mqtt_connected = False
-            st.rerun()  # UI sofort aktualisieren
+            rerun_controller.request_rerun()  # UI sofort aktualisieren
             return False
     except Exception as e:
         st.error(f"❌ Verbindung fehlgeschlagen: {e}")
         st.session_state.mqtt_connected = False
-        st.rerun()  # UI sofort aktualisieren
+        rerun_controller.request_rerun()  # UI sofort aktualisieren
         return False
 
 
-def disconnect_mqtt():
+def disconnect_mqtt(rerun_controller: RerunController):
     """MQTT Verbindung trennen"""
     st.session_state.mqtt_connected = False
     st.success("✅ Verbindung getrennt")
-    st.rerun()  # UI sofort aktualisieren
+    rerun_controller.request_rerun()  # UI sofort aktualisieren
 
 
 def send_test_message(topic, payload):
@@ -237,11 +247,20 @@ def send_test_message(topic, payload):
 def get_session_files(session_directory: str = "data/omf-data/sessions"):
     """Session-Dateien aus konfiguriertem Verzeichnis laden - nur .db Dateien"""
     logger.debug(f"🔍 get_session_files: Suche in {session_directory}")
-    session_dir = Path(session_directory)
+
+    # Absoluten Pfad verwenden (relativ zum Projekt-Root)
+    if not Path(session_directory).is_absolute():
+        # Wenn relativer Pfad, dann relativ zum Projekt-Root
+        project_root = Path(__file__).parent.parent.parent.parent.parent
+        session_dir = project_root / session_directory
+    else:
+        session_dir = Path(session_directory)
+
     logger.debug(f"📁 Verzeichnis existiert: {session_dir.exists()}")
+    logger.debug(f"📁 Absoluter Pfad: {session_dir.absolute()}")
 
     if not session_dir.exists():
-        logger.warning(f"❌ Verzeichnis existiert nicht: {session_directory}")
+        logger.warning(f"❌ Verzeichnis existiert nicht: {session_dir.absolute()}")
         return []
 
     # Nur SQLite-Dateien finden (Replay Station kann nur .db Dateien verarbeiten)
@@ -333,7 +352,7 @@ def load_log_session(session_file):
         return []
 
 
-def show_replay_controls():
+def show_replay_controls(rerun_controller: RerunController):
     """Replay-Kontrollen anzeigen"""
     session = st.session_state.loaded_session
 
@@ -372,7 +391,7 @@ def show_replay_controls():
             )
             logger.debug(f"▶️ User klickt: {button_text} - Session: {session_name}")
             start_replay()
-            st.rerun()  # Sofortige UI-Aktualisierung
+            rerun_controller.request_rerun()  # Sofortige UI-Aktualisierung
 
     with col2:
         if st.button("⏸️ Pause", disabled=not session["is_playing"], key="pause_btn"):
@@ -383,7 +402,7 @@ def show_replay_controls():
             )
             logger.debug(f"⏸️ User klickt: Pause - Session: {session_name}")
             pause_replay()
-            st.rerun()  # Sofortige UI-Aktualisierung
+            rerun_controller.request_rerun()  # Sofortige UI-Aktualisierung
 
     with col3:
         if st.button("⏹️ Stop", key="stop_btn"):
@@ -394,7 +413,7 @@ def show_replay_controls():
             )
             logger.debug(f"⏹️ User klickt: Stop - Session: {session_name}")
             stop_replay()
-            st.rerun()  # Sofortige UI-Aktualisierung
+            rerun_controller.request_rerun()  # Sofortige UI-Aktualisierung
 
     with col4:
         if st.button("🔄 Reset", key="reset_btn"):
@@ -405,7 +424,7 @@ def show_replay_controls():
             )
             logger.debug(f"🔄 User klickt: Reset - Session: {session_name}")
             reset_replay()
-            st.rerun()  # Sofortige UI-Aktualisierung
+            rerun_controller.request_rerun()  # Sofortige UI-Aktualisierung
 
     # Einstellungen
     col1, col2 = st.columns(2)
@@ -487,7 +506,7 @@ def show_replay_controls():
     # Auto-Refresh für Live-Updates
     if session["is_playing"]:
         time.sleep(0.1)  # Kürzere Wartezeit für bessere Responsivität
-        st.rerun()
+        rerun_controller.request_rerun()
 
 
 def start_replay():

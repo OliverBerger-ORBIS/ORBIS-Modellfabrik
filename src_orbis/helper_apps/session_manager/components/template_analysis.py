@@ -3,11 +3,16 @@ Template Analyse Komponente
 Analyse aller APS-Sessions mit Fokus auf bestimmte Topics
 """
 
+import logging
+
 import streamlit as st
+
+logger = logging.getLogger(__name__)
 
 
 def show_template_analysis():
     """Template Analyse Tab"""
+    logger.info("🔍 Template Analysis Tab geladen")
 
     st.header("🔍 Template Analyse")
     st.markdown("Analyse aller APS-Sessions mit Fokus auf bestimmte Topics")

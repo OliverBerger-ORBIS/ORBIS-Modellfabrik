@@ -73,3 +73,37 @@ Test-Error
 {"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Starte Sequenz für Modul FTS: manual_1757772637", "timestamp": "2025-09-13 16:10:37,263"}
 {"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Commands: ['NAVIGATE', 'PICK', 'DROP']", "timestamp": "2025-09-13 16:10:37,263"}
 {"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Sequenz manual_1757772637 für FTS gestartet: ['NAVIGATE', 'PICK', 'DROP']", "timestamp": "2025-09-13 16:10:37,263"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.module_state_control", "msg": "Initialisiere ModuleStateManager mit MQTT-Client und Gateway", "timestamp": "2025-09-14 09:34:35,126"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Filter hinzugefügt: module/v1/ff/SVR4H76530/state", "timestamp": "2025-09-14 09:34:35,126"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Filter hinzugefügt: module/v1/ff/SVR3QA2098/state", "timestamp": "2025-09-14 09:34:35,126"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Filter hinzugefügt: module/v1/ff/SVR4H76449/state", "timestamp": "2025-09-14 09:34:35,126"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Filter hinzugefügt: module/v1/ff/SVR3QA0022/state", "timestamp": "2025-09-14 09:34:35,126"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Filter hinzugefügt: module/v1/ff/SVR4H73275/state", "timestamp": "2025-09-14 09:34:35,126"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Filter hinzugefügt: module/v1/ff/CHRG0/state", "timestamp": "2025-09-14 09:34:35,126"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Filter hinzugefügt: module/v1/ff/SVR4H76530/connection", "timestamp": "2025-09-14 09:34:35,126"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Filter hinzugefügt: module/v1/ff/SVR3QA2098/connection", "timestamp": "2025-09-14 09:34:35,126"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Filter hinzugefügt: module/v1/ff/SVR4H76449/connection", "timestamp": "2025-09-14 09:34:35,126"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Filter hinzugefügt: module/v1/ff/SVR3QA0022/connection", "timestamp": "2025-09-14 09:34:35,126"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Filter hinzugefügt: module/v1/ff/SVR4H73275/connection", "timestamp": "2025-09-14 09:34:35,126"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Filter hinzugefügt: module/v1/ff/CHRG0/connection", "timestamp": "2025-09-14 09:34:35,126"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Per-topic subscription für 12 Filter aktiviert", "timestamp": "2025-09-14 09:34:35,126"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Monitor-Thread gestartet", "timestamp": "2025-09-14 09:34:35,127"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "ModuleStateManager initialisiert", "timestamp": "2025-09-14 09:34:35,127"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.module_state_control", "msg": "ModuleStateManager erfolgreich initialisiert", "timestamp": "2025-09-14 09:34:35,127"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.module_state_control", "msg": "Initialisiere ModuleStateManager mit MQTT-Client und Gateway", "timestamp": "2025-09-14 11:09:36,197"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Filter hinzugefügt: module/v1/ff/SVR4H76530/state", "timestamp": "2025-09-14 11:09:36,203"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Filter hinzugefügt: module/v1/ff/SVR3QA2098/state", "timestamp": "2025-09-14 11:09:36,204"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Filter hinzugefügt: module/v1/ff/SVR4H76449/state", "timestamp": "2025-09-14 11:09:36,204"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Filter hinzugefügt: module/v1/ff/SVR3QA0022/state", "timestamp": "2025-09-14 11:09:36,204"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Filter hinzugefügt: module/v1/ff/SVR4H73275/state", "timestamp": "2025-09-14 11:09:36,204"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Filter hinzugefügt: module/v1/ff/CHRG0/state", "timestamp": "2025-09-14 11:09:36,204"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Filter hinzugefügt: module/v1/ff/SVR4H76530/connection", "timestamp": "2025-09-14 11:09:36,204"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Filter hinzugefügt: module/v1/ff/SVR3QA2098/connection", "timestamp": "2025-09-14 11:09:36,204"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Filter hinzugefügt: module/v1/ff/SVR4H76449/connection", "timestamp": "2025-09-14 11:09:36,204"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Filter hinzugefügt: module/v1/ff/SVR3QA0022/connection", "timestamp": "2025-09-14 11:09:36,204"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Filter hinzugefügt: module/v1/ff/SVR4H73275/connection", "timestamp": "2025-09-14 11:09:36,204"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Filter hinzugefügt: module/v1/ff/CHRG0/connection", "timestamp": "2025-09-14 11:09:36,204"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Per-topic subscription für 12 Filter aktiviert", "timestamp": "2025-09-14 11:09:36,204"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Monitor-Thread gestartet", "timestamp": "2025-09-14 11:09:36,205"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "ModuleStateManager initialisiert", "timestamp": "2025-09-14 11:09:36,206"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.module_state_control", "msg": "ModuleStateManager erfolgreich initialisiert", "timestamp": "2025-09-14 11:09:36,206"}

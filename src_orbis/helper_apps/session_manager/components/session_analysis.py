@@ -9,6 +9,7 @@ import streamlit as st
 
 from src_orbis.helper_apps.session_manager.components.graph_visualizer import GraphVisualizer
 from src_orbis.helper_apps.session_manager.components.session_analyzer import SessionAnalyzer
+from src_orbis.helper_apps.session_manager.components.settings_manager import SettingsManager
 from src_orbis.helper_apps.session_manager.components.timeline_visualizer import TimelineVisualizer
 from src_orbis.helper_apps.session_manager.components.ui_components import SessionAnalysisUI
 
@@ -17,6 +18,10 @@ logger = logging.getLogger(__name__)
 
 def show_session_analysis():
     """Hauptfunktion für Session-Analyse (Refactored)"""
+    logger.info("📊 Session Analysis Tab geladen")
+
+    # Settings Manager initialisieren
+    settings_manager = SettingsManager()
 
     # Session State initialisieren (nur einmal)
     if 'session_analyzer' not in st.session_state:
@@ -43,17 +48,23 @@ def show_session_analysis():
     ui = SessionAnalysisUI()
     graph_visualizer = GraphVisualizer()
 
-    # Session-Auswahl
-    selected_session = ui.render_session_selection()
+    # Session-Verzeichnis aus Settings laden
+    session_directory = settings_manager.get_session_directory("session_analysis")
+    logger.debug(f"Session-Verzeichnis aus Settings: {session_directory}")
+
+    # Session-Auswahl mit Settings-Verzeichnis
+    selected_session = ui.render_session_selection(session_directory)
 
     if selected_session:
         # Session laden
-        if analyzer.load_session_data(selected_session):
+        if analyzer.load_session_data(selected_session, session_directory):
             st.session_state.session_loaded = True
             st.session_state.current_session = selected_session
             st.success(f"✅ Session erfolgreich geladen: {selected_session}")
+            logger.info(f"Session geladen: {selected_session} aus {session_directory}")
         else:
             st.error("❌ Fehler beim Laden der Session")
+            logger.error(f"Fehler beim Laden der Session: {selected_session}")
             return
 
     # Session-Analyse anzeigen

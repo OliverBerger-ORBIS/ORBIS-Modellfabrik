@@ -24,22 +24,34 @@ class SessionAnalysisUI:
     def __init__(self):
         self.topic_filter_manager = TopicFilterManager()
 
-    def render_session_selection(self) -> str:
+    def render_session_selection(self, session_directory: str = None) -> str:
         """Renders session selection UI and returns selected session path"""
+        logger.debug("Session-Auswahl UI wird gerendert")
         st.subheader("📁 Session-Auswahl")
 
         # Session-Dateien aus konfiguriertem Verzeichnis laden
-        from src_orbis.helper_apps.session_manager.components.settings_manager import SettingsManager
+        if session_directory is None:
+            from src_orbis.helper_apps.session_manager.components.settings_manager import SettingsManager
 
-        settings_manager = SettingsManager()
-        session_directory = settings_manager.get_session_directory()
-        sessions_dir = Path(session_directory)
+            settings_manager = SettingsManager()
+            session_directory = settings_manager.get_session_directory()
+
+        logger.debug(f"Verwende Session-Verzeichnis: {session_directory}")
+        # Absoluten Pfad verwenden, relativ zum Projekt-Root
+        if not Path(session_directory).is_absolute():
+            project_root = Path(__file__).parent.parent.parent.parent.parent
+            sessions_dir = project_root / session_directory
+        else:
+            sessions_dir = Path(session_directory)
+
         if sessions_dir.exists():
             session_files = list(sessions_dir.glob("*.log"))
             session_options = ["demo"] + [str(f) for f in session_files]
+            logger.debug(f"Gefundene Session-Dateien: {len(session_files)}")
         else:
             session_options = ["demo"]
-            st.warning("Sessions-Verzeichnis nicht gefunden, verwende Demo-Daten")
+            st.warning(f"❌ Sessions-Verzeichnis nicht gefunden: {sessions_dir}")
+            logger.warning(f"Sessions-Verzeichnis nicht gefunden: {sessions_dir}")
 
         # Session-Auswahl
         selected_session = st.selectbox(

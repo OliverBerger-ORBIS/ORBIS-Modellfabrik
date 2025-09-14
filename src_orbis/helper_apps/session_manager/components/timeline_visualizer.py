@@ -23,7 +23,7 @@ class TimelineVisualizer:
     def create_timeline_visualization(self, messages: List[Dict], selected_topics: List[str] = None) -> go.Figure:
         """Erstellt Timeline-Visualisierung (Zeit vs Topic-Name)"""
         try:
-            logger.debug(f"Erstelle Timeline-Visualisierung mit Topics: {selected_topics}")
+            logger.info(f"Erstelle Timeline-Visualisierung mit Topics: {selected_topics}")
 
             if not messages:
                 logger.warning("Keine Messages verfügbar für Timeline")

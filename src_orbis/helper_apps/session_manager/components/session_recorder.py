@@ -13,11 +13,18 @@ from typing import Any, Dict, List
 
 import streamlit as st
 
-# Logging konfigurieren
+from src_orbis.omf.dashboard.utils.ui_refresh import RerunController
+
+# Logging konfigurieren - Verzeichnis sicherstellen
+# Log-Verzeichnis erstellen falls nicht vorhanden (relativ zum Projekt-Root)
+project_root = Path(__file__).parent.parent.parent.parent.parent
+log_dir = project_root / "data" / "logs"
+log_dir.mkdir(parents=True, exist_ok=True)
+
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[logging.FileHandler('data/logs/session_manager.log'), logging.StreamHandler()],
+    handlers=[logging.FileHandler(log_dir / 'session_manager.log'), logging.StreamHandler()],
 )
 logger = logging.getLogger(__name__)
 
@@ -52,7 +59,11 @@ message_buffer = ThreadSafeMessageBuffer()
 def show_session_recorder():
     """Session Recorder Tab - KISS Design"""
 
-    logger.debug("🔴 Session Recorder Tab geladen")
+    logger.info("🔴 Session Recorder Tab geladen")
+
+    # RerunController initialisieren
+    rerun_controller = RerunController()
+
     st.header("🔴 Session Recorder")
     st.markdown("Einfache 1:1 Aufnahme von MQTT-Nachrichten - **Konfiguration in ⚙️ Einstellungen**")
 
@@ -120,7 +131,7 @@ def show_session_recorder():
             if connect_to_broker(mqtt_settings):
                 st.session_state.session_recorder['connected'] = True
                 st.success("✅ MQTT verbunden!")
-                st.rerun()
+                rerun_controller.request_rerun()
             else:
                 st.error("❌ Verbindung fehlgeschlagen!")
 
@@ -129,7 +140,7 @@ def show_session_recorder():
             disconnect_from_broker()
             st.session_state.session_recorder['connected'] = False
             st.success("✅ MQTT getrennt!")
-            st.rerun()
+            rerun_controller.request_rerun()
 
     st.markdown("---")
 
@@ -149,7 +160,7 @@ def show_session_recorder():
                 st.session_state.session_recorder['recording'] = True
                 st.session_state.session_recorder['start_time'] = datetime.now()
                 st.success("🔴 Aufnahme gestartet!")
-                st.rerun()
+                rerun_controller.request_rerun()
 
         with col2:
             if st.button(
@@ -159,7 +170,7 @@ def show_session_recorder():
                 st.session_state.session_recorder['recording'] = False
                 st.session_state.session_recorder['start_time'] = None
                 st.success("⏹️ Aufnahme beendet und gespeichert!")
-                st.rerun()
+                rerun_controller.request_rerun()
 
     # Status anzeigen
     if st.session_state.session_recorder['recording']:
@@ -194,7 +205,7 @@ def show_session_recorder():
 
         with col1:
             if st.button("🔄 Aktualisieren", key="refresh_status"):
-                st.rerun()
+                rerun_controller.request_rerun()
 
         with col2:
             if st.button("📊 Status prüfen", key="check_status"):
@@ -330,8 +341,12 @@ def save_session():
         session_directory = settings_manager.get_session_recorder_directory()
         # recording_settings = settings_manager.get_setting("session_recorder", "recording", {})  # Unused for now
 
-        # Session-Verzeichnis erstellen
-        session_dir = Path(session_directory)
+        # Session-Verzeichnis erstellen (absoluten Pfad verwenden)
+        if not Path(session_directory).is_absolute():
+            project_root = Path(__file__).parent.parent.parent.parent.parent.parent
+            session_dir = project_root / session_directory
+        else:
+            session_dir = Path(session_directory)
         session_dir.mkdir(parents=True, exist_ok=True)
 
         # Dateiname generieren

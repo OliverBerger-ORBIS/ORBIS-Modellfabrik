@@ -13,7 +13,7 @@ import yaml
 def load_shopfloor_config() -> Dict[str, Any]:
     """Lädt die Shopfloor-Konfiguration aus YAML-Dateien"""
     try:
-        config_dir = Path(__file__).parent.parent.parent / "config" / "shopfloor"
+        config_dir = Path(__file__).parent.parent.parent.parent / "config" / "shopfloor"
 
         # Layout-Konfiguration laden
         layout_file = config_dir / "layout.yml"
