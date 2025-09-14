@@ -265,7 +265,7 @@ def show_positioning_statistics():
         st.metric("Inaktive Module", len(modules) - len(enabled_modules))
 
     with col4:
-        st.metric("Auslastung", f"{(len(modules) / len(positions) * 100):.1f}%")
+        st.metric("Auslastung", f"{(len(modules) / len(positions) * 100):.1f}%" if positions else "0%")
         st.metric("Aktivierungsrate", f"{(len(enabled_modules) / len(modules) * 100):.1f}%" if modules else "0%")
 
 

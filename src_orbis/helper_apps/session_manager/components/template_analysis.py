@@ -26,7 +26,11 @@ def show_template_analysis():
     st.markdown("Analyse aller APS-Sessions mit Fokus auf bestimmte Topics")
 
     # Session-Verzeichnis aus Settings
-    session_dir = st.session_state.get("settings_manager", {}).get("session_analysis", {}).get("session_directory", "data/omf-data/sessions")
+    settings_manager = st.session_state.get("settings_manager")
+    if settings_manager and hasattr(settings_manager, 'session_analysis'):
+        session_dir = settings_manager.session_analysis.get("session_directory", "data/omf-data/sessions")
+    else:
+        session_dir = "data/omf-data/sessions"
     session_path = Path(session_dir)
     
     if not session_path.exists():
