@@ -23,9 +23,9 @@ class TestReproduceSequenceError(unittest.TestCase):
     def test_reproduce_sequence_definition_get_error(self):
         """Test: Reproduziert den genauen AttributeError"""
         try:
-            from omf.tools.sequence_executor import SequenceDefinition, SequenceExecutor, SequenceStep
-            from omf.tools.sequence_ui import SequenceUI
-            from omf.tools.workflow_order_manager import get_workflow_order_manager
+            from src_orbis.omf.tools.sequence_executor import SequenceDefinition, SequenceExecutor, SequenceStep
+            from src_orbis.omf.tools.sequence_ui import SequenceUI
+            from src_orbis.omf.tools.workflow_order_manager import get_workflow_order_manager
 
             executor = SequenceExecutor(self.mock_mqtt_client)
             _ui = SequenceUI(executor)
@@ -65,8 +65,8 @@ class TestReproduceSequenceError(unittest.TestCase):
     def test_show_active_sequences_method_safety(self):
         """Test: show_active_sequences verwendet korrekte Objektzugriffe"""
         try:
-            from omf.tools.sequence_executor import SequenceDefinition, SequenceExecutor, SequenceStep
-            from omf.tools.sequence_ui import SequenceUI
+            from src_orbis.omf.tools.sequence_executor import SequenceDefinition, SequenceExecutor, SequenceStep
+            from src_orbis.omf.tools.sequence_ui import SequenceUI
 
             executor = SequenceExecutor(self.mock_mqtt_client)
             _ui = SequenceUI(executor)
@@ -102,8 +102,8 @@ class TestReproduceSequenceError(unittest.TestCase):
     def test_sequence_ui_all_methods_safety(self):
         """Test: Alle SequenceUI Methoden sind sicher"""
         try:
-            from omf.tools.sequence_executor import SequenceDefinition, SequenceExecutor, SequenceStep
-            from omf.tools.sequence_ui import SequenceUI
+            from src_orbis.omf.tools.sequence_executor import SequenceDefinition, SequenceExecutor, SequenceStep
+            from src_orbis.omf.tools.sequence_ui import SequenceUI
 
             executor = SequenceExecutor(self.mock_mqtt_client)
             _ui = SequenceUI(executor)
@@ -155,7 +155,7 @@ class TestReproduceSequenceError(unittest.TestCase):
     def test_sequence_definition_loader_safety(self):
         """Test: SequenceDefinitionLoader gibt sichere Objekte zurück"""
         try:
-            from omf.tools.sequence_definition import SequenceDefinitionLoader
+            from src_orbis.omf.tools.sequence_definition import SequenceDefinitionLoader
 
             loader = SequenceDefinitionLoader()
             sequences = loader.get_all_sequences()

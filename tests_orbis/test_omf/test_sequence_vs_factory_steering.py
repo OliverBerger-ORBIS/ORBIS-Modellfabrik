@@ -13,8 +13,8 @@ from unittest.mock import Mock, patch
 # Pfad für Imports hinzufügen
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "src_orbis"))
 
-from omf.tools.sequence_executor import SequenceDefinition, SequenceExecutor, SequenceStep, StepStatus
-from omf.tools.workflow_order_manager import WorkflowOrderManager
+from src_orbis.omf.tools.sequence_executor import SequenceDefinition, SequenceExecutor, SequenceStep, StepStatus
+from src_orbis.omf.tools.workflow_order_manager import WorkflowOrderManager
 
 
 # Factory-Steuerung-Logik direkt implementieren (ohne Streamlit-Abhängigkeiten)

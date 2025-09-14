@@ -14,7 +14,7 @@ import yaml
 # Add src_orbis to path
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "src_orbis"))
 
-from omf.tools.message_template_manager import OmfMessageTemplateManager, get_omf_message_template_manager
+from src_orbis.omf.tools.message_template_manager import OmfMessageTemplateManager, get_omf_message_template_manager
 
 
 class TestOMFMessageTemplateManager(unittest.TestCase):

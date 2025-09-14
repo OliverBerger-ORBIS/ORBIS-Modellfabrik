@@ -19,8 +19,8 @@ def debug_dashboard_problem():
 
     try:
         # Import der Dashboard-Komponenten
-        from omf.config.config import LIVE_CFG
-        from omf.tools.mqtt_client import get_omf_mqtt_client
+        from src_orbis.omf.config.config import LIVE_CFG
+        from src_orbis.omf.tools.mqtt_client import get_omf_mqtt_client
 
         print("✅ Imports erfolgreich")
         print(f"   - LIVE_CFG: {LIVE_CFG}")

@@ -128,7 +128,7 @@ class TestMessageGeneratorCommands(unittest.TestCase):
     def test_module_sequence_mill(self):
         """Test: MILL Module Sequence"""
         # Starte einen neuen Workflow, damit die orderId existiert
-        from omf.tools.workflow_order_manager import get_workflow_order_manager
+        from src_orbis.omf.tools.workflow_order_manager import get_workflow_order_manager
 
         workflow_manager = get_workflow_order_manager()
         order_id = workflow_manager.start_workflow("MILL", ["PICK", "MILL", "DROP"])
@@ -148,7 +148,7 @@ class TestMessageGeneratorCommands(unittest.TestCase):
     def test_module_sequence_aiqs(self):
         """Test: AIQS Module Sequence"""
         # Starte einen neuen Workflow, damit die orderId existiert
-        from omf.tools.workflow_order_manager import get_workflow_order_manager
+        from src_orbis.omf.tools.workflow_order_manager import get_workflow_order_manager
 
         workflow_manager = get_workflow_order_manager()
         order_id = workflow_manager.start_workflow("AIQS", ["PICK", "CHECK_QUALITY", "DROP"])
@@ -163,7 +163,7 @@ class TestMessageGeneratorCommands(unittest.TestCase):
     def test_module_sequence_drill(self):
         """Test: DRILL Module Sequence"""
         # Starte einen neuen Workflow, damit die orderId existiert
-        from omf.tools.workflow_order_manager import get_workflow_order_manager
+        from src_orbis.omf.tools.workflow_order_manager import get_workflow_order_manager
 
         workflow_manager = get_workflow_order_manager()
         order_id = workflow_manager.start_workflow("DRILL", ["PICK", "DRILL", "DROP"])

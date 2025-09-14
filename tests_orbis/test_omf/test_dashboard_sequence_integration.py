@@ -52,8 +52,7 @@ class TestDashboardSequenceIntegration(unittest.TestCase):
     def test_sequence_ui_method_signatures(self):
         """Test: SequenceUI Methoden haben korrekte Signaturen"""
         try:
-            from omf.tools.sequence_executor import SequenceExecutor
-
+            from src_orbis.omf.tools.sequence_executor import SequenceExecutor
             from src_orbis.omf.tools.sequence_ui import SequenceUI
 
             _executor = SequenceExecutor(self.mock_mqtt_client)
@@ -127,10 +126,9 @@ class TestDashboardSequenceIntegration(unittest.TestCase):
     def test_sequence_ui_object_type_handling(self):
         """Test: SequenceUI behandelt Objekttypen korrekt"""
         try:
-            from omf.tools.workflow_order_manager import get_workflow_order_manager
-
             from src_orbis.omf.tools.sequence_executor import SequenceDefinition, SequenceExecutor, SequenceStep
             from src_orbis.omf.tools.sequence_ui import SequenceUI
+            from src_orbis.omf.tools.workflow_order_manager import get_workflow_order_manager
 
             _executor = SequenceExecutor(self.mock_mqtt_client)
             _ui = SequenceUI(_executor)
@@ -202,8 +200,7 @@ class TestDashboardSequenceIntegration(unittest.TestCase):
     def test_sequence_ui_method_call_safety(self):
         """Test: SequenceUI Methodenaufrufe sind sicher"""
         try:
-            from omf.tools.sequence_executor import SequenceExecutor
-
+            from src_orbis.omf.tools.sequence_executor import SequenceExecutor
             from src_orbis.omf.tools.sequence_ui import SequenceUI
 
             _executor = SequenceExecutor(self.mock_mqtt_client)
