@@ -1,0 +1,41 @@
+metadata:
+  category: MODULE
+  sub_category: Connection
+  description: MILL Module Connection Status Template
+  icon: 🔌
+  version: 1.0.0
+  last_updated: '2025-01-15'
+
+templates:
+  module.connection.mill:
+    category: MODULE
+    sub_category: Connection
+    description: MILL Module SVR3QA2098 Connection Status
+    direction: bidirectional
+    structure:
+      connectionState: "<string>"
+      timestamp: "<datetime>"
+      moduleId: "<string>"
+      errors: "<array>"
+      information: "<array>"
+    examples:
+      - connectionState: "ONLINE"
+        timestamp: "2024-01-15T10:30:00Z"
+        moduleId: "SVR3QA2098"
+        errors: []
+        information: []
+      - connectionState: "OFFLINE"
+        timestamp: "2024-01-15T10:35:00Z"
+        moduleId: "SVR3QA2098"
+        errors: []
+        information: []
+      - connectionState: "CONNECTIONBROKEN"
+        timestamp: "2024-01-15T10:40:00Z"
+        moduleId: "SVR3QA2098"
+        errors: ["OPC-UA connection lost"]
+        information: ["Last heartbeat: 2024-01-15T10:39:45Z"]
+    validation:
+      required_fields: ["connectionState", "timestamp"]
+      connectionState_values: ["ONLINE", "OFFLINE", "CONNECTIONBROKEN"]
+      timestamp_format: "ISO8601"
+    friendly_name: "MILL : connection"

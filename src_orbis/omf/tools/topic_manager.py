@@ -5,6 +5,7 @@ Version: 3.0.0
 """
 
 import os
+from pathlib import Path
 from typing import Any, Dict, List
 
 import yaml
@@ -16,12 +17,49 @@ class OmfTopicManager:
     def __init__(self, config_path: str = None):
         """Initialize OMFTopicManager with YAML configuration"""
         if config_path is None:
-            # Default path: config/topic_config.yml relative to this file
+            # Registry v1 (primary) - load all topic files
+            self.config_path = None
+            self.config = self._load_registry_topics()
+            if self.config:
+                return
+
+        # Fallback to legacy single file
+        if config_path is None:
             config_path = os.path.join(os.path.dirname(__file__), "..", "config", "topic_config.yml")
 
         self.config_path = config_path
         self.config = None
         self.load_yaml_config()
+
+    def _load_registry_topics(self) -> Dict[str, Any]:
+        """Load topics from registry v1 structure"""
+        try:
+            # Projekt-Root-relative Pfade verwenden
+            current_dir = Path(__file__).parent
+            project_root = current_dir.parent.parent.parent.parent
+            topics_dir = project_root / "registry" / "model" / "v1" / "topics"
+
+            if not topics_dir.exists():
+                print("⚠️ Registry topics directory not found, falling back to legacy config")
+                return None
+
+            # Load all topic files
+            topics = {}
+            for topic_file in topics_dir.glob("*.yml"):
+                with open(topic_file, encoding="utf-8") as f:
+                    topic_data = yaml.safe_load(f)
+                    if "topics" in topic_data:
+                        for topic_info in topic_data["topics"]:
+                            topic = topic_info.get("topic")
+                            if topic:
+                                topics[topic] = topic_info
+
+            print(f"✅ Loaded {len(topics)} topics from registry v1")
+            return {"topics": topics}
+
+        except Exception as e:
+            print(f"⚠️ Error loading registry topics: {e}, falling back to legacy config")
+            return None
 
     def load_yaml_config(self) -> bool:
         """Load topic configuration from YAML file"""

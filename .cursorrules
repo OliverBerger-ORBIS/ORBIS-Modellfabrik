@@ -8,6 +8,12 @@
 - **KEINE sys.path.append Hacks:** `sys.path.append(...)` ❌
 - **KEINE lokalen Imports:** `from module import Class` ❌
 
+### Pfad-Standards (KRITISCH)
+- **NUR absolute Pfade:** `/Users/oliver/Projects/ORBIS-Modellfabrik/path/to/file`
+- **KEINE relativen Pfade:** `../path/to/file` ❌
+- **KEINE Path(__file__).parent Hacks:** `Path(__file__).parent.parent` ❌
+- **KEINE os.path.join Hacks:** `os.path.join(os.path.dirname(__file__), ...)` ❌
+
 ### Projekt-Struktur
 - **Aktive Sourcen:** `src_orbis/omf/dashboard/` (Produktiv-Dashboard)
 - **Helper-Apps:** `src_orbis/helper_apps/`, `src_orbis/analysis_tools/` (Separate Anwendungen)

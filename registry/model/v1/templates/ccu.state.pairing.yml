@@ -1,0 +1,55 @@
+version: 1.0.0
+metadata:
+  category: CCU
+  sub_category: State
+  description: CCU Pairing State (topic-free; topics live in mapping.yml)
+  icon: "📊"
+  last_updated: "2025-09-14"
+
+templates:
+
+  ccu.state.pairing:
+    description: Pairing-Übersicht von Modulen & FTS
+    match:
+      required_fields: [modules, transports]
+    template_structure:
+      modules:
+        type: array
+        items:
+          type: object
+          properties:
+            serialNumber: { type: string }
+            type: { type: string, enum: ["MODULE"] }
+            connected: { type: boolean }
+            available: { type: string, enum: ["READY","BUSY","BLOCKED"] }
+            assigned: { type: boolean }
+            subType: { type: string, enum: ["HBW","DRILL","MILL","DPS","AIQS","CHRG"] }
+            ip: { type: string, format: ipv4 }
+            version: { type: string }
+            hasCalibration: { type: boolean }
+            lastSeen: { type: string, format: date-time }
+            pairedSince: { type: string, format: date-time }
+            productionDuration: { type: integer, minimum: 1, maximum: 3600 }
+      transports:
+        type: array
+        items:
+          type: object
+          properties:
+            serialNumber: { type: string }
+            type: { type: string, enum: ["FTS"] }
+            connected: { type: boolean }
+            available: { type: string, enum: ["READY","BUSY","BLOCKED"] }
+            ip: { type: string, format: ipv4 }
+            version: { type: string }
+            batteryPercentage: { type: integer, minimum: 0, maximum: 100 }
+            batteryVoltage: { type: number, minimum: 0, maximum: 15 }
+            charging: { type: boolean }
+            lastSeen: { type: string, format: date-time }
+            pairedSince: { type: string, format: date-time }
+            lastLoadPosition: { type: string }
+            lastModuleSerialNumber: { type: string }
+            lastNodeId: { type: string }
+    examples:
+      - payload:
+          modules: [ { serialNumber: "SVR3QA0022", type: "MODULE", connected: true, available: "READY", subType: "HBW", ip: "192.168.0.80", version: "1.3.0", hasCalibration: true, lastSeen: "2025-08-19T09:15:49.399Z", pairedSince: "2025-08-19T09:08:25.855Z", assigned: false } ]
+          transports: [ { serialNumber: "5iO4", type: "FTS", connected: true, available: "READY", ip: "192.168.0.104", version: "1.1.0+git250d287", batteryPercentage: 92, batteryVoltage: 9, charging: false, lastSeen: "2025-08-19T09:15:11.637Z", pairedSince: "2025-08-19T09:15:38.745Z", lastLoadPosition: "2", lastModuleSerialNumber: "SVR4H73275", lastNodeId: "SVR4H73275" } ]

@@ -1,0 +1,44 @@
+metadata:
+  category: CCU
+  sub_category: Control
+  description: CCU Control Commands Templates
+  icon: 🎛️
+  version: 1.0.0
+  last_updated: '2025-01-15'
+
+templates:
+  ccu.control:
+    category: CCU
+    sub_category: Control
+    description: CCU Control Commands
+    direction: outbound
+    structure:
+      command: "<string>"
+      parameters: "<object>"
+      timestamp: "<datetime>"
+      requestId: "<string>"
+    examples:
+      - command: "RESET_FACTORY"
+        parameters: {}
+        timestamp: "2024-01-15T10:30:00Z"
+        requestId: "req-12345"
+      - command: "PAUSE_PRODUCTION"
+        parameters:
+          reason: "Maintenance"
+          duration: 3600
+        timestamp: "2024-01-15T10:30:00Z"
+        requestId: "req-12346"
+      - command: "RESUME_PRODUCTION"
+        parameters: {}
+        timestamp: "2024-01-15T10:30:00Z"
+        requestId: "req-12347"
+      - command: "SET_WORKPIECE_TYPE"
+        parameters:
+          type: "WHITE"
+          quantity: 10
+        timestamp: "2024-01-15T10:30:00Z"
+        requestId: "req-12348"
+    validation:
+      required_fields: ["command", "timestamp", "requestId"]
+      command_values: ["RESET_FACTORY", "PAUSE_PRODUCTION", "RESUME_PRODUCTION", "SET_WORKPIECE_TYPE", "CLEAR_ERRORS"]
+    friendly_name: "CCU Control Commands"

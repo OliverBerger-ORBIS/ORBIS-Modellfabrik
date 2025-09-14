@@ -1,0 +1,16 @@
+version: 1.0.0
+category: CCU
+notes: "Central Control Unit"
+topics:
+  - { topic: "ccu/state",            sub_category: "State",  friendly_name: "CCU : state",            template: "ccu/state/status", template_direction: inbound }
+  - { topic: "ccu/state/flow",        sub_category: "State",  friendly_name: "CCU : state : flow",    template: "ccu/state/status", template_direction: inbound }
+  - { topic: "ccu/state/status",      sub_category: "State",  friendly_name: "CCU : state : status",  template: "ccu/state/status", template_direction: inbound }
+  - { topic: "ccu/state/error",       sub_category: "State",  friendly_name: "CCU : state : error",   template: "ccu/state/status", template_direction: inbound }
+  - { topic: "ccu/control",           sub_category: "Control",friendly_name: "CCU : control",          template: "ccu/control",       template_direction: outbound }
+  - { topic: "ccu/control/command",   sub_category: "Control",friendly_name: "CCU : control : command",template: "ccu/control",       template_direction: outbound }
+  - { topic: "ccu/control/order",     sub_category: "Control",friendly_name: "CCU : control : order",  template: "ccu/control",       template_direction: outbound }
+  - { topic: "ccu/set/reset",         sub_category: "Control",friendly_name: "CCU : set : reset",      template: "ccu/control",       template_direction: outbound }
+  - { topic: "ccu/status",            sub_category: "Status", friendly_name: "CCU : status",           template: "ccu/state/status", template_direction: inbound }
+  - { topic: "ccu/status/connection", sub_category: "Status", friendly_name: "CCU : status : connection",template: "ccu/state/status", template_direction: inbound }
+  - { topic: "ccu/pairing/state",     sub_category: "State",  friendly_name: "CCU : pairing : state", template: "ccu/state",          template_direction: inbound }
+  - { topic: "ccu/status/health",     sub_category: "Status", friendly_name: "CCU : status : health",  template: "ccu/state/status", template_direction: inbound }

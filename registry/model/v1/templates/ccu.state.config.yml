@@ -1,0 +1,30 @@
+version: 1.0.0
+metadata:
+  category: CCU
+  sub_category: State
+  description: CCU Config State (topic-free; topics live in mapping.yml)
+  icon: "📊"
+  last_updated: "2025-09-14"
+
+templates:
+
+  ccu.state.config:
+    description: Produktions-/FTS-Settings
+    match: { }
+    template_structure:
+      ftsSettings:
+        type: object
+        properties:
+          chargeThresholdPercent: { type: integer, minimum: 0, maximum: 100 }
+      productionDurations:
+        type: object
+        additionalProperties: { type: integer, minimum: 1 }
+      productionSettings:
+        type: object
+        properties:
+          maxParallelOrders: { type: integer, minimum: 1 }
+    examples:
+      - payload:
+          ftsSettings: { chargeThresholdPercent: 10 }
+          productionDurations: { BLUE: 550, RED: 560, WHITE: 580 }
+          productionSettings: { maxParallelOrders: 4 }

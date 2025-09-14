@@ -15,16 +15,8 @@ from typing import Dict, List, Set
 
 import yaml
 
-try:
-    from .message_template_manager import get_message_template_manager
-    from .module_manager import get_module_manager
-except ImportError:
-    import os
-    import sys
-
-    # sys.path.append(os.path.dirname(__file__))  # Nicht mehr nötig nach pip install -e .
-    from message_template_manager import get_message_template_manager
-    from module_manager import get_module_manager
+from src_orbis.omf.tools.message_template_manager import get_message_template_manager
+from src_orbis.omf.tools.module_manager import get_omf_module_manager
 
 import os
 import sys

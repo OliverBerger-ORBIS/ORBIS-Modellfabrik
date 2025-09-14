@@ -81,3 +81,9 @@ known_first_party = ["src_orbis"]
 [tool.pytest.ini_options]
 testpaths = ["tests_orbis"]          # nur hier sammelt Pytest Tests
 addopts = "-q"
+
+# Absolute Path Rules
+[tool.cursor]
+always_use_absolute_paths = true
+path_resolution = "absolute"
+python_absolute_imports = true

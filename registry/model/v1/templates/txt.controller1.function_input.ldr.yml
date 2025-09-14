@@ -1,0 +1,34 @@
+metadata:
+  category: TXT
+  sub_category: Function Input
+  description: TXT Controller LDR Sensor Data
+  icon: 💡
+  version: 1.0.0
+  last_updated: '2025-01-15'
+
+templates:
+  txt.controller1.function_input.ldr:
+    category: TXT
+    sub_category: Function Input
+    description: TXT Controller LDR Sensor Data
+    direction: inbound    structure:
+      br: "<number>"
+      ldr: "<number>"
+      ts: "<datetime>"
+    examples:
+      - br: 95.6
+        ldr: 2867
+        ts: "2025-08-19T09:15:04.070Z"
+      - br: 95.7
+        ldr: 2791
+        ts: "2025-08-19T09:16:04.127Z"
+      - br: 95.9
+        ldr: 2696
+        ts: "2025-08-19T09:17:04.169Z"
+    validation:
+      required_fields: ["br", "ldr", "ts"]
+      br_range: [0, 100]
+      ldr_range: [0, 4095]
+    match:
+      required_fields: ["br", "ldr", "ts"]
+    friendly_name: "TXT Controller #1 : LDR sensor data"

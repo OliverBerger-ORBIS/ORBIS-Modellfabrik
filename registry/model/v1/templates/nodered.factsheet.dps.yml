@@ -1,0 +1,124 @@
+metadata:
+  category: Node-RED
+  sub_category: Factsheet
+  description: Node-RED DPS Factsheet Templates
+  icon: 📄
+  version: 1.0.0
+  last_updated: '2025-01-15'
+
+templates:
+  nodered.factsheet.dps:
+    category: Node-RED
+    sub_category: Factsheet
+    description: Node-RED DPS Factsheet Information
+    direction: inbound    structure:
+      headerId: "<number>"
+      loadSpecification: "<object>"
+      localizationParameters: "<object>"
+      manufacturer: "<string>"
+      physicalParameters: "<object>"
+      protocolFeatures: "<object>"
+      protocolLimits: "<object>"
+      serialNumber: "<string>"
+      timestamp: "<datetime>"
+      typeSpecification: "<object>"
+      version: "<string>"
+    examples:
+      - headerId: 1
+        loadSpecification:
+          loadSets:
+            - loadType: "WHITE"
+              setName: "WHITES"
+            - loadType: "RED"
+              setName: "REDS"
+            - loadType: "BLUE"
+              setName: "BLUES"
+        localizationParameters: {}
+        manufacturer: "Fischertechnik"
+        physicalParameters: {}
+        protocolFeatures:
+          moduleActions:
+            - actionParameters:
+                - parameterDescription: "The load type to input"
+                  parameterName: "type"
+                  parameterType: "string"
+              actionType: "DROP"
+            - actionParameters:
+                - parameterDescription: "The load type to output"
+                  parameterName: "type"
+                  parameterType: "string"
+              actionType: "PICK"
+            - actionScopes:
+                - "INSTANT"
+              actionType: "startCalibration"
+            - actionScopes:
+                - "INSTANT"
+              actionType: "stopCalibration"
+            - actionParameters:
+                - parameterDescription: "Array of ReferenceValues objects with referenceKey and referenceValue"
+                  parameterName: "references"
+                  parameterType: "array"
+                actionScopes:
+                  - "INSTANT"
+                actionType: "setCalibrationValues"
+            - actionParameters:
+                - isOptional: true
+                  parameterDescription: "Array of ReferenceValues objects with referenceKey and referenceValue"
+                  parameterName: "references"
+                  parameterType: "array"
+                actionScopes:
+                  - "INSTANT"
+                actionType: "storeCalibrationValues"
+            - actionParameters:
+                - parameterDescription: "Position to select"
+                  parameterName: "position"
+                  parameterType: "string"
+                actionScopes:
+                  - "INSTANT"
+                actionType: "selectCalibrationPosition"
+            - actionParameters:
+                - parameterDescription: "Position to test"
+                  parameterName: "position"
+                  parameterType: "string"
+                actionScopes:
+                  - "INSTANT"
+                actionType: "testCalibrationPosition"
+            - actionParameters:
+                - isOptional: true
+                  parameterDescription: "Reset to factory defaults"
+                  parameterName: "factory"
+                  parameterType: "boolean"
+                actionScopes:
+                  - "INSTANT"
+                actionType: "resetCalibration"
+            - actionParameters:
+                - parameterDescription: "The orderId that will deliver the workpiece to output"
+                  parameterName: "orderId"
+                  parameterType: "string"
+                actionScopes:
+                  - "INSTANT"
+                actionType: "announceOutput"
+            - actionScopes:
+                - "INSTANT"
+              actionType: "cancelStorageOrder"
+          moduleParameters:
+            clearModuleOnPick: true
+        protocolLimits: {}
+        serialNumber: "SVR4H73275"
+        timestamp: "2025-08-19T09:13:34.529266Z"
+        typeSpecification:
+          moduleClass: "DPS"
+          seriesName: "MOD-FF22+DPS"
+        version: "1.6.0+gitc321c85"
+    validation:
+      required_fields: ["headerId", "loadSpecification", "localizationParameters", "manufacturer", "physicalParameters", "protocolFeatures", "protocolLimits", "serialNumber", "timestamp", "typeSpecification", "version"]
+      headerId_values: [1]
+      manufacturer_values: ["Fischertechnik"]
+      serialNumber_values: ["SVR4H73275"]
+      version_values: ["1.6.0+gitc321c85"]
+      physicalParameters_values: [{}]
+      protocolLimits_values: [{}]
+      localizationParameters_values: [{}]
+    match:
+      required_fields: ["headerId", "loadSpecification", "localizationParameters", "manufacturer", "physicalParameters", "protocolFeatures", "protocolLimits", "serialNumber", "timestamp", "typeSpecification", "version"]
+    friendly_name: "NodeRed → DPS : factsheet"

@@ -1,0 +1,75 @@
+metadata:
+  category: Node-RED
+  sub_category: State
+  description: Node-RED AIQS State Templates
+  icon: 📊
+  version: 1.0.0
+  last_updated: '2025-01-15'
+
+templates:
+  nodered.state.aiqs:
+    category: Node-RED
+    sub_category: State
+    description: Node-RED AIQS State Information
+    direction: inbound    structure:
+      actionState: "<object>"
+      batteryState: "<object>"
+      errors: "<array>"
+      headerId: "<number>"
+      orderId: "<string>"
+      orderUpdateId: "<number>"
+      paused: "<boolean>"
+      serialNumber: "<string>"
+      timestamp: "<datetime>"
+    examples:
+      - actionState:
+          command: "CHECK_QUALITY"
+          id: "7b25fdfb-4a9e-419d-836c-c4348d9d9fd3"
+          result: "PASSED"
+          state: "FINISHED"
+          timestamp: "2025-08-19T09:18:22.005833Z"
+        batteryState: {}
+        errors: []
+        headerId: 7
+        orderId: "8ae07a6e-d058-48de-9b4d-8d0176622abc"
+        orderUpdateId: 10
+        paused: false
+        serialNumber: "SVR4H76530"
+        timestamp: "2025-08-19T09:18:22.006119Z"
+      - actionState:
+          command: "CHECK_QUALITY"
+          id: "7b25fdfb-4a9e-419d-836c-c4348d9d9fd3"
+          result: "PASSED"
+          state: "RUNNING"
+          timestamp: "2025-08-19T09:18:18.525120Z"
+        batteryState: {}
+        errors: []
+        headerId: 6
+        orderId: "8ae07a6e-d058-48de-9b4d-8d0176622abc"
+        orderUpdateId: 10
+        paused: false
+        serialNumber: "SVR4H76530"
+        timestamp: "2025-08-19T09:18:21.999763Z"
+      - actionState:
+          command: "CHECK_QUALITY"
+          id: "7b25fdfb-4a9e-419d-836c-c4348d9d9fd3"
+          state: "WAITING"
+          timestamp: "2025-08-19T09:18:17.950441Z"
+        batteryState: {}
+        errors: []
+        headerId: 4
+        orderId: "8ae07a6e-d058-48de-9b4d-8d0176622abc"
+        orderUpdateId: 10
+        paused: false
+        serialNumber: "SVR4H76530"
+        timestamp: "2025-08-19T09:18:17.950873Z"
+    validation:
+      required_fields: ["actionState", "batteryState", "errors", "headerId", "orderId", "orderUpdateId", "paused", "serialNumber", "timestamp"]
+      serialNumber_values: ["SVR4H76530"]
+      batteryState_values: [{}]
+      orderUpdateId_values: [0, 10]
+      paused_values: [false]
+      errors_values: [[]]
+    match:
+      required_fields: ["actionState", "batteryState", "errors", "headerId", "orderId", "orderUpdateId", "paused", "serialNumber", "timestamp"]
+    friendly_name: "NodeRed → AIQS : state"

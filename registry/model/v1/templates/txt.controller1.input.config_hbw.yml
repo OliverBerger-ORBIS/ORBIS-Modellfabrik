@@ -1,0 +1,30 @@
+metadata:
+  category: TXT
+  sub_category: Input
+  description: TXT Controller HBW Configuration Input
+  icon: ⚙️
+  version: 1.0.0
+  last_updated: '2025-01-15'
+
+templates:
+  txt.controller1.input.config_hbw:
+    category: TXT
+    sub_category: Input
+    description: TXT Controller HBW Configuration Input
+    direction: inbound    structure:
+      ts: "<datetime>"
+      warehouses: "<array>"
+    examples:
+      - ts: "2025-08-19T09:08:26.191Z"
+        warehouses: ["SVR3QA0022"]
+      - ts: "2025-08-20T07:12:20.229Z"
+        warehouses: ["SVR3QA0022"]
+      - ts: "2025-08-25T06:46:39.746Z"
+        warehouses: ["SVR3QA0022"]
+    validation:
+      required_fields: ["ts", "warehouses"]
+      warehouses_type: "array"
+      warehouses_items: "string"
+    match:
+      required_fields: ["ts", "warehouses"]
+    friendly_name: "TXT Controller #1 : HBW config input"

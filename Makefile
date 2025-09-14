@@ -1,63 +1,27 @@
-# ORBIS Modellfabrik - Makefile
+.PHONY: help validate-registry validate-mapping check-mapping-collisions check-templates-no-topics render-template
 
-.PHONY: help validate-structure fix-structure test format lint clean install docs-index
+PY?=python3
 
-help: ## Zeige verfügbare Befehle
-	@echo "ORBIS Modellfabrik - Verfügbare Befehle:"
-	@echo ""
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-20s\033[0m %s\n", $$1, $$2}'
+help:
+	@echo "Targets:"
+	@echo "  make validate-registry            # validate modules/enums/workpieces/topics/mapping against schemas"
+	@echo "  make validate-mapping             # validate mapping.yml against schema"
+	@echo "  make check-mapping-collisions     # ensure no topic matches multiple entries"
+	@echo "  make check-templates-no-topics    # ensure templates don't contain topic strings"
+	@echo "  make render-template TOPIC=...    # resolve a topic to template + vars (dry-run)"
 
-validate-structure: ## Validiere Projekt-Struktur
-	@echo "🔍 Validiere Projekt-Struktur..."
-	@python src_orbis/scripts/validate_project_structure.py
+validate-registry: validate-mapping
+	$(PY) tools/validate_registry.py
 
-fix-structure: ## Versuche automatische Struktur-Korrektur
-	@echo "🔧 Versuche automatische Struktur-Korrektur..."
-	@python src_orbis/scripts/validate_project_structure.py --fix
+validate-mapping:
+	$(PY) tools/validate_mapping.py
 
-test: ## Führe Tests aus
-	@echo "🧪 Führe Tests aus..."
-	@python -m pytest tests_orbis/ -v
+check-mapping-collisions:
+	$(PY) tools/check_mapping_collisions.py
 
-test-helper: ## Führe nur Helper-App Tests aus
-	@echo "🧪 Führe Helper-App Tests aus..."
-	@python -m pytest tests_orbis/test_helper_apps/ -v
+check-templates-no-topics:
+	$(PY) tools/check_templates_no_topics.py
 
-format: ## Formatiere Code mit Black
-	@echo "🎨 Formatiere Code..."
-	@black src_orbis/ tests_orbis/
-
-lint: ## Führe Linting mit Ruff aus
-	@echo "🔍 Führe Linting aus..."
-	@ruff check src_orbis/ tests_orbis/
-
-clean: ## Bereinige temporäre Dateien
-	@echo "🧹 Bereinige temporäre Dateien..."
-	@find . -type d -name "__pycache__" -exec rm -r {} + 2>/dev/null || true
-	@find . -type f -name "*.pyc" -delete 2>/dev/null || true
-	@find . -type d -name ".pytest_cache" -exec rm -r {} + 2>/dev/null || true
-	@find . -type d -name ".ruff_cache" -exec rm -r {} + 2>/dev/null || true
-
-install: ## Installiere Dependencies
-	@echo "📦 Installiere Dependencies..."
-	@pip install -r requirements.txt
-
-docs-index: ## Generiere Dokumentationsindex
-	@echo "📚 Generiere Dokumentationsindex..."
-	@python src_orbis/scripts/generate_docs_index.py
-
-pre-commit: ## Installiere Pre-commit Hooks
-	@echo "🪝 Installiere Pre-commit Hooks..."
-	@pre-commit install
-
-session-manager: ## Starte Session Manager
-	@echo "🚀 Starte Session Manager..."
-	@streamlit run src_orbis/helper_apps/session_manager/session_manager.py --server.port=8507
-
-all-checks: validate-structure lint test ## Führe alle Checks aus
-	@echo "✅ Alle Checks erfolgreich!"
-
-# Branch-spezifische Test-Ausführung
-test-by-branch: ## Führe Tests basierend auf Branch aus
-	@echo "🌿 Führe branch-spezifische Tests aus..."
-	@python run_tests_by_branch.py
+render-template:
+	@if [ -z "$(TOPIC)" ]; then echo "Usage: make render-template TOPIC=<mqtt/topic>"; exit 1; fi
+	$(PY) tools/render_template.py --topic "$(TOPIC)"

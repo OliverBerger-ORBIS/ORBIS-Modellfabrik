@@ -1,0 +1,51 @@
+metadata:
+  category: MODULE
+  sub_category: Order
+  description: HBW Module Order Templates
+  icon: 📋
+  version: 1.0.0
+  last_updated: '2025-01-15'
+
+templates:
+  module.order.hbw:
+    category: MODULE
+    sub_category: Order
+    description: HBW Module SVR3QA0022 Order Commands
+    direction: outbound
+    structure:
+      orderId: "<string>"
+      actionId: "<string>"
+      command: "<string>"
+      type: "<string>"
+      metadata: "<object>"
+      timestamp: "<datetime>"
+    examples:
+      - orderId: "12345"
+        actionId: "2ecc8911-1ce4-44d4-bc1a-d9574ef62464"
+        command: "PICK"
+        type: "RED"
+        metadata:
+          loadPosition: "A1"
+          workpieceId: "040a8dca341291"
+        timestamp: "2024-01-15T10:30:00Z"
+      - orderId: "12345"
+        actionId: "2ecc8911-1ce4-44d4-bc1a-d9574ef62465"
+        command: "STORE"
+        type: "RED"
+        metadata:
+          loadPosition: "A2"
+          workpieceId: "040a8dca341291"
+        timestamp: "2024-01-15T10:31:00Z"
+      - orderId: "12345"
+        actionId: "2ecc8911-1ce4-44d4-bc1a-d9574ef62466"
+        command: "DROP"
+        type: "RED"
+        metadata:
+          loadPosition: "A1"
+          result: "040a8dca341291"
+        timestamp: "2024-01-15T10:32:00Z"
+    validation:
+      required_fields: ["orderId", "actionId", "command"]
+      command_values: ["PICK", "STORE", "DROP"]
+      type_values: ["RED", "WHITE", "BLUE"]
+    friendly_name: "HBW : order"

@@ -1,0 +1,64 @@
+module_types: ["Processing","Quality-Control","Storage","Input/Output","Charging","Transport"]
+
+commands:
+  - "PICK"
+  - "DROP"
+  - "STORE"
+  - "MILL"
+  - "DRILL"
+  - "CHECK_QUALITY"
+  - "INPUT_RGB"
+  - "RGB_NFC"
+  - "NAVIGATE"
+  - "start_charging"
+  - "stop_charging"
+  - "get_status"
+
+availability_status: ["READY","BUSY","BLOCKED","ERROR","OFFLINE"]
+
+workpiece_types:
+  RED: "Rotes Werkstück"
+  WHITE: "Weißes Werkstück"
+  BLUE: "Blaues Werkstück"
+
+workpiece_states:
+  RAW: "Rohling"
+  IN_PROCESS: "In Bearbeitung"
+  WAITING_FOR_ORDER: "Wartet auf Auftrag"
+  COMPLETED: "Fertiggestellt"
+  FINISHED: "Abgeschlossen"
+  RESERVED: "Reserviert"
+
+order_types:
+  STORAGE: "Lagerung"
+  PRODUCTION: "Produktion"
+
+action_types:
+  NAVIGATION: "Navigation"
+  MANUFACTURE: "Bearbeitung"
+
+action_states:
+  IN_PROGRESS: "In Bearbeitung"
+  ENQUEUED: "In Warteschlange"
+  COMPLETED: "Fertiggestellt"
+  FINISHED: "Abgeschlossen"
+
+locations:
+  A1: "Position A1"
+  A2: "Position A2"
+  A3: "Position A3"
+  B1: "Position B1"
+  B2: "Position B2"
+  B3: "Position B3"
+  C1: "Position C1"
+  C2: "Position C2"
+  C3: "Position C3"
+
+module_sub_types:
+  HBW: "Hochregallager"
+  DRILL: "Bohrer"
+  MILL: "Fräse"
+  AIQS: "Qualitätsprüfung"
+  DPS: "Warenein- und Ausgang"
+  FTS: "Fahrerloses Transportsystem"
+  CHRG: "Ladestation"

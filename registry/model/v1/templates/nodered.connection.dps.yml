@@ -1,0 +1,54 @@
+metadata:
+  category: Node-RED
+  sub_category: Connection
+  description: Node-RED DPS Connection Templates
+  icon: 🔗
+  version: 1.0.0
+  last_updated: '2025-01-15'
+
+templates:
+  nodered.connection.dps:
+    category: Node-RED
+    sub_category: Connection
+    description: Node-RED DPS Connection Information
+    direction: inbound    structure:
+      connectionState: "<string>"
+      headerId: "<number>"
+      ip: "<string>"
+      manufacturer: "<string>"
+      serialNumber: "<string>"
+      timestamp: "<datetime>"
+      version: "<string>"
+    examples:
+      - connectionState: "ONLINE"
+        headerId: 2
+        ip: "-1"
+        manufacturer: "Fischertechnik"
+        serialNumber: "SVR4H73275"
+        timestamp: "2025-08-19T09:08:58.660990Z"
+        version: "1.6.0+gitc321c85"
+      - connectionState: "ONLINE"
+        headerId: 2
+        ip: "-1"
+        manufacturer: "Fischertechnik"
+        serialNumber: "SVR4H73275"
+        timestamp: "2025-08-20T07:12:55.735613Z"
+        version: "1.6.0+gitc321c85"
+      - connectionState: "ONLINE"
+        headerId: 2
+        ip: "-1"
+        manufacturer: "Fischertechnik"
+        serialNumber: "SVR4H73275"
+        timestamp: "2025-08-25T06:47:13.691731Z"
+        version: "1.6.0+gitc321c85"
+    validation:
+      required_fields: ["connectionState", "headerId", "ip", "manufacturer", "serialNumber", "timestamp", "version"]
+      connectionState_values: ["ONLINE"]
+      headerId_values: [2]
+      ip_values: ["-1"]
+      manufacturer_values: ["Fischertechnik"]
+      serialNumber_values: ["SVR4H73275"]
+      version_values: ["1.6.0+gitc321c85"]
+    match:
+      required_fields: ["connectionState", "headerId", "ip", "manufacturer", "serialNumber", "timestamp", "version"]
+    friendly_name: "NodeRed → DPS : connection"

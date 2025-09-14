@@ -1,0 +1,14 @@
+version: 1.0.0
+extends: "fts/order"
+module: FTS
+match:
+  required_fields: [orderId, actionId, command]
+  command_enum: ["NAVIGATE","PICK","DROP"]
+expect:
+  on_publish:
+    next_on: "${module_serial}/state"
+    sequence:
+      - { "$.orderId": "${orderId}", "$.status": "navigating" }
+      - { "$.status": "idle" }
+  timeout: "60s"
+  retry: 1

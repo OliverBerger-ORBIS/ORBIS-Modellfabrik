@@ -4,11 +4,13 @@ OMF Message Template Manager - Modulare Template-Verwaltung
 Version: 3.0.0
 """
 
-import os
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 import yaml
+
+# Import validators
+from src_orbis.omf.tools.validators import validate as run_validation
 
 
 class OmfMessageTemplateManager:
@@ -17,7 +19,19 @@ class OmfMessageTemplateManager:
     def __init__(self, templates_dir: str = None):
         """Initialisiert den OMF Message Template Manager"""
         if templates_dir is None:
-            templates_dir = os.path.join(os.path.dirname(__file__), "..", "config", "message_templates")
+            # Projekt-Root-relative Pfade verwenden
+            current_dir = Path(__file__).parent
+            project_root = current_dir.parent.parent.parent.parent
+
+            # Registry v1 (primary)
+            registry_templates = project_root / "registry" / "model" / "v1" / "templates"
+            if registry_templates.exists():
+                templates_dir = str(registry_templates)
+                print("✅ Using registry v1 message templates")
+            else:
+                # Fallback to legacy config (deprecated)
+                templates_dir = project_root / "src_orbis" / "omf" / "config" / "message_templates"
+                print("⚠️ Using deprecated message_templates - consider migrating to registry/model/v1/templates")
 
         self.templates_dir = Path(templates_dir)
         self.metadata = self._load_metadata()
@@ -179,7 +193,7 @@ class OmfMessageTemplateManager:
         return template.get("file_path") if template else None
 
     def validate_message(self, topic: str, message: Dict[str, Any]) -> Dict[str, Any]:
-        """Validiert eine Nachricht gegen das Template"""
+        """Validiert eine Nachricht gegen das Template (Legacy-Methode)"""
         template = self.get_topic_template(topic)
         if not template:
             return {"valid": False, "error": "Template nicht gefunden"}
@@ -204,6 +218,24 @@ class OmfMessageTemplateManager:
                     errors.append(f"Feld '{field}' muss Datetime-String sein")
 
         return {"valid": len(errors) == 0, "errors": errors, "template": template}
+
+    def validate_payload(self, key: str, payload: Dict[str, Any]) -> Dict[str, List[str]]:
+        """Kombiniert Template-Metadaten-Checks + Mini-Validierung"""
+        errs = []
+        t = self.get_topic_template(key) or {}
+
+        # 1) Einfache 'required_fields' aus dem Template (falls gepflegt)
+        req = (t.get("templates", {}).get(key, {}).get("match") or {}).get("required_fields") or []
+        for f in req:
+            if f not in payload:
+                errs.append(f"missing field: {f}")
+
+        # 2) Mini-Validator (regelseitig härter)
+        result = run_validation(key, payload)  # {"errors":[...], "warnings":[...]}
+        return {
+            "errors": errs + [e["msg"] for e in result["errors"]],
+            "warnings": [w["msg"] for w in result["warnings"]],
+        }
 
 
 # Singleton instance

@@ -1,0 +1,17 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "type":"object",
+  "properties":{
+    "module_types":{"type":"array","items":{"type":"string"}},
+    "commands":{"type":"array","items":{"type":"string"}},
+    "availability_status":{"type":"array","items":{"type":"string"}},
+    "workpiece_types":{"type":"object"},
+    "workpiece_states":{"type":"object"},
+    "order_types":{"type":"object"},
+    "action_types":{"type":"object"},
+    "action_states":{"type":"object"},
+    "locations":{"type":"object"},
+    "module_sub_types":{"type":"object"}
+  },
+  "additionalProperties":false
+}

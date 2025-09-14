@@ -1,0 +1,14 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "title":"Topic Registry v1",
+  "type":"object",
+  "required":["version"],
+  "properties":{
+    "version":{"type":"string"},
+    "category":{"type":["string","null"]},
+    "notes":{"type":["string","null"]},
+    "module_sub_categories":{"type":["object","null"],"additionalProperties":{"type":"object","properties":{"description":{"type":"string"},"icon":{"type":"string"}},"additionalProperties":true}},
+    "topics":{"type":["array","null"],"items":{"type":"object","required":["topic","sub_category"],"properties":{"topic":{"type":"string"},"sub_category":{"type":"string"},"module":{"type":["string","null"]},"friendly_name":{"type":["string","null"]},"description":{"type":["string","null"]},"template":{"type":["string","null"]},"template_direction":{"enum":["inbound","outbound","bidirectional",null]},"payload_examples":{"type":["object","null"]},"update_patterns":{"type":["object","null"]},"inventory_management":{"type":["object","null"]},"order_types":{"type":["object","null"]},"error_handling":{"type":["object","null"]}},"additionalProperties":true}}
+  },
+  "additionalProperties":false
+}

@@ -1,0 +1,46 @@
+version: 1.0.0
+category: MODULE
+notes: "APS-Module mit Serial-ID (HBW, DRILL, MILL, AIQS, DPS, CHRG)"
+
+module_sub_categories:
+  Connection: { description: "Verbindungsstatus", icon: "🔗" }
+  State:      { description: "Betriebszustand", icon: "📊" }
+  Order:      { description: "Befehle/Aufträge", icon: "📋" }
+  Factsheet:  { description: "Konfiguration/Metadaten", icon: "📄" }
+
+topics:
+# HBW — SVR3QA0022
+- { topic: "module/v1/ff/SVR3QA0022/connection", sub_category: "Connection", module: "HBW", friendly_name: "HBW : connection", template: "module/connection", template_direction: bidirectional }
+- { topic: "module/v1/ff/SVR3QA0022/state",      sub_category: "State",      module: "HBW", friendly_name: "HBW : state",      template: "module/state.hbw_inventory", template_direction: inbound }
+- { topic: "module/v1/ff/SVR3QA0022/order",      sub_category: "Order",      module: "HBW", friendly_name: "HBW : order",      template: "module/order",      template_direction: outbound }
+- { topic: "module/v1/ff/SVR3QA0022/factsheet",  sub_category: "Factsheet",  module: "HBW", friendly_name: "HBW : factsheet",  template: "module/factsheet",  template_direction: inbound }
+
+# DRILL — SVR4H76449
+- { topic: "module/v1/ff/SVR4H76449/connection", sub_category: "Connection", module: "DRILL", friendly_name: "DRILL : connection", template: "module/connection", template_direction: bidirectional }
+- { topic: "module/v1/ff/SVR4H76449/state",      sub_category: "State",      module: "DRILL", friendly_name: "DRILL : state",      template: "module/state",      template_direction: bidirectional }
+- { topic: "module/v1/ff/SVR4H76449/order",      sub_category: "Order",      module: "DRILL", friendly_name: "DRILL : order",      template: "module/order",      template_direction: outbound }
+- { topic: "module/v1/ff/SVR4H76449/factsheet",  sub_category: "Factsheet",  module: "DRILL", friendly_name: "DRILL : factsheet",  template: "module/factsheet",  template_direction: inbound }
+
+# MILL — SVR3QA2098
+- { topic: "module/v1/ff/SVR3QA2098/connection", sub_category: "Connection", module: "MILL", friendly_name: "MILL : connection", template: "module/connection", template_direction: bidirectional }
+- { topic: "module/v1/ff/SVR3QA2098/state",      sub_category: "State",      module: "MILL", friendly_name: "MILL : state",      template: "module/state",      template_direction: bidirectional }
+- { topic: "module/v1/ff/SVR3QA2098/order",      sub_category: "Order",      module: "MILL", friendly_name: "MILL : order",      template: "module/order",      template_direction: outbound }
+- { topic: "module/v1/ff/SVR3QA2098/factsheet",  sub_category: "Factsheet",  module: "MILL", friendly_name: "MILL : factsheet",  template: "module/factsheet",  template_direction: inbound }
+
+# AIQS — SVR4H76530
+- { topic: "module/v1/ff/SVR4H76530/connection", sub_category: "Connection", module: "AIQS", friendly_name: "AIQS : connection", template: "module/connection", template_direction: bidirectional }
+- { topic: "module/v1/ff/SVR4H76530/state",      sub_category: "State",      module: "AIQS", friendly_name: "AIQS : state",      template: "module/state",      template_direction: bidirectional }
+- { topic: "module/v1/ff/SVR4H76530/order",      sub_category: "Order",      module: "AIQS", friendly_name: "AIQS : order",      template: "module/order",      template_direction: outbound }
+- { topic: "module/v1/ff/SVR4H76530/factsheet",  sub_category: "Factsheet",  module: "AIQS", friendly_name: "AIQS : factsheet",  template: "module/factsheet",  template_direction: inbound }
+
+# DPS — SVR4H73275
+- { topic: "module/v1/ff/SVR4H73275/connection", sub_category: "Connection", module: "DPS", friendly_name: "DPS : connection", template: "module/connection", template_direction: bidirectional }
+- { topic: "module/v1/ff/SVR4H73275/state",      sub_category: "State",      module: "DPS", friendly_name: "DPS : state",      template: "module/state",      template_direction: bidirectional }
+- { topic: "module/v1/ff/SVR4H73275/order",      sub_category: "Order",      module: "DPS", friendly_name: "DPS : order",      template: "module/order",      template_direction: outbound }
+- { topic: "module/v1/ff/SVR4H73275/factsheet",  sub_category: "Factsheet",  module: "DPS", friendly_name: "DPS : factsheet",  template: "module/factsheet",  template_direction: inbound }
+
+# CHRG — CHRG0
+- { topic: "module/v1/ff/CHRG0/connection", sub_category: "Connection", module: "CHRG", friendly_name: "CHRG : connection", template: "module/connection", template_direction: bidirectional }
+- { topic: "module/v1/ff/CHRG0/state",      sub_category: "State",      module: "CHRG", friendly_name: "CHRG : state",      template: "module/state",      template_direction: bidirectional }
+- { topic: "module/v1/ff/CHRG0/order",      sub_category: "Order",      module: "CHRG", friendly_name: "CHRG : order",      template: "module/order",      template_direction: outbound }
+- { topic: "module/v1/ff/CHRG0/factsheet",  sub_category: "Factsheet",  module: "CHRG", friendly_name: "CHRG : factsheet",  template: "module/factsheet",  template_direction: inbound }

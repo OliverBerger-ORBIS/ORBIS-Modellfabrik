@@ -1,0 +1,21 @@
+version: 1.0.0
+category: TXT
+notes: "TXT 4.0 Controller"
+topics:
+  - { topic: "/j1/txt/1/f/i/stock",    sub_category: "Function Input",  friendly_name: "TXT : f : i : stock",   template: "txt/stock_input",    template_direction: inbound }
+  - { topic: "/j1/txt/1/f/o/order",    sub_category: "Function Output", friendly_name: "TXT : f : o : order" }
+  - { topic: "/j1/txt/1/f/i/order",    sub_category: "Function Input",  friendly_name: "TXT : f : i : order",   template: "txt/order_input",    template_direction: inbound }
+  - { topic: "/j1/txt/1/f/o/stock",    sub_category: "Function Output", friendly_name: "TXT : f : o : stock" }
+  - { topic: "/j1/txt/1/f/i/status",   sub_category: "Function Input",  friendly_name: "TXT : f : i : status" }
+  - { topic: "/j1/txt/1/f/o/status",   sub_category: "Function Output", friendly_name: "TXT : f : o : status" }
+  - { topic: "/j1/txt/1/f/i/error",    sub_category: "Function Input",  friendly_name: "TXT : f : i : error" }
+  - { topic: "/j1/txt/1/f/o/error",    sub_category: "Function Output", friendly_name: "TXT : f : o : error" }
+  - { topic: "/j1/txt/1/f/i/config/hbw", sub_category: "Function Input", friendly_name: "TXT : f : i : config : hbw" }
+  - { topic: "/j1/txt/1/c/bme680",     sub_category: "Control",         friendly_name: "TXT : c : bme680",      template: "txt/sensor_control", template_direction: outbound }
+  - { topic: "/j1/txt/1/c/cam",        sub_category: "Control",         friendly_name: "TXT : c : cam",         template: "txt/sensor_control", template_direction: outbound }
+  - { topic: "/j1/txt/1/c/ldr",        sub_category: "Control",         friendly_name: "TXT : c : ldr",         template: "txt/sensor_control", template_direction: outbound }
+  - { topic: "/j1/txt/1/i/bme680",     sub_category: "Input",           friendly_name: "TXT : i : bme680" }
+  - { topic: "/j1/txt/1/i/broadcast",  sub_category: "Input",           friendly_name: "TXT : i : broadcast" }
+  - { topic: "/j1/txt/1/i/cam",        sub_category: "Input",           friendly_name: "TXT : i : cam" }
+  - { topic: "/j1/txt/1/i/ldr",        sub_category: "Input",           friendly_name: "TXT : i : ldr" }
+  - { topic: "/j1/txt/1/o/broadcast",  sub_category: "Output",          friendly_name: "TXT : o : broadcast" }

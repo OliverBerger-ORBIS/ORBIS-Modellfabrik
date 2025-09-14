@@ -1,0 +1,11 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "type":"object",
+  "required":["modules","transports"],
+  "properties":{
+    "metadata":{"type":"object","properties":{"source":{"type":"string"},"version":{"type":"string"},"last_updated":{"type":"string"},"author":{"type":"string"}},"additionalProperties":true},
+    "modules":{"type":"array","items":{"type":"object","required":["serial","name","sub_type","enabled","ip_addresses","commands"],"properties":{"serial":{"type":"string"},"id":{"type":"string"},"name":{"type":"string"},"sub_type":{"enum":["HBW","DRILL","MILL","AIQS","DPS","CHRG"]},"type":{"enum":["Processing","Quality-Control","Storage","Input/Output","Charging"]},"enabled":{"type":"boolean"},"icon":{"type":"string"},"ip_range":{"type":"string"},"ip_addresses":{"type":"array","items":{"type":"string","format":"ipv4"}},"commands":{"type":"array","items":{"type":"string"}}},"additionalProperties":true}},
+    "transports":{"type":"array","items":{"type":"object","required":["serial","sub_type","commands"],"properties":{"serial":{"type":"string"},"sub_type":{"enum":["FTS"]},"commands":{"type":"array","items":{"type":"string"}}}}}
+  },
+  "additionalProperties":false
+}

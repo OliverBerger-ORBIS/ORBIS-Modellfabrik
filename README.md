@@ -1,7 +1,112 @@
-# Agile-Production-Simulation-24V
+# ORBIS Modellfabrik - Agile Production Simulation 24V
 >If you have any questions, please contact fischertechnik-technik@fischer.de
 
-## Links
+## 🎯 Quick Start
+
+- **Neue Teammitglieder:** Starte mit [Strategy Vision](docs_orbis/01-strategy/vision.md) → [System Context](docs_orbis/02-architecture/system-context.md)
+- **Entwickler:** [Registry Model](docs_orbis/02-architecture/registry-model.md) → [How-Tos](docs_orbis/04-howto/)
+- **Architekten:** [Decision Records](docs_orbis/03-decision-records/) → [Architecture](docs_orbis/02-architecture/)
+
+## 📚 Documentation Structure
+
+### 01-Strategy
+- [Vision](docs_orbis/01-strategy/vision.md) - MQTT-first Leitidee & v1-Zielbild
+- [Goals](docs_orbis/01-strategy/goals.md) - Erfolgskriterien & Qualitätsmerkmale
+- [Scope](docs_orbis/01-strategy/scope.md) - v1 vs. v1.1/2.0 Ausblick
+
+### 02-Architecture
+- [System Context](docs_orbis/02-architecture/system-context.md) - Kontextdiagramm (CCU, Module, Node-RED, OMF)
+- [Message Flow](docs_orbis/02-architecture/message-flow.md) - End-to-End-Flows (Order→Module, State→Dashboard)
+- [Registry Model](docs_orbis/02-architecture/registry-model.md) - Registry-Prinzipien & Versionierung
+- [Naming Conventions](docs_orbis/02-architecture/naming-conventions.md) - Topics, Template-Keys, IDs
+
+### 03-Decision Records (ADRs)
+- [ADR-0001: Topic-free Templates](docs_orbis/03-decision-records/ADR-0001-registry-topic-free-templates.md)
+- [ADR-0002: Exact Overrides per Serial](docs_orbis/03-decision-records/ADR-0002-exact-overrides-per-serial.md)
+
+### 04-How-To
+- [Add a New Module](docs_orbis/04-howto/add-a-new-module.md) - Template → Mapping → Tests
+- [Define a New Topic](docs_orbis/04-howto/define-a-new-topic.md) - Pattern vs. Exact
+- [Build and Run](docs_orbis/04-howto/build-and-run.md) - OMF Dashboard & Session-Manager
+- [Validate and Release](docs_orbis/04-howto/validate-and-release.md) - Make-Targets & Versioning
+
+### 05-Reference
+- [Topics](docs_orbis/05-reference/topics.md) - Logische Topic-Gruppen
+- [Templates](docs_orbis/05-reference/templates.md) - Template-Index & Migration Mapping
+- [Enums](docs_orbis/05-reference/enums.md) - Zentrale Listen (Availability/Action/Workpiece)
+
+### 99-Glossary
+- [Glossary](docs_orbis/99-glossary.md) - Eindeutige Begrifflichkeiten & IDs
+
+## 🔗 Quick Links
+
+- **Registry:** `registry/model/v1/` - Single Source of Truth
+- **Source Code:** `src_orbis/` - Runtime & Tools
+- **Legacy Docs:** [Archive](docs_orbis/archive/) - Veraltete Dokumentation
+
+## 🚀 Getting Started
+
+1. **Verstehe das System:** [Vision](docs_orbis/01-strategy/vision.md) (5 Min)
+2. **Architektur verstehen:** [System Context](docs_orbis/02-architecture/system-context.md) (10 Min)
+3. **Registry-Prinzipien:** [Registry Model](docs_orbis/02-architecture/registry-model.md) (5 Min)
+4. **Praktisch arbeiten:** [How-Tos](docs_orbis/04-howto/) (je nach Aufgabe)
+
+---
+
+**"Code as Doc" - Registry ist die Quelle der Wahrheit, Docs erklären das Warum und Wie.**
+
+## 🎯 Entwicklungshinweise
+
+### **KRITISCHE REGELN:**
+- **NUR absolute Pfade:** `/Users/oliver/Projects/ORBIS-Modellfabrik/path/to/file`
+- **NUR absolute Imports:** `from src_orbis.omf.module import Class`
+- **KEINE relativen Pfade/Imports** ❌
+
+### **Cursor AI Konfiguration:**
+- `.cursorrules` - Projekt-spezifische Regeln
+- `.vscode/settings.json` - Cursor-spezifische Einstellungen
+- `pyproject.toml` - Python-spezifische Konfiguration
+
+## 📁 Project Structure
+
+### Original Fischertechnik Content
+- `data/` - Original data files
+- `PLC-programs/` - Original PLC programs  
+- `TXT4.0-programs/` - Original TXT4.0 programs
+- `Node-RED/` - Original Node-RED flows
+- `doc/` - Original documentation
+
+### Orbis Customizations
+- `docs_orbis/` - Orbis documentation and analysis
+- `src_orbis/` - Orbis source code
+  - `omf/` - OMF Dashboard (Hauptanwendung)
+  - `helper_apps/` - Helper-Anwendungen (unabhängig)
+    - `session_manager/` - Session Manager (Replay-Funktionalität)
+- `tests_orbis/` - Orbis tests
+- `registry/` - Registry & Schemas (Single Source of Truth)
+- `data/` - Unsere Daten (`mqtt-data/`, `omf-data/`)
+
+### System-Architektur
+- **OMF Dashboard**: Hauptanwendung für Fabrik-Steuerung
+- **Session Manager**: Unabhängige Helper-App für Session-Replay
+- **Keine direkte Kopplung**: Beide Systeme arbeiten unabhängig
+- **Replay-Funktionalität**: Session Manager spielt Sessions über lokalen MQTT-Broker ab
+
+### Struktur-Validierung
+```bash
+# Struktur validieren
+make validate-structure
+
+# Automatische Korrektur versuchen
+make fix-structure
+
+# Alle Checks ausführen
+make all-checks
+```
+
+Siehe [Developer Guide](docs_orbis/developer_guide) für detaillierte Entwicklungsregeln und Import-Standards.
+
+## External Links
 - [Product Page](https://www.fischertechnik.de/en/products/industry-and-universities/training-models/569289-agile-production-simulation-24v)
 - [Overview Page](https://www.fischertechnik.de/en/industry-and-universities/technical-documents/simulate/agile-production-simulation#overview)
 - [Quick Start Guide](https://www.fischertechnik.de/-/media/fischertechnik/rebrush/industrie-und-hochschulen/technische-dokumente/agile-production-simulation/en/quick-start-guide-agile-production-simulation_en.pdf)
@@ -31,19 +136,6 @@ For detailed documentation of the Node-RED flows, system architecture, and devel
 - **[Flows Overview](./docs_orbis/node-red/flows-overview.md)** - Detailed tab and module structure
 - **[State Machine](./docs_orbis/node-red/state-machine.md)** - VDA 5050 compliant state transitions
 
-## 📁 Project Structure
-
-### Original Fischertechnik Content
-- `data/` - Original data files
-- `PLC-programs/` - Original PLC programs  
-- `TXT4.0-programs/` - Original TXT4.0 programs
-- `Node-RED/` - Original Node-RED flows
-- `doc/` - Original documentation
-
-### Orbis Customizations
-- `docs_orbis/` - Orbis documentation and analysis
-- `src_orbis/` - Orbis source code
-- `tests_orbis/` - Orbis tests
 
 ### Raspberry PI Image / Central Control Unit (CCU)
 
@@ -69,42 +161,3 @@ TIAv18 is required to access the PLC programs.
 
 As soon as TIAv18 is installed, the project files can be loaded and edited.
 
-## Projekt-Struktur
-
-### Original Fischertechnik (unverändert)
-- `README.md` - Original upstream README
-- `RPI_Image.md` - Original upstream file
-- `OPC-UA.md` - Original upstream file
-- `PLC-programs/` - Original PLC programs
-- `TXT4.0-programs/` - Original TXT4.0 programs
-- `Node-RED/` - Original Node-RED flows
-- `doc/` - Original documentation
-
-### Orbis Customizations
-- `src_orbis/` - Unser Source Code
-  - `omf/` - OMF Dashboard (Hauptanwendung)
-  - `helper_apps/` - Helper-Anwendungen (unabhängig)
-    - `session_manager/` - Session Manager (Replay-Funktionalität)
-- `tests_orbis/` - Unsere Tests
-- `docs_orbis/` - Unsere Dokumentation
-- `data/` - Unsere Daten (`mqtt-data/`, `omf-data/`)
-
-### System-Architektur
-- **OMF Dashboard**: Hauptanwendung für Fabrik-Steuerung
-- **Session Manager**: Unabhängige Helper-App für Session-Replay
-- **Keine direkte Kopplung**: Beide Systeme arbeiten unabhängig
-- **Replay-Funktionalität**: Session Manager spielt Sessions über lokalen MQTT-Broker ab
-
-### Struktur-Validierung
-```bash
-# Struktur validieren
-make validate-structure
-
-# Automatische Korrektur versuchen
-make fix-structure
-
-# Alle Checks ausführen
-make all-checks
-```
-
-Siehe `docs_orbis/DEVELOPMENT_RULES.md` für detaillierte Entwicklungsregeln.

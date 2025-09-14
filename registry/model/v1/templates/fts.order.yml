@@ -1,0 +1,53 @@
+metadata:
+  category: FTS
+  sub_category: Order
+  description: FTS Order Templates
+  icon: 📋
+  version: 1.0.0
+  last_updated: '2025-01-15'
+
+templates:
+  fts.order:
+    category: FTS
+    sub_category: Order
+    description: FTS Navigation Commands
+    direction: outbound    structure:
+      action: "<object>"
+      orderId: "<string>"
+      orderUpdateId: "<number>"
+      serialNumber: "<string>"
+      timestamp: "<datetime>"
+    examples:
+      - action:
+          command: "findInitialDockPosition"
+          id: "12345678-1234-1234-1234-123456789abc"
+          metadata:
+            nodeId: "SVR4H73275"
+        orderId: "87654321-4321-4321-4321-cba987654321"
+        orderUpdateId: 1
+        serialNumber: "5iO4"
+        timestamp: "2025-08-28T12:00:00.000Z"
+      - action:
+          command: "startCharging"
+          id: "23456789-2345-2345-2345-234567890bcd"
+          metadata: {}
+        orderId: "98765432-5432-5432-5432-dcb098765432"
+        orderUpdateId: 2
+        serialNumber: "5iO4"
+        timestamp: "2025-08-28T12:01:00.000Z"
+      - action:
+          command: "DOCK"
+          id: "34567890-3456-3456-3456-345678901cde"
+          metadata:
+            nodeId: "SVR3QA0022"
+        orderId: "09876543-6543-6543-6543-edc098765432"
+        orderUpdateId: 0
+        serialNumber: "5iO4"
+        timestamp: "2025-08-28T12:02:00.000Z"
+    validation:
+      required_fields: ["action", "orderId", "orderUpdateId", "serialNumber", "timestamp"]
+      serialNumber_values: ["5iO4"]
+      command_values: ["findInitialDockPosition", "startCharging", "DOCK", "TURN", "PASS", "LIFT"]
+    match:
+      required_fields: ["action", "orderId", "orderUpdateId", "serialNumber", "timestamp"]
+    friendly_name: "FTS : order"

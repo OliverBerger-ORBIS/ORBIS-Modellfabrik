@@ -4,7 +4,9 @@ Session Manager - Streamlit Dashboard
 Verwaltung und Analyse von MQTT-Sessions für die ORBIS Modellfabrik
 """
 
+import argparse
 import logging
+import sys
 from pathlib import Path
 
 import streamlit as st
@@ -17,6 +19,7 @@ from src_orbis.helper_apps.session_manager.components.settings_manager import Se
 from src_orbis.helper_apps.session_manager.components.settings_ui import SettingsUI
 from src_orbis.helper_apps.session_manager.components.template_analysis import show_template_analysis
 from src_orbis.omf.dashboard.utils.ui_refresh import RerunController
+from src_orbis.omf.tools.registry_manager import get_registry
 
 # Page configuration
 st.set_page_config(page_title="Session Manager", page_icon="🎙️", layout="wide", initial_sidebar_state="expanded")
@@ -208,5 +211,21 @@ def main():
     st.sidebar.markdown("ORBIS Modellfabrik")
 
 
+def parse_args():
+    """Parse command line arguments"""
+    parser = argparse.ArgumentParser(description="Session Manager - MQTT Session Management")
+    parser.add_argument("--registry-watch", action="store_true", 
+                       help="Enable registry watch mode for live development")
+    parser.add_argument("--model-version", default="v1.0.0",
+                       help="Expected model version (default: v1.0.0)")
+    return parser.parse_args()
+
 if __name__ == "__main__":
+    args = parse_args()
+    
+    # Initialize registry with watch mode if requested
+    if args.registry_watch:
+        registry = get_registry(watch_mode=True)
+        print("🔄 Registry watch mode enabled - live reloading active")
+    
     main()

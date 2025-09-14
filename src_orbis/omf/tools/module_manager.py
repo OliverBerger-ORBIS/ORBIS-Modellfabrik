@@ -22,16 +22,37 @@ class OmfModuleManager:
         self.config_path = config_path or self._get_default_config_path()
         self.config = self.load_yaml_config()
 
+        # If no config found, try to use registry v1 as fallback
         if not self.config:
+            try:
+                from .registry_manager import get_registry
+                registry = get_registry()
+                modules_data = registry.modules()
+                if modules_data:
+                    self.config = modules_data
+                    print("✅ Using registry v1 modules as fallback")
+                    return
+            except Exception as e:
+                print(f"⚠️ Registry v1 fallback failed: {e}")
+            
             raise ValueError(f"Could not load module configuration from {self.config_path}")
 
     def _get_default_config_path(self) -> str:
         """Get default path to module configuration YAML file"""
-        # Get the directory of this file
+        # Projekt-Root-relative Pfade verwenden
         current_dir = Path(__file__).parent
-        # Navigate to config directory
-        config_dir = current_dir.parent / "config"
-        return str(config_dir / "module_config.yml")
+        project_root = current_dir.parent.parent.parent.parent
+
+        # Registry v1 (primary)
+        registry_path = project_root / "registry" / "model" / "v1" / "modules.yml"
+        if registry_path.exists():
+            print(f"✅ Using registry v1: {registry_path}")
+            return str(registry_path)
+
+        # Fallback to legacy config (deprecated)
+        legacy_path = project_root / "src_orbis" / "omf" / "config" / "module_config.yml"
+        print("⚠️ Using deprecated module_config.yml - consider migrating to registry/model/v1/modules.yml")
+        return str(legacy_path)
 
     def load_yaml_config(self) -> Optional[Dict[str, Any]]:
         """Load module configuration from YAML file"""
@@ -50,12 +71,32 @@ class OmfModuleManager:
         if not self.config:
             return None
 
-        # Check in modules first
-        if "modules" in self.config and module_id in self.config["modules"]:
+        # Registry v1 format (modules as array)
+        if "modules" in self.config and isinstance(self.config["modules"], list):
+            for module in self.config["modules"]:
+                if module.get("serial") == module_id or module.get("id") == module_id:
+                    return module
+
+        # Registry v1 format (transports as array)
+        if "transports" in self.config and isinstance(self.config["transports"], list):
+            for transport in self.config["transports"]:
+                if transport.get("serial") == module_id or transport.get("id") == module_id:
+                    return transport
+
+        # Legacy format (modules as dict)
+        if (
+            "modules" in self.config
+            and isinstance(self.config["modules"], dict)
+            and module_id in self.config["modules"]
+        ):
             return self.config["modules"][module_id]
 
-        # Check in transports
-        if "transports" in self.config and module_id in self.config["transports"]:
+        # Legacy format (transports as dict)
+        if (
+            "transports" in self.config
+            and isinstance(self.config["transports"], dict)
+            and module_id in self.config["transports"]
+        ):
             return self.config["transports"][module_id]
 
         return None
@@ -105,10 +146,29 @@ class OmfModuleManager:
     def get_all_modules(self) -> Dict[str, Dict[str, Any]]:
         """Get all modules"""
         modules = {}
-        if "modules" in self.config:
+
+        # Registry v1 format (modules as array)
+        if "modules" in self.config and isinstance(self.config["modules"], list):
+            for module in self.config["modules"]:
+                key = module.get("serial") or module.get("id")
+                if key:
+                    modules[key] = module
+
+        # Registry v1 format (transports as array)
+        if "transports" in self.config and isinstance(self.config["transports"], list):
+            for transport in self.config["transports"]:
+                key = transport.get("serial") or transport.get("id")
+                if key:
+                    modules[key] = transport
+
+        # Legacy format (modules as dict)
+        if "modules" in self.config and isinstance(self.config["modules"], dict):
             modules.update(self.config["modules"])
-        if "transports" in self.config:
+
+        # Legacy format (transports as dict)
+        if "transports" in self.config and isinstance(self.config["transports"], dict):
             modules.update(self.config["transports"])
+
         return modules
 
     def get_enabled_modules(self) -> Dict[str, Dict[str, Any]]:

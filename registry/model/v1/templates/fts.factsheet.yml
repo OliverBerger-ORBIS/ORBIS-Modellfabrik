@@ -1,0 +1,107 @@
+metadata:
+  category: FTS
+  sub_category: Factsheet
+  description: FTS Factsheet Templates
+  icon: 📄
+  version: 1.0.0
+  last_updated: '2025-01-15'
+
+templates:
+  fts.factsheet:
+    category: FTS
+    sub_category: Factsheet
+    description: FTS Factsheet Information
+    direction: inbound    structure:
+      serialNumber: "<string>"
+      model: "<string>"
+      manufacturer: "<string>"
+      version: "<string>"
+      firmware: "<string>"
+      hardware: "<string>"
+      capabilities: "<array>"
+      specifications: "<object>"
+      loadHandling: "<object>"
+      protocolFeatures: "<object>"
+      timestamp: "<datetime>"
+    examples:
+      - serialNumber: "5iO4"
+        model: "FTS-AGV-001"
+        manufacturer: "FTS Manufacturer"
+        version: "1.1.0+git250d287"
+        firmware: "1.0.5"
+        hardware: "v2.1"
+        capabilities:
+          - "navigation"
+          - "load_handling"
+          - "battery_management"
+        specifications:
+          maxSpeed: 1.5
+          maxLoad: 50
+          batteryCapacity: 100
+          dimensions:
+            length: 1200
+            width: 800
+            height: 400
+        loadHandling:
+          loadSets:
+            - setName: "Standard Load"
+              loadType: "PALLET"
+              loadDimensions:
+                length: 600
+                width: 400
+                height: 200
+        protocolFeatures:
+          agvActions:
+            - actionType: "DOCK"
+              actionScopes: "MODULE"
+            - actionType: "TURN"
+              actionScopes: "INTERSECTION"
+            - actionType: "PASS"
+              actionScopes: "INTERSECTION"
+        timestamp: "2025-08-19T09:16:19.395Z"
+      - serialNumber: "5iO4"
+        model: "FTS-AGV-002"
+        manufacturer: "FTS Manufacturer"
+        version: "1.2.0+git300a456"
+        firmware: "1.1.0"
+        hardware: "v2.2"
+        capabilities:
+          - "navigation"
+          - "load_handling"
+          - "battery_management"
+          - "advanced_sensors"
+        specifications:
+          maxSpeed: 2.0
+          maxLoad: 75
+          batteryCapacity: 120
+          dimensions:
+            length: 1400
+            width: 900
+            height: 450
+        loadHandling:
+          loadSets:
+            - setName: "Heavy Load"
+              loadType: "HEAVY_PALLET"
+              loadDimensions:
+                length: 800
+                width: 600
+                height: 300
+        protocolFeatures:
+          agvActions:
+            - actionType: "DOCK"
+              actionScopes: "MODULE"
+            - actionType: "TURN"
+              actionScopes: "INTERSECTION"
+            - actionType: "PASS"
+              actionScopes: "INTERSECTION"
+            - actionType: "LIFT"
+              actionScopes: "LOAD_POSITION"
+        timestamp: "2025-08-19T09:16:19.395Z"
+    validation:
+      required_fields: ["serialNumber", "model", "manufacturer", "version", "firmware", "hardware", "capabilities", "specifications", "loadHandling", "protocolFeatures", "timestamp"]
+      serialNumber_values: ["5iO4"]
+      loadType_values: ["PALLET", "HEAVY_PALLET"]
+      actionType_values: ["DOCK", "TURN", "PASS", "LIFT"]
+    match:
+      required_fields: ["serialNumber", "model", "manufacturer", "version", "firmware", "hardware", "capabilities", "specifications", "loadHandling", "protocolFeatures", "timestamp"]
+    friendly_name: "FTS : factsheet"

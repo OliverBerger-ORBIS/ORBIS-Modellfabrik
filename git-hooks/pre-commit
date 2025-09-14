@@ -1,0 +1,13 @@
+#!/bin/sh
+set -e
+if [ -f "registry/model/v1/mapping.yml" ]; then
+  echo "[pre-commit] validate mapping..."
+  python3 tools/validate_mapping.py
+  echo "[pre-commit] check mapping collisions..."
+  python3 tools/check_mapping_collisions.py
+fi
+if [ -d "registry/model/v1/templates" ]; then
+  echo "[pre-commit] check templates don't include topics..."
+  python3 tools/check_templates_no_topics.py
+fi
+echo "[pre-commit] OK"

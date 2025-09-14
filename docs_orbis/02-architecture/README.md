@@ -16,7 +16,16 @@ Die Dokumente beschreiben den Systemkontext, die Message Flows, das Registry-Mod
 - [System Context](system-context.md) – Überblick über Hauptkomponenten (CCU, Module, Node-RED, OMF)
 - [Message Flow](message-flow.md) – End-to-End-Flows (Order → Module, State → Dashboard)
 - [Registry Model](registry-model.md) – Registry-Prinzipien & Versionierung
+- [Message Template System](message-template-system.md) – Template-Manager, Validierung, Topic-Resolution
 - [Naming Conventions](naming-conventions.md) – Topics, Template-Keys, IDs
+- [OMF Dashboard Architecture](omf-dashboard-architecture.md) – Dashboard-Architektur, MQTT-Patterns, Komponenten-Struktur
+
+### Architektur-Pattern
+- [Singleton Pattern Compliance](singleton-pattern-compliance.md) – MQTT-Singleton Pattern Richtlinien
+- [Per-Topic-Buffer Pattern](per-topic-buffer-pattern.md) – Effiziente MQTT-Nachrichtenverarbeitung
+
+### Implementierungs-Details
+- [Module State Manager](implementation/module-state-manager.md) – Modul-Status-Management Implementierung
 
 ---
 
@@ -28,22 +37,23 @@ Die Dokumente beschreiben den Systemkontext, die Message Flows, das Registry-Mod
 
 ## 📊 Top-Level Architekturdiagramm
 
+
 ```mermaid
 flowchart TD
   subgraph APS [APS Modellfabrik]
     CCU[APS CCU]
-    MOD[Module: DRILL/MILL/AIQS/DPS/HBW/CHRG]
-    FTS[FTS – Transport]
+    MOD["Module: DRILL/MILL/AIQS/DPS/HBW/CHRG"]
+    FTS["FTS - Transport"]
   end
 
   subgraph NodeRED [Node-RED Gateway]
-    NR[MQTT ↔ OPC-UA]
+    NR["MQTT <-> OPC-UA"]
   end
 
   subgraph OMF [OMF Umgebung]
-    DASH[OMF Dashboard]
-    REG[Registry (Schemas, Templates, Enums)]
-    SM[Session Manager]
+    DASH["OMF Dashboard"]
+    REG["Registry (Schemas, Templates, Enums)"]
+    SM["Session Manager"]
   end
 
   CCU <--> MOD

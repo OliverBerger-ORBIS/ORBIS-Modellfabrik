@@ -1,143 +1,70 @@
-# Orbis Modellfabrik - Documentation
+# OMF Documentation Hub
 
-This directory contains comprehensive documentation for the Orbis Modellfabrik system, based on the Fischertechnik Agile Production Simulation 24V.
+**Orbis Modellfabrik - "Code as Doc" Documentation**
 
-## 📁 Folder Structure
+## 🎯 Quick Start
 
-### Original Fischertechnik Content
-- `data/` - Original data files
-- `PLC-programs/` - Original PLC programs
-- `TXT4.0-programs/` - Original TXT4.0 programs
-- `Node-RED/` - Original Node-RED flows
-- `doc/` - Original documentation
-
-### Orbis Customizations
-- `docs_orbis/` - Orbis documentation (this folder)
-- `src_orbis/` - Orbis source code
-- `tests_orbis/` - Orbis tests
+- **Neue Teammitglieder:** Starte mit [Strategy Vision](01-strategy/vision.md) → [System Context](02-architecture/system-context.md)
+- **Entwickler:** [Registry Model](02-architecture/registry-model.md) → [How-Tos](04-howto/)
+- **Architekten:** [Decision Records](03-decision-records/) → [Architecture](02-architecture/)
 
 ## 📚 Documentation Structure
 
-### [Project Overview](./PROJECT_OVERVIEW.md)
-- **System Overview** - Complete project analysis and architecture
-- **Core Technology** - MQTT-based communication system
-- **Orbis Components** - Central configuration managers and dashboard
-- **Current Status** - Modern YAML-based architecture
+### 01-Strategy
+- [Vision](01-strategy/vision.md) - MQTT-first Leitidee & v1-Zielbild
+- [Goals](01-strategy/goals.md) - Erfolgskriterien & Qualitätsmerkmale
+- [Scope](01-strategy/scope.md) - v1 vs. v1.1/2.0 Ausblick
 
-### [Development Rules](./DEVELOPMENT_RULES.md)
-- **Import Standards** - Absolute imports only
-- **Code Quality** - Black, Ruff, Pre-commit hooks
-- **Test Standards** - Branch-specific test execution
-- **Architecture** - Separation of concerns
+### 02-Architecture
+- [System Context](02-architecture/system-context.md) - Kontextdiagramm (CCU, Module, Node-RED, OMF)
+- [Message Flow](02-architecture/message-flow.md) - End-to-End-Flows (Order→Module, State→Dashboard)
+- [Registry Model](02-architecture/registry-model.md) - Registry-Prinzipien & Versionierung
+- [Naming Conventions](02-architecture/naming-conventions.md) - Topics, Template-Keys, IDs
 
-### [Node-RED Documentation](./node-red/)
-- **System Architecture** - Overall system design and components
-- **Flows Overview** - Tab structure and module organization
-- **Subflows** - Reusable components and their functions
-- **State Machine** - VDA 5050 compliant state transitions
-- **Communication** - MQTT and OPC-UA protocols
-- **Troubleshooting** - Common issues and solutions
-- **Development** - Guidelines for customization
+### 03-Decision Records (ADRs)
+- [ADR-0001: Topic-free Templates](03-decision-records/ADR-0001-registry-topic-free-templates.md)
+- [ADR-0002: Exact Overrides per Serial](03-decision-records/ADR-0002-exact-overrides-per-serial.md)
 
-### [MQTT Documentation](./guides/communication/)
-- **[MQTT Integration Guide](./guides/communication/MQTT_INTEGRATION_GUIDE.md)** - Complete MQTT setup and usage
-- **MQTT Control Summary** - Module control and commands
-- **State Machine Notes** - FTS and module state management
-- **Setup Guides** - Remote control and traffic logging
+### 04-How-To
+- [Add a New Module](04-howto/add-a-new-module.md) - Template → Mapping → Tests
+- [Define a New Topic](04-howto/define-a-new-topic.md) - Pattern vs. Exact
+- [Build and Run](04-howto/build-and-run.md) - OMF Dashboard & Session-Manager
+- [Validate and Release](04-howto/validate-and-release.md) - Make-Targets & Versioning
 
-### [Configuration Guides](./guides/configuration/)
-- **[NFC Code Configuration](./guides/configuration/nfc-code-configuration-guide.md)** - Central NFC code management
-- **[Module Configuration](./guides/configuration/module-configuration-guide.md)** - APS module configuration
-- **[Topic Configuration](./guides/configuration/topic-configuration-guide.md)** - MQTT topic mappings
+#### Communication
+- [MQTT Integration](04-howto/communication/mqtt/dashboard-mqtt-integration.md) - Dashboard MQTT-Integration
+- [MQTT Replay Pattern](04-howto/communication/mqtt-replay-pattern.md) - Replay-Workflow-Dokumentation
 
-### [Prerequisites](./prerequisites.md)
-- **System Requirements** - All necessary prerequisites
-- **Installation Guide** - Step-by-step installation
-- **Troubleshooting** - Common issues and solutions
-- **Quick Start** - Get up and running fast
+#### Configuration
+- [Module Configuration](04-howto/configuration/module-configuration-guide.md) - Modul-Konfiguration und Icons
+- [NFC Code Configuration](04-howto/configuration/nfc-code-configuration-guide.md) - NFC-Code-Konfiguration
+- [Topic Configuration](04-howto/configuration/topic-configuration-guide.md) - Topic-Konfiguration und Priority-Filter
 
-### [Credentials & Access](./credentials.md)
-- **Default Login Credentials** - Access information for all components
-- **Network Configuration** - IP addresses and connectivity
-- **Security Guidelines** - Best practices for production use
-- **Troubleshooting Access** - Solutions for authentication issues
+#### Troubleshooting
+- [Black/Ruff Loop Problem](04-howto/troubleshooting/BLACK_RUFF_LOOP_PROBLEM.md) - Code-Formatierung-Probleme
+- [Critical Bug Fix](04-howto/troubleshooting/critical-bug-fix-module-id-mapping.md) - Modul-ID-Mapping-Fix
 
-### [Analysis Documentation](./analysis/)
-- **Session Analysis** - MQTT session analysis results
-- **Workflow Analysis** - Comprehensive workflow documentation
-- **PDF Analysis** - Documentation analysis results
+### 05-Reference
+- [Topics](05-reference/topics.md) - Logische Topic-Gruppen
+- [Templates](05-reference/templates.md) - Template-Index & Migration Mapping
+- [Enums](05-reference/enums.md) - Zentrale Listen (Availability/Action/Workpiece)
 
-### [Troubleshooting](./guides/troubleshooting/)
-- **Common Issues** - Black/Ruff problems, Import errors
-- **Bug Fixes** - Critical fixes and solutions
-- **Performance** - Optimization guides
+### 99-Glossary
+- [Glossary](99-glossary.md) - Eindeutige Begrifflichkeiten & IDs
 
-### [Releases](./releases/)
-- **Changelog** - Complete version history
-- **Release Notes** - Detailed release information
-- **Migration Guides** - Upgrade instructions
+## 🔗 Quick Links
 
-## 🚀 Quick Start
+- **Registry:** `registry/model/v1/` - Single Source of Truth
+- **Source Code:** `src_orbis/` - Runtime & Tools
+- **Legacy Docs:** [Archive](archive/) - Veraltete Dokumentation
 
-1. **System Overview**: Start with [Project Overview](./PROJECT_OVERVIEW.md)
-2. **Development Rules**: Review [Development Rules](./DEVELOPMENT_RULES.md)
-3. **Configuration**: Set up [NFC Codes](./guides/configuration/nfc-code-configuration-guide.md) and [Modules](./guides/configuration/module-configuration-guide.md)
-4. **MQTT Setup**: Follow [MQTT Integration Guide](./guides/communication/MQTT_INTEGRATION_GUIDE.md)
-5. **Dashboard**: Launch the modern Streamlit dashboard
+## 🚀 Getting Started
 
-## 📚 Dokumentationsindex
+1. **Verstehe das System:** [Vision](01-strategy/vision.md) (5 Min)
+2. **Architektur verstehen:** [System Context](02-architecture/system-context.md) (10 Min)
+3. **Registry-Prinzipien:** [Registry Model](02-architecture/registry-model.md) (5 Min)
+4. **Praktisch arbeiten:** [How-Tos](04-howto/) (je nach Aufgabe)
 
-**Interaktive Suche:** [INDEX.html](./INDEX.html) - Volltext-Suche durch alle 55 Dokumente
-**JSON-Index:** [INDEX.json](./INDEX.json) - Maschinenlesbarer Index für Tools
+---
 
-> **Hinweis:** Beide Index-Dateien sind jetzt implementiert und funktionsfähig!
-
-## 🔧 System Components
-
-### Modern Architecture (Januar 2025)
-- **Central Configuration Managers** - YAML-based configuration for all components
-- **MQTT Client System** - OMFMqttClient mit Singleton-Pattern
-- **Modern Dashboard** - Streamlit-based interface mit funktionierenden Commands
-- **Dashboard Refactoring** - Modulare Architektur (Dashboard2) in Testphase
-- **Session Analysis Tools** - Template analyzers für CCU, TXT, Module, Node-RED
-
-### Source Code Architecture
-- **Active Sources** (`src_orbis/omf/dashboard/`) - Produktiv-Dashboard mit UI-Komponenten und Business Logic
-- **Helper Apps** (`src_orbis/helper_apps/`, `src_orbis/analysis_tools/`) - Separate Anwendungen für Tests, Analyse und Experimente
-- **Trennung-Prinzip** - Stabile Produktiv-Features vs. experimentelle Helper-Apps
-
-### Production Modules
-- **25 Production Modules** (MILL, DRILL, OVEN, AIQS, HBW, FTS, CHRG)
-- **Central Control Unit** (Raspberry Pi with Node-RED)
-- **PLC Network** (Siemens S7-1200)
-- **TXT4.0 Controllers** (Fischertechnik)
-- **OPC-UA Communication** (Industrial IoT)
-
-## 🎯 Key Features
-
-### Central Configuration
-- **NFC Code Manager** - Central YAML configuration for all NFC codes
-- **Module Manager** - APS module configuration (ID, Name, Type, IP-Range)
-- **Topic Manager** - MQTT topic mappings and friendly names
-- **MQTT Client Manager** - OMFMqttClient mit Singleton-Pattern für zuverlässige Verbindungen
-
-### MQTT Broker Connection Modes
-- **Live Mode** - Direkte Verbindung zum APS-MQTT-Broker (192.168.0.100:1883)
-- **Replay Mode** - Verbindung zum lokalen Replay-Broker (localhost:1884) für Session-Tests
-- **Mock Mode** - Simulierte Verbindung für Entwicklung ohne echte Hardware
-- **Replay Station** - Separate Anwendung zum Abspielen aufgezeichneter Sessions (siehe [Replay Station Konzept](./helper_apps/omf-replay-station-concept.md))
-
-### Dashboard Integration
-- **Factory Control** - All modules controlled via hardcoded working commands
-- **Factory Reset Integration** - Direct factory reset functionality
-- **Order Management** - ROT, WEISS, BLAU order processing
-- **Central Configuration** - All settings manageable via dashboard tabs
-- **Node-RED Integration** - Dedicated tab for Node-RED analysis
-
-### Session Analysis
-- **Template Analyzers** - Separate analysis tools for developers
-- **15 Sessions Analyzed** - Wareneingang (9), Auftrag (3), AI-not-ok (3)
-- **12,420 MQTT Messages** - Systematically analyzed and documented
-- **3 Workflow Types** - Fully understood and implemented as templates
-
-The system is now functional for basic factory control and ready for MessageGenerator integration in the next phase. 
+**"Code as Doc" - Registry ist die Quelle der Wahrheit, Docs erklären das Warum und Wie.**
