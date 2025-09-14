@@ -71,12 +71,7 @@ class SessionAnalyzer:
             session_path = Path(file_path)
             if not session_path.exists():
                 logger.error(f"Session-Datei nicht gefunden: {file_path}")
-                return {
-                    "session_id": "not_found",
-                    "start_time": datetime.now(),
-                    "end_time": datetime.now(),
-                    "messages": self._generate_mock_messages(),
-                }
+                return False
 
             messages = []
             start_time = None

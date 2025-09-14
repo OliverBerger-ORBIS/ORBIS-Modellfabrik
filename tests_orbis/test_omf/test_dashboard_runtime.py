@@ -50,19 +50,16 @@ class TestDashboardRuntime(unittest.TestCase):
             self.fail(f"❌ MQTT Client Komponente failed: {e}")
 
     def test_replay_station_component(self):
-        """Test: Replay Station Komponente kann geladen werden"""
+        """Test: Replay Station Komponente ist in Session Manager integriert"""
         try:
-            from src_orbis.helper_apps.replay_station.replay_station_dashboard import SessionPlayer
+            # Test dass Replay Station jetzt Teil des Session Managers ist
+            from src_orbis.helper_apps.session_manager.components.replay_station import show_replay_station
 
-            # Test SessionPlayer initialization
-            player = SessionPlayer()
-            self.assertIsNotNone(player, "SessionPlayer sollte initialisiert werden können")
+            # Test dass Funktion existiert
+            self.assertIsNotNone(show_replay_station, "show_replay_station sollte existieren")
+            self.assertTrue(callable(show_replay_station), "show_replay_station sollte callable sein")
 
-            # Test basic methods
-            self.assertIsInstance(player.messages, list, "messages sollte Liste sein")
-            self.assertIsInstance(player.is_playing, bool, "is_playing sollte Boolean sein")
-
-            print("✅ Replay Station Komponente: OK")
+            print("✅ Replay Station Komponente (Session Manager): OK")
 
         except Exception as e:
             self.fail(f"❌ Replay Station Komponente failed: {e}")
@@ -97,21 +94,22 @@ class TestDashboardRuntime(unittest.TestCase):
             self.fail(f"❌ Factory Steering Komponente failed: {e}")
 
     def test_session_validation(self):
-        """Test: Session-Validierung funktioniert"""
+        """Test: Session-Validierung funktioniert (Session Manager)"""
         try:
-            from src_orbis.helper_apps.replay_station.replay_station_dashboard import SessionPlayer
+            from src_orbis.helper_apps.session_manager.components.session_analyzer import SessionAnalyzer
 
-            player = SessionPlayer()
+            analyzer = SessionAnalyzer()
 
             # Test with empty session
-            result = player.load_sqlite_session("nonexistent.db")
+            result = analyzer.load_session_data("nonexistent.db")
             self.assertFalse(result, "Ungültige Session sollte False zurückgeben")
 
-            # Test with valid session structure
-            self.assertIsInstance(player.messages, list, "messages sollte Liste sein")
-            self.assertIsInstance(player.current_index, int, "current_index sollte Integer sein")
+            # Test with valid session structure (demo session)
+            result = analyzer.load_session_data("demo")
+            self.assertTrue(result, "Demo Session sollte True zurückgeben")
+            self.assertIsInstance(analyzer.session_data, dict, "session_data sollte Dictionary sein")
 
-            print("✅ Session-Validierung: OK")
+            print("✅ Session-Validierung (Session Manager): OK")
 
         except Exception as e:
             self.fail(f"❌ Session-Validierung failed: {e}")
