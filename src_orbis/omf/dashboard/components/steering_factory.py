@@ -8,6 +8,8 @@ from datetime import datetime, timezone
 
 import streamlit as st
 
+from src_orbis.omf.dashboard.utils.ui_refresh import request_refresh
+
 # MqttGateway für sauberes Publishing
 from src_orbis.omf.tools.mqtt_gateway import MqttGateway
 
@@ -357,12 +359,12 @@ def _show_navigation_commands_section(gateway: MqttGateway):
     with col1:
         if st.button("🚛 DPS-HBW", key="nav_dps_hbw", help="Von DPS zu HBW"):
             _prepare_navigation_message("DPS-HBW")
-            st.rerun()
+            request_refresh()
 
     with col2:
         if st.button("🏭 HBW-DPS", key="nav_hbw_dps", help="Von HBW zu DPS"):
             _prepare_navigation_message("HBW-DPS")
-            st.rerun()
+            request_refresh()
 
     # Produktions-Routen
     st.markdown("#### 🎨 Produktions-Routen")
@@ -371,17 +373,17 @@ def _show_navigation_commands_section(gateway: MqttGateway):
     with col1:
         if st.button("🔴 RED-Prod", key="nav_red_prod", help="Produktions-Route ROT"):
             _prepare_navigation_message("RED-Prod")
-            st.rerun()
+            request_refresh()
 
     with col2:
         if st.button("🔵 BLUE-Prod", key="nav_blue_prod", help="Produktions-Route BLAU"):
             _prepare_navigation_message("BLUE-Prod")
-            st.rerun()
+            request_refresh()
 
     with col3:
         if st.button("⚪ WHITE-Prod", key="nav_white_prod", help="Produktions-Route WEISS"):
             _prepare_navigation_message("WHITE-Prod")
-            st.rerun()
+            request_refresh()
 
     # Nachricht anzeigen und Send-Button für Navigation
     if "pending_message" in st.session_state and st.session_state["pending_message"]["type"] == "navigation":
@@ -401,7 +403,7 @@ def _show_navigation_commands_section(gateway: MqttGateway):
         with col2:
             if st.button("❌ Abbrechen", key="cancel_navigation"):
                 del st.session_state["pending_message"]
-                st.rerun()
+                request_refresh()
 
 
 # Hilfsfunktionen für Tests und Legacy-Support
@@ -537,7 +539,7 @@ def _send_pending_message():
             if result:
                 st.success(f"✅ Nachricht erfolgreich gesendet an {pending['topic']}!")
                 del st.session_state["pending_message"]
-                st.rerun()
+                request_refresh()
             else:
                 st.error("❌ Fehler beim Senden der Nachricht")
         else:
@@ -585,7 +587,7 @@ def _prepare_module_sequence(module_name: str, commands: list):
     }
 
     st.success(f"✅ {module_name} Sequenz vorbereitet ({len(commands)} Schritte)")
-    st.rerun()
+    request_refresh()
 
 
 def _show_module_sequence_display_inline(gateway: MqttGateway, module_name: str):
@@ -636,7 +638,7 @@ def _show_module_sequence_display_inline(gateway: MqttGateway, module_name: str)
     # Sequenz löschen Button
     if st.button("🗑️ Sequenz löschen", key=f"clear_sequence_{module}"):
         del st.session_state["module_sequence"]
-        st.rerun()
+        request_refresh()
 
 
 def _send_sequence_message(gateway: MqttGateway, message: dict, step: int, total_steps: int):
@@ -669,7 +671,7 @@ def _send_sequence_message(gateway: MqttGateway, message: dict, step: int, total
 
                     time.sleep(3)
                     del st.session_state["module_sequence"]
-                    st.rerun()
+                    request_refresh()
         else:
             st.error(f"❌ Fehler beim Senden von Schritt {step} ({message['command']})")
     except Exception as e:

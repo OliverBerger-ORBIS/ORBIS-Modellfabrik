@@ -319,6 +319,9 @@ class ModuleStateManager:
             return False
 
         try:
+            logger.info(f"Sende Command {step.command.value} an Modul {sequence.module_id}")
+            logger.info(f"Topic: module/v1/ff/{module.serial_number}/order")
+
             # Command über MQTT-Gateway senden
             success = self._gateway.send(
                 topic=f"module/v1/ff/{module.serial_number}/order",
@@ -351,7 +354,11 @@ class ModuleStateManager:
         self, module_id: str, sequence_name: str, commands: List[CommandType], order_id: str = None
     ) -> str:
         """Startet eine neue Modul-Sequenz"""
+        logger.info(f"Starte Sequenz für Modul {module_id}: {sequence_name}")
+        logger.info(f"Commands: {[cmd.value for cmd in commands]}")
+
         if module_id not in self._modules:
+            logger.error(f"Modul {module_id} nicht gefunden")
             raise ValueError(f"Modul {module_id} nicht gefunden")
 
         # Sequenz-ID generieren

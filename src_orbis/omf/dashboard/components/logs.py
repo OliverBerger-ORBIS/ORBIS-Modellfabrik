@@ -6,6 +6,7 @@ Zeigt Live-Logs direkt im Dashboard an.
 
 import streamlit as st
 
+from src_orbis.omf.dashboard.utils.ui_refresh import request_refresh
 from src_orbis.omf.tools.streamlit_log_buffer import render_logs_panel
 
 
@@ -19,6 +20,7 @@ def show_logs():
 
     if not log_buffer:
         st.warning("❌ Log-Buffer nicht verfügbar")
+        st.info("💡 **Hinweis:** Log-Buffer wird beim nächsten Dashboard-Start initialisiert")
         return
 
     # Refresh-Button
@@ -26,12 +28,12 @@ def show_logs():
 
     with col1:
         if st.button("🔄 Aktualisieren", key="refresh_logs"):
-            st.rerun()
+            request_refresh()
 
     with col2:
         if st.button("🗑️ Löschen", key="clear_logs"):
             log_buffer.clear()
-            st.rerun()
+            request_refresh()
 
     with col3:
         st.info("💡 Logs werden automatisch aktualisiert")

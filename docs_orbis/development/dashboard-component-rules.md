@@ -297,6 +297,42 @@ messages = self._mqtt_client.get_messages(topic, limit=10)
 buffer = self._mqtt_client.get_buffer(topic_filter, maxlen=10)
 ```
 
+## 🔄 UI-Refresh-Regeln
+
+### **R015: Zentraler UI-Refresh**
+
+**Problem:** `st.rerun()` in Komponenten führt zu MQTT-Subscription-Verlust
+
+**Lösung:** Zentraler Refresh-Mechanismus über `request_refresh()`
+
+#### **Verboten in Komponenten:**
+```python
+# ❌ FALSCH - führt zu Subscription-Verlust
+st.rerun()
+```
+
+#### **Erlaubt in Komponenten:**
+```python
+# ✅ RICHTIG - zentraler Refresh
+from src_orbis.omf.dashboard.utils.ui_refresh import request_refresh
+
+def show_my_component():
+    # ... Komponenten-Logik ...
+    if some_condition:
+        request_refresh()  # Löst zentralen Refresh aus
+```
+
+#### **Zentraler Refresh im Dashboard:**
+```python
+# In omf_dashboard.py
+from src_orbis.omf.dashboard.utils.ui_refresh import consume_refresh
+
+def main():
+    # ... Dashboard-Logik ...
+    if consume_refresh():
+        st.rerun()  # Nur hier erlaubt!
+```
+
 ## 📋 Checkliste für neue Komponenten
 
 ### **Vor der Implementierung:**
@@ -312,6 +348,7 @@ buffer = self._mqtt_client.get_buffer(topic_filter, maxlen=10)
 - [ ] Error-Handling implementieren
 - [ ] UI-Standards befolgen
 - [ ] Private Funktionen mit `_` Prefix
+- [ ] **UI-Refresh:** `request_refresh()` statt `st.rerun()` verwenden
 
 ### **Nach der Implementierung:**
 - [ ] Tests schreiben und ausführen

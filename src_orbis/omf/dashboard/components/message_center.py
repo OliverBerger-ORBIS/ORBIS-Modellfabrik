@@ -16,6 +16,7 @@ import streamlit as st
 
 # Import für Prioritäts-basierte Subscriptions
 from src_orbis.omf.dashboard.config.mc_priority import get_all_priority_filters
+from src_orbis.omf.dashboard.utils.ui_refresh import request_refresh
 
 # --- Konfiguration ---
 SITE = "ff"  # falls variabel: z. B. aus Settings nehmen
@@ -189,7 +190,7 @@ def show_message_center():
                 try:
                     current_mqtt_client.clear_history()
                     st.success("✅ Nachrichten-Historie gelöscht")
-                    st.rerun()
+                    request_refresh()
                 except Exception as e:
                     st.error(f"❌ Fehler beim Löschen der Historie: {e}")
             else:

@@ -5,13 +5,17 @@ UI-Komponente für Modul-Status-Management und automatische Sequenz-Ausführung.
 Integriert den ModuleStateManager in das OMF Dashboard.
 """
 
+import logging
 from datetime import datetime, timezone
 from typing import List
 
 import streamlit as st
 
+from src_orbis.omf.dashboard.utils.ui_refresh import request_refresh
 from src_orbis.omf.tools.module_state_manager import CommandType, ModuleState, get_module_state_manager
 from src_orbis.omf.tools.mqtt_gateway import MqttGateway
+
+logger = logging.getLogger("omf.dashboard.module_state_control")
 
 
 def show_module_state_control():
@@ -34,7 +38,9 @@ def show_module_state_control():
     # State Manager initialisieren (Singleton-Pattern)
     state_manager = get_module_state_manager()
     if not hasattr(state_manager, '_mqtt_client') or state_manager._mqtt_client is None:
+        logger.info("Initialisiere ModuleStateManager mit MQTT-Client und Gateway")
         state_manager.initialize(mqtt_client, gateway)
+        logger.info("ModuleStateManager erfolgreich initialisiert")
 
     # Untertabs für verschiedene Funktionen
     tab1, tab2, tab3, tab4 = st.tabs(
@@ -63,7 +69,7 @@ def _show_module_status_overview(state_manager):
     col1, col2 = st.columns([1, 4])
     with col1:
         if st.button("🔄 Aktualisieren", key="refresh_modules"):
-            st.rerun()
+            request_refresh()
 
     with col2:
         st.info("💡 Status wird automatisch über MQTT aktualisiert")
@@ -161,14 +167,14 @@ def _show_sequence_control(state_manager):
             st.info("Keine Commands ausgewählt")
 
     # Sequenz starten
-    if selected_commands and st.button("🚀 Sequenz starten", key="start_sequence"):
+    if selected_commands and st.button("🚀 Sequenz starten", key=f"start_sequence_{module_id}"):
         try:
             sequence_name = f"manual_{int(datetime.now().timestamp())}"
             sequence_id = state_manager.start_sequence(
                 module_id=module_id, sequence_name=sequence_name, commands=selected_commands
             )
             st.success(f"✅ Sequenz gestartet: {sequence_id}")
-            st.rerun()
+            request_refresh()
         except Exception as e:
             st.error(f"❌ Fehler beim Starten der Sequenz: {e}")
 
@@ -223,7 +229,7 @@ def _show_running_sequences(state_manager):
             with col3:
                 if st.button("⏹️ Stoppen", key=f"stop_{sequence_id}"):
                     state_manager.stop_sequence(sequence_id)
-                    st.rerun()
+                    request_refresh()
 
             # Fortschrittsbalken
             progress = (sequence.current_step / len(sequence.steps)) * 100

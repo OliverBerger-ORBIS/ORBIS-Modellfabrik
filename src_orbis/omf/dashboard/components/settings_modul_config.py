@@ -6,6 +6,7 @@ Exakte Kopie der show_module_config() Funktion aus settings.py
 import streamlit as st
 
 from src_orbis.omf.config.omf_config import config
+from src_orbis.omf.dashboard.utils.ui_refresh import request_refresh
 from src_orbis.omf.tools.module_manager import get_omf_module_manager
 
 # Add src_orbis to path for imports
@@ -92,7 +93,7 @@ def show_module_config():
         if st.button("🔄 Konfiguration neu laden"):
             if module_manager.reload_config():
                 st.success("✅ Konfiguration neu geladen!")
-                st.rerun()
+                request_refresh()
             else:
                 st.error("❌ Fehler beim Neuladen!")
 

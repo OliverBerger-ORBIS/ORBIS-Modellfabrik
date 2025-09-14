@@ -7,6 +7,8 @@ from datetime import datetime, timezone
 
 import streamlit as st
 
+from src_orbis.omf.dashboard.utils.ui_refresh import request_refresh
+
 # Template-Import hinzufügen
 # sys.path.append(os.path.join(os.path.dirname(__file__), "..", "assets"))  # Nicht mehr nötig nach pip install -e .
 try:
@@ -240,7 +242,7 @@ def _send_order_directly(color: str):
 
         if result:
             st.success(f"✅ Bestellung für {color} erfolgreich gesendet!")
-            st.rerun()  # Seite aktualisieren
+            request_refresh()  # Seite aktualisieren
         else:
             st.error("❌ Fehler beim Senden der Bestellung")
 

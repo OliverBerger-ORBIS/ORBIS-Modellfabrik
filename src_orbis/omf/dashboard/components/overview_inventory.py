@@ -152,7 +152,7 @@ def show_overview_inventory():
         st.warning("⚠️ Auto-Refresh ist deaktiviert (Performance-Grund)")
         # import time
         # time.sleep(refresh_interval)  # BLOCKIERT DAS UI!
-        # st.rerun()  # ENDLOS-SCHLEIFE!
+        # request_refresh()  # ENDLOS-SCHLEIFE!
 
     # NEUES PATTERN: Per-Topic-Buffer für Lagerbestand
     mqtt_client = st.session_state.get("mqtt_client")

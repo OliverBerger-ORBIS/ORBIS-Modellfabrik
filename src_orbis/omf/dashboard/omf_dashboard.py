@@ -1,12 +1,15 @@
+from __future__ import annotations
+
+import logging
 import os
 
 import streamlit as st
 
 from src_orbis.omf.config.config import LIVE_CFG, REPLAY_CFG
 from src_orbis.omf.dashboard.components.dummy_component import show_dummy_component
-from src_orbis.omf.tools.logging_config import init_logging_once
+from src_orbis.omf.tools.logging_config import configure_logging
 from src_orbis.omf.tools.omf_mqtt_factory import ensure_dashboard_client
-from src_orbis.omf.tools.streamlit_log_buffer import add_buffer_handler, create_log_buffer
+from src_orbis.omf.tools.streamlit_log_buffer import RingBufferHandler
 from src_orbis.omf.tools.structlog_config import configure_structlog
 
 """
@@ -43,7 +46,7 @@ load_component("production_order", "components.production_order", "Production Or
 load_component("settings", "components.settings", "Settings")
 load_component("steering", "components.steering", "Steering")
 load_component("module_state_control", "src_orbis.omf.dashboard.components.module_state_control", "Module Control")
-load_component("logs", "components.logs", "Logs")
+load_component("logs", "src_orbis.omf.dashboard.components.logs", "Logs")
 load_component("fts", "components.fts", "FTS")
 load_component("ccu", "components.ccu", "CCU")
 load_component("shopfloor", "components.shopfloor", "Shopfloor")
@@ -59,7 +62,7 @@ def _init_logging_once():
         return
 
     # Logging konfigurieren
-    root, listener = init_logging_once(st.session_state)
+    root, listener = configure_logging(level=20, console_pretty=True)
 
     # Structlog konfigurieren (optional)
     try:
@@ -69,8 +72,16 @@ def _init_logging_once():
 
     # Log-Buffer für Live-Logs im Dashboard
     if "log_buffer" not in st.session_state:
-        st.session_state.log_buffer = create_log_buffer(maxlen=1000)
-        add_buffer_handler(root, st.session_state.log_buffer, level=20)  # INFO
+        from collections import deque
+
+        # Ring-Buffer erstellen
+        buf = deque(maxlen=1000)
+        st.session_state.log_buffer = buf
+
+        # Ring-Buffer-Handler an Root-Logger anhängen
+        rb = RingBufferHandler(buf)
+        rb.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(name)s: %(message)s"))
+        root.addHandler(rb)
 
     st.session_state["_log_init"] = True
 
@@ -338,7 +349,7 @@ def get_module_logo(module_name):
 def display_tabs():
     """Zeigt die Dashboard-Tabs und deren Inhalte"""
     # Tabs
-    tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs(
+    tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10 = st.tabs(
         [
             "📊 Übersicht",
             "🏭 Fertigungsaufträge",
@@ -348,6 +359,8 @@ def display_tabs():
             "🚛 FTS",
             "🏢 CCU",
             "⚙️ Einstellungen",
+            "🔧 Modul-Steuerung",
+            "📋 Logs",
         ]
     )
 
@@ -375,6 +388,12 @@ def display_tabs():
 
     with tab8:
         components["settings"]()
+
+    with tab9:
+        components["module_state_control"]()
+
+    with tab10:
+        components["logs"]()
 
 
 # =============================================================================

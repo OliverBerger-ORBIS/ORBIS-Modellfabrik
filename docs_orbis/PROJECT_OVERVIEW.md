@@ -27,11 +27,26 @@ Verständnis der Funktionsweise der APS Fischertechnik Anwendung, um eine eigene
 - **Tool:** OMF Dashboard + DSP (Distributed Shopfloor Processing)
 - **Funktion:** Automatische Produktionssteuerung mit Timing-Management
 
-#### Nächste Schritte:
-1. **Timing-Management implementieren** ⏱️
-   - ModuleStateManager für automatische Sequenz-Ausführung
+#### ✅ Abgeschlossen:
+1. **ModuleStateManager implementiert** ⏱️
+   - Automatische Sequenz-Ausführung funktional
    - Status-Subscription für alle Module
-   - Automatisches PICK → PROCESS → DROP Timing
+   - PICK → PROCESS → DROP Timing automatisiert
+
+2. **Logging-System implementiert** 📋
+   - Thread-sicheres Logging mit JSON-Format
+   - Live-Logs im Dashboard verfügbar
+   - Strukturierte Logs für Analyse
+
+3. **Dashboard-Integration** 🎛️
+   - Modul-Steuerung Tab hinzugefügt
+   - Logs Tab für Live-Monitoring
+   - UI-Refresh-Mechanismus implementiert
+
+#### Nächste Schritte:
+1. **Logger-Integration** in alle Komponenten 📝
+2. **Command-Response-Testing** implementieren 🧪
+3. **Real-Factory-Validation** durchführen 🏭
 
 2. **OPC-UA Integration über DSP** 🔌
    - Direkte SPS-Kommunikation über DSP RPI

@@ -2,196 +2,169 @@
 
 ## 📋 Übersicht
 
-**Status:** ✅ **VOLLSTÄNDIG IMPLEMENTIERT** - Thread-sicheres Logging für Streamlit
-
-**Zweck:** Strukturierte, auswertbare Logs für OMF Dashboard mit Thread-Sicherheit für MQTT-Callbacks.
+**Zweck:** Thread-sicheres, strukturiertes Logging für OMF Dashboard  
+**Basiert auf:** Python `logging` + `structlog` + `rich` (optional)  
+**Thread-sicher:** Ja (Queue-basiert für MQTT-Callbacks)  
+**Streamlit-kompatibel:** Ja (einmalige Initialisierung, Rerun-fest)
 
 ## 🏗️ Architektur
 
-### **Kern-Komponenten:**
+### **1. Fundament: Python `logging`**
+- **Queue-basiert:** `QueueHandler` + `QueueListener` für Thread-Sicherheit
+- **File-Rotation:** `RotatingFileHandler` für JSON-Logs
+- **Console-Output:** `RichHandler` (Dev) oder `StreamHandler` (Prod)
 
-#### **1. logging_config.py - Zentrale Konfiguration**
-- **Thread-sicheres Logging:** Queue + QueueListener für MQTT-Callbacks
-- **JSON-Logs:** Strukturierte Logs für Analyse (ELK/Grafana)
-- **Rich-Konsole:** Schöne Console-Ausgabe für Entwicklung
-- **Streamlit-fest:** Einmalige Initialisierung pro Session
+### **2. Strukturierung: `structlog`**
+- **JSON-Format:** Maschinenlesbare Logs für Analyse
+- **Key-Value-Pairs:** Strukturierte Metadaten
+- **Kontext:** Automatische Zeitstempel und Log-Level
 
-#### **2. structlog_config.py - Strukturierte Logs**
-- **JSON-Renderer:** Maschinenlesbare Logs
-- **Kontext-Logging:** Strukturierte Metadaten
-- **Optional:** Fallback zu stdlib logging
-
-#### **3. streamlit_log_buffer.py - Live-Logs im Dashboard**
-- **Ring-Buffer:** Thread-sicherer Puffer für UI
-- **Live-Anzeige:** Logs direkt im Dashboard
-- **Filter:** Log-Level-Filterung
-
-#### **4. logs.py - Dashboard-Komponente**
-- **Live-Logs:** Echtzeit-Anzeige im Dashboard
-- **Statistiken:** Log-Level-Zählung
-- **Filter:** Debug/Info/Warning/Error-Filter
-
-## 🔧 Implementierte Features
-
-### **✅ Thread-sicheres Logging**
-```python
-# Queue-basiertes Logging für MQTT-Callbacks
-def on_message(client, userdata, msg):
-    logger.info("mqtt_rx", extra={
-        "topic": msg.topic,
-        "qos": int(msg.qos),
-        "size": len(msg.payload)
-    })
-```
-
-### **✅ Strukturierte Logs (JSON)**
-```python
-# Mit structlog
-struct_logger.info("module_state_change",
-    module_id="MILL",
-    old_state="IDLE",
-    new_state="PICKBUSY"
-)
-
-# Ergibt JSON:
-# {"ts": "2025-01-12T10:30:00Z", "level": "info", "logger": "omf.mqtt", 
-#  "msg": "module_state_change", "module_id": "MILL", "old_state": "IDLE", "new_state": "PICKBUSY"}
-```
-
-### **✅ Live-Logs im Dashboard**
-- **Logs-Tab:** Echtzeit-Anzeige aller Logs
-- **Filter:** Nach Log-Level filtern
-- **Statistiken:** Anzahl pro Level
-- **Auto-Refresh:** Automatische Aktualisierung
-
-### **✅ Log-Rotation**
-- **Datei-Größe:** 5MB pro Datei
-- **Backup-Count:** 3 Backup-Dateien
-- **Verzeichnis:** `data/logs/`
-
-## 🎯 Verwendung
-
-### **1. Standard-Logging**
-```python
-import logging
-
-logger = logging.getLogger("omf.component_name")
-
-# Einfache Logs
-logger.info("Component initialized")
-logger.error("Error occurred", extra={"error_code": "E001"})
-```
-
-### **2. Strukturierte Logs (structlog)**
-```python
-import structlog
-
-logger = structlog.get_logger("omf.component_name")
-
-# Strukturierte Logs
-logger.info("user_action", 
-    action="button_click", 
-    component="module_control",
-    module_id="MILL"
-)
-```
-
-### **3. MQTT-Callbacks (Thread-sicher)**
-```python
-def on_message(client, userdata, msg):
-    # Nur Metadaten loggen, keine sensiblen Payloads
-    logger.info("mqtt_rx", extra={
-        "topic": msg.topic,
-        "qos": int(msg.qos),
-        "size": len(msg.payload)
-    })
-```
-
-## 📊 Log-Formate
-
-### **Console-Logs (Rich)**
-```
-[10:30:00] INFO     omf.mqtt: mqtt_rx topic=module/v1/ff/SVR3QA2098/state qos=1 size=156
-[10:30:01] INFO     omf.module_state_manager: module_state_change module_id=MILL old_state=IDLE new_state=PICKBUSY
-```
-
-### **JSON-Logs (Datei)**
-```json
-{"app": "omf_dashboard", "level": "INFO", "logger": "omf.mqtt", "msg": "mqtt_rx", "topic": "module/v1/ff/SVR3QA2098/state", "qos": 1, "size": 156, "ts": "2025-01-12T10:30:00Z"}
-{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "module_state_change", "module_id": "MILL", "old_state": "IDLE", "new_state": "PICKBUSY", "ts": "2025-01-12T10:30:01Z"}
-```
+### **3. Live-UI: Ring-Buffer**
+- **Streamlit-Integration:** Live-Logs im Dashboard
+- **Thread-sicher:** `deque` mit fester Größe
+- **Performance:** Keine UI-Calls im Handler
 
 ## 🔧 Konfiguration
 
-### **Log-Level setzen**
+### **Zentrale Initialisierung**
+
 ```python
-# In logging_config.py
-root, listener = configure_logging(
-    level=logging.DEBUG,  # DEBUG=10, INFO=20, WARNING=30, ERROR=40
-    console_pretty=True,
-    log_dir="data/logs"
-)
+# In omf_dashboard.py
+def _init_logging_once():
+    """Initialisiert Logging einmal pro Streamlit-Session"""
+    if st.session_state.get("_log_init"):
+        return
+
+    # 1. Logging konfigurieren
+    root, listener = configure_logging(level=20, console_pretty=True)
+    st.session_state["_log_listener"] = listener
+
+    # 2. Structlog konfigurieren (optional)
+    try:
+        configure_structlog()
+    except Exception:
+        pass
+
+    # 3. Log-Buffer für Live-Logs im Dashboard
+    if "log_buffer" not in st.session_state:
+        from collections import deque
+        from src_orbis.omf.tools.streamlit_log_buffer import RingBufferHandler
+        
+        # Ring-Buffer erstellen
+        buf = deque(maxlen=1000)
+        st.session_state.log_buffer = buf
+        
+        # Ring-Buffer-Handler an Root-Logger anhängen
+        rb = RingBufferHandler(buf)
+        rb.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(name)s: %(message)s"))
+        root.addHandler(rb)
+
+    st.session_state["_log_init"] = True
 ```
 
-### **Rich-Konsole deaktivieren**
+### **Logging in Komponenten**
+
+#### **Standard Python Logging:**
 ```python
-# Für Produktion
-root, listener = configure_logging(
-    console_pretty=False  # Einfache Console-Ausgabe
-)
+import logging
+log = logging.getLogger("omf.mqtt")
+
+def _on_message(client, userdata, msg):
+    try:
+        log.info("mqtt_rx", extra={"topic": msg.topic, "qos": int(msg.qos), "size": len(msg.payload)})
+    except Exception:
+        pass
 ```
 
-## 🚨 Wichtige Regeln
+#### **Strukturiertes Logging (structlog):**
+```python
+import structlog
+log = structlog.get_logger("omf.mqtt")
 
-### **1. Thread-Sicherheit**
-- **MQTT-Callbacks:** Immer in separaten Threads
-- **Queue-Handler:** Verhindert Lockups
-- **Keine UI-Operationen:** In Callbacks niemals `st.rerun()`
-
-### **2. Datenschutz**
-- **Keine sensiblen Daten:** Payloads nicht loggen
-- **Nur Metadaten:** Topic, QoS, Größe, etc.
-- **IDs sind OK:** Module-IDs, Sequenz-IDs, etc.
-
-### **3. Performance**
-- **Kurze Logs:** In Callbacks nur essenzielle Infos
-- **Asynchrone Verarbeitung:** Queue verhindert Blocking
-- **Log-Rotation:** Verhindert zu große Dateien
+def _on_message(client, userdata, msg):
+    log.info("rx", topic=msg.topic, qos=int(msg.qos), size=len(msg.payload))
+```
 
 ## 📁 Dateien
 
-### **Implementierung:**
-- `src_orbis/omf/tools/logging_config.py` - Zentrale Konfiguration
-- `src_orbis/omf/tools/structlog_config.py` - Strukturierte Logs
-- `src_orbis/omf/tools/streamlit_log_buffer.py` - Live-Logs
-- `src_orbis/omf/tools/mqtt_logging_example.py` - Beispiele
+### **Konfiguration:**
+- **`src_orbis/omf/tools/logging_config.py`** - Zentrale Logging-Konfiguration
+- **`src_orbis/omf/tools/structlog_config.py`** - Structlog-Setup
+- **`src_orbis/omf/tools/streamlit_log_buffer.py`** - Ring-Buffer-Handler
 
 ### **Dashboard-Integration:**
-- `src_orbis/omf/dashboard/components/logs.py` - Logs-Komponente
-- `src_orbis/omf/dashboard/omf_dashboard.py` - Integration
+- **`src_orbis/omf/dashboard/omf_dashboard.py`** - `_init_logging_once()`
+- **`src_orbis/omf/dashboard/components/logs.py`** - Live-Logs-UI
 
-### **Dokumentation:**
-- `docs_orbis/development/logging-system.md` - Diese Datei
+## 🚨 Regeln
 
-## 🎯 Nächste Schritte
+### **R016: Logging-System-Initialisierung**
 
-### **Phase 1: Integration in bestehende Komponenten**
-- **ModuleStateManager:** Strukturierte Logs für Sequenz-Events
-- **MQTT-Client:** Callback-Logging implementieren
-- **Dashboard-Komponenten:** Logging in alle Komponenten
+**Problem:** Logging muss thread-sicher und Streamlit-kompatibel sein
 
-### **Phase 2: Erweiterte Features**
-- **Log-Analyse:** Dashboard-Tools für Log-Analyse
-- **Alerting:** Automatische Benachrichtigungen bei Errors
-- **Metrics:** Log-basierte Metriken
+**Lösung:** Queue-basiertes Logging mit einmaliger Initialisierung
 
-### **Phase 3: Produktions-Features**
-- **ELK-Integration:** Logs nach Elasticsearch
-- **Grafana-Dashboards:** Log-Visualisierung
-- **Alert-Management:** Automatische Alerts
+#### **Verboten:**
+```python
+# ❌ FALSCH - Doppelte Initialisierung
+def some_function():
+    configure_logging()  # Führt zu doppelten Handlern
+```
+
+#### **Erlaubt:**
+```python
+# ✅ RICHTIG - Einmalige Initialisierung
+def _init_logging_once():
+    if st.session_state.get("_log_init"):
+        return
+    # ... Logging konfigurieren ...
+    st.session_state["_log_init"] = True
+```
+
+#### **In MQTT-Callbacks:**
+```python
+# ✅ RICHTIG - Thread-sichere Logs
+def _on_message(client, userdata, msg):
+    log.info("message_received", topic=msg.topic, qos=msg.qos)
+    # KEINE UI-Operationen hier!
+```
+
+## 🔍 Debugging
+
+### **Log-Buffer nicht verfügbar:**
+1. **Prüfen:** `st.session_state.get("log_buffer")`
+2. **Ursache:** Logging nicht initialisiert
+3. **Lösung:** Dashboard neu starten
+
+### **Doppelte Handler:**
+1. **Symptom:** Logs erscheinen mehrfach
+2. **Ursache:** `configure_logging()` mehrfach aufgerufen
+3. **Lösung:** `_init_logging_once()` verwenden
+
+### **Thread-Probleme:**
+1. **Symptom:** Logs fehlen oder unvollständig
+2. **Ursache:** Direkte Handler statt Queue
+3. **Lösung:** `QueueHandler` + `QueueListener` verwenden
+
+## 📊 Log-Formate
+
+### **Console (Rich):**
+```
+[INFO] omf.mqtt: message_received topic=module/v1/ff/123/state qos=1
+```
+
+### **JSON-File:**
+```json
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.mqtt", "msg": "message_received", "topic": "module/v1/ff/123/state", "qos": 1, "ts": "2024-01-15T10:30:45.123Z"}
+```
+
+### **Live-UI:**
+```
+2024-01-15 10:30:45,123 [INFO] omf.mqtt: message_received
+```
 
 ---
 
-**Erstellt:** $(date)
-**Status:** ✅ **VOLLSTÄNDIG IMPLEMENTIERT**
-**Nächster Schritt:** Integration in bestehende Komponenten
+**Erstellt:** $(date)  
+**Status:** ✅ **AKTIV**  
+**Nächste Überprüfung:** Bei Logging-Problemen

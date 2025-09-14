@@ -49,6 +49,8 @@
 - **Per-topic subscription:** `subscribe_many()` und `get_buffer()` verwenden
 - **Error-Handling:** Try-catch für alle Gateway-Calls
 - **UI-Standards:** Icons, expandable sections, Spalten-Layout
+- **UI-Refresh:** Verwende `request_refresh()` statt `st.rerun()` in Komponenten
+- **Logging-System:** Verwende `_init_logging_once()` für Logging-Initialisierung
 
 ### Vollständige Regeln
 - **Allgemein:** `docs_orbis/DEVELOPMENT_RULES.md`

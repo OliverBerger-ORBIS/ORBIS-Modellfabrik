@@ -31,6 +31,10 @@ FORBIDDEN_TOPICS = {"#"}
 BROAD_PATTERNS = ("module/#", "fts/#", "/j1/txt/1/#", "ccu/#")  # sehr grob, reicht i.d.R.
 FACTORY_HINTS = ("omf_mqtt_factory", "mqtt_factory", "session_manager", "ensure_dashboard_client", "create_log_buffer")
 
+# UI-Refresh Regeln
+ALLOWED_REFRESH_FUNCTIONS = {"request_refresh"}  # Erlaubte Refresh-Funktionen
+FORBIDDEN_REFRESH_FUNCTIONS = {"st.rerun"}  # Verbotene Refresh-Funktionen
+
 ALLOWED_RENDER_PARAM_NAMES = {"client", "mqtt_client"}  # erzwingen wir optional
 
 
@@ -151,6 +155,17 @@ class Checker(ast.NodeVisitor):
         if callee.endswith(".message_callback_add") or callee.endswith(".message_callback_remove"):
             self.add("ERROR", "R008", node, f"{callee} darf in Komponenten nicht verwendet werden.")
 
+        # R015: UI-Refresh Regeln
+        if callee in FORBIDDEN_REFRESH_FUNCTIONS:
+            self.add("ERROR", "R015", node, f"{callee} ist verboten - verwende request_refresh() statt st.rerun()")
+        elif callee in ALLOWED_REFRESH_FUNCTIONS:
+            # request_refresh() ist erlaubt - keine Meldung
+            pass
+
+        # R016: Logging-System Regeln
+        if callee == "configure_logging" and not self._is_in_init_function():
+            self.add("ERROR", "R016", node, "configure_logging() nur in _init_logging_once() verwenden")
+
         self.generic_visit(node)
 
     def visit_Attribute(self, node: ast.Attribute):
@@ -158,6 +173,13 @@ class Checker(ast.NodeVisitor):
         if isinstance(node.value, ast.Name) and node.value.id == "st" and node.attr == "rerun":
             self.add("ERROR", "R007", node, "st.rerun() darf in Komponenten nicht verwendet werden.")
         self.generic_visit(node)
+
+    def _is_in_init_function(self) -> bool:
+        """Prüft ob wir in einer _init_logging_once Funktion sind"""
+        for fn in self.func_defs:
+            if fn.name == "_init_logging_once":
+                return True
+        return False
 
     def post_check_renderer_params(self):
         if not self.enforce_render_param:

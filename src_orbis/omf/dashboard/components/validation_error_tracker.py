@@ -9,6 +9,8 @@ from typing import Dict, List
 
 import streamlit as st
 
+from src_orbis.omf.dashboard.utils.ui_refresh import request_refresh
+
 
 class ValidationErrorTracker:
     """Verfolgt Template-Validierungsfehler über mehrere Messages hinweg"""
@@ -72,7 +74,7 @@ class ValidationErrorTracker:
 
             if st.button("🗑️ Fehler-Historie löschen", key=f"clear_{self.component_name}_errors"):
                 self.clear_errors()
-                st.rerun()
+                request_refresh()
         else:
             st.success("✅ **Keine Template-Validierungsfehler** in der Historie")
 
