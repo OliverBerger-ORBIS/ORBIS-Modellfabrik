@@ -1,0 +1,208 @@
+metadata:
+  version: "3.0.0"
+  description: "OMF NFC Code Mapping mit erweiterten Informationen"
+  last_updated: "2025-08-29"
+  author: "OMF Development Team"
+
+# NFC Code Mappings mit erweiterten Informationen
+# Nur die ersten 3 NFC-Codes pro Farbe haben Quality-Check "OK"
+nfc_codes:
+  # ROTE Werkstücke (R1-R8)
+  "040a8dca341291":
+    friendly_id: "R1"
+    color: "RED"
+    quality_check: "OK"
+    description: "Rotes Werkstück 1"
+    enabled: true
+    
+  "047f8cca341290":
+    friendly_id: "R2"
+    color: "RED"
+    quality_check: "OK"
+    description: "Rotes Werkstück 2"
+    enabled: true
+    
+  "04808dca341291":
+    friendly_id: "R3"
+    color: "RED"
+    quality_check: "OK"
+    description: "Rotes Werkstück 3"
+    enabled: true
+    
+  "04818dca341290":
+    friendly_id: "R4"
+    color: "RED"
+    quality_check: "NOT-OK"
+    description: "Rotes Werkstück 4"
+    enabled: true
+    
+  "04828dca341291":
+    friendly_id: "R5"
+    color: "RED"
+    quality_check: "NOT-OK"
+    description: "Rotes Werkstück 5"
+    enabled: true
+    
+  "04838dca341290":
+    friendly_id: "R6"
+    color: "RED"
+    quality_check: "NOT-OK"
+    description: "Rotes Werkstück 6"
+    enabled: true
+    
+  "04848dca341291":
+    friendly_id: "R7"
+    color: "RED"
+    quality_check: "NOT-OK"
+    description: "Rotes Werkstück 7"
+    enabled: true
+    
+  "04858dca341290":
+    friendly_id: "R8"
+    color: "RED"
+    quality_check: "NOT-OK"
+    description: "Rotes Werkstück 8"
+    enabled: true
+
+  # WEISSE Werkstücke (W1-W8)
+  "04798eca341290":
+    friendly_id: "W1"
+    color: "WHITE"
+    quality_check: "OK"
+    description: "Weißes Werkstück 1"
+    enabled: true
+    
+  "04ab8bca341290":
+    friendly_id: "W2"
+    color: "WHITE"
+    quality_check: "OK"
+    description: "Weißes Werkstück 2"
+    enabled: true
+    
+  "04ac8bca341291":
+    friendly_id: "W3"
+    color: "WHITE"
+    quality_check: "OK"
+    description: "Weißes Werkstück 3"
+    enabled: true
+    
+  "04ad8bca341290":
+    friendly_id: "W4"
+    color: "WHITE"
+    quality_check: "NOT-OK"
+    description: "Weißes Werkstück 4"
+    enabled: true
+    
+  "04ae8bca341291":
+    friendly_id: "W5"
+    color: "WHITE"
+    quality_check: "NOT-OK"
+    description: "Weißes Werkstück 5"
+    enabled: true
+    
+  "04af8bca341290":
+    friendly_id: "W6"
+    color: "WHITE"
+    quality_check: "NOT-OK"
+    description: "Weißes Werkstück 6"
+    enabled: true
+    
+  "04b08bca341291":
+    friendly_id: "W7"
+    color: "WHITE"
+    quality_check: "NOT-OK"
+    description: "Weißes Werkstück 7"
+    enabled: true
+    
+  "04b18bca341290":
+    friendly_id: "W8"
+    color: "WHITE"
+    quality_check: "NOT-OK"
+    description: "Weißes Werkstück 8"
+    enabled: true
+
+  # BLAUE Werkstücke (B1-B8)
+  "047389ca341291":
+    friendly_id: "B1"
+    color: "BLUE"
+    quality_check: "OK"
+    description: "Blaues Werkstück 1"
+    enabled: true
+    
+  "047489ca341290":
+    friendly_id: "B2"
+    color: "BLUE"
+    quality_check: "OK"
+    description: "Blaues Werkstück 2"
+    enabled: true
+    
+  "047589ca341291":
+    friendly_id: "B3"
+    color: "BLUE"
+    quality_check: "OK"
+    description: "Blaues Werkstück 3"
+    enabled: true
+    
+  "047689ca341290":
+    friendly_id: "B4"
+    color: "BLUE"
+    quality_check: "NOT-OK"
+    description: "Blaues Werkstück 4"
+    enabled: true
+    
+  "047789ca341291":
+    friendly_id: "B5"
+    color: "BLUE"
+    quality_check: "NOT-OK"
+    description: "Blaues Werkstück 5"
+    enabled: true
+    
+  "047889ca341290":
+    friendly_id: "B6"
+    color: "BLUE"
+    quality_check: "NOT-OK"
+    description: "Blaues Werkstück 6"
+    enabled: true
+    
+  "047989ca341291":
+    friendly_id: "B7"
+    color: "BLUE"
+    quality_check: "NOT-OK"
+    description: "Blaues Werkstück 7"
+    enabled: true
+    
+  "047a89ca341290":
+    friendly_id: "B8"
+    color: "BLUE"
+    quality_check: "NOT-OK"
+    description: "Blaues Werkstück 8"
+    enabled: true
+
+# Qualitätsprüfung-Status
+quality_check_options:
+  - "OK"
+  - "NOT-OK"
+  - "PENDING"
+  - "FAILED"
+
+# Farben
+colors:
+  - "RED"
+  - "WHITE" 
+  - "BLUE"
+
+# Template-Integration
+template_placeholders:
+  nfc_code: "<nfcCode>"
+  workpiece_id: "<workpieceId>"
+  color: "<color>"
+  quality: "<quality>"
+
+# MQTT-Topic-Pfade für NFC-Codes
+mqtt_paths:
+  - ["workpieceId"]
+  - ["metadata", "workpiece", "workpieceId"]
+  - ["action", "metadata", "workpiece", "workpieceId"]
+  - ["workpiece", "workpieceId"]
+  - ["loadId"]
+  - ["id"]

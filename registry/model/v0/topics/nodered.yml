@@ -1,0 +1,23 @@
+version: 1.0.0
+category: Node-RED
+notes: "Node-RED Bridge → Module"
+topics:
+  - { topic: "module/v1/ff/NodeRed/SVR3QA0022/connection", sub_category: "Connection", module: "HBW", friendly_name: "NodeRed → HBW : connection", template: "nodered/connection", template_direction: inbound }
+  - { topic: "module/v1/ff/NodeRed/SVR3QA0022/state",      sub_category: "State",      module: "HBW", friendly_name: "NodeRed → HBW : state",      template: "nodered/state",      template_direction: inbound }
+  - { topic: "module/v1/ff/NodeRed/SVR3QA0022/factsheet",  sub_category: "Factsheet",  module: "HBW", friendly_name: "NodeRed → HBW : factsheet",  template: "nodered/factsheet",  template_direction: inbound }
+  - { topic: "module/v1/ff/NodeRed/SVR4H76449/connection", sub_category: "Connection", module: "DRILL", friendly_name: "NodeRed → DRILL : connection", template: "nodered/connection", template_direction: inbound }
+  - { topic: "module/v1/ff/NodeRed/SVR4H76449/state",      sub_category: "State",      module: "DRILL", friendly_name: "NodeRed → DRILL : state",      template: "nodered/state",      template_direction: inbound }
+  - { topic: "module/v1/ff/NodeRed/SVR4H76449/factsheet",  sub_category: "Factsheet",  module: "DRILL", friendly_name: "NodeRed → DRILL : factsheet",  template: "nodered/factsheet",  template_direction: inbound }
+  - { topic: "module/v1/ff/NodeRed/SVR3QA2098/connection", sub_category: "Connection", module: "MILL", friendly_name: "NodeRed → MILL : connection", template: "nodered/connection", template_direction: inbound }
+  - { topic: "module/v1/ff/NodeRed/SVR3QA2098/state",      sub_category: "State",      module: "MILL", friendly_name: "NodeRed → MILL : state",      template: "nodered/state",      template_direction: inbound }
+  - { topic: "module/v1/ff/NodeRed/SVR3QA2098/factsheet",  sub_category: "Factsheet",  module: "MILL", friendly_name: "NodeRed → MILL : factsheet",  template: "nodered/factsheet",  template_direction: inbound }
+  - { topic: "module/v1/ff/NodeRed/SVR4H76530/connection", sub_category: "Connection", module: "AIQS", friendly_name: "NodeRed → AIQS : connection", template: "nodered/connection", template_direction: inbound }
+  - { topic: "module/v1/ff/NodeRed/SVR4H76530/state",      sub_category: "State",      module: "AIQS", friendly_name: "NodeRed → AIQS : state",      template: "nodered/state",      template_direction: inbound }
+  - { topic: "module/v1/ff/NodeRed/SVR4H76530/factsheet",  sub_category: "Factsheet",  module: "AIQS", friendly_name: "NodeRed → AIQS : factsheet",  template: "nodered/factsheet",  template_direction: inbound }
+  - { topic: "module/v1/ff/NodeRed/SVR4H73275/connection", sub_category: "Connection", module: "DPS",  friendly_name: "NodeRed → DPS : connection", template: "nodered/connection", template_direction: inbound }
+  - { topic: "module/v1/ff/NodeRed/SVR4H73275/state",      sub_category: "State",      module: "DPS",  friendly_name: "NodeRed → DPS : state",      template: "nodered/state",      template_direction: inbound }
+  - { topic: "module/v1/ff/NodeRed/SVR4H73275/factsheet",  sub_category: "Factsheet",  module: "DPS",  friendly_name: "NodeRed → DPS : factsheet",  template: "nodered/factsheet",  template_direction: inbound }
+  - { topic: "module/v1/ff/NodeRed/CHRG0/connection", sub_category: "Connection", module: "CHRG", friendly_name: "NodeRed → CHRG : connection", template: "nodered/connection", template_direction: inbound }
+  - { topic: "module/v1/ff/NodeRed/CHRG0/state",      sub_category: "State",      module: "CHRG", friendly_name: "NodeRed → CHRG : state",      template: "nodered/state",      template_direction: inbound }
+  - { topic: "module/v1/ff/NodeRed/CHRG0/factsheet",  sub_category: "Factsheet",  module: "CHRG", friendly_name: "NodeRed → CHRG : factsheet",  template: "nodered/factsheet",  template_direction: inbound }
+  - { topic: "module/v1/ff/NodeRed/status",                 sub_category: "Status",                               friendly_name: "NodeRed : status",            template: "nodered/status",    template_direction: inbound }

@@ -1,0 +1,103 @@
+version: 1.0.0
+notes: "Ein Datei: Topic/Pattern → Template + Direction + (optionale) UI-Metadaten."
+resolution_order: ["exact", "pattern"]   # zuerst genaue Treffer, dann Muster
+
+defaults:
+  direction: inbound
+
+# OPTIONAL: leichte UI-Metadaten, ohne Payload-Strukturen!
+catalog:
+  categories:
+    CCU: { icon: "🏭" }
+    TXT: { icon: "🎛️" }
+    MODULE: { icon: "⚙️" }
+    Node-RED: { icon: "🔄" }
+  sub_categories:
+    Connection: { icon: "🔗" }
+    State: { icon: "📊" }
+    Order: { icon: "📋" }
+    Factsheet: { icon: "📄" }
+
+mappings:
+  # ----- CCU (EXACT) -----
+  - topic: "ccu/control"
+    template: "ccu/control"
+    direction: outbound
+    meta: { category: "CCU", sub_category: "Control", friendly_name: "CCU : control" }
+
+  - topic: "ccu/state/status"
+    template: "ccu/state/status"
+    meta: { category: "CCU", sub_category: "State", friendly_name: "CCU : state : status" }
+
+  - topic: "ccu/pairing/state"
+    template: "ccu/state"
+    meta: { category: "CCU", sub_category: "State", friendly_name: "CCU : pairing : state" }
+
+  # ----- MODULE (PATTERN, generisch) -----
+  - pattern: "module/v1/ff/{module_id}/connection"
+    template: "module/connection"
+    direction: bidirectional
+    vars: { module_id: "<serial>" }
+    meta: { category: "MODULE", sub_category: "Connection" }
+
+  - pattern: "module/v1/ff/{module_id}/state"
+    template: "module/state"
+    meta: { category: "MODULE", sub_category: "State" }
+
+  - pattern: "module/v1/ff/{module_id}/order"
+    template: "module/order"
+    direction: outbound
+    vars: { module_id: "<serial>" }
+    meta: { category: "MODULE", sub_category: "Order" }
+
+  - pattern: "module/v1/ff/{module_id}/factsheet"
+    template: "module/factsheet"
+    meta: { category: "MODULE", sub_category: "Factsheet" }
+
+  # ----- HBW (EXACT Override → spezielles Template) -----
+  - topic: "module/v1/ff/SVR3QA0022/state"
+    template: "module/state.hbw_inventory"
+    meta: { category: "MODULE", sub_category: "State", friendly_name: "HBW : state" }
+
+  # ----- TXT (EXACT) -----
+  - topic: "/j1/txt/1/f/i/order"
+    template: "txt/order_input"
+    meta: { category: "TXT", sub_category: "Function Input", friendly_name: "TXT : f : i : order" }
+
+  - topic: "/j1/txt/1/f/i/stock"
+    template: "txt/stock_input"
+    meta: { category: "TXT", sub_category: "Function Input", friendly_name: "TXT : f : i : stock" }
+
+  # ----- Node-RED (PATTERN) -----
+  - pattern: "module/v1/ff/NodeRed/{module_id}/connection"
+    template: "nodered/connection"
+    vars: { module_id: "<serial>" }
+    meta: { category: "Node-RED", sub_category: "Connection" }
+
+  - pattern: "module/v1/ff/NodeRed/{module_id}/state"
+    template: "nodered/state"
+    vars: { module_id: "<serial>" }
+    meta: { category: "Node-RED", sub_category: "State" }
+
+  - pattern: "module/v1/ff/NodeRed/{module_id}/factsheet"
+    template: "nodered/factsheet"
+    vars: { module_id: "<serial>" }
+    meta: { category: "Node-RED", sub_category: "Factsheet" }
+
+  # ----- FTS (EXACT) -----
+  - topic: "fts/v1/ff/5iO4/connection"
+    template: "fts/connection"
+    meta: { category: "MODULE", sub_category: "Connection", friendly_name: "FTS : connection" }
+
+  - topic: "fts/v1/ff/5iO4/state"
+    template: "fts/state"
+    meta: { category: "MODULE", sub_category: "State", friendly_name: "FTS : state" }
+
+  - topic: "fts/v1/ff/5iO4/order"
+    template: "fts/order"
+    direction: outbound
+    meta: { category: "MODULE", sub_category: "Order", friendly_name: "FTS : order" }
+
+  - topic: "fts/v1/ff/5iO4/factsheet"
+    template: "fts/factsheet"
+    meta: { category: "MODULE", sub_category: "Factsheet", friendly_name: "FTS : factsheet" }
