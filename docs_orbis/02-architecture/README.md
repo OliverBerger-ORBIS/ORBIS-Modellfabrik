@@ -13,11 +13,19 @@ Die Dokumente beschreiben den Systemkontext, die Message Flows, das Registry-Mod
 ---
 
 ## 🔗 Dokumente
+
+### Core Architecture
 - [System Context](system-context.md) – Überblick über Hauptkomponenten (CCU, Module, Node-RED, OMF)
 - [Message Flow](message-flow.md) – End-to-End-Flows (Order → Module, State → Dashboard)
 - [Registry Model](registry-model.md) – Registry-Prinzipien & Versionierung
 - [Message Template System](message-template-system.md) – Template-Manager, Validierung, Topic-Resolution
 - [Naming Conventions](naming-conventions.md) – Topics, Template-Keys, IDs
+
+### APS Physical Architecture
+- [APS Physical Architecture](aps-physical-architecture.md) – Fischertechnik Netzwerk & Hardware
+- [APS Data Flow](aps-data-flow.md) – Datenverarbeitung & Storage
+
+### Dashboard Architecture
 - [OMF Dashboard Architecture](omf-dashboard-architecture.md) – Dashboard-Architektur, MQTT-Patterns, Komponenten-Struktur
 
 ### Architektur-Pattern

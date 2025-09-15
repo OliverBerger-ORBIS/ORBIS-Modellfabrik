@@ -2,6 +2,7 @@
 
 ## 🏗️ System-Kontextdiagramm
 
+### ASCII-Art (Legacy)
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                           OMF Ecosystem                                    │
@@ -35,6 +36,60 @@
 │                            │  Recording)  │                                │
 │                            └─────────────┘                                │
 └─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Mermaid-Diagramm (Modern)
+```mermaid
+graph TB
+    subgraph "OMF Ecosystem"
+        subgraph "Control Layer"
+            CCU[CCU<br/>Central Control Unit]
+            OMF[OMF Dashboard<br/>User Interface]
+            SESSION[Session Manager<br/>Replay & Recording]
+        end
+        
+        subgraph "Communication Layer"
+            MQTT[MQTT Broker<br/>Message Routing]
+            NODERED[Node-RED<br/>Protocol Translator]
+        end
+        
+        subgraph "Module Layer"
+            HBW[HBW<br/>High Bay Warehouse]
+            DRILL[DRILL<br/>Drilling Station]
+            MILL[MILL<br/>Milling Station]
+            AIQS[AIQS<br/>Quality Control]
+            DPS[DPS<br/>Distribution Station]
+        end
+        
+        subgraph "Transport Layer"
+            FTS[FTS<br/>Fahrerlose Transportsysteme]
+            TXT[TXT Controller<br/>Fischertechnik]
+        end
+    end
+    
+    OMF <-->|MQTT Orders| MQTT
+    CCU <-->|MQTT Commands| MQTT
+    SESSION <-->|MQTT Replay| MQTT
+    
+    MQTT <-->|Message Routing| NODERED
+    NODERED <-->|OPC-UA| HBW
+    NODERED <-->|OPC-UA| DRILL
+    NODERED <-->|OPC-UA| MILL
+    NODERED <-->|OPC-UA| AIQS
+    NODERED <-->|OPC-UA| DPS
+    
+    FTS <-->|MQTT Transport| MQTT
+    TXT <-->|MQTT Sensor Data| MQTT
+    
+    MQTT -->|State Updates| OMF
+    MQTT -->|Telemetry| CCU
+    
+    classDef fischertechnik fill:#f5f5f5,stroke:#757575,stroke-width:2px
+    classDef orbis fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef modules fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    class CCU fischertechnik
+    class OMF,SESSION orbis
+    class MQTT,NODERED,HBW,DRILL,MILL,AIQS,DPS,FTS,TXT modules
 ```
 
 ## 🔄 Message-Flow-Übersicht

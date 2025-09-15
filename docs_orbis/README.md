@@ -18,6 +18,8 @@
 ### 02-Architecture
 - [System Context](02-architecture/system-context.md) - Kontextdiagramm (CCU, Module, Node-RED, OMF)
 - [Message Flow](02-architecture/message-flow.md) - End-to-End-Flows (Order→Module, State→Dashboard)
+- [APS Physical Architecture](02-architecture/aps-physical-architecture.md) - Fischertechnik Netzwerk & Hardware
+- [APS Data Flow](02-architecture/aps-data-flow.md) - Datenverarbeitung & Storage
 - [Registry Model](02-architecture/registry-model.md) - Registry-Prinzipien & Versionierung
 - [Naming Conventions](02-architecture/naming-conventions.md) - Topics, Template-Keys, IDs
 
