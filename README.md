@@ -35,6 +35,9 @@
 - [Templates](docs_orbis/05-reference/templates.md) - Template-Index & Migration Mapping
 - [Enums](docs_orbis/05-reference/enums.md) - Zentrale Listen (Availability/Action/Workpiece)
 
+### 06-Integrations
+- [Node-RED](docs_orbis/06-integrations/node-red/) - Node-RED Integration & Management
+
 ### 99-Glossary
 - [Glossary](docs_orbis/99-glossary.md) - Eindeutige Begrifflichkeiten & IDs
 
@@ -42,6 +45,7 @@
 
 - **Registry:** `registry/model/v1/` - Single Source of Truth
 - **Source Code:** `src_orbis/` - Runtime & Tools
+- **Integrations:** `integrations/` - Externe Systeme (Node-RED, etc.)
 - **Legacy Docs:** [Archive](docs_orbis/archive/) - Veraltete Dokumentation
 
 ## 🚀 Getting Started

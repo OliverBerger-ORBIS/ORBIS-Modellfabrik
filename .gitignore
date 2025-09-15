@@ -41,6 +41,7 @@ orbis_access.log
 !data/omf-data/sessions/default_test_session.log
 # Log files should NOT be in git - they are large and change frequently
 # data/logs/*.log
+data/logs/*.json
 
 # 🖼️ Generated Images & Data
 *.png
