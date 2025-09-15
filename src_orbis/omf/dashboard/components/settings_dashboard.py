@@ -5,6 +5,8 @@ Exakte Kopie der show_dashboard_settings Funktion aus settings.py
 
 import streamlit as st
 
+from src_orbis.omf.dashboard.utils.ui_refresh import request_refresh
+
 
 def show_dashboard_settings():
     """Zeigt Dashboard-Einstellungen"""
@@ -67,9 +69,9 @@ def show_dashboard_settings():
 
     # Logging-Einstellungen
     st.markdown("#### 📝 Logging-Einstellungen")
-    
+
     col1, col2 = st.columns([1, 1])
-    
+
     with col1:
         log_level = st.selectbox(
             "📊 Log-Level",
@@ -79,14 +81,14 @@ def show_dashboard_settings():
             help="Logging-Level für Dashboard-Logs",
         )
         st.session_state["log_level"] = log_level
-        
+
     with col2:
         if st.button("🔄 Logging neu laden", type="secondary"):
             # Logging-Konfiguration zurücksetzen
             if "_log_init" in st.session_state:
                 del st.session_state["_log_init"]
             st.success("✅ Logging-Konfiguration wird beim nächsten Reload angewendet")
-            st.rerun()
+            request_refresh()
 
     # Weitere Dashboard-Einstellungen können hier hinzugefügt werden
     st.markdown("#### 📊 Dashboard-Konfiguration")

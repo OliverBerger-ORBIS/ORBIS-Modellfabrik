@@ -395,7 +395,7 @@ def show_message_center():
             try:
                 data = json.loads(payload)
                 logger.debug(f"Payload als JSON geparst: {data}")
-            except Exception as e:
+            except Exception:
                 logger.debug(f"Payload als Text verwendet: {payload}")
                 pass
             result = mqtt_client.publish(topic, data, qos=int(qos), retain=retain)

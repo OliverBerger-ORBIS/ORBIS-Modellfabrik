@@ -10,8 +10,8 @@ from datetime import datetime, timezone
 from typing import Any, Callable
 
 from . import message_generator as mg
-from .omf_mqtt_client import OmfMqttClient
 from .logging_config import get_logger
+from .omf_mqtt_client import OmfMqttClient
 
 
 def utc_iso() -> str:
@@ -117,20 +117,21 @@ class MqttGateway:
         """
         payload = self.build_via_mg(builder, **kwargs)
         payload = self.enrich(payload, ensure_order_id=ensure_order_id)
-        
+
         self.logger.info(f"Publiziere MQTT: {topic} (QoS={qos}, retain={retain})")
         self.logger.debug(f"Payload: {payload}")
-        
+
         # Zusätzlicher Debug-Log für Dashboard-Buffer
         import logging
+
         dashboard_logger = logging.getLogger("omf.dashboard.debug")
         dashboard_logger.debug(f"MQTT Payload: {topic} -> {payload}")
-        
+
         result = self.client.publish_json(topic, payload, qos=qos, retain=retain)
-        
+
         if result:
             self.logger.info(f"✅ MQTT erfolgreich publiziert: {topic}")
         else:
             self.logger.error(f"❌ MQTT-Publikation fehlgeschlagen: {topic}")
-            
+
         return result

@@ -5,72 +5,57 @@ Verwaltung und Analyse von MQTT-Sessions für die ORBIS Modellfabrik
 """
 
 import argparse
-import logging
-import sys
 from pathlib import Path
 
 import streamlit as st
 
 # Import components
 from src_orbis.helper_apps.session_manager.components.auftrag_rot_analyzer import show_auftrag_rot_analysis
+from src_orbis.helper_apps.session_manager.components.logs import show_logs
+from src_orbis.helper_apps.session_manager.components.order_analyzer import show_order_analyzer
 from src_orbis.helper_apps.session_manager.components.replay_station import show_replay_station
 from src_orbis.helper_apps.session_manager.components.session_analysis import show_session_analysis
 from src_orbis.helper_apps.session_manager.components.session_recorder import show_session_recorder
 from src_orbis.helper_apps.session_manager.components.settings_manager import SettingsManager
 from src_orbis.helper_apps.session_manager.components.settings_ui import SettingsUI
 from src_orbis.helper_apps.session_manager.components.template_analysis import show_template_analysis
-from src_orbis.helper_apps.session_manager.components.order_analyzer import show_order_analyzer
-from src_orbis.omf.dashboard.utils.ui_refresh import RerunController
+from src_orbis.omf.dashboard.utils.ui_refresh import consume_refresh, request_refresh
+from src_orbis.omf.tools.logging_config import configure_logging, get_logger
 from src_orbis.omf.tools.registry_manager import get_registry
 
 # Page configuration
 st.set_page_config(page_title="Session Manager", page_icon="🎙️", layout="wide", initial_sidebar_state="expanded")
 
 
-def setup_logging():
-    """Logging-Setup mit dynamischer Level-Anpassung"""
-    # Logging-Verzeichnis erstellen falls nicht vorhanden (absoluten Pfad verwenden)
-    project_root = Path(__file__).parent.parent.parent.parent.parent
-    log_dir = project_root / "data" / "logs"
-    log_dir.mkdir(parents=True, exist_ok=True)
-
-    # Log-Datei Pfad
-    log_file = log_dir / "session_manager.log"
+def _init_logging_once():
+    """Initialisiert OMF Logging einmal pro Streamlit-Session"""
+    if st.session_state.get("_log_init"):
+        return
 
     # Aktuelles Logging-Level aus Session State holen, Default: INFO
     current_level = st.session_state.get("logging_level", "INFO")
-    level_mapping = {"DEBUG": logging.DEBUG, "INFO": logging.INFO, "WARNING": logging.WARNING, "ERROR": logging.ERROR}
+    level_mapping = {"DEBUG": 10, "INFO": 20, "WARNING": 30, "ERROR": 40}
+    level = level_mapping.get(current_level, 20)
 
-    # Logger konfigurieren
-    logger = logging.getLogger("session_manager")
-    logger.handlers.clear()  # Bestehende Handler entfernen
+    # OMF Logging konfigurieren
+    root, listener = configure_logging(
+        app_name="session_manager",
+        level=level,
+        log_dir="data/logs",
+        json_file="session_manager.jsonl",
+        console_pretty=True,
+    )
 
-    # File Handler
-    file_handler = logging.FileHandler(log_file, encoding='utf-8')
-    file_formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    file_handler.setFormatter(file_formatter)
-
-    # Console Handler für Streamlit
-    console_handler = logging.StreamHandler()
-    console_formatter = logging.Formatter('%(levelname)s - %(message)s')
-    console_handler.setFormatter(console_formatter)
-
-    # Handler hinzufügen
-    logger.addHandler(file_handler)
-    logger.addHandler(console_handler)
-
-    # Level setzen
-    logger.setLevel(level_mapping.get(current_level, logging.INFO))
-
-    return logger
+    # Listener in Session State speichern
+    st.session_state["_log_listener"] = listener
+    st.session_state["_log_init"] = True
 
 
 def show_logging_settings(logger):
     """Logging-Konfiguration Tab"""
     st.subheader("📝 Logging-Konfiguration")
 
-    # RerunController initialisieren
-    rerun_controller = RerunController()
+    # UI-Refresh System initialisiert (wird in main() verwendet)
 
     # Aktuelles Level anzeigen
     current_level = st.session_state.get("logging_level", "INFO")
@@ -94,10 +79,10 @@ def show_logging_settings(logger):
     if selected_level != current_level:
         st.session_state["logging_level"] = selected_level
         st.success(f"✅ Logging-Level auf **{selected_level}** geändert")
-        rerun_controller.request_rerun()
+        request_refresh()
 
     # Log-Datei Info
-    log_file = Path("data/logs/session_manager.log")
+    log_file = Path("data/logs/session_manager.jsonl")
     if log_file.exists():
         file_size = log_file.stat().st_size
         file_size_mb = file_size / (1024 * 1024)
@@ -109,7 +94,7 @@ def show_logging_settings(logger):
             try:
                 log_file.unlink()
                 st.success("✅ Log-Datei gelöscht")
-                rerun_controller.request_rerun()
+                request_refresh()
             except Exception as e:
                 st.error(f"❌ Fehler beim Löschen: {e}")
     else:
@@ -162,8 +147,14 @@ def show_logging_settings(logger):
 def main():
     """Hauptfunktion des Session Managers"""
 
-    # Logging initialisieren
-    logger = setup_logging()
+    # UI-Refresh prüfen (früh in main())
+    if consume_refresh():
+        st.rerun()
+        return
+
+    # OMF Logging initialisieren
+    _init_logging_once()
+    logger = get_logger("session_manager.main")
     logger.info("Session Manager gestartet")
 
     # Header
@@ -192,6 +183,7 @@ def main():
             "🔍 Template Analyse",
             "⚙️ Einstellungen",
             "📝 Logging",
+            "📋 Logs",
         ],
     )
 
@@ -211,7 +203,9 @@ def main():
     elif tab == "⚙️ Einstellungen":
         st.session_state.settings_ui.render_settings_page()
     elif tab == "📝 Logging":
-        show_logging_settings(logger)
+        show_logging_settings()
+    elif tab == "📋 Logs":
+        show_logs()
 
     # Footer
     st.sidebar.markdown("---")
@@ -222,18 +216,17 @@ def main():
 def parse_args():
     """Parse command line arguments"""
     parser = argparse.ArgumentParser(description="Session Manager - MQTT Session Management")
-    parser.add_argument("--registry-watch", action="store_true", 
-                       help="Enable registry watch mode for live development")
-    parser.add_argument("--model-version", default="v1.0.0",
-                       help="Expected model version (default: v1.0.0)")
+    parser.add_argument("--registry-watch", action="store_true", help="Enable registry watch mode for live development")
+    parser.add_argument("--model-version", default="v1.0.0", help="Expected model version (default: v1.0.0)")
     return parser.parse_args()
+
 
 if __name__ == "__main__":
     args = parse_args()
-    
+
     # Initialize registry with watch mode if requested
     if args.registry_watch:
         registry = get_registry(watch_mode=True)
         print("🔄 Registry watch mode enabled - live reloading active")
-    
+
     main()

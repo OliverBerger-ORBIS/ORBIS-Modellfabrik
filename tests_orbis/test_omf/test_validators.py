@@ -4,8 +4,9 @@ Tests für die OMF Validierungsschicht
 """
 
 import pytest
-from src_orbis.omf.tools.validators import validate
+
 from src_orbis.omf.tools.message_template_manager import OmfMessageTemplateManager
+from src_orbis.omf.tools.validators import validate
 
 
 class TestValidators:
@@ -15,19 +16,10 @@ class TestValidators:
         """Test erfolgreiche DRILL-Validierung"""
         payload = {
             "timestamp": "2024-01-15T10:30:00Z",
-            "actionState": {
-                "command": "DRILL",
-                "state": "RUNNING",
-                "id": "123e4567-e89b-12d3-a456-426614174000"
-            },
-            "loads": [
-                {
-                    "loadType": "RED",
-                    "duration": 5000
-                }
-            ]
+            "actionState": {"command": "DRILL", "state": "RUNNING", "id": "123e4567-e89b-12d3-a456-426614174000"},
+            "loads": [{"loadType": "RED", "duration": 5000}],
         }
-        
+
         result = validate("module.state.drill", payload)
         assert len(result["errors"]) == 0
         assert len(result["warnings"]) == 0
@@ -36,25 +28,17 @@ class TestValidators:
         """Test DRILL-Validierung mit ungültigem Command"""
         payload = {
             "timestamp": "2024-01-15T10:30:00Z",
-            "actionState": {
-                "command": "INVALID_COMMAND",
-                "state": "RUNNING"
-            }
+            "actionState": {"command": "INVALID_COMMAND", "state": "RUNNING"},
         }
-        
+
         result = validate("module.state.drill", payload)
         assert len(result["errors"]) > 0
         assert any("invalid command" in error["msg"] for error in result["errors"])
 
     def test_drill_validation_missing_timestamp(self):
         """Test DRILL-Validierung ohne Timestamp"""
-        payload = {
-            "actionState": {
-                "command": "DRILL",
-                "state": "RUNNING"
-            }
-        }
-        
+        payload = {"actionState": {"command": "DRILL", "state": "RUNNING"}}
+
         result = validate("module.state.drill", payload)
         assert len(result["errors"]) > 0
         assert any("missing required 'timestamp'" in error["msg"] for error in result["errors"])
@@ -63,19 +47,10 @@ class TestValidators:
         """Test erfolgreiche HBW Inventory-Validierung"""
         payload = {
             "timestamp": "2024-01-15T10:30:00Z",
-            "loads": [
-                {
-                    "loadPosition": "A1",
-                    "loadType": "RED",
-                    "loadTimestamp": 1642248600
-                }
-            ],
-            "actionState": {
-                "command": "PICK",
-                "state": "RUNNING"
-            }
+            "loads": [{"loadPosition": "A1", "loadType": "RED", "loadTimestamp": 1642248600}],
+            "actionState": {"command": "PICK", "state": "RUNNING"},
         }
-        
+
         result = validate("module.state.hbw_inventory", payload)
         assert len(result["errors"]) == 0
 
@@ -83,15 +58,9 @@ class TestValidators:
         """Test HBW Inventory-Validierung mit ungültiger Position"""
         payload = {
             "timestamp": "2024-01-15T10:30:00Z",
-            "loads": [
-                {
-                    "loadPosition": "INVALID_POS",
-                    "loadType": "RED",
-                    "loadTimestamp": 1642248600
-                }
-            ]
+            "loads": [{"loadPosition": "INVALID_POS", "loadType": "RED", "loadTimestamp": 1642248600}],
         }
-        
+
         result = validate("module.state.hbw_inventory", payload)
         assert len(result["errors"]) > 0
         assert any("invalid loadPosition" in error["msg"] for error in result["errors"])
@@ -104,12 +73,10 @@ class TestValidators:
                 "command": "CHECK_QUALITY",
                 "state": "FINISHED",
                 "result": "PASSED",
-                "metadata": {
-                    "workpieceId": "1234567890ABCD"
-                }
-            }
+                "metadata": {"workpieceId": "1234567890ABCD"},
+            },
         }
-        
+
         result = validate("module.state.aiqs", payload)
         assert len(result["errors"]) == 0
 
@@ -117,13 +84,9 @@ class TestValidators:
         """Test AIQS-Validierung mit ungültigem Result"""
         payload = {
             "timestamp": "2024-01-15T10:30:00Z",
-            "actionState": {
-                "command": "CHECK_QUALITY",
-                "state": "FINISHED",
-                "result": "INVALID_RESULT"
-            }
+            "actionState": {"command": "CHECK_QUALITY", "state": "FINISHED", "result": "INVALID_RESULT"},
         }
-        
+
         result = validate("module.state.aiqs", payload)
         assert len(result["errors"]) > 0
         assert any("CHECK_QUALITY → muss result ∈ {PASSED,FAILED}" in error["msg"] for error in result["errors"])
@@ -132,34 +95,17 @@ class TestValidators:
         """Test erfolgreiche CCU Pairing-Validierung"""
         payload = {
             "timestamp": "2024-01-15T10:30:00Z",
-            "modules": [
-                {
-                    "available": "READY",
-                    "connected": True
-                }
-            ],
-            "transports": [
-                {
-                    "batteryPercentage": 85
-                }
-            ]
+            "modules": [{"available": "READY", "connected": True}],
+            "transports": [{"batteryPercentage": 85}],
         }
-        
+
         result = validate("ccu.state.pairing", payload)
         assert len(result["errors"]) == 0
 
     def test_ccu_pairing_validation_invalid_available(self):
         """Test CCU Pairing-Validierung mit ungültigem Available-Status"""
-        payload = {
-            "timestamp": "2024-01-15T10:30:00Z",
-            "modules": [
-                {
-                    "available": "INVALID_STATUS",
-                    "connected": True
-                }
-            ]
-        }
-        
+        payload = {"timestamp": "2024-01-15T10:30:00Z", "modules": [{"available": "INVALID_STATUS", "connected": True}]}
+
         result = validate("ccu.state.pairing", payload)
         assert len(result["errors"]) > 0
         assert any("CCU Pairing: available ∈ {READY,BUSY,BLOCKED}" in error["msg"] for error in result["errors"])
@@ -169,24 +115,16 @@ class TestValidators:
         payload = {
             "timestamp": "2024-01-15T10:30:00Z",
             "systemStatus": "RUNNING",
-            "availableWorkpieces": [
-                {
-                    "type": "RED",
-                    "workpieceId": "1234567890ABCD"
-                }
-            ]
+            "availableWorkpieces": [{"type": "RED", "workpieceId": "1234567890ABCD"}],
         }
-        
+
         result = validate("ccu.state.status", payload)
         assert len(result["errors"]) == 0
 
     def test_ccu_status_validation_invalid_system_status(self):
         """Test CCU Status-Validierung mit ungültigem System-Status"""
-        payload = {
-            "timestamp": "2024-01-15T10:30:00Z",
-            "systemStatus": "INVALID_STATUS"
-        }
-        
+        payload = {"timestamp": "2024-01-15T10:30:00Z", "systemStatus": "INVALID_STATUS"}
+
         result = validate("ccu.state.status", payload)
         assert len(result["errors"]) > 0
         assert any("invalid systemStatus" in error["msg"] for error in result["errors"])
@@ -194,7 +132,7 @@ class TestValidators:
     def test_unknown_template_key(self):
         """Test Validierung mit unbekanntem Template-Key"""
         payload = {"timestamp": "2024-01-15T10:30:00Z"}
-        
+
         result = validate("unknown.template.key", payload)
         # Sollte nur generische Validierung durchführen
         assert "timestamp" in result or "errors" in result
@@ -209,14 +147,8 @@ class TestMessageTemplateManagerValidation:
 
     def test_validate_payload_success(self):
         """Test erfolgreiche Payload-Validierung über Manager"""
-        payload = {
-            "timestamp": "2024-01-15T10:30:00Z",
-            "actionState": {
-                "command": "DRILL",
-                "state": "RUNNING"
-            }
-        }
-        
+        payload = {"timestamp": "2024-01-15T10:30:00Z", "actionState": {"command": "DRILL", "state": "RUNNING"}}
+
         result = self.manager.validate_payload("module.state.drill", payload)
         assert "errors" in result
         assert "warnings" in result
@@ -225,13 +157,8 @@ class TestMessageTemplateManagerValidation:
 
     def test_validate_payload_with_errors(self):
         """Test Payload-Validierung mit Fehlern"""
-        payload = {
-            "actionState": {
-                "command": "INVALID_COMMAND",
-                "state": "RUNNING"
-            }
-        }
-        
+        payload = {"actionState": {"command": "INVALID_COMMAND", "state": "RUNNING"}}
+
         result = self.manager.validate_payload("module.state.drill", payload)
         assert len(result["errors"]) > 0
         assert any("missing required 'timestamp'" in error for error in result["errors"])
@@ -240,7 +167,7 @@ class TestMessageTemplateManagerValidation:
     def test_validate_payload_unknown_template(self):
         """Test Payload-Validierung mit unbekanntem Template"""
         payload = {"timestamp": "2024-01-15T10:30:00Z"}
-        
+
         result = self.manager.validate_payload("unknown.template", payload)
         # Sollte trotzdem funktionieren (nur generische Validierung)
         assert "errors" in result
@@ -257,21 +184,17 @@ class TestModuleConnectionValidation:
             "timestamp": "2024-01-15T10:30:00Z",
             "moduleId": "SVR3QA0022",
             "errors": [],
-            "information": []
+            "information": [],
         }
-        
+
         result = validate("module.connection.hbw", payload)
         assert len(result["errors"]) == 0
         assert len(result["warnings"]) == 0
 
     def test_module_connection_offline_success(self):
         """Test erfolgreiche OFFLINE-Validierung"""
-        payload = {
-            "connectionState": "OFFLINE",
-            "timestamp": "2024-01-15T10:35:00Z",
-            "moduleId": "SVR3QA0022"
-        }
-        
+        payload = {"connectionState": "OFFLINE", "timestamp": "2024-01-15T10:35:00Z", "moduleId": "SVR3QA0022"}
+
         result = validate("module.connection.hbw", payload)
         assert len(result["errors"]) == 0
 
@@ -282,43 +205,32 @@ class TestModuleConnectionValidation:
             "timestamp": "2024-01-15T10:40:00Z",
             "moduleId": "SVR3QA0022",
             "errors": ["Network timeout after 30s"],
-            "information": ["Last seen: 2024-01-15T10:39:30Z"]
+            "information": ["Last seen: 2024-01-15T10:39:30Z"],
         }
-        
+
         result = validate("module.connection.hbw", payload)
         assert len(result["errors"]) == 0
 
     def test_module_connection_invalid_state(self):
         """Test Validierung mit ungültigem Connection State"""
-        payload = {
-            "connectionState": "INVALID_STATE",
-            "timestamp": "2024-01-15T10:30:00Z"
-        }
-        
+        payload = {"connectionState": "INVALID_STATE", "timestamp": "2024-01-15T10:30:00Z"}
+
         result = validate("module.connection.hbw", payload)
         assert len(result["errors"]) > 0
         assert any("invalid connectionState" in error["msg"] for error in result["errors"])
 
     def test_module_connection_invalid_errors_type(self):
         """Test Validierung mit ungültigem Errors-Typ"""
-        payload = {
-            "connectionState": "ONLINE",
-            "timestamp": "2024-01-15T10:30:00Z",
-            "errors": "not_an_array"
-        }
-        
+        payload = {"connectionState": "ONLINE", "timestamp": "2024-01-15T10:30:00Z", "errors": "not_an_array"}
+
         result = validate("module.connection.hbw", payload)
         assert len(result["errors"]) > 0
         assert any("errors must be array" in error["msg"] for error in result["errors"])
 
     def test_module_connection_invalid_information_type(self):
         """Test Validierung mit ungültigem Information-Typ"""
-        payload = {
-            "connectionState": "ONLINE",
-            "timestamp": "2024-01-15T10:30:00Z",
-            "information": "not_an_array"
-        }
-        
+        payload = {"connectionState": "ONLINE", "timestamp": "2024-01-15T10:30:00Z", "information": "not_an_array"}
+
         result = validate("module.connection.hbw", payload)
         assert len(result["warnings"]) > 0
         assert any("information should be array" in warning["msg"] for warning in result["warnings"])

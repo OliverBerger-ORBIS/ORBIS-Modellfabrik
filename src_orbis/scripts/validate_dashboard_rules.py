@@ -129,6 +129,9 @@ class Checker(ast.NodeVisitor):
         # R006/R012/R009: subscribe / subscribe_many
         short = callee.split(".")[-1]
         if short in {"subscribe", "subscribe_many"}:
+            # Erlaubnis für Message Center: subscribe("#") ist OK
+            is_message_center = "message_center.py" in str(self.filename)
+
             # erster Parameter als String?
             if node.args:
                 a0 = node.args[0]
@@ -136,7 +139,15 @@ class Checker(ast.NodeVisitor):
                 if isinstance(a0, ast.Constant) and isinstance(a0.value, str):
                     topic = a0.value.strip()
                     if topic in FORBIDDEN_TOPICS:
-                        self.add("ERROR", "R006", node, "subscribe('#') ist verboten.")
+                        if is_message_center:
+                            self.add(
+                                "WARN",
+                                "R006",
+                                node,
+                                "subscribe('#') im Message Center (erlaubt, aber prüfen ob nötig).",
+                            )
+                        else:
+                            self.add("ERROR", "R006", node, "subscribe('#') ist verboten (außer im Message Center).")
                     elif topic.endswith("/#") or any(bp in topic for bp in BROAD_PATTERNS):
                         self.add("WARN", "R012", node, f"Sehr breiter Subscribe erkannt: '{topic}'")
                 # subscribe_many([...])
@@ -145,11 +156,27 @@ class Checker(ast.NodeVisitor):
                         if isinstance(el, ast.Constant) and isinstance(el.value, str):
                             t = el.value.strip()
                             if t in FORBIDDEN_TOPICS:
-                                self.add("ERROR", "R006", node, "subscribe_many mit '#' ist verboten.")
+                                if is_message_center:
+                                    self.add(
+                                        "WARN",
+                                        "R006",
+                                        node,
+                                        "subscribe_many mit '#' im Message Center (erlaubt, aber prüfen ob nötig).",
+                                    )
+                                else:
+                                    self.add(
+                                        "ERROR",
+                                        "R006",
+                                        node,
+                                        "subscribe_many mit '#' ist verboten (außer im Message Center).",
+                                    )
                             elif t.endswith("/#") or any(bp in t for bp in BROAD_PATTERNS):
                                 self.add("WARN", "R012", node, f"Sehr breiter Subscribe erkannt: '{t}'")
-            # generelle Warnung
-            self.add("WARN", "R009", node, "subscribe in Komponenten gefunden (besser: Interesse/Buffer deklarieren).")
+            # generelle Warnung (nicht für Message Center)
+            if not is_message_center:
+                self.add(
+                    "WARN", "R009", node, "subscribe in Komponenten gefunden (besser: Interesse/Buffer deklarieren)."
+                )
 
         # R008: Callback-Wiring in Komponenten
         if callee.endswith(".message_callback_add") or callee.endswith(".message_callback_remove"):

@@ -82,7 +82,7 @@ def show_session_recorder():
         st.subheader("🔌 MQTT Verbindung")
         st.info(f"**Broker:** {mqtt_settings['host']}:{mqtt_settings['port']}")
         st.info(f"**QoS:** {mqtt_settings['qos']} | **Timeout:** {mqtt_settings['timeout']}s")
-        
+
         # Authentifizierung anzeigen
         if mqtt_settings.get('username'):
             st.info(f"**Auth:** {mqtt_settings['username']} (authentifiziert)")
@@ -228,7 +228,7 @@ def connect_to_broker(mqtt_settings: Dict[str, Any]) -> bool:
         if mqtt_settings.get('username') and mqtt_settings.get('password'):
             mqtt_client.username_pw_set(mqtt_settings['username'], mqtt_settings['password'])
             logger.info(f"🔐 MQTT Authentifizierung: {mqtt_settings['username']}")
-        
+
         # Verbinden
         mqtt_client.connect(mqtt_settings['host'], mqtt_settings['port'], mqtt_settings['timeout'])
         mqtt_client.loop_start()
@@ -276,17 +276,17 @@ def start_recording():
     """Startet die Aufnahme"""
     try:
         logger.info("🔴 Session-Aufnahme wird gestartet...")
-        
+
         # MQTT Client für Aufnahme konfigurieren
         if st.session_state.session_recorder['mqtt_client']:
             mqtt_client = st.session_state.session_recorder['mqtt_client']
             # Topics abonnieren (falls sie deabonniert waren)
             mqtt_client.subscribe("#")
-            
+
             # Session State aktualisieren
             st.session_state.session_recorder['recording'] = True
             st.session_state.session_recorder['message_buffer'].clear()
-            
+
             logger.info("✅ Session-Aufnahme gestartet - alle Topics abonniert")
         else:
             logger.error("❌ Kein MQTT Client verfügbar für Aufnahme")
@@ -299,14 +299,14 @@ def pause_recording():
     """Pausiert die Aufnahme"""
     try:
         logger.info("⏸️ Session-Aufnahme wird pausiert...")
-        
+
         if st.session_state.session_recorder['mqtt_client']:
             mqtt_client = st.session_state.session_recorder['mqtt_client']
             mqtt_client.unsubscribe("#")
-            
+
             # Session State aktualisieren
             st.session_state.session_recorder['recording'] = False
-            
+
             logger.info("✅ Session-Aufnahme pausiert - Topics deabonniert")
         else:
             logger.error("❌ Kein MQTT Client verfügbar für Pause")
@@ -318,7 +318,7 @@ def stop_recording():
     """Beendet die Aufnahme und speichert"""
     try:
         logger.info("⏹️ Session-Aufnahme wird gestoppt...")
-        
+
         # Aufnahme stoppen
         if st.session_state.session_recorder['mqtt_client']:
             mqtt_client = st.session_state.session_recorder['mqtt_client']
@@ -362,7 +362,7 @@ def save_session():
     """Speichert die Session-Daten"""
     try:
         logger.info("💾 Session-Datei wird erstellt...")
-        
+
         from src_orbis.helper_apps.session_manager.components.settings_manager import SettingsManager
 
         settings_manager = SettingsManager()
@@ -376,7 +376,7 @@ def save_session():
         else:
             session_dir = Path(session_directory)
         session_dir.mkdir(parents=True, exist_ok=True)
-        
+
         logger.info(f"📁 Session-Verzeichnis: {session_dir}")
 
         # Dateiname generieren
@@ -415,7 +415,7 @@ def save_sqlite_session(filepath: Path, messages: List[Dict[str, Any]]):
     """Speichert Session als SQLite-Datei"""
     try:
         logger.debug(f"🗄️ SQLite-Datenbank wird erstellt: {filepath}")
-        
+
         conn = sqlite3.connect(filepath)
         cursor = conn.cursor()
 
@@ -441,7 +441,7 @@ def save_sqlite_session(filepath: Path, messages: List[Dict[str, Any]]):
 
         conn.commit()
         conn.close()
-        
+
         logger.debug(f"✅ SQLite Session gespeichert: {len(messages)} Messages in {filepath}")
 
     except Exception as e:
@@ -453,7 +453,7 @@ def save_log_session(filepath: Path, messages: List[Dict[str, Any]]):
     """Speichert Session als Log-Datei"""
     try:
         logger.debug(f"📝 Log-Datei wird erstellt: {filepath}")
-        
+
         with open(filepath, 'w', encoding='utf-8') as f:
             for msg in messages:
                 log_entry = {"topic": msg['topic'], "payload": msg['payload'], "timestamp": msg['timestamp']}

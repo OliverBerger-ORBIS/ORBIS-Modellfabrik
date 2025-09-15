@@ -187,18 +187,20 @@ class SettingsManager:
         self.settings["session_recorder"]["session_directory"] = directory
         self.save_settings()
 
-    def update_session_recorder_mqtt_settings(self, host: str, port: int, qos: int, timeout: int, username: str = "", password: str = ""):
+    def update_session_recorder_mqtt_settings(
+        self, host: str, port: int, qos: int, timeout: int, username: str = "", password: str = ""
+    ):
         """Aktualisiert die MQTT Broker Einstellungen für Recorder"""
         if "session_recorder" not in self.settings:
             self.settings["session_recorder"] = {}
 
         self.settings["session_recorder"]["mqtt_broker"] = {
-            "host": host, 
-            "port": port, 
-            "qos": qos, 
+            "host": host,
+            "port": port,
+            "qos": qos,
             "timeout": timeout,
             "username": username,
-            "password": password
+            "password": password,
         }
         self.save_settings()
 

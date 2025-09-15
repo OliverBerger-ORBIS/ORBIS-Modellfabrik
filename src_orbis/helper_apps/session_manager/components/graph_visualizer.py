@@ -354,7 +354,7 @@ class GraphVisualizer:
                     title=dict(
                         text=f'Message Chain Graph ({filtered_graph.number_of_nodes()} nodes, '
                         f'{filtered_graph.number_of_edges()} edges)',
-                        font=dict(size=16)
+                        font=dict(size=16),
                     ),
                     showlegend=False,
                     hovermode='closest',

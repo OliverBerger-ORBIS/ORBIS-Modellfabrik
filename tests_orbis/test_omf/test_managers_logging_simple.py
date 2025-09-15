@@ -10,9 +10,9 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 from src_orbis.omf.tools.message_template_manager import OmfMessageTemplateManager
-from src_orbis.omf.tools.registry_manager import Registry, TopicManager
 from src_orbis.omf.tools.mqtt_gateway import MqttGateway
 from src_orbis.omf.tools.omf_mqtt_client import OmfMqttClient
+from src_orbis.omf.tools.registry_manager import Registry, TopicManager
 
 
 class TestManagersLoggingSimple(unittest.TestCase):
@@ -21,7 +21,7 @@ class TestManagersLoggingSimple(unittest.TestCase):
     def setUp(self):
         """Setup für jeden Test"""
         self.temp_dir = tempfile.mkdtemp()
-        
+
         # Logging zurücksetzen
         root = logging.getLogger()
         for handler in list(root.handlers):
@@ -40,9 +40,9 @@ class TestManagersLoggingSimple(unittest.TestCase):
         """Test: MqttGateway hat Logger-Attribut"""
         # Mock MQTT Client
         mock_client = MagicMock(spec=OmfMqttClient)
-        
+
         gateway = MqttGateway(mock_client)
-        
+
         # Prüfe ob Logger-Attribut existiert
         self.assertTrue(hasattr(gateway, 'logger'))
         self.assertIsInstance(gateway.logger, logging.Logger)
@@ -52,9 +52,9 @@ class TestManagersLoggingSimple(unittest.TestCase):
         """Test: Logger-Namen folgen der Konvention"""
         # Mock MQTT Client
         mock_client = MagicMock(spec=OmfMqttClient)
-        
+
         gateway = MqttGateway(mock_client)
-        
+
         # Prüfe Logger-Name-Konvention (konsistente omf.* Namen)
         expected_name = "omf.tools.mqtt_gateway"
         self.assertEqual(gateway.logger.name, expected_name)
@@ -62,17 +62,17 @@ class TestManagersLoggingSimple(unittest.TestCase):
     def test_logging_uses_get_logger_function(self):
         """Test: Manager verwenden get_logger() Funktion"""
         # Prüfe ob alle Manager get_logger() importieren
-        with open('src_orbis/omf/tools/message_template_manager.py', 'r') as f:
+        with open('src_orbis/omf/tools/message_template_manager.py') as f:
             content = f.read()
             self.assertIn('from src_orbis.omf.tools.logging_config import get_logger', content)
             self.assertIn('get_logger(', content)
 
-        with open('src_orbis/omf/tools/registry_manager.py', 'r') as f:
+        with open('src_orbis/omf/tools/registry_manager.py') as f:
             content = f.read()
             self.assertIn('from src_orbis.omf.tools.logging_config import get_logger', content)
             self.assertIn('get_logger(', content)
 
-        with open('src_orbis/omf/tools/mqtt_gateway.py', 'r') as f:
+        with open('src_orbis/omf/tools/mqtt_gateway.py') as f:
             content = f.read()
             self.assertIn('from .logging_config import get_logger', content)
             self.assertIn('get_logger(', content)
@@ -80,7 +80,7 @@ class TestManagersLoggingSimple(unittest.TestCase):
     def test_logging_does_not_use_print_statements(self):
         """Test: Manager verwenden keine print() Statements mehr"""
         # Prüfe ob MqttGateway keine print() Statements hat
-        with open('src_orbis/omf/tools/mqtt_gateway.py', 'r') as f:
+        with open('src_orbis/omf/tools/mqtt_gateway.py') as f:
             content = f.read()
             # Sollte keine print() Statements haben
             self.assertNotIn('print(', content)
@@ -89,14 +89,14 @@ class TestManagersLoggingSimple(unittest.TestCase):
         """Test: Manager loggen Initialisierungs-Nachrichten"""
         # Mock MQTT Client
         mock_client = MagicMock(spec=OmfMqttClient)
-        
+
         # Capture Log-Messages
         with patch('src_orbis.omf.tools.mqtt_gateway.get_logger') as mock_get_logger:
             mock_logger = MagicMock()
             mock_get_logger.return_value = mock_logger
-            
+
             gateway = MqttGateway(mock_client)
-            
+
             # Prüfe ob Initialisierungs-Log aufgerufen wurde
             mock_logger.info.assert_called_with("MqttGateway initialisiert")
 
@@ -104,20 +104,20 @@ class TestManagersLoggingSimple(unittest.TestCase):
         """Test: Manager loggen Fehler korrekt"""
         # Mock MQTT Client
         mock_client = MagicMock(spec=OmfMqttClient)
-        
+
         # Capture Log-Messages
         with patch('src_orbis.omf.tools.mqtt_gateway.get_logger') as mock_get_logger:
             mock_logger = MagicMock()
             mock_get_logger.return_value = mock_logger
-            
+
             gateway = MqttGateway(mock_client)
-            
+
             # Teste Fehler-Logging
             try:
                 gateway.build_via_mg("nonexistent_builder")
             except ValueError:
                 pass  # Erwarteter Fehler
-            
+
             # Prüfe ob Error-Log aufgerufen wurde
             mock_logger.error.assert_called()
 
@@ -125,19 +125,19 @@ class TestManagersLoggingSimple(unittest.TestCase):
         """Test: Manager verwenden korrekte Log-Level"""
         # Mock MQTT Client
         mock_client = MagicMock(spec=OmfMqttClient)
-        
+
         with patch('src_orbis.omf.tools.mqtt_gateway.get_logger') as mock_get_logger:
             mock_logger = MagicMock()
             mock_get_logger.return_value = mock_logger
-            
+
             gateway = MqttGateway(mock_client)
-            
+
             # Teste verschiedene Log-Level
             gateway.logger.info("Info message")
             gateway.logger.warning("Warning message")
             gateway.logger.error("Error message")
             gateway.logger.debug("Debug message")
-            
+
             # Prüfe ob korrekte Methoden aufgerufen wurden
             mock_logger.info.assert_called_with("Info message")
             mock_logger.warning.assert_called_with("Warning message")
@@ -148,23 +148,23 @@ class TestManagersLoggingSimple(unittest.TestCase):
         """Test: Log-Messages sind strukturiert und informativ"""
         # Mock MQTT Client
         mock_client = MagicMock(spec=OmfMqttClient)
-        
+
         with patch('src_orbis.omf.tools.mqtt_gateway.get_logger') as mock_get_logger:
             mock_logger = MagicMock()
             mock_get_logger.return_value = mock_logger
-            
+
             gateway = MqttGateway(mock_client)
-            
+
             # Teste strukturierte Log-Messages
             gateway.logger.info("✅ MQTT erfolgreich publiziert: test/topic")
             gateway.logger.error("❌ MQTT-Publikation fehlgeschlagen: test/topic")
             gateway.logger.warning("⚠️ Unknown topic: test/topic")
-            
+
             # Prüfe ob Messages strukturiert sind
             info_calls = [call for call in mock_logger.info.call_args_list if "✅" in str(call)]
             error_calls = [call for call in mock_logger.error.call_args_list if "❌" in str(call)]
             warning_calls = [call for call in mock_logger.warning.call_args_list if "⚠️" in str(call)]
-            
+
             self.assertTrue(len(info_calls) > 0)
             self.assertTrue(len(error_calls) > 0)
             self.assertTrue(len(warning_calls) > 0)
@@ -173,13 +173,13 @@ class TestManagersLoggingSimple(unittest.TestCase):
         """Test: Logger werden korrekt initialisiert"""
         # Mock MQTT Client
         mock_client = MagicMock(spec=OmfMqttClient)
-        
+
         with patch('src_orbis.omf.tools.mqtt_gateway.get_logger') as mock_get_logger:
             mock_logger = MagicMock()
             mock_get_logger.return_value = mock_logger
-            
+
             gateway = MqttGateway(mock_client)
-            
+
             # Prüfe ob get_logger mit korrektem Namen aufgerufen wurde
             expected_name = "omf.tools.mqtt_gateway"
             mock_get_logger.assert_called_with(expected_name)
@@ -190,11 +190,11 @@ class TestManagersLoggingSimple(unittest.TestCase):
         manager_files = [
             'src_orbis/omf/tools/message_template_manager.py',
             'src_orbis/omf/tools/registry_manager.py',
-            'src_orbis/omf/tools/mqtt_gateway.py'
+            'src_orbis/omf/tools/mqtt_gateway.py',
         ]
-        
+
         for file_path in manager_files:
-            with open(file_path, 'r') as f:
+            with open(file_path) as f:
                 content = f.read()
                 # Sollte get_logger importieren
                 self.assertIn('get_logger', content)

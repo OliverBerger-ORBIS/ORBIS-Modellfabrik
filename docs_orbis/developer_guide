@@ -199,7 +199,45 @@ def show_my_component():
 
 **Verboten:** `st.rerun()` in Komponenten (führt zu MQTT-Subscription-Verlust)
 
-### 5.7 Logging System
+### 5.7 MQTT-Subscription Pattern
+
+#### Per-Topic-Buffer Pattern (Standard)
+```python
+# ✅ RICHTIG - Spezifische Topics für Komponenten
+mqtt_client.subscribe_many([
+    "module/v1/ff/+/state",
+    "module/v1/ff/+/connection",
+    "ccu/state"
+], qos=1)
+
+# Nachrichten aus Per-Topic-Buffer holen
+state_messages = list(mqtt_client.get_buffer("module/v1/ff/+/state"))
+connection_messages = list(mqtt_client.get_buffer("module/v1/ff/+/connection"))
+```
+
+**Vorteile:**
+- **Performant:** Nur relevante Nachrichten
+- **Skalierbar:** Pro Komponente spezifische Topics
+- **Ressourcenschonend:** Keine globalen Subscriptions
+
+#### Message Center Ausnahme
+```python
+# ✅ ERLAUBT - Nur im Message Center
+mqtt_client.subscribe("#", qos=1)  # Wildcard-Subscription
+all_messages = list(mqtt_client._history)  # Globale History
+```
+
+**Warum Ausnahme:**
+- **Message Center** benötigt **alle Nachrichten**
+- **Übersichtsfunktion** für Debugging und Monitoring
+- **Validierungsregel** erlaubt `subscribe("#")` nur in `message_center.py`
+
+**Regeln:**
+- **Standard:** Per-Topic-Buffer Pattern für alle Komponenten
+- **Ausnahme:** Wildcard-Subscription nur im Message Center
+- **Verboten:** `subscribe("#")` in anderen Komponenten
+
+### 5.8 Logging System
 
 #### Thread-sicheres Logging
 ```python

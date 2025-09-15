@@ -26,6 +26,7 @@ class OmfModuleManager:
         if not self.config:
             try:
                 from .registry_manager import get_registry
+
                 registry = get_registry()
                 modules_data = registry.modules()
                 if modules_data:
@@ -34,7 +35,7 @@ class OmfModuleManager:
                     return
             except Exception as e:
                 print(f"⚠️ Registry v1 fallback failed: {e}")
-            
+
             raise ValueError(f"Could not load module configuration from {self.config_path}")
 
     def _get_default_config_path(self) -> str:

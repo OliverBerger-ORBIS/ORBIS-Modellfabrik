@@ -9,9 +9,10 @@ from typing import Any, Dict, List, Optional
 
 import yaml
 
+from src_orbis.omf.tools.logging_config import get_logger
+
 # Import validators
 from src_orbis.omf.tools.validators import validate as run_validation
-from src_orbis.omf.tools.logging_config import get_logger
 
 
 class OmfMessageTemplateManager:
@@ -21,7 +22,7 @@ class OmfMessageTemplateManager:
         """Initialisiert den OMF Message Template Manager"""
         self.logger = get_logger("omf.tools.message_template_manager")
         self.logger.info("MessageTemplateManager initialisiert")
-        
+
         if templates_dir is None:
             # Projekt-Root-relative Pfade verwenden
             current_dir = Path(__file__).parent
@@ -35,7 +36,9 @@ class OmfMessageTemplateManager:
             else:
                 # Fallback to legacy config (deprecated)
                 templates_dir = project_root / "src_orbis" / "omf" / "config" / "message_templates"
-                self.logger.warning("⚠️ Using deprecated message_templates - consider migrating to registry/model/v1/templates")
+                self.logger.warning(
+                    "⚠️ Using deprecated message_templates - consider migrating to registry/model/v1/templates"
+                )
 
         self.templates_dir = Path(templates_dir)
         self.metadata = self._load_metadata()
@@ -134,12 +137,12 @@ class OmfMessageTemplateManager:
             if template_data:
                 # Registry v1: Template-Key ist der Dateiname ohne .yml
                 template_key = file_path.stem
-                
+
                 # Füge Metadaten hinzu
                 template_data["file_path"] = str(file_path)
                 template_data["category"] = template_data.get("metadata", {}).get("category", "unknown")
                 template_data["sub_category"] = template_data.get("metadata", {}).get("sub_category", "unknown")
-                
+
                 # Verwende Template-Key als Topic
                 self.templates[template_key] = template_data
                 self.logger.info(f"✅ 1 Template aus {file_path.name} geladen (Registry v1)")

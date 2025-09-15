@@ -1,4 +1,5 @@
 import pytest
+
 from src_orbis.omf.tools.message_template_manager import OmfMessageTemplateManager
 from src_orbis.omf.tools.validators import validate
 
@@ -15,9 +16,9 @@ class TestNodeRedTemplates:
             "manufacturer": "Fischertechnik",
             "serialNumber": "SVR4H73275",
             "timestamp": "2025-08-19T09:08:58.660990Z",
-            "version": "1.6.0+gitc321c85"
+            "version": "1.6.0+gitc321c85",
         }
-        
+
         result = validate("module/v1/ff/NodeRed/SVR4H73275/connection", payload)
         assert len(result["errors"]) == 0
         assert len(result["warnings"]) == 0
@@ -31,9 +32,9 @@ class TestNodeRedTemplates:
             "manufacturer": "Fischertechnik",
             "serialNumber": "SVR4H73275",
             "timestamp": "2025-08-19T09:08:58.660990Z",
-            "version": "1.6.0+gitc321c85"
+            "version": "1.6.0+gitc321c85",
         }
-        
+
         result = validate("module/v1/ff/NodeRed/SVR4H73275/connection", payload)
         assert len(result["errors"]) == 0
         assert len(result["warnings"]) == 1
@@ -47,9 +48,9 @@ class TestNodeRedTemplates:
             "manufacturer": "Fischertechnik",
             "serialNumber": "SVR4H76530",
             "timestamp": "2025-08-19T08:52:32.608107Z",
-            "version": "1.0.0"
+            "version": "1.0.0",
         }
-        
+
         result = validate("module/v1/ff/NodeRed/SVR4H76530/connection", payload)
         assert len(result["errors"]) == 0
         assert len(result["warnings"]) == 0
@@ -62,7 +63,7 @@ class TestNodeRedTemplates:
                 "id": "327784cd-6abc-4a0b-870e-713694fdb1dd",
                 "result": "PASSED",
                 "state": "FINISHED",
-                "timestamp": "2025-08-19T09:19:03.473043Z"
+                "timestamp": "2025-08-19T09:19:03.473043Z",
             },
             "actionStates": [
                 {
@@ -73,16 +74,16 @@ class TestNodeRedTemplates:
                             "history": [
                                 {"code": 400, "ts": 1755595028336},
                                 {"code": 600, "ts": 1755595064912},
-                                {"code": 200, "ts": 1755595103032}
+                                {"code": 200, "ts": 1755595103032},
                             ],
                             "state": "PROCESSED",
                             "type": "RED",
-                            "workpieceId": "040a8dca341291"
+                            "workpieceId": "040a8dca341291",
                         }
                     },
                     "result": "PASSED",
                     "state": "FINISHED",
-                    "timestamp": "2025-08-19T09:19:03.473043Z"
+                    "timestamp": "2025-08-19T09:19:03.473043Z",
                 }
             ],
             "batteryState": {},
@@ -94,9 +95,9 @@ class TestNodeRedTemplates:
             "orderUpdateId": 11,
             "paused": False,
             "serialNumber": "SVR4H73275",
-            "timestamp": "2025-08-19T09:19:03.477244Z"
+            "timestamp": "2025-08-19T09:19:03.477244Z",
         }
-        
+
         result = validate("module/v1/ff/NodeRed/SVR4H73275/state", payload)
         assert len(result["errors"]) == 0
         assert len(result["warnings"]) == 0
@@ -109,7 +110,7 @@ class TestNodeRedTemplates:
                 "id": "7b25fdfb-4a9e-419d-836c-c4348d9d9fd3",
                 "result": "PASSED",
                 "state": "FINISHED",
-                "timestamp": "2025-08-19T09:18:22.005833Z"
+                "timestamp": "2025-08-19T09:18:22.005833Z",
             },
             "batteryState": {},
             "errors": [],
@@ -118,9 +119,9 @@ class TestNodeRedTemplates:
             "orderUpdateId": 10,
             "paused": False,
             "serialNumber": "SVR4H76530",
-            "timestamp": "2025-08-19T09:18:22.006119Z"
+            "timestamp": "2025-08-19T09:18:22.006119Z",
         }
-        
+
         result = validate("module/v1/ff/NodeRed/SVR4H76530/state", payload)
         assert len(result["errors"]) == 0
         assert len(result["warnings"]) == 0
@@ -133,7 +134,7 @@ class TestNodeRedTemplates:
                 "loadSets": [
                     {"loadType": "WHITE", "setName": "WHITES"},
                     {"loadType": "RED", "setName": "REDS"},
-                    {"loadType": "BLUE", "setName": "BLUES"}
+                    {"loadType": "BLUE", "setName": "BLUES"},
                 ]
             },
             "localizationParameters": {},
@@ -146,23 +147,20 @@ class TestNodeRedTemplates:
                             {
                                 "parameterDescription": "The load type to input",
                                 "parameterName": "type",
-                                "parameterType": "string"
+                                "parameterType": "string",
                             }
                         ],
-                        "actionType": "DROP"
+                        "actionType": "DROP",
                     }
                 ]
             },
             "protocolLimits": {},
             "serialNumber": "SVR4H73275",
             "timestamp": "2025-08-19T09:13:34.529266Z",
-            "typeSpecification": {
-                "moduleClass": "DPS",
-                "seriesName": "MOD-FF22+DPS"
-            },
-            "version": "1.6.0+gitc321c85"
+            "typeSpecification": {"moduleClass": "DPS", "seriesName": "MOD-FF22+DPS"},
+            "version": "1.6.0+gitc321c85",
         }
-        
+
         result = validate("module/v1/ff/NodeRed/SVR4H73275/factsheet", payload)
         assert len(result["errors"]) == 0
         assert len(result["warnings"]) == 0
@@ -183,23 +181,20 @@ class TestNodeRedTemplates:
                                 "isOptional": True,
                                 "parameterDescription": "Type of workpiece that should checked",
                                 "parameterName": "type",
-                                "parameterType": "string"
+                                "parameterType": "string",
                             }
                         ],
-                        "actionType": "CHECK_QUALITY"
+                        "actionType": "CHECK_QUALITY",
                     }
                 ]
             },
             "protocolLimits": {},
             "serialNumber": "SVR4H76530",
             "timestamp": "2025-08-19T09:13:34.247569Z",
-            "typeSpecification": {
-                "moduleClass": "AIQS24",
-                "seriesName": "MOD-FF22+AIQS+24V+TXT"
-            },
-            "version": "1.3.0+git40c45a0"
+            "typeSpecification": {"moduleClass": "AIQS24", "seriesName": "MOD-FF22+AIQS+24V+TXT"},
+            "version": "1.3.0+git40c45a0",
         }
-        
+
         result = validate("module/v1/ff/NodeRed/SVR4H76530/factsheet", payload)
         assert len(result["errors"]) == 0
         assert len(result["warnings"]) == 0
@@ -208,10 +203,10 @@ class TestNodeRedTemplates:
         """Test fehlende required fields"""
         payload = {
             "connectionState": "ONLINE",
-            "headerId": 2
+            "headerId": 2,
             # missing: ip, manufacturer, serialNumber, timestamp, version
         }
-        
+
         result = validate("module/v1/ff/NodeRed/SVR4H73275/connection", payload)
         assert len(result["errors"]) > 0
         assert any("ip is required" in error["msg"] for error in result["errors"])
@@ -226,9 +221,9 @@ class TestNodeRedTemplates:
             "manufacturer": "Fischertechnik",
             "serialNumber": "WRONG_SERIAL",
             "timestamp": "2025-08-19T09:08:58.660990Z",
-            "version": "1.6.0+gitc321c85"
+            "version": "1.6.0+gitc321c85",
         }
-        
+
         result = validate("module/v1/ff/NodeRed/SVR4H73275/connection", payload)
         assert len(result["errors"]) == 0
         assert len(result["warnings"]) == 1
@@ -241,7 +236,7 @@ class TestNodeRedMessageTemplateManager:
     def test_nodered_connection_dps_validation(self):
         """Test DPS Connection mit MessageTemplateManager"""
         manager = OmfMessageTemplateManager()
-        
+
         payload = {
             "connectionState": "ONLINE",
             "headerId": 2,
@@ -249,9 +244,9 @@ class TestNodeRedMessageTemplateManager:
             "manufacturer": "Fischertechnik",
             "serialNumber": "SVR4H73275",
             "timestamp": "2025-08-19T09:08:58.660990Z",
-            "version": "1.6.0+gitc321c85"
+            "version": "1.6.0+gitc321c85",
         }
-        
+
         result = manager.validate_payload("module/v1/ff/NodeRed/SVR4H73275/connection", payload)
         assert len(result["errors"]) == 0
         assert len(result["warnings"]) == 0
@@ -259,16 +254,16 @@ class TestNodeRedMessageTemplateManager:
     def test_nodered_connection_aiqs_validation(self):
         """Test AIQS Connection mit MessageTemplateManager"""
         manager = OmfMessageTemplateManager()
-        
+
         payload = {
             "connectionState": "ONLINE",
             "headerId": 2,
             "manufacturer": "Fischertechnik",
             "serialNumber": "SVR4H76530",
             "timestamp": "2025-08-19T08:52:32.608107Z",
-            "version": "1.0.0"
+            "version": "1.0.0",
         }
-        
+
         result = manager.validate_payload("module/v1/ff/NodeRed/SVR4H76530/connection", payload)
         assert len(result["errors"]) == 0
         assert len(result["warnings"]) == 0
@@ -276,7 +271,7 @@ class TestNodeRedMessageTemplateManager:
     def test_nodered_unknown_template(self):
         """Test unbekanntes Template"""
         manager = OmfMessageTemplateManager()
-        
+
         payload = {"test": "data"}
         result = manager.validate_payload("unknown/template", payload)
         # Sollte keine Errors/Warnings zurückgeben für unbekannte Templates

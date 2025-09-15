@@ -4,7 +4,6 @@ Registry v1 Manager - Einheitliche Fehlerbehandlung und Caching
 Version: 1.0.0
 """
 
-import logging
 import re
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
@@ -51,7 +50,7 @@ class Registry:
     def __init__(self, root: str = None, watch_mode: bool = False):
         self.logger = get_logger("omf.tools.registry")
         self.logger.info("Registry v1 Manager initialisiert")
-        
+
         if root is None:
             # Projekt-Root-relative Pfade verwenden
             current_dir = Path(__file__).parent
@@ -85,7 +84,7 @@ class Registry:
 
         # Check if file exists
         if not file_path.exists():
-            logger.warning(f"⚠️ File not found: {file_path}")
+            self.logger.warning(f"⚠️ File not found: {file_path}")
             return {}
 
         # Check mtime for hot-reload
@@ -93,7 +92,7 @@ class Registry:
         cached_mtime = self._mtime_cache.get(str(file_path))
 
         if self.watch_mode and cached_mtime and current_mtime > cached_mtime:
-            logger.info(f"🔄 Hot-reload: {file_path}")
+            self.logger.info(f"🔄 Hot-reload: {file_path}")
             if str(file_path) in self._cache:
                 del self._cache[str(file_path)]
 
@@ -269,7 +268,7 @@ class MessageTemplateManager:
 
         # Log validation errors (non-blocking)
         if errors:
-            logger.warning(f"⚠️ Validation errors for {key}: {errors}")
+            self.logger.warning(f"⚠️ Validation errors for {key}: {errors}")
 
         return errors
 

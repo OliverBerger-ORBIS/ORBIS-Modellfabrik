@@ -309,7 +309,7 @@ class SettingsUI:
 
         # Username und Password in separater Zeile
         col3, col4 = st.columns(2)
-        
+
         with col3:
             mqtt_username = st.text_input(
                 "MQTT Username (optional)",
@@ -317,7 +317,7 @@ class SettingsUI:
                 help="Benutzername für MQTT Broker Authentifizierung",
                 key="recorder_mqtt_username",
             )
-        
+
         with col4:
             mqtt_password = st.text_input(
                 "MQTT Password (optional)",

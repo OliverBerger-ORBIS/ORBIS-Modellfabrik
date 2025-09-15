@@ -65,26 +65,26 @@ def _init_logging_once():
     log_level_name = st.session_state.get("log_level", "DEBUG")
     log_level_map = {"DEBUG": 10, "INFO": 20, "WARNING": 30, "ERROR": 40}
     log_level = log_level_map.get(log_level_name, 10)
-    
+
     root, listener = configure_logging(level=log_level, console_pretty=True)
-    
+
     # Debug-Log für Log-Level-Verifikation
     print(f"🔍 DEBUG: Log-Level ist auf {log_level} gesetzt (DEBUG=10, INFO=20)")
     print(f"🔍 DEBUG: Root Logger Level: {root.level}")
-    
+
     # Test-Log um zu prüfen ob Logging funktioniert
     test_logger = logging.getLogger("omf.dashboard.test")
     print(f"🔍 DEBUG: Test Logger Level VOR Konfiguration: {test_logger.level}")
-    
+
     test_logger.info("🔧 Dashboard-Logging initialisiert")
     test_logger.debug("🐛 Debug-Logging aktiviert")
-    
+
     print(f"🔍 DEBUG: Test Logger Level NACH Konfiguration: {test_logger.level}")
-    
+
     # Direkter Debug-Test
     test_logger.debug("🧪 DIREKTER DEBUG-TEST NACH LOGGER-KONFIGURATION")
     test_logger.info("ℹ️ DIREKTER INFO-TEST NACH LOGGER-KONFIGURATION")
-    
+
     # Zusätzlicher Test für RingBuffer
     if "log_buffer" in st.session_state:
         st.session_state.log_buffer.append("🧪 MANUELLER TEST-LOG FÜR RINGBUFFER")
@@ -117,35 +117,35 @@ def _init_logging_once():
             rb = RingBufferHandler(buf)
             rb.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(name)s: %(message)s"))
             st.session_state["ring_buffer_handler"] = rb
-    
+
     # Logger-Konfiguration NACH configure_logging() - das ist wichtig!
     # Stelle sicher, dass spezifische Logger auch den RingBufferHandler verwenden
     mqtt_logger = logging.getLogger("omf.tools.mqtt_gateway")
     mqtt_logger.addHandler(rb)
     mqtt_logger.setLevel(log_level)
     mqtt_logger.propagate = False  # Verhindere doppelte Logs
-    
+
     debug_logger = logging.getLogger("omf.dashboard.debug")
     debug_logger.addHandler(rb)
     debug_logger.setLevel(log_level)
     debug_logger.propagate = False
-    
+
     logs_test_logger = logging.getLogger("omf.dashboard.logs_test")
     logs_test_logger.addHandler(rb)
     logs_test_logger.setLevel(log_level)
     logs_test_logger.propagate = False
-    
+
     # Test-Logger auch konfigurieren
     test_logger = logging.getLogger("omf.dashboard.test")
     test_logger.addHandler(rb)
     test_logger.setLevel(log_level)
     test_logger.propagate = False
-    
+
     # Zusätzliche Debug-Tests nach Logger-Konfiguration
     print(f"🔍 DEBUG: MqttGateway Logger Level: {mqtt_logger.level}")
     print(f"🔍 DEBUG: Debug Logger Level: {debug_logger.level}")
     print(f"🔍 DEBUG: Test Logger Level: {test_logger.level}")
-    
+
     # Debug-Tests nach Konfiguration
     mqtt_logger.debug("🔧 MQTT DEBUG-TEST NACH KONFIGURATION")
     debug_logger.debug("🐛 DEBUG LOGGER TEST NACH KONFIGURATION")

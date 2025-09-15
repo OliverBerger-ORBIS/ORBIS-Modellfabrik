@@ -148,15 +148,56 @@ _process_module_messages(state_messages, connection_messages, module_status_stor
 - **Verwende subscribe_many()** für mehrere Topics
 - **QoS-Level** entsprechend der Anforderung wählen
 
-### 2. **Buffer-Verarbeitung**
+### 2. **Message Center Ausnahme**
+```python
+# ✅ ERLAUBT - Nur im Message Center
+mqtt_client.subscribe("#", qos=1)  # Wildcard-Subscription
+all_messages = list(mqtt_client._history)  # Globale History
+```
+
+**Warum Ausnahme:**
+- **Message Center** benötigt **alle Nachrichten** für Übersichtsfunktion
+- **Debugging und Monitoring** erfordert vollständige Nachrichtensicht
+- **Validierungsregel** erlaubt `subscribe("#")` nur in `message_center.py`
+
+**Regeln:**
+- **Standard:** Per-Topic-Buffer Pattern für alle Komponenten
+- **Ausnahme:** Wildcard-Subscription nur im Message Center
+- **Verboten:** `subscribe("#")` in anderen Komponenten
+
+### 3. **Buffer-Verarbeitung**
 - **Buffer bei jedem Rerun** abrufen
 - **Leere Buffer** handhaben
 - **Message-Validierung** vor Verarbeitung
 
-### 3. **Error Handling**
+### 4. **Error Handling**
 - **Try-Catch** um Buffer-Zugriffe
 - **Fallback-Verhalten** bei Fehlern
 - **User-Feedback** bei Problemen
+
+## Validierungsregeln
+
+Das **Per-Topic-Buffer Pattern** wird durch automatische Validierung überwacht:
+
+### Dashboard Rules Validator
+```bash
+python src_orbis/scripts/validate_dashboard_rules.py
+```
+
+**Regeln:**
+- **ERROR:** `subscribe("#")` in Komponenten (außer Message Center)
+- **WARN:** `subscribe("#")` im Message Center (erlaubt, aber prüfen ob nötig)
+- **WARN:** Sehr breite Subscribe-Patterns (`module/#`, `fts/#`, etc.)
+- **WARN:** `subscribe()` in Komponenten (besser: Interesse/Buffer deklarieren)
+
+### Message Center Ausnahme
+```python
+# ✅ ERLAUBT - Nur in message_center.py
+mqtt_client.subscribe("#", qos=1)
+
+# ❌ VERBOTEN - In allen anderen Komponenten
+mqtt_client.subscribe("#", qos=1)  # ERROR: subscribe('#') ist verboten
+```
 
 ## Troubleshooting
 

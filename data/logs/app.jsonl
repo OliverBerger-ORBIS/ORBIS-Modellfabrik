@@ -4710,3 +4710,550 @@ Test-Error
 {"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'tRNS' 748 222", "timestamp": "2025-09-15 10:37:05,459"}
 {"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 982 9", "timestamp": "2025-09-15 10:37:05,459"}
 {"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 1003 1328", "timestamp": "2025-09-15 10:37:05,459"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.test", "msg": "🔧 Dashboard-Logging initialisiert", "timestamp": "2025-09-15 16:36:52,351"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.dashboard.test", "msg": "🐛 Debug-Logging aktiviert", "timestamp": "2025-09-15 16:36:52,351"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.dashboard.test", "msg": "🧪 DIREKTER DEBUG-TEST NACH LOGGER-KONFIGURATION", "timestamp": "2025-09-15 16:36:52,351"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.test", "msg": "ℹ️ DIREKTER INFO-TEST NACH LOGGER-KONFIGURATION", "timestamp": "2025-09-15 16:36:52,351"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 16:36:53,491"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 41 9", "timestamp": "2025-09-15 16:36:53,491"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 62 8192", "timestamp": "2025-09-15 16:36:53,492"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 16:36:53,492"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 41 9", "timestamp": "2025-09-15 16:36:53,492"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 62 8192", "timestamp": "2025-09-15 16:36:53,492"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.tools.registry", "msg": "Registry v1 Manager initialisiert", "timestamp": "2025-09-15 16:36:53,504"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.tools.registry", "msg": "Registry-Root: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1", "timestamp": "2025-09-15 16:36:53,504"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/manifest.yml", "timestamp": "2025-09-15 16:36:53,508"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.tools.registry", "msg": "✅ Registry version check passed: 1.0.0", "timestamp": "2025-09-15 16:36:53,508"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/modules.yml", "timestamp": "2025-09-15 16:36:53,516"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.message_center", "msg": "📡 Message Center geladen", "timestamp": "2025-09-15 16:36:53,565"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering", "msg": "🎮 Steering geladen", "timestamp": "2025-09-15 16:36:53,569"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_factory", "msg": "🏭 Factory Steering geladen", "timestamp": "2025-09-15 16:36:53,569"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_factory", "msg": "✅ MQTT-Client verfügbar, initialisiere Gateway", "timestamp": "2025-09-15 16:36:53,569"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_generic", "msg": "🔧 Generic Steering geladen", "timestamp": "2025-09-15 16:36:53,580"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_generic", "msg": "✅ MQTT-Client verfügbar, initialisiere Gateway", "timestamp": "2025-09-15 16:36:53,583"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_sequence", "msg": "🎯 Sequence Steering geladen", "timestamp": "2025-09-15 16:36:53,586"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 16:36:53,609"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'sRGB' 41 1", "timestamp": "2025-09-15 16:36:53,609"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'gAMA' 54 4", "timestamp": "2025-09-15 16:36:53,609"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'PLTE' 70 744", "timestamp": "2025-09-15 16:36:53,609"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'tRNS' 826 248", "timestamp": "2025-09-15 16:36:53,609"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 1086 9", "timestamp": "2025-09-15 16:36:53,609"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 1107 2293", "timestamp": "2025-09-15 16:36:53,609"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 16:36:53,609"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'sRGB' 41 1", "timestamp": "2025-09-15 16:36:53,609"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'gAMA' 54 4", "timestamp": "2025-09-15 16:36:53,609"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'PLTE' 70 744", "timestamp": "2025-09-15 16:36:53,609"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'tRNS' 826 248", "timestamp": "2025-09-15 16:36:53,609"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 1086 9", "timestamp": "2025-09-15 16:36:53,609"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 1107 2293", "timestamp": "2025-09-15 16:36:53,609"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 16:36:53,611"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'sRGB' 41 1", "timestamp": "2025-09-15 16:36:53,611"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'gAMA' 54 4", "timestamp": "2025-09-15 16:36:53,611"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'PLTE' 70 765", "timestamp": "2025-09-15 16:36:53,611"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'tRNS' 847 255", "timestamp": "2025-09-15 16:36:53,611"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 1114 9", "timestamp": "2025-09-15 16:36:53,611"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 1135 2540", "timestamp": "2025-09-15 16:36:53,611"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 16:36:53,611"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'sRGB' 41 1", "timestamp": "2025-09-15 16:36:53,611"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'gAMA' 54 4", "timestamp": "2025-09-15 16:36:53,611"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'PLTE' 70 765", "timestamp": "2025-09-15 16:36:53,611"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'tRNS' 847 255", "timestamp": "2025-09-15 16:36:53,611"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 1114 9", "timestamp": "2025-09-15 16:36:53,611"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 1135 2540", "timestamp": "2025-09-15 16:36:53,611"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 16:36:53,613"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'sRGB' 41 1", "timestamp": "2025-09-15 16:36:53,613"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'gAMA' 54 4", "timestamp": "2025-09-15 16:36:53,613"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'PLTE' 70 381", "timestamp": "2025-09-15 16:36:53,613"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'tRNS' 463 127", "timestamp": "2025-09-15 16:36:53,613"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 602 9", "timestamp": "2025-09-15 16:36:53,613"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 623 905", "timestamp": "2025-09-15 16:36:53,613"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 16:36:53,613"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'sRGB' 41 1", "timestamp": "2025-09-15 16:36:53,613"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'gAMA' 54 4", "timestamp": "2025-09-15 16:36:53,613"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'PLTE' 70 381", "timestamp": "2025-09-15 16:36:53,613"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'tRNS' 463 127", "timestamp": "2025-09-15 16:36:53,613"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 602 9", "timestamp": "2025-09-15 16:36:53,613"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 623 905", "timestamp": "2025-09-15 16:36:53,613"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 16:36:53,614"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'sRGB' 41 1", "timestamp": "2025-09-15 16:36:53,614"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'gAMA' 54 4", "timestamp": "2025-09-15 16:36:53,614"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'PLTE' 70 756", "timestamp": "2025-09-15 16:36:53,614"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'tRNS' 838 252", "timestamp": "2025-09-15 16:36:53,614"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 1102 9", "timestamp": "2025-09-15 16:36:53,614"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 1123 2563", "timestamp": "2025-09-15 16:36:53,614"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 16:36:53,614"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'sRGB' 41 1", "timestamp": "2025-09-15 16:36:53,614"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'gAMA' 54 4", "timestamp": "2025-09-15 16:36:53,614"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'PLTE' 70 756", "timestamp": "2025-09-15 16:36:53,614"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'tRNS' 838 252", "timestamp": "2025-09-15 16:36:53,614"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 1102 9", "timestamp": "2025-09-15 16:36:53,614"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 1123 2563", "timestamp": "2025-09-15 16:36:53,614"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 16:36:53,616"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'sRGB' 41 1", "timestamp": "2025-09-15 16:36:53,616"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'gAMA' 54 4", "timestamp": "2025-09-15 16:36:53,616"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'PLTE' 70 531", "timestamp": "2025-09-15 16:36:53,616"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'tRNS' 613 177", "timestamp": "2025-09-15 16:36:53,616"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 802 9", "timestamp": "2025-09-15 16:36:53,616"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 823 1401", "timestamp": "2025-09-15 16:36:53,616"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 16:36:53,617"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'sRGB' 41 1", "timestamp": "2025-09-15 16:36:53,617"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'gAMA' 54 4", "timestamp": "2025-09-15 16:36:53,617"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'PLTE' 70 531", "timestamp": "2025-09-15 16:36:53,617"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'tRNS' 613 177", "timestamp": "2025-09-15 16:36:53,617"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 802 9", "timestamp": "2025-09-15 16:36:53,617"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 823 1401", "timestamp": "2025-09-15 16:36:53,617"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 16:36:53,618"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'sRGB' 41 1", "timestamp": "2025-09-15 16:36:53,618"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'gAMA' 54 4", "timestamp": "2025-09-15 16:36:53,618"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'PLTE' 70 666", "timestamp": "2025-09-15 16:36:53,618"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'tRNS' 748 222", "timestamp": "2025-09-15 16:36:53,618"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 982 9", "timestamp": "2025-09-15 16:36:53,618"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 1003 1328", "timestamp": "2025-09-15 16:36:53,618"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 16:36:53,618"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'sRGB' 41 1", "timestamp": "2025-09-15 16:36:53,618"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'gAMA' 54 4", "timestamp": "2025-09-15 16:36:53,618"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'PLTE' 70 666", "timestamp": "2025-09-15 16:36:53,618"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'tRNS' 748 222", "timestamp": "2025-09-15 16:36:53,618"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 982 9", "timestamp": "2025-09-15 16:36:53,618"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 1003 1328", "timestamp": "2025-09-15 16:36:53,618"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.module_state_control", "msg": "Initialisiere ModuleStateManager mit MQTT-Client und Gateway", "timestamp": "2025-09-15 16:36:53,727"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Filter hinzugefügt: module/v1/ff/SVR4H76530/state", "timestamp": "2025-09-15 16:36:53,727"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Filter hinzugefügt: module/v1/ff/SVR3QA2098/state", "timestamp": "2025-09-15 16:36:53,727"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Filter hinzugefügt: module/v1/ff/SVR4H76449/state", "timestamp": "2025-09-15 16:36:53,727"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Filter hinzugefügt: module/v1/ff/SVR3QA0022/state", "timestamp": "2025-09-15 16:36:53,727"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Filter hinzugefügt: module/v1/ff/SVR4H73275/state", "timestamp": "2025-09-15 16:36:53,727"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Filter hinzugefügt: module/v1/ff/CHRG0/state", "timestamp": "2025-09-15 16:36:53,727"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Filter hinzugefügt: module/v1/ff/SVR4H76530/connection", "timestamp": "2025-09-15 16:36:53,727"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Filter hinzugefügt: module/v1/ff/SVR3QA2098/connection", "timestamp": "2025-09-15 16:36:53,727"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Filter hinzugefügt: module/v1/ff/SVR4H76449/connection", "timestamp": "2025-09-15 16:36:53,727"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Filter hinzugefügt: module/v1/ff/SVR3QA0022/connection", "timestamp": "2025-09-15 16:36:53,727"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Filter hinzugefügt: module/v1/ff/SVR4H73275/connection", "timestamp": "2025-09-15 16:36:53,727"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Filter hinzugefügt: module/v1/ff/CHRG0/connection", "timestamp": "2025-09-15 16:36:53,727"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Per-topic subscription für 12 Filter aktiviert", "timestamp": "2025-09-15 16:36:53,727"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Monitor-Thread gestartet", "timestamp": "2025-09-15 16:36:53,727"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "ModuleStateManager initialisiert", "timestamp": "2025-09-15 16:36:53,727"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.module_state_control", "msg": "ModuleStateManager erfolgreich initialisiert", "timestamp": "2025-09-15 16:36:53,727"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 16:36:55,621"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 41 9", "timestamp": "2025-09-15 16:36:55,621"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 62 8192", "timestamp": "2025-09-15 16:36:55,621"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 16:36:55,621"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 41 9", "timestamp": "2025-09-15 16:36:55,621"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 62 8192", "timestamp": "2025-09-15 16:36:55,621"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.message_center", "msg": "📡 Message Center geladen", "timestamp": "2025-09-15 16:36:55,705"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering", "msg": "🎮 Steering geladen", "timestamp": "2025-09-15 16:36:55,720"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_factory", "msg": "🏭 Factory Steering geladen", "timestamp": "2025-09-15 16:36:55,720"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_factory", "msg": "✅ MQTT-Client verfügbar, initialisiere Gateway", "timestamp": "2025-09-15 16:36:55,721"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_generic", "msg": "🔧 Generic Steering geladen", "timestamp": "2025-09-15 16:36:55,731"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_generic", "msg": "✅ MQTT-Client verfügbar, initialisiere Gateway", "timestamp": "2025-09-15 16:36:55,732"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_sequence", "msg": "🎯 Sequence Steering geladen", "timestamp": "2025-09-15 16:36:55,734"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 16:36:55,749"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'sRGB' 41 1", "timestamp": "2025-09-15 16:36:55,749"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'gAMA' 54 4", "timestamp": "2025-09-15 16:36:55,749"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'PLTE' 70 744", "timestamp": "2025-09-15 16:36:55,749"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'tRNS' 826 248", "timestamp": "2025-09-15 16:36:55,749"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 1086 9", "timestamp": "2025-09-15 16:36:55,749"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 1107 2293", "timestamp": "2025-09-15 16:36:55,749"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 16:36:55,749"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'sRGB' 41 1", "timestamp": "2025-09-15 16:36:55,749"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'gAMA' 54 4", "timestamp": "2025-09-15 16:36:55,749"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'PLTE' 70 744", "timestamp": "2025-09-15 16:36:55,750"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'tRNS' 826 248", "timestamp": "2025-09-15 16:36:55,750"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 1086 9", "timestamp": "2025-09-15 16:36:55,750"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 1107 2293", "timestamp": "2025-09-15 16:36:55,750"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 16:36:55,751"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'sRGB' 41 1", "timestamp": "2025-09-15 16:36:55,751"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'gAMA' 54 4", "timestamp": "2025-09-15 16:36:55,751"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'PLTE' 70 765", "timestamp": "2025-09-15 16:36:55,751"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'tRNS' 847 255", "timestamp": "2025-09-15 16:36:55,751"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 1114 9", "timestamp": "2025-09-15 16:36:55,751"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 1135 2540", "timestamp": "2025-09-15 16:36:55,751"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 16:36:55,751"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'sRGB' 41 1", "timestamp": "2025-09-15 16:36:55,751"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'gAMA' 54 4", "timestamp": "2025-09-15 16:36:55,751"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'PLTE' 70 765", "timestamp": "2025-09-15 16:36:55,751"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'tRNS' 847 255", "timestamp": "2025-09-15 16:36:55,751"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 1114 9", "timestamp": "2025-09-15 16:36:55,751"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 1135 2540", "timestamp": "2025-09-15 16:36:55,751"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 16:36:55,753"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'sRGB' 41 1", "timestamp": "2025-09-15 16:36:55,753"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'gAMA' 54 4", "timestamp": "2025-09-15 16:36:55,753"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'PLTE' 70 381", "timestamp": "2025-09-15 16:36:55,753"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'tRNS' 463 127", "timestamp": "2025-09-15 16:36:55,753"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 602 9", "timestamp": "2025-09-15 16:36:55,753"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 623 905", "timestamp": "2025-09-15 16:36:55,753"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 16:36:55,753"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'sRGB' 41 1", "timestamp": "2025-09-15 16:36:55,753"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'gAMA' 54 4", "timestamp": "2025-09-15 16:36:55,753"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'PLTE' 70 381", "timestamp": "2025-09-15 16:36:55,753"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'tRNS' 463 127", "timestamp": "2025-09-15 16:36:55,753"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 602 9", "timestamp": "2025-09-15 16:36:55,753"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 623 905", "timestamp": "2025-09-15 16:36:55,753"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 16:36:55,756"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'sRGB' 41 1", "timestamp": "2025-09-15 16:36:55,756"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'gAMA' 54 4", "timestamp": "2025-09-15 16:36:55,756"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'PLTE' 70 756", "timestamp": "2025-09-15 16:36:55,756"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'tRNS' 838 252", "timestamp": "2025-09-15 16:36:55,756"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 1102 9", "timestamp": "2025-09-15 16:36:55,756"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 1123 2563", "timestamp": "2025-09-15 16:36:55,756"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 16:36:55,756"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'sRGB' 41 1", "timestamp": "2025-09-15 16:36:55,756"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'gAMA' 54 4", "timestamp": "2025-09-15 16:36:55,756"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'PLTE' 70 756", "timestamp": "2025-09-15 16:36:55,756"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'tRNS' 838 252", "timestamp": "2025-09-15 16:36:55,756"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 1102 9", "timestamp": "2025-09-15 16:36:55,756"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 1123 2563", "timestamp": "2025-09-15 16:36:55,757"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 16:36:55,759"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'sRGB' 41 1", "timestamp": "2025-09-15 16:36:55,759"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'gAMA' 54 4", "timestamp": "2025-09-15 16:36:55,759"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'PLTE' 70 531", "timestamp": "2025-09-15 16:36:55,759"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'tRNS' 613 177", "timestamp": "2025-09-15 16:36:55,759"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 802 9", "timestamp": "2025-09-15 16:36:55,759"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 823 1401", "timestamp": "2025-09-15 16:36:55,759"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 16:36:55,759"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'sRGB' 41 1", "timestamp": "2025-09-15 16:36:55,759"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'gAMA' 54 4", "timestamp": "2025-09-15 16:36:55,759"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'PLTE' 70 531", "timestamp": "2025-09-15 16:36:55,759"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'tRNS' 613 177", "timestamp": "2025-09-15 16:36:55,759"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 802 9", "timestamp": "2025-09-15 16:36:55,759"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 823 1401", "timestamp": "2025-09-15 16:36:55,759"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 16:36:55,761"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'sRGB' 41 1", "timestamp": "2025-09-15 16:36:55,762"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'gAMA' 54 4", "timestamp": "2025-09-15 16:36:55,762"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'PLTE' 70 666", "timestamp": "2025-09-15 16:36:55,762"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'tRNS' 748 222", "timestamp": "2025-09-15 16:36:55,762"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 982 9", "timestamp": "2025-09-15 16:36:55,762"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 1003 1328", "timestamp": "2025-09-15 16:36:55,762"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 16:36:55,762"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'sRGB' 41 1", "timestamp": "2025-09-15 16:36:55,762"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'gAMA' 54 4", "timestamp": "2025-09-15 16:36:55,762"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'PLTE' 70 666", "timestamp": "2025-09-15 16:36:55,762"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'tRNS' 748 222", "timestamp": "2025-09-15 16:36:55,762"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 982 9", "timestamp": "2025-09-15 16:36:55,762"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 1003 1328", "timestamp": "2025-09-15 16:36:55,762"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.tools.message_template_manager", "msg": "MessageTemplateManager initialisiert", "timestamp": "2025-09-15 16:36:55,768"}
+{"app": "omf_dashboard", "level": "WARNING", "logger": "omf.tools.message_template_manager", "msg": "⚠️ Using deprecated message_templates - consider migrating to registry/model/v1/templates", "timestamp": "2025-09-15 16:36:55,768"}
+{"app": "omf_dashboard", "level": "WARNING", "logger": "omf.tools.message_template_manager", "msg": "⚠️ Metadaten-Datei nicht gefunden: /Users/oliver/Projects/src_orbis/omf/config/message_templates/metadata.yml", "timestamp": "2025-09-15 16:36:55,769"}
+{"app": "omf_dashboard", "level": "WARNING", "logger": "omf.tools.message_template_manager", "msg": "⚠️ Kategorien-Datei nicht gefunden: /Users/oliver/Projects/src_orbis/omf/config/message_templates/categories.yml", "timestamp": "2025-09-15 16:36:55,769"}
+{"app": "omf_dashboard", "level": "WARNING", "logger": "omf.tools.message_template_manager", "msg": "⚠️ Templates-Verzeichnis nicht gefunden: /Users/oliver/Projects/src_orbis/omf/config/message_templates", "timestamp": "2025-09-15 16:36:55,769"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 16:36:58,857"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 41 9", "timestamp": "2025-09-15 16:36:58,858"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 62 8192", "timestamp": "2025-09-15 16:36:58,858"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 16:36:58,858"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 41 9", "timestamp": "2025-09-15 16:36:58,858"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 62 8192", "timestamp": "2025-09-15 16:36:58,858"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.message_center", "msg": "📡 Message Center geladen", "timestamp": "2025-09-15 16:36:58,898"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering", "msg": "🎮 Steering geladen", "timestamp": "2025-09-15 16:36:58,910"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_factory", "msg": "🏭 Factory Steering geladen", "timestamp": "2025-09-15 16:36:58,910"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_factory", "msg": "✅ MQTT-Client verfügbar, initialisiere Gateway", "timestamp": "2025-09-15 16:36:58,910"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_generic", "msg": "🔧 Generic Steering geladen", "timestamp": "2025-09-15 16:36:58,918"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_generic", "msg": "✅ MQTT-Client verfügbar, initialisiere Gateway", "timestamp": "2025-09-15 16:36:58,918"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_sequence", "msg": "🎯 Sequence Steering geladen", "timestamp": "2025-09-15 16:36:58,919"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 16:36:58,941"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'sRGB' 41 1", "timestamp": "2025-09-15 16:36:58,941"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'gAMA' 54 4", "timestamp": "2025-09-15 16:36:58,941"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'PLTE' 70 744", "timestamp": "2025-09-15 16:36:58,941"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'tRNS' 826 248", "timestamp": "2025-09-15 16:36:58,941"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 1086 9", "timestamp": "2025-09-15 16:36:58,941"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 1107 2293", "timestamp": "2025-09-15 16:36:58,941"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 16:36:58,941"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'sRGB' 41 1", "timestamp": "2025-09-15 16:36:58,941"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'gAMA' 54 4", "timestamp": "2025-09-15 16:36:58,941"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'PLTE' 70 744", "timestamp": "2025-09-15 16:36:58,941"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'tRNS' 826 248", "timestamp": "2025-09-15 16:36:58,941"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 1086 9", "timestamp": "2025-09-15 16:36:58,941"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 1107 2293", "timestamp": "2025-09-15 16:36:58,942"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 16:36:58,946"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'sRGB' 41 1", "timestamp": "2025-09-15 16:36:58,946"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'gAMA' 54 4", "timestamp": "2025-09-15 16:36:58,946"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'PLTE' 70 765", "timestamp": "2025-09-15 16:36:58,946"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'tRNS' 847 255", "timestamp": "2025-09-15 16:36:58,946"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 1114 9", "timestamp": "2025-09-15 16:36:58,946"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 1135 2540", "timestamp": "2025-09-15 16:36:58,946"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 16:36:58,946"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'sRGB' 41 1", "timestamp": "2025-09-15 16:36:58,946"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'gAMA' 54 4", "timestamp": "2025-09-15 16:36:58,946"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'PLTE' 70 765", "timestamp": "2025-09-15 16:36:58,946"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'tRNS' 847 255", "timestamp": "2025-09-15 16:36:58,946"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 1114 9", "timestamp": "2025-09-15 16:36:58,946"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 1135 2540", "timestamp": "2025-09-15 16:36:58,946"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 16:36:58,948"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'sRGB' 41 1", "timestamp": "2025-09-15 16:36:58,948"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'gAMA' 54 4", "timestamp": "2025-09-15 16:36:58,948"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'PLTE' 70 381", "timestamp": "2025-09-15 16:36:58,948"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'tRNS' 463 127", "timestamp": "2025-09-15 16:36:58,948"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 602 9", "timestamp": "2025-09-15 16:36:58,948"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 623 905", "timestamp": "2025-09-15 16:36:58,948"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 16:36:58,948"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'sRGB' 41 1", "timestamp": "2025-09-15 16:36:58,948"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'gAMA' 54 4", "timestamp": "2025-09-15 16:36:58,948"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'PLTE' 70 381", "timestamp": "2025-09-15 16:36:58,948"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'tRNS' 463 127", "timestamp": "2025-09-15 16:36:58,948"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 602 9", "timestamp": "2025-09-15 16:36:58,948"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 623 905", "timestamp": "2025-09-15 16:36:58,949"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 16:36:58,950"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'sRGB' 41 1", "timestamp": "2025-09-15 16:36:58,950"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'gAMA' 54 4", "timestamp": "2025-09-15 16:36:58,950"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'PLTE' 70 756", "timestamp": "2025-09-15 16:36:58,950"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'tRNS' 838 252", "timestamp": "2025-09-15 16:36:58,950"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 1102 9", "timestamp": "2025-09-15 16:36:58,950"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 1123 2563", "timestamp": "2025-09-15 16:36:58,950"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 16:36:58,950"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'sRGB' 41 1", "timestamp": "2025-09-15 16:36:58,950"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'gAMA' 54 4", "timestamp": "2025-09-15 16:36:58,950"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'PLTE' 70 756", "timestamp": "2025-09-15 16:36:58,950"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'tRNS' 838 252", "timestamp": "2025-09-15 16:36:58,950"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 1102 9", "timestamp": "2025-09-15 16:36:58,950"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 1123 2563", "timestamp": "2025-09-15 16:36:58,950"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 16:36:58,953"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'sRGB' 41 1", "timestamp": "2025-09-15 16:36:58,953"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'gAMA' 54 4", "timestamp": "2025-09-15 16:36:58,953"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'PLTE' 70 531", "timestamp": "2025-09-15 16:36:58,954"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'tRNS' 613 177", "timestamp": "2025-09-15 16:36:58,954"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 802 9", "timestamp": "2025-09-15 16:36:58,954"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 823 1401", "timestamp": "2025-09-15 16:36:58,954"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 16:36:58,954"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'sRGB' 41 1", "timestamp": "2025-09-15 16:36:58,954"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'gAMA' 54 4", "timestamp": "2025-09-15 16:36:58,954"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'PLTE' 70 531", "timestamp": "2025-09-15 16:36:58,954"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'tRNS' 613 177", "timestamp": "2025-09-15 16:36:58,954"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 802 9", "timestamp": "2025-09-15 16:36:58,954"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 823 1401", "timestamp": "2025-09-15 16:36:58,954"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 16:36:58,955"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'sRGB' 41 1", "timestamp": "2025-09-15 16:36:58,955"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'gAMA' 54 4", "timestamp": "2025-09-15 16:36:58,955"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'PLTE' 70 666", "timestamp": "2025-09-15 16:36:58,955"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'tRNS' 748 222", "timestamp": "2025-09-15 16:36:58,955"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 982 9", "timestamp": "2025-09-15 16:36:58,955"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 1003 1328", "timestamp": "2025-09-15 16:36:58,955"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 16:36:58,956"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'sRGB' 41 1", "timestamp": "2025-09-15 16:36:58,956"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'gAMA' 54 4", "timestamp": "2025-09-15 16:36:58,956"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'PLTE' 70 666", "timestamp": "2025-09-15 16:36:58,956"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'tRNS' 748 222", "timestamp": "2025-09-15 16:36:58,956"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 982 9", "timestamp": "2025-09-15 16:36:58,956"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 1003 1328", "timestamp": "2025-09-15 16:36:58,956"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.test", "msg": "🔧 Dashboard-Logging initialisiert", "timestamp": "2025-09-15 17:18:32,669"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.dashboard.test", "msg": "🐛 Debug-Logging aktiviert", "timestamp": "2025-09-15 17:18:32,669"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.dashboard.test", "msg": "🧪 DIREKTER DEBUG-TEST NACH LOGGER-KONFIGURATION", "timestamp": "2025-09-15 17:18:32,670"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.test", "msg": "ℹ️ DIREKTER INFO-TEST NACH LOGGER-KONFIGURATION", "timestamp": "2025-09-15 17:18:32,670"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 17:18:33,779"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 41 9", "timestamp": "2025-09-15 17:18:33,779"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 62 8192", "timestamp": "2025-09-15 17:18:33,779"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 17:18:33,779"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 41 9", "timestamp": "2025-09-15 17:18:33,779"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 62 8192", "timestamp": "2025-09-15 17:18:33,779"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.tools.registry", "msg": "Registry v1 Manager initialisiert", "timestamp": "2025-09-15 17:18:33,788"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.tools.registry", "msg": "Registry-Root: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1", "timestamp": "2025-09-15 17:18:33,788"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/manifest.yml", "timestamp": "2025-09-15 17:18:33,791"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.tools.registry", "msg": "✅ Registry version check passed: 1.0.0", "timestamp": "2025-09-15 17:18:33,791"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/modules.yml", "timestamp": "2025-09-15 17:18:33,797"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.message_center", "msg": "📡 Message Center geladen", "timestamp": "2025-09-15 17:18:33,845"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering", "msg": "🎮 Steering geladen", "timestamp": "2025-09-15 17:18:33,851"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_factory", "msg": "🏭 Factory Steering geladen", "timestamp": "2025-09-15 17:18:33,851"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_factory", "msg": "✅ MQTT-Client verfügbar, initialisiere Gateway", "timestamp": "2025-09-15 17:18:33,851"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_generic", "msg": "🔧 Generic Steering geladen", "timestamp": "2025-09-15 17:18:33,859"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_generic", "msg": "✅ MQTT-Client verfügbar, initialisiere Gateway", "timestamp": "2025-09-15 17:18:33,859"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_sequence", "msg": "🎯 Sequence Steering geladen", "timestamp": "2025-09-15 17:18:33,861"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 17:18:33,887"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'sRGB' 41 1", "timestamp": "2025-09-15 17:18:33,887"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'gAMA' 54 4", "timestamp": "2025-09-15 17:18:33,887"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'PLTE' 70 744", "timestamp": "2025-09-15 17:18:33,887"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'tRNS' 826 248", "timestamp": "2025-09-15 17:18:33,887"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 1086 9", "timestamp": "2025-09-15 17:18:33,887"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 1107 2293", "timestamp": "2025-09-15 17:18:33,887"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 17:18:33,887"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'sRGB' 41 1", "timestamp": "2025-09-15 17:18:33,887"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'gAMA' 54 4", "timestamp": "2025-09-15 17:18:33,887"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'PLTE' 70 744", "timestamp": "2025-09-15 17:18:33,887"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'tRNS' 826 248", "timestamp": "2025-09-15 17:18:33,887"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 1086 9", "timestamp": "2025-09-15 17:18:33,887"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 1107 2293", "timestamp": "2025-09-15 17:18:33,887"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 17:18:33,889"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'sRGB' 41 1", "timestamp": "2025-09-15 17:18:33,889"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'gAMA' 54 4", "timestamp": "2025-09-15 17:18:33,889"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'PLTE' 70 765", "timestamp": "2025-09-15 17:18:33,889"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'tRNS' 847 255", "timestamp": "2025-09-15 17:18:33,889"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 1114 9", "timestamp": "2025-09-15 17:18:33,889"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 1135 2540", "timestamp": "2025-09-15 17:18:33,889"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 17:18:33,889"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'sRGB' 41 1", "timestamp": "2025-09-15 17:18:33,889"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'gAMA' 54 4", "timestamp": "2025-09-15 17:18:33,889"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'PLTE' 70 765", "timestamp": "2025-09-15 17:18:33,889"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'tRNS' 847 255", "timestamp": "2025-09-15 17:18:33,889"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 1114 9", "timestamp": "2025-09-15 17:18:33,889"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 1135 2540", "timestamp": "2025-09-15 17:18:33,889"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 17:18:33,891"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'sRGB' 41 1", "timestamp": "2025-09-15 17:18:33,891"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'gAMA' 54 4", "timestamp": "2025-09-15 17:18:33,891"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'PLTE' 70 381", "timestamp": "2025-09-15 17:18:33,891"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'tRNS' 463 127", "timestamp": "2025-09-15 17:18:33,891"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 602 9", "timestamp": "2025-09-15 17:18:33,891"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 623 905", "timestamp": "2025-09-15 17:18:33,891"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 17:18:33,891"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'sRGB' 41 1", "timestamp": "2025-09-15 17:18:33,891"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'gAMA' 54 4", "timestamp": "2025-09-15 17:18:33,891"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'PLTE' 70 381", "timestamp": "2025-09-15 17:18:33,891"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'tRNS' 463 127", "timestamp": "2025-09-15 17:18:33,891"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 602 9", "timestamp": "2025-09-15 17:18:33,891"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 623 905", "timestamp": "2025-09-15 17:18:33,891"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 17:18:33,892"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'sRGB' 41 1", "timestamp": "2025-09-15 17:18:33,892"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'gAMA' 54 4", "timestamp": "2025-09-15 17:18:33,892"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'PLTE' 70 756", "timestamp": "2025-09-15 17:18:33,892"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'tRNS' 838 252", "timestamp": "2025-09-15 17:18:33,892"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 1102 9", "timestamp": "2025-09-15 17:18:33,892"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 1123 2563", "timestamp": "2025-09-15 17:18:33,892"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 17:18:33,892"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'sRGB' 41 1", "timestamp": "2025-09-15 17:18:33,892"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'gAMA' 54 4", "timestamp": "2025-09-15 17:18:33,892"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'PLTE' 70 756", "timestamp": "2025-09-15 17:18:33,892"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'tRNS' 838 252", "timestamp": "2025-09-15 17:18:33,892"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 1102 9", "timestamp": "2025-09-15 17:18:33,892"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 1123 2563", "timestamp": "2025-09-15 17:18:33,892"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 17:18:33,895"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'sRGB' 41 1", "timestamp": "2025-09-15 17:18:33,895"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'gAMA' 54 4", "timestamp": "2025-09-15 17:18:33,895"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'PLTE' 70 531", "timestamp": "2025-09-15 17:18:33,895"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'tRNS' 613 177", "timestamp": "2025-09-15 17:18:33,895"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 802 9", "timestamp": "2025-09-15 17:18:33,895"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 823 1401", "timestamp": "2025-09-15 17:18:33,895"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 17:18:33,895"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'sRGB' 41 1", "timestamp": "2025-09-15 17:18:33,895"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'gAMA' 54 4", "timestamp": "2025-09-15 17:18:33,895"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'PLTE' 70 531", "timestamp": "2025-09-15 17:18:33,895"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'tRNS' 613 177", "timestamp": "2025-09-15 17:18:33,895"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 802 9", "timestamp": "2025-09-15 17:18:33,895"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 823 1401", "timestamp": "2025-09-15 17:18:33,895"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 17:18:33,896"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'sRGB' 41 1", "timestamp": "2025-09-15 17:18:33,896"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'gAMA' 54 4", "timestamp": "2025-09-15 17:18:33,896"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'PLTE' 70 666", "timestamp": "2025-09-15 17:18:33,896"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'tRNS' 748 222", "timestamp": "2025-09-15 17:18:33,896"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 982 9", "timestamp": "2025-09-15 17:18:33,896"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 1003 1328", "timestamp": "2025-09-15 17:18:33,896"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 17:18:33,896"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'sRGB' 41 1", "timestamp": "2025-09-15 17:18:33,896"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'gAMA' 54 4", "timestamp": "2025-09-15 17:18:33,896"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'PLTE' 70 666", "timestamp": "2025-09-15 17:18:33,896"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'tRNS' 748 222", "timestamp": "2025-09-15 17:18:33,896"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 982 9", "timestamp": "2025-09-15 17:18:33,896"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 1003 1328", "timestamp": "2025-09-15 17:18:33,896"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.module_state_control", "msg": "Initialisiere ModuleStateManager mit MQTT-Client und Gateway", "timestamp": "2025-09-15 17:18:34,587"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Filter hinzugefügt: module/v1/ff/SVR4H76530/state", "timestamp": "2025-09-15 17:18:34,587"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Filter hinzugefügt: module/v1/ff/SVR3QA2098/state", "timestamp": "2025-09-15 17:18:34,587"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Filter hinzugefügt: module/v1/ff/SVR4H76449/state", "timestamp": "2025-09-15 17:18:34,587"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Filter hinzugefügt: module/v1/ff/SVR3QA0022/state", "timestamp": "2025-09-15 17:18:34,587"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Filter hinzugefügt: module/v1/ff/SVR4H73275/state", "timestamp": "2025-09-15 17:18:34,587"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Filter hinzugefügt: module/v1/ff/CHRG0/state", "timestamp": "2025-09-15 17:18:34,587"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Filter hinzugefügt: module/v1/ff/SVR4H76530/connection", "timestamp": "2025-09-15 17:18:34,587"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Filter hinzugefügt: module/v1/ff/SVR3QA2098/connection", "timestamp": "2025-09-15 17:18:34,587"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Filter hinzugefügt: module/v1/ff/SVR4H76449/connection", "timestamp": "2025-09-15 17:18:34,587"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Filter hinzugefügt: module/v1/ff/SVR3QA0022/connection", "timestamp": "2025-09-15 17:18:34,587"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Filter hinzugefügt: module/v1/ff/SVR4H73275/connection", "timestamp": "2025-09-15 17:18:34,587"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Filter hinzugefügt: module/v1/ff/CHRG0/connection", "timestamp": "2025-09-15 17:18:34,587"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Per-topic subscription für 12 Filter aktiviert", "timestamp": "2025-09-15 17:18:34,588"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Monitor-Thread gestartet", "timestamp": "2025-09-15 17:18:34,589"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "ModuleStateManager initialisiert", "timestamp": "2025-09-15 17:18:34,589"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.module_state_control", "msg": "ModuleStateManager erfolgreich initialisiert", "timestamp": "2025-09-15 17:18:34,589"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 17:18:42,859"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 41 9", "timestamp": "2025-09-15 17:18:42,859"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 62 8192", "timestamp": "2025-09-15 17:18:42,859"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 17:18:42,859"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 41 9", "timestamp": "2025-09-15 17:18:42,859"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 62 8192", "timestamp": "2025-09-15 17:18:42,859"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.message_center", "msg": "📡 Message Center geladen", "timestamp": "2025-09-15 17:18:42,949"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering", "msg": "🎮 Steering geladen", "timestamp": "2025-09-15 17:18:42,991"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_factory", "msg": "🏭 Factory Steering geladen", "timestamp": "2025-09-15 17:18:42,997"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_factory", "msg": "✅ MQTT-Client verfügbar, initialisiere Gateway", "timestamp": "2025-09-15 17:18:42,997"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_generic", "msg": "🔧 Generic Steering geladen", "timestamp": "2025-09-15 17:18:43,009"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_generic", "msg": "✅ MQTT-Client verfügbar, initialisiere Gateway", "timestamp": "2025-09-15 17:18:43,009"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_sequence", "msg": "🎯 Sequence Steering geladen", "timestamp": "2025-09-15 17:18:43,011"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 17:18:43,032"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'sRGB' 41 1", "timestamp": "2025-09-15 17:18:43,032"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'gAMA' 54 4", "timestamp": "2025-09-15 17:18:43,032"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'PLTE' 70 744", "timestamp": "2025-09-15 17:18:43,032"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'tRNS' 826 248", "timestamp": "2025-09-15 17:18:43,032"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 1086 9", "timestamp": "2025-09-15 17:18:43,032"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 1107 2293", "timestamp": "2025-09-15 17:18:43,032"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 17:18:43,033"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'sRGB' 41 1", "timestamp": "2025-09-15 17:18:43,033"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'gAMA' 54 4", "timestamp": "2025-09-15 17:18:43,033"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'PLTE' 70 744", "timestamp": "2025-09-15 17:18:43,033"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'tRNS' 826 248", "timestamp": "2025-09-15 17:18:43,033"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 1086 9", "timestamp": "2025-09-15 17:18:43,033"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 1107 2293", "timestamp": "2025-09-15 17:18:43,033"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 17:18:43,038"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'sRGB' 41 1", "timestamp": "2025-09-15 17:18:43,038"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'gAMA' 54 4", "timestamp": "2025-09-15 17:18:43,038"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'PLTE' 70 765", "timestamp": "2025-09-15 17:18:43,038"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'tRNS' 847 255", "timestamp": "2025-09-15 17:18:43,038"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 1114 9", "timestamp": "2025-09-15 17:18:43,038"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 1135 2540", "timestamp": "2025-09-15 17:18:43,038"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 17:18:43,038"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'sRGB' 41 1", "timestamp": "2025-09-15 17:18:43,038"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'gAMA' 54 4", "timestamp": "2025-09-15 17:18:43,038"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'PLTE' 70 765", "timestamp": "2025-09-15 17:18:43,038"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'tRNS' 847 255", "timestamp": "2025-09-15 17:18:43,038"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 1114 9", "timestamp": "2025-09-15 17:18:43,038"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 1135 2540", "timestamp": "2025-09-15 17:18:43,038"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 17:18:43,040"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'sRGB' 41 1", "timestamp": "2025-09-15 17:18:43,040"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'gAMA' 54 4", "timestamp": "2025-09-15 17:18:43,040"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'PLTE' 70 381", "timestamp": "2025-09-15 17:18:43,040"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'tRNS' 463 127", "timestamp": "2025-09-15 17:18:43,040"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 602 9", "timestamp": "2025-09-15 17:18:43,040"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 623 905", "timestamp": "2025-09-15 17:18:43,040"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 17:18:43,040"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'sRGB' 41 1", "timestamp": "2025-09-15 17:18:43,040"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'gAMA' 54 4", "timestamp": "2025-09-15 17:18:43,040"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'PLTE' 70 381", "timestamp": "2025-09-15 17:18:43,040"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'tRNS' 463 127", "timestamp": "2025-09-15 17:18:43,040"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 602 9", "timestamp": "2025-09-15 17:18:43,040"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 623 905", "timestamp": "2025-09-15 17:18:43,040"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 17:18:43,041"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'sRGB' 41 1", "timestamp": "2025-09-15 17:18:43,041"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'gAMA' 54 4", "timestamp": "2025-09-15 17:18:43,041"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'PLTE' 70 756", "timestamp": "2025-09-15 17:18:43,041"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'tRNS' 838 252", "timestamp": "2025-09-15 17:18:43,041"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 1102 9", "timestamp": "2025-09-15 17:18:43,041"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 1123 2563", "timestamp": "2025-09-15 17:18:43,041"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 17:18:43,041"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'sRGB' 41 1", "timestamp": "2025-09-15 17:18:43,041"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'gAMA' 54 4", "timestamp": "2025-09-15 17:18:43,041"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'PLTE' 70 756", "timestamp": "2025-09-15 17:18:43,041"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'tRNS' 838 252", "timestamp": "2025-09-15 17:18:43,041"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 1102 9", "timestamp": "2025-09-15 17:18:43,041"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 1123 2563", "timestamp": "2025-09-15 17:18:43,041"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 17:18:43,043"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'sRGB' 41 1", "timestamp": "2025-09-15 17:18:43,043"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'gAMA' 54 4", "timestamp": "2025-09-15 17:18:43,043"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'PLTE' 70 531", "timestamp": "2025-09-15 17:18:43,043"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'tRNS' 613 177", "timestamp": "2025-09-15 17:18:43,043"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 802 9", "timestamp": "2025-09-15 17:18:43,043"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 823 1401", "timestamp": "2025-09-15 17:18:43,043"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 17:18:43,043"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'sRGB' 41 1", "timestamp": "2025-09-15 17:18:43,043"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'gAMA' 54 4", "timestamp": "2025-09-15 17:18:43,043"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'PLTE' 70 531", "timestamp": "2025-09-15 17:18:43,043"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'tRNS' 613 177", "timestamp": "2025-09-15 17:18:43,043"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 802 9", "timestamp": "2025-09-15 17:18:43,043"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 823 1401", "timestamp": "2025-09-15 17:18:43,043"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 17:18:43,044"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'sRGB' 41 1", "timestamp": "2025-09-15 17:18:43,044"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'gAMA' 54 4", "timestamp": "2025-09-15 17:18:43,044"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'PLTE' 70 666", "timestamp": "2025-09-15 17:18:43,044"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'tRNS' 748 222", "timestamp": "2025-09-15 17:18:43,044"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 982 9", "timestamp": "2025-09-15 17:18:43,044"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 1003 1328", "timestamp": "2025-09-15 17:18:43,044"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 17:18:43,044"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'sRGB' 41 1", "timestamp": "2025-09-15 17:18:43,044"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'gAMA' 54 4", "timestamp": "2025-09-15 17:18:43,044"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'PLTE' 70 666", "timestamp": "2025-09-15 17:18:43,044"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'tRNS' 748 222", "timestamp": "2025-09-15 17:18:43,044"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 982 9", "timestamp": "2025-09-15 17:18:43,044"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 1003 1328", "timestamp": "2025-09-15 17:18:43,044"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.tools.message_template_manager", "msg": "MessageTemplateManager initialisiert", "timestamp": "2025-09-15 17:18:43,055"}
+{"app": "omf_dashboard", "level": "WARNING", "logger": "omf.tools.message_template_manager", "msg": "⚠️ Using deprecated message_templates - consider migrating to registry/model/v1/templates", "timestamp": "2025-09-15 17:18:43,055"}
+{"app": "omf_dashboard", "level": "WARNING", "logger": "omf.tools.message_template_manager", "msg": "⚠️ Metadaten-Datei nicht gefunden: /Users/oliver/Projects/src_orbis/omf/config/message_templates/metadata.yml", "timestamp": "2025-09-15 17:18:43,055"}
+{"app": "omf_dashboard", "level": "WARNING", "logger": "omf.tools.message_template_manager", "msg": "⚠️ Kategorien-Datei nicht gefunden: /Users/oliver/Projects/src_orbis/omf/config/message_templates/categories.yml", "timestamp": "2025-09-15 17:18:43,055"}
+{"app": "omf_dashboard", "level": "WARNING", "logger": "omf.tools.message_template_manager", "msg": "⚠️ Templates-Verzeichnis nicht gefunden: /Users/oliver/Projects/src_orbis/omf/config/message_templates", "timestamp": "2025-09-15 17:18:43,055"}

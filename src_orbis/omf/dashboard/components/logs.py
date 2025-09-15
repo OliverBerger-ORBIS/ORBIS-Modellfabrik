@@ -7,7 +7,6 @@ Zeigt Live-Logs direkt im Dashboard an.
 import streamlit as st
 
 from src_orbis.omf.dashboard.utils.ui_refresh import request_refresh
-from src_orbis.omf.tools.streamlit_log_buffer import render_logs_panel
 
 
 def show_logs():
@@ -17,19 +16,20 @@ def show_logs():
 
     # Log-Buffer aus Session State holen
     log_buffer = st.session_state.get("log_buffer")
-    
+
     # Test-Debug-Log direkt hinzufügen
     if log_buffer is not None:
         import logging
+
         test_logger = logging.getLogger("omf.dashboard.logs_test")
         test_logger.debug("🧪 DEBUG-TEST aus logs.py Komponente")
         test_logger.info("ℹ️ INFO-TEST aus logs.py Komponente")
-        
+
         # Teste auch MqttGateway Logger direkt
         mqtt_test_logger = logging.getLogger("omf.tools.mqtt_gateway")
         mqtt_test_logger.debug("🔧 DEBUG-TEST MqttGateway Logger")
         mqtt_test_logger.info("ℹ️ INFO-TEST MqttGateway Logger")
-        
+
         # Teste Debug Logger
         debug_test_logger = logging.getLogger("omf.dashboard.debug")
         debug_test_logger.debug("🐛 DEBUG-TEST Debug Logger")
@@ -75,12 +75,12 @@ def show_logs():
     show_info = st.session_state.get("show_info", True)
     show_warning = st.session_state.get("show_warning", True)
     show_error = st.session_state.get("show_error", True)
-    
+
     # Filter-Logik implementieren (korrigiert - alle Level können gleichzeitig angezeigt werden)
     filtered_logs = []
     for log_entry in log_buffer:
         should_show = False
-        
+
         if show_debug and "[DEBUG]" in log_entry:
             should_show = True
         if show_info and "[INFO]" in log_entry:
@@ -89,10 +89,10 @@ def show_logs():
             should_show = True
         if show_error and "[ERROR]" in log_entry:
             should_show = True
-            
+
         if should_show:
             filtered_logs.append(log_entry)
-    
+
     # Logs als Text rendern
     log_text = "\n".join(filtered_logs) if filtered_logs else "—"
 

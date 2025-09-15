@@ -20,12 +20,12 @@ class TestSessionManagerLogging(unittest.TestCase):
         if hasattr(st, 'session_state'):
             st.session_state.clear()
 
-    def test_setup_logging_function_exists(self):
-        """Test dass setup_logging Funktion existiert"""
-        from src_orbis.helper_apps.session_manager.session_manager import setup_logging
+    def test_init_logging_function_exists(self):
+        """Test dass _init_logging_once Funktion existiert"""
+        from src_orbis.helper_apps.session_manager.session_manager import _init_logging_once
 
-        self.assertIsNotNone(setup_logging)
-        self.assertTrue(callable(setup_logging))
+        self.assertIsNotNone(_init_logging_once)
+        self.assertTrue(callable(_init_logging_once))
 
     def test_logging_levels_available(self):
         """Test dass alle gewünschten Logging-Level verfügbar sind"""

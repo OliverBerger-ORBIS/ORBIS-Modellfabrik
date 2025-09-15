@@ -3,7 +3,6 @@ UI Components - Streamlit UI components for session analysis
 """
 
 import json
-import logging
 import re
 from datetime import datetime
 from pathlib import Path
@@ -14,8 +13,10 @@ import streamlit as st
 
 from src_orbis.helper_apps.session_manager.components.session_analyzer import SessionAnalyzer
 from src_orbis.helper_apps.session_manager.components.topic_manager import TopicFilterManager
+from src_orbis.omf.dashboard.utils.ui_refresh import request_refresh
+from src_orbis.omf.tools.logging_config import get_logger
 
-logger = logging.getLogger(__name__)
+logger = get_logger("session_manager.ui_components")
 
 
 class SessionAnalysisUI:
@@ -434,14 +435,14 @@ class SessionAnalysisUI:
             # Konvertiere zu Unix-Timestamps für Berechnung
             min_timestamp = min_time.timestamp()
             max_timestamp = max_time.timestamp()
-            
+
             # Berechne relative Sekunden (0 bis Ende)
             total_duration_seconds = max_timestamp - min_timestamp
-            
+
             # Schiebe-Regler für Zeitbereich (mit relativen Sekunden)
             # Verwende gespeicherten Wert oder Standard
             default_value = st.session_state.get('time_range_seconds', (0.0, total_duration_seconds))
-            
+
             time_range_seconds = st.slider(
                 "Zeitbereich auswählen (Sekunden):",
                 min_value=0.0,
@@ -451,14 +452,14 @@ class SessionAnalysisUI:
                 format="%.1f s",  # Anzeige in Sekunden
                 help="Wählen Sie den interessanten Zeitbereich für die Timeline aus (0 = Start, Ende = Session-Ende)",
             )
-            
+
             # Speichere den aktuellen Wert im Session State
             st.session_state.time_range_seconds = time_range_seconds
 
             # Konvertiere relative Sekunden zurück zu absoluten Timestamps
             start_timestamp = min_timestamp + time_range_seconds[0]
             end_timestamp = min_timestamp + time_range_seconds[1]
-            
+
             # Konvertiere zurück zu datetime-Objekten mit Timezone
             time_range = (
                 pd.to_datetime(start_timestamp, unit='s', utc=True),
@@ -477,23 +478,23 @@ class SessionAnalysisUI:
             if st.button("⏰ Ganzer Zeitbereich"):
                 st.session_state.time_range_reset = True
                 st.session_state.time_range_seconds = (0.0, total_duration_seconds)
-                st.rerun()
+                request_refresh()
 
             if st.button("⏱️ Letzte 5 Min"):
                 last_5_min = max(0.0, total_duration_seconds - 300.0)  # 5 Minuten = 300 Sekunden
                 st.session_state.time_range_seconds = (last_5_min, total_duration_seconds)
-                st.rerun()
+                request_refresh()
 
             if st.button("⏱️ Erste 5 Min"):
                 first_5_min = min(300.0, total_duration_seconds)  # 5 Minuten = 300 Sekunden
                 st.session_state.time_range_seconds = (0.0, first_5_min)
-                st.rerun()
+                request_refresh()
 
             # Zeitfilter zurücksetzen
             if st.button("🔄 Zeitfilter zurücksetzen"):
                 st.session_state.time_range_reset = True
                 st.session_state.time_range_seconds = (0.0, total_duration_seconds)
-                st.rerun()
+                request_refresh()
 
         return time_range
 
