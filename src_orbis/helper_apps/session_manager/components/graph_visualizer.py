@@ -351,9 +351,11 @@ class GraphVisualizer:
             fig = go.Figure(
                 data=[edge_trace, node_trace],
                 layout=go.Layout(
-                    title=f'Message Chain Graph ({filtered_graph.number_of_nodes()} nodes, '
-                    f'{filtered_graph.number_of_edges()} edges)',
-                    titlefont_size=16,
+                    title=dict(
+                        text=f'Message Chain Graph ({filtered_graph.number_of_nodes()} nodes, '
+                        f'{filtered_graph.number_of_edges()} edges)',
+                        font=dict(size=16)
+                    ),
                     showlegend=False,
                     hovermode='closest',
                     margin={"b": 20, "l": 5, "r": 5, "t": 40},

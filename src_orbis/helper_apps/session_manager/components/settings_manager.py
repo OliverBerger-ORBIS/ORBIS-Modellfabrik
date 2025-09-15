@@ -176,7 +176,7 @@ class SettingsManager:
     def get_session_recorder_mqtt_settings(self) -> Dict[str, Any]:
         """Gibt die MQTT Broker Einstellungen für Recorder zurück"""
         return self.settings.get("session_recorder", {}).get(
-            "mqtt_broker", {"host": "localhost", "port": 1883, "qos": 1, "timeout": 5}
+            "mqtt_broker", {"host": "localhost", "port": 1883, "qos": 1, "timeout": 5, "username": "", "password": ""}
         )
 
     def update_session_recorder_directory(self, directory: str):
@@ -187,12 +187,19 @@ class SettingsManager:
         self.settings["session_recorder"]["session_directory"] = directory
         self.save_settings()
 
-    def update_session_recorder_mqtt_settings(self, host: str, port: int, qos: int, timeout: int):
+    def update_session_recorder_mqtt_settings(self, host: str, port: int, qos: int, timeout: int, username: str = "", password: str = ""):
         """Aktualisiert die MQTT Broker Einstellungen für Recorder"""
         if "session_recorder" not in self.settings:
             self.settings["session_recorder"] = {}
 
-        self.settings["session_recorder"]["mqtt_broker"] = {"host": host, "port": port, "qos": qos, "timeout": timeout}
+        self.settings["session_recorder"]["mqtt_broker"] = {
+            "host": host, 
+            "port": port, 
+            "qos": qos, 
+            "timeout": timeout,
+            "username": username,
+            "password": password
+        }
         self.save_settings()
 
     def reset_to_defaults(self):

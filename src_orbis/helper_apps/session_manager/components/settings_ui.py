@@ -307,10 +307,30 @@ class SettingsUI:
                 key="recorder_mqtt_timeout",
             )
 
+        # Username und Password in separater Zeile
+        col3, col4 = st.columns(2)
+        
+        with col3:
+            mqtt_username = st.text_input(
+                "MQTT Username (optional)",
+                value=mqtt_settings.get("username", ""),
+                help="Benutzername für MQTT Broker Authentifizierung",
+                key="recorder_mqtt_username",
+            )
+        
+        with col4:
+            mqtt_password = st.text_input(
+                "MQTT Password (optional)",
+                value=mqtt_settings.get("password", ""),
+                type="password",
+                help="Passwort für MQTT Broker Authentifizierung",
+                key="recorder_mqtt_password",
+            )
+
         # MQTT Einstellungen speichern
         if st.button("💾 MQTT Broker Einstellungen speichern", key="save_recorder_mqtt"):
             self.settings_manager.update_session_recorder_mqtt_settings(
-                mqtt_host, int(mqtt_port), int(mqtt_qos), int(mqtt_timeout)
+                mqtt_host, int(mqtt_port), int(mqtt_qos), int(mqtt_timeout), mqtt_username, mqtt_password
             )
             st.success("✅ MQTT Broker Einstellungen gespeichert!")
 

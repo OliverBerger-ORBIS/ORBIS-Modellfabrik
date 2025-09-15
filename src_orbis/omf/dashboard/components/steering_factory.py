@@ -3,6 +3,7 @@ Kommando-Zentrale Component für OMF Dashboard
 Traditionelle Steuerungsfunktionen für die Modellfabrik
 """
 
+import logging
 import uuid
 from datetime import datetime, timezone
 
@@ -15,18 +16,24 @@ from src_orbis.omf.tools.mqtt_gateway import MqttGateway
 
 # WorkflowOrderManager für korrekte orderId/orderUpdateId Verwaltung
 
+# Logger für Factory Steering
+logger = logging.getLogger("omf.dashboard.steering_factory")
+
 
 def show_factory_steering():
     """Hauptfunktion für die Factory Steuerung"""
+    logger.info("🏭 Factory Steering geladen")
     st.subheader("🏭 Factory Steuerung")
     st.markdown("**Traditionelle Steuerungsfunktionen für die Modellfabrik:**")
 
     # MessageGateway initialisieren
     mqtt_client = st.session_state.get("mqtt_client")
     if not mqtt_client:
+        logger.warning("❌ MQTT-Client nicht verfügbar")
         st.error("❌ MQTT-Client nicht verfügbar")
         return
 
+    logger.info("✅ MQTT-Client verfügbar, initialisiere Gateway")
     gateway = MqttGateway(mqtt_client)
 
     # Factory Reset Section - Aufklappbare Box
@@ -59,6 +66,7 @@ def _show_factory_reset_section(gateway: MqttGateway):
 
     with col1:
         if st.button("🏭 Factory Reset", type="primary", key="factory_reset"):
+            logger.info("🏭 Factory Reset angefordert")
             # Direkt über MqttGateway senden
             try:
                 success = gateway.send(
@@ -67,10 +75,13 @@ def _show_factory_reset_section(gateway: MqttGateway):
                     ensure_order_id=True,
                 )
                 if success:
+                    logger.info("✅ Factory Reset erfolgreich gesendet")
                     st.success("✅ Factory Reset erfolgreich gesendet!")
                 else:
+                    logger.error("❌ Fehler beim Senden des Factory Reset")
                     st.error("❌ Fehler beim Senden des Factory Reset")
             except Exception as e:
+                logger.error(f"❌ Fehler beim Factory Reset: {e}")
                 st.error(f"❌ Fehler beim Factory Reset: {e}")
 
     with col2:

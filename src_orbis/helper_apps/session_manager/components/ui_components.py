@@ -431,52 +431,69 @@ class SessionAnalysisUI:
         col1, col2 = st.columns([3, 1])
 
         with col1:
-            # Konvertiere zu Unix-Timestamps für Slider
+            # Konvertiere zu Unix-Timestamps für Berechnung
             min_timestamp = min_time.timestamp()
             max_timestamp = max_time.timestamp()
-
-            # Schiebe-Regler für Zeitbereich (mit Unix-Timestamps)
-            time_range_timestamps = st.slider(
-                "Zeitbereich auswählen:",
-                min_value=min_timestamp,
-                max_value=max_timestamp,
-                value=(min_timestamp, max_timestamp),
+            
+            # Berechne relative Sekunden (0 bis Ende)
+            total_duration_seconds = max_timestamp - min_timestamp
+            
+            # Schiebe-Regler für Zeitbereich (mit relativen Sekunden)
+            # Verwende gespeicherten Wert oder Standard
+            default_value = st.session_state.get('time_range_seconds', (0.0, total_duration_seconds))
+            
+            time_range_seconds = st.slider(
+                "Zeitbereich auswählen (Sekunden):",
+                min_value=0.0,
+                max_value=total_duration_seconds,
+                value=default_value,
                 step=1.0,  # 1 Sekunde Schritte
-                help="Wählen Sie den interessanten Zeitbereich für die Timeline aus",
+                format="%.1f s",  # Anzeige in Sekunden
+                help="Wählen Sie den interessanten Zeitbereich für die Timeline aus (0 = Start, Ende = Session-Ende)",
             )
+            
+            # Speichere den aktuellen Wert im Session State
+            st.session_state.time_range_seconds = time_range_seconds
 
+            # Konvertiere relative Sekunden zurück zu absoluten Timestamps
+            start_timestamp = min_timestamp + time_range_seconds[0]
+            end_timestamp = min_timestamp + time_range_seconds[1]
+            
             # Konvertiere zurück zu datetime-Objekten mit Timezone
             time_range = (
-                pd.to_datetime(time_range_timestamps[0], unit='s', utc=True),
-                pd.to_datetime(time_range_timestamps[1], unit='s', utc=True),
+                pd.to_datetime(start_timestamp, unit='s', utc=True),
+                pd.to_datetime(end_timestamp, unit='s', utc=True),
             )
 
             # Zeige gewählten Zeitbereich an
             st.info(
                 f"📊 **Gewählter Zeitbereich:** "
-                f"{time_range[0].strftime('%H:%M:%S')} - {time_range[1].strftime('%H:%M:%S')}"
+                f"{time_range[0].strftime('%H:%M:%S')} - {time_range[1].strftime('%H:%M:%S')} "
+                f"({time_range_seconds[0]:.1f}s - {time_range_seconds[1]:.1f}s)"
             )
 
         with col2:
             # Schnellauswahl-Buttons
             if st.button("⏰ Ganzer Zeitbereich"):
                 st.session_state.time_range_reset = True
-                # st.rerun() entfernt - wird automatisch durch Streamlit gehandhabt
+                st.session_state.time_range_seconds = (0.0, total_duration_seconds)
+                st.rerun()
 
             if st.button("⏱️ Letzte 5 Min"):
-                # TODO: Implementiere Schnellauswahl
-                # st.rerun() entfernt - wird automatisch durch Streamlit gehandhabt
-                pass
+                last_5_min = max(0.0, total_duration_seconds - 300.0)  # 5 Minuten = 300 Sekunden
+                st.session_state.time_range_seconds = (last_5_min, total_duration_seconds)
+                st.rerun()
 
             if st.button("⏱️ Erste 5 Min"):
-                # TODO: Implementiere Schnellauswahl
-                # st.rerun() entfernt - wird automatisch durch Streamlit gehandhabt
-                pass
+                first_5_min = min(300.0, total_duration_seconds)  # 5 Minuten = 300 Sekunden
+                st.session_state.time_range_seconds = (0.0, first_5_min)
+                st.rerun()
 
             # Zeitfilter zurücksetzen
             if st.button("🔄 Zeitfilter zurücksetzen"):
                 st.session_state.time_range_reset = True
-                # st.rerun() entfernt - wird automatisch durch Streamlit gehandhabt
+                st.session_state.time_range_seconds = (0.0, total_duration_seconds)
+                st.rerun()
 
         return time_range
 

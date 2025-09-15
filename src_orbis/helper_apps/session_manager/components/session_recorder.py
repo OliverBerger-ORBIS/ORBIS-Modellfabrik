@@ -15,18 +15,8 @@ import streamlit as st
 
 from src_orbis.omf.dashboard.utils.ui_refresh import RerunController
 
-# Logging konfigurieren - Verzeichnis sicherstellen
-# Log-Verzeichnis erstellen falls nicht vorhanden (relativ zum Projekt-Root)
-project_root = Path(__file__).parent.parent.parent.parent.parent
-log_dir = project_root / "data" / "logs"
-log_dir.mkdir(parents=True, exist_ok=True)
-
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[logging.FileHandler(log_dir / 'session_manager.log'), logging.StreamHandler()],
-)
-logger = logging.getLogger(__name__)
+# Session Manager Logging-System verwenden (wie ursprünglich)
+logger = logging.getLogger("session_manager.session_recorder")
 
 
 # Thread-sichere Nachrichten-Sammlung
@@ -92,6 +82,12 @@ def show_session_recorder():
         st.subheader("🔌 MQTT Verbindung")
         st.info(f"**Broker:** {mqtt_settings['host']}:{mqtt_settings['port']}")
         st.info(f"**QoS:** {mqtt_settings['qos']} | **Timeout:** {mqtt_settings['timeout']}s")
+        
+        # Authentifizierung anzeigen
+        if mqtt_settings.get('username'):
+            st.info(f"**Auth:** {mqtt_settings['username']} (authentifiziert)")
+        else:
+            st.info("**Auth:** Keine Authentifizierung")
 
         if st.session_state.session_recorder['connected']:
             st.success("✅ Verbunden")
@@ -228,6 +224,11 @@ def connect_to_broker(mqtt_settings: Dict[str, Any]) -> bool:
         mqtt_client.on_connect = on_connect
         mqtt_client.on_message = on_message_received
 
+        # Username/Password setzen falls vorhanden
+        if mqtt_settings.get('username') and mqtt_settings.get('password'):
+            mqtt_client.username_pw_set(mqtt_settings['username'], mqtt_settings['password'])
+            logger.info(f"🔐 MQTT Authentifizierung: {mqtt_settings['username']}")
+        
         # Verbinden
         mqtt_client.connect(mqtt_settings['host'], mqtt_settings['port'], mqtt_settings['timeout'])
         mqtt_client.loop_start()
@@ -274,49 +275,74 @@ def on_connect(client, userdata, flags, rc):
 def start_recording():
     """Startet die Aufnahme"""
     try:
+        logger.info("🔴 Session-Aufnahme wird gestartet...")
+        
         # MQTT Client für Aufnahme konfigurieren
         if st.session_state.session_recorder['mqtt_client']:
             mqtt_client = st.session_state.session_recorder['mqtt_client']
             # Topics abonnieren (falls sie deabonniert waren)
             mqtt_client.subscribe("#")
-            logger.debug("🔴 Aufnahme gestartet - alle Topics abonniert")
+            
+            # Session State aktualisieren
+            st.session_state.session_recorder['recording'] = True
+            st.session_state.session_recorder['message_buffer'].clear()
+            
+            logger.info("✅ Session-Aufnahme gestartet - alle Topics abonniert")
         else:
-            logger.error("❌ Kein MQTT Client verfügbar")
+            logger.error("❌ Kein MQTT Client verfügbar für Aufnahme")
 
     except Exception as e:
-        logger.error(f"❌ Aufnahme Start Fehler: {e}")
+        logger.error(f"❌ Fehler beim Starten der Aufnahme: {e}")
 
 
 def pause_recording():
     """Pausiert die Aufnahme"""
     try:
+        logger.info("⏸️ Session-Aufnahme wird pausiert...")
+        
         if st.session_state.session_recorder['mqtt_client']:
             mqtt_client = st.session_state.session_recorder['mqtt_client']
             mqtt_client.unsubscribe("#")
-            logger.debug("⏸️ Aufnahme pausiert - Topics deabonniert")
+            
+            # Session State aktualisieren
+            st.session_state.session_recorder['recording'] = False
+            
+            logger.info("✅ Session-Aufnahme pausiert - Topics deabonniert")
+        else:
+            logger.error("❌ Kein MQTT Client verfügbar für Pause")
     except Exception as e:
-        logger.error(f"❌ Aufnahme Pause Fehler: {e}")
+        logger.error(f"❌ Fehler beim Pausieren der Aufnahme: {e}")
 
 
 def stop_recording():
     """Beendet die Aufnahme und speichert"""
     try:
+        logger.info("⏹️ Session-Aufnahme wird gestoppt...")
+        
         # Aufnahme stoppen
         if st.session_state.session_recorder['mqtt_client']:
             mqtt_client = st.session_state.session_recorder['mqtt_client']
             mqtt_client.unsubscribe("#")
+            logger.info("📡 MQTT Topics deabonniert")
 
         # Session speichern
-        if message_buffer.count() > 0:
+        message_count = message_buffer.count()
+        if message_count > 0:
+            logger.info(f"💾 Session wird gespeichert ({message_count} Messages)...")
             save_session()
             message_buffer.clear()
             st.session_state.session_recorder['session_name'] = ""
             st.session_state.session_recorder['start_time'] = None
+            logger.info("✅ Session erfolgreich gespeichert")
+        else:
+            logger.warning("⚠️ Keine Messages zum Speichern vorhanden")
 
-        logger.debug("⏹️ Aufnahme beendet und gespeichert")
+        # Session State aktualisieren
+        st.session_state.session_recorder['recording'] = False
+        logger.info("✅ Session-Aufnahme beendet")
 
     except Exception as e:
-        logger.error(f"❌ Aufnahme Stop Fehler: {e}")
+        logger.error(f"❌ Fehler beim Stoppen der Aufnahme: {e}")
 
 
 def on_message_received(client, userdata, msg):
@@ -335,6 +361,8 @@ def on_message_received(client, userdata, msg):
 def save_session():
     """Speichert die Session-Daten"""
     try:
+        logger.info("💾 Session-Datei wird erstellt...")
+        
         from src_orbis.helper_apps.session_manager.components.settings_manager import SettingsManager
 
         settings_manager = SettingsManager()
@@ -348,6 +376,8 @@ def save_session():
         else:
             session_dir = Path(session_directory)
         session_dir.mkdir(parents=True, exist_ok=True)
+        
+        logger.info(f"📁 Session-Verzeichnis: {session_dir}")
 
         # Dateiname generieren
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -356,20 +386,25 @@ def save_session():
 
         # Beide Formate speichern (SQLite + Log)
         messages = message_buffer.get_messages()
+        message_count = len(messages)
+        logger.info(f"📊 {message_count} Messages werden gespeichert...")
 
         # SQLite speichern
         sqlite_filename = f"{session_name}_{timestamp}.db"
         sqlite_filepath = session_dir / sqlite_filename
+        logger.info(f"💾 SQLite-Datei wird erstellt: {sqlite_filename}")
         save_sqlite_session(sqlite_filepath, messages)
-        logger.debug(f"✅ SQLite Session gespeichert: {sqlite_filepath}")
+        logger.info(f"✅ SQLite Session gespeichert: {sqlite_filepath}")
 
         # Log speichern
         log_filename = f"{session_name}_{timestamp}.log"
         log_filepath = session_dir / log_filename
+        logger.info(f"📝 Log-Datei wird erstellt: {log_filename}")
         save_log_session(log_filepath, messages)
-        logger.debug(f"✅ Log Session gespeichert: {log_filepath}")
+        logger.info(f"✅ Log Session gespeichert: {log_filepath}")
 
         st.success(f"💾 Session gespeichert: {sqlite_filename} + {log_filename}")
+        logger.info(f"🎉 Session erfolgreich gespeichert: {message_count} Messages in 2 Formaten")
 
     except Exception as e:
         logger.error(f"❌ Session Speichern Fehler: {e}")
@@ -379,6 +414,8 @@ def save_session():
 def save_sqlite_session(filepath: Path, messages: List[Dict[str, Any]]):
     """Speichert Session als SQLite-Datei"""
     try:
+        logger.debug(f"🗄️ SQLite-Datenbank wird erstellt: {filepath}")
+        
         conn = sqlite3.connect(filepath)
         cursor = conn.cursor()
 
@@ -393,6 +430,7 @@ def save_sqlite_session(filepath: Path, messages: List[Dict[str, Any]]):
             )
         '''
         )
+        logger.debug("📋 SQLite-Tabelle 'mqtt_messages' erstellt/verifiziert")
 
         # Nachrichten einfügen
         for msg in messages:
@@ -403,8 +441,8 @@ def save_sqlite_session(filepath: Path, messages: List[Dict[str, Any]]):
 
         conn.commit()
         conn.close()
-
-        logger.debug(f"✅ SQLite Session gespeichert: {filepath}")
+        
+        logger.debug(f"✅ SQLite Session gespeichert: {len(messages)} Messages in {filepath}")
 
     except Exception as e:
         logger.error(f"❌ SQLite Speichern Fehler: {e}")
@@ -414,12 +452,14 @@ def save_sqlite_session(filepath: Path, messages: List[Dict[str, Any]]):
 def save_log_session(filepath: Path, messages: List[Dict[str, Any]]):
     """Speichert Session als Log-Datei"""
     try:
+        logger.debug(f"📝 Log-Datei wird erstellt: {filepath}")
+        
         with open(filepath, 'w', encoding='utf-8') as f:
             for msg in messages:
                 log_entry = {"topic": msg['topic'], "payload": msg['payload'], "timestamp": msg['timestamp']}
                 f.write(json.dumps(log_entry) + '\n')
 
-        logger.debug(f"✅ Log Session gespeichert: {filepath}")
+        logger.debug(f"✅ Log Session gespeichert: {len(messages)} Messages in {filepath}")
 
     except Exception as e:
         logger.error(f"❌ Log Speichern Fehler: {e}")

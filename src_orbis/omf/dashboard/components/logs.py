@@ -17,6 +17,23 @@ def show_logs():
 
     # Log-Buffer aus Session State holen
     log_buffer = st.session_state.get("log_buffer")
+    
+    # Test-Debug-Log direkt hinzufügen
+    if log_buffer is not None:
+        import logging
+        test_logger = logging.getLogger("omf.dashboard.logs_test")
+        test_logger.debug("🧪 DEBUG-TEST aus logs.py Komponente")
+        test_logger.info("ℹ️ INFO-TEST aus logs.py Komponente")
+        
+        # Teste auch MqttGateway Logger direkt
+        mqtt_test_logger = logging.getLogger("omf.tools.mqtt_gateway")
+        mqtt_test_logger.debug("🔧 DEBUG-TEST MqttGateway Logger")
+        mqtt_test_logger.info("ℹ️ INFO-TEST MqttGateway Logger")
+        
+        # Teste Debug Logger
+        debug_test_logger = logging.getLogger("omf.dashboard.debug")
+        debug_test_logger.debug("🐛 DEBUG-TEST Debug Logger")
+        debug_test_logger.info("ℹ️ INFO-TEST Debug Logger")
 
     if not log_buffer:
         st.warning("❌ Log-Buffer nicht verfügbar")
@@ -53,8 +70,31 @@ def show_logs():
     # Logs anzeigen
     st.subheader("📊 Log-Nachrichten")
 
-    # Logs rendern
-    log_text = render_logs_panel(log_buffer, max_lines=500)
+    # Logs rendern mit aktiven Filtern
+    show_debug = st.session_state.get("show_debug", False)
+    show_info = st.session_state.get("show_info", True)
+    show_warning = st.session_state.get("show_warning", True)
+    show_error = st.session_state.get("show_error", True)
+    
+    # Filter-Logik implementieren (korrigiert - alle Level können gleichzeitig angezeigt werden)
+    filtered_logs = []
+    for log_entry in log_buffer:
+        should_show = False
+        
+        if show_debug and "[DEBUG]" in log_entry:
+            should_show = True
+        if show_info and "[INFO]" in log_entry:
+            should_show = True
+        if show_warning and "[WARNING]" in log_entry:
+            should_show = True
+        if show_error and "[ERROR]" in log_entry:
+            should_show = True
+            
+        if should_show:
+            filtered_logs.append(log_entry)
+    
+    # Logs als Text rendern
+    log_text = "\n".join(filtered_logs) if filtered_logs else "—"
 
     if log_text == "—":
         st.info("ℹ️ Keine Logs verfügbar")

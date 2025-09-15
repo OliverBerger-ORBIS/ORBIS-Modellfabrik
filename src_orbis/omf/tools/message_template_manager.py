@@ -11,6 +11,7 @@ import yaml
 
 # Import validators
 from src_orbis.omf.tools.validators import validate as run_validation
+from src_orbis.omf.tools.logging_config import get_logger
 
 
 class OmfMessageTemplateManager:
@@ -18,20 +19,23 @@ class OmfMessageTemplateManager:
 
     def __init__(self, templates_dir: str = None):
         """Initialisiert den OMF Message Template Manager"""
+        self.logger = get_logger("omf.tools.message_template_manager")
+        self.logger.info("MessageTemplateManager initialisiert")
+        
         if templates_dir is None:
             # Projekt-Root-relative Pfade verwenden
             current_dir = Path(__file__).parent
             project_root = current_dir.parent.parent.parent.parent
 
-            # Registry v1 (primary)
-            registry_templates = project_root / "registry" / "model" / "v1" / "templates"
+            # Registry v1 (primary) - Fallback zu Legacy-Struktur
+            registry_templates = project_root / "registry" / "model" / "v1" / "templates" / "templates"
             if registry_templates.exists():
                 templates_dir = str(registry_templates)
-                print("✅ Using registry v1 message templates")
+                self.logger.info("✅ Using registry v1 message templates")
             else:
                 # Fallback to legacy config (deprecated)
                 templates_dir = project_root / "src_orbis" / "omf" / "config" / "message_templates"
-                print("⚠️ Using deprecated message_templates - consider migrating to registry/model/v1/templates")
+                self.logger.warning("⚠️ Using deprecated message_templates - consider migrating to registry/model/v1/templates")
 
         self.templates_dir = Path(templates_dir)
         self.metadata = self._load_metadata()
@@ -47,10 +51,10 @@ class OmfMessageTemplateManager:
                 with open(metadata_file, encoding="utf-8") as f:
                     return yaml.safe_load(f)
             else:
-                print(f"⚠️ Metadaten-Datei nicht gefunden: {metadata_file}")
+                self.logger.warning(f"⚠️ Metadaten-Datei nicht gefunden: {metadata_file}")
                 return {}
         except Exception as e:
-            print(f"❌ Fehler beim Laden der Metadaten: {e}")
+            self.logger.error(f"❌ Fehler beim Laden der Metadaten: {e}")
             return {}
 
     def _load_categories(self) -> Dict[str, Any]:
@@ -61,19 +65,29 @@ class OmfMessageTemplateManager:
                 with open(categories_file, encoding="utf-8") as f:
                     return yaml.safe_load(f)
             else:
-                print(f"⚠️ Kategorien-Datei nicht gefunden: {categories_file}")
+                self.logger.warning(f"⚠️ Kategorien-Datei nicht gefunden: {categories_file}")
                 return {}
         except Exception as e:
-            print(f"❌ Fehler beim Laden der Kategorien: {e}")
+            self.logger.error(f"❌ Fehler beim Laden der Kategorien: {e}")
             return {}
 
     def _load_all_templates(self):
         """Lädt alle Template-Dateien"""
-        templates_dir = self.templates_dir / "templates"
-        if not templates_dir.exists():
-            print(f"⚠️ Templates-Verzeichnis nicht gefunden: {templates_dir}")
-            return
+        # Prüfe ob Legacy-Struktur (templates/templates/) existiert
+        legacy_templates_dir = self.templates_dir / "templates"
+        if legacy_templates_dir.exists():
+            self.logger.info("📁 Using legacy template structure (templates/templates/)")
+            self._load_legacy_templates(legacy_templates_dir)
+        else:
+            # Prüfe ob Registry v1 Struktur (Templates direkt im Verzeichnis)
+            if self.templates_dir.exists():
+                self.logger.info("📁 Using registry v1 template structure (templates/*.yml)")
+                self._load_registry_v1_templates()
+            else:
+                self.logger.warning(f"⚠️ Templates-Verzeichnis nicht gefunden: {self.templates_dir}")
 
+    def _load_legacy_templates(self, templates_dir):
+        """Lädt Templates aus Legacy-Struktur (templates/templates/)"""
         # Durchlaufe alle Kategorien
         for category in self.categories.get("categories", {}).keys():
             category_dir = templates_dir / category.lower()
@@ -83,6 +97,12 @@ class OmfMessageTemplateManager:
             # Durchlaufe alle YAML-Dateien in der Kategorie
             for yaml_file in category_dir.glob("*.yml"):
                 self._load_template_file(yaml_file)
+
+    def _load_registry_v1_templates(self):
+        """Lädt Templates aus Registry v1 Struktur (templates/*.yml)"""
+        # Durchlaufe alle YAML-Dateien direkt im templates-Verzeichnis
+        for yaml_file in self.templates_dir.glob("*.yml"):
+            self._load_registry_v1_template_file(yaml_file)
 
     def _load_template_file(self, file_path: Path):
         """Lädt eine einzelne Template-Datei"""
@@ -100,10 +120,33 @@ class OmfMessageTemplateManager:
 
                     self.templates[topic] = template
 
-                print(f"✅ {len(template_data['templates'])} Templates aus {file_path.name} geladen")
+                self.logger.info(f"✅ {len(template_data['templates'])} Templates aus {file_path.name} geladen")
 
         except Exception as e:
-            print(f"❌ Fehler beim Laden von {file_path}: {e}")
+            self.logger.error(f"❌ Fehler beim Laden von {file_path}: {e}")
+
+    def _load_registry_v1_template_file(self, file_path: Path):
+        """Lädt eine einzelne Template-Datei (Registry v1 Struktur)"""
+        try:
+            with open(file_path, encoding="utf-8") as f:
+                template_data = yaml.safe_load(f)
+
+            if template_data:
+                # Registry v1: Template-Key ist der Dateiname ohne .yml
+                template_key = file_path.stem
+                
+                # Füge Metadaten hinzu
+                template_data["file_path"] = str(file_path)
+                template_data["category"] = template_data.get("metadata", {}).get("category", "unknown")
+                template_data["sub_category"] = template_data.get("metadata", {}).get("sub_category", "unknown")
+                
+                # Verwende Template-Key als Topic
+                self.templates[template_key] = template_data
+                self.logger.info(f"✅ 1 Template aus {file_path.name} geladen (Registry v1)")
+            else:
+                self.logger.warning(f"⚠️ Leere Template-Datei: {file_path.name}")
+        except Exception as e:
+            self.logger.error(f"❌ Fehler beim Laden von {file_path}: {e}")
 
     def get_topic_template(self, topic: str) -> Optional[Dict[str, Any]]:
         """Holt das Template für ein spezifisches Topic"""
@@ -184,7 +227,7 @@ class OmfMessageTemplateManager:
             self._load_all_templates()
             return True
         except Exception as e:
-            print(f"❌ Fehler beim Neuladen der Templates: {e}")
+            self.logger.error(f"❌ Fehler beim Neuladen der Templates: {e}")
             return False
 
     def get_template_file_path(self, topic: str) -> Optional[str]:

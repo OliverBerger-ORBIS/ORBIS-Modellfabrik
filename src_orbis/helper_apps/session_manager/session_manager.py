@@ -12,12 +12,14 @@ from pathlib import Path
 import streamlit as st
 
 # Import components
+from src_orbis.helper_apps.session_manager.components.auftrag_rot_analyzer import show_auftrag_rot_analysis
 from src_orbis.helper_apps.session_manager.components.replay_station import show_replay_station
 from src_orbis.helper_apps.session_manager.components.session_analysis import show_session_analysis
 from src_orbis.helper_apps.session_manager.components.session_recorder import show_session_recorder
 from src_orbis.helper_apps.session_manager.components.settings_manager import SettingsManager
 from src_orbis.helper_apps.session_manager.components.settings_ui import SettingsUI
 from src_orbis.helper_apps.session_manager.components.template_analysis import show_template_analysis
+from src_orbis.helper_apps.session_manager.components.order_analyzer import show_order_analyzer
 from src_orbis.omf.dashboard.utils.ui_refresh import RerunController
 from src_orbis.omf.tools.registry_manager import get_registry
 
@@ -183,6 +185,8 @@ def main():
         "Wähle einen Tab:",
         [
             "📊 Session Analyse",
+            "🔴 Auftrag-Rot Analyse",
+            "🔍 Order Analyzer",
             "📡 Replay Station",
             "🎙️ Session Recorder",
             "🔍 Template Analyse",
@@ -194,6 +198,10 @@ def main():
     # Tab content
     if tab == "📊 Session Analyse":
         show_session_analysis()
+    elif tab == "🔴 Auftrag-Rot Analyse":
+        show_auftrag_rot_analysis()
+    elif tab == "🔍 Order Analyzer":
+        show_order_analyzer()
     elif tab == "📡 Replay Station":
         show_replay_station()
     elif tab == "🎙️ Session Recorder":

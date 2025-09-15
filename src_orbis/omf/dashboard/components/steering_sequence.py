@@ -3,10 +3,14 @@ Sequenz-Steuerung Component für OMF Dashboard
 UI für die Workflow-Sequenz-Steuerung mit Status-Anzeige
 """
 
+import logging
 import os
 
 # Import der Sequenz-Tools
 import streamlit as st
+
+# Logger für Sequence Steering
+logger = logging.getLogger("omf.dashboard.steering_sequence")
 
 tools_path = os.path.join(os.path.dirname(__file__), "..", "..", "tools")
 # sys.path.append(tools_path)  # Nicht mehr nötig nach pip install -e .
@@ -16,18 +20,22 @@ try:
     from src_orbis.omf.tools.sequence_ui import SequenceUI
 
     SEQUENCE_TOOLS_AVAILABLE = True
+    logger.info("✅ Sequenz-Tools verfügbar")
 except ImportError as e:
     SEQUENCE_TOOLS_AVAILABLE = False
+    logger.warning(f"❌ Sequenz-Tools nicht verfügbar: {e}")
     print(f"❌ Sequenz-Tools nicht verfügbar: {e}")
 
 
 def show_sequence_steering():
     """Hauptfunktion für die Sequenz-Steuerung"""
+    logger.info("🎯 Sequence Steering geladen")
     st.subheader("🎯 Sequenz-Steuerung")
     st.markdown("**Automatisierte Workflow-Sequenzen für Module:**")
 
     # Prüfe ob Sequenz-Tools verfügbar sind
     if not SEQUENCE_TOOLS_AVAILABLE:
+        logger.warning("❌ Sequenz-Tools nicht verfügbar")
         st.warning("⚠️ Sequenz-Steuerung temporär nicht verfügbar")
         st.info("💡 Verwenden Sie die Factory-Steuerung für manuelle Modul-Sequenzen")
         st.error("❌ Sequenz-Tools nicht verfügbar")

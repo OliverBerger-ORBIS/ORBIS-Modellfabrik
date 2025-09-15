@@ -47,6 +47,13 @@
 - **Freigabe:** Warten auf explizite Bestätigung vor Implementierung
 - **Keine direkte Implementierung** ohne vorherige Analyse und Freigabe
 
+### Git-Workflow-Regeln
+- **Commits:** NUR nach expliziter Bestätigung des Users
+- **Keine automatischen Commits:** Niemals `git commit` ohne User-Freigabe
+- **Staging:** `git add` ist erlaubt, aber nicht `git commit`
+- **Push:** Nur nach User-Bestätigung
+- **Workflow:** Änderungen → User-Freigabe → Commit → Push
+
 ### Dashboard-Komponenten-Regeln (KRITISCH)
 - **Wrapper-Komponenten:** `show_<component_name>()` mit Tabs
 - **Unterkomponenten:** `show_<specific_function>()` mit expandable sections

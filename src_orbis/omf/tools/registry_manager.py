@@ -11,8 +11,7 @@ from typing import Any, Dict, List, Optional, Union
 
 import yaml
 
-# Logger für Registry-spezifische Fehler
-logger = logging.getLogger(__name__)
+from src_orbis.omf.tools.logging_config import get_logger
 
 
 class RegistryError(Exception):
@@ -50,6 +49,9 @@ class Registry:
     """Registry v1 Manager mit Caching und Fehlerbehandlung"""
 
     def __init__(self, root: str = None, watch_mode: bool = False):
+        self.logger = get_logger("omf.tools.registry")
+        self.logger.info("Registry v1 Manager initialisiert")
+        
         if root is None:
             # Projekt-Root-relative Pfade verwenden
             current_dir = Path(__file__).parent
@@ -57,6 +59,7 @@ class Registry:
             root = project_root / "registry" / "model" / "v1"
 
         self.root = Path(root)
+        self.logger.info(f"Registry-Root: {self.root}")
         self.watch_mode = watch_mode
         self._cache = {}
         self._mtime_cache = {}
@@ -71,9 +74,9 @@ class Registry:
             version = manifest.get("version", "")
             if not version.startswith("1."):
                 raise RegistryError(f"Version pinning violation: expected v1.x.x, got {version}")
-            logger.info(f"✅ Registry version check passed: {version}")
+            self.logger.info(f"✅ Registry version check passed: {version}")
         except Exception as e:
-            logger.error(f"❌ Registry version check failed: {e}")
+            self.logger.error(f"❌ Registry version check failed: {e}")
             raise
 
     def load_yaml(self, path: Union[str, Path]) -> Dict[str, Any]:
@@ -101,9 +104,9 @@ class Registry:
                     data = yaml.safe_load(f)
                 self._cache[str(file_path)] = data
                 self._mtime_cache[str(file_path)] = current_mtime
-                logger.debug(f"📁 Loaded: {file_path}")
+                self.logger.debug(f"📁 Loaded: {file_path}")
             except Exception as e:
-                logger.error(f"❌ Error loading {file_path}: {e}")
+                self.logger.error(f"❌ Error loading {file_path}: {e}")
                 return {}
 
         return self._cache[str(file_path)]
@@ -152,9 +155,11 @@ class TopicResolver:
     VAR = re.compile(r"\{([a-zA-Z0-9_]+)\}")
 
     def __init__(self, mapping: Dict[str, Any]):
+        self.logger = get_logger("omf.tools.registry")
         self.exact = [m for m in mapping.get("mappings", []) if "topic" in m]
         self.pattern = [(m, self._compile(m["pattern"])) for m in mapping.get("mappings", []) if "pattern" in m]
         self.default_dir = mapping.get("defaults", {}).get("direction", "inbound")
+        self.logger.info(f"TopicResolver initialisiert: {len(self.exact)} exact, {len(self.pattern)} pattern mappings")
 
     def _compile(self, pat: str) -> re.Pattern:
         """Compile pattern with variable extraction"""
@@ -163,7 +168,7 @@ class TopicResolver:
             rgx = self.VAR.sub(lambda m: f"(?P<{m.group(1)}>[^/]+)", pat)
             return re.compile("^" + rgx + "$")
         except re.error as e:
-            logger.error(f"❌ Regex compilation error for pattern '{pat}': {e}")
+            self.logger.error(f"❌ Regex compilation error for pattern '{pat}': {e}")
             # Fallback: simple pattern matching
             return re.compile("^" + re.escape(pat).replace(r"\{[^}]+\}", r"[^/]+") + "$")
 
@@ -191,7 +196,7 @@ class TopicResolver:
                 }
 
         # Unknown topic
-        logger.warning(f"⚠️ Unknown topic: {topic}")
+        self.logger.warning(f"⚠️ Unknown topic: {topic}")
         return None
 
 
@@ -199,17 +204,19 @@ class TopicManager:
     """Topic routing with error handling"""
 
     def __init__(self, registry: Registry):
+        self.logger = get_logger("omf.tools.registry")
         self.reg = registry
         self._mapping = registry.mapping()
         self._resolver = TopicResolver(self._mapping)
         self._unknown_topics = set()  # Telemetrie
+        self.logger.info("TopicManager initialisiert")
 
     def route(self, topic: str) -> Optional[Dict[str, Any]]:
         """Route topic to template mapping with error handling"""
         result = self._resolver.resolve(topic)
         if result is None:
             self._unknown_topics.add(topic)
-            logger.warning(f"⚠️ Unknown topic: {topic}")
+            self.logger.warning(f"⚠️ Unknown topic: {topic}")
         return result
 
     def get_unknown_topics(self) -> set:
@@ -221,9 +228,11 @@ class MessageTemplateManager:
     """Message template management with validation"""
 
     def __init__(self, registry: Registry):
+        self.logger = get_logger("omf.tools.registry")
         self.reg = registry
         self._templates = registry.templates()
         self._missing_templates = set()  # Telemetrie
+        self.logger.info("MessageTemplateManager initialisiert")
 
     def get(self, key: str) -> Optional[Dict[str, Any]]:
         """Get template by key with hierarchical fallback"""
@@ -236,7 +245,7 @@ class MessageTemplateManager:
             return self._templates[alt]
 
         self._missing_templates.add(key)
-        logger.warning(f"⚠️ Template missing: {key}")
+        self.logger.warning(f"⚠️ Template missing: {key}")
         return None
 
     def validate_payload(self, key: str, payload: Dict[str, Any]) -> List[str]:

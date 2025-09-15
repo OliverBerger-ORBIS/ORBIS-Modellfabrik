@@ -4,6 +4,7 @@ Erweiterte Steuerungsmöglichkeiten für direkte MQTT-Nachrichten
 """
 
 import json
+import logging
 from datetime import datetime
 from pathlib import Path
 
@@ -12,18 +13,24 @@ import streamlit as st
 # MqttGateway für sauberes Publishing
 from src_orbis.omf.tools.mqtt_gateway import MqttGateway
 
+# Logger für Generic Steering
+logger = logging.getLogger("omf.dashboard.steering_generic")
+
 
 def show_generic_steering():
     """Hauptfunktion für die Generic Steuerung"""
+    logger.info("🔧 Generic Steering geladen")
     st.subheader("🔧 Generic Steuerung")
     st.markdown("**Erweiterte Steuerungsmöglichkeiten für direkte MQTT-Nachrichten:**")
 
     # MessageGateway initialisieren
     mqtt_client = st.session_state.get("mqtt_client")
     if not mqtt_client:
+        logger.warning("❌ MQTT-Client nicht verfügbar")
         st.error("❌ MQTT-Client nicht verfügbar")
         return
 
+    logger.info("✅ MQTT-Client verfügbar, initialisiere Gateway")
     gateway = MqttGateway(mqtt_client)
 
     # Freier Modus

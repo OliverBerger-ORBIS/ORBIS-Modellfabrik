@@ -11,6 +11,7 @@ from typing import Any, Callable
 
 from . import message_generator as mg
 from .omf_mqtt_client import OmfMqttClient
+from .logging_config import get_logger
 
 
 def utc_iso() -> str:
@@ -27,8 +28,10 @@ class MqttGateway:
     """
 
     def __init__(self, client: OmfMqttClient, id_start: int = 1000) -> None:
+        self.logger = get_logger("omf.tools.mqtt_gateway")
         self.client = client
         self._order_id = id_start
+        self.logger.info("MqttGateway initialisiert")
 
     def _next_order_id(self) -> int:
         """Generiert nächste Order-ID."""
@@ -65,8 +68,10 @@ class MqttGateway:
                         fn = getattr(obj, meth, None)
 
             if not callable(fn):
+                self.logger.error(f"Unbekannter message_generator-Builder: {builder}")
                 raise ValueError(f"Unbekannter message_generator-Builder: {builder}")
 
+        self.logger.debug(f"Builder aufgerufen: {builder} mit {kwargs}")
         return fn(**kwargs)
 
     def enrich(self, payload: dict[str, Any], ensure_order_id: bool = False) -> dict[str, Any]:
@@ -112,4 +117,20 @@ class MqttGateway:
         """
         payload = self.build_via_mg(builder, **kwargs)
         payload = self.enrich(payload, ensure_order_id=ensure_order_id)
-        return self.client.publish_json(topic, payload, qos=qos, retain=retain)
+        
+        self.logger.info(f"Publiziere MQTT: {topic} (QoS={qos}, retain={retain})")
+        self.logger.debug(f"Payload: {payload}")
+        
+        # Zusätzlicher Debug-Log für Dashboard-Buffer
+        import logging
+        dashboard_logger = logging.getLogger("omf.dashboard.debug")
+        dashboard_logger.debug(f"MQTT Payload: {topic} -> {payload}")
+        
+        result = self.client.publish_json(topic, payload, qos=qos, retain=retain)
+        
+        if result:
+            self.logger.info(f"✅ MQTT erfolgreich publiziert: {topic}")
+        else:
+            self.logger.error(f"❌ MQTT-Publikation fehlgeschlagen: {topic}")
+            
+        return result

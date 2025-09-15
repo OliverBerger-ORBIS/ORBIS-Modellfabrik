@@ -6,6 +6,7 @@ Version: 3.0.0 - Ressourcenschonend mit Topic-Kategorien
 """
 
 import json
+import logging
 import re
 from dataclasses import dataclass
 from datetime import datetime
@@ -17,6 +18,9 @@ import streamlit as st
 # Import für Prioritäts-basierte Subscriptions
 from src_orbis.omf.dashboard.config.mc_priority import get_all_priority_filters
 from src_orbis.omf.dashboard.utils.ui_refresh import request_refresh
+
+# Logger für Message Center
+logger = logging.getLogger("omf.dashboard.message_center")
 
 # --- Konfiguration ---
 SITE = "ff"  # falls variabel: z. B. aus Settings nehmen
@@ -165,11 +169,13 @@ def _flatten_for_df(messages: List[MessageRow]) -> pd.DataFrame:
 
 def show_message_center():
     """Nachrichtenzentrale anzeigen - ressourcenschonend mit Topic-Kategorien"""
+    logger.info("📡 Message Center geladen")
     st.header("📡 Nachrichtenzentrale")
 
     # Get MQTT client from session state
     mqtt_client = st.session_state.get("mqtt_client")
     if not mqtt_client:
+        logger.warning("❌ MQTT Client nicht verfügbar")
         st.error("❌ MQTT Client nicht verfügbar")
         st.warning("💡 Bitte warten Sie, bis die MQTT-Verbindung hergestellt ist")
         # NICHT return - UI-Elemente trotzdem anzeigen
@@ -183,17 +189,21 @@ def show_message_center():
 
     with col5:
         if st.button("🗑️ Historie löschen", type="secondary", key="clear_history"):
+            logger.info("🗑️ Historie löschen angefordert")
             # Direkt MQTT-Client clear_history aufrufen (REPARIERT)
             current_mqtt_client = st.session_state.get("mqtt_client")
 
             if current_mqtt_client and hasattr(current_mqtt_client, "clear_history"):
                 try:
                     current_mqtt_client.clear_history()
+                    logger.info("✅ Nachrichten-Historie erfolgreich gelöscht")
                     st.success("✅ Nachrichten-Historie gelöscht")
                     request_refresh()
                 except Exception as e:
+                    logger.error(f"❌ Fehler beim Löschen der Historie: {e}")
                     st.error(f"❌ Fehler beim Löschen der Historie: {e}")
             else:
+                logger.warning("❌ MQTT-Client nicht verfügbar oder hat keine clear_history Methode")
                 st.error("❌ MQTT-Client nicht verfügbar oder hat keine clear_history Methode")
 
     with col1:
@@ -380,13 +390,18 @@ def show_message_center():
         retain = st.checkbox("Retain", value=False)
         submitted = st.form_submit_button("Senden")
         if submitted:
+            logger.info(f"🧪 Test-Nachricht senden: {topic}")
             data = payload
             try:
                 data = json.loads(payload)
-            except Exception:
+                logger.debug(f"Payload als JSON geparst: {data}")
+            except Exception as e:
+                logger.debug(f"Payload als Text verwendet: {payload}")
                 pass
             result = mqtt_client.publish(topic, data, qos=int(qos), retain=retain)
             if result:
+                logger.info(f"✅ Test-Nachricht erfolgreich gesendet: {topic}")
                 st.success(f"Nachricht gesendet: {topic}")
             else:
+                logger.error(f"❌ Test-Nachricht fehlgeschlagen: {topic}")
                 st.error("Senden fehlgeschlagen.")
