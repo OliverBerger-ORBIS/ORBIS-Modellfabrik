@@ -1,0 +1,41 @@
+metadata:
+  category: MODULE
+  description: Auto-analyzed template for module/v1/ff/SVR4H73275/connection
+  last_updated: '2025-09-15'
+  module_id: SVR4H73275
+  source: module_template_analyzer
+  sub_category: Connection
+  version: 0.1.0
+templates:
+  module.svr4h73275.connection:
+    category: MODULE
+    description: Template for module/v1/ff/SVR4H73275/connection
+    direction: inbound
+    examples:
+    - connectionState: ONLINE
+      headerId: 327
+      ip: 192.168.0.90
+      manufacturer: Fischertechnik
+      serialNumber: SVR4H73275
+      timestamp: '2025-08-19T09:13:34.606Z'
+      version: 1.6.0
+    - connectionState: ONLINE
+      headerId: 321
+      ip: 192.168.0.90
+      manufacturer: Fischertechnik
+      serialNumber: SVR4H73275
+      timestamp: '2025-08-19T09:13:34.606Z'
+      version: 1.6.0
+    - connectionState: ONLINE
+      headerId: 313
+      ip: 192.168.0.90
+      manufacturer: Fischertechnik
+      serialNumber: SVR4H73275
+      timestamp: '2025-08-19T09:13:34.606Z'
+      version: 1.6.0
+    module_id: SVR4H73275
+    structure: {}
+    sub_category: Connection
+    validation:
+      field_types: {}
+      required_fields: []

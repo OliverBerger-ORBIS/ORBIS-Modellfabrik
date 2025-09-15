@@ -31,12 +31,11 @@ class ModuleTemplateAnalyzer:
 
     def __init__(self, session_dir: str = None, output_dir: str = None):
         """Initialize the analyzer"""
-        self.session_dir = session_dir or os.path.join(
-            os.path.dirname(__file__), "..", "..", "..", "mqtt-data", "sessions"
-        )
-        self.output_dir = output_dir or os.path.join(
-            os.path.dirname(__file__), "..", "..", "..", "mqtt-data", "template_library"
-        )
+        # Use absolute paths for better reliability
+        project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
+        
+        self.session_dir = session_dir or os.path.join(project_root, "data/omf-data/sessions")
+        self.output_dir = output_dir or os.path.join(project_root, "registry/observations/payloads")
 
         # Ensure output directory exists
         os.makedirs(self.output_dir, exist_ok=True)
@@ -429,6 +428,117 @@ class ModuleTemplateAnalyzer:
         except Exception as e:
             print(f"❌ Fehler beim Aktualisieren der YAML-Datei: {e}")
 
+    def save_observations(self, results: Dict):
+        """Save analysis results as individual observation files"""
+        saved_files = []
+        
+        for topic, template_data in results.items():
+            # Create observation filename
+            date_str = datetime.now().strftime("%Y-%m-%d")
+            category = "module"
+            module_id = self._determine_module_id(topic)
+            sub_category = self._determine_sub_category(topic)
+            short_desc = f"{module_id.lower()}-{sub_category.lower()}"
+            filename = f"{date_str}_{category}_{short_desc}.yml"
+            filepath = os.path.join(self.output_dir, filename)
+            
+            # Create observation data
+            observation = {
+                "metadata": {
+                    "date": date_str,
+                    "author": "Module Template Analyzer",
+                    "source": "analysis",
+                    "topic": topic,
+                    "related_template": f"module.{module_id.lower()}.{sub_category.lower()}",
+                    "status": "open"
+                },
+                "observation": {
+                    "description": f"Auto-analyzed MODULE topic '{topic}' with {template_data.get('statistics', {}).get('total_messages', 0)} messages",
+                    "payload_example": template_data.get("examples", [{}])[0] if template_data.get("examples") else {}
+                },
+                "analysis": {
+                    "initial_assessment": f"Template structure generated with {template_data.get('statistics', {}).get('variable_fields', 0)} variable fields and {template_data.get('statistics', {}).get('enum_fields', 0)} enum fields",
+                    "open_questions": [
+                        "Soll diese Template-Struktur in die Registry übernommen werden?",
+                        "Sind alle Felder korrekt typisiert?",
+                        "Gibt es fehlende Validierungsregeln?"
+                    ]
+                },
+                "proposed_action": [
+                    f"Template '{topic}' in Registry v1 übernehmen",
+                    "Validierungsregeln definieren",
+                    "Beispiele in Registry dokumentieren"
+                ],
+                "tags": ["module", "auto-generated", "template", module_id.lower()],
+                "priority": "medium"
+            }
+            
+            # Save observation
+            try:
+                with open(filepath, "w", encoding="utf-8") as f:
+                    yaml.dump(observation, f, default_flow_style=False, allow_unicode=True, indent=2)
+                saved_files.append(filepath)
+                print(f"📝 Observation gespeichert: {filename}")
+            except Exception as e:
+                print(f"❌ Fehler beim Speichern von {filename}: {e}")
+        
+        return saved_files
+
+    def migrate_to_registry_v0(self, results: Dict):
+        """Direct migration to Registry v0 in initial phase"""
+        project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
+        registry_dir = os.path.join(project_root, "registry/model/v2/templates")
+        os.makedirs(registry_dir, exist_ok=True)
+        
+        migrated_files = []
+        
+        for topic, template_data in results.items():
+            # Create template filename
+            module_id = self._determine_module_id(topic)
+            sub_category = self._determine_sub_category(topic)
+            template_key = f"module.{module_id.lower()}.{sub_category.lower()}"
+            filename = f"{template_key}.yml"
+            filepath = os.path.join(registry_dir, filename)
+            
+            # Create Registry v0 template
+            registry_template = {
+                "metadata": {
+                    "category": "MODULE",
+                    "module_id": module_id,
+                    "sub_category": sub_category,
+                    "description": f"Auto-analyzed template for {topic}",
+                    "version": "0.1.0",
+                    "last_updated": datetime.now().strftime("%Y-%m-%d"),
+                    "source": "module_template_analyzer"
+                },
+                "templates": {
+                    template_key: {
+                        "category": "MODULE",
+                        "module_id": module_id,
+                        "sub_category": sub_category,
+                        "description": f"Template for {topic}",
+                        "direction": "inbound" if "state" in topic or "connection" in topic else "outbound",
+                        "structure": template_data.get("structure", {}),
+                        "examples": template_data.get("examples", [])[:3],
+                        "validation": {
+                            "required_fields": list(template_data.get("structure", {}).keys()),
+                            "field_types": {k: v.get("type", "string") for k, v in template_data.get("structure", {}).items()}
+                        }
+                    }
+                }
+            }
+            
+            # Save Registry v0 template
+            try:
+                with open(filepath, "w", encoding="utf-8") as f:
+                    yaml.dump(registry_template, f, default_flow_style=False, allow_unicode=True, indent=2)
+                migrated_files.append(filepath)
+                print(f"📦 Registry v0 Template: {filename}")
+            except Exception as e:
+                print(f"❌ Fehler beim Speichern von {filename}: {e}")
+        
+        return migrated_files
+
     def run_analysis(self):
         """Run complete MODULE template analysis"""
         print("🚀 Starte MODULE Template Analyse...")
@@ -448,6 +558,12 @@ class ModuleTemplateAnalyzer:
 
             # Save to YAML
             yaml_file = self.save_results_to_yaml(results)
+
+            # Save as individual observations (NEW)
+            observation_files = self.save_observations(results)
+            
+            # In initial phase: Direct migration to Registry v0 (NEW)
+            registry_files = self.migrate_to_registry_v0(results)
 
             # Update main message templates
             self.update_message_templates_yaml(results)

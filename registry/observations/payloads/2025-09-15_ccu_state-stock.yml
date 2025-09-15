@@ -1,0 +1,82 @@
+analysis:
+  initial_assessment: Template structure generated with 3 variable fields and [] enum
+    fields
+  open_questions:
+  - Soll diese Template-Struktur in die Registry übernommen werden?
+  - Sind alle Felder korrekt typisiert?
+  - Gibt es fehlende Validierungsregeln?
+metadata:
+  author: CCU Template Analyzer
+  date: '2025-09-15'
+  related_template: ccu.state
+  source: analysis
+  status: open
+  topic: ccu/state/stock
+observation:
+  description: Auto-analyzed CCU topic 'ccu/state/stock' with 310 messages
+  payload_example:
+    stockItems:
+    - hbw: SVR3QA0022
+      location: A3
+      workpiece:
+        id: ''
+        state: RAW
+        type: ''
+    - hbw: SVR3QA0022
+      location: B3
+      workpiece:
+        id: ''
+        state: RAW
+        type: ''
+    - hbw: SVR3QA0022
+      location: C3
+      workpiece:
+        id: ''
+        state: RAW
+        type: ''
+    - hbw: SVR3QA0022
+      location: A1
+      workpiece:
+        id: ''
+        state: RAW
+        type: ''
+    - hbw: SVR3QA0022
+      location: B1
+      workpiece:
+        id: 04798eca341290
+        state: RAW
+        type: WHITE
+    - hbw: SVR3QA0022
+      location: C1
+      workpiece:
+        id: 047389ca341291
+        state: RAW
+        type: BLUE
+    - hbw: SVR3QA0022
+      location: A2
+      workpiece:
+        id: 047f8cca341290
+        state: RAW
+        type: RED
+    - hbw: SVR3QA0022
+      location: B2
+      workpiece:
+        id: 04808dca341291
+        state: RAW
+        type: RED
+    - hbw: SVR3QA0022
+      location: C2
+      workpiece:
+        id: 04ab8bca341290
+        state: RAW
+        type: WHITE
+    ts: '2025-08-19T09:17:08.337Z'
+priority: medium
+proposed_action:
+- Template 'ccu/state/stock' in Registry v1 übernehmen
+- Validierungsregeln definieren
+- Beispiele in Registry dokumentieren
+tags:
+- ccu
+- auto-generated
+- template

@@ -1,0 +1,71 @@
+metadata:
+  category: MODULE
+  description: Auto-analyzed template for module/v1/ff/SVR4H73275/order
+  last_updated: '2025-09-15'
+  module_id: SVR4H73275
+  source: module_template_analyzer
+  sub_category: Order
+  version: 0.1.0
+templates:
+  module.svr4h73275.order:
+    category: MODULE
+    description: Template for module/v1/ff/SVR4H73275/order
+    direction: outbound
+    examples:
+    - action:
+        command: DROP
+        id: 4331e643-a9b2-417b-832b-0f2c456439aa
+        metadata:
+          workpiece:
+            history: []
+            state: PROCESSED
+            type: BLUE
+            workpieceId: 04c489ca341290
+      orderId: c2963a6a-7313-43d6-8feb-ae0e223d1efc
+      orderUpdateId: 1
+      serialNumber: SVR4H73275
+      timestamp: '2025-08-19T09:20:44.714Z'
+    - action:
+        command: PICK
+        id: 4d225881-b7fa-433e-b400-439580f85270
+        metadata:
+          workpiece:
+            history:
+            - code: 400
+              ts: 1755596282376
+            - code: 600
+              ts: 1755596310969
+            - code: 200
+              ts: 1755596350095
+            state: PROCESSED
+            type: RED
+            workpieceId: 04808dca341291
+      orderId: a8811da5-6cd9-481a-aef7-ad7a1c464022
+      orderUpdateId: 11
+      serialNumber: SVR4H73275
+      timestamp: '2025-08-19T09:39:28.810Z'
+    - action:
+        command: PICK
+        id: 327784cd-6abc-4a0b-870e-713694fdb1dd
+        metadata:
+          workpiece:
+            history:
+            - code: 400
+              ts: 1755595028336
+            - code: 600
+              ts: 1755595064912
+            - code: 200
+              ts: 1755595103032
+            state: PROCESSED
+            type: RED
+            workpieceId: 040a8dca341291
+      orderId: 8ae07a6e-d058-48de-9b4d-8d0176622abc
+      orderUpdateId: 11
+      serialNumber: SVR4H73275
+      timestamp: '2025-08-19T09:18:41.187Z'
+    module_id: SVR4H73275
+    structure: {}
+    sub_category: Order
+    validation:
+      field_types: {}
+      required_fields: []

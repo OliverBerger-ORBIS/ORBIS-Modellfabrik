@@ -1,0 +1,41 @@
+metadata:
+  category: MODULE
+  description: Auto-analyzed template for module/v1/ff/SVR3QA2098/connection
+  last_updated: '2025-09-15'
+  module_id: SVR3QA2098
+  source: module_template_analyzer
+  sub_category: Connection
+  version: 0.1.0
+templates:
+  module.svr3qa2098.connection:
+    category: MODULE
+    description: Template for module/v1/ff/SVR3QA2098/connection
+    direction: inbound
+    examples:
+    - connectionState: ONLINE
+      headerId: 39
+      ip: 192.168.0.40
+      manufacturer: Fischertechnik
+      serialNumber: SVR3QA2098
+      timestamp: '2025-08-19T09:13:34.136Z'
+      version: 1.3.0
+    - connectionState: ONLINE
+      headerId: 38
+      ip: 192.168.0.40
+      manufacturer: Fischertechnik
+      serialNumber: SVR3QA2098
+      timestamp: '2025-08-19T09:13:34.136Z'
+      version: 1.3.0
+    - connectionState: ONLINE
+      headerId: 37
+      ip: 192.168.0.40
+      manufacturer: Fischertechnik
+      serialNumber: SVR3QA2098
+      timestamp: '2025-08-19T09:13:34.136Z'
+      version: 1.3.0
+    module_id: SVR3QA2098
+    structure: {}
+    sub_category: Connection
+    validation:
+      field_types: {}
+      required_fields: []

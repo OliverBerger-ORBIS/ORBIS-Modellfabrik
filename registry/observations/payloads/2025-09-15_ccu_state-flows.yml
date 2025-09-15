@@ -1,0 +1,39 @@
+analysis:
+  initial_assessment: Template structure generated with 0 variable fields and [] enum
+    fields
+  open_questions:
+  - Soll diese Template-Struktur in die Registry übernommen werden?
+  - Sind alle Felder korrekt typisiert?
+  - Gibt es fehlende Validierungsregeln?
+metadata:
+  author: CCU Template Analyzer
+  date: '2025-09-15'
+  related_template: ccu.state
+  source: analysis
+  status: open
+  topic: ccu/state/flows
+observation:
+  description: Auto-analyzed CCU topic 'ccu/state/flows' with 48 messages
+  payload_example:
+    BLUE:
+      steps:
+      - DRILL
+      - MILL
+      - AIQS
+    RED:
+      steps:
+      - MILL
+      - AIQS
+    WHITE:
+      steps:
+      - DRILL
+      - AIQS
+priority: medium
+proposed_action:
+- Template 'ccu/state/flows' in Registry v1 übernehmen
+- Validierungsregeln definieren
+- Beispiele in Registry dokumentieren
+tags:
+- ccu
+- auto-generated
+- template

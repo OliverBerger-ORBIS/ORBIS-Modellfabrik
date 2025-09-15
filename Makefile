@@ -1,4 +1,4 @@
-.PHONY: help validate-registry validate-mapping check-mapping-collisions check-templates-no-topics render-template nodered-backup-ssh nodered-restore-ssh nodered-backup-api nodered-restore-api nodered-status nodered-logs
+.PHONY: help validate-registry validate-mapping check-mapping-collisions check-templates-no-topics render-template validate-development-rules validate-observations nodered-backup-ssh nodered-restore-ssh nodered-backup-api nodered-restore-api nodered-status nodered-logs
 
 PY?=python3
 
@@ -9,6 +9,8 @@ help:
 	@echo "  make check-mapping-collisions     # ensure no topic matches multiple entries"
 	@echo "  make check-templates-no-topics    # ensure templates don't contain topic strings"
 	@echo "  make render-template TOPIC=...    # resolve a topic to template + vars (dry-run)"
+	@echo "  make validate-development-rules   # validate OMF Development Rules compliance"
+	@echo "  make validate-observations        # validate observations against schema"
 	@echo ""
 	@echo "Node-RED Integration:"
 	@echo "  make nodered-backup-ssh           # backup Node-RED via SSH (NR_HOST=pi@192.168.0.100)"
@@ -34,6 +36,9 @@ render-template:
 	@if [ -z "$(TOPIC)" ]; then echo "Usage: make render-template TOPIC=<mqtt/topic>"; exit 1; fi
 	$(PY) tools/render_template.py --topic "$(TOPIC)"
 
+validate-observations:
+	$(PY) tools/validate_observations.py
+
 # Node-RED Integration Targets
 NR_HOST ?= ff22@192.168.0.100
 NR_BASE ?= http://192.168.0.100:1880
@@ -58,3 +63,6 @@ nodered-status:
 
 nodered-logs:
 	ssh -i $(NR_SSH_KEY) $(NR_HOST) "journalctl --user -u nodered -f"
+
+validate-development-rules:
+	$(PY) src_orbis/scripts/validate_development_rules.py

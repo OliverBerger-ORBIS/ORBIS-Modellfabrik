@@ -11,7 +11,8 @@ templates:
     category: Node-RED
     sub_category: Factsheet
     description: Node-RED AIQS Factsheet Information
-    direction: inbound    structure:
+    direction: inbound
+    structure:
       headerId: "<number>"
       loadSpecification: "<object>"
       localizationParameters: "<object>"

@@ -49,8 +49,8 @@ class CCUTemplateAnalyzer:
         # Get project root (3 levels up from tools directory)
         project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
         # Set paths relative to project root
-        self.output_dir = os.path.join(project_root, "mqtt-data/template_library")
-        self.session_dir = os.path.join(project_root, "mqtt-data/sessions")
+        self.output_dir = os.path.join(project_root, "registry/observations/payloads")
+        self.session_dir = os.path.join(project_root, "data/omf-data/sessions")
         # Ensure output directory exists
         os.makedirs(self.output_dir, exist_ok=True)
         print("🔧 CCU Template Analyzer initialisiert")
@@ -215,7 +215,7 @@ class CCUTemplateAnalyzer:
         # CCU-specific ENUMs
         if field_name == "orderType":
             order_values = {v.upper() for v in str_values}
-            valid_order_types = set(self.module_mapping.get_enum_values("orderTypes"))
+            valid_order_types = {"PRODUCTION", "STORAGE", "RETRIEVAL"}
             if order_values.issubset(valid_order_types):
                 return f"[{', '.join(sorted(valid_order_types))}]"
 
@@ -227,20 +227,20 @@ class CCUTemplateAnalyzer:
 
             if production_step_types:
                 production_type_values = {v.upper() for v in production_step_types}
-                valid_action_types = set(self.module_mapping.get_enum_values("actionTypes"))
+                valid_action_types = {"PICK", "DROP", "MOVE", "PROCESS"}
                 if production_type_values.issubset(valid_action_types):
                     return f"[{', '.join(sorted(valid_action_types))}]"
 
             if top_level_types:
                 top_type_values = {v.upper() for v in top_level_types}
-                valid_workpiece_types = set(self.module_mapping.get_enum_values("workpieceTypes"))
+                valid_workpiece_types = {"RED", "BLUE", "WHITE"}
                 if top_type_values.issubset(valid_workpiece_types):
                     return f"[{', '.join(sorted(valid_workpiece_types))}]"
 
         # Action states
         if field_name == "state":
             state_values = {v.upper() for v in str_values}
-            valid_states = set(self.module_mapping.get_enum_values("actionStates"))
+            valid_states = {"RUNNING", "FINISHED", "FAILED", "PAUSED"}
             # Check if any of the values match action states
             if any(state in valid_states for state in state_values):
                 return f"[{', '.join(sorted(valid_states))}]"
@@ -248,21 +248,21 @@ class CCUTemplateAnalyzer:
         # Commands
         if field_name == "command":
             command_values = {v.upper() for v in str_values}
-            valid_commands = set(self.module_mapping.get_enum_values("commands"))
+            valid_commands = {"PICK", "DROP", "MOVE", "PROCESS", "CALIBRATE"}
             if command_values.issubset(valid_commands):
                 return f"[{', '.join(sorted(valid_commands))}]"
 
         # Module types
         if field_name == "moduleType":
             module_values = {v.upper() for v in str_values}
-            valid_module_types = set(self.module_mapping.get_enum_values("moduleSubTypes"))
+            valid_module_types = {"HBW", "DRILL", "MILL", "DPS", "AIQS", "CHRG"}
             if module_values.issubset(valid_module_types):
                 return f"[{', '.join(sorted(valid_module_types))}]"
 
         # Sources/targets
         if field_name in ["source", "target"]:
             location_values = {v.upper() for v in str_values}
-            valid_locations = set(self.module_mapping.get_enum_values("moduleSubTypes")) | {"START"}
+            valid_locations = {"HBW", "DRILL", "MILL", "DPS", "AIQS", "CHRG", "START"}
             if location_values.issubset(valid_locations):
                 return f"[{', '.join(sorted(valid_locations))}]"
 
@@ -524,7 +524,7 @@ class CCUTemplateAnalyzer:
         print("📂 Lade alle Session-Datenbanken...")
 
         all_messages = []
-        session_files = glob.glob(f"{self.session_dir}/aps_persistent_traffic_*.db")
+        session_files = glob.glob(f"{self.session_dir}/*.db")
 
         print(f"  📁 Gefunden: {len(session_files)} Session-Dateien")
 
@@ -536,17 +536,33 @@ class CCUTemplateAnalyzer:
                 conn = sqlite3.connect(session_file)
                 cursor = conn.cursor()
 
+                # Check if session_label column exists
+                cursor.execute("PRAGMA table_info(mqtt_messages)")
+                columns = [column[1] for column in cursor.fetchall()]
+                has_session_label = 'session_label' in columns
+                
                 # Get messages for target topics
                 placeholders = ",".join(["?" for _ in self.target_topics])
-                cursor.execute(
-                    f"""
-                    SELECT topic, payload, timestamp, session_label
-                    FROM mqtt_messages
-                    WHERE topic IN ({placeholders})
-                    ORDER BY timestamp
-                """,
-                    self.target_topics,
-                )
+                if has_session_label:
+                    cursor.execute(
+                        f"""
+                        SELECT topic, payload, timestamp, session_label
+                        FROM mqtt_messages
+                        WHERE topic IN ({placeholders})
+                        ORDER BY timestamp
+                    """,
+                        self.target_topics,
+                    )
+                else:
+                    cursor.execute(
+                        f"""
+                        SELECT topic, payload, timestamp, '' as session_label
+                        FROM mqtt_messages
+                        WHERE topic IN ({placeholders})
+                        ORDER BY timestamp
+                    """,
+                        self.target_topics,
+                    )
 
                 session_messages = cursor.fetchall()
                 print(f"    ✅ {len(session_messages)} Nachrichten geladen")
@@ -623,6 +639,111 @@ class CCUTemplateAnalyzer:
 
         print(f"💾 Ergebnisse gespeichert in: {output_file}")
         return output_file
+
+    def save_observations(self, results: Dict):
+        """Save analysis results as individual observation files"""
+        saved_files = []
+        
+        for topic, template_data in results.items():
+            # Create observation filename
+            date_str = datetime.now().strftime("%Y-%m-%d")
+            category = "ccu"
+            short_desc = topic.replace("/", "-").replace("ccu-", "")
+            filename = f"{date_str}_{category}_{short_desc}.yml"
+            filepath = os.path.join(self.output_dir, filename)
+            
+            # Create observation data
+            observation = {
+                "metadata": {
+                    "date": date_str,
+                    "author": "CCU Template Analyzer",
+                    "source": "analysis",
+                    "topic": topic,
+                    "related_template": f"ccu.{self._determine_sub_category(topic).lower()}",
+                    "status": "open"
+                },
+                "observation": {
+                    "description": f"Auto-analyzed CCU topic '{topic}' with {template_data.get('statistics', {}).get('total_messages', 0)} messages",
+                    "payload_example": template_data.get("examples", [{}])[0] if template_data.get("examples") else {}
+                },
+                "analysis": {
+                    "initial_assessment": f"Template structure generated with {template_data.get('statistics', {}).get('variable_fields', 0)} variable fields and {template_data.get('statistics', {}).get('enum_fields', 0)} enum fields",
+                    "open_questions": [
+                        "Soll diese Template-Struktur in die Registry übernommen werden?",
+                        "Sind alle Felder korrekt typisiert?",
+                        "Gibt es fehlende Validierungsregeln?"
+                    ]
+                },
+                "proposed_action": [
+                    f"Template '{topic}' in Registry v1 übernehmen",
+                    "Validierungsregeln definieren",
+                    "Beispiele in Registry dokumentieren"
+                ],
+                "tags": ["ccu", "auto-generated", "template"],
+                "priority": "medium"
+            }
+            
+            # Save observation
+            try:
+                with open(filepath, "w", encoding="utf-8") as f:
+                    yaml.dump(observation, f, default_flow_style=False, allow_unicode=True, indent=2)
+                saved_files.append(filepath)
+                print(f"📝 Observation gespeichert: {filename}")
+            except Exception as e:
+                print(f"❌ Fehler beim Speichern von {filename}: {e}")
+        
+        return saved_files
+
+    def migrate_to_registry_v0(self, results: Dict):
+        """Direct migration to Registry v0 in initial phase"""
+        project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
+        registry_dir = os.path.join(project_root, "registry/model/v2/templates")
+        os.makedirs(registry_dir, exist_ok=True)
+        
+        migrated_files = []
+        
+        for topic, template_data in results.items():
+            # Create template filename
+            template_key = f"ccu.{self._determine_sub_category(topic).lower()}.{topic.split('/')[-1]}"
+            filename = f"{template_key}.yml"
+            filepath = os.path.join(registry_dir, filename)
+            
+            # Create Registry v0 template
+            registry_template = {
+                "metadata": {
+                    "category": "CCU",
+                    "sub_category": self._determine_sub_category(topic),
+                    "description": f"Auto-analyzed template for {topic}",
+                    "version": "0.1.0",
+                    "last_updated": datetime.now().strftime("%Y-%m-%d"),
+                    "source": "ccu_template_analyzer"
+                },
+                "templates": {
+                    template_key: {
+                        "category": "CCU",
+                        "sub_category": self._determine_sub_category(topic),
+                        "description": f"Template for {topic}",
+                        "direction": "inbound" if "state" in topic else "outbound",
+                        "structure": template_data.get("structure", {}),
+                        "examples": template_data.get("examples", [])[:3],
+                        "validation": {
+                            "required_fields": list(template_data.get("structure", {}).keys()),
+                            "field_types": {k: v.get("type", "string") for k, v in template_data.get("structure", {}).items()}
+                        }
+                    }
+                }
+            }
+            
+            # Save Registry v0 template
+            try:
+                with open(filepath, "w", encoding="utf-8") as f:
+                    yaml.dump(registry_template, f, default_flow_style=False, allow_unicode=True, indent=2)
+                migrated_files.append(filepath)
+                print(f"📦 Registry v0 Template: {filename}")
+            except Exception as e:
+                print(f"❌ Fehler beim Speichern von {filename}: {e}")
+        
+        return migrated_files
 
     def save_results_to_yaml(self, results: Dict, output_file: str = None):
         """Save analysis results to YAML file"""
@@ -829,6 +950,12 @@ class CCUTemplateAnalyzer:
 
             # Save results to YAML (new format)
             yaml_output_file = self.save_results_to_yaml(results)
+
+            # Save as individual observations (NEW)
+            observation_files = self.save_observations(results)
+            
+            # In initial phase: Direct migration to Registry v0 (NEW)
+            registry_files = self.migrate_to_registry_v0(results)
 
             # Update main message_templates.yml
             main_yaml_file = self.update_message_templates_yaml(results)

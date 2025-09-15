@@ -1,0 +1,19 @@
+metadata:
+  category: CCU
+  description: Auto-analyzed template for ccu/pairing/pair_fts
+  last_updated: '2025-09-15'
+  source: ccu_template_analyzer
+  sub_category: Pairing
+  version: 0.1.0
+templates:
+  ccu.pairing.pair_fts:
+    category: CCU
+    description: Template for ccu/pairing/pair_fts
+    direction: outbound
+    examples:
+    - serialNumber: 5iO4
+    structure: {}
+    sub_category: Pairing
+    validation:
+      field_types: {}
+      required_fields: []

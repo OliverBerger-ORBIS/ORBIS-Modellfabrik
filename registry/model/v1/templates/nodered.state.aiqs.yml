@@ -11,7 +11,8 @@ templates:
     category: Node-RED
     sub_category: State
     description: Node-RED AIQS State Information
-    direction: inbound    structure:
+    direction: inbound
+    structure:
       actionState: "<object>"
       batteryState: "<object>"
       errors: "<array>"

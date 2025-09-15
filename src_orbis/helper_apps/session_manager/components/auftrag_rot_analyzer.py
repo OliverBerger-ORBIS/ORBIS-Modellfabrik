@@ -113,7 +113,9 @@ class AuftragRotAnalyzer:
                 continue
 
         logger.info(
-            f"🔗 {len(related_messages)} verwandte Messages gefunden (Zeitfenster: {start_time.strftime('%H:%M:%S')} - {end_time.strftime('%H:%M:%S')})"
+            f"🔗 {len(related_messages)} verwandte Messages gefunden "
+            f"(Zeitfenster: {start_time.strftime('%H:%M:%S')} - "
+            f"{end_time.strftime('%H:%M:%S')})"
         )
         return related_messages
 
@@ -319,7 +321,7 @@ class AuftragRotAnalyzer:
             go.Scatter(
                 x=edge_x,
                 y=edge_y,
-                line=dict(width=2, color='rgba(125,125,125,0.5)'),
+                line={"width": 2, "color": 'rgba(125,125,125,0.5)'},
                 hoverinfo='none',
                 mode='lines',
                 name='Edges',
@@ -335,32 +337,32 @@ class AuftragRotAnalyzer:
                 hoverinfo='text',
                 text=node_text,
                 textposition="middle center",
-                marker=dict(size=node_sizes, color=node_colors, line=dict(width=2, color='black')),
+                marker={"size": node_sizes, "color": node_colors, "line": {"width": 2, "color": 'black'}},
                 name='Nodes',
             )
         )
 
         # Layout anpassen
         fig.update_layout(
-            title=dict(text='Auftrag-Rot Message Chain Graph', font=dict(size=16)),
+            title={"text": 'Auftrag-Rot Message Chain Graph', "font": {"size": 16}},
             showlegend=False,
             hovermode='closest',
-            margin=dict(b=20, l=5, r=5, t=40),
+            margin={"b": 20, "l": 5, "r": 5, "t": 40},
             annotations=[
-                dict(
-                    text="Message-Kette für ccu/order/request mit orderType: PRODUCTION",
-                    showarrow=False,
-                    xref="paper",
-                    yref="paper",
-                    x=0.005,
-                    y=-0.002,
-                    xanchor="left",
-                    yanchor="bottom",
-                    font=dict(color="gray", size=12),
-                )
+                {
+                    "text": "Message-Kette für ccu/order/request mit orderType: PRODUCTION",
+                    "showarrow": False,
+                    "xref": "paper",
+                    "yref": "paper",
+                    "x": 0.005,
+                    "y": -0.002,
+                    "xanchor": "left",
+                    "yanchor": "bottom",
+                    "font": {"color": "gray", "size": 12},
+                }
             ],
-            xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
-            yaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+            xaxis={"showgrid": False, "zeroline": False, "showticklabels": False},
+            yaxis={"showgrid": False, "zeroline": False, "showticklabels": False},
             plot_bgcolor='white',
         )
 
@@ -496,7 +498,7 @@ def analyze_auftrag_rot_with_root(session_file: str, root_message: dict, time_ra
     import os
 
     analyzer = AuftragRotAnalyzer()
-    log_path = os.path.join("data/omf-data/sessions", session_file)
+    os.path.join("data/omf-data/sessions", session_file)
 
     # Verwandte Messages finden
     session_data = load_session_data(session_file)
@@ -612,7 +614,7 @@ def show_auftrag_rot_analysis():
         st.markdown("### 2️⃣ Topic auswählen")
 
         # Verfügbare Topics aus der Session extrahieren
-        available_topics = list(set(msg.get('topic', '') for msg in session_data if msg.get('topic')))
+        available_topics = list({msg.get('topic', '') for msg in session_data if msg.get('topic')})
         available_topics.sort()
 
         if not available_topics:

@@ -11,7 +11,8 @@ templates:
     category: TXT
     sub_category: Function Input
     description: TXT Controller BME680 Sensor Data
-    direction: inbound    structure:
+    direction: inbound
+    structure:
       aq: "<number>"
       gr: "<boolean>"
       h: "<number>"

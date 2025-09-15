@@ -11,7 +11,8 @@ templates:
     category: FTS
     sub_category: Order
     description: FTS Navigation Commands
-    direction: outbound    structure:
+    direction: outbound
+    structure:
       action: "<object>"
       orderId: "<string>"
       orderUpdateId: "<number>"

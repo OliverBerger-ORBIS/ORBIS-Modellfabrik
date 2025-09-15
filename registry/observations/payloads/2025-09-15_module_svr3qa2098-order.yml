@@ -1,0 +1,38 @@
+analysis:
+  initial_assessment: Template structure generated with 4 variable fields and 1 enum
+    fields
+  open_questions:
+  - Soll diese Template-Struktur in die Registry übernommen werden?
+  - Sind alle Felder korrekt typisiert?
+  - Gibt es fehlende Validierungsregeln?
+metadata:
+  author: Module Template Analyzer
+  date: '2025-09-15'
+  related_template: module.svr3qa2098.order
+  source: analysis
+  status: open
+  topic: module/v1/ff/SVR3QA2098/order
+observation:
+  description: Auto-analyzed MODULE topic 'module/v1/ff/SVR3QA2098/order' with 55
+    messages
+  payload_example:
+    action:
+      command: DROP
+      id: e164be70-b5b7-47cf-aa1c-29b602567ef2
+      metadata:
+        type: RED
+        workpieceId: 04808dca341291
+    orderId: a8811da5-6cd9-481a-aef7-ad7a1c464022
+    orderUpdateId: 5
+    serialNumber: SVR3QA2098
+    timestamp: '2025-08-19T09:38:30.981Z'
+priority: medium
+proposed_action:
+- Template 'module/v1/ff/SVR3QA2098/order' in Registry v1 übernehmen
+- Validierungsregeln definieren
+- Beispiele in Registry dokumentieren
+tags:
+- module
+- auto-generated
+- template
+- svr3qa2098

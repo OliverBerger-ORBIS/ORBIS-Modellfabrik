@@ -1,0 +1,28 @@
+analysis:
+  initial_assessment: Template structure generated with 1 variable fields and ['serialNumber']
+    enum fields
+  open_questions:
+  - Soll diese Template-Struktur in die Registry übernommen werden?
+  - Sind alle Felder korrekt typisiert?
+  - Gibt es fehlende Validierungsregeln?
+metadata:
+  author: CCU Template Analyzer
+  date: '2025-09-15'
+  related_template: ccu.settings
+  source: analysis
+  status: open
+  topic: ccu/set/charge
+observation:
+  description: Auto-analyzed CCU topic 'ccu/set/charge' with 9 messages
+  payload_example:
+    charge: false
+    serialNumber: 5iO4
+priority: medium
+proposed_action:
+- Template 'ccu/set/charge' in Registry v1 übernehmen
+- Validierungsregeln definieren
+- Beispiele in Registry dokumentieren
+tags:
+- ccu
+- auto-generated
+- template

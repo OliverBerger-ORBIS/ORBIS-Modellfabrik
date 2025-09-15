@@ -11,7 +11,8 @@ templates:
     category: TXT
     sub_category: Order_Input
     description: TXT Controller #1 Order Input
-    direction: inbound    structure:
+    direction: inbound
+    structure:
       state: "<enum>"
       timestamp: "<datetime>"
       type: "<enum>"

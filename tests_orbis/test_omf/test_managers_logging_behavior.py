@@ -39,7 +39,7 @@ class TestManagersLoggingBehavior(unittest.TestCase):
                 mock_logger = MagicMock()
                 mock_get_logger.return_value = mock_logger
 
-                manager = OmfMessageTemplateManager()
+                OmfMessageTemplateManager()
 
                 # Prüfe Initialisierungs-Logs
                 expected_calls = [
@@ -70,7 +70,7 @@ class TestManagersLoggingBehavior(unittest.TestCase):
                 mock_logger = MagicMock()
                 mock_get_logger.return_value = mock_logger
 
-                manager = OmfMessageTemplateManager()
+                OmfMessageTemplateManager()
 
                 # Prüfe ob Error-Log aufgerufen wurde
                 mock_logger.error.assert_called()
@@ -87,7 +87,7 @@ class TestManagersLoggingBehavior(unittest.TestCase):
                 mock_registry_instance = MagicMock()
                 mock_registry.return_value = mock_registry_instance
 
-                registry = Registry()
+                Registry()
 
                 # Prüfe dass Logger verwendet wird
                 mock_get_logger.assert_called()
@@ -107,7 +107,7 @@ class TestManagersLoggingBehavior(unittest.TestCase):
                 topic_mgr = TopicManager(mock_registry_instance)
 
                 # Teste unbekanntes Topic
-                result = topic_mgr.route("unknown/topic")
+                topic_mgr.route("unknown/topic")
 
                 # Prüfe dass Logger verwendet wird
                 mock_get_logger.assert_called()
@@ -129,7 +129,7 @@ class TestManagersLoggingBehavior(unittest.TestCase):
                 mock_mg.test_builder = MagicMock(return_value={"test": "data"})
 
                 # Teste MQTT-Publishing
-                result = gateway.send("test/topic", "test_builder")
+                gateway.send("test/topic", "test_builder")
 
                 # Prüfe Publishing-Logs
                 expected_info_calls = [
@@ -163,7 +163,7 @@ class TestManagersLoggingBehavior(unittest.TestCase):
                 mock_mg.test_builder = MagicMock(return_value={"test": "data"})
 
                 # Teste MQTT-Publishing mit Fehler
-                result = gateway.send("test/topic", "test_builder")
+                gateway.send("test/topic", "test_builder")
 
                 # Prüfe Error-Log
                 expected_calls = [call("❌ MQTT-Publikation fehlgeschlagen: test/topic")]

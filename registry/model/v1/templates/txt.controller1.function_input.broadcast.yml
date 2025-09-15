@@ -11,7 +11,8 @@ templates:
     category: TXT
     sub_category: Function Input
     description: TXT Controller Broadcast Messages
-    direction: inbound    structure:
+    direction: inbound
+    structure:
       hardwareId: "<string>"
       hardwareModel: "<string>"
       message: "<string>"

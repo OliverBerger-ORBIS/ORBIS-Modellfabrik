@@ -11,7 +11,8 @@ templates:
     category: FTS
     sub_category: State
     description: FTS State Information
-    direction: inbound    structure:
+    direction: inbound
+    structure:
       lastNodeId: "<string>"
       driving: "<boolean>"
       paused: "<boolean>"

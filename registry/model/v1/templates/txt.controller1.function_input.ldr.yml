@@ -11,7 +11,8 @@ templates:
     category: TXT
     sub_category: Function Input
     description: TXT Controller LDR Sensor Data
-    direction: inbound    structure:
+    direction: inbound
+    structure:
       br: "<number>"
       ldr: "<number>"
       ts: "<datetime>"

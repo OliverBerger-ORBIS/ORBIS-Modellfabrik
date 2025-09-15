@@ -195,7 +195,9 @@ def copy_template_to_observations(template_name: str, template_info: Dict[str, A
                 "unique_fields": template_info.get("unique_fields", 0),
                 "avg_size": template_info.get("avg_size", 0),
             },
-            "export_note": "Template wurde von Session-Analyse generiert. Manuell nach registry/model/v1/templates/ kopieren.",
+            "export_note": (
+                "Template wurde von Session-Analyse generiert. " "Manuell nach registry/model/v1/templates/ kopieren."
+            ),
         }
 
         # YAML speichern
@@ -206,7 +208,9 @@ def copy_template_to_observations(template_name: str, template_info: Dict[str, A
 
         st.success(f"✅ Template exportiert nach: {template_file}")
         st.info(
-            "💡 **Hinweis:** Template wurde nach `data/observations/generated_templates/` exportiert. Manuell nach `registry/model/v1/templates/` kopieren."
+            "💡 **Hinweis:** Template wurde nach "
+            "`data/observations/generated_templates/` exportiert. "
+            "Manuell nach `registry/model/v1/templates/` kopieren."
         )
         logger.info(f"Template {template_name} nach Observations exportiert: {template_file}")
 

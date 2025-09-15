@@ -11,7 +11,8 @@ templates:
     category: FTS
     sub_category: Connection
     description: FTS Connection Information
-    direction: bidirectional    structure:
+    direction: bidirectional
+    structure:
       connectionState: "<string>"
       serialNumber: "<string>"
       version: "<string>"

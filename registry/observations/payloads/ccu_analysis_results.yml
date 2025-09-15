@@ -1,0 +1,1948 @@
+metadata:
+  analyzer: CCU Template Analyzer
+  timestamp: '2025-09-15T23:58:17.609345'
+  total_messages: 10316
+  total_topics: 14
+  version: '1.0'
+topics:
+  ccu/global:
+    category: CCU
+    description: Auto-analyzed template for ccu/global
+    examples:
+    - type: reset
+    statistics:
+      enum_fields:
+      - type
+      total_messages: 1
+      valid_payloads: 1
+      variable_fields: 0
+    sub_category: General
+    template_structure: {}
+    validation_rules: []
+  ccu/order/active:
+    category: CCU
+    description: Auto-analyzed template for ccu/order/active
+    examples:
+    - - orderId: c2963a6a-7313-43d6-8feb-ae0e223d1efc
+        orderType: STORAGE
+        productionSteps:
+        - id: 759fa248-dca6-468e-a84f-677654406635
+          source: START
+          startedAt: '2025-08-19T09:20:42.483Z'
+          state: IN_PROGRESS
+          target: DPS
+          type: NAVIGATION
+        - command: DROP
+          dependentActionId: 759fa248-dca6-468e-a84f-677654406635
+          id: 4331e643-a9b2-417b-832b-0f2c456439aa
+          moduleType: DPS
+          state: ENQUEUED
+          type: MANUFACTURE
+        - dependentActionId: 4331e643-a9b2-417b-832b-0f2c456439aa
+          id: 71c4bf13-baf1-4605-8c20-71bf0412e1fb
+          source: DPS
+          state: ENQUEUED
+          target: HBW
+          type: NAVIGATION
+        - command: PICK
+          dependentActionId: 71c4bf13-baf1-4605-8c20-71bf0412e1fb
+          id: 193e051a-8931-4de0-8862-444d634b57be
+          moduleType: HBW
+          state: ENQUEUED
+          type: MANUFACTURE
+        receivedAt: '2025-08-19T09:20:42.440Z'
+        startedAt: '2025-08-19T09:20:42.440Z'
+        state: IN_PROGRESS
+        timestamp: '2025-08-19T09:20:42.329Z'
+        type: BLUE
+        workpieceId: 04c489ca341290
+    - - orderId: d1f48c07-5888-4e83-84f2-8fcd4acf4033
+        orderType: PRODUCTION
+        productionSteps:
+        - id: 38c381f7-f213-4728-b2c3-c56913a1d6fc
+          source: START
+          startedAt: '2025-08-19T09:35:05.338Z'
+          state: IN_PROGRESS
+          target: HBW
+          type: NAVIGATION
+        - command: DROP
+          dependentActionId: 38c381f7-f213-4728-b2c3-c56913a1d6fc
+          id: 008ac17c-c2f1-4621-a520-c1f56a5a249b
+          moduleType: HBW
+          state: ENQUEUED
+          type: MANUFACTURE
+        - dependentActionId: 008ac17c-c2f1-4621-a520-c1f56a5a249b
+          id: 761e8caa-69c0-45b3-bc7c-2b5087cfc7a5
+          source: HBW
+          state: ENQUEUED
+          target: MILL
+          type: NAVIGATION
+        - command: PICK
+          dependentActionId: 761e8caa-69c0-45b3-bc7c-2b5087cfc7a5
+          id: 284620a6-c4ab-460b-ad33-f5db01ede969
+          moduleType: MILL
+          state: ENQUEUED
+          type: MANUFACTURE
+        - command: MILL
+          dependentActionId: 284620a6-c4ab-460b-ad33-f5db01ede969
+          id: 8fbb910e-5808-4a1d-a3b4-f2f94c600308
+          moduleType: MILL
+          state: ENQUEUED
+          type: MANUFACTURE
+        - command: DROP
+          dependentActionId: 8fbb910e-5808-4a1d-a3b4-f2f94c600308
+          id: 9b1cd9cf-f629-4735-8ba5-f107e6098b2f
+          moduleType: MILL
+          state: ENQUEUED
+          type: MANUFACTURE
+        - dependentActionId: 9b1cd9cf-f629-4735-8ba5-f107e6098b2f
+          id: 776864e4-36a4-4718-8f97-ab263bc00001
+          source: MILL
+          state: ENQUEUED
+          target: AIQS
+          type: NAVIGATION
+        - command: PICK
+          dependentActionId: 776864e4-36a4-4718-8f97-ab263bc00001
+          id: 58858098-f298-44f3-9025-e3bc33785de1
+          moduleType: AIQS
+          state: ENQUEUED
+          type: MANUFACTURE
+        - command: CHECK_QUALITY
+          dependentActionId: 58858098-f298-44f3-9025-e3bc33785de1
+          id: 19fde5b1-6679-4ba4-a435-cf743a828638
+          moduleType: AIQS
+          state: ENQUEUED
+          type: MANUFACTURE
+        - command: DROP
+          dependentActionId: 19fde5b1-6679-4ba4-a435-cf743a828638
+          id: 87a0a13b-04df-4836-be2f-dad86467fa54
+          moduleType: AIQS
+          state: ENQUEUED
+          type: MANUFACTURE
+        - dependentActionId: 87a0a13b-04df-4836-be2f-dad86467fa54
+          id: 4c67dad1-ede2-4fb1-82bf-04054d60592c
+          source: AIQS
+          state: ENQUEUED
+          target: DPS
+          type: NAVIGATION
+        - command: PICK
+          dependentActionId: 4c67dad1-ede2-4fb1-82bf-04054d60592c
+          id: eeb5168c-574e-4961-9282-87ea0e065736
+          moduleType: DPS
+          state: ENQUEUED
+          type: MANUFACTURE
+        receivedAt: '2025-08-19T09:35:05.300Z'
+        startedAt: '2025-08-19T09:35:05.301Z'
+        state: IN_PROGRESS
+        timestamp: '2025-08-19T09:35:05.228Z'
+        type: RED
+    - - orderId: 8ba5cabd-a45a-4e43-8c5c-18a747c741d1
+        orderType: PRODUCTION
+        productionSteps:
+        - id: 5774ad9e-5800-4444-9f35-0a0f8002ea3c
+          source: START
+          startedAt: '2025-08-20T11:12:14.731Z'
+          state: IN_PROGRESS
+          target: HBW
+          type: NAVIGATION
+        - command: DROP
+          dependentActionId: 5774ad9e-5800-4444-9f35-0a0f8002ea3c
+          id: 5460b5b1-55b5-4b22-8c7c-01bd2b243d30
+          moduleType: HBW
+          state: ENQUEUED
+          type: MANUFACTURE
+        - dependentActionId: 5460b5b1-55b5-4b22-8c7c-01bd2b243d30
+          id: dd79d4d5-2359-479a-a3bd-430dcc161f2d
+          source: HBW
+          state: ENQUEUED
+          target: MILL
+          type: NAVIGATION
+        - command: PICK
+          dependentActionId: dd79d4d5-2359-479a-a3bd-430dcc161f2d
+          id: a80176a0-3c47-4a14-903b-64ae35676eb5
+          moduleType: MILL
+          state: ENQUEUED
+          type: MANUFACTURE
+        - command: MILL
+          dependentActionId: a80176a0-3c47-4a14-903b-64ae35676eb5
+          id: febcbdb3-5559-421b-9839-37e0f968f624
+          moduleType: MILL
+          state: ENQUEUED
+          type: MANUFACTURE
+        - command: DROP
+          dependentActionId: febcbdb3-5559-421b-9839-37e0f968f624
+          id: 06d14942-062f-4d53-b483-761b309e650e
+          moduleType: MILL
+          state: ENQUEUED
+          type: MANUFACTURE
+        - dependentActionId: 06d14942-062f-4d53-b483-761b309e650e
+          id: a6564466-e54c-49e1-8ab3-6a0ceb9121bf
+          source: MILL
+          state: ENQUEUED
+          target: AIQS
+          type: NAVIGATION
+        - command: PICK
+          dependentActionId: a6564466-e54c-49e1-8ab3-6a0ceb9121bf
+          id: e98bf6ba-d032-4675-a7e8-c0f4813e84c7
+          moduleType: AIQS
+          state: ENQUEUED
+          type: MANUFACTURE
+        - command: CHECK_QUALITY
+          dependentActionId: e98bf6ba-d032-4675-a7e8-c0f4813e84c7
+          id: 5584b78d-a98c-4fe0-927a-49201f0bca53
+          moduleType: AIQS
+          state: ENQUEUED
+          type: MANUFACTURE
+        - command: DROP
+          dependentActionId: 5584b78d-a98c-4fe0-927a-49201f0bca53
+          id: c5abca8f-f229-4875-8aa1-4a31d119d3c2
+          moduleType: AIQS
+          state: ENQUEUED
+          type: MANUFACTURE
+        - dependentActionId: c5abca8f-f229-4875-8aa1-4a31d119d3c2
+          id: a1188491-2547-429e-9468-ab0f25da2c90
+          source: AIQS
+          state: ENQUEUED
+          target: DPS
+          type: NAVIGATION
+        - command: PICK
+          dependentActionId: a1188491-2547-429e-9468-ab0f25da2c90
+          id: ced764d4-1f69-4bb1-a0a9-31be168dd416
+          moduleType: DPS
+          state: ENQUEUED
+          type: MANUFACTURE
+        receivedAt: '2025-08-20T11:12:14.696Z'
+        startedAt: '2025-08-20T11:12:14.697Z'
+        state: IN_PROGRESS
+        timestamp: '2025-08-20T11:12:14.594Z'
+        type: RED
+      - orderId: cc8d5bae-f89e-4ef8-a316-b6a25ebf76c1
+        orderType: PRODUCTION
+        productionSteps:
+        - id: 5c9242b2-8896-4717-b98a-5751b605e6c2
+          source: START
+          state: ENQUEUED
+          target: HBW
+          type: NAVIGATION
+        - command: DROP
+          dependentActionId: 5c9242b2-8896-4717-b98a-5751b605e6c2
+          id: b39f539f-1a5b-4ad5-b773-befc0b5d9edd
+          moduleType: HBW
+          state: ENQUEUED
+          type: MANUFACTURE
+        - dependentActionId: b39f539f-1a5b-4ad5-b773-befc0b5d9edd
+          id: 4547d875-7ce4-49e6-8189-97ddbc2ea4a7
+          source: HBW
+          state: ENQUEUED
+          target: MILL
+          type: NAVIGATION
+        - command: PICK
+          dependentActionId: 4547d875-7ce4-49e6-8189-97ddbc2ea4a7
+          id: bc758092-b72b-4697-ba89-a838908450c6
+          moduleType: MILL
+          state: ENQUEUED
+          type: MANUFACTURE
+        - command: MILL
+          dependentActionId: bc758092-b72b-4697-ba89-a838908450c6
+          id: 5c1be742-d97b-4c45-b89c-a75411290f00
+          moduleType: MILL
+          state: ENQUEUED
+          type: MANUFACTURE
+        - command: DROP
+          dependentActionId: 5c1be742-d97b-4c45-b89c-a75411290f00
+          id: 6a1ca6ac-51de-40be-a4a6-7832ba3412fc
+          moduleType: MILL
+          state: ENQUEUED
+          type: MANUFACTURE
+        - dependentActionId: 6a1ca6ac-51de-40be-a4a6-7832ba3412fc
+          id: 87308f15-b4f0-45fd-a58f-37bfab04e10c
+          source: MILL
+          state: ENQUEUED
+          target: AIQS
+          type: NAVIGATION
+        - command: PICK
+          dependentActionId: 87308f15-b4f0-45fd-a58f-37bfab04e10c
+          id: 1e401364-932a-47f9-aad6-9eeab5c0a6e6
+          moduleType: AIQS
+          state: ENQUEUED
+          type: MANUFACTURE
+        - command: CHECK_QUALITY
+          dependentActionId: 1e401364-932a-47f9-aad6-9eeab5c0a6e6
+          id: 1981ced3-303e-4646-b2e8-cf7caee75d4f
+          moduleType: AIQS
+          state: ENQUEUED
+          type: MANUFACTURE
+        - command: DROP
+          dependentActionId: 1981ced3-303e-4646-b2e8-cf7caee75d4f
+          id: b48870f9-d4e1-4388-976b-34f6720e42d6
+          moduleType: AIQS
+          state: ENQUEUED
+          type: MANUFACTURE
+        - dependentActionId: b48870f9-d4e1-4388-976b-34f6720e42d6
+          id: 33a9be45-8725-4082-8198-2ed1d0843d5a
+          source: AIQS
+          state: ENQUEUED
+          target: DPS
+          type: NAVIGATION
+        - command: PICK
+          dependentActionId: 33a9be45-8725-4082-8198-2ed1d0843d5a
+          id: 32a027ff-80ff-4255-9117-b57412615bb6
+          moduleType: DPS
+          state: ENQUEUED
+          type: MANUFACTURE
+        receivedAt: '2025-08-20T11:12:15.724Z'
+        startedAt: '2025-08-20T11:12:15.725Z'
+        state: IN_PROGRESS
+        timestamp: '2025-08-20T11:12:15.626Z'
+        type: RED
+    statistics:
+      enum_fields:
+      - orderType
+      - productionSteps.source
+      - productionSteps.target
+      total_messages: 725
+      valid_payloads: 725
+      variable_fields: 11
+    sub_category: Order
+    template_structure: {}
+    validation_rules: []
+  ccu/order/completed:
+    category: CCU
+    description: Auto-analyzed template for ccu/order/completed
+    examples:
+    - - orderId: 8ae07a6e-d058-48de-9b4d-8d0176622abc
+        orderType: PRODUCTION
+        productionSteps:
+        - id: 4d1d27e4-db1c-42e0-a01f-8631818bd9b6
+          source: START
+          startedAt: '2025-08-19T09:16:14.679Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:16:26.696Z'
+          target: HBW
+          type: NAVIGATION
+        - command: DROP
+          dependentActionId: 4d1d27e4-db1c-42e0-a01f-8631818bd9b6
+          id: 2ecc8911-1ce4-44d4-bc1a-d9574ef62464
+          moduleType: HBW
+          serialNumber: SVR3QA0022
+          startedAt: '2025-08-19T09:16:26.708Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:17:08.336Z'
+          type: MANUFACTURE
+        - dependentActionId: 2ecc8911-1ce4-44d4-bc1a-d9574ef62464
+          id: 54d50763-d548-40d2-9c18-44b5ddbad0ec
+          source: HBW
+          startedAt: '2025-08-19T09:17:15.869Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:17:25.207Z'
+          target: MILL
+          type: NAVIGATION
+        - command: PICK
+          dependentActionId: 54d50763-d548-40d2-9c18-44b5ddbad0ec
+          id: 683a526a-bf99-4d5a-be21-4efd3c88792f
+          moduleType: MILL
+          serialNumber: SVR3QA2098
+          startedAt: '2025-08-19T09:17:25.212Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:17:34.755Z'
+          type: MANUFACTURE
+        - command: MILL
+          dependentActionId: 683a526a-bf99-4d5a-be21-4efd3c88792f
+          id: 3c1ea434-2ab5-477a-9b52-a436518b9cb8
+          moduleType: MILL
+          serialNumber: SVR3QA2098
+          startedAt: '2025-08-19T09:17:34.758Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:17:44.912Z'
+          type: MANUFACTURE
+        - command: DROP
+          dependentActionId: 3c1ea434-2ab5-477a-9b52-a436518b9cb8
+          id: ea84b176-0945-4609-8c17-ddcebb69b4fe
+          moduleType: MILL
+          serialNumber: SVR3QA2098
+          startedAt: '2025-08-19T09:17:44.939Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:17:53.864Z'
+          type: MANUFACTURE
+        - dependentActionId: ea84b176-0945-4609-8c17-ddcebb69b4fe
+          id: c770cd56-3cdb-43d9-9a28-d7ebc2a09ba7
+          source: MILL
+          startedAt: '2025-08-19T09:17:54.104Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:18:06.705Z'
+          target: AIQS
+          type: NAVIGATION
+        - command: PICK
+          dependentActionId: c770cd56-3cdb-43d9-9a28-d7ebc2a09ba7
+          id: 35d69089-2162-41b1-8d14-ef4d3e06347a
+          moduleType: AIQS
+          serialNumber: SVR4H76530
+          startedAt: '2025-08-19T09:18:06.711Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:18:14.865Z'
+          type: MANUFACTURE
+        - command: CHECK_QUALITY
+          dependentActionId: 35d69089-2162-41b1-8d14-ef4d3e06347a
+          id: 7b25fdfb-4a9e-419d-836c-c4348d9d9fd3
+          moduleType: AIQS
+          serialNumber: SVR4H76530
+          startedAt: '2025-08-19T09:18:14.870Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:18:23.032Z'
+          type: MANUFACTURE
+        - command: DROP
+          dependentActionId: 7b25fdfb-4a9e-419d-836c-c4348d9d9fd3
+          id: 6d9c53fd-c911-407e-be14-1e0d0a93b5bc
+          moduleType: AIQS
+          serialNumber: SVR4H76530
+          startedAt: '2025-08-19T09:18:23.043Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:18:31.913Z'
+          type: MANUFACTURE
+        - dependentActionId: 6d9c53fd-c911-407e-be14-1e0d0a93b5bc
+          id: 2276c951-dc47-4082-8393-a4f6ce72fef9
+          source: AIQS
+          startedAt: '2025-08-19T09:18:32.064Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:18:41.174Z'
+          target: DPS
+          type: NAVIGATION
+        - command: PICK
+          dependentActionId: 2276c951-dc47-4082-8393-a4f6ce72fef9
+          id: 327784cd-6abc-4a0b-870e-713694fdb1dd
+          moduleType: DPS
+          serialNumber: SVR4H73275
+          startedAt: '2025-08-19T09:18:41.193Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:19:04.568Z'
+          type: MANUFACTURE
+        receivedAt: '2025-08-19T09:16:14.577Z'
+        startedAt: '2025-08-19T09:16:14.578Z'
+        state: FINISHED
+        stoppedAt: '2025-08-19T09:19:04.569Z'
+        timestamp: '2025-08-19T09:16:14.336Z'
+        type: RED
+        workpieceId: 040a8dca341291
+    - - orderId: 8ae07a6e-d058-48de-9b4d-8d0176622abc
+        orderType: PRODUCTION
+        productionSteps:
+        - id: 4d1d27e4-db1c-42e0-a01f-8631818bd9b6
+          source: START
+          startedAt: '2025-08-19T09:16:14.679Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:16:26.696Z'
+          target: HBW
+          type: NAVIGATION
+        - command: DROP
+          dependentActionId: 4d1d27e4-db1c-42e0-a01f-8631818bd9b6
+          id: 2ecc8911-1ce4-44d4-bc1a-d9574ef62464
+          moduleType: HBW
+          serialNumber: SVR3QA0022
+          startedAt: '2025-08-19T09:16:26.708Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:17:08.336Z'
+          type: MANUFACTURE
+        - dependentActionId: 2ecc8911-1ce4-44d4-bc1a-d9574ef62464
+          id: 54d50763-d548-40d2-9c18-44b5ddbad0ec
+          source: HBW
+          startedAt: '2025-08-19T09:17:15.869Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:17:25.207Z'
+          target: MILL
+          type: NAVIGATION
+        - command: PICK
+          dependentActionId: 54d50763-d548-40d2-9c18-44b5ddbad0ec
+          id: 683a526a-bf99-4d5a-be21-4efd3c88792f
+          moduleType: MILL
+          serialNumber: SVR3QA2098
+          startedAt: '2025-08-19T09:17:25.212Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:17:34.755Z'
+          type: MANUFACTURE
+        - command: MILL
+          dependentActionId: 683a526a-bf99-4d5a-be21-4efd3c88792f
+          id: 3c1ea434-2ab5-477a-9b52-a436518b9cb8
+          moduleType: MILL
+          serialNumber: SVR3QA2098
+          startedAt: '2025-08-19T09:17:34.758Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:17:44.912Z'
+          type: MANUFACTURE
+        - command: DROP
+          dependentActionId: 3c1ea434-2ab5-477a-9b52-a436518b9cb8
+          id: ea84b176-0945-4609-8c17-ddcebb69b4fe
+          moduleType: MILL
+          serialNumber: SVR3QA2098
+          startedAt: '2025-08-19T09:17:44.939Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:17:53.864Z'
+          type: MANUFACTURE
+        - dependentActionId: ea84b176-0945-4609-8c17-ddcebb69b4fe
+          id: c770cd56-3cdb-43d9-9a28-d7ebc2a09ba7
+          source: MILL
+          startedAt: '2025-08-19T09:17:54.104Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:18:06.705Z'
+          target: AIQS
+          type: NAVIGATION
+        - command: PICK
+          dependentActionId: c770cd56-3cdb-43d9-9a28-d7ebc2a09ba7
+          id: 35d69089-2162-41b1-8d14-ef4d3e06347a
+          moduleType: AIQS
+          serialNumber: SVR4H76530
+          startedAt: '2025-08-19T09:18:06.711Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:18:14.865Z'
+          type: MANUFACTURE
+        - command: CHECK_QUALITY
+          dependentActionId: 35d69089-2162-41b1-8d14-ef4d3e06347a
+          id: 7b25fdfb-4a9e-419d-836c-c4348d9d9fd3
+          moduleType: AIQS
+          serialNumber: SVR4H76530
+          startedAt: '2025-08-19T09:18:14.870Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:18:23.032Z'
+          type: MANUFACTURE
+        - command: DROP
+          dependentActionId: 7b25fdfb-4a9e-419d-836c-c4348d9d9fd3
+          id: 6d9c53fd-c911-407e-be14-1e0d0a93b5bc
+          moduleType: AIQS
+          serialNumber: SVR4H76530
+          startedAt: '2025-08-19T09:18:23.043Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:18:31.913Z'
+          type: MANUFACTURE
+        - dependentActionId: 6d9c53fd-c911-407e-be14-1e0d0a93b5bc
+          id: 2276c951-dc47-4082-8393-a4f6ce72fef9
+          source: AIQS
+          startedAt: '2025-08-19T09:18:32.064Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:18:41.174Z'
+          target: DPS
+          type: NAVIGATION
+        - command: PICK
+          dependentActionId: 2276c951-dc47-4082-8393-a4f6ce72fef9
+          id: 327784cd-6abc-4a0b-870e-713694fdb1dd
+          moduleType: DPS
+          serialNumber: SVR4H73275
+          startedAt: '2025-08-19T09:18:41.193Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:19:04.568Z'
+          type: MANUFACTURE
+        receivedAt: '2025-08-19T09:16:14.577Z'
+        startedAt: '2025-08-19T09:16:14.578Z'
+        state: FINISHED
+        stoppedAt: '2025-08-19T09:19:04.569Z'
+        timestamp: '2025-08-19T09:16:14.336Z'
+        type: RED
+        workpieceId: 040a8dca341291
+      - orderId: c2963a6a-7313-43d6-8feb-ae0e223d1efc
+        orderType: STORAGE
+        productionSteps:
+        - id: 759fa248-dca6-468e-a84f-677654406635
+          source: START
+          startedAt: '2025-08-19T09:20:42.483Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:20:44.711Z'
+          target: DPS
+          type: NAVIGATION
+        - command: DROP
+          dependentActionId: 759fa248-dca6-468e-a84f-677654406635
+          id: 4331e643-a9b2-417b-832b-0f2c456439aa
+          moduleType: DPS
+          serialNumber: SVR4H73275
+          startedAt: '2025-08-19T09:20:44.716Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:20:59.181Z'
+          type: MANUFACTURE
+        - dependentActionId: 4331e643-a9b2-417b-832b-0f2c456439aa
+          id: 71c4bf13-baf1-4605-8c20-71bf0412e1fb
+          source: DPS
+          startedAt: '2025-08-19T09:20:59.415Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:21:09.505Z'
+          target: HBW
+          type: NAVIGATION
+        - command: PICK
+          dependentActionId: 71c4bf13-baf1-4605-8c20-71bf0412e1fb
+          id: 193e051a-8931-4de0-8862-444d634b57be
+          moduleType: HBW
+          serialNumber: SVR3QA0022
+          startedAt: '2025-08-19T09:21:09.508Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:21:27.308Z'
+          type: MANUFACTURE
+        receivedAt: '2025-08-19T09:20:42.440Z'
+        startedAt: '2025-08-19T09:20:42.440Z'
+        state: FINISHED
+        stoppedAt: '2025-08-19T09:21:27.313Z'
+        timestamp: '2025-08-19T09:20:42.329Z'
+        type: BLUE
+        workpieceId: 04c489ca341290
+    - - orderId: 8ae07a6e-d058-48de-9b4d-8d0176622abc
+        orderType: PRODUCTION
+        productionSteps:
+        - id: 4d1d27e4-db1c-42e0-a01f-8631818bd9b6
+          source: START
+          startedAt: '2025-08-19T09:16:14.679Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:16:26.696Z'
+          target: HBW
+          type: NAVIGATION
+        - command: DROP
+          dependentActionId: 4d1d27e4-db1c-42e0-a01f-8631818bd9b6
+          id: 2ecc8911-1ce4-44d4-bc1a-d9574ef62464
+          moduleType: HBW
+          serialNumber: SVR3QA0022
+          startedAt: '2025-08-19T09:16:26.708Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:17:08.336Z'
+          type: MANUFACTURE
+        - dependentActionId: 2ecc8911-1ce4-44d4-bc1a-d9574ef62464
+          id: 54d50763-d548-40d2-9c18-44b5ddbad0ec
+          source: HBW
+          startedAt: '2025-08-19T09:17:15.869Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:17:25.207Z'
+          target: MILL
+          type: NAVIGATION
+        - command: PICK
+          dependentActionId: 54d50763-d548-40d2-9c18-44b5ddbad0ec
+          id: 683a526a-bf99-4d5a-be21-4efd3c88792f
+          moduleType: MILL
+          serialNumber: SVR3QA2098
+          startedAt: '2025-08-19T09:17:25.212Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:17:34.755Z'
+          type: MANUFACTURE
+        - command: MILL
+          dependentActionId: 683a526a-bf99-4d5a-be21-4efd3c88792f
+          id: 3c1ea434-2ab5-477a-9b52-a436518b9cb8
+          moduleType: MILL
+          serialNumber: SVR3QA2098
+          startedAt: '2025-08-19T09:17:34.758Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:17:44.912Z'
+          type: MANUFACTURE
+        - command: DROP
+          dependentActionId: 3c1ea434-2ab5-477a-9b52-a436518b9cb8
+          id: ea84b176-0945-4609-8c17-ddcebb69b4fe
+          moduleType: MILL
+          serialNumber: SVR3QA2098
+          startedAt: '2025-08-19T09:17:44.939Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:17:53.864Z'
+          type: MANUFACTURE
+        - dependentActionId: ea84b176-0945-4609-8c17-ddcebb69b4fe
+          id: c770cd56-3cdb-43d9-9a28-d7ebc2a09ba7
+          source: MILL
+          startedAt: '2025-08-19T09:17:54.104Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:18:06.705Z'
+          target: AIQS
+          type: NAVIGATION
+        - command: PICK
+          dependentActionId: c770cd56-3cdb-43d9-9a28-d7ebc2a09ba7
+          id: 35d69089-2162-41b1-8d14-ef4d3e06347a
+          moduleType: AIQS
+          serialNumber: SVR4H76530
+          startedAt: '2025-08-19T09:18:06.711Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:18:14.865Z'
+          type: MANUFACTURE
+        - command: CHECK_QUALITY
+          dependentActionId: 35d69089-2162-41b1-8d14-ef4d3e06347a
+          id: 7b25fdfb-4a9e-419d-836c-c4348d9d9fd3
+          moduleType: AIQS
+          serialNumber: SVR4H76530
+          startedAt: '2025-08-19T09:18:14.870Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:18:23.032Z'
+          type: MANUFACTURE
+        - command: DROP
+          dependentActionId: 7b25fdfb-4a9e-419d-836c-c4348d9d9fd3
+          id: 6d9c53fd-c911-407e-be14-1e0d0a93b5bc
+          moduleType: AIQS
+          serialNumber: SVR4H76530
+          startedAt: '2025-08-19T09:18:23.043Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:18:31.913Z'
+          type: MANUFACTURE
+        - dependentActionId: 6d9c53fd-c911-407e-be14-1e0d0a93b5bc
+          id: 2276c951-dc47-4082-8393-a4f6ce72fef9
+          source: AIQS
+          startedAt: '2025-08-19T09:18:32.064Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:18:41.174Z'
+          target: DPS
+          type: NAVIGATION
+        - command: PICK
+          dependentActionId: 2276c951-dc47-4082-8393-a4f6ce72fef9
+          id: 327784cd-6abc-4a0b-870e-713694fdb1dd
+          moduleType: DPS
+          serialNumber: SVR4H73275
+          startedAt: '2025-08-19T09:18:41.193Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:19:04.568Z'
+          type: MANUFACTURE
+        receivedAt: '2025-08-19T09:16:14.577Z'
+        startedAt: '2025-08-19T09:16:14.578Z'
+        state: FINISHED
+        stoppedAt: '2025-08-19T09:19:04.569Z'
+        timestamp: '2025-08-19T09:16:14.336Z'
+        type: RED
+        workpieceId: 040a8dca341291
+      - orderId: c2963a6a-7313-43d6-8feb-ae0e223d1efc
+        orderType: STORAGE
+        productionSteps:
+        - id: 759fa248-dca6-468e-a84f-677654406635
+          source: START
+          startedAt: '2025-08-19T09:20:42.483Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:20:44.711Z'
+          target: DPS
+          type: NAVIGATION
+        - command: DROP
+          dependentActionId: 759fa248-dca6-468e-a84f-677654406635
+          id: 4331e643-a9b2-417b-832b-0f2c456439aa
+          moduleType: DPS
+          serialNumber: SVR4H73275
+          startedAt: '2025-08-19T09:20:44.716Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:20:59.181Z'
+          type: MANUFACTURE
+        - dependentActionId: 4331e643-a9b2-417b-832b-0f2c456439aa
+          id: 71c4bf13-baf1-4605-8c20-71bf0412e1fb
+          source: DPS
+          startedAt: '2025-08-19T09:20:59.415Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:21:09.505Z'
+          target: HBW
+          type: NAVIGATION
+        - command: PICK
+          dependentActionId: 71c4bf13-baf1-4605-8c20-71bf0412e1fb
+          id: 193e051a-8931-4de0-8862-444d634b57be
+          moduleType: HBW
+          serialNumber: SVR3QA0022
+          startedAt: '2025-08-19T09:21:09.508Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:21:27.308Z'
+          type: MANUFACTURE
+        receivedAt: '2025-08-19T09:20:42.440Z'
+        startedAt: '2025-08-19T09:20:42.440Z'
+        state: FINISHED
+        stoppedAt: '2025-08-19T09:21:27.313Z'
+        timestamp: '2025-08-19T09:20:42.329Z'
+        type: BLUE
+        workpieceId: 04c489ca341290
+      - orderId: 258beef9-6001-43a2-b7d4-01ed50f4b155
+        orderType: PRODUCTION
+        productionSteps:
+        - id: f764e870-21dd-4f80-a764-6862368b617f
+          source: START
+          startedAt: '2025-08-19T09:22:49.699Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:22:51.848Z'
+          target: HBW
+          type: NAVIGATION
+        - command: DROP
+          dependentActionId: f764e870-21dd-4f80-a764-6862368b617f
+          id: 451193bc-e03e-4517-8b21-32e8a43a8938
+          moduleType: HBW
+          serialNumber: SVR3QA0022
+          startedAt: '2025-08-19T09:22:51.853Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:23:32.286Z'
+          type: MANUFACTURE
+        - dependentActionId: 451193bc-e03e-4517-8b21-32e8a43a8938
+          id: d7281ec2-a038-487d-bcb3-8c1493ed48a1
+          source: HBW
+          startedAt: '2025-08-19T09:23:32.600Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:23:45.354Z'
+          target: DRILL
+          type: NAVIGATION
+        - command: PICK
+          dependentActionId: d7281ec2-a038-487d-bcb3-8c1493ed48a1
+          id: efe26ddd-4153-44b7-becb-cce3ef1044ad
+          moduleType: DRILL
+          serialNumber: SVR4H76449
+          startedAt: '2025-08-19T09:23:45.359Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:23:55.621Z'
+          type: MANUFACTURE
+        - command: DRILL
+          dependentActionId: efe26ddd-4153-44b7-becb-cce3ef1044ad
+          id: cefbed5e-6c95-496f-ab2d-6eb520d3131b
+          moduleType: DRILL
+          serialNumber: SVR4H76449
+          startedAt: '2025-08-19T09:23:55.626Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:24:05.580Z'
+          type: MANUFACTURE
+        - command: DROP
+          dependentActionId: cefbed5e-6c95-496f-ab2d-6eb520d3131b
+          id: 87839be5-1a2b-48ba-94b6-34e699a6e859
+          moduleType: DRILL
+          serialNumber: SVR4H76449
+          startedAt: '2025-08-19T09:24:05.595Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:24:16.536Z'
+          type: MANUFACTURE
+        - dependentActionId: 87839be5-1a2b-48ba-94b6-34e699a6e859
+          id: a85d3919-28dc-48c5-962d-cb424d27abdb
+          source: DRILL
+          startedAt: '2025-08-19T09:24:16.871Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:24:34.647Z'
+          target: AIQS
+          type: NAVIGATION
+        - command: PICK
+          dependentActionId: a85d3919-28dc-48c5-962d-cb424d27abdb
+          id: 89b6bc51-4f27-4bb1-8481-fa1f9774306f
+          moduleType: AIQS
+          serialNumber: SVR4H76530
+          startedAt: '2025-08-19T09:24:34.650Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:24:42.966Z'
+          type: MANUFACTURE
+        - command: CHECK_QUALITY
+          dependentActionId: 89b6bc51-4f27-4bb1-8481-fa1f9774306f
+          id: 62714b14-0b13-4623-a0eb-7b697c161742
+          moduleType: AIQS
+          serialNumber: SVR4H76530
+          startedAt: '2025-08-19T09:24:42.970Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:24:50.868Z'
+          type: MANUFACTURE
+        - command: DROP
+          dependentActionId: 62714b14-0b13-4623-a0eb-7b697c161742
+          id: f7537bca-ccf6-45e0-805c-9f6e5b52cf20
+          moduleType: AIQS
+          serialNumber: SVR4H76530
+          startedAt: '2025-08-19T09:24:50.879Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:25:00.004Z'
+          type: MANUFACTURE
+        - dependentActionId: f7537bca-ccf6-45e0-805c-9f6e5b52cf20
+          id: fbc17dce-e6bf-4955-93cf-324f0accb71d
+          source: AIQS
+          startedAt: '2025-08-19T09:25:00.317Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:25:09.603Z'
+          target: DPS
+          type: NAVIGATION
+        - command: PICK
+          dependentActionId: fbc17dce-e6bf-4955-93cf-324f0accb71d
+          id: 9c055efe-6be5-49a0-8210-c37da63e0786
+          moduleType: DPS
+          serialNumber: SVR4H73275
+          startedAt: '2025-08-19T09:25:09.607Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:25:32.902Z'
+          type: MANUFACTURE
+        receivedAt: '2025-08-19T09:22:49.661Z'
+        startedAt: '2025-08-19T09:22:49.661Z'
+        state: FINISHED
+        stoppedAt: '2025-08-19T09:25:32.903Z'
+        timestamp: '2025-08-19T09:22:49.486Z'
+        type: WHITE
+        workpieceId: 04798eca341290
+      - orderId: 6005d7dc-d8b4-4515-af3e-40b27d03acb1
+        orderType: STORAGE
+        productionSteps:
+        - id: 528fb036-7802-4764-b68b-793ffd235819
+          source: START
+          startedAt: '2025-08-19T09:27:00.378Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:27:02.461Z'
+          target: DPS
+          type: NAVIGATION
+        - command: DROP
+          dependentActionId: 528fb036-7802-4764-b68b-793ffd235819
+          id: 001ddfa5-2af3-45bc-8e1b-764037b6ec2c
+          moduleType: DPS
+          serialNumber: SVR4H73275
+          startedAt: '2025-08-19T09:27:02.465Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:27:16.549Z'
+          type: MANUFACTURE
+        - dependentActionId: 001ddfa5-2af3-45bc-8e1b-764037b6ec2c
+          id: 5c297cb4-ac0b-4650-9af8-9231a103fb1a
+          source: DPS
+          startedAt: '2025-08-19T09:27:16.855Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:27:27.362Z'
+          target: HBW
+          type: NAVIGATION
+        - command: PICK
+          dependentActionId: 5c297cb4-ac0b-4650-9af8-9231a103fb1a
+          id: f809fe18-0293-428e-b909-9b4b8b86da94
+          moduleType: HBW
+          serialNumber: SVR3QA0022
+          startedAt: '2025-08-19T09:27:27.371Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:27:45.189Z'
+          type: MANUFACTURE
+        receivedAt: '2025-08-19T09:27:00.332Z'
+        startedAt: '2025-08-19T09:27:00.333Z'
+        state: FINISHED
+        stoppedAt: '2025-08-19T09:27:45.194Z'
+        timestamp: '2025-08-19T09:27:00.226Z'
+        type: BLUE
+        workpieceId: 048989ca341290
+      - orderId: 598cba14-5cb5-43e7-b8cc-530d87d2cfa3
+        orderType: PRODUCTION
+        productionSteps:
+        - id: 3883d0f5-06a4-45a8-b149-acc4f163d113
+          source: START
+          startedAt: '2025-08-19T09:28:37.541Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:28:39.453Z'
+          target: HBW
+          type: NAVIGATION
+        - command: DROP
+          dependentActionId: 3883d0f5-06a4-45a8-b149-acc4f163d113
+          id: ce4e7ca5-3ddd-40b3-b886-45b3d0e9e033
+          moduleType: HBW
+          serialNumber: SVR3QA0022
+          startedAt: '2025-08-19T09:28:39.458Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:29:20.241Z'
+          type: MANUFACTURE
+        - dependentActionId: ce4e7ca5-3ddd-40b3-b886-45b3d0e9e033
+          id: dc032d2e-ed87-4ff3-827b-f425f1d40f9f
+          source: HBW
+          startedAt: '2025-08-19T09:29:20.399Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:29:33.173Z'
+          target: DRILL
+          type: NAVIGATION
+        - command: PICK
+          dependentActionId: dc032d2e-ed87-4ff3-827b-f425f1d40f9f
+          id: 3f11609a-ac10-46d8-88d7-286812267ca2
+          moduleType: DRILL
+          serialNumber: SVR4H76449
+          startedAt: '2025-08-19T09:29:33.178Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:29:43.693Z'
+          type: MANUFACTURE
+        - command: DRILL
+          dependentActionId: 3f11609a-ac10-46d8-88d7-286812267ca2
+          id: 51c180ea-3c93-4136-bd6f-057691eed2f7
+          moduleType: DRILL
+          serialNumber: SVR4H76449
+          startedAt: '2025-08-19T09:29:43.697Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:29:53.651Z'
+          type: MANUFACTURE
+        - command: DROP
+          dependentActionId: 51c180ea-3c93-4136-bd6f-057691eed2f7
+          id: 511dc44a-1891-4e78-be0b-d62dae15a16c
+          moduleType: DRILL
+          serialNumber: SVR4H76449
+          startedAt: '2025-08-19T09:29:53.662Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:30:03.622Z'
+          type: MANUFACTURE
+        - dependentActionId: 511dc44a-1891-4e78-be0b-d62dae15a16c
+          id: 05ce4723-98b5-43a9-a7a9-b809f4a2368e
+          source: DRILL
+          startedAt: '2025-08-19T09:30:03.788Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:30:15.184Z'
+          target: MILL
+          type: NAVIGATION
+        - command: PICK
+          dependentActionId: 05ce4723-98b5-43a9-a7a9-b809f4a2368e
+          id: 0e2316f0-ba5e-48fc-85bb-5adbca1d3939
+          moduleType: MILL
+          serialNumber: SVR3QA2098
+          startedAt: '2025-08-19T09:30:15.187Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:30:24.909Z'
+          type: MANUFACTURE
+        - command: MILL
+          dependentActionId: 0e2316f0-ba5e-48fc-85bb-5adbca1d3939
+          id: d0abf9da-4b25-4cd8-89e2-9bc5fdc66056
+          moduleType: MILL
+          serialNumber: SVR3QA2098
+          startedAt: '2025-08-19T09:30:24.914Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:30:34.892Z'
+          type: MANUFACTURE
+        - command: DROP
+          dependentActionId: d0abf9da-4b25-4cd8-89e2-9bc5fdc66056
+          id: 434ee5db-a166-42fd-ac60-3b7727e7f10d
+          moduleType: MILL
+          serialNumber: SVR3QA2098
+          startedAt: '2025-08-19T09:30:34.911Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:30:43.836Z'
+          type: MANUFACTURE
+        - dependentActionId: 434ee5db-a166-42fd-ac60-3b7727e7f10d
+          id: 16a880d4-6a9b-4448-a342-2e488191647f
+          source: MILL
+          startedAt: '2025-08-19T09:30:43.991Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:30:56.758Z'
+          target: AIQS
+          type: NAVIGATION
+        - command: PICK
+          dependentActionId: 16a880d4-6a9b-4448-a342-2e488191647f
+          id: c73b431e-847d-4ed8-927a-d0a2f85c6c29
+          moduleType: AIQS
+          serialNumber: SVR4H76530
+          startedAt: '2025-08-19T09:30:56.761Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:31:04.884Z'
+          type: MANUFACTURE
+        - command: CHECK_QUALITY
+          dependentActionId: c73b431e-847d-4ed8-927a-d0a2f85c6c29
+          id: 0656dfd4-54e9-4eb9-876d-1fbf1bb6f7b5
+          moduleType: AIQS
+          serialNumber: SVR4H76530
+          startedAt: '2025-08-19T09:31:04.888Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:31:13.063Z'
+          type: MANUFACTURE
+        - command: DROP
+          dependentActionId: 0656dfd4-54e9-4eb9-876d-1fbf1bb6f7b5
+          id: a1f5c436-cf95-4557-8d1a-38ca6e12d3d1
+          moduleType: AIQS
+          serialNumber: SVR4H76530
+          startedAt: '2025-08-19T09:31:13.073Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:31:21.952Z'
+          type: MANUFACTURE
+        - dependentActionId: a1f5c436-cf95-4557-8d1a-38ca6e12d3d1
+          id: af75f883-aecf-44fc-b6b6-8b8c67058657
+          source: AIQS
+          startedAt: '2025-08-19T09:31:22.125Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:31:30.934Z'
+          target: DPS
+          type: NAVIGATION
+        - command: PICK
+          dependentActionId: af75f883-aecf-44fc-b6b6-8b8c67058657
+          id: 5692d8a0-bbc4-43a4-8d4f-d86f0c896abf
+          moduleType: DPS
+          serialNumber: SVR4H73275
+          startedAt: '2025-08-19T09:31:30.942Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:31:54.229Z'
+          type: MANUFACTURE
+        receivedAt: '2025-08-19T09:28:37.500Z'
+        startedAt: '2025-08-19T09:28:37.501Z'
+        state: FINISHED
+        stoppedAt: '2025-08-19T09:31:54.230Z'
+        timestamp: '2025-08-19T09:28:37.422Z'
+        type: BLUE
+        workpieceId: 047389ca341291
+      - orderId: 80ff96ec-eb05-4a39-b6b1-984467dc5442
+        orderType: STORAGE
+        productionSteps:
+        - id: f4fd6efc-dd09-42cb-8af2-970ac10b3436
+          source: START
+          startedAt: '2025-08-19T09:33:27.034Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:33:29.648Z'
+          target: DPS
+          type: NAVIGATION
+        - command: DROP
+          dependentActionId: f4fd6efc-dd09-42cb-8af2-970ac10b3436
+          id: 02ca31aa-7398-431e-883b-a8eda900ec39
+          moduleType: DPS
+          serialNumber: SVR4H73275
+          startedAt: '2025-08-19T09:33:29.653Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:33:43.709Z'
+          type: MANUFACTURE
+        - dependentActionId: 02ca31aa-7398-431e-883b-a8eda900ec39
+          id: afe3a176-1937-4913-ac72-dbd7f8ecaeab
+          source: DPS
+          startedAt: '2025-08-19T09:33:43.852Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:33:54.463Z'
+          target: HBW
+          type: NAVIGATION
+        - command: PICK
+          dependentActionId: afe3a176-1937-4913-ac72-dbd7f8ecaeab
+          id: f7c25138-6809-4fb2-a6fa-e755e91c3bdf
+          moduleType: HBW
+          serialNumber: SVR3QA0022
+          startedAt: '2025-08-19T09:33:54.469Z'
+          state: FINISHED
+          stoppedAt: '2025-08-19T09:34:12.361Z'
+          type: MANUFACTURE
+        receivedAt: '2025-08-19T09:33:27.000Z'
+        startedAt: '2025-08-19T09:33:27.000Z'
+        state: FINISHED
+        stoppedAt: '2025-08-19T09:34:12.366Z'
+        timestamp: '2025-08-19T09:33:26.899Z'
+        type: WHITE
+        workpieceId: 047c8bca341291
+    statistics:
+      enum_fields:
+      - orderType
+      - productionSteps.source
+      - productionSteps.target
+      total_messages: 117
+      valid_payloads: 117
+      variable_fields: 13
+    sub_category: Order
+    template_structure: {}
+    validation_rules: []
+  ccu/order/request:
+    category: CCU
+    description: Auto-analyzed template for ccu/order/request
+    examples:
+    - orderType: STORAGE
+      timestamp: '2025-08-19T09:20:42.329Z'
+      type: BLUE
+      workpieceId: 04c489ca341290
+    - orderType: PRODUCTION
+      timestamp: '2025-08-19T09:35:05.228Z'
+      type: RED
+    - orderType: PRODUCTION
+      timestamp: '2025-08-20T11:12:18.619Z'
+      type: WHITE
+    statistics:
+      enum_fields:
+      - orderType
+      - type
+      total_messages: 78
+      valid_payloads: 78
+      variable_fields: 2
+    sub_category: Order
+    template_structure: {}
+    validation_rules: []
+  ccu/order/response:
+    category: CCU
+    description: Auto-analyzed template for ccu/order/response
+    examples:
+    - orderId: c2963a6a-7313-43d6-8feb-ae0e223d1efc
+      orderType: STORAGE
+      productionSteps:
+      - id: 759fa248-dca6-468e-a84f-677654406635
+        source: START
+        startedAt: '2025-08-19T09:20:42.483Z'
+        state: IN_PROGRESS
+        target: DPS
+        type: NAVIGATION
+      - command: DROP
+        dependentActionId: 759fa248-dca6-468e-a84f-677654406635
+        id: 4331e643-a9b2-417b-832b-0f2c456439aa
+        moduleType: DPS
+        state: ENQUEUED
+        type: MANUFACTURE
+      - dependentActionId: 4331e643-a9b2-417b-832b-0f2c456439aa
+        id: 71c4bf13-baf1-4605-8c20-71bf0412e1fb
+        source: DPS
+        state: ENQUEUED
+        target: HBW
+        type: NAVIGATION
+      - command: PICK
+        dependentActionId: 71c4bf13-baf1-4605-8c20-71bf0412e1fb
+        id: 193e051a-8931-4de0-8862-444d634b57be
+        moduleType: HBW
+        state: ENQUEUED
+        type: MANUFACTURE
+      receivedAt: '2025-08-19T09:20:42.440Z'
+      startedAt: '2025-08-19T09:20:42.440Z'
+      state: IN_PROGRESS
+      timestamp: '2025-08-19T09:20:42.329Z'
+      type: BLUE
+      workpieceId: 04c489ca341290
+    - orderId: d1f48c07-5888-4e83-84f2-8fcd4acf4033
+      orderType: PRODUCTION
+      productionSteps:
+      - id: 38c381f7-f213-4728-b2c3-c56913a1d6fc
+        source: START
+        startedAt: '2025-08-19T09:35:05.338Z'
+        state: IN_PROGRESS
+        target: HBW
+        type: NAVIGATION
+      - command: DROP
+        dependentActionId: 38c381f7-f213-4728-b2c3-c56913a1d6fc
+        id: 008ac17c-c2f1-4621-a520-c1f56a5a249b
+        moduleType: HBW
+        state: ENQUEUED
+        type: MANUFACTURE
+      - dependentActionId: 008ac17c-c2f1-4621-a520-c1f56a5a249b
+        id: 761e8caa-69c0-45b3-bc7c-2b5087cfc7a5
+        source: HBW
+        state: ENQUEUED
+        target: MILL
+        type: NAVIGATION
+      - command: PICK
+        dependentActionId: 761e8caa-69c0-45b3-bc7c-2b5087cfc7a5
+        id: 284620a6-c4ab-460b-ad33-f5db01ede969
+        moduleType: MILL
+        state: ENQUEUED
+        type: MANUFACTURE
+      - command: MILL
+        dependentActionId: 284620a6-c4ab-460b-ad33-f5db01ede969
+        id: 8fbb910e-5808-4a1d-a3b4-f2f94c600308
+        moduleType: MILL
+        state: ENQUEUED
+        type: MANUFACTURE
+      - command: DROP
+        dependentActionId: 8fbb910e-5808-4a1d-a3b4-f2f94c600308
+        id: 9b1cd9cf-f629-4735-8ba5-f107e6098b2f
+        moduleType: MILL
+        state: ENQUEUED
+        type: MANUFACTURE
+      - dependentActionId: 9b1cd9cf-f629-4735-8ba5-f107e6098b2f
+        id: 776864e4-36a4-4718-8f97-ab263bc00001
+        source: MILL
+        state: ENQUEUED
+        target: AIQS
+        type: NAVIGATION
+      - command: PICK
+        dependentActionId: 776864e4-36a4-4718-8f97-ab263bc00001
+        id: 58858098-f298-44f3-9025-e3bc33785de1
+        moduleType: AIQS
+        state: ENQUEUED
+        type: MANUFACTURE
+      - command: CHECK_QUALITY
+        dependentActionId: 58858098-f298-44f3-9025-e3bc33785de1
+        id: 19fde5b1-6679-4ba4-a435-cf743a828638
+        moduleType: AIQS
+        state: ENQUEUED
+        type: MANUFACTURE
+      - command: DROP
+        dependentActionId: 19fde5b1-6679-4ba4-a435-cf743a828638
+        id: 87a0a13b-04df-4836-be2f-dad86467fa54
+        moduleType: AIQS
+        state: ENQUEUED
+        type: MANUFACTURE
+      - dependentActionId: 87a0a13b-04df-4836-be2f-dad86467fa54
+        id: 4c67dad1-ede2-4fb1-82bf-04054d60592c
+        source: AIQS
+        state: ENQUEUED
+        target: DPS
+        type: NAVIGATION
+      - command: PICK
+        dependentActionId: 4c67dad1-ede2-4fb1-82bf-04054d60592c
+        id: eeb5168c-574e-4961-9282-87ea0e065736
+        moduleType: DPS
+        state: ENQUEUED
+        type: MANUFACTURE
+      receivedAt: '2025-08-19T09:35:05.300Z'
+      startedAt: '2025-08-19T09:35:05.301Z'
+      state: IN_PROGRESS
+      timestamp: '2025-08-19T09:35:05.228Z'
+      type: RED
+    - orderId: 74228577-f4c6-46b4-ba43-840b34f9b0bb
+      orderType: PRODUCTION
+      productionSteps:
+      - id: d0327afb-faec-46a0-b504-56febd74af11
+        source: START
+        state: ENQUEUED
+        target: HBW
+        type: NAVIGATION
+      - command: DROP
+        dependentActionId: d0327afb-faec-46a0-b504-56febd74af11
+        id: a6dffc88-1e28-4fc4-8b01-1a39c4e7423d
+        moduleType: HBW
+        state: ENQUEUED
+        type: MANUFACTURE
+      - dependentActionId: a6dffc88-1e28-4fc4-8b01-1a39c4e7423d
+        id: 5c355cf1-5af3-42b9-a6eb-8fde7dd4cdae
+        source: HBW
+        state: ENQUEUED
+        target: DRILL
+        type: NAVIGATION
+      - command: PICK
+        dependentActionId: 5c355cf1-5af3-42b9-a6eb-8fde7dd4cdae
+        id: 6abd8ea2-3538-4670-80cb-fd98e6295802
+        moduleType: DRILL
+        state: ENQUEUED
+        type: MANUFACTURE
+      - command: DRILL
+        dependentActionId: 6abd8ea2-3538-4670-80cb-fd98e6295802
+        id: d307c149-1781-4f5f-860f-e2e03b6bda55
+        moduleType: DRILL
+        state: ENQUEUED
+        type: MANUFACTURE
+      - command: DROP
+        dependentActionId: d307c149-1781-4f5f-860f-e2e03b6bda55
+        id: 2408fcb8-0917-4b4d-9884-02bf90d4c781
+        moduleType: DRILL
+        state: ENQUEUED
+        type: MANUFACTURE
+      - dependentActionId: 2408fcb8-0917-4b4d-9884-02bf90d4c781
+        id: d7ad4c1c-5509-462b-a428-e9f99591bce0
+        source: DRILL
+        state: ENQUEUED
+        target: AIQS
+        type: NAVIGATION
+      - command: PICK
+        dependentActionId: d7ad4c1c-5509-462b-a428-e9f99591bce0
+        id: 93bc574e-86f6-45cf-bbb5-bca2ee364ad5
+        moduleType: AIQS
+        state: ENQUEUED
+        type: MANUFACTURE
+      - command: CHECK_QUALITY
+        dependentActionId: 93bc574e-86f6-45cf-bbb5-bca2ee364ad5
+        id: f6f24245-20d8-4052-bcae-cbfe7f6b6b71
+        moduleType: AIQS
+        state: ENQUEUED
+        type: MANUFACTURE
+      - command: DROP
+        dependentActionId: f6f24245-20d8-4052-bcae-cbfe7f6b6b71
+        id: ef6f130f-5326-4fe9-88e6-de22318d526a
+        moduleType: AIQS
+        state: ENQUEUED
+        type: MANUFACTURE
+      - dependentActionId: ef6f130f-5326-4fe9-88e6-de22318d526a
+        id: 2b2cecbe-64fc-452c-b326-361e345fca06
+        source: AIQS
+        state: ENQUEUED
+        target: DPS
+        type: NAVIGATION
+      - command: PICK
+        dependentActionId: 2b2cecbe-64fc-452c-b326-361e345fca06
+        id: e61ad36d-7726-413e-9b23-026099bca513
+        moduleType: DPS
+        state: ENQUEUED
+        type: MANUFACTURE
+      receivedAt: '2025-08-20T11:12:18.713Z'
+      startedAt: '2025-08-20T11:12:18.714Z'
+      state: IN_PROGRESS
+      timestamp: '2025-08-20T11:12:18.619Z'
+      type: WHITE
+    statistics:
+      enum_fields:
+      - orderType
+      - type
+      - productionSteps.type
+      - productionSteps.state
+      - state
+      total_messages: 60
+      valid_payloads: 60
+      variable_fields: 9
+    sub_category: Order
+    template_structure: {}
+    validation_rules: []
+  ccu/pairing/pair_fts:
+    category: CCU
+    description: Auto-analyzed template for ccu/pairing/pair_fts
+    examples:
+    - serialNumber: 5iO4
+    statistics:
+      enum_fields:
+      - serialNumber
+      total_messages: 8
+      valid_payloads: 8
+      variable_fields: 0
+    sub_category: Pairing
+    template_structure: {}
+    validation_rules: []
+  ccu/pairing/state:
+    category: CCU
+    description: Auto-analyzed template for ccu/pairing/state
+    examples:
+    - modules:
+      - assigned: false
+        available: READY
+        connected: true
+        hasCalibration: true
+        ip: 192.168.0.80
+        lastSeen: '2025-08-19T09:19:49.395Z'
+        pairedSince: '2025-08-19T09:08:25.855Z'
+        serialNumber: SVR3QA0022
+        subType: HBW
+        type: MODULE
+        version: 1.3.0
+      - assigned: false
+        available: READY
+        connected: true
+        hasCalibration: false
+        ip: 192.168.0.50
+        lastSeen: '2025-08-19T09:19:49.066Z'
+        pairedSince: '2025-08-19T09:08:25.855Z'
+        productionDuration: 5
+        serialNumber: SVR4H76449
+        subType: DRILL
+        type: MODULE
+        version: 1.3.0
+      - assigned: false
+        available: READY
+        connected: true
+        hasCalibration: false
+        ip: 192.168.0.40
+        lastSeen: '2025-08-19T09:19:48.973Z'
+        pairedSince: '2025-08-19T09:08:25.855Z'
+        productionDuration: 5
+        serialNumber: SVR3QA2098
+        subType: MILL
+        type: MODULE
+        version: 1.3.0
+      - assigned: false
+        available: READY
+        connected: true
+        hasCalibration: true
+        ip: 192.168.0.90
+        lastSeen: '2025-08-19T09:19:49.555Z'
+        pairedSince: '2025-08-19T09:08:25.855Z'
+        serialNumber: SVR4H73275
+        subType: DPS
+        type: MODULE
+        version: 1.6.0
+      - assigned: false
+        available: READY
+        connected: true
+        hasCalibration: true
+        ip: 192.168.0.70
+        lastSeen: '2025-08-19T09:19:49.219Z'
+        pairedSince: '2025-08-19T09:08:25.855Z'
+        serialNumber: SVR4H76530
+        subType: AIQS
+        type: MODULE
+        version: 1.3.0
+      - assigned: false
+        available: READY
+        connected: true
+        pairedSince: '2025-08-19T09:08:25.855Z'
+        serialNumber: CHRG0
+        subType: CHRG
+        type: MODULE
+      transports:
+      - available: READY
+        batteryPercentage: 92
+        batteryVoltage: 9
+        charging: false
+        connected: true
+        ip: 192.168.0.104
+        lastLoadPosition: '1'
+        lastModuleSerialNumber: SVR4H73275
+        lastNodeId: SVR4H73275
+        lastSeen: '2025-08-19T09:15:11.637Z'
+        pairedSince: '2025-08-19T09:15:38.745Z'
+        serialNumber: 5iO4
+        type: FTS
+        version: 1.1.0+git250d287
+    - modules:
+      - assigned: false
+        available: READY
+        connected: true
+        hasCalibration: true
+        ip: 192.168.0.80
+        lastSeen: '2025-08-19T09:19:49.395Z'
+        pairedSince: '2025-08-19T09:08:25.855Z'
+        serialNumber: SVR3QA0022
+        subType: HBW
+        type: MODULE
+        version: 1.3.0
+      - assigned: false
+        available: READY
+        connected: true
+        hasCalibration: false
+        ip: 192.168.0.50
+        lastSeen: '2025-08-19T09:19:49.066Z'
+        pairedSince: '2025-08-19T09:08:25.855Z'
+        productionDuration: 5
+        serialNumber: SVR4H76449
+        subType: DRILL
+        type: MODULE
+        version: 1.3.0
+      - assigned: false
+        available: READY
+        connected: true
+        hasCalibration: false
+        ip: 192.168.0.40
+        lastSeen: '2025-08-19T09:20:03.985Z'
+        pairedSince: '2025-08-19T09:08:25.855Z'
+        productionDuration: 5
+        serialNumber: SVR3QA2098
+        subType: MILL
+        type: MODULE
+        version: 1.3.0
+      - assigned: false
+        available: READY
+        connected: true
+        hasCalibration: true
+        ip: 192.168.0.90
+        lastSeen: '2025-08-19T09:19:49.555Z'
+        pairedSince: '2025-08-19T09:08:25.855Z'
+        serialNumber: SVR4H73275
+        subType: DPS
+        type: MODULE
+        version: 1.6.0
+      - assigned: false
+        available: READY
+        connected: true
+        hasCalibration: true
+        ip: 192.168.0.70
+        lastSeen: '2025-08-19T09:19:49.219Z'
+        pairedSince: '2025-08-19T09:08:25.855Z'
+        serialNumber: SVR4H76530
+        subType: AIQS
+        type: MODULE
+        version: 1.3.0
+      - assigned: false
+        available: READY
+        connected: true
+        pairedSince: '2025-08-19T09:08:25.855Z'
+        serialNumber: CHRG0
+        subType: CHRG
+        type: MODULE
+      transports:
+      - available: READY
+        batteryPercentage: 92
+        batteryVoltage: 9
+        charging: false
+        connected: true
+        ip: 192.168.0.104
+        lastLoadPosition: '1'
+        lastModuleSerialNumber: SVR4H73275
+        lastNodeId: SVR4H73275
+        lastSeen: '2025-08-19T09:15:11.637Z'
+        pairedSince: '2025-08-19T09:15:38.745Z'
+        serialNumber: 5iO4
+        type: FTS
+        version: 1.1.0+git250d287
+    - modules:
+      - assigned: false
+        available: READY
+        connected: true
+        hasCalibration: true
+        ip: 192.168.0.80
+        lastSeen: '2025-08-19T09:19:49.395Z'
+        pairedSince: '2025-08-19T09:08:25.855Z'
+        serialNumber: SVR3QA0022
+        subType: HBW
+        type: MODULE
+        version: 1.3.0
+      - assigned: false
+        available: READY
+        connected: true
+        hasCalibration: false
+        ip: 192.168.0.50
+        lastSeen: '2025-08-19T09:20:04.077Z'
+        pairedSince: '2025-08-19T09:08:25.855Z'
+        productionDuration: 5
+        serialNumber: SVR4H76449
+        subType: DRILL
+        type: MODULE
+        version: 1.3.0
+      - assigned: false
+        available: READY
+        connected: true
+        hasCalibration: false
+        ip: 192.168.0.40
+        lastSeen: '2025-08-19T09:20:03.985Z'
+        pairedSince: '2025-08-19T09:08:25.855Z'
+        productionDuration: 5
+        serialNumber: SVR3QA2098
+        subType: MILL
+        type: MODULE
+        version: 1.3.0
+      - assigned: false
+        available: READY
+        connected: true
+        hasCalibration: true
+        ip: 192.168.0.90
+        lastSeen: '2025-08-19T09:19:49.555Z'
+        pairedSince: '2025-08-19T09:08:25.855Z'
+        serialNumber: SVR4H73275
+        subType: DPS
+        type: MODULE
+        version: 1.6.0
+      - assigned: false
+        available: READY
+        connected: true
+        hasCalibration: true
+        ip: 192.168.0.70
+        lastSeen: '2025-08-19T09:19:49.219Z'
+        pairedSince: '2025-08-19T09:08:25.855Z'
+        serialNumber: SVR4H76530
+        subType: AIQS
+        type: MODULE
+        version: 1.3.0
+      - assigned: false
+        available: READY
+        connected: true
+        pairedSince: '2025-08-19T09:08:25.855Z'
+        serialNumber: CHRG0
+        subType: CHRG
+        type: MODULE
+      transports:
+      - available: READY
+        batteryPercentage: 92
+        batteryVoltage: 9
+        charging: false
+        connected: true
+        ip: 192.168.0.104
+        lastLoadPosition: '1'
+        lastModuleSerialNumber: SVR4H73275
+        lastNodeId: SVR4H73275
+        lastSeen: '2025-08-19T09:15:11.637Z'
+        pairedSince: '2025-08-19T09:15:38.745Z'
+        serialNumber: 5iO4
+        type: FTS
+        version: 1.1.0+git250d287
+    statistics:
+      enum_fields: []
+      total_messages: 8815
+      valid_payloads: 8815
+      variable_fields: 25
+    sub_category: State
+    template_structure: {}
+    validation_rules: []
+  ccu/set/charge:
+    category: CCU
+    description: Auto-analyzed template for ccu/set/charge
+    examples:
+    - charge: false
+      serialNumber: 5iO4
+    - charge: true
+      serialNumber: 5iO4
+    statistics:
+      enum_fields:
+      - serialNumber
+      total_messages: 9
+      valid_payloads: 9
+      variable_fields: 1
+    sub_category: Settings
+    template_structure: {}
+    validation_rules: []
+  ccu/set/reset:
+    category: CCU
+    description: Auto-analyzed template for ccu/set/reset
+    examples:
+    - timestamp: '2025-08-25T07:39:05.581Z'
+      withStorage: false
+    statistics:
+      enum_fields: []
+      total_messages: 1
+      valid_payloads: 1
+      variable_fields: 2
+    sub_category: Settings
+    template_structure: {}
+    validation_rules: []
+  ccu/state/config:
+    category: CCU
+    description: Auto-analyzed template for ccu/state/config
+    examples:
+    - ftsSettings:
+        chargeThresholdPercent: 10
+      productionDurations:
+        BLUE: 550
+        RED: 560
+        WHITE: 580
+      productionSettings:
+        maxParallelOrders: 4
+    statistics:
+      enum_fields: []
+      total_messages: 48
+      valid_payloads: 48
+      variable_fields: 5
+    sub_category: State
+    template_structure: {}
+    validation_rules: []
+  ccu/state/flows:
+    category: CCU
+    description: Auto-analyzed template for ccu/state/flows
+    examples:
+    - BLUE:
+        steps:
+        - DRILL
+        - MILL
+        - AIQS
+      RED:
+        steps:
+        - MILL
+        - AIQS
+      WHITE:
+        steps:
+        - DRILL
+        - AIQS
+    statistics:
+      enum_fields: []
+      total_messages: 48
+      valid_payloads: 48
+      variable_fields: 0
+    sub_category: State
+    template_structure: {}
+    validation_rules: []
+  ccu/state/layout:
+    category: CCU
+    description: Auto-analyzed template for ccu/state/layout
+    examples:
+    - intersections:
+      - id: '1'
+      - id: '2'
+      - id: '3'
+      - id: '4'
+      modules:
+      - placeholder: false
+        serialNumber: SVR3QA0022
+        type: HBW
+      - placeholder: false
+        serialNumber: SVR4H76449
+        type: DRILL
+      - placeholder: false
+        serialNumber: SVR3QA2098
+        type: MILL
+      - placeholder: false
+        serialNumber: SVR4H73275
+        type: DPS
+      - placeholder: false
+        serialNumber: SVR4H76530
+        type: AIQS
+      - serialNumber: CHRG0
+        type: CHRG
+      roads:
+      - direction: EAST
+        from: '1'
+        length: 360
+        to: '2'
+      - direction: NORTH
+        from: '3'
+        length: 360
+        to: '1'
+      - direction: EAST
+        from: '3'
+        length: 360
+        to: '4'
+      - direction: NORTH
+        from: '4'
+        length: 360
+        to: '2'
+      - direction: EAST
+        from: SVR3QA0022
+        length: 380
+        to: '1'
+      - direction: EAST
+        from: SVR4H76449
+        length: 380
+        to: '3'
+      - direction: SOUTH
+        from: SVR3QA2098
+        length: 380
+        to: '1'
+      - direction: WEST
+        from: SVR4H73275
+        length: 380
+        to: '2'
+      - direction: SOUTH
+        from: SVR4H76530
+        length: 380
+        to: '2'
+      - direction: WEST
+        from: CHRG0
+        length: 430
+        to: '4'
+    statistics:
+      enum_fields: []
+      total_messages: 48
+      valid_payloads: 48
+      variable_fields: 8
+    sub_category: State
+    template_structure: {}
+    validation_rules: []
+  ccu/state/stock:
+    category: CCU
+    description: Auto-analyzed template for ccu/state/stock
+    examples:
+    - stockItems:
+      - hbw: SVR3QA0022
+        location: A3
+        workpiece:
+          id: ''
+          state: RAW
+          type: ''
+      - hbw: SVR3QA0022
+        location: B3
+        workpiece:
+          id: ''
+          state: RAW
+          type: ''
+      - hbw: SVR3QA0022
+        location: C3
+        workpiece:
+          id: ''
+          state: RAW
+          type: ''
+      - hbw: SVR3QA0022
+        location: A1
+        workpiece:
+          id: ''
+          state: RAW
+          type: ''
+      - hbw: SVR3QA0022
+        location: B1
+        workpiece:
+          id: 04798eca341290
+          state: RAW
+          type: WHITE
+      - hbw: SVR3QA0022
+        location: C1
+        workpiece:
+          id: 047389ca341291
+          state: RAW
+          type: BLUE
+      - hbw: SVR3QA0022
+        location: A2
+        workpiece:
+          id: 047f8cca341290
+          state: RAW
+          type: RED
+      - hbw: SVR3QA0022
+        location: B2
+        workpiece:
+          id: 04808dca341291
+          state: RAW
+          type: RED
+      - hbw: SVR3QA0022
+        location: C2
+        workpiece:
+          id: 04ab8bca341290
+          state: RAW
+          type: WHITE
+      ts: '2025-08-19T09:17:08.337Z'
+    - stockItems:
+      - hbw: SVR3QA0022
+        location: A3
+        workpiece:
+          id: ''
+          state: RAW
+          type: ''
+      - hbw: SVR3QA0022
+        location: B3
+        workpiece:
+          id: ''
+          state: RAW
+          type: ''
+      - hbw: SVR3QA0022
+        location: C3
+        workpiece:
+          id: ''
+          state: RAW
+          type: ''
+      - hbw: SVR3QA0022
+        location: A1
+        workpiece:
+          id: ''
+          state: RAW
+          type: ''
+      - hbw: SVR3QA0022
+        location: B1
+        workpiece:
+          id: 04798eca341290
+          state: RAW
+          type: WHITE
+      - hbw: SVR3QA0022
+        location: C1
+        workpiece:
+          id: 047389ca341291
+          state: RAW
+          type: BLUE
+      - hbw: SVR3QA0022
+        location: A2
+        workpiece:
+          id: 047f8cca341290
+          state: RAW
+          type: RED
+      - hbw: SVR3QA0022
+        location: B2
+        workpiece:
+          id: 04808dca341291
+          state: RAW
+          type: RED
+      - hbw: SVR3QA0022
+        location: C2
+        workpiece:
+          id: 04ab8bca341290
+          state: RAW
+          type: WHITE
+      ts: '2025-08-19T09:20:42.493Z'
+    - stockItems:
+      - hbw: SVR3QA0022
+        location: A3
+        workpiece:
+          id: ''
+          state: RAW
+          type: ''
+      - hbw: SVR3QA0022
+        location: B3
+        workpiece:
+          id: ''
+          state: RAW
+          type: ''
+      - hbw: SVR3QA0022
+        location: C3
+        workpiece:
+          id: ''
+          state: RAW
+          type: ''
+      - hbw: SVR3QA0022
+        location: A1
+        workpiece:
+          id: ''
+          state: RAW
+          type: ''
+      - hbw: SVR3QA0022
+        location: B1
+        workpiece:
+          id: 04798eca341290
+          state: RAW
+          type: WHITE
+      - hbw: SVR3QA0022
+        location: C1
+        workpiece:
+          id: 047389ca341291
+          state: RAW
+          type: BLUE
+      - hbw: SVR3QA0022
+        location: A2
+        workpiece:
+          id: 047f8cca341290
+          state: RAW
+          type: RED
+      - hbw: SVR3QA0022
+        location: B2
+        workpiece:
+          id: 04808dca341291
+          state: RAW
+          type: RED
+      - hbw: SVR3QA0022
+        location: C2
+        workpiece:
+          id: 04ab8bca341290
+          state: RAW
+          type: WHITE
+      ts: '2025-08-19T09:21:09.695Z'
+    statistics:
+      enum_fields: []
+      total_messages: 310
+      valid_payloads: 310
+      variable_fields: 3
+    sub_category: State
+    template_structure: {}
+    validation_rules: []
+  ccu/state/version-mismatch:
+    category: CCU
+    description: Auto-analyzed template for ccu/state/version-mismatch
+    examples:
+    - ccuVersion: 1.3.0
+      mismatchedModules: []
+      timestamp: '2025-08-19T09:08:26.080Z'
+    - ccuVersion: 1.3.0
+      mismatchedModules: []
+      timestamp: '2025-08-25T06:46:39.626Z'
+    - ccuVersion: 1.3.0
+      mismatchedModules: []
+      timestamp: '2025-08-20T07:12:20.107Z'
+    statistics:
+      enum_fields:
+      - mismatchedModules
+      total_messages: 48
+      valid_payloads: 48
+      variable_fields: 2
+    sub_category: State
+    template_structure: {}
+    validation_rules: []

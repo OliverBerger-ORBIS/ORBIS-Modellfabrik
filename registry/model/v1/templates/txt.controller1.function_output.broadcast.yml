@@ -11,7 +11,8 @@ templates:
     category: TXT
     sub_category: Function Output
     description: TXT Controller Broadcast Output
-    direction: outbound    structure:
+    direction: outbound
+    structure:
       message: "<string>"
       ts: "<datetime>"
     examples:

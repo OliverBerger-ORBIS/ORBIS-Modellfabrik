@@ -1,0 +1,20 @@
+metadata:
+  category: CCU
+  description: Auto-analyzed template for ccu/set/reset
+  last_updated: '2025-09-15'
+  source: ccu_template_analyzer
+  sub_category: Settings
+  version: 0.1.0
+templates:
+  ccu.settings.reset:
+    category: CCU
+    description: Template for ccu/set/reset
+    direction: outbound
+    examples:
+    - timestamp: '2025-08-25T07:39:05.581Z'
+      withStorage: false
+    structure: {}
+    sub_category: Settings
+    validation:
+      field_types: {}
+      required_fields: []

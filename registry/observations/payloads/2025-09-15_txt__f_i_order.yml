@@ -1,0 +1,39 @@
+analysis:
+  enum_fields:
+  - state
+  initial_assessment: Auto-generated template analysis for TXT topic /j1/txt/1/f/i/order
+  total_messages: 725
+  variable_fields: 1
+metadata:
+  author: txt_template_analyzer
+  date: '2025-09-15'
+  source: analysis
+  status: open
+  topic: /j1/txt/1/f/i/order
+observation:
+  description: Template analysis for TXT topic /j1/txt/1/f/i/order
+  examples:
+  - state: WAITING_FOR_ORDER
+    ts: '2025-08-19T09:19:04.659Z'
+  - state: IN_PROCESS
+    ts: '2025-08-19T09:20:42.483Z'
+    type: BLUE
+  - state: IN_PROCESS
+    ts: '2025-08-19T09:20:44.716Z'
+    type: BLUE
+  message_count: 725
+  source: mqtt_sessions
+  template_structure:
+    state: '[IN_PROCESS, WAITING_FOR_ORDER]'
+    ts: <datetime>
+  topic: /j1/txt/1/f/i/order
+  type: template_analysis
+priority: medium
+proposed_action:
+- Create template for TXT topic /j1/txt/1/f/i/order
+- Review and validate template structure
+- Add to Registry v1 if approved
+tags:
+- txt
+- template
+- auto-generated

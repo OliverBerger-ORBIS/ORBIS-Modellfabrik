@@ -1,0 +1,300 @@
+metadata:
+  category: Node-RED
+  description: Auto-analyzed template for module/v1/ff/NodeRed/SVR4H73275/factsheet
+  last_updated: '2025-09-15'
+  module_id: SVR4H73275
+  source: nodered_template_analyzer
+  sub_category: Factsheet
+  version: 0.1.0
+templates:
+  nodered.svr4h73275.factsheet:
+    category: Node-RED
+    description: Template for module/v1/ff/NodeRed/SVR4H73275/factsheet
+    direction: outbound
+    examples:
+    - headerId: 1
+      loadSpecification:
+        loadSets:
+        - loadType: WHITE
+          setName: WHITES
+        - loadType: RED
+          setName: REDS
+        - loadType: BLUE
+          setName: BLUES
+      localizationParameters: {}
+      manufacturer: Fischertechnik
+      physicalParameters: {}
+      protocolFeatures:
+        moduleActions:
+        - actionParameters:
+          - parameterDescription: The load type to input
+            parameterName: type
+            parameterType: string
+          actionType: DROP
+        - actionParameters:
+          - parameterDescription: The load type to output
+            parameterName: type
+            parameterType: string
+          actionType: PICK
+        - actionScopes:
+          - INSTANT
+          actionType: startCalibration
+        - actionScopes:
+          - INSTANT
+          actionType: stopCalibration
+        - actionParameters:
+          - parameterDescription: Array of ReferenceValues objects with referenceKey
+              and referenceValue
+            parameterName: references
+            parameterType: array
+          actionScopes:
+          - INSTANT
+          actionType: setCalibrationValues
+        - actionParameters:
+          - isOptional: true
+            parameterDescription: Array of ReferenceValues objects with referenceKey
+              and referenceValue
+            parameterName: references
+            parameterType: array
+          actionScopes:
+          - INSTANT
+          actionType: storeCalibrationValues
+        - actionParameters:
+          - parameterDescription: Position to select
+            parameterName: position
+            parameterType: string
+          actionScopes:
+          - INSTANT
+          actionType: selectCalibrationPosition
+        - actionParameters:
+          - parameterDescription: Position to test
+            parameterName: position
+            parameterType: string
+          actionScopes:
+          - INSTANT
+          actionType: testCalibrationPosition
+        - actionParameters:
+          - isOptional: true
+            parameterDescription: Reset to factory defaults
+            parameterName: factory
+            parameterType: boolean
+          actionScopes:
+          - INSTANT
+          actionType: resetCalibration
+        - actionParameters:
+          - parameterDescription: The orderId that will deliver the workpiece to output
+            parameterName: orderId
+            parameterType: string
+          actionScopes:
+          - INSTANT
+          actionType: announceOutput
+        - actionScopes:
+          - INSTANT
+          actionType: cancelStorageOrder
+        moduleParameters:
+          clearModuleOnPick: true
+      protocolLimits: {}
+      serialNumber: SVR4H73275
+      timestamp: '2025-08-19T09:13:34.529266Z'
+      typeSpecification:
+        moduleClass: DPS
+        seriesName: MOD-FF22+DPS
+      version: 1.6.0+gitc321c85
+    - headerId: 1
+      loadSpecification:
+        loadSets:
+        - loadType: WHITE
+          setName: WHITES
+        - loadType: RED
+          setName: REDS
+        - loadType: BLUE
+          setName: BLUES
+      localizationParameters: {}
+      manufacturer: Fischertechnik
+      physicalParameters: {}
+      protocolFeatures:
+        moduleActions:
+        - actionParameters:
+          - parameterDescription: The load type to input
+            parameterName: type
+            parameterType: string
+          actionType: DROP
+        - actionParameters:
+          - parameterDescription: The load type to output
+            parameterName: type
+            parameterType: string
+          actionType: PICK
+        - actionScopes:
+          - INSTANT
+          actionType: startCalibration
+        - actionScopes:
+          - INSTANT
+          actionType: stopCalibration
+        - actionParameters:
+          - parameterDescription: Array of ReferenceValues objects with referenceKey
+              and referenceValue
+            parameterName: references
+            parameterType: array
+          actionScopes:
+          - INSTANT
+          actionType: setCalibrationValues
+        - actionParameters:
+          - isOptional: true
+            parameterDescription: Array of ReferenceValues objects with referenceKey
+              and referenceValue
+            parameterName: references
+            parameterType: array
+          actionScopes:
+          - INSTANT
+          actionType: storeCalibrationValues
+        - actionParameters:
+          - parameterDescription: Position to select
+            parameterName: position
+            parameterType: string
+          actionScopes:
+          - INSTANT
+          actionType: selectCalibrationPosition
+        - actionParameters:
+          - parameterDescription: Position to test
+            parameterName: position
+            parameterType: string
+          actionScopes:
+          - INSTANT
+          actionType: testCalibrationPosition
+        - actionParameters:
+          - isOptional: true
+            parameterDescription: Reset to factory defaults
+            parameterName: factory
+            parameterType: boolean
+          actionScopes:
+          - INSTANT
+          actionType: resetCalibration
+        - actionParameters:
+          - parameterDescription: The orderId that will deliver the workpiece to output
+            parameterName: orderId
+            parameterType: string
+          actionScopes:
+          - INSTANT
+          actionType: announceOutput
+        - actionScopes:
+          - INSTANT
+          actionType: cancelStorageOrder
+        moduleParameters:
+          clearModuleOnPick: true
+      protocolLimits: {}
+      serialNumber: SVR4H73275
+      timestamp: '2025-08-19T09:13:34.529266Z'
+      typeSpecification:
+        moduleClass: DPS
+        seriesName: MOD-FF22+DPS
+      version: 1.6.0+gitc321c85
+    - headerId: 1
+      loadSpecification:
+        loadSets:
+        - loadType: WHITE
+          setName: WHITES
+        - loadType: RED
+          setName: REDS
+        - loadType: BLUE
+          setName: BLUES
+      localizationParameters: {}
+      manufacturer: Fischertechnik
+      physicalParameters: {}
+      protocolFeatures:
+        moduleActions:
+        - actionParameters:
+          - parameterDescription: The load type to input
+            parameterName: type
+            parameterType: string
+          actionType: DROP
+        - actionParameters:
+          - parameterDescription: The load type to output
+            parameterName: type
+            parameterType: string
+          actionType: PICK
+        - actionScopes:
+          - INSTANT
+          actionType: startCalibration
+        - actionScopes:
+          - INSTANT
+          actionType: stopCalibration
+        - actionParameters:
+          - parameterDescription: Array of ReferenceValues objects with referenceKey
+              and referenceValue
+            parameterName: references
+            parameterType: array
+          actionScopes:
+          - INSTANT
+          actionType: setCalibrationValues
+        - actionParameters:
+          - isOptional: true
+            parameterDescription: Array of ReferenceValues objects with referenceKey
+              and referenceValue
+            parameterName: references
+            parameterType: array
+          actionScopes:
+          - INSTANT
+          actionType: storeCalibrationValues
+        - actionParameters:
+          - parameterDescription: Position to select
+            parameterName: position
+            parameterType: string
+          actionScopes:
+          - INSTANT
+          actionType: selectCalibrationPosition
+        - actionParameters:
+          - parameterDescription: Position to test
+            parameterName: position
+            parameterType: string
+          actionScopes:
+          - INSTANT
+          actionType: testCalibrationPosition
+        - actionParameters:
+          - isOptional: true
+            parameterDescription: Reset to factory defaults
+            parameterName: factory
+            parameterType: boolean
+          actionScopes:
+          - INSTANT
+          actionType: resetCalibration
+        - actionParameters:
+          - parameterDescription: The orderId that will deliver the workpiece to output
+            parameterName: orderId
+            parameterType: string
+          actionScopes:
+          - INSTANT
+          actionType: announceOutput
+        - actionScopes:
+          - INSTANT
+          actionType: cancelStorageOrder
+        moduleParameters:
+          clearModuleOnPick: true
+      protocolLimits: {}
+      serialNumber: SVR4H73275
+      timestamp: '2025-08-25T06:47:38.255414Z'
+      typeSpecification:
+        moduleClass: DPS
+        seriesName: MOD-FF22+DPS
+      version: 1.6.0+gitc321c85
+    module_id: SVR4H73275
+    structure:
+      headerId: '[1]'
+      loadSpecification: '[{''loadSets'': [{''loadType'': ''WHITE'', ''setName'':
+        ''WHITES''}, {''loadType'': ''RED'', ''setName'': ''REDS''}, {''loadType'':
+        ''BLUE'', ''setName'': ''BLUES''}]}, {''loadSets'': [{''setName'': ''WHITES'',
+        ''loadType'': ''WHITE''}, {''setName'': ''REDS'', ''loadType'': ''RED''},
+        {''setName'': ''BLUES'', ''loadType'': ''BLUE''}]}]'
+      localizationParameters: '[{}]'
+      manufacturer: '[Fischertechnik]'
+      physicalParameters: '[{}]'
+      protocolFeatures: <string>
+      protocolLimits: '[{}]'
+      serialNumber: '[SVR4H73275]'
+      timestamp: <datetime>
+      typeSpecification: '[{''moduleClass'': ''DPS'', ''seriesName'': ''MOD-FF22+DPS''},
+        {''seriesName'': ''MOD-FF22+DPS'', ''moduleClass'': ''DPS''}]'
+      version: '[1.6.0+gitc321c85]'
+    sub_category: Factsheet
+    validation:
+      field_types: {}
+      required_fields: []

@@ -1,0 +1,116 @@
+analysis:
+  initial_assessment: Template structure generated with 2 variable fields and 9 enum
+    fields
+  open_questions:
+  - Soll diese Template-Struktur in die Registry übernommen werden?
+  - Sind alle Felder korrekt typisiert?
+  - Gibt es fehlende Validierungsregeln?
+metadata:
+  author: Node-RED Template Analyzer
+  date: '2025-09-15'
+  related_template: nodered.svr4h73275.factsheet
+  source: analysis
+  status: open
+  topic: module/v1/ff/NodeRed/SVR4H73275/factsheet
+observation:
+  description: Auto-analyzed Node-RED topic 'module/v1/ff/NodeRed/SVR4H73275/factsheet'
+    with 88 messages
+  payload_example:
+    headerId: 1
+    loadSpecification:
+      loadSets:
+      - loadType: WHITE
+        setName: WHITES
+      - loadType: RED
+        setName: REDS
+      - loadType: BLUE
+        setName: BLUES
+    localizationParameters: {}
+    manufacturer: Fischertechnik
+    physicalParameters: {}
+    protocolFeatures:
+      moduleActions:
+      - actionParameters:
+        - parameterDescription: The load type to input
+          parameterName: type
+          parameterType: string
+        actionType: DROP
+      - actionParameters:
+        - parameterDescription: The load type to output
+          parameterName: type
+          parameterType: string
+        actionType: PICK
+      - actionScopes:
+        - INSTANT
+        actionType: startCalibration
+      - actionScopes:
+        - INSTANT
+        actionType: stopCalibration
+      - actionParameters:
+        - parameterDescription: Array of ReferenceValues objects with referenceKey
+            and referenceValue
+          parameterName: references
+          parameterType: array
+        actionScopes:
+        - INSTANT
+        actionType: setCalibrationValues
+      - actionParameters:
+        - isOptional: true
+          parameterDescription: Array of ReferenceValues objects with referenceKey
+            and referenceValue
+          parameterName: references
+          parameterType: array
+        actionScopes:
+        - INSTANT
+        actionType: storeCalibrationValues
+      - actionParameters:
+        - parameterDescription: Position to select
+          parameterName: position
+          parameterType: string
+        actionScopes:
+        - INSTANT
+        actionType: selectCalibrationPosition
+      - actionParameters:
+        - parameterDescription: Position to test
+          parameterName: position
+          parameterType: string
+        actionScopes:
+        - INSTANT
+        actionType: testCalibrationPosition
+      - actionParameters:
+        - isOptional: true
+          parameterDescription: Reset to factory defaults
+          parameterName: factory
+          parameterType: boolean
+        actionScopes:
+        - INSTANT
+        actionType: resetCalibration
+      - actionParameters:
+        - parameterDescription: The orderId that will deliver the workpiece to output
+          parameterName: orderId
+          parameterType: string
+        actionScopes:
+        - INSTANT
+        actionType: announceOutput
+      - actionScopes:
+        - INSTANT
+        actionType: cancelStorageOrder
+      moduleParameters:
+        clearModuleOnPick: true
+    protocolLimits: {}
+    serialNumber: SVR4H73275
+    timestamp: '2025-08-19T09:13:34.529266Z'
+    typeSpecification:
+      moduleClass: DPS
+      seriesName: MOD-FF22+DPS
+    version: 1.6.0+gitc321c85
+priority: medium
+proposed_action:
+- Template 'module/v1/ff/NodeRed/SVR4H73275/factsheet' in Registry v1 übernehmen
+- Validierungsregeln definieren
+- Beispiele in Registry dokumentieren
+tags:
+- nodered
+- auto-generated
+- template
+- svr4h73275

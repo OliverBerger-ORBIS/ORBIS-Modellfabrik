@@ -151,29 +151,39 @@ def _show_message_analysis_section():
                     st.warning("⚠️ Keine Messages für das ausgewählte Topic gefunden")
                     return
 
-                # Zeitbereich anwenden
+                # Zeitbereich anwenden (wie im Auftrag-Rot Analyzer)
                 if time_range[1] > 0:
-                    # Timestamps zu datetime konvertieren (wie im Auftrag-Rot Analyzer)
-                    timestamps = []
-                    for msg in filtered_messages:
-                        try:
-                            timestamp_str = msg.get('timestamp', '')
-                            if timestamp_str:
-                                timestamp = datetime.fromisoformat(timestamp_str.replace('Z', '+00:00'))
-                                timestamps.append(timestamp)
-                        except (ValueError, TypeError):
-                            continue
+                    # Erste Message als Referenzpunkt
+                    if filtered_messages:
+                        # Timestamps zu datetime konvertieren
+                        timestamps = []
+                        for msg in filtered_messages:
+                            try:
+                                timestamp_str = msg.get('timestamp', '')
+                                if timestamp_str:
+                                    timestamp = datetime.fromisoformat(timestamp_str.replace('Z', '+00:00'))
+                                    timestamps.append(timestamp)
+                            except (ValueError, TypeError):
+                                continue
 
-                    if timestamps:
-                        start_time = min(timestamps)
-                        end_time = start_time + timedelta(seconds=time_range[1])
-                        filtered_messages = [
-                            msg
-                            for msg in filtered_messages
-                            if start_time
-                            <= datetime.fromisoformat(msg.get('timestamp', '').replace('Z', '+00:00'))
-                            <= end_time
-                        ]
+                        if timestamps:
+                            # Start-Zeit = erste Message
+                            start_time = min(timestamps)
+                            # End-Zeit = Start-Zeit + gewählte Sekunden
+                            end_time = start_time + timedelta(seconds=time_range[1])
+
+                            logger.info(f"⏱️ Zeitbereich: {start_time} bis {end_time} ({time_range[1]}s)")
+
+                            # Messages im Zeitbereich filtern
+                            filtered_messages = [
+                                msg
+                                for msg in filtered_messages
+                                if start_time
+                                <= datetime.fromisoformat(msg.get('timestamp', '').replace('Z', '+00:00'))
+                                <= end_time
+                            ]
+
+                            logger.info(f"📊 {len(filtered_messages)} Messages im Zeitbereich gefunden")
 
                 # Einfache Message-Analyse anzeigen
                 _render_simple_message_analysis(filtered_messages, selected_topic)
@@ -353,7 +363,9 @@ def _topic_matches(topic: str, pattern: str) -> bool:
 
 
 def _render_simple_message_analysis(messages: List[Dict[str, Any]], topic: str):
-    """Zeigt eine einfache Message-Analyse"""
+    """Zeigt eine einfache Message-Analyse mit detaillierter Message-Liste"""
+    logger.info(f"📊 Rendere Message-Analyse für {len(messages)} Messages")
+
     st.markdown("#### 📊 Analyse-Ergebnisse")
 
     # Statistiken
@@ -366,11 +378,41 @@ def _render_simple_message_analysis(messages: List[Dict[str, Any]], topic: str):
         if messages:
             st.metric("Zeitbereich", f"{len(messages)} Messages")
 
-    # Message-Liste
+    # Message-Liste (wie im Auftrag-Rot Analyzer)
     st.markdown("#### 📋 Messages")
-    for i, msg in enumerate(messages):
-        with st.expander(f"Message {i+1}: {msg.get('topic', 'Unknown')}"):
-            st.json(msg)
+
+    if not messages:
+        st.warning("❌ Keine Messages gefunden")
+        return
+
+    st.info(f"📊 {len(messages)} Messages gefunden")
+
+    # Messages nach Timestamp sortieren
+    sorted_messages = sorted(messages, key=lambda x: x.get('timestamp', ''))
+
+    # Message-Liste mit aufklappbarem JSON
+    for i, msg in enumerate(sorted_messages):
+        with st.expander(f"📨 Message {i+1}: {msg.get('topic', 'Unknown')} - {msg.get('timestamp', 'No timestamp')}"):
+            col1, col2 = st.columns([1, 1])
+
+            with col1:
+                st.markdown("**Metadaten:**")
+                st.json(
+                    {
+                        'topic': msg.get('topic', 'N/A'),
+                        'timestamp': msg.get('timestamp', 'N/A'),
+                        'qos': msg.get('qos', 'N/A'),
+                        'retain': msg.get('retain', 'N/A'),
+                    }
+                )
+
+            with col2:
+                st.markdown("**Payload:**")
+                try:
+                    payload = json.loads(msg.get('payload', '{}'))
+                    st.json(payload)
+                except json.JSONDecodeError:
+                    st.text(msg.get('payload', 'Kein gültiges JSON'))
 
 
 def _analyze_order_chain(session_path: str, order_id: str, time_range: Tuple[float, float]) -> Optional[Dict[str, Any]]:
@@ -481,7 +523,7 @@ def _create_order_chain_graph(messages: List[Dict[str, Any]], order_id: str) -> 
 
     # Edges hinzufügen
     fig.add_trace(
-        go.Scatter(x=edge_x, y=edge_y, line=dict(width=2, color='#888'), hoverinfo='none', mode='lines', name='Edges')
+        go.Scatter(x=edge_x, y=edge_y, line={"width": 2, "color": '#888'}, hoverinfo='none', mode='lines', name='Edges')
     )
 
     # Nodes hinzufügen
@@ -493,7 +535,7 @@ def _create_order_chain_graph(messages: List[Dict[str, Any]], order_id: str) -> 
             hoverinfo='text',
             text=[f"Msg {i+1}" for i in range(len(messages))],
             textposition="middle center",
-            marker=dict(size=20, color='lightblue', line=dict(width=2, color='darkblue')),
+            marker={"size": 20, "color": 'lightblue', "line": {"width": 2, "color": 'darkblue'}},
             name='Messages',
         )
     )
@@ -504,22 +546,22 @@ def _create_order_chain_graph(messages: List[Dict[str, Any]], order_id: str) -> 
         titlefont_size=16,
         showlegend=False,
         hovermode='closest',
-        margin=dict(b=20, l=5, r=5, t=40),
+        margin={"b": 20, "l": 5, "r": 5, "t": 40},
         annotations=[
-            dict(
-                text="Message-Chain basierend auf Order ID",
-                showarrow=False,
-                xref="paper",
-                yref="paper",
-                x=0.005,
-                y=-0.002,
-                xanchor='left',
-                yanchor='bottom',
-                font=dict(color='#888', size=12),
-            )
+            {
+                "text": "Message-Chain basierend auf Order ID",
+                "showarrow": False,
+                "xref": "paper",
+                "yref": "paper",
+                "x": 0.005,
+                "y": -0.002,
+                "xanchor": 'left',
+                "yanchor": 'bottom',
+                "font": {"color": '#888', "size": 12},
+            }
         ],
-        xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
-        yaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+        xaxis={"showgrid": False, "zeroline": False, "showticklabels": False},
+        yaxis={"showgrid": False, "zeroline": False, "showticklabels": False},
     )
 
     return fig

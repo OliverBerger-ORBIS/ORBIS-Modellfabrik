@@ -11,7 +11,8 @@ templates:
     category: Node-RED
     sub_category: State
     description: Node-RED DPS State Information
-    direction: inbound    structure:
+    direction: inbound
+    structure:
       actionState: "<object>"
       actionStates: "<array>"
       batteryState: "<object>"

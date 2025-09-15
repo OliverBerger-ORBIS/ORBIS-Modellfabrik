@@ -1,0 +1,26 @@
+metadata:
+  category: TXT
+  description: Auto-analyzed template for /j1/txt/1/f/i/order
+  last_updated: '2025-09-15'
+  source: txt_template_analyzer
+  version: 0.1.0
+templates:
+  txt..f.i.order:
+    category: TXT
+    description: Template for /j1/txt/1/f/i/order
+    direction: inbound
+    examples:
+    - state: WAITING_FOR_ORDER
+      ts: '2025-08-19T09:19:04.659Z'
+    - state: IN_PROCESS
+      ts: '2025-08-19T09:20:42.483Z'
+      type: BLUE
+    - state: IN_PROCESS
+      ts: '2025-08-19T09:20:44.716Z'
+      type: BLUE
+    structure:
+      state: '[IN_PROCESS, WAITING_FOR_ORDER]'
+      ts: <datetime>
+    validation:
+      field_types: {}
+      required_fields: []

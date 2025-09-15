@@ -95,7 +95,7 @@ class TestManagersLoggingSimple(unittest.TestCase):
             mock_logger = MagicMock()
             mock_get_logger.return_value = mock_logger
 
-            gateway = MqttGateway(mock_client)
+            MqttGateway(mock_client)
 
             # Prüfe ob Initialisierungs-Log aufgerufen wurde
             mock_logger.info.assert_called_with("MqttGateway initialisiert")
@@ -178,7 +178,7 @@ class TestManagersLoggingSimple(unittest.TestCase):
             mock_logger = MagicMock()
             mock_get_logger.return_value = mock_logger
 
-            gateway = MqttGateway(mock_client)
+            MqttGateway(mock_client)
 
             # Prüfe ob get_logger mit korrektem Namen aufgerufen wurde
             expected_name = "omf.tools.mqtt_gateway"

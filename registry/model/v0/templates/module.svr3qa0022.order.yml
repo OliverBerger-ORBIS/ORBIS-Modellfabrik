@@ -1,0 +1,48 @@
+metadata:
+  category: MODULE
+  description: Auto-analyzed template for module/v1/ff/SVR3QA0022/order
+  last_updated: '2025-09-15'
+  module_id: SVR3QA0022
+  source: module_template_analyzer
+  sub_category: Order
+  version: 0.1.0
+templates:
+  module.svr3qa0022.order:
+    category: MODULE
+    description: Template for module/v1/ff/SVR3QA0022/order
+    direction: outbound
+    examples:
+    - action:
+        command: PICK
+        id: 193e051a-8931-4de0-8862-444d634b57be
+        metadata:
+          type: BLUE
+          workpieceId: 04c489ca341290
+      orderId: c2963a6a-7313-43d6-8feb-ae0e223d1efc
+      orderUpdateId: 3
+      serialNumber: SVR3QA0022
+      timestamp: '2025-08-19T09:21:09.507Z'
+    - action:
+        command: DROP
+        id: a156acab-0074-4526-a55c-78f3a9674d48
+        metadata:
+          type: RED
+      orderId: a8811da5-6cd9-481a-aef7-ad7a1c464022
+      orderUpdateId: 1
+      serialNumber: SVR3QA0022
+      timestamp: '2025-08-19T09:37:15.717Z'
+    - action:
+        command: DROP
+        id: 008ac17c-c2f1-4621-a520-c1f56a5a249b
+        metadata:
+          type: RED
+      orderId: d1f48c07-5888-4e83-84f2-8fcd4acf4033
+      orderUpdateId: 1
+      serialNumber: SVR3QA0022
+      timestamp: '2025-08-19T09:35:07.394Z'
+    module_id: SVR3QA0022
+    structure: {}
+    sub_category: Order
+    validation:
+      field_types: {}
+      required_fields: []

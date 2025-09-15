@@ -1,0 +1,42 @@
+analysis:
+  initial_assessment: Template structure generated with 4 variable fields and 5 enum
+    fields
+  open_questions:
+  - Soll diese Template-Struktur in die Registry übernommen werden?
+  - Sind alle Felder korrekt typisiert?
+  - Gibt es fehlende Validierungsregeln?
+metadata:
+  author: Node-RED Template Analyzer
+  date: '2025-09-15'
+  related_template: nodered.svr4h76530.state
+  source: analysis
+  status: open
+  topic: module/v1/ff/NodeRed/SVR4H76530/state
+observation:
+  description: Auto-analyzed Node-RED topic 'module/v1/ff/NodeRed/SVR4H76530/state'
+    with 196 messages
+  payload_example:
+    actionState:
+      command: CHECK_QUALITY
+      id: 7b25fdfb-4a9e-419d-836c-c4348d9d9fd3
+      result: PASSED
+      state: FINISHED
+      timestamp: '2025-08-19T09:18:22.005833Z'
+    batteryState: {}
+    errors: []
+    headerId: 7
+    orderId: 8ae07a6e-d058-48de-9b4d-8d0176622abc
+    orderUpdateId: 10
+    paused: false
+    serialNumber: SVR4H76530
+    timestamp: '2025-08-19T09:18:22.006119Z'
+priority: medium
+proposed_action:
+- Template 'module/v1/ff/NodeRed/SVR4H76530/state' in Registry v1 übernehmen
+- Validierungsregeln definieren
+- Beispiele in Registry dokumentieren
+tags:
+- nodered
+- auto-generated
+- template
+- svr4h76530

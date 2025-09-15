@@ -1,0 +1,24 @@
+metadata:
+  category: TXT
+  description: Auto-analyzed template for /j1/txt/1/f/o/order
+  last_updated: '2025-09-15'
+  source: txt_template_analyzer
+  version: 0.1.0
+templates:
+  txt..f.o.order:
+    category: TXT
+    description: Template for /j1/txt/1/f/o/order
+    direction: outbound
+    examples:
+    - ts: '2025-08-19T09:35:05.228Z'
+      type: RED
+    - ts: '2025-08-20T11:12:18.619Z'
+      type: WHITE
+    - ts: '2025-08-19T09:40:48.406Z'
+      type: BLUE
+    structure:
+      ts: <datetime>
+      type: '[BLUE, RED, WHITE]'
+    validation:
+      field_types: {}
+      required_fields: []

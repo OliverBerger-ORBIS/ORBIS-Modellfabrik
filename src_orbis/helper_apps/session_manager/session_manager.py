@@ -203,7 +203,7 @@ def main():
     elif tab == "⚙️ Einstellungen":
         st.session_state.settings_ui.render_settings_page()
     elif tab == "📝 Logging":
-        show_logging_settings()
+        show_logging_settings(logger)
     elif tab == "📋 Logs":
         show_logs()
 

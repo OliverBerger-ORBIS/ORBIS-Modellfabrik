@@ -1,0 +1,201 @@
+analysis:
+  enum_fields: []
+  initial_assessment: Auto-generated template analysis for TXT topic /j1/txt/1/f/i/stock
+  total_messages: 310
+  variable_fields: 4
+metadata:
+  author: txt_template_analyzer
+  date: '2025-09-15'
+  source: analysis
+  status: open
+  topic: /j1/txt/1/f/i/stock
+observation:
+  description: Template analysis for TXT topic /j1/txt/1/f/i/stock
+  examples:
+  - stockItems:
+    - hbw: SVR3QA0022
+      location: A3
+      workpiece:
+        id: ''
+        state: RAW
+        type: ''
+    - hbw: SVR3QA0022
+      location: B3
+      workpiece:
+        id: ''
+        state: RAW
+        type: ''
+    - hbw: SVR3QA0022
+      location: C3
+      workpiece:
+        id: ''
+        state: RAW
+        type: ''
+    - hbw: SVR3QA0022
+      location: A1
+      workpiece:
+        id: ''
+        state: RAW
+        type: ''
+    - hbw: SVR3QA0022
+      location: B1
+      workpiece:
+        id: 04798eca341290
+        state: RAW
+        type: WHITE
+    - hbw: SVR3QA0022
+      location: C1
+      workpiece:
+        id: 047389ca341291
+        state: RAW
+        type: BLUE
+    - hbw: SVR3QA0022
+      location: A2
+      workpiece:
+        id: 047f8cca341290
+        state: RAW
+        type: RED
+    - hbw: SVR3QA0022
+      location: B2
+      workpiece:
+        id: 04808dca341291
+        state: RAW
+        type: RED
+    - hbw: SVR3QA0022
+      location: C2
+      workpiece:
+        id: 04ab8bca341290
+        state: RAW
+        type: WHITE
+    ts: '2025-08-19T09:17:08.337Z'
+  - stockItems:
+    - hbw: SVR3QA0022
+      location: A3
+      workpiece:
+        id: ''
+        state: RAW
+        type: ''
+    - hbw: SVR3QA0022
+      location: B3
+      workpiece:
+        id: ''
+        state: RAW
+        type: ''
+    - hbw: SVR3QA0022
+      location: C3
+      workpiece:
+        id: ''
+        state: RAW
+        type: ''
+    - hbw: SVR3QA0022
+      location: A1
+      workpiece:
+        id: ''
+        state: RAW
+        type: ''
+    - hbw: SVR3QA0022
+      location: B1
+      workpiece:
+        id: 04798eca341290
+        state: RAW
+        type: WHITE
+    - hbw: SVR3QA0022
+      location: C1
+      workpiece:
+        id: 047389ca341291
+        state: RAW
+        type: BLUE
+    - hbw: SVR3QA0022
+      location: A2
+      workpiece:
+        id: 047f8cca341290
+        state: RAW
+        type: RED
+    - hbw: SVR3QA0022
+      location: B2
+      workpiece:
+        id: 04808dca341291
+        state: RAW
+        type: RED
+    - hbw: SVR3QA0022
+      location: C2
+      workpiece:
+        id: 04ab8bca341290
+        state: RAW
+        type: WHITE
+    ts: '2025-08-19T09:20:42.493Z'
+  - stockItems:
+    - hbw: SVR3QA0022
+      location: A3
+      workpiece:
+        id: ''
+        state: RAW
+        type: ''
+    - hbw: SVR3QA0022
+      location: B3
+      workpiece:
+        id: ''
+        state: RAW
+        type: ''
+    - hbw: SVR3QA0022
+      location: C3
+      workpiece:
+        id: ''
+        state: RAW
+        type: ''
+    - hbw: SVR3QA0022
+      location: A1
+      workpiece:
+        id: ''
+        state: RAW
+        type: ''
+    - hbw: SVR3QA0022
+      location: B1
+      workpiece:
+        id: 04798eca341290
+        state: RAW
+        type: WHITE
+    - hbw: SVR3QA0022
+      location: C1
+      workpiece:
+        id: 047389ca341291
+        state: RAW
+        type: BLUE
+    - hbw: SVR3QA0022
+      location: A2
+      workpiece:
+        id: 047f8cca341290
+        state: RAW
+        type: RED
+    - hbw: SVR3QA0022
+      location: B2
+      workpiece:
+        id: 04808dca341291
+        state: RAW
+        type: RED
+    - hbw: SVR3QA0022
+      location: C2
+      workpiece:
+        id: 04ab8bca341290
+        state: RAW
+        type: WHITE
+    ts: '2025-08-19T09:21:09.695Z'
+  message_count: 310
+  source: mqtt_sessions
+  template_structure:
+    stockItems:
+    - hbw: <string>
+      location: <string>
+      workpiece: <string>
+    ts: <datetime>
+  topic: /j1/txt/1/f/i/stock
+  type: template_analysis
+priority: medium
+proposed_action:
+- Create template for TXT topic /j1/txt/1/f/i/stock
+- Review and validate template structure
+- Add to Registry v1 if approved
+tags:
+- txt
+- template
+- auto-generated

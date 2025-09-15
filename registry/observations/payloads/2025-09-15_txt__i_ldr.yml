@@ -1,0 +1,40 @@
+analysis:
+  enum_fields: []
+  initial_assessment: Auto-generated template analysis for TXT topic /j1/txt/1/i/ldr
+  total_messages: 650
+  variable_fields: 3
+metadata:
+  author: txt_template_analyzer
+  date: '2025-09-15'
+  source: analysis
+  status: open
+  topic: /j1/txt/1/i/ldr
+observation:
+  description: Template analysis for TXT topic /j1/txt/1/i/ldr
+  examples:
+  - br: 95.8
+    ldr: 2701
+    ts: '2025-08-19T09:19:04.257Z'
+  - br: 95.6
+    ldr: 2859
+    ts: '2025-08-19T09:20:04.286Z'
+  - br: 95.9
+    ldr: 2742
+    ts: '2025-08-19T09:21:04.294Z'
+  message_count: 650
+  source: mqtt_sessions
+  template_structure:
+    br: <number>
+    ldr: <number>
+    ts: <datetime>
+  topic: /j1/txt/1/i/ldr
+  type: template_analysis
+priority: medium
+proposed_action:
+- Create template for TXT topic /j1/txt/1/i/ldr
+- Review and validate template structure
+- Add to Registry v1 if approved
+tags:
+- txt
+- template
+- auto-generated

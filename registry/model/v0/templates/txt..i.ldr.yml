@@ -1,0 +1,28 @@
+metadata:
+  category: TXT
+  description: Auto-analyzed template for /j1/txt/1/i/ldr
+  last_updated: '2025-09-15'
+  source: txt_template_analyzer
+  version: 0.1.0
+templates:
+  txt..i.ldr:
+    category: TXT
+    description: Template for /j1/txt/1/i/ldr
+    direction: inbound
+    examples:
+    - br: 95.8
+      ldr: 2701
+      ts: '2025-08-19T09:19:04.257Z'
+    - br: 95.6
+      ldr: 2859
+      ts: '2025-08-19T09:20:04.286Z'
+    - br: 95.9
+      ldr: 2742
+      ts: '2025-08-19T09:21:04.294Z'
+    structure:
+      br: <number>
+      ldr: <number>
+      ts: <datetime>
+    validation:
+      field_types: {}
+      required_fields: []

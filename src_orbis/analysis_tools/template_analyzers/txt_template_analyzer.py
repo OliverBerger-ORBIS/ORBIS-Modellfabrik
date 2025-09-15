@@ -26,17 +26,14 @@ from src_orbis.omf.tools.nfc_manager import get_omf_nfc_manager as get_nfc_manag
 
 class TXTTemplateAnalyzer:
     def __init__(self):
+        # TXT specific topics (excluding BME680 and CAM topics with special data)
         self.target_topics = [
             "/j1/txt/1/f/i/stock",
             "/j1/txt/1/f/i/order",
             "/j1/txt/1/f/i/config/hbw",
             "/j1/txt/1/f/o/order",
-            "/j1/txt/1/c/bme680",
-            "/j1/txt/1/c/cam",
             "/j1/txt/1/c/ldr",
-            "/j1/txt/1/i/bme680",
             "/j1/txt/1/i/broadcast",
-            "/j1/txt/1/i/cam",
             "/j1/txt/1/i/ldr",
             "/j1/txt/1/o/broadcast",
         ]
@@ -49,8 +46,8 @@ class TXTTemplateAnalyzer:
         project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
 
         # Set paths relative to project root
-        self.output_dir = os.path.join(project_root, "mqtt-data/template_library")
-        self.session_dir = os.path.join(project_root, "mqtt-data/sessions")
+        self.output_dir = os.path.join(project_root, "registry/observations/payloads")
+        self.session_dir = os.path.join(project_root, "data/omf-data/sessions")
 
         # Ensure output directory exists
         os.makedirs(self.output_dir, exist_ok=True)
@@ -135,9 +132,9 @@ class TXTTemplateAnalyzer:
         if module_id_values and len(module_id_values) == len(simple_values):
             return "<moduleId>"
 
-        # 6. Check for NFC codes (regex + YAML config)
-        nfc_manager = get_nfc_manager()
-        nfc_values = {v for v in str_values if nfc_manager.is_nfc_code(v)}
+        # 6. Check for NFC codes (regex pattern)
+        nfc_pattern = re.compile(r'^[0-9a-fA-F]{14}$')
+        nfc_values = {v for v in str_values if nfc_pattern.match(v)}
         if nfc_values and len(nfc_values) == len(simple_values):
             return "<nfcCode>"
 
@@ -216,19 +213,19 @@ class TXTTemplateAnalyzer:
         # TXT-specific ENUMs
         if field_name == "type":
             type_values = {v.upper() for v in str_values}
-            valid_types = set(self.module_mapping.get_enum_values("workpieceTypes"))
+            valid_types = {"PRODUCTION", "STORAGE", "RETRIEVAL"}
             if type_values.issubset(valid_types):
                 return f"[{', '.join(sorted(valid_types))}]"
 
         if field_name == "state":
             state_values = {v.upper() for v in str_values}
-            valid_states = set(self.module_mapping.get_enum_values("workpieceStates"))
+            valid_states = {"IDLE", "PROCESSING", "COMPLETED", "ERROR"}
             if state_values.issubset(valid_states):
                 return f"[{', '.join(sorted(valid_states))}]"
 
         if field_name == "location":
             location_values = {v.upper() for v in str_values}
-            valid_locations = set(self.module_mapping.get_enum_values("locations"))
+            valid_locations = {"HBW", "DPS", "MILL", "DRILL", "FTS"}
             if location_values.issubset(valid_locations):
                 return f"[{', '.join(sorted(valid_locations))}]"
 
@@ -543,7 +540,7 @@ class TXTTemplateAnalyzer:
         print("📂 Lade alle Session-Datenbanken...")
 
         all_messages = []
-        session_files = glob.glob(f"{self.session_dir}/aps_persistent_traffic_*.db")
+        session_files = glob.glob(f"{self.session_dir}/*.db")
 
         print(f"  📁 Gefunden: {len(session_files)} Session-Dateien")
 
@@ -555,17 +552,33 @@ class TXTTemplateAnalyzer:
                 conn = sqlite3.connect(session_file)
                 cursor = conn.cursor()
 
+                # Check if session_label column exists
+                cursor.execute("PRAGMA table_info(mqtt_messages)")
+                columns = [column[1] for column in cursor.fetchall()]
+                has_session_label = 'session_label' in columns
+
                 # Get messages for target topics
                 placeholders = ",".join(["?" for _ in self.target_topics])
-                cursor.execute(
-                    f"""
-                    SELECT topic, payload, timestamp, session_label
-                    FROM mqtt_messages
-                    WHERE topic IN ({placeholders})
-                    ORDER BY timestamp
-                """,
-                    self.target_topics,
-                )
+                if has_session_label:
+                    cursor.execute(
+                        f"""
+                        SELECT topic, payload, timestamp, session_label
+                        FROM mqtt_messages
+                        WHERE topic IN ({placeholders})
+                        ORDER BY timestamp
+                    """,
+                        self.target_topics,
+                    )
+                else:
+                    cursor.execute(
+                        f"""
+                        SELECT topic, payload, timestamp, '' as session_label
+                        FROM mqtt_messages
+                        WHERE topic IN ({placeholders})
+                        ORDER BY timestamp
+                    """,
+                        self.target_topics,
+                    )
 
                 session_messages = cursor.fetchall()
                 print(f"    ✅ {len(session_messages)} Nachrichten geladen")
@@ -799,6 +812,12 @@ class TXTTemplateAnalyzer:
             # Save to YAML
             yaml_file = self.save_results_to_yaml(results)
 
+            # Save observations
+            self.save_observations(results)
+
+            # Migrate to Registry v0
+            self.migrate_to_registry_v0(results)
+
             # Update main message templates
             self.update_message_templates_yaml(results)
 
@@ -827,6 +846,102 @@ class TXTTemplateAnalyzer:
         except Exception as e:
             print(f"❌ Fehler bei der Analyse: {e}")
             return False
+
+    def save_observations(self, results: Dict) -> None:
+        """Save analysis results in observation format"""
+        print("💾 Speichere Observations...")
+        
+        for topic, template_data in results.items():
+            # Create observation filename
+            topic_clean = topic.replace("/", "_").replace("j1_txt_1_", "")
+            observation_file = f"{datetime.now().strftime('%Y-%m-%d')}_txt_{topic_clean}.yml"
+            observation_path = os.path.join(self.output_dir, observation_file)
+            
+            # Create observation structure
+            observation = {
+                "metadata": {
+                    "date": datetime.now().strftime("%Y-%m-%d"),
+                    "author": "txt_template_analyzer",
+                    "source": "analysis",
+                    "topic": topic,
+                    "status": "open"
+                },
+                "observation": {
+                    "type": "template_analysis",
+                    "topic": topic,
+                    "description": f"Template analysis for TXT topic {topic}",
+                    "source": "mqtt_sessions",
+                    "message_count": template_data["statistics"]["total_messages"],
+                    "template_structure": template_data.get("template_structure", {}),
+                    "examples": template_data.get("examples", [])[:3]
+                },
+                "analysis": {
+                    "initial_assessment": f"Auto-generated template analysis for TXT topic {topic}",
+                    "enum_fields": template_data["statistics"]["enum_fields"],
+                    "variable_fields": template_data["statistics"]["variable_fields"],
+                    "total_messages": template_data["statistics"]["total_messages"]
+                },
+                "proposed_action": [
+                    f"Create template for TXT topic {topic}",
+                    "Review and validate template structure",
+                    "Add to Registry v1 if approved"
+                ],
+                "tags": ["txt", "template", "auto-generated"],
+                "priority": "medium"
+            }
+            
+            # Save observation
+            try:
+                with open(observation_path, 'w', encoding='utf-8') as f:
+                    yaml.dump(observation, f, default_flow_style=False, allow_unicode=True)
+                print(f"  ✅ Observation gespeichert: {observation_file}")
+            except Exception as e:
+                print(f"  ❌ Fehler beim Speichern von {observation_file}: {e}")
+
+    def migrate_to_registry_v0(self, results: Dict) -> None:
+        """Migrate analysis results to Registry v0 during initial phase"""
+        print("🔄 Migriere zu Registry v0...")
+        
+        registry_v0_dir = os.path.join(os.path.dirname(self.output_dir), "..", "model", "v2", "templates")
+        os.makedirs(registry_v0_dir, exist_ok=True)
+        
+        for topic, template_data in results.items():
+            # Create Registry v0 template
+            template_key = f"txt.{topic.replace('/', '.').replace('j1.txt.1.', '')}"
+            
+            registry_template = {
+                "metadata": {
+                    "category": "TXT",
+                    "description": f"Auto-analyzed template for {topic}",
+                    "version": "0.1.0",
+                    "last_updated": datetime.now().strftime("%Y-%m-%d"),
+                    "source": "txt_template_analyzer"
+                },
+                "templates": {
+                    template_key: {
+                        "category": "TXT",
+                        "description": f"Template for {topic}",
+                        "direction": "inbound" if "i/" in topic else "outbound",
+                        "structure": template_data.get("template_structure", {}),
+                        "examples": template_data.get("examples", [])[:3],
+                        "validation": {
+                            "required_fields": [],
+                            "field_types": {}
+                        }
+                    }
+                }
+            }
+            
+            # Save Registry v0 template
+            try:
+                registry_file = f"{template_key}.yml"
+                registry_path = os.path.join(registry_v0_dir, registry_file)
+                
+                with open(registry_path, 'w', encoding='utf-8') as f:
+                    yaml.dump(registry_template, f, default_flow_style=False, allow_unicode=True)
+                print(f"  ✅ Registry v0 Template gespeichert: {registry_file}")
+            except Exception as e:
+                print(f"  ❌ Fehler beim Speichern von {template_key}: {e}")
 
 
 def main():

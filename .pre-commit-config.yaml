@@ -43,3 +43,10 @@ repos:
         pass_filenames: false
         stages: [commit]
 
+      - id: validate-development-rules
+        name: validate-development-rules
+        entry: python src_orbis/scripts/validate_development_rules.py
+        language: system
+        pass_filenames: false
+        stages: [commit]
+

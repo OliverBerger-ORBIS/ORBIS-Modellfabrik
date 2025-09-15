@@ -14,7 +14,7 @@ for m in mapping.get("mappings", []):
 
 errors = 0
 exact_topics = [t for kind, t, _, _ in compiled if kind == "exact"]
-dups = set([t for t in exact_topics if exact_topics.count(t) > 1])
+dups = {t for t in exact_topics if exact_topics.count(t) > 1}
 if dups:
     errors += 1
     print("[ERROR] Duplicate exact topics:", ", ".join(sorted(dups)))
@@ -23,7 +23,7 @@ for kind, t, rgx, m in compiled:
     if kind != "exact":
         continue
     hits = 0
-    for kind2, pat, rgx2, m2 in compiled:
+    for kind2, _pat, rgx2, _m2 in compiled:
         if kind2 != "pattern":
             continue
         if rgx2.match(t):

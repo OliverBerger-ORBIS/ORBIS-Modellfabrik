@@ -93,6 +93,47 @@ registry/model/v1/
 
 ## 🔄 Versionierung & Kompatibilität
 
+### Registry-Versionen
+
+Das Registry-System unterstützt mehrere Versionen parallel:
+
+- **`v0`**: Aktuelle stabile Version (saubere Basis)
+- **`v1`**: Stable Registry (bestehend, unveränderlich)
+- **`v2+`**: Development/Test-Versionen (für Experimente)
+
+### Version Test Workflow
+
+**Zweck:** Testen von Änderungen ohne Beeinträchtigung der stabilen Versionen.
+
+**Durchführung:**
+1. Alle Template Analyzer auf v2 konfigurieren
+2. Vollständige Analyse mit aktueller Session-Datenbasis
+3. Vergleich v0 vs v2 (Diff-Analyse)
+4. Bei Erfolg: v2 → v0 verschieben
+
+**Beispiel-Ergebnis (2025-09-15):**
+```
+Registry v0: 59 Templates (ursprünglich)
+Registry v2: 59 Templates (ohne OMF Dashboard Session)
+
+Hinzugefügt in v2:
++ bme680..c.bme680.yml    # Spezialisierte BME680 Templates
++ bme680..i.bme680.yml
++ cam..c.cam.yml          # Spezialisierte CAM Templates  
++ cam..i.cam.yml
+
+Entfernt in v2:
+- txt..c.bme680.yml       # Generische TXT Templates entfernt
+- txt..c.cam.yml
+- txt..i.bme680.yml
+- txt..i.cam.yml
+```
+
+**Vorteile:**
+- ✅ Bessere Datenqualität durch spezialisierte Analyzer
+- ✅ Saubere Trennung verschiedener Datentypen
+- ✅ Sichere Entwicklung ohne Contract-Bruch
+
 ### Registry-Versionierung
 ```yaml
 # manifest.yml
@@ -195,6 +236,54 @@ def validate_message(template_key, payload):
     template = registry.get_template(template_key)
     return validate_against_schema(payload, template.schema)
 ```
+
+## Umgang mit Observations
+
+Die Registry unterscheidet zwischen **stabilen Artefakten** und **laufenden Beobachtungen**:
+
+- **`/schemas`**  
+  Enthält validierende JSON/YAML-Schemas. Diese definieren die erwartete Struktur und Regeln für Templates.
+
+- **`/templates`**  
+  Enthält die freigegebenen und stabilen Templates, die vom OMF-Dashboard und anderen Komponenten verwendet werden.
+
+- **`registry/observations/`**  
+  Arbeitsverzeichnis für Entwickler (innerhalb der Registry). Hier werden Payloads oder Strukturen abgelegt, die im Betrieb oder bei Analysen auffallen:
+  - Beispiele für neue Felder, die im Live-System auftauchen,
+  - Vorschläge für Erweiterungen oder Anpassungen bestehender Templates,
+  - Sonderfälle oder fehlerhafte Payloads, die noch bewertet werden müssen.
+
+### Workflow
+
+#### **Initiale Phase (aktuell):**
+1. **Neue Beobachtung erfassen**  
+   Ein neues Beispiel oder ein Vorschlag wird als YAML/JSON-Datei in `registry/observations/` abgelegt.  
+   → Namensschema: `<datum>_<topic>_<kurzbeschreibung>.yml`
+
+2. **Direkte Migration**  
+   Observation wird direkt in Registry übernommen (Review-Prozess abgekürzt):
+   - Template/Schema wird entsprechend angepasst
+   - Observation wird geschlossen (Status: `migrated`)
+
+#### **Spätere Phase (nach Registry v1.0):**
+1. **Neue Beobachtung erfassen**  
+   Ein neues Beispiel oder ein Vorschlag wird als YAML/JSON-Datei in `registry/observations/` abgelegt.
+
+2. **Review & Analyse**  
+   Beobachtungen werden durch das Team bewertet:
+   - Ist es ein valider neuer Anwendungsfall?
+   - Muss ein bestehendes Template erweitert werden?
+   - Oder handelt es sich um einen Ausreißer / Fehler?
+
+3. **Migration in Registry**  
+   - Wenn relevant → Anpassung des passenden Templates/Schemas.  
+   - Observation wird geschlossen (z. B. ins Archiv verschoben oder im Commit-History dokumentiert).
+
+### Vorteile
+
+- Stabilität im Kern (`/templates` & `/schemas`)  
+- Transparente Nachvollziehbarkeit von Änderungen  
+- Sammelstelle für neue Ideen & Betriebserkenntnisse
 
 ---
 

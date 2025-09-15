@@ -10284,3 +10284,62 @@
 {"app": "session_manager", "level": "INFO", "logger": "src_orbis.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-15 17:39:01,050"}
 {"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-15 17:39:04,841"}
 {"app": "session_manager", "level": "INFO", "logger": "src_orbis.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-15 17:39:04,891"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-15 21:06:52,192"}
+{"app": "session_manager", "level": "INFO", "logger": "src_orbis.helper_apps.session_manager.components.session_analysis", "msg": "📊 Session Analysis Tab geladen", "timestamp": "2025-09-15 21:06:52,246"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-15 21:07:04,714"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.order_analyzer", "msg": "🔍 Order Analyzer geladen", "timestamp": "2025-09-15 21:07:04,722"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.order_analyzer", "msg": "✅ OMF-Logging-System initialisiert", "timestamp": "2025-09-15 21:07:04,722"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-15 21:07:43,092"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.order_analyzer", "msg": "🔍 Order Analyzer geladen", "timestamp": "2025-09-15 21:07:43,094"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.order_analyzer", "msg": "✅ OMF-Logging-System initialisiert", "timestamp": "2025-09-15 21:07:43,095"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-15 21:07:52,363"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.order_analyzer", "msg": "🔍 Order Analyzer geladen", "timestamp": "2025-09-15 21:07:52,364"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.order_analyzer", "msg": "✅ OMF-Logging-System initialisiert", "timestamp": "2025-09-15 21:07:52,365"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-15 21:07:57,583"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.order_analyzer", "msg": "🔍 Order Analyzer geladen", "timestamp": "2025-09-15 21:07:57,585"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.order_analyzer", "msg": "✅ OMF-Logging-System initialisiert", "timestamp": "2025-09-15 21:07:57,585"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-15 21:08:04,757"}
+{"app": "session_manager", "level": "INFO", "logger": "src_orbis.helper_apps.session_manager.components.session_analysis", "msg": "📊 Session Analysis Tab geladen", "timestamp": "2025-09-15 21:08:04,758"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-15 21:08:39,101"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.order_analyzer", "msg": "🔍 Order Analyzer geladen", "timestamp": "2025-09-15 21:08:39,104"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.order_analyzer", "msg": "✅ OMF-Logging-System initialisiert", "timestamp": "2025-09-15 21:08:39,106"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-15 21:09:07,758"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.order_analyzer", "msg": "🔍 Order Analyzer geladen", "timestamp": "2025-09-15 21:09:07,761"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.order_analyzer", "msg": "✅ OMF-Logging-System initialisiert", "timestamp": "2025-09-15 21:09:07,762"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-15 21:09:13,689"}
+{"app": "session_manager", "level": "INFO", "logger": "src_orbis.helper_apps.session_manager.components.session_analysis", "msg": "📊 Session Analysis Tab geladen", "timestamp": "2025-09-15 21:09:13,690"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-15 21:09:37,914"}
+{"app": "session_manager", "level": "INFO", "logger": "src_orbis.helper_apps.session_manager.components.settings_ui", "msg": "⚙️ Settings Tab geladen", "timestamp": "2025-09-15 21:09:37,927"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-15 21:09:42,591"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-15 21:37:33,442"}
+{"app": "session_manager", "level": "INFO", "logger": "src_orbis.helper_apps.session_manager.components.session_analysis", "msg": "📊 Session Analysis Tab geladen", "timestamp": "2025-09-15 21:37:33,501"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-15 21:37:44,223"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.order_analyzer", "msg": "🔍 Order Analyzer geladen", "timestamp": "2025-09-15 21:37:44,225"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.order_analyzer", "msg": "✅ OMF-Logging-System initialisiert", "timestamp": "2025-09-15 21:37:44,225"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-15 21:37:49,093"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.order_analyzer", "msg": "🔍 Order Analyzer geladen", "timestamp": "2025-09-15 21:37:49,095"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.order_analyzer", "msg": "✅ OMF-Logging-System initialisiert", "timestamp": "2025-09-15 21:37:49,095"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-15 21:37:52,149"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.order_analyzer", "msg": "🔍 Order Analyzer geladen", "timestamp": "2025-09-15 21:37:52,155"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.order_analyzer", "msg": "✅ OMF-Logging-System initialisiert", "timestamp": "2025-09-15 21:37:52,156"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-15 21:37:55,298"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.order_analyzer", "msg": "🔍 Order Analyzer geladen", "timestamp": "2025-09-15 21:37:55,299"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.order_analyzer", "msg": "✅ OMF-Logging-System initialisiert", "timestamp": "2025-09-15 21:37:55,299"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-15 21:37:57,330"}
+{"app": "session_manager", "level": "INFO", "logger": "src_orbis.helper_apps.session_manager.components.session_analysis", "msg": "📊 Session Analysis Tab geladen", "timestamp": "2025-09-15 21:37:57,331"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-15 21:38:18,680"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-15 21:38:29,071"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-15 21:38:49,643"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Info-Nachricht: Allgemeine Informationen", "timestamp": "2025-09-15 21:38:49,651"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-15 21:38:54,879"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-15 21:38:58,527"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-15 21:39:00,291"}
+{"app": "session_manager", "level": "WARNING", "logger": "session_manager.main", "msg": "Warning-Nachricht: Warnung vor einem Problem", "timestamp": "2025-09-15 21:39:00,293"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-15 21:39:03,746"}
+{"app": "session_manager", "level": "ERROR", "logger": "session_manager.main", "msg": "Error-Nachricht: Ein Fehler ist aufgetreten", "timestamp": "2025-09-15 21:39:03,748"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-15 21:39:27,313"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-15 21:39:43,367"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-15 21:40:02,061"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-15 21:40:05,011"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-15 21:40:07,508"}
+{"app": "session_manager", "level": "INFO", "logger": "src_orbis.helper_apps.session_manager.components.session_analysis", "msg": "📊 Session Analysis Tab geladen", "timestamp": "2025-09-15 21:40:07,509"}

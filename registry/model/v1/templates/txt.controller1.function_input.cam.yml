@@ -11,7 +11,8 @@ templates:
     category: TXT
     sub_category: Function Input
     description: TXT Controller Camera Data
-    direction: inbound    structure:
+    direction: inbound
+    structure:
       data: "<string>"
       ts: "<datetime>"
     examples:

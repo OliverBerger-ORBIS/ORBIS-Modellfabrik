@@ -1,0 +1,45 @@
+analysis:
+  initial_assessment: Template structure generated with 4 variable fields and 6 enum
+    fields
+  open_questions:
+  - Soll diese Template-Struktur in die Registry übernommen werden?
+  - Sind alle Felder korrekt typisiert?
+  - Gibt es fehlende Validierungsregeln?
+metadata:
+  author: Module Template Analyzer
+  date: '2025-09-15'
+  related_template: module.svr4h76530.state
+  source: analysis
+  status: open
+  topic: module/v1/ff/SVR4H76530/state
+observation:
+  description: Auto-analyzed MODULE topic 'module/v1/ff/SVR4H76530/state' with 242
+    messages
+  payload_example:
+    actionState:
+      command: DROP
+      id: 6d9c53fd-c911-407e-be14-1e0d0a93b5bc
+      metadata:
+        type: RED
+        workpieceId: 040a8dca341291
+      state: FINISHED
+    errors: []
+    headerId: 25
+    loads: []
+    metadata:
+      opcuaState: connected
+    orderId: 8ae07a6e-d058-48de-9b4d-8d0176622abc
+    orderUpdateId: 0
+    paused: false
+    serialNumber: SVR4H76530
+    timestamp: '2025-08-19T09:18:31.856Z'
+priority: medium
+proposed_action:
+- Template 'module/v1/ff/SVR4H76530/state' in Registry v1 übernehmen
+- Validierungsregeln definieren
+- Beispiele in Registry dokumentieren
+tags:
+- module
+- auto-generated
+- template
+- svr4h76530

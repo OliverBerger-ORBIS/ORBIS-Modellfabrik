@@ -29,16 +29,37 @@ class OmfMessageTemplateManager:
             project_root = current_dir.parent.parent.parent.parent
 
             # Registry v1 (primary) - Fallback zu Legacy-Struktur
-            registry_templates = project_root / "registry" / "model" / "v1" / "templates" / "templates"
+            registry_templates = project_root / "registry" / "model" / "v1" / "templates"
+            self.logger.debug(f"🔍 Checking registry path: {registry_templates}")
+            self.logger.debug(f"🔍 Registry exists: {registry_templates.exists()}")
+            
             if registry_templates.exists():
                 templates_dir = str(registry_templates)
                 self.logger.info("✅ Using registry v1 message templates")
             else:
                 # Fallback to legacy config (deprecated)
-                templates_dir = project_root / "src_orbis" / "omf" / "config" / "message_templates"
-                self.logger.warning(
-                    "⚠️ Using deprecated message_templates - consider migrating to registry/model/v1/templates"
-                )
+                legacy_templates = project_root / "src_orbis" / "omf" / "config" / "message_templates"
+                self.logger.debug(f"🔍 Checking legacy path: {legacy_templates}")
+                self.logger.debug(f"🔍 Legacy exists: {legacy_templates.exists()}")
+                
+                if legacy_templates.exists():
+                    templates_dir = str(legacy_templates)
+                    self.logger.warning(
+                        "⚠️ Using deprecated message_templates - consider migrating to registry/model/v1/templates"
+                    )
+                else:
+                    # Letzter Fallback: Verwende aktuelles Arbeitsverzeichnis
+                    cwd = Path.cwd()
+                    registry_templates_cwd = cwd / "registry" / "model" / "v1" / "templates"
+                    self.logger.debug(f"🔍 Checking CWD registry path: {registry_templates_cwd}")
+                    self.logger.debug(f"🔍 CWD Registry exists: {registry_templates_cwd.exists()}")
+                    
+                    if registry_templates_cwd.exists():
+                        templates_dir = str(registry_templates_cwd)
+                        self.logger.info("✅ Using registry v1 message templates (from CWD)")
+                    else:
+                        templates_dir = str(legacy_templates)
+                        self.logger.error("❌ No template directory found!")
 
         self.templates_dir = Path(templates_dir)
         self.metadata = self._load_metadata()

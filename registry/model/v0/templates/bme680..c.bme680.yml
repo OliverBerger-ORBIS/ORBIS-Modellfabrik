@@ -1,0 +1,30 @@
+examples:
+- payload: '{"ts":"2025-08-25T09:07:09.093Z","period":60}'
+  session_name: FTS_steuerung
+  timestamp: '2025-08-25T11:07:09.166560'
+  topic: /j1/txt/1/c/bme680
+- payload: '{"ts":"2025-08-25T09:07:40.367Z","period":3}'
+  session_name: FTS_steuerung
+  timestamp: '2025-08-25T11:07:40.414734'
+  topic: /j1/txt/1/c/bme680
+- payload: '{"ts":"2025-08-25T09:07:40.929Z","period":60}'
+  session_name: FTS_steuerung
+  timestamp: '2025-08-25T11:07:41.087266'
+  topic: /j1/txt/1/c/bme680
+metadata:
+  author: bme680_template_analyzer
+  category: BME680
+  created: '2025-09-16'
+  description: BME680 sensor data template for /j1/txt/1/c/bme680
+  key: bme680..c.bme680
+  sub_category: Sensor
+  version: 1.0.0
+statistics:
+  avg_image_size: 0
+  image_count: 0
+  invalid_images: 0
+  max_image_size: 0
+  min_image_size: 0
+  total_messages: 16
+template_structure: {}
+topic: /j1/txt/1/c/bme680

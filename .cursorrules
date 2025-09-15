@@ -69,5 +69,45 @@
 - **Allgemein:** `docs_orbis/DEVELOPMENT_RULES.md`
 - **Dashboard-Komponenten:** `docs_orbis/development/dashboard-component-rules.md`
 
+## 🚨 AUTOMATISCHE REGEL-BEFOLGUNG (KRITISCH)
+
+### MANDATORY COMPLIANCE
+- **JEDE Code-Änderung** MUSS diese Regeln automatisch befolgen
+- **KEINE Ausnahmen** ohne explizite User-Freigabe
+- **Immer prüfen** vor jeder Implementierung:
+  - ✅ Absolute Imports verwendet?
+  - ✅ Absolute Pfade verwendet?
+  - ✅ OMF-Logging-System verwendet?
+  - ✅ UI-Refresh Pattern verwendet?
+  - ✅ Pre-commit Hooks kompatibel?
+  - ✅ Tests erstellt/aktualisiert?
+
+### AUTOMATISCHE VALIDIERUNG
+- **Vor jeder Implementierung:** Regeln prüfen
+- **Nach jeder Änderung:** Linting/Formatting prüfen
+- **Bei Fehlern:** Sofort korrigieren, nicht ignorieren
+- **Bei Unsicherheit:** User fragen, nicht raten
+
+### ENTWICKLUNGSPROZESS (MANDATORY)
+1. **Analyse:** Bestehende Komponenten verstehen
+2. **Regel-Check:** Alle relevanten Regeln prüfen
+3. **Implementierung:** Regeln automatisch befolgen
+4. **Validierung:** Pre-commit Hooks, Tests, Linting
+5. **Freigabe:** User-Bestätigung vor Commit
+
+### AUTOMATISCHE REGEL-ANWENDUNG
+- **VOR jeder Code-Änderung:** Development Rules prüfen
+- **WÄHREND der Implementierung:** Regeln automatisch befolgen
+- **NACH jeder Änderung:** `python src_orbis/scripts/validate_development_rules.py` ausführen
+- **Bei Regel-Verletzungen:** Sofort korrigieren, nicht ignorieren
+- **Bei Unsicherheit:** User fragen, nicht raten
+
+### ZWINGENDE REGELN (NIEMALS IGNORIEREN)
+- **Absolute Imports:** `from src_orbis.omf.module import Class`
+- **Absolute Pfade:** `/Users/oliver/Projects/ORBIS-Modellfabrik/path/to/file`
+- **OMF-Logging:** `get_logger("module.component")` statt `logging.getLogger()`
+- **UI-Refresh:** `request_refresh()` statt `st.rerun()`
+- **Pre-commit:** Black (120 Zeichen), Ruff, Tests
+
 ## 🚨 WICHTIG
 Bei jeder Code-Änderung diese Regeln befolgen!

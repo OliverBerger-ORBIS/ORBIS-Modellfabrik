@@ -11,7 +11,8 @@ templates:
     category: FTS
     sub_category: Factsheet
     description: FTS Factsheet Information
-    direction: inbound    structure:
+    direction: inbound
+    structure:
       serialNumber: "<string>"
       model: "<string>"
       manufacturer: "<string>"

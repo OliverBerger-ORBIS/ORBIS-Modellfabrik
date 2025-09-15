@@ -1,0 +1,43 @@
+analysis:
+  image_statistics:
+    avg_size: 0
+    formats: []
+    invalid_images: 0
+    max_size: 0
+    min_size: 0
+    valid_images: 0
+  initial_assessment: BME680 topic /j1/txt/1/i/bme680 contains Base64-encoded image
+    data - not suitable for template analysis
+  total_messages: 603
+metadata:
+  author: bme680_template_analyzer
+  date: '2025-09-15'
+  source: analysis
+  status: open
+  topic: /j1/txt/1/i/bme680
+observation:
+  description: BME680 image data analysis for topic /j1/txt/1/i/bme680
+  examples:
+  - payload: '{"ts":"2025-08-19T09:19:07.900Z","t":28.7,"rt":0.0,"h":30.8,"rh":0.0,"p":990.0,"iaq":29,"aq":3,"gr":0}'
+    session_name: wareneingang-blau_2
+    timestamp: '2025-08-19T11:20:02.787635'
+    topic: /j1/txt/1/i/bme680
+  - payload: '{"ts":"2025-08-19T09:20:08.580Z","t":28.7,"rt":0.0,"h":30.7,"rh":0.0,"p":989.9,"iaq":29,"aq":3,"gr":0}'
+    session_name: wareneingang-blau_2
+    timestamp: '2025-08-19T11:20:08.935290'
+    topic: /j1/txt/1/i/bme680
+  image_count: 0
+  message_count: 603
+  source: mqtt_sessions
+  topic: /j1/txt/1/i/bme680
+  type: bme680_image_analysis
+priority: low
+proposed_action:
+- Exclude BME680 topic /j1/txt/1/i/bme680 from template analysis
+- Handle as sensor data, not template data
+- Consider separate sensor data analysis if needed
+tags:
+- bme680
+- image
+- base64
+- exclude

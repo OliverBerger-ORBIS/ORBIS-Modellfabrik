@@ -1,0 +1,24 @@
+metadata:
+  category: TXT
+  description: Auto-analyzed template for /j1/txt/1/c/ldr
+  last_updated: '2025-09-15'
+  source: txt_template_analyzer
+  version: 0.1.0
+templates:
+  txt..c.ldr:
+    category: TXT
+    description: Template for /j1/txt/1/c/ldr
+    direction: outbound
+    examples:
+    - period: 60
+      ts: '2025-08-25T09:07:09.093Z'
+    - period: 3
+      ts: '2025-08-25T09:07:40.366Z'
+    - period: 60
+      ts: '2025-08-25T09:07:40.929Z'
+    structure:
+      period: <number>
+      ts: <datetime>
+    validation:
+      field_types: {}
+      required_fields: []

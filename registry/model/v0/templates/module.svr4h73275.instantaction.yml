@@ -1,0 +1,35 @@
+metadata:
+  category: MODULE
+  description: Auto-analyzed template for module/v1/ff/NodeRed/SVR4H73275/instantAction
+  last_updated: '2025-09-15'
+  module_id: SVR4H73275
+  source: module_template_analyzer
+  sub_category: InstantAction
+  version: 0.1.0
+templates:
+  module.svr4h73275.instantaction:
+    category: MODULE
+    description: Template for module/v1/ff/NodeRed/SVR4H73275/instantAction
+    direction: outbound
+    examples:
+    - actions:
+      - actionId: 17c6074e-ecb0-4324-a01c-3a736a7f2c09
+        actionType: reset
+      serialNumber: SVR4H73275
+      timestamp: '2025-08-25T07:39:05.727Z'
+    - actions:
+      - actionId: 0c88bee7-92d9-4390-9545-8ab90163e135
+        actionType: cancelStorageOrder
+      serialNumber: SVR4H73275
+      timestamp: '2025-08-20T09:25:06.809Z'
+    - actions:
+      - actionId: de9aea4b-201c-49b5-bc70-7d8ace3f19f0
+        actionType: cancelStorageOrder
+      serialNumber: SVR4H73275
+      timestamp: '2025-08-20T09:24:07.479Z'
+    module_id: SVR4H73275
+    structure: {}
+    sub_category: InstantAction
+    validation:
+      field_types: {}
+      required_fields: []

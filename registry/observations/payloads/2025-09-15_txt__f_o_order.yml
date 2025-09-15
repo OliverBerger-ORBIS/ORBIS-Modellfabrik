@@ -1,0 +1,37 @@
+analysis:
+  enum_fields:
+  - type
+  initial_assessment: Auto-generated template analysis for TXT topic /j1/txt/1/f/o/order
+  total_messages: 20
+  variable_fields: 1
+metadata:
+  author: txt_template_analyzer
+  date: '2025-09-15'
+  source: analysis
+  status: open
+  topic: /j1/txt/1/f/o/order
+observation:
+  description: Template analysis for TXT topic /j1/txt/1/f/o/order
+  examples:
+  - ts: '2025-08-19T09:35:05.228Z'
+    type: RED
+  - ts: '2025-08-20T11:12:18.619Z'
+    type: WHITE
+  - ts: '2025-08-19T09:40:48.406Z'
+    type: BLUE
+  message_count: 20
+  source: mqtt_sessions
+  template_structure:
+    ts: <datetime>
+    type: '[BLUE, RED, WHITE]'
+  topic: /j1/txt/1/f/o/order
+  type: template_analysis
+priority: medium
+proposed_action:
+- Create template for TXT topic /j1/txt/1/f/o/order
+- Review and validate template structure
+- Add to Registry v1 if approved
+tags:
+- txt
+- template
+- auto-generated

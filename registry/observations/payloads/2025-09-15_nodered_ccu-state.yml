@@ -1,0 +1,40 @@
+analysis:
+  initial_assessment: Template structure generated with 0 variable fields and 3 enum
+    fields
+  open_questions:
+  - Soll diese Template-Struktur in die Registry übernommen werden?
+  - Sind alle Felder korrekt typisiert?
+  - Gibt es fehlende Validierungsregeln?
+metadata:
+  author: Node-RED Template Analyzer
+  date: '2025-09-15'
+  related_template: nodered.ccu.state
+  source: analysis
+  status: open
+  topic: ccu/state/flows
+observation:
+  description: Auto-analyzed Node-RED topic 'ccu/state/flows' with 48 messages
+  payload_example:
+    BLUE:
+      steps:
+      - DRILL
+      - MILL
+      - AIQS
+    RED:
+      steps:
+      - MILL
+      - AIQS
+    WHITE:
+      steps:
+      - DRILL
+      - AIQS
+priority: medium
+proposed_action:
+- Template 'ccu/state/flows' in Registry v1 übernehmen
+- Validierungsregeln definieren
+- Beispiele in Registry dokumentieren
+tags:
+- nodered
+- auto-generated
+- template
+- ccu

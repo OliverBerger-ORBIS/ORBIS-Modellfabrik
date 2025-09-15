@@ -11,7 +11,8 @@ templates:
     category: Node-RED
     sub_category: Connection
     description: Node-RED AIQS Connection Information
-    direction: inbound    structure:
+    direction: inbound
+    structure:
       connectionState: "<string>"
       headerId: "<number>"
       manufacturer: "<string>"

@@ -1,0 +1,44 @@
+metadata:
+  category: Node-RED
+  description: Auto-analyzed template for module/v1/ff/NodeRed/SVR4H76530/connection
+  last_updated: '2025-09-15'
+  module_id: SVR4H76530
+  source: nodered_template_analyzer
+  sub_category: Connection
+  version: 0.1.0
+templates:
+  nodered.svr4h76530.connection:
+    category: Node-RED
+    description: Template for module/v1/ff/NodeRed/SVR4H76530/connection
+    direction: inbound
+    examples:
+    - connectionState: ONLINE
+      headerId: 2
+      manufacturer: Fischertechnik
+      serialNumber: SVR4H76530
+      timestamp: '2025-08-19T08:52:32.608107Z'
+      version: 1.0.0
+    - connectionState: ONLINE
+      headerId: 2
+      manufacturer: Fischertechnik
+      serialNumber: SVR4H76530
+      timestamp: '2025-08-19T08:52:32.608107Z'
+      version: 1.0.0
+    - connectionState: ONLINE
+      headerId: 2
+      manufacturer: Fischertechnik
+      serialNumber: SVR4H76530
+      timestamp: '2025-08-22T16:12:52.175710Z'
+      version: 1.0.0
+    module_id: SVR4H76530
+    structure:
+      connectionState: '[ONLINE]'
+      headerId: '[2]'
+      manufacturer: '[Fischertechnik]'
+      serialNumber: '[SVR4H76530]'
+      timestamp: <datetime>
+      version: '[1.0.0]'
+    sub_category: Connection
+    validation:
+      field_types: {}
+      required_fields: []

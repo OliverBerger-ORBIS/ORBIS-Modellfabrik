@@ -1,0 +1,55 @@
+metadata:
+  category: Node-RED
+  description: Auto-analyzed template for module/v1/ff/NodeRed/SVR4H76530/order
+  last_updated: '2025-09-15'
+  module_id: SVR4H76530
+  source: nodered_template_analyzer
+  sub_category: Order
+  version: 0.1.0
+templates:
+  nodered.svr4h76530.order:
+    category: Node-RED
+    description: Template for module/v1/ff/NodeRed/SVR4H76530/order
+    direction: outbound
+    examples:
+    - action:
+        command: CHECK_QUALITY
+        id: 8c7d2f84-42d9-4188-af8f-7ff2d189172b
+        metadata:
+          type: RED
+          workpieceId: 04808dca341291
+      orderId: a8811da5-6cd9-481a-aef7-ad7a1c464022
+      orderUpdateId: 10
+      serialNumber: SVR4H76530
+      timestamp: '2025-08-19T09:39:04.953Z'
+    - action:
+        command: CHECK_QUALITY
+        id: 19fde5b1-6679-4ba4-a435-cf743a828638
+        metadata:
+          type: RED
+          workpieceId: 047f8cca341290
+      orderId: d1f48c07-5888-4e83-84f2-8fcd4acf4033
+      orderUpdateId: 10
+      serialNumber: SVR4H76530
+      timestamp: '2025-08-19T09:36:56.851Z'
+    - action:
+        command: CHECK_QUALITY
+        id: 7b25fdfb-4a9e-419d-836c-c4348d9d9fd3
+        metadata:
+          type: RED
+          workpieceId: 040a8dca341291
+      orderId: 8ae07a6e-d058-48de-9b4d-8d0176622abc
+      orderUpdateId: 10
+      serialNumber: SVR4H76530
+      timestamp: '2025-08-19T09:18:17.885Z'
+    module_id: SVR4H76530
+    structure:
+      action: <string>
+      orderId: <string>
+      orderUpdateId: '[10]'
+      serialNumber: '[SVR4H76530]'
+      timestamp: <datetime>
+    sub_category: Order
+    validation:
+      field_types: {}
+      required_fields: []

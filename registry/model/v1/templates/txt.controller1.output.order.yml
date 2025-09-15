@@ -11,7 +11,8 @@ templates:
     category: TXT
     sub_category: Output
     description: TXT Controller Order Output
-    direction: outbound    structure:
+    direction: outbound
+    structure:
       ts: "<datetime>"
       type: "<string>"
     examples:
