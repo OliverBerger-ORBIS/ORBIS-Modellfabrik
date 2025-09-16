@@ -249,10 +249,10 @@ class TestShopfloorYAMLConfigs(unittest.TestCase):
             import yaml
 
             yaml_files = [
-                "omf/omf/config/products/product_catalog.yml",
-                "omf/omf/config/shopfloor/layout.yml",
-                "omf/omf/config/shopfloor/routes.yml",
-                "omf/omf/config/production/workflows.yml",
+                "omf/config/products/product_catalog.yml",
+                "omf/config/shopfloor/layout.yml",
+                "omf/config/shopfloor/routes.yml",
+                "omf/config/production/workflows.yml",
             ]
 
             for yaml_file in yaml_files:

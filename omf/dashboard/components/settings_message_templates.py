@@ -84,11 +84,11 @@ def show_messages_templates():
             # Node-RED Templates haben keine _template.yml Endung
             if selected_category == "Node-RED":
                 template_path = Path(
-                    f"omf/omf/config/message_templates/templates/node_red/{selected_template}.yml"
+                    f"omf/config/message_templates/templates/node_red/{selected_template}.yml"
                 )
             else:
                 template_path = Path(
-                    f"omf/omf/config/message_templates/templates/{selected_category.lower()}/{selected_template}_template.yml"
+                    f"omf/config/message_templates/templates/{selected_category.lower()}/{selected_template}_template.yml"
                 )
 
             # Erweiterte Debug-Informationen
@@ -103,9 +103,9 @@ def show_messages_templates():
 
             # Verzeichnis-Inhalt anzeigen
             if selected_category == "Node-RED":
-                template_dir = Path("omf/omf/config/message_templates/templates/node_red")
+                template_dir = Path("omf/config/message_templates/templates/node_red")
             else:
-                template_dir = Path(f"omf/omf/config/message_templates/templates/{selected_category.lower()}")
+                template_dir = Path(f"omf/config/message_templates/templates/{selected_category.lower()}")
             if template_dir.exists():
                 yaml_files = list(template_dir.glob("*.yml"))
                 st.info(f"**Verzeichnis-Inhalt:** {len(yaml_files)} YAML-Dateien gefunden")

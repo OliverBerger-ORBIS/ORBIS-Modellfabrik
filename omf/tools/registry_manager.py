@@ -54,7 +54,7 @@ class Registry:
         if root is None:
             # Projekt-Root-relative Pfade verwenden
             current_dir = Path(__file__).parent
-            project_root = current_dir.parent.parent.parent  # omf/omf/tools -> omf -> . -> Projekt-Root
+            project_root = current_dir.parent.parent.parent  # omf/tools -> omf -> . -> Projekt-Root
             root = project_root / "registry" / "model" / "v1"
 
         self.root = Path(root)

@@ -115,7 +115,7 @@ class DevelopmentRulesValidator:
         errors = []
 
         # Nur für OMF-Komponenten prüfen
-        if 'omf/omf/' not in str(file_path) and 'omf/helper_apps/' not in str(file_path):
+        if 'omf/' not in str(file_path) and 'omf/helper_apps/' not in str(file_path):
             return errors
 
         # Standard logging statt OMF-Logging

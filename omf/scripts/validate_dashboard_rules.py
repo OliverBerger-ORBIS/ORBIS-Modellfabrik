@@ -21,8 +21,8 @@ from dataclasses import dataclass
 from pathlib import Path
 
 # --- Projektpfade (falls nötig anpassen) ---
-COMPONENTS_DIR = Path("omf/omf/dashboard/components")
-DASHBOARD_ENTRY = Path("omf/omf/dashboard/omf_dashboard.py")
+COMPONENTS_DIR = Path("omf/dashboard/components")
+DASHBOARD_ENTRY = Path("omf/dashboard/omf_dashboard.py")
 
 # --- Feste Namensregeln (keine Config nötig) ---
 CLIENT_CLASS_NAME = "OmfMqttClient"

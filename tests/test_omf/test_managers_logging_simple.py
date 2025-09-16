@@ -62,17 +62,17 @@ class TestManagersLoggingSimple(unittest.TestCase):
     def test_logging_uses_get_logger_function(self):
         """Test: Manager verwenden get_logger() Funktion"""
         # Prüfe ob alle Manager get_logger() importieren
-        with open('omf/omf/tools/message_template_manager.py') as f:
+        with open('omf/tools/message_template_manager.py') as f:
             content = f.read()
             self.assertIn('from omf.tools.logging_config import get_logger', content)
             self.assertIn('get_logger(', content)
 
-        with open('omf/omf/tools/registry_manager.py') as f:
+        with open('omf/tools/registry_manager.py') as f:
             content = f.read()
             self.assertIn('from omf.tools.logging_config import get_logger', content)
             self.assertIn('get_logger(', content)
 
-        with open('omf/omf/tools/mqtt_gateway.py') as f:
+        with open('omf/tools/mqtt_gateway.py') as f:
             content = f.read()
             self.assertIn('from .logging_config import get_logger', content)
             self.assertIn('get_logger(', content)
@@ -80,7 +80,7 @@ class TestManagersLoggingSimple(unittest.TestCase):
     def test_logging_does_not_use_print_statements(self):
         """Test: Manager verwenden keine print() Statements mehr"""
         # Prüfe ob MqttGateway keine print() Statements hat
-        with open('omf/omf/tools/mqtt_gateway.py') as f:
+        with open('omf/tools/mqtt_gateway.py') as f:
             content = f.read()
             # Sollte keine print() Statements haben
             self.assertNotIn('print(', content)
@@ -188,9 +188,9 @@ class TestManagersLoggingSimple(unittest.TestCase):
         """Test: Alle Manager haben Logging integriert"""
         # Prüfe ob alle Manager-Dateien Logging-Imports haben
         manager_files = [
-            'omf/omf/tools/message_template_manager.py',
-            'omf/omf/tools/registry_manager.py',
-            'omf/omf/tools/mqtt_gateway.py',
+            'omf/tools/message_template_manager.py',
+            'omf/tools/registry_manager.py',
+            'omf/tools/mqtt_gateway.py',
         ]
 
         for file_path in manager_files:
