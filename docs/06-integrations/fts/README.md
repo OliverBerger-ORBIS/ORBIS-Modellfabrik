@@ -1,122 +1,103 @@
 # FTS Steuerung in Node-Red
 
 > ⚠️ **VERIFIKATION AUSSTEHEND**: Diese Dokumentation basiert auf einer Hypothese und wurde noch nicht verifiziert. Die beschriebenen FTS-Steuerungslogik und VDA 5050-Implementierung müssen noch getestet und validiert werden.
-Die Steuerung des fahrerlosen Transportsystems (FTS) bzw. Automated Guided Vehicle (AGV) nach dem VDA 5050 Standard ist in der Datei implizit enthalten, insbesondere durch die Verarbeitung von Aufträgen (Orders) und deren Weiterleitung über OPC UA Nodes. Hier sind die wesentlichen Punkte zusammengefasst: 
 
- 
- 
+Die Steuerung des fahrerlosen Transportsystems (FTS) bzw. Automated Guided Vehicle (AGV) nach dem VDA 5050 Standard ist in der Datei implizit enthalten, insbesondere durch die Verarbeitung von Aufträgen (Orders) und deren Weiterleitung über OPC UA Nodes. Hier sind die wesentlichen Punkte zusammengefasst:
 
-## 🚗 FTS-Steuerung nach VDA 5050 – Überblick 
+## 🚗 FTS-Steuerung nach VDA 5050 – Überblick
 
-1. Auftragsverarbeitung 
+### 1. Auftragsverarbeitung
 
-Aufträge werden über ein Node-RED-Flow verarbeitet. 
+Aufträge werden über ein Node-RED-Flow verarbeitet.
 
-Die Funktion Write Order (z. B. Node e7e0014dac56a4d5) schreibt Befehle an das FTS über OPC UA. 
+Die Funktion Write Order (z. B. Node e7e0014dac56a4d5) schreibt Befehle an das FTS über OPC UA.
 
-Die Aufträge enthalten Informationen wie: 
+Die Aufträge enthalten Informationen wie:
+- Zielpositionen (TO_CAMERA, TO_NIO_BIN, TO_PICKUP, etc.)
+- Bewegungsbefehle (PICK, DROP, etc.)
+- Metadaten wie duration, position, references.
 
-Zielpositionen (TO_CAMERA, TO_NIO_BIN, TO_PICKUP, etc.) 
+### 2. VDA 5050-konforme Kommunikation
 
-Bewegungsbefehle (PICK, DROP, etc.) 
+Die Struktur der Nachrichten und Zustände folgt dem VDA 5050-Standard:
+- **Order:** enthält orderId, orderUpdateId, actionState, loads, errors.
+- **State:** wird regelmäßig über MQTT publiziert (z. B. msg.topic = MQTT_topic + "/state").
+- **InstantActions:** wie startCalibration, stopCalibration, resetCalibration.
 
-Metadaten wie duration, position, references. 
+### 3. Zustandsüberwachung
 
-2. VDA 5050-konforme Kommunikation 
+Zustände wie PICKBUSY, DROPBUSY, WAITING_AFTER_PICK, etc. werden im Flow gespeichert.
 
-Die Struktur der Nachrichten und Zustände folgt dem VDA 5050-Standard: 
+Erfolgreiche oder fehlerhafte Ausführungen führen zu Statusänderungen (FINISHED, FAILED).
 
-Order: enthält orderId, orderUpdateId, actionState, loads, errors. 
+Diese Zustände werden über MQTT veröffentlicht und können vom VDA 5050 Master interpretiert werden.
 
-State: wird regelmäßig über MQTT publiziert (z. B. msg.topic = MQTT_topic + "/state"). 
+### 4. Kalibrierung und Referenzdaten
 
-InstantActions: wie startCalibration, stopCalibration, resetCalibration. 
+Es gibt spezielle Funktionen zur Kalibrierung (startCalibration, setCalibrationValues, etc.).
 
-3. Zustandsüberwachung 
+Diese Aktionen werden ebenfalls als InstantActions im VDA 5050-Format verarbeitet.
 
-Zustände wie PICKBUSY, DROPBUSY, WAITING_AFTER_PICK, etc. werden im Flow gespeichert. 
+## 🔄 Beispielhafter Ablauf
 
-Erfolgreiche oder fehlerhafte Ausführungen führen zu Statusänderungen (FINISHED, FAILED). 
+1. Order empfangen (z. B. PICK an Position TO_PICKUP)
+2. Order schreiben via OPC UA
+3. FTS fährt zur Position
+4. Statusänderung auf PICKBUSY
+5. Nach erfolgreichem Abschluss: WAITING_AFTER_PICK → FINISHED
+6. State wird über MQTT publiziert
 
-Diese Zustände werden über MQTT veröffentlicht und können vom VDA 5050 Master interpretiert werden. 
+## 📡 Technologien im Einsatz
 
-4. Kalibrierung und Referenzdaten 
+- **OPC UA:** zur Kommunikation mit dem FTS
+- **MQTT:** zur Statusübertragung im VDA 5050-Format
+- **Node-RED:** zur Orchestrierung der Logik
+- **VDA 5050:** als Kommunikationsstandard für AGV-Integration
 
-Es gibt spezielle Funktionen zur Kalibrierung (startCalibration, setCalibrationValues, etc.). 
+## Flussdiagramm
 
-Diese Aktionen werden ebenfalls als InstantActions im VDA 5050-Format verarbeitet. 
+Hier ist das grafische Flussdiagramm, das den Ablauf der FTS-Steuerung nach dem VDA 5050 Standard im Node-RED-Flow darstellt:
 
- 
- 
-
-## 🔄 Beispielhafter Ablauf 
-
-Order empfangen (z. B. PICK an Position TO_PICKUP) 
-
-Order schreiben via OPC UA 
-
-FTS fährt zur Position 
-
-Statusänderung auf PICKBUSY 
-
-Nach erfolgreichem Abschluss: WAITING_AFTER_PICK → FINISHED 
-
-State wird über MQTT publiziert 
-
- 
- 
-
-## 📡 Technologien im Einsatz 
-
-OPC UA: zur Kommunikation mit dem FTS 
-
-MQTT: zur Statusübertragung im VDA 5050-Format 
-
-Node-RED: zur Orchestrierung der Logik 
-
-VDA 5050: als Kommunikationsstandard für AGV-Integration 
-
- 
- 
-
-Hier ist das grafische Flussdiagramm, das den Ablauf der FTS-Steuerung nach dem VDA 5050 Standard im Node-RED-Flow darstellt: 
-
+```mermaid
 graph TD
-    subgraph "Auftragsverarbeitung"
-        A[MQTT: Auftrag empfangen<br/>(command: PICK, DROP, etc.)] -->|bei Auftragseingang| B{Verarbeite Auftrag<br/>(Flow prüft mobileState & command)}
+    subgraph Auftragsverarbeitung
+        A["MQTT: Auftrag empfangen<br/>(command: PICK, DROP, etc.)"] -->|bei Auftragseingang| B{"Verarbeite Auftrag<br/>(Flow prüft mobileState & command)"}
     
-        B -->|command == DROP| C[OPC UA Write: DROP<br/>ns=4;i=6 = true]
-        B -->|command == PICK| D[OPC UA Write: PICK<br/>ns=4;i=5 = true]
-        B -->|command == FIRE| E[OPC UA Write: FIRE<br/>ns=4;i=7 = duration]
-        B -->|command == MILL| F[OPC UA Write: MILL<br/>ns=4;i=11 = duration]
+        B -->|"command == DROP"| C["OPC UA Write: DROP<br/>ns=4;i=6 = true"]
+        B -->|"command == PICK"| D["OPC UA Write: PICK<br/>ns=4;i=5 = true"]
+        B -->|"command == FIRE"| E["OPC UA Write: FIRE<br/>ns=4;i=7 = duration"]
+        B -->|"command == MILL"| F["OPC UA Write: MILL<br/>ns=4;i=11 = duration"]
     
-        C --> G((Status: DROPBUSY))
-        D --> H((Status: PICKBUSY))
-        E --> I((Status: FIREBUSY))
-        F --> J((Status: MILLBUSY))
+        C --> G(("Status: DROPBUSY"))
+        D --> H(("Status: PICKBUSY"))
+        E --> I(("Status: FIREBUSY"))
+        F --> J(("Status: MILLBUSY"))
     
-        G --> K[OPC UA Read: DROP abgeschlossen]
-        H --> L[OPC UA Read: PICK abgeschlossen]
-        I --> M[OPC UA Read: FIRE abgeschlossen]
-        J --> N[OPC UA Read: MILL abgeschlossen]
+        G --> K["OPC UA Read: DROP abgeschlossen"]
+        H --> L["OPC UA Read: PICK abgeschlossen"]
+        I --> M["OPC UA Read: FIRE abgeschlossen"]
+        J --> N["OPC UA Read: MILL abgeschlossen"]
     
-        K -->|ns=4;i=9 = true| O((Status: IDLE<br/>MQTT: {state: FINISHED}))
+        K -->|"ns=4;i=9 = true"| O(("Status: IDLE<br/>MQTT: {state: FINISHED}"))
         
-        L -->|ns=4;i=12 = true| P((Status: WAITING_AFTER_PICK<br/>MQTT: {state: FINISHED}))
-        L -->|ns=4;i=8 = true<br/>ns=4;i=15 = true| Q((Fehlerfall<br/>- actionState: FAILED<br/>- MQTT: {state: ...}))
+        L -->|"ns=4;i=12 = true"| P(("Status: WAITING_AFTER_PICK<br/>MQTT: {state: FINISHED}"))
+        L -->|"ns=4;i=8 = true<br/>ns=4;i=15 = true"| Q(("Fehlerfall<br/>- actionState: FAILED<br/>- MQTT: {state: ...}"))
         
-        M -->|ns=4;i=10 = true| R((Status: WAITING_AFTER_FIRE<br/>MQTT: {state: FINISHED}))
-        M -->|ns=4;i=3 = true| Q
+        M -->|"ns=4;i=10 = true"| R(("Status: WAITING_AFTER_FIRE<br/>MQTT: {state: FINISHED}"))
+        M -->|"ns=4;i=3 = true"| Q
         
-        N -->|ns=4;i=14 = true| S((Status: WAITING_AFTER_MILL<br/>MQTT: {state: FINISHED}))
-        N -->|ns=4;i=13 = true| Q
+        N -->|"ns=4;i=14 = true"| S(("Status: WAITING_AFTER_MILL<br/>MQTT: {state: FINISHED}"))
+        N -->|"ns=4;i=13 = true"| Q
     end
 
     style Q fill:#ffcccc,stroke:#cc0000,stroke-width:2px
+```
 
-Pseudocode der Auftragsverarbeitung
+## Pseudocode der Auftragsverarbeitung
+
 Dieser Code beschreibt eine Funktion, die aufgerufen wird, wenn ein neuer MQTT-Auftrag eintrifft.
 
+```pseudocode
 // Funktion wird bei Eingang einer neuen MQTT-Nachricht aufgerufen
 FUNKTION handle_mqtt_command(command, duration):
 
@@ -190,23 +171,16 @@ FUNKTION handle_mqtt_command(command, duration):
     ENDE WENN
 
 ENDE FUNKTION
+```
 
-## 🧭 Ablaufbeschreibung 
+## 🧭 Ablaufbeschreibung
 
-MQTT-Eingang: Ein Auftrag mit einem command (z. B. PICK, DROP, MILL, FIRE) wird empfangen. 
-
-Verarbeitung: Der Flow prüft den aktuellen moduleState und entscheidet, ob der Auftrag ausgeführt werden kann. 
-
-OPC UA Write: Der entsprechende Befehl wird an das FTS gesendet (z. B. ns=4;i=5 = true für PICK). 
-
-BUSY-Zustand: Das Modul wechselt in einen BUSY-Zustand (z. B. PICKBUSY). 
-
-OPC UA Read: Das System überwacht den Abschluss der Aktion über bestimmte Nodes. 
-
-Statuswechsel: 
-
-Bei Erfolg: z. B. WAITING_AFTER_PICK, IDLE, WAITING_AFTER_MILL, WAITING_AFTER_FIRE 
-
-Bei Fehler: actionState.state = FAILED 
-
-MQTT-Statusmeldung: Der neue Zustand wird über MQTT veröffentlicht (/state). 
+1. **MQTT-Eingang:** Ein Auftrag mit einem command (z. B. PICK, DROP, MILL, FIRE) wird empfangen.
+2. **Verarbeitung:** Der Flow prüft den aktuellen moduleState und entscheidet, ob der Auftrag ausgeführt werden kann.
+3. **OPC UA Write:** Der entsprechende Befehl wird an das FTS gesendet (z. B. ns=4;i=5 = true für PICK).
+4. **BUSY-Zustand:** Das Modul wechselt in einen BUSY-Zustand (z. B. PICKBUSY).
+5. **OPC UA Read:** Das System überwacht den Abschluss der Aktion über bestimmte Nodes.
+6. **Statuswechsel:**
+   - Bei Erfolg: z. B. WAITING_AFTER_PICK, IDLE, WAITING_AFTER_MILL, WAITING_AFTER_FIRE
+   - Bei Fehler: actionState.state = FAILED
+7. **MQTT-Statusmeldung:** Der neue Zustand wird über MQTT veröffentlicht (/state).

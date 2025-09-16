@@ -1,61 +1,62 @@
 # Zentrale Steuerung über Raspberry Pi
 
 > ⚠️ **VERIFIKATION AUSSTEHEND**: Diese Dokumentation basiert auf einer Hypothese und wurde noch nicht verifiziert. Die beschriebenen Raspberry Pi-Steuerungskonzepte und Node-RED-Implementierungen müssen noch getestet und validiert werden.
-Die Steuerung einer Produktionsanlage über einen Raspberry Pi, auf dem ein Node-RED-Flow in JavaScript läuft, ist ein modernes und flexibles Konzept für die industrielle Automatisierung. Hier ist ein Überblick, wie das typischerweise funktioniert:  
 
-## 🔧 1. Hardware-Grundlage: Raspberry Pi 
+Die Steuerung einer Produktionsanlage über einen Raspberry Pi, auf dem ein Node-RED-Flow in JavaScript läuft, ist ein modernes und flexibles Konzept für die industrielle Automatisierung. Hier ist ein Überblick, wie das typischerweise funktioniert:
 
-Der Raspberry Pi dient als zentrale Steuerungseinheit. Er ist mit der Produktionsanlage über verschiedene Schnittstellen verbunden: 
+## 🔧 1. Hardware-Grundlage: Raspberry Pi
 
-* GPIO-Pins: Für einfache digitale Ein-/Ausgaben (z. B. Relais, Sensoren, LEDs) 
-* USB/Serielle Schnittstellen: Für Kommunikation mit SPSen, Sensoren oder Aktoren 
-* Ethernet/WLAN: Für Netzwerkkommunikation (z. B. MQTT, Modbus TCP, OPC UA) 
- 
-## 🧠 2. Node-RED als Steuerungslogik 
+Der Raspberry Pi dient als zentrale Steuerungseinheit. Er ist mit der Produktionsanlage über verschiedene Schnittstellen verbunden:
 
-Node-RED ist eine visuelle Programmierumgebung, die auf dem Raspberry Pi läuft. Die Steuerung erfolgt über sogenannte Flows, die aus Knoten bestehen: 
+- **GPIO-Pins:** Für einfache digitale Ein-/Ausgaben (z. B. Relais, Sensoren, LEDs)
+- **USB/Serielle Schnittstellen:** Für Kommunikation mit SPSen, Sensoren oder Aktoren
+- **Ethernet/WLAN:** Für Netzwerkkommunikation (z. B. MQTT, Modbus TCP, OPC UA)
 
-* Input-Nodes: z. B. GPIO, MQTT, HTTP, Modbus 
-* Processing-Nodes: z. B. JavaScript-Funktionen, Logik, Zeitsteuerung 
-* Output-Nodes: z. B. GPIO, MQTT, Datenbanken, Dashboards 
+## 🧠 2. Node-RED als Steuerungslogik
 
-## 🧩 3. Beispiel: Steuerung eines Motors 
+Node-RED ist eine visuelle Programmierumgebung, die auf dem Raspberry Pi läuft. Die Steuerung erfolgt über sogenannte Flows, die aus Knoten bestehen:
 
-Ein einfacher Flow könnte so aussehen: 
+- **Input-Nodes:** z. B. GPIO, MQTT, HTTP, Modbus
+- **Processing-Nodes:** z. B. JavaScript-Funktionen, Logik, Zeitsteuerung
+- **Output-Nodes:** z. B. GPIO, MQTT, Datenbanken, Dashboards
 
-* Input: Ein Taster ist an GPIO 17 angeschlossen. 
-* Processing: Ein JavaScript-Node prüft, ob der Taster gedrückt wurde. 
-* Output: Ein Relais an GPIO 27 wird aktiviert, um einen Motor zu starten. 
+## 🧩 3. Beispiel: Steuerung eines Motors
 
-// Beispiel für einen Function-Node in Node-RED 
-if (msg.payload === 1) { 
-    msg.payload = 1; // Motor EIN 
-} else { 
-    msg.payload = 0; // Motor AUS 
-} 
-return msg; 
- 
+Ein einfacher Flow könnte so aussehen:
 
-## 🌐 4. Kommunikation mit anderen Systemen 
+- **Input:** Ein Taster ist an GPIO 17 angeschlossen
+- **Processing:** Ein JavaScript-Node prüft, ob der Taster gedrückt wurde
+- **Output:** Ein Relais an GPIO 27 wird aktiviert, um einen Motor zu starten
 
-Node-RED kann mit anderen Systemen kommunizieren: 
+```javascript
+// Beispiel für einen Function-Node in Node-RED
+if (msg.payload === 1) {
+    msg.payload = 1; // Motor EIN
+} else {
+    msg.payload = 0; // Motor AUS
+}
+return msg;
+```
 
-* MQTT: Für IoT-Kommunikation 
-* Modbus TCP/RTU: Für industrielle Geräte 
-* OPC UA: Für moderne Industrie-4.0-Anwendungen 
-* REST-APIs: Für Webservices oder Datenbanken 
- 
+## 🌐 4. Kommunikation mit anderen Systemen
 
-## 📊 5. Visualisierung und Überwachung 
+Node-RED kann mit anderen Systemen kommunizieren:
 
-Mit dem Node-RED Dashboard kannst du: 
+- **MQTT:** Für IoT-Kommunikation
+- **Modbus TCP/RTU:** Für industrielle Geräte
+- **OPC UA:** Für moderne Industrie-4.0-Anwendungen
+- **REST-APIs:** Für Webservices oder Datenbanken
 
-* Schaltflächen, Anzeigen und Diagramme erstellen 
-* Den Zustand der Anlage überwachen 
-* Manuelle Eingriffe über Webinterface ermöglichen 
+## 📊 5. Visualisierung und Überwachung
 
-## 🔐 6. Sicherheit und Zuverlässigkeit 
+Mit dem Node-RED Dashboard kannst du:
 
-Watchdog-Skripte oder Systemd-Services sorgen für Autostart und Stabilität 
-VPN oder SSH-Tunnel für Fernwartung 
-Backups der Flows regelmäßig sichern 
+- Schaltflächen, Anzeigen und Diagramme erstellen
+- Den Zustand der Anlage überwachen
+- Manuelle Eingriffe über Webinterface ermöglichen
+
+## 🔐 6. Sicherheit und Zuverlässigkeit
+
+- **Watchdog-Skripte** oder **Systemd-Services** sorgen für Autostart und Stabilität
+- **VPN** oder **SSH-Tunnel** für Fernwartung
+- **Backups** der Flows regelmäßig sichern

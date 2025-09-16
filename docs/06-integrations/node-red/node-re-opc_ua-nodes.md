@@ -2,7 +2,7 @@
 
 > ⚠️ **VERIFIKATION AUSSTEHEND**: Diese Dokumentation basiert auf einer Hypothese und wurde noch nicht verifiziert. Die beschriebenen OPC UA NodeIds und Zustandsübergänge müssen noch getestet und validiert werden.
 
-Hier ist eine Tabelle mit den relevanten OPC UA NodeIds, die in den vda_status_finished-Funktionen verwendet werden, zusammen mit dem zugehörigen Maschinenzustand und der Bedeutung: 
+Hier ist eine Tabelle mit den relevanten OPC UA NodeIds, die in den vda_status_finished-Funktionen verwendet werden, zusammen mit dem zugehörigen Maschinenzustand und der Bedeutung:
 
 | NodeId | Aktion | Zustand bei Empfang | Ergebnisstatus | Beschreibung |
 |--------|--------|---------------------|----------------|--------------|
@@ -13,13 +13,17 @@ Hier ist eine Tabelle mit den relevanten OPC UA NodeIds, die in den vda_status_f
 | ns=4;i=9 | DROP | DROPBUSY | FINISHED | DROP erfolgreich abgeschlossen |
 | ns=4;i=12 | DROP | DROPBUSY | FAILED | DROP fehlgeschlagen |
 | ns=4;i=3 | FIRE | FIREBUSY | FINISHED | FIRE erfolgreich abgeschlossen |
-| ns=4;i=10 | FIRE | FIREBUSY | FAILED | FIRE fehlgeschlagen | 
+| ns=4;i=10 | FIRE | FIREBUSY | FAILED | FIRE fehlgeschlagen |
 
----------------------
+Diese NodeIds werden in den jeweiligen vda_status_finished-Funktionen geprüft, um den Abschlussstatus einer Aktion zu erkennen und den moduleState sowie den actionState entsprechend zu aktualisieren.
 
-Diese NodeIds werden in den jeweiligen vda_status_finished-Funktionen geprüft, um den Abschlussstatus einer Aktion zu erkennen und den moduleState sowie den actionState entsprechend zu aktualisieren. 
+## Zustandsdiagramme
 
-Hier ist das visuelle Zustandsdiagramm für die vda_status_finished-Funktionen im Node-RED Flow: 
+### Einfaches Zustandsdiagramm
+
+Hier ist das visuelle Zustandsdiagramm für die vda_status_finished-Funktionen im Node-RED Flow:
+
+```mermaid
 graph LR
     %% Define the disconnected IDLE state
     subgraph Initial State
@@ -55,16 +59,11 @@ graph LR
     linkStyle 3 stroke:red,stroke-width:2px
     linkStyle 5 stroke:red,stroke-width:2px
     linkStyle 7 stroke:red,stroke-width:2px
+```
 
- 🔍 Erläuterung: 
+### Erweitertes Zustandsdiagramm mit MQTT-Statusmeldungen
 
-Jeder Übergang basiert auf einem spezifischen OPC UA NodeId. 
-Schwarze Pfeile zeigen erfolgreiche Übergänge (FINISHED). 
-Rote Pfeile markieren Fehlerpfade (FAILED). 
-Die Zustände wie PICKBUSY, MILLBUSY, DROPBUSY, FIREBUSY gehen jeweils in einen „WAITINGAFTER*“-Zustand über. 
-
-## erweitertes Zustandsdiagramm mit MQTT-Statusmeldungen
-
+```mermaid
 graph TD
     %% State Definitions with Aliases for clarity
     IDLE
@@ -112,118 +111,77 @@ graph TD
     linkStyle 14 stroke:blue,stroke-width:2px
     linkStyle 15 stroke:blue,stroke-width:2px
     linkStyle 16 stroke:blue,stroke-width:2px
+```
 
+## Erläuterung
 
-### UA State Transition Logic
+Jeder Übergang basiert auf einem spezifischen OPC UA NodeId.
+- Schwarze Pfeile zeigen erfolgreiche Übergänge (FINISHED).
+- Rote Pfeile markieren Fehlerpfade (FAILED).
+- Die Zustände wie PICKBUSY, MILLBUSY, DROPBUSY, FIREBUSY gehen jeweils in einen „WAITING_AFTER*"-Zustand über.
 
-| Start State | Condition (OPC UA Node) | Result | End State | MQTT Topic |
-|-------------|-------------------------|--------|-----------|------------|
-| PICKBUSY | ns=4;i=8 | FINISHED | WAITING_AFTER_PICK | /state |
-| PICKBUSY | ns=4;i=15 | FAILED | WAITING_AFTER_PICK | /state |
-| MILLBUSY | ns=4;i=13 | FINISHED | WAITING_AFTER_MILL | /state |
-| MILLBUSY | ns=4;i=14 | FAILED | WAITING_AFTER_MILL | /state |
-| FIREBUSY | ns=4;i=3 | FINISHED | WAITING_AFTER_FIRE | /state |
-| FIREBUSY | ns=4;i=10 | FAILED | WAITING_AFTER_FIRE | /state |
-| DROPBUSY | ns=4;i=9 | FINISHED | WAITING_AFTER_DROP | /state |
-| DROPBUSY | ns=4;i=12 | FAILED | WAITING_AFTER_DROP | /state |
+## Statusübergänge für actionState
 
-### Statusübergänge für actionState
-Die Datei beschreibt eine Reihe von Statusübergängen für actionState innerhalb eines automatisierten Prozesses, der mit OPC UA (Open Platform Communications Unified Architecture) kommuniziert. Hier ist eine strukturierte Übersicht der wichtigsten Übergänge und Bedingungen: 
+Die Datei beschreibt eine Reihe von Statusübergängen für actionState innerhalb eines automatisierten Prozesses, der mit OPC UA (Open Platform Communications Unified Architecture) kommuniziert. Hier ist eine strukturierte Übersicht der wichtigsten Übergänge und Bedingungen:
 
- 
- 
+### Allgemeine Struktur
 
-🧭 Allgemeine Struktur 
+Ein actionState enthält ein command (z. B. "PICK", "DROP", "MILL", "FIRE") und einen state (z. B. "FINISHED", "FAILED"). Die Übergänge hängen vom aktuellen moduleState ab, der den Zustand des Moduls beschreibt.
 
-Ein actionState enthält ein command (z. B. "PICK", "DROP", "MILL", "FIRE") und einen state (z. B. "FINISHED", "FAILED"). Die Übergänge hängen vom aktuellen moduleState ab, der den Zustand des Moduls beschreibt. 
+### Statusübergänge im Detail
 
- 
- 
+#### 1. PICK
 
-🔁 Statusübergänge im Detail 
+**Bedingung:** actionState.command == "PICK" und moduleState == "WAITING_AFTER_DROP"
 
-1. PICK 
+**Aktion:**
+- moduleState wird auf "PICKBUSY" gesetzt.
+- OPC UA schreibt true auf Node ns=4;i=5.
 
-Bedingung: actionState.command == "PICK" und moduleState == "WAITING_AFTER_DROP" 
+#### 2. DROP
 
-Aktion: 
+**Bedingung 1:** actionState.command == "DROP" und moduleState == "WAITING_AFTER_MILL"
+**Bedingung 2:** actionState.command == "DROP" und moduleState == "WAITING_AFTER_FIRE"
 
-moduleState wird auf "PICKBUSY" gesetzt. 
+**Aktion:**
+- moduleState wird auf "DROPBUSY" gesetzt.
+- OPC UA schreibt true auf Node ns=4;i=6.
 
-OPC UA schreibt true auf Node ns=4;i=5. 
+#### 3. MILL
 
-2. DROP 
+**Bedingung:** actionState.command == "MILL" und moduleState == "WAITING_AFTER_PICK"
 
-Bedingung 1: actionState.command == "DROP" und moduleState == "WAITING_AFTER_MILL" 
+**Aktion:**
+- moduleState wird auf "MILLBUSY" gesetzt.
+- Dauer wird aus metadata.duration gelesen (Standard: 2).
+- OPC UA schreibt true und duration auf Nodes ns=4;i=4 und ns=4;i=11.
 
-Bedingung 2: actionState.command == "DROP" und moduleState == "WAITING_AFTER_FIRE" 
+#### 4. FIRE
 
-Aktion: 
+**Bedingung:** actionState.command == "FIRE" und moduleState == "WAITING_AFTER_PICK"
 
-moduleState wird auf "DROPBUSY" gesetzt. 
+**Aktion:**
+- moduleState wird auf "FIREBUSY" gesetzt.
+- Dauer wird aus metadata.duration gelesen (Standard: 2).
+- OPC UA schreibt true und duration auf Nodes ns=4;i=6 und ns=4;i=7.
 
-OPC UA schreibt true auf Node ns=4;i=6. 
+### Erfolgreicher Abschluss
 
-3. MILL 
+Wenn z. B. moduleState == "FIREBUSY" und ein bestimmter Node true meldet:
+- moduleState → "WAITING_AFTER_FIRE"
+- actionState.state → "FINISHED"
+- state wird mit Zeitstempel, headerId, orderId, orderUpdateId, loads, errors aktualisiert.
 
-Bedingung: actionState.command == "MILL" und moduleState == "WAITING_AFTER_PICK" 
+### Fehlerfall
 
-Aktion: 
+Wenn ein command nicht unterstützt wird oder Bedingungen nicht erfüllt sind:
+- actionState.state → "FAILED"
+- Fehlerobjekt wird im Flow gespeichert.
+- state wird mit Fehlern und Zeitstempel aktualisiert.
 
-moduleState wird auf "MILLBUSY" gesetzt. 
+### Zusätzliche Informationen
 
-Dauer wird aus metadata.duration gelesen (Standard: 2). 
-
-OPC UA schreibt true und duration auf Nodes ns=4;i=4 und ns=4;i=11. 
-
-4. FIRE 
-
-Bedingung: actionState.command == "FIRE" und moduleState == "WAITING_AFTER_PICK" 
-
-Aktion: 
-
-moduleState wird auf "FIREBUSY" gesetzt. 
-
-Dauer wird aus metadata.duration gelesen (Standard: 2). 
-
-OPC UA schreibt true und duration auf Nodes ns=4;i=6 und ns=4;i=7. 
-
- 
- 
-
-✅ Erfolgreicher Abschluss 
-
-Wenn z. B. moduleState == "FIREBUSY" und ein bestimmter Node true meldet: 
-
-moduleState → "WAITING_AFTER_FIRE" 
-
-actionState.state → "FINISHED" 
-
-state wird mit Zeitstempel, headerId, orderId, orderUpdateId, loads, errors aktualisiert. 
-
- 
- 
-
-❌ Fehlerfall 
-
-Wenn ein command nicht unterstützt wird oder Bedingungen nicht erfüllt sind: 
-
-actionState.state → "FAILED" 
-
-Fehlerobjekt wird im Flow gespeichert. 
-
-state wird mit Fehlern und Zeitstempel aktualisiert. 
-
- 
- 
-
-📦 Zusätzliche Informationen 
-
-actionState wird im Flow gespeichert. 
-
-loads werden mit Typ und Dauer aktualisiert. 
-
-orderUpdateId wird aktualisiert. 
-
-MQTT-Nachrichten werden mit dem neuen state versendet. 
-
+- actionState wird im Flow gespeichert.
+- loads werden mit Typ und Dauer aktualisiert.
+- orderUpdateId wird aktualisiert.
+- MQTT-Nachrichten werden mit dem neuen state versendet.
