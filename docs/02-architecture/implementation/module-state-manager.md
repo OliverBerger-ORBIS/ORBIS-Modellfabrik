@@ -11,7 +11,7 @@ t aufnehmn# ModuleStateManager - Implementierungs-Dokumentation
 ### **Kern-Komponenten:**
 
 #### **1. ModuleStateManager (Singleton)**
-- **Datei:** `src_orbis/omf/tools/module_state_manager.py`
+- **Datei:** `omf/omf/tools/module_state_manager.py`
 - **Funktion:** Zentrale Verwaltung von Modul-Status und Sequenz-Ausführung
 - **Pattern:** Singleton mit Thread-sicherem Monitoring
 
@@ -93,7 +93,7 @@ if self._is_module_ready_for_command(module, CommandType.PICK):
 ## 📊 Dashboard-Integration
 
 ### **Neue UI-Komponente:**
-- **Datei:** `src_orbis/omf/dashboard/components/module_state_control.py`
+- **Datei:** `omf/omf/dashboard/components/module_state_control.py`
 - **Tab:** "Module Control" im OMF Dashboard
 - **Features:**
   - 📊 Modul-Status-Übersicht
@@ -142,13 +142,13 @@ if self._is_module_ready_for_command(module, CommandType.PICK):
 ## 📁 Dateien
 
 ### **Implementierung:**
-- `src_orbis/omf/tools/module_state_manager.py` - Kern-Implementierung
-- `src_orbis/omf/dashboard/components/module_state_control.py` - UI-Komponente
+- `omf/omf/tools/module_state_manager.py` - Kern-Implementierung
+- `omf/omf/dashboard/components/module_state_control.py` - UI-Komponente
 - `tests_orbis/test_omf/test_module_state_manager.py` - Tests
 
 ### **Integration:**
-- `src_orbis/omf/dashboard/omf_dashboard.py` - Dashboard-Integration
-- `src_orbis/omf/dashboard/components/README.md` - Dokumentation
+- `omf/omf/dashboard/omf_dashboard.py` - Dashboard-Integration
+- `omf/omf/dashboard/components/README.md` - Dokumentation
 
 ### **Dokumentation:**
 - `docs_orbis/analysis/node-red-replacement-strategy.md` - Strategie

@@ -168,16 +168,16 @@ Dashboard v3.2.0 introduces comprehensive FTS and CCU monitoring capabilities wi
 ## 📝 Technical Details
 
 ### Files Added
-- `src_orbis/omf/dashboard/components/fts*.py` - FTS components
-- `src_orbis/omf/dashboard/components/ccu*.py` - CCU components
-- `src_orbis/omf/dashboard/components/validation_error_tracker.py` - Error tracking
-- `src_orbis/omf/config/message_templates/templates/fts/*.yml` - FTS templates
+- `omf/omf/dashboard/components/fts*.py` - FTS components
+- `omf/omf/dashboard/components/ccu*.py` - CCU components
+- `omf/omf/dashboard/components/validation_error_tracker.py` - Error tracking
+- `omf/omf/config/message_templates/templates/fts/*.yml` - FTS templates
 
 ### Files Modified
-- `src_orbis/omf/dashboard/omf_dashboard.py` - Main dashboard
-- `src_orbis/omf/dashboard/components/message_processor.py` - Message processing
-- `src_orbis/omf/config/message_templates/categories.yml` - Template categories
-- `src_orbis/omf/replay_station/*.py` - Replay station improvements
+- `omf/omf/dashboard/omf_dashboard.py` - Main dashboard
+- `omf/omf/dashboard/components/message_processor.py` - Message processing
+- `omf/omf/config/message_templates/categories.yml` - Template categories
+- `omf/omf/replay_station/*.py` - Replay station improvements
 
 ### Dependencies
 - **No new dependencies** required

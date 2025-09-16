@@ -19,7 +19,7 @@
 #### **Schritt 1: Session starten**
 ```bash
 # Session-Logger starten
-python src_orbis/mqtt/loggers/aps_session_logger.py --session-label wareneingang-rot_1 --auto-start
+python omf/mqtt/loggers/aps_session_logger.py --session-label wareneingang-rot_1 --auto-start
 ```
 
 #### **Schritt 2: Workflow durchführen**
@@ -36,68 +36,68 @@ python src_orbis/mqtt/loggers/aps_session_logger.py --session-label wareneingang
 #### **Phase 1: Wareneingang (Basis + Varianz bei Bedarf)**
 ```bash
 # Basis-Sessions (1x pro Szenario)
-python src_orbis/mqtt/loggers/aps_session_logger.py --session-label wareneingang-rot --auto-start
-python src_orbis/mqtt/loggers/aps_session_logger.py --session-label wareneingang-weiss --auto-start
-python src_orbis/mqtt/loggers/aps_session_logger.py --session-label wareneingang-blau --auto-start
+python omf/mqtt/loggers/aps_session_logger.py --session-label wareneingang-rot --auto-start
+python omf/mqtt/loggers/aps_session_logger.py --session-label wareneingang-weiss --auto-start
+python omf/mqtt/loggers/aps_session_logger.py --session-label wareneingang-blau --auto-start
 
 # Varianz-Sessions (nur bei Bedarf - z.B. wenn erste Session unklar war)
-python src_orbis/mqtt/loggers/aps_session_logger.py --session-label wareneingang-rot_2 --auto-start
-python src_orbis/mqtt/loggers/aps_session_logger.py --session-label wareneingang-weiss_2 --auto-start
-python src_orbis/mqtt/loggers/aps_session_logger.py --session-label wareneingang-blau_2 --auto-start
+python omf/mqtt/loggers/aps_session_logger.py --session-label wareneingang-rot_2 --auto-start
+python omf/mqtt/loggers/aps_session_logger.py --session-label wareneingang-weiss_2 --auto-start
+python omf/mqtt/loggers/aps_session_logger.py --session-label wareneingang-blau_2 --auto-start
 ```
 
 #### **Phase 2: Auftrag (9 Sessions)**
 ```bash
 # Rot (3x)
-python src_orbis/mqtt/loggers/aps_session_logger.py --session-label auftrag-rot_1 --auto-start
-python src_orbis/mqtt/loggers/aps_session_logger.py --session-label auftrag-rot_2 --auto-start
-python src_orbis/mqtt/loggers/aps_session_logger.py --session-label auftrag-rot_3 --auto-start
+python omf/mqtt/loggers/aps_session_logger.py --session-label auftrag-rot_1 --auto-start
+python omf/mqtt/loggers/aps_session_logger.py --session-label auftrag-rot_2 --auto-start
+python omf/mqtt/loggers/aps_session_logger.py --session-label auftrag-rot_3 --auto-start
 
 # Weiß (3x)
-python src_orbis/mqtt/loggers/aps_session_logger.py --session-label auftrag-weiss_1 --auto-start
-python src_orbis/mqtt/loggers/aps_session_logger.py --session-label auftrag-weiss_2 --auto-start
-python src_orbis/mqtt/loggers/aps_session_logger.py --session-label auftrag-weiss_3 --auto-start
+python omf/mqtt/loggers/aps_session_logger.py --session-label auftrag-weiss_1 --auto-start
+python omf/mqtt/loggers/aps_session_logger.py --session-label auftrag-weiss_2 --auto-start
+python omf/mqtt/loggers/aps_session_logger.py --session-label auftrag-weiss_3 --auto-start
 
 # Blau (3x)
-python src_orbis/mqtt/loggers/aps_session_logger.py --session-label auftrag-blau_1 --auto-start
-python src_orbis/mqtt/loggers/aps_session_logger.py --session-label auftrag-blau_2 --auto-start
-python src_orbis/mqtt/loggers/aps_session_logger.py --session-label auftrag-blau_3 --auto-start
+python omf/mqtt/loggers/aps_session_logger.py --session-label auftrag-blau_1 --auto-start
+python omf/mqtt/loggers/aps_session_logger.py --session-label auftrag-blau_2 --auto-start
+python omf/mqtt/loggers/aps_session_logger.py --session-label auftrag-blau_3 --auto-start
 ```
 
 #### **Phase 3: AI-Error (9 Sessions)**
 ```bash
 # Rot (3x) - Qualitätsprüfung nicht bestanden
-python src_orbis/mqtt/loggers/aps_session_logger.py --session-label ai-not-ok-rot_1 --auto-start
-python src_orbis/mqtt/loggers/aps_session_logger.py --session-label ai-not-ok-rot_2 --auto-start
-python src_orbis/mqtt/loggers/aps_session_logger.py --session-label ai-not-ok-rot_3 --auto-start
+python omf/mqtt/loggers/aps_session_logger.py --session-label ai-not-ok-rot_1 --auto-start
+python omf/mqtt/loggers/aps_session_logger.py --session-label ai-not-ok-rot_2 --auto-start
+python omf/mqtt/loggers/aps_session_logger.py --session-label ai-not-ok-rot_3 --auto-start
 
 # Weiß (3x) - Qualitätsprüfung nicht bestanden
-python src_orbis/mqtt/loggers/aps_session_logger.py --session-label ai-not-ok-weiss_1 --auto-start
-python src_orbis/mqtt/loggers/aps_session_logger.py --session-label ai-not-ok-weiss_2 --auto-start
-python src_orbis/mqtt/loggers/aps_session_logger.py --session-label ai-not-ok-weiss_3 --auto-start
+python omf/mqtt/loggers/aps_session_logger.py --session-label ai-not-ok-weiss_1 --auto-start
+python omf/mqtt/loggers/aps_session_logger.py --session-label ai-not-ok-weiss_2 --auto-start
+python omf/mqtt/loggers/aps_session_logger.py --session-label ai-not-ok-weiss_3 --auto-start
 
 # Blau (3x) - Qualitätsprüfung nicht bestanden
-python src_orbis/mqtt/loggers/aps_session_logger.py --session-label ai-not-ok-blau_1 --auto-start
-python src_orbis/mqtt/loggers/aps_session_logger.py --session-label ai-not-ok-blau_2 --auto-start
-python src_orbis/mqtt/loggers/aps_session_logger.py --session-label ai-not-ok-blau_3 --auto-start
+python omf/mqtt/loggers/aps_session_logger.py --session-label ai-not-ok-blau_1 --auto-start
+python omf/mqtt/loggers/aps_session_logger.py --session-label ai-not-ok-blau_2 --auto-start
+python omf/mqtt/loggers/aps_session_logger.py --session-label ai-not-ok-blau_3 --auto-start
 ```
 
 #### **Phase 4: FTS (9 Sessions)**
 ```bash
 # Laden (3x)
-python src_orbis/mqtt/loggers/aps_session_logger.py --session-label fts-laden_1 --auto-start
-python src_orbis/mqtt/loggers/aps_session_logger.py --session-label fts-laden_2 --auto-start
-python src_orbis/mqtt/loggers/aps_session_logger.py --session-label fts-laden_3 --auto-start
+python omf/mqtt/loggers/aps_session_logger.py --session-label fts-laden_1 --auto-start
+python omf/mqtt/loggers/aps_session_logger.py --session-label fts-laden_2 --auto-start
+python omf/mqtt/loggers/aps_session_logger.py --session-label fts-laden_3 --auto-start
 
 # Dock an DPS (3x)
-python src_orbis/mqtt/loggers/aps_session_logger.py --session-label fts-dock-dps_1 --auto-start
-python src_orbis/mqtt/loggers/aps_session_logger.py --session-label fts-dock-dps_2 --auto-start
-python src_orbis/mqtt/loggers/aps_session_logger.py --session-label fts-dock-dps_3 --auto-start
+python omf/mqtt/loggers/aps_session_logger.py --session-label fts-dock-dps_1 --auto-start
+python omf/mqtt/loggers/aps_session_logger.py --session-label fts-dock-dps_2 --auto-start
+python omf/mqtt/loggers/aps_session_logger.py --session-label fts-dock-dps_3 --auto-start
 
 # Laden beenden (3x)
-python src_orbis/mqtt/loggers/aps_session_logger.py --session-label fts-laden-beenden_1 --auto-start
-python src_orbis/mqtt/loggers/aps_session_logger.py --session-label fts-laden-beenden_2 --auto-start
-python src_orbis/mqtt/loggers/aps_session_logger.py --session-label fts-laden-beenden_3 --auto-start
+python omf/mqtt/loggers/aps_session_logger.py --session-label fts-laden-beenden_1 --auto-start
+python omf/mqtt/loggers/aps_session_logger.py --session-label fts-laden-beenden_2 --auto-start
+python omf/mqtt/loggers/aps_session_logger.py --session-label fts-laden-beenden_3 --auto-start
 ```
 
 ### **📊 Session-Überwachung**
@@ -114,15 +114,15 @@ du -h data/mqtt-data/sessions/*.db
 #### **Session-Analyse**
 ```bash
 # Einzelne Session analysieren
-python src_orbis/mqtt/tools/mqtt_session_analyzer.py data/mqtt-data/sessions/wareneingang-rot.db
+python omf/mqtt/tools/mqtt_session_analyzer.py data/mqtt-data/sessions/wareneingang-rot.db
 
 # Varianz-Analyse (optional - nur bei Bedarf)
-python src_orbis/mqtt/tools/mqtt_session_analyzer.py data/mqtt-data/sessions/wareneingang-rot.db --compare data/mqtt-data/sessions/wareneingang-rot_2.db
+python omf/mqtt/tools/mqtt_session_analyzer.py data/mqtt-data/sessions/wareneingang-rot.db --compare data/mqtt-data/sessions/wareneingang-rot_2.db
 
 # Alle Sessions einer Phase analysieren
 for db in data/mqtt-data/sessions/wareneingang-*.db; do
     echo "Analysiere: $db"
-    python src_orbis/mqtt/tools/mqtt_session_analyzer.py "$db"
+    python omf/mqtt/tools/mqtt_session_analyzer.py "$db"
 done
 ```
 

@@ -150,10 +150,10 @@ brew install mosquitto
 mosquitto -p 1884
 
 # 3. OMF Dashboard starten
-streamlit run src_orbis/omf/dashboard/omf_dashboard.py
+streamlit run omf/omf/dashboard/omf_dashboard.py
 
 # 4. Replay Station starten
-streamlit run src_orbis/helper_apps/replay_station/replay_station_dashboard.py
+streamlit run omf/helper_apps/replay_station/replay_station_dashboard.py
 ```
 
 ### **Verwendung:**

@@ -19,7 +19,7 @@ metadata:
   backward_compatible: true
   
   # Migration-Info
-  migrated_from: "src_orbis/mqtt/config/message_templates.yml"
+  migrated_from: "omf/mqtt/config/message_templates.yml"
   migration_date: "2025-08-29"
   
   # Validierung

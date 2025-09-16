@@ -75,7 +75,7 @@ Diese Version erweitert das OMF Dashboard um neue Komponenten für Produktkatalo
 
 ### Komponenten-Struktur
 ```
-src_orbis/omf/dashboard/components/
+omf/omf/dashboard/components/
 ├── overview_product_catalog.py              # Produktkatalog-Unterkomponente
 ├── production_order_production_planning.py  # Produktionsplanung-Unterkomponente
 ├── shopfloor_layout.py                      # Shopfloor-Layout (verbessert)
@@ -86,24 +86,24 @@ src_orbis/omf/dashboard/components/
 ## 📁 Neue Dateien
 
 ### Komponenten
-- `src_orbis/omf/dashboard/components/overview_product_catalog.py`
-- `src_orbis/omf/dashboard/components/production_order_production_planning.py`
+- `omf/omf/dashboard/components/overview_product_catalog.py`
+- `omf/omf/dashboard/components/production_order_production_planning.py`
 
 ### Tests
 - `tests_orbis/test_omf/test_new_dashboard_components.py`
 
 ### Konfiguration
-- Erweiterte `src_orbis/omf/config/products/product_catalog.yml`
+- Erweiterte `omf/omf/config/products/product_catalog.yml`
 
 ## 🔄 Geänderte Dateien
 
 ### Komponenten
-- `src_orbis/omf/dashboard/components/overview.py` - Import für Produktkatalog
-- `src_orbis/omf/dashboard/components/production_order.py` - Import für Produktionsplanung
-- `src_orbis/omf/dashboard/components/shopfloor_layout.py` - Icon-Loading verbessert
+- `omf/omf/dashboard/components/overview.py` - Import für Produktkatalog
+- `omf/omf/dashboard/components/production_order.py` - Import für Produktionsplanung
+- `omf/omf/dashboard/components/shopfloor_layout.py` - Icon-Loading verbessert
 
 ### Templates
-- `src_orbis/omf/dashboard/assets/html_templates.py` - Neue Template-Funktion
+- `omf/omf/dashboard/assets/html_templates.py` - Neue Template-Funktion
 
 ### Tests
 - `tests_orbis/test_omf/test_shopfloor_components.py` - Import-Pfad-Problem behoben

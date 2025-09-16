@@ -57,7 +57,7 @@ mappings:
 **Prinzip:** Registry hat eigene Semantische Versionierung, unabhängig von App-Versionen.
 
 **Registry-Version:** `registry/model/v1/` (Major.Minor.Patch)
-**App-Version:** `src_orbis/` (eigene Versionierung)
+**App-Version:** `omf/` (eigene Versionierung)
 
 **Kompatibilität:** OMF-Dashboard prüft `MODEL_VERSION` beim Start.
 

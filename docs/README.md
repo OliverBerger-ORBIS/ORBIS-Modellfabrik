@@ -57,7 +57,7 @@
 ## 🔗 Quick Links
 
 - **Registry:** `registry/model/v1/` - Single Source of Truth
-- **Source Code:** `src_orbis/` - Runtime & Tools
+- **Source Code:** `omf/` - Runtime & Tools
 - **Legacy Docs:** [Archive](archive/) - Veraltete Dokumentation
 
 ## 🚀 Getting Started

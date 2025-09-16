@@ -17,7 +17,7 @@ Die **Nachrichtenzentrale** ist ein neuer Tab im OMF Dashboard, der alle MQTT-Na
 
 ### **✅ Datei-Struktur:**
 ```
-src_orbis/omf/dashboard/components/
+omf/omf/dashboard/components/
 ├── message_center.py          # Haupt-Komponente
 └── [weitere Komponenten]
 

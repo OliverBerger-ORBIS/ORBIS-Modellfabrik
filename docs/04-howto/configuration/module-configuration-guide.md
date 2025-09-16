@@ -7,12 +7,12 @@ Die **zentrale Modul-Konfiguration** wurde erfolgreich implementiert und ersetzt
 ## ✅ Neue Features
 
 ### **1. Zentrale YAML-Konfiguration**
-- **Datei**: `src_orbis/mqtt/config/module_config.yml`
+- **Datei**: `omf/mqtt/config/module_config.yml`
 - **Format**: YAML für bessere Lesbarkeit und Wartung
 - **Struktur**: Hierarchische Organisation nach Modul-Typen
 
 ### **2. ModuleManager Klasse**
-- **Datei**: `src_orbis/mqtt/tools/module_manager.py`
+- **Datei**: `omf/mqtt/tools/module_manager.py`
 - **Funktionen**: Einheitliche Verwaltung für alle Tools
 - **Backward Compatibility**: Bestehende Funktionen bleiben verfügbar
 
@@ -47,7 +47,7 @@ Die **zentrale Modul-Konfiguration** wurde erfolgreich implementiert und ersetzt
 
 ### **Konfigurationsdatei:**
 ```yaml
-# src_orbis/mqtt/config/module_config.yml
+# omf/mqtt/config/module_config.yml
 metadata:
   version: "2.0"
   description: "Modul Mapping mit erweiterten Informationen"
@@ -75,7 +75,7 @@ enums:
 
 ### **ModuleManager Klasse:**
 ```python
-# src_orbis/mqtt/tools/module_manager.py
+# omf/mqtt/tools/module_manager.py
 from module_manager import get_module_manager
 
 # Verwendung
@@ -88,7 +88,7 @@ ip_addresses = manager.get_module_ip_addresses("SVR3QA0022")
 
 ### **1. In Analysatoren:**
 ```python
-from src_orbis.mqtt.tools.module_manager import get_module_manager
+from omf.mqtt.tools.module_manager import get_module_manager
 
 class TemplateAnalyzer:
     def __init__(self):
@@ -146,18 +146,18 @@ locations = module_mapping.get_locations()
 ## 🔄 Migration
 
 ### **Migrierte Dateien:** ✅ **AKTUELL**
-1. ✅ `src_orbis/omf/dashboard/omf_dashboard.py` ✅ **AKTUELL: OMF Dashboard**
-2. ✅ `src_orbis/mqtt/tools/txt_template_analyzer.py`
-3. ✅ `src_orbis/mqtt/tools/ccu_template_analyzer.py`
-4. ✅ `src_orbis/mqtt/tools/unified_type_recognition.py`
-5. ✅ `src_orbis/mqtt/tools/test_unified_type_recognition.py`
+1. ✅ `omf/omf/dashboard/omf_dashboard.py` ✅ **AKTUELL: OMF Dashboard**
+2. ✅ `omf/mqtt/tools/txt_template_analyzer.py`
+3. ✅ `omf/mqtt/tools/ccu_template_analyzer.py`
+4. ✅ `omf/mqtt/tools/unified_type_recognition.py`
+5. ✅ `omf/mqtt/tools/test_unified_type_recognition.py`
 
 ### **Gelöschte Dateien:**
-- ❌ `src_orbis/mqtt/tools/module_mapping.json` (ersetzt durch YAML)
-- ❌ `src_orbis/mqtt/tools/module_mapping_utils.py` (ersetzt durch ModuleManager)
-- ❌ `src_orbis/mqtt/tools/test_unified_type_recognition.py` (verschoben)
-- ❌ `src_orbis/mqtt/dashboard/config/settings.py` (obsolet - doppelt zur YAML-Konfiguration)
-- ❌ `src_orbis/mqtt/tools/mqtt_message_library.py` (obsolet - doppelt zur YAML-Konfiguration)
+- ❌ `omf/mqtt/tools/module_mapping.json` (ersetzt durch YAML)
+- ❌ `omf/mqtt/tools/module_mapping_utils.py` (ersetzt durch ModuleManager)
+- ❌ `omf/mqtt/tools/test_unified_type_recognition.py` (verschoben)
+- ❌ `omf/mqtt/dashboard/config/settings.py` (obsolet - doppelt zur YAML-Konfiguration)
+- ❌ `omf/mqtt/tools/mqtt_message_library.py` (obsolet - doppelt zur YAML-Konfiguration)
 - ❌ `docs_orbis/mqtt/working-mqtt-messages.md` (obsolet - doppelt zur YAML-Konfiguration)
 - ❌ `docs_orbis/mqtt/dashboard-extensions.md` (obsolet - doppelt zur YAML-Konfiguration)
 - ❌ `tests_orbis/test_dashboard_functionality.py` (obsolet - testete APS_MODULES_EXTENDED)
@@ -172,19 +172,19 @@ locations = module_mapping.get_locations()
 python tests_orbis/test_module_manager.py
 
 # Unified Type Recognition Tests
-python src_orbis/mqtt/tools/test_unified_type_recognition.py
+python omf/mqtt/tools/test_unified_type_recognition.py
 
 # Template Analyzer Tests
-python src_orbis/mqtt/tools/txt_template_analyzer.py
-python src_orbis/mqtt/tools/ccu_template_analyzer.py
+python omf/mqtt/tools/txt_template_analyzer.py
+python omf/mqtt/tools/ccu_template_analyzer.py
 
 # Dashboard Tests (bereinigt) ✅ **AKTUELL**
-python -c "from src_orbis.omf.dashboard.omf_dashboard import main; print('Dashboard import successful')" ✅ **AKTUELL**
+python -c "from omf.omf.dashboard.omf_dashboard import main; print('Dashboard import successful')" ✅ **AKTUELL**
 
 ### **Dashboard Test:** ✅ **AKTUELL**
 ```bash
 # Dashboard starten ✅ **AKTUELL: OMF Dashboard**
-streamlit run src_orbis/omf/dashboard/omf_dashboard.py
+streamlit run omf/omf/dashboard/omf_dashboard.py
 
 # Neuen "Module" Tab unter "Einstellungen" testen
 ```

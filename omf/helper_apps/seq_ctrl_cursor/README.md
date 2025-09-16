@@ -10,7 +10,7 @@ Es basiert auf dem OMF Tools Sequence System und nutzt die gleichen Komponenten 
 
 ## Abhängigkeiten
 
-Diese Helper-App nutzt die OMF Tools aus `src_orbis/omf/tools/`:
+Diese Helper-App nutzt die OMF Tools aus `omf/omf/tools/`:
 - `sequence_definition.py` - Sequenz-Definitionen (YML/Python)
 - `sequence_ui.py` - Streamlit UI-Komponenten
 - `sequence_executor.py` - Sequenz-Ausführung
@@ -20,7 +20,7 @@ Diese Helper-App nutzt die OMF Tools aus `src_orbis/omf/tools/`:
 
 1. Streamlit-App starten:
     ```bash
-    streamlit run src_orbis/helper_apps/seq_ctrl_cursor/sequence_control_dashboard.py
+    streamlit run omf/helper_apps/seq_ctrl_cursor/sequence_control_dashboard.py
     ```
 2. Sequenz im Dashboard auswählen und ausführen
 

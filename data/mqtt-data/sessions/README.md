@@ -32,7 +32,7 @@ Eigene Sessions werden als `aps_persistent_traffic_<NAME>_<TIMESTAMP>.db` und `.
 ### 🎙️ Session-Recorder:
 ```bash
 # Manueller Aufruf über Terminal
-python src_orbis/mqtt/loggers/aps_session_logger.py --session-label my-session --auto-start
+python omf/mqtt/loggers/aps_session_logger.py --session-label my-session --auto-start
 
 # Mit "q" beenden
 ```
@@ -55,7 +55,7 @@ python src_orbis/mqtt/loggers/aps_session_logger.py --session-label my-session -
 ## 🚀 Getting Started
 
 1. **Repository klonen**
-2. **Dashboard starten:** `streamlit run src_orbis/mqtt/dashboard/aps_dashboard.py`
+2. **Dashboard starten:** `streamlit run omf/mqtt/dashboard/aps_dashboard.py`
 3. **Default-Session** wird automatisch geladen
 4. **Dashboard testen** mit Demo-Daten
 5. **Eigene Sessions** aufnehmen mit Session-Recorder

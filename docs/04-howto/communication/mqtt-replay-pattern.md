@@ -126,12 +126,12 @@ mqtt_client.subscribe(topic, qos=1)
 
 ### **Session Manager starten**
 ```bash
-streamlit run src_orbis/helper_apps/session_manager/session_manager.py
+streamlit run omf/helper_apps/session_manager/session_manager.py
 ```
 
 ### **OMF Dashboard starten**
 ```bash
-streamlit run src_orbis/omf/dashboard/omf_dashboard.py
+streamlit run omf/omf/dashboard/omf_dashboard.py
 ```
 
 ### **Replay-Workflow**
@@ -149,7 +149,7 @@ streamlit run src_orbis/omf/dashboard/omf_dashboard.py
 
 ## 🔗 Verwandte Dokumentation
 
-- **[Session Manager README](../src_orbis/helper_apps/session_manager/README.md)**
-- **[OMF Dashboard README](../src_orbis/omf/dashboard/README.md)**
+- **[Session Manager README](../omf/helper_apps/session_manager/README.md)**
+- **[OMF Dashboard README](../omf/omf/dashboard/README.md)**
 - **[MQTT Integration Guide](./mqtt-integration-guide.md)**
 - **[Project Overview](../PROJECT_OVERVIEW.md)**

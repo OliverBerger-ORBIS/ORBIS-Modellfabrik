@@ -247,7 +247,7 @@ class WorkflowEngine:
 
 ### **Bestehende Dokumente erweitern:**
 - **`docs_orbis/PROJECT_OVERVIEW.md`** - Phase 3 aktualisieren
-- **`src_orbis/omf/dashboard/components/README.md`** - Neue Komponenten dokumentieren
+- **`omf/omf/dashboard/components/README.md`** - Neue Komponenten dokumentieren
 - **`docs_orbis/OMF_ARCHITECTURE.md`** - Architektur-Änderungen dokumentieren
 
 ### **Neue Dokumente:**

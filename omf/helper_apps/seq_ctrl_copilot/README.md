@@ -24,10 +24,10 @@ pytest .\tests_orbis\test_omf\helper_apps\seq_ctrl_copilot\
 
 ## Schnelleinstieg
 
-1. Rezepte in `src_orbis/recipes.yml` anlegen.
+1. Rezepte in `omf/recipes.yml` anlegen.
 2. Streamlit-App starten:
     ```bash
-    streamlit run src_orbis/helper_apps/seq_ctrl_copilot/sequence_control_dashboard.py
+    streamlit run omf/helper_apps/seq_ctrl_copilot/sequence_control_dashboard.py
     ```
 3. Sequenz im Dashboard auswählen und ausführen.
 
@@ -49,7 +49,7 @@ Du kannst eine Sequenz auch direkt im Python-Code anlegen und starten, ohne ein 
 ### Beispiel
 
 ```python
-from src_orbis.helper_apps.seq_ctrl_copilot.sequence_control_orbis import WorkflowOrderManager
+from omf.helper_apps.seq_ctrl_copilot.sequence_control_orbis import WorkflowOrderManager
 
 # Sequenz als Liste von Schritten anlegen
 custom_sequence = [

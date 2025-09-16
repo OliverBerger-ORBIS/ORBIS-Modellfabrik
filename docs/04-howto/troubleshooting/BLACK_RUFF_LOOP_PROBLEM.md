@@ -4,7 +4,7 @@
 
 ### **Symptom:**
 - Pre-commit Hooks laufen in einer Endlosschleife
-- Black formatiert immer wieder die gleiche Datei: `src_orbis/omf/config/sequence_definitions/aiqs_sequence.py`
+- Black formatiert immer wieder die gleiche Datei: `omf/omf/config/sequence_definitions/aiqs_sequence.py`
 - Ruff zeigt "All checks passed!" aber Black formatiert trotzdem
 
 ### **Aktuelle Ausgaben:**
@@ -15,7 +15,7 @@ black....................................................................Failed
 - hook id: black
 - files were modified by this hook
 
-reformatted src_orbis/omf/config/sequence_definitions/aiqs_sequence.py
+reformatted omf/omf/config/sequence_definitions/aiqs_sequence.py
 ```
 
 **Ruff Output:**
@@ -29,12 +29,12 @@ ruff.....................................................................Passed
 ```
 
 ### **Problem-Datei:**
-`src_orbis/omf/config/sequence_definitions/aiqs_sequence.py`
+`omf/omf/config/sequence_definitions/aiqs_sequence.py`
 
 **Aktueller Inhalt (Zeilen 6-8):**
 ```python
 # fmt: off
-from src_orbis.omf.tools.sequence_executor import SequenceDefinition, SequenceStep
+from omf.omf.tools.sequence_executor import SequenceDefinition, SequenceStep
 # fmt: on
 ```
 

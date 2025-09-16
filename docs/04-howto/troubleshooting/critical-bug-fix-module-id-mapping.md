@@ -20,7 +20,7 @@
 
 ## 🔧 **Behobene Datei:**
 
-**Datei:** `src_orbis/omf/dashboard/components/steering_factory.py`  
+**Datei:** `omf/omf/dashboard/components/steering_factory.py`  
 **Funktion:** `_get_module_serial()` (Zeile 198)
 
 ### **❌ Vorher (FALSCH):**

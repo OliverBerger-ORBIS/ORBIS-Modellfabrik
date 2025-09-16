@@ -7,11 +7,11 @@ Die Topic-Konfiguration ist eine zentrale Verwaltung aller MQTT-Topics für die 
 ## **Dateien**
 
 ### **Konfigurationsdatei:**
-- **Pfad**: `src_orbis/mqtt/config/topic_config.yml`
+- **Pfad**: `omf/mqtt/config/topic_config.yml`
 - **Zweck**: Zentrale YAML-Konfiguration aller MQTT-Topics
 
 ### **Manager-Klasse:**
-- **Pfad**: `src_orbis/mqtt/tools/topic_manager.py`
+- **Pfad**: `omf/mqtt/tools/topic_manager.py`
 - **Zweck**: Python-Klasse für Topic-Verwaltung und -Abfragen
 
 ## **Struktur**
@@ -165,7 +165,7 @@ unmapped = topic_manager.get_unmapped_topics(topic_list)
 ### **Integration in Template-Analyzern:**
 
 ```python
-from src_orbis.mqtt.tools.topic_manager import get_topic_manager
+from omf.mqtt.tools.topic_manager import get_topic_manager
 
 topic_manager = get_topic_manager()
 
@@ -223,13 +223,13 @@ for topic in all_topics:
 ## **Migration von alten Systemen**
 
 ### **Ersetzte Dateien:**
-- ❌ `src_orbis/mqtt/dashboard/config/topic_mapping.py` (✅ **GELÖSCHT**)
+- ❌ `omf/mqtt/dashboard/config/topic_mapping.py` (✅ **GELÖSCHT**)
 - ❌ Verstreute Topic-Mappings in verschiedenen Dateien
-- ❌ `src_orbis/mqtt/dashboard/aps_dashboard.py` (✅ **ERSETZT durch OMF Dashboard**)
+- ❌ `omf/mqtt/dashboard/aps_dashboard.py` (✅ **ERSETZT durch OMF Dashboard**)
 
 ### **Neue Struktur:**
-- ✅ `src_orbis/mqtt/config/topic_config.yml` (zentrale Konfiguration)
-- ✅ `src_orbis/mqtt/tools/topic_manager.py` (zentrale Verwaltung)
+- ✅ `omf/mqtt/config/topic_config.yml` (zentrale Konfiguration)
+- ✅ `omf/mqtt/tools/topic_manager.py` (zentrale Verwaltung)
 
 ### **Migration-Schritte:**
 1. ✅ **Topic-Informationen** aus alten Dateien in `topic_config.yml` übertragen
@@ -243,7 +243,7 @@ for topic in all_topics:
 ## **Wartung und Updates**
 
 ### **Neue Topics hinzufügen:**
-1. **YAML-Datei** bearbeiten: `src_orbis/mqtt/config/topic_config.yml`
+1. **YAML-Datei** bearbeiten: `omf/mqtt/config/topic_config.yml`
 2. **Topic-Eintrag** hinzufügen mit allen erforderlichen Feldern
 3. **Dashboard** automatisch aktualisiert
 

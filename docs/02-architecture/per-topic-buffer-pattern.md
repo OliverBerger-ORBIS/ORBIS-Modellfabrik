@@ -181,7 +181,7 @@ Das **Per-Topic-Buffer Pattern** wird durch automatische Validierung überwacht:
 
 ### Dashboard Rules Validator
 ```bash
-python src_orbis/scripts/validate_dashboard_rules.py
+python omf/scripts/validate_dashboard_rules.py
 ```
 
 **Regeln:**

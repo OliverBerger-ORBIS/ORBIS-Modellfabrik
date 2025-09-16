@@ -51,7 +51,7 @@ graph TB
 
 ### 1. **OmfMessageTemplateManager** (Singleton)
 
-**Datei:** `src_orbis/omf/tools/message_template_manager.py`
+**Datei:** `omf/omf/tools/message_template_manager.py`
 
 **Zweck:** Zentrale Verwaltung aller Message-Templates
 
@@ -75,7 +75,7 @@ class OmfMessageTemplateManager:
 
 **Template-Loading:**
 - **Primary:** `registry/model/v1/templates/` (Registry v1)
-- **Fallback:** `src_orbis/omf/config/message_templates/` (Legacy)
+- **Fallback:** `omf/omf/config/message_templates/` (Legacy)
 - **Automatisch:** Lädt alle `.yml` Dateien beim Start
 
 ### 2. **Topic-Resolution-System**
@@ -104,7 +104,7 @@ class OmfMessageTemplateManager:
 
 ### 3. **Validierungs-Layer**
 
-**Datei:** `src_orbis/omf/tools/validators.py`
+**Datei:** `omf/omf/tools/validators.py`
 
 **Zweck:** Template-spezifische Payload-Validierung
 
@@ -182,7 +182,7 @@ templates:
 ### **1. Template Manager initialisieren**
 
 ```python
-from src_orbis.omf.tools.message_template_manager import get_omf_message_template_manager
+from omf.omf.tools.message_template_manager import get_omf_message_template_manager
 
 # Singleton Manager
 manager = get_omf_message_template_manager()

@@ -16,7 +16,7 @@ Das **Workflow Sequence Control System** implementiert die Anforderungen aus `re
 
 ### **Dateien:**
 ```
-src_orbis/omf/tools/
+omf/omf/tools/
 ├── workflow_order_manager.py      # ID-Management
 ├── sequence_executor.py           # Sequenz-Ausführung
 ├── sequence_definition.py         # YML/Python Definitionen
@@ -24,7 +24,7 @@ src_orbis/omf/tools/
 ├── sequence_test_app.py           # Test-App
 └── run_sequence_test.py           # Einfacher Test
 
-src_orbis/omf/config/sequence_definitions/
+omf/omf/config/sequence_definitions/
 ├── mill_sequence.yml              # MILL-Sequenz (YML)
 ├── drill_sequence.yml             # DRILL-Sequenz (YML)
 └── aiqs_sequence.py               # AIQS-Sequenz (Python)
@@ -34,13 +34,13 @@ src_orbis/omf/config/sequence_definitions/
 
 ### **1. Einfacher Test (ohne UI):**
 ```bash
-cd src_orbis/omf/tools
+cd omf/omf/tools
 python run_sequence_test.py
 ```
 
 ### **2. Streamlit Test-App:**
 ```bash
-cd src_orbis/omf/tools
+cd omf/omf/tools
 streamlit run sequence_test_app.py
 ```
 
@@ -182,7 +182,7 @@ wait_condition:
 
 - **Anforderungen:** `docs_orbis/requirements_sequence_control.md`
 - **Architektur:** Diese README
-- **Beispiele:** `src_orbis/omf/config/sequence_definitions/`
+- **Beispiele:** `omf/omf/config/sequence_definitions/`
 - **Tests:** `run_sequence_test.py`
 
 ---

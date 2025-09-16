@@ -44,7 +44,7 @@
 ## 🔗 Quick Links
 
 - **Registry:** `registry/model/v1/` - Single Source of Truth
-- **Source Code:** `src_orbis/` - Runtime & Tools
+- **Source Code:** `omf/` - Runtime & Tools
 - **Integrations:** `integrations/` - Externe Systeme (Node-RED, etc.)
 - **Legacy Docs:** [Archive](docs_orbis/archive/) - Veraltete Dokumentation
 
@@ -72,7 +72,7 @@
 
 ### **KRITISCHE REGELN:**
 - **NUR absolute Pfade:** `/Users/oliver/Projects/ORBIS-Modellfabrik/path/to/file`
-- **NUR absolute Imports:** `from src_orbis.omf.module import Class`
+- **NUR absolute Imports:** `from omf.omf.module import Class`
 - **KEINE relativen Pfade/Imports** ❌
 
 ### **Cursor AI Konfiguration:**
@@ -91,7 +91,7 @@
 
 ### Orbis Customizations
 - `docs_orbis/` - Orbis documentation and analysis
-- `src_orbis/` - Orbis source code
+- `omf/` - Orbis source code
   - `omf/` - OMF Dashboard (Hauptanwendung)
   - `helper_apps/` - Helper-Anwendungen (unabhängig)
     - `session_manager/` - Session Manager (Replay-Funktionalität)

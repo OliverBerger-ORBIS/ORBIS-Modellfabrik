@@ -9,7 +9,7 @@
 ## **✅ Neue modulare Struktur:**
 
 ```
-src_orbis/omf/config/message_templates/
+omf/omf/config/message_templates/
 ├── README.md
 ├── metadata.yml                    # Globale Metadaten
 ├── categories.yml                  # Kategorien und Sub-Kategorien

@@ -73,7 +73,7 @@ OMF Dashboard
 
 ### 1. Dashboard Frontend
 
-**Main Entry Point:** `src_orbis/omf/dashboard/omf_dashboard.py`
+**Main Entry Point:** `omf/omf/dashboard/omf_dashboard.py`
 
 #### Tab Structure:
 - **Übersicht:** Modul-Status (Per-Topic-Buffer), Lagerbestand, Kundenaufträge, Rohmaterial-Bestellungen
@@ -85,7 +85,7 @@ OMF Dashboard
 ### 2. MQTT-Singleton Factory ✨ NEW
 
 #### OMF MQTT Factory
-**File:** `src_orbis/omf/tools/omf_mqtt_factory.py`
+**File:** `omf/omf/tools/omf_mqtt_factory.py`
 
 **Purpose:** Verwaltet MQTT-Client-Instanzen nach Singleton-Pattern
 
@@ -104,7 +104,7 @@ def ensure_dashboard_client(environment: str, config: dict) -> OMFMqttClient:
 ```
 
 #### OMF MQTT Client
-**File:** `src_orbis/omf/tools/omf_mqtt_client.py`
+**File:** `omf/omf/tools/omf_mqtt_client.py`
 
 **Purpose:** Per-Topic-Buffer MQTT-Client
 
@@ -133,7 +133,7 @@ class OMFMqttClient:
 ### 3. Hybrid Publishing Architecture ✨ NEW
 
 #### Message Gateway
-**File:** `src_orbis/omf/tools/message_gateway.py`
+**File:** `omf/omf/tools/message_gateway.py`
 
 **Purpose:** Einheitliche API für MQTT-Publishing
 
@@ -159,7 +159,7 @@ class MessageGateway:
 ```
 
 #### Message Generator
-**File:** `src_orbis/omf/tools/message_generator.py`
+**File:** `omf/omf/tools/message_generator.py`
 
 **Purpose:** Generiert semantisch korrekte MQTT-Nachrichten
 
@@ -190,7 +190,7 @@ def generate_fts_navigation_message(self, route_type: str, load_type: str) -> di
 ### 4. Overview Components
 
 #### Overview Module Status ✨ ENHANCED
-**File:** `src_orbis/omf/dashboard/components/overview_module_status.py`
+**File:** `omf/omf/dashboard/components/overview_module_status.py`
 
 **Features:**
 - **Per-Topic-Buffer:** Effiziente Nachrichtenverarbeitung
@@ -212,7 +212,7 @@ def show_overview_module_status():
 
 ### 5. Message Center ✨ ENHANCED
 
-**File:** `src_orbis/omf/dashboard/components/message_center.py`
+**File:** `omf/omf/dashboard/components/message_center.py`
 
 **Features:**
 - **Priority-based Subscriptions:** PRIO 1-6 für verschiedene Topic-Filter
@@ -241,7 +241,7 @@ def show_message_center():
 
 ### 6. Factory Steering ✨ ENHANCED
 
-**File:** `src_orbis/omf/dashboard/components/steering_factory.py`
+**File:** `omf/omf/dashboard/components/steering_factory.py`
 
 **Features:**
 - **Hybrid-Architektur:** MessageGenerator + Session State + MessageGateway
@@ -271,7 +271,7 @@ def _prepare_navigation_message(navigation_type: str):
 
 ### 7. FTS InstantAction ✨ ENHANCED
 
-**File:** `src_orbis/omf/dashboard/components/fts_instantaction.py`
+**File:** `omf/omf/dashboard/components/fts_instantaction.py`
 
 **Features:**
 - **Per-Topic-Buffer:** Effiziente FTS-Nachrichtenverarbeitung
@@ -450,7 +450,7 @@ source .venv/bin/activate
 pip install -r requirements.txt
 
 # Run
-streamlit run src_orbis/omf/dashboard/omf_dashboard.py --server.port 8506
+streamlit run omf/omf/dashboard/omf_dashboard.py --server.port 8506
 ```
 
 ### Production Considerations
@@ -505,8 +505,8 @@ Das OMF Dashboard implementiert eine moderne **Per-Topic-Buffer Architektur** mi
 - **[Module Configuration](docs_orbis/module-configuration-guide.md)** - Modul-Konfiguration und Icons
 
 ### Replay-Workflow (Unabhängige Systeme)
-- **[Session Manager](src_orbis/helper_apps/session_manager/README.md)** - Unabhängige Helper-App für Session-Analyse
-- **[Replay Station](src_orbis/helper_apps/replay_station/README.md)** - Replay-Funktionalität über lokalen MQTT-Broker
+- **[Session Manager](omf/helper_apps/session_manager/README.md)** - Unabhängige Helper-App für Session-Analyse
+- **[Replay Station](omf/helper_apps/replay_station/README.md)** - Replay-Funktionalität über lokalen MQTT-Broker
 - **[MQTT Replay Pattern](docs_orbis/guides/communication/mqtt-replay-pattern.md)** - Replay-Workflow-Dokumentation
 
 ### Development Guidelines

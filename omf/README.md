@@ -39,7 +39,7 @@ python mqtt_test_client.py   # Terminal 2
 ## 📋 Structure
 
 ```
-src_orbis/
+omf/
 ├── README.md           # This file
 ├── omf/               # OMF Dashboard and tools
 ├── analysis/          # Data analysis tools

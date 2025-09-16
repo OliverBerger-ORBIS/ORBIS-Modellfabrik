@@ -25,7 +25,7 @@ jobs:
     
     - name: Validate project structure
       run: |
-        python src_orbis/scripts/validate_project_structure.py
+        python omf/scripts/validate_project_structure.py
     
     - name: Run tests
       run: |
@@ -33,5 +33,5 @@ jobs:
     
     - name: Check code formatting
       run: |
-        black --check src_orbis/ tests_orbis/
-        ruff check src_orbis/ tests_orbis/
+        black --check omf/ tests_orbis/
+        ruff check omf/ tests_orbis/

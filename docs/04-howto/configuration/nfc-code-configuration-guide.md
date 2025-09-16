@@ -6,7 +6,7 @@ Die NFC-Code-Konfiguration wurde zentralisiert und verwendet eine YAML-Konfigura
 
 ## 📁 Konfigurationsdatei
 
-**Pfad:** `src_orbis/mqtt/config/nfc_code_config.yml`
+**Pfad:** `omf/mqtt/config/nfc_code_config.yml`
 
 ### Struktur
 
@@ -57,7 +57,7 @@ mqtt_paths:
 ### Verwendung
 
 ```python
-from src_orbis.mqtt.tools.nfc_code_manager import NFCCodeManager
+from omf.mqtt.tools.nfc_code_manager import NFCCodeManager
 
 # Manager initialisieren
 manager = NFCCodeManager()
@@ -77,7 +77,7 @@ stats = manager.get_statistics()
 
 ```python
 # Alte Funktionen funktionieren weiterhin
-from src_orbis.mqtt.tools.nfc_code_manager import get_friendly_name, get_nfc_code
+from omf.mqtt.tools.nfc_code_manager import get_friendly_name, get_nfc_code
 
 friendly_name = get_friendly_name("040a8dca341291")
 nfc_code = get_nfc_code("R1")
@@ -96,9 +96,9 @@ nfc_code = get_nfc_code("R1")
 
 ### Gelöschte Dateien
 
-- ❌ `src_orbis/mqtt/tools/nfc_code_mapping.py` - Ersetzt durch NFCCodeManager
-- ❌ `src_orbis/mqtt/tools/analyze_existing_nfc_codes.py` - Funktionalität integriert
-- ❌ `src_orbis/mqtt/tools/nfc_analysis_session.py` - Funktionalität integriert
+- ❌ `omf/mqtt/tools/nfc_code_mapping.py` - Ersetzt durch NFCCodeManager
+- ❌ `omf/mqtt/tools/analyze_existing_nfc_codes.py` - Funktionalität integriert
+- ❌ `omf/mqtt/tools/nfc_analysis_session.py` - Funktionalität integriert
 
 ### Migrierte Dateien
 

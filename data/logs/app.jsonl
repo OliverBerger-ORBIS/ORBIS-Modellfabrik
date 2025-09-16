@@ -107,8 +107,8 @@ Test-Error
 {"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Monitor-Thread gestartet", "timestamp": "2025-09-14 11:09:36,205"}
 {"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "ModuleStateManager initialisiert", "timestamp": "2025-09-14 11:09:36,206"}
 {"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.module_state_control", "msg": "ModuleStateManager erfolgreich initialisiert", "timestamp": "2025-09-14 11:09:36,206"}
-{"app": "omf_dashboard", "level": "INFO", "logger": "src_orbis.omf.tools.registry_manager", "msg": "✅ Registry version check passed: 1.0.0", "timestamp": "2025-09-14 23:05:18,089"}
-{"app": "omf_dashboard", "level": "INFO", "logger": "src_orbis.omf.tools.registry_manager", "msg": "✅ Registry version check passed: 1.0.0", "timestamp": "2025-09-14 23:12:22,742"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.omf.tools.registry_manager", "msg": "✅ Registry version check passed: 1.0.0", "timestamp": "2025-09-14 23:05:18,089"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.omf.tools.registry_manager", "msg": "✅ Registry version check passed: 1.0.0", "timestamp": "2025-09-14 23:12:22,742"}
 {"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.module_state_control", "msg": "Initialisiere ModuleStateManager mit MQTT-Client und Gateway", "timestamp": "2025-09-14 23:12:23,106"}
 {"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Filter hinzugefügt: module/v1/ff/SVR4H76530/state", "timestamp": "2025-09-14 23:12:23,106"}
 {"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Filter hinzugefügt: module/v1/ff/SVR3QA2098/state", "timestamp": "2025-09-14 23:12:23,106"}
@@ -126,7 +126,7 @@ Test-Error
 {"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Monitor-Thread gestartet", "timestamp": "2025-09-14 23:12:23,107"}
 {"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "ModuleStateManager initialisiert", "timestamp": "2025-09-14 23:12:23,108"}
 {"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.module_state_control", "msg": "ModuleStateManager erfolgreich initialisiert", "timestamp": "2025-09-14 23:12:23,108"}
-{"app": "omf_dashboard", "level": "INFO", "logger": "src_orbis.omf.tools.registry_manager", "msg": "✅ Registry version check passed: 1.0.0", "timestamp": "2025-09-15 04:48:01,446"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.omf.tools.registry_manager", "msg": "✅ Registry version check passed: 1.0.0", "timestamp": "2025-09-15 04:48:01,446"}
 {"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.module_state_control", "msg": "Initialisiere ModuleStateManager mit MQTT-Client und Gateway", "timestamp": "2025-09-15 04:48:01,650"}
 {"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Filter hinzugefügt: module/v1/ff/SVR4H76530/state", "timestamp": "2025-09-15 04:48:01,650"}
 {"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Filter hinzugefügt: module/v1/ff/SVR3QA2098/state", "timestamp": "2025-09-15 04:48:01,650"}
@@ -144,19 +144,19 @@ Test-Error
 {"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Monitor-Thread gestartet", "timestamp": "2025-09-15 04:48:01,651"}
 {"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "ModuleStateManager initialisiert", "timestamp": "2025-09-15 04:48:01,651"}
 {"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.module_state_control", "msg": "ModuleStateManager erfolgreich initialisiert", "timestamp": "2025-09-15 04:48:01,651"}
-{"app": "omf_dashboard", "level": "INFO", "logger": "src_orbis.omf.tools.registry_manager.Registry", "msg": "Registry v1 Manager initialisiert", "timestamp": "2025-09-15 05:27:23,122"}
-{"app": "omf_dashboard", "level": "INFO", "logger": "src_orbis.omf.tools.registry_manager.Registry", "msg": "Registry-Root: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1", "timestamp": "2025-09-15 05:27:23,122"}
-{"app": "omf_dashboard", "level": "INFO", "logger": "src_orbis.omf.tools.registry_manager.Registry", "msg": "✅ Registry version check passed: 1.0.0", "timestamp": "2025-09-15 05:27:23,126"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.omf.tools.registry_manager.Registry", "msg": "Registry v1 Manager initialisiert", "timestamp": "2025-09-15 05:27:23,122"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.omf.tools.registry_manager.Registry", "msg": "Registry-Root: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1", "timestamp": "2025-09-15 05:27:23,122"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.omf.tools.registry_manager.Registry", "msg": "✅ Registry version check passed: 1.0.0", "timestamp": "2025-09-15 05:27:23,126"}
 {"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.message_center", "msg": "📡 Message Center geladen", "timestamp": "2025-09-15 05:27:23,185"}
 {"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering", "msg": "🎮 Steering geladen", "timestamp": "2025-09-15 05:27:23,191"}
 {"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_factory", "msg": "🏭 Factory Steering geladen", "timestamp": "2025-09-15 05:27:23,192"}
 {"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_factory", "msg": "✅ MQTT-Client verfügbar, initialisiere Gateway", "timestamp": "2025-09-15 05:27:23,192"}
-{"app": "omf_dashboard", "level": "INFO", "logger": "src_orbis.omf.tools.mqtt_gateway.MqttGateway", "msg": "MqttGateway initialisiert", "timestamp": "2025-09-15 05:27:23,192"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.omf.tools.mqtt_gateway.MqttGateway", "msg": "MqttGateway initialisiert", "timestamp": "2025-09-15 05:27:23,192"}
 {"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_generic", "msg": "🔧 Generic Steering geladen", "timestamp": "2025-09-15 05:27:23,212"}
 {"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_generic", "msg": "✅ MQTT-Client verfügbar, initialisiere Gateway", "timestamp": "2025-09-15 05:27:23,213"}
-{"app": "omf_dashboard", "level": "INFO", "logger": "src_orbis.omf.tools.mqtt_gateway.MqttGateway", "msg": "MqttGateway initialisiert", "timestamp": "2025-09-15 05:27:23,213"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.omf.tools.mqtt_gateway.MqttGateway", "msg": "MqttGateway initialisiert", "timestamp": "2025-09-15 05:27:23,213"}
 {"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_sequence", "msg": "🎯 Sequence Steering geladen", "timestamp": "2025-09-15 05:27:23,218"}
-{"app": "omf_dashboard", "level": "INFO", "logger": "src_orbis.omf.tools.mqtt_gateway.MqttGateway", "msg": "MqttGateway initialisiert", "timestamp": "2025-09-15 05:27:23,373"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.omf.tools.mqtt_gateway.MqttGateway", "msg": "MqttGateway initialisiert", "timestamp": "2025-09-15 05:27:23,373"}
 {"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.module_state_control", "msg": "Initialisiere ModuleStateManager mit MQTT-Client und Gateway", "timestamp": "2025-09-15 05:27:23,373"}
 {"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Filter hinzugefügt: module/v1/ff/SVR4H76530/state", "timestamp": "2025-09-15 05:27:23,373"}
 {"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Filter hinzugefügt: module/v1/ff/SVR3QA2098/state", "timestamp": "2025-09-15 05:27:23,373"}
@@ -178,14 +178,14 @@ Test-Error
 {"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering", "msg": "🎮 Steering geladen", "timestamp": "2025-09-15 05:27:45,227"}
 {"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_factory", "msg": "🏭 Factory Steering geladen", "timestamp": "2025-09-15 05:27:45,228"}
 {"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_factory", "msg": "✅ MQTT-Client verfügbar, initialisiere Gateway", "timestamp": "2025-09-15 05:27:45,228"}
-{"app": "omf_dashboard", "level": "INFO", "logger": "src_orbis.omf.tools.mqtt_gateway.MqttGateway", "msg": "MqttGateway initialisiert", "timestamp": "2025-09-15 05:27:45,228"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.omf.tools.mqtt_gateway.MqttGateway", "msg": "MqttGateway initialisiert", "timestamp": "2025-09-15 05:27:45,228"}
 {"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_factory", "msg": "🏭 Factory Reset angefordert", "timestamp": "2025-09-15 05:27:45,228"}
-{"app": "omf_dashboard", "level": "INFO", "logger": "src_orbis.omf.tools.mqtt_gateway.MqttGateway", "msg": "Publiziere MQTT: ccu/set/reset (QoS=1, retain=False)", "timestamp": "2025-09-15 05:27:45,228"}
-{"app": "omf_dashboard", "level": "INFO", "logger": "src_orbis.omf.tools.mqtt_gateway.MqttGateway", "msg": "✅ MQTT erfolgreich publiziert: ccu/set/reset", "timestamp": "2025-09-15 05:27:45,229"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.omf.tools.mqtt_gateway.MqttGateway", "msg": "Publiziere MQTT: ccu/set/reset (QoS=1, retain=False)", "timestamp": "2025-09-15 05:27:45,228"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.omf.tools.mqtt_gateway.MqttGateway", "msg": "✅ MQTT erfolgreich publiziert: ccu/set/reset", "timestamp": "2025-09-15 05:27:45,229"}
 {"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_factory", "msg": "✅ Factory Reset erfolgreich gesendet", "timestamp": "2025-09-15 05:27:45,229"}
 {"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_generic", "msg": "🔧 Generic Steering geladen", "timestamp": "2025-09-15 05:27:45,235"}
 {"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_generic", "msg": "✅ MQTT-Client verfügbar, initialisiere Gateway", "timestamp": "2025-09-15 05:27:45,235"}
-{"app": "omf_dashboard", "level": "INFO", "logger": "src_orbis.omf.tools.mqtt_gateway.MqttGateway", "msg": "MqttGateway initialisiert", "timestamp": "2025-09-15 05:27:45,235"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.omf.tools.mqtt_gateway.MqttGateway", "msg": "MqttGateway initialisiert", "timestamp": "2025-09-15 05:27:45,235"}
 {"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_sequence", "msg": "🎯 Sequence Steering geladen", "timestamp": "2025-09-15 05:27:45,241"}
 {"app": "omf_dashboard", "level": "INFO", "logger": "omf.tools.registry", "msg": "Registry v1 Manager initialisiert", "timestamp": "2025-09-15 05:40:33,667"}
 {"app": "omf_dashboard", "level": "INFO", "logger": "omf.tools.registry", "msg": "Registry-Root: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1", "timestamp": "2025-09-15 05:40:33,667"}
@@ -292,10 +292,10 @@ Test-Error
 {"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_sequence", "msg": "🎯 Sequence Steering geladen", "timestamp": "2025-09-15 05:42:08,619"}
 {"app": "omf_dashboard", "level": "INFO", "logger": "omf.tools.message_template_manager", "msg": "MessageTemplateManager initialisiert", "timestamp": "2025-09-15 05:42:08,643"}
 {"app": "omf_dashboard", "level": "WARNING", "logger": "omf.tools.message_template_manager", "msg": "⚠️ Using deprecated message_templates - consider migrating to registry/model/v1/templates", "timestamp": "2025-09-15 05:42:08,644"}
-{"app": "omf_dashboard", "level": "INFO", "logger": "omf.tools.message_template_manager", "msg": "Templates-Verzeichnis: /Users/oliver/Projects/src_orbis/omf/config/message_templates", "timestamp": "2025-09-15 05:42:08,644"}
-{"app": "omf_dashboard", "level": "WARNING", "logger": "omf.tools.message_template_manager", "msg": "⚠️ Metadaten-Datei nicht gefunden: /Users/oliver/Projects/src_orbis/omf/config/message_templates/metadata.yml", "timestamp": "2025-09-15 05:42:08,644"}
-{"app": "omf_dashboard", "level": "WARNING", "logger": "omf.tools.message_template_manager", "msg": "⚠️ Kategorien-Datei nicht gefunden: /Users/oliver/Projects/src_orbis/omf/config/message_templates/categories.yml", "timestamp": "2025-09-15 05:42:08,644"}
-{"app": "omf_dashboard", "level": "WARNING", "logger": "omf.tools.message_template_manager", "msg": "⚠️ Templates-Verzeichnis nicht gefunden: /Users/oliver/Projects/src_orbis/omf/config/message_templates/templates", "timestamp": "2025-09-15 05:42:08,644"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.tools.message_template_manager", "msg": "Templates-Verzeichnis: /Users/oliver/Projects/omf/omf/config/message_templates", "timestamp": "2025-09-15 05:42:08,644"}
+{"app": "omf_dashboard", "level": "WARNING", "logger": "omf.tools.message_template_manager", "msg": "⚠️ Metadaten-Datei nicht gefunden: /Users/oliver/Projects/omf/omf/config/message_templates/metadata.yml", "timestamp": "2025-09-15 05:42:08,644"}
+{"app": "omf_dashboard", "level": "WARNING", "logger": "omf.tools.message_template_manager", "msg": "⚠️ Kategorien-Datei nicht gefunden: /Users/oliver/Projects/omf/omf/config/message_templates/categories.yml", "timestamp": "2025-09-15 05:42:08,644"}
+{"app": "omf_dashboard", "level": "WARNING", "logger": "omf.tools.message_template_manager", "msg": "⚠️ Templates-Verzeichnis nicht gefunden: /Users/oliver/Projects/omf/omf/config/message_templates/templates", "timestamp": "2025-09-15 05:42:08,644"}
 {"app": "omf_dashboard", "level": "INFO", "logger": "omf.tools.message_template_manager", "msg": "✅ 0 Templates geladen", "timestamp": "2025-09-15 05:42:08,644"}
 {"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.message_center", "msg": "📡 Message Center geladen", "timestamp": "2025-09-15 05:42:10,341"}
 {"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering", "msg": "🎮 Steering geladen", "timestamp": "2025-09-15 05:42:10,353"}
@@ -4189,9 +4189,9 @@ Test-Error
 {"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 1003 1328", "timestamp": "2025-09-15 09:53:17,708"}
 {"app": "omf_dashboard", "level": "INFO", "logger": "omf.tools.message_template_manager", "msg": "MessageTemplateManager initialisiert", "timestamp": "2025-09-15 09:53:17,717"}
 {"app": "omf_dashboard", "level": "WARNING", "logger": "omf.tools.message_template_manager", "msg": "⚠️ Using deprecated message_templates - consider migrating to registry/model/v1/templates", "timestamp": "2025-09-15 09:53:17,717"}
-{"app": "omf_dashboard", "level": "WARNING", "logger": "omf.tools.message_template_manager", "msg": "⚠️ Metadaten-Datei nicht gefunden: /Users/oliver/Projects/src_orbis/omf/config/message_templates/metadata.yml", "timestamp": "2025-09-15 09:53:17,717"}
-{"app": "omf_dashboard", "level": "WARNING", "logger": "omf.tools.message_template_manager", "msg": "⚠️ Kategorien-Datei nicht gefunden: /Users/oliver/Projects/src_orbis/omf/config/message_templates/categories.yml", "timestamp": "2025-09-15 09:53:17,717"}
-{"app": "omf_dashboard", "level": "WARNING", "logger": "omf.tools.message_template_manager", "msg": "⚠️ Templates-Verzeichnis nicht gefunden: /Users/oliver/Projects/src_orbis/omf/config/message_templates", "timestamp": "2025-09-15 09:53:17,717"}
+{"app": "omf_dashboard", "level": "WARNING", "logger": "omf.tools.message_template_manager", "msg": "⚠️ Metadaten-Datei nicht gefunden: /Users/oliver/Projects/omf/omf/config/message_templates/metadata.yml", "timestamp": "2025-09-15 09:53:17,717"}
+{"app": "omf_dashboard", "level": "WARNING", "logger": "omf.tools.message_template_manager", "msg": "⚠️ Kategorien-Datei nicht gefunden: /Users/oliver/Projects/omf/omf/config/message_templates/categories.yml", "timestamp": "2025-09-15 09:53:17,717"}
+{"app": "omf_dashboard", "level": "WARNING", "logger": "omf.tools.message_template_manager", "msg": "⚠️ Templates-Verzeichnis nicht gefunden: /Users/oliver/Projects/omf/omf/config/message_templates", "timestamp": "2025-09-15 09:53:17,717"}
 {"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.test", "msg": "🔧 Dashboard-Logging initialisiert", "timestamp": "2025-09-15 10:01:18,613"}
 {"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.dashboard.test", "msg": "🐛 Debug-Logging aktiviert", "timestamp": "2025-09-15 10:01:18,613"}
 {"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.dashboard.test", "msg": "🧪 DIREKTER DEBUG-TEST NACH LOGGER-KONFIGURATION", "timestamp": "2025-09-15 10:01:18,614"}
@@ -4414,9 +4414,9 @@ Test-Error
 {"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 1003 1328", "timestamp": "2025-09-15 10:35:07,196"}
 {"app": "omf_dashboard", "level": "INFO", "logger": "omf.tools.message_template_manager", "msg": "MessageTemplateManager initialisiert", "timestamp": "2025-09-15 10:35:07,205"}
 {"app": "omf_dashboard", "level": "WARNING", "logger": "omf.tools.message_template_manager", "msg": "⚠️ Using deprecated message_templates - consider migrating to registry/model/v1/templates", "timestamp": "2025-09-15 10:35:07,205"}
-{"app": "omf_dashboard", "level": "WARNING", "logger": "omf.tools.message_template_manager", "msg": "⚠️ Metadaten-Datei nicht gefunden: /Users/oliver/Projects/src_orbis/omf/config/message_templates/metadata.yml", "timestamp": "2025-09-15 10:35:07,205"}
-{"app": "omf_dashboard", "level": "WARNING", "logger": "omf.tools.message_template_manager", "msg": "⚠️ Kategorien-Datei nicht gefunden: /Users/oliver/Projects/src_orbis/omf/config/message_templates/categories.yml", "timestamp": "2025-09-15 10:35:07,205"}
-{"app": "omf_dashboard", "level": "WARNING", "logger": "omf.tools.message_template_manager", "msg": "⚠️ Templates-Verzeichnis nicht gefunden: /Users/oliver/Projects/src_orbis/omf/config/message_templates", "timestamp": "2025-09-15 10:35:07,205"}
+{"app": "omf_dashboard", "level": "WARNING", "logger": "omf.tools.message_template_manager", "msg": "⚠️ Metadaten-Datei nicht gefunden: /Users/oliver/Projects/omf/omf/config/message_templates/metadata.yml", "timestamp": "2025-09-15 10:35:07,205"}
+{"app": "omf_dashboard", "level": "WARNING", "logger": "omf.tools.message_template_manager", "msg": "⚠️ Kategorien-Datei nicht gefunden: /Users/oliver/Projects/omf/omf/config/message_templates/categories.yml", "timestamp": "2025-09-15 10:35:07,205"}
+{"app": "omf_dashboard", "level": "WARNING", "logger": "omf.tools.message_template_manager", "msg": "⚠️ Templates-Verzeichnis nicht gefunden: /Users/oliver/Projects/omf/omf/config/message_templates", "timestamp": "2025-09-15 10:35:07,205"}
 {"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 10:35:22,660"}
 {"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 41 9", "timestamp": "2025-09-15 10:35:22,660"}
 {"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 62 8192", "timestamp": "2025-09-15 10:35:22,660"}
@@ -4932,9 +4932,9 @@ Test-Error
 {"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 1003 1328", "timestamp": "2025-09-15 16:36:55,762"}
 {"app": "omf_dashboard", "level": "INFO", "logger": "omf.tools.message_template_manager", "msg": "MessageTemplateManager initialisiert", "timestamp": "2025-09-15 16:36:55,768"}
 {"app": "omf_dashboard", "level": "WARNING", "logger": "omf.tools.message_template_manager", "msg": "⚠️ Using deprecated message_templates - consider migrating to registry/model/v1/templates", "timestamp": "2025-09-15 16:36:55,768"}
-{"app": "omf_dashboard", "level": "WARNING", "logger": "omf.tools.message_template_manager", "msg": "⚠️ Metadaten-Datei nicht gefunden: /Users/oliver/Projects/src_orbis/omf/config/message_templates/metadata.yml", "timestamp": "2025-09-15 16:36:55,769"}
-{"app": "omf_dashboard", "level": "WARNING", "logger": "omf.tools.message_template_manager", "msg": "⚠️ Kategorien-Datei nicht gefunden: /Users/oliver/Projects/src_orbis/omf/config/message_templates/categories.yml", "timestamp": "2025-09-15 16:36:55,769"}
-{"app": "omf_dashboard", "level": "WARNING", "logger": "omf.tools.message_template_manager", "msg": "⚠️ Templates-Verzeichnis nicht gefunden: /Users/oliver/Projects/src_orbis/omf/config/message_templates", "timestamp": "2025-09-15 16:36:55,769"}
+{"app": "omf_dashboard", "level": "WARNING", "logger": "omf.tools.message_template_manager", "msg": "⚠️ Metadaten-Datei nicht gefunden: /Users/oliver/Projects/omf/omf/config/message_templates/metadata.yml", "timestamp": "2025-09-15 16:36:55,769"}
+{"app": "omf_dashboard", "level": "WARNING", "logger": "omf.tools.message_template_manager", "msg": "⚠️ Kategorien-Datei nicht gefunden: /Users/oliver/Projects/omf/omf/config/message_templates/categories.yml", "timestamp": "2025-09-15 16:36:55,769"}
+{"app": "omf_dashboard", "level": "WARNING", "logger": "omf.tools.message_template_manager", "msg": "⚠️ Templates-Verzeichnis nicht gefunden: /Users/oliver/Projects/omf/omf/config/message_templates", "timestamp": "2025-09-15 16:36:55,769"}
 {"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IHDR' 16 13", "timestamp": "2025-09-15 16:36:58,857"}
 {"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'pHYs' 41 9", "timestamp": "2025-09-15 16:36:58,858"}
 {"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 62 8192", "timestamp": "2025-09-15 16:36:58,858"}
@@ -5254,6 +5254,6 @@ Test-Error
 {"app": "omf_dashboard", "level": "DEBUG", "logger": "PIL.PngImagePlugin", "msg": "STREAM b'IDAT' 1003 1328", "timestamp": "2025-09-15 17:18:43,044"}
 {"app": "omf_dashboard", "level": "INFO", "logger": "omf.tools.message_template_manager", "msg": "MessageTemplateManager initialisiert", "timestamp": "2025-09-15 17:18:43,055"}
 {"app": "omf_dashboard", "level": "WARNING", "logger": "omf.tools.message_template_manager", "msg": "⚠️ Using deprecated message_templates - consider migrating to registry/model/v1/templates", "timestamp": "2025-09-15 17:18:43,055"}
-{"app": "omf_dashboard", "level": "WARNING", "logger": "omf.tools.message_template_manager", "msg": "⚠️ Metadaten-Datei nicht gefunden: /Users/oliver/Projects/src_orbis/omf/config/message_templates/metadata.yml", "timestamp": "2025-09-15 17:18:43,055"}
-{"app": "omf_dashboard", "level": "WARNING", "logger": "omf.tools.message_template_manager", "msg": "⚠️ Kategorien-Datei nicht gefunden: /Users/oliver/Projects/src_orbis/omf/config/message_templates/categories.yml", "timestamp": "2025-09-15 17:18:43,055"}
-{"app": "omf_dashboard", "level": "WARNING", "logger": "omf.tools.message_template_manager", "msg": "⚠️ Templates-Verzeichnis nicht gefunden: /Users/oliver/Projects/src_orbis/omf/config/message_templates", "timestamp": "2025-09-15 17:18:43,055"}
+{"app": "omf_dashboard", "level": "WARNING", "logger": "omf.tools.message_template_manager", "msg": "⚠️ Metadaten-Datei nicht gefunden: /Users/oliver/Projects/omf/omf/config/message_templates/metadata.yml", "timestamp": "2025-09-15 17:18:43,055"}
+{"app": "omf_dashboard", "level": "WARNING", "logger": "omf.tools.message_template_manager", "msg": "⚠️ Kategorien-Datei nicht gefunden: /Users/oliver/Projects/omf/omf/config/message_templates/categories.yml", "timestamp": "2025-09-15 17:18:43,055"}
+{"app": "omf_dashboard", "level": "WARNING", "logger": "omf.tools.message_template_manager", "msg": "⚠️ Templates-Verzeichnis nicht gefunden: /Users/oliver/Projects/omf/omf/config/message_templates", "timestamp": "2025-09-15 17:18:43,055"}
