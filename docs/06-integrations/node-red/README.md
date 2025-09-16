@@ -5,20 +5,35 @@ This section contains comprehensive documentation for the Node-RED flows that po
 ## 🔗 Integration Management
 
 - **[Node-RED Integration](../integrations/node_red/README.md)** - Backup, Restore und Management
-- **[Integration Guide](./node-red.md)** - Detaillierte Setup-Anleitung
+- **[Integration Guide](./integration-guide.md)** - Detaillierte Setup-Anleitung
 
 ## 📋 Documentation Index
 
-### [Flows Overview](./flows-overview.md)
+### [Flows](./flows.md)
 - Tab structure and organization
 - Module-specific flows (MILL, DRILL, OVEN, AIQS, HBW, DPS)
 - Flow grouping and organization
+
+### [Flows Detailed](./flows-detailed.md)
+- Detailed flow analysis and implementation
+- Node-RED flow patterns and best practices
+- State diagrams and pseudocode
+
+### [OPC UA Nodes](./opc-ua-nodes.md)
+- OPC UA NodeIds and state transitions
+- Connection states and error handling
+- Module-specific OPC UA implementations
 
 ### [State Machine](./state-machine.md)
 - VDA 5050 compliant state transitions
 - Action states: PENDING → RUNNING → FINISHED/FAILED
 - Connection states: ONLINE/OFFLINE/CONNECTIONBROKEN
 - Error handling and recovery
+
+### [Integration Guide](./integration-guide.md)
+- Backup and restore procedures
+- SSH and Admin API management
+- Troubleshooting and maintenance
 
 ## 🔧 Quick Reference
 
@@ -57,9 +72,11 @@ integrations/node_red/          # Backup/Restore Management
 docs/06-integrations/     # Dokumentation
 ├── node-red/                   # Node-RED spezifische Docs
 │   ├── README.md              # Diese Datei
-│   ├── flows-overview.md      # Flow-Übersicht
+│   ├── flows.md               # Flow-Übersicht
+│   ├── flows-detailed.md      # Detaillierte Flow-Analyse
+│   ├── opc-ua-nodes.md        # OPC UA NodeIds und States
 │   ├── state-machine.md       # State Machine Dokumentation
-│   └── node-red.md           # Integration Guide
+│   └── integration-guide.md   # Integration Guide
 ```
 
 ---
