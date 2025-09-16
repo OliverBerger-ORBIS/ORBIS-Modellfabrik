@@ -1,3 +1,4 @@
+from omf.tools.logging_config import get_logger
 """
 Replay Station Komponente
 Funktionalität wie alte Replay Station - MQTT-Nachrichten für Tests senden
@@ -18,7 +19,7 @@ from omf.dashboard.utils.ui_refresh import RerunController
 
 # Logging konfigurieren - Verzeichnis sicherstellen
 # Log-Verzeichnis erstellen falls nicht vorhanden
-log_dir = Path("data/logs")
+log_dir = Path("logs")
 log_dir.mkdir(parents=True, exist_ok=True)
 
 logging.basicConfig(
@@ -26,7 +27,7 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[logging.FileHandler(log_dir / 'session_manager.log'), logging.StreamHandler()],
 )
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 def show_replay_station():

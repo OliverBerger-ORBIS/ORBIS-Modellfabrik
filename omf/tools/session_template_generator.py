@@ -1,3 +1,4 @@
+from omf.tools.logging_config import get_logger
 #!/usr/bin/env python3
 """
 Session Template Generator - Generiert Templates aus Session-Analyse
@@ -12,7 +13,7 @@ from typing import Any, Dict, List, Optional, Set
 
 import yaml
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 class SessionTemplateGenerator:

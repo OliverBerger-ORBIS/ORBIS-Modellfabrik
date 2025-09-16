@@ -20,7 +20,7 @@ class SessionManagerLogger:
     - Konsistente Formatierung
     """
 
-    def __init__(self, session_name: str, log_dir: str = "data/logs"):
+    def __init__(self, session_name: str, log_dir: str = "logs"):
         """
         Args:
             session_name: Name der Session (z.B. "session_analysis", "replay_station")
@@ -91,7 +91,7 @@ class SessionManagerLogger:
                 self.logger.info(f"🗑️ Alte Log-Datei gelöscht: {log_file.name}")
 
 
-def get_session_logger(session_name: str, log_dir: str = "data/logs") -> SessionManagerLogger:
+def get_session_logger(session_name: str, log_dir: str = "logs") -> SessionManagerLogger:
     """
     Factory-Funktion für SessionManagerLogger.
 

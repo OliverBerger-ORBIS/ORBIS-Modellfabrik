@@ -1,3 +1,4 @@
+from omf.tools.logging_config import get_logger
 """
 Graph Analyzer - Message Chain Analysis and Graph Visualization
 
@@ -14,7 +15,7 @@ from typing import Any, Dict, List, Optional
 
 import networkx as nx
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 @dataclass

@@ -1,3 +1,4 @@
+from omf.tools.logging_config import get_logger
 #!/usr/bin/env python3
 """
 Secure Configuration Loader für Orbis Modellfabrik
@@ -12,7 +13,7 @@ import yaml
 
 # Logging Setup
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 class SecureConfigLoader:

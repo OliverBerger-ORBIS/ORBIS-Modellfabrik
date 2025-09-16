@@ -1,3 +1,4 @@
+from omf.tools.logging_config import get_logger
 """
 Template Analyse Komponente
 Analyse aller APS-Sessions mit Fokus auf bestimmte Topics
@@ -16,7 +17,7 @@ from omf.analysis_tools.template_analyzers.module_template_analyzer import Modul
 from omf.analysis_tools.template_analyzers.nodered_template_analyzer import NodeRedTemplateAnalyzer
 from omf.analysis_tools.template_analyzers.txt_template_analyzer import TXTTemplateAnalyzer
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 def show_template_analysis():

@@ -1,3 +1,4 @@
+from omf.tools.logging_config import get_logger
 """
 Settings Manager für Session Manager
 Zentrale Verwaltung aller Einstellungen für die verschiedenen Tabs
@@ -8,7 +9,7 @@ import logging
 from pathlib import Path
 from typing import Any, Dict, List
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 class SettingsManager:

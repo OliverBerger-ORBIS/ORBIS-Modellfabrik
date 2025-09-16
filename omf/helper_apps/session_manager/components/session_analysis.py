@@ -1,3 +1,4 @@
+from omf.tools.logging_config import get_logger
 """
 Session Analysis - Main controller for session analysis functionality
 Refactored version with separated components
@@ -13,7 +14,7 @@ from omf.helper_apps.session_manager.components.settings_manager import Settings
 from omf.helper_apps.session_manager.components.timeline_visualizer import TimelineVisualizer
 from omf.helper_apps.session_manager.components.ui_components import SessionAnalysisUI
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 def show_session_analysis():

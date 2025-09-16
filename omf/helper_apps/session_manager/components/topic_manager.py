@@ -1,3 +1,4 @@
+from omf.tools.logging_config import get_logger
 """
 Topic Filter Manager - Handles topic filtering and categorization
 """
@@ -7,7 +8,7 @@ from typing import Dict, List
 
 from omf.tools.topic_manager import OmfTopicManager
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 class TopicFilterManager:

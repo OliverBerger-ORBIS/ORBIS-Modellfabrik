@@ -41,7 +41,7 @@ def _init_logging_once():
     root, listener = configure_logging(
         app_name="session_manager",
         level=level,
-        log_dir="data/logs",
+        log_dir="logs",
         json_file="session_manager.jsonl",
         console_pretty=True,
     )
@@ -82,7 +82,7 @@ def show_logging_settings(logger):
         request_refresh()
 
     # Log-Datei Info
-    log_file = Path("data/logs/session_manager.jsonl")
+    log_file = Path("logs/session_manager.jsonl")
     if log_file.exists():
         file_size = log_file.stat().st_size
         file_size_mb = file_size / (1024 * 1024)

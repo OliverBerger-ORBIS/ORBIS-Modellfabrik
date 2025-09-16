@@ -1,3 +1,4 @@
+from omf.tools.logging_config import get_logger
 """
 Session Analyzer - Core functionality for session data analysis
 """
@@ -12,7 +13,7 @@ import streamlit as st
 
 from omf.tools.topic_manager import OmfTopicManager
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 class SessionAnalyzer:

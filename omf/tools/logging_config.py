@@ -27,7 +27,7 @@ except ImportError:
 def configure_logging(
     app_name: str = "omf_dashboard",
     level: int = logging.INFO,
-    log_dir: str | Path = "data/logs",
+    log_dir: str | Path = "logs",
     json_file: str = "app.jsonl",
     console_pretty: bool = True,
 ) -> tuple[logging.Logger, QueueListener]:
@@ -169,7 +169,7 @@ def init_logging_once(session_state: dict) -> tuple[logging.Logger, QueueListene
 
     # Logging konfigurieren
     root, listener = configure_logging(
-        app_name="omf_dashboard", level=logging.WARNING, log_dir="data/logs", console_pretty=True
+        app_name="omf_dashboard", level=logging.WARNING, log_dir="logs", console_pretty=True
     )
 
     # Structlog konfigurieren (optional)

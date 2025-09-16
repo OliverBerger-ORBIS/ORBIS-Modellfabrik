@@ -1,3 +1,4 @@
+from omf.tools.logging_config import get_logger
 """
 Graph Visualizer - Interactive Graph Visualization for Message Chains
 
@@ -17,7 +18,7 @@ import streamlit as st
 
 from .graph_analyzer import GraphAnalyzer, MessageNode
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 class GraphVisualizer:
