@@ -1,5 +1,7 @@
 # Agile Production Simulation
 
+> ⚠️ **VERIFIKATION AUSSTEHEND**: Diese Dokumentation basiert auf einer Hypothese und wurde noch nicht verifiziert. Die beschriebenen Systemkomponenten und Architektur müssen noch getestet und validiert werden.
+
 Effizienz, Agilität und Flexibilität sind beim Aufbau aktueller und zukünftiger Fabriken unverzichtbar. 
 fischertechnik stellt nun ein Trainingsmodell solch einer flexiblen und modularen Fabrik vor – die Agile Production Simulation. Die Fabrik besteht aus einzelnen Modulen wie Warenein- und Ausgang, Hochregallager, Frässtation, Bohrstation, Qualitätssicherung mit KI. Ein fahrerloses Transportsystem transportiert Werkstücke flexibel zwischen den einzelnen Stationen und gewährleistet einen flexiblen Produktionsprozess, der an die Kundenwünsche angepasst werden kann. Die Fabrik kann um einen Brennofen, weitere Bohr- oder Frässtationen und auch um zusätzliche fahrerlose Transportsysteme erweitert werden. 
 Jedes Werkstück enthält einen NFC-Tag, auf den Produktionsdaten geschrieben werden (Farbe des Werkstücks, Zeitpunkt Anlieferung, Zeitpunkt Ein- und Auslagerung, durchgeführte Produktionsschritte, Durchführung Qualitätsprüfung). Die verschieden farbigen Werkstücke (weiß, rot, blau) durchlaufen verschiedene Produktionsprozesse und durchlaufen somit unterschiedliche Stationen in der Fabrik und haben unterschiedliche Durchlaufzeiten. 

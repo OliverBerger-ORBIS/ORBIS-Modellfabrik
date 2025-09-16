@@ -1,5 +1,7 @@
 # Node-Red Flows der Fischertechnik APS
 
+> ⚠️ **VERIFIKATION AUSSTEHEND**: Diese Dokumentation basiert auf einer Hypothese und wurde noch nicht verifiziert. Die beschriebenen Node-RED-Flows und Zustandsdiagramme müssen noch getestet und validiert werden.
+
 
 
 🧱 1. Struktur der Node-RED Flows 
@@ -26,30 +28,17 @@ MQTT-Kommunikation
 
 🔄 2. Subflows (Wiederverwendbare Logik) 
 
-'TODO Tabelle 2-Spalten
-
-Subflow 
-
-Funktion 
-
-handle-actions 
-Verarbeitung von Aufträgen und InstantActions 
-load-factsheet 
-Lädt Factsheets von der Festplatte 
-get-opcua-address 
-Holt OPC UA-Adresse aus Umgebungsvariablen 
-update-rack-position 
-Aktualisiert Positionen im Rack 
-update-calibration 
-Verarbeitet Kalibrierwerte 
-vda-status-finished 
-Meldet abgeschlossene Aktionen 
-vda-status-running 
-Meldet laufende Aktionen 
-check-nodeValue-is-true 
-Prüft OPC UA-Boolesche Werte 
-check-opcua-connection 
-Überwacht Verbindungsstatus 
+| Subflow | Funktion |
+|---------|----------|
+| handle-actions | Verarbeitung von Aufträgen und InstantActions |
+| load-factsheet | Lädt Factsheets von der Festplatte |
+| get-opcua-address | Holt OPC UA-Adresse aus Umgebungsvariablen |
+| update-rack-position | Aktualisiert Positionen im Rack |
+| update-calibration | Verarbeitet Kalibrierwerte |
+| vda-status-finished | Meldet abgeschlossene Aktionen |
+| vda-status-running | Meldet laufende Aktionen |
+| check-nodeValue-is-true | Prüft OPC UA-Boolesche Werte |
+| check-opcua-connection | Überwacht Verbindungsstatus |
 
 📡 3. MQTT-Kommunikation 
 

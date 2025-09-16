@@ -1,5 +1,7 @@
 # OMF (ORBIS Modellfabrik) Dashboard Architecture
 
+> ⚠️ **VERIFIKATION AUSSTEHEND**: Diese Dokumentation basiert auf einer Hypothese und wurde noch nicht verifiziert. Die beschriebenen Architektur-Patterns und Implementierungen müssen noch getestet und validiert werden.
+
 ## Overview
 
 Das OMF Dashboard ist eine moderne, modulare Web-Anwendung zur Steuerung und Überwachung der ORBIS Modellfabrik. Es basiert auf Streamlit und implementiert die **Per-Topic-Buffer Architektur** mit **MQTT-Singleton Pattern** für optimale Performance und Einfachheit.
@@ -73,7 +75,7 @@ OMF Dashboard
 
 ### 1. Dashboard Frontend
 
-**Main Entry Point:** `omf/omf/dashboard/omf_dashboard.py`
+**Main Entry Point:** `omf/dashboard/omf_dashboard.py`
 
 #### Tab Structure:
 - **Übersicht:** Modul-Status (Per-Topic-Buffer), Lagerbestand, Kundenaufträge, Rohmaterial-Bestellungen
@@ -85,7 +87,7 @@ OMF Dashboard
 ### 2. MQTT-Singleton Factory ✨ NEW
 
 #### OMF MQTT Factory
-**File:** `omf/omf/tools/omf_mqtt_factory.py`
+**File:** `omf/tools/omf_mqtt_factory.py`
 
 **Purpose:** Verwaltet MQTT-Client-Instanzen nach Singleton-Pattern
 
@@ -104,7 +106,7 @@ def ensure_dashboard_client(environment: str, config: dict) -> OMFMqttClient:
 ```
 
 #### OMF MQTT Client
-**File:** `omf/omf/tools/omf_mqtt_client.py`
+**File:** `omf/tools/omf_mqtt_client.py`
 
 **Purpose:** Per-Topic-Buffer MQTT-Client
 
@@ -133,7 +135,7 @@ class OMFMqttClient:
 ### 3. Hybrid Publishing Architecture ✨ NEW
 
 #### Message Gateway
-**File:** `omf/omf/tools/message_gateway.py`
+**File:** `omf/tools/message_gateway.py`
 
 **Purpose:** Einheitliche API für MQTT-Publishing
 

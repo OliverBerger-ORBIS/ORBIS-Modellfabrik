@@ -1,4 +1,6 @@
 # FTS Steuerung in Node-Red
+
+> ⚠️ **VERIFIKATION AUSSTEHEND**: Diese Dokumentation basiert auf einer Hypothese und wurde noch nicht verifiziert. Die beschriebenen FTS-Steuerungslogik und VDA 5050-Implementierung müssen noch getestet und validiert werden.
 Die Steuerung des fahrerlosen Transportsystems (FTS) bzw. Automated Guided Vehicle (AGV) nach dem VDA 5050 Standard ist in der Datei implizit enthalten, insbesondere durch die Verarbeitung von Aufträgen (Orders) und deren Weiterleitung über OPC UA Nodes. Hier sind die wesentlichen Punkte zusammengefasst: 
 
  

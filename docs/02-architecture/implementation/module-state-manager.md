@@ -1,4 +1,6 @@
-t aufnehmn# ModuleStateManager - Implementierungs-Dokumentation
+# ModuleStateManager - Implementierungs-Dokumentation
+
+> ⚠️ **VERIFIKATION AUSSTEHEND**: Diese Dokumentation basiert auf einer Hypothese und wurde noch nicht verifiziert. Die beschriebenen Implementierungen und Features müssen noch getestet und validiert werden.
 
 ## 📋 Übersicht
 
@@ -10,26 +12,13 @@ t aufnehmn# ModuleStateManager - Implementierungs-Dokumentation
 
 ### **Kern-Komponenten:**
 
-#### **1. ModuleStateManager (Singleton)**
-- **Datei:** `omf/omf/tools/module_state_manager.py`
-- **Funktion:** Zentrale Verwaltung von Modul-Status und Sequenz-Ausführung
-- **Pattern:** Singleton mit Thread-sicherem Monitoring
-
-#### **2. ModuleState (Enum)**
-- **Status:** IDLE, PICKBUSY, WAITING_AFTER_PICK, MILLBUSY, DRILLBUSY, CHECKBUSY, etc.
-- **Basis:** Node-RED Flows Analyse (4567 Zeilen Order Handling Code)
-
-#### **3. CommandType (Enum)**
-- **Commands:** PICK, DROP, MILL, DRILL, CHECK_QUALITY, STORE, etc.
-- **Basis:** `module_config.yml` Konfiguration
-
-#### **4. ModuleInfo (Dataclass)**
-- **Daten:** module_id, module_name, module_type, serial_number, current_state, last_update
-- **Verwaltung:** Status-Tracking für alle Module
-
-#### **5. ModuleSequence (Dataclass)**
-- **Funktion:** Sequenz-Definition mit Steps, Status, Order-ID
-- **Beispiel:** PICK → MILL → DROP
+| Komponente | Datei | Funktion | Details |
+|------------|-------|----------|---------|
+| **ModuleStateManager** | `omf/tools/module_state_manager.py` | Zentrale Verwaltung von Modul-Status und Sequenz-Ausführung | Singleton mit Thread-sicherem Monitoring |
+| **ModuleState** | Enum | Status-Definitionen | IDLE, PICKBUSY, WAITING_AFTER_PICK, MILLBUSY, DRILLBUSY, CHECKBUSY, etc. |
+| **CommandType** | Enum | Befehl-Definitionen | PICK, DROP, MILL, DRILL, CHECK_QUALITY, STORE, etc. |
+| **ModuleInfo** | Dataclass | Modul-Informationen | module_id, module_name, module_type, serial_number, current_state, last_update |
+| **ModuleSequence** | Dataclass | Sequenz-Definition | Steps, Status, Order-ID (Beispiel: PICK → MILL → DROP) |
 
 ## 🔧 Implementierte Features
 
@@ -93,7 +82,7 @@ if self._is_module_ready_for_command(module, CommandType.PICK):
 ## 📊 Dashboard-Integration
 
 ### **Neue UI-Komponente:**
-- **Datei:** `omf/omf/dashboard/components/module_state_control.py`
+- **Datei:** `omf/dashboard/components/module_state_control.py`
 - **Tab:** "Module Control" im OMF Dashboard
 - **Features:**
   - 📊 Modul-Status-Übersicht
@@ -142,13 +131,13 @@ if self._is_module_ready_for_command(module, CommandType.PICK):
 ## 📁 Dateien
 
 ### **Implementierung:**
-- `omf/omf/tools/module_state_manager.py` - Kern-Implementierung
-- `omf/omf/dashboard/components/module_state_control.py` - UI-Komponente
+- `omf/tools/module_state_manager.py` - Kern-Implementierung
+- `omf/dashboard/components/module_state_control.py` - UI-Komponente
 - `tests/test_omf/test_module_state_manager.py` - Tests
 
 ### **Integration:**
-- `omf/omf/dashboard/omf_dashboard.py` - Dashboard-Integration
-- `omf/omf/dashboard/components/README.md` - Dokumentation
+- `omf/dashboard/omf_dashboard.py` - Dashboard-Integration
+- `omf/dashboard/components/README.md` - Dokumentation
 
 ### **Dokumentation:**
 - `docs/analysis/node-red-replacement-strategy.md` - Strategie

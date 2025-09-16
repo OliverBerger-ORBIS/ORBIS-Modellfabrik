@@ -1,5 +1,6 @@
-Diese Doku ist noch icht bestätigt. sie enthält Annahmen, wie die Steuerung implementiert ist
 # Zentrale Steuerung über Raspberry Pi
+
+> ⚠️ **VERIFIKATION AUSSTEHEND**: Diese Dokumentation basiert auf einer Hypothese und wurde noch nicht verifiziert. Die beschriebenen Raspberry Pi-Steuerungskonzepte und Node-RED-Implementierungen müssen noch getestet und validiert werden.
 Die Steuerung einer Produktionsanlage über einen Raspberry Pi, auf dem ein Node-RED-Flow in JavaScript läuft, ist ein modernes und flexibles Konzept für die industrielle Automatisierung. Hier ist ein Überblick, wie das typischerweise funktioniert:  
 
 ## 🔧 1. Hardware-Grundlage: Raspberry Pi 

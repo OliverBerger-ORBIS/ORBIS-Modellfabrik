@@ -1,4 +1,6 @@
-# Einbindung von Modbus, MQTT in Node-Red 
+# Einbindung von Modbus, MQTT in Node-Red
+
+> ⚠️ **VERIFIKATION AUSSTEHEND**: Diese Dokumentation basiert auf einer Hypothese und wurde noch nicht verifiziert. Die beschriebenen Node-RED-Integrationen und Kommunikationsprotokolle müssen noch getestet und validiert werden. 
 
  
 

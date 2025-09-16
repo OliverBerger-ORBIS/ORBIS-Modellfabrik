@@ -1,97 +1,19 @@
-OPC UA NodeIds 
+# OPC UA NodeIds
+
+> ⚠️ **VERIFIKATION AUSSTEHEND**: Diese Dokumentation basiert auf einer Hypothese und wurde noch nicht verifiziert. Die beschriebenen OPC UA NodeIds und Zustandsübergänge müssen noch getestet und validiert werden.
 
 Hier ist eine Tabelle mit den relevanten OPC UA NodeIds, die in den vda_status_finished-Funktionen verwendet werden, zusammen mit dem zugehörigen Maschinenzustand und der Bedeutung: 
 
-TODO Tabelle 5 Spalten
-NodeId 
-
-Aktion 
-
-Zustand bei Empfang 
-
-Ergebnisstatus 
-
-Beschreibung 
-
-ns=4;i=8 
-
-PICK 
-
-PICKBUSY 
-
-FINISHED 
-
-PICK erfolgreich abgeschlossen 
-
-ns=4;i=15 
-
-PICK 
-
-PICKBUSY 
-
-FAILED 
-
-PICK fehlgeschlagen 
-
-ns=4;i=13 
-
-MILL 
-
-MILLBUSY 
-
-FINISHED 
-
-MILL erfolgreich abgeschlossen 
-
-ns=4;i=14 
-
-MILL 
-
-MILLBUSY 
-
-FAILED 
-
-MILL fehlgeschlagen 
-
-ns=4;i=9 
-
-DROP 
-
-DROPBUSY 
-
-FINISHED 
-
-DROP erfolgreich abgeschlossen 
-
-ns=4;i=12 
-
-DROP 
-
-DROPBUSY 
-
-FAILED 
-
-DROP fehlgeschlagen 
-
-ns=4;i=3 
-
-FIRE 
-
-FIREBUSY 
-
-FINISHED 
-
-FIRE erfolgreich abgeschlossen 
-
-ns=4;i=10 
-
-FIRE 
-
-FIREBUSY 
-
-FAILED 
-
-FIRE fehlgeschlagen 
+| NodeId | Aktion | Zustand bei Empfang | Ergebnisstatus | Beschreibung |
+|--------|--------|---------------------|----------------|--------------|
+| ns=4;i=8 | PICK | PICKBUSY | FINISHED | PICK erfolgreich abgeschlossen |
+| ns=4;i=15 | PICK | PICKBUSY | FAILED | PICK fehlgeschlagen |
+| ns=4;i=13 | MILL | MILLBUSY | FINISHED | MILL erfolgreich abgeschlossen |
+| ns=4;i=14 | MILL | MILLBUSY | FAILED | MILL fehlgeschlagen |
+| ns=4;i=9 | DROP | DROPBUSY | FINISHED | DROP erfolgreich abgeschlossen |
+| ns=4;i=12 | DROP | DROPBUSY | FAILED | DROP fehlgeschlagen |
+| ns=4;i=3 | FIRE | FIREBUSY | FINISHED | FIRE erfolgreich abgeschlossen |
+| ns=4;i=10 | FIRE | FIREBUSY | FAILED | FIRE fehlgeschlagen | 
 
 ---------------------
 
@@ -193,15 +115,17 @@ graph TD
 
 
 ### UA State Transition Logic
-Start State	Condition (OPC UA Node)	Result	End State	MQTT Topic
-PICKBUSY	ns=4;i=8	FINISHED	WAITING_AFTER_PICK	/state
-PICKBUSY	ns=4;i=15	FAILED	WAITING_AFTER_PICK	/state
-MILLBUSY	ns=4;i=13	FINISHED	WAITING_AFTER_MILL	/state
-MILLBUSY	ns=4;i=14	FAILED	WAITING_AFTER_MILL	/state
-FIREBUSY	ns=4;i=3	FINISHED	WAITING_AFTER_FIRE	/state
-FIREBUSY	ns=4;i=10	FAILED	WAITING_AFTER_FIRE	/state
-DROPBUSY	ns=4;i=9	FINISHED	WAITING_AFTER_DROP	/state
-DROPBUSY	ns=4;i=12	FAILED	WAITING_AFTER_DROP	/state
+
+| Start State | Condition (OPC UA Node) | Result | End State | MQTT Topic |
+|-------------|-------------------------|--------|-----------|------------|
+| PICKBUSY | ns=4;i=8 | FINISHED | WAITING_AFTER_PICK | /state |
+| PICKBUSY | ns=4;i=15 | FAILED | WAITING_AFTER_PICK | /state |
+| MILLBUSY | ns=4;i=13 | FINISHED | WAITING_AFTER_MILL | /state |
+| MILLBUSY | ns=4;i=14 | FAILED | WAITING_AFTER_MILL | /state |
+| FIREBUSY | ns=4;i=3 | FINISHED | WAITING_AFTER_FIRE | /state |
+| FIREBUSY | ns=4;i=10 | FAILED | WAITING_AFTER_FIRE | /state |
+| DROPBUSY | ns=4;i=9 | FINISHED | WAITING_AFTER_DROP | /state |
+| DROPBUSY | ns=4;i=12 | FAILED | WAITING_AFTER_DROP | /state |
 
 ### Statusübergänge für actionState
 Die Datei beschreibt eine Reihe von Statusübergängen für actionState innerhalb eines automatisierten Prozesses, der mit OPC UA (Open Platform Communications Unified Architecture) kommuniziert. Hier ist eine strukturierte Übersicht der wichtigsten Übergänge und Bedingungen: 
