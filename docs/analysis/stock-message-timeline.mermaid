@@ -1,0 +1,26 @@
+gantt
+    title Stock Management Message Timeline
+    dateFormat X
+    axisFormat %H:%M:%S
+    
+    section HBW Module
+    Stock Detection    :active, hbw1, 0, 100
+    Stock Update Send  :active, hbw2, 100, 150
+    
+    section TXT Controller
+    Factory Input      :active, txt1, 100, 150
+    Aggregation        :active, txt2, 150, 200
+    
+    section CCU
+    Central State      :active, ccu1, 200, 250
+    State Distribution :active, ccu2, 250, 300
+    
+    section Applications
+    Order Validation   :active, app1, 300, 350
+    Dashboard Update   :active, app2, 300, 350
+    FTS Planning       :active, app3, 300, 350
+    
+    section Stock Changes
+    RAW State          :done, stock1, 0, 400
+    RESERVED State     :active, stock2, 400, 500
+    PROCESSING State   :active, stock3, 500, 600

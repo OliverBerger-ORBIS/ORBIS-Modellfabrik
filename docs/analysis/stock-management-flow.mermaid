@@ -1,0 +1,47 @@
+graph TD
+    %% Physical Layer
+    subgraph "Physical Layer"
+        HBW["🏭 HBW Module<br/>SVR3QA0022<br/>Physical Storage"]
+        SENSORS["📡 Sensors<br/>Workpiece Detection<br/>Position Tracking"]
+    end
+    
+    %% TXT Controller Layer
+    subgraph "TXT Controller Layer"
+        TXT["🖥️ TXT Controller<br/>/j1/txt/1<br/>Factory Aggregation"]
+    end
+    
+    %% CCU Layer
+    subgraph "CCU Layer"
+        CCU["🎯 CCU<br/>Central Control Unit<br/>State Management"]
+    end
+    
+    %% Application Layer
+    subgraph "Application Layer"
+        ORDER_MGR["📋 Order Manager<br/>Production Orders<br/>Stock Validation"]
+        DASHBOARD["📊 Dashboard<br/>Stock Visualization<br/>Real-time Monitoring"]
+        FTS["🚛 FTS<br/>Fleet Management<br/>Navigation Planning"]
+    end
+    
+    %% Message Flow
+    SENSORS -->|"Stock Changes<br/>Position Updates"| HBW
+    HBW -->|"Stock Data<br/>/j1/txt/1/f/i/stock"| TXT
+    TXT -->|"Aggregated Stock<br/>Factory Input"| CCU
+    CCU -->|"Central State<br/>ccu/state/stock"| ORDER_MGR
+    CCU -->|"Central State<br/>ccu/state/stock"| DASHBOARD
+    CCU -->|"Central State<br/>ccu/state/stock"| FTS
+    
+    %% Stock State Changes
+    ORDER_MGR -->|"Order Request<br/>Stock Validation"| CCU
+    CCU -->|"Stock Update<br/>RAW → RESERVED"| TXT
+    TXT -->|"Stock Update<br/>State Change"| HBW
+    
+    %% Styling
+    classDef physical fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef controller fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef ccu fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
+    classDef application fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    
+    class HBW,SENSORS physical
+    class TXT controller
+    class CCU ccu
+    class ORDER_MGR,DASHBOARD,FTS application

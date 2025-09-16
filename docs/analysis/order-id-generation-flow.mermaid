@@ -1,0 +1,39 @@
+graph TD
+    %% Time Flow: Top to Bottom
+    subgraph "Zeitachse: Von oben nach unten"
+        direction TB
+        
+        %% Step 1: TXT Controller initiates
+        TXT_INIT["🖥️ TXT Controller<br/>/j1/txt/1/f/o/order<br/>Zeit: 09:16:14.336Z<br/>Payload: {type: 'RED', ts: '...'}<br/>❌ KEINE orderId"]
+        
+        %% Step 2: CCU processes
+        CCU_PROC["🎯 CCU<br/>ccu/order/request<br/>Zeit: 09:16:14.336Z<br/>Payload: {type: 'RED', orderType: 'PRODUCTION'}<br/>❌ KEINE orderId"]
+        
+        %% Step 3: FTS generates orderId
+        FTS_GEN["🚛 FTS<br/>fts/v1/ff/5iO4/order<br/>Zeit: 09:16:14.654Z<br/>Payload: {orderId: '8ae07a6e-d058-48de-9b4d-8d0176622abc'}<br/>✅ orderId GENERIERT"]
+        
+        %% Step 4: CCU confirms
+        CCU_CONF["🎯 CCU<br/>ccu/order/active<br/>Zeit: 09:16:14.680Z<br/>Payload: {orderId: '8ae07a6e-d058-48de-9b4d-8d0176622abc'}<br/>✅ orderId BESTÄTIGT"]
+        
+        %% Step 5: TXT Controller receives
+        TXT_RECV["🖥️ TXT Controller<br/>/j1/txt/1/f/i/order<br/>Zeit: 09:16:14.679Z<br/>Payload: {type: 'RED', state: 'IN_PROCESS'}<br/>✅ orderId EMPFANGEN"]
+    end
+    
+    %% Message Flow
+    TXT_INIT -->|"Order Request<br/>OHNE orderId"| CCU_PROC
+    CCU_PROC -->|"Order Request<br/>OHNE orderId"| FTS_GEN
+    FTS_GEN -->|"Order Response<br/>MIT orderId"| CCU_CONF
+    CCU_CONF -->|"Order Confirmation<br/>MIT orderId"| TXT_RECV
+    
+    %% Styling
+    classDef txtController fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef ccu fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef fts fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
+    classDef noOrderId fill:#ffebee,stroke:#c62828,stroke-width:2px
+    classDef withOrderId fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px
+    
+    class TXT_INIT,TXT_RECV txtController
+    class CCU_PROC,CCU_CONF ccu
+    class FTS_GEN fts
+    class TXT_INIT,CCU_PROC noOrderId
+    class FTS_GEN,CCU_CONF,TXT_RECV withOrderId

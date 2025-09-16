@@ -1,0 +1,51 @@
+metadata:
+  date: "2025-01-15"
+  author: "Production Order Analysis"
+  source: "analysis"
+  topic: "module/v1/ff/*/connection, module/v1/ff/*/state, module/v1/ff/*/order"
+  related_template: "module.connection, module.state, module.order"
+  status: "open"
+
+observation:
+  description: "Template direction mapping does not reflect component perspective for CCU takeover analysis"
+  payload_example:
+    # Beispiel: HBW connection message
+    topic: "module/v1/ff/SVR3QA0022/connection"
+    payload:
+      serialNumber: "SVR3QA0022"
+      connected: true
+      timestamp: "2025-08-19T09:16:14.336Z"
+  context: "Analysis for CCU (Node-RED) replacement requires understanding which topics CCU subscribes to vs. publishes"
+
+analysis:
+  initial_assessment: "Current template_direction in registry/model/v0/topics/module.yml uses 'bidirectional' which doesn't reflect actual component perspective"
+  open_questions:
+    - "Should template_direction reflect the component perspective (e.g., from module's view: connection=outbound, order=inbound)?"
+    - "How should CCU takeover analysis handle bidirectional topics?"
+    - "Is there a separate field needed for component-specific direction mapping?"
+  technical_details: |
+    From CCU perspective:
+    - module/v1/ff/*/connection: INBOUND (CCU receives connection status from modules)
+    - module/v1/ff/*/state: INBOUND (CCU receives state updates from modules)  
+    - module/v1/ff/*/order: OUTBOUND (CCU sends orders to modules)
+    - module/v1/ff/*/factsheet: INBOUND (CCU receives module configuration)
+    
+    From Module perspective:
+    - module/v1/ff/*/connection: OUTBOUND (Module publishes connection status)
+    - module/v1/ff/*/state: OUTBOUND (Module publishes state updates)
+    - module/v1/ff/*/order: INBOUND (Module receives orders)
+    - module/v1/ff/*/factsheet: OUTBOUND (Module publishes configuration)
+
+proposed_action:
+  - "Add component_perspective field to topic definitions"
+  - "Create CCU-specific topic mapping documentation"
+  - "Update analysis tools to handle component perspective"
+
+tags:
+  - "template-direction"
+  - "ccu-analysis"
+  - "component-perspective"
+  - "module-topics"
+  - "registry-enhancement"
+
+priority: "medium"

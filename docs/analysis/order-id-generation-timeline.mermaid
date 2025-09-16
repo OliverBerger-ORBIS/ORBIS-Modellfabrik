@@ -1,0 +1,19 @@
+gantt
+    title Order ID Generation Timeline
+    dateFormat X
+    axisFormat %H:%M:%S
+    
+    section TXT Controller
+    Order Initiation    :active, txt1, 0, 100
+    Order Confirmation  :active, txt2, 400, 500
+    
+    section CCU
+    Order Processing    :active, ccu1, 100, 200
+    Order Confirmation  :active, ccu2, 300, 400
+    
+    section FTS
+    Order ID Generation :active, fts1, 200, 300
+    
+    section Order ID Status
+    No Order ID         :done, noid1, 0, 200
+    Order ID Generated  :active, id1, 200, 500

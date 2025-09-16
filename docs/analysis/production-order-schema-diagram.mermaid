@@ -1,0 +1,32 @@
+graph LR
+    subgraph "Zeitachse (Konstante Abstände)"
+        direction LR
+        T0["Position 0<br/>👤 Kunde<br/>bestellt ROT"]
+        T1["Position 1<br/>📱 TXT Controller<br/>/j1/txt/1/f/i/order<br/>❌ ohne orderId"]
+        T2["Position 2<br/>🏭 CCU<br/>ccu/order/request<br/>❌ ohne orderId"]
+        T3["Position 3<br/>🚚 FTS<br/>fts/v1/ff/5iO4/order<br/>✅ orderId generiert"]
+        T4["Position 4<br/>🏭 CCU<br/>ccu/order/response<br/>✅ mit orderId"]
+        T5["Position 5<br/>⚙️ HBW<br/>module/v1/ff/SVR3QA0022/order<br/>✅ mit orderId"]
+        T6["Position 6<br/>⚙️ HBW<br/>module/v1/ff/SVR3QA0022/state<br/>✅ mit orderId"]
+        T7["Position 7+<br/>⚙️ Weitere Module<br/>..."]
+    end
+    
+    T0 -->|"Kunde drückt<br/>Bestellen - ROT"| T1
+    T1 -->|"TXT sendet<br/>Order Request"| T2
+    T2 -->|"CCU erstellt<br/>Production Order"| T3
+    T3 -->|"FTS generiert<br/>orderId"| T4
+    T4 -->|"CCU bestätigt<br/>Order"| T5
+    T5 -->|"HBW startet<br/>Produktion"| T6
+    T6 -->|"Status Updates<br/>und weitere Module"| T7
+    
+    classDef customer fill:#e1f5fe
+    classDef txt fill:#f3e5f5
+    classDef ccu fill:#e8f5e8
+    classDef fts fill:#fff3e0
+    classDef module fill:#fce4ec
+    
+    class T0 customer
+    class T1 txt
+    class T2,T4 ccu
+    class T3 fts
+    class T5,T6,T7 module

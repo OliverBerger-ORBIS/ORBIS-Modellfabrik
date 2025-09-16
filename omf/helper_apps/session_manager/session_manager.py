@@ -10,7 +10,7 @@ from pathlib import Path
 import streamlit as st
 
 # Import components
-from omf.helper_apps.session_manager.components.production_order_rot_analyzer import show_production_order_rot_analysis
+from omf.helper_apps.session_manager.components.production_order_analyzer import show_production_order_analysis
 from omf.helper_apps.session_manager.components.logs import show_logs
 from omf.helper_apps.session_manager.components.order_analyzer import show_order_analyzer
 from omf.helper_apps.session_manager.components.replay_station import show_replay_station
@@ -176,7 +176,7 @@ def main():
         "Wähle einen Tab:",
         [
             "📊 Session Analyse",
-            "🔴 ProductionOrder-Rot Analyse",
+            "📊 Production Order Analyse",
             "🔍 Order Analyzer",
             "📡 Replay Station",
             "🎙️ Session Recorder",
@@ -190,8 +190,8 @@ def main():
     # Tab content
     if tab == "📊 Session Analyse":
         show_session_analysis()
-    elif tab == "🔴 ProductionOrder-Rot Analyse":
-        show_production_order_rot_analysis()
+    elif tab == "📊 Production Order Analyse":
+        show_production_order_analysis()
     elif tab == "🔍 Order Analyzer":
         show_order_analyzer()
     elif tab == "📡 Replay Station":
