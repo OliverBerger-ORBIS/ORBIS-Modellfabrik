@@ -40,7 +40,7 @@ orbis_access.log
 # Allow default demo files
 !data/omf-data/sessions/default_test_session.log
 # Log files should NOT be in git - they are large and change frequently
-# logs/*.log
+logs/*.log
 logs/*.json
 
 # 🖼️ Generated Images & Data
