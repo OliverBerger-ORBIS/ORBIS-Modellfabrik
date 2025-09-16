@@ -50,10 +50,19 @@
 
 ## 🚀 Getting Started
 
-1. **Verstehe das System:** [Vision](docs_orbis/01-strategy/vision.md) (5 Min)
-2. **Architektur verstehen:** [System Context](docs_orbis/02-architecture/system-context.md) (10 Min)
-3. **Registry-Prinzipien:** [Registry Model](docs_orbis/02-architecture/registry-model.md) (5 Min)
-4. **Praktisch arbeiten:** [How-Tos](docs_orbis/04-howto/) (je nach Aufgabe)
+1. **Repository klonen:** `git clone --recursive <repo-url>` (inkl. Submodule)
+2. **Verstehe das System:** [Vision](docs_orbis/01-strategy/vision.md) (5 Min)
+3. **Architektur verstehen:** [System Context](docs_orbis/02-architecture/system-context.md) (10 Min)
+4. **Registry-Prinzipien:** [Registry Model](docs_orbis/02-architecture/registry-model.md) (5 Min)
+5. **Praktisch arbeiten:** [How-Tos](docs_orbis/04-howto/) (je nach Aufgabe)
+
+### Upstream (Submodule)
+- **Nach dem Klonen:** `git submodule update --init --recursive`
+- **Upstream aktualisieren:** 
+  ```bash
+  cd vendor/fischertechnik && git fetch && git checkout main && cd ../..
+  git add vendor/fischertechnik && git commit -m "chore: bump upstream"
+  ```
 
 ---
 
@@ -73,12 +82,12 @@
 
 ## 📁 Project Structure
 
-### Original Fischertechnik Content
-- `data/` - Original data files
-- `PLC-programs/` - Original PLC programs  
-- `TXT4.0-programs/` - Original TXT4.0 programs
-- `Node-RED/` - Original Node-RED flows
-- `doc/` - Original documentation
+### Upstream (Submodule)
+- `vendor/fischertechnik/` - Original fischertechnik Repository als Submodule
+  - `PLC-programs/` - Original PLC programs  
+  - `TXT4.0-programs/` - Original TXT4.0 programs
+  - `Node-RED/` - Original Node-RED flows
+  - `doc/` - Original documentation
 
 ### Orbis Customizations
 - `docs_orbis/` - Orbis documentation and analysis
