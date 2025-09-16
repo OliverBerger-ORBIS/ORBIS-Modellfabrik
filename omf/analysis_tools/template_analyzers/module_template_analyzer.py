@@ -22,7 +22,7 @@ from typing import Dict, List, Set
 
 import yaml
 
-from omf.analysis_tools.nfc_code_manager import get_nfc_manager
+from omf.analysis_tools.workpiece_manager import get_nfc_manager
 from omf.tools.message_template_manager import get_message_template_manager
 
 
@@ -128,8 +128,8 @@ class ModuleTemplateAnalyzer:
             return "<datetime>"
         elif field_name.lower() in ["id", "uuid", "guid"]:
             return "<uuid>"
-        elif field_name.lower() in ["nfc", "nfc_code", "workpiece_id"]:
-            return "<nfcCode>"
+        elif field_name.lower() in ["nfc", "workpieceid", "workpiece_id", "nfc_code"]:
+            return "<workpieceId>"
         elif field_name.lower() in ["module", "module_id", "moduleid"]:
             return "<moduleId>"
         elif field_name.lower() in ["status", "state"]:
@@ -229,7 +229,7 @@ class ModuleTemplateAnalyzer:
                         rules.append(f"{field} muss ISO 8601 Format haben")
                     elif placeholder == "<uuid>":
                         rules.append(f"{field} muss UUID Format haben")
-                    elif placeholder == "<nfcCode>":
+                    elif placeholder == "<workpieceId>":
                         rules.append(f"{field} muss gültiger NFC-Code sein")
                     elif placeholder == "<moduleId>":
                         rules.append(f"{field} muss gültige Modul-ID sein")

@@ -39,7 +39,7 @@ def show_logs():
         for logger_name in [
             "session_manager.main",
             "session_manager.order_analyzer",
-            "session_manager.auftrag_rot_analyzer",
+            "session_manager.production_order_rot_analyzer",
             "session_manager.ui_components",
         ]:
             logger_obj = logging.getLogger(logger_name)

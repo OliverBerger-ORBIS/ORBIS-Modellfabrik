@@ -1,0 +1,26 @@
+metadata:
+  category: Node-RED
+  description: Auto-analyzed template for ui/default/status
+  last_updated: '2025-09-16'
+  module_id: UI
+  source: nodered_template_analyzer
+  sub_category: UI
+  version: 0.1.0
+templates:
+  nodered.ui.ui:
+    category: Node-RED
+    description: Template for ui/default/status
+    direction: outbound
+    examples:
+    - component_count: 3
+      timestamp: '2024-01-01T12:00:00Z'
+      ui_status: ready
+    module_id: UI
+    structure:
+      component_count: '[3]'
+      timestamp: <datetime>
+      ui_status: '[ready]'
+    sub_category: UI
+    validation:
+      field_types: {}
+      required_fields: []

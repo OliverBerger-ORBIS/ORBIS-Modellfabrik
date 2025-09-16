@@ -22,7 +22,7 @@ except ImportError as e:
 
 
 class OrderManager:
-    """Zentraler Manager für alle Dashboard-relevanten Informationen (Bestellungen, Lagerbestand, etc.)"""
+    """Zentraler Manager für alle Dashboard-relevanten Informationen (PurchaseOrderen, Lagerbestand, etc.)"""
 
     def __init__(self):
         self.inventory = {
@@ -94,7 +94,7 @@ class OrderManager:
             return f"Timestamp: {self.last_update_timestamp}"
 
     def get_available_workpieces(self):
-        """Verfügbare Werkstücke für Bestellungen zurückgeben"""
+        """Verfügbare Workpiecee für PurchaseOrderen zurückgeben"""
         available = {}
         for workpiece_type in self.workpiece_types:
             count = sum(1 for pos, wp in self.inventory.items() if wp == workpiece_type)
@@ -245,5 +245,5 @@ def show_overview_inventory():
         st.markdown("**Aktueller Lagerbestand:**")
         st.json(order_manager.inventory)
         available_workpieces = order_manager.get_available_workpieces()
-        st.markdown("**Verfügbare Werkstücke:**")
+        st.markdown("**Verfügbare Workpiecee:**")
         st.json(available_workpieces)

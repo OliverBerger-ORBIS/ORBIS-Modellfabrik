@@ -6,15 +6,15 @@ Wiederverwendbare HTML/CSS-Templates für konsistente UI-Elemente
 
 def get_workpiece_box_template(workpiece_type: str, count: int, available: bool) -> str:
     """
-    Template für Werkstück-Boxen (ROT, BLUE, WHITE) - OHNE HTML-Buttons für Streamlit-Kompatibilität
+    Template für Workpiece-Boxen (ROT, BLUE, WHITE) - OHNE HTML-Buttons für Streamlit-Kompatibilität
 
     Args:
         workpiece_type: RED, BLUE, WHITE
-        count: Anzahl verfügbarer Werkstücke
-        available: Ob Werkstücke verfügbar sind
+        count: Anzahl verfügbarer Workpiecee
+        available: Ob Workpiecee verfügbar sind
 
     Returns:
-        HTML-String für die Werkstück-Box (ohne Buttons)
+        HTML-String für die Workpiece-Box (ohne Buttons)
     """
     # Farben definieren
     colors = {
@@ -80,7 +80,7 @@ def get_bucket_template(position: str, workpiece_type: str = None) -> str:
         HTML-String für den Bucket
     """
     if workpiece_type:
-        # Gefüllter Bucket mit Werkstück
+        # Gefüllter Bucket mit Workpiece
         colors = {
             "RED": {"bg": "#ff0000", "border": "#cc0000", "text": "white"},
             "BLUE": {"bg": "#0066ff", "border": "#0044cc", "text": "white"},

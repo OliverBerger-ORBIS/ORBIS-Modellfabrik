@@ -63,7 +63,7 @@ class SessionAnalysisUI:
         col1, col2 = st.columns([3, 1])
         with col1:
             regex_filter = st.text_input(
-                "Filter Session-Namen (Regex):", value="", help="z.B. 'auftrag' für alle Auftragssessions"
+                "Filter Session-Namen (Regex):", value="", help="z.B. 'production_order' für alle ProductionOrderssessions"
             )
 
         with col2:

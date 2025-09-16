@@ -2,7 +2,7 @@ from omf.tools.logging_config import get_logger
 """
 Graph Analyzer - Message Chain Analysis and Graph Visualization
 
-Analysiert Message-Ketten basierend auf Meta-Informationen (orderId, workpieceId, nfcCode)
+Analysiert Message-Ketten basierend auf Meta-Informationen (orderId, workpieceId, workpieceId)
 und erstellt gerichtete Graphen für die Visualisierung.
 """
 
@@ -28,7 +28,7 @@ class MessageNode:
     payload: Dict[str, Any]
     order_id: Optional[str] = None
     workpiece_id: Optional[str] = None
-    nfc_code: Optional[str] = None
+    workpieceId: Optional[str] = None
     module_id: Optional[str] = None
     message_type: Optional[str] = None
 
@@ -39,7 +39,7 @@ class MessageEdge:
 
     source_id: str
     target_id: str
-    connection_type: str  # 'order_id', 'workpiece_id', 'nfc_code', 'temporal'
+    connection_type: str  # 'order_id', 'workpiece_id', 'workpieceId', 'temporal'
     weight: float = 1.0
     metadata: Dict[str, Any] = None
 
@@ -101,7 +101,7 @@ class GraphAnalyzer:
                 # Meta-Informationen extrahieren
                 order_id = self._extract_order_id(payload)
                 workpiece_id = self._extract_workpiece_id(payload)
-                nfc_code = self._extract_nfc_code(payload)
+                workpieceId = self._extract_workpieceId(payload)
                 module_id = self._extract_module_id(msg.get("topic", ""))
                 message_type = self._extract_message_type(msg.get("topic", ""))
 
@@ -112,7 +112,7 @@ class GraphAnalyzer:
                     payload=payload,
                     order_id=order_id,
                     workpiece_id=workpiece_id,
-                    nfc_code=nfc_code,
+                    workpieceId=workpieceId,
                     module_id=module_id,
                     message_type=message_type,
                 )
@@ -163,10 +163,10 @@ class GraphAnalyzer:
 
         return None
 
-    def _extract_nfc_code(self, payload: Dict[str, Any]) -> Optional[str]:
+    def _extract_workpieceId(self, payload: Dict[str, Any]) -> Optional[str]:
         """Extrahiert NFC-Code aus Payload"""
         # Verschiedene mögliche Felder für NFC-Code
-        nfc_fields = ["nfcCode", "nfc_code", "nfc", "rfid", "tag"]
+        nfc_fields = ["workpieceId", "workpieceId", "nfc", "rfid", "tag"]
 
         for field in nfc_fields:
             if field in payload:
@@ -210,7 +210,7 @@ class GraphAnalyzer:
                 topic=msg.topic,
                 order_id=msg.order_id,
                 workpiece_id=msg.workpiece_id,
-                nfc_code=msg.nfc_code,
+                workpieceId=msg.workpieceId,
                 module_id=msg.module_id,
                 message_type=msg.message_type,
             )
@@ -254,13 +254,13 @@ class GraphAnalyzer:
             )
 
         # NFC-Code Verbindung
-        if msg1.nfc_code and msg2.nfc_code and msg1.nfc_code == msg2.nfc_code:
+        if msg1.workpieceId and msg2.workpieceId and msg1.workpieceId == msg2.workpieceId:
             return MessageEdge(
                 source_id=msg1.message_id,
                 target_id=msg2.message_id,
-                connection_type="nfc_code",
+                connection_type="workpieceId",
                 weight=0.9,
-                metadata={"nfc_code": msg1.nfc_code},
+                metadata={"workpieceId": msg1.workpieceId},
             )
 
         # Module-ID Verbindung (gleiches Modul)
@@ -370,7 +370,7 @@ class GraphAnalyzer:
                     "topic": data.get("topic"),
                     "order_id": data.get("order_id"),
                     "workpiece_id": data.get("workpiece_id"),
-                    "nfc_code": data.get("nfc_code"),
+                    "workpieceId": data.get("workpieceId"),
                     "module_id": data.get("module_id"),
                     "message_type": data.get("message_type"),
                 }

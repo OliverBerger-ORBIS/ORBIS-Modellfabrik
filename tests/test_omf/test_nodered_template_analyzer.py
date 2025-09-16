@@ -99,9 +99,11 @@ class TestNodeRedTemplateAnalyzer(unittest.TestCase):
             # ID fields
             ("id", {"123e4567-e89b-12d3-a456-426614174000"}, "<uuid>"),
             ("uuid", {"123e4567-e89b-12d3-a456-426614174000"}, "<uuid>"),
-            # NFC fields
-            ("nfc_code", {"040a8dca341291"}, "<nfcCode>"),
-            ("workpiece_id", {"040a8dca341291"}, "<nfcCode>"),
+            # workpieceId fields
+            ("workpieceId", {"040a8dca341291"}, "<workpieceId>"),
+            ("workpiece_id", {"040a8dca341291"}, "<workpieceId>"),
+            # Legacy nfc_code field
+            ("nfc_code", {"040a8dca341291"}, "<workpieceId>"),
             # Module fields
             ("module_id", {"SVR4H73275"}, "<moduleId>"),
             ("moduleid", {"SVR4H73275"}, "<moduleId>"),

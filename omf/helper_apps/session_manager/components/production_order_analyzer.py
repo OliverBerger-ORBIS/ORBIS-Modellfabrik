@@ -1,8 +1,8 @@
 """
-Auftrag-Rot Analyzer - Spezifische Analyse für ccu/order/request mit orderType: PRODUCTION
+ProductionOrder-Rot Analyzer - Spezifische Analyse für ccu/order/request mit orderType: PRODUCTION
 
-Analysiert die Message-Kette für einen roten Auftrag und erstellt einen Graph
-basierend auf orderId, workpieceId und nfcCode Verbindungen.
+Analysiert die Message-Kette für einen roten ProductionOrder und erstellt einen Graph
+basierend auf orderId, workpieceId und workpieceId Verbindungen.
 """
 
 import json
@@ -16,18 +16,18 @@ import streamlit as st
 from omf.dashboard.utils.ui_refresh import request_refresh
 from omf.tools.logging_config import get_logger
 
-logger = get_logger("session_manager.auftrag_rot_analyzer")
+logger = get_logger("session_manager.production_order_analyzer")
 
 
-class AuftragRotAnalyzer:
-    """Analysiert Message-Ketten für rote Aufträge (orderType: PRODUCTION)"""
+class ProductionOrderAnalyzer:
+    """Analysiert Message-Ketten für production orders (orderType: PRODUCTION)"""
 
     def __init__(self):
         self.messages = []
         self.graph = nx.DiGraph()
         self.order_id = None
         self.workpiece_id = None
-        self.nfc_code = None
+        self.workpieceId = None
 
     def load_session_from_log(self, log_file_path: str) -> bool:
         """Lädt Session-Daten aus einer .log Datei"""
@@ -135,7 +135,7 @@ class AuftragRotAnalyzer:
         return None
 
     def extract_workpiece_metadata(self, messages: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-        """Extrahiert workpieceId und nfcCode aus den Messages"""
+        """Extrahiert workpieceId und workpieceId aus den Messages"""
         workpieces = []
 
         for message in messages:
@@ -145,7 +145,7 @@ class AuftragRotAnalyzer:
 
                     # Suche nach workpieceId in verschiedenen Strukturen
                     workpiece_id = None
-                    nfc_code = None
+                    workpieceId = None
                     load_type = None
 
                     # Direkte workpieceId
@@ -169,18 +169,18 @@ class AuftragRotAnalyzer:
                         if 'type' in wp and wp['type']:
                             load_type = wp['type']
 
-                    # nfcCode in verschiedenen Strukturen
-                    if 'nfcCode' in payload:
-                        nfc_code = payload['nfcCode']
+                    # workpieceId in verschiedenen Strukturen
+                    if 'workpieceId' in payload:
+                        workpieceId = payload['workpieceId']
                     elif 'loadId' in payload and payload['loadId']:
-                        nfc_code = payload['loadId']
+                        workpieceId = payload['loadId']
 
-                    if workpiece_id or nfc_code or load_type:
+                    if workpiece_id or workpieceId or load_type:
                         workpieces.append(
                             {
                                 'message': message,
                                 'workpiece_id': workpiece_id,
-                                'nfc_code': nfc_code,
+                                'workpieceId': workpieceId,
                                 'load_type': load_type,
                                 'topic': message['topic'],
                                 'timestamp': message['timestamp'],
@@ -226,7 +226,7 @@ class AuftragRotAnalyzer:
                 topic=wp['topic'],
                 timestamp=wp['timestamp'],
                 workpiece_id=wp['workpiece_id'],
-                nfc_code=wp['nfc_code'],
+                workpieceId=wp['workpieceId'],
                 load_type=wp['load_type'],
                 color='green',
                 size=10,
@@ -344,7 +344,7 @@ class AuftragRotAnalyzer:
 
         # Layout anpassen
         fig.update_layout(
-            title={"text": 'Auftrag-Rot Message Chain Graph', "font": {"size": 16}},
+            title={"text": 'ProductionOrder-Rot Message Chain Graph', "font": {"size": 16}},
             showlegend=False,
             hovermode='closest',
             margin={"b": 20, "l": 5, "r": 5, "t": 40},
@@ -368,11 +368,11 @@ class AuftragRotAnalyzer:
 
         return fig
 
-    def analyze_auftrag_rot(
+    def analyze_production_order_rot(
         self, log_file_path: str, time_filter_seconds: Optional[Tuple[float, float]] = None
     ) -> Dict[str, Any]:
-        """Hauptfunktion für die Auftrag-Rot Analyse"""
-        logger.info("🔍 Starte Auftrag-Rot Analyse")
+        """Hauptfunktion für die ProductionOrder-Rot Analyse"""
+        logger.info("🔍 Starte ProductionOrder-Rot Analyse")
 
         # Session laden
         if not self.load_session_from_log(log_file_path):
@@ -413,7 +413,7 @@ class AuftragRotAnalyzer:
             st.error(f"❌ {analysis_result['error']}")
             return
 
-        st.success("✅ Auftrag-Rot Analyse erfolgreich")
+        st.success("✅ ProductionOrder-Rot Analyse erfolgreich")
 
         # Metadaten anzeigen
         st.subheader("📋 Order Metadaten")
@@ -493,11 +493,11 @@ def load_session_data(session_file: str) -> list:
     return messages
 
 
-def analyze_auftrag_rot_with_root(session_file: str, root_message: dict, time_range: tuple) -> dict:
+def analyze_production_order_rot_with_root(session_file: str, root_message: dict, time_range: tuple) -> dict:
     """Analysiert Message-Kette basierend auf einer Root-Message"""
     import os
 
-    analyzer = AuftragRotAnalyzer()
+    analyzer = ProductionOrderRotAnalyzer()
     os.path.join("data/omf-data/sessions", session_file)
 
     # Verwandte Messages finden
@@ -582,9 +582,9 @@ def render_graph_visualization(result: dict) -> None:
         st.warning("❌ Kein Graph verfügbar")
 
 
-def show_auftrag_rot_analysis():
-    """Zeigt die umstrukturierte Auftrag-Rot Analyse UI"""
-    st.header("🔴 Auftrag-Rot Analyse")
+def show_production_order_rot_analysis():
+    """Zeigt die umstrukturierte ProductionOrder-Rot Analyse UI"""
+    st.header("🔴 ProductionOrder-Rot Analyse")
     st.markdown("**Schritt-für-Schritt Analyse von Message-Ketten**")
 
     # Schritt 1: Session-Auswahl
@@ -599,7 +599,7 @@ def show_auftrag_rot_analysis():
             st.warning("❌ Keine rot-Sessions gefunden")
             return
 
-        selected_session = st.selectbox("📁 Session auswählen", options=log_files, key="auftrag_rot_session")
+        selected_session = st.selectbox("📁 Session auswählen", options=log_files, key="production_order_rot_session")
 
         if not selected_session:
             return
@@ -621,7 +621,7 @@ def show_auftrag_rot_analysis():
             st.warning("❌ Keine Topics in der Session gefunden")
             return
 
-        selected_topic = st.selectbox("📡 Topic auswählen", options=available_topics, key="auftrag_rot_topic")
+        selected_topic = st.selectbox("📡 Topic auswählen", options=available_topics, key="production_order_rot_topic")
 
         if not selected_topic:
             return
@@ -658,7 +658,7 @@ def show_auftrag_rot_analysis():
                 "📨 Message auswählen",
                 options=range(len(topic_messages)),
                 format_func=lambda x: message_options[x],
-                key="auftrag_rot_message",
+                key="production_order_rot_message",
             )
             selected_message = topic_messages[selected_message_idx]
 
@@ -669,28 +669,28 @@ def show_auftrag_rot_analysis():
         col1, col2, col3, col4, col5 = st.columns(5)
 
         with col1:
-            if st.button("5s", key="auftrag_rot_5s"):
-                st.session_state.auftrag_rot_time_range = (0.0, 5.0)
+            if st.button("5s", key="production_order_rot_5s"):
+                st.session_state.production_order_rot_time_range = (0.0, 5.0)
                 request_refresh()
 
         with col2:
-            if st.button("15s", key="auftrag_rot_15s"):
-                st.session_state.auftrag_rot_time_range = (0.0, 15.0)
+            if st.button("15s", key="production_order_rot_15s"):
+                st.session_state.production_order_rot_time_range = (0.0, 15.0)
                 request_refresh()
 
         with col3:
-            if st.button("30s", key="auftrag_rot_30s"):
-                st.session_state.auftrag_rot_time_range = (0.0, 30.0)
+            if st.button("30s", key="production_order_rot_30s"):
+                st.session_state.production_order_rot_time_range = (0.0, 30.0)
                 request_refresh()
 
         with col4:
-            if st.button("60s", key="auftrag_rot_60s"):
-                st.session_state.auftrag_rot_time_range = (0.0, 60.0)
+            if st.button("60s", key="production_order_rot_60s"):
+                st.session_state.production_order_rot_time_range = (0.0, 60.0)
                 request_refresh()
 
         with col5:
-            if st.button("120s", key="auftrag_rot_120s"):
-                st.session_state.auftrag_rot_time_range = (0.0, 120.0)
+            if st.button("120s", key="production_order_rot_120s"):
+                st.session_state.production_order_rot_time_range = (0.0, 120.0)
                 request_refresh()
 
         # Zeitbereich-Schieberegler
@@ -698,14 +698,14 @@ def show_auftrag_rot_analysis():
             "⏱️ Zeitbereich (Sekunden)",
             min_value=0.0,
             max_value=600.0,  # 10 Minuten
-            value=st.session_state.get('auftrag_rot_time_range', (0.0, 30.0)),
+            value=st.session_state.get('production_order_rot_time_range', (0.0, 30.0)),
             step=1.0,
             format="%.1f s",
-            key="auftrag_rot_time_slider",
+            key="production_order_rot_time_slider",
         )
 
         # Session State aktualisieren
-        st.session_state.auftrag_rot_time_range = time_range
+        st.session_state.production_order_rot_time_range = time_range
 
         # Aktueller Zeitbereich anzeigen
         st.info(f"📊 Zeitbereich: {time_range[0]:.1f}s - {time_range[1]:.1f}s")
@@ -713,10 +713,10 @@ def show_auftrag_rot_analysis():
         # Schritt 5: Analyse starten
         st.markdown("### 5️⃣ Analyse starten")
 
-        if st.button("🔍 Analyse starten", type="primary", key="auftrag_rot_analyze"):
+        if st.button("🔍 Analyse starten", type="primary", key="production_order_rot_analyze"):
             with st.spinner("🔍 Analysiere Message-Kette..."):
                 # Analyse durchführen
-                result = analyze_auftrag_rot_with_root(selected_session, selected_message, time_range)
+                result = analyze_production_order_rot_with_root(selected_session, selected_message, time_range)
 
                 if 'error' in result:
                     st.error(f"❌ Fehler bei der Analyse: {result['error']}")

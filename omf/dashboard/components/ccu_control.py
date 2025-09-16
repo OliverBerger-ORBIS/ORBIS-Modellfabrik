@@ -68,7 +68,7 @@ def analyze_ccu_control_data(control_data):
             "action": control_data.get("action", "N/A"),
             "target_module": control_data.get("target_module", "N/A"),
             "parameters": control_data.get("parameters", {}),
-            # Auftragssteuerung
+            # ProductionOrderssteuerung
             "order_id": control_data.get("order_id", "N/A"),
             "order_type": control_data.get("order_type", "N/A"),
             "priority": control_data.get("priority", "NORMAL"),

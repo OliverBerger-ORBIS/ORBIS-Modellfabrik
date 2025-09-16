@@ -19,14 +19,14 @@ def show_production_order():
 
     # Untertabs für verschiedene Production Order-Bereiche
     order_tab1, order_tab2, order_tab3 = st.tabs(
-        ["📋 Produktplanung", "📋 Fertigungsauftrags-Verwaltung", "🔄 Laufende Fertigungsaufträge"]
+        ["📋 Produktplanung", "📋 Fertigungsproduction_orders-Verwaltung", "🔄 Laufende Fertigungsaufträge"]
     )
 
     # Tab 1: Produktplanung
     with order_tab1:
         show_production_order_production_planning()
 
-    # Tab 2: Fertigungsauftrags-Verwaltung (Production Order Management)
+    # Tab 2: Fertigungsproduction_orders-Verwaltung (Production Order Management)
     with order_tab2:
         show_production_order_management()
 

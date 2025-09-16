@@ -165,7 +165,7 @@ class SemanticTemplateGenerator:
         templates["module/order"] = {
             "category": "MODULE",
             "description": "Module Order - Generisch für alle Module",
-            "semantic_purpose": "Auftrag an ein Modul senden",
+            "semantic_purpose": "ProductionOrder an ein Modul senden",
             "mqtt_topic_pattern": "module/v1/ff/{module_id}/order",
             "template_structure": {
                 "module_id": "<module_serial_number>",
@@ -189,7 +189,7 @@ class SemanticTemplateGenerator:
                     "type": "object",
                     "description": "Parameter für den Befehl (modulspezifisch)",
                 },
-                "order_id": {"type": "string", "description": "Eindeutige Auftrags-ID"},
+                "order_id": {"type": "string", "description": "Eindeutige ProductionOrders-ID"},
             },
             "validation_rules": [
                 "timestamp muss ISO 8601 Format haben",
@@ -198,7 +198,7 @@ class SemanticTemplateGenerator:
                 "order_id muss eindeutig sein",
             ],
             "mqtt_control_usage": {
-                "description": "Auftrag an ein spezifisches Modul senden",
+                "description": "ProductionOrder an ein spezifisches Modul senden",
                 "example_topic": "module/v1/ff/SVR3QA0022/order",
                 "example_payload": {
                     "module_id": "SVR3QA0022",
@@ -348,7 +348,7 @@ class SemanticTemplateGenerator:
         templates["txt/order_input"] = {
             "category": "TXT",
             "description": "TXT Order Input - Generisch",
-            "semantic_purpose": "Auftragseingang über TXT-Controller",
+            "semantic_purpose": "ProductionOrderseingang über TXT-Controller",
             "mqtt_topic_pattern": "/j1/txt/1/f/i/order",
             "template_structure": {
                 "state": "<order_state>",
@@ -366,21 +366,21 @@ class SemanticTemplateGenerator:
                         "RAW",
                         "RESERVED",
                     ],
-                    "description": "Zustand des Auftrags",
+                    "description": "Zustand des ProductionOrders",
                 },
                 "type": {
                     "type": "enum",
                     "values": ["RED", "WHITE", "BLUE"],
-                    "description": "Typ des Werkstücks",
+                    "description": "Typ des Workpieces",
                 },
             },
             "validation_rules": [
                 "ts muss ISO 8601 Format haben",
-                "state muss gültiger Auftragszustand sein",
-                "type muss gültiger Werkstück-Typ sein",
+                "state muss gültiger ProductionOrderszustand sein",
+                "type muss gültiger Workpiece-Typ sein",
             ],
             "mqtt_control_usage": {
-                "description": "Auftragszustand über TXT-Controller abfragen",
+                "description": "ProductionOrderszustand über TXT-Controller abfragen",
                 "example_topic": "/j1/txt/1/f/i/order",
                 "example_payload": {
                     "state": "WAITING_FOR_ORDER",

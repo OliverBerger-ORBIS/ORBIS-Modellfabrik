@@ -1,6 +1,6 @@
 """
 OMF Dashboard Overview - Kundenaufträge (Customer Orders)
-Kopiert aus overview_inventory.py - Sektion 2: Bestellungen
+Kopiert aus overview_inventory.py - Sektion 2: PurchaseOrderen
 """
 
 from datetime import datetime, timezone
@@ -23,7 +23,7 @@ except ImportError as e:
 
 
 class OrderManager:
-    """Zentraler Manager für alle Dashboard-relevanten Informationen (Bestellungen, Lagerbestand, etc.)"""
+    """Zentraler Manager für alle Dashboard-relevanten Informationen (PurchaseOrderen, Lagerbestand, etc.)"""
 
     def __init__(self):
         self.inventory = {
@@ -83,7 +83,7 @@ class OrderManager:
             return f"Timestamp: {self.last_update_timestamp}"
 
     def get_available_workpieces(self):
-        """Verfügbare Werkstücke für Bestellungen zurückgeben"""
+        """Verfügbare Workpiecee für PurchaseOrderen zurückgeben"""
         available = {}
         for workpiece_type in self.workpiece_types:
             count = sum(1 for pos, wp in self.inventory.items() if wp == workpiece_type)
@@ -144,14 +144,14 @@ def show_overview_order():
     else:
         st.warning("⚠️ MQTT-Client nicht verfügbar - Lagerbestand wird nicht aktualisiert")
 
-    # Bestellungen
-    st.markdown("### 🛒 Bestellungen")
+    # PurchaseOrderen
+    st.markdown("### 🛒 PurchaseOrderen")
 
     available_workpieces = order_manager.get_available_workpieces()
 
     col1, col2, col3 = st.columns(3)
 
-    # ROT Werkstück
+    # ROT Workpiece
     with col1:
         red_count = available_workpieces.get("RED", 0)
         red_available = red_count > 0
@@ -161,19 +161,19 @@ def show_overview_order():
             st.markdown(get_workpiece_box_template("RED", red_count, red_available), unsafe_allow_html=True)
         else:
             # Fallback: Einfache Darstellung
-            st.markdown("**RED Werkstück**")
+            st.markdown("**RED Workpiece**")
             st.markdown(f"**Bestand: {red_count}**")
             st.markdown(f"**Verfügbar: {'✅ Ja' if red_available else '❌ Nein'}**")
 
         if red_available:
             if st.button(
-                "📋 Bestellen", key="order_inventory_order_red", type="secondary", help="Bestellung für ROT Werkstück"
+                "📋 Bestellen", key="order_inventory_order_red", type="secondary", help="PurchaseOrder für ROT Workpiece"
             ):
                 _send_order_directly("RED")
         else:
             st.button("📋 Bestellen", key="order_inventory_order_red_disabled", disabled=True)
 
-    # BLUE Werkstück
+    # BLUE Workpiece
     with col2:
         blue_count = available_workpieces.get("BLUE", 0)
         blue_available = blue_count > 0
@@ -183,19 +183,19 @@ def show_overview_order():
             st.markdown(get_workpiece_box_template("BLUE", blue_count, blue_available), unsafe_allow_html=True)
         else:
             # Fallback: Einfache Darstellung
-            st.markdown("**BLUE Werkstück**")
+            st.markdown("**BLUE Workpiece**")
             st.markdown(f"**Bestand: {blue_count}**")
             st.markdown(f"**Verfügbar: {'✅ Ja' if blue_available else '❌ Nein'}**")
 
         if blue_available:
             if st.button(
-                "📋 Bestellen", key="order_inventory_order_blue", type="secondary", help="Bestellung für BLUE Werkstück"
+                "📋 Bestellen", key="order_inventory_order_blue", type="secondary", help="PurchaseOrder für BLUE Workpiece"
             ):
                 _send_order_directly("BLUE")
         else:
             st.button("📋 Bestellen", key="order_inventory_order_blue_disabled", disabled=True)
 
-    # WHITE Werkstück
+    # WHITE Workpiece
     with col3:
         white_count = available_workpieces.get("WHITE", 0)
         white_available = white_count > 0
@@ -205,7 +205,7 @@ def show_overview_order():
             st.markdown(get_workpiece_box_template("WHITE", white_count, white_available), unsafe_allow_html=True)
         else:
             # Fallback: Einfache Darstellung
-            st.markdown("**WHITE Werkstück**")
+            st.markdown("**WHITE Workpiece**")
             st.markdown(f"**Bestand: {white_count}**")
             st.markdown(f"**Verfügbar: {'✅ Ja' if white_available else '❌ Nein'}**")
 
@@ -214,7 +214,7 @@ def show_overview_order():
                 "📋 Bestellen",
                 key="order_inventory_order_white",
                 type="secondary",
-                help="Bestellung für WHITE Werkstück",
+                help="PurchaseOrder für WHITE Workpiece",
             ):
                 _send_order_directly("WHITE")
         else:
@@ -222,14 +222,14 @@ def show_overview_order():
 
 
 def _send_order_directly(color: str):
-    """Sendet Bestellung direkt ohne Bestätigung - basierend auf steering_factory.py"""
+    """Sendet PurchaseOrder direkt ohne Bestätigung - basierend auf steering_factory.py"""
     try:
         mqtt_client = st.session_state.get("mqtt_client")
         if not mqtt_client or not mqtt_client.connected:
             st.error("❌ MQTT-Client nicht verbunden")
             return
 
-        # Bestellungs-Topic und Payload (exakt wie in steering_factory.py)
+        # PurchaseOrders-Topic und Payload (exakt wie in steering_factory.py)
         topic = "ccu/order/request"
         payload = {
             "type": color,  # RED, WHITE, BLUE
@@ -241,10 +241,10 @@ def _send_order_directly(color: str):
         result = mqtt_client.publish(topic, payload, qos=1, retain=False)
 
         if result:
-            st.success(f"✅ Bestellung für {color} erfolgreich gesendet!")
+            st.success(f"✅ PurchaseOrder für {color} erfolgreich gesendet!")
             request_refresh()  # Seite aktualisieren
         else:
-            st.error("❌ Fehler beim Senden der Bestellung")
+            st.error("❌ Fehler beim Senden der PurchaseOrder")
 
     except Exception as e:
-        st.error(f"❌ Fehler beim Senden der Bestellung: {e}")
+        st.error(f"❌ Fehler beim Senden der PurchaseOrder: {e}")

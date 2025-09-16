@@ -122,7 +122,7 @@ class Registry:
     def workpieces(self) -> Dict[str, Any]:
         """Leere workpieces.yml: Loader liefert leeres Mapping statt Exception"""
         data = self.load_yaml("workpieces.yml")
-        return data if data else {"nfc_codes": {}}
+        return data if data else {"workpieceIds": {}}
 
     def mapping(self) -> Dict[str, Any]:
         return self.load_yaml("mappings/topic_template.yml")

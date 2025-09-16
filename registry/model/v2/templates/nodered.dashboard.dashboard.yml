@@ -1,0 +1,26 @@
+metadata:
+  category: Node-RED
+  description: Auto-analyzed template for dashboard/default/status
+  last_updated: '2025-09-16'
+  module_id: Dashboard
+  source: nodered_template_analyzer
+  sub_category: Dashboard
+  version: 0.1.0
+templates:
+  nodered.dashboard.dashboard:
+    category: Node-RED
+    description: Template for dashboard/default/status
+    direction: outbound
+    examples:
+    - dashboard_status: active
+      timestamp: '2024-01-01T12:00:00Z'
+      widget_count: 5
+    module_id: Dashboard
+    structure:
+      dashboard_status: '[active]'
+      timestamp: <datetime>
+      widget_count: '[5]'
+    sub_category: Dashboard
+    validation:
+      field_types: {}
+      required_fields: []

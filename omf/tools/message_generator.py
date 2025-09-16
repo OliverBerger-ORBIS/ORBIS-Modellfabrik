@@ -639,9 +639,9 @@ class MessageGenerator:
         Generiert eine CCU-Order-Request-Nachricht
 
         Args:
-            color: Werkstück-Farbe (RED, WHITE, BLUE)
-            order_type: Auftragstyp (STORAGE, PRODUCTION)
-            workpiece_id: Werkstück-ID (NFC-ID)
+            color: Workpiece-Farbe (RED, WHITE, BLUE)
+            order_type: ProductionOrderstyp (STORAGE, PRODUCTION)
+            workpiece_id: Workpiece-ID (NFC-ID)
             ai_inspection: AI-Qualitätsprüfung aktiviert
 
         Returns:

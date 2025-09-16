@@ -60,7 +60,7 @@ TRANSLATIONS = {
         "message_controls": "Nachrichten-Steuerung",
         "settings": "Einstellungen",
         "module_status": "Modul-Status",
-        "order_management": "Auftragsverwaltung",
+        "order_management": "ProductionOrdersverwaltung",
         "ongoing_orders": "Laufende Aufträge",
         "dashboard_settings": "Dashboard-Einstellungen",
         "module_config": "Modul-Konfiguration",

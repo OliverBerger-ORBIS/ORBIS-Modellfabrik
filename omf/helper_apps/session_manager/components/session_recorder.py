@@ -108,7 +108,7 @@ def show_session_recorder():
     session_name = st.text_input(
         "Session-Name eingeben",
         value=st.session_state.session_recorder['session_name'],
-        placeholder="z.B. auftrag-rot-R1",
+        placeholder="z.B. production_order-rot-R1",
         help="Name für die aufzunehmende Session",
     )
 

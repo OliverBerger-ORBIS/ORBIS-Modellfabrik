@@ -174,7 +174,7 @@ def test_empty_workpieces_handling(temp_registry):
 
     # Should return empty mapping instead of exception
     workpieces = registry.workpieces()
-    assert workpieces == {"nfc_codes": {}}
+    assert workpieces == {"workpieceIds": {}}
 
 
 def test_hot_reload_watch_mode(temp_registry):

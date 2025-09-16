@@ -16,7 +16,7 @@ from typing import Dict, List, Set
 
 import yaml
 
-from omf.analysis_tools.nfc_code_manager import get_nfc_manager
+from omf.analysis_tools.workpiece_manager import get_nfc_manager
 from omf.tools.message_template_manager import get_message_template_manager
 from omf.tools.module_manager import OmfModuleManager
 
@@ -136,9 +136,9 @@ class CCUTemplateAnalyzer:
 
         # 6. Check for NFC codes (regex + YAML config)
         nfc_manager = get_nfc_manager()
-        nfc_values = {v for v in str_values if nfc_manager.is_nfc_code(v)}
+        nfc_values = {v for v in str_values if nfc_manager.is_workpieceId(v)}
         if nfc_values and len(nfc_values) == len(simple_values):
-            return "<nfcCode>"
+            return "<workpieceId>"
 
         # 7. Check for specific ENUMs using module mapping
         enum_result = self._check_specific_enums(field_name, str_values, context_values)
@@ -840,7 +840,7 @@ class CCUTemplateAnalyzer:
                             "icon": "🏭",
                             "sub_categories": {
                                 "Order": {
-                                    "description": "Bestellungsverwaltung und -verarbeitung",
+                                    "description": "PurchaseOrdersverwaltung und -verarbeitung",
                                     "icon": "📋",
                                 },
                                 "State": {

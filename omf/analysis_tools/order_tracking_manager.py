@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Order Tracking Manager für APS Bestellungsverfolgung
+Order Tracking Manager für APS PurchaseOrdersverfolgung
 Verwaltet Order-Status und -Historie
 """
 
@@ -11,7 +11,7 @@ from typing import Any, Dict, List, Optional
 
 
 class OrderTrackingManager:
-    """Verwaltet Order-Tracking für APS Bestellungen"""
+    """Verwaltet Order-Tracking für APS PurchaseOrderen"""
 
     def __init__(self):
         self.active_orders = {}  # orderId -> order_info
@@ -35,7 +35,7 @@ class OrderTrackingManager:
         }
 
         self.active_orders[order_id] = tracking_info
-        print(f"📊 Order Tracking gestartet für {color} Werkstück {workpiece_id} (Order ID: {order_id})")
+        print(f"📊 Order Tracking gestartet für {color} Workpiece {workpiece_id} (Order ID: {order_id})")
         return order_id
 
     def update_order_status(self, order_id: str, status: str, message: Dict[str, Any] = None):

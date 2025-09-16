@@ -1,0 +1,26 @@
+metadata:
+  category: Node-RED
+  description: Auto-analyzed template for module/v1/ff/NodeRed/SVR4H73275/factsheet
+  last_updated: '2025-09-16'
+  module_id: SVR4H73275
+  source: nodered_template_analyzer
+  sub_category: Factsheet
+  version: 0.1.0
+templates:
+  nodered.svr4h73275.factsheet:
+    category: Node-RED
+    description: Template for module/v1/ff/NodeRed/SVR4H73275/factsheet
+    direction: outbound
+    examples:
+    - description: Warenein- und Ausgang
+      module_id: SVR4H73275
+      type: DPS
+    module_id: SVR4H73275
+    structure:
+      description: '[Warenein- und Ausgang]'
+      module_id: <moduleId>
+      type: '[DPS]'
+    sub_category: Factsheet
+    validation:
+      field_types: {}
+      required_fields: []

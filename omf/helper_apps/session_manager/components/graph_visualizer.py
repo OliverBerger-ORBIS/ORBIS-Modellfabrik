@@ -95,7 +95,7 @@ class GraphVisualizer:
             color_map = {
                 "order_id": "#FF6B6B",
                 "workpiece_id": "#4ECDC4",
-                "nfc_code": "#45B7D1",
+                "workpieceId": "#45B7D1",
                 "module_id": "#96CEB4",
                 "temporal": "#FFEAA7",
             }
@@ -159,7 +159,7 @@ class GraphVisualizer:
                     "Topic": msg.topic,
                     "Order ID": msg.order_id or "-",
                     "Workpiece ID": msg.workpiece_id or "-",
-                    "NFC Code": msg.nfc_code or "-",
+                    "NFC Code": msg.workpieceId or "-",
                     "Module ID": msg.module_id or "-",
                     "Message Type": msg.message_type or "-",
                 }
@@ -187,7 +187,7 @@ class GraphVisualizer:
                         + f"Topic: {msg.topic}<br>"
                         + f"Order ID: {msg.order_id or 'N/A'}<br>"
                         + f"Workpiece ID: {msg.workpiece_id or 'N/A'}<br>"
-                        + f"NFC Code: {msg.nfc_code or 'N/A'}<br>"
+                        + f"NFC Code: {msg.workpieceId or 'N/A'}<br>"
                         + f"Module ID: {msg.module_id or 'N/A'}<extra></extra>",
                     )
                 )
@@ -215,7 +215,7 @@ class GraphVisualizer:
                 st.write("**Gefundene Meta-Informationen:**")
                 order_ids = set()
                 workpiece_ids = set()
-                nfc_codes = set()
+                workpieceIds = set()
                 module_ids = set()
 
                 for msg in self.analyzer.messages:
@@ -223,14 +223,14 @@ class GraphVisualizer:
                         order_ids.add(msg.order_id)
                     if msg.workpiece_id:
                         workpiece_ids.add(msg.workpiece_id)
-                    if msg.nfc_code:
-                        nfc_codes.add(msg.nfc_code)
+                    if msg.workpieceId:
+                        workpieceIds.add(msg.workpieceId)
                     if msg.module_id:
                         module_ids.add(msg.module_id)
 
                 st.write(f"Order IDs: {len(order_ids)} - {list(order_ids)[:5]}")
                 st.write(f"Workpiece IDs: {len(workpiece_ids)} - {list(workpiece_ids)[:5]}")
-                st.write(f"NFC Codes: {len(nfc_codes)} - {list(nfc_codes)[:5]}")
+                st.write(f"NFC Codes: {len(workpieceIds)} - {list(workpieceIds)[:5]}")
                 st.write(f"Module IDs: {len(module_ids)} - {list(module_ids)[:5]}")
 
                 # Message-Ketten Debug
@@ -322,7 +322,7 @@ class GraphVisualizer:
                 hover_text += f"Topic: {node_data.get('topic', 'N/A')}<br>"
                 hover_text += f"Order ID: {node_data.get('order_id', 'N/A')}<br>"
                 hover_text += f"Workpiece ID: {node_data.get('workpiece_id', 'N/A')}<br>"
-                hover_text += f"NFC Code: {node_data.get('nfc_code', 'N/A')}<br>"
+                hover_text += f"NFC Code: {node_data.get('workpieceId', 'N/A')}<br>"
                 hover_text += f"Module ID: {node_data.get('module_id', 'N/A')}<br>"
                 hover_text += f"Message Type: {node_data.get('message_type', 'N/A')}"
                 node_hover.append(hover_text)

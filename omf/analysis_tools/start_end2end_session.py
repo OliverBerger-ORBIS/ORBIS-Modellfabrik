@@ -3,9 +3,9 @@
 End-to-End Session Starter für W1B1R1
 
 Startet eine Session für einen vollständigen End-to-End Test mit:
-- W1 (WEISS Werkstück 1)
-- B1 (BLAU Werkstück 1)
-- R1 (ROT Werkstück 1)
+- W1 (WEISS Workpiece 1)
+- B1 (BLAU Workpiece 1)
+- R1 (ROT Workpiece 1)
 """
 
 import os
@@ -23,7 +23,7 @@ def start_end2end_session():
     print("=" * 50)
     print(f"📋 Session-Name: {session_name}")
     print(f"⏰ Start-Zeit: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    print("🏷️ Werkstücke: W1 (WEISS), B1 (BLAU), R1 (ROT)")
+    print("🏷️ Workpiecee: W1 (WEISS), B1 (BLAU), R1 (ROT)")
     print("=" * 50)
 
     # APS Session Logger starten

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Unit Tests for NFC Code Manager
-Tests the NFCCodeManager class functionality
+Tests the WorkpieceManager class functionality
 """
 
 import os
@@ -14,11 +14,11 @@ import yaml
 # Add omf to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "omf"))
 
-from omf.analysis_tools.nfc_code_manager import NFCCodeManager
+from omf.analysis_tools.workpiece_manager import WorkpieceManager
 
 
-class TestNFCCodeManager(unittest.TestCase):
-    """Test cases for NFCCodeManager class"""
+class TestWorkpieceManager(unittest.TestCase):
+    """Test cases for WorkpieceManager class"""
 
     def setUp(self):
         """Set up test fixtures"""
@@ -72,7 +72,7 @@ class TestNFCCodeManager(unittest.TestCase):
         self.temp_file.close()
 
         # Initialize manager with test config
-        self.manager = NFCCodeManager(self.temp_file.name)
+        self.manager = WorkpieceManager(self.temp_file.name)
 
     def tearDown(self):
         """Clean up test fixtures"""
@@ -87,7 +87,7 @@ class TestNFCCodeManager(unittest.TestCase):
     def test_init_with_invalid_path(self):
         """Test initialization with invalid config path"""
         with self.assertRaises(ValueError):
-            NFCCodeManager("/nonexistent/path/config.yml")
+            WorkpieceManager("/nonexistent/path/config.yml")
 
     def test_get_friendly_name(self):
         """Test getting friendly name for NFC code"""
@@ -107,7 +107,7 @@ class TestNFCCodeManager(unittest.TestCase):
 
         # Test invalid friendly name
         nfc_code = self.manager.get_nfc_code("INVALID")
-        self.assertEqual(nfc_code, "INVALID")
+        self.assertIsNone(nfc_code)
 
     def test_get_nfc_info(self):
         """Test getting complete NFC code information"""
@@ -300,7 +300,7 @@ class TestNFCCodeManager(unittest.TestCase):
         self.assertEqual(self.manager.get_friendly_name("999999999999999"), "TEST")
 
 
-class TestNFCCodeManagerBackwardCompatibility(unittest.TestCase):
+class TestWorkpieceManagerBackwardCompatibility(unittest.TestCase):
     """Test backward compatibility functions"""
 
     def setUp(self):
@@ -329,7 +329,7 @@ class TestNFCCodeManagerBackwardCompatibility(unittest.TestCase):
 
     def test_backward_compatibility_functions(self):
         """Test backward compatibility functions"""
-        from omf.analysis_tools.nfc_code_manager import (
+        from omf.analysis_tools.workpiece_manager import (
             get_all_nfc_codes,
             get_friendly_name,
             get_nfc_code,

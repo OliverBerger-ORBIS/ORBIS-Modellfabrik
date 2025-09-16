@@ -1,0 +1,26 @@
+metadata:
+  category: Node-RED
+  description: Auto-analyzed template for module/v1/ff/NodeRed/SVR4H76530/connection
+  last_updated: '2025-09-16'
+  module_id: SVR4H76530
+  source: nodered_template_analyzer
+  sub_category: Connection
+  version: 0.1.0
+templates:
+  nodered.svr4h76530.connection:
+    category: Node-RED
+    description: Template for module/v1/ff/NodeRed/SVR4H76530/connection
+    direction: inbound
+    examples:
+    - connected: true
+      module_id: SVR4H76530
+      timestamp: '2024-01-01T12:00:00Z'
+    module_id: SVR4H76530
+    structure:
+      connected: '[True]'
+      module_id: <moduleId>
+      timestamp: <datetime>
+    sub_category: Connection
+    validation:
+      field_types: {}
+      required_fields: []

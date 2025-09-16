@@ -202,14 +202,19 @@ class TestModuleTemplateAnalyzer(unittest.TestCase):
         self.assertEqual(self.analyzer._get_placeholder_for_field("id", {"12345", "67890"}), "<uuid>")
         self.assertEqual(self.analyzer._get_placeholder_for_field("uuid", {"abc-123"}), "<uuid>")
 
-        # Test NFC fields
+        # Test workpieceId fields
         self.assertEqual(
-            self.analyzer._get_placeholder_for_field("nfc_code", {"040a8dca341291"}),
-            "<nfcCode>",
+            self.analyzer._get_placeholder_for_field("workpieceId", {"040a8dca341291"}),
+            "<workpieceId>",
         )
         self.assertEqual(
             self.analyzer._get_placeholder_for_field("workpiece_id", {"040a8dca341291"}),
-            "<nfcCode>",
+            "<workpieceId>",
+        )
+        # Test legacy nfc_code field
+        self.assertEqual(
+            self.analyzer._get_placeholder_for_field("nfc_code", {"040a8dca341291"}),
+            "<workpieceId>",
         )
 
         # Test module fields

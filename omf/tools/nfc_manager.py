@@ -41,78 +41,78 @@ class OmfNfcManager:
             print(f"❌ Error loading NFC configuration: {e}")
             return None
 
-    def get_nfc_info(self, nfc_code: str) -> Optional[Dict[str, Any]]:
+    def get_nfc_info(self, workpieceId: str) -> Optional[Dict[str, Any]]:
         """Get complete NFC code information"""
         if not self.config:
             return None
 
-        if "nfc_codes" in self.config and nfc_code in self.config["nfc_codes"]:
-            return self.config["nfc_codes"][nfc_code]
+        if "workpieceIds" in self.config and workpieceId in self.config["workpieceIds"]:
+            return self.config["workpieceIds"][workpieceId]
 
         return None
 
-    def get_friendly_id(self, nfc_code: str) -> str:
+    def get_friendly_id(self, workpieceId: str) -> str:
         """Get friendly ID for NFC code"""
-        nfc_info = self.get_nfc_info(nfc_code)
-        return nfc_info.get("friendly_id", nfc_code) if nfc_info else nfc_code
+        nfc_info = self.get_nfc_info(workpieceId)
+        return nfc_info.get("friendly_id", workpieceId) if nfc_info else workpieceId
 
-    def get_nfc_code_by_friendly_id(self, friendly_id: str) -> Optional[str]:
+    def get_workpieceId_by_friendly_id(self, friendly_id: str) -> Optional[str]:
         """Get NFC code by friendly ID"""
         if not self.config:
             return None
 
-        for nfc_code, info in self.config["nfc_codes"].items():
+        for workpieceId, info in self.config["workpieceIds"].items():
             if info.get("friendly_id") == friendly_id:
-                return nfc_code
+                return workpieceId
 
         return None
 
-    def get_color(self, nfc_code: str) -> str:
+    def get_color(self, workpieceId: str) -> str:
         """Get color for NFC code"""
-        nfc_info = self.get_nfc_info(nfc_code)
+        nfc_info = self.get_nfc_info(workpieceId)
         return nfc_info.get("color", "Unknown") if nfc_info else "Unknown"
 
-    def get_quality_check(self, nfc_code: str) -> str:
+    def get_quality_check(self, workpieceId: str) -> str:
         """Get quality check status for NFC code"""
-        nfc_info = self.get_nfc_info(nfc_code)
+        nfc_info = self.get_nfc_info(workpieceId)
         return nfc_info.get("quality_check", "Unknown") if nfc_info else "Unknown"
 
-    def get_description(self, nfc_code: str) -> str:
+    def get_description(self, workpieceId: str) -> str:
         """Get description for NFC code"""
-        nfc_info = self.get_nfc_info(nfc_code)
+        nfc_info = self.get_nfc_info(workpieceId)
         return nfc_info.get("description", "No description") if nfc_info else "No description"
 
-    def is_enabled(self, nfc_code: str) -> bool:
+    def is_enabled(self, workpieceId: str) -> bool:
         """Check if NFC code is enabled"""
-        nfc_info = self.get_nfc_info(nfc_code)
+        nfc_info = self.get_nfc_info(workpieceId)
         return nfc_info.get("enabled", True) if nfc_info else False
 
-    def get_all_nfc_codes(self) -> Dict[str, Dict[str, Any]]:
+    def get_all_workpieceIds(self) -> Dict[str, Dict[str, Any]]:
         """Get all NFC codes"""
-        return self.config.get("nfc_codes", {}) if self.config else {}
+        return self.config.get("workpieceIds", {}) if self.config else {}
 
-    def get_enabled_nfc_codes(self) -> Dict[str, Dict[str, Any]]:
+    def get_enabled_workpieceIds(self) -> Dict[str, Dict[str, Any]]:
         """Get only enabled NFC codes"""
-        all_codes = self.get_all_nfc_codes()
+        all_codes = self.get_all_workpieceIds()
         return {k: v for k, v in all_codes.items() if v.get("enabled", True)}
 
-    def get_nfc_codes_by_color(self, color: str) -> Dict[str, Dict[str, Any]]:
+    def get_workpieceIds_by_color(self, color: str) -> Dict[str, Dict[str, Any]]:
         """Get NFC codes by color"""
-        all_codes = self.get_all_nfc_codes()
+        all_codes = self.get_all_workpieceIds()
         return {k: v for k, v in all_codes.items() if v.get("color") == color}
 
-    def get_nfc_codes_by_quality(self, quality: str) -> Dict[str, Dict[str, Any]]:
+    def get_workpieceIds_by_quality(self, quality: str) -> Dict[str, Dict[str, Any]]:
         """Get NFC codes by quality check status"""
-        all_codes = self.get_all_nfc_codes()
+        all_codes = self.get_all_workpieceIds()
         return {k: v for k, v in all_codes.items() if v.get("quality_check") == quality}
 
-    def validate_nfc_code(self, nfc_code: str) -> bool:
+    def validate_workpieceId(self, workpieceId: str) -> bool:
         """Validate if NFC code exists"""
-        return nfc_code in self.get_all_nfc_codes()
+        return workpieceId in self.get_all_workpieceIds()
 
     def get_nfc_statistics(self) -> Dict[str, Any]:
         """Get NFC code statistics"""
-        all_codes = self.get_enabled_nfc_codes()
+        all_codes = self.get_enabled_workpieceIds()
         total_codes = len(all_codes)
 
         color_counts = {}
@@ -151,9 +151,9 @@ class OmfNfcManager:
             print(f"❌ Error saving NFC configuration: {e}")
             return False
 
-    def update_nfc_code(self, nfc_code: str, updates: Dict[str, Any]) -> bool:
+    def update_workpieceId(self, workpieceId: str, updates: Dict[str, Any]) -> bool:
         """Update NFC code configuration"""
-        nfc_info = self.get_nfc_info(nfc_code)
+        nfc_info = self.get_nfc_info(workpieceId)
         if not nfc_info:
             return False
 
@@ -161,8 +161,8 @@ class OmfNfcManager:
         nfc_info.update(updates)
 
         # Save to config
-        if "nfc_codes" in self.config and nfc_code in self.config["nfc_codes"]:
-            self.config["nfc_codes"][nfc_code] = nfc_info
+        if "workpieceIds" in self.config and workpieceId in self.config["workpieceIds"]:
+            self.config["workpieceIds"][workpieceId] = nfc_info
 
         return self.save_config()
 
@@ -180,22 +180,22 @@ def get_omf_nfc_manager() -> OmfNfcManager:
 
 
 # Backward compatibility functions
-def get_nfc_info(nfc_code: str) -> Optional[Dict[str, Any]]:
+def get_nfc_info(workpieceId: str) -> Optional[Dict[str, Any]]:
     """Backward compatibility function"""
     manager = get_omf_nfc_manager()
-    return manager.get_nfc_info(nfc_code)
+    return manager.get_nfc_info(workpieceId)
 
 
-def get_friendly_id(nfc_code: str) -> str:
+def get_friendly_id(workpieceId: str) -> str:
     """Backward compatibility function"""
     manager = get_omf_nfc_manager()
-    return manager.get_friendly_id(nfc_code)
+    return manager.get_friendly_id(workpieceId)
 
 
-def validate_nfc_code(nfc_code: str) -> bool:
+def validate_workpieceId(workpieceId: str) -> bool:
     """Backward compatibility function"""
     manager = get_omf_nfc_manager()
-    return manager.validate_nfc_code(nfc_code)
+    return manager.validate_workpieceId(workpieceId)
 
 
 if __name__ == "__main__":
@@ -206,24 +206,24 @@ if __name__ == "__main__":
     print("=" * 50)
 
     # Test basic functionality
-    print(f"📋 Total NFC Codes: {len(manager.get_all_nfc_codes())}")
-    print(f"✅ Enabled NFC Codes: {len(manager.get_enabled_nfc_codes())}")
-    print(f"🔴 Red NFC Codes: {len(manager.get_nfc_codes_by_color('RED'))}")
-    print(f"⚪ White NFC Codes: {len(manager.get_nfc_codes_by_color('WHITE'))}")
-    print(f"🔵 Blue NFC Codes: {len(manager.get_nfc_codes_by_color('BLUE'))}")
+    print(f"📋 Total NFC Codes: {len(manager.get_all_workpieceIds())}")
+    print(f"✅ Enabled NFC Codes: {len(manager.get_enabled_workpieceIds())}")
+    print(f"🔴 Red NFC Codes: {len(manager.get_workpieceIds_by_color('RED'))}")
+    print(f"⚪ White NFC Codes: {len(manager.get_workpieceIds_by_color('WHITE'))}")
+    print(f"🔵 Blue NFC Codes: {len(manager.get_workpieceIds_by_color('BLUE'))}")
 
     # Test NFC code info
-    test_nfc_code = "040a8dca341291"
-    nfc_info = manager.get_nfc_info(test_nfc_code)
-    print(f"📋 NFC Code {test_nfc_code}: {nfc_info}")
+    test_workpieceId = "040a8dca341291"
+    nfc_info = manager.get_nfc_info(test_workpieceId)
+    print(f"📋 NFC Code {test_workpieceId}: {nfc_info}")
 
     # Test friendly ID conversion
-    friendly_id = manager.get_friendly_id(test_nfc_code)
-    print(f"📋 Friendly ID: {test_nfc_code} -> {friendly_id}")
+    friendly_id = manager.get_friendly_id(test_workpieceId)
+    print(f"📋 Friendly ID: {test_workpieceId} -> {friendly_id}")
 
     # Test reverse conversion
-    nfc_code = manager.get_nfc_code_by_friendly_id(friendly_id)
-    print(f"📋 NFC Code: {friendly_id} -> {nfc_code}")
+    workpieceId = manager.get_workpieceId_by_friendly_id(friendly_id)
+    print(f"📋 NFC Code: {friendly_id} -> {workpieceId}")
 
     # Test statistics
     stats = manager.get_nfc_statistics()

@@ -1,0 +1,26 @@
+metadata:
+  category: Node-RED
+  description: Auto-analyzed template for module/v1/ff/NodeRed/SVR4H73275/order
+  last_updated: '2025-09-16'
+  module_id: SVR4H73275
+  source: nodered_template_analyzer
+  sub_category: Order
+  version: 0.1.0
+templates:
+  nodered.svr4h73275.order:
+    category: Node-RED
+    description: Template for module/v1/ff/NodeRed/SVR4H73275/order
+    direction: outbound
+    examples:
+    - module_id: SVR4H73275
+      order_id: ORD001
+      status: pending
+    module_id: SVR4H73275
+    structure:
+      module_id: <moduleId>
+      order_id: '[ORD001]'
+      status: '[pending]'
+    sub_category: Order
+    validation:
+      field_types: {}
+      required_fields: []

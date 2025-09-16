@@ -1,0 +1,26 @@
+metadata:
+  category: Node-RED
+  description: Auto-analyzed template for module/v1/ff/NodeRed/status
+  last_updated: '2025-09-16'
+  module_id: NodeRed
+  source: nodered_template_analyzer
+  sub_category: Status
+  version: 0.1.0
+templates:
+  nodered.nodered.status:
+    category: Node-RED
+    description: Template for module/v1/ff/NodeRed/status
+    direction: outbound
+    examples:
+    - active_modules: 5
+      overall_status: healthy
+      timestamp: '2024-01-01T12:00:00Z'
+    module_id: NodeRed
+    structure:
+      active_modules: '[5]'
+      overall_status: '[healthy]'
+      timestamp: <datetime>
+    sub_category: Status
+    validation:
+      field_types: {}
+      required_fields: []

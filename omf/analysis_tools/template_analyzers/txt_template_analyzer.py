@@ -136,7 +136,7 @@ class TXTTemplateAnalyzer:
         nfc_pattern = re.compile(r'^[0-9a-fA-F]{14}$')
         nfc_values = {v for v in str_values if nfc_pattern.match(v)}
         if nfc_values and len(nfc_values) == len(simple_values):
-            return "<nfcCode>"
+            return "<workpieceId>"
 
         # 7. Check for specific ENUMs using module mapping
         enum_result = self._check_specific_enums(field_name, str_values, context_values)
@@ -779,7 +779,7 @@ class TXTTemplateAnalyzer:
                         rules.append(f"{field} muss ISO 8601 Format haben")
                     elif placeholder == "<uuid>":
                         rules.append(f"{field} muss UUID Format haben")
-                    elif placeholder == "<nfcCode>":
+                    elif placeholder == "<workpieceId>":
                         rules.append(f"{field} muss gültiger NFC-Code sein")
                     elif placeholder == "<moduleId>":
                         rules.append(f"{field} muss gültige Modul-ID sein")

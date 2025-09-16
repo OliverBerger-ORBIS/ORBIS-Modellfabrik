@@ -151,7 +151,7 @@ def _show_message_analysis_section():
                     st.warning("⚠️ Keine Messages für das ausgewählte Topic gefunden")
                     return
 
-                # Zeitbereich anwenden (wie im Auftrag-Rot Analyzer)
+                # Zeitbereich anwenden (wie im ProductionOrder-Rot Analyzer)
                 if time_range[1] > 0:
                     # Erste Message als Referenzpunkt
                     if filtered_messages:
@@ -232,7 +232,7 @@ def _show_order_analysis_section():
 def _show_message_chains_section():
     """Zeigt die Message-Chains-Sektion für Order-basierte Analyse"""
     st.markdown("### 🔗 Message Chains")
-    st.markdown("**Message-Ketten basierend auf orderID, workpieceId, nfcCode**")
+    st.markdown("**Message-Ketten basierend auf orderID, workpieceId, workpieceId**")
 
     # Session-Auswahl
     st.markdown("#### 1️⃣ Session auswählen")
@@ -378,7 +378,7 @@ def _render_simple_message_analysis(messages: List[Dict[str, Any]], topic: str):
         if messages:
             st.metric("Zeitbereich", f"{len(messages)} Messages")
 
-    # Message-Liste (wie im Auftrag-Rot Analyzer)
+    # Message-Liste (wie im ProductionOrder-Rot Analyzer)
     st.markdown("#### 📋 Messages")
 
     if not messages:

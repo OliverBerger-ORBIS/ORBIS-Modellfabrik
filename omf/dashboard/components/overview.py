@@ -21,7 +21,7 @@ def show_overview():
 
     # Untertabs für verschiedene Übersichtsbereiche
     overview_tab1, overview_tab2, overview_tab3, overview_tab4, overview_tab5 = st.tabs(
-        ["🏭 Modul Status", "📋 Kundenaufträge", "📊 Rohmaterial-Bestellungen", "📦 Lagerbestand", "📦 Produktkatalog"]
+        ["🏭 Modul Status", "📋 Kundenaufträge", "📊 Rohmaterial-PurchaseOrderen", "📦 Lagerbestand", "📦 Produktkatalog"]
     )
 
     # Tab 1: Modul Status
@@ -32,7 +32,7 @@ def show_overview():
     with overview_tab2:
         show_overview_order()
 
-    # Tab 3: Rohmaterial-Bestellungen (Purchase Orders)
+    # Tab 3: Rohmaterial-PurchaseOrderen (Purchase Orders)
     with overview_tab3:
         show_overview_order_raw()
 
