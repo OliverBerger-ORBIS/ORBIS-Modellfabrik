@@ -166,8 +166,8 @@ def setup_page_config():
 
 def get_default_broker_mode():
     """Holt den Default-Broker-Modus aus den Settings"""
-    # Default = live (für Produktionsumgebung)
-    return "live"
+    # Default = replay (für Testing)
+    return "replay"
 
 
 def handle_environment_switch():

@@ -53,7 +53,7 @@ def show_mqtt_config():
         st.info(f"**Aktuelle Konfiguration:** {mode_display}")
 
         if current_mode == "replay":
-            st.info("🎬 **Replay-Broker:** localhost:1884 (Mosquitto MQTT-Broker)")
+            st.info("🎬 **Replay-Broker:** localhost:1883 (Mosquitto MQTT-Broker)")
         elif current_mode == "mock":
             st.info("🧪 **Mock-Modus:** Simulierte Verbindung (kein echter Broker)")
         else:
@@ -68,7 +68,7 @@ def show_mqtt_config():
             # Modus-spezifische Host/Port-Anzeige
             if current_mode == "replay":
                 host_value = "localhost"
-                port_value = 1884
+                port_value = 1883
                 host_disabled = True
                 port_disabled = True
                 st.info("🎬 **Replay-Broker:** Automatische Konfiguration")
