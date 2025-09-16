@@ -98,9 +98,8 @@ def show_session_recorder():
         st.subheader("📁 Konfiguration")
         st.info(f"**Session-Verzeichnis:** `{session_directory}`")
         st.info(f"**Format:** {recording_settings.get('file_format', 'sqlite')}")
-        st.markdown("**Einstellungen** in den ⚙️ Einstellungen ändern")
-        if st.button("⚙️ Zu Einstellungen"):
-            st.switch_page("⚙️ Einstellungen")
+        st.markdown("**Einstellungen** können hier konfiguriert werden")
+        st.info("💡 Recording-Einstellungen werden automatisch geladen")
 
     st.markdown("---")
 
