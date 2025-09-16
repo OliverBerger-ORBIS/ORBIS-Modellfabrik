@@ -45,8 +45,8 @@ class ProjectStructureValidator:
             "Node-RED",
             "doc",
             "omf",
-            "tests_orbis",
-            "docs_orbis",
+            "tests",
+            "docs",
             "data",
             ".git",
             ".venv",
@@ -168,7 +168,7 @@ class ProjectStructureValidator:
         errors = []
 
         # Prüfe dass wichtige Ordner existieren
-        required_dirs = ["omf", "tests_orbis", "docs_orbis", "data"]
+        required_dirs = ["omf", "tests", "docs", "data"]
         for dir_name in required_dirs:
             if not (self.project_root / dir_name).exists():
                 errors.append(f"Erforderlicher Ordner fehlt: {dir_name}")
@@ -184,7 +184,7 @@ class ProjectStructureValidator:
         # Prüfe dass keine Orbis-Dateien im Root sind
         orbis_files = list(self.project_root.glob("*orbis*"))
         for file in orbis_files:
-            if file.name not in ["omf", "tests_orbis", "docs_orbis"]:
+            if file.name not in ["omf", "tests", "docs"]:
                 errors.append(f"Orbis-Datei im Root gefunden: {file.name}")
 
         return errors
@@ -231,7 +231,7 @@ class ProjectStructureValidator:
                 if filename.endswith('.py') and filename != '__init__.py':
                     target_dir = self.project_root / "omf"
                 elif filename.endswith('.md') and filename not in ["README.md", "RPI_Image.md", "OPC-UA.md"]:
-                    target_dir = self.project_root / "docs_orbis"
+                    target_dir = self.project_root / "docs"
                 elif filename.endswith(('.log', '.db')):
                     target_dir = self.project_root / "data"
                 else:

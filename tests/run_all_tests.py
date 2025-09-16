@@ -50,15 +50,15 @@ def main():
 
     # Test files to run
     test_files = [
-        "tests_orbis/test_dashboard_imports.py",
-        "tests_orbis/test_streamlit_startup.py",
-        "tests_orbis/test_dashboard_functionality.py",
-        "tests_orbis/test_dashboard_runtime.py",
-        "tests_orbis/test_default_session.py",
-        "tests_orbis/test_database_structure.py",
-        "tests_orbis/test_icon_configuration.py",  # NEUER ICON CONFIG TEST
-        "tests_orbis/test_filter_improvements.py",  # NEUER FILTER IMPROVEMENTS TEST
-        "tests_orbis/test_filter_integration.py",  # NEUER FILTER INTEGRATION TEST
+        "tests/test_dashboard_imports.py",
+        "tests/test_streamlit_startup.py",
+        "tests/test_dashboard_functionality.py",
+        "tests/test_dashboard_runtime.py",
+        "tests/test_default_session.py",
+        "tests/test_database_structure.py",
+        "tests/test_icon_configuration.py",  # NEUER ICON CONFIG TEST
+        "tests/test_filter_improvements.py",  # NEUER FILTER IMPROVEMENTS TEST
+        "tests/test_filter_integration.py",  # NEUER FILTER INTEGRATION TEST
     ]
 
     results = []

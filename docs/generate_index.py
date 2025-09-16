@@ -11,8 +11,8 @@ from pathlib import Path
 
 
 def find_markdown_files():
-    """Finde alle Markdown-Dateien im docs_orbis Verzeichnis."""
-    docs_dir = Path("docs_orbis")
+    """Finde alle Markdown-Dateien im docs Verzeichnis."""
+    docs_dir = Path("docs")
     md_files = []
 
     for md_file in docs_dir.rglob("*.md"):
@@ -253,7 +253,7 @@ def generate_json_index(md_files):
             "version": "1.0.0",
             "last_updated": datetime.now().isoformat(),
             "total_documents": len(md_files),
-            "description": "Maschinenlesbarer Index aller Dokumentation im docs_orbis Verzeichnis",
+            "description": "Maschinenlesbarer Index aller Dokumentation im docs Verzeichnis",
         },
         "categories": categories,
         "search_index": {
@@ -271,13 +271,13 @@ def main():
 
     print("📝 Generiere INDEX.html...")
     html_content = generate_html_index(md_files)
-    with open("docs_orbis/INDEX.html", "w", encoding="utf-8") as f:
+    with open("docs/INDEX.html", "w", encoding="utf-8") as f:
         f.write(html_content)
     print("✅ INDEX.html erstellt")
 
     print("📝 Generiere INDEX.json...")
     json_content = generate_json_index(md_files)
-    with open("docs_orbis/INDEX.json", "w", encoding="utf-8") as f:
+    with open("docs/INDEX.json", "w", encoding="utf-8") as f:
         json.dump(json_content, f, indent=2, ensure_ascii=False)
     print("✅ INDEX.json erstellt")
 

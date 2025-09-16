@@ -19,7 +19,7 @@ from typing import Dict
 class DocumentationIndexer:
     """Erstellt und verwaltet den Dokumentationsindex"""
 
-    def __init__(self, docs_root: str = "docs_orbis"):
+    def __init__(self, docs_root: str = "docs"):
         self.docs_root = Path(docs_root)
         self.index = {
             "metadata": {
@@ -139,13 +139,13 @@ class DocumentationIndexer:
         print(f"   📂 Kategorien: {self.index['metadata']['total_categories']}")
         print(f"   🔍 Suchbegriffe: {self.index['metadata']['searchable_content']}")
 
-    def save_index(self, output_file: str = "docs_orbis/INDEX.json"):
+    def save_index(self, output_file: str = "docs/INDEX.json"):
         """Speichert den Index als JSON-Datei"""
         with open(output_file, 'w', encoding='utf-8') as f:
             json.dump(self.index, f, indent=2, ensure_ascii=False)
         print(f"💾 Index gespeichert: {output_file}")
 
-    def generate_html_index(self, output_file: str = "docs_orbis/INDEX.html"):
+    def generate_html_index(self, output_file: str = "docs/INDEX.html"):
         """Generiert eine HTML-Version des Index"""
         html = f"""<!DOCTYPE html>
 <html lang="de">
@@ -276,8 +276,8 @@ def main():
 
     print("\n✅ Dokumentationsindex erfolgreich erstellt!")
     print("\n📖 Verwendung:")
-    print("   • JSON-Index: docs_orbis/INDEX.json")
-    print("   • HTML-Index: docs_orbis/INDEX.html")
+    print("   • JSON-Index: docs/INDEX.json")
+    print("   • HTML-Index: docs/INDEX.html")
     print("   • Öffne INDEX.html im Browser für interaktive Suche")
 
 

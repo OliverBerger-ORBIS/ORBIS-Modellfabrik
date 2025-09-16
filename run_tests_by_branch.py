@@ -44,10 +44,10 @@ def main():
 
     # Test-Pfad basierend auf Branch bestimmen
     if branch.startswith("helper/"):
-        test_path = "tests_orbis/test_helper_apps/"
+        test_path = "tests/test_helper_apps/"
         print("🎯 Helper-Branch erkannt → Nur Helper-App-Tests")
     else:
-        test_path = "tests_orbis/"
+        test_path = "tests/"
         print("🎯 Main-Branch erkannt → Alle Tests")
 
     # Tests ausführen

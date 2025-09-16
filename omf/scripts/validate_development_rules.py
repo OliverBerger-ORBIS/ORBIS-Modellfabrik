@@ -171,8 +171,8 @@ class DevelopmentRulesValidator:
                 if d not in ['.git', '__pycache__', '.pytest_cache', 'node_modules', '.venv', 'venv', 'env']
             ]
 
-            # Nur omf und tests_orbis prüfen
-            if 'omf' not in root and 'tests_orbis' not in root:
+            # Nur omf und tests prüfen
+            if 'omf' not in root and 'tests' not in root:
                 continue
 
             for file in files:

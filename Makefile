@@ -65,4 +65,4 @@ nodered-logs:
 	ssh -i $(NR_SSH_KEY) $(NR_HOST) "journalctl --user -u nodered -f"
 
 validate-development-rules:
-	$(PY) src_orbis/scripts/validate_development_rules.py
+	$(PY) omf/scripts/validate_development_rules.py
