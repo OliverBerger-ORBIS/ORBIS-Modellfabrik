@@ -67,9 +67,8 @@ def show_replay_station():
     with col2:
         st.subheader("⚙️ Konfiguration")
         st.info(f"**Session-Verzeichnis:** `{session_directory}`")
-        st.markdown("**MQTT-Einstellungen** in den ⚙️ Einstellungen ändern")
-        if st.button("⚙️ Zu Einstellungen"):
-            st.switch_page("⚙️ Einstellungen")
+        st.markdown("**MQTT-Einstellungen** können hier konfiguriert werden")
+        st.info("💡 MQTT-Konfiguration wird automatisch aus den Session-Daten geladen")
 
     # Connection controls
     col1, col2 = st.columns(2)

@@ -10343,3 +10343,491 @@
 {"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-15 21:40:05,011"}
 {"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-15 21:40:07,508"}
 {"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.session_analysis", "msg": "📊 Session Analysis Tab geladen", "timestamp": "2025-09-15 21:40:07,509"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:35:50,180"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.session_analysis", "msg": "📊 Session Analysis Tab geladen", "timestamp": "2025-09-16 12:35:50,230"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:07,184"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:07,186"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:09,822"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:09,828"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:09,981"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:09,981"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:23,107"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:23,109"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:33,225"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:33,232"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:33,292"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:33,293"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:39,738"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:39,740"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:40,964"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:40,969"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:47,774"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:47,778"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:47,843"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:47,844"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:48,016"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:48,017"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:48,183"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:48,184"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:48,349"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:48,349"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:48,516"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:48,517"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:48,684"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:48,685"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:48,848"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:48,849"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:49,017"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:49,018"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:49,175"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:49,176"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:49,333"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:49,334"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:49,499"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:49,499"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:49,665"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:49,666"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:49,834"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:49,835"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:49,999"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:49,999"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:50,167"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:50,167"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:50,329"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:50,330"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:50,498"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:50,499"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:50,662"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:50,662"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:50,823"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:50,823"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:50,986"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:50,987"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:51,148"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:51,149"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:51,313"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:51,314"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:51,483"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:51,484"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:51,647"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:51,648"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:51,817"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:51,817"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:51,980"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:51,981"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:52,148"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:52,149"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:52,316"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:52,317"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:52,480"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:52,481"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:52,646"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:52,647"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:52,810"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:52,811"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:52,976"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:52,977"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:53,135"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:53,136"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:53,301"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:53,302"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:53,467"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:53,468"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:53,634"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:53,635"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:53,799"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:53,799"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:53,966"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:53,967"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:54,128"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:54,128"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:54,294"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:54,295"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:54,458"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:54,459"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:54,621"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:54,622"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:54,784"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:54,784"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:54,952"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:54,953"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:55,114"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:55,115"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:55,282"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:55,283"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:55,452"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:55,453"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:55,618"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:55,618"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:55,776"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:55,777"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:55,939"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:55,939"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:56,103"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:56,104"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:56,269"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:56,269"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:56,428"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:56,429"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:56,593"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:56,593"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:56,757"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:56,757"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:56,922"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:56,922"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:57,087"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:57,088"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:57,251"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:57,252"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:57,416"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:57,416"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:57,586"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:57,587"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:57,759"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:57,760"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:57,926"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:57,927"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:58,122"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:58,123"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:58,839"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:58,839"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:36:59,558"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:36:59,558"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:00,271"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:00,272"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:00,979"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:00,980"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:01,691"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:01,692"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:02,398"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:02,399"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:03,107"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:03,108"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:03,813"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:03,814"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:04,520"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:04,520"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:05,228"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:05,229"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:06,033"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:06,034"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:06,657"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:06,658"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:07,429"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:07,430"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:08,127"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:08,128"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:08,825"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:08,826"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:09,487"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:09,488"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:10,198"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:10,199"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:10,985"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:10,986"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:11,607"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:11,608"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:12,313"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:12,314"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:13,022"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:13,022"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:13,713"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:13,714"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:14,498"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:14,498"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:15,127"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:15,127"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:15,838"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:15,839"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:16,544"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:16,545"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:17,210"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:17,211"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:17,383"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:17,384"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:17,553"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:17,554"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:17,759"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:17,760"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:17,959"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:17,959"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:18,187"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:18,187"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:18,358"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:18,359"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:18,527"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:18,527"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:18,796"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:18,797"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:19,020"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:19,021"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:19,192"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:19,192"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:19,509"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:19,510"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:19,730"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:19,730"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:19,907"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:19,908"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:20,152"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:20,152"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:20,368"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:20,369"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:20,549"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:20,551"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:20,737"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:20,737"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:21,445"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:21,447"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:22,156"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:22,156"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:22,863"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:22,863"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:23,568"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:23,569"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:24,115"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:24,115"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:24,445"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:24,446"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:25,147"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:25,148"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:25,853"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:25,854"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:26,564"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:26,565"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:27,270"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:27,270"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:27,961"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:27,962"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:28,667"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:28,668"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:29,385"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:29,386"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:30,046"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:30,046"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:30,773"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:30,773"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:31,456"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:31,457"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:32,160"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:32,161"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:32,870"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:32,871"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:33,591"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:33,592"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:34,293"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:34,294"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:34,568"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:34,569"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:34,740"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:34,741"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:35,064"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:35,064"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:35,236"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:35,236"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:35,411"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:35,412"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:35,584"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:35,585"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:35,755"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:35,756"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:35,928"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:35,931"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:36,119"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:36,119"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:36,290"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:36,291"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:36,456"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:36,457"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:36,619"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:36,620"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:37,061"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:37,062"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:37,840"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:37,840"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:38,302"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:38,303"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:38,530"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:38,530"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:38,703"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:38,704"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:39,023"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:39,024"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:39,621"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:39,622"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:39,844"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:37:39,845"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:39,897"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.settings_ui", "msg": "⚙️ Settings Tab geladen", "timestamp": "2025-09-16 12:37:39,898"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:37:49,696"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:38:06,152"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Info-Nachricht: Allgemeine Informationen", "timestamp": "2025-09-16 12:38:06,162"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:38:08,987"}
+{"app": "session_manager", "level": "WARNING", "logger": "session_manager.main", "msg": "Warning-Nachricht: Warnung vor einem Problem", "timestamp": "2025-09-16 12:38:08,994"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:38:11,050"}
+{"app": "session_manager", "level": "ERROR", "logger": "session_manager.main", "msg": "Error-Nachricht: Ein Fehler ist aufgetreten", "timestamp": "2025-09-16 12:38:11,059"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:38:12,731"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:38:39,127"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:38:39,129"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:38:39,409"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:38:39,410"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:38:39,952"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:38:39,952"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:38:40,160"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:38:40,161"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:38:40,339"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:38:40,341"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:38:40,555"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:38:40,556"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:38:40,792"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:38:40,792"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:38:40,962"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:38:40,963"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:38:41,129"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:38:41,130"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:38:41,340"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:38:41,341"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:38:41,570"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:38:41,570"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:38:41,740"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:38:41,741"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:38:42,422"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:38:42,423"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:38:43,120"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:38:43,121"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:38:43,823"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:38:43,823"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:38:44,358"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:38:44,359"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:38:44,584"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:38:44,585"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:38:44,753"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:38:44,754"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:38:44,973"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:38:44,973"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:38:45,148"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:38:45,149"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:38:45,363"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:38:45,364"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:38:45,541"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:38:45,542"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:38:45,721"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:38:45,722"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:38:45,899"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:38:45,899"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:38:46,074"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:38:46,075"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:38:46,253"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:38:46,253"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:38:46,506"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:38:46,507"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:38:46,734"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:38:46,735"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:38:46,908"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:38:46,909"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:38:47,069"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:38:47,070"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:38:47,236"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:38:47,237"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:38:47,557"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:38:47,558"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:38:47,787"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:38:47,787"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:38:47,962"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:38:47,963"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:38:48,216"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:38:48,217"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:38:48,406"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:38:48,407"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:38:48,575"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:38:48,576"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:38:48,753"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:38:48,753"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:38:48,921"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:38:48,922"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:38:49,138"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:38:49,138"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:38:49,378"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:38:49,379"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:38:50,088"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:38:50,088"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:38:50,791"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:38:50,792"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:38:51,572"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:38:51,573"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:38:52,213"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:38:52,213"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:38:52,921"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:38:52,922"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:38:53,560"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:38:53,561"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:38:53,729"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:38:53,730"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:38:53,891"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:38:53,892"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:38:54,132"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:38:54,132"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:38:54,834"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:38:54,835"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:38:55,545"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:38:55,546"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:38:56,268"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:38:56,268"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:38:56,969"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:38:56,969"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:38:57,677"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:38:57,677"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:38:58,381"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:38:58,381"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:38:58,840"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:38:58,841"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:38:59,014"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:38:59,015"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:38:59,434"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:38:59,435"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:38:59,911"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:38:59,911"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:39:00,077"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:39:00,078"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:39:00,237"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:39:00,237"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:39:00,396"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:39:00,397"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:39:00,561"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:39:00,562"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:39:00,729"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:39:00,730"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:39:01,019"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:39:01,019"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:39:01,248"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:39:01,248"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:39:01,426"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:39:01,426"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:39:01,595"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:39:01,596"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:39:01,765"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:39:01,766"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:39:01,997"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:39:01,998"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:39:02,772"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:39:02,773"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:39:03,419"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:39:03,420"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:39:03,591"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:39:03,592"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:39:03,821"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:39:03,822"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:39:03,997"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:39:03,998"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:39:04,685"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:39:04,686"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:39:05,350"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:39:05,351"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:39:06,048"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:39:06,049"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:39:06,752"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:39:06,752"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:39:07,451"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:39:07,451"}
+{"app": "session_manager", "level": "INFO", "logger": "session_manager.main", "msg": "Session Manager gestartet", "timestamp": "2025-09-16 12:39:08,183"}
+{"app": "session_manager", "level": "INFO", "logger": "omf.helper_apps.session_manager.components.replay_station", "msg": "📡 Replay Station Tab geladen", "timestamp": "2025-09-16 12:39:08,191"}
