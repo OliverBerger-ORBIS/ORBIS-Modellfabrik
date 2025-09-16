@@ -2,6 +2,11 @@
 
 > ⚠️ **VERIFIKATION AUSSTEHEND**: Diese Dokumentation basiert auf einer Hypothese und wurde noch nicht verifiziert. Die beschriebenen FTS-Steuerungslogik und VDA 5050-Implementierung müssen noch getestet und validiert werden.
 
+> **🔗 Verwandte Dokumentation:**
+> - **[APS Overview](../aps/README.md)** - Fischertechnik Agile Production Simulation
+> - **[Node-RED Integration](../node-red/README.md)** - Gateway zwischen OPC-UA und MQTT
+> - **[System Context](../../02-architecture/system-context.md)** - Gesamtarchitektur
+
 Die Steuerung des fahrerlosen Transportsystems (FTS) bzw. Automated Guided Vehicle (AGV) nach dem VDA 5050 Standard ist in der Datei implizit enthalten, insbesondere durch die Verarbeitung von Aufträgen (Orders) und deren Weiterleitung über OPC UA Nodes. Hier sind die wesentlichen Punkte zusammengefasst:
 
 ## 🚗 FTS-Steuerung nach VDA 5050 – Überblick

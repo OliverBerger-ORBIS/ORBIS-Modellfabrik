@@ -6,6 +6,11 @@
 
 Effizienz, Agilität und Flexibilität sind beim Aufbau aktueller und zukünftiger Fabriken unverzichtbar. fischertechnik stellt nun ein Trainingsmodell solch einer flexiblen und modularen Fabrik vor – die Agile Production Simulation.
 
+> **🔗 Verwandte Dokumentation:**
+> - **[System Context](../../02-architecture/system-context.md)** - Gesamtarchitektur OMF Ecosystem
+> - **[APS Physical Architecture](../../02-architecture/aps-physical-architecture.md)** - Netzwerk und Hardware-Details
+> - **[APS Data Flow](../../02-architecture/aps-data-flow.md)** - Datenverarbeitung und Storage
+
 ## Systemkomponenten
 
 Die Fabrik besteht aus einzelnen Modulen wie:
@@ -32,6 +37,11 @@ Die verschieden farbigen Werkstücke (weiß, rot, blau) durchlaufen verschiedene
 
 Gesteuert wird die Fabrik von einer zentralen Steuerung (Raspberry Pi 4 Model B), die mit den Steuerungen der einzelnen Fabrikmodule, SPS Siemens S7 1200 in der 24V Version, vernetzt ist. Die zentrale Steuerung kommuniziert über die standardisierte FTS-Schnittstelle VDA 5050 und steuert die Transportaufträge für das FTS. Für die Kommunikation wird das MQTT-Protokoll (Message Queuing Telemetry Transport) verwendet.
 
+> **🔗 Technische Details:**
+> - **[Node-RED Integration](../node-red/README.md)** - Gateway zwischen OPC-UA und MQTT
+> - **[FTS VDA 5050](../fts/README.md)** - Fahrerloses Transportsystem nach VDA 5050
+> - **[Raspberry Pi Setup](../raspberry-pi/README.md)** - Hardware-Konfiguration
+
 ## Cloud-Integration
 
 Die Fabrik ist außerdem über einen WLAN-Router mit der fischertechnik Cloud verbunden, in der sich ein Online-Shop für die Bestellung von Werkstücken durch den Kunden befindet. Darüber hinaus sind Dashboards verfügbar für:
@@ -40,6 +50,11 @@ Die Fabrik ist außerdem über einen WLAN-Router mit der fischertechnik Cloud ve
 - Ermittlung von Kennzahlen
 
 Zur Simulation von Fernwartung werden die Bilder, die die bewegliche Kamera in der Fabrik aufnimmt, im Dashboard angezeigt, so dass der Zustand der Fabrik remote eingesehen werden kann.
+
+> **🔗 ORBIS-Integration:**
+> - **[OMF Dashboard Architecture](../../02-architecture/omf-dashboard-architecture.md)** - ORBIS Dashboard-Architektur
+> - **[Message Flow](../../02-architecture/message-flow.md)** - End-to-End Kommunikationsflüsse
+> - **[Registry Model](../../02-architecture/registry-model.md)** - Template-basierte Steuerung
 
 ## Physische Struktur
 

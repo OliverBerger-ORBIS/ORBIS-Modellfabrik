@@ -7,6 +7,11 @@ This section contains comprehensive documentation for the Node-RED flows that po
 - **[Node-RED Integration](../integrations/node_red/README.md)** - Backup, Restore und Management
 - **[Integration Guide](./integration-guide.md)** - Detaillierte Setup-Anleitung
 
+> **🔗 Verwandte Systeme:**
+> - **[APS Overview](../aps/README.md)** - Fischertechnik Agile Production Simulation
+> - **[FTS VDA 5050](../fts/README.md)** - Fahrerloses Transportsystem
+> - **[System Context](../../02-architecture/system-context.md)** - Gesamtarchitektur
+
 ## 📋 Documentation Index
 
 ### [Flows](./flows.md)

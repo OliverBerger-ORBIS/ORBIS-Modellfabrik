@@ -2,6 +2,11 @@
 
 ## 🏗️ System-Kontextdiagramm
 
+> **🔗 Integration Details:**
+> - **[APS Overview](../../06-integrations/aps/README.md)** - Fischertechnik Agile Production Simulation
+> - **[Node-RED Integration](../../06-integrations/node-red/README.md)** - Gateway zwischen OPC-UA und MQTT
+> - **[FTS VDA 5050](../../06-integrations/fts/README.md)** - Fahrerloses Transportsystem
+
 ### ASCII-Art (Legacy)
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
