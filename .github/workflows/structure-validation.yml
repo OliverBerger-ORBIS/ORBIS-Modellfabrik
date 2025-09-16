@@ -29,9 +29,9 @@ jobs:
     
     - name: Run tests
       run: |
-        python -m pytest tests_orbis/ -v
+        python -m pytest tests/ -v
     
     - name: Check code formatting
       run: |
-        black --check omf/ tests_orbis/
-        ruff check omf/ tests_orbis/
+        black --check omf/ tests/
+        ruff check omf/ tests/

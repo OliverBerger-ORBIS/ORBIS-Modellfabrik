@@ -31,21 +31,21 @@ repos:
 
       - id: validate-project-structure
         name: validate-project-structure
-        entry: python src_orbis/scripts/validate_project_structure.py
+        entry: python omf/scripts/validate_project_structure.py
         language: system
         pass_filenames: false
         stages: [commit]
 
       - id: validate-dashboard-rules
         name: validate-dashboard-rules
-        entry: python src_orbis/scripts/validate_dashboard_rules.py --include-dashboard --loose
+        entry: python omf/scripts/validate_dashboard_rules.py --include-dashboard --loose
         language: system
         pass_filenames: false
         stages: [commit]
 
       - id: validate-development-rules
         name: validate-development-rules
-        entry: python src_orbis/scripts/validate_development_rules.py
+        entry: python omf/scripts/validate_development_rules.py
         language: system
         pass_filenames: false
         stages: [commit]

@@ -35,7 +35,7 @@ skip-string-normalization = true
 # Wichtig: force-exclude wirkt auch dann, wenn Black per pre-commit einzelne Dateien übergeben bekommt
 force-exclude = '''
 (?x)
-  src_orbis[\\/]+omf[\\/]+config[\\/]+sequence_definitions[\\/]+aiqs_sequence\.py$
+  omf[\\/]+config[\\/]+sequence_definitions[\\/]+aiqs_sequence\.py$
 '''
 [tool.ruff]
 line-length = 120

@@ -26,7 +26,7 @@ data/**/session_*.json
 data/**/traffic_*.json
 # Allow important JSON files
 !config/*.json
-!docs_orbis/*.json
+!docs/*.json
 !mqtt-data/template_library/*.json
 !data/omf-data/sessions/default_test_session.json
 
@@ -55,9 +55,9 @@ aps_live_analysis.png
 aps_live_data.csv
 
 # Allow Dashboard Icons (required for UI)
-!src_orbis/omf/dashboard/assets/*_icon.png
-!src_orbis/omf/dashboard/assets/*_icon.jpeg
-!src_orbis/omf/dashboard/assets/orbis_logo.png
+!omf/dashboard/assets/*_icon.png
+!omf/dashboard/assets/*_icon.jpeg
+!omf/dashboard/assets/orbis_logo.png
 
 # 🐍 Python
 __pycache__/
