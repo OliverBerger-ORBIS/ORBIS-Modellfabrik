@@ -42,7 +42,7 @@ class OmfModuleManager:
         """Get default path to module configuration YAML file"""
         # Projekt-Root-relative Pfade verwenden
         current_dir = Path(__file__).parent
-        project_root = current_dir.parent.parent.parent.parent
+        project_root = current_dir.parent.parent
 
         # Registry v1 (primary)
         registry_path = project_root / "registry" / "model" / "v1" / "modules.yml"
@@ -51,9 +51,9 @@ class OmfModuleManager:
             return str(registry_path)
 
         # Fallback to legacy config (deprecated)
-        legacy_path = project_root / "omf" / "omf" / "config" / "module_config.yml"
+        legacy_path = project_root / "omf" / "config" / "module_config.yml"
         print("⚠️ Using deprecated module_config.yml - consider migrating to registry/model/v0/modules.yml")
-        return str(legacy_path)
+        return str(legacy_path.resolve())
 
     def load_yaml_config(self) -> Optional[Dict[str, Any]]:
         """Load module configuration from YAML file"""
