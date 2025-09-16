@@ -8,10 +8,10 @@ import unittest
 from pathlib import Path
 from unittest.mock import MagicMock, call, patch
 
-from src_orbis.omf.tools.message_template_manager import OmfMessageTemplateManager
-from src_orbis.omf.tools.mqtt_gateway import MqttGateway
-from src_orbis.omf.tools.omf_mqtt_client import OmfMqttClient
-from src_orbis.omf.tools.registry_manager import Registry, TopicManager
+from omf.tools.message_template_manager import OmfMessageTemplateManager
+from omf.tools.mqtt_gateway import MqttGateway
+from omf.tools.omf_mqtt_client import OmfMqttClient
+from omf.tools.registry_manager import Registry, TopicManager
 
 
 class TestManagersLoggingBehavior(unittest.TestCase):
@@ -23,7 +23,7 @@ class TestManagersLoggingBehavior(unittest.TestCase):
 
     def test_message_template_manager_logs_initialization(self):
         """Test: MessageTemplateManager loggt Initialisierung"""
-        with patch('src_orbis.omf.tools.message_template_manager.Path') as mock_path:
+        with patch('omf.tools.message_template_manager.Path') as mock_path:
             # Mock für Registry v1 templates
             mock_templates_dir = Path(self.temp_dir) / "registry" / "model" / "v1" / "templates"
             mock_templates_dir.mkdir(parents=True, exist_ok=True)
@@ -35,7 +35,7 @@ class TestManagersLoggingBehavior(unittest.TestCase):
             mock_path.return_value.exists = mock_exists
             mock_path.return_value.glob.return_value = []  # Keine Templates
 
-            with patch('src_orbis.omf.tools.message_template_manager.get_logger') as mock_get_logger:
+            with patch('omf.tools.message_template_manager.get_logger') as mock_get_logger:
                 mock_logger = MagicMock()
                 mock_get_logger.return_value = mock_logger
 
@@ -54,7 +54,7 @@ class TestManagersLoggingBehavior(unittest.TestCase):
 
     def test_message_template_manager_logs_errors(self):
         """Test: MessageTemplateManager loggt Fehler korrekt"""
-        with patch('src_orbis.omf.tools.message_template_manager.Path') as mock_path:
+        with patch('omf.tools.message_template_manager.Path') as mock_path:
             # Mock für Registry v1 templates
             mock_templates_dir = Path(self.temp_dir) / "registry" / "model" / "v1" / "templates"
             mock_templates_dir.mkdir(parents=True, exist_ok=True)
@@ -66,7 +66,7 @@ class TestManagersLoggingBehavior(unittest.TestCase):
             mock_path.return_value.exists = mock_exists
             mock_path.return_value.glob.return_value = []  # Keine Templates
 
-            with patch('src_orbis.omf.tools.message_template_manager.get_logger') as mock_get_logger:
+            with patch('omf.tools.message_template_manager.get_logger') as mock_get_logger:
                 mock_logger = MagicMock()
                 mock_get_logger.return_value = mock_logger
 
@@ -78,12 +78,12 @@ class TestManagersLoggingBehavior(unittest.TestCase):
     def test_registry_logs_version_check(self):
         """Test: Registry loggt Version-Check"""
         # Vereinfachter Test ohne komplexe Mock-Setup
-        with patch('src_orbis.omf.tools.registry_manager.get_logger') as mock_get_logger:
+        with patch('omf.tools.registry_manager.get_logger') as mock_get_logger:
             mock_logger = MagicMock()
             mock_get_logger.return_value = mock_logger
 
             # Mock Registry
-            with patch('src_orbis.omf.tools.registry_manager.Registry') as mock_registry:
+            with patch('omf.tools.registry_manager.Registry') as mock_registry:
                 mock_registry_instance = MagicMock()
                 mock_registry.return_value = mock_registry_instance
 
@@ -95,12 +95,12 @@ class TestManagersLoggingBehavior(unittest.TestCase):
     def test_topic_manager_logs_unknown_topics(self):
         """Test: TopicManager loggt unbekannte Topics"""
         # Vereinfachter Test ohne komplexe Mock-Setup
-        with patch('src_orbis.omf.tools.registry_manager.get_logger') as mock_get_logger:
+        with patch('omf.tools.registry_manager.get_logger') as mock_get_logger:
             mock_logger = MagicMock()
             mock_get_logger.return_value = mock_logger
 
             # Mock Registry
-            with patch('src_orbis.omf.tools.registry_manager.Registry') as mock_registry:
+            with patch('omf.tools.registry_manager.Registry') as mock_registry:
                 mock_registry_instance = MagicMock()
                 mock_registry.return_value = mock_registry_instance
 
@@ -118,14 +118,14 @@ class TestManagersLoggingBehavior(unittest.TestCase):
         mock_client = MagicMock(spec=OmfMqttClient)
         mock_client.publish_json.return_value = True
 
-        with patch('src_orbis.omf.tools.mqtt_gateway.get_logger') as mock_get_logger:
+        with patch('omf.tools.mqtt_gateway.get_logger') as mock_get_logger:
             mock_logger = MagicMock()
             mock_get_logger.return_value = mock_logger
 
             gateway = MqttGateway(mock_client)
 
             # Mock message generator
-            with patch('src_orbis.omf.tools.mqtt_gateway.mg') as mock_mg:
+            with patch('omf.tools.mqtt_gateway.mg') as mock_mg:
                 mock_mg.test_builder = MagicMock(return_value={"test": "data"})
 
                 # Teste MQTT-Publishing
@@ -152,14 +152,14 @@ class TestManagersLoggingBehavior(unittest.TestCase):
         mock_client = MagicMock(spec=OmfMqttClient)
         mock_client.publish_json.return_value = False  # Simuliere Fehler
 
-        with patch('src_orbis.omf.tools.mqtt_gateway.get_logger') as mock_get_logger:
+        with patch('omf.tools.mqtt_gateway.get_logger') as mock_get_logger:
             mock_logger = MagicMock()
             mock_get_logger.return_value = mock_logger
 
             gateway = MqttGateway(mock_client)
 
             # Mock message generator
-            with patch('src_orbis.omf.tools.mqtt_gateway.mg') as mock_mg:
+            with patch('omf.tools.mqtt_gateway.mg') as mock_mg:
                 mock_mg.test_builder = MagicMock(return_value={"test": "data"})
 
                 # Teste MQTT-Publishing mit Fehler

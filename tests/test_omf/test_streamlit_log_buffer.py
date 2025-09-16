@@ -6,7 +6,7 @@ import logging
 import unittest
 from collections import deque
 
-from src_orbis.omf.tools.streamlit_log_buffer import RingBufferHandler
+from omf.tools.streamlit_log_buffer import RingBufferHandler
 
 
 class TestStreamlitLogBuffer(unittest.TestCase):

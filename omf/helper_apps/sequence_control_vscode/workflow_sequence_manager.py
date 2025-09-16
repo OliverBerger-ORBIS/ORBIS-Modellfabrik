@@ -1,7 +1,7 @@
 import threading
 from typing import Any, Dict, Optional
 
-from src_orbis.omf.tools.workflow_order_manager import get_workflow_order_manager
+from omf.tools.workflow_order_manager import get_workflow_order_manager
 
 from .sequence_loader import SequenceLoader
 

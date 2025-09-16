@@ -20,10 +20,10 @@ import unittest
 
 import yaml
 
-# Add src_orbis to path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "src_orbis"))
+# Add omf to path
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "omf"))
 
-from src_orbis.analysis_tools.template_analyzers.nodered_template_analyzer import NodeRedTemplateAnalyzer
+from omf.analysis_tools.template_analyzers.nodered_template_analyzer import NodeRedTemplateAnalyzer
 
 
 class TestNodeRedTemplateAnalyzer(unittest.TestCase):

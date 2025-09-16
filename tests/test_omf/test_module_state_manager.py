@@ -10,7 +10,7 @@ from unittest.mock import MagicMock, Mock
 
 import pytest
 
-from src_orbis.omf.tools.module_state_manager import (
+from omf.tools.module_state_manager import (
     CommandType,
     ModuleInfo,
     ModuleSequence,
@@ -27,7 +27,7 @@ class TestModuleStateManager:
     def setup_method(self):
         """Setup für jeden Test"""
         # Singleton zurücksetzen
-        from src_orbis.omf.tools.module_state_manager import ModuleStateManager
+        from omf.tools.module_state_manager import ModuleStateManager
 
         ModuleStateManager._instance = None
 

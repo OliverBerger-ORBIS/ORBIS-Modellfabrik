@@ -5,7 +5,7 @@ Exakte Kopie der show_dashboard_settings Funktion aus settings.py
 
 import streamlit as st
 
-from src_orbis.omf.dashboard.utils.ui_refresh import request_refresh
+from omf.dashboard.utils.ui_refresh import request_refresh
 
 
 def show_dashboard_settings():

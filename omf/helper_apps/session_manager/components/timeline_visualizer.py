@@ -9,7 +9,7 @@ import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 
-from src_orbis.omf.tools.topic_manager import OmfTopicManager
+from omf.tools.topic_manager import OmfTopicManager
 
 logger = logging.getLogger(__name__)
 

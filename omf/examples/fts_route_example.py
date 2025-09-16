@@ -8,7 +8,7 @@ import json
 import sys
 from pathlib import Path
 
-from src_orbis.omf.tools.fts_route_generator import FTSRouteGenerator
+from omf.tools.fts_route_generator import FTSRouteGenerator
 
 # Add project root to path
 project_root = Path(__file__).parent.parent

@@ -7,12 +7,12 @@ from datetime import datetime, timezone
 
 import streamlit as st
 
-from src_orbis.omf.dashboard.utils.ui_refresh import request_refresh
+from omf.dashboard.utils.ui_refresh import request_refresh
 
 # Template-Import hinzufügen
 # sys.path.append(os.path.join(os.path.dirname(__file__), "..", "assets"))  # Nicht mehr nötig nach pip install -e .
 try:
-    from src_orbis.omf.dashboard.assets.html_templates import get_workpiece_box_template
+    from omf.dashboard.assets.html_templates import get_workpiece_box_template
 
     TEMPLATES_AVAILABLE = True
 except ImportError as e:

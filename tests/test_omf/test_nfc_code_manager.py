@@ -11,10 +11,10 @@ import unittest
 
 import yaml
 
-# Add src_orbis to path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src_orbis"))
+# Add omf to path
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "omf"))
 
-from src_orbis.analysis_tools.nfc_code_manager import NFCCodeManager
+from omf.analysis_tools.nfc_code_manager import NFCCodeManager
 
 
 class TestNFCCodeManager(unittest.TestCase):
@@ -329,7 +329,7 @@ class TestNFCCodeManagerBackwardCompatibility(unittest.TestCase):
 
     def test_backward_compatibility_functions(self):
         """Test backward compatibility functions"""
-        from src_orbis.analysis_tools.nfc_code_manager import (
+        from omf.analysis_tools.nfc_code_manager import (
             get_all_nfc_codes,
             get_friendly_name,
             get_nfc_code,

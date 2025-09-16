@@ -9,8 +9,8 @@ import logging
 
 import streamlit as st
 
-from src_orbis.omf.tools.logging_config import get_logger
-from src_orbis.omf.tools.streamlit_log_buffer import RingBufferHandler, create_log_buffer
+from omf.tools.logging_config import get_logger
+from omf.tools.streamlit_log_buffer import RingBufferHandler, create_log_buffer
 
 logger = get_logger("session_manager.logs")
 

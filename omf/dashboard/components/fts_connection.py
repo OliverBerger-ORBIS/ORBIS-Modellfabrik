@@ -13,7 +13,7 @@ import streamlit as st
 
 # MessageTemplate Bibliothek Import
 try:
-    from src_orbis.omf.tools.message_template_manager import get_message_template_manager
+    from omf.tools.message_template_manager import get_message_template_manager
 
     TEMPLATE_MANAGER_AVAILABLE = True
 except ImportError as e:

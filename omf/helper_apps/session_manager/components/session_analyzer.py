@@ -10,7 +10,7 @@ from typing import Dict, List
 
 import streamlit as st
 
-from src_orbis.omf.tools.topic_manager import OmfTopicManager
+from omf.tools.topic_manager import OmfTopicManager
 
 logger = logging.getLogger(__name__)
 

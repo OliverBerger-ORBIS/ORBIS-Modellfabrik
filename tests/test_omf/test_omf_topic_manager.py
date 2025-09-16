@@ -10,7 +10,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
 import unittest
 
-from src_orbis.omf.tools.topic_manager import get_omf_topic_manager
+from omf.tools.topic_manager import get_omf_topic_manager
 
 
 class TestOMFTopicManager(unittest.TestCase):

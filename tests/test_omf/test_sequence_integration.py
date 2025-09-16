@@ -9,7 +9,7 @@ import unittest
 from unittest.mock import MagicMock, Mock
 
 # Pfad für Imports
-# sys.path.append(os.path.join(os.path.dirname(__file__), "..", "src_orbis"))  # Nicht mehr nötig nach pip install -e .
+# sys.path.append(os.path.join(os.path.dirname(__file__), "..", "omf"))  # Nicht mehr nötig nach pip install -e .
 
 
 class TestSequenceIntegration(unittest.TestCase):
@@ -24,7 +24,7 @@ class TestSequenceIntegration(unittest.TestCase):
     def test_import_sequence_ui(self):
         """Test: SequenceUI kann importiert werden"""
         try:
-            from src_orbis.omf.tools.sequence_ui import SequenceUI
+            from omf.tools.sequence_ui import SequenceUI
 
             self.assertTrue(True, "SequenceUI Import erfolgreich")
         except ImportError as e:
@@ -33,7 +33,7 @@ class TestSequenceIntegration(unittest.TestCase):
     def test_import_sequence_executor(self):
         """Test: SequenceExecutor kann importiert werden"""
         try:
-            from src_orbis.omf.tools.sequence_executor import SequenceDefinition, SequenceExecutor, SequenceStep
+            from omf.tools.sequence_executor import SequenceDefinition, SequenceExecutor, SequenceStep
 
             self.assertTrue(True, "SequenceExecutor Import erfolgreich")
         except ImportError as e:
@@ -42,7 +42,7 @@ class TestSequenceIntegration(unittest.TestCase):
     def test_import_workflow_order_manager(self):
         """Test: WorkflowOrderManager kann importiert werden"""
         try:
-            from src_orbis.omf.tools.workflow_order_manager import WorkflowOrder, get_workflow_order_manager
+            from omf.tools.workflow_order_manager import WorkflowOrder, get_workflow_order_manager
 
             self.assertTrue(True, "WorkflowOrderManager Import erfolgreich")
         except ImportError as e:
@@ -51,7 +51,7 @@ class TestSequenceIntegration(unittest.TestCase):
     def test_sequence_executor_initialization(self):
         """Test: SequenceExecutor kann initialisiert werden"""
         try:
-            from src_orbis.omf.tools.sequence_executor import SequenceExecutor
+            from omf.tools.sequence_executor import SequenceExecutor
 
             executor = SequenceExecutor(self.mock_mqtt_client)
             self.assertIsNotNone(executor)
@@ -62,8 +62,8 @@ class TestSequenceIntegration(unittest.TestCase):
     def test_sequence_ui_initialization(self):
         """Test: SequenceUI kann initialisiert werden"""
         try:
-            from src_orbis.omf.tools.sequence_executor import SequenceExecutor
-            from src_orbis.omf.tools.sequence_ui import SequenceUI
+            from omf.tools.sequence_executor import SequenceExecutor
+            from omf.tools.sequence_ui import SequenceUI
 
             executor = SequenceExecutor(self.mock_mqtt_client)
             ui = SequenceUI(executor)
@@ -75,7 +75,7 @@ class TestSequenceIntegration(unittest.TestCase):
     def test_sequence_definition_creation(self):
         """Test: SequenceDefinition kann erstellt werden"""
         try:
-            from src_orbis.omf.tools.sequence_executor import SequenceDefinition, SequenceStep
+            from omf.tools.sequence_executor import SequenceDefinition, SequenceStep
 
             step = SequenceStep(step_id=1, name="TEST_STEP", topic="test/topic", payload={"test": "data"})
 
@@ -90,7 +90,7 @@ class TestSequenceIntegration(unittest.TestCase):
     def test_workflow_order_creation(self):
         """Test: WorkflowOrder kann erstellt werden"""
         try:
-            from src_orbis.omf.tools.workflow_order_manager import get_workflow_order_manager
+            from omf.tools.workflow_order_manager import get_workflow_order_manager
 
             manager = get_workflow_order_manager()
             order = manager.create_order("test_sequence")
@@ -104,7 +104,7 @@ class TestSequenceIntegration(unittest.TestCase):
     def test_sequence_executor_execute_sequence(self):
         """Test: execute_sequence Methode funktioniert"""
         try:
-            from src_orbis.omf.tools.sequence_executor import SequenceDefinition, SequenceExecutor, SequenceStep
+            from omf.tools.sequence_executor import SequenceDefinition, SequenceExecutor, SequenceStep
 
             executor = SequenceExecutor(self.mock_mqtt_client)
 
@@ -122,8 +122,8 @@ class TestSequenceIntegration(unittest.TestCase):
     def test_sequence_ui_methods_exist(self):
         """Test: Alle benötigten SequenceUI Methoden existieren"""
         try:
-            from src_orbis.omf.tools.sequence_executor import SequenceExecutor
-            from src_orbis.omf.tools.sequence_ui import SequenceUI
+            from omf.tools.sequence_executor import SequenceExecutor
+            from omf.tools.sequence_ui import SequenceUI
 
             executor = SequenceExecutor(self.mock_mqtt_client)
             ui = SequenceUI(executor)
@@ -148,7 +148,7 @@ class TestSequenceIntegration(unittest.TestCase):
     def test_sequence_definition_loader(self):
         """Test: SequenceDefinitionLoader kann Sequenzen laden"""
         try:
-            from src_orbis.omf.tools.sequence_definition import SequenceDefinitionLoader
+            from omf.tools.sequence_definition import SequenceDefinitionLoader
 
             loader = SequenceDefinitionLoader()
             sequences = loader.get_all_sequences()
@@ -169,7 +169,7 @@ class TestSequenceIntegration(unittest.TestCase):
     def test_dashboard_component_import(self):
         """Test: Dashboard-Komponente kann importiert werden"""
         try:
-            from src_orbis.omf.dashboard.components.steering_sequence import show_sequence_steering
+            from omf.dashboard.components.steering_sequence import show_sequence_steering
 
             self.assertTrue(callable(show_sequence_steering))
         except Exception as e:
@@ -178,7 +178,7 @@ class TestSequenceIntegration(unittest.TestCase):
     def test_aiqs_sequence_import(self):
         """Test: AIQS-Sequenz kann importiert werden"""
         try:
-            from src_orbis.omf.sequences.aiqs_sequence import get_sequence_definition
+            from omf.sequences.aiqs_sequence import get_sequence_definition
 
             sequence = get_sequence_definition()
             self.assertIsNotNone(sequence)
@@ -189,8 +189,8 @@ class TestSequenceIntegration(unittest.TestCase):
     def test_sequence_ui_mqtt_client_handling(self):
         """Test: SequenceUI kann MQTT-Client korrekt handhaben"""
         try:
-            from src_orbis.omf.tools.sequence_executor import SequenceExecutor
-            from src_orbis.omf.tools.sequence_ui import SequenceUI
+            from omf.tools.sequence_executor import SequenceExecutor
+            from omf.tools.sequence_ui import SequenceUI
 
             executor = SequenceExecutor(self.mock_mqtt_client)
             ui = SequenceUI(executor)
@@ -209,8 +209,8 @@ class TestSequenceIntegration(unittest.TestCase):
     def test_sequence_ui_object_attributes(self):
         """Test: SequenceUI Objekte haben korrekte Attribute"""
         try:
-            from src_orbis.omf.tools.sequence_executor import SequenceExecutor
-            from src_orbis.omf.tools.sequence_ui import SequenceUI
+            from omf.tools.sequence_executor import SequenceExecutor
+            from omf.tools.sequence_ui import SequenceUI
 
             executor = SequenceExecutor(self.mock_mqtt_client)
             ui = SequenceUI(executor)
@@ -229,7 +229,7 @@ class TestSequenceErrorHandling(unittest.TestCase):
     def test_sequence_executor_without_mqtt(self):
         """Test: SequenceExecutor funktioniert ohne MQTT-Client"""
         try:
-            from src_orbis.omf.tools.sequence_executor import SequenceExecutor
+            from omf.tools.sequence_executor import SequenceExecutor
 
             executor = SequenceExecutor(None)
             self.assertIsNotNone(executor)
@@ -240,8 +240,8 @@ class TestSequenceErrorHandling(unittest.TestCase):
     def test_sequence_ui_without_mqtt(self):
         """Test: SequenceUI funktioniert ohne MQTT-Client"""
         try:
-            from src_orbis.omf.tools.sequence_executor import SequenceExecutor
-            from src_orbis.omf.tools.sequence_ui import SequenceUI
+            from omf.tools.sequence_executor import SequenceExecutor
+            from omf.tools.sequence_ui import SequenceUI
 
             executor = SequenceExecutor(None)
             ui = SequenceUI(executor)
@@ -256,7 +256,7 @@ class TestSequenceErrorHandling(unittest.TestCase):
     def test_sequence_definition_validation(self):
         """Test: SequenceDefinition Validierung"""
         try:
-            from src_orbis.omf.tools.sequence_executor import SequenceDefinition, SequenceStep
+            from omf.tools.sequence_executor import SequenceDefinition, SequenceStep
 
             # Test: Leere Sequenz
             empty_sequence = SequenceDefinition(name="empty", description="Empty sequence", steps=[])

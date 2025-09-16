@@ -29,7 +29,7 @@ def start_end2end_session():
     # APS Session Logger starten
     logger_command = [
         "python",
-        "src_orbis/mqtt/loggers/aps_session_logger.py",
+        "omf/mqtt/loggers/aps_session_logger.py",
         "--session-label",
         session_name,
         "--auto-start",
@@ -63,7 +63,7 @@ def main():
     print("=" * 50)
 
     # Prüfen ob APS Session Logger existiert
-    logger_path = "src_orbis/mqtt/loggers/aps_session_logger.py"
+    logger_path = "omf/mqtt/loggers/aps_session_logger.py"
     if not os.path.exists(logger_path):
         print(f"❌ APS Session Logger nicht gefunden: {logger_path}")
         print("💡 Stelle sicher, dass das Projekt korrekt installiert ist")

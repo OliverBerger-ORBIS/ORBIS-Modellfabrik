@@ -16,8 +16,8 @@ tools_path = os.path.join(os.path.dirname(__file__), "..", "..", "tools")
 # sys.path.append(tools_path)  # Nicht mehr nötig nach pip install -e .
 
 try:
-    from src_orbis.omf.tools.sequence_executor import SequenceExecutor
-    from src_orbis.omf.tools.sequence_ui import SequenceUI
+    from omf.tools.sequence_executor import SequenceExecutor
+    from omf.tools.sequence_ui import SequenceUI
 
     SEQUENCE_TOOLS_AVAILABLE = True
     logger.info("✅ Sequenz-Tools verfügbar")

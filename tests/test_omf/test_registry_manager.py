@@ -9,7 +9,7 @@ from pathlib import Path
 import pytest
 import yaml
 
-from src_orbis.omf.tools.registry_manager import (
+from omf.tools.registry_manager import (
     MessageTemplateManager,
     Registry,
     TemplateMissingError,

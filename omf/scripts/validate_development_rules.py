@@ -74,10 +74,10 @@ class DevelopmentRulesValidator:
         if 'sys.path.append' in content:
             errors.append("❌ sys.path.append() gefunden - verwende absolute Imports")
 
-        # Lokale Imports finden (ohne src_orbis)
+        # Lokale Imports finden (ohne omf)
         local_imports = re.findall(r'from\s+([a-zA-Z_][a-zA-Z0-9_]*)\s+import', content)
         for imp in local_imports:
-            if not imp.startswith('src_orbis') and imp not in [
+            if not imp.startswith('omf') and imp not in [
                 'os',
                 'sys',
                 'json',
@@ -115,11 +115,11 @@ class DevelopmentRulesValidator:
         errors = []
 
         # Nur für OMF-Komponenten prüfen
-        if 'src_orbis/omf/' not in str(file_path) and 'src_orbis/helper_apps/' not in str(file_path):
+        if 'omf/omf/' not in str(file_path) and 'omf/helper_apps/' not in str(file_path):
             return errors
 
         # Standard logging statt OMF-Logging
-        if 'import logging' in content and 'from src_orbis.omf.tools.logging_config import get_logger' not in content:
+        if 'import logging' in content and 'from omf.tools.logging_config import get_logger' not in content:
             errors.append("❌ Standard logging gefunden - verwende OMF-Logging-System")
 
         # logging.getLogger() statt get_logger()
@@ -171,8 +171,8 @@ class DevelopmentRulesValidator:
                 if d not in ['.git', '__pycache__', '.pytest_cache', 'node_modules', '.venv', 'venv', 'env']
             ]
 
-            # Nur src_orbis und tests_orbis prüfen
-            if 'src_orbis' not in root and 'tests_orbis' not in root:
+            # Nur omf und tests_orbis prüfen
+            if 'omf' not in root and 'tests_orbis' not in root:
                 continue
 
             for file in files:

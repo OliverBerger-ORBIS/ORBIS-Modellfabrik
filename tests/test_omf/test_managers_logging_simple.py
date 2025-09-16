@@ -9,10 +9,10 @@ import unittest
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-from src_orbis.omf.tools.message_template_manager import OmfMessageTemplateManager
-from src_orbis.omf.tools.mqtt_gateway import MqttGateway
-from src_orbis.omf.tools.omf_mqtt_client import OmfMqttClient
-from src_orbis.omf.tools.registry_manager import Registry, TopicManager
+from omf.tools.message_template_manager import OmfMessageTemplateManager
+from omf.tools.mqtt_gateway import MqttGateway
+from omf.tools.omf_mqtt_client import OmfMqttClient
+from omf.tools.registry_manager import Registry, TopicManager
 
 
 class TestManagersLoggingSimple(unittest.TestCase):
@@ -62,17 +62,17 @@ class TestManagersLoggingSimple(unittest.TestCase):
     def test_logging_uses_get_logger_function(self):
         """Test: Manager verwenden get_logger() Funktion"""
         # Prüfe ob alle Manager get_logger() importieren
-        with open('src_orbis/omf/tools/message_template_manager.py') as f:
+        with open('omf/omf/tools/message_template_manager.py') as f:
             content = f.read()
-            self.assertIn('from src_orbis.omf.tools.logging_config import get_logger', content)
+            self.assertIn('from omf.tools.logging_config import get_logger', content)
             self.assertIn('get_logger(', content)
 
-        with open('src_orbis/omf/tools/registry_manager.py') as f:
+        with open('omf/omf/tools/registry_manager.py') as f:
             content = f.read()
-            self.assertIn('from src_orbis.omf.tools.logging_config import get_logger', content)
+            self.assertIn('from omf.tools.logging_config import get_logger', content)
             self.assertIn('get_logger(', content)
 
-        with open('src_orbis/omf/tools/mqtt_gateway.py') as f:
+        with open('omf/omf/tools/mqtt_gateway.py') as f:
             content = f.read()
             self.assertIn('from .logging_config import get_logger', content)
             self.assertIn('get_logger(', content)
@@ -80,7 +80,7 @@ class TestManagersLoggingSimple(unittest.TestCase):
     def test_logging_does_not_use_print_statements(self):
         """Test: Manager verwenden keine print() Statements mehr"""
         # Prüfe ob MqttGateway keine print() Statements hat
-        with open('src_orbis/omf/tools/mqtt_gateway.py') as f:
+        with open('omf/omf/tools/mqtt_gateway.py') as f:
             content = f.read()
             # Sollte keine print() Statements haben
             self.assertNotIn('print(', content)
@@ -91,7 +91,7 @@ class TestManagersLoggingSimple(unittest.TestCase):
         mock_client = MagicMock(spec=OmfMqttClient)
 
         # Capture Log-Messages
-        with patch('src_orbis.omf.tools.mqtt_gateway.get_logger') as mock_get_logger:
+        with patch('omf.tools.mqtt_gateway.get_logger') as mock_get_logger:
             mock_logger = MagicMock()
             mock_get_logger.return_value = mock_logger
 
@@ -106,7 +106,7 @@ class TestManagersLoggingSimple(unittest.TestCase):
         mock_client = MagicMock(spec=OmfMqttClient)
 
         # Capture Log-Messages
-        with patch('src_orbis.omf.tools.mqtt_gateway.get_logger') as mock_get_logger:
+        with patch('omf.tools.mqtt_gateway.get_logger') as mock_get_logger:
             mock_logger = MagicMock()
             mock_get_logger.return_value = mock_logger
 
@@ -126,7 +126,7 @@ class TestManagersLoggingSimple(unittest.TestCase):
         # Mock MQTT Client
         mock_client = MagicMock(spec=OmfMqttClient)
 
-        with patch('src_orbis.omf.tools.mqtt_gateway.get_logger') as mock_get_logger:
+        with patch('omf.tools.mqtt_gateway.get_logger') as mock_get_logger:
             mock_logger = MagicMock()
             mock_get_logger.return_value = mock_logger
 
@@ -149,7 +149,7 @@ class TestManagersLoggingSimple(unittest.TestCase):
         # Mock MQTT Client
         mock_client = MagicMock(spec=OmfMqttClient)
 
-        with patch('src_orbis.omf.tools.mqtt_gateway.get_logger') as mock_get_logger:
+        with patch('omf.tools.mqtt_gateway.get_logger') as mock_get_logger:
             mock_logger = MagicMock()
             mock_get_logger.return_value = mock_logger
 
@@ -174,7 +174,7 @@ class TestManagersLoggingSimple(unittest.TestCase):
         # Mock MQTT Client
         mock_client = MagicMock(spec=OmfMqttClient)
 
-        with patch('src_orbis.omf.tools.mqtt_gateway.get_logger') as mock_get_logger:
+        with patch('omf.tools.mqtt_gateway.get_logger') as mock_get_logger:
             mock_logger = MagicMock()
             mock_get_logger.return_value = mock_logger
 
@@ -188,9 +188,9 @@ class TestManagersLoggingSimple(unittest.TestCase):
         """Test: Alle Manager haben Logging integriert"""
         # Prüfe ob alle Manager-Dateien Logging-Imports haben
         manager_files = [
-            'src_orbis/omf/tools/message_template_manager.py',
-            'src_orbis/omf/tools/registry_manager.py',
-            'src_orbis/omf/tools/mqtt_gateway.py',
+            'omf/omf/tools/message_template_manager.py',
+            'omf/omf/tools/registry_manager.py',
+            'omf/omf/tools/mqtt_gateway.py',
         ]
 
         for file_path in manager_files:

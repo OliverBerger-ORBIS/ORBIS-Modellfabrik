@@ -51,7 +51,7 @@ class OmfModuleManager:
             return str(registry_path)
 
         # Fallback to legacy config (deprecated)
-        legacy_path = project_root / "src_orbis" / "omf" / "config" / "module_config.yml"
+        legacy_path = project_root / "omf" / "omf" / "config" / "module_config.yml"
         print("⚠️ Using deprecated module_config.yml - consider migrating to registry/model/v0/modules.yml")
         return str(legacy_path)
 

@@ -8,8 +8,8 @@ import os
 import sys
 import unittest
 
-# Add src_orbis to path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src_orbis"))
+# Add omf to path
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "omf"))
 
 
 class TestMqttClientSessionState(unittest.TestCase):
@@ -23,7 +23,7 @@ class TestMqttClientSessionState(unittest.TestCase):
     def test_mqtt_client_creation(self):
         """Testet MQTT Client Erstellung"""
         try:
-            from src_orbis.omf.tools.omf_mqtt_factory import get_omf_mqtt_client
+            from omf.tools.omf_mqtt_factory import get_omf_mqtt_client
 
             # Test-Konfiguration
             test_config = {
@@ -55,7 +55,7 @@ class TestMqttClientSessionState(unittest.TestCase):
     def test_mqtt_client_methods(self):
         """Testet MQTT Client Methoden"""
         try:
-            from src_orbis.omf.tools.omf_mqtt_factory import get_omf_mqtt_client
+            from omf.tools.omf_mqtt_factory import get_omf_mqtt_client
 
             # Test-Konfiguration
             test_config = {
@@ -91,7 +91,7 @@ class TestMqttClientSessionState(unittest.TestCase):
     def test_session_state_simulation(self):
         """Simuliert Streamlit Session State"""
         try:
-            from src_orbis.omf.tools.omf_mqtt_factory import get_omf_mqtt_client
+            from omf.tools.omf_mqtt_factory import get_omf_mqtt_client
 
             # Test-Konfiguration
             test_config = {
@@ -131,7 +131,7 @@ class TestMqttClientSessionState(unittest.TestCase):
     def test_clear_history_functionality(self):
         """Testet clear_history Funktionalität"""
         try:
-            from src_orbis.omf.tools.omf_mqtt_factory import get_omf_mqtt_client
+            from omf.tools.omf_mqtt_factory import get_omf_mqtt_client
 
             # Test-Konfiguration
             test_config = {
@@ -166,7 +166,7 @@ class TestMqttClientSessionState(unittest.TestCase):
     def test_mqtt_client_attributes(self):
         """Testet alle wichtigen MQTT Client Attribute"""
         try:
-            from src_orbis.omf.tools.omf_mqtt_factory import get_omf_mqtt_client
+            from omf.tools.omf_mqtt_factory import get_omf_mqtt_client
 
             # Test-Konfiguration
             test_config = {

@@ -13,10 +13,10 @@ import unittest
 from datetime import datetime
 from unittest.mock import patch
 
-# Add src_orbis to path for imports
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src_orbis"))
+# Add omf to path for imports
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "omf"))
 
-from src_orbis.omf.tools.message_generator import MessageGenerator
+from omf.tools.message_generator import MessageGenerator
 
 
 class TestFactoryReset(unittest.TestCase):

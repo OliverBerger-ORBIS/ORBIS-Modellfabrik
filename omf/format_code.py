@@ -49,17 +49,17 @@ def main():
     print("=" * 50)
 
     # Python-Dateien finden
-    python_files = list(Path("src_orbis").rglob("*.py"))
+    python_files = list(Path("omf").rglob("*.py"))
     python_files.extend(Path("tests_orbis").rglob("*.py"))
 
     print(f"📁 Gefundene Python-Dateien: {len(python_files)}")
 
     # 1. Black Formatierung
-    success = run_command("python -m black src_orbis/ tests_orbis/", "Black Formatierung")
+    success = run_command("python -m black omf/ tests_orbis/", "Black Formatierung")
 
     # 2. isort Import-Sortierung
     if success:
-        success = run_command("python -m isort src_orbis/ tests_orbis/", "Import-Sortierung")
+        success = run_command("python -m isort omf/ tests_orbis/", "Import-Sortierung")
 
     # 3. Syntax-Prüfung
     if success:
@@ -78,7 +78,7 @@ def main():
     # 4. Flake8 Linting
     if success:
         success = run_command(
-            "python -m flake8 src_orbis/ tests_orbis/ --max-line-length=88 --ignore=E203,W503",
+            "python -m flake8 omf/ tests_orbis/ --max-line-length=88 --ignore=E203,W503",
             "Code-Linting",
         )
 

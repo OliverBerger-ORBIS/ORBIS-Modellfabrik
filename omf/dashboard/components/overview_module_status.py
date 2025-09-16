@@ -16,7 +16,7 @@ import streamlit as st
 
 # Import module manager for static module info
 try:
-    from src_orbis.omf.tools.module_manager import get_omf_module_manager
+    from omf.tools.module_manager import get_omf_module_manager
 except ImportError:
     # Fallback if module manager not available
     get_omf_module_manager = None

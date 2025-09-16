@@ -10,18 +10,18 @@ from pathlib import Path
 import streamlit as st
 
 # Import components
-from src_orbis.helper_apps.session_manager.components.auftrag_rot_analyzer import show_auftrag_rot_analysis
-from src_orbis.helper_apps.session_manager.components.logs import show_logs
-from src_orbis.helper_apps.session_manager.components.order_analyzer import show_order_analyzer
-from src_orbis.helper_apps.session_manager.components.replay_station import show_replay_station
-from src_orbis.helper_apps.session_manager.components.session_analysis import show_session_analysis
-from src_orbis.helper_apps.session_manager.components.session_recorder import show_session_recorder
-from src_orbis.helper_apps.session_manager.components.settings_manager import SettingsManager
-from src_orbis.helper_apps.session_manager.components.settings_ui import SettingsUI
-from src_orbis.helper_apps.session_manager.components.template_analysis import show_template_analysis
-from src_orbis.omf.dashboard.utils.ui_refresh import consume_refresh, request_refresh
-from src_orbis.omf.tools.logging_config import configure_logging, get_logger
-from src_orbis.omf.tools.registry_manager import get_registry
+from omf.helper_apps.session_manager.components.auftrag_rot_analyzer import show_auftrag_rot_analysis
+from omf.helper_apps.session_manager.components.logs import show_logs
+from omf.helper_apps.session_manager.components.order_analyzer import show_order_analyzer
+from omf.helper_apps.session_manager.components.replay_station import show_replay_station
+from omf.helper_apps.session_manager.components.session_analysis import show_session_analysis
+from omf.helper_apps.session_manager.components.session_recorder import show_session_recorder
+from omf.helper_apps.session_manager.components.settings_manager import SettingsManager
+from omf.helper_apps.session_manager.components.settings_ui import SettingsUI
+from omf.helper_apps.session_manager.components.template_analysis import show_template_analysis
+from omf.dashboard.utils.ui_refresh import consume_refresh, request_refresh
+from omf.tools.logging_config import configure_logging, get_logger
+from omf.tools.registry_manager import get_registry
 
 # Page configuration
 st.set_page_config(page_title="Session Manager", page_icon="🎙️", layout="wide", initial_sidebar_state="expanded")

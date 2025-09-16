@@ -21,8 +21,8 @@ from dataclasses import dataclass
 from pathlib import Path
 
 # --- Projektpfade (falls nötig anpassen) ---
-COMPONENTS_DIR = Path("src_orbis/omf/dashboard/components")
-DASHBOARD_ENTRY = Path("src_orbis/omf/dashboard/omf_dashboard.py")
+COMPONENTS_DIR = Path("omf/omf/dashboard/components")
+DASHBOARD_ENTRY = Path("omf/omf/dashboard/omf_dashboard.py")
 
 # --- Feste Namensregeln (keine Config nötig) ---
 CLIENT_CLASS_NAME = "OmfMqttClient"
@@ -88,7 +88,7 @@ class Checker(ast.NodeVisitor):
                 "WARN",
                 "R014",
                 node,
-                "Relativer Import erkannt - verwende absolute Imports: from src_orbis.module import Class",
+                "Relativer Import erkannt - verwende absolute Imports: from omf.module import Class",
             )
 
         mod = node.module or ""

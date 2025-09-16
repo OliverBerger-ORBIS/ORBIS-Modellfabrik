@@ -5,14 +5,14 @@ from typing import Dict, List, Optional
 
 import yaml
 
-# Add the src_orbis directory to the Python path
+# Add the omf directory to the Python path
 current_dir = os.path.dirname(os.path.abspath(__file__))
-src_orbis_path = os.path.join(current_dir, "..", "..", "..")
-if src_orbis_path not in sys.path:
-    sys.path.insert(0, src_orbis_path)
+omf_path = os.path.join(current_dir, "..", "..", "..")
+if omf_path not in sys.path:
+    sys.path.insert(0, omf_path)
 
 try:
-    from src_orbis.omf.config.config_loader import OmfConfig
+    from omf.config.config_loader import OmfConfig
 except ImportError:
     # Fallback für Tests
     class OmfConfig:

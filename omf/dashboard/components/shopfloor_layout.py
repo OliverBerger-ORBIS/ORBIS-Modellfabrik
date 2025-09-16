@@ -360,7 +360,7 @@ def get_module_positions() -> List[Dict[str, Any]]:
         config_file = Path(__file__).parent.parent.parent.parent / "config" / "shopfloor" / "layout.yml"
         # Fallback für absoluten Pfad
         if not config_file.exists():
-            config_file = Path("src_orbis/omf/config/shopfloor/layout.yml")
+            config_file = Path("omf/omf/config/shopfloor/layout.yml")
         if config_file.exists():
             with open(config_file, encoding="utf-8") as f:
                 config = yaml.safe_load(f)
@@ -370,7 +370,7 @@ def get_module_positions() -> List[Dict[str, Any]]:
                 module_config_file = Path(__file__).parent.parent.parent.parent / "config" / "module_config.yml"
                 # Fallback für absoluten Pfad
                 if not module_config_file.exists():
-                    module_config_file = Path("src_orbis/omf/config/module_config.yml")
+                    module_config_file = Path("omf/omf/config/module_config.yml")
                 if module_config_file.exists():
                     with open(module_config_file, encoding="utf-8") as f:
                         module_config = yaml.safe_load(f)

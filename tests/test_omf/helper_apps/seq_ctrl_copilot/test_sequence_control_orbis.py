@@ -1,13 +1,13 @@
 import os
 import sys
 
-# Workspace-Root zum sys.path hinzufügen, damit src_orbis als Package gefunden wird
+# Workspace-Root zum sys.path hinzufügen, damit omf als Package gefunden wird
 WORKSPACE_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
 if WORKSPACE_ROOT not in sys.path:
     sys.path.insert(0, WORKSPACE_ROOT)
 import pytest
 
-from src_orbis.helper_apps.seq_ctrl_copilot.sequence_control_orbis import WorkflowOrderManager
+from omf.helper_apps.seq_ctrl_copilot.sequence_control_orbis import WorkflowOrderManager
 
 
 @pytest.fixture

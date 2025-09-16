@@ -9,10 +9,10 @@ from datetime import datetime, timezone
 
 import streamlit as st
 
-from src_orbis.omf.dashboard.utils.ui_refresh import request_refresh
+from omf.dashboard.utils.ui_refresh import request_refresh
 
 # MqttGateway für sauberes Publishing
-from src_orbis.omf.tools.mqtt_gateway import MqttGateway
+from omf.tools.mqtt_gateway import MqttGateway
 
 # WorkflowOrderManager für korrekte orderId/orderUpdateId Verwaltung
 
@@ -492,7 +492,7 @@ def _prepare_navigation_message(navigation_type: str):
         return
 
     # MessageGenerator verwenden
-    from src_orbis.omf.tools.message_generator import get_omf_message_generator
+    from omf.tools.message_generator import get_omf_message_generator
 
     generator = get_omf_message_generator()
 

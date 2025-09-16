@@ -5,7 +5,7 @@ Topic Filter Manager - Handles topic filtering and categorization
 import logging
 from typing import Dict, List
 
-from src_orbis.omf.tools.topic_manager import OmfTopicManager
+from omf.tools.topic_manager import OmfTopicManager
 
 logger = logging.getLogger(__name__)
 

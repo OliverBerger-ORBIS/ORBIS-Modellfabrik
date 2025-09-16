@@ -9,12 +9,12 @@ from typing import Any, Dict
 
 import streamlit as st
 
-from src_orbis.analysis_tools.template_analyzers.ccu_template_analyzer import CCUTemplateAnalyzer
+from omf.analysis_tools.template_analyzers.ccu_template_analyzer import CCUTemplateAnalyzer
 
 # Import bestehende Template-Analyser
-from src_orbis.analysis_tools.template_analyzers.module_template_analyzer import ModuleTemplateAnalyzer
-from src_orbis.analysis_tools.template_analyzers.nodered_template_analyzer import NodeRedTemplateAnalyzer
-from src_orbis.analysis_tools.template_analyzers.txt_template_analyzer import TXTTemplateAnalyzer
+from omf.analysis_tools.template_analyzers.module_template_analyzer import ModuleTemplateAnalyzer
+from omf.analysis_tools.template_analyzers.nodered_template_analyzer import NodeRedTemplateAnalyzer
+from omf.analysis_tools.template_analyzers.txt_template_analyzer import TXTTemplateAnalyzer
 
 logger = logging.getLogger(__name__)
 

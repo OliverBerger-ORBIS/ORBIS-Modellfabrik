@@ -5,8 +5,8 @@ Tests für die OMF Validierungsschicht
 
 import pytest
 
-from src_orbis.omf.tools.message_template_manager import OmfMessageTemplateManager
-from src_orbis.omf.tools.validators import validate
+from omf.tools.message_template_manager import OmfMessageTemplateManager
+from omf.tools.validators import validate
 
 
 class TestValidators:

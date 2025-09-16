@@ -21,7 +21,7 @@ class TestNewDashboardComponents(unittest.TestCase):
     def test_overview_product_catalog_import(self):
         """Test: Overview Product Catalog Komponente kann importiert werden"""
         try:
-            from src_orbis.omf.dashboard.components.overview_product_catalog import show_overview_product_catalog
+            from omf.dashboard.components.overview_product_catalog import show_overview_product_catalog
 
             self.assertTrue(
                 callable(show_overview_product_catalog), "show_overview_product_catalog sollte aufrufbar sein"
@@ -33,7 +33,7 @@ class TestNewDashboardComponents(unittest.TestCase):
     def test_production_order_production_planning_import(self):
         """Test: Production Order Production Planning Komponente kann importiert werden"""
         try:
-            from src_orbis.omf.dashboard.components.production_order_production_planning import (
+            from omf.dashboard.components.production_order_production_planning import (
                 show_production_order_production_planning,
             )
 
@@ -48,7 +48,7 @@ class TestNewDashboardComponents(unittest.TestCase):
     def test_product_catalog_loading(self):
         """Test: Produktkatalog kann geladen werden"""
         try:
-            from src_orbis.omf.dashboard.components.overview_product_catalog import load_product_catalog
+            from omf.dashboard.components.overview_product_catalog import load_product_catalog
 
             # Mock der YAML-Datei
             mock_catalog = {
@@ -60,7 +60,7 @@ class TestNewDashboardComponents(unittest.TestCase):
                 },
             }
 
-            with patch("src_orbis.omf.dashboard.components.overview_product_catalog.Path") as mock_path:
+            with patch("omf.dashboard.components.overview_product_catalog.Path") as mock_path:
                 mock_path.return_value.exists.return_value = True
                 with patch("builtins.open", MagicMock()):
                     with patch("yaml.safe_load", return_value=mock_catalog):
@@ -78,7 +78,7 @@ class TestNewDashboardComponents(unittest.TestCase):
     def test_manufacturing_steps_loading(self):
         """Test: Fertigungsschritte können geladen werden"""
         try:
-            from src_orbis.omf.dashboard.components.production_order_production_planning import load_product_catalog
+            from omf.dashboard.components.production_order_production_planning import load_product_catalog
 
             # Mock der YAML-Datei mit Fertigungsschritten
             mock_catalog = {
@@ -94,7 +94,7 @@ class TestNewDashboardComponents(unittest.TestCase):
                 },
             }
 
-            with patch("src_orbis.omf.dashboard.components.production_order_production_planning.Path") as mock_path:
+            with patch("omf.dashboard.components.production_order_production_planning.Path") as mock_path:
                 mock_path.return_value.exists.return_value = True
                 with patch("builtins.open", MagicMock()):
                     with patch("yaml.safe_load", return_value=mock_catalog):
@@ -116,7 +116,7 @@ class TestNewDashboardComponents(unittest.TestCase):
     def test_html_templates_import(self):
         """Test: HTML-Templates können importiert werden"""
         try:
-            from src_orbis.omf.dashboard.assets.html_templates import get_product_catalog_template
+            from omf.dashboard.assets.html_templates import get_product_catalog_template
 
             self.assertTrue(
                 callable(get_product_catalog_template), "get_product_catalog_template sollte aufrufbar sein"
@@ -135,7 +135,7 @@ class TestNewDashboardComponents(unittest.TestCase):
     def test_shopfloor_layout_icon_loading(self):
         """Test: Shopfloor Layout Icon-Loading funktioniert"""
         try:
-            from src_orbis.omf.dashboard.components.shopfloor_layout import display_module_icon, get_module_icon_path
+            from omf.dashboard.components.shopfloor_layout import display_module_icon, get_module_icon_path
 
             self.assertTrue(callable(get_module_icon_path), "get_module_icon_path sollte aufrufbar sein")
             self.assertTrue(callable(display_module_icon), "display_module_icon sollte aufrufbar sein")
@@ -156,7 +156,7 @@ class TestNewDashboardComponents(unittest.TestCase):
     def test_shopfloor_layout_loading(self):
         """Test: Shopfloor Layout kann geladen werden"""
         try:
-            from src_orbis.omf.dashboard.components.shopfloor_layout import load_shopfloor_layout
+            from omf.dashboard.components.shopfloor_layout import load_shopfloor_layout
 
             # Mock der YAML-Datei
             mock_layout = {
@@ -169,7 +169,7 @@ class TestNewDashboardComponents(unittest.TestCase):
                 ],
             }
 
-            with patch("src_orbis.omf.dashboard.components.shopfloor_layout.Path") as mock_path:
+            with patch("omf.dashboard.components.shopfloor_layout.Path") as mock_path:
                 mock_path.return_value.exists.return_value = True
                 with patch("builtins.open", MagicMock()):
                     with patch("yaml.safe_load", return_value=mock_layout):
@@ -193,7 +193,7 @@ class TestNewDashboardYAMLConfigs(unittest.TestCase):
         try:
             import yaml
 
-            config_file = Path.cwd() / "src_orbis" / "omf" / "config" / "products" / "product_catalog.yml"
+            config_file = Path.cwd() / "omf" / "omf" / "config" / "products" / "product_catalog.yml"
             self.assertTrue(config_file.exists(), "product_catalog.yml sollte existieren")
 
             with open(config_file, encoding="utf-8") as f:
@@ -228,7 +228,7 @@ class TestNewDashboardYAMLConfigs(unittest.TestCase):
         try:
             import yaml
 
-            config_file = Path.cwd() / "src_orbis" / "omf" / "config" / "shopfloor" / "layout.yml"
+            config_file = Path.cwd() / "omf" / "omf" / "config" / "shopfloor" / "layout.yml"
             self.assertTrue(config_file.exists(), "layout.yml sollte existieren")
 
             with open(config_file, encoding="utf-8") as f:

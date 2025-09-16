@@ -5,9 +5,9 @@ Exakte Kopie der show_nfc_config() Funktion aus settings.py
 
 import streamlit as st
 
-from src_orbis.omf.tools.nfc_manager import get_omf_nfc_manager
+from omf.tools.nfc_manager import get_omf_nfc_manager
 
-# Add src_orbis to path for imports
+# Add omf to path for imports
 # sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", ".."))  # Nicht mehr nötig nach pip install -e .
 
 

@@ -19,7 +19,7 @@ class TestFTSMessageGeneration(unittest.TestCase):
 
     def setUp(self):
         """Setup für Tests"""
-        from src_orbis.omf.tools.fts_route_generator import FTSRouteGenerator
+        from omf.tools.fts_route_generator import FTSRouteGenerator
 
         self.generator = FTSRouteGenerator()
 

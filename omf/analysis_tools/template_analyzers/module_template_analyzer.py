@@ -1,4 +1,4 @@
-from src_orbis.omf.tools.module_manager import get_omf_module_manager
+from omf.tools.module_manager import get_omf_module_manager
 
 #!/usr/bin/env python3
 """
@@ -22,8 +22,8 @@ from typing import Dict, List, Set
 
 import yaml
 
-from src_orbis.analysis_tools.nfc_code_manager import get_nfc_manager
-from src_orbis.omf.tools.message_template_manager import get_message_template_manager
+from omf.analysis_tools.nfc_code_manager import get_nfc_manager
+from omf.tools.message_template_manager import get_message_template_manager
 
 
 class ModuleTemplateAnalyzer:

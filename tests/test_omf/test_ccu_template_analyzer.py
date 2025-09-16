@@ -21,8 +21,8 @@ import unittest
 from datetime import datetime
 from unittest.mock import Mock, patch
 
-sys.path.append(os.path.join(os.path.dirname(__file__), "..", "src_orbis", "analysis_tools", "template_analyzers"))
-from src_orbis.analysis_tools.template_analyzers.ccu_template_analyzer import CCUTemplateAnalyzer
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", "omf", "analysis_tools", "template_analyzers"))
+from omf.analysis_tools.template_analyzers.ccu_template_analyzer import CCUTemplateAnalyzer
 
 
 class TestCCUTemplateAnalyzer(unittest.TestCase):

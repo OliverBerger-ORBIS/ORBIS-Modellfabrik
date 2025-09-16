@@ -1,18 +1,18 @@
 import os
 import sys
 
-# Workspace-Root zum sys.path hinzufügen, damit src_orbis als Package gefunden wird
+# Workspace-Root zum sys.path hinzufügen, damit omf als Package gefunden wird
 WORKSPACE_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
 if WORKSPACE_ROOT not in sys.path:
     sys.path.insert(0, WORKSPACE_ROOT)
 import pytest
 
-from src_orbis.helper_apps.seq_ctrl_cursor.sequence_control_dashboard import main
+from omf.helper_apps.seq_ctrl_cursor.sequence_control_dashboard import main
 
 
 def test_dashboard_import():
     """Test dass das Dashboard erfolgreich importiert werden kann."""
-    from src_orbis.helper_apps.seq_ctrl_cursor import sequence_control_dashboard
+    from omf.helper_apps.seq_ctrl_cursor import sequence_control_dashboard
 
     assert sequence_control_dashboard is not None
 
@@ -25,8 +25,8 @@ def test_main_function_exists():
 
 def test_dashboard_components_import():
     """Test dass alle benötigten Komponenten importiert werden können."""
-    from src_orbis.omf.tools.sequence_definition import create_example_python_sequence, create_example_sequences
-    from src_orbis.omf.tools.sequence_ui import create_sequence_ui_app
+    from omf.tools.sequence_definition import create_example_python_sequence, create_example_sequences
+    from omf.tools.sequence_ui import create_sequence_ui_app
 
     assert callable(create_example_python_sequence)
     assert callable(create_example_sequences)
@@ -35,7 +35,7 @@ def test_dashboard_components_import():
 
 def test_sequence_definition_functions():
     """Test der Sequence Definition Funktionen."""
-    from src_orbis.omf.tools.sequence_definition import create_example_python_sequence, create_example_sequences
+    from omf.tools.sequence_definition import create_example_python_sequence, create_example_sequences
 
     # Test create_example_python_sequence - kann None zurückgeben wenn keine Sequenzen gefunden
     python_seq = create_example_python_sequence()
@@ -53,7 +53,7 @@ def test_sequence_definition_functions():
 
 def test_sequence_ui_app():
     """Test der Sequence UI App Funktion."""
-    from src_orbis.omf.tools.sequence_ui import create_sequence_ui_app
+    from omf.tools.sequence_ui import create_sequence_ui_app
 
     # Test dass die Funktion existiert und callable ist
     assert callable(create_sequence_ui_app)

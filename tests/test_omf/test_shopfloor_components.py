@@ -20,7 +20,7 @@ class TestShopfloorComponents(unittest.TestCase):
     def test_shopfloor_component_import(self):
         """Test: Shopfloor-Komponente kann importiert werden"""
         try:
-            from src_orbis.omf.dashboard.components.shopfloor import show_shopfloor
+            from omf.dashboard.components.shopfloor import show_shopfloor
 
             self.assertTrue(callable(show_shopfloor), "show_shopfloor sollte aufrufbar sein")
             print("✅ Shopfloor-Komponente Import: OK")
@@ -30,7 +30,7 @@ class TestShopfloorComponents(unittest.TestCase):
     def test_shopfloor_layout_component_import(self):
         """Test: Shopfloor-Layout-Komponente kann importiert werden"""
         try:
-            from src_orbis.omf.dashboard.components.shopfloor_layout import show_shopfloor_layout
+            from omf.dashboard.components.shopfloor_layout import show_shopfloor_layout
 
             self.assertTrue(callable(show_shopfloor_layout), "show_shopfloor_layout sollte aufrufbar sein")
             print("✅ Shopfloor-Layout-Komponente Import: OK")
@@ -40,7 +40,7 @@ class TestShopfloorComponents(unittest.TestCase):
     def test_shopfloor_routes_component_import(self):
         """Test: Shopfloor-Routes-Komponente kann importiert werden"""
         try:
-            from src_orbis.omf.dashboard.components.shopfloor_routes import show_shopfloor_routes
+            from omf.dashboard.components.shopfloor_routes import show_shopfloor_routes
 
             self.assertTrue(callable(show_shopfloor_routes), "show_shopfloor_routes sollte aufrufbar sein")
             print("✅ Shopfloor-Routes-Komponente Import: OK")
@@ -50,7 +50,7 @@ class TestShopfloorComponents(unittest.TestCase):
     def test_shopfloor_positioning_component_import(self):
         """Test: Shopfloor-Positioning-Komponente kann importiert werden"""
         try:
-            from src_orbis.omf.dashboard.components.shopfloor_positioning import show_shopfloor_positioning
+            from omf.dashboard.components.shopfloor_positioning import show_shopfloor_positioning
 
             self.assertTrue(callable(show_shopfloor_positioning), "show_shopfloor_positioning sollte aufrufbar sein")
             print("✅ Shopfloor-Positioning-Komponente Import: OK")
@@ -60,7 +60,7 @@ class TestShopfloorComponents(unittest.TestCase):
     def test_shopfloor_config_loading(self):
         """Test: Shopfloor-Konfiguration kann geladen werden"""
         try:
-            from src_orbis.omf.dashboard.components.shopfloor_utils import load_shopfloor_config
+            from omf.dashboard.components.shopfloor_utils import load_shopfloor_config
 
             # Mock der YAML-Dateien
             mock_config = {
@@ -68,7 +68,7 @@ class TestShopfloorComponents(unittest.TestCase):
                 "routes": {"metadata": {"version": "3.0.0"}, "routes": []},
             }
 
-            with patch("src_orbis.omf.dashboard.components.shopfloor_utils.Path") as mock_path:
+            with patch("omf.dashboard.components.shopfloor_utils.Path") as mock_path:
                 mock_path.return_value.exists.return_value = True
                 with patch("builtins.open", MagicMock()):
                     with patch("yaml.safe_load", return_value=mock_config["layout"]):
@@ -84,10 +84,10 @@ class TestShopfloorComponents(unittest.TestCase):
     def test_shopfloor_metadata(self):
         """Test: Shopfloor-Metadaten können abgerufen werden"""
         try:
-            from src_orbis.omf.dashboard.components.shopfloor_utils import get_shopfloor_metadata
+            from omf.dashboard.components.shopfloor_utils import get_shopfloor_metadata
 
             # Mock der Konfiguration
-            with patch("src_orbis.omf.dashboard.components.shopfloor_utils.load_shopfloor_config") as mock_load:
+            with patch("omf.dashboard.components.shopfloor_utils.load_shopfloor_config") as mock_load:
                 mock_load.return_value = {
                     "layout": {"metadata": {"version": "3.0.0", "grid_size": "4x3"}},
                     "routes": {"metadata": {"fts_serial": "5iO4"}},
@@ -105,10 +105,10 @@ class TestShopfloorComponents(unittest.TestCase):
     def test_module_positions(self):
         """Test: Modul-Positionen können abgerufen werden"""
         try:
-            from src_orbis.omf.dashboard.components.shopfloor_utils import get_module_positions
+            from omf.dashboard.components.shopfloor_utils import get_module_positions
 
             # Mock der Konfiguration
-            with patch("src_orbis.omf.dashboard.components.shopfloor_utils.load_shopfloor_config") as mock_load:
+            with patch("omf.dashboard.components.shopfloor_utils.load_shopfloor_config") as mock_load:
                 mock_load.return_value = {
                     "layout": {
                         "positions": [
@@ -129,10 +129,10 @@ class TestShopfloorComponents(unittest.TestCase):
     def test_fts_routes(self):
         """Test: FTS-Routen können abgerufen werden"""
         try:
-            from src_orbis.omf.dashboard.components.shopfloor_utils import get_fts_routes
+            from omf.dashboard.components.shopfloor_utils import get_fts_routes
 
             # Mock der Konfiguration
-            with patch("src_orbis.omf.dashboard.components.shopfloor_utils.load_shopfloor_config") as mock_load:
+            with patch("omf.dashboard.components.shopfloor_utils.load_shopfloor_config") as mock_load:
                 mock_load.return_value = {
                     "routes": {"routes": [{"route_id": "HBW_DRILL", "from": "HBW", "to": "DRILL", "distance": 760}]}
                 }
@@ -155,10 +155,10 @@ class TestShopfloorComponents(unittest.TestCase):
     def test_route_search(self):
         """Test: Route-Suche funktioniert"""
         try:
-            from src_orbis.omf.dashboard.components.shopfloor_utils import find_route_between_modules
+            from omf.dashboard.components.shopfloor_utils import find_route_between_modules
 
             # Mock der Konfiguration
-            with patch("src_orbis.omf.dashboard.components.shopfloor_utils.get_fts_routes") as mock_routes:
+            with patch("omf.dashboard.components.shopfloor_utils.get_fts_routes") as mock_routes:
                 mock_routes.return_value = [{"route_id": "HBW_DRILL", "from": "HBW", "to": "DRILL", "distance": 760}]
 
                 route = find_route_between_modules("HBW", "DRILL")
@@ -176,13 +176,13 @@ class TestShopfloorComponents(unittest.TestCase):
     def test_shopfloor_statistics(self):
         """Test: Shopfloor-Statistiken können berechnet werden"""
         try:
-            from src_orbis.omf.dashboard.components.shopfloor_utils import get_shopfloor_statistics
+            from omf.dashboard.components.shopfloor_utils import get_shopfloor_statistics
 
             # Mock der Konfiguration
-            with patch("src_orbis.omf.dashboard.components.shopfloor_utils.get_module_positions") as mock_positions:
-                with patch("src_orbis.omf.dashboard.components.shopfloor_utils.get_fts_routes") as mock_routes:
+            with patch("omf.dashboard.components.shopfloor_utils.get_module_positions") as mock_positions:
+                with patch("omf.dashboard.components.shopfloor_utils.get_fts_routes") as mock_routes:
                     with patch(
-                        "src_orbis.omf.dashboard.components.shopfloor_utils.get_product_routes"
+                        "omf.dashboard.components.shopfloor_utils.get_product_routes"
                     ) as mock_product_routes:
                         mock_positions.return_value = [
                             {"type": "MODULE", "enabled": True},
@@ -210,7 +210,7 @@ class TestShopfloorYAMLConfigs(unittest.TestCase):
         """Test: Produktkatalog YAML-Datei existiert"""
         try:
             # Verwende das aktuelle Arbeitsverzeichnis als Basis
-            config_file = Path.cwd() / "src_orbis" / "omf" / "config" / "products" / "product_catalog.yml"
+            config_file = Path.cwd() / "omf" / "omf" / "config" / "products" / "product_catalog.yml"
             self.assertTrue(config_file.exists(), "product_catalog.yml sollte existieren")
             print("✅ Produktkatalog YAML existiert: OK")
         except Exception as e:
@@ -219,7 +219,7 @@ class TestShopfloorYAMLConfigs(unittest.TestCase):
     def test_shopfloor_layout_yaml_exists(self):
         """Test: Shopfloor-Layout YAML-Datei existiert"""
         try:
-            config_file = Path.cwd() / "src_orbis" / "omf" / "config" / "shopfloor" / "layout.yml"
+            config_file = Path.cwd() / "omf" / "omf" / "config" / "shopfloor" / "layout.yml"
             self.assertTrue(config_file.exists(), "layout.yml sollte existieren")
             print("✅ Shopfloor-Layout YAML existiert: OK")
         except Exception as e:
@@ -228,7 +228,7 @@ class TestShopfloorYAMLConfigs(unittest.TestCase):
     def test_shopfloor_routes_yaml_exists(self):
         """Test: Shopfloor-Routes YAML-Datei existiert"""
         try:
-            config_file = Path.cwd() / "src_orbis" / "omf" / "config" / "shopfloor" / "routes.yml"
+            config_file = Path.cwd() / "omf" / "omf" / "config" / "shopfloor" / "routes.yml"
             self.assertTrue(config_file.exists(), "routes.yml sollte existieren")
             print("✅ Shopfloor-Routes YAML existiert: OK")
         except Exception as e:
@@ -237,7 +237,7 @@ class TestShopfloorYAMLConfigs(unittest.TestCase):
     def test_production_workflows_yaml_exists(self):
         """Test: Produktions-Workflows YAML-Datei existiert"""
         try:
-            config_file = Path.cwd() / "src_orbis" / "omf" / "config" / "production" / "workflows.yml"
+            config_file = Path.cwd() / "omf" / "omf" / "config" / "production" / "workflows.yml"
             self.assertTrue(config_file.exists(), "workflows.yml sollte existieren")
             print("✅ Produktions-Workflows YAML existiert: OK")
         except Exception as e:
@@ -249,10 +249,10 @@ class TestShopfloorYAMLConfigs(unittest.TestCase):
             import yaml
 
             yaml_files = [
-                "src_orbis/omf/config/products/product_catalog.yml",
-                "src_orbis/omf/config/shopfloor/layout.yml",
-                "src_orbis/omf/config/shopfloor/routes.yml",
-                "src_orbis/omf/config/production/workflows.yml",
+                "omf/omf/config/products/product_catalog.yml",
+                "omf/omf/config/shopfloor/layout.yml",
+                "omf/omf/config/shopfloor/routes.yml",
+                "omf/omf/config/production/workflows.yml",
             ]
 
             for yaml_file in yaml_files:

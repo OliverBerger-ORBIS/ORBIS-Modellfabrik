@@ -9,7 +9,7 @@ from typing import Dict, List
 
 import streamlit as st
 
-from src_orbis.omf.dashboard.utils.ui_refresh import request_refresh
+from omf.dashboard.utils.ui_refresh import request_refresh
 
 
 class ValidationErrorTracker:

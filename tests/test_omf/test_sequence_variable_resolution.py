@@ -10,10 +10,10 @@ import unittest
 from unittest.mock import MagicMock, Mock
 
 # Pfad für Imports hinzufügen
-sys.path.append(os.path.join(os.path.dirname(__file__), "..", "src_orbis"))
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", "omf"))
 
-from src_orbis.omf.tools.sequence_executor import SequenceDefinition, SequenceExecutor, SequenceStep, StepStatus
-from src_orbis.omf.tools.workflow_order_manager import WorkflowOrder, WorkflowOrderManager
+from omf.tools.sequence_executor import SequenceDefinition, SequenceExecutor, SequenceStep, StepStatus
+from omf.tools.workflow_order_manager import WorkflowOrder, WorkflowOrderManager
 
 
 class TestSequenceVariableResolution(unittest.TestCase):
@@ -112,7 +112,7 @@ class TestSequenceVariableResolution(unittest.TestCase):
         mock_order.context = {}
         mock_order.total_steps = 0
 
-        with unittest.mock.patch("src_orbis.omf.tools.sequence_executor.workflow_order_manager") as mock_manager:
+        with unittest.mock.patch("omf.tools.sequence_executor.workflow_order_manager") as mock_manager:
             mock_manager.create_order.return_value = mock_order
 
             # Sequenz ausführen
@@ -145,7 +145,7 @@ class TestSequenceVariableResolution(unittest.TestCase):
         mock_order.context = {}
         mock_order.total_steps = 1
 
-        with unittest.mock.patch("src_orbis.omf.tools.sequence_executor.workflow_order_manager") as mock_manager:
+        with unittest.mock.patch("omf.tools.sequence_executor.workflow_order_manager") as mock_manager:
             mock_manager.create_order.return_value = mock_order
             mock_manager.get_order.return_value = mock_order
             mock_manager.increment_update_id.return_value = 1

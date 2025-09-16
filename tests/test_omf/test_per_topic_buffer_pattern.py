@@ -11,8 +11,8 @@ Diese Tests validieren die Per-Topic-Buffer Architektur:
 import unittest
 from unittest.mock import Mock, patch
 
-from src_orbis.omf.tools.mqtt_config import MqttConfig
-from src_orbis.omf.tools.omf_mqtt_client import OmfMqttClient
+from omf.tools.mqtt_config import MqttConfig
+from omf.tools.omf_mqtt_client import OmfMqttClient
 
 
 class TestPerTopicBufferPattern(unittest.TestCase):
@@ -23,7 +23,7 @@ class TestPerTopicBufferPattern(unittest.TestCase):
         self.config = MqttConfig(host="localhost", port=1883, client_id="test_client", clean_session=True, protocol=4)
 
         # Mock MQTT-Client ohne echte Verbindung
-        with patch('src_orbis.omf.tools.omf_mqtt_client.mqtt'):
+        with patch('omf.tools.omf_mqtt_client.mqtt'):
             self.client = OmfMqttClient(self.config)
 
     def test_buffer_initialization(self):
@@ -152,7 +152,7 @@ class TestPerTopicBufferIntegration(unittest.TestCase):
     def test_dashboard_component_integration(self):
         """Test: Dashboard-Komponenten können Per-Topic-Buffer verwenden"""
         # Mock Dashboard-Komponente
-        with patch('src_orbis.omf.tools.omf_mqtt_client.mqtt'):
+        with patch('omf.tools.omf_mqtt_client.mqtt'):
             client = OmfMqttClient(MqttConfig(host="localhost", port=1883))
 
         # Simuliere Dashboard-Komponente
@@ -181,7 +181,7 @@ class TestPerTopicBufferIntegration(unittest.TestCase):
 
     def test_message_processing_pattern(self):
         """Test: Message-Processing Pattern mit Per-Topic-Buffer"""
-        with patch('src_orbis.omf.tools.omf_mqtt_client.mqtt'):
+        with patch('omf.tools.omf_mqtt_client.mqtt'):
             client = OmfMqttClient(MqttConfig(host="localhost", port=1883))
 
         # Simuliere Message-Processing

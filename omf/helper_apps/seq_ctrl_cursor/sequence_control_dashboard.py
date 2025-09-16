@@ -9,8 +9,8 @@ import sys
 
 import streamlit as st
 
-from src_orbis.omf.tools.sequence_definition import create_example_python_sequence, create_example_sequences
-from src_orbis.omf.tools.sequence_ui import create_sequence_ui_app
+from omf.tools.sequence_definition import create_example_python_sequence, create_example_sequences
+from omf.tools.sequence_ui import create_sequence_ui_app
 
 # Pfad für Imports hinzufügen
 current_dir = os.path.dirname(os.path.abspath(__file__))

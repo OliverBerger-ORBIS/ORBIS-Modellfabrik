@@ -3,7 +3,7 @@ import re
 import sys
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-DASH = ROOT / "src_orbis" / "omf" / "dashboard"
+DASH = ROOT / "omf" / "omf" / "dashboard"
 
 viol = 0
 

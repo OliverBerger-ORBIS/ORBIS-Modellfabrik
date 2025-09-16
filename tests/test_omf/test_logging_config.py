@@ -8,7 +8,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-from src_orbis.omf.tools.logging_config import configure_logging
+from omf.tools.logging_config import configure_logging
 
 
 class TestLoggingConfig(unittest.TestCase):
@@ -79,7 +79,7 @@ class TestLoggingConfig(unittest.TestCase):
 
     def test_configure_logging_handles_rich_import_error(self):
         """Test: configure_logging() funktioniert ohne rich"""
-        with patch('src_orbis.omf.tools.logging_config._HAS_RICH', False):
+        with patch('omf.tools.logging_config._HAS_RICH', False):
             root, listener = configure_logging(
                 app_name="test_app",
                 level=logging.INFO,

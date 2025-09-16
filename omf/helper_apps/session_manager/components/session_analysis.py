@@ -7,11 +7,11 @@ import logging
 
 import streamlit as st
 
-from src_orbis.helper_apps.session_manager.components.graph_visualizer import GraphVisualizer
-from src_orbis.helper_apps.session_manager.components.session_analyzer import SessionAnalyzer
-from src_orbis.helper_apps.session_manager.components.settings_manager import SettingsManager
-from src_orbis.helper_apps.session_manager.components.timeline_visualizer import TimelineVisualizer
-from src_orbis.helper_apps.session_manager.components.ui_components import SessionAnalysisUI
+from omf.helper_apps.session_manager.components.graph_visualizer import GraphVisualizer
+from omf.helper_apps.session_manager.components.session_analyzer import SessionAnalyzer
+from omf.helper_apps.session_manager.components.settings_manager import SettingsManager
+from omf.helper_apps.session_manager.components.timeline_visualizer import TimelineVisualizer
+from omf.helper_apps.session_manager.components.ui_components import SessionAnalysisUI
 
 logger = logging.getLogger(__name__)
 

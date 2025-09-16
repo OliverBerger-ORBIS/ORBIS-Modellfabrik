@@ -11,10 +11,10 @@ from pathlib import Path
 
 import yaml
 
-# Add src_orbis to path
-sys.path.append(os.path.join(os.path.dirname(__file__), "..", "src_orbis"))
+# Add omf to path
+sys.path.append(os.path.join(os.path.dirname(__file__), "..", "omf"))
 
-from src_orbis.omf.tools.message_template_manager import OmfMessageTemplateManager, get_omf_message_template_manager
+from omf.tools.message_template_manager import OmfMessageTemplateManager, get_omf_message_template_manager
 
 
 class TestOMFMessageTemplateManager(unittest.TestCase):

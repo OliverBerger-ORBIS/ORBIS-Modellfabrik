@@ -16,8 +16,8 @@ import pandas as pd
 import streamlit as st
 
 # Import für Prioritäts-basierte Subscriptions
-from src_orbis.omf.dashboard.config.mc_priority import get_all_priority_filters
-from src_orbis.omf.dashboard.utils.ui_refresh import request_refresh
+from omf.dashboard.config.mc_priority import get_all_priority_filters
+from omf.dashboard.utils.ui_refresh import request_refresh
 
 # Logger für Message Center
 logger = logging.getLogger("omf.dashboard.message_center")

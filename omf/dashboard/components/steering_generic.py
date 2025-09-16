@@ -11,7 +11,7 @@ from pathlib import Path
 import streamlit as st
 
 # MqttGateway für sauberes Publishing
-from src_orbis.omf.tools.mqtt_gateway import MqttGateway
+from omf.tools.mqtt_gateway import MqttGateway
 
 # Logger für Generic Steering
 logger = logging.getLogger("omf.dashboard.steering_generic")

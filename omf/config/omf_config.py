@@ -10,7 +10,7 @@ import yaml
 # Basis-Pfade
 BASE_DIR = Path(__file__).parent.parent.parent.parent
 OMF_DATA_DIR = BASE_DIR / "omf-data"
-CONFIG_DIR = BASE_DIR / "src_orbis" / "omf" / "config"
+CONFIG_DIR = BASE_DIR / "omf" / "omf" / "config"
 
 # Standard-Konfiguration
 DEFAULT_CONFIG = {

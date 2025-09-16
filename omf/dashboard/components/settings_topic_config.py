@@ -5,7 +5,7 @@ Exakte Kopie der show_topic_config() Funktion aus settings.py
 
 import streamlit as st
 
-# Add src_orbis to path for imports
+# Add omf to path for imports
 # sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", ".."))  # Nicht mehr nötig nach pip install -e .
 
 
@@ -24,7 +24,7 @@ def show_topic_config():
             # sys.path.append(tools_path)  # Nicht mehr nötig nach pip install -e .
             pass
 
-        from src_orbis.omf.tools.topic_manager import get_omf_topic_manager
+        from omf.tools.topic_manager import get_omf_topic_manager
 
         topic_manager = get_omf_topic_manager()
 

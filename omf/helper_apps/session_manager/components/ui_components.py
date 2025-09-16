@@ -11,10 +11,10 @@ from typing import Dict, List, Tuple
 import pandas as pd
 import streamlit as st
 
-from src_orbis.helper_apps.session_manager.components.session_analyzer import SessionAnalyzer
-from src_orbis.helper_apps.session_manager.components.topic_manager import TopicFilterManager
-from src_orbis.omf.dashboard.utils.ui_refresh import request_refresh
-from src_orbis.omf.tools.logging_config import get_logger
+from omf.helper_apps.session_manager.components.session_analyzer import SessionAnalyzer
+from omf.helper_apps.session_manager.components.topic_manager import TopicFilterManager
+from omf.dashboard.utils.ui_refresh import request_refresh
+from omf.tools.logging_config import get_logger
 
 logger = get_logger("session_manager.ui_components")
 
@@ -32,7 +32,7 @@ class SessionAnalysisUI:
 
         # Session-Dateien aus konfiguriertem Verzeichnis laden
         if session_directory is None:
-            from src_orbis.helper_apps.session_manager.components.settings_manager import SettingsManager
+            from omf.helper_apps.session_manager.components.settings_manager import SettingsManager
 
             settings_manager = SettingsManager()
             session_directory = settings_manager.get_session_directory()

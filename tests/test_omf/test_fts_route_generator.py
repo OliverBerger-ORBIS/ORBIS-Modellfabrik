@@ -19,14 +19,14 @@ class TestFTSRouteGenerator(unittest.TestCase):
 
     def setUp(self):
         """Setup für Tests"""
-        from src_orbis.omf.tools.fts_route_generator import FTSRouteGenerator
+        from omf.tools.fts_route_generator import FTSRouteGenerator
 
         self.generator = FTSRouteGenerator()
 
     def test_fts_route_generator_import(self):
         """Test: FTS Route Generator kann importiert werden"""
         try:
-            from src_orbis.omf.tools.fts_route_generator import FTSRouteGenerator, get_fts_route_generator
+            from omf.tools.fts_route_generator import FTSRouteGenerator, get_fts_route_generator
 
             self.assertTrue(callable(FTSRouteGenerator), "FTSRouteGenerator sollte aufrufbar sein")
             self.assertTrue(callable(get_fts_route_generator), "get_fts_route_generator sollte aufrufbar sein")
@@ -374,7 +374,7 @@ class TestFTSRouteGeneratorIntegration(unittest.TestCase):
     def test_dps_to_hbw_message_structure(self):
         """Test: DPS → HBW Message-Struktur entspricht getesteter FTS-Order"""
         try:
-            from src_orbis.omf.tools.fts_route_generator import FTSRouteGenerator
+            from omf.tools.fts_route_generator import FTSRouteGenerator
 
             # Mock der Konfiguration
             with patch.object(FTSRouteGenerator, "_load_routes_config") as mock_routes:

@@ -8,11 +8,11 @@ import sys
 import unittest
 from pathlib import Path
 
-# Add src_orbis to path
-sys.path.insert(0, str(Path(__file__).parent.parent / "src_orbis"))
+# Add omf to path
+sys.path.insert(0, str(Path(__file__).parent.parent / "omf"))
 
-from src_orbis.omf.tools.message_generator import MessageGenerator
-from src_orbis.omf.tools.workflow_order_manager import WorkflowOrderManager, get_workflow_order_manager
+from omf.tools.message_generator import MessageGenerator
+from omf.tools.workflow_order_manager import WorkflowOrderManager, get_workflow_order_manager
 
 
 class TestMessageGenerator(unittest.TestCase):

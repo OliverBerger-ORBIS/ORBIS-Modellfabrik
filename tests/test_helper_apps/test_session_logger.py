@@ -15,7 +15,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-from src_orbis.helper_apps.session_manager.utils.session_logger import (
+from omf.helper_apps.session_manager.utils.session_logger import (
     SessionManagerLogger,
     get_analysis_logger,
     get_recorder_logger,

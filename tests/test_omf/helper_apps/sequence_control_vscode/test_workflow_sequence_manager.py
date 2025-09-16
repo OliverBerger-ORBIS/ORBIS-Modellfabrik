@@ -1,19 +1,19 @@
 import os
 import sys
 
-# Workspace-Root zum sys.path hinzufügen, damit src_orbis als Package gefunden wird
+# Workspace-Root zum sys.path hinzufügen, damit omf als Package gefunden wird
 WORKSPACE_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
 if WORKSPACE_ROOT not in sys.path:
     sys.path.insert(0, WORKSPACE_ROOT)
 import pytest
 
-from src_orbis.helper_apps.sequence_control_vscode.workflow_sequence_manager import WorkflowSequenceManager
+from omf.helper_apps.sequence_control_vscode.workflow_sequence_manager import WorkflowSequenceManager
 
 
 @pytest.fixture
 def manager():
     """Test fixture für WorkflowSequenceManager."""
-    return WorkflowSequenceManager("src_orbis/helper_apps/sequence_control_vscode/recipes")
+    return WorkflowSequenceManager("omf/helper_apps/sequence_control_vscode/recipes")
 
 
 def test_manager_initialization(manager):
@@ -39,7 +39,7 @@ def test_start_sequence(manager):
         def start_workflow(self, module, steps):
             return "test_order_123"
 
-    from src_orbis.omf.tools.workflow_order_manager import get_workflow_order_manager
+    from omf.tools.workflow_order_manager import get_workflow_order_manager
 
     original_manager = get_workflow_order_manager
 

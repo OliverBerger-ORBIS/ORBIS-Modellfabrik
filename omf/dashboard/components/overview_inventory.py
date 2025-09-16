@@ -11,7 +11,7 @@ import streamlit as st
 # Template-Import hinzufügen
 # sys.path.append(os.path.join(os.path.dirname(__file__), "..", "assets"))  # Nicht mehr nötig nach pip install -e .
 try:
-    from src_orbis.omf.dashboard.assets.html_templates import get_bucket_template
+    from omf.dashboard.assets.html_templates import get_bucket_template
 
     TEMPLATES_AVAILABLE = True
 except ImportError as e:

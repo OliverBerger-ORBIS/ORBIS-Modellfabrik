@@ -11,10 +11,10 @@ import unittest
 
 import yaml
 
-# Add src_orbis to path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src_orbis"))
+# Add omf to path
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "omf"))
 
-from src_orbis.analysis_tools.module_manager import ModuleManager
+from omf.analysis_tools.module_manager import ModuleManager
 
 
 class TestModuleManager(unittest.TestCase):
@@ -490,7 +490,7 @@ class TestModuleManagerBackwardCompatibility(unittest.TestCase):
 
     def test_backward_compatibility_functions(self):
         """Test backward compatibility functions"""
-        from src_orbis.omf.tools.module_manager import (
+        from omf.tools.module_manager import (
             get_module_info,
             get_module_name,
             get_module_type,

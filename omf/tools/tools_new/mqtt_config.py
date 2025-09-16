@@ -27,11 +27,11 @@ def cfg_for(env: str) -> MqttConfig:
         MqttConfig: Konfiguration für die angegebene Umgebung
     """
     if env == "live":
-        from src_orbis.omf.config.config import LIVE_CFG
+        from omf.config.config import LIVE_CFG
 
         return MqttConfig(**LIVE_CFG)
     elif env == "replay":
-        from src_orbis.omf.config.config import REPLAY_CFG
+        from omf.config.config import REPLAY_CFG
 
         return MqttConfig(**REPLAY_CFG)
     elif env == "mock":

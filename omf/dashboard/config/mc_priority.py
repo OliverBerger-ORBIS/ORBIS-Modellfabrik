@@ -6,7 +6,7 @@ Definiert Topic-Prioritäten speziell für die Message Center Komponente.
 
 from typing import List
 
-from src_orbis.omf.tools.mqtt_topics import PRIORITY_FILTERS
+from omf.tools.mqtt_topics import PRIORITY_FILTERS
 
 # Prioritäts-Topics für Message Center (basierend auf mqtt_topics.py)
 PRIORITY_TOPICS = PRIORITY_FILTERS
@@ -35,6 +35,6 @@ def get_all_priority_filters(upto: int) -> List[str]:
     Returns:
         Liste aller Topic-Filter bis zu dieser Stufe
     """
-    from src_orbis.omf.tools.mqtt_topics import flatten_filters
+    from omf.tools.mqtt_topics import flatten_filters
 
     return flatten_filters(upto)

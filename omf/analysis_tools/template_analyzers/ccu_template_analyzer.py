@@ -16,9 +16,9 @@ from typing import Dict, List, Set
 
 import yaml
 
-from src_orbis.analysis_tools.nfc_code_manager import get_nfc_manager
-from src_orbis.omf.tools.message_template_manager import get_message_template_manager
-from src_orbis.omf.tools.module_manager import OmfModuleManager
+from omf.analysis_tools.nfc_code_manager import get_nfc_manager
+from omf.tools.message_template_manager import get_message_template_manager
+from omf.tools.module_manager import OmfModuleManager
 
 # sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", ".."))  # Nicht mehr nötig nach pip install -e .
 

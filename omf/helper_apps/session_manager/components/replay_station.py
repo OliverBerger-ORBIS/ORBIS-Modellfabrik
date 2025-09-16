@@ -14,7 +14,7 @@ from pathlib import Path
 
 import streamlit as st
 
-from src_orbis.omf.dashboard.utils.ui_refresh import RerunController
+from omf.dashboard.utils.ui_refresh import RerunController
 
 # Logging konfigurieren - Verzeichnis sicherstellen
 # Log-Verzeichnis erstellen falls nicht vorhanden
@@ -41,7 +41,7 @@ def show_replay_station():
     st.markdown("MQTT-Nachrichten für Tests senden - **MQTT-Konfiguration in ⚙️ Einstellungen**")
 
     # Konfiguration aus Settings laden
-    from src_orbis.helper_apps.session_manager.components.settings_manager import SettingsManager
+    from omf.helper_apps.session_manager.components.settings_manager import SettingsManager
 
     settings_manager = SettingsManager()
     mqtt_settings = settings_manager.get_mqtt_broker_settings()

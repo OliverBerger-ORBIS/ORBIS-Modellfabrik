@@ -6,7 +6,7 @@ import time
 import unittest
 from unittest.mock import MagicMock, patch
 
-from src_orbis.omf.dashboard.utils.ui_refresh import consume_refresh, request_refresh
+from omf.dashboard.utils.ui_refresh import consume_refresh, request_refresh
 
 
 class TestUIRefresh(unittest.TestCase):
@@ -17,7 +17,7 @@ class TestUIRefresh(unittest.TestCase):
         # Mock Streamlit session_state
         self.mock_session_state = {}
 
-    @patch('src_orbis.omf.dashboard.utils.ui_refresh.st')
+    @patch('omf.dashboard.utils.ui_refresh.st')
     def test_request_refresh_sets_flag(self, mock_st):
         """Test: request_refresh() setzt Flag in session_state"""
         mock_st.session_state = self.mock_session_state
@@ -32,7 +32,7 @@ class TestUIRefresh(unittest.TestCase):
         self.assertIn("_ui_refresh_requested_at", mock_st.session_state)
         self.assertIsInstance(mock_st.session_state["_ui_refresh_requested_at"], (int, float))
 
-    @patch('src_orbis.omf.dashboard.utils.ui_refresh.st')
+    @patch('omf.dashboard.utils.ui_refresh.st')
     def test_consume_refresh_returns_true_once(self, mock_st):
         """Test: consume_refresh() gibt genau einmal True zurück"""
         mock_st.session_state = self.mock_session_state
@@ -51,7 +51,7 @@ class TestUIRefresh(unittest.TestCase):
         result2 = consume_refresh()
         self.assertFalse(result2)
 
-    @patch('src_orbis.omf.dashboard.utils.ui_refresh.st')
+    @patch('omf.dashboard.utils.ui_refresh.st')
     def test_consume_refresh_no_flag_returns_false(self, mock_st):
         """Test: consume_refresh() ohne Flag gibt False zurück"""
         mock_st.session_state = self.mock_session_state
@@ -60,7 +60,7 @@ class TestUIRefresh(unittest.TestCase):
         result = consume_refresh()
         self.assertFalse(result)
 
-    @patch('src_orbis.omf.dashboard.utils.ui_refresh.st')
+    @patch('omf.dashboard.utils.ui_refresh.st')
     def test_consume_refresh_zero_flag_returns_false(self, mock_st):
         """Test: consume_refresh() mit Flag=0 gibt False zurück"""
         mock_st.session_state = self.mock_session_state
@@ -71,7 +71,7 @@ class TestUIRefresh(unittest.TestCase):
         result = consume_refresh()
         self.assertFalse(result)
 
-    @patch('src_orbis.omf.dashboard.utils.ui_refresh.st')
+    @patch('omf.dashboard.utils.ui_refresh.st')
     def test_request_refresh_updates_timestamp(self, mock_st):
         """Test: request_refresh() aktualisiert Timestamp bei wiederholten Aufrufen"""
         mock_st.session_state = self.mock_session_state

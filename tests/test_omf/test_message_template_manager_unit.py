@@ -10,7 +10,7 @@ import unittest
 
 import yaml
 
-from src_orbis.omf.tools.message_template_manager import OmfMessageTemplateManager
+from omf.tools.message_template_manager import OmfMessageTemplateManager
 
 
 class TestMessageTemplateManager(unittest.TestCase):

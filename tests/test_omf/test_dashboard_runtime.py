@@ -19,7 +19,7 @@ class TestDashboardRuntime(unittest.TestCase):
     def test_message_center_component(self):
         """Test: Message Center Komponente kann geladen werden"""
         try:
-            from src_orbis.omf.dashboard.components.message_center import show_message_center
+            from omf.dashboard.components.message_center import show_message_center
 
             # Test that function exists
             self.assertTrue(callable(show_message_center), "show_message_center sollte aufrufbar sein")
@@ -32,8 +32,8 @@ class TestDashboardRuntime(unittest.TestCase):
     def test_mqtt_client_component(self):
         """Test: MQTT Client Komponente kann geladen werden"""
         try:
-            from src_orbis.omf.tools.mqtt_config import MqttConfig
-            from src_orbis.omf.tools.omf_mqtt_client import OmfMqttClient
+            from omf.tools.mqtt_config import MqttConfig
+            from omf.tools.omf_mqtt_client import OmfMqttClient
 
             # Test MQTT Client initialization mit minimaler Konfiguration
             cfg = MqttConfig(host="localhost")
@@ -53,7 +53,7 @@ class TestDashboardRuntime(unittest.TestCase):
         """Test: Replay Station Komponente ist in Session Manager integriert"""
         try:
             # Test dass Replay Station jetzt Teil des Session Managers ist
-            from src_orbis.helper_apps.session_manager.components.replay_station import show_replay_station
+            from omf.helper_apps.session_manager.components.replay_station import show_replay_station
 
             # Test dass Funktion existiert
             self.assertIsNotNone(show_replay_station, "show_replay_station sollte existieren")
@@ -67,7 +67,7 @@ class TestDashboardRuntime(unittest.TestCase):
     def test_dashboard_settings_component(self):
         """Test: Dashboard Settings Komponente kann geladen werden"""
         try:
-            from src_orbis.omf.dashboard.components.settings import show_dashboard_settings
+            from omf.dashboard.components.settings import show_dashboard_settings
 
             # Test that function exists
             self.assertTrue(
@@ -83,7 +83,7 @@ class TestDashboardRuntime(unittest.TestCase):
     def test_factory_steering_component(self):
         """Test: Factory Steering Komponente kann geladen werden"""
         try:
-            from src_orbis.omf.dashboard.components.steering_factory import show_factory_steering
+            from omf.dashboard.components.steering_factory import show_factory_steering
 
             # Test that function exists
             self.assertTrue(callable(show_factory_steering), "show_factory_steering sollte aufrufbar sein")
@@ -96,7 +96,7 @@ class TestDashboardRuntime(unittest.TestCase):
     def test_session_validation(self):
         """Test: Session-Validierung funktioniert (Session Manager)"""
         try:
-            from src_orbis.helper_apps.session_manager.components.session_analyzer import SessionAnalyzer
+            from omf.helper_apps.session_manager.components.session_analyzer import SessionAnalyzer
 
             analyzer = SessionAnalyzer()
 
@@ -117,7 +117,7 @@ class TestDashboardRuntime(unittest.TestCase):
     def test_message_filtering(self):
         """Test: Nachrichten-Filterung funktioniert"""
         try:
-            from src_orbis.omf.dashboard.components.message_center import show_message_center
+            from omf.dashboard.components.message_center import show_message_center
 
             # Test that function exists
             self.assertTrue(callable(show_message_center), "show_message_center sollte aufrufbar sein")

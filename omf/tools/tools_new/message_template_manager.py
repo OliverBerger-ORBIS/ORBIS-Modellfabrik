@@ -9,10 +9,10 @@ from typing import Any, Dict, List, Optional
 
 import yaml
 
-from src_orbis.omf.tools.logging_config import get_logger
+from omf.tools.logging_config import get_logger
 
 # Import validators
-from src_orbis.omf.tools.validators import validate as run_validation
+from omf.tools.validators import validate as run_validation
 
 
 class OmfMessageTemplateManager:
@@ -38,7 +38,7 @@ class OmfMessageTemplateManager:
                 self.logger.info("✅ Using registry v1 message templates")
             else:
                 # Fallback to legacy config (deprecated)
-                legacy_templates = project_root / "src_orbis" / "omf" / "config" / "message_templates"
+                legacy_templates = project_root / "omf" / "omf" / "config" / "message_templates"
                 self.logger.debug(f"🔍 Checking legacy path: {legacy_templates}")
                 self.logger.debug(f"🔍 Legacy exists: {legacy_templates.exists()}")
                 

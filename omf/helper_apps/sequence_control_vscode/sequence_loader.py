@@ -20,6 +20,6 @@ class SequenceLoader:
 
 
 # Beispiel-Nutzung:
-# loader = SequenceLoader("src_orbis/sequence_control/recipes")
+# loader = SequenceLoader("omf/sequence_control/recipes")
 # seq = loader.load_sequence("mill_sequence")
 # print(seq)

@@ -44,7 +44,7 @@ class ProjectStructureValidator:
             "TXT4.0-programs",
             "Node-RED",
             "doc",
-            "src_orbis",
+            "omf",
             "tests_orbis",
             "docs_orbis",
             "data",
@@ -168,7 +168,7 @@ class ProjectStructureValidator:
         errors = []
 
         # Prüfe dass wichtige Ordner existieren
-        required_dirs = ["src_orbis", "tests_orbis", "docs_orbis", "data"]
+        required_dirs = ["omf", "tests_orbis", "docs_orbis", "data"]
         for dir_name in required_dirs:
             if not (self.project_root / dir_name).exists():
                 errors.append(f"Erforderlicher Ordner fehlt: {dir_name}")
@@ -184,7 +184,7 @@ class ProjectStructureValidator:
         # Prüfe dass keine Orbis-Dateien im Root sind
         orbis_files = list(self.project_root.glob("*orbis*"))
         for file in orbis_files:
-            if file.name not in ["src_orbis", "tests_orbis", "docs_orbis"]:
+            if file.name not in ["omf", "tests_orbis", "docs_orbis"]:
                 errors.append(f"Orbis-Datei im Root gefunden: {file.name}")
 
         return errors
@@ -207,7 +207,7 @@ class ProjectStructureValidator:
                 print(f"  {i}. {error}")
             print()
             print(
-                "💡 Tipp: Verwende 'python src_orbis/scripts/validate_project_structure.py --fix' "
+                "💡 Tipp: Verwende 'python omf/scripts/validate_project_structure.py --fix' "
                 "für automatische Korrekturen"
             )
             return False
@@ -229,7 +229,7 @@ class ProjectStructureValidator:
 
                 # Versuche Datei in passenden Ordner zu verschieben
                 if filename.endswith('.py') and filename != '__init__.py':
-                    target_dir = self.project_root / "src_orbis"
+                    target_dir = self.project_root / "omf"
                 elif filename.endswith('.md') and filename not in ["README.md", "RPI_Image.md", "OPC-UA.md"]:
                     target_dir = self.project_root / "docs_orbis"
                 elif filename.endswith(('.log', '.db')):

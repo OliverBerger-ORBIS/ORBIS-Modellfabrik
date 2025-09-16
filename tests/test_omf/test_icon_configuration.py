@@ -11,7 +11,7 @@ import unittest
 class TestIconConfiguration(unittest.TestCase):
     def test_module_icon_files_exist(self):
         """Test: Alle erwarteten Modul-Icon-Dateien existieren im assets-Ordner (ohne ORBIS)"""
-        dashboard_dir = os.path.join(os.path.dirname(__file__), "..", "..", "src_orbis", "omf", "dashboard")
+        dashboard_dir = os.path.join(os.path.dirname(__file__), "..", "..", "omf", "omf", "dashboard")
         assets_dir = os.path.join(dashboard_dir, "assets")
         expected_modules = ["MILL", "DRILL", "AIQS", "HBW", "DPS", "FTS", "CHRG"]
         missing = []
@@ -26,7 +26,7 @@ class TestIconConfiguration(unittest.TestCase):
 
     def test_orbis_logo_file_exists(self):
         """Test: orbis_logo.png existiert im assets-Ordner"""
-        dashboard_dir = os.path.join(os.path.dirname(__file__), "..", "..", "src_orbis", "omf", "dashboard")
+        dashboard_dir = os.path.join(os.path.dirname(__file__), "..", "..", "omf", "omf", "dashboard")
         assets_dir = os.path.join(dashboard_dir, "assets")
         logo_file = "orbis_logo.png"
         logo_path = os.path.join(assets_dir, logo_file)
@@ -37,7 +37,7 @@ class TestIconConfiguration(unittest.TestCase):
     def test_icon_config_import(self):
         """Test: Icon Config kann importiert werden"""
         try:
-            from src_orbis.omf.dashboard.components.overview_module_status import (
+            from omf.dashboard.components.overview_module_status import (
                 MODULE_ICONS,
                 get_module_icon,
                 get_status_icon,
@@ -53,7 +53,7 @@ class TestIconConfiguration(unittest.TestCase):
     def test_module_icons_structure(self):
         """Test: MODULE_ICONS Struktur ist korrekt"""
         try:
-            from src_orbis.omf.dashboard.components.overview_module_status import MODULE_ICONS
+            from omf.dashboard.components.overview_module_status import MODULE_ICONS
 
             # Check if it's a dictionary
             self.assertIsInstance(MODULE_ICONS, dict)
@@ -75,7 +75,7 @@ class TestIconConfiguration(unittest.TestCase):
     def test_status_icons_structure(self):
         """Test: get_status_icon Funktion funktioniert"""
         try:
-            from src_orbis.omf.dashboard.components.overview_module_status import get_status_icon
+            from omf.dashboard.components.overview_module_status import get_status_icon
 
             # Check if function works
             self.assertIsNotNone(get_status_icon)
@@ -97,7 +97,7 @@ class TestIconConfiguration(unittest.TestCase):
     def test_get_module_icon_function(self):
         """Test: get_module_icon Funktion"""
         try:
-            from src_orbis.omf.dashboard.components.overview_module_status import get_module_icon
+            from omf.dashboard.components.overview_module_status import get_module_icon
 
             # Test with valid modules
             test_modules = ["DPS", "HBW", "MILL", "DRILL", "AIQS", "FTS"]
@@ -120,7 +120,7 @@ class TestIconConfiguration(unittest.TestCase):
     def test_get_status_icon_function(self):
         """Test: get_status_icon Funktion"""
         try:
-            from src_orbis.omf.dashboard.components.overview_module_status import get_status_icon
+            from omf.dashboard.components.overview_module_status import get_status_icon
 
             # Test with valid statuses
             test_statuses = ["available", "busy", "error", "idle", "offline"]
@@ -143,7 +143,7 @@ class TestIconConfiguration(unittest.TestCase):
     def test_icon_paths_exist(self):
         """Test: Icon-Pfade existieren (falls Icons als Dateien)"""
         try:
-            from src_orbis.omf.dashboard.components.overview_module_status import MODULE_ICONS, get_status_icon
+            from omf.dashboard.components.overview_module_status import MODULE_ICONS, get_status_icon
 
             # Check if icon paths exist (if they are file paths)
             all_icons = list(MODULE_ICONS.values())
@@ -162,7 +162,7 @@ class TestIconConfiguration(unittest.TestCase):
     def test_icon_colors_are_valid(self):
         """Test: Icon-Farben sind gültige CSS-Farben"""
         try:
-            from src_orbis.omf.dashboard.components.overview_module_status import MODULE_ICONS, get_status_icon
+            from omf.dashboard.components.overview_module_status import MODULE_ICONS, get_status_icon
 
             # Icons are emojis, so no color validation needed
             # This test is kept for future use if colors are added

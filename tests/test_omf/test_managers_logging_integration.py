@@ -8,10 +8,10 @@ import unittest
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-from src_orbis.omf.tools.message_template_manager import OmfMessageTemplateManager
-from src_orbis.omf.tools.mqtt_gateway import MqttGateway
-from src_orbis.omf.tools.omf_mqtt_client import OmfMqttClient
-from src_orbis.omf.tools.registry_manager import Registry, TopicManager
+from omf.tools.message_template_manager import OmfMessageTemplateManager
+from omf.tools.mqtt_gateway import MqttGateway
+from omf.tools.omf_mqtt_client import OmfMqttClient
+from omf.tools.registry_manager import Registry, TopicManager
 
 
 class TestManagersLoggingIntegration(unittest.TestCase):
@@ -24,12 +24,12 @@ class TestManagersLoggingIntegration(unittest.TestCase):
     def test_registry_has_logger(self):
         """Test: Registry hat Logger-Attribut"""
         # Vereinfachter Test ohne komplexe Mock-Setup
-        with patch('src_orbis.omf.tools.registry_manager.get_logger') as mock_get_logger:
+        with patch('omf.tools.registry_manager.get_logger') as mock_get_logger:
             mock_logger = MagicMock()
             mock_get_logger.return_value = mock_logger
 
             # Mock Registry
-            with patch('src_orbis.omf.tools.registry_manager.Registry') as mock_registry:
+            with patch('omf.tools.registry_manager.Registry') as mock_registry:
                 mock_registry_instance = MagicMock()
                 mock_registry_instance.logger = mock_logger
                 mock_registry.return_value = mock_registry_instance
@@ -44,7 +44,7 @@ class TestManagersLoggingIntegration(unittest.TestCase):
     def test_topic_manager_has_logger(self):
         """Test: TopicManager hat Logger-Attribut"""
         # Mock Registry
-        with patch('src_orbis.omf.tools.registry_manager.Registry') as mock_registry:
+        with patch('omf.tools.registry_manager.Registry') as mock_registry:
             mock_registry_instance = MagicMock()
             mock_registry.return_value = mock_registry_instance
 
@@ -57,7 +57,7 @@ class TestManagersLoggingIntegration(unittest.TestCase):
     def test_registry_message_template_manager_has_logger(self):
         """Test: Registry MessageTemplateManager hat Logger-Attribut"""
         # Mock Registry
-        with patch('src_orbis.omf.tools.registry_manager.Registry') as mock_registry:
+        with patch('omf.tools.registry_manager.Registry') as mock_registry:
             mock_registry_instance = MagicMock()
             mock_registry.return_value = mock_registry_instance
 

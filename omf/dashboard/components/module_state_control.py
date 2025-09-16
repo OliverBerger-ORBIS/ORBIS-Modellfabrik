@@ -11,9 +11,9 @@ from typing import List
 
 import streamlit as st
 
-from src_orbis.omf.dashboard.utils.ui_refresh import request_refresh
-from src_orbis.omf.tools.module_state_manager import CommandType, ModuleState, get_module_state_manager
-from src_orbis.omf.tools.mqtt_gateway import MqttGateway
+from omf.dashboard.utils.ui_refresh import request_refresh
+from omf.tools.module_state_manager import CommandType, ModuleState, get_module_state_manager
+from omf.tools.mqtt_gateway import MqttGateway
 
 logger = logging.getLogger("omf.dashboard.module_state_control")
 

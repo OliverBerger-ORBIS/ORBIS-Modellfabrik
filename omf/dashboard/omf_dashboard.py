@@ -5,12 +5,12 @@ import os
 
 import streamlit as st
 
-from src_orbis.omf.config.config import LIVE_CFG, REPLAY_CFG
-from src_orbis.omf.dashboard.components.dummy_component import show_dummy_component
-from src_orbis.omf.tools.logging_config import configure_logging
-from src_orbis.omf.tools.omf_mqtt_factory import ensure_dashboard_client
-from src_orbis.omf.tools.streamlit_log_buffer import RingBufferHandler
-from src_orbis.omf.tools.structlog_config import configure_structlog
+from omf.config.config import LIVE_CFG, REPLAY_CFG
+from omf.dashboard.components.dummy_component import show_dummy_component
+from omf.tools.logging_config import configure_logging
+from omf.tools.omf_mqtt_factory import ensure_dashboard_client
+from omf.tools.streamlit_log_buffer import RingBufferHandler
+from omf.tools.structlog_config import configure_structlog
 
 """
 ORBIS Modellfabrik Dashboard (OMF) - Modulare Architektur
@@ -45,8 +45,8 @@ load_component("overview", "components.overview", "Overview")
 load_component("production_order", "components.production_order", "Production Order")
 load_component("settings", "components.settings", "Settings")
 load_component("steering", "components.steering", "Steering")
-load_component("module_state_control", "src_orbis.omf.dashboard.components.module_state_control", "Module Control")
-load_component("logs", "src_orbis.omf.dashboard.components.logs", "Logs")
+load_component("module_state_control", "omf.dashboard.components.module_state_control", "Module Control")
+load_component("logs", "omf.dashboard.components.logs", "Logs")
 load_component("fts", "components.fts", "FTS")
 load_component("ccu", "components.ccu", "CCU")
 load_component("shopfloor", "components.shopfloor", "Shopfloor")
@@ -283,7 +283,7 @@ def setup_mqtt_subscription(client, cfg):
             # Prioritäts-basierte Subscriptions
             if hasattr(client, "subscribe_many"):
                 try:
-                    from src_orbis.omf.dashboard.config.mc_priority import get_all_priority_filters
+                    from omf.dashboard.config.mc_priority import get_all_priority_filters
 
                     # Standard-Priorität 6 (alle Topics)
                     default_priority = st.session_state.get("mc_priority", 6)

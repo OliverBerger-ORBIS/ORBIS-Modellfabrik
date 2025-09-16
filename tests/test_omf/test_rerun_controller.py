@@ -13,7 +13,7 @@ import time
 import unittest
 from unittest.mock import MagicMock, patch
 
-from src_orbis.omf.dashboard.utils.ui_refresh import RerunController, get_rerun_controller, request_rerun_safe
+from omf.dashboard.utils.ui_refresh import RerunController, get_rerun_controller, request_rerun_safe
 
 
 class TestRerunController(unittest.TestCase):
