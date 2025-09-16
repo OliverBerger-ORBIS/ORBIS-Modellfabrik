@@ -265,9 +265,9 @@ st.session_state.mqtt_mock_enabled = True
 #### Testing:
 
 ##### Unit Tests:
-- `tests_orbis/test_message_generator.py`: Message-Generator Tests
-- `tests_orbis/test_topic_mapping_manager.py`: Topic-Mapping Tests
-- `tests_orbis/test_dashboard_mqtt_integration.py`: Dashboard MQTT Tests
+- `tests/test_message_generator.py`: Message-Generator Tests
+- `tests/test_topic_mapping_manager.py`: Topic-Mapping Tests
+- `tests/test_dashboard_mqtt_integration.py`: Dashboard MQTT Tests
 
 ##### Integration Tests:
 - Dashboard-Integration getestet

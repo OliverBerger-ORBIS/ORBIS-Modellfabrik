@@ -90,7 +90,7 @@ omf/omf/dashboard/components/
 - `omf/omf/dashboard/components/production_order_production_planning.py`
 
 ### Tests
-- `tests_orbis/test_omf/test_new_dashboard_components.py`
+- `tests/test_omf/test_new_dashboard_components.py`
 
 ### Konfiguration
 - Erweiterte `omf/omf/config/products/product_catalog.yml`
@@ -106,10 +106,10 @@ omf/omf/dashboard/components/
 - `omf/omf/dashboard/assets/html_templates.py` - Neue Template-Funktion
 
 ### Tests
-- `tests_orbis/test_omf/test_shopfloor_components.py` - Import-Pfad-Problem behoben
+- `tests/test_omf/test_shopfloor_components.py` - Import-Pfad-Problem behoben
 
 ### Dokumentation
-- `docs_orbis/requirements_dashboard.md` - Status aktualisiert, neue Features dokumentiert
+- `docs/requirements_dashboard.md` - Status aktualisiert, neue Features dokumentiert
 
 ## 🐛 Behobene Probleme
 

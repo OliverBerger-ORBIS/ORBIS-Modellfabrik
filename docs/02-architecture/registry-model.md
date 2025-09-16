@@ -151,7 +151,7 @@ def check_registry_compatibility():
     registry_version = load_manifest()["model_version"]
     if not is_compatible(registry_version, OMF_VERSION):
         show_error("Registry version mismatch", 
-                  "See docs_orbis/04-howto/validate-and-release.md")
+                  "See docs/04-howto/validate-and-release.md")
 ```
 
 ### Breaking Changes

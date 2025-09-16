@@ -49,12 +49,12 @@ This section contains comprehensive documentation for the Node-RED flows that po
 
 ## 📁 Folder Organization
 
-This documentation is part of the Orbis customizations (`docs_orbis/06-integrations/`) and should be distinguished from the original Fischertechnik Node-RED flows in the `Node-RED/` folder.
+This documentation is part of the Orbis customizations (`docs/06-integrations/`) and should be distinguished from the original Fischertechnik Node-RED flows in the `Node-RED/` folder.
 
 ### Integration Structure
 ```
 integrations/node_red/          # Backup/Restore Management
-docs_orbis/06-integrations/     # Dokumentation
+docs/06-integrations/     # Dokumentation
 ├── node-red/                   # Node-RED spezifische Docs
 │   ├── README.md              # Diese Datei
 │   ├── flows-overview.md      # Flow-Übersicht

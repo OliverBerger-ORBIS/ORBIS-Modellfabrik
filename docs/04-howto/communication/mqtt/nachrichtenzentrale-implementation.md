@@ -21,7 +21,7 @@ omf/omf/dashboard/components/
 ├── message_center.py          # Haupt-Komponente
 └── [weitere Komponenten]
 
-tests_orbis/
+tests/
 └── test_message_center.py     # Unit-Tests
 ```
 

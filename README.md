@@ -3,58 +3,58 @@
 
 ## 🎯 Quick Start
 
-- **Neue Teammitglieder:** Starte mit [Strategy Vision](docs_orbis/01-strategy/vision.md) → [System Context](docs_orbis/02-architecture/system-context.md)
-- **Entwickler:** [Registry Model](docs_orbis/02-architecture/registry-model.md) → [How-Tos](docs_orbis/04-howto/)
-- **Architekten:** [Decision Records](docs_orbis/03-decision-records/) → [Architecture](docs_orbis/02-architecture/)
+- **Neue Teammitglieder:** Starte mit [Strategy Vision](docs/01-strategy/vision.md) → [System Context](docs/02-architecture/system-context.md)
+- **Entwickler:** [Registry Model](docs/02-architecture/registry-model.md) → [How-Tos](docs/04-howto/)
+- **Architekten:** [Decision Records](docs/03-decision-records/) → [Architecture](docs/02-architecture/)
 
 ## 📚 Documentation Structure
 
 ### 01-Strategy
-- [Vision](docs_orbis/01-strategy/vision.md) - MQTT-first Leitidee & v1-Zielbild
-- [Goals](docs_orbis/01-strategy/goals.md) - Erfolgskriterien & Qualitätsmerkmale
-- [Scope](docs_orbis/01-strategy/scope.md) - v1 vs. v1.1/2.0 Ausblick
+- [Vision](docs/01-strategy/vision.md) - MQTT-first Leitidee & v1-Zielbild
+- [Goals](docs/01-strategy/goals.md) - Erfolgskriterien & Qualitätsmerkmale
+- [Scope](docs/01-strategy/scope.md) - v1 vs. v1.1/2.0 Ausblick
 
 ### 02-Architecture
-- [System Context](docs_orbis/02-architecture/system-context.md) - Kontextdiagramm (CCU, Module, Node-RED, OMF)
-- [Message Flow](docs_orbis/02-architecture/message-flow.md) - End-to-End-Flows (Order→Module, State→Dashboard)
-- [Registry Model](docs_orbis/02-architecture/registry-model.md) - Registry-Prinzipien & Versionierung
-- [Naming Conventions](docs_orbis/02-architecture/naming-conventions.md) - Topics, Template-Keys, IDs
+- [System Context](docs/02-architecture/system-context.md) - Kontextdiagramm (CCU, Module, Node-RED, OMF)
+- [Message Flow](docs/02-architecture/message-flow.md) - End-to-End-Flows (Order→Module, State→Dashboard)
+- [Registry Model](docs/02-architecture/registry-model.md) - Registry-Prinzipien & Versionierung
+- [Naming Conventions](docs/02-architecture/naming-conventions.md) - Topics, Template-Keys, IDs
 
 ### 03-Decision Records (ADRs)
-- [ADR-0001: Topic-free Templates](docs_orbis/03-decision-records/ADR-0001-registry-topic-free-templates.md)
-- [ADR-0002: Exact Overrides per Serial](docs_orbis/03-decision-records/ADR-0002-exact-overrides-per-serial.md)
+- [ADR-0001: Topic-free Templates](docs/03-decision-records/ADR-0001-registry-topic-free-templates.md)
+- [ADR-0002: Exact Overrides per Serial](docs/03-decision-records/ADR-0002-exact-overrides-per-serial.md)
 
 ### 04-How-To
-- [Add a New Module](docs_orbis/04-howto/add-a-new-module.md) - Template → Mapping → Tests
-- [Define a New Topic](docs_orbis/04-howto/define-a-new-topic.md) - Pattern vs. Exact
-- [Build and Run](docs_orbis/04-howto/build-and-run.md) - OMF Dashboard & Session-Manager
-- [Validate and Release](docs_orbis/04-howto/validate-and-release.md) - Make-Targets & Versioning
+- [Add a New Module](docs/04-howto/add-a-new-module.md) - Template → Mapping → Tests
+- [Define a New Topic](docs/04-howto/define-a-new-topic.md) - Pattern vs. Exact
+- [Build and Run](docs/04-howto/build-and-run.md) - OMF Dashboard & Session-Manager
+- [Validate and Release](docs/04-howto/validate-and-release.md) - Make-Targets & Versioning
 
 ### 05-Reference
-- [Topics](docs_orbis/05-reference/topics.md) - Logische Topic-Gruppen
-- [Templates](docs_orbis/05-reference/templates.md) - Template-Index & Migration Mapping
-- [Enums](docs_orbis/05-reference/enums.md) - Zentrale Listen (Availability/Action/Workpiece)
+- [Topics](docs/05-reference/topics.md) - Logische Topic-Gruppen
+- [Templates](docs/05-reference/templates.md) - Template-Index & Migration Mapping
+- [Enums](docs/05-reference/enums.md) - Zentrale Listen (Availability/Action/Workpiece)
 
 ### 06-Integrations
-- [Node-RED](docs_orbis/06-integrations/node-red/) - Node-RED Integration & Management
+- [Node-RED](docs/06-integrations/node-red/) - Node-RED Integration & Management
 
 ### 99-Glossary
-- [Glossary](docs_orbis/99-glossary.md) - Eindeutige Begrifflichkeiten & IDs
+- [Glossary](docs/99-glossary.md) - Eindeutige Begrifflichkeiten & IDs
 
 ## 🔗 Quick Links
 
 - **Registry:** `registry/model/v1/` - Single Source of Truth
 - **Source Code:** `omf/` - Runtime & Tools
 - **Integrations:** `integrations/` - Externe Systeme (Node-RED, etc.)
-- **Legacy Docs:** [Archive](docs_orbis/archive/) - Veraltete Dokumentation
+- **Legacy Docs:** [Archive](docs/archive/) - Veraltete Dokumentation
 
 ## 🚀 Getting Started
 
 1. **Repository klonen:** `git clone --recursive <repo-url>` (inkl. Submodule)
-2. **Verstehe das System:** [Vision](docs_orbis/01-strategy/vision.md) (5 Min)
-3. **Architektur verstehen:** [System Context](docs_orbis/02-architecture/system-context.md) (10 Min)
-4. **Registry-Prinzipien:** [Registry Model](docs_orbis/02-architecture/registry-model.md) (5 Min)
-5. **Praktisch arbeiten:** [How-Tos](docs_orbis/04-howto/) (je nach Aufgabe)
+2. **Verstehe das System:** [Vision](docs/01-strategy/vision.md) (5 Min)
+3. **Architektur verstehen:** [System Context](docs/02-architecture/system-context.md) (10 Min)
+4. **Registry-Prinzipien:** [Registry Model](docs/02-architecture/registry-model.md) (5 Min)
+5. **Praktisch arbeiten:** [How-Tos](docs/04-howto/) (je nach Aufgabe)
 
 ### Upstream (Submodule)
 - **Nach dem Klonen:** `git submodule update --init --recursive`
@@ -90,12 +90,12 @@
   - `doc/` - Original documentation
 
 ### Orbis Customizations
-- `docs_orbis/` - Orbis documentation and analysis
+- `docs/` - Orbis documentation and analysis
 - `omf/` - Orbis source code
   - `omf/` - OMF Dashboard (Hauptanwendung)
   - `helper_apps/` - Helper-Anwendungen (unabhängig)
     - `session_manager/` - Session Manager (Replay-Funktionalität)
-- `tests_orbis/` - Orbis tests
+- `tests/` - Orbis tests
 - `registry/` - Registry & Schemas (Single Source of Truth)
 - `data/` - Unsere Daten (`mqtt-data/`, `omf-data/`)
 
@@ -117,7 +117,7 @@ make fix-structure
 make all-checks
 ```
 
-Siehe [Developer Guide](docs_orbis/developer_guide) für detaillierte Entwicklungsregeln und Import-Standards.
+Siehe [Developer Guide](docs/developer_guide) für detaillierte Entwicklungsregeln und Import-Standards.
 
 ## External Links
 - [Product Page](https://www.fischertechnik.de/en/products/industry-and-universities/training-models/569289-agile-production-simulation-24v)
@@ -142,12 +142,12 @@ The `Node-RED` folder contains the flows of Node-RED as a Json file
 
 ### Documentation
 
-For detailed documentation of the Node-RED flows, system architecture, and development guidelines, see the [Orbis Documentation Directory](./docs_orbis/).
+For detailed documentation of the Node-RED flows, system architecture, and development guidelines, see the [Orbis Documentation Directory](./docs/).
 
-- **[Node-RED Documentation](./docs_orbis/node-red/)** - Complete flow analysis, state machine, and development guides
-- **[System Architecture](./docs_orbis/node-red/architecture.md)** - Overall system design and components
-- **[Flows Overview](./docs_orbis/node-red/flows-overview.md)** - Detailed tab and module structure
-- **[State Machine](./docs_orbis/node-red/state-machine.md)** - VDA 5050 compliant state transitions
+- **[Node-RED Documentation](./docs/node-red/)** - Complete flow analysis, state machine, and development guides
+- **[System Architecture](./docs/node-red/architecture.md)** - Overall system design and components
+- **[Flows Overview](./docs/node-red/flows-overview.md)** - Detailed tab and module structure
+- **[State Machine](./docs/node-red/state-machine.md)** - VDA 5050 compliant state transitions
 
 
 ### Raspberry PI Image / Central Control Unit (CCU)

@@ -54,14 +54,14 @@ OMF Dashboard
 - **Zentraler Zugriff** über `st.session_state["mqtt_client"]`
 - **Stabile Verbindungen** ohne Verletzung des Singleton-Patterns
 - **Umgebungswechsel** (live/mock/replay) ohne Probleme
-- **📖 Detaillierte Dokumentation:** [Singleton-Pattern Compliance](docs_orbis/singleton-pattern-compliance.md)
+- **📖 Detaillierte Dokumentation:** [Singleton-Pattern Compliance](docs/singleton-pattern-compliance.md)
 
 ### 2. **Per-Topic-Buffer Pattern** ✨ NEW
 - **Topic-spezifische Buffer** für jede MQTT-Subscription
 - **Automatische Nachrichtensammlung** in separaten Buffers
 - **Effiziente Verarbeitung** ohne Message-Processor Overhead
 - **Direkte Buffer-Zugriffe** für optimale Performance
-- **📖 Detaillierte Dokumentation:** [Per-Topic-Buffer Pattern](docs_orbis/per-topic-buffer-pattern.md)
+- **📖 Detaillierte Dokumentation:** [Per-Topic-Buffer Pattern](docs/per-topic-buffer-pattern.md)
 
 ### 3. **Hybrid-Architektur für Publishing** ✨ NEW
 - **MessageGenerator** für Payload-Erstellung
@@ -320,14 +320,14 @@ User clicks DPS-HBW → _prepare_navigation_message → MessageGenerator → Ses
 - **Zentraler Zugriff** über `st.session_state["mqtt_client"]`
 - **Keine Verletzung** des Singleton-Patterns
 - **Stabile Verbindungen** ohne Probleme
-- **📖 Detaillierte Dokumentation:** [Singleton-Pattern Compliance](docs_orbis/singleton-pattern-compliance.md)
+- **📖 Detaillierte Dokumentation:** [Singleton-Pattern Compliance](docs/singleton-pattern-compliance.md)
 
 ### 2. **Per-Topic-Buffer Pattern**
 - **Topic-spezifische Buffer** für jede Subscription
 - **Automatische Nachrichtensammlung** in separaten Buffers
 - **Effiziente Verarbeitung** ohne Message-Processor Overhead
 - **Direkte Buffer-Zugriffe** für optimale Performance
-- **📖 Detaillierte Dokumentation:** [Per-Topic-Buffer Pattern](docs_orbis/per-topic-buffer-pattern.md)
+- **📖 Detaillierte Dokumentation:** [Per-Topic-Buffer Pattern](docs/per-topic-buffer-pattern.md)
 
 ### 3. **Hybrid-Architektur**
 - **MessageGenerator** für Payload-Erstellung
@@ -496,20 +496,20 @@ Das OMF Dashboard implementiert eine moderne **Per-Topic-Buffer Architektur** mi
 ## 📚 Architecture Documentation
 
 ### Pattern-Spezifische Dokumentation
-- **[Singleton-Pattern Compliance](docs_orbis/singleton-pattern-compliance.md)** - MQTT-Singleton Pattern Richtlinien und Best Practices
-- **[Per-Topic-Buffer Pattern](docs_orbis/per-topic-buffer-pattern.md)** - Effiziente MQTT-Nachrichtenverarbeitung
+- **[Singleton-Pattern Compliance](docs/singleton-pattern-compliance.md)** - MQTT-Singleton Pattern Richtlinien und Best Practices
+- **[Per-Topic-Buffer Pattern](docs/per-topic-buffer-pattern.md)** - Effiziente MQTT-Nachrichtenverarbeitung
 
 ### Integration Dokumentation
-- **[MQTT Integration](docs_orbis/mqtt/dashboard-mqtt-integration.md)** - Dashboard MQTT-Integration
-- **[Topic Configuration](docs_orbis/topic-configuration-guide.md)** - Topic-Konfiguration und Priority-Filter
-- **[Module Configuration](docs_orbis/module-configuration-guide.md)** - Modul-Konfiguration und Icons
+- **[MQTT Integration](docs/mqtt/dashboard-mqtt-integration.md)** - Dashboard MQTT-Integration
+- **[Topic Configuration](docs/topic-configuration-guide.md)** - Topic-Konfiguration und Priority-Filter
+- **[Module Configuration](docs/module-configuration-guide.md)** - Modul-Konfiguration und Icons
 
 ### Replay-Workflow (Unabhängige Systeme)
 - **[Session Manager](omf/helper_apps/session_manager/README.md)** - Unabhängige Helper-App für Session-Analyse
 - **[Replay Station](omf/helper_apps/replay_station/README.md)** - Replay-Funktionalität über lokalen MQTT-Broker
-- **[MQTT Replay Pattern](docs_orbis/guides/communication/mqtt-replay-pattern.md)** - Replay-Workflow-Dokumentation
+- **[MQTT Replay Pattern](docs/guides/communication/mqtt-replay-pattern.md)** - Replay-Workflow-Dokumentation
 
 ### Development Guidelines
 - **[Development Rules](OMF_DEVELOPMENT_RULES.md)** - Projekt-spezifische Entwicklungsrichtlinien
-- **[Import Standards](docs_orbis/IMPORT_STANDARDS_GUIDE.md)** - Import-Standards und Best Practices
-- **[Release Notes Procedure](docs_orbis/RELEASE_NOTES_PROCEDURE.md)** - Release Notes Erstellung
+- **[Import Standards](docs/IMPORT_STANDARDS_GUIDE.md)** - Import-Standards und Best Practices
+- **[Release Notes Procedure](docs/RELEASE_NOTES_PROCEDURE.md)** - Release Notes Erstellung

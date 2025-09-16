@@ -142,11 +142,11 @@ ssh pi@192.168.0.100 "systemctl --user status nodered"
 
 ## 📚 Weitere Dokumentation
 
-- [Node-RED Integration Guide](../../docs_orbis/06-integrations/node-red/node-red.md)
-- [Node-RED Flows Overview](../../docs_orbis/06-integrations/node-red/flows-overview.md)
-- [Node-RED State Machine](../../docs_orbis/06-integrations/node-red/state-machine.md)
-- [Fischertechnik Dokumentation](../../docs_orbis/analysis/fischertechnik-dokumentation-analyse.md)
-- [System Context](../../docs_orbis/02-architecture/system-context.md)
+- [Node-RED Integration Guide](../../docs/06-integrations/node-red/node-red.md)
+- [Node-RED Flows Overview](../../docs/06-integrations/node-red/flows-overview.md)
+- [Node-RED State Machine](../../docs/06-integrations/node-red/state-machine.md)
+- [Fischertechnik Dokumentation](../../docs/analysis/fischertechnik-dokumentation-analyse.md)
+- [System Context](../../docs/02-architecture/system-context.md)
 
 ## ⚠️ Wichtige Hinweise
 

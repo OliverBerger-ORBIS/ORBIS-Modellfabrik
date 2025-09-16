@@ -135,7 +135,7 @@ def check_registry_compatibility():
         Registry: {registry_version}
         OMF: {omf_version}
         
-        See: docs_orbis/04-howto/validate-and-release.md
+        See: docs/04-howto/validate-and-release.md
         """)
 ```
 

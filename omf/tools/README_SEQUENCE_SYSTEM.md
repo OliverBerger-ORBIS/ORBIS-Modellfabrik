@@ -180,7 +180,7 @@ wait_condition:
 
 ## 📚 Dokumentation
 
-- **Anforderungen:** `docs_orbis/requirements_sequence_control.md`
+- **Anforderungen:** `docs/requirements_sequence_control.md`
 - **Architektur:** Diese README
 - **Beispiele:** `omf/omf/config/sequence_definitions/`
 - **Tests:** `run_sequence_test.py`

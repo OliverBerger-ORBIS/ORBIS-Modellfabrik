@@ -24,7 +24,7 @@
 ## 🧪 **Quality Assurance**
 
 ### **Unit Tests hinzugefügt**
-- **Neue Test-Datei:** `tests_orbis/test_module_id_mapping.py`
+- **Neue Test-Datei:** `tests/test_module_id_mapping.py`
 - **9 Test-Cases** für Module-ID-Mapping
 - **Kritische Bug-Prävention** implementiert
 - **Alle Tests:** ✅ **PASSED**
@@ -82,9 +82,9 @@
 
 ## 📞 **Support**
 Bei Problemen oder Fragen:
-- **Dokumentation:** `docs_orbis/`
-- **Unit Tests:** `tests_orbis/test_module_id_mapping.py`
-- **Critical Bug Fix:** `docs_orbis/critical-bug-fix-module-id-mapping.md`
+- **Dokumentation:** `docs/`
+- **Unit Tests:** `tests/test_module_id_mapping.py`
+- **Critical Bug Fix:** `docs/critical-bug-fix-module-id-mapping.md`
 
 ---
 

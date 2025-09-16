@@ -110,7 +110,7 @@ if self._is_module_ready_for_command(module, CommandType.PICK):
 ## 🧪 Tests
 
 ### **Test-Coverage:**
-- **Datei:** `tests_orbis/test_omf/test_module_state_manager.py`
+- **Datei:** `tests/test_omf/test_module_state_manager.py`
 - **Tests:** 18 Tests, alle bestanden ✅
 - **Coverage:** Singleton, Sequenz-Management, Command-Sending, Error-Handling
 
@@ -144,15 +144,15 @@ if self._is_module_ready_for_command(module, CommandType.PICK):
 ### **Implementierung:**
 - `omf/omf/tools/module_state_manager.py` - Kern-Implementierung
 - `omf/omf/dashboard/components/module_state_control.py` - UI-Komponente
-- `tests_orbis/test_omf/test_module_state_manager.py` - Tests
+- `tests/test_omf/test_module_state_manager.py` - Tests
 
 ### **Integration:**
 - `omf/omf/dashboard/omf_dashboard.py` - Dashboard-Integration
 - `omf/omf/dashboard/components/README.md` - Dokumentation
 
 ### **Dokumentation:**
-- `docs_orbis/analysis/node-red-replacement-strategy.md` - Strategie
-- `docs_orbis/implementation/module-state-manager.md` - Diese Datei
+- `docs/analysis/node-red-replacement-strategy.md` - Strategie
+- `docs/implementation/module-state-manager.md` - Diese Datei
 
 ## 🎯 Erfolgskriterien
 

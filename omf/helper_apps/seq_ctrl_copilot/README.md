@@ -16,10 +16,10 @@ Konzeption und DEsign by guthub-copilot.
 
 ## Tests
 
-Tests liegen im Ordner `tests_orbis/test_omf/helper_apps/seq_ctrl_copilot` und können mit `pytest` ausgeführt werden:
+Tests liegen im Ordner `tests/test_omf/helper_apps/seq_ctrl_copilot` und können mit `pytest` ausgeführt werden:
 ```bash
 $env:PYTHONPATH = "."
-pytest .\tests_orbis\test_omf\helper_apps\seq_ctrl_copilot\
+pytest .\tests\test_omf\helper_apps\seq_ctrl_copilot\
 ```
 
 ## Schnelleinstieg

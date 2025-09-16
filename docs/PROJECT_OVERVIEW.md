@@ -59,7 +59,7 @@ Verständnis der Funktionsweise der APS Fischertechnik Anwendung, um eine eigene
    - Vollständige Übernahme der Produktionssteuerung
 
 #### Detaillierte Strategie:
-- **Dokumentation:** `docs_orbis/analysis/node-red-replacement-strategy.md`
+- **Dokumentation:** `docs/analysis/node-red-replacement-strategy.md`
 - **Status:** 📋 **STRATEGIE DEFINIERT** - Bereit für Implementierung
 
 ## 🏗️ Teilprojekte

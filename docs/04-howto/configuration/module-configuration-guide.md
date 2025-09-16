@@ -158,18 +158,18 @@ locations = module_mapping.get_locations()
 - ❌ `omf/mqtt/tools/test_unified_type_recognition.py` (verschoben)
 - ❌ `omf/mqtt/dashboard/config/settings.py` (obsolet - doppelt zur YAML-Konfiguration)
 - ❌ `omf/mqtt/tools/mqtt_message_library.py` (obsolet - doppelt zur YAML-Konfiguration)
-- ❌ `docs_orbis/mqtt/working-mqtt-messages.md` (obsolet - doppelt zur YAML-Konfiguration)
-- ❌ `docs_orbis/mqtt/dashboard-extensions.md` (obsolet - doppelt zur YAML-Konfiguration)
-- ❌ `tests_orbis/test_dashboard_functionality.py` (obsolet - testete APS_MODULES_EXTENDED)
-- ❌ `tests_orbis/test_dashboard_imports.py` (obsolet - testete APS_MODULES_EXTENDED)
-- ❌ `tests_orbis/test_streamlit_startup.py` (obsolet - testete APS_MODULES_EXTENDED)
+- ❌ `docs/mqtt/working-mqtt-messages.md` (obsolet - doppelt zur YAML-Konfiguration)
+- ❌ `docs/mqtt/dashboard-extensions.md` (obsolet - doppelt zur YAML-Konfiguration)
+- ❌ `tests/test_dashboard_functionality.py` (obsolet - testete APS_MODULES_EXTENDED)
+- ❌ `tests/test_dashboard_imports.py` (obsolet - testete APS_MODULES_EXTENDED)
+- ❌ `tests/test_streamlit_startup.py` (obsolet - testete APS_MODULES_EXTENDED)
 
 ## 🧪 Tests
 
 ### **Unit-Tests:**
 ```bash
 # ModuleManager Tests
-python tests_orbis/test_module_manager.py
+python tests/test_module_manager.py
 
 # Unified Type Recognition Tests
 python omf/mqtt/tools/test_unified_type_recognition.py

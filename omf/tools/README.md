@@ -121,8 +121,8 @@ topic_mappings:
 
 Alle Tools haben umfassende Unit Tests:
 
-- `tests_orbis/test_topic_mapping_manager.py`: TopicMappingManager Tests
-- `tests_orbis/test_message_generator.py`: MessageGenerator Tests
+- `tests/test_topic_mapping_manager.py`: TopicMappingManager Tests
+- `tests/test_message_generator.py`: MessageGenerator Tests
 
 ### Test Coverage:
 - ✅ Template-Mapping-Funktionalität

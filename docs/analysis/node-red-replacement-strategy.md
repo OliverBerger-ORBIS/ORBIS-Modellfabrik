@@ -246,14 +246,14 @@ class WorkflowEngine:
 ## 📁 Dokumentations-Integration
 
 ### **Bestehende Dokumente erweitern:**
-- **`docs_orbis/PROJECT_OVERVIEW.md`** - Phase 3 aktualisieren
+- **`docs/PROJECT_OVERVIEW.md`** - Phase 3 aktualisieren
 - **`omf/omf/dashboard/components/README.md`** - Neue Komponenten dokumentieren
-- **`docs_orbis/OMF_ARCHITECTURE.md`** - Architektur-Änderungen dokumentieren
+- **`docs/OMF_ARCHITECTURE.md`** - Architektur-Änderungen dokumentieren
 
 ### **Neue Dokumente:**
-- **`docs_orbis/analysis/node-red-replacement-strategy.md`** - Diese Datei
-- **`docs_orbis/implementation/module-state-manager.md`** - Implementierungs-Details
-- **`docs_orbis/testing/command-comparison.md`** - MQTT-Command-Vergleich
+- **`docs/analysis/node-red-replacement-strategy.md`** - Diese Datei
+- **`docs/implementation/module-state-manager.md`** - Implementierungs-Details
+- **`docs/testing/command-comparison.md`** - MQTT-Command-Vergleich
 
 ---
 

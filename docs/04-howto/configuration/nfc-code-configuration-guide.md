@@ -112,10 +112,10 @@ nfc_code = get_nfc_code("R1")
 
 ### Unit Tests
 
-**Pfad:** `tests_orbis/test_nfc_code_manager.py`
+**Pfad:** `tests/test_nfc_code_manager.py`
 
 ```bash
-cd tests_orbis
+cd tests
 python test_nfc_code_manager.py
 ```
 

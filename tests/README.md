@@ -95,13 +95,13 @@ Integration-Tests mit echten Daten:
 ### Einzelne Tests ausführen:
 ```bash
 # Filter-Verbesserungen Tests
-python tests_orbis/test_filter_improvements.py
+python tests/test_filter_improvements.py
 
 # Filter-Integration Tests
-python tests_orbis/test_filter_integration.py
+python tests/test_filter_integration.py
 
 # Alle Tests
-python tests_orbis/run_all_tests.py
+python tests/run_all_tests.py
 ```
 
 ### Test-Ausgabe:
@@ -172,8 +172,8 @@ python tests_orbis/run_all_tests.py
 ### Debug-Modus:
 ```bash
 # Verbose Test-Ausgabe
-python -v tests_orbis/test_filter_improvements.py
+python -v tests/test_filter_improvements.py
 
 # Einzelnen Test ausführen
-python -m unittest tests_orbis.test_filter_improvements.TestFilterImprovements.test_module_icons
+python -m unittest tests.test_filter_improvements.TestFilterImprovements.test_module_icons
 ``` 
