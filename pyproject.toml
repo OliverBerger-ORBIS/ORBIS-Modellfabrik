@@ -25,11 +25,8 @@ dev = [
 ]
 
 [tool.setuptools]
-# Wir benutzen „flat layout“: Packages im Repo-Root finden (kein special 'src/')
-# und nehmen alle, die mit 'src_orbis' anfangen.
-[tool.setuptools.packages.find]
-where = ["."]
-include = ["src_orbis*"]
+# Standard Python Layout: Hauptpaket im Root
+packages = ["omf"]
 
 [tool.black]
 line-length = 120
@@ -61,25 +58,24 @@ ignore = [
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]
 "tests/*" = ["E501", "F401", "E402"]
-"tests_orbis/*" = ["E501", "F401", "E402"]
-"src_orbis/analysis_tools/*" = ["E501", "F401", "E402", "F811", "C414", "E722", "F841"]
-"src_orbis/omf/dashboard/assets/html_templates.py" = ["E501"]
-"src_orbis/omf/dashboard/components/*" = ["E501"]  # HTML template strings
-"src_orbis/omf/dashboard/components/overview_inventory.py" = ["E501"]
-"src_orbis/omf/dashboard/components/overview_purchase_order.py" = ["E501"]
-"src_orbis/omf/dashboard/components/ccu_pairing.py" = ["E501"]
-"src_orbis/omf/dashboard/components/ccu_state.py" = ["E501"]
-"src_orbis/omf/dashboard/components/settings_mqtt_config.py" = ["E501"]
+"omf/analysis_tools/*" = ["E501", "F401", "E402", "F811", "C414", "E722", "F841"]
+"omf/dashboard/assets/html_templates.py" = ["E501"]
+"omf/dashboard/components/*" = ["E501"]  # HTML template strings
+"omf/dashboard/components/overview_inventory.py" = ["E501"]
+"omf/dashboard/components/overview_purchase_order.py" = ["E501"]
+"omf/dashboard/components/ccu_pairing.py" = ["E501"]
+"omf/dashboard/components/ccu_state.py" = ["E501"]
+"omf/dashboard/components/settings_mqtt_config.py" = ["E501"]
 
 
 [tool.isort]
 profile = "black"
 line_length = 120
 multi_line_output = 3
-known_first_party = ["src_orbis"]
+known_first_party = ["omf"]
 
 [tool.pytest.ini_options]
-testpaths = ["tests_orbis"]          # nur hier sammelt Pytest Tests
+testpaths = ["tests"]          # nur hier sammelt Pytest Tests
 addopts = "-q"
 
 # Absolute Path Rules
