@@ -1,0 +1,41 @@
+sequenceDiagram
+    participant TXT as TXT Controller
+    participant CCU as Central Control Unit
+    participant MQTT as MQTT Broker
+    participant MODULE as Processing Module
+    participant OPCUA as OPC-UA Server
+    participant FTS as FTS System
+    
+    Note over TXT,FTS: Order Processing Flow
+    
+    TXT->>CCU: Order Request (without orderId)
+    CCU->>FTS: Forward Order
+    FTS->>FTS: Generate orderId
+    FTS->>CCU: Order with orderId
+    CCU->>MQTT: Publish Order
+    MQTT->>MODULE: Order Message
+    
+    Note over MODULE: Order Handling Function
+    MODULE->>MODULE: Store orderId & orderUpdateId
+    MODULE->>MODULE: Set moduleState = PICKBUSY
+    
+    Note over MODULE: PICK Operation
+    MODULE->>OPCUA: Write PICK Command
+    OPCUA->>MODULE: PICK Status Update
+    MODULE->>MODULE: Set moduleState = PROCESSING
+    
+    Note over MODULE: PROCESSING Operation
+    MODULE->>OPCUA: Write PROCESS Command
+    OPCUA->>MODULE: PROCESS Status Update
+    MODULE->>MODULE: Set moduleState = DROPBUSY
+    
+    Note over MODULE: DROP Operation
+    MODULE->>OPCUA: Write DROP Command
+    OPCUA->>MODULE: DROP Status Update
+    MODULE->>MODULE: Set moduleState = IDLE
+    
+    Note over MODULE: Status Publishing
+    MODULE->>MQTT: Publish VDA Status
+    MQTT->>CCU: Status Update
+    MQTT->>TXT: Status Update
+

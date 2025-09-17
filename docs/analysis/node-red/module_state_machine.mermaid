@@ -1,0 +1,35 @@
+stateDiagram-v2
+    [*] --> IDLE : Module Start
+    
+    IDLE --> PICKBUSY : Order Received
+    PICKBUSY --> PROCESSING : Pick Completed
+    PROCESSING --> DROPBUSY : Processing Completed
+    DROPBUSY --> IDLE : Drop Completed
+    
+    IDLE --> ERROR : Error Occurred
+    PICKBUSY --> ERROR : Pick Failed
+    PROCESSING --> ERROR : Processing Failed
+    DROPBUSY --> ERROR : Drop Failed
+    ERROR --> IDLE : Error Cleared
+    
+    note right of IDLE
+        Module ready for new order
+        State: IDLE
+    end note
+    
+    note right of PICKBUSY
+        Picking workpiece from input
+        State: PICKBUSY
+    end note
+    
+    note right of PROCESSING
+        Processing workpiece
+        (MILL/DRILL/OVEN specific)
+        State: PROCESSING
+    end note
+    
+    note right of DROPBUSY
+        Dropping workpiece to output
+        State: DROPBUSY
+    end note
+

@@ -1,0 +1,16 @@
+[Unit]
+Description=Fischer technick future factory Service
+Requires=docker.service
+After=docker.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory=/home/ff22/fischertechnik/ff-central-control-unit
+ExecStart=/usr/local/bin/docker-compose -f docker-compose-prod.yml up -d --force-recreate
+ExecStop=/usr/local/bin/docker-compose -f docker-compose-prod.yml down
+TimeoutStartSec=0
+
+[Install]
+WantedBy=multi-user.target
+

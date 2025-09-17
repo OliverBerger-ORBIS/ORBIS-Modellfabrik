@@ -1,0 +1,70 @@
+version: '3.8'
+services:
+  central-control:
+    links:
+      - mqtt-broker
+    container_name: central-control-prod
+    restart: on-failure
+    image: ghcr.io/ommsolutions/ff-ccu-armv7:release-24v-v130
+    pull_policy: never
+    networks:
+      - ff-future-factory-prod
+    volumes:
+      - ./central-control/data/:/app/data
+    environment:
+      MQTT_USER: default
+      MQTT_PASS: default
+      MQTT_URL: mqtt://mqtt-broker
+      MQTT_INIT_RETRIES: 20
+      MQTT_INIT_RETRY_DELAY: 1000
+      STORAGE_PATH: /app/data
+      FTS_CHARGE_BELOW_PERCENTAGE: 10
+      MQTT_DEBUG: false
+  frontend:
+    container_name: central-control-frontend-prod
+    restart: on-failure
+    networks:
+      - ff-future-factory-prod
+    environment:
+      NODE_ENV: development
+    image: ghcr.io/ommsolutions/ff-frontend-armv7:release-24v-v130
+    pull_policy: never
+    ports:
+      - "80:80"
+  mqtt-broker:
+    image: eclipse-mosquitto:2
+    container_name: mqtt-broker-prod
+    pull_policy: never
+    restart: on-failure
+    networks:
+      - ff-future-factory-prod
+    volumes:
+      - ./mosquitto/config/:/mosquitto/config/:ro
+      - ./logs/mosquitto:/mosquitto/log/
+      - mosquittodata-prod:/mosquitto/data
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+  nodered:
+    image: ghcr.io/ommsolutions/ff-nodered-armv7:release-24v-v130
+    pull_policy: never
+    container_name: nodered-prod
+    restart: on-failure
+    networks:
+      - ff-future-factory-prod
+    environment:
+      - TZ=Europe/Amsterdam
+    ports:
+      - 1880:1880
+  watchtower:
+    image: containrrr/watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --cleanup --include-stopped --include-restarting --run-once
+
+volumes:
+  mosquittodata-prod: ~
+
+networks:
+  ff-future-factory-prod:
+    driver: bridge

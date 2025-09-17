@@ -1,0 +1,143 @@
+{
+  "modules": [
+    {
+      "type": "HBW",
+      "serialNumber": "SVR5G49392",
+      "placeholder": false
+    },
+    {
+      "type": "DRILL",
+      "serialNumber": "SVR4LS1245",
+      "placeholder": false
+    },
+    {
+      "type": "MILL",
+      "serialNumber": "SVR4PW5290",
+      "placeholder": false
+    },
+    {
+      "type": "DPS",
+      "serialNumber": "SVR4PW5653",
+      "placeholder": false
+    },
+    {
+      "type": "AIQS",
+      "serialNumber": "SVR4PW5083",
+      "placeholder": false
+    },
+    {
+      "type": "CHRG",
+      "serialNumber": "CHRG0"
+    },
+    {
+      "type": "CHRG",
+      "serialNumber": "CHRG1"
+    }
+  ],
+  "intersections": [
+    {
+      "id": "1"
+    },
+    {
+      "id": "2"
+    },
+    {
+      "id": "3"
+    },
+    {
+      "id": "4"
+    },
+    {
+      "id": "5"
+    },
+    {
+      "id": "6"
+    }
+  ],
+  "roads": [
+    {
+      "length": 360,
+      "from": "1",
+      "to": "2",
+      "direction": "EAST"
+    },
+    {
+      "length": 360,
+      "from": "2",
+      "to": "6",
+      "direction": "EAST"
+    },
+    {
+      "length": 360,
+      "from": "3",
+      "to": "1",
+      "direction": "NORTH"
+    },
+    {
+      "length": 360,
+      "from": "3",
+      "to": "4",
+      "direction": "EAST"
+    },
+    {
+      "length": 360,
+      "from": "4",
+      "to": "2",
+      "direction": "NORTH"
+    },
+    {
+      "length": 360,
+      "from": "4",
+      "to": "5",
+      "direction": "EAST"
+    },
+    {
+      "length": 360,
+      "from": "5",
+      "to": "6",
+      "direction": "NORTH"
+    },
+    {
+      "direction": "EAST",
+      "from": "SVR5G49392",
+      "to": "1",
+      "length": 380
+    },
+    {
+      "direction": "EAST",
+      "from": "SVR4LS1245",
+      "to": "3",
+      "length": 380
+    },
+    {
+      "direction": "SOUTH",
+      "from": "SVR4PW5290",
+      "to": "2",
+      "length": 380
+    },
+    {
+      "direction": "WEST",
+      "from": "SVR4PW5653",
+      "to": "6",
+      "length": 380
+    },
+    {
+      "direction": "SOUTH",
+      "from": "SVR4PW5083",
+      "to": "6",
+      "length": 380
+    },
+    {
+      "direction": "WEST",
+      "from": "CHRG0",
+      "to": "5",
+      "length": 430
+    },
+    {
+      "direction": "SOUTH",
+      "from": "CHRG1",
+      "to": "1",
+      "length": 430
+    }
+  ]
+}

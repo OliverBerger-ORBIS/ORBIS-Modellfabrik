@@ -1,0 +1,48 @@
+stateDiagram-v2
+    [*] --> IDLE : AIQS Module Start
+    
+    IDLE --> RPICK : Order Received
+    RPICK --> WCQ : Pick Completed
+    WCQ --> RCQ : Quality Check Started
+    RCQ --> WDROP : Quality Check Completed
+    WDROP --> RDROP : Drop Started
+    RDROP --> IDLE : Drop Completed
+    
+    IDLE --> ERROR : Error Occurred
+    RPICK --> ERROR : Pick Failed
+    WCQ --> ERROR : Quality Check Failed
+    RCQ --> ERROR : Quality Check Failed
+    WDROP --> ERROR : Drop Failed
+    RDROP --> ERROR : Drop Failed
+    ERROR --> IDLE : Error Cleared
+    
+    note right of IDLE
+        AIQS ready for new order
+        State: IDLE
+    end note
+    
+    note right of RPICK
+        Running Pick operation
+        State: RPICK
+    end note
+    
+    note right of WCQ
+        Waiting for Quality Check
+        State: WCQ
+    end note
+    
+    note right of RCQ
+        Running Quality Check
+        State: RCQ
+    end note
+    
+    note right of WDROP
+        Waiting for Drop operation
+        State: WDROP
+    end note
+    
+    note right of RDROP
+        Running Drop operation
+        State: RDROP
+    end note
+

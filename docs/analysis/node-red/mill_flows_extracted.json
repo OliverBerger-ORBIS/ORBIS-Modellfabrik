@@ -1,0 +1,4045 @@
+{
+  "tabs": [
+    {
+      "id": "9810df827082ae56",
+      "type": "tab",
+      "label": "MILL #1",
+      "disabled": false,
+      "info": "eine Schnittstelle, die den lokalen MQTT-Broker mit\r\ndem OPCUA-Server der Fraese verbindet.",
+      "env": []
+    },
+    {
+      "id": "f6c8f50b75376b12",
+      "type": "tab",
+      "label": "MILL #2",
+      "disabled": false,
+      "info": "",
+      "env": []
+    },
+    {
+      "id": "05a427a07096ebdb",
+      "type": "tab",
+      "label": "MILL #3",
+      "disabled": false,
+      "info": "",
+      "env": []
+    },
+    {
+      "id": "a0e5f985232949c9",
+      "type": "tab",
+      "label": "MILL #4",
+      "disabled": false,
+      "info": "",
+      "env": []
+    },
+    {
+      "id": "5fc4fbd01fd96575",
+      "type": "tab",
+      "label": "MILL #5",
+      "disabled": false,
+      "info": "",
+      "env": []
+    }
+  ],
+  "nodes": [
+    {
+      "id": "f8824f864369a41f",
+      "type": "OPCUA-IIoT-Connector",
+      "z": "9810df827082ae56",
+      "discoveryUrl": "",
+      "endpoint": "opc.tcp://192.168.0.40:4840",
+      "endpointMustExist": false,
+      "keepSessionAlive": true,
+      "loginEnabled": false,
+      "name": "MILL_OPCUA",
+      "showErrors": true,
+      "securityPolicy": "None",
+      "securityMode": "None",
+      "individualCerts": false,
+      "publicCertificateFile": "",
+      "privateKeyFile": "",
+      "defaultSecureTokenLifetime": "",
+      "autoSelectRightEndpoint": false,
+      "strategyMaxRetry": "",
+      "strategyInitialDelay": "1000",
+      "strategyMaxDelay": "",
+      "strategyRandomisationFactor": "",
+      "requestedSessionTimeout": "",
+      "connectionStartDelay": "",
+      "reconnectDelay": "",
+      "maxBadSessionRequests": "10"
+    },
+    {
+      "id": "10c631e5670ce5e1",
+      "type": "OPCUA-IIoT-Connector",
+      "z": "f6c8f50b75376b12",
+      "discoveryUrl": "",
+      "endpoint": "opc.tcp://192.168.0.41:4840",
+      "endpointMustExist": false,
+      "keepSessionAlive": true,
+      "loginEnabled": false,
+      "name": "MILL2_OPCUA",
+      "showErrors": true,
+      "securityPolicy": "None",
+      "securityMode": "None",
+      "individualCerts": false,
+      "publicCertificateFile": "",
+      "privateKeyFile": "",
+      "defaultSecureTokenLifetime": "",
+      "autoSelectRightEndpoint": false,
+      "strategyMaxRetry": "",
+      "strategyInitialDelay": "",
+      "strategyMaxDelay": "",
+      "strategyRandomisationFactor": "",
+      "requestedSessionTimeout": "",
+      "connectionStartDelay": "",
+      "reconnectDelay": "",
+      "maxBadSessionRequests": "10"
+    },
+    {
+      "id": "7859b273f274fc48",
+      "type": "OPCUA-IIoT-Connector",
+      "z": "05a427a07096ebdb",
+      "discoveryUrl": "",
+      "endpoint": "opc.tcp://192.168.0.42:4840",
+      "endpointMustExist": false,
+      "keepSessionAlive": true,
+      "loginEnabled": false,
+      "name": "MILL3_OPCUA",
+      "showErrors": false,
+      "securityPolicy": "None",
+      "securityMode": "None",
+      "individualCerts": false,
+      "publicCertificateFile": "",
+      "privateKeyFile": "",
+      "defaultSecureTokenLifetime": "",
+      "autoSelectRightEndpoint": false,
+      "strategyMaxRetry": "",
+      "strategyInitialDelay": "",
+      "strategyMaxDelay": "",
+      "strategyRandomisationFactor": "",
+      "requestedSessionTimeout": "",
+      "connectionStartDelay": "",
+      "reconnectDelay": "",
+      "maxBadSessionRequests": "10"
+    },
+    {
+      "id": "014fc68d7d610e9d",
+      "type": "OPCUA-IIoT-Connector",
+      "z": "a0e5f985232949c9",
+      "discoveryUrl": "",
+      "endpoint": "opc.tcp://192.168.0.43:4840/",
+      "endpointMustExist": false,
+      "keepSessionAlive": true,
+      "loginEnabled": false,
+      "name": "MILL4_OPCUA",
+      "showErrors": false,
+      "securityPolicy": "None",
+      "securityMode": "None",
+      "individualCerts": false,
+      "publicCertificateFile": "",
+      "privateKeyFile": "",
+      "defaultSecureTokenLifetime": "",
+      "autoSelectRightEndpoint": false,
+      "strategyMaxRetry": "",
+      "strategyInitialDelay": "",
+      "strategyMaxDelay": "",
+      "strategyRandomisationFactor": "",
+      "requestedSessionTimeout": "",
+      "connectionStartDelay": "",
+      "reconnectDelay": "",
+      "maxBadSessionRequests": "10"
+    },
+    {
+      "id": "dc24d4023df4a98c",
+      "type": "OPCUA-IIoT-Connector",
+      "z": "5fc4fbd01fd96575",
+      "discoveryUrl": "",
+      "endpoint": "opc.tcp://192.168.0.44:4840",
+      "endpointMustExist": false,
+      "keepSessionAlive": true,
+      "loginEnabled": false,
+      "name": "MILL5_OPCUA",
+      "showErrors": false,
+      "securityPolicy": "None",
+      "securityMode": "None",
+      "individualCerts": false,
+      "publicCertificateFile": "",
+      "privateKeyFile": "",
+      "defaultSecureTokenLifetime": "",
+      "autoSelectRightEndpoint": false,
+      "strategyMaxRetry": "",
+      "strategyInitialDelay": "",
+      "strategyMaxDelay": "",
+      "strategyRandomisationFactor": "",
+      "requestedSessionTimeout": "",
+      "connectionStartDelay": "",
+      "reconnectDelay": "",
+      "maxBadSessionRequests": "10"
+    },
+    {
+      "id": "84df02980fc40b12",
+      "type": "OPCUA-IIoT-Listener",
+      "z": "9810df827082ae56",
+      "connector": "f8824f864369a41f",
+      "action": "subscribe",
+      "queueSize": 10,
+      "name": "",
+      "topic": "",
+      "justValue": false,
+      "useGroupItems": false,
+      "showStatusActivities": true,
+      "showErrors": true,
+      "x": 580,
+      "y": 980,
+      "wires": [
+        [
+          "0fd92e362101022d"
+        ]
+      ]
+    },
+    {
+      "id": "ef2cc52219936216",
+      "type": "OPCUA-IIoT-Inject",
+      "z": "9810df827082ae56",
+      "injectType": "read",
+      "payload": "",
+      "payloadType": "date",
+      "topic": "readSerial",
+      "repeat": "",
+      "crontab": "",
+      "once": true,
+      "startDelay": "20",
+      "name": "serialnumber",
+      "addressSpaceItems": [
+        {
+          "name": "SerialNumber",
+          "nodeId": "ns=3;s=SerialNumber",
+          "datatypeName": "String"
+        },
+        {
+          "name": "model",
+          "nodeId": "ns=4;i=2",
+          "datatypeName": "String"
+        },
+        {
+          "name": "version",
+          "nodeId": "ns=4;i=21",
+          "datatypeName": "String"
+        }
+      ],
+      "x": 170,
+      "y": 460,
+      "wires": [
+        [
+          "d0f0a98c76cc1658"
+        ]
+      ]
+    },
+    {
+      "id": "d0f0a98c76cc1658",
+      "type": "OPCUA-IIoT-Read",
+      "z": "9810df827082ae56",
+      "attributeId": "0",
+      "maxAge": 1,
+      "depth": 1,
+      "connector": "f8824f864369a41f",
+      "name": "read serialNumber",
+      "justValue": false,
+      "showStatusActivities": true,
+      "showErrors": true,
+      "parseStrings": true,
+      "historyDays": 1,
+      "x": 390,
+      "y": 460,
+      "wires": [
+        [
+          "63b1d349f9e14e22",
+          "6da2e3c24b5b1b15"
+        ]
+      ]
+    },
+    {
+      "id": "cc88e3b8b0269abb",
+      "type": "function",
+      "z": "9810df827082ae56",
+      "name": "Order Handling",
+      "func": "if (flow.get(\"orderId\") == msg.payload.orderId || flow.get(\"orderId\") == \"0\") {\n    // orderId im Flow speichern\n    flow.set(\"orderId\", msg.payload.orderId);\n\n    // orderUpdateId Fallunterscheidung\n    if (msg.payload.orderUpdateId > flow.get(\"orderUpdateId\")) {\n\n        // duration in actionState\n        let actionState = flow.get(\"actionState\");\n        actionState.command = msg.payload.action.command;\n        actionState.id = msg.payload.action.id;\n        let loads = flow.get(\"loads\");\n        let newLoad = loads[0] ?? {};\n\n        // Command Fallunterscheidung\n        if (actionState.command == \"PICK\" && flow.get(\"moduleState\") == \"IDLE\") {\n            // ModulState busy setzen\n            flow.set(\"moduleState\", \"PICKBUSY\");\n\n            // OPCUA Write Content\n            msg.payload.valuesToWrite = [{ \"value\": true }];\n            msg.payload.nodesToWrite = [{ \"name\": \"pick\", \"nodeId\": \"ns=4;i=5\", \"datatypeName\": \"Boolean\" }];\n        } else if (actionState.command == \"DROP\" && flow.get(\"moduleState\") == \"WAITING_AFTER_MILL\") {\n            // ModulState busy setzen\n            flow.set(\"moduleState\", \"DROPBUSY\");\n\n            // OPCUA Write Content\n            msg.payload.valuesToWrite = [{ \"value\": true }];\n            msg.payload.nodesToWrite = [{ \"nodeId\": \"ns=4;i=6\", \"datatypeName\": \"Boolean\" }];\n        } else if (actionState.command == \"MILL\" && flow.get(\"moduleState\") == \"WAITING_AFTER_PICK\") {\n            // state.loads bearbeiten\n            newLoad.duration = msg.payload.action.metadata.duration ? msg.payload.action.metadata.duration : 2\n\n            // ModulState busy setzen\n            flow.set(\"moduleState\", \"MILLBUSY\");\n\n            // OPCUA Write Content\n            msg.payload.valuesToWrite = [\n                { \"value\": true },\n                { \"value\": newLoad.duration}];\n            msg.payload.nodesToWrite = [\n                { \"name\": \"mill\", \"nodeId\": \"ns=4;i=4\", \"datatypeName\": \"Boolean\" },\n                { \"name\": \"duration\", \"nodeId\": \"ns=4;i=11\", \"datatypeName\": \"Int16\" }];\n            actionState.duration = newLoad.duration;\n        } else {\n            const flowErrors = flow.get(\"errors\") ?? [];\n            const errors = Array.isArray(flowErrors) ? flowErrors : [flowErrors];\n            let error = {\n                \"errorType\": \"Validation\",\n                \"errorLevel\": \"WARNING\",\n                \"errorReferences\": [\n                    { \"topic\": \"order\" },\n                    { \"headerId\": flow.get(\"headerId\") },\n                    { \"orderId\": msg.payload.orderId },\n                    { \"orderUpdateId\": msg.payload.orderUpdateId }\n                ],\n                \"errorMessage\": \"Command not supported\"\n            }\n            // Error in Flow\n            flow.set(\"errors\", [...errors, error]);\n            return [null, msg];\n        }\n\n        // actionState in Flow speichern\n        flow.set(\"actionState\", actionState);\n\n        // loads for order im Flow speichern\n        newLoad.loadType = msg.payload.action.metadata.type;\n        flow.set(\"loads\", [newLoad]);\n\n        // orderUpdateId updaten\n        flow.set(\"orderUpdateId\", msg.payload.orderUpdateId);\n\n        // OPCUA write Content\n        msg.payload.nodetype = \"inject\";\n        msg.payload.injectType = \"write\";\n\n        return [msg,null];\n    } else {\n        const flowErrors = flow.get(\"errors\") ?? [];\n        const errors = Array.isArray(flowErrors) ? flowErrors : [flowErrors];\n        let error = {\n            \"errorType\": \"Validation\",\n            \"errorLevel\": \"WARNING\",\n            \"errorReferences\": [\n                { \"topic\": \"order\" },\n                { \"headerId\": flow.get(\"headerId\") },\n                { \"orderId\": msg.payload.orderId },\n                { \"orderUpdateId\": msg.payload.orderUpdateId }\n            ],\n            \"errorMessage\": \"OrderUpdateId not valid\"\n        }\n        // Error in Flow\n        flow.set(\"errors\", [...errors, error]);\n        return [null, msg];\n    }\n} else {\n    const flowErrors = flow.get(\"errors\") ?? [];\n    const errors = Array.isArray(flowErrors) ? flowErrors : [flowErrors];\n    let error = {\n        \"errorType\": \"Validation\",\n        \"errorLevel\": \"WARNING\",\n        \"errorReferences\": [\n            { \"topic\": \"order\" },\n            { \"headerId\": flow.get(\"headerId\") },\n            { \"orderId\": msg.payload.orderId },\n            { \"orderUpdateId\": msg.payload.orderUpdateId }\n        ],\n        \"errorMessage\": \"OrderId not valid\"\n    }\n    // Error in Flow\n    flow.set(\"errors\", [...errors, error]);\n    return [null, msg];\n}\n",
+      "outputs": 2,
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 980,
+      "y": 240,
+      "wires": [
+        [
+          "f5ca159ccb1f2e6a"
+        ],
+        [
+          "b0e989f72ff76e1e"
+        ]
+      ]
+    },
+    {
+      "id": "f5ca159ccb1f2e6a",
+      "type": "OPCUA-IIoT-Write",
+      "z": "9810df827082ae56",
+      "connector": "f8824f864369a41f",
+      "name": "Write Order",
+      "justValue": true,
+      "showStatusActivities": true,
+      "showErrors": true,
+      "x": 1190,
+      "y": 180,
+      "wires": [
+        [
+          "2ce2e5a1396e4726",
+          "effbdfa5ecb213b2"
+        ]
+      ]
+    },
+    {
+      "id": "effbdfa5ecb213b2",
+      "type": "debug",
+      "z": "9810df827082ae56",
+      "name": "write MSg",
+      "active": false,
+      "tosidebar": true,
+      "console": false,
+      "tostatus": false,
+      "complete": "true",
+      "targetType": "full",
+      "statusVal": "",
+      "statusType": "auto",
+      "x": 1360,
+      "y": 140,
+      "wires": []
+    },
+    {
+      "id": "9275df57d3f45391",
+      "type": "function",
+      "z": "9810df827082ae56",
+      "name": "vda_status_finished PICK",
+      "func": "// wenn \"TRUE\" im OPCUA und die richtige interne state\nif (msg.payload.value.value.value == true && flow.get(\"moduleState\") == \"PICKBUSY\") {\n\n    // state\n    let state = flow.get(\"state\");\n    let headerId = flow.get(\"headerId\");\n    let actionState = flow.get(\"actionState\");\n    let flowErrors = flow.get(\"errors\") ?? [];\n    let errors = Array.isArray(flowErrors) ? flowErrors : [flowErrors];\n\n    // Timestamp\n    let now = new Date();\n    let timestamp = now.toISOString();\n\n    // erfolgreich mit der NodeId\n    if (msg.payload.nodeId == \"ns=4;i=8\") {\n        if (msg.payload.value.value.value == true && flow.get(\"moduleState\") == \"PICKBUSY\") {\n            flow.set(\"moduleState\", \"WAITING_AFTER_PICK\");\n            actionState.state = \"FINISHED\"; // Waiting for FTS\n        }\n    }\n\n    // nicht erfolgreich mit der NodeId\n    else if (msg.payload.nodeId == \"ns=4;i=12\") {\n        let error = {\n            timestamp,\n            \"errorType\": \"PICK_failed\",\n            \"errorMessage\": \"PICK failed\",\n            \"errorLevel\": \"FATAL\",\n            \"errorReferences\": [\n                { \"topic\": \"order\" },\n                { \"headerId\": flow.get(\"headerId\") },\n                { \"orderId\": flow.get(\"orderId\") },\n                { \"orderUpdateId\": flow.get(\"orderUpdateId\") }\n            ],\n        }\n        actionState.state = \"FAILED\"; // FAILED PICK\n        errors.push(error);\n        flow.set(\"errors\", errors);\n        flow.set(\"moduleState\", \"IDLE\");\n    }\n\n    state.headerId = headerId;\n    state.loads = flow.get(\"loads\");\n    state.actionState = flow.get(\"actionState\");\n    state.timestamp = timestamp;\n    state.orderId = flow.get(\"orderId\");\n    state.orderUpdateId = flow.get(\"orderUpdateId\");\n    state.errors = flow.get(\"errors\") ? flow.get(\"errors\") : [];\n\n    // headerId Update\n    flow.set(\"headerId\", headerId + 1);\n\n    msg.topic = flow.get(\"MQTT_topic\") + \"/state\";\n    msg.payload = state;\n    return msg;\n} else {\n\n    return;\n}",
+      "outputs": 1,
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 1350,
+      "y": 1020,
+      "wires": [
+        [
+          "e28019bd4d3c63b3",
+          "ffc8d545a583a254"
+        ]
+      ]
+    },
+    {
+      "id": "0fd92e362101022d",
+      "type": "switch",
+      "z": "9810df827082ae56",
+      "name": "topicswitch",
+      "property": "payload.nodeId",
+      "propertyType": "msg",
+      "rules": [
+        {
+          "t": "eq",
+          "v": "ns=4;i=14",
+          "vt": "str"
+        },
+        {
+          "t": "eq",
+          "v": "ns=4;i=13",
+          "vt": "str"
+        },
+        {
+          "t": "eq",
+          "v": "ns=4;i=9",
+          "vt": "str"
+        },
+        {
+          "t": "eq",
+          "v": "ns=4;i=3",
+          "vt": "str"
+        },
+        {
+          "t": "eq",
+          "v": "ns=4;i=16",
+          "vt": "str"
+        },
+        {
+          "t": "eq",
+          "v": "ns=4;i=10",
+          "vt": "str"
+        },
+        {
+          "t": "eq",
+          "v": "ns=4;i=15",
+          "vt": "str"
+        },
+        {
+          "t": "eq",
+          "v": "ns=4;i=12",
+          "vt": "str"
+        },
+        {
+          "t": "eq",
+          "v": "ns=4;i=8",
+          "vt": "str"
+        }
+      ],
+      "checkall": "true",
+      "repair": false,
+      "outputs": 9,
+      "x": 770,
+      "y": 980,
+      "wires": [
+        [],
+        [
+          "a42f4a5baded7e34",
+          "c2c41b017291ea5c"
+        ],
+        [
+          "c2c41b017291ea5c"
+        ],
+        [
+          "292be9a2c27fb100"
+        ],
+        [],
+        [
+          "1ee728a06a2be2f8"
+        ],
+        [],
+        [
+          "bbe82cd66f64a56e",
+          "9275df57d3f45391"
+        ],
+        [
+          "9275df57d3f45391"
+        ]
+      ],
+      "outputLabels": [
+        "drop_aktiv",
+        "drop_failed",
+        "drop_finished",
+        "idle",
+        "mill_aktiv",
+        "mill_finished",
+        "pick_aktiv",
+        "pick_failed",
+        "pick_finished"
+      ]
+    },
+    {
+      "id": "2ce2e5a1396e4726",
+      "type": "function",
+      "z": "9810df827082ae56",
+      "name": "Publish vda_status_RUNNING",
+      "func": "// Timestamp\nlet now = new Date();\nlet timestamp = now.toISOString();\n\n\n\n//state bauen\nlet headerId = flow.get(\"headerId\");\nlet actionState = flow.get(\"actionState\");\nactionState.id = msg.payload.action.id ? msg.payload.action.id : \"noIdfound\";\nlet state = flow.get(\"state\");\n\nactionState.state = \"RUNNING\";\nstate.headerId = flow.get(\"headerId\");\nstate.loads = flow.get(\"loads\");\nstate.actionState = actionState;\nstate.timestamp = timestamp;\nstate.orderId = flow.get(\"orderId\");\nstate.orderUpdateId = flow.get(\"orderUpdateId\");\nconst flowErrors = flow.get(\"errors\") ?? [];\nstate.errors = Array.isArray(flowErrors) ? flowErrors : [flowErrors];\nmsg.payload = state;\n\n// flowVariable Update\nflow.set(\"headerId\", headerId + 1);\nflow.set(\"errors\", null);\n\nmsg.topic = flow.get(\"MQTT_topic\") + \"/state\";\n\nreturn msg;",
+      "outputs": 1,
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 1430,
+      "y": 220,
+      "wires": [
+        [
+          "7bbd139882cb9d91",
+          "c42740473d19f811"
+        ]
+      ]
+    },
+    {
+      "id": "7bbd139882cb9d91",
+      "type": "debug",
+      "z": "9810df827082ae56",
+      "name": "Order State",
+      "active": false,
+      "tosidebar": true,
+      "console": false,
+      "tostatus": false,
+      "complete": "true",
+      "targetType": "full",
+      "statusVal": "",
+      "statusType": "auto",
+      "x": 1810,
+      "y": 220,
+      "wires": []
+    },
+    {
+      "id": "c2c41b017291ea5c",
+      "type": "function",
+      "z": "9810df827082ae56",
+      "name": "vda_status_finished DROP",
+      "func": "// wenn OPCUA den Wert True liefert\nif (msg.payload.value.value.value == true && flow.get(\"moduleState\") == \"DROPBUSY\") {\n    // Timestamp\n    let now = new Date();\n    let timestamp = now.toISOString();\n    let headerId = flow.get(\"headerId\");\n    let actionState = flow.get(\"actionState\");\n    let state = flow.get(\"state\");\n    let flowErrors = flow.get(\"errors\") ?? [];\n    let errors = Array.isArray(flowErrors) ? flowErrors : [flowErrors];\n\n    // wenn drop_finished gesetzt wurde\n    if (msg.payload.nodeId == \"ns=4;i=9\") {\n        actionState.state = \"FINISHED\";\n    }\n\n    // wenn drop_failed gesetzt wurde\n    else if (msg.payload.nodeId == \"ns=4;i=13\") {\n        actionState.state = \"FAILED\";\n        let error = {\n            timestamp,\n            \"errorType\": \"DROP_failed\",\n            \"errorMessage\": \"DROP failed\",\n            \"errorLevel\": \"WARNING\",\n            \"errorReferences\": [\n                { \"topic\": \"order\" },\n                { \"headerId\": flow.get(\"headerId\") },\n                { \"orderId\": flow.get(\"orderId\") },\n                { \"orderUpdateId\": flow.get(\"orderUpdateId\") }\n            ],\n        }\n        errors.push(error);\n        flow.set(\"errors\", errors);\n    } else {\n        return\n    }\n\n    // state\n    state.headerId = headerId;\n    state.loads = [];\n    state.actionState = actionState;\n    state.timestamp = timestamp;\n    state.orderId = flow.get(\"orderId\");\n    state.orderUpdateId = flow.get(\"orderUpdateId\");\n    state.errors = flow.get(\"errors\") ? flow.get(\"errors\") : [];\n\n    // headerId Update\n    flow.set(\"headerId\", headerId + 1);\n    flow.set(\"orderId\", 0);\n    flow.set(\"orderUpdateId\", 0);\n    flow.set(\"loads\", []);\n    flow.set(\"moduleState\", \"IDLE\");\n    flow.set(\"errors\", []);\n\n    msg.topic = flow.get(\"MQTT_topic\") + \"/state\";\n    msg.payload = state;\n    return msg;\n}\nelse {\n    return;\n}",
+      "outputs": 1,
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 1360,
+      "y": 940,
+      "wires": [
+        [
+          "e28019bd4d3c63b3",
+          "ffc8d545a583a254"
+        ]
+      ]
+    },
+    {
+      "id": "e28019bd4d3c63b3",
+      "type": "debug",
+      "z": "9810df827082ae56",
+      "name": "finished",
+      "active": false,
+      "tosidebar": true,
+      "console": false,
+      "tostatus": false,
+      "complete": "true",
+      "targetType": "full",
+      "statusVal": "",
+      "statusType": "auto",
+      "x": 1700,
+      "y": 1140,
+      "wires": []
+    },
+    {
+      "id": "1ee728a06a2be2f8",
+      "type": "function",
+      "z": "9810df827082ae56",
+      "name": "vda_status_finished MILL",
+      "func": "if (msg.payload.value.value.value == true && flow.get(\"moduleState\") == \"MILLBUSY\") {\n\n    let state = flow.get(\"state\");\n    flow.set(\"moduleState\", \"WAITING_AFTER_MILL\");\n\n    // Timestamp\n    let now = new Date();\n    let timestamp = now.toISOString();\n\n    let headerId = flow.get(\"headerId\");\n    let actionState = flow.get(\"actionState\");\n    actionState.state = \"FINISHED\"\n    \n    // state\n    state.headerId = headerId;\n    state.loads = flow.get(\"loads\");\n    state.actionState = actionState;\n    state.timestamp = timestamp;\n    state.orderId = flow.get(\"orderId\");\n    state.orderUpdateId = flow.get(\"orderUpdateId\");\n    const flowErrors = flow.get(\"errors\") ?? [];\n    state.errors = Array.isArray(flowErrors) ? flowErrors : [flowErrors];\n\n    // headerId Update\n    flow.set(\"headerId\", headerId + 1);\n\n    msg.topic = flow.get(\"MQTT_topic\") + \"/state\";\n    msg.payload = state;\n    return msg;\n}\nelse {\n    return;\n}",
+      "outputs": 1,
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 1350,
+      "y": 980,
+      "wires": [
+        [
+          "e28019bd4d3c63b3",
+          "ffc8d545a583a254"
+        ]
+      ]
+    },
+    {
+      "id": "292be9a2c27fb100",
+      "type": "change",
+      "z": "9810df827082ae56",
+      "name": "OPCUA state IDLE",
+      "rules": [
+        {
+          "t": "set",
+          "p": "SPS_idle",
+          "pt": "flow",
+          "to": "payload.value.value.value",
+          "tot": "msg"
+        }
+      ],
+      "action": "",
+      "property": "",
+      "from": "",
+      "to": "",
+      "reg": false,
+      "x": 1130,
+      "y": 860,
+      "wires": [
+        []
+      ]
+    },
+    {
+      "id": "bbe82cd66f64a56e",
+      "type": "change",
+      "z": "9810df827082ae56",
+      "name": "OPCUA state PICK",
+      "rules": [
+        {
+          "t": "set",
+          "p": "pick_failed",
+          "pt": "flow",
+          "to": "payload.value.value.value",
+          "tot": "msg"
+        }
+      ],
+      "action": "",
+      "property": "",
+      "from": "",
+      "to": "",
+      "reg": false,
+      "x": 1130,
+      "y": 800,
+      "wires": [
+        []
+      ]
+    },
+    {
+      "id": "a42f4a5baded7e34",
+      "type": "change",
+      "z": "9810df827082ae56",
+      "name": "OPCUA state DROP",
+      "rules": [
+        {
+          "t": "set",
+          "p": "drop_failed",
+          "pt": "flow",
+          "to": "payload.value.value.value",
+          "tot": "msg"
+        }
+      ],
+      "action": "",
+      "property": "",
+      "from": "",
+      "to": "",
+      "reg": false,
+      "x": 1140,
+      "y": 740,
+      "wires": [
+        []
+      ]
+    },
+    {
+      "id": "ef0bf5f46fe26aa4",
+      "type": "function",
+      "z": "9810df827082ae56",
+      "name": "variable setup",
+      "func": "// Nötige Werte im Flow speichern\nflow.set(\"flowName\", \"MILL\");\nflow.set(\"moduleState\", \"IDLE\");\nflow.set(\"orderUpdateId\", 0);\nflow.set(\"orderId\", \"0\");\nflow.set(\"loads\", []);\nflow.set(\"headerId\", 1);\nflow.set(\"actionState\", {});\nflow.set(\"model\", \"MILL\");\nflow.set(\"errors\", []);\n\nflow.set(\"state\", {\n    \"headerId\": 0,\n    \"loads\": [],\n    \"actionState\": null,\n    \"serialNumber\": \"notReadYet\",\n    \"timestamp\": \"timestamp\",\n    \"errors\": [],\n    \"orderUpdateId\": 0,\n    \"orderId\": 0,\n    \"paused\": false,\n    \"metadata\": {\n        \"opcuaState\": \"connected\"\n    }\n});\n\n// factsheet for MILL\nconst factsheet = msg.factsheet ?? {};\nflow.set(\"factsheet\", factsheet);\n\nflow.set(\"connection\", {\n    \"headerId\": 0,\n    \"timestamp\": \"timestamp\",\n    \"ip\": \"192.168.0.40\",\n    \"version\": \"1.0.0\",\n    \"manufacturer\": \"Fischertechnik\",\n    \"serialNumber\": \"serialNumber\",\n    \"connectionState\": \"ONLINE\"\n});\nflow.set(\"opcuaState\", \"connected\");\n\nreturn ",
+      "outputs": 1,
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 380,
+      "y": 60,
+      "wires": [
+        []
+      ]
+    },
+    {
+      "id": "b0e989f72ff76e1e",
+      "type": "function",
+      "z": "9810df827082ae56",
+      "name": "Publish vda_status_FAILED",
+      "func": "// Timestamp\nlet now = new Date();\nlet timestamp = now.toISOString();\n\n// state bauen\nlet state = flow.get(\"state\");\nstate.headerId = flow.get(\"headerId\");\nstate.loads = flow.get(\"loads\");\nstate.actionState = flow.get(\"actionState\");\nstate.actionState.state = \"FAILED\";\nstate.timestamp = timestamp;\nstate.orderId = flow.get(\"orderId\");\nstate.orderUpdateId = flow.get(\"orderUpdateId\");\nconst flowErrors = flow.get(\"errors\") ?? [];\nstate.errors = Array.isArray(flowErrors) ? flowErrors : [flowErrors];\n\n// flow update\nflow.set(\"headerId\", state.headerId + 1);\n\nmsg.topic = flow.get(\"MQTT_topic\") + \"/state\";\nmsg.payload = state;\nreturn msg;",
+      "outputs": 1,
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 1420,
+      "y": 320,
+      "wires": [
+        [
+          "7bbd139882cb9d91",
+          "c42740473d19f811"
+        ]
+      ]
+    },
+    {
+      "id": "d33d0bcf9d6bcbe4",
+      "type": "OPCUA-IIoT-Browser",
+      "z": "9810df827082ae56",
+      "nodeId": "ns=4;i=1",
+      "name": "browse",
+      "justValue": true,
+      "sendNodesToRead": false,
+      "sendNodesToBrowser": false,
+      "sendNodesToListener": true,
+      "multipleOutputs": false,
+      "showStatusActivities": true,
+      "showErrors": true,
+      "recursiveBrowse": false,
+      "recursiveDepth": 1,
+      "delayPerMessage": 0.2,
+      "connector": "f8824f864369a41f",
+      "x": 400,
+      "y": 980,
+      "wires": [
+        [
+          "84df02980fc40b12",
+          "09303051db932bfe"
+        ]
+      ]
+    },
+    {
+      "id": "8cb0c3e3d9d1afb9",
+      "type": "OPCUA-IIoT-Inject",
+      "z": "9810df827082ae56",
+      "injectType": "inject",
+      "payload": "{\"interval\":100}",
+      "payloadType": "json",
+      "topic": "",
+      "repeat": "",
+      "crontab": "",
+      "once": true,
+      "startDelay": "10",
+      "name": "inject",
+      "addressSpaceItems": [],
+      "x": 150,
+      "y": 980,
+      "wires": [
+        [
+          "d33d0bcf9d6bcbe4"
+        ]
+      ]
+    },
+    {
+      "id": "09303051db932bfe",
+      "type": "change",
+      "z": "9810df827082ae56",
+      "name": "BrowserArray",
+      "rules": [
+        {
+          "t": "set",
+          "p": "BrowseArray",
+          "pt": "flow",
+          "to": "payload.browserResults",
+          "tot": "msg"
+        }
+      ],
+      "action": "",
+      "property": "",
+      "from": "",
+      "to": "",
+      "reg": false,
+      "x": 780,
+      "y": 880,
+      "wires": [
+        []
+      ]
+    },
+    {
+      "id": "ffc8d545a583a254",
+      "type": "link out",
+      "z": "9810df827082ae56",
+      "name": "MQTT_retained",
+      "mode": "link",
+      "links": [
+        "1a56d5a4f8592caa"
+      ],
+      "x": 1735,
+      "y": 960,
+      "wires": []
+    },
+    {
+      "id": "63b1d349f9e14e22",
+      "type": "subflow:1b897516f5bf21fa",
+      "z": "9810df827082ae56",
+      "name": "",
+      "x": 620,
+      "y": 460,
+      "wires": [
+        [
+          "cc88e3b8b0269abb"
+        ],
+        [
+          "dc8e1da6db07a138"
+        ],
+        [
+          "c42740473d19f811"
+        ],
+        []
+      ]
+    },
+    {
+      "id": "c42740473d19f811",
+      "type": "link out",
+      "z": "9810df827082ae56",
+      "name": "MQTT_retained",
+      "mode": "link",
+      "links": [
+        "1a56d5a4f8592caa"
+      ],
+      "x": 1935,
+      "y": 480,
+      "wires": []
+    },
+    {
+      "id": "38f75efbbd61c00e",
+      "type": "subflow:6a25ecd632542087",
+      "z": "9810df827082ae56",
+      "name": "",
+      "env": [
+        {
+          "name": "FACTSHEET_FILE",
+          "value": "/data/factsheets/factsheet-mill.json",
+          "type": "str"
+        },
+        {
+          "name": "FACTSHEET_FILENAME",
+          "value": "factsheet-mill.json",
+          "type": "str"
+        }
+      ],
+      "x": 150,
+      "y": 60,
+      "wires": [
+        [
+          "ef0bf5f46fe26aa4"
+        ]
+      ]
+    },
+    {
+      "id": "65ea2295db8256c4",
+      "type": "function",
+      "z": "9810df827082ae56",
+      "name": "vda_action factsheetRequest",
+      "func": "/**\n * @typedef {object} ActionState\n * @property {string} id\n * @property {string} state\n * @property {string} command\n * @property {object} [metadata]\n * \n * @param {string} state\n * @returns {ActionState}\n */\nfunction updateActionState(state, metadata = undefined) {\n    const actionState = flow.get(\"actionState\") ?? {};\n    actionState.id = msg.actionId;\n    actionState.state = state;\n    actionState.command = msg.actionCommand;\n    actionState.metadata = metadata ?? undefined;\n    flow.set(\"actionState\", actionState);\n    return actionState;\n}\n\nconst actionState = updateActionState(\"RUNNING\");\n\n// factsheet timestamp aktualisieren\nconst factsheet = flow.get(\"factsheet\");\nfactsheet.timestamp = new Date().toISOString();\nflow.set(\"factsheet\", factsheet);\n\n//publish on topic\nmsg.topic = flow.get(\"MQTT_topic\") + \"/factsheet\";\nmsg.payload = factsheet;\nreturn msg;",
+      "outputs": 1,
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 1240,
+      "y": 420,
+      "wires": [
+        [
+          "e2ee768c89a9dcb5",
+          "c42740473d19f811"
+        ]
+      ]
+    },
+    {
+      "id": "e2ee768c89a9dcb5",
+      "type": "function",
+      "z": "9810df827082ae56",
+      "name": "vda_status_finished instantAction",
+      "func": "/**\n * @typedef {object} ActionState\n * @property {string} id\n * @property {string} state\n * @property {string} command\n * @property {object} [metadata]\n * \n * @param {string} state\n * @returns {ActionState}\n */\nfunction updateActionState(state, metadata = undefined) {\n    const actionState = flow.get(\"actionState\") ?? {};\n    actionState.id = msg.actionId;\n    actionState.state = state;\n    actionState.command = msg.actionCommand;\n    actionState.metadata = metadata ?? undefined;\n    flow.set(\"actionState\", actionState);\n    return actionState;\n}\n\nconst actionState = updateActionState(\"FINISHED\");\n\n// state bauen\nlet state = flow.get(\"state\");\nstate.headerId = flow.get(\"headerId\");\nstate.actionState = actionState\nstate.timestamp = new Date().toISOString();\nstate.orderId = actionState.id;\nstate.orderUpdateId = \"0\";\nconst flowErrors = flow.get(\"errors\") ?? [];\nstate.errors = Array.isArray(flowErrors) ? flowErrors : [flowErrors];\n\n// flow update\nflow.set(\"headerId\", state.headerId + 1);\n\nmsg.topic = flow.get(\"MQTT_topic\") + \"/state\";\nmsg.payload = state;\nreturn msg;",
+      "outputs": 1,
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 1560,
+      "y": 420,
+      "wires": [
+        [
+          "c42740473d19f811"
+        ]
+      ]
+    },
+    {
+      "id": "dc8e1da6db07a138",
+      "type": "switch",
+      "z": "9810df827082ae56",
+      "name": "handleInstantAction",
+      "property": "instantAction",
+      "propertyType": "msg",
+      "rules": [
+        {
+          "t": "eq",
+          "v": "factsheetRequest",
+          "vt": "str"
+        }
+      ],
+      "checkall": "true",
+      "repair": false,
+      "outputs": 1,
+      "x": 970,
+      "y": 420,
+      "wires": [
+        [
+          "65ea2295db8256c4"
+        ]
+      ]
+    },
+    {
+      "id": "c5b5a85ec2269243",
+      "type": "catch",
+      "z": "9810df827082ae56",
+      "name": "Catch all Errors",
+      "scope": null,
+      "uncaught": true,
+      "x": 160,
+      "y": 140,
+      "wires": [
+        [
+          "8b9f2b9f57dd3d5d"
+        ]
+      ]
+    },
+    {
+      "id": "8b9f2b9f57dd3d5d",
+      "type": "debug",
+      "z": "9810df827082ae56",
+      "name": "display-error",
+      "active": true,
+      "tosidebar": true,
+      "console": false,
+      "tostatus": false,
+      "complete": "true",
+      "targetType": "full",
+      "statusVal": "",
+      "statusType": "auto",
+      "x": 390,
+      "y": 140,
+      "wires": []
+    },
+    {
+      "id": "5b1744c09f35fa4d",
+      "type": "subflow:468f2460ce66f11e",
+      "z": "9810df827082ae56",
+      "name": "",
+      "x": 650,
+      "y": 620,
+      "wires": [
+        [
+          "c42740473d19f811"
+        ]
+      ]
+    },
+    {
+      "id": "2675e42a18b06390",
+      "type": "OPCUA-IIoT-Inject",
+      "z": "9810df827082ae56",
+      "injectType": "read",
+      "payload": "",
+      "payloadType": "date",
+      "topic": "readSerial",
+      "repeat": "15",
+      "crontab": "",
+      "once": true,
+      "startDelay": "20",
+      "name": "serialnumber",
+      "addressSpaceItems": [
+        {
+          "name": "SerialNumber",
+          "nodeId": "ns=3;s=SerialNumber",
+          "datatypeName": "String"
+        },
+        {
+          "name": "model",
+          "nodeId": "ns=4;i=2",
+          "datatypeName": "String"
+        }
+      ],
+      "x": 200,
+      "y": 620,
+      "wires": [
+        [
+          "000af99b0ede127b",
+          "5b1744c09f35fa4d"
+        ]
+      ]
+    },
+    {
+      "id": "000af99b0ede127b",
+      "type": "OPCUA-IIoT-Read",
+      "z": "9810df827082ae56",
+      "attributeId": "0",
+      "maxAge": 1,
+      "depth": 1,
+      "connector": "f8824f864369a41f",
+      "name": "read serialNumber",
+      "justValue": false,
+      "showStatusActivities": true,
+      "showErrors": true,
+      "parseStrings": true,
+      "historyDays": 1,
+      "x": 410,
+      "y": 580,
+      "wires": [
+        [
+          "5b1744c09f35fa4d"
+        ]
+      ]
+    },
+    {
+      "id": "6da2e3c24b5b1b15",
+      "type": "debug",
+      "z": "9810df827082ae56",
+      "name": "debug 2",
+      "active": false,
+      "tosidebar": true,
+      "console": false,
+      "tostatus": false,
+      "complete": "false",
+      "statusVal": "",
+      "statusType": "auto",
+      "x": 580,
+      "y": 360,
+      "wires": []
+    },
+    {
+      "id": "e4af1351b613935f",
+      "type": "OPCUA-IIoT-Listener",
+      "z": "f6c8f50b75376b12",
+      "connector": "10c631e5670ce5e1",
+      "action": "subscribe",
+      "queueSize": 10,
+      "name": "",
+      "topic": "",
+      "justValue": false,
+      "useGroupItems": false,
+      "showStatusActivities": true,
+      "showErrors": true,
+      "x": 580,
+      "y": 980,
+      "wires": [
+        [
+          "13014a3b40279d23"
+        ]
+      ]
+    },
+    {
+      "id": "51f1c446fdc888f3",
+      "type": "OPCUA-IIoT-Read",
+      "z": "f6c8f50b75376b12",
+      "attributeId": "0",
+      "maxAge": 1,
+      "depth": 1,
+      "connector": "10c631e5670ce5e1",
+      "name": "read serialNumber",
+      "justValue": false,
+      "showStatusActivities": true,
+      "showErrors": true,
+      "parseStrings": true,
+      "historyDays": 1,
+      "x": 390,
+      "y": 460,
+      "wires": [
+        [
+          "5ca54bd1379d2014"
+        ]
+      ]
+    },
+    {
+      "id": "d50b0f89a41e2f60",
+      "type": "function",
+      "z": "f6c8f50b75376b12",
+      "name": "Order Handling",
+      "func": "if (flow.get(\"orderId\") == msg.payload.orderId || flow.get(\"orderId\") == \"0\") {\n    // orderId im Flow speichern\n    flow.set(\"orderId\", msg.payload.orderId);\n\n    // orderUpdateId Fallunterscheidung\n    if (msg.payload.orderUpdateId > flow.get(\"orderUpdateId\")) {\n\n        // duration in actionState\n        let actionState = flow.get(\"actionState\");\n        actionState.command = msg.payload.action.command;\n        actionState.id = msg.payload.action.id;\n        let loads = flow.get(\"loads\");\n        let newLoad = loads[0] ?? {};\n\n        // Command Fallunterscheidung\n        if (actionState.command == \"PICK\" && flow.get(\"moduleState\") == \"IDLE\") {\n            // ModulState busy setzen\n            flow.set(\"moduleState\", \"PICKBUSY\");\n\n            // OPCUA Write Content\n            msg.payload.valuesToWrite = [{ \"value\": true }];\n            msg.payload.nodesToWrite = [{ \"name\": \"pick\", \"nodeId\": \"ns=4;i=5\", \"datatypeName\": \"Boolean\" }];\n        } else if (actionState.command == \"DROP\" && flow.get(\"moduleState\") == \"WAITING_AFTER_MILL\") {\n            // ModulState busy setzen\n            flow.set(\"moduleState\", \"DROPBUSY\");\n\n            // OPCUA Write Content\n            msg.payload.valuesToWrite = [{ \"value\": true }];\n            msg.payload.nodesToWrite = [{ \"nodeId\": \"ns=4;i=6\", \"datatypeName\": \"Boolean\" }];\n        } else if (actionState.command == \"MILL\" && flow.get(\"moduleState\") == \"WAITING_AFTER_PICK\") {\n            // state.loads bearbeiten\n            newLoad.duration = msg.payload.action.metadata.duration ? msg.payload.action.metadata.duration : 2\n\n            // ModulState busy setzen\n            flow.set(\"moduleState\", \"MILLBUSY\");\n\n            // OPCUA Write Content\n            msg.payload.valuesToWrite = [\n                { \"value\": true },\n                { \"value\": newLoad.duration }];\n            msg.payload.nodesToWrite = [\n                { \"name\": \"mill\", \"nodeId\": \"ns=4;i=4\", \"datatypeName\": \"Boolean\" },\n                { \"name\": \"duration\", \"nodeId\": \"ns=4;i=11\", \"datatypeName\": \"Int16\" }];\n            actionState.duration = newLoad.duration;\n        } else {\n            const flowErrors = flow.get(\"errors\") ?? [];\n            const errors = Array.isArray(flowErrors) ? flowErrors : [flowErrors];\n            let error = {\n                \"errorType\": \"Validation\",\n                \"errorLevel\": \"WARNING\",\n                \"errorReferences\": [\n                    { \"topic\": \"order\" },\n                    { \"headerId\": flow.get(\"headerId\") },\n                    { \"orderId\": msg.payload.orderId },\n                    { \"orderUpdateId\": msg.payload.orderUpdateId }\n                ],\n                \"errorMessage\": \"Command not supported\"\n            }\n            // Error in Flow\n            flow.set(\"errors\", [...errors, error]);\n            return [null, msg];\n        }\n\n        // actionState in Flow speichern\n        flow.set(\"actionState\", actionState);\n\n        // loads for order im Flow speichern\n        newLoad.loadType = msg.payload.action.metadata.type;\n        flow.set(\"loads\", [newLoad]);\n\n        // orderUpdateId updaten\n        flow.set(\"orderUpdateId\", msg.payload.orderUpdateId);\n\n        // OPCUA write Content\n        msg.payload.nodetype = \"inject\";\n        msg.payload.injectType = \"write\";\n\n        return [msg, null];\n    } else {\n        const flowErrors = flow.get(\"errors\") ?? [];\n        const errors = Array.isArray(flowErrors) ? flowErrors : [flowErrors];\n        let error = {\n            \"errorType\": \"Validation\",\n            \"errorLevel\": \"WARNING\",\n            \"errorReferences\": [\n                { \"topic\": \"order\" },\n                { \"headerId\": flow.get(\"headerId\") },\n                { \"orderId\": msg.payload.orderId },\n                { \"orderUpdateId\": msg.payload.orderUpdateId }\n            ],\n            \"errorMessage\": \"OrderUpdateId not valid\"\n        }\n        // Error in Flow\n        flow.set(\"errors\", [...errors, error]);\n        return [null, msg];\n    }\n} else {\n    const flowErrors = flow.get(\"errors\") ?? [];\n    const errors = Array.isArray(flowErrors) ? flowErrors : [flowErrors];\n    let error = {\n        \"errorType\": \"Validation\",\n        \"errorLevel\": \"WARNING\",\n        \"errorReferences\": [\n            { \"topic\": \"order\" },\n            { \"headerId\": flow.get(\"headerId\") },\n            { \"orderId\": msg.payload.orderId },\n            { \"orderUpdateId\": msg.payload.orderUpdateId }\n        ],\n        \"errorMessage\": \"OrderId not valid\"\n    }\n    // Error in Flow\n    flow.set(\"errors\", [...errors, error]);\n    return [null, msg];\n}\n",
+      "outputs": 2,
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 980,
+      "y": 240,
+      "wires": [
+        [
+          "46daf718310aad69"
+        ],
+        [
+          "eba861f25c6310f2"
+        ]
+      ]
+    },
+    {
+      "id": "46daf718310aad69",
+      "type": "OPCUA-IIoT-Write",
+      "z": "f6c8f50b75376b12",
+      "connector": "10c631e5670ce5e1",
+      "name": "Write Order",
+      "justValue": true,
+      "showStatusActivities": true,
+      "showErrors": true,
+      "x": 1190,
+      "y": 180,
+      "wires": [
+        [
+          "125359fdc5bc8840",
+          "e890003b493b4bf5"
+        ]
+      ]
+    },
+    {
+      "id": "e890003b493b4bf5",
+      "type": "debug",
+      "z": "f6c8f50b75376b12",
+      "name": "write MSg",
+      "active": false,
+      "tosidebar": true,
+      "console": false,
+      "tostatus": false,
+      "complete": "true",
+      "targetType": "full",
+      "statusVal": "",
+      "statusType": "auto",
+      "x": 1360,
+      "y": 140,
+      "wires": []
+    },
+    {
+      "id": "69fb59256c20b694",
+      "type": "function",
+      "z": "f6c8f50b75376b12",
+      "name": "vda_status_finished PICK",
+      "func": "// wenn \"TRUE\" im OPCUA und die richtige interne state\nif (msg.payload.value.value.value == true && flow.get(\"moduleState\") == \"PICKBUSY\") {\n\n    // state\n    let state = flow.get(\"state\");\n    let headerId = flow.get(\"headerId\");\n    let actionState = flow.get(\"actionState\");\n    let flowErrors = flow.get(\"errors\") ?? [];\n    let errors = Array.isArray(flowErrors) ? flowErrors : [flowErrors];\n\n    // Timestamp\n    let now = new Date();\n    let timestamp = now.toISOString();\n\n    // erfolgreich mit der NodeId\n    if (msg.payload.nodeId == \"ns=4;i=8\") {\n        if (msg.payload.value.value.value == true && flow.get(\"moduleState\") == \"PICKBUSY\") {\n            flow.set(\"moduleState\", \"WAITING_AFTER_PICK\");\n            actionState.state = \"FINISHED\"; // Waiting for FTS\n        }\n    }\n\n    // nicht erfolgreich mit der NodeId\n    else if (msg.payload.nodeId == \"ns=4;i=12\") {\n        let error = {\n            timestamp,\n            \"errorType\": \"PICK_failed\",\n            \"errorMessage\": \"PICK failed\",\n            \"errorLevel\": \"FATAL\",\n            \"errorReferences\": [\n                { \"topic\": \"order\" },\n                { \"headerId\": flow.get(\"headerId\") },\n                { \"orderId\": flow.get(\"orderId\") },\n                { \"orderUpdateId\": flow.get(\"orderUpdateId\") }\n            ],\n        }\n        actionState.state = \"FAILED\"; // FAILED PICK\n        errors.push(error);\n        flow.set(\"errors\", errors);\n        flow.set(\"moduleState\", \"IDLE\");\n    }\n\n    state.headerId = headerId;\n    state.loads = flow.get(\"loads\");\n    state.actionState = flow.get(\"actionState\");\n    state.timestamp = timestamp;\n    state.orderId = flow.get(\"orderId\");\n    state.orderUpdateId = flow.get(\"orderUpdateId\");\n    state.errors = flow.get(\"errors\") ? flow.get(\"errors\") : [];\n\n    // headerId Update\n    flow.set(\"headerId\", headerId + 1);\n\n    msg.topic = flow.get(\"MQTT_topic\") + \"/state\";\n    msg.payload = state;\n    return msg;\n} else {\n\n    return;\n}",
+      "outputs": 1,
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 1350,
+      "y": 1020,
+      "wires": [
+        [
+          "4ff0557c79a22048",
+          "6a89475cfc0c08ec"
+        ]
+      ]
+    },
+    {
+      "id": "13014a3b40279d23",
+      "type": "switch",
+      "z": "f6c8f50b75376b12",
+      "name": "topicswitch",
+      "property": "payload.nodeId",
+      "propertyType": "msg",
+      "rules": [
+        {
+          "t": "eq",
+          "v": "ns=4;i=14",
+          "vt": "str"
+        },
+        {
+          "t": "eq",
+          "v": "ns=4;i=13",
+          "vt": "str"
+        },
+        {
+          "t": "eq",
+          "v": "ns=4;i=9",
+          "vt": "str"
+        },
+        {
+          "t": "eq",
+          "v": "ns=4;i=3",
+          "vt": "str"
+        },
+        {
+          "t": "eq",
+          "v": "ns=4;i=16",
+          "vt": "str"
+        },
+        {
+          "t": "eq",
+          "v": "ns=4;i=10",
+          "vt": "str"
+        },
+        {
+          "t": "eq",
+          "v": "ns=4;i=15",
+          "vt": "str"
+        },
+        {
+          "t": "eq",
+          "v": "ns=4;i=12",
+          "vt": "str"
+        },
+        {
+          "t": "eq",
+          "v": "ns=4;i=8",
+          "vt": "str"
+        }
+      ],
+      "checkall": "true",
+      "repair": false,
+      "outputs": 9,
+      "x": 770,
+      "y": 980,
+      "wires": [
+        [],
+        [
+          "f728f206bee02bb8",
+          "9dfae358f19d380b"
+        ],
+        [
+          "9dfae358f19d380b"
+        ],
+        [
+          "d391c770207c477e"
+        ],
+        [],
+        [
+          "0107937eed074b61"
+        ],
+        [],
+        [
+          "26f2c2edb2823204",
+          "69fb59256c20b694"
+        ],
+        [
+          "69fb59256c20b694"
+        ]
+      ],
+      "outputLabels": [
+        "drop_aktiv",
+        "drop_failed",
+        "drop_finished",
+        "idle",
+        "mill_aktiv",
+        "mill_finished",
+        "pick_aktiv",
+        "pick_failed",
+        "pick_finished"
+      ]
+    },
+    {
+      "id": "125359fdc5bc8840",
+      "type": "function",
+      "z": "f6c8f50b75376b12",
+      "name": "Publish vda_status_RUNNING",
+      "func": "// Timestamp\nlet now = new Date();\nlet timestamp = now.toISOString();\n\n\n\n//state bauen\nlet headerId = flow.get(\"headerId\");\nlet actionState = flow.get(\"actionState\");\nactionState.id = msg.payload.action.id ? msg.payload.action.id : \"noIdfound\";\nlet state = flow.get(\"state\");\n\nactionState.state = \"RUNNING\";\nstate.headerId = flow.get(\"headerId\");\nstate.loads = flow.get(\"loads\");\nstate.actionState = actionState;\nstate.timestamp = timestamp;\nstate.orderId = flow.get(\"orderId\");\nstate.orderUpdateId = flow.get(\"orderUpdateId\");\nconst flowErrors = flow.get(\"errors\") ?? [];\nstate.errors = Array.isArray(flowErrors) ? flowErrors : [flowErrors];\nmsg.payload = state;\n\n// flowVariable Update\nflow.set(\"headerId\", headerId + 1);\nflow.set(\"errors\", null);\n\nmsg.topic = flow.get(\"MQTT_topic\") + \"/state\";\n\nreturn msg;",
+      "outputs": 1,
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 1430,
+      "y": 220,
+      "wires": [
+        [
+          "c9f167cd677fc933",
+          "e93ebee86dd29f0c"
+        ]
+      ]
+    },
+    {
+      "id": "c9f167cd677fc933",
+      "type": "debug",
+      "z": "f6c8f50b75376b12",
+      "name": "Order State",
+      "active": false,
+      "tosidebar": true,
+      "console": false,
+      "tostatus": false,
+      "complete": "true",
+      "targetType": "full",
+      "statusVal": "",
+      "statusType": "auto",
+      "x": 1810,
+      "y": 220,
+      "wires": []
+    },
+    {
+      "id": "9dfae358f19d380b",
+      "type": "function",
+      "z": "f6c8f50b75376b12",
+      "name": "vda_status_finished DROP",
+      "func": "// wenn OPCUA den Wert True liefert\nif (msg.payload.value.value.value == true && flow.get(\"moduleState\") == \"DROPBUSY\") {\n    // Timestamp\n    let now = new Date();\n    let timestamp = now.toISOString();\n    let headerId = flow.get(\"headerId\");\n    let actionState = flow.get(\"actionState\");\n    let state = flow.get(\"state\");\n    let flowErrors = flow.get(\"errors\") ?? [];\n    let errors = Array.isArray(flowErrors) ? flowErrors : [flowErrors];\n\n    // wenn drop_finished gesetzt wurde\n    if (msg.payload.nodeId == \"ns=4;i=9\") {\n        actionState.state = \"FINISHED\";\n    }\n\n    // wenn drop_failed gesetzt wurde\n    else if (msg.payload.nodeId == \"ns=4;i=13\") {\n        actionState.state = \"FAILED\";\n        let error = {\n            timestamp,\n            \"errorType\": \"DROP_failed\",\n            \"errorMessage\": \"DROP failed\",\n            \"errorLevel\": \"WARNING\",\n            \"errorReferences\": [\n                { \"topic\": \"order\" },\n                { \"headerId\": flow.get(\"headerId\") },\n                { \"orderId\": flow.get(\"orderId\") },\n                { \"orderUpdateId\": flow.get(\"orderUpdateId\") }\n            ],\n        }\n        errors.push(error);\n        flow.set(\"errors\", errors);\n    } else {\n        return\n    }\n\n    // state\n    state.headerId = headerId;\n    state.loads = [];\n    state.actionState = actionState;\n    state.timestamp = timestamp;\n    state.orderId = flow.get(\"orderId\");\n    state.orderUpdateId = flow.get(\"orderUpdateId\");\n    state.errors = flow.get(\"errors\") ? flow.get(\"errors\") : [];\n\n    // headerId Update\n    flow.set(\"headerId\", headerId + 1);\n    flow.set(\"orderId\", 0);\n    flow.set(\"orderUpdateId\", 0);\n    flow.set(\"loads\", []);\n    flow.set(\"moduleState\", \"IDLE\");\n    flow.set(\"errors\", []);\n\n    msg.topic = flow.get(\"MQTT_topic\") + \"/state\";\n    msg.payload = state;\n    return msg;\n}\nelse {\n    return;\n}",
+      "outputs": 1,
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 1360,
+      "y": 940,
+      "wires": [
+        [
+          "4ff0557c79a22048",
+          "6a89475cfc0c08ec"
+        ]
+      ]
+    },
+    {
+      "id": "4ff0557c79a22048",
+      "type": "debug",
+      "z": "f6c8f50b75376b12",
+      "name": "finished",
+      "active": false,
+      "tosidebar": true,
+      "console": false,
+      "tostatus": false,
+      "complete": "true",
+      "targetType": "full",
+      "statusVal": "",
+      "statusType": "auto",
+      "x": 1700,
+      "y": 1140,
+      "wires": []
+    },
+    {
+      "id": "0107937eed074b61",
+      "type": "function",
+      "z": "f6c8f50b75376b12",
+      "name": "vda_status_finished MILL",
+      "func": "if (msg.payload.value.value.value == true && flow.get(\"moduleState\") == \"MILLBUSY\") {\n\n    let state = flow.get(\"state\");\n    flow.set(\"moduleState\", \"WAITING_AFTER_MILL\");\n\n    // Timestamp\n    let now = new Date();\n    let timestamp = now.toISOString();\n\n    let headerId = flow.get(\"headerId\");\n    let actionState = flow.get(\"actionState\");\n    actionState.state = \"FINISHED\"\n    \n    // state\n    state.headerId = headerId;\n    state.loads = flow.get(\"loads\");\n    state.actionState = actionState;\n    state.timestamp = timestamp;\n    state.orderId = flow.get(\"orderId\");\n    state.orderUpdateId = flow.get(\"orderUpdateId\");\n    const flowErrors = flow.get(\"errors\") ?? [];\n    state.errors = Array.isArray(flowErrors) ? flowErrors : [flowErrors];\n\n    // headerId Update\n    flow.set(\"headerId\", headerId + 1);\n\n    msg.topic = flow.get(\"MQTT_topic\") + \"/state\";\n    msg.payload = state;\n    return msg;\n}\nelse {\n    return;\n}",
+      "outputs": 1,
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 1350,
+      "y": 980,
+      "wires": [
+        [
+          "4ff0557c79a22048",
+          "6a89475cfc0c08ec"
+        ]
+      ]
+    },
+    {
+      "id": "d391c770207c477e",
+      "type": "change",
+      "z": "f6c8f50b75376b12",
+      "name": "OPCUA state IDLE",
+      "rules": [
+        {
+          "t": "set",
+          "p": "SPS_idle",
+          "pt": "flow",
+          "to": "payload.value.value.value",
+          "tot": "msg"
+        }
+      ],
+      "action": "",
+      "property": "",
+      "from": "",
+      "to": "",
+      "reg": false,
+      "x": 1130,
+      "y": 860,
+      "wires": [
+        []
+      ]
+    },
+    {
+      "id": "26f2c2edb2823204",
+      "type": "change",
+      "z": "f6c8f50b75376b12",
+      "name": "OPCUA state PICK",
+      "rules": [
+        {
+          "t": "set",
+          "p": "pick_failed",
+          "pt": "flow",
+          "to": "payload.value.value.value",
+          "tot": "msg"
+        }
+      ],
+      "action": "",
+      "property": "",
+      "from": "",
+      "to": "",
+      "reg": false,
+      "x": 1130,
+      "y": 800,
+      "wires": [
+        []
+      ]
+    },
+    {
+      "id": "f728f206bee02bb8",
+      "type": "change",
+      "z": "f6c8f50b75376b12",
+      "name": "OPCUA state DROP",
+      "rules": [
+        {
+          "t": "set",
+          "p": "drop_failed",
+          "pt": "flow",
+          "to": "payload.value.value.value",
+          "tot": "msg"
+        }
+      ],
+      "action": "",
+      "property": "",
+      "from": "",
+      "to": "",
+      "reg": false,
+      "x": 1140,
+      "y": 740,
+      "wires": [
+        []
+      ]
+    },
+    {
+      "id": "2195e1f52695f907",
+      "type": "function",
+      "z": "f6c8f50b75376b12",
+      "name": "variable setup",
+      "func": "// Nötige Werte im Flow speichern\nflow.set(\"flowName\", \"MILL\");\nflow.set(\"moduleState\", \"IDLE\");\nflow.set(\"orderUpdateId\", 0);\nflow.set(\"orderId\", \"0\");\nflow.set(\"loads\", []);\nflow.set(\"headerId\", 1);\nflow.set(\"actionState\", {});\nflow.set(\"model\", \"MILL\");\nflow.set(\"errors\", []);\n\nflow.set(\"state\", {\n    \"headerId\": 0,\n    \"loads\": [],\n    \"actionState\": null,\n    \"serialNumber\": \"notReadYet\",\n    \"timestamp\": \"timestamp\",\n    \"errors\": [],\n    \"orderUpdateId\": 0,\n    \"orderId\": 0,\n    \"paused\": false,\n    \"metadata\": {\n        \"opcuaState\": \"connected\"\n    }\n});\n\n// factsheet for MILL\nconst factsheet = msg.factsheet ?? {};\nflow.set(\"factsheet\", factsheet);\n\nflow.set(\"connection\", {\n    \"headerId\": 0,\n    \"timestamp\": \"timestamp\",\n    \"ip\": \"192.168.0.41\",\n    \"version\": \"1.0.0\",\n    \"manufacturer\": \"Fischertechnik\",\n    \"serialNumber\": \"serialNumber\",\n    \"connectionState\": \"ONLINE\"\n});\nflow.set(\"opcuaState\", \"connected\");\n\nreturn ",
+      "outputs": 1,
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 380,
+      "y": 60,
+      "wires": [
+        []
+      ]
+    },
+    {
+      "id": "eba861f25c6310f2",
+      "type": "function",
+      "z": "f6c8f50b75376b12",
+      "name": "Publish vda_status_FAILED",
+      "func": "// Timestamp\nlet now = new Date();\nlet timestamp = now.toISOString();\n\n// state bauen\nlet state = flow.get(\"state\");\nstate.headerId = flow.get(\"headerId\");\nstate.loads = flow.get(\"loads\");\nstate.actionState = flow.get(\"actionState\");\nstate.actionState.state = \"FAILED\";\nstate.timestamp = timestamp;\nstate.orderId = flow.get(\"orderId\");\nstate.orderUpdateId = flow.get(\"orderUpdateId\");\nconst flowErrors = flow.get(\"errors\") ?? [];\nstate.errors = Array.isArray(flowErrors) ? flowErrors : [flowErrors];\n\n// flow update\nflow.set(\"headerId\", state.headerId + 1);\n\nmsg.topic = flow.get(\"MQTT_topic\") + \"/state\";\nmsg.payload = state;\nreturn msg;",
+      "outputs": 1,
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 1420,
+      "y": 320,
+      "wires": [
+        [
+          "c9f167cd677fc933",
+          "e93ebee86dd29f0c"
+        ]
+      ]
+    },
+    {
+      "id": "0c5144837e9e67be",
+      "type": "OPCUA-IIoT-Browser",
+      "z": "f6c8f50b75376b12",
+      "nodeId": "ns=4;i=1",
+      "name": "browse",
+      "justValue": true,
+      "sendNodesToRead": false,
+      "sendNodesToBrowser": false,
+      "sendNodesToListener": true,
+      "multipleOutputs": false,
+      "showStatusActivities": true,
+      "showErrors": true,
+      "recursiveBrowse": false,
+      "recursiveDepth": 1,
+      "delayPerMessage": 0.2,
+      "connector": "10c631e5670ce5e1",
+      "x": 400,
+      "y": 980,
+      "wires": [
+        [
+          "e4af1351b613935f",
+          "6980a5eabf32a599"
+        ]
+      ]
+    },
+    {
+      "id": "59a50589ef7e6909",
+      "type": "OPCUA-IIoT-Inject",
+      "z": "f6c8f50b75376b12",
+      "injectType": "inject",
+      "payload": "{\"interval\":100}",
+      "payloadType": "json",
+      "topic": "",
+      "repeat": "",
+      "crontab": "",
+      "once": true,
+      "startDelay": "10",
+      "name": "inject",
+      "addressSpaceItems": [],
+      "x": 150,
+      "y": 980,
+      "wires": [
+        [
+          "0c5144837e9e67be"
+        ]
+      ]
+    },
+    {
+      "id": "6980a5eabf32a599",
+      "type": "change",
+      "z": "f6c8f50b75376b12",
+      "name": "BrowserArray",
+      "rules": [
+        {
+          "t": "set",
+          "p": "BrowseArray",
+          "pt": "flow",
+          "to": "payload.browserResults",
+          "tot": "msg"
+        }
+      ],
+      "action": "",
+      "property": "",
+      "from": "",
+      "to": "",
+      "reg": false,
+      "x": 780,
+      "y": 880,
+      "wires": [
+        []
+      ]
+    },
+    {
+      "id": "6a89475cfc0c08ec",
+      "type": "link out",
+      "z": "f6c8f50b75376b12",
+      "name": "MQTT_retained",
+      "mode": "link",
+      "links": [
+        "1a56d5a4f8592caa"
+      ],
+      "x": 1735,
+      "y": 960,
+      "wires": []
+    },
+    {
+      "id": "5ca54bd1379d2014",
+      "type": "subflow:1b897516f5bf21fa",
+      "z": "f6c8f50b75376b12",
+      "name": "",
+      "x": 620,
+      "y": 460,
+      "wires": [
+        [
+          "d50b0f89a41e2f60"
+        ],
+        [
+          "94de6d6d0aa329df"
+        ],
+        [
+          "e93ebee86dd29f0c"
+        ],
+        []
+      ]
+    },
+    {
+      "id": "e93ebee86dd29f0c",
+      "type": "link out",
+      "z": "f6c8f50b75376b12",
+      "name": "MQTT_retained",
+      "mode": "link",
+      "links": [
+        "1a56d5a4f8592caa"
+      ],
+      "x": 1935,
+      "y": 480,
+      "wires": []
+    },
+    {
+      "id": "621b6d9609491463",
+      "type": "subflow:6a25ecd632542087",
+      "z": "f6c8f50b75376b12",
+      "name": "",
+      "env": [
+        {
+          "name": "FACTSHEET_FILE",
+          "value": "/data/factsheets/factsheet-mill.json",
+          "type": "str"
+        },
+        {
+          "name": "FACTSHEET_FILENAME",
+          "value": "factsheet-mill.json",
+          "type": "str"
+        }
+      ],
+      "x": 150,
+      "y": 60,
+      "wires": [
+        [
+          "2195e1f52695f907"
+        ]
+      ]
+    },
+    {
+      "id": "e40ed08ffd3f4845",
+      "type": "function",
+      "z": "f6c8f50b75376b12",
+      "name": "vda_action factsheetRequest",
+      "func": "/**\n * @typedef {object} ActionState\n * @property {string} id\n * @property {string} state\n * @property {string} command\n * @property {object} [metadata]\n * \n * @param {string} state\n * @returns {ActionState}\n */\nfunction updateActionState(state, metadata = undefined) {\n    const actionState = flow.get(\"actionState\") ?? {};\n    actionState.id = msg.actionId;\n    actionState.state = state;\n    actionState.command = msg.actionCommand;\n    actionState.metadata = metadata ?? undefined;\n    flow.set(\"actionState\", actionState);\n    return actionState;\n}\n\nconst actionState = updateActionState(\"RUNNING\");\n\n// factsheet timestamp aktualisieren\nconst factsheet = flow.get(\"factsheet\");\nfactsheet.timestamp = new Date().toISOString();\nflow.set(\"factsheet\", factsheet);\n\n//publish on topic\nmsg.topic = flow.get(\"MQTT_topic\") + \"/factsheet\";\nmsg.payload = factsheet;\nreturn msg;",
+      "outputs": 1,
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 1240,
+      "y": 420,
+      "wires": [
+        [
+          "793fd25848e2ce1f",
+          "e93ebee86dd29f0c"
+        ]
+      ]
+    },
+    {
+      "id": "793fd25848e2ce1f",
+      "type": "function",
+      "z": "f6c8f50b75376b12",
+      "name": "vda_status_finished instantAction",
+      "func": "/**\n * @typedef {object} ActionState\n * @property {string} id\n * @property {string} state\n * @property {string} command\n * @property {object} [metadata]\n * \n * @param {string} state\n * @returns {ActionState}\n */\nfunction updateActionState(state, metadata = undefined) {\n    const actionState = flow.get(\"actionState\") ?? {};\n    actionState.id = msg.actionId;\n    actionState.state = state;\n    actionState.command = msg.actionCommand;\n    actionState.metadata = metadata ?? undefined;\n    flow.set(\"actionState\", actionState);\n    return actionState;\n}\n\nconst actionState = updateActionState(\"FINISHED\");\n\n// state bauen\nlet state = flow.get(\"state\");\nstate.headerId = flow.get(\"headerId\");\nstate.actionState = actionState\nstate.timestamp = new Date().toISOString();\nstate.orderId = actionState.id;\nstate.orderUpdateId = \"0\";\nconst flowErrors = flow.get(\"errors\") ?? [];\nstate.errors = Array.isArray(flowErrors) ? flowErrors : [flowErrors];\n\n// flow update\nflow.set(\"headerId\", state.headerId + 1);\n\nmsg.topic = flow.get(\"MQTT_topic\") + \"/state\";\nmsg.payload = state;\nreturn msg;",
+      "outputs": 1,
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 1560,
+      "y": 420,
+      "wires": [
+        [
+          "e93ebee86dd29f0c"
+        ]
+      ]
+    },
+    {
+      "id": "94de6d6d0aa329df",
+      "type": "switch",
+      "z": "f6c8f50b75376b12",
+      "name": "handleInstantAction",
+      "property": "instantAction",
+      "propertyType": "msg",
+      "rules": [
+        {
+          "t": "eq",
+          "v": "factsheetRequest",
+          "vt": "str"
+        }
+      ],
+      "checkall": "true",
+      "repair": false,
+      "outputs": 1,
+      "x": 970,
+      "y": 420,
+      "wires": [
+        [
+          "e40ed08ffd3f4845"
+        ]
+      ]
+    },
+    {
+      "id": "6ac09b3176e81556",
+      "type": "catch",
+      "z": "f6c8f50b75376b12",
+      "name": "Catch all Errors",
+      "scope": null,
+      "uncaught": true,
+      "x": 160,
+      "y": 140,
+      "wires": [
+        [
+          "d0eddaab120c095b"
+        ]
+      ]
+    },
+    {
+      "id": "d0eddaab120c095b",
+      "type": "debug",
+      "z": "f6c8f50b75376b12",
+      "name": "display-error",
+      "active": false,
+      "tosidebar": true,
+      "console": false,
+      "tostatus": false,
+      "complete": "true",
+      "targetType": "full",
+      "statusVal": "",
+      "statusType": "auto",
+      "x": 390,
+      "y": 140,
+      "wires": []
+    },
+    {
+      "id": "adaab3f20abc77a7",
+      "type": "subflow:468f2460ce66f11e",
+      "z": "f6c8f50b75376b12",
+      "name": "",
+      "x": 650,
+      "y": 600,
+      "wires": [
+        [
+          "e93ebee86dd29f0c"
+        ]
+      ]
+    },
+    {
+      "id": "594a39967ca7c36f",
+      "type": "OPCUA-IIoT-Inject",
+      "z": "f6c8f50b75376b12",
+      "injectType": "read",
+      "payload": "",
+      "payloadType": "date",
+      "topic": "readSerial",
+      "repeat": "15",
+      "crontab": "",
+      "once": true,
+      "startDelay": "20",
+      "name": "serialnumber",
+      "addressSpaceItems": [
+        {
+          "name": "SerialNumber",
+          "nodeId": "ns=3;s=SerialNumber",
+          "datatypeName": "String"
+        },
+        {
+          "name": "model",
+          "nodeId": "ns=4;i=2",
+          "datatypeName": "String"
+        }
+      ],
+      "x": 200,
+      "y": 600,
+      "wires": [
+        [
+          "a37376d3d3b0c917",
+          "adaab3f20abc77a7"
+        ]
+      ]
+    },
+    {
+      "id": "a37376d3d3b0c917",
+      "type": "OPCUA-IIoT-Read",
+      "z": "f6c8f50b75376b12",
+      "attributeId": "0",
+      "maxAge": 1,
+      "depth": 1,
+      "connector": "10c631e5670ce5e1",
+      "name": "read serialNumber",
+      "justValue": false,
+      "showStatusActivities": true,
+      "showErrors": true,
+      "parseStrings": true,
+      "historyDays": 1,
+      "x": 410,
+      "y": 560,
+      "wires": [
+        [
+          "adaab3f20abc77a7"
+        ]
+      ]
+    },
+    {
+      "id": "5ea2281b434baee8",
+      "type": "OPCUA-IIoT-Inject",
+      "z": "f6c8f50b75376b12",
+      "injectType": "read",
+      "payload": "",
+      "payloadType": "date",
+      "topic": "readSerial",
+      "repeat": "",
+      "crontab": "",
+      "once": true,
+      "startDelay": "20",
+      "name": "serialnumber",
+      "addressSpaceItems": [
+        {
+          "name": "SerialNumber",
+          "nodeId": "ns=3;s=SerialNumber",
+          "datatypeName": "String"
+        },
+        {
+          "name": "model",
+          "nodeId": "ns=4;i=2",
+          "datatypeName": "String"
+        },
+        {
+          "name": "version",
+          "nodeId": "ns=4;i=21",
+          "datatypeName": "String"
+        }
+      ],
+      "x": 170,
+      "y": 460,
+      "wires": [
+        [
+          "51f1c446fdc888f3"
+        ]
+      ]
+    },
+    {
+      "id": "7b9e43c2b1e8f3ac",
+      "type": "OPCUA-IIoT-Listener",
+      "z": "05a427a07096ebdb",
+      "connector": "7859b273f274fc48",
+      "action": "subscribe",
+      "queueSize": 10,
+      "name": "",
+      "topic": "",
+      "justValue": false,
+      "useGroupItems": false,
+      "showStatusActivities": true,
+      "showErrors": true,
+      "x": 580,
+      "y": 980,
+      "wires": [
+        [
+          "3faa32427cf78361"
+        ]
+      ]
+    },
+    {
+      "id": "79a8ab2b7ba63194",
+      "type": "OPCUA-IIoT-Read",
+      "z": "05a427a07096ebdb",
+      "attributeId": "0",
+      "maxAge": 1,
+      "depth": 1,
+      "connector": "7859b273f274fc48",
+      "name": "read serialNumber",
+      "justValue": false,
+      "showStatusActivities": true,
+      "showErrors": true,
+      "parseStrings": true,
+      "historyDays": 1,
+      "x": 390,
+      "y": 460,
+      "wires": [
+        [
+          "7c1ea1a955e6d26f"
+        ]
+      ]
+    },
+    {
+      "id": "28bd4ce3740d5b46",
+      "type": "function",
+      "z": "05a427a07096ebdb",
+      "name": "Order Handling",
+      "func": "if (flow.get(\"orderId\") == msg.payload.orderId || flow.get(\"orderId\") == \"0\") {\n    // orderId im Flow speichern\n    flow.set(\"orderId\", msg.payload.orderId);\n\n    // orderUpdateId Fallunterscheidung\n    if (msg.payload.orderUpdateId > flow.get(\"orderUpdateId\")) {\n\n        // duration in actionState\n        let actionState = flow.get(\"actionState\");\n        actionState.command = msg.payload.action.command;\n        actionState.id = msg.payload.action.id;\n        let loads = flow.get(\"loads\");\n        let newLoad = loads[0] ?? {};\n\n        // Command Fallunterscheidung\n        if (actionState.command == \"PICK\" && flow.get(\"moduleState\") == \"IDLE\") {\n            // ModulState busy setzen\n            flow.set(\"moduleState\", \"PICKBUSY\");\n\n            // OPCUA Write Content\n            msg.payload.valuesToWrite = [{ \"value\": true }];\n            msg.payload.nodesToWrite = [{ \"name\": \"pick\", \"nodeId\": \"ns=4;i=5\", \"datatypeName\": \"Boolean\" }];\n        } else if (actionState.command == \"DROP\" && flow.get(\"moduleState\") == \"WAITING_AFTER_MILL\") {\n            // ModulState busy setzen\n            flow.set(\"moduleState\", \"DROPBUSY\");\n\n            // OPCUA Write Content\n            msg.payload.valuesToWrite = [{ \"value\": true }];\n            msg.payload.nodesToWrite = [{ \"nodeId\": \"ns=4;i=6\", \"datatypeName\": \"Boolean\" }];\n        } else if (actionState.command == \"MILL\" && flow.get(\"moduleState\") == \"WAITING_AFTER_PICK\") {\n            // state.loads bearbeiten\n            newLoad.duration = msg.payload.action.metadata.duration ? msg.payload.action.metadata.duration : 2\n\n            // ModulState busy setzen\n            flow.set(\"moduleState\", \"MILLBUSY\");\n\n            // OPCUA Write Content\n            msg.payload.valuesToWrite = [\n                { \"value\": true },\n                { \"value\": newLoad.duration }];\n            msg.payload.nodesToWrite = [\n                { \"name\": \"mill\", \"nodeId\": \"ns=4;i=4\", \"datatypeName\": \"Boolean\" },\n                { \"name\": \"duration\", \"nodeId\": \"ns=4;i=11\", \"datatypeName\": \"Int16\" }];\n            actionState.duration = newLoad.duration;\n        } else {\n            const flowErrors = flow.get(\"errors\") ?? [];\n            const errors = Array.isArray(flowErrors) ? flowErrors : [flowErrors];\n            let error = {\n                \"errorType\": \"Validation\",\n                \"errorLevel\": \"WARNING\",\n                \"errorReferences\": [\n                    { \"topic\": \"order\" },\n                    { \"headerId\": flow.get(\"headerId\") },\n                    { \"orderId\": msg.payload.orderId },\n                    { \"orderUpdateId\": msg.payload.orderUpdateId }\n                ],\n                \"errorMessage\": \"Command not supported\"\n            }\n            // Error in Flow\n            flow.set(\"errors\", [...errors, error]);\n            return [null, msg];\n        }\n\n        // actionState in Flow speichern\n        flow.set(\"actionState\", actionState);\n\n        // loads for order im Flow speichern\n        newLoad.loadType = msg.payload.action.metadata.type;\n        flow.set(\"loads\", [newLoad]);\n\n        // orderUpdateId updaten\n        flow.set(\"orderUpdateId\", msg.payload.orderUpdateId);\n\n        // OPCUA write Content\n        msg.payload.nodetype = \"inject\";\n        msg.payload.injectType = \"write\";\n\n        return [msg, null];\n    } else {\n        const flowErrors = flow.get(\"errors\") ?? [];\n        const errors = Array.isArray(flowErrors) ? flowErrors : [flowErrors];\n        let error = {\n            \"errorType\": \"Validation\",\n            \"errorLevel\": \"WARNING\",\n            \"errorReferences\": [\n                { \"topic\": \"order\" },\n                { \"headerId\": flow.get(\"headerId\") },\n                { \"orderId\": msg.payload.orderId },\n                { \"orderUpdateId\": msg.payload.orderUpdateId }\n            ],\n            \"errorMessage\": \"OrderUpdateId not valid\"\n        }\n        // Error in Flow\n        flow.set(\"errors\", [...errors, error]);\n        return [null, msg];\n    }\n} else {\n    const flowErrors = flow.get(\"errors\") ?? [];\n    const errors = Array.isArray(flowErrors) ? flowErrors : [flowErrors];\n    let error = {\n        \"errorType\": \"Validation\",\n        \"errorLevel\": \"WARNING\",\n        \"errorReferences\": [\n            { \"topic\": \"order\" },\n            { \"headerId\": flow.get(\"headerId\") },\n            { \"orderId\": msg.payload.orderId },\n            { \"orderUpdateId\": msg.payload.orderUpdateId }\n        ],\n        \"errorMessage\": \"OrderId not valid\"\n    }\n    // Error in Flow\n    flow.set(\"errors\", [...errors, error]);\n    return [null, msg];\n}\n",
+      "outputs": 2,
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 980,
+      "y": 240,
+      "wires": [
+        [
+          "0dd964455236b34d"
+        ],
+        [
+          "a4f3b40f6c0c4682"
+        ]
+      ]
+    },
+    {
+      "id": "0dd964455236b34d",
+      "type": "OPCUA-IIoT-Write",
+      "z": "05a427a07096ebdb",
+      "connector": "7859b273f274fc48",
+      "name": "Write Order",
+      "justValue": true,
+      "showStatusActivities": true,
+      "showErrors": true,
+      "x": 1190,
+      "y": 180,
+      "wires": [
+        [
+          "3c347c97b8ce57fe",
+          "16a196eefbc5fc23"
+        ]
+      ]
+    },
+    {
+      "id": "16a196eefbc5fc23",
+      "type": "debug",
+      "z": "05a427a07096ebdb",
+      "name": "write MSg",
+      "active": false,
+      "tosidebar": true,
+      "console": false,
+      "tostatus": false,
+      "complete": "true",
+      "targetType": "full",
+      "statusVal": "",
+      "statusType": "auto",
+      "x": 1360,
+      "y": 140,
+      "wires": []
+    },
+    {
+      "id": "9dc9bfd6a24c5af1",
+      "type": "function",
+      "z": "05a427a07096ebdb",
+      "name": "vda_status_finished PICK",
+      "func": "// wenn \"TRUE\" im OPCUA und die richtige interne state\nif (msg.payload.value.value.value == true && flow.get(\"moduleState\") == \"PICKBUSY\") {\n\n    // state\n    let state = flow.get(\"state\");\n    let headerId = flow.get(\"headerId\");\n    let actionState = flow.get(\"actionState\");\n    let flowErrors = flow.get(\"errors\") ?? [];\n    let errors = Array.isArray(flowErrors) ? flowErrors : [flowErrors];\n\n    // Timestamp\n    let now = new Date();\n    let timestamp = now.toISOString();\n\n    // erfolgreich mit der NodeId\n    if (msg.payload.nodeId == \"ns=4;i=8\") {\n        if (msg.payload.value.value.value == true && flow.get(\"moduleState\") == \"PICKBUSY\") {\n            flow.set(\"moduleState\", \"WAITING_AFTER_PICK\");\n            actionState.state = \"FINISHED\"; // Waiting for FTS\n        }\n    }\n\n    // nicht erfolgreich mit der NodeId\n    else if (msg.payload.nodeId == \"ns=4;i=12\") {\n        let error = {\n            timestamp,\n            \"errorType\": \"PICK_failed\",\n            \"errorMessage\": \"PICK failed\",\n            \"errorLevel\": \"FATAL\",\n            \"errorReferences\": [\n                { \"topic\": \"order\" },\n                { \"headerId\": flow.get(\"headerId\") },\n                { \"orderId\": flow.get(\"orderId\") },\n                { \"orderUpdateId\": flow.get(\"orderUpdateId\") }\n            ],\n        }\n        actionState.state = \"FAILED\"; // FAILED PICK\n        errors.push(error);\n        flow.set(\"errors\", errors);\n        flow.set(\"moduleState\", \"IDLE\");\n    }\n\n    state.headerId = headerId;\n    state.loads = flow.get(\"loads\");\n    state.actionState = flow.get(\"actionState\");\n    state.timestamp = timestamp;\n    state.orderId = flow.get(\"orderId\");\n    state.orderUpdateId = flow.get(\"orderUpdateId\");\n    state.errors = flow.get(\"errors\") ? flow.get(\"errors\") : [];\n\n    // headerId Update\n    flow.set(\"headerId\", headerId + 1);\n\n    msg.topic = flow.get(\"MQTT_topic\") + \"/state\";\n    msg.payload = state;\n    return msg;\n} else {\n\n    return;\n}",
+      "outputs": 1,
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 1350,
+      "y": 1020,
+      "wires": [
+        [
+          "6d59f394b8e096cd",
+          "c8f59ce606cc90ca"
+        ]
+      ]
+    },
+    {
+      "id": "3faa32427cf78361",
+      "type": "switch",
+      "z": "05a427a07096ebdb",
+      "name": "topicswitch",
+      "property": "payload.nodeId",
+      "propertyType": "msg",
+      "rules": [
+        {
+          "t": "eq",
+          "v": "ns=4;i=14",
+          "vt": "str"
+        },
+        {
+          "t": "eq",
+          "v": "ns=4;i=13",
+          "vt": "str"
+        },
+        {
+          "t": "eq",
+          "v": "ns=4;i=9",
+          "vt": "str"
+        },
+        {
+          "t": "eq",
+          "v": "ns=4;i=3",
+          "vt": "str"
+        },
+        {
+          "t": "eq",
+          "v": "ns=4;i=16",
+          "vt": "str"
+        },
+        {
+          "t": "eq",
+          "v": "ns=4;i=10",
+          "vt": "str"
+        },
+        {
+          "t": "eq",
+          "v": "ns=4;i=15",
+          "vt": "str"
+        },
+        {
+          "t": "eq",
+          "v": "ns=4;i=12",
+          "vt": "str"
+        },
+        {
+          "t": "eq",
+          "v": "ns=4;i=8",
+          "vt": "str"
+        }
+      ],
+      "checkall": "true",
+      "repair": false,
+      "outputs": 9,
+      "x": 770,
+      "y": 980,
+      "wires": [
+        [],
+        [
+          "bacf247c53368113",
+          "e0ddd3bfdb9d3ce2"
+        ],
+        [
+          "e0ddd3bfdb9d3ce2"
+        ],
+        [
+          "39cc4d4ab24b8172"
+        ],
+        [],
+        [
+          "688e61492fe26e5c"
+        ],
+        [],
+        [
+          "f5fbb20a8764a759",
+          "9dc9bfd6a24c5af1"
+        ],
+        [
+          "9dc9bfd6a24c5af1"
+        ]
+      ],
+      "outputLabels": [
+        "drop_aktiv",
+        "drop_failed",
+        "drop_finished",
+        "idle",
+        "mill_aktiv",
+        "mill_finished",
+        "pick_aktiv",
+        "pick_failed",
+        "pick_finished"
+      ]
+    },
+    {
+      "id": "3c347c97b8ce57fe",
+      "type": "function",
+      "z": "05a427a07096ebdb",
+      "name": "Publish vda_status_RUNNING",
+      "func": "// Timestamp\nlet now = new Date();\nlet timestamp = now.toISOString();\n\n\n\n//state bauen\nlet headerId = flow.get(\"headerId\");\nlet actionState = flow.get(\"actionState\");\nactionState.id = msg.payload.action.id ? msg.payload.action.id : \"noIdfound\";\nlet state = flow.get(\"state\");\n\nactionState.state = \"RUNNING\";\nstate.headerId = flow.get(\"headerId\");\nstate.loads = flow.get(\"loads\");\nstate.actionState = actionState;\nstate.timestamp = timestamp;\nstate.orderId = flow.get(\"orderId\");\nstate.orderUpdateId = flow.get(\"orderUpdateId\");\nconst flowErrors = flow.get(\"errors\") ?? [];\nstate.errors = Array.isArray(flowErrors) ? flowErrors : [flowErrors];\nmsg.payload = state;\n\n// flowVariable Update\nflow.set(\"headerId\", headerId + 1);\nflow.set(\"errors\", null);\n\nmsg.topic = flow.get(\"MQTT_topic\") + \"/state\";\n\nreturn msg;",
+      "outputs": 1,
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 1430,
+      "y": 220,
+      "wires": [
+        [
+          "709c9acac5bbe0c5",
+          "d2239bd3216b6c97"
+        ]
+      ]
+    },
+    {
+      "id": "709c9acac5bbe0c5",
+      "type": "debug",
+      "z": "05a427a07096ebdb",
+      "name": "Order State",
+      "active": false,
+      "tosidebar": true,
+      "console": false,
+      "tostatus": false,
+      "complete": "true",
+      "targetType": "full",
+      "statusVal": "",
+      "statusType": "auto",
+      "x": 1810,
+      "y": 220,
+      "wires": []
+    },
+    {
+      "id": "e0ddd3bfdb9d3ce2",
+      "type": "function",
+      "z": "05a427a07096ebdb",
+      "name": "vda_status_finished DROP",
+      "func": "// wenn OPCUA den Wert True liefert\nif (msg.payload.value.value.value == true && flow.get(\"moduleState\") == \"DROPBUSY\") {\n    // Timestamp\n    let now = new Date();\n    let timestamp = now.toISOString();\n    let headerId = flow.get(\"headerId\");\n    let actionState = flow.get(\"actionState\");\n    let state = flow.get(\"state\");\n    let flowErrors = flow.get(\"errors\") ?? [];\n    let errors = Array.isArray(flowErrors) ? flowErrors : [flowErrors];\n\n    // wenn drop_finished gesetzt wurde\n    if (msg.payload.nodeId == \"ns=4;i=9\") {\n        actionState.state = \"FINISHED\";\n    }\n\n    // wenn drop_failed gesetzt wurde\n    else if (msg.payload.nodeId == \"ns=4;i=13\") {\n        actionState.state = \"FAILED\";\n        let error = {\n            timestamp,\n            \"errorType\": \"DROP_failed\",\n            \"errorMessage\": \"DROP failed\",\n            \"errorLevel\": \"WARNING\",\n            \"errorReferences\": [\n                { \"topic\": \"order\" },\n                { \"headerId\": flow.get(\"headerId\") },\n                { \"orderId\": flow.get(\"orderId\") },\n                { \"orderUpdateId\": flow.get(\"orderUpdateId\") }\n            ],\n        }\n        errors.push(error);\n        flow.set(\"errors\", errors);\n    } else {\n        return\n    }\n\n    // state\n    state.headerId = headerId;\n    state.loads = [];\n    state.actionState = actionState;\n    state.timestamp = timestamp;\n    state.orderId = flow.get(\"orderId\");\n    state.orderUpdateId = flow.get(\"orderUpdateId\");\n    state.errors = flow.get(\"errors\") ? flow.get(\"errors\") : [];\n\n    // headerId Update\n    flow.set(\"headerId\", headerId + 1);\n    flow.set(\"orderId\", 0);\n    flow.set(\"orderUpdateId\", 0);\n    flow.set(\"loads\", []);\n    flow.set(\"moduleState\", \"IDLE\");\n    flow.set(\"errors\", []);\n\n    msg.topic = flow.get(\"MQTT_topic\") + \"/state\";\n    msg.payload = state;\n    return msg;\n}\nelse {\n    return;\n}",
+      "outputs": 1,
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 1360,
+      "y": 940,
+      "wires": [
+        [
+          "6d59f394b8e096cd",
+          "c8f59ce606cc90ca"
+        ]
+      ]
+    },
+    {
+      "id": "6d59f394b8e096cd",
+      "type": "debug",
+      "z": "05a427a07096ebdb",
+      "name": "finished",
+      "active": false,
+      "tosidebar": true,
+      "console": false,
+      "tostatus": false,
+      "complete": "true",
+      "targetType": "full",
+      "statusVal": "",
+      "statusType": "auto",
+      "x": 1700,
+      "y": 1140,
+      "wires": []
+    },
+    {
+      "id": "688e61492fe26e5c",
+      "type": "function",
+      "z": "05a427a07096ebdb",
+      "name": "vda_status_finished MILL",
+      "func": "if (msg.payload.value.value.value == true && flow.get(\"moduleState\") == \"MILLBUSY\") {\n\n    let state = flow.get(\"state\");\n    flow.set(\"moduleState\", \"WAITING_AFTER_MILL\");\n\n    // Timestamp\n    let now = new Date();\n    let timestamp = now.toISOString();\n\n    let headerId = flow.get(\"headerId\");\n    let actionState = flow.get(\"actionState\");\n    actionState.state = \"FINISHED\"\n    \n    // state\n    state.headerId = headerId;\n    state.loads = flow.get(\"loads\");\n    state.actionState = actionState;\n    state.timestamp = timestamp;\n    state.orderId = flow.get(\"orderId\");\n    state.orderUpdateId = flow.get(\"orderUpdateId\");\n    const flowErrors = flow.get(\"errors\") ?? [];\n    state.errors = Array.isArray(flowErrors) ? flowErrors : [flowErrors];\n\n    // headerId Update\n    flow.set(\"headerId\", headerId + 1);\n\n    msg.topic = flow.get(\"MQTT_topic\") + \"/state\";\n    msg.payload = state;\n    return msg;\n}\nelse {\n    return;\n}",
+      "outputs": 1,
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 1350,
+      "y": 980,
+      "wires": [
+        [
+          "6d59f394b8e096cd",
+          "c8f59ce606cc90ca"
+        ]
+      ]
+    },
+    {
+      "id": "39cc4d4ab24b8172",
+      "type": "change",
+      "z": "05a427a07096ebdb",
+      "name": "OPCUA state IDLE",
+      "rules": [
+        {
+          "t": "set",
+          "p": "SPS_idle",
+          "pt": "flow",
+          "to": "payload.value.value.value",
+          "tot": "msg"
+        }
+      ],
+      "action": "",
+      "property": "",
+      "from": "",
+      "to": "",
+      "reg": false,
+      "x": 1130,
+      "y": 860,
+      "wires": [
+        []
+      ]
+    },
+    {
+      "id": "f5fbb20a8764a759",
+      "type": "change",
+      "z": "05a427a07096ebdb",
+      "name": "OPCUA state PICK",
+      "rules": [
+        {
+          "t": "set",
+          "p": "pick_failed",
+          "pt": "flow",
+          "to": "payload.value.value.value",
+          "tot": "msg"
+        }
+      ],
+      "action": "",
+      "property": "",
+      "from": "",
+      "to": "",
+      "reg": false,
+      "x": 1130,
+      "y": 800,
+      "wires": [
+        []
+      ]
+    },
+    {
+      "id": "bacf247c53368113",
+      "type": "change",
+      "z": "05a427a07096ebdb",
+      "name": "OPCUA state DROP",
+      "rules": [
+        {
+          "t": "set",
+          "p": "drop_failed",
+          "pt": "flow",
+          "to": "payload.value.value.value",
+          "tot": "msg"
+        }
+      ],
+      "action": "",
+      "property": "",
+      "from": "",
+      "to": "",
+      "reg": false,
+      "x": 1140,
+      "y": 740,
+      "wires": [
+        []
+      ]
+    },
+    {
+      "id": "1d62b8d1f6e0c080",
+      "type": "function",
+      "z": "05a427a07096ebdb",
+      "name": "variable setup",
+      "func": "// Nötige Werte im Flow speichern\nflow.set(\"flowName\", \"MILL\");\nflow.set(\"moduleState\", \"IDLE\");\nflow.set(\"orderUpdateId\", 0);\nflow.set(\"orderId\", \"0\");\nflow.set(\"loads\", []);\nflow.set(\"headerId\", 1);\nflow.set(\"actionState\", {});\nflow.set(\"model\", \"MILL\");\nflow.set(\"errors\", []);\n\nflow.set(\"state\", {\n    \"headerId\": 0,\n    \"loads\": [],\n    \"actionState\": null,\n    \"serialNumber\": \"notReadYet\",\n    \"timestamp\": \"timestamp\",\n    \"errors\": [],\n    \"orderUpdateId\": 0,\n    \"orderId\": 0,\n    \"paused\": false,\n    \"metadata\": {\n        \"opcuaState\": \"connected\"\n    }\n});\n\n// factsheet for MILL\nconst factsheet = msg.factsheet ?? {};\nflow.set(\"factsheet\", factsheet);\n\nflow.set(\"connection\", {\n    \"headerId\": 0,\n    \"timestamp\": \"timestamp\",\n    \"ip\": \"192.168.0.42\",\n    \"version\": \"1.0.0\",\n    \"manufacturer\": \"Fischertechnik\",\n    \"serialNumber\": \"serialNumber\",\n    \"connectionState\": \"ONLINE\"\n});\nflow.set(\"opcuaState\", \"connected\");\n\nreturn ",
+      "outputs": 1,
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 380,
+      "y": 60,
+      "wires": [
+        []
+      ]
+    },
+    {
+      "id": "a4f3b40f6c0c4682",
+      "type": "function",
+      "z": "05a427a07096ebdb",
+      "name": "Publish vda_status_FAILED",
+      "func": "// Timestamp\nlet now = new Date();\nlet timestamp = now.toISOString();\n\n// state bauen\nlet state = flow.get(\"state\");\nstate.headerId = flow.get(\"headerId\");\nstate.loads = flow.get(\"loads\");\nstate.actionState = flow.get(\"actionState\");\nstate.actionState.state = \"FAILED\";\nstate.timestamp = timestamp;\nstate.orderId = flow.get(\"orderId\");\nstate.orderUpdateId = flow.get(\"orderUpdateId\");\nconst flowErrors = flow.get(\"errors\") ?? [];\nstate.errors = Array.isArray(flowErrors) ? flowErrors : [flowErrors];\n\n// flow update\nflow.set(\"headerId\", state.headerId + 1);\n\nmsg.topic = flow.get(\"MQTT_topic\") + \"/state\";\nmsg.payload = state;\nreturn msg;",
+      "outputs": 1,
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 1420,
+      "y": 320,
+      "wires": [
+        [
+          "709c9acac5bbe0c5",
+          "d2239bd3216b6c97"
+        ]
+      ]
+    },
+    {
+      "id": "03dc71409a2e9496",
+      "type": "OPCUA-IIoT-Browser",
+      "z": "05a427a07096ebdb",
+      "nodeId": "ns=4;i=1",
+      "name": "browse",
+      "justValue": true,
+      "sendNodesToRead": false,
+      "sendNodesToBrowser": false,
+      "sendNodesToListener": true,
+      "multipleOutputs": false,
+      "showStatusActivities": true,
+      "showErrors": true,
+      "recursiveBrowse": false,
+      "recursiveDepth": 1,
+      "delayPerMessage": 0.2,
+      "connector": "7859b273f274fc48",
+      "x": 400,
+      "y": 980,
+      "wires": [
+        [
+          "7b9e43c2b1e8f3ac",
+          "bcd06b533f96ce5c"
+        ]
+      ]
+    },
+    {
+      "id": "2239e24f817fe7c5",
+      "type": "OPCUA-IIoT-Inject",
+      "z": "05a427a07096ebdb",
+      "injectType": "inject",
+      "payload": "{\"interval\":100}",
+      "payloadType": "json",
+      "topic": "",
+      "repeat": "",
+      "crontab": "",
+      "once": true,
+      "startDelay": "10",
+      "name": "inject",
+      "addressSpaceItems": [],
+      "x": 150,
+      "y": 980,
+      "wires": [
+        [
+          "03dc71409a2e9496"
+        ]
+      ]
+    },
+    {
+      "id": "bcd06b533f96ce5c",
+      "type": "change",
+      "z": "05a427a07096ebdb",
+      "name": "BrowserArray",
+      "rules": [
+        {
+          "t": "set",
+          "p": "BrowseArray",
+          "pt": "flow",
+          "to": "payload.browserResults",
+          "tot": "msg"
+        }
+      ],
+      "action": "",
+      "property": "",
+      "from": "",
+      "to": "",
+      "reg": false,
+      "x": 780,
+      "y": 880,
+      "wires": [
+        []
+      ]
+    },
+    {
+      "id": "c8f59ce606cc90ca",
+      "type": "link out",
+      "z": "05a427a07096ebdb",
+      "name": "MQTT_retained",
+      "mode": "link",
+      "links": [
+        "1a56d5a4f8592caa"
+      ],
+      "x": 1735,
+      "y": 960,
+      "wires": []
+    },
+    {
+      "id": "7c1ea1a955e6d26f",
+      "type": "subflow:1b897516f5bf21fa",
+      "z": "05a427a07096ebdb",
+      "name": "",
+      "x": 620,
+      "y": 460,
+      "wires": [
+        [
+          "28bd4ce3740d5b46"
+        ],
+        [
+          "6b6c21345ca583f1"
+        ],
+        [
+          "d2239bd3216b6c97"
+        ],
+        []
+      ]
+    },
+    {
+      "id": "d2239bd3216b6c97",
+      "type": "link out",
+      "z": "05a427a07096ebdb",
+      "name": "MQTT_retained",
+      "mode": "link",
+      "links": [
+        "1a56d5a4f8592caa"
+      ],
+      "x": 1935,
+      "y": 480,
+      "wires": []
+    },
+    {
+      "id": "640bd29d7f9f9243",
+      "type": "subflow:6a25ecd632542087",
+      "z": "05a427a07096ebdb",
+      "name": "",
+      "env": [
+        {
+          "name": "FACTSHEET_FILE",
+          "value": "/data/factsheets/factsheet-mill.json",
+          "type": "str"
+        },
+        {
+          "name": "FACTSHEET_FILENAME",
+          "value": "factsheet-mill.json",
+          "type": "str"
+        }
+      ],
+      "x": 150,
+      "y": 60,
+      "wires": [
+        [
+          "1d62b8d1f6e0c080"
+        ]
+      ]
+    },
+    {
+      "id": "a7c38ab0e58110ca",
+      "type": "function",
+      "z": "05a427a07096ebdb",
+      "name": "vda_action factsheetRequest",
+      "func": "/**\n * @typedef {object} ActionState\n * @property {string} id\n * @property {string} state\n * @property {string} command\n * @property {object} [metadata]\n * \n * @param {string} state\n * @returns {ActionState}\n */\nfunction updateActionState(state, metadata = undefined) {\n    const actionState = flow.get(\"actionState\") ?? {};\n    actionState.id = msg.actionId;\n    actionState.state = state;\n    actionState.command = msg.actionCommand;\n    actionState.metadata = metadata ?? undefined;\n    flow.set(\"actionState\", actionState);\n    return actionState;\n}\n\nconst actionState = updateActionState(\"RUNNING\");\n\n// factsheet timestamp aktualisieren\nconst factsheet = flow.get(\"factsheet\");\nfactsheet.timestamp = new Date().toISOString();\nflow.set(\"factsheet\", factsheet);\n\n//publish on topic\nmsg.topic = flow.get(\"MQTT_topic\") + \"/factsheet\";\nmsg.payload = factsheet;\nreturn msg;",
+      "outputs": 1,
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 1240,
+      "y": 420,
+      "wires": [
+        [
+          "0a6e35de5d306ab6",
+          "d2239bd3216b6c97"
+        ]
+      ]
+    },
+    {
+      "id": "0a6e35de5d306ab6",
+      "type": "function",
+      "z": "05a427a07096ebdb",
+      "name": "vda_status_finished instantAction",
+      "func": "/**\n * @typedef {object} ActionState\n * @property {string} id\n * @property {string} state\n * @property {string} command\n * @property {object} [metadata]\n * \n * @param {string} state\n * @returns {ActionState}\n */\nfunction updateActionState(state, metadata = undefined) {\n    const actionState = flow.get(\"actionState\") ?? {};\n    actionState.id = msg.actionId;\n    actionState.state = state;\n    actionState.command = msg.actionCommand;\n    actionState.metadata = metadata ?? undefined;\n    flow.set(\"actionState\", actionState);\n    return actionState;\n}\n\nconst actionState = updateActionState(\"FINISHED\");\n\n// state bauen\nlet state = flow.get(\"state\");\nstate.headerId = flow.get(\"headerId\");\nstate.actionState = actionState\nstate.timestamp = new Date().toISOString();\nstate.orderId = actionState.id;\nstate.orderUpdateId = \"0\";\nconst flowErrors = flow.get(\"errors\") ?? [];\nstate.errors = Array.isArray(flowErrors) ? flowErrors : [flowErrors];\n\n// flow update\nflow.set(\"headerId\", state.headerId + 1);\n\nmsg.topic = flow.get(\"MQTT_topic\") + \"/state\";\nmsg.payload = state;\nreturn msg;",
+      "outputs": 1,
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 1560,
+      "y": 420,
+      "wires": [
+        [
+          "d2239bd3216b6c97"
+        ]
+      ]
+    },
+    {
+      "id": "6b6c21345ca583f1",
+      "type": "switch",
+      "z": "05a427a07096ebdb",
+      "name": "handleInstantAction",
+      "property": "instantAction",
+      "propertyType": "msg",
+      "rules": [
+        {
+          "t": "eq",
+          "v": "factsheetRequest",
+          "vt": "str"
+        }
+      ],
+      "checkall": "true",
+      "repair": false,
+      "outputs": 1,
+      "x": 970,
+      "y": 420,
+      "wires": [
+        [
+          "a7c38ab0e58110ca"
+        ]
+      ]
+    },
+    {
+      "id": "8a6a4971aab79fe9",
+      "type": "catch",
+      "z": "05a427a07096ebdb",
+      "name": "Catch all Errors",
+      "scope": null,
+      "uncaught": true,
+      "x": 160,
+      "y": 140,
+      "wires": [
+        [
+          "867e0ab9d722b88f"
+        ]
+      ]
+    },
+    {
+      "id": "867e0ab9d722b88f",
+      "type": "debug",
+      "z": "05a427a07096ebdb",
+      "name": "display-error",
+      "active": false,
+      "tosidebar": true,
+      "console": false,
+      "tostatus": false,
+      "complete": "true",
+      "targetType": "full",
+      "statusVal": "",
+      "statusType": "auto",
+      "x": 390,
+      "y": 140,
+      "wires": []
+    },
+    {
+      "id": "e6213a541f6cc0ef",
+      "type": "subflow:468f2460ce66f11e",
+      "z": "05a427a07096ebdb",
+      "name": "",
+      "x": 650,
+      "y": 600,
+      "wires": [
+        [
+          "d2239bd3216b6c97"
+        ]
+      ]
+    },
+    {
+      "id": "7b64ee4eee4a57cb",
+      "type": "OPCUA-IIoT-Inject",
+      "z": "05a427a07096ebdb",
+      "injectType": "read",
+      "payload": "",
+      "payloadType": "date",
+      "topic": "readSerial",
+      "repeat": "15",
+      "crontab": "",
+      "once": true,
+      "startDelay": "20",
+      "name": "serialnumber",
+      "addressSpaceItems": [
+        {
+          "name": "SerialNumber",
+          "nodeId": "ns=3;s=SerialNumber",
+          "datatypeName": "String"
+        },
+        {
+          "name": "model",
+          "nodeId": "ns=4;i=2",
+          "datatypeName": "String"
+        }
+      ],
+      "x": 180,
+      "y": 600,
+      "wires": [
+        [
+          "3ca0e8cce791e547",
+          "e6213a541f6cc0ef"
+        ]
+      ]
+    },
+    {
+      "id": "3ca0e8cce791e547",
+      "type": "OPCUA-IIoT-Read",
+      "z": "05a427a07096ebdb",
+      "attributeId": "0",
+      "maxAge": 1,
+      "depth": 1,
+      "connector": "7859b273f274fc48",
+      "name": "read serialNumber",
+      "justValue": false,
+      "showStatusActivities": true,
+      "showErrors": true,
+      "parseStrings": true,
+      "historyDays": 1,
+      "x": 390,
+      "y": 560,
+      "wires": [
+        [
+          "e6213a541f6cc0ef"
+        ]
+      ]
+    },
+    {
+      "id": "8a02b1228a3bd26d",
+      "type": "OPCUA-IIoT-Inject",
+      "z": "05a427a07096ebdb",
+      "injectType": "read",
+      "payload": "",
+      "payloadType": "date",
+      "topic": "readSerial",
+      "repeat": "",
+      "crontab": "",
+      "once": true,
+      "startDelay": "20",
+      "name": "serialnumber",
+      "addressSpaceItems": [
+        {
+          "name": "SerialNumber",
+          "nodeId": "ns=3;s=SerialNumber",
+          "datatypeName": "String"
+        },
+        {
+          "name": "model",
+          "nodeId": "ns=4;i=2",
+          "datatypeName": "String"
+        },
+        {
+          "name": "version",
+          "nodeId": "ns=4;i=21",
+          "datatypeName": "String"
+        }
+      ],
+      "x": 170,
+      "y": 460,
+      "wires": [
+        [
+          "79a8ab2b7ba63194"
+        ]
+      ]
+    },
+    {
+      "id": "50d0da44b9c33ab1",
+      "type": "OPCUA-IIoT-Listener",
+      "z": "a0e5f985232949c9",
+      "connector": "014fc68d7d610e9d",
+      "action": "subscribe",
+      "queueSize": 10,
+      "name": "",
+      "topic": "",
+      "justValue": false,
+      "useGroupItems": false,
+      "showStatusActivities": true,
+      "showErrors": true,
+      "x": 580,
+      "y": 980,
+      "wires": [
+        [
+          "aa8cd1b7de2db0eb"
+        ]
+      ]
+    },
+    {
+      "id": "7bb73981cc64192c",
+      "type": "OPCUA-IIoT-Read",
+      "z": "a0e5f985232949c9",
+      "attributeId": "0",
+      "maxAge": 1,
+      "depth": 1,
+      "connector": "014fc68d7d610e9d",
+      "name": "read serialNumber",
+      "justValue": false,
+      "showStatusActivities": true,
+      "showErrors": true,
+      "parseStrings": true,
+      "historyDays": 1,
+      "x": 390,
+      "y": 460,
+      "wires": [
+        [
+          "caada65e18fbd22b"
+        ]
+      ]
+    },
+    {
+      "id": "6bdcbfaff638b488",
+      "type": "function",
+      "z": "a0e5f985232949c9",
+      "name": "Order Handling",
+      "func": "if (flow.get(\"orderId\") == msg.payload.orderId || flow.get(\"orderId\") == \"0\") {\n    // orderId im Flow speichern\n    flow.set(\"orderId\", msg.payload.orderId);\n\n    // orderUpdateId Fallunterscheidung\n    if (msg.payload.orderUpdateId > flow.get(\"orderUpdateId\")) {\n\n        // duration in actionState\n        let actionState = flow.get(\"actionState\");\n        actionState.command = msg.payload.action.command;\n        actionState.id = msg.payload.action.id;\n        let loads = flow.get(\"loads\");\n        let newLoad = loads[0] ?? {};\n\n        // Command Fallunterscheidung\n        if (actionState.command == \"PICK\" && flow.get(\"moduleState\") == \"IDLE\") {\n            // ModulState busy setzen\n            flow.set(\"moduleState\", \"PICKBUSY\");\n\n            // OPCUA Write Content\n            msg.payload.valuesToWrite = [{ \"value\": true }];\n            msg.payload.nodesToWrite = [{ \"name\": \"pick\", \"nodeId\": \"ns=4;i=5\", \"datatypeName\": \"Boolean\" }];\n        } else if (actionState.command == \"DROP\" && flow.get(\"moduleState\") == \"WAITING_AFTER_MILL\") {\n            // ModulState busy setzen\n            flow.set(\"moduleState\", \"DROPBUSY\");\n\n            // OPCUA Write Content\n            msg.payload.valuesToWrite = [{ \"value\": true }];\n            msg.payload.nodesToWrite = [{ \"nodeId\": \"ns=4;i=6\", \"datatypeName\": \"Boolean\" }];\n        } else if (actionState.command == \"MILL\" && flow.get(\"moduleState\") == \"WAITING_AFTER_PICK\") {\n            // state.loads bearbeiten\n            newLoad.duration = msg.payload.action.metadata.duration ? msg.payload.action.metadata.duration : 2\n\n            // ModulState busy setzen\n            flow.set(\"moduleState\", \"MILLBUSY\");\n\n            // OPCUA Write Content\n            msg.payload.valuesToWrite = [\n                { \"value\": true },\n                { \"value\": newLoad.duration }];\n            msg.payload.nodesToWrite = [\n                { \"name\": \"mill\", \"nodeId\": \"ns=4;i=4\", \"datatypeName\": \"Boolean\" },\n                { \"name\": \"duration\", \"nodeId\": \"ns=4;i=11\", \"datatypeName\": \"Int16\" }];\n            actionState.duration = newLoad.duration;\n        } else {\n            const flowErrors = flow.get(\"errors\") ?? [];\n            const errors = Array.isArray(flowErrors) ? flowErrors : [flowErrors];\n            let error = {\n                \"errorType\": \"Validation\",\n                \"errorLevel\": \"WARNING\",\n                \"errorReferences\": [\n                    { \"topic\": \"order\" },\n                    { \"headerId\": flow.get(\"headerId\") },\n                    { \"orderId\": msg.payload.orderId },\n                    { \"orderUpdateId\": msg.payload.orderUpdateId }\n                ],\n                \"errorMessage\": \"Command not supported\"\n            }\n            // Error in Flow\n            flow.set(\"errors\", [...errors, error]);\n            return [null, msg];\n        }\n\n        // actionState in Flow speichern\n        flow.set(\"actionState\", actionState);\n\n        // loads for order im Flow speichern\n        newLoad.loadType = msg.payload.action.metadata.type;\n        flow.set(\"loads\", [newLoad]);\n\n        // orderUpdateId updaten\n        flow.set(\"orderUpdateId\", msg.payload.orderUpdateId);\n\n        // OPCUA write Content\n        msg.payload.nodetype = \"inject\";\n        msg.payload.injectType = \"write\";\n\n        return [msg, null];\n    } else {\n        const flowErrors = flow.get(\"errors\") ?? [];\n        const errors = Array.isArray(flowErrors) ? flowErrors : [flowErrors];\n        let error = {\n            \"errorType\": \"Validation\",\n            \"errorLevel\": \"WARNING\",\n            \"errorReferences\": [\n                { \"topic\": \"order\" },\n                { \"headerId\": flow.get(\"headerId\") },\n                { \"orderId\": msg.payload.orderId },\n                { \"orderUpdateId\": msg.payload.orderUpdateId }\n            ],\n            \"errorMessage\": \"OrderUpdateId not valid\"\n        }\n        // Error in Flow\n        flow.set(\"errors\", [...errors, error]);\n        return [null, msg];\n    }\n} else {\n    const flowErrors = flow.get(\"errors\") ?? [];\n    const errors = Array.isArray(flowErrors) ? flowErrors : [flowErrors];\n    let error = {\n        \"errorType\": \"Validation\",\n        \"errorLevel\": \"WARNING\",\n        \"errorReferences\": [\n            { \"topic\": \"order\" },\n            { \"headerId\": flow.get(\"headerId\") },\n            { \"orderId\": msg.payload.orderId },\n            { \"orderUpdateId\": msg.payload.orderUpdateId }\n        ],\n        \"errorMessage\": \"OrderId not valid\"\n    }\n    // Error in Flow\n    flow.set(\"errors\", [...errors, error]);\n    return [null, msg];\n}\n",
+      "outputs": 2,
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 980,
+      "y": 240,
+      "wires": [
+        [
+          "0ed45d4159b737f0"
+        ],
+        [
+          "6d76228171bfc25d"
+        ]
+      ]
+    },
+    {
+      "id": "0ed45d4159b737f0",
+      "type": "OPCUA-IIoT-Write",
+      "z": "a0e5f985232949c9",
+      "connector": "014fc68d7d610e9d",
+      "name": "Write Order",
+      "justValue": true,
+      "showStatusActivities": true,
+      "showErrors": true,
+      "x": 1190,
+      "y": 180,
+      "wires": [
+        [
+          "4ab12f97b3726869",
+          "6179fcbc8e98af0f"
+        ]
+      ]
+    },
+    {
+      "id": "6179fcbc8e98af0f",
+      "type": "debug",
+      "z": "a0e5f985232949c9",
+      "name": "write MSg",
+      "active": false,
+      "tosidebar": true,
+      "console": false,
+      "tostatus": false,
+      "complete": "true",
+      "targetType": "full",
+      "statusVal": "",
+      "statusType": "auto",
+      "x": 1360,
+      "y": 140,
+      "wires": []
+    },
+    {
+      "id": "d96ea8bd9bd887e8",
+      "type": "function",
+      "z": "a0e5f985232949c9",
+      "name": "vda_status_finished PICK",
+      "func": "// wenn \"TRUE\" im OPCUA und die richtige interne state\nif (msg.payload.value.value.value == true && flow.get(\"moduleState\") == \"PICKBUSY\") {\n\n    // state\n    let state = flow.get(\"state\");\n    let headerId = flow.get(\"headerId\");\n    let actionState = flow.get(\"actionState\");\n    let flowErrors = flow.get(\"errors\") ?? [];\n    let errors = Array.isArray(flowErrors) ? flowErrors : [flowErrors];\n\n    // Timestamp\n    let now = new Date();\n    let timestamp = now.toISOString();\n\n    // erfolgreich mit der NodeId\n    if (msg.payload.nodeId == \"ns=4;i=8\") {\n        if (msg.payload.value.value.value == true && flow.get(\"moduleState\") == \"PICKBUSY\") {\n            flow.set(\"moduleState\", \"WAITING_AFTER_PICK\");\n            actionState.state = \"FINISHED\"; // Waiting for FTS\n        }\n    }\n\n    // nicht erfolgreich mit der NodeId\n    else if (msg.payload.nodeId == \"ns=4;i=12\") {\n        let error = {\n            timestamp,\n            \"errorType\": \"PICK_failed\",\n            \"errorMessage\": \"PICK failed\",\n            \"errorLevel\": \"FATAL\",\n            \"errorReferences\": [\n                { \"topic\": \"order\" },\n                { \"headerId\": flow.get(\"headerId\") },\n                { \"orderId\": flow.get(\"orderId\") },\n                { \"orderUpdateId\": flow.get(\"orderUpdateId\") }\n            ],\n        }\n        actionState.state = \"FAILED\"; // FAILED PICK\n        errors.push(error);\n        flow.set(\"errors\", errors);\n        flow.set(\"moduleState\", \"IDLE\");\n    }\n\n    state.headerId = headerId;\n    state.loads = flow.get(\"loads\");\n    state.actionState = flow.get(\"actionState\");\n    state.timestamp = timestamp;\n    state.orderId = flow.get(\"orderId\");\n    state.orderUpdateId = flow.get(\"orderUpdateId\");\n    state.errors = flow.get(\"errors\") ? flow.get(\"errors\") : [];\n\n    // headerId Update\n    flow.set(\"headerId\", headerId + 1);\n\n    msg.topic = flow.get(\"MQTT_topic\") + \"/state\";\n    msg.payload = state;\n    return msg;\n} else {\n\n    return;\n}",
+      "outputs": 1,
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 1350,
+      "y": 1020,
+      "wires": [
+        [
+          "7c7c4b82763e50f3",
+          "7fd52d35a43b2482"
+        ]
+      ]
+    },
+    {
+      "id": "aa8cd1b7de2db0eb",
+      "type": "switch",
+      "z": "a0e5f985232949c9",
+      "name": "topicswitch",
+      "property": "payload.nodeId",
+      "propertyType": "msg",
+      "rules": [
+        {
+          "t": "eq",
+          "v": "ns=4;i=14",
+          "vt": "str"
+        },
+        {
+          "t": "eq",
+          "v": "ns=4;i=13",
+          "vt": "str"
+        },
+        {
+          "t": "eq",
+          "v": "ns=4;i=9",
+          "vt": "str"
+        },
+        {
+          "t": "eq",
+          "v": "ns=4;i=3",
+          "vt": "str"
+        },
+        {
+          "t": "eq",
+          "v": "ns=4;i=16",
+          "vt": "str"
+        },
+        {
+          "t": "eq",
+          "v": "ns=4;i=10",
+          "vt": "str"
+        },
+        {
+          "t": "eq",
+          "v": "ns=4;i=15",
+          "vt": "str"
+        },
+        {
+          "t": "eq",
+          "v": "ns=4;i=12",
+          "vt": "str"
+        },
+        {
+          "t": "eq",
+          "v": "ns=4;i=8",
+          "vt": "str"
+        }
+      ],
+      "checkall": "true",
+      "repair": false,
+      "outputs": 9,
+      "x": 770,
+      "y": 980,
+      "wires": [
+        [],
+        [
+          "e302bc854b468fb3",
+          "88822f3d38a8cf5d"
+        ],
+        [
+          "88822f3d38a8cf5d"
+        ],
+        [
+          "1439cb2cee54dc68"
+        ],
+        [],
+        [
+          "eff8df734c02aef8"
+        ],
+        [],
+        [
+          "15c731173260b413",
+          "d96ea8bd9bd887e8"
+        ],
+        [
+          "d96ea8bd9bd887e8"
+        ]
+      ],
+      "outputLabels": [
+        "drop_aktiv",
+        "drop_failed",
+        "drop_finished",
+        "idle",
+        "mill_aktiv",
+        "mill_finished",
+        "pick_aktiv",
+        "pick_failed",
+        "pick_finished"
+      ]
+    },
+    {
+      "id": "4ab12f97b3726869",
+      "type": "function",
+      "z": "a0e5f985232949c9",
+      "name": "Publish vda_status_RUNNING",
+      "func": "// Timestamp\nlet now = new Date();\nlet timestamp = now.toISOString();\n\n\n\n//state bauen\nlet headerId = flow.get(\"headerId\");\nlet actionState = flow.get(\"actionState\");\nactionState.id = msg.payload.action.id ? msg.payload.action.id : \"noIdfound\";\nlet state = flow.get(\"state\");\n\nactionState.state = \"RUNNING\";\nstate.headerId = flow.get(\"headerId\");\nstate.loads = flow.get(\"loads\");\nstate.actionState = actionState;\nstate.timestamp = timestamp;\nstate.orderId = flow.get(\"orderId\");\nstate.orderUpdateId = flow.get(\"orderUpdateId\");\nconst flowErrors = flow.get(\"errors\") ?? [];\nstate.errors = Array.isArray(flowErrors) ? flowErrors : [flowErrors];\nmsg.payload = state;\n\n// flowVariable Update\nflow.set(\"headerId\", headerId + 1);\nflow.set(\"errors\", null);\n\nmsg.topic = flow.get(\"MQTT_topic\") + \"/state\";\n\nreturn msg;",
+      "outputs": 1,
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 1430,
+      "y": 220,
+      "wires": [
+        [
+          "a1a19b05031590fe",
+          "da46fcdf765cd02f"
+        ]
+      ]
+    },
+    {
+      "id": "a1a19b05031590fe",
+      "type": "debug",
+      "z": "a0e5f985232949c9",
+      "name": "Order State",
+      "active": false,
+      "tosidebar": true,
+      "console": false,
+      "tostatus": false,
+      "complete": "true",
+      "targetType": "full",
+      "statusVal": "",
+      "statusType": "auto",
+      "x": 1810,
+      "y": 220,
+      "wires": []
+    },
+    {
+      "id": "88822f3d38a8cf5d",
+      "type": "function",
+      "z": "a0e5f985232949c9",
+      "name": "vda_status_finished DROP",
+      "func": "// wenn OPCUA den Wert True liefert\nif (msg.payload.value.value.value == true && flow.get(\"moduleState\") == \"DROPBUSY\") {\n    // Timestamp\n    let now = new Date();\n    let timestamp = now.toISOString();\n    let headerId = flow.get(\"headerId\");\n    let actionState = flow.get(\"actionState\");\n    let state = flow.get(\"state\");\n    let flowErrors = flow.get(\"errors\") ?? [];\n    let errors = Array.isArray(flowErrors) ? flowErrors : [flowErrors];\n\n    // wenn drop_finished gesetzt wurde\n    if (msg.payload.nodeId == \"ns=4;i=9\") {\n        actionState.state = \"FINISHED\";\n    }\n\n    // wenn drop_failed gesetzt wurde\n    else if (msg.payload.nodeId == \"ns=4;i=13\") {\n        actionState.state = \"FAILED\";\n        let error = {\n            timestamp,\n            \"errorType\": \"DROP_failed\",\n            \"errorMessage\": \"DROP failed\",\n            \"errorLevel\": \"WARNING\",\n            \"errorReferences\": [\n                { \"topic\": \"order\" },\n                { \"headerId\": flow.get(\"headerId\") },\n                { \"orderId\": flow.get(\"orderId\") },\n                { \"orderUpdateId\": flow.get(\"orderUpdateId\") }\n            ],\n        }\n        errors.push(error);\n        flow.set(\"errors\", errors);\n    } else {\n        return\n    }\n\n    // state\n    state.headerId = headerId;\n    state.loads = [];\n    state.actionState = actionState;\n    state.timestamp = timestamp;\n    state.orderId = flow.get(\"orderId\");\n    state.orderUpdateId = flow.get(\"orderUpdateId\");\n    state.errors = flow.get(\"errors\") ? flow.get(\"errors\") : [];\n\n    // headerId Update\n    flow.set(\"headerId\", headerId + 1);\n    flow.set(\"orderId\", 0);\n    flow.set(\"orderUpdateId\", 0);\n    flow.set(\"loads\", []);\n    flow.set(\"moduleState\", \"IDLE\");\n    flow.set(\"errors\", []);\n\n    msg.topic = flow.get(\"MQTT_topic\") + \"/state\";\n    msg.payload = state;\n    return msg;\n}\nelse {\n    return;\n}",
+      "outputs": 1,
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 1360,
+      "y": 940,
+      "wires": [
+        [
+          "7c7c4b82763e50f3",
+          "7fd52d35a43b2482"
+        ]
+      ]
+    },
+    {
+      "id": "7c7c4b82763e50f3",
+      "type": "debug",
+      "z": "a0e5f985232949c9",
+      "name": "finished",
+      "active": false,
+      "tosidebar": true,
+      "console": false,
+      "tostatus": false,
+      "complete": "true",
+      "targetType": "full",
+      "statusVal": "",
+      "statusType": "auto",
+      "x": 1700,
+      "y": 1140,
+      "wires": []
+    },
+    {
+      "id": "eff8df734c02aef8",
+      "type": "function",
+      "z": "a0e5f985232949c9",
+      "name": "vda_status_finished MILL",
+      "func": "if (msg.payload.value.value.value == true && flow.get(\"moduleState\") == \"MILLBUSY\") {\n\n    let state = flow.get(\"state\");\n    flow.set(\"moduleState\", \"WAITING_AFTER_MILL\");\n\n    // Timestamp\n    let now = new Date();\n    let timestamp = now.toISOString();\n\n    let headerId = flow.get(\"headerId\");\n    let actionState = flow.get(\"actionState\");\n    actionState.state = \"FINISHED\"\n    \n    // state\n    state.headerId = headerId;\n    state.loads = flow.get(\"loads\");\n    state.actionState = actionState;\n    state.timestamp = timestamp;\n    state.orderId = flow.get(\"orderId\");\n    state.orderUpdateId = flow.get(\"orderUpdateId\");\n    const flowErrors = flow.get(\"errors\") ?? [];\n    state.errors = Array.isArray(flowErrors) ? flowErrors : [flowErrors];\n\n    // headerId Update\n    flow.set(\"headerId\", headerId + 1);\n\n    msg.topic = flow.get(\"MQTT_topic\") + \"/state\";\n    msg.payload = state;\n    return msg;\n}\nelse {\n    return;\n}",
+      "outputs": 1,
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 1350,
+      "y": 980,
+      "wires": [
+        [
+          "7c7c4b82763e50f3",
+          "7fd52d35a43b2482"
+        ]
+      ]
+    },
+    {
+      "id": "1439cb2cee54dc68",
+      "type": "change",
+      "z": "a0e5f985232949c9",
+      "name": "OPCUA state IDLE",
+      "rules": [
+        {
+          "t": "set",
+          "p": "SPS_idle",
+          "pt": "flow",
+          "to": "payload.value.value.value",
+          "tot": "msg"
+        }
+      ],
+      "action": "",
+      "property": "",
+      "from": "",
+      "to": "",
+      "reg": false,
+      "x": 1130,
+      "y": 860,
+      "wires": [
+        []
+      ]
+    },
+    {
+      "id": "15c731173260b413",
+      "type": "change",
+      "z": "a0e5f985232949c9",
+      "name": "OPCUA state PICK",
+      "rules": [
+        {
+          "t": "set",
+          "p": "pick_failed",
+          "pt": "flow",
+          "to": "payload.value.value.value",
+          "tot": "msg"
+        }
+      ],
+      "action": "",
+      "property": "",
+      "from": "",
+      "to": "",
+      "reg": false,
+      "x": 1130,
+      "y": 800,
+      "wires": [
+        []
+      ]
+    },
+    {
+      "id": "e302bc854b468fb3",
+      "type": "change",
+      "z": "a0e5f985232949c9",
+      "name": "OPCUA state DROP",
+      "rules": [
+        {
+          "t": "set",
+          "p": "drop_failed",
+          "pt": "flow",
+          "to": "payload.value.value.value",
+          "tot": "msg"
+        }
+      ],
+      "action": "",
+      "property": "",
+      "from": "",
+      "to": "",
+      "reg": false,
+      "x": 1140,
+      "y": 740,
+      "wires": [
+        []
+      ]
+    },
+    {
+      "id": "acaebea02aae425c",
+      "type": "function",
+      "z": "a0e5f985232949c9",
+      "name": "variable setup",
+      "func": "// Nötige Werte im Flow speichern\nflow.set(\"flowName\", \"MILL\");\nflow.set(\"moduleState\", \"IDLE\");\nflow.set(\"orderUpdateId\", 0);\nflow.set(\"orderId\", \"0\");\nflow.set(\"loads\", []);\nflow.set(\"headerId\", 1);\nflow.set(\"actionState\", {});\nflow.set(\"model\", \"MILL\");\nflow.set(\"errors\", []);\n\nflow.set(\"state\", {\n    \"headerId\": 0,\n    \"loads\": [],\n    \"actionState\": null,\n    \"serialNumber\": \"notReadYet\",\n    \"timestamp\": \"timestamp\",\n    \"errors\": [],\n    \"orderUpdateId\": 0,\n    \"orderId\": 0,\n    \"paused\": false,\n    \"metadata\": {\n        \"opcuaState\": \"connected\"\n    }\n});\n\n// factsheet for MILL\nconst factsheet = msg.factsheet ?? {};\nflow.set(\"factsheet\", factsheet);\n\nflow.set(\"connection\", {\n    \"headerId\": 0,\n    \"timestamp\": \"timestamp\",\n    \"ip\": \"192.168.0.43\",\n    \"version\": \"1.0.0\",\n    \"manufacturer\": \"Fischertechnik\",\n    \"serialNumber\": \"serialNumber\",\n    \"connectionState\": \"ONLINE\"\n});\nflow.set(\"opcuaState\", \"connected\");\n\nreturn ",
+      "outputs": 1,
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 380,
+      "y": 60,
+      "wires": [
+        []
+      ]
+    },
+    {
+      "id": "6d76228171bfc25d",
+      "type": "function",
+      "z": "a0e5f985232949c9",
+      "name": "Publish vda_status_FAILED",
+      "func": "// Timestamp\nlet now = new Date();\nlet timestamp = now.toISOString();\n\n// state bauen\nlet state = flow.get(\"state\");\nstate.headerId = flow.get(\"headerId\");\nstate.loads = flow.get(\"loads\");\nstate.actionState = flow.get(\"actionState\");\nstate.actionState.state = \"FAILED\";\nstate.timestamp = timestamp;\nstate.orderId = flow.get(\"orderId\");\nstate.orderUpdateId = flow.get(\"orderUpdateId\");\nconst flowErrors = flow.get(\"errors\") ?? [];\nstate.errors = Array.isArray(flowErrors) ? flowErrors : [flowErrors];\n\n// flow update\nflow.set(\"headerId\", state.headerId + 1);\n\nmsg.topic = flow.get(\"MQTT_topic\") + \"/state\";\nmsg.payload = state;\nreturn msg;",
+      "outputs": 1,
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 1420,
+      "y": 320,
+      "wires": [
+        [
+          "a1a19b05031590fe",
+          "da46fcdf765cd02f"
+        ]
+      ]
+    },
+    {
+      "id": "192b3ab7d07a0f04",
+      "type": "OPCUA-IIoT-Browser",
+      "z": "a0e5f985232949c9",
+      "nodeId": "ns=4;i=1",
+      "name": "browse",
+      "justValue": true,
+      "sendNodesToRead": false,
+      "sendNodesToBrowser": false,
+      "sendNodesToListener": true,
+      "multipleOutputs": false,
+      "showStatusActivities": true,
+      "showErrors": true,
+      "recursiveBrowse": false,
+      "recursiveDepth": 1,
+      "delayPerMessage": 0.2,
+      "connector": "014fc68d7d610e9d",
+      "x": 400,
+      "y": 980,
+      "wires": [
+        [
+          "50d0da44b9c33ab1",
+          "9e66db44793de846"
+        ]
+      ]
+    },
+    {
+      "id": "90f081c9f5d3771e",
+      "type": "OPCUA-IIoT-Inject",
+      "z": "a0e5f985232949c9",
+      "injectType": "inject",
+      "payload": "{\"interval\":100}",
+      "payloadType": "json",
+      "topic": "",
+      "repeat": "",
+      "crontab": "",
+      "once": true,
+      "startDelay": "10",
+      "name": "inject",
+      "addressSpaceItems": [],
+      "x": 150,
+      "y": 980,
+      "wires": [
+        [
+          "192b3ab7d07a0f04"
+        ]
+      ]
+    },
+    {
+      "id": "9e66db44793de846",
+      "type": "change",
+      "z": "a0e5f985232949c9",
+      "name": "BrowserArray",
+      "rules": [
+        {
+          "t": "set",
+          "p": "BrowseArray",
+          "pt": "flow",
+          "to": "payload.browserResults",
+          "tot": "msg"
+        }
+      ],
+      "action": "",
+      "property": "",
+      "from": "",
+      "to": "",
+      "reg": false,
+      "x": 780,
+      "y": 880,
+      "wires": [
+        []
+      ]
+    },
+    {
+      "id": "7fd52d35a43b2482",
+      "type": "link out",
+      "z": "a0e5f985232949c9",
+      "name": "MQTT_retained",
+      "mode": "link",
+      "links": [
+        "1a56d5a4f8592caa"
+      ],
+      "x": 1735,
+      "y": 960,
+      "wires": []
+    },
+    {
+      "id": "caada65e18fbd22b",
+      "type": "subflow:1b897516f5bf21fa",
+      "z": "a0e5f985232949c9",
+      "name": "",
+      "x": 620,
+      "y": 460,
+      "wires": [
+        [
+          "6bdcbfaff638b488"
+        ],
+        [
+          "bebb38a1524be2cc"
+        ],
+        [
+          "da46fcdf765cd02f"
+        ],
+        []
+      ]
+    },
+    {
+      "id": "da46fcdf765cd02f",
+      "type": "link out",
+      "z": "a0e5f985232949c9",
+      "name": "MQTT_retained",
+      "mode": "link",
+      "links": [
+        "1a56d5a4f8592caa"
+      ],
+      "x": 1935,
+      "y": 480,
+      "wires": []
+    },
+    {
+      "id": "0b2b566e650c31fb",
+      "type": "subflow:6a25ecd632542087",
+      "z": "a0e5f985232949c9",
+      "name": "",
+      "env": [
+        {
+          "name": "FACTSHEET_FILE",
+          "value": "/data/factsheets/factsheet-mill.json",
+          "type": "str"
+        },
+        {
+          "name": "FACTSHEET_FILENAME",
+          "value": "factsheet-mill.json",
+          "type": "str"
+        }
+      ],
+      "x": 150,
+      "y": 60,
+      "wires": [
+        [
+          "acaebea02aae425c"
+        ]
+      ]
+    },
+    {
+      "id": "e781e4b0a40357f4",
+      "type": "function",
+      "z": "a0e5f985232949c9",
+      "name": "vda_action factsheetRequest",
+      "func": "/**\n * @typedef {object} ActionState\n * @property {string} id\n * @property {string} state\n * @property {string} command\n * @property {object} [metadata]\n * \n * @param {string} state\n * @returns {ActionState}\n */\nfunction updateActionState(state, metadata = undefined) {\n    const actionState = flow.get(\"actionState\") ?? {};\n    actionState.id = msg.actionId;\n    actionState.state = state;\n    actionState.command = msg.actionCommand;\n    actionState.metadata = metadata ?? undefined;\n    flow.set(\"actionState\", actionState);\n    return actionState;\n}\n\nconst actionState = updateActionState(\"RUNNING\");\n\n// factsheet timestamp aktualisieren\nconst factsheet = flow.get(\"factsheet\");\nfactsheet.timestamp = new Date().toISOString();\nflow.set(\"factsheet\", factsheet);\n\n//publish on topic\nmsg.topic = flow.get(\"MQTT_topic\") + \"/factsheet\";\nmsg.payload = factsheet;\nreturn msg;",
+      "outputs": 1,
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 1240,
+      "y": 420,
+      "wires": [
+        [
+          "85c9360a486bb811",
+          "da46fcdf765cd02f"
+        ]
+      ]
+    },
+    {
+      "id": "85c9360a486bb811",
+      "type": "function",
+      "z": "a0e5f985232949c9",
+      "name": "vda_status_finished instantAction",
+      "func": "/**\n * @typedef {object} ActionState\n * @property {string} id\n * @property {string} state\n * @property {string} command\n * @property {object} [metadata]\n * \n * @param {string} state\n * @returns {ActionState}\n */\nfunction updateActionState(state, metadata = undefined) {\n    const actionState = flow.get(\"actionState\") ?? {};\n    actionState.id = msg.actionId;\n    actionState.state = state;\n    actionState.command = msg.actionCommand;\n    actionState.metadata = metadata ?? undefined;\n    flow.set(\"actionState\", actionState);\n    return actionState;\n}\n\nconst actionState = updateActionState(\"FINISHED\");\n\n// state bauen\nlet state = flow.get(\"state\");\nstate.headerId = flow.get(\"headerId\");\nstate.actionState = actionState\nstate.timestamp = new Date().toISOString();\nstate.orderId = actionState.id;\nstate.orderUpdateId = \"0\";\nconst flowErrors = flow.get(\"errors\") ?? [];\nstate.errors = Array.isArray(flowErrors) ? flowErrors : [flowErrors];\n\n// flow update\nflow.set(\"headerId\", state.headerId + 1);\n\nmsg.topic = flow.get(\"MQTT_topic\") + \"/state\";\nmsg.payload = state;\nreturn msg;",
+      "outputs": 1,
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 1560,
+      "y": 420,
+      "wires": [
+        [
+          "da46fcdf765cd02f"
+        ]
+      ]
+    },
+    {
+      "id": "bebb38a1524be2cc",
+      "type": "switch",
+      "z": "a0e5f985232949c9",
+      "name": "handleInstantAction",
+      "property": "instantAction",
+      "propertyType": "msg",
+      "rules": [
+        {
+          "t": "eq",
+          "v": "factsheetRequest",
+          "vt": "str"
+        }
+      ],
+      "checkall": "true",
+      "repair": false,
+      "outputs": 1,
+      "x": 970,
+      "y": 420,
+      "wires": [
+        [
+          "e781e4b0a40357f4"
+        ]
+      ]
+    },
+    {
+      "id": "a89a0dcd6465d828",
+      "type": "catch",
+      "z": "a0e5f985232949c9",
+      "name": "Catch all Errors",
+      "scope": null,
+      "uncaught": true,
+      "x": 160,
+      "y": 140,
+      "wires": [
+        [
+          "9b3aab1e59ca7645"
+        ]
+      ]
+    },
+    {
+      "id": "9b3aab1e59ca7645",
+      "type": "debug",
+      "z": "a0e5f985232949c9",
+      "name": "display-error",
+      "active": false,
+      "tosidebar": true,
+      "console": false,
+      "tostatus": false,
+      "complete": "true",
+      "targetType": "full",
+      "statusVal": "",
+      "statusType": "auto",
+      "x": 390,
+      "y": 140,
+      "wires": []
+    },
+    {
+      "id": "bff72ef49476ea7d",
+      "type": "subflow:468f2460ce66f11e",
+      "z": "a0e5f985232949c9",
+      "name": "",
+      "x": 650,
+      "y": 600,
+      "wires": [
+        [
+          "da46fcdf765cd02f"
+        ]
+      ]
+    },
+    {
+      "id": "51edac07ca5cfe23",
+      "type": "OPCUA-IIoT-Inject",
+      "z": "a0e5f985232949c9",
+      "injectType": "read",
+      "payload": "",
+      "payloadType": "date",
+      "topic": "readSerial",
+      "repeat": "15",
+      "crontab": "",
+      "once": true,
+      "startDelay": "20",
+      "name": "serialnumber",
+      "addressSpaceItems": [
+        {
+          "name": "SerialNumber",
+          "nodeId": "ns=3;s=SerialNumber",
+          "datatypeName": "String"
+        },
+        {
+          "name": "model",
+          "nodeId": "ns=4;i=2",
+          "datatypeName": "String"
+        }
+      ],
+      "x": 180,
+      "y": 600,
+      "wires": [
+        [
+          "b2283d203542ad97",
+          "bff72ef49476ea7d"
+        ]
+      ]
+    },
+    {
+      "id": "b2283d203542ad97",
+      "type": "OPCUA-IIoT-Read",
+      "z": "a0e5f985232949c9",
+      "attributeId": "0",
+      "maxAge": 1,
+      "depth": 1,
+      "connector": "014fc68d7d610e9d",
+      "name": "read serialNumber",
+      "justValue": false,
+      "showStatusActivities": true,
+      "showErrors": true,
+      "parseStrings": true,
+      "historyDays": 1,
+      "x": 390,
+      "y": 560,
+      "wires": [
+        [
+          "bff72ef49476ea7d"
+        ]
+      ]
+    },
+    {
+      "id": "8a833b4160a1e68e",
+      "type": "OPCUA-IIoT-Inject",
+      "z": "a0e5f985232949c9",
+      "injectType": "read",
+      "payload": "",
+      "payloadType": "date",
+      "topic": "readSerial",
+      "repeat": "",
+      "crontab": "",
+      "once": true,
+      "startDelay": "20",
+      "name": "serialnumber",
+      "addressSpaceItems": [
+        {
+          "name": "SerialNumber",
+          "nodeId": "ns=3;s=SerialNumber",
+          "datatypeName": "String"
+        },
+        {
+          "name": "model",
+          "nodeId": "ns=4;i=2",
+          "datatypeName": "String"
+        },
+        {
+          "name": "version",
+          "nodeId": "ns=4;i=21",
+          "datatypeName": "String"
+        }
+      ],
+      "x": 170,
+      "y": 460,
+      "wires": [
+        [
+          "7bb73981cc64192c"
+        ]
+      ]
+    },
+    {
+      "id": "ae2be797c95aff65",
+      "type": "OPCUA-IIoT-Listener",
+      "z": "5fc4fbd01fd96575",
+      "connector": "dc24d4023df4a98c",
+      "action": "subscribe",
+      "queueSize": 10,
+      "name": "",
+      "topic": "",
+      "justValue": false,
+      "useGroupItems": false,
+      "showStatusActivities": true,
+      "showErrors": true,
+      "x": 580,
+      "y": 980,
+      "wires": [
+        [
+          "de7d743634022218"
+        ]
+      ]
+    },
+    {
+      "id": "bdecf968fce32409",
+      "type": "OPCUA-IIoT-Read",
+      "z": "5fc4fbd01fd96575",
+      "attributeId": "0",
+      "maxAge": 1,
+      "depth": 1,
+      "connector": "dc24d4023df4a98c",
+      "name": "read serialNumber",
+      "justValue": false,
+      "showStatusActivities": true,
+      "showErrors": true,
+      "parseStrings": true,
+      "historyDays": 1,
+      "x": 390,
+      "y": 460,
+      "wires": [
+        [
+          "6e69d179b76cc20a"
+        ]
+      ]
+    },
+    {
+      "id": "37f95576f2039358",
+      "type": "function",
+      "z": "5fc4fbd01fd96575",
+      "name": "Order Handling",
+      "func": "if (flow.get(\"orderId\") == msg.payload.orderId || flow.get(\"orderId\") == \"0\") {\n    // orderId im Flow speichern\n    flow.set(\"orderId\", msg.payload.orderId);\n\n    // orderUpdateId Fallunterscheidung\n    if (msg.payload.orderUpdateId > flow.get(\"orderUpdateId\")) {\n\n        // duration in actionState\n        let actionState = flow.get(\"actionState\");\n        actionState.command = msg.payload.action.command;\n        actionState.id = msg.payload.action.id;\n        let loads = flow.get(\"loads\");\n        let newLoad = loads[0] ?? {};\n\n        // Command Fallunterscheidung\n        if (actionState.command == \"PICK\" && flow.get(\"moduleState\") == \"IDLE\") {\n            // ModulState busy setzen\n            flow.set(\"moduleState\", \"PICKBUSY\");\n\n            // OPCUA Write Content\n            msg.payload.valuesToWrite = [{ \"value\": true }];\n            msg.payload.nodesToWrite = [{ \"name\": \"pick\", \"nodeId\": \"ns=4;i=5\", \"datatypeName\": \"Boolean\" }];\n        } else if (actionState.command == \"DROP\" && flow.get(\"moduleState\") == \"WAITING_AFTER_MILL\") {\n            // ModulState busy setzen\n            flow.set(\"moduleState\", \"DROPBUSY\");\n\n            // OPCUA Write Content\n            msg.payload.valuesToWrite = [{ \"value\": true }];\n            msg.payload.nodesToWrite = [{ \"nodeId\": \"ns=4;i=6\", \"datatypeName\": \"Boolean\" }];\n        } else if (actionState.command == \"MILL\" && flow.get(\"moduleState\") == \"WAITING_AFTER_PICK\") {\n            // state.loads bearbeiten\n            newLoad.duration = msg.payload.action.metadata.duration ? msg.payload.action.metadata.duration : 2\n\n            // ModulState busy setzen\n            flow.set(\"moduleState\", \"MILLBUSY\");\n\n            // OPCUA Write Content\n            msg.payload.valuesToWrite = [\n                { \"value\": true },\n                { \"value\": newLoad.duration }];\n            msg.payload.nodesToWrite = [\n                { \"name\": \"mill\", \"nodeId\": \"ns=4;i=4\", \"datatypeName\": \"Boolean\" },\n                { \"name\": \"duration\", \"nodeId\": \"ns=4;i=11\", \"datatypeName\": \"Int16\" }];\n            actionState.duration = newLoad.duration;\n        } else {\n            const flowErrors = flow.get(\"errors\") ?? [];\n            const errors = Array.isArray(flowErrors) ? flowErrors : [flowErrors];\n            let error = {\n                \"errorType\": \"Validation\",\n                \"errorLevel\": \"WARNING\",\n                \"errorReferences\": [\n                    { \"topic\": \"order\" },\n                    { \"headerId\": flow.get(\"headerId\") },\n                    { \"orderId\": msg.payload.orderId },\n                    { \"orderUpdateId\": msg.payload.orderUpdateId }\n                ],\n                \"errorMessage\": \"Command not supported\"\n            }\n            // Error in Flow\n            flow.set(\"errors\", [...errors, error]);\n            return [null, msg];\n        }\n\n        // actionState in Flow speichern\n        flow.set(\"actionState\", actionState);\n\n        // loads for order im Flow speichern\n        newLoad.loadType = msg.payload.action.metadata.type;\n        flow.set(\"loads\", [newLoad]);\n\n        // orderUpdateId updaten\n        flow.set(\"orderUpdateId\", msg.payload.orderUpdateId);\n\n        // OPCUA write Content\n        msg.payload.nodetype = \"inject\";\n        msg.payload.injectType = \"write\";\n\n        return [msg, null];\n    } else {\n        const flowErrors = flow.get(\"errors\") ?? [];\n        const errors = Array.isArray(flowErrors) ? flowErrors : [flowErrors];\n        let error = {\n            \"errorType\": \"Validation\",\n            \"errorLevel\": \"WARNING\",\n            \"errorReferences\": [\n                { \"topic\": \"order\" },\n                { \"headerId\": flow.get(\"headerId\") },\n                { \"orderId\": msg.payload.orderId },\n                { \"orderUpdateId\": msg.payload.orderUpdateId }\n            ],\n            \"errorMessage\": \"OrderUpdateId not valid\"\n        }\n        // Error in Flow\n        flow.set(\"errors\", [...errors, error]);\n        return [null, msg];\n    }\n} else {\n    const flowErrors = flow.get(\"errors\") ?? [];\n    const errors = Array.isArray(flowErrors) ? flowErrors : [flowErrors];\n    let error = {\n        \"errorType\": \"Validation\",\n        \"errorLevel\": \"WARNING\",\n        \"errorReferences\": [\n            { \"topic\": \"order\" },\n            { \"headerId\": flow.get(\"headerId\") },\n            { \"orderId\": msg.payload.orderId },\n            { \"orderUpdateId\": msg.payload.orderUpdateId }\n        ],\n        \"errorMessage\": \"OrderId not valid\"\n    }\n    // Error in Flow\n    flow.set(\"errors\", [...errors, error]);\n    return [null, msg];\n}\n",
+      "outputs": 2,
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 980,
+      "y": 240,
+      "wires": [
+        [
+          "898359777571d4e5"
+        ],
+        [
+          "ada95e0dbc40ed50"
+        ]
+      ]
+    },
+    {
+      "id": "898359777571d4e5",
+      "type": "OPCUA-IIoT-Write",
+      "z": "5fc4fbd01fd96575",
+      "connector": "dc24d4023df4a98c",
+      "name": "Write Order",
+      "justValue": true,
+      "showStatusActivities": true,
+      "showErrors": true,
+      "x": 1190,
+      "y": 180,
+      "wires": [
+        [
+          "926991327fa32491",
+          "4bead212bf3c4830"
+        ]
+      ]
+    },
+    {
+      "id": "4bead212bf3c4830",
+      "type": "debug",
+      "z": "5fc4fbd01fd96575",
+      "name": "write MSg",
+      "active": false,
+      "tosidebar": true,
+      "console": false,
+      "tostatus": false,
+      "complete": "true",
+      "targetType": "full",
+      "statusVal": "",
+      "statusType": "auto",
+      "x": 1360,
+      "y": 140,
+      "wires": []
+    },
+    {
+      "id": "5fd3e042ede74b83",
+      "type": "function",
+      "z": "5fc4fbd01fd96575",
+      "name": "vda_status_finished PICK",
+      "func": "// wenn \"TRUE\" im OPCUA und die richtige interne state\nif (msg.payload.value.value.value == true && flow.get(\"moduleState\") == \"PICKBUSY\") {\n\n    // state\n    let state = flow.get(\"state\");\n    let headerId = flow.get(\"headerId\");\n    let actionState = flow.get(\"actionState\");\n    let flowErrors = flow.get(\"errors\") ?? [];\n    let errors = Array.isArray(flowErrors) ? flowErrors : [flowErrors];\n\n    // Timestamp\n    let now = new Date();\n    let timestamp = now.toISOString();\n\n    // erfolgreich mit der NodeId\n    if (msg.payload.nodeId == \"ns=4;i=8\") {\n        if (msg.payload.value.value.value == true && flow.get(\"moduleState\") == \"PICKBUSY\") {\n            flow.set(\"moduleState\", \"WAITING_AFTER_PICK\");\n            actionState.state = \"FINISHED\"; // Waiting for FTS\n        }\n    }\n\n    // nicht erfolgreich mit der NodeId\n    else if (msg.payload.nodeId == \"ns=4;i=12\") {\n        let error = {\n            timestamp,\n            \"errorType\": \"PICK_failed\",\n            \"errorMessage\": \"PICK failed\",\n            \"errorLevel\": \"FATAL\",\n            \"errorReferences\": [\n                { \"topic\": \"order\" },\n                { \"headerId\": flow.get(\"headerId\") },\n                { \"orderId\": flow.get(\"orderId\") },\n                { \"orderUpdateId\": flow.get(\"orderUpdateId\") }\n            ],\n        }\n        actionState.state = \"FAILED\"; // FAILED PICK\n        errors.push(error);\n        flow.set(\"errors\", errors);\n        flow.set(\"moduleState\", \"IDLE\");\n    }\n\n    state.headerId = headerId;\n    state.loads = flow.get(\"loads\");\n    state.actionState = flow.get(\"actionState\");\n    state.timestamp = timestamp;\n    state.orderId = flow.get(\"orderId\");\n    state.orderUpdateId = flow.get(\"orderUpdateId\");\n    state.errors = flow.get(\"errors\") ? flow.get(\"errors\") : [];\n\n    // headerId Update\n    flow.set(\"headerId\", headerId + 1);\n\n    msg.topic = flow.get(\"MQTT_topic\") + \"/state\";\n    msg.payload = state;\n    return msg;\n} else {\n\n    return;\n}",
+      "outputs": 1,
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 1350,
+      "y": 1020,
+      "wires": [
+        [
+          "e81a7450cc6160e0",
+          "2214f7baa101d895"
+        ]
+      ]
+    },
+    {
+      "id": "de7d743634022218",
+      "type": "switch",
+      "z": "5fc4fbd01fd96575",
+      "name": "topicswitch",
+      "property": "payload.nodeId",
+      "propertyType": "msg",
+      "rules": [
+        {
+          "t": "eq",
+          "v": "ns=4;i=14",
+          "vt": "str"
+        },
+        {
+          "t": "eq",
+          "v": "ns=4;i=13",
+          "vt": "str"
+        },
+        {
+          "t": "eq",
+          "v": "ns=4;i=9",
+          "vt": "str"
+        },
+        {
+          "t": "eq",
+          "v": "ns=4;i=3",
+          "vt": "str"
+        },
+        {
+          "t": "eq",
+          "v": "ns=4;i=16",
+          "vt": "str"
+        },
+        {
+          "t": "eq",
+          "v": "ns=4;i=10",
+          "vt": "str"
+        },
+        {
+          "t": "eq",
+          "v": "ns=4;i=15",
+          "vt": "str"
+        },
+        {
+          "t": "eq",
+          "v": "ns=4;i=12",
+          "vt": "str"
+        },
+        {
+          "t": "eq",
+          "v": "ns=4;i=8",
+          "vt": "str"
+        }
+      ],
+      "checkall": "true",
+      "repair": false,
+      "outputs": 9,
+      "x": 770,
+      "y": 980,
+      "wires": [
+        [],
+        [
+          "1d382824a19008bb",
+          "bd732f949d519f56"
+        ],
+        [
+          "bd732f949d519f56"
+        ],
+        [
+          "30c5fbe84ce4eea9"
+        ],
+        [],
+        [
+          "dbdf2b0e6ca6a6d1"
+        ],
+        [],
+        [
+          "03a16fdd30a264c2",
+          "5fd3e042ede74b83"
+        ],
+        [
+          "5fd3e042ede74b83"
+        ]
+      ],
+      "outputLabels": [
+        "drop_aktiv",
+        "drop_failed",
+        "drop_finished",
+        "idle",
+        "mill_aktiv",
+        "mill_finished",
+        "pick_aktiv",
+        "pick_failed",
+        "pick_finished"
+      ]
+    },
+    {
+      "id": "926991327fa32491",
+      "type": "function",
+      "z": "5fc4fbd01fd96575",
+      "name": "Publish vda_status_RUNNING",
+      "func": "// Timestamp\nlet now = new Date();\nlet timestamp = now.toISOString();\n\n\n\n//state bauen\nlet headerId = flow.get(\"headerId\");\nlet actionState = flow.get(\"actionState\");\nactionState.id = msg.payload.action.id ? msg.payload.action.id : \"noIdfound\";\nlet state = flow.get(\"state\");\n\nactionState.state = \"RUNNING\";\nstate.headerId = flow.get(\"headerId\");\nstate.loads = flow.get(\"loads\");\nstate.actionState = actionState;\nstate.timestamp = timestamp;\nstate.orderId = flow.get(\"orderId\");\nstate.orderUpdateId = flow.get(\"orderUpdateId\");\nconst flowErrors = flow.get(\"errors\") ?? [];\nstate.errors = Array.isArray(flowErrors) ? flowErrors : [flowErrors];\nmsg.payload = state;\n\n// flowVariable Update\nflow.set(\"headerId\", headerId + 1);\nflow.set(\"errors\", null);\n\nmsg.topic = flow.get(\"MQTT_topic\") + \"/state\";\n\nreturn msg;",
+      "outputs": 1,
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 1430,
+      "y": 220,
+      "wires": [
+        [
+          "2935769b6a05b7c7",
+          "761fbdab37b1fd92"
+        ]
+      ]
+    },
+    {
+      "id": "2935769b6a05b7c7",
+      "type": "debug",
+      "z": "5fc4fbd01fd96575",
+      "name": "Order State",
+      "active": false,
+      "tosidebar": true,
+      "console": false,
+      "tostatus": false,
+      "complete": "true",
+      "targetType": "full",
+      "statusVal": "",
+      "statusType": "auto",
+      "x": 1810,
+      "y": 220,
+      "wires": []
+    },
+    {
+      "id": "bd732f949d519f56",
+      "type": "function",
+      "z": "5fc4fbd01fd96575",
+      "name": "vda_status_finished DROP",
+      "func": "// wenn OPCUA den Wert True liefert\nif (msg.payload.value.value.value == true && flow.get(\"moduleState\") == \"DROPBUSY\") {\n    // Timestamp\n    let now = new Date();\n    let timestamp = now.toISOString();\n    let headerId = flow.get(\"headerId\");\n    let actionState = flow.get(\"actionState\");\n    let state = flow.get(\"state\");\n    let flowErrors = flow.get(\"errors\") ?? [];\n    let errors = Array.isArray(flowErrors) ? flowErrors : [flowErrors];\n\n    // wenn drop_finished gesetzt wurde\n    if (msg.payload.nodeId == \"ns=4;i=9\") {\n        actionState.state = \"FINISHED\";\n    }\n\n    // wenn drop_failed gesetzt wurde\n    else if (msg.payload.nodeId == \"ns=4;i=13\") {\n        actionState.state = \"FAILED\";\n        let error = {\n            timestamp,\n            \"errorType\": \"DROP_failed\",\n            \"errorMessage\": \"DROP failed\",\n            \"errorLevel\": \"WARNING\",\n            \"errorReferences\": [\n                { \"topic\": \"order\" },\n                { \"headerId\": flow.get(\"headerId\") },\n                { \"orderId\": flow.get(\"orderId\") },\n                { \"orderUpdateId\": flow.get(\"orderUpdateId\") }\n            ],\n        }\n        errors.push(error);\n        flow.set(\"errors\", errors);\n    } else {\n        return\n    }\n\n    // state\n    state.headerId = headerId;\n    state.loads = [];\n    state.actionState = actionState;\n    state.timestamp = timestamp;\n    state.orderId = flow.get(\"orderId\");\n    state.orderUpdateId = flow.get(\"orderUpdateId\");\n    state.errors = flow.get(\"errors\") ? flow.get(\"errors\") : [];\n\n    // headerId Update\n    flow.set(\"headerId\", headerId + 1);\n    flow.set(\"orderId\", 0);\n    flow.set(\"orderUpdateId\", 0);\n    flow.set(\"loads\", []);\n    flow.set(\"moduleState\", \"IDLE\");\n    flow.set(\"errors\", []);\n\n    msg.topic = flow.get(\"MQTT_topic\") + \"/state\";\n    msg.payload = state;\n    return msg;\n}\nelse {\n    return;\n}",
+      "outputs": 1,
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 1360,
+      "y": 940,
+      "wires": [
+        [
+          "e81a7450cc6160e0",
+          "2214f7baa101d895"
+        ]
+      ]
+    },
+    {
+      "id": "e81a7450cc6160e0",
+      "type": "debug",
+      "z": "5fc4fbd01fd96575",
+      "name": "finished",
+      "active": false,
+      "tosidebar": true,
+      "console": false,
+      "tostatus": false,
+      "complete": "true",
+      "targetType": "full",
+      "statusVal": "",
+      "statusType": "auto",
+      "x": 1700,
+      "y": 1140,
+      "wires": []
+    },
+    {
+      "id": "dbdf2b0e6ca6a6d1",
+      "type": "function",
+      "z": "5fc4fbd01fd96575",
+      "name": "vda_status_finished MILL",
+      "func": "if (msg.payload.value.value.value == true && flow.get(\"moduleState\") == \"MILLBUSY\") {\n\n    let state = flow.get(\"state\");\n    flow.set(\"moduleState\", \"WAITING_AFTER_MILL\");\n\n    // Timestamp\n    let now = new Date();\n    let timestamp = now.toISOString();\n\n    let headerId = flow.get(\"headerId\");\n    let actionState = flow.get(\"actionState\");\n    actionState.state = \"FINISHED\"\n    \n    // state\n    state.headerId = headerId;\n    state.loads = flow.get(\"loads\");\n    state.actionState = actionState;\n    state.timestamp = timestamp;\n    state.orderId = flow.get(\"orderId\");\n    state.orderUpdateId = flow.get(\"orderUpdateId\");\n    const flowErrors = flow.get(\"errors\") ?? [];\n    state.errors = Array.isArray(flowErrors) ? flowErrors : [flowErrors];\n\n    // headerId Update\n    flow.set(\"headerId\", headerId + 1);\n\n    msg.topic = flow.get(\"MQTT_topic\") + \"/state\";\n    msg.payload = state;\n    return msg;\n}\nelse {\n    return;\n}",
+      "outputs": 1,
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 1350,
+      "y": 980,
+      "wires": [
+        [
+          "e81a7450cc6160e0",
+          "2214f7baa101d895"
+        ]
+      ]
+    },
+    {
+      "id": "30c5fbe84ce4eea9",
+      "type": "change",
+      "z": "5fc4fbd01fd96575",
+      "name": "OPCUA state IDLE",
+      "rules": [
+        {
+          "t": "set",
+          "p": "SPS_idle",
+          "pt": "flow",
+          "to": "payload.value.value.value",
+          "tot": "msg"
+        }
+      ],
+      "action": "",
+      "property": "",
+      "from": "",
+      "to": "",
+      "reg": false,
+      "x": 1130,
+      "y": 860,
+      "wires": [
+        []
+      ]
+    },
+    {
+      "id": "03a16fdd30a264c2",
+      "type": "change",
+      "z": "5fc4fbd01fd96575",
+      "name": "OPCUA state PICK",
+      "rules": [
+        {
+          "t": "set",
+          "p": "pick_failed",
+          "pt": "flow",
+          "to": "payload.value.value.value",
+          "tot": "msg"
+        }
+      ],
+      "action": "",
+      "property": "",
+      "from": "",
+      "to": "",
+      "reg": false,
+      "x": 1130,
+      "y": 800,
+      "wires": [
+        []
+      ]
+    },
+    {
+      "id": "1d382824a19008bb",
+      "type": "change",
+      "z": "5fc4fbd01fd96575",
+      "name": "OPCUA state DROP",
+      "rules": [
+        {
+          "t": "set",
+          "p": "drop_failed",
+          "pt": "flow",
+          "to": "payload.value.value.value",
+          "tot": "msg"
+        }
+      ],
+      "action": "",
+      "property": "",
+      "from": "",
+      "to": "",
+      "reg": false,
+      "x": 1140,
+      "y": 740,
+      "wires": [
+        []
+      ]
+    },
+    {
+      "id": "7f521eb466112c18",
+      "type": "function",
+      "z": "5fc4fbd01fd96575",
+      "name": "variable setup",
+      "func": "// Nötige Werte im Flow speichern\nflow.set(\"flowName\", \"MILL\");\nflow.set(\"moduleState\", \"IDLE\");\nflow.set(\"orderUpdateId\", 0);\nflow.set(\"orderId\", \"0\");\nflow.set(\"loads\", []);\nflow.set(\"headerId\", 1);\nflow.set(\"actionState\", {});\nflow.set(\"model\", \"MILL\");\nflow.set(\"errors\", []);\n\nflow.set(\"state\", {\n    \"headerId\": 0,\n    \"loads\": [],\n    \"actionState\": null,\n    \"serialNumber\": \"notReadYet\",\n    \"timestamp\": \"timestamp\",\n    \"errors\": [],\n    \"orderUpdateId\": 0,\n    \"orderId\": 0,\n    \"paused\": false,\n    \"metadata\": {\n        \"opcuaState\": \"connected\"\n    }\n});\n\n// factsheet for MILL\nconst factsheet = msg.factsheet ?? {};\nflow.set(\"factsheet\", factsheet);\n\nflow.set(\"connection\", {\n    \"headerId\": 0,\n    \"timestamp\": \"timestamp\",\n    \"ip\": \"192.168.0.44\",\n    \"version\": \"1.0.0\",\n    \"manufacturer\": \"Fischertechnik\",\n    \"serialNumber\": \"serialNumber\",\n    \"connectionState\": \"ONLINE\"\n});\nflow.set(\"opcuaState\", \"connected\");\n\nreturn ",
+      "outputs": 1,
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 380,
+      "y": 60,
+      "wires": [
+        []
+      ]
+    },
+    {
+      "id": "ada95e0dbc40ed50",
+      "type": "function",
+      "z": "5fc4fbd01fd96575",
+      "name": "Publish vda_status_FAILED",
+      "func": "// Timestamp\nlet now = new Date();\nlet timestamp = now.toISOString();\n\n// state bauen\nlet state = flow.get(\"state\");\nstate.headerId = flow.get(\"headerId\");\nstate.loads = flow.get(\"loads\");\nstate.actionState = flow.get(\"actionState\");\nstate.actionState.state = \"FAILED\";\nstate.timestamp = timestamp;\nstate.orderId = flow.get(\"orderId\");\nstate.orderUpdateId = flow.get(\"orderUpdateId\");\nconst flowErrors = flow.get(\"errors\") ?? [];\nstate.errors = Array.isArray(flowErrors) ? flowErrors : [flowErrors];\n\n// flow update\nflow.set(\"headerId\", state.headerId + 1);\n\nmsg.topic = flow.get(\"MQTT_topic\") + \"/state\";\nmsg.payload = state;\nreturn msg;",
+      "outputs": 1,
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 1420,
+      "y": 320,
+      "wires": [
+        [
+          "2935769b6a05b7c7",
+          "761fbdab37b1fd92"
+        ]
+      ]
+    },
+    {
+      "id": "d74d9f7a50e6c58a",
+      "type": "OPCUA-IIoT-Browser",
+      "z": "5fc4fbd01fd96575",
+      "nodeId": "ns=4;i=1",
+      "name": "browse",
+      "justValue": true,
+      "sendNodesToRead": false,
+      "sendNodesToBrowser": false,
+      "sendNodesToListener": true,
+      "multipleOutputs": false,
+      "showStatusActivities": true,
+      "showErrors": true,
+      "recursiveBrowse": false,
+      "recursiveDepth": 1,
+      "delayPerMessage": 0.2,
+      "connector": "dc24d4023df4a98c",
+      "x": 400,
+      "y": 980,
+      "wires": [
+        [
+          "ae2be797c95aff65",
+          "acb934ea79de6d02"
+        ]
+      ]
+    },
+    {
+      "id": "3ae7e19004fce37f",
+      "type": "OPCUA-IIoT-Inject",
+      "z": "5fc4fbd01fd96575",
+      "injectType": "inject",
+      "payload": "{\"interval\":100}",
+      "payloadType": "json",
+      "topic": "",
+      "repeat": "",
+      "crontab": "",
+      "once": true,
+      "startDelay": "10",
+      "name": "inject",
+      "addressSpaceItems": [],
+      "x": 150,
+      "y": 980,
+      "wires": [
+        [
+          "d74d9f7a50e6c58a"
+        ]
+      ]
+    },
+    {
+      "id": "acb934ea79de6d02",
+      "type": "change",
+      "z": "5fc4fbd01fd96575",
+      "name": "BrowserArray",
+      "rules": [
+        {
+          "t": "set",
+          "p": "BrowseArray",
+          "pt": "flow",
+          "to": "payload.browserResults",
+          "tot": "msg"
+        }
+      ],
+      "action": "",
+      "property": "",
+      "from": "",
+      "to": "",
+      "reg": false,
+      "x": 780,
+      "y": 880,
+      "wires": [
+        []
+      ]
+    },
+    {
+      "id": "2214f7baa101d895",
+      "type": "link out",
+      "z": "5fc4fbd01fd96575",
+      "name": "MQTT_retained",
+      "mode": "link",
+      "links": [
+        "1a56d5a4f8592caa"
+      ],
+      "x": 1735,
+      "y": 960,
+      "wires": []
+    },
+    {
+      "id": "6e69d179b76cc20a",
+      "type": "subflow:1b897516f5bf21fa",
+      "z": "5fc4fbd01fd96575",
+      "name": "",
+      "x": 620,
+      "y": 460,
+      "wires": [
+        [
+          "37f95576f2039358"
+        ],
+        [
+          "dd9c46da111f78ed"
+        ],
+        [
+          "761fbdab37b1fd92"
+        ],
+        []
+      ]
+    },
+    {
+      "id": "761fbdab37b1fd92",
+      "type": "link out",
+      "z": "5fc4fbd01fd96575",
+      "name": "MQTT_retained",
+      "mode": "link",
+      "links": [
+        "1a56d5a4f8592caa"
+      ],
+      "x": 1935,
+      "y": 480,
+      "wires": []
+    },
+    {
+      "id": "5fc0321fd93438bb",
+      "type": "subflow:6a25ecd632542087",
+      "z": "5fc4fbd01fd96575",
+      "name": "",
+      "env": [
+        {
+          "name": "FACTSHEET_FILE",
+          "value": "/data/factsheets/factsheet-mill.json",
+          "type": "str"
+        },
+        {
+          "name": "FACTSHEET_FILENAME",
+          "value": "factsheet-mill.json",
+          "type": "str"
+        }
+      ],
+      "x": 150,
+      "y": 60,
+      "wires": [
+        [
+          "7f521eb466112c18"
+        ]
+      ]
+    },
+    {
+      "id": "599fd0682f16bc4a",
+      "type": "function",
+      "z": "5fc4fbd01fd96575",
+      "name": "vda_action factsheetRequest",
+      "func": "/**\n * @typedef {object} ActionState\n * @property {string} id\n * @property {string} state\n * @property {string} command\n * @property {object} [metadata]\n * \n * @param {string} state\n * @returns {ActionState}\n */\nfunction updateActionState(state, metadata = undefined) {\n    const actionState = flow.get(\"actionState\") ?? {};\n    actionState.id = msg.actionId;\n    actionState.state = state;\n    actionState.command = msg.actionCommand;\n    actionState.metadata = metadata ?? undefined;\n    flow.set(\"actionState\", actionState);\n    return actionState;\n}\n\nconst actionState = updateActionState(\"RUNNING\");\n\n// factsheet timestamp aktualisieren\nconst factsheet = flow.get(\"factsheet\");\nfactsheet.timestamp = new Date().toISOString();\nflow.set(\"factsheet\", factsheet);\n\n//publish on topic\nmsg.topic = flow.get(\"MQTT_topic\") + \"/factsheet\";\nmsg.payload = factsheet;\nreturn msg;",
+      "outputs": 1,
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 1240,
+      "y": 420,
+      "wires": [
+        [
+          "d9078bf8e5723ca5",
+          "761fbdab37b1fd92"
+        ]
+      ]
+    },
+    {
+      "id": "d9078bf8e5723ca5",
+      "type": "function",
+      "z": "5fc4fbd01fd96575",
+      "name": "vda_status_finished instantAction",
+      "func": "/**\n * @typedef {object} ActionState\n * @property {string} id\n * @property {string} state\n * @property {string} command\n * @property {object} [metadata]\n * \n * @param {string} state\n * @returns {ActionState}\n */\nfunction updateActionState(state, metadata = undefined) {\n    const actionState = flow.get(\"actionState\") ?? {};\n    actionState.id = msg.actionId;\n    actionState.state = state;\n    actionState.command = msg.actionCommand;\n    actionState.metadata = metadata ?? undefined;\n    flow.set(\"actionState\", actionState);\n    return actionState;\n}\n\nconst actionState = updateActionState(\"FINISHED\");\n\n// state bauen\nlet state = flow.get(\"state\");\nstate.headerId = flow.get(\"headerId\");\nstate.actionState = actionState\nstate.timestamp = new Date().toISOString();\nstate.orderId = actionState.id;\nstate.orderUpdateId = \"0\";\nconst flowErrors = flow.get(\"errors\") ?? [];\nstate.errors = Array.isArray(flowErrors) ? flowErrors : [flowErrors];\n\n// flow update\nflow.set(\"headerId\", state.headerId + 1);\n\nmsg.topic = flow.get(\"MQTT_topic\") + \"/state\";\nmsg.payload = state;\nreturn msg;",
+      "outputs": 1,
+      "noerr": 0,
+      "initialize": "",
+      "finalize": "",
+      "libs": [],
+      "x": 1560,
+      "y": 420,
+      "wires": [
+        [
+          "761fbdab37b1fd92"
+        ]
+      ]
+    },
+    {
+      "id": "dd9c46da111f78ed",
+      "type": "switch",
+      "z": "5fc4fbd01fd96575",
+      "name": "handleInstantAction",
+      "property": "instantAction",
+      "propertyType": "msg",
+      "rules": [
+        {
+          "t": "eq",
+          "v": "factsheetRequest",
+          "vt": "str"
+        }
+      ],
+      "checkall": "true",
+      "repair": false,
+      "outputs": 1,
+      "x": 970,
+      "y": 420,
+      "wires": [
+        [
+          "599fd0682f16bc4a"
+        ]
+      ]
+    },
+    {
+      "id": "a65bbacb093ca7ad",
+      "type": "catch",
+      "z": "5fc4fbd01fd96575",
+      "name": "Catch all Errors",
+      "scope": null,
+      "uncaught": true,
+      "x": 160,
+      "y": 140,
+      "wires": [
+        [
+          "795754639a288c51"
+        ]
+      ]
+    },
+    {
+      "id": "795754639a288c51",
+      "type": "debug",
+      "z": "5fc4fbd01fd96575",
+      "name": "display-error",
+      "active": false,
+      "tosidebar": true,
+      "console": false,
+      "tostatus": false,
+      "complete": "true",
+      "targetType": "full",
+      "statusVal": "",
+      "statusType": "auto",
+      "x": 390,
+      "y": 140,
+      "wires": []
+    },
+    {
+      "id": "beee5c9cf10d8732",
+      "type": "subflow:468f2460ce66f11e",
+      "z": "5fc4fbd01fd96575",
+      "name": "",
+      "x": 650,
+      "y": 580,
+      "wires": [
+        [
+          "761fbdab37b1fd92"
+        ]
+      ]
+    },
+    {
+      "id": "683123e8f9ac550d",
+      "type": "OPCUA-IIoT-Inject",
+      "z": "5fc4fbd01fd96575",
+      "injectType": "read",
+      "payload": "",
+      "payloadType": "date",
+      "topic": "readSerial",
+      "repeat": "15",
+      "crontab": "",
+      "once": true,
+      "startDelay": "20",
+      "name": "serialnumber",
+      "addressSpaceItems": [
+        {
+          "name": "SerialNumber",
+          "nodeId": "ns=3;s=SerialNumber",
+          "datatypeName": "String"
+        },
+        {
+          "name": "model",
+          "nodeId": "ns=4;i=2",
+          "datatypeName": "String"
+        }
+      ],
+      "x": 180,
+      "y": 580,
+      "wires": [
+        [
+          "4dbf24305e1117c1",
+          "beee5c9cf10d8732"
+        ]
+      ]
+    },
+    {
+      "id": "4dbf24305e1117c1",
+      "type": "OPCUA-IIoT-Read",
+      "z": "5fc4fbd01fd96575",
+      "attributeId": "0",
+      "maxAge": 1,
+      "depth": 1,
+      "connector": "dc24d4023df4a98c",
+      "name": "read serialNumber",
+      "justValue": false,
+      "showStatusActivities": true,
+      "showErrors": true,
+      "parseStrings": true,
+      "historyDays": 1,
+      "x": 390,
+      "y": 540,
+      "wires": [
+        [
+          "beee5c9cf10d8732"
+        ]
+      ]
+    },
+    {
+      "id": "34665b2f9ef23118",
+      "type": "OPCUA-IIoT-Inject",
+      "z": "5fc4fbd01fd96575",
+      "injectType": "read",
+      "payload": "",
+      "payloadType": "date",
+      "topic": "readSerial",
+      "repeat": "",
+      "crontab": "",
+      "once": true,
+      "startDelay": "20",
+      "name": "serialnumber",
+      "addressSpaceItems": [
+        {
+          "name": "SerialNumber",
+          "nodeId": "ns=3;s=SerialNumber",
+          "datatypeName": "String"
+        },
+        {
+          "name": "model",
+          "nodeId": "ns=4;i=2",
+          "datatypeName": "String"
+        },
+        {
+          "name": "version",
+          "nodeId": "ns=4;i=21",
+          "datatypeName": "String"
+        }
+      ],
+      "x": 170,
+      "y": 460,
+      "wires": [
+        [
+          "bdecf968fce32409"
+        ]
+      ]
+    }
+  ],
+  "total_tabs": 5,
+  "total_nodes": 171
+}
