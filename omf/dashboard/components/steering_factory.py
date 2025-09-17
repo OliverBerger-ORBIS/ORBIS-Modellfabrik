@@ -49,7 +49,7 @@ def show_factory_steering():
         _show_fts_commands_section(gateway)
 
     # Order Commands Section - Aufklappbare Box
-    with st.expander("📋 ProductionOrders-Befehle", expanded=False):
+    with st.expander("📋 Auftrags-Befehle", expanded=False):
         _show_order_commands_section(gateway)
 
     # Navigation Commands Section - Aufklappbare Box
@@ -265,7 +265,7 @@ def _show_fts_commands_section(gateway: MqttGateway):
 
 
 def _show_order_commands_section(gateway: MqttGateway):
-    """Zeigt ProductionOrders-Befehle"""
+    """Zeigt Auftrags-Befehle"""
     st.markdown("**Aufträge für spezifische Farben senden:**")
 
     col1, col2, col3 = st.columns(3)
@@ -283,11 +283,11 @@ def _show_order_commands_section(gateway: MqttGateway):
                     ensure_order_id=True,
                 )
                 if success:
-                    st.success("✅ ROT ProductionOrder erfolgreich gesendet!")
+                    st.success("✅ ROT Auftrag erfolgreich gesendet!")
                 else:
-                    st.error("❌ Fehler beim Senden des ROT ProductionOrders")
+                    st.error("❌ Fehler beim Senden des ROT Auftrags")
             except Exception as e:
-                st.error(f"❌ Fehler beim ROT ProductionOrder: {e}")
+                st.error(f"❌ Fehler beim ROT Auftrag: {e}")
 
     with col2:
         if st.button("⚪ WEISS", key="order_white"):
@@ -302,11 +302,11 @@ def _show_order_commands_section(gateway: MqttGateway):
                     ensure_order_id=True,
                 )
                 if success:
-                    st.success("✅ WEISS ProductionOrder erfolgreich gesendet!")
+                    st.success("✅ WEISS Auftrag erfolgreich gesendet!")
                 else:
-                    st.error("❌ Fehler beim Senden des WEISS ProductionOrders")
+                    st.error("❌ Fehler beim Senden des WEISS Auftrags")
             except Exception as e:
-                st.error(f"❌ Fehler beim WEISS ProductionOrder: {e}")
+                st.error(f"❌ Fehler beim WEISS Auftrag: {e}")
 
     with col3:
         if st.button("🔵 BLAU", key="order_blue"):
@@ -321,11 +321,11 @@ def _show_order_commands_section(gateway: MqttGateway):
                     ensure_order_id=True,
                 )
                 if success:
-                    st.success("✅ BLAU ProductionOrder erfolgreich gesendet!")
+                    st.success("✅ BLAU Auftrag erfolgreich gesendet!")
                 else:
-                    st.error("❌ Fehler beim Senden des BLAU ProductionOrders")
+                    st.error("❌ Fehler beim Senden des BLAU Auftrags")
             except Exception as e:
-                st.error(f"❌ Fehler beim BLAU ProductionOrder: {e}")
+                st.error(f"❌ Fehler beim BLAU Auftrag: {e}")
 
     st.info("💡 Aufträge werden direkt gesendet (keine Vorschau)")
 

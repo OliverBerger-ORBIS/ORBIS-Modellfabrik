@@ -1,6 +1,6 @@
 """
-OMF Dashboard Overview - Rohmaterial-PurchaseOrderen (Purchase Orders)
-Kopiert aus overview_inventory.py - Sektion 3: PurchaseOrder von Rohmaterial
+OMF Dashboard Overview - Rohmaterial-Bestellungen (Purchase Orders)
+Kopiert aus overview_inventory.py - Sektion 3: Bestellungen von Rohmaterial
 """
 
 import streamlit as st
@@ -19,7 +19,7 @@ except ImportError as e:
 
 
 class OrderManager:
-    """Zentraler Manager für alle Dashboard-relevanten Informationen (PurchaseOrderen, Lagerbestand, etc.)"""
+    """Zentraler Manager für alle Dashboard-relevanten Informationen (Bestellungen, Lagerbestand, etc.)"""
 
     def __init__(self):
         self.inventory = {
@@ -81,7 +81,7 @@ class OrderManager:
             return f"Timestamp: {self.last_update_timestamp}"
 
     def get_available_workpieces(self):
-        """Verfügbare Workpiecee für PurchaseOrderen zurückgeben"""
+        """Verfügbare Werkstücke für Bestellungen zurückgeben"""
         available = {}
         for workpiece_type in self.workpiece_types:
             count = sum(1 for pos, wp in self.inventory.items() if wp == workpiece_type)
@@ -91,7 +91,7 @@ class OrderManager:
 
 
 def process_purchase_order_messages_from_buffers(hbw_messages, order_manager):
-    """Verarbeitet HBW-Nachrichten aus Per-Topic-Buffer für Rohmaterial-PurchaseOrderen"""
+    """Verarbeitet HBW-Nachrichten aus Per-Topic-Buffer für Rohmaterial-Bestellungen"""
     if not hbw_messages:
         return
 
@@ -103,16 +103,16 @@ def process_purchase_order_messages_from_buffers(hbw_messages, order_manager):
 
 
 def show_overview_order_raw():
-    """Zeigt die Rohmaterial-PurchaseOrderen (Purchase Orders) - Kopiert aus overview_inventory.py"""
-    st.subheader("📊 Rohmaterial-PurchaseOrderen (Purchase Orders)")
-    st.info("🔄 Im Lager ist Platz für drei rohe Workpiecee jeder Farbe")
+    """Zeigt die Rohmaterial-Bestellungen (Purchase Orders) - Kopiert aus overview_inventory.py"""
+    st.subheader("📊 Rohmaterial-Bestellungen (Purchase Orders)")
+    st.info("🔄 Im Lager ist Platz für drei rohe Werkstücke jeder Farbe")
 
     # OrderManager aus Session-State holen oder erstellen
     if "order_manager" not in st.session_state:
         st.session_state["order_manager"] = OrderManager()
     order_manager = st.session_state["order_manager"]
 
-    # NEUES PATTERN: Per-Topic-Buffer für Rohmaterial-PurchaseOrderen
+    # NEUES PATTERN: Per-Topic-Buffer für Rohmaterial-Bestellungen
     mqtt_client = st.session_state.get("mqtt_client")
     if mqtt_client:
         # Abonniere die benötigten Topics für Per-Topic-Buffer
@@ -143,7 +143,7 @@ def show_overview_order_raw():
     else:
         st.warning("⚠️ MQTT-Client nicht verfügbar - Lagerbestand wird nicht aktualisiert")
 
-    # Verfügbare Workpiecee berechnen
+    # Verfügbare Werkstücke berechnen
     available_workpieces = order_manager.get_available_workpieces()
     red_count = available_workpieces.get("RED", 0)
     blue_count = available_workpieces.get("BLUE", 0)
@@ -158,7 +158,7 @@ def show_overview_order_raw():
     white_need = MAX_CAPACITY - white_count
 
     # Zeilenweise Darstellung des Bedarfs
-    st.markdown("#### 🔴 Rote Workpiecee")
+    st.markdown("#### 🔴 Rote Werkstücke")
     col1, col2, col3, col4 = st.columns([1, 1, 2, 1])
     with col1:
         if TEMPLATES_AVAILABLE:
@@ -169,12 +169,12 @@ def show_overview_order_raw():
     with col2:
         st.markdown(f"**Bedarf: {red_need} von {MAX_CAPACITY}**")
         if red_need > 0:
-            st.markdown(f"**Noch bestellbar: {red_need} Workpiecee**")
+            st.markdown(f"**Noch bestellbar: {red_need} Werkstücke**")
         else:
             st.success("✅ Vollständig - Kein Bedarf")
     with col3:
         if red_need > 0:
-            # Leere Buckets für fehlende Workpiecee - Template verwenden (große Version)
+            # Leere Buckets für fehlende Werkstücke - Template verwenden (große Version)
             if TEMPLATES_AVAILABLE:
                 empty_buckets = ""
                 for _i in range(red_need):
@@ -197,11 +197,11 @@ def show_overview_order_raw():
     with col4:
         if red_need > 0:
             if st.button("📦 Rohstoff bestellen", key="order_raw_red", type="secondary"):
-                st.info("🔄 PurchaseOrder ROT Rohstoff - Funktion wird implementiert")
+                st.info("🔄 Bestellung ROT Rohstoff - Funktion wird implementiert")
         else:
             st.button("📦 Rohstoff bestellen", key="order_raw_red_disabled", disabled=True)
 
-    st.markdown("#### 🔵 Blaue Workpiecee")
+    st.markdown("#### 🔵 Blaue Werkstücke")
     col1, col2, col3, col4 = st.columns([1, 1, 2, 1])
     with col1:
         if TEMPLATES_AVAILABLE:
@@ -212,12 +212,12 @@ def show_overview_order_raw():
     with col2:
         st.markdown(f"**Bedarf: {blue_need} von {MAX_CAPACITY}**")
         if blue_need > 0:
-            st.markdown(f"**Noch bestellbar: {blue_need} Workpiecee**")
+            st.markdown(f"**Noch bestellbar: {blue_need} Werkstücke**")
         else:
             st.success("✅ Vollständig - Kein Bedarf")
     with col3:
         if blue_need > 0:
-            # Leere Buckets für fehlende Workpiecee - Template verwenden (große Version)
+            # Leere Buckets für fehlende Werkstücke - Template verwenden (große Version)
             if TEMPLATES_AVAILABLE:
                 empty_buckets = ""
                 for _i in range(blue_need):
@@ -240,11 +240,11 @@ def show_overview_order_raw():
     with col4:
         if blue_need > 0:
             if st.button("📦 Rohstoff bestellen", key="order_raw_blue", type="secondary"):
-                st.info("🔄 PurchaseOrder BLUE Rohstoff - Funktion wird implementiert")
+                st.info("🔄 Bestellung BLUE Rohstoff - Funktion wird implementiert")
         else:
             st.button("📦 Rohstoff bestellen", key="order_raw_blue_disabled", disabled=True)
 
-    st.markdown("#### ⚪ Weiße Workpiecee")
+    st.markdown("#### ⚪ Weiße Werkstücke")
     col1, col2, col3, col4 = st.columns([1, 1, 2, 1])
     with col1:
         if TEMPLATES_AVAILABLE:
@@ -255,12 +255,12 @@ def show_overview_order_raw():
     with col2:
         st.markdown(f"**Bedarf: {white_need} von {MAX_CAPACITY}**")
         if white_need > 0:
-            st.markdown(f"**Noch bestellbar: {white_need} Workpiecee**")
+            st.markdown(f"**Noch bestellbar: {white_need} Werkstücke**")
         else:
             st.success("✅ Vollständig - Kein Bedarf")
     with col3:
         if white_need > 0:
-            # Leere Buckets für fehlende Workpiecee - Template verwenden (große Version)
+            # Leere Buckets für fehlende Werkstücke - Template verwenden (große Version)
             if TEMPLATES_AVAILABLE:
                 empty_buckets = ""
                 for _i in range(white_need):
@@ -283,7 +283,7 @@ def show_overview_order_raw():
     with col4:
         if white_need > 0:
             if st.button("📦 Rohstoff bestellen", key="order_raw_white", type="secondary"):
-                st.info("🔄 PurchaseOrder WHITE Rohstoff - Funktion wird implementiert")
+                st.info("🔄 Bestellung WHITE Rohstoff - Funktion wird implementiert")
         else:
             st.button("📦 Rohstoff bestellen", key="order_raw_white_disabled", disabled=True)
 

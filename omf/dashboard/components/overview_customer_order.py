@@ -1,6 +1,6 @@
 """
 OMF Dashboard Overview - Kundenaufträge (Customer Orders)
-Kopiert aus overview_inventory.py - Sektion 2: PurchaseOrderen
+Kopiert aus overview_inventory.py - Sektion 2: Bestellungen
 """
 
 from datetime import datetime, timezone
@@ -23,7 +23,7 @@ except ImportError as e:
 
 
 class OrderManager:
-    """Zentraler Manager für alle Dashboard-relevanten Informationen (PurchaseOrderen, Lagerbestand, etc.)"""
+    """Zentraler Manager für alle Dashboard-relevanten Informationen (Bestellungen, Lagerbestand, etc.)"""
 
     def __init__(self):
         self.inventory = {
@@ -83,7 +83,7 @@ class OrderManager:
             return f"Timestamp: {self.last_update_timestamp}"
 
     def get_available_workpieces(self):
-        """Verfügbare Workpiecee für PurchaseOrderen zurückgeben"""
+        """Verfügbare Werkstücke für Bestellungen zurückgeben"""
         available = {}
         for workpiece_type in self.workpiece_types:
             count = sum(1 for pos, wp in self.inventory.items() if wp == workpiece_type)
@@ -144,8 +144,8 @@ def show_overview_order():
     else:
         st.warning("⚠️ MQTT-Client nicht verfügbar - Lagerbestand wird nicht aktualisiert")
 
-    # PurchaseOrderen
-    st.markdown("### 🛒 PurchaseOrderen")
+    # Bestellungen
+    st.markdown("### 🛒 Bestellungen")
 
     available_workpieces = order_manager.get_available_workpieces()
 
@@ -222,7 +222,7 @@ def show_overview_order():
 
 
 def _send_order_directly(color: str):
-    """Sendet PurchaseOrder direkt ohne Bestätigung - basierend auf steering_factory.py"""
+    """Sendet Bestellung direkt ohne Bestätigung - basierend auf steering_factory.py"""
     try:
         mqtt_client = st.session_state.get("mqtt_client")
         if not mqtt_client or not mqtt_client.connected:
@@ -241,10 +241,10 @@ def _send_order_directly(color: str):
         result = mqtt_client.publish(topic, payload, qos=1, retain=False)
 
         if result:
-            st.success(f"✅ PurchaseOrder für {color} erfolgreich gesendet!")
+            st.success(f"✅ Bestellung für {color} erfolgreich gesendet!")
             request_refresh()  # Seite aktualisieren
         else:
-            st.error("❌ Fehler beim Senden der PurchaseOrder")
+            st.error("❌ Fehler beim Senden der Bestellung")
 
     except Exception as e:
-        st.error(f"❌ Fehler beim Senden der PurchaseOrder: {e}")
+        st.error(f"❌ Fehler beim Senden der Bestellung: {e}")

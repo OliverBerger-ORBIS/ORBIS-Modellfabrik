@@ -194,13 +194,13 @@ def analyze_ccu_state_data(state_data):
                     "has_workpiece": bool(workpiece.get("id", "")),
                 }
 
-                # Workpiece-Analyse
+                # Werkstück-Analyse
                 if workpiece.get("id", ""):
                     stock_analysis["occupied_slots"] += 1
                     workpiece_type = workpiece.get("type", "UNKNOWN")
                     workpiece_state = workpiece.get("state", "UNKNOWN")
 
-                    # Workpiece-Typen zählen
+                    # Werkstück-Typen zählen
                     if workpiece_type not in stock_analysis["workpiece_types"]:
                         stock_analysis["workpiece_types"][workpiece_type] = 0
                     stock_analysis["workpiece_types"][workpiece_type] += 1
@@ -301,11 +301,11 @@ def show_ccu_state():
                 utilization = analysis.get("utilization_percentage", 0)
                 st.write(f"**Utilization:** {utilization}%")
 
-            # Workpiece-Typen
+            # Werkstück-Typen
             stock_analysis = analysis.get("stock_analysis", {})
             workpiece_types = stock_analysis.get("workpiece_types", {})
             if workpiece_types:
-                st.markdown("### 🎨 Workpiece Types")
+                st.markdown("### 🎨 Werkstück-Typen")
                 col5, col6 = st.columns(2)
 
                 with col5:

@@ -17,8 +17,8 @@ def show_production_order_current():
     st.markdown("- **Aktive Aufträge:** Anzeige aller laufenden Fertigungsaufträge")
     st.markdown("- **Fortschrittsanzeige:** Visueller Fortschritt der Produktionsschritte")
     st.markdown("- **Modul-Status:** Welche Module sind aktuell beschäftigt")
-    st.markdown("- **Workpiece-Verfolgung:** Position der Workpiecee in der Fabrik")
-    st.markdown("- **Echtzeit-Updates:** Live-Aktualisierung der ProductionOrdersstatus")
+    st.markdown("- **Werkstück-Verfolgung:** Position der Werkstücke in der Fabrik")
+    st.markdown("- **Echtzeit-Updates:** Live-Aktualisierung der Auftragsstatus")
 
     # Beispiel-Daten für zukünftige Implementierung
     st.markdown("### Beispiel-Aufträge (Mock-Daten):")
