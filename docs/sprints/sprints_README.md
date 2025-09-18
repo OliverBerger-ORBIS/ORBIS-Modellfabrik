@@ -20,6 +20,12 @@ Jeder Sprint beschreibt Ziele, Änderungen, Tests und offene Punkte.
 ---
 
 ## 📌 Hinweise
-- Alle Sprints folgen einer einheitlichen Struktur (Scope, Goals, Changes, Validation, Issues, Next Steps).
-- Neue Sprints werden in diesem Verzeichnis als `sprint_X.md` abgelegt.
-- Dieses Index-Dokument dient als Einstiegspunkt für alle Entwickler und Reviewer.
+- **Schlanke Dokumentation:** Minimaler Overhead, fokussiert auf Stakeholder-Reporting
+- **2-Wochen-Zyklen:** Regelmäßige Fortschrittsdokumentation
+- **Templates:** `sprint_template.md` für neue Sprints, `stakeholder_report_template.md` für externe Berichte
+- **Decision Records:** Wichtige Entscheidungen in `docs/03-decision-records/`
+
+## 📋 Templates
+- **[Sprint Template](sprint_template.md)** - Für neue Sprints
+- **[Stakeholder Report Template](stakeholder_report_template.md)** - Für externe Berichte
+- **[Decision Record Template](../03-decision-records/decision_template.md)** - Für wichtige Entscheidungen
