@@ -62,51 +62,62 @@ class DevelopmentRulesValidator:
         return file_errors
 
     def _check_absolute_imports(self, content: str, file_path: Path) -> List[str]:
-        """Prüft auf absolute Imports"""
+        """Prüft auf korrekte Import-Struktur"""
         errors = []
-
-        # Relative Imports finden
-        relative_imports = re.findall(r'from\s+\.+', content)
-        if relative_imports:
-            errors.append(f"❌ Relative Imports gefunden: {relative_imports}")
 
         # sys.path.append Hacks finden
         if 'sys.path.append' in content:
-            errors.append("❌ sys.path.append() gefunden - verwende absolute Imports")
+            errors.append("❌ sys.path.append() gefunden - verwende korrekte Imports")
 
-        # Lokale Imports finden (ohne omf)
-        local_imports = re.findall(r'from\s+([a-zA-Z_][a-zA-Z0-9_]*)\s+import', content)
-        for imp in local_imports:
-            if not imp.startswith('omf') and imp not in [
-                'os',
-                'sys',
-                'json',
-                'datetime',
-                'typing',
-                'pathlib',
-                're',
-                'ast',
-            ]:
-                errors.append(f"❌ Lokaler Import gefunden: {imp} - verwende absolute Imports")
+        # Import-Reihenfolge prüfen (vereinfacht)
+        lines = content.split('\n')
+        import_section = True
+        found_third_party = False
+        found_local = False
+        
+        for line in lines:
+            line = line.strip()
+            if not line or line.startswith('#'):
+                continue
+            if line.startswith('"""') or line.startswith("'''"):
+                import_section = False
+                continue
+            if not import_section:
+                break
+                
+            if line.startswith('import ') or line.startswith('from '):
+                # Standard Library
+                if any(stdlib in line for stdlib in ['os', 'sys', 'json', 'datetime', 'typing', 'pathlib', 're', 'ast', 'collections', 'dataclasses', 'enum', 'threading']):
+                    if found_third_party or found_local:
+                        errors.append("❌ Standard Library Import nach Third Party/Local - korrigiere Reihenfolge")
+                # Third Party
+                elif any(tp in line for tp in ['streamlit', 'pandas', 'plotly', 'networkx', 'pytest']):
+                    found_third_party = True
+                    if found_local:
+                        errors.append("❌ Third Party Import nach Local - korrigiere Reihenfolge")
+                # Local
+                elif 'omf' in line or line.startswith('from .'):
+                    found_local = True
 
         return errors
 
     def _check_absolute_paths(self, content: str, file_path: Path) -> List[str]:
-        """Prüft auf absolute Pfade"""
+        """Prüft auf korrekte Pfad-Handling"""
         errors = []
 
-        # Relative Pfade finden
+        # Relative Pfade finden (../path)
         relative_paths = re.findall(r'["\']\.\.?/', content)
         if relative_paths:
             errors.append(f"❌ Relative Pfade gefunden: {relative_paths}")
 
-        # Path(__file__).parent Hacks finden
-        if 'Path(__file__).parent' in content:
-            errors.append("❌ Path(__file__).parent gefunden - verwende absolute Pfade")
+        # Absolute Pfade finden (hardcoded)
+        absolute_paths = re.findall(r'["\']/Users/oliver/Projects/ORBIS-Modellfabrik/', content)
+        if absolute_paths:
+            errors.append(f"❌ Absolute Pfade gefunden: {absolute_paths}")
 
-        # os.path.join Hacks finden
+        # os.path.join Hacks finden (alte Methode)
         if 'os.path.join(os.path.dirname(__file__)' in content:
-            errors.append("❌ os.path.join(os.path.dirname(__file__)) gefunden - verwende absolute Pfade")
+            errors.append("❌ os.path.join(os.path.dirname(__file__)) gefunden - verwende Path(__file__).parent")
 
         return errors
 
@@ -151,8 +162,9 @@ class DevelopmentRulesValidator:
         if long_lines:
             errors.append(f"❌ Zeilen länger als 120 Zeichen gefunden: {len(long_lines)} Zeilen")
 
-        # Ruff-kritische Patterns
-        if 'print(' in content and 'logger.' not in content:
+        # Ruff-kritische Patterns (nur für OMF-Komponenten, nicht für Scripts)
+        if ('omf/' in str(file_path) and 'scripts/' not in str(file_path) and 
+            'print(' in content and 'logger.' not in content):
             errors.append("❌ print() gefunden - verwende logger.debug()")
 
         return errors

@@ -368,9 +368,11 @@ def save_session():
         session_directory = settings_manager.get_session_recorder_directory()
         # recording_settings = settings_manager.get_setting("session_recorder", "recording", {})  # Unused for now
 
-        # Session-Verzeichnis erstellen (absoluten Pfad verwenden)
+        # Session-Verzeichnis erstellen (moderne Paket-Struktur)
         if not Path(session_directory).is_absolute():
-            project_root = Path(__file__).parent.parent.parent.parent.parent.parent
+            # Paket-relative Pfade verwenden
+            # Projekt-Root-relative Pfade für Nutz-Daten verwenden
+            project_root = Path(__file__).parent.parent.parent.parent.parent
             session_dir = project_root / session_directory
         else:
             session_dir = Path(session_directory)

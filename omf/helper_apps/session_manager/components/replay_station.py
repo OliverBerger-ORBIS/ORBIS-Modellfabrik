@@ -1,4 +1,3 @@
-from omf.tools.logging_config import get_logger
 """
 Replay Station Komponente
 Funktionalität wie alte Replay Station - MQTT-Nachrichten für Tests senden
@@ -16,6 +15,7 @@ from pathlib import Path
 import streamlit as st
 
 from omf.dashboard.utils.ui_refresh import RerunController
+from omf.tools.logging_config import get_logger
 
 # Logging konfigurieren - Verzeichnis sicherstellen
 # Log-Verzeichnis erstellen falls nicht vorhanden
@@ -248,9 +248,10 @@ def get_session_files(session_directory: str = "data/omf-data/sessions"):
     """Session-Dateien aus konfiguriertem Verzeichnis laden - nur .db Dateien"""
     logger.debug(f"🔍 get_session_files: Suche in {session_directory}")
 
-    # Absoluten Pfad verwenden (relativ zum Projekt-Root)
+    # Moderne Paket-Struktur - State of the Art
     if not Path(session_directory).is_absolute():
-        # Wenn relativer Pfad, dann relativ zum Projekt-Root
+        # Projekt-Root-relative Pfade für Nutz-Daten verwenden
+        # Von omf/helper_apps/session_manager/components/ -> Projekt-Root
         project_root = Path(__file__).parent.parent.parent.parent.parent
         session_dir = project_root / session_directory
     else:

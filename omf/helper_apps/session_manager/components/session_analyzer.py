@@ -1,16 +1,15 @@
-from omf.tools.logging_config import get_logger
 """
 Session Analyzer - Core functionality for session data analysis
 """
 
 import json
-import logging
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Dict, List
 
 import streamlit as st
 
+from omf.tools.logging_config import get_logger
 from omf.tools.topic_manager import OmfTopicManager
 
 logger = get_logger(__name__)
@@ -29,9 +28,10 @@ class SessionAnalyzer:
         try:
             logger.info(f"Lade Session-Daten: {session_file_path}")
 
-            # Session-Verzeichnis verwenden falls angegeben (absoluten Pfad verwenden)
+            # Session-Verzeichnis verwenden falls angegeben (moderne Paket-Struktur)
             if session_directory and not Path(session_file_path).is_absolute():
                 if not Path(session_directory).is_absolute():
+                    # Projekt-Root-relative Pfade für Nutz-Daten verwenden
                     project_root = Path(__file__).parent.parent.parent.parent.parent
                     full_path = project_root / session_directory / session_file_path
                 else:

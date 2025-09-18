@@ -1,4 +1,3 @@
-from omf.tools.logging_config import get_logger
 """
 Graph Analyzer - Message Chain Analysis and Graph Visualization
 
@@ -7,13 +6,14 @@ und erstellt gerichtete Graphen für die Visualisierung.
 """
 
 import json
-import logging
 from collections import defaultdict
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 import networkx as nx
+
+from omf.tools.logging_config import get_logger
 
 logger = get_logger(__name__)
 

@@ -1,10 +1,7 @@
-from omf.tools.logging_config import get_logger
 """
 Session Analysis - Main controller for session analysis functionality
 Refactored version with separated components
 """
-
-import logging
 
 import streamlit as st
 
@@ -13,6 +10,7 @@ from omf.helper_apps.session_manager.components.session_analyzer import SessionA
 from omf.helper_apps.session_manager.components.settings_manager import SettingsManager
 from omf.helper_apps.session_manager.components.timeline_visualizer import TimelineVisualizer
 from omf.helper_apps.session_manager.components.ui_components import SessionAnalysisUI
+from omf.tools.logging_config import get_logger
 
 logger = get_logger(__name__)
 

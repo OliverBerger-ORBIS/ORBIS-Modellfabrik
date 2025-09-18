@@ -11,9 +11,9 @@ from typing import Dict, List, Tuple
 import pandas as pd
 import streamlit as st
 
+from omf.dashboard.utils.ui_refresh import request_refresh
 from omf.helper_apps.session_manager.components.session_analyzer import SessionAnalyzer
 from omf.helper_apps.session_manager.components.topic_manager import TopicFilterManager
-from omf.dashboard.utils.ui_refresh import request_refresh
 from omf.tools.logging_config import get_logger
 
 logger = get_logger("session_manager.ui_components")
@@ -38,8 +38,10 @@ class SessionAnalysisUI:
             session_directory = settings_manager.get_session_directory()
 
         logger.debug(f"Verwende Session-Verzeichnis: {session_directory}")
-        # Absoluten Pfad verwenden, relativ zum Projekt-Root
+        # Moderne Paket-Struktur - State of the Art
         if not Path(session_directory).is_absolute():
+            # Paket-relative Pfade verwenden - Sessions sind im Projekt-Root
+            # Von omf/helper_apps/session_manager/components/ -> Projekt-Root
             project_root = Path(__file__).parent.parent.parent.parent.parent
             sessions_dir = project_root / session_directory
         else:
@@ -47,7 +49,8 @@ class SessionAnalysisUI:
 
         if sessions_dir.exists():
             session_files = list(sessions_dir.glob("*.log"))
-            session_options = ["demo"] + [str(f) for f in session_files]
+            # Nur Dateinamen verwenden, nicht absolute Pfade (konsistent mit anderen Tabs)
+            session_options = ["demo"] + [f.name for f in session_files]
             logger.debug(f"Gefundene Session-Dateien: {len(session_files)}")
         else:
             session_options = ["demo"]
@@ -91,7 +94,11 @@ class SessionAnalysisUI:
 
         # Session laden Button
         if st.button("📊 Session laden", type="primary"):
-            return selected_session
+            # Vollständigen Pfad zurückgeben (konsistent mit anderen Tabs)
+            if selected_session == "demo":
+                return selected_session
+            else:
+                return str(sessions_dir / selected_session)
 
         return None
 

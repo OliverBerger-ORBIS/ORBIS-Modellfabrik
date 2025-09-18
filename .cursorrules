@@ -3,16 +3,18 @@
 ## 🎯 ZENTRALE ENTWICKLUNGSREGELN
 
 ### Import-Standards (KRITISCH)
-- **NUR absolute Imports:** `from src_orbis.omf.module import Class`
-- **KEINE relativen Imports:** `from ..module import Class` ❌
+- **Absolute Imports für externe Module:** `from omf.tools.logging_config import get_logger` ✅
+- **Relative Imports für Paket-interne Module:** `from .graph_analyzer import GraphAnalyzer` ✅
+- **Standard Library Imports:** `import json, from pathlib import Path` ✅
 - **KEINE sys.path.append Hacks:** `sys.path.append(...)` ❌
-- **KEINE lokalen Imports:** `from module import Class` ❌
+- **Import-Reihenfolge:** Standard Library → Third Party → Local (absolute) → Local (relative)
 
 ### Pfad-Standards (KRITISCH)
-- **NUR absolute Pfade:** `/Users/oliver/Projects/ORBIS-Modellfabrik/path/to/file`
+- **Source-Pfade (Paket-relativ):** `Path(__file__).parent` für Paket-interne Pfade ✅
+- **Data-Pfade (Projekt-root-relativ):** `project_root / "data/omf-data/sessions"` für Nutzdaten ✅
+- **KEINE absoluten Pfade:** `/Users/oliver/Projects/ORBIS-Modellfabrik/path/to/file` ❌
 - **KEINE relativen Pfade:** `../path/to/file` ❌
-- **KEINE Path(__file__).parent Hacks:** `Path(__file__).parent.parent` ❌
-- **KEINE os.path.join Hacks:** `os.path.join(os.path.dirname(__file__), ...)` ❌
+- **Unterscheidung:** Source-Pfade vs. Data-Pfade je nach Verwendungszweck
 
 ### Projekt-Struktur
 - **Aktive Sourcen:** `src_orbis/omf/dashboard/` (Produktiv-Dashboard)
@@ -103,8 +105,8 @@
 - **Bei Unsicherheit:** User fragen, nicht raten
 
 ### ZWINGENDE REGELN (NIEMALS IGNORIEREN)
-- **Absolute Imports:** `from src_orbis.omf.module import Class`
-- **Absolute Pfade:** `/Users/oliver/Projects/ORBIS-Modellfabrik/path/to/file`
+- **Import-Struktur:** Korrekte Reihenfolge und Paket-relative Imports
+- **Pfad-Handling:** Source-Pfade (paket-relativ) vs. Data-Pfade (projekt-root-relativ)
 - **OMF-Logging:** `get_logger("module.component")` statt `logging.getLogger()`
 - **UI-Refresh:** `request_refresh()` statt `st.rerun()`
 - **Pre-commit:** Black (120 Zeichen), Ruff, Tests

@@ -9,6 +9,8 @@ from pathlib import Path
 
 import streamlit as st
 
+from omf.dashboard.utils.ui_refresh import consume_refresh, request_refresh
+
 # Import components
 from omf.helper_apps.session_manager.components.auftrag_rot_analyzer import show_auftrag_rot_analysis
 from omf.helper_apps.session_manager.components.logs import show_logs
@@ -19,7 +21,6 @@ from omf.helper_apps.session_manager.components.session_recorder import show_ses
 from omf.helper_apps.session_manager.components.settings_manager import SettingsManager
 from omf.helper_apps.session_manager.components.settings_ui import SettingsUI
 from omf.helper_apps.session_manager.components.template_analysis import show_template_analysis
-from omf.dashboard.utils.ui_refresh import consume_refresh, request_refresh
 from omf.tools.logging_config import configure_logging, get_logger
 from omf.tools.registry_manager import get_registry
 

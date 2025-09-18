@@ -1,4 +1,3 @@
-from omf.tools.logging_config import get_logger
 """
 Graph Visualizer - Interactive Graph Visualization for Message Chains
 
@@ -6,7 +5,6 @@ Erstellt interaktive Graphen für die Visualisierung von Message-Ketten
 mit verschiedenen Layout-Algorithmen und Filteroptionen.
 """
 
-import logging
 from datetime import datetime
 from typing import Any, Dict, List
 
@@ -15,6 +13,8 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
+
+from omf.tools.logging_config import get_logger
 
 from .graph_analyzer import GraphAnalyzer, MessageNode
 

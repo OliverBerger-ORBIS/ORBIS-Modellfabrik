@@ -1,13 +1,13 @@
-from omf.tools.logging_config import get_logger
 """
 Settings Manager für Session Manager
 Zentrale Verwaltung aller Einstellungen für die verschiedenen Tabs
 """
 
 import json
-import logging
 from pathlib import Path
 from typing import Any, Dict, List
+
+from omf.tools.logging_config import get_logger
 
 logger = get_logger(__name__)
 
@@ -16,11 +16,11 @@ class SettingsManager:
     """Zentrale Verwaltung aller Session Manager Einstellungen"""
 
     def __init__(self, settings_file: str = "session_manager_settings.json"):
-        # Absoluten Pfad verwenden, relativ zum Projekt-Root
+        # Moderne Paket-Struktur - State of the Art
         if not Path(settings_file).is_absolute():
-            # Gehe 4 Ebenen hoch vom aktuellen Verzeichnis zum Projekt-Root
-            project_root = Path(__file__).parent.parent.parent.parent.parent
-            self.settings_file = project_root / settings_file
+            # Paket-relative Pfade verwenden
+            package_dir = Path(__file__).parent.parent
+            self.settings_file = package_dir / settings_file
         else:
             self.settings_file = Path(settings_file)
         self.settings = self._load_settings()

@@ -46,5 +46,8 @@
   "template_analysis": {
     "show_payload_preview": true,
     "max_payload_length": 200
+  },
+  "test": {
+    "value": "test_value"
   }
 }

@@ -1,21 +1,18 @@
-from omf.tools.logging_config import get_logger
 """
 Template Analyse Komponente
 Analyse aller APS-Sessions mit Fokus auf bestimmte Topics
 """
 
-import logging
 from pathlib import Path
 from typing import Any, Dict
 
 import streamlit as st
 
 from omf.analysis_tools.template_analyzers.ccu_template_analyzer import CCUTemplateAnalyzer
-
-# Import bestehende Template-Analyser
 from omf.analysis_tools.template_analyzers.module_template_analyzer import ModuleTemplateAnalyzer
 from omf.analysis_tools.template_analyzers.nodered_template_analyzer import NodeRedTemplateAnalyzer
 from omf.analysis_tools.template_analyzers.txt_template_analyzer import TXTTemplateAnalyzer
+from omf.tools.logging_config import get_logger
 
 logger = get_logger(__name__)
 
@@ -173,12 +170,12 @@ def display_category_templates(templates: Dict[str, Any]):
 def copy_template_to_observations(template_name: str, template_info: Dict[str, Any]):
     """Exportiert Template nach data/observations/"""
     try:
-        # Projekt-Root-relative Pfade verwenden
-        current_dir = Path(__file__).parent
-        project_root = current_dir.parent.parent.parent.parent.parent.parent
+        # Moderne Paket-Struktur - State of the Art
 
-        # Observations Templates-Verzeichnis
-        observations_templates_dir = project_root / "data" / "observations" / "generated_templates"
+        # Observations Templates-Verzeichnis (temporär in data/omf-data/observations/)
+        # Später: registry/observations/ (mit Workflow)
+        project_root = Path(__file__).parent.parent.parent.parent.parent
+        observations_templates_dir = project_root / "data" / "omf-data" / "observations" / "generated_templates"
         observations_templates_dir.mkdir(parents=True, exist_ok=True)
 
         # Template-Datei erstellen
@@ -223,12 +220,11 @@ def copy_template_to_observations(template_name: str, template_info: Dict[str, A
 def copy_observations_to_registry():
     """Kopiert alle Templates von data/observations nach registry/"""
     try:
-        # Projekt-Root-relative Pfade verwenden
-        current_dir = Path(__file__).parent
-        project_root = current_dir.parent.parent.parent.parent.parent.parent
+        # Moderne Paket-Struktur - State of the Art
 
         # Quell- und Ziel-Verzeichnisse
-        source_dir = project_root / "data" / "observations" / "generated_templates"
+        project_root = Path(__file__).parent.parent.parent.parent.parent
+        source_dir = project_root / "data" / "omf-data" / "observations" / "generated_templates"
         target_dir = project_root / "registry" / "model" / "v1" / "templates"
 
         if not source_dir.exists():
@@ -255,12 +251,11 @@ def copy_observations_to_registry():
 def display_observations_templates():
     """Zeigt eine Übersicht der Observations-Templates"""
     try:
-        # Projekt-Root-relative Pfade verwenden
-        current_dir = Path(__file__).parent
-        project_root = current_dir.parent.parent.parent.parent.parent.parent
+        # Moderne Paket-Struktur - State of the Art
 
         # Observations Templates-Verzeichnis
-        observations_dir = project_root / "data" / "observations" / "generated_templates"
+        project_root = Path(__file__).parent.parent.parent.parent.parent
+        observations_dir = project_root / "data" / "omf-data" / "observations" / "generated_templates"
 
         if not observations_dir.exists():
             st.info("📁 Keine Observations-Templates gefunden. Führen Sie zuerst eine Template-Analyse durch.")
