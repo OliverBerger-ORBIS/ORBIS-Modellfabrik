@@ -1,0 +1,20 @@
+stateDiagram-v2
+    [*] --> IDLE
+
+    %% AIQS Module Status Transitions
+    IDLE -->|PICK Command| PICKBUSY
+    PICKBUSY -->|PICK Complete| WAITING_AFTER_PICK
+    WAITING_AFTER_PICK -->|FIRE Command| FIREBUSY
+    FIREBUSY -->|FIRE Complete| WAITING_AFTER_FIRE
+    WAITING_AFTER_FIRE -->|DROP Command| DROPBUSY
+    DROPBUSY -->|DROP Complete| IDLE
+
+    %% Error States
+    PICKBUSY -->|Error| FAILED
+    FIREBUSY -->|Error| FAILED
+    DROPBUSY -->|Error| FAILED
+    FAILED -->|Reset| IDLE
+
+    %% Calibration
+    IDLE -->|Calibration| CALIBRATION
+    CALIBRATION -->|Complete| IDLE

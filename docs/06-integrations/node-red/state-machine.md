@@ -1,304 +1,240 @@
-# State Machine Documentation
+# State Machine - Fischertechnik APS
 
-This document describes the **VDA 5050 compliant state machine** implemented in the Orbis Agile Production Simulation system.
+## Overview
 
-## 🔄 State Machine Overview
+Die Fischertechnik APS implementiert eine VDA 5050-konforme State Machine.
+Jedes Produktionsmodul durchläuft definierte Zustände und Übergänge.
 
-The system implements a sophisticated state machine that manages the lifecycle of production actions, module connections, and error conditions. This follows the **VDA 5050 standard** for autonomous mobile robots and industrial automation.
+## State Diagram
 
-## 📊 Action States
+```mermaid
+stateDiagram-v2
+    [*] --> IDLE
 
-### **Primary Action States**
+    %% Module States
+    IDLE --> CALIBRATION
+    IDLE --> DROPBUSY
+    IDLE --> FIREBUSY
+    IDLE --> MILLBUSY
+    IDLE --> PICKBUSY
+    IDLE --> WAITING
+    IDLE --> WAITING_AFTER_FIRE
+    IDLE --> WAITING_AFTER_MILL
+    IDLE --> WAITING_AFTER_PICK
 
-| State | Description | Color | Next States |
-|-------|-------------|-------|-------------|
-| **PENDING** | Action received, waiting to start | 🟡 Yellow | RUNNING, FAILED |
-| **RUNNING** | Action currently executing | 🟡 Yellow | FINISHED, FAILED |
-| **FINISHED** | Action completed successfully | 🟢 Green | PENDING |
-| **FAILED** | Action failed with errors | 🔴 Red | PENDING |
-
-### **State Transition Flow**
-
-```
-PENDING → RUNNING → FINISHED
-    ↓         ↓
-  FAILED ← FAILED
-```
-
-### **State Implementation**
-
-#### **PENDING State**
-```javascript
-// Action received and validated
-actionState.state = "PENDING";
-actionState.command = msg.order ?? msg.instantAction;
-actionState.id = msg.actionId;
-```
-
-#### **RUNNING State**
-```javascript
-// Action execution started
-actionState.state = "RUNNING";
-// Update timestamp and metadata
-state.timestamp = new Date().toISOString();
+    %% State Transitions
+    PICKBUSY --> WAITING_AFTER_PICK
+    MILLBUSY --> WAITING_AFTER_MILL
+    DROPBUSY --> IDLE
+    FIREBUSY --> WAITING_AFTER_FIRE
+    WAITING_AFTER_PICK --> MILLBUSY
+    WAITING_AFTER_PICK --> FIREBUSY
+    WAITING_AFTER_MILL --> DROPBUSY
+    WAITING_AFTER_FIRE --> DROPBUSY
+    CALIBRATION --> IDLE
 ```
 
-#### **FINISHED State**
-```javascript
-// Action completed successfully
-actionState.state = "FINISHED";
-// Clear order ID, update loads
-flow.set("$parent.orderId", "0");
+## Module States
+
+### Primary States
+
+- **CALIBRATION** - Module is in calibration mode
+- **DROPBUSY** - Module is executing DROP operation
+- **FIREBUSY** - Module is executing FIRE operation
+- **IDLE** - Module is idle and ready for commands
+- **MILLBUSY** - Module is executing MILL operation
+- **PICKBUSY** - Module is executing PICK operation
+- **WAITING** - Module is waiting for next operation
+- **WAITING_AFTER_FIRE** - Module waiting after FIRE completion
+- **WAITING_AFTER_MILL** - Module waiting after MILL completion
+- **WAITING_AFTER_PICK** - Module waiting after PICK completion
+
+## Action States
+
+### VDA 5050 Compliant
+
+- **FAILED** - Action failed with error
+- **FINISHED** - Action completed successfully
+- **PENDING** - Action is queued and waiting to start
+- **RUNNING** - Action is currently executing
+
+## Commands
+
+### Available Commands
+
+- **CALIBRATION** - Calibrate module to reference position
+- **DRILL** - Execute drilling operation on workpiece
+- **DROP** - Drop workpiece to output position
+- **FIRE** - Execute firing operation (AIQS module)
+- **MILL** - Execute milling operation on workpiece
+- **PICK** - Pick up workpiece from input position
+
+## State Transitions
+
+### Typical Production Flow
+
+1. **IDLE** → **PICKBUSY** (Start PICK operation)
+2. **PICKBUSY** → **WAITING_AFTER_PICK** (PICK completed)
+3. **WAITING_AFTER_PICK** → **MILLBUSY** (Start MILL operation)
+4. **MILLBUSY** → **WAITING_AFTER_MILL** (MILL completed)
+5. **WAITING_AFTER_MILL** → **DROPBUSY** (Start DROP operation)
+6. **DROPBUSY** → **IDLE** (DROP completed)
+
+## Error Handling
+
+### Error States
+
+- **FAILED** - Operation failed
+- **CONNECTIONBROKEN** - OPC-UA connection lost
+- **TIMEOUT** - Operation timeout
+
+### Recovery Procedures
+
+1. **State Reset** - Return to IDLE state
+2. **Connection Retry** - Reconnect to OPC-UA server
+3. **Operation Retry** - Retry failed operation
+4. **Error Logging** - Log error details
+
+## MILL Module Status Transitions
+
+```mermaid
+stateDiagram-v2
+    [*] --> IDLE
+
+    %% MILL Module Status Transitions
+    IDLE -->|PICK Command| PICKBUSY
+    PICKBUSY -->|PICK Complete| WAITING_AFTER_PICK
+    WAITING_AFTER_PICK -->|MILL Command| MILLBUSY
+    MILLBUSY -->|MILL Complete| WAITING_AFTER_MILL
+    WAITING_AFTER_MILL -->|DROP Command| DROPBUSY
+    DROPBUSY -->|DROP Complete| IDLE
+
+    %% Error States
+    PICKBUSY -->|Error| FAILED
+    MILLBUSY -->|Error| FAILED
+    DROPBUSY -->|Error| FAILED
+    FAILED -->|Reset| IDLE
+
+    %% Calibration
+    IDLE -->|Calibration| CALIBRATION
+    CALIBRATION -->|Complete| IDLE
 ```
 
-#### **FAILED State**
-```javascript
-// Action failed
-actionState.state = "FAILED";
-// Collect errors
-state.errors = flowErrors ? Array.isArray(flowErrors) ? flowErrors : [flowErrors] : [];
+## DRILL Module Status Transitions
+
+```mermaid
+stateDiagram-v2
+    [*] --> IDLE
+
+    %% DRILL Module Status Transitions
+    IDLE -->|PICK Command| PICKBUSY
+    PICKBUSY -->|PICK Complete| WAITING_AFTER_PICK
+    WAITING_AFTER_PICK -->|DRILL Command| DRILLBUSY
+    DRILLBUSY -->|DRILL Complete| WAITING_AFTER_DRILL
+    WAITING_AFTER_DRILL -->|DROP Command| DROPBUSY
+    DROPBUSY -->|DROP Complete| IDLE
+
+    %% Error States
+    PICKBUSY -->|Error| FAILED
+    DRILLBUSY -->|Error| FAILED
+    DROPBUSY -->|Error| FAILED
+    FAILED -->|Reset| IDLE
+
+    %% Calibration
+    IDLE -->|Calibration| CALIBRATION
+    CALIBRATION -->|Complete| IDLE
 ```
 
-## 🔌 Connection States
+## AIQS Module Status Transitions
 
-### **Connection State Types**
+```mermaid
+stateDiagram-v2
+    [*] --> IDLE
 
-| State | Description | Color | Trigger |
-|-------|-------------|-------|---------|
-| **ONLINE** | Module connected and operational | 🟢 Green | Successful OPC-UA connection |
-| **OFFLINE** | Module disconnected | 🔴 Red | Manual disconnect |
-| **CONNECTIONBROKEN** | Connection lost unexpectedly | 🔴 Red | Network timeout |
+    %% AIQS Module Status Transitions
+    IDLE -->|PICK Command| PICKBUSY
+    PICKBUSY -->|PICK Complete| WAITING_AFTER_PICK
+    WAITING_AFTER_PICK -->|FIRE Command| FIREBUSY
+    FIREBUSY -->|FIRE Complete| WAITING_AFTER_FIRE
+    WAITING_AFTER_FIRE -->|DROP Command| DROPBUSY
+    DROPBUSY -->|DROP Complete| IDLE
 
-### **Connection State Implementation**
+    %% Error States
+    PICKBUSY -->|Error| FAILED
+    FIREBUSY -->|Error| FAILED
+    DROPBUSY -->|Error| FAILED
+    FAILED -->|Reset| IDLE
 
-```javascript
-// MQTT Birth/Will messages
-birthPayload: "{\"connectionState\":\"ONLINE\"}"
-willPayload: "{\"connectionState\":\"CONNECTIONBROKEN\"}"
-closePayload: "{\"connectionState\":\"OFFLINE\"}"
+    %% Calibration
+    IDLE -->|Calibration| CALIBRATION
+    CALIBRATION -->|Complete| IDLE
 ```
 
-## 🏭 Module States
+## DPS Module Status Transitions
 
-### **Module Operating States**
+```mermaid
+stateDiagram-v2
+    [*] --> IDLE
 
-| State | Description | Behavior |
-|-------|-------------|----------|
-| **IDLE** | Ready for new orders | Accepts new orders |
-| **BUSY** | Processing current order | Rejects new orders |
-| **ERROR** | Error condition | Requires reset |
+    %% DPS Module Status Transitions
+    IDLE -->|PICK Command| PICKBUSY
+    PICKBUSY -->|PICK Complete| WAITING
+    WAITING -->|DROP Command| DROPBUSY
+    DROPBUSY -->|DROP Complete| IDLE
 
-### **Module State Transitions**
+    %% Error States
+    PICKBUSY -->|Error| FAILED
+    DROPBUSY -->|Error| FAILED
+    FAILED -->|Reset| IDLE
 
-```
-IDLE → BUSY → IDLE
-  ↓      ↓
-ERROR ← ERROR
-```
-
-## 🎯 State Management Functions
-
-### **Action State Update Function**
-
-```javascript
-function updateActionState(state, metadata = undefined) {
-    const actionState = flow.get("$parent.actionState") ?? {};
-    actionState.id = msg.actionId ?? actionState.id;
-    actionState.state = state;
-    actionState.command = msg.actionCommand ?? actionState.command;
-    actionState.metadata = metadata ?? actionState.metadata ?? {};
-    flow.set("$parent.actionState", actionState);
-    return actionState;
-}
+    %% Calibration
+    IDLE -->|Calibration| CALIBRATION
+    CALIBRATION -->|Complete| IDLE
 ```
 
-### **State Creation Function**
+## HBW Module Status Transitions
 
-```javascript
-function createState(actionState, loads = undefined) {
-    const state = flow.get("$parent.state");
-    const timestamp = new Date().toISOString();
-    const headerId = flow.get("$parent.headerId");
+```mermaid
+stateDiagram-v2
+    [*] --> IDLE
 
-    state.headerId = headerId;
-    state.loads = loads ?? state.loads ?? [];
-    state.actionState = actionState;
-    state.timestamp = timestamp;
-    state.orderId = flow.get("$parent.orderId");
-    state.orderUpdateId = flow.get("$parent.orderUpdateId");
-    state.errors = [];
-    state.paused = msg.modulePaused ?? state.paused;
-    state.operatingMode = msg.operatingMode ?? state.operatingMode;
+    %% HBW Module Status Transitions
+    IDLE -->|PICK Command| PICKBUSY
+    PICKBUSY -->|PICK Complete| WAITING
+    WAITING -->|DROP Command| DROPBUSY
+    DROPBUSY -->|DROP Complete| IDLE
 
-    // Increment header ID
-    flow.set("$parent.headerId", headerId + 1);
-    flow.set("$parent.state", state);
-    return state;
-}
+    %% Error States
+    PICKBUSY -->|Error| FAILED
+    DROPBUSY -->|Error| FAILED
+    FAILED -->|Reset| IDLE
+
+    %% Calibration
+    IDLE -->|Calibration| CALIBRATION
+    CALIBRATION -->|Complete| IDLE
 ```
 
-## 🔍 State Validation
+## OVEN Module Status Transitions
 
-### **Order ID Validation**
+```mermaid
+stateDiagram-v2
+    [*] --> IDLE
 
-```javascript
-function isMatchingOrderId() {
-    const existingOrderId = flow.get("$parent.orderId");
-    const actionState = flow.get("$parent.actionState.state");
+    %% OVEN Module Status Transitions
+    IDLE -->|PICK Command| PICKBUSY
+    PICKBUSY -->|PICK Complete| WAITING_AFTER_PICK
+    WAITING_AFTER_PICK -->|FIRE Command| FIREBUSY
+    FIREBUSY -->|FIRE Complete| WAITING_AFTER_FIRE
+    WAITING_AFTER_FIRE -->|DROP Command| DROPBUSY
+    DROPBUSY -->|DROP Complete| IDLE
 
-    if (actionState == "FINISHED" || actionState == "FAILED") {
-        flow.set("$parent.orderId", msg.orderId);
-        return msg;
-    }
+    %% Error States
+    PICKBUSY -->|Error| FAILED
+    FIREBUSY -->|Error| FAILED
+    DROPBUSY -->|Error| FAILED
+    FAILED -->|Reset| IDLE
 
-    if (msg.orderId == existingOrderId || existingOrderId == "0") {
-        flow.set("$parent.orderId", msg.orderId);
-        return msg;
-    }
-
-    // Error: OrderId not valid
-    return [null, msg];
-}
+    %% Calibration
+    IDLE -->|Calibration| CALIBRATION
+    CALIBRATION -->|Complete| IDLE
 ```
-
-### **Serial Number Validation**
-
-```javascript
-function matchesSerialNumber() {
-    const serialNumber = flow.get("$parent.serialNumber") ?? "MISSING-SERIALNUMBER";
-    if (msg.serialNumber != serialNumber) {
-        // Error: SerialNumber does not match
-        return [null, msg];
-    }
-    return msg;
-}
-```
-
-## 🚨 Error Handling
-
-### **Error Types**
-
-| Error Type | Level | Description |
-|------------|-------|-------------|
-| **Validation** | WARNING | Malformed messages, invalid parameters |
-| **Connection** | WARNING | Network issues, OPC-UA failures |
-| **Operation** | FATAL | Failed actions, hardware errors |
-| **System** | FATAL | Critical system failures |
-
-### **Error Structure**
-
-```javascript
-const error = {
-    timestamp: new Date().toISOString(),
-    errorType: "PICK_failed",
-    errorMessage: "PICK failed",
-    errorLevel: "FATAL",
-    errorReferences: [
-        { "topic": "order" },
-        { "headerId": flow.get("headerId") },
-        { "orderId": msg.orderId },
-        { "orderUpdateId": msg.orderUpdateId }
-    ]
-};
-```
-
-## 📡 State Publishing
-
-### **MQTT State Topics**
-
-- `module/v1/ff/{serialNumber}/state` - Action state updates
-- `module/v1/ff/{serialNumber}/connection` - Connection state updates
-
-### **State Message Format**
-
-```javascript
-{
-    "headerId": 123,
-    "timestamp": "2024-01-15T10:30:00.000Z",
-    "serialNumber": "FF22-001",
-    "actionState": {
-        "id": "action-456",
-        "state": "RUNNING",
-        "command": "PICK",
-        "metadata": {}
-    },
-    "loads": [],
-    "errors": [],
-    "paused": false,
-    "operatingMode": "AUTOMATIC"
-}
-```
-
-## 🔧 State Machine Subflows
-
-### **VDA Status Finished InstantAction**
-- **Purpose**: Handle successful action completion
-- **Input**: Action completion message
-- **Output**: FINISHED state message
-- **Color**: 🟢 Green
-
-### **VDA Status Running InstantAction**
-- **Purpose**: Handle action execution start
-- **Input**: Action start message
-- **Output**: RUNNING state message
-- **Color**: 🟡 Yellow
-
-### **VDA Status Failed InstantAction**
-- **Purpose**: Handle action failures
-- **Input**: Error message
-- **Output**: FAILED state message
-- **Color**: 🔴 Red
-
-## 🎛️ State Monitoring
-
-### **Status Indicators**
-
-- **Node Status**: Visual indicators in Node-RED UI
-- **MQTT Messages**: Real-time state updates
-- **Error Logs**: Detailed error tracking
-- **Performance Metrics**: State transition timing
-
-### **Debug Functions**
-
-```javascript
-// Status update
-node.status({ 
-    shape: "dot", 
-    fill: "green", 
-    text: `${parentFlowName} / ${actionState.command}: ${actionState.state}` 
-});
-
-// Debug output
-msg.topic = flow.get("$parent.MQTT_topic") + "/state";
-msg.payload = state;
-```
-
-## 🔄 State Recovery
-
-### **Recovery Mechanisms**
-
-1. **Automatic Recovery**: Retry failed actions
-2. **Manual Reset**: Clear error states
-3. **State Reset**: Reset to IDLE state
-4. **Connection Recovery**: Reconnect to OPC-UA
-
-### **Recovery Functions**
-
-```javascript
-// Reset to IDLE
-flow.set("$parent.moduleState", "IDLE");
-flow.set("$parent.errors", []);
-
-// Clear action state
-flow.set("$parent.actionState", {});
-```
-
----
-
-## 📁 Folder Organization
-
-This documentation is part of the Orbis customizations (`docs-orbis/`) and documents the state machine implementation found in the original Fischertechnik Node-RED flows located in the `Node-RED/` folder.
-
----
-
-*This state machine implementation follows VDA 5050 standards and provides robust error handling and recovery mechanisms for industrial automation.* 

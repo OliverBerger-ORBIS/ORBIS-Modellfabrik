@@ -1,0 +1,17 @@
+stateDiagram-v2
+    [*] --> IDLE
+
+    %% DPS Module Status Transitions
+    IDLE -->|PICK Command| PICKBUSY
+    PICKBUSY -->|PICK Complete| WAITING
+    WAITING -->|DROP Command| DROPBUSY
+    DROPBUSY -->|DROP Complete| IDLE
+
+    %% Error States
+    PICKBUSY -->|Error| FAILED
+    DROPBUSY -->|Error| FAILED
+    FAILED -->|Reset| IDLE
+
+    %% Calibration
+    IDLE -->|Calibration| CALIBRATION
+    CALIBRATION -->|Complete| IDLE

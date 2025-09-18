@@ -1,0 +1,41 @@
+graph TD
+    ROOT[ROOT]
+
+    subgraph "Module Topics"
+        MODULE["module/v1/ff/"]
+        SERIAL["serialNumber"]
+        STATE["/state"]
+        ORDER["/order"]
+        CONNECTION["/connection"]
+        INSTANTACTION["/instantAction"]
+    end
+
+    subgraph "CCU Topics"
+        CCU["ccu/"]
+        GLOBAL["global"]
+        ORDERREQ["order/request"]
+        ORDERACT["order/active"]
+    end
+
+    subgraph "System Topics"
+        SYSTEM["system/"]
+        RACK["rack.positions"]
+        SERIALREAD["readSerial"]
+    end
+
+    ROOT --> MODULE
+    ROOT --> CCU
+    ROOT --> SYSTEM
+
+    MODULE --> SERIAL
+    SERIAL --> STATE
+    SERIAL --> ORDER
+    SERIAL --> CONNECTION
+    SERIAL --> INSTANTACTION
+
+    CCU --> GLOBAL
+    CCU --> ORDERREQ
+    CCU --> ORDERACT
+
+    SYSTEM --> RACK
+    SYSTEM --> SERIALREAD
