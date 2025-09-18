@@ -3,6 +3,7 @@ SequenceDefinition - YML und Python Sequenz-Definitionen
 Lädt und verwaltet Sequenz-Definitionen aus verschiedenen Quellen
 """
 
+from pathlib import Path
 import os
 from typing import Any, Dict, Optional
 
@@ -13,12 +14,11 @@ try:
 except ImportError:
     from sequence_executor import SequenceDefinition, SequenceStep
 
-
 class SequenceDefinitionLoader:
     """Lädt Sequenz-Definitionen aus YML und Python"""
 
     def __init__(self, base_path: str = None):
-        self.base_path = base_path or os.path.join(os.path.dirname(__file__), "..", "config", "sequence_definitions")
+        self.base_path = base_path or str(Path(__file__).parent / ".." / "config" / "sequence_definitions")
         self.sequences: Dict[str, SequenceDefinition] = {}
         self._load_all_sequences()
 
@@ -108,11 +108,10 @@ class SequenceDefinitionLoader:
         self.sequences.clear()
         self._load_all_sequences()
 
-
 # Beispiel YML-Sequenz-Definitionen erstellen
 def create_example_sequences():
     """Erstellt Beispiel-Sequenz-Definitionen"""
-    base_path = os.path.join(os.path.dirname(__file__), "..", "config", "sequence_definitions")
+    base_path = str(Path(__file__).parent / ".." / "config" / "sequence_definitions")
     os.makedirs(base_path, exist_ok=True)
 
     # MILL-Sequenz Beispiel
@@ -189,11 +188,10 @@ def create_example_sequences():
     with open(yml_path, "w", encoding="utf-8") as f:
         yaml.dump(drill_sequence, f, default_flow_style=False, allow_unicode=True)
 
-
 # Beispiel Python-Sequenz-Definition
 def create_example_python_sequence():
     """Erstellt eine Beispiel Python-Sequenz-Definition"""
-    base_path = os.path.join(os.path.dirname(__file__), "..", "config", "sequence_definitions")
+    base_path = str(Path(__file__).parent / ".." / "config" / "sequence_definitions")
     os.makedirs(base_path, exist_ok=True)
 
     python_code = '''"""
@@ -202,7 +200,6 @@ Demonstriert komplexe Logik und dynamische Payloads
 """
 
 from omf.tools.sequence_executor import SequenceDefinition, SequenceStep
-
 
 def get_sequence_definition():
     """Gibt die AIQS-Sequenz-Definition zurück"""
@@ -279,7 +276,6 @@ def get_sequence_definition():
     python_path = os.path.join(base_path, "aiqs_sequence.py")
     with open(python_path, "w", encoding="utf-8") as f:
         f.write(python_code)
-
 
 if __name__ == "__main__":
     # Beispiel-Sequenzen erstellen

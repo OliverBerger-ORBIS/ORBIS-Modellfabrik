@@ -7,7 +7,6 @@ import streamlit as st
 
 from omf.dashboard.utils.ui_refresh import request_refresh
 
-
 def show_dashboard_settings():
     """Zeigt Dashboard-Einstellungen"""
     st.subheader("⚙️ Dashboard-Einstellungen")

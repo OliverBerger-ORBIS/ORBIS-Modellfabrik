@@ -3,13 +3,12 @@ OMF Dashboard Settings - NFC-Konfiguration
 Exakte Kopie der show_nfc_config() Funktion aus settings.py
 """
 
+from pathlib import Path
 import streamlit as st
 
 from omf.tools.nfc_manager import get_omf_nfc_manager
 
 # Add omf to path for imports
-# sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", ".."))  # Nicht mehr nötig nach pip install -e .
-
 
 def show_nfc_config():
     """Zeigt NFC-Konfiguration - Exakte Kopie aus settings.py"""

@@ -14,7 +14,6 @@ from omf.tools.logging_config import get_logger
 # Import validators
 from omf.tools.validators import validate as run_validation
 
-
 class OmfMessageTemplateManager:
     """Verwaltet modulare MQTT Message Templates"""
 
@@ -304,10 +303,8 @@ class OmfMessageTemplateManager:
             "warnings": [w["msg"] for w in result["warnings"]],
         }
 
-
 # Singleton instance
 _template_manager_instance = None
-
 
 def get_omf_message_template_manager() -> OmfMessageTemplateManager:
     """Get singleton instance of OMFMessageTemplateManager"""
@@ -315,7 +312,6 @@ def get_omf_message_template_manager() -> OmfMessageTemplateManager:
     if _template_manager_instance is None:
         _template_manager_instance = OmfMessageTemplateManager()
     return _template_manager_instance
-
 
 # Backward compatibility functions
 def get_message_template_manager() -> OmfMessageTemplateManager:

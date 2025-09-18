@@ -3,8 +3,8 @@ OMF Dashboard Settings - MQTT-Konfiguration
 Exakte Kopie der show_mqtt_config Funktion aus settings.py
 """
 
+from pathlib import Path
 import streamlit as st
-
 
 def show_mqtt_config():
     """Zeigt die MQTT-Broker Konfiguration an"""
@@ -31,10 +31,9 @@ def show_mqtt_config():
         import os
         import sys
 
-        tools_path = os.path.join(os.path.dirname(__file__), "..", "..", "tools")
+        tools_path = str(Path(__file__).parent / ".." / ".." / "tools")
         if tools_path not in sys.path:
-            # sys.path.append(tools_path)  # Nicht mehr nötig nach pip install -e .
-            pass
+                        pass
 
         # Verwende Dashboard MQTT-Client
         mqtt_client = st.session_state.get("mqtt_client")

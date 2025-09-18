@@ -6,8 +6,8 @@ Spezifischer Analyzer für BME680 Topics, die Base64-kodierte Bilddaten enthalte
 Diese Topics sind nicht für normale Template-Analyse geeignet.
 """
 
+from pathlib import Path
 import os
-import sys
 import sqlite3
 import glob
 import json
@@ -19,11 +19,9 @@ import io
 from PIL import Image
 
 # Add project root to path for absolute imports
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
-sys.path.insert(0, project_root)
+project_root = os.path.abspath(str(Path(__file__).parent / "../../.."))
 
 # No registry manager needed for BME680 analysis
-
 
 class Bme680TemplateAnalyzer:
     """Analyzer für BME680 Topics mit Sensordaten (Temperatur, Luftfeuchtigkeit, Luftdruck)"""
@@ -341,7 +339,6 @@ class Bme680TemplateAnalyzer:
         
         print("✅ BME680 Template Analyse erfolgreich abgeschlossen!")
         print("🎉 Script erfolgreich beendet!")
-
 
 if __name__ == "__main__":
     analyzer = Bme680TemplateAnalyzer()

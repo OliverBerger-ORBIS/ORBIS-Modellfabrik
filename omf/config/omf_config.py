@@ -85,7 +85,6 @@ TRANSLATIONS = {
     },
 }
 
-
 class OmfConfig:
     """OMF Dashboard Konfigurationsklasse"""
 
@@ -146,7 +145,6 @@ class OmfConfig:
         """Holt den Namen eines Moduls"""
         module_config = self.get(f"modules.{module_id}", {})
         return module_config.get("name", module_id.upper())
-
 
 # Globale Konfigurationsinstanz
 config = OmfConfig()

@@ -23,7 +23,6 @@ try:
 except ImportError:
     _HAS_RICH = False
 
-
 def configure_logging(
     app_name: str = "omf_dashboard",
     level: int = logging.INFO,
@@ -120,11 +119,9 @@ def configure_logging(
 
     return root, listener
 
-
 def get_logger(name: str) -> logging.Logger:
     """Hilfsfunktion um Logger zu erhalten"""
     return logging.getLogger(name)
-
 
 def configure_structlog() -> object | None:
     """
@@ -152,7 +149,6 @@ def configure_structlog() -> object | None:
         return structlog.get_logger()
     except ImportError:
         return None
-
 
 def init_logging_once(session_state: dict) -> tuple[logging.Logger, QueueListener | None]:
     """

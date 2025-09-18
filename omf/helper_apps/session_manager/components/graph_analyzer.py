@@ -17,7 +17,6 @@ from omf.tools.logging_config import get_logger
 
 logger = get_logger(__name__)
 
-
 @dataclass
 class MessageNode:
     """Repräsentiert einen Knoten im Message-Graph"""
@@ -32,7 +31,6 @@ class MessageNode:
     module_id: Optional[str] = None
     message_type: Optional[str] = None
 
-
 @dataclass
 class MessageEdge:
     """Repräsentiert eine Kante im Message-Graph"""
@@ -42,7 +40,6 @@ class MessageEdge:
     connection_type: str  # 'order_id', 'workpiece_id', 'nfc_code', 'temporal'
     weight: float = 1.0
     metadata: Dict[str, Any] = None
-
 
 class GraphAnalyzer:
     """Analysiert Message-Ketten und erstellt Graphen für Visualisierung"""

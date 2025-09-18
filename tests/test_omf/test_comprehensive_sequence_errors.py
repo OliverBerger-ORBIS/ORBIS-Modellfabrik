@@ -2,14 +2,11 @@
 Umfassender Test für alle möglichen SequenceDefinition.get() Fehler
 """
 
-import os
-import sys
+from pathlib import Path
 import unittest
 from unittest.mock import Mock, patch
 
 # Pfad für Imports
-# sys.path.append(os.path.join(os.path.dirname(__file__), "..", "omf"))  # Nicht mehr nötig nach pip install -e .
-
 
 class TestComprehensiveSequenceErrors(unittest.TestCase):
     """Umfassender Test für alle möglichen Fehler"""
@@ -243,7 +240,6 @@ class TestComprehensiveSequenceErrors(unittest.TestCase):
 
         except Exception as e:
             self.fail(f"YML-Sequenzen Sicherheit Test fehlgeschlagen: {e}")
-
 
 if __name__ == "__main__":
     # Test Suite ausführen

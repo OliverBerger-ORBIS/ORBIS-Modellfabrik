@@ -10,7 +10,6 @@ from unittest.mock import MagicMock, patch
 
 from omf.tools.logging_config import configure_logging
 
-
 class TestLoggingConfig(unittest.TestCase):
     """Tests für Logging-Konfiguration"""
 
@@ -136,7 +135,6 @@ class TestLoggingConfig(unittest.TestCase):
         # Extra-Daten werden nicht in JSON-Adapter gespeichert
         # self.assertIn("key", content)
         # self.assertIn("value", content)
-
 
 if __name__ == "__main__":
     unittest.main()

@@ -13,7 +13,6 @@ from .overview_module_status import show_overview_module_status
 from .overview_product_catalog import show_overview_product_catalog
 from .overview_purchase_order import show_overview_order_raw
 
-
 def show_overview():
     """Hauptfunktion für die Übersicht mit Untertabs"""
     st.header("📊 Übersicht (Overview)")

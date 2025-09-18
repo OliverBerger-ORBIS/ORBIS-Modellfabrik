@@ -1,14 +1,11 @@
-import os
-import sys
+from pathlib import Path
 
 # Workspace-Root zum sys.path hinzufügen, damit omf als Package gefunden wird
-WORKSPACE_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
+WORKSPACE_ROOT = os.path.abspath(str(Path(__file__).parent / ".." / ".." / ".."))
 if WORKSPACE_ROOT not in sys.path:
-    sys.path.insert(0, WORKSPACE_ROOT)
-import pytest
+    import pytest
 
 from omf.helper_apps.seq_ctrl_copilot.sequence_control_orbis import WorkflowOrderManager
-
 
 @pytest.fixture
 def manager():
@@ -16,13 +13,11 @@ def manager():
     WorkflowOrderManager._instance = None
     return WorkflowOrderManager.get_instance()
 
-
 def test_start_sequence(manager):
     seq = [{"name": "Step1", "topic": "t1", "payload": {}}]
     manager.start_sequence("order_test", seq)
     assert "order_test" in manager.sequences
     assert manager.sequences["order_test"]["current_step"] == 0
-
 
 def test_next_step(manager):
     seq = [{"name": "Step1", "topic": "t1", "payload": {}}, {"name": "Step2", "topic": "t2", "payload": {}}]
@@ -30,14 +25,12 @@ def test_next_step(manager):
     manager.next_step("order_test")
     assert manager.sequences["order_test"]["current_step"] == 1
 
-
 def test_abort_sequence(manager):
     seq = [{"name": "Step1", "topic": "t1", "payload": {}}]
     manager.start_sequence("order_test", seq)
     manager.abort_sequence("order_test")
     assert manager.sequences["order_test"]["aborted"] is True
     assert manager.sequences["order_test"]["status"] == "aborted"
-
 
 def test_get_current_step(manager):
     seq = [{"name": "Step1", "topic": "t1", "payload": {}}, {"name": "Step2", "topic": "t2", "payload": {}}]
@@ -51,13 +44,11 @@ def test_get_current_step(manager):
     manager.next_step("order_test")
     assert manager.get_current_step("order_test") is None
 
-
 def test_start_empty_sequence(manager):
     seq = []
     manager.start_sequence("order_empty", seq)
     assert manager.sequences["order_empty"]["steps"] == []
     assert manager.get_current_step("order_empty") is None
-
 
 def test_restart_sequence_same_id(manager):
     seq1 = [{"name": "Step1", "topic": "t1", "payload": {}}]
@@ -66,7 +57,6 @@ def test_restart_sequence_same_id(manager):
     manager.start_sequence("order_dup", seq2)
     # Prüft, ob die zweite Sequenz übernommen wurde
     assert manager.sequences["order_dup"]["steps"][0]["name"] == "Step2"
-
 
 def test_next_step_past_end(manager):
     seq = [{"name": "Step1", "topic": "t1", "payload": {}}]
@@ -77,7 +67,6 @@ def test_next_step_past_end(manager):
     assert manager.sequences["order_end"]["current_step"] > len(seq) - 1
     assert manager.sequences["order_end"]["status"] == "finished"
 
-
 def test_abort_after_finish(manager):
     seq = [{"name": "Step1", "topic": "t1", "payload": {}}]
     manager.start_sequence("order_abort_finish", seq)
@@ -86,11 +75,9 @@ def test_abort_after_finish(manager):
     # Status sollte nicht mehr "aborted" sein, wenn bereits "finished"
     assert manager.sequences["order_abort_finish"]["status"] in ["finished", "aborted"]
 
-
 def test_get_status_invalid_id(manager):
     with pytest.raises(KeyError):
         manager.get_status("unknown_id")
-
 
 def test_multiple_sequences(manager):
     seq1 = [{"name": "A", "topic": "t1", "payload": {}}]
@@ -99,7 +86,6 @@ def test_multiple_sequences(manager):
     manager.start_sequence("order2", seq2)
     assert manager.get_current_step("order1")["name"] == "A"
     assert manager.get_current_step("order2")["name"] == "B"
-
 
 def test_placeholder():
     pass

@@ -1,24 +1,20 @@
-import os
-import sys
 from pathlib import Path
 from typing import Dict, List, Optional
 
 import yaml
 
 # Add the omf directory to the Python path
-current_dir = os.path.dirname(os.path.abspath(__file__))
-omf_path = os.path.join(current_dir, "..", "..", "..")
-if omf_path not in sys.path:
-    sys.path.insert(0, omf_path)
-
+current_dir = Path(__file__).parent
+omf_path = current_dir.parent.parent.parent
+if str(omf_path) not in sys.path:
+    
 try:
     from omf.config.config_loader import OmfConfig
 except ImportError:
     # Fallback für Tests
     class OmfConfig:
         def get_config_path(self):
-            return os.path.join(os.path.dirname(__file__), "..", "config")
-
+            return str(Path(__file__).parent.parent / "config")
 
 class TopicMappingManager:
     """Verwaltet das Mapping zwischen MQTT-Topics und Message-Templates"""
@@ -111,10 +107,8 @@ class TopicMappingManager:
         mapping = self.topic_mappings.get(topic)
         return mapping.get("variable_fields", {}) if mapping else {}
 
-
 # Singleton-Instanz
 _topic_mapping_manager = None
-
 
 def get_omf_topic_mapping_manager() -> TopicMappingManager:
     """Gibt die Singleton-Instanz des TopicMappingManager zurück"""

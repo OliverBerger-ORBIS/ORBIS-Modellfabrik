@@ -5,15 +5,12 @@ Prüft die neu erstellten Komponenten: overview_product_catalog, production_orde
 Version: 3.3.0
 """
 
-import sys
 import unittest
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 # Add project root to path
 project_root = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(project_root))
-
 
 class TestNewDashboardComponents(unittest.TestCase):
     """Test-Klasse für neue Dashboard-Komponenten"""
@@ -184,7 +181,6 @@ class TestNewDashboardComponents(unittest.TestCase):
         except Exception as e:
             self.fail(f"❌ Shopfloor Layout Loading failed: {e}")
 
-
 class TestNewDashboardYAMLConfigs(unittest.TestCase):
     """Test-Klasse für neue Dashboard YAML-Konfigurationen"""
 
@@ -261,7 +257,6 @@ class TestNewDashboardYAMLConfigs(unittest.TestCase):
             print("✅ Shopfloor Layout YAML-Struktur: OK")
         except Exception as e:
             self.fail(f"❌ Shopfloor Layout YAML-Struktur failed: {e}")
-
 
 if __name__ == "__main__":
     print("🧪 Running New Dashboard Component Tests...")

@@ -5,15 +5,12 @@ Zeigt die Generierung von FTS-MQTT-Messages aus YAML-Routen
 """
 
 import json
-import sys
 from pathlib import Path
 
 from omf.tools.fts_route_generator import FTSRouteGenerator
 
 # Add project root to path
 project_root = Path(__file__).parent.parent
-sys.path.insert(0, str(project_root))
-
 
 def main():
     """Hauptfunktion für FTS Route Generator Beispiel"""
@@ -96,7 +93,6 @@ def main():
         print(f"  - {route_id}: {status}")
 
     print("\n🎉 Beispiel abgeschlossen!")
-
 
 if __name__ == "__main__":
     main()

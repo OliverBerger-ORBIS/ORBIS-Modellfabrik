@@ -29,7 +29,6 @@ logging.basicConfig(
 )
 logger = get_logger(__name__)
 
-
 def show_replay_station():
     """Replay Station Tab - Fokussiert auf wesentliche Funktionen"""
 
@@ -175,7 +174,6 @@ def show_replay_station():
         if st.button("📡 Test 3", key="quick_test_3"):
             send_test_message("test/quick/3", {"id": 3, "data": "Hello World"})
 
-
 def test_mqtt_connection(host, port, rerun_controller: RerunController):
     """MQTT Verbindung testen mit mosquitto_pub"""
     try:
@@ -202,13 +200,11 @@ def test_mqtt_connection(host, port, rerun_controller: RerunController):
         rerun_controller.request_rerun()  # UI sofort aktualisieren
         return False
 
-
 def disconnect_mqtt(rerun_controller: RerunController):
     """MQTT Verbindung trennen"""
     st.session_state.mqtt_connected = False
     st.success("✅ Verbindung getrennt")
     rerun_controller.request_rerun()  # UI sofort aktualisieren
-
 
 def send_test_message(topic, payload):
     """Test-Nachricht mit mosquitto_pub senden"""
@@ -242,7 +238,6 @@ def send_test_message(topic, payload):
         st.session_state.mqtt_connected = False
         st.error(f"❌ Fehler beim Senden: {e}")
 
-
 # Session Replay Funktionen
 def get_session_files(session_directory: str = "data/omf-data/sessions"):
     """Session-Dateien aus konfiguriertem Verzeichnis laden - nur .db Dateien"""
@@ -275,7 +270,6 @@ def get_session_files(session_directory: str = "data/omf-data/sessions"):
 
     return sorted(session_files, key=lambda x: x.name)
 
-
 def filter_sessions(session_files, regex_filter):
     """Sessions nach Regex-Filter filtern"""
     if not regex_filter:
@@ -286,7 +280,6 @@ def filter_sessions(session_files, regex_filter):
         return [f for f in session_files if pattern.search(f.name)]
     except re.error:
         return session_files
-
 
 def load_session(session_file):
     """Session laden und in Session State speichern"""
@@ -311,7 +304,6 @@ def load_session(session_file):
     except Exception as e:
         st.error(f"❌ Fehler beim Laden: {e}")
 
-
 def load_sqlite_session(session_file):
     """SQLite Session laden"""
     try:
@@ -332,7 +324,6 @@ def load_sqlite_session(session_file):
     except Exception:
         return []
 
-
 def load_log_session(session_file):
     """Log Session laden"""
     try:
@@ -351,7 +342,6 @@ def load_log_session(session_file):
         return messages
     except Exception:
         return []
-
 
 def show_replay_controls(rerun_controller: RerunController):
     """Replay-Kontrollen anzeigen"""
@@ -509,7 +499,6 @@ def show_replay_controls(rerun_controller: RerunController):
         time.sleep(0.1)  # Kürzere Wartezeit für bessere Responsivität
         rerun_controller.request_rerun()
 
-
 def start_replay():
     """Replay starten"""
     if 'loaded_session' not in st.session_state:
@@ -532,14 +521,12 @@ def start_replay():
     st.success("▶️ Replay gestartet")
     logger.debug("▶️ Replay gestartet")
 
-
 def pause_replay():
     """Replay pausieren"""
     if 'loaded_session' in st.session_state:
         st.session_state.loaded_session["is_playing"] = False
         logger.debug("⏸️ Replay pausiert")
         st.info("⏸️ Replay pausiert")
-
 
 def stop_replay():
     """Replay stoppen"""
@@ -550,7 +537,6 @@ def stop_replay():
         logger.debug("⏹️ Replay gestoppt")
         st.info("⏹️ Replay gestoppt")
 
-
 def reset_replay():
     """Replay zurücksetzen"""
     if 'loaded_session' in st.session_state:
@@ -559,7 +545,6 @@ def reset_replay():
         session["current_index"] = 0
         logger.debug("🔄 Replay zurückgesetzt")
         st.info("🔄 Replay zurückgesetzt")
-
 
 def replay_worker(session_data):
     """Replay Worker Thread"""
@@ -614,7 +599,6 @@ def replay_worker(session_data):
     except Exception as e:
         logger.error(f"❌ Loop/Ende Fehler: {e}")
         pass
-
 
 def send_replay_message(topic, payload):
     """Replay-Nachricht senden"""

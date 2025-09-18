@@ -12,11 +12,10 @@ import pandas as pd
 import streamlit as st
 import yaml
 
-
 def get_module_icon_path(module_id):
     """Gibt den Pfad zum Modul-Icon zurück (wie ORBIS-Logo)"""
     # Assets-Verzeichnis
-    assets_dir = os.path.join(os.path.dirname(__file__), "..", "assets")
+    assets_dir = str(Path(__file__).parent / ".." / "assets")
 
     # Icon-Mapping
     icon_mapping = {
@@ -35,7 +34,6 @@ def get_module_icon_path(module_id):
     icon_file = icon_mapping.get(module_id, "machine_icon.png")
     return os.path.join(assets_dir, icon_file)
 
-
 def display_module_icon(module_id, width=60, caption=""):
     """Zeigt ein Modul-Icon an (wie ORBIS-Logo)"""
     icon_path = get_module_icon_path(module_id)
@@ -47,14 +45,12 @@ def display_module_icon(module_id, width=60, caption=""):
         if caption:
             st.caption(caption)
 
-
 def show_shopfloor_layout():
     """Zeigt das 4x3 Grid Layout des Shopfloors"""
     st.subheader("🗺️ Shopfloor-Layout (4x3 Grid)")
 
     # Shopfloor Grid anzeigen
     show_shopfloor_grid()
-
 
 def show_shopfloor_grid():
     """Zeigt das 4x3 Grid mit Modulen aus layout.yml"""
@@ -97,7 +93,6 @@ def show_shopfloor_grid():
                 else:
                     st.info("Leer")
 
-
 def load_shopfloor_layout():
     """Lädt das Shopfloor-Layout aus der YAML-Datei"""
     try:
@@ -107,7 +102,6 @@ def load_shopfloor_layout():
     except Exception as e:
         st.error(f"❌ Fehler beim Laden des Shopfloor-Layouts: {e}")
         return None
-
 
 def show_grid_visualization():
     """Visualisiert das 4x3 Grid mit Modulen"""
@@ -134,7 +128,6 @@ def show_grid_visualization():
     st.subheader("📋 ASCII-Layout")
     show_ascii_layout()
 
-
 def create_grid_matrix(positions: List[Dict[str, Any]]) -> List[List[str]]:
     """Erstellt eine 3x4 Matrix für die Grid-Darstellung"""
     matrix = [["" for _ in range(4)] for _ in range(3)]
@@ -157,7 +150,6 @@ def create_grid_matrix(positions: List[Dict[str, Any]]) -> List[List[str]]:
                     matrix[row][col] = "⬜ Leer"
 
     return matrix
-
 
 def show_grid_with_icons(positions: List[Dict[str, Any]]):
     """Zeigt das Grid mit Modul-Icons"""
@@ -183,7 +175,6 @@ def show_grid_with_icons(positions: List[Dict[str, Any]]):
                 else:
                     st.markdown("⬜")
 
-
 def show_ascii_layout():
     """Zeigt das ASCII-Layout basierend auf der Dokumentation"""
     ascii_layout = """
@@ -201,7 +192,6 @@ def show_ascii_layout():
 - **Leere Positionen:** EMPTY
     """
     st.code(ascii_layout, language="text")
-
 
 def show_module_details():
     """Zeigt detaillierte Informationen zu allen Modulen"""
@@ -236,7 +226,6 @@ def show_module_details():
     # Modul-spezifische Details
     show_module_specific_details(modules)
 
-
 def show_module_specific_details(modules: List[Dict[str, Any]]):
     """Zeigt spezifische Details für jedes Modul"""
     st.subheader("🔧 Modul-spezifische Details")
@@ -269,7 +258,6 @@ def show_module_specific_details(modules: List[Dict[str, Any]]):
 
             st.write(f"**Beschreibung:** {module.get('description', 'Keine Beschreibung')}")
 
-
 def show_shopfloor_statistics():
     """Zeigt Shopfloor-Statistiken"""
     st.subheader("📊 Shopfloor-Statistiken")
@@ -294,7 +282,6 @@ def show_shopfloor_statistics():
         st.metric("Produkt-Routen", stats.get("product_routes", 0))
         st.metric("Grid-Größe", stats.get("grid_size", "4x3"))
 
-
 def get_module_by_serial(serial_number: str) -> Optional[Dict[str, Any]]:
     """Findet ein Modul anhand der Serial Number"""
     positions = get_module_positions()
@@ -304,13 +291,11 @@ def get_module_by_serial(serial_number: str) -> Optional[Dict[str, Any]]:
             return position
     return None
 
-
 def get_modules_by_type(module_type: str) -> List[Dict[str, Any]]:
     """Gibt alle Module eines bestimmten Typs zurück"""
     positions = get_module_positions()
 
     return [p for p in positions if p.get("type") == "MODULE" and p.get("name") == module_type]
-
 
 def get_intersections() -> List[Dict[str, Any]]:
     """Gibt alle Kreuzungspunkte zurück"""
@@ -318,13 +303,11 @@ def get_intersections() -> List[Dict[str, Any]]:
 
     return [p for p in positions if p.get("type") == "INTERSECTION"]
 
-
 def get_enabled_modules() -> List[Dict[str, Any]]:
     """Gibt alle aktiven Module zurück"""
     positions = get_module_positions()
 
     return [p for p in positions if p.get("type") == "MODULE" and p.get("enabled", False)]
-
 
 def get_shopfloor_metadata() -> Dict[str, Any]:
     """Lädt Shopfloor-Metadaten aus der Konfiguration"""
@@ -348,7 +331,6 @@ def get_shopfloor_metadata() -> Dict[str, Any]:
         pass
 
     return {"version": "3.3.0", "grid_size": "4x3", "total_positions": 12, "fts_serial": "5iO4"}
-
 
 def get_module_positions() -> List[Dict[str, Any]]:
     """Lädt Modul-Positionen aus der Konfiguration"""
@@ -401,7 +383,6 @@ def get_module_positions() -> List[Dict[str, Any]]:
         pass
 
     return []
-
 
 def get_shopfloor_statistics() -> Dict[str, Any]:
     """Berechnet Shopfloor-Statistiken"""

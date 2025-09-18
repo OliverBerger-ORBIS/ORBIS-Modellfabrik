@@ -1,27 +1,22 @@
-import os
-import sys
+from pathlib import Path
 
 # Workspace-Root zum sys.path hinzufügen, damit omf als Package gefunden wird
-WORKSPACE_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
+WORKSPACE_ROOT = os.path.abspath(str(Path(__file__).parent / ".." / ".." / ".."))
 if WORKSPACE_ROOT not in sys.path:
-    sys.path.insert(0, WORKSPACE_ROOT)
-import pytest
+    import pytest
 
 from omf.helper_apps.sequence_control_vscode.workflow_sequence_manager import WorkflowSequenceManager
-
 
 @pytest.fixture
 def manager():
     """Test fixture für WorkflowSequenceManager."""
     return WorkflowSequenceManager("omf/helper_apps/sequence_control_vscode/recipes")
 
-
 def test_manager_initialization(manager):
     """Test der Initialisierung des WorkflowSequenceManager."""
     assert manager.loader is not None
     assert manager.active_sequences == {}
     assert manager.lock is not None
-
 
 def test_start_sequence(manager):
     """Test des Startens einer Sequenz."""
@@ -59,7 +54,6 @@ def test_start_sequence(manager):
     finally:
         get_workflow_order_manager = original_manager
 
-
 def test_get_sequence_status(manager):
     """Test des Abrufens des Sequenz-Status."""
     # Mock active sequence
@@ -77,12 +71,10 @@ def test_get_sequence_status(manager):
     assert status["status"] == "active"
     assert len(status["sequence"]["steps"]) == 2
 
-
 def test_get_sequence_status_not_found(manager):
     """Test des Abrufens des Status einer nicht existierenden Sequenz."""
     status = manager.get_sequence_status("nonexistent_order")
     assert status is None
-
 
 def test_abort_sequence(manager):
     """Test des Abbrechens einer Sequenz."""
@@ -97,7 +89,6 @@ def test_abort_sequence(manager):
 
     manager.abort_sequence("test_order_123")
     assert manager.active_sequences["test_order_123"]["status"] == "aborted"
-
 
 def test_abort_sequence_not_found(manager):
     """Test des Abbrechens einer nicht existierenden Sequenz."""

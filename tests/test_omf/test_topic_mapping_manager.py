@@ -1,4 +1,3 @@
-import os
 import sys
 import tempfile
 import unittest
@@ -7,10 +6,8 @@ from pathlib import Path
 import yaml
 
 # Add the omf directory to the Python path
-sys.path.append(os.path.join(os.path.dirname(__file__), "..", "omf"))
 
 from omf.tools.topic_mapping_manager import TopicMappingManager
-
 
 class TestTopicMappingManager(unittest.TestCase):
     """Unit Tests für TopicMappingManager"""
@@ -232,7 +229,6 @@ class TestTopicMappingManager(unittest.TestCase):
         self.assertEqual(len(manager.topic_mappings), 0)
         self.assertEqual(len(manager.template_categories), 0)
 
-
 def run_tests():
     """Führt alle Tests aus"""
     # Test-Suite erstellen
@@ -244,7 +240,6 @@ def run_tests():
     result = runner.run(suite)
 
     return result.wasSuccessful()
-
 
 if __name__ == "__main__":
     success = run_tests()

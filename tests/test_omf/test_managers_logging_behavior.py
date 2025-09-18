@@ -13,7 +13,6 @@ from omf.tools.mqtt_gateway import MqttGateway
 from omf.tools.omf_mqtt_client import OmfMqttClient
 from omf.tools.registry_manager import Registry, TopicManager
 
-
 class TestManagersLoggingBehavior(unittest.TestCase):
     """Tests für Manager Logging-Verhalten"""
 
@@ -170,7 +169,6 @@ class TestManagersLoggingBehavior(unittest.TestCase):
 
                 for expected_call in expected_calls:
                     self.assertIn(expected_call, mock_logger.error.call_args_list)
-
 
 if __name__ == '__main__':
     unittest.main()

@@ -13,9 +13,7 @@ import json
 import os
 import re
 
-# sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", ".."))  # Nicht mehr nötig nach pip install -e .
 import sqlite3
-import sys
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Set
@@ -25,14 +23,13 @@ import yaml
 from omf.analysis_tools.nfc_code_manager import get_nfc_manager
 from omf.tools.message_template_manager import get_message_template_manager
 
-
 class ModuleTemplateAnalyzer:
     """Analyzer for MODULE MQTT message templates"""
 
     def __init__(self, session_dir: str = None, output_dir: str = None):
         """Initialize the analyzer"""
         # Use absolute paths for better reliability
-        project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
+        project_root = os.path.abspath(str(Path(__file__).parent / ".." / ".." / ".."))
         
         self.session_dir = session_dir or os.path.join(project_root, "data/omf-data/sessions")
         self.output_dir = output_dir or os.path.join(project_root, "registry/observations/payloads")
@@ -486,7 +483,7 @@ class ModuleTemplateAnalyzer:
 
     def migrate_to_registry_v0(self, results: Dict):
         """Direct migration to Registry v0 in initial phase"""
-        project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
+        project_root = os.path.abspath(str(Path(__file__).parent / ".." / ".." / ".."))
         registry_dir = os.path.join(project_root, "registry/model/v2/templates")
         os.makedirs(registry_dir, exist_ok=True)
         
@@ -594,12 +591,10 @@ class ModuleTemplateAnalyzer:
         else:
             print("❌ Keine MODULE Topics mit Daten gefunden!")
 
-
 def main():
     """Main function for standalone execution"""
     analyzer = ModuleTemplateAnalyzer()
     analyzer.run_analysis()
-
 
 if __name__ == "__main__":
     main()

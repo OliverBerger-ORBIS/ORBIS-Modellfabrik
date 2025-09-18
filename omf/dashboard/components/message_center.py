@@ -66,7 +66,6 @@ TOPIC_PATTERNS = {
 # Regex für Topic-Parsing
 TOPIC_RE = re.compile(r"^(?P<category>ccu|module|txt|fts|node-red)/.*")
 
-
 @dataclass
 class MessageRow:
     """Repräsentiert eine Nachricht mit allen relevanten Informationen"""
@@ -115,9 +114,7 @@ class MessageRow:
         else:
             return "General"
 
-
 # _ensure_store() Funktion entfernt - verwenden jetzt direkt MQTT-Client _history
-
 
 def _flatten_for_df(messages: List[MessageRow]) -> pd.DataFrame:
     """Konvertiert MessageRow-Objekte in ein DataFrame"""
@@ -163,9 +160,7 @@ def _flatten_for_df(messages: List[MessageRow]) -> pd.DataFrame:
 
     return df
 
-
 # _apply_message() Funktion entfernt - verwenden jetzt direkt MQTT-Client _history
-
 
 def show_message_center():
     """Nachrichtenzentrale anzeigen - ressourcenschonend mit Topic-Kategorien"""

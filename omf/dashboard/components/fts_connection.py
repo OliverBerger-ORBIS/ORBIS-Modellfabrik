@@ -23,7 +23,6 @@ except Exception as e:
     TEMPLATE_MANAGER_AVAILABLE = False
     print(f"❌ MessageTemplate Fehler: {e}")
 
-
 def process_fts_connection_messages_from_buffers(connection_messages):
     """Verarbeitet FTS-Connection-Nachrichten aus Per-Topic-Buffer"""
     if not connection_messages:
@@ -37,7 +36,6 @@ def process_fts_connection_messages_from_buffers(connection_messages):
         # Timestamp für letzte Aktualisierung speichern
         st.session_state["fts_connection_last_update"] = latest_connection_msg.get("ts", 0)
 
-
 def get_formatted_timestamp(timestamp):
     """Timestamp in lesbares Format konvertieren (wie in overview_inventory)"""
     if not timestamp:
@@ -49,7 +47,6 @@ def get_formatted_timestamp(timestamp):
         return dt.strftime("%d.%m.%Y %H:%M:%S")
     except (ValueError, OSError):
         return f"Timestamp: {timestamp}"
-
 
 def analyze_fts_connection_data(connection_data):
     """Analysiert FTS-Connection-Daten semantisch"""
@@ -106,7 +103,6 @@ def analyze_fts_connection_data(connection_data):
     except Exception as e:
         st.warning(f"⚠️ Fehler bei der FTS-Connection-Analyse: {e}")
         return {}
-
 
 def show_fts_connection():
     """Zeigt FTS-Connection-Informationen"""

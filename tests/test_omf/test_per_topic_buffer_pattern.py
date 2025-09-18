@@ -14,7 +14,6 @@ from unittest.mock import Mock, patch
 from omf.tools.mqtt_config import MqttConfig
 from omf.tools.omf_mqtt_client import OmfMqttClient
 
-
 class TestPerTopicBufferPattern(unittest.TestCase):
     """Testet das Per-Topic-Buffer Pattern"""
 
@@ -145,7 +144,6 @@ class TestPerTopicBufferPattern(unittest.TestCase):
         buffer = list(self.client.get_buffer(topic))
         self.assertLessEqual(len(buffer), 2000)  # Aktuell keine Begrenzung
 
-
 class TestPerTopicBufferIntegration(unittest.TestCase):
     """Integration Tests für Per-Topic-Buffer Pattern"""
 
@@ -205,7 +203,6 @@ class TestPerTopicBufferIntegration(unittest.TestCase):
         self.assertEqual(result["state_count"], 0)
         self.assertEqual(result["connection_count"], 0)
         self.assertEqual(result["pairing_count"], 0)
-
 
 if __name__ == "__main__":
     unittest.main()

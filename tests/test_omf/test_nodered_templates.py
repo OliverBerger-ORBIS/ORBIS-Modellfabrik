@@ -3,7 +3,6 @@ import pytest
 from omf.tools.message_template_manager import OmfMessageTemplateManager
 from omf.tools.validators import validate
 
-
 class TestNodeRedTemplates:
     """Test Node-RED Template Migration"""
 
@@ -228,7 +227,6 @@ class TestNodeRedTemplates:
         assert len(result["errors"]) == 0
         assert len(result["warnings"]) == 1
         assert "serialNumber should be 'SVR4H73275'" in result["warnings"][0]["msg"]
-
 
 class TestNodeRedMessageTemplateManager:
     """Test Node-RED Templates mit MessageTemplateManager"""

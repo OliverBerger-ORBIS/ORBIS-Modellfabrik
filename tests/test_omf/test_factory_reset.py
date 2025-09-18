@@ -6,18 +6,15 @@ Dieser Test ist kritisch - wenn Factory Reset nicht funktioniert,
 können wir gar nicht mehr weitermachen.
 """
 
+from pathlib import Path
 import json
-import os
-import sys
 import unittest
 from datetime import datetime
 from unittest.mock import patch
 
 # Add omf to path for imports
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "omf"))
 
 from omf.tools.message_generator import MessageGenerator
-
 
 class TestFactoryReset(unittest.TestCase):
     """Test-Klasse für Factory Reset Funktionalität"""
@@ -179,7 +176,6 @@ class TestFactoryReset(unittest.TestCase):
 
         except Exception as e:
             self.fail(f"KRITISCHER FEHLER: Factory Reset funktioniert nicht mehr! Fehler: {e}")
-
 
 if __name__ == "__main__":
     print("🧪 Starte Factory Reset Unit Tests...")

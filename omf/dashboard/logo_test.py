@@ -4,10 +4,10 @@ ORBIS Logo Test - Vergleich der verschiedenen ORBIS-Logos
 Version: 3.0.0
 """
 
+from pathlib import Path
 import os
 
 import streamlit as st
-
 
 def main():
     """Hauptfunktion für Logo-Test"""
@@ -33,7 +33,7 @@ def main():
     # ]
 
     # Assets-Verzeichnis
-    assets_dir = os.path.join(os.path.dirname(__file__), "assets")
+    assets_dir = str(Path(__file__).parent / "assets")
 
     # Logo-Vergleich
     st.markdown("## 📊 Logo-Vergleich")
@@ -213,15 +213,10 @@ def main():
     st.code(
         """
 # In omf_dashboard.py - Logo-Pfad ändern:
-logo_path = os.path.join(
-    os.path.dirname(__file__),
-    "assets",
-    "ORBIS_RGB_BIG.png"  # Ihr gewähltes Logo
-)
+logo_path = str(Path(__file__).parent / "assets" / "ORBIS_RGB_BIG.png" / "#" / "Ihr" / "gewähltes" / "Logo")
     """,
         language="python",
     )
-
 
 if __name__ == "__main__":
     main()

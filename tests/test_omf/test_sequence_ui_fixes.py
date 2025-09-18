@@ -3,14 +3,11 @@ Spezifische Tests für SequenceUI Fehlerbehebungen
 Reproduziert und testet die behobenen Fehler
 """
 
-import os
-import sys
+from pathlib import Path
 import unittest
 from unittest.mock import Mock, patch
 
 # Pfad für Imports
-# sys.path.append(os.path.join(os.path.dirname(__file__), "..", "omf"))  # Nicht mehr nötig nach pip install -e .
-
 
 class TestSequenceUIFixes(unittest.TestCase):
     """Tests für spezifische SequenceUI Fehlerbehebungen"""
@@ -229,7 +226,6 @@ class TestSequenceUIFixes(unittest.TestCase):
                 raise e
         except Exception as e:
             self.fail(f"AIQS-Sequenz Import-Fix Test fehlgeschlagen: {e}")
-
 
 if __name__ == "__main__":
     # Test Suite ausführen

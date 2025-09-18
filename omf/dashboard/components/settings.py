@@ -13,7 +13,6 @@ from .settings_mqtt_config import show_mqtt_config
 from .settings_nfc_config import show_nfc_config
 from .settings_topic_config import show_topic_config
 
-
 def show_settings():
     """Hauptfunktion für die Einstellungen mit Untertabs"""
     st.header("⚙️ Einstellungen")

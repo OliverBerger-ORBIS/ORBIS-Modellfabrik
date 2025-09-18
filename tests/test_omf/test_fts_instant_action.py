@@ -9,7 +9,6 @@ import unittest
 import uuid
 from datetime import datetime, timezone
 
-
 class TestFTSInstantAction(unittest.TestCase):
     """Test-Klasse für FTS Instant Action Commands"""
 
@@ -160,7 +159,6 @@ class TestFTSInstantAction(unittest.TestCase):
         # Leere Actions-Liste
         payload = {"timestamp": "2025-01-27T12:00:00.000Z", "serialNumber": "5iO4", "actions": []}
         self.assertEqual(len(payload["actions"]), 0)
-
 
 if __name__ == "__main__":
     unittest.main()

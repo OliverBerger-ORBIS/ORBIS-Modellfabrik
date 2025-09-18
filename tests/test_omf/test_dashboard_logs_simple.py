@@ -8,7 +8,6 @@ import unittest
 from collections import deque
 from unittest.mock import MagicMock, patch
 
-
 class TestDashboardLogsSimple(unittest.TestCase):
     """Vereinfachte Tests für Dashboard Logs-Komponente"""
 
@@ -78,7 +77,6 @@ class TestDashboardLogsSimple(unittest.TestCase):
         for i, level in enumerate(levels):
             self.assertIn(f"Message {level}", log_buffer[i])
             self.assertIn(f"[{level}]", log_buffer[i])
-
 
 if __name__ == "__main__":
     unittest.main()

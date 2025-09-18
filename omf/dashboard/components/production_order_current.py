@@ -4,7 +4,6 @@ OMF Dashboard Production Order - Laufende Production Orders
 
 import streamlit as st
 
-
 def show_production_order_current():
     """Zeigt die laufenden Production Orders"""
     st.subheader("🔄 Laufende Fertigungsaufträge (Production Orders)")

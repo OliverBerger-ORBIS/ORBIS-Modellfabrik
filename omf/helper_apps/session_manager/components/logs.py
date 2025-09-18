@@ -14,7 +14,6 @@ from omf.tools.streamlit_log_buffer import RingBufferHandler, create_log_buffer
 
 logger = get_logger("session_manager.logs")
 
-
 def show_logs():
     """Zeigt Live-Logs für den Session Manager an"""
     logger.info("📋 Session Manager Logs geladen")

@@ -9,7 +9,6 @@ import streamlit as st
 import yaml
 
 # Template-Import hinzufügen
-# sys.path.append(os.path.join(os.path.dirname(__file__), "..", "assets"))  # Nicht mehr nötig nach pip install -e .
 try:
     from omf.dashboard.assets.html_templates import get_product_catalog_template
 
@@ -17,7 +16,6 @@ try:
 except ImportError as e:
     TEMPLATES_AVAILABLE = False
     st.error(f"❌ Templates nicht verfügbar: {e}")
-
 
 def load_product_catalog():
     """Lädt den Produktkatalog aus der YAML-Datei"""
@@ -29,12 +27,10 @@ def load_product_catalog():
         st.error(f"❌ Fehler beim Laden des Produktkatalogs: {e}")
         return None
 
-
 def get_module_icon(module_name):
     """Get module icon from module name"""
     icons = {"HBW": "🏬", "DRILL": "🔩", "MILL": "⚙️", "AIQS": "🤖", "DPS": "📦", "FTS": "🚗"}
     return icons.get(module_name.upper(), "❓")
-
 
 def show_manufacturing_flow(product_name, manufacturing_steps):
     """Zeigt den Fertigungsablauf für ein Produkt"""
@@ -79,7 +75,6 @@ def show_manufacturing_flow(product_name, manufacturing_steps):
         """,
             unsafe_allow_html=True,
         )
-
 
 def show_production_order_production_planning():
     """Hauptfunktion für die Produktplanung"""

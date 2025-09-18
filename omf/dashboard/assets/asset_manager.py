@@ -15,7 +15,6 @@ from .html_templates import (
     get_workpiece_box_template,
 )
 
-
 class DashboardAssetManager:
     """Verwaltet Dashboard-Assets (Icons, Templates) für konsistente Visualisierung"""
 
@@ -217,10 +216,8 @@ class DashboardAssetManager:
         """Gibt alle verfügbaren Produkte zurück"""
         return list(self.product_templates.keys())
 
-
 # Singleton-Instanz
 _asset_manager = None
-
 
 def get_asset_manager() -> DashboardAssetManager:
     """Gibt die Singleton-Instanz des Asset Managers zurück"""

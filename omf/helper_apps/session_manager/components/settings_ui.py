@@ -11,7 +11,6 @@ from omf.tools.logging_config import get_logger
 
 logger = get_logger(__name__)
 
-
 class SettingsUI:
     """UI-Komponente für die Einstellungen"""
 

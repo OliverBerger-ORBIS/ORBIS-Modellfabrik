@@ -18,7 +18,6 @@ from omf.tools.logging_config import get_logger
 
 logger = get_logger("session_manager.auftrag_rot_analyzer")
 
-
 class AuftragRotAnalyzer:
     """Analysiert Message-Ketten für rote Aufträge (orderType: PRODUCTION)"""
 
@@ -463,7 +462,6 @@ class AuftragRotAnalyzer:
             edge_data = graph.edges[edge]
             st.write(f"- **{edge[0]}** → **{edge[1]}**: {edge_data.get('relation', 'unknown')}")
 
-
 def load_session_data(session_file: str) -> list:
     """Lädt Session-Daten aus einer Log-Datei"""
     import json
@@ -492,7 +490,6 @@ def load_session_data(session_file: str) -> list:
 
     return messages
 
-
 def analyze_auftrag_rot_with_root(session_file: str, root_message: dict, time_range: tuple) -> dict:
     """Analysiert Message-Kette basierend auf einer Root-Message"""
     import os
@@ -520,7 +517,6 @@ def analyze_auftrag_rot_with_root(session_file: str, root_message: dict, time_ra
         'graph_edges': graph.number_of_edges(),
         'time_filter': time_range,
     }
-
 
 def render_message_list(result: dict) -> None:
     """Rendert die Liste der gefundenen Messages mit aufklappbarem JSON"""
@@ -559,7 +555,6 @@ def render_message_list(result: dict) -> None:
                 except json.JSONDecodeError:
                     st.text(msg.get('payload', 'Kein gültiges JSON'))
 
-
 def render_graph_visualization(result: dict) -> None:
     """Rendert die Graph-Visualisierung"""
     plotly_figure = result.get('plotly_figure')
@@ -580,7 +575,6 @@ def render_graph_visualization(result: dict) -> None:
             st.metric("Messages", result.get('related_messages_count', 0))
     else:
         st.warning("❌ Kein Graph verfügbar")
-
 
 def show_auftrag_rot_analysis():
     """Zeigt die umstrukturierte Auftrag-Rot Analyse UI"""

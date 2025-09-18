@@ -15,7 +15,6 @@ from .steering_sequence import show_sequence_steering
 # Logger für Steering
 logger = logging.getLogger("omf.dashboard.steering")
 
-
 def show_steering():
     """Hauptfunktion für die Steuerung mit Untertabs"""
     logger.info("🎮 Steering geladen")

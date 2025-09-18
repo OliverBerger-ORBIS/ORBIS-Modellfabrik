@@ -19,7 +19,6 @@ from .omf_mqtt_client import OmfMqttClient
 # Logging konfigurieren
 logger = logging.getLogger("omf.module_state_manager")
 
-
 class ModuleState(Enum):
     """Modul-Status basierend auf Node-RED Flows Analyse"""
 
@@ -35,7 +34,6 @@ class ModuleState(Enum):
     DROPBUSY = "DROPBUSY"
     ERROR = "ERROR"
     OFFLINE = "OFFLINE"
-
 
 class CommandType(Enum):
     """Verfügbare Commands basierend auf module_config.yml"""
@@ -53,7 +51,6 @@ class CommandType(Enum):
     STOP_CHARGING = "stop_charging"
     GET_STATUS = "get_status"
 
-
 @dataclass
 class ModuleInfo:
     """Informationen über ein Modul"""
@@ -65,7 +62,6 @@ class ModuleInfo:
     current_state: ModuleState = ModuleState.IDLE
     last_update: datetime = None
     is_available: bool = True
-
 
 @dataclass
 class SequenceStep:
@@ -80,7 +76,6 @@ class SequenceStep:
         if self.metadata is None:
             self.metadata = {}
 
-
 @dataclass
 class ModuleSequence:
     """Eine komplette Modul-Sequenz (z.B. PICK → MILL → DROP)"""
@@ -92,7 +87,6 @@ class ModuleSequence:
     status: str = "pending"  # pending, running, completed, error
     order_id: str = None
     order_update_id: int = 0
-
 
 class ModuleStateManager:
     """
@@ -428,10 +422,8 @@ class ModuleStateManager:
 
         logger.info("ModuleStateManager beendet")
 
-
 # Singleton-Instanz
 _module_state_manager = None
-
 
 def get_module_state_manager() -> ModuleStateManager:
     """Gibt die Singleton-Instanz des ModuleStateManager zurück"""

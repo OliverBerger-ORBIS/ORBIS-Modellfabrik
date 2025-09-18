@@ -16,7 +16,6 @@ except ImportError:
     from sequence_executor import SequenceExecutor, WaitHandler
     from workflow_order_manager import workflow_order_manager
 
-
 class SequenceUI:
     """UI-Komponenten für Sequenz-Steuerung"""
 
@@ -414,7 +413,6 @@ class SequenceUI:
         else:
             st.info("ℹ️ Keine aktiven Sequenzen")
 
-
 def create_sequence_ui_app():
     """Erstellt die komplette Sequence UI App"""
     st.set_page_config(page_title="Workflow Sequence Control", page_icon="🔄", layout="wide")
@@ -453,7 +451,6 @@ def create_sequence_ui_app():
 
     with tab3:
         ui.show_debug_info()
-
 
 if __name__ == "__main__":
     create_sequence_ui_app()

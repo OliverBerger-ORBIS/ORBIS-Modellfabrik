@@ -1,7 +1,6 @@
 import threading
 from typing import Any, Dict, List, Optional
 
-
 class WorkflowOrderManager:
     _instance = None
     _lock = threading.Lock()

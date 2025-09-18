@@ -12,7 +12,6 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import yaml
 
-
 class MessageGenerator:
     """Generiert semantisch korrekte MQTT-Nachrichten basierend auf Templates"""
 
@@ -696,10 +695,8 @@ class MessageGenerator:
 
         return errors
 
-
 # Singleton-Instanz
 _message_generator = None
-
 
 def get_omf_message_generator() -> MessageGenerator:
     """Gibt die Singleton-Instanz des MessageGenerator zurück"""
@@ -707,7 +704,6 @@ def get_omf_message_generator() -> MessageGenerator:
     if _message_generator is None:
         _message_generator = MessageGenerator()
     return _message_generator
-
 
 def main():
     """Hauptfunktion für Tests"""
@@ -743,7 +739,6 @@ def main():
 
     except Exception as e:
         print(f"❌ Fehler: {e}")
-
 
 if __name__ == "__main__":
     main()

@@ -2,12 +2,13 @@ from __future__ import annotations
 
 import logging
 import os
+from pathlib import Path
 
 import streamlit as st
 
 from omf.config.config import LIVE_CFG, REPLAY_CFG
 from omf.dashboard.components.dummy_component import show_dummy_component
-from omf.tools.logging_config import configure_logging
+from omf.tools.logging_config import configure_logging, get_logger
 from omf.tools.omf_mqtt_factory import ensure_dashboard_client
 from omf.tools.streamlit_log_buffer import RingBufferHandler
 from omf.tools.structlog_config import configure_structlog
@@ -16,14 +17,12 @@ from omf.tools.structlog_config import configure_structlog
 ORBIS Modellfabrik Dashboard (OMF) - Modulare Architektur
 """
 
-
 # =============================================================================
 # COMPONENT LOADING - FAULT TOLERANT
 # =============================================================================
 
 # Komponenten-Imports mit Fehlerbehandlung
 components = {}
-
 
 def load_component(component_name, import_path, display_name=None):
     """Lädt eine Komponente fehlertolerant"""
@@ -37,7 +36,6 @@ def load_component(component_name, import_path, display_name=None):
     except ImportError as e:
         error_msg = str(e)
         components[component_name] = lambda: show_dummy_component(display_name, error_msg)
-
 
 # Komponenten laden
 load_component("message_center", "components.message_center", "Message Center")
@@ -55,7 +53,6 @@ load_component("shopfloor", "components.shopfloor", "Shopfloor")
 # LOGGING INITIALIZATION
 # =============================================================================
 
-
 def _init_logging_once():
     """Initialisiert Logging einmal pro Streamlit-Session"""
     if st.session_state.get("_log_init"):
@@ -72,18 +69,9 @@ def _init_logging_once():
     print(f"🔍 DEBUG: Log-Level ist auf {log_level} gesetzt (DEBUG=10, INFO=20)")
     print(f"🔍 DEBUG: Root Logger Level: {root.level}")
 
-    # Test-Log um zu prüfen ob Logging funktioniert
-    test_logger = logging.getLogger("omf.dashboard.test")
-    print(f"🔍 DEBUG: Test Logger Level VOR Konfiguration: {test_logger.level}")
-
-    test_logger.info("🔧 Dashboard-Logging initialisiert")
-    test_logger.debug("🐛 Debug-Logging aktiviert")
-
-    print(f"🔍 DEBUG: Test Logger Level NACH Konfiguration: {test_logger.level}")
-
-    # Direkter Debug-Test
-    test_logger.debug("🧪 DIREKTER DEBUG-TEST NACH LOGGER-KONFIGURATION")
-    test_logger.info("ℹ️ DIREKTER INFO-TEST NACH LOGGER-KONFIGURATION")
+    # OMF-Logging für Dashboard (thread-sicher)
+    dashboard_logger = get_logger("omf.dashboard")
+    dashboard_logger.info("🔧 Dashboard-Logging initialisiert")
 
     # Zusätzlicher Test für RingBuffer
     if "log_buffer" in st.session_state:
@@ -118,57 +106,34 @@ def _init_logging_once():
             rb.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(name)s: %(message)s"))
             st.session_state["ring_buffer_handler"] = rb
 
-    # Logger-Konfiguration NACH configure_logging() - das ist wichtig!
-    # Stelle sicher, dass spezifische Logger auch den RingBufferHandler verwenden
-    mqtt_logger = logging.getLogger("omf.tools.mqtt_gateway")
+    # OMF-Logging für MQTT (thread-sicher für Callbacks)
+    mqtt_logger = get_logger("omf.tools.mqtt_gateway")
     mqtt_logger.addHandler(rb)
     mqtt_logger.setLevel(log_level)
     mqtt_logger.propagate = False  # Verhindere doppelte Logs
 
-    debug_logger = logging.getLogger("omf.dashboard.debug")
-    debug_logger.addHandler(rb)
-    debug_logger.setLevel(log_level)
-    debug_logger.propagate = False
-
-    logs_test_logger = logging.getLogger("omf.dashboard.logs_test")
-    logs_test_logger.addHandler(rb)
-    logs_test_logger.setLevel(log_level)
-    logs_test_logger.propagate = False
-
-    # Test-Logger auch konfigurieren
-    test_logger = logging.getLogger("omf.dashboard.test")
-    test_logger.addHandler(rb)
-    test_logger.setLevel(log_level)
-    test_logger.propagate = False
-
-    # Zusätzliche Debug-Tests nach Logger-Konfiguration
+    # Debug-Info für Logger-Konfiguration
     print(f"🔍 DEBUG: MqttGateway Logger Level: {mqtt_logger.level}")
-    print(f"🔍 DEBUG: Debug Logger Level: {debug_logger.level}")
-    print(f"🔍 DEBUG: Test Logger Level: {test_logger.level}")
+    print(f"🔍 DEBUG: Dashboard Logger Level: {dashboard_logger.level}")
 
     # Debug-Tests nach Konfiguration
     mqtt_logger.debug("🔧 MQTT DEBUG-TEST NACH KONFIGURATION")
-    debug_logger.debug("🐛 DEBUG LOGGER TEST NACH KONFIGURATION")
-    test_logger.debug("🧪 TEST LOGGER DEBUG NACH KONFIGURATION")
+    dashboard_logger.debug("🐛 DASHBOARD DEBUG-TEST NACH KONFIGURATION")
 
     st.session_state["_log_init"] = True
-
 
 # =============================================================================
 # HELPER FUNCTIONS
 # =============================================================================
 
-
 def setup_page_config():
     """Konfiguriert die Streamlit-Seite"""
     st.set_page_config(page_title="OMF Dashboard", page_icon="🏭", layout="wide", initial_sidebar_state="expanded")
-
 
 def get_default_broker_mode():
     """Holt den Default-Broker-Modus aus den Settings"""
     # Default = replay (für Testing)
     return "replay"
-
 
 def handle_environment_switch():
     """
@@ -233,7 +198,6 @@ def handle_environment_switch():
 
     return env
 
-
 def initialize_mqtt_client(env):
     """
     Initialisiert den MQTT-Client über die kontrollierte Factory.
@@ -266,7 +230,6 @@ def initialize_mqtt_client(env):
         cfg = {"host": "mock", "port": 0}
 
     return client, cfg
-
 
 def setup_mqtt_subscription(client, cfg):
     """
@@ -317,7 +280,6 @@ def setup_mqtt_subscription(client, cfg):
     else:
         st.sidebar.info(f"✅ Bereits subscribed zu {broker_key}")
 
-
 def display_mqtt_status(client, cfg):
     """Zeigt MQTT-Status in der Sidebar"""
     # Erweiterte MQTT-Informationen in der Sidebar
@@ -351,7 +313,6 @@ def display_mqtt_status(client, cfg):
     except Exception:
         st.sidebar.info("📊 Statistiken nicht verfügbar")
 
-
 def display_refresh_button():
     """Zeigt den Aktualisieren-Button in der Sidebar"""
     # Genereller Aktualisieren-Button in Sidebar (für alle Seiten)
@@ -361,7 +322,6 @@ def display_refresh_button():
     if st.sidebar.button("🔄 Seite aktualisieren", type="primary", key="sidebar_refresh_page"):
         st.rerun()
 
-
 def display_header(client):
     """Zeigt den Dashboard-Header mit Logo und Status"""
     # Main title with ORBIS logo and MQTT connection status
@@ -370,7 +330,7 @@ def display_header(client):
     with col1:
         try:
             # ORBIS Logo im Header anzeigen (allLowercase Variante)
-            logo_path = os.path.join(os.path.dirname(__file__), "assets", "orbis_logo.png")
+            logo_path = str(Path(__file__).parent / "assets" / "orbis_logo.png")
             if os.path.exists(logo_path):
                 st.image(logo_path, width=100, caption="ORBIS Logo")
             else:
@@ -394,7 +354,6 @@ def display_header(client):
         # Versions-Info
         st.caption("Version 3.3.0")
 
-
 # =============================================================================
 # MODULE LOGO HELPER
 # =============================================================================
@@ -403,7 +362,7 @@ def get_module_logo(module_name):
     # Prüfe PNG und JPEG mit lowercase Namen (wie in asset_manager.py)
     icon_filename_png = f"{module_name.lower()}_icon.png"
     icon_filename_jpeg = f"{module_name.lower()}_icon.jpeg"
-    assets_dir = os.path.join(os.path.dirname(__file__), "assets")
+    assets_dir = str(Path(__file__).parent / "assets")
     icon_path_png = os.path.join(assets_dir, icon_filename_png)
     icon_path_jpeg = os.path.join(assets_dir, icon_filename_jpeg)
     if os.path.exists(icon_path_png):
@@ -412,7 +371,6 @@ def get_module_logo(module_name):
         return icon_path_jpeg
     else:
         return None
-
 
 def display_tabs():
     """Zeigt die Dashboard-Tabs und deren Inhalte"""
@@ -463,11 +421,9 @@ def display_tabs():
     with tab10:
         components["logs"]()
 
-
 # =============================================================================
 # MAIN FUNCTION
 # =============================================================================
-
 
 def main():
     """Hauptfunktion des OMF Dashboards - Modulare Architektur"""
@@ -497,7 +453,6 @@ def main():
 
     # 8. Tabs anzeigen
     display_tabs()
-
 
 # =============================================================================
 # ENTRY POINT

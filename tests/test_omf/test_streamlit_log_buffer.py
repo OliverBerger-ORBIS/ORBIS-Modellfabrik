@@ -8,7 +8,6 @@ from collections import deque
 
 from omf.tools.streamlit_log_buffer import RingBufferHandler
 
-
 class TestStreamlitLogBuffer(unittest.TestCase):
     """Tests für Streamlit Log Buffer"""
 
@@ -104,7 +103,6 @@ class TestStreamlitLogBuffer(unittest.TestCase):
 
         for i, level in enumerate(levels):
             self.assertIn(f"Message level {level}", self.buffer[i])
-
 
 if __name__ == "__main__":
     unittest.main()

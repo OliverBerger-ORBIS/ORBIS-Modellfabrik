@@ -4,15 +4,12 @@ Unit Test: Dashboard MQTT Integration Problem
 Simuliert das echte Problem aus dem Dashboard
 """
 
-import os
-import sys
+from pathlib import Path
 import unittest
 
 import pytest
 
 # Add omf to path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "omf"))
-
 
 @pytest.mark.streamlit
 class TestDashboardMqttIntegration(unittest.TestCase):
@@ -234,7 +231,6 @@ class TestDashboardMqttIntegration(unittest.TestCase):
 
         except Exception as e:
             self.fail(f"❌ clear_history Integration Test fehlgeschlagen: {e}")
-
 
 if __name__ == "__main__":
     # Test ausführen

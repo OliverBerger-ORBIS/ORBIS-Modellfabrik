@@ -9,7 +9,6 @@ import json
 import os
 import re
 import sqlite3
-import sys
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Set
@@ -19,9 +18,6 @@ import yaml
 from omf.analysis_tools.nfc_code_manager import get_nfc_manager
 from omf.tools.message_template_manager import get_message_template_manager
 from omf.tools.module_manager import OmfModuleManager
-
-# sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", ".."))  # Nicht mehr nötig nach pip install -e .
-
 
 class CCUTemplateAnalyzer:
 
@@ -47,7 +43,7 @@ class CCUTemplateAnalyzer:
         # Initialize Message Template Manager
         self.message_template_manager = get_message_template_manager()
         # Get project root (3 levels up from tools directory)
-        project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
+        project_root = os.path.abspath(str(Path(__file__).parent / ".." / ".." / ".."))
         # Set paths relative to project root
         self.output_dir = os.path.join(project_root, "registry/observations/payloads")
         self.session_dir = os.path.join(project_root, "data/omf-data/sessions")
@@ -696,7 +692,7 @@ class CCUTemplateAnalyzer:
 
     def migrate_to_registry_v0(self, results: Dict):
         """Direct migration to Registry v0 in initial phase"""
-        project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
+        project_root = os.path.abspath(str(Path(__file__).parent / ".." / ".." / ".."))
         registry_dir = os.path.join(project_root, "registry/model/v2/templates")
         os.makedirs(registry_dir, exist_ok=True)
         
@@ -1063,7 +1059,6 @@ class CCUTemplateAnalyzer:
         else:
             return "General"
 
-
 def main():
     """Main function"""
     analyzer = CCUTemplateAnalyzer()
@@ -1075,7 +1070,6 @@ def main():
     else:
         print("💥 Script mit Fehlern beendet!")
         exit(1)
-
 
 if __name__ == "__main__":
     main()

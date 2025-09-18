@@ -15,7 +15,6 @@ import yaml
 
 logger = get_logger(__name__)
 
-
 class SessionTemplateGenerator:
     """Generiert Message-Templates aus Session-Analyse"""
 
@@ -224,7 +223,6 @@ class SessionTemplateGenerator:
             except Exception as e:
                 logger.error(f"❌ Fehler beim Kopieren von {template_file.name}: {e}")
 
-
 def main():
     """CLI für Template-Generierung"""
     import argparse
@@ -252,7 +250,6 @@ def main():
     # Templates kopieren
     if args.copy_templates:
         generator.copy_templates_to_registry()
-
 
 if __name__ == "__main__":
     main()

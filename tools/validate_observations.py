@@ -17,8 +17,6 @@ from jsonschema import validate, ValidationError
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent
-sys.path.insert(0, str(PROJECT_ROOT))
-
 
 def load_schema() -> Dict[str, Any]:
     """Load the observation schema"""
@@ -34,7 +32,6 @@ def load_schema() -> Dict[str, Any]:
     except Exception as e:
         print(f"❌ Error loading schema: {e}")
         return {}
-
 
 def validate_observation_file(file_path: Path, schema: Dict[str, Any]) -> List[str]:
     """Validate a single observation file against the schema"""
@@ -74,7 +71,6 @@ def validate_observation_file(file_path: Path, schema: Dict[str, Any]) -> List[s
         errors.append(f"❌ Unexpected error: {e}")
     
     return errors
-
 
 def validate_observations() -> bool:
     """Validate all observations in registry/observations/"""
@@ -122,12 +118,10 @@ def validate_observations() -> bool:
         print(f"✅ All {len(yaml_files)} observations are valid")
         return True
 
-
 def main():
     """Main function"""
     success = validate_observations()
     sys.exit(0 if success else 1)
-
 
 if __name__ == "__main__":
     main()

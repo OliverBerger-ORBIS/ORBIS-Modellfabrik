@@ -4,14 +4,11 @@ Test für OMF Dashboard Runtime-Fehler
 Prüft Runtime-Fehler und Komponenten-Integration
 """
 
-import sys
 import unittest
 from pathlib import Path
 
 # Add project root to path
 project_root = Path(__file__).parent.parent
-sys.path.insert(0, str(project_root))
-
 
 class TestDashboardRuntime(unittest.TestCase):
     """Test OMF Dashboard Runtime-Fehler"""
@@ -126,7 +123,6 @@ class TestDashboardRuntime(unittest.TestCase):
 
         except Exception as e:
             self.fail(f"❌ Nachrichten-Filterung failed: {e}")
-
 
 if __name__ == "__main__":
     print("🧪 Testing OMF Dashboard Runtime...")

@@ -3,7 +3,6 @@ from typing import Any, Dict, List
 
 import yaml
 
-
 class SequenceLoader:
     """Lädt und parst Sequenz-Definitionen aus YML-Dateien."""
 
@@ -17,7 +16,6 @@ class SequenceLoader:
 
     def list_sequences(self) -> List[str]:
         return [f[:-4] for f in os.listdir(self.recipes_dir) if f.endswith(".yml")]
-
 
 # Beispiel-Nutzung:
 # loader = SequenceLoader("omf/sequence_control/recipes")

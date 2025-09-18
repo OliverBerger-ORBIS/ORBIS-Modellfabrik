@@ -12,7 +12,6 @@ import sys
 from pathlib import Path
 from typing import List, Tuple
 
-
 class ProjectStructureValidator:
     def __init__(self, project_root: str = "."):
         self.project_root = Path(project_root).resolve()
@@ -252,7 +251,6 @@ class ProjectStructureValidator:
 
         return fixed_count > 0
 
-
 def main():
     """Hauptfunktion für CLI-Nutzung."""
     import argparse
@@ -271,7 +269,6 @@ def main():
     else:
         success = validator.print_validation_report()
         sys.exit(0 if success else 1)
-
 
 if __name__ == "__main__":
     main()

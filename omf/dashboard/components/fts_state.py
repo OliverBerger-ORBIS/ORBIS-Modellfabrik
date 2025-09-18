@@ -23,7 +23,6 @@ except Exception as e:
     TEMPLATE_MANAGER_AVAILABLE = False
     print(f"❌ MessageTemplate Fehler: {e}")
 
-
 def process_fts_state_messages_from_buffers(state_messages):
     """Verarbeitet FTS-State-Nachrichten aus Per-Topic-Buffer"""
     if not state_messages:
@@ -37,7 +36,6 @@ def process_fts_state_messages_from_buffers(state_messages):
         # Timestamp für letzte Aktualisierung speichern
         st.session_state["fts_state_last_update"] = latest_state_msg.get("ts", 0)
 
-
 def get_formatted_timestamp(timestamp):
     """Timestamp in lesbares Format konvertieren (wie in overview_inventory)"""
     if not timestamp:
@@ -49,7 +47,6 @@ def get_formatted_timestamp(timestamp):
         return dt.strftime("%d.%m.%Y %H:%M:%S")
     except (ValueError, OSError):
         return f"Timestamp: {timestamp}"
-
 
 def analyze_fts_state_data(state_data):
     """Analysiert FTS-State-Daten semantisch basierend auf RAW-Data-Struktur"""
@@ -144,7 +141,6 @@ def analyze_fts_state_data(state_data):
     except Exception as e:
         st.warning(f"⚠️ Fehler bei der FTS-State-Analyse: {e}")
         return {}
-
 
 def show_fts_state():
     """Zeigt FTS-State-Informationen"""

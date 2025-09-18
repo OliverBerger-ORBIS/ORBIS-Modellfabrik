@@ -15,7 +15,6 @@ from datetime import datetime
 from pathlib import Path
 from typing import Dict
 
-
 class DocumentationIndexer:
     """Erstellt und verwaltet den Dokumentationsindex"""
 
@@ -263,7 +262,6 @@ class DocumentationIndexer:
             f.write(html)
         print(f"🌐 HTML-Index generiert: {output_file}")
 
-
 def main():
     """Hauptfunktion"""
     print("🚀 ORBIS-Modellfabrik - Dokumentationsindex-Generator")
@@ -279,7 +277,6 @@ def main():
     print("   • JSON-Index: docs/INDEX.json")
     print("   • HTML-Index: docs/INDEX.html")
     print("   • Öffne INDEX.html im Browser für interaktive Suche")
-
 
 if __name__ == "__main__":
     main()

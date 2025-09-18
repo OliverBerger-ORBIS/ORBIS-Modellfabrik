@@ -14,7 +14,6 @@ from omf.tools.mqtt_gateway import MqttGateway
 from omf.tools.omf_mqtt_client import OmfMqttClient
 from omf.tools.registry_manager import Registry, TopicManager
 
-
 class TestManagersLoggingSimple(unittest.TestCase):
     """Einfache Tests für Logging-Integration"""
 
@@ -200,7 +199,6 @@ class TestManagersLoggingSimple(unittest.TestCase):
                 self.assertIn('get_logger', content)
                 # Sollte Logger-Attribut haben
                 self.assertIn('self.logger = get_logger(', content)
-
 
 if __name__ == "__main__":
     unittest.main()

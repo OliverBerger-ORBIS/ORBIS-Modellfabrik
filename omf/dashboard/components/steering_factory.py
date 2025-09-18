@@ -19,7 +19,6 @@ from omf.tools.mqtt_gateway import MqttGateway
 # Logger für Factory Steering
 logger = logging.getLogger("omf.dashboard.steering_factory")
 
-
 def show_factory_steering():
     """Hauptfunktion für die Factory Steuerung"""
     logger.info("🏭 Factory Steering geladen")
@@ -56,7 +55,6 @@ def show_factory_steering():
     with st.expander("🗺️ Navigation", expanded=False):
         _show_navigation_commands_section(gateway)
 
-
 def _show_factory_reset_section(gateway: MqttGateway):
     """Zeigt Factory Reset Funktionalität"""
     st.markdown("**Factory Reset der gesamten Modellfabrik:**")
@@ -86,7 +84,6 @@ def _show_factory_reset_section(gateway: MqttGateway):
 
     with col2:
         st.info("💡 Factory Reset wird direkt gesendet (keine Vorschau)")
-
 
 def _show_module_sequences_section(gateway: MqttGateway):
     """Zeigt Modul-Sequenzen für AIQS, MILL, DRILL"""
@@ -160,7 +157,6 @@ def _show_module_sequences_section(gateway: MqttGateway):
 
         # DRILL Sequenz-Anzeige
         _show_module_sequence_display_inline(gateway, "DRILL")
-
 
 def _show_fts_commands_section(gateway: MqttGateway):
     """Zeigt FTS-Steuerung"""
@@ -263,7 +259,6 @@ def _show_fts_commands_section(gateway: MqttGateway):
 
     st.info("💡 FTS-Befehle werden direkt gesendet (keine Vorschau)")
 
-
 def _show_order_commands_section(gateway: MqttGateway):
     """Zeigt Auftrags-Befehle"""
     st.markdown("**Aufträge für spezifische Farben senden:**")
@@ -329,7 +324,6 @@ def _show_order_commands_section(gateway: MqttGateway):
 
     st.info("💡 Aufträge werden direkt gesendet (keine Vorschau)")
 
-
 def _send_module_command(gateway: MqttGateway, module_name: str, command: str):
     """Sendet einen einzelnen Modul-Befehl über MqttGateway"""
     # Modul-spezifische Serial Numbers
@@ -357,7 +351,6 @@ def _send_module_command(gateway: MqttGateway, module_name: str, command: str):
             st.error(f"❌ Fehler beim Senden von {module_name} {command}")
     except Exception as e:
         st.error(f"❌ Fehler bei {module_name} {command}: {e}")
-
 
 def _show_navigation_commands_section(gateway: MqttGateway):
     """Zeigt Navigations-Befehle"""
@@ -416,13 +409,11 @@ def _show_navigation_commands_section(gateway: MqttGateway):
                 del st.session_state["pending_message"]
                 request_refresh()
 
-
 # Hilfsfunktionen für Tests und Legacy-Support
 def _get_module_serial(module_name: str) -> str:
     """Gibt die Seriennummer für ein Modul zurück"""
     module_serials = {"AIQS": "SVR4H76530", "MILL": "SVR3QA2098", "DRILL": "SVR4H76449"}
     return module_serials.get(module_name, "UNKNOWN")
-
 
 def _prepare_fts_message(action_type: str, metadata: dict = None) -> dict:
     """Erstellt eine FTS-Nachricht für Tests und setzt pending_message"""
@@ -442,7 +433,6 @@ def _prepare_fts_message(action_type: str, metadata: dict = None) -> dict:
 
     return message
 
-
 def _prepare_module_sequence_message(module_name: str, sequence: list) -> dict:
     """Erstellt eine Modul-Sequenz-Nachricht für Tests und setzt pending_message"""
     serial_number = _get_module_serial(module_name)
@@ -457,7 +447,6 @@ def _prepare_module_sequence_message(module_name: str, sequence: list) -> dict:
         }
 
     return message
-
 
 def _prepare_module_step_message(module_name: str, command: str) -> dict:
     """Erstellt eine einzelne Modul-Schritt-Nachricht für Tests und setzt pending_message"""
@@ -481,7 +470,6 @@ def _prepare_module_step_message(module_name: str, command: str) -> dict:
     }
 
     return message
-
 
 def _prepare_navigation_message(navigation_type: str):
     """Bereitet Navigations-Nachricht vor mit Message Generator"""
@@ -533,7 +521,6 @@ def _prepare_navigation_message(navigation_type: str):
     else:
         st.error(f"❌ Fehler beim Generieren der Navigation-Nachricht für {navigation_type}")
 
-
 def _send_pending_message():
     """Sendet die vorbereitete Nachricht"""
     if "pending_message" not in st.session_state:
@@ -557,7 +544,6 @@ def _send_pending_message():
             st.error("❌ MQTT nicht verbunden")
     except Exception as e:
         st.error(f"❌ Fehler beim Senden: {e}")
-
 
 def _prepare_module_sequence(module_name: str, commands: list):
     """Bereitet eine Modul-Sequenz vor und speichert sie im Session State"""
@@ -599,7 +585,6 @@ def _prepare_module_sequence(module_name: str, commands: list):
 
     st.success(f"✅ {module_name} Sequenz vorbereitet ({len(commands)} Schritte)")
     request_refresh()
-
 
 def _show_module_sequence_display_inline(gateway: MqttGateway, module_name: str):
     """Zeigt vorbereitete Modul-Sequenz inline in der jeweiligen Modul-Box"""
@@ -650,7 +635,6 @@ def _show_module_sequence_display_inline(gateway: MqttGateway, module_name: str)
     if st.button("🗑️ Sequenz löschen", key=f"clear_sequence_{module}"):
         del st.session_state["module_sequence"]
         request_refresh()
-
 
 def _send_sequence_message(gateway: MqttGateway, message: dict, step: int, total_steps: int):
     """Sendet eine einzelne Message aus der Sequenz"""

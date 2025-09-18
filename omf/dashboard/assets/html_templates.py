@@ -3,7 +3,6 @@ HTML Templates für OMF Dashboard
 Wiederverwendbare HTML/CSS-Templates für konsistente UI-Elemente
 """
 
-
 def get_workpiece_box_template(workpiece_type: str, count: int, available: bool) -> str:
     """
     Template für Werkstück-Boxen (ROT, BLUE, WHITE) - OHNE HTML-Buttons für Streamlit-Kompatibilität
@@ -39,7 +38,6 @@ def get_workpiece_box_template(workpiece_type: str, count: int, available: bool)
     </div>
     """
 
-
 def get_product_catalog_template(workpiece_type: str) -> str:
     """
     Template für Produktkatalog-Boxen (ROT, BLUE, WHITE) - OHNE Bestand/Verfügbar-Info
@@ -67,7 +65,6 @@ def get_product_catalog_template(workpiece_type: str) -> str:
     </div>
     """
 
-
 def get_bucket_template(position: str, workpiece_type: str = None) -> str:
     """
     Template für Lager-Buckets (A1-C3)
@@ -92,7 +89,6 @@ def get_bucket_template(position: str, workpiece_type: str = None) -> str:
     else:
         # Leerer Bucket
         return f'<div style="width: 140px; height: 140px; margin: 8px auto; position: relative;"><div style="width: 140px; height: 60px; border: 4px solid #000000; border-top: none; background-color: #f9f9f9; border-radius: 0 0 12px 12px; position: absolute; bottom: 0; left: 0;"></div><div style="text-align: center; font-size: 16px; font-weight: bold; color: #999; margin-top: 4px; position: absolute; bottom: -25px; left: 0; right: 0;">{position}</div></div>'
-
 
 def get_status_badge_template(status: str, status_type: str = "info") -> str:
     """
@@ -119,7 +115,6 @@ def get_status_badge_template(status: str, status_type: str = "info") -> str:
         {status}
     </span>
     """
-
 
 def get_module_card_template(module_name: str, status: str, ip_address: str = None) -> str:
     """

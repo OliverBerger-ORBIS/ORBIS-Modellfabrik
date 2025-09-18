@@ -20,7 +20,6 @@ from .graph_analyzer import GraphAnalyzer, MessageNode
 
 logger = get_logger(__name__)
 
-
 class GraphVisualizer:
     """Erstellt interaktive Graph-Visualisierungen für Message-Ketten"""
 

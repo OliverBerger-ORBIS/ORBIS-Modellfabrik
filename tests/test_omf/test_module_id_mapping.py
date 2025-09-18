@@ -5,15 +5,12 @@ Testet die korrekte Zuordnung von Modul-Namen zu Seriennummern
 um kritische Bugs wie die Module-ID-Verwechslung zu verhindern.
 """
 
-import os
-import sys
+from pathlib import Path
 import unittest
 
 # Pfad für Import hinzufügen
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "omf"))
 
 from omf.dashboard.components.steering_factory import _get_module_serial
-
 
 class TestModuleIdMapping(unittest.TestCase):
     """Test-Klasse für Module-ID-Mapping"""
@@ -96,7 +93,6 @@ class TestModuleIdMapping(unittest.TestCase):
             generated_topic = f"module/v1/ff/{serial}/order"
 
             self.assertEqual(generated_topic, expected_topic, f"Topic für {module} sollte konsistent sein")
-
 
 if __name__ == "__main__":
     # Test-Suite ausführen

@@ -23,7 +23,6 @@ except Exception as e:
     TEMPLATE_MANAGER_AVAILABLE = False
     print(f"❌ MessageTemplate Fehler: {e}")
 
-
 def process_fts_factsheet_messages_from_buffers(factsheet_messages):
     """Verarbeitet FTS-Factsheet-Nachrichten aus Per-Topic-Buffer"""
     if not factsheet_messages:
@@ -37,7 +36,6 @@ def process_fts_factsheet_messages_from_buffers(factsheet_messages):
         # Timestamp für letzte Aktualisierung speichern
         st.session_state["fts_factsheet_last_update"] = latest_factsheet_msg.get("ts", 0)
 
-
 def get_formatted_timestamp(timestamp):
     """Timestamp in lesbares Format konvertieren (wie in overview_inventory)"""
     if not timestamp:
@@ -49,7 +47,6 @@ def get_formatted_timestamp(timestamp):
         return dt.strftime("%d.%m.%Y %H:%M:%S")
     except (ValueError, OSError):
         return f"Timestamp: {timestamp}"
-
 
 def analyze_fts_factsheet_data(factsheet_data):
     """Analysiert FTS-Factsheet-Daten semantisch"""
@@ -107,7 +104,6 @@ def analyze_fts_factsheet_data(factsheet_data):
     except Exception as e:
         st.warning(f"⚠️ Fehler bei der FTS-Factsheet-Analyse: {e}")
         return {}
-
 
 def show_fts_factsheet():
     """Zeigt FTS-Factsheet-Informationen"""

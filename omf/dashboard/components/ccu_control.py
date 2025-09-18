@@ -19,7 +19,6 @@ try:
 except ImportError:
     TEMPLATE_MANAGER_AVAILABLE = False
 
-
 def process_ccu_control_messages_from_buffers(control_messages):
     """Verarbeitet CCU-Control-Nachrichten aus Per-Topic-Buffer"""
     if not control_messages:
@@ -33,7 +32,6 @@ def process_ccu_control_messages_from_buffers(control_messages):
         # Timestamp für letzte Aktualisierung speichern
         st.session_state["ccu_control_last_update"] = latest_control_msg.get("ts", 0)
 
-
 def get_formatted_timestamp(timestamp):
     """Timestamp in lesbares Format konvertieren"""
     if not timestamp:
@@ -44,7 +42,6 @@ def get_formatted_timestamp(timestamp):
         return dt.strftime("%d.%m.%Y %H:%M:%S")
     except (ValueError, OSError):
         return f"Timestamp: {timestamp}"
-
 
 def analyze_ccu_control_data(control_data):
     """Analysiert CCU-Control-Daten semantisch basierend auf RAW-Data-Struktur"""
@@ -83,7 +80,6 @@ def analyze_ccu_control_data(control_data):
     except Exception as e:
         st.warning(f"⚠️ Fehler bei der CCU-Control-Analyse: {e}")
         return {}
-
 
 def show_ccu_control():
     """Zeigt CCU-Control-Informationen"""

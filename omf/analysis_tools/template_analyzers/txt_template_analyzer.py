@@ -9,7 +9,6 @@ import json
 import os
 import re
 import sqlite3
-import sys
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Set
@@ -19,10 +18,8 @@ import yaml
 from omf.tools.message_template_manager import get_message_template_manager
 from omf.tools.module_manager import get_omf_module_manager
 
-# sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", ".."))  # Nicht mehr nötig nach pip install -e .
 from omf.tools.module_manager import get_omf_module_manager as get_module_manager
 from omf.tools.nfc_manager import get_omf_nfc_manager as get_nfc_manager
-
 
 class TXTTemplateAnalyzer:
     def __init__(self):
@@ -43,7 +40,7 @@ class TXTTemplateAnalyzer:
         # Initialize message template manager
         self.message_template_manager = get_message_template_manager()
         # Get project root (3 levels up from tools directory)
-        project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
+        project_root = os.path.abspath(str(Path(__file__).parent / ".." / ".." / ".."))
 
         # Set paths relative to project root
         self.output_dir = os.path.join(project_root, "registry/observations/payloads")
@@ -943,7 +940,6 @@ class TXTTemplateAnalyzer:
             except Exception as e:
                 print(f"  ❌ Fehler beim Speichern von {template_key}: {e}")
 
-
 def main():
     """Main function"""
     analyzer = TXTTemplateAnalyzer()
@@ -955,7 +951,6 @@ def main():
     else:
         print("💥 Script mit Fehlern beendet!")
         exit(1)
-
 
 if __name__ == "__main__":
     main()

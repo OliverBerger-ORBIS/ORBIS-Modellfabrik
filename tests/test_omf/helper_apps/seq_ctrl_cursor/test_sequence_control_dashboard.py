@@ -1,14 +1,11 @@
-import os
-import sys
+from pathlib import Path
 
 # Workspace-Root zum sys.path hinzufügen, damit omf als Package gefunden wird
-WORKSPACE_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
+WORKSPACE_ROOT = os.path.abspath(str(Path(__file__).parent / ".." / ".." / ".."))
 if WORKSPACE_ROOT not in sys.path:
-    sys.path.insert(0, WORKSPACE_ROOT)
-import pytest
+    import pytest
 
 from omf.helper_apps.seq_ctrl_cursor.sequence_control_dashboard import main
-
 
 def test_dashboard_import():
     """Test dass das Dashboard erfolgreich importiert werden kann."""
@@ -16,12 +13,10 @@ def test_dashboard_import():
 
     assert sequence_control_dashboard is not None
 
-
 def test_main_function_exists():
     """Test dass die main Funktion existiert."""
 
     assert callable(main)
-
 
 def test_dashboard_components_import():
     """Test dass alle benötigten Komponenten importiert werden können."""
@@ -31,7 +26,6 @@ def test_dashboard_components_import():
     assert callable(create_example_python_sequence)
     assert callable(create_example_sequences)
     assert callable(create_sequence_ui_app)
-
 
 def test_sequence_definition_functions():
     """Test der Sequence Definition Funktionen."""
@@ -49,7 +43,6 @@ def test_sequence_definition_functions():
     if sequences is not None:
         assert isinstance(sequences, list)
     # Kann None sein wenn keine Sequenzen gefunden werden
-
 
 def test_sequence_ui_app():
     """Test der Sequence UI App Funktion."""

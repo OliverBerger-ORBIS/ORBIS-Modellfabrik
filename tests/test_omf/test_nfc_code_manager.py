@@ -4,18 +4,15 @@ Unit Tests for NFC Code Manager
 Tests the NFCCodeManager class functionality
 """
 
-import os
-import sys
+from pathlib import Path
 import tempfile
 import unittest
 
 import yaml
 
 # Add omf to path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "omf"))
 
 from omf.analysis_tools.nfc_code_manager import NFCCodeManager
-
 
 class TestNFCCodeManager(unittest.TestCase):
     """Test cases for NFCCodeManager class"""
@@ -299,7 +296,6 @@ class TestNFCCodeManager(unittest.TestCase):
         self.assertTrue(self.manager.is_nfc_code("999999999999999"))
         self.assertEqual(self.manager.get_friendly_name("999999999999999"), "TEST")
 
-
 class TestNFCCodeManagerBackwardCompatibility(unittest.TestCase):
     """Test backward compatibility functions"""
 
@@ -352,7 +348,6 @@ class TestNFCCodeManagerBackwardCompatibility(unittest.TestCase):
 
         all_codes = get_all_nfc_codes()
         self.assertIn("040a8dca341291", all_codes)
-
 
 if __name__ == "__main__":
     # Run tests

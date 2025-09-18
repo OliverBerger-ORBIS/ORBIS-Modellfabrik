@@ -12,7 +12,6 @@ import os
 import subprocess
 from datetime import datetime
 
-
 def start_end2end_session():
     """Startet eine End-to-End Session für W1B1R1"""
 
@@ -56,7 +55,6 @@ def start_end2end_session():
 
     return True
 
-
 def main():
     """Hauptfunktion"""
     print("🎯 End-to-End Session Starter für W1B1R1")
@@ -78,7 +76,6 @@ def main():
         print("❌ Session fehlgeschlagen")
 
     return success
-
 
 if __name__ == "__main__":
     main()

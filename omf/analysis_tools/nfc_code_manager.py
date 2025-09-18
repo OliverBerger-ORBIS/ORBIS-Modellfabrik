@@ -10,7 +10,6 @@ from typing import Any, Dict, List, Optional
 
 import yaml
 
-
 class NFCCodeManager:
     """Central NFC Code Manager using YAML configuration"""
 
@@ -210,31 +209,26 @@ class NFCCodeManager:
             return True
         return False
 
-
 # Backward compatibility functions (for existing code)
 def get_friendly_name(nfc_code: str) -> str:
     """Backward compatibility function"""
     manager = NFCCodeManager()
     return manager.get_friendly_name(nfc_code)
 
-
 def get_nfc_code(friendly_name: str) -> str:
     """Backward compatibility function"""
     manager = NFCCodeManager()
     return manager.get_nfc_code(friendly_name)
-
 
 def is_nfc_code(value: str) -> bool:
     """Backward compatibility function"""
     manager = NFCCodeManager()
     return manager.is_nfc_code(value)
 
-
 def get_nfc_codes_by_color(color: str) -> List[str]:
     """Backward compatibility function"""
     manager = NFCCodeManager()
     return manager.get_nfc_codes_by_color(color)
-
 
 # Legacy constants for backward compatibility
 def get_all_nfc_codes() -> List[str]:
@@ -242,10 +236,8 @@ def get_all_nfc_codes() -> List[str]:
     manager = NFCCodeManager()
     return manager.get_all_nfc_codes()
 
-
 # Create global instance for easy access
 _nfc_manager = None
-
 
 def get_nfc_manager() -> NFCCodeManager:
     """Get global NFC manager instance"""
@@ -253,7 +245,6 @@ def get_nfc_manager() -> NFCCodeManager:
     if _nfc_manager is None:
         _nfc_manager = NFCCodeManager()
     return _nfc_manager
-
 
 if __name__ == "__main__":
     """Test the NFC Code Manager"""

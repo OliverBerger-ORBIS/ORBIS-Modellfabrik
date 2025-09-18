@@ -1,12 +1,8 @@
-import os
-import sys
-
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from pathlib import Path
 
 import unittest
 
 from omf.tools.message_template_manager import get_message_template_manager
-
 
 class TestMessageTemplateManagerSingleton(unittest.TestCase):
     def test_singleton_behavior(self):

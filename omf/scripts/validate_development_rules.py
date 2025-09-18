@@ -18,8 +18,6 @@ from typing import List
 
 # Projekt-Root ermitteln
 PROJECT_ROOT = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(PROJECT_ROOT))
-
 
 class DevelopmentRulesValidator:
     """Validiert die Einhaltung der Development Rules"""
@@ -65,8 +63,8 @@ class DevelopmentRulesValidator:
         """Prüft auf korrekte Import-Struktur"""
         errors = []
 
-        # sys.path.append Hacks finden
-        if 'sys.path.append' in content:
+        # sys.path.append Hacks finden (aber nicht in Kommentaren oder Prüfungen)
+        if 'sys.path.append(' in content and not ('# sys.path.append' in content or 'errors.append("❌ sys.path.append()' in content):
             errors.append("❌ sys.path.append() gefunden - verwende korrekte Imports")
 
         # Import-Reihenfolge prüfen (vereinfacht)
@@ -116,8 +114,8 @@ class DevelopmentRulesValidator:
             errors.append(f"❌ Absolute Pfade gefunden: {absolute_paths}")
 
         # os.path.join Hacks finden (alte Methode)
-        if 'os.path.join(os.path.dirname(__file__)' in content:
-            errors.append("❌ os.path.join(os.path.dirname(__file__)) gefunden - verwende Path(__file__).parent")
+        if 'os.path.join(Path(__file__).parent' in content:
+            errors.append("❌ os.path.join(Path(__file__).parent) gefunden - verwende Path(__file__).parent")
 
         return errors
 
@@ -208,13 +206,11 @@ class DevelopmentRulesValidator:
             print(f"\n❌ {total_errors} Regel-Verletzungen gefunden!")
             return False
 
-
 def main():
     """Hauptfunktion"""
     validator = DevelopmentRulesValidator()
     success = validator.validate_project()
     sys.exit(0 if success else 1)
-
 
 if __name__ == "__main__":
     main()

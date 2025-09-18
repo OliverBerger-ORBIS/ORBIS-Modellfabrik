@@ -3,15 +3,11 @@
 Test für OMF Topic Manager
 """
 
-import os
-import sys
-
-sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+from pathlib import Path
 
 import unittest
 
 from omf.tools.topic_manager import get_omf_topic_manager
-
 
 class TestOMFTopicManager(unittest.TestCase):
     """Test-Klasse für OMF Topic Manager"""
@@ -113,7 +109,6 @@ class TestOMFTopicManager(unittest.TestCase):
 
         # Unbekanntes Topic
         self.assertFalse(self.topic_manager.is_known_topic("unknown/topic"))
-
 
 if __name__ == "__main__":
     unittest.main()

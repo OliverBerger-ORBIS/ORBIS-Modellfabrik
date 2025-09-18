@@ -8,7 +8,6 @@ import json
 import unittest
 from unittest.mock import MagicMock
 
-
 class TestChargeCommands(unittest.TestCase):
     """Test-Klasse für Charge Commands"""
 
@@ -144,7 +143,6 @@ class TestChargeCommands(unittest.TestCase):
             if "charge" not in invalid_message:
                 with self.assertRaises(KeyError):
                     _ = invalid_message["charge"]
-
 
 if __name__ == "__main__":
     unittest.main()

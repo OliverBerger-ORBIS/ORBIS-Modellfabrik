@@ -13,11 +13,9 @@ from . import message_generator as mg
 from .logging_config import get_logger
 from .omf_mqtt_client import OmfMqttClient
 
-
 def utc_iso() -> str:
     """Gibt UTC-Zeitstempel im ISO-Format zurück."""
     return datetime.now(timezone.utc).isoformat()
-
 
 class MqttGateway:
     """

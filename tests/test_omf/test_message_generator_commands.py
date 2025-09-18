@@ -9,17 +9,14 @@ Umfassende Tests für alle Befehle des MessageGenerators:
 - Module Steps
 """
 
+from pathlib import Path
 import json
-import os
-import sys
 import unittest
 from datetime import datetime
 
 # Add omf to path for imports
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "omf"))
 
 from omf.tools.message_generator import MessageGenerator
-
 
 class TestMessageGeneratorCommands(unittest.TestCase):
     """Test-Klasse für alle MessageGenerator Befehle"""
@@ -359,7 +356,6 @@ class TestMessageGeneratorCommands(unittest.TestCase):
 
                 except Exception as e:
                     self.fail(f"KRITISCHER FEHLER: Befehl '{name}' funktioniert nicht! Fehler: {e}")
-
 
 if __name__ == "__main__":
     print("🧪 Starte MessageGenerator Command Tests...")

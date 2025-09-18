@@ -4,12 +4,10 @@ OMF Topic Manager - Zentrale Verwaltung der MQTT-Topic-Konfiguration
 Version: 3.0.0
 """
 
-import os
 from pathlib import Path
 from typing import Any, Dict, List
 
 import yaml
-
 
 class OmfTopicManager:
     """Zentrale Verwaltung der MQTT-Topic-Konfiguration für OMF Dashboard"""
@@ -25,7 +23,7 @@ class OmfTopicManager:
 
         # Fallback to legacy single file
         if config_path is None:
-            config_path = os.path.join(os.path.dirname(__file__), "..", "config", "topic_config.yml")
+            config_path = str(Path(__file__).parent / ".." / "config" / "topic_config.yml")
 
         self.config_path = config_path
         self.config = None
@@ -248,10 +246,8 @@ class OmfTopicManager:
 
         return self.config["metadata"]
 
-
 # Singleton instance
 _topic_manager_instance = None
-
 
 def get_omf_topic_manager() -> OmfTopicManager:
     """Get singleton instance of OMFTopicManager"""
@@ -259,7 +255,6 @@ def get_omf_topic_manager() -> OmfTopicManager:
     if _topic_manager_instance is None:
         _topic_manager_instance = OmfTopicManager()
     return _topic_manager_instance
-
 
 # Backward compatibility functions
 def get_topic_manager() -> OmfTopicManager:

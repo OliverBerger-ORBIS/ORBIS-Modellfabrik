@@ -6,8 +6,6 @@ Exakte Kopie der show_messages_templates() Funktion aus settings.py
 import streamlit as st
 
 # Add omf to path for imports
-# sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", ".."))  # Nicht mehr nötig nach pip install -e .
-
 
 def show_messages_templates():
     """Zeigt die Message Templates an - Exakte Kopie aus settings.py"""

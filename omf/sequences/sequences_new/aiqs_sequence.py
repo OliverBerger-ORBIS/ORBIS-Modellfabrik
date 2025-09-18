@@ -5,7 +5,6 @@ Demonstriert komplexe Logik und dynamische Payloads
 
 from omf.tools.sequence_executor import SequenceDefinition, SequenceStep
 
-
 def get_sequence_definition():
     """Gibt die AIQS-Sequenz-Definition zurück"""
 

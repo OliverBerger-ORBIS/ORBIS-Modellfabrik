@@ -3,14 +3,11 @@ Dashboard Integration Tests für Sequenz-Steuerung
 Erkennt spezifische Dashboard-Integration Fehler
 """
 
-import os
-import sys
+from pathlib import Path
 import unittest
 from unittest.mock import MagicMock, Mock, patch
 
 # Pfad für Imports
-# sys.path.append(os.path.join(os.path.dirname(__file__), "..", "omf"))  # Nicht mehr nötig nach pip install -e .
-
 
 class TestDashboardSequenceIntegration(unittest.TestCase):
     """Tests für Dashboard-Sequenz-Integration"""
@@ -231,7 +228,6 @@ class TestDashboardSequenceIntegration(unittest.TestCase):
                     self.fail(f"show_active_sequences Aufruf fehlgeschlagen: {e}")
         except Exception as e:
             self.fail(f"SequenceUI Methodenaufruf Sicherheit Test fehlgeschlagen: {e}")
-
 
 if __name__ == "__main__":
     # Test Suite ausführen

@@ -8,7 +8,6 @@ import subprocess
 import sys
 from pathlib import Path
 
-
 def run_command(command, description):
     """Führt einen Befehl aus und gibt Status zurück"""
     print(f"🔄 {description}...")
@@ -25,7 +24,6 @@ def run_command(command, description):
         print(f"❌ Fehler bei {description}: {e}")
         return False
 
-
 def check_syntax(file_path):
     """Prüft Python-Syntax einer Datei"""
     print(f"🔍 Prüfe Syntax: {file_path}")
@@ -41,7 +39,6 @@ def check_syntax(file_path):
     except Exception as e:
         print(f"❌ Fehler beim Prüfen von {file_path}: {e}")
         return False
-
 
 def main():
     """Hauptfunktion für Code-Formatierung"""
@@ -88,7 +85,6 @@ def main():
     else:
         print("\n❌ Code-Formatierung fehlgeschlagen!")
         return False
-
 
 if __name__ == "__main__":
     success = main()

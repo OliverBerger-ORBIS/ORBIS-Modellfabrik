@@ -9,22 +9,17 @@ ISO8601 = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$")
 UUID_RE = re.compile(r"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$")
 NFC14 = re.compile(r"^[0-9a-fA-F]{14}$")  # eure NFC-IDs
 
-
 def is_iso8601(s: Any) -> bool:
     return isinstance(s, str) and bool(ISO8601.match(s))
-
 
 def is_uuid(s: Any) -> bool:
     return isinstance(s, str) and bool(UUID_RE.match(s))
 
-
 def is_nfc(s: Any) -> bool:
     return isinstance(s, str) and bool(NFC14.match(s))
 
-
 def in_enum(val: Any, allowed: list[str]) -> bool:
     return isinstance(val, str) and val in allowed
-
 
 def t(payload, path: str, default=None):
     """dict.get über 'a.b.c' Pfade."""
@@ -35,17 +30,14 @@ def t(payload, path: str, default=None):
         cur = cur[key]
     return cur
 
-
 def push(res, level: str, msg: str, where: str | None = None):
     item = {"msg": msg}
     if where:
         item["path"] = where
     res[level].append(item)
 
-
 # ---------- Kern-API ----------
 ValidationResult = Dict[str, List[Dict[str, str]]]
-
 
 def validate(template_key: str, payload: dict[str, Any]) -> ValidationResult:
     """Router für template-spezifische Checks."""
@@ -149,7 +141,6 @@ def validate(template_key: str, payload: dict[str, Any]) -> ValidationResult:
     # weitere Keys hier ergänzen …
     return res
 
-
 # ---------- generische Checks ----------
 def _generic_timestamp(res, payload, path):
     ts = t(payload, path)
@@ -158,12 +149,10 @@ def _generic_timestamp(res, payload, path):
     elif not is_iso8601(ts):
         push(res, "errors", f"'{path}' must be ISO 8601 Zulu", path)
 
-
 def _generic_uuid_if_present(res, payload, path):
     val = t(payload, path)
     if val is not None and val != "" and not is_uuid(val):
         push(res, "warnings", f"'{path}' is not UUID (ok if module uses non-uuid)", path)
-
 
 # ---------- template-spezifisch ----------
 def _hbw_inventory(res, payload):
@@ -203,7 +192,6 @@ def _hbw_inventory(res, payload):
                     "actionState.result",
                 )
 
-
 def _drill(res, payload):
     _check_action_state(res, payload, allowed={"PICK", "DRILL", "DROP"})
     loads = payload.get("loads", [])
@@ -222,7 +210,6 @@ def _drill(res, payload):
                     "loads[*].duration should be positive (Hinweis, nicht zwingend)",
                     f"loads[{i}].duration",
                 )
-
 
 def _mill(res, payload):
     _check_action_state(res, payload, allowed={"PICK", "MILL", "DROP"})
@@ -243,7 +230,6 @@ def _mill(res, payload):
                     "loads[*].duration should be positive (Hinweis, nicht zwingend)",
                     f"loads[{i}].duration",
                 )
-
 
 def _dps(res, payload):
     _check_action_state(res, payload, allowed={"PICK", "DROP"})
@@ -272,7 +258,6 @@ def _dps(res, payload):
                             f"actionStates[{i}].metadata.workpiece.history[{j}].code",
                         )
 
-
 def _aiqs(res, payload):
     _check_action_state(res, payload, allowed={"PICK", "CHECK_QUALITY", "DROP"})
     a = payload.get("actionState") or {}
@@ -297,7 +282,6 @@ def _aiqs(res, payload):
                 "actionState.metadata.workpieceId",
             )
 
-
 def _ccu_pairing(res, payload):
     for i, m in enumerate(payload.get("modules", []) or []):
         avail = m.get("available")
@@ -321,7 +305,6 @@ def _ccu_pairing(res, payload):
                 f"transports[{i}].batteryPercentage",
             )
 
-
 def _ccu_status(res, payload):
     st = payload.get("systemStatus")
     if st not in {"RUNNING", "STOPPED", "ERROR", "MAINTENANCE"}:
@@ -333,7 +316,6 @@ def _ccu_status(res, payload):
         wid = wp.get("workpieceId")
         if wid and not is_nfc(wid):
             push(res, "warnings", "workpieceId should be 14-hex NFC", f"availableWorkpieces[{i}].workpieceId")
-
 
 def _check_action_state(res, payload, allowed: set[str]):
     a = payload.get("actionState")
@@ -350,57 +332,47 @@ def _check_action_state(res, payload, allowed: set[str]):
     if aid is not None and not is_uuid(aid):
         push(res, "warnings", "actionState.id not UUID (ok if generator differs)", "actionState.id")
 
-
 # ---------- zusätzliche CCU Validatoren ----------
 def _ccu_config(res, payload):
     """Validiert ccu.state.config Nachrichten"""
     # Basis-Validierung für CCU Config
     pass
 
-
 def _ccu_layout(res, payload):
     """Validiert ccu.state.layout Nachrichten"""
     # Basis-Validierung für CCU Layout
     pass
-
 
 def _ccu_stock(res, payload):
     """Validiert ccu.state.stock Nachrichten"""
     # Basis-Validierung für CCU Stock
     pass
 
-
 def _ccu_version_mismatch(res, payload):
     """Validiert ccu.state.version_mismatch Nachrichten"""
     # Basis-Validierung für CCU Version Mismatch
     pass
-
 
 # ---------- Module Connection Validators ----------
 def _module_connection_hbw(res, payload):
     """Validiert HBW module connection Nachrichten"""
     _module_connection_generic(res, payload, "SVR3QA0022", "HBW")
 
-
 def _module_connection_mill(res, payload):
     """Validiert MILL module connection Nachrichten"""
     _module_connection_generic(res, payload, "SVR3QA2098", "MILL")
-
 
 def _module_connection_drill(res, payload):
     """Validiert DRILL module connection Nachrichten"""
     _module_connection_generic(res, payload, "SVR4H76449", "DRILL")
 
-
 def _module_connection_dps(res, payload):
     """Validiert DPS module connection Nachrichten"""
     _module_connection_generic(res, payload, "SVR4H73275", "DPS")
 
-
 def _module_connection_aiqs(res, payload):
     """Validiert AIQS module connection Nachrichten"""
     _module_connection_generic(res, payload, "SVR4H76530", "AIQS")
-
 
 def _module_connection_generic(res, payload, expected_module_id, module_name):
     """Generische Module Connection Validierung"""
@@ -429,32 +401,26 @@ def _module_connection_generic(res, payload, expected_module_id, module_name):
     if not isinstance(information, list):
         push(res, "warnings", "information should be array", "information")
 
-
 # ---------- Module Order Validators ----------
 def _module_order_hbw(res, payload):
     """Validiert HBW module order Nachrichten"""
     _module_order_generic(res, payload, "SVR3QA0022", "HBW", ["PICK", "STORE", "DROP"])
 
-
 def _module_order_mill(res, payload):
     """Validiert MILL module order Nachrichten"""
     _module_order_generic(res, payload, "SVR3QA2098", "MILL", ["PICK", "MILL", "DROP"])
-
 
 def _module_order_drill(res, payload):
     """Validiert DRILL module order Nachrichten"""
     _module_order_generic(res, payload, "SVR4H76449", "DRILL", ["PICK", "DRILL", "DROP"])
 
-
 def _module_order_dps(res, payload):
     """Validiert DPS module order Nachrichten"""
     _module_order_generic(res, payload, "SVR4H73275", "DPS", ["PICK", "DROP"])
 
-
 def _module_order_aiqs(res, payload):
     """Validiert AIQS module order Nachrichten"""
     _module_order_generic(res, payload, "SVR4H76530", "AIQS", ["PICK", "CHECK_QUALITY", "DROP"])
-
 
 def _module_order_generic(res, payload, expected_module_id, module_name, allowed_commands):
     """Generische Module Order Validierung"""
@@ -494,32 +460,26 @@ def _module_order_generic(res, payload, expected_module_id, module_name, allowed
         if workpiece_id and not is_nfc(workpiece_id):
             push(res, "warnings", "workpieceId should be 14-hex NFC for quality check", "metadata.workpieceId")
 
-
 # ---------- Module Factsheet Validators ----------
 def _module_factsheet_hbw(res, payload):
     """Validiert HBW module factsheet Nachrichten"""
     _module_factsheet_generic(res, payload, "SVR3QA0022", "HBW")
 
-
 def _module_factsheet_mill(res, payload):
     """Validiert MILL module factsheet Nachrichten"""
     _module_factsheet_generic(res, payload, "SVR3QA2098", "MILL")
-
 
 def _module_factsheet_drill(res, payload):
     """Validiert DRILL module factsheet Nachrichten"""
     _module_factsheet_generic(res, payload, "SVR4H76449", "DRILL")
 
-
 def _module_factsheet_dps(res, payload):
     """Validiert DPS module factsheet Nachrichten"""
     _module_factsheet_generic(res, payload, "SVR4H73275", "DPS")
 
-
 def _module_factsheet_aiqs(res, payload):
     """Validiert AIQS module factsheet Nachrichten"""
     _module_factsheet_generic(res, payload, "SVR4H76530", "AIQS")
-
 
 def _module_factsheet_generic(res, payload, expected_serial, module_name):
     """Generische Module Factsheet Validierung"""
@@ -558,7 +518,6 @@ def _module_factsheet_generic(res, payload, expected_serial, module_name):
     if not isinstance(metadata, dict):
         push(res, "warnings", "metadata should be object", "metadata")
 
-
 # ---------- CCU Control Validator ----------
 def _ccu_control(res, payload):
     """Validiert CCU control Nachrichten"""
@@ -588,17 +547,14 @@ def _ccu_control(res, payload):
         if workpiece_type and workpiece_type not in ["RED", "WHITE", "BLUE"]:
             push(res, "warnings", f"workpiece type '{workpiece_type}' should be RED|WHITE|BLUE", "parameters.type")
 
-
 # ---------- TXT Controller Validators ----------
 def _txt_controller1_order_input(res, payload):
     """Validiert TXT Controller #1 Order Input Nachrichten"""
     _txt_order_generic(res, payload, "controller1")
 
-
 def _txt_controller1_stock_input(res, payload):
     """Validiert TXT Controller #1 Stock Input Nachrichten"""
     _txt_stock_generic(res, payload, "controller1")
-
 
 def _txt_order_generic(res, payload, controller_id):
     """Generische TXT Order Input Validierung"""
@@ -627,7 +583,6 @@ def _txt_order_generic(res, payload, controller_id):
     details = payload.get("details")
     if details and not isinstance(details, dict):
         push(res, "warnings", "details should be object", "details")
-
 
 def _txt_stock_generic(res, payload, controller_id):
     """Generische TXT Stock Input Validierung"""
@@ -685,7 +640,6 @@ def _txt_stock_generic(res, payload, controller_id):
     if status and status not in ["AVAILABLE", "RESERVED", "EMPTY", "MAINTENANCE"]:
         push(res, "warnings", f"invalid status '{status}'", "status")
 
-
 # ---------- FTS Validators ----------
 def _fts_order(res, payload):
     """Validiert FTS order Nachrichten"""
@@ -728,7 +682,6 @@ def _fts_order(res, payload):
 
     # Timestamp Validierung
     _generic_timestamp(res, payload, "timestamp")
-
 
 def _fts_state(res, payload):
     """Validiert FTS state Nachrichten"""
@@ -789,7 +742,6 @@ def _fts_state(res, payload):
     # Timestamp Validierung
     _generic_timestamp(res, payload, "timestamp")
 
-
 def _fts_connection(res, payload):
     """Validiert FTS connection Nachrichten"""
     # Required Fields
@@ -830,7 +782,6 @@ def _fts_connection(res, payload):
 
     # Timestamp Validierung
     _generic_timestamp(res, payload, "timestamp")
-
 
 def _fts_factsheet(res, payload):
     """Validiert FTS factsheet Nachrichten"""
@@ -906,7 +857,6 @@ def _fts_factsheet(res, payload):
                             f"protocolFeatures.agvActions[{i}].actionType",
                         )
 
-
 # ---------- Node-RED Validators ----------
 def _nodered_connection_dps(res, payload):
     """Validiert Node-RED DPS connection Nachrichten"""
@@ -950,7 +900,6 @@ def _nodered_connection_dps(res, payload):
     # Timestamp Validierung
     _generic_timestamp(res, payload, "timestamp")
 
-
 def _nodered_connection_aiqs(res, payload):
     """Validiert Node-RED AIQS connection Nachrichten"""
     # Required Fields
@@ -986,7 +935,6 @@ def _nodered_connection_aiqs(res, payload):
 
     # Timestamp Validierung
     _generic_timestamp(res, payload, "timestamp")
-
 
 def _nodered_state_dps(res, payload):
     """Validiert Node-RED DPS state Nachrichten"""
@@ -1058,7 +1006,6 @@ def _nodered_state_dps(res, payload):
     # Timestamp Validierung
     _generic_timestamp(res, payload, "timestamp")
 
-
 def _nodered_state_aiqs(res, payload):
     """Validiert Node-RED AIQS state Nachrichten"""
     # Required Fields
@@ -1110,7 +1057,6 @@ def _nodered_state_aiqs(res, payload):
 
     # Timestamp Validierung
     _generic_timestamp(res, payload, "timestamp")
-
 
 def _nodered_factsheet_dps(res, payload):
     """Validiert Node-RED DPS factsheet Nachrichten"""
@@ -1191,7 +1137,6 @@ def _nodered_factsheet_dps(res, payload):
 
     # Timestamp Validierung
     _generic_timestamp(res, payload, "timestamp")
-
 
 def _nodered_factsheet_aiqs(res, payload):
     """Validiert Node-RED AIQS factsheet Nachrichten"""
@@ -1287,7 +1232,6 @@ def _nodered_factsheet_aiqs(res, payload):
     # Timestamp Validierung
     _generic_timestamp(res, payload, "timestamp")
 
-
 # ---------- TXT Controller Validators ----------
 def _txt_bme680(res, payload):
     """Validiert TXT BME680 Sensor Daten"""
@@ -1343,7 +1287,6 @@ def _txt_bme680(res, payload):
     # Timestamp Validierung
     _generic_timestamp(res, payload, "ts")
 
-
 def _txt_broadcast_input(res, payload):
     """Validiert TXT Broadcast Input"""
     # Required Fields
@@ -1385,7 +1328,6 @@ def _txt_broadcast_input(res, payload):
     # Timestamp Validierung
     _generic_timestamp(res, payload, "ts")
 
-
 def _txt_cam(res, payload):
     """Validiert TXT Camera Daten"""
     # Required Fields
@@ -1397,7 +1339,6 @@ def _txt_cam(res, payload):
 
     # Timestamp Validierung
     _generic_timestamp(res, payload, "ts")
-
 
 def _txt_ldr(res, payload):
     """Validiert TXT LDR Sensor Daten"""
@@ -1417,7 +1358,6 @@ def _txt_ldr(res, payload):
     # Timestamp Validierung
     _generic_timestamp(res, payload, "ts")
 
-
 def _txt_broadcast_output(res, payload):
     """Validiert TXT Broadcast Output"""
     # Required Fields
@@ -1429,7 +1369,6 @@ def _txt_broadcast_output(res, payload):
 
     # Timestamp Validierung
     _generic_timestamp(res, payload, "ts")
-
 
 def _txt_config_hbw(res, payload):
     """Validiert TXT HBW Configuration Input"""
@@ -1444,7 +1383,6 @@ def _txt_config_hbw(res, payload):
 
     # Timestamp Validierung
     _generic_timestamp(res, payload, "ts")
-
 
 def _txt_order_output(res, payload):
     """Validiert TXT Order Output"""

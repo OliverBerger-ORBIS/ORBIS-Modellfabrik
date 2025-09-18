@@ -6,8 +6,8 @@ Spezifischer Analyzer für CAM Topics, die Base64-kodierte Bilddaten enthalten.
 Diese Topics sind nicht für normale Template-Analyse geeignet.
 """
 
+from pathlib import Path
 import os
-import sys
 import sqlite3
 import glob
 import json
@@ -19,11 +19,9 @@ import io
 from PIL import Image
 
 # Add project root to path for absolute imports
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../.."))
-sys.path.insert(0, project_root)
+project_root = os.path.abspath(str(Path(__file__).parent / "../../.."))
 
 # No registry manager needed for CAM analysis
-
 
 class CamTemplateAnalyzer:
     """Analyzer für CAM Topics mit Bilddaten"""
@@ -339,7 +337,6 @@ class CamTemplateAnalyzer:
         
         print("✅ CAM Template Analyse erfolgreich abgeschlossen!")
         print("🎉 Script erfolgreich beendet!")
-
 
 if __name__ == "__main__":
     analyzer = CamTemplateAnalyzer()

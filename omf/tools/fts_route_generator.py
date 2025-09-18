@@ -15,7 +15,6 @@ import yaml
 # Import des bestehenden MessageGenerators
 from .message_generator import get_omf_message_generator
 
-
 class FTSRouteGenerator:
     """Generiert FTS-MQTT-Messages aus YAML-Routen-Konfiguration"""
 
@@ -295,7 +294,6 @@ class FTSRouteGenerator:
             return False
 
         return True
-
 
 def get_fts_route_generator() -> FTSRouteGenerator:
     """Singleton-Instanz des FTS Route Generators"""

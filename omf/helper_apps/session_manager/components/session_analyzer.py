@@ -14,7 +14,6 @@ from omf.tools.topic_manager import OmfTopicManager
 
 logger = get_logger(__name__)
 
-
 class SessionAnalyzer:
     """Session Analyse mit OMF Topic-Config Integration"""
 

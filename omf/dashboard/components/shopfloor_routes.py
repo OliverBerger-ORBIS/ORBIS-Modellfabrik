@@ -10,7 +10,6 @@ import streamlit as st
 
 from .shopfloor_utils import find_route_between_modules, get_fts_routes, get_product_routes
 
-
 def show_shopfloor_routes():
     """Zeigt die FTS-Routenplanung"""
     st.subheader("🛣️ FTS-Routenplanung")
@@ -123,7 +122,6 @@ def show_shopfloor_routes():
 
     except Exception as e:
         st.error(f"❌ Fehler beim Laden der Routen: {e}")
-
 
 def get_route_statistics() -> Dict[str, Any]:
     """Gibt Routen-Statistiken zurück"""

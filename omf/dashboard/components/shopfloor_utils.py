@@ -9,7 +9,6 @@ from typing import Any, Dict, List, Optional
 import streamlit as st
 import yaml
 
-
 def load_shopfloor_config() -> Dict[str, Any]:
     """Lädt die Shopfloor-Konfiguration aus YAML-Dateien"""
     try:
@@ -36,7 +35,6 @@ def load_shopfloor_config() -> Dict[str, Any]:
         st.error(f"❌ Fehler beim Laden der Shopfloor-Konfiguration: {e}")
         return {"layout": {}, "routes": {}}
 
-
 def get_shopfloor_metadata() -> Dict[str, Any]:
     """Gibt Shopfloor-Metadaten zurück"""
     config = load_shopfloor_config()
@@ -52,36 +50,30 @@ def get_shopfloor_metadata() -> Dict[str, Any]:
         "last_updated": layout_meta.get("last_updated", "2025-01-19"),
     }
 
-
 def get_module_positions() -> List[Dict[str, Any]]:
     """Gibt alle Modul-Positionen zurück"""
     config = load_shopfloor_config()
     return config.get("layout", {}).get("positions", [])
-
 
 def get_intersections() -> List[Dict[str, Any]]:
     """Gibt alle Intersection-Positionen zurück"""
     config = load_shopfloor_config()
     return config.get("layout", {}).get("intersections", [])
 
-
 def get_enabled_modules() -> List[str]:
     """Gibt die aktivierten Module zurück"""
     config = load_shopfloor_config()
     return config.get("layout", {}).get("enabled_modules", [])
-
 
 def get_fts_routes() -> List[Dict[str, Any]]:
     """Gibt alle FTS-Routen zurück"""
     config = load_shopfloor_config()
     return config.get("routes", {}).get("routes", [])
 
-
 def get_product_routes() -> Dict[str, Any]:
     """Gibt alle Produkt-Routen zurück"""
     config = load_shopfloor_config()
     return config.get("routes", {}).get("products", {})
-
 
 def find_route_between_modules(start_module: str, end_module: str) -> Optional[Dict[str, Any]]:
     """Findet eine Route zwischen zwei Modulen"""
@@ -93,7 +85,6 @@ def find_route_between_modules(start_module: str, end_module: str) -> Optional[D
             return route
 
     return None
-
 
 def get_shopfloor_statistics() -> Dict[str, Any]:
     """Gibt Shopfloor-Statistiken zurück"""

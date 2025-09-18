@@ -4,12 +4,10 @@ Template Generator - Generiert Module-spezifische Templates aus generischen Temp
 Version: 3.0.0
 """
 
-import os
 from pathlib import Path
 from typing import Any, Dict
 
 import yaml
-
 
 class TemplateGenerator:
     """Generiert Module-spezifische Templates aus generischen Templates"""
@@ -17,10 +15,10 @@ class TemplateGenerator:
     def __init__(self, module_config_path: str = None, templates_dir: str = None):
         """Initialisiert den Template Generator"""
         if module_config_path is None:
-            module_config_path = os.path.join(os.path.dirname(__file__), "..", "config", "module_config.yml")
+            module_config_path = str(Path(__file__).parent / ".." / "config" / "module_config.yml")
 
         if templates_dir is None:
-            templates_dir = os.path.join(os.path.dirname(__file__), "..", "config", "message_templates")
+            templates_dir = str(Path(__file__).parent / ".." / "config" / "message_templates")
 
         self.module_config_path = Path(module_config_path)
         self.templates_dir = Path(templates_dir)
@@ -457,7 +455,6 @@ class TemplateGenerator:
 
         return all_templates
 
-
 def main():
     """Hauptfunktion für Template-Generierung"""
     print("🔧 Template Generator")
@@ -474,7 +471,6 @@ def main():
 
     for template_type, templates in all_templates.items():
         print(f"   📁 {template_type}: {len(templates)} Templates")
-
 
 if __name__ == "__main__":
     main()

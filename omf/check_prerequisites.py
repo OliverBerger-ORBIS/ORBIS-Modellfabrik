@@ -9,7 +9,6 @@ import socket
 import subprocess
 import sys
 
-
 def check_python_version():
     """Check Python version"""
     print("🐍 Checking Python version...")
@@ -21,7 +20,6 @@ def check_python_version():
     else:
         print(f"❌ Python {version.major}.{version.minor}.{version.micro} - Too old (need 3.7+)")
         return False
-
 
 def check_python_packages():
     """Check required Python packages"""
@@ -47,7 +45,6 @@ def check_python_packages():
 
     return all_ok
 
-
 def check_mqtt_broker():
     """Check if MQTT broker is running"""
     print("\n🔌 Checking MQTT broker...")
@@ -67,7 +64,6 @@ def check_mqtt_broker():
     except Exception as e:
         print(f"❌ Error checking MQTT broker: {e}")
         return False
-
 
 def check_mosquitto_installation():
     """Check if mosquitto is installed"""
@@ -100,7 +96,6 @@ def check_mosquitto_installation():
         print(f"❌ Error checking mosquitto: {e}")
         return False
 
-
 def check_network_connectivity():
     """Check network connectivity"""
     print("\n🌐 Checking network connectivity...")
@@ -122,7 +117,6 @@ def check_network_connectivity():
         print(f"❌ Network connectivity error: {e}")
         return False
 
-
 def test_mqtt_connection():
     """Test actual MQTT connection"""
     print("\n🔍 Testing MQTT connection...")
@@ -139,7 +133,6 @@ def test_mqtt_connection():
     except Exception as e:
         print(f"❌ MQTT connection test failed: {e}")
         return False
-
 
 def main():
     """Main check function"""
@@ -194,7 +187,6 @@ def main():
         print("3. Install Python packages: pip install paho-mqtt")
 
     return passed == total
-
 
 if __name__ == "__main__":
     success = main()

@@ -10,22 +10,18 @@ Diese Tests validieren die aktuellen Regeln in steering_factory.py:
 WICHTIG: Diese Tests testen die AKTUELLE Implementierung, nicht historische Commits!
 """
 
-import os
+from pathlib import Path
 
 # Import der aktuellen factory_steering Komponente
-import sys
 import unittest
 import uuid
 from unittest.mock import patch
-
-sys.path.append(os.path.join(os.path.dirname(__file__), "..", "omf"))
 
 from omf.dashboard.components.steering_factory import (
     _prepare_fts_message,
     _prepare_module_sequence_message,
     _prepare_module_step_message,
 )
-
 
 class TestFactorySteeringRules(unittest.TestCase):
     """Testet die aktuellen Regeln in steering_factory.py"""
@@ -214,7 +210,6 @@ class TestFactorySteeringRules(unittest.TestCase):
         self.assertEqual(action["actionType"].lower(), "findinitialdockposition", "FTS actionType ist falsch")
         self.assertIn("actionId", action, "FTS actions[0] actionId fehlt")
 
-
 class TestModuleSequenceRules(unittest.TestCase):
     """Testet die kombinierten Regeln für Modul-Sequenzen"""
 
@@ -304,7 +299,6 @@ class TestModuleSequenceRules(unittest.TestCase):
             uuids_valid = False
 
         self.assertTrue(uuids_valid, "AIQS-Sequenz UUIDs sind ungültig")
-
 
 if __name__ == "__main__":
     # Test-Suite ausführen

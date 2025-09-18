@@ -4,13 +4,10 @@ Unit Test: MQTT Client Session State Problem
 Testet, warum der MQTT-Client in der Nachrichten-Zentrale nicht gefunden wird
 """
 
-import os
-import sys
+from pathlib import Path
 import unittest
 
 # Add omf to path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "omf"))
-
 
 class TestMqttClientSessionState(unittest.TestCase):
     """Testet MQTT Client Session State Probleme"""
@@ -205,7 +202,6 @@ class TestMqttClientSessionState(unittest.TestCase):
 
         except Exception as e:
             self.fail(f"❌ Attribute Test fehlgeschlagen: {e}")
-
 
 if __name__ == "__main__":
     # Test ausführen

@@ -13,7 +13,6 @@ from omf.tools.mqtt_gateway import MqttGateway
 from omf.tools.omf_mqtt_client import OmfMqttClient
 from omf.tools.registry_manager import Registry, TopicManager
 
-
 class TestManagersLoggingIntegration(unittest.TestCase):
     """Tests für Manager Logging-Integration"""
 
@@ -144,7 +143,6 @@ class TestManagersLoggingIntegration(unittest.TestCase):
         # Prüfe dass Logger existiert
         self.assertIsNotNone(gateway.logger)
         self.assertIsInstance(gateway.logger, logging.Logger)
-
 
 if __name__ == '__main__':
     unittest.main()

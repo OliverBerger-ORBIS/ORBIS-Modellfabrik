@@ -7,7 +7,6 @@ Sie stellt sicher, dass das Dashboard trotzdem funktioniert.
 
 import streamlit as st
 
-
 def show_dummy_component(component_name: str, error_message: str = None):
     """
     Zeigt eine Dummy-Komponente für fehlende Komponenten an

@@ -13,7 +13,6 @@ from omf.tools.topic_manager import OmfTopicManager
 
 logger = get_logger(__name__)
 
-
 class TimelineVisualizer:
     """Creates timeline visualizations for session analysis"""
 

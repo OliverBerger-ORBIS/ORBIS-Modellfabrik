@@ -27,7 +27,6 @@ from omf.tools.registry_manager import get_registry
 # Page configuration
 st.set_page_config(page_title="Session Manager", page_icon="🎙️", layout="wide", initial_sidebar_state="expanded")
 
-
 def _init_logging_once():
     """Initialisiert OMF Logging einmal pro Streamlit-Session"""
     if st.session_state.get("_log_init"):
@@ -50,7 +49,6 @@ def _init_logging_once():
     # Listener in Session State speichern
     st.session_state["_log_listener"] = listener
     st.session_state["_log_init"] = True
-
 
 def show_logging_settings(logger):
     """Logging-Konfiguration Tab"""
@@ -144,7 +142,6 @@ def show_logging_settings(logger):
     else:
         st.info("📄 Keine Log-Datei vorhanden")
 
-
 def main():
     """Hauptfunktion des Session Managers"""
 
@@ -213,14 +210,12 @@ def main():
     st.sidebar.markdown("**Session Manager v1.1.0**")
     st.sidebar.markdown("ORBIS Modellfabrik")
 
-
 def parse_args():
     """Parse command line arguments"""
     parser = argparse.ArgumentParser(description="Session Manager - MQTT Session Management")
     parser.add_argument("--registry-watch", action="store_true", help="Enable registry watch mode for live development")
     parser.add_argument("--model-version", default="v1.0.0", help="Expected model version (default: v1.0.0)")
     return parser.parse_args()
-
 
 if __name__ == "__main__":
     args = parse_args()

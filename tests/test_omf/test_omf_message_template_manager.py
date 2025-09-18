@@ -3,8 +3,6 @@
 Unit Tests für OMF Message Template Manager
 """
 
-import os
-import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -12,10 +10,8 @@ from pathlib import Path
 import yaml
 
 # Add omf to path
-sys.path.append(os.path.join(os.path.dirname(__file__), "..", "omf"))
 
 from omf.tools.message_template_manager import OmfMessageTemplateManager, get_omf_message_template_manager
-
 
 class TestOMFMessageTemplateManager(unittest.TestCase):
     """Test cases for OMFMessageTemplateManager"""
@@ -251,7 +247,6 @@ class TestOMFMessageTemplateManager(unittest.TestCase):
         file_path = self.manager.get_template_file_path("ccu/control")
         self.assertIsNotNone(file_path)
         self.assertIn("control.yml", file_path)
-
 
 if __name__ == "__main__":
     unittest.main()

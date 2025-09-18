@@ -8,7 +8,6 @@ import streamlit as st
 
 from omf.dashboard.utils.ui_refresh import request_refresh
 
-
 def show_logs():
     """Hauptfunktion für Logs-Anzeige"""
     st.header("📋 Live Logs")
@@ -17,23 +16,19 @@ def show_logs():
     # Log-Buffer aus Session State holen
     log_buffer = st.session_state.get("log_buffer")
 
-    # Test-Debug-Log direkt hinzufügen
+    # Test-Debug-Log direkt hinzufügen (nur für Tests)
     if log_buffer is not None:
-        import logging
-
-        test_logger = logging.getLogger("omf.dashboard.logs_test")
+        from omf.tools.logging_config import get_logger
+        
+        # OMF-Logging für Tests (thread-sicher)
+        test_logger = get_logger("omf.dashboard.logs_test")
         test_logger.debug("🧪 DEBUG-TEST aus logs.py Komponente")
         test_logger.info("ℹ️ INFO-TEST aus logs.py Komponente")
 
         # Teste auch MqttGateway Logger direkt
-        mqtt_test_logger = logging.getLogger("omf.tools.mqtt_gateway")
+        mqtt_test_logger = get_logger("omf.tools.mqtt_gateway")
         mqtt_test_logger.debug("🔧 DEBUG-TEST MqttGateway Logger")
         mqtt_test_logger.info("ℹ️ INFO-TEST MqttGateway Logger")
-
-        # Teste Debug Logger
-        debug_test_logger = logging.getLogger("omf.dashboard.debug")
-        debug_test_logger.debug("🐛 DEBUG-TEST Debug Logger")
-        debug_test_logger.info("ℹ️ INFO-TEST Debug Logger")
 
     if not log_buffer:
         st.warning("❌ Log-Buffer nicht verfügbar")
@@ -106,7 +101,6 @@ def show_logs():
     # Log-Statistiken
     with st.expander("📈 Log-Statistiken", expanded=False):
         _show_log_statistics(log_buffer)
-
 
 def _show_log_statistics(log_buffer):
     """Zeigt Log-Statistiken an"""

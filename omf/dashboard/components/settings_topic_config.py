@@ -3,11 +3,10 @@ OMF Dashboard Settings - Topic-Konfiguration
 Exakte Kopie der show_topic_config() Funktion aus settings.py
 """
 
+from pathlib import Path
 import streamlit as st
 
 # Add omf to path for imports
-# sys.path.append(os.path.join(os.path.dirname(__file__), "..", "..", ".."))  # Nicht mehr nötig nach pip install -e .
-
 
 def show_topic_config():
     """Zeigt die Topic-Konfiguration an - Exakte Kopie aus settings.py"""
@@ -19,10 +18,9 @@ def show_topic_config():
         import sys
 
         # Füge den tools-Pfad hinzu
-        tools_path = os.path.join(os.path.dirname(__file__), "..", "..", "tools")
+        tools_path = str(Path(__file__).parent / ".." / ".." / "tools")
         if tools_path not in sys.path:
-            # sys.path.append(tools_path)  # Nicht mehr nötig nach pip install -e .
-            pass
+                        pass
 
         from omf.tools.topic_manager import get_omf_topic_manager
 

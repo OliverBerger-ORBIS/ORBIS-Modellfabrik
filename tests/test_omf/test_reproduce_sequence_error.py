@@ -2,14 +2,11 @@
 Test um den genauen SequenceDefinition.get() Fehler zu reproduzieren
 """
 
-import os
-import sys
+from pathlib import Path
 import unittest
 from unittest.mock import Mock, patch
 
 # Pfad für Imports
-sys.path.append(os.path.join(os.path.dirname(__file__), "..", "omf"))
-
 
 class TestReproduceSequenceError(unittest.TestCase):
     """Test um den genauen Fehler zu reproduzieren"""
@@ -180,7 +177,6 @@ class TestReproduceSequenceError(unittest.TestCase):
 
         except Exception as e:
             self.fail(f"SequenceDefinitionLoader Sicherheit Test fehlgeschlagen: {e}")
-
 
 if __name__ == "__main__":
     # Test Suite ausführen

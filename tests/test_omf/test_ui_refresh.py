@@ -8,7 +8,6 @@ from unittest.mock import MagicMock, patch
 
 from omf.dashboard.utils.ui_refresh import consume_refresh, request_refresh
 
-
 class TestUIRefresh(unittest.TestCase):
     """Tests für UI-Refresh-Mechanismus"""
 
@@ -89,7 +88,6 @@ class TestUIRefresh(unittest.TestCase):
 
         # Timestamp sollte aktualisiert worden sein
         self.assertGreater(timestamp2, timestamp1)
-
 
 if __name__ == "__main__":
     unittest.main()

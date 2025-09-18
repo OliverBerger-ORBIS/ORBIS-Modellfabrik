@@ -3,8 +3,8 @@ Sequenz-Steuerung Component für OMF Dashboard
 UI für die Workflow-Sequenz-Steuerung mit Status-Anzeige
 """
 
+from pathlib import Path
 import logging
-import os
 
 # Import der Sequenz-Tools
 import streamlit as st
@@ -12,8 +12,7 @@ import streamlit as st
 # Logger für Sequence Steering
 logger = logging.getLogger("omf.dashboard.steering_sequence")
 
-tools_path = os.path.join(os.path.dirname(__file__), "..", "..", "tools")
-# sys.path.append(tools_path)  # Nicht mehr nötig nach pip install -e .
+tools_path = str(Path(__file__).parent / ".." / ".." / "tools")
 
 try:
     from omf.tools.sequence_executor import SequenceExecutor
@@ -25,7 +24,6 @@ except ImportError as e:
     SEQUENCE_TOOLS_AVAILABLE = False
     logger.warning(f"❌ Sequenz-Tools nicht verfügbar: {e}")
     print(f"❌ Sequenz-Tools nicht verfügbar: {e}")
-
 
 def show_sequence_steering():
     """Hauptfunktion für die Sequenz-Steuerung"""

@@ -9,7 +9,6 @@ import json
 from datetime import datetime
 from pathlib import Path
 
-
 def find_markdown_files():
     """Finde alle Markdown-Dateien im docs Verzeichnis."""
     docs_dir = Path("docs")
@@ -23,7 +22,6 @@ def find_markdown_files():
             )
 
     return sorted(md_files, key=lambda x: x["path"])
-
 
 def _get_category(relative_path):
     """Bestimme Kategorie basierend auf Pfad."""
@@ -52,7 +50,6 @@ def _get_category(relative_path):
     else:
         return "Projekt-Übersicht"
 
-
 def generate_keywords(file_info):
     """Generiere Keywords basierend auf Dateiname und Pfad."""
     keywords = []
@@ -78,7 +75,6 @@ def generate_keywords(file_info):
         keywords.extend(["troubleshooting", "debug", "problem"])
 
     return list(set(keywords))  # Duplikate entfernen
-
 
 def generate_html_index(md_files):
     """Generiere INDEX.html."""
@@ -231,7 +227,6 @@ def generate_html_index(md_files):
 
     return html_content
 
-
 def generate_json_index(md_files):
     """Generiere INDEX.json."""
     categories = {}
@@ -262,7 +257,6 @@ def generate_json_index(md_files):
         },
     }
 
-
 def main():
     """Hauptfunktion."""
     print("🔍 Suche Markdown-Dateien...")
@@ -285,7 +279,6 @@ def main():
     print(f"   📄 INDEX.html: {len(html_content)} Zeichen")
     print(f"   📄 INDEX.json: {len(json.dumps(json_content))} Zeichen")
     print(f"   📚 {len(md_files)} Dokumente indiziert")
-
 
 if __name__ == "__main__":
     main()

@@ -5,18 +5,17 @@ UI-Komponente für Modul-Status-Management und automatische Sequenz-Ausführung.
 Integriert den ModuleStateManager in das OMF Dashboard.
 """
 
-import logging
 from datetime import datetime, timezone
 from typing import List
 
 import streamlit as st
 
 from omf.dashboard.utils.ui_refresh import request_refresh
+from omf.tools.logging_config import get_logger
 from omf.tools.module_state_manager import CommandType, ModuleState, get_module_state_manager
 from omf.tools.mqtt_gateway import MqttGateway
 
-logger = logging.getLogger("omf.dashboard.module_state_control")
-
+logger = get_logger("omf.dashboard.module_state_control")
 
 def show_module_state_control():
     """Hauptfunktion für Modul-Status-Kontrolle"""
@@ -58,7 +57,6 @@ def show_module_state_control():
 
     with tab4:
         _show_running_sequences(state_manager)
-
 
 def _show_module_status_overview(state_manager):
     """Zeigt Übersicht aller Modul-Status"""
@@ -122,7 +120,6 @@ def _show_module_status_overview(state_manager):
             """
         )
 
-
 def _show_sequence_control(state_manager):
     """Zeigt Sequenz-Steuerung für Module"""
     st.subheader("🔄 Sequenz-Steuerung")
@@ -178,7 +175,6 @@ def _show_sequence_control(state_manager):
         except Exception as e:
             st.error(f"❌ Fehler beim Starten der Sequenz: {e}")
 
-
 def _show_quick_commands(state_manager, gateway):
     """Zeigt Schnell-Commands für Module"""
     st.subheader("⚡ Schnell-Commands")
@@ -203,7 +199,6 @@ def _show_quick_commands(state_manager, gateway):
                         disabled=not _is_module_ready_for_command(module, command),
                     ):
                         _send_quick_command(state_manager, gateway, module_id, command)
-
 
 def _show_running_sequences(state_manager):
     """Zeigt laufende Sequenzen"""
@@ -241,7 +236,6 @@ def _show_running_sequences(state_manager):
                 status_icon = "✅" if i < sequence.current_step else "🔄" if i == sequence.current_step else "⏳"
                 st.write(f"{status_icon} {step.command.value}")
 
-
 def _get_available_commands_for_module(module_type: str) -> List[CommandType]:
     """Gibt verfügbare Commands für einen Modul-Typ zurück"""
     if module_type == "Processing":
@@ -256,7 +250,6 @@ def _get_available_commands_for_module(module_type: str) -> List[CommandType]:
         return [CommandType.START_CHARGING, CommandType.STOP_CHARGING]
     else:
         return [CommandType.GET_STATUS]
-
 
 def _is_module_ready_for_command(module, command: CommandType) -> bool:
     """Prüft ob ein Modul bereit für einen Command ist"""
@@ -281,7 +274,6 @@ def _is_module_ready_for_command(module, command: CommandType) -> bool:
         return command in [CommandType.MILL, CommandType.DRILL, CommandType.CHECK_QUALITY, CommandType.DROP]
 
     return False
-
 
 def _send_quick_command(state_manager, gateway, module_id: str, command: CommandType):
     """Sendet einen einzelnen Command an ein Modul"""
@@ -311,7 +303,6 @@ def _send_quick_command(state_manager, gateway, module_id: str, command: Command
     except Exception as e:
         st.error(f"❌ Exception: {e}")
 
-
 def _get_status_icon(state: ModuleState) -> str:
     """Gibt Icon für Modul-Status zurück"""
     icon_map = {
@@ -329,7 +320,6 @@ def _get_status_icon(state: ModuleState) -> str:
         ModuleState.OFFLINE: "⚫",
     }
     return icon_map.get(state, "⚪")
-
 
 def _get_module_icon(module_type: str) -> str:
     """Gibt Icon für Modul-Typ zurück"""

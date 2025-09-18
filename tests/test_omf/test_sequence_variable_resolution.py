@@ -4,17 +4,14 @@ Unit Tests für Sequenz-Variable-Resolution
 Testet ob Kontext-Variablen korrekt in Topics und Payloads ersetzt werden
 """
 
-import os
-import sys
+from pathlib import Path
 import unittest
 from unittest.mock import MagicMock, Mock
 
 # Pfad für Imports hinzufügen
-sys.path.append(os.path.join(os.path.dirname(__file__), "..", "omf"))
 
 from omf.tools.sequence_executor import SequenceDefinition, SequenceExecutor, SequenceStep, StepStatus
 from omf.tools.workflow_order_manager import WorkflowOrder, WorkflowOrderManager
-
 
 class TestSequenceVariableResolution(unittest.TestCase):
     """Testet die Variable-Resolution in Sequenzen"""
@@ -182,7 +179,6 @@ class TestSequenceVariableResolution(unittest.TestCase):
             self.assertIn("orderId", payload_dict)
             self.assertIn("orderUpdateId", payload_dict)
             self.assertEqual(payload_dict["orderUpdateId"], 1)
-
 
 if __name__ == "__main__":
     unittest.main()

@@ -10,7 +10,6 @@ from typing import Any, Dict, List
 
 import yaml
 
-
 class SemanticTemplateGenerator:
     """Generiert semantische Message Templates mit Variablen"""
 
@@ -495,7 +494,6 @@ class SemanticTemplateGenerator:
 
             print(f"✅ {len(category_templates)} semantische {category.title()}-Templates in {file_path} gespeichert")
 
-
 def main():
     """Hauptfunktion"""
     print("\n🔧 Semantic Template Generator")
@@ -517,7 +515,6 @@ def main():
         print(f"   📁 {category.title()}: {len(templates)} Templates")
 
     print("\n🎯 Semantische Templates für MQTT-Control bereit!")
-
 
 if __name__ == "__main__":
     main()

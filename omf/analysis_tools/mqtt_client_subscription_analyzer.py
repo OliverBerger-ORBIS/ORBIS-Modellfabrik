@@ -14,7 +14,6 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Dict, Set, List, Tuple
 
-
 def parse_mosquitto_log(log_file: str) -> Dict:
     """Parst Mosquitto-Log und extrahiert Client-Subscription-Informationen."""
     
@@ -59,7 +58,6 @@ def parse_mosquitto_log(log_file: str) -> Dict:
         'subscribers': dict(subscribers)
     }
 
-
 def analyze_client_patterns(data: Dict) -> Dict:
     """Analysiert Client-Patterns und erstellt Übersichten."""
     
@@ -103,7 +101,6 @@ def analyze_client_patterns(data: Dict) -> Dict:
         'subscribers': subscribers,
         'topic_categories': dict(topic_categories)
     }
-
 
 def generate_report(analysis: Dict) -> str:
     """Generiert einen detaillierten Analyse-Report."""
@@ -154,7 +151,6 @@ def generate_report(analysis: Dict) -> str:
     
     return "\n".join(report)
 
-
 def main():
     """Hauptfunktion."""
     log_file = "data/aps-data/mosquitto/mosquitto_detailed.log"
@@ -191,7 +187,5 @@ def main():
         count = sum(1 for ct in analysis['client_types'].values() if ct == client_type)
         print(f"- {client_type}: {count}")
 
-
 if __name__ == "__main__":
     main()
-

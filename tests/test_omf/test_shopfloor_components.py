@@ -4,15 +4,12 @@ Test für OMF Shopfloor-Komponenten
 Prüft alle Shopfloor-bezogenen Komponenten und YAML-Configs
 """
 
-import sys
 import unittest
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 # Add project root to path
 project_root = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(project_root))
-
 
 class TestShopfloorComponents(unittest.TestCase):
     """Test-Klasse für Shopfloor-Komponenten"""
@@ -202,7 +199,6 @@ class TestShopfloorComponents(unittest.TestCase):
         except Exception as e:
             self.fail(f"❌ Shopfloor-Statistiken failed: {e}")
 
-
 class TestShopfloorYAMLConfigs(unittest.TestCase):
     """Test-Klasse für Shopfloor YAML-Konfigurationen"""
 
@@ -265,7 +261,6 @@ class TestShopfloorYAMLConfigs(unittest.TestCase):
             print("✅ YAML-Dateien sind gültig: OK")
         except Exception as e:
             self.fail(f"❌ YAML-Dateien sind gültig failed: {e}")
-
 
 if __name__ == "__main__":
     print("🧪 Running Shopfloor Component Tests...")

@@ -3,13 +3,13 @@ OMF Dashboard Overview - Lagerbestand
 Verwendet OrderManager für zentrale Verwaltung aller Dashboard-relevanten Informationen
 """
 
+from pathlib import Path
 import json
 from datetime import datetime
 
 import streamlit as st
 
 # Template-Import hinzufügen
-# sys.path.append(os.path.join(os.path.dirname(__file__), "..", "assets"))  # Nicht mehr nötig nach pip install -e .
 try:
     from omf.dashboard.assets.html_templates import get_bucket_template
 
@@ -19,7 +19,6 @@ except ImportError as e:
     st.error(f"❌ Templates nicht verfügbar: {e}")
 
 # Alte message_processor Imports entfernt - verwenden jetzt Per-Topic-Buffer
-
 
 class OrderManager:
     """Zentraler Manager für alle Dashboard-relevanten Informationen (Bestellungen, Lagerbestand, etc.)"""
@@ -102,7 +101,6 @@ class OrderManager:
                 available[workpiece_type] = count
         return available
 
-
 def process_inventory_messages_from_buffers(hbw_messages, order_manager):
     """Verarbeitet HBW-Nachrichten aus Per-Topic-Buffer für den Lagerbestand"""
     if not hbw_messages:
@@ -113,7 +111,6 @@ def process_inventory_messages_from_buffers(hbw_messages, order_manager):
         latest_hbw_msg = max(hbw_messages, key=lambda x: x.get("ts", 0))
         if order_manager:
             order_manager._process_hbw_state_message(latest_hbw_msg)
-
 
 def _create_large_bucket_display(position, workpiece_type):
     """Erstellt eine große Bucket-Darstellung für eine Lagerposition - Verwendet Template"""
@@ -130,7 +127,6 @@ def _create_large_bucket_display(position, workpiece_type):
             </div>
         </div>
         """
-
 
 def show_overview_inventory():
     """3x3 Lagerbestand-Raster anzeigen - Verwendet MQTT-Client für Live-Updates"""

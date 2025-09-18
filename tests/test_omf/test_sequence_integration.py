@@ -3,14 +3,11 @@ Integration Tests für Sequenz-Steuerung
 Erkennt häufige Fehler wie AttributeError, TypeError, ImportError
 """
 
-import os
-import sys
+from pathlib import Path
 import unittest
 from unittest.mock import MagicMock, Mock
 
 # Pfad für Imports
-# sys.path.append(os.path.join(os.path.dirname(__file__), "..", "omf"))  # Nicht mehr nötig nach pip install -e .
-
 
 class TestSequenceIntegration(unittest.TestCase):
     """Integration Tests für Sequenz-Steuerung"""
@@ -222,7 +219,6 @@ class TestSequenceIntegration(unittest.TestCase):
         except Exception as e:
             self.fail(f"SequenceUI Attribute Test fehlgeschlagen: {e}")
 
-
 class TestSequenceErrorHandling(unittest.TestCase):
     """Tests für Fehlerbehandlung in Sequenz-Steuerung"""
 
@@ -270,7 +266,6 @@ class TestSequenceErrorHandling(unittest.TestCase):
             self.assertEqual(len(sequence_with_invalid_step.steps), 1)
         except Exception as e:
             self.fail(f"SequenceDefinition Validierung fehlgeschlagen: {e}")
-
 
 if __name__ == "__main__":
     # Test Suite ausführen

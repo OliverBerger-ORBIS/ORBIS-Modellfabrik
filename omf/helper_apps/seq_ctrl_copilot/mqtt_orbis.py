@@ -15,7 +15,6 @@ class MockMqttClient:
     def publish(self, topic: str, payload: dict):
         print(f"[MQTT] Publish: {topic} - {payload}")
 
-
 def send_mqtt_command(step: dict):
     client = MockMqttClient.get_instance()
     topic = step.get("topic", "test/topic")
