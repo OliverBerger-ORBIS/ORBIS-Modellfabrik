@@ -117,6 +117,14 @@ def configure_logging(
 
     file_json.setFormatter(JsonFormatter())
 
+    # PIL/Pillow Logger auf WARNING setzen (verhindert DEBUG-Spam)
+    logging.getLogger("PIL.PngImagePlugin").setLevel(logging.WARNING)
+    logging.getLogger("PIL").setLevel(logging.WARNING)
+    
+    # Weitere störende Logger auf WARNING setzen
+    logging.getLogger("urllib3").setLevel(logging.WARNING)
+    logging.getLogger("requests").setLevel(logging.WARNING)
+
     return root, listener
 
 def get_logger(name: str) -> logging.Logger:

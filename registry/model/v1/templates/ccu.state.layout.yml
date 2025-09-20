@@ -1,38 +1,82 @@
-version: 1.0.0
 metadata:
   category: CCU
+  description: Auto-analyzed template for ccu/state/layout
+  last_updated: '2025-09-15'
+  source: ccu_template_analyzer
   sub_category: State
-  description: CCU Layout State (topic-free; topics live in mapping.yml)
-  icon: "📊"
-  last_updated: "2025-09-14"
-
+  version: 0.1.0
 templates:
-
   ccu.state.layout:
-    description: Fabrik-Layout (Knoten/Wege)
-    match: { }
-    template_structure:
-      intersections:
-        type: array
-        items: { type: object, properties: { id: { type: string } } }
-      roads:
-        type: array
-        items: { type: object, properties: { from: {type: string}, to: {type: string}, direction: {type: string}, length: {type: integer} } }
-      modules:
-        type: array
-        items: { type: object, properties: { serialNumber: {type: string}, type: {type: string} , placeholder: {type: boolean} } }
+    category: CCU
+    description: Template for ccu/state/layout
+    direction: inbound
     examples:
-      - payload:
-          intersections: [{id:"1"}, {id:"2"}, {id:"3"}, {id:"4"}]
-          roads: 
-            - {from:"1",to:"2",direction:"EAST",length:360}
-            - {from:"3",to:"1",direction:"NORTH",length:360}
-            - {from:"3",to:"4",direction:"EAST",length:360}
-            - {from:"4",to:"2",direction:"NORTH",length:360}
-          modules: 
-            - {serialNumber:"SVR3QA0022", type:"HBW", placeholder:false}
-            - {serialNumber:"SVR4H76449", type:"DRILL", placeholder:false}
-            - {serialNumber:"SVR3QA2098", type:"MILL", placeholder:false}
-            - {serialNumber:"SVR4H73275", type:"DPS", placeholder:false}
-            - {serialNumber:"SVR4H76530", type:"AIQS", placeholder:false}
-            - {serialNumber:"CHRG0", type:"CHRG", placeholder:false}
+    - intersections:
+      - id: '1'
+      - id: '2'
+      - id: '3'
+      - id: '4'
+      modules:
+      - placeholder: false
+        serialNumber: SVR3QA0022
+        type: HBW
+      - placeholder: false
+        serialNumber: SVR4H76449
+        type: DRILL
+      - placeholder: false
+        serialNumber: SVR3QA2098
+        type: MILL
+      - placeholder: false
+        serialNumber: SVR4H73275
+        type: DPS
+      - placeholder: false
+        serialNumber: SVR4H76530
+        type: AIQS
+      - serialNumber: CHRG0
+        type: CHRG
+      roads:
+      - direction: EAST
+        from: '1'
+        length: 360
+        to: '2'
+      - direction: NORTH
+        from: '3'
+        length: 360
+        to: '1'
+      - direction: EAST
+        from: '3'
+        length: 360
+        to: '4'
+      - direction: NORTH
+        from: '4'
+        length: 360
+        to: '2'
+      - direction: EAST
+        from: SVR3QA0022
+        length: 380
+        to: '1'
+      - direction: EAST
+        from: SVR4H76449
+        length: 380
+        to: '3'
+      - direction: SOUTH
+        from: SVR3QA2098
+        length: 380
+        to: '1'
+      - direction: WEST
+        from: SVR4H73275
+        length: 380
+        to: '2'
+      - direction: SOUTH
+        from: SVR4H76530
+        length: 380
+        to: '2'
+      - direction: WEST
+        from: CHRG0
+        length: 430
+        to: '4'
+    structure: {}
+    sub_category: State
+    validation:
+      field_types: {}
+      required_fields: []

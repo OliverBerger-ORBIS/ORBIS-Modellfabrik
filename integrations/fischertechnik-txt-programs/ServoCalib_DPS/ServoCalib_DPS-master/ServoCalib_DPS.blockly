@@ -1,0 +1,1017 @@
+<xml xmlns="https://developers.google.com/blockly/xml" version="15">
+  <variables>
+    <variable id="l,dcl_Yuh5R~glzvY=az">deg</variable>
+    <variable id="z+oZh2H|$^lBY{A}u]0z">target_pos_s1</variable>
+    <variable id="{QERM#!X$||gpSQ*kfwc">target_pos_s2</variable>
+    <variable id="HGooWbI$|pU@Q@1xs,/X">target_pos_s3</variable>
+    <variable id="~VV%d%niWCJE,.rkhq+F">fileCalib</variable>
+    <variable id="q/.=RAMZ%`q2./=6O!Ce">calib_json</variable>
+    <variable id="GQ]wgR4PLX3oWjpF~|`k">s_step</variable>
+    <variable id="?4vu=X6vfI.yt{~f3K1D">calib_map</variable>
+  </variables>
+  <block type="util_python_imports" id="8w[R!XX^]1w;^Uoc6etr" x="0" y="0">
+    <field name="value">import json&amp;#10;import logging&amp;#10;import subprocess&amp;#10;from datetime import datetime&amp;#10;from datetime import timezone</field>
+  </block>
+  <block type="start_block" id="=CgaANkB#9R-u%?8cYtt" deletable="false" x="0" y="185">
+    <statement name="statement">
+      <block type="variables_set" id="VXrbHMDVx60!gEU-(P%K">
+        <field name="VAR" id="z+oZh2H|$^lBY{A}u]0z">target_pos_s1</field>
+        <value name="VALUE">
+          <block type="math_number" id="*=[f*+-]5au?*][Pa8kQ">
+            <field name="NUM">256</field>
+          </block>
+        </value>
+        <next>
+          <block type="variables_set" id="mp$MkT%)dG1H9Zb|_WKM">
+            <field name="VAR" id="{QERM#!X$||gpSQ*kfwc">target_pos_s2</field>
+            <value name="VALUE">
+              <block type="math_number" id="qwZH|1}ho#]h,cc||L`w">
+                <field name="NUM">256</field>
+              </block>
+            </value>
+            <next>
+              <block type="variables_set" id="=tg?{C~6@@Sd.0x5^Q0-">
+                <field name="VAR" id="HGooWbI$|pU@Q@1xs,/X">target_pos_s3</field>
+                <value name="VALUE">
+                  <block type="math_number" id="|HMNcd0$OCUfuclo-Ge;">
+                    <field name="NUM">256</field>
+                  </block>
+                </value>
+                <next>
+                  <block type="util_python" id="6b6-EhH!ls7abD%gR_$8">
+                    <field name="value">#set servo, needed for get servo blocks</field>
+                    <next>
+                      <block type="servomotor_set_position" id="ulUDe6kPj}+`23r8^af@">
+                        <field name="instance_name">{HHyS$s2Cul$+tWcy_i:-_aHe|Ig1tD}jxJ(dV,f@</field>
+                        <value name="position">
+                          <shadow type="servomotor_number" id="yBmJRKL)1X^NOO2$,fS`">
+                            <field name="SERVOMOTOR_NUM">256</field>
+                          </shadow>
+                          <block type="variables_get" id="?dKD=PQHsj]8.L8FbZWf">
+                            <field name="VAR" id="z+oZh2H|$^lBY{A}u]0z">target_pos_s1</field>
+                          </block>
+                        </value>
+                        <next>
+                          <block type="servomotor_set_position" id="Y8#C^`juryx)VU:Rb,3j">
+                            <field name="instance_name">{HHyS$s2Cul$+tWcy_i:-FJhvd$0?GgKR?WF)%DO^</field>
+                            <value name="position">
+                              <shadow type="servomotor_number" id="yBmJRKL)1X^NOO2$,fS`">
+                                <field name="SERVOMOTOR_NUM">256</field>
+                              </shadow>
+                              <block type="variables_get" id="EcLNn)x9aC.W$~~C;HPj">
+                                <field name="VAR" id="{QERM#!X$||gpSQ*kfwc">target_pos_s2</field>
+                              </block>
+                            </value>
+                            <next>
+                              <block type="servomotor_set_position" id="jnNn6mUa0ff^vE?pcCm(">
+                                <field name="instance_name">{HHyS$s2Cul$+tWcy_i:-g3?u7p08bVsv5o0is+7l</field>
+                                <value name="position">
+                                  <shadow type="servomotor_number" id="yBmJRKL)1X^NOO2$,fS`">
+                                    <field name="SERVOMOTOR_NUM">256</field>
+                                  </shadow>
+                                  <block type="variables_get" id="]sVR]TVsJ/`9xqQAB8Bt">
+                                    <field name="VAR" id="HGooWbI$|pU@Q@1xs,/X">target_pos_s3</field>
+                                  </block>
+                                </value>
+                                <next>
+                                  <block type="variables_set" id="eYePR}QH!%PPTOGF3%ub">
+                                    <field name="VAR" id="GQ]wgR4PLX3oWjpF~|`k">s_step</field>
+                                    <value name="VALUE">
+                                      <block type="math_number" id="Yg!ab4SzLSG(@C.Zuuw~">
+                                        <field name="NUM">1</field>
+                                      </block>
+                                    </value>
+                                    <next>
+                                      <block type="controls_if" id="mcGnwr.y545b;,r4Dc@?">
+                                        <mutation elseif="0" else="1"/>
+                                        <value name="IF0">
+                                          <block type="exist_file" id="((9M]y[gft#ww+ut*1|$">
+                                            <field name="path">/opt/ft/workspaces/ServoCalib_DPS.json</field>
+                                          </block>
+                                        </value>
+                                        <statement name="DO0">
+                                          <block type="procedures_callnoreturn" id="q)IhJ8UR$WF_1n+`u_+E">
+                                            <mutation name="readCalib"/>
+                                          </block>
+                                        </statement>
+                                        <statement name="ELSE">
+                                          <block type="procedures_callnoreturn" id="faMZ;WZ=yWRYV:a2jNyV">
+                                            <mutation name="writeCalib"/>
+                                          </block>
+                                        </statement>
+                                        <next>
+                                          <block type="util_python" id="MI:{9ns0sD^(jz7SAUdB">
+                                            <field name="value">print("init: ", target_pos_s1, target_pos_s2, target_pos_s3)</field>
+                                            <next>
+                                              <block type="loop_endless" id="F?@Qa5]:Xv[^JtUQ+Lyg">
+                                                <statement name="DO">
+                                                  <block type="servomotor_set_position" id=";,CdCYhIdhflm1uez@$G">
+                                                    <field name="instance_name">{HHyS$s2Cul$+tWcy_i:-_aHe|Ig1tD}jxJ(dV,f@</field>
+                                                    <value name="position">
+                                                      <shadow type="servomotor_number" id="^/]nY;8b(|;Ene:e;Rn;">
+                                                        <field name="SERVOMOTOR_NUM">256</field>
+                                                      </shadow>
+                                                      <block type="math_constrain" id="9};2)Auk_xeWup]B[4|0" inline="false">
+                                                        <value name="VALUE">
+                                                          <block type="variables_get" id=":J_R.Gw]mGlFr;3]S,;^">
+                                                            <field name="VAR" id="z+oZh2H|$^lBY{A}u]0z">target_pos_s1</field>
+                                                          </block>
+                                                        </value>
+                                                        <value name="LOW">
+                                                          <block type="math_number" id="B.[HlZfl735|#i:wH*aq">
+                                                            <field name="NUM">0</field>
+                                                          </block>
+                                                        </value>
+                                                        <value name="HIGH">
+                                                          <block type="math_number" id="53BkI(Qla9`B/NbmupW4">
+                                                            <field name="NUM">512</field>
+                                                          </block>
+                                                        </value>
+                                                      </block>
+                                                    </value>
+                                                    <next>
+                                                      <block type="servomotor_set_position" id=")7P3eI)$Cn0BmBKSCE^J">
+                                                        <field name="instance_name">{HHyS$s2Cul$+tWcy_i:-FJhvd$0?GgKR?WF)%DO^</field>
+                                                        <value name="position">
+                                                          <shadow type="servomotor_number" id="^/]nY;8b(|;Ene:e;Rn;">
+                                                            <field name="SERVOMOTOR_NUM">256</field>
+                                                          </shadow>
+                                                          <block type="math_constrain" id="n)aiYitg.13f?WPxyBvt" inline="false">
+                                                            <value name="VALUE">
+                                                              <block type="variables_get" id="Pw[5?|S!n;sL+T^rX=X^">
+                                                                <field name="VAR" id="{QERM#!X$||gpSQ*kfwc">target_pos_s2</field>
+                                                              </block>
+                                                            </value>
+                                                            <value name="LOW">
+                                                              <block type="math_number" id="Zy-9=#U]oWp;kr:%4f]h">
+                                                                <field name="NUM">0</field>
+                                                              </block>
+                                                            </value>
+                                                            <value name="HIGH">
+                                                              <block type="math_number" id="qAo9lv2X1cUT{%e};c)(">
+                                                                <field name="NUM">512</field>
+                                                              </block>
+                                                            </value>
+                                                          </block>
+                                                        </value>
+                                                        <next>
+                                                          <block type="servomotor_set_position" id="z-L+G0[n{YN_]xl4ggdC">
+                                                            <field name="instance_name">{HHyS$s2Cul$+tWcy_i:-g3?u7p08bVsv5o0is+7l</field>
+                                                            <value name="position">
+                                                              <shadow type="servomotor_number" id="^/]nY;8b(|;Ene:e;Rn;">
+                                                                <field name="SERVOMOTOR_NUM">256</field>
+                                                              </shadow>
+                                                              <block type="math_constrain" id="}i`$BQ$lq=?3S,:AZ@T;" inline="false">
+                                                                <value name="VALUE">
+                                                                  <block type="variables_get" id="Yw=[=OQ4qxa@q?#q)RQW">
+                                                                    <field name="VAR" id="HGooWbI$|pU@Q@1xs,/X">target_pos_s3</field>
+                                                                  </block>
+                                                                </value>
+                                                                <value name="LOW">
+                                                                  <block type="math_number" id="qJ;Z9YTu`X0*:h]Kq_Qk">
+                                                                    <field name="NUM">0</field>
+                                                                  </block>
+                                                                </value>
+                                                                <value name="HIGH">
+                                                                  <block type="math_number" id="}ElV9vlJ?W}_0Ee$t1G^">
+                                                                    <field name="NUM">512</field>
+                                                                  </block>
+                                                                </value>
+                                                              </block>
+                                                            </value>
+                                                            <next>
+                                                              <block type="display_set_label_text" id="vcl9@I26m0]|@j/702:R">
+                                                                <field name="instance_name">txt_label_s1_value</field>
+                                                                <value name="value">
+                                                                  <shadow type="text" id="r`!ImR|J4mr-wtr*?^3L">
+                                                                    <field name="TEXT">abc</field>
+                                                                  </shadow>
+                                                                  <block type="variables_get" id="8zs%}|[OP?27YbV8j|P^">
+                                                                    <field name="VAR" id="z+oZh2H|$^lBY{A}u]0z">target_pos_s1</field>
+                                                                  </block>
+                                                                </value>
+                                                                <next>
+                                                                  <block type="display_set_label_text" id="HPe4t;O*BQ}6vT5;zPX3">
+                                                                    <field name="instance_name">txt_label_s1_value2</field>
+                                                                    <value name="value">
+                                                                      <shadow type="text" id="r`!ImR|J4mr-wtr*?^3L">
+                                                                        <field name="TEXT">abc</field>
+                                                                      </shadow>
+                                                                      <block type="text_format" id="u=#[/F#W^b(;~^no|!:C">
+                                                                        <mutation items="1"/>
+                                                                        <value name="value">
+                                                                          <shadow type="text" id=":SZ1PKOMPNx^3WX$jF~,">
+                                                                            <field name="TEXT">{:.1f}</field>
+                                                                          </shadow>
+                                                                        </value>
+                                                                        <value name="ADD0">
+                                                                          <block type="procedures_callreturn" id="fw@3XIxM*=*o=%J$tGFd">
+                                                                            <mutation name="get_degree_offset_S1"/>
+                                                                          </block>
+                                                                        </value>
+                                                                      </block>
+                                                                    </value>
+                                                                    <next>
+                                                                      <block type="display_set_label_text" id="]Jp`3K4VuEydw:Q2p~%%">
+                                                                        <field name="instance_name">txt_label_s2_value</field>
+                                                                        <value name="value">
+                                                                          <shadow type="text" id="kcnj,|i[+Fo,jIcSo2nR">
+                                                                            <field name="TEXT">abc</field>
+                                                                          </shadow>
+                                                                          <block type="variables_get" id="d)=qwn60FJFy$*vK3*|d">
+                                                                            <field name="VAR" id="{QERM#!X$||gpSQ*kfwc">target_pos_s2</field>
+                                                                          </block>
+                                                                        </value>
+                                                                        <next>
+                                                                          <block type="display_set_label_text" id="ONMW8!6U8TC0kk?7:_YX">
+                                                                            <field name="instance_name">txt_label_s2_value2</field>
+                                                                            <value name="value">
+                                                                              <shadow type="text" id="kcnj,|i[+Fo,jIcSo2nR">
+                                                                                <field name="TEXT">abc</field>
+                                                                              </shadow>
+                                                                              <block type="text_format" id="J]Csq]r`q~^6D|E,3A5^">
+                                                                                <mutation items="1"/>
+                                                                                <value name="value">
+                                                                                  <shadow type="text" id="q5Ag)k++.}{9xhCL25fw">
+                                                                                    <field name="TEXT">{:.1f}</field>
+                                                                                  </shadow>
+                                                                                </value>
+                                                                                <value name="ADD0">
+                                                                                  <block type="procedures_callreturn" id="pN}BBYw#pvi`G.p[4F`n">
+                                                                                    <mutation name="get_degree_offset_S2"/>
+                                                                                  </block>
+                                                                                </value>
+                                                                              </block>
+                                                                            </value>
+                                                                            <next>
+                                                                              <block type="display_set_label_text" id="G`qX,$q}s|gT}EX6Lgu4">
+                                                                                <field name="instance_name">txt_label_s3_value</field>
+                                                                                <value name="value">
+                                                                                  <shadow type="text" id="Nx^{#otqOEWX?c{.?Ju/">
+                                                                                    <field name="TEXT">abc</field>
+                                                                                  </shadow>
+                                                                                  <block type="variables_get" id="].GQb{}WXAb^mo=9w?iV">
+                                                                                    <field name="VAR" id="HGooWbI$|pU@Q@1xs,/X">target_pos_s3</field>
+                                                                                  </block>
+                                                                                </value>
+                                                                                <next>
+                                                                                  <block type="display_set_label_text" id="U/U@G4?)c(Z5s*pG-qDq">
+                                                                                    <field name="instance_name">txt_label_s3_value2</field>
+                                                                                    <value name="value">
+                                                                                      <shadow type="text" id="Nx^{#otqOEWX?c{.?Ju/">
+                                                                                        <field name="TEXT">abc</field>
+                                                                                      </shadow>
+                                                                                      <block type="text_format" id="ldi`jxY$.@,/H[xaE_jx">
+                                                                                        <mutation items="1"/>
+                                                                                        <value name="value">
+                                                                                          <shadow type="text" id="U~*KGMPv$M+ozo]G^hMY">
+                                                                                            <field name="TEXT">{:.1f}</field>
+                                                                                          </shadow>
+                                                                                        </value>
+                                                                                        <value name="ADD0">
+                                                                                          <block type="procedures_callreturn" id="j(?B3N6zv|*9nm)5!`z8">
+                                                                                            <mutation name="get_degree_offset_S3"/>
+                                                                                          </block>
+                                                                                        </value>
+                                                                                      </block>
+                                                                                    </value>
+                                                                                    <next>
+                                                                                      <block type="util_wait_for" id="c-z#E;Cq3~SNjQ!r3xBI">
+                                                                                        <field name="format">ms</field>
+                                                                                        <value name="value">
+                                                                                          <shadow type="math_number" id="Td5P/S^=m,X3RJ^jS~*L">
+                                                                                            <field name="NUM">300</field>
+                                                                                          </shadow>
+                                                                                        </value>
+                                                                                      </block>
+                                                                                    </next>
+                                                                                  </block>
+                                                                                </next>
+                                                                              </block>
+                                                                            </next>
+                                                                          </block>
+                                                                        </next>
+                                                                      </block>
+                                                                    </next>
+                                                                  </block>
+                                                                </next>
+                                                              </block>
+                                                            </next>
+                                                          </block>
+                                                        </next>
+                                                      </block>
+                                                    </next>
+                                                  </block>
+                                                </statement>
+                                              </block>
+                                            </next>
+                                          </block>
+                                        </next>
+                                      </block>
+                                    </next>
+                                  </block>
+                                </next>
+                              </block>
+                            </next>
+                          </block>
+                        </next>
+                      </block>
+                    </next>
+                  </block>
+                </next>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </statement>
+  </block>
+  <block type="procedures_defnoreturn" id="PO#vu;tpeZM?Spos_0:|" x="0" y="1275">
+    <field name="NAME">writeCalib</field>
+    <statement name="STACK">
+      <block type="text_print" id="DGC0aUl65OQD@X2Wwy/G">
+        <value name="TEXT">
+          <shadow type="text" id=":DmxK4Ww2GN^;@^1.h-t">
+            <field name="TEXT">writeCalib</field>
+          </shadow>
+        </value>
+        <next>
+          <block type="util_python" id="7{JJH+7pb:P1pRXDn!,z">
+            <field name="value">subprocess.Popen(['chmod', '777', '/opt/ft/workspaces/ServoCalib_DPS.json'])</field>
+            <next>
+              <block type="util_python" id="J$_UW[6VMM,O)BY0~oH.">
+                <field name="value">ts = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"&amp;#10;calib_map = {\&amp;#10;"ts" :  ts,\&amp;#10;"servo_degree_S1" : get_degree_offset_S1(),\&amp;#10;"servo_degree_S2" : get_degree_offset_S2(),\&amp;#10;"servo_degree_S3" : get_degree_offset_S3(),\&amp;#10;}&amp;#10;print(calib_map)</field>
+                <next>
+                  <block type="variables_set" id="Vs+(RVZO1m8oluxpEqTW">
+                    <field name="VAR" id="q/.=RAMZ%`q2./=6O!Ce">calib_json</field>
+                    <value name="VALUE">
+                      <block type="util_to_json" id="pbPl`ePrH~I`?:RzBc!h">
+                        <value name="value">
+                          <block type="variables_get" id=";-u!b]_r;)hs?:Z$Q{a8">
+                            <field name="VAR" id="?4vu=X6vfI.yt{~f3K1D">calib_map</field>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                    <next>
+                      <block type="variables_set" id="|[Ku+J#7*J6txvI*ZIK=">
+                        <field name="VAR" id="~VV%d%niWCJE,.rkhq+F">fileCalib</field>
+                        <value name="VALUE">
+                          <block type="open_file" id="-lz|v.D,MYI?d6AgC#(Y">
+                            <field name="path">/opt/ft/workspaces/ServoCalib_DPS.json</field>
+                            <field name="mode">w</field>
+                          </block>
+                        </value>
+                        <next>
+                          <block type="write_file" id="Xyd9UH|T;|}=~oUv=wf)">
+                            <field name="new line">FALSE</field>
+                            <value name="value">
+                              <block type="variables_get" id="CMrJYzPm5.0@AS7XIg?e">
+                                <field name="VAR" id="q/.=RAMZ%`q2./=6O!Ce">calib_json</field>
+                              </block>
+                            </value>
+                            <value name="name">
+                              <block type="variables_get" id="vm#_]i|r^b6:=z^SU,I2">
+                                <field name="VAR" id="~VV%d%niWCJE,.rkhq+F">fileCalib</field>
+                              </block>
+                            </value>
+                            <next>
+                              <block type="close_file" id="-H+C5cQki$wy-J!r(azo">
+                                <value name="name">
+                                  <block type="variables_get" id="v,htJLbJzRgC$tNB{mNt">
+                                    <field name="VAR" id="~VV%d%niWCJE,.rkhq+F">fileCalib</field>
+                                  </block>
+                                </value>
+                              </block>
+                            </next>
+                          </block>
+                        </next>
+                      </block>
+                    </next>
+                  </block>
+                </next>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </statement>
+  </block>
+  <block type="procedures_defnoreturn" id="fnm+3*VlEHjM%A?5LxUC" x="0" y="1787">
+    <field name="NAME">readCalib</field>
+    <statement name="STACK">
+      <block type="text_print" id="w~zIMov)NJhqS_mw%9#8">
+        <value name="TEXT">
+          <shadow type="text" id="+@?621x~Jqgs|`nvg@d*">
+            <field name="TEXT">readCalib</field>
+          </shadow>
+        </value>
+        <next>
+          <block type="variables_set" id="C[xR+kz|OmX9Kmvw.8$g">
+            <field name="VAR" id="~VV%d%niWCJE,.rkhq+F">fileCalib</field>
+            <value name="VALUE">
+              <block type="open_file" id="iY%!3]dG0n:kw3R]w;Q}">
+                <field name="path">/opt/ft/workspaces/ServoCalib_DPS.json</field>
+                <field name="mode">r</field>
+              </block>
+            </value>
+            <next>
+              <block type="variables_set" id=".Dz5[1XlrbQ]~F,^ujI^">
+                <field name="VAR" id="q/.=RAMZ%`q2./=6O!Ce">calib_json</field>
+                <value name="VALUE">
+                  <block type="read_file" id="QrsycI{|8HZJ[YMRhK%U">
+                    <value name="name">
+                      <block type="variables_get" id="v|_YNJMtTg4:))u.5T)X">
+                        <field name="VAR" id="~VV%d%niWCJE,.rkhq+F">fileCalib</field>
+                      </block>
+                    </value>
+                  </block>
+                </value>
+                <next>
+                  <block type="close_file" id="O#0$abH}}ZNE[Pva9GLb">
+                    <value name="name">
+                      <block type="variables_get" id=")f*Jk($OpBBoq2u@K:qG">
+                        <field name="VAR" id="~VV%d%niWCJE,.rkhq+F">fileCalib</field>
+                      </block>
+                    </value>
+                    <next>
+                      <block type="variables_set" id="J%`AwsPj(M.dU+r319Ao">
+                        <field name="VAR" id="?4vu=X6vfI.yt{~f3K1D">calib_map</field>
+                        <value name="VALUE">
+                          <block type="util_from_json" id="J:bD.Q+0f,wpd#+x}y.N">
+                            <value name="value">
+                              <block type="variables_get" id="E-%|j-N)0C=dUQjb`v(}">
+                                <field name="VAR" id="q/.=RAMZ%`q2./=6O!Ce">calib_json</field>
+                              </block>
+                            </value>
+                          </block>
+                        </value>
+                        <next>
+                          <block type="util_python" id="F5x1fwwyzF8x;e-Xj-Bu">
+                            <field name="value">print(calib_map)&amp;#10;target_pos_s1 = int( degree2raw( float(calib_map['servo_degree_S1']) ) )&amp;#10;target_pos_s2 = int( degree2raw( float(calib_map['servo_degree_S2']) ) )&amp;#10;target_pos_s3 = int( degree2raw( float(calib_map['servo_degree_S3']) ) )&amp;#10;print(target_pos_s1, target_pos_s2, target_pos_s3)</field>
+                            <next>
+                              <block type="display_set_slider_value" id="iy82,x5l_GOLg@em/i(T">
+                                <field name="instance_name">txt_slider_s1</field>
+                                <value name="value">
+                                  <shadow type="math_number" id="y5$9b95/T?}A/:[VL.WH">
+                                    <field name="NUM">0</field>
+                                  </shadow>
+                                  <block type="variables_get" id="^B=q!|#Cl5Rerpo$B6tf">
+                                    <field name="VAR" id="z+oZh2H|$^lBY{A}u]0z">target_pos_s1</field>
+                                  </block>
+                                </value>
+                                <next>
+                                  <block type="display_set_slider_value" id="`6f$:lZ[-!Qg[({I~k~m">
+                                    <field name="instance_name">txt_slider_s2</field>
+                                    <value name="value">
+                                      <shadow type="math_number" id="y5$9b95/T?}A/:[VL.WH">
+                                        <field name="NUM">0</field>
+                                      </shadow>
+                                      <block type="variables_get" id="WpRgP@Td`zr9Y~1[DgfP">
+                                        <field name="VAR" id="{QERM#!X$||gpSQ*kfwc">target_pos_s2</field>
+                                      </block>
+                                    </value>
+                                    <next>
+                                      <block type="display_set_slider_value" id="dEDuOB=rsQjalPD+ZoZ-">
+                                        <field name="instance_name">txt_slider_s3</field>
+                                        <value name="value">
+                                          <shadow type="math_number" id="y5$9b95/T?}A/:[VL.WH">
+                                            <field name="NUM">0</field>
+                                          </shadow>
+                                          <block type="variables_get" id="=cNDHKsP5bJ{`;*gU/ZF">
+                                            <field name="VAR" id="HGooWbI$|pU@Q@1xs,/X">target_pos_s3</field>
+                                          </block>
+                                        </value>
+                                      </block>
+                                    </next>
+                                  </block>
+                                </next>
+                              </block>
+                            </next>
+                          </block>
+                        </next>
+                      </block>
+                    </next>
+                  </block>
+                </next>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </statement>
+  </block>
+  <block type="procedures_defreturn" id="4}/E{89SM9tm3iCH.ss}" x="0" y="2261">
+    <mutation>
+      <arg name="deg" varid="l,dcl_Yuh5R~glzvY=az" argid="xc2cW?~NtSfn`;9`VOs]"/>
+    </mutation>
+    <field name="NAME">degree2raw</field>
+    <field name="xc2cW?~NtSfn`;9`VOs]">deg</field>
+    <value name="RETURN">
+      <block type="math_arithmetic" id="izmO/PE5cO/C6%Xf[jLU" inline="false">
+        <field name="OP">MULTIPLY</field>
+        <value name="A">
+          <block type="variables_get" id="ZlU!3=Zc|;$}zJbkYB!~">
+            <field name="VAR" id="l,dcl_Yuh5R~glzvY=az">deg</field>
+          </block>
+        </value>
+        <value name="B">
+          <block type="math_arithmetic" id="EzT15A[`:]4xr*8+yCAc">
+            <field name="OP">DIVIDE</field>
+            <value name="A">
+              <block type="math_number" id="y2!|)JaYiY`$t;d6WrqY">
+                <field name="NUM">512</field>
+              </block>
+            </value>
+            <value name="B">
+              <block type="math_number" id="~~0F7yJ2B[1D;`Bqe-(i">
+                <field name="NUM">180</field>
+              </block>
+            </value>
+          </block>
+        </value>
+      </block>
+    </value>
+  </block>
+  <block type="display_on_button_clicked" id="BpZH4,H_vKTz_{Q#hFzz" x="0" y="2446">
+    <field name="instance_name">txt_button_save</field>
+    <statement name="statement">
+      <block type="procedures_callnoreturn" id="O38$zr1s(hKULr-s6+X-">
+        <mutation name="writeCalib"/>
+        <next>
+          <block type="sound_play_audio_file" id="n5;Ll$B-+0}_0o+%nLy]">
+            <field name="soundfile_name">06_Car_horn_short.wav</field>
+            <field name="checkbox">FALSE</field>
+            <next>
+              <block type="util_wait_until" id="%fHaUaVsh:1^GU)L#|DJ">
+                <value name="value">
+                  <block type="logic_negate" id="{qikHgWy{fDDS*2m*UK,">
+                    <value name="BOOL">
+                      <block type="sound_is_playing_audiofile" id="a2;`,.{speLJS!!NHmS2"/>
+                    </value>
+                  </block>
+                </value>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </statement>
+  </block>
+  <block type="procedures_defreturn" id="`Qu[0UPVV)@cz{:bXQb2" x="0" y="2613">
+    <field name="NAME">get_degree_offset_S1</field>
+    <value name="RETURN">
+      <block type="math_arithmetic" id="]*l=wpzhrpr`BYBQfk2C" inline="false">
+        <field name="OP">MULTIPLY</field>
+        <value name="A">
+          <block type="servomotor_get_position" id="FuGYKd7;Owh@1#x*8R6H">
+            <field name="instance_name">{HHyS$s2Cul$+tWcy_i:-_aHe|Ig1tD}jxJ(dV,f@</field>
+          </block>
+        </value>
+        <value name="B">
+          <block type="math_arithmetic" id="=8[OX|eta1,bA-RNyd,@">
+            <field name="OP">DIVIDE</field>
+            <value name="A">
+              <block type="math_number" id="KwznQ@jzpUlf,`=O_PzN">
+                <field name="NUM">180</field>
+              </block>
+            </value>
+            <value name="B">
+              <block type="math_number" id="k_i^}{T5m86WQo:+n)NZ">
+                <field name="NUM">512</field>
+              </block>
+            </value>
+          </block>
+        </value>
+      </block>
+    </value>
+  </block>
+  <block type="procedures_defreturn" id="y.KaufcmSR-P}4(V{C61" x="0" y="2770">
+    <field name="NAME">get_degree_offset_S2</field>
+    <value name="RETURN">
+      <block type="math_arithmetic" id="1*AU1`PJ+m]55~icP}Hn" inline="false">
+        <field name="OP">MULTIPLY</field>
+        <value name="A">
+          <block type="servomotor_get_position" id="4VlRm[}e$27e$OvD=n*#">
+            <field name="instance_name">{HHyS$s2Cul$+tWcy_i:-FJhvd$0?GgKR?WF)%DO^</field>
+          </block>
+        </value>
+        <value name="B">
+          <block type="math_arithmetic" id="j:0g]0evRO@I#R5eFF}|">
+            <field name="OP">DIVIDE</field>
+            <value name="A">
+              <block type="math_number" id="a`cLR7!hF[!?GwC:I|e^">
+                <field name="NUM">180</field>
+              </block>
+            </value>
+            <value name="B">
+              <block type="math_number" id="ZF`4SG3/nCG}7n.[^/5+">
+                <field name="NUM">512</field>
+              </block>
+            </value>
+          </block>
+        </value>
+      </block>
+    </value>
+  </block>
+  <block type="procedures_defreturn" id="2.gZAK(xJu9jI(k{bgXe" x="0" y="2927">
+    <field name="NAME">get_degree_offset_S3</field>
+    <value name="RETURN">
+      <block type="math_arithmetic" id="=BD0Q{VWv`4GH~3q_|BJ" inline="false">
+        <field name="OP">MULTIPLY</field>
+        <value name="A">
+          <block type="servomotor_get_position" id="qx*}TyI3)?9y*40rG?Jp">
+            <field name="instance_name">{HHyS$s2Cul$+tWcy_i:-g3?u7p08bVsv5o0is+7l</field>
+          </block>
+        </value>
+        <value name="B">
+          <block type="math_arithmetic" id="]R;K)9]Zt0xo$hI%=?0o">
+            <field name="OP">DIVIDE</field>
+            <value name="A">
+              <block type="math_number" id="G/y#kL,/Fa9O=[DRcU!V">
+                <field name="NUM">180</field>
+              </block>
+            </value>
+            <value name="B">
+              <block type="math_number" id="m)`?cFhqsOPlppB+I]9d">
+                <field name="NUM">512</field>
+              </block>
+            </value>
+          </block>
+        </value>
+      </block>
+    </value>
+  </block>
+  <block type="display_on_slider_moved" id=")H7=Z8p4oIU4vKpY7$^O" x="0" y="3084">
+    <field name="instance_name">txt_slider_s1</field>
+    <statement name="statement">
+      <block type="variables_set" id="2v:YV%8A7]$f(6~B_G7I">
+        <field name="VAR" id="z+oZh2H|$^lBY{A}u]0z">target_pos_s1</field>
+        <value name="VALUE">
+          <block type="display_event" id="p]v_-@wiW$eRG%1+e2#D">
+            <mutation xmlns="http://www.w3.org/1999/xhtml" eventtype="value"></mutation>
+            <field name="property_name">value</field>
+          </block>
+        </value>
+      </block>
+    </statement>
+  </block>
+  <block type="display_on_slider_moved" id="8Pn:!es{lg;gbqlTCejy" x="0" y="3194">
+    <field name="instance_name">txt_slider_s2</field>
+    <statement name="statement">
+      <block type="variables_set" id="116}@cG:)5x2}1M5yk/o">
+        <field name="VAR" id="{QERM#!X$||gpSQ*kfwc">target_pos_s2</field>
+        <value name="VALUE">
+          <block type="display_event" id="d4W1rrOuLT/;S+ugk4]G">
+            <mutation xmlns="http://www.w3.org/1999/xhtml" eventtype="value"></mutation>
+            <field name="property_name">value</field>
+          </block>
+        </value>
+      </block>
+    </statement>
+  </block>
+  <block type="display_on_slider_moved" id="#iGQ3@wOlMrx~i|ARv[D" x="0" y="3304">
+    <field name="instance_name">txt_slider_s3</field>
+    <statement name="statement">
+      <block type="variables_set" id="m}VneVw6Q!#e-P-1*)nN">
+        <field name="VAR" id="HGooWbI$|pU@Q@1xs,/X">target_pos_s3</field>
+        <value name="VALUE">
+          <block type="display_event" id="X)_F7V$}+1![mAZq+U(`">
+            <mutation xmlns="http://www.w3.org/1999/xhtml" eventtype="value"></mutation>
+            <field name="property_name">value</field>
+          </block>
+        </value>
+      </block>
+    </statement>
+  </block>
+  <block type="display_on_button_clicked" id="CliaGnneX1G#qY4+QZo]" x="0" y="3414">
+    <field name="instance_name">txt_button_minus1</field>
+    <statement name="statement">
+      <block type="controls_if" id="DP5z;LJU-1/,+ac^md1a">
+        <value name="IF0">
+          <block type="logic_compare" id="PxI|P/zT0^]?phs!kj]4">
+            <field name="OP">GT</field>
+            <value name="A">
+              <block type="variables_get" id="t?t=KR!O7b4k?Luq}t)u">
+                <field name="VAR" id="z+oZh2H|$^lBY{A}u]0z">target_pos_s1</field>
+              </block>
+            </value>
+            <value name="B">
+              <block type="math_number" id="8}N_ILsj(f,SCW-/04r6">
+                <field name="NUM">0</field>
+              </block>
+            </value>
+          </block>
+        </value>
+        <statement name="DO0">
+          <block type="variables_set" id="EPF?$`mmVK#_2VsV-/ds">
+            <field name="VAR" id="z+oZh2H|$^lBY{A}u]0z">target_pos_s1</field>
+            <value name="VALUE">
+              <block type="math_arithmetic" id="^m~w?]_A:JI0zpGC$$CZ">
+                <field name="OP">MINUS</field>
+                <value name="A">
+                  <block type="variables_get" id="c|}adg:E_DbR3TO|kx)8">
+                    <field name="VAR" id="z+oZh2H|$^lBY{A}u]0z">target_pos_s1</field>
+                  </block>
+                </value>
+                <value name="B">
+                  <block type="variables_get" id="_xWTtRm;|JN#Vl,wM]j^">
+                    <field name="VAR" id="GQ]wgR4PLX3oWjpF~|`k">s_step</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <next>
+              <block type="display_set_slider_value" id="S:C~j!KZ8x?Jfn$-6otC">
+                <field name="instance_name">txt_slider_s1</field>
+                <value name="value">
+                  <shadow type="math_number" id="3e].Rz]Gwi[o#QB`;CCu">
+                    <field name="NUM">0</field>
+                  </shadow>
+                  <block type="variables_get" id="c5nytX.nsYSO`uq^}9h9">
+                    <field name="VAR" id="z+oZh2H|$^lBY{A}u]0z">target_pos_s1</field>
+                  </block>
+                </value>
+              </block>
+            </next>
+          </block>
+        </statement>
+      </block>
+    </statement>
+  </block>
+  <block type="display_on_button_clicked" id="REs9%w{NTuLlpLO+1*Y^" x="0" y="3615">
+    <field name="instance_name">txt_button_plus1</field>
+    <statement name="statement">
+      <block type="controls_if" id="=nNKUce:XcAMZg{GKh^Q">
+        <value name="IF0">
+          <block type="logic_compare" id="yUJ*A$mR=OraDzflrWQg">
+            <field name="OP">LT</field>
+            <value name="A">
+              <block type="variables_get" id="AsY:uhek?gnFRhapW-S?">
+                <field name="VAR" id="z+oZh2H|$^lBY{A}u]0z">target_pos_s1</field>
+              </block>
+            </value>
+            <value name="B">
+              <block type="math_number" id="JSz;Qce@fCk#loKUqHSi">
+                <field name="NUM">512</field>
+              </block>
+            </value>
+          </block>
+        </value>
+        <statement name="DO0">
+          <block type="variables_set" id=")aUrgd4{Z(02DA@K]bw_">
+            <field name="VAR" id="z+oZh2H|$^lBY{A}u]0z">target_pos_s1</field>
+            <value name="VALUE">
+              <block type="math_arithmetic" id="|*hxodll-mF3_!*y_2H-">
+                <field name="OP">ADD</field>
+                <value name="A">
+                  <block type="variables_get" id="EOI3L?Wzdr--Z/S0;d:w">
+                    <field name="VAR" id="z+oZh2H|$^lBY{A}u]0z">target_pos_s1</field>
+                  </block>
+                </value>
+                <value name="B">
+                  <block type="variables_get" id=":8kmRTP4/C+VrCX~,I9Q">
+                    <field name="VAR" id="GQ]wgR4PLX3oWjpF~|`k">s_step</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <next>
+              <block type="display_set_slider_value" id="%#.ow*Py6V0ty/Vg]@wc">
+                <field name="instance_name">txt_slider_s1</field>
+                <value name="value">
+                  <shadow type="math_number" id="A#]N/cGU4F%^{mg@,hB?">
+                    <field name="NUM">0</field>
+                  </shadow>
+                  <block type="variables_get" id="X42pJ)w-_CJfCHT3r.:B">
+                    <field name="VAR" id="z+oZh2H|$^lBY{A}u]0z">target_pos_s1</field>
+                  </block>
+                </value>
+              </block>
+            </next>
+          </block>
+        </statement>
+      </block>
+    </statement>
+  </block>
+  <block type="display_on_button_clicked" id="zMUHMBmtS)Fy6+PP_W.u" x="0" y="3816">
+    <field name="instance_name">txt_button_minus2</field>
+    <statement name="statement">
+      <block type="controls_if" id="Vt7Y5`9.ojrxj1TL*oLD">
+        <value name="IF0">
+          <block type="logic_compare" id="GT|5ESrAB4Q)|Eh;pcp7">
+            <field name="OP">GT</field>
+            <value name="A">
+              <block type="variables_get" id="wb`ZAFq%E;UWLfj~:W$}">
+                <field name="VAR" id="{QERM#!X$||gpSQ*kfwc">target_pos_s2</field>
+              </block>
+            </value>
+            <value name="B">
+              <block type="math_number" id="(r,0)m^Tgd9WZqodKm+T">
+                <field name="NUM">0</field>
+              </block>
+            </value>
+          </block>
+        </value>
+        <statement name="DO0">
+          <block type="variables_set" id=";0H7tCUgft953DB}9U,5">
+            <field name="VAR" id="{QERM#!X$||gpSQ*kfwc">target_pos_s2</field>
+            <value name="VALUE">
+              <block type="math_arithmetic" id="93~jD7peOWkRTY]$huOc">
+                <field name="OP">MINUS</field>
+                <value name="A">
+                  <block type="variables_get" id="#2FF8ei9V[^.({i{zN!7">
+                    <field name="VAR" id="{QERM#!X$||gpSQ*kfwc">target_pos_s2</field>
+                  </block>
+                </value>
+                <value name="B">
+                  <block type="variables_get" id=".2fq1=c5VR5ktjc4XFYw">
+                    <field name="VAR" id="GQ]wgR4PLX3oWjpF~|`k">s_step</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <next>
+              <block type="display_set_slider_value" id="[?Rj`jBCa!Y?+~8{e8sg">
+                <field name="instance_name">txt_slider_s2</field>
+                <value name="value">
+                  <shadow type="math_number" id="3e].Rz]Gwi[o#QB`;CCu">
+                    <field name="NUM">0</field>
+                  </shadow>
+                  <block type="variables_get" id="84O_Y3m/}4I)xPS~Ny?a">
+                    <field name="VAR" id="{QERM#!X$||gpSQ*kfwc">target_pos_s2</field>
+                  </block>
+                </value>
+              </block>
+            </next>
+          </block>
+        </statement>
+      </block>
+    </statement>
+  </block>
+  <block type="display_on_button_clicked" id="yhLK?`dxIdhjTGjlBg4I" x="0" y="4017">
+    <field name="instance_name">txt_button_plus2</field>
+    <statement name="statement">
+      <block type="controls_if" id="kyp?06!fM,F_]IokWwua">
+        <value name="IF0">
+          <block type="logic_compare" id="*KS|/)#Gk*imnVY{96KZ">
+            <field name="OP">LT</field>
+            <value name="A">
+              <block type="variables_get" id="Y82ECdWj9Km?qd/L;4Yl">
+                <field name="VAR" id="{QERM#!X$||gpSQ*kfwc">target_pos_s2</field>
+              </block>
+            </value>
+            <value name="B">
+              <block type="math_number" id=",??XPx/Q=pc0W5ymmqhQ">
+                <field name="NUM">512</field>
+              </block>
+            </value>
+          </block>
+        </value>
+        <statement name="DO0">
+          <block type="variables_set" id="|umNMIXFXV5[4O5GK3gM">
+            <field name="VAR" id="{QERM#!X$||gpSQ*kfwc">target_pos_s2</field>
+            <value name="VALUE">
+              <block type="math_arithmetic" id=";RakGgg#=PAbcrrg@chv">
+                <field name="OP">ADD</field>
+                <value name="A">
+                  <block type="variables_get" id="t;BP~RoXIt43~+gf8cW3">
+                    <field name="VAR" id="{QERM#!X$||gpSQ*kfwc">target_pos_s2</field>
+                  </block>
+                </value>
+                <value name="B">
+                  <block type="variables_get" id="t3)su4)[`94NP?v4[4T;">
+                    <field name="VAR" id="GQ]wgR4PLX3oWjpF~|`k">s_step</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <next>
+              <block type="display_set_slider_value" id=",@zP`.:S}NyxL#@$j$it">
+                <field name="instance_name">txt_slider_s2</field>
+                <value name="value">
+                  <shadow type="math_number" id="A#]N/cGU4F%^{mg@,hB?">
+                    <field name="NUM">0</field>
+                  </shadow>
+                  <block type="variables_get" id="VfghD=_R*zjz]wArxd)w">
+                    <field name="VAR" id="{QERM#!X$||gpSQ*kfwc">target_pos_s2</field>
+                  </block>
+                </value>
+              </block>
+            </next>
+          </block>
+        </statement>
+      </block>
+    </statement>
+  </block>
+  <block type="display_on_button_clicked" id="WhCTgpbI9P*dz/J8Yzu_" x="0" y="4218">
+    <field name="instance_name">txt_button_minus3</field>
+    <statement name="statement">
+      <block type="controls_if" id="s4CsnFSe(MZCI;P(x(=h">
+        <value name="IF0">
+          <block type="logic_compare" id="%PYYIa:S]x:%;`5j-JDI">
+            <field name="OP">GT</field>
+            <value name="A">
+              <block type="variables_get" id="=ORP3%hHHZ:hJ7{(e~/=">
+                <field name="VAR" id="HGooWbI$|pU@Q@1xs,/X">target_pos_s3</field>
+              </block>
+            </value>
+            <value name="B">
+              <block type="math_number" id="4c;fUtKNcGdZBWA}FowY">
+                <field name="NUM">0</field>
+              </block>
+            </value>
+          </block>
+        </value>
+        <statement name="DO0">
+          <block type="variables_set" id="VmH|Jy)LhcIArDT2efq7">
+            <field name="VAR" id="HGooWbI$|pU@Q@1xs,/X">target_pos_s3</field>
+            <value name="VALUE">
+              <block type="math_arithmetic" id="EsT_TED;$9+1X72O(lkt">
+                <field name="OP">MINUS</field>
+                <value name="A">
+                  <block type="variables_get" id="!|~5EoNnF+k8kw8cXMy]">
+                    <field name="VAR" id="HGooWbI$|pU@Q@1xs,/X">target_pos_s3</field>
+                  </block>
+                </value>
+                <value name="B">
+                  <block type="variables_get" id="7NN$gNX,2JVw8U+7N-J}">
+                    <field name="VAR" id="GQ]wgR4PLX3oWjpF~|`k">s_step</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <next>
+              <block type="display_set_slider_value" id="e@bl~f$o;ykg+;r2-ieQ">
+                <field name="instance_name">txt_slider_s3</field>
+                <value name="value">
+                  <shadow type="math_number" id="3e].Rz]Gwi[o#QB`;CCu">
+                    <field name="NUM">0</field>
+                  </shadow>
+                  <block type="variables_get" id="m0_=e1V`ch!d70wj#4a[">
+                    <field name="VAR" id="HGooWbI$|pU@Q@1xs,/X">target_pos_s3</field>
+                  </block>
+                </value>
+              </block>
+            </next>
+          </block>
+        </statement>
+      </block>
+    </statement>
+  </block>
+  <block type="display_on_button_clicked" id="?D`T0cYO@Na6kZ:?K2NB" x="0" y="4419">
+    <field name="instance_name">txt_button_plus3</field>
+    <statement name="statement">
+      <block type="controls_if" id="X~3w64y*(=hqDc.QHf*V">
+        <value name="IF0">
+          <block type="logic_compare" id="eO5wzj|RiwL0|qbL+yw`">
+            <field name="OP">LT</field>
+            <value name="A">
+              <block type="variables_get" id=":b^HD+0h1,Ii4$$,z#;U">
+                <field name="VAR" id="HGooWbI$|pU@Q@1xs,/X">target_pos_s3</field>
+              </block>
+            </value>
+            <value name="B">
+              <block type="math_number" id="_-Td?.^,yiK3BosV8p~$">
+                <field name="NUM">512</field>
+              </block>
+            </value>
+          </block>
+        </value>
+        <statement name="DO0">
+          <block type="variables_set" id="hJZrXJbx{|FZ)+QCX#Q)">
+            <field name="VAR" id="HGooWbI$|pU@Q@1xs,/X">target_pos_s3</field>
+            <value name="VALUE">
+              <block type="math_arithmetic" id="yNbci1li#^l,4@)LGT{)">
+                <field name="OP">ADD</field>
+                <value name="A">
+                  <block type="variables_get" id="98!D,emN6REW8uf=J_.+">
+                    <field name="VAR" id="HGooWbI$|pU@Q@1xs,/X">target_pos_s3</field>
+                  </block>
+                </value>
+                <value name="B">
+                  <block type="variables_get" id=",`lG8)USrxtr]$3Bc.4i">
+                    <field name="VAR" id="GQ]wgR4PLX3oWjpF~|`k">s_step</field>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <next>
+              <block type="display_set_slider_value" id="f{.Vresi+BAP2e8G600~">
+                <field name="instance_name">txt_slider_s3</field>
+                <value name="value">
+                  <shadow type="math_number" id="A#]N/cGU4F%^{mg@,hB?">
+                    <field name="NUM">0</field>
+                  </shadow>
+                  <block type="variables_get" id="drSi)wxuKzJ]II$N]3Jq">
+                    <field name="VAR" id="HGooWbI$|pU@Q@1xs,/X">target_pos_s3</field>
+                  </block>
+                </value>
+              </block>
+            </next>
+          </block>
+        </statement>
+      </block>
+    </statement>
+  </block>
+</xml>

@@ -51,6 +51,16 @@ class Registry:
             current_dir = Path(__file__).parent
             project_root = current_dir.parent.parent.parent  # omf/tools -> omf -> . -> Projekt-Root
             root = project_root / "registry" / "model" / "v1"
+            # Absolute Pfade verwenden für bessere Zuverlässigkeit
+            root = root.resolve()
+            
+            # Debug: Prüfe ob der Pfad existiert
+            if not root.exists():
+                # Fallback: Verwende aktuelles Arbeitsverzeichnis
+                import os
+                cwd = Path(os.getcwd())
+                root = cwd / "registry" / "model" / "v1"
+                root = root.resolve()
 
         self.root = Path(root)
         self.logger.info(f"Registry-Root: {self.root}")
@@ -62,12 +72,13 @@ class Registry:
         self._check_version_pinning()
 
     def _check_version_pinning(self):
-        """Version-Pinning: assert registry.manifest()["version"].startswith("1.")"""
+        """Version-Pinning: assert registry.manifest()["version"].startswith("0.")"""
         try:
             manifest = self.load_yaml("manifest.yml")
             version = manifest.get("version", "")
-            if not version.startswith("1."):
-                raise RegistryError(f"Version pinning violation: expected v1.x.x, got {version}")
+            # Akzeptiere sowohl "1.x.x" als auch "v1.x.x" Format
+            if not (version.startswith("1.") or version.startswith("v1.")):
+                raise RegistryError(f"Version pinning violation: expected 1.x.x or v1.x.x, got {version}")
             self.logger.info(f"✅ Registry version check passed: {version}")
         except Exception as e:
             self.logger.error(f"❌ Registry version check failed: {e}")

@@ -1,0 +1,8 @@
+{
+    "version": "1.0.3+git2d13ea9",
+    "manufacturer": "Fischertechnik",
+    "typeSpecification": {
+        "seriesName": "MOD-FF22+CGW",
+        "moduleClass": "CGW"
+    }
+}

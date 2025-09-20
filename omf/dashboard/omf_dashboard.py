@@ -49,6 +49,13 @@ load_component("fts", "components.fts", "FTS")
 load_component("ccu", "components.ccu", "CCU")
 load_component("shopfloor", "components.shopfloor", "Shopfloor")
 
+# APS-spezifische Komponenten
+load_component("aps_overview", "components.aps_overview", "APS Overview")
+load_component("aps_orders", "components.aps_orders", "APS Orders")
+load_component("aps_system_control", "components.aps_system_control", "APS System Control")
+# load_component("aps_configuration", "components.aps_configuration", "APS Configuration")  # TODO: Später ausarbeiten
+load_component("aps_steering", "components.aps_steering", "APS Steering")
+
 # =============================================================================
 # LOGGING INITIALIZATION
 # =============================================================================
@@ -375,7 +382,7 @@ def get_module_logo(module_name):
 def display_tabs():
     """Zeigt die Dashboard-Tabs und deren Inhalte"""
     # Tabs
-    tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10 = st.tabs(
+    tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11, tab12, tab13, tab14 = st.tabs(
         [
             "📊 Übersicht",
             "🏭 Fertigungsaufträge",
@@ -387,6 +394,10 @@ def display_tabs():
             "⚙️ Einstellungen",
             "🔧 Modul-Steuerung",
             "📋 Logs",
+            "🏭 APS Overview",
+            "📋 APS Orders",
+            "⚙️ APS System Control",
+            "🎮 APS Steering",
         ]
     )
 
@@ -420,6 +431,19 @@ def display_tabs():
 
     with tab10:
         components["logs"]()
+
+    # APS-spezifische Tabs
+    with tab11:
+        components["aps_overview"]()
+    
+    with tab12:
+        components["aps_orders"]()
+    
+    with tab13:
+        components["aps_system_control"]()
+    
+    with tab14:
+        components["aps_steering"]()
 
 # =============================================================================
 # MAIN FUNCTION

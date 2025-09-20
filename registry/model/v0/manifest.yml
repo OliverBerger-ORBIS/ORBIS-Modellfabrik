@@ -1,75 +1,14 @@
-version: 1.0.0
-name: "OMF Registry v1"
-description: "Single source of truth for OMF configuration"
-last_updated: "2025-09-14"
+version: 0.0.0
+name: "OMF Registry v0"
+description: "OMF Registry v0 - APS Integration"
+last_updated: "2025-09-19"
+author: "OMF Development Team"
 
-artifacts:
-  contracts:
-    - "entities.yml"
-    - "correlation.yml" 
-    - "modules.yml"
-    - "enums.yml"
-  
-  topics:
-    - "topics/module.yml"
-    - "topics/ccu.yml"
-    - "topics/fts.yml"
-    - "topics/txt.yml"
-    - "topics/nodered.yml"
-  
-  templates:
-    - "templates/ccu.state.pairing.yml"
-    - "templates/ccu.state.status.yml"
-    - "templates/ccu.state.config.yml"
-    - "templates/ccu.state.layout.yml"
-    - "templates/ccu.state.stock.yml"
-    - "templates/ccu.state.version_mismatch.yml"
-    - "templates/module.connection.hbw.yml"
-    - "templates/module.connection.mill.yml"
-    - "templates/module.connection.drill.yml"
-    - "templates/module.connection.dps.yml"
-    - "templates/module.connection.aiqs.yml"
-    - "templates/module.state.hbw_inventory.yml"
-    - "templates/module.state.drill.yml"
-    - "templates/module.state.mill.yml"
-    - "templates/module.state.dps.yml"
-    - "templates/module.state.aiqs.yml"
-    - "templates/module.order.hbw.yml"
-    - "templates/module.order.drill.yml"
-    - "templates/module.order.mill.yml"
-    - "templates/module.order.aiqs.yml"
-    - "templates/module.order.dps.yml"
-    - "templates/module.factsheet.hbw.yml"
-    - "templates/module.factsheet.drill.yml"
-    - "templates/module.factsheet.mill.yml"
-    - "templates/module.factsheet.aiqs.yml"
-    - "templates/module.factsheet.dps.yml"
-    - "templates/ccu.control.yml"
-    - "templates/txt.controller1.order_input.yml"
-    - "templates/txt.controller1.stock_input.yml"
-    - "templates/fts.order.yml"
-    - "templates/fts.state.yml"
-    - "templates/fts.connection.yml"
-    - "templates/fts.factsheet.yml"
-    - "templates/nodered.connection.dps.yml"
-    - "templates/nodered.connection.aiqs.yml"
-    - "templates/nodered.state.dps.yml"
-    - "templates/nodered.state.aiqs.yml"
-    - "templates/nodered.factsheet.dps.yml"
-    - "templates/nodered.factsheet.aiqs.yml"
-    - "templates/txt.controller1.function_input.bme680.yml"
-    - "templates/txt.controller1.function_input.broadcast.yml"
-    - "templates/txt.controller1.function_input.cam.yml"
-    - "templates/txt.controller1.function_input.ldr.yml"
-    - "templates/txt.controller1.function_output.broadcast.yml"
-    - "templates/txt.controller1.input.config_hbw.yml"
-    - "templates/txt.controller1.output.order.yml"
-    - "templates/fts.order.navigation.yml"
-  
-  mappings:
-    - "mappings/topic_template.yml"
+categories:
+  - "topics"
+  - "templates"
+  - "txt_controllers"
 
-validation:
-  schema_validation: true
-  topic_collision_check: true
-  template_content_check: true
+compatibility:
+  min_omf_version: "0.0.0"
+  max_omf_version: "0.9.9"

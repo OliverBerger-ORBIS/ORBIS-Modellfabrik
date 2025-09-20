@@ -1,0 +1,47 @@
+{
+    "headerId": 1,
+    "timestamp": "<replace_in_vda5050>",
+    "version": "1.1.0+git250d287",
+    "manufacturer": "Fischertechnik",
+    "serialNumber": "<replace_in_vda5050>",
+    "typeSpecification": {
+        "seriesName": "FTS-FF22+",
+        "agvClass": "CARRIER",
+        "navigationTypes": [
+            "PHYSICAL_LINE_GUIDED"
+        ]
+    },
+    "physicalParameters": {},
+    "protocolLimits": {},
+    "protocolFeatures": {
+        "agvActions": [
+            {
+                "actionType": "DOCK",
+                "actionScopes": "NODE"
+            }
+        ]
+    },
+    "agvGeometry": {},
+    "localizationParameters": {},
+    "loadSpecification": {
+        "loadPositions": [
+            "LEFT",
+            "MIDDLE",
+            "RIGHT"
+        ],
+        "loadSets": [
+            {
+                "setName": "WHITES",
+                "loadType": "WHITE"
+            },
+            {
+                "setName": "REDS",
+                "loadType": "RED"
+            },
+            {
+                "setName": "BLUES",
+                "loadType": "BLUE"
+            }
+        ]
+    }
+}

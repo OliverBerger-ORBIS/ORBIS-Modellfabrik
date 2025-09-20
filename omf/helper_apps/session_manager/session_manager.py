@@ -169,15 +169,15 @@ def main():
     # Sidebar Navigation
     st.sidebar.title("Navigation")
 
-    # Tab selection - Session Analyse als Default
+    # Tab selection - Session Replay als Default
     tab = st.sidebar.selectbox(
         "Wähle einen Tab:",
         [
+            "📡 Replay Station",
+            "🎙️ Session Recorder",
             "📊 Session Analyse",
             "🔴 Auftrag-Rot Analyse",
             "🔍 Order Analyzer",
-            "📡 Replay Station",
-            "🎙️ Session Recorder",
             "🔍 Template Analyse",
             "⚙️ Einstellungen",
             "📝 Logging",

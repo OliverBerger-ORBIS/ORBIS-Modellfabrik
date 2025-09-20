@@ -22,12 +22,10 @@ def show_logs():
         
         # OMF-Logging für Tests (thread-sicher)
         test_logger = get_logger("omf.dashboard.logs_test")
-        test_logger.debug("🧪 DEBUG-TEST aus logs.py Komponente")
         test_logger.info("ℹ️ INFO-TEST aus logs.py Komponente")
 
         # Teste auch MqttGateway Logger direkt
         mqtt_test_logger = get_logger("omf.tools.mqtt_gateway")
-        mqtt_test_logger.debug("🔧 DEBUG-TEST MqttGateway Logger")
         mqtt_test_logger.info("ℹ️ INFO-TEST MqttGateway Logger")
 
     if not log_buffer:

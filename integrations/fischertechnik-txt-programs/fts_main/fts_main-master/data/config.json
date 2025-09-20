@@ -1,0 +1,13 @@
+{
+    "mqtt": {
+        "host": "192.168.0.100",
+        "port": 1883,
+        "username": "default",
+        "password": "default"
+    },
+    "battery":{
+        "maxVolt" : 9100,
+        "minVolt" : 7840
+    }
+
+}

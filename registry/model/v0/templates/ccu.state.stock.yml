@@ -1,186 +1,35 @@
+version: 1.0.0
 metadata:
   category: CCU
-  description: Auto-analyzed template for ccu/state/stock
-  last_updated: '2025-09-15'
-  source: ccu_template_analyzer
   sub_category: State
-  version: 0.1.0
+  description: CCU Stock State (topic-free; topics live in mapping.yml)
+  icon: "📊"
+  last_updated: "2025-09-14"
+
 templates:
+
   ccu.state.stock:
-    category: CCU
-    description: Template for ccu/state/stock
-    direction: inbound
+    description: Aggregierter HBW-Bestand (vom CCU-Blick)
+    match: { }
+    template_structure:
+      stockItems:
+        type: array
+        items:
+          type: object
+          properties:
+            hbw: { type: string }
+            location: { type: string }
+            workpiece:
+              type: object
+              properties:
+                id: { type: string }
+                state: { type: string, enum: ["RAW","RESERVED","IN_PROCESS","COMPLETED","FINISHED"] }
+                type: { type: string, enum: ["RED","WHITE","BLUE"] }
+      ts: { type: string, format: date-time }
     examples:
-    - stockItems:
-      - hbw: SVR3QA0022
-        location: A3
-        workpiece:
-          id: ''
-          state: RAW
-          type: ''
-      - hbw: SVR3QA0022
-        location: B3
-        workpiece:
-          id: ''
-          state: RAW
-          type: ''
-      - hbw: SVR3QA0022
-        location: C3
-        workpiece:
-          id: ''
-          state: RAW
-          type: ''
-      - hbw: SVR3QA0022
-        location: A1
-        workpiece:
-          id: ''
-          state: RAW
-          type: ''
-      - hbw: SVR3QA0022
-        location: B1
-        workpiece:
-          id: 04798eca341290
-          state: RAW
-          type: WHITE
-      - hbw: SVR3QA0022
-        location: C1
-        workpiece:
-          id: 047389ca341291
-          state: RAW
-          type: BLUE
-      - hbw: SVR3QA0022
-        location: A2
-        workpiece:
-          id: 047f8cca341290
-          state: RAW
-          type: RED
-      - hbw: SVR3QA0022
-        location: B2
-        workpiece:
-          id: 04808dca341291
-          state: RAW
-          type: RED
-      - hbw: SVR3QA0022
-        location: C2
-        workpiece:
-          id: 04ab8bca341290
-          state: RAW
-          type: WHITE
-      ts: '2025-08-19T09:17:08.337Z'
-    - stockItems:
-      - hbw: SVR3QA0022
-        location: A3
-        workpiece:
-          id: ''
-          state: RAW
-          type: ''
-      - hbw: SVR3QA0022
-        location: B3
-        workpiece:
-          id: ''
-          state: RAW
-          type: ''
-      - hbw: SVR3QA0022
-        location: C3
-        workpiece:
-          id: ''
-          state: RAW
-          type: ''
-      - hbw: SVR3QA0022
-        location: A1
-        workpiece:
-          id: ''
-          state: RAW
-          type: ''
-      - hbw: SVR3QA0022
-        location: B1
-        workpiece:
-          id: 04798eca341290
-          state: RAW
-          type: WHITE
-      - hbw: SVR3QA0022
-        location: C1
-        workpiece:
-          id: 047389ca341291
-          state: RAW
-          type: BLUE
-      - hbw: SVR3QA0022
-        location: A2
-        workpiece:
-          id: 047f8cca341290
-          state: RAW
-          type: RED
-      - hbw: SVR3QA0022
-        location: B2
-        workpiece:
-          id: 04808dca341291
-          state: RAW
-          type: RED
-      - hbw: SVR3QA0022
-        location: C2
-        workpiece:
-          id: 04ab8bca341290
-          state: RAW
-          type: WHITE
-      ts: '2025-08-19T09:20:42.493Z'
-    - stockItems:
-      - hbw: SVR3QA0022
-        location: A3
-        workpiece:
-          id: ''
-          state: RAW
-          type: ''
-      - hbw: SVR3QA0022
-        location: B3
-        workpiece:
-          id: ''
-          state: RAW
-          type: ''
-      - hbw: SVR3QA0022
-        location: C3
-        workpiece:
-          id: ''
-          state: RAW
-          type: ''
-      - hbw: SVR3QA0022
-        location: A1
-        workpiece:
-          id: ''
-          state: RAW
-          type: ''
-      - hbw: SVR3QA0022
-        location: B1
-        workpiece:
-          id: 04798eca341290
-          state: RAW
-          type: WHITE
-      - hbw: SVR3QA0022
-        location: C1
-        workpiece:
-          id: 047389ca341291
-          state: RAW
-          type: BLUE
-      - hbw: SVR3QA0022
-        location: A2
-        workpiece:
-          id: 047f8cca341290
-          state: RAW
-          type: RED
-      - hbw: SVR3QA0022
-        location: B2
-        workpiece:
-          id: 04808dca341291
-          state: RAW
-          type: RED
-      - hbw: SVR3QA0022
-        location: C2
-        workpiece:
-          id: 04ab8bca341290
-          state: RAW
-          type: WHITE
-      ts: '2025-08-19T09:21:09.695Z'
-    structure: {}
-    sub_category: State
-    validation:
-      field_types: {}
-      required_fields: []
+      - payload:
+          stockItems:
+            - { hbw: "SVR3QA0022", location: "A1", workpiece: { id: "040a8dca341291", state: "RAW", type: "RED" } }
+            - { hbw: "SVR3QA0022", location: "B1", workpiece: { id: "04798eca341290", state: "RAW", type: "WHITE" } }
+            - { hbw: "SVR3QA0022", location: "C1", workpiece: { id: "047389ca341291", state: "RAW", type: "BLUE" } }
+          ts: "2025-08-19T09:13:34.583Z"

@@ -143,10 +143,19 @@ Verständnis der Funktionsweise der APS Fischertechnik Anwendung, um eine eigene
   - 🔄 Payload-Analyse und Message-Details
 
 ### Nächste Schritte
-1. **Template-Analyse** implementieren
-2. **Replay-Station** für Dashboard-Tests
-3. **OMF Dashboard** Funktionalitäts-Erweiterung
-4. **MessageGenerator** Entwicklung
+1. ✅**Template-Analyse** implementieren
+2. ✅**Replay-Station** für Dashboard-Tests
+3. ✅**OMF Dashboard** Funktionalitäts-Erweiterung
+4. ✅**MessageGenerator** Entwicklung
+5. ✅**MQTT Mosquitto** Analyse des Brokers in RPi
+6. ✅**Analyse der TXT Controler von DPS** APS-Dasboard als CCU der Fischertechnik FAbrik
+7. **APS-Dashboard** Erweiterung um Funktionalität des Dashboards von Fischertechnik
+8. **I18n** Unterstützung für alle Dashboard Views (EN,DE,FR)
+9. **Doku Sprints** Dokumenation retrospektive was in den Sprints ab Sproint 01 gemacht wurde
+10. **Doku Helper-App** Doku mit Mermaid Diagrammen und Umstrukturierung der Tabs nach dem logischen Ablauf (Session Recorder Session Replay (als default), Session Analyse, Optional Template Analysis
+11. **Mermaid** Grafiken isolieren und als Referenz in mehrere Dokus einbinden, IDE mit entsprechenden extensions, damit das funktioniert
+12. **Architektur** Doku anpassen an Ergenisse aus APS-Analyse. OMF-Dashboad besteht aus "APS-Dashboard" Funktionalität + "DPS-Control"-Funktionalität von NodeREd nachimplementieren
+
 
 ## ⚠️ Wichtige Architektur-Hinweise
 - **Keine Integration:** OMF Dashboard und Session Manager sind unabhängig

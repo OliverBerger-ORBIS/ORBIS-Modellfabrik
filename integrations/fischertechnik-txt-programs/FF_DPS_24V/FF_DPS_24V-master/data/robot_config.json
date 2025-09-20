@@ -1,0 +1,28 @@
+# Configuration
+
+kinematic:
+  # lengths (unit: mm)
+  l_1: 92.5
+  l_2: 150
+  l_4: 140
+  l_5: 67.5
+  
+  l_6:  33 # vacuum gripper
+  # l_6: ? # gripper
+
+axes:
+  axis1:
+    degree_offset: 0.9
+    invert_direction: true
+  axis2:
+    degree_offset: 66.8
+    invert_direction: true
+  axis3:
+    degree_offset: 244.3
+    invert_direction: false
+  axis4:
+    degree_offset: 92 #87.4
+  axis5:
+    degree_offset: 89 #90
+  axis6:
+    degree_offset: -92 #-92
