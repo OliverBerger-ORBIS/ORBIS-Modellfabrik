@@ -58,21 +58,28 @@ docs/
 
 ## 🎨 Styling-Standards
 
-### **OMF-Farbpalette:**
+### **OMF-Farbpalette (4-Farb-System):**
 ```mermaid
 graph TD
-    A[OMF-Komponenten] -->|Action| B[MQTT-Broker]
-    style A fill:#e1f5fe  # Blau
-    style B fill:#f3e5f5  # Lila
+    A[ORBIS Komponenten] -->|Steuert| B[FT Hardware]
+    A -->|Ersetzt| C[FT Software]
+    B --> D[External System]
+    
+    style A fill:#e3f2fd  # ORBIS Blau
+    style B fill:#fff8e1  # FT Hardware Gelb
+    style C fill:#ffebee  # FT Software Rot
+    style D fill:#f3e5f5  # External Lila
 ```
 
 ### **Standard-Farben:**
-- **OMF-Komponenten:** `#e1f5fe` (Blau)
-- **MQTT-Broker:** `#f3e5f5` (Lila)
-- **Session-Tools:** `#e8f5e8` (Grün)
-- **Data-Storage:** `#fff3e0` (Orange)
-- **Analysis-Tools:** `#fff3e0` (Orange)
-- **External Systems:** `#fce4ec` (Pink)
+- **ORBIS-Komponenten:** `#e3f2fd` (Sehr helles Blau) - OMF Dashboard, Session Manager
+- **Fischertechnik Hardware (BEHALTEN):** `#fff8e1` (Sehr helles Gelb) - DRILL, MILL, DPS Module
+- **Fischertechnik Software (ERSETZEN):** `#ffebee` (Sehr helles Rot) - Node-RED, VDA5050
+- **Externe Systeme:** `#f3e5f5` (Sehr helles Lila) - MQTT Broker, Datenbanken
+
+### **Hardware vs Software Unterscheidung:**
+- **Hardware (Gelb):** DRILL, MILL, DPS Module, TXT Controller, Raspberry Pi
+- **Software (Rot):** Node-RED Flows, VDA5050 Implementation, Legacy Software
 
 ## 🔄 Workflow
 
@@ -134,19 +141,26 @@ graph TD
 
 ```mermaid
 graph TD
-    A[Source] -->|Action| B[Target]
-    style A fill:#e1f5fe
-    style B fill:#f3e5f5
+    A[ORBIS Component] -->|Steuert| B[FT Hardware]
+    A -->|Ersetzt| C[FT Software]
+    B --> D[External System]
+    
+    style A fill:#e3f2fd  # ORBIS Blau
+    style B fill:#fff8e1  # FT Hardware Gelb
+    style C fill:#ffebee  # FT Software Rot
+    style D fill:#f3e5f5  # External Lila
 ```
 ```
 
 ## 🔗 Verweise
 
-- **Test-Directory:** `docs/mermaid-test/`
 - **Shared Diagramme:** `docs/_shared/diagrams/`
 - **Lokale Diagramme:** `docs/<section>/diagrams/`
+- **Node-RED Diagramme:** `docs/06-integrations/node-red/*.mermaid`
 - **Styling-Standards:** Diese Datei
+- **Vollständiger Style-Guide:** `mermaid-style-guide.md`
+- **Cursor AI Regeln:** `cursor-ai-mermaid-rules.md`
 
 ---
 
-*Teil der OMF-Dokumentation | [Zurück zur README](../../README.md)*
+*Teil der OMF-Dokumentation | [Zurück zur Hauptdokumentation](../../../README.md)*

@@ -20,11 +20,13 @@
 2. ✅ **PROJECT_OVERVIEW.md** zu statischer Dokumentation umwandeln
 3. ✅ **Doku Overkill vermeiden** - docs aufräumen und konsolidieren
 4. ✅ **Mermaid Doku** - Diagramme auslagern, IDE-Einrichtung, Toggle Bearbeiten/Preview, Verweise in MDs
-5. **Pre-commit und Git/GitHub Workflow** - Projekt so anpassen dass pre-commit und git/github Workflow funktioniert
-6. **Session Analyse Helper App** dokumentieren - technische Beschreibung und HowTo-Nutzung
-7. **Architektur-Dokumentation** an APS-Analyse-Ergebnisse anpassen
-8. **Node-RED Simulation** im Dashboard vorbereiten
-9. **OMF-Dashboard mit realer Fabrik testen** - Validierung der APS-Integration
+5. **Mermaid Diagramme vollständig implementieren** - noch nicht abgeschlossen
+6. **APS Configuration Tab** implementieren - fehlender 5. APS Tab (später)
+7. **Pre-commit und Git/GitHub Workflow** - Projekt so anpassen dass pre-commit und git/github Workflow funktioniert
+8. **Session Analyse Helper App** dokumentieren - technische Beschreibung und HowTo-Nutzung
+9. **Architektur-Dokumentation** an APS-Analyse-Ergebnisse anpassen
+10. **Node-RED Simulation** im Dashboard vorbereiten
+11. **OMF-Dashboard mit realer Fabrik testen** - Validierung der APS-Integration
 
 ## 📊 Sprint-Vorgehen
 
@@ -83,8 +85,10 @@
 - **Mermaid Doku** - Einfaches Hybrid-Modell implementiert
 
 ### **Offene Punkte:**
+- **Mermaid Diagramme vollständig implementieren** - noch nicht abgeschlossen
+- **Cross-Platform Testing** - ✅ **ERFOLGREICH** - Mermaid Doku auf Windows + VSCode getestet
+- **APS Configuration Tab** implementieren - fehlender 5. APS Tab (später)
 - **Pre-commit und Git/GitHub Workflow** - Projekt so anpassen dass pre-commit und git/github Workflow funktioniert
-- **Cross-Platform Testing** - Mermaid Doku auf Windows + VSCode testen
 - **Session Analyse Helper App** dokumentieren - technische Beschreibung und HowTo-Nutzung
 - **OMF-Dashboard mit realer Fabrik testen** - Validierung der APS-Integration
 - **Node-RED Simulation** im Dashboard
