@@ -28,10 +28,14 @@
 - [ADR-0002: Exact Overrides per Serial](03-decision-records/ADR-0002-exact-overrides-per-serial.md)
 
 ### 04-How-To
-- [Add a New Module](04-howto/add-a-new-module.md) - Template → Mapping → Tests
-- [Define a New Topic](04-howto/define-a-new-topic.md) - Pattern vs. Exact
-- [Build and Run](04-howto/build-and-run.md) - OMF Dashboard & Session-Manager
-- [Validate and Release](04-howto/validate-and-release.md) - Make-Targets & Versioning
+
+#### Setup
+- [Project Setup](04-howto/setup/project-setup.md) - Installation, Voraussetzungen, Development Environment
+- [Repository Structure](04-howto/setup/repository-structure.md) - Projekt-Struktur, wichtige Verzeichnisse, Konfiguration
+
+#### Development
+- [Development Workflow](04-howto/development/workflow.md) - Git-Workflow, Testing, Development Tools
+- [Dashboard Components](04-howto/development/dashboard-components.md) - Wrapper Pattern, UI-Refresh, MQTT-Integration
 
 #### Communication
 - [MQTT Integration](04-howto/communication/mqtt/dashboard-mqtt-integration.md) - Dashboard MQTT-Integration
@@ -41,6 +45,9 @@
 - [Module Configuration](04-howto/configuration/module-configuration-guide.md) - Modul-Konfiguration und Icons
 - [NFC Code Configuration](04-howto/configuration/nfc-code-configuration-guide.md) - NFC-Code-Konfiguration
 - [Topic Configuration](04-howto/configuration/topic-configuration-guide.md) - Topic-Konfiguration und Priority-Filter
+
+#### Testing
+- [Testing Strategy](04-howto/testing/testing-strategy.md) - Test-Kategorien, Test-First Development, Tools
 
 #### Troubleshooting
 - [Black/Ruff Loop Problem](04-howto/troubleshooting/BLACK_RUFF_LOOP_PROBLEM.md) - Code-Formatierung-Probleme

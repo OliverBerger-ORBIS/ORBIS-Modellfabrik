@@ -1,5 +1,7 @@
 # ORBIS Modellfabrik - Projekt-Übersicht
 
+> **Hinweis:** Für aktuelle Arbeiten, Sprint-Status und alle Projekt-Änderungen siehe [PROJECT_STATUS.md](PROJECT_STATUS.md) - zentrale Change-Dokumentation ohne separate CHANGELOG.md
+
 ## 🎯 Projektziel
 Verständnis der Funktionsweise der APS Fischertechnik Anwendung, um eine eigene Anwendung zu bauen, die die Steuerung der Modellfabrik übernimmt.
 
@@ -129,32 +131,25 @@ Verständnis der Funktionsweise der APS Fischertechnik Anwendung, um eine eigene
 - **Message-Templates:** Standardisierte Nachrichten-Formate
 - **Settings-Management:** Konfigurierbare Vorfilter und Einstellungen
 
-## 📊 Aktuelle Entwicklungsphase
+## 📊 Projekt-Status
 
-### Session Manager - Session Analyse
-- **Status:** In Entwicklung
-- **Features:**
-  - ✅ Session-Loading und Parsing
-  - ✅ Timeline-Visualisierung
-  - ✅ Topic-Filterung (Kategorie, Sub-Kategorie, Friendly Name, Topic Name)
-  - ✅ Vorfilter-System für uninteressante Topics
-  - ✅ Zeitfilter für Timeline-Analyse
-  - ✅ Settings-Management
-  - 🔄 Payload-Analyse und Message-Details
+> **Aktuelle Arbeiten:** Siehe [PROJECT_STATUS.md](PROJECT_STATUS.md)
 
-### Nächste Schritte
-1. ✅**Template-Analyse** implementieren
-2. ✅**Replay-Station** für Dashboard-Tests
-3. ✅**OMF Dashboard** Funktionalitäts-Erweiterung
-4. ✅**MessageGenerator** Entwicklung
-5. ✅**MQTT Mosquitto** Analyse des Brokers in RPi
-6. ✅**Analyse der TXT Controler von DPS** APS-Dasboard als CCU der Fischertechnik FAbrik
-7. **APS-Dashboard** Erweiterung um Funktionalität des Dashboards von Fischertechnik
+### Abgeschlossene Phasen
+1. ✅ **Template-Analyse** implementiert
+2. ✅ **Replay-Station** für Dashboard-Tests
+3. ✅ **OMF Dashboard** Funktionalitäts-Erweiterung
+4. ✅ **MessageGenerator** Entwicklung
+5. ✅ **MQTT Mosquitto** Analyse des Brokers in RPi
+6. ✅ **Analyse der TXT Controler von DPS** APS-Dashboard als CCU der Fischertechnik Fabrik
+7. ✅ **APS-Dashboard** Erweiterung um Funktionalität des Dashboards von Fischertechnik
+
+### Geplante Erweiterungen
 8. **I18n** Unterstützung für alle Dashboard Views (EN,DE,FR)
-9. **Doku Sprints** Dokumenation retrospektive was in den Sprints ab Sproint 01 gemacht wurde
+9. **Doku Sprints** Dokumentation retrospektive was in den Sprints ab Sprint 01 gemacht wurde
 10. **Doku Helper-App** Doku mit Mermaid Diagrammen und Umstrukturierung der Tabs nach dem logischen Ablauf (Session Recorder Session Replay (als default), Session Analyse, Optional Template Analysis
 11. **Mermaid** Grafiken isolieren und als Referenz in mehrere Dokus einbinden, IDE mit entsprechenden extensions, damit das funktioniert
-12. **Architektur** Doku anpassen an Ergenisse aus APS-Analyse. OMF-Dashboad besteht aus "APS-Dashboard" Funktionalität + "DPS-Control"-Funktionalität von NodeREd nachimplementieren
+12. **Architektur** Doku anpassen an Ergebnisse aus APS-Analyse. OMF-Dashboard besteht aus "APS-Dashboard" Funktionalität + "DPS-Control"-Funktionalität von Node-RED nachimplementieren
 
 
 ## ⚠️ Wichtige Architektur-Hinweise
