@@ -6,7 +6,6 @@ Version: 3.0.0 - Ressourcenschonend mit Topic-Kategorien
 """
 
 import json
-import logging
 import re
 from dataclasses import dataclass
 from datetime import datetime
@@ -18,9 +17,10 @@ import streamlit as st
 # Import für Prioritäts-basierte Subscriptions
 from omf.dashboard.config.mc_priority import get_all_priority_filters
 from omf.dashboard.utils.ui_refresh import request_refresh
+from omf.tools.logging_config import get_logger
 
 # Logger für Message Center
-logger = logging.getLogger("omf.dashboard.message_center")
+logger = get_logger("omf.dashboard.components.message_center")
 
 # --- Konfiguration ---
 SITE = "ff"  # falls variabel: z. B. aus Settings nehmen
@@ -65,6 +65,7 @@ TOPIC_PATTERNS = {
 
 # Regex für Topic-Parsing
 TOPIC_RE = re.compile(r"^(?P<category>ccu|module|txt|fts|node-red)/.*")
+
 
 @dataclass
 class MessageRow:
@@ -114,7 +115,9 @@ class MessageRow:
         else:
             return "General"
 
+
 # _ensure_store() Funktion entfernt - verwenden jetzt direkt MQTT-Client _history
+
 
 def _flatten_for_df(messages: List[MessageRow]) -> pd.DataFrame:
     """Konvertiert MessageRow-Objekte in ein DataFrame"""
@@ -160,7 +163,9 @@ def _flatten_for_df(messages: List[MessageRow]) -> pd.DataFrame:
 
     return df
 
+
 # _apply_message() Funktion entfernt - verwenden jetzt direkt MQTT-Client _history
+
 
 def show_message_center():
     """Nachrichtenzentrale anzeigen - ressourcenschonend mit Topic-Kategorien"""

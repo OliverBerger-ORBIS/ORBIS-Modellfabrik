@@ -17,6 +17,7 @@ except ImportError as e:
     TEMPLATES_AVAILABLE = False
     st.error(f"❌ Templates nicht verfügbar: {e}")
 
+
 def load_product_catalog():
     """Lädt den Produktkatalog aus der YAML-Datei"""
     try:
@@ -26,6 +27,7 @@ def load_product_catalog():
     except Exception as e:
         st.error(f"❌ Fehler beim Laden des Produktkatalogs: {e}")
         return None
+
 
 def show_overview_product_catalog():
     """Hauptfunktion für den Produktkatalog"""

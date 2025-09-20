@@ -5,6 +5,7 @@ import streamlit as st
 from .recipes_orbis import get_recipe_names, load_sequence_recipe
 from .sequence_control_orbis import WorkflowOrderManager
 
+
 def show_sequence_window(order_id: str):
     manager = WorkflowOrderManager.get_instance()
     seq = manager.sequences.get(order_id)
@@ -25,6 +26,7 @@ def show_sequence_window(order_id: str):
     if st.sidebar.button("Sequenz abbrechen"):
         manager.abort_sequence(order_id)
         st.sidebar.write("Sequenz abgebrochen!")
+
 
 st.title("ORBIS Sequenzsteuerung")
 

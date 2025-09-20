@@ -10,6 +10,7 @@ from typing import Callable, Dict, List, Optional, Union
 
 import streamlit as st
 
+
 @dataclass
 class MessageProcessor:
     """Zentraler Message-Processor für alle Dashboard-Komponenten"""
@@ -114,8 +115,10 @@ class MessageProcessor:
         st.session_state[self.last_processed_key] = 0
         st.session_state[self.last_count_key] = 0
 
+
 # Globale Message-Processor Instanzen
 _message_processors: Dict[str, MessageProcessor] = {}
+
 
 def create_topic_filter(topics: Union[str, List[str]]) -> Callable[[Dict], bool]:
     """
@@ -136,6 +139,7 @@ def create_topic_filter(topics: Union[str, List[str]]) -> Callable[[Dict], bool]
 
     return filter_func
 
+
 def create_regex_filter(pattern: str) -> Callable[[Dict], bool]:
     """
     Erstellt einen Regex-basierten Filter
@@ -153,6 +157,7 @@ def create_regex_filter(pattern: str) -> Callable[[Dict], bool]:
         return regex.search(topic) is not None
 
     return filter_func
+
 
 def get_message_processor(
     component_name: str,
@@ -177,10 +182,12 @@ def get_message_processor(
 
     return _message_processors[component_name]
 
+
 def reset_all_processors():
     """Setzt alle Message-Processor zurück (für Tests oder Reset)"""
     for processor in _message_processors.values():
         processor.reset_processing()
+
 
 def get_all_processor_stats() -> Dict[str, int]:
     """Gibt Statistiken aller Message-Processor zurück"""

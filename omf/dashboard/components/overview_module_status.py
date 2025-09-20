@@ -24,9 +24,11 @@ except ImportError:
 # Module configuration and icons (fallback)
 MODULE_ICONS = {"MILL": "⚙️", "DRILL": "🔩", "AIQS": "🤖", "HBW": "🏬", "DPS": "📦", "FTS": "🚗", "CHRG": "🔋"}
 
+
 def get_module_icon(module_name):
     """Get module icon from module name"""
     return MODULE_ICONS.get(module_name.upper(), "❓")
+
 
 def get_status_icon(status):
     """Get status icon based on status text"""
@@ -50,6 +52,7 @@ def get_status_icon(status):
         return "🎯"
     else:
         return "⚪"
+
 
 def get_enhanced_status_display(status, module_type):
     """Get enhanced status display with icons"""
@@ -104,6 +107,7 @@ def get_enhanced_status_display(status, module_type):
         return f"{get_status_icon('ready')} Ready"
     else:
         return f"⚪ {status}"
+
 
 def get_static_module_info():
     """Get static module information from module manager or fallback"""
@@ -189,6 +193,7 @@ def get_static_module_info():
     except Exception as e:
         st.error(f"Fehler beim Laden der Modul-Konfiguration: {e}")
         return {}
+
 
 def _process_module_messages(messages, module_status_store):
     """Process MQTT messages to update module status store"""
@@ -306,12 +311,14 @@ def _process_module_messages(messages, module_status_store):
         except Exception:
             continue
 
+
 def _get_module_real_time_status(module_id, module_status_store):
     """Get real-time status for a specific module"""
     if module_id not in module_status_store:
         return {"connection": "OFFLINE", "state": "Unknown", "message_count": 0, "last_update": "Never"}
 
     return module_status_store[module_id]
+
 
 def show_overview_module_status():
     """Show module status overview - Exakte Kopie von show_module_status() aus overview.py"""

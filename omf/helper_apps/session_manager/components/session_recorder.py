@@ -4,7 +4,9 @@ Einfache 1:1 Aufnahme von MQTT-Nachrichten
 """
 
 import json
-import logging
+from omf.tools.logging_config import get_logger
+
+logger = get_logger("omf.helper_apps.session_manager.components.session_recorder")
 import sqlite3
 import threading
 from datetime import datetime
@@ -17,6 +19,7 @@ from omf.dashboard.utils.ui_refresh import RerunController
 
 # Session Manager Logging-System verwenden (wie ursprünglich)
 logger = logging.getLogger("session_manager.session_recorder")
+
 
 # Thread-sichere Nachrichten-Sammlung
 class ThreadSafeMessageBuffer:
@@ -40,8 +43,10 @@ class ThreadSafeMessageBuffer:
         with self._lock:
             return len(self._messages)
 
+
 # Globale Nachrichten-Sammlung (thread-sicher)
 message_buffer = ThreadSafeMessageBuffer()
+
 
 def show_session_recorder():
     """Session Recorder Tab - KISS Design"""
@@ -207,6 +212,7 @@ def show_session_recorder():
         with col3:
             st.info("💡 **Tipp:** Klicke 'Aktualisieren' um den Status zu aktualisieren")
 
+
 def connect_to_broker(mqtt_settings: Dict[str, Any]) -> bool:
     """Verbindet zum MQTT Broker"""
     try:
@@ -243,6 +249,7 @@ def connect_to_broker(mqtt_settings: Dict[str, Any]) -> bool:
         logger.error(f"❌ MQTT Verbindungsfehler: {e}")
         return False
 
+
 def disconnect_from_broker():
     """Trennt MQTT Verbindung"""
     try:
@@ -255,6 +262,7 @@ def disconnect_from_broker():
     except Exception as e:
         logger.error(f"❌ MQTT Trennung Fehler: {e}")
 
+
 def on_connect(client, userdata, flags, rc):
     """Callback für MQTT Verbindung"""
     if rc == 0:
@@ -263,6 +271,7 @@ def on_connect(client, userdata, flags, rc):
         client.subscribe("#")
     else:
         logger.error(f"❌ MQTT Verbindung fehlgeschlagen: {rc}")
+
 
 def start_recording():
     """Startet die Aufnahme"""
@@ -286,6 +295,7 @@ def start_recording():
     except Exception as e:
         logger.error(f"❌ Fehler beim Starten der Aufnahme: {e}")
 
+
 def pause_recording():
     """Pausiert die Aufnahme"""
     try:
@@ -303,6 +313,7 @@ def pause_recording():
             logger.error("❌ Kein MQTT Client verfügbar für Pause")
     except Exception as e:
         logger.error(f"❌ Fehler beim Pausieren der Aufnahme: {e}")
+
 
 def stop_recording():
     """Beendet die Aufnahme und speichert"""
@@ -334,6 +345,7 @@ def stop_recording():
     except Exception as e:
         logger.error(f"❌ Fehler beim Stoppen der Aufnahme: {e}")
 
+
 def on_message_received(client, userdata, msg):
     """Callback für empfangene MQTT-Nachrichten (thread-sicher)"""
     try:
@@ -345,6 +357,7 @@ def on_message_received(client, userdata, msg):
 
     except Exception as e:
         logger.error(f"❌ Nachricht Verarbeitung Fehler: {e}")
+
 
 def save_session():
     """Speichert die Session-Daten"""
@@ -400,6 +413,7 @@ def save_session():
         logger.error(f"❌ Session Speichern Fehler: {e}")
         st.error(f"❌ Fehler beim Speichern: {e}")
 
+
 def save_sqlite_session(filepath: Path, messages: List[Dict[str, Any]]):
     """Speichert Session als SQLite-Datei"""
     try:
@@ -436,6 +450,7 @@ def save_sqlite_session(filepath: Path, messages: List[Dict[str, Any]]):
     except Exception as e:
         logger.error(f"❌ SQLite Speichern Fehler: {e}")
         raise
+
 
 def save_log_session(filepath: Path, messages: List[Dict[str, Any]]):
     """Speichert Session als Log-Datei"""

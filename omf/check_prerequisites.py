@@ -9,6 +9,7 @@ import socket
 import subprocess
 import sys
 
+
 def check_python_version():
     """Check Python version"""
     print("🐍 Checking Python version...")

@@ -4,10 +4,13 @@ UI für die Workflow-Sequenz-Steuerung mit Status-Anzeige
 """
 
 from pathlib import Path
-import logging
 
 # Import der Sequenz-Tools
 import streamlit as st
+
+from omf.tools.logging_config import get_logger
+
+logger = get_logger("omf.dashboard.components.steering_sequence")
 
 # Logger für Sequence Steering
 logger = logging.getLogger("omf.dashboard.steering_sequence")
@@ -23,7 +26,8 @@ try:
 except ImportError as e:
     SEQUENCE_TOOLS_AVAILABLE = False
     logger.warning(f"❌ Sequenz-Tools nicht verfügbar: {e}")
-    print(f"❌ Sequenz-Tools nicht verfügbar: {e}")
+    logger.debug(f"❌ Sequenz-Tools nicht verfügbar: {e}")
+
 
 def show_sequence_steering():
     """Hauptfunktion für die Sequenz-Steuerung"""

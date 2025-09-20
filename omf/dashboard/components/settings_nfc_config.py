@@ -10,6 +10,7 @@ from omf.tools.nfc_manager import get_omf_nfc_manager
 
 # Add omf to path for imports
 
+
 def show_nfc_config():
     """Zeigt NFC-Konfiguration - Exakte Kopie aus settings.py"""
     st.subheader("📱 NFC-Konfiguration")

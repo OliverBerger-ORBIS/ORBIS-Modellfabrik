@@ -3,8 +3,6 @@ OMF Dashboard Steering2 - Wrapper für alle Steering-Komponenten
 Hauptkomponente für alle Steuerungsfunktionen mit Untertabs
 """
 
-import logging
-
 import streamlit as st
 
 # Import der Unterkomponenten
@@ -14,6 +12,7 @@ from .steering_sequence import show_sequence_steering
 
 # Logger für Steering
 logger = logging.getLogger("omf.dashboard.steering")
+
 
 def show_steering():
     """Hauptfunktion für die Steuerung mit Untertabs"""

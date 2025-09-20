@@ -19,6 +19,7 @@ from .ccu_set import show_ccu_set
 from .ccu_state import show_ccu_state
 from .ccu_status import show_ccu_status
 
+
 def show_ccu():
     """Zeigt die CCU-Dashboard-Komponente mit Tab-Navigation"""
     st.header("🏢 CCU (Central Control Unit)")

@@ -19,6 +19,7 @@ from .fts_instantaction import show_fts_instantaction
 from .fts_order import show_fts_order
 from .fts_state import show_fts_state
 
+
 def show_fts():
     """Zeigt die FTS-Dashboard-Komponente mit Tab-Navigation"""
     st.header("🚛 FTS (Fahrerloses Transportsystem)")

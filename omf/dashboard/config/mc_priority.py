@@ -11,6 +11,7 @@ from omf.tools.mqtt_topics import PRIORITY_FILTERS
 # Prioritäts-Topics für Message Center (basierend auf mqtt_topics.py)
 PRIORITY_TOPICS = PRIORITY_FILTERS
 
+
 def get_priority_filters(level: int) -> List[str]:
     """
     Gibt die Topic-Filter für eine spezifische Prioritätsstufe zurück.
@@ -22,6 +23,7 @@ def get_priority_filters(level: int) -> List[str]:
         Liste von Topic-Filtern für diese Stufe
     """
     return PRIORITY_TOPICS.get(level, [])
+
 
 def get_all_priority_filters(upto: int) -> List[str]:
     """

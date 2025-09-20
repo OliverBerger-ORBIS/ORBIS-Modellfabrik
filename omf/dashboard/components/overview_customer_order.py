@@ -21,6 +21,7 @@ except ImportError as e:
 
 # Alte message_processor Imports entfernt - verwenden jetzt Per-Topic-Buffer
 
+
 class OrderManager:
     """Zentraler Manager für alle Dashboard-relevanten Informationen (Bestellungen, Lagerbestand, etc.)"""
 
@@ -90,6 +91,7 @@ class OrderManager:
                 available[workpiece_type] = count
         return available
 
+
 def process_customer_order_messages_from_buffers(hbw_messages, order_manager):
     """Verarbeitet HBW-Nachrichten aus Per-Topic-Buffer für Kundenaufträge"""
     if not hbw_messages:
@@ -100,6 +102,7 @@ def process_customer_order_messages_from_buffers(hbw_messages, order_manager):
         latest_hbw_msg = max(hbw_messages, key=lambda x: x.get("ts", 0))
         if order_manager:
             order_manager._process_hbw_state_message(latest_hbw_msg)
+
 
 def show_overview_order():
     """Zeigt die Kundenaufträge (Customer Orders) - Kopiert aus overview_inventory.py"""
@@ -216,6 +219,7 @@ def show_overview_order():
                 _send_order_directly("WHITE")
         else:
             st.button("📋 Bestellen", key="order_inventory_order_white_disabled", disabled=True)
+
 
 def _send_order_directly(color: str):
     """Sendet Bestellung direkt ohne Bestätigung - basierend auf steering_factory.py"""

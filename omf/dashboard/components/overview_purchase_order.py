@@ -17,6 +17,7 @@ except ImportError as e:
 
 # Alte message_processor Imports entfernt - verwenden jetzt Per-Topic-Buffer
 
+
 class OrderManager:
     """Zentraler Manager für alle Dashboard-relevanten Informationen (Bestellungen, Lagerbestand, etc.)"""
 
@@ -88,6 +89,7 @@ class OrderManager:
                 available[workpiece_type] = count
         return available
 
+
 def process_purchase_order_messages_from_buffers(hbw_messages, order_manager):
     """Verarbeitet HBW-Nachrichten aus Per-Topic-Buffer für Rohmaterial-Bestellungen"""
     if not hbw_messages:
@@ -98,6 +100,7 @@ def process_purchase_order_messages_from_buffers(hbw_messages, order_manager):
         latest_hbw_msg = max(hbw_messages, key=lambda x: x.get("ts", 0))
         if order_manager:
             order_manager._process_hbw_state_message(latest_hbw_msg)
+
 
 def show_overview_order_raw():
     """Zeigt die Rohmaterial-Bestellungen (Purchase Orders) - Kopiert aus overview_inventory.py"""

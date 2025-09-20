@@ -14,6 +14,7 @@ from omf.tools.logging_config import get_logger
 
 logger = get_logger(__name__)
 
+
 def show_session_analysis():
     """Hauptfunktion für Session-Analyse (Refactored)"""
     logger.info("📊 Session Analysis Tab geladen")

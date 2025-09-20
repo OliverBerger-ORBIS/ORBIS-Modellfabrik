@@ -4,9 +4,11 @@ SessionManagerLogger - Session-spezifisches Logging-System
 Basiert auf PR1 Konzepten für strukturierte, Session-spezifische Log-Ausgabe.
 """
 
-import logging
-import logging.handlers
+from omf.tools.logging_config import get_logger
+
+logger = get_logger("omf.helper_apps.session_manager.utils.session_logger")
 from pathlib import Path
+
 
 class SessionManagerLogger:
     """
@@ -89,6 +91,7 @@ class SessionManagerLogger:
                 log_file.unlink()
                 self.logger.info(f"🗑️ Alte Log-Datei gelöscht: {log_file.name}")
 
+
 def get_session_logger(session_name: str, log_dir: str = "logs") -> SessionManagerLogger:
     """
     Factory-Funktion für SessionManagerLogger.
@@ -102,8 +105,10 @@ def get_session_logger(session_name: str, log_dir: str = "logs") -> SessionManag
     """
     return SessionManagerLogger(session_name, log_dir)
 
+
 # Globale Logger-Instanzen für Session Manager Komponenten
 _session_loggers = {}
+
 
 def get_session_logger_cached(session_name: str) -> logging.LoggerAdapter:
     """
@@ -120,22 +125,27 @@ def get_session_logger_cached(session_name: str) -> logging.LoggerAdapter:
 
     return _session_loggers[session_name].get_logger()
 
+
 # Convenience-Funktionen für häufige Session-Namen
 def get_analysis_logger() -> logging.LoggerAdapter:
     """Logger für Session Analysis"""
     return get_session_logger_cached("analysis")
 
+
 def get_replay_logger() -> logging.LoggerAdapter:
     """Logger für Replay Station"""
     return get_session_logger_cached("replay")
+
 
 def get_recorder_logger() -> logging.LoggerAdapter:
     """Logger für Session Recorder"""
     return get_session_logger_cached("recorder")
 
+
 def get_template_logger() -> logging.LoggerAdapter:
     """Logger für Template Analysis"""
     return get_session_logger_cached("template")
+
 
 def get_settings_logger() -> logging.LoggerAdapter:
     """Logger für Settings"""

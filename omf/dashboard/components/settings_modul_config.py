@@ -12,6 +12,7 @@ from omf.tools.module_manager import get_omf_module_manager
 
 # Add omf to path for imports
 
+
 def show_module_config():
     """Zeigt Modul-Konfiguration - Exakte Kopie aus settings.py"""
     st.subheader("🏭 Modul-Konfiguration")

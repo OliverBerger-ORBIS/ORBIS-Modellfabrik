@@ -11,6 +11,7 @@ import streamlit as st
 
 # MessageProcessor entfernt - verwenden jetzt Per-Topic-Buffer
 
+
 def process_ccu_set_messages_from_buffers(set_messages):
     """Verarbeitet CCU-Set-Nachrichten aus Per-Topic-Buffer"""
     if not set_messages:
@@ -24,6 +25,7 @@ def process_ccu_set_messages_from_buffers(set_messages):
         # Timestamp für letzte Aktualisierung speichern
         st.session_state["ccu_set_last_update"] = latest_set_msg.get("ts", 0)
 
+
 def get_formatted_timestamp(timestamp):
     """Timestamp in lesbares Format konvertieren"""
     if not timestamp:
@@ -34,6 +36,7 @@ def get_formatted_timestamp(timestamp):
         return dt.strftime("%d.%m.%Y %H:%M:%S")
     except (ValueError, OSError):
         return f"Timestamp: {timestamp}"
+
 
 def analyze_ccu_set_data(set_data):
     """Analysiert CCU-Set-Daten semantisch basierend auf RAW-Data-Struktur"""
@@ -75,6 +78,7 @@ def analyze_ccu_set_data(set_data):
     except Exception as e:
         st.warning(f"⚠️ Fehler bei der CCU-Set-Analyse: {e}")
         return {}
+
 
 def show_ccu_set():
     """Zeigt CCU-Set-Informationen"""

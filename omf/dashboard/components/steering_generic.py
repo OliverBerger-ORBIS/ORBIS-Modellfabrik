@@ -4,7 +4,6 @@ Erweiterte Steuerungsmöglichkeiten für direkte MQTT-Nachrichten
 """
 
 import json
-import logging
 from datetime import datetime
 from pathlib import Path
 
@@ -15,6 +14,7 @@ from omf.tools.mqtt_gateway import MqttGateway
 
 # Logger für Generic Steering
 logger = logging.getLogger("omf.dashboard.steering_generic")
+
 
 def show_generic_steering():
     """Hauptfunktion für die Generic Steuerung"""
@@ -48,6 +48,7 @@ def show_generic_steering():
     st.markdown("### 📋 Message-getriebener Ansatz")
     st.markdown("**Message-Template auswählen und Topic bearbeiten:**")
     st.info("🔄 Diese Funktion wird in der nächsten Version implementiert")
+
 
 def show_free_mode(gateway: MqttGateway):
     """Zeigt Freien Modus für direkte MQTT-Nachrichten"""
@@ -111,6 +112,7 @@ def show_free_mode(gateway: MqttGateway):
         except json.JSONDecodeError as e:
             st.error(f"❌ Ungültiges JSON: {e}")
             st.info("ℹ️ Bitte korrigieren Sie das JSON-Format")
+
 
 def show_topic_driven_mode(gateway: MqttGateway):
     """Zeigt Topic-getriebenen Modus mit YAML-Integration"""
@@ -253,6 +255,7 @@ def show_topic_driven_mode(gateway: MqttGateway):
     except Exception as e:
         st.error(f"❌ Fehler beim Laden der Topic-Konfiguration: {e}")
         st.info("ℹ️ Überprüfen Sie die topic-config.yml und topic_message_mapping.yml Dateien")
+
 
 def _generate_example_payload(template_name: str, selected_topic: str) -> dict:
     """Generiert Beispiel-Payload basierend auf Template und Topic"""

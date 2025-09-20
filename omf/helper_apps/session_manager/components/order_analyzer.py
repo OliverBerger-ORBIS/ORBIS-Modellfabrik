@@ -20,6 +20,7 @@ from omf.tools.logging_config import get_logger
 # OMF Logging-System verwenden
 logger = get_logger("session_manager.order_analyzer")
 
+
 def show_order_analyzer():
     """Hauptfunktion für den Order Analyzer Session Manager Tab"""
     logger.info("🔍 Order Analyzer geladen")
@@ -41,6 +42,7 @@ def show_order_analyzer():
 
     with tab3:
         _show_message_chains_section()
+
 
 def _show_message_analysis_section():
     """Zeigt die Message-Analyse-Sektion (ohne Template-Validierung)"""
@@ -190,6 +192,7 @@ def _show_message_analysis_section():
                 logger.error(f"❌ Fehler bei der Message-Analyse: {e}")
                 st.error(f"❌ Fehler bei der Message-Analyse: {e}")
 
+
 def _show_order_analysis_section():
     """Zeigt die Order-Analyse-Sektion"""
     st.markdown("### 🔍 Order Analysis")
@@ -224,6 +227,7 @@ def _show_order_analysis_section():
 
     categories_df = pd.DataFrame(categories)
     st.dataframe(categories_df, use_container_width=True)
+
 
 def _show_message_chains_section():
     """Zeigt die Message-Chains-Sektion für Order-basierte Analyse"""
@@ -321,6 +325,7 @@ def _show_message_chains_section():
                 logger.error(f"❌ Fehler bei der Order-Chain-Analyse: {e}")
                 st.error(f"❌ Fehler bei der Order-Chain-Analyse: {e}")
 
+
 def _load_session_data(session_file: str) -> List[Dict[str, Any]]:
     """Lädt Session-Daten aus einer Log-Datei"""
     try:
@@ -342,6 +347,7 @@ def _load_session_data(session_file: str) -> List[Dict[str, Any]]:
         logger.error(f"❌ Fehler beim Laden der Session-Daten: {e}")
         return []
 
+
 def _topic_matches(topic: str, pattern: str) -> bool:
     """Prüft ob ein Topic einem Pattern entspricht"""
     if pattern == topic:
@@ -354,6 +360,7 @@ def _topic_matches(topic: str, pattern: str) -> bool:
             return topic.startswith(pattern_parts[0]) and topic.endswith(pattern_parts[1])
 
     return False
+
 
 def _render_simple_message_analysis(messages: List[Dict[str, Any]], topic: str):
     """Zeigt eine einfache Message-Analyse mit detaillierter Message-Liste"""
@@ -407,6 +414,7 @@ def _render_simple_message_analysis(messages: List[Dict[str, Any]], topic: str):
                 except json.JSONDecodeError:
                     st.text(msg.get('payload', 'Kein gültiges JSON'))
 
+
 def _analyze_order_chain(session_path: str, order_id: str, time_range: Tuple[float, float]) -> Optional[Dict[str, Any]]:
     """Analysiert eine Order-Chain"""
     try:
@@ -448,6 +456,7 @@ def _analyze_order_chain(session_path: str, order_id: str, time_range: Tuple[flo
         logger.error(f"❌ Fehler bei der Order-Chain-Analyse: {e}")
         return None
 
+
 def _render_order_chain_analysis(result: Dict[str, Any]):
     """Zeigt die Order-Chain-Analyse"""
     st.markdown("#### 📊 Order-Chain-Analyse")
@@ -476,6 +485,7 @@ def _render_order_chain_analysis(result: Dict[str, Any]):
         except Exception as e:
             logger.error(f"❌ Fehler beim Erstellen des Graphs: {e}")
             st.error(f"❌ Fehler beim Erstellen des Graphs: {e}")
+
 
 def _create_order_chain_graph(messages: List[Dict[str, Any]], order_id: str) -> go.Figure:
     """Erstellt einen Graph der Message-Chain"""

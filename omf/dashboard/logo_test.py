@@ -9,6 +9,7 @@ import os
 
 import streamlit as st
 
+
 def main():
     """Hauptfunktion für Logo-Test"""
 
@@ -217,6 +218,7 @@ logo_path = str(Path(__file__).parent / "assets" / "ORBIS_RGB_BIG.png" / "#" / "
     """,
         language="python",
     )
+
 
 if __name__ == "__main__":
     main()

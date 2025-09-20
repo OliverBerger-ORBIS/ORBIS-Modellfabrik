@@ -9,6 +9,7 @@ from omf.tools.topic_manager import OmfTopicManager
 
 logger = get_logger(__name__)
 
+
 class TopicFilterManager:
     """Manages topic filtering and categorization based on OMF configuration"""
 

@@ -18,6 +18,7 @@ from omf.tools.logging_config import get_logger
 
 logger = get_logger("session_manager.ui_components")
 
+
 class SessionAnalysisUI:
     """UI Components for session analysis"""
 

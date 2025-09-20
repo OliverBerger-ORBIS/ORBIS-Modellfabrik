@@ -1,3 +1,8 @@
+from omf.tools.logging_config import get_logger
+
+logger = get_logger("omf.helper_apps.seq_ctrl_copilot.mqtt_orbis")
+
+
 class MockMqttClient:
     _instance = None
 
@@ -13,7 +18,8 @@ class MockMqttClient:
         return MockMqttClient._instance
 
     def publish(self, topic: str, payload: dict):
-        print(f"[MQTT] Publish: {topic} - {payload}")
+        logger.debug(f"[MQTT] Publish: {topic} - {payload}")
+
 
 def send_mqtt_command(step: dict):
     client = MockMqttClient.get_instance()

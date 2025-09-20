@@ -8,6 +8,7 @@ import streamlit as st
 
 from omf.config.config import LIVE_CFG, REPLAY_CFG
 from omf.dashboard.components.dummy_component import show_dummy_component
+from omf.dashboard.utils.ui_refresh import request_refresh
 from omf.tools.logging_config import configure_logging, get_logger
 from omf.tools.omf_mqtt_factory import ensure_dashboard_client
 from omf.tools.streamlit_log_buffer import RingBufferHandler
@@ -24,6 +25,7 @@ ORBIS Modellfabrik Dashboard (OMF) - Modulare Architektur
 # Komponenten-Imports mit Fehlerbehandlung
 components = {}
 
+
 def load_component(component_name, import_path, display_name=None):
     """Lädt eine Komponente fehlertolerant"""
     if display_name is None:
@@ -36,6 +38,7 @@ def load_component(component_name, import_path, display_name=None):
     except ImportError as e:
         error_msg = str(e)
         components[component_name] = lambda: show_dummy_component(display_name, error_msg)
+
 
 # Komponenten laden
 load_component("message_center", "components.message_center", "Message Center")
@@ -59,6 +62,7 @@ load_component("aps_steering", "components.aps_steering", "APS Steering")
 # =============================================================================
 # LOGGING INITIALIZATION
 # =============================================================================
+
 
 def _init_logging_once():
     """Initialisiert Logging einmal pro Streamlit-Session"""
@@ -129,18 +133,22 @@ def _init_logging_once():
 
     st.session_state["_log_init"] = True
 
+
 # =============================================================================
 # HELPER FUNCTIONS
 # =============================================================================
+
 
 def setup_page_config():
     """Konfiguriert die Streamlit-Seite"""
     st.set_page_config(page_title="OMF Dashboard", page_icon="🏭", layout="wide", initial_sidebar_state="expanded")
 
+
 def get_default_broker_mode():
     """Holt den Default-Broker-Modus aus den Settings"""
     # Default = replay (für Testing)
     return "replay"
+
 
 def handle_environment_switch():
     """
@@ -195,15 +203,16 @@ def handle_environment_switch():
         subscribed_key = f"mqtt_subscribed_{broker_key}"
         if subscribed_key in st.session_state:
             del st.session_state[subscribed_key]
-        st.rerun()
+        request_refresh()
 
     if env != st.session_state["env"]:
         # Umgebungswechsel - Factory kümmert sich um Reconnect
         st.session_state["env"] = env
         st.cache_resource.clear()
-        st.rerun()
+        request_refresh()
 
     return env
+
 
 def initialize_mqtt_client(env):
     """
@@ -237,6 +246,7 @@ def initialize_mqtt_client(env):
         cfg = {"host": "mock", "port": 0}
 
     return client, cfg
+
 
 def setup_mqtt_subscription(client, cfg):
     """
@@ -287,6 +297,7 @@ def setup_mqtt_subscription(client, cfg):
     else:
         st.sidebar.info(f"✅ Bereits subscribed zu {broker_key}")
 
+
 def display_mqtt_status(client, cfg):
     """Zeigt MQTT-Status in der Sidebar"""
     # Erweiterte MQTT-Informationen in der Sidebar
@@ -320,6 +331,7 @@ def display_mqtt_status(client, cfg):
     except Exception:
         st.sidebar.info("📊 Statistiken nicht verfügbar")
 
+
 def display_refresh_button():
     """Zeigt den Aktualisieren-Button in der Sidebar"""
     # Genereller Aktualisieren-Button in Sidebar (für alle Seiten)
@@ -327,7 +339,8 @@ def display_refresh_button():
     st.sidebar.markdown("### 🔄 Aktualisierung")
 
     if st.sidebar.button("🔄 Seite aktualisieren", type="primary", key="sidebar_refresh_page"):
-        st.rerun()
+        request_refresh()
+
 
 def display_header(client):
     """Zeigt den Dashboard-Header mit Logo und Status"""
@@ -361,6 +374,7 @@ def display_header(client):
         # Versions-Info
         st.caption("Version 3.3.0")
 
+
 # =============================================================================
 # MODULE LOGO HELPER
 # =============================================================================
@@ -378,6 +392,7 @@ def get_module_logo(module_name):
         return icon_path_jpeg
     else:
         return None
+
 
 def display_tabs():
     """Zeigt die Dashboard-Tabs und deren Inhalte"""
@@ -435,19 +450,21 @@ def display_tabs():
     # APS-spezifische Tabs
     with tab11:
         components["aps_overview"]()
-    
+
     with tab12:
         components["aps_orders"]()
-    
+
     with tab13:
         components["aps_system_control"]()
-    
+
     with tab14:
         components["aps_steering"]()
+
 
 # =============================================================================
 # MAIN FUNCTION
 # =============================================================================
+
 
 def main():
     """Hauptfunktion des OMF Dashboards - Modulare Architektur"""
@@ -477,6 +494,7 @@ def main():
 
     # 8. Tabs anzeigen
     display_tabs()
+
 
 # =============================================================================
 # ENTRY POINT

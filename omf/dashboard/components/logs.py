@@ -8,6 +8,7 @@ import streamlit as st
 
 from omf.dashboard.utils.ui_refresh import request_refresh
 
+
 def show_logs():
     """Hauptfunktion für Logs-Anzeige"""
     st.header("📋 Live Logs")
@@ -19,7 +20,7 @@ def show_logs():
     # Test-Debug-Log direkt hinzufügen (nur für Tests)
     if log_buffer is not None:
         from omf.tools.logging_config import get_logger
-        
+
         # OMF-Logging für Tests (thread-sicher)
         test_logger = get_logger("omf.dashboard.logs_test")
         test_logger.info("ℹ️ INFO-TEST aus logs.py Komponente")
@@ -99,6 +100,7 @@ def show_logs():
     # Log-Statistiken
     with st.expander("📈 Log-Statistiken", expanded=False):
         _show_log_statistics(log_buffer)
+
 
 def _show_log_statistics(log_buffer):
     """Zeigt Log-Statistiken an"""

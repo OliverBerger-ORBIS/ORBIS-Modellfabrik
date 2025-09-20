@@ -9,6 +9,10 @@ from datetime import datetime
 
 import streamlit as st
 
+from omf.tools.logging_config import get_logger
+
+logger = get_logger("omf.dashboard.components.fts_order")
+
 # MessageProcessor entfernt - verwenden jetzt Per-Topic-Buffer
 
 # MessageTemplate Bibliothek Import
@@ -18,10 +22,11 @@ try:
     TEMPLATE_MANAGER_AVAILABLE = True
 except ImportError as e:
     TEMPLATE_MANAGER_AVAILABLE = False
-    print(f"❌ MessageTemplate Import-Fehler: {e}")
+    logger.debug(f"❌ MessageTemplate Import-Fehler: {e}")
 except Exception as e:
     TEMPLATE_MANAGER_AVAILABLE = False
-    print(f"❌ MessageTemplate Fehler: {e}")
+    logger.debug(f"❌ MessageTemplate Fehler: {e}")
+
 
 def process_fts_order_messages_from_buffers(order_messages):
     """Verarbeitet FTS-Order-Nachrichten aus Per-Topic-Buffer"""
@@ -36,6 +41,7 @@ def process_fts_order_messages_from_buffers(order_messages):
         # Timestamp für letzte Aktualisierung speichern
         st.session_state["fts_order_last_update"] = latest_order_msg.get("ts", 0)
 
+
 def get_formatted_timestamp(timestamp):
     """Timestamp in lesbares Format konvertieren (wie in overview_inventory)"""
     if not timestamp:
@@ -47,6 +53,7 @@ def get_formatted_timestamp(timestamp):
         return dt.strftime("%d.%m.%Y %H:%M:%S")
     except (ValueError, OSError):
         return f"Timestamp: {timestamp}"
+
 
 def analyze_fts_order_data(order_data):
     """Analysiert FTS-Order-Daten semantisch basierend auf RAW-Data-Struktur"""
@@ -172,6 +179,7 @@ def analyze_fts_order_data(order_data):
     except Exception as e:
         st.warning(f"⚠️ Fehler bei der FTS-Order-Analyse: {e}")
         return {}
+
 
 def show_fts_order():
     """Zeigt FTS-Order-Informationen"""

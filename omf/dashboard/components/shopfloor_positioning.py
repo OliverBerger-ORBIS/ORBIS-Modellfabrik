@@ -10,6 +10,7 @@ import streamlit as st
 
 from .shopfloor_utils import get_intersections, get_module_positions
 
+
 def show_shopfloor_positioning():
     """Zeigt die Modul-Positionierung"""
     st.subheader("📍 Modul-Positionierung")
@@ -32,6 +33,7 @@ def show_shopfloor_positioning():
     # Positionierungs-Statistiken
     show_positioning_statistics()
 
+
 def show_positioning_overview():
     """Zeigt eine Übersicht der Positionierung"""
     st.subheader("📊 Positionierungs-Übersicht")
@@ -50,6 +52,7 @@ def show_positioning_overview():
 
     # Grid-Legende
     show_grid_legend()
+
 
 def create_positioning_matrix(positions: List[Dict[str, Any]]) -> List[List[str]]:
     """Erstellt eine 3x4 Matrix für die Positionierungs-Darstellung"""
@@ -74,6 +77,7 @@ def create_positioning_matrix(positions: List[Dict[str, Any]]) -> List[List[str]
                     matrix[row][col] = "⬜ Leer"
 
     return matrix
+
 
 def show_grid_legend():
     """Zeigt die Grid-Legende"""
@@ -102,6 +106,7 @@ def show_grid_legend():
         st.write("✅ Aktiv")
         st.write("❌ Inaktiv")
         st.write("⬜ Leer")
+
 
 def show_module_positions():
     """Zeigt detaillierte Modul-Positionen"""
@@ -137,6 +142,7 @@ def show_module_positions():
     # Modul-Position-Details
     show_module_position_details(modules)
 
+
 def show_module_position_details(modules: List[Dict[str, Any]]):
     """Zeigt detaillierte Informationen zu den Modul-Positionen"""
     st.subheader("🔍 Modul-Position-Details")
@@ -167,6 +173,7 @@ def show_module_position_details(modules: List[Dict[str, Any]]):
                     st.write("**Keine Befehle definiert**")
 
             st.write(f"**Beschreibung:** {module.get('description', 'Keine Beschreibung')}")
+
 
 def show_intersections():
     """Zeigt die Kreuzungspunkte"""
@@ -202,6 +209,7 @@ def show_intersections():
     # Kreuzungs-Details
     show_intersection_details(intersections)
 
+
 def show_intersection_details(intersections: List[Dict[str, Any]]):
     """Zeigt detaillierte Informationen zu den Kreuzungspunkten"""
     st.subheader("🔍 Kreuzungs-Details")
@@ -231,6 +239,7 @@ def show_intersection_details(intersections: List[Dict[str, Any]]):
 
             st.write(f"**Beschreibung:** {intersection.get('description', 'Keine Beschreibung')}")
 
+
 def show_positioning_statistics():
     """Zeigt Positionierungs-Statistiken"""
     st.subheader("📊 Positionierungs-Statistiken")
@@ -259,6 +268,7 @@ def show_positioning_statistics():
         st.metric("Auslastung", f"{(len(modules) / len(positions) * 100):.1f}%" if positions else "0%")
         st.metric("Aktivierungsrate", f"{(len(enabled_modules) / len(modules) * 100):.1f}%" if modules else "0%")
 
+
 def get_position_by_coordinates(row: int, col: int) -> Optional[Dict[str, Any]]:
     """Gibt die Position an bestimmten Koordinaten zurück"""
     positions = get_module_positions()
@@ -269,17 +279,20 @@ def get_position_by_coordinates(row: int, col: int) -> Optional[Dict[str, Any]]:
             return position
     return None
 
+
 def get_modules_in_row(row: int) -> List[Dict[str, Any]]:
     """Gibt alle Module in einer bestimmten Zeile zurück"""
     positions = get_module_positions()
 
     return [p for p in positions if p.get("type") == "MODULE" and p.get("position", [0, 0])[0] == row]
 
+
 def get_modules_in_column(col: int) -> List[Dict[str, Any]]:
     """Gibt alle Module in einer bestimmten Spalte zurück"""
     positions = get_module_positions()
 
     return [p for p in positions if p.get("type") == "MODULE" and p.get("position", [0, 0])[1] == col]
+
 
 def get_neighboring_positions(row: int, col: int) -> List[Dict[str, Any]]:
     """Gibt alle benachbarten Positionen zurück"""

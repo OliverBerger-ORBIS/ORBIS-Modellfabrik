@@ -8,6 +8,7 @@ import streamlit as st
 
 # Add omf to path for imports
 
+
 def show_topic_config():
     """Zeigt die Topic-Konfiguration an - Exakte Kopie aus settings.py"""
     st.markdown("### 📡 Topic-Konfiguration")
@@ -20,7 +21,7 @@ def show_topic_config():
         # Füge den tools-Pfad hinzu
         tools_path = str(Path(__file__).parent / ".." / ".." / "tools")
         if tools_path not in sys.path:
-                        pass
+            pass
 
         from omf.tools.topic_manager import get_omf_topic_manager
 

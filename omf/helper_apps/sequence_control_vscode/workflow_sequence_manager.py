@@ -5,6 +5,7 @@ from omf.tools.workflow_order_manager import get_workflow_order_manager
 
 from .sequence_loader import SequenceLoader
 
+
 class WorkflowSequenceManager:
     """Verwaltet die Ausführung von Sequenzen als logische Einheit."""
 
@@ -52,8 +53,10 @@ class WorkflowSequenceManager:
         if order_id in self.active_sequences:
             self.active_sequences[order_id]["status"] = "aborted"
 
+
 # Singleton
 _sequence_manager = None
+
 
 def get_workflow_sequence_manager(recipes_dir: str) -> WorkflowSequenceManager:
     global _sequence_manager

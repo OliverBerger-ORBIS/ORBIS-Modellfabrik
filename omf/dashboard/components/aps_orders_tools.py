@@ -7,13 +7,14 @@ import streamlit as st
 
 from omf.dashboard.utils.ui_refresh import request_refresh
 
+
 class APSOrderToolsManager:
     """Manager für Order Tools"""
-    
+
     def __init__(self):
         self.tools = []
         self.last_update = None
-    
+
     def send_system_command(self, mqtt_client, command, payload=None):
         """Sendet einen System Command"""
         try:
@@ -21,34 +22,35 @@ class APSOrderToolsManager:
                 payload = {}
             result = mqtt_client.publish(command, payload, qos=1, retain=False)
             return result
-            
+
         except Exception as e:
             st.error(f"❌ Fehler beim Senden des System Commands: {e}")
             return False
 
+
 def show_aps_orders_tools():
     """Zeigt Order Tools an"""
     st.subheader("🔧 Order Tools")
-    
+
     # Get MQTT client from session state
     client = st.session_state.get("mqtt_client")
     if not client:
         st.error("❌ MQTT Client nicht verfügbar")
         return
-    
+
     # Initialize manager in session state
     if "aps_order_tools_manager" not in st.session_state:
         st.session_state["aps_order_tools_manager"] = APSOrderToolsManager()
-    
+
     manager = st.session_state["aps_order_tools_manager"]
-    
+
     # System Commands
     st.write("**System Commands**")
     col1, col2 = st.columns(2)
-    
+
     with col1:
         st.info("💡 Factory Reset und FTS Charge sind in APS Overview verfügbar")
-    
+
     with col2:
         if st.button("🅿️ FTS Park", key="aot_fts_park"):
             result = manager.send_system_command(client, "ccu/set/park")
@@ -56,18 +58,18 @@ def show_aps_orders_tools():
                 st.success("✅ FTS Park gesendet")
             else:
                 st.error("❌ Fehler beim Senden")
-        
+
         if st.button("🔧 System Calibration", key="aot_system_calibration"):
             result = manager.send_system_command(client, "ccu/set/calibration")
             if result:
                 st.success("✅ System Calibration gesendet")
             else:
                 st.error("❌ Fehler beim Senden")
-    
+
     # Order Management
     st.write("**Order Management**")
     col1, col2 = st.columns(2)
-    
+
     with col1:
         if st.button("⏹️ Stop All Orders", key="aot_stop_orders"):
             result = manager.send_system_command(client, "ccu/order/stop")
@@ -75,14 +77,14 @@ def show_aps_orders_tools():
                 st.success("✅ Stop All Orders gesendet")
             else:
                 st.error("❌ Fehler beim Senden")
-        
+
         if st.button("🔄 Reset Orders", key="aot_reset_orders"):
             result = manager.send_system_command(client, "ccu/order/reset")
             if result:
                 st.success("✅ Reset Orders gesendet")
             else:
                 st.error("❌ Fehler beim Senden")
-    
+
     with col2:
         if st.button("📊 Order Status", key="aot_order_status"):
             result = manager.send_system_command(client, "ccu/order/status")
@@ -90,22 +92,24 @@ def show_aps_orders_tools():
                 st.success("✅ Order Status gesendet")
             else:
                 st.error("❌ Fehler beim Senden")
-        
+
         if st.button("🧹 Clear Order Queue", key="aot_clear_queue"):
             result = manager.send_system_command(client, "ccu/order/clear")
             if result:
                 st.success("✅ Clear Order Queue gesendet")
             else:
                 st.error("❌ Fehler beim Senden")
-    
+
     # Debug Information
     st.write("**Debug Information**")
     show_debug = st.checkbox("Debug Information anzeigen", key="aot_debug_info")
-    
+
     if show_debug:
         st.write("**Debug Information:**")
-        st.json({
-            "status": "APS Order Tools aktiviert",
-            "manager": "APSOrderToolsManager",
-            "mqtt_client": "verfügbar" if client else "nicht verfügbar"
-        })
+        st.json(
+            {
+                "status": "APS Order Tools aktiviert",
+                "manager": "APSOrderToolsManager",
+                "mqtt_client": "verfügbar" if client else "nicht verfügbar",
+            }
+        )

@@ -16,6 +16,7 @@ from omf.tools.logging_config import get_logger
 
 logger = get_logger(__name__)
 
+
 def show_template_analysis():
     """Template Analyse Tab"""
     logger.info("🔍 Template Analysis Tab geladen")
@@ -51,6 +52,7 @@ def show_template_analysis():
     # Observations-Templates Übersicht
     st.subheader("📁 Observations-Templates")
     display_observations_templates()
+
 
 def run_template_analysis(analyzer_type: str, session_path: Path) -> Dict[str, Any]:
     """Führt Template-Analyse mit den bestehenden Analysern durch"""
@@ -97,6 +99,7 @@ def run_template_analysis(analyzer_type: str, session_path: Path) -> Dict[str, A
 
     return results
 
+
 def display_analysis_results(results: Dict[str, Any]):
     """Zeigt die Analyse-Ergebnisse an"""
     st.success(f"✅ Template-Analyse abgeschlossen: {results['templates_generated']} Templates generiert")
@@ -111,6 +114,7 @@ def display_analysis_results(results: Dict[str, Any]):
         if templates:
             with st.expander(f"📋 {category.upper()} Templates ({len(templates.get('templates', {}))})"):
                 display_category_templates(templates)
+
 
 def display_category_templates(templates: Dict[str, Any]):
     """Zeigt Templates einer Kategorie an"""
@@ -162,6 +166,7 @@ def display_category_templates(templates: Dict[str, Any]):
             if st.button("🔄 Alle Observations nach Registry kopieren", key="copy_all_to_registry"):
                 copy_observations_to_registry()
 
+
 def copy_template_to_observations(template_name: str, template_info: Dict[str, Any]):
     """Exportiert Template nach data/observations/"""
     try:
@@ -211,6 +216,7 @@ def copy_template_to_observations(template_name: str, template_info: Dict[str, A
         st.error(f"❌ Fehler beim Export: {e}")
         logger.error(f"Fehler beim Export von Template {template_name}: {e}")
 
+
 def copy_observations_to_registry():
     """Kopiert alle Templates von data/observations nach registry/"""
     try:
@@ -240,6 +246,7 @@ def copy_observations_to_registry():
     except Exception as e:
         st.error(f"❌ Fehler beim Kopieren: {e}")
         logger.error(f"Fehler beim Kopieren von Observations nach Registry: {e}")
+
 
 def display_observations_templates():
     """Zeigt eine Übersicht der Observations-Templates"""

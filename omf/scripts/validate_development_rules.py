@@ -123,8 +123,9 @@ class DevelopmentRulesValidator:
         """Prüft auf OMF-Logging-System"""
         errors = []
 
-        # Nur für OMF-Komponenten prüfen
-        if 'omf/' not in str(file_path) and 'omf/helper_apps/' not in str(file_path):
+        # Nur für Dashboard und Helper Apps prüfen
+        if not (str(file_path).startswith(str(self.project_root / 'omf/dashboard/')) or 
+                str(file_path).startswith(str(self.project_root / 'omf/helper_apps/'))):
             return errors
 
         # Standard logging statt OMF-Logging

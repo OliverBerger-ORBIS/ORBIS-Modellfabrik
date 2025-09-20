@@ -7,6 +7,7 @@ import streamlit as st
 
 # Add omf to path for imports
 
+
 def show_messages_templates():
     """Zeigt die Message Templates an - Exakte Kopie aus settings.py"""
     st.markdown("### 📋 Message Templates")
@@ -81,9 +82,7 @@ def show_messages_templates():
             # Debug: Zeige Template-Pfad
             # Node-RED Templates haben keine _template.yml Endung
             if selected_category == "Node-RED":
-                template_path = Path(
-                    f"omf/config/message_templates/templates/node_red/{selected_template}.yml"
-                )
+                template_path = Path(f"omf/config/message_templates/templates/node_red/{selected_template}.yml")
             else:
                 template_path = Path(
                     f"omf/config/message_templates/templates/{selected_category.lower()}/{selected_template}_template.yml"

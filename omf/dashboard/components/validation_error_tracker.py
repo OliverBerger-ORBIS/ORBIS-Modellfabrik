@@ -11,6 +11,7 @@ import streamlit as st
 
 from omf.dashboard.utils.ui_refresh import request_refresh
 
+
 class ValidationErrorTracker:
     """Verfolgt Template-Validierungsfehler über mehrere Messages hinweg"""
 
@@ -76,6 +77,7 @@ class ValidationErrorTracker:
                 request_refresh()
         else:
             st.success("✅ **Keine Template-Validierungsfehler** in der Historie")
+
 
 def get_validation_tracker(component_name: str) -> ValidationErrorTracker:
     """Factory-Funktion für ValidationErrorTracker"""

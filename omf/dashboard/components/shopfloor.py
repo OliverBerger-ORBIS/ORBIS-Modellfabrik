@@ -9,6 +9,7 @@ from .shopfloor_utils import (
     get_shopfloor_statistics,
 )
 
+
 def show_shopfloor():
     """Hauptfunktion für Shopfloor-Management mit Untertabs"""
     st.header("🏗️ Shopfloor")

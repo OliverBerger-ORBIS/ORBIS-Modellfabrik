@@ -7,6 +7,7 @@ import streamlit as st
 
 _FLAG = "_ui_refresh_requested_at"
 
+
 class RerunController:
     """
     Thread-sicherer Controller für st.rerun() Aufrufe mit Debouncing.
@@ -46,8 +47,10 @@ class RerunController:
         with self._lock:
             return (time.time() * 1000) - self._last_rerun
 
+
 # Globale RerunController-Instanz
 _rerun_controller: RerunController | None = None
+
 
 def get_rerun_controller() -> RerunController:
     """Gibt die globale RerunController-Instanz zurück."""
@@ -56,9 +59,11 @@ def get_rerun_controller() -> RerunController:
         _rerun_controller = RerunController()
     return _rerun_controller
 
+
 def request_refresh() -> None:
     """Aus Komponenten aufrufen statt st.rerun(); löst einen EINMALIGEN Refresh aus."""
     st.session_state[_FLAG] = time.time()
+
 
 def consume_refresh() -> bool:
     """Früh in omf_dashboard.main() aufrufen. Gibt genau einmal True zurück, dann Flag löschen."""
@@ -67,6 +72,7 @@ def consume_refresh() -> bool:
         st.session_state[_FLAG] = 0
         return True
     return False
+
 
 def request_rerun_safe(force: bool = False) -> bool:
     """
