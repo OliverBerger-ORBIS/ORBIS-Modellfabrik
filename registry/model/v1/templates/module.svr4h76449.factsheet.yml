@@ -1,6 +1,6 @@
 metadata:
   category: MODULE
-  description: Auto-analyzed template for module/v1/ff/SVR4H76449/factsheet
+  description: Auto-analyzed template for Module factsheet
   last_updated: '2025-09-15'
   module_id: SVR4H76449
   source: module_template_analyzer
@@ -9,7 +9,7 @@ metadata:
 templates:
   module.svr4h76449.factsheet:
     category: MODULE
-    description: Template for module/v1/ff/SVR4H76449/factsheet
+    description: Template for Module factsheet
     direction: outbound
     examples:
     - headerId: 1

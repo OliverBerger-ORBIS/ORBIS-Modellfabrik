@@ -1,17 +1,8 @@
-examples:
-- payload: '{"ts":"2025-08-25T09:07:09.092Z","on":true,"fps":2}'
-  session_name: FTS_steuerung
-  timestamp: '2025-08-25T11:07:09.163434'
-  topic: /j1/txt/1/c/cam
-- payload: '{"ts":"2025-08-25T09:07:40.367Z","on":false,"fps":2}'
-  session_name: FTS_steuerung
-  timestamp: '2025-08-25T11:07:40.415356'
-  topic: /j1/txt/1/c/cam
 metadata:
   author: cam_template_analyzer
   category: CAM
   created: '2025-09-16'
-  description: CAM image data template for /j1/txt/1/c/cam
+  description: Auto-analyzed template for TXT cam
   key: cam..c.cam
   sub_category: Image
   version: 1.0.0
@@ -23,4 +14,3 @@ statistics:
   min_image_size: 0
   total_messages: 16
 template_structure: {}
-topic: /j1/txt/1/c/cam

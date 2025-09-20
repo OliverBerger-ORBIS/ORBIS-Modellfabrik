@@ -1,13 +1,13 @@
 metadata:
   category: TXT
-  description: Auto-analyzed template for /j1/txt/1/f/i/order
+  description: Auto-analyzed template for TXT order
   last_updated: '2025-09-15'
   source: txt_template_analyzer
   version: 0.1.0
 templates:
   txt..f.i.order:
     category: TXT
-    description: Template for /j1/txt/1/f/i/order
+    description: Template for TXT order
     direction: inbound
     examples:
     - state: WAITING_FOR_ORDER

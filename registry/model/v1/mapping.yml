@@ -1,103 +1,501 @@
 version: 1.0.0
-notes: "Ein Datei: Topic/Pattern → Template + Direction + (optionale) UI-Metadaten."
-resolution_order: ["exact", "pattern"]   # zuerst genaue Treffer, dann Muster
-
+notes: 'Ein Datei: Topic/Pattern → Template + Direction + (optionale) UI-Metadaten.'
+resolution_order:
+- exact
+- pattern
 defaults:
   direction: inbound
-
-# OPTIONAL: leichte UI-Metadaten, ohne Payload-Strukturen!
 catalog:
   categories:
-    CCU: { icon: "🏭" }
-    TXT: { icon: "🎛️" }
-    MODULE: { icon: "⚙️" }
-    Node-RED: { icon: "🔄" }
+    CCU:
+      icon: 🏭
+    TXT:
+      icon: 🎛️
+    MODULE:
+      icon: ⚙️
+    Node-RED:
+      icon: 🔄
   sub_categories:
-    Connection: { icon: "🔗" }
-    State: { icon: "📊" }
-    Order: { icon: "📋" }
-    Factsheet: { icon: "📄" }
-
+    Connection:
+      icon: 🔗
+    State:
+      icon: 📊
+    Order:
+      icon: 📋
+    Factsheet:
+      icon: 📄
 mappings:
-  # ----- CCU (EXACT) -----
-  - topic: "ccu/control"
-    template: "ccu/control"
-    direction: outbound
-    meta: { category: "CCU", sub_category: "Control", friendly_name: "CCU : control" }
+- topic: ccu/control
+  template: ccu/control
+  direction: outbound
+  meta:
+    category: CCU
+    sub_category: Control
+    friendly_name: 'CCU : control'
+- topic: ccu/order/response
+  template: ccu.order.response
+  direction: bidirectional
+  meta:
+    category: CCU
+    sub_category: Order
+    friendly_name: 'CCU : order : response'
+- topic: ccu/state/status
+  template: ccu/state/status
+  direction: bidirectional
+  meta:
+    category: CCU
+    sub_category: State
+    friendly_name: 'CCU : state : status'
+- topic: ccu/state/stock
+  template: ccu.state.stock
+  direction: bidirectional
+  meta:
+    category: CCU
+    sub_category: State
+    friendly_name: 'CCU : state : stock'
+- topic: ccu/state/config
+  template: ccu.state.config
+  direction: bidirectional
+  meta:
+    category: CCU
+    sub_category: State
+    friendly_name: 'CCU : state : config'
+- topic: ccu/pairing/state
+  template: ccu/state
+  direction: bidirectional
+  meta:
+    category: CCU
+    sub_category: State
+    friendly_name: 'CCU : pairing : state'
+- pattern: module/v1/ff/{module_id}/connection
+  template: module/connection
+  direction: bidirectional
+  vars:
+    module_id: <serial>
+  meta:
+    category: MODULE
+    sub_category: Connection
+- pattern: module/v1/ff/{module_id}/state
+  template: module/state
+  meta:
+    category: MODULE
+    sub_category: State
+- pattern: module/v1/ff/{module_id}/order
+  template: module/order
+  direction: outbound
+  vars:
+    module_id: <serial>
+  meta:
+    category: MODULE
+    sub_category: Order
+- pattern: module/v1/ff/{module_id}/factsheet
+  template: module/factsheet
+  meta:
+    category: MODULE
+    sub_category: Factsheet
+- topic: module/v1/ff/SVR3QA0022/state
+  template: module/state.hbw_inventory
+  direction: bidirectional
+  meta:
+    category: MODULE
+    sub_category: State
+    friendly_name: 'HBW : state'
+- topic: /j1/txt/1/f/i/order
+  template: txt/order_input
+  direction: bidirectional
+  meta:
+    category: TXT
+    sub_category: Function Input
+    friendly_name: 'TXT : f : i : order'
+- topic: /j1/txt/1/f/i/stock
+  template: txt/stock_input
+  direction: bidirectional
+  meta:
+    category: TXT
+    sub_category: Function Input
+    friendly_name: 'TXT : f : i : stock'
+- topic: /j1/txt/1/i/ldr
+  template: txt..i.ldr
+  direction: bidirectional
+  meta:
+    category: TXT
+    sub_category: Sensor Input
+    friendly_name: 'TXT : i : ldr'
+- topic: /j1/txt/1/o/broadcast
+  template: txt..o.broadcast
+  direction: bidirectional
+  meta:
+    category: TXT
+    sub_category: Broadcast Output
+    friendly_name: 'TXT : o : broadcast'
+- pattern: module/v1/ff/NodeRed/{module_id}/connection
+  template: nodered/connection
+  vars:
+    module_id: <serial>
+  meta:
+    category: Node-RED
+    sub_category: Connection
+- pattern: module/v1/ff/NodeRed/{module_id}/state
+  template: nodered/state
+  vars:
+    module_id: <serial>
+  meta:
+    category: Node-RED
+    sub_category: State
+- pattern: module/v1/ff/NodeRed/{module_id}/factsheet
+  template: nodered/factsheet
+  direction: bidirectional
+  vars:
+    module_id: <serial>
+  meta:
+    category: Node-RED
+    sub_category: Factsheet
+- topic: module/v1/ff/NodeRed/SVR4H76530/factsheet
+  template: nodered.svr4h76530.factsheet
+  direction: bidirectional
+  meta:
+    category: Node-RED
+    sub_category: Factsheet
+    friendly_name: 'Node-RED : SVR4H76530 : factsheet'
+- topic: fts/v1/ff/5iO4/connection
+  template: fts/connection
+  direction: bidirectional
+  meta:
+    category: MODULE
+    sub_category: Connection
+    friendly_name: 'FTS : connection'
+- topic: fts/v1/ff/5iO4/state
+  template: fts/state
+  direction: bidirectional
+  meta:
+    category: MODULE
+    sub_category: State
+    friendly_name: 'FTS : state'
+- topic: fts/v1/ff/5iO4/order
+  template: fts/order
+  direction: outbound
+  meta:
+    category: MODULE
+    sub_category: Order
+    friendly_name: 'FTS : order'
+- topic: fts/v1/ff/5iO4/factsheet
+  template: fts/factsheet
+  direction: bidirectional
+  meta:
+    category: MODULE
+    sub_category: Factsheet
+    friendly_name: 'FTS : factsheet'
+- topic: module/v1/ff/SVR3QA2098/state
+  template: module.svr3qa2098.state
+  direction: bidirectional
+  meta:
+    category: MODULE
+    sub_category: State
+    friendly_name: 'Module : V1 : Ff : Svr3Qa2098 : State'
+- topic: ccu/global
+  template: ccu.general.global
+  direction: bidirectional
+  meta:
+    category: CCU
+    sub_category: State
+    friendly_name: 'Ccu : Global'
+- topic: module/v1/ff/NodeRed/SVR4H76530/state
+  template: nodered.svr4h76530.state
+  direction: bidirectional
+  meta:
+    category: Node-RED
+    sub_category: State
+    friendly_name: 'Module : V1 : Ff : Nodered : Svr4H76530 : State'
+- topic: module/v1/ff/SVR4H73275/factsheet
+  template: module.svr4h73275.factsheet
+  direction: bidirectional
+  meta:
+    category: MODULE
+    sub_category: Factsheet
+    friendly_name: 'Module : V1 : Ff : Svr4H73275 : Factsheet'
+- topic: module/v1/ff/SVR4H76530/connection
+  template: module.svr4h76530.connection
+  direction: bidirectional
+  meta:
+    category: MODULE
+    sub_category: Connection
+    friendly_name: 'Module : V1 : Ff : Svr4H76530 : Connection'
+- topic: module/v1/ff/SVR3QA0022/connection
+  template: module.svr3qa0022.connection
+  direction: bidirectional
+  meta:
+    category: MODULE
+    sub_category: Connection
+    friendly_name: 'Module : V1 : Ff : Svr3Qa0022 : Connection'
+- topic: ccu/pairing/pair_fts
+  template: ccu.pairing.pair_fts
+  direction: bidirectional
+  meta:
+    category: CCU
+    sub_category: State
+    friendly_name: 'Ccu : Pairing : Pair Fts'
+- topic: module/v1/ff/NodeRed/SVR4H73275/instantAction
+  template: module.svr4h73275.instantaction
+  direction: bidirectional
+  meta:
+    category: MODULE
+    sub_category: State
+    friendly_name: 'Module : V1 : Ff : Nodered : Svr4H73275 : Instantaction'
+- topic: ccu/order/active
+  template: ccu.order.active
+  direction: bidirectional
+  meta:
+    category: CCU
+    sub_category: Order
+    friendly_name: 'Ccu : Order : Active'
+- topic: module/v1/ff/SVR4H73275/connection
+  template: module.svr4h73275.connection
+  direction: bidirectional
+  meta:
+    category: MODULE
+    sub_category: Connection
+    friendly_name: 'Module : V1 : Ff : Svr4H73275 : Connection'
+- topic: module/v1/ff/SVR4H76530/order
+  template: module.svr4h76530.order
+  direction: bidirectional
+  meta:
+    category: MODULE
+    sub_category: Order
+    friendly_name: 'Module : V1 : Ff : Svr4H76530 : Order'
+- topic: module/v1/ff/SVR4H76449/order
+  template: module.svr4h76449.order
+  direction: bidirectional
+  meta:
+    category: MODULE
+    sub_category: Order
+    friendly_name: 'Module : V1 : Ff : Svr4H76449 : Order'
+- topic: module/v1/ff/NodeRed/SVR4H73275/state
+  template: nodered.svr4h73275.state
+  direction: bidirectional
+  meta:
+    category: Node-RED
+    sub_category: State
+    friendly_name: 'Module : V1 : Ff : Nodered : Svr4H73275 : State'
+- topic: /j1/txt/1/c/ldr
+  template: txt..c.ldr
+  direction: bidirectional
+  meta:
+    category: TXT
+    sub_category: State
+    friendly_name: ' : J1 : Txt : 1 : C : Ldr'
+- topic: module/v1/ff/SVR4H73275/order
+  template: module.svr4h73275.order
+  direction: bidirectional
+  meta:
+    category: MODULE
+    sub_category: Order
+    friendly_name: 'Module : V1 : Ff : Svr4H73275 : Order'
+- topic: module/v1/ff/NodeRed/SVR4H76530/connection
+  template: nodered.svr4h76530.connection
+  direction: bidirectional
+  meta:
+    category: Node-RED
+    sub_category: Connection
+    friendly_name: 'Module : V1 : Ff : Nodered : Svr4H76530 : Connection'
+- topic: module/v1/ff/SVR3QA2098/factsheet
+  template: module.svr3qa2098.factsheet
+  direction: bidirectional
+  meta:
+    category: MODULE
+    sub_category: Factsheet
+    friendly_name: 'Module : V1 : Ff : Svr3Qa2098 : Factsheet'
+- topic: module/v1/ff/NodeRed/SVR4H73275/connection
+  template: nodered.svr4h73275.connection
+  direction: bidirectional
+  meta:
+    category: Node-RED
+    sub_category: Connection
+    friendly_name: 'Module : V1 : Ff : Nodered : Svr4H73275 : Connection'
+- topic: ccu/order/request
+  template: ccu.order.request
+  direction: bidirectional
+  meta:
+    category: CCU
+    sub_category: Order
+    friendly_name: 'Ccu : Order : Request'
+- topic: module/v1/ff/SVR4H76449/connection
+  template: module.svr4h76449.connection
+  direction: bidirectional
+  meta:
+    category: MODULE
+    sub_category: Connection
+    friendly_name: 'Module : V1 : Ff : Svr4H76449 : Connection'
+- topic: ccu/set/charge
+  template: ccu.settings.charge
+  direction: bidirectional
+  meta:
+    category: CCU
+    sub_category: State
+    friendly_name: 'Ccu : Set : Charge'
+- topic: module/v1/ff/SVR3QA2098/connection
+  template: module.svr3qa2098.connection
+  direction: bidirectional
+  meta:
+    category: MODULE
+    sub_category: Connection
+    friendly_name: 'Module : V1 : Ff : Svr3Qa2098 : Connection'
+- topic: module/v1/ff/SVR4H76530/state
+  template: module.svr4h76530.state
+  direction: bidirectional
+  meta:
+    category: MODULE
+    sub_category: State
+    friendly_name: 'Module : V1 : Ff : Svr4H76530 : State'
+- topic: /j1/txt/1/f/i/config/hbw
+  template: txt..f.i.config.hbw
+  direction: bidirectional
+  meta:
+    category: TXT
+    sub_category: State
+    friendly_name: ' : J1 : Txt : 1 : F : I : Config : Hbw'
+- topic: module/v1/ff/SVR3QA2098/order
+  template: module.svr3qa2098.order
+  direction: bidirectional
+  meta:
+    category: MODULE
+    sub_category: Order
+    friendly_name: 'Module : V1 : Ff : Svr3Qa2098 : Order'
+- topic: module/v1/ff/NodeRed/SVR4H76530/order
+  template: nodered.svr4h76530.order
+  direction: bidirectional
+  meta:
+    category: Node-RED
+    sub_category: Order
+    friendly_name: 'Module : V1 : Ff : Nodered : Svr4H76530 : Order'
+- topic: module/v1/ff/NodeRed/status
+  template: nodered.nodered.status
+  direction: bidirectional
+  meta:
+    category: Node-RED
+    sub_category: State
+    friendly_name: 'Module : V1 : Ff : Nodered : Status'
+- topic: ccu/order/completed
+  template: ccu.order.completed
+  direction: bidirectional
+  meta:
+    category: CCU
+    sub_category: Order
+    friendly_name: 'Ccu : Order : Completed'
+- topic: module/v1/ff/SVR3QA0022/order
+  template: module.svr3qa0022.order
+  direction: bidirectional
+  meta:
+    category: MODULE
+    sub_category: Order
+    friendly_name: 'Module : V1 : Ff : Svr3Qa0022 : Order'
+- topic: module/v1/ff/SVR3QA0022/factsheet
+  template: module.svr3qa0022.factsheet
+  direction: bidirectional
+  meta:
+    category: MODULE
+    sub_category: Factsheet
+    friendly_name: 'Module : V1 : Ff : Svr3Qa0022 : Factsheet'
+- topic: /j1/txt/1/i/broadcast
+  template: txt..i.broadcast
+  direction: bidirectional
+  meta:
+    category: TXT
+    sub_category: State
+    friendly_name: ' : J1 : Txt : 1 : I : Broadcast'
+- topic: ccu/state/flows
+  template: ccu.state.flows
+  direction: bidirectional
+  meta:
+    category: CCU
+    sub_category: State
+    friendly_name: 'Ccu : State : Flows'
+- topic: module/v1/ff/SVR4H76530/factsheet
+  template: module.svr4h76530.factsheet
+  direction: bidirectional
+  meta:
+    category: MODULE
+    sub_category: Factsheet
+    friendly_name: 'Module : V1 : Ff : Svr4H76530 : Factsheet'
+- topic: module/v1/ff/SVR4H76449/factsheet
+  template: module.svr4h76449.factsheet
+  direction: bidirectional
+  meta:
+    category: MODULE
+    sub_category: Factsheet
+    friendly_name: 'Module : V1 : Ff : Svr4H76449 : Factsheet'
+- topic: /j1/txt/1/f/o/order
+  template: txt..f.o.order
+  direction: bidirectional
+  meta:
+    category: TXT
+    sub_category: Order
+    friendly_name: ' : J1 : Txt : 1 : F : O : Order'
+- topic: module/v1/ff/SVR4H73275/state
+  template: module.svr4h73275.state
+  direction: bidirectional
+  meta:
+    category: MODULE
+    sub_category: State
+    friendly_name: 'Module : V1 : Ff : Svr4H73275 : State'
+- topic: ccu/state/layout
+  template: ccu.state.layout
+  direction: bidirectional
+  meta:
+    category: CCU
+    sub_category: State
+    friendly_name: 'Ccu : State : Layout'
+- topic: ccu/set/reset
+  template: ccu.settings.reset
+  direction: bidirectional
+  meta:
+    category: CCU
+    sub_category: State
+    friendly_name: 'Ccu : Set : Reset'
+- topic: module/v1/ff/NodeRed/SVR4H73275/factsheet
+  template: nodered.svr4h73275.factsheet
+  direction: bidirectional
+  meta:
+    category: Node-RED
+    sub_category: Factsheet
+    friendly_name: 'Module : V1 : Ff : Nodered : Svr4H73275 : Factsheet'
+- topic: ccu/state/version-mismatch
+  template: ccu.state.version-mismatch
+  direction: bidirectional
+  meta:
+    category: CCU
+    sub_category: State
+    friendly_name: 'Ccu : State : Version-Mismatch'
+- topic: module/v1/ff/SVR4H76449/state
+  template: module.svr4h76449.state
+  direction: bidirectional
+  meta:
+    category: MODULE
+    sub_category: State
+    friendly_name: 'Module : V1 : Ff : Svr4H76449 : State'
+- topic: module/v1/ff/NodeRed/SVR4H73275/order
+  template: nodered.svr4h73275.order
+  direction: bidirectional
+  meta:
+    category: Node-RED
+    sub_category: Order
+    friendly_name: 'Module : V1 : Ff : Nodered : Svr4H73275 : Order'
 
-  - topic: "ccu/state/status"
-    template: "ccu/state/status"
-    meta: { category: "CCU", sub_category: "State", friendly_name: "CCU : state : status" }
+- topic: "/j1/txt/1/c/cam"
+  template: "cam..c.cam"
+  direction: bidirectional
+  meta: { category: "TXT", sub_category: "Camera Control", friendly_name: "TXT : c : cam" }
 
-  - topic: "ccu/pairing/state"
-    template: "ccu/state"
-    meta: { category: "CCU", sub_category: "State", friendly_name: "CCU : pairing : state" }
+- topic: "/j1/txt/1/i/cam"
+  template: "cam..i.cam"
+  direction: bidirectional
+  meta: { category: "TXT", sub_category: "Camera Input", friendly_name: "TXT : i : cam" }
 
-  # ----- MODULE (PATTERN, generisch) -----
-  - pattern: "module/v1/ff/{module_id}/connection"
-    template: "module/connection"
-    direction: bidirectional
-    vars: { module_id: "<serial>" }
-    meta: { category: "MODULE", sub_category: "Connection" }
+- topic: "/j1/txt/1/c/bme680"
+  template: "bme680..c.bme680"
+  direction: bidirectional
+  meta: { category: "TXT", sub_category: "Sensor Control", friendly_name: "TXT : c : bme680" }
 
-  - pattern: "module/v1/ff/{module_id}/state"
-    template: "module/state"
-    meta: { category: "MODULE", sub_category: "State" }
-
-  - pattern: "module/v1/ff/{module_id}/order"
-    template: "module/order"
-    direction: outbound
-    vars: { module_id: "<serial>" }
-    meta: { category: "MODULE", sub_category: "Order" }
-
-  - pattern: "module/v1/ff/{module_id}/factsheet"
-    template: "module/factsheet"
-    meta: { category: "MODULE", sub_category: "Factsheet" }
-
-  # ----- HBW (EXACT Override → spezielles Template) -----
-  - topic: "module/v1/ff/SVR3QA0022/state"
-    template: "module/state.hbw_inventory"
-    meta: { category: "MODULE", sub_category: "State", friendly_name: "HBW : state" }
-
-  # ----- TXT (EXACT) -----
-  - topic: "/j1/txt/1/f/i/order"
-    template: "txt/order_input"
-    meta: { category: "TXT", sub_category: "Function Input", friendly_name: "TXT : f : i : order" }
-
-  - topic: "/j1/txt/1/f/i/stock"
-    template: "txt/stock_input"
-    meta: { category: "TXT", sub_category: "Function Input", friendly_name: "TXT : f : i : stock" }
-
-  # ----- Node-RED (PATTERN) -----
-  - pattern: "module/v1/ff/NodeRed/{module_id}/connection"
-    template: "nodered/connection"
-    vars: { module_id: "<serial>" }
-    meta: { category: "Node-RED", sub_category: "Connection" }
-
-  - pattern: "module/v1/ff/NodeRed/{module_id}/state"
-    template: "nodered/state"
-    vars: { module_id: "<serial>" }
-    meta: { category: "Node-RED", sub_category: "State" }
-
-  - pattern: "module/v1/ff/NodeRed/{module_id}/factsheet"
-    template: "nodered/factsheet"
-    vars: { module_id: "<serial>" }
-    meta: { category: "Node-RED", sub_category: "Factsheet" }
-
-  # ----- FTS (EXACT) -----
-  - topic: "fts/v1/ff/5iO4/connection"
-    template: "fts/connection"
-    meta: { category: "MODULE", sub_category: "Connection", friendly_name: "FTS : connection" }
-
-  - topic: "fts/v1/ff/5iO4/state"
-    template: "fts/state"
-    meta: { category: "MODULE", sub_category: "State", friendly_name: "FTS : state" }
-
-  - topic: "fts/v1/ff/5iO4/order"
-    template: "fts/order"
-    direction: outbound
-    meta: { category: "MODULE", sub_category: "Order", friendly_name: "FTS : order" }
-
-  - topic: "fts/v1/ff/5iO4/factsheet"
-    template: "fts/factsheet"
-    meta: { category: "MODULE", sub_category: "Factsheet", friendly_name: "FTS : factsheet" }
+- topic: "/j1/txt/1/i/bme680"
+  template: "bme680..i.bme680"
+  direction: bidirectional
+  meta: { category: "TXT", sub_category: "Sensor Input", friendly_name: "TXT : i : bme680" }

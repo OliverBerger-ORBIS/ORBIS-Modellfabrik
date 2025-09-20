@@ -1,6 +1,6 @@
 metadata:
   category: CCU
-  description: Auto-analyzed template for ccu/order/request
+  description: Auto-analyzed template for CCU request
   last_updated: '2025-09-15'
   source: ccu_template_analyzer
   sub_category: Order
@@ -8,7 +8,7 @@ metadata:
 templates:
   ccu.order.request:
     category: CCU
-    description: Template for ccu/order/request
+    description: Template for CCU request
     direction: outbound
     examples:
     - orderType: STORAGE

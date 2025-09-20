@@ -1,6 +1,6 @@
 metadata:
   category: MODULE
-  description: Auto-analyzed template for module/v1/ff/SVR3QA2098/order
+  description: Auto-analyzed template for Module order
   last_updated: '2025-09-15'
   module_id: SVR3QA2098
   source: module_template_analyzer
@@ -9,7 +9,7 @@ metadata:
 templates:
   module.svr3qa2098.order:
     category: MODULE
-    description: Template for module/v1/ff/SVR3QA2098/order
+    description: Template for Module order
     direction: outbound
     examples:
     - action:

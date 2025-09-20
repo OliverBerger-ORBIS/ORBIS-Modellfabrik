@@ -1,6 +1,6 @@
 metadata:
   category: Node-RED
-  description: Auto-analyzed template for module/v1/ff/NodeRed/SVR4H76530/state
+  description: Auto-analyzed template for Module state
   last_updated: '2025-09-15'
   module_id: SVR4H76530
   source: nodered_template_analyzer
@@ -9,7 +9,7 @@ metadata:
 templates:
   nodered.svr4h76530.state:
     category: Node-RED
-    description: Template for module/v1/ff/NodeRed/SVR4H76530/state
+    description: Template for Module state
     direction: inbound
     examples:
     - actionState:

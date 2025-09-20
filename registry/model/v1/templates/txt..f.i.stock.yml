@@ -1,13 +1,13 @@
 metadata:
   category: TXT
-  description: Auto-analyzed template for /j1/txt/1/f/i/stock
+  description: Auto-analyzed template for TXT stock
   last_updated: '2025-09-15'
   source: txt_template_analyzer
   version: 0.1.0
 templates:
   txt..f.i.stock:
     category: TXT
-    description: Template for /j1/txt/1/f/i/stock
+    description: Template for TXT stock
     direction: inbound
     examples:
     - stockItems:

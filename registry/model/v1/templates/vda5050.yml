@@ -1,55 +1,63 @@
 version: 1.0.0
 category: VDA5050
-notes: "VDA5050 Standard Templates für APS-Integration"
-
+notes: VDA5050 Standard Templates für APS-Integration
 templates:
   module.order:
     direction: bidirectional
-    description: "VDA5050 Order Message"
+    description: VDA5050 Order Message
     schema:
       type: object
-      required: ["orderId", "orderUpdateId", "timestamp", "version", "nodes", "edges"]
+      required:
+      - orderId
+      - orderUpdateId
+      - timestamp
+      - version
+      - nodes
+      - edges
       properties:
         orderId:
           type: string
-          description: "Unique order identifier"
-          example: "order_2025-09-19_001"
+          description: Unique order identifier
+          example: order_2025-09-19_001
         orderUpdateId:
           type: integer
-          description: "Order update counter"
+          description: Order update counter
           example: 0
         timestamp:
           type: string
           format: date-time
-          description: "Order timestamp"
-          example: "2025-09-19T10:30:00Z"
+          description: Order timestamp
+          example: '2025-09-19T10:30:00Z'
         version:
           type: string
-          description: "VDA5050 version"
-          example: "2.0.0"
+          description: VDA5050 version
+          example: 2.0.0
         nodes:
           type: array
-          description: "Order nodes"
+          description: Order nodes
           items:
             type: object
-            required: ["nodeId", "sequenceId", "released"]
+            required:
+            - nodeId
+            - sequenceId
+            - released
             properties:
               nodeId:
                 type: string
-                description: "Node identifier"
-                example: "node_001"
+                description: Node identifier
+                example: node_001
               sequenceId:
                 type: integer
-                description: "Node sequence"
+                description: Node sequence
                 example: 0
               released:
                 type: boolean
-                description: "Node released"
+                description: Node released
                 example: true
               nodeDescription:
                 type: string
-                description: "Node description"
-                example: "Storage position A1"
+                description: Node description
+                example: Storage position A1
               nodePosition:
                 type: object
                 properties:
@@ -64,36 +72,41 @@ templates:
                     example: 0.0
               actions:
                 type: array
-                description: "Node actions"
+                description: Node actions
                 items:
                   type: object
-                  required: ["actionId", "actionType"]
+                  required:
+                  - actionId
+                  - actionType
                   properties:
                     actionId:
                       type: string
-                      example: "action_001"
+                      example: action_001
                     actionType:
                       type: string
-                      example: "store"
+                      example: store
                     parameters:
                       type: object
                       properties:
                         color:
                           type: string
-                          example: "RED"
+                          example: RED
                         workpieceId:
                           type: string
-                          example: "WP_001"
+                          example: WP_001
         edges:
           type: array
-          description: "Order edges"
+          description: Order edges
           items:
             type: object
-            required: ["edgeId", "sequenceId", "released"]
+            required:
+            - edgeId
+            - sequenceId
+            - released
             properties:
               edgeId:
                 type: string
-                example: "edge_001"
+                example: edge_001
               sequenceId:
                 type: integer
                 example: 0
@@ -102,25 +115,27 @@ templates:
                 example: true
               edgeDescription:
                 type: string
-                example: "Transport from A1 to B1"
+                example: Transport from A1 to B1
               startNodeId:
                 type: string
-                example: "node_001"
+                example: node_001
               endNodeId:
                 type: string
-                example: "node_002"
+                example: node_002
               actions:
                 type: array
                 items:
                   type: object
-                  required: ["actionId", "actionType"]
+                  required:
+                  - actionId
+                  - actionType
                   properties:
                     actionId:
                       type: string
-                      example: "action_002"
+                      example: action_002
                     actionType:
                       type: string
-                      example: "transport"
+                      example: transport
                     parameters:
                       type: object
                       properties:
@@ -130,51 +145,63 @@ templates:
                         precision:
                           type: number
                           example: 0.1
-
   module.state:
     direction: inbound
-    description: "VDA5050 State Message"
+    description: VDA5050 State Message
     schema:
       type: object
-      required: ["orderId", "orderUpdateId", "timestamp", "version", "nodeStates", "edgeStates"]
+      required:
+      - orderId
+      - orderUpdateId
+      - timestamp
+      - version
+      - nodeStates
+      - edgeStates
       properties:
         orderId:
           type: string
-          description: "Order identifier"
-          example: "order_2025-09-19_001"
+          description: Order identifier
+          example: order_2025-09-19_001
         orderUpdateId:
           type: integer
-          description: "Order update counter"
+          description: Order update counter
           example: 0
         timestamp:
           type: string
           format: date-time
-          description: "State timestamp"
-          example: "2025-09-19T10:30:00Z"
+          description: State timestamp
+          example: '2025-09-19T10:30:00Z'
         version:
           type: string
-          description: "VDA5050 version"
-          example: "2.0.0"
+          description: VDA5050 version
+          example: 2.0.0
         nodeStates:
           type: array
-          description: "Node states"
+          description: Node states
           items:
             type: object
-            required: ["nodeId", "sequenceId", "nodeState"]
+            required:
+            - nodeId
+            - sequenceId
+            - nodeState
             properties:
               nodeId:
                 type: string
-                example: "node_001"
+                example: node_001
               sequenceId:
                 type: integer
                 example: 0
               nodeState:
                 type: string
-                enum: ["WAITING", "RUNNING", "FINISHED", "FAILED"]
-                example: "RUNNING"
+                enum:
+                - WAITING
+                - RUNNING
+                - FINISHED
+                - FAILED
+                example: RUNNING
               nodeDescription:
                 type: string
-                example: "Storage position A1"
+                example: Storage position A1
               nodePosition:
                 type: object
                 properties:
@@ -191,135 +218,169 @@ templates:
                 type: array
                 items:
                   type: object
-                  required: ["actionId", "actionState"]
+                  required:
+                  - actionId
+                  - actionState
                   properties:
                     actionId:
                       type: string
-                      example: "action_001"
+                      example: action_001
                     actionState:
                       type: string
-                      enum: ["WAITING", "RUNNING", "FINISHED", "FAILED"]
-                      example: "RUNNING"
+                      enum:
+                      - WAITING
+                      - RUNNING
+                      - FINISHED
+                      - FAILED
+                      example: RUNNING
                     resultDescription:
                       type: string
-                      example: "Action completed successfully"
+                      example: Action completed successfully
         edgeStates:
           type: array
-          description: "Edge states"
+          description: Edge states
           items:
             type: object
-            required: ["edgeId", "sequenceId", "edgeState"]
+            required:
+            - edgeId
+            - sequenceId
+            - edgeState
             properties:
               edgeId:
                 type: string
-                example: "edge_001"
+                example: edge_001
               sequenceId:
                 type: integer
                 example: 0
               edgeState:
                 type: string
-                enum: ["WAITING", "RUNNING", "FINISHED", "FAILED"]
-                example: "RUNNING"
+                enum:
+                - WAITING
+                - RUNNING
+                - FINISHED
+                - FAILED
+                example: RUNNING
               edgeDescription:
                 type: string
-                example: "Transport from A1 to B1"
+                example: Transport from A1 to B1
               actionStates:
                 type: array
                 items:
                   type: object
-                  required: ["actionId", "actionState"]
+                  required:
+                  - actionId
+                  - actionState
                   properties:
                     actionId:
                       type: string
-                      example: "action_002"
+                      example: action_002
                     actionState:
                       type: string
-                      enum: ["WAITING", "RUNNING", "FINISHED", "FAILED"]
-                      example: "RUNNING"
+                      enum:
+                      - WAITING
+                      - RUNNING
+                      - FINISHED
+                      - FAILED
+                      example: RUNNING
                     resultDescription:
                       type: string
-                      example: "Transport completed"
-
+                      example: Transport completed
   module.instantaction:
     direction: bidirectional
-    description: "VDA5050 Instant Action Message"
+    description: VDA5050 Instant Action Message
     schema:
       type: object
-      required: ["instantActions"]
+      required:
+      - instantActions
       properties:
         instantActions:
           type: array
-          description: "Instant actions"
+          description: Instant actions
           items:
             type: object
-            required: ["actionId", "actionType"]
+            required:
+            - actionId
+            - actionType
             properties:
               actionId:
                 type: string
-                description: "Action identifier"
-                example: "instant_action_001"
+                description: Action identifier
+                example: instant_action_001
               actionType:
                 type: string
-                description: "Action type"
-                example: "camera_adjustment"
+                description: Action type
+                example: camera_adjustment
               parameters:
                 type: object
-                description: "Action parameters"
+                description: Action parameters
                 properties:
                   direction:
                     type: string
-                    enum: ["up", "down", "left", "right"]
-                    example: "up"
+                    enum:
+                    - up
+                    - down
+                    - left
+                    - right
+                    example: up
                   angle:
                     type: number
                     example: 10
                   color:
                     type: string
-                    example: "RED"
+                    example: RED
                   workpieceId:
                     type: string
-                    example: "WP_001"
+                    example: WP_001
               blockingType:
                 type: string
-                enum: ["NONE", "SOFT", "HARD"]
-                example: "NONE"
+                enum:
+                - NONE
+                - SOFT
+                - HARD
+                example: NONE
               actionDescription:
                 type: string
-                example: "Camera adjustment up 10 degrees"
-
+                example: Camera adjustment up 10 degrees
   module.factsheet:
     direction: inbound
-    description: "Module Factsheet Message"
+    description: Module Factsheet Message
     schema:
       type: object
-      required: ["moduleId", "moduleType", "version", "timestamp"]
+      required:
+      - moduleId
+      - moduleType
+      - version
+      - timestamp
       properties:
         moduleId:
           type: string
-          description: "Module identifier"
-          example: "SVR4H73275"
+          description: Module identifier
+          example: SVR4H73275
         moduleType:
           type: string
-          description: "Module type"
-          example: "DPS"
+          description: Module type
+          example: DPS
         version:
           type: string
-          description: "Module version"
-          example: "1.0.0"
+          description: Module version
+          example: 1.0.0
         timestamp:
           type: string
           format: date-time
-          description: "Factsheet timestamp"
-          example: "2025-09-19T10:30:00Z"
+          description: Factsheet timestamp
+          example: '2025-09-19T10:30:00Z'
         capabilities:
           type: array
-          description: "Module capabilities"
+          description: Module capabilities
           items:
             type: string
-          example: ["warehouse", "nfc", "camera"]
+          example:
+          - warehouse
+          - nfc
+          - camera
         position:
           type: object
-          description: "Module position"
+          description: Module position
           properties:
             x:
               type: number
@@ -332,7 +393,7 @@ templates:
               example: 0.0
         dimensions:
           type: object
-          description: "Module dimensions"
+          description: Module dimensions
           properties:
             length:
               type: number
@@ -345,42 +406,49 @@ templates:
               example: 0.5
         supportedActions:
           type: array
-          description: "Supported actions"
+          description: Supported actions
           items:
             type: string
-          example: ["store", "retrieve", "nfc_read", "camera_capture"]
-
+          example:
+          - store
+          - retrieve
+          - nfc_read
+          - camera_capture
   ccu.control:
     direction: outbound
-    description: "CCU Control Command"
+    description: CCU Control Command
     schema:
       type: object
-      required: ["command", "timestamp"]
+      required:
+      - command
+      - timestamp
       properties:
         command:
           type: string
-          description: "Control command"
-          example: "reset"
+          description: Control command
+          example: reset
         timestamp:
           type: string
           format: date-time
-          description: "Command timestamp"
-          example: "2025-09-19T10:30:00Z"
+          description: Command timestamp
+          example: '2025-09-19T10:30:00Z'
         parameters:
           type: object
-          description: "Command parameters"
+          description: Command parameters
           properties:
             charge:
               type: boolean
               example: true
             layout:
               type: string
-              example: "default"
+              example: default
             flows:
               type: array
               items:
                 type: string
-              example: ["flow1", "flow2"]
+              example:
+              - flow1
+              - flow2
             calibration:
               type: boolean
               example: true

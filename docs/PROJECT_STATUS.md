@@ -20,13 +20,15 @@
 2. ✅ **PROJECT_OVERVIEW.md** zu statischer Dokumentation umwandeln
 3. ✅ **Doku Overkill vermeiden** - docs aufräumen und konsolidieren
 4. ✅ **Mermaid Doku** - Diagramme auslagern, IDE-Einrichtung, Toggle Bearbeiten/Preview, Verweise in MDs
-5. **Mermaid Diagramme vollständig implementieren** - noch nicht abgeschlossen
-6. **APS Configuration Tab** implementieren - fehlender 5. APS Tab (später)
-7. **Pre-commit und Git/GitHub Workflow** - Projekt so anpassen dass pre-commit und git/github Workflow funktioniert
-8. **Session Analyse Helper App** dokumentieren - technische Beschreibung und HowTo-Nutzung
-9. **Architektur-Dokumentation** an APS-Analyse-Ergebnisse anpassen
-10. **Node-RED Simulation** im Dashboard vorbereiten
-11. **OMF-Dashboard mit realer Fabrik testen** - Validierung der APS-Integration
+5. ✅ **Mermaid Diagramme vollständig implementieren** - Dokumentation reorganisiert und committed
+6. **Template-Analyzer reparieren** - Topics aus Template-Deskriptionen entfernen (Registry-Prinzip: Templates topic-frei, Topics in mapping.yml)
+7. **Direction-Klärung mapping.yml** - Aus Sicht welcher Komponente? (CCU oder NodeRED) - aktuell Dashboard-zentrisch, aber semantisch unklar
+8. **APS Configuration Tab** implementieren - fehlender 5. APS Tab (später)
+9. **Pre-commit und Git/GitHub Workflow** - Projekt so anpassen dass pre-commit und git/github Workflow funktioniert
+10. **Session Analyse Helper App** dokumentieren - technische Beschreibung und HowTo-Nutzung
+11. **Architektur-Dokumentation** an APS-Analyse-Ergebnisse anpassen
+12. **Node-RED Simulation** im Dashboard vorbereiten
+13. **OMF-Dashboard mit realer Fabrik testen** - Validierung der APS-Integration
 
 ## 📊 Sprint-Vorgehen
 
@@ -85,7 +87,8 @@
 - **Mermaid Doku** - Einfaches Hybrid-Modell implementiert
 
 ### **Offene Punkte:**
-- **Mermaid Diagramme vollständig implementieren** - noch nicht abgeschlossen
+- **Template-Analyzer reparieren** - Topics aus Template-Deskriptionen entfernen (Registry-Prinzip verletzt)
+- **Direction-Klärung mapping.yml** - Aus Sicht welcher Komponente? (CCU oder NodeRED)
 - **Cross-Platform Testing** - ✅ **ERFOLGREICH** - Mermaid Doku auf Windows + VSCode getestet
 - **APS Configuration Tab** implementieren - fehlender 5. APS Tab (später)
 - **Pre-commit und Git/GitHub Workflow** - Projekt so anpassen dass pre-commit und git/github Workflow funktioniert

@@ -1,13 +1,13 @@
 metadata:
   category: TXT
-  description: Auto-analyzed template for /j1/txt/1/f/i/config/hbw
+  description: Auto-analyzed template for TXT hbw
   last_updated: '2025-09-15'
   source: txt_template_analyzer
   version: 0.1.0
 templates:
   txt..f.i.config.hbw:
     category: TXT
-    description: Template for /j1/txt/1/f/i/config/hbw
+    description: Template for TXT hbw
     direction: inbound
     examples:
     - ts: '2025-08-19T09:08:26.191Z'

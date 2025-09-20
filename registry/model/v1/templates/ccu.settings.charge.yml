@@ -1,6 +1,6 @@
 metadata:
   category: CCU
-  description: Auto-analyzed template for ccu/set/charge
+  description: Auto-analyzed template for CCU charge
   last_updated: '2025-09-15'
   source: ccu_template_analyzer
   sub_category: Settings
@@ -8,7 +8,7 @@ metadata:
 templates:
   ccu.settings.charge:
     category: CCU
-    description: Template for ccu/set/charge
+    description: Template for CCU charge
     direction: outbound
     examples:
     - charge: false

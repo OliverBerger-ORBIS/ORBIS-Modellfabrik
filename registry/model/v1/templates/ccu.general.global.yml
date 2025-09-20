@@ -1,6 +1,6 @@
 metadata:
   category: CCU
-  description: Auto-analyzed template for ccu/global
+  description: Auto-analyzed template for CCU global
   last_updated: '2025-09-15'
   source: ccu_template_analyzer
   sub_category: General
@@ -8,7 +8,7 @@ metadata:
 templates:
   ccu.general.global:
     category: CCU
-    description: Template for ccu/global
+    description: Template for CCU global
     direction: outbound
     examples:
     - type: reset

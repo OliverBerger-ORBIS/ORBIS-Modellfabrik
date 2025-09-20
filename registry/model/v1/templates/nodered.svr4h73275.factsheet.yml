@@ -1,6 +1,6 @@
 metadata:
   category: Node-RED
-  description: Auto-analyzed template for module/v1/ff/NodeRed/SVR4H73275/factsheet
+  description: Auto-analyzed template for Module factsheet
   last_updated: '2025-09-15'
   module_id: SVR4H73275
   source: nodered_template_analyzer
@@ -9,7 +9,7 @@ metadata:
 templates:
   nodered.svr4h73275.factsheet:
     category: Node-RED
-    description: Template for module/v1/ff/NodeRed/SVR4H73275/factsheet
+    description: Template for Module factsheet
     direction: outbound
     examples:
     - headerId: 1

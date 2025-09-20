@@ -1,6 +1,6 @@
 metadata:
   category: Node-RED
-  description: Auto-analyzed template for module/v1/ff/NodeRed/status
+  description: Auto-analyzed template for Module status
   last_updated: '2025-09-15'
   module_id: NodeRed
   source: nodered_template_analyzer
@@ -9,7 +9,7 @@ metadata:
 templates:
   nodered.nodered.status:
     category: Node-RED
-    description: Template for module/v1/ff/NodeRed/status
+    description: Template for Module status
     direction: outbound
     examples:
     - connectionState: ONLINE

@@ -1,6 +1,6 @@
 metadata:
   category: CCU
-  description: Auto-analyzed template for ccu/pairing/state
+  description: Auto-analyzed template for CCU state
   last_updated: '2025-09-15'
   source: ccu_template_analyzer
   sub_category: State
@@ -8,7 +8,7 @@ metadata:
 templates:
   ccu.state.state:
     category: CCU
-    description: Template for ccu/pairing/state
+    description: Template for CCU state
     direction: inbound
     examples:
     - modules:

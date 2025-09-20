@@ -1,6 +1,6 @@
 metadata:
   category: Node-RED
-  description: Auto-analyzed template for module/v1/ff/NodeRed/SVR4H76530/order
+  description: Auto-analyzed template for Module order
   last_updated: '2025-09-15'
   module_id: SVR4H76530
   source: nodered_template_analyzer
@@ -9,7 +9,7 @@ metadata:
 templates:
   nodered.svr4h76530.order:
     category: Node-RED
-    description: Template for module/v1/ff/NodeRed/SVR4H76530/order
+    description: Template for Module order
     direction: outbound
     examples:
     - action:

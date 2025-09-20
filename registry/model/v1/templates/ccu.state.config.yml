@@ -1,6 +1,6 @@
 metadata:
   category: CCU
-  description: Auto-analyzed template for ccu/state/config
+  description: Auto-analyzed template for CCU state config
   last_updated: '2025-09-15'
   source: ccu_template_analyzer
   sub_category: State
@@ -8,7 +8,7 @@ metadata:
 templates:
   ccu.state.config:
     category: CCU
-    description: Template for ccu/state/config
+    description: Template for CCU state config
     direction: inbound
     examples:
     - ftsSettings:

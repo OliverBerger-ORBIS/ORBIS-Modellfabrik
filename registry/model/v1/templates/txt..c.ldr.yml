@@ -1,13 +1,13 @@
 metadata:
   category: TXT
-  description: Auto-analyzed template for /j1/txt/1/c/ldr
+  description: Auto-analyzed template for TXT ldr
   last_updated: '2025-09-15'
   source: txt_template_analyzer
   version: 0.1.0
 templates:
   txt..c.ldr:
     category: TXT
-    description: Template for /j1/txt/1/c/ldr
+    description: Template for TXT ldr
     direction: outbound
     examples:
     - period: 60

@@ -1,13 +1,13 @@
 metadata:
   category: TXT
-  description: Auto-analyzed template for /j1/txt/1/i/ldr
+  description: Auto-analyzed template for TXT LDR sensor input
   last_updated: '2025-09-15'
   source: txt_template_analyzer
   version: 0.1.0
 templates:
   txt..i.ldr:
     category: TXT
-    description: Template for /j1/txt/1/i/ldr
+    description: Template for TXT LDR sensor input
     direction: inbound
     examples:
     - br: 95.8

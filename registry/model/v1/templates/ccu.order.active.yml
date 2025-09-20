@@ -1,6 +1,6 @@
 metadata:
   category: CCU
-  description: Auto-analyzed template for ccu/order/active
+  description: Auto-analyzed template for CCU active
   last_updated: '2025-09-15'
   source: ccu_template_analyzer
   sub_category: Order
@@ -8,7 +8,7 @@ metadata:
 templates:
   ccu.order.active:
     category: CCU
-    description: Template for ccu/order/active
+    description: Template for CCU active
     direction: outbound
     examples:
     - - orderId: c2963a6a-7313-43d6-8feb-ae0e223d1efc
