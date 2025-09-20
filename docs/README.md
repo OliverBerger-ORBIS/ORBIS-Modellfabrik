@@ -36,6 +36,8 @@
 #### Development
 - [Development Workflow](04-howto/development/workflow.md) - Git-Workflow, Testing, Development Tools
 - [Dashboard Components](04-howto/development/dashboard-components.md) - Wrapper Pattern, UI-Refresh, MQTT-Integration
+- [Mermaid Setup](04-howto/development/mermaid-setup.md) - Diagramme auslagern, IDE-Einrichtung, Styling-Standards
+- [Mermaid Cursor Instructions](04-howto/development/mermaid-cursor-instructions.md) - Cursor-Anweisungen für Mermaid-Diagramme
 
 #### Communication
 - [MQTT Integration](04-howto/communication/mqtt/dashboard-mqtt-integration.md) - Dashboard MQTT-Integration

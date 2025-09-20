@@ -19,11 +19,12 @@
 1. ✅ **Sprint-Dokumentation** erstellen (sprint_01 bis sprint_05)
 2. ✅ **PROJECT_OVERVIEW.md** zu statischer Dokumentation umwandeln
 3. ✅ **Doku Overkill vermeiden** - docs aufräumen und konsolidieren
-4. **Mermaid Doku** - Diagramme auslagern, IDE-Einrichtung, Toggle Bearbeiten/Preview, Verweise in MDs
-5. **Session Analyse Helper App** dokumentieren - technische Beschreibung und HowTo-Nutzung
-6. **Architektur-Dokumentation** an APS-Analyse-Ergebnisse anpassen
-7. **Node-RED Simulation** im Dashboard vorbereiten
-8. **OMF-Dashboard mit realer Fabrik testen** - Validierung der APS-Integration
+4. ✅ **Mermaid Doku** - Diagramme auslagern, IDE-Einrichtung, Toggle Bearbeiten/Preview, Verweise in MDs
+5. **Pre-commit und Git/GitHub Workflow** - Projekt so anpassen dass pre-commit und git/github Workflow funktioniert
+6. **Session Analyse Helper App** dokumentieren - technische Beschreibung und HowTo-Nutzung
+7. **Architektur-Dokumentation** an APS-Analyse-Ergebnisse anpassen
+8. **Node-RED Simulation** im Dashboard vorbereiten
+9. **OMF-Dashboard mit realer Fabrik testen** - Validierung der APS-Integration
 
 ## 📊 Sprint-Vorgehen
 
@@ -79,9 +80,11 @@
 - **MQTT-Logging** einheitlich implementiert
 - **Dictionary-Payloads** für korrekte Kommunikation
 - **Session Manager** mit Replay Station als Default
+- **Mermaid Doku** - Einfaches Hybrid-Modell implementiert
 
 ### **Offene Punkte:**
-- **Mermaid Doku** - Diagramme auslagern, IDE-Einrichtung, Toggle Bearbeiten/Preview, Verweise in MDs
+- **Pre-commit und Git/GitHub Workflow** - Projekt so anpassen dass pre-commit und git/github Workflow funktioniert
+- **Cross-Platform Testing** - Mermaid Doku auf Windows + VSCode testen
 - **Session Analyse Helper App** dokumentieren - technische Beschreibung und HowTo-Nutzung
 - **OMF-Dashboard mit realer Fabrik testen** - Validierung der APS-Integration
 - **Node-RED Simulation** im Dashboard
@@ -93,7 +96,7 @@
 1. ✅ **Sprint-Dokumentation** erstellen (sprint_01.md bis sprint_05.md)
 2. ✅ **PROJECT_OVERVIEW.md** zu statischer Dokumentation umwandeln
 3. ✅ **Doku Overkill vermeiden** - docs aufräumen und konsolidieren
-4. **Mermaid Doku** - Diagramme auslagern, IDE-Einrichtung, Toggle Bearbeiten/Preview, Verweise in MDs
+4. ✅ **Mermaid Doku** - Diagramme auslagern, IDE-Einrichtung, Toggle Bearbeiten/Preview, Verweise in MDs
 5. **Session Analyse Helper App** dokumentieren - technische Beschreibung und HowTo-Nutzung
 6. **OMF-Dashboard mit realer Fabrik testen** - Validierung der APS-Integration
 7. **Architektur-Dokumentation** an APS-Analyse-Ergebnisse anpassen
