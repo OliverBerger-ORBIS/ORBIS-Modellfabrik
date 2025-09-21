@@ -32,11 +32,18 @@
 7. **Template-Analyzer reparieren** - Topics aus Template-Deskriptionen entfernen (Registry-Prinzip: Templates topic-frei, Topics in mapping.yml)
 8. **Direction-Klärung mapping.yml** - Aus Sicht welcher Komponente? (CCU oder NodeRED) - aktuell Dashboard-zentrisch, aber semantisch unklar
 9. **APS Configuration Tab** implementieren - fehlender 5. APS Tab (später)
-10. **Pre-commit und Git/GitHub Workflow** - Projekt so anpassen dass pre-commit und git/github Workflow funktioniert
-11. **Session Analyse Helper App** dokumentieren - technische Beschreibung und HowTo-Nutzung
-12. **Architektur-Dokumentation** an APS-Analyse-Ergebnisse anpassen
+10. ✅ **Pre-commit und Git/GitHub Workflow** - Projekt so anpassen dass pre-commit und git/github Workflow funktioniert
+11. ✅ **Session Analyse Helper App** dokumentieren - technische Beschreibung und HowTo-Nutzung
+12. **Architektur-Dokumentation** an APS-Analyse-Ergebnisse anpassen - As-Is (FT APS) vs. To-Be (ORBIS) Strategie mit Migrations-Phasen dokumentieren
 13. **Node-RED Simulation** im Dashboard vorbereiten
 14. **OMF-Dashboard mit realer Fabrik testen** - Validierung der APS-Integration
+15. **OMF-Dashboard Tab-Konsolidierung** - APS-Tabs in vorhandene OMF-Tabs integrieren, unnötige Tabs entfernen (alte FTS/CCU-Tabs), Logs in Settings-Tab verschieben
+16. **OMF-Dashboard User-Konzept definieren** - Standard-User vs. DSP-Admin Rollen
+17. **APS-UI Bereich isolieren** - Standard-User sieht nur APS-Bedienung
+18. **DSP-Steuerungsbereich implementieren** - DSP-Admin sieht Node-RED-Simulation Tabs
+19. **Node-RED-Simulation Tabs erstellen** - DSP-Steuerung für OT-Übernahme
+20. **User-Rollen-System implementieren** - Default vs. DSP-Admin Sichtbarkeit
+21. **I18n Unterstützung** implementieren (EN, DE, FR)
 
 ## 📊 Sprint-Vorgehen
 
@@ -95,29 +102,6 @@
 - **Mermaid Doku** - Hybrid-Ansatz implementiert mit `docs/_shared/diagrams/`
 - **Code-Cleanup** - Sequenz-Kontrolle Helper Apps entfernt (VDA5050 übernimmt)
 
-### **Offene Punkte:**
-- **Template-Analyzer reparieren** - Topics aus Template-Deskriptionen entfernen (Registry-Prinzip verletzt)
-- **Direction-Klärung mapping.yml** - Aus Sicht welcher Komponente? (CCU oder NodeRED)
-- **Cross-Platform Testing** - ✅ **ERFOLGREICH** - Mermaid Doku auf Windows + VSCode getestet
-- **APS Configuration Tab** implementieren - fehlender 5. APS Tab (später)
-- **Pre-commit und Git/GitHub Workflow** - Projekt so anpassen dass pre-commit und git/github Workflow funktioniert
-- **Session Analyse Helper App** dokumentieren - technische Beschreibung und HowTo-Nutzung
-- **OMF-Dashboard mit realer Fabrik testen** - Validierung der APS-Integration
-- **Node-RED Simulation** im Dashboard
-- **I18n Unterstützung** (EN, DE, FR)
-- **Architektur-Dokumentation** anpassen
-
-## 📋 Next Steps
-
-1. ✅ **Sprint-Dokumentation** erstellen (sprint_01.md bis sprint_05.md)
-2. ✅ **PROJECT_OVERVIEW.md** zu statischer Dokumentation umwandeln
-3. ✅ **Doku Overkill vermeiden** - docs aufräumen und konsolidieren
-4. ✅ **Mermaid Doku** - Diagramme auslagern, IDE-Einrichtung, Toggle Bearbeiten/Preview, Verweise in MDs
-5. **Session Analyse Helper App** dokumentieren - technische Beschreibung und HowTo-Nutzung
-6. **OMF-Dashboard mit realer Fabrik testen** - Validierung der APS-Integration
-7. **Architektur-Dokumentation** an APS-Analyse-Ergebnisse anpassen
-8. **Node-RED Simulation** vorbereiten
-9. **I18n Unterstützung** implementieren
 
 ## 🔗 Wichtige Links
 
