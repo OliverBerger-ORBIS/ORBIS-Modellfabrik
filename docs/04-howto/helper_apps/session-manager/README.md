@@ -11,30 +11,52 @@ Der **Session Manager** ist eine unabhängige Helper App zur Analyse der APS Fis
 - **📊 Analyse** der Nachrichten-Ströme und -Muster
 - **🔍 Template-Erkennung** für MessageGenerator
 
-## 🏗️ Architektur
+## 🎯 Zweck-Diagramm
 
 ```mermaid
 graph TD
-    A[Session Manager] --> B[📹 Session Recorder]
-    A --> C[🎬 Replay Station]
-    A --> D[📊 Session Analysis]
-    A --> E[🔍 Template Analysis]
-    A --> F[⚙️ Settings]
+    A[APS-Fabrik] -->|Live MQTT| B[📹 Session Recorder]
+    B -->|Speichert| C[Session Files]
     
-    B --> G[MQTT Broker]
-    C --> G
-    D --> H[SQLite DB]
-    E --> H
+    C -->|Analysiert| D[📊 Session Analysis]
+    C -->|Generiert| E[🔍 Template Analysis]
+    C -->|Replay| F[🎬 Replay Station]
     
-    style A fill:#e1f5fe
-    style B fill:#e8f5e8
-    style C fill:#fff3e0
-    style D fill:#f3e5f5
-    style E fill:#fff8e1
-    style F fill:#f2f2f2
-    style G fill:#fff8e1
-    style H fill:#fff8e1
+    D -->|Erkennt| G[Message Patterns]
+    E -->|Erstellt| H[Message Templates]
+    F -->|Testet| I[OMF Dashboard]
+    
+    style A fill:#fff8e1
+    style B fill:#90caf9,stroke:#1976d2,stroke-width:3px
+    style C fill:#f5f5f5
+    style D fill:#bbdefb
+    style E fill:#bbdefb
+    style F fill:#bbdefb
+    style G fill:#e3f2fd
+    style H fill:#e3f2fd
+    style I fill:#e3f2fd
 ```
+
+### **Farbnuancen-Erklärung:**
+- **🔵 Dunkelblau (`#90caf9`):** Session Recorder - **Zentrale Komponente** (Aufnahme)
+- **🔵 Mittelblau (`#bbdefb`):** Session Analysis, Template Analysis, Replay Station - **Kern-Funktionen**
+- **🔵 Hellblau (`#e3f2fd`):** Message Patterns, Templates, OMF Dashboard - **Ergebnisse/Output**
+- **🟡 Gelb (`#fff8e1`):** APS-Fabrik - **FT Hardware (Input)**
+- **⚪ Grau (`#f5f5f5`):** Session Files - **Daten-Speicher**
+
+## 🏗️ Architektur
+
+## 📅 Sprint-Zuordnung
+
+Die Session Manager Komponenten wurden in folgenden Sprints entwickelt:
+
+| Komponente | Sprint | Zeitraum | Beschreibung |
+|------------|--------|----------|--------------|
+| **📹 Session Recorder** | Sprint 1 | 24.07 - 06.08.2025 | MQTT-Aufnahme, SQLite + Log-Dateien |
+| **🎬 Replay Station** | Sprint 2 | 07.08 - 22.08.2025 | Session-Wiedergabe für Dashboard-Tests |
+| **📊 Session Analysis** | Sprint 3 | 23.08 - 03.09.2025 | Timeline-Visualisierung, Template Analyser |
+| **🔍 Template Analysis** | Sprint 4 | 04.09 - 17.09.2025 | Registry-Aufbau, Template-Integration |
+| **⚡ Optimierungen** | Sprint 5 | 18.09 - 01.10.2025 | Performance, UI, Integration |
 
 ## 📚 Dokumentation
 
@@ -69,3 +91,4 @@ streamlit run omf/helper_apps/session_manager/session_manager.py
 - [**OMF Dashboard**](../../development/dashboard-components.md) - Haupt-Dashboard
 - [**MQTT Integration**](../../communication/mqtt/) - MQTT-Kommunikation
 - [**Template System**](../../../02-architecture/message-template-system.md) - Message-Templates
+- [**Mermaid Diagramm Regeln**](../../diagrams/cursor-ai-mermaid-rules.md) - Cursor AI Regeln für Diagramme

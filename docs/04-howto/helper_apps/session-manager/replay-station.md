@@ -2,33 +2,26 @@
 
 ## 🎯 Zweck
 
-Die **Replay Station** ermöglicht die Wiedergabe von aufgezeichneten MQTT-Sessions. Sessions werden mit originalem Timing und korrekten MQTT-Nachrichten an den lokalen Broker gesendet.
+Die **Replay Station** ermöglicht das Einspielen von aufgezeichneten MQTT-Sessions in das OMF-Dashboard im Replay-Modus. Dies ermöglicht das Testen des OMF-Dashboards, wenn die APS-Fabrik nicht verfügbar ist.
+
+**Vorteile:**
+- **Definierte Abfolge** von Nachrichten
+- **Reproduzierbare Tests** des OMF-Dashboards
+- **Unabhängige Entwicklung** ohne APS-Verbindung
+- **Kontrollierte Test-Szenarien**
 
 ## 🏗️ Architektur
 
 ```mermaid
 graph LR
     A[Session Files] -->|Load| B[Replay Station]
-    B -->|Parse| C[Message Queue]
-    C -->|Timing| D[Replay Engine]
-    D -->|Publish| E[MQTT Broker]
-    E -->|Forward| F[OMF Dashboard]
-    
-    G[User Interface] --> B
-    G --> H[Play/Pause/Stop]
-    G --> I[Speed Control]
-    G --> J[Progress Bar]
+    B -->|Publish| C[MQTT Broker]
+    C -->|Forward| D[OMF Dashboard]
     
     style A fill:#fff8e1
-    style B fill:#e8f5e8
-    style C fill:#f3e5f5
-    style D fill:#fff3e0
-    style E fill:#fff8e1
-    style F fill:#e1f5fe
-    style G fill:#e1f5fe
-    style H fill:#f3e5f5
-    style I fill:#fff3e0
-    style J fill:#fff3e0
+    style B fill:#90caf9,stroke:#1976d2,stroke-width:3px
+    style C fill:#f5f5f5
+    style D fill:#e3f2fd
 ```
 
 ## 🎮 Bedienung

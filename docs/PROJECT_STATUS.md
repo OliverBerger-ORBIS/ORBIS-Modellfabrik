@@ -85,6 +85,7 @@
 - **Dictionary-Payloads** für korrekte Kommunikation
 - **Session Manager** mit Replay Station als Default
 - **Mermaid Doku** - Einfaches Hybrid-Modell implementiert
+- **Code-Cleanup** - Sequenz-Kontrolle Helper Apps entfernt (VDA5050 übernimmt)
 
 ### **Offene Punkte:**
 - **Template-Analyzer reparieren** - Topics aus Template-Deskriptionen entfernen (Registry-Prinzip verletzt)

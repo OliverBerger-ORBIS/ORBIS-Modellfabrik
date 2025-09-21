@@ -34,7 +34,8 @@
 1. **Sprint-Dokumentation** erstellen (sprint_01.md bis sprint_05.md)
 2. **PROJECT_OVERVIEW.md** zu statischer Dokumentation umwandeln
 3. **Architektur-Dokumentation** an APS-Analyse-Ergebnisse anpassen
-4. **Node-RED Simulation** im Dashboard vorbereiten
+4. **Session Manager Dokumentation** vollständig (bereits erstellt: [Session Manager Helper App](../../04-howto/helper_apps/session-manager/README.md))
+5. **Node-RED Simulation** im Dashboard vorbereiten
 
 ## 📊 Sprint-Status
 
@@ -43,6 +44,7 @@
 - ✅ MQTT-Integration mit einheitlichem Logging
 - ✅ Dictionary-Payloads für korrekte Kommunikation
 - ✅ Session Manager mit Replay Station als Default
+  - **Dokumentation:** [Session Manager Helper App](../../04-howto/helper_apps/session-manager/README.md)
 - ✅ 11 Decision Records für Architektur-Dokumentation
 
 ### **Technische Meilensteine:**

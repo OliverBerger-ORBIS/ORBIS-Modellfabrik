@@ -9,10 +9,10 @@ Konsistente Mermaid-Diagramme für die OMF-Dokumentation erstellen mit klarer Fa
 
 ## 🎨 Farbpalette (4-Farb-System)
 
-### **1. ORBIS-Komponenten (Blau-Ton)**
-- `#e3f2fd` - Sehr helles Blau (OMF Dashboard, Session Manager)
-- `#bbdefb` - Mittleres Blau (Helper Apps, MessageGenerator)
-- `#90caf9` - Dunkleres Blau (Kritische ORBIS-Komponenten)
+### **1. ORBIS-Komponenten (Blau-Ton mit Nuancen)**
+- `#90caf9` - Dunkelblau (Zentrale Komponenten, Hauptfunktionen)
+- `#bbdefb` - Mittelblau (Kern-Komponenten, direkte Abhängigkeiten)
+- `#e3f2fd` - Hellblau (Standard-Komponenten, UI, Helper Apps)
 
 ### **2. Fischertechnik Hardware - BEHALTEN (Gelb-Ton)**
 - `#fff8e1` - Sehr helles Gelb (DRILL, MILL, DPS Module)
@@ -24,18 +24,21 @@ Konsistente Mermaid-Diagramme für die OMF-Dokumentation erstellen mit klarer Fa
 - `#ffcdd2` - Mittleres Rot (VDA5050 Implementation)
 - `#ef5350` - Dunkleres Rot (Legacy Software)
 
-### **4. Externe Systeme (Lila-Ton)**
-- `#f3e5f5` - Sehr helles Lila (MQTT Broker, Datenbanken)
-- `#e1bee7` - Mittleres Lila (APIs, Interfaces)
-- `#ce93d8` - Dunkleres Lila (Externe Services)
+### **4. Externe/Neutrale Systeme (Grau-Ton)**
+- `#f5f5f5` - Sehr helles Grau (MQTT Broker, Datenbanken)
+- `#e0e0e0` - Mittleres Grau (APIs, Interfaces)
+- `#bdbdbd` - Dunkleres Grau (Externe Services)
 
 ## 📋 Cursor AI Regeln
 
 ### **Farbzuordnung:**
-- **ORBIS Komponenten:** Immer Blau-Töne (#e3f2fd, #bbdefb, #90caf9)
+- **ORBIS Komponenten:** Blau-Töne mit Hierarchie-Nuancen
+  - `#90caf9` - Zentrale Komponenten (dunkelblau)
+  - `#bbdefb` - Kern-Komponenten (mittelblau)  
+  - `#e3f2fd` - Standard-Komponenten (hellblau)
 - **Fischertechnik Hardware (BEHALTEN):** Immer Gelb-Töne (#fff8e1, #ffecb3, #ffc107)
 - **Fischertechnik Software (TEILWEISE ERSETZEN):** Immer Rot-Töne (#ffebee, #ffcdd2, #ef5350)
-- **Externe Systeme:** Immer Lila-Töne (#f3e5f5, #e1bee7, #ce93d8)
+- **Externe/Neutrale Systeme:** Immer Grau-Töne (#f5f5f5, #e0e0e0, #bdbdbd)
 
 ### **Hardware vs Software Unterscheidung:**
 - **Hardware (Gelb):** DRILL, MILL, DPS Module, TXT Controller, Raspberry Pi
@@ -60,14 +63,15 @@ graph TD
     A -->|Ersetzt| C[FT Software]
     B --> D[External System]
     
-    style A fill:#e3f2fd  # ORBIS Blau
-    style B fill:#fff8e1  # FT Hardware Gelb
-    style C fill:#ffebee  # FT Software Rot
-    style D fill:#f3e5f5  # External Lila
+            style A fill:#90caf9,stroke:#1976d2,stroke-width:3px  # ORBIS Zentrale (dunkelblau)
+            style B fill:#fff8e1  # FT Hardware Gelb
+            style C fill:#ffebee  # FT Software Rot
+            style D fill:#f5f5f5  # External/Neutral Grau
 ```
 ```
 
 **Vollständiger Style-Guide:** Siehe `mermaid-style-guide.md` für professionelle Diagramm-Regeln  
+**Standard-Templates:** Siehe `mermaid-templates.md` für vorgefertigte Diagramm-Templates  
 **Bestehende Diagramme:** Siehe `docs/06-integrations/node-red/*.mermaid` für Beispiele
 
 ## 🔧 Praktische Beispiele
@@ -121,7 +125,7 @@ graph TD
 - Style-Definitionen am Ende des Diagramms
 
 ### **Bei Unsicherheit:**
-- Standard-Template verwenden
+- **Standard-Templates** aus `mermaid-templates.md` verwenden
 - Diese Regeln als Referenz nutzen
 - Bei Fragen: User fragen statt raten
 

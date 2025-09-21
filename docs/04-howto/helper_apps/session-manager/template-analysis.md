@@ -2,7 +2,20 @@
 
 ## 🎯 Zweck
 
-Die **Template Analysis** nutzt die bestehenden Template-Analyzer, um Message-Templates aus Session-Daten zu generieren. Diese Templates dienen als Basis für den MessageGenerator und ermöglichen die automatische Erkennung von Message-Strukturen.
+Die **Template Analysis** nutzt die bestehenden Template-Analyzer, um Message-Templates aus Session-Daten zu generieren und eine **OMF-Registry** aufzubauen.
+
+**Zweck der Analyser:**
+- **Aufbau einer Registry** mit standardisierten Message-Templates
+- **Registry wird von OMF-Dashboard-Komponenten genutzt** für:
+  - **MessageGenerator** - Automatische Message-Generierung
+  - **Steering Components** - Template-basierte Steuerung
+  - **Message Center** - Template-Validierung und -Parsing
+
+**Basis:** Automatische Erkennung von Message-Strukturen aus realen APS-Sessions
+
+**Verwandte Dokumentation:**
+- [**Registry Model**](../../../02-architecture/registry-model.md) - OMF-Registry System und 5 Kernprinzipien
+- [**Message Template System**](../../../02-architecture/message-template-system.md) - Integration mit MessageGenerator
 
 ## 🏗️ Architektur
 
@@ -38,26 +51,33 @@ graph TD
     Q --> T[Template Preview]
     
     style A fill:#fff8e1
-    style B fill:#e8f5e8
-    style C fill:#f3e5f5
-    style D fill:#fff3e0
-    style E fill:#fff3e0
-    style F fill:#fff3e0
-    style G fill:#fff3e0
-    style H fill:#fff3e0
-    style I fill:#fff3e0
-    style J fill:#e1f5fe
-    style K fill:#e1f5fe
-    style L fill:#e1f5fe
-    style M fill:#e1f5fe
-    style N fill:#e1f5fe
-    style O fill:#e1f5fe
+    style B fill:#90caf9,stroke:#1976d2,stroke-width:3px
+    style C fill:#f5f5f5
+    style D fill:#bbdefb
+    style E fill:#bbdefb
+    style F fill:#bbdefb
+    style G fill:#bbdefb
+    style H fill:#bbdefb
+    style I fill:#bbdefb
+    style J fill:#e3f2fd
+    style K fill:#e3f2fd
+    style L fill:#e3f2fd
+    style M fill:#e3f2fd
+    style N fill:#e3f2fd
+    style O fill:#e3f2fd
     style P fill:#fff8e1
-    style Q fill:#e1f5fe
-    style R fill:#f3e5f5
-    style S fill:#fff3e0
+    style Q fill:#e3f2fd
+    style R fill:#f5f5f5
+    style S fill:#f5f5f5
     style T fill:#fff8e1
 ```
+
+### **Farbnuancen-Erklärung:**
+- **🔵 Dunkelblau (`#90caf9`):** Template Analysis - **Zentrale Komponente** (Hauptfunktion)
+- **🔵 Mittelblau (`#bbdefb`):** Template Analyzer (CCU, Module, Node-RED, TXT, BME680, Camera) - **Kern-Analysen**
+- **🔵 Hellblau (`#e3f2fd`):** Template-Ergebnisse und UI - **Output/Darstellung**
+- **🟡 Gelb (`#fff8e1`):** Session Files, Template Library - **Input/Speicher**
+- **⚪ Grau (`#f5f5f5`):** Template Analyzers Container, UI Controls - **Verarbeitung/Steuerung**
 
 ## 🎮 Bedienung
 
@@ -148,5 +168,7 @@ sequenceDiagram
 ## 🔗 Verwandte Komponenten
 
 - [**Session Analysis**](session-analysis.md) - Basis für Template-Analyse
-- [**MessageGenerator**](../../../02-architecture/message-template-system.md) - Nutzer der generierten Templates
-- [**Registry System**](../../../02-architecture/registry-model.md) - Template-Speicherung und -Verwaltung
+- [**Session Recorder**](session-recorder.md) - Aufnahme der zu analysierenden Sessions
+- [**OMF Dashboard**](../../development/dashboard-components.md) - Nutzer der Registry-Templates
+- [**Registry Model**](../../../02-architecture/registry-model.md) - OMF-Registry System und Template-Speicherung
+- [**Message Template System**](../../../02-architecture/message-template-system.md) - Integration mit MessageGenerator

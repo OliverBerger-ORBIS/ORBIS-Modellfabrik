@@ -24,19 +24,25 @@ graph TD
     J --> M[Visualization Options]
     
     style A fill:#fff8e1
-    style B fill:#e8f5e8
-    style C fill:#f3e5f5
-    style D fill:#fff3e0
-    style E fill:#fff8e1
-    style F fill:#e1f5fe
-    style G fill:#e1f5fe
-    style H fill:#f2f2f2
-    style I fill:#f2f2f2
-    style J fill:#e1f5fe
-    style K fill:#f3e5f5
-    style L fill:#fff3e0
-    style M fill:#fff8e1
+    style B fill:#90caf9,stroke:#1976d2,stroke-width:3px
+    style C fill:#bbdefb
+    style D fill:#bbdefb
+    style E fill:#bbdefb
+    style F fill:#e3f2fd
+    style G fill:#e3f2fd
+    style H fill:#e3f2fd
+    style I fill:#e3f2fd
+    style J fill:#e3f2fd
+    style K fill:#f5f5f5
+    style L fill:#f5f5f5
+    style M fill:#f5f5f5
 ```
+
+### **Farbnuancen-Erklärung:**
+- **🔵 Dunkelblau (`#90caf9`):** Zentrale Komponente "Session Analysis" - **Hauptfunktion**
+- **🔵 Mittelblau (`#bbdefb`):** Kern-Komponenten (Timeline, Graph, Statistics) - **Direkte Analysen**
+- **🔵 Hellblau (`#e3f2fd`):** UI-Komponenten und Ergebnisse - **Darstellung**
+- **⚪ Grau (`#f5f5f5`):** Externe/Input-Komponenten - **Eingaben**
 
 ## 🎮 Bedienung
 

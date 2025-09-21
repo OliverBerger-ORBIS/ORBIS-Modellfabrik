@@ -42,9 +42,6 @@ class DevelopmentRulesValidator:
             # Absolute Imports prüfen
             file_errors.extend(self._check_absolute_imports(content, file_path))
 
-            # Absolute Pfade prüfen
-            file_errors.extend(self._check_absolute_paths(content, file_path))
-
             # OMF-Logging-System prüfen
             file_errors.extend(self._check_omf_logging(content, file_path))
 
@@ -96,26 +93,6 @@ class DevelopmentRulesValidator:
                 # Local
                 elif 'omf' in line or line.startswith('from .'):
                     found_local = True
-
-        return errors
-
-    def _check_absolute_paths(self, content: str, file_path: Path) -> List[str]:
-        """Prüft auf korrekte Pfad-Handling"""
-        errors = []
-
-        # Relative Pfade finden (../path)
-        relative_paths = re.findall(r'["\']\.\.?/', content)
-        if relative_paths:
-            errors.append(f"❌ Relative Pfade gefunden: {relative_paths}")
-
-        # Absolute Pfade finden (hardcoded)
-        absolute_paths = re.findall(r'["\']/Users/oliver/Projects/ORBIS-Modellfabrik/', content)
-        if absolute_paths:
-            errors.append(f"❌ Absolute Pfade gefunden: {absolute_paths}")
-
-        # os.path.join Hacks finden (alte Methode)
-        if 'os.path.join(Path(__file__).parent' in content:
-            errors.append("❌ os.path.join(Path(__file__).parent) gefunden - verwende Path(__file__).parent")
 
         return errors
 

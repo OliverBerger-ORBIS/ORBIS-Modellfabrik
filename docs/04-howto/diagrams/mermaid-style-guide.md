@@ -33,7 +33,7 @@
 * **Blau** = ORBIS-Komponenten (OMF Dashboard, Session Manager, Helper Apps)
 * **Gelb** = Fischertechnik Hardware (DRILL, MILL, DPS Module, TXT Controller, RPi)
 * **Rot** = Fischertechnik Software (Node-RED, VDA5050 - wird teilweise ersetzt)
-* **Lila** = Externe Systeme (MQTT Broker, Datenbanken, APIs)
+* **Grau** = Externe/Neutrale Systeme (MQTT Broker, Datenbanken, APIs)
 
 ### **Linienstile:**
 * MQTT-Topics = **dünn, grau**, Label `topic: …`
@@ -70,7 +70,7 @@ flowchart LR
 classDef orbis fill:#e3f2fd,stroke:#bbdefb,stroke-width:2px,color:#0b2e59;
 classDef fthardware fill:#fff8e1,stroke:#ffecb3,stroke-width:2px,color:#0b3d16;
 classDef ftsoftware fill:#ffebee,stroke:#ffcdd2,stroke-width:2px,color:#7a1a14;
-classDef external fill:#f3e5f5,stroke:#e1bee7,stroke-width:2px,color:#333;
+classDef external fill:#f5f5f5,stroke:#e0e0e0,stroke-width:2px,color:#333;
 classDef datastore fill:#fff,stroke:#ce93d8,stroke-width:1.5px,color:#333;
 classDef removed fill:#ffebee,stroke:#ef5350,stroke-dasharray: 5 3,color:#7a1a14;
 ```
@@ -79,7 +79,7 @@ classDef removed fill:#ffebee,stroke:#ef5350,stroke-dasharray: 5 3,color:#7a1a14
 - **ORBIS (Blau):** OMF Dashboard, Session Manager, MessageGenerator, Helper Apps
 - **FT Hardware (Gelb):** DRILL, MILL, DPS Module, TXT Controller, Raspberry Pi
 - **FT Software (Rot):** Node-RED Flows, VDA5050 Implementation, Legacy Software (teilweise ersetzt)
-- **External (Lila):** MQTT Broker, Datenbanken, APIs, ERP/MES
+- **External/Neutral (Grau):** MQTT Broker, Datenbanken, APIs, ERP/MES
 - **Removed (Rot gestrichelt):** Wird ersetzt/entfernt
 
 ## 📋 Beispiel: **C4-Container** (As-Is → To-Be)
@@ -91,7 +91,7 @@ flowchart LR
 classDef orbis fill:#e3f2fd,stroke:#bbdefb,stroke-width:2px,color:#0b2e59;
 classDef fthardware fill:#fff8e1,stroke:#ffecb3,stroke-width:2px,color:#0b3d16;
 classDef ftsoftware fill:#ffebee,stroke:#ffcdd2,stroke-width:2px,color:#7a1a14;
-classDef external fill:#f3e5f5,stroke:#e1bee7,stroke-width:2px,color:#333;
+classDef external fill:#f5f5f5,stroke:#e0e0e0,stroke-width:2px,color:#333;
 classDef datastore fill:#fff,stroke:#ce93d8,stroke-width:1.5px,color:#333;
 
 subgraph APS[FT APS]
@@ -115,7 +115,7 @@ flowchart LR
 classDef orbis fill:#e3f2fd,stroke:#bbdefb,stroke-width:2px,color:#0b2e59;
 classDef fthardware fill:#fff8e1,stroke:#ffecb3,stroke-width:2px,color:#0b3d16;
 classDef ftsoftware fill:#ffebee,stroke:#ffcdd2,stroke-width:2px,color:#7a1a14;
-classDef external fill:#f3e5f5,stroke:#e1bee7,stroke-width:2px,color:#333;
+classDef external fill:#f5f5f5,stroke:#e0e0e0,stroke-width:2px,color:#333;
 classDef datastore fill:#fff,stroke:#ce93d8,stroke-width:1.5px,color:#333;
 classDef removed fill:#ffebee,stroke:#ef5350,stroke-dasharray: 5 3,color:#7a1a14;
 
@@ -168,7 +168,7 @@ sequenceDiagram
 flowchart LR
 classDef orbis fill:#e3f2fd,stroke:#bbdefb,stroke-width:2px,color:#0b2e59;
 classDef fthardware fill:#fff8e1,stroke:#ffecb3,stroke-width:2px,color:#0b3d16;
-classDef external fill:#f3e5f5,stroke:#e1bee7,stroke-width:2px,color:#333;
+classDef external fill:#f5f5f5,stroke:#e0e0e0,stroke-width:2px,color:#333;
 classDef datastore fill:#fff,stroke:#ce93d8,stroke-width:1.5px,color:#333;
 
 subgraph Plant[Shopfloor]

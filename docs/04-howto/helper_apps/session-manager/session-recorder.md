@@ -2,7 +2,14 @@
 
 ## 🎯 Zweck
 
-Der **Session Recorder** Tab ermöglicht die Aufnahme von MQTT-Sessions der APS-Fabrik. Aufgenommene Sessions werden als SQLite-Datenbank und Log-Datei gespeichert und können später analysiert oder wiedergegeben werden.
+Der **Session Recorder** ermöglicht die Aufnahme von MQTT-Sessions der APS-Fabrik für zwei Hauptzwecke:
+
+1. **📊 Session Analysis** - Analyse der Nachrichten-Ströme und -Muster
+2. **🔍 Template Generierung** - Automatische Erkennung von Message-Templates
+3. **🎬 Replay Station** - Sessions für reproduzierbare Tests des OMF-Dashboards
+
+**Aufgenommene Sessions** werden als SQLite-Datenbank und Log-Datei gespeichert und dienen als Basis für alle weiteren Analysen und Tests.
+
 
 ## 🏗️ Architektur
 
@@ -17,14 +24,14 @@ graph LR
     F --> G[Start/Stop Controls]
     F --> H[Status Display]
     
-    style A fill:#fff8e1
-    style B fill:#e8f5e8
+    style A fill:#f5f5f5
+    style B fill:#90caf9,stroke:#1976d2,stroke-width:3px
     style C fill:#fff8e1
     style D fill:#fff8e1
     style E fill:#fff8e1
-    style F fill:#e1f5fe
-    style G fill:#f3e5f5
-    style H fill:#fff3e0
+    style F fill:#bbdefb
+    style G fill:#f5f5f5
+    style H fill:#e3f2fd
 ```
 
 ## 🎮 Bedienung
