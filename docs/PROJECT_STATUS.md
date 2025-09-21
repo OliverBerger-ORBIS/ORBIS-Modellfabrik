@@ -15,20 +15,28 @@
 - **Fischertechnik TXT-Programme** extrahiert und analysiert
 - **Session Manager** mit Replay Station als Default
 
+### ✅ **Mermaid Diagramm-System optimiert** (20.09.2025)
+- **Hybrid-Ansatz** implementiert: zentrale vs. dezentrale Diagramme
+- **`docs/_shared/diagrams/`** als zentrale Bibliothek für wiederverwendbare Architektur-Diagramme
+- **Build-System** mit `npm run diagrams` für automatische SVG-Generierung
+- **Kontext-spezifische Diagramme** bleiben bei entsprechenden Dokumenten
+- **Obsolet `docs/diagrams/`** entfernt - nutzt jetzt vorhandene `_shared/` Infrastruktur
+
 ### 🔄 **Nächste Schritte**
 1. ✅ **Sprint-Dokumentation** erstellen (sprint_01 bis sprint_05)
 2. ✅ **PROJECT_OVERVIEW.md** zu statischer Dokumentation umwandeln
 3. ✅ **Doku Overkill vermeiden** - docs aufräumen und konsolidieren
-4. ✅ **Mermaid Doku** - Diagramme auslagern, IDE-Einrichtung, Toggle Bearbeiten/Preview, Verweise in MDs
+4. ✅ **Mermaid Doku** - Hybrid-Ansatz mit `docs/_shared/diagrams/` implementiert
 5. ✅ **Mermaid Diagramme vollständig implementieren** - Dokumentation reorganisiert und committed
-6. **Template-Analyzer reparieren** - Topics aus Template-Deskriptionen entfernen (Registry-Prinzip: Templates topic-frei, Topics in mapping.yml)
-7. **Direction-Klärung mapping.yml** - Aus Sicht welcher Komponente? (CCU oder NodeRED) - aktuell Dashboard-zentrisch, aber semantisch unklar
-8. **APS Configuration Tab** implementieren - fehlender 5. APS Tab (später)
-9. **Pre-commit und Git/GitHub Workflow** - Projekt so anpassen dass pre-commit und git/github Workflow funktioniert
-10. **Session Analyse Helper App** dokumentieren - technische Beschreibung und HowTo-Nutzung
-11. **Architektur-Dokumentation** an APS-Analyse-Ergebnisse anpassen
-12. **Node-RED Simulation** im Dashboard vorbereiten
-13. **OMF-Dashboard mit realer Fabrik testen** - Validierung der APS-Integration
+6. ✅ **Hybrid-Ansatz für Diagramm-Organisation** - `docs/_shared/diagrams/` als zentrale Bibliothek
+7. **Template-Analyzer reparieren** - Topics aus Template-Deskriptionen entfernen (Registry-Prinzip: Templates topic-frei, Topics in mapping.yml)
+8. **Direction-Klärung mapping.yml** - Aus Sicht welcher Komponente? (CCU oder NodeRED) - aktuell Dashboard-zentrisch, aber semantisch unklar
+9. **APS Configuration Tab** implementieren - fehlender 5. APS Tab (später)
+10. **Pre-commit und Git/GitHub Workflow** - Projekt so anpassen dass pre-commit und git/github Workflow funktioniert
+11. **Session Analyse Helper App** dokumentieren - technische Beschreibung und HowTo-Nutzung
+12. **Architektur-Dokumentation** an APS-Analyse-Ergebnisse anpassen
+13. **Node-RED Simulation** im Dashboard vorbereiten
+14. **OMF-Dashboard mit realer Fabrik testen** - Validierung der APS-Integration
 
 ## 📊 Sprint-Vorgehen
 
@@ -84,7 +92,7 @@
 - **MQTT-Logging** einheitlich implementiert
 - **Dictionary-Payloads** für korrekte Kommunikation
 - **Session Manager** mit Replay Station als Default
-- **Mermaid Doku** - Einfaches Hybrid-Modell implementiert
+- **Mermaid Doku** - Hybrid-Ansatz implementiert mit `docs/_shared/diagrams/`
 - **Code-Cleanup** - Sequenz-Kontrolle Helper Apps entfernt (VDA5050 übernimmt)
 
 ### **Offene Punkte:**
