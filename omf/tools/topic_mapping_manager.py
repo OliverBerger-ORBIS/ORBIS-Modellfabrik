@@ -62,7 +62,7 @@ class TopicMappingManager:
                     self.template_categories = data.get("template_categories", {})
                 print(
                     "⚠️ Using deprecated topic_message_mapping.yml - consider migrating to "
-                    "registry/model/v0/mappings/topic_template.yml"
+                    "registry/model/v1/mappings/topic_template.yml"
                 )
                 print(f"✅ Legacy Topic-Mappings geladen: {len(self.topic_mappings)} Topics")
             else:

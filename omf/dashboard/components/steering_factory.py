@@ -66,22 +66,25 @@ def _show_factory_reset_section(gateway: MqttGateway):
 
     with col1:
         if st.button("🏭 Factory Reset", type="primary", key="factory_reset"):
-            logger.info("🏭 Factory Reset angefordert")
+            logger.info("🏭 OMF Factory Reset angefordert")
             # Direkt über MqttGateway senden
             try:
+                payload = {"timestamp": datetime.now(timezone.utc).isoformat(), "withStorage": False}
+                logger.info(f"🔍 OMF Factory Reset: Topic='ccu/set/reset', Payload={payload}")
+                
                 success = gateway.send(
                     topic="ccu/set/reset",
-                    builder=lambda: {"timestamp": datetime.now(timezone.utc).isoformat(), "withStorage": False},
+                    builder=lambda: payload,
                     ensure_order_id=True,
                 )
                 if success:
-                    logger.info("✅ Factory Reset erfolgreich gesendet")
+                    logger.info("✅ OMF Factory Reset erfolgreich gesendet")
                     st.success("✅ Factory Reset erfolgreich gesendet!")
                 else:
-                    logger.error("❌ Fehler beim Senden des Factory Reset")
+                    logger.error("❌ Fehler beim Senden des OMF Factory Reset")
                     st.error("❌ Fehler beim Senden des Factory Reset")
             except Exception as e:
-                logger.error(f"❌ Fehler beim Factory Reset: {e}")
+                logger.error(f"❌ Fehler beim OMF Factory Reset: {e}")
                 st.error(f"❌ Fehler beim Factory Reset: {e}")
 
     with col2:

@@ -45,12 +45,12 @@ class OmfMessageTemplateManager:
                 if legacy_templates.exists():
                     templates_dir = str(legacy_templates)
                     self.logger.warning(
-                        "⚠️ Using deprecated message_templates - consider migrating to registry/model/v0/templates"
+                        "⚠️ Using deprecated message_templates - consider migrating to registry/model/v1/templates"
                     )
                 else:
                     # Letzter Fallback: Verwende aktuelles Arbeitsverzeichnis
                     cwd = Path.cwd()
-                    registry_templates_cwd = cwd / "registry" / "model" / "v0" / "templates"
+                    registry_templates_cwd = cwd / "registry" / "model" / "v1" / "templates"
                     self.logger.debug(f"🔍 Checking CWD registry path: {registry_templates_cwd}")
                     self.logger.debug(f"🔍 CWD Registry exists: {registry_templates_cwd.exists()}")
 
@@ -99,7 +99,7 @@ class OmfMessageTemplateManager:
         """Lädt alle Template-Dateien"""
         # Prüfe ob Registry v0 Struktur (Templates direkt im Verzeichnis)
         if self.templates_dir.exists():
-            self.logger.info("📁 Using registry v0 template structure (templates/*.yml)")
+            self.logger.info("📁 Using registry v1 template structure (templates/*.yml)")
             self._load_registry_v1_templates()
         else:
             # Fallback: Prüfe ob Legacy-Struktur (templates/templates/) existiert

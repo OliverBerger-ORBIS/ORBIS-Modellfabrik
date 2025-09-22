@@ -14,14 +14,27 @@ class APSSteeringFTSManager:
         self.last_update = None
 
     def send_fts_command(self, mqtt_client, command, payload=None):
-        """Sendet einen FTS Command"""
+        """Sendet einen FTS Command nach APS-Standard"""
         try:
             if payload is None:
                 payload = {}
-            result = mqtt_client.publish(command, payload, qos=1, retain=False)
+            
+            # Logging für Analyse
+            from omf.dashboard.tools.logging_config import get_logger
+            logger = get_logger("omf.dashboard.components.aps_steering_fts")
+            logger.info(f"🔍 APS FTS Command: Topic='{command}', Payload={payload}")
+            
+            # APS-Standard: Direkter MQTT Publish wie in Original APS Quellen
+            # QoS=2, retain=True (Standard APS-Verhalten)
+            result = mqtt_client.publish(command, payload, qos=2, retain=True)
+            
+            logger.info(f"📤 APS FTS Command gesendet: Result={result}")
             return result
 
         except Exception as e:
+            from omf.dashboard.tools.logging_config import get_logger
+            logger = get_logger("omf.dashboard.components.aps_steering_fts")
+            logger.error(f"❌ Fehler beim Senden des FTS Commands: {e}")
             st.error(f"❌ Fehler beim Senden des FTS Commands: {e}")
             return False
 

@@ -18,7 +18,7 @@ from .validation_error_tracker import get_validation_tracker
 
 # MessageTemplate Bibliothek Import
 try:
-    from omf.tools.message_template_manager import get_message_template_manager
+    from omf.dashboard.tools.registry_manager import get_message_template_manager
 
     TEMPLATE_MANAGER_AVAILABLE = True
 except ImportError as e:

@@ -14,15 +14,18 @@ class APSOrderToolsManager:
         self.last_update = None
 
     def send_system_command(self, mqtt_client, command, payload=None):
-        """Sendet einen System Command"""
+        """Sendet einen Command nach APS-Standard"""
         try:
             if payload is None:
                 payload = {}
-            result = mqtt_client.publish(command, payload, qos=1, retain=False)
+            
+            # APS-Standard: Direkter MQTT Publish wie in Original APS Quellen
+            # QoS=2, retain=True (Standard APS-Verhalten)
+            result = mqtt_client.publish(command, payload, qos=2, retain=True)
             return result
 
         except Exception as e:
-            st.error(f"❌ Fehler beim Senden des System Commands: {e}")
+            st.error(f"❌ Fehler beim Senden des Commands: {e}")
             return False
 
 

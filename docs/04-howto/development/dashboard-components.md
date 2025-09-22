@@ -96,7 +96,7 @@ all_messages = list(mqtt_client._history)  # Globale History
 ```python
 # Buttons mit eindeutigen Keys
 if st.button("🔄 Factory Reset", key="factory_reset"):
-    result = manager.send_system_command(client, "ccu/set/factoryReset")
+    result = manager.send_system_command(client, "ccu/set/reset")
     if result:
         st.success("✅ Factory Reset gesendet")
 

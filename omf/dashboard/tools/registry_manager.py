@@ -140,7 +140,7 @@ class Registry:
         return self.load_yaml("mappings/topic_template.yml")
 
     def templates(self) -> Dict[str, Any]:
-        """Load all templates from registry/model/v0/templates/"""
+        """Load all templates from registry/model/v1/templates/"""
         templates = {}
         templates_dir = self.root / "templates"
         if templates_dir.exists():
@@ -150,7 +150,7 @@ class Registry:
         return templates
 
     def topics(self) -> Dict[str, Any]:
-        """Load all topics from registry/model/v0/topics/"""
+        """Load all topics from registry/model/v1/topics/"""
         topics = {}
         topics_dir = self.root / "topics"
         if topics_dir.exists():

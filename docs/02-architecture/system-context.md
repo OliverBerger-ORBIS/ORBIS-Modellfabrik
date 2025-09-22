@@ -7,53 +7,18 @@
 > - **[Node-RED Integration](../../06-integrations/node-red/README.md)** - Gateway zwischen OPC-UA und MQTT
 > - **[FTS VDA 5050](../../06-integrations/fts/README.md)** - Fahrerloses Transportsystem
 
-### ASCII-Art (Legacy)
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                           OMF Ecosystem                                    │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                             │
-│  ┌─────────────┐    MQTT     ┌─────────────┐    OPC-UA    ┌─────────────┐  │
-│  │    CCU      │◄───────────►│  Node-RED   │◄────────────►│   Module    │  │
-│  │ (Central    │             │ (Vermittler)│              │  (HBW/      │  │
-│  │  Control    │             │             │              │   DRILL/    │  │
-│  │  Unit)      │             │             │              │   MILL/     │  │
-│  └─────────────┘             └─────────────┘              │   AIQS/     │  │
-│         │                           │                     │   DPS)      │  │
-│         │                           │                     └─────────────┘  │
-│         │                           │                            │         │
-│         │                           │                            │         │
-│         ▼                           ▼                            ▼         │
-│  ┌─────────────┐             ┌─────────────┐              ┌─────────────┐  │
-│  │   FTS       │             │   TXT       │              │   OMF       │  │
-│  │ (Fahrerlose │             │ (Controller)│              │ Dashboard   │  │
-│  │  Transport) │             │             │              │             │  │
-│  └─────────────┘             └─────────────┘              └─────────────┘  │
-│         │                           │                            │         │
-│         │                           │                            │         │
-│         └───────────────────────────┼────────────────────────────┘         │
-│                                     │                                      │
-│                                     ▼                                      │
-│                            ┌─────────────┐                                │
-│                            │ Session-     │                                │
-│                            │ Manager      │                                │
-│                            │ (Replay &    │                                │
-│                            │  Recording)  │                                │
-│                            └─────────────┘                                │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
 
 ### Mermaid-Diagramm (Modern)
 ```mermaid
 graph TB
-    subgraph "OMF Ecosystem"
+    subgraph "APS Ecosystem"
         subgraph "Control Layer"
             APS_CCU[APS-CCU<br/>Central Control Unit]
         end
         
         subgraph "Communication Layer"
             MQTT[MQTT Broker<br/>Message Routing]
-            NODERED[Node-RED<br/>Protocol Translator]
+            APS_NODERED[APS-NodeRED<br/>Protocol Translator]
         end
         
         subgraph "Module Layer"
@@ -65,62 +30,62 @@ graph TB
         end
         
         subgraph "TXT-Control Layer"
-            FTS[FTS<br/>Fahrerlose Transportsysteme]
-            TXT[TXT Controller<br/>Fischertechnik]
-            DPS_TXT[DPS-TXT Controller<br/>Distribution Control]
+            FTS_TXT[FTS-TXT<br/>Transport Control]
+            AIQS_TXT[AIQS-TXT<br/>Quality Control]
+            DPS_TXT[DPS-TXT<br/>Distribution Control]
         end
     end
     
     APS_CCU <-->|MQTT Commands| MQTT
     
-    MQTT <-->|Message Routing| NODERED
-    NODERED <-->|OPC-UA| HBW
-    NODERED <-->|OPC-UA| DRILL
-    NODERED <-->|OPC-UA| MILL
-    NODERED <-->|OPC-UA| AIQS
-    NODERED <-->|OPC-UA| DPS
+    MQTT <-->|Message Routing| APS_NODERED
+    APS_NODERED <-->|OPC-UA| HBW
+    APS_NODERED <-->|OPC-UA| DRILL
+    APS_NODERED <-->|OPC-UA| MILL
+    APS_NODERED <-->|OPC-UA| AIQS
+    APS_NODERED <-->|OPC-UA| DPS
     
-    FTS <-->|MQTT Transport| MQTT
-    TXT <-->|MQTT Sensor Data| MQTT
+    FTS_TXT <-->|MQTT Transport| MQTT
+    AIQS_TXT <-->|MQTT Sensor Data| MQTT
     DPS_TXT <-->|MQTT Control| MQTT
     
-    MQTT -->|Telemetry| APS_CCU
+    MQTT -->|Module State| APS_CCU
     
     classDef aps fill:#fff8e1,stroke:#f57f17,stroke-width:2px
+    classDef aps_highlight fill:#ffecb3,stroke:#f57f17,stroke-width:3px
     classDef external fill:#f5f5f5,stroke:#757575,stroke-width:2px
-    classDef modules fill:#fff8e1,stroke:#f57f17,stroke-width:2px
-    class APS_CCU aps
+    class APS_CCU,APS_NODERED aps_highlight
     class MQTT external
-    class NODERED,HBW,DRILL,MILL,AIQS,DPS,FTS,TXT,DPS_TXT modules
+    class HBW,DRILL,MILL,AIQS,DPS,FTS_TXT,AIQS_TXT,DPS_TXT aps
 ```
 
 ## 🔄 Message-Flow-Übersicht
 
 ### 1. Order-Flow (Outbound)
 ```
-OMF Dashboard → MQTT Order → Node-RED → OPC-UA → Module
+APS-CCU → MQTT Order → APS-NodeRED → OPC-UA → Module
 ```
 
 **Beispiel: DRILL-Befehl**
 - **Topic:** `module/v1/ff/SVR4H76449/order`
 - **Payload:** `{"command": "DRILL", "type": "WHITE", "orderId": "123"}`
-- **Node-RED:** Übersetzt zu OPC-UA-Call
+- **APS-NodeRED:** Übersetzt zu OPC-UA-Call
 - **Module:** Führt DRILL-Aktion aus
 
 ### 2. State-Flow (Inbound)
 ```
-Module → OPC-UA → Node-RED → MQTT State → OMF Dashboard
+Module → OPC-UA → APS-NodeRED → MQTT State → APS-CCU
 ```
 
 **Beispiel: DRILL-Status**
 - **Topic:** `module/v1/ff/SVR4H76449/state`
 - **Payload:** `{"actionState": {"command": "DRILL", "state": "RUNNING"}}`
-- **Dashboard:** Zeigt Status-Update an
+- **APS-CCU:** Zeigt Status-Update an
 
 ### 3. HBW-Spezialfall
 ```
-HBW → OPC-UA → Node-RED → MQTT State (Full) → Dashboard
-HBW → OPC-UA → Node-RED → MQTT State (Delta) → Dashboard
+HBW → OPC-UA → APS-NodeRED → MQTT State (Full) → APS-CCU
+HBW → OPC-UA → APS-NodeRED → MQTT State (Delta) → APS-CCU
 ```
 
 **Erster State:** Vollständige Inventory-Liste
@@ -128,46 +93,42 @@ HBW → OPC-UA → Node-RED → MQTT State (Delta) → Dashboard
 
 ## 🏭 Komponenten-Details
 
-### CCU (Central Control Unit)
+### APS-CCU (Central Control Unit)
 - **Rolle:** Zentrale Steuerung und Orchestrierung
+- **Plattform:** Raspberry Pi mit Docker-Container
 - **MQTT-Topics:** `ccu/order/request`, `ccu/state/*`
 - **Verantwortlich:** Workflow-Management, Order-Erstellung
+- **UI:** Die Logik der APS-CCU wird über das APS-Dashboard als Benutzer-Interface zur Verfügung gestellt
 
-### Node-RED
+### APS-NodeRED
 - **Rolle:** MQTT ↔ OPC-UA Vermittler
 - **Verantwortlich:** 
   - MQTT-Befehle zu OPC-UA-Calls übersetzen
   - OPC-UA-Daten zu MQTT-Status aggregieren
   - Modul-spezifische State-Machine implementieren
 
+### MQTT-Broker
+- **Rolle:** Zentrale Message-Routing-Infrastruktur
+- **Plattform:** Docker-Container auf Raspberry Pi (gemeinsam mit APS-CCU)
+- **Verantwortlich:** Message-Routing zwischen allen APS-Komponenten
+
 ### Module (HBW, DRILL, MILL, AIQS, DPS)
 - **Rolle:** Physische Produktionsmodule
 - **OPC-UA:** Direkte Hardware-Steuerung
-- **MQTT:** Status-Updates über Node-RED
+- **MQTT:** Status-Updates über APS-NodeRED
 
 ### FTS (Fahrerlose Transportsysteme)
 - **Rolle:** Material-Transport zwischen Modulen
 - **MQTT-Topics:** `fts/v1/ff/5iO4/*`
 - **Verantwortlich:** Workpiece-Transport, Navigation
 
-### TXT Controller
-- **Rolle:** Fischertechnik-Controller
-- **MQTT-Topics:** `/j1/txt/1/f/i/*`
-- **Verantwortlich:** Sensor-Daten, Einfache Steuerung
-
-### OMF Dashboard
-- **Rolle:** Benutzer-Interface und Monitoring
+### TXT-Controller (FTS-TXT, AIQS-TXT, DPS-TXT)
+- **Rolle:** Fischertechnik-Controller für spezifische Module
 - **Verantwortlich:**
-  - Order-Erstellung und -Verwaltung
-  - Real-time Status-Monitoring
-  - Replay-System für Tests
-
-### Session Manager
-- **Rolle:** Replay und Recording-System
-- **Verantwortlich:**
-  - MQTT-Traffic aufzeichnen
-  - Deterministische Replay-Tests
-  - Session-Analyse
+  - FTS-TXT: Transport-Steuerung
+  - AIQS-TXT: Quality Control
+  - DPS-TXT: Distribution Control
+  - Sensor-Daten und einfache Steuerung
 
 ## 🔗 Kommunikations-Patterns
 
@@ -180,8 +141,8 @@ fts/v1/ff/{serial_number}/{type}
 ```
 
 ### Message-Directions
-- **Outbound:** Dashboard → Module (Orders, Commands)
-- **Inbound:** Module → Dashboard (States, Status)
+- **Outbound:** APS-Dashboard → Module (Orders, Commands)
+- **Inbound:** Module → APS-Dashboard (States, Status)
 - **Bidirectional:** Connection-Status, Heartbeats
 
 ### Registry-Integration

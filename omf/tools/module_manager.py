@@ -52,7 +52,7 @@ class OmfModuleManager:
 
         # Fallback to legacy config (deprecated)
         legacy_path = project_root / "omf" / "config" / "module_config.yml"
-        print("⚠️ Using deprecated module_config.yml - consider migrating to registry/model/v0/modules.yml")
+        print("⚠️ Using deprecated module_config.yml - consider migrating to registry/model/v1/modules.yml")
         return str(legacy_path.resolve())
 
     def load_yaml_config(self) -> Optional[Dict[str, Any]]:

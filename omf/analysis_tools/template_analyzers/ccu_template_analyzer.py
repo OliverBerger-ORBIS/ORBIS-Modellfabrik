@@ -691,7 +691,7 @@ class CCUTemplateAnalyzer:
 
         return saved_files
 
-    def migrate_to_registry_v0(self, results: Dict):
+    def migrate_to_registry/model/v2(self, results: Dict):
         """Direct migration to Registry v0 in initial phase"""
         project_root = os.path.abspath(str(Path(__file__).parent / ".." / ".." / ".."))
         registry_dir = os.path.join(project_root, "registry/model/v2/templates")
@@ -954,7 +954,7 @@ class CCUTemplateAnalyzer:
             observation_files = self.save_observations(results)
 
             # In initial phase: Direct migration to Registry v0 (NEW)
-            registry_files = self.migrate_to_registry_v0(results)
+            registry/model/v2(results)
 
             # Update main message_templates.yml
             main_yaml_file = self.update_message_templates_yaml(results)

@@ -36,7 +36,7 @@ def show_aps_overview_commands():
     """UI für APS Commands"""
     manager = APSCommandsManager()
     if st.button("🔄 Factory Reset"):
-        result = manager.send_system_command(client, "ccu/set/factoryReset")
+        result = manager.send_system_command(client, "ccu/set/reset")
 ```
 
 ## Konsequenzen

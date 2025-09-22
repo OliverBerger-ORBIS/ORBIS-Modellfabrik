@@ -25,7 +25,7 @@ class APSOrdersManager:
             }
 
             # Send order request
-            result = mqtt_client.publish("ccu/order/request", order_payload, qos=1, retain=False)
+            result = mqtt_client.publish("ccu/order/request", order_payload, qos=2, retain=True)
             return result
 
         except Exception as e:
@@ -37,7 +37,7 @@ class APSOrdersManager:
         try:
             topic = f"{module.lower()}/instantAction"
             payload = {"action": action}
-            result = mqtt_client.publish(topic, payload, qos=1, retain=False)
+            result = mqtt_client.publish(topic, payload, qos=2, retain=True)
             return result
 
         except Exception as e:

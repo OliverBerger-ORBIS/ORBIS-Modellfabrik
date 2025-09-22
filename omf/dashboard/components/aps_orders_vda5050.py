@@ -23,7 +23,7 @@ class APSVDA5050OrdersManager:
                 "workpieceId": workpiece_id if workpiece_id else None,
             }
 
-            result = mqtt_client.publish("ccu/order/request", str(order_payload), qos=1, retain=False)
+            result = mqtt_client.publish("ccu/order/request", str(order_payload), qos=2, retain=True)
             return result
 
         except Exception as e:
@@ -40,7 +40,7 @@ class APSVDA5050OrdersManager:
                 "workpieceId": workpiece_id if workpiece_id else None,
             }
 
-            result = mqtt_client.publish("ccu/order/request", str(order_payload), qos=1, retain=False)
+            result = mqtt_client.publish("ccu/order/request", str(order_payload), qos=2, retain=True)
             return result
 
         except Exception as e:

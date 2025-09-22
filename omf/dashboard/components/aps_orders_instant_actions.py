@@ -23,7 +23,7 @@ class APSInstantActionsManager:
             else:
                 payload = f'{{"action": "{action}"}}'
 
-            result = mqtt_client.publish(topic, payload, qos=1, retain=False)
+            result = mqtt_client.publish(topic, payload, qos=2, retain=True)
             return result
 
         except Exception as e:

@@ -17,7 +17,7 @@ logger = get_logger("omf.dashboard.components.fts_state")
 
 # MessageTemplate Bibliothek Import
 try:
-    from omf.tools.message_template_manager import get_message_template_manager
+    from omf.dashboard.tools.registry_manager import get_message_template_manager
 
     TEMPLATE_MANAGER_AVAILABLE = True
 except ImportError as e:

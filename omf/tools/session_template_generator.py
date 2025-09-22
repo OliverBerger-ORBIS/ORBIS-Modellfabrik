@@ -24,7 +24,7 @@ class SessionTemplateGenerator:
         if observations_dir is None:
             observations_dir = "/Users/oliver/Projects/ORBIS-Modellfabrik/data/observations"
         if registry_dir is None:
-            registry_dir = "/Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v0"
+            registry_dir = "/Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1"
 
         self.observations_dir = Path(observations_dir)
         self.registry_dir = Path(registry_dir)
