@@ -24,13 +24,26 @@
 - **Obsolet `docs/diagrams/`** entfernt - nutzt jetzt vorhandene `_shared/` Infrastruktur
 - **Cross-Platform Testing** erfolgreich - Windows + VSCode getestet
 
-### 🔄 **Nächste Schritte**
-1. **APS-Dashboard Tabs systematisch aufbauen** - Verwendung der Original-Sourcen als Referenz
-2. **Original APS-Dashboard vollständig analysieren** - Alle Commands, Topics und Payloads dokumentieren
-3. **OMF-Dashboard mit realer Fabrik testen** - Validierung der APS-Integration
-4. **Namenskonvention etablieren** - APS (As-Is) vs OMF (To-Be) Systeme, einheitliche Bezeichnungen für Dokumentation und Architektur
+## 📋 Chat-spezifische Arbeiten
 
-## 🚀 Entwicklungsphasen
+### 🎯 **Chat-A: Architektur & Dokumentation**
+- ✅ **Namenskonvention etablieren** - APS (As-Is) vs OMF (To-Be) Systeme
+- ✅ **System-Context aktualisieren** - Mermaid-Diagramm, ASCII-Art entfernt
+- ✅ **APS-CCU Beschreibung** - RPi/Docker-Container, MQTT-Broker Details
+- ⏳ **Weitere Architektur-Diagramme** - Message-Flow, Registry-Model
+
+### 🔧 **Chat-B: Code & Implementation**
+- ⏳ **Manager-Duplikate beseitigen** - OrderManager (3x), System-Status-Manager (3x)
+- ⏳ **APS-Tabs Registry-Analyse** - Welche Tabs sind notwendig?
+- ⏳ **Registry-Konsolidierung** - Legacy-Konfiguration entfernen
+- ⏳ **WorkpieceManager implementieren** - nfc_config.yml → registry Migration
+
+### 🧪 **Chat-C: Testing & Validation**
+- ⏳ **OMF-Dashboard mit realer Fabrik testen** - Validierung der APS-Integration
+- ⏳ **Cross-Platform Testing** - Windows + VSCode für Mermaid
+- ⏳ **Template-Analyzer reparieren** - Topics aus Template-Deskriptionen entfernen
+
+## 🚀 Entwicklungsphasen (High-Level)
 
 ### **Phase 0: APS as-is lauffähig machen**
 - **Status:** ✅ Abgeschlossen
@@ -43,31 +56,43 @@
 - **Erreicht:** Session Manager, OMF-Dashboard, APS-Integration
 
 ### **Phase 2: OMF-CCU etablieren**
-- **Status:** 🔄 In Bearbeitung
+- **Status:** 🔄 In Bearbeitung (Chat-A: Architektur ✅, Chat-B: Code ⏳)
 - **Ziel:** OMF-CCU im OMF-Dashboard implementieren
-- **Nächste Schritte:** APS-CCU Funktionalität vollständig übernehmen
+- **Fortschritt:** Namenskonvention etabliert, System-Context aktualisiert
 
 ### **Phase 3: OMF-NodeRED etablieren**
 - **Status:** ⏳ Geplant
 - **Ziel:** OMF-NodeRED im OMF-Dashboard implementieren
 - **Nächste Schritte:** APS-NodeRED Funktionalität ersetzen
-3. **Fehlender APS-Tab integrieren** - 5. APS Tab (APS Configuration) noch nicht eingebunden
-4. **Manager-Duplikate beseitigen** - OrderManager (3x identisch), System-Status-Manager (3x ähnlich) auslagern in `omf/dashboard/managers/`
-4. **APS-Tabs Registry-Analyse** - Welche APS-Tabs sind für unsere Steuerung tatsächlich notwendig?
-5. **APS-Tabs Registry-Integration** - Verbleibende APS-Tabs auf Registry-Manager umstellen
-6. **Registry-Konsolidierung** - Legacy-Konfiguration (`omf/config/`) entfernen, alle Manager auf Registry umstellen
-7. **WorkpieceManager implementieren** - `nfc_config.yml` → `registry/model/v1/workpieces.yml` Migration (siehe `docs/archive/analysis/dps/REGISTRY_COMPATIBILITY_ANALYSIS.md`)
-8. **OMF-Dashboard Tab-Konsolidierung** - APS-Tabs in vorhandene OMF-Tabs integrieren, unnötige Tabs entfernen
-9. **Architektur-Dokumentation** an APS-Analyse-Ergebnisse anpassen - As-Is (FT APS) vs. To-Be (ORBIS) Strategie
-10. **Node-RED Simulation** im Dashboard vorbereiten
-11. **Template-Analyzer reparieren** - Topics aus Template-Deskriptionen entfernen
-12. **Direction-Klärung mapping.yml** - Aus Sicht welcher Komponente? (CCU oder NodeRED)
-13. **OMF-Dashboard User-Konzept definieren** - Standard-User vs. DSP-Admin Rollen
-14. **APS-UI Bereich isolieren** - Standard-User sieht nur APS-Bedienung
-15. **DSP-Steuerungsbereich implementieren** - DSP-Admin sieht Node-RED-Simulation Tabs
-16. **Node-RED-Simulation Tabs erstellen** - DSP-Steuerung für OT-Übernahme
-17. **User-Rollen-System implementieren** - Default vs. DSP-Admin Sichtbarkeit
-18. **I18n Unterstützung** implementieren (EN, DE, FR)
+
+## 📋 Nächste Schritte (Prioritätenliste)
+
+### **🔧 Code & Implementation**
+1. **Fehlender APS-Tab integrieren** - 5. APS Tab (APS Configuration) noch nicht eingebunden
+2. **Manager-Duplikate beseitigen** - OrderManager (3x identisch), System-Status-Manager (3x ähnlich) auslagern in `omf/dashboard/managers/`
+3. **APS-Tabs Registry-Analyse** - Welche APS-Tabs sind für unsere Steuerung tatsächlich notwendig?
+4. **APS-Tabs Registry-Integration** - Verbleibende APS-Tabs auf Registry-Manager umstellen
+5. **Registry-Konsolidierung** - Legacy-Konfiguration (`omf/config/`) entfernen, alle Manager auf Registry umstellen
+6. **WorkpieceManager implementieren** - `nfc_config.yml` → `registry/model/v1/workpieces.yml` Migration
+7. **OMF-Dashboard Tab-Konsolidierung** - APS-Tabs in vorhandene OMF-Tabs integrieren, unnötige Tabs entfernen
+
+### **🧪 Testing & Validation**
+8. **OMF-Dashboard mit realer Fabrik testen** - Validierung der APS-Integration
+9. **Template-Analyzer reparieren** - Topics aus Template-Deskriptionen entfernen
+10. **Cross-Platform Testing** - Windows + VSCode für Mermaid
+
+### **📚 Architektur & Dokumentation**
+11. **Architektur-Dokumentation** an APS-Analyse-Ergebnisse anpassen - As-Is (FT APS) vs. To-Be (ORBIS) Strategie
+12. **Node-RED Simulation** im Dashboard vorbereiten
+13. **Direction-Klärung mapping.yml** - Aus Sicht welcher Komponente? (CCU oder NodeRED)
+
+### **👥 User & Rollen**
+14. **OMF-Dashboard User-Konzept definieren** - Standard-User vs. DSP-Admin Rollen
+15. **APS-UI Bereich isolieren** - Standard-User sieht nur APS-Bedienung
+16. **DSP-Steuerungsbereich implementieren** - DSP-Admin sieht Node-RED-Simulation Tabs
+17. **Node-RED-Simulation Tabs erstellen** - DSP-Steuerung für OT-Übernahme
+18. **User-Rollen-System implementieren** - Default vs. DSP-Admin Sichtbarkeit
+19. **I18n Unterstützung** implementieren (EN, DE, FR)
 
 #### **✅ Abgeschlossen:**
 - ✅ **Sprint-Dokumentation** erstellen (sprint_01 bis sprint_05)
