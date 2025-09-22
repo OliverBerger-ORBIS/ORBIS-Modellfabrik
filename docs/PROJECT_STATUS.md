@@ -1,19 +1,20 @@
 # ORBIS Modellfabrik - Projekt Status
 
-**Letzte Aktualisierung:** 20.09.2025  
+**Letzte Aktualisierung:** 22.09.2025  
 **Aktueller Sprint:** Sprint 05 (18.09 - 01.10.2025)
 
 > **Dokumentations-Strategie:** Dieses Dokument ist die zentrale Quelle für alle Projekt-Änderungen und Sprint-Status. Keine separate CHANGELOG.md - alles hier!
 
 ## 🚀 Aktuelle Arbeiten
 
-### ✅ **APS Dashboard Integration abgeschlossen** (20.09.2025)
-- **4 neue APS Tabs** vollständig implementiert
-- **APS-spezifische Manager** (VDA5050, TXT Controller, System Control)
-- **MQTT-Integration** mit einheitlichem Logging
-- **Registry-Erweiterung** für APS-spezifische Topics
-- **Fischertechnik TXT-Programme** extrahiert und analysiert
-- **Session Manager** mit Replay Station als Default
+### ✅ **APS Dashboard Integration erfolgreich** (22.09.2025)
+- **3 konsolidierte APS Tabs** (von 4 auf 3 reduziert)
+- **APS Control Tab** - System Commands + Status + Monitoring
+- **APS Steering Tab** - Factory + FTS + Modules + Orders (funktional)
+- **APS Orders Tab** - Order Management (unverändert)
+- **Original APS-Dashboard analysiert** - Topics und Payloads extrahiert
+- **Authentische APS-Integration** - Factory Reset und FTS Charging funktionieren
+- **Original-Sourcen organisiert** - `integrations/ff-central-control-unit/aps-dashboard-source/`
 
 ### ✅ **Mermaid Diagramm-System optimiert** (20.09.2025)
 - **Hybrid-Ansatz** implementiert: zentrale vs. dezentrale Diagramme
@@ -24,8 +25,10 @@
 - **Cross-Platform Testing** erfolgreich - Windows + VSCode getestet
 
 ### 🔄 **Nächste Schritte**
-1. **Namenskonvention etablieren** - APS (As-Is) vs OMF (To-Be) Systeme, einheitliche Bezeichnungen für Dokumentation und Architektur
-2. **OMF-Dashboard mit realer Fabrik testen** - Validierung der APS-Integration
+1. **APS-Dashboard Tabs systematisch aufbauen** - Verwendung der Original-Sourcen als Referenz
+2. **Original APS-Dashboard vollständig analysieren** - Alle Commands, Topics und Payloads dokumentieren
+3. **OMF-Dashboard mit realer Fabrik testen** - Validierung der APS-Integration
+4. **Namenskonvention etablieren** - APS (As-Is) vs OMF (To-Be) Systeme, einheitliche Bezeichnungen für Dokumentation und Architektur
 
 ## 🚀 Entwicklungsphasen
 

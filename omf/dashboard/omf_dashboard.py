@@ -53,10 +53,8 @@ load_component("ccu", "components.ccu", "CCU")
 load_component("shopfloor", "components.shopfloor", "Shopfloor")
 
 # APS-spezifische Komponenten
-load_component("aps_overview", "components.aps_overview", "APS Overview")
+load_component("aps_control", "components.aps_control", "APS Control")
 load_component("aps_orders", "components.aps_orders", "APS Orders")
-load_component("aps_system_control", "components.aps_system_control", "APS System Control")
-# load_component("aps_configuration", "components.aps_configuration", "APS Configuration")  # TODO: Später ausarbeiten
 load_component("aps_steering", "components.aps_steering", "APS Steering")
 
 # =============================================================================
@@ -452,15 +450,12 @@ def display_tabs():
 
     # APS-spezifische Tabs
     with tab11:
-        components["aps_overview"]()
+        components["aps_control"]()
 
     with tab12:
         components["aps_orders"]()
 
     with tab13:
-        components["aps_system_control"]()
-
-    with tab14:
         components["aps_steering"]()
 
 

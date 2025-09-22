@@ -1,0 +1,104 @@
+# OMF Message Templates - Globale Metadaten
+# Version: 3.0.0
+
+metadata:
+  version: "3.0.0"
+  description: "MQTT Message Templates für ORBIS Modellfabrik - Modulare Struktur"
+  last_updated: "2025-08-29"
+  author: "OMF Development Team"
+  
+  # Template-Status
+  ccu_analysis_completed: true
+  module_analysis_completed: true
+  txt_analysis_completed: true
+  node_red_analysis_completed: true
+  
+  # Struktur-Informationen
+  structure_version: "3.0.0"
+  modular: true
+  backward_compatible: true
+  
+  # Migration-Info
+  migrated_from: "omf/mqtt/config/message_templates.yml"
+  migration_date: "2025-08-29"
+  
+  # Validierung
+  validation_enabled: true
+  example_validation: true
+  structure_validation: true
+
+# Template-Kategorien
+categories:
+  - CCU
+  - MODULE
+  - TXT
+  - Node-RED
+
+# Sub-Kategorien pro Kategorie
+sub_categories:
+  CCU:
+    - Control
+    - Order
+    - State
+    - Wareneingang
+  
+  MODULE:
+    - Connection
+    - Factsheet
+    - InstantAction
+    - Order
+    - State
+    - Status
+  
+  TXT:
+    - Control
+    - Function Input
+    - Function Output
+    - General
+    - Input
+    - Output
+  
+  Node-RED:
+    - Connection
+    - Dashboard
+    - Factsheet
+    - Flows
+    - InstantAction
+    - Order
+    - State
+    - Status
+    - UI
+
+# Datei-Struktur
+file_structure:
+  templates_dir: "templates/"
+  examples_dir: "examples/"
+  validation_dir: "validation/"
+  
+  template_files:
+    ccu:
+      - "control.yml"
+      - "order.yml"
+      - "state.yml"
+      - "wareneingang.yml"
+    
+    module:
+      - "connection.yml"
+      - "factsheet.yml"
+      - "instant_action.yml"
+      - "order.yml"
+      - "state.yml"
+    
+    txt:
+      - "control.yml"
+      - "function_input.yml"
+      - "function_output.yml"
+      - "input.yml"
+      - "output.yml"
+    
+    node_red:
+      - "connection.yml"
+      - "dashboard.yml"
+      - "flows.yml"
+      - "state.yml"
+      - "ui.yml"
