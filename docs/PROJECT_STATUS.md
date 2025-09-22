@@ -21,29 +21,60 @@
 - **Build-System** mit `npm run diagrams` für automatische SVG-Generierung
 - **Kontext-spezifische Diagramme** bleiben bei entsprechenden Dokumenten
 - **Obsolet `docs/diagrams/`** entfernt - nutzt jetzt vorhandene `_shared/` Infrastruktur
+- **Cross-Platform Testing** erfolgreich - Windows + VSCode getestet
 
 ### 🔄 **Nächste Schritte**
-1. ✅ **Sprint-Dokumentation** erstellen (sprint_01 bis sprint_05)
-2. ✅ **PROJECT_OVERVIEW.md** zu statischer Dokumentation umwandeln
-3. ✅ **Doku Overkill vermeiden** - docs aufräumen und konsolidieren
-4. ✅ **Mermaid Doku** - Hybrid-Ansatz mit `docs/_shared/diagrams/` implementiert
-5. ✅ **Mermaid Diagramme vollständig implementieren** - Dokumentation reorganisiert und committed
-6. ✅ **Hybrid-Ansatz für Diagramm-Organisation** - `docs/_shared/diagrams/` als zentrale Bibliothek
-7. **Template-Analyzer reparieren** - Topics aus Template-Deskriptionen entfernen (Registry-Prinzip: Templates topic-frei, Topics in mapping.yml)
-8. **Direction-Klärung mapping.yml** - Aus Sicht welcher Komponente? (CCU oder NodeRED) - aktuell Dashboard-zentrisch, aber semantisch unklar
-9. **APS Configuration Tab** implementieren - fehlender 5. APS Tab (später)
-10. ✅ **Pre-commit und Git/GitHub Workflow** - Projekt so anpassen dass pre-commit und git/github Workflow funktioniert
-11. ✅ **Session Analyse Helper App** dokumentieren - technische Beschreibung und HowTo-Nutzung
-12. **Architektur-Dokumentation** an APS-Analyse-Ergebnisse anpassen - As-Is (FT APS) vs. To-Be (ORBIS) Strategie mit Migrations-Phasen dokumentieren
-13. **Node-RED Simulation** im Dashboard vorbereiten
-14. **OMF-Dashboard mit realer Fabrik testen** - Validierung der APS-Integration
-15. **OMF-Dashboard Tab-Konsolidierung** - APS-Tabs in vorhandene OMF-Tabs integrieren, unnötige Tabs entfernen (alte FTS/CCU-Tabs), Logs in Settings-Tab verschieben
-16. **OMF-Dashboard User-Konzept definieren** - Standard-User vs. DSP-Admin Rollen
-17. **APS-UI Bereich isolieren** - Standard-User sieht nur APS-Bedienung
-18. **DSP-Steuerungsbereich implementieren** - DSP-Admin sieht Node-RED-Simulation Tabs
-19. **Node-RED-Simulation Tabs erstellen** - DSP-Steuerung für OT-Übernahme
-20. **User-Rollen-System implementieren** - Default vs. DSP-Admin Sichtbarkeit
-21. **I18n Unterstützung** implementieren (EN, DE, FR)
+1. **Namenskonvention etablieren** - APS (As-Is) vs OMF (To-Be) Systeme, einheitliche Bezeichnungen für Dokumentation und Architektur
+2. **OMF-Dashboard mit realer Fabrik testen** - Validierung der APS-Integration
+
+## 🚀 Entwicklungsphasen
+
+### **Phase 0: APS as-is lauffähig machen**
+- **Status:** ✅ Abgeschlossen
+- **Ziel:** Fischertechnik-Fabrik funktionsfähig
+- **Erreicht:** APS-CCU, APS-NodeRED, APS-Module laufen
+
+### **Phase 1: APS-Komponenten verstehen** 
+- **Status:** ✅ Abgeschlossen
+- **Ziel:** APS-CCU und APS-NodeRED analysieren
+- **Erreicht:** Session Manager, OMF-Dashboard, APS-Integration
+
+### **Phase 2: OMF-CCU etablieren**
+- **Status:** 🔄 In Bearbeitung
+- **Ziel:** OMF-CCU im OMF-Dashboard implementieren
+- **Nächste Schritte:** APS-CCU Funktionalität vollständig übernehmen
+
+### **Phase 3: OMF-NodeRED etablieren**
+- **Status:** ⏳ Geplant
+- **Ziel:** OMF-NodeRED im OMF-Dashboard implementieren
+- **Nächste Schritte:** APS-NodeRED Funktionalität ersetzen
+3. **Fehlender APS-Tab integrieren** - 5. APS Tab (APS Configuration) noch nicht eingebunden
+4. **Manager-Duplikate beseitigen** - OrderManager (3x identisch), System-Status-Manager (3x ähnlich) auslagern in `omf/dashboard/managers/`
+4. **APS-Tabs Registry-Analyse** - Welche APS-Tabs sind für unsere Steuerung tatsächlich notwendig?
+5. **APS-Tabs Registry-Integration** - Verbleibende APS-Tabs auf Registry-Manager umstellen
+6. **Registry-Konsolidierung** - Legacy-Konfiguration (`omf/config/`) entfernen, alle Manager auf Registry umstellen
+7. **WorkpieceManager implementieren** - `nfc_config.yml` → `registry/model/v1/workpieces.yml` Migration (siehe `docs/archive/analysis/dps/REGISTRY_COMPATIBILITY_ANALYSIS.md`)
+8. **OMF-Dashboard Tab-Konsolidierung** - APS-Tabs in vorhandene OMF-Tabs integrieren, unnötige Tabs entfernen
+9. **Architektur-Dokumentation** an APS-Analyse-Ergebnisse anpassen - As-Is (FT APS) vs. To-Be (ORBIS) Strategie
+10. **Node-RED Simulation** im Dashboard vorbereiten
+11. **Template-Analyzer reparieren** - Topics aus Template-Deskriptionen entfernen
+12. **Direction-Klärung mapping.yml** - Aus Sicht welcher Komponente? (CCU oder NodeRED)
+13. **OMF-Dashboard User-Konzept definieren** - Standard-User vs. DSP-Admin Rollen
+14. **APS-UI Bereich isolieren** - Standard-User sieht nur APS-Bedienung
+15. **DSP-Steuerungsbereich implementieren** - DSP-Admin sieht Node-RED-Simulation Tabs
+16. **Node-RED-Simulation Tabs erstellen** - DSP-Steuerung für OT-Übernahme
+17. **User-Rollen-System implementieren** - Default vs. DSP-Admin Sichtbarkeit
+18. **I18n Unterstützung** implementieren (EN, DE, FR)
+
+#### **✅ Abgeschlossen:**
+- ✅ **Sprint-Dokumentation** erstellen (sprint_01 bis sprint_05)
+- ✅ **PROJECT_OVERVIEW.md** zu statischer Dokumentation umwandeln
+- ✅ **Doku Overkill vermeiden** - docs aufräumen und konsolidieren
+- ✅ **Mermaid Doku** - Hybrid-Ansatz mit `docs/_shared/diagrams/` implementiert
+- ✅ **Mermaid Diagramme vollständig implementieren** - Dokumentation reorganisiert und committed
+- ✅ **Hybrid-Ansatz für Diagramm-Organisation** - `docs/_shared/diagrams/` als zentrale Bibliothek
+- ✅ **Pre-commit und Git/GitHub Workflow** - Projekt so anpassen dass pre-commit und git/github Workflow funktioniert
+- ✅ **Session Analyse Helper App** dokumentieren - technische Beschreibung und HowTo-Nutzung
 
 ## 📊 Sprint-Vorgehen
 

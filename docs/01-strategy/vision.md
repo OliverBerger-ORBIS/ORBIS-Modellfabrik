@@ -6,6 +6,22 @@
 
 Das OMF-System basiert auf der Prämisse, dass alle Steuerungslogik über MQTT-Nachrichten abgewickelt wird. Node-RED fungiert als intelligenter Vermittler zwischen der hochrangigen MQTT-Steuerung und der niedrigrangigen OPC-UA-Kommunikation mit den physischen Modulen.
 
+## 🏗️ System-Namenskonvention
+
+### **APS (Agile Production Simulation) - As-Is System**
+- **Fischertechnik-Fabrik** mit Original-Komponenten
+- **APS-CCU** - Central Control Unit (Raspberry PI)
+- **APS-NodeRED** - Node-RED Flows für Steuerung
+- **APS-Module** - Physische Module (DRILL, HBW, etc.)
+
+### **OMF (ORBIS-Modellfabrik) - To-Be System**
+- **OMF-Dashboard** - Streamlit-basierte Steuerung
+- **OMF-CCU** - Nachbau der APS-CCU Funktionalität
+- **OMF-NodeRED** - Ersatz für APS-NodeRED
+- **OMF-Module** - Software-Simulation der APS-Module
+
+> **📋 Namenskonvention:** Groß-Schreibweise mit Bindestrich (z.B. APS-CCU, OMF-Dashboard)
+
 ## 🏗️ Architektur-Prinzipien
 
 ### 1. MQTT als Steuerungsebene

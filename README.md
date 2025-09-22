@@ -1,6 +1,22 @@
 # ORBIS Modellfabrik - Agile Production Simulation 24V
 >If you have any questions, please contact fischertechnik-technik@fischer.de
 
+## 🏗️ System-Architektur
+
+### **APS (Agile Production Simulation) - As-Is System**
+- **Fischertechnik-Fabrik** mit Original-Komponenten
+- **APS-CCU** - Central Control Unit (Raspberry PI)
+- **APS-NodeRED** - Node-RED Flows für Steuerung
+- **APS-Module** - Physische Module (DRILL, HBW, etc.)
+
+### **OMF (ORBIS-Modellfabrik) - To-Be System**
+- **OMF-Dashboard** - Streamlit-basierte Steuerung
+- **OMF-CCU** - Nachbau der APS-CCU Funktionalität
+- **OMF-NodeRED** - Ersatz für APS-NodeRED
+- **OMF-Module** - Software-Simulation der APS-Module
+
+> **📋 Namenskonvention:** Groß-Schreibweise mit Bindestrich (z.B. APS-CCU, OMF-Dashboard)
+
 ## 🎯 Quick Start
 
 - **Neue Teammitglieder:** Starte mit [Strategy Vision](docs/01-strategy/vision.md) → [System Context](docs/02-architecture/system-context.md)
@@ -70,10 +86,16 @@
 
 ## 🎯 Entwicklungshinweise
 
-### **KRITISCHE REGELN:**
-- **NUR absolute Pfade:** `/Users/oliver/Projects/ORBIS-Modellfabrik/path/to/file`
-- **NUR absolute Imports:** `from omf.omf.module import Class`
-- **KEINE relativen Pfade/Imports** ❌
+### **STATE-OF-THE-ART REGELN:**
+- **Robuste Pfad-Konstanten:** `from omf.tools.path_constants import PROJECT_ROOT, SESSIONS_DIR, CONFIG_DIR`
+- **Absolute Imports für externe Module:** `from omf.tools.logging_config import get_logger`
+- **Relative Imports für Paket-interne Module:** `from .aps_overview_commands import show_aps_overview_commands`
+- **OMF-Logging-System:** `get_logger("omf.module.component")` statt `logging.getLogger()`
+- **UI-Refresh Pattern:** `request_refresh()` statt `st.rerun()`
+- **Keine sys.path.append Hacks:** Absolute Imports verwenden
+- **Automatische Regel-Erzwingung:** Pre-commit Hooks sorgen für Einhaltung
+
+> **📚 State-of-the-Art Standards:** Siehe [Decision Record: Development Rules Compliance](docs/03-decision-records/07-development-rules-compliance.md) und [Path Constants](omf/tools/path_constants.py)
 
 ### **Cursor AI Konfiguration:**
 - `.cursorrules` - Projekt-spezifische Regeln
@@ -117,7 +139,7 @@ make fix-structure
 make all-checks
 ```
 
-Siehe [Developer Guide](docs/developer_guide) für detaillierte Entwicklungsregeln und Import-Standards.
+Siehe [Decision Record: Development Rules Compliance](docs/03-decision-records/07-development-rules-compliance.md) für detaillierte Entwicklungsregeln und Import-Standards.
 
 ## External Links
 - [Product Page](https://www.fischertechnik.de/en/products/industry-and-universities/training-models/569289-agile-production-simulation-24v)
