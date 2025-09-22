@@ -78,8 +78,9 @@ known_first_party = ["omf"]
 testpaths = ["tests"]          # nur hier sammelt Pytest Tests
 addopts = "-q"
 
-# Absolute Path Rules
+# Cursor AI Configuration
 [tool.cursor]
-always_use_absolute_paths = true
-path_resolution = "absolute"
-python_absolute_imports = true
+# Use package-relative paths for better portability
+always_use_absolute_paths = false
+path_resolution = "package-relative"
+python_absolute_imports = false

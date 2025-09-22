@@ -9,6 +9,7 @@ import unittest
 from datetime import datetime, timezone
 from unittest.mock import MagicMock
 
+
 class TestOrderCommands(unittest.TestCase):
     """Test-Klasse für Order Commands"""
 
@@ -219,6 +220,7 @@ class TestOrderCommands(unittest.TestCase):
         order_id = order_response["orderId"]
         self.assertIsInstance(order_id, str)
         self.assertGreater(len(order_id), 0)
+
 
 if __name__ == "__main__":
     unittest.main()

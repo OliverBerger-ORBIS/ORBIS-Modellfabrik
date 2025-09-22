@@ -1,8 +1,8 @@
+import unittest
 from pathlib import Path
 
-import unittest
-
 from omf.tools.message_template_manager import get_message_template_manager
+
 
 class TestMessageTemplateManagerSingleton(unittest.TestCase):
     def test_singleton_behavior(self):

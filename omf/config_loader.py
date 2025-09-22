@@ -1,4 +1,5 @@
-from omf.tools.logging_config import get_logger
+from omf.dashboard.tools.logging_config import get_logger
+
 #!/usr/bin/env python3
 """
 Secure Configuration Loader für Orbis Modellfabrik
@@ -14,6 +15,7 @@ import yaml
 # Logging Setup
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = get_logger(__name__)
+
 
 class SecureConfigLoader:
     """Sicherer Config-Loader für sensitive Daten"""
@@ -212,6 +214,7 @@ status:
         print("10. Implement role-based access control")
         print("=" * 50)
 
+
 def main():
     """Hauptfunktion"""
     print("🔐 Secure Config Loader für Orbis Modellfabrik")
@@ -255,6 +258,7 @@ def main():
 
     # Show security guidelines
     loader.print_security_guidelines()
+
 
 if __name__ == "__main__":
     main()

@@ -112,8 +112,8 @@ class TestAPSDashboardComponentsSimple:
         
         # Check for required imports
         assert "import streamlit as st" in source
-        assert "from omf.tools.logging_config import get_logger" in source
-        assert "from omf.tools.omf_mqtt_factory import ensure_dashboard_client" in source
+        assert "from omf.dashboard.tools.logging_config import get_logger" in source
+        assert "from omf.dashboard.tools.omf_mqtt_factory import ensure_dashboard_client" in source
     
     def test_aps_orders_imports(self):
         """Test APS Orders Imports"""
@@ -124,8 +124,8 @@ class TestAPSDashboardComponentsSimple:
         
         # Check for required imports
         assert "import streamlit as st" in source
-        assert "from omf.tools.logging_config import get_logger" in source
-        assert "from omf.tools.omf_mqtt_factory import ensure_dashboard_client" in source
+        assert "from omf.dashboard.tools.logging_config import get_logger" in source
+        assert "from omf.dashboard.tools.omf_mqtt_factory import ensure_dashboard_client" in source
         assert "import json" in source
     
     def test_aps_system_control_imports(self):
@@ -137,8 +137,8 @@ class TestAPSDashboardComponentsSimple:
         
         # Check for required imports
         assert "import streamlit as st" in source
-        assert "from omf.tools.logging_config import get_logger" in source
-        assert "from omf.tools.omf_mqtt_factory import ensure_dashboard_client" in source
+        assert "from omf.dashboard.tools.logging_config import get_logger" in source
+        assert "from omf.dashboard.tools.omf_mqtt_factory import ensure_dashboard_client" in source
         assert "import json" in source
     
     def test_aps_configuration_imports(self):
@@ -150,8 +150,8 @@ class TestAPSDashboardComponentsSimple:
         
         # Check for required imports
         assert "import streamlit as st" in source
-        assert "from omf.tools.logging_config import get_logger" in source
-        assert "from omf.tools.omf_mqtt_factory import ensure_dashboard_client" in source
+        assert "from omf.dashboard.tools.logging_config import get_logger" in source
+        assert "from omf.dashboard.tools.omf_mqtt_factory import ensure_dashboard_client" in source
         assert "import json" in source
     
     def test_aps_overview_structure(self):

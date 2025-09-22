@@ -9,6 +9,7 @@ from typing import Any, Dict, List
 
 import yaml
 
+
 class OmfTopicManager:
     """Zentrale Verwaltung der MQTT-Topic-Konfiguration für OMF Dashboard"""
 
@@ -246,8 +247,10 @@ class OmfTopicManager:
 
         return self.config["metadata"]
 
+
 # Singleton instance
 _topic_manager_instance = None
+
 
 def get_omf_topic_manager() -> OmfTopicManager:
     """Get singleton instance of OMFTopicManager"""
@@ -255,6 +258,7 @@ def get_omf_topic_manager() -> OmfTopicManager:
     if _topic_manager_instance is None:
         _topic_manager_instance = OmfTopicManager()
     return _topic_manager_instance
+
 
 # Backward compatibility functions
 def get_topic_manager() -> OmfTopicManager:

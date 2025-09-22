@@ -6,9 +6,9 @@ Hauptkomponente für alle APS-System-Control-Funktionen mit Untertabs
 import streamlit as st
 
 from .aps_system_control_commands import show_aps_system_control_commands
-from .aps_system_control_status import show_aps_system_control_status
-from .aps_system_control_monitor import show_aps_system_control_monitor
 from .aps_system_control_debug import show_aps_system_control_debug
+from .aps_system_control_monitor import show_aps_system_control_monitor
+from .aps_system_control_status import show_aps_system_control_status
 
 
 def show_aps_system_control():

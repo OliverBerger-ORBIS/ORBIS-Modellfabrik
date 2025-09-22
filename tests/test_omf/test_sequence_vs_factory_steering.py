@@ -3,16 +3,16 @@ Unit-Test: Sequenz-Nachrichten vs. Factory-Steuerung-Nachrichten
 Überprüft, ob die Sequenz-Nachrichten identisch mit den Factory-Steuerung-Nachrichten sind
 """
 
-from pathlib import Path
 import json
 import unittest
 import uuid
+from pathlib import Path
 from unittest.mock import Mock, patch
 
 # Pfad für Imports hinzufügen
+from omf.dashboard.tools.sequence_executor import SequenceDefinition, SequenceExecutor, SequenceStep, StepStatus
+from omf.dashboard.tools.workflow_order_manager import WorkflowOrderManager
 
-from omf.tools.sequence_executor import SequenceDefinition, SequenceExecutor, SequenceStep, StepStatus
-from omf.tools.workflow_order_manager import WorkflowOrderManager
 
 # Factory-Steuerung-Logik direkt implementieren (ohne Streamlit-Abhängigkeiten)
 def _prepare_factory_message(module_name: str, step: str, order_update_id: int = 1):
@@ -38,6 +38,7 @@ def _prepare_factory_message(module_name: str, step: str, order_update_id: int =
     }
 
     return {"topic": topic, "payload": payload}
+
 
 class TestSequenceVsFactorySteering(unittest.TestCase):
     """Test-Klasse für Sequenz vs. Factory-Steuerung Vergleich"""
@@ -437,6 +438,7 @@ class TestSequenceVsFactorySteering(unittest.TestCase):
             )
 
             print(f"✅ MILL {command} - Struktur identisch mit Factory-Steuerung")
+
 
 if __name__ == "__main__":
     # Test-Suite ausführen

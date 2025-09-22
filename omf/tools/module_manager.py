@@ -9,6 +9,7 @@ from typing import Any, Dict, List, Optional
 
 import yaml
 
+
 class OmfModuleManager:
     def get_all_module_ids(self) -> list:
         """Get all module IDs (keys) from all modules."""
@@ -253,8 +254,10 @@ class OmfModuleManager:
 
         return self.save_config()
 
+
 # Global instance for easy access
 _omf_module_manager = None
+
 
 def get_omf_module_manager() -> OmfModuleManager:
     """Get global OMF module manager instance"""
@@ -263,26 +266,31 @@ def get_omf_module_manager() -> OmfModuleManager:
         _omf_module_manager = OmfModuleManager()
     return _omf_module_manager
 
+
 # Backward compatibility functions
 def get_module_info(module_id: str) -> Optional[Dict[str, Any]]:
     """Backward compatibility function"""
     manager = get_omf_module_manager()
     return manager.get_module_info(module_id)
 
+
 def get_module_name(module_id: str, language: str = "de") -> str:
     """Backward compatibility function"""
     manager = get_omf_module_manager()
     return manager.get_module_name(module_id, language)
+
 
 def get_module_type(module_id: str) -> str:
     """Backward compatibility function"""
     manager = get_omf_module_manager()
     return manager.get_module_type(module_id)
 
+
 def validate_module_id(module_id: str) -> bool:
     """Backward compatibility function"""
     manager = get_omf_module_manager()
     return manager.validate_module_id(module_id)
+
 
 if __name__ == "__main__":
     """Test the OMF Module Manager"""

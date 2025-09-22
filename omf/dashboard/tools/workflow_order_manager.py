@@ -7,6 +7,7 @@ import uuid
 from dataclasses import dataclass
 from typing import Dict, Optional
 
+
 @dataclass
 class WorkflowOrder:
     """Repräsentiert eine Workflow-Order mit ID-Management"""
@@ -22,6 +23,7 @@ class WorkflowOrder:
     def __post_init__(self):
         if self.context is None:
             self.context = {}
+
 
 class WorkflowOrderManager:
     """Singleton für Workflow-Order-Management"""
@@ -123,8 +125,10 @@ class WorkflowOrderManager:
         """Löscht abgeschlossene Orders"""
         self._orders = {order_id: order for order_id, order in self._orders.items() if order.status == "running"}
 
+
 # Singleton-Instanz
 workflow_order_manager = WorkflowOrderManager()
+
 
 def get_workflow_order_manager() -> WorkflowOrderManager:
     """Gibt die Singleton-Instanz des WorkflowOrderManager zurück"""

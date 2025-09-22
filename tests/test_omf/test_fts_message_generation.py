@@ -11,6 +11,7 @@ from unittest.mock import MagicMock, patch
 # Add project root to path
 project_root = Path(__file__).parent.parent
 
+
 class TestFTSMessageGeneration(unittest.TestCase):
     """Test-Klasse für FTS MQTT-Message-Generierung"""
 
@@ -290,6 +291,7 @@ class TestFTSMessageGeneration(unittest.TestCase):
             print("✅ JSON Serialization: OK")
         except Exception as e:
             self.fail(f"❌ JSON Serialization failed: {e}")
+
 
 if __name__ == "__main__":
     print("🧪 Running FTS Message Generation Tests...")

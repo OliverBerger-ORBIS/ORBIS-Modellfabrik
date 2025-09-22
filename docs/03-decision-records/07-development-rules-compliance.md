@@ -12,13 +12,13 @@ Befolgung der **OMF Development Rules** für alle Dashboard-Komponenten.
 
 ```python
 # Import-Standards
-from omf.tools.logging_config import get_logger  # Absolute Imports für externe Module
+from omf.dashboard.tools.logging_config import get_logger  # Absolute Imports für externe Module
 from .aps_overview_commands import show_aps_overview_commands  # Relative Imports für Paket-interne Module
 
-# Pfad-Standards
-from pathlib import Path
-project_root = Path(__file__).parent.parent.parent.parent
-data_path = project_root / "data/omf-data/sessions"
+# Pfad-Standards (State-of-the-Art)
+from omf.dashboard.tools.path_constants import PROJECT_ROOT, SESSIONS_DIR, CONFIG_DIR
+data_path = SESSIONS_DIR
+config_path = CONFIG_DIR / "shopfloor" / "layout.yml"
 
 # Logging-Standards
 logger = get_logger("omf.dashboard.component_name")

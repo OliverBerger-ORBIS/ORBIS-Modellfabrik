@@ -5,19 +5,23 @@ Entfernt Topic-Strings aus Template-Descriptions und fügt Mappings hinzu
 """
 
 import re
-import yaml
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Tuple
+
+import yaml
+
 
 def load_yaml(file_path: Path) -> dict:
     """Lädt YAML-Datei"""
-    with open(file_path, 'r', encoding='utf-8') as f:
+    with open(file_path, encoding='utf-8') as f:
         return yaml.safe_load(f)
+
 
 def save_yaml(data: dict, file_path: Path):
     """Speichert YAML-Datei"""
     with open(file_path, 'w', encoding='utf-8') as f:
         yaml.dump(data, f, default_flow_style=False, sort_keys=False, allow_unicode=True)
+
 
 def extract_topic_from_description(description: str) -> str:
     """Extrahiert Topic-String aus Description"""
@@ -27,7 +31,7 @@ def extract_topic_from_description(description: str) -> str:
         r'Template for ([a-zA-Z0-9/._-]+)',  # "Template for topic/name"
         r'Auto-analyzed template for ([a-zA-Z0-9/._-]+)',  # "Auto-analyzed template for topic/name"
     ]
-    
+
     for pattern in patterns:
         match = re.search(pattern, description)
         if match:
@@ -37,11 +41,12 @@ def extract_topic_from_description(description: str) -> str:
                 return topic
     return None
 
+
 def clean_template_descriptions(template_file: Path) -> Tuple[str, str]:
     """Bereinigt Template-Descriptions und gibt Topic zurück"""
     data = load_yaml(template_file)
     extracted_topics = []
-    
+
     # Metadata description bereinigen
     if 'metadata' in data and 'description' in data['metadata']:
         topic = extract_topic_from_description(data['metadata']['description'])
@@ -58,7 +63,7 @@ def clean_template_descriptions(template_file: Path) -> Tuple[str, str]:
                 data['metadata']['description'] = f"Auto-analyzed template for Node-RED {topic.split('/')[-1]}"
             else:
                 data['metadata']['description'] = f"Auto-analyzed template for {topic.split('/')[-1]}"
-    
+
     # Template descriptions bereinigen
     if 'templates' in data:
         for template_name, template_data in data['templates'].items():
@@ -78,16 +83,17 @@ def clean_template_descriptions(template_file: Path) -> Tuple[str, str]:
                         template_data['description'] = f"Template for Node-RED {topic.split('/')[-1]}"
                     else:
                         template_data['description'] = f"Template for {topic.split('/')[-1]}"
-    
+
     # Template speichern
     save_yaml(data, template_file)
-    
+
     return extracted_topics[0] if extracted_topics else None, template_name if 'templates' in data else None
+
 
 def add_mapping_to_yaml(mapping_file: Path, topic: str, template_name: str, category: str):
     """Fügt Mapping-Eintrag zur mapping.yml hinzu"""
     data = load_yaml(mapping_file)
-    
+
     # Bestimme Sub-Category basierend auf Topic
     sub_category = "State"
     if "/order" in topic:
@@ -100,7 +106,7 @@ def add_mapping_to_yaml(mapping_file: Path, topic: str, template_name: str, cate
         sub_category = "Control"
     elif "/config" in topic:
         sub_category = "State"
-    
+
     # Bestimme Category
     meta_category = category
     if "CCU" in category:
@@ -111,22 +117,18 @@ def add_mapping_to_yaml(mapping_file: Path, topic: str, template_name: str, cate
         meta_category = "Node-RED"
     elif "MODULE" in category:
         meta_category = "MODULE"
-    
+
     # Friendly Name erstellen
     friendly_name = topic.replace('/', ' : ').replace('_', ' ').title()
-    
+
     # Neuen Mapping-Eintrag erstellen
     new_mapping = {
         "topic": topic,
         "template": template_name,
         "direction": "bidirectional",
-        "meta": {
-            "category": meta_category,
-            "sub_category": sub_category,
-            "friendly_name": friendly_name
-        }
+        "meta": {"category": meta_category, "sub_category": sub_category, "friendly_name": friendly_name},
     }
-    
+
     # Prüfen ob Topic bereits existiert
     existing_topics = [m.get('topic') for m in data.get('mappings', [])]
     if topic not in existing_topics:
@@ -134,29 +136,30 @@ def add_mapping_to_yaml(mapping_file: Path, topic: str, template_name: str, cate
         print(f"✅ Added mapping: {topic} → {template_name}")
     else:
         print(f"⚠️  Topic already exists: {topic}")
-    
+
     # Speichern
     save_yaml(data, mapping_file)
+
 
 def main():
     """Hauptfunktion für Batch-Cleanup"""
     project_root = Path(__file__).parent.parent
     templates_dir = project_root / "registry" / "model" / "v1" / "templates"
     mapping_file = project_root / "registry" / "model" / "v1" / "mapping.yml"
-    
+
     print(f"🔍 Scanning templates in: {templates_dir}")
-    
+
     processed_count = 0
     error_count = 0
-    
+
     # Alle Template-Dateien durchgehen
     for template_file in templates_dir.glob("*.yml"):
         try:
             print(f"\n📝 Processing: {template_file.name}")
-            
+
             # Topic und Template-Name extrahieren
             topic, template_name = clean_template_descriptions(template_file)
-            
+
             if topic and template_name:
                 # Kategorie aus Dateiname ableiten
                 category = "UNKNOWN"
@@ -168,20 +171,21 @@ def main():
                     category = "Node-RED"
                 elif "module." in template_file.name:
                     category = "MODULE"
-                
+
                 # Mapping hinzufügen
                 add_mapping_to_yaml(mapping_file, topic, template_name, category)
                 processed_count += 1
             else:
                 print(f"⚠️  No topic found in {template_file.name}")
-                
+
         except Exception as e:
             print(f"❌ Error processing {template_file.name}: {e}")
             error_count += 1
-    
-    print(f"\n📊 Batch-Cleanup completed:")
+
+    print("\n📊 Batch-Cleanup completed:")
     print(f"   ✅ Processed: {processed_count} templates")
     print(f"   ❌ Errors: {error_count} templates")
+
 
 if __name__ == "__main__":
     main()

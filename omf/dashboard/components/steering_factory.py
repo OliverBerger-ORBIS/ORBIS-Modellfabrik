@@ -8,11 +8,11 @@ from datetime import datetime, timezone
 
 import streamlit as st
 
-from omf.dashboard.utils.ui_refresh import request_refresh
-from omf.tools.logging_config import get_logger
+from omf.dashboard.tools.logging_config import get_logger
 
 # MqttGateway für sauberes Publishing
-from omf.tools.mqtt_gateway import MqttGateway
+from omf.dashboard.tools.mqtt_gateway import MqttGateway
+from omf.dashboard.utils.ui_refresh import request_refresh
 
 # WorkflowOrderManager für korrekte orderId/orderUpdateId Verwaltung
 
@@ -492,7 +492,7 @@ def _prepare_navigation_message(navigation_type: str):
         return
 
     # MessageGenerator verwenden
-    from omf.tools.message_generator import get_omf_message_generator
+    from omf.dashboard.tools.message_generator import get_omf_message_generator
 
     generator = get_omf_message_generator()
 

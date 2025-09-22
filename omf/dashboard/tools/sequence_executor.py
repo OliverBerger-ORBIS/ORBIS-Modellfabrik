@@ -16,6 +16,7 @@ try:
 except ImportError:
     from workflow_order_manager import workflow_order_manager
 
+
 class StepStatus(Enum):
     """Status eines Sequenz-Schritts"""
 
@@ -25,6 +26,7 @@ class StepStatus(Enum):
     WAITING = "waiting"
     COMPLETED = "completed"
     ERROR = "error"
+
 
 @dataclass
 class SequenceStep:
@@ -42,6 +44,7 @@ class SequenceStep:
         if self.context_vars is None:
             self.context_vars = {}
 
+
 @dataclass
 class SequenceDefinition:
     """Definition einer Sequenz"""
@@ -54,6 +57,7 @@ class SequenceDefinition:
     def __post_init__(self):
         if self.context is None:
             self.context = {}
+
 
 class WaitHandler:
     """Behandelt Wait-Schritte zwischen Commands"""
@@ -161,6 +165,7 @@ class WaitHandler:
                     return False
 
         return True
+
 
 class SequenceExecutor:
     """Führt Sequenzen aus"""

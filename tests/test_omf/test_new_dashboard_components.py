@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+from omf.dashboard.tools.path_constants import CONFIG_DIR, PROJECT_ROOT, SESSIONS_DIR
+
 """
 Test für neue OMF Dashboard-Komponenten
 Prüft die neu erstellten Komponenten: overview_product_catalog, production_order_production_planning
@@ -10,7 +12,8 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 # Add project root to path
-project_root = Path(__file__).parent.parent.parent
+project_root = PROJECT_ROOT
+
 
 class TestNewDashboardComponents(unittest.TestCase):
     """Test-Klasse für neue Dashboard-Komponenten"""
@@ -181,6 +184,7 @@ class TestNewDashboardComponents(unittest.TestCase):
         except Exception as e:
             self.fail(f"❌ Shopfloor Layout Loading failed: {e}")
 
+
 class TestNewDashboardYAMLConfigs(unittest.TestCase):
     """Test-Klasse für neue Dashboard YAML-Konfigurationen"""
 
@@ -257,6 +261,7 @@ class TestNewDashboardYAMLConfigs(unittest.TestCase):
             print("✅ Shopfloor Layout YAML-Struktur: OK")
         except Exception as e:
             self.fail(f"❌ Shopfloor Layout YAML-Struktur failed: {e}")
+
 
 if __name__ == "__main__":
     print("🧪 Running New Dashboard Component Tests...")

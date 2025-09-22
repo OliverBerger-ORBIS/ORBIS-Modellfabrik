@@ -1,3 +1,5 @@
+from omf.dashboard.tools.path_constants import PROJECT_ROOT
+
 """
 Session Analyzer - Core functionality for session data analysis
 """
@@ -9,7 +11,7 @@ from typing import Dict, List
 
 import streamlit as st
 
-from omf.tools.logging_config import get_logger
+from omf.dashboard.tools.logging_config import get_logger
 from omf.tools.topic_manager import OmfTopicManager
 
 logger = get_logger(__name__)
@@ -32,7 +34,7 @@ class SessionAnalyzer:
             if session_directory and not Path(session_file_path).is_absolute():
                 if not Path(session_directory).is_absolute():
                     # Projekt-Root-relative Pfade für Nutz-Daten verwenden
-                    project_root = Path(__file__).parent.parent.parent.parent.parent
+                    project_root = PROJECT_ROOT
                     full_path = project_root / session_directory / session_file_path
                 else:
                     full_path = Path(session_directory) / session_file_path

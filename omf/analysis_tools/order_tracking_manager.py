@@ -9,6 +9,7 @@ import uuid
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
+
 class OrderTrackingManager:
     """Verwaltet Order-Tracking für APS Bestellungen"""
 

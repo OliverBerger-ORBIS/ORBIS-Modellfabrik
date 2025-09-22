@@ -101,7 +101,10 @@ def show_shopfloor_grid():
 def load_shopfloor_layout():
     """Lädt das Shopfloor-Layout aus der YAML-Datei"""
     try:
-        config_path = Path(__file__).parent.parent.parent.parent / "omf" / "config" / "shopfloor" / "layout.yml"
+        # State-of-the-Art: Robuste Pfad-Definition
+        from omf.dashboard.tools.path_constants import CONFIG_DIR
+
+        config_path = CONFIG_DIR / "shopfloor" / "layout.yml"
         with open(config_path, encoding="utf-8") as file:
             return yaml.safe_load(file)
     except Exception as e:
@@ -329,11 +332,11 @@ def get_enabled_modules() -> List[Dict[str, Any]]:
 def get_shopfloor_metadata() -> Dict[str, Any]:
     """Lädt Shopfloor-Metadaten aus der Konfiguration"""
     try:
-        from pathlib import Path
 
         import yaml
 
-        config_file = Path(__file__).parent.parent.parent.parent / "config" / "shopfloor" / "layout.yml"
+        from omf.dashboard.tools.path_constants import PROJECT_ROOT
+        config_file = PROJECT_ROOT / "config" / "shopfloor" / "layout.yml"
         if config_file.exists():
             with open(config_file, encoding="utf-8") as f:
                 config = yaml.safe_load(f)
@@ -357,7 +360,8 @@ def get_module_positions() -> List[Dict[str, Any]]:
 
         import yaml
 
-        config_file = Path(__file__).parent.parent.parent.parent / "config" / "shopfloor" / "layout.yml"
+        from omf.dashboard.tools.path_constants import PROJECT_ROOT
+        config_file = PROJECT_ROOT / "config" / "shopfloor" / "layout.yml"
         # Fallback für absoluten Pfad
         if not config_file.exists():
             config_file = Path("omf/config/shopfloor/layout.yml")
@@ -367,7 +371,8 @@ def get_module_positions() -> List[Dict[str, Any]]:
                 positions = config.get("positions", [])
 
                 # Icons aus module_config.yml hinzufügen
-                module_config_file = Path(__file__).parent.parent.parent.parent / "config" / "module_config.yml"
+                from omf.dashboard.tools.path_constants import PROJECT_ROOT
+                module_config_file = PROJECT_ROOT / "config" / "module_config.yml"
                 # Fallback für absoluten Pfad
                 if not module_config_file.exists():
                     module_config_file = Path("omf/config/module_config.yml")

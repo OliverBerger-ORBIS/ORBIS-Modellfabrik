@@ -10,6 +10,7 @@ from pathlib import Path
 # Add project root to path
 project_root = Path(__file__).parent.parent
 
+
 class TestDashboardRuntime(unittest.TestCase):
     """Test OMF Dashboard Runtime-Fehler"""
 
@@ -29,8 +30,8 @@ class TestDashboardRuntime(unittest.TestCase):
     def test_mqtt_client_component(self):
         """Test: MQTT Client Komponente kann geladen werden"""
         try:
-            from omf.tools.mqtt_config import MqttConfig
-            from omf.tools.omf_mqtt_client import OmfMqttClient
+            from omf.dashboard.tools.mqtt_config import MqttConfig
+            from omf.dashboard.tools.omf_mqtt_client import OmfMqttClient
 
             # Test MQTT Client initialization mit minimaler Konfiguration
             cfg = MqttConfig(host="localhost")
@@ -123,6 +124,7 @@ class TestDashboardRuntime(unittest.TestCase):
 
         except Exception as e:
             self.fail(f"❌ Nachrichten-Filterung failed: {e}")
+
 
 if __name__ == "__main__":
     print("🧪 Testing OMF Dashboard Runtime...")

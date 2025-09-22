@@ -6,16 +6,17 @@ Spezifischer Analyzer für CAM Topics, die Base64-kodierte Bilddaten enthalten.
 Diese Topics sind nicht für normale Template-Analyse geeignet.
 """
 
-from pathlib import Path
+import base64
+import glob
+import io
+import json
 import os
 import sqlite3
-import glob
-import json
-import yaml
 from datetime import datetime
-from typing import Dict, List, Set, Any
-import base64
-import io
+from pathlib import Path
+from typing import Any, Dict, List, Set
+
+import yaml
 from PIL import Image
 
 # Add project root to path for absolute imports
@@ -23,49 +24,47 @@ project_root = os.path.abspath(str(Path(__file__).parent / "../../.."))
 
 # No registry manager needed for CAM analysis
 
+
 class CamTemplateAnalyzer:
     """Analyzer für CAM Topics mit Bilddaten"""
-    
+
     def __init__(self):
         """Initialize the CAM Template Analyzer"""
         self.project_root = project_root
-        
+
         # Set paths relative to project root
         self.output_dir = os.path.join(project_root, "registry/observations/payloads")
         self.session_dir = os.path.join(project_root, "data/omf-data/sessions")
-        
+
         # CAM specific topics
-        self.target_topics = [
-            "/j1/txt/1/c/cam",
-            "/j1/txt/1/i/cam"
-        ]
-        
+        self.target_topics = ["/j1/txt/1/c/cam", "/j1/txt/1/i/cam"]
+
         print("🔧 CAM Template Analyzer initialisiert")
         print(f"📁 Ausgabe-Verzeichnis: {self.output_dir}")
         print(f"📁 Session-Verzeichnis: {self.session_dir}")
-    
+
     def load_all_sessions(self) -> List[Dict]:
         """Load messages from all session databases"""
         print("📂 Lade alle Session-Datenbanken...")
-        
+
         all_messages = []
         session_files = glob.glob(f"{self.session_dir}/*.db")
-        
+
         print(f"  📁 Gefunden: {len(session_files)} Session-Dateien")
-        
+
         for session_file in session_files:
             try:
                 session_name = os.path.basename(session_file).replace(".db", "")
                 print(f"  📊 Lade Session: {session_name}")
-                
+
                 conn = sqlite3.connect(session_file)
                 cursor = conn.cursor()
-                
+
                 # Check if session_label column exists
                 cursor.execute("PRAGMA table_info(mqtt_messages)")
                 columns = [column[1] for column in cursor.fetchall()]
                 has_session_label = 'session_label' in columns
-                
+
                 # Get messages for target topics
                 placeholders = ",".join(["?" for _ in self.target_topics])
                 if has_session_label:
@@ -88,42 +87,44 @@ class CamTemplateAnalyzer:
                     """,
                         self.target_topics,
                     )
-                
+
                 session_messages = cursor.fetchall()
                 print(f"    ✅ {len(session_messages)} Nachrichten geladen")
-                
+
                 for row in session_messages:
-                    all_messages.append({
-                        "topic": row[0],
-                        "payload": row[1],
-                        "timestamp": row[2],
-                        "session_name": row[3] or session_name,
-                    })
+                    all_messages.append(
+                        {
+                            "topic": row[0],
+                            "payload": row[1],
+                            "timestamp": row[2],
+                            "session_name": row[3] or session_name,
+                        }
+                    )
                 conn.close()
             except sqlite3.OperationalError as e:
                 print(f"  ❌ Fehler beim Laden von {session_file}: {e}")
             except Exception as e:
                 print(f"  ❌ Unerwarteter Fehler beim Laden von {session_file}: {e}")
-        
+
         print(f"📊 Insgesamt {len(all_messages)} Nachrichten aus allen Sessions geladen")
         return all_messages
-    
+
     def analyze_cam_data(self, messages: List[Dict]) -> Dict[str, Any]:
         """Analyze CAM data specifically for image content"""
         results = {}
-        
+
         for topic in self.target_topics:
             topic_messages = [msg for msg in messages if msg["topic"] == topic]
-            
+
             if not topic_messages:
                 continue
-                
+
             print(f"🔍 Analysiere Topic: {topic}")
             print(f"  📊 Analysiere {len(topic_messages)} Nachrichten für {topic}")
-            
+
             # Analyze image data
             image_stats = self._analyze_image_data(topic_messages)
-            
+
             # Create observation for this topic
             results[topic] = {
                 "statistics": {
@@ -132,16 +133,16 @@ class CamTemplateAnalyzer:
                     "invalid_images": image_stats["invalid_images"],
                     "avg_image_size": image_stats["avg_size"],
                     "max_image_size": image_stats["max_size"],
-                    "min_image_size": image_stats["min_size"]
+                    "min_image_size": image_stats["min_size"],
                 },
                 "image_analysis": image_stats,
-                "examples": topic_messages[:2]  # Only 2 examples for images
+                "examples": topic_messages[:2],  # Only 2 examples for images
             }
-            
+
             print(f"  ✅ CAM Analyse abgeschlossen mit {image_stats['valid_images']} gültigen Bildern")
-        
+
         return results
-    
+
     def _analyze_image_data(self, messages: List[Dict]) -> Dict[str, Any]:
         """Analyze Base64 image data in messages"""
         valid_images = 0
@@ -150,11 +151,11 @@ class CamTemplateAnalyzer:
         max_size = 0
         min_size = float('inf')
         image_formats = set()
-        
+
         for msg in messages:
             try:
                 payload = json.loads(msg["payload"])
-                
+
                 # Look for image data in common fields
                 image_data = None
                 for field in ["image", "data", "payload", "content"]:
@@ -165,10 +166,10 @@ class CamTemplateAnalyzer:
                         elif len(payload[field]) > 1000:  # Likely base64 data
                             image_data = payload[field]
                             break
-                
+
                 if not image_data:
                     continue
-                
+
                 # Extract base64 data
                 if image_data.startswith("data:image/"):
                     # Data URI format
@@ -179,47 +180,47 @@ class CamTemplateAnalyzer:
                     # Raw base64
                     b64_data = image_data
                     image_formats.add("unknown")
-                
+
                 # Decode and analyze
                 try:
                     image_bytes = base64.b64decode(b64_data)
                     size = len(image_bytes)
-                    
+
                     # Try to open as image
                     image = Image.open(io.BytesIO(image_bytes))
                     width, height = image.size
-                    
+
                     valid_images += 1
                     total_size += size
                     max_size = max(max_size, size)
                     min_size = min(min_size, size)
-                    
+
                 except Exception as e:
                     invalid_images += 1
-                    
+
             except (json.JSONDecodeError, KeyError, ValueError) as e:
                 invalid_images += 1
                 continue
-        
+
         return {
             "valid_images": valid_images,
             "invalid_images": invalid_images,
             "avg_size": total_size // max(valid_images, 1),
             "max_size": max_size if max_size > 0 else 0,
             "min_size": min_size if min_size != float('inf') else 0,
-            "formats": list(image_formats)
+            "formats": list(image_formats),
         }
-    
+
     def save_observations(self, results: Dict) -> None:
         """Save analysis results in observation format"""
         print("💾 Speichere CAM Observations...")
-        
+
         for topic, analysis_data in results.items():
             # Create observation filename
             topic_clean = topic.replace("/", "_").replace("j1_txt_1_", "")
             observation_file = f"{datetime.now().strftime('%Y-%m-%d')}_cam_{topic_clean}.yml"
             observation_path = os.path.join(self.output_dir, observation_file)
-            
+
             # Create observation structure
             observation = {
                 "metadata": {
@@ -227,7 +228,7 @@ class CamTemplateAnalyzer:
                     "author": "cam_template_analyzer",
                     "source": "analysis",
                     "topic": topic,
-                    "status": "open"
+                    "status": "open",
                 },
                 "observation": {
                     "type": "cam_image_analysis",
@@ -236,22 +237,22 @@ class CamTemplateAnalyzer:
                     "source": "mqtt_sessions",
                     "message_count": analysis_data["statistics"]["total_messages"],
                     "image_count": analysis_data["statistics"]["image_count"],
-                    "examples": analysis_data.get("examples", [])[:1]  # Only 1 example for images
+                    "examples": analysis_data.get("examples", [])[:1],  # Only 1 example for images
                 },
                 "analysis": {
                     "initial_assessment": f"CAM topic {topic} contains Base64-encoded image data - not suitable for template analysis",
                     "image_statistics": analysis_data["image_analysis"],
-                    "total_messages": analysis_data["statistics"]["total_messages"]
+                    "total_messages": analysis_data["statistics"]["total_messages"],
                 },
                 "proposed_action": [
                     f"Exclude CAM topic {topic} from template analysis",
                     "Handle as image data, not template data",
-                    "Consider separate image analysis if needed"
+                    "Consider separate image analysis if needed",
                 ],
                 "tags": ["cam", "image", "base64", "exclude"],
-                "priority": "low"
+                "priority": "low",
             }
-            
+
             # Save observation
             try:
                 with open(observation_path, 'w', encoding='utf-8') as f:
@@ -259,21 +260,21 @@ class CamTemplateAnalyzer:
                 print(f"  ✅ Observation gespeichert: {observation_file}")
             except Exception as e:
                 print(f"  ❌ Fehler beim Speichern von {observation_file}: {e}")
-    
+
     def migrate_to_registry_v2(self, analysis_data: Dict) -> None:
         """Migrate analysis results to Registry v2"""
         print("🔄 Migriere zu Registry v2...")
-        
+
         registry_v2_dir = os.path.join(os.path.dirname(self.output_dir), "..", "model", "v2", "templates")
         os.makedirs(registry_v2_dir, exist_ok=True)
-        
+
         for topic, data in analysis_data.items():
             # Create Registry v2 template
             topic_clean = topic.replace("/", ".").replace("j1.txt.1.", "")
             template_key = f"cam.{topic_clean}"
             template_file = f"{template_key}.yml"
             template_path = os.path.join(registry_v2_dir, template_file)
-            
+
             # Create template structure
             template = {
                 "metadata": {
@@ -283,14 +284,14 @@ class CamTemplateAnalyzer:
                     "description": f"CAM image data template for {topic}",
                     "version": "1.0.0",
                     "created": datetime.now().strftime("%Y-%m-%d"),
-                    "author": "cam_template_analyzer"
+                    "author": "cam_template_analyzer",
                 },
                 "topic": topic,
                 "template_structure": data.get("template_structure", {}),
                 "examples": data.get("examples", [])[:3],
-                "statistics": data["statistics"]
+                "statistics": data["statistics"],
             }
-            
+
             # Save template
             try:
                 with open(template_path, 'w', encoding='utf-8') as f:
@@ -298,45 +299,46 @@ class CamTemplateAnalyzer:
                 print(f"  ✅ Registry v2 Template gespeichert: {template_file}")
             except Exception as e:
                 print(f"  ❌ Fehler beim Speichern von {template_file}: {e}")
-    
+
     def run_analysis(self) -> None:
         """Run the complete CAM analysis"""
         print("=" * 60)
         print("🔧 CAM TEMPLATE ANALYZER")
         print("=" * 60)
         print("🚀 Starte CAM Template Analyse...")
-        
+
         # Load all session data
         all_messages = self.load_all_sessions()
-        
+
         if not all_messages:
             print("❌ Keine Nachrichten gefunden!")
             return
-        
+
         # Analyze CAM data
         results = self.analyze_cam_data(all_messages)
-        
+
         if not results:
             print("❌ Keine CAM Topics gefunden!")
             return
-        
+
         # Save results
         self.save_observations(results)
-        
+
         # Migrate to Registry v2
         self.migrate_to_registry_v2(results)
-        
+
         print("=" * 60)
         print("📊 ANALYSE ZUSAMMENFASSUNG")
         print("=" * 60)
         print(f"✅ Erfolgreich analysiert: {len(results)} CAM Topics")
-        
+
         for topic, data in results.items():
             stats = data["statistics"]
             print(f"  📋 {topic}: {stats['total_messages']} Nachrichten, {stats['image_count']} Bilder")
-        
+
         print("✅ CAM Template Analyse erfolgreich abgeschlossen!")
         print("🎉 Script erfolgreich beendet!")
+
 
 if __name__ == "__main__":
     analyzer = CamTemplateAnalyzer()

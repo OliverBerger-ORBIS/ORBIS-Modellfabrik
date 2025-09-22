@@ -6,9 +6,9 @@ Hauptkomponente für alle APS-Steering-Funktionen mit Untertabs
 import streamlit as st
 
 from .aps_steering_factory import show_aps_steering_factory
-from .aps_steering_orders import show_aps_steering_orders
-from .aps_steering_modules import show_aps_steering_modules
 from .aps_steering_fts import show_aps_steering_fts
+from .aps_steering_modules import show_aps_steering_modules
+from .aps_steering_orders import show_aps_steering_orders
 
 
 def show_aps_steering():

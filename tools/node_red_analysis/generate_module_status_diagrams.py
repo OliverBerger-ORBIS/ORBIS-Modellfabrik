@@ -3,9 +3,10 @@
 Generate module status transition diagrams for Fischertechnik APS
 """
 
+
 def generate_mill_status_diagram():
     """Generate MILL module status transition diagram"""
-    
+
     mermaid = []
     mermaid.append("stateDiagram-v2")
     mermaid.append("    [*] --> IDLE")
@@ -27,12 +28,13 @@ def generate_mill_status_diagram():
     mermaid.append("    %% Calibration")
     mermaid.append("    IDLE -->|Calibration| CALIBRATION")
     mermaid.append("    CALIBRATION -->|Complete| IDLE")
-    
+
     return '\n'.join(mermaid)
+
 
 def generate_drill_status_diagram():
     """Generate DRILL module status transition diagram"""
-    
+
     mermaid = []
     mermaid.append("stateDiagram-v2")
     mermaid.append("    [*] --> IDLE")
@@ -54,12 +56,13 @@ def generate_drill_status_diagram():
     mermaid.append("    %% Calibration")
     mermaid.append("    IDLE -->|Calibration| CALIBRATION")
     mermaid.append("    CALIBRATION -->|Complete| IDLE")
-    
+
     return '\n'.join(mermaid)
+
 
 def generate_aiqs_status_diagram():
     """Generate AIQS module status transition diagram"""
-    
+
     mermaid = []
     mermaid.append("stateDiagram-v2")
     mermaid.append("    [*] --> IDLE")
@@ -81,12 +84,13 @@ def generate_aiqs_status_diagram():
     mermaid.append("    %% Calibration")
     mermaid.append("    IDLE -->|Calibration| CALIBRATION")
     mermaid.append("    CALIBRATION -->|Complete| IDLE")
-    
+
     return '\n'.join(mermaid)
+
 
 def generate_dps_status_diagram():
     """Generate DPS module status transition diagram"""
-    
+
     mermaid = []
     mermaid.append("stateDiagram-v2")
     mermaid.append("    [*] --> IDLE")
@@ -105,12 +109,13 @@ def generate_dps_status_diagram():
     mermaid.append("    %% Calibration")
     mermaid.append("    IDLE -->|Calibration| CALIBRATION")
     mermaid.append("    CALIBRATION -->|Complete| IDLE")
-    
+
     return '\n'.join(mermaid)
+
 
 def generate_hbw_status_diagram():
     """Generate HBW module status transition diagram"""
-    
+
     mermaid = []
     mermaid.append("stateDiagram-v2")
     mermaid.append("    [*] --> IDLE")
@@ -129,12 +134,13 @@ def generate_hbw_status_diagram():
     mermaid.append("    %% Calibration")
     mermaid.append("    IDLE -->|Calibration| CALIBRATION")
     mermaid.append("    CALIBRATION -->|Complete| IDLE")
-    
+
     return '\n'.join(mermaid)
+
 
 def generate_oven_status_diagram():
     """Generate OVEN module status transition diagram"""
-    
+
     mermaid = []
     mermaid.append("stateDiagram-v2")
     mermaid.append("    [*] --> IDLE")
@@ -156,12 +162,13 @@ def generate_oven_status_diagram():
     mermaid.append("    %% Calibration")
     mermaid.append("    IDLE -->|Calibration| CALIBRATION")
     mermaid.append("    CALIBRATION -->|Complete| IDLE")
-    
+
     return '\n'.join(mermaid)
+
 
 def generate_production_flow_diagram():
     """Generate overall production flow diagram"""
-    
+
     mermaid = []
     mermaid.append("graph TD")
     mermaid.append("    subgraph \"Production Module Flow\"")
@@ -191,12 +198,13 @@ def generate_production_flow_diagram():
     mermaid.append("    PROCESS -.-> MILLBUSY")
     mermaid.append("    PROCESS -.-> DRILLBUSY")
     mermaid.append("    DROP -.-> DROPBUSY")
-    
+
     return '\n'.join(mermaid)
+
 
 def generate_system_architecture_diagram():
     """Generate system architecture diagram"""
-    
+
     mermaid = []
     mermaid.append("graph TB")
     mermaid.append("    subgraph \"Fischertechnik APS System\"")
@@ -242,12 +250,13 @@ def generate_system_architecture_diagram():
     mermaid.append("")
     mermaid.append("    SWITCH --> ROUTER")
     mermaid.append("    ROUTER --> MQTT")
-    
+
     return '\n'.join(mermaid)
+
 
 def generate_opcua_communication_diagram():
     """Generate OPC-UA communication flow diagram"""
-    
+
     mermaid = []
     mermaid.append("sequenceDiagram")
     mermaid.append("    participant NR as Node-RED")
@@ -273,12 +282,13 @@ def generate_opcua_communication_diagram():
     mermaid.append("    HW->>OPC: Error Occurred")
     mermaid.append("    OPC->>NR: Error Status (ns=4;i=15)")
     mermaid.append("    NR->>NR: Handle Error State")
-    
+
     return '\n'.join(mermaid)
+
 
 def generate_mqtt_topic_hierarchy_diagram():
     """Generate MQTT topic hierarchy diagram"""
-    
+
     mermaid = []
     mermaid.append("graph TD")
     mermaid.append("    ROOT[ROOT]")
@@ -321,12 +331,13 @@ def generate_mqtt_topic_hierarchy_diagram():
     mermaid.append("")
     mermaid.append("    SYSTEM --> RACK")
     mermaid.append("    SYSTEM --> SERIALREAD")
-    
+
     return '\n'.join(mermaid)
+
 
 def main():
     """Generate all diagrams and save them"""
-    
+
     diagrams = {
         'mill_status_diagram.mermaid': generate_mill_status_diagram(),
         'drill_status_diagram.mermaid': generate_drill_status_diagram(),
@@ -337,20 +348,22 @@ def main():
         'production_flow_diagram.mermaid': generate_production_flow_diagram(),
         'system_architecture_diagram.mermaid': generate_system_architecture_diagram(),
         'opcua_communication_diagram.mermaid': generate_opcua_communication_diagram(),
-        'mqtt_topic_hierarchy_diagram.mermaid': generate_mqtt_topic_hierarchy_diagram()
+        'mqtt_topic_hierarchy_diagram.mermaid': generate_mqtt_topic_hierarchy_diagram(),
     }
-    
+
     output_dir = Path('docs/analysis/node-red/aps_docs')
     output_dir.mkdir(exist_ok=True)
-    
+
     for filename, content in diagrams.items():
         file_path = output_dir / filename
         with open(file_path, 'w') as f:
             f.write(content)
         print(f"Generated: {file_path}")
-    
+
     print(f"\nAll module status diagrams generated in: {output_dir}")
+
 
 if __name__ == "__main__":
     from pathlib import Path
+
     main()

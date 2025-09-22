@@ -18,6 +18,7 @@ import uuid
 from datetime import datetime
 from unittest.mock import Mock
 
+
 # Import der funktionierenden MQTT-Nachrichten-Strukturen
 class WorkingMQTTFunctionality4378dbe:
     """Funktionierende MQTT-Funktionalität aus Commit 4378dbe - Referenz für MessageGenerator"""
@@ -66,6 +67,7 @@ class WorkingMQTTFunctionality4378dbe:
         message = {"timestamp": datetime.utcnow().isoformat() + "Z", "withStorage": with_storage}
 
         return message
+
 
 class TestMessageGeneratorFTSCompatibility(unittest.TestCase):
     """Tests für die Kompatibilität des MessageGenerators mit funktionierenden FTS-Nachrichten"""
@@ -218,6 +220,7 @@ class TestMessageGeneratorFTSCompatibility(unittest.TestCase):
         self.assertEqual(generated_metadata["timeout"], 300)
         self.assertEqual(generated_metadata["type"], "TRANSPORT")
 
+
 class TestMessageGeneratorFactoryResetCompatibility(unittest.TestCase):
     """Tests für die Kompatibilität des MessageGenerators mit funktionierenden Factory-Reset-Nachrichten"""
 
@@ -281,6 +284,7 @@ class TestMessageGeneratorFactoryResetCompatibility(unittest.TestCase):
         # Topic muss exakt übereinstimmen
         self.assertEqual(generated_topic, expected_topic)
 
+
 class TestIntegrationRequirements(unittest.TestCase):
     """Tests für die Integrationsanforderungen des MessageGenerators"""
 
@@ -312,6 +316,7 @@ class TestIntegrationRequirements(unittest.TestCase):
 
             # Methode sollte aufrufbar sein
             self.assertTrue(callable(getattr(mock_message_generator, method_name)))
+
 
 class TestJSONSerialization(unittest.TestCase):
     """Tests für die JSON-Serialisierung der Nachrichten"""
@@ -357,6 +362,7 @@ class TestJSONSerialization(unittest.TestCase):
             json.dumps(generated_message)
         except Exception as e:
             self.fail(f"Factory reset message is not JSON serializable: {e}")
+
 
 if __name__ == "__main__":
     # Test-Suite ausführen

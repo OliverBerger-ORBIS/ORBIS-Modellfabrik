@@ -8,11 +8,11 @@ import streamlit as st
 
 from omf.config.config import LIVE_CFG, REPLAY_CFG
 from omf.dashboard.components.dummy_component import show_dummy_component
+from omf.dashboard.tools.logging_config import configure_logging, get_logger
+from omf.dashboard.tools.omf_mqtt_factory import ensure_dashboard_client
+from omf.dashboard.tools.streamlit_log_buffer import RingBufferHandler
+from omf.dashboard.tools.structlog_config import configure_structlog
 from omf.dashboard.utils.ui_refresh import request_refresh
-from omf.tools.logging_config import configure_logging, get_logger
-from omf.tools.omf_mqtt_factory import ensure_dashboard_client
-from omf.tools.streamlit_log_buffer import RingBufferHandler
-from omf.tools.structlog_config import configure_structlog
 
 """
 ORBIS Modellfabrik Dashboard (OMF) - Modulare Architektur
@@ -76,9 +76,12 @@ def _init_logging_once():
 
     root, listener = configure_logging(level=log_level, console_pretty=True)
 
+    # Logger für Debug-Logs erstellen
+    logger = get_logger("omf.dashboard.init")
+
     # Debug-Log für Log-Level-Verifikation
-    print(f"🔍 DEBUG: Log-Level ist auf {log_level} gesetzt (DEBUG=10, INFO=20)")
-    print(f"🔍 DEBUG: Root Logger Level: {root.level}")
+    logger.debug(f"🔍 DEBUG: Log-Level ist auf {log_level} gesetzt (DEBUG=10, INFO=20)")
+    logger.debug(f"🔍 DEBUG: Root Logger Level: {root.level}")
 
     # OMF-Logging für Dashboard (thread-sicher)
     dashboard_logger = get_logger("omf.dashboard")
@@ -118,14 +121,14 @@ def _init_logging_once():
             st.session_state["ring_buffer_handler"] = rb
 
     # OMF-Logging für MQTT (thread-sicher für Callbacks)
-    mqtt_logger = get_logger("omf.tools.mqtt_gateway")
+    mqtt_logger = get_logger("omf.dashboard.tools.mqtt_gateway")
     mqtt_logger.addHandler(rb)
     mqtt_logger.setLevel(log_level)
     mqtt_logger.propagate = False  # Verhindere doppelte Logs
 
     # Debug-Info für Logger-Konfiguration
-    print(f"🔍 DEBUG: MqttGateway Logger Level: {mqtt_logger.level}")
-    print(f"🔍 DEBUG: Dashboard Logger Level: {dashboard_logger.level}")
+    logger.debug(f"🔍 DEBUG: MqttGateway Logger Level: {mqtt_logger.level}")
+    logger.debug(f"🔍 DEBUG: Dashboard Logger Level: {dashboard_logger.level}")
 
     # Debug-Tests nach Konfiguration
     mqtt_logger.debug("🔧 MQTT DEBUG-TEST NACH KONFIGURATION")

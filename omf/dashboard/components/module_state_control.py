@@ -10,10 +10,10 @@ from typing import List
 
 import streamlit as st
 
+from omf.dashboard.tools.logging_config import get_logger
+from omf.dashboard.tools.mqtt_gateway import MqttGateway
 from omf.dashboard.utils.ui_refresh import request_refresh
-from omf.tools.logging_config import get_logger
 from omf.tools.module_state_manager import CommandType, ModuleState, get_module_state_manager
-from omf.tools.mqtt_gateway import MqttGateway
 
 logger = get_logger("omf.dashboard.module_state_control")
 

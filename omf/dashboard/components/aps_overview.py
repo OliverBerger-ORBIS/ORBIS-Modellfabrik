@@ -5,10 +5,10 @@ Hauptkomponente für alle APS-Übersichtsfunktionen mit Untertabs
 
 import streamlit as st
 
-from .aps_overview_system_status import show_aps_system_status
+from .aps_overview_commands import show_aps_commands
 from .aps_overview_controllers import show_aps_controllers
 from .aps_overview_orders import show_aps_orders
-from .aps_overview_commands import show_aps_commands
+from .aps_overview_system_status import show_aps_system_status
 
 
 def show_aps_overview():

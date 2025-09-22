@@ -1,13 +1,13 @@
-from pathlib import Path
 import os
-
 import shutil
 import tempfile
 import unittest
+from pathlib import Path
 
 import yaml
 
 from omf.tools.message_template_manager import OmfMessageTemplateManager
+
 
 class TestMessageTemplateManagerIntegration(unittest.TestCase):
     def setUp(self):

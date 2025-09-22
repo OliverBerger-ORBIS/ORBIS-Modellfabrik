@@ -5,7 +5,8 @@ import os
 import unittest
 
 # Absolute Imports verwenden (Development Rules)
-from omf.tools.omf_mqtt_factory import ensure_dashboard_client
+from omf.dashboard.tools.omf_mqtt_factory import ensure_dashboard_client
+
 
 class TestOMFMQTTClient(unittest.TestCase):
     """Test-Klasse für OMF MQTT Client"""

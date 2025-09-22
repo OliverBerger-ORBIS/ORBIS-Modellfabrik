@@ -1,5 +1,15 @@
 #!/bin/sh
 set -e
+
+# State-of-the-Art Development Rules erzwingen
+echo "[pre-commit] enforcing development rules..."
+python3 omf/scripts/enforce_development_rules.py
+
+# Validierung der Regeln
+echo "[pre-commit] validating development rules..."
+python3 omf/scripts/validate_development_rules.py
+
+# Registry-Validierung
 if [ -f "registry/model/v1/mapping.yml" ]; then
   echo "[pre-commit] validate mapping..."
   python3 tools/validate_mapping.py
@@ -10,4 +20,4 @@ if [ -d "registry/model/v1/templates" ]; then
   echo "[pre-commit] check templates don't include topics..."
   python3 tools/check_templates_no_topics.py
 fi
-echo "[pre-commit] OK"
+echo "[pre-commit] OK - State-of-the-Art Standards eingehalten"

@@ -1,9 +1,10 @@
+from omf.dashboard.tools.path_constants import PROJECT_ROOT
+
 """
 OMF Dashboard Production Order - Produktplanung
 Komponente für die Planung von Fertigungsaufträgen aus dem Produktkatalog
 """
 
-from pathlib import Path
 
 import streamlit as st
 import yaml
@@ -21,7 +22,7 @@ except ImportError as e:
 def load_product_catalog():
     """Lädt den Produktkatalog aus der YAML-Datei"""
     try:
-        config_path = Path(__file__).parent.parent.parent.parent / "omf" / "config" / "products" / "product_catalog.yml"
+        config_path = PROJECT_ROOT / "omf" / "config" / "products" / "product_catalog.yml"
         with open(config_path, encoding="utf-8") as file:
             return yaml.safe_load(file)
     except Exception as e:

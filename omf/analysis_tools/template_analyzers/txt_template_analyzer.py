@@ -17,9 +17,9 @@ import yaml
 
 from omf.tools.message_template_manager import get_message_template_manager
 from omf.tools.module_manager import get_omf_module_manager
-
 from omf.tools.module_manager import get_omf_module_manager as get_module_manager
 from omf.tools.nfc_manager import get_omf_nfc_manager as get_nfc_manager
+
 
 class TXTTemplateAnalyzer:
     def __init__(self):
@@ -847,13 +847,13 @@ class TXTTemplateAnalyzer:
     def save_observations(self, results: Dict) -> None:
         """Save analysis results in observation format"""
         print("💾 Speichere Observations...")
-        
+
         for topic, template_data in results.items():
             # Create observation filename
             topic_clean = topic.replace("/", "_").replace("j1_txt_1_", "")
             observation_file = f"{datetime.now().strftime('%Y-%m-%d')}_txt_{topic_clean}.yml"
             observation_path = os.path.join(self.output_dir, observation_file)
-            
+
             # Create observation structure
             observation = {
                 "metadata": {
@@ -861,7 +861,7 @@ class TXTTemplateAnalyzer:
                     "author": "txt_template_analyzer",
                     "source": "analysis",
                     "topic": topic,
-                    "status": "open"
+                    "status": "open",
                 },
                 "observation": {
                     "type": "template_analysis",
@@ -870,23 +870,23 @@ class TXTTemplateAnalyzer:
                     "source": "mqtt_sessions",
                     "message_count": template_data["statistics"]["total_messages"],
                     "template_structure": template_data.get("template_structure", {}),
-                    "examples": template_data.get("examples", [])[:3]
+                    "examples": template_data.get("examples", [])[:3],
                 },
                 "analysis": {
                     "initial_assessment": f"Auto-generated template analysis for TXT topic {topic}",
                     "enum_fields": template_data["statistics"]["enum_fields"],
                     "variable_fields": template_data["statistics"]["variable_fields"],
-                    "total_messages": template_data["statistics"]["total_messages"]
+                    "total_messages": template_data["statistics"]["total_messages"],
                 },
                 "proposed_action": [
                     f"Create template for TXT topic {topic}",
                     "Review and validate template structure",
-                    "Add to Registry v1 if approved"
+                    "Add to Registry v1 if approved",
                 ],
                 "tags": ["txt", "template", "auto-generated"],
-                "priority": "medium"
+                "priority": "medium",
             }
-            
+
             # Save observation
             try:
                 with open(observation_path, 'w', encoding='utf-8') as f:
@@ -898,21 +898,21 @@ class TXTTemplateAnalyzer:
     def migrate_to_registry_v0(self, results: Dict) -> None:
         """Migrate analysis results to Registry v0 during initial phase"""
         print("🔄 Migriere zu Registry v0...")
-        
+
         registry_v0_dir = os.path.join(os.path.dirname(self.output_dir), "..", "model", "v2", "templates")
         os.makedirs(registry_v0_dir, exist_ok=True)
-        
+
         for topic, template_data in results.items():
             # Create Registry v0 template
             template_key = f"txt.{topic.replace('/', '.').replace('j1.txt.1.', '')}"
-            
+
             registry_template = {
                 "metadata": {
                     "category": "TXT",
                     "description": f"Auto-analyzed template for {topic}",
                     "version": "0.1.0",
                     "last_updated": datetime.now().strftime("%Y-%m-%d"),
-                    "source": "txt_template_analyzer"
+                    "source": "txt_template_analyzer",
                 },
                 "templates": {
                     template_key: {
@@ -921,24 +921,22 @@ class TXTTemplateAnalyzer:
                         "direction": "inbound" if "i/" in topic else "outbound",
                         "structure": template_data.get("template_structure", {}),
                         "examples": template_data.get("examples", [])[:3],
-                        "validation": {
-                            "required_fields": [],
-                            "field_types": {}
-                        }
+                        "validation": {"required_fields": [], "field_types": {}},
                     }
-                }
+                },
             }
-            
+
             # Save Registry v0 template
             try:
                 registry_file = f"{template_key}.yml"
                 registry_path = os.path.join(registry_v0_dir, registry_file)
-                
+
                 with open(registry_path, 'w', encoding='utf-8') as f:
                     yaml.dump(registry_template, f, default_flow_style=False, allow_unicode=True)
                 print(f"  ✅ Registry v0 Template gespeichert: {registry_file}")
             except Exception as e:
                 print(f"  ❌ Fehler beim Speichern von {template_key}: {e}")
+
 
 def main():
     """Main function"""
@@ -951,6 +949,7 @@ def main():
     else:
         print("💥 Script mit Fehlern beendet!")
         exit(1)
+
 
 if __name__ == "__main__":
     main()

@@ -15,6 +15,7 @@ from unittest.mock import MagicMock, patch
 
 from omf.dashboard.utils.ui_refresh import RerunController, get_rerun_controller, request_rerun_safe
 
+
 class TestRerunController(unittest.TestCase):
     """Tests für RerunController Klasse"""
 
@@ -116,6 +117,7 @@ class TestRerunController(unittest.TestCase):
             self.assertTrue(all(results))
             self.assertEqual(mock_rerun.call_count, 10)
 
+
 class TestRerunControllerIntegration(unittest.TestCase):
     """Integration Tests für RerunController"""
 
@@ -155,6 +157,7 @@ class TestRerunControllerIntegration(unittest.TestCase):
             self.assertFalse(result2)
             self.assertEqual(mock_rerun.call_count, 1)
 
+
 class TestRerunControllerEdgeCases(unittest.TestCase):
     """Edge Cases für RerunController"""
 
@@ -190,6 +193,7 @@ class TestRerunControllerEdgeCases(unittest.TestCase):
             result3 = controller.request_rerun(force=True)
             self.assertTrue(result3)
             self.assertEqual(mock_rerun.call_count, 2)
+
 
 if __name__ == '__main__':
     unittest.main()

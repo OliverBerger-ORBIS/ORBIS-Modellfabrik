@@ -18,6 +18,7 @@ try:
 except ImportError:
     struct_logger = None
 
+
 def on_message_stdlib(client, userdata, msg):
     """
     MQTT Callback mit Standard-Logging.
@@ -35,6 +36,7 @@ def on_message_stdlib(client, userdata, msg):
     except Exception:
         # Ignoriere Logging-Fehler in Callbacks
         pass
+
 
 def on_message_structlog(client, userdata, msg):
     """
@@ -55,6 +57,7 @@ def on_message_structlog(client, userdata, msg):
         # Ignoriere Logging-Fehler in Callbacks
         pass
 
+
 def on_connect_stdlib(client, userdata, flags, rc):
     """
     MQTT Connect Callback mit Standard-Logging.
@@ -72,6 +75,7 @@ def on_connect_stdlib(client, userdata, flags, rc):
             logger.error("mqtt_connect_failed", extra={"rc": rc})
     except Exception:
         pass
+
 
 def on_connect_structlog(client, userdata, flags, rc):
     """
@@ -93,6 +97,7 @@ def on_connect_structlog(client, userdata, flags, rc):
             struct_logger.error("mqtt_connect_failed", rc=rc)
     except Exception:
         pass
+
 
 def log_module_state_change(module_id: str, old_state: str, new_state: str, extra_data: Dict[str, Any] = None):
     """
@@ -120,6 +125,7 @@ def log_module_state_change(module_id: str, old_state: str, new_state: str, extr
             )
     except Exception:
         pass
+
 
 def log_sequence_event(
     sequence_id: str, event: str, module_id: str = None, step: int = None, extra_data: Dict[str, Any] = None

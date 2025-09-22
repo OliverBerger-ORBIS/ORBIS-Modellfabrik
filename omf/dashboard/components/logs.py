@@ -19,14 +19,14 @@ def show_logs():
 
     # Test-Debug-Log direkt hinzufügen (nur für Tests)
     if log_buffer is not None:
-        from omf.tools.logging_config import get_logger
+        from omf.dashboard.tools.logging_config import get_logger
 
         # OMF-Logging für Tests (thread-sicher)
         test_logger = get_logger("omf.dashboard.logs_test")
         test_logger.info("ℹ️ INFO-TEST aus logs.py Komponente")
 
         # Teste auch MqttGateway Logger direkt
-        mqtt_test_logger = get_logger("omf.tools.mqtt_gateway")
+        mqtt_test_logger = get_logger("omf.dashboard.tools.mqtt_gateway")
         mqtt_test_logger.info("ℹ️ INFO-TEST MqttGateway Logger")
 
     if not log_buffer:

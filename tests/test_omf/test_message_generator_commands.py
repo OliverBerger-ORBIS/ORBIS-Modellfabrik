@@ -9,14 +9,14 @@ Umfassende Tests für alle Befehle des MessageGenerators:
 - Module Steps
 """
 
-from pathlib import Path
 import json
 import unittest
 from datetime import datetime
+from pathlib import Path
 
 # Add omf to path for imports
+from omf.dashboard.tools.message_generator import MessageGenerator
 
-from omf.tools.message_generator import MessageGenerator
 
 class TestMessageGeneratorCommands(unittest.TestCase):
     """Test-Klasse für alle MessageGenerator Befehle"""
@@ -125,7 +125,7 @@ class TestMessageGeneratorCommands(unittest.TestCase):
     def test_module_sequence_mill(self):
         """Test: MILL Module Sequence"""
         # Starte einen neuen Workflow, damit die orderId existiert
-        from omf.tools.workflow_order_manager import get_workflow_order_manager
+        from omf.dashboard.tools.workflow_order_manager import get_workflow_order_manager
 
         workflow_manager = get_workflow_order_manager()
         order_id = workflow_manager.start_workflow("MILL", ["PICK", "MILL", "DROP"])
@@ -145,7 +145,7 @@ class TestMessageGeneratorCommands(unittest.TestCase):
     def test_module_sequence_aiqs(self):
         """Test: AIQS Module Sequence"""
         # Starte einen neuen Workflow, damit die orderId existiert
-        from omf.tools.workflow_order_manager import get_workflow_order_manager
+        from omf.dashboard.tools.workflow_order_manager import get_workflow_order_manager
 
         workflow_manager = get_workflow_order_manager()
         order_id = workflow_manager.start_workflow("AIQS", ["PICK", "CHECK_QUALITY", "DROP"])
@@ -160,7 +160,7 @@ class TestMessageGeneratorCommands(unittest.TestCase):
     def test_module_sequence_drill(self):
         """Test: DRILL Module Sequence"""
         # Starte einen neuen Workflow, damit die orderId existiert
-        from omf.tools.workflow_order_manager import get_workflow_order_manager
+        from omf.dashboard.tools.workflow_order_manager import get_workflow_order_manager
 
         workflow_manager = get_workflow_order_manager()
         order_id = workflow_manager.start_workflow("DRILL", ["PICK", "DRILL", "DROP"])
@@ -356,6 +356,7 @@ class TestMessageGeneratorCommands(unittest.TestCase):
 
                 except Exception as e:
                     self.fail(f"KRITISCHER FEHLER: Befehl '{name}' funktioniert nicht! Fehler: {e}")
+
 
 if __name__ == "__main__":
     print("🧪 Starte MessageGenerator Command Tests...")

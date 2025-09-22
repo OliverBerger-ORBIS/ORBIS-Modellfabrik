@@ -87,15 +87,15 @@
 ## 🎯 Entwicklungshinweise
 
 ### **STATE-OF-THE-ART REGELN:**
-- **Robuste Pfad-Konstanten:** `from omf.tools.path_constants import PROJECT_ROOT, SESSIONS_DIR, CONFIG_DIR`
-- **Absolute Imports für externe Module:** `from omf.tools.logging_config import get_logger`
+- **Robuste Pfad-Konstanten:** `from omf.dashboard.tools.path_constants import PROJECT_ROOT, SESSIONS_DIR, CONFIG_DIR`
+- **Absolute Imports für externe Module:** `from omf.dashboard.tools.logging_config import get_logger`
 - **Relative Imports für Paket-interne Module:** `from .aps_overview_commands import show_aps_overview_commands`
 - **OMF-Logging-System:** `get_logger("omf.module.component")` statt `logging.getLogger()`
 - **UI-Refresh Pattern:** `request_refresh()` statt `st.rerun()`
 - **Keine sys.path.append Hacks:** Absolute Imports verwenden
 - **Automatische Regel-Erzwingung:** Pre-commit Hooks sorgen für Einhaltung
 
-> **📚 State-of-the-Art Standards:** Siehe [Decision Record: Development Rules Compliance](docs/03-decision-records/07-development-rules-compliance.md) und [Path Constants](omf/tools/path_constants.py)
+> **📚 State-of-the-Art Standards:** Siehe [Decision Record: Development Rules Compliance](docs/03-decision-records/07-development-rules-compliance.md) und [Path Constants](omf/dashboard/tools/path_constants.py)
 
 ### **Cursor AI Konfiguration:**
 - `.cursorrules` - Projekt-spezifische Regeln

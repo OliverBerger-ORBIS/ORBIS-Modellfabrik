@@ -3,11 +3,12 @@ Spezifische Tests für SequenceUI Fehlerbehebungen
 Reproduziert und testet die behobenen Fehler
 """
 
-from pathlib import Path
 import unittest
+from pathlib import Path
 from unittest.mock import Mock, patch
 
 # Pfad für Imports
+
 
 class TestSequenceUIFixes(unittest.TestCase):
     """Tests für spezifische SequenceUI Fehlerbehebungen"""
@@ -21,9 +22,9 @@ class TestSequenceUIFixes(unittest.TestCase):
     def test_sequence_info_object_type_fix(self):
         """Test: sequence_info.get() Fehler ist behoben"""
         try:
-            from omf.tools.sequence_executor import SequenceDefinition, SequenceExecutor, SequenceStep
-            from omf.tools.sequence_ui import SequenceUI
-            from omf.tools.workflow_order_manager import get_workflow_order_manager
+            from omf.dashboard.tools.sequence_executor import SequenceDefinition, SequenceExecutor, SequenceStep
+            from omf.dashboard.tools.sequence_ui import SequenceUI
+            from omf.dashboard.tools.workflow_order_manager import get_workflow_order_manager
 
             executor = SequenceExecutor(self.mock_mqtt_client)
             _ui = SequenceUI(executor)
@@ -62,9 +63,9 @@ class TestSequenceUIFixes(unittest.TestCase):
     def test_show_active_sequences_fix(self):
         """Test: show_active_sequences verwendet korrekte Objektzugriffe"""
         try:
-            from omf.tools.sequence_executor import SequenceDefinition, SequenceExecutor, SequenceStep
-            from omf.tools.sequence_ui import SequenceUI
-            from omf.tools.workflow_order_manager import get_workflow_order_manager
+            from omf.dashboard.tools.sequence_executor import SequenceDefinition, SequenceExecutor, SequenceStep
+            from omf.dashboard.tools.sequence_ui import SequenceUI
+            from omf.dashboard.tools.workflow_order_manager import get_workflow_order_manager
 
             executor = SequenceExecutor(self.mock_mqtt_client)
             _ui = SequenceUI(executor)
@@ -100,7 +101,7 @@ class TestSequenceUIFixes(unittest.TestCase):
     def test_sequence_definition_vs_dictionary_handling(self):
         """Test: Korrekte Behandlung von SequenceDefinition vs Dictionary"""
         try:
-            from omf.tools.sequence_executor import SequenceDefinition, SequenceStep
+            from omf.dashboard.tools.sequence_executor import SequenceDefinition, SequenceStep
 
             # Erstelle SequenceDefinition
             step = SequenceStep(step_id=1, name="TEST_STEP", topic="test/topic", payload={"test": "data"})
@@ -134,9 +135,9 @@ class TestSequenceUIFixes(unittest.TestCase):
     def test_workflow_order_integration_fix(self):
         """Test: WorkflowOrder Integration in show_active_sequences"""
         try:
-            from omf.tools.sequence_executor import SequenceDefinition, SequenceExecutor, SequenceStep
-            from omf.tools.sequence_ui import SequenceUI
-            from omf.tools.workflow_order_manager import get_workflow_order_manager
+            from omf.dashboard.tools.sequence_executor import SequenceDefinition, SequenceExecutor, SequenceStep
+            from omf.dashboard.tools.sequence_ui import SequenceUI
+            from omf.dashboard.tools.workflow_order_manager import get_workflow_order_manager
 
             executor = SequenceExecutor(self.mock_mqtt_client)
             _ui = SequenceUI(executor)
@@ -173,8 +174,8 @@ class TestSequenceUIFixes(unittest.TestCase):
     def test_sequence_ui_method_parameter_fix(self):
         """Test: execute_sequence Parameter-Fehler ist behoben"""
         try:
-            from omf.tools.sequence_executor import SequenceDefinition, SequenceExecutor, SequenceStep
-            from omf.tools.sequence_ui import SequenceUI
+            from omf.dashboard.tools.sequence_executor import SequenceDefinition, SequenceExecutor, SequenceStep
+            from omf.dashboard.tools.sequence_ui import SequenceUI
 
             executor = SequenceExecutor(self.mock_mqtt_client)
             _ui = SequenceUI(executor)
@@ -204,8 +205,8 @@ class TestSequenceUIFixes(unittest.TestCase):
         """Test: AIQS-Sequenz Import-Fehler ist behoben"""
         try:
             # Test: AIQS-Sequenz kann importiert werden
+            from omf.dashboard.tools.sequence_executor import SequenceDefinition
             from omf.sequences.aiqs_sequence import get_sequence_definition
-            from omf.tools.sequence_executor import SequenceDefinition
 
             sequence = get_sequence_definition()
 
@@ -226,6 +227,7 @@ class TestSequenceUIFixes(unittest.TestCase):
                 raise e
         except Exception as e:
             self.fail(f"AIQS-Sequenz Import-Fix Test fehlgeschlagen: {e}")
+
 
 if __name__ == "__main__":
     # Test Suite ausführen

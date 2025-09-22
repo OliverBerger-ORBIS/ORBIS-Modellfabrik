@@ -16,6 +16,15 @@ except ImportError:
     from sequence_executor import SequenceExecutor, WaitHandler
     from workflow_order_manager import workflow_order_manager
 
+# Import für UI-Refresh Pattern
+try:
+    from ..dashboard.utils.ui_refresh import request_refresh
+except ImportError:
+    # Fallback für direkte Ausführung
+    def request_refresh():
+        st.rerun()
+
+
 class SequenceUI:
     """UI-Komponenten für Sequenz-Steuerung"""
 
@@ -63,7 +72,7 @@ class SequenceUI:
                     order_id = self.executor.execute_sequence(sequence)
                     st.session_state.active_sequence = order_id
                     st.success(f"✅ Sequenz '{sequence.name}' gestartet!")
-                    st.rerun()
+                    request_refresh()
                 else:
                     st.error("❌ MQTT-Client nicht verfügbar oder nicht verbunden")
                     st.info("ℹ️ Bitte verbinden Sie sich zuerst mit MQTT in den Einstellungen")
@@ -127,7 +136,7 @@ class SequenceUI:
                     self.executor.cancel_sequence(order_id)
                     st.session_state.active_sequence = None
                     st.warning("⚠️ Sequenz abgebrochen!")
-                    st.rerun()
+                    request_refresh()
 
     def _show_sequence_steps(self, status: Dict[str, Any]):
         """Zeigt Sequenz-Schritte mit UI"""
@@ -174,7 +183,7 @@ class SequenceUI:
                                 st.success("✅ Gesendet!")
                             else:
                                 st.error("❌ Fehler beim Senden!")
-                            st.rerun()
+                            request_refresh()
                     elif step_status == "waiting":
                         st.info("⏳ Warte...")
                     elif step_status == "completed":
@@ -209,17 +218,17 @@ class SequenceUI:
             st.success("🎉 **Sequenz erfolgreich abgeschlossen!**")
             if st.button("🔄 Neue Sequenz starten", key="new_sequence"):
                 st.session_state.active_sequence = None
-                st.rerun()
+                request_refresh()
         elif order.status == "cancelled":
             st.warning("⚠️ **Sequenz abgebrochen**")
             if st.button("🔄 Neue Sequenz starten", key="new_sequence_cancelled"):
                 st.session_state.active_sequence = None
-                st.rerun()
+                request_refresh()
         elif order.status == "error":
             st.error("❌ **Sequenz mit Fehler beendet**")
             if st.button("🔄 Neue Sequenz starten", key="new_sequence_error"):
                 st.session_state.active_sequence = None
-                st.rerun()
+                request_refresh()
 
     def show_sequence_history(self):
         """Zeigt Sequenz-Historie"""
@@ -413,6 +422,7 @@ class SequenceUI:
         else:
             st.info("ℹ️ Keine aktiven Sequenzen")
 
+
 def create_sequence_ui_app():
     """Erstellt die komplette Sequence UI App"""
     st.set_page_config(page_title="Workflow Sequence Control", page_icon="🔄", layout="wide")
@@ -451,6 +461,7 @@ def create_sequence_ui_app():
 
     with tab3:
         ui.show_debug_info()
+
 
 if __name__ == "__main__":
     create_sequence_ui_app()

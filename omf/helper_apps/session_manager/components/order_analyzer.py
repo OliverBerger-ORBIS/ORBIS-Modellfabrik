@@ -14,8 +14,8 @@ import networkx as nx
 import plotly.graph_objects as go
 import streamlit as st
 
+from omf.dashboard.tools.logging_config import get_logger
 from omf.dashboard.utils.ui_refresh import request_refresh
-from omf.tools.logging_config import get_logger
 
 # OMF Logging-System verwenden
 logger = get_logger("session_manager.order_analyzer")

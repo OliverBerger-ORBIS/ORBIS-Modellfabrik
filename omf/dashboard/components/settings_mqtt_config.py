@@ -3,7 +3,6 @@ OMF Dashboard Settings - MQTT-Konfiguration
 Exakte Kopie der show_mqtt_config Funktion aus settings.py
 """
 
-from pathlib import Path
 import streamlit as st
 
 
@@ -22,7 +21,8 @@ def show_mqtt_config():
 
     st.info(f"**Aktueller Modus:** {mode_display} (Einstellung über Sidebar)")
     st.markdown(
-        "💡 **Hinweis:** Der MQTT-Verbindungsmodus wird über die Sidebar-Umgebungsauswahl (Live/Replay/Mock) konfiguriert."
+        "💡 **Hinweis:** Der MQTT-Verbindungsmodus wird über die Sidebar-Umgebungsauswahl "
+        "(Live/Replay/Mock) konfiguriert."
     )
 
     st.markdown("---")
@@ -30,12 +30,8 @@ def show_mqtt_config():
     try:
         # Füge den tools-Pfad hinzu
         import os
-        import sys
 
-        tools_path = str(Path(__file__).parent / ".." / ".." / "tools")
-        if tools_path not in sys.path:
-            pass
-
+        # Absolute Import verwenden (State-of-the-Art)
         # Verwende Dashboard MQTT-Client
         mqtt_client = st.session_state.get("mqtt_client")
 

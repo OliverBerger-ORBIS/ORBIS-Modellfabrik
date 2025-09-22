@@ -10,6 +10,7 @@ from unittest.mock import patch
 
 import streamlit as st
 
+
 class TestSessionManagerLogging(unittest.TestCase):
     """Tests für Session Manager Logging-Funktionalität"""
 
@@ -87,6 +88,7 @@ class TestSessionManagerLogging(unittest.TestCase):
             # Prüfen dass Verzeichnis erstellt wurde
             self.assertTrue(nonexistent_dir.exists())
             self.assertIsNotNone(logger)
+
 
 if __name__ == '__main__':
     unittest.main()

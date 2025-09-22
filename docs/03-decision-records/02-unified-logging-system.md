@@ -23,7 +23,7 @@ def configure_logging(level=logging.INFO):
             return json.dumps(record_dict, ensure_ascii=False)
 
 # Verwendung in Komponenten
-from omf.tools.logging_config import get_logger
+from omf.dashboard.tools.logging_config import get_logger
 logger = get_logger("omf.dashboard.component_name")
 logger.info("📤 MQTT Publish: topic → payload")
 ```

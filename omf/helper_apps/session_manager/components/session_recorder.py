@@ -4,9 +4,6 @@ Einfache 1:1 Aufnahme von MQTT-Nachrichten
 """
 
 import json
-from omf.tools.logging_config import get_logger
-
-logger = get_logger("omf.helper_apps.session_manager.components.session_recorder")
 import sqlite3
 import threading
 from datetime import datetime
@@ -15,10 +12,14 @@ from typing import Any, Dict, List
 
 import streamlit as st
 
+from omf.dashboard.tools.logging_config import get_logger
+from omf.dashboard.tools.path_constants import PROJECT_ROOT
 from omf.dashboard.utils.ui_refresh import RerunController
 
+logger = get_logger("omf.helper_apps.session_manager.components.session_recorder")
+
 # Session Manager Logging-System verwenden (wie ursprünglich)
-logger = logging.getLogger("session_manager.session_recorder")
+# logger = logging.getLogger("session_manager.session_recorder")  # Duplikat entfernt
 
 
 # Thread-sichere Nachrichten-Sammlung
@@ -374,7 +375,7 @@ def save_session():
         if not Path(session_directory).is_absolute():
             # Paket-relative Pfade verwenden
             # Projekt-Root-relative Pfade für Nutz-Daten verwenden
-            project_root = Path(__file__).parent.parent.parent.parent.parent
+            project_root = PROJECT_ROOT
             session_dir = project_root / session_directory
         else:
             session_dir = Path(session_directory)

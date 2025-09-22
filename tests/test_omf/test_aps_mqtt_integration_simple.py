@@ -9,8 +9,8 @@ import pytest
 from unittest.mock import Mock, MagicMock, patch
 
 from omf.tools.aps_mqtt_integration import APSMqttIntegration
-from omf.tools.omf_mqtt_client import OmfMqttClient
-from omf.tools.mqtt_config import MqttConfig
+from omf.dashboard.tools.omf_mqtt_client import OmfMqttClient
+from omf.dashboard.tools.mqtt_config import MqttConfig
 
 
 class TestAPSMqttIntegrationSimple:
@@ -310,7 +310,7 @@ class TestOmfMqttClientAPSIntegrationSimple:
     @pytest.fixture
     def mock_mqtt_client(self, mqtt_config):
         """Mock MQTT Client mit APS Integration"""
-        with patch('omf.tools.omf_mqtt_client.mqtt.Client'):
+        with patch('omf.dashboard.tools.omf_mqtt_client.mqtt.Client'):
             client = OmfMqttClient(mqtt_config)
             client.connected = True
             return client

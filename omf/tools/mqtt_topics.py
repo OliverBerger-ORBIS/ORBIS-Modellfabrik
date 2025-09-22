@@ -129,6 +129,7 @@ PRIORITY_FILTERS = {
     ],
 }
 
+
 def flatten_filters(upto: int) -> list[str]:
     """
     Gibt alle Topic-Filter bis zur angegebenen Prioritätsstufe zurück.
@@ -155,6 +156,7 @@ def flatten_filters(upto: int) -> list[str]:
 
     return out
 
+
 def get_priority_filters(level: int) -> list[str]:
     """
     Gibt die Topic-Filter für eine spezifische Prioritätsstufe zurück.
@@ -166,6 +168,7 @@ def get_priority_filters(level: int) -> list[str]:
         Liste von Topic-Filtern für diese Stufe
     """
     return PRIORITY_FILTERS.get(level, [])
+
 
 def get_all_filters() -> list[str]:
     """

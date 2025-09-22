@@ -9,6 +9,7 @@ from typing import Any, Dict, Optional
 
 import yaml
 
+
 class OmfNfcManager:
     """OMF NFC Manager using YAML configuration"""
 
@@ -165,8 +166,10 @@ class OmfNfcManager:
 
         return self.save_config()
 
+
 # Global instance for easy access
 _omf_nfc_manager = None
+
 
 def get_omf_nfc_manager() -> OmfNfcManager:
     """Get global OMF NFC manager instance"""
@@ -175,21 +178,25 @@ def get_omf_nfc_manager() -> OmfNfcManager:
         _omf_nfc_manager = OmfNfcManager()
     return _omf_nfc_manager
 
+
 # Backward compatibility functions
 def get_nfc_info(nfc_code: str) -> Optional[Dict[str, Any]]:
     """Backward compatibility function"""
     manager = get_omf_nfc_manager()
     return manager.get_nfc_info(nfc_code)
 
+
 def get_friendly_id(nfc_code: str) -> str:
     """Backward compatibility function"""
     manager = get_omf_nfc_manager()
     return manager.get_friendly_id(nfc_code)
 
+
 def validate_nfc_code(nfc_code: str) -> bool:
     """Backward compatibility function"""
     manager = get_omf_nfc_manager()
     return manager.validate_nfc_code(nfc_code)
+
 
 if __name__ == "__main__":
     """Test the OMF NFC Manager"""

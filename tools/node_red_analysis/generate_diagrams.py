@@ -3,12 +3,12 @@
 Generate additional Mermaid diagrams for Node-RED documentation
 """
 
-import json
 from pathlib import Path
+
 
 def generate_module_flow_diagram():
     """Generate module flow diagram"""
-    
+
     mermaid = []
     mermaid.append("graph TD")
     mermaid.append("    subgraph \"Production Module Flow\"")
@@ -38,12 +38,13 @@ def generate_module_flow_diagram():
     mermaid.append("    PROCESS -.-> MILLBUSY")
     mermaid.append("    PROCESS -.-> DRILLBUSY")
     mermaid.append("    DROP -.-> DROPBUSY")
-    
+
     return '\n'.join(mermaid)
+
 
 def generate_mqtt_topic_hierarchy():
     """Generate MQTT topic hierarchy diagram"""
-    
+
     mermaid = []
     mermaid.append("graph TD")
     mermaid.append("    ROOT[ROOT]")
@@ -86,12 +87,13 @@ def generate_mqtt_topic_hierarchy():
     mermaid.append("")
     mermaid.append("    SYSTEM --> RACK")
     mermaid.append("    SYSTEM --> SERIALREAD")
-    
+
     return '\n'.join(mermaid)
+
 
 def generate_opcua_communication_flow():
     """Generate OPC-UA communication flow diagram"""
-    
+
     mermaid = []
     mermaid.append("sequenceDiagram")
     mermaid.append("    participant NR as Node-RED")
@@ -117,12 +119,13 @@ def generate_opcua_communication_flow():
     mermaid.append("    HW->>OPC: Error Occurred")
     mermaid.append("    OPC->>NR: Error Status (ns=4;i=15)")
     mermaid.append("    NR->>NR: Handle Error State")
-    
+
     return '\n'.join(mermaid)
+
 
 def generate_system_overview():
     """Generate system overview diagram"""
-    
+
     mermaid = []
     mermaid.append("graph TB")
     mermaid.append("    subgraph \"ORBIS Modellfabrik\"")
@@ -164,59 +167,62 @@ def generate_system_overview():
     mermaid.append("    %% MQTT to Control")
     mermaid.append("    MQTT -->|Orders| NODERED")
     mermaid.append("    MQTT -->|Status| NODERED")
-    
+
     return '\n'.join(mermaid)
+
 
 def generate_all_diagrams():
     """Generate all diagrams and save them"""
-    
+
     diagrams = {
         'module_flow_diagram.mermaid': generate_module_flow_diagram(),
         'mqtt_topic_hierarchy.mermaid': generate_mqtt_topic_hierarchy(),
         'opcua_communication_flow.mermaid': generate_opcua_communication_flow(),
-        'system_overview.mermaid': generate_system_overview()
+        'system_overview.mermaid': generate_system_overview(),
     }
-    
+
     output_dir = Path('docs/analysis/node-red')
     output_dir.mkdir(exist_ok=True)
-    
+
     for filename, content in diagrams.items():
         file_path = output_dir / filename
         with open(file_path, 'w') as f:
             f.write(content)
         print(f"Generated: {file_path}")
-    
+
     # Create a combined diagrams file
     combined_file = output_dir / 'all_diagrams.md'
     with open(combined_file, 'w') as f:
         f.write("# Node-RED Diagrams - ORBIS Modellfabrik\n\n")
-        
+
         f.write("## Module Flow Diagram\n\n")
         f.write("```mermaid\n")
         f.write(generate_module_flow_diagram())
         f.write("\n```\n\n")
-        
+
         f.write("## MQTT Topic Hierarchy\n\n")
         f.write("```mermaid\n")
         f.write(generate_mqtt_topic_hierarchy())
         f.write("\n```\n\n")
-        
+
         f.write("## OPC-UA Communication Flow\n\n")
         f.write("```mermaid\n")
         f.write(generate_opcua_communication_flow())
         f.write("\n```\n\n")
-        
+
         f.write("## System Overview\n\n")
         f.write("```mermaid\n")
         f.write(generate_system_overview())
         f.write("\n```\n")
-    
+
     print(f"Generated: {combined_file}")
+
 
 def main():
     print("=== Generate Node-RED Diagrams ===")
     generate_all_diagrams()
     print("\nAll diagrams generated successfully!")
+
 
 if __name__ == "__main__":
     main()

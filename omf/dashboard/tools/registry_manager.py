@@ -10,12 +10,14 @@ from typing import Any, Dict, List, Optional, Union
 
 import yaml
 
-from omf.tools.logging_config import get_logger
+from omf.dashboard.tools.logging_config import get_logger
+
 
 class RegistryError(Exception):
     """Base exception for Registry errors"""
 
     pass
+
 
 class UnknownTopicError(RegistryError):
     """Topic not found in resolver"""
@@ -23,6 +25,7 @@ class UnknownTopicError(RegistryError):
     def __init__(self, topic: str):
         self.topic = topic
         super().__init__(f"Unknown topic: {topic}")
+
 
 class TemplateMissingError(RegistryError):
     """Template key not found"""
@@ -32,12 +35,14 @@ class TemplateMissingError(RegistryError):
         self.topic = topic
         super().__init__(f"Template missing: {key}" + (f" for topic: {topic}" if topic else ""))
 
+
 class ValidationError(RegistryError):
     """Template validation errors (non-blocking)"""
 
     def __init__(self, errors: List[str]):
         self.errors = errors
         super().__init__(f"Validation errors: {', '.join(errors)}")
+
 
 class Registry:
     """Registry v1 Manager mit Caching und Fehlerbehandlung"""
@@ -53,11 +58,12 @@ class Registry:
             root = project_root / "registry" / "model" / "v1"
             # Absolute Pfade verwenden für bessere Zuverlässigkeit
             root = root.resolve()
-            
+
             # Debug: Prüfe ob der Pfad existiert
             if not root.exists():
                 # Fallback: Verwende aktuelles Arbeitsverzeichnis
                 import os
+
                 cwd = Path(os.getcwd())
                 root = cwd / "registry" / "model" / "v1"
                 root = root.resolve()
@@ -153,6 +159,7 @@ class Registry:
                 topics[topic_name] = self.load_yaml(topic_file)
         return topics
 
+
 class TopicResolver:
     """Deterministisch: exact > pattern"""
 
@@ -203,6 +210,7 @@ class TopicResolver:
         self.logger.warning(f"⚠️ Unknown topic: {topic}")
         return None
 
+
 class TopicManager:
     """Topic routing with error handling"""
 
@@ -225,6 +233,7 @@ class TopicManager:
     def get_unknown_topics(self) -> set:
         """Get telemetry for unknown topics"""
         return self._unknown_topics.copy()
+
 
 class MessageTemplateManager:
     """Message template management with validation"""
@@ -279,8 +288,10 @@ class MessageTemplateManager:
         """Get telemetry for missing templates"""
         return self._missing_templates.copy()
 
+
 # Global registry instance
 _registry = None
+
 
 def get_registry(watch_mode: bool = False) -> Registry:
     """Get global registry instance with optional watch mode"""
@@ -289,9 +300,11 @@ def get_registry(watch_mode: bool = False) -> Registry:
         _registry = Registry(watch_mode=watch_mode)
     return _registry
 
+
 def get_topic_manager() -> TopicManager:
     """Get topic manager instance"""
     return TopicManager(get_registry())
+
 
 def get_message_template_manager() -> MessageTemplateManager:
     """Get message template manager instance"""

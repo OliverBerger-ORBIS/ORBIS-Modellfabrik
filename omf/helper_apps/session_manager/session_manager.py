@@ -9,6 +9,8 @@ from pathlib import Path
 
 import streamlit as st
 
+from omf.dashboard.tools.logging_config import configure_logging, get_logger
+from omf.dashboard.tools.registry_manager import get_registry
 from omf.dashboard.utils.ui_refresh import consume_refresh, request_refresh
 
 # Import components
@@ -21,8 +23,6 @@ from omf.helper_apps.session_manager.components.session_recorder import show_ses
 from omf.helper_apps.session_manager.components.settings_manager import SettingsManager
 from omf.helper_apps.session_manager.components.settings_ui import SettingsUI
 from omf.helper_apps.session_manager.components.template_analysis import show_template_analysis
-from omf.tools.logging_config import configure_logging, get_logger
-from omf.tools.registry_manager import get_registry
 
 # Page configuration
 st.set_page_config(page_title="Session Manager", page_icon="🎙️", layout="wide", initial_sidebar_state="expanded")
@@ -228,6 +228,6 @@ if __name__ == "__main__":
     # Initialize registry with watch mode if requested
     if args.registry_watch:
         registry = get_registry(watch_mode=True)
-        print("🔄 Registry watch mode enabled - live reloading active")
+        logger.info("🔄 Registry watch mode enabled - live reloading active")
 
     main()

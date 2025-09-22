@@ -11,8 +11,9 @@ Diese Tests validieren die Per-Topic-Buffer Architektur:
 import unittest
 from unittest.mock import Mock, patch
 
-from omf.tools.mqtt_config import MqttConfig
-from omf.tools.omf_mqtt_client import OmfMqttClient
+from omf.dashboard.tools.mqtt_config import MqttConfig
+from omf.dashboard.tools.omf_mqtt_client import OmfMqttClient
+
 
 class TestPerTopicBufferPattern(unittest.TestCase):
     """Testet das Per-Topic-Buffer Pattern"""
@@ -22,7 +23,7 @@ class TestPerTopicBufferPattern(unittest.TestCase):
         self.config = MqttConfig(host="localhost", port=1883, client_id="test_client", clean_session=True, protocol=4)
 
         # Mock MQTT-Client ohne echte Verbindung
-        with patch('omf.tools.omf_mqtt_client.mqtt'):
+        with patch('omf.dashboard.tools.omf_mqtt_client.mqtt'):
             self.client = OmfMqttClient(self.config)
 
     def test_buffer_initialization(self):
@@ -144,13 +145,14 @@ class TestPerTopicBufferPattern(unittest.TestCase):
         buffer = list(self.client.get_buffer(topic))
         self.assertLessEqual(len(buffer), 2000)  # Aktuell keine Begrenzung
 
+
 class TestPerTopicBufferIntegration(unittest.TestCase):
     """Integration Tests für Per-Topic-Buffer Pattern"""
 
     def test_dashboard_component_integration(self):
         """Test: Dashboard-Komponenten können Per-Topic-Buffer verwenden"""
         # Mock Dashboard-Komponente
-        with patch('omf.tools.omf_mqtt_client.mqtt'):
+        with patch('omf.dashboard.tools.omf_mqtt_client.mqtt'):
             client = OmfMqttClient(MqttConfig(host="localhost", port=1883))
 
         # Simuliere Dashboard-Komponente
@@ -179,7 +181,7 @@ class TestPerTopicBufferIntegration(unittest.TestCase):
 
     def test_message_processing_pattern(self):
         """Test: Message-Processing Pattern mit Per-Topic-Buffer"""
-        with patch('omf.tools.omf_mqtt_client.mqtt'):
+        with patch('omf.dashboard.tools.omf_mqtt_client.mqtt'):
             client = OmfMqttClient(MqttConfig(host="localhost", port=1883))
 
         # Simuliere Message-Processing
@@ -203,6 +205,7 @@ class TestPerTopicBufferIntegration(unittest.TestCase):
         self.assertEqual(result["state_count"], 0)
         self.assertEqual(result["connection_count"], 0)
         self.assertEqual(result["pairing_count"], 0)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -5,12 +5,12 @@ Refactored version with separated components
 
 import streamlit as st
 
+from omf.dashboard.tools.logging_config import get_logger
 from omf.helper_apps.session_manager.components.graph_visualizer import GraphVisualizer
 from omf.helper_apps.session_manager.components.session_analyzer import SessionAnalyzer
 from omf.helper_apps.session_manager.components.settings_manager import SettingsManager
 from omf.helper_apps.session_manager.components.timeline_visualizer import TimelineVisualizer
 from omf.helper_apps.session_manager.components.ui_components import SessionAnalysisUI
-from omf.tools.logging_config import get_logger
 
 logger = get_logger(__name__)
 

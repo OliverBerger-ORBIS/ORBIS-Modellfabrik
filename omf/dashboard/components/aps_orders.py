@@ -5,10 +5,10 @@ Hauptkomponente für alle APS-Order-Funktionen mit Untertabs
 
 import streamlit as st
 
-from .aps_orders_vda5050 import show_aps_orders_vda5050
-from .aps_orders_instant_actions import show_aps_orders_instant_actions
 from .aps_orders_history import show_aps_orders_history
+from .aps_orders_instant_actions import show_aps_orders_instant_actions
 from .aps_orders_tools import show_aps_orders_tools
+from .aps_orders_vda5050 import show_aps_orders_vda5050
 
 
 def show_aps_orders():

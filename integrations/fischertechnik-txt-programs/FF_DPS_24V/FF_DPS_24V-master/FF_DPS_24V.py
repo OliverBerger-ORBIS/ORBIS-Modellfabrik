@@ -1,8 +1,7 @@
 import os
-import sys
 import threading
 import time
-from fischertechnik.mqtt.MqttClient import MqttClient
+
 from lib.Axes1Ref import *
 from lib.calibration_commands import *
 from lib.calibration_data import *
@@ -57,7 +56,7 @@ def setup_mqtt_connection():
     global result_code, unexpected, has_order, INSTANT_ACTION_RESET, i, INSTANT_ACTION_ACCOUNCE_OUTPUT, INSTANT_ACTION_CANCEL_STORAGE_ORDER, nfc_obj
     controllerid = os.uname()[1]
     print('Connecting to broker')
-    display.set_attr("txt_label_message.text", str('Connecting to MQTT...'))
+    display.set_attr("txt_label_message.text", 'Connecting to MQTT...')
     mqtt_get_client().set_disconnect_callback(handle_mqtt_disconnected)
     mqtt_get_client().set_connect_callback(handle_mqtt_connected)
     vda_setup_offline_notifications()
@@ -72,7 +71,13 @@ def setup_mqtt_connection():
 def mqtt_instant_action_callback(message):
     global result_code, unexpected, has_order, INSTANT_ACTION_RESET, i, INSTANT_ACTION_ACCOUNCE_OUTPUT, INSTANT_ACTION_CANCEL_STORAGE_ORDER, nfc_obj
     print('Instant action callback triggered')
-    for i in (vda_handle_instant_actions_get_custom(message.payload.decode("utf-8"), calibration_mode_extend_list([INSTANT_ACTION_RESET, INSTANT_ACTION_ACCOUNCE_OUTPUT, INSTANT_ACTION_CANCEL_STORAGE_ORDER], calibration_mode_get_instant_actions()))):
+    for i in vda_handle_instant_actions_get_custom(
+        message.payload.decode("utf-8"),
+        calibration_mode_extend_list(
+            [INSTANT_ACTION_RESET, INSTANT_ACTION_ACCOUNCE_OUTPUT, INSTANT_ACTION_CANCEL_STORAGE_ORDER],
+            calibration_mode_get_instant_actions(),
+        ),
+    ):
         if i['actionType'] == INSTANT_ACTION_RESET:
             reset_set_request()
             vda_set_instant_action_status(i, vda_status_running())
@@ -82,7 +87,6 @@ def mqtt_instant_action_callback(message):
             set_output_announced(i)
         elif i['actionType'] == INSTANT_ACTION_CANCEL_STORAGE_ORDER:
             set_output_announced(i)
-
 
 
 def handle_mqtt_connected(result_code):
@@ -110,7 +114,6 @@ def order_callback(message):
     vda_publish_status()
 
 
-
 def initializeModule():
     global result_code, unexpected, has_order, INSTANT_ACTION_RESET, i, INSTANT_ACTION_ACCOUNCE_OUTPUT, INSTANT_ACTION_CANCEL_STORAGE_ORDER, nfc_obj
     print('Setup MQTT Connection')
@@ -121,14 +124,17 @@ def initializeModule():
 
 
 def first_index(my_list, elem):
-    try: index = my_list.index(elem) + 1
-    except: index = 0
+    try:
+        index = my_list.index(elem) + 1
+    except:
+        index = 0
     return index
 
+
 reset_init()
-display.set_attr("txt_label_version.text", str('<h3>APS DPS (Version: {})</h3>'.format(vda_get_factsheet_version())))
-display.set_attr("txt_label_message.text", str(''))
-display.set_attr("txt_label_message2.text", str(''))
+display.set_attr("txt_label_version.text", str(f'<h3>APS DPS (Version: {vda_get_factsheet_version()})</h3>'))
+display.set_attr("txt_label_message.text", '')
+display.set_attr("txt_label_message2.text", '')
 set_version(vda_get_factsheet_version())
 initlib_log(9)
 calibration_init(robot_calibration_get_defaults())
@@ -144,7 +150,7 @@ initializeModule()
 display.set_attr("txt_button_nfc_read.enabled", str(True).lower())
 display.set_attr("txt_button_nfc_read.enabled", str(True).lower())
 display.set_attr("txt_button_nfc_read.enabled", str(True).lower())
-display.set_attr("txt_label_message.text", str('READY'))
+display.set_attr("txt_label_message.text", 'READY')
 print('Threads started, joining...')
 start_publish_threads_sensoric()
 th2.join()
@@ -152,5 +158,3 @@ th4.join()
 print('Threads joined')
 while True:
     time.sleep(0.5)
-
-

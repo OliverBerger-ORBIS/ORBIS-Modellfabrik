@@ -26,19 +26,31 @@
 ## 📁 Diagramm-Verzeichnisse (Hybrid-Ansatz)
 
 ### **🏗️ Zentrale Architektur-Diagramme**
-- **`docs/diagrams/src/`** - Mermaid-Quelldateien für wiederverwendbare Architektur-Diagramme
-- **`docs/diagrams/svg/`** - Generierte SVG-Dateien der zentralen Diagramme
+- **`docs/_shared/diagrams/src/`** - Mermaid-Quelldateien für wiederverwendbare Architektur-Diagramme
+- **`docs/_shared/diagrams/svg/`** - Generierte SVG-Dateien der zentralen Diagramme
 - **Für:** ORBIS-Ziel-Architektur, As-Is vs. To-Be Vergleiche, Integration-Patterns
+- **Build-System:** `npm run diagrams` für automatische SVG-Generierung
 
 ### **📁 Kontext-spezifische Diagramme (dezentral)**
-- **`docs/_shared/diagrams/`** - Gemeinsame Diagramme
 - **`docs/06-integrations/node-red/*.mermaid`** - APS-As-Is Architektur (Node-RED Analyse)
 - **`docs/04-howto/helper_apps/session-manager/*.mermaid`** - Session Manager Diagramme
 - **`docs/06-integrations/mqtt/*.mermaid`** - MQTT-spezifische Diagramme
 
 ### **🎯 Wann welcher Ordner?**
-- **Zentral (`docs/diagrams/src/`):** Übergreifende, wiederverwendbare Architektur-Diagramme
+- **Zentral (`docs/_shared/diagrams/src/`):** Übergreifende, wiederverwendbare Architektur-Diagramme
 - **Dezentral:** Integration-spezifische, kontextbezogene Diagramme bei den entsprechenden Dokumenten
+
+### **🔧 Build-Commands**
+```bash
+# Alle Diagramme generieren
+npm run diagrams
+
+# Watch-Modus (automatisch bei Änderungen)
+npm run diagrams:watch
+
+# Einzelnes Diagramm generieren
+npx mmdc -i _shared/diagrams/src/example.mermaid -o _shared/diagrams/svg/example.svg
+```
 
 ---
 

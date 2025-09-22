@@ -5,13 +5,15 @@ Hauptkomponente für alle Steuerungsfunktionen mit Untertabs
 
 import streamlit as st
 
+from omf.dashboard.tools.logging_config import get_logger
+
 # Import der Unterkomponenten
 from .steering_factory import show_factory_steering
 from .steering_generic import show_generic_steering
 from .steering_sequence import show_sequence_steering
 
 # Logger für Steering
-logger = logging.getLogger("omf.dashboard.steering")
+logger = get_logger("omf.dashboard.steering")
 
 
 def show_steering():

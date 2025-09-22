@@ -3,7 +3,6 @@ OMF Dashboard Settings - Modul-Konfiguration
 Exakte Kopie der show_module_config() Funktion aus settings.py
 """
 
-from pathlib import Path
 import streamlit as st
 
 from omf.config.omf_config import config

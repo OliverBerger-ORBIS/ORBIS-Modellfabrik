@@ -15,6 +15,7 @@ from .sequence_ui import create_sequence_ui_app
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.dirname(current_dir)
 
+
 def main():
     """Hauptfunktion der Test-App"""
 
@@ -27,6 +28,7 @@ def main():
 
     # UI-App starten
     create_sequence_ui_app()
+
 
 if __name__ == "__main__":
     main()

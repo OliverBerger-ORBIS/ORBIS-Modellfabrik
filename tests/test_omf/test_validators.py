@@ -8,6 +8,7 @@ import pytest
 from omf.tools.message_template_manager import OmfMessageTemplateManager
 from omf.tools.validators import validate
 
+
 class TestValidators:
     """Test-Klasse für die Validator-Funktionen"""
 
@@ -136,6 +137,7 @@ class TestValidators:
         # Sollte nur generische Validierung durchführen
         assert "timestamp" in result or "errors" in result
 
+
 class TestMessageTemplateManagerValidation:
     """Test-Klasse für die MessageTemplateManager-Validierung"""
 
@@ -170,6 +172,7 @@ class TestMessageTemplateManagerValidation:
         # Sollte trotzdem funktionieren (nur generische Validierung)
         assert "errors" in result
         assert "warnings" in result
+
 
 class TestModuleConnectionValidation:
     """Test-Klasse für module/connection Validierung"""
@@ -231,6 +234,7 @@ class TestModuleConnectionValidation:
         result = validate("module.connection.hbw", payload)
         assert len(result["warnings"]) > 0
         assert any("information should be array" in warning["msg"] for warning in result["warnings"])
+
 
 if __name__ == "__main__":
     pytest.main([__file__])

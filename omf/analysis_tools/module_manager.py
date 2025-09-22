@@ -10,6 +10,7 @@ from typing import Any, Dict, List, Optional
 
 import yaml
 
+
 class ModuleManager:
     """Central Module Manager using YAML configuration"""
 
@@ -279,29 +280,35 @@ class ModuleManager:
             return True
         return False
 
+
 # Backward compatibility functions (for existing code)
 def get_module_info(module_id: str) -> Optional[Dict[str, Any]]:
     """Backward compatibility function"""
     manager = ModuleManager()
     return manager.get_module_info(module_id)
 
+
 def get_module_name(module_id: str) -> str:
     """Backward compatibility function"""
     manager = ModuleManager()
     return manager.get_module_name(module_id)
+
 
 def get_module_type(module_id: str) -> str:
     """Backward compatibility function"""
     manager = ModuleManager()
     return manager.get_module_type(module_id)
 
+
 def validate_module_id(module_id: str) -> bool:
     """Backward compatibility function"""
     manager = ModuleManager()
     return manager.validate_module_id(module_id)
 
+
 # Create global instance for easy access
 _module_manager = None
+
 
 def get_module_manager() -> ModuleManager:
     """Get global module manager instance"""
@@ -309,6 +316,7 @@ def get_module_manager() -> ModuleManager:
     if _module_manager is None:
         _module_manager = ModuleManager()
     return _module_manager
+
 
 if __name__ == "__main__":
     """Test the Module Manager"""

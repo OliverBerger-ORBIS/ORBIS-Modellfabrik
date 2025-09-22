@@ -26,6 +26,7 @@ from omf.helper_apps.session_manager.utils.session_logger import (
     get_template_logger,
 )
 
+
 class TestSessionManagerLogger(unittest.TestCase):
     """Tests für SessionManagerLogger Klasse"""
 
@@ -109,6 +110,7 @@ class TestSessionManagerLogger(unittest.TestCase):
         # Prüfen dass alte Datei gelöscht wurde
         self.assertFalse(old_log.exists())
 
+
 class TestSessionLoggerFactory(unittest.TestCase):
     """Tests für SessionManagerLogger Factory-Funktionen"""
 
@@ -167,6 +169,7 @@ class TestSessionLoggerFactory(unittest.TestCase):
         self.assertEqual(recorder_logger.extra['session_name'], "recorder")
         self.assertEqual(template_logger.extra['session_name'], "template")
         self.assertEqual(settings_logger.extra['session_name'], "settings")
+
 
 class TestSessionLoggerIntegration(unittest.TestCase):
     """Integration Tests für SessionManagerLogger"""
@@ -227,6 +230,7 @@ class TestSessionLoggerIntegration(unittest.TestCase):
         # Sollte mindestens 2 Dateien geben (Original + Rotation)
         self.assertGreaterEqual(len(rotation_files), 2)
 
+
 class TestSessionLoggerEdgeCases(unittest.TestCase):
     """Edge Cases für SessionManagerLogger"""
 
@@ -261,6 +265,7 @@ class TestSessionLoggerEdgeCases(unittest.TestCase):
             # Sollte funktionieren
             self.assertIsInstance(logger, SessionManagerLogger)
             self.assertEqual(logger.session_name, "")
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -16,8 +16,8 @@ import streamlit as st
 
 # Import für Prioritäts-basierte Subscriptions
 from omf.dashboard.config.mc_priority import get_all_priority_filters
+from omf.dashboard.tools.logging_config import get_logger
 from omf.dashboard.utils.ui_refresh import request_refresh
-from omf.tools.logging_config import get_logger
 
 # Logger für Message Center
 logger = get_logger("omf.dashboard.components.message_center")

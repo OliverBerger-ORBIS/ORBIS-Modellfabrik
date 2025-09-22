@@ -1,3 +1,5 @@
+from omf.dashboard.tools.path_constants import PROJECT_ROOT
+
 """
 Template Analyse Komponente
 Analyse aller APS-Sessions mit Fokus auf bestimmte Topics
@@ -12,7 +14,7 @@ from omf.analysis_tools.template_analyzers.ccu_template_analyzer import CCUTempl
 from omf.analysis_tools.template_analyzers.module_template_analyzer import ModuleTemplateAnalyzer
 from omf.analysis_tools.template_analyzers.nodered_template_analyzer import NodeRedTemplateAnalyzer
 from omf.analysis_tools.template_analyzers.txt_template_analyzer import TXTTemplateAnalyzer
-from omf.tools.logging_config import get_logger
+from omf.dashboard.tools.logging_config import get_logger
 
 logger = get_logger(__name__)
 
@@ -174,7 +176,7 @@ def copy_template_to_observations(template_name: str, template_info: Dict[str, A
 
         # Observations Templates-Verzeichnis (temporär in data/omf-data/observations/)
         # Später: registry/observations/ (mit Workflow)
-        project_root = Path(__file__).parent.parent.parent.parent.parent
+        project_root = PROJECT_ROOT
         observations_templates_dir = project_root / "data" / "omf-data" / "observations" / "generated_templates"
         observations_templates_dir.mkdir(parents=True, exist_ok=True)
 
@@ -223,7 +225,7 @@ def copy_observations_to_registry():
         # Moderne Paket-Struktur - State of the Art
 
         # Quell- und Ziel-Verzeichnisse
-        project_root = Path(__file__).parent.parent.parent.parent.parent
+        project_root = PROJECT_ROOT
         source_dir = project_root / "data" / "omf-data" / "observations" / "generated_templates"
         target_dir = project_root / "registry" / "model" / "v1" / "templates"
 
@@ -254,7 +256,7 @@ def display_observations_templates():
         # Moderne Paket-Struktur - State of the Art
 
         # Observations Templates-Verzeichnis
-        project_root = Path(__file__).parent.parent.parent.parent.parent
+        project_root = PROJECT_ROOT
         observations_dir = project_root / "data" / "omf-data" / "observations" / "generated_templates"
 
         if not observations_dir.exists():

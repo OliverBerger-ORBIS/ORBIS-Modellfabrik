@@ -23,6 +23,7 @@ try:
 except ImportError:
     _HAS_RICH = False
 
+
 def configure_logging(
     app_name: str = "omf_dashboard",
     level: int = logging.INFO,
@@ -120,16 +121,18 @@ def configure_logging(
     # PIL/Pillow Logger auf WARNING setzen (verhindert DEBUG-Spam)
     logging.getLogger("PIL.PngImagePlugin").setLevel(logging.WARNING)
     logging.getLogger("PIL").setLevel(logging.WARNING)
-    
+
     # Weitere störende Logger auf WARNING setzen
     logging.getLogger("urllib3").setLevel(logging.WARNING)
     logging.getLogger("requests").setLevel(logging.WARNING)
 
     return root, listener
 
+
 def get_logger(name: str) -> logging.Logger:
     """Hilfsfunktion um Logger zu erhalten"""
     return logging.getLogger(name)
+
 
 def configure_structlog() -> object | None:
     """
@@ -157,6 +160,7 @@ def configure_structlog() -> object | None:
         return structlog.get_logger()
     except ImportError:
         return None
+
 
 def init_logging_once(session_state: dict) -> tuple[logging.Logger, QueueListener | None]:
     """

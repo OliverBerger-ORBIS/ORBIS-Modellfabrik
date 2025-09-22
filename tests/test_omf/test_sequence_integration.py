@@ -3,11 +3,12 @@ Integration Tests für Sequenz-Steuerung
 Erkennt häufige Fehler wie AttributeError, TypeError, ImportError
 """
 
-from pathlib import Path
 import unittest
+from pathlib import Path
 from unittest.mock import MagicMock, Mock
 
 # Pfad für Imports
+
 
 class TestSequenceIntegration(unittest.TestCase):
     """Integration Tests für Sequenz-Steuerung"""
@@ -21,7 +22,7 @@ class TestSequenceIntegration(unittest.TestCase):
     def test_import_sequence_ui(self):
         """Test: SequenceUI kann importiert werden"""
         try:
-            from omf.tools.sequence_ui import SequenceUI
+            from omf.dashboard.tools.sequence_ui import SequenceUI
 
             self.assertTrue(True, "SequenceUI Import erfolgreich")
         except ImportError as e:
@@ -30,7 +31,7 @@ class TestSequenceIntegration(unittest.TestCase):
     def test_import_sequence_executor(self):
         """Test: SequenceExecutor kann importiert werden"""
         try:
-            from omf.tools.sequence_executor import SequenceDefinition, SequenceExecutor, SequenceStep
+            from omf.dashboard.tools.sequence_executor import SequenceDefinition, SequenceExecutor, SequenceStep
 
             self.assertTrue(True, "SequenceExecutor Import erfolgreich")
         except ImportError as e:
@@ -39,7 +40,7 @@ class TestSequenceIntegration(unittest.TestCase):
     def test_import_workflow_order_manager(self):
         """Test: WorkflowOrderManager kann importiert werden"""
         try:
-            from omf.tools.workflow_order_manager import WorkflowOrder, get_workflow_order_manager
+            from omf.dashboard.tools.workflow_order_manager import WorkflowOrder, get_workflow_order_manager
 
             self.assertTrue(True, "WorkflowOrderManager Import erfolgreich")
         except ImportError as e:
@@ -48,7 +49,7 @@ class TestSequenceIntegration(unittest.TestCase):
     def test_sequence_executor_initialization(self):
         """Test: SequenceExecutor kann initialisiert werden"""
         try:
-            from omf.tools.sequence_executor import SequenceExecutor
+            from omf.dashboard.tools.sequence_executor import SequenceExecutor
 
             executor = SequenceExecutor(self.mock_mqtt_client)
             self.assertIsNotNone(executor)
@@ -59,8 +60,8 @@ class TestSequenceIntegration(unittest.TestCase):
     def test_sequence_ui_initialization(self):
         """Test: SequenceUI kann initialisiert werden"""
         try:
-            from omf.tools.sequence_executor import SequenceExecutor
-            from omf.tools.sequence_ui import SequenceUI
+            from omf.dashboard.tools.sequence_executor import SequenceExecutor
+            from omf.dashboard.tools.sequence_ui import SequenceUI
 
             executor = SequenceExecutor(self.mock_mqtt_client)
             ui = SequenceUI(executor)
@@ -72,7 +73,7 @@ class TestSequenceIntegration(unittest.TestCase):
     def test_sequence_definition_creation(self):
         """Test: SequenceDefinition kann erstellt werden"""
         try:
-            from omf.tools.sequence_executor import SequenceDefinition, SequenceStep
+            from omf.dashboard.tools.sequence_executor import SequenceDefinition, SequenceStep
 
             step = SequenceStep(step_id=1, name="TEST_STEP", topic="test/topic", payload={"test": "data"})
 
@@ -87,7 +88,7 @@ class TestSequenceIntegration(unittest.TestCase):
     def test_workflow_order_creation(self):
         """Test: WorkflowOrder kann erstellt werden"""
         try:
-            from omf.tools.workflow_order_manager import get_workflow_order_manager
+            from omf.dashboard.tools.workflow_order_manager import get_workflow_order_manager
 
             manager = get_workflow_order_manager()
             order = manager.create_order("test_sequence")
@@ -101,7 +102,7 @@ class TestSequenceIntegration(unittest.TestCase):
     def test_sequence_executor_execute_sequence(self):
         """Test: execute_sequence Methode funktioniert"""
         try:
-            from omf.tools.sequence_executor import SequenceDefinition, SequenceExecutor, SequenceStep
+            from omf.dashboard.tools.sequence_executor import SequenceDefinition, SequenceExecutor, SequenceStep
 
             executor = SequenceExecutor(self.mock_mqtt_client)
 
@@ -119,8 +120,8 @@ class TestSequenceIntegration(unittest.TestCase):
     def test_sequence_ui_methods_exist(self):
         """Test: Alle benötigten SequenceUI Methoden existieren"""
         try:
-            from omf.tools.sequence_executor import SequenceExecutor
-            from omf.tools.sequence_ui import SequenceUI
+            from omf.dashboard.tools.sequence_executor import SequenceExecutor
+            from omf.dashboard.tools.sequence_ui import SequenceUI
 
             executor = SequenceExecutor(self.mock_mqtt_client)
             ui = SequenceUI(executor)
@@ -145,7 +146,7 @@ class TestSequenceIntegration(unittest.TestCase):
     def test_sequence_definition_loader(self):
         """Test: SequenceDefinitionLoader kann Sequenzen laden"""
         try:
-            from omf.tools.sequence_definition import SequenceDefinitionLoader
+            from omf.dashboard.tools.sequence_definition import SequenceDefinitionLoader
 
             loader = SequenceDefinitionLoader()
             sequences = loader.get_all_sequences()
@@ -186,8 +187,8 @@ class TestSequenceIntegration(unittest.TestCase):
     def test_sequence_ui_mqtt_client_handling(self):
         """Test: SequenceUI kann MQTT-Client korrekt handhaben"""
         try:
-            from omf.tools.sequence_executor import SequenceExecutor
-            from omf.tools.sequence_ui import SequenceUI
+            from omf.dashboard.tools.sequence_executor import SequenceExecutor
+            from omf.dashboard.tools.sequence_ui import SequenceUI
 
             executor = SequenceExecutor(self.mock_mqtt_client)
             ui = SequenceUI(executor)
@@ -206,8 +207,8 @@ class TestSequenceIntegration(unittest.TestCase):
     def test_sequence_ui_object_attributes(self):
         """Test: SequenceUI Objekte haben korrekte Attribute"""
         try:
-            from omf.tools.sequence_executor import SequenceExecutor
-            from omf.tools.sequence_ui import SequenceUI
+            from omf.dashboard.tools.sequence_executor import SequenceExecutor
+            from omf.dashboard.tools.sequence_ui import SequenceUI
 
             executor = SequenceExecutor(self.mock_mqtt_client)
             ui = SequenceUI(executor)
@@ -219,13 +220,14 @@ class TestSequenceIntegration(unittest.TestCase):
         except Exception as e:
             self.fail(f"SequenceUI Attribute Test fehlgeschlagen: {e}")
 
+
 class TestSequenceErrorHandling(unittest.TestCase):
     """Tests für Fehlerbehandlung in Sequenz-Steuerung"""
 
     def test_sequence_executor_without_mqtt(self):
         """Test: SequenceExecutor funktioniert ohne MQTT-Client"""
         try:
-            from omf.tools.sequence_executor import SequenceExecutor
+            from omf.dashboard.tools.sequence_executor import SequenceExecutor
 
             executor = SequenceExecutor(None)
             self.assertIsNotNone(executor)
@@ -236,8 +238,8 @@ class TestSequenceErrorHandling(unittest.TestCase):
     def test_sequence_ui_without_mqtt(self):
         """Test: SequenceUI funktioniert ohne MQTT-Client"""
         try:
-            from omf.tools.sequence_executor import SequenceExecutor
-            from omf.tools.sequence_ui import SequenceUI
+            from omf.dashboard.tools.sequence_executor import SequenceExecutor
+            from omf.dashboard.tools.sequence_ui import SequenceUI
 
             executor = SequenceExecutor(None)
             ui = SequenceUI(executor)
@@ -252,7 +254,7 @@ class TestSequenceErrorHandling(unittest.TestCase):
     def test_sequence_definition_validation(self):
         """Test: SequenceDefinition Validierung"""
         try:
-            from omf.tools.sequence_executor import SequenceDefinition, SequenceStep
+            from omf.dashboard.tools.sequence_executor import SequenceDefinition, SequenceStep
 
             # Test: Leere Sequenz
             empty_sequence = SequenceDefinition(name="empty", description="Empty sequence", steps=[])
@@ -266,6 +268,7 @@ class TestSequenceErrorHandling(unittest.TestCase):
             self.assertEqual(len(sequence_with_invalid_step.steps), 1)
         except Exception as e:
             self.fail(f"SequenceDefinition Validierung fehlgeschlagen: {e}")
+
 
 if __name__ == "__main__":
     # Test Suite ausführen

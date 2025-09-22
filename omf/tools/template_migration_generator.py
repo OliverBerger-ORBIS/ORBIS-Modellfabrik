@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+from omf.dashboard.tools.path_constants import PROJECT_ROOT
+
 """
 Template Migration Tool - Migration von alter YAML zu modularer Struktur
 Version: 3.0.0
@@ -9,13 +11,14 @@ from typing import Any, Dict
 
 import yaml
 
+
 class TemplateMigrationTool:
     """Tool zur Migration der alten Template-YAML in modulare Struktur"""
 
     def __init__(self, old_yaml_path: str = None, new_templates_dir: str = None):
         """Initialisiert das Migration-Tool"""
         if old_yaml_path is None:
-            old_yaml_path = str(Path(__file__).parent.parent.parent / "mqtt" / "config" / "message_templates.yml")
+            old_yaml_path = str(PROJECT_ROOT / "mqtt" / "config" / "message_templates.yml")
 
         if new_templates_dir is None:
             new_templates_dir = str(Path(__file__).parent.parent / "config" / "message_templates")

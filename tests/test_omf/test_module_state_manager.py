@@ -20,6 +20,7 @@ from omf.tools.module_state_manager import (
     get_module_state_manager,
 )
 
+
 class TestModuleStateManager:
     """Test-Klasse für ModuleStateManager"""
 
@@ -273,6 +274,7 @@ class TestModuleStateManager:
         assert not self.state_manager._running
         assert self.state_manager._stop_event.is_set()
 
+
 class TestModuleState:
     """Test-Klasse für ModuleState Enum"""
 
@@ -282,6 +284,7 @@ class TestModuleState:
         assert ModuleState.PICKBUSY.value == "PICKBUSY"
         assert ModuleState.ERROR.value == "ERROR"
 
+
 class TestCommandType:
     """Test-Klasse für CommandType Enum"""
 
@@ -290,6 +293,7 @@ class TestCommandType:
         assert CommandType.PICK.value == "PICK"
         assert CommandType.MILL.value == "MILL"
         assert CommandType.DROP.value == "DROP"
+
 
 class TestModuleInfo:
     """Test-Klasse für ModuleInfo Dataclass"""
@@ -304,6 +308,7 @@ class TestModuleInfo:
         assert module.current_state == ModuleState.IDLE
         assert module.is_available is True
 
+
 class TestSequenceStep:
     """Test-Klasse für SequenceStep Dataclass"""
 
@@ -315,6 +320,7 @@ class TestSequenceStep:
         assert step.expected_state == ModuleState.PICKBUSY
         assert step.timeout == 30
         assert step.metadata == {}
+
 
 class TestModuleSequence:
     """Test-Klasse für ModuleSequence Dataclass"""

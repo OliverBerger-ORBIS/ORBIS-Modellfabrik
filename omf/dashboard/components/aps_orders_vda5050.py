@@ -5,8 +5,6 @@ Zeigt VDA5050-kompatible Orders an
 
 import streamlit as st
 
-from omf.dashboard.utils.ui_refresh import request_refresh
-
 
 class APSVDA5050OrdersManager:
     """Manager für VDA5050 Orders"""

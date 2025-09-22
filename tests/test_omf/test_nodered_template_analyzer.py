@@ -10,19 +10,19 @@ Tests the Node-RED template analysis functionality including:
 - Validation rule generation
 """
 
-from pathlib import Path
 import json
 import os
 import shutil
 import sqlite3
 import tempfile
 import unittest
+from pathlib import Path
 
 import yaml
 
 # Add omf to path
-
 from omf.analysis_tools.template_analyzers.nodered_template_analyzer import NodeRedTemplateAnalyzer
+
 
 class TestNodeRedTemplateAnalyzer(unittest.TestCase):
     """Test cases for Node-RED Template Analyzer"""
@@ -446,6 +446,7 @@ class TestNodeRedTemplateAnalyzer(unittest.TestCase):
         self.assertIn("templates", data)
         self.assertIn("test/topic", data["templates"])
 
+
 class TestNodeRedTemplateAnalyzerIntegration(unittest.TestCase):
     """Integration tests for Node-RED Template Analyzer"""
 
@@ -631,6 +632,7 @@ class TestNodeRedTemplateAnalyzerIntegration(unittest.TestCase):
                 self.assertIn("examples", template)
                 self.assertIn("statistics", template)
                 self.assertGreater(template["statistics"]["total_messages"], 0)
+
 
 if __name__ == "__main__":
     unittest.main()

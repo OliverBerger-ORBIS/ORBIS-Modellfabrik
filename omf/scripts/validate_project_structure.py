@@ -12,6 +12,7 @@ import sys
 from pathlib import Path
 from typing import List, Tuple
 
+
 class ProjectStructureValidator:
     def __init__(self, project_root: str = "."):
         self.project_root = Path(project_root).resolve()
@@ -59,6 +60,13 @@ class ProjectStructureValidator:
         # Automatisch zu bereinigende Ordner
         self.auto_cleanup_dirs = {
             "__pycache__",  # Python-Cache-Ordner
+        }
+
+        # Verbotene Ordner (alte Struktur, die nicht mehr verwendet werden soll)
+        self.forbidden_dirs = {
+            "tests_orbis",  # Alte Test-Struktur, sollte 'tests' heißen
+            "src_orbis",  # Alte Source-Struktur, sollte 'omf' heißen
+            "docs_orbis",  # Alte Docs-Struktur, sollte 'docs' heißen
         }
 
         # Dateien, die automatisch ins data/ Verzeichnis verschoben werden sollen
@@ -140,6 +148,13 @@ class ProjectStructureValidator:
                     print(f"  ❌ Fehler beim Bereinigen von {dir_name}: {e}")
                 continue
 
+            # Prüfe auf verbotene Ordner (alte Struktur)
+            if dir_name in self.forbidden_dirs:
+                errors.append(
+                    f"❌ VERBOTENER ORDNER: {dir_name} - verwende stattdessen: {self._get_correct_dir_name(dir_name)}"
+                )
+
+            # Prüfe auf unerlaubte Ordner
             if dir_name not in self.allowed_root_dirs:
                 errors.append(f"Unerlaubter Ordner im Root: {dir_name}")
 
@@ -161,6 +176,11 @@ class ProjectStructureValidator:
         errors.extend(self._validate_specific_rules())
 
         return len(errors) == 0, errors
+
+    def _get_correct_dir_name(self, forbidden_dir: str) -> str:
+        """Gibt den korrekten Ordnernamen für verbotene Ordner zurück."""
+        mapping = {"tests_orbis": "tests", "src_orbis": "omf", "docs_orbis": "docs"}
+        return mapping.get(forbidden_dir, "unbekannt")
 
     def _validate_specific_rules(self) -> List[str]:
         """Validiert spezifische Struktur-Regeln."""
@@ -251,6 +271,7 @@ class ProjectStructureValidator:
 
         return fixed_count > 0
 
+
 def main():
     """Hauptfunktion für CLI-Nutzung."""
     import argparse
@@ -269,6 +290,7 @@ def main():
     else:
         success = validator.print_validation_report()
         sys.exit(0 if success else 1)
+
 
 if __name__ == "__main__":
     main()

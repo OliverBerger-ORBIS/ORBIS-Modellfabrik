@@ -4,15 +4,15 @@ Unit Tests for Module Manager
 Tests the ModuleManager class functionality
 """
 
-from pathlib import Path
 import tempfile
 import unittest
+from pathlib import Path
 
 import yaml
 
 # Add omf to path
-
 from omf.analysis_tools.module_manager import ModuleManager
+
 
 class TestModuleManager(unittest.TestCase):
     """Test cases for ModuleManager class"""
@@ -452,6 +452,7 @@ class TestModuleManager(unittest.TestCase):
         self.assertTrue(self.manager.is_module_id("TEST123"))
         self.assertEqual(self.manager.get_module_name("TEST123"), "TEST")
 
+
 class TestModuleManagerBackwardCompatibility(unittest.TestCase):
     """Test backward compatibility functions"""
 
@@ -506,6 +507,7 @@ class TestModuleManagerBackwardCompatibility(unittest.TestCase):
 
         self.assertTrue(validate_module_id("SVR3QA0022"))
         self.assertFalse(validate_module_id("invalid_id"))
+
 
 if __name__ == "__main__":
     # Run tests

@@ -13,9 +13,11 @@ from . import message_generator as mg
 from .logging_config import get_logger
 from .omf_mqtt_client import OmfMqttClient
 
+
 def utc_iso() -> str:
     """Gibt UTC-Zeitstempel im ISO-Format zurück."""
     return datetime.now(timezone.utc).isoformat()
+
 
 class MqttGateway:
     """
@@ -26,7 +28,7 @@ class MqttGateway:
     """
 
     def __init__(self, client: OmfMqttClient, id_start: int = 1000) -> None:
-        self.logger = get_logger("omf.tools.mqtt_gateway")
+        self.logger = get_logger("omf.dashboard.tools.mqtt_gateway")
         self.client = client
         self._order_id = id_start
         self.logger.info("MqttGateway initialisiert")
@@ -122,7 +124,7 @@ class MqttGateway:
         # Zusätzlicher Debug-Log für Dashboard-Buffer
         import logging
 
-        dashboard_logger = logging.getLogger("omf.dashboard.debug")
+        dashboard_logger = get_logger("omf.dashboard.debug")
         dashboard_logger.debug(f"MQTT Payload: {topic} -> {payload}")
 
         result = self.client.publish_json(topic, payload, qos=qos, retain=retain)

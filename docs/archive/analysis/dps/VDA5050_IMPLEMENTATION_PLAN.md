@@ -79,7 +79,7 @@ import uuid
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
-from omf.tools.logging_config import get_logger
+from omf.dashboard.tools.logging_config import get_logger
 
 class VDA5050OrderManager:
     """VDA5050-konformer Order Manager für APS-Integration"""
@@ -182,7 +182,7 @@ Verwaltet TXT Controller und deren Funktionen
 """
 
 from typing import Any, Dict, List, Optional
-from omf.tools.logging_config import get_logger
+from omf.dashboard.tools.logging_config import get_logger
 
 class APSTXTControllerManager:
     """Verwaltet APS TXT Controller"""
@@ -284,7 +284,7 @@ Verwaltet System Control Commands für APS
 """
 
 from typing import Any, Dict, List, Optional
-from omf.tools.logging_config import get_logger
+from omf.dashboard.tools.logging_config import get_logger
 
 class APSSystemControlManager:
     """Verwaltet APS System Control Commands"""

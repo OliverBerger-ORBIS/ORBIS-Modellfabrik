@@ -4,12 +4,13 @@ Unit Test: Dashboard MQTT Integration Problem
 Simuliert das echte Problem aus dem Dashboard
 """
 
-from pathlib import Path
 import unittest
+from pathlib import Path
 
 import pytest
 
 # Add omf to path
+
 
 @pytest.mark.streamlit
 class TestDashboardMqttIntegration(unittest.TestCase):
@@ -23,7 +24,7 @@ class TestDashboardMqttIntegration(unittest.TestCase):
     def test_dashboard_mqtt_client_flow(self):
         """Simuliert den Dashboard MQTT-Client Flow"""
         try:
-            from omf.tools.omf_mqtt_factory import get_omf_mqtt_client
+            from omf.dashboard.tools.omf_mqtt_factory import get_omf_mqtt_client
 
             print("🔍 Dashboard MQTT-Client Flow Simulation:")
             print("=" * 50)
@@ -86,7 +87,7 @@ class TestDashboardMqttIntegration(unittest.TestCase):
     def test_session_state_persistence(self):
         """Testet Session State Persistenz"""
         try:
-            from omf.tools.omf_mqtt_factory import get_omf_mqtt_client
+            from omf.dashboard.tools.omf_mqtt_factory import get_omf_mqtt_client
 
             print("\n🔍 Session State Persistenz Test:")
             print("=" * 50)
@@ -135,7 +136,7 @@ class TestDashboardMqttIntegration(unittest.TestCase):
     def test_multiple_client_creation(self):
         """Testet mehrfache Client-Erstellung (Dashboard-Problem)"""
         try:
-            from omf.tools.omf_mqtt_factory import get_omf_mqtt_client
+            from omf.dashboard.tools.omf_mqtt_factory import get_omf_mqtt_client
 
             print("\n🔍 Mehrfache Client-Erstellung Test:")
             print("=" * 50)
@@ -191,7 +192,7 @@ class TestDashboardMqttIntegration(unittest.TestCase):
     def test_clear_history_integration(self):
         """Testet clear_history Integration"""
         try:
-            from omf.tools.omf_mqtt_factory import get_omf_mqtt_client
+            from omf.dashboard.tools.omf_mqtt_factory import get_omf_mqtt_client
 
             print("\n🔍 clear_history Integration Test:")
             print("=" * 50)
@@ -231,6 +232,7 @@ class TestDashboardMqttIntegration(unittest.TestCase):
 
         except Exception as e:
             self.fail(f"❌ clear_history Integration Test fehlgeschlagen: {e}")
+
 
 if __name__ == "__main__":
     # Test ausführen

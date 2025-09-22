@@ -19,6 +19,7 @@ from omf.analysis_tools.nfc_code_manager import get_nfc_manager
 from omf.tools.message_template_manager import get_message_template_manager
 from omf.tools.module_manager import OmfModuleManager
 
+
 class CCUTemplateAnalyzer:
 
     def __init__(self):
@@ -536,7 +537,7 @@ class CCUTemplateAnalyzer:
                 cursor.execute("PRAGMA table_info(mqtt_messages)")
                 columns = [column[1] for column in cursor.fetchall()]
                 has_session_label = 'session_label' in columns
-                
+
                 # Get messages for target topics
                 placeholders = ",".join(["?" for _ in self.target_topics])
                 if has_session_label:
@@ -639,7 +640,7 @@ class CCUTemplateAnalyzer:
     def save_observations(self, results: Dict):
         """Save analysis results as individual observation files"""
         saved_files = []
-        
+
         for topic, template_data in results.items():
             # Create observation filename
             date_str = datetime.now().strftime("%Y-%m-%d")
@@ -647,7 +648,7 @@ class CCUTemplateAnalyzer:
             short_desc = topic.replace("/", "-").replace("ccu-", "")
             filename = f"{date_str}_{category}_{short_desc}.yml"
             filepath = os.path.join(self.output_dir, filename)
-            
+
             # Create observation data
             observation = {
                 "metadata": {
@@ -656,29 +657,29 @@ class CCUTemplateAnalyzer:
                     "source": "analysis",
                     "topic": topic,
                     "related_template": f"ccu.{self._determine_sub_category(topic).lower()}",
-                    "status": "open"
+                    "status": "open",
                 },
                 "observation": {
                     "description": f"Auto-analyzed CCU topic '{topic}' with {template_data.get('statistics', {}).get('total_messages', 0)} messages",
-                    "payload_example": template_data.get("examples", [{}])[0] if template_data.get("examples") else {}
+                    "payload_example": template_data.get("examples", [{}])[0] if template_data.get("examples") else {},
                 },
                 "analysis": {
                     "initial_assessment": f"Template structure generated with {template_data.get('statistics', {}).get('variable_fields', 0)} variable fields and {template_data.get('statistics', {}).get('enum_fields', 0)} enum fields",
                     "open_questions": [
                         "Soll diese Template-Struktur in die Registry übernommen werden?",
                         "Sind alle Felder korrekt typisiert?",
-                        "Gibt es fehlende Validierungsregeln?"
-                    ]
+                        "Gibt es fehlende Validierungsregeln?",
+                    ],
                 },
                 "proposed_action": [
                     f"Template '{topic}' in Registry v1 übernehmen",
                     "Validierungsregeln definieren",
-                    "Beispiele in Registry dokumentieren"
+                    "Beispiele in Registry dokumentieren",
                 ],
                 "tags": ["ccu", "auto-generated", "template"],
-                "priority": "medium"
+                "priority": "medium",
             }
-            
+
             # Save observation
             try:
                 with open(filepath, "w", encoding="utf-8") as f:
@@ -687,7 +688,7 @@ class CCUTemplateAnalyzer:
                 print(f"📝 Observation gespeichert: {filename}")
             except Exception as e:
                 print(f"❌ Fehler beim Speichern von {filename}: {e}")
-        
+
         return saved_files
 
     def migrate_to_registry_v0(self, results: Dict):
@@ -695,15 +696,15 @@ class CCUTemplateAnalyzer:
         project_root = os.path.abspath(str(Path(__file__).parent / ".." / ".." / ".."))
         registry_dir = os.path.join(project_root, "registry/model/v2/templates")
         os.makedirs(registry_dir, exist_ok=True)
-        
+
         migrated_files = []
-        
+
         for topic, template_data in results.items():
             # Create template filename
             template_key = f"ccu.{self._determine_sub_category(topic).lower()}.{topic.split('/')[-1]}"
             filename = f"{template_key}.yml"
             filepath = os.path.join(registry_dir, filename)
-            
+
             # Create Registry v0 template
             registry_template = {
                 "metadata": {
@@ -712,7 +713,7 @@ class CCUTemplateAnalyzer:
                     "description": f"Auto-analyzed template for {topic}",
                     "version": "0.1.0",
                     "last_updated": datetime.now().strftime("%Y-%m-%d"),
-                    "source": "ccu_template_analyzer"
+                    "source": "ccu_template_analyzer",
                 },
                 "templates": {
                     template_key: {
@@ -724,12 +725,14 @@ class CCUTemplateAnalyzer:
                         "examples": template_data.get("examples", [])[:3],
                         "validation": {
                             "required_fields": list(template_data.get("structure", {}).keys()),
-                            "field_types": {k: v.get("type", "string") for k, v in template_data.get("structure", {}).items()}
-                        }
+                            "field_types": {
+                                k: v.get("type", "string") for k, v in template_data.get("structure", {}).items()
+                            },
+                        },
                     }
-                }
+                },
             }
-            
+
             # Save Registry v0 template
             try:
                 with open(filepath, "w", encoding="utf-8") as f:
@@ -738,7 +741,7 @@ class CCUTemplateAnalyzer:
                 print(f"📦 Registry v0 Template: {filename}")
             except Exception as e:
                 print(f"❌ Fehler beim Speichern von {filename}: {e}")
-        
+
         return migrated_files
 
     def save_results_to_yaml(self, results: Dict, output_file: str = None):
@@ -949,7 +952,7 @@ class CCUTemplateAnalyzer:
 
             # Save as individual observations (NEW)
             observation_files = self.save_observations(results)
-            
+
             # In initial phase: Direct migration to Registry v0 (NEW)
             registry_files = self.migrate_to_registry_v0(results)
 
@@ -1059,6 +1062,7 @@ class CCUTemplateAnalyzer:
         else:
             return "General"
 
+
 def main():
     """Main function"""
     analyzer = CCUTemplateAnalyzer()
@@ -1070,6 +1074,7 @@ def main():
     else:
         print("💥 Script mit Fehlern beendet!")
         exit(1)
+
 
 if __name__ == "__main__":
     main()

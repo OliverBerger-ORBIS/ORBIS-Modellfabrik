@@ -8,6 +8,7 @@ import logging
 from collections import deque
 from typing import Deque
 
+
 class RingBufferHandler(logging.Handler):
     """
     Logging-Handler, der Logs in einen Ringpuffer schreibt.
@@ -40,6 +41,7 @@ class RingBufferHandler(logging.Handler):
             # Ignoriere Fehler beim Logging
             pass
 
+
 def create_log_buffer(maxlen: int = 1000) -> Deque[str]:
     """
     Erstellt einen neuen Log-Buffer.
@@ -51,6 +53,7 @@ def create_log_buffer(maxlen: int = 1000) -> Deque[str]:
         Ringpuffer für Log-Nachrichten
     """
     return deque(maxlen=maxlen)
+
 
 def add_buffer_handler(logger: logging.Logger, buffer: Deque[str], level: int = logging.INFO):
     """
@@ -64,6 +67,7 @@ def add_buffer_handler(logger: logging.Logger, buffer: Deque[str], level: int = 
     handler = RingBufferHandler(buffer, level)
     handler.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(name)s: %(message)s"))
     logger.addHandler(handler)
+
 
 def render_logs_panel(buffer: Deque[str], max_lines: int = 200) -> str:
     """

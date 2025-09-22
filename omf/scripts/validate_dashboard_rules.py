@@ -37,6 +37,7 @@ FORBIDDEN_REFRESH_FUNCTIONS = {"st.rerun"}  # Verbotene Refresh-Funktionen
 
 ALLOWED_RENDER_PARAM_NAMES = {"client", "mqtt_client"}  # erzwingen wir optional
 
+
 @dataclass
 class Violation:
     kind: str  # ERROR | WARN
@@ -46,8 +47,10 @@ class Violation:
     message: str
     line_txt: str | None = None
 
+
 def _read(path: Path) -> str:
     return path.read_text(encoding="utf-8")
+
 
 def _call_qualname(node: ast.AST) -> str:
     if isinstance(node, ast.Name):
@@ -55,6 +58,7 @@ def _call_qualname(node: ast.AST) -> str:
     if isinstance(node, ast.Attribute):
         return f"{_call_qualname(node.value)}.{node.attr}"
     return node.__class__.__name__
+
 
 class Checker(ast.NodeVisitor):
     def __init__(self, filename: Path, source: str, enforce_render_param: bool):
@@ -84,7 +88,7 @@ class Checker(ast.NodeVisitor):
                 "WARN",
                 "R014",
                 node,
-                "Relativer Import erkannt - verwende absolute Imports: from omf.module import Class",
+                "Relativer Import erkannt - verwende absolute Imports für externe Module: from omf.dashboard.tools.logging_config import get_logger",
             )
 
         mod = node.module or ""
@@ -215,6 +219,7 @@ class Checker(ast.NodeVisitor):
                         "ERROR", "R013", fn, f"'{fn.name}' sollte einen Parameter 'client' oder 'mqtt_client' besitzen."
                     )
 
+
 def scan(path: Path, include_dashboard: bool, enforce_render_param: bool) -> list[Violation]:
     py_files = list(path.rglob("*.py"))
     if include_dashboard and DASHBOARD_ENTRY.exists():
@@ -239,6 +244,7 @@ def scan(path: Path, include_dashboard: bool, enforce_render_param: bool) -> lis
         chk.post_check_renderer_params()
         all_v.extend(chk.violations)
     return all_v
+
 
 def main():
     ap = argparse.ArgumentParser()
@@ -279,6 +285,7 @@ def main():
 
     exit_nonzero = bool(errors or (args.strict and warns))
     raise SystemExit(1 if exit_nonzero else 0)
+
 
 if __name__ == "__main__":
     main()

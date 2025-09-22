@@ -5,8 +5,6 @@ Zeigt System Monitoring für die APS an
 
 import streamlit as st
 
-from omf.dashboard.utils.ui_refresh import request_refresh
-
 
 class APSSystemControlMonitorManager:
     """Manager für APS System Control Monitor"""

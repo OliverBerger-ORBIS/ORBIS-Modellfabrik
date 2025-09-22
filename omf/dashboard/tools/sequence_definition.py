@@ -3,8 +3,8 @@ SequenceDefinition - YML und Python Sequenz-Definitionen
 Lädt und verwaltet Sequenz-Definitionen aus verschiedenen Quellen
 """
 
-from pathlib import Path
 import os
+from pathlib import Path
 from typing import Any, Dict, Optional
 
 import yaml
@@ -13,6 +13,7 @@ try:
     from .sequence_executor import SequenceDefinition, SequenceStep
 except ImportError:
     from sequence_executor import SequenceDefinition, SequenceStep
+
 
 class SequenceDefinitionLoader:
     """Lädt Sequenz-Definitionen aus YML und Python"""
@@ -108,6 +109,7 @@ class SequenceDefinitionLoader:
         self.sequences.clear()
         self._load_all_sequences()
 
+
 # Beispiel YML-Sequenz-Definitionen erstellen
 def create_example_sequences():
     """Erstellt Beispiel-Sequenz-Definitionen"""
@@ -188,6 +190,7 @@ def create_example_sequences():
     with open(yml_path, "w", encoding="utf-8") as f:
         yaml.dump(drill_sequence, f, default_flow_style=False, allow_unicode=True)
 
+
 # Beispiel Python-Sequenz-Definition
 def create_example_python_sequence():
     """Erstellt eine Beispiel Python-Sequenz-Definition"""
@@ -199,7 +202,7 @@ Beispiel Python-Sequenz-Definition für AIQS
 Demonstriert komplexe Logik und dynamische Payloads
 """
 
-from omf.tools.sequence_executor import SequenceDefinition, SequenceStep
+from omf.dashboard.tools.sequence_executor import SequenceDefinition, SequenceStep
 
 def get_sequence_definition():
     """Gibt die AIQS-Sequenz-Definition zurück"""
@@ -276,6 +279,7 @@ def get_sequence_definition():
     python_path = os.path.join(base_path, "aiqs_sequence.py")
     with open(python_path, "w", encoding="utf-8") as f:
         f.write(python_code)
+
 
 if __name__ == "__main__":
     # Beispiel-Sequenzen erstellen

@@ -9,7 +9,8 @@ from unittest.mock import MagicMock, Mock, patch
 
 import pytest
 
-from omf.tools.message_generator import MessageGenerator
+from omf.dashboard.tools.message_generator import MessageGenerator
+
 
 class TestFTSNavigationGenerator:
     """Test-Klasse für FTS Navigation Message Generator"""
@@ -217,6 +218,7 @@ class TestFTSNavigationGenerator:
             dock_action = nodes[-1]["action"]
             assert dock_action["metadata"]["loadType"] == load_type
 
+
 class TestFTSNavigationDashboardIntegration:
     """Test-Klasse für Dashboard Integration"""
 
@@ -271,6 +273,7 @@ class TestFTSNavigationDashboardIntegration:
             assert message["type"] == "navigation"
             assert message["topic"] == "fts/v1/ff/5iO4/order"
             assert "orderId" in message["payload"]
+
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])

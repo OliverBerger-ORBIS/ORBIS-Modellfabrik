@@ -7,6 +7,7 @@ Führt Tests basierend auf dem aktuellen Git-Branch aus
 import subprocess
 import sys
 
+
 def get_current_branch():
     """Aktuellen Git-Branch ermitteln"""
     try:
@@ -15,6 +16,7 @@ def get_current_branch():
     except subprocess.CalledProcessError:
         print("❌ Fehler beim Ermitteln des Git-Branches")
         return None
+
 
 def run_tests(test_path):
     """Tests ausführen"""
@@ -26,6 +28,7 @@ def run_tests(test_path):
     except subprocess.CalledProcessError:
         print("❌ Tests fehlgeschlagen")
         return False
+
 
 def main():
     """Hauptfunktion"""
@@ -56,6 +59,7 @@ def main():
     else:
         print("💥 Tests fehlgeschlagen!")
         sys.exit(1)
+
 
 if __name__ == "__main__":
     main()

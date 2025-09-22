@@ -8,9 +8,9 @@ import unittest
 from pathlib import Path
 
 # Add omf to path
+from omf.dashboard.tools.message_generator import MessageGenerator
+from omf.dashboard.tools.workflow_order_manager import WorkflowOrderManager, get_workflow_order_manager
 
-from omf.tools.message_generator import MessageGenerator
-from omf.tools.workflow_order_manager import WorkflowOrderManager, get_workflow_order_manager
 
 class TestMessageGenerator(unittest.TestCase):
     """Test-Klasse für MessageGenerator"""
@@ -221,6 +221,7 @@ class TestMessageGenerator(unittest.TestCase):
 
         print(f"✅ CCU Order Request message: {json.dumps(result, indent=2)}")
 
+
 class TestWorkflowOrderManager(unittest.TestCase):
     """Test-Klasse für WorkflowOrderManager"""
 
@@ -292,6 +293,7 @@ class TestWorkflowOrderManager(unittest.TestCase):
 
         print(f"✅ Workflow completed: {order_id}")
 
+
 def run_tests():
     """Führt alle Tests aus"""
     print("🧪 Starting MessageGenerator and WorkflowOrderManager Tests...")
@@ -317,6 +319,7 @@ def run_tests():
     print(f"   ⚠️  Errors: {len(result.errors)}")
 
     return result
+
 
 if __name__ == "__main__":
     run_tests()

@@ -12,7 +12,6 @@ import glob
 import json
 import os
 import re
-
 import sqlite3
 from datetime import datetime
 from pathlib import Path
@@ -23,6 +22,7 @@ import yaml
 from omf.analysis_tools.nfc_code_manager import get_nfc_manager
 from omf.tools.message_template_manager import get_message_template_manager
 
+
 class NodeRedTemplateAnalyzer:
     """Analyzer for Node-RED MQTT message templates"""
 
@@ -30,7 +30,7 @@ class NodeRedTemplateAnalyzer:
         """Initialize the analyzer"""
         # Use absolute paths for better reliability
         project_root = os.path.abspath(str(Path(__file__).parent / ".." / ".." / ".."))
-        
+
         self.session_dir = session_dir or os.path.join(project_root, "data/omf-data/sessions")
         self.output_dir = output_dir or os.path.join(project_root, "registry/observations/payloads")
 
@@ -475,17 +475,19 @@ class NodeRedTemplateAnalyzer:
     def save_observations(self, results: Dict):
         """Save analysis results as individual observation files"""
         saved_files = []
-        
+
         for topic, template_data in results.items():
             # Create observation filename
             date_str = datetime.now().strftime("%Y-%m-%d")
             category = "nodered"
             module_id = self._determine_module_id(topic)
             sub_category = self._determine_sub_category(topic)
-            short_desc = f"{module_id.lower()}-{sub_category.lower()}" if module_id != "Node-RED" else sub_category.lower()
+            short_desc = (
+                f"{module_id.lower()}-{sub_category.lower()}" if module_id != "Node-RED" else sub_category.lower()
+            )
             filename = f"{date_str}_{category}_{short_desc}.yml"
             filepath = os.path.join(self.output_dir, filename)
-            
+
             # Create observation data
             observation = {
                 "metadata": {
@@ -493,30 +495,34 @@ class NodeRedTemplateAnalyzer:
                     "author": "Node-RED Template Analyzer",
                     "source": "analysis",
                     "topic": topic,
-                    "related_template": f"nodered.{module_id.lower()}.{sub_category.lower()}" if module_id != "Node-RED" else f"nodered.{sub_category.lower()}",
-                    "status": "open"
+                    "related_template": (
+                        f"nodered.{module_id.lower()}.{sub_category.lower()}"
+                        if module_id != "Node-RED"
+                        else f"nodered.{sub_category.lower()}"
+                    ),
+                    "status": "open",
                 },
                 "observation": {
                     "description": f"Auto-analyzed Node-RED topic '{topic}' with {template_data.get('statistics', {}).get('total_messages', 0)} messages",
-                    "payload_example": template_data.get("examples", [{}])[0] if template_data.get("examples") else {}
+                    "payload_example": template_data.get("examples", [{}])[0] if template_data.get("examples") else {},
                 },
                 "analysis": {
                     "initial_assessment": f"Template structure generated with {template_data.get('statistics', {}).get('variable_fields', 0)} variable fields and {template_data.get('statistics', {}).get('enum_fields', 0)} enum fields",
                     "open_questions": [
                         "Soll diese Template-Struktur in die Registry übernommen werden?",
                         "Sind alle Felder korrekt typisiert?",
-                        "Gibt es fehlende Validierungsregeln?"
-                    ]
+                        "Gibt es fehlende Validierungsregeln?",
+                    ],
                 },
                 "proposed_action": [
                     f"Template '{topic}' in Registry v1 übernehmen",
                     "Validierungsregeln definieren",
-                    "Beispiele in Registry dokumentieren"
+                    "Beispiele in Registry dokumentieren",
                 ],
                 "tags": ["nodered", "auto-generated", "template", module_id.lower()],
-                "priority": "medium"
+                "priority": "medium",
             }
-            
+
             # Save observation
             try:
                 with open(filepath, "w", encoding="utf-8") as f:
@@ -525,7 +531,7 @@ class NodeRedTemplateAnalyzer:
                 print(f"📝 Observation gespeichert: {filename}")
             except Exception as e:
                 print(f"❌ Fehler beim Speichern von {filename}: {e}")
-        
+
         return saved_files
 
     def migrate_to_registry_v0(self, results: Dict):
@@ -533,17 +539,21 @@ class NodeRedTemplateAnalyzer:
         project_root = os.path.abspath(str(Path(__file__).parent / ".." / ".." / ".."))
         registry_dir = os.path.join(project_root, "registry/model/v2/templates")
         os.makedirs(registry_dir, exist_ok=True)
-        
+
         migrated_files = []
-        
+
         for topic, template_data in results.items():
             # Create template filename
             module_id = self._determine_module_id(topic)
             sub_category = self._determine_sub_category(topic)
-            template_key = f"nodered.{module_id.lower()}.{sub_category.lower()}" if module_id != "Node-RED" else f"nodered.{sub_category.lower()}"
+            template_key = (
+                f"nodered.{module_id.lower()}.{sub_category.lower()}"
+                if module_id != "Node-RED"
+                else f"nodered.{sub_category.lower()}"
+            )
             filename = f"{template_key}.yml"
             filepath = os.path.join(registry_dir, filename)
-            
+
             # Create Registry v0 template
             registry_template = {
                 "metadata": {
@@ -553,7 +563,7 @@ class NodeRedTemplateAnalyzer:
                     "description": f"Auto-analyzed template for {topic}",
                     "version": "0.1.0",
                     "last_updated": datetime.now().strftime("%Y-%m-%d"),
-                    "source": "nodered_template_analyzer"
+                    "source": "nodered_template_analyzer",
                 },
                 "templates": {
                     template_key: {
@@ -564,14 +574,11 @@ class NodeRedTemplateAnalyzer:
                         "direction": "inbound" if "state" in topic or "connection" in topic else "outbound",
                         "structure": template_data.get("template_structure", {}),
                         "examples": template_data.get("examples", [])[:3],
-                        "validation": {
-                            "required_fields": [],
-                            "field_types": {}
-                        }
+                        "validation": {"required_fields": [], "field_types": {}},
                     }
-                }
+                },
             }
-            
+
             # Save Registry v0 template
             try:
                 with open(filepath, "w", encoding="utf-8") as f:
@@ -580,7 +587,7 @@ class NodeRedTemplateAnalyzer:
                 print(f"📦 Registry v0 Template: {filename}")
             except Exception as e:
                 print(f"❌ Fehler beim Speichern von {filename}: {e}")
-        
+
         return migrated_files
 
     def run_analysis(self):
@@ -605,7 +612,7 @@ class NodeRedTemplateAnalyzer:
 
             # Save as individual observations (NEW)
             observation_files = self.save_observations(results)
-            
+
             # In initial phase: Direct migration to Registry v0 (NEW)
             registry_files = self.migrate_to_registry_v0(results)
 
@@ -638,10 +645,12 @@ class NodeRedTemplateAnalyzer:
         else:
             print("❌ Keine Node-RED Topics mit Daten gefunden!")
 
+
 def main():
     """Main function for standalone execution"""
     analyzer = NodeRedTemplateAnalyzer()
     analyzer.run_analysis()
+
 
 if __name__ == "__main__":
     main()

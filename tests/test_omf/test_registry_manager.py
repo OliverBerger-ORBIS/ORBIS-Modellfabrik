@@ -9,7 +9,7 @@ from pathlib import Path
 import pytest
 import yaml
 
-from omf.tools.registry_manager import (
+from omf.dashboard.tools.registry_manager import (
     MessageTemplateManager,
     Registry,
     TemplateMissingError,
@@ -18,6 +18,7 @@ from omf.tools.registry_manager import (
     UnknownTopicError,
     ValidationError,
 )
+
 
 @pytest.fixture
 def temp_registry():
@@ -75,6 +76,7 @@ def temp_registry():
 
         yield str(registry_path)
 
+
 def test_version_pinning_violation():
     """Test version pinning: should fail for v2.x.x"""
     with tempfile.TemporaryDirectory() as tmpdir:
@@ -89,6 +91,7 @@ def test_version_pinning_violation():
         with pytest.raises(Exception, match="Version pinning violation"):
             Registry(str(registry_path))
 
+
 def test_exact_overrides_pattern(temp_registry):
     """Test exact match overrides pattern match"""
     registry = Registry(temp_registry)
@@ -101,6 +104,7 @@ def test_exact_overrides_pattern(temp_registry):
     # Other module should use pattern
     mill_result = topic_mgr.route("module/v1/ff/SVR4H76449/state")
     assert mill_result["template"] == "module.state"
+
 
 def test_unknown_topic_handling(temp_registry):
     """Test unknown topic handling"""
@@ -115,6 +119,7 @@ def test_unknown_topic_handling(temp_registry):
     unknown_topics = topic_mgr.get_unknown_topics()
     assert "unknown/topic" in unknown_topics
 
+
 def test_template_missing_handling(temp_registry):
     """Test template missing handling"""
     registry = Registry(temp_registry)
@@ -128,6 +133,7 @@ def test_template_missing_handling(temp_registry):
     missing_templates = template_mgr.get_missing_templates()
     assert "missing/template" in missing_templates
 
+
 def test_hierarchical_template_keys(temp_registry):
     """Test hierarchical template key resolution"""
     registry = Registry(temp_registry)
@@ -138,6 +144,7 @@ def test_hierarchical_template_keys(temp_registry):
     assert result is not None
     assert result["module"] == "DRILL"
 
+
 def test_validation_errors_non_blocking(temp_registry):
     """Test validation errors are non-blocking"""
     registry = Registry(temp_registry)
@@ -147,6 +154,7 @@ def test_validation_errors_non_blocking(temp_registry):
     errors = template_mgr.validate_payload("module/order", {"command": "PICK"})
     assert "missing field: orderId" in errors
     assert "missing field: actionId" in errors
+
 
 def test_command_enum_validation(temp_registry):
     """Test command enum validation"""
@@ -159,6 +167,7 @@ def test_command_enum_validation(temp_registry):
     )
     assert "command not in enum" in str(errors)
 
+
 def test_empty_workpieces_handling(temp_registry):
     """Test empty workpieces.yml handling"""
     registry = Registry(temp_registry)
@@ -166,6 +175,7 @@ def test_empty_workpieces_handling(temp_registry):
     # Should return empty mapping instead of exception
     workpieces = registry.workpieces()
     assert workpieces == {"nfc_codes": {}}
+
 
 def test_hot_reload_watch_mode(temp_registry):
     """Test hot-reload in watch mode"""

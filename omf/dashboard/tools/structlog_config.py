@@ -8,6 +8,7 @@ from typing import Optional
 
 import structlog
 
+
 def configure_structlog() -> Optional[structlog.BoundLogger]:
     """
     Konfiguriert structlog für strukturierte Logs.
@@ -32,6 +33,7 @@ def configure_structlog() -> Optional[structlog.BoundLogger]:
         return structlog.get_logger()
     except ImportError:
         return None
+
 
 def get_structlog_logger(name: str = "omf") -> structlog.BoundLogger:
     """

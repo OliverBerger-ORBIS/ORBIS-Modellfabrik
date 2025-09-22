@@ -6,9 +6,9 @@ Hauptkomponente für alle APS-Configuration-Funktionen mit Untertabs
 import streamlit as st
 
 from .aps_configuration_controllers import show_aps_configuration_controllers
+from .aps_configuration_monitoring import show_aps_configuration_monitoring
 from .aps_configuration_mqtt import show_aps_configuration_mqtt
 from .aps_configuration_system import show_aps_configuration_system
-from .aps_configuration_monitoring import show_aps_configuration_monitoring
 
 
 def show_aps_configuration():

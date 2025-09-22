@@ -1,3 +1,5 @@
+from omf.dashboard.tools.path_constants import PROJECT_ROOT
+
 """
 UI Components - Streamlit UI components for session analysis
 """
@@ -11,10 +13,10 @@ from typing import Dict, List, Tuple
 import pandas as pd
 import streamlit as st
 
+from omf.dashboard.tools.logging_config import get_logger
 from omf.dashboard.utils.ui_refresh import request_refresh
 from omf.helper_apps.session_manager.components.session_analyzer import SessionAnalyzer
 from omf.helper_apps.session_manager.components.topic_manager import TopicFilterManager
-from omf.tools.logging_config import get_logger
 
 logger = get_logger("session_manager.ui_components")
 
@@ -42,7 +44,7 @@ class SessionAnalysisUI:
         if not Path(session_directory).is_absolute():
             # Paket-relative Pfade verwenden - Sessions sind im Projekt-Root
             # Von omf/helper_apps/session_manager/components/ -> Projekt-Root
-            project_root = Path(__file__).parent.parent.parent.parent.parent
+            project_root = PROJECT_ROOT
             sessions_dir = project_root / session_directory
         else:
             sessions_dir = Path(session_directory)

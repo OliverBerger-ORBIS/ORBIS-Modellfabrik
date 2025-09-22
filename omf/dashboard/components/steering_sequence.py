@@ -8,18 +8,16 @@ from pathlib import Path
 # Import der Sequenz-Tools
 import streamlit as st
 
-from omf.tools.logging_config import get_logger
-
-logger = get_logger("omf.dashboard.components.steering_sequence")
+from omf.dashboard.tools.logging_config import get_logger
 
 # Logger für Sequence Steering
-logger = logging.getLogger("omf.dashboard.steering_sequence")
+logger = get_logger("omf.dashboard.steering_sequence")
 
 tools_path = str(Path(__file__).parent / ".." / ".." / "tools")
 
 try:
-    from omf.tools.sequence_executor import SequenceExecutor
-    from omf.tools.sequence_ui import SequenceUI
+    from omf.dashboard.tools.sequence_executor import SequenceExecutor
+    from omf.dashboard.tools.sequence_ui import SequenceUI
 
     SEQUENCE_TOOLS_AVAILABLE = True
     logger.info("✅ Sequenz-Tools verfügbar")

@@ -9,6 +9,7 @@ from typing import Any, Dict
 
 import yaml
 
+
 class TemplateMigrationTool:
     """Tool zur Migration der alten Template-YAML in modulare Struktur"""
 
@@ -257,6 +258,7 @@ class TemplateMigrationTool:
 
         return validation_report
 
+
 def main():
     """Hauptfunktion für Migration"""
     print("🔧 Template Migration Tool")
@@ -308,6 +310,7 @@ def main():
         print(f"❌ {len(migration_report.get('errors', []))} Fehler aufgetreten")
         for error in migration_report.get("errors", []):
             print(f"   - {error}")
+
 
 if __name__ == "__main__":
     main()

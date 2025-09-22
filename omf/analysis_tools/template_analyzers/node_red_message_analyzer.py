@@ -13,6 +13,7 @@ from typing import Dict, Optional
 
 import pandas as pd
 
+
 class NodeRedMessageAnalyzer:
     def __init__(self, db_file: str):
         self.db_file = db_file
@@ -232,6 +233,7 @@ class NodeRedMessageAnalyzer:
 
         print("\n" + "=" * 60)
 
+
 def main():
     parser = argparse.ArgumentParser(description="Node-RED Message Analyzer")
     parser.add_argument("--session", required=True, help="Session-Datenbank-Datei")
@@ -245,6 +247,7 @@ def main():
 
     analyzer = NodeRedMessageAnalyzer(args.session)
     analyzer.generate_report(args.output)
+
 
 if __name__ == "__main__":
     main()

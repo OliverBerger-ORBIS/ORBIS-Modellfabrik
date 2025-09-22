@@ -4,9 +4,10 @@ Test für Icon Configuration System
 Prüft die Icon-Konfiguration und -Verwaltung
 """
 
-from pathlib import Path
 import os
 import unittest
+from pathlib import Path
+
 
 class TestIconConfiguration(unittest.TestCase):
     def test_module_icon_files_exist(self):
@@ -178,6 +179,7 @@ class TestIconConfiguration(unittest.TestCase):
 
         except ImportError as e:
             self.fail(f"❌ Icon colors validation failed: {e}")
+
 
 if __name__ == "__main__":
     unittest.main()

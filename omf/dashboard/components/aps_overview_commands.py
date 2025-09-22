@@ -5,8 +5,6 @@ Zeigt APS System Commands an
 
 import streamlit as st
 
-from omf.dashboard.utils.ui_refresh import request_refresh
-
 
 class APSCommandsManager:
     """Manager für APS System Commands"""

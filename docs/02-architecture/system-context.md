@@ -48,9 +48,7 @@
 graph TB
     subgraph "OMF Ecosystem"
         subgraph "Control Layer"
-            CCU[CCU<br/>Central Control Unit]
-            OMF[OMF Dashboard<br/>User Interface]
-            SESSION[Session Manager<br/>Replay & Recording]
+            APS_CCU[APS-CCU<br/>Central Control Unit]
         end
         
         subgraph "Communication Layer"
@@ -66,15 +64,14 @@ graph TB
             DPS[DPS<br/>Distribution Station]
         end
         
-        subgraph "Transport Layer"
+        subgraph "TXT-Control Layer"
             FTS[FTS<br/>Fahrerlose Transportsysteme]
             TXT[TXT Controller<br/>Fischertechnik]
+            DPS_TXT[DPS-TXT Controller<br/>Distribution Control]
         end
     end
     
-    OMF <-->|MQTT Orders| MQTT
-    CCU <-->|MQTT Commands| MQTT
-    SESSION <-->|MQTT Replay| MQTT
+    APS_CCU <-->|MQTT Commands| MQTT
     
     MQTT <-->|Message Routing| NODERED
     NODERED <-->|OPC-UA| HBW
@@ -85,16 +82,16 @@ graph TB
     
     FTS <-->|MQTT Transport| MQTT
     TXT <-->|MQTT Sensor Data| MQTT
+    DPS_TXT <-->|MQTT Control| MQTT
     
-    MQTT -->|State Updates| OMF
-    MQTT -->|Telemetry| CCU
+    MQTT -->|Telemetry| APS_CCU
     
-    classDef fischertechnik fill:#f5f5f5,stroke:#757575,stroke-width:2px
-    classDef orbis fill:#e1f5fe,stroke:#01579b,stroke-width:2px
-    classDef modules fill:#fff3e0,stroke:#f57c00,stroke-width:2px
-    class CCU fischertechnik
-    class OMF,SESSION orbis
-    class MQTT,NODERED,HBW,DRILL,MILL,AIQS,DPS,FTS,TXT modules
+    classDef aps fill:#fff8e1,stroke:#f57f17,stroke-width:2px
+    classDef external fill:#f5f5f5,stroke:#757575,stroke-width:2px
+    classDef modules fill:#fff8e1,stroke:#f57f17,stroke-width:2px
+    class APS_CCU aps
+    class MQTT external
+    class NODERED,HBW,DRILL,MILL,AIQS,DPS,FTS,TXT,DPS_TXT modules
 ```
 
 ## 🔄 Message-Flow-Übersicht

@@ -51,7 +51,7 @@ pip install -r requirements.txt
 ### **Import Standards (KRITISCH)**
 ```python
 # ✅ KORREKTE Imports
-from omf.tools.logging_config import get_logger
+from omf.dashboard.tools.logging_config import get_logger
 from omf.dashboard.components.overview import show_overview
 
 # ❌ VERBOTENE Imports
@@ -60,13 +60,18 @@ from module import Class    # Lokale Imports
 import sys; sys.path.append(...)  # sys.path.append Hacks
 ```
 
-### **Pfad Standards (KRITISCH)**
+### **Pfad Standards (State-of-the-Art)**
 ```python
-# ✅ Source-Pfade (Paket-relativ)
-Path(__file__).parent
+# ✅ Robuste Pfad-Konstanten verwenden
+from omf.dashboard.tools.path_constants import PROJECT_ROOT, SESSIONS_DIR, CONFIG_DIR
 
-# ✅ Data-Pfade (Projekt-root-relativ)
-project_root / "data/omf-data/sessions"
+# ✅ Verwendung:
+data_path = SESSIONS_DIR
+config_path = CONFIG_DIR / "shopfloor" / "layout.yml"
+templates_path = PROJECT_ROOT / "registry" / "model" / "v1" / "templates"
+
+# ❌ Fehleranfällige parent.parent... Ketten
+Path(__file__).parent.parent.parent.parent.parent
 
 # ❌ Absolute Pfade
 "/Users/oliver/Projects/ORBIS-Modellfabrik/path/to/file"

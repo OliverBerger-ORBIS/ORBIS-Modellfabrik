@@ -3,11 +3,12 @@ Dashboard Integration Tests für Sequenz-Steuerung
 Erkennt spezifische Dashboard-Integration Fehler
 """
 
-from pathlib import Path
 import unittest
+from pathlib import Path
 from unittest.mock import MagicMock, Mock, patch
 
 # Pfad für Imports
+
 
 class TestDashboardSequenceIntegration(unittest.TestCase):
     """Tests für Dashboard-Sequenz-Integration"""
@@ -49,8 +50,8 @@ class TestDashboardSequenceIntegration(unittest.TestCase):
     def test_sequence_ui_method_signatures(self):
         """Test: SequenceUI Methoden haben korrekte Signaturen"""
         try:
-            from omf.tools.sequence_executor import SequenceExecutor
-            from omf.tools.sequence_ui import SequenceUI
+            from omf.dashboard.tools.sequence_executor import SequenceExecutor
+            from omf.dashboard.tools.sequence_ui import SequenceUI
 
             _executor = SequenceExecutor(self.mock_mqtt_client)
             _ui = SequenceUI(_executor)
@@ -74,7 +75,7 @@ class TestDashboardSequenceIntegration(unittest.TestCase):
     def test_sequence_executor_running_sequences_structure(self):
         """Test: running_sequences hat korrekte Struktur"""
         try:
-            from omf.tools.sequence_executor import SequenceDefinition, SequenceExecutor, SequenceStep
+            from omf.dashboard.tools.sequence_executor import SequenceDefinition, SequenceExecutor, SequenceStep
 
             _executor = SequenceExecutor(self.mock_mqtt_client)
 
@@ -99,8 +100,8 @@ class TestDashboardSequenceIntegration(unittest.TestCase):
     def test_workflow_order_manager_integration(self):
         """Test: WorkflowOrderManager Integration"""
         try:
-            from omf.tools.sequence_executor import SequenceDefinition, SequenceExecutor, SequenceStep
-            from omf.tools.workflow_order_manager import WorkflowOrder, get_workflow_order_manager
+            from omf.dashboard.tools.sequence_executor import SequenceDefinition, SequenceExecutor, SequenceStep
+            from omf.dashboard.tools.workflow_order_manager import WorkflowOrder, get_workflow_order_manager
 
             manager = get_workflow_order_manager()
             _executor = SequenceExecutor(self.mock_mqtt_client)
@@ -123,9 +124,9 @@ class TestDashboardSequenceIntegration(unittest.TestCase):
     def test_sequence_ui_object_type_handling(self):
         """Test: SequenceUI behandelt Objekttypen korrekt"""
         try:
-            from omf.tools.sequence_executor import SequenceDefinition, SequenceExecutor, SequenceStep
-            from omf.tools.sequence_ui import SequenceUI
-            from omf.tools.workflow_order_manager import get_workflow_order_manager
+            from omf.dashboard.tools.sequence_executor import SequenceDefinition, SequenceExecutor, SequenceStep
+            from omf.dashboard.tools.sequence_ui import SequenceUI
+            from omf.dashboard.tools.workflow_order_manager import get_workflow_order_manager
 
             _executor = SequenceExecutor(self.mock_mqtt_client)
             _ui = SequenceUI(_executor)
@@ -153,7 +154,7 @@ class TestDashboardSequenceIntegration(unittest.TestCase):
     def test_sequence_definition_loader_error_handling(self):
         """Test: SequenceDefinitionLoader Fehlerbehandlung"""
         try:
-            from omf.tools.sequence_definition import SequenceDefinitionLoader
+            from omf.dashboard.tools.sequence_definition import SequenceDefinitionLoader
 
             loader = SequenceDefinitionLoader()
 
@@ -197,8 +198,8 @@ class TestDashboardSequenceIntegration(unittest.TestCase):
     def test_sequence_ui_method_call_safety(self):
         """Test: SequenceUI Methodenaufrufe sind sicher"""
         try:
-            from omf.tools.sequence_executor import SequenceExecutor
-            from omf.tools.sequence_ui import SequenceUI
+            from omf.dashboard.tools.sequence_executor import SequenceExecutor
+            from omf.dashboard.tools.sequence_ui import SequenceUI
 
             _executor = SequenceExecutor(self.mock_mqtt_client)
             _ui = SequenceUI(_executor)
@@ -228,6 +229,7 @@ class TestDashboardSequenceIntegration(unittest.TestCase):
                     self.fail(f"show_active_sequences Aufruf fehlgeschlagen: {e}")
         except Exception as e:
             self.fail(f"SequenceUI Methodenaufruf Sicherheit Test fehlgeschlagen: {e}")
+
 
 if __name__ == "__main__":
     # Test Suite ausführen

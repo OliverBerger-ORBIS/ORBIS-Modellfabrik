@@ -1,4 +1,5 @@
-from omf.tools.logging_config import get_logger
+from omf.dashboard.tools.logging_config import get_logger
+
 #!/usr/bin/env python3
 """
 Session Template Generator - Generiert Templates aus Session-Analyse
@@ -14,6 +15,7 @@ from typing import Any, Dict, List, Optional, Set
 import yaml
 
 logger = get_logger(__name__)
+
 
 class SessionTemplateGenerator:
     """Generiert Message-Templates aus Session-Analyse"""
@@ -223,6 +225,7 @@ class SessionTemplateGenerator:
             except Exception as e:
                 logger.error(f"❌ Fehler beim Kopieren von {template_file.name}: {e}")
 
+
 def main():
     """CLI für Template-Generierung"""
     import argparse
@@ -250,6 +253,7 @@ def main():
     # Templates kopieren
     if args.copy_templates:
         generator.copy_templates_to_registry()
+
 
 if __name__ == "__main__":
     main()

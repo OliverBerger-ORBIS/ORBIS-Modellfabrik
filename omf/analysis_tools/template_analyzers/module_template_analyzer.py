@@ -12,7 +12,6 @@ import glob
 import json
 import os
 import re
-
 import sqlite3
 from datetime import datetime
 from pathlib import Path
@@ -23,6 +22,7 @@ import yaml
 from omf.analysis_tools.nfc_code_manager import get_nfc_manager
 from omf.tools.message_template_manager import get_message_template_manager
 
+
 class ModuleTemplateAnalyzer:
     """Analyzer for MODULE MQTT message templates"""
 
@@ -30,7 +30,7 @@ class ModuleTemplateAnalyzer:
         """Initialize the analyzer"""
         # Use absolute paths for better reliability
         project_root = os.path.abspath(str(Path(__file__).parent / ".." / ".." / ".."))
-        
+
         self.session_dir = session_dir or os.path.join(project_root, "data/omf-data/sessions")
         self.output_dir = output_dir or os.path.join(project_root, "registry/observations/payloads")
 
@@ -428,7 +428,7 @@ class ModuleTemplateAnalyzer:
     def save_observations(self, results: Dict):
         """Save analysis results as individual observation files"""
         saved_files = []
-        
+
         for topic, template_data in results.items():
             # Create observation filename
             date_str = datetime.now().strftime("%Y-%m-%d")
@@ -438,7 +438,7 @@ class ModuleTemplateAnalyzer:
             short_desc = f"{module_id.lower()}-{sub_category.lower()}"
             filename = f"{date_str}_{category}_{short_desc}.yml"
             filepath = os.path.join(self.output_dir, filename)
-            
+
             # Create observation data
             observation = {
                 "metadata": {
@@ -447,29 +447,29 @@ class ModuleTemplateAnalyzer:
                     "source": "analysis",
                     "topic": topic,
                     "related_template": f"module.{module_id.lower()}.{sub_category.lower()}",
-                    "status": "open"
+                    "status": "open",
                 },
                 "observation": {
                     "description": f"Auto-analyzed MODULE topic '{topic}' with {template_data.get('statistics', {}).get('total_messages', 0)} messages",
-                    "payload_example": template_data.get("examples", [{}])[0] if template_data.get("examples") else {}
+                    "payload_example": template_data.get("examples", [{}])[0] if template_data.get("examples") else {},
                 },
                 "analysis": {
                     "initial_assessment": f"Template structure generated with {template_data.get('statistics', {}).get('variable_fields', 0)} variable fields and {template_data.get('statistics', {}).get('enum_fields', 0)} enum fields",
                     "open_questions": [
                         "Soll diese Template-Struktur in die Registry übernommen werden?",
                         "Sind alle Felder korrekt typisiert?",
-                        "Gibt es fehlende Validierungsregeln?"
-                    ]
+                        "Gibt es fehlende Validierungsregeln?",
+                    ],
                 },
                 "proposed_action": [
                     f"Template '{topic}' in Registry v1 übernehmen",
                     "Validierungsregeln definieren",
-                    "Beispiele in Registry dokumentieren"
+                    "Beispiele in Registry dokumentieren",
                 ],
                 "tags": ["module", "auto-generated", "template", module_id.lower()],
-                "priority": "medium"
+                "priority": "medium",
             }
-            
+
             # Save observation
             try:
                 with open(filepath, "w", encoding="utf-8") as f:
@@ -478,7 +478,7 @@ class ModuleTemplateAnalyzer:
                 print(f"📝 Observation gespeichert: {filename}")
             except Exception as e:
                 print(f"❌ Fehler beim Speichern von {filename}: {e}")
-        
+
         return saved_files
 
     def migrate_to_registry_v0(self, results: Dict):
@@ -486,9 +486,9 @@ class ModuleTemplateAnalyzer:
         project_root = os.path.abspath(str(Path(__file__).parent / ".." / ".." / ".."))
         registry_dir = os.path.join(project_root, "registry/model/v2/templates")
         os.makedirs(registry_dir, exist_ok=True)
-        
+
         migrated_files = []
-        
+
         for topic, template_data in results.items():
             # Create template filename
             module_id = self._determine_module_id(topic)
@@ -496,7 +496,7 @@ class ModuleTemplateAnalyzer:
             template_key = f"module.{module_id.lower()}.{sub_category.lower()}"
             filename = f"{template_key}.yml"
             filepath = os.path.join(registry_dir, filename)
-            
+
             # Create Registry v0 template
             registry_template = {
                 "metadata": {
@@ -506,7 +506,7 @@ class ModuleTemplateAnalyzer:
                     "description": f"Auto-analyzed template for {topic}",
                     "version": "0.1.0",
                     "last_updated": datetime.now().strftime("%Y-%m-%d"),
-                    "source": "module_template_analyzer"
+                    "source": "module_template_analyzer",
                 },
                 "templates": {
                     template_key: {
@@ -519,12 +519,14 @@ class ModuleTemplateAnalyzer:
                         "examples": template_data.get("examples", [])[:3],
                         "validation": {
                             "required_fields": list(template_data.get("structure", {}).keys()),
-                            "field_types": {k: v.get("type", "string") for k, v in template_data.get("structure", {}).items()}
-                        }
+                            "field_types": {
+                                k: v.get("type", "string") for k, v in template_data.get("structure", {}).items()
+                            },
+                        },
                     }
-                }
+                },
             }
-            
+
             # Save Registry v0 template
             try:
                 with open(filepath, "w", encoding="utf-8") as f:
@@ -533,7 +535,7 @@ class ModuleTemplateAnalyzer:
                 print(f"📦 Registry v0 Template: {filename}")
             except Exception as e:
                 print(f"❌ Fehler beim Speichern von {filename}: {e}")
-        
+
         return migrated_files
 
     def run_analysis(self):
@@ -558,7 +560,7 @@ class ModuleTemplateAnalyzer:
 
             # Save as individual observations (NEW)
             observation_files = self.save_observations(results)
-            
+
             # In initial phase: Direct migration to Registry v0 (NEW)
             registry_files = self.migrate_to_registry_v0(results)
 
@@ -591,10 +593,12 @@ class ModuleTemplateAnalyzer:
         else:
             print("❌ Keine MODULE Topics mit Daten gefunden!")
 
+
 def main():
     """Main function for standalone execution"""
     analyzer = ModuleTemplateAnalyzer()
     analyzer.run_analysis()
+
 
 if __name__ == "__main__":
     main()

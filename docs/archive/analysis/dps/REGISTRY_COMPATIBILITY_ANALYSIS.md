@@ -119,7 +119,7 @@ Ersetzt NFCCodeManager mit VDA5050-Integration
 """
 
 from omf.tools.registry_manager import get_registry
-from omf.tools.logging_config import get_logger
+from omf.dashboard.tools.logging_config import get_logger
 
 class WorkpieceManager:
     """Erweiterte Werkstück-Verwaltung mit VDA5050-Integration"""

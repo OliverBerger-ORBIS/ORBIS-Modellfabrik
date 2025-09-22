@@ -9,6 +9,7 @@ from typing import Any, Dict
 
 import yaml
 
+
 class TemplateGenerator:
     """Generiert Module-spezifische Templates aus generischen Templates"""
 
@@ -455,6 +456,7 @@ class TemplateGenerator:
 
         return all_templates
 
+
 def main():
     """Hauptfunktion für Template-Generierung"""
     print("🔧 Template Generator")
@@ -471,6 +473,7 @@ def main():
 
     for template_type, templates in all_templates.items():
         print(f"   📁 {template_type}: {len(templates)} Templates")
+
 
 if __name__ == "__main__":
     main()

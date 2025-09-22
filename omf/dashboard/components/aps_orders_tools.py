@@ -5,8 +5,6 @@ Zeigt Order Tools und Utilities an
 
 import streamlit as st
 
-from omf.dashboard.utils.ui_refresh import request_refresh
-
 
 class APSOrderToolsManager:
     """Manager für Order Tools"""

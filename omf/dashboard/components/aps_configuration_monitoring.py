@@ -5,8 +5,6 @@ Zeigt Monitoring-Konfiguration für die APS an
 
 import streamlit as st
 
-from omf.dashboard.utils.ui_refresh import request_refresh
-
 
 class APSConfigurationMonitoringManager:
     """Manager für APS Monitoring Configuration"""

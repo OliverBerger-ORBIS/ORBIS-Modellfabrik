@@ -5,9 +5,9 @@ Streamlit UI für die Einstellungen
 
 import streamlit as st
 
+from omf.dashboard.tools.logging_config import get_logger
 from omf.dashboard.utils.ui_refresh import RerunController
 from omf.helper_apps.session_manager.components.settings_manager import SettingsManager
-from omf.tools.logging_config import get_logger
 
 logger = get_logger(__name__)
 

@@ -5,11 +5,12 @@ Zeigt Live-Logs für den Session Manager an.
 """
 
 import json
+import logging
 
 import streamlit as st
 
-from omf.tools.logging_config import get_logger
-from omf.tools.streamlit_log_buffer import RingBufferHandler, create_log_buffer
+from omf.dashboard.tools.logging_config import get_logger
+from omf.dashboard.tools.streamlit_log_buffer import RingBufferHandler, create_log_buffer
 from omf.dashboard.utils.ui_refresh import request_refresh
 
 logger = get_logger("omf.helper_apps.session_manager.components.logs")

@@ -3,7 +3,6 @@
 Unit tests for Module Template Analyzer
 """
 
-from pathlib import Path
 import json
 import os
 import shutil
@@ -11,13 +10,14 @@ import sqlite3
 import sys
 import tempfile
 import unittest
+from pathlib import Path
 from unittest.mock import Mock
 
 import yaml
 
 # Add omf to path
-
 from omf.analysis_tools.template_analyzers.module_template_analyzer import ModuleTemplateAnalyzer
+
 
 class TestModuleTemplateAnalyzer(unittest.TestCase):
     """Test cases for ModuleTemplateAnalyzer"""
@@ -374,6 +374,7 @@ class TestModuleTemplateAnalyzer(unittest.TestCase):
         self.assertEqual(template["sub_category"], "State")
         self.assertEqual(template["module"], "HBW")
 
+
 class TestModuleTemplateAnalyzerIntegration(unittest.TestCase):
     """Integration tests for ModuleTemplateAnalyzer"""
 
@@ -505,6 +506,7 @@ class TestModuleTemplateAnalyzerIntegration(unittest.TestCase):
         for topic in found_topics:
             self.assertIn(topic, expected_topics)
 
+
 def run_tests():
     """Run all tests"""
     # Create test suite
@@ -520,6 +522,7 @@ def run_tests():
     result = runner.run(suite)
 
     return result.wasSuccessful()
+
 
 if __name__ == "__main__":
     success = run_tests()

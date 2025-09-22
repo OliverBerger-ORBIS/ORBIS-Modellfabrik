@@ -1,5 +1,5 @@
-from pathlib import Path
 import sys
+from pathlib import Path
 
 import pytest
 
@@ -23,6 +23,7 @@ from datetime import datetime
 from unittest.mock import Mock, patch
 
 from omf.analysis_tools.template_analyzers.ccu_template_analyzer import CCUTemplateAnalyzer
+
 
 class TestCCUTemplateAnalyzer(unittest.TestCase):
     """Test CCU Template Analyzer Funktionalitäten"""
@@ -300,6 +301,7 @@ class TestCCUTemplateAnalyzer(unittest.TestCase):
         self.assertEqual(template["category"], "CCU")
         self.assertEqual(template["sub_category"], "Order")
 
+
 class TestCCUTemplateAnalyzerIntegration(unittest.TestCase):
     """Integration Tests für CCU Template Analyzer"""
 
@@ -429,6 +431,7 @@ class TestCCUTemplateAnalyzerIntegration(unittest.TestCase):
         # Note: Templates might be empty due to database schema differences
         # self.assertGreater(len(data["templates"]), 0)
 
+
 def run_comprehensive_test():
     """Führe umfassenden Test durch"""
     print("🧪 Starte umfassende CCU Template Analyzer Tests...")
@@ -452,6 +455,7 @@ def run_comprehensive_test():
     print(f"  📋 Gesamt: {result.testsRun}")
 
     return result.wasSuccessful()
+
 
 if __name__ == "__main__":
     success = run_comprehensive_test()

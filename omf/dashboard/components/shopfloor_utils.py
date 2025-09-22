@@ -1,9 +1,10 @@
+from omf.dashboard.tools.path_constants import PROJECT_ROOT
+
 """
 OMF Dashboard Shopfloor Utils - Gemeinsame Shopfloor-Funktionen
 Gemeinsame Utility-Funktionen für alle Shopfloor-Komponenten
 """
 
-from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 import streamlit as st
@@ -13,7 +14,7 @@ import yaml
 def load_shopfloor_config() -> Dict[str, Any]:
     """Lädt die Shopfloor-Konfiguration aus YAML-Dateien"""
     try:
-        config_dir = Path(__file__).parent.parent.parent.parent / "config" / "shopfloor"
+        config_dir = PROJECT_ROOT / "config" / "shopfloor"
 
         # Layout-Konfiguration laden
         layout_file = config_dir / "layout.yml"

@@ -5,15 +5,16 @@ Erweiterte Steuerungsmöglichkeiten für direkte MQTT-Nachrichten
 
 import json
 from datetime import datetime
-from pathlib import Path
 
 import streamlit as st
 
+from omf.dashboard.tools.logging_config import get_logger
+
 # MqttGateway für sauberes Publishing
-from omf.tools.mqtt_gateway import MqttGateway
+from omf.dashboard.tools.mqtt_gateway import MqttGateway
 
 # Logger für Generic Steering
-logger = logging.getLogger("omf.dashboard.steering_generic")
+logger = get_logger("omf.dashboard.steering_generic")
 
 
 def show_generic_steering():
@@ -120,8 +121,11 @@ def show_topic_driven_mode(gateway: MqttGateway):
         # Alle Topics aus topic-config.yml laden
         import yaml
 
-        topic_config_path = Path(__file__).parent.parent.parent / "config" / "topic_config.yml"
-        topic_mapping_path = Path(__file__).parent.parent.parent / "config" / "topic_message_mapping.yml"
+        # State-of-the-Art: Robuste Pfad-Definition
+        from omf.dashboard.tools.path_constants import CONFIG_DIR
+
+        topic_config_path = CONFIG_DIR / "topic_config.yml"
+        topic_mapping_path = CONFIG_DIR / "topic_message_mapping.yml"
 
         # Topic-Konfiguration laden
         with open(topic_config_path, encoding="utf-8") as f:

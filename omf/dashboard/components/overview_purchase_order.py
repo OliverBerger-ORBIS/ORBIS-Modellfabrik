@@ -3,7 +3,6 @@ OMF Dashboard Overview - Rohmaterial-Bestellungen (Purchase Orders)
 Kopiert aus overview_inventory.py - Sektion 3: Bestellung von Rohmaterial
 """
 
-from pathlib import Path
 import streamlit as st
 
 # Template-Import hinzufügen

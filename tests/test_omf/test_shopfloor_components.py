@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+from omf.dashboard.tools.path_constants import CONFIG_DIR, PROJECT_ROOT, SESSIONS_DIR
+
 """
 Test für OMF Shopfloor-Komponenten
 Prüft alle Shopfloor-bezogenen Komponenten und YAML-Configs
@@ -9,7 +11,8 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 # Add project root to path
-project_root = Path(__file__).parent.parent.parent
+project_root = PROJECT_ROOT
+
 
 class TestShopfloorComponents(unittest.TestCase):
     """Test-Klasse für Shopfloor-Komponenten"""
@@ -178,9 +181,7 @@ class TestShopfloorComponents(unittest.TestCase):
             # Mock der Konfiguration
             with patch("omf.dashboard.components.shopfloor_utils.get_module_positions") as mock_positions:
                 with patch("omf.dashboard.components.shopfloor_utils.get_fts_routes") as mock_routes:
-                    with patch(
-                        "omf.dashboard.components.shopfloor_utils.get_product_routes"
-                    ) as mock_product_routes:
+                    with patch("omf.dashboard.components.shopfloor_utils.get_product_routes") as mock_product_routes:
                         mock_positions.return_value = [
                             {"type": "MODULE", "enabled": True},
                             {"type": "INTERSECTION", "enabled": True},
@@ -198,6 +199,7 @@ class TestShopfloorComponents(unittest.TestCase):
             print("✅ Shopfloor-Statistiken: OK")
         except Exception as e:
             self.fail(f"❌ Shopfloor-Statistiken failed: {e}")
+
 
 class TestShopfloorYAMLConfigs(unittest.TestCase):
     """Test-Klasse für Shopfloor YAML-Konfigurationen"""
@@ -261,6 +263,7 @@ class TestShopfloorYAMLConfigs(unittest.TestCase):
             print("✅ YAML-Dateien sind gültig: OK")
         except Exception as e:
             self.fail(f"❌ YAML-Dateien sind gültig failed: {e}")
+
 
 if __name__ == "__main__":
     print("🧪 Running Shopfloor Component Tests...")

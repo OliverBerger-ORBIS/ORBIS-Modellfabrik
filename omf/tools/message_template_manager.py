@@ -9,10 +9,11 @@ from typing import Any, Dict, List, Optional
 
 import yaml
 
-from omf.tools.logging_config import get_logger
+from omf.dashboard.tools.logging_config import get_logger
 
 # Import validators
 from omf.tools.validators import validate as run_validation
+
 
 class OmfMessageTemplateManager:
     """Verwaltet modulare MQTT Message Templates"""
@@ -31,7 +32,7 @@ class OmfMessageTemplateManager:
             registry_templates = project_root / "registry" / "model" / "v1" / "templates"
             self.logger.debug(f"🔍 Checking registry path: {registry_templates}")
             self.logger.debug(f"🔍 Registry exists: {registry_templates.exists()}")
-            
+
             if registry_templates.exists():
                 templates_dir = str(registry_templates)
                 self.logger.info("✅ Using registry v1 message templates")
@@ -40,7 +41,7 @@ class OmfMessageTemplateManager:
                 legacy_templates = project_root / "omf" / "omf" / "config" / "message_templates"
                 self.logger.debug(f"🔍 Checking legacy path: {legacy_templates}")
                 self.logger.debug(f"🔍 Legacy exists: {legacy_templates.exists()}")
-                
+
                 if legacy_templates.exists():
                     templates_dir = str(legacy_templates)
                     self.logger.warning(
@@ -52,7 +53,7 @@ class OmfMessageTemplateManager:
                     registry_templates_cwd = cwd / "registry" / "model" / "v0" / "templates"
                     self.logger.debug(f"🔍 Checking CWD registry path: {registry_templates_cwd}")
                     self.logger.debug(f"🔍 CWD Registry exists: {registry_templates_cwd.exists()}")
-                    
+
                     if registry_templates_cwd.exists():
                         templates_dir = str(registry_templates_cwd)
                         self.logger.info("✅ Using registry v1 message templates (from CWD)")
@@ -303,8 +304,10 @@ class OmfMessageTemplateManager:
             "warnings": [w["msg"] for w in result["warnings"]],
         }
 
+
 # Singleton instance
 _template_manager_instance = None
+
 
 def get_omf_message_template_manager() -> OmfMessageTemplateManager:
     """Get singleton instance of OMFMessageTemplateManager"""
@@ -312,6 +315,7 @@ def get_omf_message_template_manager() -> OmfMessageTemplateManager:
     if _template_manager_instance is None:
         _template_manager_instance = OmfMessageTemplateManager()
     return _template_manager_instance
+
 
 # Backward compatibility functions
 def get_message_template_manager() -> OmfMessageTemplateManager:

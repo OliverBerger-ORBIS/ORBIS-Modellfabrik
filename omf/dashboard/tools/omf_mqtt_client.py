@@ -7,8 +7,10 @@ from typing import Any, Callable, Deque, Dict, List, Optional, Set
 
 import paho.mqtt.client as mqtt
 
-from omf.tools.logging_config import get_logger
+from omf.dashboard.tools.logging_config import get_logger
+
 from .mqtt_config import MqttConfig
+
 
 class OmfMqttClient:
     def __init__(self, cfg: MqttConfig, on_message: Callable[[dict], None] | None = None, history_size: int = 10000):
@@ -115,14 +117,14 @@ class OmfMqttClient:
 
     def publish(self, topic: str, payload, qos: int = 1, retain: bool = False) -> bool:
         data = payload if isinstance(payload, (bytes, bytearray)) else json.dumps(payload)
-        
+
         # Log Topic und Payload beim Senden (nutze bereits serialisierten String)
         if isinstance(payload, (bytes, bytearray)):
             payload_str = payload.decode('utf-8', errors='replace')
         else:
             payload_str = data  # data ist bereits json.dumps(payload)
         self.logger.info(f"📤 MQTT Publish: {topic} → {payload_str}")
-        
+
         res = self.client.publish(topic, data, qos=qos, retain=retain)
         if res.rc == mqtt.MQTT_ERR_SUCCESS:
             self._history.append(
@@ -345,23 +347,24 @@ class OmfMqttClient:
 
         # Neue Subscriptions setzen
         self.subscribe_many(list(want), qos=1)
-    
+
     def enable_aps_integration(self) -> Any:
         """Aktiviert APS-Integration"""
         try:
             if self._aps_integration is None:
                 from omf.tools.aps_mqtt_integration import APSMqttIntegration
+
                 self._aps_integration = APSMqttIntegration(self)
                 self.logger.info("🔗 APS-Integration aktiviert")
             return self._aps_integration
         except Exception as e:
             self.logger.error(f"❌ APS-Integration Aktivierung fehlgeschlagen: {e}")
             return None
-    
+
     def get_aps_integration(self) -> Optional[Any]:
         """Gibt APS-Integration zurück"""
         return self._aps_integration
-    
+
     def is_aps_enabled(self) -> bool:
         """Prüft ob APS-Integration aktiviert ist"""
         return self._aps_integration is not None

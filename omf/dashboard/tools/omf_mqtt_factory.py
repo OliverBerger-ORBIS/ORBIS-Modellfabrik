@@ -6,6 +6,7 @@ from typing import MutableMapping
 from .mqtt_config import cfg_for
 from .omf_mqtt_client import OmfMqttClient
 
+
 def ensure_dashboard_client(env: str, store: MutableMapping) -> OmfMqttClient:
     """
     Liefert genau EINEN MQTT-Client pro Streamlit-Session.
@@ -49,6 +50,7 @@ def ensure_dashboard_client(env: str, store: MutableMapping) -> OmfMqttClient:
 
     return cli
 
+
 def create_ephemeral(env: str) -> OmfMqttClient:
     """
     Für Tests/Tools außerhalb der Streamlit-App: separater, kurzfristiger Client.
@@ -64,6 +66,7 @@ def create_ephemeral(env: str) -> OmfMqttClient:
     cli = OmfMqttClient(cfg)
     cli.connect()
     return cli
+
 
 # Legacy-Funktion für Rückwärtskompatibilität (nur für Tests/Tools)
 def get_omf_mqtt_client(cfg_dict: dict = None) -> OmfMqttClient:

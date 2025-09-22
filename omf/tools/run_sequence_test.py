@@ -6,12 +6,13 @@ Führt die Test-App aus ohne Streamlit-UI
 
 import os
 
-from .sequence_definition import SequenceDefinitionLoader
-from .sequence_executor import SequenceExecutor
-from .workflow_order_manager import workflow_order_manager
+from omf.dashboard.tools.sequence_definition import SequenceDefinitionLoader
+from omf.dashboard.tools.sequence_executor import SequenceExecutor
+from omf.dashboard.tools.workflow_order_manager import workflow_order_manager
 
 # Pfad für Imports hinzufügen
 current_dir = os.path.dirname(os.path.abspath(__file__))
+
 
 class MockMqttClient:
     """Mock MQTT Client für Tests"""
@@ -37,6 +38,7 @@ class MockMqttClient:
         self.recent_messages.append(message)
         print(f"📥 MQTT Receive: {topic} ← {payload}")
 
+
 def test_sequence_loading():
     """Testet das Laden von Sequenz-Definitionen"""
     print("🔍 Teste Sequenz-Definitionen laden...")
@@ -50,6 +52,7 @@ def test_sequence_loading():
         print(f"    Beschreibung: {sequence.description}")
 
     return sequences
+
 
 def test_sequence_execution():
     """Testet die Sequenz-Ausführung"""
@@ -106,6 +109,7 @@ def test_sequence_execution():
     for msg in mock_mqtt.published_messages:
         print(f"  - {msg['topic']} → {msg['payload']}")
 
+
 def test_workflow_order_manager():
     """Testet den WorkflowOrderManager"""
     print("\n🔄 Teste WorkflowOrderManager...")
@@ -131,6 +135,7 @@ def test_workflow_order_manager():
     all_orders = workflow_order_manager.get_all_orders()
     print(f"📊 Gesamt Orders: {len(all_orders)}")
 
+
 def main():
     """Hauptfunktion"""
     print("🔄 Workflow Sequence Control - Test Suite")
@@ -149,6 +154,7 @@ def main():
         import traceback
 
         traceback.print_exc()
+
 
 if __name__ == "__main__":
     main()

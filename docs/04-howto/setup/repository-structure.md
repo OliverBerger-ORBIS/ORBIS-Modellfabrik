@@ -74,7 +74,7 @@ ORBIS-Modellfabrik/
 ### **Import-Standards**
 ```python
 # ✅ Absolute Imports
-from omf.tools.logging_config import get_logger
+from omf.dashboard.tools.logging_config import get_logger
 from omf.dashboard.components.overview import show_overview
 
 # ❌ Relative Imports

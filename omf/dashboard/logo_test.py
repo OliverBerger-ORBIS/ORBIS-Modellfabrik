@@ -4,8 +4,8 @@ ORBIS Logo Test - Vergleich der verschiedenen ORBIS-Logos
 Version: 3.0.0
 """
 
-from pathlib import Path
 import os
+from pathlib import Path
 
 import streamlit as st
 

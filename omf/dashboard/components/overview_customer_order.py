@@ -3,7 +3,6 @@ OMF Dashboard Overview - Kundenaufträge (Customer Orders)
 Kopiert aus overview_inventory.py - Sektion 2: Bestellungen
 """
 
-from pathlib import Path
 from datetime import datetime, timezone
 
 import streamlit as st

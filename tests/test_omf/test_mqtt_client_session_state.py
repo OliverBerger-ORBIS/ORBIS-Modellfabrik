@@ -4,10 +4,11 @@ Unit Test: MQTT Client Session State Problem
 Testet, warum der MQTT-Client in der Nachrichten-Zentrale nicht gefunden wird
 """
 
-from pathlib import Path
 import unittest
+from pathlib import Path
 
 # Add omf to path
+
 
 class TestMqttClientSessionState(unittest.TestCase):
     """Testet MQTT Client Session State Probleme"""
@@ -20,7 +21,7 @@ class TestMqttClientSessionState(unittest.TestCase):
     def test_mqtt_client_creation(self):
         """Testet MQTT Client Erstellung"""
         try:
-            from omf.tools.omf_mqtt_factory import get_omf_mqtt_client
+            from omf.dashboard.tools.omf_mqtt_factory import get_omf_mqtt_client
 
             # Test-Konfiguration
             test_config = {
@@ -52,7 +53,7 @@ class TestMqttClientSessionState(unittest.TestCase):
     def test_mqtt_client_methods(self):
         """Testet MQTT Client Methoden"""
         try:
-            from omf.tools.omf_mqtt_factory import get_omf_mqtt_client
+            from omf.dashboard.tools.omf_mqtt_factory import get_omf_mqtt_client
 
             # Test-Konfiguration
             test_config = {
@@ -88,7 +89,7 @@ class TestMqttClientSessionState(unittest.TestCase):
     def test_session_state_simulation(self):
         """Simuliert Streamlit Session State"""
         try:
-            from omf.tools.omf_mqtt_factory import get_omf_mqtt_client
+            from omf.dashboard.tools.omf_mqtt_factory import get_omf_mqtt_client
 
             # Test-Konfiguration
             test_config = {
@@ -128,7 +129,7 @@ class TestMqttClientSessionState(unittest.TestCase):
     def test_clear_history_functionality(self):
         """Testet clear_history Funktionalität"""
         try:
-            from omf.tools.omf_mqtt_factory import get_omf_mqtt_client
+            from omf.dashboard.tools.omf_mqtt_factory import get_omf_mqtt_client
 
             # Test-Konfiguration
             test_config = {
@@ -163,7 +164,7 @@ class TestMqttClientSessionState(unittest.TestCase):
     def test_mqtt_client_attributes(self):
         """Testet alle wichtigen MQTT Client Attribute"""
         try:
-            from omf.tools.omf_mqtt_factory import get_omf_mqtt_client
+            from omf.dashboard.tools.omf_mqtt_factory import get_omf_mqtt_client
 
             # Test-Konfiguration
             test_config = {
@@ -202,6 +203,7 @@ class TestMqttClientSessionState(unittest.TestCase):
 
         except Exception as e:
             self.fail(f"❌ Attribute Test fehlgeschlagen: {e}")
+
 
 if __name__ == "__main__":
     # Test ausführen

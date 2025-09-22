@@ -12,6 +12,7 @@ from omf.tools.fts_route_generator import FTSRouteGenerator
 # Add project root to path
 project_root = Path(__file__).parent.parent
 
+
 def main():
     """Hauptfunktion für FTS Route Generator Beispiel"""
     print("🚛 FTS Route Generator - Praktisches Beispiel")
@@ -93,6 +94,7 @@ def main():
         print(f"  - {route_id}: {status}")
 
     print("\n🎉 Beispiel abgeschlossen!")
+
 
 if __name__ == "__main__":
     main()

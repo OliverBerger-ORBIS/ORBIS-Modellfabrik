@@ -2,6 +2,7 @@ from dataclasses import dataclass
 
 import paho.mqtt.client as mqtt
 
+
 @dataclass(frozen=True)
 class MqttConfig:
     host: str
@@ -13,6 +14,7 @@ class MqttConfig:
     clean_session: bool = True
     protocol: int = mqtt.MQTTv311  # passt i.d.R. für Mosquitto v2
     tls: bool = False
+
 
 def cfg_for(env: str) -> MqttConfig:
     """

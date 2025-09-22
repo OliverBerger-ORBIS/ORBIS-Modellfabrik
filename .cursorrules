@@ -3,7 +3,7 @@
 ## 🎯 ZENTRALE ENTWICKLUNGSREGELN
 
 ### Import-Standards (KRITISCH)
-- **Absolute Imports für externe Module:** `from omf.tools.logging_config import get_logger` ✅
+- **Absolute Imports für externe Module:** `from omf.dashboard.tools.logging_config import get_logger` ✅
 - **Relative Imports für Paket-interne Module:** `from .graph_analyzer import GraphAnalyzer` ✅
 - **Standard Library Imports:** `import json, from pathlib import Path` ✅
 - **KEINE sys.path.append Hacks:** `sys.path.append(...)` ❌
@@ -17,9 +17,9 @@
 - **Unterscheidung:** Source-Pfade vs. Data-Pfade je nach Verwendungszweck
 
 ### Projekt-Struktur
-- **Aktive Sourcen:** `src_orbis/omf/dashboard/` (Produktiv-Dashboard)
-- **Helper-Apps:** `src_orbis/helper_apps/`, `src_orbis/analysis_tools/` (Separate Anwendungen)
-- **Dokumentation:** `docs_orbis/` (Alle Projekt-Dokumente)
+- **Aktive Sourcen:** `omf/dashboard/` (Produktiv-Dashboard)
+- **Helper-Apps:** `omf/helper_apps/`, `omf/analysis_tools/` (Separate Anwendungen)
+- **Dokumentation:** `docs/` (Alle Projekt-Dokumente)
 - **Session-Daten:** `data/omf-data/sessions/` (SQLite + Log-Dateien)
 - **Log-Dateien:** `data/logs/` (nicht mehr ins Projekt-Root)
 
@@ -30,16 +30,16 @@
 - **Commits:** Häufig und mit funktionierendem Stand
 
 ### Test-Standards
-- **Test-Verzeichnis:** `tests_orbis/` (Alle Tests hier)
-- **Test-Struktur:** `tests_orbis/test_omf/`, `tests_orbis/test_helper_apps/`
+- **Test-Verzeichnis:** `tests/` (Alle Tests hier)
+- **Test-Struktur:** `tests/test_omf/`, `tests/test_helper_apps/`
 - **Test-Imports:** Absolute Imports auch in Tests verwenden
 - **Test-Namen:** `test_*.py` oder `*_test.py`
-- **Test-Ausführung:** `python -m pytest tests_orbis/`
+- **Test-Ausführung:** `python -m pytest tests/`
 
 ### Branch-spezifische Test-Regeln
-- **Helper-Branches:** Nur `tests_orbis/test_helper_apps/` ausführen
-- **Main-Branch:** Alle Tests in `tests_orbis/` ausführen
-- **Helper-Test-Befehl:** `python -m pytest tests_orbis/test_helper_apps/`
+- **Helper-Branches:** Nur `tests/test_helper_apps/` ausführen
+- **Main-Branch:** Alle Tests in `tests/` ausführen
+- **Helper-Test-Befehl:** `python -m pytest tests/test_helper_apps/`
 - **Automatische Ausführung:** `python run_tests_by_branch.py`
 
 ### Entwicklungsprozess-Regeln
@@ -68,8 +68,8 @@
 - **Logging-System:** Verwende `_init_logging_once()` für Logging-Initialisierung
 
 ### Vollständige Regeln
-- **Allgemein:** `docs_orbis/DEVELOPMENT_RULES.md`
-- **Dashboard-Komponenten:** `docs_orbis/development/dashboard-component-rules.md`
+- **Allgemein:** `docs/03-decision-records/07-development-rules-compliance.md`
+- **Dashboard-Komponenten:** `docs/03-decision-records/07-development-rules-compliance.md`
 
 ## 🚨 AUTOMATISCHE REGEL-BEFOLGUNG (KRITISCH)
 
@@ -100,7 +100,7 @@
 ### AUTOMATISCHE REGEL-ANWENDUNG
 - **VOR jeder Code-Änderung:** Development Rules prüfen
 - **WÄHREND der Implementierung:** Regeln automatisch befolgen
-- **NACH jeder Änderung:** `python src_orbis/scripts/validate_development_rules.py` ausführen
+- **NACH jeder Änderung:** `python omf/scripts/validate_development_rules.py` ausführen
 - **Bei Regel-Verletzungen:** Sofort korrigieren, nicht ignorieren
 - **Bei Unsicherheit:** User fragen, nicht raten
 

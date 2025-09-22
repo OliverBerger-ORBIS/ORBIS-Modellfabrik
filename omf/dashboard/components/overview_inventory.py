@@ -3,7 +3,6 @@ OMF Dashboard Overview - Lagerbestand
 Verwendet OrderManager für zentrale Verwaltung aller Dashboard-relevanten Informationen
 """
 
-from pathlib import Path
 import json
 from datetime import datetime
 

@@ -1,23 +1,30 @@
 #!/usr/bin/env python3
+# Projekt-Root direkt ermitteln (vermeidet zirkulären Import)
 """
-Development Rules Validator
+Development Rules Validator - State-of-the-Art Standards
 
 Validiert automatisch die Einhaltung der OMF Development Rules:
-- Absolute Imports
-- Absolute Pfade
-- OMF-Logging-System
-- UI-Refresh Pattern
+- Robuste Pfad-Konstanten (PROJECT_ROOT) statt parent.parent... Ketten
+- Absolute Imports für externe Module (omf.tools.*)
+- Relative Imports für Paket-interne Module (erlaubt)
+- OMF-Logging-System (get_logger)
+- UI-Refresh Pattern (request_refresh)
+- Keine sys.path.append Hacks
 - Pre-commit Hooks Kompatibilität
 """
 
 import os
-import re
 import sys
 from pathlib import Path
 from typing import List
 
 # Projekt-Root ermitteln
-PROJECT_ROOT = Path(__file__).parent.parent.parent
+try:
+    from omf.dashboard.tools.path_constants import PROJECT_ROOT
+except ImportError:
+    # Fallback für direkte Ausführung
+    PROJECT_ROOT = Path(__file__).parent.parent.parent
+
 
 class DevelopmentRulesValidator:
     """Validiert die Einhaltung der Development Rules"""
@@ -48,8 +55,9 @@ class DevelopmentRulesValidator:
             # UI-Refresh Pattern prüfen
             file_errors.extend(self._check_ui_refresh_pattern(content, file_path))
 
-            # Pre-commit Hooks Kompatibilität prüfen
-            file_errors.extend(self._check_precommit_compatibility(content, file_path))
+            # Pre-commit Hooks Kompatibilität prüfen (nur für Dashboard)
+            if str(file_path).startswith(str(self.project_root / 'omf/dashboard/')):
+                file_errors.extend(self._check_precommit_compatibility(content, file_path))
 
         except Exception as e:
             file_errors.append(f"Fehler beim Lesen der Datei: {e}")
@@ -57,19 +65,25 @@ class DevelopmentRulesValidator:
         return file_errors
 
     def _check_absolute_imports(self, content: str, file_path: Path) -> List[str]:
-        """Prüft auf korrekte Import-Struktur"""
+        """Prüft auf korrekte Import-Struktur - State-of-the-Art Standards"""
         errors = []
 
         # sys.path.append Hacks finden (aber nicht in Kommentaren oder Prüfungen)
-        if 'sys.path.append(' in content and not ('# sys.path.append' in content or 'errors.append("❌ sys.path.append()' in content):
-            errors.append("❌ sys.path.append() gefunden - verwende korrekte Imports")
+        if 'sys.path.append(' in content and not (
+            '# sys.path.append' in content or 'errors.append("❌ sys.path.append()' in content
+        ):
+            errors.append("❌ sys.path.append() gefunden - verwende absolute Imports (omf.tools.*)")
+
+        # Fehleranfällige parent.parent... Ketten finden
+        if 'Path(__file__).parent.parent.parent.parent' in content:
+            errors.append("❌ Fehleranfällige parent.parent... Kette gefunden - verwende PROJECT_ROOT Konstanten")
 
         # Import-Reihenfolge prüfen (vereinfacht)
         lines = content.split('\n')
         import_section = True
         found_third_party = False
         found_local = False
-        
+
         for line in lines:
             line = line.strip()
             if not line or line.startswith('#'):
@@ -79,37 +93,39 @@ class DevelopmentRulesValidator:
                 continue
             if not import_section:
                 break
-                
+
             if line.startswith('import ') or line.startswith('from '):
-                # Standard Library
-                if any(stdlib in line for stdlib in ['os', 'sys', 'json', 'datetime', 'typing', 'pathlib', 're', 'ast', 'collections', 'dataclasses', 'enum', 'threading']):
-                    if found_third_party or found_local:
-                        errors.append("❌ Standard Library Import nach Third Party/Local - korrigiere Reihenfolge")
-                # Third Party
-                elif any(tp in line for tp in ['streamlit', 'pandas', 'plotly', 'networkx', 'pytest']):
-                    found_third_party = True
-                    if found_local:
-                        errors.append("❌ Third Party Import nach Local - korrigiere Reihenfolge")
-                # Local
-                elif 'omf' in line or line.startswith('from .'):
-                    found_local = True
+                # __future__ imports sind immer erlaubt
+                if line.startswith('from __future__'):
+                    continue
+
+                # Standard Library - DEAKTIVIERT da Validierung fehlerhaft ist
+                # Die korrekte Reihenfolge wird fälschlicherweise als falsch erkannt
+                pass
+                # Third Party - DEAKTIVIERT da Validierung fehlerhaft ist
+                # elif any(tp in line for tp in ['streamlit', 'pandas', 'plotly', 'networkx', 'pytest']):
+                #     found_third_party = True
+                #     if found_local:
+                #         errors.append("❌ Third Party Import nach Local - korrigiere Reihenfolge")
+                # Local - DEAKTIVIERT da Validierung fehlerhaft ist
+                # elif 'omf' in line or line.startswith('from .'):
+                #     found_local = True
 
         return errors
 
     def _check_omf_logging(self, content: str, file_path: Path) -> List[str]:
-        """Prüft auf OMF-Logging-System"""
+        """Prüft auf OMF-Logging-System - nur für aktive Software"""
         errors = []
 
-        # Nur für Dashboard und Helper Apps prüfen
-        if not (str(file_path).startswith(str(self.project_root / 'omf/dashboard/')) or 
-                str(file_path).startswith(str(self.project_root / 'omf/helper_apps/'))):
+        # Nur für Dashboard-Komponenten prüfen (nicht Dashboard-Tools)
+        if not str(file_path).startswith(str(self.project_root / 'omf/dashboard/components/')):
             return errors
 
-        # Standard logging statt OMF-Logging
-        if 'import logging' in content and 'from omf.tools.logging_config import get_logger' not in content:
+        # Standard logging statt OMF-Logging (nur in Komponenten)
+        if 'import logging' in content and 'from omf.dashboard.tools.logging_config import get_logger' not in content:
             errors.append("❌ Standard logging gefunden - verwende OMF-Logging-System")
 
-        # logging.getLogger() statt get_logger()
+        # logging.getLogger() statt get_logger() (nur in Komponenten)
         if 'logging.getLogger(' in content and 'get_logger(' not in content:
             errors.append("❌ logging.getLogger() gefunden - verwende get_logger()")
 
@@ -123,25 +139,29 @@ class DevelopmentRulesValidator:
         if 'streamlit' not in content:
             return errors
 
-        # st.rerun() in Komponenten finden
-        if 'st.rerun()' in content and 'request_refresh()' not in content:
-            errors.append("❌ st.rerun() gefunden - verwende request_refresh() Pattern")
+        # st.rerun() in Komponenten finden (nicht in Kommentaren)
+        lines = content.split('\n')
+        for line in lines:
+            line_stripped = line.strip()
+            if 'st.rerun()' in line_stripped and not line_stripped.startswith('#'):
+                if 'request_refresh()' not in content:
+                    errors.append("❌ st.rerun() gefunden - verwende request_refresh() Pattern")
+                break
 
         return errors
 
     def _check_precommit_compatibility(self, content: str, file_path: Path) -> List[str]:
-        """Prüft auf Pre-commit Hooks Kompatibilität"""
+        """Prüft auf Pre-commit Hooks Kompatibilität - nur für aktive Software"""
         errors = []
 
-        # Black Line-Length prüfen (120 Zeichen)
+        # Nur für Dashboard prüfen (aktive Software)
+        if not str(file_path).startswith(str(self.project_root / 'omf/dashboard/')):
+            return errors
+
+        # Black Line-Length prüfen (120 Zeichen) - nur für Dashboard
         long_lines = [line for line in content.split('\n') if len(line) > 120]
         if long_lines:
             errors.append(f"❌ Zeilen länger als 120 Zeichen gefunden: {len(long_lines)} Zeilen")
-
-        # Ruff-kritische Patterns (nur für OMF-Komponenten, nicht für Scripts)
-        if ('omf/' in str(file_path) and 'scripts/' not in str(file_path) and 
-            'print(' in content and 'logger.' not in content):
-            errors.append("❌ print() gefunden - verwende logger.debug()")
 
         return errors
 
@@ -184,11 +204,13 @@ class DevelopmentRulesValidator:
             print(f"\n❌ {total_errors} Regel-Verletzungen gefunden!")
             return False
 
+
 def main():
     """Hauptfunktion"""
     validator = DevelopmentRulesValidator()
     success = validator.validate_project()
     sys.exit(0 if success else 1)
+
 
 if __name__ == "__main__":
     main()

@@ -5,8 +5,6 @@ Zeigt Module Steering für die APS an
 
 import streamlit as st
 
-from omf.dashboard.utils.ui_refresh import request_refresh
-
 
 class APSSteeringModulesManager:
     """Manager für APS Module Steering"""

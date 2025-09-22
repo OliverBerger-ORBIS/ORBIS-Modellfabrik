@@ -10,8 +10,8 @@ from pathlib import Path
 import yaml
 
 # Add omf to path
-
 from omf.tools.message_template_manager import OmfMessageTemplateManager, get_omf_message_template_manager
+
 
 class TestOMFMessageTemplateManager(unittest.TestCase):
     """Test cases for OMFMessageTemplateManager"""
@@ -247,6 +247,7 @@ class TestOMFMessageTemplateManager(unittest.TestCase):
         file_path = self.manager.get_template_file_path("ccu/control")
         self.assertIsNotNone(file_path)
         self.assertIn("control.yml", file_path)
+
 
 if __name__ == "__main__":
     unittest.main()

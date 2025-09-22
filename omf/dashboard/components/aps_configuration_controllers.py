@@ -5,8 +5,6 @@ Zeigt Controller-Konfiguration für die APS an
 
 import streamlit as st
 
-from omf.dashboard.utils.ui_refresh import request_refresh
-
 
 class APSConfigurationControllersManager:
     """Manager für APS Controller Configuration"""

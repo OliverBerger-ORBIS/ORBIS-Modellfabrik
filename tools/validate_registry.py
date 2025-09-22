@@ -6,12 +6,14 @@ from common import *
 ensure_deps()
 from jsonschema import validate
 
+
 def vfile(path_parts, schema_name):
     f = find_file(*path_parts)
     schema = json.loads(find_file("registry", "schemas", schema_name).read_text(encoding="utf-8"))
     data = load_yaml(f)
     validate(instance=data, schema=schema)
     print(f"[OK] {f} valid")
+
 
 vfile(("registry", "model", "v1", "modules.yml"), "modules.schema.json")
 vfile(("registry", "model", "v1", "enums.yml"), "enums.schema.json")

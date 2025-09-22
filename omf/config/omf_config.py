@@ -1,14 +1,15 @@
+from omf.dashboard.tools.path_constants import CONFIG_DIR, PROJECT_ROOT
+
 """
 OMF Dashboard Konfiguration
 Version: 3.0.0
 """
 
-from pathlib import Path
 
 import yaml
 
 # Basis-Pfade
-BASE_DIR = Path(__file__).parent.parent.parent.parent
+BASE_DIR = PROJECT_ROOT
 OMF_DATA_DIR = BASE_DIR / "omf-data"
 CONFIG_DIR = BASE_DIR / "omf" / "omf" / "config"
 
@@ -85,6 +86,7 @@ TRANSLATIONS = {
     },
 }
 
+
 class OmfConfig:
     """OMF Dashboard Konfigurationsklasse"""
 
@@ -145,6 +147,7 @@ class OmfConfig:
         """Holt den Namen eines Moduls"""
         module_config = self.get(f"modules.{module_id}", {})
         return module_config.get("name", module_id.upper())
+
 
 # Globale Konfigurationsinstanz
 config = OmfConfig()

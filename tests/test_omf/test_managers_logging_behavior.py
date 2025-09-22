@@ -8,10 +8,11 @@ import unittest
 from pathlib import Path
 from unittest.mock import MagicMock, call, patch
 
+from omf.dashboard.tools.mqtt_gateway import MqttGateway
+from omf.dashboard.tools.omf_mqtt_client import OmfMqttClient
+from omf.dashboard.tools.registry_manager import Registry, TopicManager
 from omf.tools.message_template_manager import OmfMessageTemplateManager
-from omf.tools.mqtt_gateway import MqttGateway
-from omf.tools.omf_mqtt_client import OmfMqttClient
-from omf.tools.registry_manager import Registry, TopicManager
+
 
 class TestManagersLoggingBehavior(unittest.TestCase):
     """Tests für Manager Logging-Verhalten"""
@@ -77,12 +78,12 @@ class TestManagersLoggingBehavior(unittest.TestCase):
     def test_registry_logs_version_check(self):
         """Test: Registry loggt Version-Check"""
         # Vereinfachter Test ohne komplexe Mock-Setup
-        with patch('omf.tools.registry_manager.get_logger') as mock_get_logger:
+        with patch('omf.dashboard.tools.registry_manager.get_logger') as mock_get_logger:
             mock_logger = MagicMock()
             mock_get_logger.return_value = mock_logger
 
             # Mock Registry
-            with patch('omf.tools.registry_manager.Registry') as mock_registry:
+            with patch('omf.dashboard.tools.registry_manager.Registry') as mock_registry:
                 mock_registry_instance = MagicMock()
                 mock_registry.return_value = mock_registry_instance
 
@@ -94,12 +95,12 @@ class TestManagersLoggingBehavior(unittest.TestCase):
     def test_topic_manager_logs_unknown_topics(self):
         """Test: TopicManager loggt unbekannte Topics"""
         # Vereinfachter Test ohne komplexe Mock-Setup
-        with patch('omf.tools.registry_manager.get_logger') as mock_get_logger:
+        with patch('omf.dashboard.tools.registry_manager.get_logger') as mock_get_logger:
             mock_logger = MagicMock()
             mock_get_logger.return_value = mock_logger
 
             # Mock Registry
-            with patch('omf.tools.registry_manager.Registry') as mock_registry:
+            with patch('omf.dashboard.tools.registry_manager.Registry') as mock_registry:
                 mock_registry_instance = MagicMock()
                 mock_registry.return_value = mock_registry_instance
 
@@ -117,14 +118,14 @@ class TestManagersLoggingBehavior(unittest.TestCase):
         mock_client = MagicMock(spec=OmfMqttClient)
         mock_client.publish_json.return_value = True
 
-        with patch('omf.tools.mqtt_gateway.get_logger') as mock_get_logger:
+        with patch('omf.dashboard.tools.mqtt_gateway.get_logger') as mock_get_logger:
             mock_logger = MagicMock()
             mock_get_logger.return_value = mock_logger
 
             gateway = MqttGateway(mock_client)
 
             # Mock message generator
-            with patch('omf.tools.mqtt_gateway.mg') as mock_mg:
+            with patch('omf.dashboard.tools.mqtt_gateway.mg') as mock_mg:
                 mock_mg.test_builder = MagicMock(return_value={"test": "data"})
 
                 # Teste MQTT-Publishing
@@ -151,14 +152,14 @@ class TestManagersLoggingBehavior(unittest.TestCase):
         mock_client = MagicMock(spec=OmfMqttClient)
         mock_client.publish_json.return_value = False  # Simuliere Fehler
 
-        with patch('omf.tools.mqtt_gateway.get_logger') as mock_get_logger:
+        with patch('omf.dashboard.tools.mqtt_gateway.get_logger') as mock_get_logger:
             mock_logger = MagicMock()
             mock_get_logger.return_value = mock_logger
 
             gateway = MqttGateway(mock_client)
 
             # Mock message generator
-            with patch('omf.tools.mqtt_gateway.mg') as mock_mg:
+            with patch('omf.dashboard.tools.mqtt_gateway.mg') as mock_mg:
                 mock_mg.test_builder = MagicMock(return_value={"test": "data"})
 
                 # Teste MQTT-Publishing mit Fehler
@@ -169,6 +170,7 @@ class TestManagersLoggingBehavior(unittest.TestCase):
 
                 for expected_call in expected_calls:
                     self.assertIn(expected_call, mock_logger.error.call_args_list)
+
 
 if __name__ == '__main__':
     unittest.main()

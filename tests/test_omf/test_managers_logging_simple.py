@@ -9,10 +9,11 @@ import unittest
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
+from omf.dashboard.tools.mqtt_gateway import MqttGateway
+from omf.dashboard.tools.omf_mqtt_client import OmfMqttClient
+from omf.dashboard.tools.registry_manager import Registry, TopicManager
 from omf.tools.message_template_manager import OmfMessageTemplateManager
-from omf.tools.mqtt_gateway import MqttGateway
-from omf.tools.omf_mqtt_client import OmfMqttClient
-from omf.tools.registry_manager import Registry, TopicManager
+
 
 class TestManagersLoggingSimple(unittest.TestCase):
     """Einfache Tests für Logging-Integration"""
@@ -45,7 +46,7 @@ class TestManagersLoggingSimple(unittest.TestCase):
         # Prüfe ob Logger-Attribut existiert
         self.assertTrue(hasattr(gateway, 'logger'))
         self.assertIsInstance(gateway.logger, logging.Logger)
-        self.assertEqual(gateway.logger.name, 'omf.tools.mqtt_gateway')
+        self.assertEqual(gateway.logger.name, 'omf.dashboard.tools.mqtt_gateway')
 
     def test_logger_names_follow_convention(self):
         """Test: Logger-Namen folgen der Konvention"""
@@ -55,7 +56,7 @@ class TestManagersLoggingSimple(unittest.TestCase):
         gateway = MqttGateway(mock_client)
 
         # Prüfe Logger-Name-Konvention (konsistente omf.* Namen)
-        expected_name = "omf.tools.mqtt_gateway"
+        expected_name = "omf.dashboard.tools.mqtt_gateway"
         self.assertEqual(gateway.logger.name, expected_name)
 
     def test_logging_uses_get_logger_function(self):
@@ -63,12 +64,12 @@ class TestManagersLoggingSimple(unittest.TestCase):
         # Prüfe ob alle Manager get_logger() importieren
         with open('omf/tools/message_template_manager.py') as f:
             content = f.read()
-            self.assertIn('from omf.tools.logging_config import get_logger', content)
+            self.assertIn('from omf.dashboard.tools.logging_config import get_logger', content)
             self.assertIn('get_logger(', content)
 
         with open('omf/tools/registry_manager.py') as f:
             content = f.read()
-            self.assertIn('from omf.tools.logging_config import get_logger', content)
+            self.assertIn('from omf.dashboard.tools.logging_config import get_logger', content)
             self.assertIn('get_logger(', content)
 
         with open('omf/tools/mqtt_gateway.py') as f:
@@ -90,7 +91,7 @@ class TestManagersLoggingSimple(unittest.TestCase):
         mock_client = MagicMock(spec=OmfMqttClient)
 
         # Capture Log-Messages
-        with patch('omf.tools.mqtt_gateway.get_logger') as mock_get_logger:
+        with patch('omf.dashboard.tools.mqtt_gateway.get_logger') as mock_get_logger:
             mock_logger = MagicMock()
             mock_get_logger.return_value = mock_logger
 
@@ -105,7 +106,7 @@ class TestManagersLoggingSimple(unittest.TestCase):
         mock_client = MagicMock(spec=OmfMqttClient)
 
         # Capture Log-Messages
-        with patch('omf.tools.mqtt_gateway.get_logger') as mock_get_logger:
+        with patch('omf.dashboard.tools.mqtt_gateway.get_logger') as mock_get_logger:
             mock_logger = MagicMock()
             mock_get_logger.return_value = mock_logger
 
@@ -125,7 +126,7 @@ class TestManagersLoggingSimple(unittest.TestCase):
         # Mock MQTT Client
         mock_client = MagicMock(spec=OmfMqttClient)
 
-        with patch('omf.tools.mqtt_gateway.get_logger') as mock_get_logger:
+        with patch('omf.dashboard.tools.mqtt_gateway.get_logger') as mock_get_logger:
             mock_logger = MagicMock()
             mock_get_logger.return_value = mock_logger
 
@@ -148,7 +149,7 @@ class TestManagersLoggingSimple(unittest.TestCase):
         # Mock MQTT Client
         mock_client = MagicMock(spec=OmfMqttClient)
 
-        with patch('omf.tools.mqtt_gateway.get_logger') as mock_get_logger:
+        with patch('omf.dashboard.tools.mqtt_gateway.get_logger') as mock_get_logger:
             mock_logger = MagicMock()
             mock_get_logger.return_value = mock_logger
 
@@ -173,14 +174,14 @@ class TestManagersLoggingSimple(unittest.TestCase):
         # Mock MQTT Client
         mock_client = MagicMock(spec=OmfMqttClient)
 
-        with patch('omf.tools.mqtt_gateway.get_logger') as mock_get_logger:
+        with patch('omf.dashboard.tools.mqtt_gateway.get_logger') as mock_get_logger:
             mock_logger = MagicMock()
             mock_get_logger.return_value = mock_logger
 
             MqttGateway(mock_client)
 
             # Prüfe ob get_logger mit korrektem Namen aufgerufen wurde
-            expected_name = "omf.tools.mqtt_gateway"
+            expected_name = "omf.dashboard.tools.mqtt_gateway"
             mock_get_logger.assert_called_with(expected_name)
 
     def test_logging_integration_completeness(self):
@@ -199,6 +200,7 @@ class TestManagersLoggingSimple(unittest.TestCase):
                 self.assertIn('get_logger', content)
                 # Sollte Logger-Attribut haben
                 self.assertIn('self.logger = get_logger(', content)
+
 
 if __name__ == "__main__":
     unittest.main()

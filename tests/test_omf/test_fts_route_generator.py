@@ -11,6 +11,7 @@ from unittest.mock import MagicMock, patch
 # Add project root to path
 project_root = Path(__file__).parent.parent
 
+
 class TestFTSRouteGenerator(unittest.TestCase):
     """Test-Klasse für FTS Route Generator"""
 
@@ -364,6 +365,7 @@ class TestFTSRouteGenerator(unittest.TestCase):
         except Exception as e:
             self.fail(f"❌ Get Tested Routes failed: {e}")
 
+
 class TestFTSRouteGeneratorIntegration(unittest.TestCase):
     """Integration-Tests für FTS Route Generator"""
 
@@ -422,6 +424,7 @@ class TestFTSRouteGeneratorIntegration(unittest.TestCase):
             print("✅ DPS to HBW Message Structure: OK")
         except Exception as e:
             self.fail(f"❌ DPS to HBW Message Structure failed: {e}")
+
 
 if __name__ == "__main__":
     print("🧪 Running FTS Route Generator Tests...")
