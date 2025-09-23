@@ -1,8 +1,8 @@
 {
   "BLUE": {
     "steps": [
-      "DRILL",
       "MILL",
+      "DRILL",
       "AIQS"
     ]
   },

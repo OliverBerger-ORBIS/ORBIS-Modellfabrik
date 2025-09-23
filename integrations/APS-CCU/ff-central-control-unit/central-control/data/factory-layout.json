@@ -2,28 +2,28 @@
   "modules": [
     {
       "type": "HBW",
-      "serialNumber": "SVR3QA0022",
-      "placeholder": false
+      "serialNumber": "HBW-MISSING",
+      "placeholder": true
     },
     {
       "type": "DRILL",
-      "serialNumber": "SVR4H76449",
-      "placeholder": false
+      "serialNumber": "DRILL-MISSING",
+      "placeholder": true
     },
     {
       "type": "MILL",
-      "serialNumber": "SVR3QA2098",
-      "placeholder": false
+      "serialNumber": "MILL-MISSING",
+      "placeholder": true
     },
     {
       "type": "DPS",
-      "serialNumber": "SVR4H73275",
-      "placeholder": false
+      "serialNumber": "DPS-MISSING",
+      "placeholder": true
     },
     {
       "type": "AIQS",
-      "serialNumber": "SVR4H76530",
-      "placeholder": false
+      "serialNumber": "AIQS-MISSING",
+      "placeholder": true
     },
     {
       "type": "CHRG",
@@ -71,31 +71,31 @@
     },
     {
       "direction": "EAST",
-      "from": "SVR3QA0022",
+      "from": "HBW-MISSING",
       "to": "1",
       "length": 380
     },
     {
       "direction": "EAST",
-      "from": "SVR4H76449",
+      "from": "DRILL-MISSING",
       "to": "3",
       "length": 380
     },
     {
       "direction": "SOUTH",
-      "from": "SVR3QA2098",
+      "from": "MILL-MISSING",
       "to": "1",
       "length": 380
     },
     {
       "direction": "WEST",
-      "from": "SVR4H73275",
+      "from": "DPS-MISSING",
       "to": "2",
       "length": 380
     },
     {
       "direction": "SOUTH",
-      "from": "SVR4H76530",
+      "from": "AIQS-MISSING",
       "to": "2",
       "length": 380
     },

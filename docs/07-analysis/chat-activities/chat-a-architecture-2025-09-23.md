@@ -9,22 +9,23 @@
 - **System-Context aktualisieren** - Mermaid-Diagramm, ASCII-Art entfernt
 - **APS-CCU Beschreibung** - RPi/Docker-Container, MQTT-Broker Details
 - **Cursor-Agent-Struktur-Plan überarbeiten** - APS/OMF Namenskonvention + bewährte Vorgehensweisen
+- **APS-CCU Backend-Code extrahiert** - Docker-Container analysiert, Code in `/integrations/APS-CCU/` strukturiert
 
 ## ⏳ **Nächste Schritte:**
 
-### **1. Integration-Struktur anpassen**
+### **1. Integration-Struktur anpassen** ✅
 **Ziel:** `/integrations/` auf Komponenten-Namen umstellen
 
 **Konkrete Umbenennungen:**
-- `ff-central-control-unit/` → `APS-CCU/`
+- ✅ `ff-central-control-unit/` → `APS-CCU/` (abgeschlossen)
 - `node_red/` → `APS-NodeRED/`
 - `fischertechnik-txt-programs/` → `TXT-DPS/`, `TXT-FTS/`, `TXT-AIQS/`, `TXT-CGW/`
 - `mqtt/` → `mosquitto/`
 
 **Vorgehen:**
-1. Bestehende Ordner analysieren
-2. Neue Ordner-Struktur erstellen
-3. Dateien migrieren
+1. ✅ Bestehende Ordner analysieren (APS-CCU abgeschlossen)
+2. ✅ Neue Ordner-Struktur erstellen (APS-CCU abgeschlossen)
+3. ✅ Dateien migrieren (APS-CCU abgeschlossen)
 4. Verlinkungen aktualisieren
 
 ### **2. Dokumentations-Struktur anpassen**

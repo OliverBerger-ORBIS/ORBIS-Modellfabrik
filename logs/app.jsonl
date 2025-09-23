@@ -12019,3 +12019,323 @@
 {"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.components.aps_control", "msg": "📤 APS System Command gesendet: Result=True", "timestamp": "2025-09-23 10:04:02,683"}
 {"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_configuration", "msg": "Factory Configuration erfolgreich angezeigt", "timestamp": "2025-09-23 10:04:02,706"}
 {"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_configuration", "msg": "System Configuration erfolgreich angezeigt", "timestamp": "2025-09-23 10:04:02,709"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.dashboard.init", "msg": "🔍 DEBUG: Log-Level ist auf 10 gesetzt (DEBUG=10, INFO=20)", "timestamp": "2025-09-23 14:42:40,758"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.dashboard.init", "msg": "🔍 DEBUG: Root Logger Level: 10", "timestamp": "2025-09-23 14:42:40,758"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard", "msg": "🔧 Dashboard-Logging initialisiert", "timestamp": "2025-09-23 14:42:40,758"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.dashboard.init", "msg": "🔍 DEBUG: MqttGateway Logger Level: 10", "timestamp": "2025-09-23 14:42:40,759"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.dashboard.init", "msg": "🔍 DEBUG: Dashboard Logger Level: 0", "timestamp": "2025-09-23 14:42:40,759"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.dashboard", "msg": "🐛 DASHBOARD DEBUG-TEST NACH KONFIGURATION", "timestamp": "2025-09-23 14:42:40,759"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.components.message_center", "msg": "📡 Message Center geladen", "timestamp": "2025-09-23 14:42:41,955"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering", "msg": "🎮 Steering geladen", "timestamp": "2025-09-23 14:42:41,959"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.components.steering_factory", "msg": "🏭 Factory Steering geladen", "timestamp": "2025-09-23 14:42:41,960"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.components.steering_factory", "msg": "✅ MQTT-Client verfügbar, initialisiere Gateway", "timestamp": "2025-09-23 14:42:41,960"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_generic", "msg": "🔧 Generic Steering geladen", "timestamp": "2025-09-23 14:42:41,970"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_generic", "msg": "✅ MQTT-Client verfügbar, initialisiere Gateway", "timestamp": "2025-09-23 14:42:41,971"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_sequence", "msg": "🎯 Sequence Steering geladen", "timestamp": "2025-09-23 14:42:42,015"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.module_state_control", "msg": "Initialisiere ModuleStateManager mit MQTT-Client und Gateway", "timestamp": "2025-09-23 14:42:42,149"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Filter hinzugefügt: module/v1/ff/SVR4H76530/state", "timestamp": "2025-09-23 14:42:42,149"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Filter hinzugefügt: module/v1/ff/SVR3QA2098/state", "timestamp": "2025-09-23 14:42:42,149"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Filter hinzugefügt: module/v1/ff/SVR4H76449/state", "timestamp": "2025-09-23 14:42:42,149"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Filter hinzugefügt: module/v1/ff/SVR3QA0022/state", "timestamp": "2025-09-23 14:42:42,149"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Filter hinzugefügt: module/v1/ff/SVR4H73275/state", "timestamp": "2025-09-23 14:42:42,149"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Filter hinzugefügt: module/v1/ff/CHRG0/state", "timestamp": "2025-09-23 14:42:42,149"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Filter hinzugefügt: module/v1/ff/SVR4H76530/connection", "timestamp": "2025-09-23 14:42:42,149"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Filter hinzugefügt: module/v1/ff/SVR3QA2098/connection", "timestamp": "2025-09-23 14:42:42,149"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Filter hinzugefügt: module/v1/ff/SVR4H76449/connection", "timestamp": "2025-09-23 14:42:42,149"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Filter hinzugefügt: module/v1/ff/SVR3QA0022/connection", "timestamp": "2025-09-23 14:42:42,149"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Filter hinzugefügt: module/v1/ff/SVR4H73275/connection", "timestamp": "2025-09-23 14:42:42,149"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Filter hinzugefügt: module/v1/ff/CHRG0/connection", "timestamp": "2025-09-23 14:42:42,149"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Per-topic subscription für 12 Filter aktiviert", "timestamp": "2025-09-23 14:42:42,149"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "Monitor-Thread gestartet", "timestamp": "2025-09-23 14:42:42,150"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.module_state_manager", "msg": "ModuleStateManager initialisiert", "timestamp": "2025-09-23 14:42:42,150"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.module_state_control", "msg": "ModuleStateManager erfolgreich initialisiert", "timestamp": "2025-09-23 14:42:42,150"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.logs_test", "msg": "ℹ️ INFO-TEST aus logs.py Komponente", "timestamp": "2025-09-23 14:42:42,160"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_overview", "msg": "APS Bestellung Panel erfolgreich angezeigt", "timestamp": "2025-09-23 14:42:42,174"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_overview", "msg": "APS Rohware Panel erfolgreich angezeigt", "timestamp": "2025-09-23 14:42:42,186"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_overview", "msg": "APS Lagerbestand Panel erfolgreich angezeigt", "timestamp": "2025-09-23 14:42:42,191"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.components.aps_control", "msg": "🚀 APS Control Manager initialisiert", "timestamp": "2025-09-23 14:42:42,197"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_configuration", "msg": "Factory Configuration erfolgreich angezeigt", "timestamp": "2025-09-23 14:42:42,222"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_system_configuration", "msg": "APS Configuration Datei /Users/oliver/Projects/ORBIS-Modellfabrik/omf/config/aps_system_configuration.yml nicht gefunden", "timestamp": "2025-09-23 14:42:42,224"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_system_configuration", "msg": "APS Configuration mit Standardwerten initialisiert", "timestamp": "2025-09-23 14:42:42,224"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_configuration", "msg": "System Configuration erfolgreich angezeigt", "timestamp": "2025-09-23 14:42:42,229"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.components.message_center", "msg": "📡 Message Center geladen", "timestamp": "2025-09-23 14:42:51,017"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering", "msg": "🎮 Steering geladen", "timestamp": "2025-09-23 14:42:51,036"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.components.steering_factory", "msg": "🏭 Factory Steering geladen", "timestamp": "2025-09-23 14:42:51,036"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.components.steering_factory", "msg": "✅ MQTT-Client verfügbar, initialisiere Gateway", "timestamp": "2025-09-23 14:42:51,037"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_generic", "msg": "🔧 Generic Steering geladen", "timestamp": "2025-09-23 14:42:51,042"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_generic", "msg": "✅ MQTT-Client verfügbar, initialisiere Gateway", "timestamp": "2025-09-23 14:42:51,042"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_sequence", "msg": "🎯 Sequence Steering geladen", "timestamp": "2025-09-23 14:42:51,120"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.tools.registry", "msg": "Registry v1 Manager initialisiert", "timestamp": "2025-09-23 14:42:51,148"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.tools.registry", "msg": "Registry-Root: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1", "timestamp": "2025-09-23 14:42:51,149"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/manifest.yml", "timestamp": "2025-09-23 14:42:51,150"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.tools.registry", "msg": "✅ Registry version check passed: v1.0.0", "timestamp": "2025-09-23 14:42:51,150"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/templates/ccu.state.stock.yml", "timestamp": "2025-09-23 14:42:51,162"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/templates/txt..i.ldr.yml", "timestamp": "2025-09-23 14:42:51,166"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/templates/txt..o.broadcast.yml", "timestamp": "2025-09-23 14:42:51,169"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/templates/ccu.state.config.yml", "timestamp": "2025-09-23 14:42:51,170"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/templates/categories.yml", "timestamp": "2025-09-23 14:42:51,182"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/templates/ccu.order.response.yml", "timestamp": "2025-09-23 14:42:51,192"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/templates/nodered.svr4h76530.factsheet.yml", "timestamp": "2025-09-23 14:42:51,198"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/templates/module.svr3qa2098.state.yml", "timestamp": "2025-09-23 14:42:51,201"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/templates/ccu.general.global.yml", "timestamp": "2025-09-23 14:42:51,202"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/templates/nodered.svr4h76530.state.yml", "timestamp": "2025-09-23 14:42:51,206"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/templates/module.svr4h73275.factsheet.yml", "timestamp": "2025-09-23 14:42:51,223"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/templates/cam..c.cam.yml", "timestamp": "2025-09-23 14:42:51,224"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/templates/module.svr4h76530.connection.yml", "timestamp": "2025-09-23 14:42:51,227"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/templates/vda5050.yml", "timestamp": "2025-09-23 14:42:51,249"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/templates/module.svr3qa0022.connection.yml", "timestamp": "2025-09-23 14:42:51,251"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/templates/ccu.pairing.pair_fts.yml", "timestamp": "2025-09-23 14:42:51,252"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/templates/module.svr4h73275.instantaction.yml", "timestamp": "2025-09-23 14:42:51,254"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/templates/nodered.svr4h73275.instantaction.yml", "timestamp": "2025-09-23 14:42:51,256"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/templates/ccu.order.active.yml", "timestamp": "2025-09-23 14:42:51,270"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/templates/module.svr4h73275.connection.yml", "timestamp": "2025-09-23 14:42:51,272"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/templates/module.svr4h76530.order.yml", "timestamp": "2025-09-23 14:42:51,274"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/templates/module.svr4h76449.order.yml", "timestamp": "2025-09-23 14:42:51,277"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/templates/nodered.svr4h73275.state.yml", "timestamp": "2025-09-23 14:42:51,283"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/templates/txt..c.ldr.yml", "timestamp": "2025-09-23 14:42:51,286"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/templates/module.svr4h73275.order.yml", "timestamp": "2025-09-23 14:42:51,289"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/templates/nodered.svr4h76530.connection.yml", "timestamp": "2025-09-23 14:42:51,296"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/templates/module.svr3qa2098.factsheet.yml", "timestamp": "2025-09-23 14:42:51,302"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/templates/nodered.svr4h73275.connection.yml", "timestamp": "2025-09-23 14:42:51,305"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/templates/ccu.order.request.yml", "timestamp": "2025-09-23 14:42:51,306"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/templates/cam..i.cam.yml", "timestamp": "2025-09-23 14:42:51,307"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/templates/module.svr3qa0022.state.yml", "timestamp": "2025-09-23 14:42:51,317"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/templates/module.svr4h76449.connection.yml", "timestamp": "2025-09-23 14:42:51,319"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/templates/ccu.settings.charge.yml", "timestamp": "2025-09-23 14:42:51,320"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/templates/module.svr3qa2098.connection.yml", "timestamp": "2025-09-23 14:42:51,322"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/templates/module.svr4h76530.state.yml", "timestamp": "2025-09-23 14:42:51,325"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/templates/txt..f.i.config.hbw.yml", "timestamp": "2025-09-23 14:42:51,327"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/templates/module.svr3qa2098.order.yml", "timestamp": "2025-09-23 14:42:51,330"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/templates/bme680..c.bme680.yml", "timestamp": "2025-09-23 14:42:51,331"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/templates/nodered.svr4h76530.order.yml", "timestamp": "2025-09-23 14:42:51,334"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/templates/metadata.yml", "timestamp": "2025-09-23 14:42:51,337"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/templates/nodered.nodered.status.yml", "timestamp": "2025-09-23 14:42:51,340"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/templates/ccu.order.completed.yml", "timestamp": "2025-09-23 14:42:51,381"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/templates/module.nodered.status.yml", "timestamp": "2025-09-23 14:42:51,383"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/templates/txt..f.i.stock.yml", "timestamp": "2025-09-23 14:42:51,390"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/templates/ccu.state.state.yml", "timestamp": "2025-09-23 14:42:51,402"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/templates/module.svr3qa0022.order.yml", "timestamp": "2025-09-23 14:42:51,405"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/templates/module.svr3qa0022.factsheet.yml", "timestamp": "2025-09-23 14:42:51,421"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/templates/txt..i.broadcast.yml", "timestamp": "2025-09-23 14:42:51,424"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/templates/txt..f.i.order.yml", "timestamp": "2025-09-23 14:42:51,425"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/templates/ccu.state.flows.yml", "timestamp": "2025-09-23 14:42:51,427"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/templates/module.svr4h76530.factsheet.yml", "timestamp": "2025-09-23 14:42:51,442"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/templates/module.svr4h76449.factsheet.yml", "timestamp": "2025-09-23 14:42:51,450"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/templates/txt..f.o.order.yml", "timestamp": "2025-09-23 14:42:51,451"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/templates/module.svr4h73275.state.yml", "timestamp": "2025-09-23 14:42:51,455"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/templates/nodered.ccu.state.yml", "timestamp": "2025-09-23 14:42:51,458"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/templates/ccu.state.layout.yml", "timestamp": "2025-09-23 14:42:51,462"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/templates/ccu.settings.reset.yml", "timestamp": "2025-09-23 14:42:51,464"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/templates/nodered.svr4h73275.factsheet.yml", "timestamp": "2025-09-23 14:42:51,479"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/templates/bme680..i.bme680.yml", "timestamp": "2025-09-23 14:42:51,486"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/templates/ccu.state.version-mismatch.yml", "timestamp": "2025-09-23 14:42:51,508"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/templates/module.svr4h76449.state.yml", "timestamp": "2025-09-23 14:42:51,512"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.tools.registry", "msg": "📁 Loaded: /Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/templates/nodered.svr4h73275.order.yml", "timestamp": "2025-09-23 14:42:51,523"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.tools.registry", "msg": "MessageTemplateManager initialisiert", "timestamp": "2025-09-23 14:42:51,523"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.logs_test", "msg": "ℹ️ INFO-TEST aus logs.py Komponente", "timestamp": "2025-09-23 14:42:51,578"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_overview", "msg": "APS Bestellung Panel erfolgreich angezeigt", "timestamp": "2025-09-23 14:42:51,581"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_overview", "msg": "APS Rohware Panel erfolgreich angezeigt", "timestamp": "2025-09-23 14:42:51,583"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_overview", "msg": "APS Lagerbestand Panel erfolgreich angezeigt", "timestamp": "2025-09-23 14:42:51,584"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_configuration", "msg": "Factory Configuration erfolgreich angezeigt", "timestamp": "2025-09-23 14:42:51,613"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_configuration", "msg": "System Configuration erfolgreich angezeigt", "timestamp": "2025-09-23 14:42:51,615"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.components.message_center", "msg": "📡 Message Center geladen", "timestamp": "2025-09-23 14:43:22,555"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering", "msg": "🎮 Steering geladen", "timestamp": "2025-09-23 14:43:22,577"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.components.steering_factory", "msg": "🏭 Factory Steering geladen", "timestamp": "2025-09-23 14:43:22,578"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.components.steering_factory", "msg": "✅ MQTT-Client verfügbar, initialisiere Gateway", "timestamp": "2025-09-23 14:43:22,578"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_generic", "msg": "🔧 Generic Steering geladen", "timestamp": "2025-09-23 14:43:22,584"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_generic", "msg": "✅ MQTT-Client verfügbar, initialisiere Gateway", "timestamp": "2025-09-23 14:43:22,585"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_sequence", "msg": "🎯 Sequence Steering geladen", "timestamp": "2025-09-23 14:43:22,686"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.tools.registry", "msg": "MessageTemplateManager initialisiert", "timestamp": "2025-09-23 14:43:22,713"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.logs_test", "msg": "ℹ️ INFO-TEST aus logs.py Komponente", "timestamp": "2025-09-23 14:43:22,777"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_overview", "msg": "APS Bestellung Panel erfolgreich angezeigt", "timestamp": "2025-09-23 14:43:22,780"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_overview", "msg": "APS Rohware Panel erfolgreich angezeigt", "timestamp": "2025-09-23 14:43:22,782"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_overview", "msg": "APS Lagerbestand Panel erfolgreich angezeigt", "timestamp": "2025-09-23 14:43:22,783"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_configuration", "msg": "Factory Configuration erfolgreich angezeigt", "timestamp": "2025-09-23 14:43:22,807"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_configuration", "msg": "System Configuration erfolgreich angezeigt", "timestamp": "2025-09-23 14:43:22,810"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.components.message_center", "msg": "📡 Message Center geladen", "timestamp": "2025-09-23 14:43:42,860"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering", "msg": "🎮 Steering geladen", "timestamp": "2025-09-23 14:43:42,878"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.components.steering_factory", "msg": "🏭 Factory Steering geladen", "timestamp": "2025-09-23 14:43:42,879"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.components.steering_factory", "msg": "✅ MQTT-Client verfügbar, initialisiere Gateway", "timestamp": "2025-09-23 14:43:42,880"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_generic", "msg": "🔧 Generic Steering geladen", "timestamp": "2025-09-23 14:43:42,885"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_generic", "msg": "✅ MQTT-Client verfügbar, initialisiere Gateway", "timestamp": "2025-09-23 14:43:42,885"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_sequence", "msg": "🎯 Sequence Steering geladen", "timestamp": "2025-09-23 14:43:42,938"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.tools.registry", "msg": "MessageTemplateManager initialisiert", "timestamp": "2025-09-23 14:43:43,005"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.logs_test", "msg": "ℹ️ INFO-TEST aus logs.py Komponente", "timestamp": "2025-09-23 14:43:43,066"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_overview", "msg": "APS Bestellung Panel erfolgreich angezeigt", "timestamp": "2025-09-23 14:43:43,069"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_overview", "msg": "APS Rohware Panel erfolgreich angezeigt", "timestamp": "2025-09-23 14:43:43,071"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_overview", "msg": "APS Lagerbestand Panel erfolgreich angezeigt", "timestamp": "2025-09-23 14:43:43,072"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_overview", "msg": "Kamera nach up bewegt", "timestamp": "2025-09-23 14:43:43,075"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_configuration", "msg": "Factory Configuration erfolgreich angezeigt", "timestamp": "2025-09-23 14:43:43,096"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_configuration", "msg": "System Configuration erfolgreich angezeigt", "timestamp": "2025-09-23 14:43:43,099"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.components.message_center", "msg": "📡 Message Center geladen", "timestamp": "2025-09-23 14:43:47,315"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering", "msg": "🎮 Steering geladen", "timestamp": "2025-09-23 14:43:47,338"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.components.steering_factory", "msg": "🏭 Factory Steering geladen", "timestamp": "2025-09-23 14:43:47,339"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.components.steering_factory", "msg": "✅ MQTT-Client verfügbar, initialisiere Gateway", "timestamp": "2025-09-23 14:43:47,340"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_generic", "msg": "🔧 Generic Steering geladen", "timestamp": "2025-09-23 14:43:47,357"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_generic", "msg": "✅ MQTT-Client verfügbar, initialisiere Gateway", "timestamp": "2025-09-23 14:43:47,357"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_sequence", "msg": "🎯 Sequence Steering geladen", "timestamp": "2025-09-23 14:43:47,476"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.tools.registry", "msg": "MessageTemplateManager initialisiert", "timestamp": "2025-09-23 14:43:47,506"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.logs_test", "msg": "ℹ️ INFO-TEST aus logs.py Komponente", "timestamp": "2025-09-23 14:43:47,563"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_overview", "msg": "APS Bestellung Panel erfolgreich angezeigt", "timestamp": "2025-09-23 14:43:47,566"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_overview", "msg": "APS Rohware Panel erfolgreich angezeigt", "timestamp": "2025-09-23 14:43:47,568"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_overview", "msg": "APS Lagerbestand Panel erfolgreich angezeigt", "timestamp": "2025-09-23 14:43:47,569"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_overview", "msg": "Kamera nach down bewegt", "timestamp": "2025-09-23 14:43:47,572"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_configuration", "msg": "Factory Configuration erfolgreich angezeigt", "timestamp": "2025-09-23 14:43:47,598"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_configuration", "msg": "System Configuration erfolgreich angezeigt", "timestamp": "2025-09-23 14:43:47,601"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.components.message_center", "msg": "📡 Message Center geladen", "timestamp": "2025-09-23 14:43:52,538"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering", "msg": "🎮 Steering geladen", "timestamp": "2025-09-23 14:43:52,561"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.components.steering_factory", "msg": "🏭 Factory Steering geladen", "timestamp": "2025-09-23 14:43:52,562"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.components.steering_factory", "msg": "✅ MQTT-Client verfügbar, initialisiere Gateway", "timestamp": "2025-09-23 14:43:52,562"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_generic", "msg": "🔧 Generic Steering geladen", "timestamp": "2025-09-23 14:43:52,600"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_generic", "msg": "✅ MQTT-Client verfügbar, initialisiere Gateway", "timestamp": "2025-09-23 14:43:52,600"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_sequence", "msg": "🎯 Sequence Steering geladen", "timestamp": "2025-09-23 14:43:52,666"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.tools.registry", "msg": "MessageTemplateManager initialisiert", "timestamp": "2025-09-23 14:43:52,695"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.logs_test", "msg": "ℹ️ INFO-TEST aus logs.py Komponente", "timestamp": "2025-09-23 14:43:52,754"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_overview", "msg": "APS Bestellung Panel erfolgreich angezeigt", "timestamp": "2025-09-23 14:43:52,757"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_overview", "msg": "APS Rohware Panel erfolgreich angezeigt", "timestamp": "2025-09-23 14:43:52,759"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_overview", "msg": "APS Lagerbestand Panel erfolgreich angezeigt", "timestamp": "2025-09-23 14:43:52,760"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_overview", "msg": "Kamera nach left bewegt", "timestamp": "2025-09-23 14:43:52,764"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_configuration", "msg": "Factory Configuration erfolgreich angezeigt", "timestamp": "2025-09-23 14:43:52,788"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_configuration", "msg": "System Configuration erfolgreich angezeigt", "timestamp": "2025-09-23 14:43:52,790"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.components.message_center", "msg": "📡 Message Center geladen", "timestamp": "2025-09-23 14:43:53,916"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering", "msg": "🎮 Steering geladen", "timestamp": "2025-09-23 14:43:53,938"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.components.steering_factory", "msg": "🏭 Factory Steering geladen", "timestamp": "2025-09-23 14:43:53,938"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.components.steering_factory", "msg": "✅ MQTT-Client verfügbar, initialisiere Gateway", "timestamp": "2025-09-23 14:43:53,939"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_generic", "msg": "🔧 Generic Steering geladen", "timestamp": "2025-09-23 14:43:53,943"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_generic", "msg": "✅ MQTT-Client verfügbar, initialisiere Gateway", "timestamp": "2025-09-23 14:43:53,944"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_sequence", "msg": "🎯 Sequence Steering geladen", "timestamp": "2025-09-23 14:43:53,985"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.tools.registry", "msg": "MessageTemplateManager initialisiert", "timestamp": "2025-09-23 14:43:54,018"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.logs_test", "msg": "ℹ️ INFO-TEST aus logs.py Komponente", "timestamp": "2025-09-23 14:43:54,076"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_overview", "msg": "APS Bestellung Panel erfolgreich angezeigt", "timestamp": "2025-09-23 14:43:54,079"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_overview", "msg": "APS Rohware Panel erfolgreich angezeigt", "timestamp": "2025-09-23 14:43:54,081"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_overview", "msg": "APS Lagerbestand Panel erfolgreich angezeigt", "timestamp": "2025-09-23 14:43:54,082"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_overview", "msg": "Kamera nach right bewegt", "timestamp": "2025-09-23 14:43:54,086"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_configuration", "msg": "Factory Configuration erfolgreich angezeigt", "timestamp": "2025-09-23 14:43:54,106"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_configuration", "msg": "System Configuration erfolgreich angezeigt", "timestamp": "2025-09-23 14:43:54,109"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.components.message_center", "msg": "📡 Message Center geladen", "timestamp": "2025-09-23 14:44:36,406"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering", "msg": "🎮 Steering geladen", "timestamp": "2025-09-23 14:44:36,423"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.components.steering_factory", "msg": "🏭 Factory Steering geladen", "timestamp": "2025-09-23 14:44:36,427"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.components.steering_factory", "msg": "✅ MQTT-Client verfügbar, initialisiere Gateway", "timestamp": "2025-09-23 14:44:36,428"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_generic", "msg": "🔧 Generic Steering geladen", "timestamp": "2025-09-23 14:44:36,436"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_generic", "msg": "✅ MQTT-Client verfügbar, initialisiere Gateway", "timestamp": "2025-09-23 14:44:36,436"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_sequence", "msg": "🎯 Sequence Steering geladen", "timestamp": "2025-09-23 14:44:36,484"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.tools.registry", "msg": "MessageTemplateManager initialisiert", "timestamp": "2025-09-23 14:44:36,516"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.logs_test", "msg": "ℹ️ INFO-TEST aus logs.py Komponente", "timestamp": "2025-09-23 14:44:36,596"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_overview", "msg": "APS Bestellung Panel erfolgreich angezeigt", "timestamp": "2025-09-23 14:44:36,599"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_overview", "msg": "APS Rohware Panel erfolgreich angezeigt", "timestamp": "2025-09-23 14:44:36,601"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_overview", "msg": "APS Lagerbestand Panel erfolgreich angezeigt", "timestamp": "2025-09-23 14:44:36,602"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.components.aps_control", "msg": "🔍 APS System Command: Topic='ccu/set/reset', Payload={'timestamp': '2025-09-23T12:44:36.608473+00:00', 'withStorage': False}", "timestamp": "2025-09-23 14:44:36,608"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.tools.omf_mqtt_client", "msg": "📤 MQTT Publish: ccu/set/reset → {\"timestamp\": \"2025-09-23T12:44:36.608473+00:00\", \"withStorage\": false}", "timestamp": "2025-09-23 14:44:36,608"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.components.aps_control", "msg": "📤 APS System Command gesendet: Result=True", "timestamp": "2025-09-23 14:44:36,608"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_configuration", "msg": "Factory Configuration erfolgreich angezeigt", "timestamp": "2025-09-23 14:44:36,627"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_configuration", "msg": "System Configuration erfolgreich angezeigt", "timestamp": "2025-09-23 14:44:36,630"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.components.message_center", "msg": "📡 Message Center geladen", "timestamp": "2025-09-23 14:45:20,051"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering", "msg": "🎮 Steering geladen", "timestamp": "2025-09-23 14:45:20,071"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.components.steering_factory", "msg": "🏭 Factory Steering geladen", "timestamp": "2025-09-23 14:45:20,071"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.components.steering_factory", "msg": "✅ MQTT-Client verfügbar, initialisiere Gateway", "timestamp": "2025-09-23 14:45:20,072"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_generic", "msg": "🔧 Generic Steering geladen", "timestamp": "2025-09-23 14:45:20,077"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_generic", "msg": "✅ MQTT-Client verfügbar, initialisiere Gateway", "timestamp": "2025-09-23 14:45:20,077"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_sequence", "msg": "🎯 Sequence Steering geladen", "timestamp": "2025-09-23 14:45:20,231"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.tools.registry", "msg": "MessageTemplateManager initialisiert", "timestamp": "2025-09-23 14:45:20,260"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.logs_test", "msg": "ℹ️ INFO-TEST aus logs.py Komponente", "timestamp": "2025-09-23 14:45:20,324"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_overview", "msg": "APS Bestellung Panel erfolgreich angezeigt", "timestamp": "2025-09-23 14:45:20,329"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_overview", "msg": "APS Rohware Panel erfolgreich angezeigt", "timestamp": "2025-09-23 14:45:20,331"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_overview", "msg": "APS Lagerbestand Panel erfolgreich angezeigt", "timestamp": "2025-09-23 14:45:20,332"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.components.aps_control", "msg": "🔍 APS System Command: Topic='ccu/set/pairFts', Payload={'serialNumber': '5iO4'}", "timestamp": "2025-09-23 14:45:20,336"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.tools.omf_mqtt_client", "msg": "📤 MQTT Publish: ccu/set/pairFts → {\"serialNumber\": \"5iO4\"}", "timestamp": "2025-09-23 14:45:20,337"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.components.aps_control", "msg": "📤 APS System Command gesendet: Result=True", "timestamp": "2025-09-23 14:45:20,337"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_configuration", "msg": "Factory Configuration erfolgreich angezeigt", "timestamp": "2025-09-23 14:45:20,359"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_configuration", "msg": "System Configuration erfolgreich angezeigt", "timestamp": "2025-09-23 14:45:20,361"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.components.message_center", "msg": "📡 Message Center geladen", "timestamp": "2025-09-23 14:46:13,482"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering", "msg": "🎮 Steering geladen", "timestamp": "2025-09-23 14:46:13,509"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.components.steering_factory", "msg": "🏭 Factory Steering geladen", "timestamp": "2025-09-23 14:46:13,509"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.components.steering_factory", "msg": "✅ MQTT-Client verfügbar, initialisiere Gateway", "timestamp": "2025-09-23 14:46:13,510"}
+{"app": "omf_dashboard", "level": "DEBUG", "logger": "omf.dashboard.debug", "msg": "MQTT Payload: fts/v1/ff/5iO4/instantAction -> {'timestamp': '2025-09-23T12:46:13.514404+00:00', 'serialNumber': '5iO4', 'actions': [{'actionType': 'findInitialDockPosition', 'actionId': '312cf228-3cd7-443c-8a2d-d9e5dcbc7b8d', 'metadata': {'nodeId': 'SVR4H73275'}}], 'orderId': 1001}", "timestamp": "2025-09-23 14:46:13,514"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.tools.omf_mqtt_client", "msg": "📤 MQTT Publish: fts/v1/ff/5iO4/instantAction → {\"timestamp\": \"2025-09-23T12:46:13.514404+00:00\", \"serialNumber\": \"5iO4\", \"actions\": [{\"actionType\": \"findInitialDockPosition\", \"actionId\": \"312cf228-3cd7-443c-8a2d-d9e5dcbc7b8d\", \"metadata\": {\"nodeId\": \"SVR4H73275\"}}], \"orderId\": 1001}", "timestamp": "2025-09-23 14:46:13,514"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_generic", "msg": "🔧 Generic Steering geladen", "timestamp": "2025-09-23 14:46:13,523"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_generic", "msg": "✅ MQTT-Client verfügbar, initialisiere Gateway", "timestamp": "2025-09-23 14:46:13,523"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_sequence", "msg": "🎯 Sequence Steering geladen", "timestamp": "2025-09-23 14:46:13,592"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.tools.registry", "msg": "MessageTemplateManager initialisiert", "timestamp": "2025-09-23 14:46:13,622"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.tools.registry", "msg": "MessageTemplateManager initialisiert", "timestamp": "2025-09-23 14:46:13,624"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.tools.registry", "msg": "MessageTemplateManager initialisiert", "timestamp": "2025-09-23 14:46:13,627"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.tools.registry", "msg": "MessageTemplateManager initialisiert", "timestamp": "2025-09-23 14:46:13,631"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.tools.registry", "msg": "MessageTemplateManager initialisiert", "timestamp": "2025-09-23 14:46:13,637"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.logs_test", "msg": "ℹ️ INFO-TEST aus logs.py Komponente", "timestamp": "2025-09-23 14:46:13,697"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_overview", "msg": "APS Bestellung Panel erfolgreich angezeigt", "timestamp": "2025-09-23 14:46:13,701"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_overview", "msg": "APS Rohware Panel erfolgreich angezeigt", "timestamp": "2025-09-23 14:46:13,703"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_overview", "msg": "APS Lagerbestand Panel erfolgreich angezeigt", "timestamp": "2025-09-23 14:46:13,705"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_configuration", "msg": "Factory Configuration erfolgreich angezeigt", "timestamp": "2025-09-23 14:46:13,728"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_configuration", "msg": "System Configuration erfolgreich angezeigt", "timestamp": "2025-09-23 14:46:13,731"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.components.message_center", "msg": "📡 Message Center geladen", "timestamp": "2025-09-23 14:47:23,784"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering", "msg": "🎮 Steering geladen", "timestamp": "2025-09-23 14:47:23,803"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.components.steering_factory", "msg": "🏭 Factory Steering geladen", "timestamp": "2025-09-23 14:47:23,804"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.components.steering_factory", "msg": "✅ MQTT-Client verfügbar, initialisiere Gateway", "timestamp": "2025-09-23 14:47:23,804"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_generic", "msg": "🔧 Generic Steering geladen", "timestamp": "2025-09-23 14:47:23,814"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_generic", "msg": "✅ MQTT-Client verfügbar, initialisiere Gateway", "timestamp": "2025-09-23 14:47:23,814"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_sequence", "msg": "🎯 Sequence Steering geladen", "timestamp": "2025-09-23 14:47:23,864"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.tools.registry", "msg": "MessageTemplateManager initialisiert", "timestamp": "2025-09-23 14:47:23,891"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.tools.registry", "msg": "MessageTemplateManager initialisiert", "timestamp": "2025-09-23 14:47:23,896"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.tools.registry", "msg": "MessageTemplateManager initialisiert", "timestamp": "2025-09-23 14:47:23,900"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.tools.registry", "msg": "MessageTemplateManager initialisiert", "timestamp": "2025-09-23 14:47:23,904"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.tools.registry", "msg": "MessageTemplateManager initialisiert", "timestamp": "2025-09-23 14:47:23,911"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.logs_test", "msg": "ℹ️ INFO-TEST aus logs.py Komponente", "timestamp": "2025-09-23 14:47:23,969"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_overview", "msg": "APS Bestellung Panel erfolgreich angezeigt", "timestamp": "2025-09-23 14:47:23,977"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_overview", "msg": "APS Rohware Panel erfolgreich angezeigt", "timestamp": "2025-09-23 14:47:23,980"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_overview", "msg": "APS Lagerbestand Panel erfolgreich angezeigt", "timestamp": "2025-09-23 14:47:23,981"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_configuration", "msg": "Factory Configuration erfolgreich angezeigt", "timestamp": "2025-09-23 14:47:24,004"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_configuration", "msg": "System Configuration erfolgreich angezeigt", "timestamp": "2025-09-23 14:47:24,007"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.components.message_center", "msg": "📡 Message Center geladen", "timestamp": "2025-09-23 14:47:29,546"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering", "msg": "🎮 Steering geladen", "timestamp": "2025-09-23 14:47:29,568"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.components.steering_factory", "msg": "🏭 Factory Steering geladen", "timestamp": "2025-09-23 14:47:29,569"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.components.steering_factory", "msg": "✅ MQTT-Client verfügbar, initialisiere Gateway", "timestamp": "2025-09-23 14:47:29,569"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_generic", "msg": "🔧 Generic Steering geladen", "timestamp": "2025-09-23 14:47:29,574"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_generic", "msg": "✅ MQTT-Client verfügbar, initialisiere Gateway", "timestamp": "2025-09-23 14:47:29,574"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_sequence", "msg": "🎯 Sequence Steering geladen", "timestamp": "2025-09-23 14:47:29,622"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.tools.registry", "msg": "MessageTemplateManager initialisiert", "timestamp": "2025-09-23 14:47:29,652"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.tools.registry", "msg": "MessageTemplateManager initialisiert", "timestamp": "2025-09-23 14:47:29,655"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.tools.registry", "msg": "MessageTemplateManager initialisiert", "timestamp": "2025-09-23 14:47:29,658"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.tools.registry", "msg": "MessageTemplateManager initialisiert", "timestamp": "2025-09-23 14:47:29,661"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.tools.registry", "msg": "MessageTemplateManager initialisiert", "timestamp": "2025-09-23 14:47:29,666"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.logs_test", "msg": "ℹ️ INFO-TEST aus logs.py Komponente", "timestamp": "2025-09-23 14:47:29,765"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_overview", "msg": "APS Bestellung Panel erfolgreich angezeigt", "timestamp": "2025-09-23 14:47:29,768"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_overview", "msg": "APS Rohware Panel erfolgreich angezeigt", "timestamp": "2025-09-23 14:47:29,770"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_overview", "msg": "APS Lagerbestand Panel erfolgreich angezeigt", "timestamp": "2025-09-23 14:47:29,771"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_configuration", "msg": "Factory Configuration erfolgreich angezeigt", "timestamp": "2025-09-23 14:47:29,794"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_configuration", "msg": "System Configuration erfolgreich angezeigt", "timestamp": "2025-09-23 14:47:29,796"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_modules", "msg": "Module Status manuell aktualisiert", "timestamp": "2025-09-23 14:47:29,797"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.components.message_center", "msg": "📡 Message Center geladen", "timestamp": "2025-09-23 14:55:51,078"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering", "msg": "🎮 Steering geladen", "timestamp": "2025-09-23 14:55:51,145"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.components.steering_factory", "msg": "🏭 Factory Steering geladen", "timestamp": "2025-09-23 14:55:51,150"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.components.steering_factory", "msg": "✅ MQTT-Client verfügbar, initialisiere Gateway", "timestamp": "2025-09-23 14:55:51,152"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_generic", "msg": "🔧 Generic Steering geladen", "timestamp": "2025-09-23 14:55:51,176"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_generic", "msg": "✅ MQTT-Client verfügbar, initialisiere Gateway", "timestamp": "2025-09-23 14:55:51,176"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_sequence", "msg": "🎯 Sequence Steering geladen", "timestamp": "2025-09-23 14:55:51,222"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.tools.registry", "msg": "MessageTemplateManager initialisiert", "timestamp": "2025-09-23 14:55:51,251"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.tools.registry", "msg": "MessageTemplateManager initialisiert", "timestamp": "2025-09-23 14:55:51,254"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.tools.registry", "msg": "MessageTemplateManager initialisiert", "timestamp": "2025-09-23 14:55:51,258"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.tools.registry", "msg": "MessageTemplateManager initialisiert", "timestamp": "2025-09-23 14:55:51,262"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.tools.registry", "msg": "MessageTemplateManager initialisiert", "timestamp": "2025-09-23 14:55:51,270"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.logs_test", "msg": "ℹ️ INFO-TEST aus logs.py Komponente", "timestamp": "2025-09-23 14:55:51,336"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_overview", "msg": "APS Bestellung Panel erfolgreich angezeigt", "timestamp": "2025-09-23 14:55:51,340"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_overview", "msg": "APS Rohware Panel erfolgreich angezeigt", "timestamp": "2025-09-23 14:55:51,342"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_overview", "msg": "APS Lagerbestand Panel erfolgreich angezeigt", "timestamp": "2025-09-23 14:55:51,344"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_configuration", "msg": "Factory Configuration erfolgreich angezeigt", "timestamp": "2025-09-23 14:55:51,370"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_configuration", "msg": "System Configuration erfolgreich angezeigt", "timestamp": "2025-09-23 14:55:51,373"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.components.message_center", "msg": "📡 Message Center geladen", "timestamp": "2025-09-23 14:55:53,397"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering", "msg": "🎮 Steering geladen", "timestamp": "2025-09-23 14:55:53,415"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.components.steering_factory", "msg": "🏭 Factory Steering geladen", "timestamp": "2025-09-23 14:55:53,416"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.components.steering_factory", "msg": "✅ MQTT-Client verfügbar, initialisiere Gateway", "timestamp": "2025-09-23 14:55:53,416"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_generic", "msg": "🔧 Generic Steering geladen", "timestamp": "2025-09-23 14:55:53,425"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_generic", "msg": "✅ MQTT-Client verfügbar, initialisiere Gateway", "timestamp": "2025-09-23 14:55:53,425"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.steering_sequence", "msg": "🎯 Sequence Steering geladen", "timestamp": "2025-09-23 14:55:53,476"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.tools.registry", "msg": "MessageTemplateManager initialisiert", "timestamp": "2025-09-23 14:55:53,503"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.tools.registry", "msg": "MessageTemplateManager initialisiert", "timestamp": "2025-09-23 14:55:53,511"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.tools.registry", "msg": "MessageTemplateManager initialisiert", "timestamp": "2025-09-23 14:55:53,516"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.tools.registry", "msg": "MessageTemplateManager initialisiert", "timestamp": "2025-09-23 14:55:53,519"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.tools.registry", "msg": "MessageTemplateManager initialisiert", "timestamp": "2025-09-23 14:55:53,523"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.logs_test", "msg": "ℹ️ INFO-TEST aus logs.py Komponente", "timestamp": "2025-09-23 14:55:53,586"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_overview", "msg": "APS Bestellung Panel erfolgreich angezeigt", "timestamp": "2025-09-23 14:55:53,590"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_overview", "msg": "APS Rohware Panel erfolgreich angezeigt", "timestamp": "2025-09-23 14:55:53,593"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_overview", "msg": "APS Lagerbestand Panel erfolgreich angezeigt", "timestamp": "2025-09-23 14:55:53,594"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_configuration", "msg": "Factory Configuration erfolgreich angezeigt", "timestamp": "2025-09-23 14:55:53,618"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "dashboard.components.aps_configuration", "msg": "System Configuration erfolgreich angezeigt", "timestamp": "2025-09-23 14:55:53,620"}
