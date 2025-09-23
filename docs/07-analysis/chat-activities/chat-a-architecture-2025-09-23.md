@@ -10,6 +10,9 @@
 - **APS-CCU Beschreibung** - RPi/Docker-Container, MQTT-Broker Details
 - **Cursor-Agent-Struktur-Plan überarbeiten** - APS/OMF Namenskonvention + bewährte Vorgehensweisen
 - **APS-CCU Backend-Code extrahiert** - Docker-Container analysiert, Code in `/integrations/APS-CCU/` strukturiert
+- **Mosquitto-Struktur umorganisiert** - `/integrations/mosquitto/` und `/docs/06-integrations/mosquitto/` erstellt
+- **Mosquitto-Logs extrahiert** - Vom RPi: `mosquitto_current.log` (12.8MB) und `mosquitto_payload_test.log` (12.4MB)
+- **TXT-DPS Struktur erstellt** - `/integrations/TXT-DPS/` und `/docs/06-integrations/TXT-DPS/` mit READMEs
 
 ## ⏳ **Nächste Schritte:**
 
@@ -18,15 +21,16 @@
 
 **Konkrete Umbenennungen:**
 - ✅ `ff-central-control-unit/` → `APS-CCU/` (abgeschlossen)
-- `node_red/` → `APS-NodeRED/`
-- `fischertechnik-txt-programs/` → `TXT-DPS/`, `TXT-FTS/`, `TXT-AIQS/`, `TXT-CGW/`
-- `mqtt/` → `mosquitto/`
+- ✅ `node_red/` → `APS-NodeRED/` (abgeschlossen)
+- ✅ `mqtt/` → `mosquitto/` (abgeschlossen)
+- ⏳ `fischertechnik-txt-programs/` → `TXT-DPS/`, `TXT-FTS/`, `TXT-AIQS/`, `TXT-CGW/` (noch zu bearbeiten)
 
 **Vorgehen:**
-1. ✅ Bestehende Ordner analysieren (APS-CCU abgeschlossen)
-2. ✅ Neue Ordner-Struktur erstellen (APS-CCU abgeschlossen)
-3. ✅ Dateien migrieren (APS-CCU abgeschlossen)
-4. Verlinkungen aktualisieren
+1. ✅ Bestehende Ordner analysieren (APS-CCU, APS-NodeRED, mosquitto abgeschlossen)
+2. ✅ Neue Ordner-Struktur erstellen (APS-CCU, APS-NodeRED, mosquitto abgeschlossen)
+3. ✅ Dateien migrieren (APS-CCU, APS-NodeRED, mosquitto abgeschlossen)
+4. ⏳ Verlinkungen aktualisieren (teilweise abgeschlossen)
+5. ⏳ **Fischertechnik TXT-Programme umorganisieren** - FF_DPS_24V, FF_FTS_24V, FF_AIQS_24V, etc.
 
 ### **2. Dokumentations-Struktur anpassen**
 **Ziel:** `/docs/06-integrations/APS-Ecosystem/` aufbauen
@@ -67,10 +71,11 @@
 - **Registry-Model** - Template-basierte Steuerung
 
 ## 📋 **Prioritäten:**
-1. **Integration-Struktur anpassen** (Höchste Priorität)
-2. **Dokumentations-Struktur anpassen**
-3. **07-analysis Struktur aufbauen**
-4. **Weitere Architektur-Diagramme**
+1. ⏳ **Fischertechnik TXT-Programme umorganisieren** (Höchste Priorität)
+2. ⏳ **Mosquitto-Logs analysieren** - Mit Zwischenergebnis-Patterns filtern
+3. **Dokumentations-Struktur anpassen**
+4. **07-analysis Struktur aufbauen**
+5. **Weitere Architektur-Diagramme**
 
 ## 🔗 **Verlinkungen:**
 - **PROJECT_STATUS.md** - Zentrale Koordination

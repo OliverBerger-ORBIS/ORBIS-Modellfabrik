@@ -1,0 +1,24 @@
+sequenceDiagram
+    participant NR as Node-RED
+    participant OPC as OPC-UA Server
+    participant HW as Hardware Module
+
+    Note over NR,HW: Command Execution Flow
+
+    NR->>OPC: Write Command
+    OPC->>HW: Execute PICK Operation
+    HW->>OPC: Operation Status
+    OPC->>NR: Status Update
+
+    Note over NR,HW: Status Monitoring
+
+    NR->>OPC: Read Status
+    OPC->>HW: Get Current State
+    HW->>OPC: State Information
+    OPC->>NR: State Response
+
+    Note over NR,HW: Error Handling
+
+    HW->>OPC: Error Occurred
+    OPC->>NR: Error Status
+    NR->>NR: Handle Error State
