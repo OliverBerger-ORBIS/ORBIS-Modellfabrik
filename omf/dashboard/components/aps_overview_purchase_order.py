@@ -1,6 +1,6 @@
 """
-OMF Dashboard Overview - Rohmaterial-Bestellungen (Purchase Orders)
-Kopiert aus overview_inventory.py - Sektion 3: Bestellung von Rohmaterial
+APS Dashboard Overview - Rohmaterial-Bestellungen (Purchase Orders)
+Kopie von overview_purchase_order.py mit eindeutigen APS-Keys
 """
 
 import streamlit as st
@@ -17,8 +17,8 @@ except ImportError as e:
 # Alte message_processor Imports entfernt - verwenden jetzt Per-Topic-Buffer
 
 
-class OrderManager:
-    """Zentraler Manager für alle Dashboard-relevanten Informationen (Bestellungen, Lagerbestand, etc.)"""
+class APSOrderManager:
+    """Zentraler Manager für alle APS Dashboard-relevanten Informationen (Bestellungen, Lagerbestand, etc.)"""
 
     def __init__(self):
         self.inventory = {
@@ -51,62 +51,63 @@ class OrderManager:
             for position in self.inventory:
                 self.inventory[position] = None
 
-            # Neue Ladungen verarbeiten
+            # Neue Lagerbestand-Daten verarbeiten
             for load in loads:
-                load_type = load.get("loadType")
-                load_position = load.get("loadPosition")
+                position = load.get("position")
+                workpiece = load.get("workpiece")
+                if position in self.inventory:
+                    self.inventory[position] = workpiece
 
-                if load_type in self.workpiece_types and load_position in self.inventory:
-                    self.inventory[load_position] = load_type
-
-            # Timestamp aktualisieren
-            self.last_update_timestamp = message.get("ts")
+            # Zeitstempel aktualisieren
+            from datetime import datetime, timezone
+            self.last_update_timestamp = datetime.now(timezone.utc)
 
         except Exception as e:
-            st.error(f"❌ Fehler beim Verarbeiten der HBW-Nachricht: {e}")
-
-    def get_formatted_timestamp(self):
-        """Timestamp in lesbares Format konvertieren"""
-        if not self.last_update_timestamp:
-            return "Nie aktualisiert"
-
-        try:
-            # Unix-Timestamp zu datetime konvertieren
-            from datetime import datetime
-
-            dt = datetime.fromtimestamp(self.last_update_timestamp)
-            return dt.strftime("%d.%m.%Y %H:%M:%S")
-        except (ValueError, OSError):
-            return f"Timestamp: {self.last_update_timestamp}"
+            st.error(f"❌ Fehler beim Verarbeiten der HBW State-Nachricht: {e}")
 
     def get_available_workpieces(self):
-        """Verfügbare Werkstücke für Bestellungen zurückgeben"""
-        available = {}
-        for workpiece_type in self.workpiece_types:
-            count = sum(1 for pos, wp in self.inventory.items() if wp == workpiece_type)
-            if count > 0:
-                available[workpiece_type] = count
+        """Gibt die verfügbaren Werkstücke zurück"""
+        available = {"RED": 0, "BLUE": 0, "WHITE": 0}
+        
+        for position, workpiece in self.inventory.items():
+            if workpiece in available:
+                available[workpiece] += 1
+        
         return available
 
-
-def process_purchase_order_messages_from_buffers(hbw_messages, order_manager):
-    """Verarbeitet HBW-Nachrichten aus Per-Topic-Buffer für Rohmaterial-Bestellungen"""
-    if not hbw_messages:
-        return
-
-    # Neueste HBW-Nachricht finden
-    if hbw_messages:
-        latest_hbw_msg = max(hbw_messages, key=lambda x: x.get("ts", 0))
-        if order_manager:
-            order_manager._process_hbw_state_message(latest_hbw_msg)
+    def get_formatted_timestamp(self):
+        """Gibt den formatierten Zeitstempel zurück"""
+        if self.last_update_timestamp:
+            return self.last_update_timestamp.strftime("%d.%m.%Y %H:%M:%S")
+        return "Nie"
 
 
-def show_overview_order_raw():
-    """Zeigt die Rohmaterial-Bestellungen (Purchase Orders) - Kopiert aus overview_inventory.py"""
-    st.subheader("📊 Rohmaterial-Bestellungen (Purchase Orders)")
-    st.info("🔄 Im Lager ist Platz für drei rohe Werkstücke jeder Farbe")
+def process_purchase_order_messages_from_buffers(messages, order_manager):
+    """Verarbeitet Nachrichten aus dem Per-Topic-Buffer für Rohmaterial-Bestellungen"""
+    for message in messages:
+        order_manager._process_hbw_state_message(message)
 
-    # OrderManager aus Session-State holen oder erstellen
+
+def _send_raw_material_order_directly(color: str):
+    """Sendet Rohmaterial-Bestellung direkt ohne Bestätigung"""
+    try:
+        # Importiere die echte _send_raw_material_order_directly Funktion
+        from omf.dashboard.components.overview_purchase_order import _send_raw_material_order_directly as original_send_order
+        
+        # Rufe die echte Funktion auf
+        original_send_order(color)
+        
+    except Exception as e:
+        st.error(f"❌ Fehler beim Senden der Rohmaterial-Bestellung: {e}")
+
+
+def show_aps_overview_order_raw():
+    """Zeigt die APS Rohmaterial-Bestellungen (Purchase Orders) - Kopie mit eindeutigen Keys"""
+    st.subheader("📦 Rohmaterial-Bestellungen (Purchase Orders)")
+
+    # Verwende den gleichen OrderManager wie die Original-Komponente
+    from omf.dashboard.components.overview_purchase_order import OrderManager
+    
     if "order_manager" not in st.session_state:
         st.session_state["order_manager"] = OrderManager()
     order_manager = st.session_state["order_manager"]
@@ -126,23 +127,22 @@ def show_overview_order_raw():
                 st.info(f"📊 **{len(hbw_messages)} HBW-Nachrichten in Buffer**")
 
                 # Verarbeite die Nachrichten aus dem Buffer
+                from omf.dashboard.components.overview_purchase_order import process_purchase_order_messages_from_buffers
                 process_purchase_order_messages_from_buffers(hbw_messages, order_manager)
 
                 # Status-Anzeige
                 if order_manager.last_update_timestamp:
                     formatted_time = order_manager.get_formatted_timestamp()
                     st.success(f"✅ Lagerbestand aktualisiert: {formatted_time}")
-                else:
-                    st.info("ℹ️ Keine HBW-Nachrichten verarbeitet")
             else:
-                st.info("ℹ️ Keine HBW-Nachrichten empfangen")
+                st.warning("⚠️ Keine HBW-Nachrichten im Buffer")
 
         except Exception as e:
-            st.warning(f"⚠️ Fehler beim Zugriff auf Per-Topic-Buffer: {e}")
+            st.error(f"❌ Fehler beim Verarbeiten der HBW-Nachrichten: {e}")
     else:
-        st.warning("⚠️ MQTT-Client nicht verfügbar - Lagerbestand wird nicht aktualisiert")
+        st.warning("⚠️ MQTT-Client nicht verfügbar")
 
-    # Verfügbare Werkstücke berechnen
+    # Zeige verfügbare Werkstücke
     available_workpieces = order_manager.get_available_workpieces()
     red_count = available_workpieces.get("RED", 0)
     blue_count = available_workpieces.get("BLUE", 0)
@@ -156,7 +156,7 @@ def show_overview_order_raw():
     blue_need = MAX_CAPACITY - blue_count
     white_need = MAX_CAPACITY - white_count
 
-    # Zeilenweise Darstellung des Bedarfs
+    # Zeilenweise Darstellung des Bedarfs - ECHTE Darstellung
     st.markdown("#### 🔴 Rote Werkstücke")
     col1, col2, col3, col4 = st.columns([1, 1, 2, 1])
     with col1:
@@ -195,11 +195,12 @@ def show_overview_order_raw():
                 )
     with col4:
         if red_need > 0:
-            if st.button("📦 Rohstoff bestellen", key="overview_purchase_order_red", type="secondary"):
-                st.info("🔄 Bestellung ROT Rohstoff - Funktion wird implementiert")
+            if st.button("📦 Rohstoff bestellen", key="aps_overview_purchase_order_red", type="secondary"):
+                _send_raw_material_order_directly("RED")
         else:
-            st.button("📦 Rohstoff bestellen", key="overview_purchase_order_red_disabled", disabled=True)
+            st.button("📦 Rohstoff bestellen", key="aps_overview_purchase_order_red_disabled", disabled=True)
 
+    # BLUE Werkstücke
     st.markdown("#### 🔵 Blaue Werkstücke")
     col1, col2, col3, col4 = st.columns([1, 1, 2, 1])
     with col1:
@@ -238,11 +239,12 @@ def show_overview_order_raw():
                 )
     with col4:
         if blue_need > 0:
-            if st.button("📦 Rohstoff bestellen", key="overview_purchase_order_blue", type="secondary"):
-                st.info("🔄 Bestellung BLUE Rohstoff - Funktion wird implementiert")
+            if st.button("📦 Rohstoff bestellen", key="aps_overview_purchase_order_blue", type="secondary"):
+                _send_raw_material_order_directly("BLUE")
         else:
-            st.button("📦 Rohstoff bestellen", key="overview_purchase_order_blue_disabled", disabled=True)
+            st.button("📦 Rohstoff bestellen", key="aps_overview_purchase_order_blue_disabled", disabled=True)
 
+    # WHITE Werkstücke
     st.markdown("#### ⚪ Weiße Werkstücke")
     col1, col2, col3, col4 = st.columns([1, 1, 2, 1])
     with col1:
@@ -274,16 +276,14 @@ def show_overview_order_raw():
                 # Fallback: Einfache Darstellung
                 empty_buckets = ""
                 for _i in range(white_need):
-                    empty_buckets += '<div style="width: 140px; height: 140px; border: 2px solid #ccc; border-top: none; background-color: #f9f9f9; border-radius: 0 0 8px 8px; display: inline-block; margin: 8px;"></div>'
+                    empty_buckets += '<div style="width: 140px; height: 140px; border: 2px solid #ccc; border-top: none; background-color: #f9f9f9; border-radius: 0 0 8px 8px; display: inline-block; margin: 8px;"></div>'  # noqa: E501
                 st.markdown(
                     f'<div style="display: flex; gap: 10px; flex-wrap: wrap;">{empty_buckets}</div>',
                     unsafe_allow_html=True,
                 )
     with col4:
         if white_need > 0:
-            if st.button("📦 Rohstoff bestellen", key="overview_purchase_order_white", type="secondary"):
-                st.info("🔄 Bestellung WHITE Rohstoff - Funktion wird implementiert")
+            if st.button("📦 Rohstoff bestellen", key="aps_overview_purchase_order_white", type="secondary"):
+                _send_raw_material_order_directly("WHITE")
         else:
-            st.button("📦 Rohstoff bestellen", key="overview_purchase_order_white_disabled", disabled=True)
-
-    st.markdown("---")
+            st.button("📦 Rohstoff bestellen", key="aps_overview_purchase_order_white_disabled", disabled=True)

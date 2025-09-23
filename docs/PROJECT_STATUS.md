@@ -1,20 +1,22 @@
 # ORBIS Modellfabrik - Projekt Status
 
-**Letzte Aktualisierung:** 22.09.2025  
+**Letzte Aktualisierung:** 23.09.2025  
 **Aktueller Sprint:** Sprint 05 (18.09 - 01.10.2025)
 
 > **Dokumentations-Strategie:** Dieses Dokument ist die zentrale Quelle für alle Projekt-Änderungen und Sprint-Status. Keine separate CHANGELOG.md - alles hier!
 
 ## 🚀 Aktuelle Arbeiten
 
-### ✅ **APS Dashboard Integration erfolgreich** (22.09.2025)
-- **3 konsolidierte APS Tabs** (von 4 auf 3 reduziert)
+### 🔄 **APS Dashboard Integration in Bearbeitung** (23.09.2025)
+- **APS Overview Tab** - 75% funktionsfähig (Kundenaufträge, Rohmaterial, Lagerbestand ✅)
+- **Sensor-Daten fehlen noch** - MQTT Topics für Sensoren noch nicht implementiert
 - **APS Control Tab** - System Commands + Status + Monitoring
 - **APS Steering Tab** - Factory + FTS + Modules + Orders (funktional)
 - **APS Orders Tab** - Order Management (unverändert)
 - **Original APS-Dashboard analysiert** - Topics und Payloads extrahiert
-- **Authentische APS-Integration** - Factory Reset und FTS Charging funktionieren
+- **Code-Duplizierung** - Temporäre Lösung für Key-Konflikte implementiert
 - **Original-Sourcen organisiert** - `integrations/ff-central-control-unit/aps-dashboard-source/`
+- **Status:** Guter Fortschritt - Sensor-Daten sind nächste Priorität
 
 ### ✅ **Mermaid Diagramm-System optimiert** (20.09.2025)
 - **Hybrid-Ansatz** implementiert: zentrale vs. dezentrale Diagramme
@@ -33,6 +35,9 @@
 - ⏳ **Weitere Architektur-Diagramme** - Message-Flow, Registry-Model
 
 ### 🔧 **Chat-B: Code & Implementation**
+- 🔄 **APS Dashboard Integration systematisch vorantreiben** - Nur 2-3 Befehle funktionieren
+- ⏳ **APS Configuration Tab implementieren** - Fehlender 5. Tab
+- ⏳ **Alle APS-Commands testen und implementieren** - Systematische Validierung
 - ⏳ **Manager-Duplikate beseitigen** - OrderManager (3x), System-Status-Manager (3x)
 - ⏳ **APS-Tabs Registry-Analyse** - Welche Tabs sind notwendig?
 - ⏳ **Registry-Konsolidierung** - Legacy-Konfiguration entfernen
@@ -68,13 +73,16 @@
 ## 📋 Nächste Schritte (Prioritätenliste)
 
 ### **🔧 Code & Implementation**
-1. **Fehlender APS-Tab integrieren** - 5. APS Tab (APS Configuration) noch nicht eingebunden
-2. **Manager-Duplikate beseitigen** - OrderManager (3x identisch), System-Status-Manager (3x ähnlich) auslagern in `omf/dashboard/managers/`
-3. **APS-Tabs Registry-Analyse** - Welche APS-Tabs sind für unsere Steuerung tatsächlich notwendig?
-4. **APS-Tabs Registry-Integration** - Verbleibende APS-Tabs auf Registry-Manager umstellen
-5. **Registry-Konsolidierung** - Legacy-Konfiguration (`omf/config/`) entfernen, alle Manager auf Registry umstellen
-6. **WorkpieceManager implementieren** - `nfc_config.yml` → `registry/model/v1/workpieces.yml` Migration
-7. **OMF-Dashboard Tab-Konsolidierung** - APS-Tabs in vorhandene OMF-Tabs integrieren, unnötige Tabs entfernen
+1. **APS Configuration Tab implementieren** - Fehlender 5. APS Tab systematisch aufbauen
+2. **Alle APS-Commands testen und validieren** - Systematische Überprüfung aller implementierten Befehle
+3. **Original APS-Dashboard vollständig analysieren** - Alle Tabs, alle Funktionen, alle Commands
+4. **Authentische APS-Integration** - Nicht nur oberflächlich, sondern vollständig funktional
+5. **Manager-Duplikate beseitigen** - OrderManager (3x identisch), System-Status-Manager (3x ähnlich) auslagern in `omf/dashboard/managers/`
+6. **APS-Tabs Registry-Analyse** - Welche APS-Tabs sind für unsere Steuerung tatsächlich notwendig?
+7. **APS-Tabs Registry-Integration** - Verbleibende APS-Tabs auf Registry-Manager umstellen
+8. **Registry-Konsolidierung** - Legacy-Konfiguration (`omf/config/`) entfernen, alle Manager auf Registry umstellen
+9. **WorkpieceManager implementieren** - `nfc_config.yml` → `registry/model/v1/workpieces.yml` Migration
+10. **OMF-Dashboard Tab-Konsolidierung** - APS-Tabs in vorhandene OMF-Tabs integrieren, unnötige Tabs entfernen
 
 ### **🧪 Testing & Validation**
 8. **OMF-Dashboard mit realer Fabrik testen** - Validierung der APS-Integration
@@ -167,8 +175,10 @@
 - **Aktuelle Sprint-Dokumentation:** `docs/sprints/`
 - **Decision Records:** `docs/03-decision-records/`
 - **Architektur:** `docs/02-architecture/`
-- **APS-Analyse:** `docs/analysis/dps/`
+- **APS-Analyse:** `docs/07-analysis/mqtt/`
+- **APS Dashboard Integration Status:** `docs/07-analysis/aps-dashboard-integration-status.md`
+- **APS Overview Implementation Status:** `docs/07-analysis/aps-overview-implementation-complete.md`
 
 ---
 
-**Status:** Projekt läuft erfolgreich, alle geplanten Meilensteine erreicht 🎉
+**Status:** Projekt läuft erfolgreich, APS Dashboard Integration in systematischer Weiterentwicklung 🔄

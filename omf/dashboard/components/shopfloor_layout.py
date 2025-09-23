@@ -94,6 +94,15 @@ def show_shopfloor_grid():
 
                     st.write(f"**{module_name}**")
                     st.caption(f"ID: {module_serial}")
+                elif cell_data and cell_data.get("type") == "INTERSECTION":
+                    intersection_id = cell_data.get("id", "")
+                    intersection_name = cell_data.get("name", "")
+                    mqtt_id = cell_data.get("mqtt_id", "")
+                    
+                    # Intersection Icon anzeigen
+                    st.markdown(f"**➕ {intersection_name}**")
+                    st.caption(f"MQTT ID: {mqtt_id}")
+                    st.caption("Navigation")
                 else:
                     st.info("Leer")
 

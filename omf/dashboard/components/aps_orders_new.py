@@ -13,7 +13,7 @@ from omf.dashboard.utils.ui_refresh import request_refresh
 logger = get_logger("dashboard.components.aps_orders")
 
 
-def show_aps_orders():
+def show_aps_orders_new():
     """Zeigt den APS Orders Tab mit 2-Spalten-Layout"""
     st.header("📋 APS Orders")
     st.write("Laufende Fertigungsaufträge mit Production Steps und Werkstück-Positionierung")
@@ -69,7 +69,7 @@ def _show_ongoing_orders():
         "Wählen Sie einen Auftrag aus:",
         options=orders_data,
         format_func=lambda x: f"{x['Order']} - {x['Color']} ({x['Timestamp']})",
-        key="aps_orders_tab19_selection"
+        key="aps_orders_tab19_selection_new"
     )
     
     # Zeige ausgewählten Auftrag
@@ -140,7 +140,7 @@ def _show_visualization_and_info_section():
 
 
 def _show_factory_layout_visualization():
-    """Zeigt die grafische Repräsentation des Fabrik-Layouts (2x3 Grid)"""
+    """Zeigt die grafische Repräsentation des Fabrik-Layouts (3x4 Grid)"""
     
     # Hole ausgewählten Auftrag
     selected_order = st.session_state.get("selected_aps_order", None)
@@ -149,8 +149,20 @@ def _show_factory_layout_visualization():
         st.info("👆 Wählen Sie zuerst einen Auftrag aus der linken Spalte aus")
         return
     
-    # Fabrik-Layout (2x3 Grid)
+    # Fabrik-Layout (3x4 Grid) - verwende das echte Factory Layout
     st.write("**Fabrik-Layout mit Werkstück-Position:**")
+    
+    # Importiere Factory Layout
+    try:
+        from omf.dashboard.components.shopfloor_layout import show_shopfloor_grid
+        show_shopfloor_grid()
+    except ImportError:
+        st.error("❌ Factory Layout konnte nicht geladen werden")
+        # Fallback: Einfaches Grid
+        _show_simple_factory_grid(selected_order)
+    
+def _show_simple_factory_grid(selected_order):
+    """Fallback: Einfaches Factory Grid wenn das echte Layout nicht verfügbar ist"""
     
     # Aktuelle Position des Werkstücks
     current_position = _get_current_workpiece_position(selected_order["Order"])

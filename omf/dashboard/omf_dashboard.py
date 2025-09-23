@@ -54,8 +54,14 @@ load_component("shopfloor", "components.shopfloor", "Shopfloor")
 
 # APS-spezifische Komponenten
 load_component("aps_control", "components.aps_control", "APS Control")
-load_component("aps_orders", "components.aps_orders", "APS Orders")
-load_component("aps_steering", "components.aps_steering", "APS Steering")
+# load_component("aps_orders", "components.aps_orders", "APS Orders")  # Entfernt - redundant
+load_component("aps_orders_new", "components.aps_orders_new", "APS Orders New")
+# load_component("aps_steering", "components.aps_steering", "APS Steering")  # Entfernt - redundant
+load_component("aps_configuration", "components.aps_configuration", "APS Configuration")
+load_component("aps_modules", "components.aps_modules", "APS Modules")
+load_component("aps_overview", "components.aps_overview", "APS Overview")
+# load_component("aps_overview_new", "components.aps_overview_new", "APS Overview New")  # Entfernt - redundant
+load_component("aps_processes", "components.aps_processes", "APS Processes")
 
 # =============================================================================
 # LOGGING INITIALIZATION
@@ -398,7 +404,7 @@ def get_module_logo(module_name):
 def display_tabs():
     """Zeigt die Dashboard-Tabs und deren Inhalte"""
     # Tabs
-    tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11, tab12, tab13, tab14 = st.tabs(
+    tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11, tab12, tab13, tab14, tab15, tab16 = st.tabs(
         [
             "📊 Übersicht",
             "🏭 Fertigungsaufträge",
@@ -411,9 +417,12 @@ def display_tabs():
             "🔧 Modul-Steuerung",
             "📋 Logs",
             "🏭 APS Overview",
-            "📋 APS Orders",
             "⚙️ APS System Control",
-            "🎮 APS Steering",
+            "⚙️ APS Configuration",
+            "🏭 APS Modules",
+            # "📊 APS Overview New",  # Entfernt - redundant
+            "🔄 APS Processes",
+            "📋 APS Orders New",
         ]
     )
 
@@ -450,13 +459,22 @@ def display_tabs():
 
     # APS-spezifische Tabs
     with tab11:
-        components["aps_control"]()
+        components["aps_overview"]()
 
     with tab12:
-        components["aps_orders"]()
+        components["aps_control"]()
 
     with tab13:
-        components["aps_steering"]()
+        components["aps_configuration"]()
+
+    with tab14:
+        components["aps_modules"]()
+
+    with tab15:
+        components["aps_processes"]()
+
+    with tab16:
+        components["aps_orders_new"]()
 
 
 # =============================================================================

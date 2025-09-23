@@ -1,6 +1,6 @@
 """
-OMF Dashboard Overview - Lagerbestand
-Verwendet OrderManager für zentrale Verwaltung aller Dashboard-relevanten Informationen
+APS Dashboard Overview - Lagerbestand
+Kopie von overview_inventory.py mit eindeutigen APS-Keys
 """
 
 import json
@@ -20,8 +20,8 @@ except ImportError as e:
 # Alte message_processor Imports entfernt - verwenden jetzt Per-Topic-Buffer
 
 
-class OrderManager:
-    """Zentraler Manager für alle Dashboard-relevanten Informationen (Bestellungen, Lagerbestand, etc.)"""
+class APSOrderManager:
+    """Zentraler Manager für alle APS Dashboard-relevanten Informationen (Bestellungen, Lagerbestand, etc.)"""
 
     def __init__(self):
         self.inventory = {
@@ -48,70 +48,47 @@ class OrderManager:
         """HBW-Modul-Status-Nachricht verarbeiten (primäre Quelle für Lagerbestand)"""
         try:
             payload = message.get("payload", {})
-            if isinstance(payload, str):
-                payload = json.loads(payload)
-
-            if not isinstance(payload, dict):
-                return
-
-            # HBW-Modul-Status verarbeiten: {"loads": [{"loadType": "RED", "loadPosition": "A1", ...}]}
             loads = payload.get("loads", [])
 
-            # Alle Positionen erst auf leer setzen
+            # Lagerbestand zurücksetzen
             for position in self.inventory:
                 self.inventory[position] = None
 
-            # Belegte Positionen aktualisieren
+            # Neue Lagerbestand-Daten verarbeiten
             for load in loads:
-                load_type = load.get("loadType", "")
-                load_position = load.get("loadPosition", "")
+                position = load.get("position")
+                workpiece = load.get("workpiece")
+                if position in self.inventory:
+                    self.inventory[position] = workpiece
 
-                if load_type and load_position in self.inventory:
-                    # Farben von HBW-Format zu Display-Format konvertieren
-                    if load_type == "RED":
-                        self.inventory[load_position] = "RED"
-                    elif load_type == "BLUE":
-                        self.inventory[load_position] = "BLUE"
-                    elif load_type == "WHITE":
-                        self.inventory[load_position] = "WHITE"
+            # Zeitstempel aktualisieren
+            from datetime import datetime
+            self.last_update_timestamp = datetime.now()
 
-            self.last_update_timestamp = message.get("ts", 0)
-
-        except (json.JSONDecodeError, KeyError, AttributeError) as e:
-            st.warning(f"⚠️ Fehler beim Verarbeiten der HBW-Nachricht: {e}")
-
-    def get_formatted_timestamp(self):
-        """Timestamp in lesbares Format konvertieren"""
-        if not self.last_update_timestamp:
-            return "Nie aktualisiert"
-
-        try:
-            # Unix-Timestamp zu datetime konvertieren
-            dt = datetime.fromtimestamp(self.last_update_timestamp)
-            return dt.strftime("%d.%m.%Y %H:%M:%S")
-        except (ValueError, OSError):
-            return f"Timestamp: {self.last_update_timestamp}"
+        except Exception as e:
+            st.error(f"❌ Fehler beim Verarbeiten der HBW State-Nachricht: {e}")
 
     def get_available_workpieces(self):
-        """Verfügbare Werkstücke für Bestellungen zurückgeben"""
-        available = {}
-        for workpiece_type in self.workpiece_types:
-            count = sum(1 for pos, wp in self.inventory.items() if wp == workpiece_type)
-            if count > 0:
-                available[workpiece_type] = count
+        """Gibt die verfügbaren Werkstücke zurück"""
+        available = {"RED": 0, "BLUE": 0, "WHITE": 0}
+        
+        for position, workpiece in self.inventory.items():
+            if workpiece in available:
+                available[workpiece] += 1
+        
         return available
 
+    def get_formatted_timestamp(self):
+        """Gibt den formatierten Zeitstempel zurück"""
+        if self.last_update_timestamp:
+            return self.last_update_timestamp.strftime("%d.%m.%Y %H:%M:%S")
+        return "Nie"
 
-def process_inventory_messages_from_buffers(hbw_messages, order_manager):
-    """Verarbeitet HBW-Nachrichten aus Per-Topic-Buffer für den Lagerbestand"""
-    if not hbw_messages:
-        return
 
-    # Neueste HBW-Nachricht finden
-    if hbw_messages:
-        latest_hbw_msg = max(hbw_messages, key=lambda x: x.get("ts", 0))
-        if order_manager:
-            order_manager._process_hbw_state_message(latest_hbw_msg)
+def process_inventory_messages_from_buffers(messages, order_manager):
+    """Verarbeitet Nachrichten aus dem Per-Topic-Buffer für Lagerbestand"""
+    for message in messages:
+        order_manager._process_hbw_state_message(message)
 
 
 def _create_large_bucket_display(position, workpiece_type):
@@ -131,27 +108,17 @@ def _create_large_bucket_display(position, workpiece_type):
         """
 
 
-def show_overview_inventory():
-    """3x3 Lagerbestand-Raster anzeigen - Verwendet MQTT-Client für Live-Updates"""
-    st.subheader("📚 Lagerbestand - HBW Übersicht")
-    st.markdown("Aktuelle Belegung des Hochregallagers (3x3 Raster)")
+def show_aps_overview_inventory():
+    """Zeigt den APS Lagerbestand - Kopie mit eindeutigen Keys"""
+    st.subheader("🏬 Lagerbestand - HBW Übersicht")
+    st.write("Aktuelle Belegung des Hochregallagers (3x3 Raster)")
 
-    # OrderManager initialisieren
+    # Verwende den gleichen OrderManager wie die Original-Komponente
+    from omf.dashboard.components.overview_inventory import OrderManager
+    
     if "order_manager" not in st.session_state:
-        st.session_state.order_manager = OrderManager()
-
-    order_manager = st.session_state.order_manager
-
-    # Auto-Refresh aus Settings (global) - DEAKTIVIERT für Performance
-    auto_refresh = st.session_state.get("auto_refresh_enabled", False)
-
-    # Auto-Refresh Timer (nur wenn aktiviert) - PERFORMANCE-PROBLEM BEHOBEN
-    if auto_refresh:
-        # PERFORMANCE-FIX: Auto-Refresh deaktiviert, da es das UI blockiert
-        st.warning("⚠️ Auto-Refresh ist deaktiviert (Performance-Grund)")
-        # import time
-        # time.sleep(refresh_interval)  # BLOCKIERT DAS UI!
-        # request_refresh()  # ENDLOS-SCHLEIFE!
+        st.session_state["order_manager"] = OrderManager()
+    order_manager = st.session_state["order_manager"]
 
     # NEUES PATTERN: Per-Topic-Buffer für Lagerbestand
     mqtt_client = st.session_state.get("mqtt_client")
@@ -168,23 +135,22 @@ def show_overview_inventory():
                 st.info(f"📊 **{len(hbw_messages)} HBW-Nachrichten in Buffer**")
 
                 # Verarbeite die Nachrichten aus dem Buffer
+                from omf.dashboard.components.overview_inventory import process_inventory_messages_from_buffers
                 process_inventory_messages_from_buffers(hbw_messages, order_manager)
 
                 # Status-Anzeige
                 if order_manager.last_update_timestamp:
                     formatted_time = order_manager.get_formatted_timestamp()
                     st.success(f"✅ Lagerbestand aktualisiert: {formatted_time}")
-                else:
-                    st.info("ℹ️ Keine HBW-Nachrichten verarbeitet")
             else:
-                st.info("ℹ️ Keine HBW-Nachrichten empfangen")
+                st.warning("⚠️ Keine HBW-Nachrichten im Buffer")
 
         except Exception as e:
-            st.warning(f"⚠️ Fehler beim Zugriff auf Per-Topic-Buffer: {e}")
+            st.error(f"❌ Fehler beim Verarbeiten der HBW-Nachrichten: {e}")
     else:
-        st.warning("⚠️ MQTT-Client nicht verfügbar - Lagerbestand wird nicht aktualisiert")
+        st.warning("⚠️ MQTT-Client nicht verfügbar")
 
-    # 3x3 Raster erstellen
+    # 3x3 Raster erstellen - ECHTE Grid-Darstellung
     st.markdown("### 🏗️ Lagerpositionen (A1-C3)")
 
     # Grid-Layout mit 3 Spalten
@@ -238,11 +204,12 @@ def show_overview_inventory():
         bucket_html = _create_large_bucket_display("C3", c3_status)
         st.markdown(bucket_html, unsafe_allow_html=True)
 
-    # Debug-Info
-    if st.checkbox("🔍 Lagerbestand Debug-Info", key="overview_inventory_debug"):
+    # Debug-Info mit eindeutigem Key
+    if st.checkbox("🔍 Lagerbestand Debug-Info", key="aps_overview_inventory_debug"):
         st.markdown("**🔍 Debug-Informationen:**")
         st.markdown("**Aktueller Lagerbestand:**")
         st.json(order_manager.inventory)
-        available_workpieces = order_manager.get_available_workpieces()
         st.markdown("**Verfügbare Werkstücke:**")
-        st.json(available_workpieces)
+        st.json(order_manager.get_available_workpieces())
+        st.markdown("**Letzte Aktualisierung:**")
+        st.write(order_manager.get_formatted_timestamp())
