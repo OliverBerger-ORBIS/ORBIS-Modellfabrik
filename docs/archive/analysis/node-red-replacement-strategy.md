@@ -1,8 +1,8 @@
-# Node-RED Ersatz-Strategie: OMF Dashboard übernimmt Produktionssteuerung
+# APS-NodeRED Ersatz-Strategie: OMF Dashboard übernimmt Produktionssteuerung
 
 ## 📋 Übersicht
 
-**Ziel:** Node-RED Flows schrittweise deaktivieren und durch OMF Dashboard ersetzen, um die komplette Produktionssteuerung zu übernehmen.
+**Ziel:** APS-NodeRED Flows schrittweise deaktivieren und durch OMF Dashboard ersetzen, um die komplette Produktionssteuerung zu übernehmen.
 
 **Status:** 🚀 **IN IMPLEMENTIERUNG** - ModuleStateManager funktional, Logging-System implementiert
 
@@ -12,7 +12,7 @@
 ```
 Raspberry Pi (192.168.0.100)
 ├── MQTT-Broker (Port 1883)
-├── Node-RED (Port 1880) ← ZU ERSETZEN
+├── APS-NodeRED (Port 1880) ← ZU ERSETZEN
 ├── Zentrale Steuereinheit (CCU)
 └── Web-Interface (Port 80)
 ```
@@ -25,7 +25,7 @@ OMF Dashboard (localhost)
 └── DSP RPI (OPC-UA Integration)
 ```
 
-## 🔍 Node-RED Flows Analyse
+## 🔍 APS-NodeRED Flows Analyse
 
 ### **Gefundene Komponenten:**
 - **25 Tabs:** 1 Init + 24 Modul-Tabs (MILL, DRILL, OVEN, AIQS, HBW, DPS)

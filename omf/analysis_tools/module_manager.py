@@ -24,11 +24,8 @@ class ModuleManager:
 
     def _get_default_config_path(self) -> str:
         """Get default path to module configuration YAML file"""
-        # Get the directory of this file
-        current_dir = os.path.dirname(os.path.abspath(__file__))
-        # Navigate to config directory
-        config_dir = os.path.join(current_dir, "../config")
-        return os.path.join(config_dir, "module_config.yml")
+        from omf.dashboard.tools.path_constants import REGISTRY_DIR
+        return str(REGISTRY_DIR / "model" / "v1" / "modules.yml")
 
     def load_yaml_config(self) -> Optional[Dict[str, Any]]:
         """Load module configuration from YAML file"""

@@ -54,12 +54,12 @@ graph TB
 
 ## 🔗 Integration Management
 
-- **[Node-RED Integration](../../../integrations/node_red/README.md)** - Backup, Restore und Management
+- **[Node-RED Integration](../../../integrations/APS-NodeRED/README.md)** - Backup, Restore und Management
 - **[Integration Guide](./integration-guide.md)** - Detaillierte Setup-Anleitung
 
 > **🔗 Verwandte Systeme:**
-> - **[APS Overview](../aps/README.md)** - Fischertechnik Agile Production Simulation
-> - **[FTS VDA 5050](../fts/README.md)** - Fahrerloses Transportsystem
+> - **[APS-CCU](../APS-CCU/README.md)** - Fischertechnik Agile Production Simulation
+> - **[TXT-FTS VDA 5050](../TXT-FTS/README.md)** - Fahrerloses Transportsystem
 > - **[System Context](../../02-architecture/system-context.md)** - Gesamtarchitektur
 
 ## 📋 Documentation Index
@@ -123,12 +123,12 @@ Diese Dokumentation beschreibt die **aktuelle Fischertechnik APS Node-RED Strukt
 
 ### Current System Structure
 ```
-integrations/node_red/          # Aktuelle Node-RED Backups
+integrations/APS-NodeRED/       # Aktuelle Node-RED Backups
 ├── backups/                    # flows.json Backups
 ├── project/                    # Node-RED Projekt-Dateien
 └── scripts/                    # Management Scripts
 
-docs/06-integrations/node-red/  # Dokumentation der IST-Struktur
+docs/06-integrations/APS-NodeRED/  # Dokumentation der IST-Struktur
 ├── README.md                   # Diese Datei
 ├── flows.md                    # Flow-Übersicht
 ├── flows-detailed.md           # Detaillierte Flow-Analyse

@@ -131,7 +131,7 @@ integrations/APS-CCU/
 ## 🔗 Verwandte Dokumente
 
 - [APS-CCU Integration](../06-integrations/APS-Ecosystem/APS-CCU/)
-- [MQTT-Analyse](../mqtt/)
+- [MQTT-Analyse](../../06-integrations/mosquitto/)
 - [System-Context](../02-architecture/system-context.md)
 
 ---

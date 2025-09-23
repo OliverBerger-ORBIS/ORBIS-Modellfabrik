@@ -138,7 +138,7 @@ APS Overview Tab
 ## 📚 **Dokumentation**
 
 ### **Basis-Dokumentation**
-- **MQTT Topics:** `docs/07-analysis/mqtt/README.md`
+- **MQTT Topics:** `docs/06-integrations/mosquitto/README.md`
 - **Sensor-Analyse:** `docs/archive/analysis/dps/FF_DPS_24V_ANALYSIS.md`
 - **APS Overview:** `docs/07-analysis/aps-dashboard-tabs-analysis/tab-01-overview.md`
 

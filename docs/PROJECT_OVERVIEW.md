@@ -12,22 +12,27 @@ Verständnis der Funktionsweise der APS Fischertechnik Anwendung, um eine eigene
   - Wareneingang
   - Produktion nach Bestellung
 
-## 🚀 Geplante Vorgehensweise
+## 🚀 Entwicklungsphasen
 
-### Phase 1: Nachrichten-Fluß aufnehmen ✅
-- **Session-Rekording** der Komponenten und Module der APS-Fabrik
-- **Status:** Abgeschlossen (über Python-Script)
+### **Phase 0: APS as-is lauffähig machen**
+- **Status:** ✅ Abgeschlossen
+- **Ziel:** Fischertechnik-Fabrik funktionsfähig
+- **Erreicht:** APS-CCU, APS-NodeRED, APS-Module laufen
 
-### Phase 2: Session-Analyse 🔄 **IN ENTWICKLUNG**
-- **Status:** Session Manager teilweise funktional
-- **Erreicht:** Session Recorder, Replay Station, Timeline-Visualisierung
-- **Fehlt:** Graph-Visualisierung, vollständige Template-Analyse
-- **Nächster Schritt:** Graph-Visualisierung und Template-Integration
+### **Phase 1: APS-Komponenten verstehen** 
+- **Status:** ✅ Abgeschlossen
+- **Ziel:** APS-CCU und APS-NodeRED analysieren
+- **Erreicht:** Session Manager, OMF-Dashboard, APS-Integration
 
-### Phase 3: Steuerungs-Entwicklung 🚀 **AKTUELLER FOKUS**
-- **Ziel:** Node-RED Flows ersetzen und komplette Produktionssteuerung übernehmen
-- **Tool:** OMF Dashboard + DSP (Distributed Shopfloor Processing)
-- **Funktion:** Automatische Produktionssteuerung mit Timing-Management
+### **Phase 2: OMF-CCU etablieren**
+- **Status:** 🔄 In Bearbeitung
+- **Ziel:** OMF-CCU im OMF-Dashboard implementieren
+- **Fortschritt:** APS Overview Tab implementiert, Sensor-Daten Integration, TXT-Module umorganisiert
+
+### **Phase 3: OMF-NodeRED etablieren**
+- **Status:** ⏳ Geplant
+- **Ziel:** OMF-NodeRED im OMF-Dashboard implementieren
+- **Nächste Schritte:** APS-NodeRED Funktionalität ersetzen
 
 #### ✅ Abgeschlossen:
 1. **ModuleStateManager implementiert** ⏱️

@@ -36,7 +36,7 @@ Die Topic-Konfiguration ist eine zentrale Verwaltung aller MQTT-Topics für die 
 - **Topics**: 24 Topics mit Sub-Kategorien
 - **Sub-Kategorien**: Connection, State, Order, Factsheet
 
-#### **4. Node-RED (Gateway)**
+#### **4. APS-NodeRED (Gateway)**
 - **Icon**: 🔄
 - **Beschreibung**: Übersetzt zwischen OPC-UA und MQTT Protokollen
 - **Topics**: 16 Topics für Gateway-Funktionalität
@@ -62,11 +62,11 @@ Die Topic-Konfiguration ist eine zentrale Verwaltung aller MQTT-Topics für die 
 - **Order** 📋: Befehle und Aufträge an das Modul (6 Topics)
 - **Factsheet** 📄: Modul-Konfiguration und Metadaten (6 Topics)
 
-#### **Node-RED Sub-Kategorien:**
-- **Connection** 🔗: Node-RED Gateway-Verbindungen (5 Topics)
-- **State** 📊: Node-RED Gateway-Status (5 Topics)
-- **Factsheet** 📄: Node-RED Gateway-Konfiguration (5 Topics)
-- **Status** 📡: Node-RED Gateway-Status (1 Topic)
+#### **APS-NodeRED Sub-Kategorien:**
+- **Connection** 🔗: APS-NodeRED Gateway-Verbindungen (5 Topics)
+- **State** 📊: APS-NodeRED Gateway-Status (5 Topics)
+- **Factsheet** 📄: APS-NodeRED Gateway-Konfiguration (5 Topics)
+- **Status** 📡: APS-NodeRED Gateway-Status (1 Topic)
 
 ## **TopicManager Klasse**
 
@@ -110,7 +110,7 @@ unmapped = topic_manager.get_unmapped_topics(topic_list)
 ### **Features:**
 - ✅ **Kategorien-Übersicht**: Alle 4 Kategorien mit Icons und Beschreibungen (kollabiert)
 - ✅ **Topic-Tabellen**: Pro Kategorie mit Topic, Friendly-Name, Sub-Kategorie, Modul
-- ✅ **Universelle Filterung**: Sub-Kategorie-Filter für alle Kategorien, Modul-Filter für MODULE und Node-RED
+- ✅ **Universelle Filterung**: Sub-Kategorie-Filter für alle Kategorien, Modul-Filter für MODULE und APS-NodeRED
 - ✅ **Statistiken**: Gesamt-Topics, Kategorien, Sub-Kategorien
 - ✅ **Sub-Kategorie-Details**: Icons und Beschreibungen für alle Kategorien
 - ✅ **Vollständige Sub-Kategorien**: Alle Kategorien haben strukturierte Sub-Kategorien
@@ -150,14 +150,14 @@ unmapped = topic_manager.get_unmapped_topics(topic_list)
   description: "MILL-Verbindungsstatus"
 ```
 
-### **Node-RED Topics:**
+### **APS-NodeRED Topics:**
 ```yaml
 "module/v1/ff/NodeRed/SVR4H76530/connection":
-  category: "Node-RED"
+  category: "APS-NodeRED"
   sub_category: "Connection"
   module: "AIQS"
-  friendly_name: "NodeRed → AIQS : connection"
-  description: "Node-RED Gateway - AIQS-Verbindung"
+  friendly_name: "APS-NodeRED → AIQS : connection"
+  description: "APS-NodeRED Gateway - AIQS-Verbindung"
 ```
 
 ## **Verwendung in Analysatoren**

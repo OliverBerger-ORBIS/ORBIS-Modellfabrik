@@ -38,6 +38,7 @@ Dieses Dokument dient als Leitfaden für die Dokumentationsstruktur der ORBIS-Mo
 
 /logs/                   # Nicht versionierte Log-Dateien (lokal)
 /data/                   # MQTT-Sessions für Replay-Tests ohne reale APS
+├── aps-data/           # APS-Sessions
 ├── omf-data/           # OMF-Sessions
 └── mqtt-data/          # MQTT-Sessions
 
@@ -60,9 +61,7 @@ Dieses Dokument dient als Leitfaden für die Dokumentationsstruktur der ORBIS-Mo
 ├── TXT-DPS/                 # TXT-DPS Komponente (.ft, .json, .py Programme)
 ├── TXT-FTS/                 # TXT-FTS Komponente (.ft, .json, .py Programme)
 ├── TXT-AIQS/                # TXT-AIQS Komponente (.ft, .json, .py Programme)
-├── TXT-CGW/                 # TXT-CGW Komponente (.ft, .json, .py Programme)
 ├── mosquitto/               # MQTT-Broker Komponente (Konfiguration, Logs)
-├── docker/                  # Docker-Container Komponente (docker-compose, etc.)
 └── OPC-UA-Module/           # OPC-UA-Module (NodeMaps, Topologien, zukünftig)
 
 /vendor/
@@ -82,22 +81,27 @@ Dieses Dokument dient als Leitfaden für die Dokumentationsstruktur der ORBIS-Mo
 ├── 04-howto/            # Technische Anleitungen
 ├── 05-reference/        # Datenformate, externe Links, Schnittstellen
 ├── 06-integrations/     # Beschreibung technischer Schnittstellen und Logik
-│   └── APS-Ecosystem/   # As-Is Komponente (Übergeordnetes Thema)
-│       ├── APS-CCU/     # APS-CCU Dokumentation
-│       ├── APS-NodeRED/ # APS-NodeRED Dokumentation
-│       ├── TXT-DPS/     # TXT-DPS Dokumentation
-│       ├── TXT-FTS/     # TXT-FTS Dokumentation
-│       ├── TXT-AIQS/    # TXT-AIQS Dokumentation
-│       ├── TXT-CGW/     # TXT-CGW Dokumentation
-│       ├── mosquitto/   # MQTT-Broker Dokumentation
-│       ├── docker/      # Docker-Container Dokumentation
-│       └── OPC-UA-Module/ # OPC-UA-Module Dokumentation
+│   ├── APS-CCU/     # APS-CCU Dokumentation
+│   ├── APS-NodeRED/ # APS-NodeRED Dokumentation
+│   ├── TXT-DPS/     # TXT-DPS Dokumentation
+│   ├── TXT-FTS/     # TXT-FTS Dokumentation
+│   ├── TXT-AIQS/    # TXT-AIQS Dokumentation
+│   ├── mosquitto/   # MQTT-Broker Dokumentation
 ├── 07-analysis/         # Funktionale Analysen + CHAT-Aktivitäten
 ├── 08-extensions/       # Erweiterungen wie DSP, AI, Cloud, etc.
 ├── sprints/             # Sprint-Dokumentation (sprint_A.md, sprint_B.md, etc.)
 ├── releases/            # Release Notes und Versionshistorie
 ├── helper_apps/         # Helper Apps Dokumentation
-└── analysis/            # Legacy: Wird nach 07-analysis migriert
+├── _shared/             # Geteilte Ressourcen (Mermaid-Diagramme, etc.)
+├── archive/             # Archivierte Dokumentation
+├── analysis/            # Legacy: Wird nach 07-analysis migriert
+├── credentials.md       # Credentials und Secrets
+├── generate_index.py    # Index-Generator
+├── INDEX.html           # HTML-Index
+├── INDEX.json           # JSON-Index
+├── PROJECT_OVERVIEW.md  # Projekt-Übersicht
+├── PROJECT_STATUS.md    # Projekt-Status
+└── 99-glossary.md       # Glossar
 ```
 
 ---
@@ -114,7 +118,6 @@ Dieser Ordner dient zur funktionalen und blackboxartigen Analyse bestehender Kom
 | `functional-analysis/txt-dps-analysis.md`           | TXT-DPS Verhalten und Steuerlogik |
 | `functional-analysis/txt-fts-analysis.md`           | TXT-FTS Verhalten und Steuerlogik |
 | `functional-analysis/txt-aiqs-analysis.md`          | TXT-AIQS Verhalten und Steuerlogik |
-| `functional-analysis/txt-cgw-analysis.md`           | TXT-CGW Verhalten und Steuerlogik |
 | `functional-analysis/mosquitto-analysis.md`         | MQTT-Broker Konfiguration und Topics |
 | `functional-analysis/docker-setup-analysis.md`     | Docker-Container Umgebung auf dem RPi |
 | `functional-analysis/opcua-module-analysis.md`      | OPC-UA-Module NodeMaps und Topologien |
@@ -134,7 +137,6 @@ Dieser Ordner dient zur funktionalen und blackboxartigen Analyse bestehender Kom
 - [ ] Ordner `/docs/07-analysis/` anlegen
 - [ ] Unterordner `functional-analysis/` und `chat-activities/` erstellen
 - [ ] Bestehende Analysen aus `/docs/06-integrations/` ggf. verschieben
-- [ ] TOC-Datei (`docs/07-analysis/TOC-07-analysis.md`) erstellen
 
 ### **CHAT-Aktivitäten protokollieren:**
 - [ ] Jeder Chat erstellt täglich eine Aktivitäts-Datei
@@ -167,7 +169,7 @@ Dieser Ordner dient zur funktionalen und blackboxartigen Analyse bestehender Kom
 
 ### **Bewährte Vorgehensweise:**
 - ✅ **Sourcen & Scripte** → `/integrations/{KOMPONENTE}/` (z.B. APS-CCU, TXT-DPS)
-- ✅ **Technische Schnittstellen** → `/docs/06-integrations/APS-Ecosystem/{KOMPONENTE}/`
+- ✅ **Technische Schnittstellen** → `/docs/06-integrations/{KOMPONENTE}/`
 - ✅ **Funktionale Analysen** → `/docs/07-analysis/functional-analysis/{komponente}-analysis.md`
 - ✅ **CHAT-Aktivitäten** → `/docs/07-analysis/chat-activities/`
 - ✅ **APS/OMF Namenskonvention** - APS (As-Is), OMF (To-Be), Groß-Schreibweise mit Bindestrich
