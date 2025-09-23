@@ -33,8 +33,10 @@
 - ✅ **System-Context aktualisieren** - Mermaid-Diagramm, ASCII-Art entfernt
 - ✅ **APS-CCU Beschreibung** - RPi/Docker-Container, MQTT-Broker Details
 - ✅ **Cursor-Agent-Struktur-Plan überarbeiten** - APS/OMF Namenskonvention + bewährte Vorgehensweisen
+- ✅ **APS-CCU Backend-Code extrahiert** - Docker-Container analysiert, Code in `/integrations/APS-CCU/` strukturiert
 - ⏳ **Integration-Struktur anpassen** - `/integrations/` auf Komponenten-Namen umstellen
 - ⏳ **Dokumentations-Struktur anpassen** - `/docs/06-integrations/APS-Ecosystem/` aufbauen
+- ⏳ **Vollständige APS-CCU Analyse** - Detaillierte Code-Analyse, MQTT-Topics, API-Endpoints, Funktions-Diagramme
 - ⏳ **Weitere Architektur-Diagramme** - Message-Flow, Registry-Model
 - 📋 **Details:** [Chat-A Aktivitäten](docs/07-analysis/chat-activities/chat-a-architecture-2025-09-23.md)
 
@@ -45,12 +47,16 @@
 - ⏳ **Sensor-Daten Integration testen** - Mit realer Fabrik validieren (HÖCHSTE PRIORITÄT)
 - ⏳ **APS Configuration Tab implementieren** - Fehlender 5. Tab
 - ⏳ **Alle APS-Commands testen** - Systematische Validierung
+- ⏳ **OMF-CCU Entwicklung** - Nachbau der APS-CCU Funktionalität (nach vollständiger Analyse)
+- ⏳ **MQTT-Integration** - OMF-Dashboard Integration mit APS-CCU
 - 📋 **Details:** [Chat-B Aktivitäten](docs/07-analysis/chat-activities/chat-b-implementation-2025-09-23.md)
 
 ### 🧪 **Chat-C: Testing & Validation**
 - ⏳ **Sensor-Daten Integration testen** - APS Overview Tab mit realer Fabrik validieren (HÖCHSTE PRIORITÄT)
 - ⏳ **OMF-Dashboard mit realer Fabrik testen** - Validierung der APS-Integration
 - ⏳ **Cross-Platform Testing** - Windows + VSCode für Mermaid
+- ⏳ **APS-CCU Backend-Tests** - Jest-Tests analysieren und validieren
+- ⏳ **Integration-Tests** - APS-CCU mit realer Fabrik testen
 - ⏳ **Template-Analyzer reparieren** - Topics aus Template-Deskriptionen entfernen
 - ⏳ **Integration-Struktur testen** - Ob neue Komponenten-Namen funktionieren
 - 📋 **Details:** [Chat-C Aktivitäten](docs/07-analysis/chat-activities/chat-c-testing-2025-09-23.md)

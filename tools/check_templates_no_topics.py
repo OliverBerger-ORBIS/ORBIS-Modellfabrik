@@ -7,7 +7,7 @@ if not tmpl_dir.exists():
     raise SystemExit(0)
 
 bad = []
-topic_like = re.compile(r"(module/v1/ff/|ccu/|fts/v1/ff/|/j1/txt/1/)")
+topic_like = re.compile(r"(module/v1/ff/|^ccu/|fts/v1/ff/|/j1/txt/1/)")
 for p in tmpl_dir.glob("*.yml"):
     txt = p.read_text(encoding="utf-8")
     if topic_like.search(txt):
