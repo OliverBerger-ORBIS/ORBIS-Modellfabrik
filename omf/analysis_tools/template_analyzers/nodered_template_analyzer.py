@@ -534,7 +534,7 @@ class NodeRedTemplateAnalyzer:
 
         return saved_files
 
-    def migrate_to_registry/model/v2(self, results: Dict):
+    def migrate_to_registry_v2(self, results: Dict):
         """Direct migration to Registry v0 in initial phase"""
         project_root = os.path.abspath(str(Path(__file__).parent / ".." / ".." / ".."))
         registry_dir = os.path.join(project_root, "registry/model/v2/templates")

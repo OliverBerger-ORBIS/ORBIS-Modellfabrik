@@ -225,3 +225,4 @@ def set_workflow_data(workflow_data):
 def get_advanced_processing_status():
     """Gibt den Status der erweiterten Verarbeitungsschritte zurück"""
     return st.session_state.get("aps_processes_advanced", False)
+

@@ -147,34 +147,113 @@ def _show_aps_nfc_reader_panel():
 
 
 def _show_sensor_panels():
-    """Zeigt die 4 Sensordaten-Panels"""
+    """Zeigt die Sensordaten-Panels mit echten MQTT-Daten"""
     st.subheader("🌡️ Sensordaten")
+    st.write("Real-time Sensordaten von BME680 und LDR")
     
-    # 1. Temperatur
-    _show_temperature_panel()
-    st.divider()
+    # MQTT-Client für Sensor-Daten
+    mqtt_client = st.session_state.get("mqtt_client")
+    if not mqtt_client:
+        st.warning("⚠️ MQTT-Client nicht verfügbar")
+        return
     
-    # 2. Luftfeuchtigkeit
-    _show_humidity_panel()
-    st.divider()
+    # Abonniere Sensor-Topics
+    sensor_topics = [
+        "/j1/txt/1/c/bme680",  # BME680 Sensor (Temperatur, Luftfeuchtigkeit, Luftdruck, Luftqualität)
+        "/j1/txt/1/c/ldr",     # LDR Sensor (Licht)
+        "/j1/txt/1/c/cam"      # Kamera-Daten
+    ]
     
-    # 3. Luftdruck
-    _show_pressure_panel()
-    st.divider()
-    
-    # 4. Luftqualität
-    _show_air_quality_panel()
-    st.divider()
-    
-    # 5. Kamera-Steuerung
-    _show_camera_control_panel()
+    try:
+        mqtt_client.subscribe_many(sensor_topics)
+        
+        # Hole Sensor-Daten aus dem Buffer
+        bme680_messages = list(mqtt_client.get_buffer("/j1/txt/1/c/bme680"))
+        ldr_messages = list(mqtt_client.get_buffer("/j1/txt/1/c/ldr"))
+        cam_messages = list(mqtt_client.get_buffer("/j1/txt/1/c/cam"))
+        
+        # Zeige Sensor-Status
+        if bme680_messages:
+            st.info(f"📊 **{len(bme680_messages)} BME680-Nachrichten in Buffer**")
+        if ldr_messages:
+            st.info(f"📊 **{len(ldr_messages)} LDR-Nachrichten in Buffer**")
+        if cam_messages:
+            st.info(f"📊 **{len(cam_messages)} Kamera-Nachrichten in Buffer**")
+        
+        # 1. Temperatur
+        _show_temperature_panel(bme680_messages)
+        st.divider()
+        
+        # 2. Luftfeuchtigkeit
+        _show_humidity_panel(bme680_messages)
+        st.divider()
+        
+        # 3. Luftdruck
+        _show_pressure_panel(bme680_messages)
+        st.divider()
+        
+        # 4. Luftqualität
+        _show_air_quality_panel(bme680_messages)
+        st.divider()
+        
+        # 5. Lichtsensor
+        _show_light_panel(ldr_messages)
+        st.divider()
+        
+        # 6. Kamera-Steuerung
+        _show_camera_control_panel()
+        
+    except Exception as e:
+        st.error(f"❌ Fehler beim Laden der Sensordaten: {e}")
+        logger.error(f"Fehler beim Laden der Sensordaten: {e}")
+        
+        # Fallback: Zeige Mock-Daten
+        _show_temperature_panel([])
+        _show_humidity_panel([])
+        _show_pressure_panel([])
+        _show_air_quality_panel([])
+        _show_light_panel([])
+        _show_camera_control_panel()
 
 
-def _show_temperature_panel():
-    """Zeigt das Temperatur-Panel"""
+def _show_temperature_panel(bme680_messages):
+    """Zeigt das Temperatur-Panel mit echten BME680-Daten"""
     st.subheader("🌡️ APS: Aktuelle Temperatur")
     
-    # Simulierte Temperatur-Daten (später aus MQTT)
+    if bme680_messages:
+        # Verarbeite die neueste BME680-Nachricht
+        latest_message = bme680_messages[-1]
+        try:
+            # Parse BME680-Daten (JSON-Format erwartet)
+            import json
+            sensor_data = json.loads(latest_message.payload)
+            
+            temperature = sensor_data.get("temperature", 0.0)
+            timestamp = latest_message.timestamp.strftime("%Y-%m-%d %H:%M:%S")
+            
+            # Thermometer-Gauge
+            st.metric("Temperatur", f"{temperature:.1f}°C")
+            
+            # Thermometer-Visualisierung
+            st.progress(temperature / 50.0)  # Normalisiert auf 0-50°C
+            
+            # Zeitstempel
+            st.caption(f"{timestamp} ({len(bme680_messages)} Nachrichten)")
+            
+        except Exception as e:
+            st.error(f"❌ Fehler beim Parsen der BME680-Daten: {e}")
+            logger.error(f"Fehler beim Parsen der BME680-Daten: {e}")
+            
+            # Fallback: Zeige Mock-Daten
+            _show_temperature_fallback()
+    else:
+        # Keine Daten verfügbar
+        st.warning("⚠️ Keine BME680-Daten verfügbar")
+        _show_temperature_fallback()
+
+
+def _show_temperature_fallback():
+    """Fallback für Temperatur-Panel ohne echte Daten"""
     temperature = 29.5
     
     # Thermometer-Gauge
@@ -184,14 +263,47 @@ def _show_temperature_panel():
     st.progress(temperature / 50.0)  # Normalisiert auf 0-50°C
     
     # Zeitstempel
-    st.caption("26.8.2025, 18:30:55.535")
+    st.caption("26.8.2025, 18:30:55.535 (Mock-Daten)")
 
 
-def _show_humidity_panel():
-    """Zeigt das Luftfeuchtigkeit-Panel"""
+def _show_humidity_panel(bme680_messages):
+    """Zeigt das Luftfeuchtigkeit-Panel mit echten BME680-Daten"""
     st.subheader("💧 APS: Aktuelle Luftfeuchtigkeit")
     
-    # Simulierte Luftfeuchtigkeit-Daten (später aus MQTT)
+    if bme680_messages:
+        # Verarbeite die neueste BME680-Nachricht
+        latest_message = bme680_messages[-1]
+        try:
+            # Parse BME680-Daten (JSON-Format erwartet)
+            import json
+            sensor_data = json.loads(latest_message.payload)
+            
+            humidity = sensor_data.get("humidity", 0.0)
+            timestamp = latest_message.timestamp.strftime("%Y-%m-%d %H:%M:%S")
+            
+            # Luftfeuchtigkeit-Gauge
+            st.metric("Luftfeuchtigkeit", f"{humidity:.1f}% r.H.")
+            
+            # Luftfeuchtigkeit-Visualisierung
+            st.progress(humidity / 100.0)
+            
+            # Zeitstempel
+            st.caption(f"{timestamp} ({len(bme680_messages)} Nachrichten)")
+            
+        except Exception as e:
+            st.error(f"❌ Fehler beim Parsen der BME680-Daten: {e}")
+            logger.error(f"Fehler beim Parsen der BME680-Daten: {e}")
+            
+            # Fallback: Zeige Mock-Daten
+            _show_humidity_fallback()
+    else:
+        # Keine Daten verfügbar
+        st.warning("⚠️ Keine BME680-Daten verfügbar")
+        _show_humidity_fallback()
+
+
+def _show_humidity_fallback():
+    """Fallback für Luftfeuchtigkeit-Panel ohne echte Daten"""
     humidity = 26.8
     
     # Luftfeuchtigkeit-Gauge
@@ -201,14 +313,47 @@ def _show_humidity_panel():
     st.progress(humidity / 100.0)
     
     # Zeitstempel
-    st.caption("26.8.2025, 18:30:55.535")
+    st.caption("26.8.2025, 18:30:55.535 (Mock-Daten)")
 
 
-def _show_pressure_panel():
-    """Zeigt das Luftdruck-Panel"""
+def _show_pressure_panel(bme680_messages):
+    """Zeigt das Luftdruck-Panel mit echten BME680-Daten"""
     st.subheader("🌬️ APS: Aktueller Luftdruck")
     
-    # Simulierte Luftdruck-Daten (später aus MQTT)
+    if bme680_messages:
+        # Verarbeite die neueste BME680-Nachricht
+        latest_message = bme680_messages[-1]
+        try:
+            # Parse BME680-Daten (JSON-Format erwartet)
+            import json
+            sensor_data = json.loads(latest_message.payload)
+            
+            pressure = sensor_data.get("pressure", 0.0)
+            timestamp = latest_message.timestamp.strftime("%Y-%m-%d %H:%M:%S")
+            
+            # Luftdruck-Gauge
+            st.metric("Luftdruck", f"{pressure:.1f} hPa")
+            
+            # Luftdruck-Visualisierung
+            st.progress((pressure - 950) / 100.0)  # Normalisiert auf 950-1050 hPa
+            
+            # Zeitstempel
+            st.caption(f"{timestamp} ({len(bme680_messages)} Nachrichten)")
+            
+        except Exception as e:
+            st.error(f"❌ Fehler beim Parsen der BME680-Daten: {e}")
+            logger.error(f"Fehler beim Parsen der BME680-Daten: {e}")
+            
+            # Fallback: Zeige Mock-Daten
+            _show_pressure_fallback()
+    else:
+        # Keine Daten verfügbar
+        st.warning("⚠️ Keine BME680-Daten verfügbar")
+        _show_pressure_fallback()
+
+
+def _show_pressure_fallback():
+    """Fallback für Luftdruck-Panel ohne echte Daten"""
     pressure = 986.0
     
     # Luftdruck-Gauge
@@ -218,14 +363,63 @@ def _show_pressure_panel():
     st.progress((pressure - 950) / 100.0)  # Normalisiert auf 950-1050 hPa
     
     # Zeitstempel
-    st.caption("26.8.2025, 18:30:55.535")
+    st.caption("26.8.2025, 18:30:55.535 (Mock-Daten)")
 
 
-def _show_air_quality_panel():
-    """Zeigt das Luftqualität-Panel"""
+def _show_air_quality_panel(bme680_messages):
+    """Zeigt das Luftqualität-Panel mit echten BME680-Daten"""
     st.subheader("🌿 APS: Aktuelle Luftqualität")
     
-    # Simulierte Luftqualität-Daten (später aus MQTT)
+    if bme680_messages:
+        # Verarbeite die neueste BME680-Nachricht
+        latest_message = bme680_messages[-1]
+        try:
+            # Parse BME680-Daten (JSON-Format erwartet)
+            import json
+            sensor_data = json.loads(latest_message.payload)
+            
+            iaq = sensor_data.get("iaq", 0)
+            accuracy = sensor_data.get("accuracy", 0)
+            timestamp = latest_message.timestamp.strftime("%Y-%m-%d %H:%M:%S")
+            
+            # Luftqualität-Anzeige
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                st.metric("IAQ", iaq)
+            
+            with col2:
+                st.metric("Genauigkeit", accuracy)
+            
+            # Luftqualität-Visualisierung (3 Quadrate)
+            col1, col2, col3 = st.columns(3)
+            
+            with col1:
+                st.markdown("⬜")  # Grau
+            
+            with col2:
+                st.markdown("⬜")  # Grau
+            
+            with col3:
+                st.markdown("🟢")  # Grün
+            
+            # Zeitstempel
+            st.caption(f"{timestamp} ({len(bme680_messages)} Nachrichten)")
+            
+        except Exception as e:
+            st.error(f"❌ Fehler beim Parsen der BME680-Daten: {e}")
+            logger.error(f"Fehler beim Parsen der BME680-Daten: {e}")
+            
+            # Fallback: Zeige Mock-Daten
+            _show_air_quality_fallback()
+    else:
+        # Keine Daten verfügbar
+        st.warning("⚠️ Keine BME680-Daten verfügbar")
+        _show_air_quality_fallback()
+
+
+def _show_air_quality_fallback():
+    """Fallback für Luftqualität-Panel ohne echte Daten"""
     iaq = 41
     accuracy = 3
     
@@ -251,7 +445,57 @@ def _show_air_quality_panel():
         st.markdown("🟢")  # Grün
     
     # Zeitstempel
-    st.caption("26.8.2025, 18:30:55.535")
+    st.caption("26.8.2025, 18:30:55.535 (Mock-Daten)")
+
+
+def _show_light_panel(ldr_messages):
+    """Zeigt das Lichtsensor-Panel mit echten LDR-Daten"""
+    st.subheader("💡 APS: Aktuelle Lichtstärke")
+    
+    if ldr_messages:
+        # Verarbeite die neueste LDR-Nachricht
+        latest_message = ldr_messages[-1]
+        try:
+            # Parse LDR-Daten (JSON-Format erwartet)
+            import json
+            sensor_data = json.loads(latest_message.payload)
+            
+            light_level = sensor_data.get("light_level", 0.0)
+            timestamp = latest_message.timestamp.strftime("%Y-%m-%d %H:%M:%S")
+            
+            # Lichtstärke-Gauge
+            st.metric("Lichtstärke", f"{light_level:.1f} lux")
+            
+            # Lichtstärke-Visualisierung
+            st.progress(light_level / 1000.0)  # Normalisiert auf 0-1000 lux
+            
+            # Zeitstempel
+            st.caption(f"{timestamp} ({len(ldr_messages)} Nachrichten)")
+            
+        except Exception as e:
+            st.error(f"❌ Fehler beim Parsen der LDR-Daten: {e}")
+            logger.error(f"Fehler beim Parsen der LDR-Daten: {e}")
+            
+            # Fallback: Zeige Mock-Daten
+            _show_light_fallback()
+    else:
+        # Keine Daten verfügbar
+        st.warning("⚠️ Keine LDR-Daten verfügbar")
+        _show_light_fallback()
+
+
+def _show_light_fallback():
+    """Fallback für Lichtsensor-Panel ohne echte Daten"""
+    light_level = 450.0
+    
+    # Lichtstärke-Gauge
+    st.metric("Lichtstärke", f"{light_level} lux")
+    
+    # Lichtstärke-Visualisierung
+    st.progress(light_level / 1000.0)  # Normalisiert auf 0-1000 lux
+    
+    # Zeitstempel
+    st.caption("26.8.2025, 18:30:55.535 (Mock-Daten)")
 
 
 def _show_camera_control_panel():

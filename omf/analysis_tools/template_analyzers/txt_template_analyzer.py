@@ -895,12 +895,12 @@ class TXTTemplateAnalyzer:
             except Exception as e:
                 print(f"  ❌ Fehler beim Speichern von {observation_file}: {e}")
 
-    def migrate_to_registry/model/v2(self, results: Dict) -> None:
+    def migrate_to_registry_v2(self, results: Dict) -> None:
         """Migrate analysis results to Registry v0 during initial phase"""
         print("🔄 Migriere zu Registry v0...")
 
-        registry/model/v2_dir = os.path.join(os.path.dirname(self.output_dir), "..", "model", "v2", "templates")
-        os.makedirs(registry/model/v2_dir, exist_ok=True)
+        registry_v2_dir = os.path.join(os.path.dirname(self.output_dir), "..", "model", "v2", "templates")
+        os.makedirs(registry_v2_dir, exist_ok=True)
 
         for topic, template_data in results.items():
             # Create Registry v0 template
@@ -929,7 +929,7 @@ class TXTTemplateAnalyzer:
             # Save Registry v0 template
             try:
                 registry_file = f"{template_key}.yml"
-                registry/model/v2_dir, registry_file)
+                registry_path = os.path.join(registry_v2_dir, registry_file)
 
                 with open(registry_path, 'w', encoding='utf-8') as f:
                     yaml.dump(registry_template, f, default_flow_style=False, allow_unicode=True)

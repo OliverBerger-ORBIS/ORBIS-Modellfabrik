@@ -195,10 +195,10 @@ def show_overview_order_raw():
                 )
     with col4:
         if red_need > 0:
-            if st.button("📦 Rohstoff bestellen", key="overview_purchase_order_red", type="secondary"):
+            if st.button("📦 Rohstoff bestellen", key="order_raw_red", type="secondary"):
                 st.info("🔄 Bestellung ROT Rohstoff - Funktion wird implementiert")
         else:
-            st.button("📦 Rohstoff bestellen", key="overview_purchase_order_red_disabled", disabled=True)
+            st.button("📦 Rohstoff bestellen", key="order_raw_red_disabled", disabled=True)
 
     st.markdown("#### 🔵 Blaue Werkstücke")
     col1, col2, col3, col4 = st.columns([1, 1, 2, 1])
@@ -238,10 +238,10 @@ def show_overview_order_raw():
                 )
     with col4:
         if blue_need > 0:
-            if st.button("📦 Rohstoff bestellen", key="overview_purchase_order_blue", type="secondary"):
+            if st.button("📦 Rohstoff bestellen", key="order_raw_blue", type="secondary"):
                 st.info("🔄 Bestellung BLUE Rohstoff - Funktion wird implementiert")
         else:
-            st.button("📦 Rohstoff bestellen", key="overview_purchase_order_blue_disabled", disabled=True)
+            st.button("📦 Rohstoff bestellen", key="order_raw_blue_disabled", disabled=True)
 
     st.markdown("#### ⚪ Weiße Werkstücke")
     col1, col2, col3, col4 = st.columns([1, 1, 2, 1])
@@ -281,9 +281,9 @@ def show_overview_order_raw():
                 )
     with col4:
         if white_need > 0:
-            if st.button("📦 Rohstoff bestellen", key="overview_purchase_order_white", type="secondary"):
+            if st.button("📦 Rohstoff bestellen", key="order_raw_white", type="secondary"):
                 st.info("🔄 Bestellung WHITE Rohstoff - Funktion wird implementiert")
         else:
-            st.button("📦 Rohstoff bestellen", key="overview_purchase_order_white_disabled", disabled=True)
+            st.button("📦 Rohstoff bestellen", key="order_raw_white_disabled", disabled=True)
 
     st.markdown("---")

@@ -32,21 +32,28 @@
 - ✅ **Namenskonvention etablieren** - APS (As-Is) vs OMF (To-Be) Systeme
 - ✅ **System-Context aktualisieren** - Mermaid-Diagramm, ASCII-Art entfernt
 - ✅ **APS-CCU Beschreibung** - RPi/Docker-Container, MQTT-Broker Details
+- ✅ **Cursor-Agent-Struktur-Plan überarbeiten** - APS/OMF Namenskonvention + bewährte Vorgehensweisen
+- ⏳ **Integration-Struktur anpassen** - `/integrations/` auf Komponenten-Namen umstellen
+- ⏳ **Dokumentations-Struktur anpassen** - `/docs/06-integrations/APS-Ecosystem/` aufbauen
 - ⏳ **Weitere Architektur-Diagramme** - Message-Flow, Registry-Model
+- 📋 **Details:** [Chat-A Aktivitäten](docs/07-analysis/chat-activities/chat-a-architecture-2025-09-23.md)
 
 ### 🔧 **Chat-B: Code & Implementation**
-- 🔄 **APS Dashboard Integration systematisch vorantreiben** - Nur 2-3 Befehle funktionieren
+- ✅ **APS Overview Tab 75% funktionsfähig** - Kundenaufträge, Rohmaterial, Lagerbestand
+- 🔄 **Sensor-Daten Integration implementiert** - 6 Sensor-Panels mit echten MQTT-Daten (BME680, LDR, Kamera) - **NOCH NICHT GETESTET**
+- ✅ **APS Dashboard Integration systematisch vorantreiben** - APS Overview implementiert
+- ⏳ **Sensor-Daten Integration testen** - Mit realer Fabrik validieren (HÖCHSTE PRIORITÄT)
 - ⏳ **APS Configuration Tab implementieren** - Fehlender 5. Tab
-- ⏳ **Alle APS-Commands testen und implementieren** - Systematische Validierung
-- ⏳ **Manager-Duplikate beseitigen** - OrderManager (3x), System-Status-Manager (3x)
-- ⏳ **APS-Tabs Registry-Analyse** - Welche Tabs sind notwendig?
-- ⏳ **Registry-Konsolidierung** - Legacy-Konfiguration entfernen
-- ⏳ **WorkpieceManager implementieren** - nfc_config.yml → registry Migration
+- ⏳ **Alle APS-Commands testen** - Systematische Validierung
+- 📋 **Details:** [Chat-B Aktivitäten](docs/07-analysis/chat-activities/chat-b-implementation-2025-09-23.md)
 
 ### 🧪 **Chat-C: Testing & Validation**
+- ⏳ **Sensor-Daten Integration testen** - APS Overview Tab mit realer Fabrik validieren (HÖCHSTE PRIORITÄT)
 - ⏳ **OMF-Dashboard mit realer Fabrik testen** - Validierung der APS-Integration
 - ⏳ **Cross-Platform Testing** - Windows + VSCode für Mermaid
 - ⏳ **Template-Analyzer reparieren** - Topics aus Template-Deskriptionen entfernen
+- ⏳ **Integration-Struktur testen** - Ob neue Komponenten-Namen funktionieren
+- 📋 **Details:** [Chat-C Aktivitäten](docs/07-analysis/chat-activities/chat-c-testing-2025-09-23.md)
 
 ## 🚀 Entwicklungsphasen (High-Level)
 
@@ -61,14 +68,32 @@
 - **Erreicht:** Session Manager, OMF-Dashboard, APS-Integration
 
 ### **Phase 2: OMF-CCU etablieren**
-- **Status:** 🔄 In Bearbeitung (Chat-A: Architektur ✅, Chat-B: Code ⏳)
+- **Status:** 🔄 In Bearbeitung (Chat-A: Architektur ✅, Chat-B: Code 🔄)
 - **Ziel:** OMF-CCU im OMF-Dashboard implementieren
-- **Fortschritt:** Namenskonvention etabliert, System-Context aktualisiert
+- **Fortschritt:** Namenskonvention etabliert, System-Context aktualisiert, APS Overview Tab implementiert (noch nicht getestet)
 
 ### **Phase 3: OMF-NodeRED etablieren**
 - **Status:** ⏳ Geplant
 - **Ziel:** OMF-NodeRED im OMF-Dashboard implementieren
 - **Nächste Schritte:** APS-NodeRED Funktionalität ersetzen
+
+## 🔄 **Chat-B Fortschritt: Sensor-Daten Integration implementiert**
+
+### **✅ Was Chat-B implementiert hat:**
+- **APS Overview Tab erweitert** - 6 Sensor-Panels hinzugefügt (BME680, LDR, Kamera)
+- **MQTT-Integration** - Echte MQTT-Daten für Sensoren implementiert
+- **Fallback-Mechanismus** - Mock-Daten bei MQTT-Fehlern
+- **Dokumentation** - `docs/07-analysis/sensor-data-integration-complete.md`
+
+### **⚠️ Was noch fehlt:**
+- **Testing mit realer Fabrik** - Sensor-Daten Integration noch nicht validiert
+- **MQTT-Topics verifizieren** - Ob die implementierten Topics korrekt sind
+- **Real-time Updates testen** - Ob die OMF-Standard MQTT-Pattern funktionieren
+
+### **🎯 Nächste Chat-B Prioritäten:**
+1. **Sensor-Daten Integration testen** - Mit realer Fabrik validieren
+2. **APS Configuration Tab** - Fehlender 5. Tab implementieren
+3. **Alle APS-Commands testen** - Systematische Validierung
 
 ## 📋 Nächste Schritte (Prioritätenliste)
 
@@ -85,9 +110,10 @@
 10. **OMF-Dashboard Tab-Konsolidierung** - APS-Tabs in vorhandene OMF-Tabs integrieren, unnötige Tabs entfernen
 
 ### **🧪 Testing & Validation**
-8. **OMF-Dashboard mit realer Fabrik testen** - Validierung der APS-Integration
-9. **Template-Analyzer reparieren** - Topics aus Template-Deskriptionen entfernen
-10. **Cross-Platform Testing** - Windows + VSCode für Mermaid
+8. **Sensor-Daten Integration testen** - APS Overview Tab mit realer Fabrik validieren (HÖCHSTE PRIORITÄT)
+9. **OMF-Dashboard mit realer Fabrik testen** - Validierung der APS-Integration
+10. **Template-Analyzer reparieren** - Topics aus Template-Deskriptionen entfernen
+11. **Cross-Platform Testing** - Windows + VSCode für Mermaid
 
 ### **📚 Architektur & Dokumentation**
 11. **Architektur-Dokumentation** an APS-Analyse-Ergebnisse anpassen - As-Is (FT APS) vs. To-Be (ORBIS) Strategie
