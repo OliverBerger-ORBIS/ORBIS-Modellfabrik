@@ -15,9 +15,10 @@ class SemanticTemplateGenerator:
     """Generiert semantische Message Templates mit Variablen"""
 
     def __init__(self):
+        from omf.dashboard.tools.path_constants import REGISTRY_DIR
         self.config_dir = Path(__file__).parent.parent / "config"
-        self.module_config_path = self.config_dir / "module_config.yml"
-        self.template_dir = self.config_dir / "message_templates" / "templates"
+        self.module_config_path = REGISTRY_DIR / "model" / "v1" / "modules.yml"
+        self.template_dir = REGISTRY_DIR / "model" / "v1" / "templates"
 
     def load_module_config(self) -> Dict[str, Any]:
         """Lädt Module-Konfiguration"""

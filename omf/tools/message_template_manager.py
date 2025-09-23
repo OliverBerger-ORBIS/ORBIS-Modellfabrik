@@ -29,7 +29,8 @@ class OmfMessageTemplateManager:
             project_root = current_dir.parent.parent.parent.parent
 
             # Registry v1 (primary) - Fallback zu Legacy-Struktur
-            registry_templates = project_root / "registry" / "model" / "v1" / "templates"
+            from omf.dashboard.tools.path_constants import REGISTRY_DIR
+            registry_templates = REGISTRY_DIR / "model" / "v1" / "templates"
             self.logger.debug(f"🔍 Checking registry path: {registry_templates}")
             self.logger.debug(f"🔍 Registry exists: {registry_templates.exists()}")
 
@@ -37,29 +38,18 @@ class OmfMessageTemplateManager:
                 templates_dir = str(registry_templates)
                 self.logger.info("✅ Using registry v1 message templates")
             else:
-                # Fallback to legacy config (deprecated)
-                legacy_templates = project_root / "omf" / "omf" / "config" / "message_templates"
-                self.logger.debug(f"🔍 Checking legacy path: {legacy_templates}")
-                self.logger.debug(f"🔍 Legacy exists: {legacy_templates.exists()}")
+                # Letzter Fallback: Verwende aktuelles Arbeitsverzeichnis
+                from omf.dashboard.tools.path_constants import REGISTRY_DIR
+                registry_templates_cwd = REGISTRY_DIR / "model" / "v1" / "templates"
+                self.logger.debug(f"🔍 Checking CWD registry path: {registry_templates_cwd}")
+                self.logger.debug(f"🔍 CWD Registry exists: {registry_templates_cwd.exists()}")
 
-                if legacy_templates.exists():
-                    templates_dir = str(legacy_templates)
-                    self.logger.warning(
-                        "⚠️ Using deprecated message_templates - consider migrating to registry/model/v1/templates"
-                    )
+                if registry_templates_cwd.exists():
+                    templates_dir = str(registry_templates_cwd)
+                    self.logger.info("✅ Using registry v1 message templates (from CWD)")
                 else:
-                    # Letzter Fallback: Verwende aktuelles Arbeitsverzeichnis
-                    cwd = Path.cwd()
-                    registry_templates_cwd = cwd / "registry" / "model" / "v1" / "templates"
-                    self.logger.debug(f"🔍 Checking CWD registry path: {registry_templates_cwd}")
-                    self.logger.debug(f"🔍 CWD Registry exists: {registry_templates_cwd.exists()}")
-
-                    if registry_templates_cwd.exists():
-                        templates_dir = str(registry_templates_cwd)
-                        self.logger.info("✅ Using registry v1 message templates (from CWD)")
-                    else:
-                        templates_dir = str(legacy_templates)
-                        self.logger.error("❌ No template directory found!")
+                    self.logger.error("❌ No template directory found!")
+                    raise FileNotFoundError(f"Registry templates not found at {registry_templates_cwd}")
 
         self.templates_dir = Path(templates_dir)
         self.metadata = self._load_metadata()

@@ -18,7 +18,7 @@ import yaml
 from omf.tools.message_template_manager import get_message_template_manager
 from omf.tools.module_manager import get_omf_module_manager
 from omf.tools.module_manager import get_omf_module_manager as get_module_manager
-from omf.tools.nfc_manager import get_omf_nfc_manager as get_nfc_manager
+from omf.tools.workpiece_manager import get_omf_workpiece_manager as get_workpiece_manager
 
 
 class TXTTemplateAnalyzer:

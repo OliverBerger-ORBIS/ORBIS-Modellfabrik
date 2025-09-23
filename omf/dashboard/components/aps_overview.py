@@ -5,6 +5,8 @@ Basiert auf bestehenden OMF-Komponenten, aber im APS-Stil modernisiert
 """
 
 import streamlit as st
+import time
+from datetime import datetime
 from omf.dashboard.tools.logging_config import get_logger
 from omf.dashboard.utils.ui_refresh import request_refresh
 
@@ -157,28 +159,31 @@ def _show_sensor_panels():
         st.warning("⚠️ MQTT-Client nicht verfügbar")
         return
     
-    # Abonniere Sensor-Topics
+    # Abonniere Sensor-Topics (INBOUND - echte Sensordaten empfangen)
     sensor_topics = [
-        "/j1/txt/1/c/bme680",  # BME680 Sensor (Temperatur, Luftfeuchtigkeit, Luftdruck, Luftqualität)
-        "/j1/txt/1/c/ldr",     # LDR Sensor (Licht)
-        "/j1/txt/1/c/cam"      # Kamera-Daten
+        "/j1/txt/1/i/bme680",  # BME680 Sensor Input (Temperatur, Luftfeuchtigkeit, Luftdruck, Luftqualität)
+        "/j1/txt/1/i/ldr",     # LDR Sensor Input (Licht)
+        "/j1/txt/1/i/cam"      # Kamera Input (Kamera-Daten)
     ]
     
     try:
         mqtt_client.subscribe_many(sensor_topics)
         
-        # Hole Sensor-Daten aus dem Buffer
-        bme680_messages = list(mqtt_client.get_buffer("/j1/txt/1/c/bme680"))
-        ldr_messages = list(mqtt_client.get_buffer("/j1/txt/1/c/ldr"))
-        cam_messages = list(mqtt_client.get_buffer("/j1/txt/1/c/cam"))
+        # Hole Sensor-Daten aus dem Buffer (INBOUND Topics)
+        bme680_messages = list(mqtt_client.get_buffer("/j1/txt/1/i/bme680"))
+        ldr_messages = list(mqtt_client.get_buffer("/j1/txt/1/i/ldr"))
+        cam_messages = list(mqtt_client.get_buffer("/j1/txt/1/i/cam"))
         
         # Zeige Sensor-Status
         if bme680_messages:
             st.info(f"📊 **{len(bme680_messages)} BME680-Nachrichten in Buffer**")
+            logger.info(f"BME680 Messages: {len(bme680_messages)}")
         if ldr_messages:
             st.info(f"📊 **{len(ldr_messages)} LDR-Nachrichten in Buffer**")
+            logger.info(f"LDR Messages: {len(ldr_messages)}")
         if cam_messages:
             st.info(f"📊 **{len(cam_messages)} Kamera-Nachrichten in Buffer**")
+            logger.info(f"Camera Messages: {len(cam_messages)}")
         
         # 1. Temperatur
         _show_temperature_panel(bme680_messages)
@@ -224,12 +229,16 @@ def _show_temperature_panel(bme680_messages):
         # Verarbeite die neueste BME680-Nachricht
         latest_message = bme680_messages[-1]
         try:
-            # Parse BME680-Daten (JSON-Format erwartet)
-            import json
-            sensor_data = json.loads(latest_message.payload)
+            # Parse BME680-Daten (Dictionary-Format aus get_buffer)
+            payload = latest_message.get("payload", {})
+            if isinstance(payload, str):
+                import json
+                sensor_data = json.loads(payload)
+            else:
+                sensor_data = payload
             
-            temperature = sensor_data.get("temperature", 0.0)
-            timestamp = latest_message.timestamp.strftime("%Y-%m-%d %H:%M:%S")
+            temperature = sensor_data.get("t", 0.0)
+            timestamp = datetime.fromtimestamp(latest_message.get("ts", time.time())).strftime("%Y-%m-%d %H:%M:%S")
             
             # Thermometer-Gauge
             st.metric("Temperatur", f"{temperature:.1f}°C")
@@ -274,12 +283,16 @@ def _show_humidity_panel(bme680_messages):
         # Verarbeite die neueste BME680-Nachricht
         latest_message = bme680_messages[-1]
         try:
-            # Parse BME680-Daten (JSON-Format erwartet)
-            import json
-            sensor_data = json.loads(latest_message.payload)
+            # Parse BME680-Daten (Dictionary-Format aus get_buffer)
+            payload = latest_message.get("payload", {})
+            if isinstance(payload, str):
+                import json
+                sensor_data = json.loads(payload)
+            else:
+                sensor_data = payload
             
-            humidity = sensor_data.get("humidity", 0.0)
-            timestamp = latest_message.timestamp.strftime("%Y-%m-%d %H:%M:%S")
+            humidity = sensor_data.get("h", 0.0)
+            timestamp = datetime.fromtimestamp(latest_message.get("ts", time.time())).strftime("%Y-%m-%d %H:%M:%S")
             
             # Luftfeuchtigkeit-Gauge
             st.metric("Luftfeuchtigkeit", f"{humidity:.1f}% r.H.")
@@ -324,12 +337,16 @@ def _show_pressure_panel(bme680_messages):
         # Verarbeite die neueste BME680-Nachricht
         latest_message = bme680_messages[-1]
         try:
-            # Parse BME680-Daten (JSON-Format erwartet)
-            import json
-            sensor_data = json.loads(latest_message.payload)
+            # Parse BME680-Daten (Dictionary-Format aus get_buffer)
+            payload = latest_message.get("payload", {})
+            if isinstance(payload, str):
+                import json
+                sensor_data = json.loads(payload)
+            else:
+                sensor_data = payload
             
-            pressure = sensor_data.get("pressure", 0.0)
-            timestamp = latest_message.timestamp.strftime("%Y-%m-%d %H:%M:%S")
+            pressure = sensor_data.get("p", 0.0)
+            timestamp = datetime.fromtimestamp(latest_message.get("ts", time.time())).strftime("%Y-%m-%d %H:%M:%S")
             
             # Luftdruck-Gauge
             st.metric("Luftdruck", f"{pressure:.1f} hPa")
@@ -374,13 +391,17 @@ def _show_air_quality_panel(bme680_messages):
         # Verarbeite die neueste BME680-Nachricht
         latest_message = bme680_messages[-1]
         try:
-            # Parse BME680-Daten (JSON-Format erwartet)
-            import json
-            sensor_data = json.loads(latest_message.payload)
+            # Parse BME680-Daten (Dictionary-Format aus get_buffer)
+            payload = latest_message.get("payload", {})
+            if isinstance(payload, str):
+                import json
+                sensor_data = json.loads(payload)
+            else:
+                sensor_data = payload
             
             iaq = sensor_data.get("iaq", 0)
-            accuracy = sensor_data.get("accuracy", 0)
-            timestamp = latest_message.timestamp.strftime("%Y-%m-%d %H:%M:%S")
+            accuracy = sensor_data.get("aq", 0)
+            timestamp = datetime.fromtimestamp(latest_message.get("ts", time.time())).strftime("%Y-%m-%d %H:%M:%S")
             
             # Luftqualität-Anzeige
             col1, col2 = st.columns(2)
@@ -456,18 +477,23 @@ def _show_light_panel(ldr_messages):
         # Verarbeite die neueste LDR-Nachricht
         latest_message = ldr_messages[-1]
         try:
-            # Parse LDR-Daten (JSON-Format erwartet)
-            import json
-            sensor_data = json.loads(latest_message.payload)
+            # Parse LDR-Daten (Dictionary-Format aus get_buffer)
+            payload = latest_message.get("payload", {})
+            if isinstance(payload, str):
+                import json
+                sensor_data = json.loads(payload)
+            else:
+                sensor_data = payload
             
-            light_level = sensor_data.get("light_level", 0.0)
-            timestamp = latest_message.timestamp.strftime("%Y-%m-%d %H:%M:%S")
+            light_level = sensor_data.get("ldr", 0.0)
+            timestamp = datetime.fromtimestamp(latest_message.get("ts", time.time())).strftime("%Y-%m-%d %H:%M:%S")
             
             # Lichtstärke-Gauge
             st.metric("Lichtstärke", f"{light_level:.1f} lux")
             
-            # Lichtstärke-Visualisierung
-            st.progress(light_level / 1000.0)  # Normalisiert auf 0-1000 lux
+            # Lichtstärke-Visualisierung (LDR-Werte sind 0-4095, normalisiert auf 0-1)
+            normalized_light = min(max(light_level / 4095.0, 0.0), 1.0)
+            st.progress(normalized_light)
             
             # Zeitstempel
             st.caption(f"{timestamp} ({len(ldr_messages)} Nachrichten)")
@@ -491,8 +517,9 @@ def _show_light_fallback():
     # Lichtstärke-Gauge
     st.metric("Lichtstärke", f"{light_level} lux")
     
-    # Lichtstärke-Visualisierung
-    st.progress(light_level / 1000.0)  # Normalisiert auf 0-1000 lux
+    # Lichtstärke-Visualisierung (LDR-Werte sind 0-4095, normalisiert auf 0-1)
+    normalized_light = min(max(light_level / 4095.0, 0.0), 1.0)
+    st.progress(normalized_light)
     
     # Zeitstempel
     st.caption("26.8.2025, 18:30:55.535 (Mock-Daten)")

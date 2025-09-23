@@ -33,8 +33,8 @@ class TopicMappingManager:
         try:
             # Projekt-Root-relative Pfade verwenden
             current_dir = Path(__file__).parent
-            project_root = current_dir.parent.parent.parent.parent
-            registry_mapping = project_root / "registry" / "model" / "v1" / "mappings" / "topic_template.yml"
+            from omf.dashboard.tools.path_constants import REGISTRY_DIR
+            registry_mapping = REGISTRY_DIR / "model" / "v1" / "mappings" / "topic_template.yml"
 
             if registry_mapping.exists():
                 with open(registry_mapping, encoding="utf-8") as f:
@@ -53,20 +53,7 @@ class TopicMappingManager:
                 print(f"✅ Registry Topic-Mappings geladen: {len(self.topic_mappings)} Topics")
                 return
 
-            # Fallback to legacy config
-            mapping_file = Path(self.config.get_config_path()) / "topic_message_mapping.yml"
-            if mapping_file.exists():
-                with open(mapping_file, encoding="utf-8") as f:
-                    data = yaml.safe_load(f)
-                    self.topic_mappings = data.get("topic_mappings", {})
-                    self.template_categories = data.get("template_categories", {})
-                print(
-                    "⚠️ Using deprecated topic_message_mapping.yml - consider migrating to "
-                    "registry/model/v1/mappings/topic_template.yml"
-                )
-                print(f"✅ Legacy Topic-Mappings geladen: {len(self.topic_mappings)} Topics")
-            else:
-                print("⚠️ Keine Topic-Mapping-Datei gefunden")
+            print("⚠️ Registry Topic-Mapping nicht gefunden")
         except Exception as e:
             print(f"❌ Fehler beim Laden der Topic-Mappings: {e}")
 

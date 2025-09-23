@@ -80,13 +80,29 @@ def show_messages_templates():
             import yaml
 
             # Debug: Zeige Template-Pfad
-            # Node-RED Templates haben keine _template.yml Endung
+            # Templates aus Registry laden (alle in einem Verzeichnis)
+            from omf.dashboard.tools.path_constants import REGISTRY_DIR
+            templates_dir = REGISTRY_DIR / "model" / "v1" / "templates"
+            
+            # Template-Namen basierend auf Kategorie und Template-Name konstruieren
+            # Da die Templates spezifische Serial-Nummern haben, suchen wir nach dem Pattern
             if selected_category == "Node-RED":
-                template_path = Path(f"omf/config/message_templates/templates/node_red/{selected_template}.yml")
+                template_pattern = f"nodered.*{selected_template}*.yml"
+            elif selected_category == "Module":
+                template_pattern = f"module.*{selected_template}*.yml"
+            elif selected_category == "CCU":
+                template_pattern = f"ccu.*{selected_template}*.yml"
+            elif selected_category == "TXT":
+                template_pattern = f"txt.*{selected_template}*.yml"
             else:
-                template_path = Path(
-                    f"omf/config/message_templates/templates/{selected_category.lower()}/{selected_template}_template.yml"
-                )
+                template_pattern = f"*{selected_template}*.yml"
+            
+            # Suche nach dem ersten passenden Template
+            matching_templates = list(templates_dir.glob(template_pattern))
+            if matching_templates:
+                template_path = matching_templates[0]
+            else:
+                template_path = templates_dir / f"{selected_template}.yml"
 
             # Erweiterte Debug-Informationen
             st.markdown("### 🔍 Debug-Informationen")
@@ -99,12 +115,20 @@ def show_messages_templates():
                 st.info(f"**Template:** {selected_template}")
 
             # Verzeichnis-Inhalt anzeigen
-            if selected_category == "Node-RED":
-                template_dir = Path("omf/config/message_templates/templates/node_red")
-            else:
-                template_dir = Path(f"omf/config/message_templates/templates/{selected_category.lower()}")
+            from omf.dashboard.tools.path_constants import REGISTRY_DIR
+            template_dir = REGISTRY_DIR / "model" / "v1" / "templates"
             if template_dir.exists():
-                yaml_files = list(template_dir.glob("*.yml"))
+                # Filtere Templates nach Kategorie
+                if selected_category == "Node-RED":
+                    yaml_files = list(template_dir.glob("nodered.*.yml"))
+                elif selected_category == "Module":
+                    yaml_files = list(template_dir.glob("module.*.yml"))
+                elif selected_category == "CCU":
+                    yaml_files = list(template_dir.glob("ccu.*.yml"))
+                elif selected_category == "TXT":
+                    yaml_files = list(template_dir.glob("txt.*.yml"))
+                else:
+                    yaml_files = list(template_dir.glob("*.yml"))
                 st.info(f"**Verzeichnis-Inhalt:** {len(yaml_files)} YAML-Dateien gefunden")
                 with st.expander("📁 Alle YAML-Dateien im Verzeichnis", expanded=False):
                     for yaml_file in yaml_files:

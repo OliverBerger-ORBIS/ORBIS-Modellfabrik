@@ -19,7 +19,7 @@ from typing import Dict, List, Set
 
 import yaml
 
-from omf.analysis_tools.nfc_code_manager import get_nfc_manager
+from omf.tools.workpiece_manager import get_omf_workpiece_manager
 from omf.tools.message_template_manager import get_message_template_manager
 
 
@@ -38,7 +38,7 @@ class NodeRedTemplateAnalyzer:
         os.makedirs(self.output_dir, exist_ok=True)
 
         # Initialize managers
-        self.nfc_manager = get_nfc_manager()
+        self.workpiece_manager = get_omf_workpiece_manager()
         self.module_mapping = get_omf_module_manager()
         self.message_template_manager = get_message_template_manager()
 

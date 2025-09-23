@@ -20,11 +20,11 @@ except ImportError as e:
 
 
 def load_product_catalog():
-    """Lädt den Produktkatalog aus der YAML-Datei"""
+    """Lädt den Produktkatalog über den Product Manager"""
     try:
-        config_path = PROJECT_ROOT / "omf" / "config" / "products" / "product_catalog.yml"
-        with open(config_path, encoding="utf-8") as file:
-            return yaml.safe_load(file)
+        from omf.tools.product_manager import get_omf_product_manager
+        product_manager = get_omf_product_manager()
+        return product_manager.get_all_products()
     except Exception as e:
         st.error(f"❌ Fehler beim Laden des Produktkatalogs: {e}")
         return None

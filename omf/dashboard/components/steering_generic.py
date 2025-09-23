@@ -124,12 +124,18 @@ def show_topic_driven_mode(gateway: MqttGateway):
         # State-of-the-Art: Robuste Pfad-Definition
         from omf.dashboard.tools.path_constants import CONFIG_DIR
 
-        topic_config_path = CONFIG_DIR / "topic_config.yml"
-        topic_mapping_path = CONFIG_DIR / "topic_message_mapping.yml"
+        from omf.dashboard.tools.path_constants import REGISTRY_DIR
+        topics_dir = REGISTRY_DIR / "model" / "v1" / "topics"
+        topic_mapping_path = REGISTRY_DIR / "model" / "v1" / "mappings" / "topic_template.yml"
 
-        # Topic-Konfiguration laden
-        with open(topic_config_path, encoding="utf-8") as f:
-            topic_config = yaml.safe_load(f)
+        # Topic-Konfiguration aus Registry laden
+        topic_config = {"topics": {}}
+        if topics_dir.exists():
+            for topic_file in topics_dir.glob("*.yml"):
+                with open(topic_file, encoding="utf-8") as f:
+                    topic_data = yaml.safe_load(f)
+                    if "topics" in topic_data:
+                        topic_config["topics"].update(topic_data["topics"])
 
         # Topic-Message-Mapping laden
         with open(topic_mapping_path, encoding="utf-8") as f:
@@ -258,7 +264,7 @@ def show_topic_driven_mode(gateway: MqttGateway):
             st.warning("⚠️ Keine verfügbaren Topics gefunden")
     except Exception as e:
         st.error(f"❌ Fehler beim Laden der Topic-Konfiguration: {e}")
-        st.info("ℹ️ Überprüfen Sie die topic-config.yml und topic_message_mapping.yml Dateien")
+        st.info("ℹ️ Überprüfen Sie die Registry-Konfiguration in registry/model/v1/")
 
 
 def _generate_example_payload(template_name: str, selected_topic: str) -> dict:

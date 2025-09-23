@@ -15,7 +15,7 @@ from typing import Dict, List, Set
 
 import yaml
 
-from omf.analysis_tools.nfc_code_manager import get_nfc_manager
+from omf.tools.workpiece_manager import get_omf_workpiece_manager
 from omf.tools.message_template_manager import get_message_template_manager
 from omf.tools.module_manager import OmfModuleManager
 
@@ -132,8 +132,8 @@ class CCUTemplateAnalyzer:
             return "<moduleId>"
 
         # 6. Check for NFC codes (regex + YAML config)
-        nfc_manager = get_nfc_manager()
-        nfc_values = {v for v in str_values if nfc_manager.is_nfc_code(v)}
+        workpiece_manager = get_omf_workpiece_manager()
+        nfc_values = {v for v in str_values if workpiece_manager.is_nfc_code(v)}
         if nfc_values and len(nfc_values) == len(simple_values):
             return "<nfcCode>"
 

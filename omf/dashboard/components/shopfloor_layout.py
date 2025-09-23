@@ -108,14 +108,15 @@ def show_shopfloor_grid():
 
 
 def load_shopfloor_layout():
-    """Lädt das Shopfloor-Layout aus der YAML-Datei"""
+    """Lädt das Shopfloor-Layout über den Shopfloor Manager"""
     try:
-        # State-of-the-Art: Robuste Pfad-Definition
-        from omf.dashboard.tools.path_constants import CONFIG_DIR
-
-        config_path = CONFIG_DIR / "shopfloor" / "layout.yml"
-        with open(config_path, encoding="utf-8") as file:
-            return yaml.safe_load(file)
+        from omf.tools.shopfloor_manager import get_omf_shopfloor_manager
+        shopfloor_manager = get_omf_shopfloor_manager()
+        return {
+            "positions": shopfloor_manager.get_all_positions(),
+            "grid": shopfloor_manager.get_grid_layout(),
+            "shopfloor_metadata": shopfloor_manager.get_layout_statistics()
+        }
     except Exception as e:
         st.error(f"❌ Fehler beim Laden des Shopfloor-Layouts: {e}")
         return None
@@ -363,77 +364,11 @@ def get_shopfloor_metadata() -> Dict[str, Any]:
 
 
 def get_module_positions() -> List[Dict[str, Any]]:
-    """Lädt Modul-Positionen aus der Konfiguration"""
+    """Lädt Modul-Positionen über den Shopfloor Manager"""
     try:
-        from pathlib import Path
-
-        import yaml
-
-        from omf.dashboard.tools.path_constants import PROJECT_ROOT
-        config_file = PROJECT_ROOT / "config" / "shopfloor" / "layout.yml"
-        # Fallback für absoluten Pfad
-        if not config_file.exists():
-            config_file = Path("omf/config/shopfloor/layout.yml")
-        if config_file.exists():
-            with open(config_file, encoding="utf-8") as f:
-                config = yaml.safe_load(f)
-                positions = config.get("positions", [])
-
-                # Icons aus module_config.yml hinzufügen
-                from omf.dashboard.tools.path_constants import PROJECT_ROOT
-                module_config_file = PROJECT_ROOT / "config" / "module_config.yml"
-                # Fallback für absoluten Pfad
-                if not module_config_file.exists():
-                    module_config_file = Path("omf/config/module_config.yml")
-                if module_config_file.exists():
-                    with open(module_config_file, encoding="utf-8") as f:
-                        module_config = yaml.safe_load(f)
-                        modules = module_config.get("modules", {})
-
-                        # Icons zu Positionen hinzufügen
-                        for position in positions:
-                            if position.get("type") == "MODULE":
-                                module_serial = position.get("module_serial")
-                                if module_serial in modules:
-                                    position["icon"] = modules[module_serial].get("icon", "❓")
-                                else:
-                                    # Fallback: Suche nach Modul-Name
-                                    module_name = position.get("id")
-                                    for _serial, module_data in modules.items():
-                                        if module_data.get("name") == module_name:
-                                            position["icon"] = module_data.get("icon", "❓")
-                                            break
-                                    else:
-                                        position["icon"] = "❓"
-                            elif position.get("type") == "INTERSECTION":
-                                position["icon"] = "➕"
-                            elif position.get("type") == "EMPTY":
-                                position["icon"] = "⬜"
-
-                return positions
-    except Exception:
-        pass
-
-    return []
-
-
-def get_shopfloor_statistics() -> Dict[str, Any]:
-    """Berechnet Shopfloor-Statistiken"""
-    positions = get_module_positions()
-
-    total_positions = len(positions)
-    modules = len([p for p in positions if p.get("type") == "MODULE"])
-    intersections = len([p for p in positions if p.get("type") == "INTERSECTION"])
-    empty_positions = len([p for p in positions if p.get("type") == "EMPTY"])
-    active_modules = len([p for p in positions if p.get("type") == "MODULE" and p.get("enabled", False)])
-
-    return {
-        "total_positions": total_positions,
-        "modules": modules,
-        "intersections": intersections,
-        "empty_positions": empty_positions,
-        "active_modules": active_modules,
-        "total_routes": 11,  # Aus routes.yml
-        "product_routes": 3,  # Aus routes.yml
-        "grid_size": "4x3",
-    }
+        from omf.tools.shopfloor_manager import get_omf_shopfloor_manager
+        shopfloor_manager = get_omf_shopfloor_manager()
+        return shopfloor_manager.get_module_positions()
+    except Exception as e:
+        st.error(f"❌ Fehler beim Laden der Modul-Positionen: {e}")
+        return []

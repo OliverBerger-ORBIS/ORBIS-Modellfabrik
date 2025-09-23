@@ -1,0 +1,289 @@
+# OMF FTS Routes Configuration
+# FTS-Routenplanung basierend auf 4x3 Grid Layout
+# Version: 3.0.0
+
+metadata:
+  version: "3.3.0"
+  description: "OMF FTS-Routenplanung für 4x3 Grid Layout"
+  last_updated: "2025-09-09"
+  author: "OMF Development Team"
+  grid_layout: "4x3"
+  fts_serial: "5iO4"
+
+# FTS-Konfiguration
+fts:
+  serial_number: "5iO4"
+  name: "FTS"
+  name_lang_en: "Flexible Transport System"
+  name_lang_de: "Flexibles Transportsystem"
+  start_position: "CHRG0"
+  home_position: "CHRG0"
+  enabled: true
+  icon: "🚛"
+
+# Route-Definitionen zwischen Modulen
+routes:
+  # HBW zu anderen Modulen
+  hbw_to_drill:
+    route_id: "HBW_DRILL"
+    from: "HBW"
+    to: "DRILL"
+    via: ["Intersection1", "Intersection3"]
+    mqtt_via: ["1", "3"]  # Für MQTT-Messages
+    distance: 760  # cm (380 + 380)
+    estimated_time: 15  # Sekunden
+    description: "HBW → Kreuzung 1 → Kreuzung 3 → DRILL"
+    intersection_actions:
+      - intersection: "Intersection1"
+        mqtt_id: "1"
+        action: "PASS"  # Durchfahren
+      - intersection: "Intersection3"
+        mqtt_id: "3"
+        action: "PASS"  # Durchfahren
+    enabled: true
+    
+  hbw_to_mill:
+    route_id: "HBW_MILL"
+    from: "HBW"
+    to: "MILL"
+    via: ["Intersection1"]
+    mqtt_via: ["1"]  # Für MQTT-Messages
+    distance: 380  # cm
+    estimated_time: 8  # Sekunden
+    description: "HBW → Kreuzung 1 → MILL"
+    intersection_actions:
+      - intersection: "Intersection1"
+        mqtt_id: "1"
+        action: "PASS"  # Durchfahren
+    enabled: true
+    
+  hbw_to_aiqs:
+    route_id: "HBW_AIQS"
+    from: "HBW"
+    to: "AIQS"
+    via: ["Intersection1", "Intersection2"]
+    mqtt_via: ["1", "2"]  # Für MQTT-Messages
+    distance: 740  # cm (380 + 360)
+    estimated_time: 14  # Sekunden
+    description: "HBW → Kreuzung 1 → Kreuzung 2 → AIQS"
+    intersection_actions:
+      - intersection: "Intersection1"
+        mqtt_id: "1"
+        action: "PASS"  # Durchfahren
+      - intersection: "Intersection2"
+        mqtt_id: "2"
+        action: "PASS"  # Durchfahren
+    enabled: true
+    
+  hbw_to_dps:
+    route_id: "HBW_DPS"
+    from: "HBW"
+    to: "DPS"
+    via: ["Intersection1", "Intersection2"]
+    mqtt_via: ["1", "2"]  # Für MQTT-Messages
+    distance: 740  # cm (380 + 360)
+    estimated_time: 14  # Sekunden
+    description: "HBW → Kreuzung 1 → Kreuzung 2 → DPS"
+    intersection_actions:
+      - intersection: "Intersection1"
+        mqtt_id: "1"
+        action: "PASS"  # Durchfahren
+      - intersection: "Intersection2"
+        mqtt_id: "2"
+        action: "PASS"  # Durchfahren
+    enabled: true
+
+  # DRILL zu anderen Modulen
+  drill_to_mill:
+    route_id: "DRILL_MILL"
+    from: "DRILL"
+    to: "MILL"
+    via: ["Intersection3", "Intersection1"]
+    mqtt_via: ["3", "1"]  # Für MQTT-Messages
+    distance: 760  # cm (380 + 380)
+    estimated_time: 15  # Sekunden
+    description: "DRILL → Kreuzung 3 → Kreuzung 1 → MILL"
+    intersection_actions:
+      - intersection: "Intersection3"
+        mqtt_id: "3"
+        action: "PASS"  # Durchfahren
+      - intersection: "Intersection1"
+        mqtt_id: "1"
+        action: "PASS"  # Durchfahren
+    enabled: true
+    
+  drill_to_aiqs:
+    route_id: "DRILL_AIQS"
+    from: "DRILL"
+    to: "AIQS"
+    via: ["Intersection3", "Intersection1", "Intersection2"]
+    mqtt_via: ["3", "1", "2"]  # Für MQTT-Messages
+    distance: 1120  # cm (380 + 380 + 360)
+    estimated_time: 22  # Sekunden
+    description: "DRILL → Kreuzung 3 → Kreuzung 1 → Kreuzung 2 → AIQS"
+    intersection_actions:
+      - intersection: "Intersection3"
+        mqtt_id: "3"
+        action: "PASS"  # Durchfahren
+      - intersection: "Intersection1"
+        mqtt_id: "1"
+        action: "PASS"  # Durchfahren
+      - intersection: "Intersection2"
+        mqtt_id: "2"
+        action: "PASS"  # Durchfahren
+    enabled: true
+    
+  drill_to_dps:
+    route_id: "DRILL_DPS"
+    from: "DRILL"
+    to: "DPS"
+    via: ["Intersection3", "Intersection1", "Intersection2"]
+    mqtt_via: ["3", "1", "2"]  # Für MQTT-Messages
+    distance: 1120  # cm (380 + 380 + 360)
+    estimated_time: 22  # Sekunden
+    description: "DRILL → Kreuzung 3 → Kreuzung 1 → Kreuzung 2 → DPS"
+    intersection_actions:
+      - intersection: "Intersection3"
+        mqtt_id: "3"
+        action: "PASS"  # Durchfahren
+      - intersection: "Intersection1"
+        mqtt_id: "1"
+        action: "PASS"  # Durchfahren
+      - intersection: "Intersection2"
+        mqtt_id: "2"
+        action: "PASS"  # Durchfahren
+    enabled: true
+
+  # MILL zu anderen Modulen
+  mill_to_aiqs:
+    route_id: "MILL_AIQS"
+    from: "MILL"
+    to: "AIQS"
+    via: ["Intersection2"]
+    mqtt_via: ["2"]  # Für MQTT-Messages
+    distance: 360  # cm
+    estimated_time: 7  # Sekunden
+    description: "MILL → Kreuzung 2 → AIQS"
+    intersection_actions:
+      - intersection: "Intersection2"
+        mqtt_id: "2"
+        action: "PASS"  # Durchfahren
+    enabled: true
+    
+  mill_to_dps:
+    route_id: "MILL_DPS"
+    from: "MILL"
+    to: "DPS"
+    via: ["Intersection2"]
+    mqtt_via: ["2"]  # Für MQTT-Messages
+    distance: 360  # cm
+    estimated_time: 7  # Sekunden
+    description: "MILL → Kreuzung 2 → DPS"
+    intersection_actions:
+      - intersection: "Intersection2"
+        mqtt_id: "2"
+        action: "PASS"  # Durchfahren
+    enabled: true
+
+  # AIQS zu anderen Modulen
+  aiqs_to_dps:
+    route_id: "AIQS_DPS"
+    from: "AIQS"
+    to: "DPS"
+    via: ["Intersection2"]
+    mqtt_via: ["2"]  # Für MQTT-Messages
+    distance: 360  # cm
+    estimated_time: 7  # Sekunden
+    description: "AIQS → Kreuzung 2 → DPS"
+    intersection_actions:
+      - intersection: "Intersection2"
+        mqtt_id: "2"
+        action: "PASS"  # Durchfahren
+    enabled: true
+
+  # DPS zu anderen Modulen (basierend auf getesteter FTS-Order)
+  dps_to_hbw:
+    route_id: "DPS_HBW"
+    from: "DPS"
+    to: "HBW"
+    via: ["Intersection2", "Intersection1"]
+    mqtt_via: ["2", "1"]  # Für MQTT-Messages
+    distance: 740  # cm (360 + 380)
+    estimated_time: 14  # Sekunden
+    description: "DPS → Kreuzung 2 → Kreuzung 1 → HBW"
+    intersection_actions:
+      - intersection: "Intersection2"
+        mqtt_id: "2"
+        action: "PASS"  # Durchfahren
+      - intersection: "Intersection1"
+        mqtt_id: "1"
+        action: "PASS"  # Durchfahren
+    enabled: true
+    tested: true  # Diese Route wurde getestet
+
+# Produkt-spezifische Routen (basierend auf ChatGPT-Zusammenfassung)
+product_routes:
+  # Produkt Blau: HBW → DRILL → MILL → AIQS → DPS
+  blue_route:
+    product_id: "BLUE"
+    route_sequence:
+      - route_id: "HBW_DRILL"
+        step: 1
+        description: "Transport zur Bohrstation"
+      - route_id: "DRILL_MILL"
+        step: 2
+        description: "Transport zur Frässtation"
+      - route_id: "MILL_AIQS"
+        step: 3
+        description: "Transport zur Qualitätssicherung"
+      - route_id: "AIQS_DPS"
+        step: 4
+        description: "Transport zum Ausgang"
+    total_distance: 2600  # cm
+    total_estimated_time: 59  # Sekunden
+    enabled: true
+
+  # Produkt Weiß: HBW → DRILL → AIQS → DPS
+  white_route:
+    product_id: "WHITE"
+    route_sequence:
+      - route_id: "HBW_DRILL"
+        step: 1
+        description: "Transport zur Bohrstation"
+      - route_id: "DRILL_AIQS"
+        step: 2
+        description: "Transport zur Qualitätssicherung"
+      - route_id: "AIQS_DPS"
+        step: 3
+        description: "Transport zum Ausgang"
+    total_distance: 1840  # cm
+    total_estimated_time: 44  # Sekunden
+    enabled: true
+
+  # Produkt Rot: HBW → MILL → AIQS → DPS
+  red_route:
+    product_id: "RED"
+    route_sequence:
+      - route_id: "HBW_MILL"
+        step: 1
+        description: "Transport zur Frässtation"
+      - route_id: "MILL_AIQS"
+        step: 2
+        description: "Transport zur Qualitätssicherung"
+      - route_id: "AIQS_DPS"
+        step: 3
+        description: "Transport zum Ausgang"
+    total_distance: 1460  # cm
+    total_estimated_time: 28  # Sekunden
+    enabled: true
+
+# Route-Metadaten
+route_metadata:
+  total_routes: 11
+  total_product_routes: 3
+  enabled_routes: 11
+  tested_routes: 1  # DPS_HBW wurde getestet
+  fts_serial: "5iO4"
+  grid_based: true
+  intersection_count: 4
+  intersection_actions: ["PASS", "TURN_LEFT", "TURN_RIGHT"]

@@ -9,6 +9,8 @@ from typing import Any, Dict, List, Optional
 
 import yaml
 
+from omf.dashboard.tools.path_constants import PROJECT_ROOT, REGISTRY_DIR
+
 
 class OmfModuleManager:
     def get_all_module_ids(self) -> list:
@@ -18,42 +20,21 @@ class OmfModuleManager:
     """OMF Module Manager using YAML configuration"""
 
     def __init__(self, config_path: Optional[str] = None):
-        """Initialize OMF Module Manager with YAML configuration"""
+        """Initialize OMF Module Manager with Registry-based configuration"""
         self.config_path = config_path or self._get_default_config_path()
         self.config = self.load_yaml_config()
 
-        # If no config found, try to use registry v1 as fallback
         if not self.config:
-            try:
-                from .registry_manager import get_registry
-
-                registry = get_registry()
-                modules_data = registry.modules()
-                if modules_data:
-                    self.config = modules_data
-                    print("✅ Using registry v1 modules as fallback")
-                    return
-            except Exception as e:
-                print(f"⚠️ Registry v1 fallback failed: {e}")
-
             raise ValueError(f"Could not load module configuration from {self.config_path}")
 
     def _get_default_config_path(self) -> str:
         """Get default path to module configuration YAML file"""
-        # Projekt-Root-relative Pfade verwenden
-        current_dir = Path(__file__).parent
-        project_root = current_dir.parent.parent
-
-        # Registry v1 (primary)
-        registry_path = project_root / "registry" / "model" / "v1" / "modules.yml"
+        # Verwende zentrale Pfad-Konstanten
+        registry_path = REGISTRY_DIR / "model" / "v1" / "modules.yml"
         if registry_path.exists():
-            print(f"✅ Using registry v1: {registry_path}")
             return str(registry_path)
-
-        # Fallback to legacy config (deprecated)
-        legacy_path = project_root / "omf" / "config" / "module_config.yml"
-        print("⚠️ Using deprecated module_config.yml - consider migrating to registry/model/v1/modules.yml")
-        return str(legacy_path.resolve())
+        
+        raise FileNotFoundError(f"Registry modules configuration not found at {registry_path}")
 
     def load_yaml_config(self) -> Optional[Dict[str, Any]]:
         """Load module configuration from YAML file"""

@@ -10,7 +10,7 @@ from .settings_dashboard import show_dashboard_settings
 from .settings_message_templates import show_messages_templates
 from .settings_modul_config import show_module_config
 from .settings_mqtt_config import show_mqtt_config
-from .settings_nfc_config import show_nfc_config
+from .settings_workpiece import show_workpiece_config
 from .settings_topic_config import show_topic_config
 
 
@@ -21,7 +21,7 @@ def show_settings():
 
     # Untertabs für verschiedene Einstellungsbereiche
     settings_tab1, settings_tab2, settings_tab3, settings_tab4, settings_tab5, settings_tab6 = st.tabs(
-        ["⚙️ Dashboard", "🏭 Module", "📱 NFC", "🔗 MQTT", "📡 Topics", "📋 Templates"]
+        ["⚙️ Dashboard", "🏭 Module", "🔧 Werkstück", "🔗 MQTT", "📡 Topics", "📋 Templates"]
     )
 
     # Tab 1: Dashboard Einstellungen
@@ -32,9 +32,9 @@ def show_settings():
     with settings_tab2:
         show_module_config()
 
-    # Tab 3: NFC Konfiguration
+    # Tab 3: Werkstück Konfiguration
     with settings_tab3:
-        show_nfc_config()
+        show_workpiece_config()
 
     # Tab 4: MQTT Konfiguration
     with settings_tab4:

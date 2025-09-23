@@ -9,23 +9,23 @@ from typing import Any, Dict, List
 
 import yaml
 
+from omf.dashboard.tools.path_constants import PROJECT_ROOT, REGISTRY_DIR
+
 
 class OmfTopicManager:
     """Zentrale Verwaltung der MQTT-Topic-Konfiguration für OMF Dashboard"""
 
     def __init__(self, config_path: str = None):
-        """Initialize OMFTopicManager with YAML configuration"""
+        """Initialize OMFTopicManager with Registry-based configuration"""
         if config_path is None:
-            # Registry v1 (primary) - load all topic files
+            # Registry v1 (only source) - load all topic files
             self.config_path = None
             self.config = self._load_registry_topics()
-            if self.config:
-                return
+            if not self.config:
+                raise ValueError("Could not load topics from registry")
+            return
 
-        # Fallback to legacy single file
-        if config_path is None:
-            config_path = str(Path(__file__).parent / ".." / "config" / "topic_config.yml")
-
+        # Custom config path provided
         self.config_path = config_path
         self.config = None
         self.load_yaml_config()
@@ -33,14 +33,11 @@ class OmfTopicManager:
     def _load_registry_topics(self) -> Dict[str, Any]:
         """Load topics from registry v1 structure"""
         try:
-            # Projekt-Root-relative Pfade verwenden
-            current_dir = Path(__file__).parent
-            project_root = current_dir.parent.parent.parent.parent
-            topics_dir = project_root / "registry" / "model" / "v1" / "topics"
+            # Verwende zentrale Pfad-Konstanten
+            topics_dir = REGISTRY_DIR / "model" / "v1" / "topics"
 
             if not topics_dir.exists():
-                print("⚠️ Registry topics directory not found, falling back to legacy config")
-                return None
+                raise FileNotFoundError(f"Registry topics directory not found at {topics_dir}")
 
             # Load all topic files
             topics = {}

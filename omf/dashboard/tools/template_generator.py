@@ -16,10 +16,12 @@ class TemplateGenerator:
     def __init__(self, module_config_path: str = None, templates_dir: str = None):
         """Initialisiert den Template Generator"""
         if module_config_path is None:
-            module_config_path = str(Path(__file__).parent / ".." / "config" / "module_config.yml")
+            from omf.dashboard.tools.path_constants import REGISTRY_DIR
+            module_config_path = str(REGISTRY_DIR / "model" / "v1" / "modules.yml")
 
         if templates_dir is None:
-            templates_dir = str(Path(__file__).parent / ".." / "config" / "message_templates")
+            from omf.dashboard.tools.path_constants import REGISTRY_DIR
+            templates_dir = str(REGISTRY_DIR / "model" / "v1" / "templates")
 
         self.module_config_path = Path(module_config_path)
         self.templates_dir = Path(templates_dir)

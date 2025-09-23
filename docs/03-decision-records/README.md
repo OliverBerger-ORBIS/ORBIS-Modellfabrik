@@ -37,7 +37,7 @@
 ### 7. [Development Rules Compliance](07-development-rules-compliance.md)
 **Status:** Accepted  
 **Datum:** 2024-12-19  
-**Kurzbeschreibung:** Befolgung der OMF Development Rules für einheitliche Entwicklungsstandards, Code-Qualität und Formatierung.
+**Kurzbeschreibung:** Befolgung der OMF Development Rules für einheitliche Entwicklungsstandards, Code-Qualität, Formatierung und Registry-Pfad-Konstanten.
 
 ### 8. [Registry-basierte Konfiguration](08-registry-based-configuration.md)
 **Status:** Accepted  

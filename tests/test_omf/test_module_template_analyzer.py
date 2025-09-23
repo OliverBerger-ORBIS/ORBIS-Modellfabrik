@@ -39,7 +39,7 @@ class TestModuleTemplateAnalyzer(unittest.TestCase):
         self.analyzer = ModuleTemplateAnalyzer(session_dir=self.session_dir, output_dir=self.output_dir)
 
         # Mock managers
-        self.analyzer.nfc_manager = Mock()
+        self.analyzer.workpiece_manager = Mock()
         self.analyzer.module_mapping = Mock()
         self.analyzer.message_template_manager = Mock()
 
@@ -393,7 +393,7 @@ class TestModuleTemplateAnalyzerIntegration(unittest.TestCase):
         self.analyzer = ModuleTemplateAnalyzer(session_dir=self.session_dir, output_dir=self.output_dir)
 
         # Mock managers
-        self.analyzer.nfc_manager = Mock()
+        self.analyzer.workpiece_manager = Mock()
         self.analyzer.module_mapping = Mock()
         self.analyzer.message_template_manager = Mock()
         self.analyzer.module_ids = ["HBW", "VGR", "DPS", "MILL", "OVEN", "CHRG"]
