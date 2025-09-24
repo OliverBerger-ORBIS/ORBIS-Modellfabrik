@@ -42,13 +42,18 @@ def show_overview_product_catalog():
     # 3 Spalten für die Produkte
     col1, col2, col3 = st.columns(3)
 
-    # Produkte aus der Konfiguration laden
-    products = catalog.get("products", {})
+    # Produkte aus der Registry laden (products ist bereits ein Dict)
+    if not isinstance(catalog, dict):
+        st.error("❌ Produktkatalog hat falsches Format")
+        return
+
+    # 3 Spalten für die Produkte
+    col1, col2, col3 = st.columns(3)
 
     # ROT
     with col1:
-        if "red" in products:
-            product = products["red"]
+        if "red" in catalog:
+            product = catalog["red"]
             if TEMPLATES_AVAILABLE:
                 html_content = get_product_catalog_template("RED")
                 st.markdown(html_content, unsafe_allow_html=True)
@@ -63,8 +68,8 @@ def show_overview_product_catalog():
 
     # BLAU
     with col2:
-        if "blue" in products:
-            product = products["blue"]
+        if "blue" in catalog:
+            product = catalog["blue"]
             if TEMPLATES_AVAILABLE:
                 html_content = get_product_catalog_template("BLUE")
                 st.markdown(html_content, unsafe_allow_html=True)
@@ -79,8 +84,8 @@ def show_overview_product_catalog():
 
     # WEISS
     with col3:
-        if "white" in products:
-            product = products["white"]
+        if "white" in catalog:
+            product = catalog["white"]
             if TEMPLATES_AVAILABLE:
                 html_content = get_product_catalog_template("WHITE")
                 st.markdown(html_content, unsafe_allow_html=True)

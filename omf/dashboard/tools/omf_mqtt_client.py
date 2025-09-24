@@ -243,7 +243,7 @@ class OmfMqttClient:
             data = json.dumps(payload, ensure_ascii=False).encode("utf-8")
             return self.publish(topic, data, qos=qos, retain=retain)
         except Exception as e:
-            print(f"publish_json failed: {e}")
+            self.logger.error(f"publish_json failed: {e}")
             return False
 
     def connect(self) -> bool:
@@ -259,7 +259,7 @@ class OmfMqttClient:
             self.connected = True
             return True
         except Exception as e:
-            print(f"MQTT connect failed: {e}")
+            self.logger.error(f"MQTT connect failed: {e}")
             self.connected = False
             return False
 
@@ -272,7 +272,7 @@ class OmfMqttClient:
             self.client.disconnect()
             self.connected = False
         except Exception as e:
-            print(f"MQTT disconnect failed: {e}")
+            self.logger.error(f"MQTT disconnect failed: {e}")
 
     def reconnect(self, new_cfg: MqttConfig) -> bool:
         """
@@ -288,6 +288,12 @@ class OmfMqttClient:
             # Alte Verbindung sauber trennen
             self.client.loop_stop()
             self.client.disconnect()
+            
+            # Warten bis Verbindung vollständig getrennt ist
+            for _ in range(50):  # Max 5 Sekunden warten
+                if not self.connected:
+                    break
+                time.sleep(0.1)
 
             # Neue Konfiguration setzen
             self.cfg = new_cfg
@@ -323,7 +329,7 @@ class OmfMqttClient:
 
             return True
         except Exception as e:
-            print(f"MQTT reconnect failed: {e}")
+            self.logger.error(f"MQTT reconnect failed: {e}")
             return False
 
     def set_message_center_priority(self, level: int, prio_map: Dict[int, List[str]], history_maxlen: int = 5000):

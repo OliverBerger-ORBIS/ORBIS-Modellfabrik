@@ -14,15 +14,17 @@ logger = get_logger("dashboard.components.aps_overview")
 
 
 def show_aps_overview():
-    """Zeigt den APS Overview Tab mit 4 Haupt-Panels und Sensordaten"""
+    """Zeigt den APS Overview Tab mit 5 Haupt-Panels und Sensordaten"""
     st.header("🏭 APS Overview")
-    st.write("APS-Übersicht mit Bestellungen, Lagerbestand, Sensordaten und Kamera-Steuerung")
+    st.write("APS-Übersicht mit Bestellungen, Lagerbestand, Sensordaten, Kamera-Steuerung und Produktkatalog")
     
     # 2-Spalten-Layout: Links Haupt-Panels, Rechts Sensordaten
     col1, col2 = st.columns([2, 1])
     
     with col1:
-        # 4 Haupt-Panels
+        # 5 Haupt-Panels - Produktkatalog an erster Stelle
+        _show_aps_produktkatalog_panel()
+        st.divider()
         _show_aps_bestellung_panel()
         st.divider()
         _show_aps_rohware_panel()
@@ -648,6 +650,82 @@ def get_sensor_data():
 def set_sensor_data(sensor_data):
     """Setzt die Sensordaten"""
     logger.info(f"Sensordaten gesetzt: {sensor_data}")
+
+
+def _show_aps_produktkatalog_panel():
+    """Zeigt das APS: Produktkatalog Panel - integriert in aps_overview"""
+    st.subheader("📦 APS: Produktkatalog")
+    st.write("Verfügbare Produkte und deren Konfiguration")
+
+    try:
+        # Produktkatalog direkt laden (ohne separaten Tab)
+        from omf.tools.product_manager import get_omf_product_manager
+        product_manager = get_omf_product_manager()
+        catalog = product_manager.get_all_products()
+        
+        if not catalog:
+            st.error("❌ Keine Produkte gefunden")
+            return
+
+        # 3 Spalten für die Produkte
+        col1, col2, col3 = st.columns(3)
+
+        # HTML-Templates importieren
+        try:
+            from omf.dashboard.assets.html_templates import get_product_catalog_template
+            TEMPLATES_AVAILABLE = True
+        except ImportError:
+            TEMPLATES_AVAILABLE = False
+
+        # ROT
+        with col1:
+            if "red" in catalog:
+                product = catalog["red"]
+                if TEMPLATES_AVAILABLE:
+                    html_content = get_product_catalog_template("RED")
+                    st.markdown(html_content, unsafe_allow_html=True)
+                else:
+                    st.write("🔴 **ROT**")
+                st.write(f"**Name:** {product.get('name', 'Rot')}")
+                st.write(f"**Beschreibung:** {product.get('description', 'Rot')}")
+                st.write(f"**Material:** {product.get('material', 'Kunststoff')}")
+                st.write(f"**Farbe:** {product.get('color', 'Rot')}")
+                st.write(f"**Größe:** {product.get('size', 'Standard')}")
+
+        # BLAU
+        with col2:
+            if "blue" in catalog:
+                product = catalog["blue"]
+                if TEMPLATES_AVAILABLE:
+                    html_content = get_product_catalog_template("BLUE")
+                    st.markdown(html_content, unsafe_allow_html=True)
+                else:
+                    st.write("🔵 **BLAU**")
+                st.write(f"**Name:** {product.get('name', 'Blau')}")
+                st.write(f"**Beschreibung:** {product.get('description', 'Blau')}")
+                st.write(f"**Material:** {product.get('material', 'Kunststoff')}")
+                st.write(f"**Farbe:** {product.get('color', 'Blau')}")
+                st.write(f"**Größe:** {product.get('size', 'Standard')}")
+
+        # WEISS
+        with col3:
+            if "white" in catalog:
+                product = catalog["white"]
+                if TEMPLATES_AVAILABLE:
+                    html_content = get_product_catalog_template("WHITE")
+                    st.markdown(html_content, unsafe_allow_html=True)
+                else:
+                    st.write("⚪ **WEISS**")
+                st.write(f"**Name:** {product.get('name', 'Weiß')}")
+                st.write(f"**Beschreibung:** {product.get('description', 'Weiß')}")
+                st.write(f"**Material:** {product.get('material', 'Kunststoff')}")
+                st.write(f"**Farbe:** {product.get('color', 'Weiß')}")
+                st.write(f"**Größe:** {product.get('size', 'Standard')}")
+
+    except Exception as e:
+        logger.error(f"❌ Fehler beim Laden des Produktkatalog Panels: {e}")
+        st.error(f"❌ Fehler beim Laden des Produktkatalog Panels: {e}")
+        st.info("💡 Produktkatalog Panel konnte nicht geladen werden.")
 
 
 def get_camera_status():

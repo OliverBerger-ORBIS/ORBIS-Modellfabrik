@@ -12,7 +12,7 @@ from omf.dashboard.tools.logging_config import configure_logging, get_logger
 from omf.dashboard.tools.omf_mqtt_factory import ensure_dashboard_client
 from omf.dashboard.tools.streamlit_log_buffer import RingBufferHandler
 from omf.dashboard.tools.structlog_config import configure_structlog
-from omf.dashboard.utils.ui_refresh import request_refresh
+from omf.dashboard.utils.ui_refresh import request_refresh, consume_refresh
 
 """
 ORBIS Modellfabrik Dashboard (OMF) - Modulare Architektur
@@ -42,20 +42,20 @@ def load_component(component_name, import_path, display_name=None):
 
 # Komponenten laden
 load_component("message_center", "components.message_center", "Message Center")
-load_component("overview", "components.overview", "Overview")
-load_component("production_order", "components.production_order", "Production Order")
+# load_component("overview", "components.overview", "Overview")  # Entfernt - wird ersetzt durch aps_overview
+# load_component("production_order", "components.production_order", "Production Order")  # Entfernt - nur Placeholder
 load_component("settings", "components.settings", "Settings")
 load_component("steering", "components.steering", "Steering")
-load_component("module_state_control", "omf.dashboard.components.module_state_control", "Module Control")
+load_component("wl_module_state_control", "omf.dashboard.components.wl_module_state_control", "WL Module Control")
 load_component("logs", "omf.dashboard.components.logs", "Logs")
-load_component("fts", "components.fts", "FTS")
-load_component("ccu", "components.ccu", "CCU")
-load_component("shopfloor", "components.shopfloor", "Shopfloor")
+# load_component("fts", "components.fts", "FTS")  # Entfernt - übernommen in aps_modules.py
+# load_component("ccu", "components.ccu", "CCU")  # Entfernt - übernommen in aps_modules.py
+# load_component("shopfloor", "components.shopfloor", "Shopfloor")  # Entfernt - übernommen in aps_modules.py
 
 # APS-spezifische Komponenten
 load_component("aps_control", "components.aps_control", "APS Control")
 # load_component("aps_orders", "components.aps_orders", "APS Orders")  # Entfernt - redundant
-load_component("aps_orders_new", "components.aps_orders_new", "APS Orders New")
+load_component("aps_orders", "components.aps_orders", "APS Orders")
 # load_component("aps_steering", "components.aps_steering", "APS Steering")  # Entfernt - redundant
 load_component("aps_configuration", "components.aps_configuration", "APS Configuration")
 load_component("aps_modules", "components.aps_modules", "APS Modules")
@@ -403,78 +403,62 @@ def get_module_logo(module_name):
 
 def display_tabs():
     """Zeigt die Dashboard-Tabs und deren Inhalte"""
-    # Tabs
-    tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11, tab12, tab13, tab14, tab15, tab16 = st.tabs(
+    # Tabs (reduziert von 16 auf 11 Tabs) - Korrekte Reihenfolge: APS → Werksleiter → Admin
+    tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11 = st.tabs(
         [
-            "📊 Übersicht",
-            "🏭 Fertigungsaufträge",
-            "📡 Nachrichten-Zentrale",
-            "🎮 Steuerung",
-            "🏗️ Shopfloor",
-            "🚛 FTS",
-            "🏢 CCU",
-            "⚙️ Einstellungen",
-            "🔧 Modul-Steuerung",
-            "📋 Logs",
+            # APS-Tabs (Business-User)
             "🏭 APS Overview",
-            "⚙️ APS System Control",
+            "📋 APS Orders",
+            "🔄 APS Processes",
             "⚙️ APS Configuration",
             "🏭 APS Modules",
-            # "📊 APS Overview New",  # Entfernt - redundant
-            "🔄 APS Processes",
-            "📋 APS Orders New",
+            # Werksleiter-Tabs (WL)
+            "🔧 WL Modul-Steuerung",
+            "⚙️ WL System Control",
+            # Admin-Tabs (System)
+            "🎮 Steuerung",
+            "📡 Nachrichten-Zentrale",
+            "📋 Logs",
+            "⚙️ Einstellungen",
         ]
     )
 
-    # Tab-Inhalte
+    # Tab-Inhalte (reduziert von 16 auf 11 Tabs) - Korrekte Reihenfolge: APS → Werksleiter → Admin
+    # APS-Tabs (Business-User)
     with tab1:
-        components["overview"]()
+        components["aps_overview"]()
 
     with tab2:
-        components["production_order"]()
+        components["aps_orders"]()
 
     with tab3:
-        components["message_center"]()
+        components["aps_processes"]()
 
     with tab4:
-        components["steering"]()
+        components["aps_configuration"]()
 
     with tab5:
-        components["shopfloor"]()
+        components["aps_modules"]()
 
+    # Werksleiter-Tabs (WL)
     with tab6:
-        components["fts"]()
+        components["wl_module_state_control"]()
 
     with tab7:
-        components["ccu"]()
+        components["aps_control"]()
 
+    # Admin-Tabs (System)
     with tab8:
-        components["settings"]()
+        components["steering"]()
 
     with tab9:
-        components["module_state_control"]()
+        components["message_center"]()
 
     with tab10:
         components["logs"]()
 
-    # APS-spezifische Tabs
     with tab11:
-        components["aps_overview"]()
-
-    with tab12:
-        components["aps_control"]()
-
-    with tab13:
-        components["aps_configuration"]()
-
-    with tab14:
-        components["aps_modules"]()
-
-    with tab15:
-        components["aps_processes"]()
-
-    with tab16:
-        components["aps_orders_new"]()
+        components["settings"]()
 
 
 # =============================================================================
@@ -487,7 +471,11 @@ def main():
     # 1. Logging initialisieren (einmal pro Session)
     _init_logging_once()
 
-    # 2. Seite konfigurieren
+    # 2. UI-Refresh verarbeiten (früh aufrufen)
+    if consume_refresh():
+        st.rerun()
+
+    # 3. Seite konfigurieren
     setup_page_config()
 
     # 3. Umgebung handhaben

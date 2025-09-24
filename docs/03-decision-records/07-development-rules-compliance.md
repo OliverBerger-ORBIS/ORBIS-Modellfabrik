@@ -28,6 +28,12 @@ logger.info("📤 MQTT Publish: topic → payload")
 # UI-Refresh Pattern
 from omf.dashboard.utils.ui_refresh import request_refresh
 request_refresh()  # Statt st.rerun()
+
+# MQTT-Verbindungsstabilität (KRITISCH)
+# st.success(), st.error(), st.warning() sind NICHT das Problem!
+# Das Problem liegt in der Reihenfolge der Funktionsaufrufe oder anderen Änderungen
+logger.info("✅ Erfolgreich gesendet")  # ✅ Korrekt für Logging
+st.success("✅ Erfolgreich gesendet")  # ✅ Auch korrekt - war schon immer da
 ```
 
 ## Konsequenzen
@@ -51,6 +57,7 @@ request_refresh()  # Statt st.rerun()
 - [x] **Registry-Pfade mit REGISTRY_DIR verwenden**
 - [x] OMF-Logging-System verwenden
 - [x] UI-Refresh Pattern statt st.rerun()
+- [x] **MQTT-Verbindungsstabilität: Reihenfolge der Funktionsaufrufe prüfen**
 - [x] Black Formatting (120 Zeichen)
 - [x] Pre-commit Hooks befolgen
 
@@ -73,6 +80,37 @@ registry_path = project_root / "registry" / "model" / "v1" / "modules.yml"
 # Hardcodierte Pfade
 registry_path = "/Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/modules.yml"
 ```
+
+## MQTT-Verbindungsstabilität (KRITISCH)
+
+### Problem:
+Das MQTT-Verbindungsproblem liegt **NICHT** in `st.success()`, `st.error()`, `st.warning()` - diese waren schon immer da und funktionierten.
+
+### ✅ Korrekt:
+```python
+# st.success(), st.error() sind NICHT das Problem
+def _execute_fts_command(module_id):
+    try:
+        gateway.send(topic="ccu/set/charge", builder=lambda: {...})
+        st.success(f"✅ FTS-Befehl für {module_id} erfolgreich gesendet!")  # ✅ OK
+    except Exception as e:
+        st.error(f"❌ Fehler beim FTS-Befehl für {module_id}: {e}")  # ✅ OK
+```
+
+### ❌ Falsch:
+```python
+# Das Problem liegt in der Reihenfolge der Funktionsaufrufe
+def main():
+    # Falsche Reihenfolge kann MQTT-Verbindung beeinträchtigen
+    setup_page_config()  # ❌ Falsche Reihenfolge
+    if consume_refresh():  # ❌ Zu spät aufgerufen
+        st.rerun()
+```
+
+### Regel:
+- **`st.success()`, `st.error()` sind NICHT das Problem** - waren schon immer da
+- **Reihenfolge der Funktionsaufrufe prüfen** - das ist das echte Problem
+- **`consume_refresh()` früh in `main()` aufrufen** - vor anderen Initialisierungen
 
 ---
 

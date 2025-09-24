@@ -22,7 +22,7 @@ from typing import List
 try:
     from omf.dashboard.tools.path_constants import PROJECT_ROOT
 except ImportError:
-    # Fallback für direkte Ausführung
+    # Fallback für direkte Ausführung - verwende PROJECT_ROOT Konstante
     PROJECT_ROOT = Path(__file__).parent.parent.parent
 
 

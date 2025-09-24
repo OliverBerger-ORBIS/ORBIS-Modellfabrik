@@ -220,7 +220,7 @@ def connect_to_broker(mqtt_settings: Dict[str, Any]) -> bool:
         import paho.mqtt.client as mqtt
 
         # MQTT Client erstellen
-        mqtt_client = mqtt.Client(client_id="session_recorder")
+        mqtt_client = mqtt.Client(client_id="session_manager_session_recorder")
 
         # Callback-Funktionen setzen
         mqtt_client.on_connect = on_connect

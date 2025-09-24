@@ -182,7 +182,7 @@ def test_mqtt_connection(host, port, rerun_controller: RerunController):
     """MQTT Verbindung testen mit mosquitto_pub"""
     try:
         result = subprocess.run(
-            ["mosquitto_pub", "-h", host, "-p", str(port), "-t", "test/connection", "-m", "test", "-q", "1"],
+            ["mosquitto_pub", "-h", host, "-p", str(port), "-t", "test/connection", "-m", "test", "-q", "1", "-i", "session_manager_replay_station"],
             capture_output=True,
             text=True,
             timeout=5,
@@ -228,6 +228,8 @@ def send_test_message(topic, payload):
                 json.dumps(payload),
                 "-q",
                 "1",
+                "-i",
+                "session_manager_replay_station",
             ],
             capture_output=True,
             text=True,
@@ -626,7 +628,7 @@ def send_replay_message(topic, payload):
         mqtt_port = st.session_state.get('mqtt_port', 1883)
 
         result = subprocess.run(
-            ["mosquitto_pub", "-h", mqtt_host, "-p", str(mqtt_port), "-t", topic, "-m", payload, "-q", "1"],
+            ["mosquitto_pub", "-h", mqtt_host, "-p", str(mqtt_port), "-t", topic, "-m", payload, "-q", "1", "-i", "session_manager_replay_station"],
             capture_output=True,
             text=True,
             timeout=5,
