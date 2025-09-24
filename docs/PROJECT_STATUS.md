@@ -38,6 +38,8 @@
 ### 🔧 **Chat-B: Code & Implementation**
 - ✅ **APS Overview Tab implementiert** - Kundenaufträge, Rohmaterial, Lagerbestand, Sensor-Daten
 - ✅ **Registry-Konsolidierung abgeschlossen** - Alle Legacy-Konfigurationen zu Registry migriert, 5 neue Manager implementiert
+- ✅ **Message Center Modul-Filter implementiert** - HBW, DPS, DRILL, MILL, AIQS, CHRG, FTS mit Registry-basierter Filterung
+- ✅ **Session State Integration** - Alle Filter verwenden eindeutige Keys für Persistenz
 - ⏳ **Sensor-Daten Integration testen** - Mit realer Fabrik validieren (HÖCHSTE PRIORITÄT)
 - ⏳ **APS Configuration Tab implementieren** - Fehlender 5. Tab
 - ⏳ **Alle APS-Commands testen** - Systematische Validierung
@@ -59,6 +61,7 @@
 3. **Alle APS-Commands testen und validieren** - Systematische Überprüfung aller implementierten Befehle
 4. **Manager-Duplikate beseitigen** - OrderManager (3x identisch), System-Status-Manager (3x ähnlich) auslagern
 5. ✅ **Registry-Konsolidierung** - Legacy-Konfiguration (`omf/config/`) entfernen, alle Manager auf Registry umstellen
+6. ✅ **Message Center Modul-Filter** - HBW, DPS, DRILL, MILL, AIQS, CHRG, FTS mit Registry-basierter Filterung implementiert
 
 ### **🧪 Testing & Validation**
 6. **OMF-Dashboard mit realer Fabrik testen** - Validierung der APS-Integration

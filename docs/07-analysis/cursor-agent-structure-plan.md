@@ -185,3 +185,15 @@ Dieser Ordner dient zur funktionalen und blackboxartigen Analyse bestehender Kom
 - **Zuerst nachfragen** oder `07-analysis/unsorted.md` nutzen
 - **Chat-Bereiche prüfen** in PROJECT_STATUS.md
 - **Bestehende Struktur respektieren** - Nicht willkürlich ändern
+
+### **🚨 WICHTIG: Virtual Environment aktivieren (KRITISCH)**
+- **Vor JEDEM pip install:** `source .venv/bin/activate` (Linux/Mac) oder `.venv\Scripts\activate` (Windows)
+- **Vor JEDEM Python-Befehl:** Virtual Environment muss aktiviert sein
+- **Pre-commit Hooks:** Benötigen aktivierte venv für Dependencies (pyyaml, etc.)
+- **Fehlerquelle:** Alle Chat-Agenten vergessen venv-Aktivierung → ModuleNotFoundError
+
+### **Korrekte Reihenfolge:**
+1. **Virtual Environment aktivieren:** `source .venv/bin/activate`
+2. **Dependencies prüfen:** `pip list | grep yaml`
+3. **Falls fehlend:** `pip install pyyaml`
+4. **Dann erst:** `git commit` (ohne --no-verify)

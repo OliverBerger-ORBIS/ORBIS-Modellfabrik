@@ -170,7 +170,7 @@ def _flatten_for_df(messages: List[MessageRow]) -> pd.DataFrame:
 def show_message_center():
     """Nachrichtenzentrale anzeigen - ressourcenschonend mit Topic-Kategorien"""
     logger.info("📡 Message Center geladen")
-    st.header("📡 Nachrichtenzentrale")
+    st.header("📡 Nachrichtenzentrale", help="Nachrichten werden automatisch aus MQTT-Nachrichten geladen")
 
     # Get MQTT client from session state
     mqtt_client = st.session_state.get("mqtt_client")
@@ -181,7 +181,6 @@ def show_message_center():
         # NICHT return - UI-Elemente trotzdem anzeigen
 
     # Status wird automatisch aktualisiert - keine UI-Elemente nötig
-    st.info("💡 **Nachrichten werden automatisch aus MQTT-Nachrichten geladen**")
 
     # Filter-Optionen
     st.subheader("🔍 Filter & Einstellungen")
@@ -207,31 +206,89 @@ def show_message_center():
                 st.error("❌ MQTT-Client nicht verfügbar oder hat keine clear_history Methode")
 
     with col1:
-        # Nachrichten-Typ Filter
-        message_type_filter = st.selectbox("📨 Nachrichten-Typ", options=["Alle", "received", "sent"], index=0)
+        # Nachrichten-Typ Filter (mit Session State)
+        message_type_filter = st.selectbox(
+            "📨 Nachrichten-Typ", 
+            options=["Alle", "received", "sent"], 
+            index=0,
+            key="message_center_type_filter"
+        )
 
     with col2:
-        # Topic-Kategorie Filter
+        # Topic-Kategorie Filter (mit Session State)
         topic_categories = ["Alle", "CCU", "MODULE", "TXT", "Node-RED", "FTS"]
-        category_filter = st.selectbox("🏷️ Kategorie", options=topic_categories, index=0)
+        category_filter = st.selectbox(
+            "🏷️ Kategorie", 
+            options=topic_categories, 
+            index=0,
+            key="message_center_category_filter"
+        )
 
     with col3:
-        # Sub-Kategorie Filter
+        # Sub-Kategorie Filter (mit Session State)
         sub_categories = ["Alle", "Connection", "State", "Order", "Factsheet", "Control", "Status"]
-        sub_category_filter = st.selectbox("📋 Sub-Kategorie", options=sub_categories, index=0)
+        sub_category_filter = st.selectbox(
+            "📋 Sub-Kategorie", 
+            options=sub_categories, 
+            index=0,
+            key="message_center_sub_category_filter"
+        )
 
     with col4:
-        # Anzahl Nachrichten
-        max_messages = st.number_input("📊 Max", min_value=10, max_value=1000, value=200, step=10)
+        # Anzahl Nachrichten (mit Session State)
+        max_messages = st.number_input(
+            "📊 Max", 
+            min_value=10, 
+            max_value=1000, 
+            value=200, 
+            step=10,
+            key="message_center_max_messages"
+        )
 
     with col6:
-        # Prioritäts-Slider für Message Center
+        # Prioritäts-Slider für Message Center (mit Session State)
         priority_level = st.slider(
             "🎯 Priorität",
             min_value=1,
             max_value=6,
             value=6,
             help="1=Kritisch, 2=Wichtig, 3=Normal, 4=TXT/Node-RED, 5=Spezifisch, 6=Alle",
+            key="message_center_priority_level"
+        )
+
+    # Zweite Filterzeile für Admin-User
+    st.markdown("---")
+    st.markdown("#### 🔍 Modul Filter")
+    
+    col7, col8, col9 = st.columns(3)
+    
+    with col7:
+        # Modul-Filter (basierend auf Registry-Daten, mit Session State)
+        module_filter = st.selectbox(
+            "🏭 Modul",
+            options=["Alle", "HBW", "DPS", "DRILL", "MILL", "AIQS", "CHRG", "FTS"],
+            index=0,
+            help="Filtert nach spezifischen Modulen (basierend auf registry/model/v1/modules.yml)",
+            key="message_center_module_filter"
+        )
+    
+    with col8:
+        # Status-Type Filter (mit Session State)
+        status_type_filter = st.selectbox(
+            "📊 Status-Type",
+            options=["Alle", "Connection Status", "Module Status", "AGV Status"],
+            index=0,
+            help="Filtert nach Status-Typen",
+            key="message_center_status_type_filter"
+        )
+    
+    with col9:
+        # Erweiterte Filter aktivieren (mit Session State)
+        advanced_filters_enabled = st.checkbox(
+            "🔧 Erweiterte Filter aktivieren",
+            value=False,
+            help="Aktiviert die Modul- und Status-Type Filter",
+            key="message_center_advanced_filters_enabled"
         )
 
     # Prioritäts-basierte MQTT-Subscription für Message Center
@@ -240,17 +297,17 @@ def show_message_center():
             # Für Prioritätsstufe 6: Alle Topics (Wildcard)
             if priority_level >= 6:
                 mqtt_client.subscribe("#", qos=1)
-                st.success("✅ Alle Topics abonniert (Prioritätsstufe 6)")
+                subscribed_topics_count = "Alle"  # Wildcard für alle Topics
             else:
                 # Für niedrigere Prioritäten: Spezifische Filter
                 priority_filters = get_all_priority_filters(priority_level)
                 if priority_filters:
                     mqtt_client.subscribe_many(priority_filters, qos=1)
-                    st.success(f"✅ Prioritätsstufe {priority_level} aktiv - {len(priority_filters)} Topics abonniert")
+                    subscribed_topics_count = len(priority_filters)
                 else:
                     # Fallback: Alle Topics
                     mqtt_client.subscribe("#", qos=1)
-                    st.success("✅ Alle Topics abonniert (Fallback)")
+                    subscribed_topics_count = "Alle"  # Wildcard für alle Topics
 
             # Nachrichten aus der globalen History holen
             all_messages = list(mqtt_client._history)  # Direkter Zugriff auf _history
@@ -268,16 +325,15 @@ def show_message_center():
                 )
                 message_rows.append(message_row)
 
-            # Status-Anzeige
-            st.success(f"✅ MQTT-Client verbunden - {len(all_messages)} Nachrichten empfangen")
-
         except Exception as e:
             st.error(f"❌ Fehler beim Laden der Nachrichten: {e}")
             st.info("💡 MQTT-Verbindung wird im Hintergrund wiederhergestellt")
             message_rows = []
+            subscribed_topics_count = "Fehler"
     else:
         st.warning("⚠️ MQTT-Client nicht verfügbar - Nachrichten werden nicht aktualisiert")
         message_rows = []
+        subscribed_topics_count = "N/A"
 
     # Nachrichten filtern
     filtered_messages = []
@@ -294,6 +350,52 @@ def show_message_center():
         if sub_category_filter != "Alle" and msg.get_sub_category() != sub_category_filter:
             continue
 
+        # Erweiterte Filter (nur wenn aktiviert)
+        if advanced_filters_enabled:
+            # Modul-Filter (basierend auf Registry-Daten)
+            topic_lower = msg.topic.lower()
+            module_found = False
+            
+            if module_filter == "Alle":
+                # "Alle" = nur Module-Nachrichten (nicht CCU, TXT, etc.)
+                if ("module/v1/ff/" in topic_lower or "fts/v1/ff/" in topic_lower):
+                    module_found = True
+            else:
+                # Spezifische Modul-Filter
+                if module_filter == "HBW" and ("svr3qa0022" in topic_lower or "hbw" in topic_lower):
+                    module_found = True
+                elif module_filter == "DPS" and ("dps" in topic_lower or "nodered" in topic_lower):
+                    module_found = True
+                elif module_filter == "DRILL" and ("svr4h76449" in topic_lower or "drill" in topic_lower):
+                    module_found = True
+                elif module_filter == "MILL" and ("svr3qa2098" in topic_lower or "mill" in topic_lower):
+                    module_found = True
+                elif module_filter == "AIQS" and ("svr4h73275" in topic_lower or "aiqs" in topic_lower):
+                    module_found = True
+                elif module_filter == "CHRG" and ("svr4h76530" in topic_lower or "chrg" in topic_lower):
+                    module_found = True
+                elif module_filter == "FTS" and "fts" in topic_lower:
+                    module_found = True
+            
+            if not module_found:
+                continue
+
+            # Status-Type Filter (basierend auf Registry-Daten)
+            if status_type_filter != "Alle":
+                topic_lower = msg.topic.lower()
+                status_found = False
+                
+                # Status-Type-Patterns (basierend auf registry/model/v1/topics/aps.yml)
+                if status_type_filter == "Connection Status" and "connection" in topic_lower:
+                    status_found = True
+                elif status_type_filter == "Module Status" and ("state" in topic_lower or "status" in topic_lower):
+                    status_found = True
+                elif status_type_filter == "AGV Status" and ("fts" in topic_lower or "agv" in topic_lower):
+                    status_found = True
+                
+                if not status_found:
+                    continue
+
         filtered_messages.append(msg)
 
     # Nach Anzahl begrenzen
@@ -307,7 +409,7 @@ def show_message_center():
         df = _flatten_for_df(filtered_messages)
 
         # Statistiken
-        col1, col2, col3, col4 = st.columns(4)
+        col1, col2, col3, col4, col5 = st.columns(5)
         with col1:
             st.metric("📊 Gesamt", len(message_rows))
         with col2:
@@ -318,6 +420,8 @@ def show_message_center():
         with col4:
             sent_count = len([m for m in filtered_messages if m.message_type == "sent"])
             st.metric("📤 Gesendet", sent_count)
+        with col5:
+            st.metric("📡 Topics", subscribed_topics_count)
 
         # Tabelle anzeigen
         st.dataframe(

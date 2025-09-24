@@ -7,6 +7,10 @@
 ## ✅ **Abgeschlossen:**
 - **APS Overview Tab 75% funktionsfähig** - Kundenaufträge, Rohmaterial, Lagerbestand
 - **APS Dashboard Integration systematisch vorantreiben** - APS Overview implementiert
+- **Message Center Modul-Filter implementiert** - HBW, DPS, DRILL, MILL, AIQS, CHRG, FTS mit Registry-basierter Filterung
+- **Session State Integration** - Alle Filter verwenden eindeutige Keys für Persistenz
+- **Status-Type Filter** - Connection Status, Module Status, AGV Status
+- **Erweiterte Filter** - Aktivierbar über Checkbox mit Registry-basierter Topic-Pattern-Erkennung
 
 ## 🔄 **In Bearbeitung:**
 - **Sensor-Daten Integration implementiert** - 6 Sensor-Panels mit echten MQTT-Daten (BME680, LDR, Kamera) - **NOCH NICHT GETESTET**
@@ -99,7 +103,7 @@
 3. **Alle APS-Commands testen**
 4. **Manager-Duplikate beseitigen**
 5. **APS-Tabs Registry-Analyse**
-6. **Registry-Konsolidierung**
+6. ✅ **Registry-Konsolidierung** - Abgeschlossen
 7. **WorkpieceManager implementieren**
 
 ## 🔗 **Verlinkungen:**
