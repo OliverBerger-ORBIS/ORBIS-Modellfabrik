@@ -10,6 +10,7 @@ import logging
 import re
 import sqlite3
 import subprocess
+import threading
 import time
 from datetime import datetime
 from pathlib import Path
@@ -456,62 +457,16 @@ def show_replay_controls(rerun_controller: RerunController):
         st.progress(0.0)
         st.text("📊 Fortschritt: 0.0% (0/0)")
 
-    # Replay Logic (ohne Threading)
-    if session["is_playing"] and session["current_index"] < len(session["messages"]):
-        # Nächste Nachricht senden
-        msg = session["messages"][session["current_index"]]
-        logger.debug(f"📤 Sende Nachricht {session['current_index'] + 1}/{len(session['messages'])}: {msg['topic']}")
-
-        if send_replay_message(msg["topic"], msg["payload"]):
-            session["current_index"] += 1
-            logger.debug(f"✅ Nachricht {session['current_index']}/{len(session['messages'])} gesendet")
-
-            # Original Timing basierend auf Geschwindigkeit
-            if session["current_index"] < len(session["messages"]):
-                current_msg = session["messages"][session["current_index"]]
-                prev_msg = session["messages"][session["current_index"] - 1]
-
-                # Zeitdifferenz zwischen Nachrichten berechnen
-                if "timestamp" in current_msg and "timestamp" in prev_msg:
-                    try:
-                        # Verschiedene Timestamp-Formate unterstützen
-                        current_ts_str = current_msg["timestamp"]
-                        prev_ts_str = prev_msg["timestamp"]
-
-                        # ISO Format mit Z
-                        if current_ts_str.endswith('Z'):
-                            current_ts = datetime.fromisoformat(current_ts_str.replace('Z', '+00:00'))
-                            prev_ts = datetime.fromisoformat(prev_ts_str.replace('Z', '+00:00'))
-                        else:
-                            # Standard ISO Format
-                            current_ts = datetime.fromisoformat(current_ts_str)
-                            prev_ts = datetime.fromisoformat(prev_ts_str)
-
-                        time_diff = (current_ts - prev_ts).total_seconds()
-
-                        # Geschwindigkeit anwenden
-                        speed = session.get("speed", 1.0)
-                        wait_time = time_diff / speed
-
-                        if wait_time > 0:
-                            logger.debug(f"⏳ Warte {wait_time:.3f}s bis zur nächsten Nachricht")
-                            time.sleep(wait_time)
-                        else:
-                            # Negative Zeitdifferenz = Nachrichten zur gleichen Zeit
-                            time.sleep(0.01)  # Minimale Wartezeit
-                    except Exception as e:
-                        logger.warning(f"⚠️ Zeitberechnung fehlgeschlagen: {e}")
-                        time.sleep(0.1)  # Fallback
-                else:
-                    time.sleep(0.1)  # Fallback wenn keine Timestamps
-        else:
-            logger.error(f"❌ Fehler beim Senden von Nachricht {session['current_index'] + 1}")
-            session["is_playing"] = False
-
-    # Auto-Refresh für Live-Updates
+    # Live-Status Anzeige ohne automatisches Refresh
     if session["is_playing"]:
-        time.sleep(0.1)  # Kürzere Wartezeit für bessere Responsivität
-        rerun_controller.request_rerun()
+        if session["current_index"] < len(session["messages"]):
+            next_msg = session["messages"][session["current_index"]]
+            st.info(f"📡 Aktuelle Nachricht: {next_msg.get('topic', 'Unknown')}")
+        else:
+            st.success("✅ Alle Nachrichten gesendet!")
+            # Replay automatisch beenden wenn alle Nachrichten gesendet
+            if not session.get("loop", False):
+                session["is_playing"] = False
 
 
 def start_replay():
@@ -522,6 +477,13 @@ def start_replay():
         return
 
     session = st.session_state.loaded_session
+    
+    # Prüfen ob bereits läuft
+    if session.get("is_playing", False):
+        logger.warning("⚠️ Replay läuft bereits")
+        st.warning("⚠️ Replay läuft bereits")
+        return
+    
     session["is_playing"] = True
     session_name = (
         session.get('file', {}).get('name', 'Unknown')
@@ -532,7 +494,27 @@ def start_replay():
         f"▶️ Start Replay: Session={session_name}, Index={session['current_index']}, Messages={len(session['messages'])}"
     )
 
-    # Einfache Lösung: Replay direkt starten (ohne Threading)
+    # Thread-sicheres Starten des Replay Workers
+    if 'replay_thread' not in st.session_state or not st.session_state.replay_thread.is_alive():
+        # Session-Daten für Thread kopieren (thread-safe)
+        session_data = {
+            "messages": session["messages"].copy(),
+            "current_index": session["current_index"],
+            "speed": session.get("speed", 1.0),
+            "loop": session.get("loop", False)
+        }
+        
+        # Worker Thread starten
+        replay_thread = threading.Thread(
+            target=replay_worker, 
+            args=(session_data,), 
+            daemon=True,
+            name="ReplayWorker"
+        )
+        replay_thread.start()
+        st.session_state.replay_thread = replay_thread
+        logger.debug("🚀 Replay Worker Thread gestartet")
+    
     st.success("▶️ Replay gestartet")
     logger.debug("▶️ Replay gestartet")
 
@@ -566,7 +548,7 @@ def reset_replay():
 
 
 def replay_worker(session_data):
-    """Replay Worker Thread"""
+    """Replay Worker Thread - läuft im Hintergrund ohne UI-Reruns"""
     # Session-Daten als Parameter übergeben (Thread-sicher)
     messages = session_data["messages"]
     current_index = session_data["current_index"]
@@ -575,49 +557,90 @@ def replay_worker(session_data):
 
     logger.debug(f"🚀 Replay Worker gestartet: {len(messages)} Nachrichten, Index: {current_index}, Speed: {speed}x")
 
-    while current_index < len(messages):
-        msg = messages[current_index]
-        logger.debug(f"📤 Sende Nachricht {current_index + 1}/{len(messages)}: {msg['topic']}")
-
-        # Nachricht senden
-        if send_replay_message(msg["topic"], msg["payload"]):
-            current_index += 1
-            logger.debug(f"✅ Nachricht {current_index}/{len(messages)} gesendet")
-        else:
-            logger.error(f"❌ Fehler beim Senden von Nachricht {current_index + 1}")
-            break
-
-        # Warten bis zur nächsten Nachricht
-        if current_index < len(messages):
-            try:
-                current_time = datetime.fromisoformat(msg["timestamp"].replace("Z", "+00:00"))
-                next_msg = messages[current_index]
-                next_time = datetime.fromisoformat(next_msg["timestamp"].replace("Z", "+00:00"))
-                time_diff = (next_time - current_time).total_seconds()
-
-                sleep_time = time_diff / speed
-                if sleep_time > 0:
-                    logger.debug(f"⏳ Warte {sleep_time:.2f}s bis zur nächsten Nachricht")
-                    time.sleep(sleep_time)
-            except Exception as e:
-                logger.warning(f"⏳ Fallback Wartezeit: {e}")
-                time.sleep(1.0 / speed)
-
-    logger.debug(f"🏁 Replay Worker beendet: {current_index}/{len(messages)} Nachrichten gesendet")
-
-    # Loop oder beenden
     try:
+        while current_index < len(messages):
+            # Prüfen ob Replay noch aktiv ist (kann durch Pause/Stop geändert werden)
+            if 'loaded_session' not in st.session_state or not st.session_state.loaded_session.get("is_playing", False):
+                logger.debug("⏸️ Replay wurde pausiert oder gestoppt")
+                break
+                
+            msg = messages[current_index]
+            logger.debug(f"📤 Sende Nachricht {current_index + 1}/{len(messages)}: {msg['topic']}")
+
+            # Nachricht senden
+            if send_replay_message(msg["topic"], msg["payload"]):
+                current_index += 1
+                # Session State aktualisieren (thread-safe)
+                if 'loaded_session' in st.session_state:
+                    st.session_state.loaded_session["current_index"] = current_index
+                logger.debug(f"✅ Nachricht {current_index}/{len(messages)} gesendet")
+            else:
+                logger.error(f"❌ Fehler beim Senden von Nachricht {current_index + 1}")
+                break
+
+            # Warten bis zur nächsten Nachricht (Original Timing respektieren)
+            if current_index < len(messages):
+                try:
+                    current_msg = msg
+                    next_msg = messages[current_index]
+                    
+                    # Zeitdifferenz zwischen Nachrichten berechnen
+                    if "timestamp" in current_msg and "timestamp" in next_msg:
+                        current_ts_str = current_msg["timestamp"]
+                        next_ts_str = next_msg["timestamp"]
+
+                        # ISO Format mit Z
+                        if current_ts_str.endswith('Z'):
+                            current_ts = datetime.fromisoformat(current_ts_str.replace('Z', '+00:00'))
+                            next_ts = datetime.fromisoformat(next_ts_str.replace('Z', '+00:00'))
+                        else:
+                            # Standard ISO Format  
+                            current_ts = datetime.fromisoformat(current_ts_str)
+                            next_ts = datetime.fromisoformat(next_ts_str)
+
+                        time_diff = (next_ts - current_ts).total_seconds()
+                        
+                        # Geschwindigkeit anwenden
+                        wait_time = time_diff / speed
+                        
+                        if wait_time > 0:
+                            logger.debug(f"⏳ Warte {wait_time:.3f}s bis zur nächsten Nachricht")
+                            time.sleep(wait_time)
+                        else:
+                            # Negative Zeitdifferenz = Nachrichten zur gleichen Zeit
+                            time.sleep(0.01)  # Minimale Wartezeit
+                    else:
+                        # Fallback: Feste Wartezeit wenn keine Timestamps
+                        time.sleep(1.0 / speed)
+                        
+                except Exception as e:
+                    logger.warning(f"⚠️ Zeitberechnung fehlgeschlagen: {e}")
+                    time.sleep(0.1)  # Fallback
+
+        logger.debug(f"🏁 Replay Worker beendet: {current_index}/{len(messages)} Nachrichten gesendet")
+
+        # Loop oder beenden
         if 'loaded_session' in st.session_state:
-            if loop and st.session_state.loaded_session.get("is_playing", False):
+            session = st.session_state.loaded_session
+            if loop and session.get("is_playing", False) and current_index >= len(messages):
                 logger.debug("🔄 Loop: Starte von vorne")
-                st.session_state.loaded_session["current_index"] = 0
-                replay_worker()
+                session["current_index"] = 0
+                # Rekursiv für Loop (mit aktualisierten Session-Daten)
+                updated_session_data = {
+                    "messages": messages,
+                    "current_index": 0,
+                    "speed": session.get("speed", speed),
+                    "loop": session.get("loop", loop)
+                }
+                replay_worker(updated_session_data)
             else:
                 logger.debug("⏹️ Replay beendet")
-                st.session_state.loaded_session["is_playing"] = False
+                session["is_playing"] = False
+                
     except Exception as e:
-        logger.error(f"❌ Loop/Ende Fehler: {e}")
-        pass
+        logger.error(f"❌ Replay Worker Fehler: {e}")
+        if 'loaded_session' in st.session_state:
+            st.session_state.loaded_session["is_playing"] = False
 
 
 def send_replay_message(topic, payload):
