@@ -36,6 +36,8 @@ class ProjectStructureValidator:
             "__init__.py",
             "Makefile",
             ".DS_Store",  # macOS system file
+            "setup_dev.sh",  # Entwicklungsskript
+            ".gitmodules",  # Git-Submodule-Konfiguration
         }
 
         # Original Fischertechnik Ordner (bleiben im Root)
@@ -55,6 +57,13 @@ class ProjectStructureValidator:
             ".streamlit",
             ".vscode",
             ".github",  # GitHub Actions workflows
+            "tools",  # Projekt-Tools
+            "git-hooks",  # Git-Hooks
+            "integrations",  # Integrationen
+            "logs",  # Log-Dateien
+            "registry",  # Registry-Daten
+            "vendor",  # Vendor-Dateien
+            "orbis_modellfabrik.egg-info",  # Python-Package-Info
         }
 
         # Automatisch zu bereinigende Ordner
@@ -200,10 +209,10 @@ class ProjectStructureValidator:
                 if not (data_dir / subdir).exists():
                     errors.append(f"Erwarteter Unterordner fehlt: data/{subdir}")
 
-        # Prüfe dass keine Orbis-Dateien im Root sind
+        # Prüfe dass keine Orbis-Dateien im Root sind (außer erlaubten)
         orbis_files = list(self.project_root.glob("*orbis*"))
         for file in orbis_files:
-            if file.name not in ["omf", "tests", "docs"]:
+            if file.name not in ["omf", "tests", "docs", "orbis_modellfabrik.egg-info"]:
                 errors.append(f"Orbis-Datei im Root gefunden: {file.name}")
 
         return errors
