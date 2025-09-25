@@ -39,6 +39,18 @@ def ensure_dashboard_client(env: str, store: MutableMapping) -> OmfMqttClient:
 - [x] Session State Management in `omf_dashboard.py`
 - [x] Alle Komponenten verwenden `st.session_state.get("mqtt_client")`
 - [x] Keine direkten `OmfMqttClient` Instanzen in Komponenten
+- [x] **Strenge Environment-Prüfung** zur Vermeidung von Connection-Loops
+- [x] **Saubere Verbindungsbehandlung** mit `disconnect()` und `loop_stop()`
+
+## Kritische Regeln (2025-09-25 Update)
+
+**Connection-Loop Prevention:**
+1. **Strenge Prüfung:** `stored_env != env` vor jedem Reconnect
+2. **Saubere Trennung:** Alte Verbindungen mit `disconnect()` und `loop_stop()` trennen
+3. **Fallback-Mechanismus:** Bei Reconnect-Fehlern neuen Client erstellen
+4. **Zentrale Verwendung:** `ensure_dashboard_client()` nur in `omf_dashboard.py`
+
+**Siehe auch:** [Decision Record 13: MQTT Connection-Loop Prevention](13-mqtt-connection-loop-prevention.md)
 
 ---
 

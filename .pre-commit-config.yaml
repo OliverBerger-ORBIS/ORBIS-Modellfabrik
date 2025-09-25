@@ -65,3 +65,10 @@ repos:
         types: [python]
         stages: [commit]
 
+      - id: check-mqtt-connection-loop
+        name: check-mqtt-connection-loop
+        entry: python omf/scripts/check_mqtt_connection_loop.py
+        language: system
+        types: [python]
+        stages: [commit]
+

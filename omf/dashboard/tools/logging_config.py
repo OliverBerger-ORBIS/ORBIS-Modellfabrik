@@ -26,7 +26,7 @@ except ImportError:
 
 def configure_logging(
     app_name: str = "omf_dashboard",
-    level: int = logging.INFO,
+    level: int = logging.DEBUG,  # DEBUG-Level für Connection-Loop Analyse
     log_dir: str | Path = "logs",
     json_file: str = "app.jsonl",
     console_pretty: bool = True,

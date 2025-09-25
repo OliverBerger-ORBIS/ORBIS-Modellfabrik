@@ -10,6 +10,9 @@ from omf.config.config import LIVE_CFG, REPLAY_CFG
 from omf.dashboard.components.dummy_component import show_dummy_component
 from omf.dashboard.tools.logging_config import configure_logging, get_logger
 from omf.dashboard.tools.omf_mqtt_factory import ensure_dashboard_client
+
+# Logger für Dashboard
+logger = get_logger("omf.dashboard")
 from omf.dashboard.tools.streamlit_log_buffer import RingBufferHandler
 from omf.dashboard.tools.structlog_config import configure_structlog
 from omf.dashboard.utils.ui_refresh import request_refresh, consume_refresh
@@ -165,9 +168,16 @@ def handle_environment_switch():
     - Prioritäts-Sidebar für Nachrichten-Zentrale
     - Verbesserte Umgebungswechsel-Logik
     """
+    # Debug-Logging: Environment-Switch Start
+    logger.info(f"🔍 ENV-SWITCH: handle_environment_switch gestartet")
+    
     # Default aus Settings holen
     if "env" not in st.session_state:
-        st.session_state["env"] = get_default_broker_mode()
+        default_env = get_default_broker_mode()
+        st.session_state["env"] = default_env
+        logger.info(f"🔍 ENV-SWITCH: Default Environment gesetzt: '{default_env}'")
+    else:
+        logger.info(f"🔍 ENV-SWITCH: Bestehende Environment: '{st.session_state['env']}'")
 
     # Default-Modus Info
     default_mode = get_default_broker_mode()
@@ -214,11 +224,17 @@ def handle_environment_switch():
 
     if env != st.session_state["env"]:
         # Umgebungswechsel - Factory kümmert sich um Reconnect
+        old_env = st.session_state["env"]
+        logger.info(f"🔄 ENV-SWITCH: Environment-Wechsel erkannt: '{old_env}' -> '{env}'")
         st.session_state["env"] = env
         st.cache_resource.clear()
+        logger.info(f"🔄 ENV-SWITCH: Cache geleert, Environment aktualisiert")
         # KEIN request_refresh() - verursacht Connection-Loop!
         # Die Factory kümmert sich automatisch um den Reconnect
+    else:
+        logger.info(f"♻️ ENV-SWITCH: Kein Environment-Wechsel, env='{env}' bleibt gleich")
 
+    logger.info(f"🔍 ENV-SWITCH: handle_environment_switch beendet, return env='{env}'")
     return env
 
 
@@ -231,8 +247,13 @@ def initialize_mqtt_client(env):
     - Reconnect bei Umgebungswechsel
     - Robuste Fehlerbehandlung
     """
+    # Debug-Logging: Aufruf protokollieren
+    logger.info(f"🔍 initialize_mqtt_client aufgerufen: env='{env}'")
+    
     # Verwende die kontrollierte Factory
     client = ensure_dashboard_client(env, st.session_state)
+    
+    logger.info(f"🔍 initialize_mqtt_client: Client erhalten, connected={client.connected}")
 
     # Automatisch verbinden wenn nicht verbunden
     if not client.connected:

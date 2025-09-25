@@ -53,6 +53,10 @@ def render_component():
 - [ ] UI-Refresh Pattern befolgt?
 ```
 
+## 🔗 **Verwandte Patterns:**
+- **MQTT Connection-Loop Prevention:** Ähnlicher Pre-commit Hook (`omf/scripts/check_mqtt_connection_loop.py`) verhindert MQTT-Verbindungsprobleme
+- **Siehe auch:** [Decision Record 13: MQTT Connection-Loop Prevention](13-mqtt-connection-loop-prevention.md)
+
 ## Consequences
 
 ### Positive:
