@@ -6,6 +6,11 @@ Sie stellt sicher, dass das Dashboard trotzdem funktioniert.
 """
 
 import streamlit as st
+from omf.dashboard.tools.logging_config import get_logger
+
+# Logger für Dummy Component
+logger = get_logger("omf.dashboard.components.dummy_component")
+logger.info("🔍 LOADED: dummy_component")
 
 
 def show_dummy_component(component_name: str, error_message: str = None):

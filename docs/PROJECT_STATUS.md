@@ -43,7 +43,15 @@
 - ✅ **Registry-Konsolidierung abgeschlossen** - Alle Legacy-Konfigurationen zu Registry migriert, 5 neue Manager implementiert
 - ✅ **Message Center Modul-Filter implementiert** - HBW, DPS, DRILL, MILL, AIQS, CHRG, FTS mit Registry-basierter Filterung
 - ✅ **Session State Integration** - Alle Filter verwenden eindeutige Keys für Persistenz
-- ⏳ **Sensor-Daten Integration testen** - Mit realer Fabrik validieren (HÖCHSTE PRIORITÄT)
+- ✅ **Component-Strukturierung abgeschlossen** - User-Konzept umgesetzt: operator/, supervisor/, admin/ Verzeichnisse
+- ✅ **Component-Bereinigung erfolgreich** - 22 ungenutzte Components identifiziert und gelöscht
+- ✅ **Logger-Standardisierung** - Alle Components mit konsistenten omf.* Logger-Pfaden
+- ✅ **Import-Standardisierung** - Alle relativen Imports zu absoluten Imports geändert
+- ✅ **Factory Reset im Header** - Funktional implementiert mit MQTT-Gateway
+- ✅ **MQTT Connection-Loop Problem gelöst** - Strenge Environment-Prüfung implementiert
+- ✅ **Pre-commit Hooks** - st.rerun() und MQTT Connection-Loop Prevention
+- ⏳ **User Konzept umsetzen** - Rollenbasierte Tab-Sichtbarkeit implementieren (NÄCHSTE PRIORITÄT)
+- ⏳ **Sensor-Daten Integration testen** - Mit realer Fabrik validieren
 - ⏳ **APS Configuration Tab implementieren** - Fehlender 5. Tab
 - ⏳ **Alle APS-Commands testen** - Systematische Validierung
 - 📋 **Details:** [Chat-B Aktivitäten](docs/07-analysis/chat-activities/chat-b-implementation-2025-09-23.md)
@@ -114,13 +122,33 @@
 - **Sprint-Status** wird kontinuierlich aktualisiert
 - **Wichtige Entscheidungen** in `docs/03-decision-records/`
 
+## 🎯 Nächste Schritte (Prioritäten)
+
+### **🔥 HÖCHSTE PRIORITÄT: User Konzept umsetzen**
+- **Rollenbasierte Tab-Sichtbarkeit implementieren**
+  - **Operator (APS-Business-User):** APS Overview, APS Orders, APS Processes, APS Configuration, APS Modules
+  - **Supervisor (Werksleiter/DSP-User):** WL Module Control, APS Control
+  - **Admin (System-Admin):** Steering, Message Center, Logs, Settings
+- **Tab-Filterung basierend auf User-Rolle**
+- **Session State für User-Rolle**
+
+### **🔧 TECHNISCHE PRIORITÄTEN:**
+- **Sensor-Daten Integration testen** - Mit realer Fabrik validieren
+- **APS Configuration Tab implementieren** - Fehlender 5. Tab
+- **Alle APS-Commands testen** - Systematische Validierung
+- **Manager-Duplikate beseitigen** - OrderManager (3x), System-Status-Manager (3x)
+
+### **🌐 ZUKUNFTSPLANUNG:**
+- **I18n (EN, DE, FR) umsetzen** - Internationalisierung
+- **Weitere Architektur-Diagramme** - Message-Flow, Registry-Model
+
 ## 📊 Sprint-Status
 
 ### Sprint 05 (18.09 - 01.10.2025) - **AKTUELL**
 - **Status:** In Bearbeitung
-- **Fokus:** DPS TXT Komponente Analyse und Integration
-- **Erreicht:** APS Dashboard vollständig in OMF-Dashboard integriert
-- **Nächste Schritte:** Sprint-Dokumentation, Architektur-Anpassung
+- **Fokus:** Component-Strukturierung und User-Konzept Vorbereitung
+- **Erreicht:** APS Dashboard vollständig in OMF-Dashboard integriert, Component-Bereinigung abgeschlossen
+- **Nächste Schritte:** User-Konzept umsetzen (Rollenbasierte Tab-Sichtbarkeit), Sprint-Dokumentation
 
 ### Sprint 04 (04.09 - 17.09.2025) - **ABGESCHLOSSEN**
 - **Status:** ✅ Abgeschlossen

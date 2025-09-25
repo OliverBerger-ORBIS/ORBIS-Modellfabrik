@@ -43,28 +43,23 @@ def load_component(component_name, import_path, display_name=None):
         components[component_name] = lambda: show_dummy_component(display_name, error_msg)
 
 
-# Komponenten laden
-load_component("message_center", "components.message_center", "Message Center")
-# load_component("overview", "components.overview", "Overview")  # Entfernt - wird ersetzt durch aps_overview
-# load_component("production_order", "components.production_order", "Production Order")  # Entfernt - nur Placeholder
-load_component("settings", "components.settings", "Settings")
-load_component("steering", "components.steering", "Steering")
-load_component("wl_module_state_control", "omf.dashboard.components.wl_module_state_control", "WL Module Control")
-load_component("logs", "omf.dashboard.components.logs", "Logs")
-# load_component("fts", "components.fts", "FTS")  # Entfernt - übernommen in aps_modules.py
-# load_component("ccu", "components.ccu", "CCU")  # Entfernt - übernommen in aps_modules.py
-# load_component("shopfloor", "components.shopfloor", "Shopfloor")  # Entfernt - übernommen in aps_modules.py
+# Komponenten laden - Neue Struktur nach User-Konzept
+# Operator Components (APS-Business-User)
+load_component("aps_overview", "components.operator.aps_overview", "APS Overview")
+load_component("aps_orders", "components.operator.aps_orders", "APS Orders")
+load_component("aps_processes", "components.operator.aps_processes", "APS Processes")
+load_component("aps_configuration", "components.operator.aps_configuration", "APS Configuration")
+load_component("aps_modules", "components.operator.aps_modules", "APS Modules")
 
-# APS-spezifische Komponenten
-load_component("aps_control", "components.aps_control", "APS Control")
-# load_component("aps_orders", "components.aps_orders", "APS Orders")  # Entfernt - redundant
-load_component("aps_orders", "components.aps_orders", "APS Orders")
-# load_component("aps_steering", "components.aps_steering", "APS Steering")  # Entfernt - redundant
-load_component("aps_configuration", "components.aps_configuration", "APS Configuration")
-load_component("aps_modules", "components.aps_modules", "APS Modules")
-load_component("aps_overview", "components.aps_overview", "APS Overview")
-# load_component("aps_overview_new", "components.aps_overview_new", "APS Overview New")  # Entfernt - redundant
-load_component("aps_processes", "components.aps_processes", "APS Processes")
+# Supervisor Components (Werksleiter/DSP-User)
+load_component("wl_module_state_control", "components.supervisor.wl_module_state_control", "WL Module Control")
+load_component("aps_control", "components.supervisor.aps_control", "APS Control")
+
+# Admin Components (System-Admin)
+load_component("steering", "components.admin.steering", "Steering")
+load_component("message_center", "components.admin.message_center", "Message Center")
+load_component("logs", "components.admin.logs", "Logs")
+load_component("settings", "components.admin.settings", "Settings")
 
 # =============================================================================
 # LOGGING INITIALIZATION

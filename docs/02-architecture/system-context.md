@@ -10,23 +10,29 @@
 
 ### Mermaid-Diagramm (Modern)
 ```mermaid
+%%{init: {'theme':'neutral'}}%%
 graph TB
+classDef orbis fill:#e3f2fd,stroke:#bbdefb,stroke-width:2px,color:#0b2e59;
+classDef fthardware fill:#fff8e1,stroke:#ffecb3,stroke-width:2px,color:#0b3d16;
+classDef ftsoftware fill:#ffebee,stroke:#ffcdd2,stroke-width:2px,color:#7a1a14;
+classDef external fill:#f5f5f5,stroke:#e0e0e0,stroke-width:2px,color:#333;
+
     subgraph "APS Ecosystem"
         subgraph "Control Layer"
-            APS_CCU[APS-CCU<br/>Central Control Unit]
+            APS_CCU[APS-CCU<br/>Central Control Unit]:::ftsoftware
         end
         
         subgraph "Communication Layer"
-            MQTT[MQTT Broker<br/>Message Routing]
-            APS_NODERED[APS-NodeRED<br/>Protocol Translator]
+            MQTT[MQTT Broker<br/>Message Routing]:::external
+            APS_NODERED[APS-NodeRED<br/>Protocol Translator]:::ftsoftware
         end
         
         subgraph "Module Layer"
-            HBW[HBW<br/>High Bay Warehouse]
-            DRILL[DRILL<br/>Drilling Station]
-            MILL[MILL<br/>Milling Station]
-            AIQS[AIQS<br/>Quality Control]
-            DPS[DPS<br/>Distribution Station]
+            HBW[HBW<br/>High Bay Warehouse]:::fthardware
+            DRILL[DRILL<br/>Drilling Station]:::fthardware
+            MILL[MILL<br/>Milling Station]:::fthardware
+            AIQS[AIQS<br/>Quality Control]:::fthardware
+            DPS[DPS<br/>Distribution Station]:::fthardware
         end
         
         subgraph "TXT-Control Layer"

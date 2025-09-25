@@ -1,14 +1,14 @@
 # omf/dashboard/components/controls/factory_reset.py
 
 import streamlit as st
-from datetime import datetime, timezone
-
 from omf.dashboard.tools.logging_config import get_logger
-from omf.dashboard.tools.mqtt_gateway import MqttGateway
-from omf.dashboard.utils.ui_refresh import request_refresh
 
 # Logger für Factory Reset
 logger = get_logger("omf.dashboard.components.controls.factory_reset")
+logger.info("🔍 LOADED: controls.factory_reset")
+from datetime import datetime, timezone
+from omf.dashboard.tools.mqtt_gateway import MqttGateway
+from omf.dashboard.utils.ui_refresh import request_refresh
 
 
 def render_factory_reset():
