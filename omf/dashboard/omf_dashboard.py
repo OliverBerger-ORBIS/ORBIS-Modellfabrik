@@ -216,7 +216,8 @@ def handle_environment_switch():
         # Umgebungswechsel - Factory kümmert sich um Reconnect
         st.session_state["env"] = env
         st.cache_resource.clear()
-        request_refresh()
+        # KEIN request_refresh() - verursacht Connection-Loop!
+        # Die Factory kümmert sich automatisch um den Reconnect
 
     return env
 
@@ -350,11 +351,11 @@ def display_refresh_button():
 
 
 def display_header(client):
-    """Zeigt den Dashboard-Header mit Logo und Status"""
-    # Main title with ORBIS logo and MQTT connection status
-    col1, col2, col3 = st.columns([1, 3, 1])
+    """Zeigt den Dashboard-Header mit Logo, Titel und Controls"""
+    # Header Layout: Logo, Titel, Controls
+    header_col1, header_col2, header_col3 = st.columns([1, 3, 1])
 
-    with col1:
+    with header_col1:
         try:
             # ORBIS Logo im Header anzeigen (allLowercase Variante)
             logo_path = str(Path(__file__).parent / "assets" / "orbis_logo.png")
@@ -367,12 +368,16 @@ def display_header(client):
             st.markdown("🏭")
             st.caption("Modellfabrik")
 
-    with col2:
-        # Haupttitel (linksbündig ohne Symbol)
+    with header_col2:
+        # Haupttitel (zentriert)
         st.markdown("# Modellfabrik Dashboard")
 
-    with col3:
-        # MQTT-Verbindung und Versions-Info
+    with header_col3:
+        # Factory Reset Controls
+        from omf.dashboard.components.controls.factory_reset import render_factory_reset
+        render_factory_reset()
+        
+        # MQTT-Verbindung Info
         if client.connected:
             st.success("🟢 MQTT Verbindung aktiv")
         else:

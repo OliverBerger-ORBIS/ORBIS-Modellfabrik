@@ -58,3 +58,10 @@ repos:
         pass_filenames: false
         stages: [commit]
 
+      - id: check-st-rerun
+        name: check-st-rerun
+        entry: python omf/scripts/check_st_rerun.py
+        language: system
+        types: [python]
+        stages: [commit]
+
