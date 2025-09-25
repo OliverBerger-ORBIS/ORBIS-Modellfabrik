@@ -14,25 +14,28 @@ Verständnis der Funktionsweise der APS Fischertechnik Anwendung, um eine eigene
 
 ## 🚀 Entwicklungsphasen
 
-### **Phase 0: APS as-is lauffähig machen**
-- **Status:** ✅ Abgeschlossen
-- **Ziel:** Fischertechnik-Fabrik funktionsfähig
-- **Erreicht:** APS-CCU, APS-NodeRED, APS-Module laufen
+> **📋 Detaillierte Phasen-Dokumentation:** [Development Phases](docs/01-strategy/development-phases.md)
 
-### **Phase 1: APS-Komponenten verstehen** 
+### **Phase 0: APS "as IS" - Fischertechnik-System verstehen**
 - **Status:** ✅ Abgeschlossen
-- **Ziel:** APS-CCU und APS-NodeRED analysieren
-- **Erreicht:** Session Manager, OMF-Dashboard, APS-Integration
+- **Ziel:** Das bestehende Fischertechnik APS-System vollständig verstehen
+- **Erreicht:** APS-Ecosystem dokumentiert, Mosquitto-Analyse, APS-NodeRED Flows analysiert
 
-### **Phase 2: OMF-CCU etablieren**
+### **Phase 1: OMF-Dashboard mit APS-CCU Frontend-Funktionalität**
 - **Status:** 🔄 In Bearbeitung
-- **Ziel:** OMF-CCU im OMF-Dashboard implementieren
-- **Fortschritt:** APS Overview Tab implementiert, Sensor-Daten Integration, TXT-Module umorganisiert
+- **Ziel:** APS-Dashboard Funktionalität im OMF-Dashboard nachbauen
+- **Erreicht:** APS-Tabs implementiert (Overview, Control, Steering, Orders), Sensor-Daten Integration (teilweise)
+- **Aktuell:** Sensor-Daten Integration testen, APS Configuration Tab implementieren
 
-### **Phase 3: OMF-NodeRED etablieren**
+### **Phase 2: OMF-Dashboard mit APS-NodeRED Funktionalität**
 - **Status:** ⏳ Geplant
-- **Ziel:** OMF-NodeRED im OMF-Dashboard implementieren
-- **Nächste Schritte:** APS-NodeRED Funktionalität ersetzen
+- **Ziel:** APS-NodeRED Gateway-Funktionalität im OMF-Dashboard integrieren
+- **Geplant:** MQTT ↔ OPC-UA Gateway, VDA 5050 FTS-Standard, Registry-basierte Konfiguration
+
+### **Phase 3: Erweiterungen (Zukünftige Entwicklung)**
+- **Status:** ⏳ Geplant
+- **Ziel:** OMF-System um erweiterte Funktionalitäten ausbauen
+- **Geplant:** DSP-Anbindung, ORBIS Cloud, SAP/ERP, KI-Use-cases, erweiterte Analytics
 
 #### ✅ Abgeschlossen:
 1. **ModuleStateManager implementiert** ⏱️

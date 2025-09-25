@@ -34,9 +34,8 @@
 ## 📚 Archivierte Analyse
 
 **Vollständige Analyse-Dokumente:**
-- **`docs/archive/analysis/dps/FF_DPS_24V_ANALYSIS.md`** - Vollständige DPS-Analyse
-- **`docs/archive/analysis/dps/DPS_ANALYSIS_PLAN.md`** - Detaillierter Analyse-Plan
-- **`docs/archive/analysis/dps/DPS_ACCESS_ATTEMPTS.md`** - Zugriffs-Versuche
+- **`docs/archive/analysis/dps/`** - Historische DPS-Analysen (separater Aufräumprozess geplant)
+- **Hinweis:** Inhalte werden in zukünftiger Analyse in APS-CCU/OMF-CCU Kontext eingeordnet
 
 ## 🚀 Nächste Schritte
 

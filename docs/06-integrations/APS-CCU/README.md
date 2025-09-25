@@ -1,72 +1,75 @@
-# Agile Production Simulation
+# APS-CCU Integration Dokumentation
 
-> ⚠️ **VERIFIKATION AUSSTEHEND**: Diese Dokumentation basiert auf einer Hypothese und wurde noch nicht verifiziert. Die beschriebenen Systemkomponenten und Architektur müssen noch getestet und validiert werden.
+## 📋 Übersicht
 
-## Überblick
+**APS-CCU** ist das Herz der APS Modellfabrik - die zentrale Steuerungseinheit.
 
-Effizienz, Agilität und Flexibilität sind beim Aufbau aktueller und zukünftiger Fabriken unverzichtbar. fischertechnik stellt nun ein Trainingsmodell solch einer flexiblen und modularen Fabrik vor – die Agile Production Simulation.
+## 🔍 Komponenten-Details
 
-> **🔗 Verwandte Dokumentation:**
-> - **[System Context](../../02-architecture/system-context.md)** - Gesamtarchitektur OMF Ecosystem
-> - **[APS Physical Architecture](../../02-architecture/aps-physical-architecture.md)** - Netzwerk und Hardware-Details
-> - **[APS Data Flow](../../02-architecture/aps-data-flow.md)** - Datenverarbeitung und Storage
+### **Hardware**
+- **IP-Adresse:** 172.18.0.4 (Docker-Network)
+- **Controller:** Raspberry Pi 4 Model B
+- **Rolle:** Zentrale Steuerung der gesamten Fabrik
+- **Netzwerk:** Docker-Container mit MQTT-Broker
 
-## Systemkomponenten
+### **Software**
+- **MQTT-Broker:** Mosquitto (Port 1883)
+- **Node-RED:** Gateway zwischen MQTT und OPC-UA
+- **Dashboard:** Web-Interface (Port 80)
+- **Docker:** Container-Orchestrierung
 
-Die Fabrik besteht aus einzelnen Modulen wie:
-- Warenein- und Ausgang
-- Hochregallager
-- Frässtation
-- Bohrstation
-- Qualitätssicherung mit KI
+## 🔗 MQTT-Integration
 
-Ein fahrerloses Transportsystem transportiert Werkstücke flexibel zwischen den einzelnen Stationen und gewährleistet einen flexiblen Produktionsprozess, der an die Kundenwünsche angepasst werden kann. Die Fabrik kann um einen Brennofen, weitere Bohr- oder Frässtationen und auch um zusätzliche fahrerlose Transportsysteme erweitert werden.
+### **Zentrale Kommunikation**
+- **Broker:** 172.18.0.4:1883
+- **Topics:** Zentrale Message-Routing-Infrastruktur
+- **QoS:** Commands (QoS 2), Sensor (QoS 1)
+- **Will Messages:** Connection-Monitoring
 
-## Werkstück-Management
+### **Dashboard-Integration**
+- **Frontend:** `http://192.168.0.100/dashboard`
+- **Client-ID:** `mqttjs_bba12050`
+- **Routing:** 192.168.0.100 → 172.18.0.5
 
-Jedes Werkstück enthält einen NFC-Tag, auf den Produktionsdaten geschrieben werden:
-- Farbe des Werkstücks
-- Zeitpunkt Anlieferung
-- Zeitpunkt Ein- und Auslagerung
-- Durchgeführte Produktionsschritte
-- Durchführung Qualitätsprüfung
+## 🏭 Fabrik-Steuerung
 
-Die verschieden farbigen Werkstücke (weiß, rot, blau) durchlaufen verschiedene Produktionsprozesse und durchlaufen somit unterschiedliche Stationen in der Fabrik und haben unterschiedliche Durchlaufzeiten.
+### **Module-Koordination**
+- **TXT-Controller:** DPS, AIQS, FTS (192.168.0.102-105)
+- **Production Modules:** MILL, DRILL, AIQS, DPS, HBW, OVEN
+- **OPC-UA:** Kommunikation mit SPS Siemens S7 1200
+- **VDA 5050:** FTS-Standard-Implementierung
 
-## Steuerungssystem
+### **System-Funktionen**
+- **Factory Reset:** System-weite Reset-Funktion
+- **Order Management:** Auftragssteuerung
+- **State Machine:** Modul-Status-Verwaltung
+- **Remote Monitoring:** Camera-Integration
 
-Gesteuert wird die Fabrik von einer zentralen Steuerung (Raspberry Pi 4 Model B), die mit den Steuerungen der einzelnen Fabrikmodule, SPS Siemens S7 1200 in der 24V Version, vernetzt ist. Die zentrale Steuerung kommuniziert über die standardisierte FTS-Schnittstelle VDA 5050 und steuert die Transportaufträge für das FTS. Für die Kommunikation wird das MQTT-Protokoll (Message Queuing Telemetry Transport) verwendet.
+## 📚 Verwandte Dokumentation
 
-> **🔗 Technische Details:**
-> - **[Node-RED Integration](../node-red/README.md)** - Gateway zwischen OPC-UA und MQTT
-> - **[FTS VDA 5050](../fts/README.md)** - Fahrerloses Transportsystem nach VDA 5050
-> - **[Raspberry Pi Setup](../raspberry-pi/README.md)** - Hardware-Konfiguration
+### **APS-Ecosystem:**
+- **[APS System Overview](../APS-Ecosystem/aps-system-overview.md)** - High-Level funktionale Beschreibung
+- **[System Overview](../APS-Ecosystem/system-overview.md)** - Technische System-Architektur
+- **[Component Mapping](../APS-Ecosystem/component-mapping.md)** - Client-ID Mapping
 
-## Cloud-Integration
+### **Komponenten:**
+- **[APS-NodeRED](../APS-NodeRED/README.md)** - Node-RED Gateway und Flows
+- **[Mosquitto](../mosquitto/README.md)** - MQTT-Broker Log-Analyse
+- **[TXT-Controller](../TXT-*/README.md)** - TXT-DPS, TXT-AIQS, TXT-FTS
 
-Die Fabrik ist außerdem über einen WLAN-Router mit der fischertechnik Cloud verbunden, in der sich ein Online-Shop für die Bestellung von Werkstücken durch den Kunden befindet. Darüber hinaus sind Dashboards verfügbar für:
-- Auftragssteuerung
-- Visualisierung des Fabrikzustands
-- Ermittlung von Kennzahlen
+### **Architektur:**
+- **[System Context](../../02-architecture/system-context.md)** - OMF-Architektur-Kontext
+- **[Message Flow](../../02-architecture/message-flow.md)** - MQTT-Kommunikations-Patterns
+- **[Registry Model](../../02-architecture/registry-model.md)** - Message-Template-System
 
-Zur Simulation von Fernwartung werden die Bilder, die die bewegliche Kamera in der Fabrik aufnimmt, im Dashboard angezeigt, so dass der Zustand der Fabrik remote eingesehen werden kann.
+## 🚀 Nächste Schritte
 
-> **🔗 ORBIS-Integration:**
-> - **[OMF Dashboard Architecture](../../02-architecture/omf-dashboard-architecture.md)** - ORBIS Dashboard-Architektur
-> - **[Message Flow](../../02-architecture/message-flow.md)** - End-to-End Kommunikationsflüsse
-> - **[Registry Model](../../02-architecture/registry-model.md)** - Template-basierte Steuerung
+1. **Docker-Container analysieren** - Container-Konfiguration
+2. **Node-RED Flows dokumentieren** - Gateway-Logik
+3. **Dashboard-Integration testen** - Web-Interface
+4. **OMF-Integration vorbereiten** - Phase 1 Planung
 
-## Physische Struktur
+---
 
-Physisch werden die Grundplatten einzelnen Module der Fabrik über ein Nut- und Federprinzip miteinander zu einer zusammenhängenden Grundplatte verbunden. An den offenen Enden können weitere Module hinzugefügt und im Dashboard konfiguriert werden.
-
-## Didaktisches Material
-
-Das didaktische Begleitmaterial bietet neben einer detaillierten Einführung in die Handhabung der Fabrik umfangreiches Lehrmaterial. Inhalte sind bspw.:
-- Grundlagen von Industrie 4.0
-- Modulare Produktion
-- Intelligente Vernetzung
-- Mensch-Technik-Organisation
-- Digital Twin
-- Sensordatenauswertung in Echtzeit
-- Und vieles mehr
+*Erstellt: 24. September 2025*  
+*Status: Herz der Fabrik - Zentrale Steuerungseinheit*

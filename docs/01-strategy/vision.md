@@ -1,5 +1,7 @@
 # OMF Vision - MQTT-First Architecture
 
+> **📋 Entwicklungsphasen:** [Development Phases](development-phases.md)
+
 ## 🎯 Leitidee
 
 **Steuerung über MQTT-Kommandos, Node-RED vermittelt zu OPC-UA**

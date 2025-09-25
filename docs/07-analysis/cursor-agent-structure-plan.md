@@ -118,7 +118,7 @@ Dieser Ordner dient zur funktionalen und blackboxartigen Analyse bestehender Kom
 | `functional-analysis/txt-dps-analysis.md`           | TXT-DPS Verhalten und Steuerlogik |
 | `functional-analysis/txt-fts-analysis.md`           | TXT-FTS Verhalten und Steuerlogik |
 | `functional-analysis/txt-aiqs-analysis.md`          | TXT-AIQS Verhalten und Steuerlogik |
-| `functional-analysis/mosquitto-analysis.md`         | MQTT-Broker Konfiguration und Topics |
+| `06-integrations/mosquitto/log-analysis-2025-09-24.md` | MQTT-Broker Log-Analyse und Topics |
 | `functional-analysis/docker-setup-analysis.md`     | Docker-Container Umgebung auf dem RPi |
 | `functional-analysis/opcua-module-analysis.md`      | OPC-UA-Module NodeMaps und Topologien |
 
@@ -170,7 +170,7 @@ Dieser Ordner dient zur funktionalen und blackboxartigen Analyse bestehender Kom
 ### **Bewährte Vorgehensweise:**
 - ✅ **Sourcen & Scripte** → `/integrations/{KOMPONENTE}/` (z.B. APS-CCU, TXT-DPS)
 - ✅ **Technische Schnittstellen** → `/docs/06-integrations/{KOMPONENTE}/`
-- ✅ **Funktionale Analysen** → `/docs/07-analysis/functional-analysis/{komponente}-analysis.md`
+- ✅ **Funktionale Analysen** → `/docs/06-integrations/{komponente}/README.md`
 - ✅ **CHAT-Aktivitäten** → `/docs/07-analysis/chat-activities/`
 - ✅ **APS/OMF Namenskonvention** - APS (As-Is), OMF (To-Be), Groß-Schreibweise mit Bindestrich
 - ✅ **Komponenten-Namen** - Überall identisch: APS-CCU, TXT-DPS, mosquitto, etc.

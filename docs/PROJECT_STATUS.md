@@ -32,8 +32,11 @@
 - ✅ **Integration-Struktur angepasst** - TXT-Module umorganisiert (TXT-DPS, TXT-FTS, TXT-AIQS)
 - ✅ **Dokumentations-Struktur bereinigt** - Namenskonvention vereinheitlicht, Legacy-Ordner entfernt
 - ✅ **Cursor-Agent-Struktur-Plan aktualisiert** - Vollständig konsistent mit tatsächlicher Struktur
+- ✅ **APS-Ecosystem dokumentiert** - Phase 0 "as IS" System-Übersicht erstellt
+- ✅ **APS-CCU README erstellt** - Herz der Fabrik als zentrale Steuerungseinheit
+- ✅ **Doku-Leichen bereinigt** - Redundante Dokumente gelöscht, Verlinkungen korrigiert
 - ⏳ **Weitere Architektur-Diagramme** - Message-Flow, Registry-Model
-- 📋 **Details:** [Chat-A Aktivitäten](docs/07-analysis/chat-activities/chat-a-architecture-2025-09-23.md)
+- 📋 **Details:** [Chat-A Aktivitäten](docs/07-analysis/chat-activities/chat-a-architecture-2025-09-24.md)
 
 ### 🔧 **Chat-B: Code & Implementation**
 - ✅ **APS Overview Tab implementiert** - Kundenaufträge, Rohmaterial, Lagerbestand, Sensor-Daten
@@ -72,12 +75,20 @@
 9. **Weitere Architektur-Diagramme** - Message-Flow, Registry-Model
 10. **Architektur-Dokumentation** an APS-Analyse-Ergebnisse anpassen
 
+### **🔍 TXT-Controller Analyse (Niedrige Priorität)**
+16. **TXT-AIQS tiefere Analyse** - AI Quality System: Funktionsanalyse, MQTT-Topics, Image Recognition Workflow, Quality Control Process Mapping
+17. **TXT-DPS tiefere Analyse** - Delivery and Pickup Station: Browser-Interface erkunden, Code-Analyse, Integration testen
+18. **TXT-FTS tiefere Analyse** - FTS Steuerung: VDA 5050-Implementierung verifizieren, Node-RED Flows analysieren, OPC-UA Kommunikation dokumentieren
+
+### **🏭 APS-CCU Dokumentation (Niedrige Priorität)**
+19. **APS-CCU tiefere Analyse** - Central Control Unit: Docker-Container analysieren, Node-RED Flows dokumentieren, Dashboard-Integration testen, OMF-Integration vorbereiten
+
 ### **👥 User & Rollen**
-11. **OMF-Dashboard User-Konzept definieren** - Standard-User vs. DSP-Admin Rollen
-12. **APS-UI Bereich isolieren** - Standard-User sieht nur APS-Bedienung
-13. **DSP-Steuerungsbereich implementieren** - DSP-Admin sieht Node-RED-Simulation Tabs
-14. **User-Rollen-System implementieren** - Default vs. DSP-Admin Sichtbarkeit
-15. **I18n Unterstützung** implementieren (EN, DE, FR)
+20. **OMF-Dashboard User-Konzept definieren** - Standard-User vs. DSP-Admin Rollen
+21. **APS-UI Bereich isolieren** - Standard-User sieht nur APS-Bedienung
+22. **DSP-Steuerungsbereich implementieren** - DSP-Admin sieht Node-RED-Simulation Tabs
+23. **User-Rollen-System implementieren** - Default vs. DSP-Admin Sichtbarkeit
+24. **I18n Unterstützung** implementieren (EN, DE, FR)
 
 #### **✅ Abgeschlossen:**
 - ✅ **Sprint-Dokumentation** erstellen (sprint_01 bis sprint_05)

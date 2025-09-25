@@ -7,40 +7,40 @@ Diese Sektion enthält die umfassende Dokumentation der Node-RED Flows der Fisch
 
 ```mermaid
 graph TB
-    subgraph "Fischertechnik APS System"
+    subgraph "APS-Ecosystem (Phase 0)"
         subgraph "Production Layer"
-            MILL[MILL Module<br/>192.168.0.40:4840]
-            DRILL[DRILL Module<br/>192.168.0.50:4840]
-            AIQS[AIQS Module<br/>192.168.0.70:4840]
-            DPS[DPS Module<br/>192.168.0.90:4840]
-            HBW[HBW Module<br/>192.168.0.80:4840]
-            OVEN[OVEN Module<br/>192.168.0.60:4840]
+            MILL["MILL Module<br/>192.168.0.40:4840"]
+            DRILL["DRILL Module<br/>192.168.0.50:4840"]
+            AIQS["AIQS Module<br/>192.168.0.70:4840"]
+            DPS["DPS Module<br/>192.168.0.90:4840"]
+            HBW["HBW Module<br/>192.168.0.80:4840"]
+            OVEN["OVEN Module<br/>192.168.0.60:4840"]
         end
 
         subgraph "Control Layer"
-            CCU[Central Control Unit<br/>Node-RED<br/>192.168.0.100:1880]
-            MQTT[MQTT Broker<br/>192.168.2.189:1883]
+            NODERED["Node-RED<br/>192.168.0.100:1880"]
+            MQTT["MQTT Broker<br/>192.168.2.189:1883"]
         end
 
         subgraph "Network Layer"
-            SWITCH[Network Switch<br/>192.168.0.1]
-            ROUTER[Router<br/>192.168.2.1]
+            SWITCH["Network Switch<br/>192.168.0.1"]
+            ROUTER["Router<br/>192.168.2.1"]
         end
     end
 
     %% Production to Control
-    MILL -->|OPC-UA| CCU
-    DRILL -->|OPC-UA| CCU
-    AIQS -->|OPC-UA| CCU
-    DPS -->|OPC-UA| CCU
-    HBW -->|OPC-UA| CCU
-    OVEN -->|OPC-UA| CCU
+    MILL -->|OPC-UA| NODERED
+    DRILL -->|OPC-UA| NODERED
+    AIQS -->|OPC-UA| NODERED
+    DPS -->|OPC-UA| NODERED
+    HBW -->|OPC-UA| NODERED
+    OVEN -->|OPC-UA| NODERED
 
     %% Control to MQTT
-    CCU -->|Publish/Subscribe| MQTT
+    NODERED -->|Publish/Subscribe| MQTT
 
     %% Network connections
-    CCU --> SWITCH
+    NODERED --> SWITCH
     MILL --> SWITCH
     DRILL --> SWITCH
     AIQS --> SWITCH
@@ -50,6 +50,14 @@ graph TB
 
     SWITCH --> ROUTER
     ROUTER --> MQTT
+
+    classDef fthardware fill:#fff8e1,stroke:#ffecb3,stroke-width:2px,color:#0b3d16
+    classDef ftsoftware fill:#ffebee,stroke:#ffcdd2,stroke-width:2px,color:#7a1a14
+    classDef external fill:#f5f5f5,stroke:#e0e0e0,stroke-width:2px,color:#333
+
+    class MILL,DRILL,AIQS,DPS,HBW,OVEN fthardware
+    class NODERED ftsoftware
+    class MQTT,SWITCH,ROUTER external
 ```
 
 ## 🔗 Integration Management
@@ -68,8 +76,6 @@ graph TB
 - Tab structure and organization
 - Module-specific flows (MILL, DRILL, OVEN, AIQS, HBW, DPS)
 - Flow grouping and organization
-
-### [Flows Detailed](./flows-detailed.md)
 - Detailed flow analysis and implementation
 - Node-RED flow patterns and best practices
 - State diagrams and pseudocode
@@ -90,13 +96,17 @@ graph TB
 - SSH and Admin API management
 - Troubleshooting and maintenance
 
+### [System Architecture](../../02-architecture/system-context.md)
+- Gesamtarchitektur und System-Kontext
+- Verlinkung zur zentralen Architektur-Dokumentation
+
 ## 🔧 Quick Reference
 
 ### System Components
-- **25 Production Modules** across 5 types
-- **Central Control Unit** (Raspberry Pi)
-- **MQTT Broker** (192.168.2.189:1883)
-- **OPC-UA Network** (192.168.0.x:4840)
+- **6 Production Modules** (MILL, DRILL, AIQS, DPS, HBW, OVEN)
+- **Node-RED Central Control Unit** (Raspberry Pi)
+- **MQTT Broker** (Message Routing)
+- **OPC-UA Network** (Module Communication)
 
 ### Key Files
 - `flows.json` - Main Node-RED configuration
@@ -107,6 +117,65 @@ graph TB
 - **Node-RED UI**: `http://192.168.0.100:1880/`
 - **SSH Access**: `ff22` / `ff22+`
 - **MQTT Topics**: `module/v1/ff/{serialNumber}/{action}`
+
+### Network Details
+- **Node-RED**: 192.168.0.100:1880
+- **MQTT Broker**: 192.168.2.189:1883
+- **OPC-UA Modules**: 192.168.0.40-90:4840
+
+## 📊 **MQTT-Topic-Hierarchie**
+
+```mermaid
+graph TD
+    ROOT["ROOT"]
+
+    subgraph "Module Topics"
+        MODULE["module/v1/ff/"]
+        SERIAL["serialNumber"]
+        STATE["/state"]
+        ORDER["/order"]
+        CONNECTION["/connection"]
+        INSTANTACTION["/instantAction"]
+    end
+
+    subgraph "CCU Topics"
+        CCU["ccu/"]
+        GLOBAL["global"]
+        ORDERREQ["order/request"]
+        ORDERACT["order/active"]
+    end
+
+    subgraph "System Topics"
+        SYSTEM["system/"]
+        RACK["rack.positions"]
+        SERIALREAD["readSerial"]
+    end
+
+    ROOT --> MODULE
+    ROOT --> CCU
+    ROOT --> SYSTEM
+
+    MODULE --> SERIAL
+    SERIAL --> STATE
+    SERIAL --> ORDER
+    SERIAL --> CONNECTION
+    SERIAL --> INSTANTACTION
+
+    CCU --> GLOBAL
+    CCU --> ORDERREQ
+    CCU --> ORDERACT
+
+    SYSTEM --> RACK
+    SYSTEM --> SERIALREAD
+
+    classDef module fill:#fff8e1,stroke:#ffecb3,stroke-width:2px,color:#0b3d16
+    classDef ccu fill:#ffebee,stroke:#ffcdd2,stroke-width:2px,color:#7a1a14
+    classDef system fill:#f5f5f5,stroke:#e0e0e0,stroke-width:2px,color:#333
+
+    class MODULE,SERIAL,STATE,ORDER,CONNECTION,INSTANTACTION module
+    class CCU,GLOBAL,ORDERREQ,ORDERACT ccu
+    class SYSTEM,RACK,SERIALREAD system
+```
 
 ## 🚀 Getting Started
 
@@ -130,8 +199,7 @@ integrations/APS-NodeRED/       # Aktuelle Node-RED Backups
 
 docs/06-integrations/APS-NodeRED/  # Dokumentation der IST-Struktur
 ├── README.md                   # Diese Datei
-├── flows.md                    # Flow-Übersicht
-├── flows-detailed.md           # Detaillierte Flow-Analyse
+├── flows.md                    # Alle Flow-Details
 ├── opc-ua-nodes.md             # OPC UA NodeIds und States
 ├── state-machine.md            # State Machine Dokumentation
 └── integration-guide.md        # Backup/Restore Anleitung
