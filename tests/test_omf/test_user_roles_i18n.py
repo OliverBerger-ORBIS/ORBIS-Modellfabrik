@@ -80,10 +80,13 @@ class TestUserRolesAndI18n(unittest.TestCase):
             self.assertIn("settings", lang_translations)
 
     def test_language_manager_default(self):
-        """Test: Standard-Sprache ist Deutsch"""
+        """Test: Standard-Sprache ist Deutsch wenn nicht anders konfiguriert"""
+        # Test mit komplett gemocktem session state und config
         with patch('streamlit.session_state', {}):
-            with patch('omf.config.omf_config.OmfConfig') as mock_config:
-                mock_config.return_value.get.return_value = "de"
+            with patch('omf.dashboard.utils.language_manager.OmfConfig') as mock_config_class:
+                mock_config_instance = mock_config_class.return_value
+                mock_config_instance.get.return_value = "de"
+                
                 language = LanguageManager.get_current_language()
                 self.assertEqual(language, "de")
 
