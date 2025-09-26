@@ -55,11 +55,24 @@ DEFAULT_CONFIG = {
 # Übersetzungen
 TRANSLATIONS = {
     "de": {
+        # Tab-Namen
+        "aps_overview": "APS Übersicht",
+        "aps_orders": "APS Aufträge", 
+        "aps_processes": "APS Prozesse",
+        "aps_configuration": "APS Konfiguration",
+        "aps_modules": "APS Module",
+        "wl_module_control": "WL Modul-Steuerung",
+        "wl_system_control": "WL System Control",
+        "steering": "Steuerung",
+        "message_center": "Nachrichten-Zentrale",
+        "logs": "Logs",
+        "settings": "Einstellungen",
+        
+        # Bestehende Übersetzungen
         "overview": "Übersicht",
         "orders": "Aufträge",
         "message_monitor": "Nachrichten-Monitor",
         "message_controls": "Nachrichten-Steuerung",
-        "settings": "Einstellungen",
         "module_status": "Modul-Status",
         "order_management": "Auftragsverwaltung",
         "ongoing_orders": "Laufende Aufträge",
@@ -68,13 +81,33 @@ TRANSLATIONS = {
         "nfc_config": "NFC-Konfiguration",
         "topic_config": "Topic-Konfiguration",
         "messages_templates": "Nachrichten-Templates",
+        
+        # UI-Elemente
+        "language": "Sprache",
+        "user_role": "Benutzerrolle",
+        "select_language": "Sprache wählen:",
+        "select_role": "Rolle wählen:",
+        "tabs_available": "Tabs verfügbar"
     },
     "en": {
+        # Tab-Namen
+        "aps_overview": "APS Overview",
+        "aps_orders": "APS Orders",
+        "aps_processes": "APS Processes", 
+        "aps_configuration": "APS Configuration",
+        "aps_modules": "APS Modules",
+        "wl_module_control": "WL Module Control",
+        "wl_system_control": "WL System Control",
+        "steering": "Steering",
+        "message_center": "Message Center",
+        "logs": "Logs",
+        "settings": "Settings",
+        
+        # Bestehende Übersetzungen
         "overview": "Overview",
         "orders": "Orders",
         "message_monitor": "Message Monitor",
         "message_controls": "Message Controls",
-        "settings": "Settings",
         "module_status": "Module Status",
         "order_management": "Order Management",
         "ongoing_orders": "Ongoing Orders",
@@ -83,6 +116,48 @@ TRANSLATIONS = {
         "nfc_config": "NFC Configuration",
         "topic_config": "Topic Configuration",
         "messages_templates": "Message Templates",
+        
+        # UI-Elemente
+        "language": "Language",
+        "user_role": "User Role",
+        "select_language": "Select Language:",
+        "select_role": "Select Role:",
+        "tabs_available": "tabs available"
+    },
+    "fr": {
+        # Tab-Namen
+        "aps_overview": "Vue d'ensemble APS",
+        "aps_orders": "Commandes APS",
+        "aps_processes": "Processus APS",
+        "aps_configuration": "Configuration APS", 
+        "aps_modules": "Modules APS",
+        "wl_module_control": "Contrôle Module WL",
+        "wl_system_control": "Contrôle Système WL",
+        "steering": "Direction",
+        "message_center": "Centre de Messages",
+        "logs": "Journaux",
+        "settings": "Paramètres",
+        
+        # Übersetzungen
+        "overview": "Vue d'ensemble",
+        "orders": "Commandes",
+        "message_monitor": "Moniteur de Messages",
+        "message_controls": "Contrôles de Messages",
+        "module_status": "État des Modules",
+        "order_management": "Gestion des Commandes",
+        "ongoing_orders": "Commandes en Cours",
+        "dashboard_settings": "Paramètres du Tableau de Bord",
+        "module_config": "Configuration des Modules",
+        "nfc_config": "Configuration NFC",
+        "topic_config": "Configuration des Sujets",
+        "messages_templates": "Modèles de Messages",
+        
+        # UI-Elemente
+        "language": "Langue",
+        "user_role": "Rôle Utilisateur",
+        "select_language": "Choisir la langue:",
+        "select_role": "Choisir le rôle:",
+        "tabs_available": "onglets disponibles"
     },
 }
 
