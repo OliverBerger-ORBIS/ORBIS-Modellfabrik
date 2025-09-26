@@ -400,7 +400,7 @@ if validation["errors"]:
 - [Registry Model](registry-model.md) - Registry-Prinzipien & Versionierung
 - [System Context](system-context.md) - Überblick über Hauptkomponenten
 - [Template Reference](../05-reference/templates.md) - Template-Index & Migration Mapping
-- [How-To: Add a New Module](../04-howto/add-a-new-module.md) - Template → Mapping → Tests
+- [How-To: Add a New Module](../04-howto/development/add-a-new-module.md) - Template → Mapping → Tests
 
 ---
 

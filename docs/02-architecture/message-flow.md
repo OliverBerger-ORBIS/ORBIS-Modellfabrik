@@ -37,30 +37,30 @@ sequenceDiagram
 
 ---
 
-## 📡 APS Communication Flow
+## 📡 OMF Communication Flow (Phase 1)
 
 ### 🎨 Farbkodierung
-- **🔸 Hellgrau**: Fischertechnik-Komponenten (werden ersetzt)
-- **🔸 Hellblau**: ORBIS-Komponenten (OMF Dashboard, Session Manager)
-- **🔸 Gelb**: Module (bleiben unverändert)
+- **🔸 Blau**: ORBIS-Komponenten (OMF Dashboard, Session Manager)
+- **🔸 Rot**: Fischertechnik Software (APS-NodeRED)
+- **🔸 Gelb**: Module (unverändert)
 
-### Phase 1: Ausgangssituation (Fischertechnik Standard)
+### Phase 1: OMF-Dashboard mit APS-CCU Frontend-Funktionalität
 ```mermaid
 sequenceDiagram
-    participant FTC as Fischertechnik Cloud<br/>fischertechnik-cloud.com
-    participant FT_DASH as FT Dashboard<br/>192.168.0.100
-    participant MQTT as MQTT Broker<br/>192.168.0.100
-    participant NR as Node-RED<br/>192.168.0.100
+    participant OMF_DASH as OMF Dashboard<br/>Streamlit App
+    participant SESSION as Session Manager<br/>Replay/Recording
+    participant MQTT as mosquitto<br/>172.18.0.4:1883
+    participant NR as APS-NodeRED<br/>172.18.0.4
     participant AIQS as AIQS Module<br/>192.168.0.70
     participant HBW as HBW Module<br/>192.168.0.80
     participant MILL as MILL Module<br/>192.168.0.40
     participant DRILL as DRILL Module<br/>192.168.0.50
-    participant FTS as FTS Module<br/>192.168.0.**104**
+    participant FTS as FTS Module<br/>192.168.0.104
     
-    Note over FTC,FTS: Phase 1: Fischertechnik Standard<br/>🔸 Hellgrau: Fischertechnik-Komponenten<br/>🔸 Gelb: Module (unverändert)
+    Note over OMF_DASH,FTS: Phase 1: OMF-Dashboard Integration<br/>🔸 Blau: ORBIS-Komponenten (OMF, Session)<br/>🔸 Gelb: Module (unverändert)
     
-    FTC->>FT_DASH: HTTPS/REST API<br/>Camera Images (Base64)
-    FT_DASH->>MQTT: Publish Commands<br/>QoS=1, Retain=False
+    OMF_DASH->>MQTT: Registry-based Commands<br/>QoS=1, Retain=False
+    SESSION->>MQTT: Replay Messages<br/>QoS=1, Retain=False
     
     MQTT->>NR: Route Commands
     NR->>AIQS: OPC-UA Commands<br/>Quality Processing
@@ -74,35 +74,31 @@ sequenceDiagram
     DRILL->>NR: OPC-UA State Updates
     
     NR->>MQTT: Convert to MQTT<br/>State Updates
-    MQTT->>FT_DASH: Telemetry Data
-    FT_DASH->>FTC: Forward to Cloud
+    MQTT->>OMF_DASH: State Updates
+    MQTT->>SESSION: Record Messages
     
     Note over FTS: VDA5050 Standard Communication
     FTS->>MQTT: Transport Status<br/>QoS=0, Retain=False
-    MQTT->>FT_DASH: FTS Telemetry
-    FT_DASH->>FTC: FTS Data to Cloud
+    MQTT->>OMF_DASH: FTS State Updates
+    MQTT->>SESSION: Record FTS Status
 ```
 
-### Phase 2: ORBIS-Integration (Aktuell)
+### Phase 2: OMF-Dashboard mit APS-NodeRED Funktionalität
 ```mermaid
 sequenceDiagram
-    participant FTC as Fischertechnik Cloud<br/>fischertechnik-cloud.com
-    participant FT_DASH as FT Dashboard<br/>192.168.0.100
     participant OMF_DASH as OMF Dashboard<br/>Streamlit App
     participant SESSION as Session Manager<br/>Replay/Recording
-    participant MQTT as MQTT Broker<br/>192.168.0.100
-    participant NR as Node-RED<br/>192.168.0.100
+    participant MQTT as mosquitto<br/>172.18.0.4:1883
+    participant NR as APS-NodeRED<br/>172.18.0.4
     participant AIQS as AIQS Module<br/>192.168.0.70
     participant DPS as DPS Module<br/>192.168.0.90
     participant HBW as HBW Module<br/>192.168.0.80
     participant MILL as MILL Module<br/>192.168.0.40
     participant DRILL as DRILL Module<br/>192.168.0.50
-    participant FTS as FTS Module<br/>192.168.0.**104**
+    participant FTS as FTS Module<br/>192.168.0.104
     
-    Note over FTC,FTS: Phase 2: ORBIS-Integration<br/>🔸 Hellgrau: Fischertechnik-Komponenten<br/>🔸 Hellblau: ORBIS-Komponenten (OMF, Session)<br/>🔸 Gelb: Module (unverändert)
+    Note over OMF_DASH,FTS: Phase 2: APS-NodeRED Integration<br/>🔸 Blau: ORBIS-Komponenten (OMF, Session)<br/>🔸 Gelb: Module (unverändert)
     
-    FTC->>FT_DASH: HTTPS/REST API<br/>Camera Images (Base64)
-    FT_DASH->>MQTT: Publish Commands<br/>QoS=1, Retain=False
     
     OMF_DASH->>MQTT: Registry-based Commands<br/>QoS=1, Retain=False
     SESSION->>MQTT: Replay Messages<br/>QoS=1, Retain=False
@@ -121,10 +117,8 @@ sequenceDiagram
     DRILL->>NR: OPC-UA State Updates
     
     NR->>MQTT: Convert to MQTT<br/>State Updates
-    MQTT->>FT_DASH: Telemetry Data
     MQTT->>OMF_DASH: State Updates
     MQTT->>SESSION: Record Messages
-    FT_DASH->>FTC: Forward to Cloud
     
     Note over FTS: VDA5050 Standard Communication
     FTS->>MQTT: Transport Status<br/>QoS=0, Retain=False
@@ -135,25 +129,25 @@ sequenceDiagram
 
 ---
 
-## 🔄 APS Order Processing Flow
+## 🔄 OMF Order Processing Flow (Phase 1)
 
-### Phase 1: Ausgangssituation (Fischertechnik Standard)
+### Phase 1: OMF-Dashboard mit APS-CCU Frontend-Funktionalität
 ```mermaid
 sequenceDiagram
-    participant FTC as Fischertechnik Cloud<br/>fischertechnik-cloud.com
-    participant FT_DASH as FT Dashboard<br/>192.168.0.100
-    participant MQTT as MQTT Broker<br/>192.168.0.100
-    participant NR as Node-RED<br/>192.168.0.100
+    participant OMF_DASH as OMF Dashboard<br/>Streamlit App
+    participant SESSION as Session Manager<br/>Replay/Recording
+    participant MQTT as mosquitto<br/>172.18.0.4:1883
+    participant NR as APS-NodeRED<br/>172.18.0.4
     participant AIQS as AIQS Module<br/>192.168.0.70
     participant HBW as HBW Module<br/>192.168.0.80
     participant MILL as MILL Module<br/>192.168.0.40
     participant DRILL as DRILL Module<br/>192.168.0.50
-    participant FTS as FTS Module<br/>192.168.0.**104**
+    participant FTS as FTS Module<br/>192.168.0.104
     
-    Note over FTC,FTS: Phase 1: Fischertechnik Standard<br/>🔸 Hellgrau: Fischertechnik-Komponenten<br/>🔸 Gelb: Module (unverändert)
+    Note over OMF_DASH,FTS: Phase 1: OMF-Dashboard Integration<br/>🔸 Blau: ORBIS-Komponenten (OMF, Session)<br/>🔸 Gelb: Module (unverändert)
     
-    FTC->>FT_DASH: Order Request<br/>{"orderType": "PRODUCTION", "orderId": "123"}
-    FT_DASH->>MQTT: Publish Order<br/>ccu/order/request
+    OMF_DASH->>MQTT: Registry-based Order<br/>{"orderType": "PRODUCTION", "orderId": "123"}
+    SESSION->>MQTT: Record Order Messages
     
     MQTT->>NR: Route Order
     NR->>HBW: OPC-UA Command<br/>Pick Workpiece
@@ -178,26 +172,24 @@ sequenceDiagram
     FT_DASH->>FTC: Order Complete<br/>{"status": "COMPLETED"}
 ```
 
-### Phase 2: ORBIS-Integration (Aktuell)
+### Phase 2: OMF-Dashboard mit APS-NodeRED Funktionalität
 ```mermaid
 sequenceDiagram
-    participant FTC as Fischertechnik Cloud<br/>fischertechnik-cloud.com
-    participant FT_DASH as FT Dashboard<br/>192.168.0.100
     participant OMF_DASH as OMF Dashboard<br/>Streamlit App
     participant SESSION as Session Manager<br/>Replay/Recording
-    participant MQTT as MQTT Broker<br/>192.168.0.100
-    participant NR as Node-RED<br/>192.168.0.100
+    participant MQTT as mosquitto<br/>172.18.0.4:1883
+    participant NR as APS-NodeRED<br/>172.18.0.4
     participant AIQS as AIQS Module<br/>192.168.0.70
     participant DPS as DPS Module<br/>192.168.0.90
     participant HBW as HBW Module<br/>192.168.0.80
     participant MILL as MILL Module<br/>192.168.0.40
     participant DRILL as DRILL Module<br/>192.168.0.50
-    participant FTS as FTS Module<br/>192.168.0.**104**
+    participant FTS as FTS Module<br/>192.168.0.104
     
-    Note over FTC,FTS: Phase 2: ORBIS-Integration<br/>🔸 Hellgrau: Fischertechnik-Komponenten<br/>🔸 Hellblau: ORBIS-Komponenten (OMF, Session)<br/>🔸 Gelb: Module (unverändert)
+    Note over OMF_DASH,FTS: Phase 2: APS-NodeRED Integration<br/>🔸 Blau: ORBIS-Komponenten (OMF, Session)<br/>🔸 Gelb: Module (unverändert)
     
-    FTC->>FT_DASH: Order Request<br/>{"orderType": "PRODUCTION", "orderId": "123"}
-    FT_DASH->>MQTT: Publish Order<br/>ccu/order/request
+    OMF_DASH->>MQTT: Registry-based Order<br/>{"orderType": "PRODUCTION", "orderId": "123"}
+    SESSION->>MQTT: Record Order Messages
     
     OMF_DASH->>MQTT: Registry-based Order<br/>{"orderType": "PRODUCTION", "orderId": "456"}
     SESSION->>MQTT: Record Order Messages
@@ -229,8 +221,6 @@ sequenceDiagram
     DPS->>NR: OPC-UA State<br/>Distribution Complete
     NR->>MQTT: Convert to MQTT<br/>DPS State Update
     
-    MQTT->>FT_DASH: All State Updates
     MQTT->>OMF_DASH: All State Updates
     MQTT->>SESSION: Record All Updates
-    FT_DASH->>FTC: Order Complete<br/>{"status": "COMPLETED"}
 ```

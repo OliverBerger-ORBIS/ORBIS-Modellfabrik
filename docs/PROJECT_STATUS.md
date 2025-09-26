@@ -35,8 +35,11 @@
 - ✅ **APS-Ecosystem dokumentiert** - Phase 0 "as IS" System-Übersicht erstellt
 - ✅ **APS-CCU README erstellt** - Herz der Fabrik als zentrale Steuerungseinheit
 - ✅ **Doku-Leichen bereinigt** - Redundante Dokumente gelöscht, Verlinkungen korrigiert
-- ⏳ **Weitere Architektur-Diagramme** - Message-Flow, Registry-Model
-- 📋 **Details:** [Chat-A Aktivitäten](docs/07-analysis/chat-activities/chat-a-architecture-2025-09-24.md)
+- ✅ **User-Rollen-System dokumentiert** - Operator, Supervisor, Admin Rollen in Architektur integriert
+- ✅ **Veraltete Component-Dokumentation bereinigt** - Abschnitte 4-7 aus omf-dashboard-architecture.md entfernt
+- ✅ **Architektur-Bereinigung abgeschlossen** - Verifikations-Warnungen entfernt, Mermaid-Diagramme standardisiert, Verlinkungen korrigiert, Namenskonventionen geprüft, redundante Dokumente bereinigt
+- 📋 **Neue Aufgabe:** **Component-Dokumentation nach Implementierung** - Dokumentation des tatsächlichen "Ablaufs" nach Implementierung oder nach Klarstellung der Implementierung
+- 📋 **Details:** [Chat-A Aktivitäten](docs/07-analysis/chat-activities/chat-a-architecture-cleanup-2025-09-25.md)
 
 ### 🔧 **Chat-B: Code & Implementation**
 - ✅ **APS Overview Tab implementiert** - Kundenaufträge, Rohmaterial, Lagerbestand, Sensor-Daten

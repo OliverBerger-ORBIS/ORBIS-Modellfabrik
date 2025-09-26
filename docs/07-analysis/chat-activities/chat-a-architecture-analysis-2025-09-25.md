@@ -34,10 +34,10 @@
 - **`aps-data-flow.md`** - Vermischt Phase 0 und Phase 1
 
 **2. Inhaltlich falsche Diagramme:**
-- **Falsche IP-Adressen** - 192.168.0.100 statt 172.18.0.4 (MQTT Broker)
-- **Falsche Client-IDs** - Keine korrekten Client-IDs aus Mosquitto-Analyse
-- **Falsche Topic-Struktur** - Nicht basierend auf realen MQTT-Logs
-- **Falsche Komponenten-Namen** - APS-CCU statt korrekte Komponenten
+- **IP-Adressen** - 192.168.0.100 ist korrekt für User-Zugang, aber Routing zu 172.18.0.4 sollte dokumentiert werden
+- **Client-IDs** - Sprechende Namen verwenden (nicht Mosquitto-IDs), aber basierend auf realen Erkenntnissen
+- **Topic-Struktur** - Sollte der faktischen Mosquitto-Analyse entsprechen
+- **Komponenten-Namen** - Nach Namenskonvention (APS-CCU, TXT-DPS, mosquitto)
 
 **3. Veraltete Phasen-Definition:**
 - **"Phase 1: Ausgangssituation"** - Ist eigentlich Phase 0
@@ -49,43 +49,60 @@
 ## 🎯 **Konkrete Probleme in `/02-architecture/`**
 
 ### **`system-context.md`:**
+
+**❌ FALSCH - Vermischt Phase 0 und Phase 1:**
 ```mermaid
-# ❌ FALSCH - Vermischt Phase 0 und Phase 1
+%%{init: {'theme':'neutral'}}%%
+graph TB
+classDef orbis fill:#e3f2fd,stroke:#bbdefb,stroke-width:2px,color:#0b2e59;
+classDef fthardware fill:#fff8e1,stroke:#ffecb3,stroke-width:2px,color:#0b3d16;
+classDef ftsoftware fill:#ffebee,stroke:#ffcdd2,stroke-width:2px,color:#7a1a14;
+classDef external fill:#f5f5f5,stroke:#e0e0e0,stroke-width:2px,color:#333;
+
 subgraph "APS Ecosystem"
-    APS_CCU[APS-CCU<br/>Central Control Unit]  # ❌ Falscher Name
-    MQTT[MQTT Broker<br/>Message Routing]      # ❌ Falsche IP
+    APS_CCU[APS-CCU<br/>Central Control Unit]:::ftsoftware
+    MQTT[MQTT Broker<br/>Message Routing]:::external
+end
 ```
 
-**Sollte sein:**
+**✅ KORREKT - Nur Phase 1/2 (OMF-Integration):**
 ```mermaid
-# ✅ KORREKT - Nur Phase 1/2 (OMF-Integration)
+%%{init: {'theme':'neutral'}}%%
+graph TB
+classDef orbis fill:#e3f2fd,stroke:#bbdefb,stroke-width:2px,color:#0b2e59;
+classDef fthardware fill:#fff8e1,stroke:#ffecb3,stroke-width:2px,color:#0b3d16;
+classDef ftsoftware fill:#ffebee,stroke:#ffcdd2,stroke-width:2px,color:#7a1a14;
+classDef external fill:#f5f5f5,stroke:#e0e0e0,stroke-width:2px,color:#333;
+
 subgraph "OMF Ecosystem (Phase 1/2)"
-    OMF_DASH[OMF Dashboard<br/>Streamlit App]
-    SESSION[Session Manager<br/>Replay/Recording]
+    OMF_DASH[OMF Dashboard<br/>Streamlit App]:::orbis
+    SESSION[Session Manager<br/>Replay/Recording]:::orbis
+    MQTT[mosquitto<br/>192.168.0.100:1883]:::external
+end
 ```
 
 ### **`message-flow.md`:**
-```mermaid
-# ❌ FALSCH - "Phase 1: Ausgangssituation" ist eigentlich Phase 0
+
+**❌ FALSCH - "Phase 1: Ausgangssituation" ist eigentlich Phase 0:**
+```
 ### Phase 1: Ausgangssituation (Fischertechnik Standard)
 ```
 
-**Sollte sein:**
-```mermaid
-# ✅ KORREKT - Phase 1: OMF-Dashboard mit APS-CCU Frontend-Funktionalität
+**✅ KORREKT - Phase 1: OMF-Dashboard mit APS-CCU Frontend-Funktionalität:**
+```
 ### Phase 1: OMF-Dashboard Integration
 ```
 
 ### **`aps-data-flow.md`:**
-```mermaid
-# ❌ FALSCH - Vermischt Phase 0 und Phase 1
+
+**❌ FALSCH - Vermischt Phase 0 und Phase 1:**
+```
 ### Phase 1: Ausgangssituation (Fischertechnik Standard)
 ### Phase 2: ORBIS-Integration (Aktuell)
 ```
 
-**Sollte sein:**
-```mermaid
-# ✅ KORREKT - Nur Phase 1/2 (OMF-Integration)
+**✅ KORREKT - Nur Phase 1/2 (OMF-Integration):**
+```
 ### Phase 1: OMF-Dashboard mit APS-CCU Frontend-Funktionalität
 ### Phase 2: OMF-Dashboard mit APS-NodeRED Funktionalität
 ```

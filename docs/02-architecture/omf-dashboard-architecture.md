@@ -4,47 +4,137 @@
 
 Das OMF Dashboard ist eine moderne, modulare Web-Anwendung zur Steuerung und Überwachung der ORBIS Modellfabrik. Es basiert auf Streamlit und implementiert die **Per-Topic-Buffer Architektur** mit **MQTT-Singleton Pattern** für optimale Performance und Einfachheit.
 
+## 👥 User-Rollen-System
+
+### **Rollen-basierte Architektur**
+Das OMF Dashboard implementiert ein **User-Rollen-System** mit drei Hauptrollen:
+
+#### **🔧 Operator (Phase 1)**
+- **Zugriff:** APS-Funktionalität (APS-Dashboard nachgebaut)
+- **Tabs:** Overview, Control, Steering, Orders
+- **Zweck:** Standard-Bedienung der Modellfabrik
+- **Status:** ✅ Implementiert
+
+#### **👨‍💼 Supervisor (Phase 2)**
+- **Zugriff:** APS-NodeRED Funktionalität
+- **Tabs:** Node-RED Flows, OPC-UA Gateway, VDA 5050
+- **Zweck:** Erweiterte Steuerung und Monitoring
+- **Status:** 🔄 In Entwicklung (Platzhalter-Tabs)
+
+#### **⚙️ Admin (Phasen-unabhängig)**
+- **Zugriff:** System-Konfiguration, Registry, MQTT-Settings
+- **Tabs:** Settings, Configuration, System-Status
+- **Zweck:** System-Administration und Wartung
+- **Status:** ✅ Implementiert
+
 ## Architecture Overview
 
+### **1. High-Level Architektur (User-Rollen)**
+
+```mermaid
+%%{init: {'theme':'neutral'}}%%
+flowchart TD
+classDef orbis fill:#e3f2fd,stroke:#bbdefb,stroke-width:2px,color:#0b2e59;
+classDef operator fill:#e3f2fd,stroke:#bbdefb,stroke-width:2px,color:#0b2e59;
+classDef supervisor fill:#fff8e1,stroke:#ffecb3,stroke-width:2px,color:#0b3d16;
+classDef admin fill:#ffebee,stroke:#ffcdd2,stroke-width:2px,color:#7a1a14;
+classDef business fill:#f3e5f5,stroke:#ce93d8,stroke-width:2px,color:#4a148c;
+classDef data fill:#f5f5f5,stroke:#e0e0e0,stroke-width:2px,color:#333;
+
+    subgraph "OMF Dashboard (User-Rollen-basiert)"
+        subgraph "Frontend (Streamlit)"
+            MAIN[Main Dashboard<br/>omf_dashboard.py]:::orbis
+            
+            subgraph "🔧 Operator Components (Phase 1)"
+                OP[Operator Components<br/>APS-Dashboard Funktionalität]:::operator
+            end
+            
+            subgraph "👨‍💼 Supervisor Components (Phase 2) 🔄"
+                SUP[Supervisor Components<br/>APS-NodeRED Funktionalität]:::supervisor
+            end
+            
+            subgraph "⚙️ Admin Components (Phasen-unabhängig)"
+                ADM[Admin Components<br/>System-Administration]:::admin
+            end
+            
+            subgraph "Shared Components"
+                SHARED[Shared Components<br/>Message Center, Assets]:::orbis
+            end
+        end
+        
+        subgraph "Business Logic (tools/)"
+            MQTT[MQTT-Singleton Factory]:::business
+            PUB[Hybrid Publishing]:::business
+            WORK[Workflow Management]:::business
+            CONFIG[Configuration Managers]:::business
+        end
+        
+        subgraph "Data Layer"
+            TEMPLATES[Message Templates]:::data
+            MQTT_CONFIG[MQTT Configuration]:::data
+            CONFIG_FILES[Configuration Files]:::data
+        end
+    end
+
+    MAIN --> OP
+    MAIN --> SUP
+    MAIN --> ADM
+    MAIN --> SHARED
+    
+    OP --> MQTT
+    SUP --> MQTT
+    ADM --> MQTT
+    SHARED --> MQTT
+    
+    MQTT --> TEMPLATES
+    PUB --> TEMPLATES
+    WORK --> TEMPLATES
+    CONFIG --> CONFIG_FILES
 ```
-OMF Dashboard
+
+
+### **3. Architektur-Übersicht/Struktur**
+
+```
+OMF Dashboard (User-Rollen-basiert)
 ├── Frontend (Streamlit)
 │   ├── Main Dashboard (omf_dashboard.py)
-│   └── Components
-│       ├── Overview Components
-│       │   ├── overview_inventory.py      # Lagerbestand
-│       │   ├── overview_customer_order.py # Kundenaufträge
-│       │   ├── overview_purchase_order.py # Rohmaterial-Bestellungen
-│       │   └── overview_module_status.py  # Modul-Status (Per-Topic-Buffer)
-│       ├── Production Order Components
-│       │   ├── production_order_management.py # Auftragsverwaltung
-│       │   └── production_order_current.py    # Laufende Aufträge
-│       ├── Steering Components
-│       │   ├── steering_factory.py       # Factory-Steuerung (Hybrid-Architektur)
-│       │   ├── steering_sequence.py      # Sequenz-Steuerung
-│       │   └── steering_generic.py       # Generic-Steuerung
-│       ├── Message Center (message_center.py) # Priority-based Subscriptions
-│       ├── FTS Components
-│       │   └── fts_instantaction.py      # FTS-Steuerung (Per-Topic-Buffer)
-│       ├── Settings (settings.py)
-│       └── Assets
-│           └── html_templates.py         # HTML-Templates
+│   └── Components (Rollen-basiert)
+│       ├── 🔧 Operator Components (Phase 1)
+│       ├── 👨‍💼 Supervisor Components (Phase 2) 🔄
+│       ├── ⚙️ Admin Components (Phasen-unabhängig)
+│       └── Shared Components
 ├── Business Logic (tools/)
 │   ├── MQTT-Singleton Factory ✨ NEW
-│   │   ├── omf_mqtt_factory.py          # Singleton-Pattern
-│   │   └── omf_mqtt_client.py           # Per-Topic-Buffer Client
 │   ├── Hybrid Publishing ✨ NEW
-│   │   ├── message_gateway.py           # Publishing Gateway
-│   │   └── message_generator.py         # Payload Generation
 │   ├── Workflow Management ✨ ENHANCED
-│   │   └── workflow_order_manager.py    # Order-ID Management
 │   └── Configuration Managers
 └── Data Layer
     ├── Message Templates
     ├── MQTT Configuration ✨ NEW
-    │   ├── mqtt_config.py               # MQTT-Konfiguration
-    │   └── mqtt_topics.py               # Topic-Definitionen
     └── Configuration Files
+```
+
+### **4. Component-Struktur**
+
+```
+Components (Rollen-basiert)
+├── 🔧 Operator Components (Phase 1)
+│   ├── aps_overview → "Overview"
+│   ├── aps_orders → "Orders"
+│   ├── aps_processes → "Process"
+│   ├── aps_configuration → "Configuration"
+│   └── aps_modules → "Modules"
+├── 👨‍💼 Supervisor Components (Phase 2) 🔄
+│   ├── NodeRed-Flows (ToDo)
+│   ├── OPC UA (ToDo)
+│   └── VDA (ToDo)
+├── ⚙️ Admin Components (Phasen-unabhängig)
+│   ├── steering → "Steering"
+│   ├── message_center → "Message Center"
+│   ├── logs → "Logs"
+│   └── settings → "Settings"
+└── Shared Components
 ```
 
 ## Core Architecture Patterns
@@ -69,18 +159,38 @@ OMF Dashboard
 - **MessageGateway** für finales Publishing
 - **WorkflowOrderManager** für orderId/orderUpdateId Verwaltung
 
+### 4. **User-Rollen-System** ✨ NEW
+- **Rollen-basierte Komponenten-Struktur** für verschiedene Benutzertypen
+- **Operator (Phase 1):** APS-Dashboard Funktionalität nachgebaut
+- **Supervisor (Phase 2):** APS-NodeRED Funktionalität (Platzhalter-Tabs)
+- **Admin (Phasen-unabhängig):** System-Konfiguration und Wartung
+- **Flexible Tab-Struktur** für rollenspezifische Zugriffe
+
 ## Core Components
 
-### 1. Dashboard Frontend
+### 1. Dashboard Frontend (User-Rollen-basiert)
 
 **Main Entry Point:** `omf/dashboard/omf_dashboard.py`
 
-#### Tab Structure:
-- **Übersicht:** Modul-Status (Per-Topic-Buffer), Lagerbestand, Kundenaufträge, Rohmaterial-Bestellungen
-- **Fertigungsaufträge:** Auftragsverwaltung und laufende Fertigungsaufträge
-- **Nachrichtenzentrale:** Priority-based Subscriptions mit Per-Topic-Buffer
-- **Steuerung:** Factory-, Modul- und FTS-Steuerung mit Hybrid-Architektur
-- **Einstellungen:** Dashboard-, Modul-, NFC-, MQTT-, Topic- und Template-Konfiguration
+#### User-Rollen-basierte Tab-Struktur:
+
+**🔧 Operator (Phase 1):**
+- **Overview** - Systemübersicht und Modul-Status
+- **Orders** - Auftragsverwaltung und -steuerung
+- **Process** - Prozesssteuerung und -überwachung
+- **Configuration** - Systemkonfiguration
+- **Modules** - Modulstatus und -steuerung
+
+**👨‍💼 Supervisor (Phase 2):**
+- **NodeRed-Flows** (ToDo) - Flow-Editor und -Management
+- **OPC UA** (ToDo) - OPC-UA Verbindungen und Gateway-Status
+- **VDA** (ToDo) - FTS-Standard und Transport-Orders
+
+**⚙️ Admin (Phasen-unabhängig):**
+- **Steering** - Factory-Steuerung und -überwachung
+- **Message Center** - MQTT-Nachrichten-Zentrale
+- **Logs** - System-Logs und Debugging
+- **Settings** - System-Einstellungen und Konfiguration
 
 ### 2. MQTT-Singleton Factory ✨ NEW
 
@@ -187,105 +297,97 @@ def generate_fts_navigation_message(self, route_type: str, load_type: str) -> di
     }
 ```
 
-### 4. Overview Components
+## 👥 User-Rollen-System Details
 
-#### Overview Module Status ✨ ENHANCED
-**File:** `omf/omf/dashboard/components/overview_module_status.py`
+### **Rollen-basierte Komponenten-Struktur**
 
-**Features:**
-- **Per-Topic-Buffer:** Effiziente Nachrichtenverarbeitung
-- **Module Status:** Connection, Availability, IP-Status
-- **Real-time Updates:** Live-Aktualisierung der Modul-Status
-- **Topic Processing:** `module/v1/ff/+/state`, `module/v1/ff/+/connection`, `ccu/pairing/state`
+Das OMF Dashboard implementiert ein **hierarchisches User-Rollen-System** mit spezifischen Komponenten für jede Rolle:
 
-```python
-def show_overview_module_status():
-    # Per-Topic-Buffer für Modul-Status
-    state_messages = list(client.get_buffer("module/v1/ff/+/state"))
-    connection_messages = list(client.get_buffer("module/v1/ff/+/connection"))
-    pairing_messages = list(client.get_buffer("ccu/pairing/state"))
-    factsheet_messages = list(client.get_buffer("module/v1/ff/+/factsheet"))
-    
-    # Verarbeitung
-    _process_module_messages(state_messages, connection_messages, pairing_messages, factsheet_messages)
+#### **🔧 Operator (Phase 1) - APS-Dashboard Funktionalität**
+
+**Zweck:** Standard-Bedienung der Modellfabrik (APS-Dashboard nachgebaut)
+
+**Tabs:**
+- **Overview** (aps_overview) - Systemübersicht und Status
+- **Orders** (aps_orders) - Auftragsverwaltung und -steuerung
+- **Process** (aps_processes) - Prozesssteuerung und -überwachung
+- **Configuration** (aps_configuration) - Systemkonfiguration
+- **Modules** (aps_modules) - Modulstatus und -steuerung
+
+**Status:** 🔄 **In Entwicklung** - Orders noch nicht implementiert, andere nur als Hüllen
+
+#### **👨‍💼 Supervisor (Phase 2) - APS-NodeRED Funktionalität**
+
+**Zweck:** Erweiterte Steuerung und Monitoring über Node-RED
+
+**Tabs:**
+- **NodeRed-Flows** (ToDo) - Flow-Editor, Flow-Management, Flow-Monitoring
+- **OPC UA** (ToDo) - OPC-UA Verbindungen, Gateway-Status, Protocol-Translation
+- **VDA** (ToDo) - FTS-Standard, Transport-Orders, Vehicle-Management
+
+**Status:** 🔄 **In Entwicklung** - Alle Tabs noch zu implementieren
+
+#### **⚙️ Admin (Phasen-unabhängig) - System-Administration**
+
+**Zweck:** System-Konfiguration, Registry-Management, Wartung
+
+**Tabs:**
+- **Steering** (steering) - Factory-Steuerung und -überwachung
+- **Message Center** (message_center) - MQTT-Nachrichten-Zentrale
+- **Logs** (logs) - System-Logs und Debugging
+- **Settings** (settings) - System-Einstellungen und Konfiguration
+
+**Status:** ✅ **Implementiert** - System-Administration funktionsfähig
+
+### **Tab-Struktur pro Rolle**
+
+```mermaid
+%%{init: {'theme':'neutral'}}%%
+flowchart TD
+    classDef operator fill:#e3f2fd,stroke:#bbdefb,stroke-width:2px,color:#0b2e59;
+    classDef supervisor fill:#fff8e1,stroke:#ffecb3,stroke-width:2px,color:#0b3d16;
+    classDef admin fill:#ffebee,stroke:#ffcdd2,stroke-width:2px,color:#7a1a14;
+    classDef shared fill:#f5f5f5,stroke:#e0e0e0,stroke-width:2px,color:#333;
+
+    subgraph "🔧 Operator (Phase 1)"
+        OP1[Overview]:::operator
+        OP2[Orders]:::operator
+        OP3[Process]:::operator
+        OP4[Configuration]:::operator
+        OP5[Modules]:::operator
+    end
+
+    subgraph "👨‍💼 Supervisor (Phase 2) 🔄"
+        SUP1[NodeRed-Flows]:::supervisor
+        SUP2[OPC UA]:::supervisor
+        SUP3[VDA]:::supervisor
+    end
+
+    subgraph "⚙️ Admin (Phasen-unabhängig)"
+        ADM1[Steering]:::admin
+        ADM2[Message Center]:::admin
+        ADM3[Logs]:::admin
+        ADM4[Settings]:::admin
+    end
+
+    subgraph "Shared Components"
+        SH1[Message Center]:::shared
+        SH2[Assets]:::shared
+    end
+
+    OP1 --> SH1
+    SUP1 --> SH1
+    ADM1 --> SH1
 ```
 
-### 5. Message Center ✨ ENHANCED
+### **Implementierungs-Status**
 
-**File:** `omf/omf/dashboard/components/message_center.py`
+| Rolle | Phase | Status | Tabs | Implementierung |
+|-------|-------|--------|------|-----------------|
+| **Operator** | Phase 1 | 🔄 In Entwicklung | Overview, Orders, Process, Configuration, Modules | Orders nicht implementiert, andere nur Hüllen |
+| **Supervisor** | Phase 2 | 🔄 In Entwicklung | NodeRed-Flows, OPC UA, VDA | Alle Tabs noch zu implementieren |
+| **Admin** | Phasen-unabhängig | ✅ Implementiert | Steering, Message Center, Logs, Settings | Alle Tabs funktionsfähig |
 
-**Features:**
-- **Priority-based Subscriptions:** PRIO 1-6 für verschiedene Topic-Filter
-- **Per-Topic-Buffer:** Effiziente Nachrichtenverarbeitung
-- **Live Message Display:** Echtzeit-Anzeige empfangener Nachrichten
-- **Test-Bereich:** MQTT-Nachrichten senden und testen
-
-```python
-def show_message_center():
-    # Priority-basierte Subscriptions
-    priority_level = st.session_state.get("mc_priority", 1)
-    
-    if priority_level >= 6:
-        # Alle Topics
-        client.subscribe("#")
-    else:
-        # Spezifische Topics basierend auf Priority
-        filters = get_priority_filters(priority_level)
-        client.subscribe_many(filters)
-    
-    # Per-Topic-Buffer abrufen und verarbeiten
-    for topic_filter in active_filters:
-        messages = list(client.get_buffer(topic_filter))
-        _display_messages(messages)
-```
-
-### 6. Factory Steering ✨ ENHANCED
-
-**File:** `omf/omf/dashboard/components/steering_factory.py`
-
-**Features:**
-- **Hybrid-Architektur:** MessageGenerator + Session State + MessageGateway
-- **FTS Navigation:** DPS-HBW, HBW-DPS, Produktions-Routen
-- **Module Sequences:** AIQS, MILL, DRILL mit Sequenzklammer
-- **Factory Reset:** Kompletter Factory-Reset
-- **Order Commands:** ROT, WEISS, BLAU Aufträge
-
-```python
-def _prepare_navigation_message(navigation_type: str):
-    # MessageGenerator verwenden
-    generator = get_omf_message_generator()
-    
-    # Navigation Message generieren
-    message = generator.generate_fts_navigation_message(
-        route_type=route_mapping[navigation_type],
-        load_type=load_type_mapping[navigation_type]
-    )
-    
-    # Session State für Preview
-    st.session_state["pending_message"] = {
-        "topic": message["topic"],
-        "payload": message["payload"],
-        "type": "navigation"
-    }
-```
-
-### 7. FTS InstantAction ✨ ENHANCED
-
-**File:** `omf/omf/dashboard/components/fts_instantaction.py`
-
-**Features:**
-- **Per-Topic-Buffer:** Effiziente FTS-Nachrichtenverarbeitung
-- **Real-time Updates:** Live-Aktualisierung der FTS-Status
-- **Instant Actions:** Sofortige FTS-Befehle
-
-```python
-def show_fts_instantaction():
-    # Per-Topic-Buffer für FTS-Nachrichten
-    instantaction_messages = list(client.get_buffer("fts/v1/ff/5iO4/instantAction"))
-    
-    # Verarbeitung
-    process_fts_instantaction_messages_from_buffers(instantaction_messages)
-```
 
 ## Data Flow
 
@@ -500,16 +602,11 @@ Das OMF Dashboard implementiert eine moderne **Per-Topic-Buffer Architektur** mi
 - **[Per-Topic-Buffer Pattern](docs/per-topic-buffer-pattern.md)** - Effiziente MQTT-Nachrichtenverarbeitung
 
 ### Integration Dokumentation
-- **[MQTT Integration](docs/mqtt/dashboard-mqtt-integration.md)** - Dashboard MQTT-Integration
-- **[Topic Configuration](docs/topic-configuration-guide.md)** - Topic-Konfiguration und Priority-Filter
-- **[Module Configuration](docs/module-configuration-guide.md)** - Modul-Konfiguration und Icons
+- **[MQTT Integration](../04-howto/communication/mqtt/dashboard-mqtt-integration.md)** - Dashboard MQTT-Integration
+- **[Topic Configuration](../04-howto/configuration/topic-configuration-guide.md)** - Topic-Konfiguration und Priority-Filter
+- **[Module Configuration](../04-howto/configuration/module-configuration-guide.md)** - Modul-Konfiguration und Icons
 
 ### Replay-Workflow (Unabhängige Systeme)
-- **[Session Manager](omf/helper_apps/session_manager/README.md)** - Unabhängige Helper-App für Session-Analyse
-- **[Replay Station](omf/helper_apps/replay_station/README.md)** - Replay-Funktionalität über lokalen MQTT-Broker
-- **[MQTT Replay Pattern](docs/guides/communication/mqtt-replay-pattern.md)** - Replay-Workflow-Dokumentation
-
-### Development Guidelines
-- **[Development Rules](OMF_DEVELOPMENT_RULES.md)** - Projekt-spezifische Entwicklungsrichtlinien
-- **[Import Standards](docs/IMPORT_STANDARDS_GUIDE.md)** - Import-Standards und Best Practices
-- **[Release Notes Procedure](docs/RELEASE_NOTES_PROCEDURE.md)** - Release Notes Erstellung
+- **[Session Manager](../04-howto/helper_apps/session-manager/README.md)** - Unabhängige Helper-App für Session-Analyse
+- **[Replay Station](../04-howto/helper_apps/session-manager/replay-station.md)** - Replay-Funktionalität über lokalen MQTT-Broker
+- **[MQTT Replay Pattern](../04-howto/communication/mqtt-replay-pattern.md)** - Replay-Workflow-Dokumentation

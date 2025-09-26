@@ -22,7 +22,7 @@ Die Dokumente beschreiben den Systemkontext, die Message Flows, das Registry-Mod
 - [Naming Conventions](naming-conventions.md) – Topics, Template-Keys, IDs
 
 ### APS Physical Architecture
-- [APS Physical Architecture](aps-physical-architecture.md) – Fischertechnik Netzwerk & Hardware
+- [APS Physical Architecture](../../06-integrations/APS-Ecosystem/system-overview.md) – Fischertechnik Netzwerk & Hardware
 - [APS Data Flow](aps-data-flow.md) – Datenverarbeitung & Storage
 
 ### Dashboard Architecture

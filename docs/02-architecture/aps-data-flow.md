@@ -1,46 +1,68 @@
-# APS Data Flow Architecture
+# APS Data Flow Architecture - Chat-A Version
 
-## 📋 Architektur-Phasen
-
-### Phase 1: Ausgangssituation (Fischertechnik Standard)
-- **Fischertechnik Cloud** als zentrale Datenquelle
-- **Fischertechnik Dashboard** für lokale Visualisierung
-- **Keine ORBIS-Integration**
-
-### Phase 2: ORBIS-Integration (Aktuell)
-- **OMF Dashboard** für erweiterte Steuerung
-- **Session Manager** für Replay/Recording
-- **Registry v1** für Template-Management
-- **DPS-Modul** hinzugefügt
+> **Chat-A Bearbeitung:** Formale Bereinigung mit korrekten Phasen-Informationen  
+> **Datum:** 2025-09-25  
+> **Status:** Neue Version mit OMF-Style-Guide und korrekten Phasen
 
 ---
 
-## 📊 Datenfluss-Diagramm (Phase 2: ORBIS-Integration)
+## 📋 Architektur-Phasen (Korrekte Definition)
+
+### **Phase 0: APS "as IS" - Fischertechnik-System verstehen**
+- **Status:** ✅ Abgeschlossen
+- **Ziel:** Das bestehende Fischertechnik APS-System vollständig verstehen
+- **Erreicht:** APS-Ecosystem dokumentiert, Mosquitto-Analyse, APS-NodeRED Flows analysiert
+
+### **Phase 1: OMF-Dashboard mit APS-CCU Frontend-Funktionalität**
+- **Status:** 🔄 In Bearbeitung
+- **Ziel:** APS-Dashboard Funktionalität im OMF-Dashboard nachbauen
+- **Erreicht:** APS Overview Tab, APS Control Tab, APS Steering Tab, APS Orders Tab
+- **Aktuell:** Sensor-Daten Integration testen, APS Configuration Tab implementieren
+
+### **Phase 2: OMF-Dashboard mit APS-NodeRED Funktionalität**
+- **Status:** ⏳ Geplant
+- **Ziel:** APS-NodeRED Gateway-Funktionalität im OMF-Dashboard integrieren
+- **Geplant:** MQTT ↔ OPC-UA Gateway, VDA 5050 FTS-Standard, Registry-basierte Konfiguration
+
+### **Phase 3: Erweiterungen (Zukünftige Entwicklung)**
+- **Status:** ⏳ Geplant
+- **Ziel:** OMF-System um erweiterte Funktionalitäten ausbauen
+- **Geplant:** DSP-Anbindung, ORBIS Cloud, SAP/ERP, KI-Use-cases, erweiterte Analytics
+
+---
+
+## 📊 Datenfluss-Diagramm (Phase 1: OMF-Dashboard Integration)
 
 ```mermaid
+%%{init: {'theme':'neutral'}}%%
 flowchart TD
+classDef orbis fill:#e3f2fd,stroke:#bbdefb,stroke-width:2px,color:#0b2e59;
+classDef fthardware fill:#fff8e1,stroke:#ffecb3,stroke-width:2px,color:#0b3d16;
+classDef ftsoftware fill:#ffebee,stroke:#ffcdd2,stroke-width:2px,color:#7a1a14;
+classDef external fill:#f5f5f5,stroke:#e0e0e0,stroke-width:2px,color:#333;
+
     subgraph "Data Sources"
-        CAM[Camera Images<br/>Base64 JPEG]
-        SENS[Sensor Data<br/>Quality Checks]
-        STATE[Module States<br/>Connection Status]
+        CAM[Camera Images<br/>Base64 JPEG]:::fthardware
+        SENS[Sensor Data<br/>Quality Checks]:::fthardware
+        STATE[Module States<br/>Connection Status]:::fthardware
     end
     
     subgraph "Data Processing"
-        CG[Cloud Gateway<br/>~192.168.0.101<br/>Data Aggregation]
-        NR[Node-RED<br/>192.168.0.100<br/>Flow Processing]
-        MQTT[MQTT Broker<br/>192.168.0.100<br/>Message Routing]
+        CG[Cloud Gateway<br/>~192.168.0.101<br/>Data Aggregation]:::ftsoftware
+        NR[APS-NodeRED<br/>192.168.0.100<br/>Flow Processing]:::ftsoftware
+        MQTT[mosquitto<br/>192.168.0.100<br/>Message Routing]:::external
     end
     
     subgraph "Data Storage"
-        CLOUD[Fischertechnik Cloud<br/>Dashboard Data]
-        LOCAL[Local Logs<br/>Session Data]
+        CLOUD[Fischertechnik Cloud<br/>Dashboard Data]:::external
+        LOCAL[Local Logs<br/>Session Data]:::external
     end
     
     subgraph "Data Consumers"
-        FT_DASH[Fischertechnik Dashboard<br/>192.168.0.100<br/>Angular PWA]
-        OMF_DASH[OMF Dashboard<br/>Streamlit App]
-        SESSION[Session Manager<br/>Replay/Recording]
-        API[REST API<br/>External Systems]
+        FT_DASH[Fischertechnik Dashboard<br/>192.168.0.100<br/>Angular PWA]:::ftsoftware
+        OMF_DASH[OMF Dashboard<br/>Streamlit App]:::orbis
+        SESSION[Session Manager<br/>Replay/Recording]:::orbis
+        API[REST API<br/>External Systems]:::external
     end
     
     CAM -->|HTTPS| CG
@@ -62,27 +84,20 @@ flowchart TD
     OMF_DASH -->|Registry Commands| MQTT
     SESSION -->|Replay| MQTT
     API -->|External Commands| CG
-    
-    classDef fischertechnik fill:#f5f5f5,stroke:#757575,stroke-width:2px
-    classDef orbis fill:#e1f5fe,stroke:#01579b,stroke-width:2px
-    classDef modules fill:#fff3e0,stroke:#f57c00,stroke-width:2px
-    class FT_DASH,API fischertechnik
-    class OMF_DASH,SESSION orbis
-    class CAM,SENS,STATE,CG,NR,MQTT,CLOUD,LOCAL modules
 ```
 
-## 🔄 Kommunikations-Protokoll-Diagramm
+## 🔄 Kommunikations-Protokoll-Diagramm (VDA 5050 Standard)
 
 ```mermaid
 sequenceDiagram
     participant FTC as Fischertechnik Cloud
     participant CG as Cloud Gateway
-    participant MQTT as MQTT Broker
-    participant DPS as DPS Module
-    participant AIQS as AIQS Module
-    participant FTS as FTS Module
+    participant MQTT as mosquitto
+    participant DPS as TXT-DPS
+    participant AIQS as TXT-AIQS
+    participant FTS as TXT-FTS
     
-    Note over FTC,FTS: VDA5050 Standard Communication
+    Note over FTC,FTS: VDA 5050 Standard Communication
     
     FTC->>CG: HTTPS/REST API<br/>Camera Images (Base64)
     CG->>MQTT: Publish Commands<br/>QoS=1, Retain=False
@@ -102,35 +117,41 @@ sequenceDiagram
     AIQS->>AIQS: Internal OPC-UA<br/>Quality Processing
 ```
 
-## 🏗️ System-Komponenten-Diagramm
+## 🏗️ System-Komponenten-Diagramm (Phase 1)
 
 ```mermaid
+%%{init: {'theme':'neutral'}}%%
 graph TB
+classDef orbis fill:#e3f2fd,stroke:#bbdefb,stroke-width:2px,color:#0b2e59;
+classDef fthardware fill:#fff8e1,stroke:#ffecb3,stroke-width:2px,color:#0b3d16;
+classDef ftsoftware fill:#ffebee,stroke:#ffcdd2,stroke-width:2px,color:#7a1a14;
+classDef external fill:#f5f5f5,stroke:#e0e0e0,stroke-width:2px,color:#333;
+
     subgraph "Cloud Layer"
-        FTC[Fischertechnik Cloud<br/>fischertechnik-cloud.com<br/>Angular PWA]
-        API[Cloud API<br/>REST/HTTPS]
+        FTC[Fischertechnik Cloud<br/>fischertechnik-cloud.com<br/>Angular PWA]:::external
+        API[Cloud API<br/>REST/HTTPS]:::external
     end
     
     subgraph "Gateway Layer"
-        CG[Cloud Gateway<br/>~192.168.0.101<br/>TXT 4.0 Controller]
-        NR[Node-RED<br/>192.168.0.100<br/>Docker Container]
-        MQTT[MQTT Broker<br/>192.168.0.100<br/>Port 1883]
+        CG[Cloud Gateway<br/>~192.168.0.101<br/>TXT 4.0 Controller]:::fthardware
+        NR[APS-NodeRED<br/>192.168.0.100<br/>Docker Container]:::ftsoftware
+        MQTT[mosquitto<br/>192.168.0.100<br/>Port 1883]:::external
     end
     
     subgraph "Module Layer"
-        DPS[DPS Module<br/>TXT 4.0]
-        FTS[FTS Module<br/>TXT 4.0]
-        AIQS[AIQS Modules<br/>SPS S7-1200]
+        DPS[TXT-DPS<br/>TXT 4.0]:::fthardware
+        FTS[TXT-FTS<br/>TXT 4.0]:::fthardware
+        AIQS[TXT-AIQS<br/>SPS S7-1200]:::fthardware
     end
     
     subgraph "Network Layer"
-        WLAN[WLAN Access Point<br/>Unverschlüsselt]
-        LAN[LAN Switch<br/>Statische IPs]
+        WLAN[WLAN Access Point<br/>Unverschlüsselt]:::external
+        LAN[LAN Switch<br/>Statische IPs]:::external
     end
     
     subgraph "Data Layer"
-        LOGS[Session Logs<br/>SQLite + JSON]
-        CACHE[Cloud Cache<br/>Service Worker]
+        LOGS[Session Logs<br/>SQLite + JSON]:::external
+        CACHE[Cloud Cache<br/>Service Worker]:::external
     end
     
     FTC -->|HTTPS| API
@@ -155,28 +176,35 @@ graph TB
 ## 🔐 Sicherheits-Architektur-Diagramm
 
 ```mermaid
+%%{init: {'theme':'neutral'}}%%
 graph TB
+classDef orbis fill:#e3f2fd,stroke:#bbdefb,stroke-width:2px,color:#0b2e59;
+classDef fthardware fill:#fff8e1,stroke:#ffecb3,stroke-width:2px,color:#0b3d16;
+classDef ftsoftware fill:#ffebee,stroke:#ffcdd2,stroke-width:2px,color:#7a1a14;
+classDef external fill:#f5f5f5,stroke:#e0e0e0,stroke-width:2px,color:#333;
+classDef risk fill:#ffebee,stroke:#ef5350,stroke-dasharray: 5 3,color:#7a1a14;
+
     subgraph "Internet (Unsicher)"
-        FTC[Fischertechnik Cloud<br/>HTTPS/TLS]
+        FTC[Fischertechnik Cloud<br/>HTTPS/TLS]:::external
     end
     
     subgraph "Local Network (Teilweise unsicher)"
-        CG[Cloud Gateway<br/>SSH: ft/fischertechnik]
-        WLAN[WLAN Access Point<br/>Unverschlüsselt]
-        LAN[LAN Switch<br/>Statische IPs]
+        CG[Cloud Gateway<br/>SSH: ft/fischertechnik]:::fthardware
+        WLAN[WLAN Access Point<br/>Unverschlüsselt]:::external
+        LAN[LAN Switch<br/>Statische IPs]:::external
     end
     
     subgraph "Module Layer (Unverschlüsselt)"
-        DPS[DPS Module<br/>MQTT unverschlüsselt]
-        FTS[FTS Module<br/>MQTT unverschlüsselt]
-        AIQS[AIQS Modules<br/>OPC-UA unverschlüsselt]
+        DPS[TXT-DPS<br/>MQTT unverschlüsselt]:::fthardware
+        FTS[TXT-FTS<br/>MQTT unverschlüsselt]:::fthardware
+        AIQS[TXT-AIQS<br/>OPC-UA unverschlüsselt]:::fthardware
     end
     
     subgraph "Sicherheitsrisiken"
-        RISK1[WLAN unverschlüsselt<br/>⚠️ Sniffing möglich]
-        RISK2[SSH Standard-Passwörter<br/>⚠️ Brute Force möglich]
-        RISK3[MQTT unverschlüsselt<br/>⚠️ Man-in-the-Middle]
-        RISK4[OPC-UA unverschlüsselt<br/>⚠️ Industrial Spoofing]
+        RISK1[WLAN unverschlüsselt<br/>⚠️ Sniffing möglich]:::risk
+        RISK2[SSH Standard-Passwörter<br/>⚠️ Brute Force möglich]:::risk
+        RISK3[MQTT unverschlüsselt<br/>⚠️ Man-in-the-Middle]:::risk
+        RISK4[OPC-UA unverschlüsselt<br/>⚠️ Industrial Spoofing]:::risk
     end
     
     FTC -.->|HTTPS/TLS| CG
@@ -200,8 +228,8 @@ graph TB
 
 ### 2. **Datenverarbeitung**
 - **Cloud Gateway**: Aggregation und Routing
-- **Node-RED**: Flow-basierte Verarbeitung
-- **MQTT Broker**: Message Queuing und Distribution
+- **APS-NodeRED**: Flow-basierte Verarbeitung
+- **mosquitto**: Message Queuing und Distribution
 
 ### 3. **Datenspeicherung**
 - **Fischertechnik Cloud**: Dashboard-Daten, Caching
@@ -231,4 +259,19 @@ Module → MQTT → Session Manager → Logs
 
 ---
 
-**"Daten fließen über MQTT, werden in Node-RED verarbeitet und in der Cloud visualisiert."**
+## 📋 Chat-A Änderungen
+
+### ✅ **Formale Bereinigung:**
+- **Phasen-Definition korrigiert** - Phase 0/1/2/3 statt Phase 1/2
+- **OMF-Style-Guide angewendet** - Konsistente Farben (Blau=ORBIS, Gelb=FT-Hardware, Rot=FT-Software, Grau=External)
+- **Namenskonventionen standardisiert** - APS-NodeRED, TXT-DPS, TXT-AIQS, TXT-FTS, mosquitto
+- **Mermaid-Diagramme standardisiert** - classDef-Definitionen, konsistente Farbzuordnung
+
+### ❌ **NICHT geändert (Chat-B Aufgabe):**
+- Inhaltliche Architektur-Updates
+- Aktuelle Implementierungsdetails
+- Technische Korrekturen
+
+---
+
+**"Daten fließen über MQTT, werden in APS-NodeRED verarbeitet und in der Cloud visualisiert."** 🚀
