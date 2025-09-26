@@ -1,0 +1,25 @@
+# Cursor AI - Ignore Rules
+# Diese Dateien sollen NICHT von Cursor AI verändert werden
+
+# Git Hooks - KRITISCH: Nie verändern!
+git-hooks/pre-commit
+
+# Wichtige Konfigurationsdateien
+.gitignore
+pyproject.toml
+requirements.txt
+pytest.ini
+
+# Log-Dateien (werden automatisch generiert)
+logs/
+*.log
+*.jsonl
+
+# Vendor-Verzeichnisse (Submodule)
+vendor/
+
+# Temporäre Dateien
+*.tmp
+*.temp
+__pycache__/
+*.pyc

@@ -20,4 +20,11 @@ if [ -d "registry/model/v1/templates" ]; then
   echo "[pre-commit] check templates don't include topics..."
   python3 tools/check_templates_no_topics.py
 fi
+
+# 🧪 KRITISCHE TESTS AUSFÜHREN
+echo "[pre-commit] running tests..."
+source .venv/bin/activate
+python -m pytest tests/ -v --tb=short
+echo "[pre-commit] tests passed ✅"
+
 echo "[pre-commit] OK - State-of-the-Art Standards eingehalten"
