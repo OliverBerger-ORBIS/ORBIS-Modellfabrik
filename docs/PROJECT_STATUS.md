@@ -54,24 +54,39 @@
 - ✅ **MQTT Connection-Loop Problem gelöst** - Strenge Environment-Prüfung implementiert
 - ✅ **Pre-commit Hooks** - st.rerun() und MQTT Connection-Loop Prevention
 - ⏳ **User Konzept umsetzen** - Rollenbasierte Tab-Sichtbarkeit implementieren (NÄCHSTE PRIORITÄT)
-- ⏳ **Sensor-Daten Integration testen** - Mit realer Fabrik validieren
 - ⏳ **APS Configuration Tab implementieren** - Fehlender 5. Tab
-- ⏳ **Alle APS-Commands testen** - Systematische Validierung
 - 📋 **Details:** [Chat-B Aktivitäten](docs/07-analysis/chat-activities/chat-b-implementation-2025-09-23.md)
 
 ### 🧪 **Chat-C: Testing & Validation**
-- ⏳ **Sensor-Daten Integration testen** - APS Overview Tab mit realer Fabrik validieren (HÖCHSTE PRIORITÄT)
-- ⏳ **OMF-Dashboard mit realer Fabrik testen** - Validierung der APS-Integration
-- ⏳ **Template-Analyzer reparieren** - Topics aus Template-Deskriptionen entfernen
-- 📋 **Details:** [Chat-C Aktivitäten](docs/07-analysis/chat-activities/chat-c-testing-2025-09-23.md)
+- ✅ **OMF-Dashboard Testing abgeschlossen** - Umfassendes Testing mit realer Fabrik durchgeführt
+- ✅ **15 kritische Probleme identifiziert** - Vollständige Liste der nicht funktionierenden Bereiche
+- ✅ **Testing-Protokoll erstellt** - Detaillierte Dokumentation aller Tests und Ergebnisse
+- 📋 **Details:** [Chat-C Testing-Protokoll](docs/07-analysis/chat-activities/chat-c-testing-2025-09-25.md)
+
+### 🔧 **Chat-D: Fix aus Testing-Session**
+- [ ] **🚨 KRITISCH: APS-Modul-Status reparieren** - Status-Nachrichten werden nicht verarbeitet
+- [ ] **🚨 KRITISCH: Replay Station Reconnects beheben** - Regression (war schon gefixed)
+- [ ] **🚨 KRITISCH: APS Orders Tab implementieren** - Große Baustelle: Nachrichten auswerten
+- [ ] **Kamera-Controls implementieren** - hoch, rechts, runter etc. mit 10-Grad-Schritten
+- [ ] **Kamera-Button-Problem lösen** - 2x-Klick-Problem beheben
+- [ ] **Bild-machen implementieren** - Kamera-Aufnahme-Funktion
+- [ ] **Bild-Anzeigen implementieren** - Aufgenommene Bilder anzeigen
+- [ ] **APS Processes Controls implementieren** - "add Step", "save workflow"
+- [ ] **Modal Auto-Close implementieren** - Modal sollte sich nach erfolgreichem Command schließen
+- [ ] **APS Configuration Icons reparieren** - Factory Layout Icons werden nicht gefunden
+- [ ] **APS Configuration Bearbeitung implementieren** - Abschnitt noch nicht implementiert
+- [ ] **Layout-Probleme beheben** - Controls nach unten, aktueller Prozess oben
+- [ ] **Factory Layout I18n-Konflikt beheben** - I18n-Unterstützung verursacht Darstellungsfehler
+- [ ] **I18n-Übersetzung erweitern** - Nur Hauptkomponenten übersetzt
+- [ ] **Template-Analyzer reparieren** - Topics aus Template-Deskriptionen entfernen
 
 
 
-## 📋 Nächste Prioritäten (Backlog)
+## 📋 BACKLOG
 
 ### **🔧 Code & Implementation**
-1. **Sensor-Daten Integration testen** - APS Overview Tab mit realer Fabrik validieren (HÖCHSTE PRIORITÄT)
-2. **APS Configuration Tab implementieren** - Fehlender 5. APS Tab systematisch aufbauen
+
+2. **APS Order Tab implementieren** - Tab systematisch aufbauen
 3. **Alle APS-Commands testen und validieren** - Systematische Überprüfung aller implementierten Befehle
 4. **Manager-Duplikate beseitigen** - OrderManager (3x identisch), System-Status-Manager (3x ähnlich) auslagern
 5. ✅ **Registry-Konsolidierung** - Legacy-Konfiguration (`omf/config/`) entfernen, alle Manager auf Registry umstellen
@@ -91,15 +106,17 @@
 17. **TXT-DPS tiefere Analyse** - Delivery and Pickup Station: Browser-Interface erkunden, Code-Analyse, Integration testen
 18. **TXT-FTS tiefere Analyse** - FTS Steuerung: VDA 5050-Implementierung verifizieren, Node-RED Flows analysieren, OPC-UA Kommunikation dokumentieren
 
-### **🏭 APS-CCU Dokumentation (Niedrige Priorität)**
+### **🏭 APS-CCU Dokumentation (Mittlere Priorität)**
 19. **APS-CCU tiefere Analyse** - Central Control Unit: Docker-Container analysieren, Node-RED Flows dokumentieren, Dashboard-Integration testen, OMF-Integration vorbereiten
 
 ### **👥 User & Rollen**
-20. **OMF-Dashboard User-Konzept definieren** - Standard-User vs. DSP-Admin Rollen
-21. **APS-UI Bereich isolieren** - Standard-User sieht nur APS-Bedienung
-22. **DSP-Steuerungsbereich implementieren** - DSP-Admin sieht Node-RED-Simulation Tabs
-23. **User-Rollen-System implementieren** - Default vs. DSP-Admin Sichtbarkeit
 24. **I18n Unterstützung** implementieren (EN, DE, FR)
+- **Rollenbasierte Tab-Sichtbarkeit implementieren**
+  - **Operator (APS-Business-User):** APS Overview, APS Orders, APS Processes, APS Configuration, APS Modules
+  - **Supervisor (Werksleiter/DSP-User):** WL Module Control, APS Control
+  - **Admin (System-Admin):** Steering, Message Center, Logs, Settings
+- **Tab-Filterung basierend auf User-Rolle**
+- **Session State für User-Rolle**
 
 #### **✅ Abgeschlossen:**
 - ✅ **Sprint-Dokumentation** erstellen (sprint_01 bis sprint_05)
@@ -125,19 +142,8 @@
 - **Sprint-Status** wird kontinuierlich aktualisiert
 - **Wichtige Entscheidungen** in `docs/03-decision-records/`
 
-## 🎯 Nächste Schritte (Prioritäten)
-
-### **🔥 HÖCHSTE PRIORITÄT: User Konzept umsetzen**
-- **Rollenbasierte Tab-Sichtbarkeit implementieren**
-  - **Operator (APS-Business-User):** APS Overview, APS Orders, APS Processes, APS Configuration, APS Modules
-  - **Supervisor (Werksleiter/DSP-User):** WL Module Control, APS Control
-  - **Admin (System-Admin):** Steering, Message Center, Logs, Settings
-- **Tab-Filterung basierend auf User-Rolle**
-- **Session State für User-Rolle**
-
 ### **🔧 TECHNISCHE PRIORITÄTEN:**
 - **Sensor-Daten Integration testen** - Mit realer Fabrik validieren
-- **APS Configuration Tab implementieren** - Fehlender 5. Tab
 - **Alle APS-Commands testen** - Systematische Validierung
 - **Manager-Duplikate beseitigen** - OrderManager (3x), System-Status-Manager (3x)
 

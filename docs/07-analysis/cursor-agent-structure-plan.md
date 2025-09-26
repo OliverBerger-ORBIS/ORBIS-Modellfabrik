@@ -13,7 +13,7 @@ Dieses Dokument dient als Leitfaden für die Dokumentationsstruktur der ORBIS-Mo
 - ✅ **Chat-Bereiche respektieren** - Nicht in andere Bereiche eingreifen
 - ✅ **Realistische Status-Updates** - Implementiert ≠ Funktioniert
 - ✅ **Testing-Priorität** - Immer testen bevor "abgeschlossen" markieren
-- ✅ **CHAT-Aktivitäten protokollieren** - Jede Aktivität in `/docs/07-analysis/chat-activities/`
+- ✅ **CHAT-Aktivitäten protokollieren** - Jeder Agent erstellt ein chat-xy*<beschreibung>_Date-time.md  `/docs/07-analysis/chat-activities/`
 - ✅ **APS/OMF Namenskonvention** - APS (As-Is), OMF (To-Be), Groß-Schreibweise mit Bindestrich
 
 ---

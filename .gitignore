@@ -42,6 +42,9 @@ orbis_access.log
 # Log files should NOT be in git - they are large and change frequently
 logs/*.log
 logs/*.json
+logs/*.jsonl
+logs/*.jsonl.*
+logs/*.log.*
 
 # 🖼️ Generated Images & Data
 *.png

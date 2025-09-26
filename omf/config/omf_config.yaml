@@ -1,6 +1,6 @@
 dashboard:
   auto_refresh: false
-  language: en
+  language: de
   refresh_interval: 5
   theme: light
 modules:
