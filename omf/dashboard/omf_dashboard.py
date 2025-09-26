@@ -423,65 +423,51 @@ def get_module_logo(module_name):
 
 
 def display_tabs():
-    """Zeigt die Dashboard-Tabs und deren Inhalte"""
-    # Tabs (reduziert von 16 auf 11 Tabs) - Korrekte Reihenfolge: APS → Werksleiter → Admin
-    tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11 = st.tabs(
-        [
-            # APS-Tabs (Business-User)
-            "🏭 APS Overview",
-            "📋 APS Orders",
-            "🔄 APS Processes",
-            "⚙️ APS Configuration",
-            "🏭 APS Modules",
-            # Werksleiter-Tabs (WL)
-            "🔧 WL Modul-Steuerung",
-            "⚙️ WL System Control",
-            # Admin-Tabs (System)
-            "🎮 Steuerung",
-            "📡 Nachrichten-Zentrale",
-            "📋 Logs",
-            "⚙️ Einstellungen",
-        ]
-    )
-
-    # Tab-Inhalte (reduziert von 16 auf 11 Tabs) - Korrekte Reihenfolge: APS → Werksleiter → Admin
-    # APS-Tabs (Business-User)
-    with tab1:
-        components["aps_overview"]()
-
-    with tab2:
-        components["aps_orders"]()
-
-    with tab3:
-        components["aps_processes"]()
-
-    with tab4:
-        components["aps_configuration"]()
-
-    with tab5:
-        components["aps_modules"]()
-
-    # Werksleiter-Tabs (WL)
-    with tab6:
-        components["wl_module_state_control"]()
-
-    with tab7:
-        components["aps_control"]()
-
-    # Admin-Tabs (System)
-    with tab8:
-        components["steering"]()
-
-    with tab9:
-        components["message_center"]()
-
-    with tab10:
-        components["logs"]()
-
-    with tab11:
-        components["settings"]()
-
-
+    """Zeigt die Dashboard-Tabs basierend auf Benutzerrolle und Sprache"""
+    from omf.dashboard.utils.user_manager import UserManager
+    from omf.dashboard.utils.language_manager import LanguageManager
+    
+    # Aktuelle Rolle und Sprache holen
+    current_role = UserManager.get_current_user_role()
+    current_language = LanguageManager.get_current_language()
+    
+    # Erlaubte Tabs für die Rolle ermitteln
+    allowed_tabs = UserManager.get_allowed_tabs(current_role)
+    
+    if not allowed_tabs:
+        st.error("❌ Keine Tabs für die aktuelle Rolle verfügbar")
+        return
+    
+    # Tab-Namen und Icons dynamisch generieren
+    tab_labels = []
+    tab_components = []
+    
+    for tab_key in allowed_tabs:
+        tab_info = UserManager.TAB_NAMES.get(tab_key, {"icon": "📋", "key": tab_key})
+        icon = tab_info["icon"]
+        translated_name = LanguageManager.get_tab_name(tab_key, current_language)
+        
+        tab_labels.append(f"{icon} {translated_name}")
+        
+        # Component-Name ermitteln (für Tabs mit unterschiedlichem Component-Namen)
+        component_name = tab_info.get("component", tab_key)
+        tab_components.append(component_name)
+    
+    # Dynamische Tab-Erstellung
+    tabs = st.tabs(tab_labels)
+    
+    # Tab-Inhalte dynamisch rendern
+    for i, component_name in enumerate(tab_components):
+        with tabs[i]:
+            if component_name in components:
+                try:
+                    components[component_name]()
+                except Exception as e:
+                    st.error(f"❌ Fehler beim Laden der Komponente '{component_name}': {str(e)}")
+                    st.info("💡 Diese Komponente wird möglicherweise noch entwickelt")
+            else:
+                st.warning(f"⚠️ Komponente '{component_name}' nicht gefunden")
+                st.info("💡 Diese Komponente wird möglicherweise noch entwickelt")
 # =============================================================================
 # MAIN FUNCTION
 # =============================================================================
@@ -499,7 +485,14 @@ def main():
     # 3. Seite konfigurieren
     setup_page_config()
 
-    # 3. Umgebung handhaben
+    # 3.1. User Role und Language Selectors anzeigen
+    from omf.dashboard.utils.user_manager import UserManager
+    from omf.dashboard.utils.language_manager import LanguageManager
+    
+    UserManager.show_role_selector()
+    LanguageManager.show_language_selector()
+
+    # 3.2. Umgebung handhaben
     env = handle_environment_switch()
 
     # 4. MQTT-Client initialisieren
