@@ -196,3 +196,46 @@ TIAv18 is required to access the PLC programs.
 
 As soon as TIAv18 is installed, the project files can be loaded and edited.
 
+---
+
+## OMF2 Streamlit Dashboard
+
+Das OMF2 Dashboard ist eine moderne, webbasierte Anwendung zur Steuerung und Überwachung der ORBIS Modellfabrik. Die Anwendung ist als Streamlit-App implementiert und bietet eine rollenbasierte, mehrsprachige Benutzeroberfläche.
+
+### Schnellstart OMF2
+
+```bash
+# Installation der Abhängigkeiten
+pip install -r requirements.txt
+
+# Starten der OMF2 Streamlit-App
+streamlit run omf2/omf_dashboard.py
+```
+
+Die OMF2-Anwendung ist dann unter `http://localhost:8501` verfügbar.
+
+### OMF2 Architektur
+
+Das OMF2 Dashboard folgt der in `omf2/projekt-struktur-omf2.md` definierten Architektur:
+
+- **Rollenbasierte Zugriffskontrolle**: Admin, Supervisor, Operator, Viewer
+- **Mehrsprachigkeit**: Deutsch, Englisch, Französisch
+- **Modulare UI-Komponenten**: CCU Dashboard, Message Center, System Logs, Settings
+- **Session State Management**: Streamlit-native Zustandsverwaltung
+- **Factory Pattern**: Singleton-basierte Client-Verwaltung
+
+### OMF2 Tests
+
+```bash
+# OMF2-Dashboard-Tests ausführen
+python -m pytest omf2/tests/test_streamlit_dashboard.py -v
+```
+
+### OMF2 Konfiguration
+
+- **MQTT-Einstellungen**: `omf2/config/mqtt_settings.yml`
+- **Benutzerrollen**: `omf2/config/user_roles.yml`
+- **Anwendungen**: `omf2/config/apps.yml`
+
+Für detaillierte Informationen siehe `omf2/projekt-struktur-omf2.md`.
+
