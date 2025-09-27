@@ -13,8 +13,12 @@ try:
 except ImportError:
     STREAMLIT_AVAILABLE = False
 
-from omf2.ccu import CCUGateway, ccu_mqtt_client
-from omf2.ccu.workpiece_manager import get_workpiece_manager
+try:
+    from omf2.ccu import CCUGateway, ccu_mqtt_client
+    from omf2.ccu.workpiece_manager import get_workpiece_manager
+    CCU_AVAILABLE = True
+except ImportError:
+    CCU_AVAILABLE = False
 
 logger = logging.getLogger(__name__)
 
@@ -25,9 +29,14 @@ class CCUOverviewTab:
     """
     
     def __init__(self):
-        self.workpiece_manager = get_workpiece_manager()
-        self.ccu_gateway = CCUGateway(ccu_mqtt_client)
-        logger.info("🏭 CCU Overview Tab initialized")
+        if CCU_AVAILABLE:
+            self.workpiece_manager = get_workpiece_manager()
+            self.ccu_gateway = CCUGateway(ccu_mqtt_client)
+            logger.info("🏭 CCU Overview Tab initialized")
+        else:
+            self.workpiece_manager = None
+            self.ccu_gateway = None
+            logger.warning("⚠️ CCU components not available - using dummy mode")
     
     def render(self):
         """Render the CCU overview tab"""
@@ -37,6 +46,9 @@ class CCUOverviewTab:
         
         st.header("🏭 CCU Dashboard")
         st.markdown("Central Control Unit monitoring and control")
+        
+        if not CCU_AVAILABLE:
+            st.warning("⚠️ CCU components not available - showing demo mode")
         
         # Connection status
         self._render_connection_status()
@@ -54,14 +66,17 @@ class CCUOverviewTab:
     
     def _render_connection_status(self):
         """Render connection status indicator"""
-        is_connected = self.ccu_gateway.is_connected()
-        
-        if is_connected:
-            st.success("🟢 CCU MQTT Connected")
+        if CCU_AVAILABLE and self.ccu_gateway:
+            is_connected = self.ccu_gateway.is_connected()
+            
+            if is_connected:
+                st.success("🟢 CCU MQTT Connected")
+            else:
+                st.error("🔴 CCU MQTT Disconnected")
+                if st.button("🔄 Reconnect CCU"):
+                    self._reconnect_ccu()
         else:
-            st.error("🔴 CCU MQTT Disconnected")
-            if st.button("🔄 Reconnect CCU"):
-                self._reconnect_ccu()
+            st.info("🔄 CCU MQTT Status: Demo Mode")
     
     def _render_system_status(self):
         """Render system status section"""

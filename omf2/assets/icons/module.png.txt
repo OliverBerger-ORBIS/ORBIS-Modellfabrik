@@ -1,0 +1,3 @@
+# Module Icon Placeholder
+# This is a placeholder for module icons
+# In production, these would be actual PNG/SVG files

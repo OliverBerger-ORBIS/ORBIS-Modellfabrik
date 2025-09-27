@@ -13,8 +13,12 @@ try:
 except ImportError:
     STREAMLIT_AVAILABLE = False
 
-from omf2.system import LogManager
-from omf2.system.logs import LogLevel, get_log_manager
+try:
+    from omf2.system import LogManager
+    from omf2.system.logs import LogLevel, get_log_manager
+    SYSTEM_AVAILABLE = True
+except ImportError:
+    SYSTEM_AVAILABLE = False
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +29,10 @@ class LogsTab:
     """
     
     def __init__(self):
-        self.log_manager = get_log_manager()
+        if SYSTEM_AVAILABLE:
+            self.log_manager = get_log_manager()
+        else:
+            self.log_manager = None
         logger.info("📝 Logs Tab initialized")
     
     def render(self):

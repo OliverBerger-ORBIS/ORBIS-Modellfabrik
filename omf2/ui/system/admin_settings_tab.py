@@ -12,7 +12,11 @@ try:
 except ImportError:
     STREAMLIT_AVAILABLE = False
 
-from omf2.system import AdminSettings
+try:
+    from omf2.system import AdminSettings
+    ADMIN_AVAILABLE = True
+except ImportError:
+    ADMIN_AVAILABLE = False
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +27,10 @@ class AdminSettingsTab:
     """
     
     def __init__(self):
-        self.admin_settings = AdminSettings()
+        if ADMIN_AVAILABLE:
+            self.admin_settings = AdminSettings()
+        else:
+            self.admin_settings = None
         logger.info("⚙️ Admin Settings Tab initialized")
     
     def render(self):
