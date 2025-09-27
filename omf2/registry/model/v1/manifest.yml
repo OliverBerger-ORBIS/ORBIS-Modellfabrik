@@ -1,0 +1,20 @@
+version: "1.0.0"
+owner: "ORBIS Modellfabrik"
+compatibility:
+  min_version: "1.0.0"
+  max_version: "1.9.x"
+description: "OMF Dashboard Registry Model v1"
+created: "2025-01-25"
+last_updated: "2025-01-25"
+
+components:
+  - mappings
+  - templates  
+  - entities
+  - schemas
+
+features:
+  - workpiece_management
+  - message_templates
+  - user_roles
+  - i18n_support

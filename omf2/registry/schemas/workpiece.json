@@ -1,0 +1,82 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Workpiece Schema",
+  "description": "Schema for workpiece definitions",
+  "type": "object",
+  "properties": {
+    "workpiece_types": {
+      "type": "object",
+      "patternProperties": {
+        "^[a-z_]+$": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Human readable name"
+            },
+            "dimensions": {
+              "type": "string",
+              "pattern": "^\\d+x\\d+x\\d+$",
+              "description": "Dimensions in format WxLxH"
+            },
+            "weight": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Weight in grams"
+            },
+            "material": {
+              "type": "string",
+              "enum": ["aluminium", "steel", "plastic", "titanium", "copper"]
+            },
+            "processing_steps": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "minItems": 1
+            },
+            "default_processing_time": {
+              "type": "number",
+              "minimum": 1,
+              "description": "Default processing time in seconds"
+            },
+            "nfc_codes": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^NFC_[A-Z]+_[A-Z0-9]+_\\d{3}$"
+              },
+              "minItems": 1
+            }
+          },
+          "required": ["name", "dimensions", "weight", "material", "processing_steps", "default_processing_time", "nfc_codes"]
+        }
+      }
+    },
+    "materials": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "processing_steps": {
+      "type": "object",
+      "patternProperties": {
+        "^[a-z_]+$": {
+          "type": "object",
+          "properties": {
+            "icon": {
+              "type": "string"
+            },
+            "estimated_time": {
+              "type": "number",
+              "minimum": 1
+            }
+          },
+          "required": ["icon", "estimated_time"]
+        }
+      }
+    }
+  },
+  "required": ["workpiece_types", "materials", "processing_steps"]
+}

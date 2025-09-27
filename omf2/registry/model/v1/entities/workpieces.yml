@@ -1,0 +1,77 @@
+workpiece_types:
+  standard_a:
+    name: "Standard Werkstück A"
+    dimensions: "100x50x25"
+    weight: 250
+    material: "aluminium"
+    processing_steps:
+      - "drill"
+      - "mill" 
+      - "inspect"
+    default_processing_time: 60
+    nfc_codes:
+      - "NFC_STD_A_001"
+      - "NFC_STD_A_002"
+  
+  extended_b:
+    name: "Erweitertes Werkstück B"
+    dimensions: "150x75x30"
+    weight: 450
+    material: "steel"
+    processing_steps:
+      - "cut"
+      - "drill"
+      - "mill"
+      - "polish"
+      - "inspect"
+    default_processing_time: 120
+    nfc_codes:
+      - "NFC_EXT_B_001"
+      - "NFC_EXT_B_002"
+  
+  special_c:
+    name: "Spezial Werkstück C"
+    dimensions: "200x100x40"
+    weight: 800
+    material: "plastic"
+    processing_steps:
+      - "form"
+      - "heat_treat"
+      - "inspect"
+      - "package"
+    default_processing_time: 180
+    nfc_codes:
+      - "NFC_SPC_C_001"
+
+materials:
+  - aluminium
+  - steel
+  - plastic
+  - titanium
+  - copper
+
+processing_steps:
+  drill:
+    icon: "🔩"
+    estimated_time: 15
+  mill:
+    icon: "⚙️" 
+    estimated_time: 30
+  cut:
+    icon: "✂️"
+    estimated_time: 20
+  polish:
+    icon: "✨"
+    estimated_time: 25
+  inspect:
+    icon: "🔍"
+    estimated_time: 10
+  form:
+    icon: "🏗️"
+    estimated_time: 45
+  heat_treat:
+    icon: "🔥"
+    estimated_time: 60
+  package:
+    icon: "📦"
+    estimated_time: 5
