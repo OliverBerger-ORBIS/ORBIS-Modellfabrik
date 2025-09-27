@@ -1,0 +1,182 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Workpieces Registry Schema",
+  "description": "JSON Schema for validating workpieces registry configuration",
+  "type": "object",
+  "required": ["metadata", "workpieces"],
+  "properties": {
+    "metadata": {
+      "type": "object",
+      "required": ["version", "description", "schema_version"],
+      "properties": {
+        "version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$"
+        },
+        "description": {
+          "type": "string"
+        },
+        "last_updated": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "schema_version": {
+          "type": "string"
+        }
+      }
+    },
+    "workpieces": {
+      "type": "object",
+      "patternProperties": {
+        "^[A-Z][0-9]+$": {
+          "$ref": "#/definitions/workpiece"
+        }
+      }
+    },
+    "types": {
+      "type": "object",
+      "patternProperties": {
+        "^[a-z_]+$": {
+          "$ref": "#/definitions/workpiece_type"
+        }
+      }
+    },
+    "colors": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/color"
+      }
+    },
+    "quality_checks": {
+      "type": "object",
+      "patternProperties": {
+        "^[a-z_]+$": {
+          "$ref": "#/definitions/quality_check"
+        }
+      }
+    },
+    "processing_steps": {
+      "type": "object",
+      "patternProperties": {
+        "^[a-z_]+$": {
+          "$ref": "#/definitions/processing_step"
+        }
+      }
+    }
+  },
+  "definitions": {
+    "workpiece": {
+      "type": "object",
+      "required": ["id", "name", "color", "type"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Z][0-9]+$"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "color": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "material": {
+          "type": "string"
+        },
+        "dimensions": {
+          "type": "object",
+          "properties": {
+            "diameter": {"type": "number", "minimum": 0},
+            "height": {"type": "number", "minimum": 0},
+            "width": {"type": "number", "minimum": 0},
+            "depth": {"type": "number", "minimum": 0},
+            "length": {"type": "number", "minimum": 0},
+            "weight": {"type": "number", "minimum": 0}
+          }
+        },
+        "properties": {
+          "type": "object",
+          "properties": {
+            "magnetic": {"type": "boolean"},
+            "conductive": {"type": "boolean"},
+            "temperature_range": {
+              "type": "array",
+              "items": {"type": "number"},
+              "minItems": 2,
+              "maxItems": 2
+            }
+          }
+        },
+        "quality_checks": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "nfc_codes": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{12,}$"
+          }
+        },
+        "processing_steps": {
+          "type": "array",
+          "items": {"type": "string"}
+        }
+      }
+    },
+    "workpiece_type": {
+      "type": "object",
+      "required": ["name", "description"],
+      "properties": {
+        "name": {"type": "string"},
+        "description": {"type": "string"},
+        "default_dimensions": {
+          "type": "array",
+          "items": {"type": "string"}
+        }
+      }
+    },
+    "color": {
+      "type": "object",
+      "required": ["id", "name", "hex"],
+      "properties": {
+        "id": {"type": "string"},
+        "name": {"type": "string"},
+        "hex": {
+          "type": "string",
+          "pattern": "^#[A-Fa-f0-9]{6}$"
+        }
+      }
+    },
+    "quality_check": {
+      "type": "object",
+      "required": ["name", "description"],
+      "properties": {
+        "name": {"type": "string"},
+        "description": {"type": "string"},
+        "tools": {
+          "type": "array",
+          "items": {"type": "string"}
+        }
+      }
+    },
+    "processing_step": {
+      "type": "object",
+      "required": ["name", "description"],
+      "properties": {
+        "name": {"type": "string"},
+        "description": {"type": "string"},
+        "station": {"type": "string"},
+        "duration": {
+          "type": "number",
+          "minimum": 0
+        }
+      }
+    }
+  }
+}
