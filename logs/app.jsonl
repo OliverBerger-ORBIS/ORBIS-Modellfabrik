@@ -1829,3 +1829,929 @@
 {"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.components.admin.steering_sequence", "msg": "🎯 Sequence Steering geladen", "timestamp": "2025-09-26 14:36:34,800"}
 {"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.components.admin.message_center", "msg": "📡 Message Center geladen", "timestamp": "2025-09-26 14:36:34,802"}
 {"app": "omf_dashboard", "level": "INFO", "logger": "omf.dashboard.logs_test", "msg": "ℹ️ INFO-TEST aus logs.py Komponente", "timestamp": "2025-09-26 14:36:34,812"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🚀 OMF Dashboard gestartet", "timestamp": "2025-09-27 10:20:49,667"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:49,722"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:49,722"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:49,723"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:49,723"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:49,729"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:49,730"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:49,732"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:49,732"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:49,759"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:49,759"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:49,760"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:49,760"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:49,765"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:49,767"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:49,768"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:49,768"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:49,795"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:49,795"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:49,796"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:49,796"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:49,803"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:49,804"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:49,806"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:49,806"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:49,836"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:49,836"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:49,837"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:49,837"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:49,843"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:49,844"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:49,846"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:49,846"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:49,875"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:49,875"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:49,876"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:49,876"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:49,883"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:49,887"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:49,890"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:49,890"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:49,943"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:49,943"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:49,944"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:49,944"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:49,950"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:49,952"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:49,954"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:49,954"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:49,982"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:49,982"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:49,982"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:49,982"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:49,989"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:49,991"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:49,993"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:49,993"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:50,022"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:50,023"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:50,023"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:50,023"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:50,029"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:50,030"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:50,032"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:50,032"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:50,064"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:50,064"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:50,064"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:50,064"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:50,070"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:50,071"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:50,073"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:50,073"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:50,102"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:50,102"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:50,102"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:50,102"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:50,108"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:50,110"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:50,112"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:50,112"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:50,140"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:50,140"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:50,141"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:50,141"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:50,147"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:50,149"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:50,150"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:50,151"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:50,182"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:50,183"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:50,183"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:50,183"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:50,188"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:50,190"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:50,193"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:50,193"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:50,241"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:50,241"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:50,242"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:50,242"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:50,249"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:50,257"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:50,263"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:50,263"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:50,298"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:50,298"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:50,299"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:50,299"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:50,304"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:50,305"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:50,307"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:50,307"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:50,337"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:50,337"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:50,337"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:50,337"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:50,343"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:50,344"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:50,346"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:50,346"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:50,379"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:50,379"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:50,379"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:50,379"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:50,385"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:50,387"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:50,389"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:50,389"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:50,418"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:50,418"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:50,419"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:50,419"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:50,424"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:50,426"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:50,428"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:50,428"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:50,459"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:50,459"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:50,460"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:50,460"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:50,465"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:50,467"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:50,469"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:50,469"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:50,502"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:50,502"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:50,503"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:50,503"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:50,510"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:50,512"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:50,514"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:50,514"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:50,563"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:50,563"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:50,564"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:50,564"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:50,571"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:50,573"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:50,575"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:50,575"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:50,606"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:50,606"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:50,606"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:50,606"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:50,612"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:50,614"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:50,616"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:50,616"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:50,648"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:50,648"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:50,648"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:50,648"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:50,654"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:50,656"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:50,657"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:50,657"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:50,690"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:50,690"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:50,690"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:50,690"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:50,696"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:50,698"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:50,700"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:50,700"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:50,731"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:50,731"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:50,731"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:50,731"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:50,737"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:50,739"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:50,741"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:50,741"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:50,774"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:50,774"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:50,775"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:50,775"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:50,780"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:50,782"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:50,784"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:50,784"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:50,811"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:50,811"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:50,812"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:50,812"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:50,817"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:50,819"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:50,821"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:50,821"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:50,851"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:50,851"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:50,852"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:50,852"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:50,857"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:50,859"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:50,861"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:50,861"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:50,892"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:50,892"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:50,893"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:50,893"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:50,898"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:50,899"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:50,901"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:50,901"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:50,933"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:50,933"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:50,933"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:50,933"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:50,939"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:50,941"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:50,943"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:50,943"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:50,983"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:50,983"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:50,983"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:50,983"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:50,989"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:50,990"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:50,992"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:50,992"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:51,025"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:51,025"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:51,026"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:51,026"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:51,031"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:51,033"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:51,035"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:51,035"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:51,072"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:51,072"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:51,073"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:51,073"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:51,079"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:51,080"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:51,082"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:51,082"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:51,115"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:51,115"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:51,115"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:51,115"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:51,121"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:51,122"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:51,124"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:51,124"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:51,157"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:51,157"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:51,158"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:51,158"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:51,164"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:51,166"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:51,167"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:51,167"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:51,201"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:51,201"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:51,202"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:51,202"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:51,207"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:51,209"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:51,211"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:51,211"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:51,243"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:51,243"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:51,243"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:51,243"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:51,249"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:51,250"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:51,252"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:51,252"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:51,285"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:51,285"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:51,286"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:51,286"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:51,291"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:51,293"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:51,295"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:51,295"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:51,330"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:51,330"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:51,331"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:51,331"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:51,337"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:51,338"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:51,340"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:51,340"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:51,383"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:51,383"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:51,383"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:51,383"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:51,389"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:51,390"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:51,392"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:51,392"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:51,428"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:51,428"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:51,428"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:51,429"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:51,435"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:51,437"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:51,439"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:51,439"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:51,475"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:51,475"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:51,476"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:51,476"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:51,481"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:51,483"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:51,485"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:51,485"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:51,520"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:51,520"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:51,521"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:51,521"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:51,526"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:51,528"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:51,530"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:51,530"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:51,566"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:51,566"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:51,566"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:51,567"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:51,572"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:51,574"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:51,576"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:51,576"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:51,614"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:51,614"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:51,614"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:51,614"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:51,620"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:51,622"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:51,623"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:51,624"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:51,657"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:51,657"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:51,658"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:51,658"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:51,664"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:51,665"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:51,667"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:51,667"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:51,705"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:51,705"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:51,706"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:51,706"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:51,711"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:51,713"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:51,715"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:51,715"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:51,748"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:51,748"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:51,748"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:51,748"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:51,754"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:51,755"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:51,757"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:51,757"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:51,792"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:51,792"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:51,793"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:51,793"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:51,798"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:51,800"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:51,802"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:51,802"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:51,837"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:51,837"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:51,838"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:51,838"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:51,844"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:51,845"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:51,847"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:51,847"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:51,886"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:51,886"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:51,886"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:51,886"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:51,892"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:51,893"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:51,895"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:51,895"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:51,935"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:51,935"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:51,936"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:51,936"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:51,941"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:51,943"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:51,945"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:51,945"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:51,980"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:51,980"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:51,981"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:51,981"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:51,987"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:51,988"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:51,990"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:51,990"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:52,028"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:52,029"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:52,029"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:52,029"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:52,035"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:52,036"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:52,038"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:52,038"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:52,076"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:52,076"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:52,077"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:52,077"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:52,082"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:52,084"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:52,086"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:52,086"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:52,126"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:52,126"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:52,127"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:52,127"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:52,133"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:52,134"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:52,136"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:52,136"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:52,179"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:52,179"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:52,180"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:52,180"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:52,186"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:52,187"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:52,189"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:52,189"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:52,228"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:52,229"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:52,229"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:52,229"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:52,235"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:52,236"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:52,238"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:52,238"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:52,279"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:52,279"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:52,279"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:52,279"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:52,285"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:52,287"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:52,288"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:52,288"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:52,326"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:52,326"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:52,327"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:52,327"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:52,332"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:52,334"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:52,336"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:52,336"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:52,378"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:52,378"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:52,378"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:52,378"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:52,384"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:52,386"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:52,387"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:52,387"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:52,428"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:52,429"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:52,429"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:52,429"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:52,435"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:52,437"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:52,439"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:52,439"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:52,480"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:52,480"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:52,481"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:52,481"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:52,486"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:52,488"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:52,490"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:52,490"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:52,535"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:52,535"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:52,536"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:52,536"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:52,541"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:52,543"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:52,545"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:52,545"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:52,588"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:52,588"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:52,588"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:52,588"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:52,594"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:52,595"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:52,597"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:52,597"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:52,641"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:52,641"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:52,642"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:52,642"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:52,647"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:52,649"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:52,651"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:52,651"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:52,693"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:52,693"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:52,694"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:52,694"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:52,699"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:52,701"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:52,703"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:52,703"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:52,747"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:52,747"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:52,747"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:52,748"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:52,753"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:52,755"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:52,757"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:52,757"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:52,801"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:52,801"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:52,802"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:52,802"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:52,807"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:52,809"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:52,811"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:52,811"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:52,850"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:52,850"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:52,850"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:52,851"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:52,856"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:52,858"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:52,860"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:52,860"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:52,900"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:52,900"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:52,901"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:52,901"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:52,907"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:52,908"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:52,910"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:52,910"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:52,948"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:52,948"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:52,949"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:52,949"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:52,954"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:52,956"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:52,958"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:52,958"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:52,995"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:52,995"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:52,996"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:52,996"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:53,001"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:53,003"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:53,005"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:53,005"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:53,046"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:53,046"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:53,047"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:53,047"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:53,052"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:53,053"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:53,055"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:53,055"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:53,103"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:53,103"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:53,104"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:53,104"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:53,110"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:53,111"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:53,113"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:53,113"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:53,158"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:53,158"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:53,159"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:53,159"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:53,165"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:53,166"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:53,168"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:53,168"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:53,218"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:53,218"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:53,219"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:53,219"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:53,225"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:53,226"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:53,228"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:53,228"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:53,276"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:53,276"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:53,277"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🚀 OMF Dashboard gestartet", "timestamp": "2025-09-27 10:23:38,260"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:23:38,306"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:23:38,306"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:23:38,307"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:23:38,307"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:23:38,312"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:23:38,314"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:23:38,316"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:23:38,316"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:23:38,351"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:23:38,351"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:23:38,351"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:23:38,352"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:23:38,357"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:23:38,359"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:23:38,361"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:23:38,361"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:23:38,411"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:23:38,411"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:23:38,414"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:23:38,414"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:23:38,443"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:23:38,460"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:53,277"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:23:38,463"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:23:38,463"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:23:38,526"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:53,282"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:23:38,526"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:23:38,527"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:23:38,527"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:23:38,533"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:23:38,535"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:23:38,536"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:23:38,537"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:23:38,573"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:23:38,573"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:23:38,574"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:23:38,574"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:53,284"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:23:38,579"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:23:38,581"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:23:38,583"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:23:38,583"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:23:38,620"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:23:38,620"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:23:38,621"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:23:38,621"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:23:38,627"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:23:38,629"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:23:38,630"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:23:38,630"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:23:38,670"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:23:38,670"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:23:38,670"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:23:38,671"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:53,286"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:23:38,677"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:23:38,679"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:23:38,681"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:23:38,681"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:23:38,716"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:23:38,716"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:23:38,717"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:23:38,717"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:23:38,723"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:23:38,725"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:23:38,726"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:23:38,727"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:23:38,767"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:23:38,767"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:23:38,768"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:23:38,768"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:23:38,792"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:23:38,797"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:23:38,801"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:23:38,801"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:53,286"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:23:38,857"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:53,335"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:23:38,857"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:23:38,858"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:23:38,858"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:53,336"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:53,336"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:23:38,863"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:23:38,865"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:23:38,867"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:23:38,867"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:53,336"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:53,342"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:23:38,904"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:23:38,904"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:53,344"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:53,345"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:23:38,904"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:23:38,904"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:23:38,910"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:53,345"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:23:38,912"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:23:38,914"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:23:38,914"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:53,391"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:23:38,951"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:23:38,951"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:53,391"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:23:38,951"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:23:38,951"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:23:38,957"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:23:38,959"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:23:38,961"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:23:38,961"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:23:38,999"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:23:38,999"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:23:38,999"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:23:38,999"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:23:39,005"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:23:39,007"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:23:39,011"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:23:39,011"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:23:39,046"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:23:39,046"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:23:39,047"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:53,392"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:53,392"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:23:39,047"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:23:39,053"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:23:39,054"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:23:39,056"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:23:39,056"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:53,397"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:53,399"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:23:39,094"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:23:39,094"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:23:39,095"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:23:39,095"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:53,402"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:23:39,103"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:23:39,105"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:53,402"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:53,447"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:53,447"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:23:39,107"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:23:39,107"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:53,448"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:23:39,152"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:23:39,152"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:23:39,153"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:23:39,153"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:23:39,160"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:53,448"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:23:39,162"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:23:39,171"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:53,453"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:53,455"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:53,457"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:53,457"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:23:39,171"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:53,509"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:53,509"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:53,510"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:23:39,225"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:53,510"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:53,516"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:23:39,225"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:23:39,226"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:23:39,226"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:23:39,232"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:23:39,234"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:53,517"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:23:39,237"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:23:39,237"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:23:39,275"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:23:39,275"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:23:39,276"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:53,519"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:23:39,276"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:23:39,282"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:23:39,284"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:23:39,287"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:23:39,287"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:23:39,334"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:53,519"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:23:39,334"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:53,568"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:23:39,334"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:23:39,334"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:23:39,342"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:23:39,344"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:23:39,347"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:53,568"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:23:39,347"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:23:39,390"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:23:39,390"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:23:39,390"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:23:39,390"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:23:39,396"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:23:39,398"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:53,569"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:23:39,400"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:53,569"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:23:39,400"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:23:39,440"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:23:39,440"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:23:39,441"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:23:39,441"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:53,574"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:23:39,448"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:23:39,450"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:23:39,452"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:23:39,452"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:53,576"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:23:39,494"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:23:39,494"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:53,578"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:23:39,494"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:23:39,494"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:23:39,501"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:53,578"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:23:39,502"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:23:39,505"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:23:39,505"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:23:39,561"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:23:39,561"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:53,626"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:23:39,562"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:53,626"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:23:39,562"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:23:39,576"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:53,626"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:23:39,579"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:23:39,583"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:23:39,583"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:53,626"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:23:39,634"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:53,632"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:23:39,634"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:23:39,635"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:23:39,635"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:23:39,641"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:53,634"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:23:39,643"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:23:39,645"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:23:39,645"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:23:39,685"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:53,636"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:23:39,685"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:23:39,685"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:53,636"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:23:39,685"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:23:39,691"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:23:39,693"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:23:39,695"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:53,683"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:23:39,695"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:53,683"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:23:39,739"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:23:39,739"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:23:39,740"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:53,684"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:23:39,740"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:23:39,746"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:23:39,747"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:23:39,749"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:53,684"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:23:39,749"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:23:39,792"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:23:39,792"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:53,689"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:53,691"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:23:39,793"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:53,693"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:53,693"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:23:39,793"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:23:39,799"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:53,740"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:23:39,800"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:23:39,802"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:23:39,802"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:23:39,850"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:53,740"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:20:53,741"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:20:53,741"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:20:53,746"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:23:39,850"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:23:39,850"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:23:39,850"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:23:39,857"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:23:39,859"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:23:39,861"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:23:39,861"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:23:39,923"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:23:39,923"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:20:53,748"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:23:39,924"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:23:39,924"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:23:39,932"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:53,750"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:23:39,934"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:23:39,936"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:20:53,750"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:23:39,936"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:53,796"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:23:39,992"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:23:39,992"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'workpiece' geöffnet", "timestamp": "2025-09-27 10:23:39,993"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Workpiece Subtab geöffnet", "timestamp": "2025-09-27 10:23:39,993"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'general' geöffnet", "timestamp": "2025-09-27 10:23:39,999"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:20:53,796"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Subtab 'system' geöffnet", "timestamp": "2025-09-27 10:23:40,001"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Logs Tab geöffnet", "timestamp": "2025-09-27 10:23:40,003"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Logs Tab geöffnet", "timestamp": "2025-09-27 10:23:40,003"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "🔧 Settings Tab geöffnet", "timestamp": "2025-09-27 10:23:40,049"}
+{"app": "omf_dashboard", "level": "INFO", "logger": "omf_dashboard", "msg": "Settings Tab geöffnet", "timestamp": "2025-09-27 10:23:40,050"}
