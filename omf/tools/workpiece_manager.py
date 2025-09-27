@@ -68,6 +68,9 @@ class OmfWorkpieceManager:
         try:
             with open(self.config_path, encoding="utf-8") as f:
                 config = yaml.safe_load(f)
+                if config is None:
+                    self.logger.error(f"❌ YAML file is empty or invalid: {self.config_path}")
+                    return None
                 self.logger.info(f"✅ Loaded workpiece config: {len(config.get('nfc_codes', {}))} workpieces")
                 return config
         except FileNotFoundError:

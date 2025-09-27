@@ -109,7 +109,7 @@ class TestSequenceVariableResolution(unittest.TestCase):
         mock_order.context = {}
         mock_order.total_steps = 0
 
-        with unittest.mock.patch("omf.tools.sequence_executor.workflow_order_manager") as mock_manager:
+        with unittest.mock.patch("omf.dashboard.tools.sequence_executor.workflow_order_manager") as mock_manager:
             mock_manager.create_order.return_value = mock_order
 
             # Sequenz ausführen
@@ -142,7 +142,7 @@ class TestSequenceVariableResolution(unittest.TestCase):
         mock_order.context = {}
         mock_order.total_steps = 1
 
-        with unittest.mock.patch("omf.tools.sequence_executor.workflow_order_manager") as mock_manager:
+        with unittest.mock.patch("omf.dashboard.tools.sequence_executor.workflow_order_manager") as mock_manager:
             mock_manager.create_order.return_value = mock_order
             mock_manager.get_order.return_value = mock_order
             mock_manager.increment_update_id.return_value = 1

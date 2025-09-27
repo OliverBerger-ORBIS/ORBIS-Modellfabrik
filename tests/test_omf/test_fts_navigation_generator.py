@@ -222,7 +222,7 @@ class TestFTSNavigationGenerator:
 class TestFTSNavigationDashboardIntegration:
     """Test-Klasse für Dashboard Integration"""
 
-    @patch('omf.dashboard.components.steering_factory.st')
+    @patch('omf.dashboard.components.admin.steering_factory.st')
     def test_prepare_navigation_message_dps_hbw(self, mock_st):
         """Test: Dashboard Navigation Message für DPS-HBW"""
         # Arrange
@@ -235,7 +235,7 @@ class TestFTSNavigationDashboardIntegration:
         mock_session_state["mqtt_client"] = mock_mqtt_client
 
         # Act
-        from omf.dashboard.components.steering_factory import _prepare_navigation_message
+        from omf.dashboard.components.admin.steering_factory import _prepare_navigation_message
 
         _prepare_navigation_message("DPS-HBW")
 
@@ -246,7 +246,7 @@ class TestFTSNavigationDashboardIntegration:
         assert message["topic"] == "fts/v1/ff/5iO4/order"
         assert "orderId" in message["payload"]
 
-    @patch('omf.dashboard.components.steering_factory.st')
+    @patch('omf.dashboard.components.admin.steering_factory.st')
     def test_prepare_navigation_message_route_mapping(self, mock_st):
         """Test: Route-Mapping für verschiedene Navigation-Typen"""
         # Arrange
@@ -259,7 +259,7 @@ class TestFTSNavigationDashboardIntegration:
         mock_session_state["mqtt_client"] = mock_mqtt_client
 
         # Act
-        from omf.dashboard.components.steering_factory import _prepare_navigation_message
+        from omf.dashboard.components.admin.steering_factory import _prepare_navigation_message
 
         # Test verschiedene Navigation-Typen
         navigation_types = ["DPS-HBW", "RED-Prod", "BLUE-Prod", "WHITE-Prod"]

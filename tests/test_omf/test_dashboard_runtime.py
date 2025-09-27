@@ -17,7 +17,7 @@ class TestDashboardRuntime(unittest.TestCase):
     def test_message_center_component(self):
         """Test: Message Center Komponente kann geladen werden"""
         try:
-            from omf.dashboard.components.message_center import show_message_center
+            from omf.dashboard.components.admin.message_center import show_message_center
 
             # Test that function exists
             self.assertTrue(callable(show_message_center), "show_message_center sollte aufrufbar sein")
@@ -65,7 +65,7 @@ class TestDashboardRuntime(unittest.TestCase):
     def test_dashboard_settings_component(self):
         """Test: Dashboard Settings Komponente kann geladen werden"""
         try:
-            from omf.dashboard.components.settings import show_dashboard_settings
+            from omf.dashboard.components.admin.settings import show_dashboard_settings
 
             # Test that function exists
             self.assertTrue(
@@ -81,7 +81,7 @@ class TestDashboardRuntime(unittest.TestCase):
     def test_factory_steering_component(self):
         """Test: Factory Steering Komponente kann geladen werden"""
         try:
-            from omf.dashboard.components.steering_factory import show_factory_steering
+            from omf.dashboard.components.admin.steering_factory import show_factory_steering
 
             # Test that function exists
             self.assertTrue(callable(show_factory_steering), "show_factory_steering sollte aufrufbar sein")
@@ -115,7 +115,7 @@ class TestDashboardRuntime(unittest.TestCase):
     def test_message_filtering(self):
         """Test: Nachrichten-Filterung funktioniert"""
         try:
-            from omf.dashboard.components.message_center import show_message_center
+            from omf.dashboard.components.admin.message_center import show_message_center
 
             # Test that function exists
             self.assertTrue(callable(show_message_center), "show_message_center sollte aufrufbar sein")

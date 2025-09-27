@@ -167,7 +167,7 @@ class TestSequenceIntegration(unittest.TestCase):
     def test_dashboard_component_import(self):
         """Test: Dashboard-Komponente kann importiert werden"""
         try:
-            from omf.dashboard.components.steering_sequence import show_sequence_steering
+            from omf.dashboard.components.admin.steering_sequence import show_sequence_steering
 
             self.assertTrue(callable(show_sequence_steering))
         except Exception as e:
@@ -176,7 +176,7 @@ class TestSequenceIntegration(unittest.TestCase):
     def test_aiqs_sequence_import(self):
         """Test: AIQS-Sequenz kann importiert werden"""
         try:
-            from omf.sequences.aiqs_sequence import get_sequence_definition
+            from omf.sequences.sequences_new.aiqs_sequence import get_sequence_definition
 
             sequence = get_sequence_definition()
             self.assertIsNotNone(sequence)

@@ -16,7 +16,7 @@ import uuid
 from pathlib import Path
 from unittest.mock import patch
 
-from omf.dashboard.components.steering_factory import (
+from omf.dashboard.components.admin.steering_factory import (
     _prepare_fts_message,
     _prepare_module_sequence_message,
     _prepare_module_step_message,
@@ -33,7 +33,7 @@ class TestFactorySteeringRules(unittest.TestCase):
 
         # Patch st.session_state
         self.session_state_patcher = patch(
-            "omf.dashboard.components.steering_factory.st.session_state", self.mock_session_state
+            "omf.dashboard.components.admin.steering_factory.st.session_state", self.mock_session_state
         )
         self.session_state_patcher.start()
 
@@ -140,10 +140,14 @@ class TestFactorySteeringRules(unittest.TestCase):
     def test_sequence_order_update_id_increments(self):
         """Test: orderUpdateId muss in einer Sequenz inkrementiert werden (1, 2, 3...)"""
         # Import der echten Sequenz-Funktion
-        from omf.dashboard.components.steering_factory import _prepare_module_sequence
+        from omf.dashboard.components.admin.steering_factory import _prepare_module_sequence
 
-        # Sequenz vorbereiten (echte Funktion)
-        _prepare_module_sequence("AIQS", ["PICK", "CHECK_QUALITY", "DROP"])
+        # Mock streamlit für den Test
+        with patch('streamlit.success') as mock_success, \
+             patch('streamlit.config.get_option') as mock_config, \
+             patch('streamlit.logger.get_logger') as mock_logger:
+            # Sequenz vorbereiten (echte Funktion)
+            _prepare_module_sequence("AIQS", ["PICK", "CHECK_QUALITY", "DROP"])
 
         # Sequenz aus session_state abrufen
         sequence = self.mock_session_state.get("module_sequence")
@@ -218,7 +222,7 @@ class TestModuleSequenceRules(unittest.TestCase):
         """Test-Setup"""
         self.mock_session_state = {}
         self.session_state_patcher = patch(
-            "omf.dashboard.components.steering_factory.st.session_state", self.mock_session_state
+            "omf.dashboard.components.admin.steering_factory.st.session_state", self.mock_session_state
         )
         self.session_state_patcher.start()
 

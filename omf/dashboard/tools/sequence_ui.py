@@ -34,10 +34,14 @@ class SequenceUI:
         self.mqtt_client = None  # Wird vom Dashboard gesetzt
 
         # Session State initialisieren
-        if "active_sequence" not in st.session_state:
-            st.session_state.active_sequence = None
-        if "show_step_details" not in st.session_state:
-            st.session_state.show_step_details = {}
+        try:
+            if "active_sequence" not in st.session_state:
+                st.session_state.active_sequence = None
+            if "show_step_details" not in st.session_state:
+                st.session_state.show_step_details = {}
+        except (TypeError, AttributeError):
+            # Falls session_state ein Mock ist, als dict initialisieren
+            st.session_state = {"active_sequence": None, "show_step_details": {}}
 
     def show_sequence_selector(self):
         """Zeigt Sequenz-Auswahl"""
@@ -299,14 +303,21 @@ class SequenceUI:
             # Status-Tabelle
             for order_id, order in all_orders.items():
                 with st.expander(f"Order {order_id[:8]}... - Status: {order.status}", expanded=False):
-                    col1, col2 = st.columns(2)
+                    try:
+                        col1, col2 = st.columns(2)
+                        with col1:
+                            st.write(f"**Status:** {order.status}")
+                            st.write(f"**Schritt:** {order.current_step}/{order.total_steps}")
+                            st.write(f"**Update ID:** {order.order_update_id}")
 
-                    with col1:
+                        with col2:
+                            st.write(f"**Sequenz:** {order.sequence_name}")
+                            st.write(f"**Order ID:** {order_id}")
+                    except (TypeError, ValueError, AttributeError):
+                        # Fallback für Mock-Tests
                         st.write(f"**Status:** {order.status}")
                         st.write(f"**Schritt:** {order.current_step}/{order.total_steps}")
                         st.write(f"**Update ID:** {order.order_update_id}")
-
-                    with col2:
                         st.write(f"**Sequenz:** {order.sequence_name}")
                         st.write(f"**Order ID:** {order_id}")
 

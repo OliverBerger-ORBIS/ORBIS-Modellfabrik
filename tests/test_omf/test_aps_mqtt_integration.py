@@ -67,21 +67,26 @@ class TestAPSMqttIntegration:
         # Storage Order
         storage_order = aps_integration.create_storage_order("RED", "WP_001", "DPS")
         assert storage_order["orderId"] is not None
-        assert storage_order["nodes"][0]["actions"][0]["parameters"]["color"] == "RED"
-        assert storage_order["nodes"][0]["actions"][0]["parameters"]["workpieceId"] == "WP_001"
+        assert storage_order["action"] == "STORAGE"
+        assert storage_order["type"] == "RED"
+        assert storage_order["workpieceId"] == "WP_001"
+        assert storage_order["targetModule"] == "DPS"
 
         # Retrieval Order
         retrieval_order = aps_integration.create_retrieval_order("BLUE", "WP_002", "HBW")
         assert retrieval_order["orderId"] is not None
-        assert retrieval_order["nodes"][0]["actions"][0]["parameters"]["color"] == "BLUE"
-        assert retrieval_order["nodes"][0]["actions"][0]["parameters"]["workpieceId"] == "WP_002"
+        assert retrieval_order["action"] == "RETRIEVAL"
+        assert retrieval_order["type"] == "BLUE"
+        assert retrieval_order["workpieceId"] == "WP_002"
+        assert retrieval_order["sourceModule"] == "HBW"
 
     def test_instant_action_creation(self, aps_integration):
         """Test Instant Action Creation"""
         action = aps_integration.send_instant_action("camera_adjustment", {"direction": "up", "angle": 10}, "DPS")
-        assert action["instantActions"][0]["actionType"] == "camera_adjustment"
-        assert action["instantActions"][0]["parameters"]["direction"] == "up"
-        assert action["instantActions"][0]["parameters"]["angle"] == 10
+        assert action["actionType"] == "camera_adjustment"
+        assert action["parameters"]["direction"] == "up"
+        assert action["parameters"]["angle"] == 10
+        assert action["targetModule"] == "DPS"
 
     def test_system_commands(self, aps_integration, mock_mqtt_client):
         """Test System Commands"""
@@ -136,7 +141,7 @@ class TestAPSMqttIntegration:
         # Check discovered controllers
         controllers = aps_integration.get_discovered_controllers()
         assert "SVR4H73275" in controllers
-        assert controllers["SVR4H73275"]["moduleType"] == "DPS"
+        assert controllers["SVR4H73275"]["module_type"] == "DPS"
 
     def test_state_message_handling(self, aps_integration):
         """Test State Message Handling"""
@@ -173,9 +178,18 @@ class TestAPSMqttIntegration:
 
     def test_utility_functions(self, aps_integration):
         """Test Utility Functions"""
-        # Mock controller
-        aps_integration.txt_controller_manager._controllers = {
-            "SVR4H73275": {"serial_number": "SVR4H73275", "ip_address": "192.168.0.102", "online": True}
+        # Mock controller using the correct attributes
+        aps_integration.txt_controller_manager.discovered_controllers = {
+            "SVR4H73275": {
+                "serial_number": "SVR4H73275", 
+                "ip_address": "192.168.0.102", 
+                "last_seen": 9999999999,  # Far in the future to be considered online
+                "module_type": "DPS"
+            }
+        }
+        # Also mock the IP mapping
+        aps_integration.txt_controller_manager.controller_ip_mapping = {
+            "SVR4H73275": "192.168.0.102"
         }
 
         # Test utility functions

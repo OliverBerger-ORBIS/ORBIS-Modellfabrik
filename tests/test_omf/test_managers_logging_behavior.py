@@ -29,8 +29,8 @@ class TestManagersLoggingBehavior(unittest.TestCase):
             mock_templates_dir.mkdir(parents=True, exist_ok=True)
 
             # Mock für exist() calls
-            def mock_exists(path):
-                return str(path).endswith("templates")
+            def mock_exists():
+                return True
 
             mock_path.return_value.exists = mock_exists
             mock_path.return_value.glob.return_value = []  # Keine Templates
@@ -45,7 +45,7 @@ class TestManagersLoggingBehavior(unittest.TestCase):
                 expected_calls = [
                     call("MessageTemplateManager initialisiert"),
                     call("✅ Using registry v1 message templates"),
-                    call("📁 Using legacy template structure (templates/templates/)"),
+                    call("📁 Using registry v1 template structure (templates/*.yml)"),
                 ]
 
                 # Prüfe ob alle erwarteten Logs aufgerufen wurden
@@ -60,8 +60,8 @@ class TestManagersLoggingBehavior(unittest.TestCase):
             mock_templates_dir.mkdir(parents=True, exist_ok=True)
 
             # Mock für exist() calls
-            def mock_exists(path):
-                return str(path).endswith("templates")
+            def mock_exists():
+                return True
 
             mock_path.return_value.exists = mock_exists
             mock_path.return_value.glob.return_value = []  # Keine Templates

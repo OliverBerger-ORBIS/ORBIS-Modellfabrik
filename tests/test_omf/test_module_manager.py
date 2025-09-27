@@ -4,6 +4,7 @@ Unit Tests for Module Manager
 Tests the ModuleManager class functionality
 """
 
+import os
 import tempfile
 import unittest
 from pathlib import Path

@@ -31,7 +31,7 @@ class TestDashboardSequenceIntegration(unittest.TestCase):
     def test_steering_sequence_component_import(self, mock_session_state):
         """Test: Steering Sequence Komponente kann importiert werden"""
         try:
-            from omf.dashboard.components.steering_sequence import show_sequence_steering
+            from omf.dashboard.components.admin.steering_sequence import show_sequence_steering
 
             self.assertTrue(callable(show_sequence_steering))
         except Exception as e:
@@ -41,7 +41,7 @@ class TestDashboardSequenceIntegration(unittest.TestCase):
     def test_steering_component_import(self, mock_session_state):
         """Test: Steering Komponente kann importiert werden"""
         try:
-            from omf.dashboard.components.steering import show_steering
+            from omf.dashboard.components.admin.steering import show_steering
 
             self.assertTrue(callable(show_steering))
         except Exception as e:
@@ -180,7 +180,7 @@ class TestDashboardSequenceIntegration(unittest.TestCase):
         """Test: AIQS-Sequenz Import-Fix funktioniert"""
         try:
             # Test: AIQS-Sequenz kann importiert werden
-            from omf.sequences.aiqs_sequence import get_sequence_definition
+            from omf.sequences.sequences_new.aiqs_sequence import get_sequence_definition
 
             sequence = get_sequence_definition()
 

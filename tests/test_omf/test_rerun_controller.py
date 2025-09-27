@@ -31,7 +31,7 @@ class TestRerunController(unittest.TestCase):
 
     def test_force_rerun(self):
         """Test Force-Rerun funktioniert immer"""
-        with patch('streamlit.rerun') as mock_rerun:
+        with patch('omf.dashboard.utils.ui_refresh.st.rerun') as mock_rerun:
             # Erster Force-Rerun
             result1 = self.controller.request_rerun(force=True)
             self.assertTrue(result1)
@@ -44,7 +44,7 @@ class TestRerunController(unittest.TestCase):
 
     def test_debouncing(self):
         """Test Debouncing verhindert zu häufige Reruns"""
-        with patch('streamlit.rerun') as mock_rerun:
+        with patch('omf.dashboard.utils.ui_refresh.st.rerun') as mock_rerun:
             # Erster Rerun
             result1 = self.controller.request_rerun()
             self.assertTrue(result1)
@@ -57,7 +57,7 @@ class TestRerunController(unittest.TestCase):
 
     def test_debounce_timeout(self):
         """Test Debounce-Zeit wird respektiert"""
-        with patch('streamlit.rerun') as mock_rerun:
+        with patch('omf.dashboard.utils.ui_refresh.st.rerun') as mock_rerun:
             # Erster Rerun
             result1 = self.controller.request_rerun()
             self.assertTrue(result1)
@@ -87,7 +87,7 @@ class TestRerunController(unittest.TestCase):
 
     def test_thread_safety(self):
         """Test Thread-Safety mit mehreren Threads"""
-        with patch('streamlit.rerun') as mock_rerun:
+        with patch('omf.dashboard.utils.ui_refresh.st.rerun') as mock_rerun:
             results = []
             errors = []
 
@@ -130,7 +130,7 @@ class TestRerunControllerIntegration(unittest.TestCase):
 
     def test_request_rerun_safe_function(self):
         """Test request_rerun_safe Funktion"""
-        with patch('streamlit.rerun') as mock_rerun:
+        with patch('omf.dashboard.utils.ui_refresh.st.rerun') as mock_rerun:
             # Test Force-Anfrage (normale Anfrage kann debounced werden)
             result = request_rerun_safe(force=True)
             self.assertTrue(result)
@@ -143,7 +143,7 @@ class TestRerunControllerIntegration(unittest.TestCase):
 
     def test_debounce_with_global_controller(self):
         """Test Debouncing mit globalem Controller"""
-        with patch('streamlit.rerun') as mock_rerun:
+        with patch('omf.dashboard.utils.ui_refresh.st.rerun') as mock_rerun:
             controller = get_rerun_controller()
             controller._debounce_ms = 50  # 50ms für Test
 
@@ -165,7 +165,7 @@ class TestRerunControllerEdgeCases(unittest.TestCase):
         """Test mit 0ms Debounce-Zeit"""
         controller = RerunController(debounce_ms=0)
 
-        with patch('streamlit.rerun') as mock_rerun:
+        with patch('omf.dashboard.utils.ui_refresh.st.rerun') as mock_rerun:
             # Beide Reruns sollten ausgeführt werden
             result1 = controller.request_rerun()
             result2 = controller.request_rerun()
@@ -178,7 +178,7 @@ class TestRerunControllerEdgeCases(unittest.TestCase):
         """Test mit sehr hoher Debounce-Zeit"""
         controller = RerunController(debounce_ms=10000)  # 10 Sekunden
 
-        with patch('streamlit.rerun') as mock_rerun:
+        with patch('omf.dashboard.utils.ui_refresh.st.rerun') as mock_rerun:
             # Erster Rerun
             result1 = controller.request_rerun()
             self.assertTrue(result1)

@@ -67,12 +67,12 @@ class TestManagersLoggingSimple(unittest.TestCase):
             self.assertIn('from omf.dashboard.tools.logging_config import get_logger', content)
             self.assertIn('get_logger(', content)
 
-        with open('omf/tools/registry_manager.py') as f:
+        with open('omf/dashboard/tools/registry_manager.py') as f:
             content = f.read()
             self.assertIn('from omf.dashboard.tools.logging_config import get_logger', content)
             self.assertIn('get_logger(', content)
 
-        with open('omf/tools/mqtt_gateway.py') as f:
+        with open('omf/dashboard/tools/mqtt_gateway.py') as f:
             content = f.read()
             self.assertIn('from .logging_config import get_logger', content)
             self.assertIn('get_logger(', content)
@@ -80,7 +80,7 @@ class TestManagersLoggingSimple(unittest.TestCase):
     def test_logging_does_not_use_print_statements(self):
         """Test: Manager verwenden keine print() Statements mehr"""
         # Prüfe ob MqttGateway keine print() Statements hat
-        with open('omf/tools/mqtt_gateway.py') as f:
+        with open('omf/dashboard/tools/mqtt_gateway.py') as f:
             content = f.read()
             # Sollte keine print() Statements haben
             self.assertNotIn('print(', content)
@@ -189,8 +189,8 @@ class TestManagersLoggingSimple(unittest.TestCase):
         # Prüfe ob alle Manager-Dateien Logging-Imports haben
         manager_files = [
             'omf/tools/message_template_manager.py',
-            'omf/tools/registry_manager.py',
-            'omf/tools/mqtt_gateway.py',
+            'omf/dashboard/tools/registry_manager.py',
+            'omf/dashboard/tools/mqtt_gateway.py',
         ]
 
         for file_path in manager_files:

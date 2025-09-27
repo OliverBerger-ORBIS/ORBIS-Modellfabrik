@@ -9,7 +9,7 @@ import unittest
 from pathlib import Path
 
 # Pfad für Import hinzufügen
-from omf.dashboard.components.steering_factory import _get_module_serial
+from omf.dashboard.components.admin.steering_factory import _get_module_serial
 
 
 class TestModuleIdMapping(unittest.TestCase):

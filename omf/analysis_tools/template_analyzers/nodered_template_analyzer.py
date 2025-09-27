@@ -614,7 +614,8 @@ class NodeRedTemplateAnalyzer:
             observation_files = self.save_observations(results)
 
             # In initial phase: Direct migration to Registry v0 (NEW)
-            registry/model/v2(results)
+            # TODO: Implement registry migration
+            # registry_migration.migrate_to_v2(results)
 
             # Update main message templates
             self.update_message_templates_yaml(results)

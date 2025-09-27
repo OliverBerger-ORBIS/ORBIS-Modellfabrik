@@ -191,7 +191,7 @@ class TestComprehensiveSequenceErrors(unittest.TestCase):
         """Test: AIQS-Sequenz ist sicher"""
         try:
             from omf.dashboard.tools.sequence_executor import SequenceDefinition
-            from omf.sequences.aiqs_sequence import get_sequence_definition
+            from omf.sequences.sequences_new.aiqs_sequence import get_sequence_definition
 
             sequence = get_sequence_definition()
 

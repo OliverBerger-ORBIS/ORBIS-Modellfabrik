@@ -47,6 +47,7 @@ class ProjectStructureValidator:
             "Node-RED",
             "doc",
             "omf",
+            "omf2"
             "tests",
             "docs",
             "data",

@@ -12,8 +12,8 @@ from typing import Any, Dict, List, Optional
 
 import yaml
 
-# Import des bestehenden MessageGenerators
-from .message_generator import get_omf_message_generator
+# Import des bestehenden MessageTemplateManagers
+from .message_template_manager import get_omf_message_template_manager
 
 
 class FTSRouteGenerator:
@@ -28,8 +28,8 @@ class FTSRouteGenerator:
         self.routes_config = self._load_routes_config()
         self.layout_config = self._load_layout_config()
 
-        # Integration mit bestehendem MessageGenerator
-        self.message_generator = get_omf_message_generator()
+        # Integration mit bestehendem MessageTemplateManager
+        self.message_template_manager = get_omf_message_template_manager()
 
     def _load_routes_config(self) -> Dict[str, Any]:
         """Lädt die Routen-Konfiguration"""
@@ -118,10 +118,10 @@ class FTSRouteGenerator:
             if not fts_message:
                 return None
 
-            # Validiere über MessageGenerator (falls FTS-Template existiert)
+            # Validiere über MessageTemplateManager (falls FTS-Template existiert)
             try:
                 # Versuche FTS-Template zu validieren
-                validation_result = self.message_generator.validate_message("fts/navigation", fts_message)
+                validation_result = self.message_template_manager.validate_message("fts/navigation", fts_message)
                 if validation_result:
                     print(f"⚠️ Validierungswarnungen für FTS-Message: {validation_result}")
             except Exception as e:

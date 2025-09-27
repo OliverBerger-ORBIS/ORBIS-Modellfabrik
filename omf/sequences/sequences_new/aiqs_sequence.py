@@ -3,7 +3,7 @@ Beispiel Python-Sequenz-Definition für AIQS
 Demonstriert komplexe Logik und dynamische Payloads
 """
 
-from omf.tools.sequence_executor import SequenceDefinition, SequenceStep
+from omf.dashboard.tools.sequence_executor import SequenceDefinition, SequenceStep
 
 
 def get_sequence_definition():
