@@ -1,0 +1,31 @@
+app:
+  name: "OMF Dashboard"
+  version: "2.0.0"
+  debug: false
+  log_level: "INFO"
+
+dashboard:
+  theme: "light"
+  auto_refresh: true
+  refresh_interval: 5
+  max_log_entries: 1000
+  language: "de"
+
+workpiece:
+  default_type: "standard_a"
+  validation_enabled: true
+  nfc_enabled: true
+  processing_timeout: 300
+
+logging:
+  level: "INFO"
+  file_rotation: true
+  max_files: 10
+  max_file_size: "10MB"
+  console_output: true
+
+ui:
+  sidebar_expanded: true
+  tab_navigation: "top"  # "top" or "sidebar"
+  show_icons: true
+  compact_mode: false

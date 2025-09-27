@@ -1,0 +1,39 @@
+roles:
+  operator:
+    name: "Operator"
+    permissions:
+      - "view_logs"
+      - "view_messages"
+      - "send_messages"
+    tabs:
+      - "logs"
+      - "message_center"
+  
+  supervisor:
+    name: "Supervisor" 
+    permissions:
+      - "view_logs"
+      - "view_messages"
+      - "send_messages"
+      - "manage_workpieces"
+      - "view_settings"
+    tabs:
+      - "settings"
+      - "logs"
+      - "message_center"
+  
+  admin:
+    name: "Administrator"
+    permissions:
+      - "all"
+    tabs:
+      - "settings"
+      - "logs"
+      - "message_center"
+
+default_role: "operator"
+
+role_hierarchy:
+  - "operator"
+  - "supervisor" 
+  - "admin"

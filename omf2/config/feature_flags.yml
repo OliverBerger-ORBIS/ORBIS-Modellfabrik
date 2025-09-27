@@ -1,0 +1,37 @@
+features:
+  workpiece_management:
+    enabled: true
+    description: "Werkstück-Verwaltung und -Konfiguration"
+    
+  message_center:
+    enabled: true
+    description: "Nachrichten-Zentrale für interne Kommunikation"
+    
+  advanced_logging:
+    enabled: true
+    description: "Erweiterte Logging-Funktionen"
+    
+  i18n_support:
+    enabled: true
+    description: "Mehrsprachige Benutzeroberfläche"
+    
+  registry_integration:
+    enabled: true
+    description: "Integration mit Registry-System"
+    
+  real_time_updates:
+    enabled: true
+    description: "Echzeit-Updates für Logs und Nachrichten"
+    
+  user_roles:
+    enabled: true
+    description: "Rollenbasierte Zugriffskontrolle"
+
+experimental:
+  auto_configuration:
+    enabled: false
+    description: "Automatische Konfigurationserkennung"
+    
+  machine_learning:
+    enabled: false
+    description: "ML-basierte Optimierungen"
