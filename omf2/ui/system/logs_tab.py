@@ -7,6 +7,7 @@ import streamlit as st
 import logging
 from datetime import datetime
 from omf2.common.i18n import translate, get_current_language
+from omf.dashboard.utils.ui_refresh import request_refresh
 
 
 def show_logs_tab(logger: logging.Logger):
@@ -38,7 +39,7 @@ def show_logs_tab(logger: logging.Logger):
     with col3:
         if st.button(f"🔄 {translate('refresh_logs', current_lang)}"):
             logger.info("Logs manuell aktualisiert")
-            st.rerun()
+            request_refresh()
             
     with col4:
         if st.button(f"🗑️ {translate('clear_logs', current_lang)}"):
@@ -82,7 +83,7 @@ def show_logs_tab(logger: logging.Logger):
                 st.session_state.log_messages.append(new_log)
                 
         # Auto-refresh nach 5 Sekunden
-        st.rerun()
+        request_refresh()
 
 
 def _generate_sample_logs():

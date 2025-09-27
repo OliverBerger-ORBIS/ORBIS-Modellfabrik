@@ -10,6 +10,7 @@ from pathlib import Path
 
 # Import centralized logging configuration
 from omf.dashboard.tools.logging_config import configure_logging, get_logger
+from omf.dashboard.utils.ui_refresh import request_refresh, consume_refresh
 
 # Import i18n module
 from omf2.common.i18n import translate, get_current_language, set_language
@@ -71,22 +72,26 @@ def setup_sidebar():
         
         if selected_lang != current_lang:
             set_language(selected_lang)
-            st.rerun()
+            request_refresh()
 
 
 def main():
     """Hauptfunktion des OMF Dashboards"""
     
-    # 1. Seite konfigurieren
+    # 1. UI-Refresh verarbeiten (früh aufrufen)
+    if consume_refresh():
+        st.rerun()
+    
+    # 2. Seite konfigurieren
     setup_page_config()
     
-    # 2. Logging initialisieren
+    # 3. Logging initialisieren
     logger = setup_logging()
     
-    # 3. Sidebar einrichten
+    # 4. Sidebar einrichten
     setup_sidebar()
     
-    # 4. Hauptbereich mit Tabs
+    # 5. Hauptbereich mit Tabs
     current_lang = get_current_language()
     
     # Tab-Definitionen

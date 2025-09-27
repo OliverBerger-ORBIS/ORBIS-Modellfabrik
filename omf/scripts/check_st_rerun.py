@@ -27,6 +27,16 @@ def check_file_for_st_rerun(file_path: Path) -> list[str]:
         for i, line in enumerate(lines, 1):
             for pattern in forbidden_patterns:
                 if re.search(pattern, line):
+                    # Check if this is the allowed consume_refresh() pattern
+                    if i > 1:  # Check previous line
+                        prev_line = lines[i-2].strip()
+                        if 'consume_refresh()' in prev_line and 'if' in prev_line:
+                            continue  # This is allowed
+                    
+                    # Check if on same line or next line
+                    if 'consume_refresh()' in line:
+                        continue  # This is allowed
+                    
                     violations.append(f"{file_path}:{i}: {line.strip()}")
                     
     except Exception as e:
