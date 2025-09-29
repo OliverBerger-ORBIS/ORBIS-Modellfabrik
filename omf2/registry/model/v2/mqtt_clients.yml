@@ -1,0 +1,288 @@
+metadata:
+  version: "2.0.0"
+  last_updated: "2025-09-28"
+  author: "OMF Development Team"
+  description: "MQTT-Client Konfiguration (QoS/Retain nur zur Information)"
+
+# MQTT-Client-Konfiguration
+mqtt_clients:
+  # Admin MQTT Client (MessageTemplateGenerator)
+  admin_mqtt_client:
+    client_id: "omf_admin"  
+    # role: "message_center und generic_steering"
+    # functions: ["template_generation", "system_monitoring", "debug_tools"]
+    published_topics:
+      # Admin publiziert ALLES (Wildcard '*')
+      - "*"
+    subscribed_topics:
+      # Admin subscribiert ALLES (Wildcard '#')
+      - "#"
+
+  # CCU Dashboard Frontend
+  ccu_mqtt_client:
+    client_id: "omf_ccu"  # Dynamisch, wechselt bei jeder Anmeldung
+    # role: "Dashboard CCUFrontend"
+    # friendly_name: "CCU Dashboard"
+    # functions: ["ui_interactions", "system_control", "factory_reset"]
+    published_topics:
+      # CCU Control Topics
+      - "ccu/set/reset"
+      - "ccu/global"
+      - "ccu/control"
+      - "ccu/control/command"
+      - "ccu/control/order"
+      - "ccu/order/request"
+      # CCU State Topics
+      - "ccu/state"
+      - "ccu/state/flow"
+      - "ccu/state/status"
+      - "ccu/state/error"
+      - "ccu/state/stock"
+      - "ccu/state/version-mismatch"
+      - "ccu/state/layout"
+      - "ccu/state/config"
+      - "ccu/state/flows"
+      # CCU Status Topics
+      - "ccu/status"
+      - "ccu/status/connection"
+      - "ccu/status/health"
+      # CCU Pairing Topics
+      - "ccu/order/active"
+      - "ccu/pairing/state"
+      # Module Commands
+      - "module/v1/ff/SVR3QA0022/instantAction"
+      - "module/v1/ff/SVR4H76449/instantAction"
+      - "module/v1/ff/SVR3QA2098/instantAction"
+      - "module/v1/ff/SVR4H76530/instantAction"
+      - "module/v1/ff/SVR4H73275/instantAction"
+      - "module/v1/ff/SVR3QA0022/order"
+      - "module/v1/ff/SVR4H76449/order"
+      - "module/v1/ff/SVR3QA2098/order"
+      - "module/v1/ff/SVR4H76530/order"
+      - "module/v1/ff/SVR4H73275/order"
+      - "module/v1/ff/CHRG0/order"
+      # TXT Function Input Topics
+      - "/j1/txt/1/f/i/order"
+      - "/j1/txt/1/f/i/stock"
+      - "/j1/txt/1/f/i/status"
+      - "/j1/txt/1/f/i/error"
+      - "/j1/txt/1/f/i/config/hbw"
+      # TXT Control Topics
+      - "/j1/txt/1/c/bme680"
+      - "/j1/txt/1/c/cam"
+      - "/j1/txt/1/c/ldr"
+      # TXT Output Topics
+      - "/j1/txt/1/o/broadcast"
+    subscribed_topics:
+      - "fts/v1/ff/5iO4/state"
+      - "fts/v1/ff/5iO4/connection"
+      - "fts/v1/ff/5iO4/factsheet"
+      - "module/v1/ff/SVR4H73275/state"
+      - "module/v1/ff/SVR4H73275/connection"
+      - "module/v1/ff/SVR4H73275/factsheet"
+      - "module/v1/ff/SVR4H76530/state"
+      - "module/v1/ff/SVR4H76530/connection"
+      - "module/v1/ff/SVR4H76530/factsheet"
+      - "module/v1/ff/SVR4H76449/state"
+      - "module/v1/ff/SVR4H76449/connection"
+      - "module/v1/ff/SVR4H76449/factsheet"
+      - "module/v1/ff/SVR3QA2098/state"
+      - "module/v1/ff/SVR3QA2098/connection"
+      - "module/v1/ff/SVR3QA2098/factsheet"
+      - "module/v1/ff/SVR3QA0022/state"
+      - "module/v1/ff/SVR3QA0022/connection"
+      - "module/v1/ff/SVR3QA0022/factsheet"
+      - "module/v1/ff/NodeRed/SVR4H73275/state"
+      - "module/v1/ff/NodeRed/SVR4H73275/connection"
+      - "module/v1/ff/NodeRed/SVR4H73275/factsheet"
+      - "module/v1/ff/NodeRed/CHRG0/state"
+      - "module/v1/ff/NodeRed/CHRG0/connection"
+      - "module/v1/ff/NodeRed/CHRG0/factsheet"
+      - "module/v1/ff/NodeRed/status"
+      # TXT Function Output Topics
+      - "/j1/txt/1/f/o/order"
+      - "/j1/txt/1/f/o/stock"
+      - "/j1/txt/1/f/o/status"
+      - "/j1/txt/1/f/o/error"
+      # TXT Input Topics
+      - "/j1/txt/1/i/bme680"
+      - "/j1/txt/1/i/broadcast"
+      - "/j1/txt/1/i/cam"
+      - "/j1/txt/1/i/ldr"
+
+  # Node-RED Publisher (Normalisiert alle States)
+  nodered_pub_mqtt_client:
+    client_id: "omf_nodered_pub"  # Dynamisch
+    # role: "Node-RED Publisher"
+    # friendly_name: "Node-RED Publisher"
+    # functions: ["state_normalization", "topic_unification", "ccu_feedback"]
+    published_topics:
+      # Normalisierte Module-States (NodeRed/*/state)
+      - "module/v1/ff/NodeRed/SVR3QA0022/state"
+      - "module/v1/ff/NodeRed/SVR3QA0022/connection"
+      - "module/v1/ff/NodeRed/SVR3QA0022/factsheet"
+      - "module/v1/ff/NodeRed/SVR4H76449/state"
+      - "module/v1/ff/NodeRed/SVR4H76449/connection"
+      - "module/v1/ff/NodeRed/SVR4H76449/factsheet"
+      - "module/v1/ff/NodeRed/SVR3QA2098/state"
+      - "module/v1/ff/NodeRed/SVR3QA2098/connection"
+      - "module/v1/ff/NodeRed/SVR3QA2098/factsheet"
+      - "module/v1/ff/NodeRed/SVR4H76530/state"
+      - "module/v1/ff/NodeRed/SVR4H76530/connection"
+      - "module/v1/ff/NodeRed/SVR4H76530/factsheet"
+      - "module/v1/ff/NodeRed/SVR4H73275/state"
+      - "module/v1/ff/NodeRed/SVR4H73275/connection"
+      - "module/v1/ff/NodeRed/SVR4H73275/factsheet"
+      - "module/v1/ff/NodeRed/CHRG0/state"
+      - "module/v1/ff/NodeRed/CHRG0/connection"
+      - "module/v1/ff/NodeRed/CHRG0/factsheet"
+      # CCU-Feedback
+      - "ccu/global"
+      - "ccu/order/completed"
+    subscribed_topics: []  # Node-RED Publisher ist NUR Publisher, nie Subscriber
+
+  # Node-RED Subscriber (Empfängt alle Quellen)
+  nodered_sub_mqtt_client:
+    client_id: "omf_nodered_sub"  # Dynamisch
+    # role: "Node-RED Subscriber"
+    # friendly_name: "Node-RED Subscriber"
+    # functions: ["command_processing", "state_aggregation", "opc_ua_bridge"]
+    published_topics: []  # Node-RED Subscriber ist NUR Subscriber, nie Publisher
+
+    subscribed_topics:
+      # CCU-Commands
+      - "ccu/global"
+      - "ccu/set/reset"
+      - "ccu/control"
+      - "ccu/control/command"
+      - "ccu/control/order"
+      - "ccu/order/request"
+      - "ccu/order/active"
+      - "ccu/pairing/state"
+      # Module Commands
+      - "module/v1/ff/SVR3QA0022/instantAction"
+      - "module/v1/ff/SVR4H76449/instantAction"
+      - "module/v1/ff/SVR3QA2098/instantAction"
+      - "module/v1/ff/SVR4H76530/instantAction"
+      - "module/v1/ff/SVR4H73275/instantAction"
+      - "module/v1/ff/CHRG0/instantAction"
+      - "module/v1/ff/SVR3QA0022/order"
+      - "module/v1/ff/SVR4H76449/order"
+      - "module/v1/ff/SVR3QA2098/order"
+      - "module/v1/ff/SVR4H76530/order"
+      - "module/v1/ff/SVR4H73275/order"
+      - "module/v1/ff/CHRG0/order"
+      # TXT-Controller States (direkte Topics)
+      - "module/v1/ff/SVR3QA0022/state"
+      - "module/v1/ff/SVR4H76449/state"
+      - "module/v1/ff/SVR3QA2098/state"
+      - "module/v1/ff/SVR4H76530/state"
+      - "module/v1/ff/SVR4H73275/state"
+      - "module/v1/ff/CHRG0/state"
+      # FTS States
+      - "fts/v1/ff/5iO4/state"
+      - "fts/v1/ff/5iO4/connection" 
+
+
+  # TXT-AIQS Controller
+  txt_aiqs_mqtt_client:
+    # client_id: "auto-B9109AD9"  # Dynamisch
+    # ip_address: "192.168.0.103"
+    # role: "TXT-AIQS Controller"
+    # friendly_name: "TXT-AIQS"
+    # functions: ["sensor_data", "camera", "quality_control"]
+    published_topics:
+      # TXT Input Topics (Sensor-Daten)
+      - "/j1/txt/1/i/cam"
+      - "/j1/txt/1/i/ldr"
+      - "/j1/txt/1/i/bme680"
+      - "/j1/txt/1/i/broadcast"
+      # TXT Function Output Topics
+      - "/j1/txt/1/f/o/order"
+      - "/j1/txt/1/f/o/stock"
+      - "/j1/txt/1/f/o/status"
+      - "/j1/txt/1/f/o/error"
+      # Node-RED Topics (TXT-AIQS publiziert DPS-Status)
+      - "module/v1/ff/NodeRed/SVR4H73275/state"
+      - "module/v1/ff/NodeRed/SVR4H73275/connection"
+    subscribed_topics:
+      # TXT Control Topics (Commands von CCU)
+      - "/j1/txt/1/c/bme680"
+      - "/j1/txt/1/c/cam"
+      - "/j1/txt/1/c/ldr"
+      # TXT Function Input Topics (Commands von CCU)
+      - "/j1/txt/1/f/i/order"
+      - "/j1/txt/1/f/i/stock"
+      - "/j1/txt/1/f/i/status"
+      - "/j1/txt/1/f/i/error"
+      - "/j1/txt/1/f/i/config/hbw"
+      # TXT Output Topics (Commands von CCU)
+      - "/j1/txt/1/o/broadcast"
+
+  # TXT-DPS Controller
+  txt_dps_mqtt_client:
+    # client_id: "auto-AC941349"  # Dynamisch
+    # ip_address: "192.168.0.102"
+    # role: "TXT-DPS Controller"
+    # friendly_name: "TXT-DPS"
+    # functions: ["distribution", "order_management", "sensor_subscription"]
+    published_topics: []
+    subscribed_topics:
+      # TXT Input Topics (Sensor-Daten von TXT-AIQS)
+      - "/j1/txt/1/i/cam"
+      - "/j1/txt/1/i/ldr"
+      - "/j1/txt/1/i/bme680"
+      - "/j1/txt/1/i/broadcast"
+      # TXT Control Topics (Commands von CCU)
+      - "/j1/txt/1/c/bme680"
+      - "/j1/txt/1/c/cam"
+      - "/j1/txt/1/c/ldr"
+      # TXT Function Input Topics (Commands von CCU)
+      - "/j1/txt/1/f/i/order"
+      - "/j1/txt/1/f/i/stock"
+      - "/j1/txt/1/f/i/status"
+      - "/j1/txt/1/f/i/error"
+      - "/j1/txt/1/f/i/config/hbw"
+      # TXT Output Topics (Commands von CCU)
+      - "/j1/txt/1/o/broadcast"
+      # CCU Topics
+      - "ccu/pairing/state"
+      - "ccu/order/active"
+      - "ccu/order/completed"
+
+  # TXT-FTS Controller
+  txt_fts_mqtt_client:
+    # client_id: "auto-F6DFC829"  # Dynamisch
+    # ip_address: "192.168.0.105"
+    # role: "TXT-FTS Controller"
+    # friendly_name: "TXT-FTS"
+    # functions: ["transport", "navigation", "pick_drop"]
+    published_topics:
+      - "fts/v1/ff/5iO4/state"
+      - "fts/v1/ff/5iO4/connection"
+      - "fts/v1/ff/5iO4/factsheet"
+    subscribed_topics:
+      # FTS Order Topics (Commands von CCU)
+      - "fts/v1/ff/5iO4/order"
+
+  # TXT-CGW Controller
+  txt_cgw_mqtt_client:
+    # client_id: "auto-9BD9E2A9"  # Dynamisch
+    # ip_address: "192.168.0.104"
+    # role: "TXT-CGW Controller"
+    # friendly_name: "TXT-CGW"
+    # functions: ["gateway", "node_red_status", "system_integration"]
+    published_topics:
+      - "module/v1/ff/NodeRed/status"
+    subscribed_topics: []
+
+# QoS-Patterns (Info)
+qos_patterns:
+  qos_0: ["instantAction"]  # Sofort-Aktionen
+  qos_1: ["state", "connection", "sensor"]  # Status und Sensoren
+  qos_2: ["critical", "pairing", "camera"]  # System-kritische Daten
+
+# Retain-Patterns (Info)
+retain_patterns:
+  retain_0: ["instantAction", "sensor", "order"]  # Temporäre Nachrichten
+  retain_1: ["state", "connection", "camera", "factsheet"]  # Persistente Nachrichten

@@ -38,24 +38,58 @@ omf2/
     ccu_gateway.py
     ccu_mqtt_client.py
     workpiece_manager.py
+    helpers/
+      ccu_factory_layout.py
   nodered/
     nodered_gateway.py
-    nodered_mqtt_client.py
-  message_center/
-    message_center_gateway.py
-    message_center_mqtt_client.py
-  generic_steering/
-    generic_steering_gateway.py
-    generic_steering_mqtt_client.py
-  system/
-    admin_settings.py
-    logs.py
+    nodered_pub_mqtt_client.py
+    nodered_sub_mqtt_client.py
+    helpers/
+      nodered_utils.py
+  admin/
+    admin_gateway.py
+    admin_mqtt_client.py
+    logs_manager.py
+    helpers/
+      admin_utils.py
   ui/
     ccu/
-      overview_tab.py
-    system/
-      admin_settings_tab.py
-      logs_tab.py
+      ccu_overview/
+        ccu_overview_tab.py                     # aps_overview
+      ccu_orders/
+        ccu_orders_tab.py                       # aps_orders
+      ccu_process/
+        ccu_process_tab.py                      # aps_processes
+      ccu_configuration/
+        ccu_configuration_tab.py                # aps_configuration
+        ccu_factory_configuration_subtab.py     # Untertab Konfiguration
+        ccu_parameter_configuration_subtab.py   # Untertab Konfiguration
+      ccu_modules/
+        ccu_modules_tab.py                      # aps_modules
+    nodered/
+      nodered_overview/
+        nodered_overview_tab.py
+      nodered_processes/
+        nodered_processes_tab.py
+    admin/
+      generic_steering/
+        generic_steering_tab.py
+      message_center/
+        message_center_tab.py
+      admin_settings/
+        admin_settings_tab.py
+        workpiece_subtab.py
+        dashboard_subtab.py
+        module_subtab.py
+        mqtt_subtab.py
+        topics_subtab.py
+        templates_subtab.py
+      logs/
+        logs_tab.py
+    components/
+      factory_layout.py
+      custom_button.py
+      status_indicator.py
   config/
     mqtt_settings.yml
     user_roles.yml
@@ -86,7 +120,7 @@ omf2/
 
 ## 2. Prinzipien & Verantwortlichkeiten
 
-### **Registry (im Projekt-Root)**
+### **Registry (nach erfolgtem refactoring im Projekt-Root)**
 - Enthält **alle fachlichen Modelle, Schemata und Registry-Manager**.
 - `manager/` innerhalb von `registry/` enthält alle Klassen, die den Zugriff, das Parsen und die Validierung der Registry-Daten kapseln (z. B. `registry_manager.py`, `workpiece_registry_manager.py`).
 
@@ -103,7 +137,9 @@ omf2/
 - Nutze Factories immer, wenn Clients/Gateways domänenübergreifend oder konfigurierbar erstellt werden sollen.
 
 ### **Modulare Domänenstruktur**
-- Jede Domäne (`ccu`, `nodered`, `message_center`, `generic_steering`) erhält ein eigenes Verzeichnis in `omf2/` mit:
+- Jede Domäne (`ccu`, `nodered`, `admin`) erhält ein eigenes Verzeichnis in `omf2/`
+- `nodered/` enthält zwei MQTT-Clients: `nodered_pub_mqtt_client.py` und `nodered_sub_mqtt_client.py`.
+- Wiederverwendbare, aber **nur domänenintern** genutzte Komponenten in `helpers/`-Unterordner innerhalb der jeweiligen Domäne.
   - **MQTT-Client (Singleton):** `<domäne>_mqtt_client.py`
   - **Gateway:** `<domäne>_gateway.py`
   - **(optional) Manager:** Für Entitäten, z. B. `workpiece_manager.py`
@@ -123,7 +159,14 @@ omf2/
 - Der domänenspezifische Manager (z. B. im CCU-Modul) nutzt diese Definitionen, um konkrete Workpieces im Betriebsablauf zu verwalten und zu steuern.
 
 ### **UI**
-- UI-Komponenten (Tabs/Subtabs) werden in `omf2/ui/<domäne>/` modular abgelegt (z. B. `overview_tab.py`, `logs_tab.py`).
+- **Jeder Haupt-Tab und Subtab liegt immer in einem eigenen Unterordner** im jeweiligen Bereich unter `ui/`.  
+  Das gilt auch für Tabs ohne Subtabs – damit bleibt die Struktur konsistent und zukunftssicher.
+- Beispiel:
+    - `ui/ccu/ccu_overview/ccu_overview_tab.py`
+    - `ui/ccu/ccu_configuration/ccu_configuration_tab.py`
+    - `ui/ccu/ccu_configuration/ccu_factory_configuration_subtab.py`
+    - `ui/admin/admin_settings/workpiece_subtab.py`
+- **Wiederverwendbare UI-Komponenten** (z.B. `factory_layout.py`, `status_indicator.py`) liegen in `ui/components/`.
 
 ### **Config**
 - Technische, betreiberspezifische und laufzeitveränderliche Einstellungen in `omf2/config/`.
@@ -146,8 +189,11 @@ omf2/
 ---
 
 ## 4. Namenskonventionen
+- Siehe Beispiele in der Struktur oben.
+- Keine Bindestriche, sondern Unterstriche.
+- Klar sprechende Namen.
 
-- **Dateien:** `<domäne>_mqtt_client.py`, `<domäne>_gateway.py`, `workpiece_manager.py` usw.
+- **Dateien:** `<domäne>_mqtt_[pub|sub]_client.py`, `<domäne>_gateway.py`, `workpiece_manager.py` usw.
 - **Klassen:** `CCUGateway`, `NodeRedGateway`, `MessageCenterGateway`, `WorkpieceManager` etc.
 - **Configs/Schemas:** Klar sprechende Namen, z. B. `mqtt_settings.yml`, `user_roles.yml`, `workpieces.schema.json`.
 

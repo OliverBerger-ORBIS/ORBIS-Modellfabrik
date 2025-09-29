@@ -13,8 +13,8 @@ graph TB
         
         subgraph "Communication Layer"
             MQTT_BROKER["MQTT Broker<br/>172.18.0.4:1883"]
-            NODERED_SUB["Node-RED (SUB)<br/>Monitoring & Processing"]
-            NODERED_PUB["Node-RED (PUB)<br/>Command Publishing"]
+            NODERED_SUB["Node-RED (SUB)<br/>Command Publishing"]
+            NODERED_PUB["Node-RED (PUB)<br/>Monitoring & Processing"]
         end
         
         subgraph "Module Layer"
@@ -35,23 +35,29 @@ graph TB
     %% Dashboard to MQTT
     APS_DASH -->|MQTT Commands| MQTT_BROKER
     
-    %% MQTT to Node-RED
-    MQTT_BROKER <-->|Message Routing| NODERED_SUB
-    MQTT_BROKER <-->|Command Publishing| NODERED_PUB
+    %% MQTT to Node-RED (SUB)
+    MQTT_BROKER -->|Command, Status| NODERED_SUB
+   
+    %% Node-RED Internal Communication
+    NODERED_SUB --> NODERED_PUB
+
+    %% Node-RED (PUB) to MQTT
+    NODERED_PUB -->|Command, Status| MQTT_BROKER
+
     
     %% Node-RED to Modules
-    NODERED_PUB -->|OPC-UA Commands| HBW
-    NODERED_PUB -->|OPC-UA Commands| DRILL
-    NODERED_PUB -->|OPC-UA Commands| MILL
-    NODERED_PUB -->|OPC-UA Commands| AIQS
-    NODERED_PUB -->|OPC-UA Commands| DPS
+    NODERED_SUB -->|OPC-UA Commands| HBW
+    NODERED_SUB -->|OPC-UA Commands| DRILL
+    NODERED_SUB -->|OPC-UA Commands| MILL
+    NODERED_SUB -->|OPC-UA Commands| AIQS
+    NODERED_SUB -->|OPC-UA Commands| DPS
     
     %% Modules to Node-RED
-    HBW -->|OPC-UA Status| NODERED_SUB
-    DRILL -->|OPC-UA Status| NODERED_SUB
-    MILL -->|OPC-UA Status| NODERED_SUB
-    AIQS -->|OPC-UA Status| NODERED_SUB
-    DPS -->|OPC-UA Status| NODERED_SUB
+    HBW -->|OPC-UA Status| NODERED_PUB
+    DRILL -->|OPC-UA Status| NODERED_PUB
+    MILL -->|OPC-UA Status| NODERED_PUB
+    AIQS -->|OPC-UA Status| NODERED_PUB
+    DPS -->|OPC-UA Status| NODERED_PUB
     
     %% TXT-Controller to MQTT
     TXT_FTS -->|MQTT Transport| MQTT_BROKER

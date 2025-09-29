@@ -1,0 +1,35 @@
+metadata:
+  version: "2.0.0"
+  last_updated: "2025-09-28"
+  author: "OMF Development Team"
+  description: "TXT-Controller Konfiguration (Hardware-spezifisch)"
+
+# TXT Controller Konfiguration
+txt_controllers:
+  # TXT-FTS (Transport Control System)
+  - id: "TXT4.0-5iO4"
+    name: "TXT-FTS"
+    ip_address: "192.168.0.104"  # DHCP-vergeben, kann sich ändern
+    zugeordnet_zu_serial: "5iO4"
+    mqtt_client: "txt_fts_mqtt_client"
+    
+  # TXT-DPS (Distribution Control System)  
+  - id: "TXT4.0-p0F4"
+    name: "TXT-DPS"
+    ip_address: "192.168.0.102"  # DHCP-vergeben, kann sich ändern
+    zugeordnet_zu_serial: "SVR4H73275"
+    mqtt_client: "txt_dps_mqtt_client"
+    
+  # TXT-AIQS (Quality Control System)
+  - id: "TXT4.0-00Y4"
+    name: "TXT-AIQS"
+    ip_address: "192.168.0.103"  # DHCP-vergeben, kann sich ändern
+    zugeordnet_zu_serial: "SVR4H76530"
+    mqtt_client: "txt_aiqs_mqtt_client"
+    
+  # TXT-CGW (Central Gateway)
+  - id: "TXT4.0-WiY4"
+    name: "TXT-CGW"
+    ip_address: "192.168.0.101"  # DHCP-vergeben, kann sich ändern
+    zugeordnet_zu_serial: null  # CGW hat kein zugeordnetes Modul
+    mqtt_client: "txt_cgw_mqtt_client"

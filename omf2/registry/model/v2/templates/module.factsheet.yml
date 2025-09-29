@@ -1,0 +1,130 @@
+metadata:
+  version: "2.0.0"
+  last_updated: "2025-09-28"
+  author: "OMF Development Team"
+  description: "Module Factsheet Template - Generisch für alle Module"
+
+template:
+  name: "module.factsheet"
+  category: "MODULE"
+  sub_category: "Factsheet"
+  
+  # Template für module/v1/ff/{module_id}/factsheet
+  schema:
+    type: "object"
+    properties:
+      module_id:
+        type: "string"
+        description: "Module serial number"
+        example: "SVR3QA0022"
+      name:
+        type: "string"
+        description: "Module name"
+        example: "HBW"
+      type:
+        type: "string"
+        description: "Module type"
+        example: "Storage"
+      sub_type:
+        type: "string"
+        description: "Module sub-type"
+        example: "HBW"
+      capabilities:
+        type: "array"
+        items:
+          type: "string"
+        description: "Module capabilities"
+        example: ["store", "retrieve", "inventory"]
+      position:
+        type: "object"
+        properties:
+          x:
+            type: "number"
+            description: "X coordinate"
+            example: 100.5
+          y:
+            type: "number"
+            description: "Y coordinate"
+            example: 200.3
+          z:
+            type: "number"
+            description: "Z coordinate"
+            example: 50.0
+        description: "Module position"
+      dimensions:
+        type: "object"
+        properties:
+          width:
+            type: "number"
+            description: "Module width"
+            example: 100.0
+          height:
+            type: "number"
+            description: "Module height"
+            example: 200.0
+          depth:
+            type: "number"
+            description: "Module depth"
+            example: 50.0
+        description: "Module dimensions"
+      max_capacity:
+        type: "integer"
+        description: "Maximum capacity"
+        example: 100
+      current_load:
+        type: "integer"
+        description: "Current load"
+        example: 25
+      status:
+        type: "string"
+        enum: ["online", "offline", "maintenance", "error"]
+        description: "Module status"
+        example: "online"
+      last_maintenance:
+        type: "string"
+        format: "date-time"
+        description: "Last maintenance timestamp"
+        example: "2025-09-20T10:00:00Z"
+      next_maintenance:
+        type: "string"
+        format: "date-time"
+        description: "Next maintenance timestamp"
+        example: "2025-10-20T10:00:00Z"
+      version:
+        type: "string"
+        description: "Module firmware version"
+        example: "v2.1.0"
+      manufacturer:
+        type: "string"
+        description: "Module manufacturer"
+        example: "Fischertechnik"
+      model:
+        type: "string"
+        description: "Module model"
+        example: "TXT 4.0"
+    
+    required: ["module_id", "name", "type", "sub_type", "capabilities", "status"]
+
+  # Beispiel-Payload
+  example:
+    module_id: "SVR3QA0022"
+    name: "HBW"
+    type: "Storage"
+    sub_type: "HBW"
+    capabilities: ["store", "retrieve", "inventory"]
+    position:
+      x: 100.5
+      y: 200.3
+      z: 50.0
+    dimensions:
+      width: 100.0
+      height: 200.0
+      depth: 50.0
+    max_capacity: 100
+    current_load: 25
+    status: "online"
+    last_maintenance: "2025-09-20T10:00:00Z"
+    next_maintenance: "2025-10-20T10:00:00Z"
+    version: "v2.1.0"
+    manufacturer: "Fischertechnik"
+    model: "TXT 4.0"

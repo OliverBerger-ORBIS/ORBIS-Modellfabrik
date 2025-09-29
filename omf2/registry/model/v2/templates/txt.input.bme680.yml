@@ -1,0 +1,77 @@
+metadata:
+  version: "2.0.0"
+  last_updated: "2025-09-28"
+  author: "OMF Development Team"
+  description: "TXT BME680 Sensor Input Template"
+
+template:
+  name: "txt.input.bme680"
+  category: "TXT"
+  sub_category: "Sensor_Input"
+  
+  # Template für /j1/txt/1/i/bme680
+  schema:
+    type: "object"
+    properties:
+      temperature:
+        type: "number"
+        description: "Temperature in Celsius"
+        example: 23.5
+      humidity:
+        type: "number"
+        description: "Humidity percentage"
+        example: 45.2
+      pressure:
+        type: "number"
+        description: "Pressure in hPa"
+        example: 1013.25
+      gas_resistance:
+        type: "number"
+        description: "Gas resistance in kOhm"
+        example: 12.5
+      timestamp:
+        type: "string"
+        format: "date-time"
+        description: "Sensor reading timestamp"
+        example: "2025-09-28T16:24:55Z"
+      sensor_id:
+        type: "string"
+        description: "Sensor identifier"
+        example: "BME680-001"
+      quality:
+        type: "string"
+        enum: ["excellent", "good", "fair", "poor"]
+        description: "Sensor reading quality"
+        example: "good"
+      location:
+        type: "object"
+        properties:
+          x:
+            type: "number"
+            description: "X coordinate"
+            example: 100.5
+          y:
+            type: "number"
+            description: "Y coordinate"
+            example: 200.3
+          z:
+            type: "number"
+            description: "Z coordinate"
+            example: 50.0
+        description: "Sensor location"
+    
+    required: ["temperature", "humidity", "pressure", "timestamp", "sensor_id"]
+
+  # Beispiel-Payload
+  example:
+    temperature: 23.5
+    humidity: 45.2
+    pressure: 1013.25
+    gas_resistance: 12.5
+    timestamp: "2025-09-28T16:24:55Z"
+    sensor_id: "BME680-001"
+    quality: "good"
+    location:
+      x: 100.5
+      y: 200.3
+      z: 50.0

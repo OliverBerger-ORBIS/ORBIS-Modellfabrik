@@ -1,0 +1,75 @@
+metadata:
+  version: "2.0.0"
+  last_updated: "2025-09-28"
+  author: "OMF Development Team"
+  description: "Topic-Template-Mappings für v2 Registry"
+
+# Topic-Template-Mappings
+mappings:
+  # CCU Topics (exakt)
+  - { topic: "ccu/set/reset", template: "ccu.control.reset", direction: outbound }
+  - { topic: "ccu/global", template: "ccu.control.global", direction: outbound }
+  - { topic: "ccu/control", template: "ccu.control.general", direction: outbound }
+  - { topic: "ccu/control/command", template: "ccu.control.command", direction: outbound }
+  - { topic: "ccu/control/order", template: "ccu.control.order", direction: outbound }
+  - { topic: "ccu/order/request", template: "ccu.order.request", direction: outbound }
+  - { topic: "ccu/order/active", template: "ccu.order.active", direction: outbound }
+  - { topic: "ccu/order/completed", template: "ccu.order.completed", direction: inbound }
+  - { topic: "ccu/state", template: "ccu.state.general", direction: inbound }
+  - { topic: "ccu/state/flow", template: "ccu.state.flow", direction: inbound }
+  - { topic: "ccu/state/status", template: "ccu.state.status", direction: inbound }
+  - { topic: "ccu/state/error", template: "ccu.state.error", direction: inbound }
+  - { topic: "ccu/state/stock", template: "ccu.state.stock", direction: inbound }
+  - { topic: "ccu/state/version-mismatch", template: "ccu.state.version_mismatch", direction: inbound }
+  - { topic: "ccu/state/layout", template: "ccu.state.layout", direction: inbound }
+  - { topic: "ccu/state/config", template: "ccu.state.config", direction: inbound }
+  - { topic: "ccu/state/flows", template: "ccu.state.flows", direction: inbound }
+  - { topic: "ccu/status", template: "ccu.status.general", direction: inbound }
+  - { topic: "ccu/status/connection", template: "ccu.status.connection", direction: inbound }
+  - { topic: "ccu/status/health", template: "ccu.status.health", direction: inbound }
+  - { topic: "ccu/pairing/state", template: "ccu.pairing.state", direction: bidirectional }
+
+  # Module Topics (pattern - generisch für alle Module)
+  - { pattern: "module/v1/ff/{module_id}/connection", template: "module.connection", direction: bidirectional, vars: { module_id: "<serial>" } }
+  - { pattern: "module/v1/ff/{module_id}/state", template: "module.state", direction: inbound, vars: { module_id: "<serial>" } }
+  - { pattern: "module/v1/ff/{module_id}/order", template: "module.order", direction: outbound, vars: { module_id: "<serial>" } }
+  - { pattern: "module/v1/ff/{module_id}/factsheet", template: "module.factsheet", direction: inbound, vars: { module_id: "<serial>" } }
+  - { pattern: "module/v1/ff/{module_id}/instantAction", template: "module.instantaction", direction: outbound, vars: { module_id: "<serial>" } }
+
+  # Node-RED Topics (pattern - generisch für alle Module)
+  - { pattern: "module/v1/ff/NodeRed/{module_id}/connection", template: "module.nodered.connection", direction: inbound, vars: { module_id: "<serial>" } }
+  - { pattern: "module/v1/ff/NodeRed/{module_id}/state", template: "module.nodered.state", direction: inbound, vars: { module_id: "<serial>" } }
+  - { pattern: "module/v1/ff/NodeRed/{module_id}/factsheet", template: "module.nodered.factsheet", direction: inbound, vars: { module_id: "<serial>" } }
+  - { topic: "module/v1/ff/NodeRed/status", template: "module.nodered.status", direction: inbound }
+
+  # FTS Topics (exakt)
+  - { topic: "fts/v1/ff/5iO4/connection", template: "fts.connection", direction: bidirectional }
+  - { topic: "fts/v1/ff/5iO4/state", template: "fts.state", direction: inbound }
+  - { topic: "fts/v1/ff/5iO4/order", template: "fts.order", direction: outbound }
+  - { topic: "fts/v1/ff/5iO4/factsheet", template: "fts.factsheet", direction: inbound }
+
+  # TXT Topics (pattern - generisch für alle TXT-Controller)
+  - { pattern: "/j1/txt/1/f/i/{function}", template: "txt.function.input", direction: outbound, vars: { function: "<function_name>" } }
+  - { pattern: "/j1/txt/1/f/o/{function}", template: "txt.function.output", direction: inbound, vars: { function: "<function_name>" } }
+  - { pattern: "/j1/txt/1/c/{control}", template: "txt.control", direction: outbound, vars: { control: "<control_name>" } }
+  - { pattern: "/j1/txt/1/i/{input}", template: "txt.input", direction: inbound, vars: { input: "<input_name>" } }
+  - { pattern: "/j1/txt/1/o/{output}", template: "txt.output", direction: outbound, vars: { output: "<output_name>" } }
+
+  # TXT Topics (exakt - spezifische Topics)
+  - { topic: "/j1/txt/1/f/i/order", template: "txt.function.order_input", direction: outbound }
+  - { topic: "/j1/txt/1/f/i/stock", template: "txt.function.stock_input", direction: outbound }
+  - { topic: "/j1/txt/1/f/i/status", template: "txt.function.status_input", direction: outbound }
+  - { topic: "/j1/txt/1/f/i/error", template: "txt.function.error_input", direction: outbound }
+  - { topic: "/j1/txt/1/f/i/config/hbw", template: "txt.function.config_hbw", direction: outbound }
+  - { topic: "/j1/txt/1/f/o/order", template: "txt.function.order_output", direction: inbound }
+  - { topic: "/j1/txt/1/f/o/stock", template: "txt.function.stock_output", direction: inbound }
+  - { topic: "/j1/txt/1/f/o/status", template: "txt.function.status_output", direction: inbound }
+  - { topic: "/j1/txt/1/f/o/error", template: "txt.function.error_output", direction: inbound }
+  - { topic: "/j1/txt/1/c/bme680", template: "txt.control.bme680", direction: outbound }
+  - { topic: "/j1/txt/1/c/cam", template: "txt.control.cam", direction: outbound }
+  - { topic: "/j1/txt/1/c/ldr", template: "txt.control.ldr", direction: outbound }
+  - { topic: "/j1/txt/1/i/bme680", template: "txt.input.bme680", direction: inbound }
+  - { topic: "/j1/txt/1/i/broadcast", template: "txt.input.broadcast", direction: inbound }
+  - { topic: "/j1/txt/1/i/cam", template: "txt.input.cam", direction: inbound }
+  - { topic: "/j1/txt/1/i/ldr", template: "txt.input.ldr", direction: inbound }
+  - { topic: "/j1/txt/1/o/broadcast", template: "txt.output.broadcast", direction: outbound }

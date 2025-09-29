@@ -1,0 +1,68 @@
+metadata:
+  version: "2.0.0"
+  last_updated: "2025-09-28"
+  author: "OMF Development Team"
+  description: "TXT Function Order Input Template"
+
+template:
+  name: "txt.function.order_input"
+  category: "TXT"
+  sub_category: "Function_Input"
+  
+  # Template für /j1/txt/1/f/i/order
+  schema:
+    type: "object"
+    properties:
+      order_id:
+        type: "string"
+        description: "Unique order identifier"
+        example: "ORD-2025-09-28-001"
+      order_type:
+        type: "string"
+        enum: ["process", "move", "store", "retrieve", "inspect"]
+        description: "Type of order"
+        example: "process"
+      priority:
+        type: "integer"
+        minimum: 1
+        maximum: 10
+        description: "Order priority (1=highest, 10=lowest)"
+        example: 1
+      parameters:
+        type: "object"
+        description: "Order-specific parameters"
+        example:
+          workpiece_id: "WP-001"
+          target_position: [100, 200, 50]
+          duration: 300
+          quality_check: true
+      timestamp:
+        type: "string"
+        format: "date-time"
+        description: "Order creation timestamp"
+        example: "2025-09-28T16:24:55Z"
+      deadline:
+        type: "string"
+        format: "date-time"
+        description: "Order deadline"
+        example: "2025-09-28T17:00:00Z"
+      requester:
+        type: "string"
+        description: "Order requester (client_id)"
+        example: "omf_ccu"
+    
+    required: ["order_id", "order_type", "priority", "timestamp", "requester"]
+
+  # Beispiel-Payload
+  example:
+    order_id: "ORD-2025-09-28-001"
+    order_type: "process"
+    priority: 1
+    parameters:
+      workpiece_id: "WP-001"
+      target_position: [100, 200, 50]
+      duration: 300
+      quality_check: true
+    timestamp: "2025-09-28T16:24:55Z"
+    deadline: "2025-09-28T17:00:00Z"
+    requester: "omf_ccu"

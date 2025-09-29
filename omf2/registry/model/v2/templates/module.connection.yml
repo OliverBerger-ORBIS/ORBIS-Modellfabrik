@@ -1,0 +1,59 @@
+metadata:
+  version: "2.0.0"
+  last_updated: "2025-09-28"
+  author: "OMF Development Team"
+  description: "Module Connection Template - Generisch für alle Module"
+
+template:
+  name: "module.connection"
+  category: "MODULE"
+  sub_category: "Connection"
+  
+  # Template für module/v1/ff/{module_id}/connection
+  schema:
+    type: "object"
+    properties:
+      connected:
+        type: "boolean"
+        description: "Module connection status"
+        example: true
+      timestamp:
+        type: "string"
+        format: "date-time"
+        description: "Connection timestamp"
+        example: "2025-09-28T16:24:55Z"
+      module_id:
+        type: "string"
+        description: "Module serial number"
+        example: "SVR3QA0022"
+      client_id:
+        type: "string"
+        description: "MQTT client ID"
+        example: "auto-B9109AD9"
+      ip_address:
+        type: "string"
+        format: "ipv4"
+        description: "Module IP address"
+        example: "192.168.0.103"
+      last_seen:
+        type: "string"
+        format: "date-time"
+        description: "Last seen timestamp"
+        example: "2025-09-28T16:24:55Z"
+      status:
+        type: "string"
+        enum: ["online", "offline", "connecting", "disconnected"]
+        description: "Connection status"
+        example: "online"
+    
+    required: ["connected", "timestamp", "module_id", "status"]
+
+  # Beispiel-Payload
+  example:
+    connected: true
+    timestamp: "2025-09-28T16:24:55Z"
+    module_id: "SVR3QA0022"
+    client_id: "auto-B9109AD9"
+    ip_address: "192.168.0.103"
+    last_seen: "2025-09-28T16:24:55Z"
+    status: "online"

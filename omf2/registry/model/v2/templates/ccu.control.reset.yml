@@ -1,0 +1,59 @@
+metadata:
+  version: "2.0.0"
+  last_updated: "2025-09-28"
+  author: "OMF Development Team"
+  description: "CCU Control Reset Template"
+
+template:
+  name: "ccu.control.reset"
+  category: "CCU"
+  sub_category: "Control"
+  
+  # Template für ccu/set/reset
+  schema:
+    type: "object"
+    properties:
+      reset_type:
+        type: "string"
+        enum: ["factory", "soft", "hard", "partial"]
+        description: "Type of reset"
+        example: "factory"
+      scope:
+        type: "array"
+        items:
+          type: "string"
+        description: "Reset scope (modules to reset)"
+        example: ["all", "modules", "controllers", "system"]
+      force:
+        type: "boolean"
+        description: "Force reset even if modules are busy"
+        example: false
+      backup:
+        type: "boolean"
+        description: "Create backup before reset"
+        example: true
+      timestamp:
+        type: "string"
+        format: "date-time"
+        description: "Reset request timestamp"
+        example: "2025-09-28T16:24:55Z"
+      requester:
+        type: "string"
+        description: "Reset requester (client_id)"
+        example: "omf_ccu"
+      reason:
+        type: "string"
+        description: "Reset reason"
+        example: "Factory reset requested by user"
+    
+    required: ["reset_type", "timestamp", "requester"]
+
+  # Beispiel-Payload
+  example:
+    reset_type: "factory"
+    scope: ["all"]
+    force: false
+    backup: true
+    timestamp: "2025-09-28T16:24:55Z"
+    requester: "omf_ccu"
+    reason: "Factory reset requested by user"

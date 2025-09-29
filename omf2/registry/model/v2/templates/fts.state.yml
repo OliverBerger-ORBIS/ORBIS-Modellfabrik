@@ -1,0 +1,111 @@
+metadata:
+  version: "2.0.0"
+  last_updated: "2025-09-28"
+  author: "OMF Development Team"
+  description: "FTS State Template"
+
+template:
+  name: "fts.state"
+  category: "FTS"
+  sub_category: "State"
+  
+  # Template für fts/v1/ff/5iO4/state
+  schema:
+    type: "object"
+    properties:
+      fts_id:
+        type: "string"
+        description: "FTS identifier"
+        example: "5iO4"
+      state:
+        type: "string"
+        enum: ["idle", "moving", "loading", "unloading", "charging", "error", "maintenance"]
+        description: "FTS state"
+        example: "idle"
+      status:
+        type: "string"
+        enum: ["ready", "busy", "error", "maintenance", "offline"]
+        description: "FTS status"
+        example: "ready"
+      position:
+        type: "object"
+        properties:
+          x:
+            type: "number"
+            description: "X coordinate"
+            example: 100.5
+          y:
+            type: "number"
+            description: "Y coordinate"
+            example: 200.3
+          z:
+            type: "number"
+            description: "Z coordinate"
+            example: 50.0
+        description: "FTS position"
+      battery_level:
+        type: "number"
+        minimum: 0
+        maximum: 100
+        description: "Battery level percentage"
+        example: 85.5
+      speed:
+        type: "number"
+        description: "Current speed in m/s"
+        example: 1.2
+      direction:
+        type: "string"
+        enum: ["north", "south", "east", "west", "northeast", "northwest", "southeast", "southwest", "stop"]
+        description: "Movement direction"
+        example: "north"
+      payload:
+        type: "object"
+        properties:
+          has_payload:
+            type: "boolean"
+            description: "Whether FTS is carrying payload"
+            example: true
+          payload_id:
+            type: "string"
+            description: "Payload identifier"
+            example: "WP-001"
+          payload_weight:
+            type: "number"
+            description: "Payload weight in kg"
+            example: 2.5
+        description: "FTS payload information"
+      timestamp:
+        type: "string"
+        format: "date-time"
+        description: "State timestamp"
+        example: "2025-09-28T16:24:55Z"
+      error_code:
+        type: "string"
+        description: "Error code if state is error"
+        example: "E001"
+      error_message:
+        type: "string"
+        description: "Error message if state is error"
+        example: "Navigation timeout"
+    
+    required: ["fts_id", "state", "status", "position", "battery_level", "timestamp"]
+
+  # Beispiel-Payload
+  example:
+    fts_id: "5iO4"
+    state: "idle"
+    status: "ready"
+    position:
+      x: 100.5
+      y: 200.3
+      z: 50.0
+    battery_level: 85.5
+    speed: 1.2
+    direction: "north"
+    payload:
+      has_payload: true
+      payload_id: "WP-001"
+      payload_weight: 2.5
+    timestamp: "2025-09-28T16:24:55Z"
+    error_code: null
+    error_message: null

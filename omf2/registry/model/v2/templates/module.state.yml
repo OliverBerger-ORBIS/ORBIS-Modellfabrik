@@ -1,0 +1,84 @@
+metadata:
+  version: "2.0.0"
+  last_updated: "2025-09-28"
+  author: "OMF Development Team"
+  description: "Module State Template - Generisch für alle Module"
+
+template:
+  name: "module.state"
+  category: "MODULE"
+  sub_category: "State"
+  
+  # Template für module/v1/ff/{module_id}/state
+  schema:
+    type: "object"
+    properties:
+      module_id:
+        type: "string"
+        description: "Module serial number"
+        example: "SVR3QA0022"
+      state:
+        type: "string"
+        enum: ["idle", "processing", "error", "maintenance", "offline"]
+        description: "Module state"
+        example: "idle"
+      status:
+        type: "string"
+        enum: ["ready", "busy", "error", "maintenance", "offline"]
+        description: "Module status"
+        example: "ready"
+      timestamp:
+        type: "string"
+        format: "date-time"
+        description: "State timestamp"
+        example: "2025-09-28T16:24:55Z"
+      position:
+        type: "object"
+        properties:
+          x:
+            type: "number"
+            description: "X coordinate"
+            example: 100.5
+          y:
+            type: "number"
+            description: "Y coordinate"
+            example: 200.3
+          z:
+            type: "number"
+            description: "Z coordinate"
+            example: 50.0
+        description: "Module position"
+      error_code:
+        type: "string"
+        description: "Error code if state is error"
+        example: "E001"
+      error_message:
+        type: "string"
+        description: "Error message if state is error"
+        example: "Sensor timeout"
+      maintenance_required:
+        type: "boolean"
+        description: "Maintenance required flag"
+        example: false
+      last_maintenance:
+        type: "string"
+        format: "date-time"
+        description: "Last maintenance timestamp"
+        example: "2025-09-20T10:00:00Z"
+    
+    required: ["module_id", "state", "status", "timestamp"]
+
+  # Beispiel-Payload
+  example:
+    module_id: "SVR3QA0022"
+    state: "idle"
+    status: "ready"
+    timestamp: "2025-09-28T16:24:55Z"
+    position:
+      x: 100.5
+      y: 200.3
+      z: 50.0
+    error_code: null
+    error_message: null
+    maintenance_required: false
+    last_maintenance: "2025-09-20T10:00:00Z"

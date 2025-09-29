@@ -1,0 +1,77 @@
+metadata:
+  version: "2.0.0"
+  last_updated: "2025-09-28"
+  author: "OMF Development Team"
+  description: "Module Order Template - Generisch für alle Module"
+
+template:
+  name: "module.order"
+  category: "MODULE"
+  sub_category: "Order"
+  
+  # Template für module/v1/ff/{module_id}/order
+  schema:
+    type: "object"
+    properties:
+      order_id:
+        type: "string"
+        description: "Unique order identifier"
+        example: "ORD-2025-09-28-001"
+      module_id:
+        type: "string"
+        description: "Target module serial number"
+        example: "SVR3QA0022"
+      order_type:
+        type: "string"
+        enum: ["process", "move", "store", "retrieve", "inspect", "maintenance"]
+        description: "Type of order"
+        example: "process"
+      priority:
+        type: "integer"
+        minimum: 1
+        maximum: 10
+        description: "Order priority (1=highest, 10=lowest)"
+        example: 1
+      parameters:
+        type: "object"
+        description: "Order-specific parameters"
+        example:
+          workpiece_id: "WP-001"
+          target_position: [100, 200, 50]
+          duration: 300
+      timestamp:
+        type: "string"
+        format: "date-time"
+        description: "Order creation timestamp"
+        example: "2025-09-28T16:24:55Z"
+      deadline:
+        type: "string"
+        format: "date-time"
+        description: "Order deadline"
+        example: "2025-09-28T17:00:00Z"
+      requester:
+        type: "string"
+        description: "Order requester (client_id)"
+        example: "omf_ccu"
+      status:
+        type: "string"
+        enum: ["pending", "accepted", "in_progress", "completed", "failed", "cancelled"]
+        description: "Order status"
+        example: "pending"
+    
+    required: ["order_id", "module_id", "order_type", "priority", "timestamp", "requester"]
+
+  # Beispiel-Payload
+  example:
+    order_id: "ORD-2025-09-28-001"
+    module_id: "SVR3QA0022"
+    order_type: "process"
+    priority: 1
+    parameters:
+      workpiece_id: "WP-001"
+      target_position: [100, 200, 50]
+      duration: 300
+    timestamp: "2025-09-28T16:24:55Z"
+    deadline: "2025-09-28T17:00:00Z"
+    requester: "omf_ccu"
+    status: "pending"
