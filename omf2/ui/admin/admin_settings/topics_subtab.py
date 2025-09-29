@@ -12,7 +12,10 @@ logger = get_logger(__name__)
 
 def render_topics_subtab():
     """Render Topics Configuration Subtab"""
-    logger.info("📋 Rendering Topics Configuration Subtab")
+    # Only log on first render
+    if "topics_subtab_logged" not in st.session_state:
+        logger.info("📋 Rendering Topics Configuration Subtab (init only)")
+        st.session_state["topics_subtab_logged"] = True
     try:
         st.subheader("📋 Topics Configuration")
         st.markdown("Configure MQTT topics and their mappings")

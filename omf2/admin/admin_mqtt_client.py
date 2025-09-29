@@ -82,13 +82,19 @@ class AdminMQTTClient:
             logger.error(f"❌ Failed to load base client_id from registry: {e}")
             return 'omf_admin'
     
-    def _load_config(self) -> Dict[str, Any]:
-        """Lädt MQTT-Konfiguration aus mqtt_settings.yml"""
+    def _load_config(self, environment: str = 'mock') -> Dict[str, Any]:
+        """Lädt MQTT-Konfiguration aus mqtt_settings.yml für spezifisches Environment"""
         try:
             config_path = Path(__file__).parent.parent / "config" / "mqtt_settings.yml"
             if config_path.exists():
                 with open(config_path, 'r', encoding='utf-8') as f:
-                    return yaml.safe_load(f)
+                    config = yaml.safe_load(f)
+                    # Environment-spezifische Konfiguration laden
+                    env_config = config.get('environments', {}).get(environment, {})
+                    # Basis-Konfiguration mit Environment-spezifischen Werten mergen
+                    base_config = config.get('mqtt', {})
+                    merged_config = {**base_config, **env_config.get('mqtt', {})}
+                    return merged_config
             else:
                 logger.warning(f"⚠️ Config file not found: {config_path}")
                 return self._get_default_config()
@@ -99,15 +105,13 @@ class AdminMQTTClient:
     def _get_default_config(self) -> Dict[str, Any]:
         """Fallback-Konfiguration"""
         return {
-            'mqtt': {
-                'host': 'localhost',
-                'port': 1883,
-                'username': '',
-                'password': '',
-                'keepalive': 60,
-                'clean_session': True
-            },
-            'default_environment': 'mock'
+            'host': 'localhost',
+            'port': 1883,
+            'username': '',
+            'password': '',
+            'keepalive': 60,
+            'clean_session': True,
+            'client_id_postfix': '_mock'
         }
     
     def _get_published_topics(self) -> List[str]:
@@ -132,7 +136,7 @@ class AdminMQTTClient:
     
     def connect(self, environment: str = 'mock') -> bool:
         """
-        Verbindung zum MQTT-Broker herstellen
+        Verbindung zum MQTT-Broker herstellen - CLEAN Connect/Disconnect-Handling
         
         Args:
             environment: Environment ('live', 'replay', 'mock')
@@ -147,47 +151,58 @@ class AdminMQTTClient:
                 if not MQTT_AVAILABLE:
                     logger.warning("⚠️ paho-mqtt not available, using mock mode")
                     self.connected = True
-                    self.current_environment = environment
+                    self._current_environment = environment
                     return True
                 
-                # Environment-spezifische Konfiguration laden
-                env_config = self.config.get('environments', {}).get(environment, {})
-                mqtt_config = {**self.config.get('mqtt', {}), **env_config.get('mqtt', {})}
+                # Config für Environment laden
+                mqtt_config = self._load_config(environment)
                 
-                # Store current environment
-                self.current_environment = environment
-                
-                # Mock-Modus für 'mock' environment oder wenn disabled
-                if environment == 'mock' or not mqtt_config.get('enabled', True):
-                    # Update client_id even in mock mode
-                    self.client_id = mqtt_config.get('client_id', f'omf_{environment}')
-                    logger.info(f"🧪 Mock mode - no real MQTT connection (Client ID: {self.client_id})")
+                # Mock-Mode: Keine echte Verbindung
+                if environment == 'mock':
+                    self.client_id = f"{self.base_client_id}_mock"
                     self.connected = True
+                    self._current_environment = environment
+                    logger.info(f"🧪 Mock mode active - no real MQTT connection (Client ID: {self.client_id})")
                     return True
                 
-                # Clean disconnect any existing connection first
-                if self.client and self.connected:
-                    logger.info("🔄 Disconnecting existing MQTT connection before reconnect")
-                    self.client.loop_stop()
-                    self.client.disconnect()
-                    self.connected = False
-                    # Wait for clean disconnect
-                    time.sleep(0.2)
+                # Check if already connected with same environment
+                if (self.connected and 
+                    hasattr(self, '_current_environment') and 
+                    self._current_environment == environment):
+                    logger.debug(f"♻️ Already connected to {environment}")
+                    return True
                 
-                # MQTT-Client initialisieren mit environment-spezifischer client_id
-                self.client_id = mqtt_config.get('client_id', f'omf_{environment}')
-                self.client = mqtt.Client(client_id=self.client_id, clean_session=mqtt_config.get('clean_session', True))
+                # CLEAN DISCONNECT: Vor jedem neuen Connect sauber trennen
+                if self.connected:
+                    logger.info(f"🔄 Clean disconnect before reconnecting to {environment}")
+                    self.disconnect()
+                    # Warten bis Disconnect vollständig abgeschlossen
+                    import time
+                    for _ in range(50):  # Max 5 Sekunden warten
+                        if not self.connected:
+                            break
+                        time.sleep(0.1)
+                
+                # MQTT-Client initialisieren - NEUE Instanz mit neuer Config
+                client_id_postfix = mqtt_config.get('client_id_postfix', f"_{environment}")
+                client_id = f"{self.base_client_id}{client_id_postfix}"
+                self.client_id = client_id
+                self.client = mqtt.Client(client_id=client_id)
                 self.client.on_connect = self._on_connect
                 self.client.on_message = self._on_message
                 self.client.on_disconnect = self._on_disconnect
                 
-                # Authentifizierung falls vorhanden
-                username = mqtt_config.get('username')
-                password = mqtt_config.get('password')
-                if username:
-                    self.client.username_pw_set(username, password)
+                # Authentication
+                if mqtt_config.get('username'):
+                    self.client.username_pw_set(
+                        mqtt_config['username'], 
+                        mqtt_config.get('password', '')
+                    )
                 
-                # Verbindung herstellen - non-blocking
+                # Reconnect-Delay setzen
+                self.client.reconnect_delay_set(min_delay=1, max_delay=30)
+                
+                # Verbindung herstellen
                 host = mqtt_config.get('host', 'localhost')
                 port = mqtt_config.get('port', 1883)
                 keepalive = mqtt_config.get('keepalive', 60)
@@ -196,41 +211,34 @@ class AdminMQTTClient:
                 self.client.loop_start()
                 self.client.connect_async(host, port, keepalive)
                 
-                # Wait for connection with timeout
-                timeout = 10
-                start_time = time.time()
-                while not self.connected and (time.time() - start_time) < timeout:
+                # Warten auf Verbindung
+                import time
+                for _ in range(50):  # Max 5 Sekunden warten
+                    if self.connected:
+                        break
                     time.sleep(0.1)
                 
-                if self.connected:
-                    logger.info(f"✅ Admin MQTT Client connected to {host}:{port} (Environment: {environment})")
-                    # Subscribe to all topics after successful connection
-                    self.subscribe_to_all()
-                    return True
-                else:
-                    logger.warning(f"⚠️ Admin MQTT Client connection timeout for {environment}, continuing in mock mode")
-                    # Fall back to mock mode
-                    self.connected = True
-                    return True
+                self._current_environment = environment
+                logger.info(f"✅ Admin MQTT Client connected to {host}:{port} (Environment: {environment})")
+                return True
                     
             except Exception as e:
                 logger.error(f"❌ Admin MQTT Client connection failed for {environment}: {e}")
-                # Fall back to mock mode on error
-                self.connected = True
-                self.current_environment = environment
-                return True
+                self.connected = False
+                return False
     
     def disconnect(self):
-        """Verbindung zum MQTT-Broker trennen"""
+        """Verbindung zum MQTT-Broker trennen - CLEAN Disconnect mit loop_stop"""
         with self._client_lock:
             try:
                 if self.client and self.connected:
-                    logger.info(f"🔌 Disconnecting Admin MQTT Client (Environment: {self.current_environment})")
+                    logger.info(f"🔌 Clean disconnecting Admin MQTT Client (Environment: {getattr(self, '_current_environment', 'unknown')})")
+                    # CLEAN DISCONNECT: Erst loop_stop, dann disconnect
                     self.client.loop_stop()
                     self.client.disconnect()
                     self.connected = False
                     self.client = None
-                    logger.info("🔌 Admin MQTT Client disconnected")
+                    logger.info("🔌 Admin MQTT Client cleanly disconnected")
                 else:
                     logger.debug("🔌 Admin MQTT Client was not connected")
                     self.connected = False
@@ -331,6 +339,9 @@ class AdminMQTTClient:
         # Disconnect from current environment
         if self.connected:
             self.disconnect()
+            # Reset subscription flag for new environment
+            if hasattr(self, '_subscribed'):
+                delattr(self, '_subscribed')
         
         # Reload configuration to pick up any changes
         self.config = self._load_config()
@@ -353,16 +364,17 @@ class AdminMQTTClient:
             Connection info dict
         """
         try:
-            env_config = self.config.get('environments', {}).get(self.current_environment, {})
+            current_env = getattr(self, '_current_environment', 'mock')
+            env_config = self.config.get('environments', {}).get(current_env, {})
             mqtt_config = {**self.config.get('mqtt', {}), **env_config.get('mqtt', {})}
             
             return {
                 "connected": self.connected,
-                "environment": self.current_environment,
+                "environment": current_env,
                 "client_id": self.client_id,
                 "host": mqtt_config.get('host', 'unknown'),
                 "port": mqtt_config.get('port', 1883),
-                "mock_mode": self.current_environment == 'mock' or not mqtt_config.get('enabled', True)
+                "mock_mode": current_env == 'mock' or not mqtt_config.get('enabled', True)
             }
         except Exception as e:
             logger.error(f"❌ Failed to get connection info: {e}")
@@ -439,7 +451,10 @@ class AdminMQTTClient:
                     "client_id": self.client_id
                 }
             
-            logger.info(f"📊 System overview: {overview}")
+            # Only log system overview on significant changes or first call
+            if not hasattr(self, '_last_overview') or self._last_overview != overview:
+                logger.info(f"📊 System overview: {overview}")
+                self._last_overview = overview
             return overview
             
         except Exception as e:
@@ -447,10 +462,21 @@ class AdminMQTTClient:
             return {}
     
     def _on_connect(self, client, userdata, flags, rc):
-        """MQTT on_connect Callback"""
+        """MQTT on_connect Callback - Subscribe NUR hier!"""
         if rc == 0:
             self.connected = True
             logger.info("✅ Admin MQTT Client connected successfully")
+            
+            # SUBSCRIBE NUR IM ON_CONNECT-CALLBACK!
+            try:
+                # Admin subscribiert zu allen Topics mit '#'
+                result = client.subscribe("#", qos=1)
+                if result[0] == 0:
+                    logger.info("📥 Subscribed to all topics (#)")
+                else:
+                    logger.error(f"❌ Subscribe to all topics failed: {result[0]}")
+            except Exception as e:
+                logger.error(f"❌ Exception during subscribe: {e}")
         else:
             self.connected = False
             logger.error(f"❌ Admin MQTT Client connection failed: {rc}")

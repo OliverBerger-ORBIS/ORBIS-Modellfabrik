@@ -12,7 +12,10 @@ logger = get_logger(__name__)
 
 def render_workpiece_subtab():
     """Render Workpiece Configuration Subtab"""
-    logger.info("🔧 Rendering Workpiece Configuration Subtab")
+    # Only log on first render
+    if "workpiece_subtab_logged" not in st.session_state:
+        logger.info("🔧 Rendering Workpiece Configuration Subtab (init only)")
+        st.session_state["workpiece_subtab_logged"] = True
     try:
         st.subheader("🔧 Workpiece Configuration")
         st.markdown("Configure workpiece definitions and schemas")

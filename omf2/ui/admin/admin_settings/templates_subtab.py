@@ -12,7 +12,10 @@ logger = get_logger(__name__)
 
 def render_templates_subtab():
     """Render Templates Configuration Subtab"""
-    logger.info("📝 Rendering Templates Configuration Subtab")
+    # Only log on first render
+    if "templates_subtab_logged" not in st.session_state:
+        logger.info("📝 Rendering Templates Configuration Subtab (init only)")
+        st.session_state["templates_subtab_logged"] = True
     try:
         st.subheader("📝 Templates Configuration")
         st.markdown("Configure message templates and schemas")

@@ -32,14 +32,23 @@ def render_message_center_tab():
         admin_client = st.session_state['admin_mqtt_client']
         admin_gateway = st.session_state['admin_gateway']
         
-        # Get current environment and connection info
+        # Get current environment and connection info (safe)
         current_env = st.session_state.get('current_environment', 'mock')
-        conn_info = admin_client.get_connection_info()
-        
-        # Auto-connect if needed
-        if not conn_info['connected'] or conn_info['environment'] != current_env:
-            admin_client.connect(current_env)
+        try:
             conn_info = admin_client.get_connection_info()
+        except Exception as e:
+            logger.warning(f"⚠️ Failed to get connection info: {e}")
+            conn_info = {
+                "connected": False,
+                "environment": current_env,
+                "client_id": "unknown",
+                "host": "unknown",
+                "port": 1883,
+                "mock_mode": True
+            }
+        
+        # NO auto-connect in tabs - let main dashboard handle connections
+        # This prevents multiple connection attempts per tab render
         
         # Connection Status Display
         col1, col2, col3 = st.columns(3)

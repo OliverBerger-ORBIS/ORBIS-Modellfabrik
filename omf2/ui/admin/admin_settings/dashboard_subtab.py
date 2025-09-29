@@ -12,7 +12,10 @@ logger = get_logger(__name__)
 
 def render_dashboard_subtab():
     """Render Dashboard Configuration Subtab"""
-    logger.info("📊 Rendering Dashboard Configuration Subtab")
+    # Only log on first render
+    if "dashboard_subtab_logged" not in st.session_state:
+        logger.info("📊 Rendering Dashboard Configuration Subtab (init only)")
+        st.session_state["dashboard_subtab_logged"] = True
     try:
         st.subheader("📊 Dashboard Configuration")
         st.markdown("Configure dashboard appearance and behavior")

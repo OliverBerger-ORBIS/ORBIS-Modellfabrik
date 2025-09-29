@@ -12,7 +12,10 @@ logger = get_logger(__name__)
 
 def render_module_subtab():
     """Render Module Configuration Subtab"""
-    logger.info("🔧 Rendering Module Configuration Subtab")
+    # Only log on first render
+    if "module_subtab_logged" not in st.session_state:
+        logger.info("🔧 Rendering Module Configuration Subtab (init only)")
+        st.session_state["module_subtab_logged"] = True
     try:
         st.subheader("🔧 Module Configuration")
         st.markdown("Configure module definitions and properties")

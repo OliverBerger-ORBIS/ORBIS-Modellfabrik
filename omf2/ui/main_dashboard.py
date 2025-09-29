@@ -179,13 +179,11 @@ class MainDashboard:
         current_env = st.session_state.get('current_environment', 'mock')
         
         if admin_client:
-            # Get detailed connection info
+            # Get detailed connection info - UI liest IMMER aus session_state
             conn_info = admin_client.get_connection_info()
             
-            # Auto-connect if not connected and environment matches
-            if not conn_info['connected'] or conn_info['environment'] != current_env:
-                admin_client.connect(current_env)
-                conn_info = admin_client.get_connection_info()  # Refresh info
+            # NO AUTO-CONNECT in UI - prevents connection loops
+            # Connection is handled by main dashboard initialization
             
             # Display connection status with detailed info
             if conn_info['connected']:
@@ -225,8 +223,11 @@ class MainDashboard:
         # Get tab configuration based on user role
         tab_config = self.user_manager.get_tab_config()
         
-        logger.info(f"📋 Tab configuration: {tab_config}")
-        logger.info(f"📋 Available tabs: {list(tab_config.keys()) if tab_config else 'None'}")
+        # Log tab configuration only once per session
+        if "tab_config_logged" not in st.session_state:
+            logger.info(f"📋 Tab configuration: {tab_config}")
+            logger.info(f"📋 Available tabs: {list(tab_config.keys()) if tab_config else 'None'}")
+            st.session_state["tab_config_logged"] = True
         
         if not tab_config:
             st.warning("⚠️ No tabs available for your current role")
@@ -244,21 +245,23 @@ class MainDashboard:
             tab_labels.append(f"{icon} {name}")
         
         # Create tabs
-        logger.info(f"📑 Creating {len(tab_keys)} tabs: {tab_keys}")
+        if "tabs_created" not in st.session_state:
+            logger.info(f"📑 Creating {len(tab_keys)} tabs: {tab_keys}")
+            st.session_state["tabs_created"] = True
         tabs = st.tabs(tab_labels)
         
         # Render tab content
         for i, tab_key in enumerate(tab_keys):
             with tabs[i]:
-                logger.info(f"📋 Rendering tab {i+1}/{len(tab_keys)}: {tab_key}")
+                # Only log tab rendering on first render
+                if f"tab_{tab_key}_rendered" not in st.session_state:
+                    logger.info(f"📋 Rendering tab {i+1}/{len(tab_keys)}: {tab_key}")
+                    st.session_state[f"tab_{tab_key}_rendered"] = True
                 self._render_tab_content(tab_key, tab_config[tab_key])
     
     def _render_tab_content(self, tab_key: str, tab_config: Dict[str, Any]):
         """Render content for a specific tab"""
         try:
-            # Log tab navigation
-            logger.info(f"🔄 Rendering tab: {tab_key}")
-            
             # Check if component is already loaded
             if tab_key not in self._loaded_components:
                 module_name = tab_config.get('module')
@@ -273,7 +276,10 @@ class MainDashboard:
                     module = importlib.import_module(module_name)
                     component_function = getattr(module, function_name)
                     self._loaded_components[tab_key] = component_function
-                    logger.info(f"✅ Loaded component: {tab_key}")
+                    # Only log component loading once
+                    if f"component_{tab_key}_loaded" not in st.session_state:
+                        logger.info(f"✅ Loaded component: {tab_key}")
+                        st.session_state[f"component_{tab_key}_loaded"] = True
                 except (ImportError, AttributeError) as e:
                     logger.warning(f"⚠️ Failed to load component {tab_key}: {e}")
                     error_msg = str(e)

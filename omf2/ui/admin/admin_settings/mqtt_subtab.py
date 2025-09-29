@@ -12,7 +12,10 @@ logger = get_logger(__name__)
 
 def render_mqtt_subtab():
     """Render MQTT Configuration Subtab"""
-    logger.info("📡 Rendering MQTT Configuration Subtab")
+    # Only log on first render
+    if "mqtt_subtab_logged" not in st.session_state:
+        logger.info("📡 Rendering MQTT Configuration Subtab (init only)")
+        st.session_state["mqtt_subtab_logged"] = True
     try:
         st.subheader("📡 MQTT Configuration")
         st.markdown("Configure MQTT broker settings and client parameters")
