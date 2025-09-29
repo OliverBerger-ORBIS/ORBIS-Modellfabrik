@@ -1,15 +1,13 @@
-from omf.dashboard.tools.path_constants import PROJECT_ROOT
-
 """
 Replay Station Komponente
 Funktionalität wie alte Replay Station - MQTT-Nachrichten für Tests senden
+Isolierte Version ohne OMF-Dependencies
 """
 
 import json
 import logging
 import re
 import sqlite3
-import subprocess
 import time
 import threading
 from dataclasses import dataclass
@@ -19,12 +17,13 @@ from pathlib import Path
 
 import streamlit as st
 
-from omf.dashboard.tools.logging_config import get_logger
-from omf.dashboard.utils.ui_refresh import RerunController
+from ..utils.path_constants import PROJECT_ROOT
+from ..utils.logging_config import get_logger
+from ..utils.ui_refresh import RerunController
+from ..mqtt.mqtt_client import SessionManagerMQTTClient, MQTTMessage
 
 # Logging konfigurieren - Verzeichnis sicherstellen
-# Log-Verzeichnis erstellen falls nicht vorhanden
-log_dir = Path("logs")
+log_dir = Path("logs/session_manager")
 log_dir.mkdir(parents=True, exist_ok=True)
 
 logging.basicConfig(
@@ -50,9 +49,10 @@ class _ReplayItem:
 
 class ReplayController:
     """
-    Thread-sicherer MQTT-Replay-Controller.
-    - Keinerlei Streamlit-Aufrufe im Thread!
-    - Versendet Nachrichten per mosquitto_pub.
+    Thread-sicherer MQTT-Replay-Controller mit persistentem MQTT-Client.
+    - Keine Connection-Loops durch persistente Verbindung
+    - Thread-sichere Publishing ohne mosquitto_pub
+    - Sauberes Cleanup alter Controller-Instanzen
     """
     def __init__(self, host: str, port: int):
         self.host = host
@@ -65,6 +65,7 @@ class ReplayController:
         self._pause = threading.Event()  # gesetzt = pausiert
         self._worker: Optional[threading.Thread] = None
         self.started_at_mono: float = 0.0
+        self._mqtt_client: Optional[SessionManagerMQTTClient] = None
 
     # ---------- öffentlich ----------
     def load(self, items: List[Tuple[float, str, bytes, int, bool]]) -> None:
@@ -81,6 +82,14 @@ class ReplayController:
             if self._worker and self._worker.is_alive():
                 self._pause.clear()
                 return
+            
+            # MQTT-Client initialisieren falls nötig
+            if not self._mqtt_client:
+                self._mqtt_client = SessionManagerMQTTClient(self.host, self.port, "session_manager_replay")
+                if not self._mqtt_client.connect():
+                    logger.error("❌ MQTT-Client konnte nicht verbinden")
+                    return
+            
             self._stop.clear()
             self._pause.clear()
             self.started_at_mono = time.monotonic() - (self._seq[self._idx].ts_rel / self._speed if self._seq else 0.0)
@@ -105,6 +114,9 @@ class ReplayController:
         self._pause.clear()
         with self._lock:
             self._idx = 0
+            # Worker-Thread sauber beenden
+            if self._worker and self._worker.is_alive():
+                self._worker.join(timeout=2.0)  # Max 2 Sekunden warten
 
     def set_speed(self, speed: float) -> None:
         with self._lock:
@@ -143,36 +155,51 @@ class ReplayController:
             if due > now:
                 time.sleep(min(0.1, due - now))
                 continue
-            # Publish (ohne Streamlit!)
-            try:
-                payload_str = item.payload if isinstance(item.payload, (bytes, bytearray)) else str(item.payload).encode("utf-8")
-                subprocess.run(
-                    [
-                        "mosquitto_pub",
-                        "-h", self.host,
-                        "-p", str(self.port),
-                        "-t", item.topic,
-                        "-m", payload_str,
-                        "-q", str(item.qos),
-                        "-i", "session_manager_replay_station",
-                    ],
-                    capture_output=True,
-                    text=False,
-                    timeout=5,
-                )
-            except Exception:
-                pass  # Logging optional extern
+            # Publish mit persistentem MQTT-Client
+            if self._mqtt_client and self._mqtt_client.is_connected():
+                try:
+                    payload_str = item.payload if isinstance(item.payload, (bytes, bytearray)) else str(item.payload).encode("utf-8")
+                    success = self._mqtt_client.publish(
+                        topic=item.topic,
+                        payload=payload_str,
+                        qos=item.qos,
+                        retain=item.retain
+                    )
+                    if not success:
+                        logger.warning(f"⚠️ MQTT-Publish fehlgeschlagen: {item.topic}")
+                except Exception as e:
+                    logger.error(f"❌ MQTT-Publish Exception: {e}")
+            else:
+                logger.error("❌ MQTT-Client nicht verbunden")
             # Index vorrücken
             with self._lock:
                 self._idx += 1
+    
+    def cleanup(self):
+        """Sauberes Cleanup des Controllers"""
+        self.stop()
+        if self._mqtt_client:
+            self._mqtt_client.disconnect()
+            self._mqtt_client = None
 
 # Einfache Factory, die genau EINE Controller-Instanz je Broker hält
 def _get_replay_controller(mqtt_host: str, mqtt_port: int) -> ReplayController:
     key = "_replay_controller"
     rc: Optional[ReplayController] = st.session_state.get(key)
-    if rc is None or rc.host != mqtt_host or int(rc.port) != int(mqtt_port):
+    
+    # Alten Controller sauber stoppen falls Host/Port geändert
+    if rc and (rc.host != mqtt_host or int(rc.port) != int(mqtt_port)):
+        logger.info("🔄 Alten ReplayController stoppen (Host/Port geändert)")
+        rc.cleanup()
+        rc = None
+        del st.session_state[key]
+    
+    # Neuen Controller erstellen falls nötig
+    if rc is None:
+        logger.info(f"🆕 Neuen ReplayController erstellen: {mqtt_host}:{mqtt_port}")
         rc = ReplayController(mqtt_host, int(mqtt_port))
         st.session_state[key] = rc
+    
     return rc
 
 
@@ -324,29 +351,35 @@ def show_replay_station():
 
 
 def test_mqtt_connection(host, port, rerun_controller: RerunController):
-    """MQTT Verbindung testen mit mosquitto_pub"""
+    """MQTT Verbindung testen mit persistentem MQTT-Client"""
     try:
-        result = subprocess.run(
-            ["mosquitto_pub", "-h", host, "-p", str(port), "-t", "test/connection", "-m", "test", "-q", "1", "-i", "session_manager_replay_station"],
-            capture_output=True,
-            text=True,
-            timeout=5,
-        )
-
-        if result.returncode == 0:
-            st.session_state.mqtt_connected = True
-            st.success(f"✅ MQTT Broker erreichbar: {host}:{port}")
-            rerun_controller.request_rerun()  # UI sofort aktualisieren
-            return True
+        # Temporären MQTT-Client für Test erstellen
+        test_client = SessionManagerMQTTClient(host, port, "session_manager_test")
+        
+        if test_client.connect():
+            # Test-Nachricht senden
+            success = test_client.publish("test/connection", "test", qos=1)
+            test_client.disconnect()
+            
+            if success:
+                st.session_state.mqtt_connected = True
+                st.success(f"✅ MQTT Broker erreichbar: {host}:{port}")
+                rerun_controller.request_rerun()
+                return True
+            else:
+                st.error("❌ MQTT Test-Nachricht konnte nicht gesendet werden")
+                st.session_state.mqtt_connected = False
+                rerun_controller.request_rerun()
+                return False
         else:
-            st.error(f"❌ MQTT Broker nicht erreichbar: {result.stderr}")
+            st.error(f"❌ MQTT Broker nicht erreichbar: {host}:{port}")
             st.session_state.mqtt_connected = False
-            rerun_controller.request_rerun()  # UI sofort aktualisieren
+            rerun_controller.request_rerun()
             return False
     except Exception as e:
         st.error(f"❌ Verbindung fehlgeschlagen: {e}")
         st.session_state.mqtt_connected = False
-        rerun_controller.request_rerun()  # UI sofort aktualisieren
+        rerun_controller.request_rerun()
         return False
 
 
@@ -358,35 +391,35 @@ def disconnect_mqtt(rerun_controller: RerunController):
 
 
 def send_test_message(topic, payload):
-    """Test-Nachricht mit mosquitto_pub senden"""
+    """Test-Nachricht mit persistentem MQTT-Client senden"""
     try:
-        result = subprocess.run(
-            [
-                "mosquitto_pub",
-                "-h",
-                st.session_state.mqtt_host,
-                "-p",
-                str(st.session_state.mqtt_port),
-                "-t",
-                topic,
-                "-m",
-                json.dumps(payload),
-                "-q",
-                "1",
-                "-i",
-                "session_manager_replay_station",
-            ],
-            capture_output=True,
-            text=True,
-            timeout=5,
+        # Temporären MQTT-Client für Test erstellen
+        test_client = SessionManagerMQTTClient(
+            st.session_state.mqtt_host, 
+            st.session_state.mqtt_port, 
+            "session_manager_test"
         )
-
-        if result.returncode == 0:
-            st.session_state.mqtt_connected = True  # Verbindung bestätigen
-            st.success(f"📤 Nachricht gesendet: {topic}")
+        
+        if test_client.connect():
+            # JSON-Payload vorbereiten
+            if isinstance(payload, (dict, list)):
+                payload_str = json.dumps(payload, separators=(",", ":"), ensure_ascii=False)
+            else:
+                payload_str = str(payload)
+            
+            # Nachricht senden
+            success = test_client.publish(topic, payload_str, qos=1)
+            test_client.disconnect()
+            
+            if success:
+                st.session_state.mqtt_connected = True
+                st.success(f"📤 Nachricht gesendet: {topic}")
+            else:
+                st.session_state.mqtt_connected = False
+                st.error("❌ Fehler beim Senden der Nachricht")
         else:
             st.session_state.mqtt_connected = False
-            st.error(f"❌ Fehler beim Senden: {result.stderr}")
+            st.error("❌ MQTT-Client konnte nicht verbinden")
     except Exception as e:
         st.session_state.mqtt_connected = False
         st.error(f"❌ Fehler beim Senden: {e}")
@@ -755,25 +788,8 @@ def replay_worker(session_data):
 
 
 def send_replay_message(topic, payload):
-    """Replay-Nachricht senden"""
-    try:
-        # MQTT-Parameter aus Session State holen
-        mqtt_host = st.session_state.get('mqtt_host', 'localhost')
-        mqtt_port = st.session_state.get('mqtt_port', 1883)
-
-        result = subprocess.run(
-            ["mosquitto_pub", "-h", mqtt_host, "-p", str(mqtt_port), "-t", topic, "-m", payload, "-q", "1", "-i", "session_manager_replay_station"],
-            capture_output=True,
-            text=True,
-            timeout=5,
-        )
-
-        if result.returncode == 0:
-            logger.debug(f"✅ Replay: {topic} → {payload[:50]}...")
-            return True
-        else:
-            logger.error(f"❌ Replay Fehler: {result.stderr}")
-            return False
-    except Exception as e:
-        logger.error(f"❌ Replay Exception: {e}")
-        return False
+    """Replay-Nachricht senden - wird jetzt vom ReplayController gehandhabt"""
+    # Diese Funktion wird nicht mehr verwendet, da der ReplayController
+    # jetzt direkt mit dem persistenten MQTT-Client arbeitet
+    logger.debug(f"📤 Replay-Nachricht: {topic} → {payload[:50]}...")
+    return True
