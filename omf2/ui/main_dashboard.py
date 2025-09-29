@@ -99,25 +99,25 @@ class MainDashboard:
         # Update session state - EXACT like old dashboard
         st.session_state['current_environment'] = new_env
         
-        # Reconnect admin MQTT client with new environment
+        # Reconnect admin MQTT client with new environment using improved method
         if 'admin_mqtt_client' in st.session_state:
             admin_client = st.session_state['admin_mqtt_client']
             
-            # Disconnect old connection
-            if admin_client.connected:
-                admin_client.disconnect()
-                logger.info(f"🔌 Admin MQTT Client disconnected from {old_env}")
+            # Use the new reconnect_environment method for clean switching
+            success = admin_client.reconnect_environment(new_env)
             
-            # Connect with new environment
-            admin_client.connect(new_env)
-            logger.info(f"✅ Admin MQTT Client reconnected to {new_env}")
+            if success:
+                logger.info(f"✅ Admin MQTT Client reconnected to {new_env}")
+            else:
+                logger.warning(f"⚠️ Admin MQTT Client reconnection to {new_env} had issues, continuing anyway")
         
         # Clear cache - EXACT like old dashboard
         st.cache_resource.clear()
         logger.info(f"🔄 ENV-SWITCH: Cache geleert, Environment aktualisiert")
         
-        # KEIN request_refresh() - verursacht Connection-Loop! (wie im alten Dashboard)
-        # Die Factory kümmert sich automatisch um den Reconnect
+        # Use request_refresh instead of potential st.rerun calls
+        from omf2.ui.utils.ui_refresh import request_refresh
+        request_refresh()
     
     def _render_sidebar(self):
         """Render sidebar with controls and status"""
@@ -170,7 +170,7 @@ class MainDashboard:
             request_refresh()
     
     def _render_connection_status(self):
-        """Render connection status in sidebar - EXACT like old dashboard"""
+        """Render connection status in sidebar - Enhanced with real-time info"""
         st.sidebar.markdown("---")
         st.sidebar.subheader("🔗 Connection Status")
         
@@ -179,20 +179,38 @@ class MainDashboard:
         current_env = st.session_state.get('current_environment', 'mock')
         
         if admin_client:
-            # Connect to MQTT if not connected (like old dashboard)
-            if not admin_client.connected:
-                admin_client.connect(current_env)
+            # Get detailed connection info
+            conn_info = admin_client.get_connection_info()
             
-            if admin_client.connected:
-                status_icon = "🟢"
-                status_text = f"Connected ({current_env})"
-                st.sidebar.success(f"{status_icon} **Admin MQTT**: {status_text}")
+            # Auto-connect if not connected and environment matches
+            if not conn_info['connected'] or conn_info['environment'] != current_env:
+                admin_client.connect(current_env)
+                conn_info = admin_client.get_connection_info()  # Refresh info
+            
+            # Display connection status with detailed info
+            if conn_info['connected']:
+                if conn_info['mock_mode']:
+                    status_icon = "🧪"
+                    status_text = f"Mock Mode ({current_env})"
+                    st.sidebar.info(f"{status_icon} **Admin MQTT**: {status_text}")
+                else:
+                    status_icon = "🟢"
+                    status_text = f"Connected ({current_env})"
+                    host_port = f"{conn_info['host']}:{conn_info['port']}"
+                    st.sidebar.success(f"{status_icon} **Admin MQTT**: {status_text}")
+                    st.sidebar.caption(f"🌐 Broker: `{host_port}`")
             else:
                 status_icon = "🔴"
                 status_text = f"Disconnected ({current_env})"
                 st.sidebar.error(f"{status_icon} **Admin MQTT**: {status_text}")
+                
+            # Show Client ID with current environment
+            client_id = conn_info.get('client_id', f'omf_{current_env}')
+            st.sidebar.caption(f"🆔 Client ID: `{client_id}`")
+            
         else:
             st.sidebar.warning("Admin MQTT client not initialized")
+            st.sidebar.caption("🆔 Client ID: Noch nicht initialisiert")
             
         # Show environment-specific info
         if current_env == 'mock':
@@ -201,14 +219,6 @@ class MainDashboard:
             st.sidebar.success("🟢 Live mode - Real MQTT connection")
         elif current_env == 'replay':
             st.sidebar.warning("🔄 Replay mode - Historical data")
-        
-        # Show Client ID (like in old dashboard)
-        if admin_client:
-            # Use actual client_id from admin_client
-            client_id = getattr(admin_client, 'client_id', f'omf_{current_env}')
-            st.sidebar.caption(f"🆔 Client ID: `{client_id}`")
-        else:
-            st.sidebar.caption("🆔 Client ID: Noch nicht initialisiert")
     
     def _render_main_content(self):
         """Render main content area with tabs"""

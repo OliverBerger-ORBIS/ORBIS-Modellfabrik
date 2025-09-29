@@ -66,7 +66,8 @@ class TestAdminMQTTClient(unittest.TestCase):
         
         # Should attempt real connection
         mock_mqtt.Client.assert_called_once()
-        mock_client.connect.assert_called_once()
+        # New behavior: uses connect_async instead of connect
+        mock_client.connect_async.assert_called_once()
         mock_client.loop_start.assert_called_once()
 
     def test_publish_message_mock(self):
@@ -167,9 +168,8 @@ class TestAdminMQTTClient(unittest.TestCase):
         
         client.disconnect()
         
-        # In mock mode, disconnect doesn't change connected status
-        # because there's no real MQTT client to disconnect
-        self.assertTrue(client.connected)  # Mock mode stays connected
+        # New behavior: disconnect always sets connected=False
+        self.assertFalse(client.connected)
 
     def test_message_processing(self):
         """Test Message Processing"""
@@ -198,6 +198,36 @@ class TestAdminMQTTClient(unittest.TestCase):
         self.assertIs(client1, client2)
         self.assertIs(client1, client3)
         self.assertIs(client2, client3)
+
+    def test_reconnect_environment(self):
+        """Test environment reconnection"""
+        client = get_admin_mqtt_client()
+        
+        # Connect to mock first
+        result1 = client.connect('mock')
+        self.assertTrue(result1)
+        self.assertEqual(client.current_environment, 'mock')
+        
+        # Reconnect to replay
+        result2 = client.reconnect_environment('replay')
+        self.assertTrue(result2)
+        self.assertEqual(client.current_environment, 'replay')
+
+    def test_get_connection_info(self):
+        """Test connection info retrieval"""
+        client = get_admin_mqtt_client()
+        client.connect('mock')
+        
+        conn_info = client.get_connection_info()
+        
+        self.assertIsInstance(conn_info, dict)
+        self.assertIn('connected', conn_info)
+        self.assertIn('environment', conn_info)
+        self.assertIn('client_id', conn_info)
+        self.assertIn('mock_mode', conn_info)
+        self.assertTrue(conn_info['connected'])
+        self.assertEqual(conn_info['environment'], 'mock')
+        self.assertTrue(conn_info['mock_mode'])
 
 
 if __name__ == '__main__':
