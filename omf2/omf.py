@@ -113,21 +113,28 @@ def main():
             st.session_state['admin_mqtt_client'] = get_admin_mqtt_client()
             logger.info("🔌 Admin MQTT Client initialized on startup")
         
-        # Initialize log buffer (like old dashboard)
+        # Initialize log buffer with RingBufferHandler (like old dashboard)
         if 'log_buffer' not in st.session_state:
             from collections import deque
-            st.session_state['log_buffer'] = deque(maxlen=1000)
+            from omf2.common.streamlit_log_buffer import RingBufferHandler, create_log_buffer
+            
+            # Create ring buffer
+            st.session_state['log_buffer'] = create_log_buffer(maxlen=1000)
             logger.info("📋 Log buffer initialized")
             
-            # Add some test logs to buffer
-            st.session_state['log_buffer'].append("2025-09-29 14:00:00 [INFO] omf2.dashboard: OMF2 Dashboard started")
-            st.session_state['log_buffer'].append("2025-09-29 14:00:01 [INFO] omf2.admin: Admin MQTT Client initialized")
-            st.session_state['log_buffer'].append("2025-09-29 14:00:02 [INFO] omf2.ui: Main Dashboard rendered")
+            # Setup RingBufferHandler for all loggers
+            ring_handler = RingBufferHandler(st.session_state['log_buffer'])
+            ring_handler.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(name)s: %(message)s"))
             
-            # Add more test logs for demonstration
-            st.session_state['log_buffer'].append("2025-09-29 14:00:03 [DEBUG] omf2.message_center: Test message generation ready")
-            st.session_state['log_buffer'].append("2025-09-29 14:00:04 [INFO] omf2.mqtt: MQTT connection established")
-            st.session_state['log_buffer'].append("2025-09-29 14:00:05 [WARNING] omf2.system: Mock mode active - no real MQTT connection")
+            # Add handler to root logger
+            root_logger = logging.getLogger()
+            root_logger.addHandler(ring_handler)
+            st.session_state['ring_buffer_handler'] = ring_handler
+            
+            # Add some initial logs
+            logger.info("🚀 OMF2 Dashboard started")
+            logger.info("🔌 Admin MQTT Client initialized")
+            logger.info("📊 Main Dashboard rendered")
         
         # Create and render main dashboard
         if 'main_dashboard' not in st.session_state:
