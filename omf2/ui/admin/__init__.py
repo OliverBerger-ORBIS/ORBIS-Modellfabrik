@@ -1,4 +1,5 @@
 """
-Admin UI components for OMF2
-Administrative interfaces for system management
+Admin UI Components - Administrative User Interface
 """
+
+__all__ = []

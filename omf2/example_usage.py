@@ -11,8 +11,6 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from omf2.ccu import CCUGateway, ccu_mqtt_client
 from omf2.nodered import NodeREDGateway, nodered_mqtt_client
-from omf2.message_center import MessageCenterGateway, message_center_mqtt_client
-from omf2.generic_steering import GenericSteeringGateway, generic_steering_mqtt_client
 from omf2.system import AdminSettings, LogManager
 from omf2.ccu.workpiece_manager import get_workpiece_manager
 
@@ -66,12 +64,7 @@ def main():
     print(f"✅ Node-RED Gateway connected: {nodered_gateway.is_connected()}")
     
     # Message Center Gateway
-    message_center_gateway = MessageCenterGateway(message_center_mqtt_client)
-    print(f"✅ Message Center Gateway connected: {message_center_gateway.is_connected()}")
     
-    # Generic Steering Gateway
-    steering_gateway = GenericSteeringGateway(generic_steering_mqtt_client)
-    print(f"✅ Generic Steering Gateway connected: {steering_gateway.is_connected()}")
     
     # 4. Log Management
     print("\n📝 4. Log Management...")

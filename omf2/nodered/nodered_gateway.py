@@ -1,163 +1,224 @@
 #!/usr/bin/env python3
 """
-Node-RED Gateway - Business logic layer for Node-RED MQTT operations
+Node-RED Gateway - Fassade für Node-RED Business-Operationen
 """
 
 import logging
-from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional
-
-from .nodered_mqtt_client import NodeREDMqttClient
+from typing import Dict, List, Optional, Any
+from omf2.common.message_templates import get_message_templates
 
 logger = logging.getLogger(__name__)
 
 
-class NodeREDGateway:
+class NoderedGateway:
     """
-    Node-RED Gateway - Encapsulates all Node-RED-related MQTT operations
+    Gateway für Node-RED-spezifische Business-Operationen
     
-    This gateway provides business logic methods for Node-RED integration,
-    using the Node-RED MQTT client as the underlying transport.
+    Nutzt MessageTemplates und beide MQTT-Clients (pub/sub) für Node-RED-Operationen.
+    Stellt Methoden für die UI bereit.
     """
     
-    def __init__(self, mqtt_client: NodeREDMqttClient):
-        self.client = mqtt_client
-        self.logger = logger
-        
-        # Node-RED specific topic patterns
-        self.topics = {
-            "input": "nodered/input",
-            "output": "nodered/output",
-            "flow": "nodered/flow",
-            "status": "nodered/status",
-            "control": "nodered/control"
-        }
-        
-        # Subscribe to Node-RED topics on initialization
-        self._subscribe_to_nodered_topics()
-        
-        logger.info("🔴 Node-RED Gateway initialized")
-    
-    def _subscribe_to_nodered_topics(self):
-        """Subscribe to all Node-RED-related topics"""
-        nodered_topics = [
-            "nodered/+",  # All Node-RED topics
-            "nodered/input/+",
-            "nodered/output/+", 
-            "nodered/flow/+",
-            "nodered/status",
-            "nodered/control"
-        ]
-        self.client.subscribe_many(nodered_topics)
-    
-    def _utc_timestamp(self) -> str:
-        """Generate UTC timestamp"""
-        return datetime.now(timezone.utc).isoformat()
-    
-    def send_input_data(self, flow_id: str, data: Dict[str, Any]) -> bool:
+    def __init__(self, pub_mqtt_client=None, sub_mqtt_client=None, **kwargs):
         """
-        Send input data to Node-RED flow
+        Initialisiert Node-RED Gateway
         
         Args:
-            flow_id: Node-RED flow identifier
-            data: Input data for the flow
-            
-        Returns:
-            bool: Success status
+            pub_mqtt_client: Node-RED Publisher MQTT-Client
+            sub_mqtt_client: Node-RED Subscriber MQTT-Client
         """
-        payload = {
-            "timestamp": self._utc_timestamp(),
-            "flow_id": flow_id,
-            "data": data
-        }
+        self.pub_mqtt_client = pub_mqtt_client
+        self.sub_mqtt_client = sub_mqtt_client
+        self.message_templates = get_message_templates()
         
-        topic = f"{self.topics['input']}/{flow_id}"
-        return self.client.publish_json(topic, payload)
+        logger.info("🏗️ NoderedGateway initialized")
     
-    def send_control_command(self, command: str, flow_id: Optional[str] = None, parameters: Optional[Dict] = None) -> bool:
+    def get_normalized_module_states(self) -> List[Dict]:
         """
-        Send control command to Node-RED
+        Normalisierte Module States abrufen (von Node-RED Publisher)
+        
+        Returns:
+            Liste der normalisierten Module States
+        """
+        try:
+            # Registry v2 Integration: Topics aus Registry laden
+            pub_topics = self.get_pub_topics()
+            module_state_topics = [topic for topic in pub_topics if "module" in topic and "state" in topic]
+            
+            states = []
+            for topic in module_state_topics:
+                # TODO: MQTT-Client Integration implementieren
+                # state = self.pub_mqtt_client.get_buffer(topic)
+                # if state:
+                #     states.append(state)
+                pass
+            
+            logger.info(f"📊 Normalized Module States requested for {len(module_state_topics)} topics (TODO: MQTT integration)")
+            return states
+            
+        except Exception as e:
+            logger.error(f"❌ Normalized Module States retrieval failed: {e}")
+            return []
+    
+    def get_ccu_commands(self) -> List[Dict]:
+        """
+        CCU Commands abrufen (von Node-RED Subscriber)
+        
+        Returns:
+            Liste der CCU Commands
+        """
+        try:
+            # TODO: MQTT-Client Integration implementieren
+            # topics = self._get_sub_topics_for_pattern("ccu/*")
+            # commands = []
+            # for topic in topics:
+            #     command = self.sub_mqtt_client.get_buffer(topic)
+            #     if command:
+            #         commands.append(command)
+            # return commands
+            
+            logger.info("📊 CCU Commands requested (TODO: MQTT integration)")
+            return []
+            
+        except Exception as e:
+            logger.error(f"❌ CCU Commands retrieval failed: {e}")
+            return []
+    
+    def get_opc_ua_states(self) -> List[Dict]:
+        """
+        OPC-UA States abrufen (von Node-RED Subscriber)
+        
+        Returns:
+            Liste der OPC-UA States
+        """
+        try:
+            # TODO: MQTT-Client Integration implementieren
+            # topics = self._get_sub_topics_for_pattern("opc_ua/*")
+            # states = []
+            # for topic in topics:
+            #     state = self.sub_mqtt_client.get_buffer(topic)
+            #     if state:
+            #         states.append(state)
+            # return states
+            
+            logger.info("📊 OPC-UA States requested (TODO: MQTT integration)")
+            return []
+            
+        except Exception as e:
+            logger.error(f"❌ OPC-UA States retrieval failed: {e}")
+            return []
+    
+    def send_ccu_feedback(self, feedback_data: Dict[str, Any]) -> bool:
+        """
+        CCU Feedback senden (über Node-RED Publisher)
         
         Args:
-            command: Command to execute (e.g., "start", "stop", "deploy")
-            flow_id: Optional specific flow ID
-            parameters: Command parameters
+            feedback_data: Feedback-Daten
             
         Returns:
-            bool: Success status
+            True wenn erfolgreich, False bei Fehler
         """
-        payload = {
-            "timestamp": self._utc_timestamp(),
-            "command": command,
-            "flow_id": flow_id,
-            "parameters": parameters or {}
-        }
-        
-        return self.client.publish_json(self.topics["control"], payload)
+        try:
+            # TODO: MQTT-Client Integration implementieren
+            # topic = "ccu/global"
+            # message = self.message_templates.render_message(topic, feedback_data)
+            # if message:
+            #     self.pub_mqtt_client.publish(topic, message)
+            #     return True
+            
+            logger.info(f"📤 CCU Feedback: {feedback_data} (TODO: MQTT integration)")
+            return True
+            
+        except Exception as e:
+            logger.error(f"❌ CCU Feedback failed: {e}")
+            return False
     
-    def send_status_update(self, status: str, details: Optional[Dict] = None) -> bool:
+    def send_order_completed(self, order_data: Dict[str, Any]) -> bool:
         """
-        Send Node-RED status update
+        Order Completed senden (über Node-RED Publisher)
         
         Args:
-            status: Current status (e.g., "running", "stopped", "error")
-            details: Additional status details
+            order_data: Order-Daten
             
         Returns:
-            bool: Success status
+            True wenn erfolgreich, False bei Fehler
         """
-        payload = {
-            "timestamp": self._utc_timestamp(),
-            "status": status,
-            "details": details or {}
-        }
-        
-        return self.client.publish_json(self.topics["status"], payload)
+        try:
+            # TODO: MQTT-Client Integration implementieren
+            # topic = "ccu/order/completed"
+            # message = self.message_templates.render_message(topic, order_data)
+            # if message:
+            #     self.pub_mqtt_client.publish(topic, message)
+            #     return True
+            
+            logger.info(f"📤 Order Completed: {order_data} (TODO: MQTT integration)")
+            return True
+            
+        except Exception as e:
+            logger.error(f"❌ Order Completed failed: {e}")
+            return False
     
-    def deploy_flow(self, flow_config: Dict[str, Any]) -> bool:
+    def get_pub_topics(self) -> List[str]:
         """
-        Deploy a Node-RED flow
+        Node-RED Publisher Topics aus Registry abrufen
+        
+        Returns:
+            Liste der Publisher Topics
+        """
+        try:
+            mqtt_clients = self.message_templates.mqtt_clients
+            nodered_pub_client = mqtt_clients.get('mqtt_clients', {}).get('nodered_pub_mqtt_client', {})
+            return nodered_pub_client.get('published_topics', [])
+        except Exception as e:
+            logger.error(f"❌ Failed to get Node-RED pub topics: {e}")
+            return []
+    
+    def get_sub_topics(self) -> List[str]:
+        """
+        Node-RED Subscriber Topics aus Registry abrufen
+        
+        Returns:
+            Liste der Subscriber Topics
+        """
+        try:
+            mqtt_clients = self.message_templates.mqtt_clients
+            nodered_sub_client = mqtt_clients.get('mqtt_clients', {}).get('nodered_sub_mqtt_client', {})
+            return nodered_sub_client.get('subscribed_topics', [])
+        except Exception as e:
+            logger.error(f"❌ Failed to get Node-RED sub topics: {e}")
+            return []
+    
+    def _get_pub_topics_for_pattern(self, pattern: str) -> List[str]:
+        """
+        Publisher Topics für Pattern abrufen
         
         Args:
-            flow_config: Flow configuration
+            pattern: Topic-Pattern
             
         Returns:
-            bool: Success status
+            Liste der passenden Topics
         """
-        payload = {
-            "timestamp": self._utc_timestamp(),
-            "action": "deploy",
-            "config": flow_config
-        }
+        try:
+            all_topics = self.get_pub_topics()
+            # TODO: Pattern-Matching implementieren
+            return [topic for topic in all_topics if pattern.replace('*', '') in topic]
+        except Exception as e:
+            logger.error(f"❌ Failed to get pub topics for pattern {pattern}: {e}")
+            return []
+    
+    def _get_sub_topics_for_pattern(self, pattern: str) -> List[str]:
+        """
+        Subscriber Topics für Pattern abrufen
         
-        return self.client.publish_json(self.topics["flow"], payload)
-    
-    def get_flow_output(self, flow_id: str, limit: int = 100) -> List[Dict[str, Any]]:
-        """Get output data from Node-RED flow"""
-        topic = f"{self.topics['output']}/{flow_id}"
-        buffer = self.client.get_buffer(topic)
-        return list(buffer)[-limit:]
-    
-    def get_latest_status(self) -> Optional[Dict[str, Any]]:
-        """Get latest Node-RED status"""
-        buffer = self.client.get_buffer(self.topics["status"])
-        if buffer:
-            return buffer[-1]["payload"]
-        return None
-    
-    def is_connected(self) -> bool:
-        """Check if Node-RED MQTT client is connected"""
-        return self.client.connected
-    
-    def add_output_callback(self, flow_id: str, callback):
-        """Add callback for flow output"""
-        pattern = f"{self.topics['output']}/{flow_id}"
-        self.client.add_callback(pattern, callback)
-    
-    def add_status_callback(self, callback):
-        """Add callback for status updates"""
-        self.client.add_callback(self.topics["status"], callback)
-    
-    def add_control_callback(self, callback):
-        """Add callback for control commands"""
-        self.client.add_callback(self.topics["control"], callback)
+        Args:
+            pattern: Topic-Pattern
+            
+        Returns:
+            Liste der passenden Topics
+        """
+        try:
+            all_topics = self.get_sub_topics()
+            # TODO: Pattern-Matching implementieren
+            return [topic for topic in all_topics if pattern.replace('*', '') in topic]
+        except Exception as e:
+            logger.error(f"❌ Failed to get sub topics for pattern {pattern}: {e}")
+            return []

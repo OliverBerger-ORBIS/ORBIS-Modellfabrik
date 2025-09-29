@@ -56,14 +56,10 @@ class TestOMF2Dashboard:
     
     def test_ui_components_import(self):
         """Test that UI components can be imported"""
-        from omf2.ui.ccu.overview_tab import render_ccu_overview_tab
-        from omf2.ui.message_center_tab import render_message_center_tab
-        from omf2.ui.admin.steering_tab import render_steering_tab
-        from omf2.ui.system.logs_tab import render_logs_tab
+        from omf2.ui.ccu.ccu_overview.ccu_overview_tab import render_ccu_overview_tab
+        from omf2.ui.admin.logs.logs_tab import render_logs_tab
         
         assert callable(render_ccu_overview_tab)
-        assert callable(render_message_center_tab)
-        assert callable(render_steering_tab)
         assert callable(render_logs_tab)
     
     def test_i18n_translations(self):
@@ -97,15 +93,14 @@ class TestOMF2Dashboard:
         roles = user_manager.get_available_roles()
         assert 'admin' in roles
         assert 'operator' in roles
-        assert 'viewer' in roles
         
         # Test role permissions
         admin_components = user_manager.get_role_ui_components('admin')
-        viewer_components = user_manager.get_role_ui_components('viewer')
+        operator_components = user_manager.get_role_ui_components('operator')
         
-        assert len(admin_components) > len(viewer_components)
+        assert len(admin_components) > len(operator_components)
         assert 'ccu_dashboard' in admin_components
-        assert 'ccu_dashboard' in viewer_components
+        assert 'ccu_dashboard' in operator_components
     
     def test_tab_configuration(self):
         """Test tab configuration based on roles"""
@@ -117,20 +112,20 @@ class TestOMF2Dashboard:
         user_manager.set_user_role('admin')
         admin_tabs = user_manager.get_tab_config()
         
-        # Set role to viewer and get tab config
-        user_manager.set_user_role('viewer')
-        viewer_tabs = user_manager.get_tab_config()
+        # Set role to operator and get tab config
+        user_manager.set_user_role('operator')
+        operator_tabs = user_manager.get_tab_config()
         
-        # Admin should have more tabs than viewer
-        assert len(admin_tabs) > len(viewer_tabs)
+        # Admin should have more tabs than operator
+        assert len(admin_tabs) > len(operator_tabs)
         
         # Both should have CCU dashboard
         assert 'ccu_dashboard' in admin_tabs
-        assert 'ccu_dashboard' in viewer_tabs
+        assert 'ccu_dashboard' in operator_tabs
         
         # Only admin should have admin settings
         if 'admin_settings' in admin_tabs:
-            assert 'admin_settings' not in viewer_tabs
+            assert 'admin_settings' not in operator_tabs
 
 
 class TestOMF2ComponentsIntegration:
@@ -148,7 +143,7 @@ class TestOMF2ComponentsIntegration:
             initialize_session_state()
             
             # Check default values are set
-            assert mock_session_state.get('user_role') == 'viewer'
+            assert mock_session_state.get('user_role') == 'operator'
             assert mock_session_state.get('current_language') == 'de'
             assert mock_session_state.get('current_environment') == 'development'
     
@@ -216,8 +211,8 @@ class TestOMF2UI:
         assert user_manager.has_permission('*')
         assert user_manager.can_access_component('admin_settings')
         
-        # Test viewer permissions
-        user_manager.set_user_role('viewer')
+        # Test operator permissions
+        user_manager.set_user_role('operator')
         assert user_manager.has_permission('read')
         assert not user_manager.has_permission('admin')
         assert not user_manager.can_access_component('admin_settings')

@@ -13,10 +13,10 @@ import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from omf2.ccu.ccu_mqtt_client import CCUMqttClient, get_ccu_mqtt_client, cleanup_ccu_mqtt_client
+from omf2.ccu.ccu_mqtt_client import CCUMQTTClient, get_ccu_mqtt_client
 
 
-class TestCCUMqttClient(unittest.TestCase):
+class TestCCUMQTTClient(unittest.TestCase):
     """Test cases for CCU MQTT Client"""
     
     def setUp(self):
@@ -39,7 +39,7 @@ class TestCCUMqttClient(unittest.TestCase):
     
     def test_client_initialization(self):
         """Test CCU MQTT client initialization"""
-        client = CCUMqttClient(
+        client = CCUMQTTClient(
             host="test.broker.com",
             port=1883,
             username="testuser",

@@ -12,7 +12,7 @@ from pathlib import Path
 import sys
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from omf2.system.admin_settings import AdminSettings
+from omf2.admin.admin_settings import AdminSettings
 
 
 class TestAdminSettings(unittest.TestCase):
@@ -85,8 +85,8 @@ class TestAdminSettings(unittest.TestCase):
         self.assertIn("users", user_roles)
         self.assertIn("admin", user_roles["roles"])
         self.assertIn("operator", user_roles["roles"])
-        self.assertIn("viewer", user_roles["roles"])
-        self.assertEqual(user_roles["default_role"], "viewer")
+        self.assertIn("operator", user_roles["roles"])
+        self.assertEqual(user_roles["default_role"], "operator")
     
     def test_get_environment_settings(self):
         """Test getting settings for specific environment"""

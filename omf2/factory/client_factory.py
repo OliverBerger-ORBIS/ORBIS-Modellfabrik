@@ -5,6 +5,7 @@ Manages MQTT clients and other connection clients using singleton pattern
 
 from typing import Dict, Any, Optional
 import yaml
+import threading
 from pathlib import Path
 
 from omf2.common.logger import get_logger
@@ -15,9 +16,22 @@ logger = get_logger(__name__)
 class ClientFactory:
     """Factory for creating and managing client instances"""
     
+    _instance = None
+    _lock = threading.Lock()
+    
+    def __new__(cls):
+        if cls._instance is None:
+            with cls._lock:
+                if cls._instance is None:
+                    cls._instance = super().__new__(cls)
+        return cls._instance
+    
     def __init__(self):
+        if hasattr(self, '_initialized'):
+            return
         self._clients: Dict[str, Any] = {}
         self._config = self._load_config()
+        self._initialized = True
     
     def _load_config(self) -> Dict[str, Any]:
         """Load client configuration"""
@@ -77,14 +91,20 @@ class ClientFactory:
             try:
                 # Import the specific MQTT client class
                 if domain == 'ccu':
-                    from omf2.ccu.ccu_mqtt_client import CCUMqttClient
-                    client_class = CCUMqttClient
+                    from omf2.ccu.ccu_mqtt_client import CCUMQTTClient
+                    client_class = CCUMQTTClient
                 elif domain == 'nodered':
-                    from omf2.nodered.nodered_mqtt_client import NodeRedMqttClient
-                    client_class = NodeRedMqttClient
-                elif domain == 'message_center':
-                    from omf2.message_center.message_center_mqtt_client import MessageCenterMqttClient
-                    client_class = MessageCenterMqttClient
+                    from omf2.nodered.nodered_mqtt_client import NodeREDMqttClient
+                    client_class = NodeREDMqttClient
+                elif domain == 'nodered_pub':
+                    from omf2.nodered.nodered_pub_mqtt_client import NodeREDPubMQTTClient
+                    client_class = NodeREDPubMQTTClient
+                elif domain == 'nodered_sub':
+                    from omf2.nodered.nodered_sub_mqtt_client import NodeREDSubMQTTClient
+                    client_class = NodeREDSubMQTTClient
+                elif domain == 'admin':
+                    from omf2.admin.admin_mqtt_client import AdminMQTTClient
+                    client_class = AdminMQTTClient
                 else:
                     logger.error(f"❌ Unknown domain: {domain}")
                     return None
@@ -93,8 +113,9 @@ class ClientFactory:
                 env_config = self._config.get('environments', {}).get(environment, {})
                 mqtt_config = {**self._config.get('mqtt', {}), **env_config.get('mqtt', {})}
                 
-                # Create client instance
-                self._clients[client_key] = client_class(mqtt_config)
+                # Create client instance (Singleton pattern)
+                # MQTT clients are singletons, so we don't pass config to constructor
+                self._clients[client_key] = client_class()
                 logger.info(f"✅ Created MQTT client for {domain} in {environment}")
                 
             except ImportError as e:
@@ -149,3 +170,14 @@ class ClientFactory:
                 status[client_key] = False
         
         return status
+
+
+# Singleton Factory
+def get_client_factory() -> ClientFactory:
+    """
+    Factory-Funktion für ClientFactory Singleton
+    
+    Returns:
+        ClientFactory Singleton Instance
+    """
+    return ClientFactory()

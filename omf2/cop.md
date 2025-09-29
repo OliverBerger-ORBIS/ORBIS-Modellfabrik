@@ -497,11 +497,7 @@ omf2/
   nodered/
     nodered_gateway.py
     ...
-  message_center/
-    message_center_gateway.py
     ...
-  generic_steering/
-    generic_steering_gateway.py
     ...
   system/
     admin_settings.py

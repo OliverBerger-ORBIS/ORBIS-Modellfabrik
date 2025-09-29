@@ -5,23 +5,38 @@ Es dient als Referenz für alle Teammitglieder und als Vorgabe für Coding Agent
 
 ---
 
-## 1. Grundstruktur omf2 (nach Registry-Umzug ins Projekt-Root)
-vor dem Umzug befindet sich die registry in omf2/registry
+## 1. Grundstruktur omf2 (Registry bleibt in omf2/registry)
+Die Registry bleibt in omf2/registry/ - nur die UI-Struktur wird reorganisiert
 
 ```
-registry/
-  model/
-    v1/
-      workpieces.yml
-      ...
-  schemas/
-    workpieces.schema.json
-    ...
-  manager/
-    registry_manager.py
-    workpiece_registry_manager.py
-    ...
 omf2/
+  registry/
+    model/
+      v2/
+        modules.yml
+        mqtt_clients.yml
+        stations.yml
+        txt_controllers.yml
+        topics/
+          ccu.yml
+          fts.yml
+          module.yml
+          nodered.yml
+          txt.yml
+        templates/
+          module.connection.yml
+          module.state.yml
+          ccu.control.reset.yml
+          fts.state.yml
+          ...
+        mappings/
+          topic_templates.yml
+      v1/
+        workpieces.yml
+        ...
+    schemas/
+      workpieces.schema.json
+      ...
   assets/
     logos/
       orbis_logo.png
@@ -49,7 +64,8 @@ omf2/
   admin/
     admin_gateway.py
     admin_mqtt_client.py
-    logs_manager.py
+    admin_settings.py
+    logs.py
     helpers/
       admin_utils.py
   ui/
@@ -72,10 +88,6 @@ omf2/
       nodered_processes/
         nodered_processes_tab.py
     admin/
-      generic_steering/
-        generic_steering_tab.py
-      message_center/
-        message_center_tab.py
       admin_settings/
         admin_settings_tab.py
         workpiece_subtab.py
@@ -86,10 +98,18 @@ omf2/
         templates_subtab.py
       logs/
         logs_tab.py
+      generic_steering/
+        generic_steering_tab.py
+      message_center/
+        message_center_tab.py
     components/
       factory_layout.py
       custom_button.py
       status_indicator.py
+    utils/
+      ui_refresh.py          # UI-Refresh-Strategie (request_refresh statt st.rerun)
+                           # Verhindert Race Conditions in MQTT-Callbacks
+                           # Thread-sichere UI-Updates
   config/
     mqtt_settings.yml
     user_roles.yml
@@ -103,10 +123,6 @@ omf2/
       test_workpiece_manager.py
     nodered/
       test_nodered_gateway.py
-    message_center/
-      test_message_center_gateway.py
-    generic_steering/
-      test_generic_steering_gateway.py
     system/
       test_admin_settings.py
       test_logs.py
@@ -199,17 +215,66 @@ omf2/
 
 ---
 
-## 5. Prinzipien für zukünftige Aufgaben und Coding Agents
+## 5. Environment-Handling
+
+### 5.1 Environment-Typen
+Das OMF2 Dashboard unterstützt drei Environment-Modi:
+
+- **🟢 Live**: Real-time MQTT-Verbindung zur echten APS-Fabrik
+  - Direkte Verbindung zu 192.168.0.100:1883
+  - Echte Hardware-Kommunikation
+  - Produktions-Modus
+
+- **🔄 Replay**: Historische Daten-Wiedergabe
+  - Session-Daten aus `data/omf-data/sessions/`
+  - Kontrollierte Test-Szenarien
+  - Reproduzierbare Tests
+
+- **🧪 Mock**: Simulierte Daten für Entwicklung
+  - Simulierte MQTT-Nachrichten
+  - Keine Hardware-Abhängigkeit
+  - Entwicklung und Testing
+
+### 5.2 Environment-Integration
+- **Default Environment**: `mock` für sichere Entwicklung
+- **Environment-Selector**: Im Dashboard-Header mit Beschreibungen
+- **Automatischer Reload**: Bei Environment-Wechsel
+- **MQTT-Client-Reset**: Bei Environment-Wechsel für saubere Verbindungen
+
+### 5.3 Environment-spezifische Konfiguration
+```python
+# Environment-spezifische MQTT-Konfiguration
+environments = {
+    'live': {
+        'broker_host': '192.168.0.100',
+        'broker_port': 1883,
+        'description': 'Real-time MQTT connection'
+    },
+    'replay': {
+        'broker_host': 'localhost',
+        'broker_port': 1883,
+        'description': 'Historical data playback'
+    },
+    'mock': {
+        'broker_host': 'localhost',
+        'broker_port': 1883,
+        'description': 'Simulated data for testing'
+    }
+}
+```
+
+## 6. Prinzipien für zukünftige Aufgaben und Coding Agents
 
 - **Strukturierte Ablage:** Jede neue Komponente/Manager/Client wird nach diesem Muster angelegt.
 - **Modularität:** Domänenübergreifende oder -spezifische Logik strikt trennen.
 - **Referenzmigration:** Bei neuen Aufgaben prüfen, ob Altbestand übernommen werden muss (siehe Punkt 3).
 - **Tests & Dokumentation:** Jede neue Komponente wird mit passenden Tests und Docstrings/README versehen.
+- **Environment-Awareness:** Alle MQTT-Clients müssen Environment-Wechsel unterstützen.
 - **Referenz auf dieses Dokument:** Jede Aufgabenbeschreibung für Coding Agents, die die Projektstruktur betreffen, soll auf dieses Dokument verweisen.
 
 ---
 
-## 6. Beispiel für die Referenz in Coding-Agent-Aufgaben
+## 7. Beispiel für die Referenz in Coding-Agent-Aufgaben
 
 > **Bitte beachte die Vorgaben aus `omf2/projekt-struktur-omf2.md` für die Ablage, Benennung und Modularisierung!**
 

@@ -6,7 +6,7 @@ apps:
     name: "CCU Dashboard"
     description: "Central Control Unit monitoring and control dashboard"
     enabled: true
-    module: "omf2.ui.ccu.overview_tab"
+    module: "omf2.ui.ccu.ccu_overview.ccu_overview_tab"
     icon: "🏭"
     category: "Operations"
     required_permissions: ["read"]
@@ -15,7 +15,7 @@ apps:
     name: "Message Center"
     description: "Central message and notification management"
     enabled: true
-    module: "omf2.ui.system.message_center_tab"
+    module: "omf2.ui.admin.message_center.message_center_tab"
     icon: "💬"
     category: "Communication"
     required_permissions: ["read"]
@@ -24,7 +24,7 @@ apps:
     name: "System Logs"
     description: "System log viewer and analysis tools"
     enabled: true
-    module: "omf2.ui.system.logs_tab"
+    module: "omf2.ui.admin.logs.logs_tab"
     icon: "📝"
     category: "System"
     required_permissions: ["read", "view_logs"]
@@ -33,7 +33,7 @@ apps:
     name: "Admin Settings"
     description: "System administration and configuration management"
     enabled: true
-    module: "omf2.ui.system.admin_settings_tab"
+    module: "omf2.ui.admin.admin_settings.admin_settings_tab"
     icon: "⚙️"
     category: "Administration"
     required_permissions: ["*"]  # Admin only
@@ -43,7 +43,7 @@ apps:
     name: "Factory Steering"
     description: "Generic factory control and steering interface"
     enabled: true
-    module: "omf2.ui.generic_steering.steering_tab"
+    module: "omf2.ui.admin.generic_steering.generic_steering_tab"
     icon: "🎮"
     category: "Control"
     required_permissions: ["read", "control"]

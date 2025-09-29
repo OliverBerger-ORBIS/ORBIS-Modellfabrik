@@ -9,6 +9,7 @@ import yaml
 import streamlit as st
 
 from omf2.common.logger import get_logger
+from omf2.ui.utils.ui_refresh import request_refresh
 
 logger = get_logger(__name__)
 
@@ -40,32 +41,29 @@ class UserManager:
         """Get default roles configuration"""
         return {
             'roles': {
-                'admin': {
+                'administrator': {
                     'name': 'Administrator',
                     'permissions': ['*'],
-                    'ui_components': ['ccu_dashboard', 'message_center', 'system_logs', 'admin_settings', 'steering_factory'],
-                    'color': '#FF4B4B'
+                    'ui_components': ['ccu_dashboard', 'ccu_orders', 'ccu_process', 'ccu_configuration', 'ccu_modules', 'nodered_overview', 'nodered_processes', 'message_center', 'generic_steering', 'system_logs', 'admin_settings'],
+                    'color': '#FF4B4B',
+                    'description': 'Full system access - sees all tabs'
                 },
                 'supervisor': {
                     'name': 'Supervisor', 
                     'permissions': ['read', 'control', 'manage_workflows'],
-                    'ui_components': ['ccu_dashboard', 'message_center', 'system_logs', 'steering_factory'],
-                    'color': '#FF8C00'
+                    'ui_components': ['ccu_dashboard', 'ccu_orders', 'ccu_process', 'ccu_configuration', 'ccu_modules', 'nodered_overview', 'nodered_processes'],
+                    'color': '#FF8C00',
+                    'description': 'CCU and Node-RED tabs access'
                 },
                 'operator': {
                     'name': 'Operator',
                     'permissions': ['read', 'control'],
-                    'ui_components': ['ccu_dashboard', 'message_center'],
-                    'color': '#1f77b4'
-                },
-                'viewer': {
-                    'name': 'Viewer',
-                    'permissions': ['read'],
-                    'ui_components': ['ccu_dashboard'],
-                    'color': '#2ca02c'
+                    'ui_components': ['ccu_dashboard', 'ccu_orders', 'ccu_process', 'ccu_configuration', 'ccu_modules'],
+                    'color': '#1f77b4',
+                    'description': 'CCU tabs only'
                 }
             },
-            'default_role': 'viewer'
+            'default_role': 'operator'
         }
     
     def get_available_roles(self) -> List[str]:
@@ -89,8 +87,20 @@ class UserManager:
     def get_current_user_role(self) -> str:
         """Get current user role from session state"""
         if 'user_role' not in st.session_state:
-            default_role = self._roles_config.get('default_role', 'viewer')
+            default_role = self._roles_config.get('default_role', 'operator')
             st.session_state['user_role'] = default_role
+        
+        # Check if current role is still valid (in case viewer was removed)
+        current_role = st.session_state['user_role']
+        if current_role not in self.get_available_roles():
+            # Reset to default role if current role is no longer available
+            st.session_state['user_role'] = self._roles_config.get('default_role', 'operator')
+            logger.info(f"🔄 Reset invalid role '{current_role}' to default role")
+        
+        # Force cleanup of viewer role if it still exists
+        if current_role == 'viewer':
+            st.session_state['user_role'] = 'operator'
+            logger.info("🧹 Forced cleanup of viewer role - reset to operator")
         
         return st.session_state['user_role']
     
@@ -145,7 +155,7 @@ class UserManager:
         
         if new_role != current_role:
             self.set_user_role(new_role)
-            st.rerun()
+            request_refresh()
         
         # Role information
         role_info = self.get_role_info(current_role)
@@ -183,38 +193,77 @@ class UserManager:
         current_role = self.get_current_user_role()
         ui_components = self.get_role_ui_components(current_role)
         
+        logger.info(f"👤 Current role: {current_role}")
+        logger.info(f"📋 UI components for {current_role}: {ui_components}")
+        
         # Define tab configuration with icons and display names
         all_tabs = {
             'ccu_dashboard': {
                 'icon': '🏭',
                 'name': 'CCU Dashboard',
-                'module': 'omf2.ui.ccu.overview_tab',
+                'module': 'omf2.ui.ccu.ccu_overview.ccu_overview_tab',
                 'function': 'render_ccu_overview_tab'
+            },
+            'ccu_orders': {
+                'icon': '📦',
+                'name': 'CCU Orders',
+                'module': 'omf2.ui.ccu.ccu_orders.ccu_orders_tab',
+                'function': 'render_ccu_orders_tab'
+            },
+            'ccu_process': {
+                'icon': '⚙️',
+                'name': 'CCU Process',
+                'module': 'omf2.ui.ccu.ccu_process.ccu_process_tab',
+                'function': 'render_ccu_process_tab'
+            },
+            'ccu_configuration': {
+                'icon': '⚙️',
+                'name': 'CCU Configuration',
+                'module': 'omf2.ui.ccu.ccu_configuration.ccu_configuration_tab',
+                'function': 'render_ccu_configuration_tab'
+            },
+            'ccu_modules': {
+                'icon': '🔧',
+                'name': 'CCU Modules',
+                'module': 'omf2.ui.ccu.ccu_modules.ccu_modules_tab',
+                'function': 'render_ccu_modules_tab'
+            },
+            'nodered_overview': {
+                'icon': '🔄',
+                'name': 'Node-RED Overview',
+                'module': 'omf2.ui.nodered.nodered_overview.nodered_overview_tab',
+                'function': 'render_nodered_overview_tab'
+            },
+            'nodered_processes': {
+                'icon': '⚙️',
+                'name': 'Node-RED Processes',
+                'module': 'omf2.ui.nodered.nodered_processes.nodered_processes_tab',
+                'function': 'render_nodered_processes_tab'
             },
             'message_center': {
                 'icon': '📨',
-                'name': 'Message Center', 
-                'module': 'omf2.ui.message_center_tab',
+                'name': 'Message Center',
+                'module': 'omf2.ui.admin.message_center.message_center_tab',
                 'function': 'render_message_center_tab'
+            },
+            'generic_steering': {
+                'icon': '🎛️',
+                'name': 'Factory Control',
+                'module': 'omf2.ui.admin.generic_steering.generic_steering_tab',
+                'function': 'render_generic_steering_tab'
             },
             'system_logs': {
                 'icon': '📋',
                 'name': 'System Logs',
-                'module': 'omf2.ui.system.logs_tab',
+                'module': 'omf2.ui.admin.logs.logs_tab',
                 'function': 'render_logs_tab'
             },
             'admin_settings': {
                 'icon': '⚙️',
-                'name': 'Settings',
-                'module': 'omf2.ui.system.admin_settings_tab',
+                'name': 'Admin Settings',
+                'module': 'omf2.ui.admin.admin_settings.admin_settings_tab',
                 'function': 'render_admin_settings_tab'
             },
-            'steering_factory': {
-                'icon': '🎛️',
-                'name': 'Factory Control',
-                'module': 'omf2.ui.admin.steering_tab',
-                'function': 'render_steering_tab'
-            }
         }
         
         # Filter tabs based on role permissions
@@ -222,5 +271,9 @@ class UserManager:
         for tab_key, tab_config in all_tabs.items():
             if tab_key in ui_components:
                 available_tabs[tab_key] = tab_config
+                logger.info(f"✅ Tab '{tab_key}' available for {current_role}")
+            else:
+                logger.info(f"❌ Tab '{tab_key}' not available for {current_role}")
         
+        logger.info(f"📋 Final available tabs: {list(available_tabs.keys())}")
         return available_tabs

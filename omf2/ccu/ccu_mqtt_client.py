@@ -1,182 +1,246 @@
 #!/usr/bin/env python3
 """
-CCU MQTT Client - Singleton implementation for CCU domain
+CCU MQTT Client - Thread-sicherer Singleton für CCU MQTT-Kommunikation
 """
 
 import logging
-import time
-from typing import Any, Dict, List, Optional, Callable
-from collections import defaultdict, deque
+import threading
+import json
+from typing import Dict, List, Optional, Any, Callable
+from omf2.common.message_templates import get_message_templates
+from omf2.common.logger import get_logger
 
-import paho.mqtt.client as mqtt
-
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
-class CCUMqttClient:
-    """Singleton MQTT Client for CCU domain operations"""
+class CCUMQTTClient:
+    """
+    Thread-sicherer Singleton für CCU MQTT-Kommunikation
     
-    def __init__(self, host: str = "localhost", port: int = 1883, 
-                 username: Optional[str] = None, password: Optional[str] = None,
-                 client_id: Optional[str] = None):
-        self.host = host
-        self.port = port
-        self.username = username
-        self.password = password
-        self.client_id = client_id or f"ccu_client_{int(time.time())}"
-        
-        # MQTT client setup
-        self.client = mqtt.Client(client_id=self.client_id, clean_session=True)
-        if username:
-            self.client.username_pw_set(username, password or "")
+    Kapselt alle Verbindungs- und Kommunikationsdetails.
+    Nutzt Registry v2 für Topic-Konfiguration.
+    """
+    
+    _instance = None
+    _lock = threading.Lock()
+    _initialized = False
+    
+    def __new__(cls):
+        if cls._instance is None:
+            with cls._lock:
+                if cls._instance is None:
+                    cls._instance = super().__new__(cls)
+        return cls._instance
+    
+    def __init__(self):
+        if CCUMQTTClient._initialized:
+            return
             
-        self.client.on_connect = self._on_connect
-        self.client.on_disconnect = self._on_disconnect
-        self.client.on_message = self._on_message
+        self.message_templates = get_message_templates()
+        self.client_id = "omf_ccu"  # Dynamisch, wechselt bei jeder Anmeldung
         
-        self.connected = False
-        self._subscribed_topics = set()
-        self._message_buffers = defaultdict(lambda: deque(maxlen=1000))
-        self._callbacks = defaultdict(list)
+        # Thread-sichere Locks
+        self._client_lock = threading.Lock()
+        self._buffer_lock = threading.Lock()
         
-        logger.info(f"🏭 CCU MQTT Client initialized: {self.client_id}")
+        # TODO: MQTT-Broker Settings aus Config laden (cfg_or_env)
+        # self.broker_host = config.get("mqtt.broker.host", "localhost")
+        # self.broker_port = config.get("mqtt.broker.port", 1883)
+        # self.broker_username = config.get("mqtt.broker.username")
+        # self.broker_password = config.get("mqtt.broker.password")
+        
+        # TODO: MQTT-Client initialisieren
+        # self.client = mqtt.Client(client_id=self.client_id)
+        # self.client.on_connect = self._on_connect
+        # self.client.on_message = self._on_message
+        # self.client.on_disconnect = self._on_disconnect
+        
+        # Topic-Buffer für Per-Topic-Buffer Pattern (thread-safe)
+        self.topic_buffers = {}
+        
+        # Published/Subscribed Topics aus Registry
+        self.published_topics = self._get_published_topics()
+        self.subscribed_topics = self._get_subscribed_topics()
+        
+        CCUMQTTClient._initialized = True
+        logger.info("🏗️ CCU MQTT Client initialized")
+    
+    def _get_published_topics(self) -> List[str]:
+        """Lädt Published Topics aus Registry"""
+        try:
+            mqtt_clients = self.message_templates.mqtt_clients
+            ccu_client = mqtt_clients.get('mqtt_clients', {}).get('ccu_mqtt_client', {})
+            return ccu_client.get('published_topics', [])
+        except Exception as e:
+            logger.error(f"❌ Failed to load CCU published topics: {e}")
+            return []
+    
+    def _get_subscribed_topics(self) -> List[str]:
+        """Lädt Subscribed Topics aus Registry"""
+        try:
+            mqtt_clients = self.message_templates.mqtt_clients
+            ccu_client = mqtt_clients.get('mqtt_clients', {}).get('ccu_mqtt_client', {})
+            return ccu_client.get('subscribed_topics', [])
+        except Exception as e:
+            logger.error(f"❌ Failed to load CCU subscribed topics: {e}")
+            return []
     
     def connect(self) -> bool:
-        """Connect to MQTT broker"""
+        """
+        Verbindung zum MQTT-Broker herstellen
+        
+        Returns:
+            True wenn erfolgreich, False bei Fehler
+        """
         try:
-            self.client.connect(self.host, self.port, 60)
-            self.client.loop_start()
+            # TODO: MQTT-Client Verbindung implementieren
+            # self.client.connect(self.broker_host, self.broker_port)
+            # self.client.loop_start()
+            
+            logger.info("🔌 CCU MQTT Client connected (TODO: MQTT integration)")
             return True
+            
         except Exception as e:
-            logger.error(f"❌ CCU MQTT connection failed: {e}")
+            logger.error(f"❌ CCU MQTT Client connection failed: {e}")
             return False
     
     def disconnect(self):
-        """Disconnect from MQTT broker"""
-        self.client.loop_stop()
-        self.client.disconnect()
-        self.connected = False
-        logger.info("🔌 CCU MQTT Client disconnected")
-    
-    def subscribe(self, topic: str, qos: int = 1) -> bool:
-        """Subscribe to a topic"""
-        if topic not in self._subscribed_topics:
-            try:
-                self.client.subscribe(topic, qos)
-                self._subscribed_topics.add(topic)
-                logger.info(f"📬 CCU subscribed to: {topic}")
-                return True
-            except Exception as e:
-                logger.error(f"❌ CCU subscription failed for {topic}: {e}")
-                return False
-        return True
-    
-    def subscribe_many(self, topics: List[str], qos: int = 1) -> bool:
-        """Subscribe to multiple topics"""
-        success = True
-        for topic in topics:
-            if not self.subscribe(topic, qos):
-                success = False
-        return success
-    
-    def publish(self, topic: str, payload: str, qos: int = 1) -> bool:
-        """Publish message to topic"""
+        """Verbindung zum MQTT-Broker trennen"""
         try:
-            result = self.client.publish(topic, payload, qos)
-            if result.rc == mqtt.MQTT_ERR_SUCCESS:
-                logger.info(f"📤 CCU published to {topic}: {payload[:100]}...")
-                return True
-            else:
-                logger.error(f"❌ CCU publish failed to {topic}: {result.rc}")
-                return False
+            # TODO: MQTT-Client Disconnect implementieren
+            # self.client.loop_stop()
+            # self.client.disconnect()
+            
+            logger.info("🔌 CCU MQTT Client disconnected (TODO: MQTT integration)")
+            
         except Exception as e:
-            logger.error(f"❌ CCU publish exception for {topic}: {e}")
+            logger.error(f"❌ CCU MQTT Client disconnect failed: {e}")
+    
+    def publish(self, topic: str, message: Dict[str, Any], qos: int = None, retain: bool = None) -> bool:
+        """
+        Message auf Topic publizieren
+        
+        Args:
+            topic: MQTT Topic
+            message: Message-Dict
+            qos: QoS-Level (wird aus Registry geladen wenn None)
+            retain: Retain-Flag (wird aus Registry geladen wenn None)
+            
+        Returns:
+            True wenn erfolgreich, False bei Fehler
+        """
+        try:
+            # QoS/Retain aus Registry laden wenn nicht angegeben
+            if qos is None or retain is None:
+                topic_qos, topic_retain = self.message_templates.get_topic_config(topic)
+                qos = qos if qos is not None else topic_qos
+                retain = retain if retain is not None else topic_retain
+            
+            # TODO: MQTT-Client Publish implementieren
+            # import json
+            # payload = json.dumps(message)
+            # result = self.client.publish(topic, payload, qos=qos, retain=retain)
+            # return result.rc == 0
+            
+            logger.info(f"📤 Published to {topic}: {message} (TODO: MQTT integration)")
+            return True
+            
+        except Exception as e:
+            logger.error(f"❌ Publish failed for topic {topic}: {e}")
             return False
     
-    def publish_json(self, topic: str, payload: Dict[str, Any], qos: int = 1) -> bool:
-        """Publish JSON payload to topic"""
-        import json
-        return self.publish(topic, json.dumps(payload), qos)
-    
-    def get_buffer(self, topic: str) -> deque:
-        """Get message buffer for a topic"""
-        return self._message_buffers[topic]
-    
-    def add_callback(self, topic_pattern: str, callback: Callable[[str, Dict[str, Any]], None]):
-        """Add callback for topic pattern"""
-        self._callbacks[topic_pattern].append(callback)
-        logger.info(f"📞 CCU callback added for pattern: {topic_pattern}")
-    
-    def _on_connect(self, client, userdata, flags, rc):
-        """MQTT on_connect callback"""
-        if rc == 0:
-            self.connected = True
-            logger.info("✅ CCU MQTT Client connected")
-        else:
-            logger.error(f"❌ CCU MQTT connection failed with code: {rc}")
-    
-    def _on_disconnect(self, client, userdata, rc):
-        """MQTT on_disconnect callback"""
-        self.connected = False
-        logger.info(f"🔌 CCU MQTT Client disconnected (code: {rc})")
-    
-    def _on_message(self, client, userdata, msg):
-        """MQTT on_message callback"""
+    def subscribe(self, topic: str, callback: Callable = None) -> bool:
+        """
+        Topic subscriben
+        
+        Args:
+            topic: MQTT Topic
+            callback: Callback-Funktion für eingehende Messages
+            
+        Returns:
+            True wenn erfolgreich, False bei Fehler
+        """
         try:
-            topic = msg.topic
-            payload_str = msg.payload.decode('utf-8')
+            # TODO: MQTT-Client Subscribe implementieren
+            # self.client.subscribe(topic)
+            # if callback:
+            #     self.client.message_callback_add(topic, callback)
             
-            # Try to parse as JSON
-            try:
-                import json
-                payload = json.loads(payload_str)
-            except json.JSONDecodeError:
-                payload = {"raw": payload_str}
-            
-            # Store in buffer
-            self._message_buffers[topic].append({
-                "timestamp": time.time(),
-                "topic": topic,
-                "payload": payload
-            })
-            
-            # Execute callbacks
-            import fnmatch
-            for pattern, callbacks in self._callbacks.items():
-                if fnmatch.fnmatch(topic, pattern):
-                    for callback in callbacks:
-                        try:
-                            callback(topic, payload)
-                        except Exception as e:
-                            logger.error(f"❌ CCU callback error for {topic}: {e}")
-            
-            logger.debug(f"📨 CCU received: {topic} -> {payload_str[:100]}...")
+            logger.info(f"📥 Subscribed to {topic} (TODO: MQTT integration)")
+            return True
             
         except Exception as e:
-            logger.error(f"❌ CCU message processing error: {e}")
+            logger.error(f"❌ Subscribe failed for topic {topic}: {e}")
+            return False
+    
+    def get_buffer(self, topic: str) -> Optional[Dict]:
+        """
+        Letzte Message aus Topic-Buffer abrufen (thread-safe)
+        
+        Args:
+            topic: MQTT Topic
+            
+        Returns:
+            Letzte Message oder None
+        """
+        try:
+            with self._buffer_lock:
+                return self.topic_buffers.get(topic)
+        except Exception as e:
+            logger.error(f"❌ Failed to get buffer for topic {topic}: {e}")
+            return None
+    
+    def get_all_buffers(self) -> Dict[str, Dict]:
+        """
+        Alle Topic-Buffer abrufen (thread-safe)
+        
+        Returns:
+            Dict mit allen Topic-Buffern
+        """
+        try:
+            with self._buffer_lock:
+                return self.topic_buffers.copy()
+        except Exception as e:
+            logger.error(f"❌ Failed to get all buffers: {e}")
+            return {}
+    
+    def _on_connect(self, client, userdata, flags, rc):
+        """MQTT on_connect Callback"""
+        if rc == 0:
+            logger.info("✅ CCU MQTT Client connected successfully")
+            # TODO: Subscriptions aktivieren
+            # for topic in self.subscribed_topics:
+            #     self.subscribe(topic)
+        else:
+            logger.error(f"❌ CCU MQTT Client connection failed: {rc}")
+    
+    def _on_message(self, client, userdata, msg):
+        """MQTT on_message Callback"""
+        try:
+            topic = msg.topic
+            payload = msg.payload.decode('utf-8')
+            
+            # TODO: JSON-Parsing und Buffer-Update
+            # import json
+            # message = json.loads(payload)
+            # self.topic_buffers[topic] = message
+            
+            logger.debug(f"📥 Received on {topic}: {payload}")
+            
+        except Exception as e:
+            logger.error(f"❌ Message processing failed: {e}")
+    
+    def _on_disconnect(self, client, userdata, rc):
+        """MQTT on_disconnect Callback"""
+        logger.info("🔌 CCU MQTT Client disconnected")
 
 
-# Singleton instance
-_ccu_mqtt_client = None
-
-
-def get_ccu_mqtt_client(**kwargs) -> CCUMqttClient:
-    """Get singleton CCU MQTT client instance"""
-    global _ccu_mqtt_client
-    if _ccu_mqtt_client is None:
-        _ccu_mqtt_client = CCUMqttClient(**kwargs)
-        logger.info("🏭 CCU MQTT Client singleton created")
-    return _ccu_mqtt_client
-
-
-def cleanup_ccu_mqtt_client():
-    """Cleanup CCU MQTT client singleton"""
-    global _ccu_mqtt_client
-    if _ccu_mqtt_client:
-        _ccu_mqtt_client.disconnect()
-        _ccu_mqtt_client = None
-        logger.info("🧹 CCU MQTT Client singleton cleaned up")
-
-
-# Export singleton instance
-ccu_mqtt_client = get_ccu_mqtt_client()
+# Singleton Factory
+def get_ccu_mqtt_client() -> CCUMQTTClient:
+    """
+    Factory-Funktion für CCU MQTT Client Singleton
+    
+    Returns:
+        CCU MQTT Client Singleton Instance
+    """
+    return CCUMQTTClient()

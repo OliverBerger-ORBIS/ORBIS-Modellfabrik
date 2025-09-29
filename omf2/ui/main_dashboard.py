@@ -8,6 +8,7 @@ from typing import Dict, Any, Optional
 import importlib
 
 from omf2.common.logger import get_logger
+from omf2.ui.utils.ui_refresh import request_refresh
 from omf2.ui.user_manager import UserManager
 
 logger = get_logger(__name__)
@@ -58,21 +59,27 @@ class MainDashboard:
     
     def _render_environment_selector(self):
         """Render environment selector"""
-        current_env = st.session_state.get('current_environment', 'development')
+        current_env = st.session_state.get('current_environment', 'mock')
         
-        environments = ['development', 'staging', 'production']
+        environments = ['live', 'replay', 'mock']
+        env_descriptions = {
+            'live': '🟢 Live - Real-time MQTT connection',
+            'replay': '🔄 Replay - Historical data playback',
+            'mock': '🧪 Mock - Simulated data for testing'
+        }
         
         new_env = st.selectbox(
             "Environment:",
             environments,
             index=environments.index(current_env) if current_env in environments else 0,
-            key="env_selector"
+            key="env_selector",
+            format_func=lambda x: env_descriptions[x]
         )
         
         if new_env != current_env:
             st.session_state['current_environment'] = new_env
             logger.info(f"🌍 Environment changed to: {new_env}")
-            st.rerun()
+            request_refresh()
     
     def _render_sidebar(self):
         """Render sidebar with controls and status"""
@@ -89,7 +96,7 @@ class MainDashboard:
         
         # Refresh button
         if st.sidebar.button("🔄 Refresh Dashboard"):
-            st.rerun()
+            request_refresh()
     
     def _render_language_selector(self):
         """Render language selector in sidebar"""
@@ -117,7 +124,7 @@ class MainDashboard:
             i18n.set_language(new_lang)
             st.session_state['current_language'] = new_lang
             logger.info(f"🌐 Language changed to: {new_lang}")
-            st.rerun()
+            request_refresh()
     
     def _render_connection_status(self):
         """Render connection status in sidebar"""
@@ -145,6 +152,9 @@ class MainDashboard:
         # Get tab configuration based on user role
         tab_config = self.user_manager.get_tab_config()
         
+        logger.info(f"📋 Tab configuration: {tab_config}")
+        logger.info(f"📋 Available tabs: {list(tab_config.keys()) if tab_config else 'None'}")
+        
         if not tab_config:
             st.warning("⚠️ No tabs available for your current role")
             self.user_manager.render_permissions_info()
@@ -161,16 +171,21 @@ class MainDashboard:
             tab_labels.append(f"{icon} {name}")
         
         # Create tabs
+        logger.info(f"📑 Creating {len(tab_keys)} tabs: {tab_keys}")
         tabs = st.tabs(tab_labels)
         
         # Render tab content
         for i, tab_key in enumerate(tab_keys):
             with tabs[i]:
+                logger.info(f"📋 Rendering tab {i+1}/{len(tab_keys)}: {tab_key}")
                 self._render_tab_content(tab_key, tab_config[tab_key])
     
     def _render_tab_content(self, tab_key: str, tab_config: Dict[str, Any]):
         """Render content for a specific tab"""
         try:
+            # Log tab navigation
+            logger.info(f"🔄 Rendering tab: {tab_key}")
+            
             # Check if component is already loaded
             if tab_key not in self._loaded_components:
                 module_name = tab_config.get('module')
@@ -188,7 +203,8 @@ class MainDashboard:
                     logger.info(f"✅ Loaded component: {tab_key}")
                 except (ImportError, AttributeError) as e:
                     logger.warning(f"⚠️ Failed to load component {tab_key}: {e}")
-                    self._loaded_components[tab_key] = lambda: self._render_dummy_tab(tab_key, str(e))
+                    error_msg = str(e)
+                    self._loaded_components[tab_key] = lambda: self._render_dummy_tab(tab_key, error_msg)
             
             # Render the component
             component_function = self._loaded_components[tab_key]

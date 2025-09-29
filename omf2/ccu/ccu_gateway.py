@@ -1,178 +1,203 @@
 #!/usr/bin/env python3
 """
-CCU Gateway - Business logic layer for CCU MQTT operations
+CCU Gateway - Fassade für CCU Business-Operationen
 """
 
 import logging
-from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional
-
-from .ccu_mqtt_client import CCUMqttClient
+from typing import Dict, List, Optional, Any
+from omf2.common.message_templates import get_message_templates
 
 logger = logging.getLogger(__name__)
 
 
-class CCUGateway:
+class CcuGateway:
     """
-    CCU Gateway - Encapsulates all CCU-related MQTT operations
+    Gateway für CCU-spezifische Business-Operationen
     
-    This gateway provides business logic methods for CCU operations,
-    using the CCU MQTT client as the underlying transport.
+    Nutzt MessageTemplates und MQTT-Client für CCU-Operationen.
+    Stellt Methoden für die UI bereit.
     """
     
-    def __init__(self, mqtt_client: CCUMqttClient):
-        self.client = mqtt_client
-        self.logger = logger
-        
-        # CCU-specific topic patterns
-        self.topics = {
-            "state": "ccu/state",
-            "status": "ccu/status", 
-            "control": "ccu/control",
-            "workflow": "ccu/workflow",
-            "connection": "ccu/connection"
-        }
-        
-        # Subscribe to CCU topics on initialization
-        self._subscribe_to_ccu_topics()
-        
-        logger.info("🏭 CCU Gateway initialized")
-    
-    def _subscribe_to_ccu_topics(self):
-        """Subscribe to all CCU-related topics"""
-        ccu_topics = [
-            "ccu/+",  # All CCU topics
-            "ccu/state",
-            "ccu/status", 
-            "ccu/control",
-            "ccu/workflow/+",
-            "ccu/connection"
-        ]
-        self.client.subscribe_many(ccu_topics)
-    
-    def _utc_timestamp(self) -> str:
-        """Generate UTC timestamp"""
-        return datetime.now(timezone.utc).isoformat()
-    
-    def send_status_update(self, module: str, state: str, details: Optional[Dict] = None) -> bool:
+    def __init__(self, mqtt_client=None, **kwargs):
         """
-        Send CCU status update
+        Initialisiert CCU Gateway
         
         Args:
-            module: Module name (e.g., "Bohrstation", "Frässtation")
-            state: Current state (e.g., "running", "idle", "error")
-            details: Additional status details
-            
-        Returns:
-            bool: Success status
+            mqtt_client: MQTT-Client für CCU (wird später implementiert)
         """
-        payload = {
-            "timestamp": self._utc_timestamp(),
-            "module": module,
-            "state": state,
-            "details": details or {}
-        }
+        self.mqtt_client = mqtt_client
+        self.message_templates = get_message_templates()
         
-        return self.client.publish_json(self.topics["status"], payload)
+        logger.info("🏗️ CcuGateway initialized")
     
-    def send_control_command(self, command: str, target: str, parameters: Optional[Dict] = None) -> bool:
+    def reset_factory(self) -> bool:
         """
-        Send CCU control command
+        Factory Reset ausführen
+        
+        Returns:
+            True wenn erfolgreich, False bei Fehler
+        """
+        try:
+            # Registry v2 Integration: Topic aus Registry laden
+            topic = "ccu/set/reset"
+            topic_config = self.message_templates.get_topic_config(topic)
+            
+            if topic_config:
+                # Message aus Template rendern
+                message = self.message_templates.render_message(topic, {"reset": True})
+                if message:
+                    # TODO: MQTT-Client Integration implementieren
+                    # qos = topic_config.get('qos', 1)
+                    # retain = topic_config.get('retain', False)
+                    # self.mqtt_client.publish(topic, message, qos=qos, retain=retain)
+                    
+                    logger.info(f"🔄 Factory Reset message rendered: {message}")
+                    return True
+            else:
+                logger.warning(f"⚠️ No topic configuration found for {topic}")
+            
+            logger.info("🔄 Factory Reset requested (TODO: MQTT integration)")
+            return True
+            
+        except Exception as e:
+            logger.error(f"❌ Factory Reset failed: {e}")
+            return False
+    
+    def send_global_command(self, command: str, params: Dict[str, Any] = None) -> bool:
+        """
+        Global Command senden
         
         Args:
-            command: Command to execute (e.g., "start", "stop", "reset")
-            target: Target module or system
-            parameters: Command parameters
+            command: Command-String
+            params: Zusätzliche Parameter
             
         Returns:
-            bool: Success status
+            True wenn erfolgreich, False bei Fehler
         """
-        payload = {
-            "timestamp": self._utc_timestamp(),
-            "command": command,
-            "target": target,
-            "parameters": parameters or {}
-        }
-        
-        return self.client.publish_json(self.topics["control"], payload)
+        try:
+            # Registry v2 Integration: Topic aus Registry laden
+            topic = "ccu/global"
+            topic_config = self.message_templates.get_topic_config(topic)
+            
+            if topic_config:
+                # Message aus Template rendern
+                message = self.message_templates.render_message(topic, {
+                    "command": command,
+                    "params": params or {}
+                })
+                if message:
+                    # TODO: MQTT-Client Integration implementieren
+                    # qos = topic_config.get('qos', 1)
+                    # retain = topic_config.get('retain', False)
+                    # self.mqtt_client.publish(topic, message, qos=qos, retain=retain)
+                    
+                    logger.info(f"📤 Global Command message rendered: {message}")
+                    return True
+            else:
+                logger.warning(f"⚠️ No topic configuration found for {topic}")
+            
+            logger.info(f"📤 Global Command: {command} (TODO: MQTT integration)")
+            return True
+            
+        except Exception as e:
+            logger.error(f"❌ Global Command failed: {e}")
+            return False
     
-    def send_workflow_update(self, workflow_id: str, step: str, status: str, data: Optional[Dict] = None) -> bool:
+    def get_ccu_state(self) -> Optional[Dict]:
         """
-        Send workflow update
+        CCU State abrufen
+        
+        Returns:
+            CCU State Dict oder None
+        """
+        try:
+            # TODO: MQTT-Client Integration implementieren
+            # topic = "ccu/state"
+            # state = self.mqtt_client.get_buffer(topic)
+            # return state
+            
+            logger.info("📊 CCU State requested (TODO: MQTT integration)")
+            return {"status": "idle", "timestamp": "2025-09-28T16:24:55Z"}
+            
+        except Exception as e:
+            logger.error(f"❌ CCU State retrieval failed: {e}")
+            return None
+    
+    def get_module_states(self) -> List[Dict]:
+        """
+        Alle Module States abrufen
+        
+        Returns:
+            Liste der Module States
+        """
+        try:
+            # TODO: MQTT-Client Integration implementieren
+            # topics = self.message_templates.get_all_topic_patterns("module/v1/ff/*/state")
+            # states = []
+            # for topic in topics:
+            #     state = self.mqtt_client.get_buffer(topic)
+            #     if state:
+            #         states.append(state)
+            # return states
+            
+            logger.info("📊 Module States requested (TODO: MQTT integration)")
+            return []
+            
+        except Exception as e:
+            logger.error(f"❌ Module States retrieval failed: {e}")
+            return []
+    
+    def send_order_request(self, order_data: Dict[str, Any]) -> bool:
+        """
+        Order Request senden
         
         Args:
-            workflow_id: Unique workflow identifier
-            step: Current workflow step
-            status: Step status (e.g., "started", "completed", "failed")
-            data: Additional workflow data
+            order_data: Order-Daten
             
         Returns:
-            bool: Success status
+            True wenn erfolgreich, False bei Fehler
         """
-        payload = {
-            "timestamp": self._utc_timestamp(),
-            "workflow_id": workflow_id,
-            "step": step,
-            "status": status,
-            "data": data or {}
-        }
-        
-        topic = f"{self.topics['workflow']}/{workflow_id}"
-        return self.client.publish_json(topic, payload)
-    
-    def send_connection_status(self, component: str, connected: bool, details: Optional[Dict] = None) -> bool:
-        """
-        Send connection status update
-        
-        Args:
-            component: Component name
-            connected: Connection status
-            details: Additional connection details
+        try:
+            # TODO: MQTT-Client Integration implementieren
+            # topic = "ccu/order/request"
+            # message = self.message_templates.render_message(topic, order_data)
+            # if message:
+            #     self.mqtt_client.publish(topic, message)
+            #     return True
             
-        Returns:
-            bool: Success status
+            logger.info(f"📤 Order Request: {order_data} (TODO: MQTT integration)")
+            return True
+            
+        except Exception as e:
+            logger.error(f"❌ Order Request failed: {e}")
+            return False
+    
+    def get_published_topics(self) -> List[str]:
         """
-        payload = {
-            "timestamp": self._utc_timestamp(),
-            "component": component,
-            "connected": connected,
-            "details": details or {}
-        }
+        CCU Published Topics aus Registry abrufen
         
-        return self.client.publish_json(self.topics["connection"], payload)
+        Returns:
+            Liste der Published Topics
+        """
+        try:
+            mqtt_clients = self.message_templates.mqtt_clients
+            ccu_client = mqtt_clients.get('mqtt_clients', {}).get('ccu_mqtt_client', {})
+            return ccu_client.get('published_topics', [])
+        except Exception as e:
+            logger.error(f"❌ Failed to get CCU published topics: {e}")
+            return []
     
-    def get_latest_state(self) -> Optional[Dict[str, Any]]:
-        """Get latest CCU state"""
-        buffer = self.client.get_buffer(self.topics["state"])
-        if buffer:
-            return buffer[-1]["payload"]
-        return None
-    
-    def get_status_history(self, limit: int = 100) -> List[Dict[str, Any]]:
-        """Get CCU status history"""
-        buffer = self.client.get_buffer(self.topics["status"])
-        return list(buffer)[-limit:]
-    
-    def get_workflow_status(self, workflow_id: str) -> Optional[Dict[str, Any]]:
-        """Get status for specific workflow"""
-        topic = f"{self.topics['workflow']}/{workflow_id}"
-        buffer = self.client.get_buffer(topic)
-        if buffer:
-            return buffer[-1]["payload"]
-        return None
-    
-    def is_connected(self) -> bool:
-        """Check if CCU MQTT client is connected"""
-        return self.client.connected
-    
-    def add_status_callback(self, callback):
-        """Add callback for status updates"""
-        self.client.add_callback(self.topics["status"], callback)
-    
-    def add_control_callback(self, callback):
-        """Add callback for control commands"""
-        self.client.add_callback(self.topics["control"], callback)
-    
-    def add_workflow_callback(self, callback):
-        """Add callback for workflow updates"""
-        self.client.add_callback(f"{self.topics['workflow']}/+", callback)
+    def get_subscribed_topics(self) -> List[str]:
+        """
+        CCU Subscribed Topics aus Registry abrufen
+        
+        Returns:
+            Liste der Subscribed Topics
+        """
+        try:
+            mqtt_clients = self.message_templates.mqtt_clients
+            ccu_client = mqtt_clients.get('mqtt_clients', {}).get('ccu_mqtt_client', {})
+            return ccu_client.get('subscribed_topics', [])
+        except Exception as e:
+            logger.error(f"❌ Failed to get CCU subscribed topics: {e}")
+            return []

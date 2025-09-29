@@ -36,11 +36,9 @@ class I18nManager:
                         'admin': 'Administrator',
                         'supervisor': 'Supervisor', 
                         'operator': 'Operator',
-                        'viewer': 'Betrachter'
                     },
                     'tabs': {
                         'ccu_dashboard': 'CCU Dashboard',
-                        'message_center': 'Nachrichten-Zentrale',
                         'system_logs': 'System-Logs',
                         'admin_settings': 'Admin-Einstellungen',
                         'steering_factory': 'Fabrik-Steuerung'
@@ -67,11 +65,9 @@ class I18nManager:
                         'admin': 'Administrator',
                         'supervisor': 'Supervisor',
                         'operator': 'Operator', 
-                        'viewer': 'Viewer'
                     },
                     'tabs': {
                         'ccu_dashboard': 'CCU Dashboard',
-                        'message_center': 'Message Center',
                         'system_logs': 'System Logs',
                         'admin_settings': 'Admin Settings',
                         'steering_factory': 'Factory Control'
@@ -98,11 +94,9 @@ class I18nManager:
                         'admin': 'Administrateur',
                         'supervisor': 'Superviseur',
                         'operator': 'Opérateur',
-                        'viewer': 'Observateur'
                     },
                     'tabs': {
                         'ccu_dashboard': 'Tableau de bord CCU',
-                        'message_center': 'Centre de messages',
                         'system_logs': 'Journaux système',
                         'admin_settings': 'Paramètres admin',
                         'steering_factory': 'Contrôle usine'

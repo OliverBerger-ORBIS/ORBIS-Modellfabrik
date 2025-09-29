@@ -9,7 +9,6 @@ mqtt_clients:
   # Admin MQTT Client (MessageTemplateGenerator)
   admin_mqtt_client:
     client_id: "omf_admin"  
-    # role: "message_center und generic_steering"
     # functions: ["template_generation", "system_monitoring", "debug_tools"]
     published_topics:
       # Admin publiziert ALLES (Wildcard '*')

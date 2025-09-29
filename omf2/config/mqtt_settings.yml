@@ -1,51 +1,62 @@
 # MQTT Settings Configuration for OMF2
 # This file contains technical MQTT broker settings and environment configurations
 
+# Default MQTT settings
+mqtt:
+  host: "localhost"
+  port: 1883
+  username: ""
+  password: ""
+  keepalive: 60
+  clean_session: true
+  connection_timeout: 60
+  qos_default: 1
+  buffer_size: 1000
+  message_history_size: 10000
+
+# Environment-specific configurations
 environments:
   live:
     description: "Live production environment"
-    host: "localhost"
-    port: 1883
-    username: ""
-    password: ""
-    client_id_prefix: "omf2_live"
-    enabled: true
-    tls: false
-    keepalive: 60
-    clean_session: true
+    mqtt:
+      host: "192.168.0.100"  # APS-Fabrik MQTT-Broker
+      port: 1883
+      username: "default"
+      password: "default"
+      client_id: "omf_dashboard_live"
+      enabled: true
+      tls: false
+      keepalive: 60
+      clean_session: true
     
   replay:
     description: "Replay/simulation environment"
-    host: "localhost"
-    port: 1883
-    username: ""
-    password: ""
-    client_id_prefix: "omf2_replay"
-    enabled: true
-    tls: false
-    keepalive: 60
-    clean_session: true
+    mqtt:
+      host: "localhost"
+      port: 1883
+      username: ""
+      password: ""
+      client_id: "omf_dashboard_replay"
+      enabled: true
+      tls: false
+      keepalive: 45  # Wie in REPLAY_CFG
+      clean_session: true
     
   mock:
     description: "Mock/testing environment"
-    host: "localhost"
-    port: 1883
-    username: ""
-    password: ""
-    client_id_prefix: "omf2_mock"
-    enabled: true
-    tls: false
-    keepalive: 60
-    clean_session: true
+    mqtt:
+      host: "mock"  # Keine echte MQTT-Verbindung
+      port: 0       # Wie in funktionierender Implementierung
+      username: ""
+      password: ""
+      client_id: "omf_dashboard_mock"
+      enabled: false  # Mock ist deaktiviert
+      tls: false
+      keepalive: 60
+      clean_session: true
 
 # Default environment selection
-default_environment: "replay"
-
-# Global MQTT settings
-connection_timeout: 60
-qos_default: 1
-buffer_size: 1000
-message_history_size: 10000
+default_environment: "mock"
 
 # Logging settings for MQTT
 logging:

@@ -1,7 +1,7 @@
 """
-CCU UI Components
+CCU UI Components - Central Control Unit User Interface
 """
 
-from .overview_tab import CCUOverviewTab
+from .ccu_overview.ccu_overview_tab import render_ccu_overview_tab
 
-__all__ = ["CCUOverviewTab"]
+__all__ = ["render_ccu_overview_tab"]
