@@ -23,7 +23,7 @@ environments:
       port: 1883
       username: "default"
       password: "default"
-      client_id: "omf_dashboard_live"
+      client_id: "omf_live"
       enabled: true
       tls: false
       keepalive: 60
@@ -36,7 +36,7 @@ environments:
       port: 1883
       username: ""
       password: ""
-      client_id: "omf_dashboard_replay"
+      client_id: "omf_replay"
       enabled: true
       tls: false
       keepalive: 45  # Wie in REPLAY_CFG
@@ -49,7 +49,7 @@ environments:
       port: 0       # Wie in funktionierender Implementierung
       username: ""
       password: ""
-      client_id: "omf_dashboard_mock"
+      client_id: "omf_mock"
       enabled: false  # Mock ist deaktiviert
       tls: false
       keepalive: 60

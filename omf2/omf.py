@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import logging
 import sys
+import atexit
 from pathlib import Path
 
 # Add project root to Python path
@@ -28,6 +29,28 @@ from omf2.ui.utils.ui_refresh import request_refresh, consume_refresh
 # Configure logging
 logger = get_logger("omf2.dashboard")
 
+def cleanup_resources():
+    """Cleanup resources on application exit"""
+    try:
+        logger.info("🧹 Cleaning up resources on exit...")
+        
+        # Disconnect MQTT clients
+        if 'admin_mqtt_client' in st.session_state:
+            admin_client = st.session_state.get('admin_mqtt_client')
+            if admin_client and hasattr(admin_client, 'disconnect'):
+                admin_client.disconnect()
+                logger.info("🔌 Admin MQTT Client disconnected")
+        
+        # Clear session state
+        st.session_state.clear()
+        logger.info("🧹 Session state cleared")
+        
+    except Exception as e:
+        logger.error(f"❌ Error during cleanup: {e}")
+
+# Register cleanup function (signal handlers don't work in Streamlit)
+atexit.register(cleanup_resources)
+
 def setup_page_config():
     """Configure Streamlit page settings"""
     st.set_page_config(
@@ -43,11 +66,11 @@ def setup_page_config():
     )
 
 def initialize_session_state():
-    """Initialize Streamlit session state with default values"""
+    """Initialize Streamlit session state with default values - EXACT like old dashboard"""
     defaults = {
-        'user_role': 'operator',
+        'user_role': 'administrator',  # DEFAULT: Administrator
         'current_language': 'de',
-        'current_environment': 'mock',
+        'current_environment': 'mock',  # DEFAULT: Mock (stabiler)
         'initialized': False,
         'mqtt_clients': {},
         'ui_managers': {}
@@ -83,6 +106,28 @@ def main():
         # Initialize client factory in session state
         if 'client_factory' not in st.session_state:
             st.session_state['client_factory'] = get_client_factory()
+        
+        # Initialize admin MQTT client immediately (like old dashboard)
+        if 'admin_mqtt_client' not in st.session_state:
+            from omf2.admin.admin_mqtt_client import get_admin_mqtt_client
+            st.session_state['admin_mqtt_client'] = get_admin_mqtt_client()
+            logger.info("🔌 Admin MQTT Client initialized on startup")
+        
+        # Initialize log buffer (like old dashboard)
+        if 'log_buffer' not in st.session_state:
+            from collections import deque
+            st.session_state['log_buffer'] = deque(maxlen=1000)
+            logger.info("📋 Log buffer initialized")
+            
+            # Add some test logs to buffer
+            st.session_state['log_buffer'].append("2025-09-29 14:00:00 [INFO] omf2.dashboard: OMF2 Dashboard started")
+            st.session_state['log_buffer'].append("2025-09-29 14:00:01 [INFO] omf2.admin: Admin MQTT Client initialized")
+            st.session_state['log_buffer'].append("2025-09-29 14:00:02 [INFO] omf2.ui: Main Dashboard rendered")
+            
+            # Add more test logs for demonstration
+            st.session_state['log_buffer'].append("2025-09-29 14:00:03 [DEBUG] omf2.message_center: Test message generation ready")
+            st.session_state['log_buffer'].append("2025-09-29 14:00:04 [INFO] omf2.mqtt: MQTT connection established")
+            st.session_state['log_buffer'].append("2025-09-29 14:00:05 [WARNING] omf2.system: Mock mode active - no real MQTT connection")
         
         # Create and render main dashboard
         if 'main_dashboard' not in st.session_state:

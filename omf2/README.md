@@ -1,20 +1,20 @@
 # OMF2 - Modular Architecture for ORBIS Modellfabrik
 
 **Version: 2.0.0**  
-**Status: VOLLSTÄNDIG IMPLEMENTIERT** ✅  
+**Status: IN ENTWICKLUNG** 🚧  
 **Datum: 2025-09-29**  
-**Tests: 55 Tests erfolgreich** ✅
+**Tests: Teilweise implementiert** ⚠️
 
 ## Overview
 
 OMF2 implements a **gekapselte MQTT-Architektur** for the ORBIS Modellfabrik with domain-specific MQTT clients and gateways. This architecture provides better separation of concerns, improved testability, and cleaner code organization.
 
-**✅ IMPLEMENTIERTE FEATURES:**
-- Thread-sichere Singleton-Pattern für alle Komponenten
-- Registry v2 Integration in allen Gateways
-- Vollständige Test-Abdeckung (55 Tests)
-- Error-Handling und Performance-Optimierung
-- Robuste gekapselte MQTT-Kommunikation
+**🚧 IMPLEMENTIERUNGSSTATUS:**
+- ✅ Thread-sichere Singleton-Pattern für MQTT-Clients
+- ✅ Registry v2 Integration in Gateways (teilweise)
+- ⚠️ Test-Abdeckung (in Entwicklung)
+- ⚠️ Error-Handling (teilweise implementiert)
+- ⚠️ MQTT-Kommunikation (Mock-Mode funktional)
 
 ## Architecture
 
@@ -80,26 +80,19 @@ omf2/
 │       ├── admin_settings/
 │       │   └── admin_settings_tab.py # Admin Settings Tab
 │       └── logs/
-│           └── admin_logs_tab.py    # System Logs Tab
-├── registry/                        # Registry v2 (Moved to Project Root)
-│   └── model/v2/
-│       ├── modules.yml              # UI Modules Configuration
-│       ├── stations.yml             # Physical Stations
-│       ├── txt_controllers.yml      # TXT Controllers
-│       ├── mqtt_clients.yml         # MQTT Client Configuration
-│       ├── topics/                  # Topic Definitions
-│       │   ├── ccu.yml              # CCU Topics
-│       │   ├── fts.yml              # FTS Topics
-│       │   ├── module.yml           # Module Topics
-│       │   ├── nodered.yml          # Node-RED Topics
-│       │   └── txt.yml              # TXT Topics
-│       ├── templates/               # Message Templates
-│       │   ├── module.connection.yml
-│       │   ├── module.state.yml
-│       │   ├── ccu.control.reset.yml
-│       │   └── fts.state.yml
-│       └── mappings/
-│           └── topic_templates.yml  # Topic-Template Mappings
+│           └── logs_tab.py          # System Logs Tab
+├── assets/                          # Static Assets
+│   ├── logos/                       # Company and Product Logos
+│   ├── icons/                       # UI Icons (PNG, SVG)
+│   └── templates/                   # HTML Templates
+├── config/                          # Configuration Files
+│   ├── mqtt_settings.yml            # MQTT Configuration
+│   ├── user_roles.yml               # User Role Configuration
+│   └── apps.yml                     # App Configuration
+├── common/                          # Common Components
+│   ├── message_templates.py         # Message Templates Singleton
+│   ├── logger.py                    # Logging Configuration
+│   └── i18n.py                      # Internationalization
 └── tests/                           # Test Suite
     ├── test_message_templates.py    # Message Templates Tests
     ├── test_ui_components.py        # UI Components Tests
@@ -115,7 +108,7 @@ omf2/
 └── registry/                        # Data Registry (MOVED TO PROJECT ROOT)
 ```
 
-## ✅ IMPLEMENTIERUNGSÜBERSICHT
+## 🚧 IMPLEMENTIERUNGSSTATUS
 
 ### **📁 IMPLEMENTIERTE KOMPONENTEN:**
 
@@ -127,23 +120,23 @@ omf2/
 - ✅ **AdminGateway** (`omf2/admin/admin_gateway.py`)
 
 **Registry v2 Integration:**
-- ✅ **Topics, Templates, Mappings** (`omf2/registry/model/v2/`)
-- ✅ **Vollständige Registry v2** implementiert
+- ✅ **Topics, Templates, Mappings** (`registry/model/v2/`)
+- ⚠️ **Registry v2** (teilweise implementiert)
 
 **UI-Komponenten:**
-- ✅ **CCU Tabs und Subtabs** (`omf2/ui/ccu/`)
-- ✅ **Node-RED Tabs** (`omf2/ui/nodered/`)
-- ✅ **Admin Tabs und Subtabs** (`omf2/ui/admin/`)
+- ⚠️ **CCU Tabs** (`omf2/ui/ccu/`) - Grundstruktur vorhanden
+- ⚠️ **Node-RED Tabs** (`omf2/ui/nodered/`) - Grundstruktur vorhanden
+- ⚠️ **Admin Tabs** (`omf2/ui/admin/`) - Grundstruktur vorhanden
 
 **Tests:**
-- ✅ **55 Tests erfolgreich** (0 Fehler)
-- ✅ **Thread-Safety** getestet
-- ✅ **Registry v2 Integration** getestet
-- ✅ **Performance** optimiert
+- ⚠️ **Tests** (teilweise implementiert)
+- ⚠️ **Thread-Safety** (teilweise getestet)
+- ⚠️ **Registry v2 Integration** (teilweise getestet)
+- ⚠️ **Performance** (nicht optimiert)
 
 ## Usage
 
-### ✅ IMPLEMENTIERTE VERWENDUNG
+### 🚧 VERWENDUNG (IN ENTWICKLUNG)
 
 ```python
 # Gateway-Factory verwenden (empfohlen)
@@ -154,159 +147,170 @@ ccu_gateway = get_ccu_gateway()
 nodered_gateway = get_nodered_gateway()
 admin_gateway = get_admin_gateway()
 
-# Business-Operationen ausführen
-ccu_gateway.reset_factory()
-ccu_gateway.send_global_command("start", {"line": "1"})
-nodered_gateway.get_normalized_module_states()
-admin_gateway.generate_message_template("ccu/global", {"command": "status"})
+# Business-Operationen ausführen (teilweise implementiert)
+# ccu_gateway.reset_factory()  # TODO: Implementieren
+# ccu_gateway.send_global_command("start", {"line": "1"})  # TODO: Implementieren
+# nodered_gateway.get_normalized_module_states()  # TODO: Implementieren
+admin_gateway.generate_message_template("ccu/global", {"command": "status"})  # ✅ Funktioniert
 ```
 
-### **🚀 ARCHITEKTUR-VORTEILE:**
-- **Thread-sicher**: Alle Komponenten verwenden Singleton-Pattern
-- **Registry v2**: Vollständige Integration in allen Gateways
-- **Testbar**: 55 Tests mit 100% Erfolgsrate
-- **Performance**: Optimiert für hohe Last
-- **Wartbar**: Klare Trennung der Domänen
-- **UI-Refresh-Strategie**: `request_refresh()` statt `st.rerun()` verhindert Race Conditions
+### **🚧 ARCHITEKTUR-VORTEILE (IN ENTWICKLUNG):**
+- **Thread-sicher**: MQTT-Clients verwenden Singleton-Pattern ✅
+- **Registry v2**: Teilweise Integration in Gateways ⚠️
+- **Testbar**: Tests in Entwicklung ⚠️
+- **Performance**: Nicht optimiert ⚠️
+- **Wartbar**: Klare Trennung der Domänen ✅
+- **UI-Refresh-Strategie**: `request_refresh()` statt `st.rerun()` ✅
 
-### Configuration Management
+### 🚧 Configuration Management (IN ENTWICKLUNG)
 
 ```python
-from omf2.system import AdminSettings
+# TODO: AdminSettings implementieren
+# from omf2.admin import AdminSettings
 
-admin_settings = AdminSettings()
+# admin_settings = AdminSettings()
 
-# MQTT Settings
-mqtt_settings = admin_settings.load_mqtt_settings()
-available_envs = admin_settings.get_available_environments()
-env_config = admin_settings.get_environment_settings("live")
+# MQTT Settings (teilweise implementiert)
+# mqtt_settings = admin_settings.load_mqtt_settings()
+# available_envs = admin_settings.get_available_environments()
+# env_config = admin_settings.get_environment_settings("live")
 
-# User Management
-user_permissions = admin_settings.get_user_permissions("admin")
-has_permission = admin_settings.has_permission("admin", "control")
+# User Management (TODO: Implementieren)
+# user_permissions = admin_settings.get_user_permissions("admin")
+# has_permission = admin_settings.has_permission("admin", "control")
 
-# App Configuration
-enabled_apps = admin_settings.get_enabled_apps("admin")
+# App Configuration (TODO: Implementieren)
+# enabled_apps = admin_settings.get_enabled_apps("admin")
 ```
 
-### Workpiece Management
+### 🚧 Workpiece Management (TODO: IMPLEMENTIEREN)
 
 ```python
-from omf2.ccu.workpiece_manager import get_workpiece_manager
+# TODO: WorkpieceManager implementieren
+# from omf2.ccu.workpiece_manager import get_workpiece_manager
 
-workpiece_manager = get_workpiece_manager()
+# workpiece_manager = get_workpiece_manager()
 
-# Get workpiece by ID
-workpiece = workpiece_manager.get_workpiece_by_id("R1")
+# Get workpiece by ID (TODO: Implementieren)
+# workpiece = workpiece_manager.get_workpiece_by_id("R1")
 
-# Get workpiece by NFC code
-workpiece = workpiece_manager.get_workpiece_by_nfc_code("040a8dca341291")
+# Get workpiece by NFC code (TODO: Implementieren)
+# workpiece = workpiece_manager.get_workpiece_by_nfc_code("040a8dca341291")
 
-# Validate NFC code
-is_valid = workpiece_manager.validate_nfc_code("040a8dca341291")
+# Validate NFC code (TODO: Implementieren)
+# is_valid = workpiece_manager.validate_nfc_code("040a8dca341291")
 
-# Get statistics
-stats = workpiece_manager.get_statistics()
+# Get statistics (TODO: Implementieren)
+# stats = workpiece_manager.get_statistics()
 ```
 
-### Log Management
+### 🚧 Log Management (TEILWEISE IMPLEMENTIERT)
 
 ```python
-from omf2.system.logs import get_log_manager, LogLevel
+# TODO: LogManager vollständig implementieren
+# from omf2.admin.logs import get_log_manager, LogLevel
 
-log_manager = get_log_manager()
+# log_manager = get_log_manager()
 
-# Add log entries
-log_manager.log_info("component", "Information message")
-log_manager.log_error("component", "Error message", {"context": "data"})
+# Add log entries (TODO: Implementieren)
+# log_manager.log_info("component", "Information message")
+# log_manager.log_error("component", "Error message", {"context": "data"})
 
-# Get logs
-recent_logs = log_manager.get_recent_logs(minutes=60)
-error_logs = log_manager.get_error_logs(limit=50)
-component_logs = log_manager.get_component_logs("ccu")
+# Get logs (TODO: Implementieren)
+# recent_logs = log_manager.get_recent_logs(minutes=60)
+# error_logs = log_manager.get_error_logs(limit=50)
+# component_logs = log_manager.get_component_logs("ccu")
 
-# Search logs
-search_results = log_manager.search_logs("error", limit=100)
+# Search logs (TODO: Implementieren)
+# search_results = log_manager.search_logs("error", limit=100)
 
-# Export logs
-log_manager.export_logs(Path("logs_export.json"))
+# Export logs (TODO: Implementieren)
+# log_manager.export_logs(Path("logs_export.json"))
 ```
 
-### UI Components
+### 🚧 UI Components (GRUNDSTRUKTUR VORHANDEN)
 
 ```python
-# Streamlit UI components
-from omf2.ui.ccu import CCUOverviewTab
-from omf2.ui.system import AdminSettingsTab, LogsTab
+# Streamlit UI components (teilweise implementiert)
+# from omf2.ui.ccu.ccu_overview import CCUOverviewTab
+# from omf2.ui.admin.admin_settings import AdminSettingsTab
+# from omf2.ui.admin.logs import LogsTab
 
-# In Streamlit app
-ccu_tab = CCUOverviewTab()
-ccu_tab.render()
+# In Streamlit app (TODO: Vollständig implementieren)
+# ccu_tab = CCUOverviewTab()
+# ccu_tab.render()
 
-admin_tab = AdminSettingsTab()
-admin_tab.render()
+# admin_tab = AdminSettingsTab()
+# admin_tab.render()
 
-logs_tab = LogsTab()
-logs_tab.render()
+# logs_tab = LogsTab()
+# logs_tab.render()
 ```
 
 ## Configuration
 
-### MQTT Settings (config/mqtt_settings.yml)
+### 🚧 MQTT Settings (config/mqtt_settings.yml) - KORREKTUR ERFORDERLICH
 
 ```yaml
+# AKTUELLE KONFIGURATION (TEILWEISE FALSCH):
 environments:
   live:
-    host: "localhost"
-    port: 1883
-    enabled: true
+    mqtt:
+      host: "192.168.0.100"  # ✅ Korrekt
+      port: 1883
+      client_id_postfix: "_live"  # ✅ Korrekt
   replay:
-    host: "localhost" 
-    port: 1883
-    enabled: true
+    mqtt:
+      host: "localhost"  # ✅ Korrekt
+      port: 1883
+      client_id_postfix: "_replay"  # ✅ Korrekt
   mock:
-    host: "localhost"
-    port: 1883
-    enabled: true
+    mqtt:
+      host: "localhost"  # ✅ Korrekt
+      port: 1883
+      client_id_postfix: "_mock"  # ✅ Korrekt
 
-default_environment: "replay"
+# TODO: Weitere Konfigurationen implementieren
+default_environment: "mock"  # ✅ Korrekt (stabiler)
 connection_timeout: 60
 qos_default: 1
 ```
 
-### User Roles (config/user_roles.yml)
+### 🚧 User Roles (config/user_roles.yml) - TODO: IMPLEMENTIEREN
 
 ```yaml
-roles:
-  admin:
-    name: "Administrator"
-    permissions: ["*"]
-  operator:
-    name: "Operator"
-    permissions: ["read", "control"]
+# TODO: User Roles implementieren
+# roles:
+#   admin:
+#     name: "Administrator"
+#     permissions: ["*"]
+#   operator:
+#     name: "Operator"
+#     permissions: ["read", "control"]
 
-users:
-  admin:
-    role: "admin"
-    name: "System Administrator"
-    active: true
+# users:
+#   admin:
+#     role: "admin"
+#     name: "System Administrator"
+#     active: true
 ```
 
-### Apps Configuration (config/apps.yml)
+### 🚧 Apps Configuration (config/apps.yml) - TEILWEISE IMPLEMENTIERT
 
 ```yaml
-apps:
-  ccu_dashboard:
-    name: "CCU Dashboard"
-    enabled: true
-    module: "omf2.ui.ccu.ccu_overview.ccu_overview_tab"
-    required_permissions: ["read"]
+# TODO: Apps Configuration vollständig implementieren
+# apps:
+#   ccu_dashboard:
+#     name: "CCU Dashboard"
+#     enabled: true
+#     module: "omf2.ui.ccu.ccu_overview.ccu_overview_tab"
+#     required_permissions: ["read"]
     
-  admin_settings:
-    name: "Admin Settings"
-    enabled: true
-    module: "omf2.ui.system.admin_settings_tab"
-    required_role: "admin"
+#   admin_settings:
+#     name: "Admin Settings"
+#     enabled: true
+#     module: "omf2.ui.admin.admin_settings.admin_settings_tab"
+#     required_role: "admin"
 ```
 
 ## Features
@@ -341,29 +345,28 @@ Each domain has a gateway that provides:
 - System administration interface
 - Log viewer and analysis tools
 
-## Testing
-
-Run the test suite:
+## 🚧 Testing (IN ENTWICKLUNG)
 
 ```bash
-# Run all tests
-python -m pytest omf2/tests/ -v
+# TODO: Test suite vollständig implementieren
+# python -m pytest omf2/tests/ -v
 
-# Run specific test files
-python -m pytest omf2/tests/test_ccu_mqtt_client.py -v
-python -m pytest omf2/tests/test_workpiece_manager.py -v
-python -m pytest omf2/tests/test_admin_settings.py -v
+# TODO: Spezifische Tests implementieren
+# python -m pytest omf2/tests/test_ccu_mqtt_client.py -v
+# python -m pytest omf2/tests/test_workpiece_manager.py -v
+# python -m pytest omf2/tests/test_admin_settings.py -v
 ```
 
-## Demo
+**HINWEIS:** Test suite ist noch nicht vollständig implementiert.
 
-Run the example usage script:
+## 🚧 Demo (TODO: IMPLEMENTIEREN)
 
 ```bash
-python omf2/example_usage.py
+# TODO: Example usage script implementieren
+# python omf2/example_usage.py
 ```
 
-This demonstrates all major components working together.
+**HINWEIS:** Example usage script ist noch nicht implementiert.
 
 ## Migration from OMF v1
 

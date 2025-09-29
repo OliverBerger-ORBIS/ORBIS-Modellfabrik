@@ -29,6 +29,13 @@ repos:
         pass_filenames: false
         stages: [commit]
 
+      - id: streamlit-startup-test
+        name: streamlit-startup-test
+        entry: python -m pytest omf2/tests/test_streamlit_startup.py -v
+        language: system
+        pass_filenames: false
+        stages: [commit]
+
       - id: validate-project-structure
         name: validate-project-structure
         entry: python omf/scripts/validate_project_structure.py

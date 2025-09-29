@@ -4,7 +4,7 @@ Node-RED Overview Tab - Node-RED Overview UI Component
 """
 
 import streamlit as st
-from omf2.nodered.nodered_gateway import NodeREDGateway
+from omf2.nodered.nodered_gateway import NoderedGateway
 from omf2.nodered.nodered_pub_mqtt_client import get_nodered_pub_mqtt_client
 from omf2.nodered.nodered_sub_mqtt_client import get_nodered_sub_mqtt_client
 from omf2.common.logger import get_logger
@@ -21,7 +21,7 @@ def render_nodered_overview_tab():
         
         # Initialize Node-RED Gateway
         if 'nodered_gateway' not in st.session_state:
-            st.session_state['nodered_gateway'] = NodeREDGateway()
+            st.session_state['nodered_gateway'] = NoderedGateway()
         
         nodered_gateway = st.session_state['nodered_gateway']
         

@@ -1,139 +1,125 @@
 #!/usr/bin/env python3
 """
 System Logs Tab - System Logs UI Component
+Einfache Logs-Funktionalität aus dem alten Dashboard
 """
 
 import streamlit as st
 from omf2.common.logger import get_logger
+from omf2.ui.utils.ui_refresh import request_refresh
 
 logger = get_logger(__name__)
 
 
 def render_logs_tab():
-    """Render System Logs Tab"""
+    """Render System Logs Tab - Einfache Logs-Funktionalität"""
+    logger.info("📋 Rendering System Logs Tab")
     try:
-        st.header("📋 System Logs")
-        st.markdown("System and Application Logs")
+        st.header("📋 Live Logs")
+        st.markdown("**Echtzeit-Logs der OMF2 Dashboard-Anwendung**")
         
-        # Log Filter Section
-        with st.expander("🔍 Log Filters", expanded=True):
-            col1, col2, col3 = st.columns(3)
-            
-            with col1:
-                log_level = st.selectbox(
-                    "Log Level:",
-                    ["ALL", "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
-                    index=1,
-                    key="system_logs_filter_level"
-                )
-            
-            with col2:
-                log_source = st.selectbox(
-                    "Source:",
-                    ["ALL", "CCU", "Node-RED", "Admin", "MQTT", "System"],
-                    index=0,
-                    key="system_logs_filter_source"
-                )
-            
-            with col3:
-                time_range = st.selectbox(
-                    "Time Range:",
-                    ["Last 1 hour", "Last 6 hours", "Last 24 hours", "Last 7 days"],
-                    index=1,
-                    key="system_logs_filter_time"
-                )
+        # Log-Buffer aus Session State holen
+        log_buffer = st.session_state.get("log_buffer")
         
-        # Log Statistics Section
-        with st.expander("📊 Log Statistics", expanded=True):
-            col1, col2, col3, col4 = st.columns(4)
-            
-            with col1:
-                st.metric("Total Logs", "2,847", "↗️ +23")
-            
-            with col2:
-                st.metric("Errors", "12", "↘️ -3")
-            
-            with col3:
-                st.metric("Warnings", "45", "↗️ +2")
-            
-            with col4:
-                st.metric("Info", "2,790", "↗️ +24")
+        if not log_buffer:
+            st.warning("❌ Log-Buffer nicht verfügbar")
+            st.info("💡 **Hinweis:** Log-Buffer wird beim nächsten Dashboard-Start initialisiert")
+            return
         
-        # Recent Logs Section
-        with st.expander("📝 Recent Logs", expanded=True):
-            st.markdown("### Latest System Logs")
-            
-            # Placeholder log data
-            logs = [
-                {"timestamp": "2025-09-28T16:24:55Z", "level": "INFO", "source": "CCU", "message": "Factory reset initiated"},
-                {"timestamp": "2025-09-28T16:24:50Z", "level": "INFO", "source": "Node-RED", "message": "Message normalized for SVR3QA0022"},
-                {"timestamp": "2025-09-28T16:24:45Z", "level": "WARNING", "source": "MQTT", "message": "Connection timeout to broker"},
-                {"timestamp": "2025-09-28T16:24:40Z", "level": "ERROR", "source": "Admin", "message": "Failed to validate message template"},
-                {"timestamp": "2025-09-28T16:24:35Z", "level": "INFO", "source": "System", "message": "Dashboard session started"},
-            ]
-            
-            for log in logs:
-                col1, col2, col3, col4 = st.columns([2, 1, 1, 4])
-                with col1:
-                    st.write(log['timestamp'])
-                with col2:
-                    level_color = {
-                        "INFO": "🟢",
-                        "WARNING": "🟡", 
-                        "ERROR": "🔴",
-                        "CRITICAL": "🔴"
-                    }.get(log['level'], "⚪")
-                    st.write(f"{level_color} {log['level']}")
-                with col3:
-                    st.write(log['source'])
-                with col4:
-                    st.write(log['message'])
+        # Refresh/Löschen Buttons
+        col1, col2, col3 = st.columns([1, 1, 4])
         
-        # Error Analysis Section
-        with st.expander("🔍 Error Analysis", expanded=True):
-            st.markdown("### Error Patterns")
-            
-            # Placeholder error analysis
-            error_patterns = [
-                {"pattern": "MQTT Connection Timeout", "count": 5, "last_seen": "2025-09-28T16:24:45Z"},
-                {"pattern": "Message Validation Failed", "count": 3, "last_seen": "2025-09-28T16:20:30Z"},
-                {"pattern": "Template Not Found", "count": 2, "last_seen": "2025-09-28T16:15:15Z"},
-            ]
-            
-            for pattern in error_patterns:
-                col1, col2, col3 = st.columns([3, 1, 2])
-                with col1:
-                    st.write(f"**{pattern['pattern']}**")
-                with col2:
-                    st.write(f"Count: {pattern['count']}")
-                with col3:
-                    st.write(f"Last: {pattern['last_seen']}")
+        with col1:
+            if st.button("🔄 Aktualisieren", key="logs_refresh_btn"):
+                request_refresh()
         
-        # Log Export Section
-        with st.expander("📤 Log Export", expanded=False):
-            st.markdown("### Export Logs")
+        with col2:
+            if st.button("🗑️ Löschen", key="logs_clear_btn"):
+                log_buffer.clear()
+                request_refresh()
+        
+        with col3:
+            st.info("💡 Logs werden automatisch aktualisiert")
+        
+        # Log-Level Filter
+        st.subheader("🔍 Filter")
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            show_debug = st.checkbox("DEBUG", value=False, key="logs_show_debug")
+            show_info = st.checkbox("INFO", value=True, key="logs_show_info")
+        
+        with col2:
+            show_warning = st.checkbox("WARNING", value=True, key="logs_show_warning")
+            show_error = st.checkbox("ERROR", value=True, key="logs_show_error")
+        
+        # Logs anzeigen
+        st.subheader("📊 Log-Nachrichten")
+        
+        # Filter-Logik
+        filtered_logs = []
+        for log_entry in log_buffer:
+            should_show = False
             
-            col1, col2 = st.columns(2)
+            if show_debug and "[DEBUG]" in log_entry:
+                should_show = True
+            if show_info and "[INFO]" in log_entry:
+                should_show = True
+            if show_warning and "[WARNING]" in log_entry:
+                should_show = True
+            if show_error and "[ERROR]" in log_entry:
+                should_show = True
             
-            with col1:
-                export_format = st.selectbox(
-                    "Export Format:",
-                    ["JSON", "CSV", "TXT", "LOG"],
-                    key="system_logs_export_format"
-                )
-            
-            with col2:
-                export_range = st.selectbox(
-                    "Export Range:",
-                    ["Last 100 logs", "Last 1000 logs", "All logs", "Custom range"],
-                    key="system_logs_export_range"
-                )
-            
-            if st.button("📥 Export Logs", key="system_logs_export_btn"):
-                st.success(f"✅ Logs exported in {export_format} format")
-                st.info("💡 Download will start automatically")
+            if should_show:
+                filtered_logs.append(log_entry)
+        
+        # Logs als Text rendern
+        log_text = "\n".join(filtered_logs) if filtered_logs else "—"
+        
+        if log_text == "—":
+            st.info("ℹ️ Keine Logs verfügbar")
+            return
+        
+        # Logs in Code-Block anzeigen
+        st.code(log_text, language="text")
+        
+        # Log-Statistiken
+        with st.expander("📈 Log-Statistiken", expanded=False):
+            _show_log_statistics(log_buffer)
         
     except Exception as e:
         logger.error(f"❌ System Logs Tab rendering error: {e}")
         st.error(f"❌ System Logs Tab failed: {e}")
         st.info("💡 This component is currently under development.")
+
+
+def _show_log_statistics(log_buffer):
+    """Zeigt Log-Statistiken an"""
+    try:
+        total_logs = len(log_buffer)
+        
+        # Log-Level zählen
+        debug_count = sum(1 for log in log_buffer if "[DEBUG]" in log)
+        info_count = sum(1 for log in log_buffer if "[INFO]" in log)
+        warning_count = sum(1 for log in log_buffer if "[WARNING]" in log)
+        error_count = sum(1 for log in log_buffer if "[ERROR]" in log)
+        
+        col1, col2, col3, col4 = st.columns(4)
+        
+        with col1:
+            st.metric("DEBUG", debug_count)
+        
+        with col2:
+            st.metric("INFO", info_count)
+        
+        with col3:
+            st.metric("WARNING", warning_count)
+        
+        with col4:
+            st.metric("ERROR", error_count)
+        
+        st.caption(f"📊 Gesamt: {total_logs} Log-Einträge")
+        
+    except Exception as e:
+        logger.error(f"❌ Log statistics error: {e}")
+        st.error("❌ Fehler beim Laden der Statistiken")

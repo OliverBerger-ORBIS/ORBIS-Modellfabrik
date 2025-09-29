@@ -4,7 +4,7 @@ Node-RED Processes Tab - Process Management UI Component
 """
 
 import streamlit as st
-from omf2.nodered.nodered_gateway import NodeREDGateway
+from omf2.nodered.nodered_gateway import NoderedGateway
 from omf2.common.logger import get_logger
 
 logger = get_logger(__name__)
@@ -19,7 +19,7 @@ def render_nodered_processes_tab():
         
         # Initialize Node-RED Gateway
         if 'nodered_gateway' not in st.session_state:
-            st.session_state['nodered_gateway'] = NodeREDGateway()
+            st.session_state['nodered_gateway'] = NoderedGateway()
         
         nodered_gateway = st.session_state['nodered_gateway']
         

@@ -10,13 +10,14 @@ Die Registry bleibt in omf2/registry/ - nur die UI-Struktur wird reorganisiert
 
 ```
 omf2/
-  registry/
+  registry/                                    # ✅ IMPLEMENTIERT
     model/
       v2/
         modules.yml
         mqtt_clients.yml
         stations.yml
         txt_controllers.yml
+        workpieces.yml                         # ✅ HINZUGEFÜGT
         topics/
           ccu.yml
           fts.yml
@@ -27,8 +28,13 @@ omf2/
           module.connection.yml
           module.state.yml
           ccu.control.reset.yml
+          ccu.control.global.yml              # ✅ HINZUGEFÜGT
           fts.state.yml
-          ...
+          module.factsheet.yml                 # ✅ HINZUGEFÜGT
+          module.instantaction.yml             # ✅ HINZUGEFÜGT
+          module.order.yml                     # ✅ HINZUGEFÜGT
+          txt.function.order_input.yml         # ✅ HINZUGEFÜGT
+          txt.input.bme680.yml                 # ✅ HINZUGEFÜGT
         mappings/
           topic_templates.yml
       v1/
@@ -37,51 +43,48 @@ omf2/
     schemas/
       workpieces.schema.json
       ...
-  assets/
+  assets/                                      # ✅ IMPLEMENTIERT
     logos/
-      orbis_logo.png
-      ...
+      orbis_logo.txt                           # ✅ HINZUGEFÜGT
     icons/
-      module.png
-      module.svg
-      ...
-    templates/
-      base.html
-      custom_template.html
-      ...
-  ccu/
+      module.png.txt                           # ✅ HINZUGEFÜGT
+  ccu/                                         # ✅ IMPLEMENTIERT
     ccu_gateway.py
     ccu_mqtt_client.py
     workpiece_manager.py
-    helpers/
-      ccu_factory_layout.py
-  nodered/
+    # helpers/                                 # ❌ NOCH NICHT IMPLEMENTIERT
+    #   ccu_factory_layout.py
+  nodered/                                     # ✅ IMPLEMENTIERT
     nodered_gateway.py
     nodered_pub_mqtt_client.py
     nodered_sub_mqtt_client.py
-    helpers/
-      nodered_utils.py
-  admin/
+    nodered_mqtt_client.py                     # ✅ HINZUGEFÜGT
+    # helpers/                                 # ❌ NOCH NICHT IMPLEMENTIERT
+    #   nodered_utils.py
+  admin/                                       # ✅ IMPLEMENTIERT
     admin_gateway.py
     admin_mqtt_client.py
     admin_settings.py
     logs.py
-    helpers/
-      admin_utils.py
-  ui/
+    # helpers/                                 # ❌ NOCH NICHT IMPLEMENTIERT
+    #   admin_utils.py
+  ui/                                          # ✅ IMPLEMENTIERT
+    main_dashboard.py                          # ✅ HINZUGEFÜGT
+    user_manager.py                            # ✅ HINZUGEFÜGT
+    common/                                    # ✅ HINZUGEFÜGT
     ccu/
       ccu_overview/
-        ccu_overview_tab.py                     # aps_overview
+        ccu_overview_tab.py
       ccu_orders/
-        ccu_orders_tab.py                       # aps_orders
+        ccu_orders_tab.py
       ccu_process/
-        ccu_process_tab.py                      # aps_processes
+        ccu_process_tab.py
       ccu_configuration/
-        ccu_configuration_tab.py                # aps_configuration
-        ccu_factory_configuration_subtab.py     # Untertab Konfiguration
-        ccu_parameter_configuration_subtab.py   # Untertab Konfiguration
+        ccu_configuration_tab.py
+        ccu_factory_configuration_subtab.py
+        ccu_parameter_configuration_subtab.py
       ccu_modules/
-        ccu_modules_tab.py                      # aps_modules
+        ccu_modules_tab.py
     nodered/
       nodered_overview/
         nodered_overview_tab.py
@@ -96,40 +99,63 @@ omf2/
         mqtt_subtab.py
         topics_subtab.py
         templates_subtab.py
-      logs/
-        logs_tab.py
+      # logs/                                   # ❌ NOCH NICHT IMPLEMENTIERT
+      #   logs_tab.py
       generic_steering/
         generic_steering_tab.py
       message_center/
         message_center_tab.py
-    components/
-      factory_layout.py
-      custom_button.py
-      status_indicator.py
+    components/                                # ❌ NOCH NICHT IMPLEMENTIERT
+      # factory_layout.py
+      # custom_button.py
+      # status_indicator.py
     utils/
-      ui_refresh.py          # UI-Refresh-Strategie (request_refresh statt st.rerun)
-                           # Verhindert Race Conditions in MQTT-Callbacks
-                           # Thread-sichere UI-Updates
-  config/
+      ui_refresh.py                            # ✅ IMPLEMENTIERT
+  config/                                      # ✅ IMPLEMENTIERT
     mqtt_settings.yml
-    user_roles.yml
     apps.yml
-  factory/
+    # user_roles.yml                           # ❌ NOCH NICHT IMPLEMENTIERT
+  factory/                                     # ✅ IMPLEMENTIERT
     client_factory.py
     gateway_factory.py
-  tests/
-    ccu/
-      test_ccu_gateway.py
-      test_workpiece_manager.py
-    nodered/
-      test_nodered_gateway.py
-    system/
-      test_admin_settings.py
-      test_logs.py
-  common/
+  tests/                                       # ✅ IMPLEMENTIERT (FLACH)
+    test_admin_mqtt_client.py                 # ✅ HINZUGEFÜGT
+    test_admin_settings.py
+    test_ccu_mqtt_client.py
+    test_comprehensive_architecture.py         # ✅ HINZUGEFÜGT
+    test_gateway_factory.py                   # ✅ HINZUGEFÜGT
+    test_message_templates.py
+    test_registry_v2_integration.py            # ✅ HINZUGEFÜGT
+    test_registry_v2_integration_simple.py    # ✅ HINZUGEFÜGT
+    test_st_rerun_forbidden.py                # ✅ HINZUGEFÜGT
+    test_streamlit_dashboard.py               # ✅ HINZUGEFÜGT
+    test_streamlit_startup.py                 # ✅ HINZUGEFÜGT
+    test_ui_components.py                    # ✅ HINZUGEFÜGT
+    test_workpiece_manager.py
+    # ccu/                                     # ❌ NOCH NICHT IMPLEMENTIERT
+    #   test_ccu_gateway.py
+    #   test_workpiece_manager.py
+    # nodered/                                 # ❌ NOCH NICHT IMPLEMENTIERT
+    #   test_nodered_gateway.py
+    # system/                                   # ❌ NOCH NICHT IMPLEMENTIERT
+    #   test_admin_settings.py
+    #   test_logs.py
+  common/                                      # ✅ IMPLEMENTIERT
     i18n.py
     logger.py
-    ...
+    message_templates.py                       # ✅ HINZUGEFÜGT
+  # ZUSÄTZLICHE ENTWICKLUNGEN:                 # ✅ HINZUGEFÜGT
+  omf.py                                       # ✅ HAUPTANWENDUNG
+  example_usage.py                            # ✅ BEISPIEL-SKRIPT
+  scripts/                                    # ✅ HILFSSKRIPTE
+    check_st_rerun.py
+  dashboard/                                   # ✅ DASHBOARD-UTILS
+    utils/
+  # DOKUMENTATION:                             # ✅ HINZUGEFÜGT
+  architektur-mqtt-gateway-streamlit.md
+  cop.md
+  IMPLEMENTATION_STATUS.md
+  refactoring-backlog-omf2.md
 ```
 
 ---
@@ -263,7 +289,41 @@ environments = {
 }
 ```
 
-## 6. Prinzipien für zukünftige Aufgaben und Coding Agents
+## 6. Aktuelle Implementierung und Weiterentwicklung
+
+### 6.1 Implementierungsstatus (Stand: 2025-09-29)
+
+**✅ VOLLSTÄNDIG IMPLEMENTIERT:**
+- Registry v2 mit allen Templates und Mappings
+- MQTT-Clients (Admin, CCU, Node-RED) mit Singleton-Pattern
+- Gateway-Factory und Client-Factory
+- UI-Struktur mit allen Tabs und Subtabs
+- MessageTemplates Singleton
+- UI-Refresh-Strategie (request_refresh statt st.rerun)
+- Grundlegende Test-Suite
+
+**⚠️ TEILWEISE IMPLEMENTIERT:**
+- Assets-Verzeichnis (Grundstruktur vorhanden)
+- Config-Dateien (mqtt_settings.yml, apps.yml)
+- Admin-Settings mit Subtabs
+- Test-Struktur (flach, nicht domänen-spezifisch)
+
+**❌ NOCH NICHT IMPLEMENTIERT:**
+- Helper-Verzeichnisse (ccu/helpers/, nodered/helpers/, admin/helpers/)
+- UI-Komponenten (factory_layout.py, custom_button.py, status_indicator.py)
+- Logs-Tab (ui/admin/logs/logs_tab.py)
+- User-Roles-Konfiguration (user_roles.yml)
+- Domänen-spezifische Test-Struktur
+
+**✅ ZUSÄTZLICHE ENTWICKLUNGEN:**
+- Hauptanwendung (omf.py)
+- Beispiel-Skript (example_usage.py)
+- Hilfsskripte (scripts/)
+- Dashboard-Utils (dashboard/utils/)
+- Umfangreiche Dokumentation
+- Architektur-Dokumente
+
+### 6.2 Prinzipien für zukünftige Aufgaben und Coding Agents
 
 - **Strukturierte Ablage:** Jede neue Komponente/Manager/Client wird nach diesem Muster angelegt.
 - **Modularität:** Domänenübergreifende oder -spezifische Logik strikt trennen.
@@ -271,13 +331,46 @@ environments = {
 - **Tests & Dokumentation:** Jede neue Komponente wird mit passenden Tests und Docstrings/README versehen.
 - **Environment-Awareness:** Alle MQTT-Clients müssen Environment-Wechsel unterstützen.
 - **Referenz auf dieses Dokument:** Jede Aufgabenbeschreibung für Coding Agents, die die Projektstruktur betreffen, soll auf dieses Dokument verweisen.
+- **Implementierungsstatus beachten:** Berücksichtige den aktuellen Implementierungsstand bei neuen Entwicklungen.
 
 ---
 
 ## 7. Beispiel für die Referenz in Coding-Agent-Aufgaben
 
 > **Bitte beachte die Vorgaben aus `omf2/projekt-struktur-omf2.md` für die Ablage, Benennung und Modularisierung!**
+> 
+> **Aktueller Implementierungsstand:** Siehe Abschnitt 6.1 für den aktuellen Status der Implementierung.
 
 ---
 
-**Letzte Aktualisierung:** 2025-09-27
+## 8. Changelog der Weiterentwicklung
+
+### Version 2.0.0 (2025-09-29)
+
+**Hinzugefügt:**
+- ✅ Hauptanwendung (omf.py)
+- ✅ Beispiel-Skript (example_usage.py)
+- ✅ Hilfsskripte (scripts/)
+- ✅ Dashboard-Utils (dashboard/utils/)
+- ✅ Umfangreiche Dokumentation
+- ✅ Architektur-Dokumente
+- ✅ Zusätzliche Templates in Registry v2
+- ✅ Node-RED MQTT-Client (nodered_mqtt_client.py)
+- ✅ UI-Manager (user_manager.py)
+- ✅ UI-Common-Verzeichnis
+- ✅ Umfangreiche Test-Suite
+
+**Geändert:**
+- 🔄 Test-Struktur (flach statt domänen-spezifisch)
+- 🔄 Assets-Struktur (Grundstruktur implementiert)
+
+**Noch zu implementieren:**
+- ❌ Helper-Verzeichnisse
+- ❌ UI-Komponenten
+- ❌ Logs-Tab
+- ❌ User-Roles-Konfiguration
+- ❌ Domänen-spezifische Test-Struktur
+
+---
+
+**Letzte Aktualisierung:** 2025-09-29
