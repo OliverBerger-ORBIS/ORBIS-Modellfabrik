@@ -1,0 +1,70 @@
+# User Roles Configuration for OMF2 Dashboard
+
+roles:
+  administrator:
+    name: "Administrator"
+    description: "Full system access - System Administrator"
+    permissions:
+      - "dashboard:read"
+      - "dashboard:write"
+      - "mqtt:read"
+      - "mqtt:write"
+      - "admin:read"
+      - "admin:write"
+      - "logs:read"
+      - "settings:read"
+      - "settings:write"
+    ui_components:
+      - "ccu_dashboard"
+      - "ccu_orders"
+      - "ccu_process"
+      - "ccu_configuration"
+      - "ccu_modules"
+      - "nodered_overview"
+      - "nodered_processes"
+      - "message_center"
+      - "generic_steering"
+      - "system_logs"
+      - "admin_settings"
+
+  supervisor:
+    name: "Supervisor"
+    description: "Werksleiter/DSP-User - NodeRED and Control access"
+    permissions:
+      - "dashboard:read"
+      - "mqtt:read"
+      - "mqtt:write"
+      - "control:read"
+      - "control:write"
+      - "logs:read"
+    ui_components:
+      - "ccu_dashboard"
+      - "nodered_overview"
+      - "nodered_processes"
+      - "message_center"
+      - "generic_steering"
+      - "system_logs"
+
+  operator:
+    name: "Operator"
+    description: "APS-Business-User - Operational features"
+    permissions:
+      - "dashboard:read"
+      - "mqtt:read"
+      - "logs:read"
+    ui_components:
+      - "ccu_dashboard"
+      - "ccu_orders"
+      - "ccu_process"
+      - "ccu_configuration"
+      - "ccu_modules"
+      - "system_logs"
+
+# Default role
+default_role: "administrator"
+
+# Available roles for selection
+available_roles:
+  - "administrator"
+  - "supervisor"
+  - "operator"

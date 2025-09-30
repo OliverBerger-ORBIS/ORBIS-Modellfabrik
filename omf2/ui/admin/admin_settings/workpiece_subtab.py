@@ -16,26 +16,135 @@ def render_workpiece_subtab():
     if "workpiece_subtab_logged" not in st.session_state:
         logger.info("🔧 Rendering Workpiece Configuration Subtab (init only)")
         st.session_state["workpiece_subtab_logged"] = True
+    
     try:
-        st.subheader("🔧 Workpiece Configuration")
-        st.markdown("Configure workpiece definitions and schemas")
+        st.subheader("🔧 Werkstück-Konfiguration")
+        st.markdown("Registry-basierte Werkstück-Verwaltung aus omf2/registry")
+
+        # Load workpiece data using WorkpieceManager (as per architecture)
+        from omf2.common.workpiece_manager import get_workpiece_manager
         
-        # Placeholder content
-        st.info("💡 Workpiece configuration will be implemented here")
+        try:
+            # Get workpiece manager
+            manager = get_workpiece_manager()
+            
+            # ROTE Werkstücke
+            red_workpieces = manager.get_workpieces_by_color_with_nfc('RED')
+            if red_workpieces:
+                with st.expander(f"🔴 Rote Werkstücke ({len(red_workpieces)})", expanded=False):
+                    red_data = []
+                    for nfc_code, wp_data in red_workpieces.items():
+                        friendly_id = wp_data.get('friendly_id', 'Unknown')
+                        quality_check = wp_data.get('quality_check', 'Unknown')
+                        description = wp_data.get('description', 'No description')
+                        
+                        red_data.append({
+                            "Werkstück": f"🔴 {friendly_id}",
+                            "NFC Code": nfc_code[:12] + "...",
+                            "Qualität": quality_check,
+                            "Beschreibung": description,
+                            "Status": "✅" if wp_data.get('enabled', True) else "❌",
+                        })
+                    
+                    if red_data:
+                        st.dataframe(
+                            red_data,
+                            column_config={
+                                "Werkstück": st.column_config.TextColumn("Werkstück", width="medium"),
+                                "ID": st.column_config.TextColumn("ID", width="small"),
+                                "NFC Code": st.column_config.TextColumn("NFC Code", width="medium"),
+                                "Qualität": st.column_config.TextColumn("Qualität", width="small"),
+                                "Beschreibung": st.column_config.TextColumn("Beschreibung", width="medium"),
+                                "Status": st.column_config.TextColumn("Status", width="small"),
+                            },
+                            hide_index=True,
+                        )
+
+            # BLAUE Werkstücke
+            blue_workpieces = manager.get_workpieces_by_color_with_nfc('BLUE')
+            if blue_workpieces:
+                with st.expander(f"🔵 Blaue Werkstücke ({len(blue_workpieces)})", expanded=False):
+                    blue_data = []
+                    for nfc_code, wp_data in blue_workpieces.items():
+                        friendly_id = wp_data.get('friendly_id', 'Unknown')
+                        quality_check = wp_data.get('quality_check', 'Unknown')
+                        description = wp_data.get('description', 'No description')
+                        
+                        blue_data.append({
+                            "Werkstück": f"🔵 {friendly_id}",
+                            "NFC Code": nfc_code[:12] + "...",
+                            "Qualität": quality_check,
+                            "Beschreibung": description,
+                            "Status": "✅" if wp_data.get('enabled', True) else "❌",
+                        })
+                    
+                    if blue_data:
+                        st.dataframe(
+                            blue_data,
+                            column_config={
+                                "Werkstück": st.column_config.TextColumn("Werkstück", width="medium"),
+                                "ID": st.column_config.TextColumn("ID", width="small"),
+                                "NFC Code": st.column_config.TextColumn("NFC Code", width="medium"),
+                                "Qualität": st.column_config.TextColumn("Qualität", width="small"),
+                                "Beschreibung": st.column_config.TextColumn("Beschreibung", width="medium"),
+                                "Status": st.column_config.TextColumn("Status", width="small"),
+                            },
+                            hide_index=True,
+                        )
+
+            # WEISSE Werkstücke
+            white_workpieces = manager.get_workpieces_by_color_with_nfc('WHITE')
+            if white_workpieces:
+                with st.expander(f"⚪ Weiße Werkstücke ({len(white_workpieces)})", expanded=False):
+                    white_data = []
+                    for nfc_code, wp_data in white_workpieces.items():
+                        friendly_id = wp_data.get('friendly_id', 'Unknown')
+                        quality_check = wp_data.get('quality_check', 'Unknown')
+                        description = wp_data.get('description', 'No description')
+                        
+                        white_data.append({
+                            "Werkstück": f"⚪ {friendly_id}",
+                            "NFC Code": nfc_code[:12] + "...",
+                            "Qualität": quality_check,
+                            "Beschreibung": description,
+                            "Status": "✅" if wp_data.get('enabled', True) else "❌",
+                        })
+                    
+                    if white_data:
+                        st.dataframe(
+                            white_data,
+                            column_config={
+                                "Werkstück": st.column_config.TextColumn("Werkstück", width="medium"),
+                                "ID": st.column_config.TextColumn("ID", width="small"),
+                                "NFC Code": st.column_config.TextColumn("NFC Code", width="medium"),
+                                "Qualität": st.column_config.TextColumn("Qualität", width="small"),
+                                "Beschreibung": st.column_config.TextColumn("Beschreibung", width="medium"),
+                                "Status": st.column_config.TextColumn("Status", width="small"),
+                            },
+                            hide_index=True,
+                        )
+            
+            # Registry Info
+            with st.expander("📊 Registry Information", expanded=False):
+                all_workpieces = manager.get_all_workpieces()
+                st.write(f"**Total Workpieces:** {len(all_workpieces)}")
+                st.write(f"**Red Workpieces:** {len(red_workpieces)}")
+                st.write(f"**Blue Workpieces:** {len(blue_workpieces)}")
+                st.write(f"**White Workpieces:** {len(white_workpieces)}")
+                
+                # Show available colors
+                colors = manager.get_workpiece_colors()
+                if colors:
+                    st.write("**Available Colors:**")
+                    for color in colors:
+                        st.write(f"- {color}")
         
-        # Example configuration sections
-        with st.expander("📋 Workpiece Definitions", expanded=True):
-            st.write("Manage workpiece types and their properties")
-            st.text_input("Workpiece Type", key="admin_settings_workpiece_workpiece_type")
-            st.text_area("Description", key="admin_settings_workpiece_workpiece_desc")
-        
-        with st.expander("📊 Schema Configuration", expanded=False):
-            st.write("Configure workpiece schemas and validation rules")
-            st.text_input("Schema Version", key="admin_settings_workpiece_schema_version")
-        
-        with st.expander("🔄 Workflow Settings", expanded=False):
-            st.write("Define workpiece workflow and state transitions")
-            st.selectbox("Default State", ["idle", "processing", "completed"], key="admin_settings_workpiece_default_state")
+        except FileNotFoundError:
+            st.error("❌ Registry file not found. Please check omf2/registry/model/v2/workpieces.yml")
+            st.info("💡 Make sure the registry file exists and is accessible.")
+        except Exception as e:
+            st.error(f"❌ Error loading registry: {e}")
+            st.info("💡 Check the registry file format and permissions.")
         
     except Exception as e:
         logger.error(f"❌ Workpiece Subtab rendering error: {e}")

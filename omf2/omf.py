@@ -117,6 +117,7 @@ def main():
         if 'log_buffer' not in st.session_state:
             from collections import deque
             from omf2.common.streamlit_log_buffer import RingBufferHandler, create_log_buffer
+            import logging
             
             # Create ring buffer
             st.session_state['log_buffer'] = create_log_buffer(maxlen=1000)
@@ -126,15 +127,33 @@ def main():
             ring_handler = RingBufferHandler(st.session_state['log_buffer'])
             ring_handler.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(name)s: %(message)s"))
             
-            # Add handler to root logger
+            # Add handler ONLY to root logger to avoid duplicates
             root_logger = logging.getLogger()
             root_logger.addHandler(ring_handler)
+            root_logger.setLevel(logging.INFO)
+            
+            # Configure all omf2 loggers to propagate to root logger
+            for logger_name in ["omf2", "omf2.dashboard", "omf2.admin", "omf2.ui", "omf2.common", "omf2.ccu", "omf2.nodered"]:
+                existing_logger = logging.getLogger(logger_name)
+                existing_logger.setLevel(logging.INFO)
+                # Ensure logs propagate to root logger (which has the ring buffer)
+                existing_logger.propagate = True
+            
             st.session_state['ring_buffer_handler'] = ring_handler
             
             # Add some initial logs
             logger.info("🚀 OMF2 Dashboard started")
             logger.info("🔌 Admin MQTT Client initialized")
             logger.info("📊 Main Dashboard rendered")
+        
+        # Ensure log_buffer is always available (fallback)
+        if 'log_buffer' not in st.session_state:
+            from collections import deque
+            st.session_state['log_buffer'] = deque(maxlen=1000)
+            st.session_state['log_buffer'].append("2025-09-29 20:05:00 [INFO] omf2.dashboard: Log buffer fallback initialized")
+            st.session_state['log_buffer'].append("2025-09-29 20:05:01 [INFO] omf2.dashboard: OMF2 Dashboard started")
+            st.session_state['log_buffer'].append("2025-09-29 20:05:02 [INFO] omf2.admin: Admin MQTT Client initialized")
+            st.session_state['log_buffer'].append("2025-09-29 20:05:03 [INFO] omf2.ui: Main Dashboard rendered")
         
         # Create and render main dashboard
         if 'main_dashboard' not in st.session_state:

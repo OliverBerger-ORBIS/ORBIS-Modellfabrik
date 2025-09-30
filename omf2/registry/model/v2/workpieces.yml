@@ -1,176 +1,214 @@
-# Workpieces Registry v2
-# This file defines the workpiece types and their properties
-
 metadata:
-  version: "2.0.0"
-  description: "OMF2 Workpieces Registry"
-  last_updated: "2024-01-01T00:00:00Z"
-  schema_version: "workpieces.schema.json"
+  version: "3.0.0"
+  description: "OMF Workpiece Mapping mit NFC code als Schlüssel"
+  last_updated: "2025-08-29"
+  author: "OMF Development Team"
 
+# Workpiece Mappings mit NFC code als Schlüssel
+# Nur die ersten 3 Werkstücke pro Farbe haben Quality-Check "OK"
 workpieces:
-  R1:
-    id: "R1"
-    name: "Red Workpiece 1"
-    description: "Standard red cylindrical workpiece"
-    color: "red"
-    type: "cylinder"
-    material: "plastic"
-    dimensions:
-      diameter: 25.0  # mm
-      height: 40.0    # mm
-      weight: 15.0    # grams
-    properties:
-      magnetic: false
-      conductive: false
-      temperature_range: [-10, 80]  # Celsius
-    quality_checks:
-      - "dimensional"
-      - "visual"
-      - "weight"
-    nfc_codes:
-      - "040a8dca341291"
-      - "041b2fda452382"
-    processing_steps:
-      - "drilling"
-      - "milling"
-      - "quality_check"
+  # ROTE Werkstücke (R1-R8)
+  "040a8dca341291":
+    friendly_id: "R1"
+    color: "RED"
+    quality_check: "OK"
+    description: "Rotes Werkstück 1"
+    enabled: true
     
-  B1:
-    id: "B1"
-    name: "Blue Workpiece 1"
-    description: "Standard blue cylindrical workpiece"
-    color: "blue"
-    type: "cylinder"
-    material: "plastic"
-    dimensions:
-      diameter: 25.0  # mm
-      height: 40.0    # mm
-      weight: 15.0    # grams
-    properties:
-      magnetic: false
-      conductive: false
-      temperature_range: [-10, 80]  # Celsius
-    quality_checks:
-      - "dimensional"
-      - "visual"
-      - "weight"
-    nfc_codes:
-      - "042c3eeb563473"
-      - "043d4ffc674584"
-    processing_steps:
-      - "drilling"
-      - "milling"
-      - "quality_check"
+  "047f8cca341290":
+    friendly_id: "R2"
+    color: "RED"
+    quality_check: "OK"
+    description: "Rotes Werkstück 2"
+    enabled: true
     
-  G1:
-    id: "G1"
-    name: "Green Workpiece 1"
-    description: "Standard green cylindrical workpiece"
-    color: "green"
-    type: "cylinder"
-    material: "plastic"
-    dimensions:
-      diameter: 25.0  # mm
-      height: 40.0    # mm
-      weight: 15.0    # grams
-    properties:
-      magnetic: false
-      conductive: false
-      temperature_range: [-10, 80]  # Celsius
-    quality_checks:
-      - "dimensional"
-      - "visual"
-      - "weight"
-    nfc_codes:
-      - "044e5ffd785695"
-      - "045f6aae896706"
-    processing_steps:
-      - "drilling"
-      - "assembly"
-      - "quality_check"
+  "04808dca341291":
+    friendly_id: "R3"
+    color: "RED"
+    quality_check: "OK"
+    description: "Rotes Werkstück 3"
+    enabled: true
+    
+  "04818dca341290":
+    friendly_id: "R4"
+    color: "RED"
+    quality_check: "NOT-OK"
+    description: "Rotes Werkstück 4"
+    enabled: true
+    
+  "04828dca341291":
+    friendly_id: "R5"
+    color: "RED"
+    quality_check: "NOT-OK"
+    description: "Rotes Werkstück 5"
+    enabled: true
+    
+  "04838dca341290":
+    friendly_id: "R6"
+    color: "RED"
+    quality_check: "NOT-OK"
+    description: "Rotes Werkstück 6"
+    enabled: true
+    
+  "04848dca341291":
+    friendly_id: "R7"
+    color: "RED"
+    quality_check: "NOT-OK"
+    description: "Rotes Werkstück 7"
+    enabled: true
+    
+  "04858dca341290":
+    friendly_id: "R8"
+    color: "RED"
+    quality_check: "NOT-OK"
+    description: "Rotes Werkstück 8"
+    enabled: true
 
-# Workpiece types definition
-types:
-  cylinder:
-    name: "Cylindrical"
-    description: "Round cylindrical workpiece"
-    default_dimensions: ["diameter", "height"]
+  # WEISSE Werkstücke (W1-W8)
+  "04798eca341290":
+    friendly_id: "W1"
+    color: "WHITE"
+    quality_check: "OK"
+    description: "Weißes Werkstück 1"
+    enabled: true
     
-  cube:
-    name: "Cubic"
-    description: "Square cubic workpiece"
-    default_dimensions: ["width", "height", "depth"]
+  "04ab8bca341290":
+    friendly_id: "W2"
+    color: "WHITE"
+    quality_check: "OK"
+    description: "Weißes Werkstück 2"
+    enabled: true
     
-  custom:
-    name: "Custom"
-    description: "Custom shaped workpiece"
-    default_dimensions: ["length", "width", "height"]
+  "04ac8bca341291":
+    friendly_id: "W3"
+    color: "WHITE"
+    quality_check: "OK"
+    description: "Weißes Werkstück 3"
+    enabled: true
+    
+  "04ad8bca341290":
+    friendly_id: "W4"
+    color: "WHITE"
+    quality_check: "NOT-OK"
+    description: "Weißes Werkstück 4"
+    enabled: true
+    
+  "04ae8bca341291":
+    friendly_id: "W5"
+    color: "WHITE"
+    quality_check: "NOT-OK"
+    description: "Weißes Werkstück 5, mit Sprung"
+    enabled: true
+    
+  "04af8bca341290":
+    friendly_id: "W6"
+    color: "WHITE"
+    quality_check: "NOT-OK"
+    description: "Weißes Werkstück 6, gefrässt"
+    enabled: true
+    
+  "04b08bca341291":
+    friendly_id: "W7"
+    color: "WHITE"
+    quality_check: "NOT-OK"
+    description: "Weißes Werkstück 7, Bohrloch ausgeleiert"
+    enabled: true
+    
+  "04b18bca341290":
+    friendly_id: "W8"
+    color: "WHITE"
+    quality_check: "NOT-OK"
+    description: "Weißes Werkstück 8"
+    enabled: true
 
-# Available colors
+  # BLAUE Werkstücke (B1-B8)
+  "047389ca341291":
+    friendly_id: "B1"
+    color: "BLUE"
+    quality_check: "OK"
+    description: "Blaues Werkstück 1"
+    enabled: true
+    
+  "047489ca341290":
+    friendly_id: "B2"
+    color: "BLUE"
+    quality_check: "OK"
+    description: "Blaues Werkstück 2"
+    enabled: true
+    
+  "047589ca341291":
+    friendly_id: "B3"
+    color: "BLUE"
+    quality_check: "OK"
+    description: "Blaues Werkstück 3"
+    enabled: true
+    
+  "047689ca341290":
+    friendly_id: "B4"
+    color: "BLUE"
+    quality_check: "NOT-OK"
+    description: "Blaues Werkstück 4, nur gefrässt"
+    enabled: true
+    
+  "047789ca341291":
+    friendly_id: "B5"
+    color: "BLUE"
+    quality_check: "NOT-OK"
+    description: "Blaues Werkstück 5"
+    enabled: true
+    
+  "047889ca341290":
+    friendly_id: "B6"
+    color: "BLUE"
+    quality_check: "NOT-OK"
+    description: "Blaues Werkstück 6"
+    enabled: true
+    
+  "047989ca341291":
+    friendly_id: "B7"
+    color: "BLUE"
+    quality_check: "NOT-OK"
+    description: "Blaues Werkstück 7, nur gebohrt"
+    enabled: true
+    
+  "047a89ca341290":
+    friendly_id: "B8"
+    color: "BLUE"
+    quality_check: "NOT-OK"
+    description: "Blaues Werkstück 8"
+    enabled: true
+
+# Qualitätsprüfung-Status
+quality_check_options:
+  - "OK"
+  - "NOT-OK"
+  - "PENDING"
+  - "FAILED"
+
+# Farben
 colors:
   - id: "red"
     name: "Red"
     hex: "#FF0000"
-  - id: "blue"
-    name: "Blue"
-    hex: "#0000FF"
-  - id: "green"
-    name: "Green"
-    hex: "#00FF00"
-  - id: "yellow"
-    name: "Yellow"
-    hex: "#FFFF00"
   - id: "white"
     name: "White"
     hex: "#FFFFFF"
-  - id: "black"
-    name: "Black"
-    hex: "#000000"
+  - id: "blue"
+    name: "Blue"
+    hex: "#0000FF"
 
-# Quality check definitions
-quality_checks:
-  dimensional:
-    name: "Dimensional Check"
-    description: "Verify workpiece dimensions"
-    tools: ["caliper", "gauge"]
-    
-  visual:
-    name: "Visual Inspection"
-    description: "Visual quality inspection"
-    tools: ["camera", "human_inspector"]
-    
-  weight:
-    name: "Weight Check"
-    description: "Verify workpiece weight"
-    tools: ["scale"]
-    
-  electrical:
-    name: "Electrical Test"
-    description: "Test electrical properties"
-    tools: ["multimeter", "test_fixture"]
+# Template-Integration
+template_placeholders:
+  nfc_code: "<nfcCode>"
+  workpiece_id: "<workpieceId>"
+  color: "<color>"
+  quality: "<quality>"
 
-# Processing steps
-processing_steps:
-  drilling:
-    name: "Drilling"
-    description: "Drill holes in workpiece"
-    station: "DRILL"
-    duration: 30  # seconds
-    
-  milling:
-    name: "Milling"
-    description: "Mill workpiece surfaces"
-    station: "MILL"
-    duration: 45  # seconds
-    
-  assembly:
-    name: "Assembly"
-    description: "Assemble components"
-    station: "ASSEMBLY"
-    duration: 60  # seconds
-    
-  quality_check:
-    name: "Quality Check"
-    description: "Final quality inspection"
-    station: "QC"
-    duration: 20  # seconds
+# MQTT-Topic-Pfade für NFC-Codes
+mqtt_paths:
+  - ["workpieceId"]
+  - ["metadata", "workpiece", "workpieceId"]
+  - ["action", "metadata", "workpiece", "workpieceId"]
+  - ["workpiece", "workpieceId"]
+  - ["loadId"]
+  - ["id"]
