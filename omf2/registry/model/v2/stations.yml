@@ -9,44 +9,49 @@ stations:
   # OPC-UA Stationen (mit SPS und OPC-UA-Server)
   opc_ua_stations:
     # HBW - Hochregallager
-    - serial: "SVR3QA0022"
+    - id: "SVR3QA0022"
       ip_address: "192.168.0.80"
       ip_range: "192.168.0.80-83"
       opc_ua_server: true
       opc_ua_endpoint: "opc.tcp://192.168.0.80:4840"
+      description: "Sauggreifer mit Förderband und Hochregallager"
 
     # DRILL - Bohrer
-    - serial: "SVR4H76449"
+    - id: "SVR4H76449"
       ip_address: "192.168.0.50"
       ip_range: "192.168.0.50-55"
       opc_ua_server: true
       opc_ua_endpoint: "opc.tcp://192.168.0.50:4840"
+      description: "Sauggreifer mit Förderband und Bohrer"
 
     # MILL - Fräse
-    - serial: "SVR3QA2098"
+    - id: "SVR3QA2098"
       ip_address: "192.168.0.40"
       ip_range: "192.168.0.40-45"
       opc_ua_server: true
       opc_ua_endpoint: "opc.tcp://192.168.0.40:4840"
+      description: "Sauggreifer mit Förderband und Fräse"
 
     # AIQS - Qualitätsprüfung
-    - serial: "SVR4H76530"
+    - id: "SVR4H76530"
       ip_address: "192.168.0.70"
       ip_range: "192.168.0.70-75"
       opc_ua_server: true
       opc_ua_endpoint: "opc.tcp://192.168.0.70:4840"
+      description: "Sauggreifer mit Förderband"
 
     # DPS - Warenein- und Ausgang
-    - serial: "SVR4H73275"
+    - id: "SVR4H73275"
       ip_address: "192.168.0.90"
       ip_range: "192.168.0.90"
       opc_ua_server: true
       opc_ua_endpoint: "opc.tcp://192.168.0.90:4840"
+      description: "6-Achs-Greifarm mit NFC-Scanner"
 
   # Non-OPC-UA Stationen (ohne OPC-UA-Server)
   non_opc_ua_stations:
     # CHRG - Ladestation
-    - serial: "CHRG0"
+    - id: "CHRG0"
       ip_address: "192.168.0.65"
       ip_range: "192.168.0.65"
       opc_ua_server: false

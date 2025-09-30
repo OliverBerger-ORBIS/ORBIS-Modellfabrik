@@ -6,8 +6,8 @@ metadata:
 
 template:
   name: "module.state"
-  category: "MODULE"
-  sub_category: "State"
+  template_category: "MODULE"
+  template_sub_category: "State"
   
   # Template für module/v1/ff/{module_id}/state
   schema:

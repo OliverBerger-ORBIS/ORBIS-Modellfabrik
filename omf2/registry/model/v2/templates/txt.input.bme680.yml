@@ -6,8 +6,8 @@ metadata:
 
 template:
   name: "txt.input.bme680"
-  category: "TXT"
-  sub_category: "Sensor_Input"
+  template_category: "TXT"
+  template_sub_category: "Sensor_Input"
   
   # Template für /j1/txt/1/i/bme680
   schema:

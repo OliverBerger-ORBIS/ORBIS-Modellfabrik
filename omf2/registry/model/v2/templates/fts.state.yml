@@ -6,8 +6,8 @@ metadata:
 
 template:
   name: "fts.state"
-  category: "FTS"
-  sub_category: "State"
+  template_category: "FTS"
+  template_sub_category: "State"
   
   # Template für fts/v1/ff/5iO4/state
   schema:

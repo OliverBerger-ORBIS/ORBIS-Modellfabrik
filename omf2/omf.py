@@ -107,6 +107,12 @@ def main():
         if 'client_factory' not in st.session_state:
             st.session_state['client_factory'] = get_client_factory()
         
+        # Initialize registry manager first (like old dashboard)
+        if 'registry_manager' not in st.session_state:
+            from omf2.registry.manager.registry_manager import get_registry_manager
+            st.session_state['registry_manager'] = get_registry_manager()
+            logger.info("📚 Registry Manager initialized on startup")
+        
         # Initialize admin MQTT client immediately (like old dashboard)
         if 'admin_mqtt_client' not in st.session_state:
             from omf2.admin.admin_mqtt_client import get_admin_mqtt_client

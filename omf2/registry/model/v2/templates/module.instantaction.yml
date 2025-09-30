@@ -6,8 +6,8 @@ metadata:
 
 template:
   name: "module.instantaction"
-  category: "MODULE"
-  sub_category: "InstantAction"
+  template_category: "MODULE"
+  template_sub_category: "InstantAction"
   
   # Template für module/v1/ff/{module_id}/instantAction
   schema:

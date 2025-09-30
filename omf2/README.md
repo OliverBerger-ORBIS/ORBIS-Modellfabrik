@@ -48,8 +48,12 @@ omf2/
 │   └── admin_mqtt_client.py         # Admin MQTT Client (Singleton)
 ├── common/                           # Common Components
 │   ├── message_templates.py         # Message Templates Singleton
+│   ├── workpiece_manager.py        # Workpiece Manager (Registry v2)
 │   ├── logger.py                    # Logging Configuration
 │   └── i18n.py                      # Internationalization
+├── registry/                        # Registry v2 Management
+│   └── manager/
+│       └── registry_manager.py     # Registry Manager (Singleton)
 ├── factory/                          # Factory Components
 │   ├── gateway_factory.py           # Gateway Factory
 │   └── client_factory.py            # Client Factory
@@ -120,8 +124,9 @@ omf2/
 - ✅ **AdminGateway** (`omf2/admin/admin_gateway.py`)
 
 **Registry v2 Integration:**
+- ✅ **Registry Manager** (`omf2/registry/manager/registry_manager.py`) - Zentrale Komponente für alle Registry-Daten
 - ✅ **Topics, Templates, Mappings** (`registry/model/v2/`)
-- ⚠️ **Registry v2** (teilweise implementiert)
+- ✅ **MQTT Clients, Workpieces, Modules, Stations, TXT Controllers** (vollständig implementiert)
 
 **UI-Komponenten:**
 - ⚠️ **CCU Tabs** (`omf2/ui/ccu/`) - Grundstruktur vorhanden
@@ -183,25 +188,49 @@ admin_gateway.generate_message_template("ccu/global", {"command": "status"})  # 
 # enabled_apps = admin_settings.get_enabled_apps("admin")
 ```
 
-### 🚧 Workpiece Management (TODO: IMPLEMENTIEREN)
+### ✅ Registry Manager (VOLLSTÄNDIG IMPLEMENTIERT)
 
 ```python
-# TODO: WorkpieceManager implementieren
-# from omf2.ccu.workpiece_manager import get_workpiece_manager
+# Registry Manager verwenden (empfohlen)
+from omf2.registry.manager.registry_manager import get_registry_manager
 
-# workpiece_manager = get_workpiece_manager()
+# Registry Manager erstellen (Singleton-Pattern)
+registry_manager = get_registry_manager()
 
-# Get workpiece by ID (TODO: Implementieren)
-# workpiece = workpiece_manager.get_workpiece_by_id("R1")
+# Alle Registry-Daten laden
+topics = registry_manager.get_topics()
+templates = registry_manager.get_templates()
+mqtt_clients = registry_manager.get_mqtt_clients()
+workpieces = registry_manager.get_workpieces()
+modules = registry_manager.get_modules()
+stations = registry_manager.get_stations()
+txt_controllers = registry_manager.get_txt_controllers()
 
-# Get workpiece by NFC code (TODO: Implementieren)
-# workpiece = workpiece_manager.get_workpiece_by_nfc_code("040a8dca341291")
+# Registry-Statistiken
+stats = registry_manager.get_registry_stats()
+```
 
-# Validate NFC code (TODO: Implementieren)
-# is_valid = workpiece_manager.validate_nfc_code("040a8dca341291")
+### ✅ Workpiece Management (VOLLSTÄNDIG IMPLEMENTIERT)
 
-# Get statistics (TODO: Implementieren)
-# stats = workpiece_manager.get_statistics()
+```python
+# WorkpieceManager verwenden
+from omf2.common.workpiece_manager import get_workpiece_manager
+
+workpiece_manager = get_workpiece_manager()
+
+# Get workpiece by ID
+workpiece = workpiece_manager.get_workpiece_by_id("B1")
+
+# Get workpiece by NFC code
+workpiece = workpiece_manager.get_workpiece_by_nfc_code("047389ca341291")
+
+# Get workpieces by color
+blue_workpieces = workpiece_manager.get_workpieces_by_color("BLUE")
+red_workpieces = workpiece_manager.get_workpieces_by_color("RED")
+white_workpieces = workpiece_manager.get_workpieces_by_color("WHITE")
+
+# Get statistics
+stats = workpiece_manager.get_statistics()
 ```
 
 ### 🚧 Log Management (TEILWEISE IMPLEMENTIERT)

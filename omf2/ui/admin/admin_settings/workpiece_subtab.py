@@ -28,50 +28,18 @@ def render_workpiece_subtab():
             # Get workpiece manager
             manager = get_workpiece_manager()
             
-            # ROTE Werkstücke
-            red_workpieces = manager.get_workpieces_by_color_with_nfc('RED')
-            if red_workpieces:
-                with st.expander(f"🔴 Rote Werkstücke ({len(red_workpieces)})", expanded=False):
-                    red_data = []
-                    for nfc_code, wp_data in red_workpieces.items():
-                        friendly_id = wp_data.get('friendly_id', 'Unknown')
-                        quality_check = wp_data.get('quality_check', 'Unknown')
-                        description = wp_data.get('description', 'No description')
-                        
-                        red_data.append({
-                            "Werkstück": f"🔴 {friendly_id}",
-                            "NFC Code": nfc_code[:12] + "...",
-                            "Qualität": quality_check,
-                            "Beschreibung": description,
-                            "Status": "✅" if wp_data.get('enabled', True) else "❌",
-                        })
-                    
-                    if red_data:
-                        st.dataframe(
-                            red_data,
-                            column_config={
-                                "Werkstück": st.column_config.TextColumn("Werkstück", width="medium"),
-                                "ID": st.column_config.TextColumn("ID", width="small"),
-                                "NFC Code": st.column_config.TextColumn("NFC Code", width="medium"),
-                                "Qualität": st.column_config.TextColumn("Qualität", width="small"),
-                                "Beschreibung": st.column_config.TextColumn("Beschreibung", width="medium"),
-                                "Status": st.column_config.TextColumn("Status", width="small"),
-                            },
-                            hide_index=True,
-                        )
-
-            # BLAUE Werkstücke
+            # BLAUE Werkstücke (zuerst)
             blue_workpieces = manager.get_workpieces_by_color_with_nfc('BLUE')
             if blue_workpieces:
                 with st.expander(f"🔵 Blaue Werkstücke ({len(blue_workpieces)})", expanded=False):
                     blue_data = []
-                    for nfc_code, wp_data in blue_workpieces.items():
-                        friendly_id = wp_data.get('friendly_id', 'Unknown')
+                    for workpiece_id, wp_data in blue_workpieces.items():
+                        nfc_code = wp_data.get('nfc_code', 'Unknown')
                         quality_check = wp_data.get('quality_check', 'Unknown')
                         description = wp_data.get('description', 'No description')
                         
                         blue_data.append({
-                            "Werkstück": f"🔵 {friendly_id}",
+                            "Werkstück": f"🔵 {workpiece_id}",
                             "NFC Code": nfc_code[:12] + "...",
                             "Qualität": quality_check,
                             "Beschreibung": description,
@@ -83,7 +51,6 @@ def render_workpiece_subtab():
                             blue_data,
                             column_config={
                                 "Werkstück": st.column_config.TextColumn("Werkstück", width="medium"),
-                                "ID": st.column_config.TextColumn("ID", width="small"),
                                 "NFC Code": st.column_config.TextColumn("NFC Code", width="medium"),
                                 "Qualität": st.column_config.TextColumn("Qualität", width="small"),
                                 "Beschreibung": st.column_config.TextColumn("Beschreibung", width="medium"),
@@ -97,13 +64,13 @@ def render_workpiece_subtab():
             if white_workpieces:
                 with st.expander(f"⚪ Weiße Werkstücke ({len(white_workpieces)})", expanded=False):
                     white_data = []
-                    for nfc_code, wp_data in white_workpieces.items():
-                        friendly_id = wp_data.get('friendly_id', 'Unknown')
+                    for workpiece_id, wp_data in white_workpieces.items():
+                        nfc_code = wp_data.get('nfc_code', 'Unknown')
                         quality_check = wp_data.get('quality_check', 'Unknown')
                         description = wp_data.get('description', 'No description')
                         
                         white_data.append({
-                            "Werkstück": f"⚪ {friendly_id}",
+                            "Werkstück": f"⚪ {workpiece_id}",
                             "NFC Code": nfc_code[:12] + "...",
                             "Qualität": quality_check,
                             "Beschreibung": description,
@@ -115,7 +82,37 @@ def render_workpiece_subtab():
                             white_data,
                             column_config={
                                 "Werkstück": st.column_config.TextColumn("Werkstück", width="medium"),
-                                "ID": st.column_config.TextColumn("ID", width="small"),
+                                "NFC Code": st.column_config.TextColumn("NFC Code", width="medium"),
+                                "Qualität": st.column_config.TextColumn("Qualität", width="small"),
+                                "Beschreibung": st.column_config.TextColumn("Beschreibung", width="medium"),
+                                "Status": st.column_config.TextColumn("Status", width="small"),
+                            },
+                            hide_index=True,
+                        )
+            
+            # ROTE Werkstücke (dritte - korrekte Reihenfolge)
+            red_workpieces = manager.get_workpieces_by_color_with_nfc('RED')
+            if red_workpieces:
+                with st.expander(f"🔴 Rote Werkstücke ({len(red_workpieces)})", expanded=False):
+                    red_data = []
+                    for workpiece_id, wp_data in red_workpieces.items():
+                        nfc_code = wp_data.get('nfc_code', 'Unknown')
+                        quality_check = wp_data.get('quality_check', 'Unknown')
+                        description = wp_data.get('description', 'No description')
+                        
+                        red_data.append({
+                            "Werkstück": f"🔴 {workpiece_id}",
+                            "NFC Code": nfc_code[:12] + "...",
+                            "Qualität": quality_check,
+                            "Beschreibung": description,
+                            "Status": "✅" if wp_data.get('enabled', True) else "❌",
+                        })
+                    
+                    if red_data:
+                        st.dataframe(
+                            red_data,
+                            column_config={
+                                "Werkstück": st.column_config.TextColumn("Werkstück", width="medium"),
                                 "NFC Code": st.column_config.TextColumn("NFC Code", width="medium"),
                                 "Qualität": st.column_config.TextColumn("Qualität", width="small"),
                                 "Beschreibung": st.column_config.TextColumn("Beschreibung", width="medium"),

@@ -4,6 +4,9 @@ metadata:
   author: "OMF Development Team"
   description: "Node-RED Topics mit QoS/Retain und Publisher/Subscriber-Mapping"
 
+# Category für alle Topics in dieser Datei
+category: "nodered"
+
 # Node-RED Topics (normalisierte Module-States)
 nodered_topics:
   # HBW — SVR3QA0022

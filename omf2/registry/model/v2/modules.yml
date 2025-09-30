@@ -6,64 +6,64 @@ metadata:
 
 modules:
   # HBW - Hochregallager
-  - serial: "SVR3QA0022"
+  - id: "SVR3QA0022"
     name: "HBW"
     name_lang_en: "High Bay Warehouse"
     name_lang_de: "Hochregallager"
     type: "Storage"
-    sub_type: "HBW"
     enabled: true
     icon: "🏬"
 
   # DRILL - Bohrer
-  - serial: "SVR4H76449"
+  - id: "SVR4H76449"
     name: "DRILL"
     name_lang_en: "Drill"
     name_lang_de: "Bohrer"
     type: "Processing"
-    sub_type: "DRILL"
     enabled: true
     icon: "🔩"
 
   # MILL - Fräse
-  - serial: "SVR3QA2098"
+  - id: "SVR3QA2098"
     name: "MILL"
     name_lang_en: "Mill"
     name_lang_de: "Fräse"
     type: "Processing"
-    sub_type: "MILL"
     enabled: true
     icon: "⚙️"
 
   # AIQS - Qualitätsprüfung
-  - serial: "SVR4H76530"
+  - id: "SVR4H76530"
     name: "AIQS"
     name_lang_en: "Quality Inspection"
     name_lang_de: "Qualitätsprüfung"
     type: "Quality-Control"
-    sub_type: "AIQS"
     enabled: true
     icon: "🔍"
 
   # DPS - Warenein- und Ausgang
-  - serial: "SVR4H73275"
+  - id: "SVR4H73275"
     name: "DPS"
     name_lang_en: "Delivery and Pickup Station"
     name_lang_de: "Warenein- und Ausgang"
     type: "Input/Output"
-    sub_type: "DPS"
     enabled: true
     icon: "📦"
 
   # CHRG - Ladestation
-  - serial: "CHRG0"
+  - id: "CHRG0"
     name: "CHRG"
     name_lang_en: "Charging Station"
     name_lang_de: "Ladestation"
     type: "Charging"
-    sub_type: "CHRG"
     enabled: true
     icon: "🔋"
 
-  # FTS - Fahrerloses Transportsystem (entfernt - gehört nicht zu UI-Modulen)
-  # FTS ist ein Transport-System, kein UI-Modul
+  # FTS - Fahrerloses Transportsystem (ist ein APS-Modul)
+  - id: "5iO4"
+    name: "FTS"
+    name_lang_en: "Automated Guided Vehicle"
+    name_lang_de: "Fahrerloses Transportsystem"
+    type: "Transport"
+    enabled: true
+    icon: "🚗"

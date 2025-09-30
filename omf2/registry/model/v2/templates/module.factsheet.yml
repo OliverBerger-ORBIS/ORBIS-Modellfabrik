@@ -6,8 +6,8 @@ metadata:
 
 template:
   name: "module.factsheet"
-  category: "MODULE"
-  sub_category: "Factsheet"
+  template_category: "MODULE"
+  template_sub_category: "Factsheet"
   
   # Template für module/v1/ff/{module_id}/factsheet
   schema:

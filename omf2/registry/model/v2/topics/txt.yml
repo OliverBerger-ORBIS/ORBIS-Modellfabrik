@@ -4,6 +4,9 @@ metadata:
   author: "OMF Development Team"
   description: "TXT Topics mit QoS/Retain und Publisher/Subscriber-Mapping"
 
+# Category für alle Topics in dieser Datei
+category: "txt"
+
 # TXT Topics
 txt_topics:
   # TXT Function Input Topics (CCU → TXT)

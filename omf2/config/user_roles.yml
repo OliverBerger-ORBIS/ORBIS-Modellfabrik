@@ -20,8 +20,6 @@ roles:
       - "ccu_process"
       - "ccu_configuration"
       - "ccu_modules"
-      - "nodered_overview"
-      - "nodered_processes"
       - "message_center"
       - "generic_steering"
       - "system_logs"

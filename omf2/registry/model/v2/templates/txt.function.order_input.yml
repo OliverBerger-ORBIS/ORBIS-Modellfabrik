@@ -6,8 +6,8 @@ metadata:
 
 template:
   name: "txt.function.order_input"
-  category: "TXT"
-  sub_category: "Function_Input"
+  template_category: "TXT"
+  template_sub_category: "Function_Input"
   
   # Template für /j1/txt/1/f/i/order
   schema:

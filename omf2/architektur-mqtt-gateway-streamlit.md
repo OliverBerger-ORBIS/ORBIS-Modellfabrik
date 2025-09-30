@@ -2,7 +2,7 @@
 
 **Status: VOLLSTÄNDIG IMPLEMENTIERT** ✅  
 **Datum: 2025-09-29**  
-**Tests: 55 Tests erfolgreich** ✅
+**Tests: 70 Tests erfolgreich** ✅
 
 **Ziel:**  
 Weggekapselte, robuste Architektur für MQTT-Kommunikation, Message-Templates und UI-Refresh in einer Streamlit-App, sodass UI- und Business-Logik möglichst einfach bleiben und typische Fehlerquellen (Threading, Race-Conditions, Deadlocks, inkonsistenter State) vermieden werden.
@@ -13,6 +13,8 @@ Weggekapselte, robuste Architektur für MQTT-Kommunikation, Message-Templates un
 
 ## 1. ✅ IMPLEMENTIERTE KOMPONENTEN
 
+- **✅ Registry Manager** (`omf2/registry/manager/registry_manager.py`)  
+  Zentrale Singleton-Komponente für alle Registry v2 Daten (Topics, Templates, MQTT Clients, Workpieces, Modules, Stations, TXT Controllers).
 - **✅ MessageTemplates** (`omf2/common/message_templates.py`)  
   Singleton-Utility zum Laden, Rendern und Validieren von Nachrichten aus Registry v2 Templates.
 - **✅ Gateway-Factory** (`omf2/factory/gateway_factory.py`)  
@@ -34,27 +36,104 @@ Weggekapselte, robuste Architektur für MQTT-Kommunikation, Message-Templates un
 Streamlit-UI (omf2/ui/)
     │
     ▼
-Gateway-Factory (Singleton)
+Registry Manager (Singleton) ✅
+    ├── Topics, Templates, Mappings ✅
+    ├── MQTT Clients, Workpieces ✅
+    └── Modules, Stations, TXT Controllers ✅
+        │
+        ▼
+Gateway-Factory (Singleton) ✅
     ├── CcuGateway (Registry v2) ✅
     ├── NoderedGateway (Registry v2) ✅
     └── AdminGateway (Registry v2) ✅
         │
         ▼
-MessageTemplates (Singleton) ✅
-    ├── Registry v2 Topics ✅
-    ├── Registry v2 Templates ✅
-    └── Registry v2 Mappings ✅
+MQTT Clients (Singleton) ✅
+    ├── CCU MQTT Client ✅
+    ├── Node-RED MQTT Client ✅
+    └── Admin MQTT Client ✅
 ```
 
 **✅ IMPLEMENTIERTE FEATURES:**
-- Thread-sichere Singleton-Pattern
+- Registry Manager als zentrale Komponente für alle Registry-Daten
+- Thread-sichere Singleton-Pattern für alle Komponenten
+- Gateway-Factory für Business-Operationen
+- MQTT Clients als Singleton für sichere Kommunikation
 - Registry v2 Integration in allen Gateways
-- Vollständige Test-Abdeckung (55 Tests)
+- Vollständige Test-Abdeckung (70 Tests)
 - Error-Handling und Performance-Optimierung
 
 ---
 
-## 3. MessageTemplates-Utility (zentral, Singleton)
+## 3. Registry Manager (zentral, Singleton)
+
+- Zentrale Komponente für alle Registry v2 Daten
+- Lädt Topics, Templates, MQTT Clients, Workpieces, Modules, Stations, TXT Controllers
+- Bietet einheitliche API für alle Registry-Entitäten
+- Name-Mapping zwischen verwandten Entitäten (Module → Station → TXT Controller)
+
+```python
+# omf2/registry/manager/registry_manager.py
+
+import logging
+import yaml
+from pathlib import Path
+
+class RegistryManager:
+    _instance = None
+
+    def __new__(cls, registry_path="omf2/registry/model/v2/"):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+            cls._instance._load_all_registry_data(registry_path)
+        return cls._instance
+
+    def _load_all_registry_data(self, registry_path):
+        # Lädt alle Registry-Daten
+        self._load_topics()
+        self._load_templates()
+        self._load_mqtt_clients()
+        self._load_workpieces()
+        self._load_modules()
+        self._load_stations()
+        self._load_txt_controllers()
+
+    def get_topics(self):
+        return self.topics
+
+    def get_templates(self):
+        return self.templates
+
+    def get_mqtt_clients(self):
+        return self.mqtt_clients
+
+    def get_workpieces(self):
+        return self.workpieces
+
+    def get_modules(self):
+        return self.modules
+
+    def get_stations(self):
+        return self.stations
+
+    def get_txt_controllers(self):
+        return self.txt_controllers
+
+    def get_registry_stats(self):
+        return {
+            'topics_count': len(self.topics),
+            'templates_count': len(self.templates),
+            'mqtt_clients_count': len(self.mqtt_clients),
+            'workpieces_count': len(self.workpieces),
+            'modules_count': len(self.modules),
+            'stations_count': len(self.stations),
+            'txt_controllers_count': len(self.txt_controllers)
+        }
+```
+
+---
+
+## 4. MessageTemplates-Utility (zentral, Singleton)
 
 - Lädt Topics, Templates und Mappings aus Registry.
 - Bietet Methoden zum Rendern, Validieren, (optional Loggen) von Nachrichten.
@@ -106,7 +185,7 @@ class MessageTemplates:
 
 ---
 
-## 4. Thread-sicherer MQTT-Client (Singleton)
+## 5. Thread-sicherer MQTT-Client (Singleton)
 
 - Eine Instanz pro Domäne.
 - Alle Methoden (publish, subscribe, etc.) arbeiten thread-safe via Lock.
@@ -154,7 +233,7 @@ class CCUMQTTClient:
 
 ---
 
-## 5. Gateway (Fassade, pro Domäne)
+## 6. Gateway (Fassade, pro Domäne)
 
 - Kapselt Message-Erstellung, Validierung, Logging und MQTT-Kommunikation.
 - Bietet Methoden wie `send_order(params)` für die UI.
@@ -196,7 +275,7 @@ class CCUGateway:
 
 ---
 
-## 6. Streamlit-UI: Nur Gateway nutzen, State/Refresh per Session
+## 7. Streamlit-UI: Nur Gateway nutzen, State/Refresh per Session
 
 ```python
 # Im Streamlit-Tab (z.B. ui/ccu/ccu_orders/ccu_orders_tab.py)
@@ -225,7 +304,7 @@ if msg:
 
 ---
 
-## 7. UI-Refresh-Pattern (Streamlit)
+## 8. UI-Refresh-Pattern (Streamlit)
 
 - Nach Aktionen: Zähler in `st.session_state` erhöhen, z.B. `order_refresh`.
 - UI-Komponenten können an diesen Zähler gekoppelt werden (z.B. mit `key=f"orders_{st.session_state['order_refresh']}"`).
@@ -233,7 +312,7 @@ if msg:
 
 ---
 
-## 8. Vorteile & Best Practices
+## 9. Vorteile & Best Practices
 
 - **UI bleibt einfach:** Keine Threading-Probleme, keine MQTT-Details, kein Deadlock-Risiko.
 - **Gateways sind "schlanke Fassade":** Testbar, erweiterbar, keine Redundanz.
@@ -243,7 +322,7 @@ if msg:
 
 ---
 
-## 9. Erweiterungsmöglichkeiten
+## 10. Erweiterungsmöglichkeiten
 
 - Validierung per JSON Schema (in validate_message).
 - Abstrakte Basisklassen für Gateway/MQTTClient, falls wirklich notwendig.
@@ -288,15 +367,31 @@ if msg:
 - `omf2/tests/test_message_templates.py` - 17 Tests ✅
 
 ### **📊 TEST-STATISTIK:**
-- **55 Tests erfolgreich** ✅
+- **70 Tests erfolgreich** ✅
 - **0 Fehler** ✅
 - **Thread-Safety** getestet ✅
 - **Registry v2 Integration** getestet ✅
+- **Registry Manager** getestet ✅
 - **Performance** optimiert ✅
 
 ### **🚀 VERWENDUNG:**
 
 ```python
+# Registry Manager verwenden (zentrale Komponente)
+from omf2.registry.manager.registry_manager import get_registry_manager
+
+# Registry Manager erstellen (Singleton)
+registry_manager = get_registry_manager()
+
+# Alle Registry-Daten laden
+topics = registry_manager.get_topics()
+templates = registry_manager.get_templates()
+mqtt_clients = registry_manager.get_mqtt_clients()
+workpieces = registry_manager.get_workpieces()
+modules = registry_manager.get_modules()
+stations = registry_manager.get_stations()
+txt_controllers = registry_manager.get_txt_controllers()
+
 # Gateway-Factory verwenden
 from omf2.factory.gateway_factory import get_ccu_gateway, get_nodered_gateway, get_admin_gateway
 

@@ -6,8 +6,8 @@ metadata:
 
 template:
   name: "ccu.control.reset"
-  category: "CCU"
-  sub_category: "Control"
+  template_category: "CCU"
+  template_sub_category: "Control"
   
   # Template für ccu/set/reset
   schema:

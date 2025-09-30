@@ -4,6 +4,9 @@ metadata:
   author: "OMF Development Team"
   description: "CCU Topics mit QoS/Retain und Publisher/Subscriber-Mapping"
 
+# Category für alle Topics in dieser Datei
+category: "ccu"
+
 # CCU Topics
 ccu_topics:
   # CCU State Topics (Dashboard → CCU)

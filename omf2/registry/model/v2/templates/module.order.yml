@@ -6,8 +6,8 @@ metadata:
 
 template:
   name: "module.order"
-  category: "MODULE"
-  sub_category: "Order"
+  template_category: "MODULE"
+  template_sub_category: "Order"
   
   # Template für module/v1/ff/{module_id}/order
   schema:

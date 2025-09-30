@@ -1,182 +1,183 @@
 metadata:
   version: "3.0.0"
-  description: "OMF Workpiece Mapping mit NFC code als Schlüssel"
+  description: "OMF Workpiece Mapping mit id und nfc_code"
   last_updated: "2025-08-29"
   author: "OMF Development Team"
 
-# Workpiece Mappings mit NFC code als Schlüssel
+# Workpiece Mappings mit id und nfc_code
 # Nur die ersten 3 Werkstücke pro Farbe haben Quality-Check "OK"
 workpieces:
-  # ROTE Werkstücke (R1-R8)
-  "040a8dca341291":
-    friendly_id: "R1"
-    color: "RED"
-    quality_check: "OK"
-    description: "Rotes Werkstück 1"
-    enabled: true
-    
-  "047f8cca341290":
-    friendly_id: "R2"
-    color: "RED"
-    quality_check: "OK"
-    description: "Rotes Werkstück 2"
-    enabled: true
-    
-  "04808dca341291":
-    friendly_id: "R3"
-    color: "RED"
-    quality_check: "OK"
-    description: "Rotes Werkstück 3"
-    enabled: true
-    
-  "04818dca341290":
-    friendly_id: "R4"
-    color: "RED"
-    quality_check: "NOT-OK"
-    description: "Rotes Werkstück 4"
-    enabled: true
-    
-  "04828dca341291":
-    friendly_id: "R5"
-    color: "RED"
-    quality_check: "NOT-OK"
-    description: "Rotes Werkstück 5"
-    enabled: true
-    
-  "04838dca341290":
-    friendly_id: "R6"
-    color: "RED"
-    quality_check: "NOT-OK"
-    description: "Rotes Werkstück 6"
-    enabled: true
-    
-  "04848dca341291":
-    friendly_id: "R7"
-    color: "RED"
-    quality_check: "NOT-OK"
-    description: "Rotes Werkstück 7"
-    enabled: true
-    
-  "04858dca341290":
-    friendly_id: "R8"
-    color: "RED"
-    quality_check: "NOT-OK"
-    description: "Rotes Werkstück 8"
-    enabled: true
-
-  # WEISSE Werkstücke (W1-W8)
-  "04798eca341290":
-    friendly_id: "W1"
-    color: "WHITE"
-    quality_check: "OK"
-    description: "Weißes Werkstück 1"
-    enabled: true
-    
-  "04ab8bca341290":
-    friendly_id: "W2"
-    color: "WHITE"
-    quality_check: "OK"
-    description: "Weißes Werkstück 2"
-    enabled: true
-    
-  "04ac8bca341291":
-    friendly_id: "W3"
-    color: "WHITE"
-    quality_check: "OK"
-    description: "Weißes Werkstück 3"
-    enabled: true
-    
-  "04ad8bca341290":
-    friendly_id: "W4"
-    color: "WHITE"
-    quality_check: "NOT-OK"
-    description: "Weißes Werkstück 4"
-    enabled: true
-    
-  "04ae8bca341291":
-    friendly_id: "W5"
-    color: "WHITE"
-    quality_check: "NOT-OK"
-    description: "Weißes Werkstück 5, mit Sprung"
-    enabled: true
-    
-  "04af8bca341290":
-    friendly_id: "W6"
-    color: "WHITE"
-    quality_check: "NOT-OK"
-    description: "Weißes Werkstück 6, gefrässt"
-    enabled: true
-    
-  "04b08bca341291":
-    friendly_id: "W7"
-    color: "WHITE"
-    quality_check: "NOT-OK"
-    description: "Weißes Werkstück 7, Bohrloch ausgeleiert"
-    enabled: true
-    
-  "04b18bca341290":
-    friendly_id: "W8"
-    color: "WHITE"
-    quality_check: "NOT-OK"
-    description: "Weißes Werkstück 8"
-    enabled: true
-
   # BLAUE Werkstücke (B1-B8)
-  "047389ca341291":
-    friendly_id: "B1"
+  - id: "B1"
+    nfc_code: "047389ca341291"
     color: "BLUE"
     quality_check: "OK"
     description: "Blaues Werkstück 1"
     enabled: true
     
-  "047489ca341290":
-    friendly_id: "B2"
+  - id: "B2"
+    nfc_code: "047489ca341290"
     color: "BLUE"
     quality_check: "OK"
     description: "Blaues Werkstück 2"
     enabled: true
     
-  "047589ca341291":
-    friendly_id: "B3"
+  - id: "B3"
+    nfc_code: "047589ca341291"
     color: "BLUE"
     quality_check: "OK"
     description: "Blaues Werkstück 3"
     enabled: true
     
-  "047689ca341290":
-    friendly_id: "B4"
+  - id: "B4"
+    nfc_code: "047689ca341290"
     color: "BLUE"
     quality_check: "NOT-OK"
-    description: "Blaues Werkstück 4, nur gefrässt"
+    description: "Blaues Werkstück 4, mit Riss"
     enabled: true
     
-  "047789ca341291":
-    friendly_id: "B5"
+  - id: "B5"
+    nfc_code: "047789ca341291"
     color: "BLUE"
     quality_check: "NOT-OK"
-    description: "Blaues Werkstück 5"
+    description: "Blaues Werkstück 5, gebohrt und einmal gefrässt"
     enabled: true
     
-  "047889ca341290":
-    friendly_id: "B6"
+  - id: "B6"
+    nfc_code: "047889ca341290"
     color: "BLUE"
     quality_check: "NOT-OK"
-    description: "Blaues Werkstück 6"
+    description: "Blaues Werkstück 6, gefrässt und gebohrt mit Sprung"
     enabled: true
     
-  "047989ca341291":
-    friendly_id: "B7"
+  - id: "B7"
+    nfc_code: "047989ca341291"
     color: "BLUE"
     quality_check: "NOT-OK"
-    description: "Blaues Werkstück 7, nur gebohrt"
+    description: "Blaues Werkstück 7, nur 1 mal gefrässt"
     enabled: true
     
-  "047a89ca341290":
-    friendly_id: "B8"
+  - id: "B8"
+    nfc_code: "047a89ca341290"
     color: "BLUE"
     quality_check: "NOT-OK"
-    description: "Blaues Werkstück 8"
+    description: "Blaues Werkstück 8, nur gefrässt"
     enabled: true
+
+  # WEISSE Werkstücke (W1-W8)
+  - id: "W1"
+    nfc_code: "04798eca341290"
+    color: "WHITE"
+    quality_check: "OK"
+    description: "Weißes Werkstück 1"
+    enabled: true
+    
+  - id: "W2"
+    nfc_code: "04ab8bca341290"
+    color: "WHITE"
+    quality_check: "OK"
+    description: "Weißes Werkstück 2"
+    enabled: true
+    
+  - id: "W3"
+    nfc_code: "04ac8bca341291"
+    color: "WHITE"
+    quality_check: "OK"
+    description: "Weißes Werkstück 3"
+    enabled: true
+    
+  - id: "W4"
+    nfc_code: "04ad8bca341290"
+    color: "WHITE"
+    quality_check: "NOT-OK"
+    description: "Weißes Werkstück 4, Bohrloch ausgeleiert"
+    enabled: true
+    
+  - id: "W5"
+    nfc_code: "04ae8bca341291"
+    color: "WHITE"
+    quality_check: "NOT-OK"
+    description: "Weißes Werkstück 5, nicht gebohrt, 1 Frässloch"
+    enabled: true
+    
+  - id: "W6"
+    nfc_code: "04af8bca341290"
+    color: "WHITE"
+    quality_check: "NOT-OK"
+    description: "Weißes Werkstück 6, mit Riss"
+    enabled: true
+    
+  - id: "W7"
+    nfc_code: "04b08bca341291"
+    color: "WHITE"
+    quality_check: "NOT-OK"
+    description: "Weißes Werkstück 7, Bohrloch mit Riss"
+    enabled: true
+    
+  - id: "W8"
+    nfc_code: "04b18bca341290"
+    color: "WHITE"
+    quality_check: "NOT-OK"
+    description: "Weißes Werkstück 8, Bohrloch und 1 mal gefrässt"
+    enabled: true
+   
+  # ROTE Werkstücke (R1-R8)
+  - id: "R1"
+    nfc_code: "040a8dca341291"
+    color: "RED"
+    quality_check: "OK"
+    description: "Rotes Werkstück 1"
+    enabled: true
+    
+  - id: "R2"
+    nfc_code: "047f8cca341290"
+    color: "RED"
+    quality_check: "OK"
+    description: "Rotes Werkstück 2"
+    enabled: true
+    
+  - id: "R3"
+    nfc_code: "04808dca341291"
+    color: "RED"
+    quality_check: "OK"
+    description: "Rotes Werkstück 3"
+    enabled: true
+    
+  - id: "R4"
+    nfc_code: "04818dca341290"
+    color: "RED"
+    quality_check: "NOT-OK"
+    description: "Rotes Werkstück 4, gebohrt und einmal gefrässt"
+    enabled: true
+    
+  - id: "R5"
+    nfc_code: "04828dca341291"
+    color: "RED"
+    quality_check: "NOT-OK"
+    description: "Rotes Werkstück 5, gefrässt und gebohrt"
+    enabled: true
+    
+  - id: "R6"
+    nfc_code: "04838dca341290"
+    color: "RED"
+    quality_check: "NOT-OK"
+    description: "Rotes Werkstück 6, nur 1 Frässloch"
+    enabled: true
+    
+  - id: "R7"
+    nfc_code: "04848dca341291"
+    color: "RED"
+    quality_check: "NOT-OK"
+    description: "Rotes Werkstück 7, mit Sprung in Frässloch"
+    enabled: true
+    
+  - id: "R8"
+    nfc_code: "04858dca341290"
+    color: "RED"
+    quality_check: "NOT-OK"
+    description: "Rotes Werkstück 8, mit Sprung, ohne Frässloch"
+    enabled: true
+
 
 # Qualitätsprüfung-Status
 quality_check_options:
@@ -187,15 +188,17 @@ quality_check_options:
 
 # Farben
 colors:
-  - id: "red"
-    name: "Red"
-    hex: "#FF0000"
-  - id: "white"
-    name: "White"
-    hex: "#FFFFFF"
   - id: "blue"
     name: "Blue"
     hex: "#0000FF"
+  - id: "white"
+    name: "White"
+    hex: "#FFFFFF"
+  - id: "red"
+    name: "Red"
+    hex: "#FF0000"
+
+
 
 # Template-Integration
 template_placeholders:

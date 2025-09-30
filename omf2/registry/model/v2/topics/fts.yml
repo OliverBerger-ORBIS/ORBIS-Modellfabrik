@@ -4,6 +4,9 @@ metadata:
   author: "OMF Development Team"
   description: "FTS Topics mit QoS/Retain und Publisher/Subscriber-Mapping"
 
+# Category für alle Topics in dieser Datei
+category: "fts"
+
 # FTS (Fischertechnik Transport System) Topics
 fts_topics:
   - { topic: "fts/v1/ff/5iO4/connection", qos: 1, retain: 1 }

@@ -50,7 +50,13 @@ class WorkpieceManager:
             if workpieces_file.exists():
                 with open(workpieces_file, 'r', encoding='utf-8') as f:
                     data = yaml.safe_load(f)
-                    self.workpieces = data.get('workpieces', {})
+                    # Workpieces sind jetzt als Liste
+                    workpieces_list = data.get('workpieces', [])
+                    self.workpieces = {}
+                    for wp_data in workpieces_list:
+                        if isinstance(wp_data, dict) and 'id' in wp_data:
+                            workpiece_id = wp_data['id']
+                            self.workpieces[workpiece_id] = wp_data
                     self.colors = data.get('colors', [])
                     self.quality_checks = data.get('quality_check_options', [])
             
@@ -75,25 +81,25 @@ class WorkpieceManager:
             Liste von Werkstück-Dicts
         """
         result = []
-        for nfc_code, wp_data in self.workpieces.items():
+        for workpiece_id, wp_data in self.workpieces.items():
             if wp_data.get('color') == color:
                 result.append(wp_data)
         return result
     
     def get_workpieces_by_color_with_nfc(self, color: str) -> Dict[str, Dict[str, Any]]:
         """
-        Gibt alle Werkstücke einer bestimmten Farbe mit NFC-Code als Key zurück
+        Gibt alle Werkstücke einer bestimmten Farbe mit ID als Key zurück
         
         Args:
             color: Farbe (z.B. "RED", "BLUE", "WHITE")
             
         Returns:
-            Dictionary mit NFC-Code als Key und Werkstück-Daten als Value
+            Dictionary mit ID als Key und Werkstück-Daten als Value
         """
         result = {}
-        for nfc_code, wp_data in self.workpieces.items():
+        for workpiece_id, wp_data in self.workpieces.items():
             if wp_data.get('color') == color:
-                result[nfc_code] = wp_data
+                result[workpiece_id] = wp_data
         return result
     
     def get_workpiece_by_nfc_code(self, nfc_code: str) -> Optional[Dict[str, Any]]:

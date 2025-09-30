@@ -16,44 +16,54 @@ def render_admin_settings_tab():
     logger.info("⚙️ Rendering Admin Settings Tab")
     try:
         st.header("⚙️ Admin Settings")
-        st.markdown("System configuration and administration")
+        st.markdown("Dashboard configuration and registry information")
         
         # Create subtabs
         subtab_labels = [
-            "🔧 Workpiece",
-            "📊 Dashboard", 
-            "🔧 Module",
-            "📡 MQTT",
+            "📊 Dashboard",
+            "📡 MQTT Clients", 
             "📋 Topics",
-            "📝 Templates"
+            "📝 Templates",
+            "🔧 Modules",
+            "🏭 Stations",
+            "🎮 TXT Controllers",
+            "🔧 Workpieces"
         ]
         
         subtabs = st.tabs(subtab_labels)
         
         # Render subtab content
-        with subtabs[0]:
-            from omf2.ui.admin.admin_settings.workpiece_subtab import render_workpiece_subtab
-            render_workpiece_subtab()
-        
-        with subtabs[1]:
+        with subtabs[0]:  # Dashboard
             from omf2.ui.admin.admin_settings.dashboard_subtab import render_dashboard_subtab
             render_dashboard_subtab()
         
-        with subtabs[2]:
-            from omf2.ui.admin.admin_settings.module_subtab import render_module_subtab
-            render_module_subtab()
+        with subtabs[1]:  # MQTT Clients
+            from omf2.ui.admin.admin_settings.mqtt_clients_subtab import render_mqtt_clients_subtab
+            render_mqtt_clients_subtab()
         
-        with subtabs[3]:
-            from omf2.ui.admin.admin_settings.mqtt_subtab import render_mqtt_subtab
-            render_mqtt_subtab()
-        
-        with subtabs[4]:
+        with subtabs[2]:  # Topics
             from omf2.ui.admin.admin_settings.topics_subtab import render_topics_subtab
             render_topics_subtab()
         
-        with subtabs[5]:
+        with subtabs[3]:  # Templates
             from omf2.ui.admin.admin_settings.templates_subtab import render_templates_subtab
             render_templates_subtab()
+        
+        with subtabs[4]:  # Modules
+            from omf2.ui.admin.admin_settings.module_subtab import render_module_subtab
+            render_module_subtab()
+        
+        with subtabs[5]:  # Stations
+            from omf2.ui.admin.admin_settings.stations_subtab import render_stations_subtab
+            render_stations_subtab()
+        
+        with subtabs[6]:  # TXT Controllers
+            from omf2.ui.admin.admin_settings.txt_controllers_subtab import render_txt_controllers_subtab
+            render_txt_controllers_subtab()
+        
+        with subtabs[7]:  # Workpieces
+            from omf2.ui.admin.admin_settings.workpiece_subtab import render_workpiece_subtab
+            render_workpiece_subtab()
         
     except Exception as e:
         logger.error(f"❌ Admin Settings Tab rendering error: {e}")

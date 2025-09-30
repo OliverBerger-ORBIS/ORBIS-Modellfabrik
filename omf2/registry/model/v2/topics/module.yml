@@ -4,6 +4,9 @@ metadata:
   author: "OMF Development Team"
   description: "Module Topics mit QoS/Retain und Publisher/Subscriber-Mapping"
 
+# Category für alle Topics in dieser Datei
+category: "module"
+
 # Module Topics (APS-Module mit Serial-ID)
 module_topics:
   # HBW — SVR3QA0022

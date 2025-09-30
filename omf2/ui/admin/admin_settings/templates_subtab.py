@@ -1,47 +1,96 @@
 #!/usr/bin/env python3
 """
-Admin Settings - Templates Subtab
+Templates Subtab - Templates Verwaltung für Admin Settings
+Zeigt alle Templates aus der Registry nach Kategorien an
 """
 
 import streamlit as st
-from omf2.admin.admin_gateway import AdminGateway
 from omf2.common.logger import get_logger
+from omf2.ui.utils.ui_refresh import request_refresh
 
 logger = get_logger(__name__)
 
 
 def render_templates_subtab():
-    """Render Templates Configuration Subtab"""
-    # Only log on first render
-    if "templates_subtab_logged" not in st.session_state:
-        logger.info("📝 Rendering Templates Configuration Subtab (init only)")
-        st.session_state["templates_subtab_logged"] = True
+    """Render Templates Subtab mit Registry-Daten"""
     try:
-        st.subheader("📝 Templates Configuration")
-        st.markdown("Configure message templates and schemas")
+        st.subheader("📝 Templates Konfiguration")
+        st.markdown("Registry-basierte Templates-Verwaltung aus omf2/registry")
+
+        # Load registry manager
+        from omf2.registry.manager.registry_manager import get_registry_manager
+        registry_manager = get_registry_manager()
         
-        # Placeholder content
-        st.info("💡 Templates configuration will be implemented here")
+        # Get all templates
+        all_templates = registry_manager.get_templates()
         
-        # Example configuration sections
-        with st.expander("📋 Template Definitions", expanded=True):
-            st.write("Manage message template definitions")
-            st.text_input("Template Name", key="admin_settings_templates_template_name")
-            st.selectbox("Template Category", ["module", "ccu", "fts", "nodered"], key="admin_settings_templates_template_category")
-            st.text_area("Template Schema", key="admin_settings_templates_template_schema")
+        if not all_templates:
+            st.warning("⚠️ Keine Templates in der Registry gefunden")
+            return
         
-        with st.expander("🔄 Template Validation", expanded=False):
-            st.write("Configure template validation rules")
-            st.checkbox("Enable Schema Validation", value=True, key="admin_settings_templates_schema_validation")
-            st.checkbox("Enable Field Validation", value=True, key="admin_settings_templates_field_validation")
+        # Gruppiere Templates nach Kategorien
+        templates_by_category = _group_templates_by_category(all_templates)
         
-        with st.expander("📊 Template Analytics", expanded=False):
-            st.write("View template usage and performance")
-            st.metric("Total Templates", "28")
-            st.metric("Active Templates", "24")
-            st.metric("Validation Errors", "3")
+        # Zeige Templates nach Kategorien
+        for category, templates in templates_by_category.items():
+            with st.expander(f"📂 {category} ({len(templates)} templates)", expanded=False):
+                # Erstelle DataFrame für diese Kategorie
+                template_data = []
+                for template_name, template_info in templates.items():
+                    template_data.append({
+                        "Name": template_name,
+                        "Template Category": template_info.get('template_category', 'unknown'),
+                        "Template Sub Category": template_info.get('template_sub_category', 'unknown'),
+                        "Version": template_info.get('version', 'unknown'),
+                        "Description": template_info.get('description', 'No description')
+                    })
+                
+                if template_data:
+                    st.dataframe(
+                        template_data,
+                        column_config={
+                            "Name": st.column_config.TextColumn("Template Name", width="medium"),
+                            "Template Category": st.column_config.TextColumn("Template Category", width="small"),
+                            "Template Sub Category": st.column_config.TextColumn("Template Sub Category", width="small"),
+                            "Version": st.column_config.TextColumn("Version", width="small"),
+                            "Description": st.column_config.TextColumn("Description", width="large"),
+                        },
+                        hide_index=True,
+                    )
+        
+        # Registry Information
+        with st.expander("📊 Registry Information", expanded=False):
+            stats = registry_manager.get_registry_stats()
+            st.write(f"**Load Timestamp:** {stats['load_timestamp']}")
+            st.write(f"**Total Templates:** {len(all_templates)}")
+            st.write(f"**Categories:** {len(templates_by_category)}")
+            
+            # Zeige Kategorien-Übersicht
+            st.write("**Categories Overview:**")
+            for category, templates in templates_by_category.items():
+                st.write(f"- {category}: {len(templates)} templates")
         
     except Exception as e:
         logger.error(f"❌ Templates Subtab rendering error: {e}")
         st.error(f"❌ Templates Subtab failed: {e}")
         st.info("💡 This component is currently under development.")
+
+
+def _group_templates_by_category(all_templates):
+    """Gruppiert Templates nach Kategorien"""
+    templates_by_category = {}
+    
+    for template_name, template_info in all_templates.items():
+        category = template_info.get('template_category', 'unknown')
+        
+        if category not in templates_by_category:
+            templates_by_category[category] = {}
+        
+        templates_by_category[category][template_name] = template_info
+    
+    return templates_by_category
+
+
+def show_templates_subtab():
+    """Wrapper für Templates Subtab"""
+    render_templates_subtab()

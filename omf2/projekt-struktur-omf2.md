@@ -11,6 +11,8 @@ Die Registry bleibt in omf2/registry/ - nur die UI-Struktur wird reorganisiert
 ```
 omf2/
   registry/                                    # ✅ IMPLEMENTIERT
+    manager/                                  # ✅ NEU HINZUGEFÜGT
+      registry_manager.py                     # ✅ Registry Manager (Singleton)
     model/
       v2/
         modules.yml

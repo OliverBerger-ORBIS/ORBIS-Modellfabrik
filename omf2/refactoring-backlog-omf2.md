@@ -14,9 +14,9 @@ Die Tabelle zeigt, wie alte Komponenten/Funktionen in die neue Architektur über
 | Supervisor-Erweiterungen                   | `ui/supervisor/*`, WL Module/System Ctrl| offen      | Tab-Freischaltung via Rolle, modular                         |                    |
 | Admin-Tabs (Steering, Message Center, ...) | `ui/admin/steering_tab.py`, ...         | offen      | Subtabs modular, Fehlerbehandlung, Logging                   |                    |
 | **Untertabs**                              | Separate Module in jeweiligem Tab-Ordner| offen      | z.B. `ui/admin/steering/factory_tab.py`                      |                    |
-| Werkstück-Konfiguration                    | `ui/admin/settings/workpiece_tab.py`    | offen      | Manager-Prinzip, Daten aus registry, validiert gegen Schema  |                    |
-| MQTT-Konfiguration (Settings)              | `ui/admin/settings/mqtt_tab.py`, config | offen      | Werte aus/zu config/mqtt_settings.yml                        |                    |
-| Topic-/Template-Konfiguration              | `ui/admin/settings/topics_tab.py`       | offen      | Modular, Vorlagen als assets/templates/                      |                    |
+| Werkstück-Konfiguration                    | `ui/admin/admin_settings/workpiece_subtab.py` | ✅ | Registry Manager, id/nfc_code Struktur, WorkpieceManager | ✅ |
+| MQTT-Konfiguration (Settings)              | `ui/admin/admin_settings/dashboard_subtab.py` | ✅ | Registry Manager, Environment-Info, Read-Only | ✅ |
+| Topic-/Template-Konfiguration              | `ui/admin/admin_settings/topics_subtab.py` | ✅ | Registry Manager, Category-basierte Anzeige | ✅ |
 | Dynamische Tab-Generierung                 | Zentraler Tab-Renderer                  | offen      | Tabs/Subtabs nach Rolle, i18n, Fehlerfallback                |                    |
 | Internationalisierung (DE/EN/FR)           | `common/i18n.py` + UI-Integration       | offen      | Keine Hardcodierung, dynamische Sprachwahl                   |                    |
 | Icons pro Tab                              | `assets/icons/`                         | offen      | UI lädt Icons dynamisch, fallback bei fehlenden Icons        |                    |

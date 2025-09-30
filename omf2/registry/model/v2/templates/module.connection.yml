@@ -6,8 +6,8 @@ metadata:
 
 template:
   name: "module.connection"
-  category: "MODULE"
-  sub_category: "Connection"
+  template_category: "MODULE"
+  template_sub_category: "Connection"
   
   # Template für module/v1/ff/{module_id}/connection
   schema:
