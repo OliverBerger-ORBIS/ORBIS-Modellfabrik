@@ -222,6 +222,33 @@ omf2/
 ### **Common**
 - Gemeinsame Utilities, Logger, i18n etc. zentral unter `omf2/common/`.
 
+### **🎯 ZENTRALE INITIALISIERUNG (omf.py)**
+
+**Registry Manager wird zentral in `omf.py` initialisiert:**
+```python
+# Initialize Registry Manager (Singleton - nur einmal initialisiert)
+if 'registry_manager' not in st.session_state:
+    from omf2.registry.manager.registry_manager import get_registry_manager
+    st.session_state['registry_manager'] = get_registry_manager()
+    logger.info("📚 Registry Manager initialized on startup")
+```
+
+**Verwendung in allen Domänen:**
+```python
+# Registry Manager aus Session State holen
+registry_manager = st.session_state.get('registry_manager')
+if registry_manager:
+    topics = registry_manager.get_topics()
+    templates = registry_manager.get_templates()
+    # etc.
+```
+
+**Vorteile:**
+- **✅ Singleton Pattern** verhindert mehrfache Initialisierung
+- **✅ Verfügbar in allen Domänen** (Admin, CCU, Node-RED, Common)
+- **✅ Thread-safe** durch Session State
+- **✅ Effizient** - nur einmal geladen beim App-Start
+
 ---
 
 ## 3. Migration und Übertrag von Quellen

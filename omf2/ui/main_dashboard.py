@@ -55,23 +55,8 @@ class MainDashboard:
                 st.markdown("## ORBIS Modellfabrik Control")
         
         with col3:
-            # Environment status display (updated dynamically)
-            st.markdown("### 🌍 Environment")
-            current_env = st.session_state.get('current_environment', 'mock')
-            env_descriptions = {
-                'live': '🟢 Live - Real-time MQTT',
-                'replay': '🔄 Replay - Historical data', 
-                'mock': '🧪 Mock - Simulated data'
-            }
-            env_status = env_descriptions.get(current_env, current_env)
-            
-            # Color coding for environment status
-            if current_env == 'live':
-                st.success(f"**{env_status}**")
-            elif current_env == 'replay':
-                st.warning(f"**{env_status}**")
-            else:  # mock
-                st.info(f"**{env_status}**")
+            # Environment status removed - shown in sidebar instead
+            pass
     
     def _render_environment_selector(self):
         """Render environment selector with radio buttons - EXACT like old dashboard"""
@@ -170,53 +155,65 @@ class MainDashboard:
             request_refresh()
     
     def _render_connection_status(self):
-        """Render connection status in sidebar - Enhanced with real-time info"""
+        """Render connection status in sidebar as collapsible element"""
         st.sidebar.markdown("---")
-        st.sidebar.subheader("🔗 Connection Status")
         
-        # Check admin MQTT client status
+        # Check admin MQTT client status first to determine expander color
         admin_client = st.session_state.get('admin_mqtt_client')
         current_env = st.session_state.get('current_environment', 'mock')
         
+        # Determine expander color based on connection status
         if admin_client:
-            # Get detailed connection info - UI liest IMMER aus session_state
             conn_info = admin_client.get_connection_info()
-            
-            # NO AUTO-CONNECT in UI - prevents connection loops
-            # Connection is handled by main dashboard initialization
-            
-            # Display connection status with detailed info
             if conn_info['connected']:
-                if conn_info['mock_mode']:
-                    status_icon = "🧪"
-                    status_text = f"Mock Mode ({current_env})"
-                    st.sidebar.info(f"{status_icon} **Admin MQTT**: {status_text}")
-                else:
-                    status_icon = "🟢"
-                    status_text = f"Connected ({current_env})"
-                    host_port = f"{conn_info['host']}:{conn_info['port']}"
-                    st.sidebar.success(f"{status_icon} **Admin MQTT**: {status_text}")
-                    st.sidebar.caption(f"🌐 Broker: `{host_port}`")
+                expander_color = "🟢"  # Green for connected
             else:
-                status_icon = "🔴"
-                status_text = f"Disconnected ({current_env})"
-                st.sidebar.error(f"{status_icon} **Admin MQTT**: {status_text}")
-                
-            # Show Client ID with current environment
-            client_id = conn_info.get('client_id', f'omf_{current_env}')
-            st.sidebar.caption(f"🆔 Client ID: `{client_id}`")
-            
+                expander_color = "🔴"  # Red for disconnected
         else:
-            st.sidebar.warning("Admin MQTT client not initialized")
-            st.sidebar.caption("🆔 Client ID: Noch nicht initialisiert")
-            
-        # Show environment-specific info
-        if current_env == 'mock':
-            st.sidebar.info("🧪 Mock mode - No real MQTT connection")
-        elif current_env == 'live':
-            st.sidebar.success("🟢 Live mode - Real MQTT connection")
-        elif current_env == 'replay':
-            st.sidebar.warning("🔄 Replay mode - Historical data")
+            expander_color = "🔴"  # Red for not initialized
+        
+        # Collapsible Connection Status with color-coded icon
+        with st.sidebar.expander(f"{expander_color} Connection Status", expanded=False):
+            if admin_client:
+                # Get detailed connection info - UI liest IMMER aus session_state
+                conn_info = admin_client.get_connection_info()
+                
+                # NO AUTO-CONNECT in UI - prevents connection loops
+                # Connection is handled by main dashboard initialization
+                
+                # Display connection status with consistent formatting
+                if conn_info['connected']:
+                    if conn_info['mock_mode']:
+                        status_icon = "🧪"
+                        status_text = f"Mock Mode ({current_env})"
+                        st.info(f"{status_icon} **Admin MQTT**: {status_text}")
+                    else:
+                        status_icon = "🟢"
+                        status_text = f"Connected ({current_env})"
+                        st.success(f"{status_icon} **Admin MQTT**: {status_text}")
+                else:
+                    status_icon = "🔴"
+                    status_text = f"Disconnected ({current_env})"
+                    st.error(f"{status_icon} **Admin MQTT**: {status_text}")
+                
+                # Show Broker and Client ID with same formatting as MQTT status
+                host_port = f"{conn_info['host']}:{conn_info['port']}"
+                st.info(f"🌐 **Broker**: `{host_port}`")
+                
+                client_id = conn_info.get('client_id', f'omf_{current_env}')
+                st.info(f"🆔 **Client ID**: `{client_id}`")
+                
+            else:
+                st.warning("Admin MQTT client not initialized")
+                st.info("🆔 **Client ID**: Noch nicht initialisiert")
+                
+            # Show environment-specific info
+            if current_env == 'mock':
+                st.info("🧪 Mock mode - No real MQTT connection")
+            elif current_env == 'live':
+                st.success("🟢 Live mode - Real MQTT connection")
+            elif current_env == 'replay':
+                st.warning("🔄 Replay mode - Historical data")
     
     def _render_main_content(self):
         """Render main content area with tabs"""

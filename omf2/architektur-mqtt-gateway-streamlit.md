@@ -377,20 +377,20 @@ if msg:
 ### **🚀 VERWENDUNG:**
 
 ```python
-# Registry Manager verwenden (zentrale Komponente)
-from omf2.registry.manager.registry_manager import get_registry_manager
+# Registry Manager verwenden (zentral initialisiert in omf.py)
+# Registry Manager ist bereits in st.session_state verfügbar
 
-# Registry Manager erstellen (Singleton)
-registry_manager = get_registry_manager()
-
-# Alle Registry-Daten laden
-topics = registry_manager.get_topics()
-templates = registry_manager.get_templates()
-mqtt_clients = registry_manager.get_mqtt_clients()
-workpieces = registry_manager.get_workpieces()
-modules = registry_manager.get_modules()
-stations = registry_manager.get_stations()
-txt_controllers = registry_manager.get_txt_controllers()
+# Registry Manager aus Session State holen
+registry_manager = st.session_state.get('registry_manager')
+if registry_manager:
+    # Alle Registry-Daten laden
+    topics = registry_manager.get_topics()
+    templates = registry_manager.get_templates()
+    mqtt_clients = registry_manager.get_mqtt_clients()
+    workpieces = registry_manager.get_workpieces()
+    modules = registry_manager.get_modules()
+    stations = registry_manager.get_stations()
+    txt_controllers = registry_manager.get_txt_controllers()
 
 # Gateway-Factory verwenden
 from omf2.factory.gateway_factory import get_ccu_gateway, get_nodered_gateway, get_admin_gateway

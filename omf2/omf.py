@@ -107,7 +107,7 @@ def main():
         if 'client_factory' not in st.session_state:
             st.session_state['client_factory'] = get_client_factory()
         
-        # Initialize registry manager first (like old dashboard)
+        # Initialize Registry Manager (Singleton - nur einmal initialisiert)
         if 'registry_manager' not in st.session_state:
             from omf2.registry.manager.registry_manager import get_registry_manager
             st.session_state['registry_manager'] = get_registry_manager()

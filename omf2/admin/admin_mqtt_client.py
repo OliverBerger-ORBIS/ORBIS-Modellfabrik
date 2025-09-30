@@ -62,8 +62,9 @@ class AdminMQTTClient:
         self.current_environment = None
         self.config = self._load_config()
         
-        # Topic-Buffer für Per-Topic-Buffer Pattern (thread-safe)
-        self.topic_buffers = {}
+        # Topic-Buffer für Per-Topic-Buffer Pattern (thread-safe) - wie in omf/
+        from collections import defaultdict, deque
+        self.topic_buffers = defaultdict(lambda: deque(maxlen=1000))
         
         # Published/Subscribed Topics aus Registry
         self.published_topics = self._get_published_topics()
@@ -278,6 +279,8 @@ class AdminMQTTClient:
                 # Mock-Modus
                 if not self.connected or not self.client:
                     logger.info(f"📤 Mock publish to {topic}: {message}")
+                    # Auch im Mock-Modus in Buffer hinzufügen
+                    self._add_sent_message_to_buffer(topic, message, qos, retain)
                     return True
                 
                 # JSON-Payload erstellen
@@ -288,6 +291,10 @@ class AdminMQTTClient:
                 
                 if result.rc == 0:
                     logger.info(f"📤 Published to {topic}: {message}")
+                    
+                    # Gesendete Message auch in Buffer hinzufügen (für Message Monitor)
+                    self._add_sent_message_to_buffer(topic, message, qos, retain)
+                    
                     return True
                 else:
                     logger.error(f"❌ Publish failed for topic {topic}: {result.rc}")
@@ -296,6 +303,25 @@ class AdminMQTTClient:
             except Exception as e:
                 logger.error(f"❌ Publish failed for topic {topic}: {e}")
                 return False
+    
+    def _add_sent_message_to_buffer(self, topic: str, message: Dict[str, Any], qos: int, retain: bool):
+        """Gesendete Message in Buffer hinzufügen (für Message Monitor)"""
+        try:
+            import time
+            message_data = {
+                'payload': message,
+                'raw_payload': json.dumps(message, ensure_ascii=False),
+                'timestamp': time.time(),
+                'qos': qos,
+                'retain': retain,
+                'message_type': 'sent'  # Mark as sent message
+            }
+            
+            with self._buffer_lock:
+                self.topic_buffers[topic].append(message_data)
+                
+        except Exception as e:
+            logger.error(f"❌ Failed to add sent message to buffer: {e}")
     
     def subscribe_to_all(self) -> bool:
         """
@@ -415,7 +441,10 @@ class AdminMQTTClient:
         """
         try:
             with self._buffer_lock:
-                return self.topic_buffers.get(topic)
+                buffer = self.topic_buffers.get(topic)
+                if buffer and len(buffer) > 0:
+                    return buffer[-1]  # Letzte Message aus deque
+                return None
         except Exception as e:
             logger.error(f"❌ Failed to get buffer for topic {topic}: {e}")
             return None
@@ -445,8 +474,8 @@ class AdminMQTTClient:
             with self._buffer_lock:
                 overview = {
                     "total_topics": len(self.topic_buffers),
-                    "active_topics": [topic for topic, buffer in self.topic_buffers.items() if buffer],
-                    "last_activity": max([buffer.get('timestamp', '') for buffer in self.topic_buffers.values() if buffer], default=''),
+                    "active_topics": [topic for topic, buffer in self.topic_buffers.items() if len(buffer) > 0],
+                    "last_activity": max([max([msg.get('timestamp', '') for msg in buffer], default='') for buffer in self.topic_buffers.values() if len(buffer) > 0], default=''),
                     "mqtt_connected": self.connected,
                     "client_id": self.client_id
                 }
@@ -490,20 +519,30 @@ class AdminMQTTClient:
             # JSON-Parsing und Buffer-Update
             try:
                 message = json.loads(payload)
-                message['timestamp'] = time.time()
+                
+                # Ensure message is a dictionary, not a list
+                if isinstance(message, list):
+                    # If it's a list, wrap it in a dictionary
+                    message = {"data": message, "timestamp": time.time()}
+                elif isinstance(message, dict):
+                    # If it's a dictionary, add timestamp
+                    message['timestamp'] = time.time()
+                else:
+                    # If it's something else, wrap it
+                    message = {"data": message, "timestamp": time.time()}
                 
                 with self._buffer_lock:
-                    self.topic_buffers[topic] = message
+                    self.topic_buffers[topic].append(message)
                 
                 logger.debug(f"📥 Received on {topic}: {message}")
                 
             except json.JSONDecodeError:
                 # Nicht-JSON Messages als Text speichern
                 with self._buffer_lock:
-                    self.topic_buffers[topic] = {
+                    self.topic_buffers[topic].append({
                         'raw_payload': payload,
                         'timestamp': time.time()
-                    }
+                    })
                 logger.debug(f"📥 Received raw on {topic}: {payload}")
             
         except Exception as e:

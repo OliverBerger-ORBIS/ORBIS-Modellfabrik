@@ -222,9 +222,9 @@ def _render_system_info():
     
     # Registry Stats (falls verfügbar)
     try:
-        from omf2.registry.manager.registry_manager import get_registry_manager
-        registry_manager = get_registry_manager()
-        stats = registry_manager.get_registry_stats()
+        registry_manager = st.session_state.get('registry_manager')
+        if registry_manager:
+            stats = registry_manager.get_registry_stats()
         
         st.subheader("📊 Registry Statistiken")
         

@@ -191,24 +191,30 @@ admin_gateway.generate_message_template("ccu/global", {"command": "status"})  # 
 ### ✅ Registry Manager (VOLLSTÄNDIG IMPLEMENTIERT)
 
 ```python
-# Registry Manager verwenden (empfohlen)
-from omf2.registry.manager.registry_manager import get_registry_manager
+# Registry Manager verwenden (zentral initialisiert in omf.py)
+# Registry Manager ist bereits in st.session_state verfügbar
 
-# Registry Manager erstellen (Singleton-Pattern)
-registry_manager = get_registry_manager()
-
-# Alle Registry-Daten laden
-topics = registry_manager.get_topics()
-templates = registry_manager.get_templates()
-mqtt_clients = registry_manager.get_mqtt_clients()
-workpieces = registry_manager.get_workpieces()
-modules = registry_manager.get_modules()
-stations = registry_manager.get_stations()
-txt_controllers = registry_manager.get_txt_controllers()
-
-# Registry-Statistiken
-stats = registry_manager.get_registry_stats()
+# Registry Manager aus Session State holen
+registry_manager = st.session_state.get('registry_manager')
+if registry_manager:
+    # Alle Registry-Daten laden
+    topics = registry_manager.get_topics()
+    templates = registry_manager.get_templates()
+    mqtt_clients = registry_manager.get_mqtt_clients()
+    workpieces = registry_manager.get_workpieces()
+    modules = registry_manager.get_modules()
+    stations = registry_manager.get_stations()
+    txt_controllers = registry_manager.get_txt_controllers()
+    
+    # Registry-Statistiken
+    stats = registry_manager.get_registry_stats()
 ```
+
+**🎯 ZENTRALE INITIALISIERUNG:**
+- **Registry Manager wird in `omf.py` initialisiert** beim App-Start
+- **Verfügbar in allen Domänen** (Admin, CCU, Node-RED, Common)
+- **Singleton Pattern** verhindert mehrfache Initialisierung
+- **Session State** macht es thread-safe und effizient
 
 ### ✅ Workpiece Management (VOLLSTÄNDIG IMPLEMENTIERT)
 
