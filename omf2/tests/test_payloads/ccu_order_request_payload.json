@@ -1,0 +1,9 @@
+{
+  "topic": "ccu/order/request",
+  "payload": {
+    "timestamp": "2025-10-01T08:06:19.463Z",
+    "orderType": "STORAGE",
+    "type": "WHITE",
+    "workpieceId": "047c8bca341291"
+  }
+}

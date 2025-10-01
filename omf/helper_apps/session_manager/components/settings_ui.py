@@ -26,20 +26,23 @@ class SettingsUI:
         st.markdown("Zentrale Konfiguration für alle Session Manager Tabs")
 
         # Tabs für verschiedene Sektionen
-        tab1, tab2, tab3, tab4 = st.tabs(
-            ["📊 Session Analyse", "▶️ Replay Station", "🔴 Session Recorder", "📋 Template Analyse"]
+        tab1, tab2, tab3, tab4, tab5 = st.tabs(
+            ["📂 Topic Recorder", "📊 Session Analyse", "▶️ Replay Station", "🔴 Session Recorder", "📋 Template Analyse"]
         )
 
         with tab1:
-            self._render_session_analysis_settings()
+            self._render_topic_recorder_settings()
 
         with tab2:
-            self._render_replay_station_settings()
+            self._render_session_analysis_settings()
 
         with tab3:
-            self._render_session_recorder_settings()
+            self._render_replay_station_settings()
 
         with tab4:
+            self._render_session_recorder_settings()
+
+        with tab5:
             self._render_template_analysis_settings()
 
         # Allgemeine Einstellungen
@@ -389,6 +392,156 @@ class SettingsUI:
                 },
             )
             st.success("✅ Recording Einstellungen gespeichert!")
+
+    def _render_topic_recorder_settings(self):
+        """Rendert die Topic Recorder Einstellungen"""
+        st.subheader("📂 Topic Recorder Einstellungen")
+
+        # Topics-Verzeichnis Einstellungen
+        st.markdown("#### 📁 Topics-Verzeichnis")
+        current_dir = self.settings_manager.get_topic_recorder_directory()
+
+        topics_directory = st.text_input(
+            "Topics-Verzeichnis",
+            value=current_dir,
+            help="Verzeichnis in dem die Topic-Dateien gespeichert werden",
+            key="topic_recorder_topics_dir",
+        )
+
+        # Topics-Verzeichnis Einstellungen speichern
+        if st.button("💾 Topics-Verzeichnis speichern", key="save_topic_recorder_dir"):
+            self.settings_manager.update_topic_recorder_directory(topics_directory)
+            st.success("✅ Topics-Verzeichnis gespeichert!")
+
+        st.markdown("---")
+
+        # MQTT Broker Einstellungen
+        st.markdown("#### 🔌 MQTT Broker Konfiguration")
+        mqtt_settings = self.settings_manager.get_topic_recorder_mqtt_settings()
+
+        col1, col2 = st.columns(2)
+
+        with col1:
+            mqtt_host = st.text_input(
+                "MQTT Broker Host",
+                value=mqtt_settings.get("host", "localhost"),
+                help="Hostname oder IP-Adresse des MQTT Brokers",
+                key="topic_recorder_mqtt_host",
+            )
+
+            mqtt_port = st.number_input(
+                "MQTT Broker Port",
+                min_value=1,
+                max_value=65535,
+                value=mqtt_settings.get("port", 1883),
+                help="Port des MQTT Brokers",
+                key="topic_recorder_mqtt_port",
+            )
+
+        with col2:
+            mqtt_qos = st.selectbox(
+                "QoS Level",
+                options=[0, 1, 2],
+                index=mqtt_settings.get("qos", 1),
+                help="Quality of Service Level für MQTT Nachrichten",
+                key="topic_recorder_mqtt_qos",
+            )
+
+            mqtt_timeout = st.number_input(
+                "Timeout (Sekunden)",
+                min_value=1,
+                max_value=60,
+                value=mqtt_settings.get("timeout", 5),
+                help="Timeout für MQTT Verbindungen",
+                key="topic_recorder_mqtt_timeout",
+            )
+
+        # Username und Password in separater Zeile
+        col3, col4 = st.columns(2)
+
+        with col3:
+            mqtt_username = st.text_input(
+                "MQTT Username (optional)",
+                value=mqtt_settings.get("username", ""),
+                help="Benutzername für MQTT Broker Authentifizierung",
+                key="topic_recorder_mqtt_username",
+            )
+
+        with col4:
+            mqtt_password = st.text_input(
+                "MQTT Password (optional)",
+                value=mqtt_settings.get("password", ""),
+                type="password",
+                help="Passwort für MQTT Broker Authentifizierung",
+                key="topic_recorder_mqtt_password",
+            )
+
+        # MQTT Einstellungen speichern
+        if st.button("💾 MQTT Broker Einstellungen speichern", key="save_topic_recorder_mqtt"):
+            self.settings_manager.update_topic_recorder_mqtt_settings(
+                mqtt_host, int(mqtt_port), int(mqtt_qos), int(mqtt_timeout), mqtt_username, mqtt_password
+            )
+            st.success("✅ MQTT Broker Einstellungen gespeichert!")
+
+        st.markdown("---")
+
+        # Info über Dateinamen-Format
+        st.markdown("#### 📋 Dateinamen-Format")
+        st.info("**Format:** `<topic>.json` - JSON mit allen MQTT-Metadaten")
+        st.markdown("**Dateiname-Beispiele:**")
+        st.code("ccu_order_active.json  (Topic: ccu/order/active)", language="text")
+        st.code("_j1_txt_1_i_bme680.json  (Topic: /j1/txt/1/i/bme680)", language="text")
+        
+        st.markdown("**Datei-Inhalt (JSON):**")
+        example_json = """{
+  "topic": "/j1/txt/1/i/bme680",
+  "payload": "temperature=25.3",
+  "qos": 1,
+  "retain": false,
+  "timestamp": "2025-10-01T14:30:00.123Z"
+}"""
+        st.code(example_json, language="json")
+        st.info("💡 **Verhalten:** Pro Topic wird nur die erste Nachricht gespeichert (valides Test-Beispiel, keine Überschreibung)")
+
+        st.markdown("---")
+
+        # Periodische Topics verwalten
+        st.markdown("#### 🔄 Periodische Topics")
+        st.markdown("Topics die manuell als 'periodisch' markiert sind (nur erste Nachricht wird gespeichert)")
+
+        periodic_topics = self.settings_manager.get_topic_recorder_periodic_topics()
+
+        # Neues Topic hinzufügen
+        col1, col2 = st.columns([3, 1])
+        with col1:
+            new_topic = st.text_input(
+                "Neues periodisches Topic hinzufügen:",
+                placeholder="/j1/txt/1/i/cam",
+                key="add_periodic_topic_input"
+            )
+        with col2:
+            if st.button("➕ Hinzufügen", key="add_periodic_topic_btn"):
+                if new_topic and new_topic not in periodic_topics:
+                    self.settings_manager.add_topic_recorder_periodic_topic(new_topic)
+                    st.success(f"✅ Topic hinzugefügt: {new_topic}")
+                    self.rerun_controller.request_rerun()
+
+        # Liste der periodischen Topics
+        if periodic_topics:
+            st.markdown("**Konfigurierte periodische Topics:**")
+            for i, topic in enumerate(periodic_topics):
+                col1, col2 = st.columns([4, 1])
+                with col1:
+                    st.code(topic, language="text")
+                with col2:
+                    if st.button("🗑️", key=f"delete_periodic_topic_{i}"):
+                        self.settings_manager.remove_topic_recorder_periodic_topic(topic)
+                        st.success(f"✅ Topic entfernt: {topic}")
+                        self.rerun_controller.request_rerun()
+        else:
+            st.info("📋 Keine periodischen Topics konfiguriert - verwende Analyse-Ergebnisse")
+
+        st.caption("💡 **Hinweis:** Diese Topics werden zusätzlich zu den automatisch erkannten als periodisch behandelt")
 
     def _render_template_analysis_settings(self):
         """Rendert die Template Analyse Einstellungen"""

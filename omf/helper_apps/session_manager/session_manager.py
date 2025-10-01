@@ -23,6 +23,7 @@ from omf.helper_apps.session_manager.components.session_recorder import show_ses
 from omf.helper_apps.session_manager.components.settings_manager import SettingsManager
 from omf.helper_apps.session_manager.components.settings_ui import SettingsUI
 from omf.helper_apps.session_manager.components.template_analysis import show_template_analysis
+from omf.helper_apps.session_manager.components.topic_recorder import show_topic_recorder
 
 # Page configuration
 st.set_page_config(page_title="Session Manager", page_icon="🎙️", layout="wide", initial_sidebar_state="expanded")
@@ -172,10 +173,11 @@ def main():
     # Sidebar Navigation
     st.sidebar.title("Navigation")
 
-    # Tab selection - Session Replay als Default
+    # Tab selection - Topic Recorder als Default
     tab = st.sidebar.selectbox(
         "Wähle einen Tab:",
         [
+            "📂 Topic Recorder",
             "📡 Replay Station",
             "🎙️ Session Recorder",
             "📊 Session Analyse",
@@ -189,7 +191,9 @@ def main():
     )
 
     # Tab content
-    if tab == "📊 Session Analyse":
+    if tab == "📂 Topic Recorder":
+        show_topic_recorder()
+    elif tab == "📊 Session Analyse":
         show_session_analysis()
     elif tab == "🔴 Auftrag-Rot Analyse":
         show_auftrag_rot_analysis()
@@ -228,6 +232,7 @@ if __name__ == "__main__":
     # Initialize registry with watch mode if requested
     if args.registry_watch:
         registry = get_registry(watch_mode=True)
-        logger.info("🔄 Registry watch mode enabled - live reloading active")
+        # Logger wird in main() initialisiert, daher hier nur print
+        print("🔄 Registry watch mode enabled - live reloading active")
 
     main()

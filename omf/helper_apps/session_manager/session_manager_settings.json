@@ -49,5 +49,28 @@
   },
   "test": {
     "value": "test_value"
+  },
+  "topic_recorder": {
+    "mqtt_broker": {
+      "host": "192.168.0.100",
+      "port": 1883,
+      "qos": 1,
+      "timeout": 5,
+      "username": "default",
+      "password": "default"
+    },
+    "periodic_topics": [
+      "ccu/pairing/state",
+      "/j1/txt/1/i/cam",
+      "module/v1/ff/SVR4H73275/instantAction",
+      "module/v1/ff/SVR4H73275/connection",
+      "module/v1/ff/SVR3QA0022/connection",
+      "module/v1/ff/SVR4H76530/connection",
+      "module/v1/ff/SVR4H76449/connection",
+      "module/v1/ff/SVR3QA2098/connection",
+      "fts/v1/ff/5iO4/state",
+      "/j1/txt/1/i/bme680",
+      "/j1/txt/1/i/ldr"
+    ]
   }
 }

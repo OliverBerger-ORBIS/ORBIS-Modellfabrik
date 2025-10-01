@@ -40,7 +40,7 @@ def render_generic_steering_tab():
         # Registry Manager Status
         if registry_manager:
             stats = registry_manager.get_registry_stats()
-            total_entities = (stats['topics_count'] + stats['templates_count'] + 
+            total_entities = (stats['topics_count'] + stats['schemas_count'] + 
                             stats['mqtt_clients_count'] + stats['workpieces_count'] + 
                             stats['modules_count'] + stats['stations_count'] + 
                             stats['txt_controllers_count'])

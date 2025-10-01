@@ -1,0 +1,42 @@
+{
+  "topic": "module/v1/ff/SVR3QA0022/state",
+  "payload": {
+    "headerId": 1,
+    "loads": [
+      {
+        "loadType": "",
+        "loadId": "",
+        "loadPosition": "A1",
+        "loadTimestamp": 0
+      },
+      {
+        "loadType": "BLUE",
+        "loadId": "048989ca341290",
+        "loadPosition": "A2",
+        "loadTimestamp": 1759220483909
+      },
+      {
+        "loadType": "WHITE",
+        "loadId": "047b8bca341291",
+        "loadPosition": "B1",
+        "loadTimestamp": 1759220395197
+      }
+    ],
+    "actionState": {
+      "id": "a229c687-a31b-466f-8eb8-fbd761669303",
+      "state": "FINISHED",
+      "command": "factsheetRequest",
+      "metadata": {}
+    },
+    "serialNumber": "SVR3QA0022",
+    "timestamp": "2025-10-01T06:47:37.824Z",
+    "errors": [],
+    "orderUpdateId": 0,
+    "paused": false,
+    "operatingMode": "AUTOMATIC",
+    "metadata": {
+      "opcuaState": "connected"
+    },
+    "information": []
+  }
+}
