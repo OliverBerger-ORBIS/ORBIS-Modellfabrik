@@ -53,6 +53,15 @@ class PayloadGenerator:
         properties = schema.get('properties', {})
         required = schema.get('required', [])
         
+        # Handle wildcard schemas (no properties, but additionalProperties: true)
+        if not properties and schema.get('additionalProperties', False):
+            # Generate a simple payload for wildcard schemas
+            return {
+                "message": "test_message",
+                "timestamp": "2024-01-01T00:00:00Z",
+                "data": {}
+            }
+        
         for prop, prop_info in properties.items():
             # Generate all properties, not just required ones
             # This ensures protocolFeatures and other complex objects are generated
@@ -117,8 +126,22 @@ class PayloadGenerator:
                 "state": "FINISHED",
                 "command": "test_command",
                 "timestamp": "2024-01-01T00:00:00Z",
-                "metadata": {}
+                "metadata": {
+                    "workpiece": {
+                        "workpieceId": "test_workpiece_id",
+                        "type": "test_type",
+                        "state": "test_state",
+                        "history": [{"ts": 1234567890, "code": 1}]
+                    }
+                }
             }]
+        elif prop == 'actionState':
+            return {
+                "id": "test_action_state",
+                "state": "FINISHED",
+                "command": "test_command",
+                "timestamp": "2024-01-01T00:00:00Z"
+            }
         elif prop == 'metadata':
             return {"opcuaState": "connected"}
         elif prop == 'batteryState':
