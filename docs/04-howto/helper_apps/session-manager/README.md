@@ -9,26 +9,31 @@ Der **Session Manager** ist eine unabhängige Helper App zur Analyse der APS Fis
 - **📹 Aufnahme** von MQTT-Sessions der APS-Fabrik
 - **🎬 Wiedergabe** von aufgezeichneten Sessions
 - **📊 Analyse** der Nachrichten-Ströme und -Muster
-- **🔍 Template-Erkennung** für MessageGenerator
+- **📂 Topic-Recording** für individuelle Topic-Analyse
+- **🔍 Schema-Integration** für automatische Payload-Validierung
 
 ## 🎯 Zweck-Diagramm
 
 ```mermaid
 graph TD
     A[APS-Fabrik] -->|Live MQTT| B[📹 Session Recorder]
+    A -->|Live MQTT| B2[📂 Topic Recorder]
     B -->|Speichert| C[Session Files]
+    B2 -->|Speichert| C2[Topic Files]
     
     C -->|Analysiert| D[📊 Session Analysis]
-    C -->|Generiert| E[🔍 Template Analysis]
     C -->|Replay| F[🎬 Replay Station]
+    C2 -->|Generiert| E[🔍 Schema Analysis]
     
     D -->|Erkennt| G[Message Patterns]
-    E -->|Erstellt| H[Message Templates]
+    E -->|Erstellt| H[JSON Schemas]
     F -->|Testet| I[OMF Dashboard]
     
     style A fill:#fff8e1
     style B fill:#90caf9,stroke:#1976d2,stroke-width:3px
+    style B2 fill:#90caf9,stroke:#1976d2,stroke-width:3px
     style C fill:#f5f5f5
+    style C2 fill:#f5f5f5
     style D fill:#bbdefb
     style E fill:#bbdefb
     style F fill:#bbdefb
@@ -38,11 +43,11 @@ graph TD
 ```
 
 ### **Farbnuancen-Erklärung:**
-- **🔵 Dunkelblau (`#90caf9`):** Session Recorder - **Zentrale Komponente** (Aufnahme)
-- **🔵 Mittelblau (`#bbdefb`):** Session Analysis, Template Analysis, Replay Station - **Kern-Funktionen**
-- **🔵 Hellblau (`#e3f2fd`):** Message Patterns, Templates, OMF Dashboard - **Ergebnisse/Output**
+- **🔵 Dunkelblau (`#90caf9`):** Session Recorder, Topic Recorder - **Zentrale Komponenten** (Aufnahme)
+- **🔵 Mittelblau (`#bbdefb`):** Session Analysis, Schema Analysis, Replay Station - **Kern-Funktionen**
+- **🔵 Hellblau (`#e3f2fd`):** Message Patterns, JSON Schemas, OMF Dashboard - **Ergebnisse/Output**
 - **🟡 Gelb (`#fff8e1`):** APS-Fabrik - **FT Hardware (Input)**
-- **⚪ Grau (`#f5f5f5`):** Session Files - **Daten-Speicher**
+- **⚪ Grau (`#f5f5f5`):** Session Files, Topic Files - **Daten-Speicher**
 
 ## 🏗️ Architektur
 
@@ -56,6 +61,7 @@ Die Session Manager Komponenten wurden in folgenden Sprints entwickelt:
 | **🎬 Replay Station** | Sprint 2 | 07.08 - 22.08.2025 | Session-Wiedergabe für Dashboard-Tests |
 | **📊 Session Analysis** | Sprint 3 | 23.08 - 03.09.2025 | Timeline-Visualisierung, Template Analyser |
 | **🔍 Template Analysis** | Sprint 4 | 04.09 - 17.09.2025 | Registry-Aufbau, Template-Integration |
+| **📂 Topic Recorder** | Sprint 6 | 01.10 - 15.10.2025 | Individuelle Topic-Aufnahme, Schema-Integration |
 | **⚡ Optimierungen** | Sprint 5 | 18.09 - 01.10.2025 | Performance, UI, Integration |
 
 ## 📚 Dokumentation
@@ -64,10 +70,10 @@ Die Session Manager Komponenten wurden in folgenden Sprints entwickelt:
 
 | Tab | Beschreibung | Dokumentation |
 |-----|-------------|---------------|
-| 📹 **Session Recorder** | MQTT-Sessions aufnehmen | [session-recorder.md](session-recorder.md) |
-| 🎬 **Replay Station** | Sessions wiedergeben | [replay-station.md](replay-station.md) |
+| 📂 **Topic Recorder** | Individuelle Topics aufnehmen | [topic-recorder.md](topic-recorder.md) |
+| 📡 **Replay Station** | Sessions wiedergeben | [replay-station.md](replay-station.md) |
+| 🎙️ **Session Recorder** | MQTT-Sessions aufnehmen | [session-recorder.md](session-recorder.md) |
 | 📊 **Session Analysis** | Sessions analysieren | [session-analysis.md](session-analysis.md) |
-| 🔍 **Template Analysis** | Message-Templates erkennen | [template-analysis.md](template-analysis.md) |
 
 ### 🔧 Allgemeine Themen
 

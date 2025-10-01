@@ -20,7 +20,7 @@ def show_logs():
     """Zeigt Live-Logs für den Session Manager an"""
     logger.info("📋 Session Manager Logs geladen")
 
-    st.header("📋 Session Manager Logs")
+    st.subheader("📋 Live-Logs")
     st.markdown("**Live-Logs für den Session Manager**")
 
     # Log-Buffer initialisieren

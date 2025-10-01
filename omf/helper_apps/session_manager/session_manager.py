@@ -14,15 +14,12 @@ from omf.dashboard.tools.registry_manager import get_registry
 from omf.dashboard.utils.ui_refresh import consume_refresh, request_refresh
 
 # Import components
-from omf.helper_apps.session_manager.components.auftrag_rot_analyzer import show_auftrag_rot_analysis
 from omf.helper_apps.session_manager.components.logs import show_logs
-from omf.helper_apps.session_manager.components.order_analyzer import show_order_analyzer
 from omf.helper_apps.session_manager.components.replay_station import show_replay_station
 from omf.helper_apps.session_manager.components.session_analysis import show_session_analysis
 from omf.helper_apps.session_manager.components.session_recorder import show_session_recorder
 from omf.helper_apps.session_manager.components.settings_manager import SettingsManager
 from omf.helper_apps.session_manager.components.settings_ui import SettingsUI
-from omf.helper_apps.session_manager.components.template_analysis import show_template_analysis
 from omf.helper_apps.session_manager.components.topic_recorder import show_topic_recorder
 
 # Page configuration
@@ -54,7 +51,7 @@ def _init_logging_once():
 
 
 def show_logging_settings(logger):
-    """Logging-Konfiguration Tab"""
+    """Logging-Konfiguration und Live-Logs Tab"""
     st.subheader("📝 Logging-Konfiguration")
 
     # UI-Refresh System initialisiert (wird in main() verwendet)
@@ -181,35 +178,25 @@ def main():
             "📡 Replay Station",
             "🎙️ Session Recorder",
             "📊 Session Analyse",
-            "🔴 Auftrag-Rot Analyse",
-            "🔍 Order Analyzer",
-            "🔍 Template Analyse",
             "⚙️ Einstellungen",
             "📝 Logging",
-            "📋 Logs",
         ],
     )
 
     # Tab content
     if tab == "📂 Topic Recorder":
         show_topic_recorder()
-    elif tab == "📊 Session Analyse":
-        show_session_analysis()
-    elif tab == "🔴 Auftrag-Rot Analyse":
-        show_auftrag_rot_analysis()
-    elif tab == "🔍 Order Analyzer":
-        show_order_analyzer()
     elif tab == "📡 Replay Station":
         show_replay_station()
     elif tab == "🎙️ Session Recorder":
         show_session_recorder()
-    elif tab == "🔍 Template Analyse":
-        show_template_analysis()
+    elif tab == "📊 Session Analyse":
+        show_session_analysis()
     elif tab == "⚙️ Einstellungen":
         st.session_state.settings_ui.render_settings_page()
     elif tab == "📝 Logging":
         show_logging_settings(logger)
-    elif tab == "📋 Logs":
+        st.markdown("---")
         show_logs()
 
     # Footer
