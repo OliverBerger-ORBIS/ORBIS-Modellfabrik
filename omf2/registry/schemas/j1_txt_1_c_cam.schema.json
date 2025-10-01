@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": [
+    "object",
+    "null"
+  ],
+  "properties": {
+    "ts": {
+      "type": "string"
+    },
+    "on": {
+      "type": "boolean"
+    },
+    "fps": {
+      "type": "integer"
+    }
+  },
+  "required": [
+    "fps",
+    "on",
+    "ts"
+  ],
+  "title": "J1_Txt_1_C_Cam Schema",
+  "description": "Granular schema for j1_txt_1_c_cam topics from 4 examples",
+  "category": "txt",
+  "additionalProperties": true
+}

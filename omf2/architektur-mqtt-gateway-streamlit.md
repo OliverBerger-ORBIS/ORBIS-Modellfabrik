@@ -1,8 +1,9 @@
 # ✅ IMPLEMENTIERTE ARCHITEKTUR: Gekapseltes MQTT, MessageTemplates & Gateway für Streamlit-Apps
 
 **Status: VOLLSTÄNDIG IMPLEMENTIERT** ✅  
-**Datum: 2025-09-29**  
-**Tests: 70 Tests erfolgreich** ✅
+**Datum: 2025-10-01**  
+**Tests: 70 Tests erfolgreich** ✅  
+**Registry-Migration: ABGESCHLOSSEN** ✅
 
 **Ziel:**  
 Weggekapselte, robuste Architektur für MQTT-Kommunikation, Message-Templates und UI-Refresh in einer Streamlit-App, sodass UI- und Business-Logik möglichst einfach bleiben und typische Fehlerquellen (Threading, Race-Conditions, Deadlocks, inkonsistenter State) vermieden werden.
@@ -15,6 +16,10 @@ Weggekapselte, robuste Architektur für MQTT-Kommunikation, Message-Templates un
 
 - **✅ Registry Manager** (`omf2/registry/manager/registry_manager.py`)  
   Zentrale Singleton-Komponente für alle Registry v2 Daten (Topics, Templates, MQTT Clients, Workpieces, Modules, Stations, TXT Controllers).
+- **✅ Schema-Integration** (`omf2/registry/schemas/`)  
+  44 JSON-Schemas für Topic-Validierung und Payload-Validierung.
+- **✅ UI-Schema-Integration** (`omf2/ui/admin/admin_settings/schemas_subtab.py`)  
+  Schema-Validierung in Admin Settings mit Live-Payload-Testing.
 - **✅ MessageTemplates** (`omf2/common/message_templates.py`)  
   Singleton-Utility zum Laden, Rendern und Validieren von Nachrichten aus Registry v2 Templates.
 - **✅ Gateway-Factory** (`omf2/factory/gateway_factory.py`)  

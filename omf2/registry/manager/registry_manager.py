@@ -22,12 +22,12 @@ class RegistryManager:
     _instance = None
     _initialized = False
     
-    def __new__(cls, registry_path: str = "omf2/registry/model/v2/"):
+    def __new__(cls, registry_path: str = "omf2/registry/"):
         if cls._instance is None:
             cls._instance = super().__new__(cls)
         return cls._instance
     
-    def __init__(self, registry_path: str = "omf2/registry/model/v2/"):
+    def __init__(self, registry_path: str = "omf2/registry/"):
         if RegistryManager._initialized:
             return
             
@@ -36,8 +36,8 @@ class RegistryManager:
         
         # Registry-Entitäten im Speicher
         self.topics = {}
-        self.templates = {}
-        self.topic_template_mappings = {}
+        self.schemas = {}  # Ersetzt templates
+        self.topic_schema_mappings = {}  # Ersetzt topic_template_mappings
         self.mqtt_clients = {}
         self.workpieces = {}
         self.modules = {}
@@ -56,11 +56,11 @@ class RegistryManager:
             # Topics laden
             self._load_topics()
             
-            # Templates laden
-            self._load_templates()
+            # Schemas laden (ersetzt Templates)
+            self._load_schemas()
             
-            # Topic-Template-Mappings laden
-            self._load_topic_template_mappings()
+            # Topic-Schema-Mappings laden
+            self._load_topic_schema_mappings()
             
             # MQTT Clients laden
             self._load_mqtt_clients()
@@ -77,7 +77,7 @@ class RegistryManager:
             # TXT Controllers laden
             self._load_txt_controllers()
             
-            logger.info(f"📚 Registry v2 loaded: {len(self.topics)} topics, {len(self.templates)} templates, {len(self.workpieces)} workpieces")
+            logger.info(f"📚 Registry v2 loaded: {len(self.topics)} topics, {len(self.schemas)} schemas, {len(self.workpieces)} workpieces")
             
         except Exception as e:
             logger.error(f"❌ Failed to load registry data: {e}")
@@ -108,6 +108,8 @@ class RegistryManager:
                                     'topic': topic_name,
                                     'qos': topic_data.get('qos', 1),
                                     'retain': topic_data.get('retain', 0),
+                                    'schema': topic_data.get('schema'),
+                                    'description': topic_data.get('description'),
                                     'category': file_category,
                                     'file': topic_file.name
                                 }
@@ -133,7 +135,7 @@ class RegistryManager:
                     template_data = data['template']
                     template_name = template_data.get('name', template_file.stem)
                     
-                    self.templates[template_name] = {
+                    self.schemas[template_name] = {
                         'name': template_name,
                         'template_category': template_data.get('template_category', 'UNKNOWN'),
                         'template_sub_category': template_data.get('template_sub_category', 'UNKNOWN'),
@@ -161,7 +163,7 @@ class RegistryManager:
             for mapping in mappings:
                 if isinstance(mapping, dict) and 'topic' in mapping:
                     topic = mapping['topic']
-                    self.topic_template_mappings[topic] = {
+                    self.topic_schema_mappings[topic] = {
                         'topic': topic,
                         'template': mapping.get('template'),
                         'direction': mapping.get('direction', 'unknown')
@@ -171,6 +173,49 @@ class RegistryManager:
             
         except Exception as e:
             logger.error(f"❌ Failed to load topic-template mappings: {e}")
+    
+    def _load_schemas(self):
+        """Lädt alle Schemas aus dem schemas Unterordner"""
+        schemas_dir = self.registry_path / "schemas"
+        if not schemas_dir.exists():
+            logger.warning(f"⚠️ Schemas directory not found: {schemas_dir}")
+            return
+        
+        for schema_file in schemas_dir.glob("*.schema.json"):
+            try:
+                import json
+                with open(schema_file, 'r', encoding='utf-8') as f:
+                    schema_data = json.load(f)
+                    
+                schema_name = schema_file.stem
+                self.schemas[schema_name] = {
+                    'name': schema_name,
+                    'file': schema_file.name,
+                    'schema': schema_data,
+                    'title': schema_data.get('title', ''),
+                    'description': schema_data.get('description', ''),
+                    'category': schema_data.get('category', 'unknown')
+                }
+                    
+                logger.info(f"📝 Loaded schema from {schema_file.name}")
+                
+            except Exception as e:
+                logger.error(f"❌ Failed to load schema from {schema_file}: {e}")
+    
+    def _load_topic_schema_mappings(self):
+        """Lädt Topic-Schema-Mappings"""
+        # Schema-Mappings werden automatisch aus Topics generiert
+        # da Topics jetzt direkt Schema-Referenzen haben
+        for topic, topic_info in self.topics.items():
+            if topic_info.get('schema'):
+                self.topic_schema_mappings[topic] = {
+                    'topic': topic,
+                    'schema': topic_info['schema'],
+                    'description': topic_info.get('description', ''),
+                    'category': topic_info.get('category', 'unknown')
+                }
+        
+        logger.info(f"🔗 Generated {len(self.topic_schema_mappings)} topic-schema mappings")
     
     def _load_mqtt_clients(self):
         """Lädt MQTT Clients Konfiguration"""
@@ -342,12 +387,64 @@ class RegistryManager:
         return self.topics
     
     def get_templates(self) -> Dict[str, Any]:
-        """Gibt alle Templates zurück"""
-        return self.templates
+        """Gibt alle Templates zurück (DEPRECATED - use get_schemas)"""
+        return self.schemas
     
-    def get_topic_template_mappings(self) -> Dict[str, Any]:
-        """Gibt alle Topic-Template-Mappings zurück"""
-        return self.topic_template_mappings
+    def get_schemas(self) -> Dict[str, Any]:
+        """Gibt alle Schemas zurück"""
+        return self.schemas
+    
+    def get_topic_schema_mappings(self) -> Dict[str, Any]:
+        """Gibt alle Topic-Schema-Mappings zurück"""
+        return self.topic_schema_mappings
+    
+    def get_topic_schema(self, topic: str) -> Optional[Dict]:
+        """Gibt das Schema für einen Topic zurück"""
+        topic_info = self.topics.get(topic)
+        if not topic_info or not topic_info.get('schema'):
+            return None
+        
+        schema_file = self.registry_path / "schemas" / topic_info['schema']
+        if not schema_file.exists():
+            return None
+        
+        try:
+            import json
+            with open(schema_file, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except Exception as e:
+            logger.error(f"Fehler beim Laden des Schemas {schema_file}: {e}")
+            return None
+    
+    def get_topic_description(self, topic: str) -> Optional[str]:
+        """Gibt die Beschreibung für einen Topic zurück"""
+        topic_info = self.topics.get(topic)
+        return topic_info.get('description') if topic_info else None
+    
+    def validate_topic_payload(self, topic: str, payload: Dict) -> Dict[str, Any]:
+        """Validiert einen Payload gegen das Topic-Schema"""
+        schema = self.get_topic_schema(topic)
+        if not schema:
+            return {
+                'valid': False,
+                'error': 'No schema found for topic',
+                'schema_file': None
+            }
+        
+        try:
+            import jsonschema
+            jsonschema.validate(payload, schema)
+            return {
+                'valid': True,
+                'error': None,
+                'schema_file': self.topics[topic]['schema']
+            }
+        except Exception as e:
+            return {
+                'valid': False,
+                'error': str(e),
+                'schema_file': self.topics[topic]['schema']
+            }
     
     def get_mqtt_clients(self) -> Dict[str, Any]:
         """Gibt alle MQTT Clients zurück"""
@@ -388,8 +485,8 @@ class RegistryManager:
         return {
             'load_timestamp': self._load_timestamp.isoformat(),
             'topics_count': len(self.topics),
-            'templates_count': len(self.templates),
-            'mappings_count': len(self.topic_template_mappings),
+            'schemas_count': len(self.schemas),
+            'mappings_count': len(self.topic_schema_mappings),
             'mqtt_clients_count': len(self.mqtt_clients),
             'workpieces_count': len(self.workpieces),
             'modules_count': len(self.modules),
@@ -399,7 +496,7 @@ class RegistryManager:
 
 
 # Singleton Factory
-def get_registry_manager(registry_path: str = "omf2/registry/model/v2/") -> RegistryManager:
+def get_registry_manager(registry_path: str = "omf2/registry/") -> RegistryManager:
     """
     Factory-Funktion für Registry Manager Singleton
     

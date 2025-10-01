@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": [
+    "object",
+    "null"
+  ],
+  "properties": {
+    "type": {
+      "type": "string"
+    },
+    "ts": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "ts",
+    "type"
+  ],
+  "title": "J1_Txt_1_F_O_Order Schema",
+  "description": "Granular schema for j1_txt_1_f_o_order topics from 8 examples",
+  "category": "txt",
+  "additionalProperties": true
+}

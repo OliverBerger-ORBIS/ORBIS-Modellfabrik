@@ -1,0 +1,153 @@
+metadata:
+  version: 2.0.0
+  last_updated: '2025-09-28'
+  author: OMF Development Team
+  description: CCU Topics mit QoS/Retain und Publisher/Subscriber-Mapping
+category: ccu
+ccu_topics:
+- topic: ccu/order/request
+  qos: 2
+  retain: 0
+  schema: ccu_order_request.schema.json
+  description: Order commands for processing tasks and workflow execution
+- topic: ccu/state
+  qos: 1
+  retain: 0
+  schema: ccu_global.schema.json
+  description: State information with current status and processing state
+- topic: ccu/state/flow
+  qos: 1
+  retain: 0
+  schema: ccu_global.schema.json
+  description: State information with current status and processing state
+- topic: ccu/state/status
+  qos: 1
+  retain: 0
+  schema: ccu_global.schema.json
+  description: State information with current status and processing state
+- topic: ccu/state/error
+  qos: 1
+  retain: 0
+  schema: ccu_global.schema.json
+  description: State information with current status and processing state
+- topic: ccu/state/stock
+  qos: 1
+  retain: 0
+  schema: ccu_global.schema.json
+  description: State information with current status and processing state
+- topic: ccu/state/version-mismatch
+  qos: 2
+  retain: 1
+  schema: ccu_global.schema.json
+  description: State information with current status and processing state
+- topic: ccu/state/layout
+  qos: 1
+  retain: 1
+  schema: ccu_global.schema.json
+  description: State information with current status and processing state
+- topic: ccu/state/config
+  qos: 1
+  retain: 1
+  schema: ccu_global.schema.json
+  description: State information with current status and processing state
+- topic: ccu/state/flows
+  qos: 1
+  retain: 1
+  schema: ccu_global.schema.json
+  description: State information with current status and processing state
+- topic: ccu/control
+  qos: 1
+  retain: 0
+  schema: ccu_global.schema.json
+  description: Control commands and system directives
+- topic: ccu/control/command
+  qos: 1
+  retain: 0
+  schema: ccu_global.schema.json
+  description: Control commands and system directives
+- topic: ccu/control/order
+  qos: 1
+  retain: 0
+  schema: ccu_order_request.schema.json
+  description: Order commands for processing tasks and workflow execution
+- topic: ccu/set/reset
+  qos: 2
+  retain: 0
+  schema: ccu_set_reset.schema.json
+  description: System settings and configuration commands
+- topic: ccu/global
+  qos: 2
+  retain: 0
+  description: 'Topic: ccu/global'
+- topic: ccu/status
+  qos: 1
+  retain: 1
+  description: 'Topic: ccu/status'
+- topic: ccu/status/connection
+  qos: 1
+  retain: 1
+  description: 'Topic: ccu/status/connection'
+- topic: ccu/status/health
+  qos: 1
+  retain: 1
+  description: 'Topic: ccu/status/health'
+- topic: ccu/pairing/state
+  qos: 2
+  retain: 1
+  schema: ccu_global.schema.json
+  description: State information with current status and processing state
+- topic: ccu/order/active
+  qos: 1
+  retain: 0
+  schema: ccu_order_request.schema.json
+  description: Order commands for processing tasks and workflow execution
+- topic: ccu/order/completed
+  qos: 1
+  retain: 0
+  schema: ccu_order_request.schema.json
+  description: Order commands for processing tasks and workflow execution
+- topic: ccu/set/charge
+  qos: 1
+  retain: 0
+  schema: ccu_set_reset.schema.json
+  description: System settings and configuration commands
+- topic: ccu/set/layout
+  qos: 1
+  retain: 0
+  schema: ccu_set_reset.schema.json
+  description: System settings and configuration commands
+- topic: ccu/set/flows
+  qos: 1
+  retain: 0
+  schema: ccu_set_reset.schema.json
+  description: System settings and configuration commands
+- topic: ccu/set/calibration
+  qos: 1
+  retain: 0
+  schema: ccu_set_reset.schema.json
+  description: System settings and configuration commands
+- topic: ccu/set/park
+  qos: 1
+  retain: 0
+  schema: ccu_set_reset.schema.json
+  description: System settings and configuration commands
+- topic: ccu/set/delete-module
+  qos: 1
+  retain: 0
+  schema: ccu_set_reset.schema.json
+  description: System settings and configuration commands
+- topic: ccu/set/module-duration
+  qos: 1
+  retain: 0
+  schema: ccu_set_reset.schema.json
+  description: System settings and configuration commands
+- topic: ccu/set/default_layout
+  qos: 1
+  retain: 0
+  schema: ccu_set_reset.schema.json
+  description: System settings and configuration commands
+- topic: ccu/set/config
+  qos: 1
+  retain: 0
+  schema: ccu_set_reset.schema.json
+  description: System settings and configuration commands

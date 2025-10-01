@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": [
+    "object",
+    "null"
+  ],
+  "properties": {
+    "timestamp": {
+      "type": "string"
+    },
+    "withStorage": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "timestamp"
+  ],
+  "title": "Ccu_Set_Reset Schema",
+  "description": "Granular schema for ccu_set_reset topics from 5 examples",
+  "category": "ccu",
+  "additionalProperties": true
+}

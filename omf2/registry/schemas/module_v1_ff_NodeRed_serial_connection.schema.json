@@ -1,0 +1,42 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": [
+    "object",
+    "null"
+  ],
+  "properties": {
+    "headerId": {
+      "type": "integer"
+    },
+    "timestamp": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "manufacturer": {
+      "type": "string"
+    },
+    "serialNumber": {
+      "type": "string"
+    },
+    "connectionState": {
+      "type": "string"
+    },
+    "ip": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "connectionState",
+    "headerId",
+    "manufacturer",
+    "serialNumber",
+    "timestamp",
+    "version"
+  ],
+  "title": "Module_V1_Ff_Nodered_Serial_Connection Schema",
+  "description": "Granular schema for module_v1_ff_NodeRed_serial_connection topics from 6 examples",
+  "category": "module",
+  "additionalProperties": true
+}

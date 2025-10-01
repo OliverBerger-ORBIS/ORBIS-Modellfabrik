@@ -17,9 +17,11 @@ def render_topics_subtab():
         st.subheader("📡 Topics Konfiguration")
         st.markdown("Registry-basierte Topics-Verwaltung aus omf2/registry")
 
-        # Load registry manager
-        from omf2.registry.manager.registry_manager import get_registry_manager
-        registry_manager = get_registry_manager()
+        # Load registry manager from session state (initialized in omf.py)
+        if 'registry_manager' not in st.session_state:
+            from omf2.registry.manager.registry_manager import get_registry_manager
+            st.session_state['registry_manager'] = get_registry_manager("omf2/registry/")
+        registry_manager = st.session_state['registry_manager']
         
         # Get all topics
         all_topics = registry_manager.get_topics()
@@ -41,6 +43,8 @@ def render_topics_subtab():
                         "Topic": topic_name,
                         "QoS": topic_info.get('qos', 1),
                         "Retain": topic_info.get('retain', 0),
+                        "Schema": topic_info.get('schema', 'No schema'),
+                        "Description": topic_info.get('description', 'No description'),
                         "Category": topic_info.get('category', 'unknown'),
                         "File": topic_info.get('file', 'unknown')
                     })
@@ -52,11 +56,17 @@ def render_topics_subtab():
                             "Topic": st.column_config.TextColumn("Topic", width="large"),
                             "QoS": st.column_config.NumberColumn("QoS", width="small"),
                             "Retain": st.column_config.NumberColumn("Retain", width="small"),
+                            "Schema": st.column_config.TextColumn("Schema", width="medium"),
+                            "Description": st.column_config.TextColumn("Description", width="large"),
                             "Category": st.column_config.TextColumn("Category", width="medium"),
                             "File": st.column_config.TextColumn("File", width="medium"),
                         },
                         hide_index=True,
                     )
+        
+        # Schema Validation Test
+        with st.expander("🧪 Schema Validation Test", expanded=False):
+            _render_schema_validation_test(registry_manager, all_topics)
         
         # Registry Information
         with st.expander("📊 Registry Information", expanded=False):
@@ -64,6 +74,11 @@ def render_topics_subtab():
             st.write(f"**Load Timestamp:** {stats['load_timestamp']}")
             st.write(f"**Total Topics:** {len(all_topics)}")
             st.write(f"**Categories:** {len(topics_by_category)}")
+            
+            # Schema Statistics
+            topics_with_schema = sum(1 for info in all_topics.values() if info.get('schema'))
+            st.write(f"**Topics with Schema:** {topics_with_schema}")
+            st.write(f"**Topics without Schema:** {len(all_topics) - topics_with_schema}")
             
             # Zeige Kategorien-Übersicht
             st.write("**Categories Overview:**")
@@ -89,6 +104,55 @@ def _group_topics_by_category(all_topics):
         topics_by_category[category][topic_name] = topic_info
     
     return topics_by_category
+
+
+def _render_schema_validation_test(registry_manager, all_topics):
+    """Rendert Schema-Validierungstest"""
+    st.write("**Test Payload Validation:**")
+    
+    # Topic Selection
+    topics_with_schema = [topic for topic, info in all_topics.items() if info.get('schema')]
+    
+    if not topics_with_schema:
+        st.warning("Keine Topics mit Schema gefunden")
+        return
+    
+    selected_topic = st.selectbox("Select Topic:", topics_with_schema, key="admin_settings_topics_validation_topic")
+    
+    if selected_topic:
+        topic_info = all_topics[selected_topic]
+        st.write(f"**Schema:** {topic_info.get('schema')}")
+        st.write(f"**Description:** {topic_info.get('description', 'No description')}")
+        
+        # Test Payload Input
+        st.write("**Test Payload (JSON):**")
+        default_payload = {
+            "example": "payload",
+            "timestamp": "2025-01-01T12:00:00Z"
+        }
+        
+        import json
+        payload_text = st.text_area(
+            "JSON Payload:",
+            value=json.dumps(default_payload, indent=2),
+            height=200,
+            key="admin_settings_topics_validation_payload"
+        )
+        
+        if st.button("🔍 Validate Payload", key="admin_settings_topics_validation_validate"):
+            try:
+                payload = json.loads(payload_text)
+                validation_result = registry_manager.validate_topic_payload(selected_topic, payload)
+                
+                if validation_result['valid']:
+                    st.success("✅ Payload is valid!")
+                else:
+                    st.error(f"❌ Payload validation failed: {validation_result['error']}")
+                    
+            except json.JSONDecodeError as e:
+                st.error(f"❌ Invalid JSON: {e}")
+            except Exception as e:
+                st.error(f"❌ Validation error: {e}")
 
 
 def show_topics_subtab():

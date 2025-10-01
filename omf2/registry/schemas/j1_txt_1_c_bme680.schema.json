@@ -1,0 +1,23 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": [
+    "object",
+    "null"
+  ],
+  "properties": {
+    "ts": {
+      "type": "string"
+    },
+    "period": {
+      "type": "integer"
+    }
+  },
+  "required": [
+    "period",
+    "ts"
+  ],
+  "title": "J1_Txt_1_C_Bme680 Schema",
+  "description": "Granular schema for j1_txt_1_c_bme680 topics from 4 examples",
+  "category": "txt",
+  "additionalProperties": true
+}

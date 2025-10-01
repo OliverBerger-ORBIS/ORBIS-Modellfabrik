@@ -1,0 +1,164 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": [
+    "object",
+    "null"
+  ],
+  "properties": {
+    "headerId": {
+      "type": "integer"
+    },
+    "timestamp": {
+      "type": "string"
+    },
+    "version": {
+      "type": "string"
+    },
+    "manufacturer": {
+      "type": "string"
+    },
+    "serialNumber": {
+      "type": "string"
+    },
+    "typeSpecification": {
+      "type": "object",
+      "properties": {
+        "seriesName": {
+          "type": "string"
+        },
+        "moduleClass": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "moduleClass",
+        "seriesName"
+      ]
+    },
+    "physicalParameters": {
+      "type": "object"
+    },
+    "protocolLimits": {
+      "type": "object"
+    },
+    "protocolFeatures": {
+      "type": "object",
+      "properties": {
+        "moduleActions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "actionType": {
+                "type": "string"
+              },
+              "actionParameters": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "parameterName": {
+                      "type": "string"
+                    },
+                    "parameterType": {
+                      "type": "string"
+                    },
+                    "parameterDescription": {
+                      "type": "string"
+                    },
+                    "isOptional": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "parameterDescription",
+                    "parameterName",
+                    "parameterType"
+                  ]
+                }
+              },
+              "actionScopes": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "actionType"
+            ]
+          }
+        },
+        "moduleParameters": {
+          "type": "object",
+          "properties": {
+            "clearModuleOnPick": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "clearModuleOnPick"
+          ]
+        }
+      },
+      "required": [
+        "moduleActions"
+      ]
+    },
+    "localizationParameters": {
+      "type": "object"
+    },
+    "loadSpecification": {
+      "type": "object",
+      "properties": {
+        "loadSets": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "setName": {
+                "type": "string"
+              },
+              "loadType": {
+                "type": "string"
+              },
+              "maxAmount": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "loadType",
+              "setName"
+            ]
+          }
+        },
+        "loadPositions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "loadSets"
+      ]
+    }
+  },
+  "required": [
+    "headerId",
+    "loadSpecification",
+    "localizationParameters",
+    "manufacturer",
+    "physicalParameters",
+    "protocolFeatures",
+    "protocolLimits",
+    "serialNumber",
+    "timestamp",
+    "typeSpecification",
+    "version"
+  ],
+  "title": "Module_V1_Ff_Serial_Factsheet Schema",
+  "description": "Granular schema for module_v1_ff_serial_factsheet topics from 14 examples",
+  "category": "module",
+  "additionalProperties": true
+}

@@ -13,38 +13,25 @@ omf2/
   registry/                                    # ✅ IMPLEMENTIERT
     manager/                                  # ✅ NEU HINZUGEFÜGT
       registry_manager.py                     # ✅ Registry Manager (Singleton)
-    model/
-      v2/
-        modules.yml
-        mqtt_clients.yml
-        stations.yml
-        txt_controllers.yml
-        workpieces.yml                         # ✅ HINZUGEFÜGT
-        topics/
-          ccu.yml
-          fts.yml
-          module.yml
-          nodered.yml
-          txt.yml
-        templates/
-          module.connection.yml
-          module.state.yml
-          ccu.control.reset.yml
-          ccu.control.global.yml              # ✅ HINZUGEFÜGT
-          fts.state.yml
-          module.factsheet.yml                 # ✅ HINZUGEFÜGT
-          module.instantaction.yml             # ✅ HINZUGEFÜGT
-          module.order.yml                     # ✅ HINZUGEFÜGT
-          txt.function.order_input.yml         # ✅ HINZUGEFÜGT
-          txt.input.bme680.yml                 # ✅ HINZUGEFÜGT
-        mappings/
-          topic_templates.yml
-      v1/
-        workpieces.yml
-        ...
-    schemas/
-      workpieces.schema.json
-      ...
+    modules.yml                               # ✅ DIREKT UNTER REGISTRY
+    mqtt_clients.yml                          # ✅ DIREKT UNTER REGISTRY
+    stations.yml                              # ✅ DIREKT UNTER REGISTRY
+    txt_controllers.yml                       # ✅ DIREKT UNTER REGISTRY
+    workpieces.yml                            # ✅ DIREKT UNTER REGISTRY
+    topics/                                   # ✅ DIREKT UNTER REGISTRY
+      ccu.yml
+      fts.yml
+      module.yml
+      nodered.yml
+      txt.yml
+    schemas/                                  # ✅ NEU: SCHEMA-INTEGRATION
+      module_v1_ff_serial_connection.schema.json
+      ccu_global.schema.json
+      j1_txt_1_i_bme680.schema.json
+      # ... 44 Schema-Dateien
+    tools/                                    # ✅ NEU: REGISTRY-TOOLS
+      add_schema_to_topics.py
+      test_payload_generator.py
   assets/                                      # ✅ IMPLEMENTIERT
     logos/
       orbis_logo.txt                           # ✅ HINZUGEFÜGT
@@ -229,7 +216,7 @@ omf2/
 # Initialize Registry Manager (Singleton - nur einmal initialisiert)
 if 'registry_manager' not in st.session_state:
     from omf2.registry.manager.registry_manager import get_registry_manager
-    st.session_state['registry_manager'] = get_registry_manager()
+    st.session_state['registry_manager'] = get_registry_manager("omf2/registry/")
     logger.info("📚 Registry Manager initialized on startup")
 ```
 
@@ -255,7 +242,7 @@ if registry_manager:
 
 - **Bei Bedarf** können Sourcen (z.B. Gateways, Manager, Modelle) aus `omf/`, `registry/model/v1/` oder anderen Alt-Verzeichnissen übernommen werden.
 - Die Übernahme erfolgt ggf. als Kopie, Anpassung an die neue Struktur und Benennung.
-- Die Migration von Workpieces und Schemata erfolgt von `registry/model/v1/workpieces.yml` und `registry/schemas/workpieces.schema.json` nach `omf2/registry/model/v2/` bzw. `omf2/registry/schemas/`.
+- Die Migration von Workpieces und Schemata erfolgt von `registry/model/v1/workpieces.yml` und `registry/schemas/workpieces.schema.json` nach `omf2/registry/` bzw. `omf2/registry/schemas/`.
 
 ---
 
@@ -351,6 +338,9 @@ environments = {
 - Dashboard-Utils (dashboard/utils/)
 - Umfangreiche Dokumentation
 - Architektur-Dokumente
+- **Schema-Integration:** 44 JSON-Schemas für Topic-Validierung
+- **Registry-Migration:** Vereinfachte Struktur ohne `model/v2/` Pfad
+- **UI-Schema-Integration:** Schema-Validierung in Admin Settings
 
 ### 6.2 Prinzipien für zukünftige Aufgaben und Coding Agents
 
@@ -373,6 +363,15 @@ environments = {
 ---
 
 ## 8. Changelog der Weiterentwicklung
+
+### Version 2.1.0 (2025-10-01)
+
+**Registry-Migration und Schema-Integration:**
+- ✅ **Registry-Struktur vereinfacht:** Entfernung von `model/v2/` Pfad
+- ✅ **Schema-Integration:** 44 JSON-Schemas für Topic-Validierung
+- ✅ **UI-Schema-Integration:** Schema-Validierung in Admin Settings
+- ✅ **Registry-Tools:** Automatische Schema-Zuordnung zu Topics
+- ✅ **Pfad-Korrekturen:** Alle Komponenten verwenden neue Registry-Pfade
 
 ### Version 2.0.0 (2025-09-29)
 
@@ -402,4 +401,4 @@ environments = {
 
 ---
 
-**Letzte Aktualisierung:** 2025-09-29
+**Letzte Aktualisierung:** 2025-10-01

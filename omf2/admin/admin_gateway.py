@@ -181,14 +181,14 @@ class AdminGateway:
             # status = {
             #     "mqtt_connected": self.mqtt_client.is_connected(),
             #     "topics_count": len(self.get_all_topics()),
-            #     "templates_count": len(self.message_templates.get_all_templates()),
+            #     "schemas_count": len(self.message_templates.get_all_templates()),
             #     "last_activity": self.mqtt_client.get_last_activity()
             # }
             
             status = {
                 "mqtt_connected": False,  # TODO: MQTT integration
                 "topics_count": len(self.get_all_topics()),
-                "templates_count": len(self.message_templates.get_all_templates()),
+                "schemas_count": len(self.message_templates.get_all_templates()),
                 "last_activity": "2025-09-28T16:24:55Z"  # TODO: MQTT integration
             }
             

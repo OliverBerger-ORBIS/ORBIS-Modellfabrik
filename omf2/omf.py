@@ -106,8 +106,11 @@ def main():
         
         # Initialize Registry Manager (Singleton - nur einmal initialisiert)
         if 'registry_manager' not in st.session_state:
-            from omf2.registry.manager.registry_manager import get_registry_manager
-            st.session_state['registry_manager'] = get_registry_manager()
+            from omf2.registry.manager.registry_manager import get_registry_manager, RegistryManager
+            # Reset singleton to use new path
+            RegistryManager._instance = None
+            RegistryManager._initialized = False
+            st.session_state['registry_manager'] = get_registry_manager("omf2/registry/")
             logger.info("📚 Registry Manager initialized on startup")
         
         # Initialize Client Factory and connect to Registry Manager

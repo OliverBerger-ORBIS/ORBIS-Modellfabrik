@@ -1,0 +1,79 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": [
+    "object",
+    "null"
+  ],
+  "properties": {
+    "modules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "serialNumber": {
+            "type": "string"
+          },
+          "placeholder": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "serialNumber",
+          "type"
+        ]
+      }
+    },
+    "intersections": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    "roads": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "length": {
+            "type": "integer"
+          },
+          "from": {
+            "type": "string"
+          },
+          "to": {
+            "type": "string"
+          },
+          "direction": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "direction",
+          "from",
+          "length",
+          "to"
+        ]
+      }
+    }
+  },
+  "required": [
+    "intersections",
+    "modules",
+    "roads"
+  ],
+  "title": "Ccu_State_Layout Schema",
+  "description": "Granular schema for ccu_state_layout topics from 1 examples",
+  "category": "ccu",
+  "additionalProperties": true
+}

@@ -1,0 +1,59 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": [
+    "object",
+    "null"
+  ],
+  "properties": {
+    "productionDurations": {
+      "type": "object",
+      "properties": {
+        "WHITE": {
+          "type": "integer"
+        },
+        "BLUE": {
+          "type": "integer"
+        },
+        "RED": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "BLUE",
+        "RED",
+        "WHITE"
+      ]
+    },
+    "productionSettings": {
+      "type": "object",
+      "properties": {
+        "maxParallelOrders": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "maxParallelOrders"
+      ]
+    },
+    "ftsSettings": {
+      "type": "object",
+      "properties": {
+        "chargeThresholdPercent": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "chargeThresholdPercent"
+      ]
+    }
+  },
+  "required": [
+    "ftsSettings",
+    "productionDurations",
+    "productionSettings"
+  ],
+  "title": "Ccu_State_Config Schema",
+  "description": "Granular schema for ccu_state_config topics from 1 examples",
+  "category": "ccu",
+  "additionalProperties": true
+}

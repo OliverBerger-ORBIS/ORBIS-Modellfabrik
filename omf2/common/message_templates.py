@@ -24,12 +24,12 @@ class MessageTemplates:
     _instance = None
     _initialized = False
     
-    def __new__(cls, registry_path: str = "omf2/registry/model/v2/"):
+    def __new__(cls, registry_path: str = "omf2/registry/"):
         if cls._instance is None:
             cls._instance = super().__new__(cls)
         return cls._instance
     
-    def __init__(self, registry_path: str = "omf2/registry/model/v2/"):
+    def __init__(self, registry_path: str = "omf2/registry/"):
         if MessageTemplates._initialized:
             return
             
@@ -277,7 +277,7 @@ class MessageTemplates:
 
 
 # Singleton Factory
-def get_message_templates(registry_path: str = "omf2/registry/model/v2/") -> MessageTemplates:
+def get_message_templates(registry_path: str = "omf2/registry/") -> MessageTemplates:
     """
     Factory-Funktion für MessageTemplates Singleton
     

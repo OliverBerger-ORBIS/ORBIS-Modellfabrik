@@ -23,7 +23,7 @@ def render_admin_settings_tab():
             "📊 Dashboard",
             "📡 MQTT Clients", 
             "📋 Topics",
-            "📝 Templates",
+            "📝 Schemas",
             "🔧 Modules",
             "🏭 Stations",
             "🎮 TXT Controllers",
@@ -45,9 +45,9 @@ def render_admin_settings_tab():
             from omf2.ui.admin.admin_settings.topics_subtab import render_topics_subtab
             render_topics_subtab()
         
-        with subtabs[3]:  # Templates
-            from omf2.ui.admin.admin_settings.templates_subtab import render_templates_subtab
-            render_templates_subtab()
+        with subtabs[3]:  # Schemas
+            from omf2.ui.admin.admin_settings.schemas_subtab import render_schemas_subtab
+            render_schemas_subtab()
         
         with subtabs[4]:  # Modules
             from omf2.ui.admin.admin_settings.module_subtab import render_module_subtab

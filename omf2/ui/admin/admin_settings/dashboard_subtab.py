@@ -232,7 +232,7 @@ def _render_system_info():
         
         with col1:
             st.metric("📡 Topics", stats.get('topics_count', 0))
-            st.metric("📋 Templates", stats.get('templates_count', 0))
+            st.metric("📝 Schemas", stats.get('schemas_count', 0))
         
         with col2:
             st.metric("🔗 Mappings", stats.get('mappings_count', 0))

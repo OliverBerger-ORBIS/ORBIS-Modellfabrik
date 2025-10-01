@@ -1,0 +1,62 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": [
+    "object",
+    "null"
+  ],
+  "properties": {
+    "timestamp": {
+      "type": "string"
+    },
+    "serialNumber": {
+      "type": "string"
+    },
+    "actions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "actionType": {
+            "type": "string"
+          },
+          "actionId": {
+            "type": "string"
+          },
+          "metadata": {
+            "type": "object",
+            "properties": {
+              "nodeId": {
+                "type": "string"
+              },
+              "loadDropped": {
+                "type": "boolean"
+              },
+              "loadType": {
+                "type": "string"
+              },
+              "loadId": {
+                "type": "string"
+              },
+              "loadPosition": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "required": [
+          "actionId",
+          "actionType"
+        ]
+      }
+    }
+  },
+  "required": [
+    "actions",
+    "serialNumber",
+    "timestamp"
+  ],
+  "title": "Fts_V1_Ff_Serial_Instantaction Schema",
+  "description": "Granular schema for fts_v1_ff_serial_instantAction topics from 71 examples",
+  "category": "fts",
+  "additionalProperties": true
+}

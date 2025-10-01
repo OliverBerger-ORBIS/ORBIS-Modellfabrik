@@ -22,12 +22,12 @@ class WorkpieceManager:
     _instance = None
     _initialized = False
     
-    def __new__(cls, registry_path: str = "omf2/registry/model/v2/"):
+    def __new__(cls, registry_path: str = "omf2/registry/"):
         if cls._instance is None:
             cls._instance = super().__new__(cls)
         return cls._instance
     
-    def __init__(self, registry_path: str = "omf2/registry/model/v2/"):
+    def __init__(self, registry_path: str = "omf2/registry/"):
         if WorkpieceManager._initialized:
             return
             
@@ -222,7 +222,7 @@ class WorkpieceManager:
 
 
 # Singleton Factory
-def get_workpiece_manager(registry_path: str = "omf2/registry/model/v2/") -> WorkpieceManager:
+def get_workpiece_manager(registry_path: str = "omf2/registry/") -> WorkpieceManager:
     """
     Factory-Funktion für WorkpieceManager Singleton
     

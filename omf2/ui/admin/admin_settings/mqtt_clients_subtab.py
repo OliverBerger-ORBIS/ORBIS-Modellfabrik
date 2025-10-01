@@ -183,7 +183,7 @@ def render_mqtt_clients_subtab():
             st.write(f"**Load Timestamp:** {stats['load_timestamp']}")
             st.write(f"**MQTT Clients:** {stats['mqtt_clients_count']}")
             st.write(f"**Topics:** {stats['topics_count']}")
-            st.write(f"**Templates:** {stats['templates_count']}")
+            st.write(f"**Schemas:** {stats['schemas_count']}")
             st.write(f"**Mappings:** {stats['mappings_count']}")
             st.write(f"**Workpieces:** {stats['workpieces_count']}")
             st.write(f"**Modules:** {stats['modules_count']}")

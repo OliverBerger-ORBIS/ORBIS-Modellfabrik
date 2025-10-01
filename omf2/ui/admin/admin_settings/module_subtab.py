@@ -22,9 +22,11 @@ def render_module_subtab():
         st.subheader("🔧 Module Configuration")
         st.markdown("Registry-basierte Module-Verwaltung aus omf2/registry")
 
-        # Load registry manager
-        from omf2.registry.manager.registry_manager import get_registry_manager
-        registry_manager = get_registry_manager()
+        # Load registry manager from session state (initialized in omf.py)
+        if 'registry_manager' not in st.session_state:
+            from omf2.registry.manager.registry_manager import get_registry_manager
+            st.session_state['registry_manager'] = get_registry_manager("omf2/registry/")
+        registry_manager = st.session_state['registry_manager']
         
         # Get all modules
         all_modules = registry_manager.get_modules()

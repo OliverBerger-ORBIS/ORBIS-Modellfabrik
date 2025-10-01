@@ -1,0 +1,216 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": [
+    "object",
+    "null"
+  ],
+  "properties": {
+    "lastNodeSequenceId": {
+      "type": "integer"
+    },
+    "batteryState": {
+      "type": "object",
+      "properties": {
+        "currentVoltage": {
+          "type": "number"
+        },
+        "percentage": {
+          "type": "integer"
+        },
+        "maxVolt": {
+          "type": "number"
+        },
+        "charging": {
+          "type": "boolean"
+        },
+        "minVolt": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "charging",
+        "currentVoltage",
+        "maxVolt",
+        "minVolt",
+        "percentage"
+      ]
+    },
+    "timestamp": {
+      "type": "string"
+    },
+    "serialNumber": {
+      "type": "string"
+    },
+    "driving": {
+      "type": "boolean"
+    },
+    "paused": {
+      "type": "boolean"
+    },
+    "errors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "errorLevel": {
+            "type": "string"
+          },
+          "errorType": {
+            "type": "string"
+          },
+          "errorReferences": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "referenceValue": {
+                  "type": [
+                    "integer",
+                    "null",
+                    "string"
+                  ]
+                },
+                "referenceKey": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "referenceKey",
+                "referenceValue"
+              ]
+            }
+          }
+        },
+        "required": [
+          "errorLevel",
+          "errorReferences",
+          "errorType"
+        ]
+      }
+    },
+    "orderId": {
+      "type": "string"
+    },
+    "orderUpdateId": {
+      "type": "integer"
+    },
+    "lastNodeId": {
+      "type": "string"
+    },
+    "lastCode": {
+      "type": "string"
+    },
+    "waitingForLoadHandling": {
+      "type": "boolean"
+    },
+    "actionStates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string"
+          },
+          "command": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "command",
+          "id",
+          "state",
+          "timestamp"
+        ]
+      }
+    },
+    "edgeStates": {
+      "type": "array"
+    },
+    "headerId": {
+      "type": "integer"
+    },
+    "load": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "loadPosition": {
+            "type": "string"
+          },
+          "loadType": {
+            "type": [
+              "null",
+              "string"
+            ]
+          },
+          "loadId": {
+            "type": [
+              "null",
+              "string"
+            ]
+          }
+        },
+        "required": [
+          "loadId",
+          "loadPosition",
+          "loadType"
+        ]
+      }
+    },
+    "nodeStates": {
+      "type": "array"
+    },
+    "actionState": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "state": {
+          "type": "string"
+        },
+        "timestamp": {
+          "type": "string"
+        },
+        "command": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "command",
+        "id",
+        "state",
+        "timestamp"
+      ]
+    }
+  },
+  "required": [
+    "actionStates",
+    "batteryState",
+    "driving",
+    "edgeStates",
+    "errors",
+    "headerId",
+    "lastCode",
+    "lastNodeId",
+    "lastNodeSequenceId",
+    "load",
+    "nodeStates",
+    "orderId",
+    "orderUpdateId",
+    "paused",
+    "serialNumber",
+    "timestamp",
+    "waitingForLoadHandling"
+  ],
+  "title": "Fts_V1_Ff_Serial_State Schema",
+  "description": "Granular schema for fts_v1_ff_serial_state topics from 112 examples",
+  "category": "fts",
+  "additionalProperties": true
+}

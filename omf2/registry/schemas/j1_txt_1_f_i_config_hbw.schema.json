@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": [
+    "object",
+    "null"
+  ],
+  "properties": {
+    "ts": {
+      "type": "string"
+    },
+    "warehouses": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "ts",
+    "warehouses"
+  ],
+  "title": "J1_Txt_1_F_I_Config_Hbw Schema",
+  "description": "Granular schema for j1_txt_1_f_i_config_hbw topics from 2 examples",
+  "category": "txt",
+  "additionalProperties": true
+}

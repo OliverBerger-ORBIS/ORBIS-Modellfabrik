@@ -17,9 +17,11 @@ def render_templates_subtab():
         st.subheader("📝 Templates Konfiguration")
         st.markdown("Registry-basierte Templates-Verwaltung aus omf2/registry")
 
-        # Load registry manager
-        from omf2.registry.manager.registry_manager import get_registry_manager
-        registry_manager = get_registry_manager()
+        # Load registry manager from session state (initialized in omf.py)
+        if 'registry_manager' not in st.session_state:
+            from omf2.registry.manager.registry_manager import get_registry_manager
+            st.session_state['registry_manager'] = get_registry_manager("omf2/registry/")
+        registry_manager = st.session_state['registry_manager']
         
         # Get all templates
         all_templates = registry_manager.get_templates()

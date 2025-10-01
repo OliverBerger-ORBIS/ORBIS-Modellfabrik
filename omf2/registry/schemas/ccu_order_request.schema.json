@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": [
+    "object",
+    "null"
+  ],
+  "properties": {
+    "type": {
+      "type": "string"
+    },
+    "timestamp": {
+      "type": "string"
+    },
+    "orderType": {
+      "type": "string"
+    },
+    "workpieceId": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "orderType",
+    "timestamp",
+    "type"
+  ],
+  "title": "Ccu_Order_Request Schema",
+  "description": "Granular schema for ccu_order_request topics from 17 examples",
+  "category": "ccu",
+  "additionalProperties": true
+}

@@ -1,0 +1,26 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": [
+    "object",
+    "null"
+  ],
+  "properties": {
+    "ts": {
+      "type": "string"
+    },
+    "cmd": {
+      "type": "string"
+    },
+    "degree": {
+      "type": "integer"
+    }
+  },
+  "required": [
+    "cmd",
+    "ts"
+  ],
+  "title": "J1_Txt_1_O_Ptu Schema",
+  "description": "Granular schema for j1_txt_1_o_ptu topics from 7 examples",
+  "category": "txt",
+  "additionalProperties": true
+}

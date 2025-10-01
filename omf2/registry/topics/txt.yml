@@ -1,0 +1,92 @@
+metadata:
+  version: 2.0.0
+  last_updated: '2025-09-28'
+  author: OMF Development Team
+  description: TXT Topics mit QoS/Retain und Publisher/Subscriber-Mapping
+category: txt
+txt_topics:
+- topic: /j1/txt/1/f/i/stock
+  qos: 1
+  retain: 0
+  schema: j1_txt_1_f_i_order.schema.json
+  description: 'Topic: /j1/txt/1/f/i/stock'
+- topic: /j1/txt/1/f/i/order
+  qos: 1
+  retain: 0
+  schema: j1_txt_1_f_i_order.schema.json
+  description: Order commands for processing tasks and workflow execution
+- topic: /j1/txt/1/f/i/status
+  qos: 1
+  retain: 0
+  schema: j1_txt_1_f_i_order.schema.json
+  description: 'Topic: /j1/txt/1/f/i/status'
+- topic: /j1/txt/1/f/i/error
+  qos: 1
+  retain: 0
+  schema: j1_txt_1_f_i_order.schema.json
+  description: 'Topic: /j1/txt/1/f/i/error'
+- topic: /j1/txt/1/f/i/config/hbw
+  qos: 1
+  retain: 1
+  schema: j1_txt_1_f_i_order.schema.json
+  description: 'Topic: /j1/txt/1/f/i/config/hbw'
+- topic: /j1/txt/1/f/o/order
+  qos: 1
+  retain: 0
+  schema: j1_txt_1_f_o_order.schema.json
+  description: Order commands for processing tasks and workflow execution
+- topic: /j1/txt/1/f/o/stock
+  qos: 1
+  retain: 0
+  schema: j1_txt_1_f_o_order.schema.json
+  description: 'Topic: /j1/txt/1/f/o/stock'
+- topic: /j1/txt/1/f/o/status
+  qos: 1
+  retain: 0
+  schema: j1_txt_1_f_o_order.schema.json
+  description: 'Topic: /j1/txt/1/f/o/status'
+- topic: /j1/txt/1/f/o/error
+  qos: 1
+  retain: 0
+  schema: j1_txt_1_f_o_order.schema.json
+  description: 'Topic: /j1/txt/1/f/o/error'
+- topic: /j1/txt/1/c/bme680
+  qos: 1
+  retain: 0
+  schema: j1_txt_1_c_bme680.schema.json
+  description: 'Topic: /j1/txt/1/c/bme680'
+- topic: /j1/txt/1/c/cam
+  qos: 1
+  retain: 0
+  schema: j1_txt_1_c_bme680.schema.json
+  description: 'Topic: /j1/txt/1/c/cam'
+- topic: /j1/txt/1/c/ldr
+  qos: 1
+  retain: 0
+  schema: j1_txt_1_c_bme680.schema.json
+  description: 'Topic: /j1/txt/1/c/ldr'
+- topic: /j1/txt/1/i/bme680
+  qos: 1
+  retain: 0
+  schema: j1_txt_1_i_bme680.schema.json
+  description: 'Topic: /j1/txt/1/i/bme680'
+- topic: /j1/txt/1/i/broadcast
+  qos: 1
+  retain: 0
+  schema: j1_txt_1_i_bme680.schema.json
+  description: 'Topic: /j1/txt/1/i/broadcast'
+- topic: /j1/txt/1/i/cam
+  qos: 2
+  retain: 1
+  schema: j1_txt_1_i_bme680.schema.json
+  description: 'Topic: /j1/txt/1/i/cam'
+- topic: /j1/txt/1/i/ldr
+  qos: 1
+  retain: 0
+  schema: j1_txt_1_i_bme680.schema.json
+  description: 'Topic: /j1/txt/1/i/ldr'
+- topic: /j1/txt/1/o/broadcast
+  qos: 1
+  retain: 0
+  schema: j1_txt_1_o_ptu.schema.json
+  description: 'Topic: /j1/txt/1/o/broadcast'

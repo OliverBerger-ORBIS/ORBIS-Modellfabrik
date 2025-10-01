@@ -137,7 +137,7 @@ def render_workpiece_subtab():
                         st.write(f"- {color}")
         
         except FileNotFoundError:
-            st.error("❌ Registry file not found. Please check omf2/registry/model/v2/workpieces.yml")
+            st.error("❌ Registry file not found. Please check omf2/registry/workpieces.yml")
             st.info("💡 Make sure the registry file exists and is accessible.")
         except Exception as e:
             st.error(f"❌ Error loading registry: {e}")

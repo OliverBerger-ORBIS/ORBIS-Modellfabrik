@@ -1,0 +1,101 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": [
+    "array",
+    "null"
+  ],
+  "items": {
+    "type": "object",
+    "properties": {
+      "orderType": {
+        "type": "string"
+      },
+      "type": {
+        "type": "string"
+      },
+      "timestamp": {
+        "type": "string"
+      },
+      "orderId": {
+        "type": "string"
+      },
+      "productionSteps": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string"
+            },
+            "state": {
+              "type": "string"
+            },
+            "source": {
+              "type": "string"
+            },
+            "target": {
+              "type": "string"
+            },
+            "startedAt": {
+              "type": "string"
+            },
+            "stoppedAt": {
+              "type": "string"
+            },
+            "dependentActionId": {
+              "type": "string"
+            },
+            "command": {
+              "type": "string"
+            },
+            "moduleType": {
+              "type": "string"
+            },
+            "serialNumber": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id",
+            "state",
+            "type"
+          ]
+        }
+      },
+      "receivedAt": {
+        "type": "string"
+      },
+      "state": {
+        "type": "string"
+      },
+      "workpieceId": {
+        "type": "string"
+      },
+      "startedAt": {
+        "type": "string"
+      },
+      "stoppedAt": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "orderId",
+      "orderType",
+      "productionSteps",
+      "receivedAt",
+      "startedAt",
+      "state",
+      "stoppedAt",
+      "timestamp",
+      "type",
+      "workpieceId"
+    ]
+  },
+  "title": "Ccu_Order_Completed Schema",
+  "description": "Granular schema for ccu_order_completed topics from 18 examples",
+  "category": "ccu",
+  "additionalProperties": true
+}

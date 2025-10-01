@@ -52,8 +52,21 @@ omf2/
 │   ├── logger.py                    # Logging Configuration
 │   └── i18n.py                      # Internationalization
 ├── registry/                        # Registry v2 Management
-│   └── manager/
-│       └── registry_manager.py     # Registry Manager (Singleton)
+│   ├── manager/
+│   │   └── registry_manager.py     # Registry Manager (Singleton)
+│   ├── schemas/                     # JSON Schema Files (44 schemas)
+│   │   ├── module_v1_ff_serial_connection.schema.json
+│   │   ├── ccu_global.schema.json
+│   │   └── ... (44 schema files)
+│   ├── topics/                      # Topic Definitions with Schema Integration
+│   │   ├── ccu.yml
+│   │   ├── module.yml
+│   │   └── ...
+│   ├── modules.yml                  # Module Definitions
+│   ├── workpieces.yml               # Workpiece Definitions
+│   └── tools/                       # Registry Tools
+│       ├── add_schema_to_topics.py
+│       └── test_payload_generator.py
 ├── factory/                          # Factory Components
 │   ├── gateway_factory.py           # Gateway Factory
 │   └── client_factory.py            # Client Factory
@@ -125,8 +138,10 @@ omf2/
 
 **Registry v2 Integration:**
 - ✅ **Registry Manager** (`omf2/registry/manager/registry_manager.py`) - Zentrale Komponente für alle Registry-Daten
-- ✅ **Topics, Templates, Mappings** (`registry/model/v2/`)
+- ✅ **Topics, Templates, Mappings** (`omf2/registry/`) - Vereinfachte Struktur ohne `model/v2/`
+- ✅ **Schema-Integration** (`omf2/registry/schemas/`) - 44 JSON-Schemas für Topic-Validierung
 - ✅ **MQTT Clients, Workpieces, Modules, Stations, TXT Controllers** (vollständig implementiert)
+- ✅ **UI-Schema-Integration** - Schema-Validierung in Admin Settings
 
 **UI-Komponenten:**
 - ⚠️ **CCU Tabs** (`omf2/ui/ccu/`) - Grundstruktur vorhanden
@@ -199,12 +214,19 @@ registry_manager = st.session_state.get('registry_manager')
 if registry_manager:
     # Alle Registry-Daten laden
     topics = registry_manager.get_topics()
-    templates = registry_manager.get_templates()
+    schemas = registry_manager.get_schemas()  # ✅ NEU: Schema-Integration
     mqtt_clients = registry_manager.get_mqtt_clients()
     workpieces = registry_manager.get_workpieces()
     modules = registry_manager.get_modules()
     stations = registry_manager.get_stations()
     txt_controllers = registry_manager.get_txt_controllers()
+    
+    # Schema-Validierung für Topics
+    topic_schema = registry_manager.get_topic_schema("module/v1/ff/SVR3QA0022/state")
+    topic_description = registry_manager.get_topic_description("module/v1/ff/SVR3QA0022/state")
+    
+    # Payload-Validierung
+    is_valid = registry_manager.validate_topic_payload("module/v1/ff/SVR3QA0022/state", payload)
     
     # Registry-Statistiken
     stats = registry_manager.get_registry_stats()
@@ -215,6 +237,7 @@ if registry_manager:
 - **Verfügbar in allen Domänen** (Admin, CCU, Node-RED, Common)
 - **Singleton Pattern** verhindert mehrfache Initialisierung
 - **Session State** macht es thread-safe und effizient
+- **Schema-Integration** für Topic-Validierung und Payload-Validierung
 
 ### ✅ Workpiece Management (VOLLSTÄNDIG IMPLEMENTIERT)
 

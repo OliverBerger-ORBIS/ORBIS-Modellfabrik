@@ -1,0 +1,114 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": [
+    "object",
+    "null"
+  ],
+  "properties": {
+    "timestamp": {
+      "type": "string"
+    },
+    "orderId": {
+      "type": "string"
+    },
+    "orderUpdateId": {
+      "type": "integer"
+    },
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "linkedEdges": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "action": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string"
+              },
+              "metadata": {
+                "type": "object",
+                "properties": {
+                  "direction": {
+                    "type": "string"
+                  },
+                  "loadType": {
+                    "type": "string"
+                  },
+                  "loadPosition": {
+                    "type": "string"
+                  },
+                  "loadId": {
+                    "type": "string"
+                  },
+                  "charge": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            },
+            "required": [
+              "id",
+              "type"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "linkedEdges"
+        ]
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "length": {
+            "type": "integer"
+          },
+          "linkedNodes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "length",
+          "linkedNodes"
+        ]
+      }
+    },
+    "serialNumber": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "edges",
+    "nodes",
+    "orderId",
+    "orderUpdateId",
+    "serialNumber",
+    "timestamp"
+  ],
+  "title": "Fts_V1_Ff_Serial_Order Schema",
+  "description": "Granular schema for fts_v1_ff_serial_order topics from 51 examples",
+  "category": "fts",
+  "additionalProperties": true
+}

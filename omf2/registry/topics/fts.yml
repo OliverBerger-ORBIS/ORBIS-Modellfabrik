@@ -1,0 +1,27 @@
+metadata:
+  version: 2.0.0
+  last_updated: '2025-09-28'
+  author: OMF Development Team
+  description: FTS Topics mit QoS/Retain und Publisher/Subscriber-Mapping
+category: fts
+fts_topics:
+- topic: fts/v1/ff/5iO4/connection
+  qos: 1
+  retain: 1
+  schema: fts_v1_ff_serial_connection.schema.json
+  description: Connection status with client information and IP address
+- topic: fts/v1/ff/5iO4/state
+  qos: 2
+  retain: 1
+  schema: fts_v1_ff_serial_state.schema.json
+  description: State information with current status and processing state
+- topic: fts/v1/ff/5iO4/order
+  qos: 1
+  retain: 0
+  schema: fts_v1_ff_serial_order.schema.json
+  description: Order commands for processing tasks and workflow execution
+- topic: fts/v1/ff/5iO4/factsheet
+  qos: 2
+  retain: 1
+  schema: fts_v1_ff_serial_factsheet.schema.json
+  description: Factsheet with capabilities, specifications and configuration details

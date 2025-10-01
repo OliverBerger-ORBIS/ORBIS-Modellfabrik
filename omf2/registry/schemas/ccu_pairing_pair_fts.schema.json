@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": [
+    "object",
+    "null"
+  ],
+  "properties": {
+    "serialNumber": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "serialNumber"
+  ],
+  "title": "Ccu_Pairing_Pair_Fts Schema",
+  "description": "Granular schema for ccu_pairing_pair_fts topics from 1 examples",
+  "category": "ccu",
+  "additionalProperties": true
+}

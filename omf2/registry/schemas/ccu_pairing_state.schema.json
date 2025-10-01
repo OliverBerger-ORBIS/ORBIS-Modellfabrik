@@ -1,0 +1,138 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": [
+    "object",
+    "null"
+  ],
+  "properties": {
+    "modules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "serialNumber": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "connected": {
+            "type": "boolean"
+          },
+          "available": {
+            "type": "string"
+          },
+          "subType": {
+            "type": "string"
+          },
+          "pairedSince": {
+            "type": "string"
+          },
+          "productionDuration": {
+            "type": "integer"
+          },
+          "assigned": {
+            "type": "boolean"
+          },
+          "ip": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "lastSeen": {
+            "type": "string"
+          },
+          "hasCalibration": {
+            "type": "boolean"
+          },
+          "calibrating": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "available",
+          "connected",
+          "pairedSince",
+          "serialNumber",
+          "subType",
+          "type"
+        ]
+      }
+    },
+    "transports": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "serialNumber": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "connected": {
+            "type": "boolean"
+          },
+          "available": {
+            "type": "string"
+          },
+          "ip": {
+            "type": "string"
+          },
+          "version": {
+            "type": "string"
+          },
+          "lastSeen": {
+            "type": "string"
+          },
+          "charging": {
+            "type": "boolean"
+          },
+          "batteryVoltage": {
+            "type": "number"
+          },
+          "batteryPercentage": {
+            "type": "integer"
+          },
+          "lastNodeId": {
+            "type": "string"
+          },
+          "pairedSince": {
+            "type": "string"
+          },
+          "lastModuleSerialNumber": {
+            "type": "string"
+          },
+          "lastLoadPosition": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "available",
+          "batteryPercentage",
+          "batteryVoltage",
+          "charging",
+          "connected",
+          "ip",
+          "lastLoadPosition",
+          "lastModuleSerialNumber",
+          "lastNodeId",
+          "lastSeen",
+          "pairedSince",
+          "serialNumber",
+          "type",
+          "version"
+        ]
+      }
+    }
+  },
+  "required": [
+    "modules",
+    "transports"
+  ],
+  "title": "Ccu_Pairing_State Schema",
+  "description": "Granular schema for ccu_pairing_state topics from 7 examples",
+  "category": "ccu",
+  "additionalProperties": true
+}
