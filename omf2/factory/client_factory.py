@@ -54,27 +54,39 @@ class ClientFactory:
             return self._get_default_config()
     
     def _get_default_config(self) -> Dict[str, Any]:
-        """Get default configuration"""
+        """Get default configuration - aligned with omf2/config/mqtt_settings.yml"""
         return {
             'mqtt': {
                 'host': 'localhost',
                 'port': 1883,
-                'username': None,
-                'password': None,
+                'username': '',
+                'password': '',
                 'keepalive': 60,
                 'clean_session': True
             },
             'environments': {
-                'development': {
+                'live': {
                     'mqtt': {
-                        'host': 'localhost',
-                        'port': 1883
+                        'host': '192.168.0.100',  # APS-Fabrik MQTT-Broker
+                        'port': 1883,
+                        'username': 'default',
+                        'password': 'default'
                     }
                 },
-                'production': {
+                'replay': {
                     'mqtt': {
-                        'host': 'mqtt.orbis-modellfabrik.de',
-                        'port': 1883
+                        'host': 'localhost',
+                        'port': 1883,
+                        'username': '',
+                        'password': ''
+                    }
+                },
+                'mock': {
+                    'mqtt': {
+                        'host': 'mock',
+                        'port': 0,
+                        'username': '',
+                        'password': ''
                     }
                 }
             }
@@ -142,29 +154,21 @@ class ClientFactory:
         """Dynamically import MQTT client class based on class name"""
         try:
             if client_class_name == 'AdminMqttClient':
-                from omf2.admin.admin_mqtt_client import AdminMQTTClient
-                return AdminMQTTClient
+                from omf2.admin.admin_mqtt_client import AdminMqttClient
+                return AdminMqttClient
             elif client_class_name == 'CcuMqttClient':
-                from omf2.ccu.ccu_mqtt_client import CCUMQTTClient
-                return CCUMQTTClient
-            elif client_class_name == 'NodeRedPubMqttClient':
-                from omf2.nodered.nodered_pub_mqtt_client import NodeREDPubMQTTClient
-                return NodeREDPubMQTTClient
-            elif client_class_name == 'NodeRedSubMqttClient':
-                from omf2.nodered.nodered_sub_mqtt_client import NodeREDSubMQTTClient
-                return NodeREDSubMQTTClient
-            elif client_class_name == 'TxtAiqsMqttClient':
-                from omf2.txt.txt_aiqs_mqtt_client import TxtAiqsMqttClient
-                return TxtAiqsMqttClient
-            elif client_class_name == 'TxtDpsMqttClient':
-                from omf2.txt.txt_dps_mqtt_client import TxtDpsMqttClient
-                return TxtDpsMqttClient
-            elif client_class_name == 'TxtFtsMqttClient':
-                from omf2.txt.txt_fts_mqtt_client import TxtFtsMqttClient
-                return TxtFtsMqttClient
-            elif client_class_name == 'TxtCgwMqttClient':
-                from omf2.txt.txt_cgw_mqtt_client import TxtCgwMqttClient
-                return TxtCgwMqttClient
+                from omf2.ccu.ccu_mqtt_client import CcuMqttClient
+                return CcuMqttClient
+            elif client_class_name == 'NoderedPubMqttClient':
+                from omf2.nodered.nodered_pub_mqtt_client import NoderedPubMqttClient
+                return NoderedPubMqttClient
+            elif client_class_name == 'NoderedSubMqttClient':
+                from omf2.nodered.nodered_sub_mqtt_client import NoderedSubMqttClient
+                return NoderedSubMqttClient
+            # TXT clients not yet implemented - will be added when needed
+            elif client_class_name in ['TxtAiqsMqttClient', 'TxtDpsMqttClient', 'TxtFtsMqttClient', 'TxtCgwMqttClient']:
+                logger.warning(f"⚠️ TXT client {client_class_name} not yet implemented")
+                return None
             else:
                 logger.error(f"❌ Unknown client class: {client_class_name}")
                 return None
@@ -176,17 +180,17 @@ class ClientFactory:
         """Fallback: Old hardcoded client mapping"""
         try:
             if client_name == 'admin_mqtt_client':
-                from omf2.admin.admin_mqtt_client import AdminMQTTClient
-                return AdminMQTTClient
+                from omf2.admin.admin_mqtt_client import AdminMqttClient
+                return AdminMqttClient
             elif client_name == 'ccu_mqtt_client':
-                from omf2.ccu.ccu_mqtt_client import CCUMQTTClient
-                return CCUMQTTClient
+                from omf2.ccu.ccu_mqtt_client import CcuMqttClient
+                return CcuMqttClient
             elif client_name == 'nodered_pub_mqtt_client':
-                from omf2.nodered.nodered_pub_mqtt_client import NodeREDPubMQTTClient
-                return NodeREDPubMQTTClient
+                from omf2.nodered.nodered_pub_mqtt_client import NoderedPubMqttClient
+                return NoderedPubMqttClient
             elif client_name == 'nodered_sub_mqtt_client':
-                from omf2.nodered.nodered_sub_mqtt_client import NodeREDSubMQTTClient
-                return NodeREDSubMQTTClient
+                from omf2.nodered.nodered_sub_mqtt_client import NoderedSubMqttClient
+                return NoderedSubMqttClient
             else:
                 logger.error(f"❌ Unknown client name: {client_name}")
                 return None
@@ -207,7 +211,7 @@ class ClientFactory:
             Client instance or None
         """
         if client_type == 'mqtt':
-            return self.get_mqtt_client(domain, kwargs.get('environment', 'development'))
+            return self.get_mqtt_client(domain, kwargs.get('environment', 'mock'))
         else:
             logger.error(f"❌ Unsupported client type: {client_type}")
             return None

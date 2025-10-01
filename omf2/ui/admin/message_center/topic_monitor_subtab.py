@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
 Topic Monitor Subtab - Live MQTT Topic Monitoring with Category Filtering
+Gateway-Pattern konform: Nutzt AdminGateway statt direkten MQTT-Client
 """
 
 import streamlit as st
@@ -13,8 +14,13 @@ from omf2.ui.utils.message_utils import MessageRow
 logger = get_logger(__name__)
 
 
-def render_topic_monitor_subtab(admin_client, conn_info):
-    """Render Topic Monitor Subtab with live MQTT topic monitoring"""
+def render_topic_monitor_subtab(admin_gateway, conn_info):
+    """Render Topic Monitor Subtab with live MQTT topic monitoring
+    
+    Args:
+        admin_gateway: AdminGateway Instanz (Gateway-Pattern)
+        conn_info: Connection Info Dict
+    """
     logger.info("📡 Rendering Topic Monitor Subtab")
     
     try:
@@ -53,8 +59,8 @@ def render_topic_monitor_subtab(admin_client, conn_info):
             if st.button("🔄 Refresh Now", key="manual_refresh_monitor"):
                 request_refresh()
         
-        # Get all topic buffers
-        all_buffers = admin_client.get_all_buffers()
+        # Get all topic buffers via Gateway
+        all_buffers = admin_gateway.get_all_message_buffers()
         if not all_buffers:
             st.info("📋 No topics available yet. Topics will appear as messages are received.")
             return

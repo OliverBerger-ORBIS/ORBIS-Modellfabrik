@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
 Enhanced View Subtab - omf/ style message display with filtering and detailed payload inspection
+Gateway-Pattern konform: Nutzt AdminGateway statt direkten MQTT-Client
 """
 
 import streamlit as st
@@ -23,8 +24,13 @@ from omf2.ui.utils.ui_refresh import request_refresh
 logger = get_logger(__name__)
 
 
-def render_message_monitor_subtab(admin_client, conn_info):
-    """Render Message Monitor Subtab with omf/ style UI"""
+def render_message_monitor_subtab(admin_gateway, conn_info):
+    """Render Message Monitor Subtab with omf/ style UI
+    
+    Args:
+        admin_gateway: AdminGateway Instanz (Gateway-Pattern)
+        conn_info: Connection Info Dict
+    """
     logger.info("📊 Rendering Message Monitor Subtab")
     
     try:
@@ -43,11 +49,12 @@ def render_message_monitor_subtab(admin_client, conn_info):
         with col5:
             if st.button("🗑️ Historie löschen", type="secondary", key="clear_history_enhanced"):
                 logger.info("🗑️ Historie löschen angefordert")
-                # Clear topic buffers
-                with admin_client._buffer_lock:
-                    admin_client.topic_buffers.clear()
-                st.success("✅ Nachrichten-Historie gelöscht")
-                request_refresh()
+                # Gateway-Pattern: Nutze AdminGateway clear_message_history
+                if admin_gateway.clear_message_history():
+                    st.success("✅ Nachrichten-Historie gelöscht")
+                    request_refresh()
+                else:
+                    st.error("❌ Historie löschen fehlgeschlagen")
 
         with col1:
             # Nachrichten-Typ Filter
@@ -94,7 +101,8 @@ def render_message_monitor_subtab(admin_client, conn_info):
 
         # Get all topic buffers and convert to MessageRow format
         try:
-            all_buffers = admin_client.get_all_buffers()
+            # Gateway-Pattern: Nutze AdminGateway get_all_message_buffers
+            all_buffers = admin_gateway.get_all_message_buffers()
             message_rows = []
             
             for topic, buffer_data in all_buffers.items():

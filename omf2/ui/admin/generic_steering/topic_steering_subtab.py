@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
 Topic Steering Subtab - Commands from omf/dashboard/components/admin/steering_generic.py
+Gateway-Pattern konform: Nutzt AdminGateway statt direkten MQTT-Client
 """
 
 import streamlit as st
@@ -11,8 +12,13 @@ from omf2.ui.utils.ui_refresh import request_refresh
 logger = get_logger(__name__)
 
 
-def render_topic_steering_subtab(admin_mqtt_client, registry_manager):
-    """Render Topic Steering Subtab with commands from steering_generic.py"""
+def render_topic_steering_subtab(admin_gateway, registry_manager):
+    """Render Topic Steering Subtab with commands from steering_generic.py
+    
+    Args:
+        admin_gateway: AdminGateway Instanz (Gateway-Pattern)
+        registry_manager: RegistryManager Instanz
+    """
     logger.info("🔧 Rendering Topic Steering Subtab")
     
     try:
@@ -73,10 +79,20 @@ def render_topic_steering_subtab(admin_mqtt_client, registry_manager):
                     # Parse JSON payload
                     payload = json.loads(payload_input)
                     
-                    # TODO: Implement actual MQTT publishing
-                    st.success(f"✅ Message sent to topic: {topic_input}")
-                    st.json(payload)
-                    logger.info(f"📤 Free mode message sent: {topic_input}")
+                    # Gateway-Pattern: Nutze AdminGateway publish_message
+                    success = admin_gateway.publish_message(
+                        topic=topic_input,
+                        message=payload,
+                        qos=qos_level,
+                        retain=retain_message
+                    )
+                    
+                    if success:
+                        st.success(f"✅ Message sent to topic: {topic_input}")
+                        st.json(payload)
+                        logger.info(f"📤 Free mode message sent: {topic_input} (QoS: {qos_level}, Retain: {retain_message})")
+                    else:
+                        st.error(f"❌ Failed to send message to {topic_input}")
                     
                 except json.JSONDecodeError as e:
                     st.error(f"❌ Invalid JSON: {e}")
@@ -145,12 +161,12 @@ def render_topic_steering_subtab(admin_mqtt_client, registry_manager):
             if st.button("📝 Load Template", key="load_template_btn"):
                 st.info(f"Template '{selected_template}' loaded! (TODO: Implement)")
         
-        # Connection Info
-        if admin_mqtt_client:
-            conn_info = admin_mqtt_client.get_connection_info()
+        # Connection Info via Gateway
+        conn_info = admin_gateway.get_connection_info()
+        if conn_info.get('connected', False):
             st.info(f"🔗 MQTT Client: {conn_info.get('client_id', 'Unknown')} | Connected: {conn_info.get('connected', False)}")
         else:
-            st.warning("⚠️ Admin MQTT Client not available")
+            st.warning("⚠️ MQTT Client not connected")
             
     except Exception as e:
         logger.error(f"❌ Topic Steering Subtab error: {e}")

@@ -82,28 +82,39 @@ class AdminGateway:
             logger.error(f"❌ Message validation failed for topic {topic}: {e}")
             return {"errors": [str(e)], "warnings": []}
     
-    def publish_message(self, topic: str, message: Dict[str, Any]) -> bool:
+    def publish_message(self, topic: str, message: Dict[str, Any], qos: int = 1, retain: bool = False) -> bool:
         """
-        Message auf Topic publizieren
+        Message auf Topic publizieren (mit expliziten QoS/Retain oder aus Registry)
         
         Args:
             topic: MQTT Topic
             message: Message-Dict
+            qos: Quality of Service Level (0, 1, 2)
+            retain: Retain Flag
             
         Returns:
             True wenn erfolgreich, False bei Fehler
         """
         try:
-            # TODO: MQTT-Client Integration implementieren
-            # qos, retain = self.message_templates.get_topic_config(topic)
-            # success = self.mqtt_client.publish(topic, message, qos=qos, retain=retain)
-            # if success:
-            #     self.message_templates.log_message(topic, message, "SEND")
-            # return success
+            if not self.mqtt_client:
+                logger.warning("⚠️ No MQTT client available")
+                return False
             
-            logger.info(f"📤 Published message to {topic}: {message} (TODO: MQTT integration)")
-            self.message_templates.log_message(topic, message, "SEND")
-            return True
+            # MQTT-Client publish_message nutzen (mit QoS und Retain)
+            success = self.mqtt_client.publish_message(
+                topic=topic,
+                message=message,
+                qos=qos,
+                retain=retain
+            )
+            
+            if success:
+                logger.info(f"📤 Published message to {topic} (QoS: {qos}, Retain: {retain})")
+                self.message_templates.log_message(topic, message, "SEND")
+            else:
+                logger.error(f"❌ Failed to publish message to {topic}")
+            
+            return success
             
         except Exception as e:
             logger.error(f"❌ Publish message failed for topic {topic}: {e}")
@@ -217,3 +228,88 @@ class AdminGateway:
         except Exception as e:
             logger.error(f"❌ Failed to get admin subscribed topics: {e}")
             return []
+    
+    # ===== Message Buffer Management Methods =====
+    
+    def get_all_message_buffers(self) -> Dict[str, List[Dict[str, Any]]]:
+        """
+        Alle Message-Buffers vom MQTT-Client abrufen
+        
+        Returns:
+            Dict mit Topic -> List[Message] Mappings
+        """
+        try:
+            if not self.mqtt_client:
+                logger.warning("⚠️ No MQTT client available")
+                return {}
+            
+            buffers = self.mqtt_client.get_all_buffers()
+            logger.debug(f"📊 Retrieved {len(buffers)} message buffers")
+            return buffers
+            
+        except Exception as e:
+            logger.error(f"❌ Failed to get message buffers: {e}")
+            return {}
+    
+    def clear_message_history(self) -> bool:
+        """
+        Komplette Message-Historie löschen
+        
+        Returns:
+            True wenn erfolgreich
+        """
+        try:
+            if not self.mqtt_client:
+                logger.warning("⚠️ No MQTT client available")
+                return False
+            
+            # MQTT-Client hat clear_buffers() Methode
+            self.mqtt_client.clear_buffers()
+            logger.info("🗑️ Message history cleared")
+            return True
+            
+        except Exception as e:
+            logger.error(f"❌ Failed to clear message history: {e}")
+            return False
+    
+    def get_connection_info(self) -> Dict[str, Any]:
+        """
+        MQTT Connection Info abrufen
+        
+        Returns:
+            Dict mit Connection Info (client_id, connected, environment, etc.)
+        """
+        try:
+            if not self.mqtt_client:
+                logger.warning("⚠️ No MQTT client available")
+                return {
+                    "connected": False,
+                    "client_id": "unknown",
+                    "environment": "unknown"
+                }
+            
+            conn_info = self.mqtt_client.get_connection_info()
+            return conn_info
+            
+        except Exception as e:
+            logger.error(f"❌ Failed to get connection info: {e}")
+            return {
+                "connected": False,
+                "client_id": "error",
+                "environment": "error"
+            }
+    
+    def is_connected(self) -> bool:
+        """
+        MQTT Connection Status prüfen
+        
+        Returns:
+            True wenn verbunden
+        """
+        try:
+            if not self.mqtt_client:
+                return False
+            return self.mqtt_client.connected
+        except Exception as e:
+            logger.error(f"❌ Failed to check connection status: {e}")
+            return False

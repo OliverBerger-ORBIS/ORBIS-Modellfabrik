@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 """
 Generic Steering Tab - Modular Architecture with Factory and Topic Steering
+Gateway-Pattern konform: Nutzt AdminGateway aus Gateway-Factory
 """
 
 import streamlit as st
 from omf2.common.logger import get_logger
+from omf2.factory.gateway_factory import get_admin_gateway
 
 logger = get_logger(__name__)
 
@@ -17,23 +19,19 @@ def render_generic_steering_tab():
         st.title("🎛️ Generic Steering")
         st.markdown("**Factory Management and Control with Modular Architecture**")
         
-        # Get Admin MQTT Client from session state (already initialized in omf.py)
-        admin_mqtt_client = st.session_state.get('admin_mqtt_client')
-        if not admin_mqtt_client:
-            st.error("❌ Admin MQTT client not available")
+        # Gateway-Pattern: Get AdminGateway from Factory
+        admin_gateway = get_admin_gateway()
+        if not admin_gateway:
+            st.error("❌ Admin Gateway not available")
             return
         
         # Get Registry Manager from session state
         registry_manager = st.session_state.get('registry_manager')
         
-        # Reconnect only if connection was lost (central connection in omf.py)
+        # Connection Status via Gateway
+        conn_info = admin_gateway.get_connection_info()
         current_env = st.session_state.get('current_environment', 'mock')
-        if not admin_mqtt_client.connected:
-            admin_mqtt_client.connect(current_env)
-            logger.warning(f"🔄 Reconnecting to {current_env} (connection was lost)")
         
-        # Connection Status
-        conn_info = admin_mqtt_client.get_connection_info()
         if conn_info['connected']:
             st.success(f"🔗 **Connected:** {conn_info['client_id']} | **Environment:** {current_env}")
         else:
@@ -54,23 +52,23 @@ def render_generic_steering_tab():
         tab1, tab2 = st.tabs(["🏭 Factory Steering", "🔧 Topic Steering"])
         
         with tab1:
-            _render_factory_steering_tab(admin_mqtt_client, registry_manager)
+            _render_factory_steering_tab(admin_gateway, registry_manager)
         
         with tab2:
-            _render_topic_steering_tab(admin_mqtt_client, registry_manager)
+            _render_topic_steering_tab(admin_gateway, registry_manager)
         
     except Exception as e:
         logger.error(f"❌ Generic Steering Tab error: {e}")
         st.error(f"❌ Generic Steering failed: {e}")
 
 
-def _render_factory_steering_tab(admin_mqtt_client, registry_manager):
+def _render_factory_steering_tab(admin_gateway, registry_manager):
     """Render Factory Steering Tab"""
     from omf2.ui.admin.generic_steering.factory_steering_subtab import render_factory_steering_subtab
-    render_factory_steering_subtab(admin_mqtt_client, registry_manager)
+    render_factory_steering_subtab(admin_gateway, registry_manager)
 
 
-def _render_topic_steering_tab(admin_mqtt_client, registry_manager):
+def _render_topic_steering_tab(admin_gateway, registry_manager):
     """Render Topic Steering Tab"""
     from omf2.ui.admin.generic_steering.topic_steering_subtab import render_topic_steering_subtab
-    render_topic_steering_subtab(admin_mqtt_client, registry_manager)
+    render_topic_steering_subtab(admin_gateway, registry_manager)

@@ -13,7 +13,7 @@ from omf2.common.logger import get_logger
 logger = get_logger(__name__)
 
 
-class CCUMQTTClient:
+class CcuMqttClient:
     """
     Thread-sicherer Singleton für CCU MQTT-Kommunikation
     
@@ -33,7 +33,7 @@ class CCUMQTTClient:
         return cls._instance
     
     def __init__(self):
-        if CCUMQTTClient._initialized:
+        if CcuMqttClient._initialized:
             return
             
         self.message_templates = get_message_templates()
@@ -62,7 +62,7 @@ class CCUMQTTClient:
         self.published_topics = self._get_published_topics()
         self.subscribed_topics = self._get_subscribed_topics()
         
-        CCUMQTTClient._initialized = True
+        CcuMqttClient._initialized = True
         logger.info("🏗️ CCU MQTT Client initialized")
     
     def _get_published_topics(self) -> List[str]:
@@ -236,11 +236,11 @@ class CCUMQTTClient:
 
 
 # Singleton Factory
-def get_ccu_mqtt_client() -> CCUMQTTClient:
+def get_ccu_mqtt_client() -> CcuMqttClient:
     """
     Factory-Funktion für CCU MQTT Client Singleton
     
     Returns:
         CCU MQTT Client Singleton Instance
     """
-    return CCUMQTTClient()
+    return CcuMqttClient()

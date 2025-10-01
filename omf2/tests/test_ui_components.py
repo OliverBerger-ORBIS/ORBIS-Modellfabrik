@@ -10,12 +10,12 @@ from pathlib import Path
 from unittest.mock import patch, MagicMock
 
 from omf2.ccu.ccu_gateway import CcuGateway
-from omf2.ccu.ccu_mqtt_client import CCUMQTTClient, get_ccu_mqtt_client
+from omf2.ccu.ccu_mqtt_client import CcuMqttClient, get_ccu_mqtt_client
 from omf2.nodered.nodered_gateway import NoderedGateway
-from omf2.nodered.nodered_pub_mqtt_client import NodeREDPubMQTTClient, get_nodered_pub_mqtt_client
-from omf2.nodered.nodered_sub_mqtt_client import NodeREDSubMQTTClient, get_nodered_sub_mqtt_client
+from omf2.nodered.nodered_pub_mqtt_client import NoderedPubMqttClient, get_nodered_pub_mqtt_client
+from omf2.nodered.nodered_sub_mqtt_client import NoderedSubMqttClient, get_nodered_sub_mqtt_client
 from omf2.admin.admin_gateway import AdminGateway
-from omf2.admin.admin_mqtt_client import AdminMQTTClient, get_admin_mqtt_client
+from omf2.admin.admin_mqtt_client import AdminMqttClient, get_admin_mqtt_client
 
 
 class TestCCUGateway(unittest.TestCase):
@@ -24,13 +24,13 @@ class TestCCUGateway(unittest.TestCase):
     def setUp(self):
         """Setup für jeden Test"""
         # Singleton zurücksetzen
-        CCUMQTTClient._instance = None
-        CCUMQTTClient._initialized = False
+        CcuMqttClient._instance = None
+        CcuMqttClient._initialized = False
     
     def tearDown(self):
         """Cleanup nach jedem Test"""
-        CCUMQTTClient._instance = None
-        CCUMQTTClient._initialized = False
+        CcuMqttClient._instance = None
+        CcuMqttClient._initialized = False
     
     def test_ccu_gateway_initialization(self):
         """Test: CCU Gateway Initialisierung"""
@@ -83,24 +83,24 @@ class TestCCUGateway(unittest.TestCase):
         self.assertIsInstance(topics, list)
 
 
-class TestCCUMQTTClient(unittest.TestCase):
+class TestCcuMqttClient(unittest.TestCase):
     """Test-Klasse für CCU MQTT Client"""
     
     def setUp(self):
         """Setup für jeden Test"""
         # Singleton zurücksetzen
-        CCUMQTTClient._instance = None
-        CCUMQTTClient._initialized = False
+        CcuMqttClient._instance = None
+        CcuMqttClient._initialized = False
     
     def tearDown(self):
         """Cleanup nach jedem Test"""
-        CCUMQTTClient._instance = None
-        CCUMQTTClient._initialized = False
+        CcuMqttClient._instance = None
+        CcuMqttClient._initialized = False
     
     def test_singleton_pattern(self):
         """Test: Singleton Pattern funktioniert"""
-        instance1 = CCUMQTTClient()
-        instance2 = CCUMQTTClient()
+        instance1 = CcuMqttClient()
+        instance2 = CcuMqttClient()
         self.assertIs(instance1, instance2)
     
     def test_factory_function(self):
@@ -111,43 +111,43 @@ class TestCCUMQTTClient(unittest.TestCase):
     
     def test_initialization(self):
         """Test: Initialisierung"""
-        client = CCUMQTTClient()
+        client = CcuMqttClient()
         self.assertEqual(client.client_id, "omf_ccu")
         self.assertIsInstance(client.published_topics, list)
         self.assertIsInstance(client.subscribed_topics, list)
     
     def test_connect(self):
         """Test: Verbindung"""
-        client = CCUMQTTClient()
+        client = CcuMqttClient()
         result = client.connect()
         self.assertTrue(result)
     
     def test_disconnect(self):
         """Test: Trennung"""
-        client = CCUMQTTClient()
+        client = CcuMqttClient()
         client.disconnect()  # Sollte nicht fehlschlagen
     
     def test_publish(self):
         """Test: Publish"""
-        client = CCUMQTTClient()
+        client = CcuMqttClient()
         result = client.publish("test/topic", {"test": "data"})
         self.assertTrue(result)
     
     def test_subscribe(self):
         """Test: Subscribe"""
-        client = CCUMQTTClient()
+        client = CcuMqttClient()
         result = client.subscribe("test/topic")
         self.assertTrue(result)
     
     def test_get_buffer(self):
         """Test: Buffer abrufen"""
-        client = CCUMQTTClient()
+        client = CcuMqttClient()
         buffer = client.get_buffer("test/topic")
         self.assertIsNone(buffer)  # Leer bei Initialisierung
     
     def test_get_all_buffers(self):
         """Test: Alle Buffers abrufen"""
-        client = CCUMQTTClient()
+        client = CcuMqttClient()
         buffers = client.get_all_buffers()
         self.assertIsInstance(buffers, dict)
 
@@ -158,17 +158,17 @@ class TestNodeREDGateway(unittest.TestCase):
     def setUp(self):
         """Setup für jeden Test"""
         # Singletons zurücksetzen
-        NodeREDPubMQTTClient._instance = None
-        NodeREDPubMQTTClient._initialized = False
-        NodeREDSubMQTTClient._instance = None
-        NodeREDSubMQTTClient._initialized = False
+        NoderedPubMqttClient._instance = None
+        NoderedPubMqttClient._initialized = False
+        NoderedSubMqttClient._instance = None
+        NoderedSubMqttClient._initialized = False
     
     def tearDown(self):
         """Cleanup nach jedem Test"""
-        NodeREDPubMQTTClient._instance = None
-        NodeREDPubMQTTClient._initialized = False
-        NodeREDSubMQTTClient._instance = None
-        NodeREDSubMQTTClient._initialized = False
+        NoderedPubMqttClient._instance = None
+        NoderedPubMqttClient._initialized = False
+        NoderedSubMqttClient._instance = None
+        NoderedSubMqttClient._initialized = False
     
     def test_nodered_gateway_initialization(self):
         """Test: Node-RED Gateway Initialisierung"""
@@ -222,24 +222,24 @@ class TestNodeREDGateway(unittest.TestCase):
         self.assertIsInstance(topics, list)
 
 
-class TestNodeREDPubMQTTClient(unittest.TestCase):
+class TestNoderedPubMqttClient(unittest.TestCase):
     """Test-Klasse für Node-RED Publisher MQTT Client"""
     
     def setUp(self):
         """Setup für jeden Test"""
         # Singleton zurücksetzen
-        NodeREDPubMQTTClient._instance = None
-        NodeREDPubMQTTClient._initialized = False
+        NoderedPubMqttClient._instance = None
+        NoderedPubMqttClient._initialized = False
     
     def tearDown(self):
         """Cleanup nach jedem Test"""
-        NodeREDPubMQTTClient._instance = None
-        NodeREDPubMQTTClient._initialized = False
+        NoderedPubMqttClient._instance = None
+        NoderedPubMqttClient._initialized = False
     
     def test_singleton_pattern(self):
         """Test: Singleton Pattern funktioniert"""
-        instance1 = NodeREDPubMQTTClient()
-        instance2 = NodeREDPubMQTTClient()
+        instance1 = NoderedPubMqttClient()
+        instance2 = NoderedPubMqttClient()
         self.assertIs(instance1, instance2)
     
     def test_factory_function(self):
@@ -250,50 +250,50 @@ class TestNodeREDPubMQTTClient(unittest.TestCase):
     
     def test_initialization(self):
         """Test: Initialisierung"""
-        client = NodeREDPubMQTTClient()
+        client = NoderedPubMqttClient()
         self.assertEqual(client.client_id, "omf_nodered_pub")
         self.assertIsInstance(client.published_topics, list)
         self.assertEqual(client.subscribed_topics, [])  # Publisher ist nie Subscriber
     
     def test_publish_normalized_state(self):
         """Test: Normalisierten State publizieren"""
-        client = NodeREDPubMQTTClient()
+        client = NoderedPubMqttClient()
         result = client.publish_normalized_state("SVR3QA0022", {"state": "idle"})
         self.assertTrue(result)
     
     def test_publish_ccu_feedback(self):
         """Test: CCU Feedback publizieren"""
-        client = NodeREDPubMQTTClient()
+        client = NoderedPubMqttClient()
         feedback = {"status": "ok"}
         result = client.publish_ccu_feedback(feedback)
         self.assertTrue(result)
     
     def test_publish_order_completed(self):
         """Test: Order Completed publizieren"""
-        client = NodeREDPubMQTTClient()
+        client = NoderedPubMqttClient()
         order_data = {"order_id": "123"}
         result = client.publish_order_completed(order_data)
         self.assertTrue(result)
 
 
-class TestNodeREDSubMQTTClient(unittest.TestCase):
+class TestNoderedSubMqttClient(unittest.TestCase):
     """Test-Klasse für Node-RED Subscriber MQTT Client"""
     
     def setUp(self):
         """Setup für jeden Test"""
         # Singleton zurücksetzen
-        NodeREDSubMQTTClient._instance = None
-        NodeREDSubMQTTClient._initialized = False
+        NoderedSubMqttClient._instance = None
+        NoderedSubMqttClient._initialized = False
     
     def tearDown(self):
         """Cleanup nach jedem Test"""
-        NodeREDSubMQTTClient._instance = None
-        NodeREDSubMQTTClient._initialized = False
+        NoderedSubMqttClient._instance = None
+        NoderedSubMqttClient._initialized = False
     
     def test_singleton_pattern(self):
         """Test: Singleton Pattern funktioniert"""
-        instance1 = NodeREDSubMQTTClient()
-        instance2 = NodeREDSubMQTTClient()
+        instance1 = NoderedSubMqttClient()
+        instance2 = NoderedSubMqttClient()
         self.assertIs(instance1, instance2)
     
     def test_factory_function(self):
@@ -304,38 +304,38 @@ class TestNodeREDSubMQTTClient(unittest.TestCase):
     
     def test_initialization(self):
         """Test: Initialisierung"""
-        client = NodeREDSubMQTTClient()
+        client = NoderedSubMqttClient()
         self.assertEqual(client.client_id, "omf_nodered_sub")
         self.assertIsInstance(client.subscribed_topics, list)
         self.assertEqual(client.published_topics, [])  # Subscriber ist nie Publisher
     
     def test_subscribe_to_ccu_commands(self):
         """Test: CCU Commands subscriben"""
-        client = NodeREDSubMQTTClient()
+        client = NoderedSubMqttClient()
         result = client.subscribe_to_ccu_commands()
         self.assertTrue(result)
     
     def test_subscribe_to_opc_ua_states(self):
         """Test: OPC-UA States subscriben"""
-        client = NodeREDSubMQTTClient()
+        client = NoderedSubMqttClient()
         result = client.subscribe_to_opc_ua_states()
         self.assertTrue(result)
     
     def test_subscribe_to_txt_commands(self):
         """Test: TXT Commands subscriben"""
-        client = NodeREDSubMQTTClient()
+        client = NoderedSubMqttClient()
         result = client.subscribe_to_txt_commands()
         self.assertTrue(result)
     
     def test_get_ccu_command_buffers(self):
         """Test: CCU Command Buffers abrufen"""
-        client = NodeREDSubMQTTClient()
+        client = NoderedSubMqttClient()
         buffers = client.get_ccu_command_buffers()
         self.assertIsInstance(buffers, dict)
     
     def test_get_opc_ua_state_buffers(self):
         """Test: OPC-UA State Buffers abrufen"""
-        client = NodeREDSubMQTTClient()
+        client = NoderedSubMqttClient()
         buffers = client.get_opc_ua_state_buffers()
         self.assertIsInstance(buffers, dict)
 
@@ -346,13 +346,13 @@ class TestAdminGateway(unittest.TestCase):
     def setUp(self):
         """Setup für jeden Test"""
         # Singleton zurücksetzen
-        AdminMQTTClient._instance = None
-        AdminMQTTClient._initialized = False
+        AdminMqttClient._instance = None
+        AdminMqttClient._initialized = False
     
     def tearDown(self):
         """Cleanup nach jedem Test"""
-        AdminMQTTClient._instance = None
-        AdminMQTTClient._initialized = False
+        AdminMqttClient._instance = None
+        AdminMqttClient._initialized = False
     
     def test_admin_gateway_initialization(self):
         """Test: Admin Gateway Initialisierung"""
@@ -414,24 +414,24 @@ class TestAdminGateway(unittest.TestCase):
         self.assertIsInstance(topics, list)
 
 
-class TestAdminMQTTClient(unittest.TestCase):
+class TestAdminMqttClient(unittest.TestCase):
     """Test-Klasse für Admin MQTT Client"""
     
     def setUp(self):
         """Setup für jeden Test"""
         # Singleton zurücksetzen
-        AdminMQTTClient._instance = None
-        AdminMQTTClient._initialized = False
+        AdminMqttClient._instance = None
+        AdminMqttClient._initialized = False
     
     def tearDown(self):
         """Cleanup nach jedem Test"""
-        AdminMQTTClient._instance = None
-        AdminMQTTClient._initialized = False
+        AdminMqttClient._instance = None
+        AdminMqttClient._initialized = False
     
     def test_singleton_pattern(self):
         """Test: Singleton Pattern funktioniert"""
-        instance1 = AdminMQTTClient()
-        instance2 = AdminMQTTClient()
+        instance1 = AdminMqttClient()
+        instance2 = AdminMqttClient()
         self.assertIs(instance1, instance2)
     
     def test_factory_function(self):
@@ -442,26 +442,26 @@ class TestAdminMQTTClient(unittest.TestCase):
     
     def test_initialization(self):
         """Test: Initialisierung"""
-        client = AdminMQTTClient()
+        client = AdminMqttClient()
         self.assertEqual(client.client_id, "omf_admin")
         self.assertIsInstance(client.published_topics, list)
         self.assertIsInstance(client.subscribed_topics, list)
     
     def test_publish_message(self):
         """Test: Message publizieren"""
-        client = AdminMQTTClient()
+        client = AdminMqttClient()
         result = client.publish_message("test/topic", {"test": "data"})
         self.assertTrue(result)
     
     def test_subscribe_to_all(self):
         """Test: Alle Topics subscriben"""
-        client = AdminMQTTClient()
+        client = AdminMqttClient()
         result = client.subscribe_to_all()
         self.assertTrue(result)
     
     def test_get_system_overview(self):
         """Test: System Overview abrufen"""
-        client = AdminMQTTClient()
+        client = AdminMqttClient()
         overview = client.get_system_overview()
         self.assertIsInstance(overview, dict)
         self.assertIn("total_topics", overview)

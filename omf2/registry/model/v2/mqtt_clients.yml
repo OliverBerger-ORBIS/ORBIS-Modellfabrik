@@ -116,7 +116,7 @@ mqtt_clients:
   # Node-RED Publisher (Normalisiert alle States)
   nodered_pub_mqtt_client:
     active: false
-    client_class: "NodeRedPubMqttClient"
+    client_class: "NoderedPubMqttClient"
     client_id: "omf_nodered_pub"  # Dynamisch
     # role: "Node-RED Publisher"
     # friendly_name: "Node-RED Publisher"
@@ -149,7 +149,7 @@ mqtt_clients:
   # Node-RED Subscriber (Empfängt alle Quellen)
   nodered_sub_mqtt_client:
     active: false
-    client_class: "NodeRedSubMqttClient"
+    client_class: "NoderedSubMqttClient"
     client_id: "omf_nodered_sub"  # Dynamisch
     # role: "Node-RED Subscriber"
     # friendly_name: "Node-RED Subscriber"

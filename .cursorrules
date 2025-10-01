@@ -35,6 +35,8 @@
 - **Test-Imports:** Absolute Imports auch in Tests verwenden
 - **Test-Namen:** `test_*.py` oder `*_test.py`
 - **Test-Ausführung:** `python -m pytest tests/`
+- **Virtual Environment:** Immer `.venv` aktivieren: `source .venv/bin/activate`
+- **Test-Environment:** Alle Tests mit aktiviertem .venv ausführen
 
 ### Branch-spezifische Test-Regeln
 - **Helper-Branches:** Nur `tests/test_helper_apps/` ausführen
@@ -48,6 +50,8 @@
 - **Zusammenfassung:** Kurze Übersicht der geplanten Änderungen
 - **Freigabe:** Warten auf explizite Bestätigung vor Implementierung
 - **Keine direkte Implementierung** ohne vorherige Analyse und Freigabe
+- **Virtual Environment:** Immer `.venv` aktivieren vor Tests und Entwicklung
+- **Dependencies:** Alle Tests mit aktiviertem .venv ausführen
 
 ### Git-Workflow-Regeln
 - **Commits:** NUR nach expliziter Bestätigung des Users

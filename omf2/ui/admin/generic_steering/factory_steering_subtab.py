@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
 Factory Steering Subtab - Commands from omf/dashboard/components/admin/steering_factory.py
+Gateway-Pattern konform: Nutzt AdminGateway statt direkten MQTT-Client
 """
 
 import streamlit as st
@@ -10,8 +11,13 @@ from omf2.ui.utils.ui_refresh import request_refresh
 logger = get_logger(__name__)
 
 
-def render_factory_steering_subtab(admin_mqtt_client, registry_manager):
-    """Render Factory Steering Subtab with commands from steering_factory.py"""
+def render_factory_steering_subtab(admin_gateway, registry_manager):
+    """Render Factory Steering Subtab with commands from steering_factory.py
+    
+    Args:
+        admin_gateway: AdminGateway Instanz (Gateway-Pattern)
+        registry_manager: RegistryManager Instanz
+    """
     logger.info("🏭 Rendering Factory Steering Subtab")
     
     try:

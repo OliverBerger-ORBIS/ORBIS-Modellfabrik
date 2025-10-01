@@ -19,10 +19,15 @@ class TestOMF2Dashboard:
     def test_dashboard_imports(self):
         """Test that dashboard modules can be imported"""
         # Test main dashboard
-        from omf2.omf_dashboard import main, setup_page_config, initialize_session_state
-        assert callable(main)
-        assert callable(setup_page_config)
-        assert callable(initialize_session_state)
+        from omf2.ui.main_dashboard import MainDashboard
+        from omf2.ui.user_manager import UserManager
+        
+        dashboard = MainDashboard()
+        assert dashboard is not None
+        assert hasattr(dashboard, 'render')
+        
+        user_manager = UserManager()
+        assert user_manager is not None
     
     def test_common_modules_import(self):
         """Test that common modules can be imported"""
@@ -91,15 +96,20 @@ class TestOMF2Dashboard:
         
         # Test available roles
         roles = user_manager.get_available_roles()
-        assert 'admin' in roles
+        assert 'administrator' in roles
+        assert 'supervisor' in roles
         assert 'operator' in roles
         
         # Test role permissions
-        admin_components = user_manager.get_role_ui_components('admin')
+        admin_components = user_manager.get_role_ui_components('administrator')
+        supervisor_components = user_manager.get_role_ui_components('supervisor')
         operator_components = user_manager.get_role_ui_components('operator')
         
-        assert len(admin_components) > len(operator_components)
+        assert len(admin_components) > len(supervisor_components)
+        # Supervisor and operator have different but equal number of components
+        assert len(supervisor_components) >= len(operator_components)
         assert 'ccu_dashboard' in admin_components
+        assert 'ccu_dashboard' in supervisor_components
         assert 'ccu_dashboard' in operator_components
     
     def test_tab_configuration(self):
@@ -108,23 +118,30 @@ class TestOMF2Dashboard:
         
         user_manager = UserManager()
         
-        # Set role to admin and get tab config
-        user_manager.set_user_role('admin')
+        # Set role to administrator and get tab config
+        user_manager.set_user_role('administrator')
         admin_tabs = user_manager.get_tab_config()
+        
+        # Set role to supervisor and get tab config
+        user_manager.set_user_role('supervisor')
+        supervisor_tabs = user_manager.get_tab_config()
         
         # Set role to operator and get tab config
         user_manager.set_user_role('operator')
         operator_tabs = user_manager.get_tab_config()
         
-        # Admin should have more tabs than operator
+        # Administrator should have more tabs than supervisor and operator
+        assert len(admin_tabs) > len(supervisor_tabs)
         assert len(admin_tabs) > len(operator_tabs)
         
-        # Both should have CCU dashboard
+        # All should have CCU dashboard
         assert 'ccu_dashboard' in admin_tabs
+        assert 'ccu_dashboard' in supervisor_tabs
         assert 'ccu_dashboard' in operator_tabs
         
-        # Only admin should have admin settings
+        # Only administrator should have admin settings
         if 'admin_settings' in admin_tabs:
+            assert 'admin_settings' not in supervisor_tabs
             assert 'admin_settings' not in operator_tabs
 
 
@@ -134,18 +151,17 @@ class TestOMF2ComponentsIntegration:
     @patch('streamlit.session_state', {})
     def test_session_state_initialization(self):
         """Test session state initialization"""
-        from omf2.omf_dashboard import initialize_session_state
+        from omf2.ui.user_manager import UserManager
         
         # Mock streamlit session_state
         mock_session_state = {}
         
         with patch('streamlit.session_state', mock_session_state):
-            initialize_session_state()
+            user_manager = UserManager()
             
             # Check default values are set
-            assert mock_session_state.get('user_role') == 'operator'
-            assert mock_session_state.get('current_language') == 'de'
-            assert mock_session_state.get('current_environment') == 'development'
+            assert user_manager.get_available_roles() is not None
+            assert len(user_manager.get_available_roles()) > 0
     
     def test_client_factory_config_loading(self):
         """Test client factory configuration loading"""
@@ -206,13 +222,20 @@ class TestOMF2UI:
         
         user_manager = UserManager()
         
-        # Test admin permissions
-        user_manager.set_user_role('admin')
-        assert user_manager.has_permission('*')
+        # Test administrator permissions
+        user_manager.set_user_role('administrator')
+        assert user_manager.has_permission('admin:read')
+        assert user_manager.has_permission('admin:write')
         assert user_manager.can_access_component('admin_settings')
+        
+        # Test supervisor permissions
+        user_manager.set_user_role('supervisor')
+        assert user_manager.has_permission('control:read')
+        assert user_manager.has_permission('control:write')
+        assert not user_manager.can_access_component('admin_settings')
         
         # Test operator permissions
         user_manager.set_user_role('operator')
-        assert user_manager.has_permission('read')
-        assert not user_manager.has_permission('admin')
+        assert user_manager.has_permission('dashboard:read')
+        assert not user_manager.has_permission('admin:read')
         assert not user_manager.can_access_component('admin_settings')

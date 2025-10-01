@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
 Send Test Message Subtab - MQTT Message Sending Interface
+Gateway-Pattern konform: Nutzt AdminGateway statt direkten MQTT-Client
 """
 
 import streamlit as st
@@ -12,8 +13,13 @@ from omf2.ui.utils.ui_refresh import request_refresh
 logger = get_logger(__name__)
 
 
-def render_send_test_message_subtab(admin_client, conn_info):
-    """Render Send Test Message Subtab"""
+def render_send_test_message_subtab(admin_gateway, conn_info):
+    """Render Send Test Message Subtab
+    
+    Args:
+        admin_gateway: AdminGateway Instanz (Gateway-Pattern)
+        conn_info: Connection Info Dict
+    """
     logger.info("🚀 Rendering Send Test Message Subtab")
     
     try:
@@ -63,7 +69,8 @@ def render_send_test_message_subtab(admin_client, conn_info):
                 try:
                     message_dict = json.loads(test_message)
                     
-                    success = admin_client.publish_message(
+                    # Gateway-Pattern: Nutze AdminGateway publish_message
+                    success = admin_gateway.publish_message(
                         topic=test_topic,
                         message=message_dict,
                         qos=qos_level,

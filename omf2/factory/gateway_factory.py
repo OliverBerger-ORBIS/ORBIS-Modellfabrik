@@ -109,8 +109,15 @@ class GatewayFactory:
         with self._gateway_locks[gateway_name]:
             if gateway_name not in self._gateways:
                 from omf2.admin.admin_gateway import AdminGateway
-                self._gateways[gateway_name] = AdminGateway(**kwargs)
-                logger.info(f"🏭 Created {gateway_name} gateway")
+                from omf2.factory.client_factory import get_client_factory
+                
+                # MQTT-Client aus Client-Factory holen
+                client_factory = get_client_factory()
+                admin_mqtt_client = client_factory.get_mqtt_client('admin_mqtt_client')
+                
+                # AdminGateway mit MQTT-Client erstellen
+                self._gateways[gateway_name] = AdminGateway(mqtt_client=admin_mqtt_client, **kwargs)
+                logger.info(f"🏭 Created {gateway_name} gateway with MQTT client")
             
             return self._gateways[gateway_name]
     

@@ -13,17 +13,17 @@ import os
 # Add the project root to the Python path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
-from omf2.admin.admin_mqtt_client import AdminMQTTClient, get_admin_mqtt_client
+from omf2.admin.admin_mqtt_client import AdminMqttClient, get_admin_mqtt_client
 
 
-class TestAdminMQTTClient(unittest.TestCase):
+class TestAdminMqttClient(unittest.TestCase):
     """Tests für Admin MQTT Client"""
 
     def setUp(self):
         """Setup für jeden Test"""
         # Reset singleton instance
-        AdminMQTTClient._instance = None
-        AdminMQTTClient._initialized = False
+        AdminMqttClient._instance = None
+        AdminMqttClient._initialized = False
 
     def test_singleton_pattern(self):
         """Test Singleton-Pattern"""
@@ -31,7 +31,7 @@ class TestAdminMQTTClient(unittest.TestCase):
         client2 = get_admin_mqtt_client()
         
         self.assertIs(client1, client2)
-        self.assertIsInstance(client1, AdminMQTTClient)
+        self.assertIsInstance(client1, AdminMqttClient)
 
     def test_initialization(self):
         """Test Initialisierung"""
@@ -187,12 +187,12 @@ class TestAdminMQTTClient(unittest.TestCase):
         client = get_admin_mqtt_client()
         
         self.assertIsNotNone(client)
-        self.assertIsInstance(client, AdminMQTTClient)
+        self.assertIsInstance(client, AdminMqttClient)
 
     def test_multiple_instances_singleton(self):
         """Test dass mehrere Aufrufe dieselbe Instanz zurückgeben"""
-        client1 = AdminMQTTClient()
-        client2 = AdminMQTTClient()
+        client1 = AdminMqttClient()
+        client2 = AdminMqttClient()
         client3 = get_admin_mqtt_client()
         
         self.assertIs(client1, client2)

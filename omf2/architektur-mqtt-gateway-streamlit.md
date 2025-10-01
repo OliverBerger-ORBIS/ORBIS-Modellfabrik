@@ -198,7 +198,7 @@ import threading
 import paho.mqtt.client as mqtt
 from queue import Queue
 
-class CCUMQTTClient:
+class CcuMqttClient:
     _instance = None
     _lock = threading.Lock()
 
@@ -243,7 +243,7 @@ class CCUMQTTClient:
 # omf2/ccu/ccu_gateway.py
 
 from omf2.common.message_templates import MessageTemplates
-from omf2.ccu.ccu_mqtt_client import CCUMQTTClient
+from omf2.ccu.ccu_mqtt_client import CcuMqttClient
 
 class CCUGateway:
     _instance = None
@@ -255,7 +255,7 @@ class CCUGateway:
         return cls._instance
 
     def __init__(self):
-        self.mqtt_client = CCUMQTTClient()
+        self.mqtt_client = CcuMqttClient()
         self.templates = MessageTemplates()
 
     def send_order(self, params):

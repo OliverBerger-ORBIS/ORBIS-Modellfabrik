@@ -24,7 +24,7 @@ from omf2.common.logger import get_logger
 logger = get_logger(__name__)
 
 
-class AdminMQTTClient:
+class AdminMqttClient:
     """
     Thread-sicherer Singleton für Admin MQTT-Kommunikation
     
@@ -44,7 +44,7 @@ class AdminMQTTClient:
         return cls._instance
     
     def __init__(self):
-        if AdminMQTTClient._initialized:
+        if AdminMqttClient._initialized:
             return
             
         self.message_templates = get_message_templates()
@@ -70,7 +70,7 @@ class AdminMQTTClient:
         self.published_topics = self._get_published_topics()
         self.subscribed_topics = self._get_subscribed_topics()
         
-        AdminMQTTClient._initialized = True
+        AdminMqttClient._initialized = True
         logger.info("🏗️ Admin MQTT Client initialized")
     
     def _get_base_client_id(self) -> str:
@@ -463,6 +463,22 @@ class AdminMQTTClient:
             logger.error(f"❌ Failed to get all buffers: {e}")
             return {}
     
+    def clear_buffers(self) -> bool:
+        """
+        Alle Topic-Buffer löschen (thread-safe)
+        
+        Returns:
+            True wenn erfolgreich
+        """
+        try:
+            with self._buffer_lock:
+                self.topic_buffers.clear()
+                logger.info("🗑️ All topic buffers cleared")
+                return True
+        except Exception as e:
+            logger.error(f"❌ Failed to clear buffers: {e}")
+            return False
+    
     def get_system_overview(self) -> Dict[str, Any]:
         """
         System Overview abrufen (thread-safe)
@@ -555,11 +571,11 @@ class AdminMQTTClient:
 
 
 # Singleton Factory
-def get_admin_mqtt_client() -> AdminMQTTClient:
+def get_admin_mqtt_client() -> AdminMqttClient:
     """
     Factory-Funktion für Admin MQTT Client Singleton
     
     Returns:
         Admin MQTT Client Singleton Instance
     """
-    return AdminMQTTClient()
+    return AdminMqttClient()

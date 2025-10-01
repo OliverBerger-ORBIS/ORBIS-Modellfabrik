@@ -10,7 +10,7 @@ from omf2.common.message_templates import get_message_templates
 logger = logging.getLogger(__name__)
 
 
-class NodeREDSubMQTTClient:
+class NoderedSubMqttClient:
     """
     Thread-sicherer Singleton für Node-RED Subscriber MQTT-Kommunikation
     
@@ -27,7 +27,7 @@ class NodeREDSubMQTTClient:
         return cls._instance
     
     def __init__(self):
-        if NodeREDSubMQTTClient._initialized:
+        if NoderedSubMqttClient._initialized:
             return
             
         self.message_templates = get_message_templates()
@@ -52,7 +52,7 @@ class NodeREDSubMQTTClient:
         self.subscribed_topics = self._get_subscribed_topics()
         self.published_topics = []  # Node-RED Subscriber ist nie Publisher
         
-        NodeREDSubMQTTClient._initialized = True
+        NoderedSubMqttClient._initialized = True
         logger.info("🏗️ Node-RED Subscriber MQTT Client initialized")
     
     def _get_subscribed_topics(self) -> List[str]:
@@ -254,11 +254,11 @@ class NodeREDSubMQTTClient:
 
 
 # Singleton Factory
-def get_nodered_sub_mqtt_client() -> NodeREDSubMQTTClient:
+def get_nodered_sub_mqtt_client() -> NoderedSubMqttClient:
     """
     Factory-Funktion für Node-RED Subscriber MQTT Client Singleton
     
     Returns:
         Node-RED Subscriber MQTT Client Singleton Instance
     """
-    return NodeREDSubMQTTClient()
+    return NoderedSubMqttClient()
