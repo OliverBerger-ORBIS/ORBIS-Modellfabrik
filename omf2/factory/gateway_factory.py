@@ -10,8 +10,13 @@ Implementiert das Factory-Pattern für thread-sichere Gateway-Erstellung.
 """
 
 import threading
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, TYPE_CHECKING
 from omf2.common.logger import get_logger
+
+if TYPE_CHECKING:
+    from omf2.ccu.ccu_gateway import CcuGateway
+    from omf2.nodered.nodered_gateway import NoderedGateway
+    from omf2.admin.admin_gateway import AdminGateway
 
 logger = get_logger(__name__)
 
@@ -109,28 +114,28 @@ class GatewayFactory:
             
             return self._gateways[gateway_name]
     
-    def get_gateway(self, domain: str, **kwargs) -> Any:
+    def get_gateway(self, gateway_name: str, **kwargs) -> Any:
         """
-        Generische Factory-Methode für alle Gateways
+        Generische Factory-Methode für alle Gateways (einfache Namen ohne Domains)
         
         Args:
-            domain: Domäne ('ccu', 'nodered', 'admin')
+            gateway_name: Gateway name ('admin_gateway', 'ccu_gateway', 'nodered_gateway')
             **kwargs: Konfigurationsparameter
             
         Returns:
             Gateway: Entsprechende Gateway-Instanz
             
         Raises:
-            ValueError: Bei unbekannter Domäne
+            ValueError: Bei unbekanntem Gateway-Namen
         """
-        if domain == 'ccu':
+        if gateway_name == 'ccu_gateway':
             return self.get_ccu_gateway(**kwargs)
-        elif domain == 'nodered':
+        elif gateway_name == 'nodered_gateway':
             return self.get_nodered_gateway(**kwargs)
-        elif domain == 'admin':
+        elif gateway_name == 'admin_gateway':
             return self.get_admin_gateway(**kwargs)
         else:
-            raise ValueError(f"Unknown domain: {domain}")
+            raise ValueError(f"Unknown gateway name: {gateway_name}")
     
     def get_all_gateways(self) -> Dict[str, Any]:
         """
@@ -161,6 +166,19 @@ class GatewayFactory:
         with self._lock:
             self._gateways.clear()
             logger.info("🏭 Reset all gateways")
+    
+    def get_available_gateways(self) -> list[str]:
+        """
+        Get list of available gateway names
+        
+        Returns:
+            List of gateway names
+        """
+        return [
+            'admin_gateway',
+            'ccu_gateway',
+            'nodered_gateway'
+        ]
 
 
 # Factory-Instanz
@@ -202,6 +220,6 @@ def get_admin_gateway(**kwargs) -> 'AdminGateway':
     return get_gateway_factory().get_admin_gateway(**kwargs)
 
 
-def get_gateway(domain: str, **kwargs) -> Any:
+def get_gateway(gateway_name: str, **kwargs) -> Any:
     """Convenience-Funktion für generischen Gateway-Zugriff"""
-    return get_gateway_factory().get_gateway(domain, **kwargs)
+    return get_gateway_factory().get_gateway(gateway_name, **kwargs)

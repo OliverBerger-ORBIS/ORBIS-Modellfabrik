@@ -377,10 +377,12 @@ if msg:
 ### **🚀 VERWENDUNG:**
 
 ```python
-# Registry Manager verwenden (zentral initialisiert in omf.py)
-# Registry Manager ist bereits in st.session_state verfügbar
+# 🎯 ZENTRALE INITIALISIERUNG in omf.py (beim App-Start):
+# 1. Registry Manager wird initialisiert
+# 2. Admin MQTT Client wird initialisiert
+# 3. MQTT Verbindung wird hergestellt
 
-# Registry Manager aus Session State holen
+# In Tabs/Components: Registry Manager aus Session State holen
 registry_manager = st.session_state.get('registry_manager')
 if registry_manager:
     # Alle Registry-Daten laden
@@ -391,6 +393,17 @@ if registry_manager:
     modules = registry_manager.get_modules()
     stations = registry_manager.get_stations()
     txt_controllers = registry_manager.get_txt_controllers()
+
+# In Tabs/Components: Admin MQTT Client aus Session State holen
+admin_client = st.session_state.get('admin_mqtt_client')
+if admin_client:
+    # Reconnect nur bei Verbindungsverlust
+    if not admin_client.connected:
+        current_env = st.session_state.get('current_environment', 'mock')
+        admin_client.connect(current_env)
+    
+    # Connection Info holen
+    conn_info = admin_client.get_connection_info()
 
 # Gateway-Factory verwenden
 from omf2.factory.gateway_factory import get_ccu_gateway, get_nodered_gateway, get_admin_gateway

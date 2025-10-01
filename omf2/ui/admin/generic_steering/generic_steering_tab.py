@@ -1,89 +1,76 @@
 #!/usr/bin/env python3
 """
-Generic Steering Tab - Simplified for Development
+Generic Steering Tab - Modular Architecture with Factory and Topic Steering
 """
 
 import streamlit as st
-from omf2.admin.admin_gateway import AdminGateway
-from omf2.admin.admin_mqtt_client import get_admin_mqtt_client
-from omf2.ccu.ccu_gateway import CcuGateway
 from omf2.common.logger import get_logger
 
 logger = get_logger(__name__)
 
 
 def render_generic_steering_tab():
-    """Render Generic Steering Tab - Simplified for Development"""
+    """Render Generic Steering Tab with Factory and Topic Steering Subtabs"""
     logger.info("🎛️ Rendering Generic Steering Tab")
+    
     try:
-        st.header("🎛️ Factory Control")
-        st.markdown("**Factory Management and Control**")
+        st.title("🎛️ Generic Steering")
+        st.markdown("**Factory Management and Control with Modular Architecture**")
         
-        # Initialize Gateways and MQTT Client
-        if 'admin_gateway' not in st.session_state:
-            st.session_state['admin_gateway'] = AdminGateway()
+        # Get Admin MQTT Client from session state (already initialized in omf.py)
+        admin_mqtt_client = st.session_state.get('admin_mqtt_client')
+        if not admin_mqtt_client:
+            st.error("❌ Admin MQTT client not available")
+            return
         
-        if 'ccu_gateway' not in st.session_state:
-            st.session_state['ccu_gateway'] = CcuGateway()
+        # Get Registry Manager from session state
+        registry_manager = st.session_state.get('registry_manager')
         
-        if 'admin_mqtt_client' not in st.session_state:
-            st.session_state['admin_mqtt_client'] = get_admin_mqtt_client()
-        
-        admin_gateway = st.session_state['admin_gateway']
-        ccu_gateway = st.session_state['ccu_gateway']
-        admin_client = st.session_state['admin_mqtt_client']
-        
-        # Connect to MQTT (based on current environment)
+        # Reconnect only if connection was lost (central connection in omf.py)
         current_env = st.session_state.get('current_environment', 'mock')
-        if not admin_client.connected:
-            admin_client.connect(current_env)
+        if not admin_mqtt_client.connected:
+            admin_mqtt_client.connect(current_env)
+            logger.warning(f"🔄 Reconnecting to {current_env} (connection was lost)")
         
-        # Simple Status
-        st.info(f"🔗 **Client:** {admin_client.client_id} | **Environment:** {current_env}")
+        # Connection Status
+        conn_info = admin_mqtt_client.get_connection_info()
+        if conn_info['connected']:
+            st.success(f"🔗 **Connected:** {conn_info['client_id']} | **Environment:** {current_env}")
+        else:
+            st.error(f"🔴 **Disconnected:** {conn_info['client_id']} | **Environment:** {current_env}")
         
-        # Factory Commands (Main Focus)
-        st.subheader("🚨 Factory Commands")
+        # Registry Manager Status
+        if registry_manager:
+            stats = registry_manager.get_registry_stats()
+            total_entities = (stats['topics_count'] + stats['templates_count'] + 
+                            stats['mqtt_clients_count'] + stats['workpieces_count'] + 
+                            stats['modules_count'] + stats['stations_count'] + 
+                            stats['txt_controllers_count'])
+            st.info(f"📚 **Registry:** {total_entities} entities loaded")
+        else:
+            st.warning("⚠️ **Registry Manager not available**")
         
-        col1, col2 = st.columns(2)
+        # Tabs for different steering modes
+        tab1, tab2 = st.tabs(["🏭 Factory Steering", "🔧 Topic Steering"])
         
-        with col1:
-            if st.button("🔄 Reset Factory", key="reset_factory_btn"):
-                if ccu_gateway.reset_factory():
-                    st.success("✅ Factory Reset initiated!")
-                else:
-                    st.error("❌ Factory Reset failed")
+        with tab1:
+            _render_factory_steering_tab(admin_mqtt_client, registry_manager)
         
-        with col2:
-            global_command = st.text_input("Global Command:", key="global_command_input")
-            if st.button("🚀 Send Command", key="send_command_btn"):
-                if global_command:
-                    if ccu_gateway.send_global_command(global_command):
-                        st.success(f"✅ Command '{global_command}' sent!")
-                    else:
-                        st.error(f"❌ Command '{global_command}' failed")
-                else:
-                    st.warning("⚠️ Please enter a command")
-        
-        # Simple Module Control
-        st.subheader("🔧 Module Control")
-        
-        module_options = ["Module A", "Module B", "Module C"]
-        selected_module = st.selectbox("Select Module:", module_options, key="module_selector")
-        
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            if st.button(f"▶️ Start {selected_module}", key=f"start_{selected_module}_btn"):
-                st.success(f"Starting {selected_module}...")
-            if st.button(f"⏸️ Pause {selected_module}", key=f"pause_{selected_module}_btn"):
-                st.warning(f"Pausing {selected_module}...")
-        
-        with col2:
-            if st.button(f"⏹️ Stop {selected_module}", key=f"stop_{selected_module}_btn"):
-                st.error(f"Stopping {selected_module}...")
-            if st.button(f"🔄 Calibrate {selected_module}", key=f"calibrate_{selected_module}_btn"):
-                st.info(f"Calibrating {selected_module}...")
+        with tab2:
+            _render_topic_steering_tab(admin_mqtt_client, registry_manager)
         
     except Exception as e:
         logger.error(f"❌ Generic Steering Tab error: {e}")
         st.error(f"❌ Generic Steering failed: {e}")
+
+
+def _render_factory_steering_tab(admin_mqtt_client, registry_manager):
+    """Render Factory Steering Tab"""
+    from omf2.ui.admin.generic_steering.factory_steering_subtab import render_factory_steering_subtab
+    render_factory_steering_subtab(admin_mqtt_client, registry_manager)
+
+
+def _render_topic_steering_tab(admin_mqtt_client, registry_manager):
+    """Render Topic Steering Tab"""
+    from omf2.ui.admin.generic_steering.topic_steering_subtab import render_topic_steering_subtab
+    render_topic_steering_subtab(admin_mqtt_client, registry_manager)

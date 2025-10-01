@@ -8,6 +8,8 @@ metadata:
 mqtt_clients:
   # Admin MQTT Client (MessageTemplateGenerator)
   admin_mqtt_client:
+    active: true
+    client_class: "AdminMqttClient"
     client_id: "omf_admin"  
     # functions: ["template_generation", "system_monitoring", "debug_tools"]
     published_topics:
@@ -19,6 +21,8 @@ mqtt_clients:
 
   # CCU Dashboard Frontend
   ccu_mqtt_client:
+    active: false
+    client_class: "CcuMqttClient"
     client_id: "omf_ccu"  # Dynamisch, wechselt bei jeder Anmeldung
     # role: "Dashboard CCUFrontend"
     # friendly_name: "CCU Dashboard"
@@ -111,6 +115,8 @@ mqtt_clients:
 
   # Node-RED Publisher (Normalisiert alle States)
   nodered_pub_mqtt_client:
+    active: false
+    client_class: "NodeRedPubMqttClient"
     client_id: "omf_nodered_pub"  # Dynamisch
     # role: "Node-RED Publisher"
     # friendly_name: "Node-RED Publisher"
@@ -142,6 +148,8 @@ mqtt_clients:
 
   # Node-RED Subscriber (Empfängt alle Quellen)
   nodered_sub_mqtt_client:
+    active: false
+    client_class: "NodeRedSubMqttClient"
     client_id: "omf_nodered_sub"  # Dynamisch
     # role: "Node-RED Subscriber"
     # friendly_name: "Node-RED Subscriber"
@@ -185,6 +193,8 @@ mqtt_clients:
 
   # TXT-AIQS Controller
   txt_aiqs_mqtt_client:
+    active: false
+    client_class: "TxtAiqsMqttClient"
     # client_id: "auto-B9109AD9"  # Dynamisch
     # ip_address: "192.168.0.103"
     # role: "TXT-AIQS Controller"
@@ -220,6 +230,8 @@ mqtt_clients:
 
   # TXT-DPS Controller
   txt_dps_mqtt_client:
+    active: false
+    client_class: "TxtDpsMqttClient"
     # client_id: "auto-AC941349"  # Dynamisch
     # ip_address: "192.168.0.102"
     # role: "TXT-DPS Controller"
@@ -251,6 +263,8 @@ mqtt_clients:
 
   # TXT-FTS Controller
   txt_fts_mqtt_client:
+    active: false
+    client_class: "TxtFtsMqttClient"
     # client_id: "auto-F6DFC829"  # Dynamisch
     # ip_address: "192.168.0.105"
     # role: "TXT-FTS Controller"
@@ -266,6 +280,8 @@ mqtt_clients:
 
   # TXT-CGW Controller
   txt_cgw_mqtt_client:
+    active: false
+    client_class: "TxtCgwMqttClient"
     # client_id: "auto-9BD9E2A9"  # Dynamisch
     # ip_address: "192.168.0.104"
     # role: "TXT-CGW Controller"

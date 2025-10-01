@@ -189,6 +189,8 @@ class RegistryManager:
                 if isinstance(client_data, dict):
                     self.mqtt_clients[client_name] = {
                         'name': client_name,
+                        'active': client_data.get('active', False),
+                        'client_class': client_data.get('client_class', ''),
                         'client_id': client_data.get('client_id', client_name),
                         'subscribed_topics': client_data.get('subscribed_topics', []),
                         'published_topics': client_data.get('published_topics', []),
@@ -372,6 +374,14 @@ class RegistryManager:
         if module_id in self.modules:
             return self.modules[module_id].get('name', module_id)
         return module_id  # Fallback: ID als Name verwenden
+    
+    def get_active_mqtt_clients(self) -> Dict[str, Any]:
+        """Gibt nur aktive MQTT Clients zurück"""
+        return {name: config for name, config in self.mqtt_clients.items() if config.get('active', False)}
+    
+    def get_mqtt_client_config(self, client_name: str) -> Dict[str, Any]:
+        """Gibt Konfiguration für einen spezifischen MQTT Client zurück"""
+        return self.mqtt_clients.get(client_name, {})
 
     def get_registry_stats(self) -> Dict[str, Any]:
         """Gibt Registry-Statistiken zurück"""

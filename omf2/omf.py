@@ -23,6 +23,7 @@ import streamlit as st
 from omf2.common.i18n import I18nManager
 from omf2.common.logger import get_logger
 from omf2.factory.client_factory import get_client_factory
+from omf2.factory.gateway_factory import get_gateway_factory
 from omf2.ui.main_dashboard import MainDashboard
 from omf2.ui.utils.ui_refresh import request_refresh, consume_refresh
 
@@ -103,21 +104,40 @@ def main():
         if 'i18n_manager' not in st.session_state:
             st.session_state['i18n_manager'] = I18nManager()
         
-        # Initialize client factory in session state
-        if 'client_factory' not in st.session_state:
-            st.session_state['client_factory'] = get_client_factory()
-        
         # Initialize Registry Manager (Singleton - nur einmal initialisiert)
         if 'registry_manager' not in st.session_state:
             from omf2.registry.manager.registry_manager import get_registry_manager
             st.session_state['registry_manager'] = get_registry_manager()
             logger.info("📚 Registry Manager initialized on startup")
         
-        # Initialize admin MQTT client immediately (like old dashboard)
+        # Initialize Client Factory and connect to Registry Manager
+        if 'client_factory' not in st.session_state:
+            client_factory = get_client_factory()
+            client_factory.set_registry_manager(st.session_state['registry_manager'])
+            st.session_state['client_factory'] = client_factory
+            logger.info("🏭 Client Factory initialized with Registry Manager")
+        
+        # Initialize Gateway Factory
+        if 'gateway_factory' not in st.session_state:
+            st.session_state['gateway_factory'] = get_gateway_factory()
+            logger.info("🏭 Gateway Factory initialized")
+        
+        # Initialize admin MQTT client via Client Factory (based on Registry)
         if 'admin_mqtt_client' not in st.session_state:
-            from omf2.admin.admin_mqtt_client import get_admin_mqtt_client
-            st.session_state['admin_mqtt_client'] = get_admin_mqtt_client()
-            logger.info("🔌 Admin MQTT Client initialized on startup")
+            client_factory = st.session_state['client_factory']
+            admin_client = client_factory.get_mqtt_client('admin_mqtt_client')
+            if admin_client:
+                st.session_state['admin_mqtt_client'] = admin_client
+                logger.info("🔌 Admin MQTT Client initialized via Client Factory")
+            else:
+                logger.error("❌ Failed to initialize Admin MQTT Client")
+        
+        # Connect to MQTT (central connection for entire app)
+        admin_client = st.session_state['admin_mqtt_client']
+        current_env = st.session_state.get('current_environment', 'mock')
+        if not admin_client.connected:
+            admin_client.connect(current_env)
+            logger.info(f"🔌 Admin MQTT Client connected to {current_env} on startup")
         
         # Initialize log buffer with RingBufferHandler (like old dashboard)
         if 'log_buffer' not in st.session_state:
