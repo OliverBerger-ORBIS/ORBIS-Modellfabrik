@@ -8,7 +8,7 @@ txt_topics:
 - topic: /j1/txt/1/f/i/stock
   qos: 1
   retain: 0
-  schema: j1_txt_1_f_i_order.schema.json
+  schema: wildcard.schema.json
   description: 'Topic: /j1/txt/1/f/i/stock'
 - topic: /j1/txt/1/f/i/order
   qos: 1

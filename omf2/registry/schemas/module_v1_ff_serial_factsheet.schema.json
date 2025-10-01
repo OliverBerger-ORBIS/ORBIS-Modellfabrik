@@ -100,10 +100,7 @@
             "clearModuleOnPick"
           ]
         }
-      },
-      "required": [
-        "moduleActions"
-      ]
+      }
     },
     "localizationParameters": {
       "type": "object"
@@ -138,10 +135,7 @@
             "type": "string"
           }
         }
-      },
-      "required": [
-        "loadSets"
-      ]
+      }
     }
   },
   "required": [

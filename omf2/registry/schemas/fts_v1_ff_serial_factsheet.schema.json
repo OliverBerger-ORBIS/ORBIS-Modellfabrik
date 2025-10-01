@@ -72,10 +72,7 @@
             ]
           }
         }
-      },
-      "required": [
-        "agvActions"
-      ]
+      }
     },
     "loadSpecification": {
       "type": "object",
@@ -104,11 +101,7 @@
             ]
           }
         }
-      },
-      "required": [
-        "loadPositions",
-        "loadSets"
-      ]
+      }
     },
     "headerId": {
       "type": "integer"

@@ -78,18 +78,22 @@ ccu_topics:
 - topic: ccu/global
   qos: 2
   retain: 0
+  schema: wildcard.schema.json
   description: 'Topic: ccu/global'
 - topic: ccu/status
   qos: 1
   retain: 1
+  schema: wildcard.schema.json
   description: 'Topic: ccu/status'
 - topic: ccu/status/connection
   qos: 1
   retain: 1
+  schema: wildcard.schema.json
   description: 'Topic: ccu/status/connection'
 - topic: ccu/status/health
   qos: 1
   retain: 1
+  schema: wildcard.schema.json
   description: 'Topic: ccu/status/health'
 - topic: ccu/pairing/state
   qos: 2

@@ -98,4 +98,5 @@ nodered_topics:
 - topic: module/v1/ff/NodeRed/status
   qos: 1
   retain: 1
+  schema: wildcard.schema.json
   description: 'Topic: module/v1/ff/NodeRed/status'

@@ -4,6 +4,7 @@ Admin Gateway - Fassade für Admin Business-Operationen
 """
 
 import logging
+import json
 from typing import Dict, List, Optional, Any
 from omf2.common.message_templates import get_message_templates
 
@@ -109,7 +110,10 @@ class AdminGateway:
             )
             
             if success:
+                # Log detailed message information
+                payload_str = json.dumps(message, indent=2) if isinstance(message, dict) else str(message)
                 logger.info(f"📤 Published message to {topic} (QoS: {qos}, Retain: {retain})")
+                logger.info(f"📦 Payload: {payload_str}")
                 self.message_templates.log_message(topic, message, "SEND")
             else:
                 logger.error(f"❌ Failed to publish message to {topic}")

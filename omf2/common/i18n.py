@@ -70,7 +70,7 @@ class I18nManager:
                         'ccu_dashboard': 'CCU Dashboard',
                         'system_logs': 'System Logs',
                         'admin_settings': 'Admin Settings',
-                        'steering_factory': 'Factory Control'
+                        'steering_factory': 'Generic Steering'
                     },
                     'common': {
                         'connect': 'Connect',

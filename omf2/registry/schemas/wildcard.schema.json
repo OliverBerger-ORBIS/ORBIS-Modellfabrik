@@ -1,0 +1,8 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "Wildcard Schema",
+  "description": "Accepts any JSON object - used for topics without specific schemas",
+  "properties": {},
+  "additionalProperties": true
+}

@@ -91,7 +91,6 @@ def render_logs_tab():  # FIXED RINGBUFFER ERROR
     
     # Filter anwenden
     filtered_logs = []
-    st.info(f"📊 Zeige {len(filtered_logs)} von {len(log_buffer)} verfügbaren Logs")
     for log_entry in log_buffer:
         if "[DEBUG]" in log_entry and not show_debug:
             continue
@@ -102,6 +101,8 @@ def render_logs_tab():  # FIXED RINGBUFFER ERROR
         if "[ERROR]" in log_entry and not show_error:
             continue
         filtered_logs.append(log_entry)
+    
+    st.info(f"📊 Zeige {len(filtered_logs)} von {len(log_buffer)} verfügbaren Logs")
     
     # Logs in umgekehrter Reihenfolge anzeigen (neueste zuerst)
     for log_entry in reversed(filtered_logs):  # Nur die letzten 50 Einträge

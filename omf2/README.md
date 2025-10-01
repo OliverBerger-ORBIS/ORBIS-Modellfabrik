@@ -91,7 +91,7 @@ omf2/
 │   │       └── nodered_processes_tab.py # Node-RED Processes Tab
 │   └── admin/                       # Admin UI Components
 │       ├── generic_steering/
-│       │   └── generic_steering_tab.py # Factory Control Tab
+│       │   └── generic_steering_tab.py # Generic Steering Tab
 │       ├── message_center/
 │       │   └── message_center_tab.py # Message Center Tab
 │       ├── admin_settings/

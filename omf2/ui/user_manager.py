@@ -248,7 +248,7 @@ class UserManager:
             },
             'generic_steering': {
                 'icon': '🎛️',
-                'name': 'Factory Control',
+                'name': 'Generic Steering',
                 'module': 'omf2.ui.admin.generic_steering.generic_steering_tab',
                 'function': 'render_generic_steering_tab'
             },
