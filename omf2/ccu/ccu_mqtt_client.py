@@ -7,7 +7,7 @@ import logging
 import threading
 import json
 from typing import Dict, List, Optional, Any, Callable
-from omf2.common.message_templates import get_message_templates
+from omf2.registry.manager.registry_manager import get_registry_manager
 from omf2.common.logger import get_logger
 
 logger = get_logger(__name__)
@@ -36,7 +36,7 @@ class CcuMqttClient:
         if CcuMqttClient._initialized:
             return
             
-        self.message_templates = get_message_templates()
+        self.registry_manager = get_registry_manager()
         self.client_id = "omf_ccu"  # Dynamisch, wechselt bei jeder Anmeldung
         
         # Thread-sichere Locks
@@ -68,7 +68,7 @@ class CcuMqttClient:
     def _get_published_topics(self) -> List[str]:
         """Lädt Published Topics aus Registry"""
         try:
-            mqtt_clients = self.message_templates.mqtt_clients
+            mqtt_clients = self.registry_manager.get_mqtt_clients()
             ccu_client = mqtt_clients.get('mqtt_clients', {}).get('ccu_mqtt_client', {})
             return ccu_client.get('published_topics', [])
         except Exception as e:
@@ -78,7 +78,7 @@ class CcuMqttClient:
     def _get_subscribed_topics(self) -> List[str]:
         """Lädt Subscribed Topics aus Registry"""
         try:
-            mqtt_clients = self.message_templates.mqtt_clients
+            mqtt_clients = self.registry_manager.get_mqtt_clients()
             ccu_client = mqtt_clients.get('mqtt_clients', {}).get('ccu_mqtt_client', {})
             return ccu_client.get('subscribed_topics', [])
         except Exception as e:
@@ -132,7 +132,9 @@ class CcuMqttClient:
         try:
             # QoS/Retain aus Registry laden wenn nicht angegeben
             if qos is None or retain is None:
-                topic_qos, topic_retain = self.message_templates.get_topic_config(topic)
+                topic_config = self.registry_manager.get_topic_config(topic)
+                topic_qos = topic_config.get('qos', 0) if topic_config else 0
+                topic_retain = topic_config.get('retain', False) if topic_config else False
                 qos = qos if qos is not None else topic_qos
                 retain = retain if retain is not None else topic_retain
             

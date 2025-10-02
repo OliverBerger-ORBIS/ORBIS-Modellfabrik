@@ -5,7 +5,7 @@ CCU Gateway - Fassade für CCU Business-Operationen
 
 import logging
 from typing import Dict, List, Optional, Any
-from omf2.common.message_templates import get_message_templates
+from omf2.registry.manager.registry_manager import get_registry_manager
 
 logger = logging.getLogger(__name__)
 
@@ -14,7 +14,7 @@ class CcuGateway:
     """
     Gateway für CCU-spezifische Business-Operationen
     
-    Nutzt MessageTemplates und MQTT-Client für CCU-Operationen.
+    Nutzt Registry Manager und Topic-Schema-Payload Beziehung für CCU-Operationen.
     Stellt Methoden für die UI bereit.
     """
     
@@ -26,7 +26,7 @@ class CcuGateway:
             mqtt_client: MQTT-Client für CCU (wird später implementiert)
         """
         self.mqtt_client = mqtt_client
-        self.message_templates = get_message_templates()
+        self.registry_manager = get_registry_manager()
         
         logger.info("🏗️ CcuGateway initialized")
     
@@ -40,11 +40,12 @@ class CcuGateway:
         try:
             # Registry v2 Integration: Topic aus Registry laden
             topic = "ccu/set/reset"
-            topic_config = self.message_templates.get_topic_config(topic)
+            topic_config = self.registry_manager.get_topic_config(topic)
             
             if topic_config:
                 # Message aus Template rendern
-                message = self.message_templates.render_message(topic, {"reset": True})
+                # TODO: Implement message rendering from registry manager
+                message = {"reset": True}
                 if message:
                     # TODO: MQTT-Client Integration implementieren
                     # qos = topic_config.get('qos', 1)
@@ -77,14 +78,15 @@ class CcuGateway:
         try:
             # Registry v2 Integration: Topic aus Registry laden
             topic = "ccu/global"
-            topic_config = self.message_templates.get_topic_config(topic)
+            topic_config = self.registry_manager.get_topic_config(topic)
             
             if topic_config:
                 # Message aus Template rendern
-                message = self.message_templates.render_message(topic, {
+                # TODO: Implement message rendering from registry manager
+                message = {
                     "command": command,
                     "params": params or {}
-                })
+                }
                 if message:
                     # TODO: MQTT-Client Integration implementieren
                     # qos = topic_config.get('qos', 1)
@@ -132,7 +134,7 @@ class CcuGateway:
         """
         try:
             # TODO: MQTT-Client Integration implementieren
-            # topics = self.message_templates.get_all_topic_patterns("module/v1/ff/*/state")
+            # topics = self.registry_manager.get_topic_patterns("module/v1/ff/*/state")
             # states = []
             # for topic in topics:
             #     state = self.mqtt_client.get_buffer(topic)
@@ -160,7 +162,7 @@ class CcuGateway:
         try:
             # TODO: MQTT-Client Integration implementieren
             # topic = "ccu/order/request"
-            # message = self.message_templates.render_message(topic, order_data)
+            # message = self.registry_manager.render_message(topic, order_data)
             # if message:
             #     self.mqtt_client.publish(topic, message)
             #     return True
@@ -180,7 +182,7 @@ class CcuGateway:
             Liste der Published Topics
         """
         try:
-            mqtt_clients = self.message_templates.mqtt_clients
+            mqtt_clients = self.registry_manager.get_mqtt_clients()
             ccu_client = mqtt_clients.get('mqtt_clients', {}).get('ccu_mqtt_client', {})
             return ccu_client.get('published_topics', [])
         except Exception as e:
@@ -195,7 +197,7 @@ class CcuGateway:
             Liste der Subscribed Topics
         """
         try:
-            mqtt_clients = self.message_templates.mqtt_clients
+            mqtt_clients = self.registry_manager.get_mqtt_clients()
             ccu_client = mqtt_clients.get('mqtt_clients', {}).get('ccu_mqtt_client', {})
             return ccu_client.get('subscribed_topics', [])
         except Exception as e:

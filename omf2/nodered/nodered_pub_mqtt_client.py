@@ -5,7 +5,7 @@ Node-RED Publisher MQTT Client - Thread-sicherer Singleton für Node-RED Publish
 
 import logging
 from typing import Dict, List, Optional, Any, Callable
-from omf2.common.message_templates import get_message_templates
+from omf2.registry.manager.registry_manager import get_registry_manager
 
 logger = logging.getLogger(__name__)
 
@@ -30,7 +30,7 @@ class NoderedPubMqttClient:
         if NoderedPubMqttClient._initialized:
             return
             
-        self.message_templates = get_message_templates()
+        self.registry_manager = get_registry_manager()
         self.client_id = "omf_nodered_pub"  # Dynamisch
         
         # TODO: MQTT-Broker Settings aus Config laden (cfg_or_env)
@@ -58,7 +58,7 @@ class NoderedPubMqttClient:
     def _get_published_topics(self) -> List[str]:
         """Lädt Published Topics aus Registry"""
         try:
-            mqtt_clients = self.message_templates.mqtt_clients
+            mqtt_clients = self.registry_manager.get_mqtt_clients()
             nodered_pub_client = mqtt_clients.get('mqtt_clients', {}).get('nodered_pub_mqtt_client', {})
             return nodered_pub_client.get('published_topics', [])
         except Exception as e:
@@ -111,7 +111,7 @@ class NoderedPubMqttClient:
             topic = f"module/v1/ff/NodeRed/{module_id}/state"
             
             # TODO: MQTT-Client Publish implementieren
-            # qos, retain = self.message_templates.get_topic_config(topic)
+            # qos, retain = self.registry_manager.get_topic_config(topic)
             # import json
             # payload = json.dumps(state_data)
             # result = self.client.publish(topic, payload, qos=qos, retain=retain)
@@ -138,7 +138,7 @@ class NoderedPubMqttClient:
             topic = "ccu/global"
             
             # TODO: MQTT-Client Publish implementieren
-            # qos, retain = self.message_templates.get_topic_config(topic)
+            # qos, retain = self.registry_manager.get_topic_config(topic)
             # import json
             # payload = json.dumps(feedback_data)
             # result = self.client.publish(topic, payload, qos=qos, retain=retain)
@@ -165,7 +165,7 @@ class NoderedPubMqttClient:
             topic = "ccu/order/completed"
             
             # TODO: MQTT-Client Publish implementieren
-            # qos, retain = self.message_templates.get_topic_config(topic)
+            # qos, retain = self.registry_manager.get_topic_config(topic)
             # import json
             # payload = json.dumps(order_data)
             # result = self.client.publish(topic, payload, qos=qos, retain=retain)

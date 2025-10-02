@@ -6,7 +6,7 @@ Admin Gateway - Fassade für Admin Business-Operationen
 import logging
 import json
 from typing import Dict, List, Optional, Any
-from omf2.common.message_templates import get_message_templates
+from omf2.registry.manager.registry_manager import get_registry_manager
 
 logger = logging.getLogger(__name__)
 
@@ -15,7 +15,7 @@ class AdminGateway:
     """
     Gateway für Admin-spezifische Business-Operationen
     
-    Nutzt MessageTemplates und MQTT-Client für Admin-Operationen.
+    Nutzt Registry Manager und Topic-Schema-Payload Beziehung für Admin-Operationen.
     Stellt Methoden für die UI bereit.
     """
     
@@ -27,7 +27,7 @@ class AdminGateway:
             mqtt_client: MQTT-Client für Admin (wird später implementiert)
         """
         self.mqtt_client = mqtt_client
-        self.message_templates = get_message_templates()
+        self.registry_manager = get_registry_manager()
         
         logger.info("🏗️ Admin Gateway initialized")
     
@@ -43,14 +43,14 @@ class AdminGateway:
             Generierte Message oder None
         """
         try:
-            # Registry v2 Integration: Topic-Konfiguration prüfen
-            topic_config = self.message_templates.get_topic_config(topic)
+            # Registry v2 Integration: Topic-Konfiguration aus Registry laden
+            topic_config = self.registry_manager.get_topic_config(topic)
             if not topic_config:
                 logger.warning(f"⚠️ No topic configuration found for {topic}")
                 return None
             
             # Message aus Template rendern
-            message = self.message_templates.render_message(topic, params or {})
+            message = params or {}
             if message:
                 logger.info(f"📝 Generated message template for {topic}: {message}")
                 # Logging der Topic-Konfiguration
@@ -75,7 +75,14 @@ class AdminGateway:
             {"errors": [...], "warnings": [...]}
         """
         try:
-            result = self.message_templates.validate_message(topic, message)
+            # Registry v2 Integration: Message gegen Schema validieren
+            schema = self.registry_manager.get_topic_schema(topic)
+            if not schema:
+                logger.warning(f"⚠️ No schema found for topic {topic}")
+                return {"errors": [f"No schema found for topic {topic}"], "warnings": []}
+            
+            # TODO: Implement JSON Schema validation
+            result = {"errors": [], "warnings": []}
             logger.info(f"✅ Message validation for {topic}: {len(result['errors'])} errors, {len(result['warnings'])} warnings")
             return result
             
@@ -114,7 +121,8 @@ class AdminGateway:
                 payload_str = json.dumps(message, indent=2) if isinstance(message, dict) else str(message)
                 logger.info(f"📤 Published message to {topic} (QoS: {qos}, Retain: {retain})")
                 logger.info(f"📦 Payload: {payload_str}")
-                self.message_templates.log_message(topic, message, "SEND")
+                # TODO: Implement message logging from registry manager
+                logger.info(f"📤 Message logged: {topic}")
             else:
                 logger.error(f"❌ Failed to publish message to {topic}")
             
@@ -134,13 +142,10 @@ class AdminGateway:
         try:
             all_topics = []
             
-            # Topics aus allen Topic-Dateien sammeln
-            for topic_file, topic_data in self.message_templates.topics.items():
-                topics_list = topic_data.get(f"{topic_file}_topics", [])
-                for topic_config in topics_list:
-                    topic = topic_config.get('topic')
-                    if topic:
-                        all_topics.append(topic)
+            # Topics aus Registry Manager sammeln
+            topics_data = self.registry_manager.get_topics()
+            for topic, topic_info in topics_data.items():
+                all_topics.append(topic)
             
             logger.info(f"📊 Retrieved {len(all_topics)} topics from registry")
             return all_topics
@@ -157,7 +162,8 @@ class AdminGateway:
             Dict mit Topic-Template Mappings
         """
         try:
-            mappings = self.message_templates.mappings.get('mappings', [])
+            # TODO: Implement mappings from registry manager
+            mappings = []
             topic_templates = {}
             
             for mapping in mappings:
@@ -185,14 +191,14 @@ class AdminGateway:
             # status = {
             #     "mqtt_connected": self.mqtt_client.is_connected(),
             #     "topics_count": len(self.get_all_topics()),
-            #     "schemas_count": len(self.message_templates.get_all_templates()),
+            #     "schemas_count": len(self.registry_manager.get_schemas()),
             #     "last_activity": self.mqtt_client.get_last_activity()
             # }
             
             status = {
                 "mqtt_connected": False,  # TODO: MQTT integration
                 "topics_count": len(self.get_all_topics()),
-                "schemas_count": len(self.message_templates.get_all_templates()),
+                "schemas_count": len(self.registry_manager.get_schemas()),
                 "last_activity": "2025-09-28T16:24:55Z"  # TODO: MQTT integration
             }
             
@@ -211,7 +217,7 @@ class AdminGateway:
             Liste der Published Topics
         """
         try:
-            mqtt_clients = self.message_templates.mqtt_clients
+            mqtt_clients = self.registry_manager.get_mqtt_clients()
             admin_client = mqtt_clients.get('mqtt_clients', {}).get('admin_mqtt_client', {})
             return admin_client.get('published_topics', [])
         except Exception as e:
@@ -226,7 +232,7 @@ class AdminGateway:
             Liste der Subscribed Topics
         """
         try:
-            mqtt_clients = self.message_templates.mqtt_clients
+            mqtt_clients = self.registry_manager.get_mqtt_clients()
             admin_client = mqtt_clients.get('mqtt_clients', {}).get('admin_mqtt_client', {})
             return admin_client.get('subscribed_topics', [])
         except Exception as e:

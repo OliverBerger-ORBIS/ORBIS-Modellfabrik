@@ -18,7 +18,7 @@ except ImportError:
     MQTT_AVAILABLE = False
     mqtt = None
 
-from omf2.common.message_templates import get_message_templates
+from omf2.registry.manager.registry_manager import get_registry_manager
 from omf2.common.logger import get_logger
 
 logger = get_logger(__name__)
@@ -47,7 +47,7 @@ class AdminMqttClient:
         if AdminMqttClient._initialized:
             return
             
-        self.message_templates = get_message_templates()
+        self.registry_manager = get_registry_manager()
         # Get client_id from registry as prefix
         self.base_client_id = self._get_base_client_id()
         self.client_id = self.base_client_id  # Will be updated based on environment
@@ -76,7 +76,7 @@ class AdminMqttClient:
     def _get_base_client_id(self) -> str:
         """Get base client_id from registry"""
         try:
-            mqtt_clients = self.message_templates.mqtt_clients
+            mqtt_clients = self.registry_manager.get_mqtt_clients()
             admin_client = mqtt_clients.get('mqtt_clients', {}).get('admin_mqtt_client', {})
             return admin_client.get('client_id', 'omf_admin')
         except Exception as e:
@@ -118,7 +118,7 @@ class AdminMqttClient:
     def _get_published_topics(self) -> List[str]:
         """Lädt Published Topics aus Registry"""
         try:
-            mqtt_clients = self.message_templates.mqtt_clients
+            mqtt_clients = self.registry_manager.get_mqtt_clients()
             admin_client = mqtt_clients.get('mqtt_clients', {}).get('admin_mqtt_client', {})
             return admin_client.get('published_topics', [])
         except Exception as e:
@@ -128,7 +128,7 @@ class AdminMqttClient:
     def _get_subscribed_topics(self) -> List[str]:
         """Lädt Subscribed Topics aus Registry"""
         try:
-            mqtt_clients = self.message_templates.mqtt_clients
+            mqtt_clients = self.registry_manager.get_mqtt_clients()
             admin_client = mqtt_clients.get('mqtt_clients', {}).get('admin_mqtt_client', {})
             return admin_client.get('subscribed_topics', [])
         except Exception as e:
@@ -268,7 +268,9 @@ class AdminMqttClient:
                 # QoS/Retain aus Registry laden wenn nicht angegeben
                 if qos is None or retain is None:
                     try:
-                        topic_qos, topic_retain = self.message_templates.get_topic_config(topic)
+                        topic_config = self.registry_manager.get_topic_config(topic)
+                        topic_qos = topic_config.get('qos', 0) if topic_config else 0
+                        topic_retain = topic_config.get('retain', False) if topic_config else False
                         qos = qos if qos is not None else topic_qos
                         retain = retain if retain is not None else topic_retain
                     except Exception:

@@ -5,7 +5,7 @@ Node-RED Gateway - Fassade für Node-RED Business-Operationen
 
 import logging
 from typing import Dict, List, Optional, Any
-from omf2.common.message_templates import get_message_templates
+from omf2.registry.manager.registry_manager import get_registry_manager
 
 logger = logging.getLogger(__name__)
 
@@ -14,7 +14,7 @@ class NoderedGateway:
     """
     Gateway für Node-RED-spezifische Business-Operationen
     
-    Nutzt MessageTemplates und beide MQTT-Clients (pub/sub) für Node-RED-Operationen.
+    Nutzt Registry Manager und Topic-Schema-Payload Beziehung für Node-RED-Operationen.
     Stellt Methoden für die UI bereit.
     """
     
@@ -28,7 +28,7 @@ class NoderedGateway:
         """
         self.pub_mqtt_client = pub_mqtt_client
         self.sub_mqtt_client = sub_mqtt_client
-        self.message_templates = get_message_templates()
+        self.registry_manager = get_registry_manager()
         
         logger.info("🏗️ NoderedGateway initialized")
     
@@ -41,7 +41,7 @@ class NoderedGateway:
         """
         try:
             # Registry v2 Integration: Topics aus Registry laden
-            pub_topics = self.get_pub_topics()
+            pub_topics = self.registry_manager.get_topics()
             module_state_topics = [topic for topic in pub_topics if "module" in topic and "state" in topic]
             
             states = []
@@ -120,7 +120,7 @@ class NoderedGateway:
         try:
             # TODO: MQTT-Client Integration implementieren
             # topic = "ccu/global"
-            # message = self.message_templates.render_message(topic, feedback_data)
+            # message = self.registry_manager.render_message(topic, feedback_data)
             # if message:
             #     self.pub_mqtt_client.publish(topic, message)
             #     return True
@@ -145,7 +145,7 @@ class NoderedGateway:
         try:
             # TODO: MQTT-Client Integration implementieren
             # topic = "ccu/order/completed"
-            # message = self.message_templates.render_message(topic, order_data)
+            # message = self.registry_manager.render_message(topic, order_data)
             # if message:
             #     self.pub_mqtt_client.publish(topic, message)
             #     return True
@@ -165,9 +165,11 @@ class NoderedGateway:
             Liste der Publisher Topics
         """
         try:
-            mqtt_clients = self.message_templates.mqtt_clients
-            nodered_pub_client = mqtt_clients.get('mqtt_clients', {}).get('nodered_pub_mqtt_client', {})
-            return nodered_pub_client.get('published_topics', [])
+            # Registry v2 Integration: Topics aus Registry Manager
+            all_topics = self.registry_manager.get_topics()
+            # Filter für Node-RED Publisher Topics
+            pub_topics = [topic for topic in all_topics if "module" in topic or "ccu" in topic]
+            return pub_topics
         except Exception as e:
             logger.error(f"❌ Failed to get Node-RED pub topics: {e}")
             return []
@@ -180,9 +182,11 @@ class NoderedGateway:
             Liste der Subscriber Topics
         """
         try:
-            mqtt_clients = self.message_templates.mqtt_clients
-            nodered_sub_client = mqtt_clients.get('mqtt_clients', {}).get('nodered_sub_mqtt_client', {})
-            return nodered_sub_client.get('subscribed_topics', [])
+            # Registry v2 Integration: Topics aus Registry Manager
+            all_topics = self.registry_manager.get_topics()
+            # Filter für Node-RED Subscriber Topics
+            sub_topics = [topic for topic in all_topics if "ccu" in topic or "opc_ua" in topic]
+            return sub_topics
         except Exception as e:
             logger.error(f"❌ Failed to get Node-RED sub topics: {e}")
             return []

@@ -5,7 +5,7 @@ Node-RED Subscriber MQTT Client - Thread-sicherer Singleton für Node-RED Subscr
 
 import logging
 from typing import Dict, List, Optional, Any, Callable
-from omf2.common.message_templates import get_message_templates
+from omf2.registry.manager.registry_manager import get_registry_manager
 
 logger = logging.getLogger(__name__)
 
@@ -30,7 +30,7 @@ class NoderedSubMqttClient:
         if NoderedSubMqttClient._initialized:
             return
             
-        self.message_templates = get_message_templates()
+        self.registry_manager = get_registry_manager()
         self.client_id = "omf_nodered_sub"  # Dynamisch
         
         # TODO: MQTT-Broker Settings aus Config laden (cfg_or_env)
@@ -58,7 +58,7 @@ class NoderedSubMqttClient:
     def _get_subscribed_topics(self) -> List[str]:
         """Lädt Subscribed Topics aus Registry"""
         try:
-            mqtt_clients = self.message_templates.mqtt_clients
+            mqtt_clients = self.registry_manager.get_mqtt_clients()
             nodered_sub_client = mqtt_clients.get('mqtt_clients', {}).get('nodered_sub_mqtt_client', {})
             return nodered_sub_client.get('subscribed_topics', [])
         except Exception as e:
