@@ -421,6 +421,19 @@ class RegistryManager:
         topic_info = self.topics.get(topic)
         return topic_info.get('description') if topic_info else None
     
+    def get_topic_config(self, topic: str) -> Optional[Dict[str, Any]]:
+        """Gibt die Konfiguration für einen Topic zurück (QoS, Retain, etc.)"""
+        topic_info = self.topics.get(topic)
+        if not topic_info:
+            return None
+        
+        return {
+            'qos': topic_info.get('qos', 1),
+            'retain': bool(topic_info.get('retain', 0)),
+            'schema': topic_info.get('schema'),
+            'description': topic_info.get('description')
+        }
+    
     def validate_topic_payload(self, topic: str, payload: Dict) -> Dict[str, Any]:
         """Validiert einen Payload gegen das Topic-Schema"""
         schema = self.get_topic_schema(topic)
