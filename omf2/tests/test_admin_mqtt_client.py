@@ -37,7 +37,7 @@ class TestAdminMqttClient(unittest.TestCase):
         """Test Initialisierung"""
         client = get_admin_mqtt_client()
         
-        self.assertIsNotNone(client.message_templates)
+        self.assertIsNotNone(client.registry_manager)
         self.assertEqual(client.client_id, "omf_admin")
         self.assertFalse(client.connected)
         self.assertIsNone(client.client)
@@ -96,10 +96,12 @@ class TestAdminMqttClient(unittest.TestCase):
         result = client.get_buffer('nonexistent/topic')
         self.assertIsNone(result)
         
-        # Test with data
-        client.topic_buffers['test/topic'] = {'test': 'data'}
-        result = client.get_buffer('test/topic')
-        self.assertEqual(result, {'test': 'data'})
+        # Test with data - Mock the buffer
+        from collections import deque
+        mock_buffer = deque([{'test': 'data'}], maxlen=1000)
+        with patch.object(client, 'topic_buffers', {'test/topic': mock_buffer}):
+            result = client.get_buffer('test/topic')
+            self.assertEqual(result, {'test': 'data'})
 
     def test_get_all_buffers(self):
         """Test Alle Buffer abrufen"""
@@ -156,8 +158,10 @@ class TestAdminMqttClient(unittest.TestCase):
         client = get_admin_mqtt_client()
         
         self.assertIsNotNone(client.config)
-        self.assertIn('mqtt', client.config)
-        self.assertIn('environments', client.config)
+        # Test actual config structure (flat merged config)
+        self.assertIn('host', client.config)
+        self.assertIn('port', client.config)
+        self.assertIn('client_id_postfix', client.config)
 
     def test_disconnect(self):
         """Test Disconnect"""
@@ -177,10 +181,11 @@ class TestAdminMqttClient(unittest.TestCase):
         
         # Simulate message processing
         test_message = {'test': 'data', 'timestamp': time.time()}
-        client.topic_buffers['test/topic'] = test_message
-        
-        result = client.get_buffer('test/topic')
-        self.assertEqual(result, test_message)
+        from collections import deque
+        mock_buffer = deque([test_message], maxlen=1000)
+        with patch.object(client, 'topic_buffers', {'test/topic': mock_buffer}):
+            result = client.get_buffer('test/topic')
+            self.assertEqual(result, test_message)
 
     def test_factory_function(self):
         """Test Factory-Funktion"""
@@ -206,12 +211,12 @@ class TestAdminMqttClient(unittest.TestCase):
         # Connect to mock first
         result1 = client.connect('mock')
         self.assertTrue(result1)
-        self.assertEqual(client.current_environment, 'mock')
+        self.assertEqual(getattr(client, '_current_environment', None), 'mock')
         
         # Reconnect to replay
         result2 = client.reconnect_environment('replay')
         self.assertTrue(result2)
-        self.assertEqual(client.current_environment, 'replay')
+        self.assertEqual(getattr(client, '_current_environment', None), 'replay')
 
     def test_get_connection_info(self):
         """Test connection info retrieval"""

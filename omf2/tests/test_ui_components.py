@@ -18,7 +18,7 @@ from omf2.admin.admin_gateway import AdminGateway
 from omf2.admin.admin_mqtt_client import AdminMqttClient, get_admin_mqtt_client
 
 
-class TestCCUGateway(unittest.TestCase):
+class TestCcuGateway(unittest.TestCase):
     """Test-Klasse für CCU Gateway"""
     
     def setUp(self):
@@ -35,7 +35,7 @@ class TestCCUGateway(unittest.TestCase):
     def test_ccu_gateway_initialization(self):
         """Test: CCU Gateway Initialisierung"""
         gateway = CcuGateway()
-        self.assertIsNotNone(gateway.message_templates)
+        self.assertIsNotNone(gateway.registry_manager)
         self.assertIsNone(gateway.mqtt_client)
     
     def test_reset_factory(self):
@@ -152,7 +152,7 @@ class TestCcuMqttClient(unittest.TestCase):
         self.assertIsInstance(buffers, dict)
 
 
-class TestNodeREDGateway(unittest.TestCase):
+class TestNoderedGateway(unittest.TestCase):
     """Test-Klasse für Node-RED Gateway"""
     
     def setUp(self):
@@ -173,7 +173,7 @@ class TestNodeREDGateway(unittest.TestCase):
     def test_nodered_gateway_initialization(self):
         """Test: Node-RED Gateway Initialisierung"""
         gateway = NoderedGateway()
-        self.assertIsNotNone(gateway.message_templates)
+        self.assertIsNotNone(gateway.registry_manager)
         self.assertIsNone(gateway.pub_mqtt_client)
         self.assertIsNone(gateway.sub_mqtt_client)
     
@@ -357,7 +357,7 @@ class TestAdminGateway(unittest.TestCase):
     def test_admin_gateway_initialization(self):
         """Test: Admin Gateway Initialisierung"""
         gateway = AdminGateway()
-        self.assertIsNotNone(gateway.message_templates)
+        self.assertIsNotNone(gateway.registry_manager)
         self.assertIsNone(gateway.mqtt_client)
     
     def test_generate_message_template(self):
@@ -377,7 +377,8 @@ class TestAdminGateway(unittest.TestCase):
     
     def test_publish_message(self):
         """Test: Message publizieren"""
-        gateway = AdminGateway()
+        from omf2.factory.gateway_factory import get_admin_gateway
+        gateway = get_admin_gateway()
         result = gateway.publish_message("test/topic", {"test": "data"})
         self.assertTrue(result)
     

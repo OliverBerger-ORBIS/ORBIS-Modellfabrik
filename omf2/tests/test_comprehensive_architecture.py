@@ -18,7 +18,7 @@ from unittest.mock import patch, MagicMock
 # Add the project root to the Python path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
-from omf2.common.message_templates import get_message_templates
+from omf2.registry.manager.registry_manager import get_registry_manager
 from omf2.factory.gateway_factory import (
     get_gateway_factory, 
     get_ccu_gateway, 
@@ -38,14 +38,14 @@ class TestComprehensiveArchitecture(unittest.TestCase):
         GatewayFactory._gateways = {}
         GatewayFactory._gateway_locks = {}
 
-    def test_message_templates_singleton(self):
-        """Test MessageTemplates Singleton-Pattern"""
+    def test_registry_manager_singleton(self):
+        """Test Registry Manager Singleton-Pattern"""
         # Teste Singleton-Verhalten
-        templates1 = get_message_templates()
-        templates2 = get_message_templates()
+        registry1 = get_registry_manager()
+        registry2 = get_registry_manager()
         
-        self.assertIs(templates1, templates2)
-        self.assertIsNotNone(templates1)
+        self.assertIs(registry1, registry2)
+        self.assertIsNotNone(registry1)
 
     def test_gateway_factory_singleton(self):
         """Test Gateway-Factory Singleton-Pattern"""
@@ -68,10 +68,10 @@ class TestComprehensiveArchitecture(unittest.TestCase):
         self.assertIsNotNone(nodered_gateway)
         self.assertIsNotNone(admin_gateway)
         
-        # Prüfe, dass alle MessageTemplates haben
-        self.assertIsNotNone(ccu_gateway.message_templates)
-        self.assertIsNotNone(nodered_gateway.message_templates)
-        self.assertIsNotNone(admin_gateway.message_templates)
+        # Prüfe, dass alle Registry Manager haben
+        self.assertIsNotNone(ccu_gateway.registry_manager)
+        self.assertIsNotNone(nodered_gateway.registry_manager)
+        self.assertIsNotNone(admin_gateway.registry_manager)
 
     def test_ccu_gateway_functionality(self):
         """Test CCU Gateway Funktionalität"""
@@ -143,17 +143,17 @@ class TestComprehensiveArchitecture(unittest.TestCase):
         self.assertIsInstance(pub_topics, list)
         self.assertIsInstance(sub_topics, list)
 
-    def test_registry_v2_integration(self):
-        """Test Registry v2 Integration in allen Gateways"""
-        # Teste, dass alle Gateways Registry v2 nutzen
+    def test_registry_integration(self):
+        """Test Registry Integration in allen Gateways"""
+        # Teste, dass alle Gateways Registry Manager nutzen
         ccu_gateway = get_ccu_gateway()
         nodered_gateway = get_nodered_gateway()
         admin_gateway = get_admin_gateway()
         
-        # Alle Gateways sollten die gleiche MessageTemplates-Instanz haben
-        self.assertIs(ccu_gateway.message_templates, nodered_gateway.message_templates)
-        self.assertIs(nodered_gateway.message_templates, admin_gateway.message_templates)
-        self.assertIs(ccu_gateway.message_templates, admin_gateway.message_templates)
+        # Alle Gateways sollten die gleiche Registry Manager-Instanz haben
+        self.assertIs(ccu_gateway.registry_manager, nodered_gateway.registry_manager)
+        self.assertIs(nodered_gateway.registry_manager, admin_gateway.registry_manager)
+        self.assertIs(ccu_gateway.registry_manager, admin_gateway.registry_manager)
 
     def test_gateway_factory_management(self):
         """Test Gateway-Factory Management"""
@@ -243,11 +243,11 @@ class TestComprehensiveArchitecture(unittest.TestCase):
         self.assertIn('nodered', all_gateways)
         self.assertIn('admin', all_gateways)
         
-        # Alle Gateways sollten die gleiche MessageTemplates-Instanz haben
-        message_templates = get_message_templates()
-        self.assertIs(ccu_gateway.message_templates, message_templates)
-        self.assertIs(nodered_gateway.message_templates, message_templates)
-        self.assertIs(admin_gateway.message_templates, message_templates)
+        # Alle Gateways sollten die gleiche Registry Manager-Instanz haben
+        registry_manager = get_registry_manager()
+        self.assertIs(ccu_gateway.registry_manager, registry_manager)
+        self.assertIs(nodered_gateway.registry_manager, registry_manager)
+        self.assertIs(admin_gateway.registry_manager, registry_manager)
 
     def test_performance(self):
         """Test Performance der Architektur"""
