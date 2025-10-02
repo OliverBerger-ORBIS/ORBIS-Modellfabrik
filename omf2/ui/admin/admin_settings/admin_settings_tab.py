@@ -7,6 +7,7 @@ import streamlit as st
 from omf2.admin.admin_gateway import AdminGateway
 from omf2.admin.admin_mqtt_client import get_admin_mqtt_client
 from omf2.common.logger import get_logger
+from omf2.ui.common.symbols import UISymbols
 
 logger = get_logger(__name__)
 
@@ -18,16 +19,16 @@ def render_admin_settings_tab():
         st.header("⚙️ Admin Settings")
         st.markdown("Dashboard configuration and registry information")
         
-        # Create subtabs
+        # Create subtabs using UISymbols for consistent icon management
         subtab_labels = [
-            "📊 Dashboard",
-            "📡 MQTT Clients", 
-            "📋 Topics",
-            "📝 Schemas",
-            "🔧 Modules",
-            "🏭 Stations",
-            "🎮 TXT Controllers",
-            "🔧 Workpieces"
+            f"{UISymbols.get_functional_icon('dashboard')} Dashboard",
+            f"{UISymbols.get_functional_icon('mqtt_connect')} MQTT Clients", 
+            f"{UISymbols.get_functional_icon('topic_driven')} Topics",
+            f"{UISymbols.get_functional_icon('schema_driven')} Schemas",
+            f"{UISymbols.get_tab_icon('ccu_modules')} Modules",
+            f"{UISymbols.get_functional_icon('stations')} Stations",
+            f"{UISymbols.get_functional_icon('txt_controllers')} TXT Controllers",
+            f"{UISymbols.get_functional_icon('workpieces')} Workpieces"
         ]
         
         subtabs = st.tabs(subtab_labels)

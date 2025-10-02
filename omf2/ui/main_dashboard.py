@@ -10,6 +10,7 @@ import importlib
 from omf2.common.logger import get_logger
 from omf2.ui.utils.ui_refresh import request_refresh
 from omf2.ui.user_manager import UserManager
+from omf2.ui.common.symbols import UISymbols
 
 logger = get_logger(__name__)
 
@@ -231,13 +232,14 @@ class MainDashboard:
             self.user_manager.render_permissions_info()
             return
         
-        # Create tab labels with icons
+        # Create tab labels with icons using UISymbols
         tab_labels = []
         tab_keys = list(tab_config.keys())
         
         for tab_key in tab_keys:
             tab_info = tab_config[tab_key]
-            icon = tab_info.get('icon', '📋')
+            # Use UISymbols for consistent icon management
+            icon = UISymbols.get_tab_icon(tab_key)
             name = tab_info.get('name', tab_key)
             tab_labels.append(f"{icon} {name}")
         

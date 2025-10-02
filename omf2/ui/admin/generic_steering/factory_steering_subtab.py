@@ -82,6 +82,9 @@ def _send_factory_reset(admin_gateway):
     """Send Factory Reset Command"""
     try:
         from datetime import datetime
+        # TODO: Replace hardcoded payload with schema-driven approach
+        # TODO: Use PayloadGenerator.generate_example_payload("ccu/set/reset") instead
+        # TODO: Integrate with Registry Manager for proper schema validation
         payload = {
             "timestamp": datetime.now().isoformat(),
             "withStorage": False
@@ -103,6 +106,9 @@ def _send_emergency_stop(admin_gateway):
     """Send Emergency Stop Command"""
     try:
         from datetime import datetime
+        # TODO: Replace hardcoded payload with schema-driven approach
+        # TODO: Use PayloadGenerator.generate_example_payload("ccu/control") instead
+        # TODO: Integrate with Registry Manager for proper schema validation
         payload = {
             "timestamp": datetime.now().isoformat(),
             "emergency": True
@@ -124,6 +130,9 @@ def _send_fts_dock(admin_gateway, fts_serial):
     """Send FTS Dock Command"""
     try:
         from datetime import datetime
+        # TODO: Replace hardcoded payload with schema-driven approach
+        # TODO: Use PayloadGenerator.generate_example_payload(f"fts/v1/ff/{fts_serial}/instantAction") instead
+        # TODO: Integrate with Registry Manager for proper schema validation
         payload = {
             "timestamp": datetime.now().isoformat(),
             "serialNumber": fts_serial,
@@ -150,6 +159,9 @@ def _send_fts_load(admin_gateway, fts_serial):
     """Send FTS Load Command"""
     try:
         from datetime import datetime
+        # TODO: Replace hardcoded payload with schema-driven approach
+        # TODO: Use PayloadGenerator.generate_example_payload(f"fts/v1/ff/{fts_serial}/instantAction") instead
+        # TODO: Integrate with Registry Manager for proper schema validation
         payload = {
             "serialNumber": fts_serial,
             "charge": True,
@@ -172,6 +184,9 @@ def _send_fts_unload(admin_gateway, fts_serial):
     """Send FTS Unload Command"""
     try:
         from datetime import datetime
+        # TODO: Replace hardcoded payload with schema-driven approach
+        # TODO: Use PayloadGenerator.generate_example_payload("ccu/set/charge") instead
+        # TODO: Integrate with Registry Manager for proper schema validation
         payload = {
             "serialNumber": fts_serial,
             "charge": False,
@@ -194,6 +209,9 @@ def _send_order(admin_gateway, color):
     """Send Production Order"""
     try:
         from datetime import datetime
+        # TODO: Replace hardcoded payload with schema-driven approach
+        # TODO: Use PayloadGenerator.generate_example_payload("ccu/orders/send") instead
+        # TODO: Integrate with Registry Manager for proper schema validation
         payload = {
             "type": color,
             "timestamp": datetime.now().isoformat(),

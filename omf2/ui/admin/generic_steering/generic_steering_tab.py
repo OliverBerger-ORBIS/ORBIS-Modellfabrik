@@ -7,6 +7,7 @@ Gateway-Pattern konform: Nutzt AdminGateway aus Gateway-Factory
 import streamlit as st
 from omf2.common.logger import get_logger
 from omf2.factory.gateway_factory import get_admin_gateway
+from omf2.ui.common.symbols import UISymbols
 
 logger = get_logger(__name__)
 
@@ -16,13 +17,13 @@ def render_generic_steering_tab():
     logger.info("🎛️ Rendering Generic Steering Tab")
     
     try:
-        st.title("🎛️ Generic Steering")
+        st.title(f"{UISymbols.get_tab_icon('generic_steering')} Generic Steering")
         st.markdown("**Factory Management and Control with Modular Architecture**")
         
         # Gateway-Pattern: Get AdminGateway from Factory
         admin_gateway = get_admin_gateway()
         if not admin_gateway:
-            st.error("❌ Admin Gateway not available")
+            st.error(f"{UISymbols.get_status_icon('error')} Admin Gateway not available")
             return
         
         # Get Registry Manager from session state
@@ -44,12 +45,15 @@ def render_generic_steering_tab():
                             stats['mqtt_clients_count'] + stats['workpieces_count'] + 
                             stats['modules_count'] + stats['stations_count'] + 
                             stats['txt_controllers_count'])
-            st.info(f"📚 **Registry:** {total_entities} entities loaded")
+            st.info(f"{UISymbols.get_status_icon('history')} **Registry:** {total_entities} entities loaded")
         else:
-            st.warning("⚠️ **Registry Manager not available**")
+            st.warning(f"{UISymbols.get_status_icon('warning')} **Registry Manager not available**")
         
-        # Tabs for different steering modes
-        tab1, tab2 = st.tabs(["🏭 Factory Steering", "🔧 Topic Steering"])
+        # Tabs for different steering modes using UISymbols
+        tab1, tab2 = st.tabs([
+            f"{UISymbols.get_tab_icon('ccu_dashboard')} Factory Steering", 
+            f"{UISymbols.get_functional_icon('topic_driven')} Topic Steering"
+        ])
         
         with tab1:
             _render_factory_steering_tab(admin_gateway, registry_manager)
