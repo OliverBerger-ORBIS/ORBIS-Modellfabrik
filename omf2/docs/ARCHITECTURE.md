@@ -42,9 +42,11 @@ Weggekapselte, robuste Architektur für MQTT-Kommunikation, Message-Templates un
 Streamlit-UI (omf2/ui/)
     │
     ▼
-Business Logic (omf2/ccu/, omf2/admin/)
+Business Logic (omf2/ccu/, omf2/admin/, omf2/common/)
     ├── ModuleManager (Schema-basierte Message-Verarbeitung) ✅
     ├── WorkpieceManager (Registry-basierte Icons) ✅
+    ├── MessageManager (Domain-agnostic Message Generation/Validation) ✅
+    ├── TopicManager (Domain-agnostic Topic Management) ✅
     └── AdminGateway (System-Verwaltung) ✅
         │
         ▼
@@ -63,11 +65,13 @@ MQTT Clients (Singleton) ✅
 **✅ IMPLEMENTIERTE FEATURES:**
 - Registry Manager als zentrale Komponente für alle Registry-Daten
 - Business Logic Manager (ModuleManager, WorkpieceManager) für Entitäts-Verwaltung
+- **Domain-agnostic Manager (MessageManager, TopicManager) für wiederverwendbare Logik**
 - Schema-basierte Message-Verarbeitung mit direkter Registry-Abfrage
 - Thread-sichere Singleton-Pattern für alle Komponenten
 - Gateway-Factory für Business-Operationen
 - MQTT Clients als Singleton für sichere Kommunikation
 - Registry v2 Integration in allen Gateways
+- **Gateway Pattern mit Manager-Delegation für saubere Trennung**
 - Saubere Architektur ohne redundante Mappings
 - Vollständige Test-Abdeckung (55 Tests)
 - Error-Handling und Performance-Optimierung
@@ -123,7 +127,99 @@ all_workpieces_icon = workpiece_manager.get_all_workpieces_icon()  # 🔵⚪🔴
 
 ---
 
-## 4. Registry Manager (zentral, Singleton)
+## 4. Domain-agnostic Manager (Wiederverwendbare Logik)
+
+### 4.1 MessageManager (Domain-agnostic Message Generation/Validation)
+
+**Datei:** `omf2/common/message_manager.py`
+
+**Funktionen:**
+- **Schema-driven Message Generation:** Generiert Schema-konforme Messages für alle Domänen
+- **Message Validation:** Validiert Messages gegen JSON-Schemas
+- **Domain-agnostic:** Wiederverwendbar für admin, ccu, nodered
+- **Buffer Management:** Verwaltet Message-Buffer für alle Domänen
+- **Deep Merge:** Intelligente Payload-Zusammenführung
+
+**Pattern:**
+```python
+# Factory Functions für Domain-spezifische Manager
+from omf2.common.message_manager import get_admin_message_manager, get_ccu_message_manager
+
+# Admin Domain
+admin_message_manager = get_admin_message_manager()
+message = admin_message_manager.generate_message("admin/topic", {"param": "value"})
+valid = admin_message_manager.validate_message("admin/topic", payload)
+
+# CCU Domain  
+ccu_message_manager = get_ccu_message_manager()
+message = ccu_message_manager.generate_message("ccu/topic", {"param": "value"})
+valid = ccu_message_manager.validate_message("ccu/topic", payload)
+```
+
+### 4.2 TopicManager (Domain-agnostic Topic Management)
+
+**Datei:** `omf2/common/topic_manager.py`
+
+**Funktionen:**
+- **Topic Discovery:** Findet Topics nach Patterns für alle Domänen
+- **Schema Management:** Lädt und verwaltet Topic-Schemas
+- **Domain Filtering:** Filtert Topics nach Domäne (admin, ccu, nodered)
+- **Topic Analysis:** Analysiert Topic-Struktur und Verfügbarkeit
+- **Validation:** Validiert Topic-Strukturen
+
+**Pattern:**
+```python
+# Factory Functions für Domain-spezifische Manager
+from omf2.common.topic_manager import get_admin_topic_manager, get_ccu_topic_manager
+
+# Admin Domain
+admin_topic_manager = get_admin_topic_manager()
+admin_topics = admin_topic_manager.get_domain_topics()
+schemas = admin_topic_manager.get_topic_schemas()
+
+# CCU Domain
+ccu_topic_manager = get_ccu_topic_manager()
+ccu_topics = ccu_topic_manager.get_domain_topics()
+analysis = ccu_topic_manager.analyze_topic("ccu/orders/send")
+```
+
+### 4.3 Gateway Pattern mit Manager-Delegation
+
+**Pattern:**
+```python
+# Gateway delegiert an Domain-agnostic Manager
+class AdminGateway:
+    def __init__(self):
+        self.message_manager = get_admin_message_manager()
+        self.topic_manager = get_admin_topic_manager()
+    
+    def generate_message(self, topic, params):
+        return self.message_manager.generate_message(topic, params)
+    
+    def get_all_topics(self):
+        return self.topic_manager.get_all_topics()
+
+class CcuGateway:
+    def __init__(self):
+        self.message_manager = get_ccu_message_manager()
+        self.topic_manager = get_ccu_topic_manager()
+    
+    def generate_message(self, topic, params):
+        return self.message_manager.generate_message(topic, params)
+    
+    def get_all_topics(self):
+        return self.topic_manager.get_all_topics()
+```
+
+**Vorteile:**
+- **Code-Duplikation eliminiert:** Gemeinsame Logik in Domain-agnostic Manager
+- **Konsistente Implementierung:** Alle Domänen verwenden dieselbe Logik
+- **Einfache Wartung:** Änderungen nur in einem Manager
+- **Testbarkeit:** Manager können isoliert getestet werden
+
+---
+
+## 5. Registry Manager (zentral, Singleton)
 
 - Zentrale Komponente für alle Registry v2 Daten
 - Lädt Topics, Templates, MQTT Clients, Workpieces, Modules, Stations, TXT Controllers
@@ -364,7 +460,9 @@ if msg:
 
 - **UI bleibt einfach:** Keine Threading-Probleme, keine MQTT-Details, kein Deadlock-Risiko.
 - **Gateways sind "schlanke Fassade":** Testbar, erweiterbar, keine Redundanz.
-- **MQTT und Templates sind zentral und thread-safe gekapselt.**
+- **Domain-agnostic Manager:** Wiederverwendbare Logik, Code-Duplikation eliminiert.
+- **Gateway Pattern mit Manager-Delegation:** Saubere Trennung von Verantwortlichkeiten.
+- **MQTT und Schemas sind zentral und thread-safe gekapselt.**
 - **UI-Refresh wird zentral gesteuert, keine Race-Conditions mit Session-State.**
 - **Das Pattern ist in allen Domänen wiederverwendbar und hält die Komplexität im Griff.**
 
@@ -399,6 +497,11 @@ if msg:
 - `omf2/nodered/nodered_gateway.py` - NoderedGateway ✅
 - `omf2/admin/admin_gateway.py` - AdminGateway ✅
 
+**Domain-agnostic Manager:**
+- `omf2/common/message_manager.py` - MessageManager (Domain-agnostic) ✅
+- `omf2/common/topic_manager.py` - TopicManager (Domain-agnostic) ✅
+- `omf2/admin/admin_message_manager.py` - AdminMessageManager (Wrapper) ✅
+
 **Registry v2 Integration:**
 - `omf2/registry/model/v2/` - Vollständige Registry v2 ✅
 - Topics, Templates, Mappings - Alle implementiert ✅
@@ -413,6 +516,9 @@ if msg:
 - `omf2/tests/test_gateway_factory.py` - 14 Tests ✅
 - `omf2/tests/test_registry_v2_integration_simple.py` - 10 Tests ✅
 - `omf2/tests/test_registry_manager_comprehensive.py` - 20 Tests ✅
+- `omf2/tests/test_message_manager.py` - MessageManager Tests ✅
+- `omf2/tests/test_topic_manager.py` - TopicManager Tests ✅
+- `omf2/tests/test_admin_message_manager.py` - AdminMessageManager Tests ✅
 
 ### **📊 TEST-STATISTIK:**
 - **55 Tests erfolgreich** ✅
@@ -466,5 +572,5 @@ ccu_gateway.reset_factory()
 ccu_gateway.send_global_command("start", {"line": "1"})
 ```
 
-**Letzte Aktualisierung:** 2025-10-02  
+**Letzte Aktualisierung:** 2025-10-03  
 **Status:** VOLLSTÄNDIG IMPLEMENTIERT ✅
