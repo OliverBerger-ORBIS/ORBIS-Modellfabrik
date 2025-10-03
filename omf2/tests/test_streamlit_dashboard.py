@@ -62,7 +62,7 @@ class TestOMF2Dashboard:
     def test_ui_components_import(self):
         """Test that UI components can be imported"""
         from omf2.ui.ccu.ccu_overview.ccu_overview_tab import render_ccu_overview_tab
-        from omf2.ui.admin.logs.system_logs_tab import render_system_logs_tab
+        from omf2.ui.admin.system_logs.system_logs_tab import render_system_logs_tab
         
         assert callable(render_ccu_overview_tab)
         assert callable(render_system_logs_tab)

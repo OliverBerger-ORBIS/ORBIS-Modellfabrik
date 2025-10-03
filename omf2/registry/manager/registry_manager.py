@@ -56,7 +56,7 @@ class RegistryManager:
             # Topics laden
             self._load_topics()
             
-            # Schemas laden (ersetzt Templates)
+            # Schemas laden
             self._load_schemas()
             
             # Topic-Schema-Mappings nicht mehr benötigt - Schema-Info ist in topics gespeichert
@@ -118,34 +118,6 @@ class RegistryManager:
             except Exception as e:
                 logger.error(f"❌ Failed to load topics from {topic_file}: {e}")
     
-    def _load_templates(self):
-        """Lädt alle Templates aus dem templates Unterordner"""
-        templates_dir = self.registry_path / "templates"
-        if not templates_dir.exists():
-            logger.warning(f"⚠️ Templates directory not found: {templates_dir}")
-            return
-        
-        for template_file in templates_dir.glob("*.yml"):
-            try:
-                with open(template_file, 'r', encoding='utf-8') as f:
-                    data = yaml.safe_load(f) or {}
-                    
-                if 'template' in data:
-                    template_data = data['template']
-                    template_name = template_data.get('name', template_file.stem)
-                    
-                    self.schemas[template_name] = {
-                        'name': template_name,
-                        'template_category': template_data.get('template_category', 'UNKNOWN'),
-                        'template_sub_category': template_data.get('template_sub_category', 'UNKNOWN'),
-                        'schema': template_data.get('schema', {}),
-                        'file': template_file.name
-                    }
-                    
-                logger.info(f"📝 Loaded template {template_name} from {template_file.name}")
-                
-            except Exception as e:
-                logger.error(f"❌ Failed to load template from {template_file}: {e}")
     
     
     def _load_schemas(self):
@@ -346,9 +318,6 @@ class RegistryManager:
         """Gibt alle Topics zurück"""
         return self.topics
     
-    def get_templates(self) -> Dict[str, Any]:
-        """Gibt alle Templates zurück (DEPRECATED - use get_schemas)"""
-        return self.schemas
     
     def get_schemas(self) -> Dict[str, Any]:
         """Gibt alle Schemas zurück"""

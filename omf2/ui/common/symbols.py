@@ -62,6 +62,7 @@ class UISymbols:
         # Availability Status Icons
         'available': '🟢',          # Available/Ready
         'busy': '🟠',               # Busy/Processing (🟠 - avoid conflict with pending)
+        'blocked': '🔴',            # Blocked (🔴 - red circle like in aps_modules.py)
         'charging': '⚡',            # Charging
         'transport': '🚗',           # Transport/Moving
         'maintenance': '🔧',         # Maintenance

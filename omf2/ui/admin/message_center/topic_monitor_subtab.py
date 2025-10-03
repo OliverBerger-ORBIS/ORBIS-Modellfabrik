@@ -15,12 +15,11 @@ from omf2.ui.common.symbols import UISymbols
 logger = get_logger(__name__)
 
 
-def render_topic_monitor_subtab(admin_gateway, conn_info):
+def render_topic_monitor_subtab(admin_gateway):
     """Render Topic Monitor Subtab with live MQTT topic monitoring
     
     Args:
         admin_gateway: AdminGateway Instanz (Gateway-Pattern)
-        conn_info: Connection Info Dict
     """
     logger.info(f"{UISymbols.get_functional_icon('topic_driven')} Rendering Topic Monitor Subtab")
     
@@ -28,13 +27,7 @@ def render_topic_monitor_subtab(admin_gateway, conn_info):
         st.subheader(f"{UISymbols.get_functional_icon('topic_driven')} Live MQTT Topic Monitor")
         st.markdown("**Real-time monitoring of MQTT topics with category filtering**")
         
-        # Check connection status
-        if not conn_info.get('connected', False):
-            if conn_info.get('mock_mode', False):
-                st.info("💡 Send a test message from the 'Send Messages' tab to see live monitoring in action!")
-            else:
-                st.info("🧪 Mock mode active - messages will be logged but not sent to real MQTT broker.")
-            return
+        # Connection status shown in sidebar only
         
         # Topic filter and category filter
         col1, col2, col3 = st.columns([2, 2, 1])

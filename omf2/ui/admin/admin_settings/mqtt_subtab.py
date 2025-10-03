@@ -4,7 +4,6 @@ Admin Settings - MQTT Subtab
 """
 
 import streamlit as st
-from omf2.admin.admin_gateway import AdminGateway
 from omf2.common.logger import get_logger
 
 logger = get_logger(__name__)

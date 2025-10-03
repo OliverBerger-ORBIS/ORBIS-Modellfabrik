@@ -8,7 +8,7 @@
 
 ## 📋 Übersicht
 
-OMF2 ist die neue, modulare und rollenbasierte Streamlit-Anwendung für die ORBIS-Modellfabrik. Sie ersetzt das bestehende OMF Dashboard mit einer gekapselten, robusten Architektur für MQTT-Kommunikation, Message-Templates und UI-Refresh.
+OMF2 ist die neue, modulare und rollenbasierte Streamlit-Anwendung für die ORBIS-Modellfabrik. Sie ersetzt das bestehende OMF Dashboard mit einer gekapselten, robusten Architektur für MQTT-Kommunikation, Schema-driven Messages und UI-Refresh.
 
 ## 🎯 **Hauptziele erreicht:**
 
@@ -18,7 +18,7 @@ OMF2 ist die neue, modulare und rollenbasierte Streamlit-Anwendung für die ORBI
 - ✅ **Thread-sichere Kommunikation:** Keine Race Conditions
 - ✅ **Modulare UI-Struktur:** Rollenbasierte Tab-Generierung
 - ✅ **Symbol-System:** Konsistente UI-Symbole mit UISymbols
-- ✅ **Saubere Architektur:** Redundante Mappings entfernt, direkte Schema-Abfrage
+- ✅ **Schema-driven Architecture:** Direkte JSON-Schema Integration ohne Templates
 
 ## 🏗️ **Architektur**
 
@@ -66,7 +66,7 @@ omf2/
 │   ├── manager/                   # Registry Manager (Singleton)
 │   ├── topics/                    # Topic-Definitionen
 │   ├── schemas/                   # 44 JSON-Schemas
-│   └── *.yml                      # Templates, Mappings, etc.
+│   └── *.yml                      # Schemas, Mappings, etc.
 ├── ui/                           # 🎨 Streamlit UI
 │   ├── main_dashboard.py          # Hauptdashboard
 │   ├── user_manager.py           # Rollenbasierte Zugriffe

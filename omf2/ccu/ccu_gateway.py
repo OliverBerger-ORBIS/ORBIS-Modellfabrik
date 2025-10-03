@@ -7,6 +7,8 @@ import logging
 import json
 from typing import Dict, List, Optional, Any
 from omf2.registry.manager.registry_manager import get_registry_manager
+from omf2.common.message_manager import get_ccu_message_manager
+from omf2.common.topic_manager import get_ccu_topic_manager
 
 logger = logging.getLogger(__name__)
 
@@ -28,6 +30,17 @@ class CcuGateway:
         """
         self.mqtt_client = mqtt_client
         self.registry_manager = get_registry_manager()
+        
+        # Initialize Message Manager
+        self.message_manager = get_ccu_message_manager(
+            registry_manager=self.registry_manager,
+            mqtt_client=self.mqtt_client
+        )
+        
+        # Initialize Topic Manager
+        self.topic_manager = get_ccu_topic_manager(
+            registry_manager=self.registry_manager
+        )
         
         logger.info("🏗️ CcuGateway initialized")
     
@@ -75,95 +88,39 @@ class CcuGateway:
     
     def get_all_topics(self) -> List[str]:
         """
-        Alle CCU Topics aus Registry abrufen
+        Alle CCU Topics aus Registry abrufen - Delegiert an Topic Manager
         
         Returns:
             Liste aller CCU Topics
         """
-        try:
-            all_topics = []
-            
-            # CCU Topics aus Registry Manager sammeln
-            mqtt_clients = self.registry_manager.get_mqtt_clients()
-            ccu_client = mqtt_clients.get('ccu_mqtt_client', {})
-            subscribed_topics = ccu_client.get('subscribed_topics', [])
-            
-            for topic_info in subscribed_topics:
-                if isinstance(topic_info, dict):
-                    topic = topic_info.get('topic', '')
-                else:
-                    topic = str(topic_info)
-                if topic:
-                    all_topics.append(topic)
-            
-            logger.debug(f"📡 Retrieved {len(all_topics)} CCU topics from registry")
-            return all_topics
-            
-        except Exception as e:
-            logger.error(f"❌ Failed to get CCU topics: {e}")
-            return []
+        return self.topic_manager.get_domain_topics("ccu")
     
     def get_all_message_buffers(self) -> Dict[str, Any]:
         """
-        Alle Message-Buffer abrufen - CCU-spezifische Buffers
+        Alle Message-Buffer abrufen - Delegiert an Message Manager
         
         Returns:
             Dict mit allen CCU Message-Buffers
         """
-        try:
-            if not self.mqtt_client:
-                logger.warning("⚠️ No MQTT client available")
-                return {}
-            
-            # Get all buffers from CCU MQTT client
-            all_buffers = self.mqtt_client.get_all_buffers()
-            logger.info(f"📊 Retrieved {len(all_buffers)} CCU message buffers")
-            return all_buffers
-            
-        except Exception as e:
-            logger.error(f"❌ Failed to get CCU message buffers: {e}")
-            return {}
+        return self.message_manager.get_all_message_buffers()
     
     def get_message_buffers(self) -> Dict[str, Dict]:
         """
-        Alle Message Buffers abrufen
+        Alle Message Buffers abrufen - Delegiert an Message Manager
         
         Returns:
             Dict mit allen Message Buffers
         """
-        try:
-            if not self.mqtt_client:
-                logger.warning("⚠️ No MQTT client available")
-                return {}
-            
-            buffers = self.mqtt_client.get_all_buffers()
-            logger.debug(f"📊 Retrieved {len(buffers)} message buffers")
-            return buffers
-            
-        except Exception as e:
-            logger.error(f"❌ Failed to get message buffers: {e}")
-            return {}
+        return self.message_manager.get_all_message_buffers()
     
     def clear_message_history(self) -> bool:
         """
-        Komplette Message-Historie löschen
+        Komplette Message-Historie löschen - Delegiert an Message Manager
         
         Returns:
             True wenn erfolgreich
         """
-        try:
-            if not self.mqtt_client:
-                logger.warning("⚠️ No MQTT client available")
-                return False
-            
-            # MQTT-Client hat clear_buffers() Methode
-            self.mqtt_client.clear_buffers()
-            logger.info("🗑️ Message history cleared")
-            return True
-            
-        except Exception as e:
-            logger.error(f"❌ Failed to clear message history: {e}")
-            return False
+        return self.message_manager.clear_message_history()
     
     def get_connection_info(self) -> Dict[str, Any]:
         """
@@ -212,28 +169,23 @@ class CcuGateway:
     
     def reset_factory(self) -> bool:
         """
-        Factory Reset ausführen
+        Factory Reset ausführen - Schema-driven Message Generation
         
         Returns:
             True wenn erfolgreich, False bei Fehler
         """
         try:
-            # Registry v2 Integration: Topic aus Registry laden
             topic = "ccu/set/reset"
-            topic_config = self.registry_manager.get_topic_config(topic)
+            # Schema-driven Message Generation
+            message = self.message_manager.generate_message(topic, {"reset": True})
             
-            if topic_config:
-                # Message aus Template rendern
-                # TODO: Implement message rendering from registry manager
-                message = {"reset": True}
-                if message:
-                    # MQTT-Client Integration
-                    success = self.publish_message(topic, message)
-                    if success:
-                        logger.info("🏭 Factory reset executed")
-                        return True
+            if message:
+                success = self.publish_message(topic, message)
+                if success:
+                    logger.info("🏭 Factory reset executed")
+                    return True
             else:
-                logger.warning(f"⚠️ No topic configuration found for {topic}")
+                logger.warning(f"⚠️ Failed to generate message for {topic}")
                 return False
             
         except Exception as e:
@@ -242,7 +194,7 @@ class CcuGateway:
     
     def send_global_command(self, command: str, params: Dict[str, Any] = None) -> bool:
         """
-        Global Command senden
+        Global Command senden - Schema-driven Message Generation
         
         Args:
             command: Command-String
@@ -252,30 +204,21 @@ class CcuGateway:
             True wenn erfolgreich, False bei Fehler
         """
         try:
-            # Registry v2 Integration: Topic aus Registry laden
             topic = "ccu/global"
-            topic_config = self.registry_manager.get_topic_config(topic)
+            # Schema-driven Message Generation
+            message = self.message_manager.generate_message(topic, {
+                "command": command,
+                "params": params or {}
+            })
             
-            if topic_config:
-                # Message aus Template rendern
-                # TODO: Implement message rendering from registry manager
-                message = {
-                    "command": command,
-                    "params": params or {}
-                }
-                if message:
-                    # TODO: MQTT-Client Integration implementieren
-                    # qos = topic_config.get('qos', 1)
-                    # retain = topic_config.get('retain', False)
-                    # self.mqtt_client.publish(topic, message, qos=qos, retain=retain)
-                    
-                    logger.info(f"📤 Global Command message rendered: {message}")
+            if message:
+                success = self.publish_message(topic, message)
+                if success:
+                    logger.info(f"📤 Global Command sent: {command}")
                     return True
             else:
-                logger.warning(f"⚠️ No topic configuration found for {topic}")
-            
-            logger.info(f"📤 Global Command: {command} (TODO: MQTT integration)")
-            return True
+                logger.warning(f"⚠️ Failed to generate message for {topic}")
+                return False
             
         except Exception as e:
             logger.error(f"❌ Global Command failed: {e}")
@@ -352,30 +295,79 @@ class CcuGateway:
     
     def get_published_topics(self) -> List[str]:
         """
-        CCU Published Topics aus Registry abrufen
+        CCU Published Topics aus Registry abrufen - Delegiert an Topic Manager
         
         Returns:
             Liste der Published Topics
         """
-        try:
-            mqtt_clients = self.registry_manager.get_mqtt_clients()
-            ccu_client = mqtt_clients.get('mqtt_clients', {}).get('ccu_mqtt_client', {})
-            return ccu_client.get('published_topics', [])
-        except Exception as e:
-            logger.error(f"❌ Failed to get CCU published topics: {e}")
-            return []
+        return self.topic_manager.get_published_topics("ccu")
     
     def get_subscribed_topics(self) -> List[str]:
         """
-        CCU Subscribed Topics aus Registry abrufen
+        CCU Subscribed Topics aus Registry abrufen - Delegiert an Topic Manager
         
         Returns:
             Liste der Subscribed Topics
         """
-        try:
-            mqtt_clients = self.registry_manager.get_mqtt_clients()
-            ccu_client = mqtt_clients.get('mqtt_clients', {}).get('ccu_mqtt_client', {})
-            return ccu_client.get('subscribed_topics', [])
-        except Exception as e:
-            logger.error(f"❌ Failed to get CCU subscribed topics: {e}")
-            return []
+        return self.topic_manager.get_subscribed_topics("ccu")
+    
+    # ===== New Manager-based Functionality =====
+    
+    def generate_message(self, topic: str, params: Dict[str, Any] = None) -> Optional[Dict]:
+        """
+        Message für Topic generieren - Delegiert an Message Manager
+        
+        Args:
+            topic: MQTT Topic
+            params: Parameter für Message-Generierung
+            
+        Returns:
+            Generierte Message oder None
+        """
+        return self.message_manager.generate_message(topic, params)
+    
+    def validate_message(self, topic: str, message: Dict[str, Any]) -> Dict[str, List[str]]:
+        """
+        Message gegen Schema validieren - Delegiert an Message Manager
+        
+        Args:
+            topic: MQTT Topic
+            message: Message zum Validieren
+            
+        Returns:
+            {"errors": [...], "warnings": [...]}
+        """
+        return self.message_manager.validate_message(topic, message)
+    
+    def get_topic_schemas(self) -> Dict[str, Dict]:
+        """
+        CCU Topic-Schema Mappings abrufen - Delegiert an Topic Manager
+        
+        Returns:
+            Dict mit Topic-Schema Mappings
+        """
+        return self.topic_manager.get_topic_schemas()
+    
+    def analyze_topic(self, topic: str) -> Dict[str, Any]:
+        """
+        CCU Topic-Analyse durchführen - Delegiert an Topic Manager
+        
+        Args:
+            topic: MQTT Topic
+            
+        Returns:
+            Dict mit Topic-Analyse-Informationen
+        """
+        return self.topic_manager.analyze_topic(topic)
+    
+    def get_topics_by_pattern(self, pattern: str) -> List[str]:
+        """
+        CCU Topics nach Pattern filtern - Delegiert an Topic Manager
+        
+        Args:
+            pattern: Topic-Pattern (z.B. "ccu/*", "*/state")
+            
+        Returns:
+            Liste der passenden Topics
+        """
+        return self.topic_manager.get_topics_by_pattern(pattern)

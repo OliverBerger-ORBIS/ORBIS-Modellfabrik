@@ -4,7 +4,8 @@
 **Status: VOLLSTÄNDIG IMPLEMENTIERT** ✅  
 **Tests: 55 Tests erfolgreich** ✅  
 **Registry-Migration: ABGESCHLOSSEN** ✅  
-**Architektur-Cleanup: ABGESCHLOSSEN** ✅
+**Architektur-Cleanup: ABGESCHLOSSEN** ✅  
+**CCU Modules Tab: AVAILABILITY STATUS IMPLEMENTIERT** ✅
 
 ## 🎯 GEKAPSELTE MQTT-ARCHITEKTUR
 
@@ -26,9 +27,32 @@ Die vollständige gekapselte MQTT-Architektur für Streamlit-Apps wurde erfolgre
 | **ModuleManager** | ✅ | - | Schema-basierte Message-Verarbeitung |
 | **WorkpieceManager** | ✅ | - | Registry-basierte Workpiece-Icons |
 | **UI-Komponenten** | ✅ | - | Vollständige Tab-Struktur |
+| **CCU Modules Tab** | ✅ | - | Availability Status (READY/BUSY/BLOCKED), Connection Status |
 | **Comprehensive Tests** | ✅ | 14 | Architektur-weite Tests |
 
 **GESAMT: 55 Tests erfolgreich**
+
+## 🎯 CCU MODULES TAB - AVAILABILITY STATUS IMPLEMENTIERT
+
+### **✅ Verfügbare Status korrekt implementiert:**
+- **READY** → 🟢 Available ✅
+- **BUSY** → 🟠 Busy ✅  
+- **BLOCKED** → 🔴 Blocked ✅
+- **UNKNOWN** → ⚫ UNKNOWN ✅
+
+### **✅ Connection Status korrekt implementiert:**
+- **Connected** → 🟢 Connected ✅
+- **Disconnected** → 🔴 Disconnected ✅
+
+### **✅ Technische Implementierung:**
+- **MQTT Payload-Verarbeitung:** Korrekte JSON-Parsing aus `payload` Feld ✅
+- **UISymbols Integration:** Alle Status-Icons aus zentraler UISymbols-Klasse ✅
+- **Module Manager:** Schema-basierte Message-Verarbeitung ✅
+- **UI Integration:** Echte MQTT-Daten in Tabelle angezeigt ✅
+
+### **📋 TODO - Shopfloor.yml Integration:**
+- **Location Entscheidung:** registry vs config (noch nicht entschieden) ❓
+- **Configuration Status:** Bereit implementiert, wartet auf shopfloor.yml ❓
 
 ## 🏗️ IMPLEMENTIERTE ARCHITEKTUR
 
@@ -75,7 +99,7 @@ UI-Schema-Integration ✅
 - ✅ Topics, Schemas, Mappings - Alle implementiert
 - ✅ `omf2/registry/schemas/` - 44 JSON-Schemas für Topic-Validierung
 - ✅ Schema-Integration in Topic-Definitionen
-- ✅ **KEINE Templates mehr** - Direkte JSON-Schemas für Topic-Validierung
+- ✅ **Schema-driven Architecture** - Direkte JSON-Schemas für Topic-Validierung
 
 ### **UI-Komponenten:**
 - ✅ `omf2/ui/ccu/` - CCU Tabs und Subtabs
@@ -94,7 +118,7 @@ UI-Schema-Integration ✅
 - ✅ **UI-Schema-Integration:** Schema-Validierung in Admin Settings
 - ✅ **Registry-Tools:** Automatische Schema-Zuordnung zu Topics
 - ✅ **Pfad-Korrekturen:** Alle Komponenten verwenden neue Registry-Pfade
-- ✅ **Templates entfernt:** Keine MessageTemplates mehr - direkte JSON-Schemas
+- ✅ **Schema-driven Messages:** Direkte JSON-Schemas ohne MessageTemplates
 - ✅ **Architektur-Cleanup:** Redundante topic_schema_mappings entfernt
 - ✅ **Direkte Schema-Abfrage:** Schema-Info wird direkt aus Topics geladen
 
@@ -129,7 +153,7 @@ admin_gateway.publish_message("ccu/global", {"command": "status"})
 - ✅ Weggekapselte, robuste Architektur
 - ✅ UI bleibt einfach (keine Threading-Probleme)
 - ✅ Gateways sind "schlanke Fassade"
-- ✅ MQTT und Templates sind zentral und thread-safe gekapselt
+- ✅ MQTT und Schemas sind zentral und thread-safe gekapselt
 - ✅ Das Pattern ist in allen Domänen wiederverwendbar
 
 ### **✅ Technische Ziele:**

@@ -29,14 +29,7 @@ def render_generic_steering_tab():
         # Get Registry Manager from session state
         registry_manager = st.session_state.get('registry_manager')
         
-        # Connection Status via Gateway
-        conn_info = admin_gateway.get_connection_info()
-        current_env = st.session_state.get('current_environment', 'mock')
-        
-        if conn_info['connected']:
-            st.success(f"🔗 **Connected:** {conn_info['client_id']} | **Environment:** {current_env}")
-        else:
-            st.error(f"{UISymbols.get_status_icon('error')} **Disconnected:** {conn_info['client_id']} | **Environment:** {current_env}")
+        # Connection status shown in sidebar only
         
         # Registry Manager Status
         if registry_manager:

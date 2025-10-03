@@ -4,9 +4,8 @@ Admin Settings Tab - Admin Settings UI Component
 """
 
 import streamlit as st
-from omf2.admin.admin_gateway import AdminGateway
-from omf2.admin.admin_mqtt_client import get_admin_mqtt_client
 from omf2.common.logger import get_logger
+from omf2.factory.gateway_factory import get_admin_gateway
 from omf2.ui.common.symbols import UISymbols
 
 logger = get_logger(__name__)
@@ -18,6 +17,15 @@ def render_admin_settings_tab():
     try:
         st.header(f"{UISymbols.get_tab_icon('admin_settings')} Admin Settings")
         st.markdown("Dashboard configuration and registry information")
+        
+        # Gateway-Pattern: Get AdminGateway from Factory
+        admin_gateway = get_admin_gateway()
+        if not admin_gateway:
+            st.error(f"{UISymbols.get_status_icon('error')} Admin Gateway not available")
+            return
+        
+        # Get Registry Manager from session state
+        registry_manager = st.session_state.get('registry_manager')
         
         # Create subtabs using UISymbols for consistent icon management
         subtab_labels = [

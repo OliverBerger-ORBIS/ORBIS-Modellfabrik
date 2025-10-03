@@ -25,12 +25,11 @@ from omf2.ui.common.symbols import UISymbols
 logger = get_logger(__name__)
 
 
-def render_message_monitor_subtab(admin_gateway, conn_info):
+def render_message_monitor_subtab(admin_gateway):
     """Render Message Monitor Subtab with omf/ style UI
     
     Args:
         admin_gateway: AdminGateway Instanz (Gateway-Pattern)
-        conn_info: Connection Info Dict
     """
     logger.info(f"{UISymbols.get_functional_icon('dashboard')} Rendering Message Monitor Subtab")
     
@@ -38,10 +37,7 @@ def render_message_monitor_subtab(admin_gateway, conn_info):
         st.subheader(f"{UISymbols.get_functional_icon('dashboard')} Message Monitor (omf/ Style)")
         st.markdown("**Structured table view with filtering and detailed payload inspection**")
         
-        # Use passed parameters instead of re-initializing
-        # admin_client and conn_info are already provided
-        
-        # Connection status is already shown in main Message Center tab
+        # Connection status shown in sidebar only
         
         # Filter-Optionen (aus omf/)
         st.subheader(f"{UISymbols.get_functional_icon('search')} Filter & Einstellungen")

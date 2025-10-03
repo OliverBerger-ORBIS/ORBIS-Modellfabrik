@@ -10,7 +10,7 @@ Die Tabelle zeigt, wie alte Komponenten/Funktionen in die neue Architektur über
 | **Alt-Funktion / Komponente**              | **Ziel (omf2 / neue Struktur)**         | **Status** | **Prinzipien / Besonderheiten**                              | **Verantwortlich** |
 |--------------------------------------------|-----------------------------------------|------------|-------------------------------------------------------------|--------------------|
 | **Rollenbasierte Haupttabs**               | Dynamische Tab-Generierung mit Rollen   |  ✅        | Rollen in config/user_roles.yml, Tabs dynamisch initiiert    | ✅ |
-| Operator Tabs (APS Module) | `ui/ccu/modules/ccu_modules_tab.py`     |      ✅         | Modular, Icons, i18n, MQ-Integration                        |                    |
+| Operator Tabs (APS Module) | `ui/ccu/modules/ccu_modules_tab.py`     |      ✅         | Modular, Icons, MQ-Integration, Availability Status (READY/BUSY/BLOCKED) | ✅ |
 | Operator Tabs (APS Overview) | `ui/ccu/overview/ccu_overview_tab.py`     | offen      | Modular, Icons, i18n, MQ-Integration                        |                    |
 | Operator Tabs (APS Aufträge.) | `ui/ccu/orders/ccu_orers_tab.py`     | offen      | Modular, Icons, i18n, MQ-Integration                        |                    |
 | Operator Tabs (APS Prozesse.) | `ui/ccu/process/ccu_process_tab.py`     | offen      | Modular, Icons, i18n, MQ-Integration                        |                    |
@@ -20,7 +20,7 @@ Die Tabelle zeigt, wie alte Komponenten/Funktionen in die neue Architektur über
 | **Untertabs**                              | Separate Module in jeweiligem Tab-Ordner| ✅         | z.B. `ui/admin/steering/factory_tab.py`                      |                    |
 | Werkstück-Konfiguration                    | `ui/admin/admin_settings/workpiece_subtab.py` | ✅ | Registry Manager, id/nfc_code Struktur, WorkpieceManager | ✅ |
 | MQTT-Konfiguration (Settings)              | `ui/admin/admin_settings/dashboard_subtab.py` | ✅ | Registry Manager, Environment-Info, Read-Only | ✅ |
-| Topic-/Template-Konfiguration              | `ui/admin/admin_settings/topics_subtab.py` | ✅ | Registry Manager, Category-basierte Anzeige | ✅ |
+| Topic-/Schema-Konfiguration               | `ui/admin/admin_settings/topics_subtab.py` | ✅ | Registry Manager, Category-basierte Anzeige | ✅ |
 | Dynamische Tab-Generierung                 | Zentraler Tab-Renderer                  | offen      | Tabs/Subtabs nach Rolle, i18n, Fehlerfallback                |                    |
 | Internationalisierung (DE/EN/FR)           | `common/i18n.py` + UI-Integration       | Phase 2    | Keine Hardcodierung, dynamische Sprachwahl (nach Grundarchitektur) |                    |
 | Icons pro Tab                              | `ui/common/symbols.py` (UISymbols)    | ✅         | Zentrale UISymbols-Klasse, konsistente Symbol-Verwendung    | ✅ |
@@ -48,8 +48,8 @@ Die Tabelle zeigt, wie alte Komponenten/Funktionen in die neue Architektur über
   z.B. MQTT-Client per Factory und Singleton, Session-State-Verwaltung.
 - **Logging:**  
   Strukturiertes, modular nutzbares Logging mit Ring-Buffer, Anzeige im Log-Tab.
-- **Assets & Templates:**  
-  Alle Bilder, Templates und Icons zentral in `assets/`.
+- **Assets:**  
+  Alle Bilder und Icons zentral in `assets/`.
 - **Umgebungsmodi (live/replay/mock):**  
   Umschaltbar, beeinflusst Datenquellen und Verbindungen (z.B. MQTT).
 
@@ -67,22 +67,24 @@ Die Tabelle zeigt, wie alte Komponenten/Funktionen in die neue Architektur über
 ## ✅ ABGESCHLOSSENE PUNKTE (2025-10-02)
 
 ### **🎯 VOLLSTÄNDIG IMPLEMENTIERT:**
+- ✅ **Rollenbasierte Haupttabs** (Dynamische Tab-Generierung mit Rollen)
 - ✅ **Admin-Tabs** (Steering, Message Center, Admin Settings)
 - ✅ **Untertabs** (Modulare Struktur in Tab-Ordnern)
 - ✅ **Werkstück-Konfiguration** (Registry Manager Integration)
 - ✅ **MQTT-Konfiguration** (Registry Manager, Environment-Info)
-- ✅ **Topic-/Template-Konfiguration** (Registry Manager, Category-basierte Anzeige)
+- ✅ **Topic-/Schema-Konfiguration** (Registry Manager, Category-basierte Anzeige)
 - ✅ **Icons pro Tab** (UISymbols-Klasse, konsistente Symbol-Verwendung)
 - ✅ **Komponenten-Loading** (Error-Handling, Fallback-Messages)
 - ✅ **MQTT-Client** (Singleton-Pattern, Threadsafe)
 - ✅ **UI-Refresh** (Threadsafe, keine Race Conditions)
 - ✅ **Logging** (Modular, strukturierte Logs)
 - ✅ **Umgebungs-Modi** (Live/Replay/Mock, Default: replay)
+- ✅ **CCU Modules Tab** (Availability Status: READY/BUSY/BLOCKED, Connection Status, UISymbols)
 
 ### **📊 FORTSCHRITT:**
-- **Abgeschlossen:** 11/15 technische Punkte (73%)
-- **Verbleibend:** 4 Punkte (Rollenbasierte Tabs, Dynamische Tab-Generierung, i18n, CCU-Tabs)
+- **Abgeschlossen:** 13/15 technische Punkte (87%)
+- **Verbleibend:** 2 Punkte (Dynamische Tab-Generierung, i18n)
 
 ---
 
-**Letzte Aktualisierung:** 2025-10-02
+**Letzte Aktualisierung:** 2025-10-03

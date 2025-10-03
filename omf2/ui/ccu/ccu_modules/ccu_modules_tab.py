@@ -214,7 +214,7 @@ def _show_module_statistics(ccu_gateway):
         # Calculate statistics
         total_modules = len(modules)
         connected_modules = sum(1 for status in status_store.values() if status.get("connected", False))
-        available_modules = sum(1 for status in status_store.values() if status.get("available") in ["READY", "AVAILABLE"])
+        available_modules = sum(1 for status in status_store.values() if status.get("available") == "READY")
         
         # Get configured modules count from Module Manager
         factory_config = module_manager.get_factory_configuration()
@@ -254,7 +254,7 @@ def _show_module_statistics_summary(status_store):
         # Calculate summary statistics
         total_modules = len(status_store)
         connected_modules = sum(1 for status in status_store.values() if status.get("connected", False))
-        available_modules = sum(1 for status in status_store.values() if status.get("available") in ["READY", "AVAILABLE"])
+        available_modules = sum(1 for status in status_store.values() if status.get("available") == "READY")
         
         # Get configured modules count from Module Manager
         module_manager = get_ccu_module_manager()

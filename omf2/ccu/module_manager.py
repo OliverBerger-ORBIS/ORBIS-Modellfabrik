@@ -144,20 +144,32 @@ class CcuModuleManager:
             
             if "/connection" in topic:
                 # Connection message: use connectionState field (Schema: module_v1_ff_serial_connection.schema.json)
-                connection_state = message_data.get("connectionState")
+                # CORRECTED: Use connectionState from payload, not from message_data
+                connection_state = payload.get("connectionState")
                 if connection_state is not None:
                     # Map connection states to boolean
                     connected = connection_state.lower() in ["connected", "online", "active"]
                     status_store[module_id]["connected"] = connected
-                    logger.info(f"🔍 DEBUG: Module {module_id} connection state: {connection_state} -> connected: {connected}")
+                    logger.info(f"🔍 DEBUG: Module {module_id} connection state from payload: {connection_state} -> connected: {connected}")
+                else:
+                    logger.warning(f"⚠️ Module {module_id} no connectionState found in payload: {payload}")
                     
             elif "/state" in topic:
-                # State message: use metadata.opcuaState field (Schema: module_v1_ff_serial_state.schema.json)
-                metadata = message_data.get("metadata", {})
-                opcua_state = metadata.get("opcuaState")
-                if opcua_state is not None:
-                    status_store[module_id]["available"] = opcua_state
-                    logger.info(f"🔍 DEBUG: Module {module_id} opcua state: {opcua_state}")
+                # State message: use available field directly (Schema: module_v1_ff_serial_state.schema.json)
+                # CORRECTED: Use 'available' field from payload, not from message_data
+                available = payload.get("available")
+                if available is not None:
+                    status_store[module_id]["available"] = available
+                    logger.info(f"🔍 DEBUG: Module {module_id} available state from payload: {available}")
+                else:
+                    # Fallback to metadata.opcuaState if available field not present
+                    metadata = payload.get("metadata", {})
+                    opcua_state = metadata.get("opcuaState")
+                    if opcua_state is not None:
+                        status_store[module_id]["available"] = opcua_state
+                        logger.info(f"🔍 DEBUG: Module {module_id} opcua state (fallback): {opcua_state}")
+                    else:
+                        logger.warning(f"⚠️ Module {module_id} no available or opcuaState found in payload: {payload}")
             
             # Update message count and timestamp
             status_store[module_id]["message_count"] += 1
@@ -333,38 +345,26 @@ class CcuModuleManager:
     
     def get_availability_display(self, availability: str) -> str:
         """
-        Get availability display with icon (UISymbols-based)
+        Get availability display with icon (UISymbols-based) - CORRECTED to match aps_modules.py
         
         Args:
-            availability: Availability status string
+            availability: Availability status string (READY, BUSY, BLOCKED, etc.)
             
         Returns:
             Display string with icon from UISymbols
         """
-        availability_lower = availability.lower()
-        
-        if "available" in availability_lower or "ready" in availability_lower:
+        # Exact match with aps_modules.py logic
+        if availability == "READY":
             icon = UISymbols.get_status_icon('available')
             return f"{icon} Available"
-        elif "busy" in availability_lower or "processing" in availability_lower:
+        elif availability == "BUSY":
             icon = UISymbols.get_status_icon('busy')
             return f"{icon} Busy"
-        elif "error" in availability_lower or "blocked" in availability_lower:
-            icon = UISymbols.get_status_icon('error')
-            return f"{icon} Error"
-        elif "charging" in availability_lower:
-            icon = UISymbols.get_status_icon('charging')
-            return f"{icon} Charging"
-        elif "transport" in availability_lower or "moving" in availability_lower:
-            icon = UISymbols.get_status_icon('transport')
-            return f"{icon} Transport"
-        elif "maintenance" in availability_lower:
-            icon = UISymbols.get_status_icon('maintenance')
-            return f"{icon} Maintenance"
-        elif "idle" in availability_lower or "waiting" in availability_lower:
-            icon = UISymbols.get_status_icon('idle')
-            return f"{icon} Idle"
+        elif availability == "BLOCKED":
+            icon = UISymbols.get_status_icon('blocked')
+            return f"{icon} Blocked"
         else:
+            # For any other status, show with unknown icon
             icon = UISymbols.get_status_icon('unknown')
             return f"{icon} {availability}"
     
@@ -387,18 +387,26 @@ class CcuModuleManager:
     
     def is_module_configured(self, module_id: str, factory_config: Dict[str, Any]) -> bool:
         """
-        Check if module is configured in factory
+        Check if module is configured in factory - CORRECTED to match aps_modules.py
         
         Args:
             module_id: Module identifier
-            factory_config: Factory configuration
+            factory_config: Factory configuration from shopfloor.yml
             
         Returns:
             True if module is configured
         """
         try:
-            configured_modules = factory_config.get("configuredModules", [])
-            return module_id in configured_modules
+            if not factory_config:
+                return False
+            
+            # Check positions array like in aps_modules.py
+            positions = factory_config.get("positions", [])
+            for position in positions:
+                if position.get("type") == "MODULE" and position.get("module_serial") == module_id:
+                    return position.get("enabled", False)
+            
+            return False
         except Exception:
             return False
     
@@ -421,16 +429,16 @@ class CcuModuleManager:
     
     def get_factory_configuration(self) -> Dict[str, Any]:
         """
-        Get factory configuration from Registry
+        Get factory configuration - PLACEHOLDER until shopfloor.yml location is decided
         
         Returns:
-            Factory configuration dict
+            Factory configuration dict (empty until shopfloor.yml is integrated)
         """
         try:
-            # Try to get factory configuration from registry
-            # This should come from a factory configuration file in registry
-            # For now, return empty config - will be implemented when registry structure is clear
-            logger.debug("📊 Factory configuration requested (placeholder)")
+            # TODO: shopfloor.yml integration - location not yet decided!
+            # Options: registry/model/v1/shopfloor.yml OR config/shopfloor.yml
+            logger.info("📋 TODO: shopfloor.yml integration needed for 'Configured' status")
+            logger.info("📋 Decision needed: registry vs config location for shopfloor.yml")
             return {}
             
         except Exception as e:

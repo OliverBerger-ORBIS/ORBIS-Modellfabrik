@@ -27,10 +27,7 @@ def render_message_center_tab():
             st.error(f"{UISymbols.get_status_icon('error')} Admin Gateway not available")
             return
         
-        # Get connection info via Gateway
-        conn_info = admin_gateway.get_connection_info()
-        
-        # Connection Status removed - shown in sidebar instead
+        # Connection status shown in sidebar only
         
         # Tabs for different functions - Standard konform using UISymbols
         tab1, tab2, tab3 = st.tabs([
@@ -40,32 +37,32 @@ def render_message_center_tab():
         ])
         
         with tab1:
-            _render_message_monitor_tab(admin_gateway, conn_info)
+            _render_message_monitor_tab(admin_gateway)
         
         with tab2:
-            _render_topic_monitor_tab(admin_gateway, conn_info)
+            _render_topic_monitor_tab(admin_gateway)
         
         with tab3:
-            _render_send_test_message_tab(admin_gateway, conn_info)
+            _render_send_test_message_tab(admin_gateway)
         
     except Exception as e:
         logger.error(f"{UISymbols.get_status_icon('error')} Message Center Tab error: {e}")
         st.error(f"{UISymbols.get_status_icon('error')} Message Center failed: {e}")
 
 
-def _render_message_monitor_tab(admin_gateway, conn_info):
+def _render_message_monitor_tab(admin_gateway):
     """Render Message Monitor tab (formerly Enhanced View)"""
     from omf2.ui.admin.message_center.message_monitor_subtab import render_message_monitor_subtab
-    render_message_monitor_subtab(admin_gateway, conn_info)
+    render_message_monitor_subtab(admin_gateway)
 
 
-def _render_topic_monitor_tab(admin_gateway, conn_info):
+def _render_topic_monitor_tab(admin_gateway):
     """Render Topic Monitor tab"""
     from omf2.ui.admin.message_center.topic_monitor_subtab import render_topic_monitor_subtab
-    render_topic_monitor_subtab(admin_gateway, conn_info)
+    render_topic_monitor_subtab(admin_gateway)
 
 
-def _render_send_test_message_tab(admin_gateway, conn_info):
+def _render_send_test_message_tab(admin_gateway):
     """Render Send Test Message tab"""
     from omf2.ui.admin.message_center.send_test_message_subtab import render_send_test_message_subtab
-    render_send_test_message_subtab(admin_gateway, conn_info)
+    render_send_test_message_subtab(admin_gateway)

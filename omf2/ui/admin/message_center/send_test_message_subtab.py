@@ -14,12 +14,11 @@ from omf2.ui.common.symbols import UISymbols
 logger = get_logger(__name__)
 
 
-def render_send_test_message_subtab(admin_gateway, conn_info):
+def render_send_test_message_subtab(admin_gateway):
     """Render Send Test Message Subtab
     
     Args:
         admin_gateway: AdminGateway Instanz (Gateway-Pattern)
-        conn_info: Connection Info Dict
     """
     logger.info("🚀 Rendering Send Test Message Subtab")
     
@@ -39,7 +38,7 @@ def render_send_test_message_subtab(admin_gateway, conn_info):
             default_message = {
                 "message": "Hello from OMF2 Message Center",
                 "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "environment": conn_info.get('environment', 'unknown')
+                "environment": st.session_state.get('current_environment', 'unknown')
             }
             
             test_message = st.text_area(

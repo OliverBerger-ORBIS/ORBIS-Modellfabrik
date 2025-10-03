@@ -87,7 +87,7 @@ omf2/
         module_subtab.py
         mqtt_subtab.py
         topics_subtab.py
-        templates_subtab.py
+        schemas_subtab.py
       # logs/                                   # ❌ NOCH NICHT IMPLEMENTIERT
       #   logs_tab.py
       generic_steering/
@@ -133,7 +133,7 @@ omf2/
     i18n.py
     logger.py
     workpiece_manager.py                       # ✅ NEU: Registry-basierte Workpiece-Icons
-    # message_templates.py - ENTFERNT (durch Registry Manager ersetzt)
+    # Schema-driven Messages - Direkte JSON-Schema Integration
   # ZUSÄTZLICHE ENTWICKLUNGEN:                 # ✅ HINZUGEFÜGT
   omf.py                                       # ✅ HAUPTANWENDUNG
   example_usage.py                            # ✅ BEISPIEL-SKRIPT
@@ -160,7 +160,7 @@ omf2/
 - Der Ordner `omf2/assets/` dient als zentrale Ablage für alle statischen Ressourcen, die in der UI verwendet werden.
   - **logos/**: Firmen- und Produktlogos.
   - **icons/**: PNG, SVG, und andere Icon-Grafiken (z. B. für Module oder Statusanzeigen).
-  - **templates/**: HTML-Templates für UI, Reports, E-Mails etc.
+  - **schemas/**: JSON-Schemas für Message-Validierung etc.
 - Assets werden in der UI direkt aus diesem Verzeichnis geladen und versioniert.
 
 ### **Factory-Pattern**
@@ -227,7 +227,7 @@ if 'registry_manager' not in st.session_state:
 registry_manager = st.session_state.get('registry_manager')
 if registry_manager:
     topics = registry_manager.get_topics()
-    templates = registry_manager.get_templates()
+    schemas = registry_manager.get_schemas()
     # etc.
 ```
 
@@ -364,7 +364,7 @@ environments = {
 ### 6.1 Implementierungsstatus (Stand: 2025-09-29)
 
 **✅ VOLLSTÄNDIG IMPLEMENTIERT:**
-- Registry v2 mit allen Templates und Mappings
+- Registry v2 mit allen Schemas und Mappings
 - MQTT-Clients (Admin, CCU, Node-RED) mit Singleton-Pattern
 - Gateway-Factory und Client-Factory
 - UI-Struktur mit allen Tabs und Subtabs
@@ -436,7 +436,7 @@ environments = {
 - ✅ Dashboard-Utils (dashboard/utils/)
 - ✅ Umfangreiche Dokumentation
 - ✅ Architektur-Dokumente
-- ✅ Zusätzliche Templates in Registry v2
+- ✅ Zusätzliche Schemas in Registry v2
 - ✅ Node-RED MQTT-Client (nodered_mqtt_client.py)
 - ✅ UI-Manager (user_manager.py)
 - ✅ UI-Common-Verzeichnis

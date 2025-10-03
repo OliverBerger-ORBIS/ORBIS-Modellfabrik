@@ -256,7 +256,7 @@ class UserManager:
             'system_logs': {
                 'icon': UISymbols.get_functional_icon('logs'),
                 'name': 'System Logs',
-                'module': 'omf2.ui.admin.logs.system_logs_tab',
+                'module': 'omf2.ui.admin.system_logs.system_logs_tab',
                 'function': 'render_system_logs_tab'
             },
             'admin_settings': {

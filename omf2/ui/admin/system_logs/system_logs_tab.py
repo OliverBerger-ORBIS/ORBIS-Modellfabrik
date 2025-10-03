@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """
+NICHT SICHTBAR für agent
 Admin Logs Tab - System Log Viewer and Analysis
 Gateway-Pattern konform: Nutzt AdminGateway für Log-Zugriff
 """
@@ -27,12 +28,7 @@ def render_system_logs_tab():
             st.error(f"{UISymbols.get_status_icon('error')} Admin Gateway not available")
             return
         
-        # Get connection info
-        conn_info = admin_gateway.get_connection_info()
-        if conn_info['connected']:
-            st.success(f"{UISymbols.get_status_icon('success')} Connected to MQTT Broker")
-        else:
-            st.warning(f"{UISymbols.get_status_icon('warning')} Disconnected from MQTT Broker")
+        # Connection status shown in sidebar only
         
         # Log viewer tabs
         tab1, tab2, tab3 = st.tabs([

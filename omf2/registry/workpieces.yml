@@ -213,8 +213,8 @@ colors:
 
 
 
-# Template-Integration
-template_placeholders:
+# Schema-Integration
+schema_placeholders:
   nfc_code: "<nfcCode>"
   workpiece_id: "<workpieceId>"
   color: "<color>"
