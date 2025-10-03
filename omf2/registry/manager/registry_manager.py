@@ -37,7 +37,7 @@ class RegistryManager:
         # Registry-Entitäten im Speicher
         self.topics = {}
         self.schemas = {}  # Ersetzt templates
-        self.topic_schema_mappings = {}  # Ersetzt topic_template_mappings
+        # topic_schema_mappings entfernt - Schema-Info ist bereits in topics gespeichert
         self.mqtt_clients = {}
         self.workpieces = {}
         self.modules = {}
@@ -59,8 +59,7 @@ class RegistryManager:
             # Schemas laden (ersetzt Templates)
             self._load_schemas()
             
-            # Topic-Schema-Mappings laden
-            self._load_topic_schema_mappings()
+            # Topic-Schema-Mappings nicht mehr benötigt - Schema-Info ist in topics gespeichert
             
             # MQTT Clients laden
             self._load_mqtt_clients()
@@ -148,31 +147,6 @@ class RegistryManager:
             except Exception as e:
                 logger.error(f"❌ Failed to load template from {template_file}: {e}")
     
-    def _load_topic_template_mappings(self):
-        """Lädt Topic-Template-Mappings"""
-        mappings_file = self.registry_path / "mappings" / "topic_templates.yml"
-        if not mappings_file.exists():
-            logger.warning(f"⚠️ Topic-Template mappings file not found: {mappings_file}")
-            return
-        
-        try:
-            with open(mappings_file, 'r', encoding='utf-8') as f:
-                data = yaml.safe_load(f) or {}
-                
-            mappings = data.get('mappings', [])
-            for mapping in mappings:
-                if isinstance(mapping, dict) and 'topic' in mapping:
-                    topic = mapping['topic']
-                    self.topic_schema_mappings[topic] = {
-                        'topic': topic,
-                        'template': mapping.get('template'),
-                        'direction': mapping.get('direction', 'unknown')
-                    }
-                    
-            logger.info(f"🔗 Loaded {len(mappings)} topic-template mappings")
-            
-        except Exception as e:
-            logger.error(f"❌ Failed to load topic-template mappings: {e}")
     
     def _load_schemas(self):
         """Lädt alle Schemas aus dem schemas Unterordner"""
@@ -202,20 +176,6 @@ class RegistryManager:
             except Exception as e:
                 logger.error(f"❌ Failed to load schema from {schema_file}: {e}")
     
-    def _load_topic_schema_mappings(self):
-        """Lädt Topic-Schema-Mappings"""
-        # Schema-Mappings werden automatisch aus Topics generiert
-        # da Topics jetzt direkt Schema-Referenzen haben
-        for topic, topic_info in self.topics.items():
-            if topic_info.get('schema'):
-                self.topic_schema_mappings[topic] = {
-                    'topic': topic,
-                    'schema': topic_info['schema'],
-                    'description': topic_info.get('description', ''),
-                    'category': topic_info.get('category', 'unknown')
-                }
-        
-        logger.info(f"🔗 Generated {len(self.topic_schema_mappings)} topic-schema mappings")
     
     def _load_mqtt_clients(self):
         """Lädt MQTT Clients Konfiguration"""
@@ -394,9 +354,6 @@ class RegistryManager:
         """Gibt alle Schemas zurück"""
         return self.schemas
     
-    def get_topic_schema_mappings(self) -> Dict[str, Any]:
-        """Gibt alle Topic-Schema-Mappings zurück"""
-        return self.topic_schema_mappings
     
     def get_topic_schema(self, topic: str) -> Optional[Dict]:
         """Gibt das Schema für einen Topic zurück"""
@@ -499,7 +456,7 @@ class RegistryManager:
             'load_timestamp': self._load_timestamp.isoformat(),
             'topics_count': len(self.topics),
             'schemas_count': len(self.schemas),
-            'mappings_count': len(self.topic_schema_mappings),
+            'mappings_count': 0,  # topic_schema_mappings entfernt - Schema-Info in topics
             'mqtt_clients_count': len(self.mqtt_clients),
             'workpieces_count': len(self.workpieces),
             'modules_count': len(self.modules),

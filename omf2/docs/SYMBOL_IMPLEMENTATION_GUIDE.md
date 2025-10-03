@@ -29,7 +29,7 @@ Dieser Guide beschreibt die Implementierung der finalen Symbol-Entscheidungen in
 'modules': '🏗️',             # Modules (FINAL: 🏗️)
 'stations': '🏢',            # Stations (FINAL: 🏢)
 'txt_controllers': '🕹️',     # TXT Controllers (FINAL: 🕹️)
-'workpieces': '🔵⚪🔴',       # Workpieces (FINAL: 🔵⚪🔴)
+'workpieces': None,           # Workpieces (loaded from Registry)
 ```
 
 ### **Status-Feedback**
@@ -102,7 +102,7 @@ subtab_labels = [
     f"{UISymbols.get_tab_icon('ccu_modules')} Modules",
     f"{UISymbols.get_functional_icon('stations')} Stations",
     f"{UISymbols.get_functional_icon('txt_controllers')} TXT Controllers",
-    f"{UISymbols.get_functional_icon('workpieces')} Workpieces",
+    f"{UISymbols.get_workpiece_icon('all_workpieces')} Workpieces",  # 🔵⚪🔴
 ]
 ```
 

@@ -10,6 +10,7 @@ import streamlit as st
 
 from omf2.common.logger import get_logger
 from omf2.ui.utils.ui_refresh import request_refresh
+from omf2.ui.common.symbols import UISymbols
 
 logger = get_logger(__name__)
 
@@ -199,13 +200,13 @@ class UserManager:
         # Define tab configuration with icons and display names
         all_tabs = {
             'ccu_dashboard': {
-                'icon': '🏭',
+                'icon': UISymbols.get_tab_icon('ccu_dashboard'),
                 'name': 'CCU Dashboard',
                 'module': 'omf2.ui.ccu.ccu_overview.ccu_overview_tab',
                 'function': 'render_ccu_overview_tab'
             },
             'ccu_orders': {
-                'icon': '📦',
+                'icon': UISymbols.get_tab_icon('ccu_orders'),
                 'name': 'CCU Orders',
                 'module': 'omf2.ui.ccu.ccu_orders.ccu_orders_tab',
                 'function': 'render_ccu_orders_tab'
@@ -253,10 +254,10 @@ class UserManager:
                 'function': 'render_generic_steering_tab'
             },
             'system_logs': {
-                'icon': '📋',
+                'icon': UISymbols.get_functional_icon('logs'),
                 'name': 'System Logs',
-                'module': 'omf2.ui.admin.logs.logs_tab',
-                'function': 'render_logs_tab'
+                'module': 'omf2.ui.admin.logs.system_logs_tab',
+                'function': 'render_system_logs_tab'
             },
             'admin_settings': {
                 'icon': '⚙️',

@@ -4,6 +4,19 @@ metadata:
   last_updated: "2025-08-29"
   author: "OMF Development Team"
 
+# Workpiece Icons
+icons:
+  # Allgemeine Workpiece-Icons
+  general:
+    all_workpieces: "🔵⚪🔴"      # BLAU-WEISS-ROT (alle Farben)
+    workpiece: "📦"               # Allgemeines Werkstück-Symbol
+    
+  # Farbspezifische Icons
+  colors:
+    blue: "🔵"                    # Blauer Kreis für BLAU
+    white: "⚪"                   # Weißer Kreis für WEISS  
+    red: "🔴"                     # Roter Kreis für ROT
+
 # Workpiece Mappings mit id und nfc_code
 # Nur die ersten 3 Werkstücke pro Farbe haben Quality-Check "OK"
 workpieces:

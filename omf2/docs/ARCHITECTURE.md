@@ -1,9 +1,10 @@
 # ✅ IMPLEMENTIERTE ARCHITEKTUR: Gekapseltes MQTT, Registry Manager & Gateway für Streamlit-Apps
 
 **Status: VOLLSTÄNDIG IMPLEMENTIERT** ✅  
-**Datum: 2025-10-02**  
+**Datum: 2025-10-03**  
 **Tests: 55 Tests erfolgreich** ✅  
-**Registry-Migration: ABGESCHLOSSEN** ✅
+**Registry-Migration: ABGESCHLOSSEN** ✅  
+**Architektur-Cleanup: ABGESCHLOSSEN** ✅
 
 **Ziel:**  
 Weggekapselte, robuste Architektur für MQTT-Kommunikation, Message-Templates und UI-Refresh in einer Streamlit-App, sodass UI- und Business-Logik möglichst einfach bleiben und typische Fehlerquellen (Threading, Race-Conditions, Deadlocks, inkonsistenter State) vermieden werden.
@@ -41,10 +42,10 @@ Weggekapselte, robuste Architektur für MQTT-Kommunikation, Message-Templates un
 Streamlit-UI (omf2/ui/)
     │
     ▼
-Registry Manager (Singleton) ✅
-    ├── Topics, Templates, Mappings ✅
-    ├── MQTT Clients, Workpieces ✅
-    └── Modules, Stations, TXT Controllers ✅
+Business Logic (omf2/ccu/, omf2/admin/)
+    ├── ModuleManager (Schema-basierte Message-Verarbeitung) ✅
+    ├── WorkpieceManager (Registry-basierte Icons) ✅
+    └── AdminGateway (System-Verwaltung) ✅
         │
         ▼
 Gateway-Factory (Singleton) ✅
@@ -61,16 +62,68 @@ MQTT Clients (Singleton) ✅
 
 **✅ IMPLEMENTIERTE FEATURES:**
 - Registry Manager als zentrale Komponente für alle Registry-Daten
+- Business Logic Manager (ModuleManager, WorkpieceManager) für Entitäts-Verwaltung
+- Schema-basierte Message-Verarbeitung mit direkter Registry-Abfrage
 - Thread-sichere Singleton-Pattern für alle Komponenten
 - Gateway-Factory für Business-Operationen
 - MQTT Clients als Singleton für sichere Kommunikation
 - Registry v2 Integration in allen Gateways
-- Vollständige Test-Abdeckung (70 Tests)
+- Saubere Architektur ohne redundante Mappings
+- Vollständige Test-Abdeckung (55 Tests)
 - Error-Handling und Performance-Optimierung
 
 ---
 
-## 3. Registry Manager (zentral, Singleton)
+## 3. Business Logic Manager (Entitäts-Verwaltung)
+
+### 3.1 ModuleManager (Schema-basierte Message-Verarbeitung)
+
+**Datei:** `omf2/ccu/module_manager.py`
+
+**Funktionen:**
+- **Schema-basierte Message-Verarbeitung:** Verwendet Registry-Schemas für korrekte Daten-Extraktion
+- **Status-Management:** Connection, Availability, Configuration Status
+- **Icon-Verwaltung:** Registry-basierte Module-Icons
+- **Gateway-Pattern:** Nutzt CCU Gateway für MQTT-Zugriff
+
+**Beispiel:**
+```python
+from omf2.ccu.module_manager import get_ccu_module_manager
+
+module_manager = get_ccu_module_manager()
+modules = module_manager.get_all_modules()
+
+for module_id, module_data in modules.items():
+    icon = module_manager.get_module_icon(module_id)  # Registry-basiert
+    connection = module_manager.get_connection_display(module_data)  # UISymbols
+    availability = module_manager.get_availability_display(module_data)  # UISymbols
+    configuration = module_manager.get_configuration_display(module_data)  # UISymbols
+```
+
+### 3.2 WorkpieceManager (Registry-basierte Icons)
+
+**Datei:** `omf2/common/workpiece_manager.py`
+
+**Funktionen:**
+- **Workpiece-Icons:** Lädt Icons aus `registry/workpieces.yml`
+- **Farb-spezifische Icons:** 🔵⚪🔴 für blue/white/red
+- **Singleton-Pattern:** Zentrale Icon-Verwaltung
+- **UISymbols-Integration:** Über `UISymbols.get_workpiece_icon()`
+
+**Beispiel:**
+```python
+from omf2.common.workpiece_manager import get_workpiece_manager
+
+workpiece_manager = get_workpiece_manager()
+blue_icon = workpiece_manager.get_workpiece_icon('blue')  # 🔵
+white_icon = workpiece_manager.get_workpiece_icon('white')  # ⚪
+red_icon = workpiece_manager.get_workpiece_icon('red')  # 🔴
+all_workpieces_icon = workpiece_manager.get_all_workpieces_icon()  # 🔵⚪🔴
+```
+
+---
+
+## 4. Registry Manager (zentral, Singleton)
 
 - Zentrale Komponente für alle Registry v2 Daten
 - Lädt Topics, Templates, MQTT Clients, Workpieces, Modules, Stations, TXT Controllers

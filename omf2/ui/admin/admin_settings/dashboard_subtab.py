@@ -8,13 +8,14 @@ import streamlit as st
 import yaml
 from pathlib import Path
 from omf2.common.logger import get_logger
+from omf2.ui.common.symbols import UISymbols
 
 logger = get_logger(__name__)
 
 def render_dashboard_subtab():
     """Rendert das Dashboard Subtab mit Konfigurationsinformationen"""
     
-    st.header("📊 Dashboard Konfiguration")
+    st.header(f"{UISymbols.get_functional_icon('dashboard')} Dashboard Konfiguration")
     st.info("ℹ️ **Nur Anzeige** - Konfigurationsänderungen sind zur Laufzeit nicht möglich")
     
     # Projekt-Root ermitteln

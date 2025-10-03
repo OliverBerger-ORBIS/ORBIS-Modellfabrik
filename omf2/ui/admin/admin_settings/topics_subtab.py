@@ -7,6 +7,7 @@ Zeigt alle Topics aus der Registry nach Kategorien an
 import streamlit as st
 from omf2.common.logger import get_logger
 from omf2.ui.utils.ui_refresh import request_refresh
+from omf2.ui.common.symbols import UISymbols
 
 logger = get_logger(__name__)
 
@@ -14,7 +15,7 @@ logger = get_logger(__name__)
 def render_topics_subtab():
     """Render Topics Subtab mit Registry-Daten"""
     try:
-        st.subheader("📡 Topics Konfiguration")
+        st.subheader(f"{UISymbols.get_functional_icon('topic_driven')} Topics Konfiguration")
         st.markdown("Registry-basierte Topics-Verwaltung aus omf2/registry")
 
         # Load registry manager from session state (initialized in omf.py)
@@ -27,7 +28,7 @@ def render_topics_subtab():
         all_topics = registry_manager.get_topics()
         
         if not all_topics:
-            st.warning("⚠️ Keine Topics in der Registry gefunden")
+            st.warning(f"{UISymbols.get_status_icon('warning')} Keine Topics in der Registry gefunden")
             return
         
         # Gruppiere Topics nach Kategorien
@@ -69,7 +70,7 @@ def render_topics_subtab():
             _render_schema_validation_test(registry_manager, all_topics)
         
         # Registry Information
-        with st.expander("📊 Registry Information", expanded=False):
+        with st.expander(f"{UISymbols.get_functional_icon('dashboard')} Registry Information", expanded=False):
             stats = registry_manager.get_registry_stats()
             st.write(f"**Load Timestamp:** {stats['load_timestamp']}")
             st.write(f"**Total Topics:** {len(all_topics)}")
@@ -86,8 +87,8 @@ def render_topics_subtab():
                 st.write(f"- {category}: {len(topics)} topics")
         
     except Exception as e:
-        logger.error(f"❌ Topics Subtab rendering error: {e}")
-        st.error(f"❌ Topics Subtab failed: {e}")
+        logger.error(f"{UISymbols.get_status_icon('error')} Topics Subtab rendering error: {e}")
+        st.error(f"{UISymbols.get_status_icon('error')} Topics Subtab failed: {e}")
         st.info("💡 This component is currently under development.")
 
 
@@ -139,20 +140,20 @@ def _render_schema_validation_test(registry_manager, all_topics):
             key="admin_settings_topics_validation_payload"
         )
         
-        if st.button("🔍 Validate Payload", key="admin_settings_topics_validation_validate"):
+        if st.button(f"{UISymbols.get_functional_icon('search')} Validate Payload", key="admin_settings_topics_validation_validate"):
             try:
                 payload = json.loads(payload_text)
                 validation_result = registry_manager.validate_topic_payload(selected_topic, payload)
                 
                 if validation_result['valid']:
-                    st.success("✅ Payload is valid!")
+                    st.success(f"{UISymbols.get_status_icon('success')} Payload is valid!")
                 else:
-                    st.error(f"❌ Payload validation failed: {validation_result['error']}")
+                    st.error(f"{UISymbols.get_status_icon('error')} Payload validation failed: {validation_result['error']}")
                     
             except json.JSONDecodeError as e:
-                st.error(f"❌ Invalid JSON: {e}")
+                st.error(f"{UISymbols.get_status_icon('error')} Invalid JSON: {e}")
             except Exception as e:
-                st.error(f"❌ Validation error: {e}")
+                st.error(f"{UISymbols.get_status_icon('error')} Validation error: {e}")
 
 
 def show_topics_subtab():

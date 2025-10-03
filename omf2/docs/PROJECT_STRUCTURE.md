@@ -40,7 +40,7 @@ omf2/
   ccu/                                         # ✅ IMPLEMENTIERT
     ccu_gateway.py
     ccu_mqtt_client.py
-    workpiece_manager.py
+    module_manager.py                          # ✅ NEU: Schema-basierte Message-Verarbeitung
     # helpers/                                 # ❌ NOCH NICHT IMPLEMENTIERT
     #   ccu_factory_layout.py
   nodered/                                     # ✅ IMPLEMENTIERT
@@ -54,7 +54,7 @@ omf2/
     admin_gateway.py
     admin_mqtt_client.py
     admin_settings.py
-    logs.py
+    log_manager.py                             # ✅ NEU: Log Manager (vorher logs.py)
     # helpers/                                 # ❌ NOCH NICHT IMPLEMENTIERT
     #   admin_utils.py
   ui/                                          # ✅ IMPLEMENTIERT
@@ -132,6 +132,7 @@ omf2/
   common/                                      # ✅ IMPLEMENTIERT
     i18n.py
     logger.py
+    workpiece_manager.py                       # ✅ NEU: Registry-basierte Workpiece-Icons
     # message_templates.py - ENTFERNT (durch Registry Manager ersetzt)
   # ZUSÄTZLICHE ENTWICKLUNGEN:                 # ✅ HINZUGEFÜGT
   omf.py                                       # ✅ HAUPTANWENDUNG
@@ -238,7 +239,60 @@ if registry_manager:
 
 ---
 
-## 3. Migration und Übertrag von Quellen
+## 3. Business Logic Manager (Entitäts-Verwaltung)
+
+### 3.1 ModuleManager (Schema-basierte Message-Verarbeitung)
+
+**Datei:** `omf2/ccu/module_manager.py`
+
+**Zweck:** Verwaltung von Modulen mit Schema-basierter Message-Verarbeitung
+
+**Funktionen:**
+- **Schema-basierte Message-Verarbeitung:** Verwendet Registry-Schemas für korrekte Daten-Extraktion
+- **Status-Management:** Connection, Availability, Configuration Status
+- **Icon-Verwaltung:** Registry-basierte Module-Icons
+- **Gateway-Pattern:** Nutzt CCU Gateway für MQTT-Zugriff
+
+**Architektur:**
+```python
+# UI → ModuleManager → CCU Gateway → MQTT Client
+def render_ccu_modules_tab():
+    module_manager = get_ccu_module_manager()
+    modules = module_manager.get_all_modules()
+    
+    for module_id, module_data in modules.items():
+        icon = module_manager.get_module_icon(module_id)  # Registry-basiert
+        connection = module_manager.get_connection_display(module_data)  # UISymbols
+```
+
+### 3.2 WorkpieceManager (Registry-basierte Icons)
+
+**Datei:** `omf2/common/workpiece_manager.py`
+
+**Zweck:** Zentrale Verwaltung von Workpiece-Icons aus der Registry
+
+**Funktionen:**
+- **Workpiece-Icons:** Lädt Icons aus `registry/workpieces.yml`
+- **Farb-spezifische Icons:** 🔵⚪🔴 für blue/white/red
+- **Singleton-Pattern:** Zentrale Icon-Verwaltung
+- **UISymbols-Integration:** Über `UISymbols.get_workpiece_icon()`
+
+**Registry-Integration:**
+```yaml
+# registry/workpieces.yml
+icons:
+  general:
+    all_workpieces: "🔵⚪🔴"  # Drei Farb-Symbole
+    workpiece: "📦"
+  colors:
+    blue: "🔵"
+    white: "⚪"
+    red: "🔴"
+```
+
+---
+
+## 4. Migration und Übertrag von Quellen
 
 - **Bei Bedarf** können Sourcen (z.B. Gateways, Manager, Modelle) aus `omf/`, `registry/model/v1/` oder anderen Alt-Verzeichnissen übernommen werden.
 - Die Übernahme erfolgt ggf. als Kopie, Anpassung an die neue Struktur und Benennung.

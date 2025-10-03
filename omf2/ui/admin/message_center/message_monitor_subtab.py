@@ -20,6 +20,7 @@ from omf2.ui.utils.message_utils import (
 )
 from omf2.common.logger import get_logger
 from omf2.ui.utils.ui_refresh import request_refresh
+from omf2.ui.common.symbols import UISymbols
 
 logger = get_logger(__name__)
 
@@ -31,10 +32,10 @@ def render_message_monitor_subtab(admin_gateway, conn_info):
         admin_gateway: AdminGateway Instanz (Gateway-Pattern)
         conn_info: Connection Info Dict
     """
-    logger.info("📊 Rendering Message Monitor Subtab")
+    logger.info(f"{UISymbols.get_functional_icon('dashboard')} Rendering Message Monitor Subtab")
     
     try:
-        st.subheader("📊 Message Monitor (omf/ Style)")
+        st.subheader(f"{UISymbols.get_functional_icon('dashboard')} Message Monitor (omf/ Style)")
         st.markdown("**Structured table view with filtering and detailed payload inspection**")
         
         # Use passed parameters instead of re-initializing
@@ -43,7 +44,7 @@ def render_message_monitor_subtab(admin_gateway, conn_info):
         # Connection status is already shown in main Message Center tab
         
         # Filter-Optionen (aus omf/)
-        st.subheader("🔍 Filter & Einstellungen")
+        st.subheader(f"{UISymbols.get_functional_icon('search')} Filter & Einstellungen")
         col1, col2, col3, col4, col5, col6 = st.columns([2, 2, 2, 1, 1, 1])
 
         with col5:
@@ -51,10 +52,10 @@ def render_message_monitor_subtab(admin_gateway, conn_info):
                 logger.info("🗑️ Historie löschen angefordert")
                 # Gateway-Pattern: Nutze AdminGateway clear_message_history
                 if admin_gateway.clear_message_history():
-                    st.success("✅ Nachrichten-Historie gelöscht")
+                    st.success(f"{UISymbols.get_status_icon('success')} Nachrichten-Historie gelöscht")
                     request_refresh()
                 else:
-                    st.error("❌ Historie löschen fehlgeschlagen")
+                    st.error(f"{UISymbols.get_status_icon('error')} Historie löschen fehlgeschlagen")
 
         with col1:
             # Nachrichten-Typ Filter
@@ -78,7 +79,7 @@ def render_message_monitor_subtab(admin_gateway, conn_info):
         with col3:
             # Einfacher Filter nach Topic-Pattern
             topic_pattern_filter = st.text_input(
-                "🔍 Topic Pattern",
+                f"{UISymbols.get_functional_icon('search')} Topic Pattern",
                 placeholder="z.B. ccu/, module/, txt/",
                 key="enhanced_topic_pattern_filter"
             )
@@ -86,7 +87,7 @@ def render_message_monitor_subtab(admin_gateway, conn_info):
         with col4:
             # Anzahl Nachrichten
             max_messages = st.number_input(
-                "📊 Max", 
+                f"{UISymbols.get_functional_icon('dashboard')} Max", 
                 min_value=10, 
                 max_value=1000, 
                 value=200, 
@@ -96,7 +97,7 @@ def render_message_monitor_subtab(admin_gateway, conn_info):
 
         with col6:
             # Manual refresh only
-            if st.button("🔄 Refresh Now", key="manual_refresh_enhanced"):
+            if st.button(f"{UISymbols.get_status_icon('refresh')} Refresh Now", key="manual_refresh_enhanced"):
                 request_refresh()
 
         # Get all topic buffers and convert to MessageRow format
@@ -119,8 +120,8 @@ def render_message_monitor_subtab(admin_gateway, conn_info):
                         )
                         message_rows.append(message_row)
         except Exception as e:
-            logger.error(f"❌ Message buffer processing failed: {e}")
-            st.error(f"❌ Message processing error: {e}")
+            logger.error(f"{UISymbols.get_status_icon('error')} Message buffer processing failed: {e}")
+            st.error(f"{UISymbols.get_status_icon('error')} Message processing error: {e}")
             message_rows = []
             all_buffers = {}
 
@@ -144,8 +145,8 @@ def render_message_monitor_subtab(admin_gateway, conn_info):
             if topic_pattern_filter:
                 filtered_messages = [msg for msg in filtered_messages if topic_pattern_filter.lower() in msg.topic.lower()]
         except Exception as e:
-            logger.error(f"❌ Filter application failed: {e}")
-            st.error(f"❌ Filter error: {e}")
+            logger.error(f"{UISymbols.get_status_icon('error')} Filter application failed: {e}")
+            st.error(f"{UISymbols.get_status_icon('error')} Filter error: {e}")
             filtered_messages = message_rows  # Fallback to all messages
 
         # Nach Anzahl begrenzen
@@ -161,17 +162,17 @@ def render_message_monitor_subtab(admin_gateway, conn_info):
             # Statistiken
             col1, col2, col3, col4, col5 = st.columns(5)
             with col1:
-                st.metric("📊 Gesamt", len(message_rows))
+                st.metric(f"{UISymbols.get_functional_icon('dashboard')} Gesamt", len(message_rows))
             with col2:
-                st.metric("🔍 Gefiltert", len(filtered_messages))
+                st.metric(f"{UISymbols.get_functional_icon('search')} Gefiltert", len(filtered_messages))
             with col3:
                 received_count = len([m for m in filtered_messages if m.message_type == "received"])
-                st.metric("📥 Empfangen", received_count)
+                st.metric(f"{UISymbols.get_status_icon('receive')} Empfangen", received_count)
             with col4:
                 sent_count = len([m for m in filtered_messages if m.message_type == "sent"])
-                st.metric("📤 Gesendet", sent_count)
+                st.metric(f"{UISymbols.get_status_icon('send')} Gesendet", sent_count)
             with col5:
-                st.metric("📡 Topics", len(all_buffers))
+                st.metric(f"{UISymbols.get_functional_icon('topic_driven')} Topics", len(all_buffers))
 
             # Tabelle anzeigen (aus omf/)
             st.dataframe(
@@ -181,7 +182,7 @@ def render_message_monitor_subtab(admin_gateway, conn_info):
                     "⏰": st.column_config.TextColumn("Zeit", width="small"),
                     "📨": st.column_config.TextColumn("Typ", width="small"),
                     "🏷️": st.column_config.TextColumn("Kategorie", width="small"),
-                    "📡": st.column_config.TextColumn("Topic", width="medium"),
+                    f"{UISymbols.get_functional_icon('topic_driven')}": st.column_config.TextColumn("Topic", width="medium"),
                     "📄": st.column_config.TextColumn("Payload", width="extra-large"),
                     "🔢": st.column_config.NumberColumn("QoS", width="small"),
                     "💾": st.column_config.TextColumn("Retain", width="small"),
@@ -191,7 +192,7 @@ def render_message_monitor_subtab(admin_gateway, conn_info):
             )
 
             # Erweiterte Payload-Anzeige für die letzten 5 Nachrichten (aus omf/)
-            st.subheader("🔍 Detaillierte Payload-Ansicht (letzte 5 Nachrichten)")
+            st.subheader(f"{UISymbols.get_functional_icon('search')} Detaillierte Payload-Ansicht (letzte 5 Nachrichten)")
             recent_messages = filtered_messages[-5:] if len(filtered_messages) >= 5 else filtered_messages
 
             for i, msg in enumerate(reversed(recent_messages)):
@@ -210,19 +211,19 @@ def render_message_monitor_subtab(admin_gateway, conn_info):
 
             # Filter-Info
             filter_info = (
-                f"📊 **{len(filtered_messages)} von {len(message_rows)} "
+                f"{UISymbols.get_functional_icon('dashboard')} **{len(filtered_messages)} von {len(message_rows)} "
                 f"Nachrichten angezeigt** (gefiltert nach: {message_type_filter}, "
                 f"{category_filter})"
             )
             st.info(filter_info)
 
         else:
-            st.warning("⚠️ Keine Nachrichten entsprechen den aktuellen Filtern")
+            st.warning(f"{UISymbols.get_status_icon('warning')} Keine Nachrichten entsprechen den aktuellen Filtern")
             if not all_buffers:
                 st.info("💡 Send a test message from the 'Send Messages' tab to see live monitoring in action!")
 
         # Auto-refresh functionality removed (not supported)
 
     except Exception as e:
-        logger.error(f"❌ Enhanced View Subtab error: {e}")
-        st.error(f"❌ Enhanced View failed: {e}")
+        logger.error(f"{UISymbols.get_status_icon('error')} Enhanced View Subtab error: {e}")
+        st.error(f"{UISymbols.get_status_icon('error')} Enhanced View failed: {e}")

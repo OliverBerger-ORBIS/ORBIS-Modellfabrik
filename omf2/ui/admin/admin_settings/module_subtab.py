@@ -7,6 +7,7 @@ Zeigt alle Modules aus der Registry an
 import streamlit as st
 from omf2.common.logger import get_logger
 from omf2.ui.utils.ui_refresh import request_refresh
+from omf2.ui.common.symbols import UISymbols
 
 logger = get_logger(__name__)
 
@@ -15,11 +16,11 @@ def render_module_subtab():
     """Render Module Subtab mit Registry-Daten"""
     # Only log on first render
     if "module_subtab_logged" not in st.session_state:
-        logger.info("🔧 Rendering Module Configuration Subtab (init only)")
+        logger.info(f"{UISymbols.get_functional_icon('module_control')} Rendering Module Configuration Subtab (init only)")
         st.session_state["module_subtab_logged"] = True
     
     try:
-        st.subheader("🔧 Module Configuration")
+        st.subheader(f"{UISymbols.get_functional_icon('module_control')} Module Configuration")
         st.markdown("Registry-basierte Module-Verwaltung aus omf2/registry")
 
         # Load registry manager from session state (initialized in omf.py)
@@ -32,7 +33,7 @@ def render_module_subtab():
         all_modules = registry_manager.get_modules()
         
         if not all_modules:
-            st.warning("⚠️ Keine Modules in der Registry gefunden")
+            st.warning(f"{UISymbols.get_status_icon('warning')} Keine Modules in der Registry gefunden")
             return
         
         # Erstelle DataFrame für alle Modules
@@ -42,7 +43,7 @@ def render_module_subtab():
                 "ID": module_id,
                 "Name": module_info.get('name', 'Unknown'),
                 "Type": module_info.get('type', 'Unknown'),
-                "Enabled": "✅" if module_info.get('enabled', True) else "❌",
+                "Enabled": f"{UISymbols.get_status_icon('success')}" if module_info.get('enabled', True) else f"{UISymbols.get_status_icon('error')}",
                 "Icon": module_info.get('icon', '🔧'),
                 "Name EN": module_info.get('name_lang_en', ''),
                 "Name DE": module_info.get('name_lang_de', '')
@@ -65,7 +66,7 @@ def render_module_subtab():
             )
         
         # Registry Information
-        with st.expander("📊 Registry Information", expanded=False):
+        with st.expander(f"{UISymbols.get_functional_icon('dashboard')} Registry Information", expanded=False):
             stats = registry_manager.get_registry_stats()
             st.write(f"**Load Timestamp:** {stats['load_timestamp']}")
             st.write(f"**Total Modules:** {len(all_modules)}")
@@ -75,12 +76,12 @@ def render_module_subtab():
             for module_id, module_info in all_modules.items():
                 name = module_info.get('name', 'Unknown')
                 module_type = module_info.get('type', 'Unknown')
-                enabled = "✅" if module_info.get('enabled', True) else "❌"
+                enabled = f"{UISymbols.get_status_icon('success')}" if module_info.get('enabled', True) else f"{UISymbols.get_status_icon('error')}"
                 st.write(f"- {module_id}: {name} ({module_type}) {enabled}")
         
     except Exception as e:
-        logger.error(f"❌ Module Subtab rendering error: {e}")
-        st.error(f"❌ Module Subtab failed: {e}")
+        logger.error(f"{UISymbols.get_status_icon('error')} Module Subtab rendering error: {e}")
+        st.error(f"{UISymbols.get_status_icon('error')} Module Subtab failed: {e}")
         st.info("💡 This component is currently under development.")
 
 

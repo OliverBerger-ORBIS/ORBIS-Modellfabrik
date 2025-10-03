@@ -21,8 +21,9 @@ mqtt_clients:
 
   # CCU Dashboard Frontend
   ccu_mqtt_client:
-    active: false
+    active: true
     client_class: "CcuMqttClient"
+    module_path: "omf2.ccu.ccu_mqtt_client"
     client_id: "omf_ccu"  # Dynamisch, wechselt bei jeder Anmeldung
     # role: "Dashboard CCUFrontend"
     # friendly_name: "CCU Dashboard"
@@ -77,9 +78,12 @@ mqtt_clients:
       # TXT Output Topics
       - "/j1/txt/1/o/broadcast"
     subscribed_topics:
-      - "fts/v1/ff/5iO4/state"
-      - "fts/v1/ff/5iO4/connection"
-      - "fts/v1/ff/5iO4/factsheet"
+      - topic: "fts/v1/ff/5iO4/state"
+        qos: 1
+      - topic: "fts/v1/ff/5iO4/connection"
+        qos: 1
+      - topic: "fts/v1/ff/5iO4/factsheet"
+        qos: 1
       - "module/v1/ff/SVR4H73275/state"
       - "module/v1/ff/SVR4H73275/connection"
       - "module/v1/ff/SVR4H73275/factsheet"

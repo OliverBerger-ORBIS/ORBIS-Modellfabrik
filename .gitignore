@@ -127,3 +127,11 @@ tmp/
 
 # 🔍 Search Indexes
 .search-index/
+
+# 🧪 Schema Test Results (Auto-generated)
+data/omf-data/schema_test_results/
+data/omf-data/schema_test_result/
+
+
+# OMF2 Data Files
+data/aps-data/

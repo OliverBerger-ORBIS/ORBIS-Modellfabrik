@@ -6,6 +6,29 @@ Dieser Guide definiert die Standards und Best Practices für die Entwicklung von
 
 ## 🏗️ **Architektur-Prinzipien**
 
+### **0. OBLIGATORISCHE Funktionssignatur (KRITISCH)**
+```python
+# ✅ KORREKT: Alle render_*_tab() Funktionen MÜSSEN diese Signatur haben
+def render_my_tab(gateway=None, registry_manager=None):
+    """Render My Tab
+    
+    Args:
+        gateway: [Domain]Gateway Instanz (Gateway-Pattern)
+        registry_manager: RegistryManager Instanz (Singleton)
+    """
+    # Fallback-Initialisierung falls Parameter nicht übergeben
+    if not gateway:
+        gateway = get_my_gateway()
+    if not registry_manager:
+        registry_manager = get_registry_manager()
+```
+
+**🚨 KRITISCHE REGEL FÜR AGENTS:**
+- **ALLE** `render_*_tab()` Funktionen MÜSSEN `(gateway, registry_manager)` Parameter haben
+- **KEINE** Ausnahmen ohne explizite User-Freigabe
+- **ALWAYS** prüfen vor jeder Implementierung
+- **LOGGER-SYMBOLE:** Verwende UISymbols für konsistente Logger-Symbole
+
 ### **1. Gateway-Pattern (OBLIGATORISCH)**
 ```python
 # ✅ KORREKT: Gateway verwenden

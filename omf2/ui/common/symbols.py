@@ -53,12 +53,30 @@ class UISymbols:
         'receive': '📥',            # Nachrichten empfangen (FINAL: 📥)
         'debug': '🔍',              # Debug/Inspection
         'history': '📚',            # History/Logs
+        
+        # Connection Status Icons
+        'connected': '🟢',          # Connected/Online
+        'disconnected': '🔴',       # Disconnected/Offline
+        'connecting': '🟡',         # Connecting/In Progress
+        
+        # Availability Status Icons
+        'available': '🟢',          # Available/Ready
+        'busy': '🟠',               # Busy/Processing (🟠 - avoid conflict with pending)
+        'charging': '⚡',            # Charging
+        'transport': '🚗',           # Transport/Moving
+        'maintenance': '🔧',         # Maintenance
+        'idle': '😴',               # Idle/Waiting
+        'unknown': '⚫',             # Unknown/Undefined (⚫ - avoid conflict with workpieces)
+        
+        # Configuration Status Icons
+        'configured': '✅',          # Configured
+        'not_configured': '❌',      # Not Configured
     }
     
     # Functional Icons - FINALE ENTSCHEIDUNGEN
     FUNCTIONAL_ICONS: Dict[str, str] = {
         # Factory Operations
-        'factory_reset': '🏭',      # Factory Reset
+        'factory_reset': '🏭🔄',    # Factory Reset (Factory + Refresh)
         'emergency_stop': '🚨',     # Emergency Stop
         'module_control': '🛠️',     # Module Control (FINAL: 🛠️)
         
@@ -71,9 +89,9 @@ class UISymbols:
         'running': '▶️',            # Running/Active (FINAL: ▶️)
         'stopped': '⏹️',            # Stopped/Error (FINAL: ⏹️)
         'unknown': '⚪',             # Unknown/Neutral
-        'pending': '⏳',             # Pending/Waiting (FINAL: ⏳)
-        'completed': '✅',          # Completed
-        'cancelled': '❌',          # Cancelled
+        'pending': '🟡',             # Pending/Waiting (FINAL: 🟡 - avoid conflict with loading)
+        'completed': '✔️',          # Completed (FINAL: ✔️ - avoid conflict with success)
+        'cancelled': '✖️',          # Cancelled (FINAL: ✖️ - avoid conflict with error)
         
         # Navigation & Control
         'settings': '⚙️',           # Settings/Configuration
@@ -94,7 +112,7 @@ class UISymbols:
         'dashboard': '📊',          # Dashboard Settings
         'stations': '🏢',            # Stations (FINAL: 🏢)
         'txt_controllers': '🕹️',    # TXT Controllers (FINAL: 🕹️)
-        'workpieces': '🔵⚪🔴',      # Workpieces (FINAL: 🔵⚪🔴)
+        'workpieces': None,          # Workpieces (loaded from Registry)
     }
     
     @classmethod
@@ -111,6 +129,37 @@ class UISymbols:
     def get_functional_icon(cls, function: str) -> str:
         """Get icon for functional elements"""
         return cls.FUNCTIONAL_ICONS.get(function, '⚙️')
+    
+    @classmethod
+    def get_workpiece_icon(cls, color: str = None) -> str:
+        """Get workpiece icon by color or general workpiece icon"""
+        try:
+            from omf2.common.workpiece_manager import get_workpiece_manager
+            workpiece_manager = get_workpiece_manager()
+            
+            # Special case for all_workpieces
+            if color == 'all_workpieces':
+                return workpiece_manager.get_all_workpieces_icon()
+            elif color:
+                return workpiece_manager.get_workpiece_icon(color)
+            else:
+                return workpiece_manager.get_all_workpieces_icon()
+        except Exception:
+            # Fallback to hardcoded icons if Registry is not available
+            if color == 'all_workpieces':
+                return '🔵⚪🔴'
+            elif color:
+                color_lower = color.lower()
+                if color_lower == 'blue':
+                    return '🔵'
+                elif color_lower == 'white':
+                    return '⚪'
+                elif color_lower == 'red':
+                    return '🔴'
+                else:
+                    return '📦'
+            else:
+                return '🔵⚪🔴'
     
     @classmethod
     def get_all_tab_icons(cls) -> Dict[str, str]:

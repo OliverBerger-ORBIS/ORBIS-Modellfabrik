@@ -19,10 +19,10 @@ Dieser Style Guide definiert die einheitliche Verwendung von Symbolen und Icons 
 TAB_ICONS = {
     # CCU Module
     'ccu_dashboard': '🏭',      # Factory/Overview
-    'ccu_orders': '📦',         # Orders/Workpieces
-    'ccu_process': '⚙️',        # Process Control
+    'ccu_orders': '📝',         # Orders/Workpieces
+    'ccu_process': '🔄',        # Process Control
     'ccu_configuration': '⚙️',  # Configuration
-    'ccu_modules': '🔧',        # Module Control
+    'ccu_modules': '🏗️',       # Module Control
     
     # Node-RED Integration
     'nodered_overview': '🔄',   # Process Overview
@@ -96,10 +96,10 @@ class UISymbols:
     # Tab Navigation
     TAB_ICONS = {
         'ccu_dashboard': '🏭',
-        'ccu_orders': '📦',
-        'ccu_process': '⚙️',
+        'ccu_orders': '📝',
+        'ccu_process': '🔄',
         'ccu_configuration': '⚙️',
-        'ccu_modules': '🔧',
+        'ccu_modules': '🏗️',
         'nodered_overview': '🔄',
         'nodered_processes': '⚙️',
         'message_center': '📨',
@@ -224,11 +224,11 @@ def render_control_button(action: str, label: str):
 # Alte omf/dashboard Symbole → Neue omf2/ui Symbole
 LEGACY_MAPPING = {
     'aps_overview': 'ccu_dashboard',      # 🏭 → 🏭
-    'aps_orders': 'ccu_orders',          # 📋 → 📦
-    'aps_processes': 'ccu_process',       # 🔄 → ⚙️
+    'aps_orders': 'ccu_orders',          # 📋 → 📝
+    'aps_processes': 'ccu_process',       # 🔄 → 🔄
     'aps_configuration': 'ccu_configuration', # ⚙️ → ⚙️
-    'aps_modules': 'ccu_modules',         # 🏭 → 🔧
-    'wl_module_control': 'ccu_modules',   # 🔧 → 🔧
+    'aps_modules': 'ccu_modules',         # 🏭 → 🏗️
+    'wl_module_control': 'ccu_modules',   # 🔧 → 🏗️
     'wl_system_control': 'ccu_configuration', # ⚙️ → ⚙️
     'steering': 'generic_steering',       # 🎮 → 🎮
     'message_center': 'message_center',   # 📡 → 📨

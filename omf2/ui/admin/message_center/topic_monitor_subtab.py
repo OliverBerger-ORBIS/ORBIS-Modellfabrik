@@ -10,6 +10,7 @@ from collections import deque
 from omf2.common.logger import get_logger
 from omf2.ui.utils.ui_refresh import request_refresh
 from omf2.ui.utils.message_utils import MessageRow
+from omf2.ui.common.symbols import UISymbols
 
 logger = get_logger(__name__)
 
@@ -21,10 +22,10 @@ def render_topic_monitor_subtab(admin_gateway, conn_info):
         admin_gateway: AdminGateway Instanz (Gateway-Pattern)
         conn_info: Connection Info Dict
     """
-    logger.info("📡 Rendering Topic Monitor Subtab")
+    logger.info(f"{UISymbols.get_functional_icon('topic_driven')} Rendering Topic Monitor Subtab")
     
     try:
-        st.subheader("📡 Live MQTT Topic Monitor")
+        st.subheader(f"{UISymbols.get_functional_icon('topic_driven')} Live MQTT Topic Monitor")
         st.markdown("**Real-time monitoring of MQTT topics with category filtering**")
         
         # Check connection status
@@ -56,7 +57,7 @@ def render_topic_monitor_subtab(admin_gateway, conn_info):
         
         with col3:
             # Manual refresh only
-            if st.button("🔄 Refresh Now", key="manual_refresh_monitor"):
+            if st.button(f"{UISymbols.get_status_icon('refresh')} Refresh Now", key="manual_refresh_monitor"):
                 request_refresh()
         
         # Get all topic buffers via Gateway
@@ -90,7 +91,7 @@ def render_topic_monitor_subtab(admin_gateway, conn_info):
         
         # Display filtered topics
         if not filtered_topics:
-            st.info("🔍 No topics match your current filters.")
+            st.info(f"{UISymbols.get_functional_icon('search')} No topics match your current filters.")
             return
         
         st.info(f"📄 Showing first 20 of {len(filtered_topics)} topics. Use topic filter to narrow down results.")
@@ -113,5 +114,5 @@ def render_topic_monitor_subtab(admin_gateway, conn_info):
                     st.text("No messages in buffer")
         
     except Exception as e:
-        logger.error(f"❌ Topic Monitor Subtab error: {e}")
-        st.error(f"❌ Topic Monitor failed: {e}")
+        logger.error(f"{UISymbols.get_status_icon('error')} Topic Monitor Subtab error: {e}")
+        st.error(f"{UISymbols.get_status_icon('error')} Topic Monitor failed: {e}")

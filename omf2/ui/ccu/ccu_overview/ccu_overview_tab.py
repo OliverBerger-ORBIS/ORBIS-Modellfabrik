@@ -11,18 +11,31 @@ from omf2.common.logger import get_logger
 logger = get_logger(__name__)
 
 
-def render_ccu_overview_tab():
-    """Render CCU Overview Tab"""
+def render_ccu_overview_tab(ccu_gateway=None, registry_manager=None):
+    """Render CCU Overview Tab
+    
+    Args:
+        ccu_gateway: CcuGateway Instanz (Gateway-Pattern)
+        registry_manager: RegistryManager Instanz (Singleton)
+    """
     logger.info("🏭 Rendering CCU Overview Tab")
     try:
+        # Initialize CCU Gateway if not provided
+        if not ccu_gateway:
+            if 'ccu_gateway' not in st.session_state:
+                # Use Gateway Factory to create CCU Gateway with MQTT Client
+                from omf2.factory.gateway_factory import get_gateway_factory
+                gateway_factory = get_gateway_factory()
+                st.session_state['ccu_gateway'] = gateway_factory.get_ccu_gateway()
+            ccu_gateway = st.session_state['ccu_gateway']
+        
+        # Initialize Registry Manager if not provided
+        if not registry_manager:
+            from omf2.registry.manager.registry_manager import get_registry_manager
+            registry_manager = get_registry_manager()
+        
         st.header("🏭 CCU Dashboard")
         st.markdown("Central Control Unit - Factory Management")
-        
-        # Initialize CCU Gateway
-        if 'ccu_gateway' not in st.session_state:
-            st.session_state['ccu_gateway'] = CcuGateway()
-        
-        ccu_gateway = st.session_state['ccu_gateway']
         
         # CCU Status Section
         with st.expander("📊 CCU Status", expanded=True):

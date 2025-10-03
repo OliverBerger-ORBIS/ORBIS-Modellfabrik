@@ -7,6 +7,7 @@ Zeigt alle Stations aus der Registry nach Kategorien an
 import streamlit as st
 from omf2.common.logger import get_logger
 from omf2.ui.utils.ui_refresh import request_refresh
+from omf2.ui.common.symbols import UISymbols
 
 logger = get_logger(__name__)
 
@@ -14,7 +15,7 @@ logger = get_logger(__name__)
 def render_stations_subtab():
     """Render Stations Subtab mit Registry-Daten"""
     try:
-        st.subheader("🏭 Stations Konfiguration")
+        st.subheader(f"{UISymbols.get_functional_icon('stations')} Stations Konfiguration")
         st.markdown("Registry-basierte Stations-Verwaltung aus omf2/registry")
 
         # Load registry manager from session state (initialized in omf.py)
@@ -27,7 +28,7 @@ def render_stations_subtab():
         all_stations = registry_manager.get_stations()
         
         if not all_stations:
-            st.warning("⚠️ Keine Stations in der Registry gefunden")
+            st.warning(f"{UISymbols.get_status_icon('warning')} Keine Stations in der Registry gefunden")
             return
         
         # Gruppiere Stations nach Kategorien
@@ -45,7 +46,7 @@ def render_stations_subtab():
                         "Type": station_info.get('type', 'Unknown'),
                         "IP Address": station_info.get('ip_address', 'N/A'),
                         "IP Range": station_info.get('ip_range', 'N/A'),
-                        "OPC UA Server": "✅" if station_info.get('opc_ua_server', False) else "❌",
+                        "OPC UA Server": f"{UISymbols.get_status_icon('success')}" if station_info.get('opc_ua_server', False) else f"{UISymbols.get_status_icon('error')}",
                         "OPC UA Endpoint": station_info.get('opc_ua_endpoint', 'N/A'),
                         "Description": station_info.get('description', 'No description')
                     })
@@ -67,7 +68,7 @@ def render_stations_subtab():
                     )
         
         # Registry Information
-        with st.expander("📊 Registry Information", expanded=False):
+        with st.expander(f"{UISymbols.get_functional_icon('dashboard')} Registry Information", expanded=False):
             stats = registry_manager.get_registry_stats()
             st.write(f"**Load Timestamp:** {stats['load_timestamp']}")
             st.write(f"**Total Stations:** {len(all_stations)}")
@@ -79,8 +80,8 @@ def render_stations_subtab():
                 st.write(f"- {category}: {len(stations)} stations")
         
     except Exception as e:
-        logger.error(f"❌ Stations Subtab rendering error: {e}")
-        st.error(f"❌ Stations Subtab failed: {e}")
+        logger.error(f"{UISymbols.get_status_icon('error')} Stations Subtab rendering error: {e}")
+        st.error(f"{UISymbols.get_status_icon('error')} Stations Subtab failed: {e}")
         st.info("💡 This component is currently under development.")
 
 

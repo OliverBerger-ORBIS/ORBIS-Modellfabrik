@@ -1,9 +1,10 @@
 # 🏭 OMF2 - ORBIS Modellfabrik Dashboard
 
 **Status:** VOLLSTÄNDIG IMPLEMENTIERT ✅  
-**Datum:** 2025-10-02  
+**Datum:** 2025-10-03  
 **Tests:** 55 Tests erfolgreich ✅  
-**Registry-Migration:** ABGESCHLOSSEN ✅
+**Registry-Migration:** ABGESCHLOSSEN ✅  
+**Architektur-Cleanup:** ABGESCHLOSSEN ✅
 
 ## 📋 Übersicht
 
@@ -17,6 +18,7 @@ OMF2 ist die neue, modulare und rollenbasierte Streamlit-Anwendung für die ORBI
 - ✅ **Thread-sichere Kommunikation:** Keine Race Conditions
 - ✅ **Modulare UI-Struktur:** Rollenbasierte Tab-Generierung
 - ✅ **Symbol-System:** Konsistente UI-Symbole mit UISymbols
+- ✅ **Saubere Architektur:** Redundante Mappings entfernt, direkte Schema-Abfrage
 
 ## 🏗️ **Architektur**
 
@@ -24,16 +26,22 @@ OMF2 ist die neue, modulare und rollenbasierte Streamlit-Anwendung für die ORBI
 Streamlit-UI (omf2/ui/)
     │
     ▼
-Registry Manager (Singleton) ✅
-    ├── Topics, Templates, Mappings ✅
-    ├── MQTT Clients, Workpieces ✅
-    └── Modules, Stations, TXT Controllers ✅
+Business Logic (omf2/ccu/, omf2/admin/)
+    ├── ModuleManager (Schema-basierte Message-Verarbeitung) ✅
+    ├── WorkpieceManager (Registry-basierte Icons) ✅
+    └── AdminGateway (System-Verwaltung) ✅
         │
         ▼
 Gateway-Factory (Singleton) ✅
     ├── CcuGateway (Registry v2) ✅
     ├── NoderedGateway (Registry v2) ✅
     └── AdminGateway (Registry v2) ✅
+        │
+        ▼
+Registry Manager (Singleton) ✅
+    ├── Topics, Schemas (direkte Abfrage) ✅
+    ├── MQTT Clients, Workpieces ✅
+    └── Modules, Stations, TXT Controllers ✅
         │
         ▼
 MQTT Clients (Singleton) ✅
@@ -98,25 +106,43 @@ ccu_gateway.reset_factory()
 ccu_gateway.send_global_command("start", {"line": "1"})
 ```
 
-### **3. UI-Komponenten entwickeln:**
+### **3. UI-Komponenten entwickeln (Beispiel: CCU Modules):**
 ```python
 # Immer UISymbols verwenden
 from omf2.ui.common.symbols import UISymbols
-from omf2.factory.gateway_factory import get_admin_gateway
+from omf2.factory.gateway_factory import get_ccu_gateway
+from omf2.ccu.module_manager import get_ccu_module_manager
 from omf2.ui.utils.ui_refresh import request_refresh
 
-# Tab-Icons
-icon = UISymbols.get_tab_icon('my_tab')  # Gibt '📝' zurück
-
-# Gateway-Pattern
-gateway = get_admin_gateway()
-if not gateway:
-    st.error("Gateway not available")
-    return
-
-# UI-Refresh
-if st.button("Action"):
-    request_refresh()  # Statt st.rerun()
+def render_ccu_modules_tab():
+    # Gateway-Pattern
+    ccu_gateway = get_ccu_gateway()
+    if not ccu_gateway:
+        st.error(f"{UISymbols.get_status_icon('error')} CCU Gateway not available")
+        return
+    
+    # Business Logic
+    module_manager = get_ccu_module_manager()
+    
+    # UI mit UISymbols
+    st.header(f"{UISymbols.get_tab_icon('ccu_modules')} CCU Modules")
+    
+    # Module-Status-Tabelle
+    modules = module_manager.get_all_modules()
+    for module_id, module_data in modules.items():
+        col1, col2, col3, col4 = st.columns(4)
+        with col1:
+            st.write(f"{module_manager.get_module_icon(module_id)} {module_id}")
+        with col2:
+            st.write(module_manager.get_connection_display(module_data))
+        with col3:
+            st.write(module_manager.get_availability_display(module_data))
+        with col4:
+            st.write(module_manager.get_configuration_display(module_data))
+    
+    # UI-Refresh
+    if st.button(f"{UISymbols.get_status_icon('refresh')} Refresh"):
+        request_refresh()  # Statt st.rerun()
 ```
 
 ## 📚 **Dokumentation**
@@ -138,6 +164,8 @@ if st.button("Action"):
 - **Gateway-Pattern verwenden** (nie direkte MQTT-Clients)
 - **UISymbols verwenden** (nie hardcodierte Symbole)
 - **request_refresh() verwenden** (nie st.rerun())
+- **Business Logic Manager verwenden** (ModuleManager, WorkpieceManager)
+- **Schema-basierte Message-Verarbeitung** (get_topic_schema())
 - **Error-Handling implementieren** (Try-Catch für Gateway-Calls)
 - **Logger verwenden** (get_logger(__name__))
 
@@ -146,6 +174,7 @@ if st.button("Action"):
 - ❌ Hardcodierte Symbole
 - ❌ st.rerun() verwenden
 - ❌ Direkte Registry-Zugriffe
+- ❌ Redundante Mappings (Schema-Info direkt aus Topics)
 
 ## 📊 **Test-Statistik**
 
@@ -181,6 +210,7 @@ if st.button("Action"):
 
 ---
 
-**Letzte Aktualisierung:** 2025-10-02  
+**Letzte Aktualisierung:** 2025-10-03  
 **Status:** VOLLSTÄNDIG IMPLEMENTIERT ✅  
-**Registry-Migration:** ABGESCHLOSSEN ✅
+**Registry-Migration:** ABGESCHLOSSEN ✅  
+**Architektur-Cleanup:** ABGESCHLOSSEN ✅

@@ -79,7 +79,7 @@ def test_symbol_consistency():
         'mqtt_connect': '🔌',
         'stations': '🏢',
         'txt_controllers': '🕹️',
-        'workpieces': '🔵⚪🔴',
+        'workpieces': None,  # loaded from Registry
     }
     
     for key, expected_icon in final_decisions.items():

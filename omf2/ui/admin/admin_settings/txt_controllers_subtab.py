@@ -7,6 +7,7 @@ Zeigt alle TXT Controllers aus der Registry an
 import streamlit as st
 from omf2.common.logger import get_logger
 from omf2.ui.utils.ui_refresh import request_refresh
+from omf2.ui.common.symbols import UISymbols
 
 logger = get_logger(__name__)
 
@@ -14,7 +15,7 @@ logger = get_logger(__name__)
 def render_txt_controllers_subtab():
     """Render TXT Controllers Subtab mit Registry-Daten"""
     try:
-        st.subheader("🎮 TXT Controllers Konfiguration")
+        st.subheader(f"{UISymbols.get_functional_icon('txt_controllers')} TXT Controllers Konfiguration")
         st.markdown("Registry-basierte TXT Controllers-Verwaltung aus omf2/registry")
 
         # Load registry manager from session state (initialized in omf.py)
@@ -27,7 +28,7 @@ def render_txt_controllers_subtab():
         all_txt_controllers = registry_manager.get_txt_controllers()
         
         if not all_txt_controllers:
-            st.warning("⚠️ Keine TXT Controllers in der Registry gefunden")
+            st.warning(f"{UISymbols.get_status_icon('warning')} Keine TXT Controllers in der Registry gefunden")
             return
         
         # Erstelle DataFrame für alle TXT Controllers
@@ -57,7 +58,7 @@ def render_txt_controllers_subtab():
             )
         
         # Registry Information
-        with st.expander("📊 Registry Information", expanded=False):
+        with st.expander(f"{UISymbols.get_functional_icon('dashboard')} Registry Information", expanded=False):
             stats = registry_manager.get_registry_stats()
             st.write(f"**Load Timestamp:** {stats['load_timestamp']}")
             st.write(f"**Total TXT Controllers:** {len(all_txt_controllers)}")
@@ -70,8 +71,8 @@ def render_txt_controllers_subtab():
                 st.write(f"- {controller_id}: {name} ({ip_address})")
         
     except Exception as e:
-        logger.error(f"❌ TXT Controllers Subtab rendering error: {e}")
-        st.error(f"❌ TXT Controllers Subtab failed: {e}")
+        logger.error(f"{UISymbols.get_status_icon('error')} TXT Controllers Subtab rendering error: {e}")
+        st.error(f"{UISymbols.get_status_icon('error')} TXT Controllers Subtab failed: {e}")
         st.info("💡 This component is currently under development.")
 
 

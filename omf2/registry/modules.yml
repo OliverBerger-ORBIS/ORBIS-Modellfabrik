@@ -39,7 +39,7 @@ modules:
     name_lang_de: "Qualitätsprüfung"
     type: "Quality-Control"
     enabled: true
-    icon: "🔍"
+    icon: "🤖"
 
   # DPS - Warenein- und Ausgang
   - id: "SVR4H73275"

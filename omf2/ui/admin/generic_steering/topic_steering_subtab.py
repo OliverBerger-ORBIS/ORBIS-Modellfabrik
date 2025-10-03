@@ -8,6 +8,7 @@ from omf2.registry.manager.registry_manager import get_registry_manager
 from omf2.ui.common.components.topic_selector import TopicSelector
 from omf2.ui.common.components.schema_tester import SchemaTester
 from omf2.ui.common.components.payload_generator import PayloadGenerator
+from omf2.ui.common.symbols import UISymbols
 
 
 def render_topic_steering_subtab(admin_gateway=None, registry_manager=None):
@@ -24,7 +25,7 @@ def render_topic_steering_subtab(admin_gateway=None, registry_manager=None):
     schema_tester = SchemaTester(registry_manager)
     
     # Main UI
-    st.markdown("### 🎯 Topic Steering")
+    st.markdown(f"### {UISymbols.get_functional_icon('target')} Topic Steering")
     st.markdown("Schema-driven message sending and testing")
     
     # Mode selection

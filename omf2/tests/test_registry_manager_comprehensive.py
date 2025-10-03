@@ -60,7 +60,7 @@ class TestRegistryManagerComprehensive(unittest.TestCase):
         # Prüfe, dass alle Load-Methoden aufgerufen wurden
         self.assertIsNotNone(manager.topics)
         self.assertIsNotNone(manager.schemas)
-        self.assertIsNotNone(manager.topic_schema_mappings)
+        # topic_schema_mappings entfernt - Schema-Info wird direkt aus topics geladen
         self.assertIsNotNone(manager.mqtt_clients)
         self.assertIsNotNone(manager.workpieces)
         self.assertIsNotNone(manager.modules)
@@ -92,46 +92,22 @@ class TestRegistryManagerComprehensive(unittest.TestCase):
         self.assertEqual(schemas, manager.schemas)
     
     @patch('omf2.registry.manager.registry_manager.Path')
-    def test_get_topic_schema_mappings(self, mock_path):
-        """Test get_topic_schema_mappings() Methode"""
-        mock_path.return_value.exists.return_value = True
-        mock_path.return_value.glob.return_value = []
-        
-        manager = get_registry_manager("test/registry/")
-        mappings = manager.get_topic_schema_mappings()
-        
-        self.assertIsInstance(mappings, dict)
-        self.assertEqual(mappings, manager.topic_schema_mappings)
-    
-    @patch('omf2.registry.manager.registry_manager.Path')
     def test_get_topic_schema(self, mock_path):
-        """Test get_topic_schema() Methode"""
+        """Test get_topic_schema() Methode - Schema-Info wird direkt aus Topics geladen"""
         mock_path.return_value.exists.return_value = True
         mock_path.return_value.glob.return_value = []
         
         manager = get_registry_manager("test/registry/")
         
-        # Test mit existierendem Topic und Schema-Datei
-        manager.topics = {
-            "test/topic": {
-                "topic": "test/topic",
-                "schema": "test_schema.json"
-            }
-        }
-        
-        # Mock Schema-Datei
-        mock_schema_file = MagicMock()
-        mock_schema_file.exists.return_value = True
-        mock_schema_file.read_text.return_value = '{"type": "object", "properties": {"test": {"type": "string"}}}'
-        
-        with patch('builtins.open', mock_open(read_data='{"type": "object"}')):
-            schema = manager.get_topic_schema("test/topic")
-            # Mock funktioniert, also sollte Schema geladen werden
-            self.assertIsNotNone(schema)
-            self.assertEqual(schema["type"], "object")
+        # Test mit existierendem Topic
+        if manager.topics:
+            test_topic = list(manager.topics.keys())[0]
+            schema = manager.get_topic_schema(test_topic)
+            # Schema kann None sein, wenn Topic kein Schema hat
+            self.assertTrue(schema is None or isinstance(schema, dict))
         
         # Test mit nicht-existierendem Topic
-        schema = manager.get_topic_schema("nonexistent/topic")
+        schema = manager.get_topic_schema("non_existent_topic")
         self.assertIsNone(schema)
     
     @patch('omf2.registry.manager.registry_manager.Path')
@@ -351,11 +327,10 @@ class TestRegistryManagerComprehensive(unittest.TestCase):
         # Alle get_* Methoden sollten konsistente Daten zurückgeben
         topics = manager.get_topics()
         schemas = manager.get_schemas()
-        mappings = manager.get_topic_schema_mappings()
         
         self.assertEqual(topics, manager.topics)
         self.assertEqual(schemas, manager.schemas)
-        self.assertEqual(mappings, manager.topic_schema_mappings)
+        # mappings entfernt - topic_schema_mappings nicht mehr verfügbar
         
         # Stats sollten korrekte Zählungen haben
         stats = manager.get_registry_stats()

@@ -129,6 +129,8 @@ class AdminMqttClient:
         """Lädt Subscribed Topics aus Registry"""
         try:
             mqtt_clients = self.registry_manager.get_mqtt_clients()
+            # TODO: Registry-Struktur Problem - Admin Client sucht nach 'mqtt_clients.admin_mqtt_client'
+            # aber Registry hat direkte Keys: 'admin_mqtt_client'. Gleiche Struktur für alle Clients prüfen!
             admin_client = mqtt_clients.get('mqtt_clients', {}).get('admin_mqtt_client', {})
             return admin_client.get('subscribed_topics', [])
         except Exception as e:
@@ -338,6 +340,8 @@ class AdminMqttClient:
                     logger.info("📥 Mock subscribe to all topics")
                     return True
                 
+                # TODO: Admin Client Problem - Admin verwendet Wildcard "#" statt Registry-Liste
+                # Sollte subscribed_topics aus Registry laden und zu diesen subscriben!
                 # Wildcard-Subscription für Admin
                 result = self.client.subscribe("#", qos=1)
                 

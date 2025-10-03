@@ -6,6 +6,7 @@ Admin Settings - Workpiece Subtab
 import streamlit as st
 from omf2.admin.admin_gateway import AdminGateway
 from omf2.common.logger import get_logger
+from omf2.ui.common.symbols import UISymbols
 
 logger = get_logger(__name__)
 
@@ -14,11 +15,11 @@ def render_workpiece_subtab():
     """Render Workpiece Configuration Subtab"""
     # Only log on first render
     if "workpiece_subtab_logged" not in st.session_state:
-        logger.info("🔧 Rendering Workpiece Configuration Subtab (init only)")
+        logger.info(f"{UISymbols.get_functional_icon('module_control')} Rendering Workpiece Configuration Subtab (init only)")
         st.session_state["workpiece_subtab_logged"] = True
-    
+
     try:
-        st.subheader("🔧 Werkstück-Konfiguration")
+        st.subheader(f"{UISymbols.get_functional_icon('module_control')} Werkstück-Konfiguration")
         st.markdown("Registry-basierte Werkstück-Verwaltung aus omf2/registry")
 
         # Load workpiece data using WorkpieceManager (as per architecture)
@@ -31,7 +32,7 @@ def render_workpiece_subtab():
             # BLAUE Werkstücke (zuerst)
             blue_workpieces = manager.get_workpieces_by_color_with_nfc('BLUE')
             if blue_workpieces:
-                with st.expander(f"🔵 Blaue Werkstücke ({len(blue_workpieces)})", expanded=False):
+                with st.expander(f"{UISymbols.get_workpiece_icon('blue')} Blaue Werkstücke ({len(blue_workpieces)})", expanded=False):
                     blue_data = []
                     for workpiece_id, wp_data in blue_workpieces.items():
                         nfc_code = wp_data.get('nfc_code', 'Unknown')
@@ -39,11 +40,11 @@ def render_workpiece_subtab():
                         description = wp_data.get('description', 'No description')
                         
                         blue_data.append({
-                            "Werkstück": f"🔵 {workpiece_id}",
+                            "Werkstück": f"{UISymbols.get_workpiece_icon('blue')} {workpiece_id}",
                             "NFC Code": nfc_code[:12] + "...",
                             "Qualität": quality_check,
                             "Beschreibung": description,
-                            "Status": "✅" if wp_data.get('enabled', True) else "❌",
+                            "Status": UISymbols.get_status_icon('success') if wp_data.get('enabled', True) else UISymbols.get_status_icon('error'),
                         })
                     
                     if blue_data:
@@ -62,7 +63,7 @@ def render_workpiece_subtab():
             # WEISSE Werkstücke
             white_workpieces = manager.get_workpieces_by_color_with_nfc('WHITE')
             if white_workpieces:
-                with st.expander(f"⚪ Weiße Werkstücke ({len(white_workpieces)})", expanded=False):
+                with st.expander(f"{UISymbols.get_workpiece_icon('white')} Weiße Werkstücke ({len(white_workpieces)})", expanded=False):
                     white_data = []
                     for workpiece_id, wp_data in white_workpieces.items():
                         nfc_code = wp_data.get('nfc_code', 'Unknown')
@@ -70,11 +71,11 @@ def render_workpiece_subtab():
                         description = wp_data.get('description', 'No description')
                         
                         white_data.append({
-                            "Werkstück": f"⚪ {workpiece_id}",
+                            "Werkstück": f"{UISymbols.get_workpiece_icon('white')} {workpiece_id}",
                             "NFC Code": nfc_code[:12] + "...",
                             "Qualität": quality_check,
                             "Beschreibung": description,
-                            "Status": "✅" if wp_data.get('enabled', True) else "❌",
+                            "Status": UISymbols.get_status_icon('success') if wp_data.get('enabled', True) else UISymbols.get_status_icon('error'),
                         })
                     
                     if white_data:
@@ -93,7 +94,7 @@ def render_workpiece_subtab():
             # ROTE Werkstücke (dritte - korrekte Reihenfolge)
             red_workpieces = manager.get_workpieces_by_color_with_nfc('RED')
             if red_workpieces:
-                with st.expander(f"🔴 Rote Werkstücke ({len(red_workpieces)})", expanded=False):
+                with st.expander(f"{UISymbols.get_workpiece_icon('red')} Rote Werkstücke ({len(red_workpieces)})", expanded=False):
                     red_data = []
                     for workpiece_id, wp_data in red_workpieces.items():
                         nfc_code = wp_data.get('nfc_code', 'Unknown')
@@ -101,11 +102,11 @@ def render_workpiece_subtab():
                         description = wp_data.get('description', 'No description')
                         
                         red_data.append({
-                            "Werkstück": f"🔴 {workpiece_id}",
+                            "Werkstück": f"{UISymbols.get_workpiece_icon('red')} {workpiece_id}",
                             "NFC Code": nfc_code[:12] + "...",
                             "Qualität": quality_check,
                             "Beschreibung": description,
-                            "Status": "✅" if wp_data.get('enabled', True) else "❌",
+                            "Status": UISymbols.get_status_icon('success') if wp_data.get('enabled', True) else UISymbols.get_status_icon('error'),
                         })
                     
                     if red_data:
@@ -137,13 +138,13 @@ def render_workpiece_subtab():
                         st.write(f"- {color}")
         
         except FileNotFoundError:
-            st.error("❌ Registry file not found. Please check omf2/registry/workpieces.yml")
+            st.error(f"{UISymbols.get_status_icon('error')} Registry file not found. Please check omf2/registry/workpieces.yml")
             st.info("💡 Make sure the registry file exists and is accessible.")
         except Exception as e:
-            st.error(f"❌ Error loading registry: {e}")
+            st.error(f"{UISymbols.get_status_icon('error')} Error loading registry: {e}")
             st.info("💡 Check the registry file format and permissions.")
         
     except Exception as e:
-        logger.error(f"❌ Workpiece Subtab rendering error: {e}")
-        st.error(f"❌ Workpiece Subtab failed: {e}")
+        logger.error(f"{UISymbols.get_status_icon('error')} Workpiece Subtab rendering error: {e}")
+        st.error(f"{UISymbols.get_status_icon('error')} Workpiece Subtab failed: {e}")
         st.info("💡 This component is currently under development.")

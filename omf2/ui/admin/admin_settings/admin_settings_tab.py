@@ -14,9 +14,9 @@ logger = get_logger(__name__)
 
 def render_admin_settings_tab():
     """Render Admin Settings Tab with Subtabs"""
-    logger.info("⚙️ Rendering Admin Settings Tab")
+    logger.info(f"{UISymbols.get_tab_icon('admin_settings')} Rendering Admin Settings Tab")
     try:
-        st.header("⚙️ Admin Settings")
+        st.header(f"{UISymbols.get_tab_icon('admin_settings')} Admin Settings")
         st.markdown("Dashboard configuration and registry information")
         
         # Create subtabs using UISymbols for consistent icon management
@@ -28,7 +28,7 @@ def render_admin_settings_tab():
             f"{UISymbols.get_tab_icon('ccu_modules')} Modules",
             f"{UISymbols.get_functional_icon('stations')} Stations",
             f"{UISymbols.get_functional_icon('txt_controllers')} TXT Controllers",
-            f"{UISymbols.get_functional_icon('workpieces')} Workpieces"
+            f"{UISymbols.get_workpiece_icon('all_workpieces')} Workpieces"
         ]
         
         subtabs = st.tabs(subtab_labels)
@@ -67,6 +67,6 @@ def render_admin_settings_tab():
             render_workpiece_subtab()
         
     except Exception as e:
-        logger.error(f"❌ Admin Settings Tab rendering error: {e}")
-        st.error(f"❌ Admin Settings Tab failed: {e}")
+        logger.error(f"{UISymbols.get_status_icon('error')} Admin Settings Tab rendering error: {e}")
+        st.error(f"{UISymbols.get_status_icon('error')} Admin Settings Tab failed: {e}")
         st.info("💡 This component is currently under development.")

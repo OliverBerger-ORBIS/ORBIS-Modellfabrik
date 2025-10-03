@@ -6,6 +6,9 @@ Handles systematic schema testing and validation
 import json
 import streamlit as st
 import json
+import os
+from datetime import datetime
+from pathlib import Path
 from typing import Dict, Any, List, Tuple
 from omf2.registry.manager.registry_manager import get_registry_manager
 from omf2.common.logger import get_logger
@@ -79,12 +82,21 @@ class SchemaTester:
             # Validate payload
             validation_result = self.registry_manager.validate_topic_payload(topic, payload)
             
+            # Get schema file info from validation result
+            schema_file = validation_result.get('schema_file', 'unknown')
+            if not schema_file or schema_file == 'unknown':
+                # Fallback to schema info
+                if isinstance(topic_schema, dict):
+                    schema_file = topic_schema.get('$id', topic_schema.get('title', 'unknown'))
+                else:
+                    schema_file = str(topic_schema)
+            
             if validation_result.get('valid', False):
                 return {
                     'topic': topic,
                     'status': 'VALID',
                     'error': None,
-                    'schema_file': topic_schema.get('$id', 'unknown') if isinstance(topic_schema, dict) else str(topic_schema),
+                    'schema_file': schema_file,
                     'payload': payload
                 }
             else:
@@ -92,7 +104,7 @@ class SchemaTester:
                     'topic': topic,
                     'status': 'INVALID',
                     'error': validation_result.get('error', 'Validation failed'),
-                    'schema_file': topic_schema.get('$id', 'unknown') if isinstance(topic_schema, dict) else str(topic_schema),
+                    'schema_file': schema_file,
                     'payload': payload,
                     'validation_errors': validation_result.get('errors', [])
                 }
@@ -169,12 +181,76 @@ class SchemaTester:
                         st.text(f"  - {error}")
         
         # Export results
-        if st.button("📁 Export All Test Results", key="export_test_results"):
-            import io
-            json_str = json.dumps(test_results, indent=2)
-            st.download_button(
-                label="Download Test Results",
-                data=json_str,
-                file_name="schema_test_results.json",
-                mime="application/json"
-            )
+        st.markdown("#### 💾 Export Test Results")
+        
+        # Directory selection
+        export_dir = st.text_input(
+            "Export Directory:",
+            value="data/omf-data/schema_test_results",
+            help="Directory where test results will be saved (default: data/omf-data/schema_test_results)",
+            key="export_dir_input"
+        )
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            if st.button("📁 Export Test Results", key="export_test_results"):
+                self._export_test_results(test_results, export_dir)
+        
+        with col2:
+            if st.button("📥 Download Test Results", key="download_test_results"):
+                import io
+                json_str = json.dumps(test_results, indent=2)
+                st.download_button(
+                    label="Download Test Results",
+                    data=json_str,
+                    file_name="schema_test_results.json",
+                    mime="application/json"
+                )
+    
+    def _export_test_results(self, test_results: Dict[str, Any], export_dir: str):
+        """Export test results to specified directory with timestamp"""
+        try:
+            # Create timestamp for filename
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            filename = f"schema_test_results_{timestamp}.json"
+            
+            # Ensure export directory exists
+            export_path = Path(export_dir)
+            export_path.mkdir(parents=True, exist_ok=True)
+            
+            # Full file path
+            file_path = export_path / filename
+            
+            # Add metadata to test results
+            export_data = {
+                'metadata': {
+                    'export_timestamp': datetime.now().isoformat(),
+                    'export_directory': str(export_path),
+                    'filename': filename,
+                    'total_topics': test_results['total_topics'],
+                    'valid_count': test_results['valid_count'],
+                    'invalid_count': test_results['invalid_count'],
+                    'no_schema_count': test_results['no_schema_count']
+                },
+                'test_results': test_results
+            }
+            
+            # Write JSON file
+            with open(file_path, 'w', encoding='utf-8') as f:
+                json.dump(export_data, f, indent=2, ensure_ascii=False)
+            
+            # Success message
+            st.success(f"✅ Test results exported successfully!")
+            st.info(f"📁 File saved: {file_path}")
+            st.info(f"📊 Summary: {test_results['valid_count']}/{test_results['total_topics']} topics valid ({test_results['valid_percentage']:.1f}%)")
+            
+            # Show file info
+            file_size = file_path.stat().st_size
+            st.info(f"📏 File size: {file_size:,} bytes")
+            
+            logger.info(f"📁 Schema test results exported to: {file_path}")
+            
+        except Exception as e:
+            st.error(f"❌ Failed to export test results: {e}")
+            logger.error(f"❌ Export failed: {e}")

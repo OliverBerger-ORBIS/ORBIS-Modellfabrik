@@ -36,7 +36,7 @@ def render_generic_steering_tab():
         if conn_info['connected']:
             st.success(f"🔗 **Connected:** {conn_info['client_id']} | **Environment:** {current_env}")
         else:
-            st.error(f"🔴 **Disconnected:** {conn_info['client_id']} | **Environment:** {current_env}")
+            st.error(f"{UISymbols.get_status_icon('error')} **Disconnected:** {conn_info['client_id']} | **Environment:** {current_env}")
         
         # Registry Manager Status
         if registry_manager:
@@ -62,8 +62,8 @@ def render_generic_steering_tab():
             _render_topic_steering_tab(admin_gateway, registry_manager)
         
     except Exception as e:
-        logger.error(f"❌ Generic Steering Tab error: {e}")
-        st.error(f"❌ Generic Steering failed: {e}")
+        logger.error(f"{UISymbols.get_status_icon('error')} Generic Steering Tab error: {e}")
+        st.error(f"{UISymbols.get_status_icon('error')} Generic Steering failed: {e}")
 
 
 def _render_factory_steering_tab(admin_gateway, registry_manager):

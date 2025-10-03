@@ -9,6 +9,7 @@ import json
 import time
 from omf2.common.logger import get_logger
 from omf2.ui.utils.ui_refresh import request_refresh
+from omf2.ui.common.symbols import UISymbols
 
 logger = get_logger(__name__)
 
@@ -78,16 +79,16 @@ def render_send_test_message_subtab(admin_gateway, conn_info):
                     )
                     
                     if success:
-                        st.success(f"✅ Message sent to `{test_topic}`")
+                        st.success(f"{UISymbols.get_status_icon('success')} Message sent to `{test_topic}`")
                         st.caption(f"QoS: {qos_level}, Retain: {retain_flag}")
                     else:
-                        st.error("❌ Send failed")
+                        st.error(f"{UISymbols.get_status_icon('error')} Send failed")
                         
                 except json.JSONDecodeError as e:
-                    st.error(f"❌ Invalid JSON: {e}")
+                    st.error(f"{UISymbols.get_status_icon('error')} Invalid JSON: {e}")
                 except Exception as e:
-                    st.error(f"❌ Error: {e}")
+                    st.error(f"{UISymbols.get_status_icon('error')} Error: {e}")
         
     except Exception as e:
-        logger.error(f"❌ Send Test Message Subtab error: {e}")
-        st.error(f"❌ Send Test Message failed: {e}")
+        logger.error(f"{UISymbols.get_status_icon('error')} Send Test Message Subtab error: {e}")
+        st.error(f"{UISymbols.get_status_icon('error')} Send Test Message failed: {e}")

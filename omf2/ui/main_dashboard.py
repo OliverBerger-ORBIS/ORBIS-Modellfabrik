@@ -97,6 +97,41 @@ class MainDashboard:
             else:
                 logger.warning(f"⚠️ Admin MQTT Client reconnection to {new_env} had issues, continuing anyway")
         
+        # Reconnect CCU MQTT client with new environment
+        if 'ccu_mqtt_client' in st.session_state:
+            ccu_client = st.session_state['ccu_mqtt_client']
+            
+            # Use the new reconnect_environment method for clean switching
+            success = ccu_client.reconnect_environment(new_env)
+            
+            if success:
+                logger.info(f"✅ CCU MQTT Client reconnected to {new_env}")
+            else:
+                logger.warning(f"⚠️ CCU MQTT Client reconnection to {new_env} had issues, continuing anyway")
+        
+        # TODO nodered: Node-RED MQTT Clients Environment-Switch hinzufügen - fehlen noch
+        # if 'nodered_pub_mqtt_client' in st.session_state:
+        #     nodered_pub_client = st.session_state['nodered_pub_mqtt_client']
+        #     success = nodered_pub_client.reconnect_environment(new_env)
+        #     if success:
+        #         logger.info(f"✅ Node-RED Pub MQTT Client reconnected to {new_env}")
+        #     else:
+        #         logger.warning(f"⚠️ Node-RED Pub MQTT Client reconnection to {new_env} had issues, continuing anyway")
+        # 
+        # if 'nodered_sub_mqtt_client' in st.session_state:
+        #     nodered_sub_client = st.session_state['nodered_sub_mqtt_client']
+        #     success = nodered_sub_client.reconnect_environment(new_env)
+        #     if success:
+        #         logger.info(f"✅ Node-RED Sub MQTT Client reconnected to {new_env}")
+        #     else:
+        #         logger.warning(f"⚠️ Node-RED Sub MQTT Client reconnection to {new_env} had issues, continuing anyway")
+        
+        # TODO: MQTT Client Probleme für nodered_pub/nodered_sub vermeiden:
+        # 1. Registry-Struktur: mqtt_clients.get('client_name', {}) NICHT mqtt_clients.get('mqtt_clients', {}).get('client_name', {})
+        # 2. Environment-Switch: reconnect_environment() mit Switch-Logging implementieren
+        # 3. Connection Loop: Topics aus Registry laden, Try-catch um Subscription
+        # 4. Admin Client: Wildcard "#" durch Registry-Liste ersetzen
+        
         # Clear cache - EXACT like old dashboard
         st.cache_resource.clear()
         logger.info(f"🔄 ENV-SWITCH: Cache geleert, Environment aktualisiert")
@@ -171,10 +206,10 @@ class MainDashboard:
             else:
                 expander_color = "🔴"  # Red for disconnected
         else:
-            expander_color = "🔴"  # Red for not initialized
+            expander_color = "⚪"  # White for not initialized
         
         # Collapsible Connection Status with color-coded icon
-        with st.sidebar.expander(f"{expander_color} Connection Status", expanded=False):
+        with st.sidebar.expander(f"{expander_color} admin Connection Status", expanded=False):
             if admin_client:
                 # Get detailed connection info - UI liest IMMER aus session_state
                 conn_info = admin_client.get_connection_info()
@@ -202,11 +237,11 @@ class MainDashboard:
                 st.info(f"🌐 **Broker**: `{host_port}`")
                 
                 client_id = conn_info.get('client_id', f'omf_{current_env}')
-                st.info(f"🆔 **Client ID**: `{client_id}`")
+                st.info(f"🆔 **admin Client ID**: `{client_id}`")
                 
             else:
                 st.warning("Admin MQTT client not initialized")
-                st.info("🆔 **Client ID**: Noch nicht initialisiert")
+                st.info("🆔 **Admin Client ID**: Noch nicht initialisiert")
                 
             # Show environment-specific info
             if current_env == 'mock':
@@ -215,7 +250,66 @@ class MainDashboard:
                 st.success("🟢 Live mode - Real MQTT connection")
             elif current_env == 'replay':
                 st.warning("🔄 Replay mode - Historical data")
-    
+
+
+         # Check ccu MQTT client status first to determine expander color
+        ccu_client = st.session_state.get('ccu_mqtt_client')
+        current_env = st.session_state.get('current_environment', 'mock')
+        
+        # Determine expander color based on connection status (ccu)
+        if ccu_client:
+            conn_info = ccu_client.get_connection_info()
+            if conn_info['connected']:
+                expander_color = "🟢"  # Green for connected
+            else:
+                expander_color = "🔴"  # Red for disconnected
+        else:
+            expander_color = "⚪"  # White for not initialized
+        
+        # Collapsible Connection Status with color-coded icon
+        with st.sidebar.expander(f"{expander_color} ccu Connection Status", expanded=False):
+            if ccu_client:
+                # Get detailed connection info - UI liest IMMER aus session_state
+                conn_info = ccu_client.get_connection_info()
+                
+                # NO AUTO-CONNECT in UI - prevents connection loops
+                # Connection is handled by main dashboard initialization
+                
+                # Display connection status with consistent formatting
+                if conn_info['connected']:
+                    if conn_info['mock_mode']:
+                        status_icon = "🧪"
+                        status_text = f"Mock Mode ({current_env})"
+                        st.info(f"{status_icon} **CCU MQTT**: {status_text}")
+                    else:
+                        status_icon = "🟢"
+                        status_text = f"Connected ({current_env})"
+                        st.success(f"{status_icon} **CCU MQTT**: {status_text}")
+                else:
+                    status_icon = "🔴"
+                    status_text = f"Disconnected ({current_env})"
+                    st.error(f"{status_icon} **CCU MQTT**: {status_text}")
+                
+                # Show Broker and Client ID with same formatting as MQTT status
+                host_port = f"{conn_info['host']}:{conn_info['port']}"
+                st.info(f"🌐 **CCU Broker**: `{host_port}`")
+                
+                client_id = conn_info.get('client_id', f'omf_{current_env}')
+                st.info(f"🆔 **CCU Client ID**: `{client_id}`")
+                
+            else:
+                st.warning("CCU MQTT client not initialized")
+                st.info("🆔 **CCU Client ID**: Noch nicht initialisiert")
+                
+            # Show environment-specific info
+            if current_env == 'mock':
+                st.info("🧪 Mock mode - No real MQTT connection")
+            elif current_env == 'live':
+                st.success("🟢 Live mode - Real MQTT connection")
+            elif current_env == 'replay':
+                st.warning("🔄 Replay mode - Historical data")
+
+
     def _render_main_content(self):
         """Render main content area with tabs"""
         # Get tab configuration based on user role

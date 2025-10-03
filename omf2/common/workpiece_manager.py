@@ -219,6 +219,43 @@ class WorkpieceManager:
             if match:
                 result.append(wp_data)
         return result
+    
+    def get_workpiece_icon(self, color: str) -> str:
+        """Get workpiece icon by color"""
+        if not hasattr(self, '_icons'):
+            self._icons = self._load_workpiece_icons()
+        
+        color_lower = color.lower()
+        return self._icons.get('colors', {}).get(color_lower, "📦")  # Fallback to general workpiece icon
+    
+    def get_all_workpieces_icon(self) -> str:
+        """Get icon for all workpieces (BLAU-WEISS-ROT)"""
+        if not hasattr(self, '_icons'):
+            self._icons = self._load_workpiece_icons()
+        
+        return self._icons.get('general', {}).get('all_workpieces', "🔵⚪🔴")
+    
+    def get_general_workpiece_icon(self) -> str:
+        """Get general workpiece icon"""
+        if not hasattr(self, '_icons'):
+            self._icons = self._load_workpiece_icons()
+        
+        return self._icons.get('general', {}).get('workpiece', "📦")
+    
+    def _load_workpiece_icons(self) -> Dict[str, Any]:
+        """Load workpiece icons from registry"""
+        try:
+            workpieces_file = self.registry_path / "workpieces.yml"
+            if workpieces_file.exists():
+                with open(workpieces_file, 'r', encoding='utf-8') as f:
+                    data = yaml.safe_load(f)
+                    return data.get('icons', {})
+            else:
+                logger.warning(f"Workpieces file not found: {workpieces_file}")
+                return {}
+        except Exception as e:
+            logger.error(f"Error loading workpiece icons: {e}")
+            return {}
 
 
 # Singleton Factory

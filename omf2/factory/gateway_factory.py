@@ -63,8 +63,15 @@ class GatewayFactory:
         with self._gateway_locks[gateway_name]:
             if gateway_name not in self._gateways:
                 from omf2.ccu.ccu_gateway import CcuGateway
-                self._gateways[gateway_name] = CcuGateway(**kwargs)
-                logger.info(f"🏭 Created {gateway_name} gateway")
+                from omf2.factory.client_factory import get_client_factory
+                
+                # MQTT-Client aus Client-Factory holen
+                client_factory = get_client_factory()
+                ccu_mqtt_client = client_factory.get_mqtt_client('ccu_mqtt_client')
+                
+                # CcuGateway mit MQTT-Client erstellen
+                self._gateways[gateway_name] = CcuGateway(mqtt_client=ccu_mqtt_client, **kwargs)
+                logger.info(f"🏭 Created {gateway_name} gateway with MQTT client")
             
             return self._gateways[gateway_name]
     
@@ -184,6 +191,7 @@ class GatewayFactory:
         return [
             'admin_gateway',
             'ccu_gateway',
+            # TODO nodered: nodered_gateway implementieren - fehlt noch
             'nodered_gateway'
         ]
 

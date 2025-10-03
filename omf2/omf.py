@@ -42,6 +42,13 @@ def cleanup_resources():
                 admin_client.disconnect()
                 logger.info("🔌 Admin MQTT Client disconnected")
         
+        # Disconnect CCU MQTT client (EXACT same pattern as Admin)
+        if 'ccu_mqtt_client' in st.session_state:
+            ccu_client = st.session_state.get('ccu_mqtt_client')
+            if ccu_client and hasattr(ccu_client, 'disconnect'):
+                ccu_client.disconnect()
+                logger.info("🏗️ CCU MQTT Client disconnected")
+        
         # Clear session state
         st.session_state.clear()
         logger.info("🧹 Session state cleared")
@@ -84,6 +91,12 @@ def initialize_session_state():
 def main():
     """Main application function"""
     try:
+        # TODO: MQTT Client Probleme für nodered_pub/nodered_sub vermeiden:
+        # 1. Registry-Struktur: mqtt_clients.get('client_name', {}) NICHT mqtt_clients.get('mqtt_clients', {}).get('client_name', {})
+        # 2. Environment-Switch: reconnect_environment() mit Switch-Logging implementieren
+        # 3. Connection Loop: Topics aus Registry laden, Try-catch um Subscription
+        # 4. Admin Client: Wildcard "#" durch Registry-Liste ersetzen
+        
         # Setup page configuration
         setup_page_config()
         
@@ -135,12 +148,28 @@ def main():
             else:
                 logger.error("❌ Failed to initialize Admin MQTT Client")
         
+        # Initialize CCU MQTT client via Client Factory (EXACT same pattern as Admin)
+        if 'ccu_mqtt_client' not in st.session_state:
+            client_factory = st.session_state['client_factory']
+            ccu_client = client_factory.get_mqtt_client('ccu_mqtt_client')
+            if ccu_client:
+                st.session_state['ccu_mqtt_client'] = ccu_client
+                logger.info("🏗️ CCU MQTT Client initialized via Client Factory")
+            else:
+                logger.error("❌ Failed to initialize CCU MQTT Client")
+        
         # Connect to MQTT (central connection for entire app)
         admin_client = st.session_state['admin_mqtt_client']
         current_env = st.session_state.get('current_environment', 'mock')
         if not admin_client.connected:
             admin_client.connect(current_env)
             logger.info(f"🔌 Admin MQTT Client connected to {current_env} on startup")
+        
+        # Connect CCU MQTT client (EXACT same pattern as Admin)
+        ccu_client = st.session_state['ccu_mqtt_client']
+        if not ccu_client.connected:
+            ccu_client.connect(current_env)
+            logger.info(f"🏗️ CCU MQTT Client connected to {current_env} on startup")
         
         # Initialize log buffer with RingBufferHandler (like old dashboard)
         if 'log_buffer' not in st.session_state:

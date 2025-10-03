@@ -257,6 +257,7 @@ class ClientFactory:
             return [
                 'admin_mqtt_client',
                 'ccu_mqtt_client',
+                # TODO nodered: nodered_pub_mqtt_client und nodered_sub_mqtt_client implementieren - fehlen noch
                 'nodered_pub_mqtt_client',
                 'nodered_sub_mqtt_client'
             ]
