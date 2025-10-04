@@ -171,33 +171,20 @@ def main():
             ccu_client.connect(current_env)
             logger.info(f"🏗️ CCU MQTT Client connected to {current_env} on startup")
         
-        # Initialize log buffer with RingBufferHandler (like old dashboard)
+        # Initialize log buffer with centralized setup from omf2.common.logger
         if 'log_buffer' not in st.session_state:
-            from collections import deque
-            from omf2.common.streamlit_log_buffer import RingBufferHandler, create_log_buffer
-            import logging
+            from omf2.common.logger import setup_central_log_buffer
             
-            # Create ring buffer
-            st.session_state['log_buffer'] = create_log_buffer(maxlen=1000)
-            logger.info("📋 Log buffer initialized")
+            # Setup central log buffer with RingBufferHandler
+            log_buffer, ring_handler = setup_central_log_buffer(
+                buffer_size=1000,
+                log_level=logging.INFO
+            )
             
-            # Setup RingBufferHandler for all loggers
-            ring_handler = RingBufferHandler(st.session_state['log_buffer'])
-            ring_handler.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(name)s: %(message)s"))
-            
-            # Add handler ONLY to root logger to avoid duplicates
-            root_logger = logging.getLogger()
-            root_logger.addHandler(ring_handler)
-            root_logger.setLevel(logging.INFO)
-            
-            # Configure all omf2 loggers to propagate to root logger
-            for logger_name in ["omf2", "omf2.dashboard", "omf2.admin", "omf2.ui", "omf2.common", "omf2.ccu", "omf2.nodered"]:
-                existing_logger = logging.getLogger(logger_name)
-                existing_logger.setLevel(logging.INFO)
-                # Ensure logs propagate to root logger (which has the ring buffer)
-                existing_logger.propagate = True
-            
+            st.session_state['log_buffer'] = log_buffer
             st.session_state['ring_buffer_handler'] = ring_handler
+            
+            logger.info("📋 Central log buffer initialized via omf2.common.logger")
             
             # Add some initial logs
             logger.info("🚀 OMF2 Dashboard started")
