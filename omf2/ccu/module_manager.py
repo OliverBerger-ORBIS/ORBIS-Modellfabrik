@@ -53,20 +53,13 @@ class CcuModuleManager:
             payload: Payload-Daten (Dict ohne MQTT-Metadaten)
         """
         try:
-            logger.debug(f"🔔 ModuleManager received message for topic: {topic}")
-            
             # Extract module ID from topic
             module_id = self._extract_module_id_from_topic(topic)
             if not module_id:
-                logger.debug(f"⚠️ Could not extract module ID from topic: {topic}")
                 return
-            
-            logger.debug(f"🔍 Processing module message for {module_id} from topic: {topic}")
             
             # Update module status in State-Holder (mit Topic-Kontext)
             self.update_module_status(module_id, payload, self.module_status, topic)
-            
-            logger.debug(f"✅ Updated module state for {module_id}")
                 
         except Exception as e:
             logger.error(f"❌ Failed to process module message for topic {topic}: {e}")
@@ -85,7 +78,6 @@ class CcuModuleManager:
                 
                 # NO duplicate mapping by name - only use Module IDs
             
-            logger.debug(f"📊 Loaded {len(module_icons)} module icons from Registry")
             return module_icons
             
         except Exception as e:
@@ -107,7 +99,6 @@ class CcuModuleManager:
                 logger.warning("⚠️ No modules found in registry")
                 return {}
             
-            logger.debug(f"📊 Loaded {len(modules)} modules from registry")
             return modules
             
         except Exception as e:
@@ -157,35 +148,66 @@ class CcuModuleManager:
             # Payload ist bereits ein Dict - keine JSON-Parsing nötig!
             # (Business-Manager Pattern: direkte Payload-Verarbeitung)
             
-            # DEBUG: Log payload structure
-            logger.debug(f"Module {module_id} payload keys: {list(payload.keys())}")
-            
-            # Extract connection state from payload (Business-Manager Pattern)
+            # Extract module status from payload (Business-Manager Pattern)
+            # Based on analysis of real MQTT data from ai-not-ok-rot_1.log
             if "/connection" in topic:
-                # Connection message: check for connected field
-                if "connected" in payload:
-                    connected = payload.get("connected", False)
+                # Connection Messages: connectionState → connected
+                if "connectionState" in payload:
+                    connection_state = payload.get("connectionState", "OFFLINE")
+                    connected = connection_state == "ONLINE"
                     status_store[module_id]["connected"] = connected
-                    logger.debug(f"Module {module_id} connection state from payload: {connected}")
-                else:
-                    logger.warning(f"⚠️ Module {module_id} connection message without 'connected' field: {list(payload.keys())}")
                     
             elif "/state" in topic:
-                # State message: check for available field
-                if "available" in payload:
-                    available = payload.get("available")
-                    status_store[module_id]["available"] = available
-                    logger.debug(f"Module {module_id} available state from payload: {available}")
+                # State Messages: actionState.state + paused → available
+                action_state_obj = payload.get("actionState")
+                paused = payload.get("paused", False)
+                
+                if action_state_obj is None:
+                    # Fallback: Wenn actionState null ist, aber Modul connected → READY
+                    if status_store[module_id].get("connected", False):
+                        available = "READY"
+                    else:
+                        available = "Unknown"
                 else:
-                    logger.warning(f"⚠️ Module {module_id} state message without 'available' field: {list(payload.keys())}")
-            
+                    # Normale Verarbeitung mit actionState
+                    action_state = action_state_obj.get("state", "Unknown")
+                    
+                    if paused:
+                        available = "BLOCKED"
+                    elif action_state == "RUNNING":
+                        available = "BUSY"
+                    elif action_state == "FINISHED":
+                        available = "READY"
+                    else:
+                        available = action_state  # Fallback
+                    
+                status_store[module_id]["available"] = available
+                
+            elif "/factsheet" in topic:
+                # Factsheet Messages: factsheet vorhanden → configured = true
+                status_store[module_id]["configured"] = True
+                status_store[module_id]["factsheet_data"] = payload
+                
+            elif "ccu/pairing/state" in topic:
+                # Pairing Messages: modules array → connected + available
+                if "modules" in payload:
+                    modules = payload.get("modules", [])
+                    for module_info in modules:
+                        if module_info.get("serialNumber") == module_id:
+                            if "connected" in module_info:
+                                connected = module_info.get("connected", False)
+                                status_store[module_id]["connected"] = connected
+                            
+                            if "available" in module_info:
+                                available = module_info.get("available", "Unknown")
+                                status_store[module_id]["available"] = available
+                            break
+                
             # Update message count and timestamp
             status_store[module_id]["message_count"] += 1
             # Always use string format for last_update to avoid Arrow conversion issues
             from datetime import datetime
             status_store[module_id]["last_update"] = datetime.now().strftime('%H:%M:%S')
-            
-            logger.debug(f"📊 Updated status for {module_id}: {status_store[module_id]}")
             
         except Exception as e:
             logger.error(f"❌ Failed to update module status for {module_id}: {e}")
@@ -211,38 +233,21 @@ class CcuModuleManager:
             
             # Get buffers via Gateway (Gateway-Pattern)
             all_buffers = ccu_gateway.get_all_message_buffers()
-            logger.info(f"📊 Retrieved {len(all_buffers)} buffers via CCU Gateway")
-            
             for topic, messages in all_buffers.items():
                 if not messages:
                     continue
                 
-                logger.debug(f"📡 Processing topic: {topic} with {len(messages)} messages")
-                
                 # Extract module ID from topic
                 module_id = self._extract_module_id_from_topic(topic)
                 if not module_id:
-                    logger.debug(f"⚠️ Could not extract module ID from topic: {topic}")
                     continue
-                
-                logger.info(f"🔍 DEBUG: Extracted module ID: {module_id} from topic: {topic}")
                 
                 # Process latest message for status
                 latest_message = messages[-1] if messages else None
                 if latest_message:
-                    logger.info(f"🔍 DEBUG: Processing latest message for {module_id}:")
-                    logger.info(f"🔍 DEBUG: Message structure: {latest_message}")
-                    logger.info(f"🔍 DEBUG: Message payload: {latest_message.get('payload', 'NO_PAYLOAD')}")
-                    
                     # Add topic information to message for processing
                     latest_message["topic"] = topic
                     self.update_module_status(module_id, latest_message, status_store)
-            
-            logger.info(f"📊 Processed module messages for {len(status_store)} modules")
-            
-            # DEBUG: Log detailed status for each module
-            for module_id, status in status_store.items():
-                logger.info(f"🔍 DEBUG Module {module_id}: connected={status.get('connected')}, available={status.get('available')}, messages={status.get('message_count')}")
             
             return status_store
             
@@ -279,7 +284,6 @@ class CcuModuleManager:
                         potential_module_id = parts[module_id_position]
                         # Check if this module ID exists in Registry
                         if potential_module_id in module_ids:
-                            logger.debug(f"📊 Extracted module ID {potential_module_id} from topic {topic}")
                             return potential_module_id
             
             return None
@@ -319,10 +323,17 @@ class CcuModuleManager:
             topic_patterns = []
             for pattern in patterns:
                 if pattern == 'module/v1/ff/':
+                    # Direkte Module Topics: module/v1/ff/SVR4H73275/state
                     topic_patterns.append({
                         'pattern': pattern,
                         'module_id_position': 3,
                         'type': 'module'
+                    })
+                    # NodeRed Module Topics: module/v1/ff/NodeRed/SVR4H73275/state
+                    topic_patterns.append({
+                        'pattern': 'module/v1/ff/NodeRed/',
+                        'module_id_position': 4,
+                        'type': 'module_nodered'
                     })
                 elif pattern == 'fts/v1/ff/':
                     topic_patterns.append({
@@ -331,7 +342,6 @@ class CcuModuleManager:
                         'type': 'fts'
                     })
             
-            logger.debug(f"📊 Loaded {len(topic_patterns)} topic patterns from Registry: {[p['pattern'] for p in topic_patterns]}")
             return topic_patterns
             
         except Exception as e:

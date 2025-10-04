@@ -609,6 +609,11 @@ class CcuMqttClient:
             # Business-Functions aus Registry laden
             business_functions = self.registry_manager.get_business_functions('ccu_mqtt_client')
             
+            # DEBUG: Log loaded business functions (nur einmal)
+            if not hasattr(self, '_business_functions_logged'):
+                logger.info(f"📋 Loaded business functions: {list(business_functions.keys())}")
+                self._business_functions_logged = True
+            
             for function_name, function_config in business_functions.items():
                 subscribed_topics = function_config.get('subscribed_topics', [])
                 callback_method = function_config.get('callback_method', '')

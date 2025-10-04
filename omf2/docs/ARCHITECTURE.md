@@ -694,13 +694,45 @@ MQTT-Client (Transport) → Business-Manager (State-Holder) → UI (Konsument)
 # omf2/registry/mqtt_clients.yml
 mqtt_clients:
   ccu_mqtt_client:
+    # HAUPT-LISTE: MQTT Client subscribed diese Topics
+    subscribed_topics:
+      - "/j1/txt/1/i/bme680"
+      - "/j1/txt/1/i/ldr"
+      - "module/v1/ff/SVR3QA0022/state"
+      - "module/v1/ff/SVR3QA0022/connection"
+      - "module/v1/ff/SVR3QA0022/factsheet"
+      - "ccu/pairing/state"
+    
+    # BUSINESS-FUNCTIONS: Callbacks für Topic-Subsets
     business_functions:
       sensor_manager:
         subscribed_topics: ["/j1/txt/1/i/bme680", "/j1/txt/1/i/ldr"]
         callback_method: "process_sensor_message"
         manager_class: "SensorManager"
         manager_module: "omf2.ccu.sensor_manager"
+      
+      module_manager:
+        subscribed_topics: 
+          - "module/v1/ff/SVR3QA0022/state"
+          - "module/v1/ff/SVR3QA0022/connection"
+          - "module/v1/ff/SVR3QA0022/factsheet"
+          - "ccu/pairing/state"
+        callback_method: "process_module_message"
+        manager_class: "CcuModuleManager"
+        manager_module: "omf2.ccu.module_manager"
 ```
+
+#### **Wichtige Architektur-Details:**
+
+**🔑 Doppelte Topic-Listen:**
+1. **`subscribed_topics`** (Haupt-Liste): MQTT Client subscribed diese Topics
+2. **`business_functions.xxx.subscribed_topics`** (Subset-Liste): Business Functions bekommen Callbacks
+
+**📋 Warum beide Listen?**
+- **MQTT Client** muss Topics subscribed haben, bevor Messages empfangen werden
+- **Business Functions** bekommen nur Callbacks für ihre relevanten Topics
+- **Registry-driven**: Beide Listen werden aus `mqtt_clients.yml` geladen
+- **Flexibel**: Business Functions können Topic-Subsets definieren
 
 #### **MQTT-Client Callback:**
 ```python

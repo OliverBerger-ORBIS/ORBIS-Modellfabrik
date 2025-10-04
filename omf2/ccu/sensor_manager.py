@@ -51,7 +51,7 @@ class SensorManager:
             if processed_data:
                 # Update State-Holder
                 self.sensor_data[topic] = processed_data
-                logger.info(f"✅ Updated sensor state for {topic}: {processed_data}")
+                logger.debug(f"✅ Updated sensor state for {topic}: {processed_data}")
             else:
                 logger.warning(f"⚠️ No processed data for sensor topic: {topic}")
                 
@@ -82,8 +82,7 @@ class SensorManager:
             # Get buffers via Gateway (Gateway-Pattern)
             all_buffers = ccu_gateway.get_all_message_buffers()
             logger.debug(f"🔍 SENSOR DEBUG: Got {len(all_buffers)} message buffers")
-            print(f"🔍 SENSOR DEBUG: Got {len(all_buffers)} message buffers")
-            logger.info(f"📊 Retrieved {len(all_buffers)} buffers via CCU Gateway")
+            logger.debug(f"📊 Retrieved {len(all_buffers)} buffers via CCU Gateway")
             
             for topic, messages in all_buffers.items():
                 if not messages:
@@ -97,9 +96,9 @@ class SensorManager:
                     processed_data = self._extract_sensor_data(topic, messages)
                     if processed_data:
                         sensor_data[topic] = processed_data
-                        logger.info(f"🔍 DEBUG: Processed sensor data for {topic}: {processed_data}")
+                        logger.debug(f"🔍 DEBUG: Processed sensor data for {topic}: {processed_data}")
             
-            logger.info(f"📊 Processed sensor data for {len(sensor_data)} sensor topics")
+            logger.debug(f"📊 Processed sensor data for {len(sensor_data)} sensor topics")
             return sensor_data
             
         except Exception as e:
