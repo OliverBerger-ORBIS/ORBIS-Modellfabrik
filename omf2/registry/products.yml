@@ -1,0 +1,39 @@
+# OMF2 Product Catalog Configuration
+# Minimale Produktdefinitionen für das CCU Dashboard
+# Version: 1.0.0
+
+metadata:
+  version: "1.0.0"
+  description: "OMF2 Produktkatalog für CCU Dashboard"
+  last_updated: "2025-10-04"
+
+# Produktdefinitionen (Reihenfolge: Blau, Weiß, Rot)
+products:
+  blue:
+    id: "BLUE"
+    name: "Produkt Blau"
+    color: "#0066CC"
+    material: "Kunststoff"
+    description: "Komplette Bearbeitung"
+    enabled: true
+    icon: "🔵"
+
+  white:
+    id: "WHITE"
+    name: "Produkt Weiß"
+    color: "#FFFFFF"
+    material: "Kunststoff"
+    description: "Bohren + Qualitätssicherung"
+    enabled: true
+    icon: "⚪"
+
+  red:
+    id: "RED"
+    name: "Produkt Rot"
+    color: "#CC0000"
+    material: "Kunststoff"
+    description: "Fräsen + Qualitätssicherung"
+    enabled: true
+    icon: "🔴"
+
+# Keine Katalog-Metadaten mehr benötigt

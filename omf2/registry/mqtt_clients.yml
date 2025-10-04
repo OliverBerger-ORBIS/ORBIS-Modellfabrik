@@ -77,6 +77,7 @@ mqtt_clients:
       - "/j1/txt/1/c/ldr"
       # TXT Output Topics
       - "/j1/txt/1/o/broadcast"
+      - "/j1/txt/1/o/ptu"
     subscribed_topics:
       - topic: "fts/v1/ff/5iO4/state"
         qos: 1

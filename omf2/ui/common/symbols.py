@@ -13,6 +13,7 @@ class UISymbols:
     TAB_ICONS: Dict[str, str] = {
         # CCU Module
         'ccu_dashboard': '🏭',      # Factory/Overview
+        'ccu_overview': '🏭',       # CCU Overview
         'ccu_orders': '📝',         # Orders/Workpieces (FINAL: 📝)
         'ccu_process': '🔄',        # Process Control (FINAL: 🔄)
         'ccu_configuration': '⚙️',  # Configuration
@@ -114,6 +115,13 @@ class UISymbols:
         'stations': '🏢',            # Stations (FINAL: 🏢)
         'txt_controllers': '🕹️',    # TXT Controllers (FINAL: 🕹️)
         'workpieces': None,          # Workpieces (loaded from Registry)
+        
+        # CCU Overview specific icons
+        'product_catalog': '📋',    # Product Catalog
+        'customer_order': '🛒',     # Customer Orders
+        'purchase_order': '📦',     # Purchase Orders
+        'inventory': '📚',          # Inventory
+        'sensor_data': '📊',        # Sensor Data
     }
     
     @classmethod

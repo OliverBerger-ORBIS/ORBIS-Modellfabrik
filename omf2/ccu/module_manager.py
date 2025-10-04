@@ -143,33 +143,33 @@ class CcuModuleManager:
             logger.info(f"🔍 DEBUG: Module {module_id} message_data keys: {list(message_data.keys())}")
             
             if "/connection" in topic:
-                # Connection message: use connectionState field (Schema: module_v1_ff_serial_connection.schema.json)
-                # CORRECTED: Use connectionState from payload, not from message_data
-                connection_state = payload.get("connectionState")
+                # Connection message: connectionState is DIRECTLY in message_data (not in payload)
+                # CORRECTED: Use connectionState from message_data directly
+                connection_state = message_data.get("connectionState")
                 if connection_state is not None:
                     # Map connection states to boolean
                     connected = connection_state.lower() in ["connected", "online", "active"]
                     status_store[module_id]["connected"] = connected
-                    logger.info(f"🔍 DEBUG: Module {module_id} connection state from payload: {connection_state} -> connected: {connected}")
+                    logger.info(f"🔍 DEBUG: Module {module_id} connection state from message_data: {connection_state} -> connected: {connected}")
                 else:
-                    logger.warning(f"⚠️ Module {module_id} no connectionState found in payload: {payload}")
+                    logger.warning(f"⚠️ Module {module_id} no connectionState found in message_data: {list(message_data.keys())}")
                     
             elif "/state" in topic:
-                # State message: use available field directly (Schema: module_v1_ff_serial_state.schema.json)
-                # CORRECTED: Use 'available' field from payload, not from message_data
-                available = payload.get("available")
+                # State message: available field is DIRECTLY in message_data (not in payload)
+                # CORRECTED: Use 'available' field from message_data directly
+                available = message_data.get("available")
                 if available is not None:
                     status_store[module_id]["available"] = available
-                    logger.info(f"🔍 DEBUG: Module {module_id} available state from payload: {available}")
+                    logger.info(f"🔍 DEBUG: Module {module_id} available state from message_data: {available}")
                 else:
                     # Fallback to metadata.opcuaState if available field not present
-                    metadata = payload.get("metadata", {})
+                    metadata = message_data.get("metadata", {})
                     opcua_state = metadata.get("opcuaState")
                     if opcua_state is not None:
                         status_store[module_id]["available"] = opcua_state
                         logger.info(f"🔍 DEBUG: Module {module_id} opcua state (fallback): {opcua_state}")
                     else:
-                        logger.warning(f"⚠️ Module {module_id} no available or opcuaState found in payload: {payload}")
+                        logger.warning(f"⚠️ Module {module_id} no available or opcuaState found in message_data: {list(message_data.keys())}")
             
             # Update message count and timestamp
             status_store[module_id]["message_count"] += 1

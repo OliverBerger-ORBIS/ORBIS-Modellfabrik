@@ -1,15 +1,21 @@
 # ✅ IMPLEMENTIERTE ARCHITEKTUR: Gekapseltes MQTT, Registry Manager & Gateway für Streamlit-Apps
 
 **Status: VOLLSTÄNDIG IMPLEMENTIERT** ✅  
-**Datum: 2025-10-03**  
+**Datum: 2025-10-04**  
 **Tests: 55 Tests erfolgreich** ✅  
 **Registry-Migration: ABGESCHLOSSEN** ✅  
-**Architektur-Cleanup: ABGESCHLOSSEN** ✅
+**Architektur-Cleanup: ABGESCHLOSSEN** ✅  
+**Schema-Validation: SYSTEMATISCH KORRIGIERT** ✅
 
 **Ziel:**  
 Weggekapselte, robuste Architektur für MQTT-Kommunikation, Message-Templates und UI-Refresh in einer Streamlit-App, sodass UI- und Business-Logik möglichst einfach bleiben und typische Fehlerquellen (Threading, Race-Conditions, Deadlocks, inkonsistenter State) vermieden werden.
 
 **✅ ERREICHT:** Alle Ziele wurden erfolgreich implementiert und getestet.
+
+**🔧 AKTUELLE ERKENNTNISSE (2025-10-04):**
+- **Schema-Validation Problem gelöst**: Falsche Schema-Zuordnungen in `txt.yml` korrigiert
+- **Message Processing Pattern**: Registry Manager für Payload-Validierung statt MessageManager
+- **Topic-Schema-Mapping**: Jeder Sensor-Typ hat jetzt sein eigenes Schema (BME680, LDR, CAM)
 
 ---
 
@@ -44,6 +50,7 @@ Streamlit-UI (omf2/ui/)
     ▼
 Business Logic (omf2/ccu/, omf2/admin/, omf2/common/)
     ├── ModuleManager (Schema-basierte Message-Verarbeitung) ✅
+    ├── SensorManager (Schema-basierte Sensor-Daten-Verarbeitung mit Registry Manager) ✅
     ├── WorkpieceManager (Registry-basierte Icons) ✅
     ├── MessageManager (Domain-agnostic Message Generation/Validation) ✅
     ├── TopicManager (Domain-agnostic Topic Management) ✅
@@ -66,6 +73,7 @@ MQTT Clients (Singleton) ✅
 - Registry Manager als zentrale Komponente für alle Registry-Daten
 - Business Logic Manager (ModuleManager, WorkpieceManager) für Entitäts-Verwaltung
 - **Domain-agnostic Manager (MessageManager, TopicManager) für wiederverwendbare Logik**
+- **SensorManager für Schema-basierte Sensor-Daten-Verarbeitung**
 - Schema-basierte Message-Verarbeitung mit direkter Registry-Abfrage
 - Thread-sichere Singleton-Pattern für alle Komponenten
 - Gateway-Factory für Business-Operationen
@@ -127,9 +135,76 @@ all_workpieces_icon = workpiece_manager.get_all_workpieces_icon()  # 🔵⚪🔴
 
 ---
 
-## 4. Domain-agnostic Manager (Wiederverwendbare Logik)
+## 4. Business Logic Manager (Schema-basierte Daten-Verarbeitung)
 
-### 4.1 MessageManager (Domain-agnostic Message Generation/Validation)
+### 4.1 SensorManager (Schema-basierte Sensor-Daten-Verarbeitung)
+
+**Zweck:** Verarbeitet Sensor-Messages aus MQTT-Buffers mit Schema-basierter Feld-Extraktion (BME680, LDR, CAM).
+
+**🔧 KORRIGIERTES PATTERN (2025-10-04):**
+```python
+# UI Component → Business Logic Manager → Gateway → Registry Manager
+class SensorManager:
+    def process_sensor_messages(self, ccu_gateway) -> Dict[str, Any]:
+        # 1. Get all buffers via Gateway
+        all_buffers = ccu_gateway.get_all_message_buffers()
+        
+        # 2. Process each sensor topic
+        for topic, messages in all_buffers.items():
+            if self._is_sensor_topic(topic):
+                processed_data = self._extract_sensor_data(topic, messages)
+        
+        return sensor_data
+    
+    def _extract_sensor_data(self, topic: str, messages: List[Dict]) -> Dict[str, Any]:
+        # 1. Extract payload from message (remove metadata)
+        payload = latest_message.copy()
+        metadata_fields = ['timestamp', 'ts']
+        sensor_payload = {k: v for k, v in payload.items() if k not in metadata_fields}
+        
+        # 2. Use Registry Manager for schema-based payload validation
+        validation_result = self.registry_manager.validate_topic_payload(topic, sensor_payload)
+        
+        # 3. Extract validated sensor fields
+        if validation_result.get("valid", False):
+            validated_payload = sensor_payload
+            
+            if "/bme680" in topic:
+                return {
+                    "temperature": validated_payload.get("t", 0.0),      # ✅ Korrekt
+                    "humidity": validated_payload.get("h", 0.0),         # ✅ Korrekt
+                    "pressure": validated_payload.get("p", 0.0),         # ✅ Korrekt
+                    "air_quality": validated_payload.get("iaq", 0.0)     # ✅ Korrekt: "iaq"
+                }
+            elif "/ldr" in topic:
+                return {"light": validated_payload.get("ldr", 0.0)}      # ✅ Korrekt: "ldr"
+            elif "/cam" in topic:
+                return {"image_data": validated_payload.get("data", "")} # ✅ Korrekt
+```
+
+**Usage:**
+```python
+# UI Component
+sensor_manager = get_ccu_sensor_manager()
+sensor_data = sensor_manager.process_sensor_messages(ccu_gateway)
+bme680_data = sensor_data.get("/j1/txt/1/i/bme680", {})
+temperature = bme680_data.get("temperature", 0.0)
+```
+
+**Vorteile:**
+- **Registry Manager Validation:** Korrekte Schema-Validierung für jeden Sensor-Typ
+- **Payload-Extraktion:** Metadaten werden korrekt entfernt vor Validierung
+- **Topic-spezifische Schemas:** BME680, LDR, CAM haben jeweils eigene Schemas
+- **Korrekte Feld-Namen:** `iaq` (nicht `aq`), `ldr` (nicht `l`) entsprechend echten MQTT-Daten
+- **Gateway-Pattern:** UI interagiert nur mit Manager, nicht direkt mit Gateway
+- **Message Processing Pattern:** Standardisiertes Debug-Logging und Feld-Extraktion
+- **Wiederverwendbar:** Gleiche Logik für alle Sensor-Topics
+
+---
+
+## 5. Domain-agnostic Manager (Wiederverwendbare Logik)
+
+### 5.1 MessageManager (Domain-agnostic Message Generation/Validation)
 
 **Datei:** `omf2/common/message_manager.py`
 
@@ -156,7 +231,7 @@ message = ccu_message_manager.generate_message("ccu/topic", {"param": "value"})
 valid = ccu_message_manager.validate_message("ccu/topic", payload)
 ```
 
-### 4.2 TopicManager (Domain-agnostic Topic Management)
+### 5.2 TopicManager (Domain-agnostic Topic Management)
 
 **Datei:** `omf2/common/topic_manager.py`
 
@@ -462,6 +537,7 @@ if msg:
 - **Gateways sind "schlanke Fassade":** Testbar, erweiterbar, keine Redundanz.
 - **Domain-agnostic Manager:** Wiederverwendbare Logik, Code-Duplikation eliminiert.
 - **Gateway Pattern mit Manager-Delegation:** Saubere Trennung von Verantwortlichkeiten.
+- **Message Processing Pattern:** Standardisiertes Pattern für alle Manager (verhindert wiederkehrende Fehler).
 - **MQTT und Schemas sind zentral und thread-safe gekapselt.**
 - **UI-Refresh wird zentral gesteuert, keine Race-Conditions mit Session-State.**
 - **Das Pattern ist in allen Domänen wiederverwendbar und hält die Komplexität im Griff.**
@@ -497,10 +573,16 @@ if msg:
 - `omf2/nodered/nodered_gateway.py` - NoderedGateway ✅
 - `omf2/admin/admin_gateway.py` - AdminGateway ✅
 
+**Business Logic Manager:**
+- `omf2/ccu/sensor_manager.py` - SensorManager (Schema-basierte Sensor-Daten-Verarbeitung) ✅
+
 **Domain-agnostic Manager:**
 - `omf2/common/message_manager.py` - MessageManager (Domain-agnostic) ✅
 - `omf2/common/topic_manager.py` - TopicManager (Domain-agnostic) ✅
 - `omf2/admin/admin_message_manager.py` - AdminMessageManager (Wrapper) ✅
+
+**Dokumentation:**
+- `omf2/docs/MESSAGE_PROCESSING_PATTERN.md` - Standard-Pattern für alle Manager ✅
 
 **Registry v2 Integration:**
 - `omf2/registry/model/v2/` - Vollständige Registry v2 ✅
@@ -516,6 +598,7 @@ if msg:
 - `omf2/tests/test_gateway_factory.py` - 14 Tests ✅
 - `omf2/tests/test_registry_v2_integration_simple.py` - 10 Tests ✅
 - `omf2/tests/test_registry_manager_comprehensive.py` - 20 Tests ✅
+- `omf2/tests/test_sensor_manager.py` - SensorManager Tests (geplant)
 - `omf2/tests/test_message_manager.py` - MessageManager Tests ✅
 - `omf2/tests/test_topic_manager.py` - TopicManager Tests ✅
 - `omf2/tests/test_admin_message_manager.py` - AdminMessageManager Tests ✅
@@ -572,5 +655,7 @@ ccu_gateway.reset_factory()
 ccu_gateway.send_global_command("start", {"line": "1"})
 ```
 
-**Letzte Aktualisierung:** 2025-10-03  
-**Status:** VOLLSTÄNDIG IMPLEMENTIERT ✅
+**Letzte Aktualisierung:** 2025-10-04  
+**Status:** VOLLSTÄNDIG IMPLEMENTIERT ✅  
+**Message Processing Pattern:** DOKUMENTIERT ✅  
+**Schema-Validation:** SYSTEMATISCH KORRIGIERT ✅

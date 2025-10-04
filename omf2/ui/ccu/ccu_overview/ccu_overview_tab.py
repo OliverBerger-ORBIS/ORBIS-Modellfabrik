@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
 """
-CCU Overview Tab - CCU Dashboard UI Component
+CCU Overview Tab - CCU Dashboard UI Component with Subtabs
 """
 
 import streamlit as st
 from omf2.ccu.ccu_gateway import CcuGateway
-from omf2.ccu.ccu_mqtt_client import get_ccu_mqtt_client
 from omf2.common.logger import get_logger
+from omf2.ui.common.symbols import UISymbols
 
 logger = get_logger(__name__)
 
 
 def render_ccu_overview_tab(ccu_gateway=None, registry_manager=None):
-    """Render CCU Overview Tab
+    """Render CCU Overview Tab with Subtabs
     
     Args:
         ccu_gateway: CcuGateway Instanz (Gateway-Pattern)
@@ -20,126 +20,50 @@ def render_ccu_overview_tab(ccu_gateway=None, registry_manager=None):
     """
     logger.info("🏭 Rendering CCU Overview Tab")
     try:
-        # Initialize CCU Gateway if not provided
+        # Gateway-Pattern: Get CcuGateway from Factory (EXACT like Admin)
+        from omf2.factory.gateway_factory import get_ccu_gateway
+        ccu_gateway = get_ccu_gateway()
         if not ccu_gateway:
-            if 'ccu_gateway' not in st.session_state:
-                # Use Gateway Factory to create CCU Gateway with MQTT Client
-                from omf2.factory.gateway_factory import get_gateway_factory
-                gateway_factory = get_gateway_factory()
-                st.session_state['ccu_gateway'] = gateway_factory.get_ccu_gateway()
-            ccu_gateway = st.session_state['ccu_gateway']
+            st.error(f"{UISymbols.get_status_icon('error')} CCU Gateway not available")
+            return
         
         # Initialize Registry Manager if not provided
         if not registry_manager:
             from omf2.registry.manager.registry_manager import get_registry_manager
             registry_manager = get_registry_manager()
         
-        st.header("🏭 CCU Dashboard")
-        st.markdown("Central Control Unit - Factory Management")
+        # Use UISymbols for consistent icon usage
+        st.header(f"{UISymbols.get_tab_icon('ccu_overview')} CCU Overview")
+        st.markdown("Central Control Unit - Factory Overview and Management")
         
-        # CCU Status Section
-        with st.expander("📊 CCU Status", expanded=True):
-            col1, col2, col3 = st.columns(3)
-            
-            with col1:
-                st.metric("Status", "🟢 Connected", "Online")
-            
-            with col2:
-                st.metric("Modules", "7", "Active")
-            
-            with col3:
-                st.metric("Orders", "3", "Processing")
+        # Create subtabs
+        tab1, tab2, tab3, tab4, tab5 = st.tabs([
+            f"{UISymbols.get_functional_icon('product_catalog')} Product Catalog",
+            f"{UISymbols.get_functional_icon('customer_order')} Customer Orders",
+            f"{UISymbols.get_functional_icon('purchase_order')} Purchase Orders",
+            f"{UISymbols.get_functional_icon('inventory')} Inventory",
+            f"{UISymbols.get_functional_icon('sensor_data')} Sensor Data"
+        ])
         
-        # Factory Control Section
-        with st.expander("🎛️ Factory Control", expanded=True):
-            col1, col2 = st.columns(2)
-            
-            with col1:
-                if st.button("🔄 Reset Factory", type="primary", key="ccu_overview_reset_btn"):
-                    if ccu_gateway.reset_factory():
-                        st.success("✅ Factory reset initiated")
-                    else:
-                        st.error("❌ Factory reset failed")
-            
-            with col2:
-                if st.button("📤 Send Global Command", key="ccu_overview_global_cmd_btn"):
-                    command = st.text_input("Command:", value="status", key="ccu_overview_global_cmd_input")
-                    if st.button("Send", key="ccu_overview_global_cmd_send"):
-                        if ccu_gateway.send_global_command(command):
-                            st.success(f"✅ Command '{command}' sent")
-                        else:
-                            st.error(f"❌ Command '{command}' failed")
+        with tab1:
+            from omf2.ui.ccu.ccu_overview.product_catalog_subtab import render_product_catalog_subtab
+            render_product_catalog_subtab(ccu_gateway, registry_manager)
         
-        # Module States Section
-        with st.expander("📋 Module States", expanded=True):
-            st.markdown("### Active Modules")
-            
-            # Placeholder module data
-            modules = [
-                {"id": "SVR3QA0022", "name": "DPS", "state": "idle", "status": "🟢"},
-                {"id": "SVR4H76449", "name": "FTS", "state": "moving", "status": "🟡"},
-                {"id": "SVR3QA2098", "name": "AIQS", "state": "processing", "status": "🟢"},
-                {"id": "SVR4H76530", "name": "CHRG", "state": "charging", "status": "🟢"},
-                {"id": "SVR4H73275", "name": "CGW", "state": "idle", "status": "🟢"},
-            ]
-            
-            for module in modules:
-                col1, col2, col3, col4 = st.columns([2, 2, 2, 1])
-                with col1:
-                    st.write(f"**{module['name']}**")
-                with col2:
-                    st.write(module['id'])
-                with col3:
-                    st.write(module['state'])
-                with col4:
-                    st.write(module['status'])
+        with tab2:
+            from omf2.ui.ccu.ccu_overview.customer_order_subtab import render_customer_order_subtab
+            render_customer_order_subtab(ccu_gateway, registry_manager)
         
-        # Order Management Section
-        with st.expander("📦 Order Management", expanded=True):
-            st.markdown("### Active Orders")
-            
-            # Placeholder order data
-            orders = [
-                {"id": "ORD-001", "workpiece": "WP-001", "status": "processing", "progress": 75},
-                {"id": "ORD-002", "workpiece": "WP-002", "status": "queued", "progress": 0},
-                {"id": "ORD-003", "workpiece": "WP-003", "status": "completed", "progress": 100},
-            ]
-            
-            for order in orders:
-                col1, col2, col3, col4 = st.columns([2, 2, 2, 2])
-                with col1:
-                    st.write(f"**{order['id']}**")
-                with col2:
-                    st.write(order['workpiece'])
-                with col3:
-                    st.write(order['status'])
-                with col4:
-                    st.progress(order['progress'] / 100)
+        with tab3:
+            from omf2.ui.ccu.ccu_overview.purchase_order_subtab import render_purchase_order_subtab
+            render_purchase_order_subtab(ccu_gateway, registry_manager)
         
-        # MQTT Client Info Section
-        with st.expander("🔗 MQTT Client Info", expanded=False):
-            st.markdown("### CCU MQTT Client Configuration")
-            
-            # Get MQTT client info
-            ccu_mqtt_client = get_ccu_mqtt_client()
-            
-            col1, col2 = st.columns(2)
-            
-            with col1:
-                st.markdown("**Published Topics:**")
-                published_topics = ccu_gateway.get_published_topics()
-                for topic in published_topics[:5]:  # Show first 5
-                    st.write(f"• {topic}")
-                if len(published_topics) > 5:
-                    st.write(f"• ... and {len(published_topics) - 5} more")
-            
-            with col2:
-                st.markdown("**Subscribed Topics:**")
-                subscribed_topics = ccu_gateway.get_subscribed_topics()
-                for topic in subscribed_topics[:5]:  # Show first 5
-                    st.write(f"• {topic}")
-                if len(subscribed_topics) > 5:
-                    st.write(f"• ... and {len(subscribed_topics) - 5} more")
+        with tab4:
+            from omf2.ui.ccu.ccu_overview.inventory_subtab import render_inventory_subtab
+            render_inventory_subtab(ccu_gateway, registry_manager)
+        
+        with tab5:
+            from omf2.ui.ccu.ccu_overview.sensor_data_subtab import render_sensor_data_subtab
+            render_sensor_data_subtab(ccu_gateway, registry_manager)
         
     except Exception as e:
         logger.error(f"❌ CCU Overview Tab rendering error: {e}")
