@@ -79,8 +79,62 @@ def _render_log_history(admin_gateway):
         if st.button(f"{UISymbols.get_status_icon('refresh')} Refresh", key="refresh_logs"):
             st.rerun()
     
-    # Placeholder for log entries
-    st.info(f"{UISymbols.get_status_icon('info')} Log history functionality will be implemented with AdminGateway integration")
+    # Get log entries from central buffer
+    log_buffer = st.session_state.get('log_buffer')
+    if not log_buffer:
+        st.error(f"{UISymbols.get_status_icon('error')} No log buffer available")
+        return
+    
+    # Convert deque to list and reverse (newest first)
+    all_logs = list(log_buffer)[::-1]
+    
+    # Filter by log level
+    if log_level != "ALL":
+        filtered_logs = [log for log in all_logs if f"[{log_level}]" in log]
+    else:
+        filtered_logs = all_logs
+    
+    # Limit entries
+    filtered_logs = filtered_logs[:max_entries]
+    
+    # Display log entries
+    if not filtered_logs:
+        st.info(f"{UISymbols.get_status_icon('info')} No logs found for level: {log_level}")
+        return
+    
+    st.success(f"{UISymbols.get_status_icon('success')} Showing {len(filtered_logs)} log entries")
+    
+    # Display logs in expandable sections
+    for i, log_entry in enumerate(filtered_logs):
+        # Extract timestamp and level for display
+        timestamp = log_entry.split(']')[0].split('[')[0].strip() if ']' in log_entry else "Unknown"
+        level = "INFO"
+        if "[DEBUG]" in log_entry:
+            level = "DEBUG"
+        elif "[INFO]" in log_entry:
+            level = "INFO"
+        elif "[WARNING]" in log_entry:
+            level = "WARNING"
+        elif "[ERROR]" in log_entry:
+            level = "ERROR"
+        
+        # Color coding for log levels
+        if level == "ERROR":
+            icon = f"{UISymbols.get_status_icon('error')}"
+            color = "🔴"
+        elif level == "WARNING":
+            icon = f"{UISymbols.get_status_icon('warning')}"
+            color = "🟡"
+        elif level == "DEBUG":
+            icon = f"{UISymbols.get_functional_icon('search')}"
+            color = "🔵"
+        else:
+            icon = f"{UISymbols.get_status_icon('info')}"
+            color = "🔵"
+        
+        # Create expandable section
+        with st.expander(f"{color} {timestamp} - {level}", expanded=False):
+            st.code(log_entry, language="text")
 
 
 def _render_log_search(admin_gateway):
@@ -99,14 +153,66 @@ def _render_log_search(admin_gateway):
         )
     
     with col2:
-        if st.button(f"{UISymbols.get_functional_icon('search')} Search", key="search_logs"):
-            if search_query:
-                st.success(f"{UISymbols.get_status_icon('success')} Searching for: {search_query}")
-            else:
-                st.warning(f"{UISymbols.get_status_icon('warning')} Please enter a search query")
+        search_clicked = st.button(f"{UISymbols.get_functional_icon('search')} Search", key="search_logs")
     
-    # Search results placeholder
-    st.info(f"{UISymbols.get_status_icon('info')} Log search functionality will be implemented with AdminGateway integration")
+    # Get log entries from central buffer
+    log_buffer = st.session_state.get('log_buffer')
+    if not log_buffer:
+        st.error(f"{UISymbols.get_status_icon('error')} No log buffer available")
+        return
+    
+    # Convert deque to list and reverse (newest first)
+    all_logs = list(log_buffer)[::-1]
+    
+    # Perform search if query provided
+    if search_query and search_clicked:
+        # Case-insensitive search
+        search_results = [log for log in all_logs if search_query.lower() in log.lower()]
+        
+        if search_results:
+            st.success(f"{UISymbols.get_status_icon('success')} Found {len(search_results)} results for: '{search_query}'")
+            
+            # Display search results
+            for i, log_entry in enumerate(search_results[:50]):  # Limit to 50 results
+                # Extract timestamp and level for display
+                timestamp = log_entry.split(']')[0].split('[')[0].strip() if ']' in log_entry else "Unknown"
+                level = "INFO"
+                if "[DEBUG]" in log_entry:
+                    level = "DEBUG"
+                elif "[INFO]" in log_entry:
+                    level = "INFO"
+                elif "[WARNING]" in log_entry:
+                    level = "WARNING"
+                elif "[ERROR]" in log_entry:
+                    level = "ERROR"
+                
+                # Color coding for log levels
+                if level == "ERROR":
+                    color = "🔴"
+                elif level == "WARNING":
+                    color = "🟡"
+                elif level == "DEBUG":
+                    color = "🔵"
+                else:
+                    color = "🔵"
+                
+                # Highlight search term in log entry
+                highlighted_log = log_entry.replace(
+                    search_query, f"**{search_query}**"
+                )
+                
+                # Create expandable section
+                with st.expander(f"{color} {timestamp} - {level}", expanded=False):
+                    st.markdown(highlighted_log)
+        else:
+            st.warning(f"{UISymbols.get_status_icon('warning')} No results found for: '{search_query}'")
+    
+    elif search_clicked and not search_query:
+        st.warning(f"{UISymbols.get_status_icon('warning')} Please enter a search query")
+    
+    # Show recent logs if no search performed
+    if not search_query:
+        st.info(f"{UISymbols.get_status_icon('info')} Enter a search term to search through {len(all_logs)} log entries")
 
 
 def _render_log_analytics(admin_gateway):
@@ -114,20 +220,111 @@ def _render_log_analytics(admin_gateway):
     st.subheader(f"{UISymbols.get_functional_icon('dashboard')} Log Analytics")
     st.markdown("**System log statistics and trends**")
     
-    # Analytics metrics placeholder
+    # Get log entries from central buffer
+    log_buffer = st.session_state.get('log_buffer')
+    if not log_buffer:
+        st.error(f"{UISymbols.get_status_icon('error')} No log buffer available")
+        return
+    
+    # Convert deque to list
+    all_logs = list(log_buffer)
+    
+    # Count log levels
+    total_logs = len(all_logs)
+    debug_count = sum(1 for log in all_logs if "[DEBUG]" in log)
+    info_count = sum(1 for log in all_logs if "[INFO]" in log)
+    warning_count = sum(1 for log in all_logs if "[WARNING]" in log)
+    error_count = sum(1 for log in all_logs if "[ERROR]" in log)
+    
+    # Analytics metrics
     col1, col2, col3, col4 = st.columns(4)
     
     with col1:
-        st.metric(f"{UISymbols.get_status_icon('success')} Total Logs", "1,234")
+        st.metric(f"{UISymbols.get_status_icon('success')} Total Logs", f"{total_logs:,}")
     
     with col2:
-        st.metric(f"{UISymbols.get_status_icon('error')} Errors", "23")
+        st.metric(f"{UISymbols.get_status_icon('error')} Errors", f"{error_count:,}")
     
     with col3:
-        st.metric(f"{UISymbols.get_status_icon('warning')} Warnings", "45")
+        st.metric(f"{UISymbols.get_status_icon('warning')} Warnings", f"{warning_count:,}")
     
     with col4:
-        st.metric(f"{UISymbols.get_status_icon('info')} Info", "1,166")
+        st.metric(f"{UISymbols.get_status_icon('info')} Info", f"{info_count:,}")
     
-    # Analytics chart placeholder
-    st.info(f"{UISymbols.get_status_icon('info')} Log analytics charts will be implemented with AdminGateway integration")
+    # Additional metrics
+    col5, col6 = st.columns(2)
+    
+    with col5:
+        st.metric(f"{UISymbols.get_functional_icon('search')} Debug", f"{debug_count:,}")
+    
+    with col6:
+        # Calculate error rate
+        error_rate = (error_count / total_logs * 100) if total_logs > 0 else 0
+        st.metric(f"{UISymbols.get_status_icon('error')} Error Rate", f"{error_rate:.1f}%")
+    
+    # Log level distribution chart
+    if total_logs > 0:
+        st.subheader(f"{UISymbols.get_functional_icon('dashboard')} Log Level Distribution")
+        
+        # Create simple bar chart using columns
+        chart_col1, chart_col2, chart_col3, chart_col4, chart_col5 = st.columns(5)
+        
+        with chart_col1:
+            st.metric("DEBUG", debug_count, delta=None)
+            debug_percent = (debug_count / total_logs * 100) if total_logs > 0 else 0
+            st.progress(debug_percent / 100)
+        
+        with chart_col2:
+            st.metric("INFO", info_count, delta=None)
+            info_percent = (info_count / total_logs * 100) if total_logs > 0 else 0
+            st.progress(info_percent / 100)
+        
+        with chart_col3:
+            st.metric("WARNING", warning_count, delta=None)
+            warning_percent = (warning_count / total_logs * 100) if total_logs > 0 else 0
+            st.progress(warning_percent / 100)
+        
+        with chart_col4:
+            st.metric("ERROR", error_count, delta=None)
+            error_percent = (error_count / total_logs * 100) if total_logs > 0 else 0
+            st.progress(error_percent / 100)
+        
+        with chart_col5:
+            st.metric("TOTAL", total_logs, delta=None)
+            st.progress(1.0)
+    
+    # Recent activity
+    st.subheader(f"{UISymbols.get_functional_icon('history')} Recent Activity")
+    
+    # Show last 10 log entries with timestamps
+    recent_logs = all_logs[-10:] if len(all_logs) >= 10 else all_logs
+    recent_logs.reverse()  # Show newest first
+    
+    for log_entry in recent_logs:
+        # Extract timestamp and level
+        timestamp = log_entry.split(']')[0].split('[')[0].strip() if ']' in log_entry else "Unknown"
+        level = "INFO"
+        if "[DEBUG]" in log_entry:
+            level = "DEBUG"
+        elif "[INFO]" in log_entry:
+            level = "INFO"
+        elif "[WARNING]" in log_entry:
+            level = "WARNING"
+        elif "[ERROR]" in log_entry:
+            level = "ERROR"
+        
+        # Color coding
+        if level == "ERROR":
+            color = "🔴"
+        elif level == "WARNING":
+            color = "🟡"
+        elif level == "DEBUG":
+            color = "🔵"
+        else:
+            color = "🔵"
+        
+        # Show recent activity
+        st.text(f"{color} {timestamp} - {level}")
+    
+    if not recent_logs:
+        st.info(f"{UISymbols.get_status_icon('info')} No recent activity")
