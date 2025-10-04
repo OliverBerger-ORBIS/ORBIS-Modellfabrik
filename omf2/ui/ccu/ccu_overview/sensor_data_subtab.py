@@ -127,8 +127,9 @@ def _show_temperature_panel(bme680_data):
         # Thermometer-Gauge
         st.metric("Temperatur", f"{temperature:.1f}°C")
         
-        # Thermometer-Visualisierung
-        st.progress(temperature / 50.0)  # Normalisiert auf 0-50°C
+        # Thermometer-Visualisierung (normalisiert auf 0-50°C)
+        normalized_temp = max(0, min(1, temperature / 50.0))
+        st.progress(normalized_temp)
         
         # Zeitstempel
         if timestamp:
@@ -158,8 +159,9 @@ def _show_humidity_panel(bme680_data):
         # Luftfeuchtigkeit-Gauge
         st.metric("Luftfeuchtigkeit", f"{humidity:.1f}%")
         
-        # Luftfeuchtigkeit-Visualisierung
-        st.progress(humidity / 100.0)  # Normalisiert auf 0-100%
+        # Luftfeuchtigkeit-Visualisierung (normalisiert auf 0-100%)
+        normalized_humidity = max(0, min(1, humidity / 100.0))
+        st.progress(normalized_humidity)
         
         # Zeitstempel
         if timestamp:
@@ -222,7 +224,8 @@ def _show_air_quality_panel(bme680_data):
         st.metric("Luftqualität", f"{air_quality:.1f} IAQ")
         
         # Luftqualität-Visualisierung (normalisiert auf 0-500 IAQ)
-        st.progress(air_quality / 500.0)
+        normalized_air_quality = max(0, min(1, air_quality / 500.0))
+        st.progress(normalized_air_quality)
         
         # Zeitstempel
         if timestamp:
@@ -253,7 +256,8 @@ def _show_light_panel(ldr_data):
         st.metric("Lichtstärke", f"{light:.1f} Lux")
         
         # Licht-Visualisierung (normalisiert auf 0-1000 Lux)
-        st.progress(light / 1000.0)
+        normalized_light = max(0, min(1, light / 1000.0))
+        st.progress(normalized_light)
         
         # Zeitstempel
         if timestamp:
