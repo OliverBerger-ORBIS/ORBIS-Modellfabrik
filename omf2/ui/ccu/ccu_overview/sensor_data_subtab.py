@@ -59,9 +59,9 @@ def _show_sensor_panels(ccu_gateway: CcuGateway, registry_manager):
     """Zeigt die Sensordaten-Panels mit echten MQTT-Daten - Business Logic über SensorManager"""
     logger.info("🌡️ Rendering Sensor Panels")
     try:
-        # Business Logic über SensorManager (Gateway-Pattern)
+        # NEU: Business Logic über SensorManager State-Holder (Business-Manager Pattern)
         sensor_manager = get_ccu_sensor_manager()
-        sensor_data = sensor_manager.process_sensor_messages(ccu_gateway)
+        sensor_data = sensor_manager.get_sensor_data()  # Liest aus State-Holder
         
         # Zeige Sensor-Status
         if sensor_data:
@@ -428,7 +428,7 @@ def _show_sensor_statistics(ccu_gateway: CcuGateway):
     """Show sensor statistics"""
     try:
         sensor_manager = get_ccu_sensor_manager()
-        sensor_data = sensor_manager.process_sensor_messages(ccu_gateway)
+        sensor_data = sensor_manager.get_sensor_data()  # Liest aus State-Holder
         stats = sensor_manager.get_sensor_statistics(sensor_data)
         
         st.info("📊 **Sensor Statistics**")

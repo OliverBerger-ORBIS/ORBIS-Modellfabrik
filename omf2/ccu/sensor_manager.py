@@ -5,6 +5,8 @@ Schema-basierte Verarbeitung von BME680, LDR, CAM Topics
 """
 
 import json
+import time
+import logging
 from typing import Dict, List, Any, Optional
 from omf2.common.logger import get_logger
 from omf2.common.message_manager import get_ccu_message_manager
@@ -25,7 +27,36 @@ class SensorManager:
         """Initialize Sensor Manager"""
         self.registry_manager = get_registry_manager()
         self.message_manager = get_ccu_message_manager()
-        logger.info("🌡️ CCU Sensor Manager initialized with MessageManager")
+        
+        # NEU: State-Holder für Sensor-Daten
+        self.sensor_data = {}  # {topic: processed_sensor_data}
+        
+        logger.info("🌡️ CCU Sensor Manager initialized with MessageManager and State-Holder")
+    
+    def process_sensor_message(self, topic: str, payload: Dict[str, Any]):
+        """
+        NEU: Verarbeitet eingehende Sensor-Message und updated State
+        Wird vom MQTT-Client über Business-Function-Callback aufgerufen
+        
+        Args:
+            topic: MQTT Topic (String)
+            payload: Payload-Daten (Dict ohne MQTT-Metadaten)
+        """
+        try:
+            logger.debug(f"🔔 SensorManager received message for topic: {topic}")
+            
+            # Verarbeite Sensor-Daten direkt mit Payload
+            processed_data = self._extract_sensor_data(topic, payload)
+            
+            if processed_data:
+                # Update State-Holder
+                self.sensor_data[topic] = processed_data
+                logger.info(f"✅ Updated sensor state for {topic}: {processed_data}")
+            else:
+                logger.warning(f"⚠️ No processed data for sensor topic: {topic}")
+                
+        except Exception as e:
+            logger.error(f"❌ Failed to process sensor message for topic {topic}: {e}")
     
     def process_sensor_messages(self, ccu_gateway) -> Dict[str, Any]:
         """
@@ -39,7 +70,6 @@ class SensorManager:
         """
         try:
             logger.debug("🔍 SENSOR DEBUG: Starting sensor message processing")
-            print("🔍 SENSOR DEBUG: Starting sensor message processing")
             
             # Initialize sensor data store
             sensor_data = {}
@@ -61,7 +91,7 @@ class SensorManager:
                 
                 # Check if this is a sensor topic
                 if self._is_sensor_topic(topic):
-                    logger.debug(f"📡 Processing sensor topic: {topic} with {len(messages)} messages")
+                    logger.debug(f"📡 Processing sensor topic: {topic} with {1} messages")
                     
                     # Extract sensor data from messages
                     processed_data = self._extract_sensor_data(topic, messages)
@@ -94,52 +124,44 @@ class SensorManager:
         
         return topic in sensor_topics
     
-    def _extract_sensor_data(self, topic: str, messages: List[Dict]) -> Dict[str, Any]:
+    def _extract_sensor_data(self, topic: str, payload: Dict[str, Any]) -> Dict[str, Any]:
         """
-        Extract sensor data from messages using MessageManager (Schema-based)
+        Extract sensor data from payload using MessageManager (Schema-based)
         
         Args:
             topic: MQTT topic
-            messages: List of messages for this topic
+            payload: Payload-Daten (Dict ohne MQTT-Metadaten)
             
         Returns:
             Processed sensor data dictionary
         """
-        if not messages:
+        if not payload:
             return {}
         
-        # Get latest message
-        latest_message = messages[-1]
+        logger.debug(f"🔍 SENSOR DEBUG: Raw payload keys: {list(payload.keys())}")
+        logger.debug(f"🔍 SENSOR DEBUG: Raw payload structure: {payload}")
         
-        logger.info(f"🔍 SENSOR DEBUG: Raw message keys: {list(latest_message.keys())}")
-        logger.info(f"🔍 SENSOR DEBUG: Raw message structure: {latest_message}")
+        # DEBUG: Print to console as well (nur bei Debug-Level)
+        if logger.isEnabledFor(logging.DEBUG):
+            print(f"🔍 SENSOR DEBUG: Raw payload keys: {list(payload.keys())}")
+            print(f"🔍 SENSOR DEBUG: Raw payload: {payload}")
         
-        # CRITICAL: Print to console as well
-        print(f"🔍 SENSOR DEBUG: Raw message keys: {list(latest_message.keys())}")
-        print(f"🔍 SENSOR DEBUG: Raw message: {latest_message}")
+        # Payload ist bereits ein Dict - keine JSON-Parsing nötig!
+        sensor_payload = payload
         
-        # Extract payload from message (KORREKT: nur das "payload" field!)
-        payload_string = latest_message.get('payload', '{}')
-        if isinstance(payload_string, str):
-            try:
-                sensor_payload = json.loads(payload_string)  # Das ist der echte Payload!
-            except json.JSONDecodeError as e:
-                logger.error(f"❌ Invalid JSON in payload for {topic}: {e}")
-                return {}
-        else:
-            sensor_payload = payload_string
-        
-        logger.info(f"🔍 SENSOR DEBUG: Extracted sensor payload for {topic}: {sensor_payload}")
-        print(f"🔍 SENSOR DEBUG: Extracted sensor payload for {topic}: {sensor_payload}")
+        logger.debug(f"🔍 SENSOR DEBUG: Processing sensor payload for {topic}: {sensor_payload}")
+        if logger.isEnabledFor(logging.DEBUG):
+            print(f"🔍 SENSOR DEBUG: Processing sensor payload for {topic}: {sensor_payload}")
         
         # Check if payload is empty (common in live MQTT data)
         if not sensor_payload or sensor_payload == {}:
-            logger.info(f"🔍 SENSOR DEBUG: Empty payload for {topic} - returning fallback data")
-            print(f"🔍 SENSOR DEBUG: Empty payload for {topic} - returning fallback data")
+            logger.debug(f"🔍 SENSOR DEBUG: Empty payload for {topic} - returning fallback data")
+            if logger.isEnabledFor(logging.DEBUG):
+                print(f"🔍 SENSOR DEBUG: Empty payload for {topic} - returning fallback data")
             return {
                 'raw_data': {},
-                'timestamp': latest_message.get('timestamp', ''),
-                'message_count': len(messages),
+                'timestamp': sensor_payload.get('ts', ''),
+                'message_count': 1,
                 'status': 'empty_payload'
             }
         
@@ -163,20 +185,20 @@ class SensorManager:
                         "humidity": validated_payload.get("h", 0.0),     # ✅ Korrekt: "h" 
                         "pressure": validated_payload.get("p", 0.0),     # ✅ Korrekt: "p"
                         "air_quality": validated_payload.get("iaq", 0.0), # ✅ Korrekt: "iaq" (nicht "aq")
-                        "timestamp": latest_message.get("timestamp", ""),
-                        "message_count": len(messages)
+                        "timestamp": sensor_payload.get("timestamp", ""),
+                        "message_count": 1
                     }
                 elif "/ldr" in topic:
                     return {
                         "light": validated_payload.get("ldr", 0.0),      # ✅ Korrekt: "ldr" (nicht "l")
-                        "timestamp": latest_message.get("timestamp", ""),
-                        "message_count": len(messages)
+                        "timestamp": sensor_payload.get("timestamp", ""),
+                        "message_count": 1
                     }
                 elif "/cam" in topic:
                     return {
                         "image_data": validated_payload.get("data", ""),
-                        "timestamp": validated_payload.get("ts", latest_message.get("timestamp", "")),
-                        "message_count": len(messages)
+                        "timestamp": validated_payload.get("ts", sensor_payload.get("timestamp", "")),
+                        "message_count": 1
                     }
             else:
                 logger.warning(f"⚠️ Payload validation failed for {topic}: {validation_result.get('error', 'Unknown error')}")
@@ -188,9 +210,9 @@ class SensorManager:
         
         # Fallback for unknown sensor topics or validation errors
         return {
-            "raw_data": latest_message.get("payload", {}),
-            "timestamp": latest_message.get("timestamp", ""),
-            "message_count": len(messages)
+            "raw_data": sensor_payload,
+            "timestamp": sensor_payload.get("timestamp", ""),
+            "message_count": 1
         }
     
     def get_sensor_statistics(self, sensor_data: Dict[str, Any]) -> Dict[str, Any]:
@@ -226,6 +248,34 @@ class SensorManager:
             stats["light"] = ldr_data.get("light", 0.0)
         
         return stats
+    
+    def get_sensor_data(self, sensor_id: str = None) -> Dict[str, Any]:
+        """
+        NEU: Liest Sensor-Daten aus State-Holder (für UI)
+        
+        Args:
+            sensor_id: Spezifischer Sensor-Topic (optional)
+            
+        Returns:
+            Sensor-Daten aus State-Holder
+        """
+        if sensor_id:
+            return self.sensor_data.get(sensor_id, {})
+        return dict(self.sensor_data)
+    
+    def get_sensor_state(self) -> Dict[str, Any]:
+        """
+        NEU: Gibt aktuellen Sensor-State zurück
+        
+        Returns:
+            Vollständiger Sensor-State
+        """
+        return {
+            "sensor_data": dict(self.sensor_data),
+            "total_sensors": len(self.sensor_data),
+            "sensor_topics": list(self.sensor_data.keys()),
+            "last_update": max([data.get("timestamp", "") for data in self.sensor_data.values()], default="")
+        }
 
 
 # Singleton Factory

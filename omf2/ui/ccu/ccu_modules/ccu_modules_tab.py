@@ -82,14 +82,9 @@ def _show_module_overview_table(ccu_gateway):
             st.info("📋 Keine Module konfiguriert")
             return
         
-        # Initialize module status store in session state
-        if "ccu_module_status_store" not in st.session_state:
-            st.session_state["ccu_module_status_store"] = {}
-        
-        # ALWAYS process module messages and update status store (like OMF)
-        # This ensures real-time updates from MQTT buffers
-        status_store = module_manager.process_module_messages(ccu_gateway)
-        st.session_state["ccu_module_status_store"] = status_store
+        # NEU: Business-Manager Pattern - lese aus Manager State-Holder
+        # Module-Status wird automatisch über MQTT-Callbacks aktualisiert
+        status_store = module_manager.get_module_status_from_state()  # Liest aus State-Holder
         
         # Display real-time status info with refresh indicator
         if status_store:
@@ -103,8 +98,8 @@ def _show_module_overview_table(ccu_gateway):
             if not module_info.get("enabled", True):
                 continue
             
-            # Get real-time status from Module Manager
-            real_time_status = module_manager.get_module_status(module_id, status_store)
+            # Get real-time status from Module Manager State-Holder
+            real_time_status = module_manager.get_module_status_from_state(module_id)
             
             # Get module icon and display name from Module Manager (Registry-based)
             icon_display = module_manager.get_module_icon(module_id)
@@ -182,8 +177,7 @@ def _refresh_module_status(ccu_gateway):
         module_manager = get_ccu_module_manager()
         
         # Process module messages and update status store
-        status_store = module_manager.process_module_messages(ccu_gateway)
-        st.session_state["ccu_module_status_store"] = status_store
+        status_store = module_manager.get_module_status_from_state()  # Liest aus State-Holder
         
         st.success("✅ Module status refreshed!")
         logger.info(f"📊 Refreshed status for {len(status_store)} modules")

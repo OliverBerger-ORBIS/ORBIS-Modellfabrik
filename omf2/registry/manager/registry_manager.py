@@ -172,7 +172,8 @@ class RegistryManager:
                         'subscribed_topics': client_data.get('subscribed_topics', []),
                         'published_topics': client_data.get('published_topics', []),
                         'qos': client_data.get('qos', 1),
-                        'retain': client_data.get('retain', 0)
+                        'retain': client_data.get('retain', 0),
+                        'business_functions': client_data.get('business_functions', {})  # NEU: Business-Functions
                     }
                     
             logger.info(f"📡 Loaded {len(self.mqtt_clients)} MQTT clients")
@@ -418,6 +419,34 @@ class RegistryManager:
     def get_mqtt_client_config(self, client_name: str) -> Dict[str, Any]:
         """Gibt Konfiguration für einen spezifischen MQTT Client zurück"""
         return self.mqtt_clients.get(client_name, {})
+    
+    def get_business_functions(self, client_name: str) -> Dict[str, Any]:
+        """
+        Gibt Business-Functions für einen spezifischen MQTT Client zurück
+        
+        Args:
+            client_name: Name des MQTT Clients (z.B. 'ccu_mqtt_client')
+            
+        Returns:
+            Dict mit Business-Function-Konfiguration
+        """
+        client_config = self.mqtt_clients.get(client_name, {})
+        return client_config.get('business_functions', {})
+    
+    def get_business_function_topics(self, client_name: str, function_name: str) -> List[str]:
+        """
+        Gibt subscribed Topics für eine spezifische Business-Function zurück
+        
+        Args:
+            client_name: Name des MQTT Clients
+            function_name: Name der Business-Function (z.B. 'sensor_manager')
+            
+        Returns:
+            Liste der subscribed Topics für diese Business-Function
+        """
+        business_functions = self.get_business_functions(client_name)
+        function_config = business_functions.get(function_name, {})
+        return function_config.get('subscribed_topics', [])
 
     def get_registry_stats(self) -> Dict[str, Any]:
         """Gibt Registry-Statistiken zurück"""

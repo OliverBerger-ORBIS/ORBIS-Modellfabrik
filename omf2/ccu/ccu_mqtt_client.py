@@ -572,17 +572,98 @@ class CcuMqttClient:
                 
                 logger.debug(f"📥 Received on {topic}: {message}")
                 
+                # NEU: Business-Function Callbacks - übergibt topic + payload
+                # message enthält bereits die Payload-Inhalte + timestamp
+                # Extrahiere Payload ohne timestamp für Business-Manager
+                payload = {k: v for k, v in message.items() if k != 'timestamp'}
+                self._notify_business_functions(topic, payload)
+                
             except json.JSONDecodeError:
                 # Nicht-JSON Messages als Text speichern
                 with self._buffer_lock:
-                    self.topic_buffers[topic].append({
+                    raw_message = {
                         'raw_payload': payload,
                         'timestamp': time.time()
-                    })
+                    }
+                    self.topic_buffers[topic].append(raw_message)
+                
                 logger.debug(f"📥 Received raw on {topic}: {payload}")
+                
+                # NEU: Business-Function Callbacks für Raw-Payload - übergibt topic + payload
+                # Für Raw-Payload: extrahiere nur den raw_payload-Inhalt
+                payload = {"raw_payload": raw_message.get('raw_payload', payload)}
+                self._notify_business_functions(topic, payload)
             
         except Exception as e:
             logger.error(f"❌ CCU Message processing error: {e}")
+    
+    def _notify_business_functions(self, topic: str, payload: Dict[str, Any]):
+        """
+        Benachrichtigt Business-Functions über eingehende Messages
+        
+        Args:
+            topic: MQTT Topic (String)
+            payload: Payload-Daten (Dict ohne MQTT-Metadaten)
+        """
+        try:
+            # Business-Functions aus Registry laden
+            business_functions = self.registry_manager.get_business_functions('ccu_mqtt_client')
+            
+            for function_name, function_config in business_functions.items():
+                subscribed_topics = function_config.get('subscribed_topics', [])
+                callback_method = function_config.get('callback_method', '')
+                manager_module = function_config.get('manager_module', '')
+                manager_class = function_config.get('manager_class', '')
+                
+                # Prüfen ob Topic für diese Business-Function relevant ist
+                if topic in subscribed_topics and callback_method:
+                    logger.debug(f"🔔 Notifying {function_name} about topic {topic}")
+                    self._call_business_function_callback(
+                        manager_module, manager_class, callback_method, topic, payload
+                    )
+                    
+        except Exception as e:
+            logger.error(f"❌ Business function notification failed for topic {topic}: {e}")
+    
+    def _call_business_function_callback(self, manager_module: str, manager_class: str, 
+                                       callback_method: str, topic: str, payload: Dict[str, Any]):
+        """
+        Ruft Business-Function-Callback auf
+        
+        Args:
+            manager_module: Module-Pfad (z.B. 'omf2.ccu.sensor_manager')
+            manager_class: Klassen-Name (z.B. 'SensorManager')
+            callback_method: Callback-Methoden-Name (z.B. 'process_sensor_message')
+            topic: MQTT Topic (String)
+            payload: Payload-Daten (Dict ohne MQTT-Metadaten)
+        """
+        try:
+            # Dynamischer Import der Manager-Klasse
+            import importlib
+            module = importlib.import_module(manager_module)
+            manager_class_obj = getattr(module, manager_class)
+            
+            # Singleton-Instanz abrufen über Factory-Funktionen
+            if manager_module == 'omf2.ccu.sensor_manager':
+                # SensorManager Factory-Funktion
+                manager_instance = getattr(module, 'get_ccu_sensor_manager')()
+            elif manager_module == 'omf2.ccu.module_manager':
+                # ModuleManager Factory-Funktion
+                manager_instance = getattr(module, 'get_ccu_module_manager')()
+            else:
+                # Fallback: Direkte Instanziierung
+                manager_instance = manager_class_obj()
+            
+            # Callback-Methode aufrufen
+            if hasattr(manager_instance, callback_method):
+                callback_func = getattr(manager_instance, callback_method)
+                callback_func(topic, payload)
+                logger.debug(f"✅ Called {manager_module}.{callback_method} for topic {topic}")
+            else:
+                logger.warning(f"⚠️ Callback method {callback_method} not found in {manager_class}")
+                
+        except Exception as e:
+            logger.error(f"❌ Failed to call business function callback {callback_method}: {e}")
     
     def _get_qos_for_topic(self, topic: str) -> int:
         """

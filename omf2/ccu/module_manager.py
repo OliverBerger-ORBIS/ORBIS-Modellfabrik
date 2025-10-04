@@ -38,7 +38,38 @@ class CcuModuleManager:
         # Module configuration and icons (NO HARDCODED STRINGS - loaded from Registry)
         self.MODULE_ICONS = self._load_module_icons_from_registry()
         
-        logger.info("🏗️ CCU Module Manager initialized")
+        # NEU: State-Holder für Module-Status
+        self.module_status = {}  # {module_id: module_status_data}
+        
+        logger.info("🏗️ CCU Module Manager initialized with State-Holder")
+    
+    def process_module_message(self, topic: str, payload: Dict[str, Any]):
+        """
+        NEU: Verarbeitet eingehende Module-Message und updated State
+        Wird vom MQTT-Client über Business-Function-Callback aufgerufen
+        
+        Args:
+            topic: MQTT Topic (String)
+            payload: Payload-Daten (Dict ohne MQTT-Metadaten)
+        """
+        try:
+            logger.debug(f"🔔 ModuleManager received message for topic: {topic}")
+            
+            # Extract module ID from topic
+            module_id = self._extract_module_id_from_topic(topic)
+            if not module_id:
+                logger.debug(f"⚠️ Could not extract module ID from topic: {topic}")
+                return
+            
+            logger.info(f"🔍 Processing module message for {module_id} from topic: {topic}")
+            
+            # Update module status in State-Holder (mit Topic-Kontext)
+            self.update_module_status(module_id, payload, self.module_status, topic)
+            
+            logger.info(f"✅ Updated module state for {module_id}")
+                
+        except Exception as e:
+            logger.error(f"❌ Failed to process module message for topic {topic}: {e}")
     
     def _load_module_icons_from_registry(self) -> Dict[str, str]:
         """Loads module icons from registry (NO HARDCODED STRINGS)."""
@@ -104,13 +135,13 @@ class CcuModuleManager:
         
         return status_store[module_id]
     
-    def update_module_status(self, module_id: str, message_data: Dict[str, Any], status_store: Dict[str, Any]) -> None:
+    def update_module_status(self, module_id: str, payload: Dict[str, Any], status_store: Dict[str, Any], topic: str = "") -> None:
         """
-        Update module status from message data
+        Update module status from payload data (Business-Manager Pattern)
         
         Args:
             module_id: Module identifier
-            message_data: Message data from MQTT
+            payload: Payload-Daten (Dict ohne MQTT-Metadaten)
             status_store: Module status store to update
         """
         try:
@@ -123,53 +154,30 @@ class CcuModuleManager:
                     "last_update": "Never"
                 }
             
-            # Get payload from message data (correct structure like OMF)
-            payload = message_data.get("payload", {})
+            # Payload ist bereits ein Dict - keine JSON-Parsing nötig!
+            # (Business-Manager Pattern: direkte Payload-Verarbeitung)
             
-            # Handle string payload (JSON)
-            if isinstance(payload, str):
-                try:
-                    import json
-                    payload = json.loads(payload)
-                except Exception as e:
-                    logger.warning(f"⚠️ Failed to parse JSON payload: {e}")
-                    payload = {}
+            # DEBUG: Log payload structure
+            logger.debug(f"🔍 DEBUG: Module {module_id} payload keys: {list(payload.keys())}")
             
-            # SCHEMA-BASED field extraction - DATA IS IN message_data DIRECTLY, NOT in payload!
-            topic = message_data.get("topic", "")
-            
-            # DEBUG: Log message structure
-            logger.info(f"🔍 DEBUG: Module {module_id} topic: {topic}")
-            logger.info(f"🔍 DEBUG: Module {module_id} message_data keys: {list(message_data.keys())}")
-            
+            # Extract connection state from payload (Business-Manager Pattern)
             if "/connection" in topic:
-                # Connection message: connectionState is DIRECTLY in message_data (not in payload)
-                # CORRECTED: Use connectionState from message_data directly
-                connection_state = message_data.get("connectionState")
-                if connection_state is not None:
-                    # Map connection states to boolean
-                    connected = connection_state.lower() in ["connected", "online", "active"]
+                # Connection message: check for connected field
+                if "connected" in payload:
+                    connected = payload.get("connected", False)
                     status_store[module_id]["connected"] = connected
-                    logger.info(f"🔍 DEBUG: Module {module_id} connection state from message_data: {connection_state} -> connected: {connected}")
+                    logger.debug(f"🔍 DEBUG: Module {module_id} connection state from payload: {connected}")
                 else:
-                    logger.warning(f"⚠️ Module {module_id} no connectionState found in message_data: {list(message_data.keys())}")
+                    logger.warning(f"⚠️ Module {module_id} connection message without 'connected' field: {list(payload.keys())}")
                     
             elif "/state" in topic:
-                # State message: available field is DIRECTLY in message_data (not in payload)
-                # CORRECTED: Use 'available' field from message_data directly
-                available = message_data.get("available")
-                if available is not None:
+                # State message: check for available field
+                if "available" in payload:
+                    available = payload.get("available")
                     status_store[module_id]["available"] = available
-                    logger.info(f"🔍 DEBUG: Module {module_id} available state from message_data: {available}")
+                    logger.debug(f"🔍 DEBUG: Module {module_id} available state from payload: {available}")
                 else:
-                    # Fallback to metadata.opcuaState if available field not present
-                    metadata = message_data.get("metadata", {})
-                    opcua_state = metadata.get("opcuaState")
-                    if opcua_state is not None:
-                        status_store[module_id]["available"] = opcua_state
-                        logger.info(f"🔍 DEBUG: Module {module_id} opcua state (fallback): {opcua_state}")
-                    else:
-                        logger.warning(f"⚠️ Module {module_id} no available or opcuaState found in message_data: {list(message_data.keys())}")
+                    logger.warning(f"⚠️ Module {module_id} state message without 'available' field: {list(payload.keys())}")
             
             # Update message count and timestamp
             status_store[module_id]["message_count"] += 1
@@ -444,6 +452,34 @@ class CcuModuleManager:
         except Exception as e:
             logger.error(f"❌ Failed to get factory configuration: {e}")
             return {}
+    
+    def get_module_status_from_state(self, module_id: str = None) -> Dict[str, Any]:
+        """
+        NEU: Liest Module-Status aus State-Holder (für UI)
+        
+        Args:
+            module_id: Spezifische Module-ID (optional)
+            
+        Returns:
+            Module-Status aus State-Holder
+        """
+        if module_id:
+            return self.module_status.get(module_id, {})
+        return dict(self.module_status)
+    
+    def get_module_state(self) -> Dict[str, Any]:
+        """
+        NEU: Gibt aktuellen Module-State zurück
+        
+        Returns:
+            Vollständiger Module-State
+        """
+        return {
+            "module_status": dict(self.module_status),
+            "total_modules": len(self.module_status),
+            "module_ids": list(self.module_status.keys()),
+            "last_update": max([status.get("last_update", "") for status in self.module_status.values()], default="")
+        }
 
 
 # Singleton Factory

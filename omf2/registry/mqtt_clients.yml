@@ -117,6 +117,43 @@ mqtt_clients:
       - "/j1/txt/1/i/broadcast"
       - "/j1/txt/1/i/cam"
       - "/j1/txt/1/i/ldr"
+    
+    # Business-Function-spezifische Topic-Listen (Untermenge der subscribed_topics)
+    business_functions:
+      sensor_manager:
+        subscribed_topics:
+          - "/j1/txt/1/i/bme680"    # BME680 Sensor-Daten
+          - "/j1/txt/1/i/ldr"       # LDR Sensor-Daten
+          - "/j1/txt/1/i/cam"       # Camera-Daten
+        callback_method: "process_sensor_message"
+        manager_class: "SensorManager"
+        manager_module: "omf2.ccu.sensor_manager"
+      
+      module_manager:
+        subscribed_topics:
+          # Module State Topics
+          - "module/v1/ff/SVR4H73275/state"
+          - "module/v1/ff/SVR4H73275/connection"
+          - "module/v1/ff/SVR4H76530/state"
+          - "module/v1/ff/SVR4H76530/connection"
+          - "module/v1/ff/SVR4H76449/state"
+          - "module/v1/ff/SVR4H76449/connection"
+          - "module/v1/ff/SVR3QA2098/state"
+          - "module/v1/ff/SVR3QA2098/connection"
+          - "module/v1/ff/SVR3QA0022/state"
+          - "module/v1/ff/SVR3QA0022/connection"
+          # NodeRed Module Topics
+          - "module/v1/ff/NodeRed/SVR4H73275/state"
+          - "module/v1/ff/NodeRed/SVR4H73275/connection"
+          - "module/v1/ff/NodeRed/CHRG0/state"
+          - "module/v1/ff/NodeRed/CHRG0/connection"
+          - "module/v1/ff/NodeRed/status"
+          # FTS Topics
+          - "fts/v1/ff/5iO4/state"
+          - "fts/v1/ff/5iO4/connection"
+        callback_method: "process_module_message"
+        manager_class: "CcuModuleManager"
+        manager_module: "omf2.ccu.module_manager"
 
   # Node-RED Publisher (Normalisiert alle States)
   nodered_pub_mqtt_client:

@@ -655,7 +655,128 @@ ccu_gateway.reset_factory()
 ccu_gateway.send_global_command("start", {"line": "1"})
 ```
 
+---
+
+## 8. ✅ BUSINESS-MANAGER PATTERN (NEU IMPLEMENTIERT)
+
+**Status: IMPLEMENTIERT UND GETESTET** ✅  
+**Datum: 2025-10-04**  
+**Pattern: Business-Manager als State-Holder mit direkter Payload-Verarbeitung**
+
+### **🎯 ARCHITEKTUR-PRINZIP:**
+
+```
+MQTT-Client (Transport) → Business-Manager (State-Holder) → UI (Konsument)
+```
+
+### **📋 KOMPONENTEN:**
+
+#### **MQTT-Client (Transport-Layer):**
+- **Verantwortlichkeit:** Transport, Topic-Management, Message-Dispatch
+- **NICHT:** Zentraler State-Holder für Business-Daten
+- **Callback-Pattern:** Übergibt `topic` + `payload` an Business-Manager
+
+#### **Business-Manager (State-Layer):**
+- **Verantwortlichkeit:** Business-Logic, State-Holder, Schema-Validierung
+- **Pattern:** `process_xxx_message(topic: str, payload: Dict)`
+- **State-Holder:** Hält aktuellen Business-State im Speicher
+- **Schema-Validierung:** Über MessageManager gegen Registry-Schemas
+
+#### **UI (Presentation-Layer):**
+- **Verantwortlichkeit:** Anzeige, Benutzer-Interaktion
+- **Pattern:** Liest nur aus Manager-State, nie direkt aus MQTT-Client
+- **Refresh:** `request_refresh()` Pattern (nie `st.rerun()`)
+
+### **🔧 IMPLEMENTIERUNG:**
+
+#### **Registry-Konfiguration:**
+```yaml
+# omf2/registry/mqtt_clients.yml
+mqtt_clients:
+  ccu_mqtt_client:
+    business_functions:
+      sensor_manager:
+        subscribed_topics: ["/j1/txt/1/i/bme680", "/j1/txt/1/i/ldr"]
+        callback_method: "process_sensor_message"
+        manager_class: "SensorManager"
+        manager_module: "omf2.ccu.sensor_manager"
+```
+
+#### **MQTT-Client Callback:**
+```python
+def _on_message(self, client, userdata, msg):
+    topic = msg.topic
+    payload = json.loads(msg.payload.decode('utf-8'))
+    
+    # Business-Function Callbacks
+    self._notify_business_functions(topic, payload)
+```
+
+#### **Business-Manager:**
+```python
+class SensorManager:
+    def __init__(self):
+        self.sensor_data = {}  # State-Holder
+    
+    def process_sensor_message(self, topic: str, payload: Dict[str, Any]):
+        # Direkte Payload-Verarbeitung (kein JSON-Parsing)
+        processed_data = self._extract_sensor_data(topic, payload)
+        self.sensor_data[topic] = processed_data
+    
+    def get_sensor_data(self, sensor_id: str = None):
+        # UI liest aus State-Holder
+        return self.sensor_data.get(sensor_id) if sensor_id else self.sensor_data
+```
+
+#### **UI-Komponente:**
+```python
+def render_sensor_data_subtab():
+    sensor_manager = get_ccu_sensor_manager()
+    sensor_data = sensor_manager.get_sensor_data()  # Liest aus State-Holder
+    
+    # Anzeige der Daten
+    for topic, data in sensor_data.items():
+        st.metric(f"Sensor {topic}", data['temperature'])
+```
+
+### **🎯 KRITISCHE REGELN:**
+
+1. **Direkte Payload-Verarbeitung:** Manager bekommen `topic` + `payload`, nicht Message-Struktur
+2. **Kein JSON-Parsing in Manager:** Payload ist bereits Dict
+3. **State-Holder Pattern:** Manager halten aktuellen Business-State
+4. **UI liest nur aus Manager:** Nie direkt aus MQTT-Client oder Gateway-Buffers
+5. **request_refresh() Pattern:** Nie `st.rerun()` verwenden
+6. **Schema-Validierung:** Über MessageManager gegen Registry-Schemas
+
+### **📊 VORTEILE:**
+
+- **Trennung der Verantwortlichkeiten:** Transport vs. Business vs. Presentation
+- **Testbarkeit:** Manager können unabhängig getestet werden
+- **Skalierbarkeit:** Einfache Erweiterung um neue Business-Manager
+- **Konsistenz:** Klarer Datenfluss ohne Race-Conditions
+- **Performance:** Kein unnötiges JSON-Parsing oder Message-Wrapping
+
+### **🧪 TESTING:**
+
+```python
+# Verwendet echte Test-Payloads aus test_payloads_for_topic/
+def test_sensor_manager_process_message():
+    sensor_manager = get_ccu_sensor_manager()
+    topic = "/j1/txt/1/i/bme680"
+    payload = {"t": 26.2, "h": 29.2, "p": 1003.9, "iaq": 34}
+    
+    sensor_manager.process_sensor_message(topic, payload)
+    sensor_data = sensor_manager.get_sensor_data()
+    assert topic in sensor_data
+```
+
+**Status:** ✅ IMPLEMENTIERT FÜR SENSOR-DATEN  
+**Nächste Schritte:** Erweitern auf Module-Manager und weitere Business-Manager
+
+---
+
 **Letzte Aktualisierung:** 2025-10-04  
 **Status:** VOLLSTÄNDIG IMPLEMENTIERT ✅  
 **Message Processing Pattern:** DOKUMENTIERT ✅  
-**Schema-Validation:** SYSTEMATISCH KORRIGIERT ✅
+**Schema-Validation:** SYSTEMATISCH KORRIGIERT ✅  
+**Business-Manager Pattern:** IMPLEMENTIERT UND DOKUMENTIERT ✅
