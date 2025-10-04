@@ -93,7 +93,30 @@ def get_current_log_levels() -> Dict[str, str]:
     levels = {}
     for logger_name in ["omf2", "omf2.ccu", "omf2.admin", "omf2.common", "omf2.ui", "omf2.nodered"]:
         logger = logging.getLogger(logger_name)
-        levels[logger_name] = logging.getLevelName(logger.level)
+        level_name = logging.getLevelName(logger.level)
+        # Convert NOTSET to the effective level
+        if level_name == "NOTSET":
+            effective_level = logger.getEffectiveLevel()
+            level_name = logging.getLevelName(effective_level)
+        levels[logger_name] = level_name
+    
+    # Add business manager specific loggers
+    business_loggers = [
+        "omf2.ccu.sensor_manager",
+        "omf2.ccu.module_manager", 
+        "omf2.ccu.ccu_mqtt_client",
+        "omf2.admin.admin_mqtt_client"
+    ]
+    
+    for logger_name in business_loggers:
+        logger = logging.getLogger(logger_name)
+        level_name = logging.getLevelName(logger.level)
+        # Convert NOTSET to the effective level
+        if level_name == "NOTSET":
+            effective_level = logger.getEffectiveLevel()
+            level_name = logging.getLevelName(effective_level)
+        levels[logger_name] = level_name
+    
     return levels
 
 # Quick access functions

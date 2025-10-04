@@ -31,10 +31,11 @@ def render_system_logs_tab():
         # Connection status shown in sidebar only
         
         # Log viewer tabs
-        tab1, tab2, tab3 = st.tabs([
+        tab1, tab2, tab3, tab4 = st.tabs([
             f"{UISymbols.get_functional_icon('history')} Log History",
             f"{UISymbols.get_functional_icon('search')} Log Search", 
-            f"{UISymbols.get_functional_icon('dashboard')} Log Analytics"
+            f"{UISymbols.get_functional_icon('dashboard')} Log Analytics",
+            f"{UISymbols.get_functional_icon('settings')} Log Management"
         ])
         
         with tab1:
@@ -45,6 +46,9 @@ def render_system_logs_tab():
         
         with tab3:
             _render_log_analytics(admin_gateway)
+        
+        with tab4:
+            _render_log_management(admin_gateway)
         
     except Exception as e:
         logger.error(f"{UISymbols.get_status_icon('error')} Admin Logs Tab rendering error: {e}")
@@ -328,3 +332,197 @@ def _render_log_analytics(admin_gateway):
     
     if not recent_logs:
         st.info(f"{UISymbols.get_status_icon('info')} No recent activity")
+
+
+def _render_log_management(admin_gateway):
+    """Render log management and configuration"""
+    st.subheader(f"{UISymbols.get_functional_icon('settings')} Log Management")
+    st.markdown("**Configure logging levels and settings**")
+    
+    # Import logging configuration functions
+    from omf2.common.logging_config import (
+        get_current_log_levels, 
+        set_debug_mode,
+        enable_sensor_debug,
+        disable_debug_logging,
+        enable_module_debug,
+        enable_mqtt_debug
+    )
+    
+    # Current log levels display
+    st.subheader(f"{UISymbols.get_functional_icon('dashboard')} Current Log Levels")
+    current_levels = get_current_log_levels()
+    
+    # Core modules
+    st.markdown("**Core Modules**")
+    col1, col2 = st.columns(2)
+    with col1:
+        st.metric("omf2", current_levels.get("omf2", "Unknown"))
+        st.metric("omf2.ccu", current_levels.get("omf2.ccu", "Unknown"))
+        st.metric("omf2.admin", current_levels.get("omf2.admin", "Unknown"))
+    
+    with col2:
+        st.metric("omf2.common", current_levels.get("omf2.common", "Unknown"))
+        st.metric("omf2.ui", current_levels.get("omf2.ui", "Unknown"))
+        st.metric("omf2.nodered", current_levels.get("omf2.nodered", "Unknown"))
+    
+    # Business managers
+    st.markdown("**Business Managers**")
+    col3, col4 = st.columns(2)
+    with col3:
+        st.metric("sensor_manager", current_levels.get("omf2.ccu.sensor_manager", "Unknown"))
+        st.metric("module_manager", current_levels.get("omf2.ccu.module_manager", "Unknown"))
+    
+    with col4:
+        st.metric("ccu_mqtt_client", current_levels.get("omf2.ccu.ccu_mqtt_client", "Unknown"))
+        st.metric("admin_mqtt_client", current_levels.get("omf2.admin.admin_mqtt_client", "Unknown"))
+    
+    # Quick debug controls
+    st.subheader(f"{UISymbols.get_functional_icon('settings')} Quick Debug Controls")
+    st.markdown("**Enable/disable debug logging for specific components**")
+    
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        st.markdown("**Sensor Manager**")
+        if st.button(f"{UISymbols.get_functional_icon('search')} Enable Sensor Debug", key="enable_sensor_debug"):
+            enable_sensor_debug()
+            st.success(f"{UISymbols.get_status_icon('success')} Sensor debug enabled")
+            st.rerun()
+        
+        if st.button(f"{UISymbols.get_status_icon('info')} Disable Sensor Debug", key="disable_sensor_debug"):
+            set_debug_mode("omf2.ccu.sensor_manager", False)
+            st.info(f"{UISymbols.get_status_icon('info')} Sensor debug disabled")
+            st.rerun()
+    
+    with col2:
+        st.markdown("**Module Manager**")
+        if st.button(f"{UISymbols.get_functional_icon('search')} Enable Module Debug", key="enable_module_debug"):
+            enable_module_debug()
+            st.success(f"{UISymbols.get_status_icon('success')} Module debug enabled")
+            st.rerun()
+        
+        if st.button(f"{UISymbols.get_status_icon('info')} Disable Module Debug", key="disable_module_debug"):
+            set_debug_mode("omf2.ccu.module_manager", False)
+            st.info(f"{UISymbols.get_status_icon('info')} Module debug disabled")
+            st.rerun()
+    
+    with col3:
+        st.markdown("**MQTT Clients**")
+        if st.button(f"{UISymbols.get_functional_icon('search')} Enable MQTT Debug", key="enable_mqtt_debug"):
+            enable_mqtt_debug()
+            st.success(f"{UISymbols.get_status_icon('success')} MQTT debug enabled")
+            st.rerun()
+        
+        if st.button(f"{UISymbols.get_status_icon('info')} Disable MQTT Debug", key="disable_mqtt_debug"):
+            set_debug_mode("omf2.ccu.ccu_mqtt_client", False)
+            set_debug_mode("omf2.admin.admin_mqtt_client", False)
+            st.info(f"{UISymbols.get_status_icon('info')} MQTT debug disabled")
+            st.rerun()
+    
+    # Global controls
+    st.subheader(f"{UISymbols.get_functional_icon('settings')} Global Controls")
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        if st.button(f"{UISymbols.get_functional_icon('search')} Enable All Debug", key="enable_all_debug"):
+            set_debug_mode(enabled=True)
+            st.success(f"{UISymbols.get_status_icon('success')} All debug logging enabled")
+            st.rerun()
+    
+    with col2:
+        if st.button(f"{UISymbols.get_status_icon('info')} Disable All Debug", key="disable_all_debug"):
+            disable_debug_logging()
+            st.info(f"{UISymbols.get_status_icon('info')} All debug logging disabled")
+            st.rerun()
+    
+    # Manual log level configuration
+    st.subheader(f"{UISymbols.get_functional_icon('settings')} Manual Log Level Configuration")
+    st.markdown("**Set specific log levels for modules**")
+    
+    # Module selection
+    module_options = {
+        "omf2": "OMF2 Core",
+        "omf2.ccu": "CCU Domain",
+        "omf2.admin": "Admin Domain", 
+        "omf2.common": "Common Components",
+        "omf2.ui": "UI Components",
+        "omf2.nodered": "NodeRED Integration"
+    }
+    
+    selected_module = st.selectbox(
+        f"{UISymbols.get_functional_icon('search')} Select Module",
+        options=list(module_options.keys()),
+        format_func=lambda x: module_options[x],
+        key="log_level_module"
+    )
+    
+    # Log level selection
+    level_options = ["DEBUG", "INFO", "WARNING", "ERROR"]
+    current_level = current_levels.get(selected_module, "INFO")
+    
+    selected_level = st.selectbox(
+        f"{UISymbols.get_functional_icon('settings')} Log Level",
+        options=level_options,
+        index=level_options.index(current_level) if current_level in level_options else 1,
+        key="log_level_selection"
+    )
+    
+    # Apply button
+    if st.button(f"{UISymbols.get_functional_icon('settings')} Apply Log Level", key="apply_log_level"):
+        set_debug_mode(selected_module, selected_level == "DEBUG")
+        st.success(f"{UISymbols.get_status_icon('success')} Log level for {module_options[selected_module]} set to {selected_level}")
+        st.rerun()
+    
+    # Configuration file info
+    st.subheader(f"{UISymbols.get_functional_icon('info')} Configuration File")
+    st.markdown("**Persistent configuration via YAML file**")
+    
+    st.info(f"""
+    **Configuration File:** `omf2/config/logging_config.yml`
+    
+    **Manual Configuration:**
+    ```yaml
+    modules:
+      {selected_module}:
+        level: {selected_level}
+    
+    business_managers:
+      sensor_manager:
+        level: DEBUG  # Enable sensor debugging
+      module_manager:
+        level: DEBUG  # Enable module debugging
+    ```
+    
+    **Note:** Changes to the YAML file require a dashboard restart to take effect.
+    """)
+    
+    # Restart information
+    st.subheader(f"{UISymbols.get_functional_icon('warning')} Application Restart")
+    st.markdown("**When restart is required**")
+    
+    st.warning(f"""
+    **Restart Required For:**
+    - Changes to `omf2/config/logging_config.yml`
+    - Changes to global logging configuration
+    - Changes to buffer size or file logging settings
+    
+    **No Restart Required For:**
+    - Quick debug controls (above)
+    - Manual log level changes (above)
+    - Runtime log level adjustments
+    """)
+    
+    # Test logging
+    st.subheader(f"{UISymbols.get_functional_icon('search')} Test Logging")
+    st.markdown("**Generate test log entries to verify configuration**")
+    
+    if st.button(f"{UISymbols.get_functional_icon('search')} Generate Test Logs", key="generate_test_logs"):
+        test_logger = logger.getChild("test")
+        test_logger.debug("Test DEBUG message")
+        test_logger.info("Test INFO message")
+        test_logger.warning("Test WARNING message")
+        test_logger.error("Test ERROR message")
+        st.success(f"{UISymbols.get_status_icon('success')} Test log entries generated")
+        st.info(f"{UISymbols.get_status_icon('info')} Check the Log History tab to see the test entries")
