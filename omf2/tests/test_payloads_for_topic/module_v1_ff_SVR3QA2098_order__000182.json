@@ -1,0 +1,14 @@
+{
+  "timestamp": "2025-10-01T11:37:07.797Z",
+  "serialNumber": "SVR3QA2098",
+  "orderId": "1aacf6d8-31be-42d5-9adf-162e0b7c768b",
+  "orderUpdateId": 3,
+  "action": {
+    "id": "c2196d3c-f795-486c-9a87-6fe26a9af1f0",
+    "command": "PICK",
+    "metadata": {
+      "type": "RED",
+      "workpieceId": "04f08dca341290"
+    }
+  }
+}

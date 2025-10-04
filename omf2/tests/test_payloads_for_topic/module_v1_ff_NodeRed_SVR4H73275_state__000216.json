@@ -1,0 +1,31 @@
+{
+  "actionStates": [
+    {
+      "result": "04c090ca341290",
+      "id": "0",
+      "timestamp": "2025-10-01T10:05:21.632742Z",
+      "metadata": {
+        "type": "WHITE"
+      },
+      "command": "RGB_NFC",
+      "state": "FINISHED"
+    }
+  ],
+  "actionState": {
+    "result": "04c090ca341290",
+    "command": "RGB_NFC",
+    "id": "0",
+    "timestamp": "2025-10-01T10:05:21.632742Z",
+    "state": "FINISHED"
+  },
+  "batteryState": {},
+  "errors": [],
+  "orderUpdateId": 1,
+  "paused": false,
+  "information": [],
+  "operatingMode": "AUTOMATIC",
+  "serialNumber": "SVR4H73275",
+  "timestamp": "2025-10-01T10:05:21.633020Z",
+  "headerId": 68,
+  "orderId": "0"
+}

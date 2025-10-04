@@ -1,0 +1,13 @@
+{
+  "timestamp": "2025-10-01T10:55:48.519Z",
+  "serialNumber": "SVR4H76530",
+  "actions": [
+    {
+      "actionType": "selectCalibrationPosition",
+      "actionId": "c786a295-7bb5-472b-a1e8-7cdd56d83d3f",
+      "metadata": {
+        "position": "TO_PICKUP"
+      }
+    }
+  ]
+}

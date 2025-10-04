@@ -1,0 +1,18 @@
+{
+  "timestamp": "2025-10-01T09:58:17.496Z",
+  "serialNumber": "SVR4H73275",
+  "orderId": "50fdbb01-1cf6-45c1-a24b-7171f9cab3e2",
+  "orderUpdateId": 1,
+  "action": {
+    "id": "98054187-eef0-4dab-8592-8985e3021230",
+    "command": "DROP",
+    "metadata": {
+      "workpiece": {
+        "workpieceId": "040a8dca341291",
+        "type": "RED",
+        "history": [],
+        "state": "PROCESSED"
+      }
+    }
+  }
+}

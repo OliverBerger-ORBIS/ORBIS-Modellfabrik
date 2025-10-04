@@ -18,6 +18,7 @@ def render_ccu_overview_tab(ccu_gateway=None, registry_manager=None):
         ccu_gateway: CcuGateway Instanz (Gateway-Pattern)
         registry_manager: RegistryManager Instanz (Singleton)
     """
+    print("🔍 UI DEBUG: CCU Overview Tab wird gerendert!")
     logger.info("🏭 Rendering CCU Overview Tab")
     try:
         # Gateway-Pattern: Get CcuGateway from Factory (EXACT like Admin)

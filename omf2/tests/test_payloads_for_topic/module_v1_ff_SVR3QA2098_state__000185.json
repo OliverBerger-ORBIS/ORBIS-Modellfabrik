@@ -1,0 +1,22 @@
+{
+  "headerId": 30,
+  "loads": [
+    {
+      "loadType": "RED"
+    }
+  ],
+  "actionState": {
+    "id": "c2196d3c-f795-486c-9a87-6fe26a9af1f0",
+    "state": "RUNNING",
+    "command": "PICK"
+  },
+  "serialNumber": "SVR3QA2098",
+  "timestamp": "2025-10-01T11:37:07.863Z",
+  "errors": [],
+  "orderUpdateId": 3,
+  "orderId": "1aacf6d8-31be-42d5-9adf-162e0b7c768b",
+  "paused": false,
+  "metadata": {
+    "opcuaState": "connected"
+  }
+}

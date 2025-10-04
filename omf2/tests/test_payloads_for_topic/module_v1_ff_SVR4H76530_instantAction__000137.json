@@ -1,0 +1,11 @@
+{
+  "timestamp": "2025-10-01T10:57:37.278Z",
+  "serialNumber": "SVR4H76530",
+  "actions": [
+    {
+      "actionType": "stopCalibration",
+      "actionId": "29600b66-f635-46d5-9b58-df41d3b59a89",
+      "metadata": {}
+    }
+  ]
+}

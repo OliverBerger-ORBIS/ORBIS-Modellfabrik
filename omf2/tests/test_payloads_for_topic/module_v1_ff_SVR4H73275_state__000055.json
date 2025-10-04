@@ -1,0 +1,18 @@
+{
+  "headerId": 1,
+  "loads": [],
+  "actionState": {
+    "id": "1bd494b7-3668-42e8-a686-e9e9eadc3bc6",
+    "state": "FINISHED",
+    "command": "factsheetRequest",
+    "metadata": {}
+  },
+  "serialNumber": "SVR4H73275",
+  "timestamp": "2025-10-01T11:29:59.300Z",
+  "errors": [],
+  "orderUpdateId": 0,
+  "paused": false,
+  "metadata": {
+    "opcuaState": "connected"
+  }
+}

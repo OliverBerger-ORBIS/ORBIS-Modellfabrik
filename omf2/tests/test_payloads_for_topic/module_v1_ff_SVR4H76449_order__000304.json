@@ -1,0 +1,14 @@
+{
+  "timestamp": "2025-10-01T09:39:33.900Z",
+  "serialNumber": "SVR4H76449",
+  "orderId": "d41940cc-356f-4c98-8352-d57c039b9b8e",
+  "orderUpdateId": 3,
+  "action": {
+    "id": "001a13d9-b0bf-4c74-9703-8c0ed6c18930",
+    "command": "PICK",
+    "metadata": {
+      "type": "WHITE",
+      "workpieceId": "047b8bca341291"
+    }
+  }
+}

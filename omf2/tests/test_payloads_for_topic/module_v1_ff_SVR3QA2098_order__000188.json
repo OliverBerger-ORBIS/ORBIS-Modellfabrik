@@ -1,0 +1,14 @@
+{
+  "timestamp": "2025-10-01T11:37:17.709Z",
+  "serialNumber": "SVR3QA2098",
+  "orderId": "1aacf6d8-31be-42d5-9adf-162e0b7c768b",
+  "orderUpdateId": 4,
+  "action": {
+    "id": "7086873a-d60c-44fc-88a8-4139c8439a99",
+    "command": "MILL",
+    "metadata": {
+      "duration": 5,
+      "type": "RED"
+    }
+  }
+}

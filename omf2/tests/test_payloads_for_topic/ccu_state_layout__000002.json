@@ -1,0 +1,109 @@
+{
+  "modules": [
+    {
+      "type": "HBW",
+      "serialNumber": "SVR3QA0022",
+      "placeholder": false
+    },
+    {
+      "type": "DRILL",
+      "serialNumber": "SVR4H76449",
+      "placeholder": false
+    },
+    {
+      "type": "MILL",
+      "serialNumber": "SVR3QA2098",
+      "placeholder": false
+    },
+    {
+      "type": "DPS",
+      "serialNumber": "SVR4H73275",
+      "placeholder": false
+    },
+    {
+      "type": "AIQS",
+      "serialNumber": "SVR4H76530",
+      "placeholder": false
+    },
+    {
+      "type": "CHRG",
+      "serialNumber": "CHRG0"
+    }
+  ],
+  "intersections": [
+    {
+      "id": "1"
+    },
+    {
+      "id": "2"
+    },
+    {
+      "id": "3"
+    },
+    {
+      "id": "4"
+    }
+  ],
+  "roads": [
+    {
+      "length": 360,
+      "from": "1",
+      "to": "2",
+      "direction": "EAST"
+    },
+    {
+      "length": 360,
+      "from": "3",
+      "to": "1",
+      "direction": "NORTH"
+    },
+    {
+      "length": 360,
+      "from": "3",
+      "to": "4",
+      "direction": "EAST"
+    },
+    {
+      "length": 360,
+      "from": "4",
+      "to": "2",
+      "direction": "NORTH"
+    },
+    {
+      "direction": "EAST",
+      "from": "SVR3QA0022",
+      "to": "1",
+      "length": 380
+    },
+    {
+      "direction": "EAST",
+      "from": "SVR4H76449",
+      "to": "3",
+      "length": 380
+    },
+    {
+      "direction": "SOUTH",
+      "from": "SVR3QA2098",
+      "to": "1",
+      "length": 380
+    },
+    {
+      "direction": "WEST",
+      "from": "SVR4H73275",
+      "to": "2",
+      "length": 380
+    },
+    {
+      "direction": "SOUTH",
+      "from": "SVR4H76530",
+      "to": "2",
+      "length": 380
+    },
+    {
+      "direction": "WEST",
+      "from": "CHRG0",
+      "to": "4",
+      "length": 430
+    }
+  ]
+}

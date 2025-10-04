@@ -1,0 +1,21 @@
+{
+  "timestamp": "2025-10-01T11:36:10.175Z",
+  "orderId": "1aacf6d8-31be-42d5-9adf-162e0b7c768b",
+  "orderUpdateId": 0,
+  "nodes": [
+    {
+      "id": "SVR3QA0022",
+      "linkedEdges": [],
+      "action": {
+        "type": "DOCK",
+        "id": "be345d91-d09d-4f70-88bc-9ee4ae72fc83",
+        "metadata": {
+          "loadType": "RED",
+          "loadPosition": "1"
+        }
+      }
+    }
+  ],
+  "edges": [],
+  "serialNumber": "5iO4"
+}

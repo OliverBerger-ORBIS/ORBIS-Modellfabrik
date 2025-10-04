@@ -21,6 +21,7 @@ logger = get_logger(__name__)
 def render_sensor_data_subtab(ccu_gateway: CcuGateway, registry_manager):
     """Render Sensor Data Subtab - Business Logic über SensorManager"""
     logger.info("🌡️ Rendering Sensor Data Subtab")
+    print("🔍 UI DEBUG: Sensor Data Subtab wird gerendert")
     try:
         # Header mit UISymbols
         st.header(f"{UISymbols.get_functional_icon('sensor_data')} Sensor Data")
@@ -31,6 +32,7 @@ def render_sensor_data_subtab(ccu_gateway: CcuGateway, registry_manager):
         
         with col1:
             if st.button(f"{UISymbols.get_status_icon('refresh')} Refresh Data", use_container_width=True, key="sensor_refresh"):
+                print("🔍 UI DEBUG: Refresh Button gedrückt!")
                 logger.info("🔄 DEBUG: Refresh Sensor Data Button clicked")
                 _refresh_sensor_data()
         
@@ -408,15 +410,18 @@ def _take_camera_photo(ccu_gateway: CcuGateway):
 
 def _refresh_sensor_data():
     """Refresh sensor data - UI Refresh Pattern"""
+    print("🔍 UI DEBUG: _refresh_sensor_data() wird ausgeführt")
     logger.info("🔄 Refreshing sensor data")
     try:
         # UI Refresh Pattern (statt st.rerun())
         request_refresh()
         st.success("✅ Sensor data refreshed!")
         logger.info("✅ Sensor data refreshed successfully")
+        print("🔍 UI DEBUG: Sensor data refresh abgeschlossen")
     except Exception as e:
         logger.error(f"❌ Failed to refresh sensor data: {e}")
         st.error(f"❌ Failed to refresh sensor data: {e}")
+        print(f"🔍 UI DEBUG: Error beim Refresh: {e}")
 
 
 def _show_sensor_statistics(ccu_gateway: CcuGateway):

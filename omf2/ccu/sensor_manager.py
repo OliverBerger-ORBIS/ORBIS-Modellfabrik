@@ -4,6 +4,7 @@ CCU Sensor Manager - Business Logic für Sensor-Daten-Verarbeitung
 Schema-basierte Verarbeitung von BME680, LDR, CAM Topics
 """
 
+import json
 from typing import Dict, List, Any, Optional
 from omf2.common.logger import get_logger
 from omf2.common.message_manager import get_ccu_message_manager
@@ -37,6 +38,9 @@ class SensorManager:
             Dictionary with processed sensor data by topic
         """
         try:
+            logger.debug("🔍 SENSOR DEBUG: Starting sensor message processing")
+            print("🔍 SENSOR DEBUG: Starting sensor message processing")
+            
             # Initialize sensor data store
             sensor_data = {}
             
@@ -47,6 +51,8 @@ class SensorManager:
             
             # Get buffers via Gateway (Gateway-Pattern)
             all_buffers = ccu_gateway.get_all_message_buffers()
+            logger.debug(f"🔍 SENSOR DEBUG: Got {len(all_buffers)} message buffers")
+            print(f"🔍 SENSOR DEBUG: Got {len(all_buffers)} message buffers")
             logger.info(f"📊 Retrieved {len(all_buffers)} buffers via CCU Gateway")
             
             for topic, messages in all_buffers.items():
@@ -112,15 +118,30 @@ class SensorManager:
         print(f"🔍 SENSOR DEBUG: Raw message keys: {list(latest_message.keys())}")
         print(f"🔍 SENSOR DEBUG: Raw message: {latest_message}")
         
-        # Extract payload from message (Schema is for payload, not full message)
-        payload = latest_message.copy()
-        
-        # Remove metadata fields that are not part of the sensor schema
-        metadata_fields = ['timestamp', 'ts']  # Keep sensor data fields
-        sensor_payload = {k: v for k, v in payload.items() if k not in metadata_fields}
+        # Extract payload from message (KORREKT: nur das "payload" field!)
+        payload_string = latest_message.get('payload', '{}')
+        if isinstance(payload_string, str):
+            try:
+                sensor_payload = json.loads(payload_string)  # Das ist der echte Payload!
+            except json.JSONDecodeError as e:
+                logger.error(f"❌ Invalid JSON in payload for {topic}: {e}")
+                return {}
+        else:
+            sensor_payload = payload_string
         
         logger.info(f"🔍 SENSOR DEBUG: Extracted sensor payload for {topic}: {sensor_payload}")
         print(f"🔍 SENSOR DEBUG: Extracted sensor payload for {topic}: {sensor_payload}")
+        
+        # Check if payload is empty (common in live MQTT data)
+        if not sensor_payload or sensor_payload == {}:
+            logger.info(f"🔍 SENSOR DEBUG: Empty payload for {topic} - returning fallback data")
+            print(f"🔍 SENSOR DEBUG: Empty payload for {topic} - returning fallback data")
+            return {
+                'raw_data': {},
+                'timestamp': latest_message.get('timestamp', ''),
+                'message_count': len(messages),
+                'status': 'empty_payload'
+            }
         
         # Use Registry Manager for schema-based validation (like SchemaTester)
         try:

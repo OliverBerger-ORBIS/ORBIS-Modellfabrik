@@ -1,0 +1,27 @@
+{
+  "headerId": 4,
+  "serialNumber": "SVR4H73275",
+  "timestamp": "2025-10-01T11:32:13.307828Z",
+  "paused": false,
+  "batteryState": {},
+  "operatingMode": "AUTOMATIC",
+  "errors": [],
+  "orderUpdateId": 1,
+  "information": [],
+  "actionState": {
+    "id": "3a17e722-68bc-49c2-b1c6-6d20948d9107",
+    "timestamp": "2025-10-01T11:32:13.307498Z",
+    "state": "RUNNING",
+    "command": "INPUT_RGB"
+  },
+  "orderId": "3a17e722-68bc-49c2-b1c6-6d20948d9107",
+  "actionStates": [
+    {
+      "timestamp": "2025-10-01T11:32:13.307498Z",
+      "id": "3a17e722-68bc-49c2-b1c6-6d20948d9107",
+      "metadata": {},
+      "state": "RUNNING",
+      "command": "INPUT_RGB"
+    }
+  ]
+}

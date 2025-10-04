@@ -1,0 +1,39 @@
+{
+  "timestamp": "2025-10-01T11:40:35.019Z",
+  "serialNumber": "SVR4H73275",
+  "orderId": "06dbdb8a-311e-4cf0-b76d-1366317cbccc",
+  "orderUpdateId": 11,
+  "action": {
+    "id": "d7f1dff7-526a-41da-a1c1-a5aab8f26f47",
+    "command": "PICK",
+    "metadata": {
+      "workpiece": {
+        "workpieceId": "040a8dca341291",
+        "type": "RED",
+        "history": [
+          {
+            "ts": 1759318747226,
+            "code": 400
+          },
+          {
+            "ts": 1759318775831,
+            "code": 600
+          },
+          {
+            "ts": 1759318816027,
+            "code": 200
+          },
+          {
+            "ts": 1759318497664,
+            "code": 100
+          },
+          {
+            "ts": 1759318531290,
+            "code": 300
+          }
+        ],
+        "state": "PROCESSED"
+      }
+    }
+  }
+}

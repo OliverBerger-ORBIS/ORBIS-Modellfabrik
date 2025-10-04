@@ -1,0 +1,121 @@
+[
+  {
+    "orderType": "PRODUCTION",
+    "type": "WHITE",
+    "timestamp": "2025-10-01T09:38:37.420Z",
+    "orderId": "d41940cc-356f-4c98-8352-d57c039b9b8e",
+    "productionSteps": [
+      {
+        "id": "045c08f2-dc8a-4bfc-923c-6aaacd60237a",
+        "type": "NAVIGATION",
+        "state": "FINISHED",
+        "source": "START",
+        "target": "HBW",
+        "startedAt": "2025-10-01T09:38:37.531Z",
+        "stoppedAt": "2025-10-01T09:38:39.575Z"
+      },
+      {
+        "id": "7828b789-d790-4d49-97dd-d5c076975561",
+        "type": "MANUFACTURE",
+        "dependentActionId": "045c08f2-dc8a-4bfc-923c-6aaacd60237a",
+        "state": "FINISHED",
+        "command": "DROP",
+        "moduleType": "HBW",
+        "startedAt": "2025-10-01T09:38:39.577Z",
+        "serialNumber": "SVR3QA0022",
+        "stoppedAt": "2025-10-01T09:39:20.402Z"
+      },
+      {
+        "id": "80d11088-e361-4617-b04f-d946e900f313",
+        "type": "NAVIGATION",
+        "state": "FINISHED",
+        "source": "HBW",
+        "target": "DRILL",
+        "dependentActionId": "7828b789-d790-4d49-97dd-d5c076975561",
+        "startedAt": "2025-10-01T09:39:20.503Z",
+        "stoppedAt": "2025-10-01T09:39:33.898Z"
+      },
+      {
+        "id": "001a13d9-b0bf-4c74-9703-8c0ed6c18930",
+        "type": "MANUFACTURE",
+        "dependentActionId": "80d11088-e361-4617-b04f-d946e900f313",
+        "state": "FINISHED",
+        "command": "PICK",
+        "moduleType": "DRILL",
+        "startedAt": "2025-10-01T09:39:33.901Z",
+        "serialNumber": "SVR4H76449",
+        "stoppedAt": "2025-10-01T09:39:44.958Z"
+      },
+      {
+        "id": "5106ad8a-34a4-4e12-adb4-83004e0c03fc",
+        "type": "MANUFACTURE",
+        "dependentActionId": "001a13d9-b0bf-4c74-9703-8c0ed6c18930",
+        "state": "IN_PROGRESS",
+        "command": "DRILL",
+        "moduleType": "DRILL",
+        "startedAt": "2025-10-01T09:39:44.960Z",
+        "serialNumber": "SVR4H76449"
+      },
+      {
+        "id": "5c85ed99-f941-4f51-82e6-faab236ff899",
+        "type": "MANUFACTURE",
+        "dependentActionId": "5106ad8a-34a4-4e12-adb4-83004e0c03fc",
+        "state": "ENQUEUED",
+        "command": "DROP",
+        "moduleType": "DRILL"
+      },
+      {
+        "id": "06d04f01-df74-4fda-a77b-2718c9dd9947",
+        "type": "NAVIGATION",
+        "state": "ENQUEUED",
+        "source": "DRILL",
+        "target": "AIQS",
+        "dependentActionId": "5c85ed99-f941-4f51-82e6-faab236ff899"
+      },
+      {
+        "id": "71d1a4a5-b745-4bb1-a912-5ec45d1da862",
+        "type": "MANUFACTURE",
+        "dependentActionId": "06d04f01-df74-4fda-a77b-2718c9dd9947",
+        "state": "ENQUEUED",
+        "command": "PICK",
+        "moduleType": "AIQS"
+      },
+      {
+        "id": "de12ed6f-ee6c-4b41-9427-ed568ee4f793",
+        "type": "MANUFACTURE",
+        "dependentActionId": "71d1a4a5-b745-4bb1-a912-5ec45d1da862",
+        "state": "ENQUEUED",
+        "command": "CHECK_QUALITY",
+        "moduleType": "AIQS"
+      },
+      {
+        "id": "bb23112b-b2e3-4f88-aadf-1010c8a0cfa3",
+        "type": "MANUFACTURE",
+        "dependentActionId": "de12ed6f-ee6c-4b41-9427-ed568ee4f793",
+        "state": "ENQUEUED",
+        "command": "DROP",
+        "moduleType": "AIQS"
+      },
+      {
+        "id": "53eff382-aa9b-4b76-8223-b41761e93a35",
+        "type": "NAVIGATION",
+        "state": "ENQUEUED",
+        "source": "AIQS",
+        "target": "DPS",
+        "dependentActionId": "bb23112b-b2e3-4f88-aadf-1010c8a0cfa3"
+      },
+      {
+        "id": "63a451a9-f6d2-4008-869e-0e588469e1f2",
+        "type": "MANUFACTURE",
+        "dependentActionId": "53eff382-aa9b-4b76-8223-b41761e93a35",
+        "state": "ENQUEUED",
+        "command": "PICK",
+        "moduleType": "DPS"
+      }
+    ],
+    "receivedAt": "2025-10-01T09:38:37.496Z",
+    "state": "IN_PROGRESS",
+    "workpieceId": "047b8bca341291",
+    "startedAt": "2025-10-01T09:38:37.496Z"
+  }
+]

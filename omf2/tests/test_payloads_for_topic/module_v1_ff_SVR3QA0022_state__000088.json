@@ -1,0 +1,79 @@
+{
+  "headerId": 51,
+  "loads": [
+    {
+      "loadType": "WHITE",
+      "loadId": "047c8bca341291",
+      "loadPosition": "A1",
+      "loadTimestamp": 1759306017560
+    },
+    {
+      "loadType": "RED",
+      "loadId": "04fa8cca341290",
+      "loadPosition": "A2",
+      "loadTimestamp": 1759317370722
+    },
+    {
+      "loadType": "",
+      "loadId": "",
+      "loadPosition": "A3",
+      "loadTimestamp": 0
+    },
+    {
+      "loadType": "WHITE",
+      "loadId": "047b8bca341291",
+      "loadPosition": "B1",
+      "loadTimestamp": 1759312460464
+    },
+    {
+      "loadType": "RED",
+      "loadId": "040a8dca341291",
+      "loadPosition": "B2",
+      "loadTimestamp": 1759312722565
+    },
+    {
+      "loadType": "WHITE",
+      "loadId": "04798eca341290",
+      "loadPosition": "B3",
+      "loadTimestamp": 1759220882441
+    },
+    {
+      "loadType": "BLUE",
+      "loadId": "047389ca341291",
+      "loadPosition": "C1",
+      "loadTimestamp": 1759313206785
+    },
+    {
+      "loadType": "",
+      "loadId": "",
+      "loadPosition": "C2",
+      "loadTimestamp": 0
+    },
+    {
+      "loadType": "",
+      "loadId": "",
+      "loadPosition": "C3",
+      "loadTimestamp": 0
+    }
+  ],
+  "actionState": {
+    "id": "7bbf1656-bc20-429b-8f6d-4c12e9afd1e4",
+    "command": "PICK",
+    "metadata": {
+      "type": "RED",
+      "workpieceId": "04fa8cca341290"
+    },
+    "state": "FINISHED"
+  },
+  "serialNumber": "SVR3QA0022",
+  "timestamp": "2025-10-01T11:16:31.687Z",
+  "errors": [],
+  "orderUpdateId": 3,
+  "orderId": "7590e1ad-d1bc-4d89-9358-65d4c6cff292",
+  "paused": false,
+  "operatingMode": "AUTOMATIC",
+  "metadata": {
+    "opcuaState": "connected"
+  },
+  "information": []
+}

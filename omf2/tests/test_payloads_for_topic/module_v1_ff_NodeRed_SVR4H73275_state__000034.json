@@ -1,0 +1,27 @@
+{
+  "actionStates": [
+    {
+      "state": "RUNNING",
+      "command": "INPUT_RGB",
+      "id": "e3986f6b-cd86-475c-a460-7ce0df43e509",
+      "timestamp": "2025-10-01T11:14:15.227235Z",
+      "metadata": {}
+    }
+  ],
+  "actionState": {
+    "command": "INPUT_RGB",
+    "id": "e3986f6b-cd86-475c-a460-7ce0df43e509",
+    "timestamp": "2025-10-01T11:14:15.227235Z",
+    "state": "RUNNING"
+  },
+  "batteryState": {},
+  "errors": [],
+  "orderUpdateId": 1,
+  "paused": false,
+  "information": [],
+  "operatingMode": "AUTOMATIC",
+  "serialNumber": "SVR4H73275",
+  "timestamp": "2025-10-01T11:14:15.227572Z",
+  "headerId": 93,
+  "orderId": "e3986f6b-cd86-475c-a460-7ce0df43e509"
+}

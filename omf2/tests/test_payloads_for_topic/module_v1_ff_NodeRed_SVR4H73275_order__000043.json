@@ -1,0 +1,10 @@
+{
+  "timestamp": "2025-10-01T11:15:09.225Z",
+  "orderId": "3c46bc2e-6d08-4dd4-82af-f3a89c6c4560",
+  "orderUpdateId": 1,
+  "action": {
+    "id": "3c46bc2e-6d08-4dd4-82af-f3a89c6c4560",
+    "command": "INPUT_RGB",
+    "metadata": {}
+  }
+}

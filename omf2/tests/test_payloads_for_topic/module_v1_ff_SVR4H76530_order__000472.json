@@ -1,0 +1,14 @@
+{
+  "timestamp": "2025-10-01T10:16:36.461Z",
+  "serialNumber": "SVR4H76530",
+  "orderId": "65b5edec-e634-4485-86c9-af4b8ad4d3f4",
+  "orderUpdateId": 9,
+  "action": {
+    "id": "13b3b831-fd14-402e-b827-245fa7fbed34",
+    "command": "DROP",
+    "metadata": {
+      "type": "RED",
+      "workpieceId": "04808dca341291"
+    }
+  }
+}

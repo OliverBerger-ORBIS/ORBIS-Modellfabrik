@@ -1,0 +1,10 @@
+{
+  "timestamp": "2025-10-01T11:31:37.008Z",
+  "serialNumber": "5iO4",
+  "actions": [
+    {
+      "actionId": "a40a987a-bc29-49e3-ab55-a0bd5fb9f63c",
+      "actionType": "factsheetRequest"
+    }
+  ]
+}

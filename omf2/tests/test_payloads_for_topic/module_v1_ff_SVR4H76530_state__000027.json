@@ -1,0 +1,22 @@
+{
+  "headerId": 57,
+  "loads": [],
+  "actionState": {
+    "command": "DROP",
+    "id": "3becd172-6311-4e71-b054-4fc90d4f12ce",
+    "metadata": {
+      "type": "BLUE",
+      "workpieceId": "04a189ca341290"
+    },
+    "state": "FINISHED"
+  },
+  "serialNumber": "SVR4H76530",
+  "timestamp": "2025-10-01T08:35:09.201Z",
+  "errors": [],
+  "orderUpdateId": 0,
+  "orderId": "591be086-e66f-4633-8496-e19ade9d414b",
+  "paused": false,
+  "metadata": {
+    "opcuaState": "connected"
+  }
+}

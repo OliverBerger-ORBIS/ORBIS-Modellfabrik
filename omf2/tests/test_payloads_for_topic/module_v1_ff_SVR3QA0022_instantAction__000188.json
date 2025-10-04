@@ -1,0 +1,10 @@
+{
+  "timestamp": "2025-10-01T11:04:26.265Z",
+  "serialNumber": "SVR3QA0022",
+  "actions": [
+    {
+      "actionId": "0db95d73-ef68-4883-bda7-47d825834b3d",
+      "actionType": "factsheetRequest"
+    }
+  ]
+}

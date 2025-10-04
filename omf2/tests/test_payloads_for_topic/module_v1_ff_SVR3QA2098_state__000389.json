@@ -1,0 +1,19 @@
+{
+  "headerId": 19,
+  "loads": [],
+  "actionState": {
+    "command": "DROP",
+    "id": "6aaa9fc6-8e13-4535-b514-23aa71e75e31",
+    "state": "FINISHED",
+    "duration": 5
+  },
+  "serialNumber": "SVR3QA2098",
+  "timestamp": "2025-10-01T10:13:54.120Z",
+  "errors": [],
+  "orderUpdateId": 5,
+  "orderId": "0f77cfd1-c4ec-4e5f-8262-d9de2add939a",
+  "paused": false,
+  "metadata": {
+    "opcuaState": "connected"
+  }
+}

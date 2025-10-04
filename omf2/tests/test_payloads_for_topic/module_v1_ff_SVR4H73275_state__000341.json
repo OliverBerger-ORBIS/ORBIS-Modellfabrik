@@ -1,0 +1,22 @@
+{
+  "headerId": 2,
+  "loads": [],
+  "actionState": {
+    "id": "176da1c2-a433-4c54-8450-45ad4f5901c2",
+    "state": "FINISHED",
+    "command": "setStatusLED",
+    "metadata": {
+      "green": false,
+      "red": false,
+      "yellow": true
+    }
+  },
+  "serialNumber": "SVR4H73275",
+  "timestamp": "2025-10-01T10:10:31.105Z",
+  "errors": [],
+  "orderUpdateId": 0,
+  "paused": false,
+  "metadata": {
+    "opcuaState": "connected"
+  }
+}

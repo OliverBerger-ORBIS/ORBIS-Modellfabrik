@@ -1,0 +1,21 @@
+{
+  "headerId": 173,
+  "loads": [
+    {
+      "type": "RED"
+    }
+  ],
+  "actionState": {
+    "id": "ca88a1fa-c834-4c92-921e-3e93fe11b145",
+    "state": "RUNNING"
+  },
+  "serialNumber": "SVR4H73275",
+  "timestamp": "2025-10-01T11:34:43.235Z",
+  "errors": [],
+  "orderUpdateId": 0,
+  "orderId": "a2d2309a-6395-4f83-90de-b9edd85c5f02",
+  "paused": false,
+  "metadata": {
+    "opcuaState": "connected"
+  }
+}

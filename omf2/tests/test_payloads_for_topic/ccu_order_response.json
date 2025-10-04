@@ -1,0 +1,10 @@
+{
+  "orderId": "TEST_ORDER",
+  "orderType": "test_orderType",
+  "productionSteps": [],
+  "receivedAt": "test_receivedAt",
+  "startedAt": "test_startedAt",
+  "state": "READY",
+  "timestamp": "2025-10-04T10:00:00.000Z",
+  "type": "test_type"
+}

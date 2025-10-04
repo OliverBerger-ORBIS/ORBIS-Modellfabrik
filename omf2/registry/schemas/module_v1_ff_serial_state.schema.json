@@ -96,7 +96,7 @@
               "type": "string"
             },
             "result": {
-              "type": "string"
+              "type": ["string", "null"]
             },
             "duration": {
               "type": "integer"
@@ -141,10 +141,10 @@
                   "type": "string"
                 },
                 "headerId": {
-                  "type": "integer"
+                  "type": ["integer", "null"]
                 },
                 "orderId": {
-                  "type": "string"
+                  "type": ["string", "null"]
                 },
                 "orderUpdateId": {
                   "type": "integer"
@@ -280,9 +280,7 @@
                 ]
               }
             },
-            "required": [
-              "workpiece"
-            ]
+            "required": []
           },
           "state": {
             "type": "string"
@@ -291,7 +289,7 @@
             "type": "string"
           },
           "result": {
-            "type": "string"
+            "type": ["string", "null"]
           },
           "warning": {
             "type": "boolean"
@@ -300,8 +298,7 @@
         "required": [
           "command",
           "id",
-          "state",
-          "timestamp"
+          "state"
         ]
       }
     }

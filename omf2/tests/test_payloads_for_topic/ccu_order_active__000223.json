@@ -1,0 +1,109 @@
+[
+  {
+    "orderType": "PRODUCTION",
+    "type": "RED",
+    "timestamp": "2025-10-01T11:36:10.096Z",
+    "orderId": "06dbdb8a-311e-4cf0-b76d-1366317cbccc",
+    "productionSteps": [
+      {
+        "id": "f18b9cbe-cfa4-414c-bfa5-547af27ef169",
+        "type": "NAVIGATION",
+        "state": "IN_PROGRESS",
+        "source": "START",
+        "target": "HBW",
+        "startedAt": "2025-10-01T11:38:08.965Z"
+      },
+      {
+        "id": "15ff7822-b9c8-46cd-9935-649ea2be427b",
+        "type": "MANUFACTURE",
+        "dependentActionId": "f18b9cbe-cfa4-414c-bfa5-547af27ef169",
+        "state": "ENQUEUED",
+        "command": "DROP",
+        "moduleType": "HBW"
+      },
+      {
+        "id": "d3889a3d-9590-4d6f-a2ea-9961a5ac990c",
+        "type": "NAVIGATION",
+        "state": "ENQUEUED",
+        "source": "HBW",
+        "target": "MILL",
+        "dependentActionId": "15ff7822-b9c8-46cd-9935-649ea2be427b"
+      },
+      {
+        "id": "52b705c8-e7b9-4ab1-9571-7c9808ecca23",
+        "type": "MANUFACTURE",
+        "dependentActionId": "d3889a3d-9590-4d6f-a2ea-9961a5ac990c",
+        "state": "ENQUEUED",
+        "command": "PICK",
+        "moduleType": "MILL"
+      },
+      {
+        "id": "0ce88144-07b3-4129-b707-cba1e6178c6e",
+        "type": "MANUFACTURE",
+        "dependentActionId": "52b705c8-e7b9-4ab1-9571-7c9808ecca23",
+        "state": "ENQUEUED",
+        "command": "MILL",
+        "moduleType": "MILL"
+      },
+      {
+        "id": "9f7e1a84-c552-4410-b9f1-eca51854f5e9",
+        "type": "MANUFACTURE",
+        "dependentActionId": "0ce88144-07b3-4129-b707-cba1e6178c6e",
+        "state": "ENQUEUED",
+        "command": "DROP",
+        "moduleType": "MILL"
+      },
+      {
+        "id": "6959a2c7-ecbb-40de-8884-3ca03484ccc6",
+        "type": "NAVIGATION",
+        "state": "ENQUEUED",
+        "source": "MILL",
+        "target": "AIQS",
+        "dependentActionId": "9f7e1a84-c552-4410-b9f1-eca51854f5e9"
+      },
+      {
+        "id": "3b2f383f-5615-4c8b-a2bd-842ccb5e738b",
+        "type": "MANUFACTURE",
+        "dependentActionId": "6959a2c7-ecbb-40de-8884-3ca03484ccc6",
+        "state": "ENQUEUED",
+        "command": "PICK",
+        "moduleType": "AIQS"
+      },
+      {
+        "id": "f86efb7f-1d8f-4e39-92f5-e3e46b72ece6",
+        "type": "MANUFACTURE",
+        "dependentActionId": "3b2f383f-5615-4c8b-a2bd-842ccb5e738b",
+        "state": "ENQUEUED",
+        "command": "CHECK_QUALITY",
+        "moduleType": "AIQS"
+      },
+      {
+        "id": "41f3bac8-b302-4bfe-82a3-3be9c7be203b",
+        "type": "MANUFACTURE",
+        "dependentActionId": "f86efb7f-1d8f-4e39-92f5-e3e46b72ece6",
+        "state": "ENQUEUED",
+        "command": "DROP",
+        "moduleType": "AIQS"
+      },
+      {
+        "id": "b3450351-fe35-4f98-a9be-ad9ff28dc1fb",
+        "type": "NAVIGATION",
+        "state": "ENQUEUED",
+        "source": "AIQS",
+        "target": "DPS",
+        "dependentActionId": "41f3bac8-b302-4bfe-82a3-3be9c7be203b"
+      },
+      {
+        "id": "d7f1dff7-526a-41da-a1c1-a5aab8f26f47",
+        "type": "MANUFACTURE",
+        "dependentActionId": "b3450351-fe35-4f98-a9be-ad9ff28dc1fb",
+        "state": "ENQUEUED",
+        "command": "PICK",
+        "moduleType": "DPS"
+      }
+    ],
+    "receivedAt": "2025-10-01T11:38:08.924Z",
+    "state": "IN_PROGRESS",
+    "startedAt": "2025-10-01T11:38:08.924Z"
+  }
+]

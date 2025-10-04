@@ -1,0 +1,35 @@
+{
+  "headerId": 38,
+  "serialNumber": "SVR4H76530",
+  "paused": false,
+  "actionState": {
+    "id": "CHECK_QUALITY__1759316149842",
+    "timestamp": "2025-10-01T10:55:49.904215Z",
+    "command": "CHECK_QUALITY",
+    "state": "WAITING"
+  },
+  "timestamp": "2025-10-01T10:55:49.907785Z",
+  "batteryState": {},
+  "orderUpdateId": 5,
+  "errors": [
+    {
+      "errorLevel": "WARNING",
+      "errorReferences": [
+        {
+          "topic": "order"
+        },
+        {
+          "headerId": null
+        },
+        {
+          "orderId": "CHECK_QUALITY__1759316149842"
+        },
+        {
+          "orderUpdateId": 5
+        }
+      ],
+      "errorType": "orderError"
+    }
+  ],
+  "orderId": "CHECK_QUALITY__1759316149842"
+}

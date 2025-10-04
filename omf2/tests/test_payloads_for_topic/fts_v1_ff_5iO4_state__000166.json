@@ -1,0 +1,50 @@
+{
+  "actionState": {
+    "id": "897998c8-a417-44b6-9e7d-3e0b21ceb9e7",
+    "state": "FINISHED",
+    "timestamp": "2025-10-01T09:36:25.464149Z",
+    "command": "DOCK"
+  },
+  "serialNumber": "5iO4",
+  "waitingForLoadHandling": false,
+  "timestamp": "2025-10-01T09:36:39.621446Z",
+  "actionStates": [
+    {
+      "id": "897998c8-a417-44b6-9e7d-3e0b21ceb9e7",
+      "state": "FINISHED",
+      "timestamp": "2025-10-01T09:36:25.464149Z",
+      "command": "DOCK"
+    },
+    {
+      "id": "f11ce740-4f32-40fe-a558-a3d11c101b9b",
+      "state": "FINISHED",
+      "timestamp": "2025-10-01T09:36:39.621110Z",
+      "command": "clearLoadHandler"
+    }
+  ],
+  "lastNodeSequenceId": 0,
+  "orderId": "5e75ef1f-6091-4ec0-b71c-4d54968593f9",
+  "edgeStates": [],
+  "load": [
+    {
+      "loadType": "BLUE",
+      "loadId": "042c88ca341291",
+      "loadPosition": "1"
+    }
+  ],
+  "lastNodeId": "SVR4H73275",
+  "nodeStates": [],
+  "headerId": 310,
+  "driving": false,
+  "orderUpdateId": 0,
+  "errors": [],
+  "lastCode": "",
+  "paused": false,
+  "batteryState": {
+    "charging": false,
+    "maxVolt": 9.1,
+    "minVolt": 7.84,
+    "percentage": 76,
+    "currentVoltage": 8.8
+  }
+}

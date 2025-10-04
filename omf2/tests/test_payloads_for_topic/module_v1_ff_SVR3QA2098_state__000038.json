@@ -1,0 +1,18 @@
+{
+  "headerId": 1,
+  "loads": [],
+  "actionState": {
+    "id": "5b21e182-730f-4300-ac4c-d51150075fe8",
+    "state": "FINISHED",
+    "command": "factsheetRequest"
+  },
+  "serialNumber": "SVR3QA2098",
+  "timestamp": "2025-10-01T11:29:58.736Z",
+  "errors": [],
+  "orderUpdateId": "0",
+  "orderId": "5b21e182-730f-4300-ac4c-d51150075fe8",
+  "paused": false,
+  "metadata": {
+    "opcuaState": "connected"
+  }
+}

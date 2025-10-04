@@ -1,0 +1,17 @@
+{
+  "errors": [],
+  "orderId": "06dbdb8a-311e-4cf0-b76d-1366317cbccc",
+  "headerId": 9,
+  "orderUpdateId": 10,
+  "timestamp": "2025-10-01T11:40:13.862959Z",
+  "batteryState": {},
+  "serialNumber": "SVR4H76530",
+  "actionState": {
+    "command": "CHECK_QUALITY",
+    "result": "PASSED",
+    "state": "RUNNING",
+    "id": "f86efb7f-1d8f-4e39-92f5-e3e46b72ece6",
+    "timestamp": "2025-10-01T11:40:10.616570Z"
+  },
+  "paused": false
+}

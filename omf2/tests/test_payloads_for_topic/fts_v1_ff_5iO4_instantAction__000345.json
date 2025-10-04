@@ -1,0 +1,13 @@
+{
+  "timestamp": "2025-10-01T10:10:58.741Z",
+  "serialNumber": "5iO4",
+  "actions": [
+    {
+      "actionType": "findInitialDockPosition",
+      "actionId": "2c5ea0de-a6d2-4c66-8b61-d2abca3ba3c9",
+      "metadata": {
+        "nodeId": "SVR4H73275"
+      }
+    }
+  ]
+}

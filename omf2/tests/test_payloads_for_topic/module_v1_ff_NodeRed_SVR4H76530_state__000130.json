@@ -1,0 +1,16 @@
+{
+  "headerId": 45,
+  "serialNumber": "SVR4H76530",
+  "paused": false,
+  "actionState": {
+    "id": "CHECK_QUALITY__1759316235998",
+    "timestamp": "2025-10-01T10:57:16.021420Z",
+    "command": "CHECK_QUALITY",
+    "state": "WAITING"
+  },
+  "timestamp": "2025-10-01T10:57:16.021873Z",
+  "batteryState": {},
+  "orderUpdateId": 7,
+  "errors": [],
+  "orderId": "CHECK_QUALITY__1759316235997"
+}

@@ -1,0 +1,24 @@
+{
+  "headerId": 117,
+  "loads": [
+    {
+      "loadType": "BLUE",
+      "duration": 5
+    }
+  ],
+  "actionState": {
+    "command": "DRILL",
+    "id": "2f79f6c6-2c94-4060-af55-f8c4b19a058f",
+    "state": "FINISHED",
+    "duration": 5
+  },
+  "serialNumber": "SVR4H76449",
+  "timestamp": "2025-10-01T10:02:08.869Z",
+  "errors": [],
+  "orderUpdateId": 4,
+  "orderId": "73e83f6f-71b2-4e1c-b665-1e72ab0d3d6f",
+  "paused": false,
+  "metadata": {
+    "opcuaState": "connected"
+  }
+}

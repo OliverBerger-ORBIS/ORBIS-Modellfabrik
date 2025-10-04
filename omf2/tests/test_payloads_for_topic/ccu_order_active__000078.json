@@ -1,0 +1,54 @@
+[
+  {
+    "orderType": "STORAGE",
+    "type": "RED",
+    "timestamp": "2025-10-01T11:15:43.904Z",
+    "orderId": "7590e1ad-d1bc-4d89-9358-65d4c6cff292",
+    "productionSteps": [
+      {
+        "id": "3b0f63cf-543e-44d8-ab7a-5b6aaf6d1f0c",
+        "type": "NAVIGATION",
+        "state": "FINISHED",
+        "source": "START",
+        "target": "DPS",
+        "startedAt": "2025-10-01T11:15:44.038Z",
+        "stoppedAt": "2025-10-01T11:15:45.639Z"
+      },
+      {
+        "id": "345fb1ad-37dd-4311-adcb-35d00c27f74f",
+        "type": "MANUFACTURE",
+        "dependentActionId": "3b0f63cf-543e-44d8-ab7a-5b6aaf6d1f0c",
+        "state": "FINISHED",
+        "command": "DROP",
+        "moduleType": "DPS",
+        "startedAt": "2025-10-01T11:15:45.645Z",
+        "serialNumber": "SVR4H73275",
+        "stoppedAt": "2025-10-01T11:16:00.211Z"
+      },
+      {
+        "id": "f0658e7f-9201-46d4-808b-dadf347693bd",
+        "type": "NAVIGATION",
+        "state": "FINISHED",
+        "source": "DPS",
+        "target": "HBW",
+        "dependentActionId": "345fb1ad-37dd-4311-adcb-35d00c27f74f",
+        "startedAt": "2025-10-01T11:16:00.496Z",
+        "stoppedAt": "2025-10-01T11:16:10.704Z"
+      },
+      {
+        "id": "7bbf1656-bc20-429b-8f6d-4c12e9afd1e4",
+        "type": "MANUFACTURE",
+        "dependentActionId": "f0658e7f-9201-46d4-808b-dadf347693bd",
+        "state": "IN_PROGRESS",
+        "command": "PICK",
+        "moduleType": "HBW",
+        "startedAt": "2025-10-01T11:16:10.706Z",
+        "serialNumber": "SVR3QA0022"
+      }
+    ],
+    "receivedAt": "2025-10-01T11:15:44.011Z",
+    "state": "IN_PROGRESS",
+    "workpieceId": "04fa8cca341290",
+    "startedAt": "2025-10-01T11:15:44.012Z"
+  }
+]

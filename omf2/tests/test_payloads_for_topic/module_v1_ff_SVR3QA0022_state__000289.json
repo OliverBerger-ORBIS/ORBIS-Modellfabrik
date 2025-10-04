@@ -1,0 +1,78 @@
+{
+  "headerId": 87,
+  "loads": [
+    {
+      "loadType": "WHITE",
+      "loadId": "047c8bca341291",
+      "loadPosition": "A1",
+      "loadTimestamp": 1759306017560
+    },
+    {
+      "loadType": "",
+      "loadId": "",
+      "loadPosition": "A2",
+      "loadTimestamp": 0
+    },
+    {
+      "loadType": "",
+      "loadId": "",
+      "loadPosition": "A3",
+      "loadTimestamp": 0
+    },
+    {
+      "loadType": "WHITE",
+      "loadId": "047b8bca341291",
+      "loadPosition": "B1",
+      "loadTimestamp": 1759312460464
+    },
+    {
+      "loadType": "",
+      "loadId": "",
+      "loadPosition": "B2",
+      "loadTimestamp": 0
+    },
+    {
+      "loadType": "WHITE",
+      "loadId": "04798eca341290",
+      "loadPosition": "B3",
+      "loadTimestamp": 1759220882441
+    },
+    {
+      "loadType": "BLUE",
+      "loadId": "047389ca341291",
+      "loadPosition": "C1",
+      "loadTimestamp": 1759313206785
+    },
+    {
+      "loadType": "RED",
+      "loadId": "04d78cca341290",
+      "loadPosition": "C2",
+      "loadTimestamp": 1759317444182
+    },
+    {
+      "loadType": "",
+      "loadId": "",
+      "loadPosition": "C3",
+      "loadTimestamp": 0
+    }
+  ],
+  "actionState": {
+    "id": "7389a01b-3697-4ee0-b972-ae7d87726484",
+    "command": "DROP",
+    "metadata": {
+      "type": "RED"
+    },
+    "state": "RUNNING"
+  },
+  "serialNumber": "SVR3QA0022",
+  "timestamp": "2025-10-01T11:23:50.915Z",
+  "errors": [],
+  "orderUpdateId": 1,
+  "orderId": "b43058e1-ba0f-4891-a621-00440af01f18",
+  "paused": false,
+  "operatingMode": "AUTOMATIC",
+  "metadata": {
+    "opcuaState": "connected"
+  },
+  "information": []
+}

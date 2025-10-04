@@ -30,7 +30,6 @@
   "required": [
     "connectionState",
     "headerId",
-    "ip",
     "manufacturer",
     "serialNumber",
     "timestamp",

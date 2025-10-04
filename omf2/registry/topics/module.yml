@@ -133,20 +133,20 @@ module_topics:
 - topic: module/v1/ff/CHRG0/connection
   qos: 1
   retain: 1
-  schema: module_v1_ff_serial_connection.schema.json
+  schema: wildcard.schema.json
   description: Connection status with client information and IP address
 - topic: module/v1/ff/CHRG0/state
   qos: 2
   retain: 1
-  schema: module_v1_ff_serial_state.schema.json
+  schema: wildcard.schema.json
   description: State information with current status and processing state
 - topic: module/v1/ff/CHRG0/order
   qos: 1
   retain: 0
-  schema: module_v1_ff_serial_order.schema.json
+  schema: wildcard.schema.json
   description: Order commands for processing tasks and workflow execution
 - topic: module/v1/ff/CHRG0/factsheet
   qos: 2
   retain: 1
-  schema: module_v1_ff_serial_factsheet.schema.json
+  schema: wildcard.schema.json
   description: Factsheet with capabilities, specifications and configuration details

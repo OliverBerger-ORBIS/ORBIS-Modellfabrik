@@ -1,0 +1,24 @@
+{
+  "headerId": 16,
+  "loads": [
+    {
+      "loadType": "RED",
+      "duration": 5
+    }
+  ],
+  "actionState": {
+    "command": "MILL",
+    "id": "789ebf8e-6006-4b0f-8483-aa76a5c0b03f",
+    "state": "FINISHED",
+    "duration": 5
+  },
+  "serialNumber": "SVR3QA2098",
+  "timestamp": "2025-10-01T10:13:44.978Z",
+  "errors": [],
+  "orderUpdateId": 4,
+  "orderId": "0f77cfd1-c4ec-4e5f-8262-d9de2add939a",
+  "paused": false,
+  "metadata": {
+    "opcuaState": "connected"
+  }
+}

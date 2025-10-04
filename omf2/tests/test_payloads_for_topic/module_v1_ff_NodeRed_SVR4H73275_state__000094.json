@@ -1,0 +1,35 @@
+{
+  "actionStates": [
+    {
+      "command": "factsheetRequest",
+      "id": "SOME_ID",
+      "state": "FINISHED"
+    }
+  ],
+  "actionState": {
+    "command": "factsheetRequest",
+    "id": "SOME_ID",
+    "timestamp": "2025-10-01T09:35:22.251970Z",
+    "state": "FINISHED"
+  },
+  "batteryState": {},
+  "errors": [
+    {
+      "errorLevel": "WARNING",
+      "errorReferences": [
+        {
+          "orderId": null
+        }
+      ],
+      "errorType": "RESET_WARNING"
+    }
+  ],
+  "orderUpdateId": 0,
+  "paused": false,
+  "information": [],
+  "operatingMode": "AUTOMATIC",
+  "serialNumber": "SVR4H73275",
+  "timestamp": "2025-10-01T09:35:22.251254Z",
+  "headerId": 29,
+  "orderId": ""
+}

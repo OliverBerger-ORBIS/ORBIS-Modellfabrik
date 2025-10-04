@@ -1,0 +1,56 @@
+{
+  "actionState": {
+    "id": "c553bbb5-0f28-4dfc-8fa7-32cd5fddce9b",
+    "state": "RUNNING",
+    "timestamp": "2025-10-01T09:39:22.861801Z",
+    "command": "TURN"
+  },
+  "serialNumber": "5iO4",
+  "waitingForLoadHandling": false,
+  "timestamp": "2025-10-01T09:39:22.862757Z",
+  "actionStates": [
+    {
+      "id": "c553bbb5-0f28-4dfc-8fa7-32cd5fddce9b",
+      "state": "RUNNING",
+      "timestamp": "2025-10-01T09:39:22.861801Z",
+      "command": "TURN"
+    },
+    {
+      "id": "1077bdc0-e9cf-4c87-8145-e177dbfeaa70",
+      "state": "WAITING",
+      "timestamp": "2025-10-01T09:39:22.863305Z",
+      "command": "TURN"
+    },
+    {
+      "id": "80d11088-e361-4617-b04f-d946e900f313",
+      "state": "WAITING",
+      "timestamp": "2025-10-01T09:39:22.863455Z",
+      "command": "DOCK"
+    }
+  ],
+  "lastNodeSequenceId": 0,
+  "orderId": "d41940cc-356f-4c98-8352-d57c039b9b8e",
+  "edgeStates": [],
+  "load": [
+    {
+      "loadType": "WHITE",
+      "loadId": "047b8bca341291",
+      "loadPosition": "1"
+    }
+  ],
+  "lastNodeId": "1",
+  "nodeStates": [],
+  "headerId": 333,
+  "driving": true,
+  "orderUpdateId": 2,
+  "errors": [],
+  "lastCode": "",
+  "paused": false,
+  "batteryState": {
+    "charging": false,
+    "maxVolt": 9.1,
+    "minVolt": 7.84,
+    "percentage": 76,
+    "currentVoltage": 8.8
+  }
+}

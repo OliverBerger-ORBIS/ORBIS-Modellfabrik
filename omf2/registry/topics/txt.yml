@@ -8,7 +8,7 @@ txt_topics:
 - topic: /j1/txt/1/f/i/stock
   qos: 1
   retain: 0
-  schema: wildcard.schema.json
+  schema: j1_txt_1_f_i_stock.schema.json
   description: 'Topic: /j1/txt/1/f/i/stock'
 - topic: /j1/txt/1/f/i/order
   qos: 1
@@ -28,27 +28,27 @@ txt_topics:
 - topic: /j1/txt/1/f/i/config/hbw
   qos: 1
   retain: 1
-  schema: j1_txt_1_f_i_order.schema.json
+  schema: j1_txt_1_f_i_config_hbw.schema.json
   description: 'Topic: /j1/txt/1/f/i/config/hbw'
 - topic: /j1/txt/1/f/o/order
   qos: 1
   retain: 0
-  schema: j1_txt_1_f_o_order.schema.json
+  schema: wildcard.schema.json
   description: Order commands for processing tasks and workflow execution
 - topic: /j1/txt/1/f/o/stock
   qos: 1
   retain: 0
-  schema: j1_txt_1_f_o_order.schema.json
+  schema: wildcard.schema.json
   description: 'Topic: /j1/txt/1/f/o/stock'
 - topic: /j1/txt/1/f/o/status
   qos: 1
   retain: 0
-  schema: j1_txt_1_f_o_order.schema.json
+  schema: wildcard.schema.json
   description: 'Topic: /j1/txt/1/f/o/status'
 - topic: /j1/txt/1/f/o/error
   qos: 1
   retain: 0
-  schema: j1_txt_1_f_o_order.schema.json
+  schema: wildcard.schema.json
   description: 'Topic: /j1/txt/1/f/o/error'
 - topic: /j1/txt/1/c/bme680
   qos: 1
@@ -73,7 +73,7 @@ txt_topics:
 - topic: /j1/txt/1/i/broadcast
   qos: 1
   retain: 0
-  schema: j1_txt_1_i_bme680.schema.json
+  schema: j1_txt_1_i_broadcast.schema.json
   description: 'Topic: /j1/txt/1/i/broadcast'
 - topic: /j1/txt/1/i/cam
   qos: 2
@@ -88,5 +88,5 @@ txt_topics:
 - topic: /j1/txt/1/o/broadcast
   qos: 1
   retain: 0
-  schema: j1_txt_1_o_ptu.schema.json
+  schema: wildcard.schema.json
   description: 'Topic: /j1/txt/1/o/broadcast'

@@ -1,0 +1,14 @@
+{
+  "headerId": 0,
+  "loads": [],
+  "actionState": null,
+  "serialNumber": "SVR3QA2098",
+  "timestamp": "2025-10-01T09:35:21.727Z",
+  "errors": [],
+  "orderUpdateId": 0,
+  "orderId": 0,
+  "paused": false,
+  "metadata": {
+    "opcuaState": "connected"
+  }
+}

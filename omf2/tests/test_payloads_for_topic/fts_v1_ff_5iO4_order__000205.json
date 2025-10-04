@@ -1,0 +1,61 @@
+{
+  "timestamp": "2025-10-01T11:20:28.387Z",
+  "orderId": "aa74c367-dfc6-4c3b-b669-af293ea717f1",
+  "orderUpdateId": 10,
+  "nodes": [
+    {
+      "id": "SVR4H76530",
+      "linkedEdges": [
+        "SVR4H76530-2"
+      ]
+    },
+    {
+      "id": "2",
+      "linkedEdges": [
+        "SVR4H76530-2",
+        "2-SVR4H73275"
+      ],
+      "action": {
+        "id": "8ad695fd-08c1-494e-8350-f3ef452c69e1",
+        "type": "TURN",
+        "metadata": {
+          "direction": "LEFT"
+        }
+      }
+    },
+    {
+      "id": "SVR4H73275",
+      "linkedEdges": [
+        "2-SVR4H73275"
+      ],
+      "action": {
+        "type": "DOCK",
+        "id": "171d6d8d-c150-4f61-b272-734baf699ce7",
+        "metadata": {
+          "loadId": "040a8dca341291",
+          "loadType": "RED",
+          "loadPosition": "1"
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "SVR4H76530-2",
+      "length": 380,
+      "linkedNodes": [
+        "SVR4H76530",
+        "2"
+      ]
+    },
+    {
+      "id": "2-SVR4H73275",
+      "length": 380,
+      "linkedNodes": [
+        "2",
+        "SVR4H73275"
+      ]
+    }
+  ],
+  "serialNumber": "5iO4"
+}

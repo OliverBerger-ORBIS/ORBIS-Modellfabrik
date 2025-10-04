@@ -1,0 +1,16 @@
+{
+  "serialNumber": "5iO4",
+  "timestamp": "2025-10-01T09:39:44.957Z",
+  "actions": [
+    {
+      "actionId": "784fcbdb-2aea-40ae-9431-a4f95d610ebe",
+      "actionType": "clearLoadHandler",
+      "metadata": {
+        "loadDropped": true,
+        "loadType": "WHITE",
+        "loadId": "047b8bca341291",
+        "loadPosition": "1"
+      }
+    }
+  ]
+}

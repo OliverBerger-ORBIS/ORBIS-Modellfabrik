@@ -1,0 +1,188 @@
+{
+  "headerId": 52,
+  "loads": [],
+  "actionState": {
+    "id": "b021daaf-b711-4ed0-bf94-08b0088b5633",
+    "state": "FINISHED",
+    "command": "setCalibrationValues",
+    "metadata": {
+      "references": [
+        {
+          "referenceKey": "cal__badTime",
+          "referenceValue": 10
+        },
+        {
+          "referenceKey": "cal__cameraTime",
+          "referenceValue": 745
+        },
+        {
+          "referenceKey": "cal__defBadTime",
+          "referenceValue": 1000
+        },
+        {
+          "referenceKey": "cal__defCameraTime",
+          "referenceValue": 745
+        },
+        {
+          "referenceKey": "cal__defGripperDownTime",
+          "referenceValue": 700
+        },
+        {
+          "referenceKey": "cal__defMidLightGateTime",
+          "referenceValue": 20
+        },
+        {
+          "referenceKey": "cal__defPreFaultCheckTime",
+          "referenceValue": 500
+        },
+        {
+          "referenceKey": "cal__defPrePhotoTime",
+          "referenceValue": 500
+        },
+        {
+          "referenceKey": "cal__defProcessEndTime",
+          "referenceValue": 2000
+        },
+        {
+          "referenceKey": "cal__defVacuumGenerateTime",
+          "referenceValue": 200
+        },
+        {
+          "referenceKey": "cal__defVacuumReleaseTime",
+          "referenceValue": 200
+        },
+        {
+          "referenceKey": "cal__gripperDownTime",
+          "referenceValue": 700
+        },
+        {
+          "referenceKey": "cal__midLightGateTime",
+          "referenceValue": 20
+        },
+        {
+          "referenceKey": "cal__preFaultCheckTime",
+          "referenceValue": 500
+        },
+        {
+          "referenceKey": "cal__prePhotoTime",
+          "referenceValue": 500
+        },
+        {
+          "referenceKey": "cal__processEndTime",
+          "referenceValue": 2000
+        },
+        {
+          "referenceKey": "cal__vacuumGenerateTime",
+          "referenceValue": 200
+        },
+        {
+          "referenceKey": "cal__vacuumReleaseTime",
+          "referenceValue": 200
+        }
+      ]
+    }
+  },
+  "serialNumber": "SVR4H76530",
+  "timestamp": "2025-10-01T10:57:08.544Z",
+  "errors": [],
+  "orderUpdateId": 0,
+  "paused": true,
+  "metadata": {
+    "opcuaState": "connected"
+  },
+  "operatingMode": "TEACHIN",
+  "information": [
+    {
+      "infoType": "calibration_data",
+      "infoLevel": "DEBUG",
+      "infoReferences": [
+        {
+          "referenceKey": "cal__cameraTime",
+          "referenceValue": 745
+        },
+        {
+          "referenceKey": "cal__badTime",
+          "referenceValue": 10
+        },
+        {
+          "referenceKey": "cal__processEndTime",
+          "referenceValue": 2000
+        },
+        {
+          "referenceKey": "cal__midLightGateTime",
+          "referenceValue": 20
+        },
+        {
+          "referenceKey": "cal__gripperDownTime",
+          "referenceValue": 700
+        },
+        {
+          "referenceKey": "cal__vacuumReleaseTime",
+          "referenceValue": 200
+        },
+        {
+          "referenceKey": "cal__prePhotoTime",
+          "referenceValue": 500
+        },
+        {
+          "referenceKey": "cal__vacuumGenerateTime",
+          "referenceValue": 200
+        },
+        {
+          "referenceKey": "cal__preFaultCheckTime",
+          "referenceValue": 500
+        },
+        {
+          "referenceKey": "cal__defCameraTime",
+          "referenceValue": 745
+        },
+        {
+          "referenceKey": "cal__defBadTime",
+          "referenceValue": 1000
+        },
+        {
+          "referenceKey": "cal__defProcessEndTime",
+          "referenceValue": 2000
+        },
+        {
+          "referenceKey": "cal__defMidLightGateTime",
+          "referenceValue": 20
+        },
+        {
+          "referenceKey": "cal__defPrePhotoTime",
+          "referenceValue": 500
+        },
+        {
+          "referenceKey": "cal__defGripperDownTime",
+          "referenceValue": 700
+        },
+        {
+          "referenceKey": "cal__defVacuumReleaseTime",
+          "referenceValue": 200
+        },
+        {
+          "referenceKey": "cal__defPreFaultCheckTime",
+          "referenceValue": 500
+        },
+        {
+          "referenceKey": "cal__defVacuumGenerateTime",
+          "referenceValue": 200
+        }
+      ]
+    },
+    {
+      "infoType": "calibration_status",
+      "infoLevel": "DEBUG",
+      "infoReferences": [
+        {
+          "referenceKey": "POSITIONS.AVAILABLE",
+          "referenceValue": "TO_CAMERA,TO_NIO_BIN,TO_PICKUP,CALIBRATION_TESTIMAGE"
+        },
+        {
+          "referenceKey": "POSITIONS.CURRENT",
+          "referenceValue": "TO_PICKUP"
+        }
+      ]
+    }
+  ]
+}

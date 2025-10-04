@@ -1,0 +1,77 @@
+{
+  "timestamp": "2025-10-01T11:34:57.849Z",
+  "orderId": "a2d2309a-6395-4f83-90de-b9edd85c5f02",
+  "orderUpdateId": 2,
+  "nodes": [
+    {
+      "id": "SVR4H73275",
+      "linkedEdges": [
+        "SVR4H73275-2"
+      ]
+    },
+    {
+      "id": "2",
+      "linkedEdges": [
+        "SVR4H73275-2",
+        "2-1"
+      ],
+      "action": {
+        "id": "abda008a-3abe-4d28-940e-23f710a18c52",
+        "type": "PASS"
+      }
+    },
+    {
+      "id": "1",
+      "linkedEdges": [
+        "2-1",
+        "1-SVR3QA0022"
+      ],
+      "action": {
+        "id": "c52bc411-56fd-47de-9db7-d6bab4455af5",
+        "type": "PASS"
+      }
+    },
+    {
+      "id": "SVR3QA0022",
+      "linkedEdges": [
+        "1-SVR3QA0022"
+      ],
+      "action": {
+        "type": "DOCK",
+        "id": "9d9938bb-af31-4b4a-a6b4-21e1f11a0b15",
+        "metadata": {
+          "loadId": "040a8dca341291",
+          "loadType": "RED",
+          "loadPosition": "1"
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "SVR4H73275-2",
+      "length": 380,
+      "linkedNodes": [
+        "SVR4H73275",
+        "2"
+      ]
+    },
+    {
+      "id": "2-1",
+      "length": 360,
+      "linkedNodes": [
+        "2",
+        "1"
+      ]
+    },
+    {
+      "id": "1-SVR3QA0022",
+      "length": 380,
+      "linkedNodes": [
+        "1",
+        "SVR3QA0022"
+      ]
+    }
+  ],
+  "serialNumber": "5iO4"
+}

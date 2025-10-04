@@ -28,7 +28,17 @@ from omf2.ui.main_dashboard import MainDashboard
 from omf2.ui.utils.ui_refresh import request_refresh, consume_refresh
 
 # Configure logging
+from omf2.common.logger import setup_file_logging
+log_dir = setup_file_logging()
 logger = get_logger("omf2.dashboard")
+logger.info(f"📝 OMF2 Logging aktiviert: {log_dir}")
+
+# Enable DEBUG logging for all OMF2 modules
+import logging
+logging.getLogger("omf2").setLevel(logging.DEBUG)
+logging.getLogger("omf2.ccu").setLevel(logging.DEBUG)
+logging.getLogger("omf2.admin").setLevel(logging.DEBUG)
+logging.getLogger("omf2.common").setLevel(logging.DEBUG)
 
 def cleanup_resources():
     """Cleanup resources on application exit"""

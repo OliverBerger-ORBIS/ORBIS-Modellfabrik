@@ -1,0 +1,18 @@
+{
+  "headerId": 1,
+  "loads": [],
+  "actionState": {
+    "id": "937396ff-4bdc-4dbe-98b8-742083abc7f3",
+    "state": "FINISHED",
+    "command": "factsheetRequest"
+  },
+  "serialNumber": "SVR4H76449",
+  "timestamp": "2025-10-01T11:04:26.012Z",
+  "errors": [],
+  "orderUpdateId": "0",
+  "orderId": "937396ff-4bdc-4dbe-98b8-742083abc7f3",
+  "paused": false,
+  "metadata": {
+    "opcuaState": "connected"
+  }
+}

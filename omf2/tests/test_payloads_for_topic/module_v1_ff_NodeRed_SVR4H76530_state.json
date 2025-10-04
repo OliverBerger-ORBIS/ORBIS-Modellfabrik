@@ -1,0 +1,16 @@
+{
+  "headerId": 2,
+  "serialNumber": "SVR4H76530",
+  "paused": false,
+  "actionState": {
+    "id": "SOME_ID",
+    "timestamp": "2025-10-01T06:47:39.294968Z",
+    "command": "factsheetRequest",
+    "state": "FINISHED"
+  },
+  "timestamp": "2025-10-01T06:47:39.294673Z",
+  "batteryState": {},
+  "orderUpdateId": 0,
+  "errors": [],
+  "orderId": ""
+}

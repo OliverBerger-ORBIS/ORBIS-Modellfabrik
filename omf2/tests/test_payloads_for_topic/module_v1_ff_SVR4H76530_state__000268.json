@@ -1,0 +1,26 @@
+{
+  "headerId": 48,
+  "loads": [
+    {
+      "loadType": "RED"
+    }
+  ],
+  "actionState": {
+    "command": "CHECK_QUALITY",
+    "id": "f86efb7f-1d8f-4e39-92f5-e3e46b72ece6",
+    "metadata": {
+      "type": "RED",
+      "workpieceId": "040a8dca341291"
+    },
+    "state": "RUNNING"
+  },
+  "serialNumber": "SVR4H76530",
+  "timestamp": "2025-10-01T11:40:07.108Z",
+  "errors": [],
+  "orderUpdateId": 0,
+  "orderId": "06dbdb8a-311e-4cf0-b76d-1366317cbccc",
+  "paused": false,
+  "metadata": {
+    "opcuaState": "connected"
+  }
+}

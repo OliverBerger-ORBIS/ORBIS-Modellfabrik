@@ -1,0 +1,10 @@
+{
+  "serialNumber": "SVR4H73275",
+  "timestamp": "2025-10-01T08:22:53.786Z",
+  "actions": [
+    {
+      "actionId": "09055af5-e3ec-4f15-9b0c-efc30119ddff",
+      "actionType": "reset"
+    }
+  ]
+}

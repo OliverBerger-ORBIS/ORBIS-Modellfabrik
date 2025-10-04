@@ -1,0 +1,14 @@
+{
+  "headerId": 0,
+  "loads": [],
+  "actionState": null,
+  "serialNumber": "SVR4H76449",
+  "timestamp": "2025-10-01T09:35:21.854Z",
+  "errors": [],
+  "orderUpdateId": 0,
+  "orderId": "",
+  "paused": false,
+  "metadata": {
+    "opcuaState": "connected"
+  }
+}

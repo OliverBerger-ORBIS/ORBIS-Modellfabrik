@@ -1,0 +1,22 @@
+{
+  "headerId": 267,
+  "loads": [],
+  "actionState": {
+    "state": "FINISHED",
+    "command": "RGB_NFC",
+    "id": "0",
+    "timestamp": "2025-10-01T11:14:59.723958Z",
+    "metadata": {
+      "type": "WHITE"
+    }
+  },
+  "serialNumber": "SVR4H73275",
+  "timestamp": "2025-10-01T11:15:00.745Z",
+  "errors": [],
+  "orderUpdateId": 0,
+  "orderId": "0",
+  "paused": false,
+  "metadata": {
+    "opcuaState": "connected"
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "actionStates": [
+    {
+      "result": "PASSED",
+      "id": "b9b2426f-3018-4037-ab62-58955468c226",
+      "timestamp": "2025-10-01T08:35:41.197329Z",
+      "metadata": {
+        "workpiece": {
+          "type": "BLUE",
+          "workpieceId": "04a189ca341290",
+          "state": "PROCESSED",
+          "history": [
+            {
+              "ts": 1759307587316,
+              "code": 400
+            },
+            {
+              "ts": 1759307620759,
+              "code": 700
+            },
+            {
+              "ts": 1759307661763,
+              "code": 600
+            },
+            {
+              "ts": 1759307700110,
+              "code": 200
+            }
+          ]
+        }
+      },
+      "command": "PICK",
+      "state": "FINISHED"
+    }
+  ],
+  "actionState": {
+    "result": "PASSED",
+    "command": "PICK",
+    "id": "b9b2426f-3018-4037-ab62-58955468c226",
+    "timestamp": "2025-10-01T08:35:41.197329Z",
+    "state": "FINISHED"
+  },
+  "batteryState": {},
+  "errors": [],
+  "orderUpdateId": 15,
+  "paused": false,
+  "information": [],
+  "operatingMode": "AUTOMATIC",
+  "serialNumber": "SVR4H73275",
+  "timestamp": "2025-10-01T08:35:41.197639Z",
+  "headerId": 26,
+  "orderId": "591be086-e66f-4633-8496-e19ade9d414b"
+}

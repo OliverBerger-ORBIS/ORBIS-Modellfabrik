@@ -1,0 +1,12 @@
+{
+  "timestamp": "2025-10-01T09:57:48.837Z",
+  "orderId": "0",
+  "orderUpdateId": 1,
+  "action": {
+    "id": "0",
+    "command": "RGB_NFC",
+    "metadata": {
+      "type": "RED"
+    }
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "headerId": 135,
+  "loads": [
+    {
+      "loadType": "UNKNOWN"
+    }
+  ],
+  "actionState": null,
+  "serialNumber": "SVR4H73275",
+  "timestamp": "2025-10-01T11:33:57.970Z",
+  "errors": [
+    {}
+  ],
+  "orderUpdateId": 0,
+  "orderId": "0",
+  "paused": false,
+  "metadata": {
+    "opcuaState": "connected"
+  }
+}

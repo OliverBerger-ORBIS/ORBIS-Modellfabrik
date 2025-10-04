@@ -1,0 +1,32 @@
+{
+  "serialNumber": "5iO4",
+  "waitingForLoadHandling": false,
+  "timestamp": "2025-10-01T09:35:42.403209Z",
+  "actionStates": [
+    {
+      "id": "1de2c1b5-1ae0-405b-a0fe-388f6f858604",
+      "state": "FINISHED",
+      "timestamp": "2025-10-01T09:35:42.402869Z",
+      "command": "findInitialDockPosition"
+    }
+  ],
+  "lastNodeSequenceId": 0,
+  "orderId": "",
+  "edgeStates": [],
+  "load": [],
+  "lastNodeId": "SVR4H73275",
+  "nodeStates": [],
+  "headerId": 303,
+  "driving": true,
+  "orderUpdateId": 0,
+  "errors": [],
+  "lastCode": "",
+  "paused": false,
+  "batteryState": {
+    "charging": false,
+    "maxVolt": 9.1,
+    "minVolt": 7.84,
+    "percentage": 84,
+    "currentVoltage": 8.9
+  }
+}

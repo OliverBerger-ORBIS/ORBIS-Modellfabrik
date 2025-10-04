@@ -1,0 +1,20 @@
+{
+  "headerId": 1102,
+  "loads": [
+    {
+      "type": "BLUE"
+    }
+  ],
+  "actionState": null,
+  "serialNumber": "SVR4H73275",
+  "timestamp": "2025-10-01T10:06:01.655Z",
+  "errors": [
+    {}
+  ],
+  "orderUpdateId": 0,
+  "orderId": "0",
+  "paused": false,
+  "metadata": {
+    "opcuaState": "connected"
+  }
+}

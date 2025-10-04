@@ -1,0 +1,13 @@
+{
+  "timestamp": "2025-10-01T10:12:28.788Z",
+  "serialNumber": "SVR3QA0022",
+  "orderId": "0f77cfd1-c4ec-4e5f-8262-d9de2add939a",
+  "orderUpdateId": 1,
+  "action": {
+    "id": "261b0b0e-2e36-496c-b023-6f7c3742565b",
+    "command": "DROP",
+    "metadata": {
+      "type": "RED"
+    }
+  }
+}
