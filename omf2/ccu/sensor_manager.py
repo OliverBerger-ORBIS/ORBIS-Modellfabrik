@@ -138,26 +138,18 @@ class SensorManager:
         if not payload:
             return {}
         
-        logger.debug(f"🔍 SENSOR DEBUG: Raw payload keys: {list(payload.keys())}")
-        logger.debug(f"🔍 SENSOR DEBUG: Raw payload structure: {payload}")
-        
-        # DEBUG: Print to console as well (nur bei Debug-Level)
-        if logger.isEnabledFor(logging.DEBUG):
-            print(f"🔍 SENSOR DEBUG: Raw payload keys: {list(payload.keys())}")
-            print(f"🔍 SENSOR DEBUG: Raw payload: {payload}")
+        # Payload-Struktur wird nur bei Debug-Level geloggt
+        logger.debug(f"Raw payload keys: {list(payload.keys())}")
+        logger.debug(f"Raw payload structure: {payload}")
         
         # Payload ist bereits ein Dict - keine JSON-Parsing nötig!
         sensor_payload = payload
         
-        logger.debug(f"🔍 SENSOR DEBUG: Processing sensor payload for {topic}: {sensor_payload}")
-        if logger.isEnabledFor(logging.DEBUG):
-            print(f"🔍 SENSOR DEBUG: Processing sensor payload for {topic}: {sensor_payload}")
+        logger.debug(f"Processing sensor payload for {topic}: {sensor_payload}")
         
         # Check if payload is empty (common in live MQTT data)
         if not sensor_payload or sensor_payload == {}:
-            logger.debug(f"🔍 SENSOR DEBUG: Empty payload for {topic} - returning fallback data")
-            if logger.isEnabledFor(logging.DEBUG):
-                print(f"🔍 SENSOR DEBUG: Empty payload for {topic} - returning fallback data")
+            logger.debug(f"Empty payload for {topic} - returning fallback data")
             return {
                 'raw_data': {},
                 'timestamp': sensor_payload.get('ts', ''),
@@ -169,14 +161,12 @@ class SensorManager:
         try:
             # Validate payload using Registry Manager (Schema-based) - like SchemaTester
             validation_result = self.registry_manager.validate_topic_payload(topic, sensor_payload)
-            logger.info(f"🔍 SENSOR DEBUG: Registry validation for {topic}: {validation_result}")
-            print(f"🔍 SENSOR DEBUG: Registry validation for {topic}: {validation_result}")
+            logger.debug(f"Registry validation for {topic}: {validation_result}")
             
             # Extract validated payload
             if validation_result.get("valid", False):
                 validated_payload = sensor_payload  # Use extracted payload
-                logger.info(f"🔍 SENSOR DEBUG: Validated payload for {topic}: {validated_payload}")
-                print(f"🔍 SENSOR DEBUG: Validated payload for {topic}: {validated_payload}")
+                logger.debug(f"Validated payload for {topic}: {validated_payload}")
                 
                 # Schema-based field extraction based on topic
                 if "/bme680" in topic:

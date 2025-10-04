@@ -158,7 +158,7 @@ class CcuModuleManager:
             # (Business-Manager Pattern: direkte Payload-Verarbeitung)
             
             # DEBUG: Log payload structure
-            logger.debug(f"🔍 DEBUG: Module {module_id} payload keys: {list(payload.keys())}")
+            logger.debug(f"Module {module_id} payload keys: {list(payload.keys())}")
             
             # Extract connection state from payload (Business-Manager Pattern)
             if "/connection" in topic:
@@ -166,7 +166,7 @@ class CcuModuleManager:
                 if "connected" in payload:
                     connected = payload.get("connected", False)
                     status_store[module_id]["connected"] = connected
-                    logger.debug(f"🔍 DEBUG: Module {module_id} connection state from payload: {connected}")
+                    logger.debug(f"Module {module_id} connection state from payload: {connected}")
                 else:
                     logger.warning(f"⚠️ Module {module_id} connection message without 'connected' field: {list(payload.keys())}")
                     
@@ -175,7 +175,7 @@ class CcuModuleManager:
                 if "available" in payload:
                     available = payload.get("available")
                     status_store[module_id]["available"] = available
-                    logger.debug(f"🔍 DEBUG: Module {module_id} available state from payload: {available}")
+                    logger.debug(f"Module {module_id} available state from payload: {available}")
                 else:
                     logger.warning(f"⚠️ Module {module_id} state message without 'available' field: {list(payload.keys())}")
             
