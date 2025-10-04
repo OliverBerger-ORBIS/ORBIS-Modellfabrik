@@ -66,6 +66,10 @@ class CcuMqttClient:
         from collections import defaultdict, deque
         self.topic_buffers = defaultdict(lambda: deque(maxlen=1000))
         
+        # Callback-Handler für Manager-Integration (thread-safe)
+        self._callbacks_lock = threading.Lock()
+        self._message_callbacks: List[Callable[[str, Dict[str, Any]], None]] = []
+        
         # Published/Subscribed Topics aus Registry
         self.published_topics = self._get_published_topics()
         self.subscribed_topics = self._get_subscribed_topics()
@@ -401,6 +405,33 @@ class CcuMqttClient:
             logger.error(f"❌ CCU MQTT Client failed to reconnect to {new_environment}")
         
         return success
+    
+    def register_message_callback(self, callback: Callable[[str, Dict[str, Any]], None]) -> None:
+        """
+        Register callback for MQTT message processing
+        
+        Callbacks are called for every received MQTT message with (topic, payload)
+        Use this to integrate managers that need to process messages in real-time.
+        
+        Args:
+            callback: Function(topic: str, payload: Dict) to call on message
+        """
+        with self._callbacks_lock:
+            if callback not in self._message_callbacks:
+                self._message_callbacks.append(callback)
+                logger.info(f"📞 Registered message callback: {callback.__name__ if hasattr(callback, '__name__') else 'anonymous'}")
+    
+    def unregister_message_callback(self, callback: Callable[[str, Dict[str, Any]], None]) -> None:
+        """
+        Unregister callback for MQTT message processing
+        
+        Args:
+            callback: Callback function to remove
+        """
+        with self._callbacks_lock:
+            if callback in self._message_callbacks:
+                self._message_callbacks.remove(callback)
+                logger.info(f"📞 Unregistered message callback: {callback.__name__ if hasattr(callback, '__name__') else 'anonymous'}")
 
     def get_connection_info(self) -> Dict[str, Any]:
         """
@@ -569,6 +600,14 @@ class CcuMqttClient:
                 
                 with self._buffer_lock:
                     self.topic_buffers[topic].append(message)
+                
+                # Execute registered callbacks (thread-safe)
+                with self._callbacks_lock:
+                    for callback in self._message_callbacks:
+                        try:
+                            callback(topic, message)
+                        except Exception as e:
+                            logger.error(f"❌ Callback error for {topic}: {e}")
                 
                 logger.debug(f"📥 Received on {topic}: {message}")
                 

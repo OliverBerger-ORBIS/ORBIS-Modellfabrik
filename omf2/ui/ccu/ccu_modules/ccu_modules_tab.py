@@ -69,7 +69,7 @@ def render_ccu_modules_tab(ccu_gateway=None, registry_manager=None):
 
 
 def _show_module_overview_table(ccu_gateway):
-    """Show Module Overview Table - ECHTE MQTT-Daten vom ccu_gateway mit Module Manager"""
+    """Show Module Overview Table - ECHTE MQTT-Daten vom Module Manager (State-Holder Pattern)"""
     try:
         logger.info("📊 Showing Module Overview Table")
         
@@ -82,29 +82,25 @@ def _show_module_overview_table(ccu_gateway):
             st.info("📋 Keine Module konfiguriert")
             return
         
-        # Initialize module status store in session state
-        if "ccu_module_status_store" not in st.session_state:
-            st.session_state["ccu_module_status_store"] = {}
+        # Get current status from manager's internal state (State-Holder Pattern)
+        # UI liest NUR aus dem Manager, nie direkt vom MQTT Client!
+        status_store = module_manager.get_all_module_status()
         
-        # ALWAYS process module messages and update status store (like OMF)
-        # This ensures real-time updates from MQTT buffers
-        status_store = module_manager.process_module_messages(ccu_gateway)
-        st.session_state["ccu_module_status_store"] = status_store
-        
-        # Display real-time status info with refresh indicator
+        # Display real-time status info
         if status_store:
             st.info(f"📊 Real-time Status: {len(status_store)} modules with live data")
-            st.success("✅ **Status wird automatisch aus MQTT-Nachrichten aktualisiert**")
+            st.success("✅ **Status wird automatisch via MQTT Callbacks aktualisiert**")
         else:
             st.warning("⚠️ Keine Module-Status-Daten verfügbar")
+            st.info("💡 Tipp: Manager empfängt Daten automatisch via MQTT Callbacks")
         
         module_table_data = []
         for module_id, module_info in modules.items():
             if not module_info.get("enabled", True):
                 continue
             
-            # Get real-time status from Module Manager
-            real_time_status = module_manager.get_module_status(module_id, status_store)
+            # Get real-time status from Module Manager (State-Holder Pattern)
+            real_time_status = module_manager.get_module_status(module_id)
             
             # Get module icon and display name from Module Manager (Registry-based)
             icon_display = module_manager.get_module_icon(module_id)
@@ -174,19 +170,14 @@ def _is_module_configured(module_id, ccu_gateway):
 
 
 def _refresh_module_status(ccu_gateway):
-    """Refresh module status from MQTT data"""
+    """Refresh module status from manager's internal state"""
     try:
         logger.info("🔄 Refreshing module status")
         
-        # Initialize Module Manager
-        module_manager = get_ccu_module_manager()
-        
-        # Process module messages and update status store
-        status_store = module_manager.process_module_messages(ccu_gateway)
-        st.session_state["ccu_module_status_store"] = status_store
-        
-        st.success("✅ Module status refreshed!")
-        logger.info(f"📊 Refreshed status for {len(status_store)} modules")
+        # Module Manager maintains state automatically via callbacks
+        # This just triggers a UI refresh
+        st.success("✅ Module status wird automatisch aktualisiert!")
+        logger.info("📊 Module status is automatically updated via MQTT callbacks")
         
         # CRITICAL: Request UI refresh to update the display
         from omf2.ui.utils.ui_refresh import request_refresh
@@ -208,8 +199,8 @@ def _show_module_statistics(ccu_gateway):
         # Get modules from Module Manager
         modules = module_manager.get_all_modules()
         
-        # Get status store
-        status_store = st.session_state.get("ccu_module_status_store", {})
+        # Get status from manager's internal state
+        status_store = module_manager.get_all_module_status()
         
         # Calculate statistics
         total_modules = len(modules)

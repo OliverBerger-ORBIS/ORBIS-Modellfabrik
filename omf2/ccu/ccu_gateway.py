@@ -42,7 +42,32 @@ class CcuGateway:
             registry_manager=self.registry_manager
         )
         
+        # Setup Manager Integration (State-Holder Pattern)
+        self._setup_manager_integration()
+        
         logger.info("🏗️ CcuGateway initialized")
+    
+    def _setup_manager_integration(self):
+        """Setup Manager Integration with MQTT Client callbacks"""
+        try:
+            # Import managers
+            from omf2.ccu.sensor_manager import get_ccu_sensor_manager
+            from omf2.ccu.module_manager import get_ccu_module_manager
+            
+            # Get manager instances
+            sensor_manager = get_ccu_sensor_manager()
+            module_manager = get_ccu_module_manager()
+            
+            # Register callbacks with MQTT Client
+            if self.mqtt_client:
+                self.mqtt_client.register_message_callback(sensor_manager.process_sensor_message)
+                self.mqtt_client.register_message_callback(module_manager.process_module_message)
+                logger.info("✅ Manager integration setup complete (callbacks registered)")
+            else:
+                logger.warning("⚠️ MQTT Client not available for manager integration")
+                
+        except Exception as e:
+            logger.error(f"❌ Failed to setup manager integration: {e}")
     
     def publish_message(self, topic: str, message: Dict[str, Any], qos: int = 1, retain: bool = False) -> bool:
         """

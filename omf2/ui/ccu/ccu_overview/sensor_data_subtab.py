@@ -57,16 +57,20 @@ def _show_sensor_panels(ccu_gateway: CcuGateway, registry_manager):
     """Zeigt die Sensordaten-Panels mit echten MQTT-Daten - Business Logic über SensorManager"""
     logger.info("🌡️ Rendering Sensor Panels")
     try:
-        # Business Logic über SensorManager (Gateway-Pattern)
+        # Business Logic über SensorManager (State-Holder Pattern)
+        # UI liest NUR aus dem Manager, nie direkt vom MQTT Client!
         sensor_manager = get_ccu_sensor_manager()
-        sensor_data = sensor_manager.process_sensor_messages(ccu_gateway)
+        
+        # Get current sensor data from manager (thread-safe)
+        sensor_data = sensor_manager.get_all_sensor_data()
         
         # Zeige Sensor-Status
         if sensor_data:
             st.success(f"✅ **{len(sensor_data)} Sensor-Topics mit Live-Daten verfügbar**")
-            logger.info(f"Sensor data processed: {len(sensor_data)} topics")
+            logger.info(f"Sensor data from manager: {len(sensor_data)} topics")
         else:
             st.warning("⚠️ Keine Sensor-Daten verfügbar")
+            st.info("💡 Tipp: Manager empfängt Daten automatisch via MQTT Callbacks")
         
         # Zeige Sensor-Panels mit verarbeiteten Daten
         bme680_data = sensor_data.get("/j1/txt/1/i/bme680", {})
@@ -423,7 +427,8 @@ def _show_sensor_statistics(ccu_gateway: CcuGateway):
     """Show sensor statistics"""
     try:
         sensor_manager = get_ccu_sensor_manager()
-        sensor_data = sensor_manager.process_sensor_messages(ccu_gateway)
+        # Get data from manager's internal state
+        sensor_data = sensor_manager.get_all_sensor_data()
         stats = sensor_manager.get_sensor_statistics(sensor_data)
         
         st.info("📊 **Sensor Statistics**")

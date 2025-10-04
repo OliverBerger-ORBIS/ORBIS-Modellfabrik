@@ -2,8 +2,14 @@
 """
 CCU Sensor Manager - Business Logic für Sensor-Daten-Verarbeitung
 Schema-basierte Verarbeitung von BME680, LDR, CAM Topics
+
+State-Holder Pattern:
+- Hält aktuellen Sensor-State intern vor (thread-safe)
+- Empfängt MQTT-Nachrichten via Callbacks vom MQTT Client
+- Bietet thread-safe Zugriffsmethoden für UI (get_sensor_data)
 """
 
+import threading
 from typing import Dict, List, Any, Optional
 from omf2.common.logger import get_logger
 from omf2.common.message_manager import get_ccu_message_manager
@@ -16,15 +22,72 @@ class SensorManager:
     """
     CCU Sensor Manager - Business Logic für Sensor-Daten-Verarbeitung
     
-    Verarbeitet Sensor-Messages aus MQTT-Buffers mit Schema-basierter Feld-Extraktion
-    Analog zu ModuleManager für Module-Status-Verarbeitung
+    State-Holder Pattern:
+    - Verarbeitet Sensor-Messages aus MQTT via Callbacks
+    - Hält aktuellen Sensor-State intern (thread-safe)
+    - Bietet Zugriffsmethoden für UI
     """
     
     def __init__(self):
-        """Initialize Sensor Manager"""
+        """Initialize Sensor Manager with state-holding pattern"""
         self.registry_manager = get_registry_manager()
         self.message_manager = get_ccu_message_manager()
-        logger.info("🌡️ CCU Sensor Manager initialized with MessageManager")
+        
+        # Thread-safe state storage
+        self._state_lock = threading.Lock()
+        self._sensor_state: Dict[str, Any] = {}
+        
+        logger.info("🌡️ CCU Sensor Manager initialized with state-holding pattern")
+    
+    def process_sensor_message(self, topic: str, payload: Dict[str, Any]) -> None:
+        """
+        Process single sensor message from MQTT callback
+        
+        Args:
+            topic: MQTT topic
+            payload: Message payload
+        """
+        try:
+            if not self._is_sensor_topic(topic):
+                return
+            
+            logger.debug(f"📡 Processing sensor message: {topic}")
+            
+            # Extract and validate sensor data
+            sensor_data = self._extract_sensor_data_from_payload(topic, payload)
+            
+            if sensor_data:
+                # Update internal state (thread-safe)
+                with self._state_lock:
+                    self._sensor_state[topic] = sensor_data
+                    logger.debug(f"✅ Updated sensor state for {topic}")
+            
+        except Exception as e:
+            logger.error(f"❌ Failed to process sensor message for {topic}: {e}")
+    
+    def get_sensor_data(self, topic: Optional[str] = None) -> Dict[str, Any]:
+        """
+        Get current sensor data (thread-safe)
+        
+        Args:
+            topic: Optional specific sensor topic, if None returns all
+            
+        Returns:
+            Current sensor data
+        """
+        with self._state_lock:
+            if topic:
+                return self._sensor_state.get(topic, {}).copy()
+            return {k: v.copy() for k, v in self._sensor_state.items()}
+    
+    def get_all_sensor_data(self) -> Dict[str, Any]:
+        """
+        Get all current sensor data (thread-safe)
+        
+        Returns:
+            All sensor data by topic
+        """
+        return self.get_sensor_data()
     
     def process_sensor_messages(self, ccu_gateway) -> Dict[str, Any]:
         """
@@ -87,6 +150,64 @@ class SensorManager:
         ]
         
         return topic in sensor_topics
+    
+    def _extract_sensor_data_from_payload(self, topic: str, payload: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Extract sensor data from single payload
+        
+        Args:
+            topic: MQTT topic
+            payload: Message payload
+            
+        Returns:
+            Processed sensor data dictionary
+        """
+        if not payload:
+            return {}
+        
+        logger.debug(f"🔍 SENSOR: Extracting from payload for {topic}")
+        
+        # Remove metadata fields that are not part of the sensor schema
+        metadata_fields = ['timestamp', 'ts']
+        sensor_payload = {k: v for k, v in payload.items() if k not in metadata_fields}
+        
+        # Use Registry Manager for schema-based validation
+        try:
+            validation_result = self.registry_manager.validate_topic_payload(topic, sensor_payload)
+            
+            if validation_result.get("valid", False):
+                validated_payload = sensor_payload
+                
+                # Schema-based field extraction based on topic
+                if "/bme680" in topic:
+                    return {
+                        "temperature": validated_payload.get("t", 0.0),
+                        "humidity": validated_payload.get("h", 0.0),
+                        "pressure": validated_payload.get("p", 0.0),
+                        "air_quality": validated_payload.get("iaq", 0.0),
+                        "timestamp": payload.get("timestamp", ""),
+                    }
+                elif "/ldr" in topic:
+                    return {
+                        "light": validated_payload.get("ldr", 0.0),
+                        "timestamp": payload.get("timestamp", ""),
+                    }
+                elif "/cam" in topic:
+                    return {
+                        "image_data": validated_payload.get("data", ""),
+                        "timestamp": validated_payload.get("ts", payload.get("timestamp", "")),
+                    }
+            else:
+                logger.warning(f"⚠️ Payload validation failed for {topic}")
+                
+        except Exception as e:
+            logger.error(f"❌ Registry validation error for {topic}: {e}")
+        
+        # Fallback for unknown sensor topics or validation errors
+        return {
+            "raw_data": payload,
+            "timestamp": payload.get("timestamp", ""),
+        }
     
     def _extract_sensor_data(self, topic: str, messages: List[Dict]) -> Dict[str, Any]:
         """

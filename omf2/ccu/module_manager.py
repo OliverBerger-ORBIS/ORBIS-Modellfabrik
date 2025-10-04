@@ -1,11 +1,16 @@
 #!/usr/bin/env python3
 """
 CCU Module Manager - Business-Logik für Module-Status-Verarbeitung
-Entspricht der overview_module_status.py Funktionalität, aber für CCU
+
+State-Holder Pattern:
+- Hält aktuellen Module-Status intern vor (thread-safe)
+- Empfängt MQTT-Nachrichten via Callbacks vom MQTT Client
+- Bietet thread-safe Zugriffsmethoden für UI (get_module_status)
 """
 
 import json
 import time
+import threading
 from typing import Dict, List, Any, Optional
 from omf2.common.logger import get_logger
 from omf2.registry.manager.registry_manager import get_registry_manager
@@ -18,16 +23,16 @@ class CcuModuleManager:
     """
     CCU Module Manager - Business-Logik für Module-Status-Verarbeitung
     
-    Verantwortlichkeiten:
-    - Real-time Status-Verarbeitung
-    - Module-Status-Caching (Session State)
+    State-Holder Pattern:
+    - Real-time Status-Verarbeitung via MQTT Callbacks
+    - Thread-safe Module-Status-Caching
     - Business-Logik für Connection/Availability
     - Integration mit CCU Gateway
     """
     
     def __init__(self, registry_manager=None):
         """
-        Initialize CCU Module Manager
+        Initialize CCU Module Manager with state-holding pattern
         
         Args:
             registry_manager: Registry Manager instance
@@ -35,10 +40,107 @@ class CcuModuleManager:
         self.registry_manager = registry_manager or get_registry_manager()
         self._initialized = False
         
+        # Thread-safe state storage
+        self._state_lock = threading.Lock()
+        self._module_state: Dict[str, Dict[str, Any]] = {}
+        
         # Module configuration and icons (NO HARDCODED STRINGS - loaded from Registry)
         self.MODULE_ICONS = self._load_module_icons_from_registry()
         
-        logger.info("🏗️ CCU Module Manager initialized")
+        logger.info("🏗️ CCU Module Manager initialized with state-holding pattern")
+    
+    def process_module_message(self, topic: str, payload: Dict[str, Any]) -> None:
+        """
+        Process single module message from MQTT callback
+        
+        Args:
+            topic: MQTT topic
+            payload: Message payload
+        """
+        try:
+            # Extract module ID from topic
+            module_id = self._extract_module_id_from_topic(topic)
+            if not module_id:
+                return
+            
+            logger.debug(f"📡 Processing module message for {module_id}: {topic}")
+            
+            # Create message data structure
+            message_data = {
+                "topic": topic,
+                "payload": payload,
+                "timestamp": payload.get("timestamp", time.time())
+            }
+            
+            # Copy fields from payload to message_data (MQTT Client pattern)
+            if isinstance(payload, dict):
+                for key, value in payload.items():
+                    if key not in message_data:
+                        message_data[key] = value
+            
+            # Update module state (thread-safe)
+            with self._state_lock:
+                if module_id not in self._module_state:
+                    self._module_state[module_id] = {
+                        "connected": False,
+                        "available": "Unknown",
+                        "message_count": 0,
+                        "last_update": "Never"
+                    }
+                
+                self._update_module_state_internal(module_id, message_data)
+                logger.debug(f"✅ Updated module state for {module_id}")
+            
+        except Exception as e:
+            logger.error(f"❌ Failed to process module message for {topic}: {e}")
+    
+    def _update_module_state_internal(self, module_id: str, message_data: Dict[str, Any]) -> None:
+        """
+        Internal method to update module state (called within lock)
+        
+        Args:
+            module_id: Module identifier
+            message_data: Message data from MQTT
+        """
+        try:
+            topic = message_data.get("topic", "")
+            
+            if "/connection" in topic:
+                # Connection message
+                connection_state = message_data.get("connectionState")
+                if connection_state is not None:
+                    connected = connection_state.lower() in ["connected", "online", "active"]
+                    self._module_state[module_id]["connected"] = connected
+                    
+            elif "/state" in topic:
+                # State message
+                available = message_data.get("available")
+                if available is not None:
+                    self._module_state[module_id]["available"] = available
+                else:
+                    # Fallback to metadata.opcuaState
+                    metadata = message_data.get("metadata", {})
+                    opcua_state = metadata.get("opcuaState")
+                    if opcua_state is not None:
+                        self._module_state[module_id]["available"] = opcua_state
+            
+            # Update message count and timestamp
+            self._module_state[module_id]["message_count"] += 1
+            from datetime import datetime
+            self._module_state[module_id]["last_update"] = datetime.now().strftime('%H:%M:%S')
+            
+        except Exception as e:
+            logger.error(f"❌ Failed to update internal module state for {module_id}: {e}")
+    
+    def get_all_module_status(self) -> Dict[str, Any]:
+        """
+        Get all current module status (thread-safe)
+        
+        Returns:
+            All module status data
+        """
+        with self._state_lock:
+            return {k: v.copy() for k, v in self._module_state.items()}
     
     def _load_module_icons_from_registry(self) -> Dict[str, str]:
         """Loads module icons from registry (NO HARDCODED STRINGS)."""
@@ -83,17 +185,30 @@ class CcuModuleManager:
             logger.error(f"❌ Failed to get modules: {e}")
             return {}
     
-    def get_module_status(self, module_id: str, status_store: Dict[str, Any]) -> Dict[str, Any]:
+    def get_module_status(self, module_id: str, status_store: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """
         Get real-time status for a specific module
         
         Args:
             module_id: Module identifier
-            status_store: Module status store from session state
+            status_store: Optional external status store (for backward compatibility)
             
         Returns:
             Module status information
         """
+        # Use internal state if no external store provided
+        if status_store is None:
+            with self._state_lock:
+                if module_id in self._module_state:
+                    return self._module_state[module_id].copy()
+                return {
+                    "connected": False,
+                    "available": "Unknown",
+                    "message_count": 0,
+                    "last_update": "Never"
+                }
+        
+        # Backward compatibility: use external store
         if module_id not in status_store:
             return {
                 "connected": False,
