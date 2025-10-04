@@ -61,12 +61,12 @@ class CcuModuleManager:
                 logger.debug(f"⚠️ Could not extract module ID from topic: {topic}")
                 return
             
-            logger.info(f"🔍 Processing module message for {module_id} from topic: {topic}")
+            logger.debug(f"🔍 Processing module message for {module_id} from topic: {topic}")
             
             # Update module status in State-Holder (mit Topic-Kontext)
             self.update_module_status(module_id, payload, self.module_status, topic)
             
-            logger.info(f"✅ Updated module state for {module_id}")
+            logger.debug(f"✅ Updated module state for {module_id}")
                 
         except Exception as e:
             logger.error(f"❌ Failed to process module message for topic {topic}: {e}")
@@ -85,7 +85,7 @@ class CcuModuleManager:
                 
                 # NO duplicate mapping by name - only use Module IDs
             
-            logger.info(f"📊 Loaded {len(module_icons)} module icons from Registry")
+            logger.debug(f"📊 Loaded {len(module_icons)} module icons from Registry")
             return module_icons
             
         except Exception as e:
@@ -107,7 +107,7 @@ class CcuModuleManager:
                 logger.warning("⚠️ No modules found in registry")
                 return {}
             
-            logger.info(f"📊 Loaded {len(modules)} modules from registry")
+            logger.debug(f"📊 Loaded {len(modules)} modules from registry")
             return modules
             
         except Exception as e:

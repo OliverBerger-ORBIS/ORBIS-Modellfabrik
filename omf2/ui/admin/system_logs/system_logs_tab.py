@@ -353,71 +353,81 @@ def _render_log_management(admin_gateway):
     st.subheader(f"{UISymbols.get_functional_icon('dashboard')} Current Log Levels")
     current_levels = get_current_log_levels()
     
-    # Core modules
-    st.markdown("**Core Modules**")
+    # Compact log levels display
+    st.markdown("**Current Log Levels**")
+    
+    # Core modules - compact format
     col1, col2 = st.columns(2)
     with col1:
-        st.metric("omf2", current_levels.get("omf2", "Unknown"))
-        st.metric("omf2.ccu", current_levels.get("omf2.ccu", "Unknown"))
-        st.metric("omf2.admin", current_levels.get("omf2.admin", "Unknown"))
+        st.text("Core Modules:")
+        st.text(f"• omf2: {current_levels.get('omf2', 'Unknown')}")
+        st.text(f"• omf2.ccu: {current_levels.get('omf2.ccu', 'Unknown')}")
+        st.text(f"• omf2.admin: {current_levels.get('omf2.admin', 'Unknown')}")
     
     with col2:
-        st.metric("omf2.common", current_levels.get("omf2.common", "Unknown"))
-        st.metric("omf2.ui", current_levels.get("omf2.ui", "Unknown"))
-        st.metric("omf2.nodered", current_levels.get("omf2.nodered", "Unknown"))
+        st.text("")  # Spacer
+        st.text(f"• omf2.common: {current_levels.get('omf2.common', 'Unknown')}")
+        st.text(f"• omf2.ui: {current_levels.get('omf2.ui', 'Unknown')}")
+        st.text(f"• omf2.nodered: {current_levels.get('omf2.nodered', 'Unknown')}")
     
-    # Business managers
-    st.markdown("**Business Managers**")
+    # Business managers - compact format
     col3, col4 = st.columns(2)
     with col3:
-        st.metric("sensor_manager", current_levels.get("omf2.ccu.sensor_manager", "Unknown"))
-        st.metric("module_manager", current_levels.get("omf2.ccu.module_manager", "Unknown"))
+        st.text("Business Managers:")
+        st.text(f"• sensor_manager: {current_levels.get('omf2.ccu.sensor_manager', 'Unknown')}")
+        st.text(f"• module_manager: {current_levels.get('omf2.ccu.module_manager', 'Unknown')}")
     
     with col4:
-        st.metric("ccu_mqtt_client", current_levels.get("omf2.ccu.ccu_mqtt_client", "Unknown"))
-        st.metric("admin_mqtt_client", current_levels.get("omf2.admin.admin_mqtt_client", "Unknown"))
+        st.text("MQTT Clients:")
+        st.text(f"• ccu_mqtt_client: {current_levels.get('omf2.ccu.ccu_mqtt_client', 'Unknown')}")
+        st.text(f"• admin_mqtt_client: {current_levels.get('omf2.admin.admin_mqtt_client', 'Unknown')}")
     
     # Quick debug controls
     st.subheader(f"{UISymbols.get_functional_icon('settings')} Quick Debug Controls")
     st.markdown("**Enable/disable debug logging for specific components**")
     
-    col1, col2, col3 = st.columns(3)
-    
+    # Compact debug controls
+    st.markdown("**Sensor Manager**")
+    col1, col2 = st.columns([1, 1])
     with col1:
-        st.markdown("**Sensor Manager**")
-        if st.button(f"{UISymbols.get_functional_icon('search')} Enable Sensor Debug", key="enable_sensor_debug"):
+        if st.button("🔍 Enable Sensor Debug", key="enable_sensor_debug"):
             enable_sensor_debug()
-            st.success(f"{UISymbols.get_status_icon('success')} Sensor debug enabled")
-            st.rerun()
-        
-        if st.button(f"{UISymbols.get_status_icon('info')} Disable Sensor Debug", key="disable_sensor_debug"):
-            set_debug_mode("omf2.ccu.sensor_manager", False)
-            st.info(f"{UISymbols.get_status_icon('info')} Sensor debug disabled")
+            st.success("✅ Sensor debug enabled")
             st.rerun()
     
     with col2:
-        st.markdown("**Module Manager**")
-        if st.button(f"{UISymbols.get_functional_icon('search')} Enable Module Debug", key="enable_module_debug"):
-            enable_module_debug()
-            st.success(f"{UISymbols.get_status_icon('success')} Module debug enabled")
-            st.rerun()
-        
-        if st.button(f"{UISymbols.get_status_icon('info')} Disable Module Debug", key="disable_module_debug"):
-            set_debug_mode("omf2.ccu.module_manager", False)
-            st.info(f"{UISymbols.get_status_icon('info')} Module debug disabled")
+        if st.button("ℹ️ Disable Sensor Debug", key="disable_sensor_debug"):
+            set_debug_mode("omf2.ccu.sensor_manager", False)
+            st.info("ℹ️ Sensor debug disabled")
             st.rerun()
     
+    st.markdown("**Module Manager**")
+    col3, col4 = st.columns([1, 1])
     with col3:
-        st.markdown("**MQTT Clients**")
-        if st.button(f"{UISymbols.get_functional_icon('search')} Enable MQTT Debug", key="enable_mqtt_debug"):
-            enable_mqtt_debug()
-            st.success(f"{UISymbols.get_status_icon('success')} MQTT debug enabled")
+        if st.button("🔍 Enable Module Debug", key="enable_module_debug"):
+            enable_module_debug()
+            st.success("✅ Module debug enabled")
             st.rerun()
-        
-        if st.button(f"{UISymbols.get_status_icon('info')} Disable MQTT Debug", key="disable_mqtt_debug"):
+    
+    with col4:
+        if st.button("ℹ️ Disable Module Debug", key="disable_module_debug"):
+            set_debug_mode("omf2.ccu.module_manager", False)
+            st.info("ℹ️ Module debug disabled")
+            st.rerun()
+    
+    st.markdown("**MQTT Clients**")
+    col5, col6 = st.columns([1, 1])
+    with col5:
+        if st.button("🔍 Enable MQTT Debug", key="enable_mqtt_debug"):
+            enable_mqtt_debug()
+            st.success("✅ MQTT debug enabled")
+            st.rerun()
+    
+    with col6:
+        if st.button("ℹ️ Disable MQTT Debug", key="disable_mqtt_debug"):
             set_debug_mode("omf2.ccu.ccu_mqtt_client", False)
             set_debug_mode("omf2.admin.admin_mqtt_client", False)
-            st.info(f"{UISymbols.get_status_icon('info')} MQTT debug disabled")
+            st.info("ℹ️ MQTT debug disabled")
             st.rerun()
     
     # Global controls
