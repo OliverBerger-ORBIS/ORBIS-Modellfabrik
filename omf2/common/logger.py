@@ -22,24 +22,33 @@ def get_logger(name: str, level: int = logging.INFO) -> logging.Logger:
         Configured logger instance
     """
     logger = logging.getLogger(name)
+    logger.setLevel(level)
     
-    # Only configure if not already configured
-    if not logger.handlers:
-        # Create handler
-        handler = logging.StreamHandler(sys.stdout)
-        
-        # Create formatter
-        formatter = logging.Formatter(
-            '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-            datefmt='%Y-%m-%d %H:%M:%S'
-        )
-        
-        handler.setFormatter(formatter)
-        logger.addHandler(handler)
-        logger.setLevel(level)
-        
-        # Prevent duplicate logging
-        logger.propagate = False
+    # Check if root logger has handlers (central buffer is set up)
+    root_logger = logging.getLogger()
+    has_central_buffer = any(isinstance(h, RingBufferHandler) for h in root_logger.handlers)
+    
+    if has_central_buffer:
+        # Central buffer is active - let logs propagate to root
+        logger.propagate = True
+        # Don't add local handlers to avoid duplicate console output
+    else:
+        # No central buffer - configure local handler if needed
+        if not logger.handlers:
+            # Create handler
+            handler = logging.StreamHandler(sys.stdout)
+            
+            # Create formatter
+            formatter = logging.Formatter(
+                '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                datefmt='%Y-%m-%d %H:%M:%S'
+            )
+            
+            handler.setFormatter(formatter)
+            logger.addHandler(handler)
+            
+            # Prevent duplicate logging when no central buffer
+            logger.propagate = False
     
     return logger
 

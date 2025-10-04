@@ -49,22 +49,21 @@ class LogEntry:
     def from_log_line(cls, log_line: str) -> Optional['LogEntry']:
         """
         Parse a log entry from a formatted log line.
-        Expected format: "YYYY-MM-DD HH:MM:SS [LEVEL] component.name: message"
+        Expected formats:
+        - "YYYY-MM-DD HH:MM:SS [LEVEL] component.name: message"
+        - "YYYY-MM-DD HH:MM:SS,mmm [LEVEL] component.name: message"
         """
         try:
-            # Parse format: "2025-01-01 12:00:00 [INFO] omf2.dashboard: Test message"
-            pattern = r'^(\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2})[,\s]+\[(\w+)\]\s+([\w\.]+):\s+(.*)$'
+            # Parse format with optional milliseconds
+            # Pattern: "2025-10-04 10:32:16,276 [INFO] omf2.test: Test message"
+            pattern = r'^(\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2})[,\.]?\d*\s+\[(\w+)\]\s+([\w\.]+):\s+(.*)$'
             match = re.match(pattern, log_line)
             
             if match:
                 timestamp_str, level_str, component, message = match.groups()
                 
-                # Parse timestamp (handle both formats)
-                try:
-                    timestamp = datetime.strptime(timestamp_str, "%Y-%m-%d %H:%M:%S")
-                except ValueError:
-                    # Try alternative format with milliseconds
-                    timestamp = datetime.strptime(timestamp_str.split(',')[0], "%Y-%m-%d %H:%M:%S")
+                # Parse timestamp (without milliseconds)
+                timestamp = datetime.strptime(timestamp_str, "%Y-%m-%d %H:%M:%S")
                 
                 # Parse level
                 try:
