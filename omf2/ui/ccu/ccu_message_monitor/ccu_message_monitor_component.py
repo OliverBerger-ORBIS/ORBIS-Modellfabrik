@@ -91,8 +91,11 @@ def render_ccu_message_monitor(ccu_gateway, title="CCU Message Monitor", show_co
             if not messages:
                 continue
             
+            # Create a copy of messages to avoid "deque mutated during iteration" error
+            messages_copy = list(messages) if hasattr(messages, '__iter__') else [messages]
+            
             # Process ALL messages in buffer, not just the latest (like Admin)
-            for message in messages:
+            for message in messages_copy:
                 # Extract message info - handle both dict and other types
                 if isinstance(message, dict):
                     # Format timestamp properly
@@ -226,7 +229,12 @@ def _show_ccu_message_statistics(ccu_gateway):
         
         # Calculate statistics
         total_topics = len(all_buffers)
-        total_messages = sum(len(messages) if isinstance(messages, list) else 1 for messages in all_buffers.values())
+        total_messages = 0
+        for messages in all_buffers.values():
+            if messages:
+                # Create a copy to avoid "deque mutated during iteration" error
+                messages_copy = list(messages) if hasattr(messages, '__iter__') else [messages]
+                total_messages += len(messages_copy)
         
         # Count by type
         state_topics = sum(1 for topic in all_buffers.keys() if "state" in topic)
