@@ -1,0 +1,37 @@
+# OMF2 Logging Configuration
+# This file allows you to configure logging levels for different modules
+
+# Global logging configuration
+global:
+  level: INFO  # DEBUG, INFO, WARNING, ERROR
+  buffer_size: 1000
+  file_logging: true
+
+# Module-specific logging levels
+modules:
+  omf2:
+    level: INFO
+  omf2.ccu:
+    level: INFO  # Set to DEBUG for detailed CCU debugging
+  omf2.admin:
+    level: INFO
+  omf2.common:
+    level: INFO
+  omf2.ui:
+    level: INFO
+  omf2.nodered:
+    level: INFO
+
+# Business Manager specific logging
+business_managers:
+  sensor_manager:
+    level: INFO  # Set to DEBUG for sensor data debugging
+  module_manager:
+    level: INFO  # Set to DEBUG for module status debugging
+
+# MQTT Client logging
+mqtt_clients:
+  admin_mqtt_client:
+    level: INFO
+  ccu_mqtt_client:
+    level: INFO  # Set to DEBUG for MQTT message debugging

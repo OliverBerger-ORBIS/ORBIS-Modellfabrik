@@ -33,12 +33,13 @@ log_dir = setup_file_logging()
 logger = get_logger("omf2.dashboard")
 logger.info(f"📝 OMF2 Logging aktiviert: {log_dir}")
 
-# Enable DEBUG logging for all OMF2 modules
+# Configure logging levels for OMF2 modules
 import logging
-logging.getLogger("omf2").setLevel(logging.DEBUG)
-logging.getLogger("omf2.ccu").setLevel(logging.DEBUG)
-logging.getLogger("omf2.admin").setLevel(logging.DEBUG)
-logging.getLogger("omf2.common").setLevel(logging.DEBUG)
+from omf2.common.logging_config import apply_logging_config
+
+# Apply logging configuration from YAML file
+apply_logging_config()
+logger.info("📋 Logging configuration applied from config file")
 
 def cleanup_resources():
     """Cleanup resources on application exit"""
@@ -181,47 +182,24 @@ def main():
             ccu_client.connect(current_env)
             logger.info(f"🏗️ CCU MQTT Client connected to {current_env} on startup")
         
-        # Initialize log buffer with RingBufferHandler (like old dashboard)
+        # Initialize central log buffer with new logging system
         if 'log_buffer' not in st.session_state:
-            from collections import deque
-            from omf2.common.streamlit_log_buffer import RingBufferHandler, create_log_buffer
-            import logging
+            from omf2.common.logger import setup_central_log_buffer
             
-            # Create ring buffer
-            st.session_state['log_buffer'] = create_log_buffer(maxlen=1000)
-            logger.info("📋 Log buffer initialized")
-            
-            # Setup RingBufferHandler for all loggers
-            ring_handler = RingBufferHandler(st.session_state['log_buffer'])
-            ring_handler.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(name)s: %(message)s"))
-            
-            # Add handler ONLY to root logger to avoid duplicates
-            root_logger = logging.getLogger()
-            root_logger.addHandler(ring_handler)
-            root_logger.setLevel(logging.INFO)
-            
-            # Configure all omf2 loggers to propagate to root logger
-            for logger_name in ["omf2", "omf2.dashboard", "omf2.admin", "omf2.ui", "omf2.common", "omf2.ccu", "omf2.nodered"]:
-                existing_logger = logging.getLogger(logger_name)
-                existing_logger.setLevel(logging.INFO)
-                # Ensure logs propagate to root logger (which has the ring buffer)
-                existing_logger.propagate = True
-            
+            # Setup central log buffer (new system from Copilot PR)
+            log_buffer, ring_handler = setup_central_log_buffer(
+                buffer_size=1000,
+                log_level=logging.INFO
+            )
+            st.session_state['log_buffer'] = log_buffer
             st.session_state['ring_buffer_handler'] = ring_handler
+            
+            logger.info("📋 Central log buffer initialized with new logging system")
             
             # Add some initial logs
             logger.info("🚀 OMF2 Dashboard started")
             logger.info("🔌 Admin MQTT Client initialized")
             logger.info("📊 Main Dashboard rendered")
-        
-        # Ensure log_buffer is always available (fallback)
-        if 'log_buffer' not in st.session_state:
-            from collections import deque
-            st.session_state['log_buffer'] = deque(maxlen=1000)
-            st.session_state['log_buffer'].append("2025-09-29 20:05:00 [INFO] omf2.dashboard: Log buffer fallback initialized")
-            st.session_state['log_buffer'].append("2025-09-29 20:05:01 [INFO] omf2.dashboard: OMF2 Dashboard started")
-            st.session_state['log_buffer'].append("2025-09-29 20:05:02 [INFO] omf2.admin: Admin MQTT Client initialized")
-            st.session_state['log_buffer'].append("2025-09-29 20:05:03 [INFO] omf2.ui: Main Dashboard rendered")
         
         # Create and render main dashboard
         if 'main_dashboard' not in st.session_state:
