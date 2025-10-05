@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-CCU Gateway - Fassade für CCU Business-Operationen
+CCU Gateway - Fassade für CCU Business-Operationen mit Topic-Routing
 """
 
 import logging
@@ -15,10 +15,13 @@ logger = logging.getLogger(__name__)
 
 class CcuGateway:
     """
-    Gateway für CCU-spezifische Business-Operationen
+    Gateway für CCU-spezifische Business-Operationen mit Topic-Routing
     
-    Nutzt Registry Manager und Topic-Schema-Payload Beziehung für CCU-Operationen.
-    Stellt Methoden für die UI bereit.
+    Verantwortlichkeiten:
+    - Empfängt ALLE MQTT-Nachrichten vom ccu_mqtt_client
+    - Routet Nachrichten anhand von Topic-Präfixen an die zuständigen Manager
+    - Nutzt Registry Manager und Topic-Schema-Payload Beziehung für CCU-Operationen
+    - Stellt Methoden für die UI bereit
     """
     
     def __init__(self, mqtt_client=None, **kwargs):
@@ -42,7 +45,75 @@ class CcuGateway:
             registry_manager=self.registry_manager
         )
         
-        logger.info("🏗️ CcuGateway initialized")
+        # Explizite Topic-Listen für Manager-Routing
+        # Diese Listen definieren, welche Topics an welchen Manager weitergeleitet werden
+        self.sensor_topics = {
+            '/j1/txt/1/i/bme680',  # BME680 Sensor-Daten
+            '/j1/txt/1/i/ldr',     # LDR Sensor-Daten
+            '/j1/txt/1/i/cam'      # Camera-Daten
+        }
+        
+        # Module Topics: Präfix-basierte Matching für dynamische Module-IDs
+        self.module_topic_prefixes = [
+            'module/v1/ff/',       # Direkte Module Topics
+            'fts/v1/ff/',          # FTS Topics
+            'ccu/pairing/state'    # CCU Pairing State (für globale Status-Updates)
+        ]
+        
+        # Initialisiere Manager (Lazy Loading)
+        self._sensor_manager = None
+        self._module_manager = None
+        
+        logger.info("🏗️ CcuGateway initialized with Topic-Routing")
+    
+    def _get_sensor_manager(self):
+        """Lazy Loading für SensorManager (Singleton)"""
+        if self._sensor_manager is None:
+            from omf2.ccu.sensor_manager import get_ccu_sensor_manager
+            self._sensor_manager = get_ccu_sensor_manager()
+        return self._sensor_manager
+    
+    def _get_module_manager(self):
+        """Lazy Loading für ModuleManager (Singleton)"""
+        if self._module_manager is None:
+            from omf2.ccu.module_manager import get_ccu_module_manager
+            self._module_manager = get_ccu_module_manager()
+        return self._module_manager
+    
+    def on_mqtt_message(self, topic: str, payload: Dict[str, Any]):
+        """
+        Gateway-Routing: Empfängt ALLE MQTT-Nachrichten und routet sie an zuständige Manager
+        
+        Diese Methode wird vom ccu_mqtt_client im on_message Callback aufgerufen.
+        Sie implementiert das Gateway-Pattern für Topic-Routing.
+        
+        Args:
+            topic: MQTT Topic (String)
+            payload: Payload-Daten (Dict ohne MQTT-Metadaten)
+        """
+        try:
+            logger.debug(f"🔀 Gateway routing message for topic: {topic}")
+            
+            # Routing 1: Sensor Topics (Set-basiertes Lookup)
+            if topic in self.sensor_topics:
+                logger.debug(f"📡 Routing to sensor_manager: {topic}")
+                sensor_manager = self._get_sensor_manager()
+                sensor_manager.process_sensor_message(topic, payload)
+                return
+            
+            # Routing 2: Module Topics (Präfix-basiertes Matching)
+            for prefix in self.module_topic_prefixes:
+                if topic.startswith(prefix):
+                    logger.debug(f"🏭 Routing to module_manager: {topic}")
+                    module_manager = self._get_module_manager()
+                    module_manager.process_module_message(topic, payload)
+                    return
+            
+            # Unbekanntes Topic: Nur Debug-Logging
+            logger.debug(f"❓ No routing for topic: {topic}")
+            
+        except Exception as e:
+            logger.error(f"❌ Gateway routing failed for topic {topic}: {e}")
     
     def publish_message(self, topic: str, message: Dict[str, Any], qos: int = 1, retain: bool = False) -> bool:
         """

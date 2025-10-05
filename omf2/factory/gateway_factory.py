@@ -70,8 +70,13 @@ class GatewayFactory:
                 ccu_mqtt_client = client_factory.get_mqtt_client('ccu_mqtt_client')
                 
                 # CcuGateway mit MQTT-Client erstellen
-                self._gateways[gateway_name] = CcuGateway(mqtt_client=ccu_mqtt_client, **kwargs)
-                logger.info(f"🏭 Created {gateway_name} gateway with MQTT client")
+                ccu_gateway = CcuGateway(mqtt_client=ccu_mqtt_client, **kwargs)
+                
+                # Gateway im MQTT-Client registrieren für Topic-Routing
+                ccu_mqtt_client.set_gateway(ccu_gateway)
+                
+                self._gateways[gateway_name] = ccu_gateway
+                logger.info(f"🏭 Created {gateway_name} gateway with MQTT client and topic routing")
             
             return self._gateways[gateway_name]
     
