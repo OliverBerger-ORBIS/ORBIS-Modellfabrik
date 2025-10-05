@@ -5,12 +5,13 @@ CCU Gateway - Fassade für CCU Business-Operationen mit Topic-Routing
 
 import logging
 import json
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Optional, Any, Union
 from omf2.registry.manager.registry_manager import get_registry_manager
 from omf2.common.message_manager import get_ccu_message_manager
 from omf2.common.topic_manager import get_ccu_topic_manager
+from omf2.common.logger import get_logger
 
-logger = logging.getLogger(__name__)
+logger = get_logger("omf2.ccu.ccu_gateway")
 
 
 class CcuGateway:
@@ -80,40 +81,123 @@ class CcuGateway:
             self._module_manager = get_ccu_module_manager()
         return self._module_manager
     
-    def on_mqtt_message(self, topic: str, payload: Dict[str, Any]):
+    def on_mqtt_message(self, topic: str, message: Union[Dict, List, str], meta: Optional[Dict] = None):
         """
-        Gateway-Routing: Empfängt ALLE MQTT-Nachrichten und routet sie an zuständige Manager
+        Gateway-Routing mit Schema-Validierung für CCU Messages
         
         Diese Methode wird vom ccu_mqtt_client im on_message Callback aufgerufen.
-        Sie implementiert das Gateway-Pattern für Topic-Routing.
+        Sie implementiert das Gateway-Pattern für Topic-Routing mit Schema-Validierung.
         
         Args:
             topic: MQTT Topic (String)
-            payload: Payload-Daten (Dict ohne MQTT-Metadaten)
+            message: Payload-Daten (Dict, List, str) - NIE raw bytes!
+            meta: Metadaten (timestamp, raw, qos, retain)
+        
+        Returns:
+            bool: True wenn Message verarbeitet wurde, False bei Fehler
         """
         try:
-            logger.debug(f"🔀 Gateway routing message for topic: {topic}")
+            logger.debug(f"🔀 CCU Gateway processing message for topic: {topic}")
+            
+            # 1. Schema aus Registry holen
+            schema = self.registry_manager.get_topic_schema(topic)
+            
+            # 2. Schema-Validierung (wenn Schema vorhanden)
+            if schema:
+                logger.debug(f"📋 Found schema for topic {topic}, validating payload")
+                validated_message = self._validate_message(topic, message, schema)
+                if not validated_message:
+                    logger.warning(f"⚠️ Message rejected due to schema validation failure: {topic}")
+                    return False  # Validierung fehlgeschlagen
+            else:
+                validated_message = message
+                logger.debug(f"📋 No schema for topic {topic}, skipping validation")
+            
+            # 3. Gateway-Routing mit validierter Message
+            logger.debug(f"📤 Routing validated message to managers: {topic}")
+            return self._route_ccu_message(topic, validated_message, meta)
+            
+        except Exception as e:
+            logger.error(f"❌ CCU Gateway processing failed for topic {topic}: {e}")
+            return False
+    
+    def _validate_message(self, topic: str, message: Union[Dict, List, str], schema: Dict) -> Optional[Union[Dict, List, str]]:
+        """
+        Validiert Message gegen Schema
+        
+        Args:
+            topic: MQTT Topic
+            message: Message-Daten
+            schema: JSON-Schema
+        
+        Returns:
+            Validierte Message oder None bei Fehler
+        """
+        try:
+            import jsonschema
+            
+            # Schema-Validierung starten
+            logger.debug(f"🔍 Validating schema for topic: {topic}")
+            
+            jsonschema.validate(instance=message, schema=schema)
+            
+            # Erfolgreiche Validierung
+            logger.debug(f"✅ Schema validation successful for {topic}")
+            return message
+            
+        except ImportError:
+            logger.warning(f"⚠️ jsonschema library not available, skipping validation for {topic}")
+            return message
+            
+        except jsonschema.ValidationError as e:
+            # Schema-Validierung fehlgeschlagen - Detailliertes Logging für Troubleshooting
+            logger.warning(f"❌ Schema validation failed for {topic}: {e.message}")
+            logger.warning(f"   Schema: {schema}")
+            logger.warning(f"   Payload: {str(message)[:200]}...")  # Erste 200 Zeichen des Payloads
+            logger.warning(f"   → Troubleshooting: Prüfe Registry-Topic-Schema Beziehung, Schema-Flexibilität oder MQTT-Sender")
+            return None
+            
+        except Exception as e:
+            logger.error(f"❌ Validation error for {topic}: {e}")
+            return None
+    
+    def _route_ccu_message(self, topic: str, message: Union[Dict, List, str], meta: Optional[Dict] = None) -> bool:
+        """
+        CCU Message-Routing - Routet Messages an zuständige Manager
+        
+        Args:
+            topic: MQTT Topic
+            message: Validierte Message
+            meta: Metadaten
+        
+        Returns:
+            True wenn Message verarbeitet wurde
+        """
+        try:
+            logger.debug(f"📋 CCU Gateway routing message: {topic}")
             
             # Routing 1: Sensor Topics (Set-basiertes Lookup)
             if topic in self.sensor_topics:
                 logger.debug(f"📡 Routing to sensor_manager: {topic}")
                 sensor_manager = self._get_sensor_manager()
-                sensor_manager.process_sensor_message(topic, payload)
-                return
+                sensor_manager.process_sensor_message(topic, message, meta)
+                return True
             
             # Routing 2: Module Topics (Präfix-basiertes Matching)
             for prefix in self.module_topic_prefixes:
                 if topic.startswith(prefix):
                     logger.debug(f"🏭 Routing to module_manager: {topic}")
                     module_manager = self._get_module_manager()
-                    module_manager.process_module_message(topic, payload)
-                    return
+                    module_manager.process_module_message(topic, message, meta)
+                    return True
             
             # Unbekanntes Topic: Nur Debug-Logging
             logger.debug(f"❓ No routing for topic: {topic}")
+            return True  # Nicht als Fehler behandeln
             
         except Exception as e:
-            logger.error(f"❌ Gateway routing failed for topic {topic}: {e}")
+            logger.error(f"❌ CCU message routing failed for {topic}: {e}")
+            return False
     
     def publish_message(self, topic: str, message: Dict[str, Any], qos: int = 1, retain: bool = False) -> bool:
         """

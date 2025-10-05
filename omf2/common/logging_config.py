@@ -80,42 +80,71 @@ def set_debug_mode(module: str = None, enabled: bool = True):
     if module:
         # Specific module
         if module.startswith("omf2."):
+            # Set the specific logger
             logging.getLogger(module).setLevel(level)
+            
+            # Also set parent loggers to ensure proper propagation
+            parts = module.split('.')
+            for i in range(1, len(parts)):
+                parent_name = '.'.join(parts[:i+1])
+                logging.getLogger(parent_name).setLevel(level)
+            
+            # Ensure root logger allows DEBUG messages
+            if enabled:
+                logging.getLogger().setLevel(logging.DEBUG)
         else:
             logging.getLogger(f"omf2.{module}").setLevel(level)
     else:
         # All OMF2 modules
         for logger_name in ["omf2", "omf2.ccu", "omf2.admin", "omf2.common", "omf2.ui", "omf2.nodered"]:
             logging.getLogger(logger_name).setLevel(level)
+        
+        # Ensure root logger allows DEBUG messages
+        if enabled:
+            logging.getLogger().setLevel(logging.DEBUG)
 
 def get_current_log_levels() -> Dict[str, str]:
-    """Get current logging levels for all OMF2 modules"""
+    """Get current logging levels for all OMF2 modules - Architecture-based"""
     levels = {}
-    for logger_name in ["omf2", "omf2.ccu", "omf2.admin", "omf2.common", "omf2.ui", "omf2.nodered"]:
+    
+    # Core modules
+    for logger_name in ["omf2", "omf2.common", "omf2.ui", "omf2.nodered"]:
         logger = logging.getLogger(logger_name)
         level_name = logging.getLevelName(logger.level)
-        # Convert NOTSET to the effective level
         if level_name == "NOTSET":
             effective_level = logger.getEffectiveLevel()
             level_name = logging.getLevelName(effective_level)
         levels[logger_name] = level_name
     
-    # Add business manager specific loggers
-    business_loggers = [
-        "omf2.ccu.sensor_manager",
-        "omf2.ccu.module_manager", 
-        "omf2.ccu.ccu_mqtt_client",
-        "omf2.admin.admin_mqtt_client"
-    ]
+    # Architecture-based loggers: MQTT → Gateway → Manager → UI
+    architecture_loggers = {
+        # 🔌 MQTT Clients (Architecture Layer 1)
+        "mqtt_clients": [
+            "omf2.ccu.ccu_mqtt_client",
+            "omf2.admin.admin_mqtt_client"
+        ],
+        # 🚪 Gateways (Architecture Layer 2)
+        "gateways": [
+            "omf2.ccu.ccu_gateway", 
+            "omf2.admin.admin_gateway"
+        ],
+        # 🏢 Business Managers (Architecture Layer 3)
+        "business_managers": [
+            "omf2.ccu.sensor_manager",
+            "omf2.ccu.module_manager"
+        ]
+    }
     
-    for logger_name in business_loggers:
-        logger = logging.getLogger(logger_name)
-        level_name = logging.getLevelName(logger.level)
-        # Convert NOTSET to the effective level
-        if level_name == "NOTSET":
-            effective_level = logger.getEffectiveLevel()
-            level_name = logging.getLevelName(effective_level)
-        levels[logger_name] = level_name
+    # Process all architecture loggers
+    for category, logger_list in architecture_loggers.items():
+        for logger_name in logger_list:
+            logger = logging.getLogger(logger_name)
+            level_name = logging.getLevelName(logger.level)
+            # Convert NOTSET to the effective level
+            if level_name == "NOTSET":
+                effective_level = logger.getEffectiveLevel()
+                level_name = logging.getLevelName(effective_level)
+            levels[logger_name] = level_name
     
     return levels
 

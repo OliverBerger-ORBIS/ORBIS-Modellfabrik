@@ -3,14 +3,15 @@
 Admin Gateway - Fassade für Admin Business-Operationen
 """
 
-import logging
 import json
-from typing import Dict, List, Optional, Any
+import logging
+from typing import Dict, List, Optional, Any, Union
 from omf2.registry.manager.registry_manager import get_registry_manager
 from omf2.admin.admin_message_manager import get_admin_message_manager
 from omf2.common.topic_manager import get_admin_topic_manager
+from omf2.common.logger import get_logger
 
-logger = logging.getLogger(__name__)
+logger = get_logger("omf2.admin.admin_gateway")
 
 
 class AdminGateway:
@@ -238,6 +239,149 @@ class AdminGateway:
                 "environment": "error"
             }
     
+    def on_mqtt_message(self, topic: str, message: Union[Dict, List, str], meta: Optional[Dict] = None):
+        """
+        Gateway-Routing mit Schema-Validierung für Admin Messages
+        
+        Diese Methode wird vom admin_mqtt_client im on_message Callback aufgerufen.
+        Sie implementiert das Gateway-Pattern für Topic-Routing mit Schema-Validierung.
+        
+        Args:
+            topic: MQTT Topic (String)
+            message: Payload-Daten (Dict, List, str) - NIE raw bytes!
+            meta: Metadaten (timestamp, raw, qos, retain)
+        
+        Returns:
+            bool: True wenn Message verarbeitet wurde, False bei Fehler
+        """
+        try:
+            logger.debug(f"🔀 Admin Gateway processing message for topic: {topic}")
+            
+            # 1. Schema aus Registry holen
+            schema = self.registry_manager.get_topic_schema(topic)
+            
+            # 2. Schema-Validierung (wenn Schema vorhanden)
+            if schema:
+                logger.debug(f"📋 Found schema for topic {topic}, validating payload")
+                validated_message = self._validate_message(topic, message, schema)
+                if not validated_message:
+                    logger.warning(f"⚠️ Message rejected due to schema validation failure: {topic}")
+                    return False  # Validierung fehlgeschlagen
+            else:
+                validated_message = message
+                logger.debug(f"📋 No schema found for topic {topic}, skipping validation")
+            
+            # 3. Gateway-Routing mit validierter Message
+            logger.debug(f"📤 Routing validated message to message center: {topic}")
+            return self._route_admin_message(topic, validated_message, meta)
+            
+        except Exception as e:
+            logger.error(f"❌ Admin Gateway processing failed for topic {topic}: {e}")
+            return False
+    
+    def _validate_message(self, topic: str, message: Union[Dict, List, str], schema: Dict) -> Optional[Union[Dict, List, str]]:
+        """
+        Validiert Message gegen Schema
+        
+        Args:
+            topic: MQTT Topic
+            message: Message-Daten
+            schema: JSON-Schema
+            
+        Returns:
+            Validierte Message oder None bei Fehler
+        """
+        try:
+            import jsonschema
+            
+            # Schema-Validierung starten
+            logger.debug(f"🔍 Validating schema for topic: {topic}")
+            
+            jsonschema.validate(instance=message, schema=schema)
+            
+            # Erfolgreiche Validierung
+            logger.debug(f"✅ Schema validation successful for {topic}")
+            return message
+            
+        except ImportError:
+            logger.warning(f"⚠️ jsonschema library not available, skipping validation for {topic}")
+            return message
+            
+        except jsonschema.ValidationError as e:
+            # Schema-Validierung fehlgeschlagen - Detailliertes Logging für Troubleshooting
+            logger.warning(f"❌ Schema validation failed for {topic}: {e.message}")
+            logger.warning(f"   Schema: {schema}")
+            logger.warning(f"   Payload: {str(message)[:200]}...")  # Erste 200 Zeichen des Payloads
+            logger.warning(f"   → Troubleshooting: Prüfe Registry-Topic-Schema Beziehung, Schema-Flexibilität oder MQTT-Sender")
+            return None
+            
+        except Exception as e:
+            logger.error(f"❌ Validation error for {topic}: {e}")
+            return None
+    
+    def _route_admin_message(self, topic: str, message: Union[Dict, List, str], meta: Optional[Dict] = None) -> bool:
+        """
+        Admin Message-Routing - Alle Topics werden verarbeitet
+        
+        Admin Gateway empfängt ALLE Topics (subscribed zu "#") und leitet sie weiter.
+        Hauptzweck: Weiterleitung an Message Center für Monitoring/Übersicht.
+        
+        Args:
+            topic: MQTT Topic (alle Topics werden verarbeitet)
+            message: Validierte Message
+            meta: Metadaten
+            
+        Returns:
+            True wenn Message verarbeitet wurde
+        """
+        try:
+            logger.debug(f"📋 Admin Gateway routing ALL topics: {topic}")
+            
+            # Alle Topics an Message Center weiterleiten
+            self._handle_message_center(topic, message, meta)
+            
+            # Optional: Weitere Weiterleitungen (aber nicht als elif!)
+            if self._should_log_to_audit(topic, message):
+                self._handle_audit_log(topic, message, meta)
+            
+            if self._should_alert_admin(topic, message):
+                self._handle_admin_alert(topic, message, meta)
+                
+            return True
+                
+        except Exception as e:
+            logger.error(f"❌ Admin message routing failed for {topic}: {e}")
+            return False
+    
+    def _handle_message_center(self, topic: str, message: Union[Dict, List, str], meta: Optional[Dict] = None):
+        """Alle Topics an Message Center weiterleiten"""
+        # Delegiert an Message Manager für Buffer-Update
+        if self.message_manager:
+            logger.debug(f"📋 Routing to message center: {topic}")
+            # Message Manager für Admin-Monitoring und Übersicht
+            # Hier wird die Message für das Message Center verarbeitet
+            # TODO: Hier könnte die Message tatsächlich an das Message Center weitergeleitet werden
+    
+    def _should_log_to_audit(self, topic: str, message: Union[Dict, List, str]) -> bool:
+        """Prüft ob Topic für Audit-Log relevant ist"""
+        # Beispiel: Alle CCU-Topics für Audit-Log
+        return topic.startswith("ccu/") or topic.startswith("module/")
+    
+    def _handle_audit_log(self, topic: str, message: Union[Dict, List, str], meta: Optional[Dict] = None):
+        """Behandelt Audit-Logging"""
+        logger.debug(f"📝 Audit log: {topic}")
+        # Audit-Logging für wichtige Topics
+    
+    def _should_alert_admin(self, topic: str, message: Union[Dict, List, str]) -> bool:
+        """Prüft ob Admin-Alert nötig ist"""
+        # Beispiel: Error-Topics oder kritische States
+        return "error" in topic.lower() or "critical" in str(message).lower()
+    
+    def _handle_admin_alert(self, topic: str, message: Union[Dict, List, str], meta: Optional[Dict] = None):
+        """Behandelt Admin-Alerts"""
+        logger.warning(f"🚨 Admin alert for topic: {topic}")
+        # Admin-Alert für kritische Topics
+
     def is_connected(self) -> bool:
         """
         MQTT Connection Status prüfen

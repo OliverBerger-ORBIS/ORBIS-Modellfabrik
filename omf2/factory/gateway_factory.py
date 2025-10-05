@@ -128,8 +128,13 @@ class GatewayFactory:
                 admin_mqtt_client = client_factory.get_mqtt_client('admin_mqtt_client')
                 
                 # AdminGateway mit MQTT-Client erstellen
-                self._gateways[gateway_name] = AdminGateway(mqtt_client=admin_mqtt_client, **kwargs)
-                logger.info(f"🏭 Created {gateway_name} gateway with MQTT client")
+                admin_gateway = AdminGateway(mqtt_client=admin_mqtt_client, **kwargs)
+                
+                # Gateway im MQTT-Client registrieren (Architecture: MQTT → Gateway → Manager → UI)
+                admin_mqtt_client.register_gateway(admin_gateway)
+                
+                self._gateways[gateway_name] = admin_gateway
+                logger.info(f"🏭 Created {gateway_name} gateway with MQTT client and registered for routing")
             
             return self._gateways[gateway_name]
     

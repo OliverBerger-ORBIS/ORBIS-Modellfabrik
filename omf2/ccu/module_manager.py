@@ -43,14 +43,15 @@ class CcuModuleManager:
         
         logger.info("🏗️ CCU Module Manager initialized with State-Holder")
     
-    def process_module_message(self, topic: str, payload: Dict[str, Any]):
+    def process_module_message(self, topic: str, payload: Dict[str, Any], meta: Optional[Dict] = None):
         """
         NEU: Verarbeitet eingehende Module-Message und updated State
-        Wird vom MQTT-Client über Business-Function-Callback aufgerufen
+        Wird vom Gateway über Topic-Routing aufgerufen
         
         Args:
             topic: MQTT Topic (String)
             payload: Payload-Daten (Dict ohne MQTT-Metadaten)
+            meta: Metadaten (timestamp, raw, qos, retain)
         """
         try:
             # Extract module ID from topic

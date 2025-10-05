@@ -432,14 +432,13 @@ def send_test_message(topic, payload):
         )
         
         if test_client.connect():
-            # JSON-Payload vorbereiten
+            # Payload-Aufbereitung wie normale Session-Daten (konsistent)
             if isinstance(payload, (dict, list)):
-                payload_str = json.dumps(payload, separators=(",", ":"), ensure_ascii=False)
-            else:
-                payload_str = str(payload)
+                payload = json.dumps(payload, separators=(",", ":"), ensure_ascii=False)
+            payload_b = (payload if isinstance(payload, (bytes, bytearray)) else str(payload)).encode("utf-8")
             
             # Nachricht senden
-            success = test_client.publish(topic, payload_str, qos=1)
+            success = test_client.publish(topic, payload_b, qos=1)
             test_client.disconnect()
             
             if success:
@@ -501,13 +500,12 @@ def send_factsheet_preload(replay_ctrl: ReplayController):
                 retain = factsheet_data.get("retain", False)
                 
                 if topic and payload:
-                    # Payload ist jetzt JSON-Object, muss zu String konvertiert werden
-                    if isinstance(payload, dict):
-                        payload_str = json.dumps(payload, separators=(",", ":"), ensure_ascii=False)
-                    else:
-                        payload_str = str(payload)
+                    # Payload-Aufbereitung wie normale Session-Daten (Zeile 661-663)
+                    if isinstance(payload, (dict, list)):
+                        payload = json.dumps(payload, separators=(",", ":"), ensure_ascii=False)
+                    payload_b = (payload if isinstance(payload, (bytes, bytearray)) else str(payload)).encode("utf-8")
                     
-                    success = factsheet_client.publish(topic, payload_str, qos=qos, retain=retain)
+                    success = factsheet_client.publish(topic, payload_b, qos=qos, retain=retain)
                     
                     if success:
                         success_count += 1

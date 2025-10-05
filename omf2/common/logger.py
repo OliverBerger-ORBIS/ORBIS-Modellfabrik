@@ -5,8 +5,9 @@ Provides structured logging with consistent formatting and centralized log buffe
 
 import logging
 import sys
+import threading
 from pathlib import Path
-from typing import Optional, Deque
+from typing import Optional, Deque, Dict
 from collections import deque
 
 
@@ -89,10 +90,46 @@ def setup_file_logging(log_dir: Optional[Path] = None) -> Path:
 # Central Log Buffer Components
 # ============================================================================
 
+class MultiLevelRingBufferHandler(logging.Handler):
+    """
+    Logging-Handler, der für jeden Log-Level einen eigenen Ringbuffer (deque) hält.
+    Ermöglicht z.B. Fehler-Logs persistent im Buffer zu halten, auch wenn viele INFO/DEBUG Logs auftreten.
+    """
+    def __init__(self, buffer_sizes=None):
+        super().__init__()
+        # Standardgrößen pro Level
+        self.buffer_sizes = buffer_sizes or {
+            "ERROR": 200,      # Größer für wichtige Errors
+            "WARNING": 200,    # Größer für wichtige Warnings  
+            "INFO": 500,       # Standard für Info-Logs
+            "DEBUG": 300       # Kleinere für Debug-Logs
+        }
+        self.buffers = {
+            level: deque(maxlen=size)
+            for level, size in self.buffer_sizes.items()
+        }
+        self._lock = threading.Lock()
+
+    def emit(self, record):
+        msg = self.format(record)
+        level = record.levelname
+        with self._lock:
+            # Füge in passenden Buffer ein, falls Level definiert, sonst in INFO
+            self.buffers.get(level, self.buffers["INFO"]).append(msg)
+
+    def get_buffer(self, level=None):
+        # Hole Buffer für bestimmtes Level, oder alle als dict
+        with self._lock:
+            if level:
+                return list(self.buffers.get(level, []))
+            return {lvl: list(buf) for lvl, buf in self.buffers.items()}
+
+
 class RingBufferHandler(logging.Handler):
     """
-    Logging-Handler, der Logs in einen Ringpuffer schreibt.
+    Legacy RingBufferHandler für Rückwärtskompatibilität.
     
+    Logging-Handler, der Logs in einen Ringpuffer schreibt.
     Thread-sicher für MQTT-Callbacks und Streamlit-UI.
     """
     
@@ -135,6 +172,79 @@ def create_log_buffer(maxlen: int = 1000) -> Deque[str]:
     return deque(maxlen=maxlen)
 
 
+def setup_multilevel_ringbuffer_logging():
+    """
+    Initialisiert einen MultiLevelRingBufferHandler und hängt ihn an den Root-Logger.
+    Gibt das Handler-Objekt und die Referenz auf die Buffers zurück.
+    """
+    logger = logging.getLogger()
+    # Prüfe, ob schon vorhanden
+    if not any(isinstance(h, MultiLevelRingBufferHandler) for h in logger.handlers):
+        handler = MultiLevelRingBufferHandler()
+        formatter = logging.Formatter('%(asctime)s [%(levelname)s] %(name)s: %(message)s')
+        handler.setFormatter(formatter)
+        handler.setLevel(logging.DEBUG)
+        logger.addHandler(handler)
+    else:
+        handler = next(h for h in logger.handlers if isinstance(h, MultiLevelRingBufferHandler))
+    return handler, handler.buffers
+
+
+def setup_level_specific_log_buffers(log_level: int = logging.INFO) -> Dict[str, Deque[str]]:
+    """
+    Legacy Funktion für Rückwärtskompatibilität.
+    Setzt Level-spezifische Log-Buffer auf und gibt sie zurück.
+    
+    Args:
+        log_level: Logging-Level für den Buffer
+    
+    Returns:
+        Dict mit Level-spezifischen Ringpuffern
+    """
+    # Erstelle Level-spezifische Ringpuffer mit unterschiedlichen Größen
+    log_buffers = {
+        'ERROR': deque(maxlen=200),      # Größer für wichtige Errors
+        'WARNING': deque(maxlen=200),    # Größer für wichtige Warnings  
+        'INFO': deque(maxlen=500),       # Standard für Info-Logs
+        'DEBUG': deque(maxlen=300)       # Kleinere für Debug-Logs
+    }
+    
+    # Erstelle Handler
+    handler = LevelSpecificRingBufferHandler(log_buffers, log_level)
+    
+    # Erstelle Formatter
+    formatter = logging.Formatter(
+        '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S'
+    )
+    handler.setFormatter(formatter)
+    
+    # Konfiguriere Root-Logger
+    root_logger = logging.getLogger()
+    
+    # Entferne existierende Handler
+    for h in root_logger.handlers[:]:
+        root_logger.removeHandler(h)
+    
+    # Füge neuen Handler hinzu
+    root_logger.addHandler(handler)
+    root_logger.setLevel(log_level)
+    
+    # Konfiguriere OMF2-Logger (nur wenn Level NOTSET ist)
+    omf2_loggers = [
+        'omf2', 'omf2.ui', 'omf2.admin', 'omf2.ccu', 'omf2.common', 'omf2.nodered',
+        'omf2.admin.admin_gateway', 'omf2.admin.admin_mqtt_client',
+        'omf2.ccu.ccu_gateway', 'omf2.ccu.ccu_mqtt_client'
+    ]
+    
+    for logger_name in omf2_loggers:
+        logger = logging.getLogger(logger_name)
+        if logger.level == logging.NOTSET:
+            logger.setLevel(log_level)
+    
+    return log_buffers
+
+
 def setup_central_log_buffer(
     buffer_size: int = 1000,
     log_level: int = logging.INFO,
@@ -157,6 +267,10 @@ def setup_central_log_buffer(
             "omf2",
             "omf2.dashboard",
             "omf2.admin",
+            "omf2.admin.admin_gateway",
+            "omf2.admin.admin_mqtt_client",
+            "omf2.ccu.ccu_gateway",
+            "omf2.ccu.ccu_mqtt_client",
             "omf2.ui",
             "omf2.common",
             "omf2.ccu",
@@ -182,7 +296,9 @@ def setup_central_log_buffer(
     # Alle omf2-Logger konfigurieren
     for logger_name in omf2_loggers:
         logger = logging.getLogger(logger_name)
-        logger.setLevel(log_level)
+        # Nur setzen wenn noch nicht explizit gesetzt
+        if logger.level == logging.NOTSET:
+            logger.setLevel(log_level)
         # Logs propagieren zum root logger (der den RingBufferHandler hat)
         logger.propagate = True
     

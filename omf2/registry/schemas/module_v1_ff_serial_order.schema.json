@@ -90,8 +90,7 @@
     "action",
     "orderId",
     "orderUpdateId",
-    "serialNumber",
-    "timestamp"
+    "serialNumber"
   ],
   "title": "Module_V1_Ff_Serial_Order Schema",
   "description": "Granular schema for module_v1_ff_serial_order topics from 85 examples",

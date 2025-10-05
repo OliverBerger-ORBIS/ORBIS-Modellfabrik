@@ -7,13 +7,9 @@ global:
   buffer_size: 1000
   file_logging: true
 
-# Module-specific logging levels
+# Architecture-based logging: MQTT → Gateway → Manager → UI
 modules:
   omf2:
-    level: INFO
-  omf2.ccu:
-    level: INFO  # Set to DEBUG for detailed CCU debugging
-  omf2.admin:
     level: INFO
   omf2.common:
     level: INFO
@@ -22,16 +18,23 @@ modules:
   omf2.nodered:
     level: INFO
 
-# Business Manager specific logging
-business_managers:
-  sensor_manager:
-    level: INFO  # Set to DEBUG for sensor data debugging
-  module_manager:
-    level: INFO  # Set to DEBUG for module status debugging
-
-# MQTT Client logging
+# 🔌 MQTT Clients (Architecture Layer 1)
 mqtt_clients:
   admin_mqtt_client:
-    level: INFO
+    level: DEBUG  # DEBUG for Admin MQTT Client
   ccu_mqtt_client:
-    level: INFO  # Set to DEBUG for MQTT message debugging
+    level: DEBUG  # DEBUG for CCU MQTT Client
+
+# 🚪 Gateways (Architecture Layer 2)
+gateways:
+  admin_gateway:
+    level: DEBUG  # DEBUG for Admin Gateway
+  ccu_gateway:
+    level: DEBUG  # DEBUG for CCU Gateway
+
+# 🏢 Business Managers (Architecture Layer 3)
+business_managers:
+  sensor_manager:
+    level: DEBUG  # DEBUG for sensor data debugging
+  module_manager:
+    level: DEBUG  # DEBUG for module status debugging

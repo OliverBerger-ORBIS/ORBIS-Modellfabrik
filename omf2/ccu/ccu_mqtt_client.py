@@ -594,56 +594,103 @@ class CcuMqttClient:
         """
         try:
             topic = msg.topic
-            payload = msg.payload.decode('utf-8')
-            
-            # JSON-Parsing und Buffer-Update
+            # Sichere Payload-Dekodierung
             try:
-                message = json.loads(payload)
+                payload_raw = msg.payload.decode('utf-8') if msg.payload else ""
+            except (AttributeError, UnicodeDecodeError) as e:
+                logger.warning(f"⚠️ Payload decode error: {e}")
+                payload_raw = ""
+            
+            mqtt_timestamp = time.time()
+            
+            # JSON-Parsing
+            try:
+                message = json.loads(payload_raw)
                 
-                # Ensure message is a dictionary, not a list
-                if isinstance(message, list):
-                    # If it's a list, wrap it in a dictionary
-                    message = {"data": message, "timestamp": time.time()}
-                elif isinstance(message, dict):
-                    # If it's a dictionary, add timestamp
-                    message['timestamp'] = time.time()
+                # Buffer-Update (mit MQTT-Client timestamp für Monitoring)
+                # Robust für alle JSON-Typen (dict, list, str, int, bool)
+                if isinstance(message, dict):
+                    buffer_message = message.copy()
+                    buffer_message['mqtt_timestamp'] = mqtt_timestamp
                 else:
-                    # If it's something else, wrap it
-                    message = {"data": message, "timestamp": time.time()}
+                    # Für Listen, Strings, Numbers, Booleans: als Dict wrappen
+                    buffer_message = {
+                        'data': message,
+                        'mqtt_timestamp': mqtt_timestamp
+                    }
                 
                 with self._buffer_lock:
-                    self.topic_buffers[topic].append(message)
+                    self.topic_buffers[topic].append(buffer_message)
                 
                 logger.debug(f"📥 Received on {topic}: {message}")
                 
-                # Gateway-Routing: Ruft Gateway mit topic + payload auf
-                # Extrahiere Payload ohne timestamp für Business-Manager
-                clean_payload = {k: v for k, v in message.items() if k != 'timestamp'}
+                # Meta-Parameter für Gateway
+                meta = {
+                    "mqtt_timestamp": mqtt_timestamp,
+                    "qos": msg.qos,
+                    "retain": msg.retain
+                }
+                
+                # Gateway-Routing: message = clean_payload (keine Änderungen!)
                 if self._gateway:
-                    self._gateway.on_mqtt_message(topic, clean_payload)
+                    self._gateway.on_mqtt_message(topic, message, meta)
                 else:
                     logger.debug(f"⚠️ No gateway registered, skipping routing for {topic}")
                 
             except json.JSONDecodeError:
                 # Nicht-JSON Messages als Text speichern
                 with self._buffer_lock:
-                    raw_message = {
-                        'raw_payload': payload,
-                        'timestamp': time.time()
-                    }
-                    self.topic_buffers[topic].append(raw_message)
+                    self.topic_buffers[topic].append({
+                        'raw_payload': payload_raw,
+                        'mqtt_timestamp': mqtt_timestamp
+                    })
                 
-                logger.debug(f"📥 Received raw on {topic}: {payload}")
+                logger.debug(f"📥 Received raw on {topic}: {payload_raw}")
                 
                 # Gateway-Routing für Raw-Payload
-                clean_payload = {"raw_payload": payload}
+                meta = {
+                    "mqtt_timestamp": mqtt_timestamp,
+                    "qos": msg.qos,
+                    "retain": msg.retain
+                }
+                
                 if self._gateway:
-                    self._gateway.on_mqtt_message(topic, clean_payload)
+                    self._gateway.on_mqtt_message(topic, {"raw_payload": payload_raw}, meta)
                 else:
                     logger.debug(f"⚠️ No gateway registered, skipping routing for {topic}")
             
         except Exception as e:
-            logger.error(f"❌ CCU Message processing error: {e}")
+            # Sammle alle Context-Informationen in einem String
+            context_parts = []
+            context_parts.append(f"❌ CCU Message processing error: {e}")
+            
+            try:
+                context_parts.append(f"📍 Topic: {topic}")
+            except:
+                context_parts.append("📍 Topic: <undefined>")
+            
+            try:
+                context_parts.append(f"📍 Payload type: {type(payload_raw)}")
+                context_parts.append(f"📍 Payload preview: {payload_raw[:200]}...")
+            except:
+                context_parts.append("📍 Payload: <undefined>")
+            
+            try:
+                context_parts.append(f"📍 MQTT timestamp: {mqtt_timestamp}")
+            except:
+                context_parts.append("📍 MQTT timestamp: <undefined>")
+            
+            try:
+                if 'message' in locals():
+                    context_parts.append(f"📍 Message type: {type(message)}")
+                    context_parts.append(f"📍 Message preview: {str(message)[:200]}...")
+                else:
+                    context_parts.append("📍 Message: <not parsed>")
+            except:
+                context_parts.append("📍 Message: <error accessing>")
+            
+            # Ein einziger Log-Eintrag mit allen Informationen
+            logger.error(" | ".join(context_parts))
     
     def _on_disconnect(self, client, userdata, rc):
         """MQTT on_disconnect Callback"""

@@ -53,7 +53,6 @@
         "required": [
           "available",
           "connected",
-          "pairedSince",
           "serialNumber",
           "subType",
           "type"
@@ -114,12 +113,10 @@
           "batteryVoltage",
           "charging",
           "connected",
-          "ip",
           "lastLoadPosition",
           "lastModuleSerialNumber",
           "lastNodeId",
           "lastSeen",
-          "pairedSince",
           "serialNumber",
           "type",
           "version"

@@ -33,14 +33,15 @@ class SensorManager:
         
         logger.info("🌡️ CCU Sensor Manager initialized with MessageManager and State-Holder")
     
-    def process_sensor_message(self, topic: str, payload: Dict[str, Any]):
+    def process_sensor_message(self, topic: str, payload: Dict[str, Any], meta: Optional[Dict] = None):
         """
         NEU: Verarbeitet eingehende Sensor-Message und updated State
-        Wird vom MQTT-Client über Business-Function-Callback aufgerufen
+        Wird vom Gateway über Topic-Routing aufgerufen
         
         Args:
             topic: MQTT Topic (String)
             payload: Payload-Daten (Dict ohne MQTT-Metadaten)
+            meta: Metadaten (timestamp, raw, qos, retain)
         """
         try:
             logger.debug(f"🔔 SensorManager received message for topic: {topic}")

@@ -27,6 +27,14 @@ from omf2.factory.gateway_factory import get_gateway_factory
 from omf2.ui.main_dashboard import MainDashboard
 from omf2.ui.utils.ui_refresh import request_refresh, consume_refresh
 
+from omf2.common.logger import setup_multilevel_ringbuffer_logging
+
+# BEST PRACTICE: Frühe Initialisierung vor erstem logger.info()
+if 'log_handler' not in st.session_state:
+    handler, buffers = setup_multilevel_ringbuffer_logging()
+    st.session_state['log_handler'] = handler
+    st.session_state['log_buffers'] = buffers
+
 # Configure logging
 from omf2.common.logger import setup_file_logging
 log_dir = setup_file_logging()
@@ -181,25 +189,6 @@ def main():
         if not ccu_client.connected:
             ccu_client.connect(current_env)
             logger.info(f"🏗️ CCU MQTT Client connected to {current_env} on startup")
-        
-        # Initialize central log buffer with new logging system
-        if 'log_buffer' not in st.session_state:
-            from omf2.common.logger import setup_central_log_buffer
-            
-            # Setup central log buffer (new system from Copilot PR)
-            log_buffer, ring_handler = setup_central_log_buffer(
-                buffer_size=1000,
-                log_level=logging.INFO
-            )
-            st.session_state['log_buffer'] = log_buffer
-            st.session_state['ring_buffer_handler'] = ring_handler
-            
-            logger.info("📋 Central log buffer initialized with new logging system")
-            
-            # Add some initial logs
-            logger.info("🚀 OMF2 Dashboard started")
-            logger.info("🔌 Admin MQTT Client initialized")
-            logger.info("📊 Main Dashboard rendered")
         
         # Create and render main dashboard
         if 'main_dashboard' not in st.session_state:

@@ -99,7 +99,7 @@ def render_ccu_message_monitor(ccu_gateway, title="CCU Message Monitor", show_co
                 # Extract message info - handle both dict and other types
                 if isinstance(message, dict):
                     # Format timestamp properly
-                    raw_timestamp = message.get('timestamp', 'Unknown')
+                    raw_timestamp = message.get('mqtt_timestamp', 'Unknown')
                     if isinstance(raw_timestamp, (int, float)):
                         from datetime import datetime
                         timestamp = datetime.fromtimestamp(raw_timestamp).strftime('%H:%M:%S.%f')[:-3]

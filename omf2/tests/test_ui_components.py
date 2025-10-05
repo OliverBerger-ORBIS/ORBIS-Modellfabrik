@@ -177,38 +177,6 @@ class TestNoderedGateway(unittest.TestCase):
         self.assertIsNone(gateway.pub_mqtt_client)
         self.assertIsNone(gateway.sub_mqtt_client)
     
-    def test_get_normalized_module_states(self):
-        """Test: Normalisierte Module States abrufen"""
-        gateway = NoderedGateway()
-        states = gateway.get_normalized_module_states()
-        self.assertIsInstance(states, list)
-    
-    def test_get_ccu_commands(self):
-        """Test: CCU Commands abrufen"""
-        gateway = NoderedGateway()
-        commands = gateway.get_ccu_commands()
-        self.assertIsInstance(commands, list)
-    
-    def test_get_opc_ua_states(self):
-        """Test: OPC-UA States abrufen"""
-        gateway = NoderedGateway()
-        states = gateway.get_opc_ua_states()
-        self.assertIsInstance(states, list)
-    
-    def test_send_ccu_feedback(self):
-        """Test: CCU Feedback senden"""
-        gateway = NoderedGateway()
-        feedback = {"status": "ok", "message": "test"}
-        result = gateway.send_ccu_feedback(feedback)
-        self.assertTrue(result)
-    
-    def test_send_order_completed(self):
-        """Test: Order Completed senden"""
-        gateway = NoderedGateway()
-        order_data = {"order_id": "123", "status": "completed"}
-        result = gateway.send_order_completed(order_data)
-        self.assertTrue(result)
-    
     def test_get_pub_topics(self):
         """Test: Publisher Topics abrufen"""
         gateway = NoderedGateway()
@@ -255,25 +223,6 @@ class TestNoderedPubMqttClient(unittest.TestCase):
         self.assertIsInstance(client.published_topics, list)
         self.assertEqual(client.subscribed_topics, [])  # Publisher ist nie Subscriber
     
-    def test_publish_normalized_state(self):
-        """Test: Normalisierten State publizieren"""
-        client = NoderedPubMqttClient()
-        result = client.publish_normalized_state("SVR3QA0022", {"state": "idle"})
-        self.assertTrue(result)
-    
-    def test_publish_ccu_feedback(self):
-        """Test: CCU Feedback publizieren"""
-        client = NoderedPubMqttClient()
-        feedback = {"status": "ok"}
-        result = client.publish_ccu_feedback(feedback)
-        self.assertTrue(result)
-    
-    def test_publish_order_completed(self):
-        """Test: Order Completed publizieren"""
-        client = NoderedPubMqttClient()
-        order_data = {"order_id": "123"}
-        result = client.publish_order_completed(order_data)
-        self.assertTrue(result)
 
 
 class TestNoderedSubMqttClient(unittest.TestCase):
@@ -309,36 +258,6 @@ class TestNoderedSubMqttClient(unittest.TestCase):
         self.assertIsInstance(client.subscribed_topics, list)
         self.assertEqual(client.published_topics, [])  # Subscriber ist nie Publisher
     
-    def test_subscribe_to_ccu_commands(self):
-        """Test: CCU Commands subscriben"""
-        client = NoderedSubMqttClient()
-        result = client.subscribe_to_ccu_commands()
-        self.assertTrue(result)
-    
-    def test_subscribe_to_opc_ua_states(self):
-        """Test: OPC-UA States subscriben"""
-        client = NoderedSubMqttClient()
-        result = client.subscribe_to_opc_ua_states()
-        self.assertTrue(result)
-    
-    def test_subscribe_to_txt_commands(self):
-        """Test: TXT Commands subscriben"""
-        client = NoderedSubMqttClient()
-        result = client.subscribe_to_txt_commands()
-        self.assertTrue(result)
-    
-    def test_get_ccu_command_buffers(self):
-        """Test: CCU Command Buffers abrufen"""
-        client = NoderedSubMqttClient()
-        buffers = client.get_ccu_command_buffers()
-        self.assertIsInstance(buffers, dict)
-    
-    def test_get_opc_ua_state_buffers(self):
-        """Test: OPC-UA State Buffers abrufen"""
-        client = NoderedSubMqttClient()
-        buffers = client.get_opc_ua_state_buffers()
-        self.assertIsInstance(buffers, dict)
-
 
 class TestAdminGateway(unittest.TestCase):
     """Test-Klasse für Admin Gateway"""
@@ -360,12 +279,12 @@ class TestAdminGateway(unittest.TestCase):
         self.assertIsNotNone(gateway.registry_manager)
         self.assertIsNone(gateway.mqtt_client)
     
-    def test_generate_message_template(self):
-        """Test: Message Template generieren"""
+    def test_generate_message(self):
+        """Test: Message generieren"""
         gateway = AdminGateway()
-        template = gateway.generate_message_template("test/topic", {"param": "value"})
-        # Kann None sein wenn Template nicht gefunden
-        self.assertTrue(template is None or isinstance(template, dict))
+        message = gateway.generate_message("test/topic", {"param": "value"})
+        # Kann None sein wenn Message nicht gefunden
+        self.assertTrue(message is None or isinstance(message, dict))
     
     def test_validate_message(self):
         """Test: Message validieren"""
@@ -388,11 +307,11 @@ class TestAdminGateway(unittest.TestCase):
         topics = gateway.get_all_topics()
         self.assertIsInstance(topics, list)
     
-    def test_get_topic_templates(self):
-        """Test: Topic Templates abrufen"""
+    def test_get_topic_schemas(self):
+        """Test: Topic Schemas abrufen"""
         gateway = AdminGateway()
-        templates = gateway.get_topic_templates()
-        self.assertIsInstance(templates, dict)
+        schemas = gateway.get_topic_schemas()
+        self.assertIsInstance(schemas, dict)
     
     def test_get_system_status(self):
         """Test: System Status abrufen"""

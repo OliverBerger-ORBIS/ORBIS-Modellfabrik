@@ -66,6 +66,9 @@ class AdminMqttClient:
         from collections import defaultdict, deque
         self.topic_buffers = defaultdict(lambda: deque(maxlen=1000))
         
+        # Gateway für Message-Routing (Architecture: MQTT → Gateway → Manager → UI)
+        self._gateway = None
+        
         # Published/Subscribed Topics aus Registry
         self.published_topics = self._get_published_topics()
         self.subscribed_topics = self._get_subscribed_topics()
@@ -536,44 +539,105 @@ class AdminMqttClient:
         """MQTT on_message Callback (thread-safe)"""
         try:
             topic = msg.topic
-            payload = msg.payload.decode('utf-8')
-            
-            # JSON-Parsing und Buffer-Update
+            # Sichere Payload-Dekodierung
             try:
-                message = json.loads(payload)
+                payload_raw = msg.payload.decode('utf-8') if msg.payload else ""
+            except (AttributeError, UnicodeDecodeError) as e:
+                logger.warning(f"⚠️ Payload decode error: {e}")
+                payload_raw = ""
+            
+            mqtt_timestamp = time.time()
+            
+            # JSON-Parsing
+            try:
+                message = json.loads(payload_raw)
                 
-                # Ensure message is a dictionary, not a list
-                if isinstance(message, list):
-                    # If it's a list, wrap it in a dictionary
-                    message = {"data": message, "timestamp": time.time()}
-                elif isinstance(message, dict):
-                    # If it's a dictionary, add timestamp
-                    message['timestamp'] = time.time()
+                # Buffer-Update (mit MQTT-Client timestamp für Monitoring)
+                # Robust für alle JSON-Typen (dict, list, str, int, bool)
+                if isinstance(message, dict):
+                    buffer_message = message.copy()
+                    buffer_message['mqtt_timestamp'] = mqtt_timestamp
                 else:
-                    # If it's something else, wrap it
-                    message = {"data": message, "timestamp": time.time()}
+                    # Für Listen, Strings, Numbers, Booleans: als Dict wrappen
+                    buffer_message = {
+                        'data': message,
+                        'mqtt_timestamp': mqtt_timestamp
+                    }
                 
                 with self._buffer_lock:
-                    self.topic_buffers[topic].append(message)
+                    self.topic_buffers[topic].append(buffer_message)
                 
                 logger.debug(f"📥 Received on {topic}: {message}")
+                
+                # Meta-Parameter für Gateway
+                meta = {
+                    "mqtt_timestamp": mqtt_timestamp,
+                    "qos": msg.qos,
+                    "retain": msg.retain
+                }
+                
+                # Gateway-Routing: message = clean_payload (keine Änderungen!)
+                if self._gateway:
+                    self._gateway.on_mqtt_message(topic, message, meta)
+                else:
+                    logger.debug(f"⚠️ No gateway registered, skipping routing for {topic}")
                 
             except json.JSONDecodeError:
                 # Nicht-JSON Messages als Text speichern
                 with self._buffer_lock:
                     self.topic_buffers[topic].append({
-                        'raw_payload': payload,
-                        'timestamp': time.time()
+                        'raw_payload': payload_raw,
+                        'mqtt_timestamp': mqtt_timestamp
                     })
-                logger.debug(f"📥 Received raw on {topic}: {payload}")
+                logger.debug(f"📥 Received raw on {topic}: {payload_raw}")
             
         except Exception as e:
-            logger.error(f"❌ Message processing failed: {e}")
+            # Sammle alle Context-Informationen in einem String
+            context_parts = []
+            context_parts.append(f"❌ Admin Message processing error: {e}")
+            
+            try:
+                context_parts.append(f"📍 Topic: {topic}")
+            except:
+                context_parts.append("📍 Topic: <undefined>")
+            
+            try:
+                context_parts.append(f"📍 Payload type: {type(payload_raw)}")
+                context_parts.append(f"📍 Payload preview: {payload_raw[:200]}...")
+            except:
+                context_parts.append("📍 Payload: <undefined>")
+            
+            try:
+                context_parts.append(f"📍 MQTT timestamp: {mqtt_timestamp}")
+            except:
+                context_parts.append("📍 MQTT timestamp: <undefined>")
+            
+            try:
+                if 'message' in locals():
+                    context_parts.append(f"📍 Message type: {type(message)}")
+                    context_parts.append(f"📍 Message preview: {str(message)[:200]}...")
+                else:
+                    context_parts.append("📍 Message: <not parsed>")
+            except:
+                context_parts.append("📍 Message: <error accessing>")
+            
+            # Ein einziger Log-Eintrag mit allen Informationen
+            logger.error(" | ".join(context_parts))
     
     def _on_disconnect(self, client, userdata, rc):
         """MQTT on_disconnect Callback"""
         self.connected = False
         logger.info("🔌 Admin MQTT Client disconnected")
+    
+    def register_gateway(self, gateway):
+        """
+        Registriert ein Gateway für Message-Routing
+        
+        Args:
+            gateway: AdminGateway Instanz für Message-Routing
+        """
+        self._gateway = gateway
+        logger.info(f"🚪 Admin Gateway registered for message routing")
 
 
 # Singleton Factory

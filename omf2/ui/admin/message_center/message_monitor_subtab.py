@@ -110,7 +110,7 @@ def render_message_monitor_subtab(admin_gateway):
                             topic=topic,
                             payload=message.get('payload', message),
                             message_type=message.get('message_type', 'received'),  # Default to 'received' for normal messages
-                            timestamp=message.get('timestamp', time.time()),
+                            timestamp=message.get('mqtt_timestamp', time.time()),
                             qos=message.get('qos', 0),
                             retain=message.get('retain', False)
                         )

@@ -83,7 +83,6 @@
         },
         "required": [
           "errorLevel",
-          "errorReferences",
           "errorType"
         ]
       }

@@ -6,7 +6,7 @@ metadata:
 
 # MQTT-Client-Konfiguration
 mqtt_clients:
-  # Admin MQTT Client (MessageTemplateGenerator)
+  # Admin MQTT Client
   admin_mqtt_client:
     active: true
     client_class: "AdminMqttClient"

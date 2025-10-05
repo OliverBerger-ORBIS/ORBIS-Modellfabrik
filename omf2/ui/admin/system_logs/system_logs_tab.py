@@ -31,11 +31,12 @@ def render_system_logs_tab():
         # Connection status shown in sidebar only
         
         # Log viewer tabs
-        tab1, tab2, tab3, tab4 = st.tabs([
+        tab1, tab2, tab3, tab4, tab5 = st.tabs([
             f"{UISymbols.get_functional_icon('history')} Log History",
             f"{UISymbols.get_functional_icon('search')} Log Search", 
             f"{UISymbols.get_functional_icon('dashboard')} Log Analytics",
-            f"{UISymbols.get_functional_icon('settings')} Log Management"
+            f"{UISymbols.get_functional_icon('settings')} Log Management",
+            f"🚨 Error & Warnings"
         ])
         
         with tab1:
@@ -49,6 +50,10 @@ def render_system_logs_tab():
         
         with tab4:
             _render_log_management(admin_gateway)
+        
+        with tab5:
+            from omf2.ui.admin.system_logs.error_warning_tab import render_error_warning_tab
+            render_error_warning_tab()
         
     except Exception as e:
         logger.error(f"{UISymbols.get_status_icon('error')} Admin Logs Tab rendering error: {e}")
@@ -83,14 +88,19 @@ def _render_log_history(admin_gateway):
         if st.button(f"{UISymbols.get_status_icon('refresh')} Refresh", key="refresh_logs"):
             st.rerun()
     
-    # Get log entries from central buffer
-    log_buffer = st.session_state.get('log_buffer')
-    if not log_buffer:
-        st.error(f"{UISymbols.get_status_icon('error')} No log buffer available")
+    # Get log entries from new multi-level buffer system
+    log_handler = st.session_state.get('log_handler')
+    if not log_handler:
+        st.error(f"{UISymbols.get_status_icon('error')} No log handler available")
         return
     
-    # Convert deque to list and reverse (newest first)
-    all_logs = list(log_buffer)[::-1]
+    # Get all logs from all levels and combine them
+    all_logs = []
+    for level in ['ERROR', 'WARNING', 'INFO', 'DEBUG']:
+        all_logs.extend(log_handler.get_buffer(level))
+    
+    # Sort by timestamp (newest first)
+    all_logs.sort(key=lambda x: x.split(']')[0] if ']' in x else x, reverse=True)
     
     # Filter by log level
     if log_level != "ALL":
@@ -110,34 +120,48 @@ def _render_log_history(admin_gateway):
     
     # Display logs in expandable sections
     for i, log_entry in enumerate(filtered_logs):
-        # Extract timestamp and level for display
-        timestamp = log_entry.split(']')[0].split('[')[0].strip() if ']' in log_entry else "Unknown"
+        # Extract level and logger name for display
         level = "INFO"
+        logger_name = "unknown"
+        
+        # Parse log format: "timestamp [LEVEL] logger_name: message"
         if "[DEBUG]" in log_entry:
             level = "DEBUG"
+            parts = log_entry.split("[DEBUG] ")
+            if len(parts) > 1:
+                logger_part = parts[1].split(":")[0] if ":" in parts[1] else "unknown"
+                logger_name = logger_part.strip()
         elif "[INFO]" in log_entry:
             level = "INFO"
+            parts = log_entry.split("[INFO] ")
+            if len(parts) > 1:
+                logger_part = parts[1].split(":")[0] if ":" in parts[1] else "unknown"
+                logger_name = logger_part.strip()
         elif "[WARNING]" in log_entry:
             level = "WARNING"
+            parts = log_entry.split("[WARNING] ")
+            if len(parts) > 1:
+                logger_part = parts[1].split(":")[0] if ":" in parts[1] else "unknown"
+                logger_name = logger_part.strip()
         elif "[ERROR]" in log_entry:
             level = "ERROR"
+            parts = log_entry.split("[ERROR] ")
+            if len(parts) > 1:
+                logger_part = parts[1].split(":")[0] if ":" in parts[1] else "unknown"
+                logger_name = logger_part.strip()
         
         # Color coding for log levels
         if level == "ERROR":
-            icon = f"{UISymbols.get_status_icon('error')}"
             color = "🔴"
         elif level == "WARNING":
-            icon = f"{UISymbols.get_status_icon('warning')}"
             color = "🟡"
         elif level == "DEBUG":
-            icon = f"{UISymbols.get_functional_icon('search')}"
             color = "🔵"
         else:
-            icon = f"{UISymbols.get_status_icon('info')}"
             color = "🔵"
         
-        # Create expandable section
-        with st.expander(f"{color} {timestamp} - {level}", expanded=False):
+        # Create expandable section with new format: [LEVEL] logger_name
+        with st.expander(f"{color} [{level}] {logger_name}", expanded=False):
             st.code(log_entry, language="text")
 
 
@@ -159,14 +183,19 @@ def _render_log_search(admin_gateway):
     with col2:
         search_clicked = st.button(f"{UISymbols.get_functional_icon('search')} Search", key="search_logs")
     
-    # Get log entries from central buffer
-    log_buffer = st.session_state.get('log_buffer')
-    if not log_buffer:
-        st.error(f"{UISymbols.get_status_icon('error')} No log buffer available")
+    # Get log entries from new multi-level buffer system
+    log_handler = st.session_state.get('log_handler')
+    if not log_handler:
+        st.error(f"{UISymbols.get_status_icon('error')} No log handler available")
         return
     
-    # Convert deque to list and reverse (newest first)
-    all_logs = list(log_buffer)[::-1]
+    # Get all logs from all levels and combine them
+    all_logs = []
+    for level in ['ERROR', 'WARNING', 'INFO', 'DEBUG']:
+        all_logs.extend(log_handler.get_buffer(level))
+    
+    # Sort by timestamp (newest first)
+    all_logs.sort(key=lambda x: x.split(']')[0] if ']' in x else x, reverse=True)
     
     # Perform search if query provided
     if search_query and search_clicked:
@@ -178,17 +207,35 @@ def _render_log_search(admin_gateway):
             
             # Display search results
             for i, log_entry in enumerate(search_results[:50]):  # Limit to 50 results
-                # Extract timestamp and level for display
-                timestamp = log_entry.split(']')[0].split('[')[0].strip() if ']' in log_entry else "Unknown"
+                # Extract level and logger name for display (same logic as Log History)
                 level = "INFO"
+                logger_name = "unknown"
+                
+                # Parse log format: "timestamp [LEVEL] logger_name: message"
                 if "[DEBUG]" in log_entry:
                     level = "DEBUG"
+                    parts = log_entry.split("[DEBUG] ")
+                    if len(parts) > 1:
+                        logger_part = parts[1].split(":")[0] if ":" in parts[1] else "unknown"
+                        logger_name = logger_part.strip()
                 elif "[INFO]" in log_entry:
                     level = "INFO"
+                    parts = log_entry.split("[INFO] ")
+                    if len(parts) > 1:
+                        logger_part = parts[1].split(":")[0] if ":" in parts[1] else "unknown"
+                        logger_name = logger_part.strip()
                 elif "[WARNING]" in log_entry:
                     level = "WARNING"
+                    parts = log_entry.split("[WARNING] ")
+                    if len(parts) > 1:
+                        logger_part = parts[1].split(":")[0] if ":" in parts[1] else "unknown"
+                        logger_name = logger_part.strip()
                 elif "[ERROR]" in log_entry:
                     level = "ERROR"
+                    parts = log_entry.split("[ERROR] ")
+                    if len(parts) > 1:
+                        logger_part = parts[1].split(":")[0] if ":" in parts[1] else "unknown"
+                        logger_name = logger_part.strip()
                 
                 # Color coding for log levels
                 if level == "ERROR":
@@ -205,9 +252,10 @@ def _render_log_search(admin_gateway):
                     search_query, f"**{search_query}**"
                 )
                 
-                # Create expandable section
-                with st.expander(f"{color} {timestamp} - {level}", expanded=False):
-                    st.markdown(highlighted_log)
+                # Display directly without expandable section (expanded by default)
+                st.markdown(f"**{color} [{level}] {logger_name}**")
+                st.code(highlighted_log, language="text")
+                st.markdown("---")  # Separator between entries
         else:
             st.warning(f"{UISymbols.get_status_icon('warning')} No results found for: '{search_query}'")
     
@@ -224,14 +272,16 @@ def _render_log_analytics(admin_gateway):
     st.subheader(f"{UISymbols.get_functional_icon('dashboard')} Log Analytics")
     st.markdown("**System log statistics and trends**")
     
-    # Get log entries from central buffer
-    log_buffer = st.session_state.get('log_buffer')
-    if not log_buffer:
-        st.error(f"{UISymbols.get_status_icon('error')} No log buffer available")
+    # Get log entries from new multi-level buffer system
+    log_handler = st.session_state.get('log_handler')
+    if not log_handler:
+        st.error(f"{UISymbols.get_status_icon('error')} No log handler available")
         return
     
-    # Convert deque to list
-    all_logs = list(log_buffer)
+    # Get all logs from all levels and combine them
+    all_logs = []
+    for level in ['ERROR', 'WARNING', 'INFO', 'DEBUG']:
+        all_logs.extend(log_handler.get_buffer(level))
     
     # Count log levels
     total_logs = len(all_logs)
@@ -353,82 +403,77 @@ def _render_log_management(admin_gateway):
     st.subheader(f"{UISymbols.get_functional_icon('dashboard')} Current Log Levels")
     current_levels = get_current_log_levels()
     
-    # Compact log levels display
+    # Architecture-based log levels display
     st.markdown("**Current Log Levels**")
     
-    # Core modules - compact format
+    # Domain-based architecture: MQTT → Gateway → Manager → UI
     col1, col2 = st.columns(2)
+    
     with col1:
-        st.text("Core Modules:")
-        st.text(f"• omf2: {current_levels.get('omf2', 'Unknown')}")
-        st.text(f"• omf2.ccu: {current_levels.get('omf2.ccu', 'Unknown')}")
-        st.text(f"• omf2.admin: {current_levels.get('omf2.admin', 'Unknown')}")
+        st.text("🔌 **ADMIN Domain:**")
+        st.text(f"• admin_mqtt_client: {current_levels.get('omf2.admin.admin_mqtt_client', 'Unknown')}")
+        st.text(f"• admin_gateway: {current_levels.get('omf2.admin.admin_gateway', 'Unknown')}")
+        st.text(f"• (admin_managers: TBD)")
+        st.text(f"• omf2.ui: {current_levels.get('omf2.ui', 'Unknown')}")
     
     with col2:
-        st.text("")  # Spacer
-        st.text(f"• omf2.common: {current_levels.get('omf2.common', 'Unknown')}")
-        st.text(f"• omf2.ui: {current_levels.get('omf2.ui', 'Unknown')}")
-        st.text(f"• omf2.nodered: {current_levels.get('omf2.nodered', 'Unknown')}")
-    
-    # Business managers - compact format
-    col3, col4 = st.columns(2)
-    with col3:
-        st.text("Business Managers:")
+        st.text("🏭 **CCU Domain:**")
+        st.text(f"• ccu_mqtt_client: {current_levels.get('omf2.ccu.ccu_mqtt_client', 'Unknown')}")
+        st.text(f"• ccu_gateway: {current_levels.get('omf2.ccu.ccu_gateway', 'Unknown')}")
         st.text(f"• sensor_manager: {current_levels.get('omf2.ccu.sensor_manager', 'Unknown')}")
         st.text(f"• module_manager: {current_levels.get('omf2.ccu.module_manager', 'Unknown')}")
     
-    with col4:
-        st.text("MQTT Clients:")
-        st.text(f"• ccu_mqtt_client: {current_levels.get('omf2.ccu.ccu_mqtt_client', 'Unknown')}")
-        st.text(f"• admin_mqtt_client: {current_levels.get('omf2.admin.admin_mqtt_client', 'Unknown')}")
+    # Common components
+    st.text("🔧 **Common Components:**")
+    st.text(f"• omf2.common: {current_levels.get('omf2.common', 'Unknown')}")
+    st.text(f"• omf2.nodered: {current_levels.get('omf2.nodered', 'Unknown')}")
     
     # Quick debug controls
     st.subheader(f"{UISymbols.get_functional_icon('settings')} Quick Debug Controls")
     st.markdown("**Enable/disable debug logging for specific components**")
     
-    # Compact debug controls
-    st.markdown("**Sensor Manager**")
-    col1, col2 = st.columns([1, 1])
+    # Domain-based debug controls
+    col1, col2 = st.columns(2)
+    
     with col1:
-        if st.button("🔍 Enable Sensor Debug", key="enable_sensor_debug"):
-            enable_sensor_debug()
-            st.success("✅ Sensor debug enabled")
+        st.markdown("**🔌 ADMIN Domain**")
+        if st.button("🔍 Admin MQTT", key="enable_admin_mqtt_debug"):
+            set_debug_mode("omf2.admin.admin_mqtt_client", True)
+            st.success("✅ Admin MQTT debug enabled")
+            st.rerun()
+        if st.button("🔍 Admin Gateway", key="enable_admin_gateway_debug"):
+            set_debug_mode("omf2.admin.admin_gateway", True)
+            st.success("✅ Admin Gateway debug enabled")
+            st.rerun()
+        if st.button("ℹ️ Disable Admin", key="disable_admin_debug"):
+            set_debug_mode("omf2.admin.admin_mqtt_client", False)
+            set_debug_mode("omf2.admin.admin_gateway", False)
+            st.info("ℹ️ Admin debug disabled")
             st.rerun()
     
     with col2:
-        if st.button("ℹ️ Disable Sensor Debug", key="disable_sensor_debug"):
-            set_debug_mode("omf2.ccu.sensor_manager", False)
-            st.info("ℹ️ Sensor debug disabled")
+        st.markdown("**🏭 CCU Domain**")
+        if st.button("🔍 CCU MQTT", key="enable_ccu_mqtt_debug"):
+            set_debug_mode("omf2.ccu.ccu_mqtt_client", True)
+            st.success("✅ CCU MQTT debug enabled")
             st.rerun()
-    
-    st.markdown("**Module Manager**")
-    col3, col4 = st.columns([1, 1])
-    with col3:
-        if st.button("🔍 Enable Module Debug", key="enable_module_debug"):
+        if st.button("🔍 CCU Gateway", key="enable_ccu_gateway_debug"):
+            set_debug_mode("omf2.ccu.ccu_gateway", True)
+            st.success("✅ CCU Gateway debug enabled")
+            st.rerun()
+        if st.button("🔍 Managers", key="enable_ccu_managers_debug"):
+            enable_sensor_debug()
             enable_module_debug()
-            st.success("✅ Module debug enabled")
+            st.success("✅ CCU Managers debug enabled")
             st.rerun()
-    
-    with col4:
-        if st.button("ℹ️ Disable Module Debug", key="disable_module_debug"):
-            set_debug_mode("omf2.ccu.module_manager", False)
-            st.info("ℹ️ Module debug disabled")
-            st.rerun()
-    
-    st.markdown("**MQTT Clients**")
-    col5, col6 = st.columns([1, 1])
-    with col5:
-        if st.button("🔍 Enable MQTT Debug", key="enable_mqtt_debug"):
-            enable_mqtt_debug()
-            st.success("✅ MQTT debug enabled")
-            st.rerun()
-    
-    with col6:
-        if st.button("ℹ️ Disable MQTT Debug", key="disable_mqtt_debug"):
+        if st.button("ℹ️ Disable CCU", key="disable_ccu_debug"):
             set_debug_mode("omf2.ccu.ccu_mqtt_client", False)
-            set_debug_mode("omf2.admin.admin_mqtt_client", False)
-            st.info("ℹ️ MQTT debug disabled")
+            set_debug_mode("omf2.ccu.ccu_gateway", False)
+            set_debug_mode("omf2.ccu.sensor_manager", False)
+            set_debug_mode("omf2.ccu.module_manager", False)
+            st.info("ℹ️ CCU debug disabled")
             st.rerun()
+    
     
     # Global controls
     st.subheader(f"{UISymbols.get_functional_icon('settings')} Global Controls")

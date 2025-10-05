@@ -113,15 +113,36 @@
 
 ### Orbis Customizations
 - `docs/` - Orbis documentation and analysis
-- `omf/` - Orbis source code
-  - `omf/` - OMF Dashboard (Hauptanwendung)
+- `omf/` - Legacy OMF Dashboard (Hauptanwendung)
+  - `omf/` - OMF Dashboard (Legacy-Version)
   - `helper_apps/` - Helper-Anwendungen (unabhängig)
     - `session_manager/` - Session Manager (Replay-Funktionalität)
-- `tests/` - Orbis tests
-- `registry/` - Registry & Schemas (Single Source of Truth)
+- `omf2/` - **NEUE OMF2 Architektur** (Empfohlen)
+  - `omf2/omf.py` - Streamlit Dashboard Entry Point
+  - `omf2/admin/` - Admin Domain (MQTT Client + Gateway + Manager)
+  - `omf2/ccu/` - CCU Domain (MQTT Client + Gateway + Manager)
+  - `omf2/nodered/` - Node-RED Domain (Gateway + Manager)
+  - `omf2/common/` - Shared Components (Logger, Registry, Manager)
+  - `omf2/factory/` - Factory Pattern für Singleton-Erstellung
+  - `omf2/ui/` - Streamlit UI Components
+  - `omf2/registry/` - Registry v2 (Topics, Schemas, MQTT Clients)
+  - `omf2/config/` - Konfigurationsdateien (MQTT, Logging)
+  - `omf2/docs/` - OMF2-spezifische Dokumentation
+  - `omf2/tests/` - OMF2 Test Suite (55 Tests)
+- `tests/` - Legacy Orbis tests
+- `registry/` - Legacy Registry & Schemas
 - `data/` - Unsere Daten (`mqtt-data/`, `omf-data/`)
 
 ### System-Architektur
+
+#### **OMF2 (Empfohlen) - Moderne Architektur**
+- **Drei-Schichten-Architektur**: MQTT Client → Gateway → Business Manager
+- **Thread-sichere Singleton**: Alle Komponenten sind thread-safe
+- **Schema-driven**: Registry-basierte Validierung und Routing
+- **Best Practice Logging**: Level-spezifische Ringbuffer mit UI-Integration
+- **55 erfolgreiche Tests**: Vollständige Test-Abdeckung
+
+#### **OMF (Legacy) - Bestehende Architektur**
 - **OMF Dashboard**: Hauptanwendung für Fabrik-Steuerung
 - **Session Manager**: Unabhängige Helper-App für Session-Replay
 - **Keine direkte Kopplung**: Beide Systeme arbeiten unabhängig
@@ -205,37 +226,70 @@ Das OMF2 Dashboard ist eine moderne, webbasierte Anwendung zur Steuerung und Üb
 ### Schnellstart OMF2
 
 ```bash
+# Virtual Environment aktivieren
+source .venv/bin/activate
+
 # Installation der Abhängigkeiten
 pip install -r requirements.txt
 
 # Starten der OMF2 Streamlit-App
-streamlit run omf2/omf_dashboard.py
+streamlit run omf2/omf.py
 ```
 
 Die OMF2-Anwendung ist dann unter `http://localhost:8501` verfügbar.
 
-### OMF2 Architektur
+### OMF2 Core-Architektur
 
-Das OMF2 Dashboard folgt der in `omf2/projekt-struktur-omf2.md` definierten Architektur:
+Das OMF2 Dashboard folgt einer professionellen **Drei-Schichten-Architektur**:
 
-- **Rollenbasierte Zugriffskontrolle**: Admin, Supervisor, Operator, Viewer
-- **Mehrsprachigkeit**: Deutsch, Englisch, Französisch
-- **Modulare UI-Komponenten**: CCU Dashboard, Message Center, System Logs, Settings
-- **Session State Management**: Streamlit-native Zustandsverwaltung
-- **Factory Pattern**: Singleton-basierte Client-Verwaltung
+#### **🔌 MQTT CLIENT LAYER (Transport)**
+- **Thread-sichere Singleton** für alle Domänen (Admin, CCU, Node-RED)
+- **Raw MQTT → Clean JSON** Transformation
+- **Meta-Parameter-System** (timestamp, qos, retain)
+- **Robust Payload-Handling** für alle JSON-Typen
+- **Buffer-Management** für UI-Monitoring
+
+#### **🚪 GATEWAY LAYER (Validation & Routing)**
+- **Schema-Validation** mit Registry-Schemas
+- **Topic-Routing** (Set-basiert + Präfix-basiert)
+- **Error-Handling** mit detailliertem Logging
+- **Clean Data Contract** (NIE raw bytes an Manager)
+- **Domain-spezifische Gateways** (Admin, CCU, Node-RED)
+
+#### **🏢 BUSINESS MANAGER LAYER (Business Logic)**
+- **State-Holder Pattern** für Business-Daten
+- **Schema-basierte Verarbeitung** mit Registry-Integration
+- **Domain-agnostic Manager** (Message, Topic, Sensor, Module)
+- **Clean API** für UI-Komponenten
+- **Thread-safe Operations** für MQTT-Callbacks
+
+### OMF2 Features
+
+- **Best Practice Logging-System** mit Level-spezifischen Ringbuffern
+- **UI-Logging Integration** mit dedizierten Error & Warning Tabs
+- **Registry v2 Integration** für alle Komponenten
+- **Schema-driven Architecture** mit JSON-Schema-Validierung
+- **Thread-safe Singleton Pattern** für alle Komponenten
+- **55 erfolgreiche Tests** für die gesamte Architektur
 
 ### OMF2 Tests
 
 ```bash
-# OMF2-Dashboard-Tests ausführen
-python -m pytest omf2/tests/test_streamlit_dashboard.py -v
+# Alle OMF2-Tests ausführen
+python -m pytest omf2/tests/ -v
+
+# Spezifische Test-Suites
+python -m pytest omf2/tests/test_comprehensive_architecture.py -v
+python -m pytest omf2/tests/test_gateway_factory.py -v
+python -m pytest omf2/tests/test_registry_manager_comprehensive.py -v
 ```
 
 ### OMF2 Konfiguration
 
 - **MQTT-Einstellungen**: `omf2/config/mqtt_settings.yml`
-- **Benutzerrollen**: `omf2/config/user_roles.yml`
-- **Anwendungen**: `omf2/config/apps.yml`
+- **Logging-Konfiguration**: `omf2/config/logging_config.yml`
+- **Registry-Schemas**: `omf2/registry/schemas/`
+- **Topic-Definitionen**: `omf2/registry/topics/`
 
-Für detaillierte Informationen siehe `omf2/projekt-struktur-omf2.md`.
+Für detaillierte Architektur-Informationen siehe `omf2/docs/ARCHITECTURE.md`.
 

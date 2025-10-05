@@ -77,7 +77,7 @@ def render_topic_monitor_subtab(admin_gateway):
         def get_latest_timestamp(topic):
             buffer = all_buffers[topic]
             if buffer and len(buffer) > 0:
-                return buffer[-1].get('timestamp', 0)
+                return buffer[-1].get('mqtt_timestamp', 0)
             return 0
         
         filtered_topics.sort(key=get_latest_timestamp, reverse=True)
@@ -95,13 +95,14 @@ def render_topic_monitor_subtab(admin_gateway):
             with st.expander(f"📨 {topic}", expanded=(i < 3)):
                 if buffer and len(buffer) > 0:
                     latest_message = buffer[-1]
-                    if 'timestamp' in latest_message:
-                        timestamp_str = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(latest_message['timestamp']))
+                    if 'mqtt_timestamp' in latest_message:
+                        timestamp_str = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(latest_message['mqtt_timestamp']))
                         st.caption(f"⏰ Last updated: {timestamp_str}")
                     if 'raw_payload' in latest_message:
                         st.text(f"Raw payload: {latest_message['raw_payload']}")
                     else:
-                        display_dict = {k: v for k, v in latest_message.items() if k != 'timestamp'}
+                        # Entferne mqtt_timestamp für saubere Anzeige
+                        display_dict = {k: v for k, v in latest_message.items() if k != 'mqtt_timestamp'}
                         st.json(display_dict)
                 else:
                     st.text("No messages in buffer")

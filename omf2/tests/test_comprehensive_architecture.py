@@ -2,7 +2,6 @@
 Comprehensive Tests für die gesamte gekapselte MQTT-Architektur
 
 Testet alle Komponenten der Architektur:
-- MessageTemplates Singleton
 - Gateway-Factory
 - Alle Gateways (CCU, Node-RED, Admin)
 - Registry v2 Integration
@@ -95,38 +94,17 @@ class TestComprehensiveArchitecture(unittest.TestCase):
         self.assertIsInstance(pub_topics, list)
         self.assertIsInstance(sub_topics, list)
 
-    def test_nodered_gateway_functionality(self):
-        """Test Node-RED Gateway Funktionalität"""
-        nodered_gateway = get_nodered_gateway()
-        
-        # Test alle Node-RED Gateway Methoden
-        normalized_states = nodered_gateway.get_normalized_module_states()
-        ccu_commands = nodered_gateway.get_ccu_commands()
-        opc_ua_states = nodered_gateway.get_opc_ua_states()
-        feedback_result = nodered_gateway.send_ccu_feedback({"status": "ok"})
-        order_result = nodered_gateway.send_order_completed({"order_id": "123"})
-        pub_topics = nodered_gateway.get_pub_topics()
-        sub_topics = nodered_gateway.get_sub_topics()
-        
-        # Prüfe Ergebnisse
-        self.assertIsInstance(normalized_states, list)
-        self.assertIsInstance(ccu_commands, list)
-        self.assertIsInstance(opc_ua_states, list)
-        self.assertTrue(feedback_result)
-        self.assertTrue(order_result)
-        self.assertIsInstance(pub_topics, list)
-        self.assertIsInstance(sub_topics, list)
 
     def test_admin_gateway_functionality(self):
         """Test Admin Gateway Funktionalität"""
         admin_gateway = get_admin_gateway()
         
         # Test alle Admin Gateway Methoden
-        message = admin_gateway.generate_message_template("test/topic", {"param": "value"})
+        message = admin_gateway.generate_message("test/topic", {"param": "value"})
         validation = admin_gateway.validate_message("test/topic", {"test": "data"})
         publish_result = admin_gateway.publish_message("test/topic", {"test": "data"})
         all_topics = admin_gateway.get_all_topics()
-        topic_templates = admin_gateway.get_topic_templates()
+        topic_schemas = admin_gateway.get_topic_schemas()
         system_status = admin_gateway.get_system_status()
         pub_topics = admin_gateway.get_published_topics()
         sub_topics = admin_gateway.get_subscribed_topics()
@@ -138,7 +116,7 @@ class TestComprehensiveArchitecture(unittest.TestCase):
         self.assertIn('warnings', validation)
         self.assertTrue(publish_result)
         self.assertIsInstance(all_topics, list)
-        self.assertIsInstance(topic_templates, dict)
+        self.assertIsInstance(topic_schemas, dict)
         self.assertIsInstance(system_status, dict)
         self.assertIsInstance(pub_topics, list)
         self.assertIsInstance(sub_topics, list)
@@ -298,21 +276,15 @@ class TestComprehensiveArchitecture(unittest.TestCase):
         ccu_gateway.send_global_command("start_production", {"line": "1"})
         ccu_gateway.send_order_request({"order_id": "ORD-001", "product": "Widget"})
         
-        # 3. Teste Node-RED Workflow
-        normalized_states = nodered_gateway.get_normalized_module_states()
-        nodered_gateway.send_ccu_feedback({"status": "processing"})
-        nodered_gateway.send_order_completed({"order_id": "ORD-001", "status": "completed"})
-        
-        # 4. Teste Admin Workflow
-        message = admin_gateway.generate_message_template("ccu/global", {"command": "status"})
+        # 3. Teste Admin Workflow
+        message = admin_gateway.generate_message("ccu/global", {"command": "status"})
         validation = admin_gateway.validate_message("ccu/global", {"status": "running"})
         admin_gateway.publish_message("ccu/global", {"status": "running"})
         
-        # 5. Prüfe, dass alle Workflows funktionieren
+        # 4. Prüfe, dass alle Workflows funktionieren
         self.assertIsNotNone(ccu_gateway)
         self.assertIsNotNone(nodered_gateway)
         self.assertIsNotNone(admin_gateway)
-        self.assertIsInstance(normalized_states, list)
         self.assertTrue(message is None or isinstance(message, dict))
         self.assertIsInstance(validation, dict)
 

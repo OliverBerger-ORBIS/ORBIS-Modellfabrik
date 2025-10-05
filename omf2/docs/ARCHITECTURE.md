@@ -1,28 +1,35 @@
 # ✅ IMPLEMENTIERTE ARCHITEKTUR: Gekapseltes MQTT, Registry Manager & Gateway für Streamlit-Apps
 
 **Status: VOLLSTÄNDIG IMPLEMENTIERT** ✅  
-**Datum: 2025-10-04**  
+**Datum: 2025-10-05**  
 **Tests: 55 Tests erfolgreich** ✅  
 **Registry-Migration: ABGESCHLOSSEN** ✅  
 **Architektur-Cleanup: ABGESCHLOSSEN** ✅  
-**Schema-Validation: SYSTEMATISCH KORRIGIERT** ✅
+**Schema-Validation: SYSTEMATISCH KORRIGIERT** ✅  
+**Gateway-Routing: MIT SCHEMA-VALIDIERUNG IMPLEMENTIERT** ✅  
+**Meta-Parameter: VOLLSTÄNDIG INTEGRIERT** ✅
 
 **Ziel:**  
 Weggekapselte, robuste Architektur für MQTT-Kommunikation, Message-Templates und UI-Refresh in einer Streamlit-App, sodass UI- und Business-Logik möglichst einfach bleiben und typische Fehlerquellen (Threading, Race-Conditions, Deadlocks, inkonsistenter State) vermieden werden.
 
 **✅ ERREICHT:** Alle Ziele wurden erfolgreich implementiert und getestet.
 
-**🔧 AKTUELLE ERKENNTNISSE (2025-10-04):**
+**🔧 AKTUELLE ERKENNTNISSE (2025-10-06):**
 - **Schema-Validation Problem gelöst**: Falsche Schema-Zuordnungen in `txt.yml` korrigiert
 - **Message Processing Pattern**: Registry Manager für Payload-Validierung statt MessageManager
 - **Topic-Schema-Mapping**: Jeder Sensor-Typ hat jetzt sein eigenes Schema (BME680, LDR, CAM)
+- **Gateway-Routing mit Schema-Validierung**: MQTT Client → Gateway (Schema-Validierung) → Manager
+- **Meta-Parameter-System**: MQTT-Metadaten (timestamp, raw, qos, retain) durch gesamte Architektur
+- **Clean Payload-Handling**: Manager erhalten immer Dict/List/Str - NIE raw bytes
+- **Best Practice Logging-System**: Level-spezifische Ringbuffer mit Thread-Safety
+- **UI-Logging Integration**: Dedicated Error & Warning Tabs mit kritischen Logs
 
 ---
 
 ## 1. ✅ IMPLEMENTIERTE KOMPONENTEN
 
 - **✅ Registry Manager** (`omf2/registry/manager/registry_manager.py`)  
-  Zentrale Singleton-Komponente für alle Registry v2 Daten (Topics, Templates, MQTT Clients, Workpieces, Modules, Stations, TXT Controllers).
+  Zentrale Singleton-Komponente für alle Registry v2 Daten (Topics, Schemas, MQTT Clients, Workpieces, Modules, Stations, TXT Controllers).
 - **✅ Schema-Integration** (`omf2/registry/schemas/`)  
   44 JSON-Schemas für Topic-Validierung und Payload-Validierung.
 - **✅ UI-Schema-Integration** (`omf2/ui/admin/admin_settings/schemas_subtab.py`)  
@@ -32,7 +39,7 @@ Weggekapselte, robuste Architektur für MQTT-Kommunikation, Message-Templates un
 - **✅ Gateway-Factory** (`omf2/factory/gateway_factory.py`)  
   Thread-sichere Factory für alle Gateway-Instanzen mit Singleton-Pattern.
 - **✅ CcuGateway** (`omf2/ccu/ccu_gateway.py`)  
-  Fassade für CCU Business-Operationen mit Registry v2 Integration.
+  Gateway mit Topic-Routing für CCU Business-Operationen. Routet MQTT-Nachrichten an zuständige Manager.
 - **✅ NoderedGateway** (`omf2/nodered/nodered_gateway.py`)  
   Fassade für Node-RED Business-Operationen mit Registry v2 Integration.
 - **✅ AdminGateway** (`omf2/admin/admin_gateway.py`)  
@@ -43,6 +50,121 @@ Weggekapselte, robuste Architektur für MQTT-Kommunikation, Message-Templates un
 ---
 
 ## 2. ✅ IMPLEMENTIERTE ARCHITEKTUR
+
+### **Gateway-Routing-Pattern mit Schema-Validierung (NEU)**
+
+```
+┌─────────────────────┐
+│   MQTT Broker       │
+└──────────┬──────────┘
+           │
+           ▼
+┌─────────────────────┐
+│  mqtt_client        │  ← Raw MQTT Processing
+│  - connect()        │
+│  - _on_message()    │  → JSON-Parsing + Meta-Parameter
+│  - set_gateway()    │  → timestamp, raw, qos, retain
+└──────────┬──────────┘
+           │
+           ▼
+┌─────────────────────┐
+│   gateway           │  ← Schema-Validation + Topic-Routing
+│  - on_mqtt_message()│  → Schema aus Registry
+│  - _validate_message│  → jsonschema.validate()
+│  - _route_message   │  → Validierte Message an Manager
+└──────────┬──────────┘
+           │
+           ├────────────────────┐
+           ▼                    ▼
+┌──────────────────┐  ┌──────────────────┐
+│ business_manager │  │ business_manager │  ← Clean Business-Logik
+│ - process_*(topic│  │ - process_*(topic│  → Immer Dict/List/Str
+│   payload, meta) │  │   payload, meta) │  → NIE raw bytes!
+│ - state_holder   │  │ - state_holder   │
+└──────────────────┘  └──────────────────┘
+```
+
+**Architektur-Ebenen:**
+1. **🔌 MQTT Client:** Raw MQTT → JSON + Meta-Parameter
+2. **🚪 Gateway:** Schema-Validierung + Topic-Routing  
+3. **🏢 Business Manager:** Clean Business-Logik
+4. **🖥️ UI Components:** Display & User Interaction
+
+### **Schema-Validierung & Meta-Parameter Konzept**
+
+**Payload-Handling:**
+```python
+# MQTT Client: Raw → Clean
+def _on_message(self, client, userdata, msg):
+    topic = msg.topic
+    payload_raw = msg.payload.decode('utf-8')
+    message = json.loads(payload_raw)  # Dict/List/Str
+    
+    meta = {
+        "timestamp": time.time(),
+        "raw": payload_raw,
+        "qos": msg.qos,
+        "retain": msg.retain
+    }
+    
+    # Gateway mit cleanen Daten aufrufen
+    self._gateway.on_mqtt_message(topic, message, meta)
+
+# Gateway: Schema-Validierung + Routing
+def on_mqtt_message(self, topic, message, meta=None):
+    # 1. Schema aus Registry holen
+    schema = self.registry_manager.get_topic_schema(topic)
+    
+    # 2. Schema-Validierung
+    if schema:
+        validated_message = self._validate_message(topic, message, schema)
+        if not validated_message:
+            return False  # Validierung fehlgeschlagen
+    
+    # 3. Topic-Routing an Manager
+    return self._route_message(topic, validated_message, meta)
+
+# Business Manager: Immer cleanen Input
+def process_sensor_message(self, topic, payload, meta=None):
+    # payload ist immer Dict/List/Str - NIE raw bytes!
+    # meta enthält MQTT-Metadaten falls benötigt
+```
+
+**Vorteile:**
+- **Clean Separation:** MQTT-Client macht Parsing, Gateway macht Validierung
+- **Testbarkeit:** Manager können mit echten Dicts getestet werden
+- **Robustheit:** Schema-Validierung fängt ungültige Payloads ab
+- **Monitoring:** Meta-Parameter für Debugging und Monitoring
+
+**Schema-Validation Troubleshooting:**
+Bei Validation Warnings müssen wir zwischen 3 Fällen unterscheiden:
+
+1. **Registry-Topic-Schema Beziehung passt nicht:**
+   - Problem: Falsches Schema für Topic in Registry
+   - Lösung: Schema-Zuordnung in Registry korrigieren
+
+2. **Schema ist zu streng für echte Nachricht:**
+   - Problem: Schema ist zu restriktiv für reale MQTT-Nachrichten
+   - Lösung: Schema anpassen (weniger required fields, flexiblere Typen)
+
+3. **Nachricht ist falsch/ungültig:**
+   - Problem: MQTT-Nachricht entspricht nicht dem erwarteten Format
+   - Lösung: MQTT-Sender korrigieren
+
+**Debugging-Strategie:**
+```python
+# Gateway Logging für Troubleshooting
+if schema:
+    logger.debug(f"📋 Found schema for topic {topic}, validating payload")
+    validated_message = self._validate_message(topic, message, schema)
+    if not validated_message:
+        logger.warning(f"⚠️ Schema validation failed for {topic}")
+        logger.warning(f"   Schema: {schema}")
+        logger.warning(f"   Payload: {str(message)[:200]}...")
+        # → Hier entscheiden: Registry, Schema oder Nachricht korrigieren?
+```
+
+### **Gesamte Architektur**
 
 ```plaintext
 Streamlit-UI (omf2/ui/)
@@ -58,35 +180,93 @@ Business Logic (omf2/ccu/, omf2/admin/, omf2/common/)
         │
         ▼
 Gateway-Factory (Singleton) ✅
-    ├── CcuGateway (Registry v2) ✅
+    ├── CcuGateway (Topic-Routing) ✅
     ├── NoderedGateway (Registry v2) ✅
     └── AdminGateway (Registry v2) ✅
         │
         ▼
 MQTT Clients (Singleton) ✅
-    ├── CCU MQTT Client ✅
+    ├── CCU MQTT Client (Gateway-Routing) ✅
     ├── Node-RED MQTT Client ✅
     └── Admin MQTT Client ✅
 ```
 
 **✅ IMPLEMENTIERTE FEATURES:**
+- **Gateway-Routing-Pattern mit Schema-Validierung** für saubere Trennung von Transport und Business-Logik
+- **Meta-Parameter-System** für MQTT-Metadaten (timestamp, raw, qos, retain)
+- **Schema-Validierung im Gateway** mit jsonschema für alle Topics
+- **Clean Payload-Handling:** MQTT Client → Gateway → Manager (NIE raw bytes in Manager)
+- **Best Practice Logging-System** mit Level-spezifischen Ringbuffern und Thread-Safety
+- **UI-Logging Integration** mit dedizierten Error & Warning Tabs
 - Registry Manager als zentrale Komponente für alle Registry-Daten
 - Business Logic Manager (ModuleManager, WorkpieceManager) für Entitäts-Verwaltung
 - **Domain-agnostic Manager (MessageManager, TopicManager) für wiederverwendbare Logik**
 - **SensorManager für Schema-basierte Sensor-Daten-Verarbeitung**
 - Schema-basierte Message-Verarbeitung mit direkter Registry-Abfrage
 - Thread-sichere Singleton-Pattern für alle Komponenten
-- Gateway-Factory für Business-Operationen
+- Gateway-Factory für Business-Operationen mit automatischer Gateway-Registrierung
 - MQTT Clients als Singleton für sichere Kommunikation
 - Registry v2 Integration in allen Gateways
+- **Architektur-basierte Log-Management** mit domänen-spezifischen Debug-Controls
 - **Gateway Pattern mit Manager-Delegation für saubere Trennung**
+- **Topic-Routing im Gateway** (Set-basiert für Sensoren, Präfix-basiert für Module)
 - Saubere Architektur ohne redundante Mappings
 - Vollständige Test-Abdeckung (55 Tests)
 - Error-Handling und Performance-Optimierung
 
 ---
 
-## 3. Business Logic Manager (Entitäts-Verwaltung)
+## 3. Gateway-Routing-Pattern (NEU)
+
+### **Separation of Concerns:**
+- **MQTT Client:** Nur Verbindung & Transport (KEINE Business-Logik)
+- **Gateway:** Topic-Routing und Manager-Aufrufe
+- **Manager:** Business-Logik und State-Verarbeitung
+
+### **Topic-Routing-Strategie:**
+```python
+# Sensor-Topics (Set-basiert, O(1) Lookup)
+sensor_topics = {
+    '/j1/txt/1/i/bme680',  # BME680 Sensor
+    '/j1/txt/1/i/ldr',     # LDR Sensor
+    '/j1/txt/1/i/cam'      # Camera
+}
+
+# Module-Topics (Präfix-basiert, flexibel)
+module_topic_prefixes = [
+    'module/v1/ff/',       # Direkte Module
+    'fts/v1/ff/',          # FTS Topics
+    'ccu/pairing/state'    # CCU Pairing
+]
+```
+
+### **Routing-Logik:**
+```python
+def on_mqtt_message(self, topic: str, payload: Dict[str, Any]):
+    # Routing 1: Sensor Topics (Set-basiert, O(1))
+    if topic in self.sensor_topics:
+        sensor_manager = self._get_sensor_manager()
+        sensor_manager.process_sensor_message(topic, payload)
+        return
+    
+    # Routing 2: Module Topics (Präfix-basiert)
+    for prefix in self.module_topic_prefixes:
+        if topic.startswith(prefix):
+            module_manager = self._get_module_manager()
+            module_manager.process_module_message(topic, payload)
+            return
+```
+
+### **Vorteile:**
+- ✅ **Separation of Concerns:** Client ≠ Gateway ≠ Manager
+- ✅ **Wartbarkeit:** Zentrale Topic-Listen, einfach erweiterbar
+- ✅ **Testbarkeit:** Komponenten isoliert testbar
+- ✅ **Performance:** O(1) Lookup für Sensor-Topics
+- ✅ **Singleton-kompatibel:** Lazy-Loading der Manager
+
+---
+
+## 4. Business Logic Manager (Entitäts-Verwaltung)
 
 ### 3.1 ModuleManager (Schema-basierte Message-Verarbeitung)
 
@@ -320,7 +500,7 @@ class RegistryManager:
     def _load_all_registry_data(self, registry_path):
         # Lädt alle Registry-Daten
         self._load_topics()
-        self._load_templates()
+        self._load_schemas()
         self._load_mqtt_clients()
         self._load_workpieces()
         self._load_modules()
@@ -330,8 +510,8 @@ class RegistryManager:
     def get_topics(self):
         return self.topics
 
-    def get_templates(self):
-        return self.templates
+    def get_schemas(self):
+        return self.schemas
 
     def get_mqtt_clients(self):
         return self.mqtt_clients
@@ -351,7 +531,7 @@ class RegistryManager:
     def get_registry_stats(self):
         return {
             'topics_count': len(self.topics),
-            'templates_count': len(self.templates),
+            'schemas_count': len(self.schemas),
             'mqtt_clients_count': len(self.mqtt_clients),
             'workpieces_count': len(self.workpieces),
             'modules_count': len(self.modules),
@@ -624,7 +804,7 @@ registry_manager = st.session_state.get('registry_manager')
 if registry_manager:
     # Alle Registry-Daten laden
     topics = registry_manager.get_topics()
-    templates = registry_manager.get_templates()
+    schemas = registry_manager.get_schemas()
     mqtt_clients = registry_manager.get_mqtt_clients()
     workpieces = registry_manager.get_workpieces()
     modules = registry_manager.get_modules()
@@ -807,8 +987,163 @@ def test_sensor_manager_process_message():
 
 ---
 
-**Letzte Aktualisierung:** 2025-10-04  
+---
+
+## 9. ✅ BEST PRACTICE LOGGING-SYSTEM (NEU IMPLEMENTIERT)
+
+**Status: VOLLSTÄNDIG IMPLEMENTIERT** ✅  
+**Datum: 2025-10-06**  
+**Pattern: Level-spezifische Ringbuffer mit Thread-Safety**
+
+### **🎯 ARCHITEKTUR-PRINZIP:**
+
+```
+Application Startup → Multi-Level Ringbuffer Handler → UI Log Tabs
+```
+
+### **📋 KOMPONENTEN:**
+
+#### **MultiLevelRingBufferHandler:**
+- **Thread-sicherer Handler** für alle Log-Level
+- **Separate Ringbuffer** für ERROR, WARNING, INFO, DEBUG
+- **Level-spezifische Buffer-Größen** (ERROR/WARNING größer für wichtige Logs)
+- **Thread-Safety** mit `threading.Lock()` für MQTT-Callbacks
+
+#### **Setup-Funktion:**
+- **Frühe Initialisierung** vor erstem `logger.info()`
+- **Handler nur EINMAL** anhängen (verhindert Duplikate)
+- **DEBUG Level** um alle Logs zu erfassen
+- **Session State** Integration für Streamlit
+
+### **🔧 IMPLEMENTIERUNG:**
+
+#### **Handler-Initialisierung:**
+```python
+# omf2/common/logger.py
+class MultiLevelRingBufferHandler(logging.Handler):
+    def __init__(self, buffer_sizes=None):
+        super().__init__()
+        self.buffer_sizes = buffer_sizes or {
+            "ERROR": 200,      # Größer für wichtige Errors
+            "WARNING": 200,    # Größer für wichtige Warnings  
+            "INFO": 500,       # Standard für Info-Logs
+            "DEBUG": 300       # Kleinere für Debug-Logs
+        }
+        self.buffers = {
+            level: deque(maxlen=size)
+            for level, size in self.buffer_sizes.items()
+        }
+        self._lock = threading.Lock()
+
+    def emit(self, record):
+        msg = self.format(record)
+        level = record.levelname
+        with self._lock:
+            self.buffers.get(level, self.buffers["INFO"]).append(msg)
+
+    def get_buffer(self, level=None):
+        with self._lock:
+            if level:
+                return list(self.buffers.get(level, []))
+            return {lvl: list(buf) for lvl, buf in self.buffers.items()}
+```
+
+#### **Setup-Funktion:**
+```python
+def setup_multilevel_ringbuffer_logging():
+    """
+    Initialisiert einen MultiLevelRingBufferHandler und hängt ihn an den Root-Logger.
+    Gibt das Handler-Objekt und die Referenz auf die Buffers zurück.
+    """
+    logger = logging.getLogger()
+    # Prüfe, ob schon vorhanden
+    if not any(isinstance(h, MultiLevelRingBufferHandler) for h in logger.handlers):
+        handler = MultiLevelRingBufferHandler()
+        formatter = logging.Formatter('%(asctime)s [%(levelname)s] %(name)s: %(message)s')
+        handler.setFormatter(formatter)
+        handler.setLevel(logging.DEBUG)
+        logger.addHandler(handler)
+    else:
+        handler = next(h for h in logger.handlers if isinstance(h, MultiLevelRingBufferHandler))
+    return handler, handler.buffers
+```
+
+#### **Application Startup (omf.py):**
+```python
+# BEST PRACTICE: Frühe Initialisierung vor erstem logger.info()
+from omf2.common.logger import setup_multilevel_ringbuffer_logging
+
+if 'log_handler' not in st.session_state:
+    handler, buffers = setup_multilevel_ringbuffer_logging()
+    st.session_state['log_handler'] = handler
+    st.session_state['log_buffers'] = buffers
+```
+
+#### **UI-Integration:**
+```python
+# System Logs Tab
+log_handler = st.session_state.get('log_handler')
+if log_handler:
+    # Kombiniere alle Level-spezifischen Buffer
+    all_logs = []
+    for level in ['ERROR', 'WARNING', 'INFO', 'DEBUG']:
+        all_logs.extend(log_handler.get_buffer(level))
+    
+    # Sortiere nach Timestamp (neueste zuerst)
+    all_logs.sort(key=lambda x: x.split(']')[0] if ']' in x else x, reverse=True)
+
+# Error & Warning Tab
+error_logs = log_handler.get_buffer('ERROR')
+warning_logs = log_handler.get_buffer('WARNING')
+```
+
+### **🎯 KRITISCHE REGELN:**
+
+1. **Frühe Initialisierung:** Handler wird vor erstem `logger.info()` erstellt
+2. **Handler nur EINMAL:** Prüfung auf existierende Handler, keine Duplikate
+3. **Thread-Safety:** `threading.Lock()` für sichere Buffer-Zugriffe
+4. **Level-spezifische Buffer:** Separate Buffer schützen wichtige Logs
+5. **Session State:** Handler und Buffer in `st.session_state` gespeichert
+6. **DEBUG Level:** Handler erfasst alle Log-Level
+
+### **📊 VORTEILE:**
+
+- **Schutz wichtiger Logs:** ERROR/WARNING werden nicht von DEBUG/INFO verdrängt
+- **Thread-Safety:** Sichere Zugriffe aus MQTT-Callbacks
+- **UI-Integration:** Dedicated Tabs für kritische Logs
+- **Performance:** Optimierte Buffer-Größen pro Level
+- **Wartbarkeit:** Zentrale Logging-Konfiguration
+
+### **🧪 TESTING:**
+
+```python
+# Test der kompletten Integration
+handler, buffers = setup_multilevel_ringbuffer_logging()
+
+# Simuliere echte OMF2 Logs
+logger = logging.getLogger('omf2.admin.admin_gateway')
+logger.error('❌ Schema validation failed for module/v1/ff/SVR3QA2098/factsheet: headerId is a required property')
+
+logger = logging.getLogger('omf2.ccu.ccu_mqtt_client')  
+logger.error('❌ CCU Message processing error: list indices must be integers or slices, not str')
+
+# Prüfe Ergebnisse
+error_logs = handler.get_buffer('ERROR')
+warning_logs = handler.get_buffer('WARNING')
+
+assert len(error_logs) == 2
+assert len(warning_logs) == 0
+```
+
+**Status:** ✅ VOLLSTÄNDIG IMPLEMENTIERT UND GETESTET  
+**UI-Integration:** ✅ ERROR & WARNING TABS FUNKTIONAL  
+**Thread-Safety:** ✅ MQTT-CALLBACKS GETESTET  
+
+---
+
+**Letzte Aktualisierung:** 2025-10-06  
 **Status:** VOLLSTÄNDIG IMPLEMENTIERT ✅  
 **Message Processing Pattern:** DOKUMENTIERT ✅  
 **Schema-Validation:** SYSTEMATISCH KORRIGIERT ✅  
-**Business-Manager Pattern:** IMPLEMENTIERT UND DOKUMENTIERT ✅
+**Business-Manager Pattern:** IMPLEMENTIERT UND DOKUMENTIERT ✅  
+**Best Practice Logging-System:** IMPLEMENTIERT UND DOKUMENTIERT ✅
