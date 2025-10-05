@@ -297,9 +297,40 @@ def show_replay_station():
                 # Session-Info
                 st.info(f"📁 Ausgewählte Session: {selected_session.name}")
 
+                # Factsheet-Preload Option
+                st.markdown("#### 📋 Factsheet-Preload")
+                col1, col2 = st.columns([2, 1])
+                
+                with col1:
+                    send_factsheets = st.checkbox(
+                        "📋 Factsheets vor Session-Replay senden", 
+                        value=True,
+                        help="Sendet alle verfügbaren Factsheet-Messages an den Broker, bevor die Session abgespielt wird"
+                    )
+                
+                with col2:
+                    if st.button("📋 Factsheets jetzt senden", key="send_factsheets_now"):
+                        logger.debug("📋 User klickt: Factsheets jetzt senden")
+                        send_factsheet_preload(replay_ctrl)
+                
+                # Verfügbare Factsheets anzeigen
+                factsheet_files = get_factsheet_files()
+                if factsheet_files:
+                    st.info(f"📋 {len(factsheet_files)} Factsheet-Dateien verfügbar")
+                    with st.expander("📋 Verfügbare Factsheets anzeigen"):
+                        for factsheet_file in factsheet_files[:10]:  # Erste 10 anzeigen
+                            st.text(f"• {factsheet_file.name}")
+                        if len(factsheet_files) > 10:
+                            st.text(f"... und {len(factsheet_files) - 10} weitere")
+                else:
+                    st.warning("❌ Keine Factsheet-Dateien gefunden")
+
                 # Session laden
                 if st.button("📂 Session laden"):
                     logger.debug(f"📂 User klickt: Session laden - {selected_session.name}")
+                    if send_factsheets:
+                        logger.info("📋 Factsheet-Preload vor Session-Load")
+                        send_factsheet_preload(replay_ctrl)
                     load_session(selected_session, replay_ctrl)
 
                 # Replay-Kontrollen (wenn Session geladen)
@@ -425,7 +456,125 @@ def send_test_message(topic, payload):
         st.error(f"❌ Fehler beim Senden: {e}")
 
 
+def send_factsheet_preload(replay_ctrl: ReplayController):
+    """Factsheet-Messages aus JSON-Dateien laden und an Broker senden"""
+    try:
+        # Factsheet-Verzeichnis
+        factsheet_dir = PROJECT_ROOT / "data/omf-data/sessions/factsheets"
+        
+        if not factsheet_dir.exists():
+            st.warning(f"❌ Factsheet-Verzeichnis nicht gefunden: {factsheet_dir}")
+            return False
+        
+        # JSON-Factsheet-Dateien finden
+        factsheet_files = list(factsheet_dir.glob("*.json"))
+        
+        if not factsheet_files:
+            st.warning("❌ Keine Factsheet-JSON-Dateien gefunden")
+            return False
+        
+        logger.info(f"📋 Lade {len(factsheet_files)} Factsheet-Dateien...")
+        
+        # Temporären MQTT-Client für Factsheets erstellen
+        factsheet_client = SessionManagerMQTTClient(
+            st.session_state.mqtt_host, 
+            st.session_state.mqtt_port, 
+            "session_manager_factsheets"
+        )
+        
+        if not factsheet_client.connect():
+            st.error("❌ MQTT-Client konnte nicht für Factsheets verbinden")
+            return False
+        
+        success_count = 0
+        error_count = 0
+        
+        # Factsheets laden und senden
+        for factsheet_file in factsheet_files:
+            try:
+                with open(factsheet_file, 'r', encoding='utf-8') as f:
+                    factsheet_data = json.load(f)
+                
+                topic = factsheet_data.get("topic")
+                payload = factsheet_data.get("payload")
+                qos = factsheet_data.get("qos", 0)
+                retain = factsheet_data.get("retain", False)
+                
+                if topic and payload:
+                    # Payload ist jetzt JSON-Object, muss zu String konvertiert werden
+                    if isinstance(payload, dict):
+                        payload_str = json.dumps(payload, separators=(",", ":"), ensure_ascii=False)
+                    else:
+                        payload_str = str(payload)
+                    
+                    success = factsheet_client.publish(topic, payload_str, qos=qos, retain=retain)
+                    
+                    if success:
+                        success_count += 1
+                        logger.debug(f"✅ Factsheet gesendet: {topic}")
+                    else:
+                        error_count += 1
+                        logger.warning(f"⚠️ Factsheet fehlgeschlagen: {topic}")
+                else:
+                    error_count += 1
+                    logger.warning(f"⚠️ Ungültige Factsheet-Daten: {factsheet_file.name}")
+                    
+            except Exception as e:
+                error_count += 1
+                logger.error(f"❌ Fehler beim Laden von {factsheet_file.name}: {e}")
+        
+        factsheet_client.disconnect()
+        
+        # Ergebnis anzeigen
+        if success_count > 0:
+            st.success(f"✅ {success_count} Factsheets erfolgreich gesendet")
+            if error_count > 0:
+                st.warning(f"⚠️ {error_count} Factsheets fehlgeschlagen")
+        else:
+            st.error("❌ Keine Factsheets konnten gesendet werden")
+        
+        logger.info(f"📋 Factsheet-Preload abgeschlossen: {success_count} erfolgreich, {error_count} fehlgeschlagen")
+        return success_count > 0
+        
+    except Exception as e:
+        st.error(f"❌ Fehler beim Factsheet-Preload: {e}")
+        logger.error(f"❌ Factsheet-Preload Exception: {e}")
+        return False
+
+
 # Session Replay Funktionen
+def get_factsheet_files(factsheet_directory: str = "data/omf-data/sessions/factsheets"):
+    """Factsheet-Dateien aus konfiguriertem Verzeichnis laden - nur .json Dateien"""
+    logger.debug(f"🔍 get_factsheet_files: Suche in {factsheet_directory}")
+
+    # Moderne Paket-Struktur - State of the Art
+    if not Path(factsheet_directory).is_absolute():
+        # Projekt-Root-relative Pfade für Nutz-Daten verwenden
+        # Von omf/helper_apps/session_manager/components/ -> Projekt-Root
+        project_root = PROJECT_ROOT
+        factsheet_dir = project_root / factsheet_directory
+    else:
+        factsheet_dir = Path(factsheet_directory)
+
+    logger.debug(f"📁 Factsheet-Verzeichnis existiert: {factsheet_dir.exists()}")
+    logger.debug(f"📁 Absoluter Pfad: {factsheet_dir.absolute()}")
+
+    if not factsheet_dir.exists():
+        logger.warning(f"❌ Factsheet-Verzeichnis existiert nicht: {factsheet_dir.absolute()}")
+        return []
+
+    # Nur JSON-Dateien finden (Factsheet-Preload kann nur .json Dateien verarbeiten)
+    factsheet_files = list(factsheet_dir.glob("*.json"))
+
+    logger.debug(f"📊 Gefundene .json Factsheet-Dateien: {len(factsheet_files)}")
+
+    logger.debug(f"📁 Gesamt Factsheet-Dateien: {len(factsheet_files)}")
+    for f in factsheet_files:
+        logger.debug(f"  - {f.name}")
+
+    return sorted(factsheet_files, key=lambda x: x.name)
+
+
 def get_session_files(session_directory: str = "data/omf-data/sessions"):
     """Session-Dateien aus konfiguriertem Verzeichnis laden - nur .db Dateien"""
     logger.debug(f"🔍 get_session_files: Suche in {session_directory}")
