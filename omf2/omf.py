@@ -31,7 +31,7 @@ from omf2.common.logger import setup_multilevel_ringbuffer_logging
 
 # BEST PRACTICE: Frühe Initialisierung vor erstem logger.info()
 if 'log_handler' not in st.session_state:
-    handler, buffers = setup_multilevel_ringbuffer_logging()
+    handler, buffers = setup_multilevel_ringbuffer_logging(force_new=True)
     st.session_state['log_handler'] = handler
     st.session_state['log_buffers'] = buffers
 

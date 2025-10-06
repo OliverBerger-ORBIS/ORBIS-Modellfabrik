@@ -21,14 +21,14 @@ modules:
 # 🔌 MQTT Clients (Architecture Layer 1)
 mqtt_clients:
   admin_mqtt_client:
-    level: DEBUG  # DEBUG for Admin MQTT Client
+    level: INFO  # INFO for Admin MQTT Client
   ccu_mqtt_client:
     level: DEBUG  # DEBUG for CCU MQTT Client
 
 # 🚪 Gateways (Architecture Layer 2)
 gateways:
   admin_gateway:
-    level: DEBUG  # DEBUG for Admin Gateway
+    level: INFO  # INFO for Admin Gateway
   ccu_gateway:
     level: DEBUG  # DEBUG for CCU Gateway
 

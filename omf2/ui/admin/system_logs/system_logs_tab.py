@@ -8,6 +8,7 @@ Gateway-Pattern konform: Nutzt AdminGateway für Log-Zugriff
 import streamlit as st
 from omf2.common.logger import get_logger
 from omf2.ui.common.symbols import UISymbols
+from omf2.ui.utils.ui_refresh import request_refresh
 
 logger = get_logger(__name__)
 
@@ -19,6 +20,28 @@ def render_system_logs_tab():
     try:
         st.header(f"{UISymbols.get_functional_icon('logs')} System Logs")
         st.markdown("**System log viewer and analysis tools**")
+        
+        # Display mode toggle
+        col1, col2 = st.columns([3, 1])
+        with col1:
+            st.markdown("**Display Options:**")
+        with col2:
+            # Initialize display mode in session state if not exists
+            if 'log_display_mode' not in st.session_state:
+                st.session_state['log_display_mode'] = "Console View"
+            
+            display_mode = st.selectbox(
+                "📋 Log Display Mode",
+                ["Table View", "Console View"],
+                index=1 if st.session_state['log_display_mode'] == "Console View" else 0,
+                key="log_display_mode",
+                help="Table View: Structured tabular display | Console View: Classic one-line format"
+            )
+            
+            # Update session state only if changed
+            if st.session_state['log_display_mode'] != display_mode:
+                st.session_state['log_display_mode'] = display_mode
+                request_refresh()
         
         # Connection status check
         from omf2.factory.gateway_factory import get_admin_gateway
@@ -86,7 +109,7 @@ def _render_log_history(admin_gateway):
     
     with col3:
         if st.button(f"{UISymbols.get_status_icon('refresh')} Refresh", key="refresh_logs"):
-            st.rerun()
+            request_refresh()
     
     # Get log entries from new multi-level buffer system
     log_handler = st.session_state.get('log_handler')
@@ -118,51 +141,274 @@ def _render_log_history(admin_gateway):
     
     st.success(f"{UISymbols.get_status_icon('success')} Showing {len(filtered_logs)} log entries")
     
-    # Display logs in expandable sections
-    for i, log_entry in enumerate(filtered_logs):
-        # Extract level and logger name for display
-        level = "INFO"
-        logger_name = "unknown"
+    # Display logs based on selected mode
+    display_mode = st.session_state.get('log_display_mode', 'Console View')
+    if display_mode == 'Table View':
+        _render_log_table(filtered_logs)
+    else:
+        _render_log_console(filtered_logs)
+
+
+def _render_log_table(log_entries):
+    """Render log entries in tabular format for better readability"""
+    if not log_entries:
+        return
+    
+    # Parse log entries into structured data
+    parsed_logs = []
+    for log_entry in log_entries:
+        parsed_log = _parse_log_entry(log_entry)
+        parsed_logs.append(parsed_log)
+    
+    # Create table header
+    st.markdown("### 📋 Log Entries (Sequential View)")
+    
+    # Display logs in a structured table format
+    for i, log in enumerate(parsed_logs):
+        # Create a container for each log entry
+        with st.container():
+            # Color-coded level indicator
+            level_color = {
+                "ERROR": "🔴",
+                "WARNING": "🟡", 
+                "INFO": "🔵",
+                "DEBUG": "🔵"
+            }.get(log["level"], "⚪")
+            
+            # Compact log entry display - all in one line
+            col1, col2, col3, col4, col5 = st.columns([1, 2, 3, 2, 1])
+            
+            with col1:
+                st.markdown(f"**{level_color} {log['level']}**")
+            
+            with col2:
+                st.text(log["timestamp"])
+            
+            with col3:
+                st.text(log["logger_name"])
+            
+            with col4:
+                # Message content inline
+                st.text(log["message"][:50] + "..." if len(log["message"]) > 50 else log["message"])
+            
+            with col5:
+                # Copy button inline
+                if st.button("📋", key=f"copy_log_{i}", help="Copy log entry"):
+                    # Display the log entry in a code block for copying
+                    st.code(log["full_message"], language="text")
+                    # Don't trigger refresh - just show the content
+            
+            # Full log entry in collapsible section
+            with st.expander(f"🔍 Full Log Entry #{i+1}", expanded=False):
+                st.code(log["full_message"], language="text")
+            
+            # Separator between entries
+            st.markdown("---")
+
+
+def _render_log_console(log_entries):
+    """Render log entries in classic console format (one line per entry)"""
+    if not log_entries:
+        return
+    
+    st.markdown("### 📋 Log Entries (Console View)")
+    st.caption("Classic one-line format - one log entry per line")
+    
+    # Display logs in classic console format with inline copy button
+    for i, log_entry in enumerate(log_entries):
+        # Parse log entry to extract level for color coding
+        parsed_log = _parse_log_entry(log_entry)
         
+        # Color coding for log levels
+        level_color = {
+            "ERROR": "🔴",
+            "WARNING": "🟡", 
+            "INFO": "🔵",
+            "DEBUG": "🔵"
+        }.get(parsed_log["level"], "⚪")
+        
+        # Compact display with inline copy button
+        col1, col2 = st.columns([10, 1])
+        
+        with col1:
+            # Display as single line with color indicator
+            st.text(f"{level_color} {log_entry}")
+        
+        with col2:
+            # Copy button inline
+            if st.button("📋", key=f"copy_console_{i}", help="Copy log entry"):
+                st.code(log_entry, language="text")
+
+
+def _parse_log_entry(log_entry):
+    """Parse a log entry into structured components"""
+    # Default values
+    timestamp = "Unknown"
+    level = "INFO"
+    logger_name = "unknown"
+    message = log_entry
+    
+    try:
         # Parse log format: "timestamp [LEVEL] logger_name: message"
         if "[DEBUG]" in log_entry:
             level = "DEBUG"
             parts = log_entry.split("[DEBUG] ")
             if len(parts) > 1:
-                logger_part = parts[1].split(":")[0] if ":" in parts[1] else "unknown"
-                logger_name = logger_part.strip()
+                timestamp = parts[0].strip()
+                remaining = parts[1]
+                if ":" in remaining:
+                    logger_name = remaining.split(":")[0].strip()
+                    message = ":".join(remaining.split(":")[1:]).strip()
+                else:
+                    logger_name = remaining.strip()
+                    message = ""
         elif "[INFO]" in log_entry:
             level = "INFO"
             parts = log_entry.split("[INFO] ")
             if len(parts) > 1:
-                logger_part = parts[1].split(":")[0] if ":" in parts[1] else "unknown"
-                logger_name = logger_part.strip()
+                timestamp = parts[0].strip()
+                remaining = parts[1]
+                if ":" in remaining:
+                    logger_name = remaining.split(":")[0].strip()
+                    message = ":".join(remaining.split(":")[1:]).strip()
+                else:
+                    logger_name = remaining.strip()
+                    message = ""
         elif "[WARNING]" in log_entry:
             level = "WARNING"
             parts = log_entry.split("[WARNING] ")
             if len(parts) > 1:
-                logger_part = parts[1].split(":")[0] if ":" in parts[1] else "unknown"
-                logger_name = logger_part.strip()
+                timestamp = parts[0].strip()
+                remaining = parts[1]
+                if ":" in remaining:
+                    logger_name = remaining.split(":")[0].strip()
+                    message = ":".join(remaining.split(":")[1:]).strip()
+                else:
+                    logger_name = remaining.strip()
+                    message = ""
         elif "[ERROR]" in log_entry:
             level = "ERROR"
             parts = log_entry.split("[ERROR] ")
             if len(parts) > 1:
-                logger_part = parts[1].split(":")[0] if ":" in parts[1] else "unknown"
-                logger_name = logger_part.strip()
+                timestamp = parts[0].strip()
+                remaining = parts[1]
+                if ":" in remaining:
+                    logger_name = remaining.split(":")[0].strip()
+                    message = ":".join(remaining.split(":")[1:]).strip()
+                else:
+                    logger_name = remaining.strip()
+                    message = ""
+    except Exception as e:
+        # Fallback for malformed log entries
+        logger.warning(f"Failed to parse log entry: {e}")
+    
+    return {
+        "timestamp": timestamp,
+        "level": level,
+        "logger_name": logger_name,
+        "message": message,
+        "full_message": log_entry
+    }
+
+
+def _render_search_results_table(search_results, search_query):
+    """Render search results in tabular format with highlighted search terms"""
+    if not search_results:
+        return
+    
+    st.markdown("### 🔍 Search Results (Sequential View)")
+    
+    # Display search results in tabular format
+    for i, log_entry in enumerate(search_results):
+        # Parse log entry
+        parsed_log = _parse_log_entry(log_entry)
+        
+        # Highlight search term in message
+        highlighted_message = parsed_log["message"].replace(
+            search_query, f"**{search_query}**"
+        )
+        
+        # Create a container for each log entry
+        with st.container():
+            # Color-coded level indicator
+            level_color = {
+                "ERROR": "🔴",
+                "WARNING": "🟡", 
+                "INFO": "🔵",
+                "DEBUG": "🔵"
+            }.get(parsed_log["level"], "⚪")
+            
+            # Compact search result display - all in one line
+            col1, col2, col3, col4, col5 = st.columns([1, 2, 3, 2, 1])
+            
+            with col1:
+                st.markdown(f"**{level_color} {parsed_log['level']}**")
+            
+            with col2:
+                st.text(parsed_log["timestamp"])
+            
+            with col3:
+                st.text(parsed_log["logger_name"])
+            
+            with col4:
+                # Message content with highlighted search term (truncated)
+                truncated_message = highlighted_message[:50] + "..." if len(highlighted_message) > 50 else highlighted_message
+                st.markdown(truncated_message)
+            
+            with col5:
+                # Copy button inline
+                if st.button("📋", key=f"copy_search_{i}", help="Copy log entry"):
+                    st.code(parsed_log["full_message"], language="text")
+            
+            # Full log entry in collapsible section
+            with st.expander(f"🔍 Full Log Entry #{i+1}", expanded=(i < 3)):
+                # Highlight search term in full message
+                highlighted_full = parsed_log["full_message"].replace(
+                    search_query, f"**{search_query}**"
+                )
+                st.code(highlighted_full, language="text")
+            
+            # Separator between entries
+            st.markdown("---")
+
+
+def _render_search_results_console(search_results, search_query):
+    """Render search results in classic console format with highlighted search terms"""
+    if not search_results:
+        return
+    
+    st.markdown("### 🔍 Search Results (Console View)")
+    st.caption("Classic one-line format with highlighted search terms")
+    
+    # Display search results in console format with inline copy button
+    for i, log_entry in enumerate(search_results):
+        # Parse log entry
+        parsed_log = _parse_log_entry(log_entry)
         
         # Color coding for log levels
-        if level == "ERROR":
-            color = "🔴"
-        elif level == "WARNING":
-            color = "🟡"
-        elif level == "DEBUG":
-            color = "🔵"
-        else:
-            color = "🔵"
+        level_color = {
+            "ERROR": "🔴",
+            "WARNING": "🟡", 
+            "INFO": "🔵",
+            "DEBUG": "🔵"
+        }.get(parsed_log["level"], "⚪")
         
-        # Create expandable section with new format: [LEVEL] logger_name
-        with st.expander(f"{color} [{level}] {logger_name}", expanded=False):
-            st.code(log_entry, language="text")
+        # Highlight search term in log entry
+        highlighted_log = log_entry.replace(
+            search_query, f"**{search_query}**"
+        )
+        
+        # Compact display with inline copy button
+        col1, col2 = st.columns([10, 1])
+        
+        with col1:
+            # Display as single line with color indicator and highlighting
+            st.markdown(f"{level_color} {highlighted_log}")
+        
+        with col2:
+            # Copy button inline
+            if st.button("📋", key=f"copy_search_console_{i}", help="Copy log entry"):
+                st.code(log_entry, language="text")
 
 
 def _render_log_search(admin_gateway):
@@ -205,57 +451,12 @@ def _render_log_search(admin_gateway):
         if search_results:
             st.success(f"{UISymbols.get_status_icon('success')} Found {len(search_results)} results for: '{search_query}'")
             
-            # Display search results
-            for i, log_entry in enumerate(search_results[:50]):  # Limit to 50 results
-                # Extract level and logger name for display (same logic as Log History)
-                level = "INFO"
-                logger_name = "unknown"
-                
-                # Parse log format: "timestamp [LEVEL] logger_name: message"
-                if "[DEBUG]" in log_entry:
-                    level = "DEBUG"
-                    parts = log_entry.split("[DEBUG] ")
-                    if len(parts) > 1:
-                        logger_part = parts[1].split(":")[0] if ":" in parts[1] else "unknown"
-                        logger_name = logger_part.strip()
-                elif "[INFO]" in log_entry:
-                    level = "INFO"
-                    parts = log_entry.split("[INFO] ")
-                    if len(parts) > 1:
-                        logger_part = parts[1].split(":")[0] if ":" in parts[1] else "unknown"
-                        logger_name = logger_part.strip()
-                elif "[WARNING]" in log_entry:
-                    level = "WARNING"
-                    parts = log_entry.split("[WARNING] ")
-                    if len(parts) > 1:
-                        logger_part = parts[1].split(":")[0] if ":" in parts[1] else "unknown"
-                        logger_name = logger_part.strip()
-                elif "[ERROR]" in log_entry:
-                    level = "ERROR"
-                    parts = log_entry.split("[ERROR] ")
-                    if len(parts) > 1:
-                        logger_part = parts[1].split(":")[0] if ":" in parts[1] else "unknown"
-                        logger_name = logger_part.strip()
-                
-                # Color coding for log levels
-                if level == "ERROR":
-                    color = "🔴"
-                elif level == "WARNING":
-                    color = "🟡"
-                elif level == "DEBUG":
-                    color = "🔵"
-                else:
-                    color = "🔵"
-                
-                # Highlight search term in log entry
-                highlighted_log = log_entry.replace(
-                    search_query, f"**{search_query}**"
-                )
-                
-                # Display directly without expandable section (expanded by default)
-                st.markdown(f"**{color} [{level}] {logger_name}**")
-                st.code(highlighted_log, language="text")
-                st.markdown("---")  # Separator between entries
+            # Display search results based on selected mode
+            display_mode = st.session_state.get('log_display_mode', 'Console View')
+            if display_mode == 'Table View':
+                _render_search_results_table(search_results[:50], search_query)  # Limit to 50 results
+            else:
+                _render_search_results_console(search_results[:50], search_query)  # Limit to 50 results
         else:
             st.warning(f"{UISymbols.get_status_icon('warning')} No results found for: '{search_query}'")
     
@@ -440,39 +641,39 @@ def _render_log_management(admin_gateway):
         if st.button("🔍 Admin MQTT", key="enable_admin_mqtt_debug"):
             set_debug_mode("omf2.admin.admin_mqtt_client", True)
             st.success("✅ Admin MQTT debug enabled")
-            st.rerun()
+            request_refresh()
         if st.button("🔍 Admin Gateway", key="enable_admin_gateway_debug"):
             set_debug_mode("omf2.admin.admin_gateway", True)
             st.success("✅ Admin Gateway debug enabled")
-            st.rerun()
+            request_refresh()
         if st.button("ℹ️ Disable Admin", key="disable_admin_debug"):
             set_debug_mode("omf2.admin.admin_mqtt_client", False)
             set_debug_mode("omf2.admin.admin_gateway", False)
             st.info("ℹ️ Admin debug disabled")
-            st.rerun()
+            request_refresh()
     
     with col2:
         st.markdown("**🏭 CCU Domain**")
         if st.button("🔍 CCU MQTT", key="enable_ccu_mqtt_debug"):
             set_debug_mode("omf2.ccu.ccu_mqtt_client", True)
             st.success("✅ CCU MQTT debug enabled")
-            st.rerun()
+            request_refresh()
         if st.button("🔍 CCU Gateway", key="enable_ccu_gateway_debug"):
             set_debug_mode("omf2.ccu.ccu_gateway", True)
             st.success("✅ CCU Gateway debug enabled")
-            st.rerun()
+            request_refresh()
         if st.button("🔍 Managers", key="enable_ccu_managers_debug"):
             enable_sensor_debug()
             enable_module_debug()
             st.success("✅ CCU Managers debug enabled")
-            st.rerun()
+            request_refresh()
         if st.button("ℹ️ Disable CCU", key="disable_ccu_debug"):
             set_debug_mode("omf2.ccu.ccu_mqtt_client", False)
             set_debug_mode("omf2.ccu.ccu_gateway", False)
             set_debug_mode("omf2.ccu.sensor_manager", False)
             set_debug_mode("omf2.ccu.module_manager", False)
             st.info("ℹ️ CCU debug disabled")
-            st.rerun()
+            request_refresh()
     
     
     # Global controls
@@ -484,13 +685,13 @@ def _render_log_management(admin_gateway):
         if st.button(f"{UISymbols.get_functional_icon('search')} Enable All Debug", key="enable_all_debug"):
             set_debug_mode(enabled=True)
             st.success(f"{UISymbols.get_status_icon('success')} All debug logging enabled")
-            st.rerun()
+            request_refresh()
     
     with col2:
         if st.button(f"{UISymbols.get_status_icon('info')} Disable All Debug", key="disable_all_debug"):
             disable_debug_logging()
             st.info(f"{UISymbols.get_status_icon('info')} All debug logging disabled")
-            st.rerun()
+            request_refresh()
     
     # Manual log level configuration
     st.subheader(f"{UISymbols.get_functional_icon('settings')} Manual Log Level Configuration")
@@ -528,7 +729,7 @@ def _render_log_management(admin_gateway):
     if st.button(f"{UISymbols.get_functional_icon('settings')} Apply Log Level", key="apply_log_level"):
         set_debug_mode(selected_module, selected_level == "DEBUG")
         st.success(f"{UISymbols.get_status_icon('success')} Log level for {module_options[selected_module]} set to {selected_level}")
-        st.rerun()
+        request_refresh()
     
     # Configuration file info
     st.subheader(f"{UISymbols.get_functional_icon('info')} Configuration File")

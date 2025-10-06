@@ -136,9 +136,29 @@ class MainDashboard:
         st.cache_resource.clear()
         logger.info(f"🔄 ENV-SWITCH: Cache geleert, Environment aktualisiert")
         
+        # Reconnect logging system to UI buffers after environment switch
+        self._reconnect_logging_system()
+        
         # Use request_refresh instead of potential st.rerun calls
         from omf2.ui.utils.ui_refresh import request_refresh
         request_refresh()
+    
+    def _reconnect_logging_system(self):
+        """Reconnect logging system to UI buffers after environment switch"""
+        try:
+            from omf2.common.logger import setup_multilevel_ringbuffer_logging
+            
+            # CRITICAL: Use force_new=True to remove old handlers and attach new one
+            handler, buffers = setup_multilevel_ringbuffer_logging(force_new=True)
+            
+            # Update session state with new handler and buffers
+            st.session_state['log_handler'] = handler
+            st.session_state['log_buffers'] = buffers
+            
+            logger.info("✅ Logging system reconnected to UI buffers")
+            
+        except Exception as e:
+            logger.error(f"❌ Failed to reconnect logging system: {e}")
     
     def _render_sidebar(self):
         """Render sidebar with controls and status"""

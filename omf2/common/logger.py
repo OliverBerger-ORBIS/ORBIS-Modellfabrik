@@ -172,21 +172,27 @@ def create_log_buffer(maxlen: int = 1000) -> Deque[str]:
     return deque(maxlen=maxlen)
 
 
-def setup_multilevel_ringbuffer_logging():
+def setup_multilevel_ringbuffer_logging(force_new=False):
     """
-    Initialisiert einen MultiLevelRingBufferHandler und hängt ihn an den Root-Logger.
-    Gibt das Handler-Objekt und die Referenz auf die Buffers zurück.
+    Initialisiert oder erneuert einen MultiLevelRingBufferHandler.
+    force_new: True = alte Handler werden entfernt und ein neuer angehängt.
     """
     logger = logging.getLogger()
-    # Prüfe, ob schon vorhanden
-    if not any(isinstance(h, MultiLevelRingBufferHandler) for h in logger.handlers):
+    # Entferne ALLE alten MultiLevelRingBufferHandler, wenn force_new
+    if force_new:
+        handlers_to_remove = [h for h in logger.handlers if isinstance(h, MultiLevelRingBufferHandler)]
+        for h in handlers_to_remove:
+            logger.removeHandler(h)
+    # Prüfe, ob jetzt noch einer da ist
+    existing = [h for h in logger.handlers if isinstance(h, MultiLevelRingBufferHandler)]
+    if existing:
+        handler = existing[0]
+    else:
         handler = MultiLevelRingBufferHandler()
         formatter = logging.Formatter('%(asctime)s [%(levelname)s] %(name)s: %(message)s')
         handler.setFormatter(formatter)
         handler.setLevel(logging.DEBUG)
         logger.addHandler(handler)
-    else:
-        handler = next(h for h in logger.handlers if isinstance(h, MultiLevelRingBufferHandler))
     return handler, handler.buffers
 
 
@@ -210,7 +216,7 @@ def setup_level_specific_log_buffers(log_level: int = logging.INFO) -> Dict[str,
     }
     
     # Erstelle Handler
-    handler = LevelSpecificRingBufferHandler(log_buffers, log_level)
+    handler = RingBufferHandler(log_buffers['INFO'], log_level)  # Use RingBufferHandler instead
     
     # Erstelle Formatter
     formatter = logging.Formatter(
