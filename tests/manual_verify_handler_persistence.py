@@ -13,8 +13,8 @@ from pathlib import Path
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-from omf2.common.logger import setup_multilevel_ringbuffer_logging, MultiLevelRingBufferHandler
-from omf2.common.logging_config import apply_logging_config, _ensure_multilevel_handler_attached
+from omf2.common.logger import setup_multilevel_ringbuffer_logging, MultiLevelRingBufferHandler, ensure_ringbufferhandler_attached
+from omf2.common.logging_config import apply_logging_config
 
 
 class MockSessionState:
@@ -52,9 +52,12 @@ def simulate_initial_setup(session_state):
     apply_logging_config()
     print("✅ Logging configuration applied")
     
-    # Verify handler is attached
-    _ensure_multilevel_handler_attached()
-    print("✅ Handler attachment verified")
+    # Verify handler is attached using new utility
+    result = ensure_ringbufferhandler_attached()
+    if result:
+        print("✅ Handler attachment verified")
+    else:
+        print("⚠️ Handler attachment could not be verified (may be OK in test environment)")
     
     # Test logging
     logger = logging.getLogger("omf2.dashboard")
@@ -84,7 +87,15 @@ def simulate_environment_switch(session_state, old_env, new_env):
     session_state['log_handler'] = handler
     session_state['log_buffers'] = buffers
     
-    # VERIFICATION
+    # VERIFICATION using new utility function
+    result = ensure_ringbufferhandler_attached()
+    
+    if result:
+        print(f"✅ Handler verified: ensure_ringbufferhandler_attached() returned True")
+    else:
+        print(f"⚠️ Handler verification failed (may be OK in test environment)")
+    
+    # Additional manual verification
     root_logger = logging.getLogger()
     handler_attached = handler in root_logger.handlers
     multilevel_handlers = [h for h in root_logger.handlers if isinstance(h, MultiLevelRingBufferHandler)]
@@ -92,12 +103,10 @@ def simulate_environment_switch(session_state, old_env, new_env):
     
     if not handler_attached:
         print("❌ FEHLER: Handler ist NICHT am Root-Logger attached!")
-        root_logger.addHandler(handler)
-        print("⚠️ Forced re-attachment of handler")
     elif handler_count != 1:
         print(f"❌ FEHLER: {handler_count} MultiLevelRingBufferHandler (sollte 1 sein)")
     else:
-        print(f"✅ Handler verified: Exactly 1 MultiLevelRingBufferHandler attached")
+        print(f"✅ Manual verification: Exactly 1 MultiLevelRingBufferHandler attached")
     
     # Test logging after switch
     logger.info(f"✅ Logging system reconnected successfully")
