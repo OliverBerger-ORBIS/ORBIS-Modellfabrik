@@ -146,7 +146,8 @@ class MainDashboard:
     def _reconnect_logging_system(self):
         """Reconnect logging system to UI buffers after environment switch"""
         try:
-            from omf2.common.logger import setup_multilevel_ringbuffer_logging
+            from omf2.common.logger import setup_multilevel_ringbuffer_logging, MultiLevelRingBufferHandler
+            import logging
             
             # CRITICAL: Use force_new=True to remove old handlers and attach new one
             handler, buffers = setup_multilevel_ringbuffer_logging(force_new=True)
@@ -155,7 +156,26 @@ class MainDashboard:
             st.session_state['log_handler'] = handler
             st.session_state['log_buffers'] = buffers
             
-            logger.info("✅ Logging system reconnected to UI buffers")
+            # VERIFICATION: Prüfe, dass Handler tatsächlich am Root-Logger ist
+            root_logger = logging.getLogger()
+            handler_attached = handler in root_logger.handlers
+            
+            # VERIFICATION: Prüfe, dass nur EINER existiert
+            multilevel_handlers = [h for h in root_logger.handlers if isinstance(h, MultiLevelRingBufferHandler)]
+            handler_count = len(multilevel_handlers)
+            
+            if not handler_attached:
+                logger.error(f"❌ FEHLER: Handler ist NICHT am Root-Logger attached nach reconnect!")
+                # Versuche Force-Re-Attachment
+                root_logger.addHandler(handler)
+                logger.warning(f"⚠️ Forced re-attachment of handler to root logger")
+            elif handler_count != 1:
+                logger.error(f"❌ FEHLER: {handler_count} MultiLevelRingBufferHandler am Root-Logger (sollte 1 sein)")
+            else:
+                logger.info(f"✅ Logging system reconnected successfully - Handler verified at root logger")
+            
+            # Log test message to verify
+            logger.info("🧪 TEST: Environment switch complete - logging system reconnected")
             
         except Exception as e:
             logger.error(f"❌ Failed to reconnect logging system: {e}")
