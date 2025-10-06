@@ -37,6 +37,7 @@
 - **Test-Ausführung:** `python -m pytest tests/`
 - **Virtual Environment:** Immer `.venv` aktivieren: `source .venv/bin/activate`
 - **Test-Environment:** Alle Tests mit aktiviertem .venv ausführen
+- **Terminal Commands:** Immer `.venv` aktivieren vor pip install, git commit, etc.
 
 ### Branch-spezifische Test-Regeln
 - **Helper-Branches:** Nur `tests/test_helper_apps/` ausführen
