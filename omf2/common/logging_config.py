@@ -74,7 +74,8 @@ def apply_logging_config():
             logging.getLogger(f"omf2.ccu.{client_name}").setLevel(getattr(logging, level.upper()))
     
     # KRITISCH: Nach apply_logging_config() Handler-Attachment prüfen und ggf. wiederherstellen
-    _ensure_multilevel_handler_attached()
+    from omf2.common.logger import ensure_ringbufferhandler_attached
+    ensure_ringbufferhandler_attached()
 
 def set_debug_mode(module: str = None, enabled: bool = True):
     """Quick function to enable/disable debug logging for specific modules"""
@@ -176,42 +177,9 @@ def enable_mqtt_debug():
 
 def _ensure_multilevel_handler_attached():
     """
-    Stellt sicher, dass der MultiLevelRingBufferHandler am Root-Logger hängt.
+    DEPRECATED: Use omf2.common.logger.ensure_ringbufferhandler_attached() instead.
     
-    Diese Funktion wird nach apply_logging_config() aufgerufen, um sicherzustellen,
-    dass der Handler nicht versehentlich entfernt wurde.
+    Kept for backward compatibility but delegates to the new function.
     """
-    try:
-        import streamlit as st
-        
-        # Handler aus Session State holen
-        handler = st.session_state.get('log_handler')
-        if not handler:
-            # Kein Handler im Session State - nichts zu tun
-            logging.debug("ℹ️ No log_handler in session state - skipping handler check")
-            return
-        
-        # Prüfen, ob Handler am Root-Logger hängt
-        root_logger = logging.getLogger()
-        if handler not in root_logger.handlers:
-            # Handler ist nicht attached - re-attach
-            root_logger.addHandler(handler)
-            logging.warning("⚠️ MultiLevelRingBufferHandler was detached - re-attached to root logger")
-        else:
-            logging.debug("✅ MultiLevelRingBufferHandler is correctly attached to root logger")
-        
-        # Prüfe, dass nur EINER existiert
-        from omf2.common.logger import MultiLevelRingBufferHandler
-        multilevel_handlers = [h for h in root_logger.handlers if isinstance(h, MultiLevelRingBufferHandler)]
-        if len(multilevel_handlers) > 1:
-            # Zu viele Handler - entferne Duplikate, behalte den aus Session State
-            for h in multilevel_handlers:
-                if h is not handler:
-                    root_logger.removeHandler(h)
-                    logging.warning(f"⚠️ Removed duplicate MultiLevelRingBufferHandler from root logger")
-        
-    except ImportError:
-        # Streamlit nicht verfügbar - ignoriere
-        pass
-    except Exception as e:
-        logging.error(f"❌ Error ensuring handler attachment: {e}")
+    from omf2.common.logger import ensure_ringbufferhandler_attached
+    return ensure_ringbufferhandler_attached()

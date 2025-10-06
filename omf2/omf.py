@@ -50,8 +50,8 @@ apply_logging_config()
 logger.info("📋 Logging configuration applied from config file")
 
 # KRITISCH: Nach apply_logging_config() Handler-Attachment verifizieren
-from omf2.common.logging_config import _ensure_multilevel_handler_attached
-_ensure_multilevel_handler_attached()
+from omf2.common.logger import ensure_ringbufferhandler_attached
+ensure_ringbufferhandler_attached()
 logger.info("✅ Logging handler attachment verified after config apply")
 
 def cleanup_resources():
