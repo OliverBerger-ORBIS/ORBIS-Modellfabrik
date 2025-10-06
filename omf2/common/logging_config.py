@@ -43,7 +43,17 @@ def load_logging_config() -> Dict[str, Any]:
         return {}
 
 def apply_logging_config():
-    """Apply logging configuration from YAML file"""
+    """
+    Apply logging configuration from YAML file.
+    
+    This function:
+    1. Loads configuration from omf2/config/logging_config.yml
+    2. Applies log levels to all configured modules and managers
+    3. Ensures MultiLevelRingBufferHandler remains attached after config changes
+    
+    CRITICAL: After changing log levels, the handler attachment is verified
+    to guarantee that logs continue to appear in the System Logs UI.
+    """
     config = load_logging_config()
     
     # Apply global level
@@ -74,6 +84,7 @@ def apply_logging_config():
             logging.getLogger(f"omf2.ccu.{client_name}").setLevel(getattr(logging, level.upper()))
     
     # KRITISCH: Nach apply_logging_config() Handler-Attachment prüfen und ggf. wiederherstellen
+    # This ensures that changing log levels doesn't break log visibility in the UI
     from omf2.common.logger import ensure_ringbufferhandler_attached
     ensure_ringbufferhandler_attached()
 

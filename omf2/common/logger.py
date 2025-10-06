@@ -384,7 +384,7 @@ def ensure_ringbufferhandler_attached():
         # Handler aus Session State holen
         handler = st.session_state.get('log_handler')
         if not handler:
-            logging.debug("ℹ️ No log_handler in session state - handler attachment cannot be verified")
+            logging.info("ℹ️ ensure_ringbufferhandler_attached: No log_handler in session state - handler attachment cannot be verified")
             return False
         
         # Root-Logger holen
@@ -394,9 +394,9 @@ def ensure_ringbufferhandler_attached():
         if handler not in root_logger.handlers:
             # Handler ist nicht attached - re-attach durchführen
             root_logger.addHandler(handler)
-            logging.warning("⚠️ MultiLevelRingBufferHandler was detached - re-attached to root logger")
+            logging.info("⚠️ ensure_ringbufferhandler_attached: MultiLevelRingBufferHandler was detached - re-attached to root logger")
         else:
-            logging.debug("✅ MultiLevelRingBufferHandler is correctly attached to root logger")
+            logging.debug("✅ ensure_ringbufferhandler_attached: MultiLevelRingBufferHandler is correctly attached to root logger")
         
         # KRITISCH: Prüfe, dass nur EINER existiert (keine Duplikate)
         multilevel_handlers = [h for h in root_logger.handlers if isinstance(h, MultiLevelRingBufferHandler)]
@@ -404,10 +404,14 @@ def ensure_ringbufferhandler_attached():
         
         if handler_count > 1:
             # Zu viele Handler - entferne Duplikate, behalte nur den aus Session State
+            removed_count = 0
             for h in multilevel_handlers:
                 if h is not handler:
                     root_logger.removeHandler(h)
-                    logging.warning(f"⚠️ Removed duplicate MultiLevelRingBufferHandler from root logger")
+                    removed_count += 1
+            
+            if removed_count > 0:
+                logging.info(f"⚠️ ensure_ringbufferhandler_attached: Removed {removed_count} duplicate MultiLevelRingBufferHandler(s) from root logger")
             
             # Verify wieder
             multilevel_handlers = [h for h in root_logger.handlers if isinstance(h, MultiLevelRingBufferHandler)]
@@ -415,25 +419,25 @@ def ensure_ringbufferhandler_attached():
         
         # Finale Verifikation
         if handler_count != 1:
-            logging.error(f"❌ FEHLER: {handler_count} MultiLevelRingBufferHandler am Root-Logger (sollte 1 sein)")
+            logging.error(f"❌ ensure_ringbufferhandler_attached: FEHLER: {handler_count} MultiLevelRingBufferHandler am Root-Logger (sollte 1 sein)")
             return False
         
         if handler not in root_logger.handlers:
-            logging.error(f"❌ FEHLER: Handler aus Session State ist NICHT am Root-Logger attached")
+            logging.error(f"❌ ensure_ringbufferhandler_attached: FEHLER: Handler aus Session State ist NICHT am Root-Logger attached")
             return False
         
         # Buffers aus Session State aktualisieren (falls noch nicht gesetzt)
         if 'log_buffers' not in st.session_state or st.session_state['log_buffers'] is not handler.buffers:
             st.session_state['log_buffers'] = handler.buffers
-            logging.debug("✅ Updated log_buffers in session state to match handler")
+            logging.debug("✅ ensure_ringbufferhandler_attached: Updated log_buffers in session state to match handler")
         
-        logging.debug("✅ Handler attachment verification successful")
+        logging.debug("✅ ensure_ringbufferhandler_attached: Handler attachment verification successful")
         return True
         
     except ImportError:
         # Streamlit nicht verfügbar - ignoriere (z.B. in Unit-Tests)
-        logging.debug("ℹ️ Streamlit not available - skipping handler attachment check")
+        logging.debug("ℹ️ ensure_ringbufferhandler_attached: Streamlit not available - skipping handler attachment check")
         return False
     except Exception as e:
-        logging.error(f"❌ Error ensuring handler attachment: {e}")
+        logging.error(f"❌ ensure_ringbufferhandler_attached: Error ensuring handler attachment: {e}")
         return False

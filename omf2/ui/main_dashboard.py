@@ -144,7 +144,17 @@ class MainDashboard:
         request_refresh()
     
     def _reconnect_logging_system(self):
-        """Reconnect logging system to UI buffers after environment switch"""
+        """
+        Reconnect logging system to UI buffers after environment switch.
+        
+        This function ensures that:
+        1. A new MultiLevelRingBufferHandler is created with force_new=True
+        2. Old handlers are removed to prevent duplicates
+        3. Session state references are updated
+        4. Handler is verified to be attached to root logger
+        
+        Called after every environment switch to guarantee log visibility in UI.
+        """
         try:
             from omf2.common.logger import setup_multilevel_ringbuffer_logging, MultiLevelRingBufferHandler, ensure_ringbufferhandler_attached
             import logging
