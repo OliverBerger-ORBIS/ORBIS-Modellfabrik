@@ -362,3 +362,78 @@ def get_log_buffer_entries(
     # Letzte max_lines Zeilen
     recent_logs = list(buffer)[-max_lines:]
     return "\n".join(recent_logs)
+
+
+def ensure_ringbufferhandler_attached():
+    """
+    Stellt sicher, dass der MultiLevelRingBufferHandler konsistent am Root-Logger angehängt ist.
+    
+    Diese Utility-Funktion wird nach jedem Environment-Switch und nach jeder 
+    Logging-Konfigurationsänderung aufgerufen, um sicherzustellen, dass:
+    1. Der Handler aus dem Session State am Root-Logger hängt
+    2. Es nur EINEN MultiLevelRingBufferHandler gibt
+    3. Handler- und Buffer-Referenzen im Session State korrekt sind
+    
+    Returns:
+        bool: True wenn Handler erfolgreich attached/verifiziert wurde, False sonst
+    """
+    try:
+        # Import streamlit hier, um Dependencies zu minimieren
+        import streamlit as st
+        
+        # Handler aus Session State holen
+        handler = st.session_state.get('log_handler')
+        if not handler:
+            logging.debug("ℹ️ No log_handler in session state - handler attachment cannot be verified")
+            return False
+        
+        # Root-Logger holen
+        root_logger = logging.getLogger()
+        
+        # Prüfe, ob der Handler aus Session State am Root-Logger hängt
+        if handler not in root_logger.handlers:
+            # Handler ist nicht attached - re-attach durchführen
+            root_logger.addHandler(handler)
+            logging.warning("⚠️ MultiLevelRingBufferHandler was detached - re-attached to root logger")
+        else:
+            logging.debug("✅ MultiLevelRingBufferHandler is correctly attached to root logger")
+        
+        # KRITISCH: Prüfe, dass nur EINER existiert (keine Duplikate)
+        multilevel_handlers = [h for h in root_logger.handlers if isinstance(h, MultiLevelRingBufferHandler)]
+        handler_count = len(multilevel_handlers)
+        
+        if handler_count > 1:
+            # Zu viele Handler - entferne Duplikate, behalte nur den aus Session State
+            for h in multilevel_handlers:
+                if h is not handler:
+                    root_logger.removeHandler(h)
+                    logging.warning(f"⚠️ Removed duplicate MultiLevelRingBufferHandler from root logger")
+            
+            # Verify wieder
+            multilevel_handlers = [h for h in root_logger.handlers if isinstance(h, MultiLevelRingBufferHandler)]
+            handler_count = len(multilevel_handlers)
+        
+        # Finale Verifikation
+        if handler_count != 1:
+            logging.error(f"❌ FEHLER: {handler_count} MultiLevelRingBufferHandler am Root-Logger (sollte 1 sein)")
+            return False
+        
+        if handler not in root_logger.handlers:
+            logging.error(f"❌ FEHLER: Handler aus Session State ist NICHT am Root-Logger attached")
+            return False
+        
+        # Buffers aus Session State aktualisieren (falls noch nicht gesetzt)
+        if 'log_buffers' not in st.session_state or st.session_state['log_buffers'] is not handler.buffers:
+            st.session_state['log_buffers'] = handler.buffers
+            logging.debug("✅ Updated log_buffers in session state to match handler")
+        
+        logging.debug("✅ Handler attachment verification successful")
+        return True
+        
+    except ImportError:
+        # Streamlit nicht verfügbar - ignoriere (z.B. in Unit-Tests)
+        logging.debug("ℹ️ Streamlit not available - skipping handler attachment check")
+        return False
+    except Exception as e:
+        logging.error(f"❌ Error ensuring handler attachment: {e}")
+        return False

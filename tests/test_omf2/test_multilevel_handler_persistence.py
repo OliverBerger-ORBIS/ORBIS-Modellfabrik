@@ -210,6 +210,155 @@ def test_environment_switch_simulation():
     print("✅ test_environment_switch_simulation PASSED")
 
 
+def test_ensure_ringbufferhandler_attached_without_streamlit():
+    """Test: ensure_ringbufferhandler_attached() works gracefully without streamlit"""
+    from omf2.common.logger import ensure_ringbufferhandler_attached
+    
+    # Setup
+    root_logger = logging.getLogger()
+    
+    # Clear all handlers
+    for h in list(root_logger.handlers):
+        root_logger.removeHandler(h)
+    
+    # Call without streamlit session state (should return False gracefully)
+    result = ensure_ringbufferhandler_attached()
+    
+    # Should return False when streamlit is not available or no handler in session
+    assert result == False, "Should return False when streamlit context not available"
+    
+    print("✅ test_ensure_ringbufferhandler_attached_without_streamlit PASSED")
+
+
+def test_ensure_ringbufferhandler_reattaches_detached_handler():
+    """Test: ensure_ringbufferhandler_attached() re-attaches a detached handler"""
+    from omf2.common.logger import ensure_ringbufferhandler_attached
+    
+    # Mock streamlit session state
+    class MockSessionState:
+        def __init__(self):
+            self._state = {}
+        
+        def get(self, key, default=None):
+            return self._state.get(key, default)
+        
+        def __setitem__(self, key, value):
+            self._state[key] = value
+        
+        def __getitem__(self, key):
+            return self._state[key]
+        
+        def __contains__(self, key):
+            return key in self._state
+    
+    # Setup
+    root_logger = logging.getLogger()
+    
+    # Clear all handlers
+    for h in list(root_logger.handlers):
+        root_logger.removeHandler(h)
+    
+    # Setup handler
+    handler, buffers = setup_multilevel_ringbuffer_logging(force_new=True)
+    
+    # Create mock session state
+    mock_st = type('MockStreamlit', (), {})()
+    mock_st.session_state = MockSessionState()
+    mock_st.session_state['log_handler'] = handler
+    mock_st.session_state['log_buffers'] = buffers
+    
+    # Import and monkey-patch streamlit module
+    import sys
+    sys.modules['streamlit'] = mock_st
+    
+    # Detach handler manually (simulate the bug)
+    root_logger.removeHandler(handler)
+    
+    # Verify handler is detached
+    assert handler not in root_logger.handlers, "Handler should be detached before test"
+    
+    # Call ensure_ringbufferhandler_attached
+    result = ensure_ringbufferhandler_attached()
+    
+    # Verify handler is re-attached
+    assert result == True, "Should return True when handler successfully attached"
+    assert handler in root_logger.handlers, "Handler should be re-attached after call"
+    
+    # Verify only ONE handler
+    multilevel_handlers = [h for h in root_logger.handlers if isinstance(h, MultiLevelRingBufferHandler)]
+    assert len(multilevel_handlers) == 1, f"Should have exactly 1 MultiLevelRingBufferHandler, got {len(multilevel_handlers)}"
+    
+    # Cleanup: remove mock streamlit
+    del sys.modules['streamlit']
+    
+    print("✅ test_ensure_ringbufferhandler_reattaches_detached_handler PASSED")
+
+
+def test_ensure_ringbufferhandler_removes_duplicates():
+    """Test: ensure_ringbufferhandler_attached() removes duplicate handlers"""
+    from omf2.common.logger import ensure_ringbufferhandler_attached
+    
+    # Mock streamlit session state
+    class MockSessionState:
+        def __init__(self):
+            self._state = {}
+        
+        def get(self, key, default=None):
+            return self._state.get(key, default)
+        
+        def __setitem__(self, key, value):
+            self._state[key] = value
+        
+        def __getitem__(self, key):
+            return self._state[key]
+        
+        def __contains__(self, key):
+            return key in self._state
+    
+    # Setup
+    root_logger = logging.getLogger()
+    
+    # Clear all handlers
+    for h in list(root_logger.handlers):
+        root_logger.removeHandler(h)
+    
+    # Setup two handlers (simulate duplicate bug)
+    handler1, buffers1 = setup_multilevel_ringbuffer_logging(force_new=True)
+    handler2 = MultiLevelRingBufferHandler()
+    root_logger.addHandler(handler2)
+    
+    # Create mock session state with first handler
+    mock_st = type('MockStreamlit', (), {})()
+    mock_st.session_state = MockSessionState()
+    mock_st.session_state['log_handler'] = handler1
+    mock_st.session_state['log_buffers'] = buffers1
+    
+    # Import and monkey-patch streamlit module
+    import sys
+    sys.modules['streamlit'] = mock_st
+    
+    # Verify we have 2 handlers before
+    multilevel_handlers_before = [h for h in root_logger.handlers if isinstance(h, MultiLevelRingBufferHandler)]
+    assert len(multilevel_handlers_before) == 2, "Should have 2 handlers before test"
+    
+    # Call ensure_ringbufferhandler_attached
+    result = ensure_ringbufferhandler_attached()
+    
+    # Verify only ONE handler remains (the one from session state)
+    assert result == True, "Should return True when duplicates removed"
+    multilevel_handlers_after = [h for h in root_logger.handlers if isinstance(h, MultiLevelRingBufferHandler)]
+    assert len(multilevel_handlers_after) == 1, f"Should have exactly 1 MultiLevelRingBufferHandler after, got {len(multilevel_handlers_after)}"
+    
+    # Verify correct handler is kept
+    assert handler1 in root_logger.handlers, "Handler from session state should be kept"
+    assert handler2 not in root_logger.handlers, "Duplicate handler should be removed"
+    
+    # Cleanup: remove mock streamlit
+    del sys.modules['streamlit']
+    
+    print("✅ test_ensure_ringbufferhandler_removes_duplicates PASSED")
+
+
 if __name__ == "__main__":
     print("🧪 Running MultiLevelRingBufferHandler Persistence Tests")
     print("=" * 70)
@@ -221,6 +370,9 @@ if __name__ == "__main__":
         test_handler_persistence_after_apply_logging_config()
         test_logging_actually_works()
         test_environment_switch_simulation()
+        test_ensure_ringbufferhandler_attached_without_streamlit()
+        test_ensure_ringbufferhandler_reattaches_detached_handler()
+        test_ensure_ringbufferhandler_removes_duplicates()
         
         print("=" * 70)
         print("✅ ALL TESTS PASSED")
