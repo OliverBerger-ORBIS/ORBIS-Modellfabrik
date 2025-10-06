@@ -85,6 +85,17 @@ def setup_file_logging(log_dir: Optional[Path] = None) -> Path:
     
     return log_dir
 
+import logging
+
+def heal_all_loggers():
+    """
+    Entfernt alle eigenen Handler aus allen benannten Loggern (außer Root)
+    und setzt propagate=True, damit sie wieder Logs an den Root-Logger schicken.
+    """
+    for name, logger in logging.root.manager.loggerDict.items():
+        if isinstance(logger, logging.Logger):
+            logger.handlers.clear()
+            logger.propagate = True
 
 # ============================================================================
 # Central Log Buffer Components
@@ -225,61 +236,6 @@ def setup_multilevel_ringbuffer_logging(force_new=False):
         logging.debug(f"✅ Verification successful: Exactly 1 MultiLevelRingBufferHandler attached to root logger")
     
     return handler, handler.buffers
-
-
-def setup_level_specific_log_buffers(log_level: int = logging.INFO) -> Dict[str, Deque[str]]:
-    """
-    Legacy Funktion für Rückwärtskompatibilität.
-    Setzt Level-spezifische Log-Buffer auf und gibt sie zurück.
-    
-    Args:
-        log_level: Logging-Level für den Buffer
-    
-    Returns:
-        Dict mit Level-spezifischen Ringpuffern
-    """
-    # Erstelle Level-spezifische Ringpuffer mit unterschiedlichen Größen
-    log_buffers = {
-        'ERROR': deque(maxlen=200),      # Größer für wichtige Errors
-        'WARNING': deque(maxlen=200),    # Größer für wichtige Warnings  
-        'INFO': deque(maxlen=500),       # Standard für Info-Logs
-        'DEBUG': deque(maxlen=300)       # Kleinere für Debug-Logs
-    }
-    
-    # Erstelle Handler
-    handler = RingBufferHandler(log_buffers['INFO'], log_level)  # Use RingBufferHandler instead
-    
-    # Erstelle Formatter
-    formatter = logging.Formatter(
-        '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-        datefmt='%Y-%m-%d %H:%M:%S'
-    )
-    handler.setFormatter(formatter)
-    
-    # Konfiguriere Root-Logger
-    root_logger = logging.getLogger()
-    
-    # Entferne existierende Handler
-    for h in root_logger.handlers[:]:
-        root_logger.removeHandler(h)
-    
-    # Füge neuen Handler hinzu
-    root_logger.addHandler(handler)
-    root_logger.setLevel(log_level)
-    
-    # Konfiguriere OMF2-Logger (nur wenn Level NOTSET ist)
-    omf2_loggers = [
-        'omf2', 'omf2.ui', 'omf2.admin', 'omf2.ccu', 'omf2.common', 'omf2.nodered',
-        'omf2.admin.admin_gateway', 'omf2.admin.admin_mqtt_client',
-        'omf2.ccu.ccu_gateway', 'omf2.ccu.ccu_mqtt_client'
-    ]
-    
-    for logger_name in omf2_loggers:
-        logger = logging.getLogger(logger_name)
-        if logger.level == logging.NOTSET:
-            logger.setLevel(log_level)
-    
-    return log_buffers
 
 
 def setup_central_log_buffer(

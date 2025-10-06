@@ -70,7 +70,6 @@ class SensorManager:
             Dictionary with processed sensor data by topic
         """
         try:
-            logger.debug("🔍 SENSOR DEBUG: Starting sensor message processing")
             
             # Initialize sensor data store
             sensor_data = {}
@@ -82,7 +81,6 @@ class SensorManager:
             
             # Get buffers via Gateway (Gateway-Pattern)
             all_buffers = ccu_gateway.get_all_message_buffers()
-            logger.debug(f"🔍 SENSOR DEBUG: Got {len(all_buffers)} message buffers")
             logger.debug(f"📊 Retrieved {len(all_buffers)} buffers via CCU Gateway")
             
             for topic, messages in all_buffers.items():
@@ -97,7 +95,6 @@ class SensorManager:
                     processed_data = self._extract_sensor_data(topic, messages)
                     if processed_data:
                         sensor_data[topic] = processed_data
-                        logger.debug(f"🔍 DEBUG: Processed sensor data for {topic}: {processed_data}")
             
             logger.debug(f"📊 Processed sensor data for {len(sensor_data)} sensor topics")
             return sensor_data

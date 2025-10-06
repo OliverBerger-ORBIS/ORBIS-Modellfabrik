@@ -1,5 +1,15 @@
 # OMF Modellfabrik - Cursor AI Regeln
 
+## 🚨 KRITISCHE VERBOTE (POSITION 1 - HÖCHSTE PRIORITÄT)
+
+### Streamlit-App-Verbot (ABSOLUT KRITISCH)
+- **NIEMALS Streamlit-Apps starten:** `streamlit run` ❌
+- **Grund:** Verursacht Race-Conditions, Connection-Probleme, MQTT-Konflikte
+- **Verboten:** `streamlit run omf2/omf.py`, `streamlit run omf/helper_apps/...`
+- **Erlaubt:** Nur User startet Streamlit-Apps
+- **Konsequenz:** Mehrere Instanzen führen zu MQTT-Connection-Chaos
+- **Regel:** Agent startet KEINE Streamlit-Apps - NUR User!
+
 ## 🎯 ZENTRALE ENTWICKLUNGSREGELN
 
 ### Import-Standards (KRITISCH)

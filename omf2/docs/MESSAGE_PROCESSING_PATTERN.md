@@ -46,8 +46,8 @@ def _extract_entity_data(self, topic: str, messages: List[Dict]) -> Dict[str, An
     latest_message = messages[-1]
     
     # STEP 1: ALWAYS log message structure FIRST
-    logger.info(f"🔍 DEBUG: Raw message keys: {list(latest_message.keys())}")
-    logger.info(f"🔍 DEBUG: Message structure: {latest_message}")
+    logger.info(f"Raw message keys: {list(latest_message.keys())}")
+    logger.info(f"Message structure: {latest_message}")
     
     # STEP 2: Check if data is in payload (String) or message_data (Direct)
     payload = latest_message.get("payload", "{}")
@@ -64,11 +64,11 @@ def _extract_entity_data(self, topic: str, messages: List[Dict]) -> Dict[str, An
     # STEP 3: Check BOTH locations for data
     # Option A: Data is in parsed payload (String format from MQTT)
     if parsed_data and any(key in parsed_data for key in ["t", "h", "p", "connectionState", "available"]):
-        logger.info(f"🔍 DEBUG: Data found in payload: {parsed_data}")
+        logger.info(f"Data found in payload: {parsed_data}")
         data_source = parsed_data
     # Option B: Data is directly in message_data (Direct format)
     elif any(key in latest_message for key in ["t", "h", "p", "connectionState", "available"]):
-        logger.info(f"🔍 DEBUG: Data found in message_data: {latest_message}")
+        logger.info(f"Data found in message_data: {latest_message}")
         data_source = latest_message
     else:
         logger.warning(f"⚠️ No data found in payload or message_data")
@@ -180,9 +180,9 @@ find data/aps-data -name "*connection*" | head -3 | xargs cat
 ### **Schritt 2: Message-Struktur verstehen**
 ```python
 # ALWAYS log message structure:
-logger.info(f"🔍 DEBUG: Raw message keys: {list(message.keys())}")
-logger.info(f"🔍 DEBUG: Message structure: {message}")
-logger.info(f"🔍 DEBUG: Payload: {message.get('payload', 'NO_PAYLOAD')}")
+logger.info(f"Raw message keys: {list(message.keys())}")
+logger.info(f"Message structure: {message}")
+logger.info(f"Payload: {message.get('payload', 'NO_PAYLOAD')}")
 ```
 
 ### **Schritt 3: Feld-Namen aus echten Daten extrahieren**
@@ -229,8 +229,8 @@ def _extract_sensor_data(self, topic: str, messages: List[Dict]) -> Dict[str, An
     latest_message = messages[-1]
     
     # STEP 1: Log message structure (MANDATORY)
-    logger.info(f"🔍 DEBUG: Raw message keys: {list(latest_message.keys())}")
-    logger.info(f"🔍 DEBUG: Message structure: {latest_message}")
+    logger.info(f"Raw message keys: {list(latest_message.keys())}")
+    logger.info(f"Message structure: {latest_message}")
     
     # STEP 2: Check data location (MANDATORY)
     payload = latest_message.get("payload", "{}")
@@ -247,10 +247,10 @@ def _extract_sensor_data(self, topic: str, messages: List[Dict]) -> Dict[str, An
     # STEP 3: Check BOTH locations (MANDATORY)
     if parsed_data and any(key in parsed_data for key in ["t", "h", "p", "iaq"]):
         data_source = parsed_data
-        logger.info(f"🔍 DEBUG: Data found in payload: {parsed_data}")
+        logger.info(f"Data found in payload: {parsed_data}")
     elif any(key in latest_message for key in ["t", "h", "p", "iaq"]):
         data_source = latest_message
-        logger.info(f"🔍 DEBUG: Data found in message_data: {latest_message}")
+        logger.info(f"Data found in message_data: {latest_message}")
     else:
         logger.warning(f"⚠️ No data found in payload or message_data")
         return {}

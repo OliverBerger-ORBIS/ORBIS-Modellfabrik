@@ -20,6 +20,20 @@ sys.path.insert(0, str(project_root))
 
 import streamlit as st
 
+# 1. ZUERST Handler setzen (noch vor allen anderen Imports, die loggen)!
+from omf2.common.logger import setup_multilevel_ringbuffer_logging
+from omf2.common.logger import heal_all_loggers
+from omf2.common.logger import ensure_ringbufferhandler_attached
+
+# BEST PRACTICE: Frühe Initialisierung vor erstem logger.info()
+if 'log_handler' not in st.session_state:
+    handler, buffers = setup_multilevel_ringbuffer_logging(force_new=True)
+    st.session_state['log_handler'] = handler
+    st.session_state['log_buffers'] = buffers
+    ensure_ringbufferhandler_attached()
+    heal_all_loggers()
+
+# 2. DANN restliche Imports (jetzt bekommen alle Logger propagate=True!)
 from omf2.common.i18n import I18nManager
 from omf2.common.logger import get_logger
 from omf2.factory.client_factory import get_client_factory
@@ -27,32 +41,22 @@ from omf2.factory.gateway_factory import get_gateway_factory
 from omf2.ui.main_dashboard import MainDashboard
 from omf2.ui.utils.ui_refresh import request_refresh, consume_refresh
 
-from omf2.common.logger import setup_multilevel_ringbuffer_logging
-
-# BEST PRACTICE: Frühe Initialisierung vor erstem logger.info()
-if 'log_handler' not in st.session_state:
-    handler, buffers = setup_multilevel_ringbuffer_logging(force_new=True)
-    st.session_state['log_handler'] = handler
-    st.session_state['log_buffers'] = buffers
-
 # Configure logging
 from omf2.common.logger import setup_file_logging
 log_dir = setup_file_logging()
+ensure_ringbufferhandler_attached()
+heal_all_loggers()
 logger = get_logger("omf2.dashboard")
 logger.info(f"📝 OMF2 Logging aktiviert: {log_dir}")
 
 # Configure logging levels for OMF2 modules
 import logging
 from omf2.common.logging_config import apply_logging_config
-
-# Apply logging configuration from YAML file
 apply_logging_config()
+ensure_ringbufferhandler_attached()
+heal_all_loggers()
 logger.info("📋 Logging configuration applied from config file")
 
-# KRITISCH: Nach apply_logging_config() Handler-Attachment verifizieren
-from omf2.common.logger import ensure_ringbufferhandler_attached
-ensure_ringbufferhandler_attached()
-logger.info("✅ Logging handler attachment verified after config apply")
 
 def cleanup_resources():
     """Cleanup resources on application exit"""
@@ -102,7 +106,7 @@ def initialize_session_state():
     defaults = {
         'user_role': 'administrator',  # DEFAULT: Administrator
         'current_language': 'de',
-        'current_environment': 'mock',  # DEFAULT: Mock (stabiler)
+        'current_environment': 'replay',  # DEFAULT: Mock (stabiler)
         'initialized': False,
         'mqtt_clients': {},
         'ui_managers': {}

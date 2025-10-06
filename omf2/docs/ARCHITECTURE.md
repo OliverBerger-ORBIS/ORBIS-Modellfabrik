@@ -711,7 +711,160 @@ if msg:
 
 ---
 
-## 9. Vorteile & Best Practices
+## 9. ✅ BEST PRACTICE LOGGING-SYSTEM
+
+### **Multi-Level Ring Buffer Logging (Thread-Safe)**
+
+**Zweck:** Zentrale Log-Sammlung für UI-Display mit Level-spezifischen Buffern und Thread-Safety.
+
+**Architektur:**
+```python
+# omf2/common/logger.py
+
+class MultiLevelRingBufferHandler(logging.Handler):
+    """Thread-sicherer Handler mit Level-spezifischen Ring-Buffern"""
+    
+    def __init__(self):
+        super().__init__()
+        self.buffers = {
+            'ERROR': deque(maxlen=200),      # Kritische Errors
+            'WARNING': deque(maxlen=200),    # Wichtige Warnings  
+            'INFO': deque(maxlen=500),       # Standard Info-Logs
+            'DEBUG': deque(maxlen=300)       # Debug-Logs
+        }
+        self._lock = threading.Lock()
+    
+    def emit(self, record):
+        """Thread-sichere Log-Speicherung in Level-spezifische Buffer"""
+        with self._lock:
+            level = record.levelname
+            if level in self.buffers:
+                formatted = self.format(record)
+                self.buffers[level].append(formatted)
+```
+
+**Initialisierung (omf2/omf.py):**
+```python
+# 1. ZUERST Handler setzen (noch vor allen anderen Imports, die loggen)!
+from omf2.common.logger import setup_multilevel_ringbuffer_logging
+from omf2.common.logger import heal_all_loggers
+from omf2.common.logger import ensure_ringbufferhandler_attached
+
+# BEST PRACTICE: Frühe Initialisierung vor erstem logger.info()
+if 'log_handler' not in st.session_state:
+    handler, buffers = setup_multilevel_ringbuffer_logging(force_new=True)
+    st.session_state['log_handler'] = handler
+    st.session_state['log_buffers'] = buffers
+    ensure_ringbufferhandler_attached()
+    heal_all_loggers()
+
+# 2. DANN restliche Imports (jetzt bekommen alle Logger propagate=True!)
+```
+
+**Handler-Persistenz nach Environment-Switch:**
+```python
+# omf2/ui/main_dashboard.py
+
+def _reconnect_logging_system(self):
+    """Reconnect logging system to UI buffers after environment switch"""
+    try:
+        from omf2.common.logger import setup_multilevel_ringbuffer_logging, MultiLevelRingBufferHandler
+        import logging
+        
+        # CRITICAL: Remove ALL existing handlers first
+        root_logger = logging.getLogger()
+        for handler_to_remove in root_logger.handlers[:]:
+            root_logger.removeHandler(handler_to_remove)
+        
+        # CRITICAL: Create new handler and attach to root logger
+        handler, buffers = setup_multilevel_ringbuffer_logging(force_new=True)
+        
+        # Update session state with new handler and buffers
+        st.session_state['log_handler'] = handler
+        st.session_state['log_buffers'] = buffers
+        
+        # CRITICAL: Force UI refresh to pick up new handler
+        from omf2.ui.utils.ui_refresh import request_refresh
+        request_refresh()
+        
+    except Exception as e:
+        logger.error(f"❌ Failed to reconnect logging system: {e}")
+```
+
+**UI-Integration (omf2/ui/admin/system_logs/):**
+```python
+# system_logs_tab.py
+
+def render_system_logs_tab():
+    """System Logs Tab mit Multi-Level Buffer Integration"""
+    
+    # Handler aus Session State holen
+    log_handler = st.session_state.get('log_handler')
+    if not log_handler:
+        st.error("❌ No log handler available")
+        return
+    
+    # Level-spezifische Logs aus Buffern holen
+    all_logs = []
+    for level in ['ERROR', 'WARNING', 'INFO', 'DEBUG']:
+        level_logs = log_handler.get_buffer(level)
+        all_logs.extend(level_logs)
+    
+    # Sort by timestamp (newest first)
+    all_logs.sort(key=lambda x: x.split(']')[0] if ']' in x else x, reverse=True)
+    
+    # Display mit Toggle (Table View / Console View)
+    display_mode = st.session_state.get('log_display_mode', 'Console View')
+    if display_mode == 'Table View':
+        _render_log_table(all_logs)
+    else:
+        _render_log_console(all_logs)
+```
+
+### **Logging-System Best Practices:**
+
+**1. Handler-Persistenz:**
+- ✅ **`ensure_ringbufferhandler_attached()`** - Stellt sicher, dass Handler am Root-Logger ist
+- ✅ **`heal_all_loggers()`** - Entfernt alle eigenen Handler und setzt `propagate=True`
+- ✅ **Reihenfolge:** Zuerst Handler sicherstellen, dann Logger "heilen"
+
+**2. Environment-Switch Handling:**
+- ✅ **Handler-Removal:** Alle alten Handler entfernen vor Neu-Initialisierung
+- ✅ **Session State Update:** Handler und Buffers in `st.session_state` aktualisieren
+- ✅ **UI-Refresh:** `request_refresh()` nach Handler-Update
+
+**3. Thread-Safety:**
+- ✅ **Lock-basierte Buffer:** Alle Buffer-Operationen sind thread-safe
+- ✅ **Singleton Pattern:** Ein Handler pro Session
+- ✅ **Propagate=True:** Alle Logger senden an Root-Logger
+
+**4. UI-Integration:**
+- ✅ **Level-spezifische Display:** ERROR, WARNING, INFO, DEBUG getrennt
+- ✅ **Display Modes:** Table View (strukturiert) / Console View (einzeilig)
+- ✅ **Real-time Updates:** Logs erscheinen sofort in UI
+
+**5. Debugging & Troubleshooting:**
+- ✅ **Handler-Verification:** Prüfung, dass genau ein Handler am Root-Logger ist
+- ✅ **Buffer-Size Monitoring:** Debug-Ausgaben für Buffer-Größen
+- ✅ **Session State Consistency:** Handler-ID-Verifikation
+
+### **Wichtige Regeln:**
+
+**❌ VERBOTEN:**
+- Mehrere `MultiLevelRingBufferHandler` am Root-Logger
+- Handler ohne Thread-Safety
+- Logger ohne `propagate=True`
+- Handler-Verlust nach Environment-Switch
+
+**✅ ERFORDERLICH:**
+- Ein Handler pro Session
+- Thread-sichere Buffer-Operationen
+- Handler-Persistenz nach Environment-Switch
+- UI-Refresh nach Handler-Update
+
+---
+
+## 10. Vorteile & Best Practices
 
 - **UI bleibt einfach:** Keine Threading-Probleme, keine MQTT-Details, kein Deadlock-Risiko.
 - **Gateways sind "schlanke Fassade":** Testbar, erweiterbar, keine Redundanz.

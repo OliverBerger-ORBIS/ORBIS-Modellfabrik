@@ -36,10 +36,6 @@ def render_ccu_message_monitor(ccu_gateway, title="CCU Message Monitor", show_co
             st.error("❌ CCU MQTT Client nicht verfügbar über Gateway")
             return
         
-        # DEBUG: Check CCU MQTT Client status
-        logger.info(f"🔍 DEBUG: CCU MQTT Client connected: {mqtt_client.connected}")
-        logger.info(f"🔍 DEBUG: CCU MQTT Client client_id: {mqtt_client.client_id}")
-        logger.info(f"🔍 DEBUG: CCU MQTT Client subscribed topics: {mqtt_client._get_subscribed_topics()}")
         
         # CCU Message Monitor Controls (optional)
         if show_controls:
@@ -47,7 +43,6 @@ def render_ccu_message_monitor(ccu_gateway, title="CCU Message Monitor", show_co
             
             with col1:
                 if st.button(f"{UISymbols.get_status_icon('refresh')} Refresh Messages", use_container_width=True, key="ccu_refresh_messages"):
-                    logger.info("🔄 DEBUG: Refresh Messages Button clicked")
                     _refresh_ccu_messages(ccu_gateway)
             
             with col2:
@@ -61,13 +56,6 @@ def render_ccu_message_monitor(ccu_gateway, title="CCU Message Monitor", show_co
         # Get all buffers from CCU MQTT client
         all_buffers = mqtt_client.get_all_buffers()
         
-        # DEBUG: Log buffer information
-        logger.info(f"🔍 DEBUG: CCU MQTT Client buffers: {len(all_buffers) if all_buffers else 0} topics")
-        if all_buffers:
-            for topic, messages in all_buffers.items():
-                logger.info(f"🔍 DEBUG: Topic {topic}: {len(messages) if messages else 0} messages")
-        else:
-            logger.warning("🔍 DEBUG: No buffers found in CCU MQTT Client")
         
         # Always show subscribed topics, even if no buffers
         subscribed_topics = mqtt_client._get_subscribed_topics()
@@ -184,36 +172,27 @@ def _get_message_status(message):
 def _refresh_ccu_messages(ccu_gateway):
     """Refresh CCU Messages - EXACT like Admin but with CCU topics"""
     try:
-        logger.info("🔄 DEBUG: _refresh_ccu_messages function called")
         logger.info("🔄 Refreshing CCU Messages")
         
         # Get MQTT client through gateway
         mqtt_client = ccu_gateway.mqtt_client
         if mqtt_client:
-            logger.info("🔄 DEBUG: MQTT client exists, getting subscribed topics")
             # Get subscribed topics from registry (not hardcoded!)
             subscribed_topics = mqtt_client._get_subscribed_topics()
-            logger.info(f"🔄 DEBUG: Got {len(subscribed_topics) if subscribed_topics else 0} subscribed topics")
             if subscribed_topics:
                 # Re-subscribe to all CCU topics from registry
-                logger.info(f"🔄 DEBUG: About to call subscribe_many, that is the problem")
-                logger.info(f"🔄 DEBUG: Subscribed topics: {subscribed_topics}")
                 # mqtt_client.subscribe_many(subscribed_topics)
-                logger.info(f"🔄 DEBUG: We have to get all buffers instead")
                 logger.info(f"📥 Re-subscribed to {len(subscribed_topics)} CCU topics")
             else:
                 logger.warning("⚠️ No CCU topics found in registry")
         else:
-            logger.warning("🔄 DEBUG: No MQTT client provided")
-        logger.info("🔄 DEBUG: About to show success message")
+            logger.warning("⚠️ No MQTT client provided")
         st.success("✅ CCU Messages refreshed!")
-        logger.info("🔄 DEBUG: Success message shown")
         
         # CRITICAL: Request UI refresh to update the display
         from omf2.ui.utils.ui_refresh import request_refresh
         request_refresh()
     except Exception as e:
-        logger.error(f"❌ DEBUG: Exception in _refresh_ccu_messages: {e}")
         logger.error(f"❌ CCU Messages refresh error: {e}")
         st.error(f"❌ CCU Messages refresh failed: {e}")
 

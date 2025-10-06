@@ -38,8 +38,8 @@ def render_system_logs_tab():
                 help="Table View: Structured tabular display | Console View: Classic one-line format"
             )
             
-            # Update session state only if changed
-            if st.session_state['log_display_mode'] != display_mode:
+            # Update session state only if changed (avoid widget warning)
+            if display_mode != st.session_state['log_display_mode']:
                 st.session_state['log_display_mode'] = display_mode
                 request_refresh()
         

@@ -42,7 +42,6 @@ def render_ccu_modules_tab(ccu_gateway=None, registry_manager=None):
         
         with col1:
             if st.button(f"{UISymbols.get_status_icon('refresh')} Refresh Status", use_container_width=True, key="module_refresh_status"):
-                logger.info("🔄 DEBUG: Refresh Status Button clicked")
                 _refresh_module_status(ccu_gateway)
         
         with col2:
