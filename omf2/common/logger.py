@@ -175,24 +175,55 @@ def create_log_buffer(maxlen: int = 1000) -> Deque[str]:
 def setup_multilevel_ringbuffer_logging(force_new=False):
     """
     Initialisiert oder erneuert einen MultiLevelRingBufferHandler.
-    force_new: True = alte Handler werden entfernt und ein neuer angehängt.
+    
+    Stellt sicher, dass IMMER genau EIN MultiLevelRingBufferHandler am Root-Logger hängt.
+    
+    Args:
+        force_new: True = alte Handler werden entfernt und ein neuer angehängt.
+    
+    Returns:
+        tuple: (handler, buffers) - Handler-Instanz und Buffer-Dict
     """
-    logger = logging.getLogger()
+    root_logger = logging.getLogger()
+    
     # Entferne ALLE alten MultiLevelRingBufferHandler, wenn force_new
     if force_new:
-        handlers_to_remove = [h for h in logger.handlers if isinstance(h, MultiLevelRingBufferHandler)]
+        handlers_to_remove = [h for h in root_logger.handlers if isinstance(h, MultiLevelRingBufferHandler)]
         for h in handlers_to_remove:
-            logger.removeHandler(h)
+            root_logger.removeHandler(h)
+            # Log removal for debugging
+            logging.debug(f"🔧 Removed old MultiLevelRingBufferHandler from root logger")
+    
     # Prüfe, ob jetzt noch einer da ist
-    existing = [h for h in logger.handlers if isinstance(h, MultiLevelRingBufferHandler)]
+    existing = [h for h in root_logger.handlers if isinstance(h, MultiLevelRingBufferHandler)]
+    
     if existing:
+        # Handler existiert bereits - verwende ihn
         handler = existing[0]
+        logging.debug(f"✅ Reusing existing MultiLevelRingBufferHandler")
     else:
+        # Erstelle neuen Handler
         handler = MultiLevelRingBufferHandler()
         formatter = logging.Formatter('%(asctime)s [%(levelname)s] %(name)s: %(message)s')
         handler.setFormatter(formatter)
         handler.setLevel(logging.DEBUG)
-        logger.addHandler(handler)
+        root_logger.addHandler(handler)
+        logging.debug(f"✅ Created and attached new MultiLevelRingBufferHandler to root logger")
+    
+    # KRITISCH: Verifiziere, dass Handler tatsächlich am Root-Logger hängt
+    handler_attached = handler in root_logger.handlers
+    if not handler_attached:
+        # Handler ist nicht attached - behebe das Problem
+        root_logger.addHandler(handler)
+        logging.warning(f"⚠️ Handler was not attached - forced re-attachment to root logger")
+    
+    # Finale Verifikation
+    total_multilevel_handlers = len([h for h in root_logger.handlers if isinstance(h, MultiLevelRingBufferHandler)])
+    if total_multilevel_handlers != 1:
+        logging.error(f"❌ FEHLER: {total_multilevel_handlers} MultiLevelRingBufferHandler am Root-Logger (sollte 1 sein)")
+    else:
+        logging.debug(f"✅ Verification successful: Exactly 1 MultiLevelRingBufferHandler attached to root logger")
+    
     return handler, handler.buffers
 
 

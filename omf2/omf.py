@@ -49,6 +49,11 @@ from omf2.common.logging_config import apply_logging_config
 apply_logging_config()
 logger.info("📋 Logging configuration applied from config file")
 
+# KRITISCH: Nach apply_logging_config() Handler-Attachment verifizieren
+from omf2.common.logging_config import _ensure_multilevel_handler_attached
+_ensure_multilevel_handler_attached()
+logger.info("✅ Logging handler attachment verified after config apply")
+
 def cleanup_resources():
     """Cleanup resources on application exit"""
     try:
