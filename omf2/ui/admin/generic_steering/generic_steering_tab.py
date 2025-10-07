@@ -8,6 +8,7 @@ import streamlit as st
 from omf2.common.logger import get_logger
 from omf2.factory.gateway_factory import get_admin_gateway
 from omf2.ui.common.symbols import UISymbols
+from omf2.common.i18n import I18nManager
 
 logger = get_logger(__name__)
 
@@ -17,7 +18,10 @@ def render_generic_steering_tab():
     logger.info("🎛️ Rendering Generic Steering Tab")
     
     try:
-        st.title(f"{UISymbols.get_tab_icon('generic_steering')} Generic Steering")
+        # Initialize i18n
+        i18n = I18nManager()
+        
+        st.title(f"{UISymbols.get_tab_icon('generic_steering')} {i18n.translate('tabs.generic_steering')}")
         st.markdown("**Factory Management and Control with Modular Architecture**")
         
         # Gateway-Pattern: Get AdminGateway from Factory

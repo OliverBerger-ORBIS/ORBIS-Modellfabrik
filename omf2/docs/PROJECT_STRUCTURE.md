@@ -1,8 +1,8 @@
 # OMF2 Project Structure
 
 **Status: VOLLSTÄNDIG DOKUMENTIERT** ✅  
-**Datum: 2025-10-06**  
-**Architektur: Drei-Schichten-Architektur mit Best Practices**
+**Datum: 2025-01-07**  
+**Architektur: Drei-Schichten-Architektur mit Connection Loop Prevention**
 
 ## 🎯 Übersicht
 
@@ -56,7 +56,7 @@ omf2/
 │   └── admin_gateway.py            # Gateway (Validation & Routing)
 │
 ├── ccu/                            # 🏭 CCU DOMAIN
-│   ├── ccu_mqtt_client.py          # MQTT Client (Transport Layer)
+│   ├── ccu_mqtt_client.py          # MQTT Client (Connection Loop Prevention)
 │   ├── ccu_gateway.py              # Gateway (Validation & Routing)
 │   ├── config_loader.py            # CCU Config Loader (Domain-specific)
 │   ├── sensor_manager.py           # Business Manager (Sensor-Daten)
@@ -74,11 +74,14 @@ omf2/
 │   └── workpiece_manager.py        # Workpiece Icon Manager
 │
 ├── factory/                        # 🏭 FACTORY PATTERN
-│   ├── gateway_factory.py          # Gateway Factory (Singleton)
+│   ├── gateway_factory.py          # Gateway Factory (Singleton + Session State)
 │   └── client_factory.py           # Client Factory (Singleton)
 │
 ├── ui/                             # 🖥️ STREAMLIT UI COMPONENTS
 │   ├── main_dashboard.py           # Haupt-Dashboard
+│   ├── utils/                      # UI Utilities
+│   │   ├── environment_switch.py   # Environment Switch mit automatischem UI-Refresh
+│   │   └── ui_refresh.py           # UI Refresh Pattern
 │   ├── admin/                      # Admin UI Components
 │   │   ├── admin_dashboard.py      # Admin Dashboard
 │   │   ├── message_center/         # Message Center UI
@@ -90,6 +93,10 @@ omf2/
 │   │   │   ├── ccu_configuration_tab.py
 │   │   │   ├── ccu_parameter_configuration_subtab.py
 │   │   │   └── ccu_factory_configuration_subtab.py
+│   │   ├── ccu_process/            # CCU Process UI
+│   │   │   ├── ccu_process_tab.py
+│   │   │   ├── ccu_production_plan_subtab.py
+│   │   │   └── ccu_production_monitoring_subtab.py
 │   │   └── common/                 # CCU Shared UI Components
 │   │       └── shopfloor_layout.py # Reusable Shopfloor Layout Component
 │   ├── nodered/                    # Node-RED UI Components

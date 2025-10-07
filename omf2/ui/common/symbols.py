@@ -19,6 +19,15 @@ class UISymbols:
         'ccu_configuration': '⚙️',  # Configuration
         'ccu_modules': '🏗️',       # Module Control (FINAL: 🏗️)
         
+        # CCU Process Subtabs
+        'production_plan': '📋',    # Production Plan (FINAL: 📋)
+        'production_monitoring': '📊', # Production Monitoring (FINAL: 📊)
+        
+        # CCU Configuration Subtabs
+        'factory': '🏭',            # Factory Configuration (FINAL: 🏭)
+        'parameter': '⚙️',          # Parameter Configuration (FINAL: ⚙️)
+        'workflow': '🔄',           # Workflow/Process Flow (FINAL: 🔄)
+        
         # Node-RED Integration
         'nodered_overview': '🔄',   # Process Overview
         'nodered_processes': '⚙️',  # Process Management
@@ -54,6 +63,14 @@ class UISymbols:
         'receive': '📥',            # Nachrichten empfangen (FINAL: 📥)
         'debug': '🔍',              # Debug/Inspection
         'history': '📚',            # History/Logs
+        'overview': '📋',           # Overview/Summary
+        'stats': '📊',              # Statistics/Analytics
+        'save': '💾',               # Save/Store
+        'load': '📂',               # Load/Open
+        'start': '▶️',               # Start/Begin
+        'stop': '⏹️',               # Stop/End
+        'pause': '⏸️',              # Pause/Suspend
+        'add': '➕',                 # Add/Create
         
         # Connection Status Icons
         'connected': '🟢',          # Connected/Online

@@ -9,6 +9,7 @@ import streamlit as st
 from omf2.common.logger import get_logger
 from omf2.ui.common.symbols import UISymbols
 from omf2.ui.utils.ui_refresh import request_refresh
+from omf2.common.i18n import I18nManager
 
 logger = get_logger(__name__)
 
@@ -18,7 +19,10 @@ def render_system_logs_tab():
     logger.info(f"{UISymbols.get_functional_icon('logs')} Rendering Admin Logs Tab")
     
     try:
-        st.header(f"{UISymbols.get_functional_icon('logs')} System Logs")
+        # Initialize i18n
+        i18n = I18nManager()
+        
+        st.header(f"{UISymbols.get_functional_icon('logs')} {i18n.translate('tabs.system_logs')}")
         st.markdown("**System log viewer and analysis tools**")
         
         # Display mode toggle

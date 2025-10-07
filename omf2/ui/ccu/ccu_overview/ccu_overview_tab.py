@@ -7,6 +7,7 @@ import streamlit as st
 from omf2.ccu.ccu_gateway import CcuGateway
 from omf2.common.logger import get_logger
 from omf2.ui.common.symbols import UISymbols
+from omf2.common.i18n import I18nManager
 
 logger = get_logger(__name__)
 
@@ -32,8 +33,11 @@ def render_ccu_overview_tab(ccu_gateway=None, registry_manager=None):
             from omf2.registry.manager.registry_manager import get_registry_manager
             registry_manager = get_registry_manager()
         
+        # Initialize i18n
+        i18n = I18nManager()
+        
         # Use UISymbols for consistent icon usage
-        st.header(f"{UISymbols.get_tab_icon('ccu_overview')} CCU Overview")
+        st.header(f"{UISymbols.get_tab_icon('ccu_overview')} {i18n.translate('tabs.ccu_overview')}")
         st.markdown("Central Control Unit - Factory Overview and Management")
         
         # Create subtabs

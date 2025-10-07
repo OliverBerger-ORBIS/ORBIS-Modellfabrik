@@ -62,21 +62,33 @@ class GatewayFactory:
         
         with self._gateway_locks[gateway_name]:
             if gateway_name not in self._gateways:
-                from omf2.ccu.ccu_gateway import CcuGateway
-                from omf2.factory.client_factory import get_client_factory
-                
-                # MQTT-Client aus Client-Factory holen
-                client_factory = get_client_factory()
-                ccu_mqtt_client = client_factory.get_mqtt_client('ccu_mqtt_client')
-                
-                # CcuGateway mit MQTT-Client erstellen
-                ccu_gateway = CcuGateway(mqtt_client=ccu_mqtt_client, **kwargs)
-                
-                # Gateway im MQTT-Client registrieren für Topic-Routing
-                ccu_mqtt_client.set_gateway(ccu_gateway)
+                # Gateway aus Session State holen (verhindert Connection Loops)
+                import streamlit as st
+                if 'ccu_gateway' not in st.session_state:
+                    from omf2.ccu.ccu_gateway import CcuGateway
+                    from omf2.factory.client_factory import get_client_factory
+                    
+                    # MQTT-Client aus Session State holen
+                    if 'ccu_mqtt_client' not in st.session_state:
+                        client_factory = get_client_factory()
+                        ccu_mqtt_client = client_factory.get_mqtt_client('ccu_mqtt_client')
+                        st.session_state['ccu_mqtt_client'] = ccu_mqtt_client
+                    else:
+                        ccu_mqtt_client = st.session_state['ccu_mqtt_client']
+                    
+                    # CcuGateway mit MQTT-Client erstellen
+                    ccu_gateway = CcuGateway(mqtt_client=ccu_mqtt_client, **kwargs)
+                    
+                    # Gateway im MQTT-Client registrieren für Topic-Routing
+                    ccu_mqtt_client.set_gateway(ccu_gateway)
+                    
+                    st.session_state['ccu_gateway'] = ccu_gateway
+                    logger.info(f"🏭 Created {gateway_name} gateway with MQTT client and topic routing")
+                else:
+                    ccu_gateway = st.session_state['ccu_gateway']
+                    logger.info(f"🏭 Retrieved {gateway_name} gateway from session state")
                 
                 self._gateways[gateway_name] = ccu_gateway
-                logger.info(f"🏭 Created {gateway_name} gateway with MQTT client and topic routing")
             
             return self._gateways[gateway_name]
     
@@ -120,21 +132,33 @@ class GatewayFactory:
         
         with self._gateway_locks[gateway_name]:
             if gateway_name not in self._gateways:
-                from omf2.admin.admin_gateway import AdminGateway
-                from omf2.factory.client_factory import get_client_factory
-                
-                # MQTT-Client aus Client-Factory holen
-                client_factory = get_client_factory()
-                admin_mqtt_client = client_factory.get_mqtt_client('admin_mqtt_client')
-                
-                # AdminGateway mit MQTT-Client erstellen
-                admin_gateway = AdminGateway(mqtt_client=admin_mqtt_client, **kwargs)
-                
-                # Gateway im MQTT-Client registrieren (Architecture: MQTT → Gateway → Manager → UI)
-                admin_mqtt_client.register_gateway(admin_gateway)
+                # Gateway aus Session State holen (verhindert Connection Loops)
+                import streamlit as st
+                if 'admin_gateway' not in st.session_state:
+                    from omf2.admin.admin_gateway import AdminGateway
+                    from omf2.factory.client_factory import get_client_factory
+                    
+                    # MQTT-Client aus Session State holen
+                    if 'admin_mqtt_client' not in st.session_state:
+                        client_factory = get_client_factory()
+                        admin_mqtt_client = client_factory.get_mqtt_client('admin_mqtt_client')
+                        st.session_state['admin_mqtt_client'] = admin_mqtt_client
+                    else:
+                        admin_mqtt_client = st.session_state['admin_mqtt_client']
+                    
+                    # AdminGateway mit MQTT-Client erstellen
+                    admin_gateway = AdminGateway(mqtt_client=admin_mqtt_client, **kwargs)
+                    
+                    # Gateway im MQTT-Client registrieren (Architecture: MQTT → Gateway → Manager → UI)
+                    admin_mqtt_client.register_gateway(admin_gateway)
+                    
+                    st.session_state['admin_gateway'] = admin_gateway
+                    logger.info(f"🏭 Created {gateway_name} gateway with MQTT client and registered for routing")
+                else:
+                    admin_gateway = st.session_state['admin_gateway']
+                    logger.info(f"🏭 Retrieved {gateway_name} gateway from session state")
                 
                 self._gateways[gateway_name] = admin_gateway
-                logger.info(f"🏭 Created {gateway_name} gateway with MQTT client and registered for routing")
             
             return self._gateways[gateway_name]
     

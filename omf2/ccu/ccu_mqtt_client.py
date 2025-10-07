@@ -132,10 +132,10 @@ class CcuMqttClient:
         """Lädt Published Topics aus Registry"""
         try:
             mqtt_clients = self.registry_manager.get_mqtt_clients()
-            admin_client = mqtt_clients.get('mqtt_clients', {}).get('admin_mqtt_client', {})
-            return admin_client.get('published_topics', [])
+            ccu_client = mqtt_clients.get('mqtt_clients', {}).get('ccu_mqtt_client', {})
+            return ccu_client.get('published_topics', [])
         except Exception as e:
-            logger.error(f"❌ Failed to load admin published topics: {e}")
+            logger.error(f"❌ Failed to load CCU published topics: {e}")
             return []
     
     def _get_subscribed_topics(self) -> List[str]:
@@ -237,8 +237,10 @@ class CcuMqttClient:
                 keepalive = mqtt_config.get('keepalive', 60)
                 
                 logger.info(f"🔗 Connecting to {host}:{port} with client_id: {self.client_id}")
-                self.client.loop_start()
+                
+                # WICHTIG: Loop erst nach connect_async starten (verhindert Connection Loops)
                 self.client.connect_async(host, port, keepalive)
+                self.client.loop_start()
                 
                 # Warten auf Verbindung
                 import time
@@ -262,9 +264,13 @@ class CcuMqttClient:
             try:
                 if self.client and self.connected:
                     logger.info(f"🔌 Clean disconnecting CCU MQTT Client (Environment: {getattr(self, 'current_environment', 'unknown')})")
-                    # TODO: Implement real MQTT disconnect
-                    # self.client.loop_stop()
-                    # self.client.disconnect()
+                    
+                    # WICHTIG: Echter MQTT Disconnect (verhindert Connection Loops)
+                    if hasattr(self.client, 'loop_stop'):
+                        self.client.loop_stop()
+                    if hasattr(self.client, 'disconnect'):
+                        self.client.disconnect()
+                    
                     self.connected = False
                     self.client = None
                     logger.info("🔌 CCU MQTT Client cleanly disconnected")
@@ -419,6 +425,10 @@ class CcuMqttClient:
         """
         logger.info(f"🔄 CCU MQTT Client environment switch: {self.current_environment} -> {new_environment}")
         
+        # WARNUNG: reconnect_environment() verursacht Connection Loops!
+        # Verwende stattdessen: switch_ccu_environment() aus environment_switch.py
+        logger.warning("⚠️ reconnect_environment() verursacht Connection Loops! Verwende switch_ccu_environment() stattdessen.")
+        
         # Disconnect from current environment
         if self.connected:
             self.disconnect()
@@ -571,12 +581,15 @@ class CcuMqttClient:
             
             # SUBSCRIBE NUR IM ON_CONNECT-CALLBACK!
             try:
-                # CCU subscribiert zu allen Topics mit '#'
-                result = client.subscribe("#", qos=1)
-                if result[0] == 0:
-                    logger.info("📥 Subscribed to all topics (#)")
+                # CCU subscribiert zu Registry-Topics (nicht Wildcard!)
+                if self.subscribed_topics:
+                    success = self.subscribe_many(self.subscribed_topics)
+                    if success:
+                        logger.info(f"📥 Subscribed to {len(self.subscribed_topics)} CCU topics from Registry")
+                    else:
+                        logger.error("❌ Failed to subscribe to CCU topics")
                 else:
-                    logger.error(f"❌ Subscribe to all topics failed: {result[0]}")
+                    logger.warning("⚠️ No subscribed topics found in Registry for CCU")
             except Exception as e:
                 logger.error(f"❌ Exception during subscribe: {e}")
         else:
@@ -638,7 +651,7 @@ class CcuMqttClient:
                     logger.debug(f"⚠️ No gateway registered, skipping routing for {topic}")
                 
             except json.JSONDecodeError:
-                # Nicht-JSON Messages als Text speichern
+                # Nicht-JSON Messages als Text speichern (KEIN Gateway-Aufruf!)
                 with self._buffer_lock:
                     self.topic_buffers[topic].append({
                         'raw_payload': payload_raw,
@@ -646,18 +659,7 @@ class CcuMqttClient:
                     })
                 
                 logger.debug(f"📥 Received raw on {topic}: {payload_raw}")
-                
-                # Gateway-Routing für Raw-Payload
-                meta = {
-                    "mqtt_timestamp": mqtt_timestamp,
-                    "qos": msg.qos,
-                    "retain": msg.retain
-                }
-                
-                if self._gateway:
-                    self._gateway.on_mqtt_message(topic, {"raw_payload": payload_raw}, meta)
-                else:
-                    logger.debug(f"⚠️ No gateway registered, skipping routing for {topic}")
+                # KEIN Gateway-Aufruf für Raw-Payload (verhindert Feedback-Loops)
             
         except Exception as e:
             # Sammle alle Context-Informationen in einem String

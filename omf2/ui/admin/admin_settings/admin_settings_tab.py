@@ -7,6 +7,7 @@ import streamlit as st
 from omf2.common.logger import get_logger
 from omf2.factory.gateway_factory import get_admin_gateway
 from omf2.ui.common.symbols import UISymbols
+from omf2.common.i18n import I18nManager
 
 logger = get_logger(__name__)
 
@@ -15,7 +16,10 @@ def render_admin_settings_tab():
     """Render Admin Settings Tab with Subtabs"""
     logger.info(f"{UISymbols.get_tab_icon('admin_settings')} Rendering Admin Settings Tab")
     try:
-        st.header(f"{UISymbols.get_tab_icon('admin_settings')} Admin Settings")
+        # Initialize i18n
+        i18n = I18nManager()
+        
+        st.header(f"{UISymbols.get_tab_icon('admin_settings')} {i18n.translate('tabs.admin_settings')}")
         st.markdown("Dashboard configuration and registry information")
         
         # Gateway-Pattern: Get AdminGateway from Factory

@@ -6,6 +6,8 @@ CCU Orders Tab - Order Management UI Component
 import streamlit as st
 from omf2.ccu.ccu_gateway import CcuGateway
 from omf2.common.logger import get_logger
+from omf2.ui.common.symbols import UISymbols
+from omf2.common.i18n import I18nManager
 
 logger = get_logger(__name__)
 
@@ -33,11 +35,14 @@ def render_ccu_orders_tab(ccu_gateway=None, registry_manager=None):
             from omf2.registry.manager.registry_manager import get_registry_manager
             registry_manager = get_registry_manager()
         
-        st.header("📦 CCU Orders")
+        # Initialize i18n
+        i18n = I18nManager()
+        
+        st.header(f"{UISymbols.get_tab_icon('ccu_orders')} {i18n.translate('tabs.ccu_orders')}")
         st.markdown("Order Management and Processing")
         
         # Order Statistics Section
-        with st.expander("📊 Order Statistics", expanded=True):
+        with st.expander(f"{UISymbols.get_status_icon('stats')} Order Statistics", expanded=True):
             col1, col2, col3, col4 = st.columns(4)
             
             with col1:

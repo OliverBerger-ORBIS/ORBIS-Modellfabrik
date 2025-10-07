@@ -205,10 +205,28 @@ def _refresh_ccu_messages(mqtt_client):
 3. **Topics**: Admin = alle, CCU = spezifische
 4. **Client ID**: Admin = `omf_admin_{env}`, CCU = `omf_ccu_{env}`
 
-## 📝 NÄCHSTE SCHRITTE
+## ✅ GELÖSTE PROBLEME (Connection Loop Fixes)
 
-1. **CCU Client Connect**: MQTT_AVAILABLE Check hinzufügen
-2. **CCU Client Subscribe**: Fallback zu "#" wenn keine Registry-Topics
-3. **CCU Refresh**: Re-Subscription wie Admin
-4. **Testing**: Beide Clients identisch testen
-5. **Documentation**: Verhalten dokumentieren
+### **1. Doppelte Gateway-Aufrufe behoben:**
+- **Problem**: CCU `_on_message()` machte ZWEI Gateway-Aufrufe (JSON + Raw-Payload)
+- **Lösung**: Raw-Payload ohne Gateway-Aufruf (wie Admin)
+- **Ergebnis**: Keine Feedback-Loops mehr
+
+### **2. Falsche Topic-Zuweisung behoben:**
+- **Problem**: CCU Client lud Admin Topics statt CCU Topics
+- **Lösung**: `_get_published_topics()` lädt jetzt `ccu_mqtt_client` Topics
+- **Ergebnis**: Korrekte Topic-Zuweisung
+
+### **3. Connection Loop beim Reconnect behoben:**
+- **Problem**: `connect()` mit falscher Loop-Reihenfolge + kein echter Disconnect
+- **Lösung**: `connect_async()` vor `loop_start()` + echter `loop_stop()`/`disconnect()`
+- **Ergebnis**: Saubere Connect/Disconnect Sequenz
+
+### **4. Environment Switch automatisiert:**
+- **Problem**: Manueller "Refresh Dashboard" nach Environment Switch nötig
+- **Lösung**: Automatischer UI-Refresh in `environment_switch.py`
+- **Ergebnis**: Nahtlose Environment Switches
+
+## 📝 STATUS: ALLE PROBLEME GELÖST ✅
+
+**CCU Client funktioniert jetzt stabil ohne Connection Loops!**

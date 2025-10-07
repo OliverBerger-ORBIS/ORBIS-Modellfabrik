@@ -85,29 +85,16 @@ class MainDashboard:
         # Update session state - EXACT like old dashboard
         st.session_state['current_environment'] = new_env
         
-        # Reconnect admin MQTT client with new environment using improved method
-        if 'admin_mqtt_client' in st.session_state:
-            admin_client = st.session_state['admin_mqtt_client']
-            
-            # Use the new reconnect_environment method for clean switching
-            success = admin_client.reconnect_environment(new_env)
-            
-            if success:
-                logger.info(f"✅ Admin MQTT Client reconnected to {new_env}")
-            else:
-                logger.warning(f"⚠️ Admin MQTT Client reconnection to {new_env} had issues, continuing anyway")
+        # Use robust environment switch utility
+        from omf2.ui.utils.environment_switch import switch_all_environments
         
-        # Reconnect CCU MQTT client with new environment
-        if 'ccu_mqtt_client' in st.session_state:
-            ccu_client = st.session_state['ccu_mqtt_client']
-            
-            # Use the new reconnect_environment method for clean switching
-            success = ccu_client.reconnect_environment(new_env)
-            
-            if success:
-                logger.info(f"✅ CCU MQTT Client reconnected to {new_env}")
-            else:
-                logger.warning(f"⚠️ CCU MQTT Client reconnection to {new_env} had issues, continuing anyway")
+        try:
+            # Switch all environments (CCU, Admin) with proper cleanup
+            switch_all_environments(new_env)
+            logger.info(f"✅ ENV-SWITCH: All environments successfully switched to '{new_env}'")
+        except Exception as e:
+            logger.error(f"❌ ENV-SWITCH: Error during environment switch: {e}")
+            st.error(f"❌ Environment switch failed: {e}")
         
         # TODO nodered: Node-RED MQTT Clients Environment-Switch hinzufügen - fehlen noch
         # if 'nodered_pub_mqtt_client' in st.session_state:

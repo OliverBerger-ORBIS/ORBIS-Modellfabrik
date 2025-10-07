@@ -30,17 +30,51 @@ def render_my_tab(gateway=None, registry_manager=None):
 - **LOGGER-SYMBOLE:** Verwende UISymbols für konsistente Logger-Symbole
 
 ### **1. Gateway-Pattern (OBLIGATORISCH)**
-```python
-# ✅ KORREKT: Gateway verwenden
-from omf2.factory.gateway_factory import get_admin_gateway, get_ccu_gateway, get_nodered_gateway
 
-def render_my_tab():
-    # Gateway-Pattern: Get Gateway from Factory
+**🚨 KRITISCH: Domain-spezifische Patterns verwenden!**
+
+#### **Admin Domain (direkte Factory - funktioniert):**
+```python
+# ✅ KORREKT: Admin Gateway
+from omf2.factory.gateway_factory import get_admin_gateway
+
+def render_admin_tab():
     admin_gateway = get_admin_gateway()
     if not admin_gateway:
         st.error(f"{UISymbols.get_status_icon('error')} Admin Gateway not available")
         return
 ```
+
+#### **CCU/NodeRED Domain (Session State - VERHINDERT Connection Loops):**
+```python
+# ✅ KORREKT: CCU Gateway mit Session State
+def render_ccu_tab(ccu_gateway=None, registry_manager=None):
+    if not ccu_gateway:
+        if 'ccu_gateway' not in st.session_state:
+            from omf2.factory.gateway_factory import get_gateway_factory
+            gateway_factory = get_gateway_factory()
+            st.session_state['ccu_gateway'] = gateway_factory.get_ccu_gateway()
+        ccu_gateway = st.session_state['ccu_gateway']
+```
+
+**🚨 WARNUNG:** Direkter Factory-Aufruf bei CCU/NodeRED verursacht Connection Loops!
+**🎯 REFERENZ:** Admin = direkte Factory | CCU/NodeRED = Session State
+
+### **3. Environment Switch Pattern (OBLIGATORISCH)**
+
+**🚨 KRITISCH: Verwende Environment Switch Utility für saubere Environment-Wechsel!**
+
+#### **Environment Switch (verhindert Connection Loops):**
+```python
+# ✅ KORREKT: Environment Switch mit automatischem UI-Refresh
+from omf2.ui.utils.environment_switch import switch_ccu_environment
+
+def switch_environment(new_env: str):
+    switch_ccu_environment(new_env)
+    # UI wird automatisch refreshed!
+```
+
+**🚨 WARNUNG:** Niemals `client.reconnect_environment()` direkt verwenden!
 
 ### **2. Singleton-Pattern (OBLIGATORISCH)**
 ```python

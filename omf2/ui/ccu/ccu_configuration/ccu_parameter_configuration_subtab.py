@@ -17,7 +17,7 @@ def render_ccu_parameter_configuration_subtab():
     """Render CCU Parameter Configuration Subtab"""
     logger.info("⚙️ Rendering CCU Parameter Configuration Subtab")
     try:
-        st.subheader("⚙️ Parameter Configuration")
+        st.subheader(f"{UISymbols.get_tab_icon('parameter')} Parameter Configuration")
         st.markdown("Configure CCU production parameters and settings")
         
         # Load configuration data

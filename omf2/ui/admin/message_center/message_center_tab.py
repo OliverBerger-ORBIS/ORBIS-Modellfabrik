@@ -8,6 +8,7 @@ import streamlit as st
 from omf2.common.logger import get_logger
 from omf2.factory.gateway_factory import get_admin_gateway
 from omf2.ui.common.symbols import UISymbols
+from omf2.common.i18n import I18nManager
 
 logger = get_logger(__name__)
 
@@ -17,8 +18,11 @@ def render_message_center_tab():
     logger.info("📧 Rendering Message Center Tab")
     
     try:
+        # Initialize i18n
+        i18n = I18nManager()
+        
         # Header
-        st.subheader(f"{UISymbols.get_tab_icon('message_center')} Message Center")
+        st.subheader(f"{UISymbols.get_tab_icon('message_center')} {i18n.translate('tabs.message_center')}")
         st.markdown("**MQTT Live Monitoring and Message Testing**")
         
         # Gateway-Pattern: Get AdminGateway from Factory

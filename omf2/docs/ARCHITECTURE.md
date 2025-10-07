@@ -38,6 +38,9 @@ Weggekapselte, robuste Architektur für MQTT-Kommunikation, Message-Templates un
   Direkte JSON-Payloads mit Schema-Validierung für alle Topics.
 - **✅ Gateway-Factory** (`omf2/factory/gateway_factory.py`)  
   Thread-sichere Factory für alle Gateway-Instanzen mit Singleton-Pattern.
+  **⚠️ KRITISCH:** Admin = direkte Factory | CCU/NodeRED = Session State (verhindert Connection Loops).
+- **✅ Environment Switch** (`omf2/ui/utils/environment_switch.py`)  
+  Robuster Environment-Switch mit automatischem UI-Refresh. Verhindert Connection Loops durch sauberen Client/Gateway-Cleanup.
 - **✅ CcuGateway** (`omf2/ccu/ccu_gateway.py`)  
   Gateway mit Topic-Routing für CCU Business-Operationen. Routet MQTT-Nachrichten an zuständige Manager.
 - **✅ NoderedGateway** (`omf2/nodered/nodered_gateway.py`)  

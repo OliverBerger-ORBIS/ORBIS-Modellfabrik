@@ -39,9 +39,21 @@ class I18nManager:
                     },
                     'tabs': {
                         'ccu_dashboard': 'CCU Dashboard',
+                        'ccu_overview': 'CCU Übersicht',
+                        'ccu_orders': 'CCU Aufträge',
+                        'ccu_process': 'CCU Prozesse',
+                        'production_plan': 'Produktionsplan',
+                        'production_monitoring': 'Produktionsüberwachung',
+                        'ccu_configuration': 'CCU Konfiguration',
+                        'factory_configuration': 'Fabrik-Konfiguration',
+                        'parameter_configuration': 'Parameter-Konfiguration',
+                        'ccu_modules': 'CCU Module',
+                        'nodered_overview': 'Node-RED Übersicht',
+                        'nodered_processes': 'Node-RED Prozesse',
+                        'message_center': 'Nachrichten-Zentrum',
+                        'generic_steering': 'Fabrik-Steuerung',
                         'system_logs': 'System-Logs',
-                        'admin_settings': 'Admin-Einstellungen',
-                        'steering_factory': 'Fabrik-Steuerung'
+                        'admin_settings': 'Admin-Einstellungen'
                     },
                     'common': {
                         'connect': 'Verbinden',
@@ -68,9 +80,21 @@ class I18nManager:
                     },
                     'tabs': {
                         'ccu_dashboard': 'CCU Dashboard',
+                        'ccu_overview': 'CCU Overview',
+                        'ccu_orders': 'CCU Orders',
+                        'ccu_process': 'CCU Processes',
+                        'production_plan': 'Production Plan',
+                        'production_monitoring': 'Production Monitoring',
+                        'ccu_configuration': 'CCU Configuration',
+                        'factory_configuration': 'Factory Configuration',
+                        'parameter_configuration': 'Parameter Configuration',
+                        'ccu_modules': 'CCU Modules',
+                        'nodered_overview': 'Node-RED Overview',
+                        'nodered_processes': 'Node-RED Processes',
+                        'message_center': 'Message Center',
+                        'generic_steering': 'Generic Steering',
                         'system_logs': 'System Logs',
-                        'admin_settings': 'Admin Settings',
-                        'steering_factory': 'Generic Steering'
+                        'admin_settings': 'Admin Settings'
                     },
                     'common': {
                         'connect': 'Connect',
@@ -97,9 +121,21 @@ class I18nManager:
                     },
                     'tabs': {
                         'ccu_dashboard': 'Tableau de bord CCU',
-                        'system_logs': 'Journaux système',
-                        'admin_settings': 'Paramètres admin',
-                        'steering_factory': 'Contrôle usine'
+                        'ccu_overview': 'Aperçu CCU',
+                        'ccu_orders': 'Commandes CCU',
+                        'ccu_process': 'Processus CCU',
+                        'production_plan': 'Plan de Production',
+                        'production_monitoring': 'Surveillance de Production',
+                        'ccu_configuration': 'Configuration CCU',
+                        'factory_configuration': 'Configuration Usine',
+                        'parameter_configuration': 'Configuration Paramètres',
+                        'ccu_modules': 'Modules CCU',
+                        'nodered_overview': 'Aperçu Node-RED',
+                        'nodered_processes': 'Processus Node-RED',
+                        'message_center': 'Centre de Messages',
+                        'generic_steering': 'Contrôle Usine',
+                        'system_logs': 'Journaux Système',
+                        'admin_settings': 'Paramètres Admin'
                     },
                     'common': {
                         'connect': 'Connecter',

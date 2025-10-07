@@ -23,18 +23,18 @@ mqtt_clients:
   admin_mqtt_client:
     level: INFO  # INFO for Admin MQTT Client
   ccu_mqtt_client:
-    level: DEBUG  # DEBUG for CCU MQTT Client
+    level: INFO  # DEBUG for CCU MQTT Client
 
 # 🚪 Gateways (Architecture Layer 2)
 gateways:
   admin_gateway:
     level: INFO  # INFO for Admin Gateway
   ccu_gateway:
-    level: DEBUG  # DEBUG for CCU Gateway
+    level: INFO  # DEBUG for CCU Gateway
 
 # 🏢 Business Managers (Architecture Layer 3)
 business_managers:
   sensor_manager:
-    level: DEBUG  # DEBUG for sensor data debugging
+    level: INFO  # DEBUG for sensor data debugging
   module_manager:
     level: DEBUG  # DEBUG for module status debugging

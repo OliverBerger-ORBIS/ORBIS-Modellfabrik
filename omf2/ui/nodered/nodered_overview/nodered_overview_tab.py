@@ -9,6 +9,8 @@ from omf2.nodered.nodered_gateway import NoderedGateway
 # from omf2.nodered.nodered_pub_mqtt_client import get_nodered_pub_mqtt_client
 # from omf2.nodered.nodered_sub_mqtt_client import get_nodered_sub_mqtt_client
 from omf2.common.logger import get_logger
+from omf2.ui.common.symbols import UISymbols
+from omf2.common.i18n import I18nManager
 
 logger = get_logger(__name__)
 
@@ -17,7 +19,10 @@ def render_nodered_overview_tab():
     """Render Node-RED Overview Tab"""
     logger.info("🔄 Rendering Node-RED Overview Tab")
     try:
-        st.header("🔄 Node-RED Overview")
+        # Initialize i18n
+        i18n = I18nManager()
+        
+        st.header(f"{UISymbols.get_tab_icon('nodered_overview')} {i18n.translate('tabs.nodered_overview')}")
         st.markdown("Node-RED Integration and Message Processing")
         
         # Initialize Node-RED Gateway
@@ -27,7 +32,7 @@ def render_nodered_overview_tab():
         nodered_gateway = st.session_state['nodered_gateway']
         
         # Node-RED Status Section
-        with st.expander("📊 Node-RED Status", expanded=True):
+        with st.expander(f"{UISymbols.get_status_icon('stats')} Node-RED Status", expanded=True):
             col1, col2, col3 = st.columns(3)
             
             with col1:
@@ -40,7 +45,7 @@ def render_nodered_overview_tab():
                 st.metric("Messages/min", "45", "↗️ +5")
         
         # Message Processing Section
-        with st.expander("📨 Message Processing", expanded=True):
+        with st.expander(f"{UISymbols.get_functional_icon('topic_driven')} Message Processing", expanded=True):
             st.markdown("### Message Flow Overview")
             
             # Message flow data

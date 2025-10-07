@@ -6,6 +6,8 @@ Node-RED Processes Tab - Process Management UI Component
 import streamlit as st
 from omf2.nodered.nodered_gateway import NoderedGateway
 from omf2.common.logger import get_logger
+from omf2.ui.common.symbols import UISymbols
+from omf2.common.i18n import I18nManager
 
 logger = get_logger(__name__)
 
@@ -14,7 +16,10 @@ def render_nodered_processes_tab():
     """Render Node-RED Processes Tab"""
     logger.info("⚙️ Rendering Node-RED Processes Tab")
     try:
-        st.header("⚙️ Node-RED Processes")
+        # Initialize i18n
+        i18n = I18nManager()
+        
+        st.header(f"{UISymbols.get_tab_icon('nodered_processes')} {i18n.translate('tabs.nodered_processes')}")
         st.markdown("Node-RED Process Management and Monitoring")
         
         # Initialize Node-RED Gateway
@@ -24,7 +29,7 @@ def render_nodered_processes_tab():
         nodered_gateway = st.session_state['nodered_gateway']
         
         # Process Statistics Section
-        with st.expander("📊 Process Statistics", expanded=True):
+        with st.expander(f"{UISymbols.get_status_icon('stats')} Process Statistics", expanded=True):
             col1, col2, col3, col4 = st.columns(4)
             
             with col1:
@@ -40,7 +45,7 @@ def render_nodered_processes_tab():
                 st.metric("Avg. Duration", "2.3 min", "↘️ -0.5 min")
         
         # Process Management Section
-        with st.expander("📋 Process Management", expanded=True):
+        with st.expander(f"{UISymbols.get_functional_icon('process_management')} Process Management", expanded=True):
             st.markdown("### Active Processes")
             
             # Placeholder process data

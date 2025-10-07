@@ -6,6 +6,8 @@ CCU Configuration Tab - CCU Configuration UI Component
 import streamlit as st
 from omf2.ccu.ccu_gateway import CcuGateway
 from omf2.common.logger import get_logger
+from omf2.ui.common.symbols import UISymbols
+from omf2.common.i18n import I18nManager
 
 logger = get_logger(__name__)
 
@@ -33,13 +35,16 @@ def render_ccu_configuration_tab(ccu_gateway=None, registry_manager=None):
             from omf2.registry.manager.registry_manager import get_registry_manager
             registry_manager = get_registry_manager()
         
-        st.header("⚙️ CCU Configuration")
+        # Initialize i18n
+        i18n = I18nManager()
+        
+        st.header(f"{UISymbols.get_tab_icon('ccu_configuration')} {i18n.translate('tabs.ccu_configuration')}")
         st.markdown("CCU System Configuration and Settings")
         
         # Create subtabs
         subtab_labels = [
-            "🏭 Factory Configuration",
-            "⚙️ Parameter Configuration"
+            f"{UISymbols.get_tab_icon('factory')} Factory Configuration",
+            f"{UISymbols.get_tab_icon('parameter')} Parameter Configuration"
         ]
         
         subtabs = st.tabs(subtab_labels)

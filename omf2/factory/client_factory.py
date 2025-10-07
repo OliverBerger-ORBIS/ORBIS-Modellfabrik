@@ -92,13 +92,14 @@ class ClientFactory:
             }
         }
     
-    def get_mqtt_client(self, client_name: str) -> Optional[Any]:
+    def get_mqtt_client(self, client_name: str, environment: str = None) -> Optional[Any]:
         """
         Get MQTT client by simple name (lazy loading, singleton pattern)
         Dynamically loads client based on Registry Manager configuration
         
         Args:
             client_name: Client name from mqtt_clients.yml (e.g., 'admin_mqtt_client')
+            environment: Environment override (e.g., 'mock', 'replay', 'live')
         
         Returns:
             MQTT client instance or None
@@ -129,8 +130,13 @@ class ClientFactory:
                         return None
                     
                     # Create client instance (Singleton pattern)
-                    self._clients[client_name] = client_class()
-                    logger.info(f"✅ Created MQTT client: {client_name} ({client_class_name})")
+                    # Pass environment parameter if provided
+                    if environment:
+                        self._clients[client_name] = client_class(environment=environment)
+                        logger.info(f"✅ Created MQTT client: {client_name} ({client_class_name}) with environment: {environment}")
+                    else:
+                        self._clients[client_name] = client_class()
+                        logger.info(f"✅ Created MQTT client: {client_name} ({client_class_name})")
                 
                 else:
                     # Fallback: Old hardcoded logic if no Registry Manager
@@ -138,8 +144,13 @@ class ClientFactory:
                     client_class = self._get_fallback_client_class(client_name)
                     if not client_class:
                         return None
-                    self._clients[client_name] = client_class()
-                    logger.info(f"✅ Created MQTT client (fallback): {client_name}")
+                    # Pass environment parameter if provided
+                    if environment:
+                        self._clients[client_name] = client_class(environment=environment)
+                        logger.info(f"✅ Created MQTT client (fallback): {client_name} with environment: {environment}")
+                    else:
+                        self._clients[client_name] = client_class()
+                        logger.info(f"✅ Created MQTT client (fallback): {client_name}")
                 
             except ImportError as e:
                 logger.error(f"❌ Failed to import {client_name}: {e}")

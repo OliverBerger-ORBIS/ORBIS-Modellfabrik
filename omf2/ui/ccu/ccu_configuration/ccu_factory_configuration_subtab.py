@@ -17,7 +17,7 @@ def render_ccu_factory_configuration_subtab():
     """Render CCU Factory Configuration Subtab"""
     logger.info("🏭 Rendering CCU Factory Configuration Subtab")
     try:
-        st.subheader("🏭 Factory Configuration")
+        st.subheader(f"{UISymbols.get_tab_icon('factory')} Factory Configuration")
         st.markdown("Factory layout configuration and module positioning")
         
         # Factory Configuration Controls

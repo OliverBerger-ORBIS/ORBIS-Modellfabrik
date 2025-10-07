@@ -9,6 +9,7 @@ from omf2.ccu.ccu_gateway import CcuGateway
 from omf2.ccu.module_manager import get_ccu_module_manager
 from omf2.common.logger import get_logger
 from omf2.ui.common.symbols import UISymbols
+from omf2.common.i18n import I18nManager
 from omf2.registry.manager.registry_manager import get_registry_manager
 import json
 
@@ -19,8 +20,11 @@ def render_ccu_modules_tab(ccu_gateway=None, registry_manager=None):
     """Render CCU Modules Tab - CCU Module Management with Real-time MQTT Data"""
     logger.info("🏗️ Rendering CCU Modules Tab")
     try:
+        # Initialize i18n
+        i18n = I18nManager()
+        
         # Use UISymbols for consistent icon usage
-        st.header(f"{UISymbols.get_tab_icon('ccu_modules')} CCU Modules")
+        st.header(f"{UISymbols.get_tab_icon('ccu_modules')} {i18n.translate('tabs.ccu_modules')}")
         st.markdown("Modul-Übersicht mit Status, Verbindungen und Aktionen")
         
         # Gateway-Pattern: Get CcuGateway from Factory (EXACT like Admin)

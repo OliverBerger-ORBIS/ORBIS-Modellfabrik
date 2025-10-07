@@ -1,10 +1,11 @@
 # 🏭 OMF2 - ORBIS Modellfabrik Dashboard
 
 **Status:** VOLLSTÄNDIG IMPLEMENTIERT ✅  
-**Datum:** 2025-10-03  
+**Datum:** 2025-01-07  
 **Tests:** 55 Tests erfolgreich ✅  
 **Registry-Migration:** ABGESCHLOSSEN ✅  
-**Architektur-Cleanup:** ABGESCHLOSSEN ✅
+**Architektur-Cleanup:** ABGESCHLOSSEN ✅  
+**Connection Loop Fixes:** IMPLEMENTIERT ✅
 
 ## 📋 Übersicht
 
@@ -19,6 +20,8 @@ OMF2 ist die neue, modulare und rollenbasierte Streamlit-Anwendung für die ORBI
 - ✅ **Modulare UI-Struktur:** Rollenbasierte Tab-Generierung
 - ✅ **Symbol-System:** Konsistente UI-Symbole mit UISymbols
 - ✅ **Schema-driven Architecture:** Direkte JSON-Schema Integration ohne Templates
+- ✅ **Connection Loop Prevention:** Robuste MQTT Connection Management
+- ✅ **Environment Switch:** Automatischer UI-Refresh bei Environment-Wechsel
 
 ## 🏗️ **Architektur**
 
@@ -145,15 +148,19 @@ def render_ccu_modules_tab():
         request_refresh()  # Statt st.rerun()
 ```
 
-## 📚 **Dokumentation**
+## 📚 **Kritische Dokumentation für Agents**
+
+### **🚨 MUST-READ für alle Cursor Agents:**
+- 📄 **[UI_DEVELOPMENT_GUIDE.md](docs/UI_DEVELOPMENT_GUIDE.md)** - **KRITISCH:** Gateway-Pattern & Environment Switch
+- 📄 **[CONNECTION_LOOP_FIXES_DECISION_RECORD.md](docs/CONNECTION_LOOP_FIXES_DECISION_RECORD.md)** - **KRITISCH:** Connection Loop Prevention
+- 📄 **[ARCHITECTURE.md](docs/ARCHITECTURE.md)** - Vollständige Architektur-Übersicht
 
 ### **Architektur & Implementierung:**
-- 📄 **[ARCHITECTURE.md](docs/ARCHITECTURE.md)** - Vollständige Architektur-Übersicht
 - 📄 **[IMPLEMENTATION_STATUS.md](docs/IMPLEMENTATION_STATUS.md)** - Implementierungsstatus
 - 📄 **[PROJECT_STRUCTURE.md](docs/PROJECT_STRUCTURE.md)** - Projektstruktur & Prinzipien
+- 📄 **[ADMIN_CCU_CLIENT_BEHAVIOR_ANALYSIS.md](docs/ADMIN_CCU_CLIENT_BEHAVIOR_ANALYSIS.md)** - MQTT Client Analysis
 
 ### **Entwicklung & Migration:**
-- 📄 **[UI_DEVELOPMENT_GUIDE.md](docs/UI_DEVELOPMENT_GUIDE.md)** - UI-Entwicklungsstandards
 - 📄 **[REFACTORING_BACKLOG.md](docs/REFACTORING_BACKLOG.md)** - Migration von omf/dashboard
 - 📄 **[UI_SYMBOL_STYLE_GUIDE.md](docs/UI_SYMBOL_STYLE_GUIDE.md)** - Symbol-Style-Guide
 - 📄 **[CCU_DOMAIN_SYMBOL_GUIDELINES.md](docs/CCU_DOMAIN_SYMBOL_GUIDELINES.md)** - CCU-Domain Guidelines
@@ -162,6 +169,7 @@ def render_ccu_modules_tab():
 
 ### **✅ OBLIGATORISCH:**
 - **Gateway-Pattern verwenden** (nie direkte MQTT-Clients)
+- **Environment Switch verwenden** (`switch_ccu_environment()` aus `environment_switch.py`)
 - **UISymbols verwenden** (nie hardcodierte Symbole)
 - **request_refresh() verwenden** (nie st.rerun())
 - **Business Logic Manager verwenden** (ModuleManager, WorkpieceManager)
@@ -171,6 +179,7 @@ def render_ccu_modules_tab():
 
 ### **🚫 VERMEIDEN:**
 - ❌ Direkte MQTT-Client Verwendung
+- ❌ `client.reconnect_environment()` direkt verwenden (verursacht Connection Loops!)
 - ❌ Hardcodierte Symbole
 - ❌ st.rerun() verwenden
 - ❌ Direkte Registry-Zugriffe
@@ -210,7 +219,8 @@ def render_ccu_modules_tab():
 
 ---
 
-**Letzte Aktualisierung:** 2025-10-03  
+**Letzte Aktualisierung:** 2025-01-07  
 **Status:** VOLLSTÄNDIG IMPLEMENTIERT ✅  
 **Registry-Migration:** ABGESCHLOSSEN ✅  
-**Architektur-Cleanup:** ABGESCHLOSSEN ✅
+**Architektur-Cleanup:** ABGESCHLOSSEN ✅  
+**Connection Loop Fixes:** IMPLEMENTIERT ✅

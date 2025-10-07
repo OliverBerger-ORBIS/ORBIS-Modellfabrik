@@ -10,6 +10,7 @@ from collections import deque
 
 from omf2.common.logger import get_logger
 from omf2.ui.common.symbols import UISymbols
+from omf2.common.i18n import I18nManager
 
 logger = get_logger(__name__)
 
@@ -19,6 +20,9 @@ def render_error_warning_tab():
     logger.info(f"{UISymbols.get_functional_icon('error')} Rendering Error & Warning Logs Tab")
     
     try:
+        # Initialize i18n
+        i18n = I18nManager()
+        
         # Best Practice: Zugriff über Handler statt direkte Buffers
         log_handler = st.session_state.get('log_handler')
         if not log_handler:

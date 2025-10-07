@@ -17,8 +17,8 @@ roles:
     ui_components:
       - "ccu_dashboard"
       - "ccu_orders"
-      - "ccu_process"
-      - "ccu_configuration"
+      - "ccu_process"                    # Includes all CCU Process subtabs
+      - "ccu_configuration"              # Includes all CCU Configuration subtabs
       - "ccu_modules"
       - "message_center"
       - "generic_steering"
@@ -53,8 +53,8 @@ roles:
     ui_components:
       - "ccu_dashboard"
       - "ccu_orders"
-      - "ccu_process"
-      - "ccu_configuration"
+      - "ccu_process"                    # Includes all CCU Process subtabs
+      - "ccu_configuration"              # Includes all CCU Configuration subtabs
       - "ccu_modules"
       - "system_logs"
 
