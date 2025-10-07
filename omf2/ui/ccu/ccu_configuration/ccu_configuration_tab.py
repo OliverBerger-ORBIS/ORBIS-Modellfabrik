@@ -36,22 +36,6 @@ def render_ccu_configuration_tab(ccu_gateway=None, registry_manager=None):
         st.header("⚙️ CCU Configuration")
         st.markdown("CCU System Configuration and Settings")
         
-        # Configuration Control Section
-        with st.expander("🎛️ Configuration Control", expanded=True):
-            col1, col2, col3 = st.columns(3)
-            
-            with col1:
-                if st.button("🔄 Refresh Configuration", key="ccu_config_refresh_btn"):
-                    _refresh_configuration(ccu_gateway)
-            
-            with col2:
-                if st.button("💾 Save Configuration", key="ccu_config_save_btn"):
-                    _save_configuration(ccu_gateway)
-            
-            with col3:
-                if st.button("🔄 Reset Configuration", key="ccu_config_reset_btn"):
-                    _reset_configuration(ccu_gateway)
-        
         # Create subtabs
         subtab_labels = [
             "🏭 Factory Configuration",

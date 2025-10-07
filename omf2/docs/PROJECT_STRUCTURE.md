@@ -45,7 +45,11 @@ omf2/
 ├── omf.py                           # 🚀 Streamlit Dashboard Entry Point
 ├── config/                          # ⚙️ Konfigurationsdateien
 │   ├── mqtt_settings.yml           # MQTT-Verbindungseinstellungen
-│   └── logging_config.yml          # Logging-Konfiguration
+│   ├── logging_config.yml          # Logging-Konfiguration
+│   └── ccu/                        # 🏭 CCU Domain Configurations
+│       ├── production_workflows.json # Production workflows (BLUE, WHITE, RED)
+│       ├── production_settings.json  # Production durations and settings
+│       └── shopfloor_layout.json     # Factory layout (3×4 grid)
 │
 ├── admin/                          # 🔧 ADMIN DOMAIN
 │   ├── admin_mqtt_client.py        # MQTT Client (Transport Layer)
@@ -54,6 +58,7 @@ omf2/
 ├── ccu/                            # 🏭 CCU DOMAIN
 │   ├── ccu_mqtt_client.py          # MQTT Client (Transport Layer)
 │   ├── ccu_gateway.py              # Gateway (Validation & Routing)
+│   ├── config_loader.py            # CCU Config Loader (Domain-specific)
 │   ├── sensor_manager.py           # Business Manager (Sensor-Daten)
 │   └── module_manager.py           # Business Manager (Module-Daten)
 │
@@ -80,7 +85,13 @@ omf2/
 │   │   └── system_logs/            # System Logs UI
 │   ├── ccu/                        # CCU UI Components
 │   │   ├── ccu_dashboard.py        # CCU Dashboard
-│   │   └── ccu_message_monitor/    # CCU Message Monitor
+│   │   ├── ccu_message_monitor/    # CCU Message Monitor
+│   │   ├── ccu_configuration/      # CCU Configuration UI
+│   │   │   ├── ccu_configuration_tab.py
+│   │   │   ├── ccu_parameter_configuration_subtab.py
+│   │   │   └── ccu_factory_configuration_subtab.py
+│   │   └── common/                 # CCU Shared UI Components
+│   │       └── shopfloor_layout.py # Reusable Shopfloor Layout Component
 │   ├── nodered/                    # Node-RED UI Components
 │   │   └── nodered_dashboard.py    # Node-RED Dashboard
 │   └── common/                     # Shared UI Components
@@ -101,10 +112,12 @@ omf2/
 ├── docs/                           # 📚 DOKUMENTATION
 │   └── ARCHITECTURE.md             # Vollständige Architektur-Dokumentation
 │
-└── tests/                          # 🧪 TEST SUITE (55 Tests)
+└── tests/                          # 🧪 TEST SUITE (55+ Tests)
     ├── test_comprehensive_architecture.py    # Architektur-Tests
     ├── test_gateway_factory.py               # Gateway Factory Tests
     ├── test_registry_manager_comprehensive.py # Registry Manager Tests
+    ├── test_ccu_config_loader.py             # CCU Config Loader Tests
+    ├── test_ccu_parameter_configuration_subtab.py # UI Component Tests
     ├── test_message_manager.py               # Message Manager Tests
     ├── test_topic_manager.py                 # Topic Manager Tests
     └── test_payloads_for_topics.py           # Schema-Validation Tests
@@ -237,6 +250,8 @@ python -m pytest omf2/tests/ -v
 python -m pytest omf2/tests/test_comprehensive_architecture.py -v
 python -m pytest omf2/tests/test_gateway_factory.py -v
 python -m pytest omf2/tests/test_registry_manager_comprehensive.py -v
+python -m pytest omf2/tests/test_ccu_config_loader.py -v
+python -m pytest omf2/tests/test_ccu_parameter_configuration_subtab.py -v
 ```
 
 ## 🚀 Deployment

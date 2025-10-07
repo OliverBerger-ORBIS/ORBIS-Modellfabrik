@@ -14,46 +14,19 @@ logger = get_logger(__name__)
 def _group_topics_by_category(topics, registry_manager):
     """Gruppiert Topics nach Kategorien basierend auf Registry-Daten"""
     topic_categories = {}
-    
-    # Lade alle Topics aus dem Registry Manager
     all_topics = registry_manager.get_topics()
     
     for topic in topics:
-        # Finde die Kategorie für dieses Topic
-        category = _find_topic_category(topic, all_topics)
+        # Hole Topic-Daten aus Registry
+        topic_data = all_topics.get(topic, {})
+        category = topic_data.get('category', 'unknown')
+        category_name = f"{category.upper()} Topics"
         
-        if category not in topic_categories:
-            topic_categories[category] = []
-        topic_categories[category].append(topic)
+        if category_name not in topic_categories:
+            topic_categories[category_name] = []
+        topic_categories[category_name].append(topic)
     
     return topic_categories
-
-
-def _find_topic_category(topic, all_topics):
-    """Findet die Kategorie für ein Topic basierend auf Registry-Daten"""
-    # Prüfe zuerst, ob das Topic in den Registry-Daten existiert
-    if topic in all_topics:
-        topic_data = all_topics[topic]
-        # Verwende die Category-Information aus der Registry
-        if 'category' in topic_data:
-            category = topic_data['category']
-            return f"{category.upper()} Topics"
-    
-    # Fallback: Topic-Pfad analysieren
-    if topic.startswith("ccu/"):
-        return "CCU Topics"
-    elif topic.startswith("module/"):
-        return "MODULE Topics"
-    elif topic.startswith("nodered/"):
-        return "NODERED Topics"
-    elif topic.startswith("txt/"):
-        return "TXT Topics"
-    elif topic.startswith("fts/"):
-        return "FTS Topics"
-    elif topic == "*" or topic == "#":
-        return "Wildcard Topics"
-    else:
-        return "Other Topics"
 
 
 def render_mqtt_clients_subtab():
@@ -192,7 +165,6 @@ def render_mqtt_clients_subtab():
         
     except Exception as e:
         logger.error(f"❌ Error rendering MQTT clients subtab: {e}")
-        st.error(f"❌ Error rendering MQTT clients: {e}")
 
 
 def show_mqtt_clients_subtab():

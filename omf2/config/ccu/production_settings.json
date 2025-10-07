@@ -1,0 +1,26 @@
+{
+  "_meta": {
+    "_description": "General configuration settings for CCU domain production and system parameters",
+    "_version": "1.0",
+    "_domain": "ccu",
+    "_source": "Original from general-config.json (integrations/APS-CCU/ff-central-control-unit/central-control/data/general-config.json)",
+    "_usage_omf2": "Used in UI Dashboard CCU Configuration Parameter Configuration for production planning and system settings",
+    "_notes": [
+      "productionDurations: Production durations for different products (in seconds)",
+      "productionSettings: Production configuration parameters",
+      "ftsSettings: FTS (Fleet Transport System) configuration settings"
+    ]
+  },
+  
+  "productionDurations": {
+    "WHITE": 440,
+    "BLUE": 460,
+    "RED": 500
+  },
+  "productionSettings": {
+    "maxParallelOrders": 4
+  },
+  "ftsSettings": {
+    "chargeThresholdPercent": 10
+  }
+}

@@ -53,22 +53,9 @@ mqtt_clients:
       # CCU Pairing Topics
       - "ccu/order/active"
       - "ccu/pairing/state"
-      # Module Commands
-      - "module/v1/ff/SVR3QA0022/instantAction"
-      - "module/v1/ff/SVR4H76449/instantAction"
-      - "module/v1/ff/SVR3QA2098/instantAction"
-      - "module/v1/ff/SVR4H76530/instantAction"
-      - "module/v1/ff/SVR4H73275/instantAction"
-      - "module/v1/ff/SVR3QA0022/order"
-      - "module/v1/ff/SVR4H76449/order"
-      - "module/v1/ff/SVR3QA2098/order"
-      - "module/v1/ff/SVR4H76530/order"
-      - "module/v1/ff/SVR4H73275/order"
-      - "module/v1/ff/CHRG0/order"
       # TXT Function Input Topics
       - "/j1/txt/1/f/i/order"
-      - "/j1/txt/1/f/i/stock"
-      - "/j1/txt/1/f/i/status"
+      - "/j1/txt/1/f/i/status" 
       - "/j1/txt/1/f/i/error"
       - "/j1/txt/1/f/i/config/hbw"
       # TXT Control Topics
@@ -79,61 +66,47 @@ mqtt_clients:
       - "/j1/txt/1/o/broadcast"
       - "/j1/txt/1/o/ptu"
     subscribed_topics:
-      - topic: "fts/v1/ff/5iO4/state"
+      - topic: "fts/v1/ff/5iO4/state" # Availability Status FTS!!
         qos: 1
-      - topic: "fts/v1/ff/5iO4/connection"
+      - topic: "fts/v1/ff/5iO4/connection" # Modul-Connection-Status FTS!!
         qos: 1
       - topic: "fts/v1/ff/5iO4/factsheet"
         qos: 1
       # Direkte Module Topics (aus end2end_WxBxRx.log)
-      - "module/v1/ff/SVR3QA0022/state"
-      - "module/v1/ff/SVR3QA0022/connection"
+      - "module/v1/ff/SVR3QA0022/state" # Availability Status HBW!!
+      - "module/v1/ff/SVR3QA0022/connection" # Modul-Connection-Status HBW!!
       - "module/v1/ff/SVR3QA0022/factsheet"
-      - "module/v1/ff/SVR4H76449/state"
-      - "module/v1/ff/SVR4H76449/connection"
+      - "module/v1/ff/SVR4H76449/state" # Availability Status DRILL!!
+      - "module/v1/ff/SVR4H76449/connection" # Modul-Connection-Status DRILL!!
       - "module/v1/ff/SVR4H76449/factsheet"
-      - "module/v1/ff/SVR3QA2098/state"
-      - "module/v1/ff/SVR3QA2098/connection"
+      - "module/v1/ff/SVR3QA2098/state" # Availability Status MILL!!
+      - "module/v1/ff/SVR3QA2098/connection" # Modul-Connection-Status MILL!!
       - "module/v1/ff/SVR3QA2098/factsheet"
-      # NodeRed Module Topics
-      - "module/v1/ff/SVR4H73275/state"
-      - "module/v1/ff/SVR4H73275/connection"
+      - "module/v1/ff/SVR4H73275/state" # Availability Status DPS!!
+      - "module/v1/ff/SVR4H73275/connection" # Modul-Connection-Status DPS!!
       - "module/v1/ff/SVR4H73275/factsheet"
-      - "module/v1/ff/SVR4H76530/state"
-      - "module/v1/ff/SVR4H76530/connection"
+      - "module/v1/ff/SVR4H76530/state" # Availability Status AIQS!!
+      - "module/v1/ff/SVR4H76530/connection" # Modul-Connection-Status AIQS!!
       - "module/v1/ff/SVR4H76530/factsheet"
-      - "module/v1/ff/NodeRed/SVR4H73275/state"
-      - "module/v1/ff/NodeRed/SVR4H73275/connection"
-      - "module/v1/ff/NodeRed/SVR4H73275/factsheet"
-      - "module/v1/ff/NodeRed/CHRG0/state"
-      - "module/v1/ff/NodeRed/CHRG0/connection"
-      - "module/v1/ff/NodeRed/CHRG0/factsheet"
-      - "module/v1/ff/NodeRed/status"
       # TXT Function Output Topics
-      - "/j1/txt/1/f/o/order"
-      - "/j1/txt/1/f/o/stock"
-      - "/j1/txt/1/f/o/status"
-      - "/j1/txt/1/f/o/error"
+      - "/j1/txt/1/f/i/stock" #Kandidat SUB für Inventory
       # TXT Input Topics
-      - "/j1/txt/1/i/bme680"
-      - "/j1/txt/1/i/broadcast"
-      - "/j1/txt/1/i/cam"
-      - "/j1/txt/1/i/ldr"
+      - "/j1/txt/1/i/bme680" # BME680 Sensor-Daten AIQS
+      - "/j1/txt/1/i/cam" # Camera-Daten Sensor
+      - "/j1/txt/1/i/ldr" # LDR Sensor-Daten TXT-AIQS
     
     # Business-Function-spezifische Topic-Listen (Untermenge der subscribed_topics)
+    # wichtig für onMessage Methoden zur Weiterleitung von Gateway an Business-Functions
     business_functions:
       sensor_manager:
         subscribed_topics:
           - "/j1/txt/1/i/bme680"    # BME680 Sensor-Daten
           - "/j1/txt/1/i/ldr"       # LDR Sensor-Daten
-          - "/j1/txt/1/i/cam"       # Camera-Daten
-        callback_method: "process_sensor_message"
-        manager_class: "SensorManager"
-        manager_module: "omf2.ccu.sensor_manager"
+          - "/j1/txt/1/i/cam"       # Camera-Daten Sensor
       
       module_manager:
         subscribed_topics:
-          # Direkte Module Topics (aus end2end_WxBxRx.log)
+          # Direkte Module Topics (Modul-Connection-Status und Availability Status)
           - "module/v1/ff/SVR3QA0022/state"
           - "module/v1/ff/SVR3QA0022/connection"
           - "module/v1/ff/SVR3QA0022/factsheet"
@@ -143,26 +116,24 @@ mqtt_clients:
           - "module/v1/ff/SVR3QA2098/state"
           - "module/v1/ff/SVR3QA2098/connection"
           - "module/v1/ff/SVR3QA2098/factsheet"
-          # NodeRed Module Topics (die wir tatsächlich in den Logs sehen)
-          - "module/v1/ff/NodeRed/SVR4H73275/state"
-          - "module/v1/ff/NodeRed/SVR4H73275/connection"
-          - "module/v1/ff/NodeRed/SVR4H73275/factsheet"
-          - "module/v1/ff/NodeRed/SVR4H76530/state"
-          - "module/v1/ff/NodeRed/SVR4H76530/connection"
-          - "module/v1/ff/NodeRed/SVR4H76530/factsheet"
-          - "module/v1/ff/NodeRed/CHRG0/state"
-          - "module/v1/ff/NodeRed/CHRG0/connection"
-          - "module/v1/ff/NodeRed/CHRG0/factsheet"
-          - "module/v1/ff/NodeRed/status"
-          # FTS Topics
+          - "module/v1/ff/SVR4H76530/state"
+          - "module/v1/ff/SVR4H76530/connection"
+          - "module/v1/ff/SVR4H76530/factsheet"
+          - "module/v1/ff/SVR4H73275/state"
+          - "module/v1/ff/SVR4H73275/connection"
+          - "module/v1/ff/SVR4H73275/factsheet"
+          - "module/v1/ff/CHRG0/state"
+          - "module/v1/ff/CHRG0/connection"
+          - "module/v1/ff/CHRG0/factsheet"
+          # FTS Topics (Modul-Connection-Status und Availability Status)
           - "fts/v1/ff/5iO4/state"
           - "fts/v1/ff/5iO4/connection"
           - "fts/v1/ff/5iO4/factsheet"
-          # CCU Pairing State (für globale connected/available Status)
-          - "ccu/pairing/state"
-        callback_method: "process_module_message"
-        manager_class: "CcuModuleManager"
-        manager_module: "omf2.ccu.module_manager"
+      
+      order_manager:
+        subscribed_topics:
+          - "/j1/txt/1/f/i/stock" #Kandidat SUB für Inventory
+
 
   # Node-RED Publisher (Normalisiert alle States)
   nodered_pub_mqtt_client:
@@ -192,9 +163,18 @@ mqtt_clients:
       - "module/v1/ff/NodeRed/CHRG0/state"
       - "module/v1/ff/NodeRed/CHRG0/connection"
       - "module/v1/ff/NodeRed/CHRG0/factsheet"
-      # CCU-Feedback
-      - "ccu/global"
-      - "ccu/order/completed"
+      # Module Commands (NodeRed publiziert Befehle an Module)
+      - "module/v1/ff/SVR3QA0022/instantAction"
+      - "module/v1/ff/SVR4H76449/instantAction"
+      - "module/v1/ff/SVR3QA2098/instantAction"
+      - "module/v1/ff/SVR4H76530/instantAction"
+      - "module/v1/ff/SVR4H73275/instantAction"
+      - "module/v1/ff/SVR3QA0022/order"
+      - "module/v1/ff/SVR4H76449/order"
+      - "module/v1/ff/SVR3QA2098/order"
+      - "module/v1/ff/SVR4H76530/order"
+      - "module/v1/ff/SVR4H73275/order"
+      - "module/v1/ff/CHRG0/order"
     subscribed_topics: []  # Node-RED Publisher ist NUR Publisher, nie Subscriber
 
   # Node-RED Subscriber (Empfängt alle Quellen)

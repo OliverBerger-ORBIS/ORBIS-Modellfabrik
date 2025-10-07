@@ -68,8 +68,8 @@ def render_payload_sequence(messages, selected_topics=None):
         
         with container:
             # Neue Spalten-Anordnung: Topic | Payload | Expand
-            # Topic doppelte Größe, neue Gewichtungen: [2, 6, 1]
-            col1, col2, col3 = st.columns([2, 6, 1])
+            # Topic doppelte Größe, Expand-Spalte vergrößert für bessere JSON-Darstellung: [2, 5, 2]
+            col1, col2, col3 = st.columns([2, 5, 2])
             
             with col1:
                 st.markdown("**Topic**")
@@ -80,7 +80,7 @@ def render_payload_sequence(messages, selected_topics=None):
             
             # Tabelle zeilenweise rendern mit neuer Spalten-Anordnung
             for idx, row in df.iterrows():
-                col1, col2, col3 = st.columns([2, 6, 1])  # Gleiche Gewichtungen
+                col1, col2, col3 = st.columns([2, 5, 2])  # Gleiche Gewichtungen
                 
                 with col1:
                     # Topic als Code-ähnlicher Text (Konsolen-Log Stil) - doppelte Größe

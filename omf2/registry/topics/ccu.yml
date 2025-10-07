@@ -9,149 +9,149 @@ ccu_topics:
   qos: 2
   retain: 0
   schema: ccu_order_request.schema.json
-  description: Order commands for processing tasks and workflow execution
+  description: TODO
 - topic: ccu/state
   qos: 1
   retain: 0
   schema: wildcard.schema.json
-  description: State information with current status and processing state
+  description: TODO
 - topic: ccu/state/flow
   qos: 1
   retain: 0
   schema: wildcard.schema.json
-  description: State information with current status and processing state
+  description: TODO
 - topic: ccu/state/status
   qos: 1
   retain: 0
   schema: wildcard.schema.json
-  description: State information with current status and processing state
+  description: TODO
 - topic: ccu/state/error
   qos: 1
   retain: 0
   schema: wildcard.schema.json
-  description: State information with current status and processing state
+  description: TODO
 - topic: ccu/state/stock
   qos: 1
   retain: 0
   schema: ccu_state_stock.schema.json
-  description: State information with current status and processing state
+  description: TODO
 - topic: ccu/state/version-mismatch
   qos: 2
   retain: 1
   schema: ccu_state_version-mismatch.schema.json
-  description: State information with current status and processing state
+  description: "mismatchedModules List: leeres Array wenn keine Versionen nicht übereinstimmen"
 - topic: ccu/state/layout
   qos: 1
   retain: 1
   schema: ccu_state_layout.schema.json
-  description: State information with current status and processing state
+  description: "modules, intersections, roads (from-to), ff-cc-data:factory_layout.json -> shopfloor-layout"
 - topic: ccu/state/config
   qos: 1
   retain: 1
   schema: ccu_state_config.schema.json
-  description: State information with current status and processing state
+  description: "productionDurations, productionSettings, ftsSettings, ff-cc-data:general-config.json -> Allg-APS-config"
 - topic: ccu/state/flows
   qos: 1
   retain: 1
   schema: ccu_state_flows.schema.json
-  description: State information with current status and processing state
+  description: "BLUE, RED, WHITE, ff-cc-data:factory-flows.json ->Produktion-Plan"
 - topic: ccu/control
   qos: 1
   retain: 0
   schema: wildcard.schema.json
-  description: Control commands and system directives
+  description: TODO
 - topic: ccu/control/command
   qos: 1
   retain: 0
   schema: wildcard.schema.json
-  description: Control commands and system directives
+  description: TODO
 - topic: ccu/control/order
   qos: 1
   retain: 0
   schema: wildcard.schema.json
-  description: Order commands for processing tasks and workflow execution
+  description: TODO
 - topic: ccu/set/reset
   qos: 2
   retain: 0
   schema: ccu_set_reset.schema.json
-  description: System settings and configuration commands
+  description: TODO
 - topic: ccu/global
   qos: 2
   retain: 0
   schema: wildcard.schema.json
-  description: 'Topic: ccu/global'
+  description: TODO
 - topic: ccu/status
   qos: 1
   retain: 1
   schema: wildcard.schema.json
-  description: 'Topic: ccu/status'
+  description: TODO
 - topic: ccu/status/connection
   qos: 1
   retain: 1
   schema: wildcard.schema.json
-  description: 'Topic: ccu/status/connection'
+  description: TODO
 - topic: ccu/status/health
   qos: 1
   retain: 1
   schema: wildcard.schema.json
-  description: 'Topic: ccu/status/health'
+  description: TODO
 - topic: ccu/pairing/state
   qos: 2
   retain: 1
   schema: ccu_pairing_state.schema.json
-  description: State information with current status and processing state
+  description: "Zsf modules connected false, available BLOCKED, transports connected true available BLOCKED"
 - topic: ccu/order/active
   qos: 1
   retain: 0
   schema: ccu_order_active.schema.json
-  description: Order commands for processing tasks and workflow execution
+  description: "kann leer sein, wenn keine aktive Bestellung vorhanden ist"
 - topic: ccu/order/completed
   qos: 1
   retain: 0
   schema: ccu_order_completed.schema.json
-  description: Order commands for processing tasks and workflow execution
+  description: "kann leer sein, wenn keine abgeschlossene Bestellung vorhanden ist"
 - topic: ccu/set/charge
   qos: 1
   retain: 0
   schema: ccu_set_charge.schema.json
-  description: System settings and configuration commands
+  description: TODO
 - topic: ccu/set/layout
   qos: 1
   retain: 0
   schema: wildcard.schema.json
-  description: System settings and configuration commands
+  description: TODO
 - topic: ccu/set/flows
   qos: 1
   retain: 0
   schema: wildcard.schema.json
-  description: System settings and configuration commands
+  description: TODO
 - topic: ccu/set/calibration
   qos: 1
   retain: 0
   schema: ccu_set_calibration.schema.json
-  description: System settings and configuration commands
+  description: TODO
 - topic: ccu/set/park
   qos: 1
   retain: 0
   schema: wildcard.schema.json
-  description: System settings and configuration commands
+  description: TODO
 - topic: ccu/set/delete-module
   qos: 1
   retain: 0
   schema: wildcard.schema.json
-  description: System settings and configuration commands
+  description: TODO
 - topic: ccu/set/module-duration
   qos: 1
   retain: 0
   schema: wildcard.schema.json
-  description: System settings and configuration commands
+  description: TODO
 - topic: ccu/set/default_layout
   qos: 1
   retain: 0
   schema: wildcard.schema.json
-  description: System settings and configuration commands
+  description: TODO
 - topic: ccu/set/config
   qos: 1
   retain: 0
   schema: wildcard.schema.json
-  description: System settings and configuration commands
+  description: TODO

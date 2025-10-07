@@ -9,84 +9,84 @@ txt_topics:
   qos: 1
   retain: 0
   schema: j1_txt_1_f_i_stock.schema.json
-  description: 'Topic: /j1/txt/1/f/i/stock'
+  description: "TXT stockitems FIFO workpiece (id-nfc, tape BLUE state-RAW, loc-FIFO-Pos, hbw-serial -> inventory"
 - topic: /j1/txt/1/f/i/order
   qos: 1
   retain: 0
   schema: j1_txt_1_f_i_order.schema.json
-  description: Order commands for processing tasks and workflow execution
+  description: 'TXT "state": "WAITING_FOR_ORDER"'
 - topic: /j1/txt/1/f/i/status
   qos: 1
   retain: 0
   schema: j1_txt_1_f_i_order.schema.json
-  description: 'Topic: /j1/txt/1/f/i/status'
+  description: 'TXT "state": "WAITING_FOR_ORDER", "type": "RED", "ts": "2025-08-29T10:00:00Z" -> order'
 - topic: /j1/txt/1/f/i/error
   qos: 1
   retain: 0
   schema: j1_txt_1_f_i_order.schema.json
-  description: 'Topic: /j1/txt/1/f/i/error'
+  description: TODO
 - topic: /j1/txt/1/f/i/config/hbw
   qos: 1
   retain: 1
   schema: j1_txt_1_f_i_config_hbw.schema.json
-  description: 'Topic: /j1/txt/1/f/i/config/hbw'
+  description: 'TXT "warehouses":["SVR3QA0022"]'
 - topic: /j1/txt/1/f/o/order
   qos: 1
   retain: 0
   schema: wildcard.schema.json
-  description: Order commands for processing tasks and workflow execution
+  description: TODO
 - topic: /j1/txt/1/f/o/stock
   qos: 1
   retain: 0
   schema: wildcard.schema.json
-  description: 'Topic: /j1/txt/1/f/o/stock'
+  description: TODO
 - topic: /j1/txt/1/f/o/status
   qos: 1
   retain: 0
   schema: wildcard.schema.json
-  description: 'Topic: /j1/txt/1/f/o/status'
+  description: TODO
 - topic: /j1/txt/1/f/o/error
   qos: 1
   retain: 0
   schema: wildcard.schema.json
-  description: 'Topic: /j1/txt/1/f/o/error'
+  description: TODO
 - topic: /j1/txt/1/c/bme680
   qos: 1
   retain: 0
   schema: j1_txt_1_c_bme680.schema.json
-  description: 'Topic: /j1/txt/1/c/bme680'
+  description: TODO
 - topic: /j1/txt/1/c/cam
   qos: 1
   retain: 0
   schema: j1_txt_1_c_cam.schema.json
-  description: 'Topic: /j1/txt/1/c/cam'
+  description: TODO
 - topic: /j1/txt/1/c/ldr
   qos: 1
   retain: 0
   schema: j1_txt_1_c_ldr.schema.json
-  description: 'Topic: /j1/txt/1/c/ldr'
+  description: TODO
 - topic: /j1/txt/1/i/bme680
   qos: 1
   retain: 0
   schema: j1_txt_1_i_bme680.schema.json
-  description: 'Topic: /j1/txt/1/i/bme680'
+  description: "TXT -> Sensor-Data"
 - topic: /j1/txt/1/i/broadcast
   qos: 1
   retain: 0
   schema: j1_txt_1_i_broadcast.schema.json
-  description: 'Topic: /j1/txt/1/i/broadcast'
+  description: 'TXT "hardwareId": "txt40-p0F4"'
 - topic: /j1/txt/1/i/cam
   qos: 2
   retain: 1
   schema: j1_txt_1_i_cam.schema.json
-  description: 'Topic: /j1/txt/1/i/cam'
+  description: TODO
 - topic: /j1/txt/1/i/ldr
   qos: 1
   retain: 0
   schema: j1_txt_1_i_ldr.schema.json
-  description: 'Topic: /j1/txt/1/i/ldr'
+  description: "TXT -> Sensor-Data"
 - topic: /j1/txt/1/o/broadcast
   qos: 1
   retain: 0
   schema: wildcard.schema.json
-  description: 'Topic: /j1/txt/1/o/broadcast'
+  description: TODO

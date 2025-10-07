@@ -46,6 +46,8 @@ Weggekapselte, robuste Architektur für MQTT-Kommunikation, Message-Templates un
   Fassade für Admin Business-Operationen mit Registry v2 Integration.
 - **✅ UI-Komponenten** (`omf2/ui/`)  
   Vollständige Streamlit-UI mit Tab-Struktur und Registry v2 Integration.
+- **✅ CCU Config Loader** (`omf2/ccu/config_loader.py`)  
+  Domain-specific configuration loader parallel to Registry Manager for CCU JSON configurations.
 
 ---
 
@@ -89,6 +91,13 @@ Weggekapselte, robuste Architektur für MQTT-Kommunikation, Message-Templates un
 2. **🚪 Gateway:** Schema-Validierung + Topic-Routing  
 3. **🏢 Business Manager:** Clean Business-Logik
 4. **🖥️ UI Components:** Display & User Interaction
+
+**Domain-Specific Config Loaders (Parallel to Registry Manager):**
+- **📁 CCU Config Loader:** Direct access to domain-specific JSON configurations
+- **⚡ No Gateway Overhead:** Config display operations bypass Gateway layer
+- **🎯 Separation:** Registry Manager (system-technical) vs. Config Loaders (domain-specific)
+- **🏭 Shopfloor Layout Component:** Reusable UI component for factory layout visualization
+- **⚙️ CCU Configuration UI:** Parameter and Factory configuration with role-based controls
 
 ### **Schema-Validierung & Meta-Parameter Konzept**
 

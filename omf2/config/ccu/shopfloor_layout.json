@@ -1,0 +1,160 @@
+{
+  "_meta": {
+    "_description": "Shopfloor layout configuration with grid and module positions",
+    "_version": "1.0",
+    "_domain": "ccu",
+    "_source": "Merged from shopfloor-layout.json and shopfloor_omf1.yml",
+    "_usage_omf2": "Used by CCUGateway for physical layout operations and module positioning",
+    "_notes": [
+      "Grid-based layout with 3x4 configuration (3 rows × 4 columns)",
+      "Module positions defined by [x, y] coordinates where x=column, y=row",
+      "Intersections connect modules via roads",
+      "Roads define physical connections between modules and intersections",
+      "Module types use original hardware names for MQTT compatibility",
+      "Registry correlation: type='Processing' (MILL,DRILL), type='Storage' (HBW), type='Quality-Control' (AIQS), type='Input/Output' (DPS), type='Charging' (CHRG)",
+      "Matrix convention: rows × columns (standard mathematical notation)"
+    ]
+  },
+  
+  "grid": {
+    "rows": 3,
+    "columns": 4,
+    "cell_size": "100x100"
+  },
+  
+  "modules": [
+    {
+      "id": "MILL",
+      "type": "MILL",
+      "serialNumber": "SVR3QA2098", 
+      "position": [0, 1]
+    },
+    {
+      "id": "AIQS",
+      "type": "AIQS",
+      "serialNumber": "SVR4H76530",
+      "position": [0, 2]
+    },
+    {
+      "id": "HBW",
+      "type": "HBW", 
+      "serialNumber": "SVR3QA0022",
+      "position": [1, 0]
+    },
+    {
+      "id": "DPS",
+      "type": "DPS",
+      "serialNumber": "SVR4H73275",
+      "position": [3, 1]
+    },
+    {
+      "id": "DRILL",
+      "type": "DRILL", 
+      "serialNumber": "SVR4H76449",
+      "position": [2, 0]
+    },
+    {
+      "id": "CHRG",
+      "type": "CHRG",
+      "serialNumber": "CHRG0",
+      "position": [3, 2]
+    }
+  ],
+  
+  "empty_positions": [
+    {
+      "id": "EMPTY1",
+      "position": [0, 0]
+    },
+    {
+      "id": "EMPTY2",
+      "position": [3, 0]
+    }
+  ],
+  
+  "intersections": [
+    {
+      "id": "1",
+      "position": [1, 1],
+      "connected_modules": ["HBW", "MILL"]
+    },
+    {
+      "id": "2", 
+      "position": [1, 2],
+      "connected_modules": ["MILL", "AIQS", "DPS"]
+    },
+    {
+      "id": "3",
+      "position": [2, 1], 
+      "connected_modules": ["DRILL", "HBW"]
+    },
+    {
+      "id": "4",
+      "position": [2, 2],
+      "connected_modules": ["DRILL", "CHRG", "DPS"]
+    }
+  ],
+  
+  "roads": [
+    {
+      "length": 360,
+      "from": "1",
+      "to": "2",
+      "direction": "EAST"
+    },
+    {
+      "length": 360,
+      "from": "3",
+      "to": "1",
+      "direction": "NORTH"
+    },
+    {
+      "length": 360,
+      "from": "3",
+      "to": "4",
+      "direction": "EAST"
+    },
+    {
+      "length": 360,
+      "from": "4",
+      "to": "2",
+      "direction": "NORTH"
+    },
+    {
+      "direction": "EAST",
+      "from": "SVR3QA0022",
+      "to": "1",
+      "length": 380
+    },
+    {
+      "direction": "EAST",
+      "from": "SVR4H76449",
+      "to": "3",
+      "length": 380
+    },
+    {
+      "direction": "SOUTH",
+      "from": "SVR3QA2098",
+      "to": "1",
+      "length": 380
+    },
+    {
+      "direction": "WEST",
+      "from": "SVR4H73275",
+      "to": "2",
+      "length": 380
+    },
+    {
+      "direction": "SOUTH",
+      "from": "SVR4H76530",
+      "to": "2",
+      "length": 380
+    },
+    {
+      "direction": "WEST",
+      "from": "CHRG0",
+      "to": "4",
+      "length": 430
+    }
+  ]
+}
