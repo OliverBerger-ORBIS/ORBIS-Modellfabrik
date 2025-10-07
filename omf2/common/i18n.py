@@ -17,9 +17,15 @@ class I18nManager:
     
     def __init__(self):
         self.current_language = 'de'  # Default to German
-        self.translations = {}
+        self.translations = None  # Lazy Loading - wird beim ersten Zugriff geladen
         self.supported_languages = ['de', 'en', 'fr']
-        self._load_translations()
+        # Kein _load_translations() mehr beim Init - Lazy Loading
+    
+    def _get_translations(self):
+        """Lazy Loading für Translations - wird beim ersten Zugriff geladen"""
+        if self.translations is None:
+            self._load_translations()
+        return self.translations
     
     def _load_translations(self):
         """Load translation files"""
@@ -192,13 +198,13 @@ class I18nManager:
             language = self.current_language
         
         # Handle fallback to English if language not available
-        if language not in self.translations:
+        if language not in self._get_translations():
             language = 'en'
         
         # Navigate through the nested dictionary
         try:
             keys = key.split('.')
-            value = self.translations[language]
+            value = self._get_translations()[language]
             
             for k in keys:
                 value = value[k]

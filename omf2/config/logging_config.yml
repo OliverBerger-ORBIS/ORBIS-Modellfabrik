@@ -38,3 +38,5 @@ business_managers:
     level: INFO  # DEBUG for sensor data debugging
   module_manager:
     level: DEBUG  # DEBUG for module status debugging
+  order_manager:
+    level: DEBUG  # DEBUG for order management debugging

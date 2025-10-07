@@ -753,6 +753,8 @@ def _render_log_management(admin_gateway):
         level: DEBUG  # Enable sensor debugging
       module_manager:
         level: DEBUG  # Enable module debugging
+      order_manager:
+        level: DEBUG  # Enable order management debugging
     ```
     
     **Note:** Changes to the YAML file require a dashboard restart to take effect.

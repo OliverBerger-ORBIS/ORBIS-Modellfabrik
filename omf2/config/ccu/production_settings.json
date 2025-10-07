@@ -8,7 +8,8 @@
     "_notes": [
       "productionDurations: Production durations for different products (in seconds)",
       "productionSettings: Production configuration parameters",
-      "ftsSettings: FTS (Fleet Transport System) configuration settings"
+      "ftsSettings: FTS (Fleet Transport System) configuration settings",
+      "TODO: rename in UI Dashboard CCU Configuration Parameter into Production Settings"
     ]
   },
   
@@ -16,6 +17,12 @@
     "WHITE": 440,
     "BLUE": 460,
     "RED": 500
+  },
+  
+  "inventorySettings": {
+    "maxCapacity": 3,
+    "positions": ["A1", "A2", "A3", "B1", "B2", "B3", "C1", "C2", "C3"],
+    "workpieceTypes": ["RED", "BLUE", "WHITE"]
   },
   "productionSettings": {
     "maxParallelOrders": 4

@@ -394,6 +394,108 @@ temperature = bme680_data.get("temperature", 0.0)
 
 ---
 
+### 4.2 OrderManager (Inventory & Order Management)
+
+**Zweck:** Verarbeitet Stock-Messages (Lagerbestand) und verwaltet Kundenaufträge/Rohmaterial-Bestellungen.
+
+**Datei:** `omf2/ccu/order_manager.py`
+
+**🔧 WICHTIGE ARCHITEKTUR-PATTERNS:**
+
+**1. Non-Blocking Initialization (KRITISCH):**
+```python
+class OrderManager:
+    def __init__(self):
+        """Initialize Order Manager - EXAKT wie Sensor Manager (kein File I/O!)"""
+        # ✅ Nur Dicts/Listen setzen - KEIN File I/O!
+        self.inventory = {f"{chr(65+i)}{j+1}": None for i in range(3) for j in range(3)}
+        self.workpiece_types = ["RED", "BLUE", "WHITE"]
+        self.max_capacity = 3
+        self._lock = threading.Lock()
+        # ❌ NIEMALS: config_loader.load_production_settings() im __init__!
+```
+
+**2. Lock-Hierarchie (Deadlock-Vermeidung):**
+```python
+# ✅ RICHTIG: Nur äußerste Methode mit Lock
+def get_inventory_status(self) -> Dict[str, Any]:
+    with self._lock:
+        available = self.get_available_workpieces()  # ← OHNE Lock!
+        need = self.get_workpiece_need()             # ← OHNE Lock!
+        return {"inventory": self.inventory.copy(), ...}
+
+# ✅ RICHTIG: Interne Methoden OHNE Lock
+def get_available_workpieces(self) -> Dict[str, int]:
+    # KEIN self._lock hier! Wird von get_inventory_status() aufgerufen
+    available = {"RED": 0, "BLUE": 0, "WHITE": 0}
+    for position, workpiece in self.inventory.items():
+        if workpiece in available:
+            available[workpiece] += 1
+    return available
+
+# ❌ FALSCH: Verschachtelte Locks führen zu DEADLOCK
+def get_inventory_status_WRONG(self):
+    with self._lock:                                # ← Lock erworben
+        available = self.get_available_workpieces() # ← Versucht Lock nochmal!
+        # → DEADLOCK!
+```
+
+**3. Singleton Pattern (wie SensorManager):**
+```python
+_order_manager_instance = None
+
+def get_order_manager() -> OrderManager:
+    global _order_manager_instance
+    if _order_manager_instance is None:
+        _order_manager_instance = OrderManager()
+        logger.info("🏗️ Order Manager singleton created")
+    return _order_manager_instance
+```
+
+**4. MQTT Message Processing:**
+```python
+def process_stock_message(self, topic: str, message: Dict[str, Any], meta: Dict[str, Any]) -> None:
+    """Verarbeitet Stock-Nachrichten vom Topic /j1/txt/1/f/i/stock"""
+    try:
+        with self._lock:  # ← Lock nur für State-Updates
+            stock_items = message.get("stockItems", [])
+            for item in stock_items:
+                location = item.get("location")  # e.g., "A1", "B2"
+                workpiece_type = item.get("workpiece", {}).get("type")
+                if location in self.inventory:
+                    self.inventory[location] = workpiece_type
+```
+
+**5. UI Integration (Non-Blocking):**
+```python
+# UI Component
+def render_inventory_subtab(ccu_gateway, registry_manager):
+    # ✅ Direkter Manager-Zugriff (wie SensorManager)
+    order_manager = get_order_manager()  # Non-Blocking Singleton
+    inventory_status = order_manager.get_inventory_status()  # Non-Blocking
+    
+    # Display inventory with Bucket-Templates (aus omf/dashboard)
+    for position, workpiece in inventory_status["inventory"].items():
+        st.markdown(get_bucket_template(position, workpiece), unsafe_allow_html=True)
+```
+
+**⚠️ KRITISCHE LEKTIONEN (für andere Agents):**
+
+1. **NIEMALS File I/O im `__init__`** → Blockiert Streamlit UI!
+2. **NIEMALS verschachtelte Locks** → Deadlock!
+3. **NIEMALS blocking Imports** → `config_loader` Import war Blocker!
+4. **Lock-Hierarchie:** Nur äußerste Methode mit Lock, interne Methoden OHNE Lock
+5. **Templates von omf/dashboard wiederverwenden** → Konsistentes Design
+
+**Vorteile:**
+- ✅ **Non-Blocking:** Kein File I/O, keine verschachtelten Locks
+- ✅ **Thread-Safe:** Korrekte Lock-Hierarchie
+- ✅ **State-Holder Pattern:** Inventory als Dict (wie sensor_data)
+- ✅ **Gateway-Pattern:** MQTT → Gateway → Order Manager → UI
+- ✅ **Live-Updates:** MQTT-Nachrichten aktualisieren Inventory in Echtzeit
+
+---
+
 ## 5. Domain-agnostic Manager (Wiederverwendbare Logik)
 
 ### 5.1 MessageManager (Domain-agnostic Message Generation/Validation)

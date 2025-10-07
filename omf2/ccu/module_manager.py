@@ -36,7 +36,7 @@ class CcuModuleManager:
         self._initialized = False
         
         # Module configuration and icons (NO HARDCODED STRINGS - loaded from Registry)
-        self.MODULE_ICONS = self._load_module_icons_from_registry()
+        self.MODULE_ICONS = None  # Lazy Loading - wird beim ersten Zugriff geladen
         
         # NEU: State-Holder für Module-Status
         self.module_status = {}  # {module_id: module_status_data}
@@ -65,24 +65,38 @@ class CcuModuleManager:
         except Exception as e:
             logger.error(f"❌ Failed to process module message for topic {topic}: {e}")
     
+    def _get_module_icons(self) -> Dict[str, str]:
+        """Lazy Loading für Module Icons - wird beim ersten Zugriff geladen"""
+        if self.MODULE_ICONS is None:
+            self.MODULE_ICONS = self._load_module_icons_from_registry()
+        return self.MODULE_ICONS
+    
     def _load_module_icons_from_registry(self) -> Dict[str, str]:
         """Loads module icons from registry (NO HARDCODED STRINGS)."""
         try:
+            logger.debug("🔍 Loading module icons from registry...")
+            
             # Get all modules from Registry
             modules = self.registry_manager.get_modules()
+            logger.debug(f"🔍 Found {len(modules)} modules in registry")
+            
             module_icons = {}
             
             for module_id, module_info in modules.items():
                 # Get icon from Registry module info
                 icon = module_info.get('icon', '❓')
                 module_icons[module_id] = icon
+                logger.debug(f"🔍 Module {module_id}: {icon}")
                 
                 # NO duplicate mapping by name - only use Module IDs
             
+            logger.info(f"✅ Loaded {len(module_icons)} module icons from registry")
             return module_icons
             
         except Exception as e:
             logger.error(f"❌ Failed to load module icons from Registry: {e}")
+            import traceback
+            logger.error(f"❌ Traceback: {traceback.format_exc()}")
             # Fallback to default icons
             return {"default": "❓"}
     
@@ -360,7 +374,7 @@ class CcuModuleManager:
             Icon string from Registry
         """
         # Direct lookup in Registry-based MODULE_ICONS
-        return self.MODULE_ICONS.get(module_id, "❓")  # Unknown module
+        return self._get_module_icons().get(module_id, "❓")  # Unknown module
     
     def get_availability_display(self, availability: str) -> str:
         """

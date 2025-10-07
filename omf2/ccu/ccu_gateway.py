@@ -10,6 +10,7 @@ from omf2.registry.manager.registry_manager import get_registry_manager
 from omf2.common.message_manager import get_ccu_message_manager
 from omf2.common.topic_manager import get_ccu_topic_manager
 from omf2.common.logger import get_logger
+from omf2.ccu.order_manager import get_order_manager
 
 logger = get_logger("omf2.ccu.ccu_gateway")
 
@@ -60,10 +61,16 @@ class CcuGateway:
             'fts/v1/ff/',          # FTS Topics
             'ccu/pairing/state'    # CCU Pairing State (für globale Status-Updates)
         ]
+
+        # Order Topics: Set-basiertes Lookup für Order Manager
+        self.order_topics = {
+            '/j1/txt/1/f/i/stock'       # HBW Lager-info
+        }
         
         # Initialisiere Manager (Lazy Loading)
         self._sensor_manager = None
         self._module_manager = None
+        self._order_manager = None
         
         logger.info("🏗️ CcuGateway initialized with Topic-Routing")
     
@@ -80,6 +87,19 @@ class CcuGateway:
             from omf2.ccu.module_manager import get_ccu_module_manager
             self._module_manager = get_ccu_module_manager()
         return self._module_manager
+    
+    def _get_order_manager(self):
+        """Lazy Loading für OrderManager (Singleton) - wie Sensor Manager"""
+        if self._order_manager is None:
+            try:
+                from omf2.ccu.order_manager import get_order_manager
+                self._order_manager = get_order_manager()
+                logger.info("🏗️ Order Manager initialized via Gateway")
+            except Exception as e:
+                logger.error(f"❌ Failed to initialize Order Manager: {e}")
+                # Fallback: Return None to avoid blocking
+                return None
+        return self._order_manager
     
     def on_mqtt_message(self, topic: str, message: Union[Dict, List, str], meta: Optional[Dict] = None):
         """
@@ -183,13 +203,24 @@ class CcuGateway:
                 sensor_manager.process_sensor_message(topic, message, meta)
                 return True
             
-            # Routing 2: Module Topics (Präfix-basiertes Matching)
+            # Routing 2: Module Topics (Präfix-basiertes Matching) - REAKTIVIERT
             for prefix in self.module_topic_prefixes:
                 if topic.startswith(prefix):
                     logger.debug(f"🏭 Routing to module_manager: {topic}")
                     module_manager = self._get_module_manager()
-                    module_manager.process_module_message(topic, message, meta)
+                    if module_manager:
+                        module_manager.process_module_message(topic, message, meta)
                     return True
+            
+            # Routing 3: Order Topics (Set-basiertes Lookup) - EXAKT wie Sensor Manager
+            if topic in self.order_topics:
+                logger.debug(f"📦 Routing to order_manager: {topic}")
+                order_manager = self._get_order_manager()
+                if order_manager:
+                    order_manager.process_stock_message(topic, message, meta)
+                else:
+                    logger.warning(f"⚠️ Order Manager not available for topic: {topic}")
+                return True
             
             # Unbekanntes Topic: Nur Debug-Logging
             logger.debug(f"❓ No routing for topic: {topic}")
@@ -526,3 +557,91 @@ class CcuGateway:
             Liste der passenden Topics
         """
         return self.topic_manager.get_topics_by_pattern(pattern)
+    
+    # Order Manager Methods
+    def get_inventory_status(self) -> Dict[str, Any]:
+        """
+        Lagerbestand-Status abrufen - Non-Blocking
+        
+        Returns:
+            Dict mit Lagerbestand-Informationen
+        """
+        # Direkter Zugriff auf Order Manager (wie Sensor Manager)
+        try:
+            order_manager = self._get_order_manager()
+            if order_manager is None:
+                logger.warning("⚠️ Order Manager not available, using fallback data")
+                raise Exception("Order Manager not available")
+            
+            inventory_status = order_manager.get_inventory_status()
+            logger.debug(f"📦 Returning real inventory status: {inventory_status}")
+            return inventory_status
+        except Exception as e:
+            logger.error(f"❌ Error getting inventory status: {e}")
+            # Fallback: Placeholder-Daten bei Fehler
+            return {
+                "inventory": {
+                    "A1": None, "A2": None, "A3": None,
+                    "B1": None, "B2": None, "B3": None,
+                    "C1": None, "C2": None, "C3": None
+                },
+                "last_update": None,
+                "available": {"RED": 0, "BLUE": 0, "WHITE": 0},
+                "need": {"RED": 3, "BLUE": 3, "WHITE": 3}
+            }
+    
+    def get_available_workpieces(self) -> Dict[str, int]:
+        """
+        Verfügbare Werkstücke abrufen - Non-Blocking
+        
+        Returns:
+            Dict mit Anzahl pro Werkstück-Typ
+        """
+        # Direkter Zugriff auf Order Manager (wie Sensor Manager)
+        try:
+            order_manager = self._get_order_manager()
+            return order_manager.get_available_workpieces()
+        except Exception as e:
+            logger.error(f"❌ Error getting available workpieces: {e}")
+            return {"RED": 0, "BLUE": 0, "WHITE": 0}
+    
+    def get_workpiece_need(self) -> Dict[str, int]:
+        """
+        Werkstück-Bedarf abrufen - Non-Blocking
+        
+        Returns:
+            Dict mit Bedarf pro Werkstück-Typ
+        """
+        # Direkter Zugriff auf Order Manager (wie Sensor Manager)
+        try:
+            order_manager = self._get_order_manager()
+            return order_manager.get_workpiece_need()
+        except Exception as e:
+            logger.error(f"❌ Error getting workpiece need: {e}")
+            return {"RED": 3, "BLUE": 3, "WHITE": 3}
+    
+    def send_customer_order(self, workpiece_type: str) -> bool:
+        """
+        Kundenauftrag senden
+        
+        Args:
+            workpiece_type: RED, BLUE, oder WHITE
+            
+        Returns:
+            True wenn erfolgreich, False bei Fehler
+        """
+        order_manager = get_order_manager()
+        return order_manager.send_customer_order(workpiece_type)
+    
+    def send_raw_material_order(self, workpiece_type: str) -> bool:
+        """
+        Rohmaterial-Bestellung senden
+        
+        Args:
+            workpiece_type: RED, BLUE, oder WHITE
+            
+        Returns:
+            True wenn erfolgreich, False bei Fehler
+        """
+        order_manager = get_order_manager()
+        return order_manager.send_raw_material_order(workpiece_type)

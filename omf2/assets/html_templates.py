@@ -80,28 +80,17 @@ def get_bucket_template(position: str, workpiece_type: str = None) -> str:
     Returns:
         HTML-String für den Bucket
     """
-    # Standard-Bucket-Farbe (leer)
-    bg_color = "#f0f0f0"
-    border_color = "#cccccc"
-    text_color = "#666666"
-    
-    # Wenn Werkstück vorhanden, verwende entsprechende Farbe
+    # EXAKT aus omf/dashboard/assets/html_templates.py
     if workpiece_type:
+        # Gefüllter Bucket mit Werkstück
         colors = {
-            "RED": {"bg": "#ffcccc", "border": "#ff6666", "text": "#cc0000"},
-            "BLUE": {"bg": "#ccccff", "border": "#6666ff", "text": "#0000cc"},
-            "WHITE": {"bg": "#ffffff", "border": "#cccccc", "text": "#666666"},
+            "RED": {"bg": "#ff0000", "border": "#cc0000", "text": "white"},
+            "BLUE": {"bg": "#0066ff", "border": "#0044cc", "text": "white"},
+            "WHITE": {"bg": "#e0e0e0", "border": "#b0b0b0", "text": "black"},
         }
         color_config = colors.get(workpiece_type, colors["WHITE"])
-        bg_color = color_config["bg"]
-        border_color = color_config["border"]
-        text_color = color_config["text"]
 
-    return f"""
-    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; margin: 5px;">
-        <div style="width: 80px; height: 60px; background-color: {bg_color}; border: 2px solid {border_color}; border-radius: 4px; display: flex; align-items: center; justify-content: center; margin-bottom: 5px;">
-            <div style="color: {text_color}; font-weight: bold; font-size: 12px;">{position}</div>
-        </div>
-        {f'<div style="color: {text_color}; font-size: 10px; font-weight: bold;">{workpiece_type}</div>' if workpiece_type else ''}
-    </div>
-    """
+        return f'<div style="width: 140px; height: 140px; margin: 8px auto; position: relative;"><div style="width: 120px; height: 80px; background-color: {color_config["bg"]}; border: 2px solid {color_config["border"]}; border-radius: 4px; position: absolute; bottom: 8px; left: 8px; display: flex; align-items: center; justify-content: center; z-index: 2;"><div style="color: {color_config["text"]}; font-weight: bold; font-size: 14px;">{workpiece_type}</div></div><div style="width: 140px; height: 60px; border: 4px solid #000000; border-top: none; background-color: #f0f0f0; border-radius: 0 0 12px 12px; position: absolute; bottom: 0; left: 0; z-index: 1;"></div><div style="text-align: center; font-size: 16px; font-weight: bold; color: #333; margin-top: 4px; position: absolute; bottom: -25px; left: 0; right: 0;">{position}</div></div>'
+    else:
+        # Leerer Bucket
+        return f'<div style="width: 140px; height: 140px; margin: 8px auto; position: relative;"><div style="width: 140px; height: 60px; border: 4px solid #000000; border-top: none; background-color: #f9f9f9; border-radius: 0 0 12px 12px; position: absolute; bottom: 0; left: 0;"></div><div style="text-align: center; font-size: 16px; font-weight: bold; color: #999; margin-top: 4px; position: absolute; bottom: -25px; left: 0; right: 0;">{position}</div></div>'
