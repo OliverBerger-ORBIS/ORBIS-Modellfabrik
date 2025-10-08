@@ -6,9 +6,11 @@ Dieser Ordner dokumentiert das **Fischertechnik APS-System im aktuellen Zustand*
 
 ## 📁 **Struktur**
 
+> 📖 **Zentrale Referenz:** [00-REFERENCE](../00-REFERENCE/README.md) - Verifizierte APS-Architektur als Single Source of Truth
+
 - **[aps-system-overview.md](aps-system-overview.md)** - High-Level funktionale Beschreibung (Fischertechnik)
 - **[system-overview.md](system-overview.md)** - Technische System-Architektur und MQTT-Kommunikation
-- **[component-mapping.md](component-mapping.md)** - Client-ID Mapping und Rollen
+- ~~[component-mapping.md](component-mapping.md)~~ - **Archiviert** → Siehe [Module Serial Mapping](../00-REFERENCE/module-serial-mapping.md)
 - **[README.md](README.md)** - Diese Übersicht
 
 ## 🔗 **Verwandte Dokumentation**

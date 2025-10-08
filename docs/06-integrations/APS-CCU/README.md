@@ -1,5 +1,10 @@
 # APS-CCU Integration Dokumentation
 
+> 📖 **Zentrale Referenz:** [00-REFERENCE](../00-REFERENCE/README.md) - Verifizierte APS-Architektur
+> 
+> - [Module Serial Mapping](../00-REFERENCE/module-serial-mapping.md) - Module-IDs & Hardware
+> - [CCU-Backend Orchestration](../00-REFERENCE/ccu-backend-orchestration.md) - Order-Management Details
+
 ## 📋 Übersicht
 
 **APS-CCU** ist das Herz der APS Modellfabrik - die zentrale Steuerungseinheit.

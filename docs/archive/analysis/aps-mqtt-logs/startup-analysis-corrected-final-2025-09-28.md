@@ -90,8 +90,8 @@
 | Topic | QoS | Retain | Publisher | Subscriber | Häufigkeit | Beschreibung |
 |-------|-----|--------|-----------|------------|------------|--------------|
 | `module/v1/ff/SVR4H73275/instantAction` | 2 | 0 | **Dashboard Frontend (mqttjs_bba12050)** | - | 509x | Sofort-Aktionen |
-| `module/v1/ff/SVR4H73275/connection` | 1 | 1 | **TXT-AIQS (auto-B9109AD9)** | **Dashboard Frontend (mqttjs_bba12050)** | 98x | Verbindungsstatus |
-| `module/v1/ff/SVR4H73275/state` | 2 | 1 | **TXT-AIQS (auto-B9109AD9)** | **Dashboard Frontend (mqttjs_bba12050)** | 3x | Modul-Status |
+| `module/v1/ff/SVR4H73275/connection` | 1 | 1 | **TXT-DPS (auto-AC941349)** | **Dashboard Frontend (mqttjs_bba12050)** | 98x | Verbindungsstatus |
+| `module/v1/ff/SVR4H73275/state` | 2 | 1 | **TXT-DPS (auto-AC941349)** | **Dashboard Frontend (mqttjs_bba12050)** | 3x | Modul-Status |
 | `module/v1/ff/SVR4H73275/factsheet` | 2 | 1 | **Node-RED Publisher (nodered_94dca81c69366ec4)** | **Dashboard Frontend (mqttjs_bba12050)** | 1x | Modul-Informationen |
 
 ### **Module Topics (SVR4H76530 - AIQS-Modul):**
@@ -130,9 +130,9 @@
 | Topic | QoS | Retain | Publisher | Subscriber | Häufigkeit | Beschreibung |
 |-------|-----|--------|-----------|------------|------------|--------------|
 | `module/v1/ff/NodeRed/status` | 1 | 1 | **TXT-CGW (auto-9BD9E2A9)** | - | 4x | Node-RED Status |
-| `module/v1/ff/NodeRed/SVR4H73275/state` | 2 | 1 | **TXT-AIQS (auto-B9109AD9)** | **Dashboard Frontend (mqttjs_bba12050)** | 4x | Node-RED DPS-Status |
+| `module/v1/ff/NodeRed/SVR4H73275/state` | 2 | 1 | **TXT-DPS (auto-AC941349)** | **Dashboard Frontend (mqttjs_bba12050)** | 4x | Node-RED DPS-Status |
 | `module/v1/ff/NodeRed/SVR4H73275/instantAction` | 2 | 0 | **Node-RED Subscriber (nodered_abe9e421b6fe3efd)** | - | 2x | Node-RED DPS-Aktionen |
-| `module/v1/ff/NodeRed/SVR4H73275/connection` | 1 | 1 | **TXT-AIQS (auto-B9109AD9)** | **Dashboard Frontend (mqttjs_bba12050)** | 1x | Node-RED DPS-Verbindung |
+| `module/v1/ff/NodeRed/SVR4H73275/connection` | 1 | 1 | **TXT-DPS (auto-AC941349)** | **Dashboard Frontend (mqttjs_bba12050)** | 1x | Node-RED DPS-Verbindung |
 | `module/v1/ff/NodeRed/SVR4H73275/factsheet` | 2 | 1 | **Node-RED Publisher (nodered_94dca81c69366ec4)** | **Dashboard Frontend (mqttjs_bba12050)** | 1x | Node-RED DPS-Informationen |
 | `module/v1/ff/NodeRed/SVR4H76530/instantAction` | 2 | 0 | **Node-RED Publisher (nodered_94dca81c69366ec4)** | - | 1x | Node-RED AIQS-Aktionen |
 
@@ -199,8 +199,8 @@
 **"Node-RED Topics werden nur von Node-RED publiziert"**
 
 ### **📊 Log-Daten zeigen:**
-- **TXT-AIQS publiziert:** `module/v1/ff/NodeRed/SVR4H73275/state` (4x)
-- **TXT-AIQS publiziert:** `module/v1/ff/NodeRed/SVR4H73275/connection` (1x)
+- **TXT-DPS publiziert:** `module/v1/ff/NodeRed/SVR4H73275/state` (4x)
+- **TXT-DPS publiziert:** `module/v1/ff/NodeRed/SVR4H73275/connection` (1x)
 - **TXT-CGW publiziert:** `module/v1/ff/NodeRed/status` (4x)
 - **Node-RED PUB publiziert:** `module/v1/ff/NodeRed/SVR4H73275/factsheet` (1x)
 
@@ -244,8 +244,8 @@
 
 ### **🔗 MODULE-ZUORDNUNG ÜBER SERIAL:**
 - **TXT-FTS** → FTS (5iO4) über serial
-- **TXT-AIQS** → AIQS (SVR4H76530) über serial  
 - **TXT-DPS** → DPS (SVR4H73275) über serial
+- **TXT-AIQS** → AIQS (SVR4H76530) über serial  
 - **TXT-CGW** → CGW (kein direktes Modul)
 
 ---

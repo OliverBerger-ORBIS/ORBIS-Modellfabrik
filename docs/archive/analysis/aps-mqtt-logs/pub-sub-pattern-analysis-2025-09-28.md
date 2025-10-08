@@ -134,7 +134,7 @@ FTS → fts/v1/ff/+/state → Dashboard
 
 ### **Integration Flow:**
 ```
-TXT-AIQS → module/v1/ff/NodeRed/SVR4H73275/state (DPS Integration)
+TXT-DPS → module/v1/ff/NodeRed/SVR4H73275/state (DPS Integration)
 TXT-CGW → module/v1/ff/NodeRed/status (System Status)
 ```
 
@@ -220,8 +220,8 @@ sequenceDiagram
     
     %% Will Messages (Connection Status)
     TXT_FTS->>MQTT_BROKER: Will: fts/v1/ff/5iO4/connection
-    TXT_AIQS->>MQTT_BROKER: Will: module/v1/ff/NodeRed/SVR4H76530/connection
     TXT_DPS->>MQTT_BROKER: Will: module/v1/ff/NodeRed/SVR4H73275/connection
+    TXT_AIQS->>MQTT_BROKER: Will: module/v1/ff/NodeRed/SVR4H76530/connection
     
     %% UI-Interaktionen (16:25:37)
     Note over DASHBOARD: User klickt "Factory Reset" Button
@@ -332,7 +332,7 @@ sequenceDiagram
 ## 🔍 **WILL MESSAGE DETAILS**
 
 **Was passiert bei Disconnect:**
-- **Topic:** `fts/v1/ff/5iO4/connection` (FTS) oder `module/v1/ff/NodeRed/SVR4H73275/connection` (Module)
+- **Topic:** `fts/v1/ff/5iO4/connection` (FTS) oder `module/v1/ff/NodeRed/SVR4H73275/connection` (DPS) oder `module/v1/ff/NodeRed/SVR4H76530/connection` (AIQS)
 - **Payload:** Wahrscheinlich `{"status": "disconnected"}` oder `{"connected": false}`
 - **QoS:** 1 (at least once)
 - **Retain:** 1 (letzte Nachricht wird gespeichert)

@@ -7,15 +7,23 @@
 > - **[Node-RED Integration](../node-red/README.md)** - Gateway zwischen OPC-UA und MQTT
 > - **[System Context](../../02-architecture/system-context.md)** - Gesamtarchitektur
 
-Die Steuerung des fahrerlosen Transportsystems (FTS) bzw. Automated Guided Vehicle (AGV) nach dem VDA 5050 Standard ist in der Datei implizit enthalten, insbesondere durch die Verarbeitung von Aufträgen (Orders) und deren Weiterleitung über OPC UA Nodes. Hier sind die wesentlichen Punkte zusammengefasst:
+Die Steuerung des fahrerlosen Transportsystems (FTS) bzw. Automated Guided Vehicle (AGV) nach dem VDA 5050 Standard erfolgt über MQTT-Topics (`fts/v1/ff/5iO4/*`).
+
+**Wichtig:** Das FTS hat einen TXT-Controller (KEIN OPC-UA Server) und kommuniziert ausschließlich via MQTT mit dem CCU-Backend.
+
+Hier sind die wesentlichen Punkte zusammengefasst:
 
 ## 🚗 FTS-Steuerung nach VDA 5050 – Überblick
 
 ### 1. Auftragsverarbeitung
 
-Aufträge werden über ein Node-RED-Flow verarbeitet.
+FTS-Aufträge werden vom **CCU-Backend** erstellt und via MQTT an das FTS gesendet.
 
-Die Funktion Write Order (z. B. Node e7e0014dac56a4d5) schreibt Befehle an das FTS über OPC UA.
+**Technische Details:**
+- **Topic:** `fts/v1/ff/5iO4/order`
+- **Sender:** CCU-Backend (`modules/fts/navigation/navigation.js`)
+- **Protokoll:** MQTT (QoS 2)
+- **KEIN OPC-UA beteiligt!**
 
 Die Aufträge enthalten Informationen wie:
 - Zielpositionen (TO_CAMERA, TO_NIO_BIN, TO_PICKUP, etc.)
@@ -54,14 +62,33 @@ Diese Aktionen werden ebenfalls als InstantActions im VDA 5050-Format verarbeite
 
 ## 📡 Technologien im Einsatz
 
-- **OPC UA:** zur Kommunikation mit dem FTS
-- **MQTT:** zur Statusübertragung im VDA 5050-Format
-- **Node-RED:** zur Orchestrierung der Logik
+- **MQTT:** zur Kommunikation mit dem FTS (Commands & Status im VDA 5050-Format)
+- **TXT-Controller:** FTS-Hardware-Steuerung (KEIN OPC-UA)
+- **CCU-Backend:** zur Orchestrierung der FTS-Navigation
 - **VDA 5050:** als Kommunikationsstandard für AGV-Integration
+
+**Hinweis:** Im Gegensatz zu den Produktions-Modulen (MILL, DRILL, HBW) hat das FTS **keinen OPC-UA Server**. Die Steuerung erfolgt ausschließlich via MQTT über den TXT-Controller.
 
 ## Flussdiagramm
 
-Hier ist das grafische Flussdiagramm, das den Ablauf der FTS-Steuerung nach dem VDA 5050 Standard im Node-RED-Flow darstellt:
+> ⚠️ **HINWEIS:** Das folgende Diagramm ist **VERALTET und FALSCH** für FTS!
+> 
+> Es beschreibt die **Modul-Steuerung** (MILL, DRILL) via OPC-UA, **NICHT** die FTS-Steuerung.
+> 
+> **FTS hat KEIN OPC-UA!** Die FTS-Steuerung erfolgt via MQTT vom CCU-Backend.
+> 
+> **Korrektes FTS-Flow:**
+> ```
+> CCU-Backend → fts/v1/ff/5iO4/order (MQTT, QoS 2)
+>       ↓
+> FTS TXT-Controller empfängt Order
+>       ↓
+> FTS führt Navigation aus
+>       ↓
+> FTS → fts/v1/ff/5iO4/state (MQTT Status-Updates)
+> ```
+> 
+> **TODO:** Diagramm durch korrektes FTS-MQTT-Flow ersetzen
 
 ```mermaid
 graph TD

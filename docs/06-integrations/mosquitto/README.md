@@ -3,8 +3,22 @@
 ## 🎯 Ziel
 Vollständige Analyse der APS-Modellfabrik Mosquitto-Komponente basierend auf echten Log-Daten.
 
-## 📋 Analyse-Ergebnisse
-Siehe [log-analysis-2025-09-24.md](./log-analysis-2025-09-24.md) für die vollständige Mosquitto-Log-Analyse.
+## 📋 MQTT Broker Details
+
+**Broker:** Mosquitto auf Raspberry Pi Docker  
+**Port:** 1883  
+**Config:** `integrations/mosquitto/config/mosquitto.conf`
+
+> 📖 Für System-Architektur und Topic-Details siehe [00-REFERENCE](../00-REFERENCE/README.md)
+
+## 🗂️ Archivierte Analysen
+
+Historische MQTT-Log-Analysen (Prozess-Dokumente) wurden archiviert:
+→ `docs/archive/analysis/aps-mqtt-logs/`
+
+- `log-analysis-2025-09-24.md` - Initiale Log-Analyse
+- `startup-analysis-corrected-final-2025-09-28.md` - Startup-Sequenz-Analyse  
+- `pub-sub-pattern-analysis-2025-09-28.md` - Pub/Sub-Pattern-Analyse
 
 ## 🔧 Technische Voraussetzungen
 

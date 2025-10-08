@@ -32,11 +32,11 @@ Will message specified (212 bytes) (r1, q1).
 
 # TXT-AIQS (192.168.0.103)  
 Will message specified (208 bytes) (r1, q1).
-    module/v1/ff/NodeRed/SVR4H73275/connection
+    module/v1/ff/NodeRed/SVR4H76530/connection
 
 # TXT-DPS (192.168.0.104)
 Will message specified (184 bytes) (r1, q1).
-    module/v1/ff/NodeRed/SVR4H76530/connection
+    module/v1/ff/NodeRed/SVR4H73275/connection
 ```
 
 ## 📊 **Publish/Subscribe-Verhalten**
@@ -102,8 +102,8 @@ Node-RED (PUB) generates: ccu/order/completed (QoS 2, r1)
 
 ### **Will Message Topics**
 - **FTS:** `fts/v1/ff/5iO4/connection`
-- **AIQS:** `module/v1/ff/NodeRed/SVR4H73275/connection`
-- **DPS:** `module/v1/ff/NodeRed/SVR4H76530/connection`
+- **DPS:** `module/v1/ff/NodeRed/SVR4H73275/connection`
+- **AIQS:** `module/v1/ff/NodeRed/SVR4H76530/connection`
 
 ### **Connection Status Pattern**
 ```

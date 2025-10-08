@@ -1,5 +1,11 @@
 # 🔴 Node-RED Integration Documentation
 
+> 📖 **Zentrale Referenz:** [00-REFERENCE](../00-REFERENCE/README.md) - Verifizierte APS-Architektur
+> 
+> **NodeRed-Rolle:** OPC-UA ↔ MQTT Bridge für MILL/DRILL/HBW Module
+> 
+> **NICHT:** Order-Management, UUID-Generation (das macht CCU-Backend!)
+
 Diese Sektion enthält die umfassende Dokumentation der Node-RED Flows der Fischertechnik Agile Production Simulation (APS).
 
 

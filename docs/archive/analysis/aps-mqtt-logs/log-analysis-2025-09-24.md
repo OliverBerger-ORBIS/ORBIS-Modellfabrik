@@ -58,8 +58,8 @@
 
 ### **Will Messages identifiziert:**
 - **auto-F6DFC829 (192.168.0.105):** `fts/v1/ff/5iO4/connection` (212 bytes, q1, r1)
-- **auto-B9109AD9 (192.168.0.103):** `module/v1/ff/NodeRed/SVR4H73275/connection` (208 bytes, q1, r1)
-- **auto-9BD9E2A9 (192.168.0.104):** `module/v1/ff/NodeRed/SVR4H76530/connection` (184 bytes, q1, r1)
+- **auto-B9109AD9 (192.168.0.103):** `module/v1/ff/NodeRed/SVR4H76530/connection` (208 bytes, q1, r1)
+- **auto-9BD9E2A9 (192.168.0.104):** `module/v1/ff/NodeRed/SVR4H73275/connection` (184 bytes, q1, r1)
 - **nodered_abe9e421b6fe3efd (172.18.0.4):** Will message specified (38 bytes, q1, r1)
 - **nodered_94dca81c69366ec4 (172.18.0.4):** Will message specified (38 bytes, q1, r1)
 - **mqttjs_8e5c7d5a, auto-AC941349:** Keine Will Messages
