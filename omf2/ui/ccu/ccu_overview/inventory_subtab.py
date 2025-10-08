@@ -16,7 +16,7 @@ try:
     TEMPLATES_AVAILABLE = True
 except ImportError as e:
     TEMPLATES_AVAILABLE = False
-    logger.debug(f"Templates not available: {e}")
+    # logger.debug(f"Templates not available: {e}")
 
 logger = get_logger(__name__)
 
@@ -62,11 +62,11 @@ def render_inventory_subtab(ccu_gateway: CcuGateway, registry_manager):
     """
     logger.info("🏬 Rendering Inventory Subtab")
     
-    st.subheader("🏬 Lagerbestand - HBW Übersicht")
+    st.subheader(f"{UISymbols.get_functional_icon('inventory')} Lagerbestand - HBW Übersicht")
     
     # Gateway verfügbar?
     if not ccu_gateway:
-        st.error("❌ CCU Gateway nicht verfügbar")
+        st.error(f"{UISymbols.get_status_icon('error')} CCU Gateway nicht verfügbar")
         return
     
     try:
@@ -86,7 +86,7 @@ def render_inventory_subtab(ccu_gateway: CcuGateway, registry_manager):
                 "C1": None, "C2": None, "C3": None
             }
             available = {"BLUE": 0, "WHITE": 0, "RED": 0}
-            st.info("💡 Warte auf Lagerbestand-Daten via MQTT...")
+            st.info(f"{UISymbols.get_status_icon('info')} Warte auf Lagerbestand-Daten via MQTT...")
         
         # 3x3 Grid Layout
         st.markdown("**Lagerbestand (A1-C3):**")
@@ -120,16 +120,16 @@ def render_inventory_subtab(ccu_gateway: CcuGateway, registry_manager):
         
         # Verfügbare Werkstücke anzeigen (Summary)
         st.markdown("---")
-        st.markdown("**📊 Verfügbare Werkstücke:**")
+        st.markdown(f"**{UISymbols.get_functional_icon('dashboard')} Verfügbare Werkstücke:**")
         
         col1, col2, col3 = st.columns(3)
         with col1:
-            st.metric("🔵 BLUE", available.get("BLUE", 0))
+            st.metric(f"{UISymbols.get_functional_icon('workpiece_blue')} BLUE", available.get("BLUE", 0))
         with col2:
-            st.metric("⚪ WHITE", available.get("WHITE", 0))
+            st.metric(f"{UISymbols.get_functional_icon('workpiece_white')} WHITE", available.get("WHITE", 0))
         with col3:
-            st.metric("🔴 RED", available.get("RED", 0))
+            st.metric(f"{UISymbols.get_functional_icon('workpiece_red')} RED", available.get("RED", 0))
         
     except Exception as e:
-        logger.error(f"❌ Error rendering inventory: {e}")
-        st.error(f"❌ Fehler beim Laden des Lagerbestands: {e}")
+        logger.error(f"{UISymbols.get_status_icon('error')} Error rendering inventory: {e}")
+        st.error(f"{UISymbols.get_status_icon('error')} Fehler beim Laden des Lagerbestands: {e}")

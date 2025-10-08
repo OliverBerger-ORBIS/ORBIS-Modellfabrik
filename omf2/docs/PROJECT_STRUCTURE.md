@@ -1,8 +1,9 @@
 # OMF2 Project Structure
 
 **Status: VOLLSTÄNDIG DOKUMENTIERT** ✅  
-**Datum: 2025-01-07**  
-**Architektur: Drei-Schichten-Architektur mit Connection Loop Prevention**
+**Datum: 2025-10-08**  
+**Architektur: Drei-Schichten-Architektur mit Connection Loop Prevention**  
+**CCU Overview Tab: KOMPLETT IMPLEMENTIERT** ✅
 
 ## 🎯 Übersicht
 
@@ -57,10 +58,11 @@ omf2/
 │
 ├── ccu/                            # 🏭 CCU DOMAIN
 │   ├── ccu_mqtt_client.py          # MQTT Client (Connection Loop Prevention)
-│   ├── ccu_gateway.py              # Gateway (Validation & Routing)
-│   ├── config_loader.py            # CCU Config Loader (Domain-specific)
+│   ├── ccu_gateway.py              # Gateway (Validation & Routing + Order Management)
+│   ├── config_loader.py            # CCU Config Loader (Domain-specific JSON configs)
 │   ├── sensor_manager.py           # Business Manager (Sensor-Daten)
-│   └── module_manager.py           # Business Manager (Module-Daten)
+│   ├── module_manager.py           # Business Manager (Module-Daten)
+│   └── order_manager.py            # Business Manager (Inventory & Order Management) ✅
 │
 ├── nodered/                        # 🔄 NODE-RED DOMAIN
 │   ├── nodered_gateway.py          # Gateway (Validation & Routing)
@@ -89,6 +91,13 @@ omf2/
 │   ├── ccu/                        # CCU UI Components
 │   │   ├── ccu_dashboard.py        # CCU Dashboard
 │   │   ├── ccu_message_monitor/    # CCU Message Monitor
+│   │   ├── ccu_overview/           # CCU Overview Tab ✅ KOMPLETT
+│   │   │   ├── ccu_overview_tab.py          # Main Tab (5 Subtabs)
+│   │   │   ├── customer_order_subtab.py     # Customer Orders (BLUE→WHITE→RED, UISymbols, DRY)
+│   │   │   ├── purchase_order_subtab.py     # Purchase Orders (Raw Material, Left-aligned)
+│   │   │   ├── inventory_subtab.py          # Inventory (3x3 Grid A1-C3, Bucket Display)
+│   │   │   ├── product_catalog_subtab.py    # Product Workflows (BLUE, WHITE, RED)
+│   │   │   └── sensor_data_subtab.py        # Sensor Data Display (Temp, Pressure, Status)
 │   │   ├── ccu_configuration/      # CCU Configuration UI
 │   │   │   ├── ccu_configuration_tab.py
 │   │   │   ├── ccu_parameter_configuration_subtab.py
@@ -102,8 +111,11 @@ omf2/
 │   ├── nodered/                    # Node-RED UI Components
 │   │   └── nodered_dashboard.py    # Node-RED Dashboard
 │   └── common/                     # Shared UI Components
-│       ├── symbols.py              # UI Symbols
+│       ├── symbols.py              # UI Symbols (UISymbols)
 │       └── ui_refresh.py           # UI Refresh Pattern
+│
+├── assets/                         # 🎨 UI ASSETS
+│   └── html_templates.py           # HTML Templates (Bucket, Workpiece Box) ✅
 │
 ├── registry/                       # 📋 REGISTRY V2 (Single Source of Truth)
 │   ├── topics/                     # Topic-Definitionen

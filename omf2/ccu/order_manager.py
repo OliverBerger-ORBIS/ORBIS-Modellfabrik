@@ -178,12 +178,13 @@ class OrderManager:
             return self.last_update_timestamp.strftime("%d.%m.%Y %H:%M:%S")
         return "Nie"
 
-    def send_customer_order(self, workpiece_type: str) -> bool:
+    def send_customer_order(self, workpiece_type: str, gateway=None) -> bool:
         """
         Sendet eine Kundenauftrag-Bestellung
         
         Args:
             workpiece_type: RED, BLUE, oder WHITE
+            gateway: Optional Gateway für MQTT-Versand
             
         Returns:
             True wenn erfolgreich, False bei Fehler
@@ -193,27 +194,41 @@ class OrderManager:
                 logger.error(f"❌ Invalid workpiece type: {workpiece_type}")
                 return False
             
-            # TODO: Implementiere MQTT-Versand über Gateway
-            # order_payload = {
-            #     "type": workpiece_type,
-            #     "timestamp": datetime.now(timezone.utc).isoformat(),
-            #     "orderType": "PRODUCTION"
-            # }
-            # gateway.publish("ccu/order/request", order_payload)
+            # MQTT-Versand über Gateway (falls verfügbar)
+            if gateway and hasattr(gateway, 'publish_message'):
+                customer_order_payload = {
+                    "type": workpiece_type,
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
+                    "orderType": "PRODUCTION",
+                    "workpieceType": workpiece_type
+                }
+                
+                # TODO: Topic aus Registry laden
+                topic = "ccu/order/request"  # Placeholder
+                
+                success = gateway.publish_message(topic, customer_order_payload)
+                if success:
+                    logger.info(f"📋 Customer order sent for {workpiece_type} via MQTT")
+                else:
+                    logger.warning(f"⚠️ Failed to send customer order for {workpiece_type} via MQTT")
+                    return False
+            else:
+                # Fallback: Nur Logging (für UI-Test)
+                logger.info(f"📋 Customer order logged for {workpiece_type} (no gateway available)")
             
-            logger.info(f"📋 Customer order sent for {workpiece_type}")
             return True
             
         except Exception as e:
             logger.error(f"❌ Error sending customer order for {workpiece_type}: {e}")
             return False
 
-    def send_raw_material_order(self, workpiece_type: str) -> bool:
+    def send_raw_material_order(self, workpiece_type: str, gateway=None) -> bool:
         """
         Sendet eine Rohmaterial-Bestellung
         
         Args:
             workpiece_type: RED, BLUE, oder WHITE
+            gateway: Optional Gateway für MQTT-Versand
             
         Returns:
             True wenn erfolgreich, False bei Fehler
@@ -223,15 +238,28 @@ class OrderManager:
                 logger.error(f"❌ Invalid workpiece type: {workpiece_type}")
                 return False
             
-            # TODO: Implementiere MQTT-Versand über Gateway
-            # raw_material_payload = {
-            #     "type": workpiece_type,
-            #     "timestamp": datetime.now(timezone.utc).isoformat(),
-            #     "orderType": "RAW_MATERIAL"
-            # }
-            # gateway.publish("ccu/order/raw_material", raw_material_payload)
+            # MQTT-Versand über Gateway (falls verfügbar)
+            if gateway and hasattr(gateway, 'publish_message'):
+                raw_material_payload = {
+                    "type": workpiece_type,
+                    "timestamp": datetime.now(timezone.utc).isoformat(),
+                    "orderType": "RAW_MATERIAL",
+                    "workpieceType": workpiece_type
+                }
+                
+                # TODO: Topic aus Registry laden
+                topic = "ccu/order/raw_material"  # Placeholder
+                
+                success = gateway.publish_message(topic, raw_material_payload)
+                if success:
+                    logger.info(f"📦 Raw material order sent for {workpiece_type} via MQTT")
+                else:
+                    logger.warning(f"⚠️ Failed to send raw material order for {workpiece_type} via MQTT")
+                    return False
+            else:
+                # Fallback: Nur Logging (für UI-Test)
+                logger.info(f"📦 Raw material order logged for {workpiece_type} (no gateway available)")
             
-            logger.info(f"📦 Raw material order sent for {workpiece_type}")
             return True
             
         except Exception as e:

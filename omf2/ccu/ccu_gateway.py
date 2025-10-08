@@ -248,8 +248,8 @@ class CcuGateway:
                 logger.warning("⚠️ No MQTT client available")
                 return False
             
-            # MQTT-Client publish_message nutzen (mit QoS und Retain)
-            success = self.mqtt_client.publish_message(
+            # MQTT-Client publish nutzen (mit QoS und Retain)
+            success = self.mqtt_client.publish(
                 topic=topic,
                 message=message,
                 qos=qos,
