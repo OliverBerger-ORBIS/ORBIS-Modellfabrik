@@ -41,7 +41,7 @@ from omf2.factory.gateway_factory import get_gateway_factory
 from omf2.ui.main_dashboard import MainDashboard
 from omf2.ui.utils.ui_refresh import request_refresh, consume_refresh
 
-# Configure logging
+# Configure logging - File-Handler NACH RingBuffer setzen
 from omf2.common.logger import setup_file_logging
 log_dir = setup_file_logging()
 ensure_ringbufferhandler_attached()

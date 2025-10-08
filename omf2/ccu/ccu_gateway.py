@@ -11,6 +11,7 @@ from omf2.common.message_manager import get_ccu_message_manager
 from omf2.common.topic_manager import get_ccu_topic_manager
 from omf2.common.logger import get_logger
 from omf2.ccu.order_manager import get_order_manager
+from omf2.ccu.production_order_manager import get_production_order_manager
 
 logger = get_logger("omf2.ccu.ccu_gateway")
 
@@ -62,15 +63,28 @@ class CcuGateway:
             'ccu/pairing/state'    # CCU Pairing State (für globale Status-Updates)
         ]
 
-        # Order Topics: Set-basiertes Lookup für Order Manager
+        # Order Topics: Set-basiertes Lookup für Order Manager (Inventory)
         self.order_topics = {
             '/j1/txt/1/f/i/stock'       # HBW Lager-info
+        }
+        
+        # Production Order Topics: Set-basiertes Lookup für Production Order Manager
+        self.production_order_topics = {
+            'ccu/order/request',        # Order Request
+            'ccu/order/active',         # Active Orders
+            'ccu/order/completed',      # Completed Orders
+            'ccu/order/response',       # CCU Bestätigung für Production Orders
+            'fts/v1/ff/5iO4/state',     # FTS Transport-Updates für Production Orders
+            'module/v1/ff/SVR3QA0022/state',  # HBW Status für PICK/DROP
+            'module/v1/ff/SVR4H76530/state',  # AIQS Status für PICK/AIQS/DROP
+            'module/v1/ff/SVR4H73275/state'   # DPS Status für DROP
         }
         
         # Initialisiere Manager (Lazy Loading)
         self._sensor_manager = None
         self._module_manager = None
         self._order_manager = None
+        self._production_order_manager = None
         
         logger.info("🏗️ CcuGateway initialized with Topic-Routing")
     
@@ -101,6 +115,19 @@ class CcuGateway:
                 return None
         return self._order_manager
     
+    def _get_production_order_manager(self):
+        """Lazy Loading für ProductionOrderManager (Singleton) - wie Order Manager"""
+        if self._production_order_manager is None:
+            try:
+                from omf2.ccu.production_order_manager import get_production_order_manager
+                self._production_order_manager = get_production_order_manager()
+                logger.info("🏗️ Production Order Manager initialized via Gateway")
+            except Exception as e:
+                logger.error(f"❌ Failed to initialize Production Order Manager: {e}")
+                # Fallback: Return None to avoid blocking
+                return None
+        return self._production_order_manager
+    
     def on_mqtt_message(self, topic: str, message: Union[Dict, List, str], meta: Optional[Dict] = None):
         """
         Gateway-Routing mit Schema-Validierung für CCU Messages
@@ -122,13 +149,15 @@ class CcuGateway:
             # 1. Schema aus Registry holen
             schema = self.registry_manager.get_topic_schema(topic)
             
-            # 2. Schema-Validierung (wenn Schema vorhanden)
+            # 2. Schema-Validierung über MessageManager (zentrale Validierung)
             if schema:
-                logger.debug(f"📋 Found schema for topic {topic}, validating payload")
-                validated_message = self._validate_message(topic, message, schema)
-                if not validated_message:
+                logger.debug(f"📋 Found schema for topic {topic}, validating payload via MessageManager")
+                validation_result = self.message_manager.validate_message(topic, message)
+                if validation_result.get("errors"):
                     logger.warning(f"⚠️ Message rejected due to schema validation failure: {topic}")
+                    logger.warning(f"   Validation errors: {validation_result['errors']}")
                     return False  # Validierung fehlgeschlagen
+                validated_message = message  # Message ist validiert
             else:
                 validated_message = message
                 logger.debug(f"📋 No schema for topic {topic}, skipping validation")
@@ -140,46 +169,6 @@ class CcuGateway:
         except Exception as e:
             logger.error(f"❌ CCU Gateway processing failed for topic {topic}: {e}")
             return False
-    
-    def _validate_message(self, topic: str, message: Union[Dict, List, str], schema: Dict) -> Optional[Union[Dict, List, str]]:
-        """
-        Validiert Message gegen Schema
-        
-        Args:
-            topic: MQTT Topic
-            message: Message-Daten
-            schema: JSON-Schema
-        
-        Returns:
-            Validierte Message oder None bei Fehler
-        """
-        try:
-            import jsonschema
-            
-            # Schema-Validierung starten
-            logger.debug(f"🔍 Validating schema for topic: {topic}")
-            
-            jsonschema.validate(instance=message, schema=schema)
-            
-            # Erfolgreiche Validierung
-            logger.debug(f"✅ Schema validation successful for {topic}")
-            return message
-            
-        except ImportError:
-            logger.warning(f"⚠️ jsonschema library not available, skipping validation for {topic}")
-            return message
-            
-        except jsonschema.ValidationError as e:
-            # Schema-Validierung fehlgeschlagen - Detailliertes Logging für Troubleshooting
-            logger.warning(f"❌ Schema validation failed for {topic}: {e.message}")
-            logger.warning(f"   Schema: {schema}")
-            logger.warning(f"   Payload: {str(message)[:200]}...")  # Erste 200 Zeichen des Payloads
-            logger.warning(f"   → Troubleshooting: Prüfe Registry-Topic-Schema Beziehung, Schema-Flexibilität oder MQTT-Sender")
-            return None
-            
-        except Exception as e:
-            logger.error(f"❌ Validation error for {topic}: {e}")
-            return None
     
     def _route_ccu_message(self, topic: str, message: Union[Dict, List, str], meta: Optional[Dict] = None) -> bool:
         """
@@ -220,6 +209,29 @@ class CcuGateway:
                     order_manager.process_stock_message(topic, message, meta)
                 else:
                     logger.warning(f"⚠️ Order Manager not available for topic: {topic}")
+                return True
+            
+            # Routing 4: Production Order Topics (Set-basiertes Lookup)
+            if topic in self.production_order_topics:
+                logger.debug(f"📋 Routing to production_order_manager: {topic}")
+                production_order_manager = self._get_production_order_manager()
+                if production_order_manager:
+                    # Route basierend auf Topic-Typ
+                    if topic == 'ccu/order/active':
+                        production_order_manager.process_active_order_message(topic, message, meta)
+                    elif topic == 'ccu/order/completed':
+                        production_order_manager.process_completed_order_message(topic, message, meta)
+                    elif topic == 'ccu/order/request':
+                        # Request wird nur geloggt (für später)
+                        logger.info(f"📋 Order request received: {topic}")
+                    elif topic == 'fts/v1/ff/5iO4/state':
+                        production_order_manager.process_fts_state_message(topic, message, meta)
+                    elif topic == 'ccu/order/response':
+                        production_order_manager.process_ccu_response_message(topic, message, meta)
+                    elif topic in ['module/v1/ff/SVR3QA0022/state', 'module/v1/ff/SVR4H76530/state', 'module/v1/ff/SVR4H73275/state']:
+                        production_order_manager.process_module_state_message(topic, message, meta)
+                else:
+                    logger.warning(f"⚠️ Production Order Manager not available for topic: {topic}")
                 return True
             
             # Unbekanntes Topic: Nur Debug-Logging

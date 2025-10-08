@@ -4,6 +4,7 @@ Provides structured logging with consistent formatting and centralized log buffe
 """
 
 import logging
+import logging.handlers
 import sys
 import threading
 from pathlib import Path
@@ -70,16 +71,22 @@ def setup_file_logging(log_dir: Optional[Path] = None) -> Path:
     
     log_dir.mkdir(exist_ok=True)
     
-    # Configure root logger for file output
+    # Configure root logger for file output with rotation
     log_file = log_dir / "omf2.log"
     
-    file_handler = logging.FileHandler(log_file)
+    # RotatingFileHandler: max 10MB per file, keep 5 files (50MB total)
+    file_handler = logging.handlers.RotatingFileHandler(
+        log_file, 
+        maxBytes=10*1024*1024,  # 10MB
+        backupCount=5,          # Keep 5 backup files
+        encoding='utf-8'
+    )
     file_formatter = logging.Formatter(
         '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
     )
     file_handler.setFormatter(file_formatter)
     
-    root_logger = logging.getLogger("omf2")
+    root_logger = logging.getLogger()  # ROOT logger, nicht "omf2"!
     root_logger.addHandler(file_handler)
     root_logger.setLevel(logging.INFO)
     

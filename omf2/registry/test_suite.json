@@ -17,6 +17,7 @@
   "ccu/order/active": {
     "random": "[{\"orderType\":\"STORAGE\",\"type\":\"BLUE\",\"timestamp\":\"2025-10-01T09:36:23.886Z\",\"orderId\":\"5e75ef1f-6091-4ec0-b71c-4d54968593f9\",\"productionSteps\":[{\"id\":\"897998c8-a417-44b6-9e7d-3e0b21ceb9e7\",\"type\":\"NAVIGATION\",\"state\":\"FINISHED\",\"source\":\"START\",\"target\":\"DPS\",\"startedAt\":\"2025-10-01T09:36:24.023Z\",\"stoppedAt\":\"2025-10-01T09:36:25.528Z\"},{\"id\":\"469d2509-ce19-45cd-b5ba-29b845d2b8fe\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"897998c8-a417-44b6-9e7d-3e0b21ceb9e7\",\"state\":\"IN_PROGRESS\",\"command\":\"DROP\",\"moduleType\":\"DPS\",\"startedAt\":\"2025-10-01T09:36:25.531Z\",\"serialNumber\":\"SVR4H73275\"},{\"id\":\"338a3257-e684-4179-82d3-4ed7d68a315b\",\"type\":\"NAVIGATION\",\"state\":\"ENQUEUED\",\"source\":\"DPS\",\"target\":\"HBW\",\"dependentActionId\":\"469d2509-ce19-45cd-b5ba-29b845d2b8fe\"},{\"id\":\"90b73246-bd52-47e4-b602-ab2c984cdfaf\",\"type\":\"MANUFACTURE\",\"dependentActionId\":\"338a3257-e684-4179-82d3-4ed7d68a315b\",\"state\":\"ENQUEUED\",\"command\":\"PICK\",\"moduleType\":\"HBW\"}],\"receivedAt\":\"2025-10-01T09:36:23.992Z\",\"state\":\"IN_PROGRESS\",\"workpieceId\":\"042c88ca341291\",\"startedAt\":\"2025-10-01T09:36:23.992Z\"}]",
     "latest": "[]",
+    "empty": [],
     "template": {}
   },
   "module/v1/ff/NodeRed/SVR4H73275/state": {

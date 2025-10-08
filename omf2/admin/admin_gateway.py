@@ -260,13 +260,15 @@ class AdminGateway:
             # 1. Schema aus Registry holen
             schema = self.registry_manager.get_topic_schema(topic)
             
-            # 2. Schema-Validierung (wenn Schema vorhanden)
+            # 2. Schema-Validierung über MessageManager (zentrale Validierung)
             if schema:
-                logger.debug(f"📋 Found schema for topic {topic}, validating payload")
-                validated_message = self._validate_message(topic, message, schema)
-                if not validated_message:
+                logger.debug(f"📋 Found schema for topic {topic}, validating payload via MessageManager")
+                validation_result = self.message_manager.validate_message(topic, message)
+                if validation_result.get("errors"):
                     logger.warning(f"⚠️ Message rejected due to schema validation failure: {topic}")
+                    logger.warning(f"   Validation errors: {validation_result['errors']}")
                     return False  # Validierung fehlgeschlagen
+                validated_message = message  # Message ist validiert
             else:
                 validated_message = message
                 logger.debug(f"📋 No schema found for topic {topic}, skipping validation")
@@ -279,45 +281,6 @@ class AdminGateway:
             logger.error(f"❌ Admin Gateway processing failed for topic {topic}: {e}")
             return False
     
-    def _validate_message(self, topic: str, message: Union[Dict, List, str], schema: Dict) -> Optional[Union[Dict, List, str]]:
-        """
-        Validiert Message gegen Schema
-        
-        Args:
-            topic: MQTT Topic
-            message: Message-Daten
-            schema: JSON-Schema
-            
-        Returns:
-            Validierte Message oder None bei Fehler
-        """
-        try:
-            import jsonschema
-            
-            # Schema-Validierung starten
-            logger.debug(f"🔍 Validating schema for topic: {topic}")
-            
-            jsonschema.validate(instance=message, schema=schema)
-            
-            # Erfolgreiche Validierung
-            logger.debug(f"✅ Schema validation successful for {topic}")
-            return message
-            
-        except ImportError:
-            logger.warning(f"⚠️ jsonschema library not available, skipping validation for {topic}")
-            return message
-            
-        except jsonschema.ValidationError as e:
-            # Schema-Validierung fehlgeschlagen - Detailliertes Logging für Troubleshooting
-            logger.warning(f"❌ Schema validation failed for {topic}: {e.message}")
-            logger.warning(f"   Schema: {schema}")
-            logger.warning(f"   Payload: {str(message)[:200]}...")  # Erste 200 Zeichen des Payloads
-            logger.warning(f"   → Troubleshooting: Prüfe Registry-Topic-Schema Beziehung, Schema-Flexibilität oder MQTT-Sender")
-            return None
-            
-        except Exception as e:
-            logger.error(f"❌ Validation error for {topic}: {e}")
-            return None
     
     def _route_admin_message(self, topic: str, message: Union[Dict, List, str], meta: Optional[Dict] = None) -> bool:
         """

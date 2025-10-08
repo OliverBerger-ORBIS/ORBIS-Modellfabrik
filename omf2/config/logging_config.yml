@@ -23,14 +23,14 @@ mqtt_clients:
   admin_mqtt_client:
     level: INFO  # INFO for Admin MQTT Client
   ccu_mqtt_client:
-    level: INFO  # DEBUG for CCU MQTT Client
+    level: DEBUG  # DEBUG for CCU MQTT Client (zeigt Payload)
 
 # 🚪 Gateways (Architecture Layer 2)
 gateways:
   admin_gateway:
     level: INFO  # INFO for Admin Gateway
   ccu_gateway:
-    level: INFO  # DEBUG for CCU Gateway
+    level: DEBUG  # DEBUG for CCU Gateway (zeigt Routing)
 
 # 🏢 Business Managers (Architecture Layer 3)
 business_managers:
@@ -40,3 +40,5 @@ business_managers:
     level: DEBUG  # DEBUG for module status debugging
   order_manager:
     level: DEBUG  # DEBUG for order management debugging
+  omf2.ccu.production_order_manager:
+    level: DEBUG  # DEBUG for production order debugging (zeigt Payload)

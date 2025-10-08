@@ -62,7 +62,8 @@ omf2/
 │   ├── config_loader.py            # CCU Config Loader (Domain-specific JSON configs)
 │   ├── sensor_manager.py           # Business Manager (Sensor-Daten)
 │   ├── module_manager.py           # Business Manager (Module-Daten)
-│   └── order_manager.py            # Business Manager (Inventory & Order Management) ✅
+│   ├── order_manager.py            # Business Manager (Inventory & Customer Orders) ✅
+│   └── production_order_manager.py # Business Manager (Production & Storage Orders) ✅ NEW!
 │
 ├── nodered/                        # 🔄 NODE-RED DOMAIN
 │   ├── nodered_gateway.py          # Gateway (Validation & Routing)
@@ -98,6 +99,10 @@ omf2/
 │   │   │   ├── inventory_subtab.py          # Inventory (3x3 Grid A1-C3, Bucket Display)
 │   │   │   ├── product_catalog_subtab.py    # Product Workflows (BLUE, WHITE, RED)
 │   │   │   └── sensor_data_subtab.py        # Sensor Data Display (Temp, Pressure, Status)
+│   │   ├── ccu_orders/             # CCU Orders Tab ✅ KOMPLETT REFACTORED
+│   │   │   ├── ccu_orders_tab.py            # Main Tab (Wrapper mit 2 Subtabs)
+│   │   │   ├── production_orders_subtab.py  # Production Orders (Active + Completed)
+│   │   │   └── storage_orders_subtab.py     # Storage Orders (Active + Completed)
 │   │   ├── ccu_configuration/      # CCU Configuration UI
 │   │   │   ├── ccu_configuration_tab.py
 │   │   │   ├── ccu_parameter_configuration_subtab.py
@@ -316,8 +321,26 @@ streamlit run omf2/omf.py
 
 ---
 
-**Letzte Aktualisierung:** 2025-10-06  
+## 🆕 Neue Features (2025-10-08)
+
+### **Production Order Manager:**
+- ✅ **Order-Lifecycle Management** (active → completed)
+- ✅ **STORAGE vs PRODUCTION** Unterscheidung
+- ✅ **Order-ID-basierte Zuordnung** (Dict statt Array)
+- ✅ **Kompletter Produktionsplan** mit MQTT-Status-Overlay
+- ✅ **Zentrale Validierung** über MessageManager
+- ✅ **Log-Rotation** (max 10MB pro Datei, 5 Backups)
+
+### **UI Refactoring:**
+- ✅ **CCU Orders Tab** mit zwei Subtabs (Production vs Storage)
+- ✅ **Completed Orders Anzeige** (ausgegraut unterhalb Active)
+- ✅ **Unterschiedliche Darstellung** für STORAGE (4 Steps) vs PRODUCTION (11+ Steps)
+
+---
+
+**Letzte Aktualisierung:** 2025-10-08  
 **Status:** VOLLSTÄNDIG IMPLEMENTIERT ✅  
 **Architektur:** DREI-SCHICHTEN-ARCHITEKTUR ✅  
 **Tests:** 55 ERFOLGREICHE TESTS ✅  
-**Dokumentation:** VOLLSTÄNDIG ✅
+**Dokumentation:** VOLLSTÄNDIG ✅  
+**Production Order Manager:** ✅ VOLLSTÄNDIG ✅

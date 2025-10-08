@@ -1,20 +1,29 @@
 # ✅ IMPLEMENTIERTE ARCHITEKTUR: Gekapseltes MQTT, Registry Manager & Gateway für Streamlit-Apps
 
 **Status: VOLLSTÄNDIG IMPLEMENTIERT** ✅  
-**Datum: 2025-10-05**  
+**Datum: 2025-10-08**  
 **Tests: 55 Tests erfolgreich** ✅  
 **Registry-Migration: ABGESCHLOSSEN** ✅  
 **Architektur-Cleanup: ABGESCHLOSSEN** ✅  
 **Schema-Validation: SYSTEMATISCH KORRIGIERT** ✅  
 **Gateway-Routing: MIT SCHEMA-VALIDIERUNG IMPLEMENTIERT** ✅  
-**Meta-Parameter: VOLLSTÄNDIG INTEGRIERT** ✅
+**Meta-Parameter: VOLLSTÄNDIG INTEGRIERT** ✅  
+**Production Order Manager: VOLLSTÄNDIG IMPLEMENTIERT** ✅ NEW!  
+**Log-Rotation: IMPLEMENTIERT** ✅ NEW!
 
 **Ziel:**  
 Weggekapselte, robuste Architektur für MQTT-Kommunikation, Message-Templates und UI-Refresh in einer Streamlit-App, sodass UI- und Business-Logik möglichst einfach bleiben und typische Fehlerquellen (Threading, Race-Conditions, Deadlocks, inkonsistenter State) vermieden werden.
 
 **✅ ERREICHT:** Alle Ziele wurden erfolgreich implementiert und getestet.
 
-**🔧 AKTUELLE ERKENNTNISSE (2025-10-06):**
+**🔧 AKTUELLE ERKENNTNISSE (2025-10-08):**
+- **Production Order Manager**: Order-Lifecycle Management (active → completed) implementiert
+- **STORAGE vs PRODUCTION**: Unterschiedliche Workflows korrekt unterschieden
+- **Order-ID-basierte Zuordnung**: Dict statt Array für effiziente Lookups
+- **Log-Rotation**: RotatingFileHandler (max 10MB, 5 Backups) verhindert 800MB Log-Dateien
+- **Zentrale Validierung**: MessageManager übernimmt alle Schema-Validierung (keine Duplikate)
+- **UI Refactoring**: CCU Orders Tab mit zwei Subtabs (Production vs Storage)
+- **Completed Orders**: Werden aus active_orders entfernt und separat angezeigt (ausgegraut)
 - **Schema-Validation Problem gelöst**: Falsche Schema-Zuordnungen in `txt.yml` korrigiert
 - **Message Processing Pattern**: Registry Manager für Payload-Validierung statt MessageManager
 - **Topic-Schema-Mapping**: Jeder Sensor-Typ hat jetzt sein eigenes Schema (BME680, LDR, CAM)

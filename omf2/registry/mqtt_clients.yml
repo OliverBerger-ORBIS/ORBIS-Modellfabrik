@@ -88,15 +88,28 @@ mqtt_clients:
       - "module/v1/ff/SVR4H76530/state" # Availability Status AIQS!!
       - "module/v1/ff/SVR4H76530/connection" # Modul-Connection-Status AIQS!!
       - "module/v1/ff/SVR4H76530/factsheet"
-      # TXT Function Output Topics
+      # TXT Function Input Topics für Order-Manager
       - "/j1/txt/1/f/i/stock" #Kandidat SUB für Inventory
-      # TXT Input Topics
+      # TXT Input Topics für Sensor-Manager
       - "/j1/txt/1/i/bme680" # BME680 Sensor-Daten AIQS
       - "/j1/txt/1/i/cam" # Camera-Daten Sensor
       - "/j1/txt/1/i/ldr" # LDR Sensor-Daten TXT-AIQS
+      # CCU Order-topics für Production-Order-Manager
+      - "ccu/order/request"
+      - "ccu/order/completed"
+      - "ccu/order/active"
+      - "ccu/order/response" # CCU Bestätigung für Production Orders
+      # FTS Transport-Updates für Production Orders
+      - "fts/v1/ff/5iO4/state"
+      # Module Messages für Production Orders (HBW, AIQS, DPS)
+      - "module/v1/ff/SVR3QA0022/state" # HBW Status für PICK/DROP
+      - "module/v1/ff/SVR4H76530/state" # AIQS Status für PICK/AIQS/DROP
+      - "module/v1/ff/SVR4H73275/state" # DPS Status für DROP
+
     
     # Business-Function-spezifische Topic-Listen (Untermenge der subscribed_topics)
     # wichtig für onMessage Methoden zur Weiterleitung von Gateway an Business-Functions
+    # das Gateway muss diese topics in der onMessage Methoden verarbeiten und an die Business-Functions weiterleiten
     business_functions:
       sensor_manager:
         subscribed_topics:
@@ -133,6 +146,17 @@ mqtt_clients:
       order_manager:
         subscribed_topics:
           - "/j1/txt/1/f/i/stock" #Kandidat SUB für Inventory
+
+      production_order_manager:
+        subscribed_topics:
+          - "ccu/order/request"
+          - "ccu/order/completed"
+          - "ccu/order/active"
+          - "ccu/order/response" # CCU Bestätigung für Production Orders
+          - "fts/v1/ff/5iO4/state" # FTS Transport-Updates für Production Orders
+          - "module/v1/ff/SVR3QA0022/state" # HBW Status für PICK/DROP
+          - "module/v1/ff/SVR4H76530/state" # AIQS Status für PICK/AIQS/DROP
+          - "module/v1/ff/SVR4H73275/state" # DPS Status für DROP
 
 
   # Node-RED Publisher (Normalisiert alle States)
