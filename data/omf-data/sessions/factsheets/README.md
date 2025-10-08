@@ -1,5 +1,14 @@
 # 📋 Factsheet-Verzeichnis
 
+> ⚠️ **VERALTET** - Dieses Verzeichnis wird durch die neue Struktur ersetzt!
+> 
+> **Neue Struktur ab Oktober 2025:**
+> - **Preload-Factsheets:** → `data/omf-data/test_topics/preloads/`
+> - **Test-Topics:** → `data/omf-data/test_topics/`
+> - **Dokumentation:** → [Test-Topics README](../../test_topics/README.md)
+
+---
+
 Dieses Verzeichnis enthält JSON-Dateien mit Factsheet-Messages, die vor dem Session-Replay an den MQTT-Broker gesendet werden können.
 
 ## 🎯 Zweck

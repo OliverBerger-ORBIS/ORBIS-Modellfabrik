@@ -32,19 +32,59 @@ graph LR
 - **Formate:** SQLite (.db) Dateien
 - **Auswahl:** Dropdown mit gefilterten Sessions
 
-### 2. **Replay-Kontrollen**
+### 2. **Test-Topic Management** 🆕
+
+Die Replay Station bietet zwei Modi für das Senden von Test-Topics:
+
+#### **🎯 Individuelle Test-Topics**
+- **Verzeichnis:** `data/omf-data/test_topics/*.json`
+- **Auswahl:** Multiselect für einzelne oder mehrere Test-Topics
+- **Verwendung:** Integrationstests einzelner Topics
+- **Button:** "📤 Ausgewählte jetzt senden"
+
+**Anwendungsfall:**
+- Testen verschiedener Payload-Varianten
+- Reproduzieren spezifischer Szenarien
+- Debugging von Message-Handling
+
+#### **🚀 Automatischer Preload**
+- **Verzeichnis:** `data/omf-data/test_topics/preloads/*.json`
+- **Modus:** Alle Test-Topics werden automatisch gesendet
+- **Verwendung:** Setup-Messages (z.B. Factsheets) vor Session-Replay
+- **Optionen:**
+  - **Checkbox:** "Test-Topics vor Session-Replay senden" (automatisch)
+  - **Button:** "🚀 Preloads jetzt senden" (manuell)
+
+**Anwendungsfall:**
+- Module als "konfiguriert" markieren
+- Initiale System-States setzen
+- Reproduzierbare Test-Umgebungen
+
+**Dateiformat:**
+```json
+{
+  "topic": "module/v1/ff/SVR3QA0022/factsheet",
+  "payload": "{...}",
+  "qos": 0,
+  "retain": false
+}
+```
+
+> 📖 Siehe [Test-Topics README](../../../../data/omf-data/test_topics/README.md) für Details
+
+### 3. **Replay-Kontrollen**
 - **▶️ Play:** Session starten/fortsetzen
 - **⏸️ Pause:** Session pausieren
 - **⏹️ Stop:** Session stoppen
 - **🔄 Reset:** Session zurücksetzen
 
-### 3. **Geschwindigkeits-Kontrolle**
+### 4. **Geschwindigkeits-Kontrolle**
 - **1x:** Original-Geschwindigkeit
 - **2x:** Doppelte Geschwindigkeit
 - **5x:** Fünffache Geschwindigkeit
 - **10x:** Zehnfache Geschwindigkeit
 
-### 4. **Fortschritts-Anzeige**
+### 5. **Fortschritts-Anzeige**
 - **Progress Bar:** Visueller Fortschrittsbalken
 - **Message Count:** Aktuelle/Gesamt Nachrichten
 - **Status:** Aktiv/Pausiert/Beendet

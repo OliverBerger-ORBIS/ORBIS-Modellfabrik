@@ -1,0 +1,9 @@
+{
+  "topic": "ccu/order/completed",
+  "payload": "[]",
+  "qos": 0,
+  "retain": true,
+  "timestamp": "2025-10-01T13:12:59.907584",
+  "sequence": 7,
+  "type": "interesting"
+}

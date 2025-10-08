@@ -1,0 +1,153 @@
+{
+  "topic": "module/v1/ff/SVR4H76530/factsheet",
+  "payload": {
+    "headerId": 1,
+    "timestamp": "2025-10-01T11:29:58.881Z",
+    "version": "1.3.0",
+    "manufacturer": "Fischertechnik",
+    "serialNumber": "SVR4H76530",
+    "typeSpecification": {
+      "seriesName": "MOD-FF22+AIQS+24V",
+      "moduleClass": "AIQS"
+    },
+    "physicalParameters": {},
+    "protocolLimits": {},
+    "protocolFeatures": {
+      "moduleActions": [
+        {
+          "actionType": "PICK",
+          "actionParameters": [
+            {
+              "parameterName": "type",
+              "parameterType": "string",
+              "parameterDescription": "Type of workpiece to pick up and process"
+            }
+          ]
+        },
+        {
+          "actionType": "DROP",
+          "actionParameters": [
+            {
+              "parameterName": "type",
+              "parameterType": "string",
+              "parameterDescription": "Type of workpiece that should be put on the FTS",
+              "isOptional": true
+            }
+          ]
+        },
+        {
+          "actionType": "CHECK_QUALITY",
+          "actionParameters": [
+            {
+              "parameterName": "type",
+              "parameterType": "string",
+              "parameterDescription": "Type of workpiece that should checked",
+              "isOptional": true
+            }
+          ]
+        },
+        {
+          "actionType": "startCalibration",
+          "actionScopes": [
+            "INSTANT"
+          ]
+        },
+        {
+          "actionType": "stopCalibration",
+          "actionScopes": [
+            "INSTANT"
+          ]
+        },
+        {
+          "actionType": "setCalibrationValues",
+          "actionScopes": [
+            "INSTANT"
+          ],
+          "actionParameters": [
+            {
+              "parameterName": "references",
+              "parameterType": "array",
+              "parameterDescription": "Array of ReferenceValues objects with referenceKey and referenceValue"
+            }
+          ]
+        },
+        {
+          "actionType": "storeCalibrationValues",
+          "actionScopes": [
+            "INSTANT"
+          ],
+          "actionParameters": [
+            {
+              "parameterName": "references",
+              "parameterType": "array",
+              "parameterDescription": "Array of ReferenceValues objects with referenceKey and referenceValue",
+              "isOptional": true
+            }
+          ]
+        },
+        {
+          "actionType": "selectCalibrationPosition",
+          "actionScopes": [
+            "INSTANT"
+          ],
+          "actionParameters": [
+            {
+              "parameterName": "position",
+              "parameterType": "string",
+              "parameterDescription": "Position to select"
+            }
+          ]
+        },
+        {
+          "actionType": "testCalibrationPosition",
+          "actionScopes": [
+            "INSTANT"
+          ],
+          "actionParameters": [
+            {
+              "parameterName": "position",
+              "parameterType": "string",
+              "parameterDescription": "Position to test"
+            }
+          ]
+        },
+        {
+          "actionType": "resetCalibration",
+          "actionScopes": [
+            "INSTANT"
+          ],
+          "actionParameters": [
+            {
+              "parameterName": "factory",
+              "parameterType": "boolean",
+              "parameterDescription": "Reset to factory defaults",
+              "isOptional": true
+            }
+          ]
+        }
+      ]
+    },
+    "localizationParameters": {},
+    "loadSpecification": {
+      "loadSets": [
+        {
+          "setName": "WHITES",
+          "loadType": "WHITE"
+        },
+        {
+          "setName": "REDS",
+          "loadType": "RED"
+        },
+        {
+          "setName": "BLUES",
+          "loadType": "BLUE"
+        }
+      ]
+    }
+  },
+  "qos": 0,
+  "retain": false,
+  "timestamp": "2025-10-01T13:29:58.886988",
+  "sequence": 42,
+  "type": "interesting"
+}

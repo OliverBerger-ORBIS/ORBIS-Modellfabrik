@@ -297,40 +297,69 @@ def show_replay_station():
                 # Session-Info
                 st.info(f"📁 Ausgewählte Session: {selected_session.name}")
 
-                # Factsheet-Preload Option
-                st.markdown("#### 📋 Factsheet-Preload")
+                # Test-Topic Preload & Individuelle Auswahl
+                st.markdown("#### 📋 Test-Topic Management")
+                
+                # Sektion 1: Individuelles Senden
+                st.markdown("##### 🎯 Individuelle Test-Topics")
+                test_topic_files = get_test_topic_files()
+                
+                if test_topic_files:
+                    # Multiselect für individuelle Auswahl
+                    selected_test_topics = st.multiselect(
+                        "Wähle Test-Topics zum Senden:",
+                        options=test_topic_files,
+                        format_func=lambda x: x.name,
+                        help="Wähle eine oder mehrere JSON-Dateien aus data/omf-data/test_topics/"
+                    )
+                    
+                    col1, col2 = st.columns([2, 1])
+                    with col1:
+                        if selected_test_topics:
+                            st.info(f"✅ {len(selected_test_topics)} Test-Topic(s) ausgewählt")
+                    with col2:
+                        if st.button("📤 Ausgewählte jetzt senden", key="send_selected_topics", disabled=not selected_test_topics):
+                            logger.debug(f"📤 User klickt: Ausgewählte Test-Topics senden ({len(selected_test_topics)} Dateien)")
+                            send_selected_test_topics(selected_test_topics, replay_ctrl)
+                else:
+                    st.warning("❌ Keine Test-Topic-Dateien in data/omf-data/test_topics/ gefunden")
+                
+                st.markdown("---")
+                
+                # Sektion 2: Automatischer Preload
+                st.markdown("##### 🚀 Automatischer Preload")
                 col1, col2 = st.columns([2, 1])
                 
                 with col1:
-                    send_factsheets = st.checkbox(
-                        "📋 Factsheets vor Session-Replay senden", 
+                    send_preloads = st.checkbox(
+                        "🚀 Test-Topics vor Session-Replay senden", 
                         value=True,
-                        help="Sendet alle verfügbaren Factsheet-Messages an den Broker, bevor die Session abgespielt wird"
+                        help="Sendet automatisch alle Test-Topics aus data/omf-data/test_topics/preloads/ vor dem Session-Replay"
                     )
                 
                 with col2:
-                    if st.button("📋 Factsheets jetzt senden", key="send_factsheets_now"):
-                        logger.debug("📋 User klickt: Factsheets jetzt senden")
-                        send_factsheet_preload(replay_ctrl)
+                    if st.button("🚀 Preloads jetzt senden", key="send_preloads_now"):
+                        logger.debug("🚀 User klickt: Preloads jetzt senden")
+                        send_preload_test_topics(replay_ctrl)
                 
-                # Verfügbare Factsheets anzeigen
-                factsheet_files = get_factsheet_files()
-                if factsheet_files:
-                    st.info(f"📋 {len(factsheet_files)} Factsheet-Dateien verfügbar")
-                    with st.expander("📋 Verfügbare Factsheets anzeigen"):
-                        for factsheet_file in factsheet_files[:10]:  # Erste 10 anzeigen
-                            st.text(f"• {factsheet_file.name}")
-                        if len(factsheet_files) > 10:
-                            st.text(f"... und {len(factsheet_files) - 10} weitere")
+                # Verfügbare Preload-Topics anzeigen
+                preload_files = get_preload_test_topic_files()
+                if preload_files:
+                    st.info(f"🚀 {len(preload_files)} Preload-Test-Topic(s) verfügbar")
+                    with st.expander("📋 Verfügbare Preload-Topics anzeigen"):
+                        for preload_file in preload_files[:10]:  # Erste 10 anzeigen
+                            st.text(f"• {preload_file.name}")
+                        if len(preload_files) > 10:
+                            st.text(f"... und {len(preload_files) - 10} weitere")
                 else:
-                    st.warning("❌ Keine Factsheet-Dateien gefunden")
+                    st.info("ℹ️ Keine Preload-Test-Topics in data/omf-data/test_topics/preloads/ gefunden")
 
                 # Session laden
                 if st.button("📂 Session laden"):
                     logger.debug(f"📂 User klickt: Session laden - {selected_session.name}")
-                    if send_factsheets:
-                        logger.info("📋 Factsheet-Preload vor Session-Load")
-                        send_factsheet_preload(replay_ctrl)
+                    if send_preloads:
+                        logger.info("🚀 Test-Topic Preload vor Session-Load")
+                        send_preload_test_topics(replay_ctrl)
                     load_session(selected_session, replay_ctrl)
 
                 # Replay-Kontrollen (wenn Session geladen)
@@ -455,122 +484,227 @@ def send_test_message(topic, payload):
         st.error(f"❌ Fehler beim Senden: {e}")
 
 
-def send_factsheet_preload(replay_ctrl: ReplayController):
-    """Factsheet-Messages aus JSON-Dateien laden und an Broker senden"""
+def send_selected_test_topics(selected_files: List[Path], replay_ctrl: ReplayController):
+    """Ausgewählte Test-Topic-Messages aus JSON-Dateien laden und an Broker senden"""
     try:
-        # Factsheet-Verzeichnis
-        factsheet_dir = PROJECT_ROOT / "data/omf-data/sessions/factsheets"
-        
-        if not factsheet_dir.exists():
-            st.warning(f"❌ Factsheet-Verzeichnis nicht gefunden: {factsheet_dir}")
+        if not selected_files:
+            st.warning("❌ Keine Test-Topics ausgewählt")
             return False
         
-        # JSON-Factsheet-Dateien finden
-        factsheet_files = list(factsheet_dir.glob("*.json"))
+        logger.info(f"📤 Sende {len(selected_files)} ausgewählte Test-Topic(s)...")
         
-        if not factsheet_files:
-            st.warning("❌ Keine Factsheet-JSON-Dateien gefunden")
-            return False
-        
-        logger.info(f"📋 Lade {len(factsheet_files)} Factsheet-Dateien...")
-        
-        # Temporären MQTT-Client für Factsheets erstellen
-        factsheet_client = SessionManagerMQTTClient(
+        # Temporären MQTT-Client für Test-Topics erstellen
+        test_client = SessionManagerMQTTClient(
             st.session_state.mqtt_host, 
             st.session_state.mqtt_port, 
-            "session_manager_factsheets"
+            "session_manager_test_topics"
         )
         
-        if not factsheet_client.connect():
-            st.error("❌ MQTT-Client konnte nicht für Factsheets verbinden")
+        if not test_client.connect():
+            st.error("❌ MQTT-Client konnte nicht für Test-Topics verbinden")
             return False
         
         success_count = 0
         error_count = 0
         
-        # Factsheets laden und senden
-        for factsheet_file in factsheet_files:
+        # Test-Topics laden und senden
+        for test_file in selected_files:
             try:
-                with open(factsheet_file, 'r', encoding='utf-8') as f:
-                    factsheet_data = json.load(f)
+                with open(test_file, 'r', encoding='utf-8') as f:
+                    test_data = json.load(f)
                 
-                topic = factsheet_data.get("topic")
-                payload = factsheet_data.get("payload")
-                qos = factsheet_data.get("qos", 0)
-                retain = factsheet_data.get("retain", False)
+                topic = test_data.get("topic")
+                payload = test_data.get("payload")
+                qos = test_data.get("qos", 0)
+                retain = test_data.get("retain", False)
                 
                 if topic and payload:
-                    # Payload-Aufbereitung wie normale Session-Daten (Zeile 661-663)
+                    # Payload-Aufbereitung wie normale Session-Daten
                     if isinstance(payload, (dict, list)):
                         payload = json.dumps(payload, separators=(",", ":"), ensure_ascii=False)
                     payload_b = (payload if isinstance(payload, (bytes, bytearray)) else str(payload)).encode("utf-8")
                     
-                    success = factsheet_client.publish(topic, payload_b, qos=qos, retain=retain)
+                    success = test_client.publish(topic, payload_b, qos=qos, retain=retain)
                     
                     if success:
                         success_count += 1
-                        logger.debug(f"✅ Factsheet gesendet: {topic}")
+                        logger.debug(f"✅ Test-Topic gesendet: {topic} ({test_file.name})")
                     else:
                         error_count += 1
-                        logger.warning(f"⚠️ Factsheet fehlgeschlagen: {topic}")
+                        logger.warning(f"⚠️ Test-Topic fehlgeschlagen: {topic} ({test_file.name})")
                 else:
                     error_count += 1
-                    logger.warning(f"⚠️ Ungültige Factsheet-Daten: {factsheet_file.name}")
+                    logger.warning(f"⚠️ Ungültige Test-Topic-Daten: {test_file.name}")
                     
             except Exception as e:
                 error_count += 1
-                logger.error(f"❌ Fehler beim Laden von {factsheet_file.name}: {e}")
+                logger.error(f"❌ Fehler beim Laden von {test_file.name}: {e}")
         
-        factsheet_client.disconnect()
+        test_client.disconnect()
         
         # Ergebnis anzeigen
         if success_count > 0:
-            st.success(f"✅ {success_count} Factsheets erfolgreich gesendet")
+            st.success(f"✅ {success_count} Test-Topic(s) erfolgreich gesendet")
             if error_count > 0:
-                st.warning(f"⚠️ {error_count} Factsheets fehlgeschlagen")
+                st.warning(f"⚠️ {error_count} Test-Topic(s) fehlgeschlagen")
         else:
-            st.error("❌ Keine Factsheets konnten gesendet werden")
+            st.error("❌ Keine Test-Topics konnten gesendet werden")
         
-        logger.info(f"📋 Factsheet-Preload abgeschlossen: {success_count} erfolgreich, {error_count} fehlgeschlagen")
+        logger.info(f"📤 Test-Topic-Versand abgeschlossen: {success_count} erfolgreich, {error_count} fehlgeschlagen")
         return success_count > 0
         
     except Exception as e:
-        st.error(f"❌ Fehler beim Factsheet-Preload: {e}")
-        logger.error(f"❌ Factsheet-Preload Exception: {e}")
+        st.error(f"❌ Fehler beim Test-Topic-Versand: {e}")
+        logger.error(f"❌ Test-Topic-Versand Exception: {e}")
+        return False
+
+
+def send_preload_test_topics(replay_ctrl: ReplayController):
+    """Preload Test-Topic-Messages aus JSON-Dateien laden und an Broker senden (alle aus preloads/)"""
+    try:
+        # Preload-Verzeichnis
+        preload_dir = PROJECT_ROOT / "data/omf-data/test_topics/preloads"
+        
+        if not preload_dir.exists():
+            st.warning(f"❌ Preload-Verzeichnis nicht gefunden: {preload_dir}")
+            return False
+        
+        # JSON-Preload-Dateien finden
+        preload_files = list(preload_dir.glob("*.json"))
+        
+        if not preload_files:
+            st.warning("❌ Keine Preload-JSON-Dateien in data/omf-data/test_topics/preloads/ gefunden")
+            return False
+        
+        logger.info(f"🚀 Lade {len(preload_files)} Preload-Test-Topic(s)...")
+        
+        # Temporären MQTT-Client für Preloads erstellen
+        preload_client = SessionManagerMQTTClient(
+            st.session_state.mqtt_host, 
+            st.session_state.mqtt_port, 
+            "session_manager_preloads"
+        )
+        
+        if not preload_client.connect():
+            st.error("❌ MQTT-Client konnte nicht für Preloads verbinden")
+            return False
+        
+        success_count = 0
+        error_count = 0
+        
+        # Preloads laden und senden
+        for preload_file in preload_files:
+            try:
+                with open(preload_file, 'r', encoding='utf-8') as f:
+                    preload_data = json.load(f)
+                
+                topic = preload_data.get("topic")
+                payload = preload_data.get("payload")
+                qos = preload_data.get("qos", 0)
+                retain = preload_data.get("retain", False)
+                
+                if topic and payload:
+                    # Payload-Aufbereitung wie normale Session-Daten
+                    if isinstance(payload, (dict, list)):
+                        payload = json.dumps(payload, separators=(",", ":"), ensure_ascii=False)
+                    payload_b = (payload if isinstance(payload, (bytes, bytearray)) else str(payload)).encode("utf-8")
+                    
+                    success = preload_client.publish(topic, payload_b, qos=qos, retain=retain)
+                    
+                    if success:
+                        success_count += 1
+                        logger.debug(f"✅ Preload gesendet: {topic}")
+                    else:
+                        error_count += 1
+                        logger.warning(f"⚠️ Preload fehlgeschlagen: {topic}")
+                else:
+                    error_count += 1
+                    logger.warning(f"⚠️ Ungültige Preload-Daten: {preload_file.name}")
+                    
+            except Exception as e:
+                error_count += 1
+                logger.error(f"❌ Fehler beim Laden von {preload_file.name}: {e}")
+        
+        preload_client.disconnect()
+        
+        # Ergebnis anzeigen
+        if success_count > 0:
+            st.success(f"✅ {success_count} Preload-Test-Topic(s) erfolgreich gesendet")
+            if error_count > 0:
+                st.warning(f"⚠️ {error_count} Preload-Test-Topic(s) fehlgeschlagen")
+        else:
+            st.error("❌ Keine Preload-Test-Topics konnten gesendet werden")
+        
+        logger.info(f"🚀 Preload abgeschlossen: {success_count} erfolgreich, {error_count} fehlgeschlagen")
+        return success_count > 0
+        
+    except Exception as e:
+        st.error(f"❌ Fehler beim Preload: {e}")
+        logger.error(f"❌ Preload Exception: {e}")
         return False
 
 
 # Session Replay Funktionen
-def get_factsheet_files(factsheet_directory: str = "data/omf-data/sessions/factsheets"):
-    """Factsheet-Dateien aus konfiguriertem Verzeichnis laden - nur .json Dateien"""
-    logger.debug(f"🔍 get_factsheet_files: Suche in {factsheet_directory}")
+def get_test_topic_files(test_topic_directory: str = "data/omf-data/test_topics"):
+    """Test-Topic-Dateien aus konfiguriertem Verzeichnis laden - nur .json Dateien"""
+    logger.debug(f"🔍 get_test_topic_files: Suche in {test_topic_directory}")
 
     # Moderne Paket-Struktur - State of the Art
-    if not Path(factsheet_directory).is_absolute():
+    if not Path(test_topic_directory).is_absolute():
         # Projekt-Root-relative Pfade für Nutz-Daten verwenden
-        # Von omf/helper_apps/session_manager/components/ -> Projekt-Root
         project_root = PROJECT_ROOT
-        factsheet_dir = project_root / factsheet_directory
+        test_topic_dir = project_root / test_topic_directory
     else:
-        factsheet_dir = Path(factsheet_directory)
+        test_topic_dir = Path(test_topic_directory)
 
-    logger.debug(f"📁 Factsheet-Verzeichnis existiert: {factsheet_dir.exists()}")
-    logger.debug(f"📁 Absoluter Pfad: {factsheet_dir.absolute()}")
+    logger.debug(f"📁 Test-Topic-Verzeichnis existiert: {test_topic_dir.exists()}")
+    logger.debug(f"📁 Absoluter Pfad: {test_topic_dir.absolute()}")
 
-    if not factsheet_dir.exists():
-        logger.warning(f"❌ Factsheet-Verzeichnis existiert nicht: {factsheet_dir.absolute()}")
+    if not test_topic_dir.exists():
+        logger.warning(f"❌ Test-Topic-Verzeichnis existiert nicht: {test_topic_dir.absolute()}")
         return []
 
-    # Nur JSON-Dateien finden (Factsheet-Preload kann nur .json Dateien verarbeiten)
-    factsheet_files = list(factsheet_dir.glob("*.json"))
+    # Nur JSON-Dateien im Hauptverzeichnis finden (nicht in preloads/)
+    test_topic_files = [f for f in test_topic_dir.glob("*.json") if f.is_file()]
 
-    logger.debug(f"📊 Gefundene .json Factsheet-Dateien: {len(factsheet_files)}")
+    logger.debug(f"📊 Gefundene .json Test-Topic-Dateien: {len(test_topic_files)}")
 
-    logger.debug(f"📁 Gesamt Factsheet-Dateien: {len(factsheet_files)}")
-    for f in factsheet_files:
+    logger.debug(f"📁 Gesamt Test-Topic-Dateien: {len(test_topic_files)}")
+    for f in test_topic_files:
         logger.debug(f"  - {f.name}")
 
-    return sorted(factsheet_files, key=lambda x: x.name)
+    return sorted(test_topic_files, key=lambda x: x.name)
+
+
+def get_preload_test_topic_files(preload_directory: str = "data/omf-data/test_topics/preloads"):
+    """Preload-Test-Topic-Dateien aus konfiguriertem Verzeichnis laden - nur .json Dateien"""
+    logger.debug(f"🔍 get_preload_test_topic_files: Suche in {preload_directory}")
+
+    # Moderne Paket-Struktur - State of the Art
+    if not Path(preload_directory).is_absolute():
+        # Projekt-Root-relative Pfade für Nutz-Daten verwenden
+        project_root = PROJECT_ROOT
+        preload_dir = project_root / preload_directory
+    else:
+        preload_dir = Path(preload_directory)
+
+    logger.debug(f"📁 Preload-Verzeichnis existiert: {preload_dir.exists()}")
+    logger.debug(f"📁 Absoluter Pfad: {preload_dir.absolute()}")
+
+    if not preload_dir.exists():
+        logger.warning(f"❌ Preload-Verzeichnis existiert nicht: {preload_dir.absolute()}")
+        return []
+
+    # Nur JSON-Dateien finden (Preload kann nur .json Dateien verarbeiten)
+    preload_files = list(preload_dir.glob("*.json"))
+
+    logger.debug(f"📊 Gefundene .json Preload-Dateien: {len(preload_files)}")
+
+    logger.debug(f"📁 Gesamt Preload-Dateien: {len(preload_files)}")
+    for f in preload_files:
+        logger.debug(f"  - {f.name}")
+
+    return sorted(preload_files, key=lambda x: x.name)
 
 
 def get_session_files(session_directory: str = "data/omf-data/sessions"):
