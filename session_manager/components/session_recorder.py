@@ -12,9 +12,9 @@ from typing import Any, Dict, List
 
 import streamlit as st
 
-from omf.dashboard.tools.logging_config import get_logger
-from omf.dashboard.tools.path_constants import PROJECT_ROOT
-from omf.dashboard.utils.ui_refresh import RerunController
+from ..utils.logging_config import get_logger
+from ..utils.path_constants import PROJECT_ROOT
+from ..utils.ui_refresh import RerunController
 
 logger = get_logger("omf.helper_apps.session_manager.components.session_recorder")
 
@@ -61,7 +61,7 @@ def show_session_recorder():
     st.markdown("Einfache 1:1 Aufnahme von MQTT-Nachrichten - **Konfiguration in ⚙️ Einstellungen**")
 
     # Konfiguration aus Settings laden
-    from omf.helper_apps.session_manager.components.settings_manager import SettingsManager
+    from .settings_manager import SettingsManager
 
     settings_manager = SettingsManager()
     mqtt_settings = settings_manager.get_session_recorder_mqtt_settings()
@@ -365,7 +365,7 @@ def save_session():
     try:
         logger.info("💾 Session-Datei wird erstellt...")
 
-        from omf.helper_apps.session_manager.components.settings_manager import SettingsManager
+        from .settings_manager import SettingsManager
 
         settings_manager = SettingsManager()
         session_directory = settings_manager.get_session_recorder_directory()

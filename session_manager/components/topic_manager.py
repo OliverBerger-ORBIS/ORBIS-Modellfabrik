@@ -4,8 +4,8 @@ Topic Filter Manager - Handles topic filtering and categorization
 
 from typing import Dict, List
 
-from omf.dashboard.tools.logging_config import get_logger
-from omf.tools.topic_manager import OmfTopicManager
+from ..utils.logging_config import get_logger
+# from ..utils.topic_manager import OmfTopicManager  # TODO: Optional feature - topic categorization
 
 logger = get_logger(__name__)
 
@@ -14,7 +14,8 @@ class TopicFilterManager:
     """Manages topic filtering and categorization based on OMF configuration"""
 
     def __init__(self):
-        self.topic_manager = OmfTopicManager()
+        # self.topic_manager = OmfTopicManager()  # TODO: Optional feature - deactivated
+        self.topic_manager = None  # Deactivated: Would require old omf registry
 
     def get_topic_categories(self, topics: List[str]) -> Dict[str, List[str]]:
         """Gruppiert Topics nach Kategorien basierend auf OMF Config"""
@@ -23,8 +24,22 @@ class TopicFilterManager:
 
         for topic in topics:
             try:
-                topic_info = self.topic_manager.get_topic_info(topic)
-                category = topic_info.get("category", "Unknown")
+                # Fallback: Simple categorization when topic_manager is disabled
+                if self.topic_manager:
+                    topic_info = self.topic_manager.get_topic_info(topic)
+                    category = topic_info.get("category", "Unknown")
+                else:
+                    # Simple categorization by topic prefix
+                    if topic.startswith("ccu/"):
+                        category = "CCU"
+                    elif topic.startswith("fts/"):
+                        category = "FTS"
+                    elif topic.startswith("module/"):
+                        category = "Module"
+                    elif "/" in topic:
+                        category = topic.split("/")[0].upper()
+                    else:
+                        category = "Unknown"
                 logger.debug(f"Topic {topic} -> Kategorie: {category}")
 
                 if category not in categories:
@@ -48,9 +63,13 @@ class TopicFilterManager:
 
         for topic in topics:
             try:
-                topic_info = self.topic_manager.get_topic_info(topic)
-                category = topic_info.get("category", "Unknown")
-                sub_category = topic_info.get("sub_category", "Sonstige")
+                # Fallback: Use simple categorization when topic_manager is disabled
+                if self.topic_manager:
+                    topic_info = self.topic_manager.get_topic_info(topic)
+                    category = topic_info.get("category", "Unknown")
+                    sub_category = topic_info.get("sub_category", "Sonstige")
+                else:
+                    category, sub_category = self._get_fallback_category_subcategory(topic)
 
                 logger.debug(f"Topic {topic} -> Kategorie: {category}, Sub-Kategorie: {sub_category}")
 
@@ -172,7 +191,8 @@ class TopicFilterManager:
         filtered_topics = []
         for topic in topics:
             try:
-                friendly_name = self.topic_manager.get_friendly_name(topic)
+                # Fallback: Use topic as friendly name when topic_manager is disabled
+                friendly_name = self.topic_manager.get_friendly_name(topic) if self.topic_manager else topic
                 if search_term.lower() in friendly_name.lower():
                     filtered_topics.append(topic)
             except Exception as e:
@@ -195,7 +215,8 @@ class TopicFilterManager:
         friendly_names = {}
         for topic in topics:
             try:
-                friendly_names[topic] = self.topic_manager.get_friendly_name(topic)
+                # Fallback: Use topic as friendly name when topic_manager is disabled
+                friendly_names[topic] = self.topic_manager.get_friendly_name(topic) if self.topic_manager else topic
             except Exception as e:
                 logger.warning(f"Fehler beim Abrufen des Friendly Names für {topic}: {e}")
                 friendly_names[topic] = topic  # Fallback: Topic-Name verwenden

@@ -8,8 +8,8 @@ import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
 
-from omf.dashboard.tools.logging_config import get_logger
-from omf.tools.topic_manager import OmfTopicManager
+from ..utils.logging_config import get_logger
+# from ..utils.topic_manager import OmfTopicManager  # TODO: Optional feature - topic categorization
 
 logger = get_logger(__name__)
 
@@ -18,7 +18,8 @@ class TimelineVisualizer:
     """Creates timeline visualizations for session analysis"""
 
     def __init__(self):
-        self.topic_manager = OmfTopicManager()
+        # self.topic_manager = OmfTopicManager()  # TODO: Optional feature - deactivated
+        self.topic_manager = None  # Deactivated: Would require old omf registry
 
     def create_timeline_visualization(self, messages: List[Dict], selected_topics: List[str] = None) -> go.Figure:
         """Erstellt Timeline-Visualisierung (Zeit vs Topic-Name)"""
@@ -61,7 +62,8 @@ class TimelineVisualizer:
                     # Y-Position basierend auf Topic-Reihenfolge
                     y_pos = topic_y_mapping[topic]
 
-                    friendly_name = self.topic_manager.get_friendly_name(topic)
+                    # Fallback: Use topic as friendly name when topic_manager is disabled
+                    friendly_name = self.topic_manager.get_friendly_name(topic) if self.topic_manager else topic
                     logger.debug(f"Topic {topic} -> Friendly Name: {friendly_name}")
 
                     # Erstelle Hover-Text mit Payload-Info

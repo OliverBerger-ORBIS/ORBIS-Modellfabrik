@@ -4,23 +4,31 @@ Session Manager - Streamlit Dashboard
 Verwaltung und Analyse von MQTT-Sessions für die ORBIS Modellfabrik
 """
 
-import argparse
+import sys
 from pathlib import Path
 
+# Add project root to Python path so session_manager package can be imported
+_app_file = Path(__file__).resolve()
+_project_root = _app_file.parent.parent
+if str(_project_root) not in sys.path:
+    sys.path.insert(0, str(_project_root))
+
+import argparse
 import streamlit as st
 
-from omf.dashboard.tools.logging_config import configure_logging, get_logger
-from omf.dashboard.tools.registry_manager import get_registry
-from omf.dashboard.utils.ui_refresh import consume_refresh, request_refresh
+# Absolute imports for main script (entry point)
+from session_manager.utils.logging_config import configure_logging, get_logger
+# from session_manager.utils.registry_manager import get_registry  # TODO: Optional feature - registry watch mode
+from session_manager.utils.ui_refresh import consume_refresh, request_refresh
 
 # Import components
-from omf.helper_apps.session_manager.components.logs import show_logs
-from omf.helper_apps.session_manager.components.replay_station import show_replay_station
-from omf.helper_apps.session_manager.components.session_analysis import show_session_analysis
-from omf.helper_apps.session_manager.components.session_recorder import show_session_recorder
-from omf.helper_apps.session_manager.components.settings_manager import SettingsManager
-from omf.helper_apps.session_manager.components.settings_ui import SettingsUI
-from omf.helper_apps.session_manager.components.topic_recorder import show_topic_recorder
+from session_manager.components.logs import show_logs
+from session_manager.components.replay_station import show_replay_station
+from session_manager.components.session_analysis import show_session_analysis
+from session_manager.components.session_recorder import show_session_recorder
+from session_manager.components.settings_manager import SettingsManager
+from session_manager.components.settings_ui import SettingsUI
+from session_manager.components.topic_recorder import show_topic_recorder
 
 # Page configuration
 st.set_page_config(page_title="Session Manager", page_icon="🎙️", layout="wide", initial_sidebar_state="expanded")
@@ -217,9 +225,9 @@ if __name__ == "__main__":
     args = parse_args()
 
     # Initialize registry with watch mode if requested
-    if args.registry_watch:
-        registry = get_registry(watch_mode=True)
-        # Logger wird in main() initialisiert, daher hier nur print
-        print("🔄 Registry watch mode enabled - live reloading active")
+    # TODO: Registry watch mode disabled during migration - needs registry_manager implementation
+    # if args.registry_watch:
+    #     registry = get_registry(watch_mode=True)
+    #     print("🔄 Registry watch mode enabled - live reloading active")
 
     main()

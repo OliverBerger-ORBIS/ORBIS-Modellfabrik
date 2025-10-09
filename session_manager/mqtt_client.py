@@ -10,7 +10,9 @@ import time
 from typing import List, Dict, Any, Optional
 
 import paho.mqtt.client as mqtt
-from omf.dashboard.tools.logging_config import get_logger
+
+# Absolute import for potential standalone use
+from session_manager.utils.logging_config import get_logger
 
 logger = get_logger(__name__)
 

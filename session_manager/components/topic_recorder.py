@@ -11,9 +11,9 @@ from typing import Any, Dict, Set
 
 import streamlit as st
 
-from omf.dashboard.tools.logging_config import get_logger
-from omf.dashboard.tools.path_constants import PROJECT_ROOT
-from omf.dashboard.utils.ui_refresh import RerunController
+from ..utils.logging_config import get_logger
+from ..utils.path_constants import PROJECT_ROOT
+from ..utils.ui_refresh import RerunController
 
 logger = get_logger("omf.helper_apps.session_manager.components.topic_recorder")
 
@@ -143,7 +143,7 @@ def show_topic_recorder():
     )
 
     # Konfiguration aus Settings laden
-    from omf.helper_apps.session_manager.components.settings_manager import SettingsManager
+    from .settings_manager import SettingsManager
 
     settings_manager = SettingsManager()
     mqtt_settings = settings_manager.get_session_recorder_mqtt_settings()
@@ -294,7 +294,7 @@ def show_topic_recorder():
             rerun_controller.request_rerun()
     else:
         # Bereit zum Starten
-        from omf.helper_apps.session_manager.components.settings_manager import SettingsManager
+        from .settings_manager import SettingsManager
         settings_manager = SettingsManager()
         manual_periodic = settings_manager.get_topic_recorder_periodic_topics()
         
@@ -613,7 +613,7 @@ def start_recording():
                 return
             
             # Periodische Topics: Kombination aus Analyse + manuell konfiguriert
-            from omf.helper_apps.session_manager.components.settings_manager import SettingsManager
+            from .settings_manager import SettingsManager
             settings_manager = SettingsManager()
             manual_periodic = set(settings_manager.get_topic_recorder_periodic_topics())
             analyzed_periodic = st.session_state.topic_recorder['periodic_topics']

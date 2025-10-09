@@ -215,7 +215,7 @@ def show_replay_station():
     st.markdown("MQTT-Nachrichten für Tests senden - **MQTT-Konfiguration in ⚙️ Einstellungen**")
 
     # Konfiguration aus Settings laden
-    from omf.helper_apps.session_manager.components.settings_manager import SettingsManager
+    from .settings_manager import SettingsManager
 
     settings_manager = SettingsManager()
     mqtt_settings = settings_manager.get_mqtt_broker_settings()

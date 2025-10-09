@@ -1,5 +1,3 @@
-from omf.dashboard.tools.path_constants import PROJECT_ROOT
-
 """
 Session Analyzer - Core functionality for session data analysis
 """
@@ -11,8 +9,9 @@ from typing import Dict, List
 
 import streamlit as st
 
-from omf.dashboard.tools.logging_config import get_logger
-from omf.tools.topic_manager import OmfTopicManager
+from ..utils.path_constants import PROJECT_ROOT
+from ..utils.logging_config import get_logger
+# from ..utils.topic_manager import OmfTopicManager  # TODO: Optional feature - topic categorization
 
 logger = get_logger(__name__)
 
@@ -21,7 +20,8 @@ class SessionAnalyzer:
     """Session Analyse mit OMF Topic-Config Integration"""
 
     def __init__(self):
-        self.topic_manager = OmfTopicManager()
+        # self.topic_manager = OmfTopicManager()  # TODO: Optional feature - topic categorization (disabled)
+        self.topic_manager = None  # Deactivated: Would require old omf registry
         self.session_data = None
         self.messages_df = None
 

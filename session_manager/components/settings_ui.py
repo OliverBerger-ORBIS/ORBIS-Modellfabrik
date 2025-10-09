@@ -5,9 +5,9 @@ Streamlit UI für die Einstellungen
 
 import streamlit as st
 
-from omf.dashboard.tools.logging_config import get_logger
-from omf.dashboard.utils.ui_refresh import RerunController
-from omf.helper_apps.session_manager.components.settings_manager import SettingsManager
+from ..utils.logging_config import get_logger
+from ..utils.ui_refresh import RerunController
+from .settings_manager import SettingsManager
 
 logger = get_logger(__name__)
 
@@ -26,8 +26,8 @@ class SettingsUI:
         st.markdown("Zentrale Konfiguration für alle Session Manager Tabs")
 
         # Tabs für verschiedene Sektionen
-        tab1, tab2, tab3, tab4, tab5 = st.tabs(
-            ["📂 Topic Recorder", "📊 Session Analyse", "▶️ Replay Station", "🔴 Session Recorder", "📋 Template Analyse"]
+        tab1, tab2, tab3, tab4 = st.tabs(
+            ["📂 Topic Recorder", "📊 Session Analyse", "▶️ Replay Station", "🔴 Session Recorder"]
         )
 
         with tab1:
@@ -41,9 +41,6 @@ class SettingsUI:
 
         with tab4:
             self._render_session_recorder_settings()
-
-        with tab5:
-            self._render_template_analysis_settings()
 
         # Allgemeine Einstellungen
         st.markdown("---")
@@ -543,20 +540,11 @@ class SettingsUI:
 
         st.caption("💡 **Hinweis:** Diese Topics werden zusätzlich zu den automatisch erkannten als periodisch behandelt")
 
-    def _render_template_analysis_settings(self):
-        """Rendert die Template Analyse Einstellungen"""
-        st.subheader("📋 Template Analyse Einstellungen")
-
-        show_payload = self.settings_manager.get_setting("template_analysis", "show_payload_preview", True)
-        if st.checkbox("Payload-Vorschau anzeigen", value=show_payload):
-            self.settings_manager.set_setting("template_analysis", "show_payload_preview", True)
-        else:
-            self.settings_manager.set_setting("template_analysis", "show_payload_preview", False)
-
-        max_payload = self.settings_manager.get_setting("template_analysis", "max_payload_length", 200)
-        new_length = st.slider("Max. Payload-Länge", 50, 1000, max_payload, 50)
-        if new_length != max_payload:
-            self.settings_manager.set_setting("template_analysis", "max_payload_length", new_length)
+    # def _render_template_analysis_settings(self):
+    #     """Rendert die Template Analyse Einstellungen"""
+    #     # REMOVED: template_analysis.py wurde entfernt
+    #     st.subheader("📋 Template Analyse Einstellungen")
+    #     st.info("❌ Template-Analyse Feature wurde entfernt (nicht verwendet)")
 
     def _render_general_settings(self):
         """Rendert die allgemeinen Einstellungen"""

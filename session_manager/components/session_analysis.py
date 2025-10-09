@@ -6,11 +6,11 @@ Refactored version with separated components
 import streamlit as st
 import pandas as pd
 
-from omf.dashboard.tools.logging_config import get_logger
-from omf.helper_apps.session_manager.components.session_analyzer import SessionAnalyzer
-from omf.helper_apps.session_manager.components.settings_manager import SettingsManager
-from omf.helper_apps.session_manager.components.timeline_visualizer import TimelineVisualizer
-from omf.helper_apps.session_manager.components.ui_components import SessionAnalysisUI
+from ..utils.logging_config import get_logger
+from .session_analyzer import SessionAnalyzer
+from .settings_manager import SettingsManager
+from .timeline_visualizer import TimelineVisualizer
+from .ui_components import SessionAnalysisUI
 
 logger = get_logger(__name__)
 

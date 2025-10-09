@@ -4,11 +4,12 @@ SessionManagerLogger - Session-spezifisches Logging-System
 Basiert auf PR1 Konzepten für strukturierte, Session-spezifische Log-Ausgabe.
 """
 
-from omf.dashboard.tools.logging_config import get_logger
-
-logger = get_logger("omf.helper_apps.session_manager.utils.session_logger")
 import logging
 from pathlib import Path
+
+from .logging_config import get_logger
+
+logger = get_logger("session_manager.utils.session_logger")
 
 
 class SessionManagerLogger:

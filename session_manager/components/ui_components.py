@@ -1,5 +1,3 @@
-from omf.dashboard.tools.path_constants import PROJECT_ROOT
-
 """
 UI Components - Streamlit UI components for session analysis
 """
@@ -13,10 +11,11 @@ from typing import Dict, List, Tuple
 import pandas as pd
 import streamlit as st
 
-from omf.dashboard.tools.logging_config import get_logger
-from omf.dashboard.utils.ui_refresh import request_refresh
-from omf.helper_apps.session_manager.components.session_analyzer import SessionAnalyzer
-from omf.helper_apps.session_manager.components.topic_manager import TopicFilterManager
+from ..utils.path_constants import PROJECT_ROOT
+from ..utils.logging_config import get_logger
+from ..utils.ui_refresh import request_refresh
+from .session_analyzer import SessionAnalyzer
+from .topic_manager import TopicFilterManager
 
 logger = get_logger("session_manager.ui_components")
 
@@ -34,7 +33,7 @@ class SessionAnalysisUI:
 
         # Session-Dateien aus konfiguriertem Verzeichnis laden
         if session_directory is None:
-            from omf.helper_apps.session_manager.components.settings_manager import SettingsManager
+            from .settings_manager import SettingsManager
 
             settings_manager = SettingsManager()
             session_directory = settings_manager.get_session_directory()
@@ -180,7 +179,8 @@ class SessionAnalysisUI:
                         sorted_topics = sorted(filtered_message_counts.items(), key=lambda x: x[1], reverse=True)
 
                         for topic, count in sorted_topics:
-                            friendly_name = analyzer.topic_manager.get_friendly_name(topic)
+                            # Fallback: Use topic as friendly name when topic_manager is disabled
+                            friendly_name = analyzer.topic_manager.get_friendly_name(topic) if analyzer.topic_manager else topic
                             if friendly_name != topic:
                                 st.write(f"• `{topic}` → {friendly_name} ({count} Messages)")
                             else:
@@ -204,7 +204,8 @@ class SessionAnalysisUI:
                         ):
                             st.write("**In Settings konfiguriert, aber nicht in dieser Session vorhanden:**")
                             for topic in sorted(prefilter_topics):
-                                friendly_name = analyzer.topic_manager.get_friendly_name(topic)
+                                # Fallback: Use topic as friendly name when topic_manager is disabled
+                                friendly_name = analyzer.topic_manager.get_friendly_name(topic) if analyzer.topic_manager else topic
                                 if friendly_name != topic:
                                     st.write(f"• `{topic}` → {friendly_name}")
                                 else:
