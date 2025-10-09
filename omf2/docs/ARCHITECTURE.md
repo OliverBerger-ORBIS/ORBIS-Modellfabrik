@@ -1486,6 +1486,635 @@ assert len(warning_logs) == 0
 
 ---
 
+## 11. ✅ ANLEITUNG: Neuen Business-Manager hinzufügen
+
+**Status: KRITISCH - MUSS FÜR JEDEN NEUEN MANAGER BEFOLGT WERDEN**  
+**Datum: 2025-10-09**  
+**Ziel: Konsistente Implementierung neuer Business-Funktionalität**
+
+---
+
+### **🎯 ZWEI PERSPEKTIVEN:**
+
+#### **A) ANALYSE & PLANUNG (Top-Down):**
+1. **Requirements analysieren** - Was soll der Manager tun?
+2. **Topics identifizieren** - Welche MQTT-Topics werden benötigt?
+3. **Gateway-Routing planen** - Wie werden Messages geroutet?
+4. **Manager-API definieren** - Welche Methoden braucht die UI?
+5. **Registry-Konfiguration planen** - Welche Topics subscribed?
+
+#### **B) IMPLEMENTIERUNG (Bottom-Up - EMPFOHLEN):**
+1. **MQTT-Client erweitern** - Topics in `mqtt_clients.yml` hinzufügen
+2. **Test 1** - Subscriptions testen
+3. **Gateway-Routing** - Routing-Logik in `ccu_gateway.py` hinzufügen
+4. **Test 2** - Gateway-Routing testen
+5. **Manager implementieren** - Business-Logic in neuem Manager
+6. **Test 3** - Manager-Methoden testen
+7. **UI-Wrapper** - Leere UI-Komponente für Display
+8. **Test 4** - End-to-End Test
+
+---
+
+### **📋 SCHRITT-FÜR-SCHRITT-ANLEITUNG (Implementierung):**
+
+#### **Schritt 1: Topics in Registry hinzufügen**
+
+**Datei:** `omf2/registry/mqtt_clients.yml`
+
+```yaml
+mqtt_clients:
+  ccu_mqtt_client:
+    subscribed_topics:
+      # ... bestehende Topics ...
+      
+      # NEU: Topics für XyzManager
+      - "domain/xyz/topic1"        # Beschreibung
+      - "domain/xyz/topic2"        # Beschreibung
+    
+    gateway_routing_hints:
+      # ... bestehende Hints ...
+      
+      xyz_manager:  # NEU
+        routed_topics:  # Topics die an XyzManager.onMessage() geroutet werden
+          - "domain/xyz/topic1"    # Beschreibung
+          - "domain/xyz/topic2"    # Beschreibung
+```
+
+**✅ Validierung:**
+- Alle `routed_topics` MÜSSEN in `subscribed_topics` sein
+- Pre-commit Hook prüft Topic-Validität
+
+**Test 1:** MQTT-Client kann Topics subscribieren
+```bash
+streamlit run omf2/omf.py
+# → Prüfe in Admin → System Logs ob Subscriptions erfolgreich
+```
+
+---
+
+#### **Schritt 2: Gateway-Routing implementieren**
+
+**Datei:** `omf2/ccu/ccu_gateway.py`
+
+```python
+class CcuGateway:
+    def __init__(self, mqtt_client=None, **kwargs):
+        # ... bestehende Topic-Listen ...
+        
+        # NEU: XYZ Topics für XyzManager
+        self.xyz_topics = {
+            'domain/xyz/topic1',
+            'domain/xyz/topic2'
+        }
+        
+        # Manager-Instanz (Lazy Loading)
+        self._xyz_manager = None
+    
+    def _get_xyz_manager(self):
+        """Lazy Loading für XyzManager (Singleton)"""
+        if self._xyz_manager is None:
+            from omf2.ccu.xyz_manager import get_xyz_manager
+            self._xyz_manager = get_xyz_manager()
+            logger.info("🏗️ XyzManager initialized via Gateway")
+        return self._xyz_manager
+    
+    def _route_ccu_message(self, topic, message, meta=None):
+        # ... bestehende Routing-Logik ...
+        
+        # NEU: Routing für XyzManager
+        if topic in self.xyz_topics:
+            logger.debug(f"🔀 Routing to xyz_manager: {topic}")
+            xyz_manager = self._get_xyz_manager()
+            if xyz_manager:
+                xyz_manager.process_xyz_message(topic, message, meta)
+            else:
+                logger.warning(f"⚠️ XyzManager not available for topic: {topic}")
+            return True
+```
+
+**Test 2:** Gateway routet Messages korrekt
+```bash
+# 1. Streamlit starten
+# 2. Test-Message senden über Session Manager
+# 3. Logs prüfen: "🔀 Routing to xyz_manager"
+```
+
+---
+
+#### **Schritt 3: Business-Manager implementieren**
+
+**Datei:** `omf2/ccu/xyz_manager.py`
+
+```python
+#!/usr/bin/env python3
+"""
+CCU XYZ Manager - Business Logic für XYZ Management
+Verarbeitet XYZ-Nachrichten vom Topic domain/xyz/*
+"""
+
+import threading
+from datetime import datetime, timezone
+from typing import Dict, Any
+from omf2.common.logger import get_logger
+
+logger = get_logger(__name__)
+
+# Singleton Factory - EXAKT wie Order Manager
+_xyz_manager_instance = None
+
+
+class XyzManager:
+    """
+    XYZ Manager für CCU Domain
+    Verwaltet XYZ-Daten und Business-Logic
+    """
+
+    def __init__(self):
+        """Initialize XYZ Manager - EXAKT wie Order Manager (kein File I/O!)"""
+        # State-Holder (wie sensor_data beim Sensor Manager)
+        self.xyz_data = {}
+        
+        # Thread-Sicherheit
+        self._lock = threading.Lock()
+        
+        # Zeitstempel
+        self.last_update = None
+        
+        logger.info("🏗️ XYZ Manager initialized with State-Holder (no file I/O)")
+
+    def process_xyz_message(self, topic: str, message: Dict[str, Any], meta: Dict[str, Any]) -> None:
+        """
+        Verarbeitet XYZ-Nachrichten vom Topic domain/xyz/*
+        
+        Args:
+            topic: MQTT Topic
+            message: Message payload (Dict/List/Str - NIE raw bytes!)
+            meta: Meta-Informationen (timestamp, qos, retain)
+        """
+        try:
+            with self._lock:
+                logger.debug(f"📋 Processing XYZ message from {topic}: {message}")
+                
+                # Message Processing Pattern verwenden (siehe MESSAGE_PROCESSING_PATTERN.md)
+                # STEP 1: Log message structure
+                logger.info(f"Raw message keys: {list(message.keys())}")
+                
+                # STEP 2: Extract data
+                processed_data = self._extract_xyz_data(topic, message)
+                
+                # STEP 3: Update State-Holder
+                self.xyz_data[topic] = processed_data
+                
+                # Zeitstempel aktualisieren
+                self.last_update = datetime.now(timezone.utc)
+                
+                logger.info(f"✅ XYZ data updated from {topic}")
+                
+        except Exception as e:
+            logger.error(f"❌ Error processing XYZ message from {topic}: {e}")
+
+    def _extract_xyz_data(self, topic: str, message: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Extrahiert XYZ-Daten aus Message
+        
+        WICHTIG: Message Processing Pattern befolgen!
+        - Keine Annahmen über Message-Struktur
+        - Debug-Logging für Sichtbarkeit
+        - Echte Feld-Namen verwenden (aus MQTT-Daten)
+        """
+        # TODO: Implementierung basierend auf echten MQTT-Daten
+        return {}
+
+    def get_xyz_data(self) -> Dict[str, Any]:
+        """
+        Gibt XYZ-Daten zurück (für UI)
+        
+        Returns:
+            Dict mit XYZ-Daten
+        """
+        with self._lock:
+            return {
+                "data": self.xyz_data.copy(),
+                "last_update": self.last_update.isoformat() if self.last_update else None
+            }
+
+
+def get_xyz_manager() -> XyzManager:
+    """
+    Get XYZ Manager singleton instance - EXAKT wie Order Manager
+    
+    Returns:
+        XyzManager: XYZ Manager Instanz
+    """
+    global _xyz_manager_instance
+    if _xyz_manager_instance is None:
+        _xyz_manager_instance = XyzManager()
+        logger.info("🏗️ XYZ Manager singleton created")
+    return _xyz_manager_instance
+```
+
+**Test 3:** Manager empfängt und verarbeitet Messages
+```bash
+# 1. Session Manager: Test-Message senden
+# 2. Logs prüfen: "✅ XYZ data updated from domain/xyz/topic1"
+# 3. Python-Shell: get_xyz_manager().get_xyz_data()
+```
+
+---
+
+#### **Schritt 4: Gateway-Methoden für UI**
+
+**Datei:** `omf2/ccu/ccu_gateway.py`
+
+```python
+class CcuGateway:
+    # ... Manager-Routing bereits in Schritt 2 ...
+    
+    # NEU: Public API für UI
+    def get_xyz_data(self) -> Dict[str, Any]:
+        """
+        XYZ-Daten abrufen - Non-Blocking
+        
+        Returns:
+            Dict mit XYZ-Daten
+        """
+        try:
+            xyz_manager = self._get_xyz_manager()
+            if xyz_manager is None:
+                logger.warning("⚠️ XYZ Manager not available")
+                return {}
+            
+            return xyz_manager.get_xyz_data()
+        except Exception as e:
+            logger.error(f"❌ Error getting XYZ data: {e}")
+            return {}
+```
+
+---
+
+#### **Schritt 5: UI-Komponente (Leerer Wrapper)**
+
+**Datei:** `omf2/ui/ccu/ccu_xyz/ccu_xyz_tab.py`
+
+```python
+"""
+CCU XYZ Tab - Zeigt XYZ-Daten an
+"""
+import streamlit as st
+from omf2.factory.gateway_factory import get_ccu_gateway
+from omf2.common.logger import get_logger
+
+logger = get_logger(__name__)
+
+
+def render_ccu_xyz_tab():
+    """Rendert CCU XYZ Tab"""
+    st.header("🔀 XYZ Management")
+    
+    try:
+        # Gateway holen
+        ccu_gateway = get_ccu_gateway()
+        
+        # XYZ-Daten vom Manager holen
+        xyz_data = ccu_gateway.get_xyz_data()
+        
+        # Anzeige
+        if xyz_data.get("data"):
+            st.json(xyz_data["data"])
+            st.caption(f"Last Update: {xyz_data.get('last_update', 'Never')}")
+        else:
+            st.info("No XYZ data available")
+            
+    except Exception as e:
+        st.error(f"❌ Error rendering XYZ tab: {e}")
+        logger.error(f"❌ XYZ tab error: {e}")
+```
+
+**Test 4:** UI zeigt Daten an
+```bash
+streamlit run omf2/omf.py
+# → CCU → XYZ Tab öffnen
+# → Sollte "No XYZ data available" zeigen
+# → Test-Message senden → Daten sollten erscheinen
+```
+
+---
+
+### **📋 CHECKLISTE für neuen Business-Manager:**
+
+#### **Analyse & Planung:**
+- [ ] Requirements definiert (Was soll der Manager tun?)
+- [ ] Topics aus Registry identifiziert (Welche Topics werden benötigt?)
+- [ ] APS "as-IS" verstanden (observed_publisher_aps, semantic_role)
+- [ ] OMF2-Rolle geklärt (omf2_usage, omf2_note)
+
+#### **Registry-Konfiguration:**
+- [ ] Topics in `ccu_mqtt_client.subscribed_topics` hinzugefügt
+- [ ] `gateway_routing_hints.xyz_manager.routed_topics` definiert
+- [ ] Alle `routed_topics` sind in `subscribed_topics` enthalten
+- [ ] Pre-commit Hook erfolgreich
+
+#### **Gateway-Integration:**
+- [ ] Topic-Liste als Set/Präfix in `__init__()` definiert
+- [ ] `_get_xyz_manager()` Lazy-Loading implementiert
+- [ ] Routing-Logik in `_route_ccu_message()` hinzugefügt
+- [ ] Public API-Methoden für UI implementiert (z.B. `get_xyz_data()`)
+
+#### **Manager-Implementierung:**
+- [ ] Singleton Factory Pattern (`get_xyz_manager()`)
+- [ ] **KEIN File I/O im `__init__()`** (Non-Blocking!)
+- [ ] State-Holder Pattern (z.B. `self.xyz_data = {}`)
+- [ ] Thread-Safety (`threading.Lock()`)
+- [ ] `process_xyz_message()` implementiert
+- [ ] Message Processing Pattern befolgt (siehe MESSAGE_PROCESSING_PATTERN.md)
+- [ ] Public API für UI (z.B. `get_xyz_data()`)
+
+#### **Testing:**
+- [ ] Test 1: MQTT-Client Subscriptions funktionieren
+- [ ] Test 2: Gateway routet Messages korrekt
+- [ ] Test 3: Manager empfängt und verarbeitet Messages
+- [ ] Test 4: UI zeigt Daten korrekt an
+- [ ] End-to-End Test: Echte MQTT-Message → UI-Anzeige
+
+#### **Dokumentation:**
+- [ ] Manager in `ARCHITECTURE.md` dokumentiert
+- [ ] Manager in `PROJECT_STRUCTURE.md` aufgeführt
+- [ ] Gateway-Routing-Hints in `mqtt_clients.yml` dokumentiert
+
+---
+
+### **🚨 KRITISCHE REGELN (NIEMALS VERLETZEN):**
+
+#### **1. Manager-Implementierung:**
+```python
+# ✅ KORREKT: Non-Blocking __init__
+class XyzManager:
+    def __init__(self):
+        self.xyz_data = {}  # State-Holder
+        self._lock = threading.Lock()
+        # KEIN File I/O hier!
+
+# ❌ FALSCH: Blocking __init__
+class XyzManager:
+    def __init__(self):
+        self.config = load_config_file()  # ← BLOCKIERT Streamlit UI!
+```
+
+#### **2. Lock-Hierarchie (Deadlock-Vermeidung):**
+```python
+# ✅ KORREKT: Nur äußerste Methode mit Lock
+def get_xyz_status(self):
+    with self._lock:
+        data = self._process_internal()  # ← OHNE Lock!
+        return data
+
+def _process_internal(self):
+    # KEIN self._lock hier!
+    return {}
+
+# ❌ FALSCH: Verschachtelte Locks → DEADLOCK
+def get_xyz_status(self):
+    with self._lock:
+        data = self._process_internal()  # ← Versucht Lock nochmal!
+        return data
+
+def _process_internal(self):
+    with self._lock:  # ← DEADLOCK!
+        return {}
+```
+
+#### **3. Message Processing Pattern:**
+```python
+# ✅ KORREKT: Message Processing Pattern befolgen
+def process_xyz_message(self, topic, message, meta):
+    # STEP 1: Log message structure
+    logger.info(f"Raw message keys: {list(message.keys())}")
+    
+    # STEP 2: Extract data (keine Annahmen!)
+    data = self._extract_xyz_data(topic, message)
+    
+    # STEP 3: Update State-Holder
+    with self._lock:
+        self.xyz_data[topic] = data
+
+# ❌ FALSCH: Annahmen über Message-Struktur
+def process_xyz_message(self, topic, message, meta):
+    # KEINE Logs!
+    temperature = message["temperature"]  # ← Kann KeyError sein!
+```
+
+#### **4. Gateway-Routing-Reihenfolge:**
+```python
+# ✅ KORREKT: Spezifische Topics VOR Präfix-Matching
+def _route_ccu_message(self, topic, message, meta):
+    # 1. Sensor Topics (Set-basiert) - O(1) Lookup
+    if topic in self.sensor_topics:
+        # ...
+    
+    # 2. Order Topics (Set-basiert) - O(1) Lookup
+    if topic in self.order_topics:
+        # ...
+    
+    # 3. Module Topics (Präfix-basiert) - Flexibel aber langsamer
+    for prefix in self.module_topic_prefixes:
+        if topic.startswith(prefix):
+            # ...
+```
+
+---
+
+### **🎯 TEMPLATE-CODE (Copy & Paste Ready):**
+
+#### **Manager Template:**
+```python
+#!/usr/bin/env python3
+"""
+CCU XYZ Manager - Business Logic für XYZ Management
+"""
+
+import threading
+from datetime import datetime, timezone
+from typing import Dict, Any
+from omf2.common.logger import get_logger
+
+logger = get_logger(__name__)
+_xyz_manager_instance = None
+
+
+class XyzManager:
+    """XYZ Manager für CCU Domain"""
+
+    def __init__(self):
+        """Initialize XYZ Manager - KEIN File I/O!"""
+        self.xyz_data = {}
+        self._lock = threading.Lock()
+        self.last_update = None
+        logger.info("🏗️ XYZ Manager initialized")
+
+    def process_xyz_message(self, topic: str, message: Dict[str, Any], meta: Dict[str, Any]) -> None:
+        """Verarbeitet XYZ-Nachrichten"""
+        try:
+            with self._lock:
+                logger.debug(f"📋 Processing XYZ message from {topic}")
+                # TODO: Implementierung
+                self.last_update = datetime.now(timezone.utc)
+                logger.info(f"✅ XYZ data updated from {topic}")
+        except Exception as e:
+            logger.error(f"❌ Error processing XYZ message: {e}")
+
+    def get_xyz_data(self) -> Dict[str, Any]:
+        """Gibt XYZ-Daten zurück (für UI)"""
+        with self._lock:
+            return {
+                "data": self.xyz_data.copy(),
+                "last_update": self.last_update.isoformat() if self.last_update else None
+            }
+
+
+def get_xyz_manager() -> XyzManager:
+    """Get XYZ Manager singleton instance"""
+    global _xyz_manager_instance
+    if _xyz_manager_instance is None:
+        _xyz_manager_instance = XyzManager()
+        logger.info("🏗️ XYZ Manager singleton created")
+    return _xyz_manager_instance
+```
+
+---
+
+### **🧪 TESTING-STRATEGIE:**
+
+#### **Test 1: MQTT-Client Subscriptions**
+```bash
+# Starte Streamlit
+streamlit run omf2/omf.py
+
+# Prüfe Logs:
+# - "📡 Subscribed to topic: domain/xyz/topic1"
+# - Keine Subscription-Fehler
+```
+
+#### **Test 2: Gateway-Routing**
+```bash
+# Session Manager: Test-Message an domain/xyz/topic1 senden
+# Prüfe Logs:
+# - "🔀 Routing to xyz_manager: domain/xyz/topic1"
+# - "🏗️ XYZ Manager initialized via Gateway"
+```
+
+#### **Test 3: Manager Message-Processing**
+```bash
+# Test-Message senden
+# Prüfe Logs:
+# - "📋 Processing XYZ message from domain/xyz/topic1"
+# - "✅ XYZ data updated from domain/xyz/topic1"
+# - Keine Processing-Fehler
+```
+
+#### **Test 4: UI-Integration**
+```python
+# Python-Shell oder Streamlit
+from omf2.factory.gateway_factory import get_ccu_gateway
+gateway = get_ccu_gateway()
+xyz_data = gateway.get_xyz_data()
+print(xyz_data)  # Sollte Daten zeigen
+```
+
+---
+
+### **📚 REFERENZ-BEISPIELE:**
+
+**Einfacher Manager (State-Holder):**
+- `omf2/ccu/sensor_manager.py` - Sensor-Daten sammeln
+- `omf2/ccu/order_manager.py` - Inventory-Management
+
+**Komplexer Manager (Lifecycle-Management):**
+- `omf2/ccu/production_order_manager.py` - Order Tracking (active → completed)
+
+**Gateway-Integration:**
+- `omf2/ccu/ccu_gateway.py` - Zeilen 51-129 (Topic-Listen + Lazy Loading)
+- `omf2/ccu/ccu_gateway.py` - Zeilen 173-243 (Routing-Logik)
+
+**Registry-Konfiguration:**
+- `omf2/registry/mqtt_clients.yml` - Zeilen 105-190 (subscribed_topics + gateway_routing_hints)
+
+**Message Processing Pattern:**
+- `omf2/docs/MESSAGE_PROCESSING_PATTERN.md` - Standard-Pattern für alle Manager
+
+---
+
+### **⚠️ HÄUFIGE FEHLER (VERMEIDEN):**
+
+#### **1. File I/O im `__init__()`:**
+```python
+# ❌ FALSCH
+def __init__(self):
+    self.config = json.load(open("config.json"))  # ← BLOCKIERT UI!
+
+# ✅ KORREKT
+def __init__(self):
+    self.config = {}  # Lazy Loading später
+```
+
+#### **2. Verschachtelte Locks:**
+```python
+# ❌ FALSCH
+def get_data(self):
+    with self._lock:
+        return self._internal_method()  # ← Versucht Lock nochmal!
+
+def _internal_method(self):
+    with self._lock:  # ← DEADLOCK!
+        return {}
+```
+
+#### **3. Manager subscribed selbst Topics:**
+```python
+# ❌ FALSCH
+class XyzManager:
+    def __init__(self):
+        mqtt_client.subscribe("domain/xyz/topic1")  # ← NIEMALS!
+
+# ✅ KORREKT: Nur in mqtt_clients.yml!
+```
+
+#### **4. Message-Struktur Annahmen:**
+```python
+# ❌ FALSCH
+def process_message(self, topic, message, meta):
+    value = message["temperature"]  # ← KeyError möglich!
+
+# ✅ KORREKT
+def process_message(self, topic, message, meta):
+    logger.info(f"Message keys: {list(message.keys())}")  # ← Debug first!
+    value = message.get("t", 0.0)  # ← Echtes Feld-Name + Fallback
+```
+
+---
+
+### **📖 ZUSAMMENFASSUNG:**
+
+**Implementierungs-Reihenfolge (Bottom-Up):**
+1. **MQTT-Client** → Test Subscriptions
+2. **Gateway-Routing** → Test Routing
+3. **Manager** → Test Message-Processing
+4. **UI-Wrapper** → Test End-to-End
+
+**Kritische Erfolgsfaktoren:**
+- ✅ Non-Blocking `__init__()` (kein File I/O!)
+- ✅ Korrekte Lock-Hierarchie (keine verschachtelten Locks!)
+- ✅ Message Processing Pattern befolgen (Debug-Logging!)
+- ✅ Gateway-Pattern verwenden (Manager subscribed NICHT selbst!)
+- ✅ Singleton Factory Pattern (ein Manager pro Domain!)
+
+**Dokumentation-Must-Haves:**
+- ✅ Topics in `mqtt_clients.yml` (subscribed + routing_hints)
+- ✅ Gateway-Integration in `ccu_gateway.py` dokumentiert
+- ✅ Manager in `ARCHITECTURE.md` aufgeführt
+- ✅ Template-Code als Referenz
+
+---
+
 **Letzte Aktualisierung:** 2025-10-09  
 **Status:** VOLLSTÄNDIG IMPLEMENTIERT ✅  
 **Message Processing Pattern:** DOKUMENTIERT ✅  
