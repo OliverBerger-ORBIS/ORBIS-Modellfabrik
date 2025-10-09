@@ -2,18 +2,26 @@
 """
 CCU Shopfloor Layout Component
 Reusable component for displaying shopfloor layout from CCU Config Loader
+Enhanced with Asset Manager and improved visualization
 """
 
 import streamlit as st
 from omf2.ccu.config_loader import get_ccu_config_loader
 from omf2.common.logger import get_logger
 from omf2.ui.common.symbols import UISymbols
+from omf2.ui.utils.ui_refresh import request_refresh
+from omf2.assets import get_asset_manager
 
 logger = get_logger(__name__)
 
 
-def show_shopfloor_layout():
-    """Show shopfloor layout component"""
+def show_shopfloor_layout(active_module_id: str = None, show_controls: bool = True):
+    """Show enhanced shopfloor layout component with asset manager
+    
+    Args:
+        active_module_id: ID of currently active module (for highlighting)
+        show_controls: Whether to show zoom controls and metadata
+    """
     try:
         st.subheader("🗺️ Shopfloor Layout")
         st.write("Factory layout with modules, intersections, and connections")
@@ -22,19 +30,20 @@ def show_shopfloor_layout():
         config_loader = get_ccu_config_loader()
         layout_data = config_loader.load_shopfloor_layout()
         
-        # Show grid visualization
-        _show_shopfloor_grid(layout_data)
+        # Show enhanced grid visualization with asset manager
+        _show_enhanced_shopfloor_grid(layout_data, active_module_id)
         
-        # Show metadata
-        _show_shopfloor_metadata(layout_data)
+        # Show metadata if requested
+        if show_controls:
+            _show_shopfloor_metadata(layout_data)
         
     except Exception as e:
         logger.error(f"❌ Shopfloor layout display error: {e}")
         st.error(f"❌ Failed to load shopfloor layout: {e}")
 
 
-def _show_shopfloor_grid(layout_data):
-    """Show 4x3 grid visualization"""
+def _show_enhanced_shopfloor_grid(layout_data, active_module_id: str = None):
+    """Show enhanced 4x3 grid visualization with asset manager and highlighting (quadratic cells)"""
     grid = layout_data.get("grid", {})
     modules = layout_data.get("modules", [])
     intersections = layout_data.get("intersections", [])
@@ -43,9 +52,12 @@ def _show_shopfloor_grid(layout_data):
     rows = grid.get("rows", 3)
     columns = grid.get("columns", 4)
     
-    st.write(f"**Grid Layout ({rows}×{columns})** (Standard: {rows} rows × {columns} columns)")
+    st.write(f"**Grid Layout ({rows}×{columns})** - Quadratische Zellen für gleichmäßige Darstellung")
     
-    # Create grid array
+    # Get asset manager
+    asset_manager = get_asset_manager()
+    
+    # Create grid array - WICHTIG: [row][col] Format für korrekte Darstellung
     grid_array = [[None for _ in range(columns)] for _ in range(rows)]
     
     # Fill grid with modules (position format: [x, y] where x=column, y=row)
@@ -69,74 +81,74 @@ def _show_shopfloor_grid(layout_data):
         if 0 <= row < rows and 0 <= col < columns:
             grid_array[row][col] = {"type": "empty", "data": empty}
     
-    # Display grid
+    # Display enhanced grid with asset manager - Quadratische Zellen
     for row in range(rows):
         cols = st.columns(columns)
         for col in range(columns):
             with cols[col]:
                 cell = grid_array[row][col]
-                _display_grid_cell(cell, row, col)
+                _display_enhanced_grid_cell(cell, row, col, active_module_id, asset_manager)
 
 
-def _display_grid_cell(cell, row, col):
-    """Display individual grid cell"""
+def _display_enhanced_grid_cell(cell, row, col, active_module_id: str, asset_manager):
+    """Display enhanced individual grid cell with asset manager and highlighting (quadratic)"""
     if not cell:
-        st.info("Empty")
+        # Empty cell with asset manager - Quadratische Zelle
+        html = asset_manager.get_shopfloor_module_html("EMPTY", f"Empty_{row}_{col}", False, size=100)
+        st.markdown(html, unsafe_allow_html=True)
         return
     
     cell_type = cell.get("type")
     cell_data = cell.get("data", {})
     
+    # Check if this is the active module
+    is_active = False
+    if cell_type == "module" and active_module_id:
+        module_id = cell_data.get("id", "")
+        is_active = module_id == active_module_id
+    
     if cell_type == "module":
-        _display_module_cell(cell_data)
+        _display_enhanced_module_cell(cell_data, is_active, asset_manager)
     elif cell_type == "intersection":
-        _display_intersection_cell(cell_data)
+        _display_enhanced_intersection_cell(cell_data, is_active, asset_manager)
     elif cell_type == "empty":
-        _display_empty_cell(cell_data)
+        _display_enhanced_empty_cell(cell_data, is_active, asset_manager)
     else:
-        st.info("Unknown")
+        html = asset_manager.get_shopfloor_module_html("MACHINE", f"Unknown_{row}_{col}", is_active, size=100)
+        st.markdown(html, unsafe_allow_html=True)
 
 
-def _display_module_cell(module):
-    """Display module cell"""
+def _display_enhanced_module_cell(module, is_active: bool, asset_manager):
+    """Display enhanced module cell with asset manager (quadratic)"""
     module_id = module.get("id", "")
     module_type = module.get("type", "")
-    serial_number = module.get("serialNumber", "")
-    position = module.get("position", [0, 0])
     
-    # Get module icon from UISymbols or Registry
-    icon = _get_module_icon(module_type)
-    
-    st.markdown(f"**{icon} {module_id}**")
-    st.caption(f"Type: {module_type}")
-    st.caption(f"Serial: {serial_number}")
-    st.caption(f"Position: [{position[0]}, {position[1]}] (x=col, y=row)")
+    # Use asset manager for enhanced HTML display - Quadratische Zelle
+    html = asset_manager.get_shopfloor_module_html(module_type, module_id, is_active, size=100)
+    st.markdown(html, unsafe_allow_html=True)
 
 
-def _display_intersection_cell(intersection):
-    """Display intersection cell"""
+def _display_enhanced_intersection_cell(intersection, is_active: bool, asset_manager):
+    """Display enhanced intersection cell with asset manager (quadratic)"""
     intersection_id = intersection.get("id", "")
-    position = intersection.get("position", [0, 0])
-    connected_modules = intersection.get("connected_modules", [])
     
-    st.markdown(f"**➕ Intersection {intersection_id}**")
-    st.caption(f"Position: [{position[0]}, {position[1]}] (x=col, y=row)")
-    if connected_modules:
-        st.caption(f"Connected: {', '.join(connected_modules)}")
+    # Use asset manager for enhanced HTML display - Quadratische Zelle
+    html = asset_manager.get_shopfloor_module_html("INTERSECTION", intersection_id, is_active, size=100)
+    st.markdown(html, unsafe_allow_html=True)
 
 
-def _display_empty_cell(empty):
-    """Display empty cell"""
+def _display_enhanced_empty_cell(empty, is_active: bool, asset_manager):
+    """Display enhanced empty cell with asset manager (quadratic)"""
     empty_id = empty.get("id", "")
-    position = empty.get("position", [0, 0])
     
-    st.markdown(f"**⚪ {empty_id}**")
-    st.caption(f"Position: [{position[0]}, {position[1]}] (x=col, y=row)")
-    st.caption("Empty Position")
+    # Use asset manager for enhanced HTML display - Quadratische Zelle
+    html = asset_manager.get_shopfloor_module_html("EMPTY", empty_id, is_active, size=100)
+    st.markdown(html, unsafe_allow_html=True)
 
 
+# Legacy function - now handled by Asset Manager
 def _get_module_icon(module_type):
-    """Get icon for module type"""
+    """Get icon for module type (legacy - use Asset Manager instead)"""
     icon_mapping = {
         "HBW": "🏬",      # High Bay Warehouse
         "MILL": "⚙️",     # Mill
@@ -217,3 +229,57 @@ def get_intersection_positions():
     except Exception as e:
         logger.error(f"❌ Failed to get intersection positions: {e}")
         return []
+
+
+def show_shopfloor_grid_only(active_module_id: str = None, title: str = "Shopfloor Layout"):
+    """Show only the shopfloor grid without metadata (for reuse in other components)
+    
+    Args:
+        active_module_id: ID of currently active module (for highlighting)
+        title: Optional title for the grid
+    """
+    try:
+        if title:
+            st.subheader(f"🗺️ {title}")
+        
+        # Load shopfloor layout from CCU Config Loader
+        config_loader = get_ccu_config_loader()
+        layout_data = config_loader.load_shopfloor_layout()
+        
+        # Show enhanced grid visualization only
+        _show_enhanced_shopfloor_grid(layout_data, active_module_id)
+        
+    except Exception as e:
+        logger.error(f"❌ Shopfloor grid display error: {e}")
+        st.error(f"❌ Failed to load shopfloor grid: {e}")
+
+
+def show_shopfloor_with_zoom_controls(active_module_id: str = None):
+    """Show shopfloor layout with zoom controls (like in original application)"""
+    try:
+        st.subheader("🗺️ Shopfloor Layout")
+        
+        # Zoom controls (like in original application)
+        col1, col2, col3 = st.columns([1, 1, 4])
+        with col1:
+            if st.button("🔍+", help="Zoom In"):
+                st.session_state.shopfloor_zoom = st.session_state.get("shopfloor_zoom", 100) + 10
+                request_refresh()
+        with col2:
+            if st.button("🔍-", help="Zoom Out"):
+                st.session_state.shopfloor_zoom = max(50, st.session_state.get("shopfloor_zoom", 100) - 10)
+                request_refresh()
+        with col3:
+            zoom_level = st.session_state.get("shopfloor_zoom", 100)
+            st.write(f"Zoom: {zoom_level}%")
+        
+        # Load and display shopfloor layout
+        config_loader = get_ccu_config_loader()
+        layout_data = config_loader.load_shopfloor_layout()
+        
+        # Show enhanced grid with zoom
+        _show_enhanced_shopfloor_grid(layout_data, active_module_id)
+        
+    except Exception as e:
+        logger.error(f"❌ Shopfloor layout with controls error: {e}")
+        st.error(f"❌ Failed to load shopfloor layout: {e}")

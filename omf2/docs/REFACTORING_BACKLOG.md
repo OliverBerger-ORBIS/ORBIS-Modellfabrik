@@ -32,7 +32,7 @@ Die Tabelle zeigt den aktuellen Status aller Komponenten und dokumentiert, was i
 | - Inventory Subtab                          | `ui/ccu/ccu_overview/inventory_subtab.py` | ✅ | 3x3 Grid (A1-C3), Bucket Display, UISymbols, FIFO-ready |
 | - Product Catalog Subtab                    | `ui/ccu/ccu_overview/product_catalog_subtab.py` | ✅ | BLUE, WHITE, RED workflows |
 | - Sensor Data Subtab                        | `ui/ccu/ccu_overview/sensor_data_subtab.py` | ✅ | Module Sensors (Temp, Pressure, Status) |
-| Operator Tabs (CCU Aufträge.)              | `ui/ccu/orders/ccu_orders_tab.py`       | ❌ | workflow-Order Manager               |
+| Operator Tabs (CCU Aufträge.)              | `ui/ccu/orders/ccu_orders_tab.py`       | ❌ | Production-Order Manager (managed auch STORAGE-Orders)              |
 | Operator Tabs (CCU Prozesse.)              | `ui/ccu/process/ccu_process_tab.py`     | ✅ | Modular, Icons, i18n, MQ-Integration |
 | Operator Tabs (CCU Konfiguration)          | `ui/ccu/configuration/ccu_configuration_tab.py` | ✅ | Modular, Icons, i18n, MQ-Integration |
 | Supervisor-Erweiterungen                   | `ui/nodered/*`, WL Module/System Ctrl   | ❌ | Tab-Freischaltung via Rolle, modular |
@@ -52,6 +52,8 @@ Die Tabelle zeigt den aktuellen Status aller Komponenten und dokumentiert, was i
 | publish über gateway client               | `ccu_gateway.publish_message()`          | ✅ | Gateway → MQTT Client publish() (korrigiert), kein mqtt_timestamp|
 | CCU Module              | Configured über factsheet,                   | ❌ | wenn factsheet, dann configured = true|
 | CCU Overview sensor -data             | UI- schöner machen                  | ❌ | Darstellung von TEmp Druck , Bilder Camera-Befehle|
+| factory_layout           | Ui verwendet ICONs und png von omf                | ❌ | Darstellung wie in omf/ mit 3X4 grid (oder 4x3) Grid|
+
 
 ---
 
@@ -144,32 +146,11 @@ Die Tabelle zeigt den aktuellen Status aller Komponenten und dokumentiert, was i
 - **Logging-System:** 100% (Best Practice mit UI-Integration)
 - **Testing:** 100% (55 Tests erfolgreich)
 
-### **❌ NOCH NICHT IMPLEMENTIERT:**
-- **UI-Komponenten:** 0% (Alle CCU und Admin Tabs fehlen)
+### **❌ NOCH NICHT vollständig IMPLEMENTIERT:**
 - **Rollenbasierte Zugriffskontrolle:** 0%
 - **Internationalisierung:** 0%
 - **UI-Symbol-System:** 0%
 - **UI-Refresh-Pattern:** 0%
-
----
-
-## 🎯 NÄCHSTE SCHRITTE
-
-### **📋 PRIORITÄT 1: UI-Komponenten implementieren**
-1. **CCU UI-Tabs** (Overview, Orders, Process, Configuration)
-2. **Admin UI-Tabs** (Steering, Message Center, Settings)
-3. **UI-Symbol-System** (UISymbols-Klasse)
-4. **UI-Refresh-Pattern** (request_refresh statt st.rerun)
-
-### **📋 PRIORITÄT 2: Rollenbasierte Zugriffskontrolle**
-1. **User-Roles-Konfiguration**
-2. **Dynamische Tab-Generierung**
-3. **Rollenbasierte Sichtbarkeit**
-
-### **📋 PRIORITÄT 3: Internationalisierung**
-1. **i18n-System** (DE/EN/FR)
-2. **Dynamische Sprachwahl**
-3. **UI-Text-Externalisierung**
 
 ---
 

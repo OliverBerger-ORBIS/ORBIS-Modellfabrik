@@ -1,0 +1,12 @@
+{
+  "topic": "ccu/order/request",
+  "payload": {
+    "type": "WHITE",
+    "timestamp": "2025-10-09T10:40:00.000Z",
+    "orderType": "PRODUCTION"
+  },
+  "qos": 2,
+  "retain": false,
+  "description": "WHITE Production Order DIREKT via ccu/order/request (bypassed TXT Gateway)"
+}
+

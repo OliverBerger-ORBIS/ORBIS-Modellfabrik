@@ -239,12 +239,14 @@ sequenceDiagram
     
     FTS->>MQTT: 7. Publish fts/v1/ff/5iO4/state<br/>{"orderId":"598cba14-...","state":"DOCKED"}
     
-    CCU->>MQTT: 8. Publish module/v1/ff/<serial>/instantAction<br/>(falls nötig)
+    CCU->>MQTT: 8. Publish module/v1/ff/<serial>/order ⭐<br/>{"orderId":"598cba14-...","action":{"command":"PICK"}}
+    MQTT->>NodeRed: NodeRed subscribed!
     
-    MQTT->>NodeRed: 9. MQTT → OPC-UA Translation
-    NodeRed->>Module: OPC-UA Command
-    Module->>NodeRed: OPC-UA Status
-    NodeRed->>MQTT: Publish module/v1/ff/<serial>/state<br/>{"orderId":"598cba14-..."}
+    Note over NodeRed: NodeRed empfängt Order-Command<br/>Function: "sub order"
+    
+    NodeRed->>Module: 9. OPC-UA Write (PICK Command)
+    Module->>NodeRed: 10. OPC-UA Read (Status)
+    NodeRed->>MQTT: 11. Publish module/v1/ff/NodeRed/<serial>/state<br/>{"orderId":"598cba14-...","actionState":"FINISHED"}
     
     CCU->>MQTT: 10. Update ccu/order/active<br/>[{"orderId":"598cba14-...","state":"IN_PROGRESS"}]
     
@@ -266,10 +268,15 @@ sequenceDiagram
 5. CCU-Backend startet Workflow-Orchestration
 6. CCU-Backend published → fts/v1/ff/5iO4/order → Navigation-Order
 7. FTS fährt zu Target-Modul
-8. CCU-Backend published → module/v1/ff/<serial>/instantAction → (falls nötig)
-9. Module arbeiten via OPC-UA (NodeRed Bridge)
-10. CCU-Backend updated → ccu/order/active
-11. Bei Completion → ccu/order/completed
+8. CCU-Backend published → module/v1/ff/<serial>/order ⭐ → Production Command
+9. NodeRed subscribed → empfängt Order (Function: "sub order")
+10. NodeRed → OPC-UA Write → SPS-Modul (Command)
+11. SPS-Modul arbeitet, NodeRed pollt via OPC-UA Read
+12. NodeRed published → module/v1/ff/NodeRed/<serial>/state (enriched)
+13. CCU-Backend updated → ccu/order/active
+14. Bei Completion → ccu/order/completed
+
+⭐ KORRIGIERT: CCU published module/.../order, NodeRed subscribed + übersetzt zu OPC-UA
 ```
 
 ## 🔑 Wichtige Erkenntnisse
@@ -282,15 +289,17 @@ sequenceDiagram
 - ✅ Sendet InstantActions an Module
 - ✅ Published State-Updates
 
-### 2. **NodeRed = OPC-UA Bridge**
-- ✅ Übersetzt MQTT → OPC-UA für MILL/DRILL/HBW
-- ✅ Enriched States von DPS/AIQS
-- ❌ NICHT beteiligt an Order-Management/UUID-Generierung
+### 2. **NodeRed = OPC-UA Bridge (bidirektional)** ⭐ KORRIGIERT
+- ✅ **Subscribed zu:** `module/v1/ff/<serial>/order` (Production Commands)
+- ✅ **Übersetzt MQTT → OPC-UA:** Commands an ALLE Module (HBW, MILL, DRILL, DPS, AIQS)
+- ✅ **Übersetzt OPC-UA → MQTT:** State-Updates mit orderId-Enrichment
+- ❌ **NICHT:** Order-Management, UUID-Generierung
 
-### 3. **Module empfangen über verschiedene Wege:**
-- **MILL/DRILL/HBW:** NodeRed sendet via OPC-UA (NICHT MQTT!)
-- **DPS/AIQS/FTS:** CCU-Backend sendet `instantAction` via MQTT (optional)
-- **FTS:** CCU-Backend sendet `order` via MQTT (primär)
+### 3. **Alle Production-Module empfangen via NodeRed:** ⭐ KORRIGIERT
+- ✅ **Alle Commands:** CCU → MQTT (`module/.../order`) → NodeRed → OPC-UA → SPS
+- ✅ **Gilt für:** HBW, MILL, DRILL, DPS, AIQS (ALLE!)
+- ✅ **NodeRed ist ZWINGEND** für SPS-Ansteuerung
+- ✅ **TXT-Controller:** NUR für Sensoren/Kamera (NICHT Production Commands)
 
 ### 4. **FTS bekommt ALLE Navigation-Orders:**
 - CCU-Backend orchestriert FTS-Routen

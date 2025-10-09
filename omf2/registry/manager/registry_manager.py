@@ -103,15 +103,19 @@ class RegistryManager:
                         for topic_data in topics_list:
                             if isinstance(topic_data, dict) and 'topic' in topic_data:
                                 topic_name = topic_data['topic']
-                                self.topics[topic_name] = {
+                                # Load ALL fields from YML (not just hardcoded subset)
+                                # This allows extended fields like semantic_role, omf2_usage, etc.
+                                topic_info = {
                                     'topic': topic_name,
-                                    'qos': topic_data.get('qos', 1),
-                                    'retain': topic_data.get('retain', 0),
-                                    'schema': topic_data.get('schema'),
-                                    'description': topic_data.get('description'),
                                     'category': file_category,
                                     'file': topic_file.name
                                 }
+                                # Copy ALL fields from YML
+                                for key, value in topic_data.items():
+                                    if key != 'topic':  # topic already set
+                                        topic_info[key] = value
+                                
+                                self.topics[topic_name] = topic_info
                                 
                 logger.info(f"📡 Loaded topics from {topic_file.name}")
                 

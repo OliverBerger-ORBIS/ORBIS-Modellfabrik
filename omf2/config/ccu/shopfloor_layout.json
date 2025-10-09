@@ -27,19 +27,19 @@
       "id": "MILL",
       "type": "MILL",
       "serialNumber": "SVR3QA2098", 
-      "position": [0, 1]
+      "position": [1, 0]
     },
     {
       "id": "AIQS",
       "type": "AIQS",
       "serialNumber": "SVR4H76530",
-      "position": [0, 2]
+      "position": [2, 0]
     },
     {
       "id": "HBW",
       "type": "HBW", 
       "serialNumber": "SVR3QA0022",
-      "position": [1, 0]
+      "position": [0, 1]
     },
     {
       "id": "DPS",
@@ -51,7 +51,7 @@
       "id": "DRILL",
       "type": "DRILL", 
       "serialNumber": "SVR4H76449",
-      "position": [2, 0]
+      "position": [0, 2]
     },
     {
       "id": "CHRG",

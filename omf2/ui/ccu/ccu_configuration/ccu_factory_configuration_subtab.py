@@ -28,11 +28,6 @@ def render_ccu_factory_configuration_subtab():
         # Shopfloor Layout Display
         _show_shopfloor_layout_section()
         
-        st.divider()
-        
-        # Layout Information
-        _show_layout_information_section()
-        
     except Exception as e:
         logger.error(f"❌ CCU Factory Configuration Subtab rendering error: {e}")
         st.error(f"❌ CCU Factory Configuration Subtab failed: {e}")
@@ -63,61 +58,20 @@ def _show_factory_controls():
 
 
 def _show_shopfloor_layout_section():
-    """Show shopfloor layout section"""
+    """Show enhanced shopfloor layout section with asset manager"""
     try:
-        # Import and use the reusable shopfloor layout component
-        from omf2.ui.ccu.common.shopfloor_layout import show_shopfloor_layout
+        # Import and use the enhanced reusable shopfloor layout component
+        from omf2.ui.ccu.common.shopfloor_layout import show_shopfloor_grid_only
         
-        # Show the shopfloor layout
-        show_shopfloor_layout()
+        # Show the enhanced shopfloor layout without problematic controls
+        show_shopfloor_grid_only(title="Shopfloor Layout")
         
     except Exception as e:
         st.error(f"❌ Failed to load shopfloor layout: {e}")
         logger.error(f"Failed to load shopfloor layout: {e}")
 
 
-def _show_layout_information_section():
-    """Show layout information section"""
-    try:
-        # Load layout data for information display
-        config_loader = get_ccu_config_loader()
-        layout_data = config_loader.load_shopfloor_layout()
-        
-        # Show layout statistics
-        modules = layout_data.get("modules", [])
-        intersections = layout_data.get("intersections", [])
-        roads = layout_data.get("roads", [])
-        empty_positions = layout_data.get("empty_positions", [])
-        
-        col1, col2, col3, col4 = st.columns(4)
-        
-        with col1:
-            st.metric("Modules", len(modules))
-        
-        with col2:
-            st.metric("Intersections", len(intersections))
-        
-        with col3:
-            st.metric("Roads", len(roads))
-        
-        with col4:
-            st.metric("Empty Positions", len(empty_positions))
-        
-        # Show module details
-        if modules:
-            with st.expander("📋 Module Details", expanded=False):
-                for module in modules:
-                    module_id = module.get("id", "Unknown")
-                    module_type = module.get("type", "Unknown")
-                    serial_number = module.get("serialNumber", "Unknown")
-                    position = module.get("position", [0, 0])
-                    
-                    st.write(f"**{module_id}** ({module_type})")
-                    st.caption(f"Serial: {serial_number} | Position: [{position[0]}, {position[1]}]")
-        
-    except Exception as e:
-        logger.error(f"❌ Failed to show layout information: {e}")
-        st.error(f"❌ Failed to load layout information: {e}")
+# Layout Information Sektion entfernt - uninteressant
 
 
 def _load_factory_layout():

@@ -1,85 +1,261 @@
 metadata:
-  version: 2.0.0
-  last_updated: '2025-09-28'
+  version: 2.1.0
+  last_updated: '2025-10-09'
   author: OMF Development Team
-  description: Node-RED Topics mit QoS/Retain und Publisher/Subscriber-Mapping
+  description: Node-RED Topics (OPC-UA → MQTT Bridge + State Enrichment)
+  note: "NodeRed acts as: 1) OPC-UA Bridge for modules WITHOUT TXT, 2) State Enrichment for modules WITH TXT"
 category: nodered
 nodered_topics:
 - topic: module/v1/ff/NodeRed/SVR3QA0022/connection
   qos: 1
   retain: 1
   schema: module_v1_ff_serial_connection.schema.json
-  description: TODO
+  description: "HBW Connection-Status via NodeRed (OPC-UA Bridge)"
+  assumption: TODO
+  # APS as-IS Observation:
+  observed_publisher_aps: "NodeRed (OPC-UA → MQTT Bridge)"
+  observed_subscriber_aps: "CCU-Backend (Pairing Module), Dashboards"
+  # OMF2 Guidance (manual configuration):
+  semantic_role: connection_status_bridged
+  triggers: null
+  omf2_usage: "ModuleManager → subscribe for HBW connection (via NodeRed bridge)"
+  omf2_note: "HBW has NO TXT - NodeRed is the ONLY MQTT source for HBW"
+  # Verification:
+  verified: false
+  data_source: "Not found in orderBlueLocal (already connected)"
 - topic: module/v1/ff/NodeRed/SVR3QA0022/state
   qos: 2
   retain: 1
   schema: module_v1_ff_serial_state.schema.json
-  description: TODO
+  description: "HBW State via NodeRed (OPC-UA Bridge) - enriched with orderId"
+  assumption: TODO
+  # APS as-IS Observation:
+  observed_publisher_aps: "NodeRed (reads OPC-UA, enriches with orderId from workflow context)"
+  observed_subscriber_aps: "CCU-Backend (Stock Management), Dashboards"
+  # OMF2 Guidance (manual configuration):
+  semantic_role: warehouse_state_enriched
+  triggers: null
+  omf2_usage: "StockManager → subscribe for HBW state (includes orderId tracking)"
+  omf2_note: "NodeRed enriches OPC-UA state with orderId from workflow context"
+  # Verification:
+  verified: false
+  data_source: "Not found in orderBlueLocal (HBW not used in this workflow)"
 - topic: module/v1/ff/NodeRed/SVR3QA0022/factsheet
   qos: 2
   retain: 1
   schema: module_v1_ff_serial_factsheet.schema.json
-  description: TODO
+  description: "HBW Factsheet via NodeRed (OPC-UA Bridge)"
+  assumption: TODO
+  # APS as-IS Observation:
+  observed_publisher_aps: "NodeRed (reads from OPC-UA, transforms to MQTT)"
+  observed_subscriber_aps: "CCU-Backend, Dashboards"
+  # OMF2 Guidance (manual configuration):
+  semantic_role: capability_announcement_bridged
+  triggers: null
+  omf2_usage: "ModuleManager → subscribe for HBW capabilities (via NodeRed)"
+  # Verification:
+  verified: false
+  data_source: "Not found in orderBlueLocal"
 - topic: module/v1/ff/NodeRed/SVR4H76449/connection
   qos: 1
   retain: 1
   schema: module_v1_ff_serial_connection.schema.json
-  description: TODO
+  description: "DRILL Connection via NodeRed (OPC-UA Bridge - ONLY source)"
+  assumption: TODO
+  # APS as-IS Observation:
+  observed_publisher_aps: "NodeRed (OPC-UA → MQTT Bridge)"
+  observed_subscriber_aps: "CCU-Backend, Dashboards"
+  # OMF2 Guidance (manual configuration):
+  semantic_role: connection_status_bridged
+  triggers: null
+  omf2_usage: "ModuleManager → subscribe for DRILL connection (REQUIRED - no TXT)"
+  omf2_note: "DRILL has NO TXT - NodeRed is the ONLY MQTT source"
+  # Verification:
+  verified: false
+  data_source: "Not found in orderBlueLocal"
 - topic: module/v1/ff/NodeRed/SVR4H76449/state
   qos: 2
   retain: 1
   schema: module_v1_ff_serial_state.schema.json
-  description: TODO
+  description: "DRILL State via NodeRed (OPC-UA Bridge - ONLY source)"
+  assumption: TODO
+  # APS as-IS Observation:
+  observed_publisher_aps: "NodeRed (OPC-UA → MQTT Bridge)"
+  observed_subscriber_aps: "CCU-Backend (Order Management), Dashboards"
+  # OMF2 Guidance (manual configuration):
+  semantic_role: module_state_bridged
+  triggers: null
+  omf2_usage: "ProductionOrderManager → subscribe for DRILL state (REQUIRED - no TXT)"
+  omf2_note: "DRILL has NO TXT - NodeRed is the ONLY MQTT source for state"
+  # Verification:
+  verified: false
+  data_source: "Not found in orderBlueLocal (DRILL not used)"
 - topic: module/v1/ff/NodeRed/SVR4H76449/factsheet
   qos: 2
   retain: 1
   schema: module_v1_ff_serial_factsheet.schema.json
-  description: TODO
+  description: "DRILL Factsheet via NodeRed (OPC-UA Bridge)"
+  assumption: TODO
+  # APS as-IS Observation:
+  observed_publisher_aps: "NodeRed (OPC-UA → MQTT)"
+  observed_subscriber_aps: "CCU-Backend, Dashboards"
+  # OMF2 Guidance (manual configuration):
+  semantic_role: capability_announcement_bridged
+  triggers: null
+  omf2_usage: "ModuleManager → subscribe for DRILL capabilities (REQUIRED - via NodeRed)"
+  # Verification:
+  verified: false
+  data_source: "Not found in orderBlueLocal"
 - topic: module/v1/ff/NodeRed/SVR3QA2098/connection
   qos: 1
   retain: 1
   schema: module_v1_ff_serial_connection.schema.json
-  description: TODO
+  description: "MILL Connection via NodeRed (OPC-UA Bridge - ONLY source)"
+  assumption: TODO
+  # APS as-IS Observation:
+  observed_publisher_aps: "NodeRed (OPC-UA → MQTT Bridge)"
+  observed_subscriber_aps: "CCU-Backend, Dashboards"
+  # OMF2 Guidance (manual configuration):
+  semantic_role: connection_status_bridged
+  triggers: null
+  omf2_usage: "ModuleManager → subscribe for MILL connection (REQUIRED - no TXT)"
+  omf2_note: "MILL has NO TXT - NodeRed is the ONLY MQTT source"
+  # Verification:
+  verified: false
+  data_source: "Not found in orderBlueLocal"
 - topic: module/v1/ff/NodeRed/SVR3QA2098/state
   qos: 2
   retain: 1
   schema: module_v1_ff_serial_state.schema.json
-  description: TODO
+  description: "MILL State via NodeRed (OPC-UA Bridge - ONLY source)"
+  assumption: TODO
+  # APS as-IS Observation:
+  observed_publisher_aps: "NodeRed (OPC-UA → MQTT Bridge)"
+  observed_subscriber_aps: "CCU-Backend (Order Management), Dashboards"
+  # OMF2 Guidance (manual configuration):
+  semantic_role: module_state_bridged
+  triggers: null
+  omf2_usage: "ProductionOrderManager → subscribe for MILL state (REQUIRED - no TXT)"
+  omf2_note: "MILL has NO TXT - NodeRed is the ONLY MQTT source for state"
+  # Verification:
+  verified: false
+  data_source: "Not found in orderBlueLocal (MILL not used)"
 - topic: module/v1/ff/NodeRed/SVR3QA2098/factsheet
   qos: 2
   retain: 1
   schema: module_v1_ff_serial_factsheet.schema.json
-  description: TODO
+  description: "MILL Factsheet via NodeRed (OPC-UA Bridge)"
+  assumption: TODO
+  # APS as-IS Observation:
+  observed_publisher_aps: "NodeRed (OPC-UA → MQTT)"
+  observed_subscriber_aps: "CCU-Backend, Dashboards"
+  # OMF2 Guidance (manual configuration):
+  semantic_role: capability_announcement_bridged
+  triggers: null
+  omf2_usage: "ModuleManager → subscribe for MILL capabilities (REQUIRED - via NodeRed)"
+  # Verification:
+  verified: false
+  data_source: "Not found in orderBlueLocal"
 - topic: module/v1/ff/NodeRed/SVR4H76530/connection
   qos: 1
   retain: 1
   schema: module_v1_ff_serial_connection.schema.json
-  description: TODO
+  description: "AIQS Connection via NodeRed (State Enrichment)"
+  assumption: TODO
+  # APS as-IS Observation:
+  observed_publisher_aps: "NodeRed (reads OPC-UA, enriches)"
+  observed_subscriber_aps: "CCU-Backend, Dashboards"
+  # OMF2 Guidance (manual configuration):
+  semantic_role: connection_status_enriched
+  triggers: null
+  omf2_usage: "ModuleManager → subscribe for AIQS connection (enriched by NodeRed)"
+  omf2_note: "AIQS has TXT+OPC-UA: NodeRed reads OPC-UA and enriches TXT data"
+  # Verification:
+  verified: true
+  data_source: "Session orderBlueLocal - 2 messages"
 - topic: module/v1/ff/NodeRed/SVR4H76530/state
   qos: 2
   retain: 1
   schema: module_v1_ff_serial_state.schema.json
-  description: TODO
+  description: "AIQS State via NodeRed - enriched with orderId and workflow context"
+  assumption: TODO
+  # APS as-IS Observation:
+  observed_publisher_aps: "NodeRed (reads OPC-UA, enriches with orderId)"
+  observed_subscriber_aps: "CCU-Backend (Order Management), Dashboards"
+  # OMF2 Guidance (manual configuration):
+  semantic_role: module_state_enriched
+  triggers: null
+  omf2_usage: "ProductionOrderManager → subscribe for AIQS state with orderId tracking"
+  omf2_note: "NodeRed enriches raw AIQS state with orderId from workflow - use for order progress tracking"
+  # Verification:
+  verified: true
+  data_source: "Session orderBlueLocal - 2 messages"
 - topic: module/v1/ff/NodeRed/SVR4H76530/factsheet
   qos: 2
   retain: 1
   schema: module_v1_ff_serial_factsheet.schema.json
-  description: TODO
+  description: "AIQS Factsheet via NodeRed (OPC-UA Bridge)"
+  assumption: TODO
+  # APS as-IS Observation:
+  observed_publisher_aps: "NodeRed (reads from OPC-UA)"
+  observed_subscriber_aps: "CCU-Backend, Dashboards"
+  # OMF2 Guidance (manual configuration):
+  semantic_role: capability_announcement_bridged
+  triggers: null
+  omf2_usage: "ModuleManager → subscribe for AIQS capabilities (via NodeRed)"
+  # Verification:
+  verified: true
+  data_source: "Session orderBlueLocal - 2 messages"
 - topic: module/v1/ff/NodeRed/SVR4H73275/connection
   qos: 1
   retain: 1
   schema: module_v1_ff_serial_connection.schema.json
-  description: TODO
+  description: "DPS Connection via NodeRed (State Enrichment)"
+  assumption: TODO
+  # APS as-IS Observation:
+  observed_publisher_aps: "NodeRed (reads OPC-UA, enriches)"
+  observed_subscriber_aps: "CCU-Backend, Dashboards"
+  # OMF2 Guidance (manual configuration):
+  semantic_role: connection_status_enriched
+  triggers: null
+  omf2_usage: "ModuleManager → subscribe for DPS connection (enriched by NodeRed)"
+  omf2_note: "DPS has TXT+OPC-UA: NodeRed reads OPC-UA and enriches TXT data"
+  # Verification:
+  verified: true
+  data_source: "Session orderBlueLocal - 2 messages"
 - topic: module/v1/ff/NodeRed/SVR4H73275/state
   qos: 2
   retain: 1
   schema: module_v1_ff_serial_state.schema.json
-  description: TODO
+  description: "DPS State via NodeRed - enriched with orderId and workflow context"
+  assumption: TODO
+  # APS as-IS Observation:
+  observed_publisher_aps: "NodeRed (reads OPC-UA, enriches with orderId)"
+  observed_subscriber_aps: "CCU-Backend (Order Management), Dashboards"
+  # OMF2 Guidance (manual configuration):
+  semantic_role: module_state_enriched
+  triggers: null
+  omf2_usage: "ProductionOrderManager → subscribe for DPS state with orderId tracking"
+  omf2_note: "NodeRed enriches raw DPS state with orderId from workflow - use for order progress tracking"
+  # Verification:
+  verified: true
+  data_source: "Session orderBlueLocal - 2 messages"
 - topic: module/v1/ff/NodeRed/SVR4H73275/factsheet
   qos: 2
   retain: 1
   schema: module_v1_ff_serial_factsheet.schema.json
-  description: TODO
+  description: "DPS Factsheet via NodeRed (OPC-UA Bridge)"
+  assumption: TODO
+  # APS as-IS Observation:
+  observed_publisher_aps: "NodeRed (reads from OPC-UA)"
+  observed_subscriber_aps: "CCU-Backend, Dashboards"
+  # OMF2 Guidance (manual configuration):
+  semantic_role: capability_announcement_bridged
+  triggers: null
+  omf2_usage: "ModuleManager → subscribe for DPS capabilities (via NodeRed)"
+  # Verification:
+  verified: true
+  data_source: "Session orderBlueLocal - 2 messages"
 - topic: module/v1/ff/NodeRed/CHRG0/connection
   qos: 1
   retain: 1
@@ -99,4 +275,51 @@ nodered_topics:
   qos: 1
   retain: 1
   schema: wildcard.schema.json
-  description: TODO
+  description: "NodeRed Health/Status - indicates NodeRed service is running"
+  assumption: TODO
+  # APS as-IS Observation:
+  observed_publisher_aps: "NodeRed (self-announcement)"
+  observed_subscriber_aps: "CCU-Backend, Monitoring Systems"
+  # OMF2 Guidance (manual configuration):
+  semantic_role: service_health
+  triggers: null
+  omf2_usage: "SystemMonitor → subscribe for NodeRed health/availability"
+  # Verification:
+  verified: true
+  data_source: "Session orderBlueLocal - 2 messages"
+
+# ==============================================================================
+# NODERED TOPIC SEMANTICS
+# ==============================================================================
+#
+# NodeRed Role in APS:
+#   1. OPC-UA → MQTT Bridge:
+#      - Module OHNE TXT (HBW, MILL, DRILL): NodeRed ist DIE EINZIGE MQTT-Quelle
+#      - Liest OPC-UA Daten und transformiert zu MQTT Topics
+#
+#   2. State Enrichment:
+#      - Module MIT TXT (DPS, AIQS): Haben eigene MQTT-Topics
+#      - NodeRed liest PARALLEL via OPC-UA
+#      - Enriches State mit orderId aus Workflow-Context
+#      - Published als "NodeRed-enriched" Version
+#
+# Topic Pattern:
+#   module/v1/ff/NodeRed/<serial>/<action>
+#                ^^^^^^^^ ← Indicates: "Transformed/Enriched by NodeRed"
+#
+# Duplicate Topics Explained:
+#   DPS/AIQS erscheinen DOPPELT:
+#   - module/v1/ff/SVR4H73275/state        ← RAW from TXT-Controller
+#   - module/v1/ff/NodeRed/SVR4H73275/state ← ENRICHED by NodeRed (with orderId)
+#
+#   HBW/MILL/DRILL erscheinen NUR mit NodeRed:
+#   - module/v1/ff/NodeRed/SVR3QA0022/state ← ONLY source (no TXT)
+#
+# OMF2 Usage Pattern:
+#   - For modules WITHOUT TXT: Subscribe to NodeRed topics (REQUIRED)
+#   - For modules WITH TXT: Subscribe to NodeRed topics for orderId tracking (OPTIONAL)
+#   - RAW TXT topics provide fast updates, NodeRed topics provide workflow context
+#
+# Data Source: Session orderBlueLocal_orderRedCloud_20251009_103935
+# Verified: 4 topics (DPS, AIQS connection/state/factsheet)
+# Analysis Date: 2025-10-09

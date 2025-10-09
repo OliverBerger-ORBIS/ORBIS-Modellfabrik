@@ -74,7 +74,8 @@ graph TB
 
 **Publishes:**
 - `ccu/order/response`, `ccu/order/active`, `ccu/order/completed`
-- `fts/v1/ff/<serial>/order`
+- `fts/v1/ff/<serial>/order` ⭐
+- `module/v1/ff/<serial>/order` ⭐ **Production Commands** (ALLE Module!)
 - `module/v1/ff/<serial>/instantAction`
 - `ccu/pairing/state`, `ccu/state/stock`, `ccu/state/flows`
 
@@ -87,7 +88,7 @@ graph TB
 
 ### 2. NodeRed
 
-**Rolle:** OPC-UA ↔ MQTT Bridge & State-Enrichment
+**Rolle:** OPC-UA ↔ MQTT Bridge (Commands + Telemetrie)
 
 | Eigenschaft | Wert |
 |-------------|------|
@@ -95,7 +96,7 @@ graph TB
 | **IP** | 172.18.0.4 (Docker) |
 | **Port** | 1880 (Admin API) |
 | **Instances** | 2 (SUB + PUB) |
-| **Hauptfunktion** | OPC-UA zu MQTT Übersetzung für MILL/DRILL/HBW |
+| **Hauptfunktion** | Bidirektionale OPC-UA ↔ MQTT Bridge für ALLE Module |
 
 **Client-IDs:**
 - `nodered_abe9e421b6fe3efd` (SUB - Monitoring)
@@ -371,19 +372,50 @@ CCU-Backend → fts/v1/ff/5iO4/order → MQTT → TXT-FTS
 TXT-FTS → fts/v1/ff/5iO4/state → MQTT → CCU-Backend
 ```
 
-### Pattern 3: CCU-Backend → Module (via NodeRed)
+### Pattern 3: CCU-Backend → Module (via NodeRed) ⭐ KORRIGIERT
+
+**Production Commands (bidirektional):**
 ```
-CCU-Backend → module/v1/ff/<serial>/instantAction → MQTT → NodeRed
-NodeRed → OPC-UA Command → SPS-Modul
-SPS-Modul → OPC-UA Status → NodeRed
-NodeRed → module/v1/ff/<serial>/state → MQTT → CCU-Backend
+CCU-Backend → module/v1/ff/<serial>/order → MQTT → NodeRed subscribed
+NodeRed → OPC-UA Write (Command) → SPS-Modul
+SPS-Modul → OPC-UA Read (Status) → NodeRed
+NodeRed → module/v1/ff/NodeRed/<serial>/state → MQTT → CCU-Backend
 ```
 
-### Pattern 4: TXT direkt → Dashboard
+**Instant Actions (z.B. LED-Steuerung):**
 ```
-TXT-DPS → /j1/txt/1/i/cam → MQTT → Dashboard (Kamera-Stream)
-TXT-AIQS → /j1/txt/1/i/bme680 → MQTT → Dashboard (Sensoren)
+CCU-Backend → module/v1/ff/<serial>/instantAction → MQTT → NodeRed
+NodeRed → OPC-UA Write → SPS-Modul
 ```
+
+**Wichtig:**
+- ✅ NodeRed subscribed zu `module/.../order` (verified in flows.json)
+- ✅ ALLE Production Commands gehen über NodeRed → OPC-UA
+- ✅ Gilt für ALLE Module (HBW, MILL, DRILL, DPS, AIQS)
+
+### Pattern 4: TXT-Module → Direkt-Telemetrie ⭐ WICHTIG
+
+**Module-Status (State/Connection/Factsheet):**
+```
+TXT-DPS → module/v1/ff/SVR4H73275/state → MQTT → CCU-Backend
+TXT-AIQS → module/v1/ff/SVR4H76530/state → MQTT → CCU-Backend
+```
+- ✅ DIREKT ohne NodeRed
+- ✅ Funktioniert auch bei NodeRed-Ausfall!
+- ✅ Verified: Live-System DPS/AIQS online trotz NodeRed offline
+
+**Sensor-Daten (nur Monitoring):**
+```
+TXT-DPS → /j1/txt/1/i/cam → MQTT → Dashboards (Kamera)
+TXT-AIQS → /j1/txt/1/i/bme680 → MQTT → Dashboards (Sensoren)
+```
+
+**Parallel: NodeRed Enrichment (optional):**
+```
+SPS → OPC-UA → NodeRed → module/v1/ff/NodeRed/<serial>/state
+```
+- ✅ Fügt orderId hinzu (aus Workflow-Context)
+- ✅ Beide Quellen parallel verfügbar
 
 ---
 
@@ -396,7 +428,18 @@ TXT-AIQS → /j1/txt/1/i/bme680 → MQTT → Dashboard (Sensoren)
 → **CCU-Backend** (`modules/fts/navigation/navigation.js`)
 
 ### "Wer übersetzt OPC-UA zu MQTT?"
-→ **NodeRed** (für MILL, DRILL, HBW)
+→ **NodeRed** (für MILL, DRILL, HBW - TELEMETRIE)
+
+### "Wer übersetzt MQTT zu OPC-UA?"
+→ **NodeRed** (für ALLE Module - COMMANDS)
+
+### "Welche Module funktionieren ohne NodeRed?"
+→ **DPS, AIQS, FTS** (haben TXT-Controller mit direkt MQTT)  
+→ **HBW, MILL, DRILL offline** (brauchen NodeRed zwingend für Telemetrie)
+
+### "Commands oder Telemetrie via NodeRed?"
+→ **Commands:** ALLE via NodeRed → OPC-UA  
+→ **Telemetrie:** Module MIT TXT direkt, Module OHNE TXT via NodeRed
 
 ### "Welches Modul hat Serial SVR4H73275?"
 → **DPS** (Delivery & Pickup Station)
