@@ -45,7 +45,7 @@ class OrderManager:
 
     def process_stock_message(self, topic: str, message: Dict[str, Any], meta: Dict[str, Any]) -> None:
         """
-        Verarbeitet Stock-Nachrichten vom Topic /j1/txt/1/f/i/stock
+        Verarbeitet Stock-Nachrichten vom Topic /j1/txt/1/f/o/stock (OUTPUT FROM TXT)
         
         Args:
             topic: MQTT Topic

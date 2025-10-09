@@ -1,22 +1,28 @@
 # ✅ IMPLEMENTIERTE ARCHITEKTUR: Gekapseltes MQTT, Registry Manager & Gateway für Streamlit-Apps
 
 **Status: VOLLSTÄNDIG IMPLEMENTIERT** ✅  
-**Datum: 2025-10-08**  
+**Datum: 2025-10-09**  
 **Tests: 55 Tests erfolgreich** ✅  
 **Registry-Migration: ABGESCHLOSSEN** ✅  
 **Architektur-Cleanup: ABGESCHLOSSEN** ✅  
 **Schema-Validation: SYSTEMATISCH KORRIGIERT** ✅  
 **Gateway-Routing: MIT SCHEMA-VALIDIERUNG IMPLEMENTIERT** ✅  
 **Meta-Parameter: VOLLSTÄNDIG INTEGRIERT** ✅  
-**Production Order Manager: VOLLSTÄNDIG IMPLEMENTIERT** ✅ NEW!  
-**Log-Rotation: IMPLEMENTIERT** ✅ NEW!
+**Production Order Manager: VOLLSTÄNDIG IMPLEMENTIERT** ✅  
+**Log-Rotation: IMPLEMENTIERT** ✅  
+**Asymmetrische Architektur: VERIFIED UND DOKUMENTIERT** ✅ NEW!  
+**Gateway-Routing-Hints: KLARGESTELLT** ✅ NEW!
 
 **Ziel:**  
 Weggekapselte, robuste Architektur für MQTT-Kommunikation, Message-Templates und UI-Refresh in einer Streamlit-App, sodass UI- und Business-Logik möglichst einfach bleiben und typische Fehlerquellen (Threading, Race-Conditions, Deadlocks, inkonsistenter State) vermieden werden.
 
 **✅ ERREICHT:** Alle Ziele wurden erfolgreich implementiert und getestet.
 
-**🔧 AKTUELLE ERKENNTNISSE (2025-10-08):**
+**🔧 AKTUELLE ERKENNTNISSE (2025-10-09):**
+- **Asymmetrische Architektur (VERIFIED)**: Commands über NodeRed, Telemetry direct für TXT-Module
+- **Gateway-Routing-Hints**: `routed_topics` statt `subscribed_topics` - Semantik klargestellt
+- **Topic-Semantische Felder**: `observed_publisher_aps`, `semantic_role`, `omf2_usage` für Guidance
+- **OMF2 CCU-Domain**: Frontend + Backend in einer Domain (kann parallel zu APS-CCU-Backend laufen)
 - **Production Order Manager**: Order-Lifecycle Management (active → completed) implementiert
 - **STORAGE vs PRODUCTION**: Unterschiedliche Workflows korrekt unterschieden
 - **Order-ID-basierte Zuordnung**: Dict statt Array für effiziente Lookups
@@ -237,12 +243,60 @@ MQTT Clients (Singleton) ✅
 
 ---
 
-## 3. Gateway-Routing-Pattern (NEU)
+## 3. Gateway-Routing-Pattern (NEU) + Asymmetrische Architektur
 
 ### **Separation of Concerns:**
 - **MQTT Client:** Nur Verbindung & Transport (KEINE Business-Logik)
 - **Gateway:** Topic-Routing und Manager-Aufrufe
 - **Manager:** Business-Logik und State-Verarbeitung
+
+### **Asymmetrische Architektur (VERIFIED 2025-10-09):**
+
+**KRITISCHE ERKENNTNIS:** APS-System hat asymmetrische Kommunikationswege:
+
+#### **Commands (CCU → Module):**
+```
+CCU-Backend → MQTT (module/.../order) → NodeRed subscribed → OPC-UA → SPS
+```
+- ✅ Gilt für **ALLE** Module (HBW, MILL, DRILL, DPS, AIQS)
+- ✅ NodeRed ist **ZWINGEND** für Production Commands
+- ✅ Verified: NodeRed Function "sub order" subscribes zu `module/.../order`
+
+#### **Telemetry (Module → CCU):**
+
+**A) Module MIT TXT-Controller (DPS, AIQS, FTS):**
+```
+TXT-Controller → MQTT DIREKT → module/v1/ff/<serial>/state
+                              → module/v1/ff/<serial>/connection
+                              → module/v1/ff/<serial>/factsheet
+```
+- ✅ **DIREKT** ohne NodeRed
+- ✅ Schnell, zuverlässig
+- ✅ Funktioniert auch wenn NodeRed offline!
+- ✅ Verified: Live-System zeigt DPS/AIQS online trotz NodeRed-Problem
+
+**B) Module OHNE TXT-Controller (HBW, MILL, DRILL):**
+```
+SPS → OPC-UA → NodeRed → MQTT → module/v1/ff/NodeRed/<serial>/state
+```
+- ✅ **NUR** über NodeRed möglich
+- ❌ Wenn NodeRed offline → Module offline!
+- ✅ Verified: Live-System zeigt HBW/MILL/DRILL offline bei NodeRed-Problem
+
+**C) NodeRed State-Enrichment (PARALLEL für DPS/AIQS):**
+```
+SPS → OPC-UA → NodeRed → enriches mit orderId → MQTT
+```
+- ✅ Parallel zu TXT-MQTT
+- ✅ Fügt orderId aus Workflow-Context hinzu
+- ✅ `module/v1/ff/NodeRed/<serial>/state` (enriched version)
+
+**Zusammenfassung:**
+- **DPS/AIQS** haben ZWEI State-Quellen:
+  - `module/v1/ff/SVR4H73275/state` ← TXT direkt (schnell, zuverlässig)
+  - `module/v1/ff/NodeRed/SVR4H73275/state` ← NodeRed enriched (mit orderId)
+- **HBW/MILL/DRILL** haben EINE State-Quelle:
+  - `module/v1/ff/NodeRed/SVR3QA0022/state` ← NUR NodeRed (REQUIRED)
 
 ### **Topic-Routing-Strategie:**
 ```python
@@ -255,8 +309,9 @@ sensor_topics = {
 
 # Module-Topics (Präfix-basiert, flexibel)
 module_topic_prefixes = [
-    'module/v1/ff/',       # Direkte Module
-    'fts/v1/ff/',          # FTS Topics
+    'module/v1/ff/',       # Direkte Module (TXT-Telemetry)
+    'module/v1/ff/NodeRed/', # NodeRed-Enriched (OPC-UA-Bridge)
+    'fts/v1/ff/',          # FTS Topics (TXT-Direct)
     'ccu/pairing/state'    # CCU Pairing
 ]
 ```
@@ -1159,36 +1214,50 @@ mqtt_clients:
       - "module/v1/ff/SVR3QA0022/factsheet"
       - "ccu/pairing/state"
     
-    # BUSINESS-FUNCTIONS: Callbacks für Topic-Subsets
-    business_functions:
+    # GATEWAY-ROUTING-HINTS: Topics die vom Gateway an Business-Functions geroutet werden
+    # WICHTIG: Business-Functions machen KEINE eigene MQTT-Subscription!
+    #          Sie erhalten Topics vom Gateway via onMessage()
+    gateway_routing_hints:
       sensor_manager:
-        subscribed_topics: ["/j1/txt/1/i/bme680", "/j1/txt/1/i/ldr"]
-        callback_method: "process_sensor_message"
-        manager_class: "SensorManager"
-        manager_module: "omf2.ccu.sensor_manager"
+        routed_topics:  # Topics die an SensorManager.onMessage() geroutet werden
+          - "/j1/txt/1/i/bme680"    # BME680 Sensor-Daten (TXT-AIQS)
+          - "/j1/txt/1/i/ldr"       # LDR Sensor-Daten (TXT-AIQS)
+          - "/j1/txt/1/i/cam"       # Camera-Daten (TXT-AIQS)
       
       module_manager:
-        subscribed_topics: 
+        routed_topics:  # Topics die an ModuleManager.onMessage() geroutet werden
           - "module/v1/ff/SVR3QA0022/state"
           - "module/v1/ff/SVR3QA0022/connection"
           - "module/v1/ff/SVR3QA0022/factsheet"
           - "ccu/pairing/state"
-        callback_method: "process_module_message"
-        manager_class: "CcuModuleManager"
-        manager_module: "omf2.ccu.module_manager"
+      
+      order_manager:
+        routed_topics:  # Topics die an OrderManager.onMessage() geroutet werden
+          - "/j1/txt/1/f/o/stock"      # HBW Inventory FROM TXT (Stock-Management)
+      
+      production_order_manager:
+        routed_topics:  # Topics die an ProductionOrderManager.onMessage() geroutet werden
+          - "ccu/order/request"         # PRIMARY trigger for new orders
+          - "ccu/order/response"        # Order confirmation with UUID
+          - "ccu/order/active"          # Active orders queue
+          - "ccu/order/completed"       # Completed orders log
 ```
 
 #### **Wichtige Architektur-Details:**
 
-**🔑 Doppelte Topic-Listen:**
-1. **`subscribed_topics`** (Haupt-Liste): MQTT Client subscribed diese Topics
-2. **`business_functions.xxx.subscribed_topics`** (Subset-Liste): Business Functions bekommen Callbacks
+**🔑 Gateway-Routing-Hints vs. Subscriptions:**
+1. **`subscribed_topics`** (Haupt-Liste): MQTT Client subscribed diese Topics am Broker
+2. **`gateway_routing_hints.xxx.routed_topics`** (Routing-Info): Gateway routet an Business Functions
 
-**📋 Warum beide Listen?**
-- **MQTT Client** muss Topics subscribed haben, bevor Messages empfangen werden
-- **Business Functions** bekommen nur Callbacks für ihre relevanten Topics
-- **Registry-driven**: Beide Listen werden aus `mqtt_clients.yml` geladen
-- **Flexibel**: Business Functions können Topic-Subsets definieren
+**📋 Semantik-Klarstellung:**
+- **MQTT Client** subscribed Topics am Broker (MQTT-Protokoll-Ebene)
+- **Gateway** empfängt Messages via `onMessage()` und routet an Business Functions
+- **Business Functions** machen KEINE eigene MQTT-Subscription, sondern bekommen Messages vom Gateway
+- **Routing-Hints** sind Entwicklungs-Hilfe, finale Logik ist im Gateway-Code
+
+**✅ Validierung:**
+- Alle `routed_topics` MÜSSEN in `ccu_mqtt_client.subscribed_topics` sein
+- Gateway prüft Topics und routet nur, wenn Topic subscribed ist
 
 #### **MQTT-Client Callback:**
 ```python
@@ -1417,9 +1486,11 @@ assert len(warning_logs) == 0
 
 ---
 
-**Letzte Aktualisierung:** 2025-10-06  
+**Letzte Aktualisierung:** 2025-10-09  
 **Status:** VOLLSTÄNDIG IMPLEMENTIERT ✅  
 **Message Processing Pattern:** DOKUMENTIERT ✅  
 **Schema-Validation:** SYSTEMATISCH KORRIGIERT ✅  
 **Business-Manager Pattern:** IMPLEMENTIERT UND DOKUMENTIERT ✅  
-**Best Practice Logging-System:** IMPLEMENTIERT UND DOKUMENTIERT ✅
+**Best Practice Logging-System:** IMPLEMENTIERT UND DOKUMENTIERT ✅  
+**Asymmetrische Architektur:** VERIFIED UND DOKUMENTIERT ✅  
+**Gateway-Routing-Hints:** KLARGESTELLT UND DOKUMENTIERT ✅

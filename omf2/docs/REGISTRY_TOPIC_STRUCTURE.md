@@ -1,8 +1,91 @@
 # 📋 REGISTRY-TOPIC-STRUKTUR FÜR registry/topics/xyz.yml
 
-**Datum:** 2025-10-05  
-**Status:** ✅ Vollständige Topic-Schema-Korrelation analysiert  
-**Gesamt:** 99 Topics in 5 Domains
+**Datum:** 2025-10-09  
+**Status:** ✅ Vollständige Topic-Schema-Korrelation + Semantische Felder  
+**Gesamt:** 99 Topics in 5 Domains  
+**Update:** Neue semantische Felder für OMF2-Guidance (2025-10-09)
+
+---
+
+## 🆕 NEUE SEMANTISCHE FELDER (2025-10-09)
+
+### **Zweck:**
+Ergänzende Felder in Topic-Definitionen für bessere Entwicklungs-Unterstützung und Architektur-Verständnis.
+
+### **Neue Felder:**
+
+#### **1. observed_publisher_aps** (String)
+- **Bedeutung:** Welche APS-Komponente publiziert dieses Topic in der echten Anlage
+- **Beispiel:** `"APS-Dashboard Frontend (MQTT-Browser)"`, `"CCU-Backend (Order Module)"`
+- **Verwendung:** Verständnis der APS "as-IS" Architektur
+
+#### **2. observed_subscriber_aps** (String)
+- **Bedeutung:** Welche APS-Komponente(n) subscribieren dieses Topic
+- **Beispiel:** `"CCU-Backend (Pairing Module), Dashboards"`
+- **Verwendung:** Verständnis der Datenflüsse im APS-System
+
+#### **3. semantic_role** (String)
+- **Bedeutung:** Semantische Rolle des Topics im System
+- **Beispiele:** 
+  - `order_trigger_primary` - Primärer Auslöser für Orders
+  - `connection_status_direct` - Direkte Connection-Status-Meldung
+  - `module_state_enriched` - Mit orderId angereicherter State
+- **Verwendung:** Schnelles Verständnis der Topic-Bedeutung
+
+#### **4. triggers** (String oder null)
+- **Bedeutung:** Welchen Workflow/Prozess triggert dieses Topic
+- **Beispiele:** `production_order_workflow`, `fts_navigation`, `module_production`
+- **Verwendung:** Workflow-Analyse und Event-Tracking
+
+#### **5. omf2_usage** (String)
+- **Bedeutung:** Empfohlene Verwendung in OMF2-Komponenten
+- **Beispiel:** `"ProductionOrderManager → subscribe to detect new orders (PRIMARY trigger, REQUIRED)"`
+- **Verwendung:** Entwicklungs-Guidance für OMF2-Agent
+
+#### **6. omf2_note** (String, optional)
+- **Bedeutung:** Wichtige Hinweise für OMF2-Entwicklung
+- **Beispiel:** `"This is the REQUIRED trigger - /j1/txt/1/f/o/order is optional alternative"`
+- **Verwendung:** Architektur-Entscheidungen und Warnungen
+
+#### **7. verified** (Boolean)
+- **Bedeutung:** Wurde diese Information durch Session-Analyse oder Code-Review verifiziert?
+- **Werte:** `true` (verifiziert), `false` (spekulativ)
+- **Verwendung:** Vertrauenswürdigkeit der Information
+
+#### **8. data_source** (String)
+- **Bedeutung:** Quelle der Verifikation
+- **Beispiel:** `"Session orderBlueLocal - 2 messages, Code: modules/order/index.js"`
+- **Verwendung:** Nachvollziehbarkeit der Analyse
+
+#### **9. analysis_note** (String, optional)
+- **Bedeutung:** Zusätzliche Analyse-Erkenntnisse
+- **Beispiel:** `"Identical timestamp with /j1/txt/1/f/o/order - Frontend sends both (Fan-Out)"`
+- **Verwendung:** Wichtige Zusammenhänge dokumentieren
+
+### **Beispiel: Vollständige Topic-Definition**
+
+```yaml
+- topic: ccu/order/request
+  qos: 2
+  retain: 0
+  schema: ccu_order_request.schema.json
+  description: "Production Order Request - PRIMARY trigger for order workflow"
+  
+  # APS as-IS Observation:
+  observed_publisher_aps: "APS-Dashboard Frontend (MQTT-Browser)"
+  observed_subscriber_aps: "CCU-Backend (Order Module - handleMessage)"
+  
+  # OMF2 Guidance (manual configuration):
+  semantic_role: order_trigger_primary
+  triggers: production_order_workflow
+  omf2_usage: "ProductionOrderManager → subscribe to detect new orders (PRIMARY trigger, REQUIRED)"
+  omf2_note: "This is the REQUIRED trigger - /j1/txt/1/f/o/order is optional alternative"
+  
+  # Verification:
+  verified: true
+  data_source: "Session orderBlueLocal_orderRedCloud - 2 messages (BLUE, RED), Code: modules/order/index.js"
+  analysis_note: "Identical timestamp with /j1/txt/1/f/o/order - Frontend sends both (Fan-Out)"
+```
 
 ---
 
@@ -306,5 +389,5 @@ registry/topics/
 ---
 
 **📝 Dokument erstellt:** 2025-10-05  
-**🔄 Letzte Aktualisierung:** 2025-10-05  
-**✅ Status:** Vollständige Registry-Struktur definiert
+**🔄 Letzte Aktualisierung:** 2025-10-09  
+**✅ Status:** Vollständige Registry-Struktur + Semantische Felder definiert
