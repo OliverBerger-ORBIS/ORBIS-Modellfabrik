@@ -69,6 +69,18 @@ omf2/
 │   ├── nodered_gateway.py          # Gateway (Validation & Routing)
 │   └── nodered_manager.py          # Business Manager (Node-RED-Daten)
 │
+├── assets/                         # 🎨 ASSET MANAGEMENT
+│   ├── __init__.py                # Asset Manager Package
+│   ├── asset_manager.py           # SVG-Icon Management & HTML Generation
+│   └── svgs/                      # SVG-Icon Library
+│       ├── warehouse_40dp_*.svg   # HBW Module Icon
+│       ├── tools_power_drill_40dp_*.svg # DRILL Module Icon
+│       ├── construction_40dp_*.svg # MILL Module Icon
+│       ├── robot_40dp_*.svg       # AIQS Module Icon
+│       ├── conveyor_belt_40dp_*.svg # DPS Module Icon
+│       ├── ev_station_40dp_*.svg  # CHRG Module Icon
+│       └── add_2_40dp_*.svg       # Intersection Icon
+│
 ├── common/                         # 🔗 SHARED COMPONENTS
 │   ├── logger.py                   # Best Practice Logging-System
 │   ├── registry_manager.py         # Registry Manager (Singleton)
@@ -106,12 +118,13 @@ omf2/
 │   │   ├── ccu_configuration/      # CCU Configuration UI
 │   │   │   ├── ccu_configuration_tab.py
 │   │   │   ├── ccu_parameter_configuration_subtab.py
-│   │   │   └── ccu_factory_configuration_subtab.py
+│   │   │   └── ccu_factory_configuration_subtab.py # 🏗️ Shopfloor Layout Integration
+│   │   ├── common/                 # 🏭 SHARED CCU COMPONENTS
+│   │   │   └── shopfloor_layout.py # 🎯 Shopfloor Layout System (3×4 Grid, SVG-Icons)
 │   │   ├── ccu_process/            # CCU Process UI
 │   │   │   ├── ccu_process_tab.py
 │   │   │   ├── ccu_production_plan_subtab.py
 │   │   │   └── ccu_production_monitoring_subtab.py
-│   │   └── common/                 # CCU Shared UI Components
 │   │       └── shopfloor_layout.py # Reusable Shopfloor Layout Component
 │   ├── nodered/                    # Node-RED UI Components
 │   │   └── nodered_dashboard.py    # Node-RED Dashboard
@@ -313,6 +326,24 @@ streamlit run omf2/omf.py
 - Isolierte Komponenten
 - Clean APIs
 - Mock-freundliche Architektur
+
+## 🧪 Test-Struktur
+
+```
+omf2/tests/
+├── __init__.py
+├── test_shopfloor/              # 🏭 Shopfloor Layout Tests
+│   ├── __init__.py
+│   ├── test_aspect_ratio_test.py
+│   ├── test_clean_test.py
+│   ├── test_debug.py
+│   ├── test_demo.py
+│   ├── test_fixed_aspect_test.py
+│   ├── test_html_test.py
+│   ├── test_shopfloor_test.py
+│   └── test_shopfloor_verification.py
+└── test_helper_apps/            # Helper App Tests
+```
 
 ### **Robustheit:**
 - Thread-sichere Operationen

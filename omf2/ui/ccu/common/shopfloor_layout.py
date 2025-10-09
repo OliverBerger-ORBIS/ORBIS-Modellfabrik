@@ -81,13 +81,78 @@ def _show_enhanced_shopfloor_grid(layout_data, active_module_id: str = None):
         if 0 <= row < rows and 0 <= col < columns:
             grid_array[row][col] = {"type": "empty", "data": empty}
     
-    # Display enhanced grid with asset manager - Quadratische Zellen
+    # Display enhanced grid with fixed 3:4 aspect ratio container
+    _display_fixed_aspect_ratio_grid(grid_array, rows, columns, active_module_id, asset_manager)
+
+
+def _display_fixed_aspect_ratio_grid(grid_array, rows, columns, active_module_id: str, asset_manager):
+    """Display grid with fixed 3:4 aspect ratio container"""
+    # Calculate container dimensions maintaining 3:4 aspect ratio
+    # Container should be 3:4 (width:height) regardless of cell size
+    cell_size = 80  # Base cell size
+    
+    # Calculate container dimensions
+    container_width = columns * cell_size + (columns - 1) * 4  # 4px margin between cells
+    container_height = rows * cell_size + (rows - 1) * 4
+    
+    # Ensure 3:4 aspect ratio
+    aspect_ratio = 3 / 4
+    if container_width / container_height > aspect_ratio:
+        # Too wide, adjust height
+        container_height = container_width / aspect_ratio
+        cell_size = (container_height - (rows - 1) * 4) / rows
+    else:
+        # Too tall, adjust width
+        container_width = container_height * aspect_ratio
+        cell_size = (container_width - (columns - 1) * 4) / columns
+    
+    # Generate HTML for fixed aspect ratio container
+    html_content = ""
     for row in range(rows):
-        cols = st.columns(columns)
         for col in range(columns):
-            with cols[col]:
-                cell = grid_array[row][col]
-                _display_enhanced_grid_cell(cell, row, col, active_module_id, asset_manager)
+            cell = grid_array[row][col]
+            
+            # Calculate position within container
+            x_pos = col * (cell_size + 4)
+            y_pos = row * (cell_size + 4)
+            
+            # Generate cell HTML
+            cell_html = _generate_grid_cell_html(cell, row, col, active_module_id, asset_manager, int(cell_size))
+            
+            html_content += f'<div style="position: absolute; left: {x_pos}px; top: {y_pos}px; width: {cell_size}px; height: {cell_size}px;">{cell_html}</div>'
+    
+    # Container HTML with fixed 3:4 aspect ratio
+    container_html = f'<div style="position: relative; width: {container_width}px; height: {container_height}px; border: 2px solid #e0e0e0; border-radius: 8px; background: #f8f9fa; margin: 10px auto; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">{html_content}</div>'
+    
+    st.markdown(container_html, unsafe_allow_html=True)
+
+
+def _generate_grid_cell_html(cell, row, col, active_module_id: str, asset_manager, cell_size: int):
+    """Generate HTML for individual grid cell"""
+    if not cell:
+        return asset_manager.get_shopfloor_module_html("EMPTY", f"Empty_{row}_{col}", False, size=cell_size)
+    
+    cell_type = cell.get("type")
+    cell_data = cell.get("data", {})
+    
+    # Check if this is the active module
+    is_active = False
+    if cell_type == "module" and active_module_id:
+        module_id = cell_data.get("id", "")
+        is_active = module_id == active_module_id
+    
+    if cell_type == "module":
+        module_id = cell_data.get("id", "")
+        module_type = cell_data.get("type", "")
+        return asset_manager.get_shopfloor_module_html(module_type, module_id, is_active, size=cell_size)
+    elif cell_type == "intersection":
+        intersection_id = cell_data.get("id", "")
+        return asset_manager.get_shopfloor_module_html("INTERSECTION", intersection_id, is_active, size=cell_size)
+    elif cell_type == "empty":
+        empty_id = cell_data.get("id", "")
+        return asset_manager.get_shopfloor_module_html("EMPTY", empty_id, is_active, size=cell_size)
+    else:
+        return asset_manager.get_shopfloor_module_html("MACHINE", f"Unknown_{row}_{col}", is_active, size=cell_size)
 
 
 def _display_enhanced_grid_cell(cell, row, col, active_module_id: str, asset_manager):

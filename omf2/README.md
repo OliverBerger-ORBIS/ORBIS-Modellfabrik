@@ -22,6 +22,7 @@ OMF2 ist die neue, modulare und rollenbasierte Streamlit-Anwendung für die ORBI
 - ✅ **Schema-driven Architecture:** Direkte JSON-Schema Integration ohne Templates
 - ✅ **Connection Loop Prevention:** Robuste MQTT Connection Management
 - ✅ **Environment Switch:** Automatischer UI-Refresh bei Environment-Wechsel
+- ✅ **Shopfloor Layout System:** Wiederverwendbare 3×4 Grid-Komponente mit SVG-Icons
 
 ## 🏗️ **Architektur**
 
@@ -165,6 +166,9 @@ def render_ccu_modules_tab():
 - 📄 **[UI_SYMBOL_STYLE_GUIDE.md](docs/UI_SYMBOL_STYLE_GUIDE.md)** - Symbol-Style-Guide
 - 📄 **[CCU_DOMAIN_SYMBOL_GUIDELINES.md](docs/CCU_DOMAIN_SYMBOL_GUIDELINES.md)** - CCU-Domain Guidelines
 
+### **Shopfloor Layout System:**
+- 📄 **[SHOPFLOOR_LAYOUT_GUIDE.md](docs/SHOPFLOOR_LAYOUT_GUIDE.md)** - **NEU:** Kompletter Guide für wiederverwendbare 3×4 Grid-Komponente
+
 ## 🎯 **Entwicklungsstandards**
 
 ### **✅ OBLIGATORISCH:**
@@ -176,6 +180,7 @@ def render_ccu_modules_tab():
 - **Schema-basierte Message-Verarbeitung** (get_topic_schema())
 - **Error-Handling implementieren** (Try-Catch für Gateway-Calls)
 - **Logger verwenden** (get_logger(__name__))
+- **Shopfloor Layout verwenden** (`show_shopfloor_grid_only()` aus `shopfloor_layout.py`)
 
 ### **🚫 VERMEIDEN:**
 - ❌ Direkte MQTT-Client Verwendung
