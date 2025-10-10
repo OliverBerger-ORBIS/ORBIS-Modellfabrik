@@ -1,11 +1,13 @@
 # ✅ REFACTORING STATUS: OMF Dashboard → omf2 (Streamlit-App)
 
-**Status: CORE-ARCHITEKTUR IMPLEMENTIERT** ✅  
-**Datum: 2025-10-06**  
-**Architektur: Best Practice Drei-Schichten-Architektur implementiert**
+**Status: MIGRATION ABGESCHLOSSEN** ✅  
+**Datum: 2025-10-10**  
+**Migration omf → omf2: VOLLSTÄNDIG** ✅  
+**Architektur: Best Practice Drei-Schichten-Architektur implementiert** ✅
 
-Das Refactoring des bestehenden OMF Dashboards zur neuen, modularen und rollenbasierten Streamlit-App **omf2** hat die **Core-Architektur erfolgreich implementiert**.  
-Die Tabelle zeigt den aktuellen Status aller Komponenten und dokumentiert, was implementiert wurde und was noch aussteht.
+Das Refactoring des bestehenden OMF Dashboards zur neuen, modularen und rollenbasierten Streamlit-App **omf2** ist **vollständig abgeschlossen**.  
+Alle funktionalen Komponenten von omf/dashboard wurden erfolgreich nach omf2 migriert.  
+Die Tabelle zeigt den aktuellen Status und dokumentiert noch ausstehende **Feature-Erweiterungen** (keine Migrations-Tasks mehr).
 
 ---
 
@@ -14,7 +16,6 @@ Die Tabelle zeigt den aktuellen Status aller Komponenten und dokumentiert, was i
 | **Alt-Funktion / Komponente**              | **Ziel (omf2 / neue Struktur)**         | **Status** | **Prinzipien / Besonderheiten**                              |
 |--------------------------------------------|-----------------------------------------|------------|-------------------------------------------------------------|
 | **✅ IMPLEMENTIERT: Core-Architektur**     |                                         |            |                                                             |
-| **🎯 TODO: OMF-Icons aktualisieren**       | Echte omf_* SVG-Icons erstellen        | 📋 | Testbar mit `icon_test.py` - aktuell Fallback zu ic_ft_* |
 | **Core-Architektur (MQTT Client Layer)**   | Thread-sichere MQTT Clients             | ✅ | Admin + CCU MQTT Clients implementiert |
 | **Core-Architektur (Gateway Layer)**       | Schema-Validation + Topic-Routing       | ✅ | Admin + CCU Gateways implementiert |
 | **Core-Architektur (Business Manager)**    | State-Holder + Business Logic           | ✅ | Sensor + Module + Order Manager implementiert |
@@ -33,7 +34,7 @@ Die Tabelle zeigt den aktuellen Status aller Komponenten und dokumentiert, was i
 | - Inventory Subtab                          | `ui/ccu/ccu_overview/inventory_subtab.py` | ✅ | 3x3 Grid (A1-C3), Bucket Display, UISymbols, FIFO-ready |
 | - Product Catalog Subtab                    | `ui/ccu/ccu_overview/product_catalog_subtab.py` | ✅ | BLUE, WHITE, RED workflows |
 | - Sensor Data Subtab                        | `ui/ccu/ccu_overview/sensor_data_subtab.py` | ✅ | Module Sensors (Temp, Pressure, Status) |
-| Operator Tabs (CCU Aufträge.)              | `ui/ccu/orders/ccu_orders_tab.py`       | ❌ | Production-Order Manager (managed auch STORAGE-Orders)              |
+| Operator Tabs (CCU Aufträge.)              | `ui/ccu/orders/ccu_orders_tab.py`       | ✅ | Production-Order Manager              |
 | Operator Tabs (CCU Prozesse.)              | `ui/ccu/process/ccu_process_tab.py`     | ✅ | Modular, Icons, i18n, MQ-Integration |
 | Operator Tabs (CCU Konfiguration)          | `ui/ccu/configuration/ccu_configuration_tab.py` | ✅ | Modular, Icons, i18n, MQ-Integration |
 | Supervisor-Erweiterungen                   | `ui/nodered/*`, WL Module/System Ctrl   | ❌ | Tab-Freischaltung via Rolle, modular |
@@ -54,6 +55,12 @@ Die Tabelle zeigt den aktuellen Status aller Komponenten und dokumentiert, was i
 | CCU Module              | Configured über factsheet,                   | ❌ | wenn factsheet, dann configured = true|
 | CCU Overview sensor -data             | UI- schöner machen                  | ❌ | Darstellung von TEmp Druck , Bilder Camera-Befehle|
 | factory_layout           | Ui verwendet ICONs und png von omf                | ❌ | Darstellung wie in omf/ mit 3X4 grid (oder 4x3) Grid|
+| **🎯 TODO: OMF-Icons aktualisieren**       | Echte omf_* SVG-Icons erstellen        | 📋 | Testbar mit `icon_test.py` - aktuell Fallback zu ic_ft_* |
+| Operator Tabs (CCU Aufträge.)              | `ui/ccu/orders/ccu_orders_tab.py`       | ❌ | Production-Order Manager mit STORAGE-Orders und  storage-plan ?   |
+| **🌐 HTML-Templates i18n**                    | `assets/html_templates.py`               | ❌ | get_workpiece_box_template() enthält hardcoded deutsche Texte ("Bestand:", "Verfügbar:", "Ja", "Nein") |
+
+|| **🌡️ Temperatur-Skala Anzeige**              | `ui/ccu/ccu_overview/sensor_data_subtab.py` | ❌ | Thermometer mit Farbskala HINTER dem Thermometer, nur bis zur aktuellen Temperatur sichtbar |
+|| **📷 Camera Controls Implementierung**        | `ui/ccu/ccu_overview/sensor_data_subtab.py` | ❌ | 3x3 Grid: HOCH, LINKS, ZENTRIEREN, RECHTS, RUNTER mit einstellbarer Schrittweite |
 
 
 ---

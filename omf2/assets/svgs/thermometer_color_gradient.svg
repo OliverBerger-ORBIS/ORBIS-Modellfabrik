@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 20.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" id="Ebene_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="270" height="460" viewBox="0 0 270 460" style="enable-background:new 0 0 270 460;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#FFFFFF;}
+	.st1{fill:url(#SVGID_1_);}
+</style>
+<title>Thermometer_color_gradient-n</title>
+<g id="Ebene_3">
+	<rect class="st0" width="270" height="460"/>
+	
+		<linearGradient id="SVGID_1_" gradientUnits="userSpaceOnUse" x1="2395.3201" y1="169.63" x2="2827.3201" y2="169.63" gradientTransform="matrix(6.123234e-17 -1 -1 -6.123234e-17 386.52 2855.3201)">
+		<stop  offset="0" style="stop-color:#0069B4"/>
+		<stop  offset="0.44" style="stop-color:#0069B4"/>
+		<stop  offset="0.63" style="stop-color:#22A636"/>
+		<stop  offset="0.64" style="stop-color:#41AF30"/>
+		<stop  offset="0.66" style="stop-color:#73BE26"/>
+		<stop  offset="0.67" style="stop-color:#9DCB1D"/>
+		<stop  offset="0.68" style="stop-color:#C0D516"/>
+		<stop  offset="0.7" style="stop-color:#DBDE10"/>
+		<stop  offset="0.71" style="stop-color:#EFE30C"/>
+		<stop  offset="0.73" style="stop-color:#FAE70A"/>
+		<stop  offset="0.75" style="stop-color:#FEE809"/>
+		<stop  offset="0.95" style="stop-color:#F21600"/>
+		<stop  offset="1" style="stop-color:#F21600"/>
+	</linearGradient>
+	<rect x="174.3" y="28" class="st1" width="85.1" height="432"/>
+</g>
+</svg>

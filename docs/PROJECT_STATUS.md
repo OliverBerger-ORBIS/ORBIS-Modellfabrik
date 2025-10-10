@@ -67,7 +67,8 @@
 - [ ] **🚨 KRITISCH: APS-Modul-Status reparieren** - Status-Nachrichten werden nicht verarbeitet
 - [ ] **🚨 KRITISCH: Replay Station Reconnects beheben** - Regression (war schon gefixed)
 - [ ] **🚨 KRITISCH: APS Orders Tab implementieren** - Große Baustelle: Nachrichten auswerten
-- [ ] **Kamera-Controls implementieren** - hoch, rechts, runter etc. mit 10-Grad-Schritten
+- [x] **Kamera-Controls Basis implementiert** - 3x3 Grid mit HOCH, LINKS, ZENTRIEREN, RECHTS, RUNTER, einstellbare Schrittweite (Backlog: Verbesserung)
+- [x] **Sensor-Daten grafisch aufbereitet** - Thermometer, Gauges für Luftdruck/Feuchtigkeit/Licht, farbige Luftqualität (Backlog: Temperatur-Skala-Verbesserung)
 - [ ] **Kamera-Button-Problem lösen** - 2x-Klick-Problem beheben
 - [ ] **Bild-machen implementieren** - Kamera-Aufnahme-Funktion
 - [ ] **Bild-Anzeigen implementieren** - Aufgenommene Bilder anzeigen
