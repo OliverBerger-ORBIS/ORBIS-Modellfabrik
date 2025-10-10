@@ -413,3 +413,4 @@ CCU-Backend macht alles intern (gleicher Prozess):
    - Auf CCU Raspberry Pi?
    - Eigene Software-Komponente?
 
+

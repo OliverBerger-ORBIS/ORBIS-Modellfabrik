@@ -60,6 +60,11 @@ st.success("✅ Erfolgreich gesendet")  # ✅ Auch korrekt - war schon immer da
 - [x] **MQTT-Verbindungsstabilität: Reihenfolge der Funktionsaufrufe prüfen**
 - [x] Black Formatting (120 Zeichen)
 - [x] Pre-commit Hooks befolgen
+- [x] **i18n-Manager aus Session State verwenden (nicht lokal erstellen)**
+- [x] **Hardcodierte deutsche Texte durch i18n.t() ersetzen**
+- [x] **Icons bleiben universal (UISymbols), werden nicht übersetzt**
+- [x] **Flache YAML-Keys verwenden (domain.section.key)**
+- [x] **String-Interpolation mit {variable} für dynamische Werte**
 
 ## Registry-Pfad-Regeln
 
@@ -80,6 +85,57 @@ registry_path = project_root / "registry" / "model" / "v1" / "modules.yml"
 # Hardcodierte Pfade
 registry_path = "/Users/oliver/Projects/ORBIS-Modellfabrik/registry/model/v1/modules.yml"
 ```
+
+## i18n (Internationalization) Regeln
+
+### ✅ Korrekt:
+```python
+# I18n-Manager aus Session State holen
+i18n = st.session_state.get("i18n_manager")
+if i18n:
+    title = i18n.t("ccu_overview.title")
+    st.header(f"{UISymbols.get_functional_icon('ccu')} {title}")
+
+# String-Interpolation mit i18n
+workpieces_text = i18n.t("ccu_overview.purchase_orders.workpieces").format(workpiece_type=workpiece_type)
+st.markdown(f"#### {icons.get(workpiece_type, '📦')} {workpieces_text}")
+
+# Icons bleiben universal (nicht übersetzt)
+st.button(f"{UISymbols.get_status_icon('send')} {i18n.t('common.buttons.order')}")
+```
+
+### ❌ Falsch:
+```python
+# Hardcodierte deutsche Texte
+st.header("🏭 CCU Übersicht")
+st.markdown("#### 📦 {workpiece_type} Werkstücke")
+st.button("📤 Rohstoff bestellen")
+
+# Icons übersetzen (Icons sind universal)
+st.button(f"{i18n.t('icons.send')} {i18n.t('common.buttons.order')}")  # ❌ Icons nicht übersetzen
+
+# I18n-Manager lokal erstellen (statt aus Session State)
+i18n = I18nManager("de")  # ❌ Lokale Instanz statt zentrale
+```
+
+### i18n YAML-Struktur:
+```yaml
+# omf2/config/translations/de/common.yml
+common.buttons.order: "Rohstoff bestellen"
+common.status.success: "Erfolgreich gesendet"
+common.forms.workpiece_type: "Werkstück-Typ"
+
+# omf2/config/translations/de/ccu_overview.yml  
+ccu_overview.title: "CCU Übersicht"
+ccu_overview.purchase_orders.workpieces: "{workpiece_type} Werkstücke"
+ccu_overview.inventory.stock_grid: "Lagerbestand (A1-C3):"
+```
+
+### i18n Key-Konventionen:
+- **Flache Keys:** `ccu_overview.purchase_orders.workpieces` (nicht verschachtelt)
+- **Domain-basiert:** `common.*`, `ccu_overview.*`, `admin.*`
+- **String-Interpolation:** `{variable}` für dynamische Werte
+- **Icons:** Bleiben universal (UISymbols), werden nicht übersetzt
 
 ## MQTT-Verbindungsstabilität (KRITISCH)
 

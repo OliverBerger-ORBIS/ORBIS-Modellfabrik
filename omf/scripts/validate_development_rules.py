@@ -55,6 +55,10 @@ class DevelopmentRulesValidator:
             # UI-Refresh Pattern prüfen
             file_errors.extend(self._check_ui_refresh_pattern(content, file_path))
 
+            # i18n-Compliance prüfen (nur für OMF2 UI-Komponenten)
+            if str(file_path).startswith(str(self.project_root / 'omf2/ui/')):
+                file_errors.extend(self._check_i18n_compliance(content, file_path))
+
             # Pre-commit Hooks Kompatibilität prüfen (nur für Dashboard)
             if str(file_path).startswith(str(self.project_root / 'omf/dashboard/')):
                 file_errors.extend(self._check_precommit_compatibility(content, file_path))
@@ -150,6 +154,57 @@ class DevelopmentRulesValidator:
 
         return errors
 
+    def _check_i18n_compliance(self, content: str, file_path: Path) -> List[str]:
+        """Prüft auf i18n-Compliance für OMF2 UI-Komponenten"""
+        errors = []
+
+        # Nur für OMF2 UI-Komponenten prüfen
+        if not str(file_path).startswith(str(self.project_root / 'omf2/ui/')):
+            return errors
+
+        # Streamlit-UI-Komponenten ohne i18n-Manager finden
+        if 'streamlit' in content and ('st.header(' in content or 'st.subheader(' in content or 'st.button(' in content):
+            # Prüfe verschiedene Varianten von i18n-Manager Verwendung
+            has_i18n_manager = (
+                'st.session_state.get("i18n_manager")' in content or
+                'i18n = st.session_state.get("i18n_manager")' in content or
+                'i18n_manager = st.session_state.get("i18n_manager")' in content or
+                'st.session_state.get(\'i18n_manager\')' in content
+            )
+            if not has_i18n_manager:
+                errors.append("❌ Streamlit UI-Komponente ohne i18n-Manager aus Session State - verwende st.session_state.get('i18n_manager')")
+
+        # Hardcodierte deutsche Texte finden (häufige Begriffe)
+        german_patterns = [
+            'st.header("🏭 CCU Übersicht")',
+            'st.subheader("Kundenaufträge")',
+            'st.button("Rohstoff bestellen")',
+            'st.markdown("#### 📦 {workpiece_type} Werkstücke")',
+            'st.write("Bestand:")',
+            'st.write("Verfügbar:")',
+            'st.write("Bedarf:")',
+            'st.write("Lagerbestand")',
+            'st.write("Produktkatalog")',
+            'st.write("Sensordaten")',
+            'st.info("Warte auf Daten via MQTT")',
+            'st.success("Erfolgreich gesendet")',
+            'st.error("Fehler beim Laden")',
+        ]
+        
+        for pattern in german_patterns:
+            if pattern in content:
+                errors.append(f"❌ Hardcodierter deutscher Text gefunden: '{pattern}' - verwende i18n.t()")
+
+        # I18n-Manager lokal erstellen (statt aus Session State)
+        if 'I18nManager(' in content and 'st.session_state.get("i18n_manager")' not in content:
+            errors.append("❌ Lokale I18nManager-Instanz gefunden - verwende st.session_state.get('i18n_manager')")
+
+        # Icons übersetzen (Icons sind universal)
+        if 'i18n.t("icons.' in content or 'i18n.t(\'icons.' in content:
+            errors.append("❌ Icons werden übersetzt - Icons bleiben universal (UISymbols)")
+
+        return errors
+
     def _check_precommit_compatibility(self, content: str, file_path: Path) -> List[str]:
         """Prüft auf Pre-commit Hooks Kompatibilität - nur für aktive Software"""
         errors = []
@@ -179,8 +234,8 @@ class DevelopmentRulesValidator:
                 if d not in ['.git', '__pycache__', '.pytest_cache', 'node_modules', '.venv', 'venv', 'env']
             ]
 
-            # Nur omf und tests prüfen
-            if 'omf' not in root and 'tests' not in root:
+            # Nur omf, omf2 und tests prüfen
+            if 'omf' not in root and 'omf2' not in root and 'tests' not in root:
                 continue
 
             for file in files:

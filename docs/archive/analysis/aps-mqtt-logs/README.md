@@ -60,3 +60,4 @@ Diese Dokumente beschreiben den **Analyse-Prozess**, wie wir zu unseren Erkenntn
 
 **Status:** Historische Analysen - Archiviert für Nachvollziehbarkeit
 
+

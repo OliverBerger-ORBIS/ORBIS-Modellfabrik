@@ -258,3 +258,4 @@ docs/06-integrations/
 
 **Status:** Review abgeschlossen - Korrekturen identifiziert 🎯
 
+

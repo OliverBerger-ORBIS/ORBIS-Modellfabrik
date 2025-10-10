@@ -57,6 +57,13 @@ repos:
         pass_filenames: false
         stages: [commit]
 
+      - id: validate-i18n-compliance
+        name: validate-i18n-compliance
+        entry: python omf2/scripts/validate_i18n_compliance.py
+        language: system
+        pass_filenames: false
+        stages: [commit]
+
       - id: validate-mermaid-diagrams
         name: validate-mermaid-diagrams
         entry: python tools/validate_mermaid_diagrams.py
