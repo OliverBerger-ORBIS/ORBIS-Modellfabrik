@@ -254,9 +254,8 @@ class OMF2AssetManager:
     # =========================================================================
     
     def get_orbis_logo_path(self) -> Optional[str]:
-        """Returns path to ORBIS company logo (high-quality PNG)"""
-        logo_path = self.logos_dir / "orbis_logo.png"
-        
+        """Returns path to ORBIS company logo (SVG)"""
+        logo_path = self.logos_dir / "ORBIS_logo_RGB.svg"
         if logo_path.exists():
             logger.debug(f"🏢 ORBIS logo found: {logo_path}")
             return str(logo_path)
