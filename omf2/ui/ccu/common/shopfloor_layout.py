@@ -121,8 +121,8 @@ def _display_fixed_aspect_ratio_grid(grid_array, rows, columns, active_module_id
             
             html_content += f'<div style="position: absolute; left: {x_pos}px; top: {y_pos}px; width: {cell_size}px; height: {cell_size}px;">{cell_html}</div>'
     
-    # Container HTML with fixed 3:4 aspect ratio
-    container_html = f'<div style="position: relative; width: {container_width}px; height: {container_height}px; border: 2px solid #e0e0e0; border-radius: 8px; background: #f8f9fa; margin: 10px auto; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">{html_content}</div>'
+    # Container HTML with fixed 3:4 aspect ratio - transparent background
+    container_html = f'<div style="position: relative; width: {container_width}px; height: {container_height}px; margin: 10px auto;">{html_content}</div>'
     
     st.markdown(container_html, unsafe_allow_html=True)
 
@@ -147,10 +147,12 @@ def _generate_grid_cell_html(cell, row, col, active_module_id: str, asset_manage
         return asset_manager.get_shopfloor_module_html(module_type, module_id, is_active, size=cell_size)
     elif cell_type == "intersection":
         intersection_id = cell_data.get("id", "")
-        return asset_manager.get_shopfloor_module_html("INTERSECTION", intersection_id, is_active, size=cell_size)
+        # Verwende die spezifische Intersection-ID für das Icon-Mapping
+        return asset_manager.get_shopfloor_module_html(intersection_id, intersection_id, is_active, size=cell_size)
     elif cell_type == "empty":
         empty_id = cell_data.get("id", "")
-        return asset_manager.get_shopfloor_module_html("EMPTY", empty_id, is_active, size=cell_size)
+        # Verwende die spezifische Empty-ID für das Icon-Mapping
+        return asset_manager.get_shopfloor_module_html(empty_id, empty_id, is_active, size=cell_size)
     else:
         return asset_manager.get_shopfloor_module_html("MACHINE", f"Unknown_{row}_{col}", is_active, size=cell_size)
 

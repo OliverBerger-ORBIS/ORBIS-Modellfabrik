@@ -39,25 +39,33 @@ class MainDashboard:
             st.error(f"❌ Dashboard rendering failed: {e}")
     
     def _render_header(self):
-        """Render dashboard header"""
+        """Render dashboard header with prominent ORBIS logo"""
+        from omf2.assets import get_asset_manager
+        
         # Get i18n manager from session state
         i18n = st.session_state.get('i18n_manager')
+        asset_manager = get_asset_manager()
         
-        col1, col2, col3 = st.columns([2, 3, 1])
+        # Prominent header layout: Logo | Title | Info
+        col1, col2, col3 = st.columns([1, 3, 1])
         
         with col1:
-            st.markdown("# 🏭 OMF2 Dashboard")
+            # Prominent ORBIS Logo (high-quality, 150px width)
+            asset_manager.display_orbis_logo(width=150)
         
         with col2:
+            # Main title (centered)
+            st.markdown("# Modellfabrik Dashboard")
             if i18n:
                 subtitle = i18n.translate('dashboard.subtitle')
-                st.markdown(f"## {subtitle}")
+                st.markdown(f"### {subtitle}")
             else:
-                st.markdown("## ORBIS Modellfabrik Control")
+                st.markdown("### ORBIS Modellfabrik Control System")
         
         with col3:
-            # Environment status removed - shown in sidebar instead
-            pass
+            # Version info and status
+            st.caption("OMF2 v2.0.0")
+            # Environment status shown in sidebar
     
     def _render_environment_selector(self):
         """Render environment selector with radio buttons - EXACT like old dashboard"""

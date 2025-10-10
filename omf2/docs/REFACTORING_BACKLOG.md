@@ -14,6 +14,7 @@ Die Tabelle zeigt den aktuellen Status aller Komponenten und dokumentiert, was i
 | **Alt-Funktion / Komponente**              | **Ziel (omf2 / neue Struktur)**         | **Status** | **Prinzipien / Besonderheiten**                              |
 |--------------------------------------------|-----------------------------------------|------------|-------------------------------------------------------------|
 | **✅ IMPLEMENTIERT: Core-Architektur**     |                                         |            |                                                             |
+| **🎯 TODO: OMF-Icons aktualisieren**       | Echte omf_* SVG-Icons erstellen        | 📋 | Testbar mit `icon_test.py` - aktuell Fallback zu ic_ft_* |
 | **Core-Architektur (MQTT Client Layer)**   | Thread-sichere MQTT Clients             | ✅ | Admin + CCU MQTT Clients implementiert |
 | **Core-Architektur (Gateway Layer)**       | Schema-Validation + Topic-Routing       | ✅ | Admin + CCU Gateways implementiert |
 | **Core-Architektur (Business Manager)**    | State-Holder + Business Logic           | ✅ | Sensor + Module + Order Manager implementiert |
