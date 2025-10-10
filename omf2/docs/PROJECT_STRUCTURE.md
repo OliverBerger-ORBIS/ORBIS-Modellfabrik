@@ -48,6 +48,13 @@ omf2/
 ├── config/                          # ⚙️ Konfigurationsdateien
 │   ├── mqtt_settings.yml           # MQTT-Verbindungseinstellungen
 │   ├── logging_config.yml          # Logging-Konfiguration
+│   ├── translations/               # 🌐 i18n Übersetzungsdateien ✅ NEW!
+│   │   ├── de/                     # Deutsche Übersetzungen (195+ Keys)
+│   │   │   ├── admin.yml           # Admin-Domain Übersetzungen
+│   │   │   ├── ccu_*.yml           # CCU-Domain Übersetzungen (5 Tabs)
+│   │   │   └── common.yml          # Gemeinsame Übersetzungen
+│   │   ├── en/                     # English Übersetzungen
+│   │   └── fr/                     # Français Übersetzungen
 │   └── ccu/                        # 🏭 CCU Domain Configurations
 │       ├── production_workflows.json # Production workflows (BLUE, WHITE, RED)
 │       ├── production_settings.json  # Production durations and settings
@@ -87,7 +94,8 @@ omf2/
 │   ├── registry_manager.py         # Registry Manager (Singleton)
 │   ├── message_manager.py          # Domain-agnostic Message Manager
 │   ├── topic_manager.py            # Domain-agnostic Topic Manager
-│   └── workpiece_manager.py        # Workpiece Icon Manager
+│   ├── workpiece_manager.py        # Workpiece Icon Manager
+│   └── i18n.py                     # 🌐 Internationalization Manager (DE, EN, FR) ✅ NEW!
 │
 ├── factory/                        # 🏭 FACTORY PATTERN
 │   ├── gateway_factory.py          # Gateway Factory (Singleton + Session State)
@@ -148,7 +156,9 @@ omf2/
 │   └── mqtt_clients.yml            # MQTT Client-Konfiguration
 │
 ├── docs/                           # 📚 DOKUMENTATION
-│   └── ARCHITECTURE.md             # Vollständige Architektur-Dokumentation
+│   ├── ARCHITECTURE.md             # Vollständige Architektur-Dokumentation
+│   ├── I18N_DEVELOPMENT_RULES.md   # 🌐 i18n Entwicklungsregeln ✅ NEW!
+│   └── I18N_IMPLEMENTATION_COMPLETE.md # 🌐 i18n Implementierungsstatus ✅ NEW!
 │
 └── tests/                          # 🧪 TEST SUITE (55+ Tests)
     ├── test_comprehensive_architecture.py    # Architektur-Tests
@@ -370,9 +380,10 @@ omf2/tests/
 
 ---
 
-**Letzte Aktualisierung:** 2025-10-08  
+**Letzte Aktualisierung:** 2025-10-10  
 **Status:** VOLLSTÄNDIG IMPLEMENTIERT ✅  
 **Architektur:** DREI-SCHICHTEN-ARCHITEKTUR ✅  
 **Tests:** 55 ERFOLGREICHE TESTS ✅  
 **Dokumentation:** VOLLSTÄNDIG ✅  
-**Production Order Manager:** ✅ VOLLSTÄNDIG ✅
+**Production Order Manager:** ✅ VOLLSTÄNDIG ✅  
+**i18n-Implementierung:** ✅ VOLLSTÄNDIG (DE, EN, FR) ✅ NEW!

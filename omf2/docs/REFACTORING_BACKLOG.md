@@ -62,6 +62,8 @@ Die Tabelle zeigt den aktuellen Status und dokumentiert noch ausstehende **Featu
 || **🌡️ Temperatur-Skala Anzeige**              | `ui/ccu/ccu_overview/sensor_data_subtab.py` | ❌ | Thermometer mit Farbskala HINTER dem Thermometer, nur bis zur aktuellen Temperatur sichtbar |
 || **📷 Camera Controls Implementierung**        | `ui/ccu/ccu_overview/sensor_data_subtab.py` | ❌ | 3x3 Grid: HOCH, LINKS, ZENTRIEREN, RECHTS, RUNTER mit einstellbarer Schrittweite |
 
+|| **🚨 KRITISCH: MQTT Topic-Korrektur**         | `omf2/registry/mqtt_clients.yml` | ❌ | Falsches Topic: `/j1/txt/1/f/o/stock` → `/j1/txt/1/f/i/stock` + Refactoring zu StockManager |
+|| **🔍 PUB-SUB Beziehung Validierung**          | `docs/REFERENCE-00/` | ❌ | Überprüfung der PUB-SUB Beziehungen wegen falschem Stock-Topic |
 
 ---
 
