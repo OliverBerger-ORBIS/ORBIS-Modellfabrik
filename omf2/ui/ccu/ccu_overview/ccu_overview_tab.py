@@ -33,20 +33,23 @@ def render_ccu_overview_tab(ccu_gateway=None, registry_manager=None):
             from omf2.registry.manager.registry_manager import get_registry_manager
             registry_manager = get_registry_manager()
         
-        # Initialize i18n
-        i18n = I18nManager()
+        # i18n Manager aus Session State holen (zentrale Instanz)
+        i18n = st.session_state.get('i18n_manager')
+        if not i18n:
+            logger.error("❌ I18n Manager not found in session state")
+            return
         
         # Use UISymbols for consistent icon usage
         st.header(f"{UISymbols.get_tab_icon('ccu_overview')} {i18n.translate('tabs.ccu_overview')}")
-        st.markdown("Central Control Unit - Factory Overview and Management")
+        st.markdown(i18n.t('ccu_overview.subtitle'))
         
-        # Create subtabs
+        # Create subtabs (i18n: Alle Tab-Titel übersetzt, Icons bleiben universell)
         tab1, tab2, tab3, tab4, tab5 = st.tabs([
-            f"{UISymbols.get_functional_icon('product_catalog')} Product Catalog",
-            f"{UISymbols.get_functional_icon('customer_order')} Customer Orders",
-            f"{UISymbols.get_functional_icon('purchase_order')} Purchase Orders",
-            f"{UISymbols.get_functional_icon('inventory')} Inventory",
-            f"{UISymbols.get_functional_icon('sensor_data')} Sensor Data"
+            f"{UISymbols.get_functional_icon('product_catalog')} {i18n.t('ccu_overview.tabs.product_catalog')}",
+            f"{UISymbols.get_functional_icon('customer_order')} {i18n.t('ccu_overview.tabs.customer_orders')}",
+            f"{UISymbols.get_functional_icon('purchase_order')} {i18n.t('ccu_overview.tabs.purchase_orders')}",
+            f"{UISymbols.get_functional_icon('inventory')} {i18n.t('ccu_overview.tabs.inventory')}",
+            f"{UISymbols.get_functional_icon('sensor_data')} {i18n.t('ccu_overview.tabs.sensor_data')}"
         ])
         
         with tab1:
@@ -72,4 +75,6 @@ def render_ccu_overview_tab(ccu_gateway=None, registry_manager=None):
     except Exception as e:
         logger.error(f"❌ CCU Overview Tab rendering error: {e}")
         st.error(f"❌ CCU Overview Tab failed: {e}")
-        st.info("💡 This component is currently under development.")
+        i18n = st.session_state.get('i18n_manager')
+        if i18n:
+            st.info(f"💡 {i18n.t('common.status.under_development')}")

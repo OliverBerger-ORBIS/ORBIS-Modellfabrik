@@ -20,7 +20,10 @@ def render_system_logs_tab():
     
     try:
         # Initialize i18n
-        i18n = I18nManager()
+        i18n = st.session_state.get("i18n_manager")
+        if not i18n:
+            logger.error("❌ I18n Manager not found in session state")
+            return
         
         st.header(f"{UISymbols.get_functional_icon('logs')} {i18n.translate('tabs.system_logs')}")
         st.markdown("**System log viewer and analysis tools**")

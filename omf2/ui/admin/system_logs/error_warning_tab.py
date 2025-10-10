@@ -21,12 +21,15 @@ def render_error_warning_tab():
     
     try:
         # Initialize i18n
-        i18n = I18nManager()
+        i18n = st.session_state.get("i18n_manager")
+        if not i18n:
+            logger.error("❌ I18n Manager not found in session state")
+            return
         
         # Best Practice: Zugriff über Handler statt direkte Buffers
         log_handler = st.session_state.get('log_handler')
         if not log_handler:
-            st.error(f"{UISymbols.get_status_icon('error')} No log handler available")
+            st.error(f"{UISymbols.get_status_icon('error')} {i18n.t('admin.error_warning.no_log_handler')}")
             return
         
         # Thread-sicherer Zugriff auf Level-spezifische Buffer
@@ -36,11 +39,12 @@ def render_error_warning_tab():
         error_count = len(error_logs)
         warning_count = len(warning_logs)
         
-        st.subheader(f"🚨 Critical Logs")
-        st.caption(f"🔴 {error_count} Errors | 🟡 {warning_count} Warnings")
+        st.subheader(f"🚨 {i18n.t('admin.error_warning.title')}")
+        caption_text = i18n.t('admin.error_warning.caption').format(error_count=error_count, warning_count=warning_count)
+        st.caption(caption_text)
         
         # Create tabs for ERROR and WARNING
-        error_tab, warning_tab = st.tabs(["🔴 Errors", "🟡 Warnings"])
+        error_tab, warning_tab = st.tabs([i18n.t('admin.error_warning.errors_tab'), i18n.t('admin.error_warning.warnings_tab')])
         
         with error_tab:
             _render_log_level(error_logs, "ERROR", "🔴")
@@ -50,14 +54,21 @@ def render_error_warning_tab():
             
     except Exception as e:
         logger.error(f"{UISymbols.get_status_icon('error')} Error & Warning Logs Tab error: {e}")
-        st.error(f"{UISymbols.get_status_icon('error')} Error displaying logs: {e}")
+        i18n = st.session_state.get("i18n_manager")
+        error_msg = i18n.t('admin.error_warning.tab_failed').format(error=e) if i18n else f"Error displaying logs: {e}"
+        st.error(f"{UISymbols.get_status_icon('error')} {error_msg}")
 
 
 def _render_log_level(logs: list, level: str, icon: str):
     """Render logs for a specific level based on display mode"""
     
     if not logs:
-        st.info(f"{icon} No {level} logs available")
+        i18n = st.session_state.get("i18n_manager")
+        if level == "ERROR":
+            no_logs_msg = i18n.t('admin.error_warning.no_errors') if i18n else f"No {level} logs available"
+        else:  # WARNING
+            no_logs_msg = i18n.t('admin.error_warning.no_warnings') if i18n else f"No {level} logs available"
+        st.info(f"{icon} {no_logs_msg}")
         return
     
     # Show latest logs first (most recent at top)

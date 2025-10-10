@@ -39,96 +39,106 @@ def render_ccu_orders_tab(ccu_gateway=None, registry_manager=None):
             registry_manager = get_registry_manager()
         
         # Initialize i18n
-        i18n = I18nManager()
+        i18n = st.session_state.get("i18n_manager")
+        if not i18n:
+            logger.error("❌ I18n Manager not found in session state")
+            return
         
         st.header(f"{UISymbols.get_tab_icon('ccu_orders')} {i18n.translate('tabs.ccu_orders')}")
-        st.markdown("Order Management and Processing")
+        st.markdown(i18n.t('ccu_orders.subtitle'))
         
         # Business Logic über ProductionOrderManager
         production_order_manager = get_production_order_manager()
         statistics = production_order_manager.get_order_statistics()
         
         # Order Statistics Section (oberhalb der Tabs)
-        with st.expander(f"{UISymbols.get_status_icon('stats')} Order Statistics", expanded=True):
+        stats_title = i18n.t('ccu_orders.statistics.title')
+        with st.expander(f"{UISymbols.get_status_icon('stats')} {stats_title}", expanded=True):
             col1, col2, col3, col4 = st.columns(4)
             
             with col1:
-                st.metric("Total Orders", statistics.get('total_count', 0))
+                st.metric(i18n.t('ccu_orders.statistics.total_orders'), statistics.get('total_count', 0))
             
             with col2:
-                st.metric("Active Orders", statistics.get('active_count', 0), "Processing")
+                st.metric(i18n.t('ccu_orders.statistics.active_orders'), statistics.get('active_count', 0), i18n.t('ccu_orders.statistics.processing'))
             
             with col3:
-                st.metric("Completed Orders", statistics.get('completed_count', 0))
+                st.metric(i18n.t('ccu_orders.statistics.completed_orders'), statistics.get('completed_count', 0))
             
             with col4:
-                stub_mode = "🔧 STUB" if statistics.get('stub_mode') else "✅ Live"
-                st.metric("Mode", stub_mode)
+                stub_mode = i18n.t('ccu_orders.statistics.stub_mode') if statistics.get('stub_mode') else i18n.t('ccu_orders.statistics.live_mode')
+                st.metric(i18n.t('ccu_orders.statistics.mode'), stub_mode)
         
         # Tabs für Production vs Storage Orders
-        tab1, tab2 = st.tabs(["🏭 Production Orders", "📦 Storage Orders"])
+        tab1, tab2 = st.tabs([i18n.t('ccu_orders.subtabs.production_orders'), i18n.t('ccu_orders.subtabs.storage_orders')])
         
         with tab1:
-            show_production_orders_subtab()
+            show_production_orders_subtab(i18n)
         
         with tab2:
-            show_storage_orders_subtab()
+            show_storage_orders_subtab(i18n)
         
         # Order Actions Section (unterhalb der Tabs)
-        with st.expander("🎛️ Order Actions", expanded=False):
-            st.markdown("### Order Control")
+        actions_title = i18n.t('ccu_orders.actions.title')
+        with st.expander(f"🎛️ {actions_title}", expanded=False):
+            st.markdown(f"### {i18n.t('ccu_orders.actions.control')}")
             
             col1, col2, col3 = st.columns(3)
             
             with col1:
-                if st.button("📤 Create New Order", key="ccu_orders_create_btn"):
-                    _create_new_order(ccu_gateway)
+                if st.button(f"📤 {i18n.t('ccu_orders.actions.create_new')}", key="ccu_orders_create_btn"):
+                    _create_new_order(ccu_gateway, i18n)
             
             with col2:
-                if st.button("⏸️ Pause All Orders", key="ccu_orders_pause_btn"):
-                    _pause_all_orders(ccu_gateway)
+                if st.button(f"⏸️ {i18n.t('ccu_orders.actions.pause_all')}", key="ccu_orders_pause_btn"):
+                    _pause_all_orders(ccu_gateway, i18n)
             
             with col3:
-                if st.button("▶️ Resume All Orders", key="ccu_orders_resume_btn"):
-                    _resume_all_orders(ccu_gateway)
+                if st.button(f"▶️ {i18n.t('ccu_orders.actions.resume_all')}", key="ccu_orders_resume_btn"):
+                    _resume_all_orders(ccu_gateway, i18n)
         
     except Exception as e:
         logger.error(f"❌ CCU Orders Tab rendering error: {e}")
         st.error(f"❌ CCU Orders Tab failed: {e}")
-        st.info("💡 This component is currently under development.")
+        i18n = st.session_state.get("i18n_manager")
+        if i18n:
+            st.info(f"💡 {i18n.t('ccu_orders.under_development')}")
 
 
-def _create_new_order(ccu_gateway):
+def _create_new_order(ccu_gateway, i18n):
     """Create New Order using CCU Gateway"""
     try:
         logger.info("📝 Creating New Order via CCU Gateway")
         # TODO: Implement actual order creation via ccu_gateway
         # order_id = ccu_gateway.create_order(workpiece_data)
-        st.success("✅ New order created via CCU Gateway!")
+        st.success(f"✅ {i18n.t('ccu_orders.status.order_created')}")
     except Exception as e:
         logger.error(f"❌ Order creation error: {e}")
-        st.error(f"❌ Order creation failed: {e}")
+        error_msg = i18n.t('ccu_orders.status.creation_failed').format(error=e)
+        st.error(f"❌ {error_msg}")
 
 
-def _pause_all_orders(ccu_gateway):
+def _pause_all_orders(ccu_gateway, i18n):
     """Pause All Orders using CCU Gateway"""
     try:
         logger.info("⏸️ Pausing All Orders via CCU Gateway")
         # TODO: Implement actual order pause via ccu_gateway
         # ccu_gateway.pause_all_orders()
-        st.success("⏸️ All orders paused via CCU Gateway!")
+        st.success(f"⏸️ {i18n.t('ccu_orders.status.orders_paused')}")
     except Exception as e:
         logger.error(f"❌ Order pause error: {e}")
-        st.error(f"❌ Order pause failed: {e}")
+        error_msg = i18n.t('ccu_orders.status.pause_failed').format(error=e)
+        st.error(f"❌ {error_msg}")
 
 
-def _resume_all_orders(ccu_gateway):
+def _resume_all_orders(ccu_gateway, i18n):
     """Resume All Orders using CCU Gateway"""
     try:
         logger.info("▶️ Resuming All Orders via CCU Gateway")
         # TODO: Implement actual order resume via ccu_gateway
         # ccu_gateway.resume_all_orders()
-        st.success("▶️ All orders resumed via CCU Gateway!")
+        st.success(f"▶️ {i18n.t('ccu_orders.status.orders_resumed')}")
     except Exception as e:
         logger.error(f"❌ Order resume error: {e}")
-        st.error(f"❌ Order resume failed: {e}")
+        error_msg = i18n.t('ccu_orders.status.resume_failed').format(error=e)
+        st.error(f"❌ {error_msg}")

@@ -20,7 +20,10 @@ def render_nodered_overview_tab():
     logger.info("🔄 Rendering Node-RED Overview Tab")
     try:
         # Initialize i18n
-        i18n = I18nManager()
+        i18n = st.session_state.get("i18n_manager")
+        if not i18n:
+            logger.error("❌ I18n Manager not found in session state")
+            return
         
         st.header(f"{UISymbols.get_tab_icon('nodered_overview')} {i18n.translate('tabs.nodered_overview')}")
         st.markdown("Node-RED Integration and Message Processing")

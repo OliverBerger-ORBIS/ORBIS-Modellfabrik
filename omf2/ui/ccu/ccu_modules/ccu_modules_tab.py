@@ -21,17 +21,20 @@ def render_ccu_modules_tab(ccu_gateway=None, registry_manager=None):
     logger.info("🏗️ Rendering CCU Modules Tab")
     try:
         # Initialize i18n
-        i18n = I18nManager()
+        i18n = st.session_state.get("i18n_manager")
+        if not i18n:
+            logger.error("❌ I18n Manager not found in session state")
+            return
         
         # Use UISymbols for consistent icon usage
         st.header(f"{UISymbols.get_tab_icon('ccu_modules')} {i18n.translate('tabs.ccu_modules')}")
-        st.markdown("Modul-Übersicht mit Status, Verbindungen und Aktionen")
+        st.markdown(i18n.t('ccu_modules.subtitle'))
         
         # Gateway-Pattern: Get CcuGateway from Factory (EXACT like Admin)
         from omf2.factory.gateway_factory import get_ccu_gateway
         ccu_gateway = get_ccu_gateway()
         if not ccu_gateway:
-            st.error(f"{UISymbols.get_status_icon('error')} CCU Gateway not available")
+            st.error(f"{UISymbols.get_status_icon('error')} {i18n.t('ccu_modules.error.gateway_not_available')}")
             return
         
         # Initialize Registry Manager if not provided
@@ -45,21 +48,21 @@ def render_ccu_modules_tab(ccu_gateway=None, registry_manager=None):
         col1, col2, col3 = st.columns([1, 1, 1])
         
         with col1:
-            if st.button(f"{UISymbols.get_status_icon('refresh')} Refresh Status", use_container_width=True, key="module_refresh_status"):
-                _refresh_module_status(ccu_gateway)
+            if st.button(f"{UISymbols.get_status_icon('refresh')} {i18n.t('ccu_modules.controls.refresh_status')}", use_container_width=True, key="module_refresh_status"):
+                _refresh_module_status(ccu_gateway, i18n)
         
         with col2:
-            if st.button(f"{UISymbols.get_functional_icon('dashboard')} Show Statistics", use_container_width=True, key="module_show_statistics"):
-                _show_module_statistics(ccu_gateway)
+            if st.button(f"{UISymbols.get_functional_icon('dashboard')} {i18n.t('ccu_modules.controls.show_statistics')}", use_container_width=True, key="module_show_statistics"):
+                _show_module_statistics(ccu_gateway, i18n)
         
         with col3:
-            if st.button(f"{UISymbols.get_functional_icon('settings')} Module Settings", use_container_width=True, key="module_settings"):
-                _show_module_settings()
+            if st.button(f"{UISymbols.get_functional_icon('settings')} {i18n.t('ccu_modules.controls.module_settings')}", use_container_width=True, key="module_settings"):
+                _show_module_settings(i18n)
         
         st.divider()
         
         # Module Overview Table - ECHTE MQTT-Daten
-        _show_module_overview_table(ccu_gateway)
+        _show_module_overview_table(ccu_gateway, i18n)
         
         # CCU Message Monitor - ECHTE MQTT-Daten über Gateway
         st.divider()
@@ -68,10 +71,15 @@ def render_ccu_modules_tab(ccu_gateway=None, registry_manager=None):
         
     except Exception as e:
         logger.error(f"❌ CCU Modules Tab error: {e}")
-        st.error(f"❌ CCU Modules Tab failed: {e}")
+        i18n = st.session_state.get("i18n_manager")
+        if i18n:
+            error_msg = i18n.t('ccu_modules.error.tab_failed').format(error=e)
+            st.error(f"❌ {error_msg}")
+        else:
+            st.error(f"❌ CCU Modules Tab failed: {e}")
 
 
-def _show_module_overview_table(ccu_gateway):
+def _show_module_overview_table(ccu_gateway, i18n):
     """Show Module Overview Table - ECHTE MQTT-Daten vom ccu_gateway mit Module Manager"""
     try:
         logger.info("📊 Showing Module Overview Table")
@@ -82,7 +90,7 @@ def _show_module_overview_table(ccu_gateway):
         # Get modules from Module Manager
         modules = module_manager.get_all_modules()
         if not modules:
-            st.info("📋 Keine Module konfiguriert")
+            st.info(f"📋 {i18n.t('ccu_modules.overview.no_modules')}")
             return
         
         # NEU: Business-Manager Pattern - lese aus Manager State-Holder
@@ -91,10 +99,11 @@ def _show_module_overview_table(ccu_gateway):
         
         # Display real-time status info with refresh indicator
         if status_store:
-            st.info(f"📊 Real-time Status: {len(status_store)} modules with live data")
-            st.success("✅ **Status wird automatisch aus MQTT-Nachrichten aktualisiert**")
+            status_msg = i18n.t('ccu_modules.overview.real_time_status').format(count=len(status_store))
+            st.info(f"📊 {status_msg}")
+            st.success(f"✅ **{i18n.t('ccu_modules.overview.auto_updated')}**")
         else:
-            st.warning("⚠️ Keine Module-Status-Daten verfügbar")
+            st.warning(f"⚠️ {i18n.t('ccu_modules.overview.no_status_data')}")
         
         module_table_data = []
         for module_id, module_info in modules.items():
@@ -125,13 +134,13 @@ def _show_module_overview_table(ccu_gateway):
             last_update = real_time_status.get("last_update", "Never")
             
             module_table_data.append({
-                "ID": module_id,
-                "Name": f"{icon_display} {display_name}",
-                "Connected": connection_display,
-                "Availability Status": availability_display,
-                "Configured": configured_display,
-                "Messages": message_count,
-                "Last Update": last_update,
+                i18n.t('ccu_modules.table.id'): module_id,
+                i18n.t('ccu_modules.table.name'): f"{icon_display} {display_name}",
+                i18n.t('ccu_modules.table.connected'): connection_display,
+                i18n.t('ccu_modules.table.availability_status'): availability_display,
+                i18n.t('ccu_modules.table.configured'): configured_display,
+                i18n.t('ccu_modules.table.messages'): message_count,
+                i18n.t('ccu_modules.table.last_update'): last_update,
             })
         
         if module_table_data:
@@ -139,13 +148,14 @@ def _show_module_overview_table(ccu_gateway):
             st.dataframe(df, use_container_width=True, hide_index=True)
             
             # Show real-time statistics
-            _show_module_statistics_summary(status_store)
+            _show_module_statistics_summary(status_store, i18n)
         else:
-            st.info("📋 Keine Module verfügbar")
+            st.info(f"📋 {i18n.t('ccu_modules.overview.no_modules_available')}")
         
     except Exception as e:
         logger.error(f"❌ Module Overview Table error: {e}")
-        st.error(f"❌ Module Overview Table failed: {e}")
+        error_msg = i18n.t('ccu_modules.error.table_failed').format(error=e)
+        st.error(f"❌ {error_msg}")
 
 
 def _get_module_display_name(module_id, module_info):
@@ -171,7 +181,7 @@ def _is_module_configured(module_id, ccu_gateway):
         return False
 
 
-def _refresh_module_status(ccu_gateway):
+def _refresh_module_status(ccu_gateway, i18n):
     """Refresh module status from MQTT data"""
     try:
         logger.info("🔄 Refreshing module status")
@@ -182,7 +192,7 @@ def _refresh_module_status(ccu_gateway):
         # Process module messages and update status store
         status_store = module_manager.get_module_status_from_state()  # Liest aus State-Holder
         
-        st.success("✅ Module status refreshed!")
+        st.success(f"✅ {i18n.t('ccu_modules.status.refresh_success')}")
         logger.info(f"📊 Refreshed status for {len(status_store)} modules")
         
         # CRITICAL: Request UI refresh to update the display
@@ -191,10 +201,11 @@ def _refresh_module_status(ccu_gateway):
         
     except Exception as e:
         logger.error(f"❌ Failed to refresh module status: {e}")
-        st.error(f"❌ Failed to refresh module status: {e}")
+        error_msg = i18n.t('ccu_modules.error.refresh_failed').format(error=e)
+        st.error(f"❌ {error_msg}")
 
 
-def _show_module_statistics(ccu_gateway):
+def _show_module_statistics(ccu_gateway, i18n):
     """Show module statistics"""
     try:
         logger.info("📊 Showing module statistics")
@@ -221,28 +232,29 @@ def _show_module_statistics(ccu_gateway):
         col1, col2, col3, col4 = st.columns(4)
         
         with col1:
-            st.metric("Total Modules", total_modules)
+            st.metric(i18n.t('ccu_modules.statistics.total_modules'), total_modules)
         
         with col2:
-            st.metric("Connected", connected_modules)
+            st.metric(i18n.t('ccu_modules.statistics.connected'), connected_modules)
         
         with col3:
-            st.metric("Available", available_modules)
+            st.metric(i18n.t('ccu_modules.statistics.available'), available_modules)
         
         with col4:
-            st.metric("Configured", configured_modules)
+            st.metric(i18n.t('ccu_modules.statistics.configured'), configured_modules)
         
         # Show detailed status
-        st.markdown("#### 📊 Detailed Status")
+        st.markdown(f"#### 📊 {i18n.t('ccu_modules.statistics.detailed_status')}")
         for module_id, status in status_store.items():
             st.write(f"**{module_id}**: Connected={status.get('connected', False)}, Available={status.get('available', 'Unknown')}")
         
     except Exception as e:
         logger.error(f"❌ Failed to show module statistics: {e}")
-        st.error(f"❌ Failed to show module statistics: {e}")
+        error_msg = i18n.t('ccu_modules.error.statistics_failed').format(error=e)
+        st.error(f"❌ {error_msg}")
 
 
-def _show_module_statistics_summary(status_store):
+def _show_module_statistics_summary(status_store, i18n):
     """Show module statistics summary"""
     try:
         if not status_store:
@@ -263,66 +275,75 @@ def _show_module_statistics_summary(status_store):
         col1, col2, col3, col4 = st.columns(4)
         
         with col1:
-            st.metric("Total", total_modules)
+            st.metric(i18n.t('ccu_modules.statistics.total'), total_modules)
         
         with col2:
-            st.metric("Connected", connected_modules)
+            st.metric(i18n.t('ccu_modules.statistics.connected'), connected_modules)
         
         with col3:
-            st.metric("Available", available_modules)
+            st.metric(i18n.t('ccu_modules.statistics.available'), available_modules)
         
         with col4:
-            st.metric("Configured", configured_modules)
+            st.metric(i18n.t('ccu_modules.statistics.configured'), configured_modules)
         
     except Exception as e:
         logger.error(f"❌ Failed to show module statistics summary: {e}")
+        error_msg = i18n.t('ccu_modules.error.statistics_summary_failed').format(error=e)
+        logger.error(error_msg)
 
 
-def _show_module_settings():
+def _show_module_settings(i18n):
     """Show module settings"""
     try:
         logger.info("⚙️ Showing module settings")
-        st.info("📋 Module settings functionality will be implemented here")
+        st.info(f"📋 {i18n.t('ccu_modules.status.settings_info')}")
         
     except Exception as e:
         logger.error(f"❌ Failed to show module settings: {e}")
-        st.error(f"❌ Failed to show module settings: {e}")
+        error_msg = i18n.t('ccu_modules.error.settings_failed').format(error=e)
+        st.error(f"❌ {error_msg}")
 
 
-def _calibrate_module(module_id, ccu_gateway):
+def _calibrate_module(module_id, ccu_gateway, i18n):
     """Calibrate a specific module"""
     try:
         logger.info(f"🔧 Calibrating module {module_id}")
         
         # TODO: Implement actual calibration logic
-        st.success(f"✅ Module {module_id} calibration started")
+        success_msg = i18n.t('ccu_modules.status.calibration_started').format(module_id=module_id)
+        st.success(f"✅ {success_msg}")
         
     except Exception as e:
         logger.error(f"❌ Failed to calibrate module {module_id}: {e}")
-        st.error(f"❌ Failed to calibrate module {module_id}: {e}")
+        error_msg = i18n.t('ccu_modules.error.calibration_failed').format(module_id=module_id, error=e)
+        st.error(f"❌ {error_msg}")
 
 
-def _dock_fts(module_id, ccu_gateway):
+def _dock_fts(module_id, ccu_gateway, i18n):
     """Dock FTS module"""
     try:
         logger.info(f"🚗 Docking FTS module {module_id}")
         
         # TODO: Implement actual docking logic
-        st.success(f"✅ FTS module {module_id} docking started")
+        success_msg = i18n.t('ccu_modules.status.docking_started').format(module_id=module_id)
+        st.success(f"✅ {success_msg}")
         
     except Exception as e:
         logger.error(f"❌ Failed to dock FTS module {module_id}: {e}")
-        st.error(f"❌ Failed to dock FTS module {module_id}: {e}")
+        error_msg = i18n.t('ccu_modules.error.docking_failed').format(module_id=module_id, error=e)
+        st.error(f"❌ {error_msg}")
 
 
-def _undock_fts(module_id, ccu_gateway):
+def _undock_fts(module_id, ccu_gateway, i18n):
     """Undock FTS module"""
     try:
         logger.info(f"🚗 Undocking FTS module {module_id}")
         
         # TODO: Implement actual undocking logic
-        st.success(f"✅ FTS module {module_id} undocking started")
+        success_msg = i18n.t('ccu_modules.status.undocking_started').format(module_id=module_id)
+        st.success(f"✅ {success_msg}")
         
     except Exception as e:
         logger.error(f"❌ Failed to undock FTS module {module_id}: {e}")
-        st.error(f"❌ Failed to undock FTS module {module_id}: {e}")
+        error_msg = i18n.t('ccu_modules.error.undocking_failed').format(module_id=module_id, error=e)
+        st.error(f"❌ {error_msg}")

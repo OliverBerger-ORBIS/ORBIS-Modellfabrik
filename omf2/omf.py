@@ -141,9 +141,10 @@ def main():
             logger.info("🚀 Starting OMF2 Dashboard session")
             st.session_state['logging_initialized'] = True
         
-        # Initialize I18n manager in session state
+        # Initialize I18n manager in session state with session_state reference
         if 'i18n_manager' not in st.session_state:
-            st.session_state['i18n_manager'] = I18nManager()
+            st.session_state['i18n_manager'] = I18nManager(session_state=st.session_state)
+            logger.info("🌐 I18n Manager initialized with Session State integration")
         
         # Initialize Registry Manager (Singleton - nur einmal initialisiert)
         if 'registry_manager' not in st.session_state:

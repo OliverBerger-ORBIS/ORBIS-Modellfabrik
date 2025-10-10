@@ -11,7 +11,7 @@ from omf2.ui.common.symbols import UISymbols
 logger = get_logger(__name__)
 
 
-def show_storage_orders_subtab():
+def show_storage_orders_subtab(i18n):
     """Render Storage Orders Subtab (nur orderType: STORAGE)"""
     logger.info("📝 Rendering Storage Orders Subtab")
     
@@ -27,49 +27,50 @@ def show_storage_orders_subtab():
         active_orders = [o for o in all_active if o.get('orderType') == 'STORAGE']
         completed_orders = [o for o in all_completed if o.get('orderType') == 'STORAGE']
         
-        st.markdown("### 📦 Storage Orders")
-        st.markdown("Only orders with **orderType: STORAGE**")
+        st.markdown(f"### {i18n.t('ccu_orders.storage.title')}")
+        st.markdown(i18n.t('ccu_orders.storage.subtitle'))
         
         # Active Storage Orders
-        _show_active_orders_section(active_orders, production_order_manager)
+        _show_active_orders_section(active_orders, production_order_manager, i18n)
         
         # Completed Storage Orders
         st.divider()
-        _show_completed_orders_section(completed_orders, production_order_manager)
+        _show_completed_orders_section(completed_orders, production_order_manager, i18n)
         
     except Exception as e:
         logger.error(f"❌ Storage Orders Subtab rendering error: {e}")
         st.error(f"❌ Storage Orders Subtab failed: {e}")
 
 
-def _show_active_orders_section(active_orders, production_order_manager):
+def _show_active_orders_section(active_orders, production_order_manager, i18n):
     """Show Active Storage Orders Section"""
-    st.markdown("#### Active Storage Orders")
+    st.markdown(f"#### {i18n.t('ccu_orders.storage.active_title')}")
     
     if active_orders:
         for order in active_orders:
-            _render_order_card(order, production_order_manager, is_completed=False)
+            _render_order_card(order, production_order_manager, i18n, is_completed=False)
     else:
-        st.info(f"{UISymbols.get_status_icon('info')} Keine aktiven Storage Orders vorhanden")
+        st.info(f"{UISymbols.get_status_icon('info')} {i18n.t('ccu_orders.storage.no_active')}")
 
 
-def _show_completed_orders_section(completed_orders, production_order_manager):
+def _show_completed_orders_section(completed_orders, production_order_manager, i18n):
     """Show Completed Storage Orders Section"""
-    st.markdown("#### Completed Storage Orders")
+    st.markdown(f"#### {i18n.t('ccu_orders.storage.completed_title')}")
     
     if completed_orders:
         for order in completed_orders:
-            _render_order_card(order, production_order_manager, is_completed=True)
+            _render_order_card(order, production_order_manager, i18n, is_completed=True)
     else:
-        st.info(f"{UISymbols.get_status_icon('info')} Keine abgeschlossenen Storage Orders vorhanden")
+        st.info(f"{UISymbols.get_status_icon('info')} {i18n.t('ccu_orders.storage.no_completed')}")
 
 
-def _render_order_card(order, production_order_manager, is_completed=False):
+def _render_order_card(order, production_order_manager, i18n, is_completed=False):
     """Render einzelne Order Card
     
     Args:
         order: Order-Dict
         production_order_manager: ProductionOrderManager Instanz
+        i18n: I18nManager Instanz
         is_completed: True für completed orders (ausgegraut)
     """
     with st.container():
@@ -96,7 +97,7 @@ def _render_order_card(order, production_order_manager, is_completed=False):
         
         with col3:
             if is_completed:
-                st.write(f"✅ COMPLETED")
+                st.write(f"✅ {i18n.t('ccu_orders.card.completed')}")
             else:
                 state = order.get('state', 'N/A')
                 state_icon = {
@@ -117,15 +118,17 @@ def _render_order_card(order, production_order_manager, is_completed=False):
         # Production Steps (expandable)
         complete_production_plan = production_order_manager.get_complete_production_plan(order)
         if complete_production_plan:
-            with st.expander(f"Production steps ({len(complete_production_plan)})", expanded=False):
-                _render_production_steps(complete_production_plan, is_completed)
+            steps_label = f"{i18n.t('ccu_orders.card.production_steps')} ({len(complete_production_plan)})"
+            with st.expander(steps_label, expanded=False):
+                _render_production_steps(complete_production_plan, i18n, is_completed)
 
 
-def _render_production_steps(production_plan, is_completed=False):
+def _render_production_steps(production_plan, i18n, is_completed=False):
     """Render Production Steps
     
     Args:
         production_plan: List of production steps
+        i18n: I18nManager Instanz
         is_completed: True für completed orders (ausgegraut)
     """
     for idx, step in enumerate(production_plan, 1):
@@ -172,14 +175,16 @@ def _render_production_steps(production_plan, is_completed=False):
         
         # Step-Beschreibung
         if step_type == 'NAVIGATION':
-            step_desc = f"Automated Guided Vehicle (AGV)"
+            step_desc = i18n.t('ccu_orders.steps.automated_guided_vehicle')
             if source != target:
                 target_icon = station_icons.get(target, '🏭')
                 step_desc += f" > {target_icon} {target}"
         elif step_type == 'MANUFACTURE':
             command = step.get('command', '')
-            if command in ['LOAD', 'UNLOAD']:
-                step_desc = f"{module_type} : {command} AGV"
+            if command == 'LOAD':
+                step_desc = f"{module_type} : {i18n.t('ccu_orders.steps.load_agv')}"
+            elif command == 'UNLOAD':
+                step_desc = f"{module_type} : {i18n.t('ccu_orders.steps.unload_agv')}"
             else:
                 step_desc = f"{module_type} : {command}"
         else:

@@ -10,6 +10,7 @@ from omf2.ccu.ccu_gateway import CcuGateway
 from omf2.ccu.order_manager import get_order_manager
 from omf2.common.logger import get_logger
 from omf2.ui.common.symbols import UISymbols
+from omf2.common.i18n import I18nManager
 
 # HTML Templates import
 try:
@@ -22,7 +23,7 @@ except ImportError as e:
 logger = get_logger(__name__)
 
 
-def _render_workpiece_section(workpiece_type: str, count: int, need: int, max_capacity: int, ccu_gateway: CcuGateway):
+def _render_workpiece_section(workpiece_type: str, count: int, need: int, max_capacity: int, ccu_gateway: CcuGateway, i18n: I18nManager):
     """Rendert eine Werkstück-Sektion (BLUE, WHITE, RED) - DRY Principle"""
     
     # Icons und Labels
@@ -32,23 +33,32 @@ def _render_workpiece_section(workpiece_type: str, count: int, need: int, max_ca
         "RED": "🔴"
     }
     
-    st.markdown(f"#### {icons.get(workpiece_type, '📦')} {workpiece_type} Werkstücke")
+    workpieces_text = i18n.t('ccu_overview.purchase_orders.workpieces').format(workpiece_type=workpiece_type)
+    st.markdown(f"#### {icons.get(workpiece_type, '📦')} {workpieces_text}")
     col1, col2, col3, col4 = st.columns([1, 1, 2, 1])
     
     with col1:
         if TEMPLATES_AVAILABLE:
+            # TODO: HTML-Templates auf i18n umstellen - enthält hardcoded deutsche Texte
             st.markdown(get_workpiece_box_template(workpiece_type, count, count > 0), unsafe_allow_html=True)
         else:
             st.markdown(f"**{workpiece_type}**")
-            st.markdown(f"**Bestand: {count}**")
-            st.markdown(f"**Verfügbar: {'✅ Ja' if count > 0 else '❌ Nein'}**")
+            stock_text = i18n.t('ccu_overview.purchase_orders.stock')
+            available_text = i18n.t('ccu_overview.purchase_orders.available')
+            yes_text = i18n.t('ccu_overview.purchase_orders.yes')
+            no_text = i18n.t('ccu_overview.purchase_orders.no')
+            st.markdown(f"**{stock_text}: {count}**")
+            st.markdown(f"**{available_text}: {'✅ ' + yes_text if count > 0 else '❌ ' + no_text}**")
     
     with col2:
-        st.markdown(f"**Bedarf: {need} von {max_capacity}**")
+        need_text = i18n.t('ccu_overview.purchase_orders.need_of_max').format(need=need, max_capacity=max_capacity)
+        st.markdown(f"**{need_text}**")
         if need > 0:
-            st.markdown(f"**Noch bestellbar: {need} Werkstücke**")
+            still_orderable_text = i18n.t('ccu_overview.purchase_orders.still_orderable').format(need=need)
+            st.markdown(f"**{still_orderable_text}**")
         else:
-            st.success(f"{UISymbols.get_status_icon('success')} Vollständig - Kein Bedarf")
+            complete_text = i18n.t('ccu_overview.purchase_orders.complete_no_need')
+            st.success(f"{UISymbols.get_status_icon('success')} {complete_text}")
     
     with col3:
         if need > 0:
@@ -73,14 +83,15 @@ def _render_workpiece_section(workpiece_type: str, count: int, need: int, max_ca
                 )
     
     with col4:
+        order_button_text = i18n.t('ccu_overview.purchase_orders.order_raw_material')
         if need > 0:
-            if st.button(f"{UISymbols.get_status_icon('send')} Rohstoff bestellen", key=f"ccu_purchase_order_{workpiece_type.lower()}", type="secondary"):
-                _send_raw_material_order(workpiece_type, ccu_gateway)
+            if st.button(f"{UISymbols.get_status_icon('send')} {order_button_text}", key=f"ccu_purchase_order_{workpiece_type.lower()}", type="secondary"):
+                _send_raw_material_order(workpiece_type, ccu_gateway, i18n)
         else:
-            st.button(f"{UISymbols.get_status_icon('send')} Rohstoff bestellen", key=f"ccu_purchase_order_{workpiece_type.lower()}_disabled", disabled=True)
+            st.button(f"{UISymbols.get_status_icon('send')} {order_button_text}", key=f"ccu_purchase_order_{workpiece_type.lower()}_disabled", disabled=True)
 
 
-def _send_raw_material_order(workpiece_type: str, ccu_gateway: CcuGateway) -> bool:
+def _send_raw_material_order(workpiece_type: str, ccu_gateway: CcuGateway, i18n: I18nManager) -> bool:
     """
     Sendet Rohmaterial-Bestellung über Order Manager
     
@@ -117,7 +128,13 @@ def render_purchase_order_subtab(ccu_gateway: CcuGateway, registry_manager):
     """
     logger.info("📦 Rendering Purchase Order Subtab")
     
-    st.subheader(f"{UISymbols.get_functional_icon('purchase_order')} Rohmaterial-Bestellungen (Purchase Orders)")
+    # I18n Manager aus Session State holen
+    i18n = st.session_state.get('i18n_manager')
+    if not i18n:
+        logger.error("❌ I18n Manager not found in session state")
+        return
+    
+    st.subheader(f"{UISymbols.get_functional_icon('purchase_order')} {i18n.t('ccu_overview.purchase_orders.title')}")
     
     # Gateway verfügbar?
     if not ccu_gateway:
@@ -136,11 +153,13 @@ def render_purchase_order_subtab(ccu_gateway: CcuGateway, registry_manager):
             
             # Zeitstempel anzeigen
             if last_update:
-                st.success(f"{UISymbols.get_status_icon('success')} Lagerbestand aktualisiert: {last_update}")
+                stock_updated_text = i18n.t('ccu_overview.purchase_orders.stock_updated').format(last_update=last_update)
+                st.success(f"{UISymbols.get_status_icon('success')} {stock_updated_text}")
         else:
             # Fallback: Default-Werte
             available_workpieces = {"RED": 0, "BLUE": 0, "WHITE": 0}
-            st.info(f"{UISymbols.get_status_icon('info')} Warte auf Lagerbestand-Daten via MQTT...")
+            waiting_text = i18n.t('ccu_overview.purchase_orders.waiting_for_stock')
+            st.info(f"{UISymbols.get_status_icon('info')} {waiting_text}")
         
         # Konstanten aus CCU Config laden
         from omf2.ccu.config_loader import get_ccu_config_loader
@@ -160,26 +179,30 @@ def render_purchase_order_subtab(ccu_gateway: CcuGateway, registry_manager):
         white_need = MAX_CAPACITY - white_count
         
         # Werkstück-Sektionen rendern (BLUE, WHITE, RED)
-        _render_workpiece_section("BLUE", blue_count, blue_need, MAX_CAPACITY, ccu_gateway)
+        _render_workpiece_section("BLUE", blue_count, blue_need, MAX_CAPACITY, ccu_gateway, i18n)
         
-        _render_workpiece_section("WHITE", white_count, white_need, MAX_CAPACITY, ccu_gateway)
+        _render_workpiece_section("WHITE", white_count, white_need, MAX_CAPACITY, ccu_gateway, i18n)
         
-        _render_workpiece_section("RED", red_count, red_need, MAX_CAPACITY, ccu_gateway)
+        _render_workpiece_section("RED", red_count, red_need, MAX_CAPACITY, ccu_gateway, i18n)
         
         # Zusammenfassung
         st.markdown("---")
-        st.markdown(f"### {UISymbols.get_functional_icon('dashboard')} Zusammenfassung")
+        summary_text = i18n.t('ccu_overview.purchase_orders.summary')
+        st.markdown(f"### {UISymbols.get_functional_icon('dashboard')} {summary_text}")
         
         total_need = red_need + blue_need + white_need
         total_available = red_count + blue_count + white_count
         
         col1, col2, col3 = st.columns(3)
         with col1:
-            st.metric(f"{UISymbols.get_functional_icon('inventory')} Gesamt verfügbar", total_available)
+            total_available_text = i18n.t('ccu_overview.purchase_orders.total_available')
+            st.metric(f"{UISymbols.get_functional_icon('inventory')} {total_available_text}", total_available)
         with col2:
-            st.metric(f"{UISymbols.get_status_icon('warning')} Gesamt Bedarf", total_need)
+            total_need_text = i18n.t('ccu_overview.purchase_orders.total_need')
+            st.metric(f"{UISymbols.get_status_icon('warning')} {total_need_text}", total_need)
         with col3:
-            st.metric(f"{UISymbols.get_functional_icon('purchase_order')} Offene Bestellungen", total_need)
+            open_orders_text = i18n.t('ccu_overview.purchase_orders.open_orders')
+            st.metric(f"{UISymbols.get_functional_icon('purchase_order')} {open_orders_text}", total_need)
         
     except Exception as e:
         logger.error(f"{UISymbols.get_status_icon('error')} Error rendering purchase order: {e}")

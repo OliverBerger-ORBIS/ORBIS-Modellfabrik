@@ -36,15 +36,18 @@ def render_ccu_configuration_tab(ccu_gateway=None, registry_manager=None):
             registry_manager = get_registry_manager()
         
         # Initialize i18n
-        i18n = I18nManager()
+        i18n = st.session_state.get("i18n_manager")
+        if not i18n:
+            logger.error("❌ I18n Manager not found in session state")
+            return
         
         st.header(f"{UISymbols.get_tab_icon('ccu_configuration')} {i18n.translate('tabs.ccu_configuration')}")
-        st.markdown("CCU System Configuration and Settings")
+        st.markdown(i18n.t('ccu_configuration.subtitle'))
         
         # Create subtabs
         subtab_labels = [
-            f"{UISymbols.get_tab_icon('factory')} Factory Configuration",
-            f"{UISymbols.get_tab_icon('parameter')} Parameter Configuration"
+            i18n.t('ccu_configuration.subtabs.factory_configuration'),
+            i18n.t('ccu_configuration.subtabs.parameter_configuration')
         ]
         
         subtabs = st.tabs(subtab_labels)
@@ -60,41 +63,50 @@ def render_ccu_configuration_tab(ccu_gateway=None, registry_manager=None):
         
     except Exception as e:
         logger.error(f"❌ CCU Configuration Tab rendering error: {e}")
-        st.error(f"❌ CCU Configuration Tab failed: {e}")
-        st.info("💡 This component is currently under development.")
+        i18n = st.session_state.get("i18n_manager")
+        if i18n:
+            error_msg = i18n.t('ccu_configuration.error.tab_failed').format(error=e)
+            st.error(f"❌ {error_msg}")
+            st.info(f"💡 {i18n.t('ccu_configuration.under_development')}")
+        else:
+            st.error(f"❌ CCU Configuration Tab failed: {e}")
+            st.info("💡 This component is currently under development.")
 
 
-def _refresh_configuration(ccu_gateway):
+def _refresh_configuration(ccu_gateway, i18n):
     """Refresh Configuration using CCU Gateway"""
     try:
         logger.info("🔄 Refreshing Configuration via CCU Gateway")
         # TODO: Implement actual configuration refresh via ccu_gateway
         # config = ccu_gateway.get_configuration()
-        st.success("✅ Configuration refreshed via CCU Gateway!")
+        st.success(f"✅ {i18n.t('ccu_configuration.status.refresh_success')}")
     except Exception as e:
         logger.error(f"❌ Configuration refresh error: {e}")
-        st.error(f"❌ Configuration refresh failed: {e}")
+        error_msg = i18n.t('ccu_configuration.error.refresh_failed').format(error=e)
+        st.error(f"❌ {error_msg}")
 
 
-def _save_configuration(ccu_gateway):
+def _save_configuration(ccu_gateway, i18n):
     """Save Configuration using CCU Gateway"""
     try:
         logger.info("💾 Saving Configuration via CCU Gateway")
         # TODO: Implement actual configuration save via ccu_gateway
         # ccu_gateway.save_configuration(config_data)
-        st.success("✅ Configuration saved via CCU Gateway!")
+        st.success(f"✅ {i18n.t('ccu_configuration.status.save_success')}")
     except Exception as e:
         logger.error(f"❌ Configuration save error: {e}")
-        st.error(f"❌ Configuration save failed: {e}")
+        error_msg = i18n.t('ccu_configuration.error.save_failed').format(error=e)
+        st.error(f"❌ {error_msg}")
 
 
-def _reset_configuration(ccu_gateway):
+def _reset_configuration(ccu_gateway, i18n):
     """Reset Configuration using CCU Gateway"""
     try:
         logger.info("🔄 Resetting Configuration via CCU Gateway")
         # TODO: Implement actual configuration reset via ccu_gateway
         # ccu_gateway.reset_configuration()
-        st.warning("🔄 Configuration reset via CCU Gateway!")
+        st.warning(f"🔄 {i18n.t('ccu_configuration.status.reset_warning')}")
     except Exception as e:
         logger.error(f"❌ Configuration reset error: {e}")
-        st.error(f"❌ Configuration reset failed: {e}")
+        error_msg = i18n.t('ccu_configuration.error.reset_failed').format(error=e)
+        st.error(f"❌ {error_msg}")

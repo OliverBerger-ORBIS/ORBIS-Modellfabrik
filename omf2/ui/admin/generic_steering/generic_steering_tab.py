@@ -19,15 +19,18 @@ def render_generic_steering_tab():
     
     try:
         # Initialize i18n
-        i18n = I18nManager()
+        i18n = st.session_state.get("i18n_manager")
+        if not i18n:
+            logger.error("❌ I18n Manager not found in session state")
+            return
         
         st.title(f"{UISymbols.get_tab_icon('generic_steering')} {i18n.translate('tabs.generic_steering')}")
-        st.markdown("**Factory Management and Control with Modular Architecture**")
+        st.markdown(f"**{i18n.t('admin.generic_steering.subtitle')}**")
         
         # Gateway-Pattern: Get AdminGateway from Factory
         admin_gateway = get_admin_gateway()
         if not admin_gateway:
-            st.error(f"{UISymbols.get_status_icon('error')} Admin Gateway not available")
+            st.error(f"{UISymbols.get_status_icon('error')} {i18n.t('admin.generic_steering.gateway_not_available')}")
             return
         
         # Get Registry Manager from session state
@@ -42,9 +45,10 @@ def render_generic_steering_tab():
                             stats['mqtt_clients_count'] + stats['workpieces_count'] + 
                             stats['modules_count'] + stats['stations_count'] + 
                             stats['txt_controllers_count'])
-            st.info(f"{UISymbols.get_status_icon('history')} **Registry:** {total_entities} entities loaded")
+            registry_msg = i18n.t('admin.generic_steering.registry_entities').format(count=total_entities)
+            st.info(f"{UISymbols.get_status_icon('history')} **{registry_msg}**")
         else:
-            st.warning(f"{UISymbols.get_status_icon('warning')} **Registry Manager not available**")
+            st.warning(f"{UISymbols.get_status_icon('warning')} **{i18n.t('admin.generic_steering.registry_not_available')}**")
         
         # Tabs for different steering modes using UISymbols
         tab1, tab2 = st.tabs([
@@ -60,7 +64,9 @@ def render_generic_steering_tab():
         
     except Exception as e:
         logger.error(f"{UISymbols.get_status_icon('error')} Generic Steering Tab error: {e}")
-        st.error(f"{UISymbols.get_status_icon('error')} Generic Steering failed: {e}")
+        i18n = st.session_state.get("i18n_manager")
+        error_msg = i18n.t('admin.generic_steering.tab_failed').format(error=e) if i18n else f"Generic Steering failed: {e}"
+        st.error(f"{UISymbols.get_status_icon('error')} {error_msg}")
 
 
 def _render_factory_steering_tab(admin_gateway, registry_manager):

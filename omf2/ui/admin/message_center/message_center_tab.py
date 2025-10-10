@@ -19,16 +19,19 @@ def render_message_center_tab():
     
     try:
         # Initialize i18n
-        i18n = I18nManager()
+        i18n = st.session_state.get("i18n_manager")
+        if not i18n:
+            logger.error("❌ I18n Manager not found in session state")
+            return
         
         # Header
         st.subheader(f"{UISymbols.get_tab_icon('message_center')} {i18n.translate('tabs.message_center')}")
-        st.markdown("**MQTT Live Monitoring and Message Testing**")
+        st.markdown(f"**{i18n.t('admin.message_center.subtitle')}**")
         
         # Gateway-Pattern: Get AdminGateway from Factory
         admin_gateway = get_admin_gateway()
         if not admin_gateway:
-            st.error(f"{UISymbols.get_status_icon('error')} Admin Gateway not available")
+            st.error(f"{UISymbols.get_status_icon('error')} {i18n.t('admin.message_center.gateway_not_available')}")
             return
         
         # Connection status shown in sidebar only
@@ -51,7 +54,9 @@ def render_message_center_tab():
         
     except Exception as e:
         logger.error(f"{UISymbols.get_status_icon('error')} Message Center Tab error: {e}")
-        st.error(f"{UISymbols.get_status_icon('error')} Message Center failed: {e}")
+        i18n = st.session_state.get("i18n_manager")
+        error_msg = i18n.t('admin.message_center.tab_failed').format(error=e) if i18n else f"Message Center failed: {e}"
+        st.error(f"{UISymbols.get_status_icon('error')} {error_msg}")
 
 
 def _render_message_monitor_tab(admin_gateway):

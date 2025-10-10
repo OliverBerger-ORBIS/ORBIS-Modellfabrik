@@ -17,15 +17,18 @@ def render_admin_settings_tab():
     logger.info(f"{UISymbols.get_tab_icon('admin_settings')} Rendering Admin Settings Tab")
     try:
         # Initialize i18n
-        i18n = I18nManager()
+        i18n = st.session_state.get("i18n_manager")
+        if not i18n:
+            logger.error("❌ I18n Manager not found in session state")
+            return
         
         st.header(f"{UISymbols.get_tab_icon('admin_settings')} {i18n.translate('tabs.admin_settings')}")
-        st.markdown("Dashboard configuration and registry information")
+        st.markdown(i18n.t('admin.settings.subtitle'))
         
         # Gateway-Pattern: Get AdminGateway from Factory
         admin_gateway = get_admin_gateway()
         if not admin_gateway:
-            st.error(f"{UISymbols.get_status_icon('error')} Admin Gateway not available")
+            st.error(f"{UISymbols.get_status_icon('error')} {i18n.t('admin.settings.gateway_not_available')}")
             return
         
         # Get Registry Manager from session state

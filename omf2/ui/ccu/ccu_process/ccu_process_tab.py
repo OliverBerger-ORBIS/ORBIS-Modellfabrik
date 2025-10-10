@@ -37,15 +37,18 @@ def render_ccu_process_tab(ccu_gateway=None, registry_manager=None):
             registry_manager = get_registry_manager()
 
         # Initialize i18n
-        i18n = I18nManager()
+        i18n = st.session_state.get("i18n_manager")
+        if not i18n:
+            logger.error("❌ I18n Manager not found in session state")
+            return
         
         st.header(f"{UISymbols.get_tab_icon('ccu_process')} {i18n.translate('tabs.ccu_process')}")
-        st.markdown("Production Planning and Process Monitoring")
+        st.markdown(i18n.t('ccu_process.subtitle'))
 
         # Create subtabs
         subtab_labels = [
-            f"{UISymbols.get_tab_icon('production_plan')} Production Plan",
-            f"{UISymbols.get_tab_icon('production_monitoring')} Production Monitoring"
+            i18n.t('ccu_process.subtabs.production_plan'),
+            i18n.t('ccu_process.subtabs.production_monitoring')
         ]
 
         subtabs = st.tabs(subtab_labels)
@@ -61,5 +64,11 @@ def render_ccu_process_tab(ccu_gateway=None, registry_manager=None):
 
     except Exception as e:
         logger.error(f"❌ CCU Process Tab rendering error: {e}")
-        st.error(f"❌ CCU Process Tab failed: {e}")
-        st.info("💡 This component is currently under development.")
+        i18n = st.session_state.get("i18n_manager")
+        if i18n:
+            error_msg = i18n.t('ccu_process.error.tab_failed').format(error=e)
+            st.error(f"❌ {error_msg}")
+            st.info(f"💡 {i18n.t('ccu_process.under_development')}")
+        else:
+            st.error(f"❌ CCU Process Tab failed: {e}")
+            st.info("💡 This component is currently under development.")

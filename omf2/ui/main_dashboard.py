@@ -221,8 +221,11 @@ class MainDashboard:
         
         if new_lang != current_lang:
             i18n.set_language(new_lang)
-            st.session_state['current_language'] = new_lang
+            # I18nManager verwendet 'i18n_current_language', nicht 'current_language'
+            st.session_state['i18n_current_language'] = new_lang
             logger.info(f"🌐 Language changed to: {new_lang}")
+            
+            
             request_refresh()
     
     def _render_connection_status(self):

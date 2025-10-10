@@ -9,6 +9,7 @@ from omf2.ccu.ccu_gateway import CcuGateway
 from omf2.ccu.order_manager import get_order_manager
 from omf2.common.logger import get_logger
 from omf2.ui.common.symbols import UISymbols
+from omf2.common.i18n import I18nManager
 
 # HTML Templates import
 try:
@@ -62,7 +63,14 @@ def render_inventory_subtab(ccu_gateway: CcuGateway, registry_manager):
     """
     logger.info("🏬 Rendering Inventory Subtab")
     
-    st.subheader(f"{UISymbols.get_functional_icon('inventory')} Lagerbestand - HBW Übersicht")
+    # I18n Manager aus Session State holen
+    i18n = st.session_state.get('i18n_manager')
+    if not i18n:
+        logger.error("❌ I18n Manager not found in session state")
+        return
+    
+    hbw_overview_text = i18n.t('ccu_overview.inventory.hbw_overview')
+    st.subheader(f"{UISymbols.get_functional_icon('inventory')} {i18n.t('ccu_overview.inventory.title')} - {hbw_overview_text}")
     
     # Gateway verfügbar?
     if not ccu_gateway:
@@ -86,10 +94,12 @@ def render_inventory_subtab(ccu_gateway: CcuGateway, registry_manager):
                 "C1": None, "C2": None, "C3": None
             }
             available = {"BLUE": 0, "WHITE": 0, "RED": 0}
-            st.info(f"{UISymbols.get_status_icon('info')} Warte auf Lagerbestand-Daten via MQTT...")
+            waiting_text = i18n.t('ccu_overview.inventory.waiting_for_stock')
+            st.info(f"{UISymbols.get_status_icon('info')} {waiting_text}")
         
         # 3x3 Grid Layout
-        st.markdown("**Lagerbestand (A1-C3):**")
+        stock_grid_text = i18n.t('ccu_overview.inventory.stock_grid')
+        st.markdown(f"**{stock_grid_text}**")
         
         # Row A
         col_a1, col_a2, col_a3 = st.columns(3)
@@ -120,7 +130,8 @@ def render_inventory_subtab(ccu_gateway: CcuGateway, registry_manager):
         
         # Verfügbare Werkstücke anzeigen (Summary)
         st.markdown("---")
-        st.markdown(f"**{UISymbols.get_functional_icon('dashboard')} Verfügbare Werkstücke:**")
+        available_workpieces_text = i18n.t('ccu_overview.inventory.available_workpieces')
+        st.markdown(f"**{UISymbols.get_functional_icon('dashboard')} {available_workpieces_text}:**")
         
         col1, col2, col3 = st.columns(3)
         with col1:
@@ -132,4 +143,5 @@ def render_inventory_subtab(ccu_gateway: CcuGateway, registry_manager):
         
     except Exception as e:
         logger.error(f"{UISymbols.get_status_icon('error')} Error rendering inventory: {e}")
-        st.error(f"{UISymbols.get_status_icon('error')} Fehler beim Laden des Lagerbestands: {e}")
+        error_text = i18n.t('ccu_overview.inventory.error_loading').format(error=e)
+        st.error(f"{UISymbols.get_status_icon('error')} {error_text}")

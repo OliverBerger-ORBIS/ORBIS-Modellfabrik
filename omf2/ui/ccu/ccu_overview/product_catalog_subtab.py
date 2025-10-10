@@ -7,6 +7,7 @@ import streamlit as st
 from omf2.ccu.ccu_gateway import CcuGateway
 from omf2.common.logger import get_logger
 from omf2.ui.common.symbols import UISymbols
+from omf2.common.i18n import I18nManager
 
 logger = get_logger(__name__)
 
@@ -19,10 +20,17 @@ def render_product_catalog_subtab(ccu_gateway: CcuGateway, registry_manager):
         registry_manager: RegistryManager Instanz (Singleton)
     """
     logger.info("📋 Rendering Product Catalog Subtab")
+    
+    # I18n Manager aus Session State holen
+    i18n = st.session_state.get('i18n_manager')
+    if not i18n:
+        logger.error("❌ I18n Manager not found in session state")
+        return
+    
     try:
         # Use UISymbols for consistent icon usage
-        st.subheader(f"{UISymbols.get_functional_icon('product_catalog')} Product Catalog")
-        st.markdown("Verfügbare Produkte und deren Konfiguration")
+        st.subheader(f"{UISymbols.get_functional_icon('product_catalog')} {i18n.t('ccu_overview.product_catalog.title')}")
+        st.markdown(i18n.t('ccu_overview.product_catalog.subtitle'))
         
         # Show Product Catalog Panel (wie in omf/ aps_overview.py)
         _show_ccu_product_catalog_panel()
@@ -30,12 +38,21 @@ def render_product_catalog_subtab(ccu_gateway: CcuGateway, registry_manager):
     except Exception as e:
         logger.error(f"❌ Product Catalog Subtab rendering error: {e}")
         st.error(f"❌ Product Catalog Subtab failed: {e}")
-        st.info("💡 This component is currently under development.")
+        i18n_fallback = st.session_state.get('i18n_manager')
+        if i18n_fallback:
+            st.info(f"💡 {i18n_fallback.t('common.status.under_development')}")
 
 
 def _show_ccu_product_catalog_panel():
     """Zeigt das CCU: Produktkatalog Panel - wie in omf/ aps_overview.py"""
     logger.info("📦 Rendering CCU Product Catalog Panel")
+    
+    # I18n Manager aus Session State holen
+    i18n = st.session_state.get('i18n_manager')
+    if not i18n:
+        logger.error("❌ I18n Manager not found in session state")
+        return
+    
     try:
         # Produktkatalog direkt laden (wie in omf/)
         from omf2.common.product_manager import get_omf2_product_manager
@@ -43,7 +60,7 @@ def _show_ccu_product_catalog_panel():
         catalog = product_manager.get_all_products()
         
         if not catalog:
-            st.error("❌ Keine Produkte gefunden")
+            st.error(f"❌ {i18n.t('ccu_overview.product_catalog.no_products')}")
             return
 
         # 3 Spalten für die Produkte (Reihenfolge: Blau, Weiß, Rot)
@@ -65,10 +82,14 @@ def _show_ccu_product_catalog_panel():
                     st.markdown(html_content, unsafe_allow_html=True)
                 else:
                     st.write("🔵 **BLAU**")
-                st.write(f"**Name:** {product.get('name', 'Blau')}")
-                st.write(f"**Beschreibung:** {product.get('description', 'Blau')}")
-                st.write(f"**Material:** {product.get('material', 'Kunststoff')}")
-                st.write(f"**Farbe:** {product.get('color', 'Blau')}")
+                name_label = i18n.t('ccu_overview.product_catalog.name')
+                desc_label = i18n.t('ccu_overview.product_catalog.description')
+                material_label = i18n.t('ccu_overview.product_catalog.material')
+                color_label = i18n.t('ccu_overview.product_catalog.color')
+                st.write(f"**{name_label}:** {product.get('name', 'Blau')}")
+                st.write(f"**{desc_label}:** {product.get('description', 'Blau')}")
+                st.write(f"**{material_label}:** {product.get('material', 'Kunststoff')}")
+                st.write(f"**{color_label}:** {product.get('color', 'Blau')}")
 
         # WEISS (Spalte 2)
         with col2:
@@ -79,10 +100,14 @@ def _show_ccu_product_catalog_panel():
                     st.markdown(html_content, unsafe_allow_html=True)
                 else:
                     st.write("⚪ **WEISS**")
-                st.write(f"**Name:** {product.get('name', 'Weiß')}")
-                st.write(f"**Beschreibung:** {product.get('description', 'Weiß')}")
-                st.write(f"**Material:** {product.get('material', 'Kunststoff')}")
-                st.write(f"**Farbe:** {product.get('color', 'Weiß')}")
+                name_label = i18n.t('ccu_overview.product_catalog.name')
+                desc_label = i18n.t('ccu_overview.product_catalog.description')
+                material_label = i18n.t('ccu_overview.product_catalog.material')
+                color_label = i18n.t('ccu_overview.product_catalog.color')
+                st.write(f"**{name_label}:** {product.get('name', 'Weiß')}")
+                st.write(f"**{desc_label}:** {product.get('description', 'Weiß')}")
+                st.write(f"**{material_label}:** {product.get('material', 'Kunststoff')}")
+                st.write(f"**{color_label}:** {product.get('color', 'Weiß')}")
 
         # ROT (Spalte 3)
         with col3:
@@ -93,15 +118,22 @@ def _show_ccu_product_catalog_panel():
                     st.markdown(html_content, unsafe_allow_html=True)
                 else:
                     st.write("🔴 **ROT**")
-                st.write(f"**Name:** {product.get('name', 'Rot')}")
-                st.write(f"**Beschreibung:** {product.get('description', 'Rot')}")
-                st.write(f"**Material:** {product.get('material', 'Kunststoff')}")
-                st.write(f"**Farbe:** {product.get('color', 'Rot')}")
+                name_label = i18n.t('ccu_overview.product_catalog.name')
+                desc_label = i18n.t('ccu_overview.product_catalog.description')
+                material_label = i18n.t('ccu_overview.product_catalog.material')
+                color_label = i18n.t('ccu_overview.product_catalog.color')
+                st.write(f"**{name_label}:** {product.get('name', 'Rot')}")
+                st.write(f"**{desc_label}:** {product.get('description', 'Rot')}")
+                st.write(f"**{material_label}:** {product.get('material', 'Kunststoff')}")
+                st.write(f"**{color_label}:** {product.get('color', 'Rot')}")
 
         # Einfache Produktstatistiken
-        st.info(f"📊 **Produktkatalog:** {len(catalog)} Produkte verfügbar")
+        summary_text = i18n.t('ccu_overview.product_catalog.summary')
+        products_available_text = i18n.t('ccu_overview.product_catalog.products_available')
+        st.info(f"📊 **{summary_text}:** {len(catalog)} {products_available_text}")
 
     except Exception as e:
         logger.error(f"❌ Fehler beim Laden des Produktkatalog Panels: {e}")
         st.error(f"❌ Fehler beim Laden des Produktkatalog Panels: {e}")
-        st.info("💡 Produktkatalog Panel konnte nicht geladen werden.")
+        error_loading_text = i18n.t('ccu_overview.product_catalog.error_loading')
+        st.info(f"💡 {error_loading_text}")
