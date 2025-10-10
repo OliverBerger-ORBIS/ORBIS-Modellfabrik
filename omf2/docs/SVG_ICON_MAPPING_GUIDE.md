@@ -15,20 +15,28 @@ Dieser Guide erklärt, wie SVG-Icons im Shopfloor Layout System getauscht werden
 
 ```python
 icon_mapping = {
-    "HBW": "warehouse_40dp_1F1F1F_FILL0_wght400_GRAD0_opsz40.svg",
-    "DRILL": "tools_power_drill_40dp_1F1F1F_FILL0_wght400_GRAD0_opsz40.svg",
-    "MILL": "construction_40dp_1F1F1F_FILL0_wght400_GRAD0_opsz40.svg",
-    "AIQS": "robot_40dp_1F1F1F_FILL0_wght400_GRAD0_opsz40.svg",
-    "DPS": "conveyor_belt_40dp_1F1F1F_FILL0_wght400_GRAD0_opsz40.svg",
-    "CHRG": "ev_station_40dp_1F1F1F_FILL0_wght400_GRAD0_opsz40.svg",
+    "HBW": "ic_ft_hbw.svg",           # High-Bay Warehouse
+    "DRILL": "ic_ft_drill.svg",       # Drilling Station
+    "MILL": "ic_ft_mill.svg",         # Milling Station
+    "AIQS": "ic_ft_aiqs.svg",         # Quality Control
+    "DPS": "ic_ft_dps.svg",           # Delivery/Pickup Station
+    "CHRG": "ic_ft_chrg.svg",         # Charging Station
+    "FTS": "ic_ft_fts.svg",           # Transport System
     "INTERSECTION": "add_2_40dp_1F1F1F_FILL0_wght400_GRAD0_opsz40.svg",
     "EMPTY": None,  # Leer - kein Icon
 }
 ```
 
-## 📁 SVG-Icon Verzeichnis
+## 📁 Asset-Verzeichnis Struktur
 
-**Pfad:** `omf2/assets/svgs/`
+### **SVG-Icons:** `omf2/assets/svgs/`
+Skalierbare Vektor-Icons für Module
+
+### **PNG-Icons:** `omf2/assets/icons/`
+Raster-Icons für Module (Fallback)
+
+### **Logos:** `omf2/assets/logos/`
+Firmen-Logos (ORBIS, Partner, etc.)
 
 ### **Verfügbare SVG-Icons:**
 ```
@@ -114,19 +122,13 @@ icon_mapping = {
 
 ## 📐 SVG-Icon Spezifikationen
 
-### **Empfohlene Eigenschaften:**
-- **Format:** SVG (Scalable Vector Graphics)
-- **Größe:** 40x40px (wird automatisch skaliert)
-- **Farbe:** #1f1f1f (dunkelgrau)
-- **Stil:** Material Design Icons
-- **ViewBox:** 0 -960 960 960 (Standard Material Icons)
+### **Icon-Größen:**
+- **Zellengröße:** 100px → **Icon-Größe:** 66px (66%)
 
-### **SVG-Template:**
-```xml
-<svg xmlns="http://www.w3.org/2000/svg" height="40" viewBox="0 -960 960 960" width="40" fill="#1f1f1f">
-    <path d="YOUR_ICON_PATH_HERE"/>
-</svg>
-```
+### **Icon-Typen:**
+- **ic_ft_*.svg:** 24x24px, #0069b4 (ORBIS Blau) - Fischertechnik-Icons
+- **omf_*.svg:** 24x24px, #0069b4 (ORBIS Blau) - OMF-spezifische Icons
+- **intersection_*.svg:** 24x24px, #1f1f1f (Schwarz) - Intersection-Icons
 
 ## 🎨 Icon-Bibliotheken
 
@@ -138,11 +140,14 @@ icon_mapping = {
 
 ### **Icon-Naming Convention:**
 ```
-{icon_name}_{size}dp_{color}_{FILL}{weight}_wght{weight}_GRAD{gradient}_opsz{size}.svg
+ic_ft_{module_name}.svg     # Fischertechnik-Icons (24x24)
+omf_{component_name}.svg    # OMF-spezifische Icons (24x24)
+intersection_{type}.svg     # Intersection-Icons (24x24)
 
 Beispiele:
-- warehouse_40dp_1F1F1F_FILL0_wght400_GRAD0_opsz40.svg
-- tools_power_drill_40dp_1F1F1F_FILL0_wght400_GRAD0_opsz40.svg
+- ic_ft_hbw.svg (Fischertechnik High-Bay Warehouse)
+- omf_machine.svg (OMF Machine Icon)
+- add_2.svg (Intersection Icon)
 ```
 
 ## 🔍 Troubleshooting

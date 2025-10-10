@@ -169,6 +169,9 @@ def render_ccu_modules_tab():
 ### **Shopfloor Layout System:**
 - 📄 **[SHOPFLOOR_LAYOUT_GUIDE.md](docs/SHOPFLOOR_LAYOUT_GUIDE.md)** - **NEU:** Kompletter Guide für wiederverwendbare 3×4 Grid-Komponente
 
+### **Logo & Branding:**
+- 📄 **[LOGO_USAGE_GUIDE.md](docs/LOGO_USAGE_GUIDE.md)** - **NEU:** ORBIS Logo Integration und Usage Guide
+
 ## 🎯 **Entwicklungsstandards**
 
 ### **✅ OBLIGATORISCH:**
