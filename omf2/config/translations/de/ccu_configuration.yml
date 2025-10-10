@@ -1,0 +1,23 @@
+# CCU Configuration Tab - Deutsche Übersetzungen
+
+# Main Tab
+ccu_configuration.subtitle: "CCU System-Konfiguration und Einstellungen"
+
+# Subtabs
+ccu_configuration.subtabs.factory_configuration: "🏭 Fabrik-Konfiguration"
+ccu_configuration.subtabs.parameter_configuration: "⚙️ Parameter-Konfiguration"
+
+# Status Messages
+ccu_configuration.status.refresh_success: "Konfiguration aktualisiert via CCU Gateway!"
+ccu_configuration.status.save_success: "Konfiguration gespeichert via CCU Gateway!"
+ccu_configuration.status.reset_warning: "Konfiguration zurückgesetzt via CCU Gateway!"
+
+# Error Messages
+ccu_configuration.error.tab_failed: "CCU Configuration Tab fehlgeschlagen: {error}"
+ccu_configuration.error.refresh_failed: "Konfigurationsaktualisierung fehlgeschlagen: {error}"
+ccu_configuration.error.save_failed: "Konfiguration speichern fehlgeschlagen: {error}"
+ccu_configuration.error.reset_failed: "Konfiguration zurücksetzen fehlgeschlagen: {error}"
+
+# Under Development
+ccu_configuration.under_development: "Diese Komponente befindet sich noch in der Entwicklung."
+

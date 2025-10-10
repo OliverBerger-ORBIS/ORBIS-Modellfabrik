@@ -1,0 +1,76 @@
+# Common Translations - English (EN)
+# Common translations for all components
+# FLAT KEY STRUCTURE: common.buttons.order instead of buttons.order
+
+# Button Labels
+common.buttons.send: "Send"
+common.buttons.order: "Order"
+common.buttons.refresh: "Refresh"
+common.buttons.save: "Save"
+common.buttons.cancel: "Cancel"
+common.buttons.delete: "Delete"
+common.buttons.edit: "Edit"
+common.buttons.add: "Add"
+common.buttons.remove: "Remove"
+common.buttons.reset: "Reset"
+common.buttons.apply: "Apply"
+common.buttons.close: "Close"
+common.buttons.back: "Back"
+common.buttons.next: "Next"
+common.buttons.finish: "Finish"
+
+# Status Messages
+common.status.success: "Success"
+common.status.error: "Error"
+common.status.warning: "Warning"
+common.status.info: "Information"
+common.status.loading: "Loading..."
+common.status.processing: "Processing..."
+common.status.completed: "Completed"
+common.status.failed: "Failed"
+common.status.pending: "Pending"
+common.status.ready: "Ready"
+common.status.connected: "Connected"
+common.status.disconnected: "Disconnected"
+common.status.available: "Available"
+common.status.unavailable: "Unavailable"
+common.status.online: "Online"
+common.status.offline: "Offline"
+common.status.under_development: "This component is currently under development."
+common.status.error_loading: "Error loading component: {error}"
+common.status.no_data: "No data available"
+common.status.waiting_for_data: "Waiting for data via MQTT..."
+
+# Form Labels
+common.forms.workpiece: "Workpiece"
+common.forms.stock: "Stock"
+common.forms.inventory: "Inventory"
+common.forms.type: "Type"
+common.forms.color: "Color"
+common.forms.position: "Position"
+common.forms.quantity: "Quantity"
+common.forms.description: "Description"
+common.forms.name: "Name"
+common.forms.id: "ID"
+common.forms.status: "Status"
+common.forms.created: "Created"
+common.forms.updated: "Updated"
+common.forms.empty: "Empty"
+common.forms.full: "Full"
+common.forms.yes: "Yes"
+common.forms.no: "No"
+
+# Dashboard
+dashboard.subtitle: "ORBIS Modellfabrik Control System"
+
+# Main Navigation Tabs
+tabs.ccu_overview: "CCU Dashboard"
+tabs.ccu_orders: "CCU Orders"
+tabs.ccu_process: "CCU Process"
+tabs.ccu_configuration: "CCU Configuration"
+tabs.ccu_modules: "CCU Modules"
+tabs.message_center: "Message Center"
+tabs.generic_steering: "Generic Steering"
+tabs.system_logs: "System Logs"
+tabs.admin_settings: "Admin Settings"
+

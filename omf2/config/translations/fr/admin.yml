@@ -1,0 +1,28 @@
+# Admin Tabs - French Translations (main tabs only)
+
+# Admin Settings Tab
+admin.settings.subtitle: "Configuration du tableau de bord et informations du registre"
+admin.settings.gateway_not_available: "Passerelle Admin non disponible"
+
+# Generic Steering Tab
+admin.generic_steering.subtitle: "Gestion et contrôle d'usine avec architecture modulaire"
+admin.generic_steering.registry_entities: "Registre: {count} entités chargées"
+admin.generic_steering.registry_not_available: "Gestionnaire de registre non disponible"
+admin.generic_steering.gateway_not_available: "Passerelle Admin non disponible"
+admin.generic_steering.tab_failed: "Échec du contrôle générique: {error}"
+
+# Message Center Tab
+admin.message_center.subtitle: "Surveillance MQTT en direct et test de messages"
+admin.message_center.gateway_not_available: "Passerelle Admin non disponible"
+admin.message_center.tab_failed: "Échec du centre de messages: {error}"
+
+# Error & Warning Tab
+admin.error_warning.title: "Journaux critiques"
+admin.error_warning.caption: "{error_count} Erreurs | {warning_count} Avertissements"
+admin.error_warning.no_log_handler: "Aucun gestionnaire de journaux disponible"
+admin.error_warning.tab_failed: "Erreur lors de l'affichage des journaux: {error}"
+admin.error_warning.errors_tab: "🔴 Erreurs"
+admin.error_warning.warnings_tab: "🟡 Avertissements"
+admin.error_warning.no_errors: "Aucun journal ERROR disponible"
+admin.error_warning.no_warnings: "Aucun journal WARNING disponible"
+

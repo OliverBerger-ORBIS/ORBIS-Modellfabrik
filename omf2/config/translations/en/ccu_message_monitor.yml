@@ -1,0 +1,66 @@
+# CCU Message Monitor - English Translations
+
+# Main Component
+ccu_message_monitor.title: "CCU Message Monitor"
+ccu_message_monitor.subtitle: "CCU MQTT Message Monitoring - Real-time Messages via CCU Gateway"
+
+# Controls
+ccu_message_monitor.controls.refresh_messages: "Refresh Messages"
+ccu_message_monitor.controls.show_statistics: "Show Statistics"
+ccu_message_monitor.controls.clear_buffer: "Clear Buffer"
+
+# Subscriptions
+ccu_message_monitor.subscriptions.subscribed_to: "CCU MQTT Client subscribed to {count} topics"
+ccu_message_monitor.subscriptions.subscribed_topics: "Subscribed Topics"
+ccu_message_monitor.subscriptions.no_topics: "CCU MQTT Client has no subscribed topics"
+
+# Messages
+ccu_message_monitor.messages.no_messages: "No CCU Messages available"
+ccu_message_monitor.messages.waiting: "Messages will be displayed once the client is connected and receiving messages"
+
+# Table Headers
+ccu_message_monitor.table.topic: "Topic"
+ccu_message_monitor.table.type: "Type"
+ccu_message_monitor.table.status: "Status"
+ccu_message_monitor.table.timestamp: "Timestamp"
+ccu_message_monitor.table.data: "Data"
+
+# Message Types
+ccu_message_monitor.types.state: "🟢 State"
+ccu_message_monitor.types.connection: "🔌 Connection"
+ccu_message_monitor.types.factsheet: "📄 Factsheet"
+ccu_message_monitor.types.ccu: "🏭 CCU"
+ccu_message_monitor.types.module: "🏗️ Module"
+ccu_message_monitor.types.fts: "🚗 FTS"
+ccu_message_monitor.types.message: "📨 Message"
+
+# Message Status
+ccu_message_monitor.status.connected: "🟢 Connected"
+ccu_message_monitor.status.available: "🟢 Available"
+ccu_message_monitor.status.busy: "🟡 Busy"
+ccu_message_monitor.status.error: "🔴 Error"
+ccu_message_monitor.status.unknown: "⚪ Unknown"
+ccu_message_monitor.status.message: "📨 Message"
+
+# Statistics
+ccu_message_monitor.statistics.title: "CCU Message Statistics"
+ccu_message_monitor.statistics.total_topics: "Total Topics"
+ccu_message_monitor.statistics.total_messages: "Total Messages"
+ccu_message_monitor.statistics.state_topics: "State Topics"
+ccu_message_monitor.statistics.connection_topics: "Connection Topics"
+
+# Status Messages
+ccu_message_monitor.actions.refresh_success: "CCU Messages refreshed!"
+ccu_message_monitor.actions.resubscribed: "Re-subscribed to {count} CCU topics"
+ccu_message_monitor.actions.buffer_cleared: "CCU Message Buffer cleared!"
+
+# Error Messages
+ccu_message_monitor.error.gateway_not_available: "CCU Gateway not available"
+ccu_message_monitor.error.mqtt_not_available: "CCU MQTT Client not available via Gateway"
+ccu_message_monitor.error.component_failed: "CCU Message Monitor Component failed: {error}"
+ccu_message_monitor.error.refresh_failed: "CCU Messages refresh failed: {error}"
+ccu_message_monitor.error.statistics_failed: "CCU Message Statistics failed: {error}"
+ccu_message_monitor.error.buffer_clear_failed: "CCU Message Buffer clear failed: {error}"
+ccu_message_monitor.error.no_topics: "No CCU topics found in registry"
+ccu_message_monitor.error.no_mqtt_client: "No MQTT client provided"
+

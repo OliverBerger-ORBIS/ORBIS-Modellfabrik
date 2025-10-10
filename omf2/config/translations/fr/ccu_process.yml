@@ -1,0 +1,15 @@
+# CCU Process Tab - French Translations
+
+# Main Tab
+ccu_process.subtitle: "Planification de production et surveillance des processus"
+
+# Subtabs
+ccu_process.subtabs.production_plan: "📋 Plan de production"
+ccu_process.subtabs.production_monitoring: "📊 Surveillance de la production"
+
+# Error Messages
+ccu_process.error.tab_failed: "Échec de l'onglet Processus CCU: {error}"
+
+# Under Development
+ccu_process.under_development: "Ce composant est actuellement en développement."
+

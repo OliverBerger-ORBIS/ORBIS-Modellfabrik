@@ -1,0 +1,23 @@
+# CCU Configuration Tab - English Translations
+
+# Main Tab
+ccu_configuration.subtitle: "CCU System Configuration and Settings"
+
+# Subtabs
+ccu_configuration.subtabs.factory_configuration: "🏭 Factory Configuration"
+ccu_configuration.subtabs.parameter_configuration: "⚙️ Parameter Configuration"
+
+# Status Messages
+ccu_configuration.status.refresh_success: "Configuration refreshed via CCU Gateway!"
+ccu_configuration.status.save_success: "Configuration saved via CCU Gateway!"
+ccu_configuration.status.reset_warning: "Configuration reset via CCU Gateway!"
+
+# Error Messages
+ccu_configuration.error.tab_failed: "CCU Configuration Tab failed: {error}"
+ccu_configuration.error.refresh_failed: "Configuration refresh failed: {error}"
+ccu_configuration.error.save_failed: "Configuration save failed: {error}"
+ccu_configuration.error.reset_failed: "Configuration reset failed: {error}"
+
+# Under Development
+ccu_configuration.under_development: "This component is currently under development."
+

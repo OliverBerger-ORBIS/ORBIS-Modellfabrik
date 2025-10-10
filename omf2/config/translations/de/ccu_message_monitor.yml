@@ -1,0 +1,66 @@
+# CCU Message Monitor - Deutsche Übersetzungen
+
+# Main Component
+ccu_message_monitor.title: "CCU Message Monitor"
+ccu_message_monitor.subtitle: "CCU MQTT Message Monitoring - Echtzeit-Nachrichten über CCU Gateway"
+
+# Controls
+ccu_message_monitor.controls.refresh_messages: "Nachrichten Aktualisieren"
+ccu_message_monitor.controls.show_statistics: "Statistiken Anzeigen"
+ccu_message_monitor.controls.clear_buffer: "Puffer Leeren"
+
+# Subscriptions
+ccu_message_monitor.subscriptions.subscribed_to: "CCU MQTT Client abonniert {count} Topics"
+ccu_message_monitor.subscriptions.subscribed_topics: "Abonnierte Topics"
+ccu_message_monitor.subscriptions.no_topics: "CCU MQTT Client hat keine abonnierten Topics"
+
+# Messages
+ccu_message_monitor.messages.no_messages: "Keine CCU Messages verfügbar"
+ccu_message_monitor.messages.waiting: "Messages werden angezeigt, sobald der Client connected ist und Nachrichten empfängt"
+
+# Table Headers
+ccu_message_monitor.table.topic: "Topic"
+ccu_message_monitor.table.type: "Typ"
+ccu_message_monitor.table.status: "Status"
+ccu_message_monitor.table.timestamp: "Zeitstempel"
+ccu_message_monitor.table.data: "Daten"
+
+# Message Types
+ccu_message_monitor.types.state: "🟢 Status"
+ccu_message_monitor.types.connection: "🔌 Verbindung"
+ccu_message_monitor.types.factsheet: "📄 Datenblatt"
+ccu_message_monitor.types.ccu: "🏭 CCU"
+ccu_message_monitor.types.module: "🏗️ Modul"
+ccu_message_monitor.types.fts: "🚗 FTS"
+ccu_message_monitor.types.message: "📨 Nachricht"
+
+# Message Status
+ccu_message_monitor.status.connected: "🟢 Verbunden"
+ccu_message_monitor.status.available: "🟢 Verfügbar"
+ccu_message_monitor.status.busy: "🟡 Beschäftigt"
+ccu_message_monitor.status.error: "🔴 Fehler"
+ccu_message_monitor.status.unknown: "⚪ Unbekannt"
+ccu_message_monitor.status.message: "📨 Nachricht"
+
+# Statistics
+ccu_message_monitor.statistics.title: "CCU Message Statistiken"
+ccu_message_monitor.statistics.total_topics: "Gesamt Topics"
+ccu_message_monitor.statistics.total_messages: "Gesamt Nachrichten"
+ccu_message_monitor.statistics.state_topics: "Status Topics"
+ccu_message_monitor.statistics.connection_topics: "Verbindungs Topics"
+
+# Status Messages
+ccu_message_monitor.actions.refresh_success: "CCU Messages aktualisiert!"
+ccu_message_monitor.actions.resubscribed: "Neu abonniert für {count} CCU Topics"
+ccu_message_monitor.actions.buffer_cleared: "CCU Message Puffer geleert!"
+
+# Error Messages
+ccu_message_monitor.error.gateway_not_available: "CCU Gateway nicht verfügbar"
+ccu_message_monitor.error.mqtt_not_available: "CCU MQTT Client nicht verfügbar über Gateway"
+ccu_message_monitor.error.component_failed: "CCU Message Monitor Component fehlgeschlagen: {error}"
+ccu_message_monitor.error.refresh_failed: "CCU Messages Aktualisierung fehlgeschlagen: {error}"
+ccu_message_monitor.error.statistics_failed: "CCU Message Statistiken fehlgeschlagen: {error}"
+ccu_message_monitor.error.buffer_clear_failed: "CCU Message Puffer Leerung fehlgeschlagen: {error}"
+ccu_message_monitor.error.no_topics: "Keine CCU Topics in Registry gefunden"
+ccu_message_monitor.error.no_mqtt_client: "Kein MQTT Client bereitgestellt"
+

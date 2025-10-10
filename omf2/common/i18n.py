@@ -1,6 +1,11 @@
 """
 Internationalization (i18n) support for OMF2 Dashboard
 Provides multi-language support for German, English, and French
+
+NON-BLOCKING ARCHITECTURE:
+- Lazy Loading: Translations werden beim ersten Zugriff geladen (kein File I/O im __init__)
+- Session State: Aktuelle Sprache wird in Streamlit Session State gespeichert
+- YAML-basiert: Translations in config/translations/ (Fallback zu inline)
 """
 
 from typing import Dict, Any, Optional
@@ -13,13 +18,25 @@ logger = get_logger(__name__)
 
 
 class I18nManager:
-    """Manages internationalization for the OMF2 Dashboard"""
+    """
+    Manages internationalization for the OMF2 Dashboard
     
-    def __init__(self):
-        self.current_language = 'de'  # Default to German
+    NON-BLOCKING: Kein File I/O im __init__ - Lazy Loading Pattern
+    SESSION STATE: Verwendet st.session_state für aktuelle Sprache
+    """
+    
+    def __init__(self, session_state=None):
+        """
+        Initialize I18nManager - KEIN File I/O hier!
+        
+        Args:
+            session_state: Optional Streamlit session_state für Sprach-Persistenz
+        """
+        self.session_state = session_state
         self.translations = None  # Lazy Loading - wird beim ersten Zugriff geladen
         self.supported_languages = ['de', 'en', 'fr']
-        # Kein _load_translations() mehr beim Init - Lazy Loading
+        self.translations_path = Path(__file__).parent.parent / "config" / "translations"
+        # Kein _load_translations() mehr beim Init - Lazy Loading!
     
     def _get_translations(self):
         """Lazy Loading für Translations - wird beim ersten Zugriff geladen"""
@@ -28,9 +45,27 @@ class I18nManager:
         return self.translations
     
     def _load_translations(self):
-        """Load translation files"""
+        """
+        Load translation files - Lazy Loading beim ersten Zugriff
+        
+        Strategie:
+        1. Versuche YAML-Files aus config/translations/ zu laden
+        2. Fallback zu inline translations (für Entwicklung/Tests)
+        
+        NON-BLOCKING: Diese Methode wird nur beim ersten translate() Aufruf aufgerufen
+        """
         try:
-            # Define default translations inline for now
+            # Versuche YAML-Files zu laden (wenn vorhanden)
+            if self.translations_path.exists():
+                logger.debug(f"📁 Loading translations from: {self.translations_path}")
+                loaded_translations = self._load_yaml_translations()
+                if loaded_translations:
+                    self.translations = loaded_translations
+                    logger.info(f"✅ Translations loaded from YAML files: {list(self.translations.keys())}")
+                    return
+            
+            # Fallback: Inline translations (wie bisher)
+            logger.info("📋 Using inline translations (YAML files not found)")
             self.translations = {
                 'de': {
                     'dashboard': {
@@ -168,51 +203,102 @@ class I18nManager:
             }
     
     def set_language(self, language: str):
-        """Set the current language"""
+        """
+        Set the current language
+        
+        Args:
+            language: Language code (de, en, fr)
+        
+        NOTE: Verwendet Session State wenn verfügbar für Persistenz
+        """
         if language in self.supported_languages:
-            self.current_language = language
-            logger.info(f"🌐 Language set to: {language}")
+            if self.session_state is not None:
+                # Session State verfügbar - speichere dort
+                self.session_state['i18n_current_language'] = language
+                logger.info(f"🌐 Language set to: {language} (Session State)")
+            else:
+                # Fallback: Nur lokal speichern
+                self.current_language = language
+                logger.info(f"🌐 Language set to: {language} (Local)")
         else:
             logger.warning(f"⚠️ Unsupported language: {language}")
     
     def get_current_language(self) -> str:
-        """Get the current language"""
-        return self.current_language
+        """
+        Get the current language
+        
+        Returns:
+            Current language code (de, en, fr)
+        
+        NOTE: Liest aus Session State wenn verfügbar, sonst Fallback zu 'de'
+        """
+        if self.session_state is not None and 'i18n_current_language' in self.session_state:
+            return self.session_state['i18n_current_language']
+        elif hasattr(self, 'current_language'):
+            return self.current_language
+        else:
+            return 'de'  # Default
     
     def get_supported_languages(self) -> list:
         """Get list of supported languages"""
         return self.supported_languages
     
-    def translate(self, key: str, language: Optional[str] = None) -> str:
+    def translate(self, key: str, language: Optional[str] = None, **kwargs) -> str:
         """
-        Get translated string for the given key
+        Get translated string for the given key with optional string interpolation
         
         Args:
             key: Translation key in dot notation (e.g., 'dashboard.title')
             language: Language code (uses current language if not specified)
+            **kwargs: Optional variables for string interpolation (e.g., workpiece_type="BLUE")
         
         Returns:
             Translated string or the key if translation not found
+        
+        Examples:
+            i18n.translate('ccu.overview.stock', count=5)
+            → "Bestand: 5" (if translation is "Bestand: {count}")
         """
         if language is None:
-            language = self.current_language
+            language = self.get_current_language()
         
         # Handle fallback to English if language not available
         if language not in self._get_translations():
             language = 'en'
         
-        # Navigate through the nested dictionary
+        # Direct key lookup (FLAT STRUCTURE: common.buttons.order)
         try:
-            keys = key.split('.')
-            value = self._get_translations()[language]
+            translations = self._get_translations()[language]
+            value = translations[key]
             
-            for k in keys:
-                value = value[k]
+            # String interpolation if kwargs provided
+            if kwargs:
+                return str(value).format(**kwargs)
             
             return str(value)
         except (KeyError, TypeError):
             logger.warning(f"⚠️ Translation not found for key: {key} (language: {language})")
             return key  # Return key as fallback
+        except (ValueError, KeyError) as e:
+            logger.error(f"❌ String interpolation error for key: {key} - {e}")
+            return key  # Return key as fallback
+    
+    def t(self, key: str, **kwargs) -> str:
+        """
+        Shorthand for translate() - for better developer experience
+        
+        Args:
+            key: Translation key in dot notation
+            **kwargs: Optional variables for string interpolation
+        
+        Returns:
+            Translated string
+        
+        Examples:
+            i18n.t('common.buttons.send')
+            i18n.t('ccu.overview.order_sent', workpiece_type='BLUE')
+        """
+        return self.translate(key, **kwargs)
     
     def get_language_display_name(self, language: str) -> str:
         """Get display name for language"""
@@ -222,6 +308,87 @@ class I18nManager:
             'fr': 'Français'
         }
         return display_names.get(language, language)
+    
+    def _load_yaml_translations(self) -> Optional[Dict[str, Any]]:
+        """
+        Load translations from YAML files (NEW STRUCTURE: de/, en/, fr/ folders)
+        
+        Struktur:
+        config/translations/
+        ├── de/
+        │   ├── common.yml
+        │   └── ccu_overview.yml
+        ├── en/
+        │   ├── common.yml
+        │   └── ccu_overview.yml
+        └── fr/
+            ├── common.yml
+            └── ccu_overview.yml
+        
+        Returns:
+            Dict mit allen Translations oder None bei Fehler
+        """
+        try:
+            translations = {'de': {}, 'en': {}, 'fr': {}}
+            
+            # Für jede Sprache: Lade alle YAML-Files im Sprach-Ordner
+            for lang in ['de', 'en', 'fr']:
+                lang_path = self.translations_path / lang
+                
+                if not lang_path.exists():
+                    logger.warning(f"⚠️ Language folder not found: {lang_path}")
+                    continue
+                
+                # Alle YAML-Files im Sprach-Ordner
+                yaml_files = list(lang_path.glob("*.yml"))
+                
+                if not yaml_files:
+                    logger.debug(f"No YAML files found in {lang_path}")
+                    continue
+                
+                # Jedes YAML-File laden und mergen
+                for yaml_file in yaml_files:
+                    try:
+                        with open(yaml_file, 'r', encoding='utf-8') as f:
+                            content = yaml.safe_load(f)
+                        
+                        if not content:
+                            continue
+                        
+                        # Deep merge in language dict
+                        self._deep_merge(translations[lang], content)
+                        
+                        logger.debug(f"✅ Loaded: {lang}/{yaml_file.name}")
+                    except Exception as e:
+                        logger.warning(f"⚠️ Failed to load {yaml_file}: {e}")
+            
+            # Prüfe ob mindestens eine Sprache Daten hat
+            if any(translations.values()):
+                logger.info(f"✅ Translations loaded from YAML files: {list(translations.keys())}")
+                return translations
+            else:
+                logger.warning("⚠️ No translations loaded from YAML files")
+                return None
+            
+        except Exception as e:
+            logger.error(f"❌ Failed to load YAML translations: {e}")
+            return None
+    
+    def _deep_merge(self, target: Dict, source: Dict) -> None:
+        """
+        Deep merge source dict into target dict (mutates target)
+        
+        Args:
+            target: Target dictionary (will be modified)
+            source: Source dictionary to merge from
+        """
+        for key, value in source.items():
+            if key in target and isinstance(target[key], dict) and isinstance(value, dict):
+                # Rekursiv mergen für nested dicts
+                self._deep_merge(target[key], value)
+            else:
+                # Einfach überschreiben
+                target[key] = value
     
     def get_role_name(self, role: str, language: Optional[str] = None) -> str:
         """Get translated role name"""

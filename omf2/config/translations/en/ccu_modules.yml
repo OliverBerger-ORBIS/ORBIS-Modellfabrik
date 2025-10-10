@@ -1,0 +1,54 @@
+# CCU Modules Tab - English Translations
+
+# Main Tab
+ccu_modules.subtitle: "Module Overview with Status, Connections and Actions"
+
+# Controls
+ccu_modules.controls.refresh_status: "Refresh Status"
+ccu_modules.controls.show_statistics: "Show Statistics"
+ccu_modules.controls.module_settings: "Module Settings"
+
+# Module Overview
+ccu_modules.overview.no_modules: "No modules configured"
+ccu_modules.overview.real_time_status: "Real-time Status: {count} modules with live data"
+ccu_modules.overview.auto_updated: "Status is automatically updated from MQTT messages"
+ccu_modules.overview.no_status_data: "No module status data available"
+ccu_modules.overview.no_modules_available: "No modules available"
+
+# Table Headers
+ccu_modules.table.id: "ID"
+ccu_modules.table.name: "Name"
+ccu_modules.table.connected: "Connected"
+ccu_modules.table.availability_status: "Availability Status"
+ccu_modules.table.configured: "Configured"
+ccu_modules.table.messages: "Messages"
+ccu_modules.table.last_update: "Last Update"
+
+# Statistics
+ccu_modules.statistics.title: "Module Statistics"
+ccu_modules.statistics.total: "Total"
+ccu_modules.statistics.total_modules: "Total Modules"
+ccu_modules.statistics.connected: "Connected"
+ccu_modules.statistics.available: "Available"
+ccu_modules.statistics.configured: "Configured"
+ccu_modules.statistics.detailed_status: "Detailed Status"
+
+# Status Messages
+ccu_modules.status.refresh_success: "Module status refreshed!"
+ccu_modules.status.settings_info: "Module settings functionality will be implemented here"
+ccu_modules.status.calibration_started: "Module {module_id} calibration started"
+ccu_modules.status.docking_started: "FTS module {module_id} docking started"
+ccu_modules.status.undocking_started: "FTS module {module_id} undocking started"
+
+# Error Messages
+ccu_modules.error.gateway_not_available: "CCU Gateway not available"
+ccu_modules.error.tab_failed: "CCU Modules Tab failed: {error}"
+ccu_modules.error.table_failed: "Module Overview Table failed: {error}"
+ccu_modules.error.refresh_failed: "Failed to refresh module status: {error}"
+ccu_modules.error.statistics_failed: "Failed to show module statistics: {error}"
+ccu_modules.error.statistics_summary_failed: "Failed to show module statistics summary: {error}"
+ccu_modules.error.settings_failed: "Failed to show module settings: {error}"
+ccu_modules.error.calibration_failed: "Failed to calibrate module {module_id}: {error}"
+ccu_modules.error.docking_failed: "Failed to dock FTS module {module_id}: {error}"
+ccu_modules.error.undocking_failed: "Failed to undock FTS module {module_id}: {error}"
+

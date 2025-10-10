@@ -1,0 +1,54 @@
+# CCU Modules Tab - Deutsche Übersetzungen
+
+# Main Tab
+ccu_modules.subtitle: "Modul-Übersicht mit Status, Verbindungen und Aktionen"
+
+# Controls
+ccu_modules.controls.refresh_status: "Status Aktualisieren"
+ccu_modules.controls.show_statistics: "Statistiken Anzeigen"
+ccu_modules.controls.module_settings: "Modul-Einstellungen"
+
+# Module Overview
+ccu_modules.overview.no_modules: "Keine Module konfiguriert"
+ccu_modules.overview.real_time_status: "Real-time Status: {count} Module mit Live-Daten"
+ccu_modules.overview.auto_updated: "Status wird automatisch aus MQTT-Nachrichten aktualisiert"
+ccu_modules.overview.no_status_data: "Keine Module-Status-Daten verfügbar"
+ccu_modules.overview.no_modules_available: "Keine Module verfügbar"
+
+# Table Headers
+ccu_modules.table.id: "ID"
+ccu_modules.table.name: "Name"
+ccu_modules.table.connected: "Verbunden"
+ccu_modules.table.availability_status: "Verfügbarkeitsstatus"
+ccu_modules.table.configured: "Konfiguriert"
+ccu_modules.table.messages: "Nachrichten"
+ccu_modules.table.last_update: "Letztes Update"
+
+# Statistics
+ccu_modules.statistics.title: "Modul-Statistiken"
+ccu_modules.statistics.total: "Gesamt"
+ccu_modules.statistics.total_modules: "Gesamt Module"
+ccu_modules.statistics.connected: "Verbunden"
+ccu_modules.statistics.available: "Verfügbar"
+ccu_modules.statistics.configured: "Konfiguriert"
+ccu_modules.statistics.detailed_status: "Detaillierter Status"
+
+# Status Messages
+ccu_modules.status.refresh_success: "Modul-Status aktualisiert!"
+ccu_modules.status.settings_info: "Modul-Einstellungen-Funktionalität wird hier implementiert"
+ccu_modules.status.calibration_started: "Modul {module_id} Kalibrierung gestartet"
+ccu_modules.status.docking_started: "FTS-Modul {module_id} Andocken gestartet"
+ccu_modules.status.undocking_started: "FTS-Modul {module_id} Abdocken gestartet"
+
+# Error Messages
+ccu_modules.error.gateway_not_available: "CCU Gateway nicht verfügbar"
+ccu_modules.error.tab_failed: "CCU Modules Tab fehlgeschlagen: {error}"
+ccu_modules.error.table_failed: "Modul-Übersichtstabelle fehlgeschlagen: {error}"
+ccu_modules.error.refresh_failed: "Modul-Status-Aktualisierung fehlgeschlagen: {error}"
+ccu_modules.error.statistics_failed: "Modul-Statistiken konnten nicht angezeigt werden: {error}"
+ccu_modules.error.statistics_summary_failed: "Modul-Statistik-Zusammenfassung fehlgeschlagen: {error}"
+ccu_modules.error.settings_failed: "Modul-Einstellungen konnten nicht angezeigt werden: {error}"
+ccu_modules.error.calibration_failed: "Modul {module_id} konnte nicht kalibriert werden: {error}"
+ccu_modules.error.docking_failed: "FTS-Modul {module_id} konnte nicht angedockt werden: {error}"
+ccu_modules.error.undocking_failed: "FTS-Modul {module_id} konnte nicht abgedockt werden: {error}"
+

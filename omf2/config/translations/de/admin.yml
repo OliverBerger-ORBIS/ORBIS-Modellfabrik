@@ -1,0 +1,28 @@
+# Admin Tabs - Deutsche Übersetzungen (nur Haupttabs)
+
+# Admin Settings Tab
+admin.settings.subtitle: "Dashboard-Konfiguration und Registry-Informationen"
+admin.settings.gateway_not_available: "Admin Gateway nicht verfügbar"
+
+# Generic Steering Tab
+admin.generic_steering.subtitle: "Fabrik-Verwaltung und -Steuerung mit modularer Architektur"
+admin.generic_steering.registry_entities: "Registry: {count} Entitäten geladen"
+admin.generic_steering.registry_not_available: "Registry Manager nicht verfügbar"
+admin.generic_steering.gateway_not_available: "Admin Gateway nicht verfügbar"
+admin.generic_steering.tab_failed: "Generic Steering fehlgeschlagen: {error}"
+
+# Message Center Tab
+admin.message_center.subtitle: "MQTT Live Monitoring und Nachrichten-Tests"
+admin.message_center.gateway_not_available: "Admin Gateway nicht verfügbar"
+admin.message_center.tab_failed: "Message Center fehlgeschlagen: {error}"
+
+# Error & Warning Tab  
+admin.error_warning.title: "Kritische Logs"
+admin.error_warning.caption: "{error_count} Fehler | {warning_count} Warnungen"
+admin.error_warning.no_log_handler: "Kein Log-Handler verfügbar"
+admin.error_warning.tab_failed: "Fehler beim Anzeigen der Logs: {error}"
+admin.error_warning.errors_tab: "🔴 Fehler"
+admin.error_warning.warnings_tab: "🟡 Warnungen"
+admin.error_warning.no_errors: "Keine ERROR Logs verfügbar"
+admin.error_warning.no_warnings: "Keine WARNING Logs verfügbar"
+

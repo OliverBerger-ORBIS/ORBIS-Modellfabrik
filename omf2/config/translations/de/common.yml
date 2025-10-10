@@ -1,0 +1,76 @@
+# Common Translations - German (DE)
+# Gemeinsame Übersetzungen für alle Komponenten
+# FLAT KEY STRUCTURE: common.buttons.order statt buttons.order
+
+# Button Labels
+common.buttons.send: "Senden"
+common.buttons.order: "Bestellen"
+common.buttons.refresh: "Aktualisieren"
+common.buttons.save: "Speichern"
+common.buttons.cancel: "Abbrechen"
+common.buttons.delete: "Löschen"
+common.buttons.edit: "Bearbeiten"
+common.buttons.add: "Hinzufügen"
+common.buttons.remove: "Entfernen"
+common.buttons.reset: "Zurücksetzen"
+common.buttons.apply: "Anwenden"
+common.buttons.close: "Schließen"
+common.buttons.back: "Zurück"
+common.buttons.next: "Weiter"
+common.buttons.finish: "Fertig"
+
+# Status Messages
+common.status.success: "Erfolgreich"
+common.status.error: "Fehler"
+common.status.warning: "Warnung"
+common.status.info: "Information"
+common.status.loading: "Wird geladen..."
+common.status.processing: "Wird verarbeitet..."
+common.status.completed: "Abgeschlossen"
+common.status.failed: "Fehlgeschlagen"
+common.status.pending: "Ausstehend"
+common.status.ready: "Bereit"
+common.status.connected: "Verbunden"
+common.status.disconnected: "Getrennt"
+common.status.available: "Verfügbar"
+common.status.unavailable: "Nicht verfügbar"
+common.status.online: "Online"
+common.status.offline: "Offline"
+common.status.under_development: "Diese Komponente befindet sich noch in der Entwicklung."
+common.status.error_loading: "Fehler beim Laden der Komponente: {error}"
+common.status.no_data: "Keine Daten verfügbar"
+common.status.waiting_for_data: "Warte auf Daten via MQTT..."
+
+# Form Labels
+common.forms.workpiece: "Werkstück"
+common.forms.stock: "Bestand"
+common.forms.inventory: "Lagerbestand"
+common.forms.type: "Typ"
+common.forms.color: "Farbe"
+common.forms.position: "Position"
+common.forms.quantity: "Menge"
+common.forms.description: "Beschreibung"
+common.forms.name: "Name"
+common.forms.id: "ID"
+common.forms.status: "Status"
+common.forms.created: "Erstellt"
+common.forms.updated: "Aktualisiert"
+common.forms.empty: "Leer"
+common.forms.full: "Voll"
+common.forms.yes: "Ja"
+common.forms.no: "Nein"
+
+# Dashboard
+dashboard.subtitle: "ORBIS Modellfabrik Control System"
+
+# Main Navigation Tabs
+tabs.ccu_overview: "CCU Dashboard"
+tabs.ccu_orders: "CCU Orders"
+tabs.ccu_process: "CCU Process"
+tabs.ccu_configuration: "CCU Configuration"
+tabs.ccu_modules: "CCU Modules"
+tabs.message_center: "Message Center"
+tabs.generic_steering: "Generic Steering"
+tabs.system_logs: "System Logs"
+tabs.admin_settings: "Admin Settings"
+

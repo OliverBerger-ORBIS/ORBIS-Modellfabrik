@@ -1,0 +1,54 @@
+# CCU Modules Tab - French Translations
+
+# Main Tab
+ccu_modules.subtitle: "Aperçu des modules avec statut, connexions et actions"
+
+# Controls
+ccu_modules.controls.refresh_status: "Actualiser le statut"
+ccu_modules.controls.show_statistics: "Afficher les statistiques"
+ccu_modules.controls.module_settings: "Paramètres des modules"
+
+# Module Overview
+ccu_modules.overview.no_modules: "Aucun module configuré"
+ccu_modules.overview.real_time_status: "Statut en temps réel: {count} modules avec données en direct"
+ccu_modules.overview.auto_updated: "Le statut est automatiquement mis à jour à partir des messages MQTT"
+ccu_modules.overview.no_status_data: "Aucune donnée de statut de module disponible"
+ccu_modules.overview.no_modules_available: "Aucun module disponible"
+
+# Table Headers
+ccu_modules.table.id: "ID"
+ccu_modules.table.name: "Nom"
+ccu_modules.table.connected: "Connecté"
+ccu_modules.table.availability_status: "Statut de disponibilité"
+ccu_modules.table.configured: "Configuré"
+ccu_modules.table.messages: "Messages"
+ccu_modules.table.last_update: "Dernière mise à jour"
+
+# Statistics
+ccu_modules.statistics.title: "Statistiques des modules"
+ccu_modules.statistics.total: "Total"
+ccu_modules.statistics.total_modules: "Total des modules"
+ccu_modules.statistics.connected: "Connecté"
+ccu_modules.statistics.available: "Disponible"
+ccu_modules.statistics.configured: "Configuré"
+ccu_modules.statistics.detailed_status: "Statut détaillé"
+
+# Status Messages
+ccu_modules.status.refresh_success: "Statut des modules actualisé!"
+ccu_modules.status.settings_info: "La fonctionnalité des paramètres des modules sera implémentée ici"
+ccu_modules.status.calibration_started: "Calibration du module {module_id} démarrée"
+ccu_modules.status.docking_started: "Amarrage du module FTS {module_id} démarré"
+ccu_modules.status.undocking_started: "Désamarrage du module FTS {module_id} démarré"
+
+# Error Messages
+ccu_modules.error.gateway_not_available: "Passerelle CCU non disponible"
+ccu_modules.error.tab_failed: "Échec de l'onglet Modules CCU: {error}"
+ccu_modules.error.table_failed: "Échec du tableau d'aperçu des modules: {error}"
+ccu_modules.error.refresh_failed: "Échec de l'actualisation du statut des modules: {error}"
+ccu_modules.error.statistics_failed: "Échec de l'affichage des statistiques des modules: {error}"
+ccu_modules.error.statistics_summary_failed: "Échec de l'affichage du résumé des statistiques des modules: {error}"
+ccu_modules.error.settings_failed: "Échec de l'affichage des paramètres des modules: {error}"
+ccu_modules.error.calibration_failed: "Échec de la calibration du module {module_id}: {error}"
+ccu_modules.error.docking_failed: "Échec de l'amarrage du module FTS {module_id}: {error}"
+ccu_modules.error.undocking_failed: "Échec du désamarrage du module FTS {module_id}: {error}"
+
