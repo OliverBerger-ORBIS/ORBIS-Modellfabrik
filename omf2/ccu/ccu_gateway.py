@@ -65,7 +65,7 @@ class CcuGateway:
 
         # Order Topics: Set-basiertes Lookup für Order Manager (Inventory)
         self.order_topics = {
-            '/j1/txt/1/f/o/stock'       # HBW Lager-info (OUTPUT FROM TXT)
+            '/j1/txt/1/f/i/stock'       # HBW Lager-info (INPUT TO TXT)
         }
         
         # Production Order Topics: Set-basiertes Lookup für Production Order Manager

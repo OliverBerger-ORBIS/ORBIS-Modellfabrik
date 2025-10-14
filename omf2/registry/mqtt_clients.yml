@@ -158,7 +158,7 @@ mqtt_clients:
       # ==============================================================================
       # TXT Function Output (FROM TXT):
       - "/j1/txt/1/f/o/order"         # Order FROM TXT (optional order trigger)
-      - "/j1/txt/1/f/o/stock"         # Stock FROM TXT (HBW inventory)
+      - "/j1/txt/1/f/i/stock"         # Stock FROM TXT (HBW inventory)
       - "/j1/txt/1/f/o/status"        # Status FROM TXT
       - "/j1/txt/1/f/o/error"         # Error FROM TXT
       
@@ -222,7 +222,7 @@ mqtt_clients:
       
       order_manager:
         routed_topics:  # Topics die an OrderManager.onMessage() geroutet werden
-          - "/j1/txt/1/f/o/stock"      # HBW Inventory FROM TXT (Stock-Management)
+          - "/j1/txt/1/f/i/stock"      # HBW Inventory FROM TXT (Stock-Management)
 
       production_order_manager:
         routed_topics:  # Topics die an ProductionOrderManager.onMessage() geroutet werden
@@ -351,7 +351,7 @@ mqtt_clients:
       # TXT Function Output Topics (FROM TXT)
       # ==============================================================================
       - "/j1/txt/1/f/o/order"         # Order FROM TXT (optional order trigger)
-      - "/j1/txt/1/f/o/stock"         # Stock FROM TXT (HBW inventory)
+      - "/j1/txt/1/f/i/stock"         # Stock FROM TXT (HBW inventory)
       - "/j1/txt/1/f/o/status"        # Status FROM TXT
       - "/j1/txt/1/f/o/error"         # Error FROM TXT
       
