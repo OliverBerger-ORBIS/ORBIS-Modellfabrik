@@ -368,11 +368,23 @@ class MainDashboard:
         tab_labels = []
         tab_keys = list(tab_config.keys())
         
+        # Get i18n manager for tab name translation
+        i18n = st.session_state.get('i18n_manager')
+        
         for tab_key in tab_keys:
             tab_info = tab_config[tab_key]
             # Use UISymbols for consistent icon management
             icon = UISymbols.get_tab_icon(tab_key)
-            name = tab_info.get('name', tab_key)
+            
+            # Use i18n translation for tab name if available, otherwise fallback to hardcoded name
+            if i18n:
+                try:
+                    name = i18n.t(f'tabs.{tab_key}')
+                except:
+                    name = tab_info.get('name', tab_key)
+            else:
+                name = tab_info.get('name', tab_key)
+            
             tab_labels.append(f"{icon} {name}")
         
         # Create tabs
