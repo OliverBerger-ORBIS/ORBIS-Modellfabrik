@@ -43,6 +43,29 @@
 
 ---
 
+### ✅ **Task 0.3 ABGESCHLOSSEN: I18n Haupt-Tabs Fix**
+
+**Status:** ✅ **VOLLSTÄNDIG ABGESCHLOSSEN**
+
+**Was wurde gefixt:**
+- ✅ **Haupt-Tabs werden jetzt übersetzt** 🌐
+- ✅ `omf2/ui/main_dashboard.py` - Tab-Namen über `i18n.t()` übersetzt
+- ✅ **Fehlende Tab-Keys** in allen 3 Sprachen hinzugefügt:
+  - `tabs.ccu_dashboard`, `tabs.nodered_overview`, `tabs.nodered_processes`
+- ✅ **Fallback-Mechanismus** funktioniert (hardcodierte Namen wenn i18n nicht verfügbar)
+- ✅ **User-Tests bestätigt** - Streamlit App läuft korrekt
+- ✅ **Tests laufen** - 323/341 bestehen (18 waren bereits vorher fehlerhaft)
+
+**Commits:**
+- `2c6ab67` - "fix: Haupt-Tab-Namen i18n-fähig machen"
+
+**Erfolgs-Kriterium erreicht:**
+- ✅ Haupt-Tabs werden in gewählter Sprache angezeigt
+- ✅ Sprachumschaltung funktioniert korrekt
+- ✅ Keine UI-Regression
+
+---
+
 ### Implementiert (323 von 341 Tests bestehen):
 
 - Core-Architektur: MQTT Clients, Gateways, Business Manager
@@ -405,6 +428,7 @@ def on_mqtt_message(self, topic, message, meta):
 
 - [x] ~~KRITISCHER FIX: Stock-Topic /f/o/stock → /f/i/stock + StockManager Refactoring~~ ✅ **ABGESCHLOSSEN**
 - [x] ~~Legacy-Cleanup: omf/ und registry/ Verzeichnisse löschen~~ ✅ **ABGESCHLOSSEN**
+- [x] ~~I18n Haupt-Tabs Fix: Tab-Namen übersetzen~~ ✅ **ABGESCHLOSSEN**
 - [ ] Alle 18 failing Tests reparieren → 100% Test-Success
 - [ ] Dokumentations-Audit: TODOs finden, Feature-Lücken identifizieren
 - [ ] Live-Test Session #1 mit echter Fabrik durchführen

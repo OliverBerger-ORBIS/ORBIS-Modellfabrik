@@ -72,15 +72,15 @@ class AdminGateway:
         return self.message_manager.validate_message(topic, message)
     
     
-    def publish_message(self, topic: str, message: Dict[str, Any], qos: int = 1, retain: bool = False) -> bool:
+    def publish_message(self, topic: str, message: Dict[str, Any], qos: int = None, retain: bool = None) -> bool:
         """
-        Message auf Topic publizieren (mit expliziten QoS/Retain oder aus Registry)
+        Message auf Topic publizieren (Registry-basierte QoS/Retain)
         
         Args:
             topic: MQTT Topic
             message: Message-Dict
-            qos: Quality of Service Level (0, 1, 2)
-            retain: Retain Flag
+            qos: Quality of Service Level (wird aus Registry geladen wenn None)
+            retain: Retain Flag (wird aus Registry geladen wenn None)
             
         Returns:
             True wenn erfolgreich, False bei Fehler
@@ -90,7 +90,22 @@ class AdminGateway:
                 logger.warning("⚠️ No MQTT client available")
                 return False
             
-            # MQTT-Client publish_message nutzen (mit QoS und Retain)
+            # 1. Schema-Validierung über MessageManager (zentrale Validierung)
+            schema = self.registry_manager.get_topic_schema(topic)
+            if schema:
+                from omf2.common.message_manager import get_message_manager
+                message_manager = get_message_manager('admin', self.registry_manager, self.mqtt_client)
+                try:
+                    validation_result = message_manager.validate_message(topic, message)
+                    if validation_result.get('errors'):
+                        logger.warning(f"⚠️ Schema validation failed for {topic}: {validation_result['errors']}")
+                    else:
+                        logger.debug(f"✅ Message validated against schema for topic: {topic}")
+                except Exception as validation_error:
+                    logger.warning(f"⚠️ Schema validation failed for {topic}: {validation_error}")
+                    # Continue anyway - validation is not blocking
+            
+            # 2. MQTT-Client publish_message nutzen (Registry-basierte QoS/Retain)
             success = self.mqtt_client.publish_message(
                 topic=topic,
                 message=message,
