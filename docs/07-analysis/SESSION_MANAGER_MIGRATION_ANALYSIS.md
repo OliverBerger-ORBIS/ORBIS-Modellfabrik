@@ -289,3 +289,4 @@ from .session_analyzer import SessionAnalyzer
 **Nächster Schritt:** `path_constants.py` erstellen → Migration starten? 🚀
 
 
+

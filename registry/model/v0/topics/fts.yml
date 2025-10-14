@@ -1,8 +1,0 @@
-version: 1.0.0
-category: MODULE
-notes: "FTS (behandelt wie Modul)"
-topics:
-  - { topic: "fts/v1/ff/5iO4/connection", sub_category: "Connection", module: "FTS", friendly_name: "FTS : connection" }
-  - { topic: "fts/v1/ff/5iO4/state",      sub_category: "State",      module: "FTS", friendly_name: "FTS : state" }
-  - { topic: "fts/v1/ff/5iO4/order",      sub_category: "Order",      module: "FTS", friendly_name: "FTS : order" }
-  - { topic: "fts/v1/ff/5iO4/factsheet",  sub_category: "Factsheet",  module: "FTS", friendly_name: "FTS : factsheet" }
