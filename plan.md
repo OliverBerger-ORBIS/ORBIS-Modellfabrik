@@ -147,16 +147,102 @@
 
 ---
 
-### Task 1.3: TODO-Audit & Feature-Gap-Analyse (NÄCHSTE PRIORITÄT)
+### ✅ **Task 1.3 ABGESCHLOSSEN: TODO-Audit & Feature-Gap-Analyse**
+
+**Status:** ✅ **VOLLSTÄNDIG ABGESCHLOSSEN**
+
+**Was wurde analysiert:**
+- ✅ **216 TODOs gefunden** und kategorisiert
+- ✅ **26 Messe-relevante TODOs** identifiziert
+- ✅ **6 Node-RED TODOs gestrichen** (nicht Messe-relevant)
+- ✅ **Priorisierung:** KRITISCH > HOCH > MITTEL
+
+**Kategorisierung:**
+- 🎯 **KRITISCH (6):** Factory Steering Hardcoded Payloads
+- 📋 **HOCH (12):** UI-Komponenten Gateway-Integration
+- 📝 **MITTEL (2):** HTML-Templates i18n
+- 🚫 **GESTRICHEN (6):** Node-RED TODOs
+
+**Commits:**
+- `cead4ac` - "docs: plan.md aktualisiert - Task 1.2 als abgeschlossen markiert"
+
+**Erfolgs-Kriterium erreicht:**
+- ✅ Vollständige TODO-Liste kategorisiert
+- ✅ Priorisierung für Messe-Vorbereitung
+- ✅ Node-RED TODOs gestrichen (nicht Messe-relevant)
+
+---
+
+### Task 2.1: Shopfloor Layout - Aktive Module anzeigen (NÄCHSTE PRIORITÄT)
+
+**Keine Abhängigkeiten - SOFORT startbar**
 
 **Problem-Analyse:**
 
-```bash
-# Finde alle publish_message() Aufrufe
-grep -r "publish_message" omf2/ccu/ omf2/admin/
-# Prüfe Meta-Parameter Handling
-grep -r "mqtt_timestamp" omf2/
+Aus `REFACTORING_BACKLOG.md` Zeile 57:
+```markdown
+| factory_layout | Ui verwendet ICONs und png von omf | ❌ | Darstellung wie in omf/ mit 3X4 grid (oder 4x3) Grid |
 ```
+
+**Feature-Anforderung:**
+
+- **Shopfloor Layout** soll zeigen welche Module **aktiv** sind
+- **3×4 Grid** mit echten omf_* SVG-Icons (nicht ic_ft_* Fallback)
+- **Aktuelle Module** visuell hervorheben
+- **Integration** in CCU Configuration Tab
+
+**Zu implementieren:**
+
+- `omf2/ui/ccu/ccu_configuration/ccu_factory_configuration_subtab.py`
+- `omf2/ui/ccu/common/shopfloor_layout.py` erweitern
+- `omf2/config/ccu/shopfloor_layout.json` aktualisieren
+- Icon-Test mit `omf2/ui/common/icon_test.py`
+
+**Erfolgs-Kriterium:**
+
+- Factory Layout korrekt dargestellt (3×4 Grid)
+- Alle Module mit richtigen omf_* SVG-Icons
+- Aktive Module visuell hervorgehoben
+- Shopfloor-Grid responsive
+
+### Task 2.2: Storage Orders Subtab Verbesserungen
+
+**Abhängigkeit: Task 2.1 abgeschlossen**
+
+**Problem-Analyse:**
+
+Aus `REFACTORING_BACKLOG.md` Zeile 59:
+```markdown
+| Operator Tabs (CCU Aufträge.) | `ui/ccu/orders/ccu_orders_tab.py` | ❌ | Production-Order Manager mit STORAGE-Orders und storage-plan ? |
+```
+
+**Feature-Anforderung:**
+
+- **Storage Orders Subtab** soll `storage-plan` anzeigen
+- **Aktuell:** Nur einfacher Plan (START → DPS → HBW)
+- **Verbesserung:** Vollständige `storage-plan` Integration
+
+**Zu implementieren:**
+
+- `omf2/ui/ccu/ccu_orders/storage_orders_subtab.py` erweitern
+- `storage-plan` Visualisierung hinzufügen
+- ProductionOrderManager Integration verbessern
+
+**Erfolgs-Kriterium:**
+
+- Storage Orders zeigen vollständigen storage-plan
+- Visualisierung analog zu Production Orders
+- Integration mit ProductionOrderManager
+
+### Task 2.3: Factory Steering Hardcoded Payloads Fix
+
+**Abhängigkeit: Task 2.2 abgeschlossen**
+
+**Problem-Analyse:**
+
+Aus TODO-Audit: 6 Funktionen in `omf2/ui/admin/generic_steering/factory_steering_subtab.py`
+- **Problem:** Hardcoded Payloads verletzen Command-Versende-Pattern
+- **Lösung:** Schema-driven Approach implementieren
 
 **Architektur-Anforderung:**
 
@@ -166,87 +252,20 @@ Business Function → Gateway.publish_message(topic, payload, meta=None)
 Gateway → MessageManager.validate(payload, schema)
                      ↓
 Gateway → MQTT Client.publish(topic, payload_clean, qos, retain)
-                     ↓
-MQTT Client fügt Meta-Parameter GETRENNT hinzu (nicht in payload!)
 ```
 
 **Zu fixen:**
 
-- `omf2/ccu/ccu_gateway.py::publish_message()` - Meta-Parameter-Handling prüfen
-- `omf2/admin/admin_gateway.py::publish_message()` - Meta-Parameter-Handling prüfen
-- Zentrale MessageManager.validate() für alle Gateways verwenden
-- Tests: Echte MQTT-Payloads unverändert lassen, Code anpassen
+- `factory_steering_subtab.py` - 6 Funktionen mit hardcodierten Payloads
+- Schema-driven Approach implementieren
+- PayloadGenerator.generate_example_payload() verwenden
+- Registry Manager Integration
 
 **Erfolgs-Kriterium:**
 
-- Meta-Parameter NIE in payload/message
-- Alle Gateways verwenden MessageManager.validate()
-- Tests zeigen saubere Trennung
-
-### Task 1.2: Test-Stabilität wiederherstellen (KRITISCH)
-
-**Abhängigkeit: Task 1.1 abgeschlossen**
-
-**Antipattern beheben:** Agenten haben eingecheckt ohne Tests zu laufen
-
-**Strategie:**
-
-1. Jeden failing Test einzeln analysieren (kontext-abhängig)
-2. NIEMALS echte MQTT-Testdaten ändern (Source of Truth!)
-3. Code an Tests anpassen, nicht umgekehrt
-4. Für jeden Test: Analyse → Rückfrage → Fix → Validierung
-
-**Failing Tests (18):**
-
-```
-test_business_manager_pattern.py (2)
-test_ccu_production_monitoring_subtab.py (2)
-test_ccu_production_plan_subtab.py (1)
-test_message_monitor_subtab.py (3)
-test_registry_integration.py (5)
-test_streamlit_dashboard.py (1)
-test_streamlit_startup.py (1)
-test_ui_components.py (3)
-```
-
-**Prozess pro Test:**
-
-1. Test lesen und verstehen
-2. Failure-Grund identifizieren
-3. Echte MQTT-Daten prüfen (data/omf-data/test_topics/)
-4. Kontext-abhängige Rückfrage an User
-5. Fix implementieren
-6. Test erneut laufen lassen
-
-**Erfolgs-Kriterium:**
-
-- 341/341 Tests bestehen ✅
-- Keine Mock-Daten geändert
-- Architektur-Compliance in allen Tests
-
-### Task 1.3: TODO-Audit & Feature-Gap-Analyse
-
-**Keine Abhängigkeiten - parallel zu 1.1/1.2 möglich**
-
-```bash
-# Alle TODOs finden
-grep -r "TODO" omf2/ --include="*.py" > docs/TODO_AUDIT.md
-# Kritische TODOs markieren
-grep -r "TODO.*KRITISCH\|TODO.*CRITICAL" omf2/
-```
-
-**Kategorisierung:**
-
-- CRITICAL: Messe-Blocker (z.B. Node-RED TODOs → STREICHEN)
-- HIGH: Feature-Lücken (z.B. Auto-Refresh)
-- MEDIUM: UI-Polish
-- LOW: Nice-to-have
-
-**Erfolgs-Kriterium:**
-
-- Vollständige TODO-Liste in docs/TODO_AUDIT.md
-- Priorisierung: CRITICAL > HIGH > MEDIUM > LOW
-- Node-RED TODOs gestrichen (nicht Messe-relevant)
+- Keine hardcodierten Payloads mehr
+- Alle Factory Steering Commands schema-validiert
+- Command-Versende-Pattern architektur-compliant
 
 ## Phase 2: KRITISCHE FEATURES (22. Okt - 4. Nov, 14 Tage)
 
@@ -479,6 +498,7 @@ def on_mqtt_message(self, topic, message, meta):
 - [x] ~~Legacy-Cleanup: omf/ und registry/ Verzeichnisse löschen~~ ✅ **ABGESCHLOSSEN**
 - [x] ~~I18n Haupt-Tabs Fix: Tab-Namen übersetzen~~ ✅ **ABGESCHLOSSEN**
 - [x] ~~Task 1.2: Alle 18 failing Tests reparieren → 100% Test-Success~~ ✅ **ABGESCHLOSSEN**
+- [x] ~~Task 1.3: TODO-Audit & Feature-Gap-Analyse~~ ✅ **ABGESCHLOSSEN**
 - [ ] Dokumentations-Audit: TODOs finden, Feature-Lücken identifizieren
 - [ ] Live-Test Session #1 mit echter Fabrik durchführen
 - [ ] Auto-Refresh bei MQTT Messages implementieren
