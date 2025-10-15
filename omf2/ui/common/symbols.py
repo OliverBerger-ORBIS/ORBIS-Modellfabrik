@@ -77,6 +77,13 @@ class UISymbols:
         'disconnected': '🔴',       # Disconnected/Offline
         'connecting': '🟡',         # Connecting/In Progress
         
+        # Production Process Step Icons
+        'step_in_progress': '🟠',   # Production Step In Progress (ORANGE CIRCLE - wie aktive Station)
+        'step_finished': '✅',      # Production Step Finished
+        'step_enqueued': '⏳',      # Production Step Enqueued
+        'step_pending': '⚪',       # Production Step Pending
+        'step_failed': '❌',        # Production Step Failed
+        
         # Availability Status Icons
         'available': '🟢',          # Available/Ready
         'busy': '🟠',               # Busy/Processing (🟠 - avoid conflict with pending)
