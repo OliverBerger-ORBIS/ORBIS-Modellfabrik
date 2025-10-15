@@ -12,6 +12,37 @@ from typing import Optional, Deque, Dict
 from collections import deque
 
 
+class SafeRotatingFileHandler(logging.handlers.RotatingFileHandler):
+    """
+    Thread-safe RotatingFileHandler that handles FileNotFoundError during rollover
+    """
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._rollover_lock = threading.Lock()
+    
+    def doRollover(self):
+        """
+        Thread-safe rollover that handles missing files gracefully
+        """
+        with self._rollover_lock:
+            try:
+                super().doRollover()
+            except FileNotFoundError as e:
+                # Log the error but don't crash the application
+                # This happens when log files are deleted externally or in race conditions
+                logging.getLogger(__name__).warning(
+                    f"Log rollover failed (file not found): {e}. "
+                    "This is usually harmless and will be retried on next rollover."
+                )
+            except Exception as e:
+                # Handle any other rollover errors
+                logging.getLogger(__name__).error(
+                    f"Log rollover failed: {e}. "
+                    "Logging will continue without rotation."
+                )
+
+
 def get_logger(name: str, level: int = logging.INFO) -> logging.Logger:
     """
     Get a configured logger instance for OMF2
@@ -74,8 +105,9 @@ def setup_file_logging(log_dir: Optional[Path] = None) -> Path:
     # Configure root logger for file output with rotation
     log_file = log_dir / "omf2.log"
     
-    # RotatingFileHandler: max 10MB per file, keep 5 files (50MB total)
-    file_handler = logging.handlers.RotatingFileHandler(
+    # SafeRotatingFileHandler: max 10MB per file, keep 5 files (50MB total)
+    # Thread-safe with graceful error handling for missing log files
+    file_handler = SafeRotatingFileHandler(
         log_file, 
         maxBytes=10*1024*1024,  # 10MB
         backupCount=5,          # Keep 5 backup files

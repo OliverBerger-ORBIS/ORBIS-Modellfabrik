@@ -127,16 +127,19 @@ mqtt_clients:
       - "module/v1/ff/SVR3QA0022/state"
       - "module/v1/ff/SVR3QA0022/connection"
       - "module/v1/ff/SVR3QA0022/factsheet"
+      - "module/v1/ff/NodeRed/SVR3QA0022/state"  # HBW via NodeRED
       
       # DRILL (via NodeRed - no TXT):
       - "module/v1/ff/SVR4H76449/state"
       - "module/v1/ff/SVR4H76449/connection"
       - "module/v1/ff/SVR4H76449/factsheet"
+      - "module/v1/ff/NodeRed/SVR4H76449/state"  # DRILL via NodeRED
       
       # MILL (via NodeRed - no TXT):
       - "module/v1/ff/SVR3QA2098/state"
       - "module/v1/ff/SVR3QA2098/connection"
       - "module/v1/ff/SVR3QA2098/factsheet"
+      - "module/v1/ff/NodeRed/SVR3QA2098/state"  # MILL via NodeRED
       
       # AIQS (direct from TXT - fast telemetry):
       - "module/v1/ff/SVR4H76530/state"
@@ -231,9 +234,13 @@ mqtt_clients:
           - "ccu/order/active"          # Active orders queue
           - "ccu/order/completed"       # Completed orders log
           - "fts/v1/ff/5iO4/state"      # FTS state for order tracking
-          - "module/v1/ff/SVR3QA0022/state"  # HBW state for PICK/DROP tracking
+          - "module/v1/ff/NodeRed/SVR3QA0022/state"  # HBW state for PICK/DROP tracking via NodeRED
+          - "module/v1/ff/NodeRed/SVR4H76449/state"  # DRILL state for DRILL tracking via NodeRED
+          - "module/v1/ff/NodeRed/SVR3QA2098/state"  # MILL state for MILL tracking via NodeRED
           - "module/v1/ff/SVR4H76530/state"  # AIQS state for CHECK_QUALITY tracking
           - "module/v1/ff/SVR4H73275/state"  # DPS state for DROP tracking
+          - "module/v1/ff/NodeRed/SVR4H73275/state"  # DPS via NodeRED
+          - "module/v1/ff/NodeRed/SVR4H76530/state"  # AIQS via NodeRED
 
 
   # Node-RED Publisher (OPC-UA → MQTT Bridge + State Enrichment)

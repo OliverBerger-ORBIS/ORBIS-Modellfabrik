@@ -68,13 +68,9 @@ class GatewayFactory:
                     from omf2.ccu.ccu_gateway import CcuGateway
                     from omf2.factory.client_factory import get_client_factory
                     
-                    # MQTT-Client aus Session State holen
-                    if 'ccu_mqtt_client' not in st.session_state:
-                        client_factory = get_client_factory()
-                        ccu_mqtt_client = client_factory.get_mqtt_client('ccu_mqtt_client')
-                        st.session_state['ccu_mqtt_client'] = ccu_mqtt_client
-                    else:
-                        ccu_mqtt_client = st.session_state['ccu_mqtt_client']
+                    # MQTT-Client direkt über Client Factory holen (kein Session State)
+                    client_factory = get_client_factory()
+                    ccu_mqtt_client = client_factory.get_mqtt_client('ccu_mqtt_client')
                     
                     # CcuGateway mit MQTT-Client erstellen
                     ccu_gateway = CcuGateway(mqtt_client=ccu_mqtt_client, **kwargs)
@@ -82,6 +78,8 @@ class GatewayFactory:
                     # Gateway im MQTT-Client registrieren für Topic-Routing
                     ccu_mqtt_client.set_gateway(ccu_gateway)
                     
+                    # Beide in Session State speichern
+                    st.session_state['ccu_mqtt_client'] = ccu_mqtt_client
                     st.session_state['ccu_gateway'] = ccu_gateway
                     logger.info(f"🏭 Created {gateway_name} gateway with MQTT client and topic routing")
                 else:

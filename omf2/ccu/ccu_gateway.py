@@ -69,15 +69,14 @@ class CcuGateway:
         }
         
         # Production Order Topics: Set-basiertes Lookup für Production Order Manager
+        # Production Order Topics (CCU Frontend Consumer - nur konsolidierte Topics)
         self.production_order_topics = {
-            'ccu/order/request',        # Order Request
-            'ccu/order/active',         # Active Orders
+            'ccu/order/active',         # Active Orders (konsolidierte Production Steps)
             'ccu/order/completed',      # Completed Orders
+            'ccu/order/request',        # Order Request (für neue Orders)
             'ccu/order/response',       # CCU Bestätigung für Production Orders
-            'fts/v1/ff/5iO4/state',     # FTS Transport-Updates für Production Orders
-            'module/v1/ff/SVR3QA0022/state',  # HBW Status für PICK/DROP
-            'module/v1/ff/SVR4H76530/state',  # AIQS Status für PICK/AIQS/DROP
-            'module/v1/ff/SVR4H73275/state'   # DPS Status für DROP
+            # HINWEIS: Module/FTS States werden von originaler CCU verarbeitet
+            # und als ccu/order/active konsolidiert publiziert
         }
         
         # Initialisiere Manager (Lazy Loading)
@@ -216,20 +215,18 @@ class CcuGateway:
                 logger.debug(f"📋 Routing to production_order_manager: {topic}")
                 production_order_manager = self._get_production_order_manager()
                 if production_order_manager:
-                    # Route basierend auf Topic-Typ
+                    # Route basierend auf Topic-Typ (CCU Frontend Consumer)
                     if topic == 'ccu/order/active':
-                        production_order_manager.process_active_order_message(topic, message, meta)
+                        production_order_manager.process_ccu_order_active(topic, message, meta)
                     elif topic == 'ccu/order/completed':
-                        production_order_manager.process_completed_order_message(topic, message, meta)
+                        production_order_manager.process_ccu_order_completed(topic, message, meta)
                     elif topic == 'ccu/order/request':
                         # Request wird nur geloggt (für später)
                         logger.info(f"📋 Order request received: {topic}")
-                    elif topic == 'fts/v1/ff/5iO4/state':
-                        production_order_manager.process_fts_state_message(topic, message, meta)
                     elif topic == 'ccu/order/response':
                         production_order_manager.process_ccu_response_message(topic, message, meta)
-                    elif topic in ['module/v1/ff/SVR3QA0022/state', 'module/v1/ff/SVR4H76530/state', 'module/v1/ff/SVR4H73275/state']:
-                        production_order_manager.process_module_state_message(topic, message, meta)
+                    # HINWEIS: Module/FTS States werden von originaler CCU verarbeitet
+                    # und als ccu/order/active konsolidiert publiziert - kein direktes Processing nötig
                 else:
                     logger.warning(f"⚠️ Production Order Manager not available for topic: {topic}")
                 return True

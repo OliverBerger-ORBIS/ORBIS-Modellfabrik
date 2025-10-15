@@ -122,8 +122,8 @@ omf2/
 │   │   │   └── sensor_data_subtab.py        # Sensor Data Display (Temp, Pressure, Status)
 │   │   ├── ccu_orders/             # CCU Orders Tab ✅ KOMPLETT REFACTORED
 │   │   │   ├── ccu_orders_tab.py            # Main Tab (Wrapper mit 2 Subtabs)
-│   │   │   ├── production_orders_subtab.py  # Production Orders (Active + Completed)
-│   │   │   └── storage_orders_subtab.py     # Storage Orders (Active + Completed)
+│   │   │   ├── production_orders_subtab.py  # Production Orders (Active + Completed, 2-Spalten-Layout)
+│   │   │   └── storage_orders_subtab.py     # Storage Orders (Active + Completed, 2-Spalten-Layout, UISymbols-konsistent)
 │   │   ├── ccu_configuration/      # CCU Configuration UI
 │   │   │   ├── ccu_configuration_tab.py
 │   │   │   ├── ccu_parameter_configuration_subtab.py
@@ -372,6 +372,14 @@ omf2/tests/
 - ✅ **Kompletter Produktionsplan** mit MQTT-Status-Overlay
 - ✅ **Zentrale Validierung** über MessageManager
 - ✅ **Log-Rotation** (max 10MB pro Datei, 5 Backups)
+
+### **Storage Orders Implementation:**
+- ✅ **Storage Orders Logic** vollständig implementiert
+- ✅ **UI-Konsistenz** zwischen Production und Storage Orders
+- ✅ **Command-Mapping-Korrektur** (PICK/DROP → LADEN/ENTLADEN AGV)
+- ✅ **Shopfloor Layout Integration** für Storage Orders
+- ✅ **Navigation Step Enhancement** (UX-Verbesserung)
+- ✅ **UISymbols-Konsistenz** (🟠 statt 🔄 für IN_PROGRESS)
 
 ### **UI Refactoring:**
 - ✅ **CCU Orders Tab** mit zwei Subtabs (Production vs Storage)

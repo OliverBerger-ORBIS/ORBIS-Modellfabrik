@@ -15,11 +15,12 @@ from omf2.assets import get_asset_manager
 logger = get_logger(__name__)
 
 
-def show_shopfloor_layout(active_module_id: str = None, show_controls: bool = True):
+def show_shopfloor_layout(active_module_id: str = None, active_intersections: list = None, show_controls: bool = True):
     """Show enhanced shopfloor layout component with asset manager
     
     Args:
         active_module_id: ID of currently active module (for highlighting)
+        active_intersections: List of active intersections for FTS navigation (for highlighting)
         show_controls: Whether to show zoom controls and metadata
     """
     try:
@@ -82,10 +83,10 @@ def _show_enhanced_shopfloor_grid(layout_data, active_module_id: str = None):
             grid_array[row][col] = {"type": "empty", "data": empty}
     
     # Display enhanced grid with fixed 3:4 aspect ratio container
-    _display_fixed_aspect_ratio_grid(grid_array, rows, columns, active_module_id, asset_manager)
+    _display_fixed_aspect_ratio_grid(grid_array, rows, columns, active_module_id, None, asset_manager)
 
 
-def _display_fixed_aspect_ratio_grid(grid_array, rows, columns, active_module_id: str, asset_manager):
+def _display_fixed_aspect_ratio_grid(grid_array, rows, columns, active_module_id: str, active_intersections: list, asset_manager):
     """Display grid with fixed 3:4 aspect ratio container"""
     # Calculate container dimensions maintaining 3:4 aspect ratio
     # Container should be 3:4 (width:height) regardless of cell size
@@ -117,7 +118,7 @@ def _display_fixed_aspect_ratio_grid(grid_array, rows, columns, active_module_id
             y_pos = row * (cell_size + 4)
             
             # Generate cell HTML
-            cell_html = _generate_grid_cell_html(cell, row, col, active_module_id, asset_manager, int(cell_size))
+            cell_html = _generate_grid_cell_html(cell, row, col, active_module_id, active_intersections, asset_manager, int(cell_size))
             
             html_content += f'<div style="position: absolute; left: {x_pos}px; top: {y_pos}px; width: {cell_size}px; height: {cell_size}px;">{cell_html}</div>'
     
@@ -127,7 +128,7 @@ def _display_fixed_aspect_ratio_grid(grid_array, rows, columns, active_module_id
     st.markdown(container_html, unsafe_allow_html=True)
 
 
-def _generate_grid_cell_html(cell, row, col, active_module_id: str, asset_manager, cell_size: int):
+def _generate_grid_cell_html(cell, row, col, active_module_id: str, active_intersections: list, asset_manager, cell_size: int):
     """Generate HTML for individual grid cell"""
     if not cell:
         return asset_manager.get_shopfloor_module_html("EMPTY", f"Empty_{row}_{col}", False, size=cell_size)
@@ -135,11 +136,16 @@ def _generate_grid_cell_html(cell, row, col, active_module_id: str, asset_manage
     cell_type = cell.get("type")
     cell_data = cell.get("data", {})
     
-    # Check if this is the active module
+    # Check if this is the active module or intersection
     is_active = False
+    is_intersection_active = False
+    
     if cell_type == "module" and active_module_id:
         module_id = cell_data.get("id", "")
         is_active = module_id == active_module_id
+    elif cell_type == "intersection" and active_intersections:
+        intersection_id = cell_data.get("id", "")
+        is_intersection_active = intersection_id in active_intersections
     
     if cell_type == "module":
         module_id = cell_data.get("id", "")
@@ -148,7 +154,7 @@ def _generate_grid_cell_html(cell, row, col, active_module_id: str, asset_manage
     elif cell_type == "intersection":
         intersection_id = cell_data.get("id", "")
         # Verwende die spezifische Intersection-ID für das Icon-Mapping
-        return asset_manager.get_shopfloor_module_html(intersection_id, intersection_id, is_active, size=cell_size)
+        return asset_manager.get_shopfloor_module_html(intersection_id, intersection_id, is_intersection_active, size=cell_size)
     elif cell_type == "empty":
         empty_id = cell_data.get("id", "")
         # Verwende die spezifische Empty-ID für das Icon-Mapping

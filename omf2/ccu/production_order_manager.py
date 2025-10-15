@@ -10,7 +10,7 @@ import threading
 import json
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, List, Any, Optional
+from typing import Dict, List, Any, Optional, Union
 from omf2.common.logger import get_logger
 
 logger = get_logger(__name__)
@@ -21,10 +21,12 @@ _production_order_manager_instance = None
 
 class ProductionOrderManager:
     """
-    Production Order Manager für CCU Domain
-    Verwaltet Production Orders (active, completed)
+    Order Manager für CCU Domain
+    Verwaltet PRODUCTION und STORAGE Orders (active, completed)
     
-    ⚠️ STUB VERSION - Nur für Testing
+    Basierend auf Quick Reference:
+    - PRODUCTION: HBW → MILL/DRILL → AIQS → DPS
+    - STORAGE: START → DPS → HBW (nur FTS Transport!)
     """
 
     def __init__(self):
@@ -32,6 +34,9 @@ class ProductionOrderManager:
         # State-Holder für Orders (Order-ID-basiert)
         self.active_orders = {}  # Dict: order_id -> order_data
         self.completed_orders = {}  # Dict: order_id -> order_data
+        
+        # MQTT Steps Storage (Order-ID-basiert)
+        self.mqtt_steps = {}  # Dict: order_id -> List[Dict] von MQTT Steps
         
         # Thread-Sicherheit
         self._lock = threading.Lock()
@@ -44,7 +49,8 @@ class ProductionOrderManager:
         self._production_workflows = None
         self._shopfloor_layout = None
         
-        logger.info("🏭 Production Order Manager initialized with Order-ID-based storage")
+        logger.info("🏭 Order Manager initialized with Order-ID-based storage")
+    
 
     def process_active_order_message(self, topic: str, message: Any, meta: Dict[str, Any]) -> None:
         """
@@ -145,29 +151,178 @@ class ProductionOrderManager:
         except Exception as e:
             logger.error(f"❌ [STUB] Error processing completed order message from {topic}: {e}")
 
-    def process_fts_state_message(self, topic: str, message: Any, meta: Dict[str, Any]) -> None:
+
+    
+    def _extract_serial_from_topic(self, topic: str) -> str:
+        """Extrahiere Serial Number aus Topic - Registry-basiert"""
+        from omf2.registry.manager.registry_manager import get_registry_manager
+        
+        registry_manager = get_registry_manager()
+        modules = registry_manager.get_modules()
+        
+        # Finde Serial-Nr in Topic (modules ist Dict mit Serial-Nr als Key)
+        for serial_nr in modules.keys():
+            if serial_nr in topic:
+                return serial_nr
+        
+        return 'UNKNOWN'
+    
+    def _get_module_name_from_serial(self, serial_nr: str) -> str:
+        """Hole Modul Name aus Serial-Nr - Registry-basiert"""
+        from omf2.registry.manager.registry_manager import get_registry_manager
+        
+        registry_manager = get_registry_manager()
+        modules = registry_manager.get_modules()
+        
+        # Hole Modul Name aus Registry
+        module_info = modules.get(serial_nr)
+        if module_info:
+            return module_info['name']
+        
+        return 'UNKNOWN'
+    
+
+    def process_ccu_order_active(self, topic: str, message: Union[Dict[str, Any], List[Dict[str, Any]]], meta: Dict[str, Any]) -> None:
         """
-        Verarbeitet FTS State Messages für Transport-Updates
+        Verarbeite ccu/order/active Message (CCU Frontend Consumer)
+        
+        Die originale CCU konsolidiert alle Module/FTS States und publiziert
+        ccu/order/active als Array von Orders - das ist unsere zentrale Quelle!
         
         Args:
-            topic: MQTT Topic (z.B. fts/v1/ff/5iO4/state)
-            message: Message Payload (bereits validiert)
-            meta: Message Metadata
+            topic: MQTT Topic (ccu/order/active)
+            message: MQTT Message Payload (Array von Orders oder einzelne Order)
+            meta: MQTT Meta-Information (timestamp, qos, retain)
         """
         try:
-            logger.info(f"🚛 [STUB] Processing FTS state message from {topic}")
-            logger.debug(f"📦 FTS State Payload: {message}")
+            # Handle sowohl Array als auch einzelne Order
+            if isinstance(message, list):
+                orders = message
+            else:
+                orders = [message] if message else []
             
-            # TODO: Implement FTS state processing
-            # - Extract orderId from message
-            # - Update transport steps in production plan
-            # - Update AGV navigation steps
+            if not orders:
+                logger.debug(f"📦 No orders in ccu/order/active from {topic}")
+                return
             
-            logger.info(f"✅ [STUB] FTS state message processed from {topic}")
+            logger.info(f"🏭 Processing ccu/order/active: {len(orders)} orders")
+            
+            # Verarbeite jede Order
+            for order in orders:
+                production_steps = order.get('productionSteps', [])
+                order_id = order.get('orderId', '')
+                order_type = order.get('type', '')
+                
+                if not production_steps or not order_id:
+                    logger.debug(f"📦 No productionSteps or orderId in order {order_id[:8] if order_id else 'unknown'}")
+                    continue
+                
+                logger.debug(f"🏭 Processing Order {order_id[:8]}... ({order_type})")
+                
+                # Speichere Production Steps direkt (kein Matching nötig!)
+                self._store_production_steps(order_id, production_steps)
+                
+                # KRITISCH: Speichere Order auch in active_orders für UI-Zugriff!
+                with self._lock:
+                    self.active_orders[order_id] = order
+                
+                logger.debug(f"✅ Order {order_id[:8]}... processed: {len(production_steps)} steps")
+            
+            logger.info(f"✅ CCU Order Active processed: {len(orders)} orders")
             
         except Exception as e:
-            logger.error(f"❌ [STUB] Error processing FTS state message from {topic}: {e}")
-
+            logger.error(f"❌ Error processing ccu/order/active from {topic}: {e}")
+    
+    def process_ccu_order_completed(self, topic: str, message: Union[Dict[str, Any], List[Dict[str, Any]]], meta: Dict[str, Any]) -> None:
+        """
+        Verarbeite ccu/order/completed Message (CCU Frontend Consumer)
+        
+        Die originale CCU publiziert ccu/order/completed als Array von completed Orders
+        
+        Args:
+            topic: MQTT Topic (ccu/order/completed)
+            message: MQTT Message Payload (Array von Orders oder einzelne Order)
+            meta: MQTT Meta-Information (timestamp, qos, retain)
+        """
+        try:
+            # Handle sowohl Array als auch einzelne Order
+            if isinstance(message, list):
+                orders = message
+            else:
+                orders = [message] if message else []
+            
+            if not orders:
+                logger.debug(f"🏁 No orders in ccu/order/completed from {topic}")
+                return
+            
+            logger.info(f"🏁 Processing ccu/order/completed: {len(orders)} orders")
+            
+            # Verarbeite jede completed Order
+            for order in orders:
+                order_id = order.get('orderId', '')
+                order_type = order.get('type', '')
+                state = order.get('state', '')
+                finished_at = order.get('finishedAt', '')
+                
+                if not order_id:
+                    logger.debug(f"🏁 No orderId in completed order")
+                    continue
+                
+                logger.info(f"🏁 Completed Order {order_id[:8]}... ({order_type}) - State: {state}")
+                
+                # KRITISCH: Verschiebe Order von active_orders zu completed_orders
+                with self._lock:
+                    if order_id in self.active_orders:
+                        # Order von active zu completed verschieben
+                        completed_order = self.active_orders[order_id].copy()
+                        completed_order['state'] = state
+                        completed_order['finishedAt'] = finished_at
+                        completed_order['completedTimestamp'] = meta.get('timestamp', '')
+                        
+                        self.completed_orders[order_id] = completed_order
+                        del self.active_orders[order_id]
+                        
+                        logger.info(f"✅ Order {order_id[:8]}... moved from active to completed")
+                    else:
+                        # Order direkt als completed speichern (falls nicht in active)
+                        self.completed_orders[order_id] = order
+                        logger.info(f"✅ Order {order_id[:8]}... stored as completed")
+                
+                # Markiere Order als completed in mqtt_steps
+                if order_id in self.mqtt_steps:
+                    # Füge completion info zu den Steps hinzu
+                    for step in self.mqtt_steps[order_id]:
+                        if 'completion' not in step:
+                            step['completion'] = {
+                                'state': state,
+                                'finishedAt': finished_at,
+                                'timestamp': meta.get('timestamp', '')
+                            }
+                    
+                    logger.info(f"✅ Order {order_id[:8]}... marked as completed with state: {state}")
+                else:
+                    logger.debug(f"🏁 Order {order_id[:8]}... not found in mqtt_steps")
+                    
+            logger.info(f"✅ CCU Order Completed processed: {len(orders)} orders")
+            
+        except Exception as e:
+            logger.error(f"❌ Error processing ccu/order/completed from {topic}: {e}")
+    
+    def _store_production_steps(self, order_id: str, production_steps: List[Dict[str, Any]]) -> None:
+        """
+        Speichere Production Steps direkt aus ccu/order/active
+        
+        Args:
+            order_id: Order ID
+            production_steps: Production Steps aus ccu/order/active
+        """
+        if order_id not in self.mqtt_steps:
+            self.mqtt_steps[order_id] = []
+        
+        # Speichere Production Steps direkt (kein Matching nötig!)
+        self.mqtt_steps[order_id] = production_steps
+        logger.debug(f"📋 Stored {len(production_steps)} production steps for Order {order_id[:8]}...")
+    
     def process_ccu_response_message(self, topic: str, message: Any, meta: Dict[str, Any]) -> None:
         """
         Verarbeitet CCU Response Messages für Order-Bestätigungen
@@ -191,29 +346,6 @@ class ProductionOrderManager:
         except Exception as e:
             logger.error(f"❌ [STUB] Error processing CCU response message from {topic}: {e}")
 
-    def process_module_state_message(self, topic: str, message: Any, meta: Dict[str, Any]) -> None:
-        """
-        Verarbeitet Module State Messages für HBW, AIQS, DPS Status-Updates
-        
-        Args:
-            topic: MQTT Topic (z.B. module/v1/ff/SVR3QA0022/state)
-            message: Message Payload (bereits validiert)
-            meta: Message Metadata
-        """
-        try:
-            logger.info(f"🏭 [STUB] Processing module state message from {topic}")
-            logger.debug(f"📦 Module State Payload: {message}")
-            
-            # TODO: Implement module state processing
-            # - Extract orderId from message
-            # - Update module-specific steps in production plan
-            # - Update HBW PICK/DROP, AIQS PICK/AIQS/DROP, DPS DROP steps
-            # - Update global order status when all steps completed
-            
-            logger.info(f"✅ [STUB] Module state message processed from {topic}")
-            
-        except Exception as e:
-            logger.error(f"❌ [STUB] Error processing module state message from {topic}: {e}")
 
     def get_active_orders(self) -> List[Dict[str, Any]]:
         """
@@ -259,18 +391,6 @@ class ProductionOrderManager:
                 "stub_mode": False  # Order-ID-basierte Implementierung
             }
 
-    def _load_production_workflows(self) -> Dict[str, Any]:
-        """Lädt Production Workflows aus Konfiguration (lazy loading)"""
-        if self._production_workflows is None:
-            try:
-                config_path = Path(__file__).parent.parent / "config" / "ccu" / "production_workflows.json"
-                with open(config_path, 'r', encoding='utf-8') as f:
-                    self._production_workflows = json.load(f)
-                logger.debug("📋 Production workflows loaded from config")
-            except Exception as e:
-                logger.warning(f"⚠️ Could not load production workflows: {e}")
-                self._production_workflows = {}
-        return self._production_workflows
 
     def _load_shopfloor_layout(self) -> Dict[str, Any]:
         """Lädt Shopfloor Layout aus Konfiguration (lazy loading)"""
@@ -285,195 +405,11 @@ class ProductionOrderManager:
                 self._shopfloor_layout = {}
         return self._shopfloor_layout
 
-    def _generate_complete_production_plan(self, workpiece_type: str) -> List[Dict[str, Any]]:
-        """
-        Generiert den FESTEN Produktionsplan basierend auf Workpiece Type
-        
-        Fester Plan: HBW → MILL/DRILL → AIQS → DPS
-        Pro Station: PICK → PROCESS → DROP
-        
-        Args:
-            workpiece_type: RED, BLUE, WHITE
-            
-        Returns:
-            Liste aller Production Steps (fester Plan)
-        """
-        workflows = self._load_production_workflows()
-        
-        # Workflow für Workpiece Type laden
-        workflow = workflows.get(workpiece_type.upper(), {})
-        steps = workflow.get('steps', [])
-        
-        if not steps:
-            logger.warning(f"⚠️ No workflow found for workpiece type: {workpiece_type}")
-            return []
-        
-        complete_plan = []
-        
-        # FESTER PRODUKTIONSPLAN (immer gleich):
-        # 1. HBW → PICK
-        complete_plan.append({
-            "id": "hbw_pick",
-            "type": "MANUFACTURE",
-            "state": "PENDING",
-            "command": "PICK",
-            "moduleType": "HBW",
-            "source": "HBW",
-            "target": "HBW",
-            "description": "High-Bay Warehouse : PICK"
-        })
-        
-        # 2. Für jeden Processing-Step (MILL, DRILL, AIQS)
-        for step_module in steps:
-            # Navigation zu Station
-            complete_plan.append({
-                "id": f"nav_to_{step_module.lower()}",
-                "type": "NAVIGATION",
-                "state": "PENDING",
-                "source": "HBW" if step_module == steps[0] else steps[steps.index(step_module)-1],
-                "target": step_module,
-                "description": f"Automated Guided Vehicle (AGV) > {step_module}"
-            })
-            
-            # PICK an Station
-            complete_plan.append({
-                "id": f"{step_module.lower()}_pick",
-                "type": "MANUFACTURE",
-                "state": "PENDING",
-                "command": "PICK",
-                "moduleType": step_module,
-                "description": f"{step_module} : PICK"
-            })
-            
-            # PROCESS an Station
-            complete_plan.append({
-                "id": f"{step_module.lower()}_process",
-                "type": "MANUFACTURE",
-                "state": "PENDING",
-                "command": step_module,
-                "moduleType": step_module,
-                "description": f"{step_module} : {step_module}"
-            })
-            
-            # DROP an Station
-            complete_plan.append({
-                "id": f"{step_module.lower()}_drop",
-                "type": "MANUFACTURE",
-                "state": "PENDING",
-                "command": "DROP",
-                "moduleType": step_module,
-                "description": f"{step_module} : DROP"
-            })
-        
-        # 3. Navigation zu DPS (Delivery Station)
-        last_station = steps[-1] if steps else "HBW"
-        complete_plan.append({
-            "id": "nav_to_dps",
-            "type": "NAVIGATION",
-            "state": "PENDING",
-            "source": last_station,
-            "target": "DPS",
-            "description": "Automated Guided Vehicle (AGV) > DPS"
-        })
-        
-        # 4. DPS → DROP (Final)
-        complete_plan.append({
-            "id": "dps_drop",
-            "type": "MANUFACTURE",
-            "state": "PENDING",
-            "command": "DROP",
-            "moduleType": "DPS",
-            "description": "DPS : DROP"
-        })
-        
-        logger.info(f"📋 Generated FIXED production plan for {workpiece_type}: {len(complete_plan)} steps")
-        return complete_plan
 
-    def _merge_mqtt_status_with_plan(self, complete_plan: List[Dict[str, Any]], mqtt_steps: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-        """
-        Mergt MQTT-Status mit kompletten Produktionsplan
-        
-        Intelligentes Matching nach Inhalt (source, target, moduleType, command)
-        
-        Args:
-            complete_plan: Kompletter Produktionsplan
-            mqtt_steps: Aktuelle Steps aus MQTT
-            
-        Returns:
-            Merged Plan mit aktuellem Status
-        """
-        merged_plan = []
-        used_mqtt_indices = set()  # Verhindert doppelte Verwendung
-        
-        for plan_step in complete_plan:
-            merged_step = plan_step.copy()
-            matched_mqtt_step = None
-            
-            # Intelligentes Matching nach Inhalt
-            for i, mqtt_step in enumerate(mqtt_steps):
-                if i in used_mqtt_indices:
-                    continue
-                
-                # Match-Kriterien
-                plan_type = plan_step.get('type')
-                plan_module = plan_step.get('moduleType')
-                plan_command = plan_step.get('command')
-                plan_source = plan_step.get('source')
-                plan_target = plan_step.get('target')
-                
-                mqtt_type = mqtt_step.get('type')
-                mqtt_module = mqtt_step.get('moduleType')
-                mqtt_command = mqtt_step.get('command')
-                mqtt_source = mqtt_step.get('source')
-                mqtt_target = mqtt_step.get('target')
-                
-                # Exakte Matches
-                if (plan_type == mqtt_type and 
-                    plan_module == mqtt_module and 
-                    plan_command == mqtt_command and
-                    plan_source == mqtt_source and
-                    plan_target == mqtt_target):
-                    matched_mqtt_step = mqtt_step
-                    used_mqtt_indices.add(i)
-                    logger.debug(f"📋 EXACT MATCH: {plan_step.get('id')} ← {mqtt_step.get('id')} ({mqtt_step.get('state')})")
-                    break
-                
-                # Fallback: Module + Command Match
-                elif (plan_type == mqtt_type and 
-                      plan_module == mqtt_module and 
-                      plan_command == mqtt_command):
-                    matched_mqtt_step = mqtt_step
-                    used_mqtt_indices.add(i)
-                    logger.debug(f"📋 MODULE+COMMAND MATCH: {plan_step.get('id')} ← {mqtt_step.get('id')} ({mqtt_step.get('state')})")
-                    break
-            
-            # MQTT-Status übernehmen wenn Match gefunden
-            if matched_mqtt_step:
-                merged_step.update({
-                    'state': matched_mqtt_step.get('state', 'PENDING'),
-                    'startedAt': matched_mqtt_step.get('startedAt'),
-                    'stoppedAt': matched_mqtt_step.get('stoppedAt'),
-                    'serialNumber': matched_mqtt_step.get('serialNumber'),
-                    'dependentActionId': matched_mqtt_step.get('dependentActionId'),
-                    # Original MQTT-Daten für Debugging
-                    'mqtt_id': matched_mqtt_step.get('id'),
-                    'mqtt_source': matched_mqtt_step.get('source'),
-                    'mqtt_target': matched_mqtt_step.get('target'),
-                    'mqtt_moduleType': matched_mqtt_step.get('moduleType'),
-                    'mqtt_command': matched_mqtt_step.get('command')
-                })
-            else:
-                logger.debug(f"📋 NO MATCH: {plan_step.get('id')} - PENDING (no MQTT data)")
-            
-            merged_plan.append(merged_step)
-        
-        matched_count = len(used_mqtt_indices)
-        logger.info(f"📋 Merged plan: {len(merged_plan)} steps ({matched_count}/{len(mqtt_steps)} MQTT steps matched)")
-        return merged_plan
 
-    def get_complete_production_plan(self, order: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def get_complete_order_plan(self, order: Dict[str, Any]) -> List[Dict[str, Any]]:
         """
-        Gibt den KOMPLETTEN Produktionsplan für eine Order zurück
+        Gibt den KOMPLETTEN Order-Plan zurück (PRODUCTION oder STORAGE)
         
         PRODUCTION Orders: HBW → MILL/DRILL → AIQS → DPS
         STORAGE Orders: START → DPS → HBW (nur FTS Transport!)
@@ -482,28 +418,74 @@ class ProductionOrderManager:
             order: Order-Dict mit workpiece type und orderType
             
         Returns:
-            Kompletter Produktionsplan mit aktuellem Status
+            Kompletter Order-Plan mit aktuellem Status
         """
         workpiece_type = order.get('type', 'RED')
         order_type = order.get('orderType', 'PRODUCTION')
-        mqtt_steps = order.get('productionSteps', [])
+        order_id = order.get('orderId')
         
-        # Unterschiedliche Pläne für PRODUCTION vs STORAGE
-        if order_type == 'STORAGE':
-            # STORAGE: Nur DPS → HBW (direkt aus MQTT-Steps)
-            # Kein fester Plan nötig, MQTT hat bereits alle Steps
-            merged_plan = mqtt_steps
-            logger.info(f"📦 Storage plan for {workpiece_type}: {len(merged_plan)} steps (direkt aus MQTT)")
+        # Hole Steps aus gespeicherten MQTT-Daten
+        if order_id and order_id in self.mqtt_steps:
+            order_steps = self.mqtt_steps[order_id]
+            logger.debug(f"📋 Using {len(order_steps)} stored MQTT steps for {order_type} Order {order_id[:8]}...")
         else:
-            # PRODUCTION: Kompletten Plan generieren
-            complete_plan = self._generate_complete_production_plan(workpiece_type)
-            
-            # MQTT-Status überlagern
-            merged_plan = self._merge_mqtt_status_with_plan(complete_plan, mqtt_steps)
-            
-            logger.info(f"🏭 Production plan for {workpiece_type}: {len(merged_plan)} steps (MQTT: {len(mqtt_steps)})")
+            # KEIN FALLBACK! Wenn keine MQTT-Daten, dann leere Liste
+            logger.warning(f"⚠️ No MQTT data found for Order {order_id[:8] if order_id else 'unknown'}")
+            return []
         
-        return merged_plan
+        # UX-Verbesserung: Navigation Steps als IN_PROGRESS markieren
+        self._enhance_navigation_steps(order_steps)
+        
+        logger.debug(f"📋 Order Plan: {len(order_steps)} steps for {order_type} order {workpiece_type}")
+        
+        return order_steps
+
+    def get_complete_production_plan(self, order: Dict[str, Any]) -> List[Dict[str, Any]]:
+        """
+        Backward-Compatibility: Ruft get_complete_order_plan() auf
+        
+        DEPRECATED: Verwende get_complete_order_plan() für alle Order-Typen
+        """
+        return self.get_complete_order_plan(order)
+
+    def get_complete_storage_plan(self, order: Dict[str, Any]) -> List[Dict[str, Any]]:
+        """
+        Gibt den STORAGE-Plan zurück (gleiche Logik wie Production)
+        
+        Storage Orders: START → DPS → HBW (nur FTS Transport!)
+        """
+        return self.get_complete_order_plan(order)
+
+    def _enhance_navigation_steps(self, steps: List[Dict[str, Any]]) -> None:
+        """
+        UX-Verbesserung: Navigation Steps als IN_PROGRESS markieren
+        
+        LOGIK: Wenn keine Production Step IN_PROGRESS, dann suche den ersten ENQUEUED.
+        Wenn dieser ein NAVIGATION Step ist, dann setze auf IN_PROGRESS.
+        
+        Args:
+            steps: Liste der Production Steps
+        """
+        if not steps:
+            return
+            
+        # 1. Prüfe ob bereits ein Production Step IN_PROGRESS ist
+        has_production_in_progress = False
+        for step in steps:
+            if step.get('state') == 'IN_PROGRESS' and step.get('type') == 'MANUFACTURE':
+                has_production_in_progress = True
+                break
+        
+        # 2. Wenn KEIN Production Step IN_PROGRESS ist
+        if not has_production_in_progress:
+            # Suche den ersten ENQUEUED Step
+            for i, step in enumerate(steps):
+                if step.get('state') == 'ENQUEUED':
+                    # Wenn es ein NAVIGATION Step ist, setze auf IN_PROGRESS
+                    if step.get('type') == 'NAVIGATION':
+                        step['state'] = 'IN_PROGRESS'
+                        logger.info(f"🔄 Enhanced Navigation Step {i}: {step.get('source')} → {step.get('target')}")
+                    break
 
     def get_order_by_id(self, order_id: str) -> Optional[Dict[str, Any]]:
         """
@@ -539,6 +521,7 @@ class ProductionOrderManager:
         else:
             logger.warning(f"⚠️ No order found for ID: {order_id}")
             return []
+
 
 
 def get_production_order_manager() -> ProductionOrderManager:

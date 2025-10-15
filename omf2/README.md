@@ -23,6 +23,7 @@ OMF2 ist die neue, modulare und rollenbasierte Streamlit-Anwendung für die ORBI
 - ✅ **Connection Loop Prevention:** Robuste MQTT Connection Management
 - ✅ **Environment Switch:** Automatischer UI-Refresh bei Environment-Wechsel
 - ✅ **Shopfloor Layout System:** Wiederverwendbare 3×4 Grid-Komponente mit SVG-Icons
+- ✅ **Storage Orders Logic:** Vollständige Storage Orders Implementierung mit UI-Konsistenz
 
 ## 🏗️ **Architektur**
 

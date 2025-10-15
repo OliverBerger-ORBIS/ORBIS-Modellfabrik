@@ -43,6 +43,7 @@ ccu_orders.storage.no_completed: "Aucune commande de stockage terminée disponib
 # Order Card
 ccu_orders.card.completed: "TERMINÉ"
 ccu_orders.card.production_steps: "Étapes de production"
+ccu_orders.card.storage_steps: "Étapes de stockage"
 
 # Production Steps
 ccu_orders.steps.automated_guided_vehicle: "Véhicule à guidage automatique (AGV)"

@@ -173,7 +173,37 @@
 
 ---
 
-### Task 2.1: Shopfloor Layout - Aktive Module anzeigen (NÄCHSTE PRIORITÄT)
+### ✅ **Task 2.1 ABGESCHLOSSEN: Storage Orders Logic & UI-Konsistenz**
+
+**Status:** ✅ **VOLLSTÄNDIG ABGESCHLOSSEN**
+
+**Was wurde implementiert:**
+- ✅ **Storage Orders Logic:** Vollständige Verarbeitung von `ccu/order/active` und `ccu/order/completed` Messages
+- ✅ **UI-Konsistenz:** Production und Storage Orders verwenden identische UISymbols und Darstellung
+- ✅ **Command-Mapping-Korrektur:** Storage Orders verwenden korrekte PICK/DROP → LADEN/ENTLADEN AGV Logik
+- ✅ **Shopfloor Layout Integration:** Storage Orders zeigen aktive Module und FTS Navigation
+- ✅ **Navigation Step Enhancement:** UX-Verbesserung für Navigation Steps (IN_PROGRESS wenn kein Production Step aktiv)
+- ✅ **UISymbols-Konsistenz:** 🟠 statt 🔄 für IN_PROGRESS (konsistent mit Production Orders)
+
+**Technische Details:**
+- ✅ `storage_orders_subtab.py` vollständig refactored
+- ✅ `get_complete_storage_plan()` und `_render_storage_steps()` implementiert
+- ✅ Shopfloor Layout mit aktiver Module-Hervorhebung
+- ✅ 2-Spalten-Layout (Liste:Shopfloor) wie Production Orders
+- ✅ Alle Tests bestehen (4/4 Storage Orders Tests)
+
+**Commits:**
+- `[COMMIT_HASH]` - "feat: Storage Orders Logic vollständig implementiert - UI-Konsistenz zwischen Production und Storage Orders"
+
+**Erfolgs-Kriterium erreicht:**
+- ✅ Storage Orders verarbeiten MQTT Messages korrekt
+- ✅ UI-Konsistenz zwischen Production und Storage Orders
+- ✅ Shopfloor Layout Integration funktional
+- ✅ Navigation Step Enhancement implementiert
+
+---
+
+### Task 2.2: Shopfloor Layout - Aktive Module anzeigen (NÄCHSTE PRIORITÄT)
 
 **Keine Abhängigkeiten - SOFORT startbar**
 
@@ -205,9 +235,56 @@ Aus `REFACTORING_BACKLOG.md` Zeile 57:
 - Aktive Module visuell hervorgehoben
 - Shopfloor-Grid responsive
 
-### Task 2.2: Storage Orders Subtab Verbesserungen
+### Task 2.3: Step Status Display Fix (PENDING)
 
-**Abhängigkeit: Task 2.1 abgeschlossen**
+**Status:** 🟡 **PENDING - Teilweise implementiert**
+
+**Problem-Analyse:**
+- ✅ **Navigation Step Enhancement:** UX-Verbesserung implementiert
+- 🟡 **Step Status Display:** UI zeigt Step-Status korrekt an (FINISHED für vorherige Steps)
+- 🟡 **Missing Navigation Step:** Production Plan hat 15 statt 16 Steps (ersten NAVIGATION Step AGV > HBW fehlt)
+
+**Was noch zu tun ist:**
+- ✅ **Navigation Step Enhancement:** Bereits implementiert
+- 🟡 **Step Status Display:** UI muss FINISHED Status für vorherige Steps korrekt anzeigen
+- 🟡 **Add Missing Navigation Step:** Production Plan sollte 16 Steps haben (AGV > HBW als Step 1)
+
+**Zu implementieren:**
+- UI-Logik für korrekte Step-Status-Anzeige
+- Production Plan um ersten NAVIGATION Step erweitern
+- Tests für 16-Step Production Plan
+
+**Erfolgs-Kriterium:**
+- UI zeigt Step-Status korrekt (FINISHED für vorherige Steps)
+- Production Plan hat 16 Steps (AGV > HBW als Step 1)
+- Alle Tests bestehen
+
+---
+
+### Task 2.4: Manager Renaming (PENDING)
+
+**Status:** 🟡 **PENDING - Geplant**
+
+**Problem-Analyse:**
+- 🟡 **OrderManager → StockManager:** OrderManager verwaltet nur Stock/Lager-Operationen, nicht Production Orders
+- 🟡 **ProductionOrderManager → OrderManager:** Verwaltet sowohl PRODUCTION als auch STORAGE Orders basierend auf Quick Reference
+
+**Was zu tun ist:**
+- `omf2/ccu/order_manager.py` → `omf2/ccu/stock_manager.py`
+- `omf2/ccu/production_order_manager.py` → `omf2/ccu/order_manager.py`
+- Alle Referenzen aktualisieren
+- Tests anpassen
+
+**Erfolgs-Kriterium:**
+- Manager-Namen sind semantisch korrekt
+- Alle Tests bestehen nach Renaming
+- Keine Breaking Changes für UI
+
+---
+
+### Task 2.5: Storage Orders Subtab Verbesserungen
+
+**Abhängigkeit: Task 2.2 abgeschlossen**
 
 **Problem-Analyse:**
 
@@ -234,9 +311,9 @@ Aus `REFACTORING_BACKLOG.md` Zeile 59:
 - Visualisierung analog zu Production Orders
 - Integration mit ProductionOrderManager
 
-### Task 2.3: Factory Steering Hardcoded Payloads Fix
+### Task 2.6: Factory Steering Hardcoded Payloads Fix
 
-**Abhängigkeit: Task 2.2 abgeschlossen**
+**Abhängigkeit: Task 2.5 abgeschlossen**
 
 **Problem-Analyse:**
 
@@ -269,9 +346,9 @@ Gateway → MQTT Client.publish(topic, payload_clean, qos, retain)
 
 ## Phase 2: KRITISCHE FEATURES (22. Okt - 4. Nov, 14 Tage)
 
-### Task 2.1: Auto-Refresh Implementation
+### Task 2.7: Auto-Refresh Implementation
 
-**Abhängigkeit: Task 1.2 (Tests grün)**
+**Abhängigkeit: Task 2.6 abgeschlossen**
 
 **MQTT-Trigger für UI-Refresh:**
 
@@ -296,9 +373,9 @@ def on_mqtt_message(self, topic, message, meta):
 - UI aktualisiert sich automatisch bei relevanten MQTT Messages
 - Keine Performance-Probleme (max 1 Refresh/Sekunde)
 
-### Task 2.2: Factory Layout Integration
+### Task 2.8: Factory Layout Integration
 
-**Abhängigkeit: Task 2.1 (Auto-Refresh)**
+**Abhängigkeit: Task 2.7 (Auto-Refresh)**
 
 **Shopfloor 3×4 Grid wie in omf/:**
 
@@ -316,7 +393,7 @@ def on_mqtt_message(self, topic, message, meta):
 
 ### Task 3.1: Sensor Data UI-Verbesserung
 
-**Abhängigkeit: Phase 2 abgeschlossen**
+**Abhängigkeit: Task 2.8 abgeschlossen**
 
 - Temperatur-Skala mit Farbverlauf (Thermometer)
 - Kamera-Controls verbessern (3×3 Grid)
@@ -332,7 +409,7 @@ def on_mqtt_message(self, topic, message, meta):
 
 ### Task 3.3: Production Order Manager Polish
 
-**Abhängigkeit: Task 2.1 (Auto-Refresh)**
+**Abhängigkeit: Task 2.7 (Auto-Refresh)**
 
 - STORAGE Orders mit storage-plan
 - Order-Filterung & Sortierung
@@ -354,7 +431,7 @@ def on_mqtt_message(self, topic, message, meta):
 
 ### Task 4.1: Live-Test Session #1 (Baseline)
 
-**Abhängigkeit: Phase 1 abgeschlossen + im Büro**
+**Abhängigkeit: Task 2.6 abgeschlossen + im Büro**
 
 - omf2 mit echter Fabrik verbinden
 - Alle CCU Tabs durchklicken
@@ -363,7 +440,7 @@ def on_mqtt_message(self, topic, message, meta):
 
 ### Task 4.2: Live-Test Session #2 (Regression)
 
-**Abhängigkeit: Phase 2 abgeschlossen + im Büro**
+**Abhängigkeit: Task 2.8 abgeschlossen + im Büro**
 
 - Vergleich mit Session #1
 - Stock-Topic Validierung ✅ **BEREITS VALIDIERT**
@@ -372,7 +449,7 @@ def on_mqtt_message(self, topic, message, meta):
 
 ### Task 4.3: Live-Test Session #3 (Workflows)
 
-**Abhängigkeit: Phase 3 abgeschlossen + im Büro**
+**Abhängigkeit: Task 3.3 abgeschlossen + im Büro**
 
 - Vollständige Workflows testen (Order → Production → Completion)
 - Alle Rollen testen
@@ -380,7 +457,7 @@ def on_mqtt_message(self, topic, message, meta):
 
 ### Task 4.4: Live-Test Session #4 (Marathon)
 
-**Abhängigkeit: Task 4.3 + im Büro**
+**Abhängigkeit: Task 4.3 abgeschlossen + im Büro**
 
 - 8h Dauerlauf mit echter Fabrik
 - Stabilität unter Last
@@ -389,7 +466,7 @@ def on_mqtt_message(self, topic, message, meta):
 
 ### Task 4.5: Messe-Präsentation vorbereiten
 
-**Abhängigkeit: Task 4.4**
+**Abhängigkeit: Task 4.4 abgeschlossen**
 
 - Demo-Szenarien definieren (3-5 Szenarien à 5-10 Minuten)
 - Backup-Strategie (Mock-Mode als Fallback)
@@ -400,7 +477,7 @@ def on_mqtt_message(self, topic, message, meta):
 
 ### Task 5.1: Setup & Smoke-Test
 
-**Abhängigkeit: Phase 4 abgeschlossen**
+**Abhängigkeit: Task 4.5 abgeschlossen**
 
 - Hardware-Verbindung prüfen (1h vor Messe-Start)
 - Alle Environments testen (live, replay, mock)
@@ -408,7 +485,7 @@ def on_mqtt_message(self, topic, message, meta):
 
 ### Task 5.2: Messe-Standby
 
-**Abhängigkeit: Task 5.1**
+**Abhängigkeit: Task 5.1 abgeschlossen**
 
 - Live-Monitoring während Demo
 - Quick-Fixes bei Bedarf
@@ -418,15 +495,18 @@ def on_mqtt_message(self, topic, message, meta):
 
 ### KRITISCH (Messe-Blocker):
 
-1. **18 failing Tests** → Phase 1 Task 1.2 (höchste Priorität)
-2. **Command-Versende-Pattern** → Phase 1 Task 1.1 (SOFORT fix)
+1. ~~**18 failing Tests** → Phase 1 Task 1.2 (höchste Priorität)~~ ✅ **ABGESCHLOSSEN**
+2. ~~**Command-Versende-Pattern** → Phase 1 Task 1.1 (SOFORT fix)~~ ✅ **ABGESCHLOSSEN**
 3. **Live-Fabrik-Zugriff** → Nur im Büro, Termine vorab planen
+4. **Storage Orders Logic** → Task 2.1 ✅ **ABGESCHLOSSEN**
 
 ### HOCH:
 
 1. ~~**Stock-Topic Fehler** → Phase 2 Task 2.1~~ ✅ **GELÖST**
-2. **Auto-Refresh** → Phase 2 Task 2.1
-3. **Factory Layout** → Phase 2 Task 2.2
+2. **Step Status Display** → Task 2.3 (PENDING)
+3. **Manager Renaming** → Task 2.4 (PENDING)
+4. **Auto-Refresh** → Task 2.7
+5. **Factory Layout** → Task 2.8
 
 ### MITTEL:
 
@@ -499,6 +579,9 @@ def on_mqtt_message(self, topic, message, meta):
 - [x] ~~I18n Haupt-Tabs Fix: Tab-Namen übersetzen~~ ✅ **ABGESCHLOSSEN**
 - [x] ~~Task 1.2: Alle 18 failing Tests reparieren → 100% Test-Success~~ ✅ **ABGESCHLOSSEN**
 - [x] ~~Task 1.3: TODO-Audit & Feature-Gap-Analyse~~ ✅ **ABGESCHLOSSEN**
+- [x] ~~Task 2.1: Storage Orders Logic & UI-Konsistenz~~ ✅ **ABGESCHLOSSEN**
+- [ ] Task 2.3: Step Status Display Fix (PENDING)
+- [ ] Task 2.4: Manager Renaming (PENDING)
 - [ ] Dokumentations-Audit: TODOs finden, Feature-Lücken identifizieren
 - [ ] Live-Test Session #1 mit echter Fabrik durchführen
 - [ ] Auto-Refresh bei MQTT Messages implementieren

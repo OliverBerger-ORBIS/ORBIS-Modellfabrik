@@ -159,10 +159,10 @@ class OMF2AssetManager:
         """Generiert HTML für Shopfloor-Modul mit SVG-Icon und Hervorhebung (quadratisches Grid)"""
         icon_path = self.get_module_icon_path(module_type)
         
-        # Aktive Station hervorheben
-        border_color = "#2196f3" if is_active else "#e0e0e0"
+        # Aktive Station hervorheben (gelb wie IN_PROGRESS Icon)
+        border_color = "#ff9800" if is_active else "#e0e0e0"  # Orange/Gelb für aktive Module
         border_width = "4px" if is_active else "2px"
-        shadow = "0 4px 12px rgba(33, 150, 243, 0.3)" if is_active else "0 2px 6px rgba(0,0,0,0.1)"
+        shadow = "0 4px 12px rgba(255, 152, 0, 0.3)" if is_active else "0 2px 6px rgba(0,0,0,0.1)"  # Gelber Schatten
         
         # Icon-Größe berechnen (66% der Zellengröße für prominente Darstellung)
         icon_size = int(size * 0.66)

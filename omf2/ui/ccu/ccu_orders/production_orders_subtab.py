@@ -127,19 +127,20 @@ def _render_order_details(order, production_order_manager, i18n, is_completed=Fa
             state = order.get('state', 'N/A')
             # NEU: UI-Symbols verwenden - Vollständige Zustands-Matrix
             state_icon = {
-                # Aktive Zustände
-                'IN_PROGRESS': UISymbols.get_status_icon('connecting'),  # 🟡
+                # Aktive Zustände (KONSISTENT mit _render_production_step_status)
+                'IN_PROGRESS': UISymbols.get_status_icon('step_in_progress'), # 🟠 (ORANGE CIRCLE - konsistent!)
+                'RUNNING': UISymbols.get_status_icon('step_in_progress'),     # 🟠 (Alias)
                 
                 # Abgeschlossene Zustände  
-                'FINISHED': UISymbols.get_status_icon('success'),        # ✅
-                'COMPLETED': UISymbols.get_status_icon('success'),       # ✅ (Alias)
+                'FINISHED': UISymbols.get_status_icon('step_finished'),       # ✅
+                'COMPLETED': UISymbols.get_status_icon('step_finished'),      # ✅ (Alias)
                 
                 # Wartende Zustände
-                'ENQUEUED': UISymbols.get_status_icon('loading'),        # ⏳
-                'PENDING': UISymbols.get_status_icon('info'),            # ℹ️
+                'ENQUEUED': UISymbols.get_status_icon('step_enqueued'),       # ⏳
+                'PENDING': UISymbols.get_status_icon('step_pending'),         # ⚪
                 
                 # Fehler-Zustände
-                'FAILED': UISymbols.get_status_icon('error')             # ❌
+                'FAILED': UISymbols.get_status_icon('step_failed')            # ❌
             }.get(state, '⚪')
             st.write(f"{state_icon} {state}")
     
@@ -184,23 +185,22 @@ def _render_shopfloor_for_order(order, production_order_manager, i18n):
 
 
 def _get_current_active_module(production_plan):
-    """Ermittelt das aktuell aktive Modul aus Production Plan (wie Original)
+    """Ermittelt das aktuell aktive Modul aus Production Plan
     
-    Logik (wie Original):
-    - Steps 1-N: FINISHED (✅) - abgeschlossen
-    - Steps N+1 bis Ende: Alle anderen Zustände - nicht abgeschlossen
-    - Aktives Modul: Erstes nicht-FINISHED Modul
+    Logik (korrekt):
+    - Finde das erste PENDING/IN_PROGRESS Modul als aktives Modul
+    - FINISHED = abgeschlossen = NICHT mehr aktiv
+    - PENDING = wartend = NÄCHSTES aktives Modul
     """
     active_module = None
     
     # Finde das erste nicht-FINISHED Modul (wie Original)
     for idx, step in enumerate(production_plan):
         step_state = step.get('state', 'PENDING')
+        step_type = step.get('type', '')
         
         # Ersten nicht-FINISHED Step finden
         if step_state != 'FINISHED':
-            step_type = step.get('type', '')
-            
             if step_type == 'NAVIGATION':
                 # FTS Navigation: Zeige FTS als aktiv
                 active_module = 'FTS'
@@ -223,7 +223,8 @@ def _get_active_intersections(production_plan):
     for step in production_plan:
         step_state = step.get('state', 'PENDING')
         
-        if step_state == 'IN_PROGRESS' and step.get('type') == 'NAVIGATION':
+        # FTS Navigation Steps die IN_PROGRESS oder PENDING sind
+        if step_state in ['IN_PROGRESS', 'RUNNING', 'PENDING'] and step.get('type') == 'NAVIGATION':
             # FTS Navigation aktiv: Markiere Source und Target als Intersections
             source = step.get('source')
             target = step.get('target')

@@ -12,7 +12,9 @@
 **Log-Rotation: IMPLEMENTIERT** ✅  
 **Asymmetrische Architektur: VERIFIED UND DOKUMENTIERT** ✅  
 **Gateway-Routing-Hints: KLARGESTELLT** ✅  
-**i18n-Implementierung: VOLLSTÄNDIG (DE, EN, FR)** ✅ NEW!
+**i18n-Implementierung: VOLLSTÄNDIG (DE, EN, FR)** ✅  
+**Storage Orders Logic: VOLLSTÄNDIG IMPLEMENTIERT** ✅ NEW!
+**UI-Konsistenz zwischen Production und Storage Orders: IMPLEMENTIERT** ✅ NEW!
 
 **Ziel:**  
 Weggekapselte, robuste Architektur für MQTT-Kommunikation, Message-Templates und UI-Refresh in einer Streamlit-App, sodass UI- und Business-Logik möglichst einfach bleiben und typische Fehlerquellen (Threading, Race-Conditions, Deadlocks, inkonsistenter State) vermieden werden.
@@ -20,6 +22,11 @@ Weggekapselte, robuste Architektur für MQTT-Kommunikation, Message-Templates un
 **✅ ERREICHT:** Alle Ziele wurden erfolgreich implementiert und getestet.
 
 **🔧 AKTUELLE ERKENNTNISSE (2025-10-10):**
+- **Storage Orders Logic (VOLLSTÄNDIG)**: Storage Orders verarbeiten `ccu/order/active` und `ccu/order/completed` Messages
+- **UI-Konsistenz (IMPLEMENTIERT)**: Production und Storage Orders verwenden identische UISymbols und Darstellung
+- **Command-Mapping-Korrektur**: Storage Orders verwenden korrekte PICK/DROP → LADEN/ENTLADEN AGV Logik
+- **Shopfloor Layout Integration**: Storage Orders zeigen aktive Module und FTS Navigation
+- **Navigation Step Enhancement**: UX-Verbesserung für Navigation Steps (IN_PROGRESS wenn kein Production Step aktiv)
 - **i18n-Implementierung (VOLLSTÄNDIG)**: 3 Sprachen (DE, EN, FR), 195+ Translation Keys, 18 YAML-Dateien
 - **Asymmetrische Architektur (VERIFIED)**: Commands über NodeRed, Telemetry direct für TXT-Module
 - **Gateway-Routing-Hints**: `routed_topics` statt `subscribed_topics` - Semantik klargestellt
