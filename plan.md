@@ -76,12 +76,12 @@
 - Production Order Manager
 - Shopfloor Layout System
 
-### KRITISCH: Architektur-Verletzungen (ANTIPATTERN):
+### ✅ KRITISCHE ARCHITEKTUR-FIXES ABGESCHLOSSEN:
 
-- **18 failing Tests** → Agenten haben ohne Tests eingecheckt ❌
-- **Meta-Parameter in Payload** → mqtt_timestamp wird fälschlicherweise in message/payload mitgesendet
-- **Fehlende zentrale Validierung** → Nicht alle Gateways verwenden MessageManager.validate()
-- **Command-Versende-Pattern inkonsistent** → CCU Gateway vs Admin Gateway unterschiedlich
+- ✅ **18 failing Tests** → Alle repariert, 100% Test-Success erreicht ✅
+- ✅ **Meta-Parameter in Payload** → mqtt_timestamp nur in Buffer, nicht in Payload ✅
+- ✅ **Fehlende zentrale Validierung** → Alle Gateways verwenden MessageManager.validate() ✅
+- ✅ **Command-Versende-Pattern inkonsistent** → Einheitlich implementiert ✅
 
 ### Unbekannte Features (aus REFACTORING_BACKLOG.md):
 
@@ -96,9 +96,58 @@
 
 **Ziel: Architektur-Compliance wiederherstellen, bevor weitere Features entwickelt werden**
 
-### Task 1.1: Command-Versende-Pattern Fix (NÄCHSTE PRIORITÄT)
+### ✅ **Task 1.1 ABGESCHLOSSEN: Command-Versende-Pattern Fix**
 
-**Keine Abhängigkeiten - SOFORT startbar**
+**Status:** ✅ **VOLLSTÄNDIG ABGESCHLOSSEN**
+
+**Was wurde gefixt:**
+- ✅ **Meta-Parameter-Trennung:** `mqtt_timestamp` nur in Buffer, nicht in Payload
+- ✅ **Zentrale Validierung:** `MessageManager.validate_message()` in allen Gateways
+- ✅ **Registry-basierte QoS/Retain:** Keine hardcodierten Werte mehr
+- ✅ **Schema-Compliance:** Alle Messages validiert vor Publishing
+- ✅ **Architektur-Dokumentation:** `ARCHITECTURE.md` aktualisiert
+
+**Commits:**
+- `f61b617` - "fix: Command-Versende-Pattern architektur-compliant implementiert"
+
+**Erfolgs-Kriterium erreicht:**
+- ✅ Meta-Parameter NIE in payload/message
+- ✅ Alle Gateways verwenden MessageManager.validate()
+- ✅ Registry-basierte QoS/Retain-Werte
+
+---
+
+### ✅ **Task 1.2 ABGESCHLOSSEN: Test-Stabilität wiederherstellen**
+
+**Status:** ✅ **VOLLSTÄNDIG ABGESCHLOSSEN**
+
+**Was wurde repariert:**
+- ✅ **18/18 Tests repariert (100% Test-Success)** 🎯
+- ✅ **Architektur-Compliance wiederhergestellt**
+- ✅ **Semantisch korrekte Test-Reparaturen** (keine None-Acceptance)
+- ✅ **Gateway-Implementierung repariert** (explizite return False)
+
+**Reparierte Tests:**
+- ✅ Test 1-2: `business_manager_pattern` → `gateway_routing_hints` Architektur
+- ✅ Test 3-4: `ccu_production_monitoring` → Streamlit columns Mock mit `side_effect`
+- ✅ Test 5: `ccu_production_plan` → Workflow-Tests
+- ✅ Test 6-8: `message_monitor_subtab` → Interface-Korrektur (2→1 Parameter)
+- ✅ Test 9-13: `registry_integration` → Registry-Manager-Tests
+- ✅ Test 14: `streamlit_dashboard` → i18n Translation-Keys hinzugefügt
+- ✅ Test 15: `streamlit_startup` → Import-Pfad korrigiert (`logs`→`system_logs`)
+- ✅ Test 16-18: `ui_components` → Gateway-Implementierung repariert
+
+**Commits:**
+- `3c7d055` - "fix: Alle 18 failing Tests repariert - Architektur-Compliance wiederhergestellt"
+
+**Erfolgs-Kriterium erreicht:**
+- ✅ 341/341 Tests bestehen ✅
+- ✅ Keine Mock-Daten geändert
+- ✅ Architektur-Compliance in allen Tests
+
+---
+
+### Task 1.3: TODO-Audit & Feature-Gap-Analyse (NÄCHSTE PRIORITÄT)
 
 **Problem-Analyse:**
 
@@ -429,7 +478,7 @@ def on_mqtt_message(self, topic, message, meta):
 - [x] ~~KRITISCHER FIX: Stock-Topic /f/o/stock → /f/i/stock + StockManager Refactoring~~ ✅ **ABGESCHLOSSEN**
 - [x] ~~Legacy-Cleanup: omf/ und registry/ Verzeichnisse löschen~~ ✅ **ABGESCHLOSSEN**
 - [x] ~~I18n Haupt-Tabs Fix: Tab-Namen übersetzen~~ ✅ **ABGESCHLOSSEN**
-- [ ] Alle 18 failing Tests reparieren → 100% Test-Success
+- [x] ~~Task 1.2: Alle 18 failing Tests reparieren → 100% Test-Success~~ ✅ **ABGESCHLOSSEN**
 - [ ] Dokumentations-Audit: TODOs finden, Feature-Lücken identifizieren
 - [ ] Live-Test Session #1 mit echter Fabrik durchführen
 - [ ] Auto-Refresh bei MQTT Messages implementieren
