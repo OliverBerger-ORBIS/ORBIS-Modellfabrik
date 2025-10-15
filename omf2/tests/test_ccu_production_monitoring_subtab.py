@@ -109,7 +109,14 @@ class TestCCUProductionMonitoringSubtab:
         # Setup mocks
         mock_st.expander = MagicMock(return_value=MagicMock())
         mock_st.markdown = MagicMock()
-        mock_st.columns = MagicMock(return_value=[MagicMock(), MagicMock(), MagicMock()])
+        # Mock st.columns with side_effect to handle different column counts
+        def mock_columns(columns):
+            if isinstance(columns, int):
+                return [MagicMock() for _ in range(columns)]
+            else:  # columns is a list (like [2, 2, 2, 2, 1])
+                return [MagicMock() for _ in columns]
+        
+        mock_st.columns = MagicMock(side_effect=mock_columns)
         mock_st.button = MagicMock(return_value=False)
         mock_st.divider = MagicMock()
         mock_st.container = MagicMock(return_value=MagicMock())
@@ -137,7 +144,10 @@ class TestCCUProductionMonitoringSubtab:
         # Verify calls
         mock_st.expander.assert_called_with("📋 Process Management", expanded=True)
         mock_st.markdown.assert_called_with("### Active Processes")
-        mock_st.columns.assert_called_with(3)
+        # Verify both columns calls: first with 3 columns, then with [2, 2, 2, 2, 1]
+        assert mock_st.columns.call_count >= 2
+        mock_st.columns.assert_any_call(3)
+        mock_st.columns.assert_any_call([2, 2, 2, 2, 1])
     
     @patch('omf2.ui.ccu.ccu_process.ccu_production_monitoring_subtab.st')
     def test_show_process_control_section(self, mock_st):
@@ -145,7 +155,14 @@ class TestCCUProductionMonitoringSubtab:
         # Setup mocks
         mock_st.expander = MagicMock(return_value=MagicMock())
         mock_st.markdown = MagicMock()
-        mock_st.columns = MagicMock(return_value=[MagicMock(), MagicMock(), MagicMock()])
+        # Mock st.columns with side_effect to handle different column counts
+        def mock_columns(columns):
+            if isinstance(columns, int):
+                return [MagicMock() for _ in range(columns)]
+            else:  # columns is a list (like [2, 2, 2, 2, 1])
+                return [MagicMock() for _ in columns]
+        
+        mock_st.columns = MagicMock(side_effect=mock_columns)
         mock_st.button = MagicMock(return_value=False)
         
         # Mock context managers
@@ -222,7 +239,14 @@ class TestCCUProductionMonitoringSubtabIntegration:
         mock_st.markdown = MagicMock()
         mock_st.divider = MagicMock()
         mock_st.expander = MagicMock(return_value=MagicMock())
-        mock_st.columns = MagicMock(return_value=[MagicMock(), MagicMock(), MagicMock(), MagicMock()])
+        # Mock st.columns with side_effect to handle different column counts
+        def mock_columns(columns):
+            if isinstance(columns, int):
+                return [MagicMock() for _ in range(columns)]
+            else:  # columns is a list (like [2, 2, 2, 2, 1])
+                return [MagicMock() for _ in columns]
+        
+        mock_st.columns = MagicMock(side_effect=mock_columns)
         mock_st.metric = MagicMock()
         mock_st.button = MagicMock(return_value=False)
         mock_st.container = MagicMock(return_value=MagicMock())
@@ -249,7 +273,8 @@ class TestCCUProductionMonitoringSubtabIntegration:
         
         # Verify main structure
         mock_st.subheader.assert_called_with("📊 Production Monitoring")
-        mock_st.markdown.assert_called_with("Real-time monitoring of active production processes")
+        # Verify markdown calls (there are multiple markdown calls in the component)
+        mock_st.markdown.assert_any_call("Real-time monitoring of active production processes")
         mock_st.divider.assert_called()
         
         # Verify expanders were called

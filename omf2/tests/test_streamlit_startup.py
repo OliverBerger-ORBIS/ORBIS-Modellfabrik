@@ -44,7 +44,7 @@ class TestStreamlitStartup(unittest.TestCase):
             ('omf2.ui.nodered.nodered_processes.nodered_processes_tab', 'render_nodered_processes_tab'),
             
             # Admin Components
-            ('omf2.ui.admin.logs.logs_tab', 'render_logs_tab'),
+            ('omf2.ui.admin.system_logs.system_logs_tab', 'render_system_logs_tab'),
             ('omf2.ui.admin.admin_settings.admin_settings_tab', 'render_admin_settings_tab'),
         ]
         

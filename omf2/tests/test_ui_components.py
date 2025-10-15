@@ -42,13 +42,15 @@ class TestCcuGateway(unittest.TestCase):
         """Test: Factory Reset"""
         gateway = CcuGateway()
         result = gateway.reset_factory()
-        self.assertTrue(result)
+        # Should return False (no MQTT client available in test)
+        self.assertFalse(result)
     
     def test_send_global_command(self):
         """Test: Global Command senden"""
         gateway = CcuGateway()
         result = gateway.send_global_command("test_command", {"param": "value"})
-        self.assertTrue(result)
+        # Should return False (no MQTT client available in test)
+        self.assertFalse(result)
     
     def test_get_ccu_state(self):
         """Test: CCU State abrufen"""
@@ -133,10 +135,11 @@ class TestCcuMqttClient(unittest.TestCase):
         result = client.publish("test/topic", {"test": "data"})
         self.assertTrue(result)
     
-    def test_subscribe(self):
-        """Test: Subscribe"""
+    def test_subscribe_many(self):
+        """Test: Subscribe Many"""
         client = CcuMqttClient()
-        result = client.subscribe("test/topic")
+        result = client.subscribe_many(["test/topic"])
+        # Should return True (mock mode works)
         self.assertTrue(result)
     
     def test_get_buffer(self):

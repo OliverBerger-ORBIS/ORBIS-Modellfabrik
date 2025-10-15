@@ -77,8 +77,38 @@ Weggekapselte, robuste Architektur für MQTT-Kommunikation, Message-Templates un
 
 ## 2. ✅ IMPLEMENTIERTE ARCHITEKTUR
 
-### **Gateway-Routing-Pattern mit Schema-Validierung (NEU)**
+### **Gateway-Routing-Pattern mit Schema-Validierung (AKTUALISIERT)**
 
+**Command-Versende-Pattern (Architektur-Compliant):**
+```
+┌─────────────────────┐
+│ Business Function   │  ← UI/Manager
+│ - send_order()      │  → Gateway.publish_message()
+│ - send_command()    │
+└──────────┬──────────┘
+           │
+           ▼
+┌─────────────────────┐
+│   Gateway           │  ← Schema-Validation + Registry-QoS/Retain
+│  - publish_message()│  → MessageManager.validate_message()
+│  - Registry-Config  │  → QoS/Retain aus Registry
+│  - Meta-Separation  │  → Transport-Details ≠ Payload-Daten
+└──────────┬──────────┘
+           │
+           ▼
+┌─────────────────────┐
+│  MQTT Client        │  ← Registry-basierte QoS/Retain
+│  - publish()        │  → Registry-Konfiguration
+│  - Meta-Parameter   │  → mqtt_timestamp nur in Buffer
+└──────────┬──────────┘
+           │
+           ▼
+┌─────────────────────┐
+│   MQTT Broker       │  ← Clean Transport ohne Meta-Parameter
+└─────────────────────┘
+```
+
+**Message-Receiving-Pattern:**
 ```
 ┌─────────────────────┐
 │   MQTT Broker       │
@@ -111,10 +141,16 @@ Weggekapselte, robuste Architektur für MQTT-Kommunikation, Message-Templates un
 ```
 
 **Architektur-Ebenen:**
-1. **🔌 MQTT Client:** Raw MQTT → JSON + Meta-Parameter
-2. **🚪 Gateway:** Schema-Validierung + Topic-Routing  
-3. **🏢 Business Manager:** Clean Business-Logik
-4. **🖥️ UI Components:** Display & User Interaction
+1. **🔌 MQTT Client:** Raw MQTT → JSON + Meta-Parameter (nur im Buffer)
+2. **🛡️ Gateway:** Schema-Validierung + Registry-basierte QoS/Retain
+3. **🧠 Business Manager:** Clean Business-Logik ohne Transport-Details
+4. **🎨 UI Components:** Manager-Zugriff über Gateway-Pattern
+
+**Kritische Architektur-Prinzipien:**
+- ✅ **Meta-Parameter-Trennung:** Transport-Details ≠ Payload-Daten
+- ✅ **Zentrale Validierung:** MessageManager.validate_message() in allen Gateways
+- ✅ **Registry-basierte QoS/Retain:** Keine hardcodierten Werte
+- ✅ **Schema-Compliance:** Alle Messages validiert vor Publishing
 
 **Domain-Specific Config Loaders (Parallel to Registry Manager):**
 - **📁 CCU Config Loader:** Direct access to domain-specific JSON configurations

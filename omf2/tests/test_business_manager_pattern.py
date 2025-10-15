@@ -123,46 +123,56 @@ class TestBusinessManagerPattern:
         # Note: Module state processing depends on topic pattern (connection vs state)
         # The real payload is a state message, so it should extract relevant fields
     
-    def test_registry_business_functions(self):
-        """Test Registry Business-Functions Configuration"""
+    def test_registry_gateway_routing_hints(self):
+        """Test Registry Gateway-Routing-Hints Configuration (Neue Architektur)"""
         registry_manager = get_registry_manager()
         
-        # Test business functions retrieval
-        business_functions = registry_manager.get_business_functions('ccu_mqtt_client')
-        assert isinstance(business_functions, dict)
+        # Test gateway routing hints retrieval
+        client_config = registry_manager.get_mqtt_client_config('ccu_mqtt_client')
+        assert isinstance(client_config, dict)
         
-        # Test sensor_manager configuration
-        assert 'sensor_manager' in business_functions
-        sensor_config = business_functions['sensor_manager']
-        assert 'subscribed_topics' in sensor_config
-        assert 'callback_method' in sensor_config
-        assert 'manager_class' in sensor_config
-        assert 'manager_module' in sensor_config
+        # Test gateway_routing_hints exists
+        assert 'gateway_routing_hints' in client_config
+        routing_hints = client_config['gateway_routing_hints']
+        assert isinstance(routing_hints, dict)
         
-        # Test module_manager configuration
-        assert 'module_manager' in business_functions
-        module_config = business_functions['module_manager']
-        assert 'subscribed_topics' in module_config
-        assert 'callback_method' in module_config
-        assert 'manager_class' in module_config
-        assert 'manager_module' in module_config
+        # Test sensor_manager routing configuration
+        assert 'sensor_manager' in routing_hints
+        sensor_routing = routing_hints['sensor_manager']
+        assert 'routed_topics' in sensor_routing
+        assert isinstance(sensor_routing['routed_topics'], list)
+        assert '/j1/txt/1/i/bme680' in sensor_routing['routed_topics']
+        assert '/j1/txt/1/i/ldr' in sensor_routing['routed_topics']
+        assert '/j1/txt/1/i/cam' in sensor_routing['routed_topics']
+        
+        # Test module_manager routing configuration
+        assert 'module_manager' in routing_hints
+        module_routing = routing_hints['module_manager']
+        assert 'routed_topics' in module_routing
+        assert isinstance(module_routing['routed_topics'], list)
+        assert 'module/v1/ff/SVR3QA0022/state' in module_routing['routed_topics']
     
-    def test_business_function_topics(self):
-        """Test Business-Function Topic Retrieval"""
+    def test_gateway_routing_topics(self):
+        """Test Gateway-Routing Topic Retrieval (Neue Architektur)"""
         registry_manager = get_registry_manager()
         
-        # Test sensor manager topics
-        sensor_topics = registry_manager.get_business_function_topics('ccu_mqtt_client', 'sensor_manager')
+        # Test sensor manager routing topics
+        client_config = registry_manager.get_mqtt_client_config('ccu_mqtt_client')
+        routing_hints = client_config.get('gateway_routing_hints', {})
+        
+        sensor_routing = routing_hints.get('sensor_manager', {})
+        sensor_topics = sensor_routing.get('routed_topics', [])
         assert isinstance(sensor_topics, list)
         assert "/j1/txt/1/i/bme680" in sensor_topics
         assert "/j1/txt/1/i/ldr" in sensor_topics
         assert "/j1/txt/1/i/cam" in sensor_topics
         
-        # Test module manager topics
-        module_topics = registry_manager.get_business_function_topics('ccu_mqtt_client', 'module_manager')
+        # Test module manager routing topics
+        module_routing = routing_hints.get('module_manager', {})
+        module_topics = module_routing.get('routed_topics', [])
         assert isinstance(module_topics, list)
         assert "module/v1/ff/SVR4H73275/state" in module_topics
-        assert "fts/v1/ff/5iO4/state" in module_topics
+        assert "module/v1/ff/SVR3QA0022/state" in module_topics
     
     @patch('omf2.ccu.sensor_manager.get_ccu_sensor_manager')
     def test_mqtt_client_callback_integration(self, mock_sensor_manager):

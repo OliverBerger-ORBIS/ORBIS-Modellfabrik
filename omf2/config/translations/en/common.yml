@@ -2,6 +2,12 @@
 # Common translations for all components
 # FLAT KEY STRUCTURE: common.buttons.order instead of buttons.order
 
+# Dashboard
+dashboard.title: "OMF2 Dashboard"
+
+# Roles
+roles.admin: "Administrator"
+
 # Button Labels
 common.buttons.send: "Send"
 common.buttons.order: "Order"

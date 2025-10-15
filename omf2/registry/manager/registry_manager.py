@@ -177,7 +177,8 @@ class RegistryManager:
                         'published_topics': client_data.get('published_topics', []),
                         'qos': client_data.get('qos', 1),
                         'retain': client_data.get('retain', 0),
-                        'business_functions': client_data.get('business_functions', {})  # NEU: Business-Functions
+                        'business_functions': client_data.get('business_functions', {}),  # Legacy: Business-Functions
+                        'gateway_routing_hints': client_data.get('gateway_routing_hints', {})  # NEU: Gateway-Routing-Hints
                     }
                     
             logger.info(f"📡 Loaded {len(self.mqtt_clients)} MQTT clients")

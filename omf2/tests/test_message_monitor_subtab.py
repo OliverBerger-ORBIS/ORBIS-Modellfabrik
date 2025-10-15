@@ -61,7 +61,7 @@ class TestMessageMonitorSubtab(unittest.TestCase):
         # Test: Function sollte ohne Fehler laufen
         try:
             from omf2.ui.admin.message_center.message_monitor_subtab import render_message_monitor_subtab
-            render_message_monitor_subtab(mock_client, mock_client.get_connection_info())
+            render_message_monitor_subtab(mock_client)
             # Wenn wir hier ankommen, ist der Test erfolgreich
             self.assertTrue(True)
         except Exception as e:
@@ -229,7 +229,7 @@ class TestMessageMonitorSubtab(unittest.TestCase):
                 "mock_mode": True
             }
             from omf2.ui.admin.message_center.message_monitor_subtab import render_message_monitor_subtab
-            render_message_monitor_subtab(mock_client, mock_conn_info)
+            render_message_monitor_subtab(mock_client)
             # Sollte error() aufgerufen haben
             mock_error.assert_called()
         except Exception as e:
@@ -271,7 +271,7 @@ class TestMessageMonitorSubtab(unittest.TestCase):
         # Test: Function sollte mit Messages funktionieren
         try:
             from omf2.ui.admin.message_center.message_monitor_subtab import render_message_monitor_subtab
-            render_message_monitor_subtab(mock_client, mock_client.get_connection_info())
+            render_message_monitor_subtab(mock_client)
             self.assertTrue(True)
         except Exception as e:
             self.fail(f"Message Monitor Subtab failed with messages: {e}")

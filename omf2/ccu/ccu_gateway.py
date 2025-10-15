@@ -397,6 +397,9 @@ class CcuGateway:
                 if success:
                     logger.info("🏭 Factory reset executed")
                     return True
+                else:
+                    logger.warning(f"⚠️ Failed to publish message for {topic}")
+                    return False
             else:
                 logger.warning(f"⚠️ Failed to generate message for {topic}")
                 return False
@@ -429,6 +432,9 @@ class CcuGateway:
                 if success:
                     logger.info(f"📤 Global Command sent: {command}")
                     return True
+                else:
+                    logger.warning(f"⚠️ Failed to publish message for {topic}")
+                    return False
             else:
                 logger.warning(f"⚠️ Failed to generate message for {topic}")
                 return False
