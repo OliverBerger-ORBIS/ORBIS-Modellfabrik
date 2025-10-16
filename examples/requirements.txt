@@ -1,0 +1,11 @@
+# Factory Grid Example Dependencies
+# This file contains minimal dependencies for running the interactive factory grid example
+
+# Core Streamlit framework
+streamlit>=1.28.0
+
+# Bokeh for event integration (required by streamlit-bokeh-events)
+bokeh>=3.3.0
+
+# Streamlit-bokeh-events for JavaScript event handling
+streamlit-bokeh-events>=0.1.2

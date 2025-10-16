@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Factory Grid - Interactive Shopfloor Layout</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+        }
+        
+        #factory-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        svg {
+            display: block;
+            margin: 0 auto;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        /* SVG element styles */
+        .module-cell {
+            stroke: #333;
+            stroke-width: 2;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .module-cell:hover {
+            stroke: #0066cc;
+            stroke-width: 3;
+        }
+        
+        .module-cell.selected {
+            fill: #4CAF50 !important;
+            stroke: #2E7D32;
+            stroke-width: 3;
+        }
+        
+        .module-label {
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            font-weight: bold;
+            fill: #333;
+            pointer-events: none;
+            user-select: none;
+        }
+        
+        #event-log {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        
+        .event-entry {
+            padding: 5px 0;
+            font-size: 13px;
+            color: #555;
+        }
+        
+        .event-click {
+            color: #0066cc;
+        }
+        
+        .event-dblclick {
+            color: #cc6600;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div id="factory-container">
+        <h1>Factory Grid - Interactive Shopfloor</h1>
+        
+        <svg id="factory-grid" width="800" height="600" viewBox="0 0 800 600">
+            <!-- Grid Background -->
+            <rect x="0" y="0" width="800" height="600" fill="#fafafa"/>
+            
+            <!-- Row 0: Special cells (0,0) and (0,3) -->
+            <!-- Cell (0,0) - Rectangle + 2 Squares -->
+            <rect class="module-cell" id="module-0-0-main" x="10" y="10" width="180" height="90" fill="#E3F2FD" data-module-id="0-0-main"/>
+            <text class="module-label" x="100" y="60" text-anchor="middle">Module 0-0-M</text>
+            
+            <rect class="module-cell" id="module-0-0-sub1" x="10" y="110" width="85" height="90" fill="#BBDEFB" data-module-id="0-0-sub1"/>
+            <text class="module-label" x="52" y="160" text-anchor="middle">0-0-S1</text>
+            
+            <rect class="module-cell" id="module-0-0-sub2" x="105" y="110" width="85" height="90" fill="#BBDEFB" data-module-id="0-0-sub2"/>
+            <text class="module-label" x="147" y="160" text-anchor="middle">0-0-S2</text>
+            
+            <!-- Cell (0,1) - Square -->
+            <rect class="module-cell" id="module-0-1" x="210" y="10" width="180" height="190" fill="#FFF9C4" data-module-id="0-1"/>
+            <text class="module-label" x="300" y="110" text-anchor="middle">Module 0-1</text>
+            
+            <!-- Cell (0,2) - Square -->
+            <rect class="module-cell" id="module-0-2" x="410" y="10" width="180" height="190" fill="#F0F4C3" data-module-id="0-2"/>
+            <text class="module-label" x="500" y="110" text-anchor="middle">Module 0-2</text>
+            
+            <!-- Cell (0,3) - Rectangle + 2 Squares -->
+            <rect class="module-cell" id="module-0-3-main" x="610" y="10" width="180" height="90" fill="#FFE0B2" data-module-id="0-3-main"/>
+            <text class="module-label" x="700" y="60" text-anchor="middle">Module 0-3-M</text>
+            
+            <rect class="module-cell" id="module-0-3-sub1" x="610" y="110" width="85" height="90" fill="#FFCC80" data-module-id="0-3-sub1"/>
+            <text class="module-label" x="652" y="160" text-anchor="middle">0-3-S1</text>
+            
+            <rect class="module-cell" id="module-0-3-sub2" x="705" y="110" width="85" height="90" fill="#FFCC80" data-module-id="0-3-sub2"/>
+            <text class="module-label" x="747" y="160" text-anchor="middle">0-3-S2</text>
+            
+            <!-- Row 1: All squares -->
+            <rect class="module-cell" id="module-1-0" x="10" y="210" width="180" height="190" fill="#D1C4E9" data-module-id="1-0"/>
+            <text class="module-label" x="100" y="310" text-anchor="middle">Module 1-0</text>
+            
+            <rect class="module-cell" id="module-1-1" x="210" y="210" width="180" height="190" fill="#C5CAE9" data-module-id="1-1"/>
+            <text class="module-label" x="300" y="310" text-anchor="middle">Module 1-1</text>
+            
+            <rect class="module-cell" id="module-1-2" x="410" y="210" width="180" height="190" fill="#BBDEFB" data-module-id="1-2"/>
+            <text class="module-label" x="500" y="310" text-anchor="middle">Module 1-2</text>
+            
+            <rect class="module-cell" id="module-1-3" x="610" y="210" width="180" height="190" fill="#B2DFDB" data-module-id="1-3"/>
+            <text class="module-label" x="700" y="310" text-anchor="middle">Module 1-3</text>
+            
+            <!-- Row 2: All squares -->
+            <rect class="module-cell" id="module-2-0" x="10" y="410" width="180" height="180" fill="#C8E6C9" data-module-id="2-0"/>
+            <text class="module-label" x="100" y="505" text-anchor="middle">Module 2-0</text>
+            
+            <rect class="module-cell" id="module-2-1" x="210" y="410" width="180" height="180" fill="#DCEDC8" data-module-id="2-1"/>
+            <text class="module-label" x="300" y="505" text-anchor="middle">Module 2-1</text>
+            
+            <rect class="module-cell" id="module-2-2" x="410" y="410" width="180" height="180" fill="#F0F4C3" data-module-id="2-2"/>
+            <text class="module-label" x="500" y="505" text-anchor="middle">Module 2-2</text>
+            
+            <rect class="module-cell" id="module-2-3" x="610" y="410" width="180" height="180" fill="#FFCCBC" data-module-id="2-3"/>
+            <text class="module-label" x="700" y="505" text-anchor="middle">Module 2-3</text>
+        </svg>
+        
+        <div id="event-log">
+            <strong>Event Log:</strong>
+            <div id="log-entries"></div>
+        </div>
+    </div>
+    
+    <script>
+        // Event handling for the factory grid
+        let selectedModuleId = null;
+        
+        // Get all module cells
+        const moduleCells = document.querySelectorAll('.module-cell');
+        
+        // Add event listeners to each module cell
+        moduleCells.forEach(cell => {
+            const moduleId = cell.getAttribute('data-module-id');
+            
+            // Single click event
+            cell.addEventListener('click', (event) => {
+                event.stopPropagation();
+                
+                // Remove previous selection
+                moduleCells.forEach(c => c.classList.remove('selected'));
+                
+                // Add selection to clicked module
+                cell.classList.add('selected');
+                selectedModuleId = moduleId;
+                
+                // Log event
+                logEvent('click', moduleId);
+                
+                // Dispatch custom event for external listeners
+                const eventData = {
+                    type: 'module-click',
+                    id: moduleId,
+                    timestamp: new Date().toISOString()
+                };
+                
+                // Try to send to parent window (for iframe embedding)
+                if (window.parent !== window) {
+                    window.parent.postMessage(eventData, '*');
+                }
+                
+                // Dispatch custom event for Bokeh integration
+                window.dispatchEvent(new CustomEvent('factoryEvent', {
+                    detail: eventData
+                }));
+            });
+            
+            // Double-click event
+            cell.addEventListener('dblclick', (event) => {
+                event.stopPropagation();
+                
+                // Log event
+                logEvent('dblclick', moduleId);
+                
+                // Dispatch custom event for external listeners
+                const eventData = {
+                    type: 'module-dblclick',
+                    id: moduleId,
+                    timestamp: new Date().toISOString()
+                };
+                
+                // Try to send to parent window (for iframe embedding)
+                if (window.parent !== window) {
+                    window.parent.postMessage(eventData, '*');
+                }
+                
+                // Dispatch custom event for Bokeh integration
+                window.dispatchEvent(new CustomEvent('factoryEvent', {
+                    detail: eventData
+                }));
+            });
+        });
+        
+        // Function to log events to the UI
+        function logEvent(eventType, moduleId) {
+            const logEntries = document.getElementById('log-entries');
+            const timestamp = new Date().toLocaleTimeString();
+            const entry = document.createElement('div');
+            entry.className = `event-entry event-${eventType}`;
+            entry.textContent = `[${timestamp}] ${eventType.toUpperCase()}: Module ${moduleId}`;
+            
+            // Add to top of log
+            logEntries.insertBefore(entry, logEntries.firstChild);
+            
+            // Keep only last 10 entries
+            while (logEntries.children.length > 10) {
+                logEntries.removeChild(logEntries.lastChild);
+            }
+        }
+        
+        // Helper function to get current state (for debugging)
+        function getGridState() {
+            return {
+                selectedModule: selectedModuleId,
+                timestamp: new Date().toISOString()
+            };
+        }
+        
+        // Expose to window for external access
+        window.factoryGrid = {
+            getState: getGridState,
+            selectModule: (moduleId) => {
+                const cell = document.querySelector(`[data-module-id="${moduleId}"]`);
+                if (cell) {
+                    cell.click();
+                }
+            }
+        };
+    </script>
+</body>
+</html>
