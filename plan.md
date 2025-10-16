@@ -404,6 +404,48 @@ def on_mqtt_message(self, topic, message, meta):
 - UI aktualisiert sich automatisch bei relevanten MQTT Messages
 - Keine Performance-Probleme (max 1 Refresh/Sekunde)
 
+### 🟡 **Task 2.6: CCU Modules UI Anpassung (NEU)**
+
+**Status:** 🟡 **NEU - ZU IMPLEMENTIEREN**
+
+**Anforderungen:**
+- **Module-Manager Integration:** UI soll Module-Status über Module-Manager abrufen
+- **Konfiguration über Factsheet oder Registry:** Flexible Konfigurationsmöglichkeiten
+- **UI-Symbols für Connection-Status:** Connected/Not Connected Icons definieren oder verwenden
+
+**Zu implementieren:**
+- `omf2/ui/ccu/ccu_modules/ccu_modules_tab.py` - Module-Manager Integration
+- UI-Symbols für Connection-Status (Connected/Not Connected)
+- Konfiguration über Factsheet oder Registry-Info
+- Module-Status-Display verbessern
+
+**Erfolgs-Kriterium:**
+- ✅ Module-Status wird über Module-Manager abgerufen
+- ✅ UI-Symbols für Connection-Status implementiert
+- ✅ Konfiguration über Factsheet oder Registry möglich
+- ✅ Module-Status korrekt angezeigt
+
+### 🟡 **Task 2.7: CCU Message Monitor Filter (NEU)**
+
+**Status:** 🟡 **NEU - ZU IMPLEMENTIEREN**
+
+**Anforderungen:**
+- **Filter für Module und FTS:** Auswählbar über Name und Serial-ID
+- **Serial-ID Auflösung:** Mapping von Serial-ID zu Module/FTS Namen
+- **Status-Type Filter:** Connection Status, Module Status, AGV/FTS Status
+
+**Zu implementieren:**
+- `omf2/ui/ccu/ccu_message_monitor/ccu_message_monitor_component.py` - Filter-Funktionalität
+- Serial-ID zu Name Mapping (über Registry)
+- Filter-UI für Module/FTS Auswahl
+- Status-Type Filter (Connection, Module, AGV/FTS)
+
+**Erfolgs-Kriterium:**
+- ✅ Filter für Module und FTS implementiert
+- ✅ Serial-ID Auflösung funktioniert
+- ✅ Status-Type Filter funktioniert
+- ✅ Message Monitor zeigt gefilterte Ergebnisse
+
 ### 🟡 **Task 2.8: Factory Layout Integration (TEILWEISE IMPLEMENTIERT)**
 
 **Status:** 🟡 **TEILWEISE IMPLEMENTIERT - FEHLENDE FEATURES**
@@ -631,6 +673,8 @@ def on_mqtt_message(self, topic, message, meta):
 - [x] ~~Task 2.3: Step Status Display Fix~~ ✅ **ABGESCHLOSSEN**
 - [x] ~~Task 2.4: Manager Renaming~~ ✅ **ABGESCHLOSSEN**
 - [ ] Task 2.5: Logging-System File-Handler Fix (NEU)
+- [ ] Task 2.6: CCU Modules UI Anpassung (NEU)
+- [ ] Task 2.7: CCU Message Monitor Filter (NEU)
 - [x] ~~Dokumentations-Audit: TODOs finden, Feature-Lücken identifizieren~~ ✅ **ABGESCHLOSSEN**
 - [ ] Live-Test Session #1 mit echter Fabrik durchführen
 - [ ] Auto-Refresh bei MQTT Messages implementieren

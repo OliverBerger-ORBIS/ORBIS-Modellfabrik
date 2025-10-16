@@ -19,7 +19,7 @@ logger = get_logger(__name__)
 class OMF2AssetManager:
     """Verwaltet OMF2-Assets (Icons, Templates) für konsistente Visualisierung"""
 
-    def __init__(self, icon_style: str = "ic_ft"):
+    def __init__(self, icon_style: str = "omf"):
         """Initialisiert den Asset Manager
 
         Args:
@@ -303,7 +303,7 @@ class OMF2AssetManager:
 _asset_manager_instance = None
 
 
-def get_asset_manager(icon_style: str = "ic_ft") -> OMF2AssetManager:
+def get_asset_manager(icon_style: str = "omf") -> OMF2AssetManager:
     """Gibt die Singleton-Instanz des Asset Managers zurück
 
     Args:
