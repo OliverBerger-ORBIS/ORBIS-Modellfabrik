@@ -252,17 +252,68 @@ Aus `REFACTORING_BACKLOG.md` Zeile 57:
 
 ---
 
-### Task 2.4: Manager Renaming (PENDING)
+### 🔧 **Task 2.5: Logging-System File-Handler Fix**
 
-**Status:** 🟡 **PENDING - Geplant**
+**Status:** 🔧 **IN PLANUNG**
 
-**Problem-Analyse:**
-- 🟡 **OrderManager → StockManager:** OrderManager verwaltet nur Stock/Lager-Operationen, nicht Production Orders
-- 🟡 **ProductionOrderManager → OrderManager:** Verwaltet sowohl PRODUCTION als auch STORAGE Orders basierend auf Quick Reference
+**Problem identifiziert:**
+- ❌ **Stock Manager Logs erscheinen NICHT in der Datei** `logs/omf2.log`
+- ❌ **Logs erscheinen nur im UI-Buffer** (MultiLevelRingBufferHandler)
+- ❌ **FileHandler wird NACH RingBufferHandler hinzugefügt** - möglicher Konflikt
+- ❌ **Agenten können Logs nicht in Datei analysieren** - nur UI-Buffer verfügbar
 
-**Was zu tun ist:**
-- `omf2/ccu/order_manager.py` → `omf2/ccu/stock_manager.py`
-- `omf2/ccu/production_order_manager.py` → `omf2/ccu/order_manager.py`
+**Anforderungen:**
+- ✅ **Alle Log-Einträge müssen an FileHandler übergeben werden**
+- ✅ **Logs müssen im Log-File auffindbar sein** für Agenten und andere Interessierte
+- ✅ **Log-Level wird unterstützt** - DEBUG, INFO, WARNING, ERROR
+- ✅ **Konfiguration über system_logs Log-Management** wird unterstützt
+- ✅ **Optional: Löschung der alten Log-Files nach Neustart** von `omf2/omf.py`
+
+**Technische Details:**
+- **MultiLevelRingBufferHandler** sammelt Logs in 4 separaten Buffern (ERROR, WARNING, INFO, DEBUG)
+- **FileHandler** wird NACH RingBufferHandler hinzugefügt (Zeile 46 in `omf2/omf.py`)
+- **Beide Handler** hängen am ROOT-Logger - sollten ALLE Logs erhalten
+- **ABER:** Stock Manager Logs erscheinen NUR im UI-Buffer, NICHT in der Datei
+
+**Erfolgs-Kriterium:**
+- ✅ Stock Manager Logs erscheinen in `logs/omf2.log`
+- ✅ Alle Business-Logic-Logs sind in Datei auffindbar
+- ✅ Log-Level-Konfiguration funktioniert korrekt
+- ✅ Agenten können Logs in Datei analysieren
+
+---
+
+### ✅ **Task 2.4 ABGESCHLOSSEN: Manager Renaming**
+
+**Status:** ✅ **VOLLSTÄNDIG ABGESCHLOSSEN**
+
+**Was wurde umbenannt:**
+- ✅ **OrderManager → StockManager:** `omf2/ccu/order_manager.py` → `omf2/ccu/stock_manager.py`
+- ✅ **ProductionOrderManager → OrderManager:** `omf2/ccu/production_order_manager.py` → `omf2/ccu/order_manager.py`
+
+**Umbenennungen durchgeführt:**
+- ✅ **Registry & Logging aktualisiert** - `mqtt_clients.yml`, `logging_config.yml`
+- ✅ **Dateien umbenannt** - Korrekte Datei-Namen
+- ✅ **Klassen umbenannt** - `ProductionOrderManager` → `OrderManager`
+- ✅ **Singleton & Factory aktualisiert** - Alle Referenzen korrigiert
+- ✅ **Gateway-Referenzen korrigiert** - Routing-Logik repariert
+- ✅ **UI-Komponenten aktualisiert** - Alle Subtabs funktionieren
+- ✅ **Test-Dateien korrigiert** - Nur aktive Methoden getestet
+- ✅ **Dokumentation aktualisiert** - Architektur-Docs korrekt
+- ✅ **Routing-Logik repariert** - 4-Routing-Struktur wiederhergestellt
+- ✅ **UI-Integration erfolgreich** - Order Manager + Stock Manager funktionieren
+
+**Kritische Fehler behoben:**
+- ✅ **Doppelte Routing-Logik entfernt** - Stock Manager bekam fälschlicherweise `ccu/order/active`
+- ✅ **Indentation Error behoben** - `production_orders_subtab.py` funktioniert wieder
+- ✅ **Gateway-Routing repariert** - Messages gehen an richtige Manager
+
+**Erfolgs-Kriterium erreicht:**
+- ✅ **Order Manager** bekommt `ccu/order/active` Messages korrekt
+- ✅ **Stock Manager** bekommt `/j1/txt/1/f/i/stock` Messages korrekt
+- ✅ **CCU Orders Subtabs** zeigen Orders an
+- ✅ **Keine Routing-Fehler** mehr
+- ✅ **Echte Integration-Tests** geschrieben (9/9 bestanden)
 - Alle Referenzen aktualisieren
 - Tests anpassen
 
@@ -501,7 +552,7 @@ def on_mqtt_message(self, topic, message, meta):
 
 1. ~~**Stock-Topic Fehler** → Phase 2 Task 2.1~~ ✅ **GELÖST**
 2. ~~**Step Status Display** → Task 2.3~~ ✅ **ABGESCHLOSSEN**
-3. **Manager Renaming** → Task 2.4 (PENDING)
+3. ~~**Manager Renaming** → Task 2.4~~ ✅ **ABGESCHLOSSEN**
 4. **Auto-Refresh** → Task 2.7
 5. **Factory Layout** → Task 2.8 (TEILWEISE - omf_* Icons, FTS Navigation, EMPTY-Felder fehlen)
 
@@ -578,7 +629,8 @@ def on_mqtt_message(self, topic, message, meta):
 - [x] ~~Task 1.3: TODO-Audit & Feature-Gap-Analyse~~ ✅ **ABGESCHLOSSEN**
 - [x] ~~Task 2.1: Storage Orders Logic & UI-Konsistenz~~ ✅ **ABGESCHLOSSEN**
 - [x] ~~Task 2.3: Step Status Display Fix~~ ✅ **ABGESCHLOSSEN**
-- [ ] Task 2.4: Manager Renaming (PENDING)
+- [x] ~~Task 2.4: Manager Renaming~~ ✅ **ABGESCHLOSSEN**
+- [ ] Task 2.5: Logging-System File-Handler Fix (NEU)
 - [x] ~~Dokumentations-Audit: TODOs finden, Feature-Lücken identifizieren~~ ✅ **ABGESCHLOSSEN**
 - [ ] Live-Test Session #1 mit echter Fabrik durchführen
 - [ ] Auto-Refresh bei MQTT Messages implementieren

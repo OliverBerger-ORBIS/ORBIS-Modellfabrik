@@ -5,12 +5,11 @@ Testet ob Kontext-Variablen korrekt in Topics und Payloads ersetzt werden
 """
 
 import unittest
-from pathlib import Path
-from unittest.mock import MagicMock, Mock
+from unittest.mock import Mock
 
 # Pfad für Imports hinzufügen
-from omf.dashboard.tools.sequence_executor import SequenceDefinition, SequenceExecutor, SequenceStep, StepStatus
-from omf.dashboard.tools.workflow_order_manager import WorkflowOrder, WorkflowOrderManager
+from omf.dashboard.tools.sequence_executor import SequenceDefinition, SequenceExecutor, SequenceStep
+from omf.dashboard.tools.workflow_order_manager import WorkflowOrder
 
 
 class TestSequenceVariableResolution(unittest.TestCase):

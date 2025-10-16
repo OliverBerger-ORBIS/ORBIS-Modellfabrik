@@ -11,7 +11,7 @@ Testet:
 import threading
 import time
 import unittest
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 from omf.dashboard.utils.ui_refresh import RerunController, get_rerun_controller, request_rerun_safe
 

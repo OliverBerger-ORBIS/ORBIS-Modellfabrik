@@ -9,7 +9,7 @@ Diese Tests validieren die Per-Topic-Buffer Architektur:
 """
 
 import unittest
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 
 from omf.dashboard.tools.mqtt_config import MqttConfig
 from omf.dashboard.tools.omf_mqtt_client import OmfMqttClient

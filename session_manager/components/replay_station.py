@@ -8,19 +8,19 @@ import json
 import logging
 import re
 import sqlite3
-import time
 import threading
+import time
 from dataclasses import dataclass
-from typing import List, Tuple, Optional, Protocol
 from datetime import datetime
 from pathlib import Path
+from typing import List, Optional, Protocol, Tuple
 
 import streamlit as st
 
-from ..utils.path_constants import PROJECT_ROOT
+from ..mqtt.mqtt_client import SessionManagerMQTTClient
 from ..utils.logging_config import get_logger
+from ..utils.path_constants import PROJECT_ROOT
 from ..utils.ui_refresh import RerunController
-from ..mqtt.mqtt_client import SessionManagerMQTTClient, MQTTMessage
 
 # Logging konfigurieren - Verzeichnis sicherstellen
 log_dir = Path("logs/session_manager")
@@ -82,14 +82,14 @@ class ReplayController:
             if self._worker and self._worker.is_alive():
                 self._pause.clear()
                 return
-            
+
             # MQTT-Client initialisieren falls nötig
             if not self._mqtt_client:
                 self._mqtt_client = SessionManagerMQTTClient(self.host, self.port, "session_manager_replay")
                 if not self._mqtt_client.connect():
                     logger.error("❌ MQTT-Client konnte nicht verbinden")
                     return
-            
+
             self._stop.clear()
             self._pause.clear()
             self.started_at_mono = time.monotonic() - (self._seq[self._idx].ts_rel / self._speed if self._seq else 0.0)
@@ -174,7 +174,7 @@ class ReplayController:
             # Index vorrücken
             with self._lock:
                 self._idx += 1
-    
+
     def cleanup(self):
         """Sauberes Cleanup des Controllers"""
         self.stop()
@@ -186,20 +186,20 @@ class ReplayController:
 def _get_replay_controller(mqtt_host: str, mqtt_port: int) -> ReplayController:
     key = "_replay_controller"
     rc: Optional[ReplayController] = st.session_state.get(key)
-    
+
     # Alten Controller sauber stoppen falls Host/Port geändert
     if rc and (rc.host != mqtt_host or int(rc.port) != int(mqtt_port)):
         logger.info("🔄 Alten ReplayController stoppen (Host/Port geändert)")
         rc.cleanup()
         rc = None
         del st.session_state[key]
-    
+
     # Neuen Controller erstellen falls nötig
     if rc is None:
         logger.info(f"🆕 Neuen ReplayController erstellen: {mqtt_host}:{mqtt_port}")
         rc = ReplayController(mqtt_host, int(mqtt_port))
         st.session_state[key] = rc
-    
+
     return rc
 
 
@@ -299,11 +299,11 @@ def show_replay_station():
 
                 # Test-Topic Preload & Individuelle Auswahl
                 st.markdown("#### 📋 Test-Topic Management")
-                
+
                 # Sektion 1: Individuelles Senden
                 st.markdown("##### 🎯 Individuelle Test-Topics")
                 test_topic_files = get_test_topic_files()
-                
+
                 if test_topic_files:
                     # Multiselect für individuelle Auswahl
                     selected_test_topics = st.multiselect(
@@ -312,7 +312,7 @@ def show_replay_station():
                         format_func=lambda x: x.name,
                         help="Wähle eine oder mehrere JSON-Dateien aus data/omf-data/test_topics/"
                     )
-                    
+
                     col1, col2 = st.columns([2, 1])
                     with col1:
                         if selected_test_topics:
@@ -323,25 +323,25 @@ def show_replay_station():
                             send_selected_test_topics(selected_test_topics, replay_ctrl)
                 else:
                     st.warning("❌ Keine Test-Topic-Dateien in data/omf-data/test_topics/ gefunden")
-                
+
                 st.markdown("---")
-                
+
                 # Sektion 2: Automatischer Preload
                 st.markdown("##### 🚀 Automatischer Preload")
                 col1, col2 = st.columns([2, 1])
-                
+
                 with col1:
                     send_preloads = st.checkbox(
-                        "🚀 Test-Topics vor Session-Replay senden", 
+                        "🚀 Test-Topics vor Session-Replay senden",
                         value=True,
                         help="Sendet automatisch alle Test-Topics aus data/omf-data/test_topics/preloads/ vor dem Session-Replay"
                     )
-                
+
                 with col2:
                     if st.button("🚀 Preloads jetzt senden", key="send_preloads_now"):
                         logger.debug("🚀 User klickt: Preloads jetzt senden")
                         send_preload_test_topics(replay_ctrl)
-                
+
                 # Verfügbare Preload-Topics anzeigen
                 preload_files = get_preload_test_topic_files()
                 if preload_files:
@@ -415,12 +415,12 @@ def test_mqtt_connection(host, port, rerun_controller: RerunController):
     try:
         # Temporären MQTT-Client für Test erstellen
         test_client = SessionManagerMQTTClient(host, port, "session_manager_test")
-        
+
         if test_client.connect():
             # Test-Nachricht senden
             success = test_client.publish("test/connection", "test", qos=1)
             test_client.disconnect()
-            
+
             if success:
                 st.session_state.mqtt_connected = True
                 st.success(f"✅ MQTT Broker erreichbar: {host}:{port}")
@@ -455,21 +455,21 @@ def send_test_message(topic, payload):
     try:
         # Temporären MQTT-Client für Test erstellen
         test_client = SessionManagerMQTTClient(
-            st.session_state.mqtt_host, 
-            st.session_state.mqtt_port, 
+            st.session_state.mqtt_host,
+            st.session_state.mqtt_port,
             "session_manager_test"
         )
-        
+
         if test_client.connect():
             # Payload-Aufbereitung wie normale Session-Daten (konsistent)
             if isinstance(payload, (dict, list)):
                 payload = json.dumps(payload, separators=(",", ":"), ensure_ascii=False)
             payload_b = (payload if isinstance(payload, (bytes, bytearray)) else str(payload)).encode("utf-8")
-            
+
             # Nachricht senden
             success = test_client.publish(topic, payload_b, qos=1)
             test_client.disconnect()
-            
+
             if success:
                 st.session_state.mqtt_connected = True
                 st.success(f"📤 Nachricht gesendet: {topic}")
@@ -490,42 +490,42 @@ def send_selected_test_topics(selected_files: List[Path], replay_ctrl: ReplayCon
         if not selected_files:
             st.warning("❌ Keine Test-Topics ausgewählt")
             return False
-        
+
         logger.info(f"📤 Sende {len(selected_files)} ausgewählte Test-Topic(s)...")
-        
+
         # Temporären MQTT-Client für Test-Topics erstellen
         test_client = SessionManagerMQTTClient(
-            st.session_state.mqtt_host, 
-            st.session_state.mqtt_port, 
+            st.session_state.mqtt_host,
+            st.session_state.mqtt_port,
             "session_manager_test_topics"
         )
-        
+
         if not test_client.connect():
             st.error("❌ MQTT-Client konnte nicht für Test-Topics verbinden")
             return False
-        
+
         success_count = 0
         error_count = 0
-        
+
         # Test-Topics laden und senden
         for test_file in selected_files:
             try:
-                with open(test_file, 'r', encoding='utf-8') as f:
+                with open(test_file, encoding='utf-8') as f:
                     test_data = json.load(f)
-                
+
                 topic = test_data.get("topic")
                 payload = test_data.get("payload")
                 qos = test_data.get("qos", 0)
                 retain = test_data.get("retain", False)
-                
+
                 if topic and payload:
                     # Payload-Aufbereitung wie normale Session-Daten
                     if isinstance(payload, (dict, list)):
                         payload = json.dumps(payload, separators=(",", ":"), ensure_ascii=False)
                     payload_b = (payload if isinstance(payload, (bytes, bytearray)) else str(payload)).encode("utf-8")
-                    
+
                     success = test_client.publish(topic, payload_b, qos=qos, retain=retain)
-                    
+
                     if success:
                         success_count += 1
                         logger.debug(f"✅ Test-Topic gesendet: {topic} ({test_file.name})")
@@ -535,13 +535,13 @@ def send_selected_test_topics(selected_files: List[Path], replay_ctrl: ReplayCon
                 else:
                     error_count += 1
                     logger.warning(f"⚠️ Ungültige Test-Topic-Daten: {test_file.name}")
-                    
+
             except Exception as e:
                 error_count += 1
                 logger.error(f"❌ Fehler beim Laden von {test_file.name}: {e}")
-        
+
         test_client.disconnect()
-        
+
         # Ergebnis anzeigen
         if success_count > 0:
             st.success(f"✅ {success_count} Test-Topic(s) erfolgreich gesendet")
@@ -549,10 +549,10 @@ def send_selected_test_topics(selected_files: List[Path], replay_ctrl: ReplayCon
                 st.warning(f"⚠️ {error_count} Test-Topic(s) fehlgeschlagen")
         else:
             st.error("❌ Keine Test-Topics konnten gesendet werden")
-        
+
         logger.info(f"📤 Test-Topic-Versand abgeschlossen: {success_count} erfolgreich, {error_count} fehlgeschlagen")
         return success_count > 0
-        
+
     except Exception as e:
         st.error(f"❌ Fehler beim Test-Topic-Versand: {e}")
         logger.error(f"❌ Test-Topic-Versand Exception: {e}")
@@ -564,53 +564,53 @@ def send_preload_test_topics(replay_ctrl: ReplayController):
     try:
         # Preload-Verzeichnis
         preload_dir = PROJECT_ROOT / "data/omf-data/test_topics/preloads"
-        
+
         if not preload_dir.exists():
             st.warning(f"❌ Preload-Verzeichnis nicht gefunden: {preload_dir}")
             return False
-        
+
         # JSON-Preload-Dateien finden
         preload_files = list(preload_dir.glob("*.json"))
-        
+
         if not preload_files:
             st.warning("❌ Keine Preload-JSON-Dateien in data/omf-data/test_topics/preloads/ gefunden")
             return False
-        
+
         logger.info(f"🚀 Lade {len(preload_files)} Preload-Test-Topic(s)...")
-        
+
         # Temporären MQTT-Client für Preloads erstellen
         preload_client = SessionManagerMQTTClient(
-            st.session_state.mqtt_host, 
-            st.session_state.mqtt_port, 
+            st.session_state.mqtt_host,
+            st.session_state.mqtt_port,
             "session_manager_preloads"
         )
-        
+
         if not preload_client.connect():
             st.error("❌ MQTT-Client konnte nicht für Preloads verbinden")
             return False
-        
+
         success_count = 0
         error_count = 0
-        
+
         # Preloads laden und senden
         for preload_file in preload_files:
             try:
-                with open(preload_file, 'r', encoding='utf-8') as f:
+                with open(preload_file, encoding='utf-8') as f:
                     preload_data = json.load(f)
-                
+
                 topic = preload_data.get("topic")
                 payload = preload_data.get("payload")
                 qos = preload_data.get("qos", 0)
                 retain = preload_data.get("retain", False)
-                
+
                 if topic and payload:
                     # Payload-Aufbereitung wie normale Session-Daten
                     if isinstance(payload, (dict, list)):
                         payload = json.dumps(payload, separators=(",", ":"), ensure_ascii=False)
                     payload_b = (payload if isinstance(payload, (bytes, bytearray)) else str(payload)).encode("utf-8")
-                    
+
                     success = preload_client.publish(topic, payload_b, qos=qos, retain=retain)
-                    
+
                     if success:
                         success_count += 1
                         logger.debug(f"✅ Preload gesendet: {topic}")
@@ -620,13 +620,13 @@ def send_preload_test_topics(replay_ctrl: ReplayController):
                 else:
                     error_count += 1
                     logger.warning(f"⚠️ Ungültige Preload-Daten: {preload_file.name}")
-                    
+
             except Exception as e:
                 error_count += 1
                 logger.error(f"❌ Fehler beim Laden von {preload_file.name}: {e}")
-        
+
         preload_client.disconnect()
-        
+
         # Ergebnis anzeigen
         if success_count > 0:
             st.success(f"✅ {success_count} Preload-Test-Topic(s) erfolgreich gesendet")
@@ -634,10 +634,10 @@ def send_preload_test_topics(replay_ctrl: ReplayController):
                 st.warning(f"⚠️ {error_count} Preload-Test-Topic(s) fehlgeschlagen")
         else:
             st.error("❌ Keine Preload-Test-Topics konnten gesendet werden")
-        
+
         logger.info(f"🚀 Preload abgeschlossen: {success_count} erfolgreich, {error_count} fehlgeschlagen")
         return success_count > 0
-        
+
     except Exception as e:
         st.error(f"❌ Fehler beim Preload: {e}")
         logger.error(f"❌ Preload Exception: {e}")

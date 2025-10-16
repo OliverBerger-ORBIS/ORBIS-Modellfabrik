@@ -13,7 +13,6 @@ WICHTIG: Diese Tests testen die AKTUELLE Implementierung, nicht historische Comm
 # Import der aktuellen factory_steering Komponente
 import unittest
 import uuid
-from pathlib import Path
 from unittest.mock import patch
 
 from omf.dashboard.components.admin.steering_factory import (

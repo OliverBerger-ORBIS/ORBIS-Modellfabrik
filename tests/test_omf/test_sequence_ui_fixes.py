@@ -4,7 +4,6 @@ Reproduziert und testet die behobenen Fehler
 """
 
 import unittest
-from pathlib import Path
 from unittest.mock import Mock, patch
 
 # Pfad für Imports
@@ -24,7 +23,6 @@ class TestSequenceUIFixes(unittest.TestCase):
         try:
             from omf.dashboard.tools.sequence_executor import SequenceDefinition, SequenceExecutor, SequenceStep
             from omf.dashboard.tools.sequence_ui import SequenceUI
-            from omf.dashboard.tools.workflow_order_manager import get_workflow_order_manager
 
             executor = SequenceExecutor(self.mock_mqtt_client)
             _ui = SequenceUI(executor)
@@ -65,7 +63,6 @@ class TestSequenceUIFixes(unittest.TestCase):
         try:
             from omf.dashboard.tools.sequence_executor import SequenceDefinition, SequenceExecutor, SequenceStep
             from omf.dashboard.tools.sequence_ui import SequenceUI
-            from omf.dashboard.tools.workflow_order_manager import get_workflow_order_manager
 
             executor = SequenceExecutor(self.mock_mqtt_client)
             _ui = SequenceUI(executor)

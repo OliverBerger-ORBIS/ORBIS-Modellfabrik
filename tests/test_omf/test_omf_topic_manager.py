@@ -4,7 +4,6 @@ Test für OMF Topic Manager
 """
 
 import unittest
-from pathlib import Path
 
 from omf.tools.topic_manager import get_omf_topic_manager
 

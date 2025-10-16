@@ -14,12 +14,8 @@ if str(_project_root) not in sys.path:
     sys.path.insert(0, str(_project_root))
 
 import argparse
-import streamlit as st
 
-# Absolute imports for main script (entry point)
-from session_manager.utils.logging_config import configure_logging, get_logger
-# from session_manager.utils.registry_manager import get_registry  # TODO: Optional feature - registry watch mode
-from session_manager.utils.ui_refresh import consume_refresh, request_refresh
+import streamlit as st
 
 # Import components
 from session_manager.components.logs import show_logs
@@ -29,6 +25,12 @@ from session_manager.components.session_recorder import show_session_recorder
 from session_manager.components.settings_manager import SettingsManager
 from session_manager.components.settings_ui import SettingsUI
 from session_manager.components.topic_recorder import show_topic_recorder
+
+# Absolute imports for main script (entry point)
+from session_manager.utils.logging_config import configure_logging, get_logger
+
+# from session_manager.utils.registry_manager import get_registry  # TODO: Optional feature - registry watch mode
+from session_manager.utils.ui_refresh import consume_refresh, request_refresh
 
 # Page configuration
 st.set_page_config(page_title="Session Manager", page_icon="🎙️", layout="wide", initial_sidebar_state="expanded")

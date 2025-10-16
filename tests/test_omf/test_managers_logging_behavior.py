@@ -2,7 +2,6 @@
 Tests für Manager Logging-Verhalten
 """
 
-import logging
 import tempfile
 import unittest
 from pathlib import Path

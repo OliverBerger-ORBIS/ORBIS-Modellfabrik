@@ -4,8 +4,7 @@ Erkennt spezifische Dashboard-Integration Fehler
 """
 
 import unittest
-from pathlib import Path
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import Mock, patch
 
 # Pfad für Imports
 
@@ -100,7 +99,7 @@ class TestDashboardSequenceIntegration(unittest.TestCase):
     def test_workflow_order_manager_integration(self):
         """Test: WorkflowOrderManager Integration"""
         try:
-            from omf.dashboard.tools.sequence_executor import SequenceDefinition, SequenceExecutor, SequenceStep
+            from omf.dashboard.tools.sequence_executor import SequenceExecutor
             from omf.dashboard.tools.workflow_order_manager import WorkflowOrder, get_workflow_order_manager
 
             manager = get_workflow_order_manager()
@@ -126,7 +125,6 @@ class TestDashboardSequenceIntegration(unittest.TestCase):
         try:
             from omf.dashboard.tools.sequence_executor import SequenceDefinition, SequenceExecutor, SequenceStep
             from omf.dashboard.tools.sequence_ui import SequenceUI
-            from omf.dashboard.tools.workflow_order_manager import get_workflow_order_manager
 
             _executor = SequenceExecutor(self.mock_mqtt_client)
             _ui = SequenceUI(_executor)

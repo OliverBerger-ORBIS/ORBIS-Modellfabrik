@@ -13,7 +13,7 @@ import logging
 import tempfile
 import unittest
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 from omf.helper_apps.session_manager.utils.session_logger import (
     SessionManagerLogger,

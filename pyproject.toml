@@ -24,19 +24,40 @@ dev = [
     "pre-commit>=3.2.0",
 ]
 
-[tool.setuptools]
-# Standard Python Layout: Hauptpaket im Root
-packages = ["omf"]
+[project.scripts]
+omf2 = "omf2.omf:main"
+
+[tool.setuptools.packages.find]
+include = ["omf2*", "session_manager*"]
+
+[tool.setuptools.package-data]
+omf2 = [
+    "config/*.yml",
+    "config/*.json",
+    "registry/**/*.yml",
+    "registry/**/*.json",
+    "assets/**/*.svg",
+    "assets/**/*.html",
+]
 
 [tool.black]
 line-length = 120
-target-version = ['py38']
-skip-string-normalization = true
-# Wichtig: force-exclude wirkt auch dann, wenn Black per pre-commit einzelne Dateien übergeben bekommt
-force-exclude = '''
-(?x)
-  omf[\\/]+config[\\/]+sequence_definitions[\\/]+aiqs_sequence\.py$
+target-version = ['py38', 'py39', 'py310', 'py311', 'py312', 'py313']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+)/
 '''
+
 [tool.ruff]
 line-length = 120
 target-version = "py38"
@@ -52,35 +73,26 @@ select = [
     "UP", # pyupgrade
 ]
 ignore = [
-    "E203",  # whitespace before ':'
+    "E501",  # line too long (HTML/CSS in f-strings)
 ]
+per-file-ignores = { "**/logger.py" = ["E402"], "**/omf.py" = ["E402"], "integrations/**" = ["F405", "E402"], "session_manager/**" = ["E402"], "tests/**" = ["E402", "F841"] }
 
-[tool.ruff.lint.per-file-ignores]
-"__init__.py" = ["F401"]
-"tests/*" = ["E501", "F401", "E402"]
-"omf/analysis_tools/*" = ["E501", "F401", "E402", "F811", "C414", "E722", "F841"]
-"omf/dashboard/assets/html_templates.py" = ["E501"]
-"omf/dashboard/components/*" = ["E501"]  # HTML template strings
-"omf/dashboard/components/overview_inventory.py" = ["E501"]
-"omf/dashboard/components/overview_purchase_order.py" = ["E501"]
-"omf/dashboard/components/ccu_pairing.py" = ["E501"]
-"omf/dashboard/components/ccu_state.py" = ["E501"]
-"omf/dashboard/components/settings_mqtt_config.py" = ["E501"]
-
-
-[tool.isort]
-profile = "black"
-line_length = 120
-multi_line_output = 3
-known_first_party = ["omf"]
+[tool.ruff.lint.isort]
+known-first-party = ["omf2", "session_manager"]
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]          # nur hier sammelt Pytest Tests
-addopts = "-q"
-
-# Cursor AI Configuration
-[tool.cursor]
-# Use package-relative paths for better portability
-always_use_absolute_paths = false
-path_resolution = "package-relative"
-python_absolute_imports = false
+testpaths = ["omf2/tests", "tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "-v",
+    "--tb=short",
+    "--strict-markers",
+    "--strict-config",
+]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests",
+    "unit: marks tests as unit tests",
+]

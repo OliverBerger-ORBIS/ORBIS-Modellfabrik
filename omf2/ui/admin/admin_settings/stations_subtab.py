@@ -5,8 +5,8 @@ Zeigt alle Stations aus der Registry nach Kategorien an
 """
 
 import streamlit as st
+
 from omf2.common.logger import get_logger
-from omf2.ui.utils.ui_refresh import request_refresh
 from omf2.ui.common.symbols import UISymbols
 
 logger = get_logger(__name__)
@@ -19,38 +19,45 @@ def render_stations_subtab():
         st.markdown("Registry-basierte Stations-Verwaltung aus omf2/registry")
 
         # Load registry manager from session state (initialized in omf.py)
-        if 'registry_manager' not in st.session_state:
+        if "registry_manager" not in st.session_state:
             from omf2.registry.manager.registry_manager import get_registry_manager
-            st.session_state['registry_manager'] = get_registry_manager("omf2/registry/")
-        registry_manager = st.session_state['registry_manager']
-        
+
+            st.session_state["registry_manager"] = get_registry_manager("omf2/registry/")
+        registry_manager = st.session_state["registry_manager"]
+
         # Get all stations
         all_stations = registry_manager.get_stations()
-        
+
         if not all_stations:
             st.warning(f"{UISymbols.get_status_icon('warning')} Keine Stations in der Registry gefunden")
             return
-        
+
         # Gruppiere Stations nach Kategorien
         stations_by_category = _group_stations_by_category(all_stations)
-        
+
         # Zeige Stations nach Kategorien
         for category, stations in stations_by_category.items():
             with st.expander(f"📂 {category} ({len(stations)} stations)", expanded=False):
                 # Erstelle DataFrame für diese Kategorie
                 station_data = []
                 for station_id, station_info in stations.items():
-                    station_data.append({
-                        "ID": station_id,
-                        "Name": station_info.get('name', 'Unknown'),
-                        "Type": station_info.get('type', 'Unknown'),
-                        "IP Address": station_info.get('ip_address', 'N/A'),
-                        "IP Range": station_info.get('ip_range', 'N/A'),
-                        "OPC UA Server": f"{UISymbols.get_status_icon('success')}" if station_info.get('opc_ua_server', False) else f"{UISymbols.get_status_icon('error')}",
-                        "OPC UA Endpoint": station_info.get('opc_ua_endpoint', 'N/A'),
-                        "Description": station_info.get('description', 'No description')
-                    })
-                
+                    station_data.append(
+                        {
+                            "ID": station_id,
+                            "Name": station_info.get("name", "Unknown"),
+                            "Type": station_info.get("type", "Unknown"),
+                            "IP Address": station_info.get("ip_address", "N/A"),
+                            "IP Range": station_info.get("ip_range", "N/A"),
+                            "OPC UA Server": (
+                                f"{UISymbols.get_status_icon('success')}"
+                                if station_info.get("opc_ua_server", False)
+                                else f"{UISymbols.get_status_icon('error')}"
+                            ),
+                            "OPC UA Endpoint": station_info.get("opc_ua_endpoint", "N/A"),
+                            "Description": station_info.get("description", "No description"),
+                        }
+                    )
+
                 if station_data:
                     st.dataframe(
                         station_data,
@@ -66,19 +73,19 @@ def render_stations_subtab():
                         },
                         hide_index=True,
                     )
-        
+
         # Registry Information
         with st.expander(f"{UISymbols.get_functional_icon('dashboard')} Registry Information", expanded=False):
             stats = registry_manager.get_registry_stats()
             st.write(f"**Load Timestamp:** {stats['load_timestamp']}")
             st.write(f"**Total Stations:** {len(all_stations)}")
             st.write(f"**Categories:** {len(stations_by_category)}")
-            
+
             # Zeige Kategorien-Übersicht
             st.write("**Categories Overview:**")
             for category, stations in stations_by_category.items():
                 st.write(f"- {category}: {len(stations)} stations")
-        
+
     except Exception as e:
         logger.error(f"{UISymbols.get_status_icon('error')} Stations Subtab rendering error: {e}")
         st.error(f"{UISymbols.get_status_icon('error')} Stations Subtab failed: {e}")
@@ -88,15 +95,15 @@ def render_stations_subtab():
 def _group_stations_by_category(all_stations):
     """Gruppiert Stations nach Kategorien"""
     stations_by_category = {}
-    
+
     for station_id, station_info in all_stations.items():
-        category = station_info.get('type', 'unknown')
-        
+        category = station_info.get("type", "unknown")
+
         if category not in stations_by_category:
             stations_by_category[category] = {}
-        
+
         stations_by_category[category][station_id] = station_info
-    
+
     return stations_by_category
 
 

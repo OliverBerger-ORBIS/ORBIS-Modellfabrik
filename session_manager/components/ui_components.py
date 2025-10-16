@@ -11,8 +11,8 @@ from typing import Dict, List, Tuple
 import pandas as pd
 import streamlit as st
 
-from ..utils.path_constants import PROJECT_ROOT
 from ..utils.logging_config import get_logger
+from ..utils.path_constants import PROJECT_ROOT
 from ..utils.ui_refresh import request_refresh
 from .session_analyzer import SessionAnalyzer
 from .topic_manager import TopicFilterManager

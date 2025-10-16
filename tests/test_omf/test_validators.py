@@ -4,7 +4,6 @@ Tests für die OMF Validierungsschicht
 """
 
 import pytest
-
 from omf.tools.message_template_manager import OmfMessageTemplateManager
 from omf.tools.validators import validate
 

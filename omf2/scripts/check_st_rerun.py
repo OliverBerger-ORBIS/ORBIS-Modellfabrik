@@ -4,27 +4,27 @@ Pre-commit Hook: Check for forbidden st.rerun() usage in OMF2
 Prevents CURSOR from accidentally adding st.rerun() calls
 """
 
-import sys
 import re
+import sys
 from pathlib import Path
 
 
 def check_file_for_st_rerun(file_path: Path) -> list[str]:
     """Check a single file for forbidden st.rerun() usage."""
     violations = []
-    
+
     try:
-        with open(file_path, 'r', encoding='utf-8') as f:
+        with open(file_path, encoding="utf-8") as f:
             content = f.read()
-            lines = content.split('\n')
-            
+            lines = content.split("\n")
+
         # Check for forbidden patterns
         forbidden_patterns = [
-            r'st\.rerun\s*\(',
-            r'streamlit\.rerun\s*\(',
-            r'\.rerun\s*\(',
+            r"st\.rerun\s*\(",
+            r"streamlit\.rerun\s*\(",
+            r"\.rerun\s*\(",
         ]
-        
+
         for i, line in enumerate(lines, 1):
             for pattern in forbidden_patterns:
                 if re.search(pattern, line):
@@ -32,23 +32,23 @@ def check_file_for_st_rerun(file_path: Path) -> list[str]:
                     if file_path.name == "omf.py" and ("consume_refresh" in line or "main()" in content):
                         continue
                     violations.append(f"{file_path}:{i}: {line.strip()}")
-                    
+
     except Exception as e:
         violations.append(f"{file_path}: Error reading file: {e}")
-    
+
     return violations
 
 
 def main():
     """Main function to check all Python files for st.rerun() usage."""
     violations = []
-    
+
     # Get all Python files from command line arguments
     for file_path in sys.argv[1:]:
         path = Path(file_path)
-        if path.suffix == '.py':
+        if path.suffix == ".py":
             violations.extend(check_file_for_st_rerun(path))
-    
+
     if violations:
         print("🚨 FORBIDDEN st.rerun() USAGE DETECTED!")
         print("=" * 50)

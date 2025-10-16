@@ -5,6 +5,7 @@ Topic Filter Manager - Handles topic filtering and categorization
 from typing import Dict, List
 
 from ..utils.logging_config import get_logger
+
 # from ..utils.topic_manager import OmfTopicManager  # TODO: Optional feature - topic categorization
 
 logger = get_logger(__name__)

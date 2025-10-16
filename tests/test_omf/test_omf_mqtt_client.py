@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """Test für OMF MQTT Client."""
 
-import os
 import unittest
 
 # Absolute Imports verwenden (Development Rules)

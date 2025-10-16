@@ -6,7 +6,7 @@ import logging
 import tempfile
 import unittest
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 from omf.dashboard.tools.logging_config import configure_logging
 

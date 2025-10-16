@@ -3,14 +3,12 @@ Unit-Test: Sequenz-Nachrichten vs. Factory-Steuerung-Nachrichten
 Überprüft, ob die Sequenz-Nachrichten identisch mit den Factory-Steuerung-Nachrichten sind
 """
 
-import json
 import unittest
 import uuid
-from pathlib import Path
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
 
 # Pfad für Imports hinzufügen
-from omf.dashboard.tools.sequence_executor import SequenceDefinition, SequenceExecutor, SequenceStep, StepStatus
+from omf.dashboard.tools.sequence_executor import SequenceDefinition, SequenceExecutor, SequenceStep
 from omf.dashboard.tools.workflow_order_manager import WorkflowOrderManager
 
 

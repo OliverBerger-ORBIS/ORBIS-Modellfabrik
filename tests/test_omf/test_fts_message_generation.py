@@ -6,7 +6,7 @@ Vergleicht generierte Messages mit getesteten FTS-Orders
 
 import unittest
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 # Add project root to path
 project_root = Path(__file__).parent.parent

@@ -3,18 +3,17 @@
 Einfacher MQTT Client Test - Funktioniert das grundsätzlich?
 """
 
-import paho.mqtt.client as mqtt
 import time
+
+import paho.mqtt.client as mqtt
 
 # Broker-Einstellungen
 BROKER_HOST = "localhost"  # oder IP-Adresse des Mosquitto-Brokers
 BROKER_PORT = 1883
 
 # Liste der Topics, die abonniert werden sollen
-TOPICS = [
-    ("ccu/set/reset", 0),
-    ("module/xy/v1/SVRRxxxx/state", 0)
-]
+TOPICS = [("ccu/set/reset", 0), ("module/xy/v1/SVRRxxxx/state", 0)]
+
 
 # Callback, wenn Verbindung hergestellt wird
 def on_connect(client, userdata, flags, rc):
@@ -27,14 +26,16 @@ def on_connect(client, userdata, flags, rc):
     else:
         print(f"❌ Verbindung fehlgeschlagen (Code {rc})")
 
+
 # Callback, wenn Nachricht empfangen wird
 def on_message(client, userdata, msg):
     print(f"📨 Nachricht empfangen: Topic='{msg.topic}' | Payload='{msg.payload.decode()}'")
 
+
 def main():
     print("🧪 Einfacher MQTT Client Test")
     print("=" * 40)
-    
+
     client = mqtt.Client(client_id="example_subscriber")
     client.on_connect = on_connect
     client.on_message = on_message
@@ -47,12 +48,13 @@ def main():
 
     print("⏳ Warte 5 Sekunden...")
     time.sleep(5)
-    
+
     print("🔌 Trenne Verbindung...")
     client.loop_stop()
     client.disconnect()
-    
+
     print("✅ Test abgeschlossen!")
+
 
 if __name__ == "__main__":
     main()

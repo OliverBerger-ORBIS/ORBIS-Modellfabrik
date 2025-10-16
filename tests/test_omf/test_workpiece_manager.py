@@ -102,15 +102,15 @@ class TestOmfWorkpieceManager(unittest.TestCase):
         with tempfile.NamedTemporaryFile(mode='w', suffix='.yml', delete=False) as f:
             f.write("invalid: yaml: content: [")
             temp_path = f.name
-        
+
         try:
             # Mock the legacy config path to also be invalid
             original_method = OmfWorkpieceManager._get_legacy_config_path
             def mock_legacy_path(self):
                 return Path("/nonexistent/legacy/config.yml")
-            
+
             OmfWorkpieceManager._get_legacy_config_path = mock_legacy_path
-            
+
             with self.assertRaises(ValueError):
                 OmfWorkpieceManager(temp_path)
         finally:

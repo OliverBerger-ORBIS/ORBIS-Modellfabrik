@@ -507,19 +507,19 @@ temperature = bme680_data.get("temperature", 0.0)
 
 ---
 
-### 4.2 OrderManager (Inventory & Order Management)
+### 4.2 StockManager (Inventory & Order Management)
 
 **Zweck:** Verarbeitet Stock-Messages (Lagerbestand) und verwaltet Kundenaufträge/Rohmaterial-Bestellungen.
 
-**Datei:** `omf2/ccu/order_manager.py`
+**Datei:** `omf2/ccu/stock_manager.py`
 
 **🔧 WICHTIGE ARCHITEKTUR-PATTERNS:**
 
 **1. Non-Blocking Initialization (KRITISCH):**
 ```python
-class OrderManager:
+class StockManager:
     def __init__(self):
-        """Initialize Order Manager - EXAKT wie Sensor Manager (kein File I/O!)"""
+        """Initialize Stock Manager - EXAKT wie Sensor Manager (kein File I/O!)"""
         # ✅ Nur Dicts/Listen setzen - KEIN File I/O!
         self.inventory = {f"{chr(65+i)}{j+1}": None for i in range(3) for j in range(3)}
         self.workpiece_types = ["RED", "BLUE", "WHITE"]
@@ -555,14 +555,14 @@ def get_inventory_status_WRONG(self):
 
 **3. Singleton Pattern (wie SensorManager):**
 ```python
-_order_manager_instance = None
+_stock_manager_instance = None
 
-def get_order_manager() -> OrderManager:
-    global _order_manager_instance
-    if _order_manager_instance is None:
-        _order_manager_instance = OrderManager()
-        logger.info("🏗️ Order Manager singleton created")
-    return _order_manager_instance
+def get_stock_manager() -> StockManager:
+    global _stock_manager_instance
+    if _stock_manager_instance is None:
+        _stock_manager_instance = StockManager()
+        logger.info("🏗️ Stock Manager singleton created")
+    return _stock_manager_instance
 ```
 
 **4. MQTT Message Processing:**
@@ -584,8 +584,8 @@ def process_stock_message(self, topic: str, message: Dict[str, Any], meta: Dict[
 # UI Component
 def render_inventory_subtab(ccu_gateway, registry_manager):
     # ✅ Direkter Manager-Zugriff (wie SensorManager)
-    order_manager = get_order_manager()  # Non-Blocking Singleton
-    inventory_status = order_manager.get_inventory_status()  # Non-Blocking
+    stock_manager = get_stock_manager()  # Non-Blocking Singleton
+    inventory_status = stock_manager.get_inventory_status()  # Non-Blocking
     
     # Display inventory with Bucket-Templates (aus omf/dashboard)
     for position, workpiece in inventory_status["inventory"].items():
@@ -604,7 +604,7 @@ def render_inventory_subtab(ccu_gateway, registry_manager):
 - ✅ **Non-Blocking:** Kein File I/O, keine verschachtelten Locks
 - ✅ **Thread-Safe:** Korrekte Lock-Hierarchie
 - ✅ **State-Holder Pattern:** Inventory als Dict (wie sensor_data)
-- ✅ **Gateway-Pattern:** MQTT → Gateway → Order Manager → UI
+- ✅ **Gateway-Pattern:** MQTT → Gateway → Stock Manager → UI
 - ✅ **Live-Updates:** MQTT-Nachrichten aktualisieren Inventory in Echtzeit
 
 ---
@@ -1280,9 +1280,9 @@ mqtt_clients:
           - "module/v1/ff/SVR3QA0022/factsheet"
           - "ccu/pairing/state"
       
-      order_manager:
-        routed_topics:  # Topics die an OrderManager.onMessage() geroutet werden
-          - "/j1/txt/1/f/o/stock"      # HBW Inventory FROM TXT (Stock-Management)
+      stock_manager:
+        routed_topics:  # Topics die an StockManager.onMessage() geroutet werden
+          - "/j1/txt/1/f/i/stock"      # HBW Inventory FROM TXT (Stock-Management)
       
       production_order_manager:
         routed_topics:  # Topics die an ProductionOrderManager.onMessage() geroutet werden
@@ -1297,6 +1297,11 @@ mqtt_clients:
 **🔑 Gateway-Routing-Hints vs. Subscriptions:**
 1. **`subscribed_topics`** (Haupt-Liste): MQTT Client subscribed diese Topics am Broker
 2. **`gateway_routing_hints.xxx.routed_topics`** (Routing-Info): Gateway routet an Business Functions
+
+**🚨 KRITISCHE ERKENNTNIS (2025-10-16):**
+- **Tests vs. Echte Architektur:** Tests testen direkte Manager-Instanzen, aber die echte Architektur verwendet Registry-basiertes Topic-Routing über `mqtt_clients.yml`
+- **Manager Renaming:** Bei Manager-Renaming müssen ALLE Referenzen aktualisiert werden: Datei, Klasse, Singleton, Gateway, Registry, UI-Komponenten, Tests
+- **Registry-basierte Architektur:** Das Gateway liest `mqtt_clients.yml` und routet Topics basierend auf `routed_topics` an die entsprechenden Manager
 
 **📋 Semantik-Klarstellung:**
 - **MQTT Client** subscribed Topics am Broker (MQTT-Protokoll-Ebene)
@@ -1836,7 +1841,7 @@ from omf2.common.logger import get_logger
 
 logger = get_logger(__name__)
 
-# Singleton Factory - EXAKT wie Order Manager
+# Singleton Factory - EXAKT wie Stock Manager
 _xyz_manager_instance = None
 
 
@@ -1847,7 +1852,7 @@ class XyzManager:
     """
 
     def __init__(self):
-        """Initialize XYZ Manager - EXAKT wie Order Manager (kein File I/O!)"""
+        """Initialize XYZ Manager - EXAKT wie Stock Manager (kein File I/O!)"""
         # State-Holder (wie sensor_data beim Sensor Manager)
         self.xyz_data = {}
         
@@ -1918,7 +1923,7 @@ class XyzManager:
 
 def get_xyz_manager() -> XyzManager:
     """
-    Get XYZ Manager singleton instance - EXAKT wie Order Manager
+    Get XYZ Manager singleton instance - EXAKT wie Stock Manager
     
     Returns:
         XyzManager: XYZ Manager Instanz

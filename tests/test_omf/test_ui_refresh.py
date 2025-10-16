@@ -4,7 +4,7 @@ Tests für ui_refresh.py - Zentraler UI-Refresh-Mechanismus
 
 import time
 import unittest
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 from omf.dashboard.utils.ui_refresh import consume_refresh, request_refresh
 

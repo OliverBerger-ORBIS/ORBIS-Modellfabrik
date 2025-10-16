@@ -6,7 +6,6 @@ Diese Tests prüfen die grundlegende Logik ohne komplexe Streamlit-UI-Mocks.
 
 import unittest
 from collections import deque
-from unittest.mock import MagicMock, patch
 
 
 class TestDashboardLogsSimple(unittest.TestCase):

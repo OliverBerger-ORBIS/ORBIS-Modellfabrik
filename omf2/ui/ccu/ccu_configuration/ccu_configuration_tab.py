@@ -4,17 +4,16 @@ CCU Configuration Tab - CCU Configuration UI Component
 """
 
 import streamlit as st
-from omf2.ccu.ccu_gateway import CcuGateway
+
 from omf2.common.logger import get_logger
 from omf2.ui.common.symbols import UISymbols
-from omf2.common.i18n import I18nManager
 
 logger = get_logger(__name__)
 
 
 def render_ccu_configuration_tab(ccu_gateway=None, registry_manager=None):
     """Render CCU Configuration Tab with Subtabs
-    
+
     Args:
         ccu_gateway: CcuGateway Instanz (Gateway-Pattern)
         registry_manager: RegistryManager Instanz (Singleton)
@@ -23,49 +22,57 @@ def render_ccu_configuration_tab(ccu_gateway=None, registry_manager=None):
     try:
         # Initialize CCU Gateway if not provided
         if not ccu_gateway:
-            if 'ccu_gateway' not in st.session_state:
+            if "ccu_gateway" not in st.session_state:
                 # Use Gateway Factory to create CCU Gateway with MQTT Client
                 from omf2.factory.gateway_factory import get_gateway_factory
+
                 gateway_factory = get_gateway_factory()
-                st.session_state['ccu_gateway'] = gateway_factory.get_ccu_gateway()
-            ccu_gateway = st.session_state['ccu_gateway']
-        
+                st.session_state["ccu_gateway"] = gateway_factory.get_ccu_gateway()
+            ccu_gateway = st.session_state["ccu_gateway"]
+
         # Initialize Registry Manager if not provided
         if not registry_manager:
             from omf2.registry.manager.registry_manager import get_registry_manager
+
             registry_manager = get_registry_manager()
-        
+
         # Initialize i18n
         i18n = st.session_state.get("i18n_manager")
         if not i18n:
             logger.error("❌ I18n Manager not found in session state")
             return
-        
+
         st.header(f"{UISymbols.get_tab_icon('ccu_configuration')} {i18n.translate('tabs.ccu_configuration')}")
-        st.markdown(i18n.t('ccu_configuration.subtitle'))
-        
+        st.markdown(i18n.t("ccu_configuration.subtitle"))
+
         # Create subtabs
         subtab_labels = [
-            i18n.t('ccu_configuration.subtabs.factory_configuration'),
-            i18n.t('ccu_configuration.subtabs.parameter_configuration')
+            i18n.t("ccu_configuration.subtabs.factory_configuration"),
+            i18n.t("ccu_configuration.subtabs.parameter_configuration"),
         ]
-        
+
         subtabs = st.tabs(subtab_labels)
-        
+
         # Render subtab content
         with subtabs[0]:
-            from omf2.ui.ccu.ccu_configuration.ccu_factory_configuration_subtab import render_ccu_factory_configuration_subtab
+            from omf2.ui.ccu.ccu_configuration.ccu_factory_configuration_subtab import (
+                render_ccu_factory_configuration_subtab,
+            )
+
             render_ccu_factory_configuration_subtab()
-        
+
         with subtabs[1]:
-            from omf2.ui.ccu.ccu_configuration.ccu_parameter_configuration_subtab import render_ccu_parameter_configuration_subtab
+            from omf2.ui.ccu.ccu_configuration.ccu_parameter_configuration_subtab import (
+                render_ccu_parameter_configuration_subtab,
+            )
+
             render_ccu_parameter_configuration_subtab()
-        
+
     except Exception as e:
         logger.error(f"❌ CCU Configuration Tab rendering error: {e}")
         i18n = st.session_state.get("i18n_manager")
         if i18n:
-            error_msg = i18n.t('ccu_configuration.error.tab_failed').format(error=e)
+            error_msg = i18n.t("ccu_configuration.error.tab_failed").format(error=e)
             st.error(f"❌ {error_msg}")
             st.info(f"💡 {i18n.t('ccu_configuration.under_development')}")
         else:
@@ -82,7 +89,7 @@ def _refresh_configuration(ccu_gateway, i18n):
         st.success(f"✅ {i18n.t('ccu_configuration.status.refresh_success')}")
     except Exception as e:
         logger.error(f"❌ Configuration refresh error: {e}")
-        error_msg = i18n.t('ccu_configuration.error.refresh_failed').format(error=e)
+        error_msg = i18n.t("ccu_configuration.error.refresh_failed").format(error=e)
         st.error(f"❌ {error_msg}")
 
 
@@ -95,7 +102,7 @@ def _save_configuration(ccu_gateway, i18n):
         st.success(f"✅ {i18n.t('ccu_configuration.status.save_success')}")
     except Exception as e:
         logger.error(f"❌ Configuration save error: {e}")
-        error_msg = i18n.t('ccu_configuration.error.save_failed').format(error=e)
+        error_msg = i18n.t("ccu_configuration.error.save_failed").format(error=e)
         st.error(f"❌ {error_msg}")
 
 
@@ -108,5 +115,5 @@ def _reset_configuration(ccu_gateway, i18n):
         st.warning(f"🔄 {i18n.t('ccu_configuration.status.reset_warning')}")
     except Exception as e:
         logger.error(f"❌ Configuration reset error: {e}")
-        error_msg = i18n.t('ccu_configuration.error.reset_failed').format(error=e)
+        error_msg = i18n.t("ccu_configuration.error.reset_failed").format(error=e)
         st.error(f"❌ {error_msg}")

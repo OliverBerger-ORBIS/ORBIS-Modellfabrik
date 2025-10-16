@@ -8,15 +8,10 @@ from pathlib import Path
 
 import pytest
 import yaml
-
 from omf.dashboard.tools.registry_manager import (
     MessageTemplateManager,
     Registry,
-    TemplateMissingError,
     TopicManager,
-    TopicResolver,
-    UnknownTopicError,
-    ValidationError,
 )
 
 

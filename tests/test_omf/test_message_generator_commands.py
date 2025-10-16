@@ -12,7 +12,6 @@ Umfassende Tests für alle Befehle des MessageGenerators:
 import json
 import unittest
 from datetime import datetime
-from pathlib import Path
 
 # Add omf to path for imports
 from omf.dashboard.tools.message_generator import MessageGenerator

@@ -144,9 +144,9 @@ def init_logging_once(session_state: dict) -> tuple[logging.Logger, QueueListene
 
     # Logging konfigurieren
     root, listener = configure_logging(
-        app_name="session_manager", 
-        level=logging.INFO, 
-        log_dir="logs/session_manager", 
+        app_name="session_manager",
+        level=logging.INFO,
+        log_dir="logs/session_manager",
         console_pretty=True
     )
 

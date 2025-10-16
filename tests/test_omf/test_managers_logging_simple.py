@@ -6,13 +6,10 @@ Testet die grundlegenden Logging-Features ohne komplexe Mocking
 import logging
 import tempfile
 import unittest
-from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 from omf.dashboard.tools.mqtt_gateway import MqttGateway
 from omf.dashboard.tools.omf_mqtt_client import OmfMqttClient
-from omf.dashboard.tools.registry_manager import Registry, TopicManager
-from omf.tools.message_template_manager import OmfMessageTemplateManager
 
 
 class TestManagersLoggingSimple(unittest.TestCase):

@@ -4,12 +4,9 @@ Tests für ModuleStateManager
 Testet das automatische Timing-Management für Modul-Sequenzen.
 """
 
-import time
-from datetime import datetime, timezone
-from unittest.mock import MagicMock, Mock
+from unittest.mock import Mock
 
 import pytest
-
 from omf.tools.module_state_manager import (
     CommandType,
     ModuleInfo,

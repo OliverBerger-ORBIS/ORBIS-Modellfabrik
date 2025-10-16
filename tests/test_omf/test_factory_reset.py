@@ -9,7 +9,6 @@ können wir gar nicht mehr weitermachen.
 import json
 import unittest
 from datetime import datetime
-from pathlib import Path
 from unittest.mock import patch
 
 # Add omf to path for imports

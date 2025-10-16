@@ -9,8 +9,9 @@ from typing import Dict, List
 
 import streamlit as st
 
-from ..utils.path_constants import PROJECT_ROOT
 from ..utils.logging_config import get_logger
+from ..utils.path_constants import PROJECT_ROOT
+
 # from ..utils.topic_manager import OmfTopicManager  # TODO: Optional feature - topic categorization
 
 logger = get_logger(__name__)

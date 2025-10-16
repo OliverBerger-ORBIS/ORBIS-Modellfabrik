@@ -60,12 +60,12 @@ class RecordingConfig:
         self._topics_directory = None
         self._periodic_topics = set()  # Topics die als periodisch erkannt wurden
         self._global_sequence = 0  # Globaler Sequenz-Counter über alle Topics
-    
+
     def start_analysis(self):
         """Startet Analyse-Phase (keine Speicherung)"""
         with self._lock:
             self._mode = "analyze"
-    
+
     def start_recording(self, topics_directory: Path, periodic_topics: Set[str]):
         """Startet Recording-Phase mit globaler Sequenznummer"""
         with self._lock:
@@ -73,31 +73,31 @@ class RecordingConfig:
             self._topics_directory = topics_directory
             self._periodic_topics = periodic_topics.copy()
             self._global_sequence = 0  # Reset bei neuem Recording
-    
+
     def stop(self):
         with self._lock:
             self._mode = None
-    
+
     def get_mode(self) -> str:
         with self._lock:
             return self._mode
-    
+
     def is_analyzing(self) -> bool:
         with self._lock:
             return self._mode == "analyze"
-    
+
     def is_recording(self) -> bool:
         with self._lock:
             return self._mode == "record"
-    
+
     def get_topics_directory(self) -> Path:
         with self._lock:
             return self._topics_directory
-    
+
     def is_periodic(self, topic: str) -> bool:
         with self._lock:
             return topic in self._periodic_topics
-    
+
     def get_next_sequence(self) -> int:
         """Gibt nächste globale Sequenznummer zurück (über alle Topics)"""
         with self._lock:
@@ -117,14 +117,14 @@ def sanitize_topic_name(topic: str) -> str:
     """
     # Trailing Slashes entfernen (aber führendes "/" behalten für die Konvertierung)
     topic = topic.rstrip('/')
-    
+
     # Alle ungültigen Zeichen (inkl. /) durch Underscore ersetzen
     # Erlaubte Zeichen: a-z, A-Z, 0-9, _, -, .
     sanitized = re.sub(r'[^a-zA-Z0-9_\-.]', '_', topic)
-    
+
     # Mehrfache Underscores durch einen ersetzen
     sanitized = re.sub(r'_+', '_', sanitized)
-    
+
     return sanitized
 
 
@@ -164,7 +164,7 @@ def show_topic_recorder():
             'analysis_duration': 60,  # Sekunden für Analyse-Phase
             'frequency_threshold': 60,  # Messages pro MINUTE für "periodisch"
         }
-    
+
     # Sicherstellen dass Analyse-Phase nicht hängt (falls App neugestartet wurde)
     if st.session_state.topic_recorder.get('analyzing', False):
         if st.session_state.topic_recorder.get('analysis_start_time'):
@@ -175,7 +175,7 @@ def show_topic_recorder():
                 st.session_state.topic_recorder['analyzing'] = False
                 st.session_state.topic_recorder['analysis_start_time'] = None
                 recording_config.stop()
-    
+
     # Prüfe MQTT-Verbindung nach Neustart
     if st.session_state.topic_recorder.get('connected', False):
         if st.session_state.topic_recorder.get('mqtt_client') is None:
@@ -208,7 +208,7 @@ def show_topic_recorder():
     with col2:
         st.subheader("📁 Konfiguration")
         st.info(f"**Topics-Verzeichnis:** `{topics_dir.relative_to(PROJECT_ROOT)}`")
-        st.info(f"**Dateiformat:** JSON mit allen MQTT-Metadaten")
+        st.info("**Dateiformat:** JSON mit allen MQTT-Metadaten")
         st.info("💡 **Verhalten:** Speichert erste Nachricht pro Topic (valides Test-Beispiel)")
 
     st.markdown("---")
@@ -285,7 +285,7 @@ def show_topic_recorder():
     elif st.session_state.topic_recorder['recording']:
         # Recording läuft
         st.success("📂 **Recording läuft** mit globalen Sequenznummern")
-        
+
         if st.button("⏹️ Recording Beenden", type="secondary"):
             stop_recording()
             st.session_state.topic_recorder['recording'] = False
@@ -297,19 +297,19 @@ def show_topic_recorder():
         from .settings_manager import SettingsManager
         settings_manager = SettingsManager()
         manual_periodic = settings_manager.get_topic_recorder_periodic_topics()
-        
+
         st.info(f"✅ **{len(manual_periodic)} periodische Topics** in Settings konfiguriert")
         st.markdown("**Periodische Topics (nur erste Nachricht):**")
         for topic in manual_periodic:
             st.code(topic, language="text")
-        
+
         st.markdown("---")
         st.markdown("💡 **Alle anderen Topics** werden mit **globaler Sequenznummer** gespeichert")
-        
+
         if st.button("▶️ Recording Starten", type="primary", key="start_recording"):
             # Setze leere analyzed_periodic (keine Analyse)
             st.session_state.topic_recorder['periodic_topics'] = set()
-            
+
             start_recording()
             st.session_state.topic_recorder['recording'] = True
             st.session_state.topic_recorder['start_time'] = datetime.now()
@@ -341,7 +341,7 @@ def show_topic_recorder():
         topics = sorted(topic_tracker.get_topics())
         if topics:
             st.markdown("**Empfangene Topics:**")
-            
+
             # In Spalten anzeigen für bessere Übersicht
             cols = st.columns(3)
             for idx, topic in enumerate(topics[-30:]):  # Letzte 30 Topics
@@ -361,7 +361,7 @@ def show_topic_recorder():
     # Gespeicherte Dateien anzeigen
     st.markdown("---")
     st.subheader("📋 Gespeicherte Topic-Dateien")
-    
+
     # Dateien aus dem aktuellen Recording-Verzeichnis anzeigen
     current_recording_dir = st.session_state.topic_recorder.get('current_recording_dir')
     if current_recording_dir and current_recording_dir.exists():
@@ -370,17 +370,17 @@ def show_topic_recorder():
         saved_files = []
     if saved_files:
         col1, col2 = st.columns([2, 1])
-        
+
         with col1:
             st.info(f"**Anzahl Dateien:** {len(saved_files)}")
-        
+
         with col2:
             sort_option = st.selectbox(
                 "Sortierung:",
                 ["Neueste zuerst", "Älteste zuerst", "Topic-Name A-Z", "Topic-Name Z-A"],
                 key="topic_recorder_sort"
             )
-        
+
         # Sortierung anwenden
         if sort_option == "Neueste zuerst":
             saved_files.sort(key=lambda f: f.stat().st_mtime, reverse=True)
@@ -390,19 +390,19 @@ def show_topic_recorder():
             saved_files.sort(key=lambda f: f.name)
         elif sort_option == "Topic-Name Z-A":
             saved_files.sort(key=lambda f: f.name, reverse=True)
-        
+
         # In expandable sections zeigen
         with st.expander("📂 Gespeicherte Dateien anzeigen", expanded=False):
             for file in saved_files[:100]:  # Erste 100 Dateien
                 file_size = file.stat().st_size
                 file_mtime = datetime.fromtimestamp(file.stat().st_mtime)
-                
+
                 # JSON-Inhalt laden für Vorschau
                 try:
                     import json
-                    with open(file, 'r', encoding='utf-8') as f:
+                    with open(file, encoding='utf-8') as f:
                         data = json.load(f)
-                    
+
                     col1, col2, col3 = st.columns([3, 1, 1])
                     with col1:
                         st.code(f"{file.name}", language="text")
@@ -484,10 +484,10 @@ def start_analysis():
     """Startet Analyse-Phase (keine Speicherung)"""
     try:
         logger.info("🔍 Topic-Analyse wird gestartet...")
-        
+
         # Topics leeren für neue Analyse
         topic_tracker.clear()
-        
+
         # MQTT Topics abonnieren (falls noch nicht geschehen)
         if st.session_state.topic_recorder['mqtt_client']:
             mqtt_client = st.session_state.topic_recorder['mqtt_client']
@@ -496,10 +496,10 @@ def start_analysis():
         else:
             logger.error("❌ Kein MQTT Client verfügbar")
             return
-        
+
         # Globale Recording-Config auf Analyse setzen
         recording_config.start_analysis()
-        
+
         logger.info("✅ Topic-Analyse gestartet")
     except Exception as e:
         logger.error(f"❌ Fehler beim Starten der Analyse: {e}")
@@ -521,25 +521,25 @@ def analyze_topic_frequencies():
         topic_counts = topic_tracker.get_topic_counts()
         analysis_duration = st.session_state.topic_recorder['analysis_duration']
         frequency_threshold = st.session_state.topic_recorder['frequency_threshold']
-        
+
         logger.info(f"🔍 Analyse-Start: {len(topic_counts)} Topics, {analysis_duration}s, Schwellenwert: {frequency_threshold} msg/min")
-        
+
         periodic_topics = set()
-        
+
         for topic, count in topic_counts.items():
             # Frequenz in Messages pro MINUTE
             frequency_per_min = (count / analysis_duration) * 60
-            
+
             if frequency_per_min >= frequency_threshold:
                 periodic_topics.add(topic)
                 logger.info(f"📊 Periodisch: {topic} ({count} msgs, {frequency_per_min:.1f} msg/min)")
             else:
                 logger.debug(f"✨ Interessant: {topic} ({count} msgs, {frequency_per_min:.1f} msg/min)")
-        
+
         st.session_state.topic_recorder['periodic_topics'] = periodic_topics
-        
+
         logger.info(f"✅ Analyse abgeschlossen: {len(periodic_topics)} periodische, {len(topic_counts) - len(periodic_topics)} interessante Topics")
-        
+
     except Exception as e:
         logger.error(f"❌ Fehler bei Frequenz-Analyse: {e}", exc_info=True)
 
@@ -547,24 +547,24 @@ def analyze_topic_frequencies():
 def show_analysis_results():
     """Zeigt Analyse-Ergebnisse an"""
     st.subheader("📊 Analyse-Ergebnisse")
-    
+
     topic_counts = topic_tracker.get_topic_counts()
     periodic_topics = st.session_state.topic_recorder['periodic_topics']
     analysis_duration = st.session_state.topic_recorder['analysis_duration']
-    
+
     # Interessante vs. Periodische Topics
     interesting_topics = set(topic_counts.keys()) - periodic_topics
-    
+
     col1, col2 = st.columns(2)
-    
+
     with col1:
         st.metric("✨ Interessante Topics", len(interesting_topics))
         st.caption("(werden mit Sequenznummer gespeichert)")
-    
+
     with col2:
         st.metric("🔄 Periodische Topics", len(periodic_topics))
         st.caption("(nur erste Nachricht)")
-    
+
     # Details anzeigen
     with st.expander("📋 Topic-Details anzeigen"):
         # Interessante Topics
@@ -577,9 +577,9 @@ def show_analysis_results():
                 st.code(topic, language="text")
             with col2:
                 st.caption(f"{count} msgs ({freq_per_min:.1f}/min)")
-        
+
         st.markdown("---")
-        
+
         # Periodische Topics
         st.markdown("### 🔄 Periodische Topics (nur erste Nachricht)")
         for topic in sorted(periodic_topics):
@@ -605,22 +605,22 @@ def start_recording():
 
             # Session State aktualisieren
             st.session_state.topic_recorder['recording'] = True
-            
+
             # Globale Recording-Config für MQTT-Callback setzen
             recording_dir = st.session_state.topic_recorder['current_recording_dir']
             if recording_dir is None:
                 logger.error("❌ Kein Recording-Verzeichnis gesetzt")
                 return
-            
+
             # Periodische Topics: Kombination aus Analyse + manuell konfiguriert
             from .settings_manager import SettingsManager
             settings_manager = SettingsManager()
             manual_periodic = set(settings_manager.get_topic_recorder_periodic_topics())
             analyzed_periodic = st.session_state.topic_recorder['periodic_topics']
-            
+
             # Vereinigung beider Sets
             all_periodic_topics = manual_periodic | analyzed_periodic
-            
+
             recording_config.start_recording(recording_dir, all_periodic_topics)
 
             logger.info(f"✅ Topic-Recording gestartet - {len(all_periodic_topics)} periodische Topics ({len(analyzed_periodic)} analysiert, {len(manual_periodic)} manuell)")
@@ -647,7 +647,7 @@ def stop_recording():
 
         # Session State aktualisieren
         st.session_state.topic_recorder['recording'] = False
-        
+
         topic_count = topic_tracker.count()
         logger.info(f"✅ Topic-Recording beendet - {topic_count} Topics empfangen")
 
@@ -659,7 +659,7 @@ def on_message_received(client, userdata, msg):
     """Callback für empfangene MQTT-Nachrichten (thread-sicher)"""
     try:
         import json
-        
+
         topic = msg.topic
         payload = msg.payload.decode('utf-8', errors='replace')
         qos = msg.qos
@@ -667,33 +667,33 @@ def on_message_received(client, userdata, msg):
 
         # Topic zur Sammlung hinzufügen (für Analyse & Recording)
         topic_tracker.add_topic(topic)
-        
+
         # Analyse-Phase: Nur zählen, nichts speichern
         if recording_config.is_analyzing():
             logger.debug(f"🔍 Analyse: {topic}")
             return
-        
+
         # Recording-Phase: Mit Sequenznummern speichern
         if not recording_config.is_recording():
             return
 
         # Dateinamen generieren
         sanitized_topic = sanitize_topic_name(topic)
-        
+
         # Prüfen ob Topic periodisch ist
         is_periodic = recording_config.is_periodic(topic)
-        
+
         # Dateipfad (thread-sicherer Zugriff)
         topics_dir = recording_config.get_topics_directory()
         if topics_dir is None:
             logger.error("❌ Topics-Verzeichnis nicht konfiguriert")
             return
-        
+
         if is_periodic:
             # Periodisches Topic: Nur erste Nachricht ohne Sequenznummer
             filename = f"{sanitized_topic}.json"
             filepath = topics_dir / filename
-            
+
             # NUR speichern wenn Datei NICHT existiert
             if not filepath.exists():
                 topic_data = {
@@ -704,10 +704,10 @@ def on_message_received(client, userdata, msg):
                     "timestamp": datetime.now().isoformat(),
                     "type": "periodic"
                 }
-                
+
                 with open(filepath, 'w', encoding='utf-8') as f:
                     json.dump(topic_data, f, indent=2, ensure_ascii=False)
-                
+
                 logger.debug(f"📂 Periodisch gespeichert: {filename}")
             else:
                 logger.debug(f"⏭️ Periodisch ignoriert: {filename}")
@@ -716,7 +716,7 @@ def on_message_received(client, userdata, msg):
             sequence = recording_config.get_next_sequence()
             filename = f"{sanitized_topic}__{sequence:06d}.json"
             filepath = topics_dir / filename
-            
+
             topic_data = {
                 "topic": topic,
                 "payload": payload,
@@ -726,10 +726,10 @@ def on_message_received(client, userdata, msg):
                 "sequence": sequence,
                 "type": "interesting"
             }
-            
+
             with open(filepath, 'w', encoding='utf-8') as f:
                 json.dump(topic_data, f, indent=2, ensure_ascii=False)
-            
+
             logger.debug(f"📂 Sequenz gespeichert: {filename} (global seq: {sequence})")
 
     except Exception as e:

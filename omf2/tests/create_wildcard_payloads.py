@@ -7,26 +7,27 @@ to achieve 99.5% success rate.
 """
 
 import json
-from pathlib import Path
 import logging
+from pathlib import Path
 
 # Setup logging
-logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
+logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 logger = logging.getLogger(__name__)
+
 
 def create_wildcard_payloads():
     """Create minimal payloads for wildcard topics"""
     payloads_dir = Path("/Users/oliver/Projects/ORBIS-Modellfabrik/omf2/tests/test_payloads_for_topic")
-    
+
     # Topics that use wildcard.schema.json (from registry analysis)
     wildcard_topics = [
         "ccu/global",
-        "ccu/status", 
+        "ccu/status",
         "ccu/status/connection",
         "ccu/status/health",
-        "module/v1/ff/NodeRed/status"
+        "module/v1/ff/NodeRed/status",
     ]
-    
+
     # Topics without schemas (should use wildcard.schema.json)
     no_schema_topics = [
         "ccu/state",
@@ -34,7 +35,7 @@ def create_wildcard_payloads():
         "ccu/state/status",
         "ccu/state/error",
         "ccu/control",
-        "ccu/control/command", 
+        "ccu/control/command",
         "ccu/control/order",
         "ccu/set/layout",
         "ccu/set/flows",
@@ -46,37 +47,38 @@ def create_wildcard_payloads():
         "ccu/pairing/unpair_fts",
         "/j1/txt/1/f/o/order",
         "/j1/txt/1/f/o/stock",
-        "/j1/txt/1/f/o/status", 
+        "/j1/txt/1/f/o/status",
         "/j1/txt/1/f/o/error",
         "/j1/txt/1/o/broadcast",
         "module/v1/ff/CHRG0/connection",
         "module/v1/ff/CHRG0/state",
-        "module/v1/ff/CHRG0/order", 
-        "module/v1/ff/CHRG0/factsheet"
+        "module/v1/ff/CHRG0/order",
+        "module/v1/ff/CHRG0/factsheet",
     ]
-    
+
     all_topics = wildcard_topics + no_schema_topics
-    
+
     created_count = 0
     for topic in all_topics:
         # Convert topic to filename
         filename = topic.replace("/", "_").replace(":", "_") + ".json"
         filepath = payloads_dir / filename
-        
+
         # Create empty payload
         payload = {}
-        
+
         # Write file
-        with open(filepath, 'w') as f:
+        with open(filepath, "w") as f:
             json.dump(payload, f, indent=2)
-        
+
         created_count += 1
         logger.info(f"✅ Created: {filename}")
-    
+
     logger.info(f"\n🎯 Created {created_count} wildcard payloads")
     return created_count
 
+
 if __name__ == "__main__":
     print("🚀 Creating Wildcard Payloads")
-    print("="*50)
+    print("=" * 50)
     create_wildcard_payloads()

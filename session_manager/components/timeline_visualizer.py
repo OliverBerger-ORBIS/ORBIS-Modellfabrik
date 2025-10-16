@@ -9,6 +9,7 @@ import plotly.graph_objects as go
 import streamlit as st
 
 from ..utils.logging_config import get_logger
+
 # from ..utils.topic_manager import OmfTopicManager  # TODO: Optional feature - topic categorization
 
 logger = get_logger(__name__)

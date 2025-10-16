@@ -5,10 +5,10 @@ Moved from existing CCU Process Tab content
 """
 
 import streamlit as st
-from omf2.ccu.ccu_gateway import CcuGateway
+
 from omf2.common.logger import get_logger
-from omf2.ui.utils.ui_refresh import request_refresh
 from omf2.ui.common.symbols import UISymbols
+from omf2.ui.utils.ui_refresh import request_refresh
 
 logger = get_logger(__name__)
 
@@ -43,16 +43,16 @@ def _show_process_statistics_section():
     """Show process statistics section"""
     with st.expander("📊 Process Statistics", expanded=True):
         col1, col2, col3, col4 = st.columns(4)
-        
+
         with col1:
             st.metric("Active Processes", "5", "Running")
-        
+
         with col2:
             st.metric("Completed Today", "23", "↗️ +3")
-        
+
         with col3:
             st.metric("Success Rate", "96%", "↗️ +2%")
-        
+
         with col4:
             st.metric("Avg. Duration", "12.5 min", "↘️ -1.2 min")
 
@@ -61,79 +61,93 @@ def _show_process_management_section():
     """Show process management section"""
     with st.expander("📋 Process Management", expanded=True):
         st.markdown("### Active Processes")
-        
+
         # Process Control Buttons
         col1, col2, col3 = st.columns(3)
-        
+
         with col1:
-            if st.button(f"{UISymbols.get_status_icon('refresh')} Refresh Processes",
-                        key="ccu_process_refresh_btn", use_container_width=True):
+            if st.button(
+                f"{UISymbols.get_status_icon('refresh')} Refresh Processes",
+                key="ccu_process_refresh_btn",
+                use_container_width=True,
+            ):
                 _refresh_processes()
-        
+
         with col2:
-            if st.button(f"{UISymbols.get_status_icon('stats')} Process Statistics",
-                        key="ccu_process_stats_btn", use_container_width=True):
+            if st.button(
+                f"{UISymbols.get_status_icon('stats')} Process Statistics",
+                key="ccu_process_stats_btn",
+                use_container_width=True,
+            ):
                 st.info("📊 Process statistics feature coming soon!")
-        
+
         with col3:
-            if st.button(f"{UISymbols.get_status_icon('settings')} Process Settings",
-                        key="ccu_process_settings_btn", use_container_width=True):
+            if st.button(
+                f"{UISymbols.get_status_icon('settings')} Process Settings",
+                key="ccu_process_settings_btn",
+                use_container_width=True,
+            ):
                 st.info("⚙️ Process settings feature coming soon!")
-        
+
         st.divider()
-        
+
         # Placeholder process data
         processes = [
             {"id": "PROC-001", "name": "Drilling Process", "status": "running", "progress": 65, "module": "DPS"},
             {"id": "PROC-002", "name": "Quality Check", "status": "waiting", "progress": 0, "module": "AIQS"},
             {"id": "PROC-003", "name": "Transport", "status": "running", "progress": 30, "module": "FTS"},
         ]
-        
+
         for process in processes:
             with st.container():
                 col1, col2, col3, col4, col5 = st.columns([2, 2, 2, 2, 1])
-                
+
                 with col1:
                     st.write(f"**{process['id']}**")
-                
+
                 with col2:
-                    st.write(process['name'])
-                
+                    st.write(process["name"])
+
                 with col3:
-                    status_color = {
-                        "running": "🟡",
-                        "waiting": "⚪",
-                        "completed": "🟢"
-                    }.get(process['status'], "⚪")
+                    status_color = {"running": "🟡", "waiting": "⚪", "completed": "🟢"}.get(process["status"], "⚪")
                     st.write(f"{status_color} {process['status']}")
-                
+
                 with col4:
-                    st.progress(process['progress'] / 100)
-                
+                    st.progress(process["progress"] / 100)
+
                 with col5:
-                    st.write(process['module'])
+                    st.write(process["module"])
 
 
 def _show_process_control_section():
     """Show process control section"""
     with st.expander("🎛️ Process Control", expanded=True):
         st.markdown("### Process Actions")
-        
+
         col1, col2, col3 = st.columns(3)
-        
+
         with col1:
-            if st.button(f"{UISymbols.get_status_icon('start')} Start Process",
-                        key="ccu_process_start_btn", use_container_width=True):
+            if st.button(
+                f"{UISymbols.get_status_icon('start')} Start Process",
+                key="ccu_process_start_btn",
+                use_container_width=True,
+            ):
                 _start_process()
-        
+
         with col2:
-            if st.button(f"{UISymbols.get_status_icon('pause')} Pause Process",
-                        key="ccu_process_pause_btn", use_container_width=True):
+            if st.button(
+                f"{UISymbols.get_status_icon('pause')} Pause Process",
+                key="ccu_process_pause_btn",
+                use_container_width=True,
+            ):
                 _pause_process()
-        
+
         with col3:
-            if st.button(f"{UISymbols.get_status_icon('stop')} Stop Process",
-                        key="ccu_process_stop_btn", use_container_width=True):
+            if st.button(
+                f"{UISymbols.get_status_icon('stop')} Stop Process",
+                key="ccu_process_stop_btn",
+                use_container_width=True,
+            ):
                 _stop_process()
 
 

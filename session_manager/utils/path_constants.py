@@ -3,7 +3,6 @@ Zentrale Pfad-Konstanten für Session Manager
 Isolierte Version ohne OMF-Dependencies
 """
 
-import os
 from pathlib import Path
 
 

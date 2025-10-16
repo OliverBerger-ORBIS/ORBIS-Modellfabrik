@@ -4,25 +4,25 @@ Test für APS Dashboard Components
 Version: 1.0.0
 """
 
-import pytest
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import Mock, patch
 
-from omf.dashboard.components.operator.aps_overview import show_aps_overview
-from omf.dashboard.components.operator.aps_orders import show_aps_orders
-from omf.dashboard.components.operator.aps_processes import show_aps_processes
+import pytest
 from omf.dashboard.components.operator.aps_configuration import show_aps_configuration
+from omf.dashboard.components.operator.aps_orders import show_aps_orders
+from omf.dashboard.components.operator.aps_overview import show_aps_overview
+from omf.dashboard.components.operator.aps_processes import show_aps_processes
 
 
 class TestAPSDashboardComponents:
     """Test-Klasse für APS Dashboard Components"""
-    
+
     @pytest.fixture
     def mock_mqtt_client(self):
         """Mock MQTT Client"""
         client = Mock()
         client.connected = True
         return client
-    
+
     @pytest.fixture
     def mock_aps_integration(self):
         """Mock APS Integration"""
@@ -107,7 +107,7 @@ class TestAPSDashboardComponents:
         integration.complete_order.return_value = True
         integration.cancel_order.return_value = True
         return integration
-    
+
     @pytest.fixture
     def mock_streamlit(self):
         """Mock Streamlit"""
@@ -131,44 +131,44 @@ class TestAPSDashboardComponents:
              patch('streamlit.code') as mock_code, \
              patch('streamlit.tabs') as mock_tabs, \
              patch('streamlit.rerun') as mock_rerun:
-            
+
             # Mock columns to return list of mocks
             mock_columns.return_value = [Mock(), Mock()]
-            
+
             # Mock columns(2) specifically - return correct number of columns
             mock_columns.side_effect = lambda n: [Mock() for _ in range(n)]
-            
+
             # Mock tabs to return correct number of tabs
             mock_tabs.side_effect = lambda tabs: [Mock() for _ in tabs]
-            
+
             # Mock expander to return context manager
             mock_expander.return_value.__enter__ = Mock()
             mock_expander.return_value.__exit__ = Mock()
-            
+
             # Mock tabs to return list of mocks
             mock_tabs.return_value = [Mock(), Mock(), Mock(), Mock()]
-            
+
             # Mock button to return False by default
             mock_button.return_value = False
-            
+
             # Mock selectbox to return first option
             mock_selectbox.return_value = "RED"
-            
+
             # Mock text_input to return empty string
             mock_text_input.return_value = ""
-            
+
             # Mock text_area to return empty string
             mock_text_area.return_value = "{}"
-            
+
             # Mock number_input to return default value
             mock_number_input.return_value = 10
-            
+
             # Mock checkbox to return False
             mock_checkbox.return_value = False
-            
+
             # Mock multiselect to return empty list
             mock_multiselect.return_value = []
-            
+
             yield {
                 'title': mock_title,
                 'markdown': mock_markdown,
@@ -191,61 +191,61 @@ class TestAPSDashboardComponents:
                 'tabs': mock_tabs,
                 'rerun': mock_rerun
             }
-    
+
     def test_aps_overview_component(self, mock_streamlit, mock_mqtt_client, mock_aps_integration):
         """Test APS Overview Component"""
         # Test that the component can be imported
         assert show_aps_overview is not None
         assert callable(show_aps_overview)
-    
+
     def test_aps_orders_component(self, mock_streamlit, mock_mqtt_client, mock_aps_integration):
         """Test APS Orders Component"""
         # Test that the component can be imported
         assert show_aps_orders is not None
         assert callable(show_aps_orders)
-    
+
     def test_aps_processes_component(self, mock_streamlit, mock_mqtt_client, mock_aps_integration):
         """Test APS Processes Component"""
         # Test that the component can be imported
         assert show_aps_processes is not None
         assert callable(show_aps_processes)
-    
+
     def test_aps_configuration_component(self, mock_streamlit, mock_mqtt_client, mock_aps_integration):
         """Test APS Configuration Component"""
         # Test that the component can be imported
         assert show_aps_configuration is not None
         assert callable(show_aps_configuration)
-    
+
     def test_aps_overview_error_handling(self, mock_streamlit):
         """Test APS Overview Error Handling"""
         # Test that the component can be imported
         assert show_aps_overview is not None
         assert callable(show_aps_overview)
-    
+
     def test_aps_orders_error_handling(self, mock_streamlit):
         """Test APS Orders Error Handling"""
         # Test that the component can be imported
         assert show_aps_orders is not None
         assert callable(show_aps_orders)
-    
+
     def test_aps_processes_error_handling(self, mock_streamlit):
         """Test APS Processes Error Handling"""
         # Test that the component can be imported
         assert show_aps_processes is not None
         assert callable(show_aps_processes)
-    
+
     def test_aps_configuration_error_handling(self, mock_streamlit):
         """Test APS Configuration Error Handling"""
         # Test that the component can be imported
         assert show_aps_configuration is not None
         assert callable(show_aps_configuration)
-    
+
     def test_aps_integration_activation(self, mock_streamlit, mock_mqtt_client, mock_aps_integration):
         """Test APS Integration Activation"""
         # Test that the component can be imported
         assert show_aps_overview is not None
         assert callable(show_aps_overview)
-    
+
     def test_aps_integration_activation_failure(self, mock_streamlit, mock_mqtt_client):
         """Test APS Integration Activation Failure"""
         # Test that the component can be imported

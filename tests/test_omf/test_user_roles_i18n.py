@@ -3,12 +3,12 @@ Tests für User Roles und i18n Funktionalität
 """
 
 import unittest
-from unittest.mock import patch, MagicMock
-import streamlit as st
+from unittest.mock import patch
 
-from omf.dashboard.utils.user_manager import UserManager, UserRole
-from omf.dashboard.utils.language_manager import LanguageManager
+import streamlit as st
 from omf.config.omf_config import TRANSLATIONS
+from omf.dashboard.utils.language_manager import LanguageManager
+from omf.dashboard.utils.user_manager import UserManager, UserRole
 
 
 class TestUserRolesAndI18n(unittest.TestCase):
@@ -60,11 +60,11 @@ class TestUserRolesAndI18n(unittest.TestCase):
         # Operator hat mindestens APS-Tabs
         self.assertIn("aps_overview", operator_tabs)
         self.assertIn("aps_orders", operator_tabs)
-        
+
         # Supervisor hat Operator-Tabs + WL-Tabs
         self.assertTrue(set(operator_tabs).issubset(set(supervisor_tabs)))
         self.assertIn("wl_module_control", supervisor_tabs)
-        
+
         # Admin hat alle Tabs
         self.assertTrue(set(supervisor_tabs).issubset(set(admin_tabs)))
         self.assertIn("steering", admin_tabs)
@@ -75,11 +75,11 @@ class TestUserRolesAndI18n(unittest.TestCase):
         # Operator kann keine Admin-Tabs sehen
         self.assertFalse(UserManager.is_tab_allowed("steering", UserRole.OPERATOR))
         self.assertFalse(UserManager.is_tab_allowed("logs", UserRole.OPERATOR))
-        
+
         # Supervisor kann WL-Tabs sehen, aber keine Admin-Tabs
         self.assertTrue(UserManager.is_tab_allowed("wl_module_control", UserRole.SUPERVISOR))
         self.assertFalse(UserManager.is_tab_allowed("steering", UserRole.SUPERVISOR))
-        
+
         # Admin kann alle Tabs sehen
         self.assertTrue(UserManager.is_tab_allowed("steering", UserRole.ADMIN))
         self.assertTrue(UserManager.is_tab_allowed("logs", UserRole.ADMIN))
@@ -87,10 +87,10 @@ class TestUserRolesAndI18n(unittest.TestCase):
     def test_language_translations(self):
         """Test: Übersetzungen sind für alle Sprachen verfügbar"""
         languages = ["de", "en", "fr"]
-        
+
         for language in languages:
             self.assertIn(language, TRANSLATIONS)
-            
+
             # Teste wichtige Tab-Namen
             lang_translations = TRANSLATIONS[language]
             self.assertIn("aps_overview", lang_translations)
@@ -104,7 +104,7 @@ class TestUserRolesAndI18n(unittest.TestCase):
             with patch('omf.dashboard.utils.language_manager.OmfConfig') as mock_config_class:
                 mock_config_instance = mock_config_class.return_value
                 mock_config_instance.get.return_value = "de"
-                
+
                 language = LanguageManager.get_current_language()
                 self.assertEqual(language, "de")
 
@@ -113,7 +113,7 @@ class TestUserRolesAndI18n(unittest.TestCase):
         # Existierender Schlüssel
         translation = LanguageManager.get_translation("aps_overview", "de")
         self.assertEqual(translation, "APS Übersicht")
-        
+
         # Nicht-existierender Schlüssel sollte den Schlüssel selbst zurückgeben
         translation = LanguageManager.get_translation("non_existent_key", "de")
         self.assertEqual(translation, "non_existent_key")
@@ -129,11 +129,11 @@ class TestUserRolesAndI18n(unittest.TestCase):
     def test_supported_languages(self):
         """Test: Unterstützte Sprachen sind korrekt definiert"""
         languages = LanguageManager.SUPPORTED_LANGUAGES
-        
+
         self.assertIn("de", languages)
         self.assertIn("en", languages)
         self.assertIn("fr", languages)
-        
+
         # Jede Sprache sollte Name und Flagge haben
         for lang_code, lang_info in languages.items():
             self.assertIn("name", lang_info)
@@ -144,7 +144,7 @@ class TestUserRolesAndI18n(unittest.TestCase):
         """Test: Rollen-Setzen funktioniert"""
         # Standard-Rolle setzen
         UserManager.set_user_role(UserRole.ADMIN)
-        
+
         # Session State sollte aktualisiert sein
         # (Mock kann das nicht vollständig simulieren, aber Funktionsaufruf testen)
         self.assertEqual(st.session_state.get("user_role"), UserRole.ADMIN.value)
@@ -155,11 +155,11 @@ class TestUserRolesAndI18n(unittest.TestCase):
         all_tabs = set()
         for role_tabs in UserManager.ROLE_TABS.values():
             all_tabs.update(role_tabs)
-        
+
         for language in ["de", "en", "fr"]:
             lang_translations = TRANSLATIONS[language]
             for tab in all_tabs:
-                self.assertIn(tab, lang_translations, 
+                self.assertIn(tab, lang_translations,
                              f"Tab '{tab}' fehlt in {language} Übersetzungen")
 
 

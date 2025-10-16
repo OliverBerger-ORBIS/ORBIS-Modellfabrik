@@ -208,19 +208,19 @@ def test_my_function(caplog):
 
 ### **Test-Examples**
 ```python
-def test_order_manager_create_order():
-    """Test für OrderManager.create_order()
+def test_stock_manager_inventory_update():
+    """Test für StockManager.update_inventory()
     
     Testet:
-    - Order-Erstellung mit gültigen Daten
+    - Inventory-Update mit gültigen Daten
     - Fehlerbehandlung bei ungültigen Daten
     - Logging-Verhalten
     """
-    manager = OrderManager()
+    manager = StockManager()
     
-    # Test gültige Order
-    order_data = {"id": "test-001", "type": "storage"}
-    result = manager.create_order(order_data)
+    # Test gültige Inventory-Update
+    inventory_data = {"A1": "RED", "B2": "BLUE"}
+    result = manager.update_inventory(inventory_data)
     
     assert result == True
     assert len(manager.orders) == 1

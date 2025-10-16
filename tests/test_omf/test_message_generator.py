@@ -5,7 +5,6 @@ Testet orderUpdateId Handling und Workflow-Management
 
 import json
 import unittest
-from pathlib import Path
 
 # Add omf to path
 from omf.dashboard.tools.message_generator import MessageGenerator

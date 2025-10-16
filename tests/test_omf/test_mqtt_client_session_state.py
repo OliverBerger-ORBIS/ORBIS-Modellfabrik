@@ -5,7 +5,6 @@ Testet, warum der MQTT-Client in der Nachrichten-Zentrale nicht gefunden wird
 """
 
 import unittest
-from pathlib import Path
 
 # Add omf to path
 

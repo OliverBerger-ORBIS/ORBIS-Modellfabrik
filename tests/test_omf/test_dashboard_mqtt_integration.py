@@ -5,7 +5,6 @@ Simuliert das echte Problem aus dem Dashboard
 """
 
 import unittest
-from pathlib import Path
 
 import pytest
 

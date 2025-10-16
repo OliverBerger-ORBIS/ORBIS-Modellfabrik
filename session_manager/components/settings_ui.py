@@ -488,7 +488,7 @@ class SettingsUI:
         st.markdown("**Dateiname-Beispiele:**")
         st.code("ccu_order_active.json  (Topic: ccu/order/active)", language="text")
         st.code("_j1_txt_1_i_bme680.json  (Topic: /j1/txt/1/i/bme680)", language="text")
-        
+
         st.markdown("**Datei-Inhalt (JSON):**")
         example_json = """{
   "topic": "/j1/txt/1/i/bme680",

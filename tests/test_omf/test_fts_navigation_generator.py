@@ -3,12 +3,10 @@ Unit Tests für FTS Navigation Message Generator
 Testet generate_fts_navigation_message() und Dashboard Integration
 """
 
-import uuid
-from datetime import datetime, timezone
-from unittest.mock import MagicMock, Mock, patch
+from datetime import datetime
+from unittest.mock import MagicMock, patch
 
 import pytest
-
 from omf.dashboard.tools.message_generator import MessageGenerator
 
 

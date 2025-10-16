@@ -38,7 +38,7 @@ business_managers:
     level: INFO  # DEBUG for sensor data debugging
   module_manager:
     level: DEBUG  # DEBUG for module status debugging
-  order_manager:
-    level: DEBUG  # DEBUG for order management debugging
-  omf2.ccu.production_order_manager:
-    level: DEBUG  # DEBUG for production order debugging (zeigt Payload)
+  stock_manager:
+    level: DEBUG  # DEBUG for stock management debugging
+  omf2.ccu.order_manager:
+    level: DEBUG  # DEBUG for order management debugging (zeigt Payload)

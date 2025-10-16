@@ -7,7 +7,6 @@ Tests the ModuleManager class functionality
 import os
 import tempfile
 import unittest
-from pathlib import Path
 
 import yaml
 

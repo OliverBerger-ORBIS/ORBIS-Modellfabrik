@@ -223,12 +223,12 @@ mqtt_clients:
           - "fts/v1/ff/5iO4/connection"
           - "fts/v1/ff/5iO4/factsheet"
       
-      order_manager:
-        routed_topics:  # Topics die an OrderManager.onMessage() geroutet werden
+      stock_manager:
+        routed_topics:  # Topics die an StockManager.onMessage() geroutet werden
           - "/j1/txt/1/f/i/stock"      # HBW Inventory FROM TXT (Stock-Management)
 
-      production_order_manager:
-        routed_topics:  # Topics die an ProductionOrderManager.onMessage() geroutet werden
+      order_manager:
+        routed_topics:  # Topics die an OrderManager.onMessage() geroutet werden
           - "ccu/order/request"         # PRIMARY trigger for new orders
           - "ccu/order/response"        # Order confirmation with UUID
           - "ccu/order/active"          # Active orders queue

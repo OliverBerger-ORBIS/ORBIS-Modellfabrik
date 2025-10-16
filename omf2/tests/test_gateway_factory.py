@@ -5,22 +5,21 @@ Testet die Gateway-Factory Singleton-Pattern, Gateway-Erstellung
 und alle Factory-Methoden.
 """
 
-import unittest
-from unittest.mock import patch, MagicMock
-import threading
-import sys
 import os
+import sys
+import threading
+import unittest
 
 # Add the project root to the Python path
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
 
 from omf2.factory.gateway_factory import (
-    GatewayFactory, 
-    get_gateway_factory,
-    get_ccu_gateway,
-    get_nodered_gateway,
+    GatewayFactory,
     get_admin_gateway,
-    get_gateway
+    get_ccu_gateway,
+    get_gateway,
+    get_gateway_factory,
+    get_nodered_gateway,
 )
 
 
@@ -38,7 +37,7 @@ class TestGatewayFactory(unittest.TestCase):
         """Test Singleton-Pattern für GatewayFactory"""
         factory1 = GatewayFactory()
         factory2 = GatewayFactory()
-        
+
         self.assertIs(factory1, factory2)
         self.assertIsNotNone(factory1)
 
@@ -46,7 +45,7 @@ class TestGatewayFactory(unittest.TestCase):
         """Test Factory-Funktion für Singleton"""
         factory1 = get_gateway_factory()
         factory2 = get_gateway_factory()
-        
+
         self.assertIs(factory1, factory2)
         self.assertIsInstance(factory1, GatewayFactory)
 
@@ -54,7 +53,7 @@ class TestGatewayFactory(unittest.TestCase):
         """Test CcuGateway Erstellung"""
         # Teste, dass Gateway erstellt wird
         gateway = get_ccu_gateway()
-        
+
         self.assertIsNotNone(gateway)
         self.assertIsInstance(gateway, object)  # Gateway ist ein Objekt
 
@@ -62,7 +61,7 @@ class TestGatewayFactory(unittest.TestCase):
         """Test NoderedGateway Erstellung"""
         # Teste, dass Gateway erstellt wird
         gateway = get_nodered_gateway()
-        
+
         self.assertIsNotNone(gateway)
         self.assertIsInstance(gateway, object)  # Gateway ist ein Objekt
 
@@ -70,7 +69,7 @@ class TestGatewayFactory(unittest.TestCase):
         """Test AdminGateway Erstellung"""
         # Teste, dass Gateway erstellt wird
         gateway = get_admin_gateway()
-        
+
         self.assertIsNotNone(gateway)
         self.assertIsInstance(gateway, object)  # Gateway ist ein Objekt
 
@@ -79,47 +78,47 @@ class TestGatewayFactory(unittest.TestCase):
         # Generische Gateway-Erstellung ist nicht implementiert
         # Wir verwenden spezifische Methoden: get_ccu_gateway(), get_admin_gateway(), etc.
         with self.assertRaises(ValueError):
-            get_gateway('ccu')  # Sollte ValueError werfen
+            get_gateway("ccu")  # Sollte ValueError werfen
 
     def test_get_gateway_unknown_domain(self):
         """Test Gateway-Erstellung für unbekannte Domäne"""
         with self.assertRaises(ValueError):
-            get_gateway('unknown_domain')
+            get_gateway("unknown_domain")
 
     def test_get_all_gateways(self):
         """Test Abrufen aller Gateways"""
         # Erstelle Gateway
         get_ccu_gateway()
-        
+
         # Teste get_all_gateways
         factory = get_gateway_factory()
         all_gateways = factory.get_all_gateways()
-        
-        self.assertIn('ccu', all_gateways)
-        self.assertIsNotNone(all_gateways['ccu'])
+
+        self.assertIn("ccu", all_gateways)
+        self.assertIsNotNone(all_gateways["ccu"])
 
     def test_reset_gateway(self):
         """Test Gateway-Reset"""
         # Erstelle Gateway
         get_ccu_gateway()
-        
+
         # Reset Gateway
         factory = get_gateway_factory()
-        factory.reset_gateway('ccu')
-        
+        factory.reset_gateway("ccu")
+
         # Prüfe, dass Gateway entfernt wurde
         all_gateways = factory.get_all_gateways()
-        self.assertNotIn('ccu', all_gateways)
+        self.assertNotIn("ccu", all_gateways)
 
     def test_reset_all_gateways(self):
         """Test Reset aller Gateways"""
         # Erstelle Gateway
         get_ccu_gateway()
-        
+
         # Reset alle Gateways
         factory = get_gateway_factory()
         factory.reset_all_gateways()
-        
+
         # Prüfe, dass alle Gateways entfernt wurden
         all_gateways = factory.get_all_gateways()
         self.assertEqual(len(all_gateways), 0)
@@ -127,22 +126,22 @@ class TestGatewayFactory(unittest.TestCase):
     def test_thread_safety(self):
         """Test Thread-Safety der Factory"""
         results = []
-        
+
         def create_gateway():
             gateway = get_ccu_gateway()
             results.append(gateway)
-        
+
         # Erstelle mehrere Threads
         threads = []
         for _ in range(5):
             thread = threading.Thread(target=create_gateway)
             threads.append(thread)
             thread.start()
-        
+
         # Warte auf alle Threads
         for thread in threads:
             thread.join()
-        
+
         # Alle Gateways sollten die gleiche Instanz sein
         self.assertEqual(len(results), 5)
         for gateway in results:
@@ -152,7 +151,7 @@ class TestGatewayFactory(unittest.TestCase):
         """Test Gateway-Erstellung mit Parametern"""
         # Erstelle Gateway mit Parametern
         gateway = get_ccu_gateway(test_param="test_value")
-        
+
         self.assertIsNotNone(gateway)
         self.assertIsInstance(gateway, object)  # Gateway ist ein Objekt
 
@@ -162,29 +161,29 @@ class TestGatewayFactory(unittest.TestCase):
         ccu_gateway = get_ccu_gateway()
         nodered_gateway = get_nodered_gateway()
         admin_gateway = get_admin_gateway()
-        
+
         # Prüfe, dass alle erstellt wurden
         self.assertIsNotNone(ccu_gateway)
         self.assertIsNotNone(nodered_gateway)
         self.assertIsNotNone(admin_gateway)
-        
+
         # Prüfe, dass alle in Factory registriert sind
         factory = get_gateway_factory()
         all_gateways = factory.get_all_gateways()
-        
-        self.assertIn('ccu', all_gateways)
-        self.assertIn('nodered', all_gateways)
-        self.assertIn('admin', all_gateways)
+
+        self.assertIn("ccu", all_gateways)
+        self.assertIn("nodered", all_gateways)
+        self.assertIn("admin", all_gateways)
 
     def test_gateway_reuse(self):
         """Test Wiederverwendung von Gateways"""
         # Erstelle Gateway zweimal
         gateway1 = get_ccu_gateway()
         gateway2 = get_ccu_gateway()
-        
+
         # Sollte die gleiche Instanz sein
         self.assertIs(gateway1, gateway2)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

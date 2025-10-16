@@ -4,9 +4,10 @@ Verwaltet Produktkonfigurationen aus der Registry (schreibgeschützt)
 Kopiert und angepasst von omf/tools/product_manager.py
 """
 
-import yaml
 from pathlib import Path
-from typing import Dict, List, Any, Optional
+from typing import Any, Dict, List, Optional
+
+import yaml
 
 from omf2.common.logger import get_logger
 
@@ -97,8 +98,8 @@ _omf2_product_manager = None
 def get_omf2_product_manager(config_path: Optional[str] = None) -> Omf2ProductManager:
     """Factory-Funktion für den OMF2 Product Manager (Singleton)"""
     global _omf2_product_manager
-    
+
     if _omf2_product_manager is None:
         _omf2_product_manager = Omf2ProductManager(config_path)
-    
+
     return _omf2_product_manager

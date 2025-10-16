@@ -5,7 +5,6 @@ Tests für Manager Logging-Integration
 import logging
 import tempfile
 import unittest
-from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 from omf.dashboard.tools.mqtt_gateway import MqttGateway

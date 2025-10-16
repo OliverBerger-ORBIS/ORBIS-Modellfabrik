@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from omf.dashboard.tools.path_constants import CONFIG_DIR, PROJECT_ROOT, SESSIONS_DIR
+from omf.dashboard.tools.path_constants import PROJECT_ROOT
 
 """
 Test für neue OMF Dashboard-Komponenten

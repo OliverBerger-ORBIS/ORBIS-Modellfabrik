@@ -4,8 +4,7 @@ Erkennt häufige Fehler wie AttributeError, TypeError, ImportError
 """
 
 import unittest
-from pathlib import Path
-from unittest.mock import MagicMock, Mock
+from unittest.mock import Mock
 
 # Pfad für Imports
 

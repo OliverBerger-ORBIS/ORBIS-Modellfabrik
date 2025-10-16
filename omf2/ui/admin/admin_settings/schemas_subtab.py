@@ -5,8 +5,8 @@ Zeigt alle Schemas aus der Registry nach Kategorien an - NEUE ARCHITEKTUR: topic
 """
 
 import streamlit as st
+
 from omf2.common.logger import get_logger
-from omf2.ui.utils.ui_refresh import request_refresh
 from omf2.ui.common.symbols import UISymbols
 
 logger = get_logger(__name__)
@@ -19,36 +19,39 @@ def render_schemas_subtab():
         st.markdown("Registry-basierte Schema-Verwaltung aus omf2/registry - NEUE ARCHITEKTUR: topic-schema-payload")
 
         # Load registry manager from session state (initialized in omf.py)
-        if 'registry_manager' not in st.session_state:
+        if "registry_manager" not in st.session_state:
             from omf2.registry.manager.registry_manager import get_registry_manager
-            st.session_state['registry_manager'] = get_registry_manager("omf2/registry/")
-        registry_manager = st.session_state['registry_manager']
-        
+
+            st.session_state["registry_manager"] = get_registry_manager("omf2/registry/")
+        registry_manager = st.session_state["registry_manager"]
+
         # Get all schemas - NEUE ARCHITEKTUR
         all_schemas = registry_manager.get_schemas()
-        
+
         if not all_schemas:
             st.warning(f"{UISymbols.get_status_icon('warning')} Keine Schemas in der Registry gefunden")
             st.info("💡 Schemas werden aus dem omf2/registry/schemas/ Verzeichnis geladen.")
             return
-        
+
         # Gruppiere Schemas nach Kategorien
         schemas_by_category = _group_schemas_by_category(all_schemas)
-        
+
         # Zeige Schemas nach Kategorien
         for category, schemas in schemas_by_category.items():
             with st.expander(f"📂 {category} ({len(schemas)} schemas)", expanded=False):
                 # Erstelle DataFrame für diese Kategorie
                 schema_data = []
                 for schema_name, schema_info in schemas.items():
-                    schema_data.append({
-                        "Name": schema_name,
-                        "Schema Category": schema_info.get('schema_category', 'unknown'),
-                        "Schema Sub Category": schema_info.get('schema_sub_category', 'unknown'),
-                        "Version": schema_info.get('version', 'unknown'),
-                        "Description": schema_info.get('description', 'No description')
-                    })
-                
+                    schema_data.append(
+                        {
+                            "Name": schema_name,
+                            "Schema Category": schema_info.get("schema_category", "unknown"),
+                            "Schema Sub Category": schema_info.get("schema_sub_category", "unknown"),
+                            "Version": schema_info.get("version", "unknown"),
+                            "Description": schema_info.get("description", "No description"),
+                        }
+                    )
+
                 if schema_data:
                     st.dataframe(
                         schema_data,
@@ -62,19 +65,19 @@ def render_schemas_subtab():
                         },
                         hide_index=True,
                     )
-        
+
         # Registry Information
         with st.expander(f"{UISymbols.get_functional_icon('dashboard')} Registry Information", expanded=False):
             stats = registry_manager.get_registry_stats()
             st.write(f"**Load Timestamp:** {stats['load_timestamp']}")
             st.write(f"**Total Schemas:** {len(all_schemas)}")
             st.write(f"**Categories:** {len(schemas_by_category)}")
-            
+
             # Zeige Kategorien-Übersicht
             st.write("**Categories Overview:**")
             for category, schemas in schemas_by_category.items():
                 st.write(f"- {category}: {len(schemas)} schemas")
-        
+
     except Exception as e:
         logger.error(f"{UISymbols.get_status_icon('error')} Schemas Subtab rendering error: {e}")
         st.error(f"{UISymbols.get_status_icon('error')} Schemas Subtab failed: {e}")
@@ -84,15 +87,15 @@ def render_schemas_subtab():
 def _group_schemas_by_category(all_schemas):
     """Gruppiert Schemas nach Kategorien"""
     schemas_by_category = {}
-    
+
     for schema_name, schema_info in all_schemas.items():
-        category = schema_info.get('schema_category', 'unknown')
-        
+        category = schema_info.get("schema_category", "unknown")
+
         if category not in schemas_by_category:
             schemas_by_category[category] = {}
-        
+
         schemas_by_category[category][schema_name] = schema_info
-    
+
     return schemas_by_category
 
 

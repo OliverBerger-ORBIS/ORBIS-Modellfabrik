@@ -6,7 +6,6 @@ um kritische Bugs wie die Module-ID-Verwechslung zu verhindern.
 """
 
 import unittest
-from pathlib import Path
 
 # Pfad für Import hinzufügen
 from omf.dashboard.components.admin.steering_factory import _get_module_serial

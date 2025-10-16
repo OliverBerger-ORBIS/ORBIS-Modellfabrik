@@ -5,10 +5,9 @@ Version: 1.0.0
 """
 
 import json
-from unittest.mock import MagicMock, Mock, patch
+from unittest.mock import Mock, patch
 
 import pytest
-
 from omf.dashboard.tools.mqtt_config import MqttConfig
 from omf.dashboard.tools.omf_mqtt_client import OmfMqttClient
 from omf.tools.aps_mqtt_integration import APSMqttIntegration
@@ -181,8 +180,8 @@ class TestAPSMqttIntegration:
         # Mock controller using the correct attributes
         aps_integration.txt_controller_manager.discovered_controllers = {
             "SVR4H73275": {
-                "serial_number": "SVR4H73275", 
-                "ip_address": "192.168.0.102", 
+                "serial_number": "SVR4H73275",
+                "ip_address": "192.168.0.102",
                 "last_seen": 9999999999,  # Far in the future to be considered online
                 "module_type": "DPS"
             }
