@@ -3,7 +3,7 @@
 > **Hinweis:** Für aktuelle Arbeiten, Sprint-Status und alle Projekt-Änderungen siehe [PROJECT_STATUS.md](PROJECT_STATUS.md) - zentrale Change-Dokumentation ohne separate CHANGELOG.md
 
 ## 🎯 Projektziel
-Verständnis der Funktionsweise der APS Fischertechnik Anwendung, um eine eigene Anwendung zu bauen, die die Steuerung der Modellfabrik übernimmt.
+Entwicklung einer modernen, modularen Web-Anwendung (OMF2) zur Steuerung und Überwachung der ORBIS Modellfabrik. OMF2 ersetzt das bestehende APS Fischertechnik System und bietet erweiterte Funktionalitäten für Produktionssteuerung, Monitoring und Analytics.
 
 ### APS-Fischertechnik System
 - **Reale Miniatur-Fabrik** mit verschiedenen Modulen
@@ -21,20 +21,20 @@ Verständnis der Funktionsweise der APS Fischertechnik Anwendung, um eine eigene
 - **Ziel:** Das bestehende Fischertechnik APS-System vollständig verstehen
 - **Erreicht:** APS-Ecosystem dokumentiert, Mosquitto-Analyse, APS-NodeRED Flows analysiert
 
-### **Phase 1: OMF-Dashboard mit APS-CCU Frontend-Funktionalität**
-- **Status:** 🔄 In Bearbeitung
-- **Ziel:** APS-Dashboard Funktionalität im OMF-Dashboard nachbauen
-- **Erreicht:** APS-Tabs implementiert (Overview, Control, Steering, Orders), Sensor-Daten Integration (teilweise)
-- **Aktuell:** Sensor-Daten Integration testen, APS Configuration Tab implementieren
+### **Phase 1: OMF2 Dashboard mit APS-CCU Frontend-Funktionalität**
+- **Status:** ✅ Abgeschlossen
+- **Ziel:** APS-Dashboard Funktionalität im OMF2-Dashboard nachbauen
+- **Erreicht:** Vollständige OMF2-Architektur implementiert, CCU-Tabs funktional, Production Order Manager, Storage Orders Logic, i18n-System
+- **Aktuell:** Messe-Vorbereitung und UI-Polish
 
-### **Phase 2: OMF-Dashboard mit APS-NodeRED Funktionalität**
-- **Status:** ⏳ Geplant
-- **Ziel:** APS-NodeRED Gateway-Funktionalität im OMF-Dashboard integrieren
-- **Geplant:** MQTT ↔ OPC-UA Gateway, VDA 5050 FTS-Standard, Registry-basierte Konfiguration
+### **Phase 2: OMF2 Dashboard mit APS-NodeRED Funktionalität**
+- **Status:** ⏳ Geplant (Post-Messe)
+- **Ziel:** APS-NodeRED Gateway-Funktionalität im OMF2-Dashboard integrieren
+- **Geplant:** MQTT ↔ OPC-UA Gateway, VDA 5050 FTS-Standard, erweiterte Registry-basierte Konfiguration
 
 ### **Phase 3: Erweiterungen (Zukünftige Entwicklung)**
-- **Status:** ⏳ Geplant
-- **Ziel:** OMF-System um erweiterte Funktionalitäten ausbauen
+- **Status:** ⏳ Geplant (Post-Messe)
+- **Ziel:** OMF2-System um erweiterte Funktionalitäten ausbauen
 - **Geplant:** DSP-Anbindung, ORBIS Cloud, SAP/ERP, KI-Use-cases, erweiterte Analytics
 
 #### ✅ Abgeschlossen:

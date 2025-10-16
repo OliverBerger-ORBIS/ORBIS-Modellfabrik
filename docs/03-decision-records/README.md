@@ -34,27 +34,37 @@
 **Datum:** 2024-12-19  
 **Kurzbeschreibung:** Singleton MQTT-Client für alle MQTT-Operationen mit zentralem Logging und konsistenter Payload-Behandlung.
 
-### 7. [Development Rules Compliance](07-development-rules-compliance.md)
-**Status:** Accepted  
+### 7. [Development Rules Compliance](../archive/03-decision-records_omf_legacy/07-development-rules-compliance.md) *(Legacy)*
+**Status:** Archived  
 **Datum:** 2024-12-19  
-**Kurzbeschreibung:** Befolgung der OMF Development Rules für einheitliche Entwicklungsstandards, Code-Qualität, Formatierung und Registry-Pfad-Konstanten.
+**Kurzbeschreibung:** Legacy Development Rules - siehe [I18n Development Rules](i18n-development-rules.md) für aktuelle Regeln.
 
 ### 8. [Registry-basierte Konfiguration](08-registry-based-configuration.md)
 **Status:** Accepted  
 **Datum:** 2024-12-19  
 **Kurzbeschreibung:** Zentrale, versionierte Konfiguration für Schemas, Templates und Module-Definitionen über das Registry-System.
 
-### 9. [Per-Topic-Buffer Pattern](09-per-topic-buffer-pattern.md)
-**Status:** Accepted  
+### 9. [Per-Topic-Buffer Pattern](../archive/02-architecture_omf_legacy/per-topic-buffer-pattern.md) *(Legacy)*
+**Status:** Archived  
 **Datum:** 2024-12-19  
-**Kurzbeschreibung:** Effiziente MQTT-Nachrichtenverarbeitung mit Topic-spezifischen Puffern für bessere Performance und Organisation.
+**Kurzbeschreibung:** Legacy MQTT-Pattern - siehe [Message Processing Pattern](../02-architecture/message-processing-pattern.md) für aktuelle Implementierung.
 
-### 10. [UI-Refresh Pattern](10-ui-refresh-pattern.md)
+### 10. [I18n Development Rules](i18n-development-rules.md) *(NEW)*
+**Status:** Accepted  
+**Datum:** 2025-10-10  
+**Kurzbeschreibung:** Implementierte i18n-Regeln für OMF2 mit DE/EN/FR Support und Lazy Loading.
+
+### 11. [I18n Implementation Complete](i18n-implementation-complete.md) *(NEW)*
+**Status:** Accepted  
+**Datum:** 2025-10-10  
+**Kurzbeschreibung:** Vollständige i18n-Implementierung mit 195+ Translation Keys und 18 YAML-Dateien.
+
+### 12. [UI-Refresh Pattern](10-ui-refresh-pattern.md)
 **Status:** Accepted  
 **Datum:** 2024-12-19  
 **Kurzbeschreibung:** Thread-sicheres UI-Update-System mit `request_refresh()` statt `st.rerun()` zur Vermeidung von Endlosschleifen.
 
-### 11. [Error Handling und Fault Tolerance](11-error-handling-fault-tolerance.md)
+### 13. [Error Handling und Fault Tolerance](11-error-handling-fault-tolerance.md)
 **Status:** Accepted  
 **Datum:** 2024-12-19  
 **Kurzbeschreibung:** Robuste Fehlerbehandlung mit Try-Catch-Blöcken, Graceful Degradation und User-freundlichen Fehlermeldungen.

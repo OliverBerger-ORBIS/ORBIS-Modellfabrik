@@ -1,22 +1,31 @@
 # ORBIS Modellfabrik - Projekt Status
 
-**Letzte Aktualisierung:** 24.09.2025  
-**Aktueller Sprint:** Sprint 05 (18.09 - 01.10.2025)
+**Letzte Aktualisierung:** 16.10.2025  
+**Aktueller Status:** OMF2 Migration abgeschlossen, Messe-Vorbereitung läuft
 
-> **Dokumentations-Strategie:** Dieses Dokument ist die zentrale Quelle für alle Projekt-Änderungen und Sprint-Status. Keine separate CHANGELOG.md - alles hier!
+> **Dokumentations-Strategie:** Dieses Dokument ist die zentrale Quelle für alle Projekt-Änderungen und Status-Updates. Keine separate CHANGELOG.md - alles hier!
 
 ## 🚀 Aktuelle Arbeiten
 
-### 🔄 **APS Dashboard Integration in Bearbeitung** (23.09.2025)
-- **APS Overview Tab** - 75% funktionsfähig (Kundenaufträge, Rohmaterial, Lagerbestand ✅)
-- **Sensor-Daten fehlen noch** - MQTT Topics für Sensoren noch nicht implementiert
-- **APS Control Tab** - System Commands + Status + Monitoring
-- **APS Steering Tab** - Factory + FTS + Modules + Orders (funktional)
-- **APS Orders Tab** - Order Management (unverändert)
-- **Original APS-Dashboard analysiert** - Topics und Payloads extrahiert
-- **Code-Duplizierung** - Temporäre Lösung für Key-Konflikte implementiert
-- **Original-Sourcen organisiert** - `integrations/ff-central-control-unit/aps-dashboard-source/`
-- **Status:** Guter Fortschritt - Sensor-Daten sind nächste Priorität
+### ✅ **OMF2 Migration abgeschlossen** (16.10.2025)
+- **Drei-Schichten-Architektur** - Vollständig implementiert und getestet ✅
+- **Registry Manager** - Zentrale Konfiguration für alle Schemas und Templates ✅
+- **Gateway-Routing-Pattern** - Schema-Validierung und Topic-Routing ✅
+- **Business Manager** - ModuleManager, WorkpieceManager, SensorManager, OrderManager ✅
+- **Production Order Manager** - Vollständige Order-Lifecycle-Verwaltung ✅
+- **Storage Orders Logic** - PICK/DROP → LADEN/ENTLADEN AGV Logik ✅
+- **i18n-System** - DE/EN/FR Support mit 195+ Translation Keys ✅
+- **Best Practice Logging** - Multi-Level Ringbuffer mit UI-Integration ✅
+- **Tests** - 341/341 Tests bestehen ✅
+- **Status:** OMF2 ist produktionsreif und demo-fähig ✅
+
+### 🎯 **Messe-Vorbereitung läuft** (bis 25.11.2025)
+- **Factory Layout** - 3×4 Grid mit echten omf_* SVG-Icons (teilweise implementiert)
+- **Auto-Refresh** - MQTT-Trigger für UI-Refresh (geplant)
+- **Sensor Data UI** - Temperatur-Skala, Kamera-Controls (geplant)
+- **HTML-Templates i18n** - Workpiece-Box übersetzen (geplant)
+- **Live-Test Sessions** - 4 Sessions mit echter Fabrik (geplant)
+- **Status:** Auf Kurs für Messe-Demo am 25.11.2025 🎯
 
 ### ✅ **Mermaid Diagramm-System optimiert** (20.09.2025)
 - **Hybrid-Ansatz** implementiert: zentrale vs. dezentrale Diagramme
@@ -143,19 +152,34 @@
 - **Sprint-Status** wird kontinuierlich aktualisiert
 - **Wichtige Entscheidungen** in `docs/03-decision-records/`
 
-### **🔧 TECHNISCHE PRIORITÄTEN:**
-- **Sensor-Daten Integration testen** - Mit realer Fabrik validieren
-- **Alle APS-Commands testen** - Systematische Validierung
-- **Manager-Duplikate beseitigen** - OrderManager (3x), System-Status-Manager (3x)
+### **🔧 TECHNISCHE PRIORITÄTEN (Sprint 07):**
+- **Factory Layout** - 3×4 Grid mit echten omf_* SVG-Icons
+- **Auto-Refresh** - MQTT-Trigger für UI-Refresh implementieren
+- **Sensor Data UI** - Temperatur-Skala, Kamera-Controls verbessern
+- **HTML-Templates i18n** - Workpiece-Box übersetzen (DE/EN/FR)
+- **Live-Test Session #1** - Mit echter Fabrik durchführen
 
 ### **🌐 ZUKUNFTSPLANUNG:**
-- **I18n (EN, DE, FR) umsetzen** - Internationalisierung
-- **Weitere Architektur-Diagramme** - Message-Flow, Registry-Model
+- **Messe-Vorbereitung** - Factory Layout, Auto-Refresh, Sensor Data UI, Live-Test Sessions
+- **Post-Messe Erweiterungen** - APS-NodeRED Funktionalität, DSP-Anbindung, ORBIS Cloud
+- **Weitere Architektur-Diagramme** - Message-Flow, Registry-Model (bereits implementiert)
 
 ## 📊 Sprint-Status
 
-### Sprint 05 (18.09 - 01.10.2025) - **AKTUELL**
+### Sprint 07 (16.10 - 29.10.2025) - **AKTUELL**
 - **Status:** In Bearbeitung
+- **Fokus:** Messe-Vorbereitung und UI-Polish
+- **Geplant:** Factory Layout, Auto-Refresh, Sensor Data UI, HTML-Templates i18n, Live-Test Sessions
+- **Nächste Schritte:** Factory Layout Icons, Auto-Refresh Implementation, Live-Test Session #1
+
+### Sprint 06 (02.10 - 15.10.2025) - **ABGESCHLOSSEN**
+- **Status:** ✅ Abgeschlossen
+- **Fokus:** OMF2-Refactoring und Architektur-Migration
+- **Erreicht:** Drei-Schichten-Architektur, Registry Manager, Gateway-Routing, Business Manager, Production Order Manager, Storage Orders Logic, i18n-System, Best Practice Logging, 341/341 Tests
+- **Meilenstein:** OMF2 ist produktionsreif und demo-fähig ✅
+
+### Sprint 05 (18.09 - 01.10.2025) - **ABGESCHLOSSEN**
+- **Status:** ✅ Abgeschlossen
 - **Fokus:** Component-Strukturierung und User-Konzept Vorbereitung
 - **Erreicht:** APS Dashboard vollständig in OMF-Dashboard integriert, Component-Bereinigung abgeschlossen
 - **Nächste Schritte:** User-Konzept umsetzen (Rollenbasierte Tab-Sichtbarkeit), Sprint-Dokumentation
@@ -183,18 +207,26 @@
 ## 🎯 Wichtige Doings
 
 ### **Entscheidungen getroffen:**
-- **Singleton Pattern** für MQTT-Client
-- **Wrapper Pattern** für Dashboard-Tabs
-- **Registry-basierte Konfiguration**
-- **Per-Topic-Buffer Pattern** für MQTT-Nachrichten
+- **Drei-Schichten-Architektur** MQTT Client → Gateway → Business Manager
+- **Registry Manager** zentrale Konfiguration für alle Schemas und Templates
+- **Gateway-Routing-Pattern** Schema-Validierung und Topic-Routing
+- **Message Processing Pattern** standardisierte Message-Verarbeitung
+- **i18n-Architektur** Lazy Loading, Session State Integration, 3 Sprachen
+- **Best Practice Logging** Multi-Level Ringbuffer mit Thread-Safety
+- **UI-Refresh-Pattern** request_refresh() statt st.rerun()
+- **Asymmetrische Architektur** Commands über NodeRed, Telemetry direct
 
 ### **Technische Meilensteine:**
-- **APS Dashboard** vollständig integriert
-- **MQTT-Logging** einheitlich implementiert
-- **Dictionary-Payloads** für korrekte Kommunikation
-- **Session Manager** mit Replay Station als Default
-- **Mermaid Doku** - Hybrid-Ansatz implementiert mit `docs/_shared/diagrams/`
-- **Code-Cleanup** - Sequenz-Kontrolle Helper Apps entfernt (VDA5050 übernimmt)
+- **OMF2-Architektur** vollständig implementiert (Drei-Schichten-Architektur)
+- **Registry Manager** zentrale Konfiguration für alle Schemas und Templates
+- **Gateway-Routing-Pattern** Schema-Validierung und Topic-Routing
+- **Business Manager** ModuleManager, WorkpieceManager, SensorManager, OrderManager
+- **Production Order Manager** vollständige Order-Lifecycle-Verwaltung
+- **Storage Orders Logic** PICK/DROP → LADEN/ENTLADEN AGV Logik
+- **i18n-System** DE/EN/FR Support mit 195+ Translation Keys
+- **Best Practice Logging** Multi-Level Ringbuffer mit UI-Integration
+- **Tests** 341/341 Tests bestehen
+- **Dokumentations-Restrukturierung** Legacy vs. Implementierte Dokumente getrennt
 
 
 ## 🔗 Wichtige Links
@@ -208,4 +240,4 @@
 
 ---
 
-**Status:** Projekt läuft erfolgreich, APS Dashboard Integration in systematischer Weiterentwicklung 🔄
+**Status:** OMF2 Migration abgeschlossen, Messe-Vorbereitung läuft erfolgreich 🎯

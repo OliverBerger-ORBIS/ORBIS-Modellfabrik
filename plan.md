@@ -235,29 +235,20 @@ Aus `REFACTORING_BACKLOG.md` Zeile 57:
 - Aktive Module visuell hervorgehoben
 - Shopfloor-Grid responsive
 
-### Task 2.3: Step Status Display Fix (PENDING)
+### ✅ **Task 2.3 ABGESCHLOSSEN: Step Status Display Fix**
 
-**Status:** 🟡 **PENDING - Teilweise implementiert**
+**Status:** ✅ **VOLLSTÄNDIG ABGESCHLOSSEN**
 
-**Problem-Analyse:**
+**Was wurde implementiert:**
 - ✅ **Navigation Step Enhancement:** UX-Verbesserung implementiert
-- 🟡 **Step Status Display:** UI zeigt Step-Status korrekt an (FINISHED für vorherige Steps)
-- 🟡 **Missing Navigation Step:** Production Plan hat 15 statt 16 Steps (ersten NAVIGATION Step AGV > HBW fehlt)
+- ✅ **Step Status Display:** UI zeigt Step-Status korrekt an (FINISHED für vorherige Steps)
+- ✅ **Production Plan:** 16 Steps korrekt implementiert (AGV > HBW als Step 1)
 
-**Was noch zu tun ist:**
-- ✅ **Navigation Step Enhancement:** Bereits implementiert
-- 🟡 **Step Status Display:** UI muss FINISHED Status für vorherige Steps korrekt anzeigen
-- 🟡 **Add Missing Navigation Step:** Production Plan sollte 16 Steps haben (AGV > HBW als Step 1)
-
-**Zu implementieren:**
-- UI-Logik für korrekte Step-Status-Anzeige
-- Production Plan um ersten NAVIGATION Step erweitern
-- Tests für 16-Step Production Plan
-
-**Erfolgs-Kriterium:**
-- UI zeigt Step-Status korrekt (FINISHED für vorherige Steps)
-- Production Plan hat 16 Steps (AGV > HBW als Step 1)
-- Alle Tests bestehen
+**Erfolgs-Kriterium erreicht:**
+- ✅ UI zeigt Step-Status korrekt (FINISHED für vorherige Steps)
+- ✅ Production Plan hat 16 Steps (AGV > HBW als Step 1)
+- ✅ Alle Tests bestehen
+- ✅ Intensiv getestet mit Session-Daten (auftrag_blau_1, _weiss_1, _rot_1)
 
 ---
 
@@ -282,38 +273,27 @@ Aus `REFACTORING_BACKLOG.md` Zeile 57:
 
 ---
 
-### Task 2.5: Storage Orders Subtab Verbesserungen
+### ✅ **Task 2.5 ABGESCHLOSSEN: Storage Orders Subtab Verbesserungen**
 
-**Abhängigkeit: Task 2.2 abgeschlossen**
+**Status:** ✅ **VOLLSTÄNDIG ABGESCHLOSSEN**
 
-**Problem-Analyse:**
+**Was wurde implementiert:**
+- ✅ **Storage Orders Subtab:** Vollständige `storage-plan` Integration
+- ✅ **Vollständige Visualisierung:** Analog zu Production Orders
+- ✅ **ProductionOrderManager Integration:** `get_complete_storage_plan()` implementiert
+- ✅ **2-Spalten-Layout:** Liste:Shopfloor wie Production Orders
+- ✅ **Shopfloor Layout Integration:** Aktive Module-Hervorhebung
+- ✅ **Command-Mapping:** Korrekte PICK/DROP → LADEN/ENTLADEN AGV Logik
 
-Aus `REFACTORING_BACKLOG.md` Zeile 59:
-```markdown
-| Operator Tabs (CCU Aufträge.) | `ui/ccu/orders/ccu_orders_tab.py` | ❌ | Production-Order Manager mit STORAGE-Orders und storage-plan ? |
-```
-
-**Feature-Anforderung:**
-
-- **Storage Orders Subtab** soll `storage-plan` anzeigen
-- **Aktuell:** Nur einfacher Plan (START → DPS → HBW)
-- **Verbesserung:** Vollständige `storage-plan` Integration
-
-**Zu implementieren:**
-
-- `omf2/ui/ccu/ccu_orders/storage_orders_subtab.py` erweitern
-- `storage-plan` Visualisierung hinzufügen
-- ProductionOrderManager Integration verbessern
-
-**Erfolgs-Kriterium:**
-
-- Storage Orders zeigen vollständigen storage-plan
-- Visualisierung analog zu Production Orders
-- Integration mit ProductionOrderManager
+**Erfolgs-Kriterium erreicht:**
+- ✅ Storage Orders zeigen vollständigen storage-plan
+- ✅ Visualisierung analog zu Production Orders
+- ✅ Integration mit ProductionOrderManager
+- ✅ UI-Konsistenz zwischen Production und Storage Orders
 
 ### Task 2.6: Factory Steering Hardcoded Payloads Fix
 
-**Abhängigkeit: Task 2.5 abgeschlossen**
+**Abhängigkeit: Task 2.5 ✅ ABGESCHLOSSEN**
 
 **Problem-Analyse:**
 
@@ -348,7 +328,7 @@ Gateway → MQTT Client.publish(topic, payload_clean, qos, retain)
 
 ### Task 2.7: Auto-Refresh Implementation
 
-**Abhängigkeit: Task 2.6 abgeschlossen**
+**Abhängigkeit: Task 2.6 (Factory Steering) abgeschlossen**
 
 **MQTT-Trigger für UI-Refresh:**
 
@@ -373,21 +353,38 @@ def on_mqtt_message(self, topic, message, meta):
 - UI aktualisiert sich automatisch bei relevanten MQTT Messages
 - Keine Performance-Probleme (max 1 Refresh/Sekunde)
 
-### Task 2.8: Factory Layout Integration
+### 🟡 **Task 2.8: Factory Layout Integration (TEILWEISE IMPLEMENTIERT)**
 
-**Abhängigkeit: Task 2.7 (Auto-Refresh)**
+**Status:** 🟡 **TEILWEISE IMPLEMENTIERT - FEHLENDE FEATURES**
 
-**Shopfloor 3×4 Grid wie in omf/:**
+**Was bereits implementiert:**
+- ✅ **Shopfloor 3×4 Grid:** Grundlegendes Layout implementiert
+- ✅ **Integration:** In CCU Configuration Tab
+- ✅ **Shopfloor Layout System:** Reusable UI-Komponente
+- ✅ **Aktive Module-Hervorhebung:** Visuelle Indikation
+- ✅ **Integration:** In Production und Storage Orders
 
-- Echte omf_* SVG-Icons (nicht ic_ft_* Fallback)
-- Integration in CCU Configuration Tab
+**Was noch fehlt:**
+- ❌ **Echte omf_* SVG-Icons:** Noch ic_ft_* Fallback verwendet
+- ❌ **FTS Navigation Display:** Für Transport-Schritte nicht implementiert
+- ❌ **Icon-Test:** Mit `omf2/ui/common/icon_test.py` nicht durchgeführt
+- ❌ **EMPTY-Felder Aufteilung:** Neue Anforderung
+- ❌ **ORBIS-Logo Darstellung:** Auf Empty-Feldern
+- ❌ **DSP Darstellung:** Auf Empty-Feldern
+
+**Zu implementieren:**
+- `omf2/ui/ccu/common/shopfloor_layout.py` - omf_* SVG-Icons verwenden
+- FTS Navigation Display für Transport-Schritte
+- EMPTY-Felder Aufteilung und ORBIS-Logo/DSP Darstellung
 - Icon-Test mit `omf2/ui/common/icon_test.py`
 
 **Erfolgs-Kriterium:**
-
-- Factory Layout korrekt dargestellt
-- Alle Module mit richtigen Icons
-- Shopfloor-Grid responsive
+- ✅ Factory Layout korrekt dargestellt
+- ❌ Alle Module mit richtigen omf_* SVG-Icons
+- ✅ Shopfloor-Grid responsive
+- ✅ Integration in Production und Storage Orders
+- ❌ FTS Navigation Display implementiert
+- ❌ EMPTY-Felder mit ORBIS-Logo/DSP
 
 ## Phase 3: UI-POLISH & i18n (5. - 18. Nov, 14 Tage)
 
@@ -409,7 +406,7 @@ def on_mqtt_message(self, topic, message, meta):
 
 ### Task 3.3: Production Order Manager Polish
 
-**Abhängigkeit: Task 2.7 (Auto-Refresh)**
+**Abhängigkeit: Task 2.7 (Auto-Refresh) abgeschlossen**
 
 - STORAGE Orders mit storage-plan
 - Order-Filterung & Sortierung
@@ -503,10 +500,10 @@ def on_mqtt_message(self, topic, message, meta):
 ### HOCH:
 
 1. ~~**Stock-Topic Fehler** → Phase 2 Task 2.1~~ ✅ **GELÖST**
-2. **Step Status Display** → Task 2.3 (PENDING)
+2. ~~**Step Status Display** → Task 2.3~~ ✅ **ABGESCHLOSSEN**
 3. **Manager Renaming** → Task 2.4 (PENDING)
 4. **Auto-Refresh** → Task 2.7
-5. **Factory Layout** → Task 2.8
+5. **Factory Layout** → Task 2.8 (TEILWEISE - omf_* Icons, FTS Navigation, EMPTY-Felder fehlen)
 
 ### MITTEL:
 
@@ -580,15 +577,15 @@ def on_mqtt_message(self, topic, message, meta):
 - [x] ~~Task 1.2: Alle 18 failing Tests reparieren → 100% Test-Success~~ ✅ **ABGESCHLOSSEN**
 - [x] ~~Task 1.3: TODO-Audit & Feature-Gap-Analyse~~ ✅ **ABGESCHLOSSEN**
 - [x] ~~Task 2.1: Storage Orders Logic & UI-Konsistenz~~ ✅ **ABGESCHLOSSEN**
-- [ ] Task 2.3: Step Status Display Fix (PENDING)
+- [x] ~~Task 2.3: Step Status Display Fix~~ ✅ **ABGESCHLOSSEN**
 - [ ] Task 2.4: Manager Renaming (PENDING)
-- [ ] Dokumentations-Audit: TODOs finden, Feature-Lücken identifizieren
+- [x] ~~Dokumentations-Audit: TODOs finden, Feature-Lücken identifizieren~~ ✅ **ABGESCHLOSSEN**
 - [ ] Live-Test Session #1 mit echter Fabrik durchführen
 - [ ] Auto-Refresh bei MQTT Messages implementieren
 - [ ] Live-Test Session #2: Regression-Check und Vergleich mit Session #1
 - [ ] Factory Layout: 3×4 Grid mit echten omf_* SVG-Icons
 - [ ] Sensor Data UI: Temperatur-Skala, Kamera-Controls, Bild-Anzeige
-- [ ] Production Order Manager: STORAGE Orders, Filterung, Limitierung
+- [x] ~~Production Order Manager: STORAGE Orders, Filterung, Limitierung~~ ✅ **ABGESCHLOSSEN**
 - [ ] Node-RED MQTT Clients: Environment-Switch, Registry-Topics
 - [ ] HTML-Templates i18n: Workpiece-Box übersetzen (DE/EN/FR)
 - [ ] Live-Test Session #3: Workflows, Rollen, Sprachen komplett testen
@@ -600,3 +597,4 @@ def on_mqtt_message(self, topic, message, meta):
 - [ ] Messe-Präsentation: Demo-Szenarien, Backup-Strategie, Installation
 - [ ] Messe-Setup: Hardware-Check, Environment-Tests, Emergency-Rollback
 - [ ] Messe-Standby: Monitoring, Quick-Fixes, Feedback sammeln
+- [ ] Ausarbeitung der Roadmap: Konkrete Inhalte für Phase 2-4 definieren

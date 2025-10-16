@@ -52,7 +52,7 @@ Die Fabrik ist außerdem über einen WLAN-Router mit der fischertechnik Cloud ve
 Zur Simulation von Fernwartung werden die Bilder, die die bewegliche Kamera in der Fabrik aufnimmt, im Dashboard angezeigt, so dass der Zustand der Fabrik remote eingesehen werden kann.
 
 > **🔗 ORBIS-Integration:**
-> - **[OMF Dashboard Architecture](../../02-architecture/omf-dashboard-architecture.md)** - ORBIS Dashboard-Architektur
+> - **[OMF2 Architecture](../../02-architecture/omf2-architecture.md)** – Implementierte ORBIS Dashboard-Architektur
 > - **[Message Flow](../../02-architecture/message-flow.md)** - End-to-End Kommunikationsflüsse
 > - **[Registry Model](../../02-architecture/registry-model.md)** - Template-basierte Steuerung
 > - **[System Overview](./system-overview.md)** - APS "as IS" System-Übersicht

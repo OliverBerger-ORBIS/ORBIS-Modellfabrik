@@ -18,10 +18,12 @@ Jeder Sprint beschreibt Ziele, Änderungen, Tests und offene Punkte.
 - [Sprint 03](sprint_03.md) – MQTT-Schnittstelle und ORBIS Dashboard (23.08 - 03.09.2025)
 - [Sprint 04](sprint_04.md) – Daten sammeln und Projektstruktur (04.09 - 17.09.2025)
 - [Sprint 05](sprint_05.md) – Track & Trace und Fit Gap Analyse (18.09 - 01.10.2025)
-- [Sprint Aktuell](sprint_aktuell.md) – Aktuelle Arbeiten und Next Steps
+- [Sprint 06](sprint_06.md) – OMF2-Refactoring und Architektur-Migration (02.10 - 15.10.2025)
+- [Sprint Aktuell](sprint_aktuell.md) – Messe-Vorbereitung und UI-Polish (16.10 - 29.10.2025)
 
 ## 📊 Stakeholder-Reports
 - [Sprint 01-04 Report](stakeholder_report_sprints_01-04.md) – Umfassender Bericht für Management
+- [Sprint 05-06 Report](stakeholder_report_sprints_05-06.md) – OMF2-Migration und Architektur-Refactoring
 
 ---
 

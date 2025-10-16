@@ -14,23 +14,26 @@ Die Dokumente beschreiben den Systemkontext, die Message Flows, das Registry-Mod
 
 ## 🔗 Dokumente
 
+### Legacy Architecture (archiviert)
+- [OMF Dashboard Architecture](../archive/02-architecture_omf_legacy/omf-dashboard-architecture.md) – Legacy Dashboard-Architektur
+- [Per-Topic-Buffer Pattern](../archive/02-architecture_omf_legacy/per-topic-buffer-pattern.md) – Legacy MQTT-Pattern
+- [Singleton Pattern Compliance](../archive/02-architecture_omf_legacy/singleton-pattern-compliance.md) – Legacy Singleton Pattern
+- [System Context](../archive/02-architecture_omf_legacy/system-context.md) – Legacy System-Überblick
+- [Message Flow](../archive/02-architecture_omf_legacy/message-flow.md) – Legacy Message-Flows
+
+### Implemented Architecture (omf2)
+- [OMF2 Architecture](omf2-architecture.md) – Implementierte Architektur
+- [Project Structure](project-structure.md) – Implementierte Projektstruktur
+- [Implementation Status](implementation-status.md) – Aktueller Implementierungsstatus
+- [Message Processing Pattern](message-processing-pattern.md) – Implementiertes Message-Pattern
+
 ### Core Architecture
-- [System Context](system-context.md) – Überblick über Hauptkomponenten (CCU, Module, Node-RED, OMF)
-- [Message Flow](message-flow.md) – End-to-End-Flows (Order → Module, State → Dashboard)
-- [Registry Model](registry-model.md) – Registry-Prinzipien & Versionierung
-- [Message Template System](message-template-system.md) – Template-Manager, Validierung, Topic-Resolution
+- [OMF2 Registry System](omf2-registry-system.md) – **KRITISCH** - RegistryManager, OMF-Entitäten, API
 - [Naming Conventions](naming-conventions.md) – Topics, Template-Keys, IDs
 
 ### APS Physical Architecture
 - [APS Physical Architecture](../../06-integrations/APS-Ecosystem/system-overview.md) – Fischertechnik Netzwerk & Hardware
 - [APS Data Flow](aps-data-flow.md) – Datenverarbeitung & Storage
-
-### Dashboard Architecture
-- [OMF Dashboard Architecture](omf-dashboard-architecture.md) – Dashboard-Architektur, MQTT-Patterns, Komponenten-Struktur
-
-### Architektur-Pattern
-- [Singleton Pattern Compliance](singleton-pattern-compliance.md) – MQTT-Singleton Pattern Richtlinien
-- [Per-Topic-Buffer Pattern](per-topic-buffer-pattern.md) – Effiziente MQTT-Nachrichtenverarbeitung
 
 ### Implementierungs-Details
 - [Module State Manager](implementation/module-state-manager.md) – Modul-Status-Management Implementierung

@@ -23,6 +23,40 @@
 - **Entwickler:** [Registry Model](docs/02-architecture/registry-model.md) → [How-Tos](docs/04-howto/)
 - **Architekten:** [Decision Records](docs/03-decision-records/) → [Architecture](docs/02-architecture/)
 
+## 🤖 **Cursor AI / Agent Einweisung**
+
+### **🚨 KRITISCHE VERBOTE (HÖCHSTE PRIORITÄT)**
+- **NIEMALS Streamlit-Apps starten:** `streamlit run` ❌ (Verursacht Race-Conditions, MQTT-Konflikte)
+- **NUR User startet Streamlit-Apps** - Agent startet KEINE Streamlit-Apps
+
+### **📋 Dokumentations-Workflow für neue Agenten/Chats**
+1. **Projekt-Status verstehen:** [PROJECT_STATUS.md](docs/PROJECT_STATUS.md) - Aktueller Sprint, Status, Arbeiten
+2. **Strategische Übersicht:** [Roadmap](docs/01-strategy/roadmap.md) - Alle Entwicklungsphasen
+3. **Konkrete ToDos:** [plan.md](plan.md) - Messe-Vorbereitung und aktuelle Aufgaben
+4. **Sprint-Details:** [docs/sprints/](docs/sprints/) - Detaillierte Sprint-Dokumentation
+5. **Architektur verstehen:** [OMF2 Architecture](docs/02-architecture/omf2-architecture.md) - Technische Grundlagen
+6. **Registry System:** [OMF2 Registry System](docs/02-architecture/omf2-registry-system.md) - **KRITISCH** - OMF-Entitäten-Zugriff
+
+### **🎯 Dokumentations-Prinzipien**
+- **roadmap.md** = Strategischer Überblick (keine konkreten ToDos)
+- **PROJECT_STATUS.md** = Sprint-Status und aktuelle Arbeiten  
+- **plan.md** = Konkrete Messe-Vorbereitung + Post-Messe Tasks
+- **docs/sprints/** = Detaillierte Sprint-Dokumentation
+- **docs/01-strategy/** = Strategische Grundlagen
+- **docs/02-architecture/** = Technische Architektur
+- **docs/03-decision-records/** = Architektur-Entscheidungen
+- **docs/04-howto/** = Praktische Anleitungen
+
+### **🔧 Entwicklung-Regeln (AUTOMATISCH BEFOLGEN)**
+- **Absolute Imports:** `from omf.dashboard.tools.logging_config import get_logger`
+- **Absolute Pfade:** `project_root / "data/omf-data/sessions"`
+- **OMF-Logging:** `get_logger("module.component")` statt `logging.getLogger()`
+- **UI-Refresh:** `request_refresh()` statt `st.rerun()`
+- **Pre-commit Hooks:** Immer befolgen, nie mit `--no-verify` überspringen
+- **Tests:** Nach jeder Änderung ausführen mit aktiviertem `.venv`
+
+> **📚 Vollständige Regeln:** Siehe [Development Rules Compliance](docs/03-decision-records/07-development-rules-compliance.md)
+
 ## 📚 Documentation Structure
 
 ### 01-Strategy

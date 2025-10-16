@@ -1,79 +1,112 @@
-# Sprint Aktuell - APS Dashboard Integration
+# Sprint Aktuell - Messe-Vorbereitung
 
-**Zeitraum:** 20.09.2025 - 01.10.2025  
+**Zeitraum:** 16.10.2025 - 29.10.2025  
 **Status:** In Bearbeitung  
-**Fokus:** Sprint-Dokumentation und Architektur-Anpassung
+**Fokus:** Messe-Vorbereitung und UI-Polish
 
 ## 🎯 Aktuelle Arbeiten
 
-### ✅ **APS Dashboard Integration abgeschlossen** (20.09.2025)
-- **4 neue APS Tabs** vollständig implementiert:
-  - 🏭 APS Overview (System Status, Controllers, Orders, Commands)
-  - 📋 APS Orders (VDA5050 Orders, Instant Actions, History, Tools)
-  - ⚙️ APS System Control (Commands, Status, Monitor, Debug)
-  - 🎮 APS Steering (Factory, Orders, Modules, FTS)
+### 🎯 **Messe-Vorbereitung läuft** (bis 25.11.2025)
+- **Factory Layout** - 3×4 Grid mit echten omf_* SVG-Icons (teilweise implementiert)
+- **Auto-Refresh** - MQTT-Trigger für UI-Refresh (geplant)
+- **Sensor Data UI** - Temperatur-Skala, Kamera-Controls (geplant)
+- **HTML-Templates i18n** - Workpiece-Box übersetzen (geplant)
+- **Live-Test Sessions** - 4 Sessions mit echter Fabrik (geplant)
+- **Status:** Auf Kurs für Messe-Demo am 25.11.2025 🎯
 
-### 🔧 **Technische Implementierung**
-- **APS-spezifische Manager:**
-  - `VDA5050OrderManager` - VDA5050 Order Management
-  - `APSTXTControllerManager` - TXT Controller Discovery
-  - `APSSystemControlManager` - System Control Commands
-  - `APSMqttIntegration` - Zentrale MQTT-Integration
+### ✅ **OMF2 Migration abgeschlossen** (16.10.2025)
+- **Drei-Schichten-Architektur** - Vollständig implementiert und getestet ✅
+- **Registry Manager** - Zentrale Konfiguration für alle Schemas und Templates ✅
+- **Gateway-Routing-Pattern** - Schema-Validierung und Topic-Routing ✅
+- **Business Manager** - ModuleManager, WorkpieceManager, SensorManager, OrderManager ✅
+- **Production Order Manager** - Vollständige Order-Lifecycle-Verwaltung ✅
+- **Storage Orders Logic** - PICK/DROP → LADEN/ENTLADEN AGV Logik ✅
+- **i18n-System** - DE/EN/FR Support mit 195+ Translation Keys ✅
+- **Best Practice Logging** - Multi-Level Ringbuffer mit UI-Integration ✅
+- **Tests** - 341/341 Tests bestehen ✅
+- **Status:** OMF2 ist produktionsreif und demo-fähig ✅
 
-- **Registry-Erweiterung:**
-  - APS-spezifische Topics (`topics/aps.yml`)
-  - TXT Controller Schemas (`txt_controllers.yml`)
-  - VDA5050 Templates (`templates/vda5050.yml`)
+## 🔧 Technische Prioritäten (Sprint 07)
 
-- **Fischertechnik TXT-Programme:**
-  - Alle `.ft` Dateien extrahiert und analysiert
-  - `FF_DPS_24V.py` als CCU-Logik identifiziert
-  - MQTT-Integration und Order Management verstanden
+### **Factory Layout** - 3×4 Grid mit echten omf_* SVG-Icons
+- **Problem:** Noch ic_ft_* Fallback verwendet
+- **Lösung:** Echte omf_* SVG-Icons implementieren
+- **Integration:** In CCU Configuration Tab
+- **Icon-Test:** Mit `omf2/ui/common/icon_test.py`
 
-### 🔄 **Nächste Schritte**
-1. **Sprint-Dokumentation** erstellen (sprint_01.md bis sprint_05.md)
-2. **PROJECT_OVERVIEW.md** zu statischer Dokumentation umwandeln
-3. **Architektur-Dokumentation** an APS-Analyse-Ergebnisse anpassen
-4. **Session Manager Dokumentation** vollständig (bereits erstellt: [Session Manager Helper App](../../04-howto/helper_apps/session-manager/README.md))
-5. **Node-RED Simulation** im Dashboard vorbereiten
+### **Auto-Refresh** - MQTT-Trigger für UI-Refresh
+- **MQTT-Trigger:** `ccu/order/active`, `ccu/order/completed`, `module/v1/ff/*/state`
+- **Pattern:** `request_refresh()` nach Message-Verarbeitung
+- **Performance:** Max 1 Refresh/Sekunde
+- **Integration:** In alle relevanten UI-Komponenten
+
+### **Sensor Data UI** - Temperatur-Skala, Kamera-Controls
+- **Temperatur-Skala:** Mit Farbverlauf (Thermometer)
+- **Kamera-Controls:** 3×3 Grid verbessern (HOCH, LINKS, ZENTRIEREN, RECHTS, RUNTER)
+- **Bild-Anzeige:** Aufgenommene Bilder anzeigen
+- **Integration:** In CCU Overview Tab
+
+### **HTML-Templates i18n** - Workpiece-Box übersetzen
+- **Datei:** `omf2/assets/html_templates.py::get_workpiece_box_template()`
+- **Hardcoded Texte:** "Bestand:", "Verfügbar:", "Ja", "Nein"
+- **Sprachen:** DE, EN, FR
+- **Integration:** Mit i18n-System
+
+### **Live-Test Session #1** - Mit echter Fabrik
+- **Abhängigkeit:** Task 2.6 abgeschlossen + im Büro
+- **Ziel:** omf2 mit echter Fabrik verbinden
+- **Tests:** Alle CCU Tabs durchklicken, alle Admin Tabs durchklicken
+- **Dokumentation:** Fehler dokumentieren (wie Chat-C Protokoll)
 
 ## 📊 Sprint-Status
 
 ### **Erreichte Ziele:**
-- ✅ APS Dashboard vollständig in OMF-Dashboard integriert
-- ✅ MQTT-Integration mit einheitlichem Logging
-- ✅ Dictionary-Payloads für korrekte Kommunikation
-- ✅ Session Manager mit Replay Station als Default
-  - **Dokumentation:** [Session Manager Helper App](../../04-howto/helper_apps/session-manager/README.md)
-- ✅ 11 Decision Records für Architektur-Dokumentation
+- ✅ OMF2-Architektur vollständig implementiert
+- ✅ Registry Manager als zentrale Konfiguration
+- ✅ Gateway-Routing-Pattern mit Schema-Validierung
+- ✅ Business Manager Pattern implementiert
+- ✅ Production Order Manager vollständig
+- ✅ Storage Orders Logic implementiert
+- ✅ i18n-System vollständig (DE/EN/FR)
+- ✅ Best Practice Logging-System
+- ✅ 341/341 Tests bestehen
+- ✅ Dokumentations-Restrukturierung abgeschlossen
 
 ### **Technische Meilensteine:**
-- **210 Dateien geändert** (161.245 Zeilen hinzugefügt)
-- **Vollständige Test-Suite** für APS-Komponenten
-- **Kompatibel** mit realer APS-Fabrik und Replay-Broker
-- **Singleton Pattern** für MQTT-Client implementiert
+- **Vollständige Architektur-Migration** von omf/ zu omf2/
+- **Thread-sichere MQTT-Client** mit Connection Loop Prevention
+- **Schema-driven Payload-Generierung** über Registry
+- **Asymmetrische Architektur** Commands über NodeRed, Telemetry direct
+- **UI-Refresh-Pattern** request_refresh() statt st.rerun()
+- **Meta-Parameter-System** MQTT-Metadaten durch gesamte Architektur
 
 ## 🎯 Wichtige Doings
 
 ### **Entscheidungen getroffen:**
-- **Wrapper Pattern** für Dashboard-Tabs
-- **Registry-basierte Konfiguration**
-- **Per-Topic-Buffer Pattern** für MQTT-Nachrichten
-- **UI-Refresh Pattern** für Streamlit-Komponenten
+- **Drei-Schichten-Architektur** MQTT Client → Gateway → Business Manager
+- **Registry Manager** zentrale Konfiguration für alle Schemas und Templates
+- **Gateway-Routing-Pattern** Schema-Validierung und Topic-Routing
+- **Message Processing Pattern** standardisierte Message-Verarbeitung
+- **i18n-Architektur** Lazy Loading, Session State Integration, 3 Sprachen
+- **Best Practice Logging** Multi-Level Ringbuffer mit Thread-Safety
+- **UI-Refresh-Pattern** request_refresh() statt st.rerun()
+- **Asymmetrische Architektur** Commands über NodeRed, Telemetry direct
 
 ### **Offene Punkte:**
-- **Node-RED Simulation** im Dashboard
-- **I18n Unterstützung** (EN, DE, FR)
-- **Mermaid Diagramme** isolieren und referenzieren
-- **Architektur-Dokumentation** anpassen
+- **Factory Layout Icons** - Echte omf_* SVG-Icons implementieren
+- **Auto-Refresh** - MQTT-Trigger für UI-Refresh
+- **Sensor Data UI** - Temperatur-Skala, Kamera-Controls
+- **HTML-Templates i18n** - Workpiece-Box übersetzen
+- **Live-Test Sessions** - 4 Sessions mit echter Fabrik
 
 ## 📋 Next Steps
 
-1. **Sprint-Dokumentation** erstellen
-2. **PROJECT_OVERVIEW.md** umwandeln
-3. **Architektur-Dokumentation** anpassen
-4. **Node-RED Simulation** vorbereiten
+1. **Factory Layout** - 3×4 Grid mit echten omf_* SVG-Icons
+2. **Auto-Refresh** - MQTT-Trigger für UI-Refresh implementieren
+3. **Sensor Data UI** - Temperatur-Skala, Kamera-Controls verbessern
+4. **HTML-Templates i18n** - Workpiece-Box übersetzen (DE/EN/FR)
+5. **Live-Test Session #1** - Mit echter Fabrik durchführen
 
 ---
 
-**Status:** Sprint läuft erfolgreich, alle geplanten Meilensteine erreicht 🎉
+**Status:** Sprint läuft erfolgreich, Messe-Vorbereitung auf Kurs für 25.11.2025 🎯

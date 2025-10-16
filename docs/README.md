@@ -20,7 +20,7 @@
 - [Message Flow](02-architecture/message-flow.md) - End-to-End-Flows (Order→Module, State→Dashboard)
 - [APS Physical Architecture](06-integrations/APS-Ecosystem/system-overview.md) - Fischertechnik Netzwerk & Hardware
 - [APS Data Flow](02-architecture/aps-data-flow.md) - Datenverarbeitung & Storage
-- [Registry Model](02-architecture/registry-model.md) - Registry-Prinzipien & Versionierung
+- [OMF2 Registry System](02-architecture/omf2-registry-system.md) - **KRITISCH** - RegistryManager, OMF-Entitäten, API
 - [Naming Conventions](02-architecture/naming-conventions.md) - Topics, Template-Keys, IDs
 
 ### 03-Decision Records (ADRs)
@@ -57,7 +57,6 @@
 
 ### 05-Reference
 - [Topics](05-reference/topics.md) - Logische Topic-Gruppen
-- [Templates](05-reference/templates.md) - Template-Index & Migration Mapping
 - [Enums](05-reference/enums.md) - Zentrale Listen (Availability/Action/Workpiece)
 
 ### 99-Glossary
