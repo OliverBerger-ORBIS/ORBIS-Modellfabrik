@@ -215,6 +215,15 @@ def _render_table_filters(df, i18n):
     try:
         logger.debug("🔍 Rendering Table Filter Controls")
 
+        # Initialize filter state in session_state BEFORE creating widgets
+        # This prevents session state conflicts
+        if "ccu_filter_topic" not in st.session_state:
+            st.session_state["ccu_filter_topic"] = "All Topics"
+        if "ccu_filter_module" not in st.session_state:
+            st.session_state["ccu_filter_module"] = "All Modules/FTS"
+        if "ccu_filter_status" not in st.session_state:
+            st.session_state["ccu_filter_status"] = "All Status"
+
         # Get Registry Manager for module/FTS data
         from omf2.registry.manager.registry_manager import RegistryManager
 
@@ -229,9 +238,10 @@ def _render_table_filters(df, i18n):
             topic_label = i18n.t("ccu_message_monitor.filter.topic") if i18n else "Topic Filter"
             unique_topics = ["All Topics"] + sorted(df["Topic"].unique().tolist())
             # Get current filter value from session state
-            current_topic = st.session_state.get("ccu_filter_topic", "All Topics")
+            current_topic = st.session_state["ccu_filter_topic"]
             if current_topic not in unique_topics:
                 current_topic = "All Topics"
+                st.session_state["ccu_filter_topic"] = current_topic
             selected_topic = st.selectbox(
                 topic_label, unique_topics, index=unique_topics.index(current_topic), key="ccu_filter_topic"
             )
@@ -257,9 +267,10 @@ def _render_table_filters(df, i18n):
                     module_options.append(display_name)
 
             # Get current filter value from session state
-            current_module = st.session_state.get("ccu_filter_module", "All Modules/FTS")
+            current_module = st.session_state["ccu_filter_module"]
             if current_module not in module_options:
                 current_module = "All Modules/FTS"
+                st.session_state["ccu_filter_module"] = current_module
             selected_module = st.selectbox(
                 module_fts_label, module_options, index=module_options.index(current_module), key="ccu_filter_module"
             )
@@ -283,9 +294,10 @@ def _render_table_filters(df, i18n):
                     status_options.append(status)
 
             # Get current filter value from session state
-            current_status = st.session_state.get("ccu_filter_status", "All Status")
+            current_status = st.session_state["ccu_filter_status"]
             if current_status not in status_options:
                 current_status = "All Status"
+                st.session_state["ccu_filter_status"] = current_status
             selected_status = st.selectbox(
                 status_label, status_options, index=status_options.index(current_status), key="ccu_filter_status"
             )
@@ -624,14 +636,15 @@ def _get_message_type(topic):
 def _get_message_status(message):
     """Get message status based on content"""
     if isinstance(message, dict):
-        # Check for connection status
-        if message.get("connected", False):
-            return "🔌 Connected"
-        elif not message.get("connected"):
-            return "🔌 Disconnected"
+        # Check for connection status (only if "connected" key exists)
+        if "connected" in message:
+            if message.get("connected", False):
+                return "🔌 Connected"
+            else:
+                return "🔌 Disconnected"
 
         # Check for module availability status
-        elif message.get("available") in ["READY", "AVAILABLE"]:
+        if message.get("available") in ["READY", "AVAILABLE"]:
             return "🏗️ Available"
         elif message.get("available") == "BUSY":
             return "🏗️ Busy"
