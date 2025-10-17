@@ -25,6 +25,12 @@
 
 ## 🤖 **Cursor AI / Agent Einweisung**
 
+### **🚨 MANDATORY: Development Methodology (HÖCHSTE PRIORITÄT)**
+- **📖 MUSS LESEN:** [Development Workflow](docs/04-howto/development/workflow.md) **BEVOR** Implementierung beginnt!
+- **📋 METHODOLOGIE BEFOLGEN:** Analyse → Planung → Absprache → Implementierung → Test → Dokumentation → Commit
+- **✅ BESTÄTIGEN:** Agent muss bestätigen dass er die Vorgehensweise verstanden hat
+- **NIEMALS direkt mit Implementierung beginnen** ohne diese Schritte!
+
 ### **🚨 KRITISCHE VERBOTE (HÖCHSTE PRIORITÄT)**
 - **NIEMALS Streamlit-Apps starten:** `streamlit run` ❌ (Verursacht Race-Conditions, MQTT-Konflikte)
 - **NUR User startet Streamlit-Apps** - Agent startet KEINE Streamlit-Apps

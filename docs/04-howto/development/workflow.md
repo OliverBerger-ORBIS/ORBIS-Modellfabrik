@@ -3,6 +3,78 @@
 **Zielgruppe:** Entwickler  
 **Letzte Aktualisierung:** 20.09.2025
 
+## 🚨 **MANDATORY: Agent Development Methodology**
+
+### **⚠️ KRITISCH: Jeder neue Agent MUSS diese Vorgehensweise befolgen**
+
+**Bevor JEDE Implementierung beginnt, MUSS der Agent:**
+
+1. **📖 DIESES DOKUMENT LESEN** - `docs/04-howto/development/workflow.md`
+2. **📋 DIE METHODOLOGIE VERSTEHEN** - Analyse → Planung → Absprache → **TESTS ZUERST** → Implementierung → UI-Test → Dokumentation → Commit
+3. **🔒 TEST-FIRST DEVELOPMENT VERSTEHEN** - **NIEMALS Code schreiben ohne vorherige Tests**
+4. **✅ BESTÄTIGEN** dass er die Vorgehensweise verstanden hat
+
+**NIEMALS direkt mit Implementierung beginnen ohne diese Schritte!**
+**NIEMALS Code schreiben ohne vorherige Unit-Tests!**
+
+---
+
+## 🎯 **Standard Development Methodology**
+
+### **Phase 1: Analyse**
+- **Codebase durchsuchen** - Bestehende Komponenten verstehen
+- **Requirements analysieren** - Was genau soll implementiert werden?
+- **Dependencies identifizieren** - Welche Komponenten sind betroffen?
+- **Architektur verstehen** - Wie passt es in das Gesamtsystem?
+
+### **Phase 2: Planung**
+- **Detaillierte Zusammenfassung** der geplanten Änderungen
+- **Technische Lösung** skizzieren
+- **Dateien identifizieren** die geändert werden müssen
+- **Risiken bewerten** und Lösungsansätze definieren
+
+### **Phase 3: Absprache**
+- **Zusammenfassung präsentieren** - Kurze Übersicht der geplanten Änderungen
+- **Auf explizite Bestätigung warten** - User muss "ja" oder "go" sagen
+- **KEINE direkte Implementierung** ohne vorherige Freigabe
+- **Bei Unsicherheit nachfragen** - Nicht raten oder annehmen
+
+### **Phase 4: Implementierung**
+- **🚨 MANDATORY: Test-First Development** - **TESTS ZUERST, DANN IMPLEMENTIERUNG**
+- **Unit-Tests schreiben** - Vor jeder Implementierung Tests erstellen
+- **Test-Driven Development** - Tests definieren das gewünschte Verhalten
+- **Regeln befolgen** - Import-Standards, Pfad-Standards, Logging-System
+- **Code-Qualität** - Black, Ruff, Pre-commit Hooks
+- **Inkrementell vorgehen** - Kleine, testbare Schritte
+
+#### **🔒 Test-First Development Regeln (NIEMALS IGNORIEREN):**
+1. **TESTS ZUERST:** Jede neue Funktion/Feature MUSS zuerst getestet werden
+2. **KEINE IMPLEMENTIERUNG ohne Tests:** Niemals Code schreiben ohne vorherige Tests
+3. **Test-Datei erstellen:** `tests/test_omf2/test_<component>.py` für neue Komponenten
+4. **Test-Coverage:** Mindestens 80% Code-Coverage für neue Features
+5. **Test-Ausführung:** `python -m pytest tests/test_omf2/` vor jeder Implementierung
+
+### **Phase 5: UI-Test-Kontrolle**
+- **Manuelle UI-Tests** - User führt Tests durch
+- **Funktionalität verifizieren** - Features funktionieren wie erwartet
+- **Performance prüfen** - Keine Memory-Leaks oder Performance-Probleme
+- **User-Feedback einarbeiten** - Verbesserungen umsetzen
+
+### **Phase 6: Dokumentation**
+- **Code dokumentieren** - Docstrings, Kommentare, Type Hints
+- **Architektur aktualisieren** - Decision Records, HowTos
+- **README aktualisieren** - Neue Features dokumentieren
+- **Veraltete Dokumentation entfernen** - Aufräumen und konsolidieren
+
+### **Phase 7: Plan-Update & Commit**
+- **plan.md aktualisieren** - Task-Status, Erfolgs-Kriterien
+- **Pre-commit Tests** - pytest, black, ruff
+- **Commit vorbereiten** - Temporäre Dateien aufräumen
+- **User-Freigabe** - Explizite Bestätigung vor Commit
+- **Push** - Änderungen übertragen
+
+---
+
 ## 🚨 Critical Development Rules
 
 ### **KEINE COMMITS VOR TESTS**
@@ -14,10 +86,12 @@
   - UI ist bedienbar
 - **Tests haben absolute Priorität vor Commits**
 
-### **Test-First Development**
-1. **Implementierung** → Test → Fix → Test → Commit
-2. **Nur bei 100% funktionierenden Features** committen
-3. **Bei Fehlern:** Fix implementieren, erneut testen
+### **🚨 MANDATORY: Test-First Development**
+1. **TESTS ZUERST** → Implementierung → Fix → Test → Commit
+2. **NIEMALS Code schreiben ohne vorherige Unit-Tests**
+3. **Test-Driven Development:** Tests definieren das gewünschte Verhalten
+4. **Nur bei 100% funktionierenden Features** committen
+5. **Bei Fehlern:** Fix implementieren, erneut testen
 
 ## 🔄 Git Workflow
 

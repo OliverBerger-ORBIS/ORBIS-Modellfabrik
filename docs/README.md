@@ -4,6 +4,7 @@
 
 ## 🎯 Quick Start
 
+- **🚨 NEUE AGENTEN:** **MUSS** [Development Workflow](04-howto/development/workflow.md) lesen **BEVOR** Implementierung beginnt!
 - **Neue Teammitglieder:** Starte mit [Strategy Vision](01-strategy/vision.md) → [System Context](02-architecture/system-context.md)
 - **Entwickler:** [Registry Model](02-architecture/registry-model.md) → [How-Tos](04-howto/)
 - **Architekten:** [Decision Records](03-decision-records/) → [Architecture](02-architecture/)
