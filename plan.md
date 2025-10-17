@@ -419,47 +419,74 @@ def on_mqtt_message(self, topic, message, meta):
 - UI aktualisiert sich automatisch bei relevanten MQTT Messages
 - Keine Performance-Probleme (max 1 Refresh/Sekunde)
 
-### 🟡 **Task 2.6: CCU Modules UI Anpassung (NEU)**
+### ✅ **Task 2.6: CCU Modules UI Anpassung (ABGESCHLOSSEN)**
 
-**Status:** 🟡 **NEU - ZU IMPLEMENTIEREN**
+**Status:** ✅ **ABGESCHLOSSEN**
 
-**Anforderungen:**
-- **Module-Manager Integration:** UI soll Module-Status über Module-Manager abrufen
-- **Konfiguration über Factsheet oder Registry:** Flexible Konfigurationsmöglichkeiten
-- **UI-Symbols für Connection-Status:** Connected/Not Connected Icons definieren oder verwenden
+**Was implementiert wurde:**
+- ✅ **5-Spalten-Architektur:** Registry Aktiv, Position, Configured, Connected, Available
+- ✅ **UI-Symbols aktualisiert:** 📶 Connected, 🚫 Disconnected, 📋 Configured
+- ✅ **Factsheet-basierte Konfiguration:** Status über MQTT `module/v1/ff/<serial>/factsheet`
+- ✅ **Performance-Optimierung:** Shopfloor Layout Caching implementiert
+- ✅ **I18n-Unterstützung:** Vollständige Übersetzungen (DE/EN/FR) für neue Spalten
+- ✅ **CHRG0-Spezialfall:** Status über `ccu/pairing/state` dokumentiert und implementiert
+- ✅ **Umfassende Dokumentation:** `docs/02-architecture/implementation/ccu-module-manager.md`
+- ✅ **Mermaid-Diagramm:** Datenfluss-Visualisierung für alle Module-Typen
 
-**Zu implementieren:**
-- `omf2/ui/ccu/ccu_modules/ccu_modules_tab.py` - Module-Manager Integration
-- UI-Symbols für Connection-Status (Connected/Not Connected)
-- Konfiguration über Factsheet oder Registry-Info
-- Module-Status-Display verbessern
+**Technische Implementierung:**
+- **UI-Komponente:** `ccu_modules_tab.py` mit 5-Spalten-Tabelle
+- **Business-Logik:** `CcuModuleManager` mit erweiterten Status-Methoden
+- **Performance:** `_factory_config_cache` für Shopfloor Layout
+- **I18n:** Neue Translation Keys für alle Sprachen
+- **Symbole:** `UISymbols` mit neuen Status-Icons
 
-**Erfolgs-Kriterium:**
+**Erfolgs-Kriterien erreicht:**
 - ✅ Module-Status wird über Module-Manager abgerufen
 - ✅ UI-Symbols für Connection-Status implementiert
 - ✅ Konfiguration über Factsheet oder Registry möglich
 - ✅ Module-Status korrekt angezeigt
+- ✅ Performance optimiert durch Caching
+- ✅ CHRG0-Spezialfall berücksichtigt
 
 ### 🟡 **Task 2.7: CCU Message Monitor Filter (NEU)**
 
-**Status:** 🟡 **NEU - ZU IMPLEMENTIEREN**
+**Status:** 🟡 **IN BEARBEITUNG - KRITISCHE PROBLEME**
 
 **Anforderungen:**
 - **Filter für Module und FTS:** Auswählbar über Name und Serial-ID
 - **Serial-ID Auflösung:** Mapping von Serial-ID zu Module/FTS Namen
 - **Status-Type Filter:** Connection Status, Module Status, AGV/FTS Status
 
+**Was bereits implementiert:**
+- ✅ **Filter-UI:** 5-Spalten Layout oberhalb der Tabelle
+- ✅ **Topic Filter:** Drop-down mit allen verfügbaren Topics
+- ✅ **Module/FTS Filter:** Drop-down mit Serial-ID basierter Filterung
+- ✅ **Status Filter:** Topic-Pattern basierte Filterung (Connection, Module State, FTS State, Factsheet, CCU State)
+- ✅ **Actions:** Apply/Clear Buttons
+- ✅ **Unit Tests:** 27 Tests für Filter-Funktionalität
+- ✅ **I18n Support:** Deutsche, englische, französische Übersetzungen
+- ✅ **FTS Topic-Erkennung:** Korrekte Erkennung von `fts/v1/ff/5iO4/...` Topics
+- ✅ **Status-Erkennung:** FTS Active/Idle basierend auf `orderId` Feld
+
+**🚨 KRITISCHE PROBLEME:**
+- ❌ **Filter-Persistenz:** Apply/Refresh verliert Filter-Einstellungen
+- ❌ **Session State Konflikte:** `st.session_state.ccu_filter_* cannot be modified after widget instantiation`
+- ❌ **UI-Refresh Problem:** `request_refresh()` führt zu Filter-Verlust
+- ❌ **Filter-Anwendung:** Filter werden nicht korrekt auf DataFrame angewendet
+
 **Zu implementieren:**
-- `omf2/ui/ccu/ccu_message_monitor/ccu_message_monitor_component.py` - Filter-Funktionalität
-- Serial-ID zu Name Mapping (über Registry)
-- Filter-UI für Module/FTS Auswahl
-- Status-Type Filter (Connection, Module, AGV/FTS)
+- Robuste Filter-Persistenz ohne Session State Konflikte
+- Stabile UI ohne Filter-Verlust bei Refresh
+- Korrekte Filter-Anwendung auf DataFrame
+- Einfache, stabile Filter-Implementierung
 
 **Erfolgs-Kriterium:**
-- ✅ Filter für Module und FTS implementiert
-- ✅ Serial-ID Auflösung funktioniert
-- ✅ Status-Type Filter funktioniert
-- ✅ Message Monitor zeigt gefilterte Ergebnisse
+- ✅ Filter-UI korrekt dargestellt
+- ✅ Topic-Pattern Filter funktioniert
+- ✅ Serial-ID Filter funktioniert
+- ❌ Filter bleiben bei Refresh erhalten
+- ❌ Apply/Clear Buttons funktionieren stabil
+- ❌ Message Monitor zeigt gefilterte Ergebnisse
 
 ### 🟡 **Task 2.8: Factory Layout Integration (GRUNDLEGEND IMPLEMENTIERT)**
 
@@ -690,8 +717,8 @@ def on_mqtt_message(self, topic, message, meta):
 - [x] ~~Task 2.3: Step Status Display Fix~~ ✅ **ABGESCHLOSSEN**
 - [x] ~~Task 2.4: Manager Renaming~~ ✅ **ABGESCHLOSSEN**
 - [x] ~~Task 2.5: Logging-System File-Handler Fix~~ ✅ **ABGESCHLOSSEN**
-- [ ] Task 2.6: CCU Modules UI Anpassung (NEU)
-- [ ] Task 2.7: CCU Message Monitor Filter (NEU)
+- [x] ~~Task 2.6: CCU Modules UI Anpassung~~ ✅ **ABGESCHLOSSEN**
+- [ ] Task 2.7: CCU Message Monitor Filter (NEU) - KRITISCHE PROBLEME
 - [x] ~~Dokumentations-Audit: TODOs finden, Feature-Lücken identifizieren~~ ✅ **ABGESCHLOSSEN**
 - [ ] Live-Test Session #1 mit echter Fabrik durchführen
 - [ ] Auto-Refresh bei MQTT Messages implementieren

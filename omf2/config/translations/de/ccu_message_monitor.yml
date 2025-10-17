@@ -54,6 +54,23 @@ ccu_message_monitor.actions.refresh_success: "CCU Messages aktualisiert!"
 ccu_message_monitor.actions.resubscribed: "Neu abonniert für {count} CCU Topics"
 ccu_message_monitor.actions.buffer_cleared: "CCU Message Puffer geleert!"
 
+# Filter Controls
+ccu_message_monitor.filter.title: "Filter"
+ccu_message_monitor.filter.topic: "Topic Filter"
+ccu_message_monitor.filter.module_fts: "Module/FTS Filter"
+ccu_message_monitor.filter.status: "Status Filter"
+ccu_message_monitor.filter.status_type: "Status-Type Filter"
+ccu_message_monitor.filter.all_modules: "Alle Module"
+ccu_message_monitor.filter.all_fts: "Alle FTS"
+ccu_message_monitor.filter.connection_status: "Verbindungsstatus"
+ccu_message_monitor.filter.module_status: "Modulstatus"
+ccu_message_monitor.filter.agv_fts_status: "AGV/FTS Status"
+ccu_message_monitor.filter.apply: "Anwenden"
+ccu_message_monitor.filter.clear: "Löschen"
+ccu_message_monitor.filter.reset: "Zurücksetzen"
+ccu_message_monitor.filter.no_selection: "Keine Auswahl"
+ccu_message_monitor.filter.applied: "Filter angewendet: {count} Nachrichten angezeigt"
+
 # Error Messages
 ccu_message_monitor.error.gateway_not_available: "CCU Gateway nicht verfügbar"
 ccu_message_monitor.error.mqtt_not_available: "CCU MQTT Client nicht verfügbar über Gateway"

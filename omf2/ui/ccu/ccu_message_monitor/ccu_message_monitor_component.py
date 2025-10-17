@@ -125,7 +125,7 @@ def render_ccu_message_monitor(ccu_gateway, title=None, show_controls=True):
             st.info(f"💡 {waiting_msg}")
             return
 
-        # Create message table data
+        # Create message table data first (before filtering)
         message_table_data = []
 
         for topic, messages in all_buffers.items():
@@ -148,8 +148,10 @@ def render_ccu_message_monitor(ccu_gateway, title=None, show_controls=True):
                     else:
                         timestamp = str(raw_timestamp)
 
-                    message_type = _get_message_type(topic)
                     status = _get_message_status(message)
+
+                    # Get module/FTS name for display
+                    module_name = _get_module_display_name(topic)
 
                     # Format payload as JSON if possible
                     payload = message.get("payload", message)
@@ -165,37 +167,35 @@ def render_ccu_message_monitor(ccu_gateway, title=None, show_controls=True):
                         data = str(payload)[:100] + "..." if len(str(payload)) > 100 else str(payload)
                 else:
                     timestamp = "Unknown"
-                    message_type = _get_message_type(topic)
                     status = "📨 Message"
+                    module_name = _get_module_display_name(topic)
                     data = str(message)[:100] + "..." if len(str(message)) > 100 else str(message)
-
-                table_headers = {
-                    "topic": i18n.t("ccu_message_monitor.table.topic") if i18n else "Topic",
-                    "type": i18n.t("ccu_message_monitor.table.type") if i18n else "Type",
-                    "status": i18n.t("ccu_message_monitor.table.status") if i18n else "Status",
-                    "timestamp": i18n.t("ccu_message_monitor.table.timestamp") if i18n else "Timestamp",
-                    "data": i18n.t("ccu_message_monitor.table.data") if i18n else "Data",
-                }
 
                 message_table_data.append(
                     {
-                        table_headers["topic"]: topic,
-                        table_headers["type"]: message_type,
-                        table_headers["status"]: status,
-                        table_headers["timestamp"]: timestamp,
-                        table_headers["data"]: data,
+                        "Topic": topic,
+                        "Type": module_name,  # Type-Spalte für Module-Name verwenden
+                        "Status": status,
+                        "Timestamp": timestamp,
+                        "Data": data,
                     }
                 )
 
         # Sort messages by timestamp (newest first) - like Admin
         if message_table_data:
-            # Get the timestamp column name (might be translated)
-            timestamp_col = i18n.t("ccu_message_monitor.table.timestamp") if i18n else "Timestamp"
             # Sort by timestamp (newest first)
-            message_table_data.sort(key=lambda x: x.get(timestamp_col, ""), reverse=True)
+            message_table_data.sort(key=lambda x: x.get("Timestamp", ""), reverse=True)
 
             df = pd.DataFrame(message_table_data)
-            st.dataframe(df, use_container_width=True)
+
+            # Render filter controls above table columns and get filter values
+            filter_values = _render_table_filters(df, i18n)
+
+            # Apply filters to the dataframe using current filter values
+            filtered_df = _apply_dataframe_filters_direct(df, filter_values, i18n)
+
+            # Display filtered table
+            st.dataframe(filtered_df, use_container_width=True)
         else:
             no_msg = i18n.t("ccu_message_monitor.messages.no_messages") if i18n else "Keine CCU Messages verfügbar"
             st.info(f"📋 {no_msg}")
@@ -210,20 +210,413 @@ def render_ccu_message_monitor(ccu_gateway, title=None, show_controls=True):
         st.error(f"❌ {error_msg}")
 
 
+def _render_table_filters(df, i18n):
+    """Render Filter Controls above table columns and return filter values"""
+    try:
+        logger.debug("🔍 Rendering Table Filter Controls")
+
+        # Get Registry Manager for module/FTS data
+        from omf2.registry.manager.registry_manager import RegistryManager
+
+        registry_manager = RegistryManager()
+        modules = registry_manager.get_modules()
+
+        # Filter row above table columns
+        col1, col2, col3, col4, col5 = st.columns(5)
+
+        with col1:
+            # Topic Filter
+            topic_label = i18n.t("ccu_message_monitor.filter.topic") if i18n else "Topic Filter"
+            unique_topics = ["All Topics"] + sorted(df["Topic"].unique().tolist())
+            # Get current filter value from session state
+            current_topic = st.session_state.get("ccu_filter_topic", "All Topics")
+            if current_topic not in unique_topics:
+                current_topic = "All Topics"
+            selected_topic = st.selectbox(
+                topic_label, unique_topics, index=unique_topics.index(current_topic), key="ccu_filter_topic"
+            )
+
+        with col2:
+            # Module/FTS Filter
+            module_fts_label = i18n.t("ccu_message_monitor.filter.module_fts") if i18n else "Module/FTS Filter"
+
+            # Create module options with ID and Name
+            module_options = ["All Modules/FTS"]
+
+            # Add FTS option (hardcoded for now)
+            module_options.append("🚗 FTS (5iO4)")
+
+            # Add regular modules
+            for module_id, module_data in modules.items():
+                module_name = module_data.get("name", "")
+                module_type = module_data.get("type", "")
+                module_icon = module_data.get("icon", "🏗️")
+
+                if module_type != "Transport":  # Skip Transport, we handle FTS separately
+                    display_name = f"{module_icon} {module_name} ({module_id})"
+                    module_options.append(display_name)
+
+            # Get current filter value from session state
+            current_module = st.session_state.get("ccu_filter_module", "All Modules/FTS")
+            if current_module not in module_options:
+                current_module = "All Modules/FTS"
+            selected_module = st.selectbox(
+                module_fts_label, module_options, index=module_options.index(current_module), key="ccu_filter_module"
+            )
+
+        with col3:
+            # Status Filter - Erweiterte Status-Optionen
+            status_label = i18n.t("ccu_message_monitor.filter.status") if i18n else "Status Filter"
+            status_options = [
+                "All Status",
+                "🔌 Connection",
+                "🏗️ Module State",
+                "🚗 FTS State",
+                "📄 Factsheet",
+                "🟢 CCU State",
+                "📨 Message",
+            ]
+            # Add unique statuses from data
+            unique_statuses = sorted(df["Status"].unique().tolist())
+            for status in unique_statuses:
+                if status not in status_options:
+                    status_options.append(status)
+
+            # Get current filter value from session state
+            current_status = st.session_state.get("ccu_filter_status", "All Status")
+            if current_status not in status_options:
+                current_status = "All Status"
+            selected_status = st.selectbox(
+                status_label, status_options, index=status_options.index(current_status), key="ccu_filter_status"
+            )
+
+        with col4:
+            # Timestamp Filter (placeholder for actions)
+            st.write("**Actions:**")
+            apply_text = i18n.t("ccu_message_monitor.filter.apply") if i18n else "Apply"
+            if st.button(f"✅ {apply_text}", key="ccu_filter_apply", use_container_width=True):
+                # Trigger refresh - filters are already applied via selectbox values
+                from omf2.ui.utils.ui_refresh import request_refresh
+
+                request_refresh()
+
+        with col5:
+            # Data Filter (placeholder for actions)
+            st.write("**Clear:**")
+            clear_text = i18n.t("ccu_message_monitor.filter.clear") if i18n else "Clear"
+            if st.button(f"🧹 {clear_text}", key="ccu_filter_clear", use_container_width=True):
+                # Clear filter state by setting default values
+                if "ccu_filter_topic" in st.session_state:
+                    del st.session_state["ccu_filter_topic"]
+                if "ccu_filter_module" in st.session_state:
+                    del st.session_state["ccu_filter_module"]
+                if "ccu_filter_status" in st.session_state:
+                    del st.session_state["ccu_filter_status"]
+                from omf2.ui.utils.ui_refresh import request_refresh
+
+                request_refresh()
+
+        # Return current filter values
+        return {"topic": selected_topic, "module": selected_module, "status": selected_status}
+
+    except Exception as e:
+        logger.error(f"❌ Table Filter Controls render error: {e}")
+        error_msg = f"Table Filter Controls failed: {e}"
+        st.error(f"❌ {error_msg}")
+        return {"topic": "All Topics", "module": "All Modules/FTS", "status": "All Status"}
+
+
+def _apply_dataframe_filters_direct(df, filter_values, i18n):
+    """Apply filters to dataframe using direct filter values"""
+    try:
+        logger.debug("🔍 Applying dataframe filters directly")
+
+        selected_topic = filter_values.get("topic", "All Topics")
+        selected_module = filter_values.get("module", "All Modules/FTS")
+        selected_status = filter_values.get("status", "All Status")
+
+        filtered_df = df.copy()
+
+        # Topic Filter
+        if selected_topic != "All Topics":
+            filtered_df = filtered_df[filtered_df["Topic"] == selected_topic]
+            logger.debug(f"🔍 Topic filter applied: {selected_topic}")
+
+        # Module/FTS Filter - Filter by SERIAL-ID in TOPICS
+        if selected_module != "All Modules/FTS":
+            # Handle FTS filter
+            if selected_module.startswith("🚗 FTS"):
+                # Extract FTS serial ID (e.g., "5iO4")
+                fts_serial = None
+                if "(" in selected_module and ")" in selected_module:
+                    fts_serial = selected_module.split("(")[-1].split(")")[0]
+
+                if fts_serial:
+                    # Filter topics containing the FTS serial ID
+                    filtered_df = filtered_df[filtered_df["Topic"].str.contains(fts_serial, na=False)]
+                    logger.debug(f"🔍 FTS filter applied for serial: {fts_serial}")
+            else:
+                # Extract module serial ID from display name for regular modules
+                module_serial = None
+                if "(" in selected_module and ")" in selected_module:
+                    module_serial = selected_module.split("(")[-1].split(")")[0]
+
+                if module_serial:
+                    # Filter topics containing the module serial ID
+                    filtered_df = filtered_df[filtered_df["Topic"].str.contains(module_serial, na=False)]
+                    logger.debug(f"🔍 Module filter applied for serial: {module_serial}")
+
+        # Status Filter - Filter by TOPIC PATTERN, not message content
+        if selected_status != "All Status":
+            if selected_status == "🔌 Connection":
+                # Filter topics containing "/connection"
+                filtered_df = filtered_df[filtered_df["Topic"].str.contains("/connection", na=False)]
+                logger.debug("🔍 Connection topic filter applied")
+            elif selected_status == "🏗️ Module State":
+                # Filter topics containing "/state" (but not FTS)
+                filtered_df = filtered_df[
+                    (filtered_df["Topic"].str.contains("/state", na=False))
+                    & (~filtered_df["Topic"].str.startswith("fts/", na=False))
+                ]
+                logger.debug("🔍 Module state topic filter applied")
+            elif selected_status == "🚗 FTS State":
+                # Filter FTS topics containing "/state"
+                filtered_df = filtered_df[
+                    (filtered_df["Topic"].str.contains("/state", na=False))
+                    & (filtered_df["Topic"].str.startswith("fts/", na=False))
+                ]
+                logger.debug("🔍 FTS state topic filter applied")
+            elif selected_status == "📄 Factsheet":
+                # Filter topics containing "/factsheet"
+                filtered_df = filtered_df[filtered_df["Topic"].str.contains("/factsheet", na=False)]
+                logger.debug("🔍 Factsheet topic filter applied")
+            elif selected_status == "🟢 CCU State":
+                # Filter CCU topics
+                filtered_df = filtered_df[filtered_df["Topic"].str.startswith("ccu/", na=False)]
+                logger.debug("🔍 CCU state topic filter applied")
+            else:
+                # Direct status match (for other statuses)
+                filtered_df = filtered_df[filtered_df["Status"] == selected_status]
+                logger.debug(f"🔍 Status filter applied: {selected_status}")
+
+        logger.debug(f"🔍 Filtered {len(filtered_df)} rows from {len(df)} total")
+        return filtered_df
+
+    except Exception as e:
+        logger.error(f"❌ Dataframe filter error: {e}")
+        return df  # Fallback to original dataframe
+
+
+def _apply_dataframe_filters(df, i18n):
+    """Apply filters to dataframe"""
+    try:
+        logger.debug("🔍 Applying dataframe filters")
+
+        # Get filter state from session
+        selected_topic = st.session_state.get("ccu_filter_topic", "All Topics")
+        selected_module = st.session_state.get("ccu_filter_module", "All Modules/FTS")
+        selected_status = st.session_state.get("ccu_filter_status", "All Status")
+
+        filtered_df = df.copy()
+
+        # Topic Filter
+        if selected_topic != "All Topics":
+            filtered_df = filtered_df[filtered_df["Topic"] == selected_topic]
+            logger.debug(f"🔍 Topic filter applied: {selected_topic}")
+
+        # Module/FTS Filter
+        if selected_module != "All Modules/FTS":
+            # Extract module ID from display name
+            module_id = None
+            if "(" in selected_module and ")" in selected_module:
+                module_id = selected_module.split("(")[-1].split(")")[0]
+
+            if module_id:
+                filtered_df = filtered_df[filtered_df["Type"].str.contains(module_id, na=False)]
+                logger.debug(f"🔍 Module filter applied: {module_id}")
+
+        # Status Filter
+        if selected_status != "All Status":
+            # Handle status mapping
+            status_mapping = {
+                "🔌 Connection": "🔌 Connected",
+                "🏗️ Module State": "🏗️ Module",
+                "🚗 FTS State": "🚗 FTS",
+                "📄 Factsheet": "📄 Factsheet",
+                "🟢 CCU State": "🟢 CCU",
+                "📨 Message": "📨 Message",
+            }
+
+            target_status = status_mapping.get(selected_status, selected_status)
+            filtered_df = filtered_df[filtered_df["Status"] == target_status]
+            logger.debug(f"🔍 Status filter applied: {target_status}")
+
+        logger.debug(f"🔍 Filtered {len(filtered_df)} rows from {len(df)} total")
+        return filtered_df
+
+    except Exception as e:
+        logger.error(f"❌ Dataframe filter error: {e}")
+        return df  # Fallback to original dataframe
+
+
+def _apply_message_filters(all_buffers, i18n):
+    """Apply filters to message buffers"""
+    try:
+        logger.debug("🔍 Applying message filters")
+
+        # Get filter state from session (only if exists)
+        selected_modules = st.session_state.get("ccu_filter_modules", [])
+        connection_status = st.session_state.get("ccu_filter_connection", True)
+        module_status = st.session_state.get("ccu_filter_module", True)
+        agv_fts_status = st.session_state.get("ccu_filter_agv_fts", True)
+
+        # If no filters applied, return all buffers
+        if not selected_modules and connection_status and module_status and agv_fts_status:
+            logger.debug("🔍 No filters applied - returning all buffers")
+            return all_buffers
+
+        filtered_buffers = {}
+
+        for topic, messages in all_buffers.items():
+            if not messages:
+                continue
+
+            # Check if topic matches selected modules
+            topic_matches_module = True
+            if selected_modules:
+                topic_matches_module = False
+                for module_filter in selected_modules:
+                    if module_filter == "all_modules" and _is_module_topic(topic):
+                        topic_matches_module = True
+                        break
+                    elif module_filter == "all_fts" and _is_fts_topic(topic):
+                        topic_matches_module = True
+                        break
+                    elif module_filter.startswith("module_") and module_filter[7:] in topic:
+                        topic_matches_module = True
+                        break
+                    elif module_filter.startswith("fts_") and module_filter[4:] in topic:
+                        topic_matches_module = True
+                        break
+
+            # Check if topic matches status types
+            topic_matches_status = True
+            if not (connection_status and module_status and agv_fts_status):
+                topic_matches_status = False
+                if connection_status and "connection" in topic:
+                    topic_matches_status = True
+                elif module_status and _is_module_topic(topic) and "state" in topic:
+                    topic_matches_status = True
+                elif agv_fts_status and _is_fts_topic(topic):
+                    topic_matches_status = True
+
+            # Include topic if it matches both module and status filters
+            if topic_matches_module and topic_matches_status:
+                filtered_buffers[topic] = messages
+
+        logger.debug(f"🔍 Filtered {len(all_buffers)} topics to {len(filtered_buffers)} topics")
+        return filtered_buffers
+
+    except Exception as e:
+        logger.error(f"❌ Message filter error: {e}")
+        # Return all buffers on error
+        return all_buffers
+
+
+def _is_module_topic(topic):
+    """Check if topic is a module topic"""
+    # Module topics contain module serial IDs
+    from omf2.registry.manager.registry_manager import RegistryManager
+
+    registry_manager = RegistryManager()
+    modules = registry_manager.get_modules()
+
+    for module_id, module_data in modules.items():
+        if module_id in topic and module_data.get("type", "") != "Transport":
+            return True
+    return False
+
+
+def _is_fts_topic(topic):
+    """Check if topic is an FTS topic"""
+    # FTS topics contain FTS serial IDs or "fts" keyword
+    if "fts" in topic.lower():
+        return True
+
+    from omf2.registry.manager.registry_manager import RegistryManager
+
+    registry_manager = RegistryManager()
+    modules = registry_manager.get_modules()
+
+    for module_id, module_data in modules.items():
+        if module_id in topic and module_data.get("type", "") == "Transport":
+            return True
+    return False
+
+
+def _get_module_display_name(topic):
+    """Get module/FTS display name for topic"""
+    try:
+        # Check for FTS topics first (fts/v1/ff/5iO4/...)
+        if topic.startswith("fts/v1/ff/"):
+            # Extract FTS serial from topic
+            parts = topic.split("/")
+            if len(parts) >= 4:
+                fts_serial = parts[3]
+                return f"🚗 FTS ({fts_serial})"
+
+        # Check for module topics (module/v1/ff/...)
+        if topic.startswith("module/v1/ff/"):
+            # Extract module serial from topic
+            parts = topic.split("/")
+            if len(parts) >= 4:
+                module_serial = parts[3]
+
+                # Look up in registry
+                from omf2.registry.manager.registry_manager import RegistryManager
+
+                registry_manager = RegistryManager()
+                modules = registry_manager.get_modules()
+
+                for module_id, module_data in modules.items():
+                    if module_id == module_serial:
+                        module_name = module_data.get("name", module_id)
+                        module_icon = module_data.get("icon", "🏗️")
+                        return f"{module_icon} {module_name} ({module_id})"
+
+                # Module not found in registry
+                return f"🏗️ Module ({module_serial})"
+
+        # Check for CCU topics
+        if topic.startswith("ccu/"):
+            return "🟢 CCU"
+
+        # If no specific pattern found, return "other"
+        return "other"
+    except Exception:
+        return "other"
+
+
 def _get_message_type(topic):
     """Get message type based on topic"""
-    if "state" in topic:
-        return "🟢 State"
-    elif "connection" in topic:
-        return "🔌 Connection"
+    if "ccu" in topic:
+        return "🏭 CCU"
     elif "factsheet" in topic:
         return "📄 Factsheet"
-    elif "ccu" in topic:
-        return "🏭 CCU"
+    elif "connection" in topic:
+        return "🔌 Connection"
+    elif "state" in topic:
+        # Check if it's FTS or Module
+        if _is_fts_topic(topic):
+            return "🚗 FTS"
+        elif _is_module_topic(topic):
+            return "🏗️ Module"
+        else:
+            return "🟢 State"
+    elif "fts" in topic.lower():
+        return "🚗 FTS"
     elif "module" in topic:
         return "🏗️ Module"
-    elif "fts" in topic:
-        return "🚗 FTS"
     else:
         return "📨 Message"
 
@@ -231,14 +624,36 @@ def _get_message_type(topic):
 def _get_message_status(message):
     """Get message status based on content"""
     if isinstance(message, dict):
+        # Check for connection status
         if message.get("connected", False):
-            return "🟢 Connected"
+            return "🔌 Connected"
+        elif not message.get("connected"):
+            return "🔌 Disconnected"
+
+        # Check for module availability status
         elif message.get("available") in ["READY", "AVAILABLE"]:
-            return "🟢 Available"
+            return "🏗️ Available"
         elif message.get("available") == "BUSY":
-            return "🟡 Busy"
+            return "🏗️ Busy"
         elif message.get("available") == "ERROR":
-            return "🔴 Error"
+            return "🏗️ Error"
+
+        # Check for FTS state (has orderId, nodeStates, actionStates)
+        elif "orderId" in message and ("nodeStates" in message or "actionStates" in message):
+            # FTS is active if it has an orderId
+            if message.get("orderId"):
+                return "🚗 FTS Active"
+            else:
+                return "🚗 FTS Idle"
+
+        # Check for factsheet content
+        elif "capabilities" in message or "loadSpecification" in message:
+            return "📄 Factsheet"
+
+        # Check for CCU state
+        elif "ccu" in str(message).lower():
+            return "🟢 CCU State"
+
         else:
             return "⚪ Unknown"
     else:
