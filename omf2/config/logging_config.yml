@@ -19,7 +19,7 @@ modules:
   omf2.nodered:
     level: INFO
   omf2.ccu:
-    level: INFO
+    level: DEBUG
   omf2.admin:
     level: INFO
 mqtt_clients:

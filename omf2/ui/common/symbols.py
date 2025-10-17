@@ -67,8 +67,8 @@ class UISymbols:
         "pause": "⏸️",  # Pause/Suspend
         "add": "➕",  # Add/Create
         # Connection Status Icons
-        "connected": "🟢",  # Connected/Online
-        "disconnected": "🔴",  # Disconnected/Offline
+        "connected": "📶",  # Connected/Online (WiFi symbol)
+        "disconnected": "🚫",  # Disconnected/Offline (Crossed out symbol)
         "connecting": "🟡",  # Connecting/In Progress
         # Production Process Step Icons
         "step_in_progress": "🟠",  # Production Step In Progress (ORANGE CIRCLE - wie aktive Station)
@@ -86,7 +86,7 @@ class UISymbols:
         "idle": "😴",  # Idle/Waiting
         "unknown": "⚫",  # Unknown/Undefined (⚫ - avoid conflict with workpieces)
         # Configuration Status Icons
-        "configured": "✅",  # Configured
+        "configured": "📋",  # Configured (Factsheet symbol)
         "not_configured": "❌",  # Not Configured
     }
 

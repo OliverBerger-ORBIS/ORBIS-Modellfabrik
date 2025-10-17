@@ -40,6 +40,12 @@ class CcuModuleManager:
         # NEU: State-Holder für Module-Status
         self.module_status = {}  # {module_id: module_status_data}
 
+        # Performance: Shopfloor layout cache
+        self._factory_config_cache = None
+
+        # NEU: State-Holder für Factsheet-Status
+        self.factsheet_status = {}  # {module_id: factsheet_data}
+
         logger.info("🏗️ CCU Module Manager initialized with State-Holder")
 
     def process_module_message(self, topic: str, payload: Dict[str, Any], meta: Optional[Dict] = None):
@@ -58,11 +64,47 @@ class CcuModuleManager:
             if not module_id:
                 return
 
-            # Update module status in State-Holder (mit Topic-Kontext)
-            self.update_module_status(module_id, payload, self.module_status, topic)
+            # Check if this is a factsheet message
+            if "/factsheet" in topic:
+                self.process_factsheet_message(module_id, payload, topic, meta)
+            else:
+                # Update module status in State-Holder (mit Topic-Kontext)
+                self.update_module_status(module_id, payload, self.module_status, topic)
 
         except Exception as e:
             logger.error(f"❌ Failed to process module message for topic {topic}: {e}")
+
+    def process_factsheet_message(
+        self, module_id: str, payload: Dict[str, Any], topic: str, meta: Optional[Dict] = None
+    ):
+        """
+        NEU: Verarbeitet Factsheet-Message für Configured Status
+
+        Args:
+            module_id: Module identifier
+            payload: Factsheet payload
+            topic: MQTT topic
+            meta: Optional metadata
+        """
+        try:
+            logger.debug(f"📋 Processing factsheet for module {module_id}")
+            logger.debug(f"📋 Topic: {topic}")
+            logger.debug(f"📋 Payload keys: {list(payload.keys()) if payload else 'None'}")
+            logger.debug(f"📋 Meta: {meta}")
+
+            # Store factsheet data in State-Holder
+            self.factsheet_status[module_id] = {
+                "factsheet_data": payload,
+                "topic": topic,
+                "last_update": meta.get("timestamp") if meta else "Unknown",
+                "configured": True,  # If factsheet exists, module is configured
+            }
+
+            logger.info(f"✅ Module {module_id} factsheet received - configured: True")
+            logger.debug(f"📋 Factsheet status updated for {module_id}: {len(self.factsheet_status)} total factsheets")
+
+        except Exception as e:
+            logger.error(f"❌ Failed to process factsheet for module {module_id}: {e}")
 
     def _get_module_icons(self) -> Dict[str, str]:
         """Lazy Loading für Module Icons - wird beim ersten Zugriff geladen"""
@@ -406,30 +448,70 @@ class CcuModuleManager:
             icon = UISymbols.get_status_icon("disconnected")
             return f"{icon} Disconnected"
 
-    def is_module_configured(self, module_id: str, factory_config: Dict[str, Any]) -> bool:
+    def is_module_configured(self, module_id: str, factory_config: Dict[str, Any] = None) -> bool:
         """
-        Check if module is configured in factory - CORRECTED to match aps_modules.py
+        Check if module is configured (has factsheet message)
 
         Args:
-            module_id: Module identifier
-            factory_config: Factory configuration from shopfloor.yml
+            module_id: Module identifier (serial number)
+            factory_config: Factory configuration (not used anymore, kept for compatibility)
 
         Returns:
-            True if module is configured
+            True if module has factsheet (configured), False otherwise
         """
         try:
-            if not factory_config:
-                return False
-
-            # Check positions array like in aps_modules.py
-            positions = factory_config.get("positions", [])
-            for position in positions:
-                if position.get("type") == "MODULE" and position.get("module_serial") == module_id:
-                    return position.get("enabled", False)
-
+            # Check if factsheet exists in State-Holder
+            configured = module_id in self.factsheet_status and self.factsheet_status[module_id].get(
+                "configured", False
+            )
+            logger.debug(
+                f"📋 Module {module_id} configured check: {configured} (factsheet exists: {module_id in self.factsheet_status})"
+            )
+            return configured
+        except Exception as e:
+            logger.error(f"❌ Error checking configured status for {module_id}: {e}")
             return False
+
+    def get_module_position(self, module_id: str) -> Optional[List[int]]:
+        """
+        Get module position from shopfloor layout
+
+        Args:
+            module_id: Module identifier (serial number)
+
+        Returns:
+            Position as [row, col] or None if not found
+        """
+        try:
+            factory_config = self.get_factory_configuration()
+            modules = factory_config.get("modules", [])
+
+            for module in modules:
+                if module.get("serialNumber") == module_id:
+                    return module.get("position")
+
+            return None
         except Exception:
-            return False
+            return None
+
+    def get_module_position_display(self, module_id: str) -> str:
+        """
+        Get module position display string
+
+        Args:
+            module_id: Module identifier (serial number)
+
+        Returns:
+            Position display string like "[0,1]" or "Not Positioned"
+        """
+        position = self.get_module_position(module_id)
+        if position:
+            position_display = f"[{position[0]},{position[1]}]"
+            logger.debug(f"📋 Module {module_id} position: {position_display}")
+            return position_display
+        else:
+            logger.debug(f"📋 Module {module_id} position: Not Positioned")
+            return "Not Positioned"
 
     def get_configuration_display(self, configured: bool) -> str:
         """
@@ -450,21 +532,59 @@ class CcuModuleManager:
 
     def get_factory_configuration(self) -> Dict[str, Any]:
         """
-        Get factory configuration - PLACEHOLDER until shopfloor.yml location is decided
+        Get factory configuration from shopfloor layout (with caching)
 
         Returns:
-            Factory configuration dict (empty until shopfloor.yml is integrated)
+            Factory configuration dict from shopfloor_layout.json
         """
+        # Return cached data if available
+        if self._factory_config_cache is not None:
+            logger.debug("📋 Using cached shopfloor layout")
+            return self._factory_config_cache
+
         try:
-            # TODO: shopfloor.yml integration - location not yet decided!
-            # Options: registry/model/v1/shopfloor.yml OR config/shopfloor.yml
-            logger.info("📋 TODO: shopfloor.yml integration needed for 'Configured' status")
-            logger.info("📋 Decision needed: registry vs config location for shopfloor.yml")
+            from omf2.ccu.config_loader import get_ccu_config_loader
+
+            config_loader = get_ccu_config_loader()
+            layout_data = config_loader.load_shopfloor_layout()
+
+            # Cache the result
+            self._factory_config_cache = layout_data
+
+            logger.debug(f"📋 Loaded and cached shopfloor layout: {len(layout_data.get('modules', []))} modules")
+            return layout_data
+        except Exception as e:
+            logger.error(f"❌ Failed to load shopfloor layout: {e}")
             return {}
 
-        except Exception as e:
-            logger.error(f"❌ Failed to get factory configuration: {e}")
-            return {}
+    def invalidate_factory_config_cache(self):
+        """
+        Invalidate the factory configuration cache
+        Call this when shopfloor layout changes
+        """
+        self._factory_config_cache = None
+        logger.debug("📋 Factory configuration cache invalidated")
+
+    def get_factsheet_status(self) -> Dict[str, Any]:
+        """
+        Get factsheet status for all modules
+
+        Returns:
+            Dict with factsheet status for all modules
+        """
+        return self.factsheet_status.copy()
+
+    def get_module_factsheet_status(self, module_id: str) -> Dict[str, Any]:
+        """
+        Get factsheet status for a specific module
+
+        Args:
+            module_id: Module identifier
+
+        Returns:
+            Dict with factsheet status or empty dict if not found
+        """
+        return self.factsheet_status.get(module_id, {})
 
     def get_module_status_from_state(self, module_id: str = None) -> Dict[str, Any]:
         """

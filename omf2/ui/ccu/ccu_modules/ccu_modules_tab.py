@@ -141,6 +141,11 @@ def _show_module_overview_table(ccu_gateway, i18n):
             factory_config = module_manager.get_factory_configuration()
             configured = module_manager.is_module_configured(module_id, factory_config)
             configured_display = module_manager.get_configuration_display(configured)
+            logger.debug(f"📋 UI: Module {module_id} configured: {configured} -> {configured_display}")
+
+            # Get position from Module Manager
+            position_display = module_manager.get_module_position_display(module_id)
+            logger.debug(f"📋 UI: Module {module_id} position: {position_display}")
 
             # Get message count and last update
             message_count = real_time_status.get("message_count", 0)
@@ -150,9 +155,13 @@ def _show_module_overview_table(ccu_gateway, i18n):
                 {
                     i18n.t("ccu_modules.table.id"): module_id,
                     i18n.t("ccu_modules.table.name"): f"{icon_display} {display_name}",
+                    i18n.t("ccu_modules.table.registry_active"): (
+                        "✅ Active" if module_info.get("enabled", True) else "❌ Inactive"
+                    ),
+                    i18n.t("ccu_modules.table.position"): position_display,
+                    i18n.t("ccu_modules.table.configured"): configured_display,
                     i18n.t("ccu_modules.table.connected"): connection_display,
                     i18n.t("ccu_modules.table.availability_status"): availability_display,
-                    i18n.t("ccu_modules.table.configured"): configured_display,
                     i18n.t("ccu_modules.table.messages"): message_count,
                     i18n.t("ccu_modules.table.last_update"): last_update,
                 }

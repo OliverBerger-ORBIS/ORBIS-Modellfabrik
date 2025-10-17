@@ -18,6 +18,8 @@ ccu_modules.overview.no_modules_available: "Keine Module verfügbar"
 # Table Headers
 ccu_modules.table.id: "ID"
 ccu_modules.table.name: "Name"
+ccu_modules.table.registry_active: "Registry Aktiv"
+ccu_modules.table.position: "Position"
 ccu_modules.table.connected: "Verbunden"
 ccu_modules.table.availability_status: "Verfügbarkeitsstatus"
 ccu_modules.table.configured: "Konfiguriert"

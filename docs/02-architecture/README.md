@@ -37,6 +37,7 @@ Die Dokumente beschreiben den Systemkontext, die Message Flows, das Registry-Mod
 
 ### Implementierungs-Details
 - [Module State Manager](implementation/module-state-manager.md) – Modul-Status-Management Implementierung
+- [CCU Module Manager](implementation/ccu-module-manager.md) – CCU Module-Status-Verarbeitung mit 5-Spalten-Architektur
 
 ---
 
