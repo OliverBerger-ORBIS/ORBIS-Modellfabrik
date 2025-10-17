@@ -113,7 +113,9 @@ def setup_file_logging(log_dir: Optional[Path] = None) -> Path:
 
     root_logger = logging.getLogger()  # ROOT logger, nicht "omf2"!
     root_logger.addHandler(file_handler)
-    root_logger.setLevel(logging.INFO)
+    # FileHandler Level wird dynamisch durch apply_logging_config() gesetzt
+    # Initial auf DEBUG setzen, damit alle Log-Level durchgelassen werden
+    root_logger.setLevel(logging.DEBUG)
 
     return log_dir
 
@@ -145,15 +147,38 @@ class MultiLevelRingBufferHandler(logging.Handler):
 
     def __init__(self, buffer_sizes=None):
         super().__init__()
-        # Standardgrößen pro Level
-        self.buffer_sizes = buffer_sizes or {
-            "ERROR": 200,  # Größer für wichtige Errors
-            "WARNING": 200,  # Größer für wichtige Warnings
-            "INFO": 500,  # Standard für Info-Logs
-            "DEBUG": 300,  # Kleinere für Debug-Logs
-        }
+        # Lade RingBuffer-Konfiguration aus YAML oder verwende Defaults
+        if buffer_sizes is None:
+            buffer_sizes = self._load_ringbuffer_config()
+
+        self.buffer_sizes = buffer_sizes
         self.buffers = {level: deque(maxlen=size) for level, size in self.buffer_sizes.items()}
         self._lock = threading.Lock()
+
+    def _load_ringbuffer_config(self):
+        """Lade RingBuffer-Konfiguration aus logging_config.yml"""
+        try:
+            from omf2.common.logging_config import load_logging_config
+
+            config = load_logging_config()
+            ringbuffer_config = config.get("ringbuffer", {})
+
+            # Verwende YAML-Konfiguration oder Defaults
+            return {
+                "ERROR": ringbuffer_config.get("ERROR", 200),
+                "WARNING": ringbuffer_config.get("WARNING", 200),
+                "INFO": ringbuffer_config.get("INFO", 500),
+                "DEBUG": ringbuffer_config.get("DEBUG", 300),
+            }
+        except Exception as e:
+            # Fallback zu Defaults bei Fehlern
+            logging.getLogger(__name__).warning(f"Failed to load ringbuffer config: {e}, using defaults")
+            return {
+                "ERROR": 200,
+                "WARNING": 200,
+                "INFO": 500,
+                "DEBUG": 300,
+            }
 
     def emit(self, record):
         msg = self.format(record)

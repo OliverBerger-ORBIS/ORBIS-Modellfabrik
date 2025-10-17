@@ -252,34 +252,49 @@ Aus `REFACTORING_BACKLOG.md` Zeile 57:
 
 ---
 
-### 🔧 **Task 2.5: Logging-System File-Handler Fix**
+### ✅ **Task 2.5 ABGESCHLOSSEN: Logging-System File-Handler Fix**
+
+**Status:** ✅ **VOLLSTÄNDIG ABGESCHLOSSEN**
+
+**Was wurde implementiert:**
+- ✅ **Log-Cleanup bei Start:** Alte `omf2.log*` Dateien werden automatisch gelöscht
+- ✅ **Log-Level-Konsistenz:** FileHandler und RingBufferHandler verwenden gleiche Log-Level
+- ✅ **UI-Konsistenz:** System Logs UI verwendet Config-basierte Verwaltung
+- ✅ **Logger-Namen-Konvention:** Alle Logger verwenden `__name__` (omf2.*)
+- ✅ **RingBuffer-Konfiguration:** Buffer-Größen sind jetzt in YAML konfigurierbar
+- ✅ **Dokumentation konsolidiert:** Nur noch ein Logging-Dokument
+
+**Technische Details:**
+- ✅ **`cleanup_old_logs()`** in `omf2/omf.py` implementiert
+- ✅ **`update_logging_config()`** für persistente UI-Änderungen
+- ✅ **RingBuffer-Konfiguration** in `logging_config.yml` integriert
+- ✅ **Log-Level-Propagation** dokumentiert und getestet
+
+**Erfolgs-Kriterium erreicht:**
+- ✅ Agenten sehen immer aktuelle Logs (keine 4MB+ Akkumulation)
+- ✅ Log-Level-Verwaltung ist konsistent zwischen UI und Config
+- ✅ Alle Logger verwenden einheitliche Namenskonvention
+- ✅ RingBuffer-Größen sind konfigurierbar
+- ✅ Vollständige Dokumentation für neue Agenten
+
+**Commits:**
+- `[Commit-Hash]` - "feat: Logging-System File-Handler Fix - Log-Cleanup, UI-Konsistenz, RingBuffer-Konfiguration"
+
+---
+
+### 🔧 **Task 2.6: Factory Steering Hardcoded Payloads Fix**
 
 **Status:** 🔧 **IN PLANUNG**
 
 **Problem identifiziert:**
-- ❌ **Stock Manager Logs erscheinen NICHT in der Datei** `logs/omf2.log`
-- ❌ **Logs erscheinen nur im UI-Buffer** (MultiLevelRingBufferHandler)
-- ❌ **FileHandler wird NACH RingBufferHandler hinzugefügt** - möglicher Konflikt
-- ❌ **Agenten können Logs nicht in Datei analysieren** - nur UI-Buffer verfügbar
-
-**Anforderungen:**
-- ✅ **Alle Log-Einträge müssen an FileHandler übergeben werden**
-- ✅ **Logs müssen im Log-File auffindbar sein** für Agenten und andere Interessierte
-- ✅ **Log-Level wird unterstützt** - DEBUG, INFO, WARNING, ERROR
-- ✅ **Konfiguration über system_logs Log-Management** wird unterstützt
-- ✅ **Optional: Löschung der alten Log-Files nach Neustart** von `omf2/omf.py`
-
-**Technische Details:**
-- **MultiLevelRingBufferHandler** sammelt Logs in 4 separaten Buffern (ERROR, WARNING, INFO, DEBUG)
-- **FileHandler** wird NACH RingBufferHandler hinzugefügt (Zeile 46 in `omf2/omf.py`)
-- **Beide Handler** hängen am ROOT-Logger - sollten ALLE Logs erhalten
-- **ABER:** Stock Manager Logs erscheinen NUR im UI-Buffer, NICHT in der Datei
+- ❌ **Hardcoded Payloads** in `factory_steering_subtab.py` verletzen Command-Versende-Pattern
+- ❌ **Schema-driven Approach fehlt** - Commands sollten aus Registry kommen
+- ❌ **Command-Versende-Pattern nicht eingehalten** - direkte Payload-Erstellung
 
 **Erfolgs-Kriterium:**
-- ✅ Stock Manager Logs erscheinen in `logs/omf2.log`
-- ✅ Alle Business-Logic-Logs sind in Datei auffindbar
-- ✅ Log-Level-Konfiguration funktioniert korrekt
-- ✅ Agenten können Logs in Datei analysieren
+- ✅ Commands werden aus Registry-Topics generiert
+- ✅ Command-Versende-Pattern wird eingehalten
+- ✅ Keine hardcodierten Payloads mehr
 
 ---
 
@@ -465,6 +480,7 @@ def on_mqtt_message(self, topic, message, meta):
 **Was noch offen ist:**
 - ❌ **FTS Navigation Display:** Für Transport-Schritte nicht implementiert
 - ❌ **Highlighting als Umrandung:** Aktuell Füllung, Umrandung gewünscht
+- ❌ **shopfloor_*hybrid -> shopfloor:** Umbenennung wir benötigen den aalten nicht mehr
 
 **Zu implementieren:**
 - FTS Navigation Display für Transport-Schritte
@@ -673,7 +689,7 @@ def on_mqtt_message(self, topic, message, meta):
 - [x] ~~Task 2.1: Storage Orders Logic & UI-Konsistenz~~ ✅ **ABGESCHLOSSEN**
 - [x] ~~Task 2.3: Step Status Display Fix~~ ✅ **ABGESCHLOSSEN**
 - [x] ~~Task 2.4: Manager Renaming~~ ✅ **ABGESCHLOSSEN**
-- [ ] Task 2.5: Logging-System File-Handler Fix (NEU)
+- [x] ~~Task 2.5: Logging-System File-Handler Fix~~ ✅ **ABGESCHLOSSEN**
 - [ ] Task 2.6: CCU Modules UI Anpassung (NEU)
 - [ ] Task 2.7: CCU Message Monitor Filter (NEU)
 - [x] ~~Dokumentations-Audit: TODOs finden, Feature-Lücken identifizieren~~ ✅ **ABGESCHLOSSEN**

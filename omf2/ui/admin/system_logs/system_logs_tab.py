@@ -583,11 +583,8 @@ def _render_log_management(admin_gateway):
 
     # Import logging configuration functions
     from omf2.common.logging_config import (
-        disable_debug_logging,
-        enable_module_debug,
-        enable_sensor_debug,
         get_current_log_levels,
-        set_debug_mode,
+        update_logging_config,
     )
 
     # Current log levels display
@@ -629,40 +626,61 @@ def _render_log_management(admin_gateway):
     with col1:
         st.markdown("**🔌 ADMIN Domain**")
         if st.button("🔍 Admin MQTT", key="enable_admin_mqtt_debug"):
-            set_debug_mode("omf2.admin.admin_mqtt_client", True)
-            st.success("✅ Admin MQTT debug enabled")
+            success = update_logging_config("omf2.admin.admin_mqtt_client", "DEBUG")
+            if success:
+                st.success("✅ Admin MQTT debug enabled")
+            else:
+                st.error("❌ Failed to enable Admin MQTT debug")
             request_refresh()
         if st.button("🔍 Admin Gateway", key="enable_admin_gateway_debug"):
-            set_debug_mode("omf2.admin.admin_gateway", True)
-            st.success("✅ Admin Gateway debug enabled")
+            success = update_logging_config("omf2.admin.admin_gateway", "DEBUG")
+            if success:
+                st.success("✅ Admin Gateway debug enabled")
+            else:
+                st.error("❌ Failed to enable Admin Gateway debug")
             request_refresh()
         if st.button("ℹ️ Disable Admin", key="disable_admin_debug"):
-            set_debug_mode("omf2.admin.admin_mqtt_client", False)
-            set_debug_mode("omf2.admin.admin_gateway", False)
-            st.info("ℹ️ Admin debug disabled")
+            success1 = update_logging_config("omf2.admin.admin_mqtt_client", "INFO")
+            success2 = update_logging_config("omf2.admin.admin_gateway", "INFO")
+            if success1 and success2:
+                st.info("ℹ️ Admin debug disabled")
+            else:
+                st.error("❌ Failed to disable Admin debug")
             request_refresh()
 
     with col2:
         st.markdown("**🏭 CCU Domain**")
         if st.button("🔍 CCU MQTT", key="enable_ccu_mqtt_debug"):
-            set_debug_mode("omf2.ccu.ccu_mqtt_client", True)
-            st.success("✅ CCU MQTT debug enabled")
+            success = update_logging_config("omf2.ccu.ccu_mqtt_client", "DEBUG")
+            if success:
+                st.success("✅ CCU MQTT debug enabled")
+            else:
+                st.error("❌ Failed to enable CCU MQTT debug")
             request_refresh()
         if st.button("🔍 CCU Gateway", key="enable_ccu_gateway_debug"):
-            set_debug_mode("omf2.ccu.ccu_gateway", True)
-            st.success("✅ CCU Gateway debug enabled")
+            success = update_logging_config("omf2.ccu.ccu_gateway", "DEBUG")
+            if success:
+                st.success("✅ CCU Gateway debug enabled")
+            else:
+                st.error("❌ Failed to enable CCU Gateway debug")
             request_refresh()
         if st.button("🔍 Managers", key="enable_ccu_managers_debug"):
-            enable_sensor_debug()
-            enable_module_debug()
-            st.success("✅ CCU Managers debug enabled")
+            success1 = update_logging_config("omf2.ccu.sensor_manager", "DEBUG")
+            success2 = update_logging_config("omf2.ccu.module_manager", "DEBUG")
+            if success1 and success2:
+                st.success("✅ CCU Managers debug enabled")
+            else:
+                st.error("❌ Failed to enable CCU Managers debug")
             request_refresh()
         if st.button("ℹ️ Disable CCU", key="disable_ccu_debug"):
-            set_debug_mode("omf2.ccu.ccu_mqtt_client", False)
-            set_debug_mode("omf2.ccu.ccu_gateway", False)
-            set_debug_mode("omf2.ccu.sensor_manager", False)
-            set_debug_mode("omf2.ccu.module_manager", False)
-            st.info("ℹ️ CCU debug disabled")
+            success1 = update_logging_config("omf2.ccu.ccu_mqtt_client", "INFO")
+            success2 = update_logging_config("omf2.ccu.ccu_gateway", "INFO")
+            success3 = update_logging_config("omf2.ccu.sensor_manager", "INFO")
+            success4 = update_logging_config("omf2.ccu.module_manager", "INFO")
+            if success1 and success2 and success3 and success4:
+                st.info("ℹ️ CCU debug disabled")
+            else:
+                st.error("❌ Failed to disable CCU debug")
             request_refresh()
 
     # Global controls
@@ -672,14 +690,30 @@ def _render_log_management(admin_gateway):
 
     with col1:
         if st.button(f"{UISymbols.get_functional_icon('search')} Enable All Debug", key="enable_all_debug"):
-            set_debug_mode(enabled=True)
-            st.success(f"{UISymbols.get_status_icon('success')} All debug logging enabled")
+            # Enable debug for all major components
+            success1 = update_logging_config("omf2", "DEBUG")
+            success2 = update_logging_config("omf2.ccu", "DEBUG")
+            success3 = update_logging_config("omf2.admin", "DEBUG")
+            success4 = update_logging_config("omf2.common", "DEBUG")
+            success5 = update_logging_config("omf2.ui", "DEBUG")
+            if success1 and success2 and success3 and success4 and success5:
+                st.success(f"{UISymbols.get_status_icon('success')} All debug logging enabled")
+            else:
+                st.error("❌ Failed to enable all debug logging")
             request_refresh()
 
     with col2:
         if st.button(f"{UISymbols.get_status_icon('info')} Disable All Debug", key="disable_all_debug"):
-            disable_debug_logging()
-            st.info(f"{UISymbols.get_status_icon('info')} All debug logging disabled")
+            # Disable debug for all major components
+            success1 = update_logging_config("omf2", "INFO")
+            success2 = update_logging_config("omf2.ccu", "INFO")
+            success3 = update_logging_config("omf2.admin", "INFO")
+            success4 = update_logging_config("omf2.common", "INFO")
+            success5 = update_logging_config("omf2.ui", "INFO")
+            if success1 and success2 and success3 and success4 and success5:
+                st.info(f"{UISymbols.get_status_icon('info')} All debug logging disabled")
+            else:
+                st.error("❌ Failed to disable all debug logging")
             request_refresh()
 
     # Manual log level configuration
@@ -716,10 +750,13 @@ def _render_log_management(admin_gateway):
 
     # Apply button
     if st.button(f"{UISymbols.get_functional_icon('settings')} Apply Log Level", key="apply_log_level"):
-        set_debug_mode(selected_module, selected_level == "DEBUG")
-        st.success(
-            f"{UISymbols.get_status_icon('success')} Log level for {module_options[selected_module]} set to {selected_level}"
-        )
+        success = update_logging_config(selected_module, selected_level)
+        if success:
+            st.success(
+                f"{UISymbols.get_status_icon('success')} Log level for {module_options[selected_module]} set to {selected_level}"
+            )
+        else:
+            st.error(f"❌ Failed to set log level for {module_options[selected_module]} to {selected_level}")
         request_refresh()
 
     # Configuration file info

@@ -11,7 +11,7 @@ from omf2.common.logger import get_logger
 from omf2.common.topic_manager import get_admin_topic_manager
 from omf2.registry.manager.registry_manager import get_registry_manager
 
-logger = get_logger("omf2.admin.admin_gateway")
+logger = get_logger(__name__)
 
 
 class AdminGateway:

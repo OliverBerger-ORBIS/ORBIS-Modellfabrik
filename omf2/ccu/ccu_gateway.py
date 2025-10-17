@@ -12,7 +12,7 @@ from omf2.common.message_manager import get_ccu_message_manager
 from omf2.common.topic_manager import get_ccu_topic_manager
 from omf2.registry.manager.registry_manager import get_registry_manager
 
-logger = get_logger("omf2.ccu.ccu_gateway")
+logger = get_logger(__name__)
 
 
 class CcuGateway:

@@ -1,13 +1,14 @@
-# OMF2 Logging Configuration
-# This file allows you to configure logging levels for different modules
-
-# Global logging configuration
 global:
-  level: DEBUG  # DEBUG, INFO, WARNING, ERROR
+  level: DEBUG
   buffer_size: 10000
   file_logging: true
 
-# Architecture-based logging: MQTT → Gateway → Manager → UI
+# RingBuffer-Konfiguration für MultiLevelRingBufferHandler
+ringbuffer:
+  ERROR: 200      # Größer für wichtige Errors
+  WARNING: 200    # Größer für wichtige Warnings  
+  INFO: 500       # Standard für Info-Logs
+  DEBUG: 300      # Kleinere für Debug-Logs
 modules:
   omf2:
     level: INFO
@@ -17,28 +18,26 @@ modules:
     level: INFO
   omf2.nodered:
     level: INFO
-
-# 🔌 MQTT Clients (Architecture Layer 1)
+  omf2.ccu:
+    level: INFO
+  omf2.admin:
+    level: INFO
 mqtt_clients:
   admin_mqtt_client:
-    level: INFO  # INFO for Admin MQTT Client
+    level: DEBUG
   ccu_mqtt_client:
-    level: DEBUG  # DEBUG for CCU MQTT Client (zeigt Payload)
-
-# 🚪 Gateways (Architecture Layer 2)
+    level: INFO
 gateways:
   admin_gateway:
-    level: INFO  # INFO for Admin Gateway
+    level: INFO
   ccu_gateway:
-    level: DEBUG  # DEBUG for CCU Gateway (zeigt Routing)
-
-# 🏢 Business Managers (Architecture Layer 3)
+    level: DEBUG
 business_managers:
   sensor_manager:
-    level: INFO  # DEBUG for sensor data debugging
+    level: DEBUG
   module_manager:
-    level: DEBUG  # DEBUG for module status debugging
+    level: DEBUG
   stock_manager:
-    level: DEBUG  # DEBUG for stock management debugging
-  omf2.ccu.order_manager:
-    level: DEBUG  # DEBUG for order management debugging (zeigt Payload)
+    level: DEBUG
+  order_manager:
+    level: DEBUG

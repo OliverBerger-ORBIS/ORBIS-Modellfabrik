@@ -14,7 +14,7 @@ from typing import Any, Dict, Optional
 
 from omf2.common.logger import get_logger
 
-logger = get_logger("ccu.config_loader")
+logger = get_logger(__name__)
 
 
 class CCUConfigLoader:

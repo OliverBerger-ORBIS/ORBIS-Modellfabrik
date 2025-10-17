@@ -1,14 +1,21 @@
-# OMF2 Logging Implementation Guide
+# OMF2 Logging System - Complete Guide
 
-**Version:** 1.0  
-**Last updated:** 2025-10-16  
+**Version:** 2.0  
+**Last updated:** 2025-10-17  
 **Author:** OMF Development Team  
 
 ---
 
 ## 🎯 **Überblick**
 
-Dieses Dokument erklärt, wie das OMF2 Logging-System funktioniert und wie Agenten es korrekt implementieren können. Es basiert auf der **MultiLevelRingBufferHandler**-Lösung und der **System Logs UI**-Integration.
+Dieses Dokument ist die **einzige und vollständige** Dokumentation des OMF2 Logging-Systems. Es erklärt, wie das System funktioniert, wie Agenten es korrekt verwenden und wie Log-Analyse durchgeführt wird.
+
+**Wichtige Änderungen in Version 2.0:**
+- ✅ **Log-Cleanup bei Start** implementiert
+- ✅ **Log-Level-Konsistenz** zwischen FileHandler und RingBufferHandler hergestellt
+- ✅ **UI-Konsistenz** - System Logs UI verwendet jetzt Config-basierte Verwaltung
+- ✅ **Logger-Namen-Konvention** - Alle Logger verwenden `__name__` (omf2.*)
+- ✅ **Konsolidierte Dokumentation** - Nur noch dieses eine Dokument
 
 ---
 
@@ -60,7 +67,7 @@ Beispiel: Korrekte Logger-Erstellung in OMF2
 # ✅ KORREKT: OMF2 Logger importieren und verwenden
 from omf2.common.logger import get_logger
 
-# Logger für diese Komponente erstellen
+# Logger für diese Komponente erstellen - IMMER __name__ verwenden!
 logger = get_logger(__name__)
 
 # Logging verwenden
@@ -70,13 +77,26 @@ logger.error("❌ Failed to connect to MQTT broker")
 logger.debug("🔧 Debug information for troubleshooting")
 ```
 
-### **❌ FALSCH: Standard Python Logger**
+### **❌ FALSCH: Hardcodierte Logger-Namen**
 
 ```python
-# ❌ FALSCH: Standard Python Logger verwenden
+# ❌ FALSCH: Hardcodierte Logger-Namen
+logger = get_logger("ccu.config_loader")  # NICHT verwenden!
+logger = get_logger("omf2.dashboard")     # NICHT verwenden!
+logger = get_logger("test")               # NICHT verwenden!
+
+# ❌ FALSCH: Standard Python Logger
 import logging
 logger = logging.getLogger(__name__)  # NICHT verwenden!
 ```
+
+### **✅ KORREKT: Logger-Namen-Konvention**
+
+**Alle Logger verwenden `__name__`:**
+- `omf2.ccu.config_loader` ✅
+- `omf2.dashboard` ✅  
+- `omf2.ccu.ccu_gateway` ✅
+- `omf2.admin.admin_gateway` ✅
 
 ---
 
@@ -372,6 +392,19 @@ Das System stellt automatisch sicher, dass Logs nach Environment-Switches weiter
    # setup_multilevel_ringbuffer_logging() manuell aufrufen
    ```
 
+5. **NICHT direkte Debug-Ausgaben in Streamlit verwenden:**
+   ```python
+   # ❌ FALSCH - Direkte Streamlit-Ausgaben
+   st.write("Debug: Processing data...")
+   st.info("Debug: Configuration loaded")
+   print("Debug: MQTT message received")
+   
+   # ✅ KORREKT - Über Logger
+   logger.debug("Processing data...")
+   logger.info("Configuration loaded")
+   logger.debug("MQTT message received")
+   ```
+
 ---
 
 ## 🔍 **9. Log-Analyse für Agenten**
@@ -476,6 +509,7 @@ Das System stellt automatisch sicher, dass Logs nach Environment-Switches weiter
 5. **Exception-Handling mit Logging kombinieren**
 6. **Logs erscheinen automatisch in Admin > System Logs**
 7. **Handler-Persistence wird automatisch gehandhabt**
+8. **NIEMALS direkte Streamlit-Ausgaben für Debug-Informationen verwenden**
 
 ### **Verifikation:**
 
@@ -487,4 +521,83 @@ Das System stellt automatisch sicher, dass Logs nach Environment-Switches weiter
 
 ---
 
-*Letzte Aktualisierung: 2025-10-16*
+## 🆕 **Version 2.0 - Neue Features**
+
+### **Log-Cleanup bei Start:**
+```python
+# In omf2/omf.py - Automatisches Cleanup alter Logs
+def cleanup_old_logs():
+    """Löscht alte Log-Dateien bei Start für saubere Agent-Analyse"""
+    log_dir = Path(__file__).parent.parent / "logs"
+    for log_file in log_dir.glob("omf2.log*"):
+        log_file.unlink()
+```
+
+### **Config-basierte UI-Verwaltung:**
+```python
+# Neue Funktion für konsistente Log-Level-Verwaltung
+def update_logging_config(module: str, level: str) -> bool:
+    """Update logging configuration in YAML file and apply changes"""
+    # 1. YAML-Datei laden
+    # 2. Level für Modul ändern  
+    # 3. YAML-Datei speichern
+    # 4. apply_logging_config() aufrufen
+```
+
+### **Log-Level-Konsistenz:**
+- ✅ FileHandler und RingBufferHandler verwenden gleiche Log-Level
+- ✅ Config-Änderungen werden automatisch angewendet
+- ✅ UI und Config sind synchron
+
+### **Log-Level-Propagation und Hierarchie:**
+
+**Python Logging Hierarchie:**
+```
+omf2 (INFO)
+├── omf2.common (INFO)
+├── omf2.ui (INFO)
+├── omf2.nodered (INFO)
+├── omf2.ccu (INFO)
+│   ├── omf2.ccu.sensor_manager (DEBUG) ← Überschreibt Parent
+│   ├── omf2.ccu.module_manager (DEBUG) ← Überschreibt Parent
+│   ├── omf2.ccu.stock_manager (DEBUG) ← Überschreibt Parent
+│   └── omf2.ccu.order_manager (DEBUG) ← Überschreibt Parent
+└── omf2.admin (INFO)
+    ├── omf2.admin.admin_mqtt_client (DEBUG) ← Überschreibt Parent
+    └── omf2.admin.admin_gateway (INFO) ← Erbt von Parent
+```
+
+**Propagation-Regeln:**
+- **Spezifische Level überschreiben Parent-Level**
+- **NOTSET erbt vom Parent**
+- **Effective Level = niedrigster gesetzter Level in Hierarchie**
+
+**Neue Komponenten hinzufügen:**
+```yaml
+# In logging_config.yml
+business_managers:
+  new_manager:          # ← Kurzer Name (nicht omf2.ccu.new_manager)
+    level: DEBUG
+```
+
+### **RingBuffer-Konfiguration:**
+
+**RingBuffer-Größen sind jetzt konfigurierbar:**
+```yaml
+# In logging_config.yml
+ringbuffer:
+  ERROR: 200      # Größer für wichtige Errors
+  WARNING: 200    # Größer für wichtige Warnings  
+  INFO: 500       # Standard für Info-Logs
+  DEBUG: 300      # Kleinere für Debug-Logs
+```
+
+**Warum separate RingBuffer-Konfiguration?**
+- ✅ **Level-spezifische Größen:** ERROR/WARNING größer als DEBUG
+- ✅ **UI-Performance:** Kleinere DEBUG-Buffer für bessere Performance
+- ✅ **Wichtige Logs schützen:** ERROR/WARNING werden nicht von DEBUG überschrieben
+- ✅ **Konfigurierbar:** Größen können je nach Bedarf angepasst werden
+
+---
+
+*Letzte Aktualisierung: 2025-10-17*

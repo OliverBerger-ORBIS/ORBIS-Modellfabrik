@@ -53,10 +53,10 @@ class OMF2AssetManager:
         # Spezielle Icons - IDs aus shopfloor_layout.json (BINDEND!) - immer gleich
         icon_mapping.update(
             {
-                "1": "point_scan.svg",  # Intersection 1
-                "2": "add.svg",  # Intersection 2
-                "3": "add_2.svg",  # Intersection 3
-                "4": "grid_goldenratio.svg",  # Intersection 4
+                "1": "point_scan_adjusted_v6.svg",  # Intersection 1
+                "2": "point_scan_adjusted_v4.svg",  # Intersection 2
+                "3": "point_scan_adjusted.svg",  # Intersection 3
+                "4": "point_scan_adjusted_v5.svg",  # Intersection 4
                 "EMPTY": None,  # Leer - kein Icon
             }
         )

@@ -36,6 +36,7 @@
 4. **Sprint-Details:** [docs/sprints/](docs/sprints/) - Detaillierte Sprint-Dokumentation
 5. **Architektur verstehen:** [OMF2 Architecture](docs/02-architecture/omf2-architecture.md) - Technische Grundlagen
 6. **Registry System:** [OMF2 Registry System](docs/02-architecture/omf2-registry-system.md) - **KRITISCH** - OMF-Entitäten-Zugriff
+7. **Logging System:** [Logging Implementation Guide](docs/04-howto/logging-implementation-guide.md) - **KRITISCH** - Log-Analyse und Debugging
 
 ### **🎯 Dokumentations-Prinzipien**
 - **roadmap.md** = Strategischer Überblick (keine konkreten ToDos)
@@ -46,6 +47,7 @@
 - **docs/02-architecture/** = Technische Architektur
 - **docs/03-decision-records/** = Architektur-Entscheidungen
 - **docs/04-howto/** = Praktische Anleitungen
+- **docs/04-howto/logging-implementation-guide.md** = **EINZIGE** Logging-Dokumentation
 
 ### **🔄 MANDATORY AGENT WORKFLOW (KRITISCH)**
 

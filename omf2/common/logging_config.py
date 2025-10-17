@@ -182,6 +182,55 @@ def enable_mqtt_debug():
     set_debug_mode("omf2.admin.admin_mqtt_client", True)
 
 
+def update_logging_config(module: str, level: str) -> bool:
+    """
+    Update logging configuration in YAML file and apply changes.
+
+    Args:
+        module: Module name (e.g., 'omf2.ccu.ccu_mqtt_client')
+        level: Log level ('DEBUG', 'INFO', 'WARNING', 'ERROR')
+
+    Returns:
+        bool: True if successful, False otherwise
+    """
+    try:
+        # Load current config
+        config = load_logging_config()
+
+        # Determine config section based on module name
+        if "mqtt_client" in module:
+            section = "mqtt_clients"
+            key = module.split(".")[-1]  # e.g., "ccu_mqtt_client"
+        elif "gateway" in module:
+            section = "gateways"
+            key = module.split(".")[-1]  # e.g., "ccu_gateway"
+        elif "manager" in module:
+            section = "business_managers"
+            key = module.split(".")[-1]  # e.g., "sensor_manager"
+        else:
+            section = "modules"
+            key = module  # e.g., "omf2.ccu"
+
+        # Update config
+        if section not in config:
+            config[section] = {}
+        config[section][key] = {"level": level}
+
+        # Save config to YAML file
+        config_path = Path(__file__).parent.parent / "config" / "logging_config.yml"
+        with open(config_path, "w", encoding="utf-8") as f:
+            yaml.dump(config, f, default_flow_style=False, sort_keys=False)
+
+        # Apply the new configuration
+        apply_logging_config()
+
+        return True
+
+    except Exception as e:
+        logging.error(f"Failed to update logging config: {e}")
+        return False
+
+
 def _ensure_multilevel_handler_attached():
     """
     DEPRECATED: Use omf2.common.logger.ensure_ringbufferhandler_attached() instead.
