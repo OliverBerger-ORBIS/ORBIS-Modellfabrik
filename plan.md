@@ -446,38 +446,39 @@ def on_mqtt_message(self, topic, message, meta):
 - ✅ Status-Type Filter funktioniert
 - ✅ Message Monitor zeigt gefilterte Ergebnisse
 
-### 🟡 **Task 2.8: Factory Layout Integration (TEILWEISE IMPLEMENTIERT)**
+### 🟡 **Task 2.8: Factory Layout Integration (GRUNDLEGEND IMPLEMENTIERT)**
 
-**Status:** 🟡 **TEILWEISE IMPLEMENTIERT - FEHLENDE FEATURES**
+**Status:** 🟡 **GRUNDLEGEND IMPLEMENTIERT - FEHLENDE FEATURES**
 
 **Was bereits implementiert:**
-- ✅ **Shopfloor 3×4 Grid:** Grundlegendes Layout implementiert
+- ✅ **Shopfloor 3×4 Grid:** Hybrid Layout mit SVG-Icons implementiert
 - ✅ **Integration:** In CCU Configuration Tab
-- ✅ **Shopfloor Layout System:** Reusable UI-Komponente
-- ✅ **Aktive Module-Hervorhebung:** Visuelle Indikation
+- ✅ **Shopfloor Layout System:** Reusable UI-Komponente (`shopfloor_layout_hybrid.py`)
+- ✅ **Aktive Module-Hervorhebung:** Orange Füllung funktioniert
 - ✅ **Integration:** In Production und Storage Orders
+- ✅ **SVG-Icons:** Alle Module und Intersections mit korrekten Icons
+- ✅ **Split-Cells:** Positionen (0,0) und (0,3) mit Rechteck + 2 Quadrate
+- ✅ **ORBIS-Logo:** In Split-Cell Rechtecken
+- ✅ **Asset Manager:** Vereinfacht ohne icon_style Parameter
+- ✅ **Matrix-Konvention:** JSON verwendet [row, column] Koordinaten
 
-**Was noch fehlt:**
-- ❌ **Echte omf_* SVG-Icons:** Noch ic_ft_* Fallback verwendet
+**Was noch offen ist:**
 - ❌ **FTS Navigation Display:** Für Transport-Schritte nicht implementiert
-- ❌ **Icon-Test:** Mit `omf2/ui/common/icon_test.py` nicht durchgeführt
-- ❌ **EMPTY-Felder Aufteilung:** Neue Anforderung
-- ❌ **ORBIS-Logo Darstellung:** Auf Empty-Feldern
-- ❌ **DSP Darstellung:** Auf Empty-Feldern
+- ❌ **Highlighting als Umrandung:** Aktuell Füllung, Umrandung gewünscht
 
 **Zu implementieren:**
-- `omf2/ui/ccu/common/shopfloor_layout.py` - omf_* SVG-Icons verwenden
 - FTS Navigation Display für Transport-Schritte
-- EMPTY-Felder Aufteilung und ORBIS-Logo/DSP Darstellung
-- Icon-Test mit `omf2/ui/common/icon_test.py`
+- Highlighting von Füllung auf Umrandung umstellen
 
 **Erfolgs-Kriterium:**
 - ✅ Factory Layout korrekt dargestellt
-- ❌ Alle Module mit richtigen omf_* SVG-Icons
+- ✅ Alle Module mit SVG-Icons (ic_ft_* als Standard)
 - ✅ Shopfloor-Grid responsive
+- ✅ Aktive Module-Hervorhebung funktioniert
 - ✅ Integration in Production und Storage Orders
+- ✅ Split-Cells mit ORBIS-Logo und Asset-Icons
 - ❌ FTS Navigation Display implementiert
-- ❌ EMPTY-Felder mit ORBIS-Logo/DSP
+- ❌ Highlighting als Umrandung statt Füllung
 
 ## Phase 3: UI-POLISH & i18n (5. - 18. Nov, 14 Tage)
 

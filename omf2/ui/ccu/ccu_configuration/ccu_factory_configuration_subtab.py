@@ -66,11 +66,11 @@ def _show_factory_controls():
 def _show_shopfloor_layout_section():
     """Show enhanced shopfloor layout section with asset manager"""
     try:
-        # Import and use the enhanced reusable shopfloor layout component
-        from omf2.ui.ccu.common.shopfloor_layout import show_shopfloor_grid_only
+        # Import and use the new hybrid shopfloor layout component
+        from omf2.ui.ccu.common.shopfloor_layout_hybrid import show_shopfloor_layout_hybrid
 
-        # Show the enhanced shopfloor layout without problematic controls
-        show_shopfloor_grid_only(title="Shopfloor Layout")
+        # Show the new hybrid shopfloor layout with interactive SVG
+        show_shopfloor_layout_hybrid(title="Shopfloor Layout")
 
     except Exception as e:
         st.error(f"❌ Failed to load shopfloor layout: {e}")

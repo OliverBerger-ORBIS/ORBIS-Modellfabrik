@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1800 600" width="1800" height="600">
+<g fill="none" stroke="currentColor" stroke-width="8" stroke-linecap="round">
+<rect x="40" y="40" width="1720" height="520" rx="26" ry="26" fill="none" stroke-opacity="0.15"/>
+</g>
+<rect x="702.00" y="156.00" width="396.00" height="168.00" rx="26" ry="26" fill="none" stroke="currentColor" stroke-width="8"/>
+<rect x="716.40" y="172.80" width="367.20" height="48.00" rx="12" ry="12" fill="none" stroke="currentColor" stroke-width="8"/>
+<circle cx="1066.00" cy="196.80" r="4.00" fill="currentColor"/>
+<rect x="716.40" y="237.60" width="367.20" height="48.00" rx="12" ry="12" fill="none" stroke="currentColor" stroke-width="8"/>
+<circle cx="1066.00" cy="261.60" r="4.00" fill="currentColor"/>
+<rect x="716.40" y="302.40" width="367.20" height="48.00" rx="12" ry="12" fill="none" stroke="currentColor" stroke-width="8"/>
+<circle cx="1066.00" cy="326.40" r="4.00" fill="currentColor"/>
+<rect x="721.80" y="338.40" width="356.40" height="5.60" rx="2.80" ry="2.80" fill="currentColor"/>
+<circle cx="900.00" cy="364.00" r="16.80" fill="none" stroke="currentColor" stroke-width="8"/>
+<line x1="900.00" y1="324.00" x2="900.00" y2="347.20" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
+<line x1="900.00" y1="364.00" x2="585.00" y2="364.00" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
+<line x1="585.00" y1="364.00" x2="585.00" y2="168.00" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
+<line x1="585.00" y1="168.00" x2="270.00" y2="168.00" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
+<circle cx="270.00" cy="168.00" r="14" fill="none" stroke="currentColor" stroke-width="8"/>
+<line x1="900.00" y1="364.00" x2="558.00" y2="364.00" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
+<line x1="558.00" y1="364.00" x2="558.00" y2="300.00" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
+<line x1="558.00" y1="300.00" x2="216.00" y2="300.00" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
+<circle cx="216.00" cy="300.00" r="14" fill="none" stroke="currentColor" stroke-width="8"/>
+<line x1="900.00" y1="364.00" x2="585.00" y2="364.00" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
+<line x1="585.00" y1="364.00" x2="585.00" y2="432.00" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
+<line x1="585.00" y1="432.00" x2="270.00" y2="432.00" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
+<circle cx="270.00" cy="432.00" r="14" fill="none" stroke="currentColor" stroke-width="8"/>
+<line x1="900.00" y1="364.00" x2="1215.00" y2="364.00" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
+<line x1="1215.00" y1="364.00" x2="1215.00" y2="168.00" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
+<line x1="1215.00" y1="168.00" x2="1530.00" y2="168.00" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
+<circle cx="1530.00" cy="168.00" r="14" fill="none" stroke="currentColor" stroke-width="8"/>
+<line x1="900.00" y1="364.00" x2="1242.00" y2="364.00" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
+<line x1="1242.00" y1="364.00" x2="1242.00" y2="300.00" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
+<line x1="1242.00" y1="300.00" x2="1584.00" y2="300.00" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
+<circle cx="1584.00" cy="300.00" r="14" fill="none" stroke="currentColor" stroke-width="8"/>
+<line x1="900.00" y1="364.00" x2="1215.00" y2="364.00" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
+<line x1="1215.00" y1="364.00" x2="1215.00" y2="432.00" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
+<line x1="1215.00" y1="432.00" x2="1530.00" y2="432.00" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
+<circle cx="1530.00" cy="432.00" r="14" fill="none" stroke="currentColor" stroke-width="8"/>
+<line x1="900.00" y1="364.00" x2="810.00" y2="364.00" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
+<line x1="810.00" y1="364.00" x2="810.00" y2="72.00" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
+<line x1="810.00" y1="72.00" x2="720.00" y2="72.00" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
+<circle cx="720.00" cy="72.00" r="14" fill="none" stroke="currentColor" stroke-width="8"/>
+<line x1="900.00" y1="364.00" x2="990.00" y2="364.00" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
+<line x1="990.00" y1="364.00" x2="990.00" y2="72.00" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
+<line x1="990.00" y1="72.00" x2="1080.00" y2="72.00" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
+<circle cx="1080.00" cy="72.00" r="14" fill="none" stroke="currentColor" stroke-width="8"/>
+<line x1="900.00" y1="364.00" x2="747.00" y2="364.00" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
+<line x1="747.00" y1="364.00" x2="747.00" y2="510.00" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
+<line x1="747.00" y1="510.00" x2="594.00" y2="510.00" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
+<circle cx="594.00" cy="510.00" r="14" fill="none" stroke="currentColor" stroke-width="8"/>
+<line x1="900.00" y1="364.00" x2="1053.00" y2="364.00" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
+<line x1="1053.00" y1="364.00" x2="1053.00" y2="510.00" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
+<line x1="1053.00" y1="510.00" x2="1206.00" y2="510.00" stroke="currentColor" stroke-width="8" stroke-linecap="round"/>
+<circle cx="1206.00" cy="510.00" r="14" fill="none" stroke="currentColor" stroke-width="8"/>
+<text x="900.00" y="576.00" font-family="Arial,Helvetica,sans-serif" font-size="42.00" text-anchor="middle" fill="currentColor">DSP: IT/OT-Integration &amp; Control</text>
+</svg>

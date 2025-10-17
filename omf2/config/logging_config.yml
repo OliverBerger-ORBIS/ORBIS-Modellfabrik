@@ -3,8 +3,8 @@
 
 # Global logging configuration
 global:
-  level: INFO  # DEBUG, INFO, WARNING, ERROR
-  buffer_size: 1000
+  level: DEBUG  # DEBUG, INFO, WARNING, ERROR
+  buffer_size: 10000
   file_logging: true
 
 # Architecture-based logging: MQTT → Gateway → Manager → UI

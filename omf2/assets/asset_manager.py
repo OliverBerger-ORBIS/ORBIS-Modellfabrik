@@ -19,78 +19,64 @@ logger = get_logger(__name__)
 class OMF2AssetManager:
     """Verwaltet OMF2-Assets (Icons, Templates) für konsistente Visualisierung"""
 
-    def __init__(self, icon_style: str = "omf"):
-        """Initialisiert den Asset Manager
-
-        Args:
-            icon_style: Icon-Style ("ic_ft" für Fischertechnik, "omf" für OMF-Icons)
-        """
+    def __init__(self):
+        """Initialisiert den Asset Manager - vereinfacht"""
         self.assets_dir = Path(__file__).parent
-        self.svgs_dir = self.assets_dir / "svgs"
-        self.logos_dir = self.assets_dir / "logos"
-        self.icon_style = icon_style
+        self.svgs_dir = self.assets_dir / "svgs"  # Alle SVGs (Icons + Logos) in einem Verzeichnis
         self.module_icons = self._load_module_icons()
         self.html_templates = self._load_html_templates()
 
     def _load_module_icons(self) -> Dict[str, str]:
-        """Lädt verfügbare Module-Icons (alle SVGs in svgs/)"""
+        """Lädt verfügbare Module-Icons (alle SVGs in svgs/) - vereinfacht"""
         icons = {}
 
-        # Module-Icon-Mapping basierend auf icon_style
-        if self.icon_style == "ic_ft":
-            # Fischertechnik-Icons (ic_ft_*)
-            icon_mapping = {
-                "HBW": "ic_ft_hbw.svg",
-                "DRILL": "ic_ft_drill.svg",
-                "MILL": "ic_ft_mill.svg",
-                "AIQS": "ic_ft_aiqs.svg",
-                "DPS": "ic_ft_dps.svg",
-                "CHRG": "ic_ft_chrg.svg",
-                "FTS": "ic_ft_fts.svg",
-                # Fallbacks für andere Module
-                "TXT": "ic_ft_hbw.svg",  # Fallback
-                "RPI": "ic_ft_hbw.svg",  # Fallback
-                "MOSQUITTO": "ic_ft_hbw.svg",  # Fallback
-                "ROUTER": "ic_ft_hbw.svg",  # Fallback
-                "MACHINE": "ic_ft_mill.svg",  # Fallback
-                "PLATINE": "ic_ft_hbw.svg",  # Fallback
-                "PC_TABLET": "ic_ft_hbw.svg",  # Fallback
-            }
-        else:  # icon_style == "omf"
-            # OMF-Module - verwende echte omf_* SVG-Icons für moderne Darstellung
-            icon_mapping = {
-                # Hauptmodule (Registry-definiert) - Echte OMF SVGs
-                "HBW": "warehouse.svg",  # High-Bay Warehouse
-                "DPS": "delivery_truck_speed.svg",  # Delivery/Pickup Station
-                "MILL": "precision_manufacturing.svg",  # Milling Station
-                "DRILL": "tools_power_drill.svg",  # Drilling Station
-                "AIQS": "barcode.svg",  # AI Quality System
-                "CHRG": "ev_station.svg",  # Charging Station
-                "FTS": "conveyor_belt.svg",  # Flexible Transport System
-                # Unterstützende Objekte (seltener verwendet) - Moderne Icons
-                "TXT": "router.svg",  # TXT Controller
-                "ROUTER": "router.svg",  # Network Router
-                "PLATINE": "construction.svg",  # Circuit Board
-                "RPI": "router.svg",  # Raspberry Pi
-                "MOSQUITTO": "wifi.svg",  # MQTT Broker
-                "MACHINE": "precision_manufacturing.svg",  # Generic Machine
-                "PC_TABLET": "router.svg",  # PC/Tablet
-            }
+        # Direktes Icon-Mapping - einfach und klar
+        icon_mapping = {
+            # Hauptmodule (Registry-definiert)
+            "HBW": "ic_ft_hbw.svg",  # High-Bay Warehouse
+            "DPS": "ic_ft_dps.svg",  # Delivery/Pickup Station
+            "MILL": "ic_ft_mill.svg",  # Milling Station
+            "DRILL": "ic_ft_drill.svg",  # Drilling Station
+            "AIQS": "ic_ft_aiqs.svg",  # AI Quality System
+            "CHRG": "ic_ft_chrg.svg",  # Charging Station
+            "FTS": "ic_ft_fts.svg",  # Flexible Transport System
+            # Unterstützende Objekte
+            "TXT": "router.svg",  # TXT Controller
+            "ROUTER": "router.svg",  # Network Router
+            "PLATINE": "construction.svg",  # Circuit Board
+            "RPI": "router.svg",  # Raspberry Pi
+            "MOSQUITTO": "wifi.svg",  # MQTT Broker
+            "MACHINE": "precision_manufacturing.svg",  # Generic Machine
+            "PC_TABLET": "router.svg",  # PC/Tablet
+        }
 
         # Spezielle Icons - IDs aus shopfloor_layout.json (BINDEND!) - immer gleich
         icon_mapping.update(
             {
-                "1": "add_2.svg",  # Intersection 1
-                "2": "point_scan.svg",  # Intersection 2
-                "3": "align_flex_center.svg",  # Intersection 3
-                "4": "add.svg",  # Intersection 4
-                "EMPTY1": "shelves.svg",  # Empty Position 1
-                "EMPTY2": "delivery_truck_speed.svg",  # Empty Position 2
-                # Generische Fallbacks
-                "INTERSECTION": "add_2.svg",  # Fallback für alle Intersections
+                "1": "point_scan.svg",  # Intersection 1
+                "2": "add.svg",  # Intersection 2
+                "3": "add_2.svg",  # Intersection 3
+                "4": "grid_goldenratio.svg",  # Intersection 4
                 "EMPTY": None,  # Leer - kein Icon
             }
         )
+
+        # Empty-Position-Assets - spezifische Zuordnung für Rectangle/Square1/Square2
+        empty_assets = {
+            # EMPTY1 Assets (Position [0,0])
+            "EMPTY1_rectangle": "ORBIS_logo_RGB.svg",
+            "EMPTY1_square1": "shelves.svg",
+            "EMPTY1_square2": "conveyor_belt.svg",
+            # EMPTY2 Assets (Position [0,3])
+            "EMPTY2_rectangle": "DSP_ITOT_Control_2x1.svg",  # DSP test logo
+            "EMPTY2_square1": "warehouse.svg",
+            "EMPTY2_square2": "delivery_truck_speed.svg",
+            # Fallback für direkte Namen (für Hybrid-App)
+            "ORBIS": "ORBIS_logo_RGB.svg",
+        }
+
+        # Empty-Assets zu icon_mapping hinzufügen
+        icon_mapping.update(empty_assets)
 
         for module_name, icon_file in icon_mapping.items():
             if icon_file is None:
@@ -105,19 +91,8 @@ class OMF2AssetManager:
                 logger.warning(f"⚠️ No SVG icon found for {module_name}: {icon_file}")
                 icons[module_name] = None
 
-        logger.info(f"📁 Loaded {len(icons)} module icons ({self.icon_style} style) from {self.svgs_dir}")
+        logger.info(f"📁 Loaded {len(icons)} module icons from {self.svgs_dir}")
         return icons
-
-    def set_icon_style(self, icon_style: str):
-        """Ändert den Icon-Style und lädt Icons neu
-
-        Args:
-            icon_style: "ic_ft" für Fischertechnik, "omf" für OMF-Icons
-        """
-        if icon_style != self.icon_style:
-            self.icon_style = icon_style
-            self.module_icons = self._load_module_icons()
-            logger.info(f"🔄 Switched to {icon_style} icon style")
 
     def _load_html_templates(self) -> Dict[str, Any]:
         """Lädt HTML-Templates für UI-Komponenten"""
@@ -138,6 +113,10 @@ class OMF2AssetManager:
 
     def get_module_icon_path(self, module_name: str) -> Optional[str]:
         """Gibt den Pfad zum Modul-Icon zurück"""
+        # Direkte Suche (case-sensitive für EMPTY1_rectangle etc.)
+        if module_name in self.module_icons:
+            return self.module_icons[module_name]
+        # Fallback: uppercase für Module (MILL, DRILL etc.)
         return self.module_icons.get(module_name.upper())
 
     def display_module_icon(self, module_name: str, width: int = 50, caption: str = None) -> None:
@@ -200,10 +179,7 @@ class OMF2AssetManager:
                     icon_html = f'<img src="data:image/png;base64,{img_data}" width="{icon_size}" height="{icon_size}" style="object-fit: contain;">'
         else:
             # Fallback zu Emoji (nur für unbekannte Module)
-            if module_type.upper() == "INTERSECTION":
-                # Sollte nicht mehr auftreten, da INTERSECTION jetzt echte SVG-Icons hat
-                icon_html = f'<div style="font-size: {icon_size}px;">➕</div>'
-            elif module_type.upper() == "EMPTY":
+            if module_type.upper() == "EMPTY":
                 icon_html = ""  # Leer - kein Icon
             else:
                 fallback_emojis = {
@@ -218,12 +194,44 @@ class OMF2AssetManager:
                 emoji = fallback_emojis.get(module_type.upper(), "🔧")
                 icon_html = f'<div style="font-size: {icon_size}px;">{emoji}</div>'
 
-        # Text nur für Module (nicht für EMPTY oder INTERSECTION)
+        # Text nur für Module (nicht für EMPTY)
         text_html = ""
-        if module_type.upper() not in ["EMPTY", "INTERSECTION"] and module_id:
+        if module_type.upper() not in ["EMPTY"] and module_id:
             text_html = f"""<div style="font-size: 9px; font-weight: bold; text-align: center; line-height: 1.1; max-width: 100%; word-wrap: break-word; position: absolute; bottom: 2px; left: 2px; right: 2px;">{module_id}</div>"""
 
         return f"""<div style="border: {border_width} solid {border_color}; border-radius: 8px; background: #fff; width: {size}px; height: {size}px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: {shadow}; margin: 2px; padding: 4px; transition: all 0.3s ease; position: relative;"><div style="flex: 1; display: flex; align-items: center; justify-content: center;">{icon_html}</div>{text_html}</div>"""
+
+    def get_empty_position_asset(self, empty_id: str, asset_type: str) -> Optional[str]:
+        """Gibt den Asset-Pfad für Empty-Position-Assets zurück
+
+        Args:
+            empty_id: Empty-Position ID (z.B. "EMPTY1", "EMPTY2")
+            asset_type: Asset-Typ (z.B. "rectangle", "square1", "square2")
+
+        Returns:
+            Asset-Pfad oder None wenn nicht gefunden
+        """
+        asset_key = f"{empty_id}_{asset_type}"
+        if asset_key in self.module_icons:
+            icon_file = self.module_icons[asset_key]
+            if icon_file:
+                return str(self.svgs_dir / icon_file)
+        return None
+
+    def get_empty_position_asset_by_name(self, asset_name: str) -> Optional[str]:
+        """Gibt den Asset-Pfad für Empty-Position-Assets zurück (Fallback-Methode)
+
+        Args:
+            asset_name: Direkter Asset-Name (z.B. "ORBIS", "shelves")
+
+        Returns:
+            Asset-Pfad oder None wenn nicht gefunden
+        """
+        if asset_name in self.module_icons:
+            icon_file = self.module_icons[asset_name]
+            if icon_file:
+                return str(self.svgs_dir / icon_file)
+        return None
 
     def get_workpiece_box_html(self, workpiece_type: str, count: int = 0, available: bool = True) -> str:
         """Generiert HTML für Werkstück-Box"""
@@ -269,7 +277,7 @@ class OMF2AssetManager:
 
     def get_orbis_logo_path(self) -> Optional[str]:
         """Returns path to ORBIS company logo (SVG)"""
-        logo_path = self.logos_dir / "ORBIS_logo_RGB.svg"
+        logo_path = self.svgs_dir / "ORBIS_logo_RGB.svg"
         if logo_path.exists():
             logger.debug(f"🏢 ORBIS logo found: {logo_path}")
             return str(logo_path)
@@ -303,19 +311,10 @@ class OMF2AssetManager:
 _asset_manager_instance = None
 
 
-def get_asset_manager(icon_style: str = "omf") -> OMF2AssetManager:
-    """Gibt die Singleton-Instanz des Asset Managers zurück
-
-    Args:
-        icon_style: Icon-Style ("ic_ft" für Fischertechnik, "omf" für OMF-Icons)
-    """
+def get_asset_manager() -> OMF2AssetManager:
+    """Gibt die Singleton-Instanz des Asset Managers zurück - vereinfacht"""
     global _asset_manager_instance
     if _asset_manager_instance is None:
-        _asset_manager_instance = OMF2AssetManager(icon_style)
-        logger.info(f"📁 OMF2 Asset Manager initialized with {icon_style} icons")
-    else:
-        # Icon-Style ändern falls gewünscht - Singleton zurücksetzen
-        if _asset_manager_instance.icon_style != icon_style:
-            _asset_manager_instance = OMF2AssetManager(icon_style)
-            logger.info(f"🔄 Asset Manager reinitialized with {icon_style} icons")
+        _asset_manager_instance = OMF2AssetManager()
+        logger.info("📁 OMF2 Asset Manager initialized")
     return _asset_manager_instance
