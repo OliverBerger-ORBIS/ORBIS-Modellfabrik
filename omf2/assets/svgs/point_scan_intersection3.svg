@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 960" width="960" height="960">
+  <!-- Intersection 3: Dickere Balken, die nicht vom Kreis überdeckt werden -->
+  <g fill="none" stroke="#000" stroke-width="15" stroke-linecap="square" vector-effect="non-scaling-stroke">
+    <!-- Horizontaler Balken: mit größerem Abstand zum Zentrumskreis -->
+    <line x1="0" y1="480" x2="350" y2="480"/>
+    <line x1="610" y1="480" x2="960" y2="480"/>
+    <!-- Vertikaler Balken: mit größerem Abstand zum Zentrumskreis -->
+    <line x1="480" y1="0" x2="480" y2="350"/>
+    <line x1="480" y1="610" x2="480" y2="960"/>
+  </g>
+  <!-- Zentrum: Kreis mit größerem Abstand zu den Balken -->
+  <circle cx="480" cy="480" r="130" fill="#000"/>
+</svg>

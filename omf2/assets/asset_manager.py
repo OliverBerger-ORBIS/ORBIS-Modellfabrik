@@ -50,13 +50,13 @@ class OMF2AssetManager:
             "PC_TABLET": "router.svg",  # PC/Tablet
         }
 
-        # Spezielle Icons - IDs aus shopfloor_layout.json (BINDEND!) - immer gleich
+        # Spezielle Icons - IDs aus shopfloor_layout.json (BINDEND!) - neue sz24 Icons
         icon_mapping.update(
             {
-                "1": "point_scan_adjusted_v6.svg",  # Intersection 1
-                "2": "point_scan_adjusted_v4.svg",  # Intersection 2
-                "3": "point_scan_adjusted.svg",  # Intersection 3
-                "4": "point_scan_adjusted_v5.svg",  # Intersection 4
+                "1": "point_scan_3sections.svg",  # Intersection 1 (3 Sektionen)
+                "2": "point_scan_3sections.svg",  # Intersection 2 (3 Sektionen)
+                "3": "point_scan_3sections.svg",  # Intersection 3 (3 Sektionen)
+                "4": "point_scan_3sections.svg",  # Intersection 4 (3 Sektionen)
                 "EMPTY": None,  # Leer - kein Icon
             }
         )

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 960" width="960" height="960">
+  <!-- Vertikaler Balken: 5 Sektionen, Sektion 3 transparent -->
+  <g fill="none" stroke="#666666" stroke-width="80" stroke-linecap="square" vector-effect="non-scaling-stroke">
+    <!-- Sektion 1: Oben (grau) -->
+    <line x1="480" y1="0" x2="480" y2="192"/>
+    <!-- Sektion 2: Oben-Mitte (grau) -->
+    <line x1="480" y1="192" x2="480" y2="384"/>
+    <!-- Sektion 3: Mitte (transparent) - wird übersprungen -->
+    <!-- Sektion 4: Unten-Mitte (grau) -->
+    <line x1="480" y1="576" x2="480" y2="768"/>
+    <!-- Sektion 5: Unten (grau) -->
+    <line x1="480" y1="768" x2="480" y2="960"/>
+  </g>
+  
+  <!-- Horizontaler Balken: 5 Sektionen, Sektion 3 transparent -->
+  <g fill="none" stroke="#666666" stroke-width="80" stroke-linecap="square" vector-effect="non-scaling-stroke">
+    <!-- Sektion 1: Links (grau) -->
+    <line x1="0" y1="480" x2="192" y2="480"/>
+    <!-- Sektion 2: Links-Mitte (grau) -->
+    <line x1="192" y1="480" x2="384" y2="480"/>
+    <!-- Sektion 3: Mitte (transparent) - wird übersprungen -->
+    <!-- Sektion 4: Rechts-Mitte (grau) -->
+    <line x1="576" y1="480" x2="768" y2="480"/>
+    <!-- Sektion 5: Rechts (grau) -->
+    <line x1="768" y1="480" x2="960" y2="480"/>
+  </g>
+  
+  <!-- Zentraler gefüllter Kreis mit Radius 50px -->
+  <circle cx="480" cy="480" r="50" fill="#666666"/>
+</svg>

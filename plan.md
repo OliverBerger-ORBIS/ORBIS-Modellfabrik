@@ -282,23 +282,43 @@ Aus `REFACTORING_BACKLOG.md` Zeile 57:
 
 ---
 
-### 🔧 **Task 2.6: Factory Steering Hardcoded Payloads Fix**
+### 🎨 **Task 2.6: SVG-basierte Workpiece-Management über Asset-Manager**
 
 **Status:** 🔧 **IN PLANUNG**
 
 **Problem identifiziert:**
-- ❌ **Hardcoded Payloads** in `factory_steering_subtab.py` verletzen Command-Versende-Pattern
-- ❌ **Schema-driven Approach fehlt** - Commands sollten aus Registry kommen
-- ❌ **Command-Versende-Pattern nicht eingehalten** - direkte Payload-Erstellung
+- ❌ **HTML-Templates veraltet** - Hardcoded deutsche Texte, nicht professionell
+- ❌ **Inkonsistente Darstellung** - Verschiedene Templates für gleiche Workpiece-Typen
+- ❌ **Keine SVG-Integration** - Workpiece-SVGs werden nicht genutzt
+
+**Betroffene Komponenten:**
+- ✅ **CCU Overview Subtabs:** `purchase_order_subtab.py`, `customer_order_subtab.py`, `inventory_subtab.py`
+- ✅ **CCU Process:** `ccu_production_plan_subtab.py` (BLUE, WHITE, RED Darstellung)
+- ✅ **CCU Configuration:** `ccu_parameter_configuration_subtab.py` (Produktionsdauern)
+- ✅ **CCU Orders:** `storage_orders_subtab.py` (Workpiece-Icons)
+- ✅ **Product Catalog:** `product_catalog_subtab.py` (Produktkatalog)
+
+**Verfügbare SVG-Assets:**
+- ✅ **Blue:** unprocessed, instock_unprocessed, instock_reserved, drilled_and_milled, 3dim
+- ✅ **Red:** unprocessed, instock_unprocessed, instock_reserved, milled, 3dim  
+- ✅ **White:** unprocessed, instock_unprocessed, instock_reserved, drilled, 3dim
+- ✅ **Palett:** palett.svg
+
+**Zu implementieren:**
+- ✅ **Test-App:** `stock_and_workpiece_layout_test.py` (analog zu hybrid_shopfloor_test.py)
+- ✅ **SVG-Integration:** Asset-Manager für Workpiece-SVGs erweitern
+- ✅ **Template-Ersetzung:** Alle HTML-Templates durch SVG-Komponenten ersetzen
+- ✅ **Professionelle Darstellung:** Moderne, konsistente Workpiece-Visualisierung
 
 **Erfolgs-Kriterium:**
-- ✅ Commands werden aus Registry-Topics generiert
-- ✅ Command-Versende-Pattern wird eingehalten
-- ✅ Keine hardcodierten Payloads mehr
+- ✅ Alle HTML-Templates durch SVG-Komponenten ersetzt
+- ✅ Professionelle, konsistente Workpiece-Darstellung
+- ✅ Asset-Manager Integration für alle Workpiece-Typen
+- ✅ Test-App erfolgreich getestet vor OMF2-Integration
 
 ---
 
-### ✅ **Task 2.4 ABGESCHLOSSEN: Manager Renaming**
+### ✅ **Task 2.7 ABGESCHLOSSEN: Manager Renaming**
 
 **Status:** ✅ **VOLLSTÄNDIG ABGESCHLOSSEN**
 
@@ -339,7 +359,7 @@ Aus `REFACTORING_BACKLOG.md` Zeile 57:
 
 ---
 
-### ✅ **Task 2.5 ABGESCHLOSSEN: Storage Orders Subtab Verbesserungen**
+### ✅ **Task 2.8 ABGESCHLOSSEN: Storage Orders Subtab Verbesserungen**
 
 **Status:** ✅ **VOLLSTÄNDIG ABGESCHLOSSEN**
 
@@ -357,7 +377,7 @@ Aus `REFACTORING_BACKLOG.md` Zeile 57:
 - ✅ Integration mit ProductionOrderManager
 - ✅ UI-Konsistenz zwischen Production und Storage Orders
 
-### Task 2.6: Factory Steering Hardcoded Payloads Fix
+### Task 2.9: Factory Steering Hardcoded Payloads Fix
 
 **Abhängigkeit: Task 2.5 ✅ ABGESCHLOSSEN**
 
@@ -392,7 +412,7 @@ Gateway → MQTT Client.publish(topic, payload_clean, qos, retain)
 
 ## Phase 2: KRITISCHE FEATURES (22. Okt - 4. Nov, 14 Tage)
 
-### Task 2.7: Auto-Refresh Implementation
+### Task 2.10: Auto-Refresh Implementation
 
 **Abhängigkeit: Task 2.6 (Factory Steering) abgeschlossen**
 
@@ -419,7 +439,7 @@ def on_mqtt_message(self, topic, message, meta):
 - UI aktualisiert sich automatisch bei relevanten MQTT Messages
 - Keine Performance-Probleme (max 1 Refresh/Sekunde)
 
-### ✅ **Task 2.6: CCU Modules UI Anpassung (ABGESCHLOSSEN)**
+### ✅ **Task 2.11: CCU Modules UI Anpassung (ABGESCHLOSSEN)**
 
 **Status:** ✅ **ABGESCHLOSSEN**
 
@@ -448,7 +468,7 @@ def on_mqtt_message(self, topic, message, meta):
 - ✅ Performance optimiert durch Caching
 - ✅ CHRG0-Spezialfall berücksichtigt
 
-### ✅ **Task 2.7 ABGESCHLOSSEN: CCU Message Monitor Filter**
+### ✅ **Task 2.12 ABGESCHLOSSEN: CCU Message Monitor Filter**
 
 **Status:** ✅ **VOLLSTÄNDIG ABGESCHLOSSEN**
 
@@ -503,40 +523,40 @@ def on_mqtt_message(self, topic, message, meta):
 - ✅ Monitor Manager Architektur vollständig implementiert
 - ✅ Routing funktioniert korrekt - alle Messages werden verarbeitet
 
-### 🟡 **Task 2.8: Factory Layout Integration (GRUNDLEGEND IMPLEMENTIERT)**
+### 🟡 **Task 2.13: Shopfloor Layout Highlighting System (GRUNDLEGEND IMPLEMENTIERT)**
 
-**Status:** 🟡 **GRUNDLEGEND IMPLEMENTIERT - FEHLENDE FEATURES**
+**Status:** 🟡 **GRUNDLEGEND IMPLEMENTIERT - OMF2 INTEGRATION AUSSTEHEND**
 
 **Was bereits implementiert:**
-- ✅ **Shopfloor 3×4 Grid:** Hybrid Layout mit SVG-Icons implementiert
-- ✅ **Integration:** In CCU Configuration Tab
-- ✅ **Shopfloor Layout System:** Reusable UI-Komponente (`shopfloor_layout_hybrid.py`)
-- ✅ **Aktive Module-Hervorhebung:** Orange Füllung funktioniert
-- ✅ **Integration:** In Production und Storage Orders
-- ✅ **SVG-Icons:** Alle Module und Intersections mit korrekten Icons
-- ✅ **Split-Cells:** Positionen (0,0) und (0,3) mit Rechteck + 2 Quadrate
-- ✅ **ORBIS-Logo:** In Split-Cell Rechtecken
-- ✅ **Asset Manager:** Vereinfacht ohne icon_style Parameter
-- ✅ **Matrix-Konvention:** JSON verwendet [row, column] Koordinaten
+- ✅ **SVG Distortion Fixes:** ViewBox-aware scaling für alle Module-Icons
+- ✅ **Roads Layer:** Untere Ebene mit 5px schwarzen Verbindungslinien
+- ✅ **Highlighting System:** Mode-basiertes System (view_mode, ccu_configuration, interactive)
+- ✅ **Orange Umrandung:** 10px dicke Umrandung für aktive Module im View Mode
+- ✅ **Test Infrastructure:** `shopfloor_layout_test.py` Helper-App
+- ✅ **API-Kompatibilität:** Rückwärtskompatible Alias-Funktionen
+- ✅ **Asset Management:** Neue SVG-Dateien für Intersections (point_scan_3sections.svg)
+- ✅ **File Management:** Kopie `shopfloor_layout.py` für Entwicklung, Original wiederhergestellt
 
 **Was noch offen ist:**
-- ❌ **FTS Navigation Display:** Für Transport-Schritte nicht implementiert
-- ❌ **Highlighting als Umrandung:** Aktuell Füllung, Umrandung gewünscht
-- ❌ **shopfloor_*hybrid -> shopfloor:** Umbenennung wir benötigen den aalten nicht mehr
+- ❌ **OMF2 Integration:** Business-Funktionen in Production/Storage Order Manager anbinden
+- ❌ **End-to-End Testing:** Mit echten Production/Storage Orders
+- ❌ **Performance Testing:** Große Datenmengen testen
 
 **Zu implementieren:**
-- FTS Navigation Display für Transport-Schritte
-- Highlighting von Füllung auf Umrandung umstellen
+- Integration in Production Order Manager
+- Integration in Storage Order Manager
+- Integration in CCU Configuration
+- Business-Funktionen Anbindung
+- End-to-End Testing mit echten Daten
 
 **Erfolgs-Kriterium:**
-- ✅ Factory Layout korrekt dargestellt
-- ✅ Alle Module mit SVG-Icons (ic_ft_* als Standard)
-- ✅ Shopfloor-Grid responsive
-- ✅ Aktive Module-Hervorhebung funktioniert
-- ✅ Integration in Production und Storage Orders
-- ✅ Split-Cells mit ORBIS-Logo und Asset-Icons
-- ❌ FTS Navigation Display implementiert
-- ❌ Highlighting als Umrandung statt Füllung
+- ✅ SVG-Verzerrungen behoben
+- ✅ Roads Layer implementiert
+- ✅ Highlighting System funktional
+- ✅ Test Infrastructure erstellt
+- ✅ API-Kompatibilität gewährleistet
+- ❌ OMF2 Integration abgeschlossen
+- ❌ End-to-End Testing erfolgreich
 
 ## Phase 3: UI-POLISH & i18n (5. - 18. Nov, 14 Tage)
 
