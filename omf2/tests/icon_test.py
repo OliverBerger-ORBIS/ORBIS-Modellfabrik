@@ -7,7 +7,7 @@ Unabhängig von der Hauptanwendung
 import streamlit as st
 
 from omf2.assets import get_asset_manager
-from omf2.ui.ccu.common.shopfloor_layout import show_shopfloor_layout_hybrid
+from omf2.ui.ccu.common.shopfloor_layout import show_shopfloor_layout
 
 
 def main():
@@ -17,7 +17,7 @@ def main():
     asset_manager = get_asset_manager()
 
     # Shopfloor Layout mit gewähltem Style anzeigen
-    show_shopfloor_layout_hybrid(active_module_id="MILL", title="Icon Test")
+    show_shopfloor_layout(active_module_id="MILL", title="Icon Test")
 
     # Debug-Info
     with st.expander("🔍 Debug Info"):

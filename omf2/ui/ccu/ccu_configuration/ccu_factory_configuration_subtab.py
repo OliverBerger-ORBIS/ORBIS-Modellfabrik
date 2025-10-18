@@ -66,12 +66,12 @@ def _show_factory_controls():
 def _show_shopfloor_layout_section():
     """Show enhanced shopfloor layout section with asset manager"""
     try:
-        # Import and use the new hybrid shopfloor layout component
-        from omf2.ui.ccu.common.shopfloor_layout import show_shopfloor_layout_hybrid
+        # Import and use the shopfloor layout component
+        from omf2.ui.ccu.common.shopfloor_layout import show_shopfloor_layout
 
-        # Show the new hybrid shopfloor layout with interactive SVG
+        # Show the shopfloor layout with interactive SVG
         # CCU Configuration mode: single/double click for module selection/navigation
-        show_shopfloor_layout_hybrid(
+        show_shopfloor_layout(
             title="Shopfloor Layout",
             unique_key="ccu_configuration_shopfloor",
             mode="ccu_configuration",  # CCU Configuration mode: single click = select, double click = navigate

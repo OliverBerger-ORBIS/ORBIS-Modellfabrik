@@ -26,7 +26,7 @@ import importlib.util
 spec = importlib.util.spec_from_file_location("shopfloor_layout", "omf2/ui/ccu/common/shopfloor_layout.py")
 shopfloor_module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(shopfloor_module)
-show_shopfloor_layout_hybrid = shopfloor_module.show_shopfloor_layout_hybrid
+show_shopfloor_layout = shopfloor_module.show_shopfloor_layout
 
 # Page configuration
 st.set_page_config(page_title="Shopfloor Layout Test", page_icon="🏭", layout="wide", initial_sidebar_state="expanded")
@@ -88,12 +88,12 @@ def main():
     col1, col2 = st.columns([2, 1])
 
     with col1:
-        # Hybrid Shopfloor Layout mit Mode
-        show_shopfloor_layout_hybrid(
+        #  Shopfloor Layout mit Mode
+        show_shopfloor_layout(
             active_module_id=active_module if active_module != "None" else None,
             active_intersections=active_intersections if active_intersections else None,
             title=f"Shopfloor Grid ({mode})",
-            unique_key="test_hybrid_shopfloor_main",
+            unique_key="test_shopfloor_main",
             mode=mode,
         )
 

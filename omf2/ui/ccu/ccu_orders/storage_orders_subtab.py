@@ -147,7 +147,7 @@ def _render_order_details(order, order_manager, i18n, is_completed=False):
 
 def _render_shopfloor_for_storage_order(order, order_manager, i18n):
     """Zeigt Shopfloor Layout mit aktiver Modul-Hervorhebung für Storage Orders (exakt wie Production Orders)"""
-    from omf2.ui.ccu.common.shopfloor_layout import show_shopfloor_layout_hybrid
+    from omf2.ui.ccu.common.shopfloor_layout import show_shopfloor_layout
 
     st.markdown("#### 🗺️ Shopfloor Layout")
 
@@ -171,7 +171,7 @@ def _render_shopfloor_for_storage_order(order, order_manager, i18n):
     with st.container():
         # Linksbündige Ausrichtung des Shopfloor Layouts
         st.markdown("<div style='text-align: left;'>", unsafe_allow_html=True)
-        show_shopfloor_layout_hybrid(
+        show_shopfloor_layout(
             active_module_id=active_module,
             active_intersections=active_intersections,
             show_controls=False,

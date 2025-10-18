@@ -284,7 +284,7 @@ Aus `REFACTORING_BACKLOG.md` Zeile 57:
 
 ### 🎨 **Task 2.6: SVG-basierte Workpiece-Management über Asset-Manager**
 
-**Status:** 🔧 **IN PLANUNG**
+**Status:** ⚠️ **GESCHEITERT - SVG-DARSTELLUNG FUNKTIONIERT NICHT**
 
 **Problem identifiziert:**
 - ❌ **HTML-Templates veraltet** - Hardcoded deutsche Texte, nicht professionell
@@ -304,17 +304,46 @@ Aus `REFACTORING_BACKLOG.md` Zeile 57:
 - ✅ **White:** unprocessed, instock_unprocessed, instock_reserved, drilled, 3dim
 - ✅ **Palett:** palett.svg
 
-**Zu implementieren:**
-- ✅ **Test-App:** `stock_and_workpiece_layout_test.py` (analog zu hybrid_shopfloor_test.py)
-- ✅ **SVG-Integration:** Asset-Manager für Workpiece-SVGs erweitern
-- ✅ **Template-Ersetzung:** Alle HTML-Templates durch SVG-Komponenten ersetzen
-- ✅ **Professionelle Darstellung:** Moderne, konsistente Workpiece-Visualisierung
+**Was wurde erreicht:**
+- ✅ **Test-App erstellt:** `stock_and_workpiece_layout_test.py` (analog zu hybrid_shopfloor_test.py)
+- ✅ **Asset-Manager erweitert:** Workpiece-SVG-Methoden hinzugefügt
+- ✅ **SVG-Namenskonvention vereinheitlicht:** `*_product.svg` (blue_product.svg, white_product.svg, red_product.svg)
+- ✅ **Sidebar-Verbesserungen:** Nur unterstützte Methoden angeboten
+- ✅ **Syntax-Tests implementiert:** Automatische Fehlererkennung
+- ✅ **SVG-Größen-Normalisierung:** ViewBox-Normalisierung implementiert
+
+**KRITISCHES PROBLEM - SVG-DARSTELLUNG:**
+- ❌ **SVGs werden in Streamlit nicht angezeigt** - trotz korrektem Laden
+- ❌ **Rendering-Problem ungelöst** - verschiedene ViewBox-Größen verursachen Probleme
+- ❌ **Agent hat keine Ahnung von SVG-Rendering** - externe Hilfe erforderlich
+
+**Technische Details:**
+- ✅ **SVG-Inhalte werden korrekt geladen** - Asset-Manager funktioniert
+- ✅ **Debug-Informationen korrekt** - SVG-IDs und ViewBox-Werte stimmen
+- ❌ **Problem liegt im Streamlit-Rendering** - verschiedene ViewBox-Größen (24x24, 100x100, 841x595)
+- ❌ **Skalierungsprobleme** - SVGs werden nicht sichtbar dargestellt
+
+**Helper-App Status:**
+- **Läuft auf Port 8515:** `streamlit run omf2/tests/test_helper_apps/stock_and_workpiece_layout_test.py --server.port 8515`
+- **Zeigt leere Container statt SVGs** - Rendering-Problem
+- **Debug-Informationen zeigen korrekte Werte** - aber keine visuelle Darstellung
+
+**Für nächsten Agent:**
+1. **SVG-Rendering-Problem in Streamlit lösen** - Hauptproblem
+2. **ViewBox-Normalisierung verbessern** - verschiedene SVG-Größen handhaben
+3. **Streamlit-spezifische SVG-Darstellung** - möglicherweise andere Rendering-Methode
+4. **Externe SVG-Expertise einholen** - Agent kennt sich nicht aus
 
 **Erfolgs-Kriterium:**
-- ✅ Alle HTML-Templates durch SVG-Komponenten ersetzt
-- ✅ Professionelle, konsistente Workpiece-Darstellung
-- ✅ Asset-Manager Integration für alle Workpiece-Typen
-- ✅ Test-App erfolgreich getestet vor OMF2-Integration
+- ❌ Alle HTML-Templates durch SVG-Komponenten ersetzt
+- ❌ Professionelle, konsistente Workpiece-Darstellung
+- ❌ Asset-Manager Integration für alle Workpiece-Typen
+- ❌ Test-App erfolgreich getestet vor OMF2-Integration
+
+**Empfehlung:**
+- **Externe Hilfe einholen** für SVG-Rendering in Streamlit
+- **Agent-Übergabe** an jemanden mit SVG-Expertise
+- **Grundlegende Infrastruktur steht** - nur Rendering-Problem
 
 ---
 

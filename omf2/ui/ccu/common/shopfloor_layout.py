@@ -32,7 +32,7 @@ from omf2.common.logger import get_logger
 logger = get_logger(__name__)
 
 
-def show_shopfloor_layout_hybrid(
+def show_shopfloor_layout(
     active_module_id: Optional[str] = None,
     active_intersections: Optional[list] = None,
     title: str = "Shopfloor Layout",
@@ -990,4 +990,4 @@ def _navigate_to_module_detail(module_id: str, module_type: str):
 
 
 # Export für OMF2-Integration
-__all__ = ["show_shopfloor_layout_hybrid"]
+__all__ = ["show_shopfloor_layout"]
