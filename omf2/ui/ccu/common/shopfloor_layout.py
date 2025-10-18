@@ -669,6 +669,7 @@ def _generate_normal_cell_svg(
     fill_color = "#FFFFFF"  # Weiß für bessere Umrandung-Sichtbarkeit
     stroke_color = "#1E90FF"  # Default dodger blue
     stroke_width = "0.5"  # Standard-Umrandung
+    css_classes = "module-cell"  # CSS classes for the rect element
 
     # Aktive Module aus Production/Storage Orders - Orange Umrandung
     # Vergleiche mit Modul-Namen (z.B. "DPS") statt Grid-Position
@@ -676,6 +677,7 @@ def _generate_normal_cell_svg(
         fill_color = "#FFFFFF"  # Weiße Füllung
         stroke_color = "#FF9800"  # Orange Umrandung
         stroke_width = "10"  # Dicke orange Umrandung
+        css_classes = "module-cell active-module"  # Add active-module class for CSS styling
         print(f"🔧 DEBUG: Active module {active_module_id} found at cell {cell_id} - applying orange border")
 
     # Icon-SVG laden - VEREINFACHT: Einheitliche Größe für alle Module
@@ -684,7 +686,7 @@ def _generate_normal_cell_svg(
 
     svg_content = f"""
         <!-- Module Cell ({row},{col}) -->
-        <rect class="module-cell"
+        <rect class="{css_classes}"
               id="module-{row}-{col}"
               x="{x_pos}" y="{y_pos}"
               width="{cell_width}" height="{cell_height}"
