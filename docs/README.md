@@ -6,7 +6,7 @@
 
 - **🚨 NEUE AGENTEN:** **MUSS** [Development Workflow](04-howto/development/workflow.md) lesen **BEVOR** Implementierung beginnt!
 - **Neue Teammitglieder:** Starte mit [Strategy Vision](01-strategy/vision.md) → [System Context](02-architecture/system-context.md)
-- **Entwickler:** [Registry Model](02-architecture/registry-model.md) → [How-Tos](04-howto/)
+- **Entwickler:** [OMF2 Registry System](02-architecture/omf2-registry-system.md) → [How-Tos](04-howto/)
 - **Architekten:** [Decision Records](03-decision-records/) → [Architecture](02-architecture/)
 
 ## 📚 Documentation Structure
@@ -36,7 +36,7 @@
 
 #### Development
 - [Development Workflow](04-howto/development/workflow.md) - Git-Workflow, Testing, Development Tools
-- [Dashboard Components](04-howto/development/dashboard-components.md) - Wrapper Pattern, UI-Refresh, MQTT-Integration
+- [UI Development Guide](04-howto/UI_DEVELOPMENT_GUIDE.md) - Wrapper Pattern, UI-Refresh, MQTT-Integration
 - [Mermaid Setup](04-howto/development/mermaid-setup.md) - Diagramme auslagern, IDE-Einrichtung, Styling-Standards
 - [Mermaid Cursor Instructions](04-howto/development/mermaid-cursor-instructions.md) - Cursor-Anweisungen für Mermaid-Diagramme
 
@@ -65,7 +65,7 @@
 
 ## 🔗 Quick Links
 
-- **Registry:** `registry/model/v1/` - Single Source of Truth
+- **Registry:** `omf2/registry/` - Single Source of Truth
 - **Source Code:** `omf/` - Runtime & Tools
 - **Legacy Docs:** [Archive](archive/) - Veraltete Dokumentation
 

@@ -187,7 +187,7 @@ mqtt_client → gateway → business_function (*manager) → ui_komponente
 ## 🔗 Quick Links
 
 - **Registry:** `registry/model/v1/` - Single Source of Truth
-- **Source Code:** `omf/` - Runtime & Tools
+- **Source Code:** `omf2/` - Runtime & Tools
 - **Integrations:** `integrations/` - Externe Systeme (Node-RED, etc.)
 - **Legacy Docs:** [Archive](docs/archive/) - Veraltete Dokumentation
 
@@ -222,7 +222,7 @@ mqtt_client → gateway → business_function (*manager) → ui_komponente
 - **Keine sys.path.append Hacks:** Absolute Imports verwenden
 - **Automatische Regel-Erzwingung:** Pre-commit Hooks sorgen für Einhaltung
 
-> **📚 State-of-the-Art Standards:** Siehe [Decision Record: Development Rules Compliance](docs/03-decision-records/07-development-rules-compliance.md) und [Path Constants](omf/dashboard/tools/path_constants.py)
+> **📚 State-of-the-Art Standards:** Siehe [Decision Record: Development Rules Compliance](docs/03-decision-records/07-development-rules-compliance.md)
 
 ### **Cursor AI Konfiguration:**
 - `.cursorrules` - Projekt-spezifische Regeln
@@ -240,11 +240,7 @@ mqtt_client → gateway → business_function (*manager) → ui_komponente
 
 ### Orbis Customizations
 - `docs/` - Orbis documentation and analysis
-- `omf/` - Legacy OMF Dashboard (Hauptanwendung)
-  - `omf/` - OMF Dashboard (Legacy-Version)
-  - `helper_apps/` - Helper-Anwendungen (unabhängig)
-    - `session_manager/` - Session Manager (Replay-Funktionalität)
-- `omf2/` - **NEUE OMF2 Architektur** (Empfohlen)
+- `omf2/` - **OMF2 Architektur** (Aktuelle Hauptanwendung)
   - `omf2/omf.py` - Streamlit Dashboard Entry Point
   - `omf2/admin/` - Admin Domain (MQTT Client + Gateway + Manager)
   - `omf2/ccu/` - CCU Domain (MQTT Client + Gateway + Manager)
@@ -255,9 +251,8 @@ mqtt_client → gateway → business_function (*manager) → ui_komponente
   - `omf2/registry/` - Registry v2 (Topics, Schemas, MQTT Clients)
   - `omf2/config/` - Konfigurationsdateien (MQTT, Logging)
   - `omf2/docs/` - OMF2-spezifische Dokumentation
-  - `omf2/tests/` - OMF2 Test Suite (55 Tests)
-- `tests/` - Legacy Orbis tests
-- `registry/` - Legacy Registry & Schemas
+  - `omf2/tests/` - OMF2 Test Suite
+- `tests/` - Orbis tests
 - `data/` - Unsere Daten (`mqtt-data/`, `omf-data/`)
 
 ### System-Architektur
@@ -267,12 +262,10 @@ mqtt_client → gateway → business_function (*manager) → ui_komponente
 - **Thread-sichere Singleton**: Alle Komponenten sind thread-safe
 - **Schema-driven**: Registry-basierte Validierung und Routing
 - **Best Practice Logging**: Level-spezifische Ringbuffer mit UI-Integration
-- **55 erfolgreiche Tests**: Vollständige Test-Abdeckung
+- **Vollständige Test-Abdeckung**: Alle Tests bestehen
 
-#### **OMF (Legacy) - Bestehende Architektur**
-- **OMF Dashboard**: Hauptanwendung für Fabrik-Steuerung
+#### **Session Manager - Helper-Anwendung**
 - **Session Manager**: Unabhängige Helper-App für Session-Replay
-- **Keine direkte Kopplung**: Beide Systeme arbeiten unabhängig
 - **Replay-Funktionalität**: Session Manager spielt Sessions über lokalen MQTT-Broker ab
 
 ### Struktur-Validierung
@@ -397,7 +390,7 @@ Das OMF2 Dashboard folgt einer professionellen **Drei-Schichten-Architektur**:
 - **Registry v2 Integration** für alle Komponenten
 - **Schema-driven Architecture** mit JSON-Schema-Validierung
 - **Thread-safe Singleton Pattern** für alle Komponenten
-- **55 erfolgreiche Tests** für die gesamte Architektur
+- **Vollständige Test-Abdeckung** für die gesamte Architektur
 
 ### OMF2 Tests
 

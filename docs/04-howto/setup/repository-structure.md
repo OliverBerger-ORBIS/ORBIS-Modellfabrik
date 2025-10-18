@@ -1,54 +1,59 @@
 # Repository Structure Guide
 
 **Zielgruppe:** Entwickler  
-**Letzte Aktualisierung:** 20.09.2025
+**Letzte Aktualisierung:** 16.10.2025
 
 ## 📁 Projekt-Struktur
 
 ```
 ORBIS-Modellfabrik/
-├── omf/                          # Hauptpaket
-│   ├── dashboard/                # Streamlit Dashboard
-│   │   ├── components/           # UI-Komponenten
-│   │   └── omf_dashboard.py      # Haupt-Dashboard
-│   ├── tools/                    # Business Logic
-│   │   ├── omf_mqtt_client.py   # MQTT-Client
-│   │   ├── logging_config.py     # Logging-System
-│   │   └── aps_*.py             # APS-Integration
-│   ├── config/                   # Konfiguration
-│   │   └── *.yml                # YAML-Configs
-│   └── helper_apps/              # Separate Anwendungen
-│       └── session_manager/      # Session Manager
-├── registry/                     # Registry-System
-│   └── model/                    # Schema-Definitionen
+├── omf2/                         # OMF2 Hauptanwendung
+│   ├── omf.py                    # Streamlit Dashboard Entry Point
+│   ├── admin/                    # Admin Domain (MQTT Client + Gateway + Manager)
+│   ├── ccu/                      # CCU Domain (MQTT Client + Gateway + Manager)
+│   ├── nodered/                  # Node-RED Domain (Gateway + Manager)
+│   ├── common/                   # Shared Components (Logger, Registry, Manager)
+│   ├── factory/                  # Factory Pattern für Singleton-Erstellung
+│   ├── ui/                       # Streamlit UI Components
+│   ├── registry/                 # Registry v2 (Topics, Schemas, MQTT Clients)
+│   ├── config/                   # Konfigurationsdateien (MQTT, Logging)
+│   ├── docs/                     # OMF2-spezifische Dokumentation
+│   └── tests/                    # OMF2 Test Suite
+├── session_manager/              # Helper-Anwendung
+│   ├── app.py                    # Session Manager Entry Point
+│   ├── components/               # UI-Komponenten
+│   ├── mqtt/                     # MQTT-Integration
+│   └── utils/                    # Utilities
 ├── data/                         # Nutzdaten
-│   └── omf-data/sessions/        # Session-Daten
+│   ├── omf-data/sessions/        # OMF Session-Daten
+│   └── mqtt-data/                # MQTT Session-Daten
 ├── docs/                         # Dokumentation
 │   ├── 01-strategy/              # Strategie
 │   ├── 02-architecture/          # Architektur
 │   ├── 03-decision-records/      # ADRs
 │   ├── 04-howto/                 # Anleitungen
 │   └── sprints/                  # Sprint-Dokumentation
-└── tests_orbis/                  # Tests
-    └── test_omf/                 # OMF-Tests
+└── tests/                        # Tests
+    ├── test_omf2/                # OMF2 Tests
+    └── test_helper_apps/         # Helper Apps Tests
 ```
 
 ## 🎯 Wichtige Verzeichnisse
 
-### **omf/dashboard/**
-- **Haupt-Dashboard:** `omf_dashboard.py`
-- **Komponenten:** `components/` (Wrapper-Pattern)
-- **UI-Refresh:** `utils/ui_refresh.py`
+### **omf2/ui/**
+- **Haupt-Dashboard:** `omf2/omf.py`
+- **UI-Komponenten:** `ui/` (Wrapper-Pattern)
+- **UI-Refresh:** `ui/utils/ui_refresh.py`
 
-### **omf/tools/**
-- **MQTT-Client:** `omf_mqtt_client.py` (Singleton)
-- **Logging:** `logging_config.py`
-- **APS-Integration:** `aps_*.py`
+### **omf2/common/**
+- **MQTT-Client:** `common/mqtt_client.py` (Singleton)
+- **Logging:** `common/logging_config.py`
+- **Registry:** `registry/` (Topics, Schemas, MQTT Clients)
 
-### **registry/model/**
+### **omf2/registry/**
 - **Schemas:** JSON-Schema-Definitionen
-- **Versionierung:** v0, v1, etc.
 - **Topics:** MQTT-Topic-Definitionen
+- **MQTT Clients:** Client-Konfiguration
 
 ### **data/omf-data/sessions/**
 - **Session-Daten:** SQLite + Log-Dateien

@@ -8,7 +8,7 @@
 **Kontext:** OMF umfasst Dashboard, Session-Manager, Registry und alle Steuerungskomponenten.
 
 ### Registry
-**Definition:** `registry/model/v1/` - Single Source of Truth für alle MQTT-Nachrichtenstrukturen.
+**Definition:** `omf2/registry/` - Single Source of Truth für alle MQTT-Nachrichtenstrukturen.
 
 **Enthält:** Templates, Mappings, Enums, Module-Definitionen, Workpiece-Definitionen.
 
