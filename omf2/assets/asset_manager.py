@@ -25,6 +25,9 @@ class OMF2AssetManager:
         self.svgs_dir = self.assets_dir / "svgs"  # Alle SVGs (Icons + Logos) in einem Verzeichnis
         self.module_icons = self._load_module_icons()
         self.html_templates = self._load_html_templates()
+        
+        # Workpiece-SVG-Manager initialisieren
+        self.workpiece = WorkpieceSvg(self)
 
     def _load_module_icons(self) -> Dict[str, str]:
         """Lädt verfügbare Module-Icons (alle SVGs in svgs/) - vereinfacht"""
@@ -118,6 +121,110 @@ class OMF2AssetManager:
             return self.module_icons[module_name]
         # Fallback: uppercase für Module (MILL, DRILL etc.)
         return self.module_icons.get(module_name.upper())
+
+    def get_workpiece_svg_path(self, workpiece_type: str, state: str = "product") -> Optional[str]:
+        """Gibt den Pfad zur Workpiece-SVG zurück - vereinheitlichte Namenskonvention"""
+        workpiece_dir = self.assets_dir / "workpiece"
+        
+        # NEUE VEREINHEITLICHTE NAMENSKONVENTION:
+        # blue_product.svg, white_product.svg, red_product.svg
+        # Passt zu Registry-Entitäten und CCU-Domain-Konfiguration
+        
+        # Haupt-SVG: Produkt-spezifisch
+        product_svg_filename = f"{workpiece_type.lower()}_product.svg"
+        product_svg_path = workpiece_dir / product_svg_filename
+        
+        if product_svg_path.exists():
+            return str(product_svg_path)
+        
+        # Fallback: Legacy-Unterstützung für spezifische Zustände
+        legacy_filenames = {
+            "unprocessed": f"{workpiece_type.lower()}_unprocessed.svg",
+            "instock_unprocessed": f"{workpiece_type.lower()}_instock_unprocessed.svg", 
+            "instock_reserved": f"{workpiece_type.lower()}_instock_reserved.svg",
+            "3dim": f"{workpiece_type.lower()}_3dim.svg"
+        }
+        
+        # Versuche Legacy-Zustand falls gewünscht
+        if state in legacy_filenames:
+            legacy_filename = legacy_filenames[state]
+            legacy_path = workpiece_dir / legacy_filename
+            
+            if legacy_path.exists():
+                return str(legacy_path)
+        
+        # Letzter Fallback: Palett-SVG
+        palett_path = workpiece_dir / "palett.svg"
+        if palett_path.exists():
+            return str(palett_path)
+        
+        return None
+
+    def get_workpiece_svg_content(self, workpiece_type: str, state: str = "unprocessed") -> Optional[str]:
+        """Lädt den Inhalt einer Workpiece-SVG"""
+        svg_path = self.get_workpiece_svg_path(workpiece_type, state)
+        if svg_path and os.path.exists(svg_path):
+            try:
+                with open(svg_path, encoding="utf-8") as svg_file:
+                    return svg_file.read()
+            except Exception as e:
+                logger.error(f"Fehler beim Laden der Workpiece-SVG {svg_path}: {e}")
+        return None
+
+
+class WorkpieceSvg:
+    """Dedizierte Klasse für Workpiece-SVG-Management"""
+    
+    def __init__(self, asset_manager):
+        self.asset_manager = asset_manager
+        self.workpiece_dir = asset_manager.assets_dir / "workpiece"
+    
+    def get_product(self, color: str) -> Optional[str]:
+        """Lädt Product-SVG für gegebene Farbe (BLUE, WHITE, RED)"""
+        return self._get_svg_by_pattern(f"{color.lower()}_product.svg")
+    
+    def get_3dim(self, color: str) -> Optional[str]:
+        """Lädt 3D-SVG für gegebene Farbe"""
+        return self._get_svg_by_pattern(f"{color.lower()}_3dim.svg")
+    
+    def get_unprocessed(self, color: str) -> Optional[str]:
+        """Lädt Unprocessed-SVG für gegebene Farbe"""
+        return self._get_svg_by_pattern(f"{color.lower()}_unprocessed.svg")
+    
+    def get_instock_unprocessed(self, color: str) -> Optional[str]:
+        """Lädt Instock Unprocessed-SVG für gegebene Farbe"""
+        return self._get_svg_by_pattern(f"{color.lower()}_instock_unprocessed.svg")
+    
+    def get_instock_reserved(self, color: str) -> Optional[str]:
+        """Lädt Instock Reserved-SVG für gegebene Farbe"""
+        return self._get_svg_by_pattern(f"{color.lower()}_instock_reserved.svg")
+    
+    def get_drilled(self, color: str) -> Optional[str]:
+        """Lädt Drilled-SVG für gegebene Farbe"""
+        return self._get_svg_by_pattern(f"{color.lower()}_drilled.svg")
+    
+    def get_milled(self, color: str) -> Optional[str]:
+        """Lädt Milled-SVG für gegebene Farbe"""
+        return self._get_svg_by_pattern(f"{color.lower()}_milled.svg")
+    
+    def get_drilled_and_milled(self, color: str) -> Optional[str]:
+        """Lädt Drilled and Milled-SVG für gegebene Farbe"""
+        return self._get_svg_by_pattern(f"{color.lower()}_drilled_and_milled.svg")
+    
+    def get_palett(self) -> Optional[str]:
+        """Lädt die spezielle Palett-SVG für alle Workpieces"""
+        return self._get_svg_by_pattern("palett.svg")
+    
+    def _get_svg_by_pattern(self, filename: str) -> Optional[str]:
+        """Hilfsmethode: Lädt SVG-Inhalt basierend auf Dateinamen"""
+        svg_path = self.workpiece_dir / filename
+        if svg_path.exists():
+            try:
+                with open(svg_path, encoding="utf-8") as svg_file:
+                    return svg_file.read()
+            except Exception as e:
+                logger.error(f"Fehler beim Laden der Workpiece-SVG {svg_path}: {e}")
+        return None
 
     def display_module_icon(self, module_name: str, width: int = 50, caption: str = None) -> None:
         """Zeigt ein Modul-Icon in Streamlit an"""
