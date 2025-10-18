@@ -152,7 +152,7 @@ def _render_order_details(order, order_manager, i18n, is_completed=False):
 
 def _render_shopfloor_for_order(order, order_manager, i18n):
     """Zeigt Shopfloor Layout mit aktiver Modul-Hervorhebung (rechts Spalte)"""
-    from omf2.ui.ccu.common.shopfloor_layout_hybrid import show_shopfloor_layout_hybrid
+    from omf2.ui.ccu.common.shopfloor_layout import show_shopfloor_layout_hybrid
 
     st.markdown("#### 🗺️ Shopfloor Layout")
 
@@ -181,6 +181,7 @@ def _render_shopfloor_for_order(order, order_manager, i18n):
             active_intersections=active_intersections,
             show_controls=False,
             unique_key="production_orders_shopfloor",
+            mode="view_mode",  # View mode: only show active modules, no clicks
         )
         st.markdown("</div>", unsafe_allow_html=True)
 
