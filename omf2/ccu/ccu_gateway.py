@@ -6,6 +6,7 @@ CCU Gateway - Fassade für CCU Business-Operationen mit Topic-Routing
 import json
 from typing import Any, Dict, List, Optional, Union
 
+from omf2.ccu.monitor_manager import get_monitor_manager
 from omf2.ccu.stock_manager import get_stock_manager
 from omf2.common.logger import get_logger
 from omf2.common.message_manager import get_ccu_message_manager
@@ -43,6 +44,9 @@ class CcuGateway:
 
         # Initialize Topic Manager
         self.topic_manager = get_ccu_topic_manager(registry_manager=self.registry_manager)
+
+        # Initialize Monitor Manager
+        self.monitor_manager = get_monitor_manager(registry_manager=self.registry_manager)
 
         # Explizite Topic-Listen für Manager-Routing
         # Diese Listen definieren, welche Topics an welchen Manager weitergeleitet werden
@@ -182,6 +186,10 @@ class CcuGateway:
         try:
             logger.debug(f"📋 CCU Gateway routing message: {topic}")
 
+            # Routing 0: Monitor Manager - ALLE Topics für Monitor (IMMER ZUERST)
+            logger.debug(f"📊 Routing to monitor_manager: {topic}")
+            self.monitor_manager.process_message(topic, message, meta)
+
             # Routing 1: Sensor Topics (Set-basiertes Lookup)
             if topic in self.sensor_topics:
                 logger.debug(f"📡 Routing to sensor_manager: {topic}")
@@ -229,9 +237,8 @@ class CcuGateway:
                     logger.warning(f"⚠️ Order Manager not available for topic: {topic}")
                 return True
 
-            # Unbekanntes Topic: Nur Debug-Logging
-            logger.debug(f"❓ No routing for topic: {topic}")
-            return True  # Nicht als Fehler behandeln
+            # Fallback: Message wurde verarbeitet (Monitor Manager hat es bekommen)
+            return True
 
         except Exception as e:
             logger.error(f"❌ CCU message routing failed for {topic}: {e}")
@@ -298,15 +305,6 @@ class CcuGateway:
             Liste aller CCU Topics
         """
         return self.topic_manager.get_domain_topics("ccu")
-
-    def get_all_message_buffers(self) -> Dict[str, Any]:
-        """
-        Alle Message-Buffer abrufen - Delegiert an Message Manager
-
-        Returns:
-            Dict mit allen CCU Message-Buffers
-        """
-        return self.message_manager.get_all_message_buffers()
 
     def get_message_buffers(self) -> Dict[str, Dict]:
         """
@@ -501,15 +499,6 @@ class CcuGateway:
         """
         return self.topic_manager.get_published_topics("ccu")
 
-    def get_subscribed_topics(self) -> List[str]:
-        """
-        CCU Subscribed Topics aus Registry abrufen - Delegiert an Topic Manager
-
-        Returns:
-            Liste der Subscribed Topics
-        """
-        return self.topic_manager.get_subscribed_topics("ccu")
-
     # ===== New Manager-based Functionality =====
 
     def generate_message(self, topic: str, params: Dict[str, Any] = None) -> Optional[Dict]:
@@ -664,3 +653,48 @@ class CcuGateway:
         """
         stock_manager = get_stock_manager()
         return stock_manager.send_raw_material_order(workpiece_type)
+
+    # ============================================================================
+    # MESSAGE MONITOR BUSINESS FUNCTIONS
+    # ============================================================================
+
+    def get_subscribed_topics(self) -> List[str]:
+        """
+        Alle abonnierten Topics vom Monitor Manager holen
+
+        Returns:
+            Liste aller abonnierten Topics
+        """
+        try:
+            filter_lists = self.monitor_manager.get_filter_lists()
+            return filter_lists.get("all_topics", [])
+        except Exception as e:
+            logger.error(f"❌ Failed to get subscribed topics: {e}")
+            return []
+
+    def get_module_fts_topics(self) -> List[str]:
+        """
+        Nur Module/FTS Topics vom Monitor Manager holen
+
+        Returns:
+            Liste der Module/FTS Topics
+        """
+        try:
+            filter_lists = self.monitor_manager.get_filter_lists()
+            return filter_lists.get("module_fts_topics", [])
+        except Exception as e:
+            logger.error(f"❌ Failed to get module/FTS topics: {e}")
+            return []
+
+    def get_all_message_buffers(self) -> Dict[str, Any]:
+        """
+        Alle Message Buffers vom Message Manager holen
+
+        Returns:
+            Dictionary mit allen Message Buffers
+        """
+        try:
+            return self.message_manager.get_all_message_buffers()
+        except Exception as e:
+            logger.error(f"❌ Failed to get message buffers: {e}")
+            return {}

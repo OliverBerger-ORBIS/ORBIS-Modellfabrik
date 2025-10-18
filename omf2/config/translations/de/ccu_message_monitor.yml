@@ -12,6 +12,7 @@ ccu_message_monitor.controls.clear_buffer: "Puffer Leeren"
 # Subscriptions
 ccu_message_monitor.subscriptions.subscribed_to: "CCU MQTT Client abonniert {count} Topics"
 ccu_message_monitor.subscriptions.subscribed_topics: "Abonnierte Topics"
+ccu_message_monitor.subscriptions.subscribed_topics_count: "Abonnierte Topics ({count})"
 ccu_message_monitor.subscriptions.no_topics: "CCU MQTT Client hat keine abonnierten Topics"
 
 # Messages
@@ -20,6 +21,7 @@ ccu_message_monitor.messages.waiting: "Messages werden angezeigt, sobald der Cli
 
 # Table Headers
 ccu_message_monitor.table.topic: "Topic"
+ccu_message_monitor.table.name: "Name"
 ccu_message_monitor.table.type: "Typ"
 ccu_message_monitor.table.status: "Status"
 ccu_message_monitor.table.timestamp: "Zeitstempel"

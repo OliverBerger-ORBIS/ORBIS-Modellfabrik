@@ -28,6 +28,7 @@
 ### **🚨 MANDATORY: Development Methodology (HÖCHSTE PRIORITÄT)**
 - **📖 MUSS LESEN:** [Development Workflow](docs/04-howto/development/workflow.md) **BEVOR** Implementierung beginnt!
 - **📋 METHODOLOGIE BEFOLGEN:** Analyse → Planung → Absprache → Implementierung → Test → Dokumentation → Commit
+- **🎨 UI-SYMBOL REGELN:** **NIEMALS hardcodierte Icons verwenden - immer UISymbols!**
 - **✅ BESTÄTIGEN:** Agent muss bestätigen dass er die Vorgehensweise verstanden hat
 - **NIEMALS direkt mit Implementierung beginnen** ohne diese Schritte!
 

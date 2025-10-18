@@ -54,6 +54,13 @@
 4. **Test-Coverage:** Mindestens 80% Code-Coverage für neue Features
 5. **Test-Ausführung:** `python -m pytest tests/test_omf2/` vor jeder Implementierung
 
+#### **🎨 UI-Symbol Regeln (NIEMALS IGNORIEREN):**
+1. **UISymbols verwenden:** NIEMALS hardcodierte Icons (`🔌`, `🏗️`, etc.)
+2. **Zentrale Definition:** Immer `UISymbols.STATUS_ICONS['key']` verwenden
+3. **Icon-Konsistenz:** Gleiche Icons für gleiche Status in allen Komponenten
+4. **Dokumentation prüfen:** `omf2/ui/common/symbols.py` vor Icon-Verwendung lesen
+5. **Tests aktualisieren:** Bei Icon-Änderungen Tests entsprechend anpassen
+
 ### **Phase 5: UI-Test-Kontrolle**
 - **Manuelle UI-Tests** - User führt Tests durch
 - **Funktionalität verifizieren** - Features funktionieren wie erwartet

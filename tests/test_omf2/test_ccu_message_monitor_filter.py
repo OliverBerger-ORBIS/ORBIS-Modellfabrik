@@ -25,8 +25,10 @@ from omf2.ui.ccu.ccu_message_monitor.ccu_message_monitor_component import (
     _is_module_topic,
     _is_fts_topic,
     _get_message_type,
-    _get_message_status
+    _get_message_status,
+    _get_topic_name_with_icon
 )
+from omf2.ui.common.symbols import UISymbols
 
 
 class TestCCUMessageMonitorFilter(unittest.TestCase):
@@ -203,25 +205,25 @@ class TestCCUMessageMonitorFilter(unittest.TestCase):
         """Test: Message Type Erkennung - State"""
         topic = "module/v1/ff/SVR3QA0022/state"
         result = _get_message_type(topic)
-        self.assertEqual(result, "🏗️ Module", "Module State Topic sollte als '🏗️ Module' erkannt werden")
+        self.assertEqual(result, "🟢 Module", "Module State Topic sollte als '🟢 Module' erkannt werden")
 
     def test_get_message_type_connection(self):
         """Test: Message Type Erkennung - Connection"""
         topic = "module/v1/ff/SVR3QA0022/connection"
         result = _get_message_type(topic)
-        self.assertEqual(result, "🔌 Connection", "Connection Topic sollte als '🔌 Connection' erkannt werden")
+        self.assertEqual(result, "📶 Connection", "Connection Topic sollte als '📶 Connection' erkannt werden")
 
     def test_get_message_type_factsheet(self):
         """Test: Message Type Erkennung - Factsheet"""
         topic = "module/v1/ff/SVR3QA0022/factsheet"
         result = _get_message_type(topic)
-        self.assertEqual(result, "📄 Factsheet", "Factsheet Topic sollte als '📄 Factsheet' erkannt werden")
+        self.assertEqual(result, "📋 Factsheet", "Factsheet Topic sollte als '📋 Factsheet' erkannt werden")
 
     def test_get_message_type_ccu(self):
         """Test: Message Type Erkennung - CCU"""
         topic = "ccu/pairing/state"
         result = _get_message_type(topic)
-        self.assertEqual(result, "🏭 CCU", "CCU Topic sollte als '🏭 CCU' erkannt werden")
+        self.assertEqual(result, "🟢 CCU", "CCU Topic sollte als '🟢 CCU' erkannt werden")
 
     def test_get_message_type_fts(self):
         """Test: Message Type Erkennung - FTS"""
@@ -233,25 +235,25 @@ class TestCCUMessageMonitorFilter(unittest.TestCase):
         """Test: Message Status Erkennung - Connected"""
         message = {"connected": True}
         result = _get_message_status(message)
-        self.assertEqual(result, "🔌 Connected", "Connected Message sollte als '🔌 Connected' erkannt werden")
+        self.assertEqual(result, "📶 Connected", "Connected Message sollte als '📶 Connected' erkannt werden")
 
     def test_get_message_status_available(self):
         """Test: Message Status Erkennung - Available"""
         message = {"available": "AVAILABLE"}
         result = _get_message_status(message)
-        self.assertEqual(result, "🏗️ Available", "Available Message sollte als '🏗️ Available' erkannt werden")
+        self.assertEqual(result, "🟢 Available", "Available Message sollte als '🟢 Available' erkannt werden")
 
     def test_get_message_status_busy(self):
         """Test: Message Status Erkennung - Busy"""
         message = {"available": "BUSY"}
         result = _get_message_status(message)
-        self.assertEqual(result, "🏗️ Busy", "Busy Message sollte als '🏗️ Busy' erkannt werden")
+        self.assertEqual(result, "🟠 Busy", "Busy Message sollte als '🟠 Busy' erkannt werden")
 
     def test_get_message_status_error(self):
         """Test: Message Status Erkennung - Error"""
         message = {"available": "ERROR"}
         result = _get_message_status(message)
-        self.assertEqual(result, "🏗️ Error", "Error Message sollte als '🏗️ Error' erkannt werden")
+        self.assertEqual(result, "❌ Error", "Error Message sollte als '❌ Error' erkannt werden")
     
     def test_get_message_status_fts_active(self):
         """Test: Message Status Erkennung - FTS Active"""
@@ -263,7 +265,28 @@ class TestCCUMessageMonitorFilter(unittest.TestCase):
         """Test: Message Status Erkennung - FTS Idle"""
         message = {"orderId": None, "nodeStates": [], "actionStates": []}
         result = _get_message_status(message)
-        self.assertEqual(result, "🚗 FTS Idle", "FTS Idle Message sollte als '🚗 FTS Idle' erkannt werden")
+        self.assertEqual(result, "😴 FTS Idle", "FTS Idle Message sollte als '😴 FTS Idle' erkannt werden")
+
+    def test_get_topic_name_with_icon_module(self):
+        """Test topic name with icon for module topics"""
+        topic = "module/v1/ff/SVR3QA0022/state"
+        result = _get_topic_name_with_icon(topic)
+        # Should return module display name with icon (e.g., "🏬 HBW (SVR3QA0022)")
+        self.assertIn("SVR3QA0022", result)  # Module serial should be in result
+
+    def test_get_topic_name_with_icon_fts(self):
+        """Test topic name with icon for FTS topics"""
+        topic = "fts/v1/ff/5iO4/state"
+        result = _get_topic_name_with_icon(topic)
+        # Should return FTS display name with icon (e.g., "🚗 FTS (5iO4)")
+        self.assertIn("5iO4", result)  # FTS serial should be in result
+
+    def test_get_topic_name_with_icon_other(self):
+        """Test topic name with icon for non-module/FTS topics"""
+        topic = "ccu/order/active"
+        result = _get_topic_name_with_icon(topic)
+        # Should return neutral topic icon
+        self.assertEqual(result, f"{UISymbols.FUNCTIONAL_ICONS['topic_driven']} Topic")
 
     def test_apply_message_filters_error_handling(self):
         """Test: Error Handling in Filter-Funktion"""

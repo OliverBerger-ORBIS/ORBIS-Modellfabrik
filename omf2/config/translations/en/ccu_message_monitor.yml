@@ -20,6 +20,7 @@ ccu_message_monitor.messages.waiting: "Messages will be displayed once the clien
 
 # Table Headers
 ccu_message_monitor.table.topic: "Topic"
+ccu_message_monitor.table.name: "Name"
 ccu_message_monitor.table.type: "Type"
 ccu_message_monitor.table.status: "Status"
 ccu_message_monitor.table.timestamp: "Timestamp"
