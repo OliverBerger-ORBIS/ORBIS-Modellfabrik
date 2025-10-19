@@ -244,35 +244,30 @@ def _display_svg_content(svg_content: str, emoji: str, filename: str, highlight=
     svg_g_id = "N/A"
     viewbox = "N/A"
 
-    if "id=" in svg_content:
-        import re
+    import re
 
+    if "id=" in svg_content:
         id_match = re.search(r'id="([^"]*)"', svg_content)
         if id_match:
             svg_id = id_match.group(1)
 
     if "<g id=" in svg_content:
-        import re
-
         g_match = re.search(r'<g id="([^"]*)"', svg_content)
         if g_match:
             svg_g_id = g_match.group(1)
 
     if "viewBox=" in svg_content:
-        import re
-
         viewbox_match = re.search(r'viewBox="([^"]*)"', svg_content)
         if viewbox_match:
             viewbox = viewbox_match.group(1)
 
-    # SVG-Größe normalisieren
+    # SVG mit festen Dimensionen vorbereiten
     normalized_svg = svg_content
-    if "viewBox=" in svg_content:
-        # Ersetze viewBox mit einheitlicher Größe
-        normalized_svg = re.sub(r'viewBox="[^"]*"', 'viewBox="0 0 100 100"', svg_content)
-        # Füge width und height hinzu
-        if "width=" not in normalized_svg and "height=" not in normalized_svg:
-            normalized_svg = normalized_svg.replace("<svg", '<svg width="100" height="100"')
+    # Entferne bestehende width/height Attribute falls vorhanden
+    normalized_svg = re.sub(r'\s+width="[^"]*"', '', normalized_svg)
+    normalized_svg = re.sub(r'\s+height="[^"]*"', '', normalized_svg)
+    # Füge feste Dimensionen hinzu (150x150 für gute Sichtbarkeit)
+    normalized_svg = normalized_svg.replace('<svg', '<svg width="150" height="150"', 1)
 
     # Container-Styling basierend auf Highlight-Status
     if highlight:
@@ -284,15 +279,11 @@ def _display_svg_content(svg_content: str, emoji: str, filename: str, highlight=
         background_style = "#f9f9f9"
         box_shadow = "0 2px 4px rgba(0,0,0,0.1)"
 
-    # SVG in Container einbetten - Größere Darstellung
+    # SVG in einfachem Container einbetten - Direkte Darstellung ohne komplexe Transforms
     st.markdown(
         f"""
-    <div style="display: flex; justify-content: center; padding: 10px; border: {border_style}; border-radius: 8px; background: {background_style}; box-shadow: {box_shadow};">
-        <div style="width: 150px; height: 150px; display: flex; align-items: center; justify-content: center; overflow: visible;">
-            <div style="transform: scale(1.0); transform-origin: center; max-width: 100%; max-height: 100%;">
-                {normalized_svg}
-            </div>
-        </div>
+    <div style="display: flex; justify-content: center; align-items: center; padding: 15px; border: {border_style}; border-radius: 8px; background: {background_style}; box-shadow: {box_shadow}; min-height: 180px;">
+        {normalized_svg}
     </div>
     """,
         unsafe_allow_html=True,
