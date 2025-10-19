@@ -112,7 +112,85 @@ def _show_dummy_asset_overview(asset_manager):
         svg_files = list(workpiece_dir.glob("*.svg"))
         st.success(f"✅ {len(svg_files)} Workpiece-SVG-Assets gefunden")
 
+        # HART KODIERTE SVG-DARSTELLUNG - OHNE SCHNICKSCHNACK
+        st.markdown("---")
+        st.markdown("### 🔧 **HART KODIERTE SVG-DARSTELLUNG**")
+        st.markdown("**Alle verfügbaren SVGs - direkt geladen ohne Asset-Manager:**")
+
+        # Alle SVG-Dateien direkt laden und in logischer Reihenfolge anzeigen
+        svg_files = list(workpiece_dir.glob("*.svg"))
+        
+        if svg_files:
+            # Definierte Reihenfolge: 6 Zeilen mit Überschriften
+            row_groups = [
+                {
+                    "title": "🎯 **PRODUCT**",
+                    "files": ["blue_product", "red_product", "white_product"]
+                },
+                {
+                    "title": "📐 **3DIM**", 
+                    "files": ["blue_3dim", "red_3dim", "white_3dim"]
+                },
+                {
+                    "title": "📦 **INSTOCK UNPROCESSED**",
+                    "files": ["blue_instock_unprocessed", "red_instock_unprocessed", "white_instock_unprocessed"]
+                },
+                {
+                    "title": "🔒 **INSTOCK RESERVED**",
+                    "files": ["blue_instock_reserved", "red_instock_reserved", "white_instock_reserved"]
+                },
+                {
+                    "title": "⚙️ **UNPROCESSED**",
+                    "files": ["blue_unprocessed", "red_unprocessed", "white_unprocessed"]
+                },
+                {
+                    "title": "🎨 **PALLETT**",
+                    "files": ["palett"]  # Nur einmal anzeigen
+                }
+            ]
+            
+            # Zeige alle SVGs in Gruppen mit Überschriften
+            for group in row_groups:
+                st.markdown(f"### {group['title']}")
+                
+                # Finde verfügbare SVG-Dateien für diese Gruppe
+                group_svg_files = []
+                for filename in group['files']:
+                    svg_file = workpiece_dir / f"{filename}.svg"
+                    if svg_file.exists():
+                        group_svg_files.append(svg_file)
+                
+                if group_svg_files:
+                    # Zeige SVGs in Spalten
+                    cols_per_row = len(group_svg_files)
+                    cols = st.columns(cols_per_row)
+                    
+                    for i, svg_file in enumerate(group_svg_files):
+                        with cols[i]:
+                            st.markdown(f"**{svg_file.stem}**")
+                            try:
+                                with open(svg_file, encoding="utf-8") as f:
+                                    svg_content = f.read()
+                                
+                                # Einfache SVG-Darstellung ohne Manipulation
+                                st.markdown(f"""
+                                <div style="border: 1px solid #ccc; padding: 10px; margin: 5px; text-align: center;">
+                                    {svg_content}
+                                </div>
+                                """, unsafe_allow_html=True)
+                                
+                            except Exception as e:
+                                st.error(f"Fehler: {e}")
+                else:
+                    st.warning(f"Keine SVG-Dateien für {group['title']} gefunden")
+                
+                # Abstand zwischen den Gruppen
+                st.markdown("")
+        else:
+            st.error("Keine SVG-Dateien gefunden!")
+
         # NEUE VEREINHEITLICHTE PRODUCT-SVGs (Registry/CCU-Alignment)
+        st.markdown("---")
         st.markdown("### 🎯 **VEREINHEITLICHTE PRODUCT-SVGs**")
         st.markdown("**Registry & CCU-Domain Alignment:** `blue_product.svg`, `white_product.svg`, `red_product.svg`")
 
@@ -182,6 +260,7 @@ def _show_dummy_asset_overview(asset_manager):
                 st.markdown("**Call:** `asset_manager.get_workpiece_palett()`")
             else:
                 st.error("❌ palett.svg nicht gefunden!")
+
 
         # Test der Asset-Manager-Methode
         st.markdown("---")
