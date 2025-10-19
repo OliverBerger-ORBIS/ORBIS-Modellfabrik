@@ -12,6 +12,8 @@ Testet die Workpiece-Management Lösung mit:
 
 import sys
 from pathlib import Path
+import re
+import uuid
 
 import streamlit as st
 
@@ -34,6 +36,79 @@ get_asset_manager = asset_manager_module.get_asset_manager
 st.set_page_config(
     page_title="Stock & Workpiece Layout Test", page_icon="📦", layout="wide", initial_sidebar_state="expanded"
 )
+
+
+def scope_svg_styles(svg_content: str) -> str:
+    """
+    Scopes SVG styles to prevent CSS class conflicts when multiple SVGs are embedded.
+    
+    This function:
+    1. Generates a unique ID for each SVG instance
+    2. Wraps the SVG content in a group with that unique ID
+    3. Scopes all CSS selectors in the <style> section to that unique ID
+    
+    This ensures that CSS classes like .cls-1, .cls-2 don't conflict between different SVGs.
+    """
+    # Generate unique ID for this SVG instance
+    unique_id = f"svg-{uuid.uuid4().hex[:8]}"
+    
+    # Check if SVG has a <style> section that needs scoping
+    if '<style>' not in svg_content and '<style ' not in svg_content:
+        # No style section, return as-is
+        return svg_content
+    
+    # Extract the style content
+    style_pattern = r'<style[^>]*>(.*?)</style>'
+    style_match = re.search(style_pattern, svg_content, re.DOTALL)
+    
+    if not style_match:
+        return svg_content
+    
+    style_content = style_match.group(1)
+    
+    # Scope all CSS selectors by prepending with #unique_id
+    # Match CSS selectors (e.g., .cls-1, #id, element)
+    # This regex matches CSS rules like: .cls-1{fill:#000;}
+    def scope_selector(match):
+        selector = match.group(1).strip()
+        properties = match.group(2)
+        
+        # Split multiple selectors (e.g., ".cls-1, .cls-2")
+        selectors = [s.strip() for s in selector.split(',')]
+        
+        # Scope each selector
+        scoped_selectors = []
+        for sel in selectors:
+            # Don't scope @-rules or already scoped selectors
+            if sel.startswith('@') or sel.startswith('#' + unique_id):
+                scoped_selectors.append(sel)
+            else:
+                scoped_selectors.append(f'#{unique_id} {sel}')
+        
+        return ','.join(scoped_selectors) + '{' + properties + '}'
+    
+    # Pattern to match CSS rules: selector{properties}
+    css_rule_pattern = r'([^{]+)\{([^}]+)\}'
+    scoped_style_content = re.sub(css_rule_pattern, scope_selector, style_content)
+    
+    # Replace the style content with scoped version
+    scoped_svg = svg_content.replace(style_content, scoped_style_content)
+    
+    # Wrap the SVG content in a group with the unique ID
+    # Find the opening <svg> tag and insert a <g id="unique_id"> after it
+    svg_tag_pattern = r'(<svg[^>]*>)'
+    
+    def add_group(match):
+        svg_tag = match.group(1)
+        return f'{svg_tag}<g id="{unique_id}">'
+    
+    scoped_svg = re.sub(svg_tag_pattern, add_group, scoped_svg, count=1)
+    
+    # Close the group before the closing </svg> tag
+    scoped_svg = scoped_svg.replace('</svg>', '</g></svg>', 1)
+    
+    return scoped_svg
+
 
 
 def main():
@@ -172,10 +247,13 @@ def _show_dummy_asset_overview(asset_manager):
                                 with open(svg_file, encoding="utf-8") as f:
                                     svg_content = f.read()
                                 
-                                # Einfache SVG-Darstellung ohne Manipulation
+                                # Scope SVG styles to prevent CSS conflicts
+                                scoped_svg_content = scope_svg_styles(svg_content)
+                                
+                                # SVG-Darstellung mit Scoping
                                 st.markdown(f"""
                                 <div style="border: 1px solid #ccc; padding: 10px; margin: 5px; text-align: center;">
-                                    {svg_content}
+                                    {scoped_svg_content}
                                 </div>
                                 """, unsafe_allow_html=True)
                                 
@@ -323,8 +401,6 @@ def _display_svg_content(svg_content: str, emoji: str, filename: str, highlight=
     svg_g_id = "N/A"
     viewbox = "N/A"
 
-    import re
-
     if "id=" in svg_content:
         id_match = re.search(r'id="([^"]*)"', svg_content)
         if id_match:
@@ -340,8 +416,11 @@ def _display_svg_content(svg_content: str, emoji: str, filename: str, highlight=
         if viewbox_match:
             viewbox = viewbox_match.group(1)
 
+    # Scope SVG styles to prevent CSS conflicts
+    scoped_svg_content = scope_svg_styles(svg_content)
+    
     # SVG mit festen Dimensionen vorbereiten
-    normalized_svg = svg_content
+    normalized_svg = scoped_svg_content
     # Entferne bestehende width/height Attribute falls vorhanden
     normalized_svg = re.sub(r'\s+width="[^"]*"', '', normalized_svg)
     normalized_svg = re.sub(r'\s+height="[^"]*"', '', normalized_svg)
@@ -388,19 +467,18 @@ def _display_single_svg(svg_file, emoji, highlight=False):
         with open(svg_file, encoding="utf-8") as f:
             svg_content = f.read()
 
+        # Scope SVG styles to prevent CSS conflicts
+        scoped_svg_content = scope_svg_styles(svg_content)
+
         # SVG-Inhalt analysieren
         svg_id = "N/A"
         svg_g_id = "N/A"
         if "id=" in svg_content:
-            import re
-
             id_match = re.search(r'id="([^"]*)"', svg_content)
             if id_match:
                 svg_id = id_match.group(1)
 
         if "<g id=" in svg_content:
-            import re
-
             g_match = re.search(r'<g id="([^"]*)"', svg_content)
             if g_match:
                 svg_g_id = g_match.group(1)
@@ -421,7 +499,7 @@ def _display_single_svg(svg_file, emoji, highlight=False):
         <div style="display: flex; justify-content: center; padding: 10px; border: {border_style}; border-radius: 8px; background: {background_style}; box-shadow: {box_shadow};">
             <div style="width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; overflow: hidden;">
                 <div style="transform: scale(0.3); transform-origin: center;">
-                    {svg_content}
+                    {scoped_svg_content}
                 </div>
             </div>
         </div>
@@ -590,6 +668,9 @@ def _get_workpiece_svg(workpiece_type: str, count: int, available: bool, asset_m
             svg_content = asset_manager.get_workpiece_svg_content(workpiece_type, "unprocessed")
 
         if svg_content:
+            # Scope SVG styles to prevent CSS conflicts
+            scoped_svg_content = scope_svg_styles(svg_content)
+            
             # SVG anpassen (Größe, Farbe basierend auf Verfügbarkeit)
             opacity = "0.7" if not available else "1.0"
             border_color = "#ff6b6b" if not available else "#4ecdc4"
@@ -599,7 +680,7 @@ def _get_workpiece_svg(workpiece_type: str, count: int, available: bool, asset_m
             <div style="display: flex; flex-direction: column; align-items: center; padding: 15px; border: 3px solid {border_color}; border-radius: 12px; background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05)); box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
                 <div style="opacity: {opacity}; width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; overflow: hidden;">
                     <div style="transform: scale(0.4); transform-origin: center;">
-                        {svg_content}
+                        {scoped_svg_content}
                     </div>
                 </div>
                 <div style="margin-top: 10px; font-weight: bold; color: {border_color}; font-size: 16px;">
