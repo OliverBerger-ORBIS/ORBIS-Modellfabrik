@@ -10,10 +10,10 @@ Testet die Workpiece-Management Lösung mit:
 - Vorbereitung für OMF2-Integration
 """
 
-import sys
-from pathlib import Path
 import re
+import sys
 import uuid
+from pathlib import Path
 
 import streamlit as st
 
@@ -41,74 +41,73 @@ st.set_page_config(
 def scope_svg_styles(svg_content: str) -> str:
     """
     Scopes SVG styles to prevent CSS class conflicts when multiple SVGs are embedded.
-    
+
     This function:
     1. Generates a unique ID for each SVG instance
     2. Wraps the SVG content in a group with that unique ID
     3. Scopes all CSS selectors in the <style> section to that unique ID
-    
+
     This ensures that CSS classes like .cls-1, .cls-2 don't conflict between different SVGs.
     """
     # Generate unique ID for this SVG instance
     unique_id = f"svg-{uuid.uuid4().hex[:8]}"
-    
+
     # Check if SVG has a <style> section that needs scoping
-    if '<style>' not in svg_content and '<style ' not in svg_content:
+    if "<style>" not in svg_content and "<style " not in svg_content:
         # No style section, return as-is
         return svg_content
-    
+
     # Extract the style content
-    style_pattern = r'<style[^>]*>(.*?)</style>'
+    style_pattern = r"<style[^>]*>(.*?)</style>"
     style_match = re.search(style_pattern, svg_content, re.DOTALL)
-    
+
     if not style_match:
         return svg_content
-    
+
     style_content = style_match.group(1)
-    
+
     # Scope all CSS selectors by prepending with #unique_id
     # Match CSS selectors (e.g., .cls-1, #id, element)
     # This regex matches CSS rules like: .cls-1{fill:#000;}
     def scope_selector(match):
         selector = match.group(1).strip()
         properties = match.group(2)
-        
+
         # Split multiple selectors (e.g., ".cls-1, .cls-2")
-        selectors = [s.strip() for s in selector.split(',')]
-        
+        selectors = [s.strip() for s in selector.split(",")]
+
         # Scope each selector
         scoped_selectors = []
         for sel in selectors:
             # Don't scope @-rules or already scoped selectors
-            if sel.startswith('@') or sel.startswith('#' + unique_id):
+            if sel.startswith("@") or sel.startswith("#" + unique_id):
                 scoped_selectors.append(sel)
             else:
-                scoped_selectors.append(f'#{unique_id} {sel}')
-        
-        return ','.join(scoped_selectors) + '{' + properties + '}'
-    
+                scoped_selectors.append(f"#{unique_id} {sel}")
+
+        return ",".join(scoped_selectors) + "{" + properties + "}"
+
     # Pattern to match CSS rules: selector{properties}
-    css_rule_pattern = r'([^{]+)\{([^}]+)\}'
+    css_rule_pattern = r"([^{]+)\{([^}]+)\}"
     scoped_style_content = re.sub(css_rule_pattern, scope_selector, style_content)
-    
+
     # Replace the style content with scoped version
     scoped_svg = svg_content.replace(style_content, scoped_style_content)
-    
+
     # Wrap the SVG content in a group with the unique ID
     # Find the opening <svg> tag and insert a <g id="unique_id"> after it
-    svg_tag_pattern = r'(<svg[^>]*>)'
-    
+    svg_tag_pattern = r"(<svg[^>]*>)"
+
     def add_group(match):
         svg_tag = match.group(1)
         return f'{svg_tag}<g id="{unique_id}">'
-    
-    scoped_svg = re.sub(svg_tag_pattern, add_group, scoped_svg, count=1)
-    
-    # Close the group before the closing </svg> tag
-    scoped_svg = scoped_svg.replace('</svg>', '</g></svg>', 1)
-    
-    return scoped_svg
 
+    scoped_svg = re.sub(svg_tag_pattern, add_group, scoped_svg, count=1)
+
+    # Close the group before the closing </svg> tag
+    scoped_svg = scoped_svg.replace("</svg>", "</g></svg>", 1)
+
+    return scoped_svg
 
 
 def main():
@@ -194,74 +193,65 @@ def _show_dummy_asset_overview(asset_manager):
 
         # Alle SVG-Dateien direkt laden und in logischer Reihenfolge anzeigen
         svg_files = list(workpiece_dir.glob("*.svg"))
-        
+
         if svg_files:
             # Definierte Reihenfolge: 6 Zeilen mit Überschriften
             row_groups = [
-                {
-                    "title": "🎯 **PRODUCT**",
-                    "files": ["blue_product", "red_product", "white_product"]
-                },
-                {
-                    "title": "📐 **3DIM**", 
-                    "files": ["blue_3dim", "red_3dim", "white_3dim"]
-                },
+                {"title": "🎯 **PRODUCT**", "files": ["blue_product", "red_product", "white_product"]},
+                {"title": "📐 **3DIM**", "files": ["blue_3dim", "red_3dim", "white_3dim"]},
                 {
                     "title": "📦 **INSTOCK UNPROCESSED**",
-                    "files": ["blue_instock_unprocessed", "red_instock_unprocessed", "white_instock_unprocessed"]
+                    "files": ["blue_instock_unprocessed", "red_instock_unprocessed", "white_instock_unprocessed"],
                 },
                 {
                     "title": "🔒 **INSTOCK RESERVED**",
-                    "files": ["blue_instock_reserved", "red_instock_reserved", "white_instock_reserved"]
+                    "files": ["blue_instock_reserved", "red_instock_reserved", "white_instock_reserved"],
                 },
-                {
-                    "title": "⚙️ **UNPROCESSED**",
-                    "files": ["blue_unprocessed", "red_unprocessed", "white_unprocessed"]
-                },
-                {
-                    "title": "🎨 **PALLETT**",
-                    "files": ["palett"]  # Nur einmal anzeigen
-                }
+                {"title": "⚙️ **UNPROCESSED**", "files": ["blue_unprocessed", "red_unprocessed", "white_unprocessed"]},
+                {"title": "🎨 **PALLETT**", "files": ["palett"]},  # Nur einmal anzeigen
             ]
-            
+
             # Zeige alle SVGs in Gruppen mit Überschriften
             for group in row_groups:
                 st.markdown(f"### {group['title']}")
-                
+
                 # Finde verfügbare SVG-Dateien für diese Gruppe
                 group_svg_files = []
-                for filename in group['files']:
+                for filename in group["files"]:
                     svg_file = workpiece_dir / f"{filename}.svg"
                     if svg_file.exists():
                         group_svg_files.append(svg_file)
-                
+
                 if group_svg_files:
                     # Zeige SVGs in Spalten
                     cols_per_row = len(group_svg_files)
                     cols = st.columns(cols_per_row)
-                    
+
                     for i, svg_file in enumerate(group_svg_files):
                         with cols[i]:
                             st.markdown(f"**{svg_file.stem}**")
                             try:
                                 with open(svg_file, encoding="utf-8") as f:
                                     svg_content = f.read()
-                                
+
                                 # Scope SVG styles to prevent CSS conflicts
                                 scoped_svg_content = scope_svg_styles(svg_content)
-                                
+
                                 # SVG-Darstellung mit Scoping
-                                st.markdown(f"""
+                                st.markdown(
+                                    f"""
                                 <div style="border: 1px solid #ccc; padding: 10px; margin: 5px; text-align: center;">
                                     {scoped_svg_content}
                                 </div>
-                                """, unsafe_allow_html=True)
-                                
+                                """,
+                                    unsafe_allow_html=True,
+                                )
+
                             except Exception as e:
                                 st.error(f"Fehler: {e}")
                 else:
                     st.warning(f"Keine SVG-Dateien für {group['title']} gefunden")
-                
+
                 # Abstand zwischen den Gruppen
                 st.markdown("")
         else:
@@ -338,7 +328,6 @@ def _show_dummy_asset_overview(asset_manager):
                 st.markdown("**Call:** `asset_manager.get_workpiece_palett()`")
             else:
                 st.error("❌ palett.svg nicht gefunden!")
-
 
         # Test der Asset-Manager-Methode
         st.markdown("---")
@@ -418,14 +407,14 @@ def _display_svg_content(svg_content: str, emoji: str, filename: str, highlight=
 
     # Scope SVG styles to prevent CSS conflicts
     scoped_svg_content = scope_svg_styles(svg_content)
-    
+
     # SVG mit festen Dimensionen vorbereiten
     normalized_svg = scoped_svg_content
     # Entferne bestehende width/height Attribute falls vorhanden
-    normalized_svg = re.sub(r'\s+width="[^"]*"', '', normalized_svg)
-    normalized_svg = re.sub(r'\s+height="[^"]*"', '', normalized_svg)
+    normalized_svg = re.sub(r'\s+width="[^"]*"', "", normalized_svg)
+    normalized_svg = re.sub(r'\s+height="[^"]*"', "", normalized_svg)
     # Füge feste Dimensionen hinzu (150x150 für gute Sichtbarkeit)
-    normalized_svg = normalized_svg.replace('<svg', '<svg width="150" height="150"', 1)
+    normalized_svg = normalized_svg.replace("<svg", '<svg width="150" height="150"', 1)
 
     # Container-Styling basierend auf Highlight-Status
     if highlight:
@@ -670,7 +659,7 @@ def _get_workpiece_svg(workpiece_type: str, count: int, available: bool, asset_m
         if svg_content:
             # Scope SVG styles to prevent CSS conflicts
             scoped_svg_content = scope_svg_styles(svg_content)
-            
+
             # SVG anpassen (Größe, Farbe basierend auf Verfügbarkeit)
             opacity = "0.7" if not available else "1.0"
             border_color = "#ff6b6b" if not available else "#4ecdc4"
