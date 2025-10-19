@@ -12,7 +12,8 @@
 ### 2. [Einheitliches Logging-System](02-unified-logging-system.md)
 **Status:** Accepted  
 **Datum:** 2024-12-19  
-**Kurzbeschreibung:** OMF-Logging-System mit JSON-Formatierung, zentraler Konfiguration und einheitlichen Logger-Instanzen für strukturierte Logs.
+**Letzte Aktualisierung:** 2025-01-17  
+**Kurzbeschreibung:** OMF-Logging-System mit QueueListener-Integration, Thread-Safety, automatischer Log-Bereinigung und optimierten Log-Leveln für strukturierte Logs.
 
 ### 3. [Komponenten-Trennung (UI ↔ Business-Logik)](03-component-separation-ui-business-logic.md)
 **Status:** Accepted  

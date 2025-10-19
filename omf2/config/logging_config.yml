@@ -19,25 +19,25 @@ modules:
   omf2.nodered:
     level: INFO
   omf2.ccu:
-    level: DEBUG
+    level: INFO
   omf2.admin:
     level: INFO
 mqtt_clients:
   admin_mqtt_client:
-    level: DEBUG
+    level: INFO
   ccu_mqtt_client:
     level: INFO
 gateways:
   admin_gateway:
     level: INFO
   ccu_gateway:
-    level: DEBUG
+    level: INFO
 business_managers:
   sensor_manager:
-    level: DEBUG
+    level: INFO
   module_manager:
-    level: DEBUG
+    level: INFO
   stock_manager:
-    level: DEBUG
+    level: INFO
   order_manager:
-    level: DEBUG
+    level: INFO

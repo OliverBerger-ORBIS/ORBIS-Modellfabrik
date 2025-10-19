@@ -175,7 +175,7 @@ def _render_shopfloor_for_storage_order(order, order_manager, i18n):
             active_module_id=active_module,
             active_intersections=active_intersections,
             show_controls=False,
-            unique_key=f"storage_orders_shopfloor_{hash(str(active_module))}",
+            unique_key=f"storage_orders_shopfloor_{active_module}_{len(active_intersections) if active_intersections else 0}",
             mode="view_mode",  # View mode: only show active modules, no clicks
         )
         st.markdown("</div>", unsafe_allow_html=True)

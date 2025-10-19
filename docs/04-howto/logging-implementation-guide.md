@@ -1,7 +1,7 @@
 # OMF2 Logging System - Complete Guide
 
-**Version:** 2.0  
-**Last updated:** 2025-10-17  
+**Version:** 3.0  
+**Last updated:** 2025-01-17  
 **Author:** OMF Development Team  
 
 ---
@@ -9,6 +9,13 @@
 ## 🎯 **Überblick**
 
 Dieses Dokument ist die **einzige und vollständige** Dokumentation des OMF2 Logging-Systems. Es erklärt, wie das System funktioniert, wie Agenten es korrekt verwenden und wie Log-Analyse durchgeführt wird.
+
+**Wichtige Änderungen in Version 3.0:**
+- ✅ **QueueListener Integration** - Thread-safe RingBuffer über QueueListener
+- ✅ **Zentrale Logging-Konfiguration** - Alle Handler über `configure_logging_with_ringbuffer()`
+- ✅ **Automatic Log Cleanup** - Alte Log-Dateien werden automatisch gelöscht
+- ✅ **Optimierte Log-Level** - Business-Manager von DEBUG auf INFO optimiert
+- ✅ **RingBuffer Thread-Safety** - 100% Log-Capture für MQTT-Callbacks
 
 **Wichtige Änderungen in Version 2.0:**
 - ✅ **Log-Cleanup bei Start** implementiert
@@ -25,12 +32,12 @@ Dieses Dokument ist die **einzige und vollständige** Dokumentation des OMF2 Log
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│  LOGGING LAYER 1: MultiLevelRingBufferHandler          │
+│  LOGGING LAYER 1: QueueListener (Thread-Safe)          │
 ├─────────────────────────────────────────────────────────┤
-│  • Level-spezifische Ringbuffer (ERROR, WARNING, INFO, DEBUG) │
-│  • Thread-sichere Buffer-Verwaltung                    │
-│  • Session State Integration                           │
-│  • Handler-Persistence nach Environment-Switches      │
+│  • Thread-sichere Queue-basierte Handler               │
+│  • MultiLevelRingBufferHandler Integration             │
+│  • FileHandler + ConsoleHandler + RingBufferHandler    │
+│  • Automatic Log Cleanup on Startup                    │
 └─────────────────────────────────────────────────────────┘
                            ↓
 ┌─────────────────────────────────────────────────────────┐
@@ -40,6 +47,7 @@ Dieses Dokument ist die **einzige und vollständige** Dokumentation des OMF2 Log
 │  • Konsistente Formatierung                            │
 │  • Component-basierte Logging                          │
 │  • Gateway-Pattern Integration                         │
+│  • 100% Log-Capture für MQTT-Callbacks                 │
 └─────────────────────────────────────────────────────────┘
                            ↓
 ┌─────────────────────────────────────────────────────────┐
@@ -49,7 +57,91 @@ Dieses Dokument ist die **einzige und vollständige** Dokumentation des OMF2 Log
 │  • Level-spezifische Anzeige (ERROR & Warnings Tab)    │
 │  • Log-Suche und -Analyse                              │
 │  • Export-Funktionalität                               │
+│  • Optimierte Log-Level (INFO statt DEBUG)             │
 └─────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 🚀 **Neue Features in Version 3.0**
+
+### **QueueListener Integration (KRITISCH)**
+
+**Problem gelöst:** RingBuffer wurde direkt an Logger gehängt → nicht thread-safe für MQTT-Callbacks
+
+**Lösung:** QueueListener-basierte Architektur
+
+```python
+# ✅ NEU: Thread-safe RingBuffer Integration
+def configure_logging_with_ringbuffer(
+    ring_buffer: Optional[Deque] = None,
+    cleanup_on_start: bool = True
+) -> tuple[logging.Logger, logging.handlers.QueueListener]:
+    """Thread-safe logging configuration with RingBuffer integration"""
+    
+    # Queue für thread-safe logging
+    log_queue = queue.Queue()
+    
+    # Handler erstellen
+    handlers = []
+    
+    # File Handler
+    if cleanup_on_start:
+        cleanup_old_logs()
+    file_handler = SafeRotatingFileHandler(...)
+    handlers.append(file_handler)
+    
+    # RingBuffer Handler (wenn angegeben)
+    if ring_buffer:
+        rb_handler = RingBufferHandler(ring_buffer)
+        handlers.append(rb_handler)
+    
+    # QueueListener für thread-safe operation
+    listener = logging.handlers.QueueListener(log_queue, *handlers)
+    listener.start()
+    
+    # Root Logger konfigurieren
+    root_logger = logging.getLogger()
+    root_logger.addHandler(logging.handlers.QueueHandler(log_queue))
+    
+    return root_logger, listener
+```
+
+### **Automatic Log Cleanup**
+
+```python
+# ✅ NEU: Automatische Log-Bereinigung
+def cleanup_old_logs(log_dir: Path, pattern: str = "omf2.log*"):
+    """Löscht alte Log-Dateien beim Neustart der Anwendung."""
+    deleted_count = 0
+    for log_file in log_dir.glob(pattern):
+        try:
+            log_file.unlink()
+            deleted_count += 1
+            print(f"🗑️ Deleted old log: {log_file.name}")
+        except Exception as e:
+            print(f"⚠️ Could not delete {log_file.name}: {e}")
+    
+    if deleted_count > 0:
+        print(f"🧹 Cleaned up {deleted_count} old log files")
+```
+
+### **Optimierte Log-Level**
+
+**Vorher (zu viele Debug-Logs):**
+```yaml
+omf2.ccu: DEBUG           # 🔧 Viele Debug-Nachrichten
+ccu_gateway: DEBUG        # 🔀 Gateway-Verarbeitung
+admin_mqtt_client: DEBUG  # 📡 MQTT-Verbindungen
+business_managers: DEBUG  # 📊 Manager-Operationen
+```
+
+**Nachher (selektive Info-Logs):**
+```yaml
+omf2.ccu: INFO            # 📋 Wichtige CCU-Events
+ccu_gateway: INFO         # 🔀 Wichtige Gateway-Events  
+admin_mqtt_client: INFO   # 📡 Wichtige MQTT-Events
+business_managers: INFO   # 📊 Wichtige Manager-Events
 ```
 
 ---
