@@ -25,25 +25,40 @@
 
 ## 🤖 **Cursor AI / Agent Einweisung**
 
-### **🚨 MANDATORY: Development Methodology (HÖCHSTE PRIORITÄT)**
-- **📖 MUSS LESEN:** [Development Workflow](docs/04-howto/development/workflow.md) **BEVOR** Implementierung beginnt!
-- **📋 METHODOLOGIE BEFOLGEN:** Analyse → Planung → Absprache → Implementierung → Test → Dokumentation → Commit
-- **🎨 UI-SYMBOL REGELN:** **NIEMALS hardcodierte Icons verwenden - immer UISymbols!**
-- **✅ BESTÄTIGEN:** Agent muss bestätigen dass er die Vorgehensweise verstanden hat
-- **NIEMALS direkt mit Implementierung beginnen** ohne diese Schritte!
+### **🚨 KRITISCH: JEDER AGENT MUSS DIESE DOKUMENTATION LESEN!**
+
+**⚠️ STOP! Bevor du irgendetwas machst, MUSS du diese Dokumentation lesen:**
+
+1. **📖 MANDATORY DEVELOPMENT METHODOLOGY:** [Development Workflow](docs/04-howto/development/workflow.md) - **MUSS GELESEN WERDEN!**
+2. **📖 ZENTRALE AGENT-DOKUMENTATION:** [Agent Onboarding Architecture](docs/04-howto/agent-onboarding-architecture.md) - **MUSS GELESEN WERDEN!**
+
+**🚨 NIEMALS direkt mit Implementierung beginnen ohne diese Dokumentation gelesen zu haben!**
+**🚨 NIEMALS spekulieren oder raten - IMMER erst Dokumentation lesen!**
+**🚨 NIEMALS "ich mache mal schnell..." - IMMER erst verstehen, dann handeln!**
+
+### **✅ BESTÄTIGUNG ERFORDERLICH**
+**Jeder Agent MUSS bestätigen dass er:**
+- ✅ Die Development Workflow-Dokumentation gelesen hat
+- ✅ Die Agent Onboarding Architecture-Dokumentation gelesen hat  
+- ✅ Die Methodologie verstanden hat
+- ✅ Die Architektur-Prinzipien verstanden hat
+
+**NUR NACH dieser Bestätigung darf der Agent mit der Arbeit beginnen!**
 
 ### **🚨 KRITISCHE VERBOTE (HÖCHSTE PRIORITÄT)**
 - **NIEMALS Streamlit-Apps starten:** `streamlit run` ❌ (Verursacht Race-Conditions, MQTT-Konflikte)
 - **NUR User startet Streamlit-Apps** - Agent startet KEINE Streamlit-Apps
 
 ### **📋 Dokumentations-Workflow für neue Agenten/Chats**
-1. **Projekt-Status verstehen:** [PROJECT_STATUS.md](docs/PROJECT_STATUS.md) - Aktueller Sprint, Status, Arbeiten
-2. **Strategische Übersicht:** [Roadmap](docs/01-strategy/roadmap.md) - Alle Entwicklungsphasen
-3. **Konkrete ToDos:** [plan.md](plan.md) - Messe-Vorbereitung und aktuelle Aufgaben
-4. **Sprint-Details:** [docs/sprints/](docs/sprints/) - Detaillierte Sprint-Dokumentation
-5. **Architektur verstehen:** [OMF2 Architecture](docs/02-architecture/omf2-architecture.md) - Technische Grundlagen
-6. **Registry System:** [OMF2 Registry System](docs/02-architecture/omf2-registry-system.md) - **KRITISCH** - OMF-Entitäten-Zugriff
-7. **Logging System:** [Logging Implementation Guide](docs/04-howto/logging-implementation-guide.md) - **KRITISCH** - Log-Analyse und Debugging
+1. **🚨 MANDATORY DEVELOPMENT METHODOLOGY:** [Development Workflow](docs/04-howto/development/workflow.md) - **MUSS GELESEN WERDEN!**
+2. **🚨 ZENTRALE AGENT-DOKUMENTATION:** [Agent Onboarding Architecture](docs/04-howto/agent-onboarding-architecture.md) - **MUSS GELESEN WERDEN!**
+3. **Projekt-Status verstehen:** [PROJECT_STATUS.md](docs/PROJECT_STATUS.md) - Aktueller Sprint, Status, Arbeiten
+4. **Strategische Übersicht:** [Roadmap](docs/01-strategy/roadmap.md) - Alle Entwicklungsphasen
+5. **Konkrete ToDos:** [plan.md](plan.md) - Messe-Vorbereitung und aktuelle Aufgaben
+6. **Sprint-Details:** [docs/sprints/](docs/sprints/) - Detaillierte Sprint-Dokumentation
+7. **Architektur verstehen:** [OMF2 Architecture](docs/02-architecture/omf2-architecture.md) - Technische Grundlagen
+8. **Registry System:** [OMF2 Registry System](docs/02-architecture/omf2-registry-system.md) - **KRITISCH** - OMF-Entitäten-Zugriff
+9. **Logging System:** [Logging Implementation Guide](docs/04-howto/logging-implementation-guide.md) - **KRITISCH** - Log-Analyse und Debugging
 
 ### **🎯 Dokumentations-Prinzipien**
 - **roadmap.md** = Strategischer Überblick (keine konkreten ToDos)

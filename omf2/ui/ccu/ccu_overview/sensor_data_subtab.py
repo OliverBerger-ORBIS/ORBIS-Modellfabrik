@@ -21,7 +21,7 @@ from omf2.ui.utils.ui_refresh import request_refresh
 logger = get_logger(__name__)
 
 
-def render_sensor_data_subtab(ccu_gateway: CcuGateway, registry_manager):
+def render_sensor_data_subtab(ccu_gateway: CcuGateway, registry_manager, asset_manager):
     """Render Sensor Data Subtab - Business Logic über SensorManager"""
     logger.info("🌡️ Rendering Sensor Data Subtab")
 

@@ -118,7 +118,9 @@ def main():
     asset_manager = get_asset_manager()
 
     # Tab-Navigation
-    tab1, tab2, tab3 = st.tabs(["🎨 Dummy-Tab: Asset-Übersicht", "📋 Purchase Order", "👤 Customer Order"])
+    tab1, tab2, tab3, tab4 = st.tabs(
+        ["🎨 Asset-Übersicht", "📋 Purchase Order", "👤 Customer Order", "📦 Product Catalog"]
+    )
 
     with tab1:
         _show_dummy_asset_overview(asset_manager)
@@ -128,6 +130,9 @@ def main():
 
     with tab3:
         _show_customer_order_dummy(asset_manager)
+
+    with tab4:
+        _show_product_catalog_test(asset_manager)
 
     # Sidebar Controls - für Debug und Test-Zwecke
     st.sidebar.header("🎛️ Controls")
@@ -268,53 +273,65 @@ def _show_dummy_asset_overview(asset_manager):
         # Spalten erstellen
         col1, col2, col3 = st.columns(3)
 
-        # Verfügbare Methoden für alle Farben - get_workpiece_product() am Ende, da es Fehler verursacht
-        methods = [
-            ("get_workpiece_3dim", "3dim"),
-            ("get_workpiece_unprocessed", "unprocessed"),
-            ("get_workpiece_instock_unprocessed", "instock_unprocessed"),
-            ("get_workpiece_instock_reserved", "instock_reserved"),
-            ("get_workpiece_product", "product"),
-        ]
+        # Verfügbare Patterns für alle Farben
+        patterns = ["3dim", "unprocessed", "instock_unprocessed", "instock_reserved", "product"]
 
         with col1:
             st.markdown("#### 🔵 **BLUE Workpieces**")
-            for method_name, state in methods:
-                method = getattr(asset_manager, method_name)
-                svg_content = method("BLUE")
+            for pattern in patterns:
+                svg_content = asset_manager.get_workpiece_svg("BLUE", pattern)
                 if svg_content:
-                    _display_svg_content(
-                        svg_content, "🔵", f"blue_{state}.svg", highlight=(method_name == "get_workpiece_product")
+                    # Verwende die neue korrekte SVG-Darstellung
+                    st.markdown(f"**🔵 {pattern}**")
+                    st.markdown(
+                        f"""
+                    <div style="border: 1px solid #ccc; padding: 10px; margin: 5px; text-align: center;">
+                        {svg_content}
+                    </div>
+                    """,
+                        unsafe_allow_html=True,
                     )
-                    st.markdown(f"**Call:** `asset_manager.{method_name}('BLUE')`")
+                    st.markdown(f"**Call:** `asset_manager.get_workpiece_svg('BLUE', '{pattern}')`")
                 else:
-                    st.error(f"❌ blue_{state}.svg nicht gefunden!")
+                    st.error(f"❌ blue_{pattern}.svg nicht gefunden!")
 
         with col2:
             st.markdown("#### ⚪ **WHITE Workpieces**")
-            for method_name, state in methods:
-                method = getattr(asset_manager, method_name)
-                svg_content = method("WHITE")
+            for pattern in patterns:
+                svg_content = asset_manager.get_workpiece_svg("WHITE", pattern)
                 if svg_content:
-                    _display_svg_content(
-                        svg_content, "⚪", f"white_{state}.svg", highlight=(method_name == "get_workpiece_product")
+                    # Verwende die neue korrekte SVG-Darstellung
+                    st.markdown(f"**⚪ {pattern}**")
+                    st.markdown(
+                        f"""
+                    <div style="border: 1px solid #ccc; padding: 10px; margin: 5px; text-align: center;">
+                        {svg_content}
+                    </div>
+                    """,
+                        unsafe_allow_html=True,
                     )
-                    st.markdown(f"**Call:** `asset_manager.{method_name}('WHITE')`")
+                    st.markdown(f"**Call:** `asset_manager.get_workpiece_svg('WHITE', '{pattern}')`")
                 else:
-                    st.error(f"❌ white_{state}.svg nicht gefunden!")
+                    st.error(f"❌ white_{pattern}.svg nicht gefunden!")
 
         with col3:
             st.markdown("#### 🔴 **RED Workpieces**")
-            for method_name, state in methods:
-                method = getattr(asset_manager, method_name)
-                svg_content = method("RED")
+            for pattern in patterns:
+                svg_content = asset_manager.get_workpiece_svg("RED", pattern)
                 if svg_content:
-                    _display_svg_content(
-                        svg_content, "🔴", f"red_{state}.svg", highlight=(method_name == "get_workpiece_product")
+                    # Verwende die neue korrekte SVG-Darstellung
+                    st.markdown(f"**🔴 {pattern}**")
+                    st.markdown(
+                        f"""
+                    <div style="border: 1px solid #ccc; padding: 10px; margin: 5px; text-align: center;">
+                        {svg_content}
+                    </div>
+                    """,
+                        unsafe_allow_html=True,
                     )
-                    st.markdown(f"**Call:** `asset_manager.{method_name}('RED')`")
+                    st.markdown(f"**Call:** `asset_manager.get_workpiece_svg('RED', '{pattern}')`")
                 else:
-                    st.error(f"❌ red_{state}.svg nicht gefunden!")
+                    st.error(f"❌ red_{pattern}.svg nicht gefunden!")
 
             # SONDERMETHODE: getPalett()
             st.markdown("---")
@@ -324,7 +341,16 @@ def _show_dummy_asset_overview(asset_manager):
             # Palett-SVG über Asset-Manager laden
             palett_content = asset_manager.get_workpiece_palett()
             if palett_content:
-                _display_svg_content(palett_content, "🎨", "palett.svg")
+                # Verwende die neue korrekte SVG-Darstellung
+                st.markdown("**🎨 palett**")
+                st.markdown(
+                    f"""
+                <div style="border: 1px solid #ccc; padding: 10px; margin: 5px; text-align: center;">
+                    {palett_content}
+                </div>
+                """,
+                    unsafe_allow_html=True,
+                )
                 st.markdown("**Call:** `asset_manager.get_workpiece_palett()`")
             else:
                 st.error("❌ palett.svg nicht gefunden!")
@@ -339,10 +365,10 @@ def _show_dummy_asset_overview(asset_manager):
         with test_col1:
             st.markdown("**BLUE Test:**")
             try:
-                blue_svg_content = asset_manager.get_workpiece_product("BLUE")
+                blue_svg_content = asset_manager.get_workpiece_svg("BLUE", "product")
                 if blue_svg_content:
                     st.success("✅ BLUE SVG geladen")
-                    st.code("asset_manager.get_workpiece_product('BLUE')", language="python")
+                    st.code("asset_manager.get_workpiece_svg('BLUE', 'product')", language="python")
                 else:
                     st.error("❌ BLUE SVG nicht geladen")
             except Exception as e:
@@ -351,10 +377,10 @@ def _show_dummy_asset_overview(asset_manager):
         with test_col2:
             st.markdown("**WHITE Test:**")
             try:
-                white_svg_content = asset_manager.get_workpiece_product("WHITE")
+                white_svg_content = asset_manager.get_workpiece_svg("WHITE", "product")
                 if white_svg_content:
                     st.success("✅ WHITE SVG geladen")
-                    st.code("asset_manager.get_workpiece_product('WHITE')", language="python")
+                    st.code("asset_manager.get_workpiece_svg('WHITE', 'product')", language="python")
                 else:
                     st.error("❌ WHITE SVG nicht geladen")
             except Exception as e:
@@ -363,10 +389,10 @@ def _show_dummy_asset_overview(asset_manager):
         with test_col3:
             st.markdown("**RED Test:**")
             try:
-                red_svg_content = asset_manager.get_workpiece_product("RED")
+                red_svg_content = asset_manager.get_workpiece_svg("RED", "product")
                 if red_svg_content:
                     st.success("✅ RED SVG geladen")
-                    st.code("asset_manager.get_workpiece_product('RED')", language="python")
+                    st.code("asset_manager.get_workpiece_svg('RED', 'product')", language="python")
                 else:
                     st.error("❌ RED SVG nicht geladen")
             except Exception as e:
@@ -510,57 +536,202 @@ def _display_single_svg(svg_file, emoji, highlight=False):
 
 
 def _show_purchase_order_dummy(asset_manager):
-    """Dummy-Tab: Purchase Order Darstellung mit Asset-Manager"""
-    st.subheader("📋 Purchase Order Dummy")
-    st.markdown("**Simulation der Purchase Order View mit SVG-Komponenten**")
+    """Purchase Order Darstellung mit Asset-Manager Integration"""
+    st.subheader("📋 Purchase Order")
+    st.markdown("**Purchase Order View mit Asset-Manager SVG-Integration**")
 
-    # Beispiel-Daten
-    purchase_orders = [
-        {"type": "BLUE", "count": 10, "available": True},
-        {"type": "WHITE", "count": 5, "available": True},
-        {"type": "RED", "count": 3, "available": False},
-    ]
+    # Lade Product Manager für Produktdaten
+    try:
+        from omf2.common.product_manager import get_omf2_product_manager
 
-    cols = st.columns(len(purchase_orders))
+        product_manager = get_omf2_product_manager()
+        catalog = product_manager.get_all_products()
 
-    for i, order in enumerate(purchase_orders):
-        with cols[i]:
-            st.markdown(f"**{order['type']} Purchase Order**")
+        st.success(f"✅ Product Manager geladen: {len(catalog)} Produkte")
 
-            # SVG-basierte Darstellung
-            svg_content = _get_workpiece_svg(order["type"], order["count"], order["available"], asset_manager)
-            st.markdown(svg_content, unsafe_allow_html=True)
+        if not catalog:
+            st.error("❌ Keine Produkte im Katalog gefunden")
+            return
 
-            # Zusätzliche Infos
-            st.markdown(f"**Anzahl:** {order['count']}")
-            st.markdown(f"**Status:** {'✅ Verfügbar' if order['available'] else '❌ Nicht verfügbar'}")
+        # Asset-Manager SVG-Darstellung
+        st.markdown("### 🎨 **Purchase Orders mit Asset-Manager SVG**")
+
+        # Beispiel Purchase Orders mit Bedarfsberechnung
+        MAX_CAPACITY = 3
+        purchase_orders = [
+            {"product_id": "blue", "count": 1, "need": 2},  # Bedarf = MAX_CAPACITY - count
+            {"product_id": "white", "count": 0, "need": 3},
+            {"product_id": "red", "count": 2, "need": 1},
+        ]
+
+        # Schleife über die Purchase Orders (3 Zeilen)
+
+        for order in purchase_orders:
+            if order["product_id"] in catalog:
+                product = catalog[order["product_id"]]
+                color_name = product.get("name", order["product_id"].capitalize())
+                color_emoji = product.get(
+                    "icon", "🔵" if order["product_id"] == "blue" else "⚪" if order["product_id"] == "white" else "🔴"
+                )
+
+                st.markdown(f"#### {color_emoji} **{color_name.upper()} Purchase Order**")
+
+                # 2 Spalten: Links SVGs, Rechts Daten
+                col1, col2 = st.columns([2, 1])
+
+                with col1:
+                    # 3DIM SVG - Asset-Manager Display-Methode verwenden
+                    st.markdown("**3DIM SVG:**")
+                    asset_manager.display_workpiece_svg(order["product_id"].upper(), "3dim")
+
+                    # Bestand anzeigen
+                    st.markdown(f"**Bestand: {order['count']}**")
+
+                    # Leere Baskets durch Palett ersetzen - Asset-Manager Display-Methode verwenden
+                    if order["need"] > 0:
+                        st.markdown("**Fehlende Baskets:**")
+                        asset_manager.display_palett_svg(order["need"])
+
+                with col2:
+                    # Purchase Order Daten
+                    st.markdown("**Purchase Order Daten:**")
+                    st.write(f"**Bestand:** {order['count']}/{MAX_CAPACITY}")
+                    st.write(f"**Bedarf:** {order['need']} Stück")
+
+                    if order["need"] > 0:
+                        if st.button("📦 Bestellen", key=f"purchase_order_{order['product_id']}"):
+                            st.success(f"✅ Rohmaterial-Bestellung für {order['product_id'].upper()} gesendet")
+                    else:
+                        st.success("✅ Bestand vollständig")
+
+                # Abstand zwischen den Zeilen
+                st.markdown("---")
+
+    except Exception as e:
+        st.error(f"❌ Fehler beim Laden der Purchase Orders: {e}")
+        st.info("💡 Stelle sicher, dass die Registry-Konfiguration korrekt ist")
 
 
 def _show_customer_order_dummy(asset_manager):
-    """Dummy-Tab: Customer Order Darstellung mit Asset-Manager"""
-    st.subheader("👤 Customer Order Dummy")
-    st.markdown("**Simulation der Customer Order View mit SVG-Komponenten**")
+    """Customer Order Darstellung mit Asset-Manager Integration"""
+    st.subheader("👤 Customer Order")
+    st.markdown("**Customer Order View mit Asset-Manager SVG-Integration**")
 
-    # Beispiel-Daten
-    customer_orders = [
-        {"type": "BLUE", "count": 2, "available": True},
-        {"type": "WHITE", "count": 1, "available": True},
-        {"type": "RED", "count": 4, "available": False},
-    ]
+    # Lade Product Manager für Produktdaten
+    try:
+        from omf2.common.product_manager import get_omf2_product_manager
 
-    cols = st.columns(len(customer_orders))
+        product_manager = get_omf2_product_manager()
+        catalog = product_manager.get_all_products()
 
-    for i, order in enumerate(customer_orders):
-        with cols[i]:
-            st.markdown(f"**{order['type']} Customer Order**")
+        st.success(f"✅ Product Manager geladen: {len(catalog)} Produkte")
 
-            # SVG-basierte Darstellung
-            svg_content = _get_workpiece_svg(order["type"], order["count"], order["available"], asset_manager)
-            st.markdown(svg_content, unsafe_allow_html=True)
+        if not catalog:
+            st.error("❌ Keine Produkte im Katalog gefunden")
+            return
 
-            # Zusätzliche Infos
-            st.markdown(f"**Bestellt:** {order['count']}")
-            st.markdown(f"**Status:** {'✅ Verfügbar' if order['available'] else '❌ Nicht verfügbar'}")
+        # Beispiel Customer Orders
+        customer_orders = [
+            {"product_id": "blue", "count": 2, "available": True},
+            {"product_id": "white", "count": 1, "available": True},
+            {"product_id": "red", "count": 4, "available": False},
+        ]
+
+        # Asset-Manager SVG-Darstellung
+        st.markdown("### 🎨 **Customer Orders mit Asset-Manager SVG**")
+
+        # 3 Spalten für die Customer Orders
+        col1, col2, col3 = st.columns(3)
+
+        # Schleife über die Customer Orders
+        columns = [col1, col2, col3]
+
+        for i, order in enumerate(customer_orders):
+            if order["product_id"] in catalog and i < 3:
+                product = catalog[order["product_id"]]
+                color_name = product.get("name", order["product_id"].capitalize())
+                color_emoji = product.get(
+                    "icon", "🔵" if order["product_id"] == "blue" else "⚪" if order["product_id"] == "white" else "🔴"
+                )
+
+                with columns[i]:
+                    st.markdown(f"#### {color_emoji} **{color_name.upper()} Customer Order**")
+
+                    # PRODUCT SVG - Asset-Manager Display-Methode verwenden
+                    asset_manager.display_workpiece_svg(order["product_id"].upper(), "product")
+
+                    # Customer Order Daten
+                    st.write(f"**Bestellt:** {order['count']} Stück")
+                    st.write(f"**Status:** {'✅ Verfügbar' if order['available'] else '❌ Nicht verfügbar'}")
+
+    except Exception as e:
+        st.error(f"❌ Fehler beim Laden der Customer Orders: {e}")
+        st.info("💡 Stelle sicher, dass die Registry-Konfiguration korrekt ist")
+
+
+def _show_product_catalog_test(asset_manager):
+    """Test-Tab: Product Catalog mit Asset-Manager Integration"""
+    st.subheader("📦 Product Catalog Test")
+    st.markdown("**Test der Product Catalog Subtab mit Asset-Manager SVG-Integration**")
+
+    # Lade Product Manager
+    try:
+        from omf2.common.product_manager import get_omf2_product_manager
+
+        product_manager = get_omf2_product_manager()
+        catalog = product_manager.get_all_products()
+
+        st.success(f"✅ Product Manager geladen: {len(catalog)} Produkte")
+
+        if not catalog:
+            st.error("❌ Keine Produkte im Katalog gefunden")
+            return
+
+        # Asset-Manager SVG-Darstellung (ohne HTML-Templates)
+        st.markdown("### 🎨 **Asset-Manager SVG-Darstellung**")
+
+        # 3 Spalten für die Produkte
+        col1, col2, col3 = st.columns(3)
+
+        # Schleife über die Produkte in der Registry
+        product_order = ["blue", "white", "red"]  # Definierte Reihenfolge
+        columns = [col1, col2, col3]
+
+        for i, product_id in enumerate(product_order):
+            if product_id in catalog and i < 3:
+                product = catalog[product_id]
+                color_name = product.get("name", product_id.capitalize())
+                color_emoji = product.get(
+                    "icon", "🔵" if product_id == "blue" else "⚪" if product_id == "white" else "🔴"
+                )
+
+                with columns[i]:
+                    st.markdown(f"#### {color_emoji} **{color_name.upper()}**")
+
+                    # PRODUCT SVG - Asset-Manager Display-Methode verwenden
+                    st.markdown("**Product SVG:**")
+                    asset_manager.display_workpiece_svg(product_id.upper(), "product")
+
+                    # 3DIM SVG - Asset-Manager Display-Methode verwenden
+                    st.markdown("**3DIM SVG:**")
+                    asset_manager.display_workpiece_svg(product_id.upper(), "3dim")
+
+                    # Produktdaten aus Registry
+                    st.markdown("**Produktdaten:**")
+                    st.write(f"**Name:** {product.get('name', 'Kein Name')}")
+                    st.write(f"**Material:** {product.get('material', 'Kein Material')}")
+                    st.write(f"**Beschreibung:** {product.get('description', 'Keine Beschreibung')}")
+
+        # Zusammenfassung
+        st.markdown("---")
+        st.markdown("### 📊 **Zusammenfassung:**")
+        st.info(f"📦 **Produktkatalog:** {len(catalog)} Produkte verfügbar")
+        st.success("✅ **Asset-Manager Integration:** SVG-basierte Darstellung funktioniert")
+        st.warning("⚠️ **HTML-Templates:** Sollten durch Asset-Manager ersetzt werden")
+
+    except Exception as e:
+        st.error(f"❌ Fehler beim Laden des Product Catalogs: {e}")
+        st.info("💡 Stelle sicher, dass die Registry-Konfiguration korrekt ist")
 
 
 def _show_purchase_order_view(workpiece_type: str, count: int, available: bool, asset_manager):

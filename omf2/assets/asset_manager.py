@@ -6,6 +6,8 @@ Version: 2.0.0
 """
 
 import os
+import re
+import uuid
 from pathlib import Path
 from typing import Any, Dict, Optional
 
@@ -14,6 +16,78 @@ import streamlit as st
 from omf2.common.logger import get_logger
 
 logger = get_logger(__name__)
+
+
+def scope_svg_styles(svg_content: str) -> str:
+    """
+    Scopes SVG styles to prevent CSS class conflicts when multiple SVGs are embedded.
+
+    This function:
+    1. Generates a unique ID for each SVG instance
+    2. Wraps the SVG content in a group with that unique ID
+    3. Scopes all CSS selectors in the <style> section to that unique ID
+
+    This ensures that CSS classes like .cls-1, .cls-2 don't conflict between different SVGs.
+    """
+    # Generate unique ID for this SVG instance
+    unique_id = f"svg-{uuid.uuid4().hex[:8]}"
+
+    # Check if SVG has a <style> section that needs scoping
+    if "<style>" not in svg_content and "<style " not in svg_content:
+        # No style section, return as-is
+        return svg_content
+
+    # Extract the style content
+    style_pattern = r"<style[^>]*>(.*?)</style>"
+    style_match = re.search(style_pattern, svg_content, re.DOTALL)
+
+    if not style_match:
+        return svg_content
+
+    style_content = style_match.group(1)
+
+    # Scope all CSS selectors by prepending with #unique_id
+    # Match CSS selectors (e.g., .cls-1, #id, element)
+    # This regex matches CSS rules like: .cls-1{fill:#000;}
+    def scope_selector(match):
+        selector = match.group(1).strip()
+        properties = match.group(2)
+
+        # Split multiple selectors (e.g., ".cls-1, .cls-2")
+        selectors = [s.strip() for s in selector.split(",")]
+
+        # Scope each selector
+        scoped_selectors = []
+        for sel in selectors:
+            # Don't scope @-rules or already scoped selectors
+            if sel.startswith("@") or sel.startswith("#" + unique_id):
+                scoped_selectors.append(sel)
+            else:
+                scoped_selectors.append(f"#{unique_id} {sel}")
+
+        return ",".join(scoped_selectors) + "{" + properties + "}"
+
+    # Pattern to match CSS rules: selector{properties}
+    css_rule_pattern = r"([^{]+)\{([^}]+)\}"
+    scoped_style_content = re.sub(css_rule_pattern, scope_selector, style_content)
+
+    # Replace the style content with scoped version
+    scoped_svg = svg_content.replace(style_content, scoped_style_content)
+
+    # Wrap the SVG content in a group with the unique ID
+    # Find the opening <svg> tag and insert a <g id="unique_id"> after it
+    svg_tag_pattern = r"(<svg[^>]*>)"
+
+    def add_group(match):
+        svg_tag = match.group(1)
+        return f'{svg_tag}<g id="{unique_id}">'
+
+    scoped_svg = re.sub(svg_tag_pattern, add_group, scoped_svg, count=1)
+
+    # Close the group before the closing </svg> tag
+    scoped_svg = scoped_svg.replace("</svg>", "</g></svg>", 1)
+
+    return scoped_svg
 
 
 class OMF2AssetManager:
@@ -119,94 +193,116 @@ class OMF2AssetManager:
         # Fallback: uppercase für Module (MILL, DRILL etc.)
         return self.module_icons.get(module_name.upper())
 
-    def get_workpiece_svg_path(self, workpiece_type: str, state: str = "product") -> Optional[str]:
-        """Gibt den Pfad zur Workpiece-SVG zurück - vereinheitlichte Namenskonvention"""
-        workpiece_dir = self.assets_dir / "workpiece"
-
-        # NEUE VEREINHEITLICHTE NAMENSKONVENTION:
-        # blue_product.svg, white_product.svg, red_product.svg
-        # Passt zu Registry-Entitäten und CCU-Domain-Konfiguration
-
-        # Haupt-SVG: Produkt-spezifisch
-        product_svg_filename = f"{workpiece_type.lower()}_product.svg"
-        product_svg_path = workpiece_dir / product_svg_filename
-
-        if product_svg_path.exists():
-            return str(product_svg_path)
-
-        # Fallback: Legacy-Unterstützung für spezifische Zustände
-        legacy_filenames = {
-            "unprocessed": f"{workpiece_type.lower()}_unprocessed.svg",
-            "instock_unprocessed": f"{workpiece_type.lower()}_instock_unprocessed.svg",
-            "instock_reserved": f"{workpiece_type.lower()}_instock_reserved.svg",
-            "3dim": f"{workpiece_type.lower()}_3dim.svg",
-        }
-
-        # Versuche Legacy-Zustand falls gewünscht
-        if state in legacy_filenames:
-            legacy_filename = legacy_filenames[state]
-            legacy_path = workpiece_dir / legacy_filename
-
-            if legacy_path.exists():
-                return str(legacy_path)
-
-        # Letzter Fallback: Palett-SVG
-        palett_path = workpiece_dir / "palett.svg"
-        if palett_path.exists():
-            return str(palett_path)
-
-        return None
-
     def get_workpiece_svg_content(self, workpiece_type: str, state: str = "unprocessed") -> Optional[str]:
-        """Lädt den Inhalt einer Workpiece-SVG"""
-        svg_path = self.get_workpiece_svg_path(workpiece_type, state)
-        if svg_path and os.path.exists(svg_path):
-            try:
-                with open(svg_path, encoding="utf-8") as svg_file:
-                    return svg_file.read()
-            except Exception as e:
-                logger.error(f"Fehler beim Laden der Workpiece-SVG {svg_path}: {e}")
-        return None
+        """Lädt den Inhalt einer Workpiece-SVG mit CSS-Scoping für korrekte Darstellung"""
+        return self._get_workpiece_svg_with_scoping(workpiece_type, state)
 
     # =========================================================================
     # WORKPIECE SVG METHODS
     # =========================================================================
 
-    def get_workpiece_product(self, color: str) -> Optional[str]:
-        """Lädt Product-SVG für gegebene Farbe (BLUE, WHITE, RED)"""
-        return self._get_workpiece_svg_by_pattern(f"{color.lower()}_product.svg")
+    def get_workpiece_svg(self, color: str, pattern: str = "product") -> Optional[str]:
+        """Lädt Workpiece-SVG für gegebene Farbe und Pattern
 
-    def get_workpiece_3dim(self, color: str) -> Optional[str]:
-        """Lädt 3D-SVG für gegebene Farbe"""
-        return self._get_workpiece_svg_by_pattern(f"{color.lower()}_3dim.svg")
+        Args:
+            color: Farbe des Workpieces (BLUE, WHITE, RED)
+            pattern: SVG-Pattern (product, 3dim, unprocessed, instock_unprocessed, instock_reserved)
 
-    def get_workpiece_unprocessed(self, color: str) -> Optional[str]:
-        """Lädt Unprocessed-SVG für gegebene Farbe"""
-        return self._get_workpiece_svg_by_pattern(f"{color.lower()}_unprocessed.svg")
-
-    def get_workpiece_instock_unprocessed(self, color: str) -> Optional[str]:
-        """Lädt Instock Unprocessed-SVG für gegebene Farbe"""
-        return self._get_workpiece_svg_by_pattern(f"{color.lower()}_instock_unprocessed.svg")
-
-    def get_workpiece_instock_reserved(self, color: str) -> Optional[str]:
-        """Lädt Instock Reserved-SVG für gegebene Farbe"""
-        return self._get_workpiece_svg_by_pattern(f"{color.lower()}_instock_reserved.svg")
+        Returns:
+            SVG-Inhalt mit CSS-Scoping oder None
+        """
+        return self._get_workpiece_svg_with_scoping(color, pattern)
 
     def get_workpiece_palett(self) -> Optional[str]:
         """Lädt die spezielle Palett-SVG für alle Workpieces"""
-        return self._get_workpiece_svg_by_pattern("palett.svg")
-
-    def _get_workpiece_svg_by_pattern(self, filename: str) -> Optional[str]:
-        """Hilfsmethode: Lädt SVG-Inhalt basierend auf Dateinamen"""
         workpiece_dir = self.assets_dir / "workpiece"
+        palett_path = workpiece_dir / "palett.svg"
+        if palett_path.exists():
+            try:
+                with open(palett_path, encoding="utf-8") as svg_file:
+                    svg_content = svg_file.read()
+                    # Wende CSS-Scoping an für korrekte Darstellung
+                    return scope_svg_styles(svg_content)
+            except Exception as e:
+                logger.error(f"Fehler beim Laden der Palett-SVG {palett_path}: {e}")
+        return None
+
+    def _get_workpiece_svg_with_scoping(self, workpiece_type: str, state: str = "product") -> Optional[str]:
+        """Lädt SVG-Inhalt mit CSS-Scoping für korrekte Darstellung"""
+        workpiece_dir = self.assets_dir / "workpiece"
+
+        # Erstelle Dateiname basierend auf Typ und Zustand
+        filename = f"{workpiece_type.lower()}_{state}.svg"
         svg_path = workpiece_dir / filename
+
         if svg_path.exists():
             try:
                 with open(svg_path, encoding="utf-8") as svg_file:
-                    return svg_file.read()
+                    svg_content = svg_file.read()
+                    # Wende CSS-Scoping an für korrekte Darstellung
+                    return scope_svg_styles(svg_content)
             except Exception as e:
                 logger.error(f"Fehler beim Laden der Workpiece-SVG {svg_path}: {e}")
+
+        # Fallback: Palett-SVG
+        palett_path = workpiece_dir / "palett.svg"
+        if palett_path.exists():
+            try:
+                with open(palett_path, encoding="utf-8") as svg_file:
+                    svg_content = svg_file.read()
+                    # Wende CSS-Scoping an für korrekte Darstellung
+                    return scope_svg_styles(svg_content)
+            except Exception as e:
+                logger.error(f"Fehler beim Laden der Palett-SVG {palett_path}: {e}")
+
         return None
+
+    def display_workpiece_svg(self, workpiece_type: str, state: str = "product", caption: str = None) -> None:
+        """Zeigt Workpiece-SVG mit korrekter Darstellung an"""
+        svg_content = self._get_workpiece_svg_with_scoping(workpiece_type, state)
+
+        if svg_content:
+            # Einfache SVG-Darstellung ohne Manipulation (wie in Helper-App)
+            st.markdown(
+                f"""
+            <div style="border: 1px solid #ccc; padding: 10px; margin: 5px; text-align: center;">
+                {svg_content}
+            </div>
+            """,
+                unsafe_allow_html=True,
+            )
+
+            if caption:
+                st.caption(caption)
+        else:
+            st.error(f"❌ SVG nicht gefunden: {workpiece_type}_{state}.svg")
+
+    def display_palett_svg(self, count: int = 1, caption: str = None) -> None:
+        """Zeigt Palett-SVG mit korrekter Darstellung an
+
+        Args:
+            count: Anzahl der Palett-SVGs die angezeigt werden sollen
+            caption: Optional caption für die Darstellung
+        """
+        palett_svg = self.get_workpiece_palett()
+
+        if palett_svg:
+            # Zeige Palett SVG für jeden fehlenden Basket - wie in stock_and_workpiece_layout_test.py
+            palett_html = ""
+            for _i in range(count):
+                palett_html += f"""
+                <div style="display: inline-block; margin: 2px;">
+                    <div style="border: 1px solid #ccc; padding: 5px; margin: 2px; text-align: center; width: 60px; height: 60px;">
+                        {palett_svg}
+                    </div>
+                </div>
+                """
+            st.markdown(palett_html, unsafe_allow_html=True)
+
+            if caption:
+                st.caption(caption)
+        else:
+            st.error("❌ Palett SVG nicht gefunden")
 
     def display_module_icon(self, module_name: str, width: int = 50, caption: str = None) -> None:
         """Zeigt ein Modul-Icon in Streamlit an"""

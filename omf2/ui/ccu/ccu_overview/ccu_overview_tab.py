@@ -34,6 +34,11 @@ def render_ccu_overview_tab(ccu_gateway=None, registry_manager=None):
 
             registry_manager = get_registry_manager()
 
+        # Initialize Asset Manager (Singleton)
+        from omf2.assets.asset_manager import get_asset_manager
+
+        asset_manager = get_asset_manager()
+
         # i18n Manager aus Session State holen (zentrale Instanz)
         i18n = st.session_state.get("i18n_manager")
         if not i18n:
@@ -58,27 +63,27 @@ def render_ccu_overview_tab(ccu_gateway=None, registry_manager=None):
         with tab1:
             from omf2.ui.ccu.ccu_overview.product_catalog_subtab import render_product_catalog_subtab
 
-            render_product_catalog_subtab(ccu_gateway, registry_manager)
+            render_product_catalog_subtab(ccu_gateway, registry_manager, asset_manager)
 
         with tab2:
             from omf2.ui.ccu.ccu_overview.customer_order_subtab import render_customer_order_subtab
 
-            render_customer_order_subtab(ccu_gateway, registry_manager)
+            render_customer_order_subtab(ccu_gateway, registry_manager, asset_manager)
 
         with tab3:
             from omf2.ui.ccu.ccu_overview.purchase_order_subtab import render_purchase_order_subtab
 
-            render_purchase_order_subtab(ccu_gateway, registry_manager)
+            render_purchase_order_subtab(ccu_gateway, registry_manager, asset_manager)
 
         with tab4:
             from omf2.ui.ccu.ccu_overview.inventory_subtab import render_inventory_subtab
 
-            render_inventory_subtab(ccu_gateway, registry_manager)
+            render_inventory_subtab(ccu_gateway, registry_manager, asset_manager)
 
         with tab5:
             from omf2.ui.ccu.ccu_overview.sensor_data_subtab import render_sensor_data_subtab
 
-            render_sensor_data_subtab(ccu_gateway, registry_manager)
+            render_sensor_data_subtab(ccu_gateway, registry_manager, asset_manager)
 
     except Exception as e:
         logger.error(f"❌ CCU Overview Tab rendering error: {e}")

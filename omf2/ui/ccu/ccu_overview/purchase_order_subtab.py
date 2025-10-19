@@ -13,42 +13,41 @@ from omf2.common.i18n import I18nManager
 from omf2.common.logger import get_logger
 from omf2.ui.common.symbols import UISymbols
 
-# HTML Templates import
-try:
-    from omf2.assets.html_templates import get_bucket_template, get_workpiece_box_template
-
-    TEMPLATES_AVAILABLE = True
-except ImportError:
-    TEMPLATES_AVAILABLE = False
-    # logger.debug(f"Templates not available: {e}")
+# HTML Templates nicht mehr benötigt - Asset-Manager verwendet
 
 logger = get_logger(__name__)
 
 
 def _render_workpiece_section(
-    workpiece_type: str, count: int, need: int, max_capacity: int, ccu_gateway: CcuGateway, i18n: I18nManager
+    workpiece_type: str,
+    count: int,
+    need: int,
+    max_capacity: int,
+    ccu_gateway: CcuGateway,
+    i18n: I18nManager,
+    asset_manager,
 ):
-    """Rendert eine Werkstück-Sektion (BLUE, WHITE, RED) - DRY Principle"""
+    """Rendert eine Werkstück-Sektion (BLUE, WHITE, RED) - Asset-Manager SVG Integration"""
 
     # Icons und Labels
     icons = {"BLUE": "🔵", "WHITE": "⚪", "RED": "🔴"}
 
     workpieces_text = i18n.t("ccu_overview.purchase_orders.workpieces").format(workpiece_type=workpiece_type)
     st.markdown(f"#### {icons.get(workpiece_type, '📦')} {workpieces_text}")
-    col1, col2, col3, col4 = st.columns([1, 1, 2, 1])
+    col1, col2, col3, col4 = st.columns([1, 1, 3, 1])
 
     with col1:
-        if TEMPLATES_AVAILABLE:
-            # TODO: HTML-Templates auf i18n umstellen - enthält hardcoded deutsche Texte
-            st.markdown(get_workpiece_box_template(workpiece_type, count, count > 0), unsafe_allow_html=True)
-        else:
-            st.markdown(f"**{workpiece_type}**")
-            stock_text = i18n.t("ccu_overview.purchase_orders.stock")
-            available_text = i18n.t("ccu_overview.purchase_orders.available")
-            yes_text = i18n.t("ccu_overview.purchase_orders.yes")
-            no_text = i18n.t("ccu_overview.purchase_orders.no")
-            st.markdown(f"**{stock_text}: {count}**")
-            st.markdown(f"**{available_text}: {'✅ ' + yes_text if count > 0 else '❌ ' + no_text}**")
+        # Asset-Manager Display-Methode verwenden
+        st.markdown("**UNPROCESSED SVG:**")
+        asset_manager.display_workpiece_svg(workpiece_type, "unprocessed")
+
+        # Bestand anzeigen
+        stock_text = i18n.t("ccu_overview.purchase_orders.stock")
+        available_text = i18n.t("ccu_overview.purchase_orders.available")
+        yes_text = i18n.t("ccu_overview.purchase_orders.yes")
+        no_text = i18n.t("ccu_overview.purchase_orders.no")
+        st.markdown(f"**{stock_text}: {count}**")
+        st.markdown(f"**{available_text}: {'✅ ' + yes_text if count > 0 else '❌ ' + no_text}**")
 
     with col2:
         need_text = i18n.t("ccu_overview.purchase_orders.need_of_max").format(need=need, max_capacity=max_capacity)
@@ -62,25 +61,11 @@ def _render_workpiece_section(
 
     with col3:
         if need > 0:
-            # Leere Buckets für fehlende Werkstücke - LINKSBÜNDIG
-            if TEMPLATES_AVAILABLE:
-                empty_buckets = ""
-                for _i in range(need):
-                    empty_bucket = get_bucket_template(f"{workpiece_type[0]}{_i+1}", None)
-                    empty_buckets += empty_bucket
-                st.markdown(
-                    f'<div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-start;">{empty_buckets}</div>',
-                    unsafe_allow_html=True,
-                )
-            else:
-                # Fallback: Einfache Darstellung
-                empty_buckets = ""
-                for _i in range(need):
-                    empty_buckets += '<div style="width: 140px; height: 140px; border: 2px solid #ccc; border-top: none; background-color: #f9f9f9; border-radius: 0 0 8px 8px; display: inline-block; margin: 8px;"></div>'
-                st.markdown(
-                    f'<div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-start;">{empty_buckets}</div>',
-                    unsafe_allow_html=True,
-                )
+            # Asset-Manager Display-Methode verwenden
+            st.markdown("**Fehlende Werkstücke:**")
+            asset_manager.display_palett_svg(need)
+        else:
+            st.success("✅ Bestand vollständig")
 
     with col4:
         order_button_text = i18n.t("ccu_overview.purchase_orders.order_raw_material")
@@ -129,12 +114,13 @@ def _send_raw_material_order(workpiece_type: str, ccu_gateway: CcuGateway, i18n:
         return False
 
 
-def render_purchase_order_subtab(ccu_gateway: CcuGateway, registry_manager):
+def render_purchase_order_subtab(ccu_gateway: CcuGateway, registry_manager, asset_manager):
     """Render Purchase Order Subtab - Business Logic über OrderManager
 
     Args:
         ccu_gateway: CcuGateway Instanz (Gateway-Pattern)
         registry_manager: RegistryManager Instanz (Singleton)
+        asset_manager: AssetManager Instanz (Singleton)
     """
     logger.info("📦 Rendering Purchase Order Subtab")
 
@@ -191,12 +177,12 @@ def render_purchase_order_subtab(ccu_gateway: CcuGateway, registry_manager):
         blue_need = MAX_CAPACITY - blue_count
         white_need = MAX_CAPACITY - white_count
 
-        # Werkstück-Sektionen rendern (BLUE, WHITE, RED)
-        _render_workpiece_section("BLUE", blue_count, blue_need, MAX_CAPACITY, ccu_gateway, i18n)
+        # Werkstück-Sektionen rendern (BLUE, WHITE, RED) - Asset-Manager SVG Integration
+        _render_workpiece_section("BLUE", blue_count, blue_need, MAX_CAPACITY, ccu_gateway, i18n, asset_manager)
 
-        _render_workpiece_section("WHITE", white_count, white_need, MAX_CAPACITY, ccu_gateway, i18n)
+        _render_workpiece_section("WHITE", white_count, white_need, MAX_CAPACITY, ccu_gateway, i18n, asset_manager)
 
-        _render_workpiece_section("RED", red_count, red_need, MAX_CAPACITY, ccu_gateway, i18n)
+        _render_workpiece_section("RED", red_count, red_need, MAX_CAPACITY, ccu_gateway, i18n, asset_manager)
 
         # Zusammenfassung
         st.markdown("---")

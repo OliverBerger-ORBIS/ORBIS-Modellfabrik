@@ -15,55 +15,7 @@ from omf2.ccu.stock_manager import get_stock_manager
 from omf2.common.logger import get_logger
 from omf2.ui.common.symbols import UISymbols
 
-# HTML Templates import
-try:
-    from omf2.assets.html_templates import get_workpiece_box_template
-
-    TEMPLATES_AVAILABLE = True
-except ImportError:
-    TEMPLATES_AVAILABLE = False
-    # logger.debug(f"Templates not available: {e}")
-
 logger = get_logger(__name__)
-
-
-def _render_workpiece_section(workpiece_type: str, count: int, available: bool, ccu_gateway: CcuGateway):
-    """
-    Rendert eine Werkstück-Sektion (BLUE, WHITE, RED) - DRY Principle
-
-    i18n: Alle Texte übersetzt
-    Icons: UISymbols bleiben universell
-    """
-    # i18n Manager aus Session State holen (zentrale Instanz)
-    i18n = st.session_state.get("i18n_manager")
-    if not i18n:
-        logger.error("❌ I18n Manager not found in session state")
-        return
-
-    # Icons bleiben universell (NICHT übersetzt!)
-
-    if TEMPLATES_AVAILABLE:
-        # Template verwenden für schöne Darstellung
-        # TODO: HTML-Templates auf i18n umstellen - enthält hardcoded deutsche Texte
-        st.markdown(get_workpiece_box_template(workpiece_type, count, available), unsafe_allow_html=True)
-    else:
-        # Fallback: Einfache Darstellung (i18n)
-        st.markdown(f"**{workpiece_type} {i18n.t('ccu_overview.customer_orders.workpiece')}**")
-        st.markdown(f"**{i18n.t('ccu_overview.customer_orders.stock')}: {count}**")
-        available_text = i18n.t("common.forms.yes") if available else i18n.t("common.forms.no")
-        st.markdown(f"**{i18n.t('ccu_overview.customer_orders.available_label')}: {available_text}**")
-
-    # Button Label (i18n) + Icon (universell)
-    button_label = f"{UISymbols.get_status_icon('send')} {i18n.t('common.buttons.order')}"
-    button_help = i18n.t("ccu_overview.customer_orders.order_button")  # Tooltip
-
-    if available:
-        if st.button(
-            button_label, key=f"ccu_customer_order_{workpiece_type.lower()}", type="secondary", help=button_help
-        ):
-            _send_customer_order(workpiece_type, ccu_gateway)
-    else:
-        st.button(button_label, key=f"ccu_customer_order_{workpiece_type.lower()}_disabled", disabled=True)
 
 
 def _send_customer_order(workpiece_type: str, ccu_gateway: CcuGateway) -> bool:
@@ -109,13 +61,14 @@ def _send_customer_order(workpiece_type: str, ccu_gateway: CcuGateway) -> bool:
         return False
 
 
-def render_customer_order_subtab(ccu_gateway: CcuGateway, registry_manager):
+def render_customer_order_subtab(ccu_gateway: CcuGateway, registry_manager, asset_manager):
     """
     Render Customer Order Subtab - Business Logic über OrderManager
 
     Args:
         ccu_gateway: CcuGateway Instanz (Gateway-Pattern)
         registry_manager: RegistryManager Instanz (Singleton)
+        asset_manager: AssetManager Instanz (Singleton)
 
     i18n: VOLLSTÄNDIG ÜBERSETZT (Pilot-Komponente)
     Icons: UISymbols bleiben universell
@@ -162,18 +115,54 @@ def render_customer_order_subtab(ccu_gateway: CcuGateway, registry_manager):
         blue_count = available_workpieces.get("BLUE", 0)
         white_count = available_workpieces.get("WHITE", 0)
 
-        # 3-Spalten-Layout für Werkstücke (BLUE, WHITE, RED)
+        # Asset Manager wird als Parameter übergeben (Singleton)
+
+        # Lade Product Manager für Produktdaten
+        from omf2.common.product_manager import get_omf2_product_manager
+
+        product_manager = get_omf2_product_manager()
+        catalog = product_manager.get_all_products()
+
+        # 3-Spalten-Layout für Werkstücke
         col1, col2, col3 = st.columns(3)
 
-        # Werkstück-Sektionen rendern (BLUE, WHITE, RED) - DRY Principle
-        with col1:
-            _render_workpiece_section("BLUE", blue_count, blue_count > 0, ccu_gateway)
+        # Schleife über die Produkte in der Registry
+        product_order = ["blue", "white", "red"]  # Definierte Reihenfolge
+        columns = [col1, col2, col3]
+        counts = [blue_count, white_count, red_count]
 
-        with col2:
-            _render_workpiece_section("WHITE", white_count, white_count > 0, ccu_gateway)
+        for i, product_id in enumerate(product_order):
+            if product_id in catalog and i < 3:
+                product = catalog[product_id]
+                count = counts[i]
+                available = count > 0
+                color_name = product.get("name", product_id.capitalize())
+                color_emoji = product.get(
+                    "icon", "🔵" if product_id == "blue" else "⚪" if product_id == "white" else "🔴"
+                )
 
-        with col3:
-            _render_workpiece_section("RED", red_count, red_count > 0, ccu_gateway)
+                with columns[i]:
+                    st.markdown(f"#### {color_emoji} **{color_name.upper()} Customer Order**")
+
+                    # PRODUCT SVG - Asset-Manager Display-Methode verwenden
+                    asset_manager.display_workpiece_svg(product_id.upper(), "product")
+
+                    # Customer Order Daten
+                    st.write(f"**{i18n.t('ccu_overview.customer_orders.stock')}: {count}**")
+                    available_text = i18n.t("common.forms.yes") if available else i18n.t("common.forms.no")
+                    st.write(f"**{i18n.t('ccu_overview.customer_orders.available_label')}: {available_text}**")
+
+                    # Button für Bestellung
+                    button_label = f"{UISymbols.get_status_icon('send')} {i18n.t('common.buttons.order')}"
+                    button_help = i18n.t("ccu_overview.customer_orders.order_button")
+
+                    if available:
+                        if st.button(
+                            button_label, key=f"ccu_customer_order_{product_id}", type="secondary", help=button_help
+                        ):
+                            _send_customer_order(product_id.upper(), ccu_gateway)
+                    else:
+                        st.button(button_label, key=f"ccu_customer_order_{product_id}_disabled", disabled=True)
 
         # Zusammenfassung (übersetzt)
         st.markdown("---")

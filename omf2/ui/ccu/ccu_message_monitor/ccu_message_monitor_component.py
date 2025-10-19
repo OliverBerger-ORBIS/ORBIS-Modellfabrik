@@ -224,9 +224,9 @@ def _render_table_filters(df, i18n, ccu_gateway, monitor_manager):
             st.session_state["ccu_filter_selected_topics"] = []
 
         # Get Registry Manager for module/FTS data
-        from omf2.registry.manager.registry_manager import RegistryManager
+        from omf2.registry.manager.registry_manager import get_registry_manager
 
-        registry_manager = RegistryManager()
+        registry_manager = get_registry_manager()
         modules = registry_manager.get_modules()
 
         # Topic Scope Switch (Teil der Filter-UI)
@@ -604,9 +604,9 @@ def _apply_message_filters(all_buffers, i18n):
 def _is_module_topic(topic):
     """Check if topic is a module topic"""
     # Module topics contain module serial IDs
-    from omf2.registry.manager.registry_manager import RegistryManager
+    from omf2.registry.manager.registry_manager import get_registry_manager
 
-    registry_manager = RegistryManager()
+    registry_manager = get_registry_manager()
     modules = registry_manager.get_modules()
 
     for module_id, module_data in modules.items():
@@ -621,9 +621,9 @@ def _is_fts_topic(topic):
     if "fts" in topic.lower():
         return True
 
-    from omf2.registry.manager.registry_manager import RegistryManager
+    from omf2.registry.manager.registry_manager import get_registry_manager
 
-    registry_manager = RegistryManager()
+    registry_manager = get_registry_manager()
     modules = registry_manager.get_modules()
 
     for module_id, module_data in modules.items():
@@ -651,9 +651,9 @@ def _get_module_display_name(topic):
                 module_serial = parts[3]
 
                 # Look up in registry
-                from omf2.registry.manager.registry_manager import RegistryManager
+                from omf2.registry.manager.registry_manager import get_registry_manager
 
-                registry_manager = RegistryManager()
+                registry_manager = get_registry_manager()
                 modules = registry_manager.get_modules()
 
                 for module_id, module_data in modules.items():

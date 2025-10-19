@@ -47,6 +47,28 @@
 
 **Status:** ✅ **VOLLSTÄNDIG ABGESCHLOSSEN**
 
+---
+
+### ✅ **Task 0.4 ABGESCHLOSSEN: Asset-Manager Integration Probleme**
+
+**Status:** ✅ **VOLLSTÄNDIG ABGESCHLOSSEN**
+
+**Gelöste Probleme:**
+1. **✅ Registry-Manager Singleton-Problem** - Alle UI-Komponenten verwenden jetzt `get_registry_manager()`
+2. **✅ Asset-Manager Integration** - Purchase Order Subtab, Product Catalog, Customer Order verwenden Asset-Manager
+3. **✅ UI-Guidelines Compliance** - Zentrale Singleton-Weitergabe implementiert
+
+**Implementierte Lösungen:**
+- **Registry-Manager:** 4 UI-Komponenten auf `get_registry_manager()` umgestellt
+- **Asset-Manager:** Zentrale Initialisierung in `ccu_overview_tab.py` und Weitergabe an Subtabs
+- **Display-Methoden:** `display_workpiece_svg()` und `display_palett_svg()` für einheitliche SVG-Darstellung
+- **Spaltenbreiten:** Col3 = 3x Col1 für bessere Palett-Darstellung
+
+**Verbleibende Arbeiten:**
+- **Inventory Subtab:** Asset-Manager Integration noch ausstehend (morgen)
+
+---
+
 **Was wurde gefixt:**
 - ✅ **Haupt-Tabs werden jetzt übersetzt** 🌐
 - ✅ `omf2/ui/main_dashboard.py` - Tab-Namen über `i18n.t()` übersetzt

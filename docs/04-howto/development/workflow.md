@@ -7,15 +7,18 @@
 
 ### **⚠️ KRITISCH: Jeder neue Agent MUSS diese Vorgehensweise befolgen**
 
-**Bevor JEDE Implementierung beginnt, MUSS der Agent:**
+**🚨 STOP! Bevor du irgendetwas machst, MUSS du diese Dokumentation lesen:**
 
 1. **📖 DIESES DOKUMENT LESEN** - `docs/04-howto/development/workflow.md`
-2. **📋 DIE METHODOLOGIE VERSTEHEN** - Analyse → Planung → Absprache → **TESTS ZUERST** → Implementierung → UI-Test → Dokumentation → Commit
-3. **🔒 TEST-FIRST DEVELOPMENT VERSTEHEN** - **NIEMALS Code schreiben ohne vorherige Tests**
-4. **✅ BESTÄTIGEN** dass er die Vorgehensweise verstanden hat
+2. **📖 AGENT ONBOARDING ARCHITECTURE** - `docs/04-howto/agent-onboarding-architecture.md`
+3. **📋 DIE METHODOLOGIE VERSTEHEN** - Analyse → Planung → Absprache → **TESTS ZUERST** → Implementierung → UI-Test → Dokumentation → Commit
+4. **🔒 TEST-FIRST DEVELOPMENT VERSTEHEN** - **NIEMALS Code schreiben ohne vorherige Tests**
+5. **✅ BESTÄTIGEN** dass du die Vorgehensweise verstanden hast
 
-**NIEMALS direkt mit Implementierung beginnen ohne diese Schritte!**
-**NIEMALS Code schreiben ohne vorherige Unit-Tests!**
+**🚨 NIEMALS direkt mit Implementierung beginnen ohne diese Schritte!**
+**🚨 NIEMALS Code schreiben ohne vorherige Unit-Tests!**
+**🚨 NIEMALS spekulieren oder raten - IMMER erst Dokumentation lesen!**
+**🚨 NIEMALS "ich mache mal schnell..." - IMMER erst verstehen, dann handeln!**
 
 ---
 

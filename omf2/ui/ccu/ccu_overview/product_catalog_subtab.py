@@ -12,12 +12,13 @@ from omf2.ui.common.symbols import UISymbols
 logger = get_logger(__name__)
 
 
-def render_product_catalog_subtab(ccu_gateway: CcuGateway, registry_manager):
+def render_product_catalog_subtab(ccu_gateway: CcuGateway, registry_manager, asset_manager):
     """Render Product Catalog Subtab
 
     Args:
         ccu_gateway: CcuGateway Instanz (Gateway-Pattern)
         registry_manager: RegistryManager Instanz (Singleton)
+        asset_manager: AssetManager Instanz (Singleton)
     """
     logger.info("📋 Rendering Product Catalog Subtab")
 
@@ -35,7 +36,7 @@ def render_product_catalog_subtab(ccu_gateway: CcuGateway, registry_manager):
         st.markdown(i18n.t("ccu_overview.product_catalog.subtitle"))
 
         # Show Product Catalog Panel (wie in omf/ aps_overview.py)
-        _show_ccu_product_catalog_panel()
+        _show_ccu_product_catalog_panel(asset_manager)
 
     except Exception as e:
         logger.error(f"❌ Product Catalog Subtab rendering error: {e}")
@@ -45,7 +46,7 @@ def render_product_catalog_subtab(ccu_gateway: CcuGateway, registry_manager):
             st.info(f"💡 {i18n_fallback.t('common.status.under_development')}")
 
 
-def _show_ccu_product_catalog_panel():
+def _show_ccu_product_catalog_panel(asset_manager):
     """Zeigt das CCU: Produktkatalog Panel - wie in omf/ aps_overview.py"""
     logger.info("📦 Rendering CCU Product Catalog Panel")
 
@@ -66,70 +67,42 @@ def _show_ccu_product_catalog_panel():
             st.error(f"❌ {i18n.t('ccu_overview.product_catalog.no_products')}")
             return
 
-        # 3 Spalten für die Produkte (Reihenfolge: Blau, Weiß, Rot)
+        # Asset Manager wird als Parameter übergeben (Singleton)
+
+        # 3 Spalten für die Produkte
         col1, col2, col3 = st.columns(3)
 
-        # HTML-Templates importieren
-        try:
-            from omf2.assets.html_templates import get_product_catalog_template
+        # Schleife über die Produkte in der Registry
+        product_order = ["blue", "white", "red"]  # Definierte Reihenfolge
+        columns = [col1, col2, col3]
 
-            TEMPLATES_AVAILABLE = True
-        except ImportError:
-            TEMPLATES_AVAILABLE = False
+        for i, product_id in enumerate(product_order):
+            if product_id in catalog and i < 3:
+                product = catalog[product_id]
+                color_name = product.get("name", product_id.capitalize())
+                color_emoji = product.get(
+                    "icon", "🔵" if product_id == "blue" else "⚪" if product_id == "white" else "🔴"
+                )
 
-        # BLAU (Spalte 1)
-        with col1:
-            if "blue" in catalog:
-                product = catalog["blue"]
-                if TEMPLATES_AVAILABLE:
-                    html_content = get_product_catalog_template("BLUE")
-                    st.markdown(html_content, unsafe_allow_html=True)
-                else:
-                    st.write("🔵 **BLAU**")
-                name_label = i18n.t("ccu_overview.product_catalog.name")
-                desc_label = i18n.t("ccu_overview.product_catalog.description")
-                material_label = i18n.t("ccu_overview.product_catalog.material")
-                color_label = i18n.t("ccu_overview.product_catalog.color")
-                st.write(f"**{name_label}:** {product.get('name', 'Blau')}")
-                st.write(f"**{desc_label}:** {product.get('description', 'Blau')}")
-                st.write(f"**{material_label}:** {product.get('material', 'Kunststoff')}")
-                st.write(f"**{color_label}:** {product.get('color', 'Blau')}")
+                with columns[i]:
+                    st.markdown(f"#### {color_emoji} **{color_name.upper()}**")
 
-        # WEISS (Spalte 2)
-        with col2:
-            if "white" in catalog:
-                product = catalog["white"]
-                if TEMPLATES_AVAILABLE:
-                    html_content = get_product_catalog_template("WHITE")
-                    st.markdown(html_content, unsafe_allow_html=True)
-                else:
-                    st.write("⚪ **WEISS**")
-                name_label = i18n.t("ccu_overview.product_catalog.name")
-                desc_label = i18n.t("ccu_overview.product_catalog.description")
-                material_label = i18n.t("ccu_overview.product_catalog.material")
-                color_label = i18n.t("ccu_overview.product_catalog.color")
-                st.write(f"**{name_label}:** {product.get('name', 'Weiß')}")
-                st.write(f"**{desc_label}:** {product.get('description', 'Weiß')}")
-                st.write(f"**{material_label}:** {product.get('material', 'Kunststoff')}")
-                st.write(f"**{color_label}:** {product.get('color', 'Weiß')}")
+                    # PRODUCT SVG - Asset-Manager Display-Methode verwenden
+                    st.markdown("**Product SVG:**")
+                    asset_manager.display_workpiece_svg(product_id.upper(), "product")
 
-        # ROT (Spalte 3)
-        with col3:
-            if "red" in catalog:
-                product = catalog["red"]
-                if TEMPLATES_AVAILABLE:
-                    html_content = get_product_catalog_template("RED")
-                    st.markdown(html_content, unsafe_allow_html=True)
-                else:
-                    st.write("🔴 **ROT**")
-                name_label = i18n.t("ccu_overview.product_catalog.name")
-                desc_label = i18n.t("ccu_overview.product_catalog.description")
-                material_label = i18n.t("ccu_overview.product_catalog.material")
-                color_label = i18n.t("ccu_overview.product_catalog.color")
-                st.write(f"**{name_label}:** {product.get('name', 'Rot')}")
-                st.write(f"**{desc_label}:** {product.get('description', 'Rot')}")
-                st.write(f"**{material_label}:** {product.get('material', 'Kunststoff')}")
-                st.write(f"**{color_label}:** {product.get('color', 'Rot')}")
+                    # 3DIM SVG - Asset-Manager Display-Methode verwenden
+                    st.markdown("**3DIM SVG:**")
+                    asset_manager.display_workpiece_svg(product_id.upper(), "3dim")
+
+                    # Produktdaten aus Registry
+                    st.markdown("**Produktdaten:**")
+                    name_label = i18n.t("ccu_overview.product_catalog.name")
+                    desc_label = i18n.t("ccu_overview.product_catalog.description")
+                    material_label = i18n.t("ccu_overview.product_catalog.material")
+                    st.write(f"**{name_label}:** {product.get('name', 'Kein Name')}")
+                    st.write(f"**{material_label}:** {product.get('material', 'Kein Material')}")
+                    st.write(f"**{desc_label}:** {product.get('description', 'Keine Beschreibung')}")
 
         # Einfache Produktstatistiken
         summary_text = i18n.t("ccu_overview.product_catalog.summary")

@@ -55,12 +55,13 @@ def _create_large_bucket_display(position, workpiece_type):
     """
 
 
-def render_inventory_subtab(ccu_gateway: CcuGateway, registry_manager):
+def render_inventory_subtab(ccu_gateway: CcuGateway, registry_manager, asset_manager):
     """Render Inventory Subtab - Business Logic über OrderManager
 
     Args:
         ccu_gateway: CcuGateway Instanz (Gateway-Pattern)
         registry_manager: RegistryManager Instanz (Singleton)
+        asset_manager: AssetManager Instanz (Singleton)
     """
     logger.info("🏬 Rendering Inventory Subtab")
 
