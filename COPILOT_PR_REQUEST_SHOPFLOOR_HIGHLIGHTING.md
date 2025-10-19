@@ -118,4 +118,4 @@ Bei Fragen zur bereits implementierten Funktionalität:
 - **Test-App:** `omf2/tests/test_helper_apps/shopfloor_layout_test.py` (funktioniert)
 - **Core-Implementation:** `omf2/ui/ccu/common/shopfloor_layout.py` (Bug hier)
 - **Funktion:** `show_shopfloor_layout()` (in shopfloor_layout.py)
-- **Commit:** `6c2f13a` - "feat: Complete OMF2 integration of shopfloor_layout"
+- **Commit:** b2df39b - "docs: Add Copilot PR-Request for Shopfloor Layout Active Module Highlighting

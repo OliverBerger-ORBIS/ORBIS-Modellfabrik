@@ -180,7 +180,7 @@ def _render_shopfloor_for_order(order, order_manager, i18n):
             active_module_id=active_module,
             active_intersections=active_intersections,
             show_controls=False,
-            unique_key="production_orders_shopfloor",
+            unique_key=f"production_orders_shopfloor_{hash(str(active_module))}",
             mode="view_mode",  # View mode: only show active modules, no clicks
         )
         st.markdown("</div>", unsafe_allow_html=True)
