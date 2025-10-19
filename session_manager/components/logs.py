@@ -10,7 +10,6 @@ import logging
 import streamlit as st
 
 from ..utils.logging_config import get_logger
-from ..utils.streamlit_log_buffer import RingBufferHandler, create_log_buffer
 from ..utils.ui_refresh import request_refresh
 
 logger = get_logger("session_manager.components.logs")
@@ -23,29 +22,10 @@ def show_logs():
     st.subheader("📋 Live-Logs")
     st.markdown("**Live-Logs für den Session Manager**")
 
-    # Log-Buffer initialisieren
+    # Log-Buffer initialisieren (wird bereits in _init_logging_once erstellt)
     if "session_manager_log_buffer" not in st.session_state:
-        st.session_state.session_manager_log_buffer = create_log_buffer(maxlen=1000)
-
-        # Ring-Buffer-Handler hinzufügen
-        rb = RingBufferHandler(st.session_state.session_manager_log_buffer)
-        rb.setLevel(logging.DEBUG)
-
-        # Handler zu Session Manager Loggern hinzufügen
-        session_logger = logging.getLogger("session_manager")
-        session_logger.addHandler(rb)
-        session_logger.propagate = False
-
-        # Weitere Session Manager Logger
-        for logger_name in [
-            "session_manager.main",
-            "session_manager.order_analyzer",
-            "session_manager.auftrag_rot_analyzer",
-            "session_manager.ui_components",
-        ]:
-            logger_obj = logging.getLogger(logger_name)
-            logger_obj.addHandler(rb)
-            logger_obj.propagate = False
+        st.warning("⚠️ Log-Buffer nicht initialisiert. Bitte Anwendung neu starten.")
+        return
 
     # Log-Level Filter
     col1, col2, col3 = st.columns([1, 1, 2])

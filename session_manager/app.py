@@ -41,17 +41,24 @@ def _init_logging_once():
     if st.session_state.get("_log_init"):
         return
 
+    # Ring-Buffer für UI-Logs erstellen wenn nicht vorhanden
+    if "session_manager_log_buffer" not in st.session_state:
+        from session_manager.utils.streamlit_log_buffer import create_log_buffer
+        st.session_state.session_manager_log_buffer = create_log_buffer(maxlen=1000)
+
     # Aktuelles Logging-Level aus Session State holen, Default: INFO
     current_level = st.session_state.get("logging_level", "INFO")
     level_mapping = {"DEBUG": 10, "INFO": 20, "WARNING": 30, "ERROR": 40}
     level = level_mapping.get(current_level, 20)
 
-    # OMF Logging konfigurieren
+    # OMF Logging konfigurieren mit RingBuffer
     root, listener = configure_logging(
         app_name="session_manager",
         level=level,
         log_dir="logs",
         json_file="session_manager.jsonl",
+        ring_buffer=st.session_state.session_manager_log_buffer,
+        cleanup_on_start=True,
         console_pretty=True,
     )
 
