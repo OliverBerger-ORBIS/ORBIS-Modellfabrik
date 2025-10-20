@@ -96,6 +96,23 @@ ccu_topics:
   retain: 1
   schema: ccu_state_flows.schema.json
   description: "BLUE, RED, WHITE, ff-cc-data:factory-flows.json ->Produktion-Plan"
+- topic: ccu/state/calibration/SVR4H76530
+  qos: 2
+  retain: 0
+  schema: wildcard.schema.json
+  description: "Module Calibration State - SVR4H76530 calibration status"
+  assumption: "Module calibration status, positioning accuracy"
+  # APS as-IS Observation:
+  observed_publisher_aps: "unknown"
+  observed_subscriber_aps: "unknown"
+  # OMF2 Guidance (manual configuration):
+  semantic_role: module_calibration_state
+  triggers: "unknown"
+  omf2_usage: "unknown"
+  omf2_note: "unknown"
+  # Verification:
+  verified: false
+  data_source: "Mosquitto-Log: 3 messages, q2,r0"
 - topic: ccu/control
   qos: 1
   retain: 0
@@ -152,6 +169,23 @@ ccu_topics:
   # Verification:
   verified: true
   data_source: "Session orderBlueLocal_orderRedCloud - 79 messages (most frequent CCU topic)"
+- topic: ccu/pairing/pair_fts
+  qos: 2
+  retain: 0
+  schema: wildcard.schema.json
+  description: "FTS Pairing Command - Initiate FTS pairing process"
+  assumption: "FTS pairing request, connection establishment"
+  # APS as-IS Observation:
+  observed_publisher_aps: "unknown"
+  observed_subscriber_aps: "unknown"
+  # OMF2 Guidance (manual configuration):
+  semantic_role: fts_pairing_command
+  triggers: "unknown"
+  omf2_usage: "unknown"
+  omf2_note: "unknown"
+  # Verification:
+  verified: false
+  data_source: "Mosquitto-Log: 1 message, q2,r0"
 - topic: ccu/order/active
   qos: 2
   retain: 1

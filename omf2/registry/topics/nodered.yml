@@ -206,6 +206,40 @@ nodered_topics:
   # Verification:
   verified: true
   data_source: "Session orderBlueLocal - 2 messages"
+- topic: module/v1/ff/NodeRed/SVR4H76530/instantAction
+  qos: 1
+  retain: 0
+  schema: module_v1_ff_NodeRed_serial_instantAction.schema.json
+  description: "Node-RED SVR4H76530 Instant Action - Immediate module control via Node-RED"
+  assumption: "Module instant actions via Node-RED OPC-UA bridge"
+  # APS as-IS Observation:
+  observed_publisher_aps: "unknown"
+  observed_subscriber_aps: "unknown"
+  # OMF2 Guidance (manual configuration):
+  semantic_role: module_instant_action_bridged
+  triggers: "unknown"
+  omf2_usage: "unknown"
+  omf2_note: "unknown"
+  # Verification:
+  verified: false
+  data_source: "Mosquitto-Log: 3 messages, q1,r0"
+- topic: module/v1/ff/NodeRed/SVR4H76530/order
+  qos: 1
+  retain: 0
+  schema: module_v1_ff_NodeRed_serial_order.schema.json
+  description: "Node-RED SVR4H76530 Order - Production orders via Node-RED"
+  assumption: "Production orders routed through Node-RED OPC-UA bridge"
+  # APS as-IS Observation:
+  observed_publisher_aps: "unknown"
+  observed_subscriber_aps: "unknown"
+  # OMF2 Guidance (manual configuration):
+  semantic_role: module_production_order_bridged
+  triggers: "unknown"
+  omf2_usage: "unknown"
+  omf2_note: "unknown"
+  # Verification:
+  verified: false
+  data_source: "Mosquitto-Log: 3 messages, q1,r0"
 - topic: module/v1/ff/NodeRed/SVR4H73275/connection
   qos: 1
   retain: 1
@@ -256,6 +290,40 @@ nodered_topics:
   # Verification:
   verified: true
   data_source: "Session orderBlueLocal - 2 messages"
+- topic: module/v1/ff/NodeRed/SVR4H73275/instantAction
+  qos: 1
+  retain: 0
+  schema: module_v1_ff_NodeRed_serial_instantAction.schema.json
+  description: "Node-RED SVR4H73275 Instant Action - Immediate module control via Node-RED"
+  assumption: "Module instant actions via Node-RED OPC-UA bridge"
+  # APS as-IS Observation:
+  observed_publisher_aps: "unknown"
+  observed_subscriber_aps: "unknown"
+  # OMF2 Guidance (manual configuration):
+  semantic_role: module_instant_action_bridged
+  triggers: "unknown"
+  omf2_usage: "unknown"
+  omf2_note: "unknown"
+  # Verification:
+  verified: false
+  data_source: "Mosquitto-Log: 6 messages, q1,r0"
+- topic: module/v1/ff/NodeRed/SVR4H73275/order
+  qos: 1
+  retain: 0
+  schema: module_v1_ff_NodeRed_serial_order.schema.json
+  description: "Node-RED SVR4H73275 Order - Production orders via Node-RED"
+  assumption: "Production orders routed through Node-RED OPC-UA bridge"
+  # APS as-IS Observation:
+  observed_publisher_aps: "unknown"
+  observed_subscriber_aps: "unknown"
+  # OMF2 Guidance (manual configuration):
+  semantic_role: module_production_order_bridged
+  triggers: "unknown"
+  omf2_usage: "unknown"
+  omf2_note: "unknown"
+  # Verification:
+  verified: false
+  data_source: "Mosquitto-Log: 7 messages, q1,r0"
 - topic: module/v1/ff/NodeRed/CHRG0/connection
   qos: 1
   retain: 1
