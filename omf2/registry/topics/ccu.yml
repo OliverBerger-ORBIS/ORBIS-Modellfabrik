@@ -17,7 +17,7 @@ ccu_topics:
   # OMF2 Guidance (manual configuration):
   semantic_role: order_trigger_primary
   triggers: production_order_workflow
-  omf2_usage: "ProductionOrderManager → subscribe to detect new orders (PRIMARY trigger, REQUIRED)"
+  omf2_usage: "OrderManager → subscribe to detect new orders (PRIMARY trigger, REQUIRED)"
   omf2_note: "This is the REQUIRED trigger - /j1/txt/1/f/o/order is optional alternative"
   # Verification:
   verified: true
@@ -35,7 +35,7 @@ ccu_topics:
   # OMF2 Guidance (manual configuration):
   semantic_role: order_confirmation
   triggers: null
-  omf2_usage: "ProductionOrderManager → publish order confirmation after UUID generation"
+  omf2_usage: "OrderManager → publish order confirmation after UUID generation"
   # Verification:
   verified: true
   data_source: "Session orderBlueLocal_orderRedCloud - 2 messages (BLUE, RED confirmations), Code: modules/order/index.js"
@@ -164,7 +164,7 @@ ccu_topics:
   # OMF2 Guidance (manual configuration):
   semantic_role: order_queue_state
   triggers: null
-  omf2_usage: "ProductionOrderManager → publish active orders array (updated on order changes)"
+  omf2_usage: "OrderManager → publish active orders array (updated on order changes)"
   # Verification:
   verified: true
   data_source: "Session orderBlueLocal_orderRedCloud - 8 messages (order queue updates)"
@@ -180,7 +180,7 @@ ccu_topics:
   # OMF2 Guidance (manual configuration):
   semantic_role: order_completion_log
   triggers: null
-  omf2_usage: "ProductionOrderManager → publish completed orders (retained for history)"
+  omf2_usage: "OrderManager → publish completed orders (retained for history)"
   # Verification:
   verified: true
   data_source: "Session orderBlueLocal_orderRedCloud - 2 messages (order completions)"

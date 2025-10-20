@@ -37,7 +37,9 @@ def test_handler_attachment_after_setup():
 
     # Verify only ONE handler
     multilevel_handlers = [h for h in root_logger.handlers if isinstance(h, MultiLevelRingBufferHandler)]
-    assert len(multilevel_handlers) == 1, f"Should have exactly 1 MultiLevelRingBufferHandler, got {len(multilevel_handlers)}"
+    assert (
+        len(multilevel_handlers) == 1
+    ), f"Should have exactly 1 MultiLevelRingBufferHandler, got {len(multilevel_handlers)}"
 
     print("✅ test_handler_attachment_after_setup PASSED")
 
@@ -62,7 +64,9 @@ def test_handler_reuse_without_force_new():
 
     # Verify only ONE handler
     multilevel_handlers = [h for h in root_logger.handlers if isinstance(h, MultiLevelRingBufferHandler)]
-    assert len(multilevel_handlers) == 1, f"Should have exactly 1 MultiLevelRingBufferHandler, got {len(multilevel_handlers)}"
+    assert (
+        len(multilevel_handlers) == 1
+    ), f"Should have exactly 1 MultiLevelRingBufferHandler, got {len(multilevel_handlers)}"
 
     print("✅ test_handler_reuse_without_force_new PASSED")
 
@@ -87,7 +91,9 @@ def test_handler_replacement_with_force_new():
 
     # Verify only ONE handler (old one should be removed)
     multilevel_handlers = [h for h in root_logger.handlers if isinstance(h, MultiLevelRingBufferHandler)]
-    assert len(multilevel_handlers) == 1, f"Should have exactly 1 MultiLevelRingBufferHandler, got {len(multilevel_handlers)}"
+    assert (
+        len(multilevel_handlers) == 1
+    ), f"Should have exactly 1 MultiLevelRingBufferHandler, got {len(multilevel_handlers)}"
 
     # Verify the new handler is attached
     assert handler2 in root_logger.handlers, "New handler should be attached to root logger"
@@ -119,7 +125,9 @@ def test_handler_persistence_after_apply_logging_config():
 
     # Verify only ONE handler
     multilevel_handlers = [h for h in root_logger.handlers if isinstance(h, MultiLevelRingBufferHandler)]
-    assert len(multilevel_handlers) == 1, f"Should have exactly 1 MultiLevelRingBufferHandler after config, got {len(multilevel_handlers)}"
+    assert (
+        len(multilevel_handlers) == 1
+    ), f"Should have exactly 1 MultiLevelRingBufferHandler after config, got {len(multilevel_handlers)}"
 
     print("✅ test_handler_persistence_after_apply_logging_config PASSED")
 
@@ -154,10 +162,10 @@ def test_logging_actually_works():
     test_logger.debug("TEST DEBUG MESSAGE")
 
     # Verify logs are in buffers
-    error_logs = handler.get_buffer('ERROR')
-    warning_logs = handler.get_buffer('WARNING')
-    info_logs = handler.get_buffer('INFO')
-    debug_logs = handler.get_buffer('DEBUG')
+    error_logs = handler.get_buffer("ERROR")
+    warning_logs = handler.get_buffer("WARNING")
+    info_logs = handler.get_buffer("INFO")
+    debug_logs = handler.get_buffer("DEBUG")
 
     assert len(error_logs) > 0, "Should have ERROR logs in buffer"
     assert len(warning_logs) > 0, "Should have WARNING logs in buffer"
@@ -198,14 +206,18 @@ def test_environment_switch_simulation():
 
     # Verify only ONE handler
     multilevel_handlers = [h for h in root_logger.handlers if isinstance(h, MultiLevelRingBufferHandler)]
-    assert len(multilevel_handlers) == 1, f"Should have exactly 1 MultiLevelRingBufferHandler after env switch, got {len(multilevel_handlers)}"
+    assert (
+        len(multilevel_handlers) == 1
+    ), f"Should have exactly 1 MultiLevelRingBufferHandler after env switch, got {len(multilevel_handlers)}"
 
     # Write logs after switch
     test_logger.info("LOG IN REPLAY ENVIRONMENT")
 
     # Verify new logs are captured
-    info_logs = handler2.get_buffer('INFO')
-    assert any("LOG IN REPLAY ENVIRONMENT" in log for log in info_logs), "New logs should be captured after environment switch"
+    info_logs = handler2.get_buffer("INFO")
+    assert any(
+        "LOG IN REPLAY ENVIRONMENT" in log for log in info_logs
+    ), "New logs should be captured after environment switch"
 
     print("✅ test_environment_switch_simulation PASSED")
 
@@ -225,7 +237,7 @@ def test_ensure_ringbufferhandler_attached_without_streamlit():
     result = ensure_ringbufferhandler_attached()
 
     # Should return False when streamlit is not available or no handler in session
-    assert result == False, "Should return False when streamlit context not available"
+    assert not result, "Should return False when streamlit context not available"
 
     print("✅ test_ensure_ringbufferhandler_attached_without_streamlit PASSED")
 
@@ -262,14 +274,15 @@ def test_ensure_ringbufferhandler_reattaches_detached_handler():
     handler, buffers = setup_multilevel_ringbuffer_logging(force_new=True)
 
     # Create mock session state
-    mock_st = type('MockStreamlit', (), {})()
+    mock_st = type("MockStreamlit", (), {})()
     mock_st.session_state = MockSessionState()
-    mock_st.session_state['log_handler'] = handler
-    mock_st.session_state['log_buffers'] = buffers
+    mock_st.session_state["log_handler"] = handler
+    mock_st.session_state["log_buffers"] = buffers
 
     # Import and monkey-patch streamlit module
     import sys
-    sys.modules['streamlit'] = mock_st
+
+    sys.modules["streamlit"] = mock_st
 
     # Detach handler manually (simulate the bug)
     root_logger.removeHandler(handler)
@@ -281,15 +294,17 @@ def test_ensure_ringbufferhandler_reattaches_detached_handler():
     result = ensure_ringbufferhandler_attached()
 
     # Verify handler is re-attached
-    assert result == True, "Should return True when handler successfully attached"
+    assert result, "Should return True when handler successfully attached"
     assert handler in root_logger.handlers, "Handler should be re-attached after call"
 
     # Verify only ONE handler
     multilevel_handlers = [h for h in root_logger.handlers if isinstance(h, MultiLevelRingBufferHandler)]
-    assert len(multilevel_handlers) == 1, f"Should have exactly 1 MultiLevelRingBufferHandler, got {len(multilevel_handlers)}"
+    assert (
+        len(multilevel_handlers) == 1
+    ), f"Should have exactly 1 MultiLevelRingBufferHandler, got {len(multilevel_handlers)}"
 
     # Cleanup: remove mock streamlit
-    del sys.modules['streamlit']
+    del sys.modules["streamlit"]
 
     print("✅ test_ensure_ringbufferhandler_reattaches_detached_handler PASSED")
 
@@ -328,14 +343,15 @@ def test_ensure_ringbufferhandler_removes_duplicates():
     root_logger.addHandler(handler2)
 
     # Create mock session state with first handler
-    mock_st = type('MockStreamlit', (), {})()
+    mock_st = type("MockStreamlit", (), {})()
     mock_st.session_state = MockSessionState()
-    mock_st.session_state['log_handler'] = handler1
-    mock_st.session_state['log_buffers'] = buffers1
+    mock_st.session_state["log_handler"] = handler1
+    mock_st.session_state["log_buffers"] = buffers1
 
     # Import and monkey-patch streamlit module
     import sys
-    sys.modules['streamlit'] = mock_st
+
+    sys.modules["streamlit"] = mock_st
 
     # Verify we have 2 handlers before
     multilevel_handlers_before = [h for h in root_logger.handlers if isinstance(h, MultiLevelRingBufferHandler)]
@@ -345,16 +361,18 @@ def test_ensure_ringbufferhandler_removes_duplicates():
     result = ensure_ringbufferhandler_attached()
 
     # Verify only ONE handler remains (the one from session state)
-    assert result == True, "Should return True when duplicates removed"
+    assert result, "Should return True when duplicates removed"
     multilevel_handlers_after = [h for h in root_logger.handlers if isinstance(h, MultiLevelRingBufferHandler)]
-    assert len(multilevel_handlers_after) == 1, f"Should have exactly 1 MultiLevelRingBufferHandler after, got {len(multilevel_handlers_after)}"
+    assert (
+        len(multilevel_handlers_after) == 1
+    ), f"Should have exactly 1 MultiLevelRingBufferHandler after, got {len(multilevel_handlers_after)}"
 
     # Verify correct handler is kept
     assert handler1 in root_logger.handlers, "Handler from session state should be kept"
     assert handler2 not in root_logger.handlers, "Duplicate handler should be removed"
 
     # Cleanup: remove mock streamlit
-    del sys.modules['streamlit']
+    del sys.modules["streamlit"]
 
     print("✅ test_ensure_ringbufferhandler_removes_duplicates PASSED")
 
@@ -386,5 +404,6 @@ if __name__ == "__main__":
         print("=" * 70)
         print(f"❌ UNEXPECTED ERROR: {e}")
         import traceback
+
         traceback.print_exc()
         sys.exit(1)

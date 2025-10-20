@@ -47,9 +47,9 @@ def test_complete_workflow():
             return key in self._state
 
     # Setup mock streamlit
-    mock_st = type('MockStreamlit', (), {})()
+    mock_st = type("MockStreamlit", (), {})()
     mock_st.session_state = MockSessionState()
-    sys.modules['streamlit'] = mock_st
+    sys.modules["streamlit"] = mock_st
 
     try:
         # Setup
@@ -62,8 +62,8 @@ def test_complete_workflow():
         # Step 1: Initial setup (simulate app startup)
         print("  Step 1: Initial setup...")
         handler, buffers = setup_multilevel_ringbuffer_logging(force_new=True)
-        mock_st.session_state['log_handler'] = handler
-        mock_st.session_state['log_buffers'] = buffers
+        mock_st.session_state["log_handler"] = handler
+        mock_st.session_state["log_buffers"] = buffers
         root_logger.setLevel(logging.DEBUG)
 
         # Verify
@@ -76,7 +76,7 @@ def test_complete_workflow():
         test_logger.info("LOG AFTER INITIAL SETUP")
 
         # Verify log captured
-        info_logs = handler.get_buffer('INFO')
+        info_logs = handler.get_buffer("INFO")
         assert any("LOG AFTER INITIAL SETUP" in log for log in info_logs), "Initial log should be captured"
         print("  ✅ Initial log captured")
 
@@ -92,15 +92,15 @@ def test_complete_workflow():
         test_logger.info("LOG AFTER APPLY_LOGGING_CONFIG")
 
         # Verify log captured
-        info_logs = handler.get_buffer('INFO')
+        info_logs = handler.get_buffer("INFO")
         assert any("LOG AFTER APPLY_LOGGING_CONFIG" in log for log in info_logs), "Log after config should be captured"
         print("  ✅ Log captured after apply_logging_config")
 
         # Step 3: Simulate environment switch (mock -> replay)
         print("  Step 3: Simulating environment switch...")
         handler2, buffers2 = setup_multilevel_ringbuffer_logging(force_new=True)
-        mock_st.session_state['log_handler'] = handler2
-        mock_st.session_state['log_buffers'] = buffers2
+        mock_st.session_state["log_handler"] = handler2
+        mock_st.session_state["log_buffers"] = buffers2
 
         # Verify new handler is attached and old one removed
         assert handler2 in root_logger.handlers, "New handler should be attached after environment switch"
@@ -116,15 +116,17 @@ def test_complete_workflow():
         test_logger.info("LOG AFTER ENVIRONMENT SWITCH")
 
         # Verify log captured by new handler
-        info_logs = handler2.get_buffer('INFO')
-        assert any("LOG AFTER ENVIRONMENT SWITCH" in log for log in info_logs), "Log after env switch should be captured"
+        info_logs = handler2.get_buffer("INFO")
+        assert any(
+            "LOG AFTER ENVIRONMENT SWITCH" in log for log in info_logs
+        ), "Log after env switch should be captured"
         print("  ✅ Log captured after environment switch")
 
         # Step 4: Call ensure_ringbufferhandler_attached (simulate manual check)
         print("  Step 4: Testing ensure_ringbufferhandler_attached...")
         result = ensure_ringbufferhandler_attached()
 
-        assert result == True, "ensure_ringbufferhandler_attached should return True"
+        assert result, "ensure_ringbufferhandler_attached should return True"
         assert handler2 in root_logger.handlers, "Handler should still be attached after ensure call"
         print("  ✅ ensure_ringbufferhandler_attached works correctly")
 
@@ -135,10 +137,10 @@ def test_complete_workflow():
         test_logger.info("FINAL INFO LOG")
         test_logger.debug("FINAL DEBUG LOG")
 
-        error_logs = handler2.get_buffer('ERROR')
-        warning_logs = handler2.get_buffer('WARNING')
-        info_logs = handler2.get_buffer('INFO')
-        debug_logs = handler2.get_buffer('DEBUG')
+        error_logs = handler2.get_buffer("ERROR")
+        warning_logs = handler2.get_buffer("WARNING")
+        info_logs = handler2.get_buffer("INFO")
+        debug_logs = handler2.get_buffer("DEBUG")
 
         assert any("FINAL ERROR LOG" in log for log in error_logs), "Final ERROR log should be captured"
         assert any("FINAL WARNING LOG" in log for log in warning_logs), "Final WARNING log should be captured"
@@ -147,12 +149,11 @@ def test_complete_workflow():
         print("  ✅ All log levels captured correctly")
 
         print("✅ test_complete_workflow PASSED")
-        return True
 
     finally:
         # Cleanup
-        if 'streamlit' in sys.modules:
-            del sys.modules['streamlit']
+        if "streamlit" in sys.modules:
+            del sys.modules["streamlit"]
 
 
 def test_handler_persistence_across_multiple_config_changes():
@@ -177,9 +178,9 @@ def test_handler_persistence_across_multiple_config_changes():
             return key in self._state
 
     # Setup mock streamlit
-    mock_st = type('MockStreamlit', (), {})()
+    mock_st = type("MockStreamlit", (), {})()
     mock_st.session_state = MockSessionState()
-    sys.modules['streamlit'] = mock_st
+    sys.modules["streamlit"] = mock_st
 
     try:
         # Setup
@@ -191,8 +192,8 @@ def test_handler_persistence_across_multiple_config_changes():
 
         # Initial setup
         handler, buffers = setup_multilevel_ringbuffer_logging(force_new=True)
-        mock_st.session_state['log_handler'] = handler
-        mock_st.session_state['log_buffers'] = buffers
+        mock_st.session_state["log_handler"] = handler
+        mock_st.session_state["log_buffers"] = buffers
         root_logger.setLevel(logging.DEBUG)
 
         test_logger = logging.getLogger("test.multiconfig")
@@ -208,23 +209,26 @@ def test_handler_persistence_across_multiple_config_changes():
 
             # Verify only ONE handler
             multilevel_handlers = [h for h in root_logger.handlers if isinstance(h, MultiLevelRingBufferHandler)]
-            assert len(multilevel_handlers) == 1, f"Should have exactly 1 handler after config #{i+1}, got {len(multilevel_handlers)}"
+            assert (
+                len(multilevel_handlers) == 1
+            ), f"Should have exactly 1 handler after config #{i+1}, got {len(multilevel_handlers)}"
 
             # Write test log
             test_logger.info(f"LOG AFTER CONFIG CHANGE #{i+1}")
 
             # Verify log captured
-            info_logs = handler.get_buffer('INFO')
-            assert any(f"LOG AFTER CONFIG CHANGE #{i+1}" in log for log in info_logs), f"Log after config #{i+1} should be captured"
+            info_logs = handler.get_buffer("INFO")
+            assert any(
+                f"LOG AFTER CONFIG CHANGE #{i+1}" in log for log in info_logs
+            ), f"Log after config #{i+1} should be captured"
 
         print("  ✅ Handler persisted across 5 config changes")
         print("✅ test_handler_persistence_across_multiple_config_changes PASSED")
-        return True
 
     finally:
         # Cleanup
-        if 'streamlit' in sys.modules:
-            del sys.modules['streamlit']
+        if "streamlit" in sys.modules:
+            del sys.modules["streamlit"]
 
 
 if __name__ == "__main__":
@@ -247,5 +251,6 @@ if __name__ == "__main__":
         print("=" * 70)
         print(f"❌ UNEXPECTED ERROR: {e}")
         import traceback
+
         traceback.print_exc()
         sys.exit(1)

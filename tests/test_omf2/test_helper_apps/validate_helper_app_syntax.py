@@ -30,7 +30,7 @@ def validate_helper_app_syntax(file_path: Path) -> bool:
         # Parse Python-Syntax
         ast.parse(source_code, filename=str(file_path))
         print(f"✅ Syntax gültig: {file_path}")
-        return True
+        assert True
 
     except SyntaxError as e:
         print(f"❌ Syntax-Fehler in {file_path}:")

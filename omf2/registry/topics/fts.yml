@@ -49,7 +49,7 @@ fts_topics:
   # OMF2 Guidance (manual configuration):
   semantic_role: navigation_command
   triggers: fts_navigation
-  omf2_usage: "ProductionOrderManager → publish FTS orders (after UUID generation)"
+  omf2_usage: "OrderManager → publish FTS orders (after UUID generation)"
   omf2_note: "FIRST topic with orderId in workflow - this is where UUID appears!"
   # Verification:
   verified: true

@@ -19,7 +19,7 @@ import json
 from pathlib import Path
 
 # Test-Payload laden
-payload_path = Path("omf2/tests/test_payloads/module_state_payload.json")
+payload_path = Path("tests/test_omf2/test_payloads/module_state_payload.json")
 with open(payload_path, 'r') as f:
     test_data = json.load(f)
 

@@ -21,16 +21,7 @@ import streamlit as st
 sys.path.append(str(Path(__file__).parent.parent.parent))
 
 # Force reload to avoid cache issues
-import importlib
-import importlib.util
-
-# Lade Asset Manager direkt aus der Datei (umgeht Python Cache)
-spec = importlib.util.spec_from_file_location(
-    "asset_manager", str(Path(__file__).parent.parent.parent / "assets" / "asset_manager.py")
-)
-asset_manager_module = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(asset_manager_module)
-get_asset_manager = asset_manager_module.get_asset_manager
+from omf2.assets.asset_manager import get_asset_manager
 
 # Page configuration
 st.set_page_config(
@@ -118,8 +109,8 @@ def main():
     asset_manager = get_asset_manager()
 
     # Tab-Navigation
-    tab1, tab2, tab3, tab4 = st.tabs(
-        ["🎨 Asset-Übersicht", "📋 Purchase Order", "👤 Customer Order", "📦 Product Catalog"]
+    tab1, tab2, tab3, tab4, tab5 = st.tabs(
+        ["🎨 Asset-Übersicht", "📋 Purchase Order", "👤 Customer Order", "📦 Product Catalog", "🏭 Stock Manager Test"]
     )
 
     with tab1:
@@ -133,6 +124,9 @@ def main():
 
     with tab4:
         _show_product_catalog_test(asset_manager)
+
+    with tab5:
+        _show_stock_manager_test(asset_manager)
 
     # Sidebar Controls - für Debug und Test-Zwecke
     st.sidebar.header("🎛️ Controls")
@@ -341,7 +335,7 @@ def _show_dummy_asset_overview(asset_manager):
             # Palett-SVG über Asset-Manager laden
             palett_content = asset_manager.get_workpiece_palett()
             if palett_content:
-                # Verwende die neue korrekte SVG-Darstellung
+                # GLEICHE DARSTELLUNG WIE WORKPIECE-SVGs
                 st.markdown("**🎨 palett**")
                 st.markdown(
                     f"""
@@ -580,17 +574,48 @@ def _show_purchase_order_dummy(asset_manager):
                 col1, col2 = st.columns([2, 1])
 
                 with col1:
-                    # 3DIM SVG - Asset-Manager Display-Methode verwenden
+                    # 3DIM SVG - DIREKTE SVG-DARSTELLUNG (EXAKT WIE IM ERSTEN TAB)
                     st.markdown("**3DIM SVG:**")
-                    asset_manager.display_workpiece_svg(order["product_id"].upper(), "3dim")
+                    svg_content = asset_manager.get_workpiece_svg(order["product_id"].upper(), "3dim")
+                    if svg_content:
+                        # EXAKT WIE IM ERSTEN TAB - GLEICHE DARSTELLUNG
+                        st.markdown(
+                            f"""
+                        <div style="border: 1px solid #ccc; padding: 10px; margin: 5px; text-align: center;">
+                            {svg_content}
+                        </div>
+                        """,
+                            unsafe_allow_html=True,
+                        )
+                        st.markdown(
+                            f"**Call:** `asset_manager.get_workpiece_svg('{order['product_id'].upper()}', '3dim')`"
+                        )
+                    else:
+                        st.error(f"❌ {order['product_id'].lower()}_3dim.svg nicht gefunden!")
 
                     # Bestand anzeigen
                     st.markdown(f"**Bestand: {order['count']}**")
 
-                    # Leere Baskets durch Palett ersetzen - Asset-Manager Display-Methode verwenden
+                    # Leere Baskets durch Palett ersetzen - DIREKTE SVG-DARSTELLUNG (WIE IN purchase_order_subtab.py)
                     if order["need"] > 0:
                         st.markdown("**Fehlende Baskets:**")
-                        asset_manager.display_palett_svg(order["need"])
+                        palett_content = asset_manager.get_workpiece_palett()
+                        if palett_content:
+                            # FESTE GRÖSSE für Palett-SVGs (100x100) - WIE IN purchase_order_subtab.py
+                            palett_html = ""
+                            for _i in range(order["need"]):
+                                palett_html += f"""
+                                <div style="display: inline-block; margin: 2px;">
+                                    <div style="border: 1px solid #ccc; padding: 10px; margin: 5px; text-align: center;">
+                                        <div style="width: 100px; height: 100px; overflow: hidden;">
+                                            {palett_content}
+                                        </div>
+                                    </div>
+                                </div>
+                                """
+                            st.markdown(palett_html, unsafe_allow_html=True)
+                        else:
+                            st.error("❌ palett.svg nicht gefunden!")
 
                 with col2:
                     # Purchase Order Daten
@@ -657,8 +682,19 @@ def _show_customer_order_dummy(asset_manager):
                 with columns[i]:
                     st.markdown(f"#### {color_emoji} **{color_name.upper()} Customer Order**")
 
-                    # PRODUCT SVG - Asset-Manager Display-Methode verwenden
-                    asset_manager.display_workpiece_svg(order["product_id"].upper(), "product")
+                    # PRODUCT SVG - DIREKTE SVG-DARSTELLUNG
+                    svg_content = asset_manager.get_workpiece_svg(order["product_id"].upper(), "product")
+                    if svg_content:
+                        st.markdown(
+                            f"""
+                        <div style="border: 1px solid #ccc; padding: 10px; margin: 5px; text-align: center;">
+                            {svg_content}
+                        </div>
+                        """,
+                            unsafe_allow_html=True,
+                        )
+                    else:
+                        st.error(f"❌ {order['product_id'].lower()}_product.svg nicht gefunden!")
 
                     # Customer Order Daten
                     st.write(f"**Bestellt:** {order['count']} Stück")
@@ -708,13 +744,35 @@ def _show_product_catalog_test(asset_manager):
                 with columns[i]:
                     st.markdown(f"#### {color_emoji} **{color_name.upper()}**")
 
-                    # PRODUCT SVG - Asset-Manager Display-Methode verwenden
+                    # PRODUCT SVG - DIREKTE SVG-DARSTELLUNG
                     st.markdown("**Product SVG:**")
-                    asset_manager.display_workpiece_svg(product_id.upper(), "product")
+                    svg_content = asset_manager.get_workpiece_svg(product_id.upper(), "product")
+                    if svg_content:
+                        st.markdown(
+                            f"""
+                        <div style="border: 1px solid #ccc; padding: 10px; margin: 5px; text-align: center;">
+                            {svg_content}
+                        </div>
+                        """,
+                            unsafe_allow_html=True,
+                        )
+                    else:
+                        st.error(f"❌ {product_id.lower()}_product.svg nicht gefunden!")
 
-                    # 3DIM SVG - Asset-Manager Display-Methode verwenden
+                    # 3DIM SVG - DIREKTE SVG-DARSTELLUNG
                     st.markdown("**3DIM SVG:**")
-                    asset_manager.display_workpiece_svg(product_id.upper(), "3dim")
+                    svg_content = asset_manager.get_workpiece_svg(product_id.upper(), "3dim")
+                    if svg_content:
+                        st.markdown(
+                            f"""
+                        <div style="border: 1px solid #ccc; padding: 10px; margin: 5px; text-align: center;">
+                            {svg_content}
+                        </div>
+                        """,
+                            unsafe_allow_html=True,
+                        )
+                    else:
+                        st.error(f"❌ {product_id.lower()}_3dim.svg nicht gefunden!")
 
                     # Produktdaten aus Registry
                     st.markdown("**Produktdaten:**")
@@ -878,6 +936,402 @@ def _get_workpiece_svg(workpiece_type: str, count: int, available: bool, asset_m
             <div style="color: #ff6b6b; font-size: 12px; margin-top: 5px;">{str(e)}</div>
         </div>
         """
+
+
+def _show_stock_manager_test(asset_manager):
+    """Stock Manager Test mit Asset-Manager Integration"""
+    st.subheader("🏭 Stock Manager Test")
+    st.markdown("**Test der Stock Manager Integration mit Asset-Manager SVG-Darstellung**")
+
+    try:
+        # Stock Manager laden
+        from omf2.ccu.stock_manager import get_stock_manager
+
+        stock_manager = get_stock_manager()
+        inventory_status = stock_manager.get_inventory_status()
+
+        st.success("✅ Stock Manager geladen")
+        st.info(f"📊 **Inventory Status:** {len(inventory_status.get('inventory', {}))} Positionen")
+
+        # Zeige Stock Manager Daten
+        st.markdown("### 📊 **Stock Manager Daten:**")
+
+        col1, col2 = st.columns(2)
+
+        with col1:
+            st.markdown("**📦 Inventory (A1-C3):**")
+            inventory_data = inventory_status.get("inventory", {})
+            for position in ["A1", "A2", "A3", "B1", "B2", "B3", "C1", "C2", "C3"]:
+                value = inventory_data.get(position, "None")
+                st.write(f"**{position}:** {value}")
+
+        with col2:
+            st.markdown("**📈 Verfügbare Werkstücke:**")
+            available = inventory_status.get("available", {})
+            for color, count in available.items():
+                st.write(f"**{color}:** {count} Stück")
+
+            st.markdown("**📉 Bedarf:**")
+            need = inventory_status.get("need", {})
+            for color, count in need.items():
+                st.write(f"**{color}:** {count} Stück")
+
+        # 3x3 Grid Darstellung - EXAKT WIE 3-SPALTEN-DARSTELLUNG
+        st.markdown("### 🎨 **3x3 Grid mit direkter SVG-Darstellung:**")
+        st.markdown("**Leere Positionen → Palett-SVG, Gefüllte Positionen → Werkstück-SVG**")
+        st.markdown("**Verwendet die gleiche Darstellung wie die funktionierende 3-Spaltendarstellung**")
+
+        # Row A - EXAKT WIE 3-SPALTEN-DARSTELLUNG
+        st.markdown("#### **Reihe A:**")
+        col_a1, col_a2, col_a3 = st.columns(3)
+
+        with col_a1:
+            st.markdown("**A1:**")
+            _render_inventory_position_direct("A1", inventory_data.get("A1"), asset_manager)
+
+        with col_a2:
+            st.markdown("**A2:**")
+            _render_inventory_position_direct("A2", inventory_data.get("A2"), asset_manager)
+
+        with col_a3:
+            st.markdown("**A3:**")
+            _render_inventory_position_direct("A3", inventory_data.get("A3"), asset_manager)
+
+        # Row B - EXAKT WIE 3-SPALTEN-DARSTELLUNG
+        st.markdown("#### **Reihe B:**")
+        col_b1, col_b2, col_b3 = st.columns(3)
+
+        with col_b1:
+            st.markdown("**B1:**")
+            _render_inventory_position_direct("B1", inventory_data.get("B1"), asset_manager)
+
+        with col_b2:
+            st.markdown("**B2:**")
+            _render_inventory_position_direct("B2", inventory_data.get("B2"), asset_manager)
+
+        with col_b3:
+            st.markdown("**B3:**")
+            _render_inventory_position_direct("B3", inventory_data.get("B3"), asset_manager)
+
+        # Row C - EXAKT WIE 3-SPALTEN-DARSTELLUNG
+        st.markdown("#### **Reihe C:**")
+        col_c1, col_c2, col_c3 = st.columns(3)
+
+        with col_c1:
+            st.markdown("**C1:**")
+            _render_inventory_position_direct("C1", inventory_data.get("C1"), asset_manager)
+
+        with col_c2:
+            st.markdown("**C2:**")
+            _render_inventory_position_direct("C2", inventory_data.get("C2"), asset_manager)
+
+        with col_c3:
+            st.markdown("**C3:**")
+            _render_inventory_position_direct("C3", inventory_data.get("C3"), asset_manager)
+
+        # Test verschiedene Zustände
+        st.markdown("---")
+        st.markdown("### 🧪 **Zustands-Test:**")
+        st.markdown("**Test der verschiedenen Werkstück-Zustände:**")
+
+        test_col1, test_col2, test_col3 = st.columns(3)
+
+        with test_col1:
+            st.markdown("**🔵 BLUE - instock_unprocessed:**")
+            # DIREKTE SVG-DARSTELLUNG
+            svg_content = asset_manager.get_workpiece_svg("BLUE", "instock_unprocessed")
+            if svg_content:
+                st.markdown(
+                    f"""
+                <div style="border: 1px solid #ccc; padding: 10px; margin: 5px; text-align: center;">
+                    {svg_content}
+                </div>
+                """,
+                    unsafe_allow_html=True,
+                )
+            else:
+                st.error("❌ blue_instock_unprocessed.svg nicht gefunden!")
+
+        with test_col2:
+            st.markdown("**⚪ WHITE - instock_reserved:**")
+            # DIREKTE SVG-DARSTELLUNG
+            svg_content = asset_manager.get_workpiece_svg("WHITE", "instock_reserved")
+            if svg_content:
+                st.markdown(
+                    f"""
+                <div style="border: 1px solid #ccc; padding: 10px; margin: 5px; text-align: center;">
+                    {svg_content}
+                </div>
+                """,
+                    unsafe_allow_html=True,
+                )
+            else:
+                st.error("❌ white_instock_reserved.svg nicht gefunden!")
+
+        with test_col3:
+            st.markdown("**🔴 RED - instock_unprocessed:**")
+            # DIREKTE SVG-DARSTELLUNG
+            svg_content = asset_manager.get_workpiece_svg("RED", "instock_unprocessed")
+            if svg_content:
+                st.markdown(
+                    f"""
+                <div style="border: 1px solid #ccc; padding: 10px; margin: 5px; text-align: center;">
+                    {svg_content}
+                </div>
+                """,
+                    unsafe_allow_html=True,
+                )
+            else:
+                st.error("❌ red_instock_unprocessed.svg nicht gefunden!")
+
+        # HALBGEFÜLLTES LAGER TEST - EXAKT WIE IM STOCK_AND_WORKPIECE_LAYOUT_TEST.PY
+        st.markdown("---")
+        st.markdown("### 🏭 **Halbgefülltes Lager Test:**")
+        st.markdown("**Exakte Darstellung wie im stock_and_workpiece_layout_test.py - 3-Spaltendarstellung**")
+
+        # Zufällige Anordnung: Palett, WHITE_instock, RED_instock, BLUE_instock
+        st.markdown("**Zufällige Anordnung: Palett, WHITE_instock, RED_instock, BLUE_instock**")
+
+        # 3-SPALTEN-LAYOUT: EXAKT WIE IM STOCK_AND_WORKPIECE_LAYOUT_TEST.PY
+        st.markdown("#### **3-SPALTEN-DARSTELLUNG (wie im stock_and_workpiece_layout_test.py):**")
+
+        # Spalten erstellen
+        col1, col2, col3 = st.columns(3)
+
+        with col1:
+            st.markdown("**🎨 Palett (Leer):**")
+            # GLEICHE DARSTELLUNG WIE WORKPIECE-SVGs
+            palett_content = asset_manager.get_workpiece_palett()
+            if palett_content:
+                st.markdown(
+                    f"""
+                <div style="border: 1px solid #ccc; padding: 10px; margin: 5px; text-align: center;">
+                    {palett_content}
+                </div>
+                """,
+                    unsafe_allow_html=True,
+                )
+                st.markdown("**Call:** `asset_manager.get_workpiece_palett()`")
+            else:
+                st.error("❌ palett.svg nicht gefunden!")
+
+        with col2:
+            st.markdown("**⚪ WHITE instock_unprocessed:**")
+            # EXAKT WIE IM STOCK_AND_WORKPIECE_LAYOUT_TEST.PY
+            svg_content = asset_manager.get_workpiece_svg("WHITE", "instock_unprocessed")
+            if svg_content:
+                st.markdown(
+                    f"""
+                <div style="border: 1px solid #ccc; padding: 10px; margin: 5px; text-align: center;">
+                    {svg_content}
+                </div>
+                """,
+                    unsafe_allow_html=True,
+                )
+                st.markdown("**Call:** `asset_manager.get_workpiece_svg('WHITE', 'instock_unprocessed')`")
+            else:
+                st.error("❌ white_instock_unprocessed.svg nicht gefunden!")
+
+        with col3:
+            st.markdown("**🔴 RED instock_unprocessed:**")
+            # EXAKT WIE IM STOCK_AND_WORKPIECE_LAYOUT_TEST.PY
+            svg_content = asset_manager.get_workpiece_svg("RED", "instock_unprocessed")
+            if svg_content:
+                st.markdown(
+                    f"""
+                <div style="border: 1px solid #ccc; padding: 10px; margin: 5px; text-align: center;">
+                    {svg_content}
+                </div>
+                """,
+                    unsafe_allow_html=True,
+                )
+                st.markdown("**Call:** `asset_manager.get_workpiece_svg('RED', 'instock_unprocessed')`")
+            else:
+                st.error("❌ red_instock_unprocessed.svg nicht gefunden!")
+
+        # Zweite Reihe
+        st.markdown("#### **Zweite Reihe:**")
+        col4, col5, col6 = st.columns(3)
+
+        with col4:
+            st.markdown("**🔵 BLUE instock_unprocessed:**")
+            # EXAKT WIE IM STOCK_AND_WORKPIECE_LAYOUT_TEST.PY
+            svg_content = asset_manager.get_workpiece_svg("BLUE", "instock_unprocessed")
+            if svg_content:
+                st.markdown(
+                    f"""
+                <div style="border: 1px solid #ccc; padding: 10px; margin: 5px; text-align: center;">
+                    {svg_content}
+                </div>
+                """,
+                    unsafe_allow_html=True,
+                )
+                st.markdown("**Call:** `asset_manager.get_workpiece_svg('BLUE', 'instock_unprocessed')`")
+            else:
+                st.error("❌ blue_instock_unprocessed.svg nicht gefunden!")
+
+        with col5:
+            st.markdown("**🎨 Palett (Leer):**")
+            # GLEICHE DARSTELLUNG WIE WORKPIECE-SVGs
+            palett_content = asset_manager.get_workpiece_palett()
+            if palett_content:
+                st.markdown(
+                    f"""
+                <div style="border: 1px solid #ccc; padding: 10px; margin: 5px; text-align: center;">
+                    {palett_content}
+                </div>
+                """,
+                    unsafe_allow_html=True,
+                )
+                st.markdown("**Call:** `asset_manager.get_workpiece_palett()`")
+            else:
+                st.error("❌ palett.svg nicht gefunden!")
+
+        with col6:
+            st.markdown("**⚪ WHITE instock_reserved:**")
+            # EXAKT WIE IM STOCK_AND_WORKPIECE_LAYOUT_TEST.PY
+            svg_content = asset_manager.get_workpiece_svg("WHITE", "instock_reserved")
+            if svg_content:
+                st.markdown(
+                    f"""
+                <div style="border: 1px solid #ccc; padding: 10px; margin: 5px; text-align: center;">
+                    {svg_content}
+                </div>
+                """,
+                    unsafe_allow_html=True,
+                )
+                st.markdown("**Call:** `asset_manager.get_workpiece_svg('WHITE', 'instock_reserved')`")
+            else:
+                st.error("❌ white_instock_reserved.svg nicht gefunden!")
+
+        # Zusammenfassung
+        st.markdown("---")
+        st.markdown("### 📊 **Zusammenfassung:**")
+        st.success("✅ **Stock Manager Integration:** Funktioniert korrekt")
+        st.success("✅ **Asset-Manager SVGs:** instock_unprocessed und instock_reserved verfügbar")
+        st.info("💡 **Nächster Schritt:** Integration in inventory_subtab.py")
+
+    except Exception as e:
+        st.error(f"❌ Fehler beim Laden des Stock Managers: {e}")
+        st.info("💡 Stelle sicher, dass der Stock Manager korrekt initialisiert ist")
+
+
+def _render_inventory_position(position: str, workpiece_type: str, asset_manager):
+    """Rendert eine einzelne Lagerposition mit direkter SVG-Darstellung"""
+    if workpiece_type is None:
+        # Leere Position → Palett-SVG
+        st.markdown("**Leer:**")
+        # DIREKTE SVG-DARSTELLUNG
+        palett_content = asset_manager.get_workpiece_palett()
+        if palett_content:
+            st.markdown(
+                f"""
+            <div style="border: 1px solid #ccc; padding: 10px; margin: 5px; text-align: center;">
+                {palett_content}
+            </div>
+            """,
+                unsafe_allow_html=True,
+            )
+            st.markdown(f"**Position {position}**")
+        else:
+            st.error("❌ palett.svg nicht gefunden!")
+    else:
+        # Gefüllte Position → Werkstück-SVG
+        st.markdown(f"**{workpiece_type}:**")
+        # DIREKTE SVG-DARSTELLUNG
+        svg_content = asset_manager.get_workpiece_svg(workpiece_type, "instock_unprocessed")
+        if svg_content:
+            st.markdown(
+                f"""
+            <div style="border: 1px solid #ccc; padding: 10px; margin: 5px; text-align: center;">
+                {svg_content}
+            </div>
+            """,
+                unsafe_allow_html=True,
+            )
+            st.markdown(f"**Position {position}**")
+        else:
+            st.error(f"❌ {workpiece_type.lower()}_instock_unprocessed.svg nicht gefunden!")
+
+
+def _render_inventory_position_uniform(position: str, workpiece_type: str, asset_manager):
+    """Rendert eine Lagerposition mit einheitlicher Größe - DIREKTE SVG-DARSTELLUNG"""
+    if workpiece_type is None:
+        # Leere Position → Palett-SVG mit einheitlicher Größe
+        st.markdown("**Leer:**")
+        # DIREKTE SVG-DARSTELLUNG
+        palett_content = asset_manager.get_workpiece_palett()
+        if palett_content:
+            st.markdown(
+                f"""
+            <div style="border: 1px solid #ccc; padding: 10px; margin: 5px; text-align: center;">
+                {palett_content}
+            </div>
+            """,
+                unsafe_allow_html=True,
+            )
+            st.markdown(f"**Position {position}**")
+        else:
+            st.error("❌ palett.svg nicht gefunden!")
+    else:
+        # Gefüllte Position → Werkstück-SVG mit einheitlicher Größe
+        st.markdown(f"**{workpiece_type}:**")
+        # DIREKTE SVG-DARSTELLUNG
+        svg_content = asset_manager.get_workpiece_svg(workpiece_type, "instock_unprocessed")
+        if svg_content:
+            st.markdown(
+                f"""
+            <div style="border: 1px solid #ccc; padding: 10px; margin: 5px; text-align: center;">
+                {svg_content}
+            </div>
+            """,
+                unsafe_allow_html=True,
+            )
+            st.markdown(f"**Position {position}**")
+        else:
+            st.error(f"❌ {workpiece_type.lower()}_instock_unprocessed.svg nicht gefunden!")
+
+
+def _render_inventory_position_direct(position: str, workpiece_type: str, asset_manager):
+    """Rendert eine Lagerposition mit direkter SVG-Darstellung - FESTE GRÖSSE (160x160) FÜR ALLE SVGs"""
+    if workpiece_type is None:
+        # Leere Position → Palett-SVG mit fester Größe
+        st.markdown("**Leer:**")
+        # FESTE GRÖSSE für Palett-SVG (160x160)
+        palett_content = asset_manager.get_workpiece_palett()
+        if palett_content:
+            st.markdown(
+                f"""
+            <div style="border: 1px solid #ccc; padding: 10px; margin: 5px; text-align: center;">
+                <div style="width: 160px; height: 160px; overflow: hidden;">
+                    {palett_content}
+                </div>
+            </div>
+            """,
+                unsafe_allow_html=True,
+            )
+            st.markdown(f"**Position {position}**")
+        else:
+            st.error("❌ palett.svg nicht gefunden!")
+    else:
+        # Gefüllte Position → Werkstück-SVG mit fester Größe
+        st.markdown(f"**{workpiece_type}:**")
+        # FESTE GRÖSSE für Workpiece-SVG (160x160)
+        svg_content = asset_manager.get_workpiece_svg(workpiece_type, "instock_unprocessed")
+        if svg_content:
+            st.markdown(
+                f"""
+            <div style="border: 1px solid #ccc; padding: 10px; margin: 5px; text-align: center;">
+                <div style="width: 160px; height: 160px; overflow: hidden;">
+                    {svg_content}
+                </div>
+            </div>
+            """,
+                unsafe_allow_html=True,
+            )
+            st.markdown(f"**Position {position}**")
+        else:
+            st.error(f"❌ {workpiece_type.lower()}_instock_unprocessed.svg nicht gefunden!")
 
 
 def _show_debug_info(asset_manager, workpiece_type: str, workpiece_state: str):

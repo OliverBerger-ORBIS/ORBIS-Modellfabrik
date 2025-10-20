@@ -13,7 +13,7 @@ class TestPayloadIntegration(unittest.TestCase):
 
     def setUp(self):
         """Setup: Test-Payloads laden"""
-        self.test_payloads_dir = Path("omf2/tests/test_payloads")
+        self.test_payloads_dir = Path("tests/test_omf2/test_payloads")
         self.payload_files = [
             "module_state_payload.json",
             "ccu_order_request_payload.json",

@@ -85,7 +85,7 @@ nodered_topics:
   # OMF2 Guidance (manual configuration):
   semantic_role: module_state_bridged
   triggers: null
-  omf2_usage: "ProductionOrderManager → subscribe for DRILL state (REQUIRED - no TXT)"
+  omf2_usage: "OrderManager → subscribe for DRILL state (REQUIRED - no TXT)"
   omf2_note: "DRILL has NO TXT - NodeRed is the ONLY MQTT source for state"
   # Verification:
   verified: false
@@ -135,7 +135,7 @@ nodered_topics:
   # OMF2 Guidance (manual configuration):
   semantic_role: module_state_bridged
   triggers: null
-  omf2_usage: "ProductionOrderManager → subscribe for MILL state (REQUIRED - no TXT)"
+  omf2_usage: "OrderManager → subscribe for MILL state (REQUIRED - no TXT)"
   omf2_note: "MILL has NO TXT - NodeRed is the ONLY MQTT source for state"
   # Verification:
   verified: false
@@ -185,7 +185,7 @@ nodered_topics:
   # OMF2 Guidance (manual configuration):
   semantic_role: module_state_enriched
   triggers: null
-  omf2_usage: "ProductionOrderManager → subscribe for AIQS state with orderId tracking"
+  omf2_usage: "OrderManager → subscribe for AIQS state with orderId tracking"
   omf2_note: "NodeRed enriches raw AIQS state with orderId from workflow - use for order progress tracking"
   # Verification:
   verified: true
@@ -235,7 +235,7 @@ nodered_topics:
   # OMF2 Guidance (manual configuration):
   semantic_role: module_state_enriched
   triggers: null
-  omf2_usage: "ProductionOrderManager → subscribe for DPS state with orderId tracking"
+  omf2_usage: "OrderManager → subscribe for DPS state with orderId tracking"
   omf2_note: "NodeRed enriches raw DPS state with orderId from workflow - use for order progress tracking"
   # Verification:
   verified: true

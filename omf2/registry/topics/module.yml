@@ -50,7 +50,7 @@ module_topics:
   # OMF2 Guidance (manual configuration):
   semantic_role: production_command
   triggers: module_production
-  omf2_usage: "ProductionOrderManager → publish production orders to HBW (via NodeRed bridge)"
+  omf2_usage: "OrderManager → publish production orders to HBW (via NodeRed bridge)"
   # Verification:
   verified: true
   data_source: "Session orderBlueLocal - 2 messages, Code: modules/production/production.js"
@@ -97,7 +97,7 @@ module_topics:
   # OMF2 Guidance (manual configuration):
   semantic_role: production_command
   triggers: module_production
-  omf2_usage: "ProductionOrderManager → publish production orders to DRILL (via NodeRed)"
+  omf2_usage: "OrderManager → publish production orders to DRILL (via NodeRed)"
   omf2_note: "DRILL has NO TXT-Controller - requires NodeRed OPC-UA bridge"
   # Verification:
   verified: false
@@ -145,7 +145,7 @@ module_topics:
   # OMF2 Guidance (manual configuration):
   semantic_role: production_command
   triggers: module_production
-  omf2_usage: "ProductionOrderManager → publish production orders to MILL (via NodeRed)"
+  omf2_usage: "OrderManager → publish production orders to MILL (via NodeRed)"
   omf2_note: "MILL has NO TXT-Controller - requires NodeRed OPC-UA bridge"
   # Verification:
   verified: false
@@ -200,7 +200,7 @@ module_topics:
   # OMF2 Guidance (manual configuration):
   semantic_role: module_state_direct
   triggers: null
-  omf2_usage: "ProductionOrderManager → subscribe for AIQS state (FAST - direct from TXT, no NodeRed)"
+  omf2_usage: "OrderManager → subscribe for AIQS state (FAST - direct from TXT, no NodeRed)"
   omf2_note: "AIQS has TXT - sends state DIRECTLY via MQTT (faster than NodeRed/OPC-UA path)"
   # Verification:
   verified: true
@@ -217,7 +217,7 @@ module_topics:
   # OMF2 Guidance (manual configuration):
   semantic_role: production_command
   triggers: module_production
-  omf2_usage: "ProductionOrderManager → publish production orders to AIQS"
+  omf2_usage: "OrderManager → publish production orders to AIQS"
   omf2_note: "AIQS has TXT-Controller AND OPC-UA - can receive via both paths"
   # Verification:
   verified: false
@@ -273,7 +273,7 @@ module_topics:
   # OMF2 Guidance (manual configuration):
   semantic_role: module_state_direct
   triggers: null
-  omf2_usage: "ProductionOrderManager → subscribe for DPS state (FAST - direct from TXT, no NodeRed)"
+  omf2_usage: "OrderManager → subscribe for DPS state (FAST - direct from TXT, no NodeRed)"
   omf2_note: "DPS has TXT - sends state DIRECTLY via MQTT (faster than NodeRed/OPC-UA path)"
   # Verification:
   verified: true
@@ -290,7 +290,7 @@ module_topics:
   # OMF2 Guidance (manual configuration):
   semantic_role: production_command
   triggers: module_production
-  omf2_usage: "ProductionOrderManager → publish production orders to DPS"
+  omf2_usage: "OrderManager → publish production orders to DPS"
   omf2_note: "DPS has TXT-Controller AND OPC-UA - can receive via both paths"
   # Verification:
   verified: false

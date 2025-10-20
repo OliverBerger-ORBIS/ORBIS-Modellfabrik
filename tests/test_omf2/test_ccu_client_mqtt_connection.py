@@ -100,7 +100,7 @@ def test_ccu_client_connection():
         ccu_client.disconnect()
         print("✅ CCU Client disconnected cleanly!")
 
-        return True
+        assert True
 
     except Exception as e:
         print(f"❌ Test failed with error: {e}")

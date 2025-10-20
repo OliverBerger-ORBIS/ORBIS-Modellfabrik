@@ -21,7 +21,7 @@ class MissingPayloadGenerator:
     def __init__(self):
         self.registry_dir = Path("/Users/oliver/Projects/ORBIS-Modellfabrik/omf2/registry")
         self.schemas_dir = self.registry_dir / "schemas"
-        self.payloads_dir = Path("/Users/oliver/Projects/ORBIS-Modellfabrik/omf2/tests/test_payloads_for_topic")
+        self.payloads_dir = Path("/Users/oliver/Projects/ORBIS-Modellfabrik/tests/test_omf2/test_payloads_for_topic")
 
     def generate_all_missing_payloads(self) -> Dict[str, Any]:
         """Generate payloads for all NO_PAYLOAD topics"""

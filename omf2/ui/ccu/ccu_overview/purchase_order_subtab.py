@@ -37,9 +37,20 @@ def _render_workpiece_section(
     col1, col2, col3, col4 = st.columns([1, 1, 3, 1])
 
     with col1:
-        # Asset-Manager Display-Methode verwenden
+        # DIREKTE SVG-DARSTELLUNG
         st.markdown("**UNPROCESSED SVG:**")
-        asset_manager.display_workpiece_svg(workpiece_type, "unprocessed")
+        svg_content = asset_manager.get_workpiece_svg(workpiece_type, "unprocessed")
+        if svg_content:
+            st.markdown(
+                f"""
+            <div style="border: 1px solid #ccc; padding: 10px; margin: 5px; text-align: center;">
+                {svg_content}
+            </div>
+            """,
+                unsafe_allow_html=True,
+            )
+        else:
+            st.error(f"❌ {workpiece_type.lower()}_unprocessed.svg nicht gefunden!")
 
         # Bestand anzeigen
         stock_text = i18n.t("ccu_overview.purchase_orders.stock")
@@ -61,9 +72,25 @@ def _render_workpiece_section(
 
     with col3:
         if need > 0:
-            # Asset-Manager Display-Methode verwenden
+            # DIREKTE SVG-DARSTELLUNG
             st.markdown("**Fehlende Werkstücke:**")
-            asset_manager.display_palett_svg(need)
+            palett_content = asset_manager.get_workpiece_palett()
+            if palett_content:
+                # FESTE GRÖSSE für Palett-SVGs (100x100)
+                palett_html = ""
+                for _i in range(need):
+                    palett_html += f"""
+                    <div style="display: inline-block; margin: 2px;">
+                        <div style="border: 1px solid #ccc; padding: 10px; margin: 5px; text-align: center;">
+                            <div style="width: 100px; height: 100px; overflow: hidden;">
+                                {palett_content}
+                            </div>
+                        </div>
+                    </div>
+                    """
+                st.markdown(palett_html, unsafe_allow_html=True)
+            else:
+                st.error("❌ palett.svg nicht gefunden!")
         else:
             st.success("✅ Bestand vollständig")
 

@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 def create_wildcard_payloads():
     """Create minimal payloads for wildcard topics"""
-    payloads_dir = Path("/Users/oliver/Projects/ORBIS-Modellfabrik/omf2/tests/test_payloads_for_topic")
+    payloads_dir = Path("/Users/oliver/Projects/ORBIS-Modellfabrik/tests/test_omf2/test_payloads_for_topic")
 
     # Topics that use wildcard.schema.json (from registry analysis)
     wildcard_topics = [

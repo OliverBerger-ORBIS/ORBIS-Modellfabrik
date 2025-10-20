@@ -17,7 +17,7 @@ def show_storage_orders_subtab(i18n):
     logger.info("📝 Rendering Storage Orders Subtab")
 
     try:
-        # Business Logic über ProductionOrderManager
+        # Business Logic über OrderManager
         order_manager = get_order_manager()
 
         # Daten holen

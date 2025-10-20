@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Test-Skript für Production Order Manager Infrastruktur
+Test-Skript für Order Manager Infrastruktur
 
 Testet:
-- ProductionOrderManager Initialisierung
+- OrderManager Initialisierung
 - MQTT Message Processing
 - Gateway Routing
 """
@@ -16,10 +16,10 @@ project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
 
 
-def test_production_order_manager_init():
+def test_order_manager_init():
     """Test 1: Manager Initialisierung"""
     print("\n" + "=" * 80)
-    print("TEST 1: ProductionOrderManager Initialisierung")
+    print("TEST 1: OrderManager Initialisierung")
     print("=" * 80)
 
     try:
@@ -37,7 +37,7 @@ def test_production_order_manager_init():
         print(f"   Active orders: {len(manager.active_orders)}")
         print(f"   Completed orders: {len(manager.completed_orders)}")
 
-        return True
+        assert True
 
     except Exception as e:
         print(f"❌ Manager initialization failed: {e}")
@@ -91,7 +91,7 @@ def test_active_order_message_processing():
         print(f"   Order Type: {active_orders[0]['type']}")
         print(f"   State: {active_orders[0]['state']}")
 
-        return True
+        assert True
 
     except Exception as e:
         print(f"❌ Active order message processing failed: {e}")
@@ -148,7 +148,7 @@ def test_completed_order_message_processing():
         print(f"   Order Type: {completed_orders[0]['type']}")
         print(f"   State: {completed_orders[0]['state']}")
 
-        return True
+        assert True
 
     except Exception as e:
         print(f"❌ Completed order message processing failed: {e}")
@@ -178,7 +178,7 @@ def test_order_statistics():
         print(f"   Total count: {stats['total_count']}")
         print(f"   STUB mode: {stats['stub_mode']}")
 
-        return True
+        assert True
 
     except Exception as e:
         print(f"❌ Order statistics failed: {e}")
@@ -191,13 +191,13 @@ def test_order_statistics():
 def run_all_tests():
     """Führt alle Tests aus"""
     print("\n" + "=" * 80)
-    print("PRODUCTION ORDER MANAGER - INFRASTRUKTUR TESTS")
+    print("ORDER MANAGER - INFRASTRUKTUR TESTS")
     print("=" * 80)
 
     results = []
 
     # Test 1: Initialisierung
-    results.append(("Initialisierung", test_production_order_manager_init()))
+    results.append(("Initialisierung", test_order_manager_init()))
 
     # Test 2: Active Order Processing
     results.append(("Active Order Processing", test_active_order_message_processing()))

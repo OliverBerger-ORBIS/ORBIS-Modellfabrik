@@ -9,7 +9,7 @@ import os
 import re
 import uuid
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Dict, Optional
 
 import streamlit as st
 
@@ -98,7 +98,7 @@ class OMF2AssetManager:
         self.assets_dir = Path(__file__).parent
         self.svgs_dir = self.assets_dir / "svgs"  # Alle SVGs (Icons + Logos) in einem Verzeichnis
         self.module_icons = self._load_module_icons()
-        self.html_templates = self._load_html_templates()
+        # HTML-Templates entfernt - Asset-Manager ist nur für Asset-Loading zuständig
 
     def _load_module_icons(self) -> Dict[str, str]:
         """Lädt verfügbare Module-Icons (alle SVGs in svgs/) - vereinfacht"""
@@ -168,22 +168,7 @@ class OMF2AssetManager:
         logger.info(f"📁 Loaded {len(icons)} module icons from {self.svgs_dir}")
         return icons
 
-    def _load_html_templates(self) -> Dict[str, Any]:
-        """Lädt HTML-Templates für UI-Komponenten"""
-        return {
-            "workpiece_colors": {
-                "RED": {"bg": "#ff0000", "border": "#cc0000", "text": "white"},
-                "BLUE": {"bg": "#0066ff", "border": "#0044cc", "text": "white"},
-                "WHITE": {"bg": "#e0e0e0", "border": "#b0b0b0", "text": "black"},
-            },
-            "status_colors": {
-                "READY": "#4caf50",  # Grün
-                "BUSY": "#ff9800",  # Orange
-                "BLOCKED": "#f44336",  # Rot
-                "OFFLINE": "#9e9e9e",  # Grau
-                "ACTIVE": "#2196f3",  # Blau (für aktive Station)
-            },
-        }
+    # HTML-Templates entfernt - Asset-Manager ist nur für Asset-Loading zuständig
 
     def get_module_icon_path(self, module_name: str) -> Optional[str]:
         """Gibt den Pfad zum Modul-Icon zurück"""
@@ -214,7 +199,7 @@ class OMF2AssetManager:
         return self._get_workpiece_svg_with_scoping(color, pattern)
 
     def get_workpiece_palett(self) -> Optional[str]:
-        """Lädt die spezielle Palett-SVG für alle Workpieces"""
+        """Lädt die spezielle Palett-SVG für alle Workpieces in ORIGINAL-Größe"""
         workpiece_dir = self.assets_dir / "workpiece"
         palett_path = workpiece_dir / "palett.svg"
         if palett_path.exists():
@@ -257,52 +242,8 @@ class OMF2AssetManager:
 
         return None
 
-    def display_workpiece_svg(self, workpiece_type: str, state: str = "product", caption: str = None) -> None:
-        """Zeigt Workpiece-SVG mit korrekter Darstellung an"""
-        svg_content = self._get_workpiece_svg_with_scoping(workpiece_type, state)
-
-        if svg_content:
-            # Einfache SVG-Darstellung ohne Manipulation (wie in Helper-App)
-            st.markdown(
-                f"""
-            <div style="border: 1px solid #ccc; padding: 10px; margin: 5px; text-align: center;">
-                {svg_content}
-            </div>
-            """,
-                unsafe_allow_html=True,
-            )
-
-            if caption:
-                st.caption(caption)
-        else:
-            st.error(f"❌ SVG nicht gefunden: {workpiece_type}_{state}.svg")
-
-    def display_palett_svg(self, count: int = 1, caption: str = None) -> None:
-        """Zeigt Palett-SVG mit korrekter Darstellung an
-
-        Args:
-            count: Anzahl der Palett-SVGs die angezeigt werden sollen
-            caption: Optional caption für die Darstellung
-        """
-        palett_svg = self.get_workpiece_palett()
-
-        if palett_svg:
-            # Zeige Palett SVG für jeden fehlenden Basket - wie in stock_and_workpiece_layout_test.py
-            palett_html = ""
-            for _i in range(count):
-                palett_html += f"""
-                <div style="display: inline-block; margin: 2px;">
-                    <div style="border: 1px solid #ccc; padding: 5px; margin: 2px; text-align: center; width: 60px; height: 60px;">
-                        {palett_svg}
-                    </div>
-                </div>
-                """
-            st.markdown(palett_html, unsafe_allow_html=True)
-
-            if caption:
-                st.caption(caption)
-        else:
-            st.error("❌ Palett SVG nicht gefunden")
+    # DISPLAY_* METHODEN ENTFERNT - UI-Komponenten verwenden direkte SVG-Darstellung
+    # Asset-Manager ist nur für Asset-Loading zuständig, nicht für UI-Darstellung
 
     def display_module_icon(self, module_name: str, width: int = 50, caption: str = None) -> None:
         """Zeigt ein Modul-Icon in Streamlit an"""
@@ -449,43 +390,9 @@ class OMF2AssetManager:
                 return str(self.svgs_dir / icon_file)
         return None
 
-    def get_workpiece_box_html(self, workpiece_type: str, count: int = 0, available: bool = True) -> str:
-        """Generiert HTML für Werkstück-Box"""
-        colors = self.html_templates["workpiece_colors"]
-        color_config = colors.get(workpiece_type.upper(), colors["WHITE"])
-
-        return f"""
-        <div style="display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start; height: 100%; text-align: left; margin: 10px;">
-            <div style="width: 120px; height: 80px; background-color: {color_config['bg']}; border: 2px solid {color_config['border']}; border-radius: 4px; margin: 0 0 10px 0; display: flex; align-items: center; justify-content: center;">
-                <div style="color: {color_config['text']}; font-weight: bold; font-size: 14px;">{workpiece_type}</div>
-            </div>
-            <div style="margin: 5px 0;">
-                <strong>Bestand: {count}</strong>
-            </div>
-            <div style="margin: 5px 0;">
-                <strong>Verfügbar: {'✅ Ja' if available else '❌ Nein'}</strong>
-            </div>
-        </div>
-        """
-
-    def get_status_badge_html(self, status: str, status_type: str = "info") -> str:
-        """Generiert HTML für Status-Badge"""
-        status_colors = self.html_templates["status_colors"]
-        color = status_colors.get(status.upper(), "#2196f3")
-
-        return f"""
-        <span style="
-            background-color: {color};
-            color: white;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: bold;
-            text-transform: uppercase;
-        ">
-            {status}
-        </span>
-        """
+    # VERALTETE HTML-TEMPLATES ENTFERNT
+    # Asset-Manager ist nur für Asset-Loading zuständig, nicht für UI-Darstellung
+    # UI-Komponenten verwenden direkte SVG-Darstellung mit st.markdown(..., unsafe_allow_html=True)
 
 
 # Singleton-Instanz

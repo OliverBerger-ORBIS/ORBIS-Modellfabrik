@@ -6,7 +6,7 @@ Verwendet wareneingang_weiss_1 Session Data
 
 import sys
 from pathlib import Path
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
 
 import pytest
 
@@ -16,7 +16,6 @@ sys.path.insert(0, str(project_root))
 
 from omf2.ccu.order_manager import OrderManager
 from omf2.common.i18n import I18nManager
-from omf2.ui.ccu.ccu_orders.storage_orders_subtab import _render_storage_steps
 
 
 class TestStorageOrdersIntegration:
@@ -39,35 +38,11 @@ class TestStorageOrdersIntegration:
                 "orderType": "STORAGE",
                 "product": "WHITE",
                 "productionSteps": [
-                    {
-                        "step": 1,
-                        "type": "NAVIGATION",
-                        "source": "START",
-                        "target": "HBW",
-                        "state": "IN_PROGRESS"
-                    },
-                    {
-                        "step": 2,
-                        "type": "MANUFACTURE",
-                        "moduleType": "HBW",
-                        "command": "PICK",
-                        "state": "ENQUEUED"
-                    },
-                    {
-                        "step": 3,
-                        "type": "NAVIGATION",
-                        "source": "HBW",
-                        "target": "DPS",
-                        "state": "PENDING"
-                    },
-                    {
-                        "step": 4,
-                        "type": "MANUFACTURE",
-                        "moduleType": "DPS",
-                        "command": "DROP",
-                        "state": "PENDING"
-                    }
-                ]
+                    {"step": 1, "type": "NAVIGATION", "source": "START", "target": "HBW", "state": "IN_PROGRESS"},
+                    {"step": 2, "type": "MANUFACTURE", "moduleType": "HBW", "command": "PICK", "state": "ENQUEUED"},
+                    {"step": 3, "type": "NAVIGATION", "source": "HBW", "target": "DPS", "state": "PENDING"},
+                    {"step": 4, "type": "MANUFACTURE", "moduleType": "DPS", "command": "DROP", "state": "PENDING"},
+                ],
             }
         ]
 
@@ -112,21 +87,9 @@ class TestStorageOrdersIntegration:
                 "orderType": "STORAGE",
                 "product": "WHITE",
                 "productionSteps": [
-                    {
-                        "step": 1,
-                        "type": "MANUFACTURE",
-                        "moduleType": "HBW",
-                        "command": "PICK",
-                        "state": "FINISHED"
-                    },
-                    {
-                        "step": 2,
-                        "type": "MANUFACTURE",
-                        "moduleType": "DPS",
-                        "command": "DROP",
-                        "state": "FINISHED"
-                    }
-                ]
+                    {"step": 1, "type": "MANUFACTURE", "moduleType": "HBW", "command": "PICK", "state": "FINISHED"},
+                    {"step": 2, "type": "MANUFACTURE", "moduleType": "DPS", "command": "DROP", "state": "FINISHED"},
+                ],
             }
         ]
 
@@ -144,7 +107,7 @@ class TestStorageOrdersIntegration:
                 "type": "STORAGE",
                 "product": "WHITE",
                 "state": "COMPLETED",
-                "finishedAt": "2025-01-16T00:00:00Z"
+                "finishedAt": "2025-01-16T00:00:00Z",
             }
         ]
 
@@ -170,28 +133,16 @@ class TestStorageOrdersIntegration:
                 "orderType": "STORAGE",
                 "product": "WHITE",
                 "productionSteps": [
-                    {
-                        "step": 1,
-                        "type": "MANUFACTURE",
-                        "moduleType": "HBW",
-                        "command": "PICK",
-                        "state": "FINISHED"
-                    },
+                    {"step": 1, "type": "MANUFACTURE", "moduleType": "HBW", "command": "PICK", "state": "FINISHED"},
                     {
                         "step": 2,
                         "type": "NAVIGATION",
                         "source": "HBW",
                         "target": "DPS",
-                        "state": "ENQUEUED"  # Navigation Step ist ENQUEUED
+                        "state": "ENQUEUED",  # Navigation Step ist ENQUEUED
                     },
-                    {
-                        "step": 3,
-                        "type": "MANUFACTURE",
-                        "moduleType": "DPS",
-                        "command": "DROP",
-                        "state": "PENDING"
-                    }
-                ]
+                    {"step": 3, "type": "MANUFACTURE", "moduleType": "DPS", "command": "DROP", "state": "PENDING"},
+                ],
             }
         ]
 

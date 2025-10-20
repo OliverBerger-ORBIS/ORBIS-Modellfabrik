@@ -11,48 +11,13 @@ from omf2.ccu.stock_manager import get_stock_manager
 from omf2.common.logger import get_logger
 from omf2.ui.common.symbols import UISymbols
 
-# HTML Templates import
-try:
-    from omf2.assets.html_templates import get_bucket_template
-
-    TEMPLATES_AVAILABLE = True
-except ImportError:
-    TEMPLATES_AVAILABLE = False
-    # logger.debug(f"Templates not available: {e}")
+# HTML Templates entfernt - Asset-Manager SVGs verwenden
 
 logger = get_logger(__name__)
 
 
-def _create_large_bucket_display(position, workpiece_type):
-    """Erstellt eine große Bucket-Darstellung für eine Lagerposition"""
-    # Versuche Templates, sonst Fallback
-    if TEMPLATES_AVAILABLE:
-        return get_bucket_template(position, workpiece_type)
-
-    # Fallback: Bucket-Style Darstellung
-    if workpiece_type:
-        # Gefüllter Bucket
-        color = {"RED": "#ff6b6b", "BLUE": "#4ecdc4", "WHITE": "#f7f7f7"}.get(workpiece_type, "#ddd")
-        border_color = {"RED": "#e74c3c", "BLUE": "#3498db", "WHITE": "#95a5a6"}.get(workpiece_type, "#bbb")
-        text_color = "#fff" if workpiece_type in ["RED", "BLUE"] else "#333"
-    else:
-        # Leerer Bucket
-        color = "#f8f9fa"
-        border_color = "#dee2e6"
-        text_color = "#6c757d"
-
-    return f"""
-    <div style="width: 140px; height: 140px; margin: 8px auto; position: relative;
-                border: 3px solid {border_color}; border-radius: 12px;
-                background: linear-gradient(145deg, {color}, {color}dd);
-                display: flex; align-items: center; justify-content: center;
-                box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-        <div style="text-align: center; color: {text_color};">
-            <div style="font-size: 14px; font-weight: bold; margin-bottom: 4px;">{position}</div>
-            <div style="font-size: 11px; opacity: 0.8;">{workpiece_type or 'Leer'}</div>
-        </div>
-    </div>
-    """
+# VERALTETE HTML-TEMPLATE-FUNKTION ENTFERNT
+# Asset-Manager SVGs werden direkt in den neuen Funktionen verwendet
 
 
 def render_inventory_subtab(ccu_gateway: CcuGateway, registry_manager, asset_manager):
@@ -107,36 +72,15 @@ def render_inventory_subtab(ccu_gateway: CcuGateway, registry_manager, asset_man
             waiting_text = i18n.t("ccu_overview.inventory.waiting_for_stock")
             st.info(f"{UISymbols.get_status_icon('info')} {waiting_text}")
 
-        # 3x3 Grid Layout
-        stock_grid_text = i18n.t("ccu_overview.inventory.stock_grid")
-        st.markdown(f"**{stock_grid_text}**")
+        # VARIANTE 1: Ohne Manipulation (AS-IS) - ZUERST
+        st.markdown("### 🏭 Lager - Ohne Manipulation (AS-IS)")
+        _render_inventory_without_manipulation(inventory_data, asset_manager)
 
-        # Row A
-        col_a1, col_a2, col_a3 = st.columns(3)
-        with col_a1:
-            st.markdown(_create_large_bucket_display("A1", inventory_data.get("A1")), unsafe_allow_html=True)
-        with col_a2:
-            st.markdown(_create_large_bucket_display("A2", inventory_data.get("A2")), unsafe_allow_html=True)
-        with col_a3:
-            st.markdown(_create_large_bucket_display("A3", inventory_data.get("A3")), unsafe_allow_html=True)
+        st.markdown("---")
 
-        # Row B
-        col_b1, col_b2, col_b3 = st.columns(3)
-        with col_b1:
-            st.markdown(_create_large_bucket_display("B1", inventory_data.get("B1")), unsafe_allow_html=True)
-        with col_b2:
-            st.markdown(_create_large_bucket_display("B2", inventory_data.get("B2")), unsafe_allow_html=True)
-        with col_b3:
-            st.markdown(_create_large_bucket_display("B3", inventory_data.get("B3")), unsafe_allow_html=True)
-
-        # Row C
-        col_c1, col_c2, col_c3 = st.columns(3)
-        with col_c1:
-            st.markdown(_create_large_bucket_display("C1", inventory_data.get("C1")), unsafe_allow_html=True)
-        with col_c2:
-            st.markdown(_create_large_bucket_display("C2", inventory_data.get("C2")), unsafe_allow_html=True)
-        with col_c3:
-            st.markdown(_create_large_bucket_display("C3", inventory_data.get("C3")), unsafe_allow_html=True)
+        # VARIANTE 2: Konstante Größe (160x160) - EINGEKLAPPT
+        with st.expander("### 🏭 Lager - Konstante Größe (160x160)", expanded=False):
+            _render_inventory_with_fixed_size(inventory_data, asset_manager)
 
         # Verfügbare Werkstücke anzeigen (Summary)
         st.markdown("---")
@@ -155,3 +99,149 @@ def render_inventory_subtab(ccu_gateway: CcuGateway, registry_manager, asset_man
         logger.error(f"{UISymbols.get_status_icon('error')} Error rendering inventory: {e}")
         error_text = i18n.t("ccu_overview.inventory.error_loading").format(error=e)
         st.error(f"{UISymbols.get_status_icon('error')} {error_text}")
+
+
+def _render_inventory_with_fixed_size(inventory_data, asset_manager):
+    """Variante 1: Lager mit konstanter Größe (160x160)"""
+    # Row A
+    col_a1, col_a2, col_a3 = st.columns(3)
+    with col_a1:
+        _render_inventory_position_fixed("A1", inventory_data.get("A1"), asset_manager)
+    with col_a2:
+        _render_inventory_position_fixed("A2", inventory_data.get("A2"), asset_manager)
+    with col_a3:
+        _render_inventory_position_fixed("A3", inventory_data.get("A3"), asset_manager)
+
+    # Row B
+    col_b1, col_b2, col_b3 = st.columns(3)
+    with col_b1:
+        _render_inventory_position_fixed("B1", inventory_data.get("B1"), asset_manager)
+    with col_b2:
+        _render_inventory_position_fixed("B2", inventory_data.get("B2"), asset_manager)
+    with col_b3:
+        _render_inventory_position_fixed("B3", inventory_data.get("B3"), asset_manager)
+
+    # Row C
+    col_c1, col_c2, col_c3 = st.columns(3)
+    with col_c1:
+        _render_inventory_position_fixed("C1", inventory_data.get("C1"), asset_manager)
+    with col_c2:
+        _render_inventory_position_fixed("C2", inventory_data.get("C2"), asset_manager)
+    with col_c3:
+        _render_inventory_position_fixed("C3", inventory_data.get("C3"), asset_manager)
+
+
+def _render_inventory_without_manipulation(inventory_data, asset_manager):
+    """Variante 2: Lager ohne Manipulation (AS-IS Modus)"""
+    # Row A
+    col_a1, col_a2, col_a3 = st.columns(3)
+    with col_a1:
+        _render_inventory_position_as_is("A1", inventory_data.get("A1"), asset_manager)
+    with col_a2:
+        _render_inventory_position_as_is("A2", inventory_data.get("A2"), asset_manager)
+    with col_a3:
+        _render_inventory_position_as_is("A3", inventory_data.get("A3"), asset_manager)
+
+    # Row B
+    col_b1, col_b2, col_b3 = st.columns(3)
+    with col_b1:
+        _render_inventory_position_as_is("B1", inventory_data.get("B1"), asset_manager)
+    with col_b2:
+        _render_inventory_position_as_is("B2", inventory_data.get("B2"), asset_manager)
+    with col_b3:
+        _render_inventory_position_as_is("B3", inventory_data.get("B3"), asset_manager)
+
+    # Row C
+    col_c1, col_c2, col_c3 = st.columns(3)
+    with col_c1:
+        _render_inventory_position_as_is("C1", inventory_data.get("C1"), asset_manager)
+    with col_c2:
+        _render_inventory_position_as_is("C2", inventory_data.get("C2"), asset_manager)
+    with col_c3:
+        _render_inventory_position_as_is("C3", inventory_data.get("C3"), asset_manager)
+
+
+def _render_inventory_position_fixed(position: str, workpiece_type: str, asset_manager):
+    """Rendert eine Lagerposition mit fester Größe (160x160)"""
+    if workpiece_type is None:
+        # Leere Position → Palett-SVG mit fester Größe
+        palett_content = asset_manager.get_workpiece_palett()
+        if palett_content:
+            st.markdown(
+                f"""
+            <div style="border: 1px solid #ccc; padding: 10px; margin: 5px; text-align: center;">
+                <div style="width: 160px; height: 160px; overflow: hidden;">
+                    {palett_content}
+                </div>
+            </div>
+            """,
+                unsafe_allow_html=True,
+            )
+            # Position und Inhalt unterhalb zentriert
+            st.markdown(
+                f"<div style='text-align: center;'><strong>{position} [EMPTY]</strong></div>", unsafe_allow_html=True
+            )
+        else:
+            st.error("❌ palett.svg nicht gefunden!")
+    else:
+        # Gefüllte Position → Werkstück-SVG mit fester Größe
+        svg_content = asset_manager.get_workpiece_svg(workpiece_type, "instock_unprocessed")
+        if svg_content:
+            st.markdown(
+                f"""
+            <div style="border: 1px solid #ccc; padding: 10px; margin: 5px; text-align: center;">
+                <div style="width: 160px; height: 160px; overflow: hidden;">
+                    {svg_content}
+                </div>
+            </div>
+            """,
+                unsafe_allow_html=True,
+            )
+            # Position und Inhalt unterhalb zentriert
+            st.markdown(
+                f"<div style='text-align: center;'><strong>{position} [{workpiece_type}]</strong></div>",
+                unsafe_allow_html=True,
+            )
+        else:
+            st.error(f"❌ {workpiece_type.lower()}_instock_unprocessed.svg nicht gefunden!")
+
+
+def _render_inventory_position_as_is(position: str, workpiece_type: str, asset_manager):
+    """Rendert eine Lagerposition ohne Manipulation (AS-IS Modus)"""
+    if workpiece_type is None:
+        # Leere Position → Palett-SVG ohne Manipulation
+        palett_content = asset_manager.get_workpiece_palett()
+        if palett_content:
+            st.markdown(
+                f"""
+            <div style="border: 1px solid #ccc; padding: 10px; margin: 5px; text-align: center;">
+                {palett_content}
+            </div>
+            """,
+                unsafe_allow_html=True,
+            )
+            # Position und Inhalt unterhalb zentriert
+            st.markdown(
+                f"<div style='text-align: center;'><strong>{position} [EMPTY]</strong></div>", unsafe_allow_html=True
+            )
+        else:
+            st.error("❌ palett.svg nicht gefunden!")
+    else:
+        # Gefüllte Position → Werkstück-SVG ohne Manipulation
+        svg_content = asset_manager.get_workpiece_svg(workpiece_type, "instock_unprocessed")
+        if svg_content:
+            st.markdown(
+                f"""
+            <div style="border: 1px solid #ccc; padding: 10px; margin: 5px; text-align: center;">
+                {svg_content}
+            </div>
+            """,
+                unsafe_allow_html=True,
+            )
+            # Position und Inhalt unterhalb zentriert
+            st.markdown(
+                f"<div style='text-align: center;'><strong>{position} [{workpiece_type}]</strong></div>",
+                unsafe_allow_html=True,
+            )
+        else:
+            st.error(f"❌ {workpiece_type.lower()}_instock_unprocessed.svg nicht gefunden!")

@@ -26,7 +26,7 @@ class MultiRecPayloadImporter:
 
     def __init__(self):
         self.base_source_dir = Path("/Users/oliver/Projects/ORBIS-Modellfabrik/data/aps-data/topics")
-        self.target_dir = Path("/Users/oliver/Projects/ORBIS-Modellfabrik/omf2/tests/test_payloads_for_topic")
+        self.target_dir = Path("/Users/oliver/Projects/ORBIS-Modellfabrik/tests/test_omf2/test_payloads_for_topic")
 
         # Available recording sessions
         self.available_sessions = ["rec0", "rec1", "rec3", "rec4", "rec5", "rec6", "rec7", "rec8"]
