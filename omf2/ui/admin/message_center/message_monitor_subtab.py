@@ -141,8 +141,8 @@ def render_message_monitor_subtab(admin_gateway):
             st.error(f"{UISymbols.get_status_icon('error')} Filter error: {e}")
             filtered_messages = message_rows  # Fallback to all messages
 
-        # Nach Anzahl begrenzen
-        filtered_messages = filtered_messages[-max_messages:]
+        # Nach Anzahl begrenzen: Liste ist absteigend (neueste zuerst) → Kopf nehmen
+        filtered_messages = filtered_messages[:max_messages]
 
         # Nachrichten anzeigen
         st.subheader("📨 Nachrichten")
@@ -185,14 +185,14 @@ def render_message_monitor_subtab(admin_gateway):
                 height=400,
             )
 
-            # Erweiterte Payload-Anzeige für die letzten 5 Nachrichten (aus omf/)
+            # Erweiterte Payload-Anzeige für die letzten 5 Nachrichten (neueste zuerst)
             st.subheader(
                 f"{UISymbols.get_functional_icon('search')} Detaillierte Payload-Ansicht (letzte 5 Nachrichten)"
             )
-            recent_messages = filtered_messages[-5:] if len(filtered_messages) >= 5 else filtered_messages
+            recent_messages = filtered_messages[:5]
 
-            for i, msg in enumerate(reversed(recent_messages)):
-                with st.expander(f"📄 Nachricht {len(recent_messages) - i}: {msg.topic}", expanded=False):
+            for i, msg in enumerate(recent_messages, start=1):
+                with st.expander(f"📄 Nachricht {i}: {msg.topic}", expanded=False):
                     col1, col2 = st.columns([1, 2])
                     with col1:
                         st.write(f"**Zeit:** {datetime.fromtimestamp(msg.timestamp).strftime('%H:%M:%S')}")

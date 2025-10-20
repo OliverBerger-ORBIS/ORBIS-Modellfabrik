@@ -35,28 +35,7 @@ from omf2.ui.main_dashboard import MainDashboard
 from omf2.ui.utils.ui_refresh import consume_refresh
 
 
-# Clean up old logs for fresh agent analysis
-def cleanup_old_logs():
-    """Löscht alte Log-Dateien bei Start für saubere Agent-Analyse"""
-    from pathlib import Path
-
-    log_dir = Path(__file__).parent.parent / "logs"
-    deleted_count = 0
-
-    for log_file in log_dir.glob("omf2.log*"):
-        try:
-            log_file.unlink()
-            deleted_count += 1
-            print(f"🗑️ Deleted old log: {log_file.name}")
-        except Exception as e:
-            print(f"⚠️ Could not delete {log_file.name}: {e}")
-
-    if deleted_count > 0:
-        print(f"🧹 Cleaned up {deleted_count} old log files for fresh agent analysis")
-
-
-# Clean up old logs before setting up new logging
-cleanup_old_logs()
+# Hinweis: Log-Cleanup erfolgt nur außerhalb von Streamlit (z. B. vor dem Start per Script)
 
 log_dir = setup_file_logging()
 ensure_ringbufferhandler_attached()

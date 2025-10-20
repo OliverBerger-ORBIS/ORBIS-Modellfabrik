@@ -171,11 +171,13 @@ def _render_shopfloor_for_storage_order(order, order_manager, i18n):
     with st.container():
         # Linksbündige Ausrichtung des Shopfloor Layouts
         st.markdown("<div style='text-align: left;'>", unsafe_allow_html=True)
+        # Eindeutiger Schlüssel je Auftrag und Zustand, um Key-Kollisionen zu vermeiden
+        order_id_short = (order.get("orderId", "N/A") or "N/A")[:8]
         show_shopfloor_layout(
             active_module_id=active_module,
             active_intersections=active_intersections,
             show_controls=False,
-            unique_key=f"storage_orders_shopfloor_{active_module}_{len(active_intersections) if active_intersections else 0}",
+            unique_key=f"storage_orders_shopfloor_{order_id_short}_{active_module}_{len(active_intersections) if active_intersections else 0}",
             mode="view_mode",  # View mode: only show active modules, no clicks
         )
         st.markdown("</div>", unsafe_allow_html=True)
