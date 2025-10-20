@@ -225,37 +225,30 @@
 
 ---
 
-### Task 2.2: Shopfloor Layout - Aktive Module anzeigen (NÄCHSTE PRIORITÄT)
+### ✅ **Task 2.2 ABGESCHLOSSEN: Shopfloor Layout - Aktive Module anzeigen**
 
-**Keine Abhängigkeiten - SOFORT startbar**
+**Status:** ✅ **VOLLSTÄNDIG ABGESCHLOSSEN**
 
-**Problem-Analyse:**
+**Was wurde implementiert:**
+- ✅ **3×4 Grid Factory Layout** - Vollständige Shopfloor-Darstellung implementiert
+- ✅ **Echte omf_* SVG-Icons** - Alle Module mit korrekten SVG-Assets
+- ✅ **Aktive Module Hervorhebung** - Visuelle Kennzeichnung aktiver Module
+- ✅ **CCU Configuration Integration** - Shopfloor Layout in Configuration Tab integriert
+- ✅ **Responsive Design** - Grid passt sich verschiedenen Bildschirmgrößen an
+- ✅ **Asset-Manager Integration** - Zentrale SVG-Verwaltung über Asset-Manager
 
-Aus `REFACTORING_BACKLOG.md` Zeile 57:
-```markdown
-| factory_layout | Ui verwendet ICONs und png von omf | ❌ | Darstellung wie in omf/ mit 3X4 grid (oder 4x3) Grid |
-```
+**Technische Details:**
+- ✅ `omf2/ui/ccu/ccu_configuration/ccu_factory_configuration_subtab.py` - Factory Layout UI
+- ✅ `omf2/ui/ccu/common/shopfloor_layout.py` - Erweiterte Shopfloor-Logik
+- ✅ `omf2/config/ccu/shopfloor_layout.json` - Konfiguration aktualisiert
+- ✅ SVG-Icon-Tests implementiert und validiert
 
-**Feature-Anforderung:**
-
-- **Shopfloor Layout** soll zeigen welche Module **aktiv** sind
-- **3×4 Grid** mit echten omf_* SVG-Icons (nicht ic_ft_* Fallback)
-- **Aktuelle Module** visuell hervorheben
-- **Integration** in CCU Configuration Tab
-
-**Zu implementieren:**
-
-- `omf2/ui/ccu/ccu_configuration/ccu_factory_configuration_subtab.py`
-- `omf2/ui/ccu/common/shopfloor_layout.py` erweitern
-- `omf2/config/ccu/shopfloor_layout.json` aktualisieren
-- Icon-Test mit `omf2/ui/common/icon_test.py`
-
-**Erfolgs-Kriterium:**
-
-- Factory Layout korrekt dargestellt (3×4 Grid)
-- Alle Module mit richtigen omf_* SVG-Icons
-- Aktive Module visuell hervorgehoben
-- Shopfloor-Grid responsive
+**Erfolgs-Kriterium erreicht:**
+- ✅ Factory Layout korrekt dargestellt (3×4 Grid)
+- ✅ Alle Module mit richtigen omf_* SVG-Icons
+- ✅ Aktive Module visuell hervorgehoben
+- ✅ Shopfloor-Grid responsive
+- ✅ CCU Configuration Tab Integration funktional
 
 ### ✅ **Task 2.3 ABGESCHLOSSEN: Step Status Display Fix**
 
@@ -448,14 +441,68 @@ Gateway → MessageManager.validate(payload, schema)
 Gateway → MQTT Client.publish(topic, payload_clean, qos, retain)
 ```
 
-**Zu fixen:**
+**🎯 Schrittweise Implementierung (Architektur-Validierung vor Umstellung):**
+
+#### **Task 2.9-A: Schema-Validierung Analyse**
+- **Ziel:** Prüfen wo Schema-Validierungen im Projekt existieren
+- **Anforderung:** Nur im MessageManager, nicht in Registry
+- **Zu prüfen:** `omf2/common/message_manager.py`, `omf2/registry/`, Gateway-Komponenten
+- **Erfolgs-Kriterium:** Zentrale Validierung identifiziert, keine Duplikate
+
+#### **Task 2.9-B: Registry-Parameter prüfen**
+- **Ziel:** Alle Versende-Parameter aus Registry verfügbar
+- **Anforderung:** QoS und Retain aus Registry, nicht hardcodiert
+- **Zu prüfen:** `omf2/registry/mqtt_clients.yml`, `omf2/registry/schemas/`, MessageManager-Integration
+- **Erfolgs-Kriterium:** Registry-basierte QoS/Retain-Werte funktional
+
+#### **Task 2.9-C: UI-Komponenten auf MessageManager umstellen**
+- **Ziel:** Registry-Validation durch MessageManager ersetzen
+- **Problem:** UI-Komponenten verwenden Registry-Validation (Duplikat)
+- **Zu ersetzen:**
+  - `omf2/ui/common/components/topic_selector.py` - Registry → MessageManager
+  - `omf2/ui/common/components/schema_tester.py` - Registry → MessageManager  
+  - `omf2/ui/admin/admin_settings/topics_subtab.py` - Registry → MessageManager
+- **Registry-Duplikat entfernen:** `omf2/registry/manager/registry_manager.py` - `validate_topic_payload()`
+- **Erfolgs-Kriterium:** Alle UI-Komponenten verwenden MessageManager, keine Registry-Validation
+
+**📊 Registry vs. Mosquitto-Log Analyse:**
+- **Dokumentation:** `docs/07-analysis/registry-mosquitto-log-analysis.md`
+- **Kritische Erkenntnisse:** 10 wichtige Topics fehlen in Registry
+- **QoS/Retain Inkonsistenzen:** Node-RED vs. Module Topics
+- **Handlungsbedarf:** Registry-Ergänzungen für fehlende Topics erforderlich
+
+#### **Task 2.9-D: Topic Steering testen**
+- **Ziel:** Admin → Generic Steering → Topic Steering funktional
+- **Anforderung:** Schema-driven Approach in Admin Domain validieren
+- **Zu testen:** Topic-driven, Schema-driven, Schema-Test Modi, PayloadGenerator-Integration
+- **Erfolgs-Kriterium:** Alle 3 Modi funktionieren fehlerfrei
+
+#### **Task 2.9-E: CCU Domain publish_message**
+- **Ziel:** publish_message in CCU Domain implementieren
+- **Anforderung:** CCU Gateway → MessageManager → MQTT Client
+- **Zu implementieren:** CCU Gateway publish_message-Methode, MessageManager-Integration
+- **Erfolgs-Kriterium:** CCU Domain kann schema-validierte Messages senden
+
+#### **Task 2.9-F: Live-Modus Test**
+- **Ziel:** End-to-End Test mit echter Fabrik
+- **Anforderung:** Echte MQTT-Verbindung, Schema-Validation mit realen Payloads
+- **Zu testen:** MQTT-Verbindung, Schema-Validation, QoS/Retain-Werte
+- **Erfolgs-Kriterium:** Live-Test mit echter Fabrik erfolgreich
+
+#### **Task 2.9-G: Factory Steering umstellen**
+- **Ziel:** Hardcodierte Payloads durch Schema-driven Approach ersetzen
+- **Anforderung:** PayloadGenerator in Factory Steering, Schema-Validation aktivieren
+- **Zu implementieren:** 6 Funktionen in `factory_steering_subtab.py` umstellen
+- **Erfolgs-Kriterium:** Keine hardcodierten Payloads mehr, alle Commands schema-validiert
+
+**Zu fixen (Task 2.9-G):**
 
 - `factory_steering_subtab.py` - 6 Funktionen mit hardcodierten Payloads
 - Schema-driven Approach implementieren
 - PayloadGenerator.generate_example_payload() verwenden
 - Registry Manager Integration
 
-**Erfolgs-Kriterium:**
+**Erfolgs-Kriterium (Task 2.9-G):**
 
 - Keine hardcodierten Payloads mehr
 - Alle Factory Steering Commands schema-validiert
@@ -776,8 +823,8 @@ def on_mqtt_message(self, topic, message, meta):
 1. ~~**Stock-Topic Fehler** → Phase 2 Task 2.1~~ ✅ **GELÖST**
 2. ~~**Step Status Display** → Task 2.3~~ ✅ **ABGESCHLOSSEN**
 3. ~~**Manager Renaming** → Task 2.4~~ ✅ **ABGESCHLOSSEN**
-4. **Auto-Refresh** → Task 2.7
-5. **Factory Layout** → Task 2.8 (TEILWEISE - omf_* Icons, FTS Navigation, EMPTY-Felder fehlen)
+4. **Auto-Refresh** → Task 2.10
+5. ~~**Factory Layout** → Task 2.2~~ ✅ **ABGESCHLOSSEN**
 
 ### MITTEL:
 
@@ -804,7 +851,7 @@ def on_mqtt_message(self, topic, message, meta):
 
 - ✅ Auto-Refresh funktioniert
 - ✅ ~~Stock-Topic korrekt~~ ✅ **GELÖST**
-- ✅ Factory Layout korrekt dargestellt
+- ✅ ~~Factory Layout korrekt dargestellt~~ ✅ **ABGESCHLOSSEN**
 - ✅ Alle drei Sprachen funktionieren
 - ✅ Rollenbasierte Tabs funktionieren
 
@@ -860,7 +907,7 @@ def on_mqtt_message(self, topic, message, meta):
 - [ ] Live-Test Session #1 mit echter Fabrik durchführen
 - [ ] Auto-Refresh bei MQTT Messages implementieren
 - [ ] Live-Test Session #2: Regression-Check und Vergleich mit Session #1
-- [ ] Factory Layout: 3×4 Grid mit echten omf_* SVG-Icons
+- [x] ~~Factory Layout: 3×4 Grid mit echten omf_* SVG-Icons~~ ✅ **ABGESCHLOSSEN**
 - [ ] Sensor Data UI: Temperatur-Skala, Kamera-Controls, Bild-Anzeige
 - [x] ~~Production Order Manager: STORAGE Orders, Filterung, Limitierung~~ ✅ **ABGESCHLOSSEN**
 - [ ] Node-RED MQTT Clients: Environment-Switch, Registry-Topics

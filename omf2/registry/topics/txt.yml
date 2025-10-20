@@ -201,8 +201,8 @@ txt_topics:
   verified: false
   data_source: "Schema exists, not found in sessions"
 - topic: /j1/txt/1/i/bme680
-  qos: 1
-  retain: 0
+  qos: 2
+  retain: 1
   schema: j1_txt_1_i_bme680.schema.json
   description: "BME680 Environment Sensor-Daten (Temp, Humidity, Pressure, Air Quality)"
   assumption: "TXT -> Sensor-Data"
@@ -249,8 +249,8 @@ txt_topics:
   verified: true
   data_source: "Session orderBlueLocal_orderRedCloud - 100+ images, very frequent (~2 fps)"
 - topic: /j1/txt/1/i/ldr
-  qos: 1
-  retain: 0
+  qos: 2
+  retain: 1
   schema: j1_txt_1_i_ldr.schema.json
   description: "LDR Light-Sensor data (brightness: br, light: ldr values)"
   assumption: "TXT -> Sensor-Data"

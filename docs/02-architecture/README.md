@@ -40,6 +40,9 @@ Die Dokumente beschreiben den Systemkontext, die Message Flows, das Registry-Mod
 - [CCU Module Manager](implementation/ccu-module-manager.md) – CCU Module-Status-Verarbeitung mit 5-Spalten-Architektur
 - [Monitor Manager](implementation/monitor-manager.md) – CCU Message Monitor Topic-Klassifizierung und Filter-Management
 
+### Message Architecture
+- [Message Sending Architecture](message-sending-architecture.md) – **NEU** - MQTT Message Sending Architektur mit Schema-Validation
+
 ---
 
 ## 📌 Hinweise

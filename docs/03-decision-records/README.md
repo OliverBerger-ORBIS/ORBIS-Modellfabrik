@@ -70,6 +70,11 @@
 **Datum:** 2024-12-19  
 **Kurzbeschreibung:** Robuste Fehlerbehandlung mit Try-Catch-Blöcken, Graceful Degradation und User-freundlichen Fehlermeldungen.
 
+### 14. [Step-by-Step Implementation Principle](09-step-by-step-implementation-principle.md) *(NEW)*
+**Status:** Accepted  
+**Datum:** 2025-10-19  
+**Kurzbeschreibung:** Architektur-Validierung vor Umstellung - Schrittweise Implementierung für komplexe Refactoring-Aufgaben.
+
 ## Verwendung
 
 ### Neue Komponente hinzufügen:
