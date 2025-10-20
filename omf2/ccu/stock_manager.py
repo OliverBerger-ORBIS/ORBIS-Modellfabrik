@@ -199,7 +199,6 @@ class StockManager:
                     "type": workpiece_type,
                     "timestamp": datetime.now(timezone.utc).isoformat(),
                     "orderType": "PRODUCTION",
-                    "workpieceType": workpiece_type,
                 }
 
                 # TODO: Topic aus Registry laden

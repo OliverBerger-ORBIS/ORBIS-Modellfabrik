@@ -1,0 +1,206 @@
+{
+  "total_tests": 15,
+  "passed_tests": 10,
+  "failed_tests": 5,
+  "test_details": [
+    {
+      "test": "Schema-driven generation for ccu/status/health",
+      "status": "PASSED",
+      "payload": {
+        "message": "test_message",
+        "timestamp": "2024-01-01T00:00:00Z",
+        "data": {}
+      }
+    },
+    {
+      "test": "Schema-driven generation for ccu/state/config",
+      "status": "PASSED",
+      "payload": {
+        "productionDurations": {
+          "WHITE": 0,
+          "BLUE": 0,
+          "RED": 0
+        },
+        "productionSettings": {
+          "maxParallelOrders": 0
+        },
+        "ftsSettings": {
+          "chargeThresholdPercent": 0
+        }
+      }
+    },
+    {
+      "test": "Schema-driven generation for ccu/order/request",
+      "status": "PASSED",
+      "payload": {
+        "type": "test_type",
+        "timestamp": "test_timestamp",
+        "orderType": "test_orderType",
+        "workpieceId": "test_workpieceId"
+      }
+    },
+    {
+      "test": "Schema-driven generation for module/v1/ff/SVR4H76530/connection",
+      "status": "PASSED",
+      "payload": {
+        "headerId": 0,
+        "timestamp": "test_timestamp",
+        "ip": "test_ip",
+        "version": "test_version",
+        "manufacturer": "test_manufacturer",
+        "serialNumber": "test_serialNumber",
+        "connectionState": "test_connectionState"
+      }
+    },
+    {
+      "test": "Schema-driven generation for fts/v1/ff/5iO4/state",
+      "status": "PASSED",
+      "payload": {
+        "lastNodeSequenceId": 0,
+        "batteryState": {
+          "currentVoltage": 0.0,
+          "percentage": 0,
+          "maxVolt": 0.0,
+          "charging": false,
+          "minVolt": 0.0
+        },
+        "timestamp": "test_timestamp",
+        "serialNumber": "test_serialNumber",
+        "driving": false,
+        "paused": false,
+        "errors": [
+          {
+            "errorLevel": "test_errorLevel",
+            "errorType": "test_errorType",
+            "errorReferences": [
+              {
+                "referenceValue": 0,
+                "referenceKey": "test_referenceKey"
+              }
+            ]
+          }
+        ],
+        "orderId": "test_order_123",
+        "orderUpdateId": 0,
+        "lastNodeId": "test_lastNodeId",
+        "lastCode": "test_lastCode",
+        "waitingForLoadHandling": false,
+        "actionStates": [
+          {
+            "id": "test_id",
+            "state": "test_state",
+            "timestamp": "test_timestamp",
+            "command": "test_command"
+          }
+        ],
+        "edgeStates": [],
+        "headerId": 0,
+        "load": [
+          {
+            "loadPosition": "test_loadPosition",
+            "loadType": null,
+            "loadId": null
+          }
+        ],
+        "nodeStates": [],
+        "actionState": {
+          "id": "test_id",
+          "state": "test_state",
+          "timestamp": "test_timestamp",
+          "command": "test_command"
+        }
+      }
+    },
+    {
+      "test": "Admin validation for ccu/status/health",
+      "status": "PASSED",
+      "validation_result": {
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "test": "Admin validation for ccu/state/config",
+      "status": "FAILED",
+      "validation_errors": [
+        "Schema validation failed: 'ftsSettings' is a required property"
+      ]
+    },
+    {
+      "test": "Admin validation for ccu/order/request",
+      "status": "FAILED",
+      "validation_errors": [
+        "Schema validation failed: 'orderType' is a required property"
+      ]
+    },
+    {
+      "test": "CCU validation for ccu/status/health",
+      "status": "PASSED",
+      "validation_result": {
+        "errors": [],
+        "warnings": []
+      }
+    },
+    {
+      "test": "CCU validation for ccu/state/stock",
+      "status": "FAILED",
+      "validation_errors": [
+        "Schema validation failed: 'stockItems' is a required property"
+      ]
+    },
+    {
+      "test": "PayloadGenerator quality for ccu/order/active",
+      "status": "FAILED",
+      "error": "No payload generated"
+    },
+    {
+      "test": "PayloadGenerator quality for ccu/order/completed",
+      "status": "FAILED",
+      "error": "No payload generated"
+    },
+    {
+      "test": "PayloadGenerator quality for ccu/state/config",
+      "status": "PASSED",
+      "payload": {
+        "productionDurations": {
+          "WHITE": 0,
+          "BLUE": 0,
+          "RED": 0
+        },
+        "productionSettings": {
+          "maxParallelOrders": 0
+        },
+        "ftsSettings": {
+          "chargeThresholdPercent": 0
+        }
+      }
+    },
+    {
+      "test": "PayloadGenerator quality for ccu/state/flows",
+      "status": "PASSED",
+      "payload": {
+        "BLUE": {
+          "steps": [
+            "test_step"
+          ]
+        },
+        "RED": {
+          "steps": [
+            "test_step"
+          ]
+        },
+        "WHITE": {
+          "steps": [
+            "test_step"
+          ]
+        }
+      }
+    },
+    {
+      "test": "Schema Tester Consistency",
+      "status": "PASSED",
+      "invalid_count_1": 2,
+      "invalid_count_2": 2
+    }
+  ]
+}

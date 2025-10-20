@@ -50,9 +50,18 @@ class PayloadGenerator:
 
     def _generate_payload_from_schema(self, schema: Dict[str, Any]) -> Dict[str, Any]:
         """Generates payload from schema definition"""
+        # Handle array types (like ccu/order/active, ccu/order/completed)
+        if schema.get("type") == ["array", "null"] or schema.get("type") == "array":
+            # Generate empty array for array types
+            return []
+
+        # Handle null types
+        if schema.get("type") == "null":
+            return None
+
         payload = {}
         properties = schema.get("properties", {})
-        schema.get("required", [])
+        # required = schema.get("required", [])  # Not used in current implementation
 
         # Handle wildcard schemas (no properties, but additionalProperties: true)
         if not properties and schema.get("additionalProperties", False):
@@ -71,9 +80,46 @@ class PayloadGenerator:
         """Generates value for a specific property"""
         prop_type = prop_info.get("type")
 
+        # Handle object types with required properties
+        if prop_type == "object" and "properties" in prop_info:
+            return self._generate_payload_from_schema(prop_info)
+
+        # Handle array types
+        if prop_type == "array":
+            items_schema = prop_info.get("items", {})
+            if items_schema:
+                # Check if items are simple types (string, number, etc.)
+                if items_schema.get("type") == "string":
+                    return ["test_step"]
+                elif items_schema.get("type") == "integer":
+                    return [0]
+                elif items_schema.get("type") == "number":
+                    return [0.0]
+                elif items_schema.get("type") == "boolean":
+                    return [True]
+                else:
+                    # Generate single item for complex objects
+                    return [self._generate_payload_from_schema(items_schema)]
+            return []
+
         # Handle specific properties with known patterns
         if prop == "orderUpdateId":
             return 0
+        elif prop == "type" and "enum" in prop_info:
+            # Handle type enum (BLUE, WHITE, RED)
+            enum_values = prop_info.get("enum", [])
+            if enum_values:
+                return enum_values[0]  # Return first enum value
+        elif prop == "orderType" and "enum" in prop_info:
+            # Handle orderType enum (PRODUCTION, STORAGE)
+            enum_values = prop_info.get("enum", [])
+            if enum_values:
+                return enum_values[0]  # Return first enum value
+        elif prop == "timestamp" and prop_info.get("format") == "date-time":
+            # Handle ISO timestamp format
+            from datetime import datetime
+
+            return datetime.now().isoformat()
         elif prop == "protocolFeatures":
             # Handle protocol features for factsheets
             # Always generate both agvActions and moduleActions to cover all cases

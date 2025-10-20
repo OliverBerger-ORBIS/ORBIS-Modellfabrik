@@ -133,9 +133,11 @@ class TestSchemaIntegration(unittest.TestCase):
         # Test-Payload (sollte invalid sein)
         invalid_payload = {"invalid_field": "test", "wrong_type": 123}
 
-        # Validierung sollte funktionieren (kann True/False/None zurückgeben)
-        result_valid = self.registry_manager.validate_topic_payload(test_topic, valid_payload)
-        result_invalid = self.registry_manager.validate_topic_payload(test_topic, invalid_payload)
+        # Validierung sollte funktionieren über MessageManager
+        from omf2.common.message_manager import MessageManager
+        message_manager = MessageManager('admin', self.registry_manager)
+        result_valid = message_manager.validate_message(test_topic, valid_payload)
+        result_invalid = message_manager.validate_message(test_topic, invalid_payload)
 
         # Ergebnisse sollten nicht None sein (können True/False sein)
         self.assertIsNotNone(result_valid, "Validierung sollte ein Ergebnis zurückgeben")

@@ -364,19 +364,7 @@ class RegistryManager:
             "description": topic_info.get("description"),
         }
 
-    def validate_topic_payload(self, topic: str, payload: Dict) -> Dict[str, Any]:
-        """Validiert einen Payload gegen das Topic-Schema"""
-        schema = self.get_topic_schema(topic)
-        if not schema:
-            return {"valid": False, "error": "No schema found for topic", "schema_file": None}
-
-        try:
-            import jsonschema
-
-            jsonschema.validate(payload, schema)
-            return {"valid": True, "error": None, "schema_file": self.topics[topic]["schema"]}
-        except Exception as e:
-            return {"valid": False, "error": str(e), "schema_file": self.topics[topic]["schema"]}
+    # validate_topic_payload method removed - use MessageManager.validate_message() instead
 
     def get_mqtt_clients(self) -> Dict[str, Any]:
         """Gibt alle MQTT Clients zurück"""

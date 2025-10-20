@@ -150,9 +150,11 @@ class TestRegistryTools(unittest.TestCase):
         # Test-Payload (sollte invalid sein)
         invalid_payload = {"invalid_field": "test", "wrong_type": 123}
 
-        # Validierung sollte funktionieren
-        result_valid = self.registry_manager.validate_topic_payload(test_topic, valid_payload)
-        result_invalid = self.registry_manager.validate_topic_payload(test_topic, invalid_payload)
+        # Validierung sollte funktionieren über MessageManager
+        from omf2.common.message_manager import MessageManager
+        message_manager = MessageManager('admin', self.registry_manager)
+        result_valid = message_manager.validate_message(test_topic, valid_payload)
+        result_invalid = message_manager.validate_message(test_topic, invalid_payload)
 
         # Ergebnisse sollten nicht None sein
         self.assertIsNotNone(result_valid, "Validierung sollte ein Ergebnis zurückgeben")
@@ -173,7 +175,9 @@ class TestRegistryTools(unittest.TestCase):
 
         # 3. Schema-Validierung
         test_payload = {"state": "idle", "timestamp": "2025-10-01T19:30:00Z"}
-        validation_result = self.registry_manager.validate_topic_payload(test_topic, test_payload)
+        from omf2.common.message_manager import MessageManager
+        message_manager = MessageManager('admin', self.registry_manager)
+        validation_result = message_manager.validate_message(test_topic, test_payload)
         self.assertIsNotNone(validation_result, "Schema-Validierung sollte funktionieren")
 
         # 4. Registry-Statistiken

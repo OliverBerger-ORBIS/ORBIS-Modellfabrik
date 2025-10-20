@@ -5,10 +5,10 @@ global:
 
 # RingBuffer-Konfiguration für MultiLevelRingBufferHandler
 ringbuffer:
-  ERROR: 200      # Größer für wichtige Errors
-  WARNING: 200    # Größer für wichtige Warnings  
-  INFO: 500       # Standard für Info-Logs
-  DEBUG: 300      # Kleinere für Debug-Logs
+  ERROR: 500      # Größer für wichtige Errors
+  WARNING: 500    # Größer für wichtige Warnings  
+  INFO: 5000       # Standard für Info-Logs
+  DEBUG: 100      # Kleinere für Debug-Logs
 modules:
   omf2:
     level: INFO

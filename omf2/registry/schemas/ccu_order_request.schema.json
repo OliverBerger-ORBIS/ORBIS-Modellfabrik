@@ -6,13 +6,16 @@
   ],
   "properties": {
     "type": {
-      "type": "string"
+      "type": "string",
+      "enum": ["BLUE", "WHITE", "RED"]
     },
     "timestamp": {
-      "type": "string"
+      "type": "string",
+      "format": "date-time"
     },
     "orderType": {
-      "type": "string"
+      "type": "string",
+      "enum": ["PRODUCTION", "STORAGE"]
     },
     "workpieceId": {
       "type": "string"

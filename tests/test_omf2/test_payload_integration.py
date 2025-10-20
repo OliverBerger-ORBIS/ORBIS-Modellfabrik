@@ -114,17 +114,19 @@ class TestPayloadIntegration(unittest.TestCase):
 
             # Nur bekannte Topics testen
             if topic in known_topics:
-                # Test Payload-Validation
-                validation_result = registry_manager.validate_topic_payload(topic, payload)
+                # Test Payload-Validation über MessageManager
+                from omf2.common.message_manager import MessageManager
+                message_manager = MessageManager('admin', registry_manager)
+                validation_result = message_manager.validate_message(topic, payload)
 
                 # Prüfe dass Validation-Result ein Dictionary ist
                 self.assertIsInstance(validation_result, dict, f"Validation für {topic} sollte Dictionary zurückgeben")
-                self.assertIn("valid", validation_result, f"Validation-Result für {topic} sollte 'valid' haben")
-                self.assertIn("error", validation_result, f"Validation-Result für {topic} sollte 'error' haben")
+                self.assertIn("errors", validation_result, f"Validation-Result für {topic} sollte 'errors' haben")
+                self.assertIn("warnings", validation_result, f"Validation-Result für {topic} sollte 'warnings' haben")
 
-                # Prüfe dass valid ein Boolean ist
+                # Prüfe dass errors eine Liste ist
                 self.assertIsInstance(
-                    validation_result["valid"], bool, f"Validation 'valid' für {topic} sollte boolean sein"
+                    validation_result["errors"], list, f"Validation 'errors' für {topic} sollte Liste sein"
                 )
 
     def test_payload_diversity(self):

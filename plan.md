@@ -477,19 +477,25 @@ Gateway → MQTT Client.publish(topic, payload_clean, qos, retain)
 - **Zu testen:** Topic-driven, Schema-driven, Schema-Test Modi, PayloadGenerator-Integration
 - **Erfolgs-Kriterium:** Alle 3 Modi funktionieren fehlerfrei
 
-#### **Task 2.9-E: CCU Domain publish_message**
+#### **Task 2.9-D: CCU Domain publish_message** ✅ **ABGESCHLOSSEN**
 - **Ziel:** publish_message in CCU Domain implementieren
-- **Anforderung:** CCU Gateway → MessageManager → MQTT Client
-- **Zu implementieren:** CCU Gateway publish_message-Methode, MessageManager-Integration
-- **Erfolgs-Kriterium:** CCU Domain kann schema-validierte Messages senden
+- **Status:** ✅ **BEREITS IMPLEMENTIERT** - CCU Gateway hat vollständige publish_message Funktionalität
+- **Erfolgs-Kriterium:** ✅ **ERREICHT** - CCU Domain kann schema-validierte Messages senden
 
-#### **Task 2.9-F: Live-Modus Test**
+#### **Task 2.9-E: Live-Modus Test** 🔄 **IN BEARBEITUNG**
 - **Ziel:** End-to-End Test mit echter Fabrik
-- **Anforderung:** Echte MQTT-Verbindung, Schema-Validation mit realen Payloads
-- **Zu testen:** MQTT-Verbindung, Schema-Validation, QoS/Retain-Werte
-- **Erfolgs-Kriterium:** Live-Test mit echter Fabrik erfolgreich
+- **Status:** 🔄 **TEILERFOLG** - CCU Overview funktioniert korrekt
+- **Erfolgs-Kriterium:** ✅ **CCU Overview** - sendet nur 3 korrekte Felder (type, timestamp, orderType)
+- **Verbleibende Probleme:**
+  - ❌ **PayloadGenerator:** Enums-Unterstützung ausbauen
+  - ❌ **Topic Steering:** Edit Payload wird nicht übernommen beim Senden
+  - ❌ **CCU Domain:** Eigene Logik statt PayloadGenerator (Zwischenzustand)
+  - ❌ **CCU Domain:** CCU Gateway soll QoS/Retain Parameter aus Registry verwenden
+    - **Problem:** CCU Gateway verwendet hardcodierte QoS/Retain Werte
+    - **Lösung:** MessageManager übernimmt QoS/Retain aus Registry (wie Admin-Domain)
+    - **Alternative:** CCU Gateway lädt QoS/Retain direkt aus Registry
 
-#### **Task 2.9-G: Factory Steering umstellen**
+#### **Task 2.9-F: Factory Steering umstellen**
 - **Ziel:** Hardcodierte Payloads durch Schema-driven Approach ersetzen
 - **Anforderung:** PayloadGenerator in Factory Steering, Schema-Validation aktivieren
 - **Zu implementieren:** 6 Funktionen in `factory_steering_subtab.py` umstellen

@@ -9,6 +9,7 @@ from typing import Any, Dict, List
 import streamlit as st
 
 from omf2.common.logger import get_logger
+from omf2.common.message_manager import MessageManager
 
 logger = get_logger(__name__)
 
@@ -16,6 +17,7 @@ logger = get_logger(__name__)
 class TopicSelector:
     def __init__(self, registry_manager):
         self.registry_manager = registry_manager
+        self.message_manager = MessageManager("admin", registry_manager)
 
     def render_topic_driven_ui(self):
         """Renders the topic-driven approach UI"""
@@ -220,36 +222,28 @@ class TopicSelector:
     def _get_topics_with_schemas(self) -> Dict[str, Dict]:
         """Get all topics with their schema, QoS, and retain information from registry"""
         try:
-            # Get MQTT clients configuration which contains topic information
-            mqtt_clients = self.registry_manager.get_mqtt_clients()
+            # Get topics from registry (correct source for QoS/Retain)
+            all_topics = self.registry_manager.get_topics()
             topics_with_info = {}
 
-            for client_name, client_config in mqtt_clients.items():
-                if isinstance(client_config, dict):
-                    subscribed_topics = client_config.get("subscribed_topics", [])
-                    for topic_info in subscribed_topics:
-                        if isinstance(topic_info, dict):
-                            topic = topic_info.get("topic", "")
-                            qos = topic_info.get("qos", 1)
-                            retain = topic_info.get("retain", False)
-                            schema = topic_info.get("schema", "")
-                        else:
-                            topic = str(topic_info)
-                            qos = 1
-                            retain = False
-                            schema = ""
-
-                        if topic and topic != "#":  # Skip wildcard topics
-                            # Try to infer schema from topic name if not explicitly set
-                            if not schema:
-                                schema = self._infer_schema_from_topic(topic)
-
-                            topics_with_info[topic] = {
-                                "qos": qos,
-                                "retain": retain,
-                                "schema": schema,
-                                "client": client_name,
-                            }
+            for topic in all_topics:
+                # Get topic configuration from registry
+                topic_config = self.registry_manager.get_topic_config(topic)
+                if topic_config:
+                    topics_with_info[topic] = {
+                        "qos": topic_config.get("qos", 1),
+                        "retain": topic_config.get("retain", False),
+                        "schema": topic_config.get("schema", ""),
+                        "client": "registry",  # Source indicator
+                    }
+                else:
+                    # Fallback if topic config not found
+                    topics_with_info[topic] = {
+                        "qos": 1,
+                        "retain": False,
+                        "schema": "",
+                        "client": "fallback",
+                    }
 
             return topics_with_info
 
@@ -376,12 +370,38 @@ class TopicSelector:
         # Message sending button
         if st.button(f"📤 Send Message to {topic}", key=f"send_message_{topic}"):
             try:
-                # Parse JSON payload
-                payload = json.loads(payload_json)
+                # Get the current value from the text area (from session state)
+                current_payload = st.session_state.get(f"payload_edit_{topic}", payload_json)
 
-                # TODO: Implement actual message sending via gateway
-                st.success(f"✅ Message sent to {topic} (QoS: {qos}, Retain: {retain})")
-                logger.info(f"📤 Message sent to {topic}: {payload}")
+                # Debug: Show what we're actually sending
+                logger.info(f"📤 Sending payload for {topic}: {current_payload}")
+                logger.info(f"📤 Original payload_json: {payload_json}")
+                logger.info(f"📤 Session state key: payload_edit_{topic}")
+                logger.info(f"📤 Session state value: {st.session_state.get(f'payload_edit_{topic}', 'NOT_FOUND')}")
+
+                # Parse JSON payload
+                payload = json.loads(current_payload)
+
+                # Validate payload using MessageManager
+                validation_result = self.message_manager.validate_message(topic, payload)
+                if validation_result.get("errors"):
+                    st.error(f"❌ Payload validation failed: {validation_result.get('errors')}")
+                    return
+
+                # Send message via gateway
+                from omf2.factory.gateway_factory import get_admin_gateway
+
+                gateway = get_admin_gateway()
+
+                if gateway and hasattr(gateway, "publish_message"):
+                    success = gateway.publish_message(topic, payload, qos, retain)
+                    if success:
+                        st.success(f"✅ Message sent successfully to {topic} (QoS: {qos}, Retain: {retain})")
+                        logger.info(f"📤 Message sent to {topic}: {payload}")
+                    else:
+                        st.error(f"❌ Failed to send message to {topic}")
+                else:
+                    st.error("❌ Gateway not available")
 
             except json.JSONDecodeError as e:
                 st.error(f"❌ Invalid JSON payload: {e}")
@@ -405,13 +425,11 @@ class TopicSelector:
 
                 payload = json.loads(payload_json)
 
-                # Validate payload if schema exists
-                topic_schema = self.registry_manager.get_topic_schema(topic)
-                if topic_schema:
-                    validation_result = self.registry_manager.validate_topic_payload(topic, payload)
-                    if not validation_result.get("valid", False):
-                        st.error(f"❌ Payload validation failed: {validation_result.get('error', 'Unknown error')}")
-                        return
+                # Validate payload using MessageManager
+                validation_result = self.message_manager.validate_message(topic, payload)
+                if validation_result.get("errors"):
+                    st.error(f"❌ Payload validation failed: {validation_result.get('errors')}")
+                    return
 
                 # Send message via gateway
                 from omf2.factory.gateway_factory import get_admin_gateway

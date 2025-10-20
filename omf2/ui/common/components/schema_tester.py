@@ -11,6 +11,7 @@ from typing import Any, Dict
 import streamlit as st
 
 from omf2.common.logger import get_logger
+from omf2.common.message_manager import MessageManager
 
 logger = get_logger(__name__)
 
@@ -18,6 +19,11 @@ logger = get_logger(__name__)
 class SchemaTester:
     def __init__(self, registry_manager):
         self.registry_manager = registry_manager
+        self.message_manager = MessageManager("admin", registry_manager)
+        # FIX: PayloadGenerator als Instanz-Variable für bessere Performance und State-Konsistenz
+        from omf2.ui.common.components.payload_generator import PayloadGenerator
+
+        self.payload_generator = PayloadGenerator(registry_manager)
 
     def run_schema_test(self) -> Dict[str, Any]:
         """Runs comprehensive schema test on all topics"""
@@ -60,11 +66,8 @@ class SchemaTester:
             if not topic_schema:
                 return {"topic": topic, "status": "NO_SCHEMA", "error": "No schema found", "schema_file": None}
 
-            # Generate test payload
-            from omf2.ui.common.components.payload_generator import PayloadGenerator
-
-            generator = PayloadGenerator(self.registry_manager)
-            payload = generator.generate_example_payload(topic)
+            # Generate test payload using instance variable (FIX: Race Condition)
+            payload = self.payload_generator.generate_example_payload(topic)
 
             if not payload:
                 return {
@@ -76,8 +79,8 @@ class SchemaTester:
                     ),
                 }
 
-            # Validate payload
-            validation_result = self.registry_manager.validate_topic_payload(topic, payload)
+            # Validate payload using MessageManager
+            validation_result = self.message_manager.validate_message(topic, payload)
 
             # Get schema file info from validation result
             schema_file = validation_result.get("schema_file", "unknown")
@@ -88,7 +91,9 @@ class SchemaTester:
                 else:
                     schema_file = str(topic_schema)
 
-            if validation_result.get("valid", False):
+            # KORREKTUR: MessageManager gibt {'errors': [], 'warnings': []} zurück
+            # Valid = keine Errors
+            if not validation_result.get("errors", []):
                 return {
                     "topic": topic,
                     "status": "VALID",
@@ -100,7 +105,7 @@ class SchemaTester:
                 return {
                     "topic": topic,
                     "status": "INVALID",
-                    "error": validation_result.get("error", "Validation failed"),
+                    "error": "Validation failed",
                     "schema_file": schema_file,
                     "payload": payload,
                     "validation_errors": validation_result.get("errors", []),

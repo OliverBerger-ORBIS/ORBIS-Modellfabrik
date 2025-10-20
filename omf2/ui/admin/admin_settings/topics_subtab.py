@@ -7,6 +7,7 @@ Zeigt alle Topics aus der Registry nach Kategorien an
 import streamlit as st
 
 from omf2.common.logger import get_logger
+from omf2.common.message_manager import MessageManager
 from omf2.ui.common.symbols import UISymbols
 
 logger = get_logger(__name__)
@@ -24,6 +25,8 @@ def render_topics_subtab():
 
             st.session_state["registry_manager"] = get_registry_manager("omf2/registry/")
         registry_manager = st.session_state["registry_manager"]
+
+        # MessageManager will be initialized when needed in button callbacks
 
         # Get all topics
         all_topics = registry_manager.get_topics()
@@ -147,13 +150,15 @@ def _render_schema_validation_test(registry_manager, all_topics):
         ):
             try:
                 payload = json.loads(payload_text)
-                validation_result = registry_manager.validate_topic_payload(selected_topic, payload)
+                # Re-initialize MessageManager for button callback scope
+                msg_mgr = MessageManager("admin", registry_manager)
+                validation_result = msg_mgr.validate_message(selected_topic, payload)
 
-                if validation_result["valid"]:
+                if not validation_result.get("errors"):
                     st.success(f"{UISymbols.get_status_icon('success')} Payload is valid!")
                 else:
                     st.error(
-                        f"{UISymbols.get_status_icon('error')} Payload validation failed: {validation_result['error']}"
+                        f"{UISymbols.get_status_icon('error')} Payload validation failed: {validation_result.get('errors')}"
                     )
 
             except json.JSONDecodeError as e:

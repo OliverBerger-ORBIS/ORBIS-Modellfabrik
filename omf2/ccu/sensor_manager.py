@@ -121,11 +121,11 @@ class SensorManager:
 
     def _extract_sensor_data(self, topic: str, payload: Dict[str, Any]) -> Dict[str, Any]:
         """
-        Extract sensor data from payload using MessageManager (Schema-based)
+        Extract sensor data from payload (Business Logic only - already validated by CCU Gateway)
 
         Args:
             topic: MQTT topic
-            payload: Payload-Daten (Dict ohne MQTT-Metadaten)
+            payload: Payload-Daten (Dict ohne MQTT-Metadaten) - bereits validiert
 
         Returns:
             Processed sensor data dictionary
@@ -152,48 +152,32 @@ class SensorManager:
                 "status": "empty_payload",
             }
 
-        # Use Registry Manager for schema-based validation (like SchemaTester)
-        try:
-            # Validate payload using Registry Manager (Schema-based) - like SchemaTester
-            validation_result = self.registry_manager.validate_topic_payload(topic, sensor_payload)
-            logger.debug(f"Registry validation for {topic}: {validation_result}")
+        # ARCHITEKTUR-FIX: Keine Validierung in Business Manager
+        # CCU Gateway hat bereits validiert - hier nur Business Logic
+        logger.debug(f"Processing validated payload for {topic} (already validated by CCU Gateway)")
 
-            # Extract validated payload
-            if validation_result.get("valid", False):
-                validated_payload = sensor_payload  # Use extracted payload
-                logger.debug(f"Validated payload for {topic}: {validated_payload}")
-
-                # Schema-based field extraction based on topic
-                if "/bme680" in topic:
-                    return {
-                        "temperature": validated_payload.get("t", 0.0),  # ✅ Korrekt: "t"
-                        "humidity": validated_payload.get("h", 0.0),  # ✅ Korrekt: "h"
-                        "pressure": validated_payload.get("p", 0.0),  # ✅ Korrekt: "p"
-                        "air_quality": validated_payload.get("iaq", 0.0),  # ✅ Korrekt: "iaq" (nicht "aq")
-                        "timestamp": sensor_payload.get("timestamp", ""),
-                        "message_count": 1,
-                    }
-                elif "/ldr" in topic:
-                    return {
-                        "light": validated_payload.get("ldr", 0.0),  # ✅ Korrekt: "ldr" (nicht "l")
-                        "timestamp": sensor_payload.get("timestamp", ""),
-                        "message_count": 1,
-                    }
-                elif "/cam" in topic:
-                    return {
-                        "image_data": validated_payload.get("data", ""),
-                        "timestamp": validated_payload.get("ts", sensor_payload.get("timestamp", "")),
-                        "message_count": 1,
-                    }
-            else:
-                logger.warning(
-                    f"⚠️ Payload validation failed for {topic}: {validation_result.get('error', 'Unknown error')}"
-                )
-                print(f"⚠️ Payload validation failed for {topic}: {validation_result.get('error', 'Unknown error')}")
-
-        except Exception as e:
-            logger.error(f"❌ Registry validation error for {topic}: {e}")
-            print(f"❌ Registry validation error for {topic}: {e}")
+        # Schema-based field extraction based on topic (Business Logic only)
+        if "/bme680" in topic:
+            return {
+                "temperature": sensor_payload.get("t", 0.0),  # ✅ Korrekt: "t"
+                "humidity": sensor_payload.get("h", 0.0),  # ✅ Korrekt: "h"
+                "pressure": sensor_payload.get("p", 0.0),  # ✅ Korrekt: "p"
+                "air_quality": sensor_payload.get("iaq", 0.0),  # ✅ Korrekt: "iaq" (nicht "aq")
+                "timestamp": sensor_payload.get("timestamp", ""),
+                "message_count": 1,
+            }
+        elif "/ldr" in topic:
+            return {
+                "light": sensor_payload.get("ldr", 0.0),  # ✅ Korrekt: "ldr" (nicht "l")
+                "timestamp": sensor_payload.get("timestamp", ""),
+                "message_count": 1,
+            }
+        elif "/cam" in topic:
+            return {
+                "image_data": sensor_payload.get("data", ""),
+                "timestamp": sensor_payload.get("ts", sensor_payload.get("timestamp", "")),
+                "message_count": 1,
+            }
 
         # Fallback for unknown sensor topics or validation errors
         return {"raw_data": sensor_payload, "timestamp": sensor_payload.get("timestamp", ""), "message_count": 1}
