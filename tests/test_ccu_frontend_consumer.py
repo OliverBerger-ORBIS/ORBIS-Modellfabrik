@@ -15,7 +15,7 @@ from pathlib import Path
 import pytest
 
 from omf2.ccu.ccu_gateway import CcuGateway
-from omf2.ccu.production_order_manager import ProductionOrderManager
+from omf2.ccu.order_manager import OrderManager
 
 
 class TestCcuFrontendConsumer:
@@ -24,7 +24,7 @@ class TestCcuFrontendConsumer:
     def setup_method(self):
         """Setup für jeden Test"""
         self.gateway = CcuGateway()
-        self.manager = ProductionOrderManager()
+        self.manager = OrderManager()
 
     def test_ccu_frontend_consumer_implementation(self):
         """Test: CCU Frontend Consumer mit echten Session-Daten"""
@@ -89,7 +89,7 @@ class TestCcuFrontendConsumer:
                 assert result == True, f"Gateway processing failed for {topic}"
                 print(f"✅ Gateway Result: {result}")
 
-                # Test: ProductionOrderManager
+                # Test: OrderManager
                 self.manager.process_ccu_order_active(topic, payload, meta)
 
                 # Zähle verarbeitete Orders und Steps
@@ -132,7 +132,7 @@ class TestCcuFrontendConsumer:
         print(f"✅ Total Orders verarbeitet: {total_orders_processed}")
         print(f"✅ Total Steps verarbeitet: {total_steps_processed}")
         print("✅ Gateway Processing: Erfolgreich")
-        print("✅ ProductionOrderManager: Erfolgreich")
+        print("✅ OrderManager: Erfolgreich")
         print("✅ Production Plans: Generiert")
 
         # UI Integration Test
@@ -177,7 +177,7 @@ class TestCcuFrontendConsumer:
         result = self.gateway.on_mqtt_message('ccu/order/active', valid_message, {'timestamp': '2025-01-01T12:00:00Z'})
         assert result == True, "Schema validation should pass for valid message"
 
-        # Test: ProductionOrderManager Processing
+        # Test: OrderManager Processing
         self.manager.process_ccu_order_active('ccu/order/active', valid_message, {'timestamp': '2025-01-01T12:00:00Z'})
 
         # Verifizierung
@@ -196,7 +196,7 @@ class TestCcuFrontendConsumer:
         result = self.gateway.on_mqtt_message('ccu/order/active', empty_message, {'timestamp': '2025-01-01T12:00:00Z'})
         assert result == True, "Empty array should be valid"
 
-        # Test: ProductionOrderManager Processing
+        # Test: OrderManager Processing
         initial_count = len(self.manager.mqtt_steps)
         self.manager.process_ccu_order_active('ccu/order/active', empty_message, {'timestamp': '2025-01-01T12:00:00Z'})
 

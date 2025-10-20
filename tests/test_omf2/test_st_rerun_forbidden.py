@@ -1,7 +1,4 @@
 import pytest
-
-# Temporär übersprungen: Streamlit DeltaGeneratorSingleton kollidiert bei parallelen Importen
-pytest.skip("temporarily skipped during test tree migration: Streamlit singleton conflicts", allow_module_level=True)
 """
 Test for forbidden st.rerun() usage in OMF2
 Prevents CURSOR from accidentally adding st.rerun() calls
@@ -199,7 +196,7 @@ class TestUIRefreshStrategy(unittest.TestCase):
 
     def test_ui_refresh_utils_exist(self):
         """Test that UI-Refresh-Utils exist"""
-        ui_refresh_file = Path(__file__).parent.parent / "ui" / "utils" / "ui_refresh.py"
+        ui_refresh_file = Path(__file__).parent.parent.parent / "omf2" / "ui" / "utils" / "ui_refresh.py"
         self.assertTrue(ui_refresh_file.exists(), "ui_refresh.py should exist")
 
     def test_request_refresh_function_exists(self):
@@ -215,7 +212,7 @@ class TestUIRefreshStrategy(unittest.TestCase):
     def test_ui_refresh_strategy_documented(self):
         """Test that UI-Refresh-Strategy is documented"""
         # Check if strategy is mentioned in documentation
-        readme_file = Path(__file__).parent.parent / "README.md"
+        readme_file = Path(__file__).parent.parent.parent / "README.md"
         if readme_file.exists():
             with open(readme_file, encoding="utf-8") as f:
                 content = f.read()

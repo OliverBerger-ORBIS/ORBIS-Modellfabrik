@@ -21,7 +21,7 @@ class TestSessionManagerLogging(unittest.TestCase):
 
     def test_init_logging_function_exists(self):
         """Test dass _init_logging_once Funktion existiert"""
-        from omf.helper_apps.session_manager.session_manager import _init_logging_once
+        from session_manager.session_manager import _init_logging_once
 
         self.assertIsNotNone(_init_logging_once)
         self.assertTrue(callable(_init_logging_once))
@@ -37,14 +37,14 @@ class TestSessionManagerLogging(unittest.TestCase):
 
     def test_session_logger_import(self):
         """Test dass Session Logger importiert werden kann"""
-        from omf.helper_apps.session_manager.utils.session_logger import SessionManagerLogger
+        from session_manager.utils.session_logger import SessionManagerLogger
 
         self.assertIsNotNone(SessionManagerLogger)
         self.assertTrue(callable(SessionManagerLogger))
 
     def test_session_logger_creation(self):
         """Test dass Session Logger erstellt werden kann"""
-        from omf.helper_apps.session_manager.utils.session_logger import SessionManagerLogger
+        from session_manager.utils.session_logger import SessionManagerLogger
 
         with tempfile.TemporaryDirectory() as temp_dir:
             logger = SessionManagerLogger("test_session", str(Path(temp_dir) / "logs"))
@@ -64,7 +64,7 @@ class TestSessionManagerLogging(unittest.TestCase):
 
     def test_empty_session_name(self):
         """Test mit leerem Session-Namen"""
-        from omf.helper_apps.session_manager.utils.session_logger import SessionManagerLogger
+        from session_manager.utils.session_logger import SessionManagerLogger
 
         with tempfile.TemporaryDirectory() as temp_dir:
             # Sollte funktionieren auch mit leerem Namen
@@ -75,7 +75,7 @@ class TestSessionManagerLogging(unittest.TestCase):
 
     def test_nonexistent_log_directory(self):
         """Test mit nicht existierendem Log-Verzeichnis"""
-        from omf.helper_apps.session_manager.utils.session_logger import SessionManagerLogger
+        from session_manager.utils.session_logger import SessionManagerLogger
 
         with tempfile.TemporaryDirectory() as temp_base:
             # Erstelle Unterverzeichnis das nicht existiert
