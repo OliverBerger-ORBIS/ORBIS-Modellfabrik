@@ -266,7 +266,7 @@ mqtt_client → gateway → business_function (*manager) → ui_komponente
   - `omf2/registry/` - Registry v2 (Topics, Schemas, MQTT Clients)
   - `omf2/config/` - Konfigurationsdateien (MQTT, Logging)
   - `omf2/docs/` - OMF2-spezifische Dokumentation
-  - `omf2/tests/` - OMF2 Test Suite
+  - `tests/test_omf2/` - OMF2 Test Suite
 - `tests/` - Orbis tests
 - `data/` - Unsere Daten (`mqtt-data/`, `omf-data/`)
 
@@ -411,12 +411,12 @@ Das OMF2 Dashboard folgt einer professionellen **Drei-Schichten-Architektur**:
 
 ```bash
 # Alle OMF2-Tests ausführen
-python -m pytest omf2/tests/ -v
+python -m pytest tests/test_omf2 -v
 
 # Spezifische Test-Suites
-python -m pytest omf2/tests/test_comprehensive_architecture.py -v
-python -m pytest omf2/tests/test_gateway_factory.py -v
-python -m pytest omf2/tests/test_registry_manager_comprehensive.py -v
+python -m pytest tests/test_omf2/test_comprehensive_architecture.py -v
+python -m pytest tests/test_omf2/test_gateway_factory.py -v
+python -m pytest tests/test_omf2/test_registry_manager_comprehensive.py -v
 ```
 
 ### OMF2 Konfiguration

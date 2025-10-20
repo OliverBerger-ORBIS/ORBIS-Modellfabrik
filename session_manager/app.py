@@ -96,7 +96,7 @@ def show_logging_settings(logger):
         st.session_state["logging_level"] = selected_level
         st.success(f"✅ Logging-Level auf **{selected_level}** geändert")
         request_refresh()
-    
+
     # Info über automatisches Log-Cleanup
     st.info("ℹ️ **Hinweis:** Alte Log-Dateien werden automatisch beim Neustart der Anwendung gelöscht.")
 

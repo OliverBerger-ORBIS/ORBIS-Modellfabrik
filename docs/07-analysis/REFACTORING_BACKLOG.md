@@ -46,7 +46,7 @@ Die Tabelle zeigt den aktuellen Status und dokumentiert noch ausstehende **Featu
 | Dynamische Tab-Generierung                 | Zentraler Tab-Renderer                  | ❌ | Tabs/Subtabs nach Rolle, i18n, Fehlerfallback |
 | Internationalisierung (DE/EN/FR)           | `common/i18n.py` + UI-Integration       | ✅ | Keine Hardcodierung, dynamische Sprachwahl |
 | Icons pro Tab                              | `ui/common/symbols.py` (UISymbols)      | ✅ | Zentrale UISymbols-Klasse, konsistent in allen Overview Subtabs |
-| HTML Templates (Bucket, Workpiece)         | `assets/html_templates.py`              | ✅ | Bucket + Workpiece Templates von omf/ migriert |
+| (Legacy) HTML Templates (Bucket, Workpiece) | (entfernt)                              | ✅ | Durch direkte SVG-Darstellung ersetzt |
 | Komponenten-Loading mit Dummy-Fallback     | Fehlerbehandlung im UI-Loader           | ❌ | Error-Handling in UI-Komponenten, Fallback-Messages |
 | UI-Refresh, Thread-sicher                  | Streamlit request_refresh + Locks       | ✅ | Threadsafe, keine Race Conditions |
 | **Features**                              |                                          | ❌ | z.B Auto-refresh bei Eingang von stock process, oderr state messages |
@@ -57,7 +57,7 @@ Die Tabelle zeigt den aktuellen Status und dokumentiert noch ausstehende **Featu
 | factory_layout           | Ui verwendet ICONs und png von omf                | ❌ | Darstellung wie in omf/ mit 3X4 grid (oder 4x3) Grid|
 | **🎯 TODO: OMF-Icons aktualisieren**       | Echte omf_* SVG-Icons erstellen        | 📋 | Testbar mit `icon_test.py` - aktuell Fallback zu ic_ft_* |
 | Operator Tabs (CCU Aufträge.)              | `ui/ccu/orders/ccu_orders_tab.py`       | ❌ | Production-Order Manager mit STORAGE-Orders und  storage-plan ?   |
-| **🌐 HTML-Templates i18n**                    | `assets/html_templates.py`               | ❌ | get_workpiece_box_template() enthält hardcoded deutsche Texte ("Bestand:", "Verfügbar:", "Ja", "Nein") |
+| (Legacy) **HTML-Templates i18n**             | (entfällt)                               | ✅ | ersetzt durch direkte SVG-Darstellung |
 
 || **🌡️ Temperatur-Skala Anzeige**              | `ui/ccu/ccu_overview/sensor_data_subtab.py` | ❌ | Thermometer mit Farbskala HINTER dem Thermometer, nur bis zur aktuellen Temperatur sichtbar |
 || **📷 Camera Controls Implementierung**        | `ui/ccu/ccu_overview/sensor_data_subtab.py` | ❌ | 3x3 Grid: HOCH, LINKS, ZENTRIEREN, RECHTS, RUNTER mit einstellbarer Schrittweite |

@@ -180,7 +180,7 @@ docs/06-integrations/APS-Ecosystem/README.md
 
 ## 🚀 Nächste Schritte (Optional)
 
-### Für Production Order Manager:
+### Für Order Manager:
 - ✅ Referenz-Dokumentation ist fertig
 - ✅ Alle Informationen konsolidiert
 - → Kann direkt verwendet werden
@@ -194,7 +194,8 @@ docs/06-integrations/APS-Ecosystem/README.md
 
 **Status:** Dokumentations-Konsolidierung abgeschlossen ✅  
 **Qualität:** Single Source of Truth etabliert 🎯  
-**Bereit für:** Production Order Manager Implementation 🚀
+**Bereit für:** Order Manager Implementation 🚀
+
 
 
 

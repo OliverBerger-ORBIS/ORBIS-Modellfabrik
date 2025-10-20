@@ -11,8 +11,6 @@ import logging
 import logging.config
 import queue
 import sys
-import time
-from collections import deque
 from logging.handlers import QueueHandler, QueueListener, RotatingFileHandler
 from pathlib import Path
 from typing import Deque
@@ -34,7 +32,7 @@ def cleanup_old_logs(log_dir: Path, pattern: str = "session_manager.jsonl*"):
     """
     if not log_dir.exists():
         return
-    
+
     deleted_count = 0
     for log_file in log_dir.glob(pattern):
         try:
@@ -43,7 +41,7 @@ def cleanup_old_logs(log_dir: Path, pattern: str = "session_manager.jsonl*"):
         except Exception as e:
             # Ignoriere Fehler beim Löschen (z.B. wenn Datei gerade genutzt wird)
             print(f"Warnung: Konnte Log-Datei {log_file} nicht löschen: {e}", file=sys.stderr)
-    
+
     if deleted_count > 0:
         print(f"🗑️  {deleted_count} alte Log-Datei(en) gelöscht", file=sys.stderr)
 
@@ -74,7 +72,7 @@ def configure_logging(
     """
     log_dir = Path(log_dir)
     log_dir.mkdir(parents=True, exist_ok=True)
-    
+
     # Alte Logs löschen wenn gewünscht
     if cleanup_on_start:
         cleanup_old_logs(log_dir, f"{json_file}*")
@@ -85,7 +83,7 @@ def configure_logging(
     file_json.setFormatter(logging.Formatter('%(message)s'))  # wir schreiben bereits JSON-Strings
 
     handlers = [("file_json", file_json)]
-    
+
     # Ring-Buffer-Handler für UI-Logs hinzufügen wenn bereitgestellt
     if ring_buffer is not None:
         from .streamlit_log_buffer import RingBufferHandler

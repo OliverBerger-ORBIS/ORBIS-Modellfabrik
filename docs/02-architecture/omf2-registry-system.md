@@ -511,8 +511,8 @@ else:
 - `omf2/ccu/sensor_manager.py` - Sensor Manager mit Registry
 
 ### **Tests:**
-- `omf2/tests/test_registry_manager_comprehensive.py` - Registry Manager Tests
-- `omf2/tests/test_schema_integration.py` - Schema Integration Tests
+- `tests/test_omf2/test_registry_manager_comprehensive.py` - Registry Manager Tests
+- `tests/test_omf2/test_schema_integration.py` - Schema Integration Tests
 
 ---
 

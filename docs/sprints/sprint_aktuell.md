@@ -46,10 +46,8 @@
 - **Bild-Anzeige:** Aufgenommene Bilder anzeigen
 - **Integration:** In CCU Overview Tab
 
-### **HTML-Templates i18n** - Workpiece-Box übersetzen
-- **Datei:** `omf2/assets/html_templates.py::get_workpiece_box_template()`
-- **Hardcoded Texte:** "Bestand:", "Verfügbar:", "Ja", "Nein"
-- **Sprachen:** DE, EN, FR
+### (Legacy) HTML-Templates i18n
+- Ersetzt durch direkte SVG-Darstellung via Asset-Manager (keine weitere Umsetzung nötig)
 - **Integration:** Mit i18n-System
 
 ### **Live-Test Session #1** - Mit echter Fabrik

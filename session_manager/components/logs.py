@@ -5,7 +5,6 @@ Zeigt Live-Logs für den Session Manager an.
 """
 
 import json
-import logging
 
 import streamlit as st
 

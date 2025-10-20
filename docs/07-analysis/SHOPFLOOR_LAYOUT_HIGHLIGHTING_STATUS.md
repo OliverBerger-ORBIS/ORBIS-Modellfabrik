@@ -42,7 +42,7 @@
 ## 🔄 In Entwicklung
 
 ### Phase 5: OMF2 Integration (Task 2.13)
-- [ ] Integration in Production Order Manager
+- [ ] Integration in Order Manager
 - [ ] Integration in Storage Order Manager  
 - [ ] Integration in CCU Configuration
 - [ ] Business-Funktionen Anbindung

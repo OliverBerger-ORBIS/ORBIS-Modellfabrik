@@ -1,6 +1,6 @@
-# 🚀 Production Order Manager - Quick Reference
+# 🚀 Order Manager - Quick Reference (vormals Production Order Manager)
 
-**Für:** Production Order Manager Implementation  
+**Für:** Order Manager Implementation  
 **Datum:** 2025-10-08  
 **Status:** Bereit für Implementierung
 
@@ -200,7 +200,8 @@ PENDING → ENQUEUED → IN_PROGRESS → COMPLETED
 
 ---
 
-**Bereit für Production Order Manager Implementation! 🚀**
+**Bereit für Order Manager Implementation! 🚀**
+
 
 
 

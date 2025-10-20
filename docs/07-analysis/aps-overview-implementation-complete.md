@@ -37,7 +37,7 @@ Der APS Overview Tab ist zu 75% implementiert. Kundenaufträge, Rohmaterial und 
 - ✅ **`aps_overview_purchase_order.py`** - Kopie mit `aps_*` Keys
 - ✅ **`aps_overview_inventory.py`** - Kopie mit `aps_*` Keys
 - ✅ **Echter OrderManager** - verwendet `st.session_state["order_manager"]`
-- ✅ **Echte HTML-Templates** - `get_workpiece_box_template()`, `get_bucket_template()`
+- ✅ (Legacy) HTML-Templates – durch direkte SVG-Darstellung ersetzt
 
 ### **Key-Konflikt-Lösung:**
 - ✅ **Eindeutige APS-Keys** - `aps_overview_*` Präfix
@@ -102,7 +102,7 @@ Der APS Overview Tab ist zu 75% implementiert. Kundenaufträge, Rohmaterial und 
 - `omf/dashboard/components/aps_overview_inventory.py` - Lagerbestand
 
 ### **Dependencies:**
-- `omf.dashboard.assets.html_templates` - HTML-Templates
+- (Legacy) `omf.dashboard.assets.html_templates` - nicht mehr verwendet
 - `omf.dashboard.utils.ui_refresh` - UI-Refresh Pattern
 - `omf.dashboard.components.overview_*` - Original-Komponenten (für OrderManager)
 

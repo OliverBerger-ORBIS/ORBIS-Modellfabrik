@@ -241,10 +241,8 @@ caption_text = i18n.t('admin.error_warning.caption').format(
 - Admin-Subtabs (aktuell auf Deutsch/Englisch)
 - CCU Configuration/Process Subtabs
 
-### **Phase 5: HTML-Templates (separate Aufgabe)**
-- `omf2/assets/html_templates.py`
-- Workpiece Box Template
-- Andere HTML-Templates
+### (Legacy) Phase 5: HTML-Templates
+- Hinweis: HTML-Templates wurden durch direkte SVG-Darstellung ersetzt. Keine Umsetzung mehr notwendig.
 
 ### **Phase 6: Translation Management (optional)**
 - Tool für Übersetzer

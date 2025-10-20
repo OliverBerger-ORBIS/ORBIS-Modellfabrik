@@ -142,7 +142,7 @@ omf2/
 │       └── ui_refresh.py           # UI Refresh Pattern
 │
 ├── assets/                         # 🎨 UI ASSETS
-│   └── html_templates.py           # HTML Templates (Bucket, Workpiece Box) ✅
+│   └── (legacy entfernt)           # HTML-Templates wurden ersetzt durch direkte SVG-Darstellung
 │
 ├── registry/                       # 📋 REGISTRY V2 (Single Source of Truth)
 │   ├── topics/                     # Topic-Definitionen
@@ -292,14 +292,14 @@ class SensorManager:
 ### **Test-Ausführung:**
 ```bash
 # Alle Tests
-python -m pytest omf2/tests/ -v
+python -m pytest tests/test_omf2 -v
 
 # Spezifische Test-Suites
-python -m pytest omf2/tests/test_comprehensive_architecture.py -v
-python -m pytest omf2/tests/test_gateway_factory.py -v
-python -m pytest omf2/tests/test_registry_manager_comprehensive.py -v
-python -m pytest omf2/tests/test_ccu_config_loader.py -v
-python -m pytest omf2/tests/test_ccu_parameter_configuration_subtab.py -v
+python -m pytest tests/test_omf2/test_comprehensive_architecture.py -v
+python -m pytest tests/test_omf2/test_gateway_factory.py -v
+python -m pytest tests/test_omf2/test_registry_manager_comprehensive.py -v
+python -m pytest tests/test_omf2/test_ccu_config_loader.py -v
+python -m pytest tests/test_omf2/test_ccu_parameter_configuration_subtab.py -v
 ```
 
 ## 🚀 Deployment
@@ -341,7 +341,7 @@ streamlit run omf2/omf.py
 ## 🧪 Test-Struktur
 
 ```
-omf2/tests/
+tests/test_omf2/
 ├── __init__.py
 ├── test_shopfloor/              # 🏭 Shopfloor Layout Tests
 │   ├── __init__.py

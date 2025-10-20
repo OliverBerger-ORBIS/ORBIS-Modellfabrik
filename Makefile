@@ -70,5 +70,5 @@ validate-development-rules:
 
 test-streamlit-startup:
 	@echo "🧪 Testing Streamlit startup for errors and warnings..."
-	$(PY) -m pytest omf2/tests/test_streamlit_startup.py -v
+	$(PY) -m pytest tests/test_omf2/test_streamlit_startup.py -v
 	@echo "✅ Streamlit startup test completed successfully"

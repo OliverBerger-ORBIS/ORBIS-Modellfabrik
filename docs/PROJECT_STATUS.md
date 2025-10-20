@@ -12,7 +12,7 @@
 - **Registry Manager** - Zentrale Konfiguration für alle Schemas und Templates ✅
 - **Gateway-Routing-Pattern** - Schema-Validierung und Topic-Routing ✅
 - **Business Manager** - ModuleManager, WorkpieceManager, SensorManager, OrderManager ✅
-- **Production Order Manager** - Vollständige Order-Lifecycle-Verwaltung ✅
+- **Order Manager** - Vollständige Order-Lifecycle-Verwaltung ✅
 - **Storage Orders Logic** - PICK/DROP → LADEN/ENTLADEN AGV Logik ✅
 - **i18n-System** - DE/EN/FR Support mit 195+ Translation Keys ✅
 - **Best Practice Logging** - Multi-Level Ringbuffer mit UI-Integration ✅
@@ -43,7 +43,7 @@
 - ✅ **Registry Manager** - Zentrale Konfiguration für alle Schemas und Templates
 - ✅ **Gateway-Routing-Pattern** - Schema-Validierung und Topic-Routing
 - ✅ **Business Manager** - ModuleManager, WorkpieceManager, SensorManager, OrderManager
-- ✅ **Production Order Manager** - Vollständige Order-Lifecycle-Verwaltung
+- ✅ **Order Manager** - Vollständige Order-Lifecycle-Verwaltung
 - ✅ **Storage Orders Logic** - PICK/DROP → LADEN/ENTLADEN AGV Logik
 - ✅ **i18n-System** - DE/EN/FR Support mit 195+ Translation Keys
 - ✅ **Best Practice Logging** - Multi-Level Ringbuffer mit UI-Integration
@@ -93,7 +93,7 @@
 - ✅ **Registry Manager** zentrale Konfiguration für alle Schemas
 - ✅ **Gateway-Routing-Pattern** Schema-Validierung und Topic-Routing
 - ✅ **Business Manager** ModuleManager, WorkpieceManager, SensorManager, OrderManager
-- ✅ **Production Order Manager** vollständige Order-Lifecycle-Verwaltung
+- ✅ **Order Manager** vollständige Order-Lifecycle-Verwaltung
 - ✅ **Storage Orders Logic** PICK/DROP → LADEN/ENTLADEN AGV Logik
 - ✅ **i18n-System** DE/EN/FR Support mit 195+ Translation Keys
 - ✅ **Best Practice Logging** Multi-Level Ringbuffer mit UI-Integration

@@ -1,4 +1,4 @@
-# 📋 Production Order Manager - Analyse-Erkenntnisse
+# 📋 Order Manager - Analyse-Erkenntnisse (vormals Production Order Manager)
 
 **Quelle:** Session-Analyse von auftrag-*.db und *.log Sessions  
 **Datum:** 2025-10-08  
@@ -101,7 +101,7 @@ Payload: { orderId, state, ... }
 }
 ```
 
-## 💡 Production Order Manager - Anforderungen
+## 💡 Order Manager - Anforderungen
 
 ### Core-Funktionen
 1. **Order-Tracking:** Alle Messages einer OrderID sammeln
@@ -170,7 +170,7 @@ python omf/analysis_tools/find_first_order_topic.py
 # Funktioniert auch mit .log Dateien (Script unterstützt beide Formate)
 ```
 
-## 🎯 Implementierungs-Prioritäten für Production Order Manager
+## 🎯 Implementierungs-Prioritäten für Order Manager
 
 ### Phase 1: Order-Erkennung
 1. ✅ **UUID-Validierung** - Filter für gültige OrderIDs
@@ -211,7 +211,7 @@ python omf/analysis_tools/find_first_order_topic.py
 
 ---
 
-**Status:** Bereit für Production Order Manager Implementation 🚀
+**Status:** Bereit für Order Manager Implementation 🚀
 
 
 ## 🔍 Order-Trigger-Sequenz (VOR der ersten OrderID)
@@ -273,7 +273,7 @@ Es gibt eine **unbekannte Komponente**, die:
 - Analyse der NodeRed-Flows
 - FTS-Logs prüfen
 
-### 💡 Production Order Manager Anforderungen:
+### 💡 Order Manager Anforderungen:
 
 1. **Order-Request-Detection:**
    - Topic: `/j1/txt/1/f/o/order` oder `ccu/order/request`
@@ -322,7 +322,7 @@ Payload: {"orderId":"598cba14-5cb5-43e7-b8cc-530d87d2cfa3",...}
 | #90 | `ccu/order/request` | `{"type":"BLUE","orderType":"PRODUCTION"}` | CCU empfängt Order-Request |
 | #95 | `fts/v1/ff/5iO4/order` | `{"orderId":"<uuid>"}` | FTS bekommt Order mit UUID |
 
-### 💡 Production Order Manager Anforderungen:
+### 💡 Order Manager Anforderungen:
 
 1. **Order-Request-Detection:**
    - Topic: `/j1/txt/1/f/o/order` oder `ccu/order/request`
@@ -412,6 +412,7 @@ CCU-Backend macht alles intern (gleicher Prozess):
 3. **Wo läuft CCU-Backend?**
    - Auf CCU Raspberry Pi?
    - Eigene Software-Komponente?
+
 
 
 

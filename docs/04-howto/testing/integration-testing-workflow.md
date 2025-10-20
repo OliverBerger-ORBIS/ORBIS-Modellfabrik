@@ -51,10 +51,10 @@ def test_ccu_order_active_routing():
 
 ```bash
 # Alle Tests ausführen und grün haben
-python -m pytest omf2/tests/ -v
+python -m pytest tests/test_omf2 -v
 
 # Spezifische Integration-Tests
-python -m pytest omf2/tests/test_ccu_gateway_routing.py -v
+python -m pytest tests/test_omf2/test_ccu_gateway_routing.py -v
 ```
 
 ### **2. ECHTE INTEGRATION-TESTS SCHREIBEN**
@@ -223,7 +223,7 @@ with patch('omf2.ccu.order_manager.get_order_manager') as mock_order_manager:
 
 ```bash
 # VOR Änderung: Baseline
-python -m pytest omf2/tests/test_ccu_gateway_routing.py -v
+python -m pytest tests/test_omf2/test_ccu_gateway_routing.py -v
 
 # Änderung durchführen
 # ...
@@ -249,7 +249,7 @@ python -m pytest omf2/tests/test_ccu_gateway_routing.py -v
 
 ## ✅ ERFOLGREICH IMPLEMENTIERT
 
-**Echte Integration-Tests in `omf2/tests/test_ccu_gateway_routing_integration.py`:**
+**Echte Integration-Tests in `tests/test_omf2/test_ccu_gateway_routing_integration.py`:**
 - ✅ **9/9 Tests bestanden** - Alle Routing-Pfade verifiziert
 - ✅ **Echte Message-Routing** - Keine Schein-Tests mehr
 - ✅ **Mocking korrekt** - Gateway-interne Methoden gemockt

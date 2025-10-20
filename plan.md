@@ -95,7 +95,7 @@
 - CCU Domain: Overview, Modules, Orders, Process, Configuration Tabs
 - Admin Domain: Settings, Message Center, System Logs, Steering
 - i18n-System (DE, EN, FR)
-- Production Order Manager
+- Order Manager (vormals Production Order Manager)
 - Shopfloor Layout System
 
 ### ✅ KRITISCHE ARCHITEKTUR-FIXES ABGESCHLOSSEN:
@@ -619,13 +619,48 @@ def on_mqtt_message(self, topic, message, meta):
 - Kamera-Controls verbessern (3×3 Grid)
 - Bild-Anzeige implementieren
 
-### Task 3.2: HTML-Templates i18n
+### Task 3.2: HTML-Templates i18n (DEPRECATED)
 
-**Abhängigkeit: Keine - parallel möglich**
+**Status:** ✅ Ersetzt durch direkte SVG-Darstellung via Asset-Manager
 
-- `omf2/assets/html_templates.py::get_workpiece_box_template()`
-- Hardcoded Texte entfernen ("Bestand:", "Verfügbar:", "Ja", "Nein")
-- Alle drei Sprachen (DE, EN, FR)
+- `omf2/assets/html_templates.py` wird nicht mehr aus der UI verwendet
+- Ehemalige Funktionen `get_workpiece_box_html`, `get_status_badge_html` im Asset-Manager wurden entfernt
+- UI-Komponenten rendern SVGs direkt mit `st.markdown(..., unsafe_allow_html=True)`
+- Größensteuerung liegt in den UI-Komponenten (AS-IS vs. feste Größe)
+
+**Folgen für Doku & Code:**
+- Referenzen auf HTML-Templates in Doku-Dateien als "legacy" kennzeichnen oder entfernen:
+  - `docs/02-architecture/omf2-architecture.md` Beispiel mit `get_bucket_template()`
+  - `docs/02-architecture/project-structure.md` Abschnitt zu `assets/html_templates.py`
+  - `docs/07-analysis/REFACTORING_BACKLOG.md` Einträge zu HTML-Templates-i18n
+  - `docs/03-decision-records/i18n-implementation-complete.md` Phase 5
+  - `docs/sprints/sprint_aktuell.md` HTML-Templates i18n
+
+**Neue SOLL-Architektur (umgesetzt):**
+- Asset-Manager: nur `get_*` Loader, CSS-Scoping, keine UI-Generierung
+- Purchase Order: Palett-SVGs feste Größe 100×100
+- Inventory: zwei Varianten
+  - AS-IS (skaliert mit Fenster) – Standard
+  - feste Größe 160×160 – in Expander
+
+### Task 3.x: UI-Tests (Streamlit) robust machen
+
+**Status:** 🟡 Offen
+
+**Hintergrund:** Nach der Konsolidierung des Testbaums auf `tests/test_omf2` kollidieren einige UI-Import-Tests mit `streamlit` (DeltaGeneratorSingleton). Diese wurden temporär mit `pytest.skip` auf Modulebene deaktiviert.
+
+**Umsetzung (geplant):**
+- Zentrale PyTest-Fixture in `tests/test_omf2/conftest.py`, die `streamlit` per Stub/Mock bereitstellt (nur für Import-/Konfig-Tests)
+- Alternativ mark `@pytest.mark.ui` und separater Testrun mit seriellem Import
+- Reaktivierung der Tests:
+  - `test_streamlit_startup.py`
+  - `test_streamlit_dashboard.py`
+  - `test_st_rerun_forbidden.py`
+  - `test_ui_schema_integration.py`
+  - `test_message_center_tab.py`
+  - `test_message_monitor_subtab.py`
+
+**Erfolgskriterium:** Alle UI-Tests laufen ohne Singleton-Konflikte und ohne echte Streamlit-App (reine Import-/Konfig-Prüfungen).
 
 ### Task 3.3: Production Order Manager Polish
 

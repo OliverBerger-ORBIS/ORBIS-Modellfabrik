@@ -34,7 +34,6 @@ from omf2.factory.gateway_factory import get_gateway_factory
 from omf2.ui.main_dashboard import MainDashboard
 from omf2.ui.utils.ui_refresh import consume_refresh
 
-
 # Hinweis: Log-Cleanup erfolgt nur außerhalb von Streamlit (z. B. vor dem Start per Script)
 
 log_dir = setup_file_logging()
