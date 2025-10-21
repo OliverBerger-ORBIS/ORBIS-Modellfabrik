@@ -19,6 +19,11 @@ def show_module_details_section(ccu_gateway, i18n):
     try:
         st.markdown("### 🔧 Module Details")
 
+        # Check if we have a preselected module from navigation (double-click)
+        preselected_module_id = st.session_state.get("preselected_module_id")
+        if preselected_module_id:
+            logger.info(f"🚀 Preselected module detected: {preselected_module_id}")
+
         # CACHING: Alle Manager und Daten nur einmal laden
         # Cache invalidieren wenn nötig (z.B. bei Refresh)
         if "module_details_cache" not in st.session_state or st.button(
@@ -64,9 +69,28 @@ def show_module_details_section(ccu_gateway, i18n):
             st.info("📋 No modules available")
             return
 
+        # Find the index of preselected module if it exists
+        default_index = 0
+        if preselected_module_id:
+            for i, (display_name, module_id) in enumerate(module_options.items()):
+                if module_id == preselected_module_id:
+                    default_index = i
+                    logger.info(f"✅ Found preselected module at index {i}: {display_name}")
+                    break
+
         selected_module_display = st.selectbox(
-            "Select Module for Details:", options=list(module_options.keys()), key="module_details_selector"
+            "Select Module for Details:", 
+            options=list(module_options.keys()), 
+            index=default_index,
+            key="module_details_selector"
         )
+
+        # Clear preselected module after it's been used
+        if preselected_module_id:
+            st.session_state.pop("preselected_module_id", None)
+            st.session_state.pop("preselected_module_type", None)
+            st.session_state.pop("show_module_details", None)
+            logger.info("✅ Cleared preselected module from session state")
 
         if selected_module_display:
             selected_module_id = module_options[selected_module_display]
