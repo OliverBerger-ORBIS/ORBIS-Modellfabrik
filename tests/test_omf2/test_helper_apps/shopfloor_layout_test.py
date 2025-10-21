@@ -3,7 +3,7 @@ Test-App für Shopfloor Layout
 ============================
 
 Testet die Shopfloor Layout Lösung mit:
-- Robuster SVG-Struktur
+- Streamlit-native Komponenten (st.columns)
 - OMF2 Asset Manager Integration
 - Echten SVG-Icons
 - Clickable Module mit Navigation
@@ -182,7 +182,7 @@ def main():
 
         **Navigation:**
         - Module leiten zu entsprechenden Detail-Seiten weiter
-        - Event-Handling über streamlit-bokeh-events
+        - Event-Handling über Streamlit-native Buttons
         """
         )
 
