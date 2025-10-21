@@ -56,6 +56,11 @@ def show_shopfloor_layout(
     """
     st.subheader(f"🏭 {title}")
 
+    # Show navigation hint if there's a preselected module (from double-click)
+    if st.session_state.get("preselected_module_id"):
+        module_id = st.session_state.get("preselected_module_id")
+        st.success(f"✅ Module **{module_id}** preselected! Navigate to **CCU Modules** tab to see details.")
+
     # Asset Manager initialisieren
     asset_manager = get_asset_manager()
 
@@ -947,49 +952,28 @@ def _handle_grid_event(event_data: Dict[str, Any]):
     module_id = event_data.get("id")
     module_type = event_data.get("moduleType")
 
+    logger.info(f"🔧 Grid event received: type={event_type}, module={module_id}, type={module_type}")
+
     if event_type == "module-click":
         # Module auswählen
         st.session_state.selected_module = module_id
         st.session_state.selected_module_type = module_type
-        st.success(f"Module {module_id} ({module_type}) selected")
+        logger.info(f"✅ Module {module_id} selected")
 
     elif event_type == "module-dblclick":
-        # Detail-Seite öffnen
-        st.session_state.show_module_detail = True
-        st.session_state.detail_module_id = module_id
-        st.session_state.detail_module_type = module_type
-        st.info(f"Opening detail view for {module_id} ({module_type})")
-
-        # Navigation zu Detail-Seite
-        _navigate_to_module_detail(module_id, module_type)
-
-
-def _navigate_to_module_detail(module_id: str, module_type: str):
-    """Navigiert zu einer Modul-Detail-Seite"""
-
-    # Navigation basierend auf Modul-Typ
-    navigation_map = {
-        "MILL": "ccu_production_monitoring",
-        "DRILL": "ccu_production_monitoring",
-        "AIQS": "ccu_quality_control",
-        "HBW": "ccu_storage_management",
-        "DPS": "ccu_input_output",
-        "CHRG": "ccu_charging_station",
-        "ORBIS-Logo": "ccu_system_overview",
-        "shelves": "ccu_storage_details",
-        "conveyor_belt": "ccu_transport_system",
-        "warehouse": "ccu_warehouse_management",
-        "delivery_truck_speed": "ccu_delivery_tracking",
-    }
-
-    target_page = navigation_map.get(module_type, "ccu_module_details")
-
-    # Navigation setzen
-    st.session_state.current_page = target_page
-    st.session_state.navigation_source = "shopfloor_grid"
-
-    logger.info(f"Navigating to {target_page} for module {module_id} ({module_type})")
-
+        # Detail-Seite öffnen - Session State für Navigation setzen
+        logger.info(f"🚀 Double-click detected on {module_id} - preparing navigation")
+        
+        # Session State für Navigation zu CCU Modules setzen
+        st.session_state.navigate_to_ccu_modules = True
+        st.session_state.preselected_module_id = module_id
+        st.session_state.preselected_module_type = module_type
+        st.session_state.show_module_details = True
+        
+        logger.info(f"✅ Navigation prepared: module={module_id}, type={module_type}")
+        
+        # Trigger rerun to navigate
+        st.rerun()
 
 # Export für OMF2-Integration
 __all__ = ["show_shopfloor_layout"]
