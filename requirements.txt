@@ -28,7 +28,6 @@ paho-mqtt>=1.6.1
 
 # Dashboard and configuration
 streamlit>=1.28.0
-streamlit-bokeh-events>=0.1.2
 pyyaml>=6.0.1
 
 # Optional: Machine learning (uncomment if needed)
