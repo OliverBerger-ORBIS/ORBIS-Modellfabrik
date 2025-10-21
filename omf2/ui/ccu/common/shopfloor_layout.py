@@ -56,10 +56,7 @@ def show_shopfloor_layout(
     """
     st.subheader(f"🏭 {title}")
 
-    # Show navigation hint if there's a preselected module (from double-click)
-    if st.session_state.get("preselected_module_id"):
-        module_id = st.session_state.get("preselected_module_id")
-        st.success(f"✅ Module **{module_id}** preselected! Navigate to **CCU Modules** tab to see details.")
+    # Note: Navigation hint removed - module details now shown in same tab
 
     # Asset Manager initialisieren
     asset_manager = get_asset_manager()
@@ -958,18 +955,17 @@ def _handle_grid_event(event_data: Dict[str, Any]):
         logger.info(f"✅ Module {module_id} selected")
 
     elif event_type == "module-dblclick":
-        # Detail-Seite öffnen - Session State für Navigation setzen
-        logger.info(f"🚀 Double-click detected on {module_id} - preparing navigation")
+        # Show module details in same tab (CCU Configuration)
+        logger.info(f"🚀 Double-click detected on {module_id} - showing module details")
 
-        # Session State für Navigation zu CCU Modules setzen
-        st.session_state.navigate_to_ccu_modules = True
-        st.session_state.preselected_module_id = module_id
-        st.session_state.preselected_module_type = module_type
+        # Session State für Module-Details im gleichen Tab
+        st.session_state.selected_module_id = module_id
+        st.session_state.selected_module_type = module_type
         st.session_state.show_module_details = True
 
-        logger.info(f"✅ Navigation prepared: module={module_id}, type={module_type}")
+        logger.info(f"✅ Module details prepared: module={module_id}, type={module_type}")
 
-        # Trigger rerun to navigate
+        # Trigger rerun to show module details
         st.rerun()
 
 
