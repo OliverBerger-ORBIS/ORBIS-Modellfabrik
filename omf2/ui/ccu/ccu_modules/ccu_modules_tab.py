@@ -25,11 +25,6 @@ def render_ccu_modules_tab(ccu_gateway=None, registry_manager=None):
             logger.error("❌ I18n Manager not found in session state")
             return
 
-        # Check if we have a preselected module from double-click navigation
-        if st.session_state.get("preselected_module_id"):
-            module_id = st.session_state.get("preselected_module_id")
-            st.info(f"🎯 **Module {module_id}** selected from shopfloor layout. Scroll down to Module Details section.")
-
         # Use UISymbols for consistent icon usage
         st.header(f"{UISymbols.get_tab_icon('ccu_modules')} {i18n.translate('tabs.ccu_modules')}")
         st.markdown(i18n.t("ccu_modules.subtitle"))
