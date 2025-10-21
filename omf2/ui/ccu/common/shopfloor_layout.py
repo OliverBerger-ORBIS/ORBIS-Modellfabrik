@@ -5,7 +5,7 @@ Shopfloor Layout - OMF2 Integration with Streamlit-native Components
 Streamlit-native implementation replacing the previous Bokeh/iframe-based approach.
 
 Features:
-- 3x4 Grid with special cells (0,0) and (0,3) 
+- 3x4 Grid with special cells (0,0) and (0,3)
 - OMF2 Asset Manager for SVG icons (ORBIS-Logo, shelves, conveyor_belt, etc.)
 - View-mode highlighting for production/storage orders
 - Interactive mode with Details buttons for module selection
@@ -79,54 +79,61 @@ def show_shopfloor_layout(
                     # Normale Zelle
                     cell_data = _find_cell_data(row, col, modules, empty_positions, intersections)
                     _render_normal_cell(
-                        row, col, cell_data, asset_manager, active_module_id, 
-                        active_intersections, mode, show_controls, unique_key
+                        row,
+                        col,
+                        cell_data,
+                        asset_manager,
+                        active_module_id,
+                        active_intersections,
+                        mode,
+                        show_controls,
+                        unique_key,
                     )
 
 
 def _render_split_cell(
-    row: int, 
-    col: int, 
-    asset_manager, 
+    row: int,
+    col: int,
+    asset_manager,
     active_module_id: Optional[str],
     mode: str,
     show_controls: bool,
-    unique_key: Optional[str]
+    unique_key: Optional[str],
 ) -> None:
     """Renders split cells (0,0) and (0,3) using Streamlit components"""
     position_id = "EMPTY1" if (row == 0 and col == 0) else "EMPTY2"
-    
+
     # Load SVG icons
     rectangle_icon = _get_module_icon_svg(asset_manager, f"{position_id}_rectangle", 120, 60, None)
     square1_icon = _get_module_icon_svg(asset_manager, f"{position_id}_square1", 60, 60, None)
     square2_icon = _get_module_icon_svg(asset_manager, f"{position_id}_square2", 60, 60, None)
-    
+
     # Display rectangle (ORBIS logo area)
     st.markdown(
         f'<div style="border: 1px solid #87CEEB; background-color: rgba(135, 206, 250, 0.3); '
         f'padding: 5px; text-align: center; height: 80px;">'
-        f'{rectangle_icon}'
-        f'</div>',
-        unsafe_allow_html=True
+        f"{rectangle_icon}"
+        f"</div>",
+        unsafe_allow_html=True,
     )
-    
+
     # Display two squares below
     subcols = st.columns(2)
     with subcols[0]:
         st.markdown(
             f'<div style="border: 1px solid #e0e0e0; background-color: #FFFFFF; '
             f'padding: 5px; text-align: center; height: 80px;">'
-            f'{square1_icon}'
-            f'</div>',
-            unsafe_allow_html=True
+            f"{square1_icon}"
+            f"</div>",
+            unsafe_allow_html=True,
         )
     with subcols[1]:
         st.markdown(
             f'<div style="border: 1px solid #e0e0e0; background-color: #FFFFFF; '
             f'padding: 5px; text-align: center; height: 80px;">'
-            f'{square2_icon}'
-            f'</div>',
-            unsafe_allow_html=True
+            f"{square2_icon}"
+            f"</div>",
+            unsafe_allow_html=True,
         )
 
 
@@ -139,31 +146,31 @@ def _render_normal_cell(
     active_intersections: Optional[list],
     mode: str,
     show_controls: bool,
-    unique_key: Optional[str]
+    unique_key: Optional[str],
 ) -> None:
     """Renders a normal cell using Streamlit components"""
-    
+
     if not cell_data:
         # Empty cell
         st.markdown(
-            f'<div style="border: 1px solid #e0e0e0; background-color: #FFFFFF; '
-            f'padding: 10px; text-align: center; height: 160px;">'
-            f'<p style="color: #999; margin-top: 60px;">Empty</p>'
-            f'</div>',
-            unsafe_allow_html=True
+            '<div style="border: 1px solid #e0e0e0; background-color: #FFFFFF; '
+            'padding: 10px; text-align: center; height: 160px;">'
+            '<p style="color: #999; margin-top: 60px;">Empty</p>'
+            "</div>",
+            unsafe_allow_html=True,
         )
         return
-    
+
     cell_type = cell_data.get("type", "unknown")
     cell_id = cell_data.get("id", f"{row}-{col}")
-    
+
     # Load icon
     icon_svg = _get_module_icon_svg(asset_manager, cell_type, 86, 86, cell_data)
-    
+
     # Determine highlighting
     is_active = active_module_id and cell_data.get("id") == active_module_id
     is_selected = st.session_state.get("selected_module_id") == cell_id
-    
+
     # Determine border and background based on state
     if is_selected and mode != "view_mode":
         border_color = "#FF9800"
@@ -177,17 +184,17 @@ def _render_normal_cell(
         border_color = "#e0e0e0"
         border_width = "1px"
         bg_color = "#FFFFFF"
-    
+
     # Display cell
     st.markdown(
         f'<div style="border: {border_width} solid {border_color}; background-color: {bg_color}; '
         f'padding: 10px; text-align: center; height: 160px;">'
         f'<div style="margin: 20px 0;">{icon_svg}</div>'
         f'<p style="font-weight: bold; font-size: 12px; margin: 5px 0;">{cell_id}</p>'
-        f'</div>',
-        unsafe_allow_html=True
+        f"</div>",
+        unsafe_allow_html=True,
     )
-    
+
     # Add Details button for interactive modes
     if mode != "view_mode" and show_controls:
         button_key = f"details_{unique_key or 'default'}_{row}_{col}"
