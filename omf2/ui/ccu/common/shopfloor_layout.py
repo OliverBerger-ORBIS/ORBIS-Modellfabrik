@@ -1,20 +1,23 @@
 """
-Shopfloor Layout - OMF2 Integration with Streamlit-native Components
-=====================================================================
+Shopfloor Layout - Stable View-Only Implementation
+===================================================
 
-Streamlit-native implementation replacing the previous Bokeh/iframe-based approach.
+Minimal, robust implementation with fixed aspect ratio and gapless grid.
 
 Features:
-- 3x4 Grid with special cells (0,0) and (0,3)
-- OMF2 Asset Manager for SVG icons (ORBIS-Logo, shelves, conveyor_belt, etc.)
-- View-mode highlighting for production/storage orders
-- Interactive mode with Details buttons for module selection
-- No Bokeh, no iframe, no complex event forwarding - just pure Streamlit
+- Fixed 4:3 aspect ratio (configurable, default 800x600)
+- Gapless 4x3 grid (CSS Grid with gap: 0)
+- Single HTML block rendering (no Streamlit columns creating gaps)
+- View-only highlighting for active modules and intersections
+- Graceful fallback if config or assets are unavailable
+- No Bokeh, no iframe, no CustomJS dependencies
+- API compatible with existing callers (production/storage subtabs)
 
-Modes:
-- view_mode: Display-only with highlighting (used in production/storage orders)
-- ccu_configuration: Interactive with Details buttons for module configuration
-- interactive: Standard interactivity
+Implementation:
+- Uses st.components.v1.html() for rendering
+- Falls back to st.markdown() if components unavailable
+- Inline CSS for complete control over layout
+- Reuses existing helper functions for config/asset loading
 """
 
 import re
@@ -35,60 +38,335 @@ def show_shopfloor_layout(
     active_module_id: Optional[str] = None,
     active_intersections: Optional[list] = None,
     title: str = "Shopfloor Layout",
-    show_controls: bool = True,
+    show_controls: bool = False,
     unique_key: Optional[str] = None,
-    mode: str = "interactive",  # "view_mode", "ccu_configuration", "interactive"
+    mode: str = "view_mode",
+    max_width: int = 800,
+    max_height: int = 600,
+    layout_config: Optional[dict] = None,
+    asset_manager: Optional[object] = None,
 ) -> None:
     """
-    Zeigt das interaktive Shopfloor Layout mit OMF2-Integration (Streamlit-native)
+    Display stable, view-only shopfloor layout with fixed aspect ratio and gapless grid.
 
     Args:
-        active_module_id: ID des aktiven Moduls (für Hervorhebung)
-        active_intersections: Liste aktiver Intersections
-        title: Titel der Komponente
-        show_controls: Ob Steuerungselemente angezeigt werden sollen
-        unique_key: Eindeutiger Key für Streamlit-Komponenten (verhindert Key-Konflikte)
-        mode: Verwendungsmodus
-            - "view_mode": Nur aktive Module anzeigen, keine Klicks
-            - "ccu_configuration": Single/Double Click für Auswahl/Navigation
-            - "interactive": Standard-Interaktivität
+        active_module_id: ID of active module (for highlighting)
+        active_intersections: List of active intersection IDs
+        title: Component title
+        show_controls: Show control elements (default: False for stable view-only mode)
+        unique_key: Unique key for Streamlit components
+        mode: Usage mode (kept for API compatibility, defaults to "view_mode")
+        max_width: Container width in pixels (default: 800)
+        max_height: Container height in pixels (default: 600)
+        layout_config: Optional layout configuration dict (loads from config if None)
+        asset_manager: Optional asset manager instance (loads if None)
     """
     st.subheader(f"🏭 {title}")
 
-    # Asset Manager initialisieren
-    asset_manager = get_asset_manager()
+    # Load layout configuration if not provided
+    if layout_config is None:
+        try:
+            config_loader = get_ccu_config_loader()
+            layout_config = config_loader.load_shopfloor_layout()
+        except Exception as e:
+            logger.error(f"Failed to load shopfloor layout config: {e}")
+            layout_config = None
 
-    # Layout-Konfiguration laden
-    config_loader = get_ccu_config_loader()
-    layout_config = config_loader.load_shopfloor_layout()
+    # Check if config is valid
+    if not layout_config or not isinstance(layout_config, dict):
+        st.error("❌ Shopfloor layout configuration not available. Please check configuration files.")
+        # Render empty grid as fallback
+        layout_config = {"modules": [], "empty_positions": [], "intersections": []}
 
-    # Module aus Konfiguration laden
+    # Load asset manager if not provided
+    if asset_manager is None:
+        try:
+            asset_manager = get_asset_manager()
+        except Exception as e:
+            logger.warning(f"Failed to load asset manager: {e}")
+            asset_manager = None
+
+    # Extract data from config
     modules = layout_config.get("modules", [])
     empty_positions = layout_config.get("empty_positions", [])
     intersections = layout_config.get("intersections", [])
 
-    # 3x4 Grid mit st.columns
+    # Generate HTML grid
+    html_content = _generate_html_grid(
+        modules=modules,
+        empty_positions=empty_positions,
+        intersections=intersections,
+        asset_manager=asset_manager,
+        active_module_id=active_module_id,
+        active_intersections=active_intersections,
+        max_width=max_width,
+        max_height=max_height,
+    )
+
+    # Render using st.components or fallback to markdown
+    try:
+        st.components.v1.html(html_content, height=max_height, scrolling=False)
+    except Exception as e:
+        logger.warning(f"st.components.v1.html failed, falling back to markdown: {e}")
+        st.markdown(html_content, unsafe_allow_html=True)
+
+
+def _generate_html_grid(
+    modules: list,
+    empty_positions: list,
+    intersections: list,
+    asset_manager,
+    active_module_id: Optional[str],
+    active_intersections: Optional[list],
+    max_width: int,
+    max_height: int,
+) -> str:
+    """
+    Generate complete HTML grid with inline CSS for gapless layout.
+    
+    Returns a single HTML string containing the entire 4x3 grid.
+    """
+    # Calculate cell dimensions
+    cell_width = max_width // 4
+    cell_height = max_height // 3
+    
+    # CSS styles
+    css = f"""
+    <style>
+        .shopfloor-container {{
+            width: {max_width}px;
+            height: {max_height}px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 0;
+            border: 1px solid #ddd;
+            background: white;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }}
+        .cell {{
+            border: 1px solid #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 8px;
+            box-sizing: border-box;
+            background: white;
+        }}
+        .cell-active {{
+            border: 4px solid #FF9800 !important;
+            background: white;
+        }}
+        .cell-intersection-active {{
+            border: 3px dashed #FF9800 !important;
+        }}
+        .cell-empty {{
+            background: rgba(135, 206, 235, 0.1);
+        }}
+        .cell-split {{
+            display: grid;
+            grid-template-rows: 1fr 1fr;
+            grid-template-columns: 1fr 1fr;
+            gap: 2px;
+            padding: 2px;
+        }}
+        .split-top {{
+            grid-column: 1 / 3;
+            background: rgba(135, 206, 235, 0.3);
+            border: 1px solid #87CEEB;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }}
+        .split-bottom {{
+            background: white;
+            border: 1px solid #e0e0e0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }}
+        .cell-label {{
+            font-size: 11px;
+            font-weight: bold;
+            margin-top: 4px;
+            text-align: center;
+        }}
+        .icon-container {{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+        }}
+    </style>
+    """
+    
+    # Generate grid cells
+    cells_html = []
     for row in range(3):
-        cols = st.columns(4)
         for col in range(4):
-            with cols[col]:
-                # Spezielle Behandlung für Positionen (0,0) und (0,3)
-                if (row == 0 and col == 0) or (row == 0 and col == 3):
-                    _render_split_cell(row, col, asset_manager, active_module_id, mode, show_controls, unique_key)
-                else:
-                    # Normale Zelle
-                    cell_data = _find_cell_data(row, col, modules, empty_positions, intersections)
-                    _render_normal_cell(
-                        row,
-                        col,
-                        cell_data,
-                        asset_manager,
-                        active_module_id,
-                        active_intersections,
-                        mode,
-                        show_controls,
-                        unique_key,
-                    )
+            cell_html = _generate_cell_html(
+                row, col, modules, empty_positions, intersections,
+                asset_manager, active_module_id, active_intersections,
+                cell_width, cell_height
+            )
+            cells_html.append(cell_html)
+    
+    # Combine into complete HTML
+    html = f"""
+    {css}
+    <div class="shopfloor-container">
+        {''.join(cells_html)}
+    </div>
+    """
+    
+    return html
+
+
+def _generate_cell_html(
+    row: int,
+    col: int,
+    modules: list,
+    empty_positions: list,
+    intersections: list,
+    asset_manager,
+    active_module_id: Optional[str],
+    active_intersections: Optional[list],
+    cell_width: int,
+    cell_height: int,
+) -> str:
+    """Generate HTML for a single grid cell."""
+    
+    # Handle special split cells at (0,0) and (0,3)
+    if (row == 0 and col == 0) or (row == 0 and col == 3):
+        return _generate_split_cell_html(row, col, empty_positions, asset_manager, cell_width, cell_height)
+    
+    # Find cell data
+    cell_data = _find_cell_data(row, col, modules, empty_positions, intersections)
+    
+    # Determine cell classes and styling
+    cell_classes = ["cell"]
+    if not cell_data:
+        cell_classes.append("cell-empty")
+    
+    # Check if this module is active
+    is_active = False
+    if cell_data and active_module_id:
+        cell_id = cell_data.get("id", "")
+        if cell_id == active_module_id:
+            cell_classes.append("cell-active")
+            is_active = True
+    
+    # Check if this is an active intersection
+    if cell_data and cell_data.get("type") == "intersection" and active_intersections:
+        intersection_id = cell_data.get("id", "")
+        if intersection_id in active_intersections:
+            cell_classes.append("cell-intersection-active")
+    
+    # Generate icon
+    icon_svg = ""
+    cell_label = ""
+    if cell_data:
+        cell_type = cell_data.get("type", "unknown")
+        cell_id = cell_data.get("id", "")
+        cell_label = cell_id
+        
+        # Get icon SVG (90% of cell width/height for padding)
+        icon_width = int(cell_width * 0.7)
+        icon_height = int(cell_height * 0.7)
+        icon_svg = _get_module_icon_svg(asset_manager, cell_type, icon_width, icon_height, cell_data)
+    else:
+        cell_label = ""
+    
+    # Build cell HTML
+    cell_html = f"""
+    <div class="{' '.join(cell_classes)}">
+        <div class="icon-container">
+            {icon_svg}
+        </div>
+        {f'<div class="cell-label">{cell_label}</div>' if cell_label else ''}
+    </div>
+    """
+    
+    return cell_html
+
+
+def _generate_split_cell_html(
+    row: int,
+    col: int,
+    empty_positions: list,
+    asset_manager,
+    cell_width: int,
+    cell_height: int,
+) -> str:
+    """Generate HTML for split cells (0,0) and (0,3)."""
+    
+    position_id = "EMPTY1" if (row == 0 and col == 0) else "EMPTY2"
+    
+    # Find empty position config
+    empty_config = None
+    for empty in empty_positions:
+        if empty.get("id") == position_id:
+            empty_config = empty
+            break
+    
+    # Default icons if config not found
+    rectangle_type = "ORBIS"
+    square1_type = "shelves"
+    square2_type = "conveyor_belt"
+    
+    if empty_config:
+        rectangle_type = empty_config.get("rectangle", rectangle_type)
+        square1_type = empty_config.get("square1", square1_type)
+        square2_type = empty_config.get("square2", square2_type)
+    
+    # Generate icons (smaller for split cells)
+    rect_width = int(cell_width * 0.8)
+    rect_height = int(cell_height * 0.4)
+    square_width = int(cell_width * 0.4)
+    square_height = int(cell_height * 0.4)
+    
+    rectangle_svg = _get_split_cell_icon(asset_manager, rectangle_type, rect_width, rect_height)
+    square1_svg = _get_split_cell_icon(asset_manager, square1_type, square_width, square_height)
+    square2_svg = _get_split_cell_icon(asset_manager, square2_type, square_width, square_height)
+    
+    cell_html = f"""
+    <div class="cell cell-split">
+        <div class="split-top">
+            {rectangle_svg}
+        </div>
+        <div class="split-bottom">
+            {square1_svg}
+        </div>
+        <div class="split-bottom">
+            {square2_svg}
+        </div>
+    </div>
+    """
+    
+    return cell_html
+
+
+def _get_split_cell_icon(asset_manager, icon_type: str, width: int, height: int) -> str:
+    """Get icon for split cell components."""
+    try:
+        if asset_manager:
+            # Try to get icon from asset manager
+            if icon_type == "ORBIS":
+                icon_path = asset_manager.get_empty_position_asset_by_name("ORBIS")
+            else:
+                icon_path = asset_manager.get_empty_position_asset_by_name(icon_type)
+            
+            if icon_path and Path(icon_path).exists():
+                with open(icon_path, encoding="utf-8") as f:
+                    svg_content = f.read()
+                    svg_content = _scale_svg_properly(svg_content, width, height)
+                    return svg_content
+    except Exception as e:
+        logger.debug(f"Could not load split cell icon {icon_type}: {e}")
+    
+    # Fallback text representation
+    return f'<text x="{width//2}" y="{height//2}" text-anchor="middle" font-size="10" fill="#666">{icon_type}</text>'
 
 
 def _render_split_cell(
@@ -100,41 +378,13 @@ def _render_split_cell(
     show_controls: bool,
     unique_key: Optional[str],
 ) -> None:
-    """Renders split cells (0,0) and (0,3) using Streamlit components"""
-    position_id = "EMPTY1" if (row == 0 and col == 0) else "EMPTY2"
-
-    # Load SVG icons
-    rectangle_icon = _get_module_icon_svg(asset_manager, f"{position_id}_rectangle", 120, 60, None)
-    square1_icon = _get_module_icon_svg(asset_manager, f"{position_id}_square1", 60, 60, None)
-    square2_icon = _get_module_icon_svg(asset_manager, f"{position_id}_square2", 60, 60, None)
-
-    # Display rectangle (ORBIS logo area)
-    st.markdown(
-        f'<div style="border: 1px solid #87CEEB; background-color: rgba(135, 206, 250, 0.3); '
-        f'padding: 5px; text-align: center; height: 80px;">'
-        f"{rectangle_icon}"
-        f"</div>",
-        unsafe_allow_html=True,
-    )
-
-    # Display two squares below
-    subcols = st.columns(2)
-    with subcols[0]:
-        st.markdown(
-            f'<div style="border: 1px solid #e0e0e0; background-color: #FFFFFF; '
-            f'padding: 5px; text-align: center; height: 80px;">'
-            f"{square1_icon}"
-            f"</div>",
-            unsafe_allow_html=True,
-        )
-    with subcols[1]:
-        st.markdown(
-            f'<div style="border: 1px solid #e0e0e0; background-color: #FFFFFF; '
-            f'padding: 5px; text-align: center; height: 80px;">'
-            f"{square2_icon}"
-            f"</div>",
-            unsafe_allow_html=True,
-        )
+    """
+    DEPRECATED: This function is no longer used.
+    Split cells are now rendered as part of the HTML grid.
+    Kept for backward compatibility only.
+    """
+    logger.warning("_render_split_cell is deprecated and should not be called")
+    pass
 
 
 def _render_normal_cell(
@@ -148,61 +398,13 @@ def _render_normal_cell(
     show_controls: bool,
     unique_key: Optional[str],
 ) -> None:
-    """Renders a normal cell using Streamlit components"""
-
-    if not cell_data:
-        # Empty cell
-        st.markdown(
-            '<div style="border: 1px solid #e0e0e0; background-color: #FFFFFF; '
-            'padding: 10px; text-align: center; height: 160px;">'
-            '<p style="color: #999; margin-top: 60px;">Empty</p>'
-            "</div>",
-            unsafe_allow_html=True,
-        )
-        return
-
-    cell_type = cell_data.get("type", "unknown")
-    cell_id = cell_data.get("id", f"{row}-{col}")
-
-    # Load icon
-    icon_svg = _get_module_icon_svg(asset_manager, cell_type, 86, 86, cell_data)
-
-    # Determine highlighting
-    is_active = active_module_id and cell_data.get("id") == active_module_id
-    is_selected = st.session_state.get("selected_module_id") == cell_id
-
-    # Determine border and background based on state
-    if is_selected and mode != "view_mode":
-        border_color = "#FF9800"
-        border_width = "3px"
-        bg_color = "rgba(255, 152, 0, 0.1)"
-    elif is_active:
-        border_color = "#FF9800"
-        border_width = "4px"
-        bg_color = "#FFFFFF"
-    else:
-        border_color = "#e0e0e0"
-        border_width = "1px"
-        bg_color = "#FFFFFF"
-
-    # Display cell
-    st.markdown(
-        f'<div style="border: {border_width} solid {border_color}; background-color: {bg_color}; '
-        f'padding: 10px; text-align: center; height: 160px;">'
-        f'<div style="margin: 20px 0;">{icon_svg}</div>'
-        f'<p style="font-weight: bold; font-size: 12px; margin: 5px 0;">{cell_id}</p>'
-        f"</div>",
-        unsafe_allow_html=True,
-    )
-
-    # Add Details button for interactive modes
-    if mode != "view_mode" and show_controls:
-        button_key = f"details_{unique_key or 'default'}_{row}_{col}"
-        if st.button("📋 Details", key=button_key, use_container_width=True):
-            st.session_state.selected_module_id = cell_id
-            st.session_state.selected_module_type = cell_type
-            st.session_state.show_module_details = True
-            st.rerun()
+    """
+    DEPRECATED: This function is no longer used.
+    Normal cells are now rendered as part of the HTML grid.
+    Kept for backward compatibility only.
+    """
+    logger.warning("_render_normal_cell is deprecated and should not be called")
+    pass
 
 
 def _generate_omf2_svg_grid_with_roads(
