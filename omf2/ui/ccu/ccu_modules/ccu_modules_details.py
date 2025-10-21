@@ -79,10 +79,10 @@ def show_module_details_section(ccu_gateway, i18n):
                     break
 
         selected_module_display = st.selectbox(
-            "Select Module for Details:", 
-            options=list(module_options.keys()), 
+            "Select Module for Details:",
+            options=list(module_options.keys()),
             index=default_index,
-            key="module_details_selector"
+            key="module_details_selector",
         )
 
         # Clear preselected module after it's been used
