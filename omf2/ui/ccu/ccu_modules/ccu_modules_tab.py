@@ -76,6 +76,12 @@ def render_ccu_modules_tab(ccu_gateway=None, registry_manager=None):
         # Module Overview Table - ECHTE MQTT-Daten
         _show_module_overview_table(ccu_gateway, i18n)
 
+        # Module Details - IMMER ANZEIGEN
+        st.divider()
+        from omf2.ui.ccu.ccu_modules.ccu_modules_details import show_module_details_section
+
+        show_module_details_section(ccu_gateway, i18n)
+
         # CCU Message Monitor - ECHTE MQTT-Daten über Gateway
         st.divider()
         from omf2.ui.ccu.ccu_message_monitor import render_ccu_message_monitor

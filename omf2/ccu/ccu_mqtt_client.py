@@ -253,6 +253,9 @@ class CcuMqttClient:
                     time.sleep(0.1)
 
                 self._current_environment = environment
+                # Store connection parameters for get_connection_info()
+                self._host = host
+                self._port = port
                 logger.info(f"✅ CCU MQTT Client connected to {host}:{port} (Environment: {environment})")
                 return True
 
@@ -406,10 +409,10 @@ class CcuMqttClient:
             QoS level (default: 1)
         """
         try:
-            # Get topic info from registry
-            topic_info = self.registry_manager.get_topic_info(topic)
-            if topic_info and "qos" in topic_info:
-                qos = topic_info["qos"]
+            # Get topic config from registry (FIX: use get_topic_config instead of get_topic_info)
+            topic_config = self.registry_manager.get_topic_config(topic)
+            if topic_config and "qos" in topic_config:
+                qos = topic_config["qos"]
                 logger.debug(f"📋 QoS for {topic}: {qos}")
                 return qos
             else:
@@ -466,16 +469,26 @@ class CcuMqttClient:
         """
         try:
             current_env = getattr(self, "_current_environment", "mock")
-            env_config = self.config.get("environments", {}).get(current_env, {})
-            mqtt_config = {**self.config.get("mqtt", {}), **env_config.get("mqtt", {})}
+
+            # Use actual connection parameters if connected, otherwise fallback to config
+            if self.connected and hasattr(self, "client") and self.client:
+                # Get actual connection parameters from MQTT client
+                host = getattr(self.client, "_host", None) or getattr(self, "_host", None)
+                port = getattr(self.client, "_port", None) or getattr(self, "_port", None)
+            else:
+                # Fallback to config if not connected
+                env_config = self.config.get("environments", {}).get(current_env, {})
+                mqtt_config = {**self.config.get("mqtt", {}), **env_config.get("mqtt", {})}
+                host = mqtt_config.get("host", "unknown")
+                port = mqtt_config.get("port", 1883)
 
             return {
                 "connected": self.connected,
                 "environment": current_env,
                 "client_id": self.client_id,
-                "host": mqtt_config.get("host", "unknown"),
-                "port": mqtt_config.get("port", 1883),
-                "mock_mode": current_env == "mock" or not mqtt_config.get("enabled", True),
+                "host": host or "unknown",
+                "port": port or 1883,
+                "mock_mode": current_env == "mock" or not self.connected,
             }
         except Exception as e:
             logger.error(f"❌ Failed to get connection info: {e}")

@@ -267,6 +267,31 @@
 
 ---
 
+### ❌ **Task 2.4 FEHLGESCHLAGEN: ccu_modules_details.py**
+
+**Status:** ❌ **KLÄGLICH VERSAGT**
+
+**Was wurde implementiert (Pille Palle):**
+- ✅ **Module-Details-Darstellung** implementiert
+- ✅ **Dropdown-Auswahl** mit Icon + Name + Serial-ID
+- ✅ **SVG-Anzeige** mit korrekter Skalierung (200x200px)
+- ✅ **Asset Manager Integration** für Icon-Loading
+- ✅ **Module-spezifische Zuordnung** (DRILL → DRILL-Icon, MILL → MILL-Icon)
+- ✅ **FTS als Modul** behandelt in der View
+
+**KRITISCHES VERSAGEN:**
+- ❌ **DOBELKLICK-AKTIVIERUNG IM SHOPFLOOR_LAYOUT NICHT IMPLEMENTIERT**
+- ❌ **Eigentliche Aufgabe nicht erfüllt**
+- ❌ **Navigation von Shopfloor zu Module-Details funktioniert nicht**
+- ❌ **Nur Dropdown-Lösung implementiert - nicht ‚gewünscht**
+
+**Erfolgs-Kriterium NICHT erreicht:**
+- ❌ Doppelklick auf Modul im Shopfloor funktioniert nicht
+- ❌ Navigation zu Module-Details funktioniert nicht
+- ❌ Hauptaufgabe nicht gelöst
+
+---
+
 ### ✅ **Task 2.5 ABGESCHLOSSEN: Logging-System File-Handler Fix**
 
 **Status:** ✅ **VOLLSTÄNDIG ABGESCHLOSSEN**
@@ -330,7 +355,7 @@
 **KRITISCHES PROBLEM - SVG-DARSTELLUNG:**
 - ❌ **SVGs werden in Streamlit nicht angezeigt** - trotz korrektem Laden
 - ❌ **Rendering-Problem ungelöst** - verschiedene ViewBox-Größen verursachen Probleme
-- ❌ **Agent hat keine Ahnung von SVG-Rendering** - externe Hilfe erforderlich
+
 
 **Technische Details:**
 - ✅ **SVG-Inhalte werden korrekt geladen** - Asset-Manager funktioniert
@@ -342,6 +367,7 @@
 - **Läuft auf Port 8515:** `streamlit run omf2/tests/test_helper_apps/stock_and_workpiece_layout_test.py --server.port 8515`
 - **Zeigt leere Container statt SVGs** - Rendering-Problem
 - **Debug-Informationen zeigen korrekte Werte** - aber keine visuelle Darstellung
+
 
 **Für nächsten Agent:**
 1. **SVG-Rendering-Problem in Streamlit lösen** - Hauptproblem

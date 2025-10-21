@@ -21,7 +21,7 @@ class TestSessionManagerLogging(unittest.TestCase):
 
     def test_init_logging_function_exists(self):
         """Test dass _init_logging_once Funktion existiert"""
-        from session_manager.session_manager import _init_logging_once
+        from session_manager.app import _init_logging_once
 
         self.assertIsNotNone(_init_logging_once)
         self.assertTrue(callable(_init_logging_once))

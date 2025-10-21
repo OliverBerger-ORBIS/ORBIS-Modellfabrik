@@ -18,6 +18,10 @@ class TopicSelector:
     def __init__(self, registry_manager):
         self.registry_manager = registry_manager
         self.message_manager = MessageManager("admin", registry_manager)
+        # PERFORMANCE: Cache PayloadGenerator to avoid re-initialization
+        from omf2.ui.common.components.payload_generator import PayloadGenerator
+
+        self.payload_generator = PayloadGenerator(registry_manager)
 
     def render_topic_driven_ui(self):
         """Renders the topic-driven approach UI"""
@@ -109,11 +113,8 @@ class TopicSelector:
             with col3:
                 st.info(f"📡 Client: {client}")
 
-            # Generate and display payload
-            from omf2.ui.common.components.payload_generator import PayloadGenerator
-
-            generator = PayloadGenerator(self.registry_manager)
-            payload = generator.generate_example_payload(topic)
+            # Generate and display payload (PERFORMANCE: Use cached PayloadGenerator)
+            payload = self.payload_generator.generate_example_payload(topic)
 
             if payload:
                 st.markdown("**Generated Payload:**")
@@ -331,11 +332,8 @@ class TopicSelector:
             with col2:
                 st.info(f"💾 Retain: {'Yes' if retain else 'No'}")
 
-            # Generate and display payload
-            from omf2.ui.common.components.payload_generator import PayloadGenerator
-
-            generator = PayloadGenerator(self.registry_manager)
-            payload = generator.generate_example_payload(topic)
+            # Generate and display payload (PERFORMANCE: Use cached PayloadGenerator)
+            payload = self.payload_generator.generate_example_payload(topic)
 
             if payload:
                 st.markdown("**Generated Payload:**")

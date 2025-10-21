@@ -87,21 +87,6 @@ def _show_ccu_product_catalog_panel(asset_manager):
                 with columns[i]:
                     st.markdown(f"#### {color_emoji} **{color_name.upper()}**")
 
-                    # PRODUCT SVG - DIREKTE SVG-DARSTELLUNG
-                    st.markdown("**Product SVG:**")
-                    svg_content = asset_manager.get_workpiece_svg(product_id.upper(), "product")
-                    if svg_content:
-                        st.markdown(
-                            f"""
-                        <div style="border: 1px solid #ccc; padding: 10px; margin: 5px; text-align: center;">
-                            {svg_content}
-                        </div>
-                        """,
-                            unsafe_allow_html=True,
-                        )
-                    else:
-                        st.error(f"❌ {product_id.lower()}_product.svg nicht gefunden!")
-
                     # 3DIM SVG - DIREKTE SVG-DARSTELLUNG
                     st.markdown("**3DIM SVG:**")
                     svg_content = asset_manager.get_workpiece_svg(product_id.upper(), "3dim")
@@ -116,6 +101,21 @@ def _show_ccu_product_catalog_panel(asset_manager):
                         )
                     else:
                         st.error(f"❌ {product_id.lower()}_3dim.svg nicht gefunden!")
+
+                    # PRODUCT SVG - DIREKTE SVG-DARSTELLUNG
+                    st.markdown("**Product SVG:**")
+                    svg_content = asset_manager.get_workpiece_svg(product_id.upper(), "product")
+                    if svg_content:
+                        st.markdown(
+                            f"""
+                        <div style="border: 1px solid #ccc; padding: 10px; margin: 5px; text-align: center;">
+                            {svg_content}
+                        </div>
+                        """,
+                            unsafe_allow_html=True,
+                        )
+                    else:
+                        st.error(f"❌ {product_id.lower()}_product.svg nicht gefunden!")
 
                     # Produktdaten aus Registry
                     st.markdown("**Produktdaten:**")

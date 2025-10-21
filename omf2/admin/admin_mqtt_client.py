@@ -228,6 +228,9 @@ class AdminMqttClient:
                     time.sleep(0.1)
 
                 self._current_environment = environment
+                # Store connection parameters for get_connection_info()
+                self._host = host
+                self._port = port
                 logger.info(f"✅ Admin MQTT Client connected to {host}:{port} (Environment: {environment})")
                 return True
 
@@ -406,16 +409,26 @@ class AdminMqttClient:
         """
         try:
             current_env = getattr(self, "_current_environment", "mock")
-            env_config = self.config.get("environments", {}).get(current_env, {})
-            mqtt_config = {**self.config.get("mqtt", {}), **env_config.get("mqtt", {})}
+
+            # Use actual connection parameters if connected, otherwise fallback to config
+            if self.connected and hasattr(self, "client") and self.client:
+                # Get actual connection parameters from MQTT client
+                host = getattr(self.client, "_host", None) or getattr(self, "_host", None)
+                port = getattr(self.client, "_port", None) or getattr(self, "_port", None)
+            else:
+                # Fallback to config if not connected
+                env_config = self.config.get("environments", {}).get(current_env, {})
+                mqtt_config = {**self.config.get("mqtt", {}), **env_config.get("mqtt", {})}
+                host = mqtt_config.get("host", "unknown")
+                port = mqtt_config.get("port", 1883)
 
             return {
                 "connected": self.connected,
                 "environment": current_env,
                 "client_id": self.client_id,
-                "host": mqtt_config.get("host", "unknown"),
-                "port": mqtt_config.get("port", 1883),
-                "mock_mode": current_env == "mock" or not mqtt_config.get("enabled", True),
+                "host": host or "unknown",
+                "port": port or 1883,
+                "mock_mode": current_env == "mock" or not self.connected,
             }
         except Exception as e:
             logger.error(f"❌ Failed to get connection info: {e}")
