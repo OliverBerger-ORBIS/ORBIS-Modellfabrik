@@ -963,17 +963,18 @@ def _handle_grid_event(event_data: Dict[str, Any]):
     elif event_type == "module-dblclick":
         # Detail-Seite öffnen - Session State für Navigation setzen
         logger.info(f"🚀 Double-click detected on {module_id} - preparing navigation")
-        
+
         # Session State für Navigation zu CCU Modules setzen
         st.session_state.navigate_to_ccu_modules = True
         st.session_state.preselected_module_id = module_id
         st.session_state.preselected_module_type = module_type
         st.session_state.show_module_details = True
-        
+
         logger.info(f"✅ Navigation prepared: module={module_id}, type={module_type}")
-        
+
         # Trigger rerun to navigate
         st.rerun()
+
 
 # Export für OMF2-Integration
 __all__ = ["show_shopfloor_layout"]
