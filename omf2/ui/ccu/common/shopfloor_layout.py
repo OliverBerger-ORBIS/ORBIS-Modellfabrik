@@ -363,11 +363,8 @@ def _generate_omf2_svg_grid_with_roads(
                     event.target.style.strokeWidth = '5';
                     event.target.style.fill = 'rgba(33, 150, 243, 0.1)';
 
-                    // Navigation-Simulation für CCU Configuration
-                    console.log('🚀 NAVIGATION: Double-click on', moduleId, '- would navigate to module configuration');
-
-                    // Simuliere Navigation durch Alert (für Demo)
-                    alert(`🚀 Navigation: Würde zu ${moduleId} Detail-Seite weiterleiten\\n\\nIn der echten App würde hier die Modul-Konfiguration geöffnet werden.`);
+                    // Navigation-Hinweis für CCU Configuration
+                    console.log('🚀 NAVIGATION: Double-click on', moduleId, '- sending navigation event');
                 } else {
                     // Interactive: Pink Umrandung
                     event.target.classList.add('double-clicked');
