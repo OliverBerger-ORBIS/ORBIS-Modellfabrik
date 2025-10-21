@@ -20,7 +20,6 @@ from pathlib import Path
 from typing import Any, Dict, Optional
 
 import streamlit as st
-from bokeh.models import CustomJS
 from bokeh.plotting import figure
 from streamlit_bokeh_events import streamlit_bokeh_events
 
@@ -69,9 +68,6 @@ def show_shopfloor_layout(
     grid_html = _generate_omf2_svg_grid_with_roads(
         layout_config, asset_manager, active_module_id, active_intersections, mode
     )
-
-    # Event-Handling Setup
-    _setup_event_handling()
 
     # Grid anzeigen
     st.components.v1.html(grid_html, height=500, scrolling=False)
@@ -246,6 +242,20 @@ def _generate_omf2_svg_grid_with_roads(
             // Double-Click Detection mit Timer
             let clickTimer = null;
             let clickCount = 0;
+
+            // Event-Forwarding: FACTORY_GRID_EVENT → GET_FACTORY_EVENT
+            // This forwards events from the SVG to streamlit-bokeh-events
+            document.addEventListener('FACTORY_GRID_EVENT', function(event) {
+                const eventData = event.detail;
+                console.log('🔧 Factory Grid Event received:', eventData);
+
+                // Forward as GET_FACTORY_EVENT for streamlit-bokeh-events
+                const streamlitEvent = new CustomEvent('GET_FACTORY_EVENT', {
+                    detail: eventData
+                });
+                document.dispatchEvent(streamlitEvent);
+                console.log('🔧 Event forwarded as GET_FACTORY_EVENT');
+            });
 
             // Event-Handler für Module-Clicks
             function handleModuleClick(event) {
@@ -876,34 +886,6 @@ def _get_module_icon_svg(asset_manager, module_type: str, width: int, height: in
         logger.warning(f"Could not load icon for {module_type}: {e}")
 
     return f'<text x="{width//2}" y="{height//2}" text-anchor="middle" font-size="10" fill="#666">{module_type}</text>'
-
-
-def _setup_event_handling():
-    """Setup für Event-Handling mit streamlit-bokeh-events"""
-
-    # Bokeh Plot für Event-Capture
-    plot = figure(width=1, height=1, x_range=(0, 1), y_range=(0, 1))
-    plot.axis.visible = False
-    plot.grid.visible = False
-    plot.outline_line_color = None
-
-    # CustomJS für Event-Capture
-    custom_js = CustomJS(
-        code="""
-        document.addEventListener('FACTORY_GRID_EVENT', function(event) {
-            const eventData = event.detail;
-            console.log('Factory Grid Event:', eventData);
-
-            // Event an Streamlit weiterleiten
-            const streamlitEvent = new CustomEvent('GET_FACTORY_EVENT', {
-                detail: eventData
-            });
-            document.dispatchEvent(streamlitEvent);
-        });
-    """
-    )
-
-    plot.js_on_event("tap", custom_js)
 
 
 def _process_grid_events(unique_key: Optional[str] = None):
