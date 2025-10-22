@@ -42,7 +42,7 @@ def main():
     # Active Module Selection
     active_module = st.sidebar.selectbox(
         "Active Module (for highlighting):",
-        ["None", "MILL", "DRILL", "AIQS", "HBW", "DPS", "CHRG", "EMPTY1-main", "EMPTY2-main"],
+        ["None", "MILL", "DRILL", "AIQS", "HBW", "DPS", "CHRG", "COMPANY", "SOFTWARE"],
         index=0,
     )
 
