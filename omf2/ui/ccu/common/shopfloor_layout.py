@@ -48,6 +48,7 @@ def show_shopfloor_layout(
     route_points: Optional[list] = None,
     agv_progress: float = 0.0,
     on_cell_click: Optional[callable] = None,
+    enable_click: bool = False,
 ) -> None:
     """
     Display stable, view-only shopfloor layout with fixed aspect ratio and gapless grid.
@@ -66,8 +67,13 @@ def show_shopfloor_layout(
         route_points: Optional list of (x, y) pixel coordinates for AGV route visualization
         agv_progress: Progress along route (0.0 to 1.0) for AGV marker positioning
         on_cell_click: Optional callback function for cell click events
+        enable_click: Enable click-to-select functionality (default: False)
     """
     st.subheader(f"🏭 {title}")
+    
+    # Show hint if click is enabled
+    if enable_click:
+        st.info("💡 Click on any position in the grid to view its details below")
 
     # Load layout configuration if not provided
     if layout_config is None:
@@ -112,11 +118,26 @@ def show_shopfloor_layout(
         max_height=max_height,
         route_points=route_points,
         agv_progress=agv_progress,
+        enable_click=enable_click,
+        unique_key=unique_key or "shopfloor",
     )
 
     # Render using st.components or fallback to markdown
     try:
-        st.components.v1.html(html_content, height=max_height, scrolling=False)
+        # Use experimental query params for click communication if enabled
+        if enable_click:
+            # Check for clicked position in query params
+            try:
+                query_params = st.query_params
+                if "pos" in query_params:
+                    clicked_pos = query_params["pos"]
+                    st.session_state.clicked_position = f"Position {clicked_pos}"
+                    # Clear the query param after processing
+                    del st.query_params["pos"]
+            except:
+                pass
+        
+        st.components.v1.html(html_content, height=max_height + 20, scrolling=False)
     except Exception as e:
         logger.warning(f"st.components.v1.html failed, falling back to markdown: {e}")
         st.markdown(html_content, unsafe_allow_html=True)
@@ -133,6 +154,8 @@ def _generate_html_grid(
     max_height: int,
     route_points: Optional[list] = None,
     agv_progress: float = 0.0,
+    enable_click: bool = False,
+    unique_key: str = "shopfloor",
 ) -> str:
     """
     Generate complete HTML grid with inline CSS for gapless layout.
@@ -186,7 +209,14 @@ def _generate_html_grid(
             box-sizing: border-box;
             background: white;
             position: relative;
+            {"cursor: pointer; transition: background-color 0.2s ease;" if enable_click else ""}
         }}
+        {"" if not enable_click else '''
+        .cell:hover {
+            background: rgba(255, 152, 0, 0.1);
+            border-color: #FF9800;
+        }
+        '''}
         .cell-active {{
             border: 4px solid #FF9800 !important;
             background: white;
@@ -287,6 +317,8 @@ def _generate_html_grid(
                 active_intersections,
                 cell_width,
                 cell_height,
+                enable_click,
+                unique_key,
             )
             cells_html.append(cell_html)
 
@@ -295,6 +327,35 @@ def _generate_html_grid(
     if route_points and len(route_points) >= 2:
         svg_overlay = _generate_route_overlay(route_points, agv_progress, max_width, max_height)
     
+    # Add JavaScript for click handling if enabled
+    javascript = ""
+    if enable_click:
+        javascript = f"""
+        <script>
+            // Handle cell clicks by setting URL query parameter
+            document.addEventListener('DOMContentLoaded', function() {{
+                const cells = document.querySelectorAll('.cell[data-position]');
+                cells.forEach(cell => {{
+                    cell.addEventListener('click', function() {{
+                        const position = this.getAttribute('data-position');
+                        // Try to communicate with parent Streamlit app
+                        if (window.parent) {{
+                            // Use postMessage to send to parent
+                            window.parent.postMessage({{
+                                type: 'shopfloor_click',
+                                position: position
+                            }}, '*');
+                        }}
+                        // Visual feedback
+                        cells.forEach(c => c.style.outline = 'none');
+                        this.style.outline = '3px solid #FF9800';
+                        this.style.outlineOffset = '-3px';
+                    }});
+                }});
+            }});
+        </script>
+        """
+    
     # Combine into complete HTML
     html = f"""
     {css}
@@ -302,6 +363,7 @@ def _generate_html_grid(
         {''.join(cells_html)}
         {svg_overlay}
     </div>
+    {javascript}
     """
 
     return html
@@ -364,12 +426,14 @@ def _generate_cell_html(
     active_intersections: Optional[list],
     cell_width: int,
     cell_height: int,
+    enable_click: bool = False,
+    unique_key: str = "shopfloor",
 ) -> str:
     """Generate HTML for a single grid cell."""
 
     # Handle special split cells at (0,0) and (0,3)
     if (row == 0 and col == 0) or (row == 0 and col == 3):
-        return _generate_split_cell_html(row, col, fixed_positions, asset_manager, cell_width, cell_height)
+        return _generate_split_cell_html(row, col, fixed_positions, asset_manager, cell_width, cell_height, enable_click)
 
     # Find cell data
     cell_data = _find_cell_data(row, col, modules, fixed_positions, intersections)
@@ -406,9 +470,12 @@ def _generate_cell_html(
     else:
         cell_label = ""
 
+    # Add data attribute for position if click is enabled
+    data_attr = f'data-position="[{row},{col}]"' if enable_click else ''
+
     # Build cell HTML
     cell_html = f"""
-    <div class="{' '.join(cell_classes)}">
+    <div class="{' '.join(cell_classes)}" {data_attr}>
         <div class="icon-container">
             {icon_svg}
         </div>
@@ -426,6 +493,7 @@ def _generate_split_cell_html(
     asset_manager,
     cell_width: int,
     cell_height: int,
+    enable_click: bool = False,
 ) -> str:
     """Generate HTML for split cells (0,0) and (0,3)."""
 
@@ -457,8 +525,11 @@ def _generate_split_cell_html(
     square1_svg = _get_split_cell_icon(asset_manager, square1_type, square_width, square_height)
     square2_svg = _get_split_cell_icon(asset_manager, square2_type, square_width, square_height)
 
+    # Add data attribute for position if click is enabled
+    data_attr = f'data-position="[{row},{col}]"' if enable_click else ''
+
     cell_html = f"""
-    <div class="cell cell-split">
+    <div class="cell cell-split" {data_attr}>
         <div class="split-top">
             {rectangle_svg}
         </div>

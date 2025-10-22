@@ -80,12 +80,27 @@ def _show_shopfloor_layout_section():
         # Import and use the shopfloor layout component
         from omf2.ui.ccu.common.shopfloor_layout import show_shopfloor_layout
 
+        # Add message listener for click events
+        st.components.v1.html("""
+        <script>
+            window.addEventListener('message', function(event) {
+                if (event.data && event.data.type === 'shopfloor_click') {
+                    // Store in sessionStorage which Streamlit can access
+                    sessionStorage.setItem('shopfloor_clicked_position', event.data.position);
+                    // Try to trigger a rerun by setting a value
+                    console.log('Shopfloor position clicked:', event.data.position);
+                }
+            });
+        </script>
+        """, height=0)
+
         # Show the shopfloor layout with interactive SVG
         # CCU Configuration mode: single/double click for module selection/navigation
         show_shopfloor_layout(
             title="Shopfloor Layout",
             unique_key="ccu_configuration_shopfloor",
             mode="ccu_configuration",  # CCU Configuration mode: single click = select, double click = navigate
+            enable_click=True,  # Enable click-to-select functionality
         )
 
     except Exception as e:
@@ -112,16 +127,44 @@ def _show_shopfloor_position_details():
             for col in range(4):
                 grid_positions.append(f"Position [{row},{col}]")
 
+        # Check if a position was clicked (stored in query params or session state)
+        clicked_position = None
+        if "clicked_position" in st.session_state:
+            clicked_position = st.session_state.clicked_position
+            # Show visual feedback for clicked position
+            st.success(f"📍 Selected: {clicked_position} - View details below")
+        
+        # Try to get from component value (experimental)
+        try:
+            component_value = st.session_state.get("ccu_configuration_shopfloor_clicked_position")
+            if component_value:
+                clicked_position = component_value
+                st.session_state.clicked_position = component_value
+                st.success(f"📍 Selected: {clicked_position} - View details below")
+        except:
+            pass
+
         # Dropdown for position selection
         col1, col2 = st.columns([2, 1])
 
+        # Set default index based on clicked position
+        default_index = 0
+        if clicked_position and clicked_position in grid_positions:
+            default_index = grid_positions.index(clicked_position)
+
         with col1:
             selected_position = st.selectbox(
-                "📍 Select Shopfloor Position:", options=grid_positions, index=0, key="shopfloor_position_selector"
+                "📍 Select Shopfloor Position:", 
+                options=grid_positions, 
+                index=default_index, 
+                key="shopfloor_position_selector"
             )
 
         with col2:
             if st.button("🔄 Refresh Position", key="refresh_position_details"):
+                # Clear clicked position on refresh
+                if "clicked_position" in st.session_state:
+                    del st.session_state.clicked_position
                 st.rerun()
 
         # Extract row, col from selected position
