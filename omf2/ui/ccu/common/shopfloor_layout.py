@@ -376,7 +376,7 @@ def _generate_route_overlay(
     max_height: int,
 ) -> str:
     """
-    Generate SVG overlay with route polyline and AGV marker
+    Generate SVG overlay with route polyline and AGV/FTS marker icon
     
     Args:
         route_points: List of (x, y) pixel coordinates
@@ -399,11 +399,43 @@ def _generate_route_overlay(
         from omf2.ui.ccu.common.route_utils import point_on_polyline
         agv_position = point_on_polyline(route_points, agv_progress)
     
-    # Generate AGV marker SVG
+    # Generate AGV marker SVG with FTS icon
     agv_marker_svg = ""
     if agv_position:
         agv_x, agv_y = agv_position
-        agv_marker_svg = f'<circle class="agv-marker" cx="{agv_x}" cy="{agv_y}" r="8"/>'
+        # Load FTS icon and embed it at the AGV position
+        try:
+            from omf2.assets.asset_manager import get_asset_manager
+            from pathlib import Path
+            
+            asset_manager = get_asset_manager()
+            fts_icon_path = asset_manager.get_module_icon_path('FTS')
+            
+            if fts_icon_path and Path(fts_icon_path).exists():
+                with open(fts_icon_path, 'r', encoding='utf-8') as f:
+                    fts_svg_content = f.read()
+                    # Extract SVG content (without <?xml> declaration)
+                    if '<?xml' in fts_svg_content:
+                        fts_svg_content = fts_svg_content.split('?>', 1)[1].strip()
+                    
+                    # Replace SVG tag with g tag for embedding, position at agv_x, agv_y
+                    # FTS icon is 24x24, scale it to 32x32 for better visibility
+                    icon_size = 32
+                    half_size = icon_size / 2
+                    
+                    # Create a group with transform to position and scale the icon
+                    agv_marker_svg = f'''
+                    <g transform="translate({agv_x - half_size}, {agv_y - half_size}) scale({icon_size/24})">
+                        {fts_svg_content.replace('<svg', '<g').replace('</svg>', '</g>').replace('width="24"', '').replace('height="24"', '')}
+                    </g>
+                    '''
+            else:
+                # Fallback to circle if FTS icon not found
+                agv_marker_svg = f'<circle class="agv-marker" cx="{agv_x}" cy="{agv_y}" r="12"/>'
+        except Exception as e:
+            logger.warning(f"Could not load FTS icon for AGV marker: {e}")
+            # Fallback to circle
+            agv_marker_svg = f'<circle class="agv-marker" cx="{agv_x}" cy="{agv_y}" r="12"/>'
     
     svg = f"""
     <svg class="route-overlay" viewBox="0 0 {max_width} {max_height}" xmlns="http://www.w3.org/2000/svg">
