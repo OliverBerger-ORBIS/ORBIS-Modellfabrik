@@ -142,7 +142,7 @@ def _show_shopfloor_position_details():
 
 
 def _show_position_details(row: int, col: int, layout_config: dict):
-    """Show details for a specific shopfloor position"""
+    """Show details for a specific shopfloor position with enhanced formatting"""
     try:
         # Check if position has a module
         modules = layout_config.get("modules", [])
@@ -170,31 +170,82 @@ def _show_position_details(row: int, col: int, layout_config: dict):
                 intersection_at_position = intersection
                 break
 
+        # Display details in a nice box
+        st.markdown("---")
+        st.markdown(f"### 📍 Details zu shopfloor-position-{row}-{col}")
+        
         # Display details based on what's at this position
         if module_at_position:
-            st.success(f"✅ **Module Found:** {module_at_position.get('id', 'Unknown')}")
-            st.write(f"- **Type:** {module_at_position.get('type', 'N/A')}")
-            st.write(f"- **Serial Number:** {module_at_position.get('serialNumber', 'N/A')}")
-            st.write(f"- **Position:** [{row}, {col}]")
+            with st.container():
+                st.success(f"✅ **Module Found:** {module_at_position.get('id', 'Unknown')}")
+                
+                # Details in columns
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.markdown("**Properties:**")
+                    st.write(f"- **ID:** {module_at_position.get('id', 'N/A')}")
+                    st.write(f"- **Name:** {module_at_position.get('id', 'N/A')}")  # Use ID as name
+                    st.write(f"- **Type:** {module_at_position.get('type', 'N/A')}")
+                
+                with col2:
+                    st.markdown("**Technical:**")
+                    st.write(f"- **Serial Number:** {module_at_position.get('serialNumber', 'N/A')}")
+                    st.write(f"- **Position:** [{row}, {col}]")
+                    # Asset keys (module type is the main asset key)
+                    st.write(f"- **Asset Keys:** {module_at_position.get('type', 'N/A')}")
 
         elif empty_at_position:
-            st.info(f"📦 **Empty Position:** {empty_at_position.get('id', 'Unknown')}")
-            st.write(f"- **Rectangle:** {empty_at_position.get('rectangle', 'N/A')}")
-            st.write(f"- **Square1:** {empty_at_position.get('square1', 'N/A')}")
-            st.write(f"- **Square2:** {empty_at_position.get('square2', 'N/A')}")
-            st.write(f"- **Position:** [{row}, {col}]")
+            with st.container():
+                st.info(f"📦 **Empty Position:** {empty_at_position.get('id', 'Unknown')}")
+                
+                # Details in columns
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.markdown("**Properties:**")
+                    st.write(f"- **ID:** {empty_at_position.get('id', 'Unknown')}")
+                    st.write(f"- **Name:** {empty_at_position.get('id', 'Unknown')}")
+                    st.write(f"- **Position:** [{row}, {col}]")
+                
+                with col2:
+                    st.markdown("**Asset Keys:**")
+                    st.write(f"- **Rectangle:** {empty_at_position.get('rectangle', 'N/A')}")
+                    st.write(f"- **Square1:** {empty_at_position.get('square1', 'N/A')}")
+                    st.write(f"- **Square2:** {empty_at_position.get('square2', 'N/A')}")
 
-            # Show asset information if available
-            _show_empty_position_assets(empty_at_position)
+                # Show asset information if available
+                st.markdown("---")
+                _show_empty_position_assets(empty_at_position)
 
         elif intersection_at_position:
-            st.warning(f"🔀 **Intersection:** {intersection_at_position.get('id', 'Unknown')}")
-            st.write(f"- **Connected Modules:** {', '.join(intersection_at_position.get('connected_modules', []))}")
-            st.write(f"- **Position:** [{row}, {col}]")
+            with st.container():
+                st.warning(f"🔀 **Intersection:** {intersection_at_position.get('id', 'Unknown')}")
+                
+                # Details in columns
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.markdown("**Properties:**")
+                    st.write(f"- **ID:** {intersection_at_position.get('id', 'Unknown')}")
+                    st.write(f"- **Name:** Intersection {intersection_at_position.get('id', 'Unknown')}")
+                    st.write(f"- **Position:** [{row}, {col}]")
+                
+                with col2:
+                    st.markdown("**Connections:**")
+                    connected = intersection_at_position.get('connected_modules', [])
+                    if connected:
+                        for conn_module in connected:
+                            st.write(f"- {conn_module}")
+                    else:
+                        st.write("- No connections")
+                    
+                    # Asset key for intersection
+                    st.write(f"- **Asset Keys:** point_scan_3sections")
 
         else:
-            st.info(f"📋 **Empty Cell** at position [{row}, {col}]")
-            st.write("No module, empty position, or intersection found at this location.")
+            with st.container():
+                st.info(f"📋 **Empty Cell** at position [{row}, {col}]")
+                st.write("**Description:** No module, empty position, or intersection found at this location.")
+                st.write(f"**Position:** [{row}, {col}]")
+                st.write("**Asset Keys:** None")
 
     except Exception as e:
         logger.error(f"❌ Failed to show position details: {e}")
