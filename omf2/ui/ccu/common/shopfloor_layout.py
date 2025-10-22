@@ -94,13 +94,16 @@ def show_shopfloor_layout(
 
     # Extract data from config
     modules = layout_config.get("modules", [])
-    empty_positions = layout_config.get("empty_positions", [])
+    fixed_positions = layout_config.get("fixed_positions", [])  # New structure (v2.0)
+    # Fallback for old structure
+    if not fixed_positions:
+        fixed_positions = layout_config.get("empty_positions", [])
     intersections = layout_config.get("intersections", [])
 
     # Generate HTML grid
     html_content = _generate_html_grid(
         modules=modules,
-        empty_positions=empty_positions,
+        fixed_positions=fixed_positions,
         intersections=intersections,
         asset_manager=asset_manager,
         active_module_id=active_module_id,
@@ -121,7 +124,7 @@ def show_shopfloor_layout(
 
 def _generate_html_grid(
     modules: list,
-    empty_positions: list,
+    fixed_positions: list,
     intersections: list,
     asset_manager,
     active_module_id: Optional[str],
@@ -159,25 +162,35 @@ def _generate_html_grid(
             background: white;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             position: relative;
+            overflow: visible;
+        }}
+        .shopfloor-container::after {{
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #ddd;
+            pointer-events: none;
         }}
         .cell {{
             width: {cell_width}px;
             height: {cell_height}px;
             border: 1px solid #e0e0e0;
-            border-bottom: 2px solid #ddd;  /* Ensure bottom border is visible */
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: space-between;  /* Separate icon from label */
+            justify-content: flex-start;
             padding: 8px;
             box-sizing: border-box;
             background: white;
-            aspect-ratio: 1 / 1;  /* Enforce square aspect ratio */
+            position: relative;
         }}
         .cell-active {{
             border: 4px solid #FF9800 !important;
-            border-bottom: 4px solid #FF9800 !important;
             background: white;
+            z-index: 1;
         }}
         .cell-intersection-active {{
             border: 3px dashed #FF9800 !important;
@@ -216,6 +229,10 @@ def _generate_html_grid(
             overflow: hidden;
             text-overflow: ellipsis;
             max-width: 100%;
+            position: absolute;
+            bottom: 8px;
+            left: 0;
+            right: 0;
         }}
         .icon-container {{
             display: flex;
@@ -227,8 +244,8 @@ def _generate_html_grid(
         }}
         .icon-container img {{
             object-fit: contain;
-            max-width: 80%;
-            max-height: 80%;
+            max-width: 100%;
+            max-height: 100%;
         }}
         /* SVG Overlay for routes */
         .route-overlay {{
@@ -238,6 +255,7 @@ def _generate_html_grid(
             width: 100%;
             height: 100%;
             pointer-events: none;
+            z-index: 10;
         }}
         .route-path {{
             fill: none;
@@ -262,7 +280,7 @@ def _generate_html_grid(
                 row,
                 col,
                 modules,
-                empty_positions,
+                fixed_positions,
                 intersections,
                 asset_manager,
                 active_module_id,
@@ -339,7 +357,7 @@ def _generate_cell_html(
     row: int,
     col: int,
     modules: list,
-    empty_positions: list,
+    fixed_positions: list,
     intersections: list,
     asset_manager,
     active_module_id: Optional[str],
@@ -351,10 +369,10 @@ def _generate_cell_html(
 
     # Handle special split cells at (0,0) and (0,3)
     if (row == 0 and col == 0) or (row == 0 and col == 3):
-        return _generate_split_cell_html(row, col, empty_positions, asset_manager, cell_width, cell_height)
+        return _generate_split_cell_html(row, col, fixed_positions, asset_manager, cell_width, cell_height)
 
     # Find cell data
-    cell_data = _find_cell_data(row, col, modules, empty_positions, intersections)
+    cell_data = _find_cell_data(row, col, modules, fixed_positions, intersections)
 
     # Determine cell classes and styling
     cell_classes = ["cell"]
@@ -404,20 +422,18 @@ def _generate_cell_html(
 def _generate_split_cell_html(
     row: int,
     col: int,
-    empty_positions: list,
+    fixed_positions: list,
     asset_manager,
     cell_width: int,
     cell_height: int,
 ) -> str:
     """Generate HTML for split cells (0,0) and (0,3)."""
 
-    position_id = "EMPTY1" if (row == 0 and col == 0) else "EMPTY2"
-
-    # Find empty position config
-    empty_config = None
-    for empty in empty_positions:
-        if empty.get("id") == position_id:
-            empty_config = empty
+    # Find fixed position config for this position
+    fixed_config = None
+    for fixed in fixed_positions:
+        if fixed.get("position") == [row, col]:
+            fixed_config = fixed
             break
 
     # Default icons if config not found
@@ -425,10 +441,11 @@ def _generate_split_cell_html(
     square1_type = "shelves"
     square2_type = "conveyor_belt"
 
-    if empty_config:
-        rectangle_type = empty_config.get("rectangle", rectangle_type)
-        square1_type = empty_config.get("square1", square1_type)
-        square2_type = empty_config.get("square2", square2_type)
+    if fixed_config:
+        assets = fixed_config.get("assets", {})
+        rectangle_type = assets.get("rectangle", rectangle_type)
+        square1_type = assets.get("square1", square1_type)
+        square2_type = assets.get("square2", square2_type)
 
     # Generate icons (smaller for split cells)
     rect_width = int(cell_width * 0.8)
@@ -615,7 +632,7 @@ def _generate_normal_cell_svg(
 
 
 def _find_cell_data(
-    row: int, col: int, modules: list, empty_positions: list, intersections: list
+    row: int, col: int, modules: list, fixed_positions: list, intersections: list
 ) -> Optional[Dict[str, Any]]:
     """Findet die Daten für eine Grid-Position"""
 
@@ -635,12 +652,12 @@ def _find_cell_data(
             logger.debug(f"✅ Intersection gefunden - Position: {position}, ID: {intersection.get('id')}")
             return {"type": "intersection", "id": intersection.get("id", "unknown"), "data": intersection}
 
-    # Empty positions suchen - JSON: [row, column] -> UI: [row, col] (Matrix-Konvention)
-    for empty in empty_positions:
-        position = empty.get("position", [])
+    # Fixed positions suchen - JSON: [row, column] -> UI: [row, col] (Matrix-Konvention)
+    for fixed in fixed_positions:
+        position = fixed.get("position", [])
         if len(position) == 2 and position[0] == row and position[1] == col:
-            print(f"✅ DEBUG: Empty Position gefunden - Position: {position}")
-            return {"type": "empty", "id": empty.get("id", "unknown"), "data": empty}
+            logger.debug(f"✅ Fixed Position gefunden - Position: {position}, ID: {fixed.get('id')}")
+            return {"type": "fixed", "id": fixed.get("id", "unknown"), "data": fixed}
 
     logger.warning(f"❌ DEBUG: Keine Daten gefunden für Position [{row},{col}]")
     return None

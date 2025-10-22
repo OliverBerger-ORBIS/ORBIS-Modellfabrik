@@ -146,7 +146,10 @@ def _show_position_details(row: int, col: int, layout_config: dict):
     try:
         # Check if position has a module
         modules = layout_config.get("modules", [])
-        fixed_positions = layout_config.get("fixed_positions", [])  # New structure
+        fixed_positions = layout_config.get("fixed_positions", [])  # New structure (v2.0)
+        # Fallback for old structure
+        if not fixed_positions:
+            fixed_positions = layout_config.get("empty_positions", [])
         intersections = layout_config.get("intersections", [])
 
         # Find module at this position
