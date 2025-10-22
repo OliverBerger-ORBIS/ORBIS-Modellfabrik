@@ -146,7 +146,7 @@ def _show_position_details(row: int, col: int, layout_config: dict):
     try:
         # Check if position has a module
         modules = layout_config.get("modules", [])
-        empty_positions = layout_config.get("empty_positions", [])
+        fixed_positions = layout_config.get("fixed_positions", [])  # New structure
         intersections = layout_config.get("intersections", [])
 
         # Find module at this position
@@ -156,11 +156,11 @@ def _show_position_details(row: int, col: int, layout_config: dict):
                 module_at_position = module
                 break
 
-        # Find empty position at this position
-        empty_at_position = None
-        for empty_pos in empty_positions:
-            if empty_pos.get("position") == [row, col]:
-                empty_at_position = empty_pos
+        # Find fixed position at this position
+        fixed_at_position = None
+        for fixed_pos in fixed_positions:
+            if fixed_pos.get("position") == [row, col]:
+                fixed_at_position = fixed_pos
                 break
 
         # Find intersection at this position
@@ -194,27 +194,30 @@ def _show_position_details(row: int, col: int, layout_config: dict):
                     # Asset keys (module type is the main asset key)
                     st.write(f"- **Asset Keys:** {module_at_position.get('type', 'N/A')}")
 
-        elif empty_at_position:
+        elif fixed_at_position:
             with st.container():
-                st.info(f"📦 **Empty Position:** {empty_at_position.get('id', 'Unknown')}")
+                position_type = fixed_at_position.get('type', 'Unknown').upper()
+                st.info(f"📦 **Position Type:** {position_type}")
                 
                 # Details in columns
                 col1, col2 = st.columns(2)
                 with col1:
                     st.markdown("**Properties:**")
-                    st.write(f"- **ID:** {empty_at_position.get('id', 'Unknown')}")
-                    st.write(f"- **Name:** {empty_at_position.get('id', 'Unknown')}")
+                    st.write(f"- **ID:** {fixed_at_position.get('id', 'Unknown')}")
+                    st.write(f"- **Name:** {fixed_at_position.get('id', 'Unknown')}")
+                    st.write(f"- **Type:** {position_type}")
                     st.write(f"- **Position:** [{row}, {col}]")
                 
                 with col2:
                     st.markdown("**Asset Keys:**")
-                    st.write(f"- **Rectangle:** {empty_at_position.get('rectangle', 'N/A')}")
-                    st.write(f"- **Square1:** {empty_at_position.get('square1', 'N/A')}")
-                    st.write(f"- **Square2:** {empty_at_position.get('square2', 'N/A')}")
+                    assets = fixed_at_position.get('assets', {})
+                    st.write(f"- **Rectangle:** {assets.get('rectangle', 'N/A')}")
+                    st.write(f"- **Square1:** {assets.get('square1', 'N/A')}")
+                    st.write(f"- **Square2:** {assets.get('square2', 'N/A')}")
 
                 # Show asset information if available
                 st.markdown("---")
-                _show_empty_position_assets(empty_at_position)
+                _show_fixed_position_assets(fixed_at_position)
 
         elif intersection_at_position:
             with st.container():
@@ -252,21 +255,11 @@ def _show_position_details(row: int, col: int, layout_config: dict):
         st.error(f"❌ Error showing position details: {e}")
 
 
-def _show_empty_position_assets(empty_position: dict):
-    """Show asset information for empty positions using new shopfloor_assets structure"""
+def _show_fixed_position_assets(fixed_position: dict):
+    """Show asset information for fixed positions using canonical shopfloor_assets structure"""
     try:
-        position_id = empty_position.get("id", "Unknown")
-
-        # Map position ID to asset type
-        asset_type = None
-        if position_id == "COMPANY":
-            asset_type = "company"
-        elif position_id == "SOFTWARE":
-            asset_type = "software"
-
-        if not asset_type:
-            st.info("📋 No asset type mapping available")
-            return
+        position_id = fixed_position.get("id", "Unknown")
+        position_type = fixed_position.get("type", "unknown")
 
         # Get Asset Manager
         from omf2.assets import get_asset_manager
@@ -278,32 +271,35 @@ def _show_empty_position_assets(empty_position: dict):
 
         col1, col2, col3 = st.columns(3)
 
+        # Use canonical key format: COMPANY_rectangle, SOFTWARE_square1, etc.
+        canonical_type = position_id  # COMPANY or SOFTWARE
+
         with col1:
             st.markdown("**Rectangle:**")
-            asset_path = asset_manager.get_shopfloor_asset_path(asset_type, "rectangle")
+            asset_path = asset_manager.get_shopfloor_asset_path(canonical_type, "rectangle")
             if asset_path:
-                st.write(f"📁 {asset_path}")
+                st.write(f"📁 {Path(asset_path).name}")
             else:
                 st.write("❌ No asset found")
 
         with col2:
             st.markdown("**Square1:**")
-            asset_path = asset_manager.get_shopfloor_asset_path(asset_type, "square1")
+            asset_path = asset_manager.get_shopfloor_asset_path(canonical_type, "square1")
             if asset_path:
-                st.write(f"📁 {asset_path}")
+                st.write(f"📁 {Path(asset_path).name}")
             else:
                 st.write("❌ No asset found")
 
         with col3:
             st.markdown("**Square2:**")
-            asset_path = asset_manager.get_shopfloor_asset_path(asset_type, "square2")
+            asset_path = asset_manager.get_shopfloor_asset_path(canonical_type, "square2")
             if asset_path:
-                st.write(f"📁 {asset_path}")
+                st.write(f"📁 {Path(asset_path).name}")
             else:
                 st.write("❌ No asset found")
 
     except Exception as e:
-        logger.error(f"❌ Failed to show empty position assets: {e}")
+        logger.error(f"❌ Failed to show fixed position assets: {e}")
         st.error(f"❌ Error showing assets: {e}")
 
 
