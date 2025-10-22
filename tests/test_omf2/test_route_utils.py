@@ -29,6 +29,7 @@ class TestGraphBuilding:
         # Check nodes
         assert "nodes" in graph
         assert "adjacency" in graph
+        assert "id_to_primary" in graph
         assert len(graph["nodes"]) > 0
 
         # Check that modules are nodes
@@ -38,6 +39,35 @@ class TestGraphBuilding:
         # Check that intersections are nodes
         assert "1" in graph["nodes"]
         assert "2" in graph["nodes"]
+
+    def test_build_graph_id_to_primary_mapping(self):
+        """Test that build_graph creates id_to_primary mapping for both id and serialNumber"""
+        # Load real config
+        config_path = Path(__file__).parent.parent.parent / "omf2" / "config" / "ccu" / "shopfloor_layout.json"
+        with open(config_path, "r") as f:
+            layout = json.load(f)
+
+        graph = build_graph(layout)
+
+        # Check id_to_primary mapping exists
+        assert "id_to_primary" in graph
+        id_to_primary = graph["id_to_primary"]
+
+        # Both module id and serialNumber should map to the same primary key
+        assert "MILL" in id_to_primary
+        assert "SVR3QA2098" in id_to_primary
+        assert id_to_primary["MILL"] == "SVR3QA2098"
+        assert id_to_primary["SVR3QA2098"] == "SVR3QA2098"
+
+        # Check DPS
+        assert "DPS" in id_to_primary
+        assert "SVR4H73275" in id_to_primary
+        assert id_to_primary["DPS"] == "SVR4H73275"
+
+        # Check HBW
+        assert "HBW" in id_to_primary
+        assert "SVR3QA0022" in id_to_primary
+        assert id_to_primary["HBW"] == "SVR3QA0022"
 
     def test_build_graph_creates_adjacency(self):
         """Test that build_graph creates proper adjacency list"""
@@ -82,6 +112,41 @@ class TestRouteComputation:
         assert route[0] == "SVR3QA2098"
         assert route[-1] == "SVR4H76530"
 
+    def test_compute_route_with_module_ids(self):
+        """Test route computation using module ids instead of serialNumbers"""
+        # Load real config
+        config_path = Path(__file__).parent.parent.parent / "omf2" / "config" / "ccu" / "shopfloor_layout.json"
+        with open(config_path, "r") as f:
+            layout = json.load(f)
+
+        graph = build_graph(layout)
+
+        # Test route using module ids (DPS to HBW)
+        route = compute_route(graph, "DPS", "HBW")
+
+        assert route is not None
+        assert len(route) >= 2
+        # Route should use primary keys (serialNumbers)
+        assert route[0] == "SVR4H73275"  # DPS serialNumber
+        assert route[-1] == "SVR3QA0022"  # HBW serialNumber
+
+    def test_compute_route_mixed_id_and_serial(self):
+        """Test route computation with mixed id and serialNumber"""
+        # Load real config
+        config_path = Path(__file__).parent.parent.parent / "omf2" / "config" / "ccu" / "shopfloor_layout.json"
+        with open(config_path, "r") as f:
+            layout = json.load(f)
+
+        graph = build_graph(layout)
+
+        # Test route using module id for start and serialNumber for goal
+        route = compute_route(graph, "MILL", "SVR4H76530")
+
+        assert route is not None
+        assert len(route) >= 2
+        assert route[0] == "SVR3QA2098"  # MILL serialNumber
+        assert route[-1] == "SVR4H76530"  # AIQS serialNumber
+
     def test_compute_route_same_node(self):
         """Test that route from node to itself is trivial"""
         layout = {
@@ -94,6 +159,19 @@ class TestRouteComputation:
         route = compute_route(graph, "SN1", "SN1")
 
         assert route == ["SN1"]
+
+    def test_compute_route_same_node_using_id(self):
+        """Test that route from node to itself works with module id"""
+        layout = {
+            "modules": [{"id": "MOD1", "serialNumber": "SN1", "position": [0, 0]}],
+            "intersections": [],
+            "roads": [],
+        }
+
+        graph = build_graph(layout)
+        route = compute_route(graph, "MOD1", "MOD1")
+
+        assert route == ["SN1"]  # Returns primary key
 
     def test_compute_route_no_path(self):
         """Test that compute_route returns None when no path exists"""
@@ -108,6 +186,32 @@ class TestRouteComputation:
 
         graph = build_graph(layout)
         route = compute_route(graph, "SN1", "SN2")
+
+        assert route is None
+
+    def test_compute_route_invalid_start(self):
+        """Test that compute_route handles invalid start node gracefully"""
+        layout = {
+            "modules": [{"id": "MOD1", "serialNumber": "SN1", "position": [0, 0]}],
+            "intersections": [],
+            "roads": [],
+        }
+
+        graph = build_graph(layout)
+        route = compute_route(graph, "INVALID", "SN1")
+
+        assert route is None
+
+    def test_compute_route_invalid_goal(self):
+        """Test that compute_route handles invalid goal node gracefully"""
+        layout = {
+            "modules": [{"id": "MOD1", "serialNumber": "SN1", "position": [0, 0]}],
+            "intersections": [],
+            "roads": [],
+        }
+
+        graph = build_graph(layout)
+        route = compute_route(graph, "SN1", "INVALID")
 
         assert route is None
 

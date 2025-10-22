@@ -31,26 +31,41 @@ def build_graph(shopfloor_layout: dict) -> Dict:
         Dictionary with:
         - nodes: Dict mapping node IDs to node data {id, type, position}
         - adjacency: Dict mapping node IDs to list of connected node IDs
+        - id_to_primary: Dict mapping both id and serialNumber to primary node key
         
     Example:
         graph = build_graph(layout_config)
-        # graph['nodes'] = {'MILL': {...}, '1': {...}, ...}
-        # graph['adjacency'] = {'MILL': ['1'], '1': ['MILL', '2'], ...}
+        # graph['nodes'] = {'SVR3QA2098': {...}, '1': {...}, ...}
+        # graph['id_to_primary'] = {'MILL': 'SVR3QA2098', 'SVR3QA2098': 'SVR3QA2098', ...}
+        # graph['adjacency'] = {'SVR3QA2098': ['1'], '1': ['SVR3QA2098', '2'], ...}
     """
     nodes = {}
     adjacency = {}
+    id_to_primary = {}  # Maps both id and serialNumber to primary node key
     
-    # Add modules as nodes
+    # Add modules as nodes - index by both serialNumber and id
     for module in shopfloor_layout.get("modules", []):
-        node_id = module.get("serialNumber") or module.get("id")
-        if node_id:
-            nodes[node_id] = {
-                "id": node_id,
+        # Use serialNumber as primary key (used in roads)
+        serial_number = module.get("serialNumber")
+        module_id = module.get("id")
+        
+        # Primary key is serialNumber if available, otherwise id
+        primary_key = serial_number or module_id
+        
+        if primary_key:
+            nodes[primary_key] = {
+                "id": primary_key,
                 "type": "module",
                 "position": module.get("position", [0, 0]),
                 "moduleType": module.get("type"),
             }
-            adjacency[node_id] = []
+            adjacency[primary_key] = []
+            
+            # Map both serialNumber and id to the primary key
+            if serial_number:
+                id_to_primary[serial_number] = primary_key
+            if module_id and module_id != serial_number:
+                id_to_primary[module_id] = primary_key
     
     # Add intersections as nodes
     for intersection in shopfloor_layout.get("intersections", []):
@@ -62,6 +77,7 @@ def build_graph(shopfloor_layout: dict) -> Dict:
                 "position": intersection.get("position", [0, 0]),
             }
             adjacency[node_id] = []
+            id_to_primary[node_id] = node_id
     
     # Build adjacency list from roads
     for road in shopfloor_layout.get("roads", []):
@@ -76,10 +92,12 @@ def build_graph(shopfloor_layout: dict) -> Dict:
                 adjacency[to_node].append(from_node)
     
     logger.debug(f"Built graph with {len(nodes)} nodes and {sum(len(v) for v in adjacency.values()) // 2} edges")
+    logger.debug(f"Graph supports {len(id_to_primary)} identifiers (id + serialNumber mappings)")
     
     return {
         "nodes": nodes,
         "adjacency": adjacency,
+        "id_to_primary": id_to_primary,
     }
 
 
@@ -87,28 +105,52 @@ def compute_route(graph: Dict, start_id: str, goal_id: str) -> Optional[List[str
     """
     Compute route from start to goal using BFS (Breadth-First Search)
     
+    Supports flexible lookup: accepts both module id (e.g., "DPS") and serialNumber (e.g., "SVR4H73275")
+    
     Args:
         graph: Graph dictionary from build_graph()
-        start_id: Starting node ID (module serialNumber or intersection ID)
-        goal_id: Goal node ID (module serialNumber or intersection ID)
+        start_id: Starting node ID (module id, serialNumber, or intersection ID)
+        goal_id: Goal node ID (module id, serialNumber, or intersection ID)
         
     Returns:
         List of node IDs representing the route from start to goal, or None if no route found
         
     Example:
-        route = compute_route(graph, "SVR3QA2098", "SVR4H76530")
-        # route = ["SVR3QA2098", "1", "2", "SVR4H76530"]
+        route = compute_route(graph, "DPS", "HBW")  # Using module ids
+        route = compute_route(graph, "SVR4H73275", "SVR3QA0022")  # Using serialNumbers
+        # Both return route like: ["SVR4H73275", "2", "1", "SVR3QA0022"]
     """
-    if start_id not in graph["nodes"] or goal_id not in graph["nodes"]:
-        logger.warning(f"Start ({start_id}) or goal ({goal_id}) not found in graph")
+    # Flexible lookup: resolve start_id and goal_id to primary keys
+    id_to_primary = graph.get("id_to_primary", {})
+    
+    # Resolve start node
+    resolved_start = id_to_primary.get(start_id, start_id)
+    if resolved_start not in graph["nodes"]:
+        available_nodes = sorted(id_to_primary.keys())
+        logger.warning(
+            f"Start node '{start_id}' not found in graph. "
+            f"Available identifiers ({len(available_nodes)}): {', '.join(available_nodes[:10])}"
+            f"{'...' if len(available_nodes) > 10 else ''}"
+        )
         return None
     
-    if start_id == goal_id:
-        return [start_id]
+    # Resolve goal node
+    resolved_goal = id_to_primary.get(goal_id, goal_id)
+    if resolved_goal not in graph["nodes"]:
+        available_nodes = sorted(id_to_primary.keys())
+        logger.warning(
+            f"Goal node '{goal_id}' not found in graph. "
+            f"Available identifiers ({len(available_nodes)}): {', '.join(available_nodes[:10])}"
+            f"{'...' if len(available_nodes) > 10 else ''}"
+        )
+        return None
+    
+    if resolved_start == resolved_goal:
+        return [resolved_start]
     
     # BFS implementation
-    queue = deque([(start_id, [start_id])])
-    visited = {start_id}
+    queue = deque([(resolved_start, [resolved_start])])
+    visited = {resolved_start}
     
     while queue:
         current_id, path = queue.popleft()
@@ -121,14 +163,14 @@ def compute_route(graph: Dict, start_id: str, goal_id: str) -> Optional[List[str
             new_path = path + [neighbor_id]
             
             # Goal reached?
-            if neighbor_id == goal_id:
+            if neighbor_id == resolved_goal:
                 logger.debug(f"Route found: {' → '.join(new_path)}")
                 return new_path
             
             visited.add(neighbor_id)
             queue.append((neighbor_id, new_path))
     
-    logger.warning(f"No route found from {start_id} to {goal_id}")
+    logger.warning(f"No route found from {start_id} (resolved: {resolved_start}) to {goal_id} (resolved: {resolved_goal})")
     return None
 
 
