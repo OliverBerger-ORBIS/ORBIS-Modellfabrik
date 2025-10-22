@@ -1,13 +1,17 @@
 {
   "_meta": {
     "_description": "Shopfloor layout configuration with grid and module positions",
-    "_version": "1.1",
+    "_version": "2.0",
     "_domain": "ccu",
     "_source": "Merged from shopfloor-layout.json and shopfloor_omf1.yml",
     "_usage_omf2": "Used by CCUGateway for physical layout operations and module positioning",
     "_changelog": {
+      "v2.0": "BREAKING: Migrated empty_positions to fixed_positions structure with canonical asset keys. Legacy EMPTY1/EMPTY2 keys no longer supported in productive code.",
       "v1.1": "Renamed EMPTY1/EMPTY2 to COMPANY/SOFTWARE for better domain semantics. Asset Manager maintains backward compatibility.",
       "v1.0": "Initial configuration with EMPTY1/EMPTY2 naming"
+    },
+    "_migration_notes": {
+      "v2.0": "Applications using empty_positions must migrate to fixed_positions structure. Asset keys changed from direct names (e.g., 'ORBIS') to canonical format (e.g., 'COMPANY_rectangle'). Legacy EMPTY1/EMPTY2 keys removed from productive asset lookup."
     },
       "_notes": [
         "Grid-based layout with 3x4 configuration (3 rows × 4 columns)",
@@ -17,22 +21,18 @@
         "Module types use original hardware names for MQTT compatibility",
         "Registry correlation: type='Processing' (MILL,DRILL), type='Storage' (HBW), type='Quality-Control' (AIQS), type='Input/Output' (DPS), type='Charging' (CHRG)",
         "Matrix convention: [row, column] - standard mathematical notation",
-        "Empty positions use assets object for direct SVG file mapping",
+        "Fixed positions (COMPANY, SOFTWARE) use canonical asset key structure for consistent SVG mapping",
         "COMPLETED: Changed EMPTY1 to COMPANY -> Get Details on factory_configuration_tab from Registry: Info about Software Digitalisation-Company ORBIS",
         "COMPLETED: Changed EMPTY2 to SOFTWARE -> Get Details on factory_configuration_tab from Registry: Info about DSP DISTRIBUTED SHOPFLOOR PROCESSING",
-        "COMPATIBILITY: Asset Manager supports both old (EMPTY1/EMPTY2) and new (COMPANY/SOFTWARE) keys for backward compatibility",
-        "TODO: Change EMPTYs should only consist of rectangles, the squares SQUARE1 und SQUARE2 respectively belong physically to HBW (for EMPTY1 squares) and to DPDS Delivery And PICKUP station for EMPTY 2 SQUARES)",
-        "TODO: COMPANY AND SOFTWARE do not play an active role in production and storage_order Process, but are the brain and steering control of all",
-        "TODO: Clicking on DPS or HBW: the corresponding GRID and the rectangles should be selected",
-        "TODO: the GRID 3 x 4 cell size should be changed to 200x200px. The cells refelect that each  cell is a square, but ..",
-        "TODO: indeed HBW and DPS are rectangles of size 200X300 (width X hight) (and should/could consist of a combined SVG by COMBINING THE ICONS FROM ORIGINAL HBW/DPS AND THE SQUARES"
+        "v2.0: Cell size increased to 200x200px for better visibility",
+        "v2.0: Fixed positions only contain rectangle assets, square assets belong physically to HBW and DPS modules"
       ]
   },
   
   "grid": {
     "rows": 3,
     "columns": 4,
-    "cell_size": "100x100"
+    "cell_size": "200x200"
   },
   
   "modules": [
@@ -74,20 +74,26 @@
     }
   ],
   
-  "empty_positions": [
+  "fixed_positions": [
     {
       "id": "COMPANY",
+      "type": "company",
       "position": [0, 0],
-      "rectangle": "ORBIS",
-      "square1": "shelves",
-      "square2": "conveyer_belt"
+      "assets": {
+        "rectangle": "ORBIS",
+        "square1": "shelves",
+        "square2": "conveyer_belt"
+      }
     },
     {
       "id": "SOFTWARE",
+      "type": "software",
       "position": [0, 3],
-      "rectangle": "DSP",
-      "square1": "warehouse",
-      "square2": "delivery_truck_speed"
+      "assets": {
+        "rectangle": "DSP",
+        "square1": "warehouse",
+        "square2": "delivery_truck_speed"
+      }
     }
   ],
   
