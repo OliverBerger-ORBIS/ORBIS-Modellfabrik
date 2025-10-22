@@ -31,6 +31,10 @@ def render_ccu_factory_configuration_subtab():
         # Shopfloor Layout Display
         _show_shopfloor_layout_section()
 
+        # Shopfloor Position Details Section
+        st.divider()
+        _show_shopfloor_position_details()
+
         # Module Details Section (shown after double-click)
         if st.session_state.get("show_module_details") and st.session_state.get("selected_module_id"):
             st.divider()
@@ -87,6 +91,169 @@ def _show_shopfloor_layout_section():
     except Exception as e:
         st.error(f"❌ Failed to load shopfloor layout: {e}")
         logger.error(f"Failed to load shopfloor layout: {e}")
+
+
+def _show_shopfloor_position_details():
+    """Show shopfloor position details with dropdown and details box"""
+    try:
+        st.subheader("🔧 Shopfloor Position Details")
+
+        # Load layout configuration
+        config_loader = get_ccu_config_loader()
+        layout_config = config_loader.load_shopfloor_layout()
+
+        if not layout_config:
+            st.warning("⚠️ No shopfloor layout configuration available")
+            return
+
+        # Get all grid positions (3x4 = 12 positions)
+        grid_positions = []
+        for row in range(3):
+            for col in range(4):
+                grid_positions.append(f"Position [{row},{col}]")
+
+        # Dropdown for position selection
+        col1, col2 = st.columns([2, 1])
+
+        with col1:
+            selected_position = st.selectbox(
+                "📍 Select Shopfloor Position:", options=grid_positions, index=0, key="shopfloor_position_selector"
+            )
+
+        with col2:
+            if st.button("🔄 Refresh Position", key="refresh_position_details"):
+                st.rerun()
+
+        # Extract row, col from selected position
+        import re
+
+        match = re.search(r"\[(\d+),(\d+)\]", selected_position)
+        if match:
+            row, col = int(match.group(1)), int(match.group(2))
+
+            # Show details for this position
+            _show_position_details(row, col, layout_config)
+        else:
+            st.error("❌ Invalid position format")
+
+    except Exception as e:
+        logger.error(f"❌ Failed to show shopfloor position details: {e}")
+        st.error(f"❌ Error showing position details: {e}")
+
+
+def _show_position_details(row: int, col: int, layout_config: dict):
+    """Show details for a specific shopfloor position"""
+    try:
+        # Check if position has a module
+        modules = layout_config.get("modules", [])
+        empty_positions = layout_config.get("empty_positions", [])
+        intersections = layout_config.get("intersections", [])
+
+        # Find module at this position
+        module_at_position = None
+        for module in modules:
+            if module.get("position") == [row, col]:
+                module_at_position = module
+                break
+
+        # Find empty position at this position
+        empty_at_position = None
+        for empty_pos in empty_positions:
+            if empty_pos.get("position") == [row, col]:
+                empty_at_position = empty_pos
+                break
+
+        # Find intersection at this position
+        intersection_at_position = None
+        for intersection in intersections:
+            if intersection.get("position") == [row, col]:
+                intersection_at_position = intersection
+                break
+
+        # Display details based on what's at this position
+        if module_at_position:
+            st.success(f"✅ **Module Found:** {module_at_position.get('id', 'Unknown')}")
+            st.write(f"- **Type:** {module_at_position.get('type', 'N/A')}")
+            st.write(f"- **Serial Number:** {module_at_position.get('serialNumber', 'N/A')}")
+            st.write(f"- **Position:** [{row}, {col}]")
+
+        elif empty_at_position:
+            st.info(f"📦 **Empty Position:** {empty_at_position.get('id', 'Unknown')}")
+            st.write(f"- **Rectangle:** {empty_at_position.get('rectangle', 'N/A')}")
+            st.write(f"- **Square1:** {empty_at_position.get('square1', 'N/A')}")
+            st.write(f"- **Square2:** {empty_at_position.get('square2', 'N/A')}")
+            st.write(f"- **Position:** [{row}, {col}]")
+
+            # Show asset information if available
+            _show_empty_position_assets(empty_at_position)
+
+        elif intersection_at_position:
+            st.warning(f"🔀 **Intersection:** {intersection_at_position.get('id', 'Unknown')}")
+            st.write(f"- **Connected Modules:** {', '.join(intersection_at_position.get('connected_modules', []))}")
+            st.write(f"- **Position:** [{row}, {col}]")
+
+        else:
+            st.info(f"📋 **Empty Cell** at position [{row}, {col}]")
+            st.write("No module, empty position, or intersection found at this location.")
+
+    except Exception as e:
+        logger.error(f"❌ Failed to show position details: {e}")
+        st.error(f"❌ Error showing position details: {e}")
+
+
+def _show_empty_position_assets(empty_position: dict):
+    """Show asset information for empty positions using new shopfloor_assets structure"""
+    try:
+        position_id = empty_position.get("id", "Unknown")
+
+        # Map position ID to asset type
+        asset_type = None
+        if position_id == "COMPANY":
+            asset_type = "company"
+        elif position_id == "SOFTWARE":
+            asset_type = "software"
+
+        if not asset_type:
+            st.info("📋 No asset type mapping available")
+            return
+
+        # Get Asset Manager
+        from omf2.assets import get_asset_manager
+
+        asset_manager = get_asset_manager()
+
+        # Show available assets
+        st.markdown("#### 🎨 Available Assets:")
+
+        col1, col2, col3 = st.columns(3)
+
+        with col1:
+            st.markdown("**Rectangle:**")
+            asset_path = asset_manager.get_shopfloor_asset_path(asset_type, "rectangle")
+            if asset_path:
+                st.write(f"📁 {asset_path}")
+            else:
+                st.write("❌ No asset found")
+
+        with col2:
+            st.markdown("**Square1:**")
+            asset_path = asset_manager.get_shopfloor_asset_path(asset_type, "square1")
+            if asset_path:
+                st.write(f"📁 {asset_path}")
+            else:
+                st.write("❌ No asset found")
+
+        with col3:
+            st.markdown("**Square2:**")
+            asset_path = asset_manager.get_shopfloor_asset_path(asset_type, "square2")
+            if asset_path:
+                st.write(f"📁 {asset_path}")
+            else:
+                st.write("❌ No asset found")
+
+    except Exception as e:
+        logger.error(f"❌ Failed to show empty position assets: {e}")
+        st.error(f"❌ Error showing assets: {e}")
 
 
 # Layout Information Sektion entfernt - uninteressant

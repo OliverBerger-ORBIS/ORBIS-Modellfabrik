@@ -135,22 +135,36 @@ class OMF2AssetManager:
             }
         )
 
-        # Empty-Position-Assets - spezifische Zuordnung für Rectangle/Square1/Square2
-        empty_assets = {
-            # EMPTY1 Assets (Position [0,0])
+        # Shopfloor-Assets - spezifische Assets für Shopfloor-Layout
+        shopfloor_assets = {
+            # NEUE API: company_* Assets (bevorzugt)
+            "company_rectangle": "ORBIS_logo_RGB.svg",
+            "company_square1": "shelves.svg",
+            "company_square2": "conveyor_belt.svg",
+            # NEUE API: software_* Assets (bevorzugt)
+            "software_rectangle": "factory.svg",  # DSP test logo
+            "software_square1": "warehouse.svg",
+            "software_square2": "delivery_truck_speed.svg",
+            # RÜCKWÄRTSKOMPATIBILITÄT: COMPANY/SOFTWARE Keys (für alte JSON)
+            "COMPANY_rectangle": "ORBIS_logo_RGB.svg",
+            "COMPANY_square1": "shelves.svg",
+            "COMPANY_square2": "conveyor_belt.svg",
+            "SOFTWARE_rectangle": "factory.svg",  # DSP test logo
+            "SOFTWARE_square1": "warehouse.svg",
+            "SOFTWARE_square2": "delivery_truck_speed.svg",
+            # DEPRECATED: Alte EMPTY1/EMPTY2 Assets (Rückwärtskompatibilität)
             "EMPTY1_rectangle": "ORBIS_logo_RGB.svg",
             "EMPTY1_square1": "shelves.svg",
             "EMPTY1_square2": "conveyor_belt.svg",
-            # EMPTY2 Assets (Position [0,3])
-            "EMPTY2_rectangle": "DSP_ITOT_Control_2x1.svg",  # DSP test logo
+            "EMPTY2_rectangle": "factory.svg",  # DSP test logo
             "EMPTY2_square1": "warehouse.svg",
             "EMPTY2_square2": "delivery_truck_speed.svg",
             # Fallback für direkte Namen (für Hybrid-App)
             "ORBIS": "ORBIS_logo_RGB.svg",
         }
 
-        # Empty-Assets zu icon_mapping hinzufügen
-        icon_mapping.update(empty_assets)
+        # Shopfloor-Assets zu icon_mapping hinzufügen
+        icon_mapping.update(shopfloor_assets)
 
         for module_name, icon_file in icon_mapping.items():
             if icon_file is None:
@@ -171,12 +185,48 @@ class OMF2AssetManager:
     # HTML-Templates entfernt - Asset-Manager ist nur für Asset-Loading zuständig
 
     def get_module_icon_path(self, module_name: str) -> Optional[str]:
-        """Gibt den Pfad zum Modul-Icon zurück"""
-        # Direkte Suche (case-sensitive für EMPTY1_rectangle etc.)
+        """Gibt den Pfad zum Modul-Icon zurück
+
+        Args:
+            module_name: Name des Moduls oder Assets (z.B. "company_rectangle", "EMPTY1")
+
+        Returns:
+            Pfad zum SVG-Icon oder None
+
+        Note:
+            - Neue Keys (company_*, software_*) werden bevorzugt
+            - Alte Keys (EMPTY1_*, EMPTY2_*) als Fallback für Rückwärtskompatibilität
+            - DEPRECATED: EMPTY1/EMPTY2 werden zu company/software gemappt
+        """
+        # 1. Direkte Suche (neue Keys bevorzugt)
         if module_name in self.module_icons:
             return self.module_icons[module_name]
-        # Fallback: uppercase für Module (MILL, DRILL etc.)
+
+        # 2. Rückwärtskompatibilität: EMPTY1/EMPTY2 → COMPANY/SOFTWARE
+        if module_name == "EMPTY1":
+            return self.module_icons.get("COMPANY_rectangle")
+        elif module_name == "EMPTY2":
+            return self.module_icons.get("SOFTWARE_rectangle")
+
+        # 3. Fallback: uppercase für Module (MILL, DRILL etc.)
         return self.module_icons.get(module_name.upper())
+
+    def get_shopfloor_asset_path(self, asset_type: str, position: str) -> Optional[str]:
+        """Gibt den Pfad zu einem Shopfloor-Asset zurück
+
+        Args:
+            asset_type: Typ des Assets ("company" oder "software")
+            position: Position des Assets ("rectangle", "square1", "square2")
+
+        Returns:
+            Pfad zum SVG-Icon oder None
+
+        Examples:
+            get_shopfloor_asset_path("company", "rectangle") -> "ORBIS_logo_RGB.svg"
+            get_shopfloor_asset_path("software", "square1") -> "warehouse.svg"
+        """
+        asset_key = f"{asset_type}_{position}"
+        return self.get_module_icon_path(asset_key)
 
     def get_workpiece_svg_content(self, workpiece_type: str, state: str = "unprocessed") -> Optional[str]:
         """Lädt den Inhalt einer Workpiece-SVG mit CSS-Scoping für korrekte Darstellung"""

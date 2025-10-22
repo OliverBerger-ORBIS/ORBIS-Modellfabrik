@@ -123,13 +123,13 @@ def _generate_html_grid(
 ) -> str:
     """
     Generate complete HTML grid with inline CSS for gapless layout.
-    
+
     Returns a single HTML string containing the entire 4x3 grid.
     """
     # Calculate cell dimensions
     cell_width = max_width // 4
     cell_height = max_height // 3
-    
+
     # CSS styles
     css = f"""
     <style>
@@ -200,18 +200,25 @@ def _generate_html_grid(
         }}
     </style>
     """
-    
+
     # Generate grid cells
     cells_html = []
     for row in range(3):
         for col in range(4):
             cell_html = _generate_cell_html(
-                row, col, modules, empty_positions, intersections,
-                asset_manager, active_module_id, active_intersections,
-                cell_width, cell_height
+                row,
+                col,
+                modules,
+                empty_positions,
+                intersections,
+                asset_manager,
+                active_module_id,
+                active_intersections,
+                cell_width,
+                cell_height,
             )
             cells_html.append(cell_html)
-    
+
     # Combine into complete HTML
     html = f"""
     {css}
@@ -219,7 +226,7 @@ def _generate_html_grid(
         {''.join(cells_html)}
     </div>
     """
-    
+
     return html
 
 
@@ -236,33 +243,31 @@ def _generate_cell_html(
     cell_height: int,
 ) -> str:
     """Generate HTML for a single grid cell."""
-    
+
     # Handle special split cells at (0,0) and (0,3)
     if (row == 0 and col == 0) or (row == 0 and col == 3):
         return _generate_split_cell_html(row, col, empty_positions, asset_manager, cell_width, cell_height)
-    
+
     # Find cell data
     cell_data = _find_cell_data(row, col, modules, empty_positions, intersections)
-    
+
     # Determine cell classes and styling
     cell_classes = ["cell"]
     if not cell_data:
         cell_classes.append("cell-empty")
-    
+
     # Check if this module is active
-    is_active = False
     if cell_data and active_module_id:
         cell_id = cell_data.get("id", "")
         if cell_id == active_module_id:
             cell_classes.append("cell-active")
-            is_active = True
-    
+
     # Check if this is an active intersection
     if cell_data and cell_data.get("type") == "intersection" and active_intersections:
         intersection_id = cell_data.get("id", "")
         if intersection_id in active_intersections:
             cell_classes.append("cell-intersection-active")
-    
+
     # Generate icon
     icon_svg = ""
     cell_label = ""
@@ -270,14 +275,14 @@ def _generate_cell_html(
         cell_type = cell_data.get("type", "unknown")
         cell_id = cell_data.get("id", "")
         cell_label = cell_id
-        
+
         # Get icon SVG (90% of cell width/height for padding)
         icon_width = int(cell_width * 0.7)
         icon_height = int(cell_height * 0.7)
         icon_svg = _get_module_icon_svg(asset_manager, cell_type, icon_width, icon_height, cell_data)
     else:
         cell_label = ""
-    
+
     # Build cell HTML
     cell_html = f"""
     <div class="{' '.join(cell_classes)}">
@@ -287,7 +292,7 @@ def _generate_cell_html(
         {f'<div class="cell-label">{cell_label}</div>' if cell_label else ''}
     </div>
     """
-    
+
     return cell_html
 
 
@@ -300,36 +305,36 @@ def _generate_split_cell_html(
     cell_height: int,
 ) -> str:
     """Generate HTML for split cells (0,0) and (0,3)."""
-    
+
     position_id = "EMPTY1" if (row == 0 and col == 0) else "EMPTY2"
-    
+
     # Find empty position config
     empty_config = None
     for empty in empty_positions:
         if empty.get("id") == position_id:
             empty_config = empty
             break
-    
+
     # Default icons if config not found
     rectangle_type = "ORBIS"
     square1_type = "shelves"
     square2_type = "conveyor_belt"
-    
+
     if empty_config:
         rectangle_type = empty_config.get("rectangle", rectangle_type)
         square1_type = empty_config.get("square1", square1_type)
         square2_type = empty_config.get("square2", square2_type)
-    
+
     # Generate icons (smaller for split cells)
     rect_width = int(cell_width * 0.8)
     rect_height = int(cell_height * 0.4)
     square_width = int(cell_width * 0.4)
     square_height = int(cell_height * 0.4)
-    
+
     rectangle_svg = _get_split_cell_icon(asset_manager, rectangle_type, rect_width, rect_height)
     square1_svg = _get_split_cell_icon(asset_manager, square1_type, square_width, square_height)
     square2_svg = _get_split_cell_icon(asset_manager, square2_type, square_width, square_height)
-    
+
     cell_html = f"""
     <div class="cell cell-split">
         <div class="split-top">
@@ -343,7 +348,7 @@ def _generate_split_cell_html(
         </div>
     </div>
     """
-    
+
     return cell_html
 
 
@@ -356,7 +361,7 @@ def _get_split_cell_icon(asset_manager, icon_type: str, width: int, height: int)
                 icon_path = asset_manager.get_empty_position_asset_by_name("ORBIS")
             else:
                 icon_path = asset_manager.get_empty_position_asset_by_name(icon_type)
-            
+
             if icon_path and Path(icon_path).exists():
                 with open(icon_path, encoding="utf-8") as f:
                     svg_content = f.read()
@@ -364,7 +369,7 @@ def _get_split_cell_icon(asset_manager, icon_type: str, width: int, height: int)
                     return svg_content
     except Exception as e:
         logger.debug(f"Could not load split cell icon {icon_type}: {e}")
-    
+
     # Fallback text representation
     return f'<text x="{width//2}" y="{height//2}" text-anchor="middle" font-size="10" fill="#666">{icon_type}</text>'
 
