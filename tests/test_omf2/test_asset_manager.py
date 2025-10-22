@@ -298,6 +298,195 @@ class TestModuleIconMethods(unittest.TestCase):
         self.assertIsNotNone(result)
 
 
+class TestCanonicalShopfloorAssets(unittest.TestCase):
+    """Tests für Canonical Shopfloor Assets (COMPANY_*, SOFTWARE_*)"""
+
+    def setUp(self):
+        """Setup für jeden Test"""
+        self.temp_dir = tempfile.mkdtemp()
+        self.assets_dir = Path(self.temp_dir) / "assets"
+        self.svgs_dir = self.assets_dir / "svgs"
+        self.svgs_dir.mkdir(parents=True)
+
+        # Create test SVG files
+        self._create_test_svg("ORBIS_logo_RGB.svg")
+        self._create_test_svg("shelves.svg")
+        self._create_test_svg("conveyor_belt.svg")
+        self._create_test_svg("factory.svg")
+        self._create_test_svg("warehouse.svg")
+        self._create_test_svg("delivery_truck_speed.svg")
+        self._create_test_svg("empty.svg")
+
+        # Mock assets_dir
+        with patch.object(OMF2AssetManager, "__init__", lambda x: None):
+            self.asset_manager = OMF2AssetManager()
+            self.asset_manager.assets_dir = self.assets_dir
+            self.asset_manager.svgs_dir = self.svgs_dir
+            # Setup canonical shopfloor assets mapping
+            self.asset_manager.module_icons = {
+                "COMPANY_rectangle": str(self.svgs_dir / "ORBIS_logo_RGB.svg"),
+                "COMPANY_square1": str(self.svgs_dir / "shelves.svg"),
+                "COMPANY_square2": str(self.svgs_dir / "conveyor_belt.svg"),
+                "SOFTWARE_rectangle": str(self.svgs_dir / "factory.svg"),
+                "SOFTWARE_square1": str(self.svgs_dir / "warehouse.svg"),
+                "SOFTWARE_square2": str(self.svgs_dir / "delivery_truck_speed.svg"),
+                "ORBIS": str(self.svgs_dir / "ORBIS_logo_RGB.svg"),
+                "DSP": str(self.svgs_dir / "factory.svg"),
+            }
+
+    def tearDown(self):
+        """Cleanup nach jedem Test"""
+        import shutil
+
+        shutil.rmtree(self.temp_dir)
+
+    def _create_test_svg(self, filename: str):
+        """Hilfsmethode: Erstellt Test-SVG-Datei"""
+        svg_path = self.svgs_dir / filename
+        svg_path.write_text('<svg viewBox="0 0 24 24"><circle /></svg>', encoding="utf-8")
+        return svg_path
+
+    def test_canonical_company_rectangle(self):
+        """Test: COMPANY_rectangle liefert ORBIS_logo_RGB.svg"""
+        result = self.asset_manager.get_module_icon_path("COMPANY_rectangle")
+        self.assertIsNotNone(result)
+        self.assertIn("ORBIS_logo_RGB.svg", str(result))
+
+    def test_canonical_company_square1(self):
+        """Test: COMPANY_square1 liefert shelves.svg"""
+        result = self.asset_manager.get_module_icon_path("COMPANY_square1")
+        self.assertIsNotNone(result)
+        self.assertIn("shelves.svg", str(result))
+
+    def test_canonical_company_square2(self):
+        """Test: COMPANY_square2 liefert conveyor_belt.svg"""
+        result = self.asset_manager.get_module_icon_path("COMPANY_square2")
+        self.assertIsNotNone(result)
+        self.assertIn("conveyor_belt.svg", str(result))
+
+    def test_canonical_software_rectangle(self):
+        """Test: SOFTWARE_rectangle liefert factory.svg"""
+        result = self.asset_manager.get_module_icon_path("SOFTWARE_rectangle")
+        self.assertIsNotNone(result)
+        self.assertIn("factory.svg", str(result))
+
+    def test_canonical_software_square1(self):
+        """Test: SOFTWARE_square1 liefert warehouse.svg"""
+        result = self.asset_manager.get_module_icon_path("SOFTWARE_square1")
+        self.assertIsNotNone(result)
+        self.assertIn("warehouse.svg", str(result))
+
+    def test_canonical_software_square2(self):
+        """Test: SOFTWARE_square2 liefert delivery_truck_speed.svg"""
+        result = self.asset_manager.get_module_icon_path("SOFTWARE_square2")
+        self.assertIsNotNone(result)
+        self.assertIn("delivery_truck_speed.svg", str(result))
+
+    def test_get_asset_file_company_rectangle(self):
+        """Test: get_asset_file für COMPANY_rectangle"""
+        result = self.asset_manager.get_asset_file("COMPANY_rectangle")
+        self.assertIsNotNone(result)
+        self.assertIn("ORBIS_logo_RGB.svg", result)
+
+    def test_get_asset_file_software_square1(self):
+        """Test: get_asset_file für SOFTWARE_square1"""
+        result = self.asset_manager.get_asset_file("SOFTWARE_square1")
+        self.assertIsNotNone(result)
+        self.assertIn("warehouse.svg", result)
+
+    def test_get_asset_file_fallback_to_empty(self):
+        """Test: get_asset_file fallback zu empty.svg bei unbekanntem Key"""
+        result = self.asset_manager.get_asset_file("UNKNOWN_KEY")
+        self.assertIsNotNone(result)
+        self.assertIn("empty.svg", result)
+
+    def test_get_shopfloor_asset_path_company(self):
+        """Test: get_shopfloor_asset_path für COMPANY assets"""
+        result = self.asset_manager.get_shopfloor_asset_path("COMPANY", "rectangle")
+        self.assertIsNotNone(result)
+        self.assertIn("ORBIS_logo_RGB.svg", str(result))
+
+    def test_get_shopfloor_asset_path_software(self):
+        """Test: get_shopfloor_asset_path für SOFTWARE assets"""
+        result = self.asset_manager.get_shopfloor_asset_path("SOFTWARE", "square1")
+        self.assertIsNotNone(result)
+        self.assertIn("warehouse.svg", str(result))
+
+    def test_legacy_empty1_deprecated(self):
+        """Test: EMPTY1 keys are no longer supported in productive code"""
+        # Legacy EMPTY1 should not work anymore
+        result = self.asset_manager.get_module_icon_path("EMPTY1")
+        self.assertIsNone(result)
+
+    def test_legacy_empty2_deprecated(self):
+        """Test: EMPTY2 keys are no longer supported in productive code"""
+        # Legacy EMPTY2 should not work anymore
+        result = self.asset_manager.get_module_icon_path("EMPTY2")
+        self.assertIsNone(result)
+
+
+class TestIconVisibilityAtPositions(unittest.TestCase):
+    """Tests für Icon-Visibility an Positionen [0,0] und [0,3]"""
+
+    def setUp(self):
+        """Setup für jeden Test"""
+        self.temp_dir = tempfile.mkdtemp()
+        self.assets_dir = Path(self.temp_dir) / "assets"
+        self.svgs_dir = self.assets_dir / "svgs"
+        self.svgs_dir.mkdir(parents=True)
+
+        # Create test SVG files for positions [0,0] and [0,3]
+        self._create_test_svg("ORBIS_logo_RGB.svg")
+        self._create_test_svg("factory.svg")
+        self._create_test_svg("empty.svg")
+
+        # Mock assets_dir
+        with patch.object(OMF2AssetManager, "__init__", lambda x: None):
+            self.asset_manager = OMF2AssetManager()
+            self.asset_manager.assets_dir = self.assets_dir
+            self.asset_manager.svgs_dir = self.svgs_dir
+            # Setup mapping for position [0,0] (COMPANY) and [0,3] (SOFTWARE)
+            self.asset_manager.module_icons = {
+                "COMPANY_rectangle": str(self.svgs_dir / "ORBIS_logo_RGB.svg"),
+                "SOFTWARE_rectangle": str(self.svgs_dir / "factory.svg"),
+            }
+
+    def tearDown(self):
+        """Cleanup nach jedem Test"""
+        import shutil
+
+        shutil.rmtree(self.temp_dir)
+
+    def _create_test_svg(self, filename: str):
+        """Hilfsmethode: Erstellt Test-SVG-Datei"""
+        svg_path = self.svgs_dir / filename
+        svg_path.write_text('<svg viewBox="0 0 24 24"><circle /></svg>', encoding="utf-8")
+        return svg_path
+
+    def test_icon_visible_at_position_0_0(self):
+        """Test: Icon ist sichtbar an Position [0,0] (COMPANY)"""
+        # Position [0,0] sollte COMPANY_rectangle icon haben
+        result = self.asset_manager.get_asset_file("COMPANY_rectangle")
+        self.assertIsNotNone(result)
+        self.assertTrue(Path(result).exists())
+        self.assertIn("ORBIS_logo_RGB.svg", result)
+
+    def test_icon_visible_at_position_0_3(self):
+        """Test: Icon ist sichtbar an Position [0,3] (SOFTWARE)"""
+        # Position [0,3] sollte SOFTWARE_rectangle icon haben
+        result = self.asset_manager.get_asset_file("SOFTWARE_rectangle")
+        self.assertIsNotNone(result)
+        self.assertTrue(Path(result).exists())
+        self.assertIn("factory.svg", result)
+
+    def test_get_asset_file_deterministic(self):
+        """Test: get_asset_file liefert deterministische Pfade"""
+        # Mehrfache Aufrufe sollten denselben Pfad liefern
+        result1 = self.asset_manager.get_asset_file("COMPANY_rectangle")
+        result2 = self.asset_manager.get_asset_file("COMPANY_rectangle")
+        self.assertEqual(result1, result2)
+
+
 class TestErrorHandling(unittest.TestCase):
     """Tests für Error-Handling"""
 
