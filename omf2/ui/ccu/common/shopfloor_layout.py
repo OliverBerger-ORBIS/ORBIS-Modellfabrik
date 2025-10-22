@@ -45,6 +45,9 @@ def show_shopfloor_layout(
     max_height: int = 600,
     layout_config: Optional[dict] = None,
     asset_manager: Optional[object] = None,
+    route_points: Optional[list] = None,
+    agv_progress: float = 0.0,
+    on_cell_click: Optional[callable] = None,
 ) -> None:
     """
     Display stable, view-only shopfloor layout with fixed aspect ratio and gapless grid.
@@ -60,6 +63,9 @@ def show_shopfloor_layout(
         max_height: Container height in pixels (default: 600)
         layout_config: Optional layout configuration dict (loads from config if None)
         asset_manager: Optional asset manager instance (loads if None)
+        route_points: Optional list of (x, y) pixel coordinates for AGV route visualization
+        agv_progress: Progress along route (0.0 to 1.0) for AGV marker positioning
+        on_cell_click: Optional callback function for cell click events
     """
     st.subheader(f"🏭 {title}")
 
@@ -101,6 +107,8 @@ def show_shopfloor_layout(
         active_intersections=active_intersections,
         max_width=max_width,
         max_height=max_height,
+        route_points=route_points,
+        agv_progress=agv_progress,
     )
 
     # Render using st.components or fallback to markdown
@@ -120,15 +128,22 @@ def _generate_html_grid(
     active_intersections: Optional[list],
     max_width: int,
     max_height: int,
+    route_points: Optional[list] = None,
+    agv_progress: float = 0.0,
 ) -> str:
     """
     Generate complete HTML grid with inline CSS for gapless layout.
 
     Returns a single HTML string containing the entire 4x3 grid.
     """
-    # Calculate cell dimensions
-    cell_width = max_width // 4
-    cell_height = max_height // 3
+    # Calculate cell dimensions - use square cells (200x200px default)
+    cell_size = 200  # Default cell size
+    cell_width = cell_size
+    cell_height = cell_size
+    
+    # Update container dimensions to match grid
+    max_width = cell_width * 4
+    max_height = cell_height * 3
 
     # CSS styles
     css = f"""
@@ -137,25 +152,31 @@ def _generate_html_grid(
             width: {max_width}px;
             height: {max_height}px;
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            grid-template-rows: repeat(3, 1fr);
+            grid-template-columns: repeat(4, {cell_width}px);
+            grid-template-rows: repeat(3, {cell_height}px);
             gap: 0;
-            border: 1px solid #ddd;
+            border: 2px solid #ddd;
             background: white;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            position: relative;
         }}
         .cell {{
+            width: {cell_width}px;
+            height: {cell_height}px;
             border: 1px solid #e0e0e0;
+            border-bottom: 2px solid #ddd;  /* Ensure bottom border is visible */
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: space-between;  /* Separate icon from label */
             padding: 8px;
             box-sizing: border-box;
             background: white;
+            aspect-ratio: 1 / 1;  /* Enforce square aspect ratio */
         }}
         .cell-active {{
             border: 4px solid #FF9800 !important;
+            border-bottom: 4px solid #FF9800 !important;
             background: white;
         }}
         .cell-intersection-active {{
@@ -189,14 +210,46 @@ def _generate_html_grid(
         .cell-label {{
             font-size: 11px;
             font-weight: bold;
-            margin-top: 4px;
             text-align: center;
+            margin-top: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
         }}
         .icon-container {{
             display: flex;
             align-items: center;
             justify-content: center;
-            flex: 1;
+            width: 80%;
+            height: 80%;
+            flex-shrink: 0;
+        }}
+        .icon-container img {{
+            object-fit: contain;
+            max-width: 80%;
+            max-height: 80%;
+        }}
+        /* SVG Overlay for routes */
+        .route-overlay {{
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }}
+        .route-path {{
+            fill: none;
+            stroke: #FF9800;
+            stroke-width: 4;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }}
+        .agv-marker {{
+            fill: #FF9800;
+            stroke: white;
+            stroke-width: 2;
         }}
     </style>
     """
@@ -219,15 +272,67 @@ def _generate_html_grid(
             )
             cells_html.append(cell_html)
 
+    # Generate SVG overlay for route visualization
+    svg_overlay = ""
+    if route_points and len(route_points) >= 2:
+        svg_overlay = _generate_route_overlay(route_points, agv_progress, max_width, max_height)
+    
     # Combine into complete HTML
     html = f"""
     {css}
     <div class="shopfloor-container">
         {''.join(cells_html)}
+        {svg_overlay}
     </div>
     """
 
     return html
+
+
+def _generate_route_overlay(
+    route_points: list,
+    agv_progress: float,
+    max_width: int,
+    max_height: int,
+) -> str:
+    """
+    Generate SVG overlay with route polyline and AGV marker
+    
+    Args:
+        route_points: List of (x, y) pixel coordinates
+        agv_progress: Progress along route (0.0 to 1.0)
+        max_width: Container width
+        max_height: Container height
+        
+    Returns:
+        HTML string with SVG overlay
+    """
+    if not route_points or len(route_points) < 2:
+        return ""
+    
+    # Convert points to SVG polyline format
+    points_str = " ".join([f"{x},{y}" for x, y in route_points])
+    
+    # Calculate AGV marker position based on progress
+    agv_position = None
+    if 0.0 <= agv_progress <= 1.0:
+        from omf2.ui.ccu.common.route_utils import point_on_polyline
+        agv_position = point_on_polyline(route_points, agv_progress)
+    
+    # Generate AGV marker SVG
+    agv_marker_svg = ""
+    if agv_position:
+        agv_x, agv_y = agv_position
+        agv_marker_svg = f'<circle class="agv-marker" cx="{agv_x}" cy="{agv_y}" r="8"/>'
+    
+    svg = f"""
+    <svg class="route-overlay" viewBox="0 0 {max_width} {max_height}" xmlns="http://www.w3.org/2000/svg">
+        <polyline class="route-path" points="{points_str}"/>
+        {agv_marker_svg}
+    </svg>
+    """
+    
+    return svg
 
 
 def _generate_cell_html(
@@ -353,7 +458,7 @@ def _generate_split_cell_html(
 
 
 def _get_split_cell_icon(asset_manager, icon_type: str, width: int, height: int) -> str:
-    """Get icon for split cell components."""
+    """Get icon for split cell components with fallback to empty.svg."""
     try:
         if asset_manager:
             # Try to get icon from asset manager
@@ -367,10 +472,19 @@ def _get_split_cell_icon(asset_manager, icon_type: str, width: int, height: int)
                     svg_content = f.read()
                     svg_content = _scale_svg_properly(svg_content, width, height)
                     return svg_content
+            
+            # Fallback to empty.svg if icon not found
+            empty_svg_path = Path(asset_manager.svgs_dir) / "empty.svg"
+            if empty_svg_path.exists():
+                with open(empty_svg_path, encoding="utf-8") as f:
+                    svg_content = f.read()
+                    svg_content = _scale_svg_properly(svg_content, width, height)
+                    return svg_content
+                    
     except Exception as e:
         logger.debug(f"Could not load split cell icon {icon_type}: {e}")
 
-    # Fallback text representation
+    # Final fallback: text representation
     return f'<text x="{width//2}" y="{height//2}" text-anchor="middle" font-size="10" fill="#666">{icon_type}</text>'
 
 
@@ -645,7 +759,7 @@ def _scale_svg_properly(svg_content: str, width: int, height: int) -> str:
 
 
 def _get_module_icon_svg(asset_manager, module_type: str, width: int, height: int, cell_data: dict = None) -> str:
-    """Lädt das SVG-Icon für ein Modul - ViewBox-bewusste Skalierung"""
+    """Lädt das SVG-Icon für ein Modul - ViewBox-bewusste Skalierung mit fallback zu empty.svg"""
     try:
         # Spezielle Behandlung für Intersections - ein Icon pro Intersection
         if module_type == "intersection":
@@ -661,9 +775,19 @@ def _get_module_icon_svg(asset_manager, module_type: str, width: int, height: in
                 # ViewBox-bewusste Skalierung - keine Verzerrung!
                 svg_content = _scale_svg_properly(svg_content, width, height)
                 return svg_content
+        
+        # Fallback to empty.svg if icon not found
+        empty_svg_path = Path(asset_manager.svgs_dir) / "empty.svg"
+        if empty_svg_path.exists():
+            with open(empty_svg_path, encoding="utf-8") as svg_file:
+                svg_content = svg_file.read()
+                svg_content = _scale_svg_properly(svg_content, width, height)
+                return svg_content
+                
     except Exception as e:
         logger.warning(f"Could not load icon for {module_type}: {e}")
 
+    # Final fallback: text representation
     return f'<text x="{width//2}" y="{height//2}" text-anchor="middle" font-size="10" fill="#666">{module_type}</text>'
 
 

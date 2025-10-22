@@ -151,8 +151,10 @@ def _render_order_details(order, order_manager, i18n, is_completed=False):
 
 
 def _render_shopfloor_for_order(order, order_manager, i18n):
-    """Zeigt Shopfloor Layout mit aktiver Modul-Hervorhebung (rechts Spalte)"""
+    """Zeigt Shopfloor Layout mit aktiver Modul-Hervorhebung und AGV-Route (rechts Spalte)"""
     from omf2.ui.ccu.common.shopfloor_layout import show_shopfloor_layout
+    from omf2.ui.ccu.common.route_utils import get_route_for_navigation_step
+    from omf2.ccu.config_loader import get_ccu_config_loader
 
     st.markdown("#### 🗺️ Shopfloor Layout")
 
@@ -160,6 +162,39 @@ def _render_shopfloor_for_order(order, order_manager, i18n):
     production_plan = order_manager.get_complete_production_plan(order)
     active_module = _get_current_active_module(production_plan)
     active_intersections = _get_active_intersections(production_plan)
+    
+    # AGV Route berechnen wenn FTS Navigation aktiv
+    route_points = None
+    agv_progress = 0.0
+    current_nav_step = None
+    
+    # Find current navigation step
+    for step in production_plan:
+        step_state = step.get("state", "PENDING")
+        if step_state in ["IN_PROGRESS", "RUNNING"] and step.get("type") == "NAVIGATION":
+            current_nav_step = step
+            break
+    
+    if current_nav_step:
+        # Compute route for FTS navigation
+        try:
+            config_loader = get_ccu_config_loader()
+            layout_config = config_loader.load_shopfloor_layout()
+            
+            source = current_nav_step.get("source")
+            target = current_nav_step.get("target")
+            
+            if source and target and layout_config:
+                route_points = get_route_for_navigation_step(layout_config, source, target, cell_size=200)
+                
+                # Calculate AGV progress (for demo, use 50% if IN_PROGRESS)
+                if step_state == "IN_PROGRESS":
+                    agv_progress = 0.5
+                elif step_state == "RUNNING":
+                    agv_progress = 0.3
+                    
+        except Exception as e:
+            logger.warning(f"Could not compute route: {e}")
 
     if active_module:
         if active_module == "FTS":
@@ -172,7 +207,7 @@ def _render_shopfloor_for_order(order, order_manager, i18n):
         # Alle Steps abgeschlossen
         st.success("✅ **Alle Production Steps abgeschlossen**")
 
-    # Shopfloor Layout mit aktiver Modul-Hervorhebung (linksbündig)
+    # Shopfloor Layout mit aktiver Modul-Hervorhebung und AGV-Route (linksbündig)
     with st.container():
         # Linksbündige Ausrichtung des Shopfloor Layouts
         st.markdown("<div style='text-align: left;'>", unsafe_allow_html=True)
@@ -182,6 +217,8 @@ def _render_shopfloor_for_order(order, order_manager, i18n):
             show_controls=False,
             unique_key=f"production_orders_shopfloor_{active_module}_{len(active_intersections) if active_intersections else 0}",
             mode="view_mode",  # View mode: only show active modules, no clicks
+            route_points=route_points,
+            agv_progress=agv_progress,
         )
         st.markdown("</div>", unsafe_allow_html=True)
 
