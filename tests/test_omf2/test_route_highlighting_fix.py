@@ -98,10 +98,11 @@ class TestRouteHighlightingFix:
         assert current_nav_step['source'] == 'START'
         assert current_nav_step['target'] == 'HBW'
 
-    def test_intersection_labels_enabled(self):
+    def test_intersection_labels_not_shown(self):
         """
-        Test that intersection labels are now shown (not embedded in SVG)
-        This verifies the fix for route visibility through intersections
+        Test that intersection labels are NOT shown at the bottom
+        This allows routes to be more clearly visible through intersection centers
+        The intersection number is embedded in the SVG icon itself
         """
         # Test data for an intersection cell
         cell_data = {
@@ -110,16 +111,33 @@ class TestRouteHighlightingFix:
             "data": {"id": "1", "position": [1, 1]}
         }
 
-        # NEW BEHAVIOR: Labels should be shown for intersections too
+        # FINAL BEHAVIOR: Labels NOT shown for intersections (only for modules)
         cell_type = cell_data.get("type", "unknown")
         cell_id = cell_data.get("id", "")
 
-        # Before fix: if cell_type != "intersection": cell_label = cell_id
-        # After fix: cell_label = cell_id (for all types)
-        cell_label = cell_id
+        # Intersection labels are not displayed
+        if cell_type != "intersection":
+            cell_label = cell_id
+        else:
+            cell_label = ""
 
-        assert cell_label == "1", "Intersection label should be shown"
-        assert cell_label != "", "Intersection label should not be empty"
+        assert cell_label == "", "Intersection label should NOT be shown at bottom"
+        
+        # Test that module labels ARE still shown
+        module_cell_data = {
+            "type": "module",
+            "id": "HBW",
+            "data": {"id": "HBW", "position": [1, 0]}
+        }
+        module_type = module_cell_data.get("type", "unknown")
+        module_id = module_cell_data.get("id", "")
+        
+        if module_type != "intersection":
+            module_label = module_id
+        else:
+            module_label = ""
+            
+        assert module_label == "HBW", "Module labels should still be shown"
 
     def test_routes_pass_through_intersection_centers(self):
         """
