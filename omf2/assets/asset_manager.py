@@ -17,6 +17,9 @@ from omf2.common.logger import get_logger
 
 logger = get_logger(__name__)
 
+# Product SVG sizing constants
+PRODUCT_SVG_BASE_SIZE = 200  # Default base size in pixels for product SVGs (200x200 container)
+
 
 def scope_svg_styles(svg_content: str) -> str:
     """
@@ -241,6 +244,41 @@ class OMF2AssetManager:
     def get_workpiece_svg_content(self, workpiece_type: str, state: str = "unprocessed") -> Optional[str]:
         """Lädt den Inhalt einer Workpiece-SVG mit CSS-Scoping für korrekte Darstellung"""
         return self._get_workpiece_svg_with_scoping(workpiece_type, state)
+    
+    def get_product_svg_with_sizing(self, workpiece_type: str, state: str = "product", scale: float = 1.0, enforce_width: bool = True) -> Optional[str]:
+        """
+        Get workpiece SVG with standardized sizing (PRODUCT_SVG_BASE_SIZE = 200px)
+        
+        Args:
+            workpiece_type: Workpiece color (BLUE, WHITE, RED)
+            state: SVG pattern (product, 3dim, unprocessed, etc.)
+            scale: Optional scale factor (default 1.0)
+            enforce_width: If True and SVG is non-square, enforce width=200px with proportional height
+            
+        Returns:
+            SVG content wrapped in container div with standardized sizing
+            
+        Example:
+            # Get BLUE product SVG in 200x200 container
+            svg_html = get_product_svg_with_sizing('BLUE', 'product')
+            
+            # Get WHITE 3dim SVG scaled to 300x300 (scale=1.5)
+            svg_html = get_product_svg_with_sizing('WHITE', '3dim', scale=1.5)
+        """
+        svg_content = self.get_workpiece_svg(workpiece_type, state)
+        if not svg_content:
+            return None
+        
+        # Calculate container size with scale factor
+        container_size = int(PRODUCT_SVG_BASE_SIZE * scale)
+        
+        # Wrap SVG in standardized container
+        # If enforce_width and SVG is non-square, the container maintains aspect ratio
+        return f"""
+        <div style="width: {container_size}px; height: {container_size}px; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+            {svg_content}
+        </div>
+        """
 
     # =========================================================================
     # WORKPIECE SVG METHODS
