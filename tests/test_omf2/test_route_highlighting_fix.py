@@ -98,32 +98,29 @@ class TestRouteHighlightingFix:
         assert current_nav_step['source'] == 'START'
         assert current_nav_step['target'] == 'HBW'
 
-    def test_intersection_labels_not_shown(self):
+    def test_no_labels_shown_for_clean_layout(self):
         """
-        Test that intersection labels are NOT shown at the bottom
-        This allows routes to be more clearly visible through intersection centers
-        The intersection number is embedded in the SVG icon itself
+        Test that NO labels are shown at the bottom of any cells
+        This allows icons to be properly centered and routes to pass through visual centers
+        All identification is done via hover tooltips
         """
         # Test data for an intersection cell
-        cell_data = {
+        intersection_cell = {
             "type": "intersection",
             "id": "1",
             "data": {"id": "1", "position": [1, 1]}
         }
 
-        # FINAL BEHAVIOR: Labels NOT shown for intersections (only for modules)
-        cell_type = cell_data.get("type", "unknown")
-        cell_id = cell_data.get("id", "")
-
-        # Intersection labels are not displayed
-        if cell_type != "intersection":
-            cell_label = cell_id
-        else:
-            cell_label = ""
+        # NEW BEHAVIOR: No labels shown for any cell type
+        cell_type = intersection_cell.get("type", "unknown")
+        cell_id = intersection_cell.get("id", "")
+        
+        # No labels displayed (regardless of type)
+        cell_label = ""
 
         assert cell_label == "", "Intersection label should NOT be shown at bottom"
         
-        # Test that module labels ARE still shown
+        # Test that module labels are ALSO not shown (unlike before)
         module_cell_data = {
             "type": "module",
             "id": "HBW",
@@ -132,12 +129,10 @@ class TestRouteHighlightingFix:
         module_type = module_cell_data.get("type", "unknown")
         module_id = module_cell_data.get("id", "")
         
-        if module_type != "intersection":
-            module_label = module_id
-        else:
-            module_label = ""
+        # No labels for modules either - all identification via tooltips
+        module_label = ""
             
-        assert module_label == "HBW", "Module labels should still be shown"
+        assert module_label == "", "Module labels should also NOT be shown - use tooltips instead"
 
     def test_routes_pass_through_intersection_centers(self):
         """
