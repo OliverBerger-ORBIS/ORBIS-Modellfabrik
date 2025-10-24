@@ -494,10 +494,10 @@ def _generate_cell_html(
         cell_type = cell_data.get("type", "unknown")
         cell_id = cell_data.get("id", "")
         
-        # Don't show labels for intersections (number is embedded in SVG)
-        # This allows route lines to be more clearly visible through the center
-        if cell_type != "intersection":
-            cell_label = cell_id
+        # Don't show labels for any cells (intersections or modules)
+        # Labels are now shown via hover tooltips only
+        # This allows icons to be properly centered and routes to pass through visual centers
+        cell_label = ""
 
         # Get icon SVG (90% of cell width/height for padding)
         icon_width = int(cell_width * 0.7)
