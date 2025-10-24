@@ -10,6 +10,8 @@ from omf2.ccu.ccu_gateway import CcuGateway
 from omf2.ccu.stock_manager import get_stock_manager
 from omf2.common.logger import get_logger
 from omf2.ui.common.symbols import UISymbols
+from omf2.ui.common.ui_constants import WAREHOUSE_CELL_SIZE
+from omf2.ui.common.product_rendering import render_product_svg_container
 
 # HTML Templates entfernt - Asset-Manager SVGs verwenden
 
@@ -162,19 +164,13 @@ def _render_inventory_without_manipulation(inventory_data, asset_manager):
 
 
 def _render_inventory_position_fixed(position: str, workpiece_type: str, asset_manager):
-    """Rendert eine Lagerposition mit fester Größe (160x160)"""
+    """Rendert eine Lagerposition mit fester Größe (200x200) - Standardized"""
     if workpiece_type is None:
-        # Leere Position → Palett-SVG mit fester Größe
+        # Leere Position → Palett-SVG mit standardisierter Größe (200x200)
         palett_content = asset_manager.get_workpiece_palett()
         if palett_content:
             st.markdown(
-                f"""
-            <div style="border: 1px solid #ccc; padding: 10px; margin: 5px; text-align: center;">
-                <div style="width: 160px; height: 160px; overflow: hidden;">
-                    {palett_content}
-                </div>
-            </div>
-            """,
+                render_product_svg_container(palett_content, scale=1.0),
                 unsafe_allow_html=True,
             )
             # Position und Inhalt unterhalb zentriert
@@ -184,17 +180,11 @@ def _render_inventory_position_fixed(position: str, workpiece_type: str, asset_m
         else:
             st.error("❌ palett.svg nicht gefunden!")
     else:
-        # Gefüllte Position → Werkstück-SVG mit fester Größe
+        # Gefüllte Position → Werkstück-SVG mit standardisierter Größe (200x200)
         svg_content = asset_manager.get_workpiece_svg(workpiece_type, "instock_unprocessed")
         if svg_content:
             st.markdown(
-                f"""
-            <div style="border: 1px solid #ccc; padding: 10px; margin: 5px; text-align: center;">
-                <div style="width: 160px; height: 160px; overflow: hidden;">
-                    {svg_content}
-                </div>
-            </div>
-            """,
+                render_product_svg_container(svg_content, scale=1.0),
                 unsafe_allow_html=True,
             )
             # Position und Inhalt unterhalb zentriert
