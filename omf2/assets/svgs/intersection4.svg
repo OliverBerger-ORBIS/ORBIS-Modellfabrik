@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 960" width="960" height="960">
-  <!-- Intersection 4: Simple circle without road markings -->
-  <!-- This allows route lines to be clearly visible through the center -->
+  <!-- Intersection 4: Crossing roads with 5px width -->
+  <g fill="none" stroke="#666666" stroke-width="5" stroke-linecap="square">
+    <!-- Horizontal road crossing through center -->
+    <line x1="0" y1="480" x2="960" y2="480"/>
+    <!-- Vertical road crossing through center -->
+    <line x1="480" y1="0" x2="480" y2="960"/>
+  </g>
   <!-- Zentrum: Grauer Kreis -->
   <circle cx="480" cy="480" r="80" fill="#666666"/>
   <!-- Intersection number in center -->
