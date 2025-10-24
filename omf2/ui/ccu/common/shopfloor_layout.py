@@ -508,10 +508,21 @@ def _generate_cell_html(
 
     # Add data attribute for position if click is enabled
     data_attr = f'data-position="[{row},{col}]"' if enable_click else ''
+    
+    # Add tooltip (title attribute) for hover - shows the cell ID/name
+    tooltip_text = ""
+    if cell_data:
+        cell_id = cell_data.get("id", "")
+        cell_type = cell_data.get("type", "unknown")
+        if cell_type == "intersection":
+            tooltip_text = f"Intersection {cell_id}"
+        else:
+            tooltip_text = cell_id
+    title_attr = f'title="{tooltip_text}"' if tooltip_text else ''
 
     # Build cell HTML
     cell_html = f"""
-    <div class="{' '.join(cell_classes)}" {data_attr}>
+    <div class="{' '.join(cell_classes)}" {data_attr} {title_attr}>
         <div class="icon-container">
             {icon_svg}
         </div>
@@ -563,9 +574,16 @@ def _generate_split_cell_html(
 
     # Add data attribute for position if click is enabled
     data_attr = f'data-position="[{row},{col}]"' if enable_click else ''
+    
+    # Add tooltip for split cells showing what's in this position
+    tooltip_text = ""
+    if fixed_config:
+        config_id = fixed_config.get("id", "")
+        tooltip_text = config_id
+    title_attr = f'title="{tooltip_text}"' if tooltip_text else ''
 
     cell_html = f"""
-    <div class="cell cell-split" {data_attr}>
+    <div class="cell cell-split" {data_attr} {title_attr}>
         <div class="split-top">
             {rectangle_svg}
         </div>
