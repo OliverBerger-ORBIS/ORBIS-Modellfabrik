@@ -541,6 +541,105 @@ class TestSingletonPattern(unittest.TestCase):
         self.assertIsInstance(am1, OMF2AssetManager)
 
 
+class TestProductSvgSizing(unittest.TestCase):
+    """Tests für Product SVG sizing (PRODUCT_SVG_BASE_SIZE = 200px)"""
+
+    def setUp(self):
+        """Setup für jeden Test"""
+        self.temp_dir = tempfile.mkdtemp()
+        self.assets_dir = Path(self.temp_dir) / "assets"
+        self.workpiece_dir = self.assets_dir / "workpiece"
+        self.workpiece_dir.mkdir(parents=True)
+
+        # Create test SVG with defined size (non-square for testing proportions)
+        test_svg = """<svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+            <style>.cls-1{fill:#0000ff;}</style>
+            <g id="svg-test"><rect class="cls-1" width="300" height="200"/></g>
+        </svg>"""
+        
+        (self.workpiece_dir / "blue_product.svg").write_text(test_svg, encoding="utf-8")
+        (self.workpiece_dir / "white_3dim.svg").write_text(test_svg, encoding="utf-8")
+
+        with patch.object(OMF2AssetManager, "__init__", lambda x: None):
+            self.asset_manager = OMF2AssetManager()
+            self.asset_manager.assets_dir = self.assets_dir
+
+    def tearDown(self):
+        """Cleanup nach jedem Test"""
+        import shutil
+        shutil.rmtree(self.temp_dir)
+
+    def test_product_svg_base_size_constant(self):
+        """Test: PRODUCT_SVG_BASE_SIZE constant is defined"""
+        from omf2.assets.asset_manager import PRODUCT_SVG_BASE_SIZE
+        self.assertEqual(PRODUCT_SVG_BASE_SIZE, 200)
+
+    def test_get_product_svg_with_sizing_default(self):
+        """Test: get_product_svg_with_sizing returns 200x200 container by default"""
+        result = self.asset_manager.get_product_svg_with_sizing("BLUE", "product")
+        
+        self.assertIsNotNone(result)
+        # Check for 200x200 container
+        self.assertIn("width: 200px", result)
+        self.assertIn("height: 200px", result)
+        # Check SVG content is included
+        self.assertIn("<svg", result)
+
+    def test_get_product_svg_with_sizing_scaled(self):
+        """Test: get_product_svg_with_sizing applies scale factor correctly"""
+        result = self.asset_manager.get_product_svg_with_sizing("WHITE", "3dim", scale=1.5)
+        
+        self.assertIsNotNone(result)
+        # Check for 300x300 container (200 * 1.5)
+        self.assertIn("width: 300px", result)
+        self.assertIn("height: 300px", result)
+
+    def test_get_product_svg_with_sizing_nonexistent(self):
+        """Test: get_product_svg_with_sizing returns None for non-existent SVG"""
+        result = self.asset_manager.get_product_svg_with_sizing("RED", "invalid_pattern")
+        
+        self.assertIsNone(result)
+
+    def test_get_product_svg_with_sizing_maintains_aspect_ratio(self):
+        """Test: Container enforces size while SVG maintains aspect ratio"""
+        result = self.asset_manager.get_product_svg_with_sizing("BLUE", "product", scale=1.0)
+        
+        # Container should be square (200x200)
+        self.assertIn("width: 200px", result)
+        self.assertIn("height: 200px", result)
+        # Container should use flexbox to center content
+        self.assertIn("display: flex", result)
+        self.assertIn("align-items: center", result)
+        self.assertIn("justify-content: center", result)
+
+
+class TestFTSIconAccess(unittest.TestCase):
+    """Tests for FTS icon accessibility via getAssetFile"""
+
+    def setUp(self):
+        """Setup für jeden Test"""
+        self.asset_manager = get_asset_manager()
+
+    def test_fts_icon_accessible_via_get_module_icon_path(self):
+        """Test: FTS icon is accessible via get_module_icon_path"""
+        result = self.asset_manager.get_module_icon_path("FTS")
+        self.assertIsNotNone(result)
+        self.assertIn("ic_ft_fts.svg", result)
+
+    def test_fts_icon_accessible_via_get_asset_file(self):
+        """Test: FTS icon is accessible via get_asset_file"""
+        result = self.asset_manager.get_asset_file("FTS")
+        self.assertIsNotNone(result)
+        self.assertIn("ic_ft_fts.svg", result)
+        # Verify it's not the empty.svg fallback
+        self.assertNotIn("empty.svg", result)
+
+    def test_fts_icon_file_exists(self):
+        """Test: FTS icon file actually exists"""
+        result = self.asset_manager.get_asset_file("FTS")
+        self.assertTrue(Path(result).exists())
+
+
 if __name__ == "__main__":
     # Test-Suite ausführen
     unittest.main(verbosity=2)
