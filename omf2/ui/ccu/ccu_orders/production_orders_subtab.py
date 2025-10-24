@@ -163,17 +163,20 @@ def _render_shopfloor_for_order(order, order_manager, i18n):
     active_module = _get_current_active_module(production_plan)
     active_intersections = _get_active_intersections(production_plan)
     
-    # AGV Route berechnen wenn FTS Navigation aktiv
+    # AGV Route berechnen NUR wenn FTS Navigation der AKTIVE Step ist
+    # FIX: Nur Route zeigen wenn active_module == "FTS", nicht bei anderen Modulen
     route_points = None
     agv_progress = 0.0
     current_nav_step = None
     
-    # Find current navigation step
-    for step in production_plan:
-        step_state = step.get("state", "PENDING")
-        if step_state in ["IN_PROGRESS", "RUNNING"] and step.get("type") == "NAVIGATION":
-            current_nav_step = step
-            break
+    # Find current navigation step - but only show route if it's the ACTIVE step
+    if active_module == "FTS":
+        for step in production_plan:
+            step_state = step.get("state", "PENDING")
+            # Only IN_PROGRESS or RUNNING navigation steps should show route
+            if step_state in ["IN_PROGRESS", "RUNNING"] and step.get("type") == "NAVIGATION":
+                current_nav_step = step
+                break
     
     if current_nav_step:
         # Compute route for FTS navigation

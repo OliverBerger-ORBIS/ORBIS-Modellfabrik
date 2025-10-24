@@ -494,9 +494,9 @@ def _generate_cell_html(
         cell_type = cell_data.get("type", "unknown")
         cell_id = cell_data.get("id", "")
         
-        # For intersections, don't show label (number is embedded in SVG)
-        if cell_type != "intersection":
-            cell_label = cell_id
+        # FIX: Show labels for all cells including intersections
+        # This makes it clearer where routes go and doesn't rely on embedded SVG text
+        cell_label = cell_id
 
         # Get icon SVG (90% of cell width/height for padding)
         icon_width = int(cell_width * 0.7)
