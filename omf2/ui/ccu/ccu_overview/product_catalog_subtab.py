@@ -7,6 +7,7 @@ import streamlit as st
 
 from omf2.ccu.ccu_gateway import CcuGateway
 from omf2.common.logger import get_logger
+from omf2.ui.common.product_rendering import render_product_svg_container
 from omf2.ui.common.symbols import UISymbols
 
 logger = get_logger(__name__)
@@ -87,31 +88,23 @@ def _show_ccu_product_catalog_panel(asset_manager):
                 with columns[i]:
                     st.markdown(f"#### {color_emoji} **{color_name.upper()}**")
 
-                    # 3DIM SVG - DIREKTE SVG-DARSTELLUNG
+                    # 3DIM SVG - STANDARDIZED 200x200 CONTAINER
                     st.markdown("**3DIM SVG:**")
                     svg_content = asset_manager.get_workpiece_svg(product_id.upper(), "3dim")
                     if svg_content:
                         st.markdown(
-                            f"""
-                        <div style="border: 1px solid #ccc; padding: 10px; margin: 5px; text-align: center;">
-                            {svg_content}
-                        </div>
-                        """,
+                            render_product_svg_container(svg_content, scale=1.0),
                             unsafe_allow_html=True,
                         )
                     else:
                         st.error(f"❌ {product_id.lower()}_3dim.svg nicht gefunden!")
 
-                    # PRODUCT SVG - DIREKTE SVG-DARSTELLUNG
+                    # PRODUCT SVG - STANDARDIZED 200x200 CONTAINER
                     st.markdown("**Product SVG:**")
                     svg_content = asset_manager.get_workpiece_svg(product_id.upper(), "product")
                     if svg_content:
                         st.markdown(
-                            f"""
-                        <div style="border: 1px solid #ccc; padding: 10px; margin: 5px; text-align: center;">
-                            {svg_content}
-                        </div>
-                        """,
+                            render_product_svg_container(svg_content, scale=1.0),
                             unsafe_allow_html=True,
                         )
                     else:

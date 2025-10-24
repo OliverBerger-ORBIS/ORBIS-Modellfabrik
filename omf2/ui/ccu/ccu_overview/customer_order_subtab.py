@@ -13,6 +13,7 @@ import streamlit as st
 from omf2.ccu.ccu_gateway import CcuGateway
 from omf2.ccu.stock_manager import get_stock_manager
 from omf2.common.logger import get_logger
+from omf2.ui.common.product_rendering import render_product_svg_container
 from omf2.ui.common.symbols import UISymbols
 
 logger = get_logger(__name__)
@@ -144,15 +145,11 @@ def render_customer_order_subtab(ccu_gateway: CcuGateway, registry_manager, asse
                 with columns[i]:
                     st.markdown(f"#### {color_emoji} **{color_name.upper()} Customer Order**")
 
-                    # PRODUCT SVG - DIREKTE SVG-DARSTELLUNG
+                    # PRODUCT SVG - STANDARDIZED 200x200 CONTAINER
                     svg_content = asset_manager.get_workpiece_svg(product_id.upper(), "product")
                     if svg_content:
                         st.markdown(
-                            f"""
-                        <div style="border: 1px solid #ccc; padding: 10px; margin: 5px; text-align: center;">
-                            {svg_content}
-                        </div>
-                        """,
+                            render_product_svg_container(svg_content, scale=1.0),
                             unsafe_allow_html=True,
                         )
                     else:
