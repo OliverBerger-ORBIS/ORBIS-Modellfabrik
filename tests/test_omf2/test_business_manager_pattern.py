@@ -129,13 +129,8 @@ class TestBusinessManagerPattern:
         """Test Registry Gateway-Routing-Hints Configuration (Neue Architektur)"""
         registry_manager = get_registry_manager()
 
-        # Test gateway routing hints retrieval
-        client_config = registry_manager.get_mqtt_client_config("ccu_mqtt_client")
-        assert isinstance(client_config, dict)
-
-        # Test gateway_routing_hints exists
-        assert "gateway_routing_hints" in client_config
-        routing_hints = client_config["gateway_routing_hints"]
+        # Test gateway routing hints retrieval from gateway.yml
+        routing_hints = registry_manager.get_gateway_routing_hints()
         assert isinstance(routing_hints, dict)
 
         # Test sensor_manager routing configuration
@@ -158,9 +153,8 @@ class TestBusinessManagerPattern:
         """Test Gateway-Routing Topic Retrieval (Neue Architektur)"""
         registry_manager = get_registry_manager()
 
-        # Test sensor manager routing topics
-        client_config = registry_manager.get_mqtt_client_config("ccu_mqtt_client")
-        routing_hints = client_config.get("gateway_routing_hints", {})
+        # Test sensor manager routing topics from gateway.yml
+        routing_hints = registry_manager.get_gateway_routing_hints()
 
         sensor_routing = routing_hints.get("sensor_manager", {})
         sensor_topics = sensor_routing.get("routed_topics", [])
