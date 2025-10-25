@@ -38,6 +38,7 @@ def render_admin_settings_tab():
         subtab_labels = [
             f"{UISymbols.get_functional_icon('dashboard')} Dashboard",
             f"{UISymbols.get_functional_icon('mqtt_connect')} MQTT Clients",
+            "🔀 Gateway",  # Gateway configuration
             f"{UISymbols.get_functional_icon('topic_driven')} Topics",
             f"{UISymbols.get_functional_icon('schema_driven')} Schemas",
             f"{UISymbols.get_tab_icon('ccu_modules')} Modules",
@@ -59,32 +60,37 @@ def render_admin_settings_tab():
 
             render_mqtt_clients_subtab()
 
-        with subtabs[2]:  # Topics
+        with subtabs[2]:  # Gateway
+            from omf2.ui.admin.admin_settings.gateway_subtab import render_gateway_subtab
+
+            render_gateway_subtab()
+
+        with subtabs[3]:  # Topics
             from omf2.ui.admin.admin_settings.topics_subtab import render_topics_subtab
 
             render_topics_subtab()
 
-        with subtabs[3]:  # Schemas
+        with subtabs[4]:  # Schemas
             from omf2.ui.admin.admin_settings.schemas_subtab import render_schemas_subtab
 
             render_schemas_subtab()
 
-        with subtabs[4]:  # Modules
+        with subtabs[5]:  # Modules
             from omf2.ui.admin.admin_settings.module_subtab import render_module_subtab
 
             render_module_subtab()
 
-        with subtabs[5]:  # Stations
+        with subtabs[6]:  # Stations
             from omf2.ui.admin.admin_settings.stations_subtab import render_stations_subtab
 
             render_stations_subtab()
 
-        with subtabs[6]:  # TXT Controllers
+        with subtabs[7]:  # TXT Controllers
             from omf2.ui.admin.admin_settings.txt_controllers_subtab import render_txt_controllers_subtab
 
             render_txt_controllers_subtab()
 
-        with subtabs[7]:  # Workpieces
+        with subtabs[8]:  # Workpieces
             from omf2.ui.admin.admin_settings.workpiece_subtab import render_workpiece_subtab
 
             render_workpiece_subtab()
