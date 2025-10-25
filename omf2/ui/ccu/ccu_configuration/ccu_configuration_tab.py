@@ -49,6 +49,7 @@ def render_ccu_configuration_tab(ccu_gateway=None, registry_manager=None):
         subtab_labels = [
             i18n.t("ccu_configuration.subtabs.factory_configuration"),
             i18n.t("ccu_configuration.subtabs.parameter_configuration"),
+            "Business Functions",  # New subtab
         ]
 
         subtabs = st.tabs(subtab_labels)
@@ -67,6 +68,13 @@ def render_ccu_configuration_tab(ccu_gateway=None, registry_manager=None):
             )
 
             render_ccu_parameter_configuration_subtab()
+
+        with subtabs[2]:
+            from omf2.ui.ccu.ccu_configuration.dashboard_business_functions_subtab import (
+                render_business_functions_section,
+            )
+
+            render_business_functions_section()
 
     except Exception as e:
         logger.error(f"❌ CCU Configuration Tab rendering error: {e}")
