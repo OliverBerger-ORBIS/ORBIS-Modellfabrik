@@ -204,7 +204,7 @@ def _generate_html_grid(
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: flex-start;
+            justify-content: center;
             padding: 8px;
             box-sizing: border-box;
             background: white;
@@ -268,8 +268,8 @@ def _generate_html_grid(
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 80%;
-            height: 80%;
+            width: 90%;
+            height: 90%;
             flex-shrink: 0;
         }}
         .icon-container img {{
