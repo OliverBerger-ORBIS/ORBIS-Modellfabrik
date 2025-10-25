@@ -48,8 +48,14 @@ class CcuGateway:
         # Initialize Monitor Manager
         self.monitor_manager = get_monitor_manager(registry_manager=self.registry_manager)
 
+        # Load Gateway Configuration from gateway.yml
+        gateway_config = self.registry_manager.get_gateway_config()
+        self.routing_hints = gateway_config.get("routing_hints", {})
+        self.refresh_triggers = gateway_config.get("refresh_triggers", {})
+
         # Explizite Topic-Listen für Manager-Routing
         # Diese Listen definieren, welche Topics an welchen Manager weitergeleitet werden
+        # HINWEIS: Diese können auch aus gateway.yml routing_hints geladen werden
         self.sensor_topics = {
             "/j1/txt/1/i/bme680",  # BME680 Sensor-Daten
             "/j1/txt/1/i/ldr",  # LDR Sensor-Daten
@@ -83,7 +89,7 @@ class CcuGateway:
         self._stock_manager = None
         self._order_manager = None
 
-        logger.info("🏗️ CcuGateway initialized with Topic-Routing")
+        logger.info(f"🏗️ CcuGateway initialized with Topic-Routing ({len(self.routing_hints)} routing hints loaded)")
 
     def _get_sensor_manager(self):
         """Lazy Loading für SensorManager (Singleton)"""
@@ -698,3 +704,21 @@ class CcuGateway:
         except Exception as e:
             logger.error(f"❌ Failed to get message buffers: {e}")
             return {}
+
+    def get_gateway_routing_hints(self) -> Dict[str, Any]:
+        """
+        Get Gateway Routing Hints from gateway.yml
+
+        Returns:
+            Dictionary with routing hints for all managers
+        """
+        return self.routing_hints
+
+    def get_gateway_refresh_triggers(self) -> Dict[str, Any]:
+        """
+        Get Gateway UI Refresh Triggers from gateway.yml
+
+        Returns:
+            Dictionary with refresh triggers for UI updates
+        """
+        return self.refresh_triggers
