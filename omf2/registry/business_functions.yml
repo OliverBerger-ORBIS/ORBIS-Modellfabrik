@@ -1,0 +1,115 @@
+# Business Functions Configuration for OMF2
+# 
+# This file describes business function metadata and wiring.
+# It contains NO executable code - only metadata and class references.
+#
+# Format:
+#   business_functions:
+#     <function_name>:
+#       enabled: true/false
+#       description: "Description of the business function"
+#       module_path: "python.module.path"
+#       class_name: "ClassName"
+#       routed_topics: ["topic1", "topic2"]
+#       priority: 1-10 (optional)
+#       metadata: {} (optional custom metadata)
+
+metadata:
+  version: "1.0.0"
+  last_updated: "2025-10-25"
+  author: "OMF Development Team"
+  description: |
+    Business Function Configuration for OMF2 Domain Services
+    
+    This configuration defines the business functions (managers) that handle
+    domain-specific logic and MQTT message routing within the CCU domain.
+    
+    Each business function is responsible for:
+    - Processing specific MQTT topics
+    - Implementing business logic for its domain
+    - Coordinating with other components via the Gateway
+
+business_functions:
+  # Order Manager - Handles order lifecycle and orchestration
+  order_manager:
+    enabled: true
+    description: "Manages order lifecycle, validation, and orchestration across modules"
+    module_path: "omf2.ccu.business.order_manager"
+    class_name: "OrderManager"
+    routed_topics:
+      - "ccu/order/request"
+      - "ccu/order/response"
+      - "ccu/order/active"
+      - "ccu/order/completed"
+      - "module/v1/ff/+/order"
+      - "fts/v1/ff/+/order"
+    priority: 10
+    metadata:
+      category: "orchestration"
+      requires_mqtt: true
+
+  # Stock Manager - Handles inventory and warehouse operations
+  stock_manager:
+    enabled: true
+    description: "Manages HBW inventory state and stock operations"
+    module_path: "omf2.ccu.business.stock_manager"
+    class_name: "StockManager"
+    routed_topics:
+      - "ccu/state/stock"
+      - "/j1/txt/1/f/i/stock"
+      - "module/v1/ff/SVR3QA0022/state"  # HBW state
+    priority: 8
+    metadata:
+      category: "inventory"
+      requires_mqtt: true
+
+  # Module Manager - Handles module state and pairing
+  module_manager:
+    enabled: true
+    description: "Manages module state, connectivity, and pairing information"
+    module_path: "omf2.ccu.business.module_manager"
+    class_name: "ModuleManager"
+    routed_topics:
+      - "ccu/pairing/state"
+      - "module/v1/ff/+/state"
+      - "module/v1/ff/+/connection"
+      - "module/v1/ff/+/factsheet"
+      - "module/v1/ff/NodeRed/+/state"
+    priority: 9
+    metadata:
+      category: "infrastructure"
+      requires_mqtt: true
+
+  # FTS Manager - Handles FTS navigation and tracking (example, disabled by default)
+  fts_manager:
+    enabled: false
+    description: "Manages FTS navigation, position tracking, and battery monitoring"
+    module_path: "omf2.ccu.business.fts_manager"
+    class_name: "FtsManager"
+    routed_topics:
+      - "fts/v1/ff/+/state"
+      - "fts/v1/ff/+/connection"
+      - "fts/v1/ff/+/factsheet"
+    priority: 7
+    metadata:
+      category: "logistics"
+      requires_mqtt: true
+
+# QoS Settings for Business Function Topics
+qos_settings:
+  default_qos: 1
+  critical_topics:
+    - "ccu/order/request"
+    - "ccu/order/response"
+  qos: 2
+
+# Routing Configuration
+routing:
+  enable_wildcard_matching: true
+  topic_separator: "/"
+  
+# Validation Rules
+validation:
+  require_module_path: true
+  require_class_name: true
+  allow_disabled_functions: true
