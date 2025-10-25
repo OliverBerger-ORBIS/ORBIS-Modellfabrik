@@ -40,6 +40,7 @@ class RegistryManager:
         self.schemas = {}  # Ersetzt templates
         # topic_schema_mappings entfernt - Schema-Info ist bereits in topics gespeichert
         self.mqtt_clients = {}
+        self.gateway = {}  # Gateway configuration
         self.workpieces = {}
         self.modules = {}
         self.stations = {}
@@ -64,6 +65,9 @@ class RegistryManager:
 
             # MQTT Clients laden
             self._load_mqtt_clients()
+
+            # Gateway configuration laden
+            self._load_gateway()
 
             # Workpieces laden
             self._load_workpieces()
@@ -175,15 +179,37 @@ class RegistryManager:
                         "qos": client_data.get("qos", 1),
                         "retain": client_data.get("retain", 0),
                         "business_functions": client_data.get("business_functions", {}),  # Legacy: Business-Functions
-                        "gateway_routing_hints": client_data.get(
-                            "gateway_routing_hints", {}
-                        ),  # NEU: Gateway-Routing-Hints
+                        # gateway_routing_hints moved to gateway.yml
                     }
 
             logger.info(f"📡 Loaded {len(self.mqtt_clients)} MQTT clients")
 
         except Exception as e:
             logger.error(f"❌ Failed to load MQTT clients: {e}")
+
+    def _load_gateway(self):
+        """Lädt Gateway Konfiguration"""
+        gateway_file = self.registry_path / "gateway.yml"
+        if not gateway_file.exists():
+            logger.warning(f"⚠️ Gateway file not found: {gateway_file}")
+            return
+
+        try:
+            with open(gateway_file, encoding="utf-8") as f:
+                data = yaml.safe_load(f) or {}
+
+            # Extrahiere Gateway-Konfiguration
+            gateway_data = data.get("gateway", {})
+            if gateway_data:
+                self.gateway = {
+                    "routing_hints": gateway_data.get("routing_hints", {}),
+                    "refresh_triggers": gateway_data.get("refresh_triggers", {}),
+                }
+
+            logger.info(f"🔀 Loaded gateway configuration with {len(self.gateway.get('routing_hints', {}))} routing hints")
+
+        except Exception as e:
+            logger.error(f"❌ Failed to load gateway configuration: {e}")
 
     def _load_workpieces(self):
         """Lädt Workpieces Konfiguration"""
@@ -428,6 +454,33 @@ class RegistryManager:
         function_config = business_functions.get(function_name, {})
         return function_config.get("subscribed_topics", [])
 
+    def get_gateway_config(self) -> Dict[str, Any]:
+        """
+        Gibt komplette Gateway-Konfiguration zurück
+        
+        Returns:
+            Dictionary mit Gateway-Konfiguration (routing_hints, refresh_triggers)
+        """
+        return self.gateway
+
+    def get_gateway_routing_hints(self) -> Dict[str, Any]:
+        """
+        Gibt Gateway Routing Hints zurück
+        
+        Returns:
+            Dictionary mit routing_hints für alle Manager
+        """
+        return self.gateway.get("routing_hints", {})
+
+    def get_gateway_refresh_triggers(self) -> Dict[str, Any]:
+        """
+        Gibt Gateway UI Refresh Triggers zurück
+        
+        Returns:
+            Dictionary mit refresh_triggers für UI-Updates
+        """
+        return self.gateway.get("refresh_triggers", {})
+
     def get_registry_stats(self) -> Dict[str, Any]:
         """Gibt Registry-Statistiken zurück"""
         return {
@@ -436,6 +489,7 @@ class RegistryManager:
             "schemas_count": len(self.schemas),
             "mappings_count": 0,  # topic_schema_mappings entfernt - Schema-Info in topics
             "mqtt_clients_count": len(self.mqtt_clients),
+            "gateway_routing_hints_count": len(self.gateway.get("routing_hints", {})),
             "workpieces_count": len(self.workpieces),
             "modules_count": len(self.modules),
             "stations_count": len(self.stations),
