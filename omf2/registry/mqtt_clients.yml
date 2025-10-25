@@ -8,7 +8,7 @@ metadata:
     WICHTIG - Semantik:
     - published_topics: Topics die der Domain-Client AKTIV publiziert
     - subscribed_topics: Topics die der Domain-Client beim Broker subscribed
-    - gateway_routing_hints: Topics die vom Gateway an Business-Functions geroutet werden
+    - gateway_routing_hints: VERSCHOBEN nach gateway.yml (siehe omf2/registry/gateway.yml)
     
     HINWEIS:
     - Dies ist ein "Living Document" für die Entwicklung
