@@ -169,8 +169,8 @@ def _render_inventory_position_fixed(position: str, workpiece_type: str, asset_m
         if palett_content:
             st.markdown(
                 f"""
-            <div style="border: 1px solid #ccc; padding: 10px; margin: 5px; text-align: center;">
-                <div style="width: 160px; height: 160px; overflow: hidden;">
+            <div style="border: 1px solid #ccc; padding: 10px; margin: 5px; text-align: center; display: flex; align-items: center; justify-content: center;">
+                <div style="width: 160px; height: 160px; display: flex; align-items: center; justify-content: center; overflow: hidden;">
                     {palett_content}
                 </div>
             </div>
@@ -189,8 +189,8 @@ def _render_inventory_position_fixed(position: str, workpiece_type: str, asset_m
         if svg_content:
             st.markdown(
                 f"""
-            <div style="border: 1px solid #ccc; padding: 10px; margin: 5px; text-align: center;">
-                <div style="width: 160px; height: 160px; overflow: hidden;">
+            <div style="border: 1px solid #ccc; padding: 10px; margin: 5px; text-align: center; display: flex; align-items: center; justify-content: center;">
+                <div style="width: 160px; height: 160px; display: flex; align-items: center; justify-content: center; overflow: hidden;">
                     {svg_content}
                 </div>
             </div>
@@ -214,7 +214,7 @@ def _render_inventory_position_as_is(position: str, workpiece_type: str, asset_m
         if palett_content:
             st.markdown(
                 f"""
-            <div style="border: 1px solid #ccc; padding: 10px; margin: 5px; text-align: center;">
+            <div style="border: 1px solid #ccc; padding: 10px; margin: 5px; text-align: center; display: flex; align-items: center; justify-content: center;">
                 {palett_content}
             </div>
             """,
@@ -232,7 +232,7 @@ def _render_inventory_position_as_is(position: str, workpiece_type: str, asset_m
         if svg_content:
             st.markdown(
                 f"""
-            <div style="border: 1px solid #ccc; padding: 10px; margin: 5px; text-align: center;">
+            <div style="border: 1px solid #ccc; padding: 10px; margin: 5px; text-align: center; display: flex; align-items: center; justify-content: center;">
                 {svg_content}
             </div>
             """,
