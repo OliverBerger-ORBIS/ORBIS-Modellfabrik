@@ -4,6 +4,19 @@
 
 The auto-refresh feature enables Streamlit UI pages to automatically update when relevant MQTT messages are received. This provides a real-time user experience without requiring manual page refreshes.
 
+## 🔑 Key Point: Redis is Optional for Testing
+
+**The UI works perfectly without Redis!** The system is designed with graceful degradation:
+
+- **Without Redis:** UI displays normally, manual refresh works (F5), no auto-refresh
+- **With Redis:** Full auto-refresh capability (~1 second latency on MQTT events)
+
+**For quick testing:** Just run `streamlit run omf2/omf.py` - no Redis needed!
+
+**For full auto-refresh:** Follow the setup instructions below.
+
+> 📘 **See [QUICK_START_AUTO_REFRESH.md](QUICK_START_AUTO_REFRESH.md) for a quick start guide with examples.**
+
 ## Architecture
 
 The system consists of three main components:
