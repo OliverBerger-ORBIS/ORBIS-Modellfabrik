@@ -104,10 +104,7 @@ def _render_order_details(order, order_manager, i18n, is_completed=False):
     """Render Order-Details (links Spalte) - EXAKT wie production_orders_subtab.py"""
     # Order Header
     order_id = order.get("orderId", "N/A")[:8]  # Kurze ID
-    if is_completed:
-        st.markdown(f"~~**{order_id}...**~~")
-    else:
-        st.write(f"**{order_id}...**")
+    st.write(f"**{order_id}...**")
 
     # Order Info Row
     col1, col2, col3 = st.columns([1, 1, 1])
@@ -115,17 +112,11 @@ def _render_order_details(order, order_manager, i18n, is_completed=False):
     with col1:
         workpiece_type = order.get("type", "N/A")
         workpiece_icon = {"RED": "🔴", "BLUE": "🔵", "WHITE": "⚪"}.get(workpiece_type, "⚪")
-        if is_completed:
-            st.markdown(f"~~{workpiece_icon} {workpiece_type}~~")
-        else:
-            st.write(f"{workpiece_icon} {workpiece_type}")
+        st.write(f"{workpiece_icon} {workpiece_type}")
 
     with col2:
         order_type = order.get("orderType", "N/A")
-        if is_completed:
-            st.markdown(f"~~📋 {order_type}~~")
-        else:
-            st.write(f"📋 {order_type}")
+        st.write(f"📋 {order_type}")
 
     with col3:
         if is_completed:
@@ -358,14 +349,11 @@ def _render_storage_steps(storage_plan, i18n, is_completed=False):
             step_desc = step.get("description", f"Step {idx}")
 
         # Anzeige (EXAKT wie production_orders_subtab.py)
-        if is_completed:
-            st.markdown(f"~~{station_icon} {status_icon} {step_desc}~~")
-        else:
-            # SOLL Format: Step n, [Status Icon] [Station Icon] [Step-description]
-            step_info = f"**Step {idx}:** {status_icon} {station_icon} {step_desc}"
+        # SOLL Format: Step n, [Status Icon] [Station Icon] [Step-description]
+        step_info = f"**Step {idx}:** {status_icon} {station_icon} {step_desc}"
 
-            # Einfache Darstellung ohne zusätzliche Status-Wörter
-            st.markdown(step_info)
+        # Einfache Darstellung ohne zusätzliche Status-Wörter
+        st.markdown(step_info)
 
 
 def _render_production_steps(production_plan, i18n, is_completed=False):
@@ -430,7 +418,4 @@ def _render_production_steps(production_plan, i18n, is_completed=False):
             step_desc = f"{step_type}"
 
         # Anzeige
-        if is_completed:
-            st.markdown(f"~~{station_icon} {status_icon} {step_desc}~~")
-        else:
-            st.write(f"{station_icon} {status_icon} {step_desc}")
+        st.write(f"{station_icon} {status_icon} {step_desc}")
