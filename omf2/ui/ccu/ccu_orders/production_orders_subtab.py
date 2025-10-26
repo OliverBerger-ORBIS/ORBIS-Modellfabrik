@@ -104,10 +104,7 @@ def _render_order_details(order, order_manager, i18n, is_completed=False):
     """Render Order-Details (links Spalte)"""
     # Order Header
     order_id = order.get("orderId", "N/A")[:8]  # Kurze ID
-    if is_completed:
-        st.markdown(f"~~**{order_id}...**~~")
-    else:
-        st.write(f"**{order_id}...**")
+    st.write(f"**{order_id}...**")
 
     # Order Info Row
     col1, col2, col3 = st.columns([1, 1, 1])
@@ -116,19 +113,13 @@ def _render_order_details(order, order_manager, i18n, is_completed=False):
         workpiece_type = order.get("type", "N/A")
         # NEU: UI-Symbols verwenden
         workpiece_icon = UISymbols.get_workpiece_icon(workpiece_type)
-        if is_completed:
-            st.markdown(f"~~{workpiece_icon} {workpiece_type}~~")
-        else:
-            st.write(f"{workpiece_icon} {workpiece_type}")
+        st.write(f"{workpiece_icon} {workpiece_type}")
 
     with col2:
         order_type = order.get("orderType", "N/A")
         # NEU: UI-Symbols verwenden
         order_icon = UISymbols.get_tab_icon("production_plan")  # 📋 für Production Plan
-        if is_completed:
-            st.markdown(f"~~{order_icon} {order_type}~~")
-        else:
-            st.write(f"{order_icon} {order_type}")
+        st.write(f"{order_icon} {order_type}")
 
     with col3:
         if is_completed:
@@ -351,11 +342,8 @@ def _render_production_steps(production_plan, i18n, is_completed=False):
             step_desc = f"{step_type}"
 
         # Anzeige mit verbesserter Sequenz-Visualisierung
-        if is_completed:
-            st.markdown(f"~~{station_icon} {status_icon} {step_desc}~~")
-        else:
-            # SOLL Format: Step n, [Status Icon] [Station Icon] [Station Name] [Step-description]
-            step_info = f"**Step {idx}:** {status_icon} {station_icon} {step_desc}"
+        # SOLL Format: Step n, [Status Icon] [Station Icon] [Station Name] [Step-description]
+        step_info = f"**Step {idx}:** {status_icon} {station_icon} {step_desc}"
 
-            # Einfache Darstellung ohne zusätzliche Status-Wörter
-            st.markdown(step_info)
+        # Einfache Darstellung ohne zusätzliche Status-Wörter
+        st.markdown(step_info)
