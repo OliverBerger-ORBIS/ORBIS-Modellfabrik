@@ -2,6 +2,26 @@
 
 This directory contains the implementation for automatic UI refresh triggered by MQTT messages.
 
+## 🎯 TL;DR - Do I Need Redis to Test?
+
+**NO!** You can test the UI without Redis:
+
+```bash
+streamlit run omf2/omf.py
+```
+
+**What this gives you:**
+- ✅ Full UI functionality
+- ✅ Manual refresh (F5)
+- ❌ No automatic refresh on MQTT events
+
+**To enable auto-refresh:**
+1. Start Redis: `docker run -d -p 6379:6379 redis:latest`
+2. Start API: `python -m omf2.backend.api_refresh`
+3. Run Streamlit: `streamlit run omf2/omf.py`
+
+> 💡 **See [QUICK_START_AUTO_REFRESH.md](QUICK_START_AUTO_REFRESH.md) for detailed usage modes and examples.**
+
 ## Quick Start
 
 ### 1. Install Dependencies
