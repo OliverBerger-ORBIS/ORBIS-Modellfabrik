@@ -73,7 +73,21 @@ def _get_redis_client():
             redis_url = "redis://localhost:6379/0"
             logger.info(f"ℹ️ REDIS_URL not set, using default: {redis_url}")
         else:
-            logger.info(f"ℹ️ Using REDIS_URL: {redis_url}")
+            # Mask password in URL for logging to avoid exposing credentials
+            from urllib.parse import urlparse, urlunparse
+
+            parsed = urlparse(redis_url)
+            if parsed.password:
+                # Replace password with *** for security
+                netloc = f"{parsed.username}:***@{parsed.hostname}"
+                if parsed.port:
+                    netloc += f":{parsed.port}"
+                safe_url = urlunparse((parsed.scheme, netloc, parsed.path, "", "", ""))
+                logger.info(f"ℹ️ Using REDIS_URL (credentials masked): {safe_url}")
+            else:
+                # No password in URL, safe to log as-is
+                safe_url = redis_url
+                logger.info(f"ℹ️ Using REDIS_URL: {safe_url}")
 
         # Create Redis client
         _redis_client = redis.from_url(redis_url, decode_responses=True, socket_connect_timeout=2, socket_timeout=2)
