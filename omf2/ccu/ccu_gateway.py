@@ -91,6 +91,67 @@ class CcuGateway:
 
         logger.info(f"🏗️ CcuGateway initialized with Topic-Routing ({len(self.routing_hints)} routing hints loaded)")
 
+    def _trigger_ui_refresh(self, topic: str):
+        """
+        Trigger UI refresh based on topic matching refresh_triggers in gateway.yml
+        
+        Args:
+            topic: MQTT topic that was just processed
+        """
+        try:
+            from omf2.backend.refresh import request_refresh
+            
+            # Check each refresh_triggers group
+            for group_name, topic_patterns in self.refresh_triggers.items():
+                # Check if topic matches any pattern in this group
+                for pattern in topic_patterns:
+                    if self._topic_matches_pattern(topic, pattern):
+                        # Request refresh for this group
+                        request_refresh(group_name, min_interval=1.0)
+                        logger.debug(f"🔄 UI refresh triggered for group '{group_name}' (topic: {topic})")
+                        break  # Only trigger once per group
+                        
+        except Exception as e:
+            logger.debug(f"⚠️ Failed to trigger UI refresh for topic {topic}: {e}")
+    
+    def _topic_matches_pattern(self, topic: str, pattern: str) -> bool:
+        """
+        Check if a topic matches a pattern (supports wildcards)
+        
+        Args:
+            topic: Actual MQTT topic
+            pattern: Pattern with optional wildcards (* for any substring)
+        
+        Returns:
+            True if topic matches pattern
+        """
+        # Simple wildcard matching
+        if '*' in pattern:
+            # Split pattern by wildcard
+            parts = pattern.split('*')
+            
+            # Check if topic starts with first part
+            if not topic.startswith(parts[0]):
+                return False
+            
+            # Check if topic ends with last part (if not empty)
+            if parts[-1] and not topic.endswith(parts[-1]):
+                return False
+            
+            # Check middle parts
+            pos = len(parts[0])
+            for part in parts[1:-1]:
+                if part:
+                    idx = topic.find(part, pos)
+                    if idx == -1:
+                        return False
+                    pos = idx + len(part)
+            
+            return True
+        else:
+            # Exact match
+            return topic == pattern
+
     def _get_sensor_manager(self):
         """Lazy Loading für SensorManager (Singleton)"""
         if self._sensor_manager is None:
@@ -201,6 +262,7 @@ class CcuGateway:
                 logger.debug(f"📡 Routing to sensor_manager: {topic}")
                 sensor_manager = self._get_sensor_manager()
                 sensor_manager.process_sensor_message(topic, message, meta)
+                self._trigger_ui_refresh(topic)
                 return True
 
             # Routing 2: Module Topics (Präfix-basiertes Matching) - REAKTIVIERT
@@ -210,6 +272,7 @@ class CcuGateway:
                     module_manager = self._get_module_manager()
                     if module_manager:
                         module_manager.process_module_message(topic, message, meta)
+                    self._trigger_ui_refresh(topic)
                     return True
 
             # Routing 3: Stock Topics (Set-basiertes Lookup) - Stock Manager
@@ -220,6 +283,7 @@ class CcuGateway:
                     stock_manager.process_stock_message(topic, message, meta)
                 else:
                     logger.warning(f"⚠️ Stock Manager not available for topic: {topic}")
+                self._trigger_ui_refresh(topic)
                 return True
 
             # Routing 4: Order Topics (Set-basiertes Lookup) - Order Manager
@@ -238,9 +302,10 @@ class CcuGateway:
                     elif topic == "ccu/order/response":
                         order_manager.process_ccu_response_message(topic, message, meta)
                     # HINWEIS: Module/FTS States werden von originaler CCU verarbeitet
-                    # und als ccu/order/active konsolidiert publiziert - kein direktes Processing nötig
+                    # und als ccu/order/active konsolidiert publiziert - kein direktes Processing nöig
                 else:
                     logger.warning(f"⚠️ Order Manager not available for topic: {topic}")
+                self._trigger_ui_refresh(topic)
                 return True
 
             # Fallback: Message wurde verarbeitet (Monitor Manager hat es bekommen)
