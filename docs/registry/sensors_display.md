@@ -277,9 +277,14 @@ pytest tests/test_sensors_display_utils.py::TestNormalizeBrightness -v
 ✅ Configuration is loaded from YAML  
 ✅ No errors in console or logs  
 
-### Note on State Store
+### Note on State Store Integration
 
-The `get_latest_sensor_values()` function in the subtab is a placeholder. You may need to adapt it to your actual state store (Redis, database, etc.) to get real sensor data.
+The `get_latest_sensor_values()` function in the subtab currently integrates with the existing `get_ccu_sensor_manager()` to retrieve sensor data from the BME680 and LDR topics. This implementation:
+- Uses the existing sensor manager pattern from the codebase
+- Retrieves data from `/j1/txt/1/i/bme680` (temperature, humidity, pressure, IAQ)
+- Retrieves data from `/j1/txt/1/i/ldr` (light/brightness)
+
+If you need to integrate with a different state store (Redis, database, etc.), you can modify the `get_latest_sensor_values()` function to query your preferred data source while maintaining the same return structure.
 
 ## Troubleshooting
 
