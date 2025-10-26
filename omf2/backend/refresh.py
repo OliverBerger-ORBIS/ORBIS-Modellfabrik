@@ -13,9 +13,9 @@ Features:
 """
 
 import os
-import time
 import threading
-from typing import Optional, Dict
+import time
+from typing import Dict, Optional
 
 from omf2.common.logger import get_logger
 
@@ -81,7 +81,7 @@ def _get_redis_client():
         # Test connection
         _redis_client.ping()
         _redis_available = True
-        logger.info(f"✅ Redis client initialized successfully")
+        logger.info("✅ Redis client initialized successfully")
 
         return _redis_client
 
