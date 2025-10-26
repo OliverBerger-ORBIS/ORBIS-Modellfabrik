@@ -6,8 +6,9 @@ Tests the Redis-based refresh throttle logic using fakeredis
 """
 
 import time
+from unittest.mock import patch
+
 import pytest
-from unittest.mock import patch, MagicMock
 
 
 @pytest.fixture
