@@ -1,0 +1,69 @@
+# Sensor Display Configuration
+# Configuration for OMF-style sensor data visualization
+_meta:
+  _description: "Configuration for sensor data display normalization and visualization"
+  _version: "1.0"
+
+# Temperature configuration
+temperature:
+  min: -30.0  # Minimum temperature in °C for normalization
+  max: 60.0   # Maximum temperature in °C for normalization
+  unit: "°C"
+  gauge:
+    color_ranges:
+      - [0, 20, "blue"]      # Cold
+      - [20, 30, "green"]    # Comfortable
+      - [30, 40, "orange"]   # Warm
+      - [40, 100, "red"]     # Hot
+
+# Humidity configuration
+humidity:
+  min: 0.0    # Minimum humidity in %
+  max: 100.0  # Maximum humidity in %
+  unit: "%"
+  gauge:
+    color_ranges:
+      - [0, 30, "orange"]    # Too dry
+      - [30, 60, "green"]    # Comfortable
+      - [60, 100, "blue"]    # Too humid
+
+# Brightness/Light configuration
+brightness:
+  max_lux: 1000.0  # Maximum lux value for 100% normalization
+  unit: "lux"
+  gauge:
+    color_ranges:
+      - [0, 20, "darkblue"]   # Dark
+      - [20, 50, "blue"]      # Dim
+      - [50, 80, "yellow"]    # Bright
+      - [80, 100, "orange"]   # Very bright
+
+# Air pressure configuration
+pressure:
+  min: 900.0   # Minimum pressure in hPa
+  max: 1100.0  # Maximum pressure in hPa
+  unit: "hPa"
+  gauge:
+    color_ranges:
+      - [0, 40, "blue"]      # Low pressure
+      - [40, 60, "green"]    # Normal
+      - [60, 100, "orange"]  # High pressure
+
+# Indoor Air Quality (IAQ) configuration
+iaq:
+  unit: "IAQ"
+  thresholds:
+    good: 50         # 0-50: Good air quality
+    moderate: 100    # 51-100: Moderate air quality
+    unhealthy: 150   # 101-150: Unhealthy for sensitive groups
+    # 151+: Unhealthy/Hazardous
+  colors:
+    good: "#28a745"       # Green
+    moderate: "#ffc107"   # Yellow/Amber
+    unhealthy: "#fd7e14"  # Orange
+    hazard: "#dc3545"     # Red
+  labels:
+    good: "Good"
+    moderate: "Moderate"
+    unhealthy: "Unhealthy"
+    hazard: "Hazardous"
