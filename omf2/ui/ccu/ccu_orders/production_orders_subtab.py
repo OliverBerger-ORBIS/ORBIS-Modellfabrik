@@ -8,6 +8,7 @@ import streamlit as st
 from omf2.ccu.order_manager import get_order_manager
 from omf2.common.logger import get_logger
 from omf2.ui.common.symbols import UISymbols
+from omf2.ui.common.refresh_polling import should_reload_data, init_auto_refresh_polling
 
 logger = get_logger(__name__)
 
@@ -17,6 +18,15 @@ def show_production_orders_subtab(i18n):
     logger.info("📝 Rendering Production Orders Subtab")
 
     try:
+        # Initialize auto-refresh polling (1 second interval)
+        init_auto_refresh_polling('order_updates', interval_ms=1000)
+        
+        # Check if we should reload data
+        should_reload = should_reload_data('order_updates')
+        
+        if should_reload:
+            logger.debug("🔄 Reloading production orders data due to refresh trigger")
+        
         # Business Logic über OrderManager
         order_manager = get_order_manager()
 
