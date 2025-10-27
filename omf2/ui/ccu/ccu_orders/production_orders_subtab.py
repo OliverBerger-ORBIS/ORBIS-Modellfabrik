@@ -9,8 +9,41 @@ from omf2.ccu.order_manager import get_order_manager
 from omf2.common.logger import get_logger
 from omf2.ui.common.symbols import UISymbols
 from omf2.ui.common.refresh_polling import should_reload_data, init_auto_refresh_polling
+from omf2.ui.ccu.production_orders_refresh_helper import check_and_reload
 
 logger = get_logger(__name__)
+
+
+def reload_orders():
+    """
+    Reload production orders data into session state
+    
+    This wrapper function loads orders from OrderManager and stores them
+    in session state for use by the UI rendering logic.
+    """
+    try:
+        logger.debug("🔄 reload_orders() called - loading fresh data")
+        order_manager = get_order_manager()
+        
+        # Load fresh data
+        all_active = order_manager.get_active_orders()
+        all_completed = order_manager.get_completed_orders()
+        
+        # Filter: Nur PRODUCTION Orders
+        active_orders = [o for o in all_active if o.get("orderType") == "PRODUCTION"]
+        completed_orders = [o for o in all_completed if o.get("orderType") == "PRODUCTION"]
+        
+        # Store in session state
+        st.session_state['production_orders_active'] = active_orders
+        st.session_state['production_orders_completed'] = completed_orders
+        
+        logger.debug(f"✅ Loaded {len(active_orders)} active and {len(completed_orders)} completed production orders")
+        
+    except Exception as e:
+        logger.error(f"❌ Error in reload_orders(): {e}")
+        # Set empty lists on error to prevent UI crashes
+        st.session_state['production_orders_active'] = []
+        st.session_state['production_orders_completed'] = []
 
 
 def show_production_orders_subtab(i18n):
@@ -18,25 +51,19 @@ def show_production_orders_subtab(i18n):
     logger.info("📝 Rendering Production Orders Subtab")
 
     try:
-        # Initialize auto-refresh polling (1 second interval)
-        init_auto_refresh_polling('order_updates', interval_ms=1000)
+        # NEW: Use production_orders_refresh_helper for robust polling + compare
+        check_and_reload(group='order_updates', reload_callback=reload_orders, interval_ms=1000)
         
-        # Check if we should reload data
-        should_reload = should_reload_data('order_updates')
+        # Get data from session state (populated by reload_orders callback)
+        # If not yet populated, load it now
+        if 'production_orders_active' not in st.session_state:
+            reload_orders()
         
-        if should_reload:
-            logger.debug("🔄 Reloading production orders data due to refresh trigger")
+        active_orders = st.session_state.get('production_orders_active', [])
+        completed_orders = st.session_state.get('production_orders_completed', [])
         
-        # Business Logic über OrderManager
+        # Get order_manager for rendering operations
         order_manager = get_order_manager()
-
-        # Daten holen
-        all_active = order_manager.get_active_orders()
-        all_completed = order_manager.get_completed_orders()
-
-        # Filter: Nur PRODUCTION Orders
-        active_orders = [o for o in all_active if o.get("orderType") == "PRODUCTION"]
-        completed_orders = [o for o in all_completed if o.get("orderType") == "PRODUCTION"]
 
         st.markdown(f"### {i18n.t('ccu_orders.production.title')}")
         st.markdown(i18n.t("ccu_orders.production.subtitle"))
