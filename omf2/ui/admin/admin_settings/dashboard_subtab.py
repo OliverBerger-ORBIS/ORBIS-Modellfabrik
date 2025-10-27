@@ -41,6 +41,9 @@ def render_dashboard_subtab():
 
     with st.expander("🔧 System Information", expanded=False):
         _render_system_info()
+    
+    with st.expander("🔄 UI Refresh Status", expanded=False):
+        _render_ui_refresh_status()
 
 
 def _render_mqtt_settings(config_path: Path):
@@ -261,3 +264,31 @@ def _render_system_info():
     except Exception as e:
         st.warning(f"⚠️ Registry Statistiken nicht verfügbar: {e}")
         logger.warning(f"Registry stats not available: {e}")
+
+
+def _render_ui_refresh_status():
+    """Display minimal UI refresh status information"""
+    import os
+    
+    st.subheader("🔄 UI Refresh Configuration")
+    st.info("**Simplified Redis-backed refresh mechanism** - See docs/operations/auto_refresh.md")
+    
+    # Check Redis availability
+    try:
+        from omf2.backend.refresh import get_all_refresh_groups
+        
+        groups = get_all_refresh_groups()
+        
+        if groups:
+            st.success(f"✅ Redis-backed refresh active ({len(groups)} groups)")
+            st.caption(f"📋 Groups: {', '.join(groups)}")
+        else:
+            st.info("ℹ️ Redis refresh available but no groups currently tracked")
+            
+    except Exception as e:
+        st.warning("⚠️ Redis not available - using in-memory fallback")
+        logger.debug(f"Redis check failed: {e}")
+    
+    st.markdown("---")
+    st.caption("💡 **Production**: Requires Redis for multi-process refresh coordination")
+    st.caption("💡 **Development**: Manual refresh via UI buttons works without Redis")
