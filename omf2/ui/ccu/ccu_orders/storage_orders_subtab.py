@@ -7,8 +7,8 @@ import streamlit as st
 
 from omf2.ccu.order_manager import get_order_manager
 from omf2.common.logger import get_logger
+from omf2.ui.common.refresh_polling import init_auto_refresh_polling, should_reload_data
 from omf2.ui.common.symbols import UISymbols
-from omf2.ui.common.refresh_polling import should_reload_data, init_auto_refresh_polling
 
 logger = get_logger(__name__)
 
@@ -19,14 +19,14 @@ def show_storage_orders_subtab(i18n):
 
     try:
         # Initialize auto-refresh polling (1 second interval)
-        init_auto_refresh_polling('order_updates', interval_ms=1000)
-        
+        init_auto_refresh_polling("order_updates", interval_ms=1000)
+
         # Check if we should reload data
-        should_reload = should_reload_data('order_updates')
-        
+        should_reload = should_reload_data("order_updates")
+
         if should_reload:
             logger.debug("🔄 Reloading storage orders data due to refresh trigger")
-        
+
         # Business Logic über OrderManager
         order_manager = get_order_manager()
 
@@ -148,9 +148,9 @@ def _render_order_details(order, order_manager, i18n, is_completed=False):
 
 def _render_shopfloor_for_storage_order(order, order_manager, i18n):
     """Zeigt Shopfloor Layout mit aktiver Modul-Hervorhebung und AGV-Route für Storage Orders"""
-    from omf2.ui.ccu.common.shopfloor_layout import show_shopfloor_layout
-    from omf2.ui.ccu.common.route_utils import get_route_for_navigation_step
     from omf2.ccu.config_loader import get_ccu_config_loader
+    from omf2.ui.ccu.common.route_utils import get_route_for_navigation_step
+    from omf2.ui.ccu.common.shopfloor_layout import show_shopfloor_layout
 
     st.markdown("#### 🗺️ Shopfloor Layout")
 
@@ -158,13 +158,13 @@ def _render_shopfloor_for_storage_order(order, order_manager, i18n):
     storage_plan = order_manager.get_complete_storage_plan(order)
     active_module = _get_current_active_module(storage_plan)
     active_intersections = _get_active_intersections(storage_plan)
-    
+
     # AGV Route berechnen NUR wenn FTS Navigation der AKTIVE Step ist
     # FIX: Nur Route zeigen wenn active_module == "FTS", nicht bei anderen Modulen
     route_points = None
     agv_progress = 0.0
     current_nav_step = None
-    
+
     # Find current navigation step - but only show route if it's the ACTIVE step
     if active_module == "FTS":
         for step in storage_plan:
@@ -173,25 +173,25 @@ def _render_shopfloor_for_storage_order(order, order_manager, i18n):
             if step_state == "IN_PROGRESS" and step.get("type") == "NAVIGATION":
                 current_nav_step = step
                 break
-    
+
     if current_nav_step:
         # Compute route for FTS navigation
         try:
             config_loader = get_ccu_config_loader()
             layout_config = config_loader.load_shopfloor_layout()
-            
+
             source = current_nav_step.get("source")
             target = current_nav_step.get("target")
-            
+
             if source and target and layout_config:
                 route_points = get_route_for_navigation_step(layout_config, source, target, cell_size=200)
-                
+
                 # Calculate AGV progress (for demo, use 50% if IN_PROGRESS)
                 if step_state == "IN_PROGRESS":
                     agv_progress = 0.5
                 elif step_state == "ENQUEUED":
                     agv_progress = 0.1
-                    
+
         except Exception as e:
             logger.warning(f"Could not compute route: {e}")
 

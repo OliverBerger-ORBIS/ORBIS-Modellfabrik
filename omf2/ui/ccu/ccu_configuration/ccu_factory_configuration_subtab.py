@@ -81,7 +81,8 @@ def _show_shopfloor_layout_section():
         from omf2.ui.ccu.common.shopfloor_layout import show_shopfloor_layout
 
         # Add message listener for click events
-        st.components.v1.html("""
+        st.components.v1.html(
+            """
         <script>
             window.addEventListener('message', function(event) {
                 if (event.data && event.data.type === 'shopfloor_click') {
@@ -92,7 +93,9 @@ def _show_shopfloor_layout_section():
                 }
             });
         </script>
-        """, height=0)
+        """,
+            height=0,
+        )
 
         # Show the shopfloor layout with interactive SVG
         # CCU Configuration mode: single/double click for module selection/navigation
@@ -133,7 +136,7 @@ def _show_shopfloor_position_details():
             clicked_position = st.session_state.clicked_position
             # Show visual feedback for clicked position
             st.success(f"📍 Selected: {clicked_position} - View details below")
-        
+
         # Try to get from component value (experimental)
         try:
             component_value = st.session_state.get("ccu_configuration_shopfloor_clicked_position")
@@ -141,7 +144,7 @@ def _show_shopfloor_position_details():
                 clicked_position = component_value
                 st.session_state.clicked_position = component_value
                 st.success(f"📍 Selected: {clicked_position} - View details below")
-        except:
+        except Exception:
             pass
 
         # Dropdown for position selection
@@ -154,10 +157,10 @@ def _show_shopfloor_position_details():
 
         with col1:
             selected_position = st.selectbox(
-                "📍 Select Shopfloor Position:", 
-                options=grid_positions, 
-                index=default_index, 
-                key="shopfloor_position_selector"
+                "📍 Select Shopfloor Position:",
+                options=grid_positions,
+                index=default_index,
+                key="shopfloor_position_selector",
             )
 
         with col2:
@@ -219,12 +222,12 @@ def _show_position_details(row: int, col: int, layout_config: dict):
         # Display details in a nice box
         st.markdown("---")
         st.markdown(f"### 📍 Details zu shopfloor-position-{row}-{col}")
-        
+
         # Display details based on what's at this position
         if module_at_position:
             with st.container():
                 st.success(f"✅ **Module Found:** {module_at_position.get('id', 'Unknown')}")
-                
+
                 # Details in columns
                 col1, col2 = st.columns(2)
                 with col1:
@@ -232,7 +235,7 @@ def _show_position_details(row: int, col: int, layout_config: dict):
                     st.write(f"- **ID:** {module_at_position.get('id', 'N/A')}")
                     st.write(f"- **Name:** {module_at_position.get('id', 'N/A')}")  # Use ID as name
                     st.write(f"- **Type:** {module_at_position.get('type', 'N/A')}")
-                
+
                 with col2:
                     st.markdown("**Technical:**")
                     st.write(f"- **Serial Number:** {module_at_position.get('serialNumber', 'N/A')}")
@@ -242,9 +245,9 @@ def _show_position_details(row: int, col: int, layout_config: dict):
 
         elif fixed_at_position:
             with st.container():
-                position_type = fixed_at_position.get('type', 'Unknown').upper()
+                position_type = fixed_at_position.get("type", "Unknown").upper()
                 st.info(f"📦 **Position Type:** {position_type}")
-                
+
                 # Details in columns
                 col1, col2 = st.columns(2)
                 with col1:
@@ -253,10 +256,10 @@ def _show_position_details(row: int, col: int, layout_config: dict):
                     st.write(f"- **Name:** {fixed_at_position.get('id', 'Unknown')}")
                     st.write(f"- **Type:** {position_type}")
                     st.write(f"- **Position:** [{row}, {col}]")
-                
+
                 with col2:
                     st.markdown("**Asset Keys:**")
-                    assets = fixed_at_position.get('assets', {})
+                    assets = fixed_at_position.get("assets", {})
                     st.write(f"- **Rectangle:** {assets.get('rectangle', 'N/A')}")
                     st.write(f"- **Square1:** {assets.get('square1', 'N/A')}")
                     st.write(f"- **Square2:** {assets.get('square2', 'N/A')}")
@@ -268,7 +271,7 @@ def _show_position_details(row: int, col: int, layout_config: dict):
         elif intersection_at_position:
             with st.container():
                 st.warning(f"🔀 **Intersection:** {intersection_at_position.get('id', 'Unknown')}")
-                
+
                 # Details in columns
                 col1, col2 = st.columns(2)
                 with col1:
@@ -276,18 +279,18 @@ def _show_position_details(row: int, col: int, layout_config: dict):
                     st.write(f"- **ID:** {intersection_at_position.get('id', 'Unknown')}")
                     st.write(f"- **Name:** Intersection {intersection_at_position.get('id', 'Unknown')}")
                     st.write(f"- **Position:** [{row}, {col}]")
-                
+
                 with col2:
                     st.markdown("**Connections:**")
-                    connected = intersection_at_position.get('connected_modules', [])
+                    connected = intersection_at_position.get("connected_modules", [])
                     if connected:
                         for conn_module in connected:
                             st.write(f"- {conn_module}")
                     else:
                         st.write("- No connections")
-                    
+
                     # Asset key for intersection
-                    st.write(f"- **Asset Keys:** point_scan_3sections")
+                    st.write("- **Asset Keys:** point_scan_3sections")
 
         else:
             with st.container():
@@ -305,7 +308,6 @@ def _show_fixed_position_assets(fixed_position: dict):
     """Show asset information for fixed positions using canonical shopfloor_assets structure"""
     try:
         position_id = fixed_position.get("id", "Unknown")
-        position_type = fixed_position.get("type", "unknown")
 
         # Get Asset Manager
         from omf2.assets import get_asset_manager

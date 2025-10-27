@@ -94,13 +94,13 @@ class CcuGateway:
     def _trigger_ui_refresh(self, topic: str):
         """
         Trigger UI refresh based on topic matching refresh_triggers in gateway.yml
-        
+
         Args:
             topic: MQTT topic that was just processed
         """
         try:
             from omf2.backend.refresh import request_refresh
-            
+
             # Check each refresh_triggers group
             for group_name, topic_patterns in self.refresh_triggers.items():
                 # Check if topic matches any pattern in this group
@@ -110,34 +110,34 @@ class CcuGateway:
                         request_refresh(group_name, min_interval=1.0)
                         logger.debug(f"🔄 UI refresh triggered for group '{group_name}' (topic: {topic})")
                         break  # Only trigger once per group
-                        
+
         except Exception as e:
             logger.debug(f"⚠️ Failed to trigger UI refresh for topic {topic}: {e}")
-    
+
     def _topic_matches_pattern(self, topic: str, pattern: str) -> bool:
         """
         Check if a topic matches a pattern (supports wildcards)
-        
+
         Args:
             topic: Actual MQTT topic
             pattern: Pattern with optional wildcards (* for any substring)
-        
+
         Returns:
             True if topic matches pattern
         """
         # Simple wildcard matching
-        if '*' in pattern:
+        if "*" in pattern:
             # Split pattern by wildcard
-            parts = pattern.split('*')
-            
+            parts = pattern.split("*")
+
             # Check if topic starts with first part
             if not topic.startswith(parts[0]):
                 return False
-            
+
             # Check if topic ends with last part (if not empty)
             if parts[-1] and not topic.endswith(parts[-1]):
                 return False
-            
+
             # Check middle parts
             pos = len(parts[0])
             for part in parts[1:-1]:
@@ -146,7 +146,7 @@ class CcuGateway:
                     if idx == -1:
                         return False
                     pos = idx + len(part)
-            
+
             return True
         else:
             # Exact match

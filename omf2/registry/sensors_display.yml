@@ -29,7 +29,7 @@ humidity:
 
 # Brightness/Light configuration
 brightness:
-  max_lux: 1000.0  # Maximum lux value for 100% normalization
+  max_lux: 4000.0  # Maximum lux value for 100% normalization
   unit: "lux"
   gauge:
     color_ranges:

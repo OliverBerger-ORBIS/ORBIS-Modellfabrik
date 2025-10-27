@@ -70,7 +70,7 @@ def show_shopfloor_layout(
         enable_click: Enable click-to-select functionality (default: False)
     """
     st.subheader(f"🏭 {title}")
-    
+
     # Show hint if click is enabled
     if enable_click:
         st.info("💡 Click on any position in the grid to view its details below")
@@ -134,9 +134,9 @@ def show_shopfloor_layout(
                     st.session_state.clicked_position = f"Position {clicked_pos}"
                     # Clear the query param after processing
                     del st.query_params["pos"]
-            except:
+            except Exception:
                 pass
-        
+
         st.components.v1.html(html_content, height=max_height + 20, scrolling=False)
     except Exception as e:
         logger.warning(f"st.components.v1.html failed, falling back to markdown: {e}")
@@ -166,7 +166,7 @@ def _generate_html_grid(
     cell_size = 200  # Default cell size
     cell_width = cell_size
     cell_height = cell_size
-    
+
     # Update container dimensions to match grid
     max_width = cell_width * 4
     max_height = cell_height * 3
@@ -326,36 +326,36 @@ def _generate_html_grid(
     svg_overlay = ""
     if route_points and len(route_points) >= 2:
         svg_overlay = _generate_route_overlay(route_points, agv_progress, max_width, max_height)
-    
+
     # Add JavaScript for click handling if enabled
     javascript = ""
     if enable_click:
-        javascript = f"""
+        javascript = """
         <script>
             // Handle cell clicks by setting URL query parameter
-            document.addEventListener('DOMContentLoaded', function() {{
+            document.addEventListener('DOMContentLoaded', function() {
                 const cells = document.querySelectorAll('.cell[data-position]');
-                cells.forEach(cell => {{
-                    cell.addEventListener('click', function() {{
+                cells.forEach(cell => {
+                    cell.addEventListener('click', function() {
                         const position = this.getAttribute('data-position');
                         // Try to communicate with parent Streamlit app
-                        if (window.parent) {{
+                        if (window.parent) {
                             // Use postMessage to send to parent
-                            window.parent.postMessage({{
+                            window.parent.postMessage({
                                 type: 'shopfloor_click',
                                 position: position
-                            }}, '*');
-                        }}
+                            }, '*');
+                        }
                         // Visual feedback
                         cells.forEach(c => c.style.outline = 'none');
                         this.style.outline = '3px solid #FF9800';
                         this.style.outlineOffset = '-3px';
-                    }});
-                }});
-            }});
+                    });
+                });
+            });
         </script>
         """
-    
+
     # Combine into complete HTML
     html = f"""
     {css}
@@ -377,58 +377,60 @@ def _generate_route_overlay(
 ) -> str:
     """
     Generate SVG overlay with route polyline and AGV/FTS marker icon
-    
+
     Args:
         route_points: List of (x, y) pixel coordinates
         agv_progress: Progress along route (0.0 to 1.0)
         max_width: Container width
         max_height: Container height
-        
+
     Returns:
         HTML string with SVG overlay
     """
     if not route_points or len(route_points) < 2:
         return ""
-    
+
     # Convert points to SVG polyline format
     points_str = " ".join([f"{x},{y}" for x, y in route_points])
-    
+
     # Calculate AGV marker position based on progress
     agv_position = None
     if 0.0 <= agv_progress <= 1.0:
         from omf2.ui.ccu.common.route_utils import point_on_polyline
+
         agv_position = point_on_polyline(route_points, agv_progress)
-    
+
     # Generate AGV marker SVG with FTS icon
     agv_marker_svg = ""
     if agv_position:
         agv_x, agv_y = agv_position
         # Load FTS icon and embed it at the AGV position
         try:
-            from omf2.assets.asset_manager import get_asset_manager
             from pathlib import Path
-            
+
+            from omf2.assets.asset_manager import get_asset_manager
+
             asset_manager = get_asset_manager()
-            fts_icon_path = asset_manager.get_module_icon_path('FTS')
-            
+            fts_icon_path = asset_manager.get_module_icon_path("FTS")
+
             if fts_icon_path and Path(fts_icon_path).exists():
-                with open(fts_icon_path, 'r', encoding='utf-8') as f:
+                with open(fts_icon_path, encoding="utf-8") as f:
                     fts_svg_content = f.read()
                     # Extract SVG content (without <?xml> declaration)
-                    if '<?xml' in fts_svg_content:
-                        fts_svg_content = fts_svg_content.split('?>', 1)[1].strip()
-                    
+                    if "<?xml" in fts_svg_content:
+                        fts_svg_content = fts_svg_content.split("?>", 1)[1].strip()
+
                     # Replace SVG tag with g tag for embedding, position at agv_x, agv_y
                     # FTS icon is 24x24, scale it to 32x32 for better visibility
                     icon_size = 32
                     half_size = icon_size / 2
-                    
+
                     # Create a group with transform to position and scale the icon
-                    agv_marker_svg = f'''
+                    agv_marker_svg = f"""
                     <g transform="translate({agv_x - half_size}, {agv_y - half_size}) scale({icon_size/24})">
                         {fts_svg_content.replace('<svg', '<g').replace('</svg>', '</g>').replace('width="24"', '').replace('height="24"', '')}
                     </g>
-                    '''
+                    """
             else:
                 # Fallback to circle if FTS icon not found
                 agv_marker_svg = f'<circle class="agv-marker" cx="{agv_x}" cy="{agv_y}" r="12"/>'
@@ -436,14 +438,14 @@ def _generate_route_overlay(
             logger.warning(f"Could not load FTS icon for AGV marker: {e}")
             # Fallback to circle
             agv_marker_svg = f'<circle class="agv-marker" cx="{agv_x}" cy="{agv_y}" r="12"/>'
-    
+
     svg = f"""
     <svg class="route-overlay" viewBox="0 0 {max_width} {max_height}" xmlns="http://www.w3.org/2000/svg">
         <polyline class="route-path" points="{points_str}"/>
         {agv_marker_svg}
     </svg>
     """
-    
+
     return svg
 
 
@@ -465,7 +467,9 @@ def _generate_cell_html(
 
     # Handle special split cells at (0,0) and (0,3)
     if (row == 0 and col == 0) or (row == 0 and col == 3):
-        return _generate_split_cell_html(row, col, fixed_positions, asset_manager, cell_width, cell_height, enable_click)
+        return _generate_split_cell_html(
+            row, col, fixed_positions, asset_manager, cell_width, cell_height, enable_click
+        )
 
     # Find cell data
     cell_data = _find_cell_data(row, col, modules, fixed_positions, intersections)
@@ -493,7 +497,7 @@ def _generate_cell_html(
     if cell_data:
         cell_type = cell_data.get("type", "unknown")
         cell_id = cell_data.get("id", "")
-        
+
         # Don't show labels for any cells (intersections or modules)
         # Labels are now shown via hover tooltips only
         # This allows icons to be properly centered and routes to pass through visual centers
@@ -507,8 +511,8 @@ def _generate_cell_html(
         cell_label = ""
 
     # Add data attribute for position if click is enabled
-    data_attr = f'data-position="[{row},{col}]"' if enable_click else ''
-    
+    data_attr = f'data-position="[{row},{col}]"' if enable_click else ""
+
     # Add tooltip (title attribute) for hover - shows the cell ID/name
     tooltip_text = ""
     if cell_data:
@@ -518,7 +522,7 @@ def _generate_cell_html(
             tooltip_text = f"Intersection {cell_id}"
         else:
             tooltip_text = cell_id
-    title_attr = f'title="{tooltip_text}"' if tooltip_text else ''
+    title_attr = f'title="{tooltip_text}"' if tooltip_text else ""
 
     # Build cell HTML
     cell_html = f"""
@@ -573,14 +577,14 @@ def _generate_split_cell_html(
     square2_svg = _get_split_cell_icon(asset_manager, square2_type, square_width, square_height)
 
     # Add data attribute for position if click is enabled
-    data_attr = f'data-position="[{row},{col}]"' if enable_click else ''
-    
+    data_attr = f'data-position="[{row},{col}]"' if enable_click else ""
+
     # Add tooltip for split cells showing what's in this position
     tooltip_text = ""
     if fixed_config:
         config_id = fixed_config.get("id", "")
         tooltip_text = config_id
-    title_attr = f'title="{tooltip_text}"' if tooltip_text else ''
+    title_attr = f'title="{tooltip_text}"' if tooltip_text else ""
 
     cell_html = f"""
     <div class="cell cell-split" {data_attr} {title_attr}>
@@ -614,7 +618,7 @@ def _get_split_cell_icon(asset_manager, icon_type: str, width: int, height: int)
                     svg_content = f.read()
                     svg_content = _scale_svg_properly(svg_content, width, height)
                     return svg_content
-            
+
             # Fallback to empty.svg if icon not found
             empty_svg_path = Path(asset_manager.svgs_dir) / "empty.svg"
             if empty_svg_path.exists():
@@ -622,7 +626,7 @@ def _get_split_cell_icon(asset_manager, icon_type: str, width: int, height: int)
                     svg_content = f.read()
                     svg_content = _scale_svg_properly(svg_content, width, height)
                     return svg_content
-                    
+
     except Exception as e:
         logger.debug(f"Could not load split cell icon {icon_type}: {e}")
 
@@ -917,7 +921,7 @@ def _get_module_icon_svg(asset_manager, module_type: str, width: int, height: in
                 # ViewBox-bewusste Skalierung - keine Verzerrung!
                 svg_content = _scale_svg_properly(svg_content, width, height)
                 return svg_content
-        
+
         # Fallback to empty.svg if icon not found
         empty_svg_path = Path(asset_manager.svgs_dir) / "empty.svg"
         if empty_svg_path.exists():
@@ -925,7 +929,7 @@ def _get_module_icon_svg(asset_manager, module_type: str, width: int, height: in
                 svg_content = svg_file.read()
                 svg_content = _scale_svg_properly(svg_content, width, height)
                 return svg_content
-                
+
     except Exception as e:
         logger.warning(f"Could not load icon for {module_type}: {e}")
 

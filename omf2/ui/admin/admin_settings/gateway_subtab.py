@@ -7,7 +7,6 @@ Shows gateway.yml configuration with routing hints and refresh triggers
 from pathlib import Path
 
 import streamlit as st
-import yaml
 
 from omf2.common.logger import get_logger
 
@@ -61,9 +60,7 @@ def render_gateway_subtab():
 def _render_routing_hints(routing_hints: dict):
     """Render Gateway Routing Hints"""
     st.markdown("### 🔀 Gateway Routing Hints")
-    st.info(
-        "ℹ️ Routing Hints definieren, welche Topics vom Gateway an welche Business-Functions geroutet werden."
-    )
+    st.info("ℹ️ Routing Hints definieren, welche Topics vom Gateway an welche Business-Functions geroutet werden.")
 
     if not routing_hints:
         st.warning("⚠️ Keine Routing Hints gefunden")
@@ -110,7 +107,9 @@ def _render_refresh_triggers(refresh_triggers: dict):
 def _render_yaml_editor(registry_manager):
     """Render YAML Editor for gateway.yml"""
     st.markdown("### 📝 YAML Editor")
-    st.warning("⚠️ **Read-Only** - Änderungen zur Laufzeit sind nicht möglich. Bearbeite gateway.yml direkt im Dateisystem.")
+    st.warning(
+        "⚠️ **Read-Only** - Änderungen zur Laufzeit sind nicht möglich. Bearbeite gateway.yml direkt im Dateisystem."
+    )
 
     # Load gateway.yml from file
     project_root = Path(__file__).parent.parent.parent.parent.parent

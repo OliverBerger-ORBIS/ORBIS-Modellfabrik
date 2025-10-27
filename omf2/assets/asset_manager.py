@@ -216,13 +216,13 @@ class OMF2AssetManager:
 
     def get_asset_file(self, key: str) -> str:
         """Get deterministic asset file path for a given key
-        
+
         Args:
             key: Asset key (e.g., "COMPANY_rectangle", "SOFTWARE_square1", "MILL")
-            
+
         Returns:
             Deterministic path to SVG file or empty.svg as fallback
-            
+
         Examples:
             get_asset_file("COMPANY_rectangle") -> "/omf2/assets/svgs/ORBIS_logo_RGB.svg"
             get_asset_file("SOFTWARE_square1") -> "/omf2/assets/svgs/warehouse.svg"
@@ -230,49 +230,51 @@ class OMF2AssetManager:
         """
         # Try to get the icon path
         icon_path = self.get_module_icon_path(key)
-        
+
         if icon_path and Path(icon_path).exists():
             return icon_path
-        
+
         # Fallback to empty.svg
         empty_path = self.svgs_dir / "empty.svg"
         if empty_path.exists():
             return str(empty_path)
-        
+
         # Ultimate fallback - return empty.svg path even if it doesn't exist
         return str(self.svgs_dir / "empty.svg")
 
     def get_workpiece_svg_content(self, workpiece_type: str, state: str = "unprocessed") -> Optional[str]:
         """Lädt den Inhalt einer Workpiece-SVG mit CSS-Scoping für korrekte Darstellung"""
         return self._get_workpiece_svg_with_scoping(workpiece_type, state)
-    
-    def get_product_svg_with_sizing(self, workpiece_type: str, state: str = "product", scale: float = 1.0, enforce_width: bool = True) -> Optional[str]:
+
+    def get_product_svg_with_sizing(
+        self, workpiece_type: str, state: str = "product", scale: float = 1.0, enforce_width: bool = True
+    ) -> Optional[str]:
         """
         Get workpiece SVG with standardized sizing (PRODUCT_SVG_BASE_SIZE = 200px)
-        
+
         Args:
             workpiece_type: Workpiece color (BLUE, WHITE, RED)
             state: SVG pattern (product, 3dim, unprocessed, etc.)
             scale: Optional scale factor (default 1.0)
             enforce_width: If True and SVG is non-square, enforce width=200px with proportional height
-            
+
         Returns:
             SVG content wrapped in container div with standardized sizing
-            
+
         Example:
             # Get BLUE product SVG in 200x200 container
             svg_html = get_product_svg_with_sizing('BLUE', 'product')
-            
+
             # Get WHITE 3dim SVG scaled to 300x300 (scale=1.5)
             svg_html = get_product_svg_with_sizing('WHITE', '3dim', scale=1.5)
         """
         svg_content = self.get_workpiece_svg(workpiece_type, state)
         if not svg_content:
             return None
-        
+
         # Calculate container size with scale factor
         container_size = int(PRODUCT_SVG_BASE_SIZE * scale)
-        
+
         # Wrap SVG in standardized container
         # If enforce_width and SVG is non-square, the container maintains aspect ratio
         return f"""
@@ -459,7 +461,7 @@ class OMF2AssetManager:
 
     def get_empty_position_asset(self, empty_id: str, asset_type: str) -> Optional[str]:
         """DEPRECATED: Use get_shopfloor_asset_path() with canonical keys instead
-        
+
         Maintained for backward compatibility. Converts old EMPTY1/EMPTY2 format to canonical keys.
 
         Args:
@@ -472,14 +474,16 @@ class OMF2AssetManager:
         # Convert to canonical format
         if empty_id in ["COMPANY", "SOFTWARE"]:
             return self.get_shopfloor_asset_path(empty_id, asset_type)
-        
+
         # No longer support EMPTY1/EMPTY2 in productive code
-        logger.warning(f"⚠️ DEPRECATED: get_empty_position_asset called with legacy key {empty_id}. Use canonical COMPANY/SOFTWARE keys.")
+        logger.warning(
+            f"⚠️ DEPRECATED: get_empty_position_asset called with legacy key {empty_id}. Use canonical COMPANY/SOFTWARE keys."
+        )
         return None
 
     def get_empty_position_asset_by_name(self, asset_name: str) -> Optional[str]:
         """DEPRECATED: Use get_module_icon_path() or get_asset_file() instead
-        
+
         Maintained for backward compatibility. Returns asset path for direct names.
 
         Args:
@@ -493,12 +497,12 @@ class OMF2AssetManager:
             icon_file = self.module_icons[asset_name]
             if icon_file:
                 return str(self.svgs_dir / icon_file)
-        
+
         # Fallback: try to find in SVG directory
         potential_path = self.svgs_dir / f"{asset_name}.svg"
         if potential_path.exists():
             return str(potential_path)
-            
+
         return None
 
     # VERALTETE HTML-TEMPLATES ENTFERNT

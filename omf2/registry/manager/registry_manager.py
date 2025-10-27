@@ -206,7 +206,9 @@ class RegistryManager:
                     "refresh_triggers": gateway_data.get("refresh_triggers", {}),
                 }
 
-            logger.info(f"🔀 Loaded gateway configuration with {len(self.gateway.get('routing_hints', {}))} routing hints")
+            logger.info(
+                f"🔀 Loaded gateway configuration with {len(self.gateway.get('routing_hints', {}))} routing hints"
+            )
 
         except Exception as e:
             logger.error(f"❌ Failed to load gateway configuration: {e}")
@@ -457,7 +459,7 @@ class RegistryManager:
     def get_gateway_config(self) -> Dict[str, Any]:
         """
         Gibt komplette Gateway-Konfiguration zurück
-        
+
         Returns:
             Dictionary mit Gateway-Konfiguration (routing_hints, refresh_triggers)
         """
@@ -466,7 +468,7 @@ class RegistryManager:
     def get_gateway_routing_hints(self) -> Dict[str, Any]:
         """
         Gibt Gateway Routing Hints zurück
-        
+
         Returns:
             Dictionary mit routing_hints für alle Manager
         """
@@ -475,7 +477,7 @@ class RegistryManager:
     def get_gateway_refresh_triggers(self) -> Dict[str, Any]:
         """
         Gibt Gateway UI Refresh Triggers zurück
-        
+
         Returns:
             Dictionary mit refresh_triggers für UI-Updates
         """

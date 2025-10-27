@@ -91,23 +91,23 @@ def render_sensor_data_subtab(ccu_gateway: CcuGateway, registry_manager, asset_m
 def get_latest_sensor_values() -> Dict:
     """
     Placeholder function to get latest sensor values from state store
-    
+
     NOTE: This should be adapted to your actual state store (Redis/DB/etc.)
     Currently returns dummy data for demonstration
-    
+
     Returns:
         Dict: Sensor data dictionary with temperature, humidity, brightness, pressure, iaq
     """
     # TODO: Integrate with actual state store
     # Example: Get from Redis, database, or existing sensor manager
-    
+
     sensor_manager = get_ccu_sensor_manager()
     sensor_data = sensor_manager.get_sensor_data()
-    
+
     if sensor_data:
         bme680_data = sensor_data.get("/j1/txt/1/i/bme680", {})
         ldr_data = sensor_data.get("/j1/txt/1/i/ldr", {})
-        
+
         return {
             "temperature": bme680_data.get("temperature"),
             "humidity": bme680_data.get("humidity"),
@@ -116,7 +116,7 @@ def get_latest_sensor_values() -> Dict:
             "brightness": ldr_data.get("light"),  # Note: might need conversion from % to lux
             "timestamp": bme680_data.get("timestamp", datetime.now().isoformat()),
         }
-    
+
     # Return None values if no data available
     return {
         "temperature": None,
@@ -203,7 +203,10 @@ def _show_temperature_gauge(temperature: float, config: Dict, i18n):
                     "bar": {"color": "darkred"},
                     "steps": [
                         {"range": [min_temp, min_temp + (max_temp - min_temp) * 0.4], "color": "lightblue"},
-                        {"range": [min_temp + (max_temp - min_temp) * 0.4, min_temp + (max_temp - min_temp) * 0.6], "color": "lightgreen"},
+                        {
+                            "range": [min_temp + (max_temp - min_temp) * 0.4, min_temp + (max_temp - min_temp) * 0.6],
+                            "color": "lightgreen",
+                        },
                         {"range": [min_temp + (max_temp - min_temp) * 0.6, max_temp], "color": "lightyellow"},
                     ],
                 },
@@ -319,9 +322,21 @@ def _show_pressure_gauge(pressure: float, config: Dict, i18n):
                     "axis": {"range": [min_pressure, max_pressure]},
                     "bar": {"color": "darkgreen"},
                     "steps": [
-                        {"range": [min_pressure, min_pressure + (max_pressure - min_pressure) * 0.4], "color": "lightblue"},
-                        {"range": [min_pressure + (max_pressure - min_pressure) * 0.4, min_pressure + (max_pressure - min_pressure) * 0.6], "color": "lightgreen"},
-                        {"range": [min_pressure + (max_pressure - min_pressure) * 0.6, max_pressure], "color": "lightyellow"},
+                        {
+                            "range": [min_pressure, min_pressure + (max_pressure - min_pressure) * 0.4],
+                            "color": "lightblue",
+                        },
+                        {
+                            "range": [
+                                min_pressure + (max_pressure - min_pressure) * 0.4,
+                                min_pressure + (max_pressure - min_pressure) * 0.6,
+                            ],
+                            "color": "lightgreen",
+                        },
+                        {
+                            "range": [min_pressure + (max_pressure - min_pressure) * 0.6, max_pressure],
+                            "color": "lightyellow",
+                        },
                     ],
                 },
             )

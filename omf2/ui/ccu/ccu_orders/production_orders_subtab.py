@@ -7,9 +7,8 @@ import streamlit as st
 
 from omf2.ccu.order_manager import get_order_manager
 from omf2.common.logger import get_logger
-from omf2.ui.common.symbols import UISymbols
-from omf2.ui.common.refresh_polling import should_reload_data, init_auto_refresh_polling
 from omf2.ui.ccu.production_orders_refresh_helper import check_and_reload
+from omf2.ui.common.symbols import UISymbols
 
 logger = get_logger(__name__)
 
@@ -17,33 +16,33 @@ logger = get_logger(__name__)
 def reload_orders():
     """
     Reload production orders data into session state
-    
+
     This wrapper function loads orders from OrderManager and stores them
     in session state for use by the UI rendering logic.
     """
     try:
         logger.debug("🔄 reload_orders() called - loading fresh data")
         order_manager = get_order_manager()
-        
+
         # Load fresh data
         all_active = order_manager.get_active_orders()
         all_completed = order_manager.get_completed_orders()
-        
+
         # Filter: Nur PRODUCTION Orders
         active_orders = [o for o in all_active if o.get("orderType") == "PRODUCTION"]
         completed_orders = [o for o in all_completed if o.get("orderType") == "PRODUCTION"]
-        
+
         # Store in session state
-        st.session_state['production_orders_active'] = active_orders
-        st.session_state['production_orders_completed'] = completed_orders
-        
+        st.session_state["production_orders_active"] = active_orders
+        st.session_state["production_orders_completed"] = completed_orders
+
         logger.debug(f"✅ Loaded {len(active_orders)} active and {len(completed_orders)} completed production orders")
-        
+
     except Exception as e:
         logger.error(f"❌ Error in reload_orders(): {e}")
         # Set empty lists on error to prevent UI crashes
-        st.session_state['production_orders_active'] = []
-        st.session_state['production_orders_completed'] = []
+        st.session_state["production_orders_active"] = []
+        st.session_state["production_orders_completed"] = []
 
 
 def show_production_orders_subtab(i18n):
@@ -52,16 +51,16 @@ def show_production_orders_subtab(i18n):
 
     try:
         # NEW: Use production_orders_refresh_helper for robust polling + compare
-        check_and_reload(group='order_updates', reload_callback=reload_orders, interval_ms=1000)
-        
+        check_and_reload(group="order_updates", reload_callback=reload_orders, interval_ms=1000)
+
         # Get data from session state (populated by reload_orders callback)
         # If not yet populated, load it now
-        if 'production_orders_active' not in st.session_state:
+        if "production_orders_active" not in st.session_state:
             reload_orders()
-        
-        active_orders = st.session_state.get('production_orders_active', [])
-        completed_orders = st.session_state.get('production_orders_completed', [])
-        
+
+        active_orders = st.session_state.get("production_orders_active", [])
+        completed_orders = st.session_state.get("production_orders_completed", [])
+
         # Get order_manager for rendering operations
         order_manager = get_order_manager()
 
@@ -180,9 +179,9 @@ def _render_order_details(order, order_manager, i18n, is_completed=False):
 
 def _render_shopfloor_for_order(order, order_manager, i18n):
     """Zeigt Shopfloor Layout mit aktiver Modul-Hervorhebung und AGV-Route (rechts Spalte)"""
-    from omf2.ui.ccu.common.shopfloor_layout import show_shopfloor_layout
-    from omf2.ui.ccu.common.route_utils import get_route_for_navigation_step
     from omf2.ccu.config_loader import get_ccu_config_loader
+    from omf2.ui.ccu.common.route_utils import get_route_for_navigation_step
+    from omf2.ui.ccu.common.shopfloor_layout import show_shopfloor_layout
 
     st.markdown("#### 🗺️ Shopfloor Layout")
 
@@ -190,13 +189,13 @@ def _render_shopfloor_for_order(order, order_manager, i18n):
     production_plan = order_manager.get_complete_production_plan(order)
     active_module = _get_current_active_module(production_plan)
     active_intersections = _get_active_intersections(production_plan)
-    
+
     # AGV Route berechnen NUR wenn FTS Navigation der AKTIVE Step ist
     # FIX: Nur Route zeigen wenn active_module == "FTS", nicht bei anderen Modulen
     route_points = None
     agv_progress = 0.0
     current_nav_step = None
-    
+
     # Find current navigation step - but only show route if it's the ACTIVE step
     if active_module == "FTS":
         for step in production_plan:
@@ -205,25 +204,25 @@ def _render_shopfloor_for_order(order, order_manager, i18n):
             if step_state in ["IN_PROGRESS", "RUNNING"] and step.get("type") == "NAVIGATION":
                 current_nav_step = step
                 break
-    
+
     if current_nav_step:
         # Compute route for FTS navigation
         try:
             config_loader = get_ccu_config_loader()
             layout_config = config_loader.load_shopfloor_layout()
-            
+
             source = current_nav_step.get("source")
             target = current_nav_step.get("target")
-            
+
             if source and target and layout_config:
                 route_points = get_route_for_navigation_step(layout_config, source, target, cell_size=200)
-                
+
                 # Calculate AGV progress (for demo, use 50% if IN_PROGRESS)
                 if step_state == "IN_PROGRESS":
                     agv_progress = 0.5
                 elif step_state == "RUNNING":
                     agv_progress = 0.3
-                    
+
         except Exception as e:
             logger.warning(f"Could not compute route: {e}")
 
