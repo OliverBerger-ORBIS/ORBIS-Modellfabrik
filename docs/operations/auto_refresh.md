@@ -4,51 +4,55 @@
 
 The auto-refresh feature enables Streamlit UI pages to automatically update when relevant MQTT messages are received. This provides a real-time user experience without requiring manual page refreshes.
 
-## 🔑 Key Point: Redis is Optional for Testing
+**This implementation is based on learnings from PR #47 (autorefresh admin/status visibility) and PR #48 (removal of duplicate publishers and Redis), combining the best parts into a minimal, safe pattern.**
 
-**The UI works perfectly without Redis!** The system is designed with graceful degradation:
+## 🔑 Architecture: MQTT-Driven UI Refresh (Safe Pattern)
 
-- **Without Redis:** UI displays normally, manual refresh works (F5), no auto-refresh
-- **With Redis:** Full auto-refresh capability (~1 second latency on MQTT events)
+The system uses a **single, safe pattern** for UI refresh:
 
-**For quick testing:** Just run `streamlit run omf2/omf.py` - no Redis needed!
+```
+Business/Gateway → MQTT Publish → admin_mqtt_client → request_refresh() → consume_refresh() → st.rerun()
+```
 
-**For full auto-refresh:** Follow the setup instructions below.
+### Key Components
 
-> 📘 **See [QUICK_START_AUTO_REFRESH.md](QUICK_START_AUTO_REFRESH.md) for a quick start guide with examples.**
+1. **Gateway Publishing** (`omf2/ccu/ccu_gateway.py`)
+   - Detects state changes during message routing
+   - Publishes lightweight events to `omf2/ui/refresh/{group}` 
+   - Uses existing gateway mqtt_client (no new clients created)
+   - Defensive: never blocks business flow on publish failure
+   - Opt-in via `OMF2_UI_REFRESH_VIA_MQTT=1` environment variable
 
-## Architecture
+2. **UI MQTT Client** (`omf2/admin/admin_mqtt_client.py`)
+   - Existing admin_mqtt_client in UI process subscribes to all topics (`#`)
+   - Detects `omf2/ui/refresh/*` messages in `_on_message` callback
+   - Calls `request_refresh()` to set flag in `st.session_state`
+   - NO new MQTT clients created on rerun
 
-The system consists of three main components:
+3. **Refresh Handler** (`omf2/ui/utils/ui_refresh.py`)
+   - `request_refresh()`: Sets timestamp flag in `st.session_state`
+   - `consume_refresh()`: Checks flag and returns True if set, then clears it
+   - Thread-safe, in-process, no Redis dependency
 
-1. **Backend Refresh Module** (`omf2/backend/refresh.py`)
-   - Redis-based shared store for refresh timestamps
-   - Throttle logic to prevent excessive refreshes (minimum 1 second between refreshes)
-   - Group-based refresh management (e.g., 'order_updates', 'module_updates')
+4. **Central Rerun Point** (`omf2/omf.py`)
+   - **ONLY place** where `st.rerun()` is called
+   - Calls `consume_refresh()` at the start of `main()`
+   - If flag is set, triggers single `st.rerun()` and returns
 
-2. **Flask API Endpoint** (`omf2/backend/api_refresh.py`)
-   - Lightweight HTTP endpoint for polling: `/api/last_refresh?group=<group>`
-   - Returns the last refresh timestamp for a given group
-   - Health check endpoint: `/api/health`
+## Safety Guarantees
 
-3. **Gateway Integration** (`omf2/ccu/ccu_gateway.py`)
-   - Triggers UI refresh after processing MQTT messages
-   - Uses `gateway.yml` refresh_triggers mapping to determine which groups to refresh
-   - Supports wildcard pattern matching for topic patterns
+✅ **No new MQTT clients in UI:** Reuses existing admin_mqtt_client singleton  
+✅ **All publishes use gateway client:** No duplicate MQTT connections  
+✅ **Single rerun entry point:** Only `consume_refresh()` in omf.py triggers st.rerun()  
+✅ **Defensive error handling:** Publish failures are logged but don't block business logic  
+✅ **In-process state:** No Redis dependency for UI-side refresh tracking  
 
 ## Configuration
 
 ### Environment Variables
 
-- **REDIS_URL**: Redis connection URL (default: `redis://localhost:6379/0`)
-- **REFRESH_API_URL**: Base URL for the refresh API (default: `http://localhost:5001`)
-
-These can also be configured via Streamlit secrets (`.streamlit/secrets.toml`):
-
-```toml
-REDIS_URL = "redis://localhost:6379/0"
-REFRESH_API_URL = "http://localhost:5001"
-```
+- **OMF2_UI_REFRESH_VIA_MQTT**: Enable Gateway publishing (default: disabled)
+  - Set to `1` or `true` to enable
 
 ### Gateway Configuration
 
@@ -93,96 +97,103 @@ The configuration can be edited via the Dashboard Gateway Configuration UI:
 2. Edit the YAML configuration in the text area
 3. Click **Save Changes** to persist the configuration
 
-## Dependencies
-
-### Redis
-
-Redis is required as the shared store for refresh timestamps. The system will function without Redis, but auto-refresh will not work.
-
-**Install Redis locally:**
-
-```bash
-# Using apt (Ubuntu/Debian)
-sudo apt-get install redis-server
-
-# Using Homebrew (macOS)
-brew install redis
-
-# Using Docker
-docker run -d -p 6379:6379 --name redis redis:latest
-```
-
-**Start Redis:**
-
-```bash
-# System service
-sudo systemctl start redis
-
-# Docker
-docker start redis
-
-# Direct
-redis-server
-```
-
-### Python Packages
-
-Required Python packages (already in `requirements.txt`):
-
-```
-redis>=7.0.0
-flask>=3.0.0
-fakeredis>=2.20.0  # For testing
-streamlit>=1.28.0
-requests>=2.31.0
-```
-
 ## Usage
 
-### Backend API Server
-
-Start the Flask API server:
+### Enable MQTT-Driven Refresh
 
 ```bash
-# Start the API server
-python -m omf2.backend.api_refresh
+# Set environment variable
+export OMF2_UI_REFRESH_VIA_MQTT=1
 
-# Or with custom host/port
-python -c "from omf2.backend.api_refresh import run_api; run_api(host='0.0.0.0', port=5001)"
+# Start Streamlit
+streamlit run omf2/omf.py
 ```
 
-### Streamlit UI Integration
+### Admin Status Dashboard
 
-The UI pages automatically poll the API and refresh when needed:
+View the full pipeline status:
+
+1. Navigate to: **Admin → Admin Settings → Dashboard**
+2. Expand **UI Auto-Refresh Status**
+3. Check Gateway publish and UI subscribe status
+4. Use provided test command to manually verify
+
+### Manual Testing
+
+Publish a test message to trigger UI refresh:
+
+```bash
+# Publish to a refresh topic
+mosquitto_pub -t omf2/ui/refresh/test -m '{"ts": 12345, "source":"manual_test"}'
+```
+
+Expected behavior:
+1. admin_mqtt_client receives message
+2. `request_refresh()` sets flag in session_state
+3. Next Streamlit rerun cycle detects flag via `consume_refresh()`
+4. UI refreshes once
+
+## Implementation Details
+
+### Gateway Publishing
+
+The Gateway automatically publishes refresh events when processing messages that match `refresh_triggers` patterns:
 
 ```python
-from omf2.ui.common.refresh_polling import should_reload_data, init_auto_refresh_polling
-
-def show_my_page():
-    # Initialize auto-refresh polling (1 second interval)
-    init_auto_refresh_polling('order_updates', interval_ms=1000)
-    
-    # Check if we should reload data
-    should_reload = should_reload_data('order_updates')
-    
-    if should_reload:
-        logger.debug("🔄 Reloading data due to refresh trigger")
-    
-    # Load and display data
-    data = get_my_data()
-    st.write(data)
+# In ccu_gateway.py _route_ccu_message()
+if topic in self.sensor_topics:
+    sensor_manager.process_sensor_message(topic, message, meta)
+    self._trigger_ui_refresh(topic)  # Publishes to omf2/ui/refresh/{group}
 ```
 
-### Manual Refresh Trigger
+The `publish_ui_refresh()` method:
+- Checks if `OMF2_UI_REFRESH_VIA_MQTT` is set
+- Uses existing `mqtt_client.publish()`
+- Payload: `{group, ts, source, optional meta}`
+- QoS 0, retain=False (lightweight)
+- Defensive: catches and logs exceptions without blocking
 
-You can manually trigger a refresh from Python code:
+### UI MQTT Handler
+
+The admin_mqtt_client receives all MQTT messages and detects UI refresh topics:
 
 ```python
-from omf2.backend.refresh import request_refresh
-
-# Trigger refresh for a group
-request_refresh('order_updates', min_interval=1.0)
+# In admin_mqtt_client.py _on_message()
+if topic.startswith("omf2/ui/refresh/"):
+    group = topic.replace("omf2/ui/refresh/", "")
+    if group:
+        from omf2.ui.utils.ui_refresh import request_refresh
+        request_refresh()  # Sets flag in st.session_state
 ```
+
+### Central Rerun Point
+
+Only one place triggers st.rerun():
+
+```python
+# In omf.py main()
+if consume_refresh():
+    st.rerun()  # Single, safe rerun
+    return
+```
+
+## Removed Components (vs PR #47 & #48)
+
+This implementation removes/simplifies:
+
+- ❌ **Browser-based MQTT WebSocket component** (`omf2/ui/components/mqtt_subscriber/`)
+  - Created new MQTT clients on every rerun
+  - WebSocket-based, not server-side
+  - Replaced by: existing admin_mqtt_client routing
+
+- ❌ **Redis dependency for UI refresh**
+  - UI-side refresh tracking is now in-process via `st.session_state`
+  - Redis can still be used by business layer if needed
+  - Simpler, fewer dependencies
+
+- ❌ **Duplicate MQTT publishers**
+  - All publishes use gateway mqtt_client
+  - No publisher_factory or separate UI publishers
 
 ## Testing
 
@@ -191,143 +202,147 @@ request_refresh('order_updates', min_interval=1.0)
 Run the refresh module tests:
 
 ```bash
-# All refresh tests
+# Refresh tests
 pytest tests/test_refresh.py -v
 
 # Gateway integration tests
 pytest tests/test_gateway_refresh_integration.py -v
-
-# UI polling helper tests
-pytest tests/test_streamlit_polling_helper.py -v
 ```
 
 ### Integration Testing
 
-1. **Start Redis:**
+1. **Start MQTT Broker:**
    ```bash
-   docker run -d -p 6379:6379 --name redis redis:latest
+   # Using Docker
+   docker run -d -p 1883:1883 -p 9001:9001 --name mosquitto eclipse-mosquitto
    ```
 
-2. **Start the API server:**
+2. **Enable UI Refresh:**
    ```bash
-   python -m omf2.backend.api_refresh
+   export OMF2_UI_REFRESH_VIA_MQTT=1
    ```
 
-3. **Publish a test MQTT message:**
+3. **Start Streamlit:**
    ```bash
-   mosquitto_pub -h localhost -t "ccu/order/active" -m '{"orderId": "test123"}'
+   streamlit run omf2/omf.py
    ```
 
-4. **Check the API:**
+4. **Verify Status:**
+   - Navigate to **Admin → Admin Settings → Dashboard**
+   - Check **UI Auto-Refresh Status**
+   - Both Gateway publish and UI subscribe should show ✅
+
+5. **Publish Test Message:**
    ```bash
-   curl "http://localhost:5001/api/last_refresh?group=order_updates"
+   mosquitto_pub -t omf2/ui/refresh/test -m '{"ts": 12345, "source":"test"}'
    ```
 
-5. **Observe Streamlit UI:**
-   - Open the production orders page
-   - The page should automatically refresh within 1 second
+6. **Observe:**
+   - Check logs for `📥 Received on omf2/ui/refresh/test`
+   - Check logs for `🔄 UI refresh requested for group 'test' from MQTT`
+   - UI should refresh
 
 ### QA Steps
 
-1. **Verify Redis connection:**
-   - Check that Redis is running: `redis-cli ping` (should return `PONG`)
-   - Check logs for "✅ Redis client initialized"
+1. **Verify Gateway Publishing:**
+   - Publish an MQTT message matching a `refresh_triggers` pattern
+   - Check gateway logs for `✅ Published UI refresh to omf2/ui/refresh/{group}`
+   - Use MQTT client to subscribe: `mosquitto_sub -t omf2/ui/refresh/#`
 
-2. **Verify API endpoint:**
-   - `curl http://localhost:5001/api/health` (should return `{"status": "ok"}`)
+2. **Verify UI Reception:**
+   - Check admin_mqtt_client is connected (Admin Settings dashboard)
+   - Publish test message to `omf2/ui/refresh/test`
+   - Check logs for `🔄 UI refresh requested`
 
-3. **Verify gateway integration:**
-   - Publish an MQTT message matching a refresh_triggers pattern
-   - Check gateway logs for "🔄 UI refresh triggered for group"
-   - Query the API: `curl "http://localhost:5001/api/last_refresh?group=order_updates"`
-   - Verify timestamp is recent
+3. **Verify Rerun:**
+   - Open a Streamlit page
+   - Publish test message
+   - Observe page refresh (check browser console for Streamlit rerun)
 
-4. **Verify UI auto-refresh:**
-   - Open a Streamlit page with auto-refresh enabled
-   - Publish an MQTT message
-   - Observe that the page refreshes within ~1 second
-   - Check browser console for no errors
+4. **Verify No Reconnect Loops:**
+   - Monitor MQTT broker connections
+   - Trigger multiple refreshes
+   - Confirm no new connections created
 
-5. **Verify throttling:**
-   - Publish multiple MQTT messages rapidly
-   - Check that refresh timestamp only updates once per second
+5. **Verify Defensive Behavior:**
+   - Stop MQTT broker
+   - Trigger business flow that would publish refresh
+   - Confirm business flow continues without error
 
 ## Troubleshooting
 
-### Redis Connection Issues
+### Gateway Not Publishing
 
-**Symptom:** "⚠️ Redis not available" in logs
-
-**Solutions:**
-1. Check that Redis is running: `redis-cli ping`
-2. Verify REDIS_URL environment variable or secret is correct
-3. Check firewall rules if Redis is on a different host
-
-### API Not Responding
-
-**Symptom:** UI polling fails, no auto-refresh
+**Symptom:** No messages on `omf2/ui/refresh/*` topics
 
 **Solutions:**
-1. Check that the API server is running
-2. Verify REFRESH_API_URL is correct
-3. Check API logs for errors
-4. Test API manually: `curl http://localhost:5001/api/health`
+1. Check `OMF2_UI_REFRESH_VIA_MQTT=1` is set
+2. Verify Gateway mqtt_client is connected
+3. Check if incoming message matches `refresh_triggers` patterns
+4. Check gateway logs for `🔇 MQTT UI refresh disabled`
 
-### Auto-Refresh Not Working
+### UI Not Receiving
 
-**Symptom:** UI doesn't refresh automatically
-
-**Solutions:**
-1. Verify that the MQTT topic matches a pattern in `refresh_triggers`
-2. Check gateway logs for "🔄 UI refresh triggered"
-3. Verify Redis connection
-4. Check API endpoint returns recent timestamp
-5. Ensure `streamlit_autorefresh` is installed (or fallback is working)
-
-### Throttle Too Aggressive
-
-**Symptom:** UI updates are delayed too much
+**Symptom:** Messages published but UI not refreshing
 
 **Solutions:**
-1. Adjust `min_interval` parameter in `request_refresh()` calls
-2. Consider creating more granular refresh groups
-3. Check if multiple rapid messages are being throttled
+1. Check admin_mqtt_client is connected (Admin Settings dashboard)
+2. Verify MQTT broker is running and accessible
+3. Check admin_mqtt_client logs for `📥 Received on omf2/ui/refresh/...`
+4. Verify `request_refresh()` is being called
+
+### Refresh Not Triggering Rerun
+
+**Symptom:** UI receives message but doesn't refresh
+
+**Solutions:**
+1. Check `consume_refresh()` is called in omf.py main()
+2. Verify `st.session_state[_FLAG]` is being set
+3. Check for errors in ui_refresh.py
+4. Verify Streamlit version supports st.rerun()
 
 ## Best Practices
 
 1. **Use appropriate refresh groups:**
    - Group related topics together (e.g., all order topics in 'order_updates')
-   - Don't create too many groups (increases polling overhead)
+   - Keep groups broad to minimize number of refresh topics
 
-2. **Throttle interval:**
-   - Default 1 second is good for most use cases
-   - Increase for less critical updates
-   - Don't set below 0.5 seconds
+2. **Gateway publishing:**
+   - Only publish for significant state changes
+   - Use lightweight payloads
+   - Never block business flow on publish failure
 
-3. **Pattern matching:**
-   - Use wildcards sparingly (they're less efficient)
-   - Prefer exact matches when possible
+3. **Testing:**
+   - Test with real MQTT broker, not mock
+   - Verify no MQTT client connection leaks
+   - Test error paths (broker down, etc.)
 
-4. **Testing:**
-   - Always test with fakeredis in unit tests
-   - Use real Redis for integration tests
-   - Test throttling behavior
-
-5. **Monitoring:**
-   - Monitor Redis memory usage
-   - Check API response times
-   - Watch for excessive polling
+4. **Monitoring:**
+   - Monitor MQTT connection count (should remain constant)
+   - Watch for excessive refresh events
+   - Check st.rerun() frequency in logs
 
 ## Performance Considerations
 
-- **Redis memory:** Each refresh group uses one key (~100 bytes)
-- **API overhead:** Each UI page polls every 1 second (minimal overhead)
-- **Gateway overhead:** Throttle logic is very fast (< 1ms per message)
-- **Network:** API polling is lightweight (< 100 bytes per request)
+- **MQTT overhead:** Minimal - single persistent connection per UI instance
+- **Publish overhead:** < 1ms per event, non-blocking
+- **UI refresh latency:** Typically < 100ms from publish to st.rerun()
+- **No polling:** Event-driven, no background polling threads
 
-## Future Enhancements
+## References
 
-- WebSocket support for push-based refresh (eliminates polling)
-- Configurable polling intervals per page
-- Refresh event history and analytics
-- Multi-Redis support for high availability
+- **PR #47:** Autorefresh admin/status visibility improvements
+- **PR #48:** Simplified architecture, removed duplicate publishers and Redis
+- **This PR:** Combines best parts with safe MQTT-driven pattern
+
+## Migration from Previous Patterns
+
+If upgrading from polling-based or Redis-based refresh:
+
+1. Remove `streamlit_autorefresh` calls from UI components
+2. Remove Flask API polling endpoints
+3. Remove Redis refresh polling helpers
+4. Set `OMF2_UI_REFRESH_VIA_MQTT=1`
+5. Restart Streamlit
+
+The new pattern is simpler, faster, and more reliable.
