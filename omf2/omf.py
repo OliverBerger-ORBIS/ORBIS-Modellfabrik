@@ -79,7 +79,10 @@ def cleanup_resources():
 
 
 # Register cleanup function (signal handlers don't work in Streamlit)
-atexit.register(cleanup_resources)
+# Guard to ensure we only register once per process, not on every rerun
+if "_cleanup_registered" not in st.session_state:
+    atexit.register(cleanup_resources)
+    st.session_state["_cleanup_registered"] = True
 
 
 def setup_page_config():
