@@ -4,96 +4,101 @@ This document describes the MQTT-driven UI refresh pipeline for the Orbis Modell
 
 ## Overview
 
-The MQTT UI refresh feature provides real-time UI updates by using MQTT messages to trigger data reloads in Streamlit components. This is an **opt-in** feature that complements the existing polling-based refresh mechanism.
+The MQTT UI refresh feature provides real-time UI updates by reusing the existing MQTT client infrastructure. Business functions can publish refresh events via the gateway, which are then received by Streamlit components via WebSocket. This is an **opt-in** feature with two separate configuration flags.
 
-## Architecture
+## Architecture (Simplified)
 
 ```
-Business Function → UIPublisher → MQTT Broker → WebSocket → Streamlit Component → UI Reload
-                                       ↓
-                                  Topic: omf2/ui/refresh/{group}
+MQTT Client → Gateway → Manager → Gateway.publish_ui_refresh()
+                                           ↓
+                                     omf2/ui/refresh/{group}
+                                           ↓
+                                   MQTT Broker (WebSocket)
+                                           ↓
+                              Streamlit mqtt_subscriber Component
+                                           ↓
+                                      UI Reload
 ```
+
+### Key Principle
+
+**Single MQTT connection**: The gateway reuses the existing `mqtt_client` connection instead of creating new publishers/subscribers.
 
 ### Components
 
-1. **UIPublisher** (`omf2/ui/publisher/uipublisher.py`)
-   - Protocol/ABC defining the interface for UI refresh publishers
-   - `publish_refresh(group, payload)` method
-
-2. **MQTTPublisher** (`omf2/gateway/mqtt_publisher.py`)
-   - Implementation of UIPublisher using paho MQTT client
+1. **Gateway.publish_ui_refresh()** (`omf2/ccu/ccu_gateway.py`)
+   - Method in existing CcuGateway class
+   - Reuses existing `mqtt_client` connection
    - Publishes to topics: `omf2/ui/refresh/{group}`
-   - Includes NoOpPublisher for graceful degradation
+   - Opt-in via `OMF2_UI_REFRESH_VIA_MQTT` env var
+   - Defensive: never blocks business flow
 
-3. **PublisherFactory** (`omf2/factory/publisher_factory.py`)
-   - Factory methods to obtain UIPublisher instances
-   - Integrates with existing gateway infrastructure
-   - Returns NoOpPublisher when MQTT unavailable
-
-4. **UI Notify Helper** (`omf2/ccu/business/ui_notify_helper.py`)
-   - Helper function for business functions to trigger UI updates
-   - `notify_ui_on_change(ui_publisher, group, changed, details)`
-
-5. **MQTT Subscriber Component** (`omf2/ui/components/mqtt_subscriber/`)
+2. **MQTT Subscriber Component** (`omf2/ui/components/mqtt_subscriber/`)
    - Custom Streamlit component with JavaScript frontend
    - Connects to MQTT broker via WebSocket
    - Subscribes to refresh topics and pushes messages to Streamlit
    - Invisible (height=0) and defensive
+   - Opt-in via `OMF2_UI_MQTT_WS_URL` env var
 
 ## Configuration
 
-### Enable MQTT UI Refresh
+### Two Separate Opt-In Flags
 
-**Option 1: Environment Variable**
+**1. Gateway Publish** (Business functions → MQTT):
+```bash
+export OMF2_UI_REFRESH_VIA_MQTT=1
+```
+
+**2. UI Subscribe** (MQTT → WebSocket → Streamlit):
 ```bash
 export OMF2_UI_MQTT_WS_URL="ws://broker-host:9001"
 ```
 
-**Option 2: Streamlit Secrets**
+Or in `.streamlit/secrets.toml`:
 ```toml
-# .streamlit/secrets.toml
 [mqtt]
 ws_url = "ws://broker-host:9001"
 ```
 
-### Optional: Configure Refresh Groups
-```toml
-# .streamlit/secrets.toml
-[ui.refresh_triggers]
-order_updates = true
-sensor_data = true
-module_status = true
-```
+### Why Two Flags?
+
+- **Gateway publish** can be enabled independently for logging/monitoring
+- **UI subscribe** can be disabled if WebSocket unavailable
+- Allows testing each component separately
 
 ## Usage
 
 ### UI Components (Automatic)
 
-The production and storage orders subtabs automatically use MQTT refresh when configured:
+The production and storage orders subtabs automatically use MQTT refresh when `OMF2_UI_MQTT_WS_URL` is configured:
 - `omf2/ui/ccu/ccu_orders/production_orders_subtab.py`
 - `omf2/ui/ccu/ccu_orders/storage_orders_subtab.py`
 
-When MQTT is enabled, they subscribe to `omf2/ui/refresh/order_updates`.
+When enabled, they subscribe to `omf2/ui/refresh/order_updates`.
 
-### Business Functions (Optional)
+### Business Functions (Example Pattern)
 
-Business functions can optionally publish refresh notifications:
+Business functions can call `gateway.publish_ui_refresh()` after state changes:
 
 ```python
-from omf2.factory.publisher_factory import get_ui_publisher
-from omf2.ccu.business.ui_notify_helper import notify_ui_on_change
+# Example from OrderManager.process_ccu_order_active()
+from omf2.factory.gateway_factory import GatewayFactory
 
-# Get publisher (returns NoOpPublisher if MQTT unavailable)
-ui_publisher = get_ui_publisher()
+gateway_factory = GatewayFactory()
+gateway = gateway_factory.get_ccu_gateway()
 
-# After processing data changes, notify UI
-notify_ui_on_change(
-    ui_publisher,
-    group='order_updates',
-    changed=True,
-    details={'order_id': order_id, 'source': 'order_manager'}
-)
+if gateway and hasattr(gateway, "publish_ui_refresh"):
+    gateway.publish_ui_refresh(
+        "order_updates",
+        {"source": "order_manager", "count": len(orders), "type": "active"}
+    )
 ```
+
+**Pattern for other managers:**
+1. Get gateway via GatewayFactory
+2. Check if `publish_ui_refresh` method exists
+3. Call with refresh group and optional payload
+4. Method is defensive - never blocks on failure
 
 ## Testing
 
@@ -106,19 +111,29 @@ mosquitto_pub -h localhost -p 1883 \
   -m '{"ts": 1234567890, "source": "test"}'
 ```
 
-### Test Fallback (Redis)
-
-```bash
-# Set refresh timestamp via Redis
-redis-cli SET ui:last_refresh:order_updates $(date +%s)
-```
-
 ### Check Admin Status
 
 Navigate to **Admin** → **Admin Status** subtab to see:
-- MQTT WebSocket configuration status
-- Broker URL and source
-- Configured refresh groups
+- Gateway MQTT publish status (`OMF2_UI_REFRESH_VIA_MQTT`)
+- UI MQTT subscribe status (`OMF2_UI_MQTT_WS_URL`)
+- Full pipeline status
+- Broker URL and configuration source
+
+### Verify Configuration
+
+```bash
+# Enable full pipeline
+export OMF2_UI_REFRESH_VIA_MQTT=1
+export OMF2_UI_MQTT_WS_URL="ws://localhost:9001"
+
+# Start Streamlit
+streamlit run omf2/ui/main_dashboard.py
+
+# Check Admin Status subtab - should show:
+# - Gateway: ✅ Enabled
+# - UI: ✅ Enabled
+# - Full pipeline: ✅ Active
+```
 
 ## Message Format
 
@@ -128,34 +143,37 @@ MQTT refresh messages follow this JSON format:
 {
   "ts": 1234567890,
   "source": "order_manager",
-  "order_id": "abc123",
-  ...additional fields...
+  "count": 5,
+  "type": "active"
 }
 ```
 
 - `ts`: Timestamp (automatically added if not present)
-- `source`: Source of the refresh event
+- `source`: Source of the refresh event (e.g., "order_manager", "gateway")
 - Additional fields: Optional context data
 
 ## Defensive Design
 
 The feature is designed to fail gracefully:
 
-1. **No MQTT Configuration**: Uses existing polling mechanism
-2. **MQTT Connection Fails**: NoOpPublisher returns False, UI continues with polling
-3. **Component Load Error**: Streamlit UI continues normally
-4. **WebSocket Connection Fails**: Frontend component returns None, no crash
+1. **Gateway publish disabled**: Method returns silently, no errors
+2. **No MQTT client**: Method logs and returns, business flow continues
+3. **MQTT publish fails**: Exception caught, logged, business flow continues
+4. **UI subscribe disabled**: Existing polling mechanism remains active
+5. **WebSocket connection fails**: Frontend component returns None, no crash
 
 ## Integration Points
 
 ### Current Integrations
 
-- ✅ Production Orders subtab
-- ✅ Storage Orders subtab
-- ✅ Admin Status display
+- ✅ Production Orders subtab (UI subscriber)
+- ✅ Storage Orders subtab (UI subscriber)
+- ✅ OrderManager (Gateway publisher example)
+- ✅ Admin Status display (configuration monitoring)
 
 ### Potential Future Integrations
 
+- Gateway auto-publish via `_trigger_ui_refresh()` (when refresh_triggers match)
 - Sensor data displays
 - Module status displays
 - System logs viewer
