@@ -7,7 +7,6 @@ import streamlit as st
 
 from omf2.ccu.order_manager import get_order_manager
 from omf2.common.logger import get_logger
-from omf2.ui.common.refresh_polling import init_auto_refresh_polling, should_reload_data
 from omf2.ui.common.symbols import UISymbols
 
 logger = get_logger(__name__)
@@ -50,42 +49,11 @@ def show_storage_orders_subtab(i18n):
     logger.info("📝 Rendering Storage Orders Subtab")
 
     try:
-        # NEW: Optional MQTT UI refresh integration (opt-in via configuration)
-        try:
-            from omf2.ui.components.mqtt_subscriber import (
-                get_mqtt_ws_url,
-                is_mqtt_ui_enabled,
-                mqtt_subscriber_component,
-            )
-
-            mqtt_ws_url = get_mqtt_ws_url()
-
-            if mqtt_ws_url and is_mqtt_ui_enabled():
-                # MQTT UI refresh is enabled
-                logger.debug("🔌 MQTT UI refresh enabled for storage orders")
-
-                # Subscribe to MQTT refresh topic
-                mqtt_message = mqtt_subscriber_component(
-                    broker_url=mqtt_ws_url,
-                    topic="omf2/ui/refresh/order_updates",
-                    key="ui_mqtt_storage_orders",
-                )
-
-                # If we received a message, trigger reload
-                if mqtt_message:
-                    logger.debug(f"📨 MQTT refresh message received: {mqtt_message}")
-                    reload_storage_orders()
-
-        except Exception as mqtt_error:
-            logger.debug(f"⚠️ MQTT UI component not available or error: {mqtt_error}")
-
-        # FALLBACK: Use existing polling mechanism (always runs)
-        init_auto_refresh_polling("order_updates", interval_ms=1000)
-        should_reload = should_reload_data("order_updates")
-
-        if should_reload:
-            logger.debug("🔄 Reloading storage orders data due to polling refresh trigger")
-            reload_storage_orders()
+        # Use production_orders_refresh_helper for consistent auto-refresh
+        from omf2.ui.ccu.production_orders_refresh_helper import check_and_reload
+        
+        # Use order_updates refresh group with polling + compare
+        check_and_reload(group="order_updates", reload_callback=reload_storage_orders, interval_ms=1000)
 
         # Get data from session state (populated by reload_storage_orders callback)
         # If not yet populated, load it now
