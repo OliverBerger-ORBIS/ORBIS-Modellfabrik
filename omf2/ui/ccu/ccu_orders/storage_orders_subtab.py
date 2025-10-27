@@ -51,7 +51,7 @@ def show_storage_orders_subtab(i18n):
     try:
         # Use production_orders_refresh_helper for consistent auto-refresh
         from omf2.ui.ccu.production_orders_refresh_helper import check_and_reload
-        
+
         # Use order_updates refresh group with polling + compare
         check_and_reload(group="order_updates", reload_callback=reload_storage_orders, interval_ms=1000)
 

@@ -109,8 +109,8 @@
       "position": [0, 0],
       "assets": {
         "rectangle": "ORBIS",
-        "square1": "shelves",
-        "square2": "conveyer_belt"
+        "square1": "factory",
+        "square2": "conveyor"
       }
     },
     {
@@ -119,8 +119,8 @@
       "position": [0, 3],
       "assets": {
         "rectangle": "DSP",
-        "square1": "warehouse",
-        "square2": "delivery_truck_speed"
+        "square1": "robot-arm",
+        "square2": "order-tracking"
       }
     }
   ],

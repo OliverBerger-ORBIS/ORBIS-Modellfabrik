@@ -68,46 +68,47 @@ def request_refresh() -> None:
 def consume_refresh() -> bool:
     """
     Check for UI refresh via Redis-backed backend polling.
-    
+
     Polls all configured refresh groups and triggers a rerun if any have new timestamps.
     This is the single entrypoint for UI refreshes in the main application.
-    
+
     Returns:
         True if a refresh was detected (triggers st.rerun()), False otherwise
     """
     try:
         from omf2.backend.refresh import get_all_refresh_groups, get_last_refresh
-        
+
         # Get all active refresh groups
         groups = get_all_refresh_groups()
-        
+
         if not groups:
             # No refresh groups yet, nothing to check
             return False
-        
+
         # Check each group for updates
         for group in groups:
             # Get current timestamp from backend
             current_timestamp = get_last_refresh(group)
-            
+
             if current_timestamp is None:
                 continue
-            
+
             # Get last known timestamp from session_state
             key = f"_last_refresh_{group}"
             last_timestamp = st.session_state.get(key, None)
-            
+
             # Check if refresh is needed
             if last_timestamp is None or current_timestamp > last_timestamp:
                 # Update session_state with new timestamp
                 st.session_state[key] = current_timestamp
                 return True
-        
+
         return False
-        
+
     except Exception as e:
         # Defensive: don't break the app if refresh checking fails
         from omf2.common.logger import get_logger
+
         logger = get_logger(__name__)
         logger.debug(f"⚠️ Error checking for refresh: {e}")
         return False

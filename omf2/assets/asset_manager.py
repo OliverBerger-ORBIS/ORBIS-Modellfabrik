@@ -110,21 +110,22 @@ class OMF2AssetManager:
         # Direktes Icon-Mapping - einfach und klar
         icon_mapping = {
             # Hauptmodule (Registry-definiert)
-            "HBW": "ic_ft_hbw.svg",  # High-Bay Warehouse
-            "DPS": "ic_ft_dps.svg",  # Delivery/Pickup Station
-            "MILL": "ic_ft_mill.svg",  # Milling Station
-            "DRILL": "ic_ft_drill.svg",  # Drilling Station
-            "AIQS": "ic_ft_aiqs.svg",  # AI Quality System
-            "CHRG": "ic_ft_chrg.svg",  # Charging Station
+            "HBW": "stock.svg",  # High-Bay Warehouse flaticon
+            "DPS": "warehouse.svg",  # Delivery/Pickup Station flaticon
+            "MILL": "milling-machine.svg",  # Milling Station flaticon
+            "DRILL": "drilling.svg",  # Drilling Station flaticon
+            "AIQS": "ai-assistant.svg",  # AI Quality System flaticon
+            "CHRG": "fuel.svg",  # Charging Station flaticon
             "FTS": "ic_ft_fts.svg",  # Flexible Transport System
             # Unterstützende Objekte
-            "TXT": "router.svg",  # TXT Controller
-            "ROUTER": "router.svg",  # Network Router
-            "PLATINE": "construction.svg",  # Circuit Board
-            "RPI": "router.svg",  # Raspberry Pi
+            "TXT": "mixer.svg",  # TXT Controller
+            "ROUTER": "wifi-router.svg",  # Network Router
+            "PLATINE": "cpu.svg",  # Circuit Board
+            "RPI": "microcontroller.svg",  # Raspberry Pi
             "MOSQUITTO": "wifi.svg",  # MQTT Broker
-            "MACHINE": "precision_manufacturing.svg",  # Generic Machine
-            "PC_TABLET": "router.svg",  # PC/Tablet
+            "MACHINE": "robot-arm.svg",  # Generic Machine
+            "PC_TABLET": "responsive.svg",  # PC/Tablet
+            "OPC_UA": "database.svg",  # OPC UA Server
         }
 
         # Spezielle Icons - IDs aus shopfloor_layout.json (BINDEND!)
@@ -143,15 +144,15 @@ class OMF2AssetManager:
         shopfloor_assets = {
             # Canonical COMPANY assets
             "COMPANY_rectangle": "ORBIS_logo_RGB.svg",
-            "COMPANY_square1": "shelves.svg",
-            "COMPANY_square2": "conveyor_belt.svg",
+            "COMPANY_square1": "factory.svg",
+            "COMPANY_square2": "conveyor.svg",
             # Canonical SOFTWARE assets
-            "SOFTWARE_rectangle": "factory.svg",  # DSP logo
-            "SOFTWARE_square1": "warehouse.svg",
-            "SOFTWARE_square2": "delivery_truck_speed.svg",
+            "SOFTWARE_rectangle": "information-technology.svg",  # DSP logo
+            "SOFTWARE_square1": "robot-arm.svg",
+            "SOFTWARE_square2": "order-tracking.svg",
             # Direct name fallback for backward compatibility (minimal)
             "ORBIS": "ORBIS_logo_RGB.svg",
-            "DSP": "factory.svg",
+            "DSP": "information-technology.svg",
         }
 
         # Shopfloor-Assets zu icon_mapping hinzufügen

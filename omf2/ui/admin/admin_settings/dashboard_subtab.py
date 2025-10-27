@@ -269,7 +269,7 @@ def _render_system_info():
 def _render_refresh_status():
     """Zeigt Auto-Refresh Status an"""
     import os
-    
+
     st.subheader("🔄 Auto-Refresh Configuration Status")
     st.markdown("**Feature status for Redis-backed UI refresh mechanism**")
 
@@ -282,7 +282,7 @@ def _render_refresh_status():
     with col1:
         try:
             from omf2.backend.refresh import get_all_refresh_groups
-            
+
             groups = get_all_refresh_groups()
             redis_available = True
             st.metric("Redis Backend", "✅ Available")
@@ -299,7 +299,7 @@ def _render_refresh_status():
             redis_url = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
             # Mask password for security
             from urllib.parse import urlparse, urlunparse
-            
+
             parsed = urlparse(redis_url)
             if parsed.password:
                 netloc = f"{parsed.username}:***@{parsed.hostname}"
@@ -308,7 +308,7 @@ def _render_refresh_status():
                 safe_url = urlunparse((parsed.scheme, netloc, parsed.path, "", "", ""))
             else:
                 safe_url = redis_url
-            
+
             st.metric("Redis URL", "Configured")
             st.caption(f"🔌 {safe_url}")
         except Exception as e:

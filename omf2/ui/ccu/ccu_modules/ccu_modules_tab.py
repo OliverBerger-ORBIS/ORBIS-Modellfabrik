@@ -18,23 +18,23 @@ logger = get_logger(__name__)
 def reload_modules():
     """
     Reload module data into session state
-    
+
     This wrapper function triggers a reload of module data from ModuleManager
     and stores it in session state for use by the UI rendering logic.
     """
     try:
         logger.debug("🔄 reload_modules() called - refreshing module data")
         module_manager = get_ccu_module_manager()
-        
+
         # Get fresh module data
         modules = module_manager.get_all_modules()
-        
+
         # Store in session state
         st.session_state["modules_data_refreshed"] = True
         st.session_state["modules_last_reload"] = pd.Timestamp.now()
-        
+
         logger.debug(f"✅ Module data refreshed: {len(modules)} modules")
-        
+
     except Exception as e:
         logger.error(f"❌ Error in reload_modules(): {e}")
 
@@ -46,10 +46,10 @@ def render_ccu_modules_tab(ccu_gateway=None, registry_manager=None):
         # Add auto-refresh support using the same pattern as production_orders_subtab
         try:
             from omf2.ui.ccu.production_orders_refresh_helper import check_and_reload
-            
+
             # Use module_updates refresh group with polling + compare
             check_and_reload(group="module_updates", reload_callback=reload_modules, interval_ms=1000)
-            
+
         except Exception as e:
             logger.debug(f"⚠️ Auto-refresh not available: {e}")
         # Initialize i18n
