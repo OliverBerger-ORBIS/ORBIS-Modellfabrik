@@ -29,16 +29,16 @@ def _get_autorefresh_enabled() -> bool:
     """
     # Try Streamlit secrets first
     try:
-        if hasattr(st, 'secrets') and 'ui' in st.secrets:
-            ui_config = st.secrets.get('ui')
-            if ui_config and 'autorefresh' in ui_config:
-                return bool(ui_config['autorefresh'])
+        if hasattr(st, "secrets") and "ui" in st.secrets:
+            ui_config = st.secrets.get("ui")
+            if ui_config and "autorefresh" in ui_config:
+                return bool(ui_config["autorefresh"])
     except Exception as e:
         logger.debug(f"Could not read autorefresh from st.secrets: {e}")
 
     # Try environment variable
-    env_value = os.environ.get('OMF2_UI_AUTOREFRESH', '').lower()
-    if env_value in ('1', 'true', 'yes'):
+    env_value = os.environ.get("OMF2_UI_AUTOREFRESH", "").lower()
+    if env_value in ("1", "true", "yes"):
         return True
 
     # Default to False
@@ -77,13 +77,12 @@ def render_admin_subtab():
         autorefresh_enabled = _get_autorefresh_enabled()
         status_icon = "✅" if autorefresh_enabled else "❌"
         st.metric(
-            label="AutoRefresh Configured",
-            value=f"{status_icon} {'Enabled' if autorefresh_enabled else 'Disabled'}"
+            label="AutoRefresh Configured", value=f"{status_icon} {'Enabled' if autorefresh_enabled else 'Disabled'}"
         )
 
         if autorefresh_enabled:
             # Show configuration source
-            if os.environ.get('OMF2_UI_AUTOREFRESH', '').lower() in ('1', 'true', 'yes'):
+            if os.environ.get("OMF2_UI_AUTOREFRESH", "").lower() in ("1", "true", "yes"):
                 st.caption("📝 Source: Environment variable `OMF2_UI_AUTOREFRESH`")
             else:
                 st.caption("📝 Source: Streamlit secrets `[ui].autorefresh`")
@@ -94,8 +93,7 @@ def render_admin_subtab():
         autorefresh_installed = _is_streamlit_autorefresh_installed()
         status_icon = "✅" if autorefresh_installed else "❌"
         st.metric(
-            label="streamlit_autorefresh Installed",
-            value=f"{status_icon} {'Yes' if autorefresh_installed else 'No'}"
+            label="streamlit_autorefresh Installed", value=f"{status_icon} {'Yes' if autorefresh_installed else 'No'}"
         )
 
         if not autorefresh_installed:
@@ -108,7 +106,9 @@ def render_admin_subtab():
     if autorefresh_enabled and autorefresh_installed:
         st.success("✅ AutoRefresh feature is fully operational")
     elif autorefresh_enabled and not autorefresh_installed:
-        st.warning("⚠️ AutoRefresh is enabled but `streamlit-autorefresh` is not installed. Install it to use this feature.")
+        st.warning(
+            "⚠️ AutoRefresh is enabled but `streamlit-autorefresh` is not installed. Install it to use this feature."
+        )
     elif not autorefresh_enabled and autorefresh_installed:
         st.info("ℹ️ AutoRefresh is disabled. The package is installed and ready to use when enabled.")
     else:

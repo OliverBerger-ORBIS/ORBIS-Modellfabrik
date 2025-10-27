@@ -33,16 +33,16 @@ def _get_autorefresh_enabled() -> bool:
     """
     # Try Streamlit secrets first
     try:
-        if hasattr(st, 'secrets') and 'ui' in st.secrets:
-            ui_config = st.secrets.get('ui')
-            if ui_config and 'autorefresh' in ui_config:
-                return bool(ui_config['autorefresh'])
+        if hasattr(st, "secrets") and "ui" in st.secrets:
+            ui_config = st.secrets.get("ui")
+            if ui_config and "autorefresh" in ui_config:
+                return bool(ui_config["autorefresh"])
     except Exception as e:
         logger.debug(f"Could not read autorefresh from st.secrets: {e}")
 
     # Try environment variable
-    env_value = os.environ.get('OMF2_UI_AUTOREFRESH', '').lower()
-    if env_value in ('1', 'true', 'yes'):
+    env_value = os.environ.get("OMF2_UI_AUTOREFRESH", "").lower()
+    if env_value in ("1", "true", "yes"):
         return True
 
     # Default to False
@@ -63,15 +63,15 @@ def _get_api_base() -> str:
     """
     # Try Streamlit secrets first
     try:
-        if hasattr(st, 'secrets') and 'api' in st.secrets:
-            api_config = st.secrets.get('api')
-            if api_config and 'base' in api_config:
-                return api_config['base']
+        if hasattr(st, "secrets") and "api" in st.secrets:
+            api_config = st.secrets.get("api")
+            if api_config and "base" in api_config:
+                return api_config["base"]
     except Exception as e:
         logger.debug(f"Could not read from st.secrets: {e}")
 
     # Try environment variable
-    api_base = os.environ.get('OMF2_API_BASE')
+    api_base = os.environ.get("OMF2_API_BASE")
     if api_base:
         return api_base
 
@@ -103,7 +103,7 @@ def fetch_last_refresh(group: str = "order_updates", timeout: float = 1.0) -> Op
             data = response.json()
 
             # Defensive: check for both 'timestamp' and 'last_refresh' keys
-            timestamp = data.get('timestamp') or data.get('last_refresh')
+            timestamp = data.get("timestamp") or data.get("last_refresh")
 
             if timestamp is not None:
                 return float(timestamp)
@@ -168,11 +168,7 @@ def ensure_autorefresh_state(group: str = "order_updates", interval_ms: int = 10
             st.session_state[counter_key] = 0
 
 
-def check_and_reload(
-    group: str = "order_updates",
-    reload_callback=None,
-    interval_ms: int = 1000
-) -> bool:
+def check_and_reload(group: str = "order_updates", reload_callback=None, interval_ms: int = 1000) -> bool:
     """
     Check if refresh is needed and trigger reload
 
