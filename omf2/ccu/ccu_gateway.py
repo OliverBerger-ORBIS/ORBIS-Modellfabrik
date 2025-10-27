@@ -99,13 +99,15 @@ class CcuGateway:
             topic: MQTT topic that was just processed
         """
         try:
+            from omf2.backend.refresh import request_refresh
+
             # Check each refresh_triggers group
             for group_name, topic_patterns in self.refresh_triggers.items():
                 # Check if topic matches any pattern in this group
                 for pattern in topic_patterns:
                     if self._topic_matches_pattern(topic, pattern):
-                        # Publish UI refresh event via MQTT (if enabled)
-                        self.publish_ui_refresh(group_name, {"source": "gateway", "trigger_topic": topic})
+                        # Request UI refresh via Redis-backed backend
+                        request_refresh(group_name, min_interval=1.0)
                         logger.debug(f"🔄 UI refresh triggered for group '{group_name}' (topic: {topic})")
                         break  # Only trigger once per group
 
