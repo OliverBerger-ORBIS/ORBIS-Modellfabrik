@@ -42,6 +42,9 @@ def render_dashboard_subtab():
     with st.expander("🔧 System Information", expanded=False):
         _render_system_info()
 
+    with st.expander("🔄 Auto-Refresh Status", expanded=False):
+        _render_refresh_status()
+
 
 def _render_mqtt_settings(config_path: Path):
     """Zeigt MQTT Settings an"""
@@ -261,3 +264,69 @@ def _render_system_info():
     except Exception as e:
         st.warning(f"⚠️ Registry Statistiken nicht verfügbar: {e}")
         logger.warning(f"Registry stats not available: {e}")
+
+
+def _render_refresh_status():
+    """Zeigt Auto-Refresh Status an"""
+    import os
+    
+    st.subheader("🔄 Auto-Refresh Configuration Status")
+    st.markdown("**Feature status for Redis-backed UI refresh mechanism**")
+
+    # Redis-backed refresh status
+    st.markdown("---")
+    st.markdown("### Redis-Backed Refresh")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        try:
+            from omf2.backend.refresh import get_all_refresh_groups
+            
+            groups = get_all_refresh_groups()
+            redis_available = True
+            st.metric("Redis Backend", "✅ Available")
+            st.caption(f"📋 Active groups: {len(groups)}")
+            if groups:
+                st.caption(f"Groups: {', '.join(groups)}")
+        except Exception as e:
+            redis_available = False
+            st.metric("Redis Backend", "❌ Unavailable")
+            st.caption(f"⚠️ Error: {str(e)[:50]}")
+
+    with col2:
+        try:
+            redis_url = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
+            # Mask password for security
+            from urllib.parse import urlparse, urlunparse
+            
+            parsed = urlparse(redis_url)
+            if parsed.password:
+                netloc = f"{parsed.username}:***@{parsed.hostname}"
+                if parsed.port:
+                    netloc += f":{parsed.port}"
+                safe_url = urlunparse((parsed.scheme, netloc, parsed.path, "", "", ""))
+            else:
+                safe_url = redis_url
+            
+            st.metric("Redis URL", "Configured")
+            st.caption(f"🔌 {safe_url}")
+        except Exception as e:
+            st.metric("Redis URL", "Error")
+            st.caption(f"⚠️ {str(e)[:50]}")
+
+    # Refresh mechanism summary
+    st.markdown("---")
+    if redis_available:
+        st.success("✅ Redis-backed refresh mechanism is operational")
+        st.info("💡 Gateway triggers refreshes via `request_refresh()` → Redis → UI polls backend")
+    else:
+        st.warning("⚠️ Redis is not available. In-memory fallback is active (not shared across processes)")
+        st.info("💡 To enable full refresh: Start Redis and configure REDIS_URL")
+
+    # Developer info
+    st.markdown("---")
+    st.markdown("### Developer Information")
+    st.caption("📝 Refresh path: Gateway → `omf2.backend.refresh.request_refresh()` → Redis → UI polling")
+    st.caption("🔍 Manual refresh: Always available via F5 or 'Refresh Dashboard' button")
+    st.caption("📚 See: docs/operations/auto_refresh.md for details")
