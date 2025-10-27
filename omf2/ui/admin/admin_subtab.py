@@ -55,6 +55,55 @@ def _is_streamlit_autorefresh_installed() -> bool:
     return importlib.util.find_spec("streamlit_autorefresh") is not None
 
 
+def _get_mqtt_ws_url() -> str:
+    """
+    Get MQTT WebSocket URL from configuration
+
+    Tries in order:
+    1. st.secrets['mqtt']['ws_url']
+    2. Environment variable OMF2_UI_MQTT_WS_URL
+    3. Empty string (not configured)
+
+    Returns:
+        MQTT WebSocket URL if configured, empty string otherwise
+    """
+    # Try Streamlit secrets first
+    try:
+        if hasattr(st, "secrets") and "mqtt" in st.secrets:
+            mqtt_config = st.secrets.get("mqtt")
+            if mqtt_config and "ws_url" in mqtt_config:
+                url = mqtt_config["ws_url"]
+                if url:
+                    return str(url)
+    except Exception as e:
+        logger.debug(f"Could not read MQTT config from st.secrets: {e}")
+
+    # Try environment variable
+    env_url = os.environ.get("OMF2_UI_MQTT_WS_URL", "")
+    if env_url:
+        return env_url
+
+    return ""
+
+
+def _get_refresh_trigger_groups() -> dict:
+    """
+    Get configured refresh trigger groups from secrets
+
+    Returns:
+        Dict of refresh trigger groups or empty dict if not configured
+    """
+    try:
+        if hasattr(st, "secrets") and "ui" in st.secrets:
+            ui_config = st.secrets.get("ui")
+            if ui_config and "refresh_triggers" in ui_config:
+                return dict(ui_config["refresh_triggers"])
+    except Exception as e:
+        logger.debug(f"Could not read refresh_triggers from st.secrets: {e}")
+
+    return {}
+
+
 def render_admin_subtab():
     """
     Render Admin Status Subtab
@@ -113,3 +162,57 @@ def render_admin_subtab():
         st.info("ℹ️ AutoRefresh is disabled. The package is installed and ready to use when enabled.")
     else:
         st.info("ℹ️ AutoRefresh is disabled and package is not installed.")
+
+    # MQTT UI Refresh Status Section
+    st.markdown("---")
+    st.markdown("### MQTT UI Refresh Feature Status")
+
+    mqtt_ws_url = _get_mqtt_ws_url()
+    mqtt_enabled = bool(mqtt_ws_url)
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        status_icon = "✅" if mqtt_enabled else "❌"
+        st.metric(
+            label="MQTT WebSocket Configured",
+            value=f"{status_icon} {'Enabled' if mqtt_enabled else 'Disabled'}",
+        )
+
+        if mqtt_enabled:
+            st.caption(f"🔌 Broker: `{mqtt_ws_url}`")
+            # Show configuration source
+            if os.environ.get("OMF2_UI_MQTT_WS_URL"):
+                st.caption("📝 Source: Environment variable `OMF2_UI_MQTT_WS_URL`")
+            else:
+                st.caption("📝 Source: Streamlit secrets `[mqtt].ws_url`")
+        else:
+            st.caption(
+                "💡 To enable: Set `OMF2_UI_MQTT_WS_URL=ws://broker:9001` or add `[mqtt].ws_url` to secrets"
+            )
+
+    with col2:
+        refresh_triggers = _get_refresh_trigger_groups()
+        trigger_count = len(refresh_triggers)
+
+        st.metric(
+            label="Configured Refresh Groups",
+            value=f"{trigger_count} group{'s' if trigger_count != 1 else ''}",
+        )
+
+        if refresh_triggers:
+            st.caption(f"📋 Groups: {', '.join(refresh_triggers.keys())}")
+        else:
+            st.caption("💡 Default groups: order_updates, sensor_data")
+
+    # MQTT feature status
+    st.markdown("---")
+    if mqtt_enabled:
+        st.success("✅ MQTT UI Refresh feature is configured and ready")
+        st.info(
+            "📨 Test with: `mosquitto_pub -t omf2/ui/refresh/order_updates -m '{\"ts\": 12345, \"source\":\"test\"}'`"
+        )
+    else:
+        st.info(
+            "ℹ️ MQTT UI Refresh is disabled. Configure WebSocket URL to enable real-time UI updates via MQTT."
+        )
