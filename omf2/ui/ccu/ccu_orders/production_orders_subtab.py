@@ -50,36 +50,7 @@ def show_production_orders_subtab(i18n):
     logger.info("📝 Rendering Production Orders Subtab")
 
     try:
-        # NEW: Optional MQTT UI refresh integration (opt-in via configuration)
-        try:
-            from omf2.ui.components.mqtt_subscriber import (
-                get_mqtt_ws_url,
-                is_mqtt_ui_enabled,
-                mqtt_subscriber_component,
-            )
-
-            mqtt_ws_url = get_mqtt_ws_url()
-
-            if mqtt_ws_url and is_mqtt_ui_enabled():
-                # MQTT UI refresh is enabled
-                logger.debug("🔌 MQTT UI refresh enabled for production orders")
-
-                # Subscribe to MQTT refresh topic
-                mqtt_message = mqtt_subscriber_component(
-                    broker_url=mqtt_ws_url,
-                    topic="omf2/ui/refresh/order_updates",
-                    key="ui_mqtt_production_orders",
-                )
-
-                # If we received a message, trigger reload
-                if mqtt_message:
-                    logger.debug(f"📨 MQTT refresh message received: {mqtt_message}")
-                    reload_orders()
-
-        except Exception as mqtt_error:
-            logger.debug(f"⚠️ MQTT UI component not available or error: {mqtt_error}")
-
-        # FALLBACK: Use production_orders_refresh_helper for robust polling + compare
+        # Use production_orders_refresh_helper for robust polling + compare
         check_and_reload(group="order_updates", reload_callback=reload_orders, interval_ms=1000)
 
         # Get data from session state (populated by reload_orders callback)

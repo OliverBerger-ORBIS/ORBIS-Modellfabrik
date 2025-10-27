@@ -50,36 +50,7 @@ def show_storage_orders_subtab(i18n):
     logger.info("📝 Rendering Storage Orders Subtab")
 
     try:
-        # NEW: Optional MQTT UI refresh integration (opt-in via configuration)
-        try:
-            from omf2.ui.components.mqtt_subscriber import (
-                get_mqtt_ws_url,
-                is_mqtt_ui_enabled,
-                mqtt_subscriber_component,
-            )
-
-            mqtt_ws_url = get_mqtt_ws_url()
-
-            if mqtt_ws_url and is_mqtt_ui_enabled():
-                # MQTT UI refresh is enabled
-                logger.debug("🔌 MQTT UI refresh enabled for storage orders")
-
-                # Subscribe to MQTT refresh topic
-                mqtt_message = mqtt_subscriber_component(
-                    broker_url=mqtt_ws_url,
-                    topic="omf2/ui/refresh/order_updates",
-                    key="ui_mqtt_storage_orders",
-                )
-
-                # If we received a message, trigger reload
-                if mqtt_message:
-                    logger.debug(f"📨 MQTT refresh message received: {mqtt_message}")
-                    reload_storage_orders()
-
-        except Exception as mqtt_error:
-            logger.debug(f"⚠️ MQTT UI component not available or error: {mqtt_error}")
-
-        # FALLBACK: Use existing polling mechanism (always runs)
+        # Use polling mechanism for refresh detection
         init_auto_refresh_polling("order_updates", interval_ms=1000)
         should_reload = should_reload_data("order_updates")
 
