@@ -592,6 +592,19 @@ class AdminMqttClient:
 
                 logger.debug(f"📥 Received on {topic}: {message}")
 
+                # UI Refresh Handler: Detect omf2/ui/refresh/* topics and trigger request_refresh
+                if topic.startswith("omf2/ui/refresh/"):
+                    try:
+                        # Extract group from topic: omf2/ui/refresh/{group}
+                        group = topic.replace("omf2/ui/refresh/", "")
+                        if group:
+                            # Call request_refresh in the UI process (not st.rerun!)
+                            from omf2.ui.utils.ui_refresh import request_refresh
+                            request_refresh()
+                            logger.debug(f"🔄 UI refresh requested for group '{group}' from MQTT")
+                    except Exception as e:
+                        logger.debug(f"⚠️ Failed to process UI refresh for topic {topic}: {e}")
+
                 # Meta-Parameter für Gateway
                 meta = {"mqtt_timestamp": mqtt_timestamp, "qos": msg.qos, "retain": msg.retain}
 
