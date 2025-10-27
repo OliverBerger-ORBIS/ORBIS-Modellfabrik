@@ -178,7 +178,8 @@ def _render_order_details(order, order_manager, i18n, is_completed=False):
         complete_production_plan = order_manager.get_complete_production_plan(order)
     if complete_production_plan:
         steps_label = f"{i18n.t('ccu_orders.card.production_steps')} ({len(complete_production_plan)})"
-        with st.expander(steps_label, expanded=False):
+        # Expand for active orders, collapse for completed orders
+        with st.expander(steps_label, expanded=not is_completed):
             _render_production_steps(complete_production_plan, i18n, is_completed)
 
 
