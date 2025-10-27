@@ -211,31 +211,26 @@ pytest tests/test_gateway_refresh_integration.py -v
 
 ### Integration Testing
 
-1. **Start MQTT Broker:**
-   ```bash
-   # Using Docker (basic setup - for production, use proper mosquitto.conf)
-   docker run -d -p 1883:1883 -p 9001:9001 --name mosquitto eclipse-mosquitto
-   
-   # For production, mount a configuration file:
-   # docker run -d -p 1883:1883 -v /path/to/mosquitto.conf:/mosquitto/config/mosquitto.conf eclipse-mosquitto
-   ```
+**Prerequisites:**
+- MQTT broker must be running (in OMF2, this is typically already running in Live and Replay environments)
+- If testing in a new environment, ensure MQTT broker is configured and accessible
 
-2. **Enable UI Refresh:**
+1. **Enable UI Refresh:**
    ```bash
    export OMF2_UI_REFRESH_VIA_MQTT=1
    ```
 
-3. **Start Streamlit:**
+2. **Start Streamlit:**
    ```bash
    streamlit run omf2/omf.py
    ```
 
-4. **Verify Status:**
+3. **Verify Status:**
    - Navigate to **Admin → Admin Settings → Dashboard**
    - Check **UI Auto-Refresh Status**
    - Both Gateway publish and UI subscribe should show ✅
 
-5. **Publish Test Message:**
+4. **Publish Test Message:**
    ```bash
    mosquitto_pub -t omf2/ui/refresh/test -m '{"ts": 12345, "source":"test"}'
    ```
@@ -340,20 +335,25 @@ pytest tests/test_gateway_refresh_integration.py -v
 
 ## Migration from Previous Patterns
 
-If upgrading from polling-based or Redis-based refresh patterns used in earlier versions:
+**Note:** This section is for reference only if upgrading from older OMF2 versions. The current implementation in this PR already includes all necessary changes.
 
-**Previous components that can be removed:**
-- `streamlit_autorefresh` polling calls from UI components
-- Flask API refresh endpoints (if using omf2/backend/api_refresh.py for polling)
-- Redis-based refresh polling helpers (if using external Redis for cross-process refresh coordination)
+If you were using polling-based or Redis-based refresh patterns in earlier versions, here's what has changed:
 
-**Migration steps:**
-1. Remove `streamlit_autorefresh` calls from UI components (no longer needed)
-2. Remove Flask API polling endpoints (if present and no longer used)
-3. Remove Redis refresh polling helpers (if using external Redis for UI refresh only)
-4. Set `OMF2_UI_REFRESH_VIA_MQTT=1` environment variable
-5. Restart Streamlit application
+**Components already removed in this PR:**
+- Browser-based MQTT WebSocket component (`omf2/ui/components/mqtt_subscriber/`)
+- No longer using `streamlit_autorefresh` polling calls
+- No longer using Flask API refresh endpoints for polling
+- No longer requiring external Redis for UI refresh coordination
 
-**Note:** This implementation uses in-process `st.session_state` for UI refresh tracking, eliminating the need for external Redis or polling APIs for UI refresh. The Redis fallback in `omf2/backend/refresh.py` remains available for other use cases but is not required for the MQTT-driven UI refresh pattern.
+**What this PR already implements:**
+1. ✅ MQTT-driven refresh via existing admin_mqtt_client (no new clients)
+2. ✅ In-process `st.session_state` for UI refresh tracking
+3. ✅ Gateway publishes to `omf2/ui/refresh/{group}` topics
+4. ✅ Single `st.rerun()` entry point in omf.py via `consume_refresh()`
 
-The new pattern is simpler, faster, and more reliable.
+**To use this implementation:**
+1. Set `OMF2_UI_REFRESH_VIA_MQTT=1` environment variable
+2. Restart Streamlit application
+3. Verify status in Admin → Admin Settings → Dashboard → UI Auto-Refresh Status
+
+The new pattern is simpler, faster, and more reliable - no external dependencies like Redis needed for UI refresh.
