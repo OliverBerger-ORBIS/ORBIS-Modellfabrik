@@ -8,9 +8,29 @@ import streamlit as st
 from omf2.ccu.order_manager import get_order_manager
 from omf2.common.logger import get_logger
 from omf2.ui.common.symbols import UISymbols
-from omf2.ui.common.refresh_polling import should_reload_data, init_auto_refresh_polling
+from omf2.ui.common.refresh_polling import should_reload_data, init_auto_refresh_polling, get_api_url
+from omf2.ui.ccu.production_orders_refresh_helper import check_and_reload
 
 logger = get_logger(__name__)
+
+
+def load_storage_orders():
+    """Load storage orders and store in session state."""
+    order_manager = get_order_manager()
+    
+    # Get all orders
+    all_active = order_manager.get_active_orders()
+    all_completed = order_manager.get_completed_orders()
+    
+    # Filter: Only STORAGE Orders
+    active_orders = [o for o in all_active if o.get("orderType") == "STORAGE"]
+    completed_orders = [o for o in all_completed if o.get("orderType") == "STORAGE"]
+    
+    # Store in session state
+    st.session_state['storage_orders_active'] = active_orders
+    st.session_state['storage_orders_completed'] = completed_orders
+    
+    logger.debug(f"📦 Loaded {len(active_orders)} active and {len(completed_orders)} completed storage orders")
 
 
 def show_storage_orders_subtab(i18n):
@@ -21,22 +41,27 @@ def show_storage_orders_subtab(i18n):
         # Initialize auto-refresh polling (1 second interval)
         init_auto_refresh_polling('order_updates', interval_ms=1000)
         
-        # Check if we should reload data
-        should_reload = should_reload_data('order_updates')
+        # Use check_and_reload for consistent refresh handling
+        API_BASE = get_api_url()
+        check_and_reload(
+            API_BASE,
+            group='order_updates',
+            reload_callable=load_storage_orders,
+            session_state_key='storage_orders_last_refresh'
+        )
         
-        if should_reload:
-            logger.debug("🔄 Reloading storage orders data due to refresh trigger")
+        # Get data from session state (loaded by check_and_reload or initial load)
+        active_orders = st.session_state.get('storage_orders_active')
+        completed_orders = st.session_state.get('storage_orders_completed')
         
-        # Business Logic über OrderManager
+        # Initial load if not in session state
+        if active_orders is None or completed_orders is None:
+            load_storage_orders()
+            active_orders = st.session_state.get('storage_orders_active', [])
+            completed_orders = st.session_state.get('storage_orders_completed', [])
+        
+        # Get order manager for rendering
         order_manager = get_order_manager()
-
-        # Daten holen
-        all_active = order_manager.get_active_orders()
-        all_completed = order_manager.get_completed_orders()
-
-        # Filter: Nur STORAGE Orders
-        active_orders = [o for o in all_active if o.get("orderType") == "STORAGE"]
-        completed_orders = [o for o in all_completed if o.get("orderType") == "STORAGE"]
 
         st.markdown(f"### {i18n.t('ccu_orders.storage.title')}")
         st.markdown(i18n.t("ccu_orders.storage.subtitle"))
