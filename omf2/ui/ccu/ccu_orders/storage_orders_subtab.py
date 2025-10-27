@@ -13,24 +13,18 @@ from omf2.ui.common.symbols import UISymbols
 logger = get_logger(__name__)
 
 
-def show_storage_orders_subtab(i18n):
-    """Render Storage Orders Subtab (nur orderType: STORAGE)"""
-    logger.info("📝 Rendering Storage Orders Subtab")
+def reload_storage_orders():
+    """
+    Reload storage orders data into session state
 
+    This wrapper function loads orders from OrderManager and stores them
+    in session state for use by the UI rendering logic.
+    """
     try:
-        # Initialize auto-refresh polling (1 second interval)
-        init_auto_refresh_polling("order_updates", interval_ms=1000)
-
-        # Check if we should reload data
-        should_reload = should_reload_data("order_updates")
-
-        if should_reload:
-            logger.debug("🔄 Reloading storage orders data due to refresh trigger")
-
-        # Business Logic über OrderManager
+        logger.debug("🔄 reload_storage_orders() called - loading fresh data")
         order_manager = get_order_manager()
 
-        # Daten holen
+        # Load fresh data
         all_active = order_manager.get_active_orders()
         all_completed = order_manager.get_completed_orders()
 
@@ -38,8 +32,74 @@ def show_storage_orders_subtab(i18n):
         active_orders = [o for o in all_active if o.get("orderType") == "STORAGE"]
         completed_orders = [o for o in all_completed if o.get("orderType") == "STORAGE"]
 
+        # Store in session state
+        st.session_state["storage_orders_active"] = active_orders
+        st.session_state["storage_orders_completed"] = completed_orders
+
+        logger.debug(f"✅ Loaded {len(active_orders)} active and {len(completed_orders)} completed storage orders")
+
+    except Exception as e:
+        logger.error(f"❌ Error in reload_storage_orders(): {e}")
+        # Set empty lists on error to prevent UI crashes
+        st.session_state["storage_orders_active"] = []
+        st.session_state["storage_orders_completed"] = []
+
+
+def show_storage_orders_subtab(i18n):
+    """Render Storage Orders Subtab (nur orderType: STORAGE)"""
+    logger.info("📝 Rendering Storage Orders Subtab")
+
+    try:
+        # NEW: Optional MQTT UI refresh integration (opt-in via configuration)
+        try:
+            from omf2.ui.components.mqtt_subscriber import (
+                get_mqtt_ws_url,
+                is_mqtt_ui_enabled,
+                mqtt_subscriber_component,
+            )
+
+            mqtt_ws_url = get_mqtt_ws_url()
+
+            if mqtt_ws_url and is_mqtt_ui_enabled():
+                # MQTT UI refresh is enabled
+                logger.debug("🔌 MQTT UI refresh enabled for storage orders")
+
+                # Subscribe to MQTT refresh topic
+                mqtt_message = mqtt_subscriber_component(
+                    broker_url=mqtt_ws_url,
+                    topic="omf2/ui/refresh/order_updates",
+                    key="ui_mqtt_storage_orders",
+                )
+
+                # If we received a message, trigger reload
+                if mqtt_message:
+                    logger.debug(f"📨 MQTT refresh message received: {mqtt_message}")
+                    reload_storage_orders()
+
+        except Exception as mqtt_error:
+            logger.debug(f"⚠️ MQTT UI component not available or error: {mqtt_error}")
+
+        # FALLBACK: Use existing polling mechanism (always runs)
+        init_auto_refresh_polling("order_updates", interval_ms=1000)
+        should_reload = should_reload_data("order_updates")
+
+        if should_reload:
+            logger.debug("🔄 Reloading storage orders data due to polling refresh trigger")
+            reload_storage_orders()
+
+        # Get data from session state (populated by reload_storage_orders callback)
+        # If not yet populated, load it now
+        if "storage_orders_active" not in st.session_state:
+            reload_storage_orders()
+
+        active_orders = st.session_state.get("storage_orders_active", [])
+        completed_orders = st.session_state.get("storage_orders_completed", [])
+
         st.markdown(f"### {i18n.t('ccu_orders.storage.title')}")
         st.markdown(i18n.t("ccu_orders.storage.subtitle"))
+
+        # Business Logic über OrderManager (for operations)
+        order_manager = get_order_manager()
 
         # Active Storage Orders
         _show_active_orders_section(active_orders, order_manager, i18n)
