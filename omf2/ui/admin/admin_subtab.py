@@ -207,12 +207,43 @@ def render_admin_subtab():
 
     # MQTT feature status
     st.markdown("---")
-    if mqtt_enabled:
-        st.success("✅ MQTT UI Refresh feature is configured and ready")
+    
+    # Check if MQTT publish refresh is enabled (gateway-side)
+    mqtt_publish_enabled = bool(os.environ.get("OMF2_UI_REFRESH_VIA_MQTT"))
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.metric(
+            label="MQTT Publish (Gateway)",
+            value=f"{'✅ Enabled' if mqtt_publish_enabled else '❌ Disabled'}",
+        )
+        if mqtt_publish_enabled:
+            st.caption("📝 Business functions publish to `omf2/ui/refresh/{group}`")
+        else:
+            st.caption("💡 To enable: Set `OMF2_UI_REFRESH_VIA_MQTT=1`")
+    
+    with col2:
+        st.metric(
+            label="MQTT Subscribe (UI)",
+            value=f"{'✅ Enabled' if mqtt_enabled else '❌ Disabled'}",
+        )
+        if mqtt_enabled:
+            st.caption("🔌 UI components subscribe via WebSocket")
+        else:
+            st.caption("💡 Configure WebSocket URL to enable")
+    
+    st.markdown("---")
+    if mqtt_publish_enabled and mqtt_enabled:
+        st.success("✅ Full MQTT UI Refresh pipeline is active (Gateway → MQTT → UI)")
         st.info(
             "📨 Test with: `mosquitto_pub -t omf2/ui/refresh/order_updates -m '{\"ts\": 12345, \"source\":\"test\"}'`"
         )
+    elif mqtt_publish_enabled and not mqtt_enabled:
+        st.warning("⚠️ Gateway publishes MQTT refresh events but UI is not configured to receive them")
+    elif not mqtt_publish_enabled and mqtt_enabled:
+        st.warning("⚠️ UI is configured to receive MQTT events but Gateway is not publishing them")
     else:
         st.info(
-            "ℹ️ MQTT UI Refresh is disabled. Configure WebSocket URL to enable real-time UI updates via MQTT."
+            "ℹ️ MQTT UI Refresh is disabled. Enable both Gateway publish and UI subscribe for real-time updates."
         )
