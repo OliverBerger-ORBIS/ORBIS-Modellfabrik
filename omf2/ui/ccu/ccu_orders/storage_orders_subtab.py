@@ -7,7 +7,6 @@ import streamlit as st
 
 from omf2.ccu.order_manager import get_order_manager
 from omf2.common.logger import get_logger
-from omf2.ui.common.refresh_polling import init_auto_refresh_polling, should_reload_data
 from omf2.ui.common.symbols import UISymbols
 
 logger = get_logger(__name__)
@@ -50,14 +49,6 @@ def show_storage_orders_subtab(i18n):
     logger.info("📝 Rendering Storage Orders Subtab")
 
     try:
-        # Use polling mechanism for refresh detection
-        init_auto_refresh_polling("order_updates", interval_ms=1000)
-        should_reload = should_reload_data("order_updates")
-
-        if should_reload:
-            logger.debug("🔄 Reloading storage orders data due to polling refresh trigger")
-            reload_storage_orders()
-
         # Get data from session state (populated by reload_storage_orders callback)
         # If not yet populated, load it now
         if "storage_orders_active" not in st.session_state:

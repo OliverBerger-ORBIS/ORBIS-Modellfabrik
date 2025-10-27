@@ -7,7 +7,6 @@ import streamlit as st
 
 from omf2.ccu.order_manager import get_order_manager
 from omf2.common.logger import get_logger
-from omf2.ui.ccu.production_orders_refresh_helper import check_and_reload
 from omf2.ui.common.symbols import UISymbols
 
 logger = get_logger(__name__)
@@ -50,9 +49,6 @@ def show_production_orders_subtab(i18n):
     logger.info("📝 Rendering Production Orders Subtab")
 
     try:
-        # Use production_orders_refresh_helper for robust polling + compare
-        check_and_reload(group="order_updates", reload_callback=reload_orders, interval_ms=1000)
-
         # Get data from session state (populated by reload_orders callback)
         # If not yet populated, load it now
         if "production_orders_active" not in st.session_state:
