@@ -133,13 +133,16 @@ class OrderManager:
             try:
                 from omf2.backend.refresh import request_refresh
 
+                logger.debug("Attempting to request UI refresh for order_updates...")
                 result = request_refresh("order_updates", min_interval=1.0)
                 if result:
                     logger.info(f"🔄 Requested UI refresh for order_updates (active: {len(orders)} orders)")
                 else:
                     logger.debug("🚫 UI refresh throttled for order_updates")
+            except ImportError as e:
+                logger.error(f"❌ Failed to import request_refresh: {e}")
             except Exception as e:
-                logger.warning(f"⚠️ Could not trigger UI refresh: {e}")
+                logger.error(f"⚠️ Could not trigger UI refresh: {e}", exc_info=True)
 
         except Exception as e:
             logger.error(f"❌ Error processing ccu/order/active from {topic}: {e}")
@@ -222,13 +225,16 @@ class OrderManager:
             try:
                 from omf2.backend.refresh import request_refresh
 
+                logger.debug("Attempting to request UI refresh for order_updates...")
                 result = request_refresh("order_updates", min_interval=1.0)
                 if result:
                     logger.info(f"🔄 Requested UI refresh for order_updates (completed: {len(orders)} orders)")
                 else:
                     logger.debug("🚫 UI refresh throttled for order_updates")
+            except ImportError as e:
+                logger.error(f"❌ Failed to import request_refresh: {e}")
             except Exception as e:
-                logger.warning(f"⚠️ Could not trigger UI refresh: {e}")
+                logger.error(f"⚠️ Could not trigger UI refresh: {e}", exc_info=True)
 
         except Exception as e:
             logger.error(f"❌ Error processing ccu/order/completed from {topic}: {e}")
