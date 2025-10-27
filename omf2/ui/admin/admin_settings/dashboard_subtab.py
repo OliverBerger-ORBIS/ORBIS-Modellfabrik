@@ -229,29 +229,31 @@ def _render_system_info():
     with col3:
         st.metric("🌐 MQTT Client", "paho-mqtt")
         st.metric("📊 YAML Parser", "PyYAML")
-    
+
     # Refresh System Status
     st.markdown("---")
     st.subheader("🔄 Refresh System Status")
-    
+
     col1, col2 = st.columns(2)
-    
+
     with col1:
         # Check if Redis is available
         try:
             from omf2.backend.refresh import _get_redis_client
+
             redis_client = _get_redis_client()
             redis_status = "✅ Connected" if redis_client else "⚠️ Unavailable (in-memory fallback)"
         except Exception:
             redis_status = "❌ Error"
-        
+
         st.metric("💾 Redis Backend", redis_status)
         st.caption("📝 Redis stores refresh timestamps for UI polling")
-    
+
     with col2:
         # Check refresh groups
         try:
             from omf2.backend.refresh import get_all_refresh_groups
+
             groups = get_all_refresh_groups()
             st.metric("📋 Refresh Groups", f"{len(groups)} active")
             if groups:
@@ -260,8 +262,10 @@ def _render_system_info():
                 st.caption("No active refresh groups yet")
         except Exception:
             st.metric("📋 Refresh Groups", "Error")
-    
-    st.info("ℹ️ **Refresh System:** Uses Redis-backed timestamps with UI polling. Manual 'Refresh Dashboard' button available in Dev mode.")
+
+    st.info(
+        "ℹ️ **Refresh System:** Uses Redis-backed timestamps with UI polling. Manual 'Refresh Dashboard' button available in Dev mode."
+    )
 
     # Registry Stats (falls verfügbar)
     try:

@@ -68,11 +68,11 @@ def request_refresh() -> None:
 def consume_refresh() -> bool:
     """
     Check if backend refresh has been triggered and rerun if needed.
-    
+
     This function checks the backend refresh API for any new refresh events
     and returns True if a rerun should happen. It tracks the last known
     refresh timestamp in session_state to avoid unnecessary reruns.
-    
+
     Returns:
         True if a rerun should happen, False otherwise
     """
@@ -81,35 +81,36 @@ def consume_refresh() -> bool:
     if ts:
         st.session_state[_FLAG] = 0
         return True
-    
+
     # Then check backend for refresh events
     try:
         from omf2.backend.refresh import get_last_refresh
-        
+
         # Check common refresh groups
         refresh_groups = ["order_updates", "module_updates", "sensor_updates"]
-        
+
         for group in refresh_groups:
             # Get current refresh timestamp from backend
             current_ts = get_last_refresh(group)
-            
+
             if current_ts is not None:
                 # Get last known timestamp from session_state
                 key = f"_last_refresh_ts_{group}"
                 last_ts = st.session_state.get(key, None)
-                
+
                 # If this is new or timestamp has changed, trigger refresh
                 if last_ts is None or current_ts > last_ts:
                     # Update session_state with new timestamp
                     st.session_state[key] = current_ts
                     return True
-        
+
         return False
-    
+
     except Exception as e:
         # If backend check fails, fall back to no refresh
         # This ensures the app continues to work even if Redis is unavailable
         from omf2.common.logger import get_logger
+
         logger = get_logger(__name__)
         logger.debug(f"⚠️ Backend refresh check failed: {e}")
         return False
