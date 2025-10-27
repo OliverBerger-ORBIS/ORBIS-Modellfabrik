@@ -7,15 +7,20 @@ import streamlit as st
 
 from omf2.common.logger import get_logger
 from omf2.ui.common.symbols import UISymbols
-from omf2.ui.common.refresh_polling import init_auto_refresh_polling
 from omf2.ui.ccu.production_orders_refresh_helper import check_and_reload
 
 logger = get_logger(__name__)
 
 
-def load_ccu_modules():
-    """Load CCU modules data and store in session state."""
+def reload_ccu_modules():
+    """
+    Reload CCU modules data into session state
+    
+    This wrapper function loads modules data and stores it
+    in session state for use by the UI rendering logic.
+    """
     try:
+        logger.debug("🔄 reload_ccu_modules() called - loading fresh data")
         from omf2.ccu.module_manager import get_ccu_module_manager
         
         module_manager = get_ccu_module_manager()
@@ -44,10 +49,10 @@ def load_ccu_modules():
         
         # Store in session state
         st.session_state['ccu_modules_data'] = modules_data
-        logger.debug(f"🏗️ Loaded {len(modules_data)} CCU modules")
+        logger.debug(f"✅ Loaded {len(modules_data)} CCU modules")
         
     except Exception as e:
-        logger.error(f"❌ Error loading CCU modules: {e}")
+        logger.error(f"❌ Error in reload_ccu_modules(): {e}")
         st.session_state['ccu_modules_data'] = []
 
 
@@ -67,23 +72,15 @@ def render_ccu_modules_subtab(ccu_gateway=None, registry_manager=None):
             st.error("❌ I18n Manager not found")
             return
         
-        # Initialize auto-refresh polling (1 second interval)
-        init_auto_refresh_polling('order_updates', interval_ms=1000)
+        # Use production_orders_refresh_helper for robust polling + compare
+        check_and_reload(group='order_updates', reload_callback=reload_ccu_modules, interval_ms=1000)
         
-        # Use check_and_reload for consistent refresh handling
-        check_and_reload(
-            group='order_updates',
-            reload_callable=load_ccu_modules,
-            session_state_key='ccu_modules_last_refresh'
-        )
+        # Get data from session state (populated by reload_ccu_modules callback)
+        # If not yet populated, load it now
+        if 'ccu_modules_data' not in st.session_state:
+            reload_ccu_modules()
         
-        # Get data from session state
-        modules_data = st.session_state.get('ccu_modules_data')
-        
-        # Initial load if not in session state
-        if modules_data is None:
-            load_ccu_modules()
-            modules_data = st.session_state.get('ccu_modules_data', [])
+        modules_data = st.session_state.get('ccu_modules_data', [])
         
         # Display modules
         st.markdown(f"### {UISymbols.get_tab_icon('ccu_modules')} CCU Modules")

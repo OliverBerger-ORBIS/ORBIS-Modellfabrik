@@ -8,29 +8,41 @@ import streamlit as st
 from omf2.ccu.order_manager import get_order_manager
 from omf2.common.logger import get_logger
 from omf2.ui.common.symbols import UISymbols
-from omf2.ui.common.refresh_polling import should_reload_data, init_auto_refresh_polling
 from omf2.ui.ccu.production_orders_refresh_helper import check_and_reload
 
 logger = get_logger(__name__)
 
 
-def load_storage_orders():
-    """Load storage orders and store in session state."""
-    order_manager = get_order_manager()
+def reload_storage_orders():
+    """
+    Reload storage orders data into session state
     
-    # Get all orders
-    all_active = order_manager.get_active_orders()
-    all_completed = order_manager.get_completed_orders()
-    
-    # Filter: Only STORAGE Orders
-    active_orders = [o for o in all_active if o.get("orderType") == "STORAGE"]
-    completed_orders = [o for o in all_completed if o.get("orderType") == "STORAGE"]
-    
-    # Store in session state
-    st.session_state['storage_orders_active'] = active_orders
-    st.session_state['storage_orders_completed'] = completed_orders
-    
-    logger.debug(f"📦 Loaded {len(active_orders)} active and {len(completed_orders)} completed storage orders")
+    This wrapper function loads orders from OrderManager and stores them
+    in session state for use by the UI rendering logic.
+    """
+    try:
+        logger.debug("🔄 reload_storage_orders() called - loading fresh data")
+        order_manager = get_order_manager()
+        
+        # Load fresh data
+        all_active = order_manager.get_active_orders()
+        all_completed = order_manager.get_completed_orders()
+        
+        # Filter: Nur STORAGE Orders
+        active_orders = [o for o in all_active if o.get("orderType") == "STORAGE"]
+        completed_orders = [o for o in all_completed if o.get("orderType") == "STORAGE"]
+        
+        # Store in session state
+        st.session_state['storage_orders_active'] = active_orders
+        st.session_state['storage_orders_completed'] = completed_orders
+        
+        logger.debug(f"✅ Loaded {len(active_orders)} active and {len(completed_orders)} completed storage orders")
+        
+    except Exception as e:
+        logger.error(f"❌ Error in reload_storage_orders(): {e}")
+        # Set empty lists on error to prevent UI crashes
+        st.session_state['storage_orders_active'] = []
+        st.session_state['storage_orders_completed'] = []
 
 
 def show_storage_orders_subtab(i18n):
@@ -38,27 +50,18 @@ def show_storage_orders_subtab(i18n):
     logger.info("📝 Rendering Storage Orders Subtab")
 
     try:
-        # Initialize auto-refresh polling (1 second interval)
-        init_auto_refresh_polling('order_updates', interval_ms=1000)
+        # Use production_orders_refresh_helper for robust polling + compare
+        check_and_reload(group='order_updates', reload_callback=reload_storage_orders, interval_ms=1000)
         
-        # Use check_and_reload for consistent refresh handling
-        check_and_reload(
-            group='order_updates',
-            reload_callable=load_storage_orders,
-            session_state_key='storage_orders_last_refresh'
-        )
+        # Get data from session state (populated by reload_storage_orders callback)
+        # If not yet populated, load it now
+        if 'storage_orders_active' not in st.session_state:
+            reload_storage_orders()
         
-        # Get data from session state (loaded by check_and_reload or initial load)
-        active_orders = st.session_state.get('storage_orders_active')
-        completed_orders = st.session_state.get('storage_orders_completed')
+        active_orders = st.session_state.get('storage_orders_active', [])
+        completed_orders = st.session_state.get('storage_orders_completed', [])
         
-        # Initial load if not in session state
-        if active_orders is None or completed_orders is None:
-            load_storage_orders()
-            active_orders = st.session_state.get('storage_orders_active', [])
-            completed_orders = st.session_state.get('storage_orders_completed', [])
-        
-        # Get order manager for rendering
+        # Get order_manager for rendering operations
         order_manager = get_order_manager()
 
         st.markdown(f"### {i18n.t('ccu_orders.storage.title')}")

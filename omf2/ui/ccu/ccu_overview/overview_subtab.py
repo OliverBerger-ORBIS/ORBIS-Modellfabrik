@@ -7,15 +7,21 @@ import streamlit as st
 
 from omf2.common.logger import get_logger
 from omf2.ui.common.symbols import UISymbols
-from omf2.ui.common.refresh_polling import init_auto_refresh_polling
 from omf2.ui.ccu.production_orders_refresh_helper import check_and_reload
 
 logger = get_logger(__name__)
 
 
-def load_overview_data(ccu_gateway=None, registry_manager=None):
-    """Load overview data and store in session state."""
+def reload_overview(ccu_gateway=None, registry_manager=None):
+    """
+    Reload overview data into session state
+    
+    This wrapper function loads overview data and stores it
+    in session state for use by the UI rendering logic.
+    """
     try:
+        logger.debug("🔄 reload_overview() called - loading fresh data")
+        
         # Load various overview data
         overview_data = {
             'timestamp': None,
@@ -49,10 +55,10 @@ def load_overview_data(ccu_gateway=None, registry_manager=None):
         
         # Store in session state
         st.session_state['overview_data'] = overview_data
-        logger.debug(f"📊 Loaded overview data: {overview_data}")
+        logger.debug(f"✅ Loaded overview data: {overview_data}")
         
     except Exception as e:
-        logger.error(f"❌ Error loading overview data: {e}")
+        logger.error(f"❌ Error in reload_overview(): {e}")
         st.session_state['overview_data'] = {}
 
 
@@ -73,26 +79,18 @@ def render_overview_subtab(ccu_gateway=None, registry_manager=None, asset_manage
             st.error("❌ I18n Manager not found")
             return
         
-        # Initialize auto-refresh polling (1 second interval)
-        init_auto_refresh_polling('order_updates', interval_ms=1000)
-        
-        # Use check_and_reload for consistent refresh handling
+        # Use production_orders_refresh_helper for robust polling + compare
         def reload_wrapper():
-            load_overview_data(ccu_gateway, registry_manager)
+            reload_overview(ccu_gateway, registry_manager)
         
-        check_and_reload(
-            group='order_updates',
-            reload_callable=reload_wrapper,
-            session_state_key='overview_last_refresh'
-        )
+        check_and_reload(group='order_updates', reload_callback=reload_wrapper, interval_ms=1000)
         
-        # Get data from session state
-        overview_data = st.session_state.get('overview_data')
+        # Get data from session state (populated by reload_overview callback)
+        # If not yet populated, load it now
+        if 'overview_data' not in st.session_state:
+            reload_overview(ccu_gateway, registry_manager)
         
-        # Initial load if not in session state
-        if overview_data is None:
-            load_overview_data(ccu_gateway, registry_manager)
-            overview_data = st.session_state.get('overview_data', {})
+        overview_data = st.session_state.get('overview_data', {})
         
         # Display overview
         st.markdown(f"### {UISymbols.get_functional_icon('dashboard')} Overview")
