@@ -155,7 +155,7 @@ class CcuGateway:
                 self.mqtt_client.publish(topic, refresh_payload, qos=0, retain=False)
                 logger.debug(f"✅ Published UI refresh to {topic}")
             else:
-                logger.debug(f"⚠️ mqtt_client has no publish method")
+                logger.debug("⚠️ mqtt_client has no publish method")
 
         except Exception as e:
             # Defensive: log but don't raise - never block business flow

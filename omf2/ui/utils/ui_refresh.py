@@ -68,11 +68,11 @@ def request_refresh() -> None:
 def consume_refresh() -> bool:
     """
     Check if any refresh group has been updated since last check.
-    
+
     This function checks the backend refresh timestamps for all known groups
     and triggers a rerun if any have been updated. This ensures st.rerun() is
     called exactly once per detected refresh event.
-    
+
     Returns:
         True if refresh detected and rerun should occur, False otherwise
     """
@@ -81,32 +81,32 @@ def consume_refresh() -> bool:
 
         # Get all active refresh groups
         groups = get_all_refresh_groups()
-        
+
         if not groups:
             # No refresh groups yet, nothing to check
             return False
-        
+
         # Check each group for updates
         refresh_needed = False
         for group in groups:
             # Get current timestamp from backend
             current_ts = get_last_refresh_ts(group)
-            
+
             if current_ts is None:
                 continue
-            
+
             # Get last seen timestamp from session state
             session_key = f"_last_seen_refresh_{group}"
             last_seen_ts = st.session_state.get(session_key, 0)
-            
+
             # Check if timestamp has increased
             if current_ts > last_seen_ts:
                 # Update session state with new timestamp
                 st.session_state[session_key] = current_ts
                 refresh_needed = True
-                
+
         return refresh_needed
-        
+
     except Exception as e:
         # Defensive: log error but don't break UI flow
         from omf2.common.logger import get_logger

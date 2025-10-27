@@ -151,61 +151,54 @@ def test_request_refresh_custom_interval(refresh_module, mock_redis):
 
 
 def test_redis_unavailable():
-    """Test behavior when Redis is not available - should use in-memory fallback"""
+    """Test in-memory implementation (Redis removed)"""
     import omf2.backend.refresh as refresh
 
     # Reset module state
-    refresh._redis_client = None
-    refresh._redis_available = None
     refresh._memory_store = {}
 
-    # Mock _get_redis_client to return None (simulating unavailable Redis)
-    with patch.object(refresh, "_get_redis_client", return_value=None):
-        # request_refresh should return True (using in-memory fallback)
-        result = refresh.request_refresh("test_group")
-        assert result is True
+    # request_refresh should return True (using in-memory store)
+    result = refresh.request_refresh("test_group")
+    assert result is True
 
-        # get_last_refresh should return the timestamp from memory
-        timestamp = refresh.get_last_refresh("test_group")
-        assert timestamp is not None
-        assert isinstance(timestamp, float)
-        assert timestamp > 0
+    # get_last_refresh should return the timestamp from memory
+    timestamp = refresh.get_last_refresh("test_group")
+    assert timestamp is not None
+    assert isinstance(timestamp, float)
+    assert timestamp > 0
 
-        # clear_refresh should return True (using in-memory fallback)
-        result = refresh.clear_refresh("test_group")
-        assert result is True
+    # clear_refresh should return True (using in-memory store)
+    result = refresh.clear_refresh("test_group")
+    assert result is True
 
-        # After clearing, get_last_refresh should return None
-        timestamp = refresh.get_last_refresh("test_group")
-        assert timestamp is None
+    # After clearing, get_last_refresh should return None
+    timestamp = refresh.get_last_refresh("test_group")
+    assert timestamp is None
 
-        # Test get_all_refresh_groups with in-memory store
-        refresh.request_refresh("orders")
-        refresh.request_refresh("modules")
-        groups = refresh.get_all_refresh_groups()
-        assert "orders" in groups
-        assert "modules" in groups
+    # Test get_all_refresh_groups with in-memory store
+    refresh.request_refresh("orders")
+    refresh.request_refresh("modules")
+    groups = refresh.get_all_refresh_groups()
+    assert "orders" in groups
+    assert "modules" in groups
 
 
 def test_memory_fallback_throttle():
-    """Test that in-memory fallback properly throttles requests"""
+    """Test that in-memory store properly throttles requests"""
     import omf2.backend.refresh as refresh
 
-    # Reset module state and use in-memory store
-    refresh._redis_client = None
-    refresh._redis_available = None
+    # Reset module state
     refresh._memory_store = {}
 
-    with patch.object(refresh, "_get_redis_client", return_value=None):
-        # First request should succeed
-        result1 = refresh.request_refresh("test_group", min_interval=1.0)
-        assert result1 is True
+    # First request should succeed
+    result1 = refresh.request_refresh("test_group", min_interval=1.0)
+    assert result1 is True
 
-        # Immediate second request should be throttled
-        result2 = refresh.request_refresh("test_group", min_interval=1.0)
-        assert result2 is False
+    # Immediate second request should be throttled
+    result2 = refresh.request_refresh("test_group", min_interval=1.0)
+    assert result2 is False
 
-        # Wait and try again
-        time.sleep(1.1)
-        result3 = refresh.request_refresh("test_group", min_interval=1.0)
-        assert result3 is True
+    # Wait and try again
+    time.sleep(1.1)
+    result3 = refresh.request_refresh("test_group", min_interval=1.0)
+    assert result3 is True
