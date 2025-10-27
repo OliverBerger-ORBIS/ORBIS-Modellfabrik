@@ -428,3 +428,5 @@ python -m pytest tests/test_omf2/test_registry_manager_comprehensive.py -v
 
 Für detaillierte Architektur-Informationen siehe `omf2/docs/ARCHITECTURE.md`.
 
+
+<!-- PR #47 Update: Simplified UI refresh architecture -->
