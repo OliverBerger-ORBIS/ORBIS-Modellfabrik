@@ -4,6 +4,8 @@ Zeigt Konfigurationsinformationen aus omf2/config/*.yml Dateien an
 Nur Anzeige - keine Änderungsmöglichkeiten
 """
 
+import importlib.util
+import os
 from pathlib import Path
 
 import streamlit as st
@@ -30,7 +32,10 @@ def render_dashboard_subtab():
         return
 
     # Expandable Boxes statt Tabs
-    with st.expander("🌐 MQTT Settings", expanded=True):
+    with st.expander("🔄 UI Auto-Refresh Status", expanded=True):
+        _render_autorefresh_status()
+
+    with st.expander("🌐 MQTT Settings", expanded=False):
         _render_mqtt_settings(config_path)
 
     with st.expander("👥 User Roles", expanded=False):
@@ -41,6 +46,114 @@ def render_dashboard_subtab():
 
     with st.expander("🔧 System Information", expanded=False):
         _render_system_info()
+
+
+def _render_autorefresh_status():
+    """Zeigt Auto-Refresh und MQTT UI Refresh Status an"""
+    st.subheader("🔄 UI Auto-Refresh Configuration")
+    st.markdown("**MQTT-driven UI refresh status and configuration**")
+    
+    # MQTT UI Refresh Status (Gateway → MQTT → UI pattern)
+    st.markdown("---")
+    st.markdown("### MQTT-Driven UI Refresh")
+    
+    mqtt_publish_enabled = bool(os.environ.get("OMF2_UI_REFRESH_VIA_MQTT"))
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.metric(
+            label="Gateway MQTT Publish",
+            value=f"{'✅ Enabled' if mqtt_publish_enabled else '❌ Disabled'}",
+        )
+        if mqtt_publish_enabled:
+            st.caption("📝 Business functions publish to `omf2/ui/refresh/{group}`")
+            st.caption("🔧 Environment: `OMF2_UI_REFRESH_VIA_MQTT=1`")
+        else:
+            st.caption("💡 To enable: Set `OMF2_UI_REFRESH_VIA_MQTT=1`")
+    
+    with col2:
+        # Check if admin_mqtt_client is connected (UI subscribe side)
+        admin_client = st.session_state.get("admin_mqtt_client")
+        ui_subscribed = admin_client is not None and admin_client.connected
+        
+        st.metric(
+            label="UI MQTT Subscribe",
+            value=f"{'✅ Connected' if ui_subscribed else '❌ Not Connected'}",
+        )
+        if ui_subscribed:
+            st.caption("🔌 admin_mqtt_client routes `omf2/ui/refresh/*` to request_refresh()")
+        else:
+            st.caption("⚠️ Admin MQTT client not connected")
+    
+    # Overall status
+    st.markdown("---")
+    if mqtt_publish_enabled and ui_subscribed:
+        st.success("✅ Full MQTT UI Refresh pipeline is active (Gateway → MQTT → UI → st.rerun())")
+        st.info(
+            "📨 **Test command:** `mosquitto_pub -t omf2/ui/refresh/test -m '{\"ts\": 12345, \"source\":\"manual_test\"}'`"
+        )
+        st.caption("💡 **How it works:**")
+        st.caption("1. Gateway publishes to `omf2/ui/refresh/{group}` on state changes")
+        st.caption("2. admin_mqtt_client receives message in UI process")
+        st.caption("3. Calls `request_refresh()` to set flag in session_state")
+        st.caption("4. `consume_refresh()` in omf.py detects flag and triggers `st.rerun()`")
+    elif mqtt_publish_enabled and not ui_subscribed:
+        st.warning("⚠️ Gateway publishes MQTT refresh events but UI is not connected to receive them")
+        st.caption("💡 Check MQTT broker connection and admin_mqtt_client status")
+    elif not mqtt_publish_enabled and ui_subscribed:
+        st.warning("⚠️ UI is ready to receive MQTT events but Gateway is not publishing them")
+        st.caption("💡 Set `OMF2_UI_REFRESH_VIA_MQTT=1` to enable Gateway publishing")
+    else:
+        st.info(
+            "ℹ️ MQTT UI Refresh is disabled. Enable both Gateway publish and UI subscribe for real-time updates."
+        )
+    
+    # Legacy autorefresh status (polling-based, for reference)
+    st.markdown("---")
+    st.markdown("### Legacy Polling-Based Auto-Refresh (Deprecated)")
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        autorefresh_enabled = _get_autorefresh_enabled()
+        st.metric(
+            label="Polling AutoRefresh",
+            value=f"{'⚠️ Enabled (Legacy)' if autorefresh_enabled else '❌ Disabled'}",
+        )
+        if autorefresh_enabled:
+            st.caption("⚠️ Consider using MQTT-driven refresh instead")
+        else:
+            st.caption("✅ Not using legacy polling")
+    
+    with col2:
+        autorefresh_installed = _is_streamlit_autorefresh_installed()
+        st.metric(
+            label="streamlit_autorefresh Package",
+            value=f"{'📦 Installed' if autorefresh_installed else '❌ Not Installed'}",
+        )
+        if autorefresh_installed:
+            st.caption("Package available but not needed for MQTT refresh")
+
+
+def _get_autorefresh_enabled() -> bool:
+    """Check if legacy autorefresh is enabled"""
+    try:
+        if hasattr(st, "secrets") and "ui" in st.secrets:
+            ui_config = st.secrets.get("ui")
+            if ui_config and "autorefresh" in ui_config:
+                return bool(ui_config["autorefresh"])
+    except Exception:
+        pass
+    
+    env_value = os.environ.get("OMF2_UI_AUTOREFRESH", "").lower()
+    return env_value in ("1", "true", "yes")
+
+
+def _is_streamlit_autorefresh_installed() -> bool:
+    """Check if streamlit_autorefresh package is installed"""
+    return importlib.util.find_spec("streamlit_autorefresh") is not None
+
 
 
 def _render_mqtt_settings(config_path: Path):
