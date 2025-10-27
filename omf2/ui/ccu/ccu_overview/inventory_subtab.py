@@ -20,6 +20,33 @@ logger = get_logger(__name__)
 # Asset-Manager SVGs werden direkt in den neuen Funktionen verwendet
 
 
+def reload_inventory():
+    """
+    Reload inventory data into session state
+    
+    This wrapper function loads stock data from StockManager and stores it
+    in session state for use by the UI rendering logic.
+    """
+    try:
+        logger.debug("🔄 reload_inventory() called - loading fresh stock data")
+        stock_manager = get_stock_manager()
+        inventory_status = stock_manager.get_inventory_status()
+        
+        # Store in session state
+        st.session_state["inventory_status"] = inventory_status
+        
+        if inventory_status and inventory_status.get("inventory"):
+            inventory_count = len([v for v in inventory_status["inventory"].values() if v is not None])
+            logger.debug(f"✅ Loaded inventory with {inventory_count} items")
+        else:
+            logger.debug("ℹ️ No inventory data available yet")
+            
+    except Exception as e:
+        logger.error(f"❌ Error in reload_inventory(): {e}")
+        # Set empty on error to prevent UI crashes
+        st.session_state["inventory_status"] = None
+
+
 def render_inventory_subtab(ccu_gateway: CcuGateway, registry_manager, asset_manager):
     """Render Inventory Subtab - Business Logic über OrderManager
 
@@ -29,6 +56,23 @@ def render_inventory_subtab(ccu_gateway: CcuGateway, registry_manager, asset_man
         asset_manager: AssetManager Instanz (Singleton)
     """
     logger.info("🏬 Rendering Inventory Subtab")
+    
+    # Add auto-refresh support using the same pattern as production_orders_subtab
+    try:
+        from omf2.ui.ccu.production_orders_refresh_helper import check_and_reload
+        
+        # Use stock_updates refresh group with polling + compare
+        check_and_reload(group="stock_updates", reload_callback=reload_inventory, interval_ms=1000)
+        
+        # If not yet populated, load it now
+        if "inventory_status" not in st.session_state:
+            reload_inventory()
+            
+    except Exception as e:
+        logger.debug(f"⚠️ Auto-refresh not available: {e}")
+        # Fallback: load data directly without auto-refresh
+        if "inventory_status" not in st.session_state:
+            reload_inventory()
 
     # I18n Manager aus Session State holen
     i18n = st.session_state.get("i18n_manager")
@@ -47,9 +91,8 @@ def render_inventory_subtab(ccu_gateway: CcuGateway, registry_manager, asset_man
         return
 
     try:
-        # Business Logic über OrderManager State-Holder (wie Sensor Manager)
-        stock_manager = get_stock_manager()
-        inventory_status = stock_manager.get_inventory_status()
+        # Get data from session state (populated by reload_inventory callback)
+        inventory_status = st.session_state.get("inventory_status")
 
         if inventory_status and inventory_status.get("inventory"):
             # Echte MQTT-Daten vorhanden
