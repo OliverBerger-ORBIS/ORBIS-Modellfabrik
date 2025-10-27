@@ -78,6 +78,9 @@ def consume_refresh() -> bool:
     """
     try:
         from omf2.backend.refresh import get_all_refresh_groups, get_last_refresh_ts
+        from omf2.common.logger import get_logger
+
+        logger = get_logger(__name__)
 
         # Get all active refresh groups
         groups = get_all_refresh_groups()
@@ -102,6 +105,7 @@ def consume_refresh() -> bool:
             # First time seeing this group - just record timestamp, don't trigger refresh
             if last_seen_ts is None:
                 st.session_state[session_key] = current_ts
+                logger.debug(f"🔍 First time seeing group '{group}', recording timestamp {current_ts}")
                 continue
 
             # Check if timestamp has increased since last check
@@ -109,6 +113,9 @@ def consume_refresh() -> bool:
                 # Update session state with new timestamp
                 st.session_state[session_key] = current_ts
                 refresh_needed = True
+                logger.info(f"🔄 Refresh detected for group '{group}' (current: {current_ts}, last: {last_seen_ts})")
+            else:
+                logger.debug(f"🔍 No refresh for group '{group}' (current: {current_ts}, last: {last_seen_ts})")
 
         return refresh_needed
 
