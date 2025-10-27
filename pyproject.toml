@@ -38,7 +38,6 @@ omf2 = [
     "registry/**/*.json",
     "assets/**/*.svg",
     "assets/**/*.html",
-    "ui/components/mqtt_subscriber/frontend/*.html",
 ]
 
 [tool.black]
