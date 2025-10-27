@@ -97,9 +97,14 @@ def consume_refresh() -> bool:
 
             # Get last seen timestamp from session state
             session_key = f"_last_seen_refresh_{group}"
-            last_seen_ts = st.session_state.get(session_key, 0)
+            last_seen_ts = st.session_state.get(session_key, None)
 
-            # Check if timestamp has increased
+            # First time seeing this group - just record timestamp, don't trigger refresh
+            if last_seen_ts is None:
+                st.session_state[session_key] = current_ts
+                continue
+
+            # Check if timestamp has increased since last check
             if current_ts > last_seen_ts:
                 # Update session state with new timestamp
                 st.session_state[session_key] = current_ts
