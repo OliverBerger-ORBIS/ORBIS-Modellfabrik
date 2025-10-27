@@ -129,17 +129,12 @@ class OrderManager:
 
             logger.info(f"✅ CCU Order Active processed: {len(orders)} orders")
 
-            # Example: Trigger UI refresh via gateway after processing orders
+            # Trigger UI refresh after processing orders
             try:
-                from omf2.factory.gateway_factory import GatewayFactory
+                from omf2.backend.refresh import request_refresh
 
-                gateway_factory = GatewayFactory()
-                gateway = gateway_factory.get_ccu_gateway()
-                if gateway and hasattr(gateway, "publish_ui_refresh"):
-                    gateway.publish_ui_refresh(
-                        "order_updates", {"source": "order_manager", "count": len(orders), "type": "active"}
-                    )
-                    logger.debug(f"✅ Published UI refresh for order_updates (active: {len(orders)})")
+                request_refresh("order_updates", min_interval=1.0)
+                logger.debug(f"✅ Requested UI refresh for order_updates (active: {len(orders)})")
             except Exception as e:
                 logger.debug(f"⚠️ Could not trigger UI refresh: {e}")
 
@@ -220,17 +215,12 @@ class OrderManager:
 
             logger.info(f"✅ CCU Order Completed processed: {len(orders)} orders")
 
-            # Example: Trigger UI refresh via gateway after processing completed orders
+            # Trigger UI refresh after processing completed orders
             try:
-                from omf2.factory.gateway_factory import GatewayFactory
+                from omf2.backend.refresh import request_refresh
 
-                gateway_factory = GatewayFactory()
-                gateway = gateway_factory.get_ccu_gateway()
-                if gateway and hasattr(gateway, "publish_ui_refresh"):
-                    gateway.publish_ui_refresh(
-                        "order_updates", {"source": "order_manager", "count": len(orders), "type": "completed"}
-                    )
-                    logger.debug(f"✅ Published UI refresh for order_updates (completed: {len(orders)})")
+                request_refresh("order_updates", min_interval=1.0)
+                logger.debug(f"✅ Requested UI refresh for order_updates (completed: {len(orders)})")
             except Exception as e:
                 logger.debug(f"⚠️ Could not trigger UI refresh: {e}")
 
