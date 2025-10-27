@@ -73,6 +73,9 @@ def consume_refresh() -> bool:
     and triggers a rerun if any have been updated. This ensures st.rerun() is
     called exactly once per detected refresh event.
 
+    Also checks the UI refresh flag for manual refresh requests (e.g., from
+    "Refresh Dashboard" button).
+
     Returns:
         True if refresh detected and rerun should occur, False otherwise
     """
@@ -81,6 +84,12 @@ def consume_refresh() -> bool:
         from omf2.common.logger import get_logger
 
         logger = get_logger(__name__)
+
+        # First check if manual UI refresh was requested
+        if _FLAG in st.session_state and st.session_state[_FLAG]:
+            st.session_state[_FLAG] = 0  # Clear the flag
+            logger.info("🔄 Manual UI refresh requested (e.g., Refresh Dashboard button)")
+            return True
 
         # Get all active refresh groups
         groups = get_all_refresh_groups()
