@@ -4,7 +4,7 @@
 
 The auto-refresh feature enables Streamlit UI pages to automatically update when relevant MQTT messages are received. This provides a real-time user experience without requiring manual page refreshes.
 
-**This document reflects the simplified architecture from PR #47 and cleanup in the current PR**, which removes duplicated MQTT publisher/subscriber components and restores the canonical Redis-backed refresh path as the single source-of-truth.
+**This document reflects the simplified architecture from PR #47 (fix/ui-refresh-simplify)**, which removes duplicated MQTT publisher/subscriber components and restores the canonical Redis-backed refresh path as the single source-of-truth. This PR addresses issues introduced in earlier PRs and updates work from PR #49/#50.
 
 ## 🔑 Key Point: Redis is Optional for Testing
 
@@ -19,24 +19,29 @@ The auto-refresh feature enables Streamlit UI pages to automatically update when
 
 > 📘 **See [QUICK_START_AUTO_REFRESH.md](QUICK_START_AUTO_REFRESH.md) for a quick start guide with examples.**
 
-## Recent Changes (PR #47 and Current PR)
+## Recent Changes (PR #47: fix/ui-refresh-simplify)
 
 **Problem:** Prior Copilot PRs introduced duplicated MQTT publisher/subscriber components that caused:
 - Reconnect loops due to multiple MQTT clients being created on UI reruns
 - Confusion about which refresh path was active (MQTT vs Redis polling)
 - Redundant code paths for UI refresh notifications
+- `publish_ui_refresh()` method causing duplicate refresh triggers
 
-**Solution:** This PR reverts to the canonical architecture:
+**Solution:** PR #47 (fix/ui-refresh-simplify) reverts to the canonical architecture:
 1. **Single Refresh Path:** Gateway → `omf2.backend.refresh.request_refresh()` → Redis → UI polling
-2. **No MQTT UI Components:** Removed `omf2/ui/components/mqtt_subscriber/` and related publisher code
+2. **No MQTT UI Components:** Confirmed removal of `omf2/ui/components/mqtt_subscriber/` and related publisher code
 3. **Singleton MQTT Clients:** Existing CCU/Admin clients remain in `st.session_state` (not recreated on reruns)
 4. **HTTP Polling Enabled:** UI calls `consume_refresh()` at startup to check Redis backend for updates
+5. **Removed Duplicate Methods:** Deleted `CcuGateway.publish_ui_refresh()` and redundant calls from order_manager
 
 **Benefits:**
 - Simpler, more maintainable code
 - No MQTT reconnect issues
 - Clear separation: MQTT for business logic, Redis for UI coordination
 - Production-ready with minimal configuration
+- Single source-of-truth for refresh logic
+
+**Related PRs:** This PR updates/supersedes work from PR #49/#50 where relevant.
 
 ## Architecture
 
@@ -456,6 +461,80 @@ These steps verify the simplified Redis-backed refresh architecture works correc
 - **API overhead:** Each UI page polls every 1 second (minimal overhead)
 - **Gateway overhead:** Throttle logic is very fast (< 1ms per message)
 - **Network:** API polling is lightweight (< 100 bytes per request)
+
+## QA Checklist for PR #47 (fix/ui-refresh-simplify)
+
+Use this checklist to verify the cleanup was successful:
+
+### Code Verification
+- [ ] Verify `omf2/ui/publisher/uipublisher.py` does not exist
+- [ ] Verify `omf2/gateway/mqtt_publisher.py` does not exist
+- [ ] Verify `omf2/factory/publisher_factory.py` does not exist
+- [ ] Verify `omf2/ccu/business/ui_notify_helper.py` does not exist
+- [ ] Verify `omf2/ui/components/mqtt_subscriber/` directory does not exist
+- [ ] Verify `omf2/ui/admin/admin_subtab.py` does not exist
+- [ ] Verify `CcuGateway.publish_ui_refresh()` method does not exist in `omf2/ccu/ccu_gateway.py`
+- [ ] Verify `publish_ui_refresh` not called in `omf2/ccu/order_manager.py`
+
+### Functional Verification
+- [ ] `omf2/backend/refresh.py` exports `request_refresh(group, min_interval)` and `get_last_refresh(group)`
+- [ ] `omf2/ccu/ccu_gateway.py::_trigger_ui_refresh()` only calls `request_refresh()` (no MQTT publishing)
+- [ ] `omf2/omf.py` calls `consume_refresh()` at line ~135 before rendering
+- [ ] MQTT clients (admin, ccu) are initialized as singletons in `st.session_state`
+- [ ] Admin dashboard shows refresh status in `dashboard_subtab.py::_render_refresh_status()`
+
+### Runtime Testing (Production Mode with Redis)
+1. **Start Redis:**
+   ```bash
+   docker run -d -p 6379:6379 --name redis redis:latest
+   export REDIS_URL="redis://localhost:6379/0"
+   ```
+
+2. **Start Streamlit:**
+   ```bash
+   streamlit run omf2/omf.py
+   ```
+
+3. **Verify Auto-Refresh:**
+   - Open UI in browser
+   - Trigger an MQTT message (e.g., order update)
+   - Verify UI refreshes automatically within 1-2 seconds
+   - Check gateway logs for "🔄 UI refresh triggered for group"
+   - Verify no reconnect loops in logs
+
+4. **Check Admin Status:**
+   - Navigate to Admin Settings → Dashboard
+   - Expand "🔄 Auto-Refresh Status"
+   - Verify Redis status shows "✅ Available"
+   - Verify active refresh groups are listed
+
+### Runtime Testing (Dev Mode without Redis)
+1. **Start Streamlit (no Redis):**
+   ```bash
+   streamlit run omf2/omf.py
+   ```
+
+2. **Verify Graceful Degradation:**
+   - UI should display normally
+   - Manual refresh button should work (if present)
+   - No errors about Redis in logs (only warnings)
+   - In-memory fallback should activate
+
+3. **Check Admin Status:**
+   - Navigate to Admin Settings → Dashboard
+   - Expand "🔄 Auto-Refresh Status"
+   - Verify Redis status shows "❌ Unavailable" or "⚠️ In-memory fallback"
+   - Verify helpful message about enabling Redis
+
+### Linting
+- [ ] Run `black omf2/` - no formatting issues
+- [ ] Run `ruff check omf2/` - no linting errors
+- [ ] No circular import errors
+
+### Documentation
+- [ ] `docs/operations/auto_refresh.md` references PR #47
+- [ ] QA checklist included in documentation
+- [ ] Production vs Dev behavior clearly documented
 
 ## Future Enhancements
 
