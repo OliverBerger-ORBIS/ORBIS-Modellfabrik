@@ -67,16 +67,47 @@ def request_refresh() -> None:
 
 def consume_refresh() -> bool:
     """
-    Check for UI refresh via Redis-backed backend polling.
+    Check for UI refresh via Redis-backed backend polling with periodic checking.
     
-    Polls all configured refresh groups and triggers a rerun if any have new timestamps.
+    Sets up periodic polling using streamlit_autorefresh if available and enabled,
+    then checks all configured refresh groups for new timestamps.
     This is the single entrypoint for UI refreshes in the main application.
     
     Returns:
         True if a refresh was detected (triggers st.rerun()), False otherwise
     """
     try:
+        import os
         from omf2.backend.refresh import get_all_refresh_groups, get_last_refresh
+        from omf2.common.logger import get_logger
+        
+        logger = get_logger(__name__)
+        
+        # Check if autorefresh is enabled
+        autorefresh_enabled = False
+        try:
+            if hasattr(st, "secrets") and "ui" in st.secrets:
+                ui_config = st.secrets.get("ui")
+                if ui_config and "autorefresh" in ui_config:
+                    autorefresh_enabled = bool(ui_config["autorefresh"])
+        except Exception:
+            pass
+        
+        if not autorefresh_enabled:
+            env_value = os.environ.get("OMF2_UI_AUTOREFRESH", "").lower()
+            if env_value in ("1", "true", "yes"):
+                autorefresh_enabled = True
+        
+        # Set up periodic polling if autorefresh is enabled
+        if autorefresh_enabled:
+            try:
+                import importlib.util
+                if importlib.util.find_spec("streamlit_autorefresh") is not None:
+                    from streamlit_autorefresh import st_autorefresh
+                    # Trigger rerun every 1 second to check for updates
+                    st_autorefresh(interval=1000, key="ui_refresh_poll")
+            except Exception as e:
+                logger.debug(f"⚠️ Could not use streamlit_autorefresh: {e}")
         
         # Get all active refresh groups
         groups = get_all_refresh_groups()
@@ -101,6 +132,7 @@ def consume_refresh() -> bool:
             if last_timestamp is None or current_timestamp > last_timestamp:
                 # Update session_state with new timestamp
                 st.session_state[key] = current_timestamp
+                logger.debug(f"🔄 Refresh detected for group '{group}' (new: {current_timestamp}, old: {last_timestamp})")
                 return True
         
         return False
