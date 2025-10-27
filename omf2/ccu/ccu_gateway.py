@@ -99,20 +99,65 @@ class CcuGateway:
             topic: MQTT topic that was just processed
         """
         try:
-            from omf2.backend.refresh import request_refresh
-
             # Check each refresh_triggers group
             for group_name, topic_patterns in self.refresh_triggers.items():
                 # Check if topic matches any pattern in this group
                 for pattern in topic_patterns:
                     if self._topic_matches_pattern(topic, pattern):
-                        # Request refresh for this group
-                        request_refresh(group_name, min_interval=1.0)
+                        # Publish UI refresh event via MQTT (if enabled)
+                        self.publish_ui_refresh(group_name, {"source": "gateway", "trigger_topic": topic})
                         logger.debug(f"🔄 UI refresh triggered for group '{group_name}' (topic: {topic})")
                         break  # Only trigger once per group
 
         except Exception as e:
             logger.debug(f"⚠️ Failed to trigger UI refresh for topic {topic}: {e}")
+
+    def publish_ui_refresh(self, group: str, payload: Optional[Dict[str, Any]] = None) -> None:
+        """
+        Publish UI refresh event to MQTT topic omf2/ui/refresh/{group}
+
+        This method reuses the existing mqtt_client connection. It's opt-in via
+        OMF2_UI_REFRESH_VIA_MQTT environment variable. Defensive: never blocks
+        business flow if publish fails.
+
+        Args:
+            group: Refresh group identifier (e.g., 'order_updates', 'sensor_data')
+            payload: Optional dict with additional context
+
+        Example:
+            gateway.publish_ui_refresh('order_updates', {'order_id': '123', 'state': 'completed'})
+        """
+        # Check if MQTT UI refresh is enabled (opt-in)
+        import os
+        import time
+
+        if not os.environ.get("OMF2_UI_REFRESH_VIA_MQTT"):
+            logger.debug(f"🔇 MQTT UI refresh disabled for group '{group}' (set OMF2_UI_REFRESH_VIA_MQTT=1)")
+            return
+
+        if not self.mqtt_client:
+            logger.debug(f"⚠️ No MQTT client available for UI refresh (group: {group})")
+            return
+
+        try:
+            # Prepare payload with timestamp
+            refresh_payload = payload.copy() if payload else {}
+            if "ts" not in refresh_payload:
+                refresh_payload["ts"] = time.time()
+
+            # Construct topic
+            topic = f"omf2/ui/refresh/{group}"
+
+            # Publish via existing mqtt_client (defensive - don't block on failure)
+            if hasattr(self.mqtt_client, "publish"):
+                self.mqtt_client.publish(topic, refresh_payload, qos=0, retain=False)
+                logger.debug(f"✅ Published UI refresh to {topic}")
+            else:
+                logger.debug(f"⚠️ mqtt_client has no publish method")
+
+        except Exception as e:
+            # Defensive: log but don't raise - never block business flow
+            logger.debug(f"⚠️ Failed to publish UI refresh for group '{group}': {e}")
 
     def _topic_matches_pattern(self, topic: str, pattern: str) -> bool:
         """
