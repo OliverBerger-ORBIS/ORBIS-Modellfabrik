@@ -129,6 +129,20 @@ class OrderManager:
 
             logger.info(f"✅ CCU Order Active processed: {len(orders)} orders")
 
+            # Example: Trigger UI refresh via gateway after processing orders
+            try:
+                from omf2.factory.gateway_factory import GatewayFactory
+
+                gateway_factory = GatewayFactory()
+                gateway = gateway_factory.get_ccu_gateway()
+                if gateway and hasattr(gateway, "publish_ui_refresh"):
+                    gateway.publish_ui_refresh(
+                        "order_updates", {"source": "order_manager", "count": len(orders), "type": "active"}
+                    )
+                    logger.debug(f"✅ Published UI refresh for order_updates (active: {len(orders)})")
+            except Exception as e:
+                logger.debug(f"⚠️ Could not trigger UI refresh: {e}")
+
         except Exception as e:
             logger.error(f"❌ Error processing ccu/order/active from {topic}: {e}")
 
@@ -205,6 +219,20 @@ class OrderManager:
                     logger.debug(f"🏁 Order {order_id[:8]}... not found in mqtt_steps")
 
             logger.info(f"✅ CCU Order Completed processed: {len(orders)} orders")
+
+            # Example: Trigger UI refresh via gateway after processing completed orders
+            try:
+                from omf2.factory.gateway_factory import GatewayFactory
+
+                gateway_factory = GatewayFactory()
+                gateway = gateway_factory.get_ccu_gateway()
+                if gateway and hasattr(gateway, "publish_ui_refresh"):
+                    gateway.publish_ui_refresh(
+                        "order_updates", {"source": "order_manager", "count": len(orders), "type": "completed"}
+                    )
+                    logger.debug(f"✅ Published UI refresh for order_updates (completed: {len(orders)})")
+            except Exception as e:
+                logger.debug(f"⚠️ Could not trigger UI refresh: {e}")
 
         except Exception as e:
             logger.error(f"❌ Error processing ccu/order/completed from {topic}: {e}")
