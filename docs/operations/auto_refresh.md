@@ -1,4 +1,31 @@
-# Auto-Refresh for UI (Streamlit) with MQTT
+# Auto-Refresh for UI (Streamlit) - Simplified Redis-backed Architecture
+
+## 🔄 Recent Changes (PR #47 Update)
+
+**This PR simplifies the UI refresh architecture by removing duplicate MQTT publisher/consumer paths introduced in previous PRs.**
+
+### Why the Revert?
+
+Previous implementations (see PR #47) introduced multiple parallel refresh paths that created issues:
+
+1. **Duplicate refresh paths**: Both MQTT WebSocket-based and Redis-backed polling running simultaneously
+2. **Reconnection loops**: MQTT WebSocket clients in UI components causing connection storms
+3. **Complexity**: Multiple mechanisms doing the same thing, making debugging difficult
+
+### Solution: Single Source of Truth
+
+This PR restores **Redis-backed refresh as the single source-of-truth** for UI updates:
+
+- ✅ **Production**: Gateway publishes refresh timestamps to Redis via `request_refresh()`
+- ✅ **UI Polling**: Streamlit UI polls Redis via `consume_refresh()` in main loop
+- ✅ **Manual Refresh**: UI components can still trigger manual refresh via button clicks
+- ❌ **Removed**: MQTT WebSocket subscriber components in UI code
+- ❌ **Removed**: Duplicate MQTT publisher methods in gateway
+
+### References
+
+- **PR #47**: Original MQTT UI refresh implementation
+- **PR #49**: Updates and consolidation (this PR updates #49)
 
 ## Overview
 
@@ -17,37 +44,37 @@ The auto-refresh feature enables Streamlit UI pages to automatically update when
 
 > 📘 **See [QUICK_START_AUTO_REFRESH.md](QUICK_START_AUTO_REFRESH.md) for a quick start guide with examples.**
 
-## Architecture
+## Simplified Architecture
 
 The system consists of three main components:
 
 1. **Backend Refresh Module** (`omf2/backend/refresh.py`)
    - Redis-based shared store for refresh timestamps
+   - In-memory fallback when Redis unavailable
    - Throttle logic to prevent excessive refreshes (minimum 1 second between refreshes)
    - Group-based refresh management (e.g., 'order_updates', 'module_updates')
 
-2. **Flask API Endpoint** (`omf2/backend/api_refresh.py`)
-   - Lightweight HTTP endpoint for polling: `/api/last_refresh?group=<group>`
-   - Returns the last refresh timestamp for a given group
-   - Health check endpoint: `/api/health`
-
-3. **Gateway Integration** (`omf2/ccu/ccu_gateway.py`)
-   - Triggers UI refresh after processing MQTT messages
+2. **Gateway Integration** (`omf2/ccu/ccu_gateway.py`)
+   - Triggers UI refresh after processing MQTT messages via `request_refresh()`
    - Uses `gateway.yml` refresh_triggers mapping to determine which groups to refresh
    - Supports wildcard pattern matching for topic patterns
+
+3. **UI Polling** (`omf2/omf.py` and `omf2/ui/utils/ui_refresh.py`)
+   - `consume_refresh()` checks Redis for new refresh timestamps in main loop
+   - Calls `st.rerun()` exactly once when new refresh detected
+   - Manual refresh via `request_refresh()` from UI components still works
 
 ## Configuration
 
 ### Environment Variables
 
 - **REDIS_URL**: Redis connection URL (default: `redis://localhost:6379/0`)
-- **REFRESH_API_URL**: Base URL for the refresh API (default: `http://localhost:5001`)
 
-These can also be configured via Streamlit secrets (`.streamlit/secrets.toml`):
+This can also be configured via Streamlit secrets (`.streamlit/secrets.toml`):
 
 ```toml
 REDIS_URL = "redis://localhost:6379/0"
-REFRESH_API_URL = "http://localhost:5001"
+```
 ```
 
 ### Gateway Configuration
@@ -131,42 +158,35 @@ Required Python packages (already in `requirements.txt`):
 
 ```
 redis>=7.0.0
-flask>=3.0.0
 fakeredis>=2.20.0  # For testing
 streamlit>=1.28.0
-requests>=2.31.0
 ```
 
 ## Usage
 
-### Backend API Server
+### Gateway-Side Refresh Trigger
 
-Start the Flask API server:
-
-```bash
-# Start the API server
-python -m omf2.backend.api_refresh
-
-# Or with custom host/port
-python -c "from omf2.backend.api_refresh import run_api; run_api(host='0.0.0.0', port=5001)"
-```
-
-### Streamlit UI Integration
-
-The UI pages automatically poll the API and refresh when needed:
+The gateway automatically triggers refresh when MQTT messages are processed:
 
 ```python
-from omf2.ui.common.refresh_polling import should_reload_data, init_auto_refresh_polling
+from omf2.backend.refresh import request_refresh
+
+# Trigger refresh for a group (called by gateway)
+request_refresh('order_updates', min_interval=1.0)
+```
+
+### UI-Side Manual Refresh
+
+UI components can trigger manual refresh:
+
+```python
+from omf2.ui.utils.ui_refresh import request_refresh
 
 def show_my_page():
-    # Initialize auto-refresh polling (1 second interval)
-    init_auto_refresh_polling('order_updates', interval_ms=1000)
-    
-    # Check if we should reload data
-    should_reload = should_reload_data('order_updates')
-    
-    if should_reload:
-        logger.debug("🔄 Reloading data due to refresh trigger")
+    # Button to manually refresh
+    if st.button("🔄 Refresh"):
+        request_refresh()
+        st.rerun()
     
     # Load and display data
     data = get_my_data()
@@ -196,9 +216,6 @@ pytest tests/test_refresh.py -v
 
 # Gateway integration tests
 pytest tests/test_gateway_refresh_integration.py -v
-
-# UI polling helper tests
-pytest tests/test_streamlit_polling_helper.py -v
 ```
 
 ### Integration Testing
@@ -208,9 +225,9 @@ pytest tests/test_streamlit_polling_helper.py -v
    docker run -d -p 6379:6379 --name redis redis:latest
    ```
 
-2. **Start the API server:**
+2. **Start Streamlit UI:**
    ```bash
-   python -m omf2.backend.api_refresh
+   streamlit run omf2/omf.py
    ```
 
 3. **Publish a test MQTT message:**
@@ -218,39 +235,56 @@ pytest tests/test_streamlit_polling_helper.py -v
    mosquitto_pub -h localhost -t "ccu/order/active" -m '{"orderId": "test123"}'
    ```
 
-4. **Check the API:**
-   ```bash
-   curl "http://localhost:5001/api/last_refresh?group=order_updates"
-   ```
+4. **Verify refresh:**
+   - Gateway logs should show: "🔄 UI refresh triggered for group 'order_updates'"
+   - Check Redis: `redis-cli GET "ui:last_refresh:order_updates"`
+   - UI should auto-refresh within 1-2 seconds
 
-5. **Observe Streamlit UI:**
-   - Open the production orders page
-   - The page should automatically refresh within 1 second
-
-### QA Steps
+### QA Steps (Production vs Development)
 
 1. **Verify Redis connection:**
    - Check that Redis is running: `redis-cli ping` (should return `PONG`)
    - Check logs for "✅ Redis client initialized"
 
 2. **Verify API endpoint:**
-   - `curl http://localhost:5001/api/health` (should return `{"status": "ok"}`)
 
-3. **Verify gateway integration:**
+#### Production Behavior (with Redis)
+
+1. **Verify Redis connection:**
+   - Check that Redis is running: `redis-cli ping` (should return `PONG`)
+   - Check logs for "✅ Redis client initialized"
+
+2. **Verify gateway integration:**
    - Publish an MQTT message matching a refresh_triggers pattern
    - Check gateway logs for "🔄 UI refresh triggered for group"
-   - Query the API: `curl "http://localhost:5001/api/last_refresh?group=order_updates"`
+   - Query Redis: `redis-cli GET "ui:last_refresh:order_updates"`
    - Verify timestamp is recent
 
-4. **Verify UI auto-refresh:**
-   - Open a Streamlit page with auto-refresh enabled
+3. **Verify UI auto-refresh:**
+   - Open a Streamlit page (e.g., Production Orders)
    - Publish an MQTT message
-   - Observe that the page refreshes within ~1 second
+   - Observe that the page refreshes within ~1-2 seconds
    - Check browser console for no errors
 
-5. **Verify throttling:**
+4. **Verify throttling:**
    - Publish multiple MQTT messages rapidly
    - Check that refresh timestamp only updates once per second
+
+#### Development Behavior (without Redis)
+
+1. **Verify fallback mode:**
+   - Start UI without Redis running
+   - Check logs for "⚠️ Redis connection failed... Using in-memory fallback"
+   - UI should still load and display normally
+
+2. **Manual refresh:**
+   - Use manual refresh buttons in UI
+   - Verify data updates correctly
+   - F5 browser refresh should always work
+
+3. **Testing:**
+   - Run unit tests with fakeredis
+   - No Redis dependency for local development
 
 ## Troubleshooting
 
@@ -262,16 +296,7 @@ pytest tests/test_streamlit_polling_helper.py -v
 1. Check that Redis is running: `redis-cli ping`
 2. Verify REDIS_URL environment variable or secret is correct
 3. Check firewall rules if Redis is on a different host
-
-### API Not Responding
-
-**Symptom:** UI polling fails, no auto-refresh
-
-**Solutions:**
-1. Check that the API server is running
-2. Verify REFRESH_API_URL is correct
-3. Check API logs for errors
-4. Test API manually: `curl http://localhost:5001/api/health`
+4. **Development**: System works in fallback mode; manual refresh still available
 
 ### Auto-Refresh Not Working
 
@@ -281,8 +306,8 @@ pytest tests/test_streamlit_polling_helper.py -v
 1. Verify that the MQTT topic matches a pattern in `refresh_triggers`
 2. Check gateway logs for "🔄 UI refresh triggered"
 3. Verify Redis connection
-4. Check API endpoint returns recent timestamp
-5. Ensure `streamlit_autorefresh` is installed (or fallback is working)
+4. Check Redis timestamp: `redis-cli GET "ui:last_refresh:order_updates"`
+5. **Development**: Use manual refresh buttons as fallback
 
 ### Throttle Too Aggressive
 
@@ -292,6 +317,29 @@ pytest tests/test_streamlit_polling_helper.py -v
 1. Adjust `min_interval` parameter in `request_refresh()` calls
 2. Consider creating more granular refresh groups
 3. Check if multiple rapid messages are being throttled
+
+## Rollback Notes
+
+If you need to rollback this PR (unlikely, as this is the stable version):
+
+1. **Restore MQTT WebSocket UI components:**
+   - Restore `omf2/ui/components/mqtt_subscriber/`
+   - Restore `omf2/ui/admin/admin_subtab.py`
+
+2. **Restore gateway MQTT publish:**
+   - Restore `publish_ui_refresh()` method in `ccu_gateway.py`
+   - Set `OMF2_UI_REFRESH_VIA_MQTT=1` environment variable
+
+3. **Configure MQTT WebSocket:**
+   - Set `OMF2_UI_MQTT_WS_URL=ws://broker:9001` in environment
+   - Update `.streamlit/secrets.toml` with MQTT WebSocket URL
+
+4. **Expect issues:**
+   - Reconnection loops under load
+   - Race conditions with multiple tabs
+   - Higher CPU usage from WebSocket connections
+
+**Recommendation:** Don't rollback. This simplified version is more stable.
 
 ## Best Practices
 
@@ -313,21 +361,32 @@ pytest tests/test_streamlit_polling_helper.py -v
    - Use real Redis for integration tests
    - Test throttling behavior
 
-5. **Monitoring:**
-   - Monitor Redis memory usage
-   - Check API response times
-   - Watch for excessive polling
+5. **Production deployment:**
+   - Always run Redis in production for multi-process coordination
+   - Monitor Redis memory usage (minimal overhead)
+   - Use Redis persistence (RDB or AOF) for refresh state durability
 
 ## Performance Considerations
 
 - **Redis memory:** Each refresh group uses one key (~100 bytes)
-- **API overhead:** Each UI page polls every 1 second (minimal overhead)
+- **UI polling overhead:** Streamlit reruns check Redis once per render (negligible)
 - **Gateway overhead:** Throttle logic is very fast (< 1ms per message)
-- **Network:** API polling is lightweight (< 100 bytes per request)
+- **Network:** No additional network overhead (Redis already used by other components)
 
-## Future Enhancements
+## Summary of Changes (This PR)
 
-- WebSocket support for push-based refresh (eliminates polling)
-- Configurable polling intervals per page
-- Refresh event history and analytics
-- Multi-Redis support for high availability
+### Removed
+
+- ❌ `omf2/ui/components/mqtt_subscriber/` - WebSocket MQTT subscriber component
+- ❌ `omf2/ui/admin/admin_subtab.py` - Duplicate admin status page
+- ❌ `publish_ui_refresh()` method - MQTT publishing from gateway
+- ❌ MQTT refresh code in production/storage order subtabs
+
+### Kept/Restored
+
+- ✅ Redis-backed `request_refresh()` in `omf2/backend/refresh.py`
+- ✅ Gateway calls `request_refresh()` directly
+- ✅ UI `consume_refresh()` polls Redis timestamps
+- ✅ Manual refresh via UI buttons
+- ✅ In-memory fallback when Redis unavailable
+- ✅ Admin status display consolidated in `dashboard_subtab.py`
