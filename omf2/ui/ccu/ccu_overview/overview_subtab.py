@@ -7,7 +7,7 @@ import streamlit as st
 
 from omf2.common.logger import get_logger
 from omf2.ui.common.symbols import UISymbols
-from omf2.ui.common.refresh_polling import init_auto_refresh_polling, get_api_url
+from omf2.ui.common.refresh_polling import init_auto_refresh_polling
 from omf2.ui.ccu.production_orders_refresh_helper import check_and_reload
 
 logger = get_logger(__name__)
@@ -77,13 +77,10 @@ def render_overview_subtab(ccu_gateway=None, registry_manager=None, asset_manage
         init_auto_refresh_polling('order_updates', interval_ms=1000)
         
         # Use check_and_reload for consistent refresh handling
-        API_BASE = get_api_url()
-        
         def reload_wrapper():
             load_overview_data(ccu_gateway, registry_manager)
         
         check_and_reload(
-            API_BASE,
             group='order_updates',
             reload_callable=reload_wrapper,
             session_state_key='overview_last_refresh'

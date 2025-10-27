@@ -13,7 +13,7 @@ import streamlit as st
 logger = get_logger(__name__)
 
 
-def check_and_reload(api_base: str, group: str, reload_callable, session_state_key: str = None):
+def check_and_reload(group: str, reload_callable, session_state_key: str = None):
     """
     Check for refresh triggers and reload data if needed.
     
@@ -22,7 +22,6 @@ def check_and_reload(api_base: str, group: str, reload_callable, session_state_k
     when data needs to be refreshed.
     
     Args:
-        api_base: Base URL for the refresh API (e.g., "http://localhost:5001")
         group: Refresh group name (e.g., 'order_updates', 'module_updates')
         reload_callable: Function to call when reload is needed. Should return data.
         session_state_key: Optional key to store the last refresh timestamp in session state.

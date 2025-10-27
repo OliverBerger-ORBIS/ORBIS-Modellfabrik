@@ -8,7 +8,7 @@ import streamlit as st
 from omf2.ccu.order_manager import get_order_manager
 from omf2.common.logger import get_logger
 from omf2.ui.common.symbols import UISymbols
-from omf2.ui.common.refresh_polling import should_reload_data, init_auto_refresh_polling, get_api_url
+from omf2.ui.common.refresh_polling import should_reload_data, init_auto_refresh_polling
 from omf2.ui.ccu.production_orders_refresh_helper import check_and_reload
 
 logger = get_logger(__name__)
@@ -42,9 +42,7 @@ def show_storage_orders_subtab(i18n):
         init_auto_refresh_polling('order_updates', interval_ms=1000)
         
         # Use check_and_reload for consistent refresh handling
-        API_BASE = get_api_url()
         check_and_reload(
-            API_BASE,
             group='order_updates',
             reload_callable=load_storage_orders,
             session_state_key='storage_orders_last_refresh'
