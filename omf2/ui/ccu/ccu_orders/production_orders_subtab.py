@@ -53,10 +53,14 @@ def show_production_orders_subtab(i18n):
         # MQTT-driven UI refresh: No explicit subscription needed here
         # The admin_mqtt_client routes omf2/ui/refresh/order_updates messages to request_refresh()
         # consume_refresh() in omf.py triggers st.rerun() which causes this function to re-render
-        # Simply load/reload data on each render
         
-        # FALLBACK: Use production_orders_refresh_helper for polling (if MQTT refresh is not enabled)
-        check_and_reload(group="order_updates", reload_callback=reload_orders, interval_ms=1000)
+        # Check if MQTT refresh is enabled
+        import os
+        mqtt_refresh_enabled = bool(os.environ.get("OMF2_UI_REFRESH_VIA_MQTT"))
+        
+        if not mqtt_refresh_enabled:
+            # FALLBACK: Use production_orders_refresh_helper for polling (if MQTT refresh is not enabled)
+            check_and_reload(group="order_updates", reload_callback=reload_orders, interval_ms=1000)
 
         # Get data from session state (populated by reload_orders callback)
         # If not yet populated, load it now

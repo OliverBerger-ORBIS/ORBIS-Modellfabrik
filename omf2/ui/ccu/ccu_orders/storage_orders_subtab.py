@@ -53,15 +53,19 @@ def show_storage_orders_subtab(i18n):
         # MQTT-driven UI refresh: No explicit subscription needed here
         # The admin_mqtt_client routes omf2/ui/refresh/order_updates messages to request_refresh()
         # consume_refresh() in omf.py triggers st.rerun() which causes this function to re-render
-        # Simply load/reload data on each render
         
-        # FALLBACK: Use existing polling mechanism (if MQTT refresh is not enabled)
-        init_auto_refresh_polling("order_updates", interval_ms=1000)
-        should_reload = should_reload_data("order_updates")
+        # Check if MQTT refresh is enabled
+        import os
+        mqtt_refresh_enabled = bool(os.environ.get("OMF2_UI_REFRESH_VIA_MQTT"))
+        
+        if not mqtt_refresh_enabled:
+            # FALLBACK: Use existing polling mechanism (if MQTT refresh is not enabled)
+            init_auto_refresh_polling("order_updates", interval_ms=1000)
+            should_reload = should_reload_data("order_updates")
 
-        if should_reload:
-            logger.debug("🔄 Reloading storage orders data due to polling refresh trigger")
-            reload_storage_orders()
+            if should_reload:
+                logger.debug("🔄 Reloading storage orders data due to polling refresh trigger")
+                reload_storage_orders()
 
         # Get data from session state (populated by reload_storage_orders callback)
         # If not yet populated, load it now
