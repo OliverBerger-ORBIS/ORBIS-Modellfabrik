@@ -20,6 +20,7 @@ from omf2.ui.admin.cache import TTLCache, cached, get_cache
 def reset_cache():
     """Reset the global cache instance before each test."""
     import omf2.ui.admin.cache as cache_module
+
     cache_module._cache_instance = None
     yield
     cache_module._cache_instance = None
@@ -204,7 +205,7 @@ class TestCachedDecorator:
         with patch.dict(os.environ, {}, clear=False):
             if "OMF2_ADMIN_CACHE_TTL" in os.environ:
                 del os.environ["OMF2_ADMIN_CACHE_TTL"]
-            
+
             call_count = [0]
 
             @cached(ttl=60)

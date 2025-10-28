@@ -14,6 +14,48 @@ from omf2.ui.common.symbols import UISymbols
 
 logger = get_logger(__name__)
 
+# Import cache with defensive fallback
+try:
+    from omf2.ui.admin.cache import get_cache
+
+    _cache_available = True
+except ImportError:
+    logger.warning("Admin cache module not available, using direct loading")
+    _cache_available = False
+
+
+def _load_config_file(file_path: Path) -> dict:
+    """
+    Load a YAML configuration file with optional caching.
+
+    Args:
+        file_path: Path to the YAML file
+
+    Returns:
+        Parsed YAML content as dict, or empty dict on error
+    """
+    if not file_path.exists():
+        return {}
+
+    try:
+        # Use cache if available
+        if _cache_available:
+            cache = get_cache()
+            cache_key = f"config_file:{file_path}"
+
+            def load_file():
+                with open(file_path, encoding="utf-8") as f:
+                    return yaml.safe_load(f) or {}
+
+            return cache.get_or_set(cache_key, load_file)
+        else:
+            # Direct load if cache not available
+            with open(file_path, encoding="utf-8") as f:
+                return yaml.safe_load(f) or {}
+    except Exception as e:
+        logger.error(f"Failed to load config file {file_path}: {e}")
+        return {}
+
 
 def render_dashboard_subtab():
     """Rendert das Dashboard Subtab mit Konfigurationsinformationen"""
@@ -56,8 +98,10 @@ def _render_mqtt_settings(config_path: Path):
         return
 
     try:
-        with open(mqtt_file, encoding="utf-8") as f:
-            mqtt_config = yaml.safe_load(f)
+        mqtt_config = _load_config_file(mqtt_file)
+        if not mqtt_config:
+            st.warning("⚠️ Keine MQTT Settings gefunden")
+            return
 
         # Default Environment
         default_env = mqtt_config.get("default_environment", "N/A")
@@ -147,8 +191,10 @@ def _render_user_roles(config_path: Path):
         return
 
     try:
-        with open(roles_file, encoding="utf-8") as f:
-            roles_config = yaml.safe_load(f)
+        roles_config = _load_config_file(roles_file)
+        if not roles_config:
+            st.warning("⚠️ Keine User Roles gefunden")
+            return
 
         if "roles" in roles_config:
             roles = roles_config["roles"]
@@ -186,8 +232,10 @@ def _render_apps_config(config_path: Path):
         return
 
     try:
-        with open(apps_file, encoding="utf-8") as f:
-            apps_config = yaml.safe_load(f)
+        apps_config = _load_config_file(apps_file)
+        if not apps_config:
+            st.warning("⚠️ Keine Apps Konfiguration gefunden")
+            return
 
         if "apps" in apps_config:
             apps = apps_config["apps"]
