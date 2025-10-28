@@ -10,7 +10,8 @@ Tests cover both PRODUCTION and STORAGE orders, and edge cases.
 """
 
 import unittest
-from typing import Dict, Any, List
+from typing import Any, Dict
+
 from omf2.ccu.order_manager import OrderManager
 
 

@@ -188,7 +188,7 @@ class OrderManager:
                         completed_order["state"] = state
                         completed_order["finishedAt"] = finished_at
                         completed_order["completedTimestamp"] = meta.get("timestamp", "")
-                        
+
                         # FIX: Set status field to COMPLETED for UI compatibility
                         # UI checks for order["status"] == "COMPLETED", but MQTT uses order["state"] == "FINISHED"
                         completed_order["status"] = "COMPLETED"
@@ -209,7 +209,7 @@ class OrderManager:
                 # Markiere Order als completed in mqtt_steps and update last step
                 if order_id in self.mqtt_steps:
                     steps = self.mqtt_steps[order_id]
-                    
+
                     # Update all steps with completion info
                     for step in steps:
                         if "completion" not in step:
@@ -218,7 +218,7 @@ class OrderManager:
                                 "finishedAt": finished_at,
                                 "timestamp": meta.get("timestamp", ""),
                             }
-                    
+
                     # FIX: Ensure last step has state="COMPLETED" for UI compatibility
                     # UI checks last_step["state"] == "COMPLETED"
                     if steps and len(steps) > 0:
