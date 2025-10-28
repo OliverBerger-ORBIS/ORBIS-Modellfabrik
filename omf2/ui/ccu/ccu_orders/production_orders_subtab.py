@@ -139,12 +139,58 @@ def _render_order_card(order, order_manager, i18n, is_completed=False):
         i18n: I18nManager Instanz
         is_completed: True für completed orders (ausgegraut)
     """
-    with st.container():
-        # NEU: Zwei-Spalten-Layout (1:2 - Liste:Shopfloor)
+    # Order Header für Expander
+    order_id = order.get("orderId", "N/A")[:8]  # Kurze ID
+    workpiece_type = order.get("type", "N/A")
+    workpiece_icon = UISymbols.get_workpiece_icon(workpiece_type)
+    state = order.get("state", "N/A")
+    
+    # Compute expanded flag based on order completion state
+    is_order_completed = False
+    try:
+        status = order.get('status') if isinstance(order, dict) else getattr(order, 'status', None)
+        if status == 'COMPLETED':
+            is_order_completed = True
+        else:
+            last_step = None
+            steps = order.get('steps') if isinstance(order, dict) else getattr(order, 'steps', None)
+            if steps:
+                last_step = steps[-1]
+            last_step_state = None
+            if isinstance(last_step, dict):
+                last_step_state = last_step.get('state')
+            else:
+                last_step_state = getattr(last_step, 'state', None) if last_step is not None else None
+            if last_step_state == 'COMPLETED':
+                is_order_completed = status == 'COMPLETED'
+    except Exception:
+        is_order_completed = False
+    
+    expanded = not is_order_completed
+    
+    # Expander label mit Order-Info
+    if is_completed:
+        state_icon = UISymbols.get_status_icon('success')
+        expander_label = f"{workpiece_icon} **{order_id}...** - {workpiece_type} - {state_icon} Completed"
+    else:
+        state_icon = {
+            "IN_PROGRESS": UISymbols.get_status_icon("step_in_progress"),
+            "RUNNING": UISymbols.get_status_icon("step_in_progress"),
+            "FINISHED": UISymbols.get_status_icon("step_finished"),
+            "COMPLETED": UISymbols.get_status_icon("step_finished"),
+            "ENQUEUED": UISymbols.get_status_icon("step_enqueued"),
+            "PENDING": UISymbols.get_status_icon("step_pending"),
+            "FAILED": UISymbols.get_status_icon("step_failed"),
+        }.get(state, "⚪")
+        expander_label = f"{workpiece_icon} **{order_id}...** - {workpiece_type} - {state_icon} {state}"
+    
+    # Gesamte Order Card in Expander (Production Steps + Shopfloor zusammen)
+    with st.expander(expander_label, expanded=expanded):
+        # Zwei-Spalten-Layout (1:2 - Production Steps:Shopfloor)
         col1, col2 = st.columns([1, 2])
 
         with col1:
-            # Links: Order-Details und Production Steps
+            # Links: Order-Details und Production Steps (immer sichtbar, nicht collapsible)
             _render_order_details(order, order_manager, i18n, is_completed)
 
         with col2:
@@ -157,78 +203,26 @@ def _render_order_card(order, order_manager, i18n, is_completed=False):
 
 def _render_order_details(order, order_manager, i18n, is_completed=False):
     """Render Order-Details (links Spalte)"""
-    # Order Header
-    order_id = order.get("orderId", "N/A")[:8]  # Kurze ID
-    st.write(f"**{order_id}...**")
-
     # Order Info Row
-    col1, col2, col3 = st.columns([1, 1, 1])
+    col1, col2 = st.columns([1, 1])
 
     with col1:
-        workpiece_type = order.get("type", "N/A")
-        # NEU: UI-Symbols verwenden
-        workpiece_icon = UISymbols.get_workpiece_icon(workpiece_type)
-        st.write(f"{workpiece_icon} {workpiece_type}")
-
-    with col2:
         order_type = order.get("orderType", "N/A")
-        # NEU: UI-Symbols verwenden
-        order_icon = UISymbols.get_tab_icon("production_plan")  # 📋 für Production Plan
+        order_icon = UISymbols.get_tab_icon("production_plan")
         st.write(f"{order_icon} {order_type}")
 
-    with col3:
-        if is_completed:
-            # NEU: UI-Symbols verwenden
-            st.write(f"{UISymbols.get_status_icon('success')} {i18n.t('ccu_orders.card.completed')}")
-        else:
-            state = order.get("state", "N/A")
-            # NEU: UI-Symbols verwenden - Vollständige Zustands-Matrix
-            state_icon = {
-                # Aktive Zustände (KONSISTENT mit _render_production_step_status)
-                "IN_PROGRESS": UISymbols.get_status_icon("step_in_progress"),  # 🟠 (ORANGE CIRCLE - konsistent!)
-                "RUNNING": UISymbols.get_status_icon("step_in_progress"),  # 🟠 (Alias)
-                # Abgeschlossene Zustände
-                "FINISHED": UISymbols.get_status_icon("step_finished"),  # ✅
-                "COMPLETED": UISymbols.get_status_icon("step_finished"),  # ✅ (Alias)
-                # Wartende Zustände
-                "ENQUEUED": UISymbols.get_status_icon("step_enqueued"),  # ⏳
-                "PENDING": UISymbols.get_status_icon("step_pending"),  # ⚪
-                # Fehler-Zustände
-                "FAILED": UISymbols.get_status_icon("step_failed"),  # ❌
-            }.get(state, "⚪")
-            st.write(f"{state_icon} {state}")
+    with col2:
+        order_id = order.get("orderId", "N/A")
+        st.write(f"ID: {order_id[:16]}...")
 
-        # Production Steps (expandable)
-        complete_production_plan = order_manager.get_complete_production_plan(order)
+    st.markdown("---")
+    
+    # Production Steps (immer sichtbar, nicht collapsible)
+    complete_production_plan = order_manager.get_complete_production_plan(order)
     if complete_production_plan:
-        steps_label = f"{i18n.t('ccu_orders.card.production_steps')} ({len(complete_production_plan)})"
-        
-        # Compute expanded flag based on order completion state
-        is_order_completed = False
-        try:
-            status = order.get('status') if isinstance(order, dict) else getattr(order, 'status', None)
-            # determine completion by status or by last step
-            if status == 'COMPLETED':
-                is_order_completed = True
-            else:
-                last_step = None
-                steps = order.get('steps') if isinstance(order, dict) else getattr(order, 'steps', None)
-                if steps:
-                    last_step = steps[-1]
-                last_step_state = None
-                if isinstance(last_step, dict):
-                    last_step_state = last_step.get('state')
-                else:
-                    last_step_state = getattr(last_step, 'state', None) if last_step is not None else None
-                if last_step_state == 'COMPLETED':
-                    # if last step completed and overall status completed -> collapsed
-                    is_order_completed = status == 'COMPLETED'
-        except Exception:
-            is_order_completed = False
-        
-        expanded = not is_order_completed
-        with st.expander(steps_label, expanded=expanded):
-            _render_production_steps(complete_production_plan, i18n, is_completed)
+        steps_label = f"**{i18n.t('ccu_orders.card.production_steps')}** ({len(complete_production_plan)})"
+        st.markdown(steps_label)
+        _render_production_steps(complete_production_plan, i18n, is_completed)
 
 
 def _render_shopfloor_for_order(order, order_manager, i18n):
