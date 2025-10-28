@@ -13,11 +13,21 @@ import yaml
 
 logger = logging.getLogger(__name__)
 
+# Import cache with defensive fallback
+try:
+    from omf2.common.cache import get_cache
+
+    _cache_available = True
+except ImportError:
+    logger.warning("Cache module not available, using direct loading for Registry")
+    _cache_available = False
+
 
 class RegistryManager:
     """
     Zentrale Komponente für Registry-Daten
     Singleton Pattern - nur eine Instanz pro Anwendung
+    Uses TTL cache (OMF2_CACHE_TTL) for performance optimization
     """
 
     _instance = None
@@ -89,6 +99,64 @@ class RegistryManager:
             logger.error(f"❌ Failed to load registry data: {e}")
             raise
 
+    def _load_yaml_file_cached(self, file_path: Path) -> Dict[str, Any]:
+        """
+        Load a YAML file with TTL caching.
+
+        Args:
+            file_path: Path to the YAML file
+
+        Returns:
+            Parsed YAML content as dict
+
+        Raises:
+            Exception: If file loading or parsing fails
+        """
+        if _cache_available:
+            cache = get_cache()
+            cache_key = f"registry_yaml:{file_path}"
+
+            def loader():
+                with open(file_path, encoding="utf-8") as f:
+                    return yaml.safe_load(f) or {}
+
+            return cache.get_or_set(cache_key, loader)
+        else:
+            # Fallback to direct loading
+            with open(file_path, encoding="utf-8") as f:
+                return yaml.safe_load(f) or {}
+
+    def _load_json_file_cached(self, file_path: Path) -> Dict[str, Any]:
+        """
+        Load a JSON file with TTL caching.
+
+        Args:
+            file_path: Path to the JSON file
+
+        Returns:
+            Parsed JSON content as dict
+
+        Raises:
+            Exception: If file loading or parsing fails
+        """
+        if _cache_available:
+            cache = get_cache()
+            cache_key = f"registry_json:{file_path}"
+
+            def loader():
+                import json
+
+                with open(file_path, encoding="utf-8") as f:
+                    return json.load(f)
+
+            return cache.get_or_set(cache_key, loader)
+        else:
+            # Fallback to direct loading
+            import json
+
+            with open(file_path, encoding="utf-8") as f:
+                return json.load(f)
+
     def _load_topics(self):
         """Lädt alle Topics aus den Unterordnern"""
         topics_dir = self.registry_path / "topics"
@@ -98,8 +166,7 @@ class RegistryManager:
 
         for topic_file in topics_dir.glob("*.yml"):
             try:
-                with open(topic_file, encoding="utf-8") as f:
-                    data = yaml.safe_load(f) or {}
+                data = self._load_yaml_file_cached(topic_file)
 
                 # Extrahiere Category aus metadata
                 file_category = data.get("category", "unknown")
@@ -134,10 +201,7 @@ class RegistryManager:
 
         for schema_file in schemas_dir.glob("*.schema.json"):
             try:
-                import json
-
-                with open(schema_file, encoding="utf-8") as f:
-                    schema_data = json.load(f)
+                schema_data = self._load_json_file_cached(schema_file)
 
                 schema_name = schema_file.stem
                 self.schemas[schema_name] = {
@@ -162,8 +226,7 @@ class RegistryManager:
             return
 
         try:
-            with open(mqtt_file, encoding="utf-8") as f:
-                data = yaml.safe_load(f) or {}
+            data = self._load_yaml_file_cached(mqtt_file)
 
             # Extrahiere MQTT Clients (ignoriere metadata, qos_patterns, retain_patterns)
             mqtt_clients_data = data.get("mqtt_clients", {})
@@ -195,8 +258,7 @@ class RegistryManager:
             return
 
         try:
-            with open(gateway_file, encoding="utf-8") as f:
-                data = yaml.safe_load(f) or {}
+            data = self._load_yaml_file_cached(gateway_file)
 
             # Extrahiere Gateway-Konfiguration
             gateway_data = data.get("gateway", {})
@@ -221,8 +283,7 @@ class RegistryManager:
             return
 
         try:
-            with open(workpieces_file, encoding="utf-8") as f:
-                data = yaml.safe_load(f) or {}
+            data = self._load_yaml_file_cached(workpieces_file)
 
             # Workpieces sind jetzt als Liste
             workpieces_list = data.get("workpieces", [])
@@ -251,8 +312,7 @@ class RegistryManager:
             return
 
         try:
-            with open(modules_file, encoding="utf-8") as f:
-                data = yaml.safe_load(f) or {}
+            data = self._load_yaml_file_cached(modules_file)
 
             # Modules sind als Liste
             modules_list = data.get("modules", [])
@@ -282,8 +342,7 @@ class RegistryManager:
             return
 
         try:
-            with open(stations_file, encoding="utf-8") as f:
-                data = yaml.safe_load(f) or {}
+            data = self._load_yaml_file_cached(stations_file)
 
             # Stations sind als Dictionary mit Unterkategorien
             stations_data = data.get("stations", {})
@@ -318,8 +377,7 @@ class RegistryManager:
             return
 
         try:
-            with open(txt_file, encoding="utf-8") as f:
-                data = yaml.safe_load(f) or {}
+            data = self._load_yaml_file_cached(txt_file)
 
             # TXT Controllers sind als Liste
             controllers_list = data.get("txt_controllers", [])
