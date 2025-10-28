@@ -189,19 +189,29 @@ class OrderManager:
                         completed_order["finishedAt"] = finished_at
                         completed_order["completedTimestamp"] = meta.get("timestamp", "")
 
+                        # FIX: Set status field to COMPLETED for UI compatibility
+                        # UI checks for order["status"] == "COMPLETED", but MQTT uses order["state"] == "FINISHED"
+                        completed_order["status"] = "COMPLETED"
+
                         self.completed_orders[order_id] = completed_order
                         del self.active_orders[order_id]
 
-                        logger.info(f"✅ Order {order_id[:8]}... moved from active to completed")
+                        logger.info(f"✅ Order {order_id[:8]}... moved from active to completed with status=COMPLETED")
                     else:
                         # Order direkt als completed speichern (falls nicht in active)
-                        self.completed_orders[order_id] = order
-                        logger.info(f"✅ Order {order_id[:8]}... stored as completed")
+                        completed_order = order.copy()
+                        # FIX: Set status field to COMPLETED for UI compatibility
+                        completed_order["status"] = "COMPLETED"
+                        self.completed_orders[order_id] = completed_order
+                        logger.info(f"✅ Order {order_id[:8]}... stored as completed with status=COMPLETED")
 
-                # Markiere Order als completed in mqtt_steps
+                # FIX: Update last step state to COMPLETED for UI compatibility
+                # Markiere Order als completed in mqtt_steps and update last step
                 if order_id in self.mqtt_steps:
-                    # Füge completion info zu den Steps hinzu
-                    for step in self.mqtt_steps[order_id]:
+                    steps = self.mqtt_steps[order_id]
+
+                    # Update all steps with completion info
+                    for step in steps:
                         if "completion" not in step:
                             step["completion"] = {
                                 "state": state,
@@ -209,9 +219,18 @@ class OrderManager:
                                 "timestamp": meta.get("timestamp", ""),
                             }
 
+                    # FIX: Ensure last step has state="COMPLETED" for UI compatibility
+                    # UI checks last_step["state"] == "COMPLETED"
+                    if steps and len(steps) > 0:
+                        last_step = steps[-1]
+                        # Map FINISHED -> COMPLETED for the last step if it's FINISHED
+                        if last_step.get("state") in ["FINISHED", "IN_PROGRESS", "RUNNING"]:
+                            last_step["state"] = "COMPLETED"
+                            logger.info(f"✅ Order {order_id[:8]}... last step marked as COMPLETED")
+
                     logger.info(f"✅ Order {order_id[:8]}... marked as completed with state: {state}")
                 else:
-                    logger.debug(f"🏁 Order {order_id[:8]}... not found in mqtt_steps")
+                    logger.warning(f"⚠️ Order {order_id[:8]}... not found in mqtt_steps - defensive handling")
 
             logger.info(f"✅ CCU Order Completed processed: {len(orders)} orders")
             # Note: UI refresh is already triggered by gateway._trigger_ui_refresh() in the routing layer
