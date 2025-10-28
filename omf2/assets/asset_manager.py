@@ -128,39 +128,43 @@ class OMF2AssetManager:
             "OPC_UA": "database.svg",  # OPC UA Server
         }
 
-        # HEADING-ICONS
-        heading_icons = {
-            # HEADING-ICONS
-            #  COPILOT: AB HIER KOMMEN HEADING-ICONS, DIE IN EINEM NEUEN VERZEICHNIS ABGELEGT WERDEN:
-            #  PATH: omf2/assets/headings
-            # CCU-TABS
-            "DASHBOARD": "visualisierung.svg",  # Dashboard-OVERVIEW
-            "ORDERS": "lieferung-bestellen.svg",  # Orders
-            "PROCESS": "gang.svg",
-            "CONFIGURATION": "system.svg",
-            "MODULES_TAB": "mehrere.svg",  # Modules
-            # ADMIN-tabs
-            "MESSAGE_CENTER": "zentral.svg",  # Message Center
-            "GENERIC_STEERING": "dezentral_1.svg",  # Generic Steering
-            "SYSTEM_LOGS": "log.svg",  # System Logs
-            "ADMIN_SETTINGS": "unterstutzung.svg",  # Admin Settings
-            # ADMIN-Settings-subtabs
-            "DASHBOOARD": "visualisierung.svg",  # Dashboard-OVERVIEW
-            "MQTT_CLIENTS": "satellitenschussel.svg",  # MQTT Broker
-            "GATEWAY": "router_1.svg",  # Gateway
-            "TOPIC": "ettikett.svg",  # Topic
-            "SCHEMAS": "diagramm.svg",  # Schemas
-            "MODULES_TAB_ADMIN": "mehrere.svg",  # Modules
-            "STATIONS": "dezentral.svg",
-            "TXT_CONTROLLERS": "mixer.svg",
-            "WORKPIECES": "empty.svg",
-            # CCU-ORDERS-Subtab
-            "PRODUCTION_ORDERS": "maschine.svg",
-            "STORAGE_ORDERS": "ladung.svg",
-            # CCU-SUBTABS
-            "FACTORY_CONFIGURATION": "grundriss.svg",
-            "SHOPFLOOR_LAYOUT": "grundriss.svg",
-        }
+        # HEADING-ICONS - Import from dedicated module
+        try:
+            from omf2.assets.heading_icons import HEADING_ICON_FILES as heading_icons
+        except Exception:
+            logger.debug("heading_icons module not available; skipping heading icons import")
+            heading_icons = {
+                # HEADING-ICONS
+                #  COPILOT: AB HIER KOMMEN HEADING-ICONS, DIE IN EINEM NEUEN VERZEICHNIS ABGELEGT WERDEN:
+                #  PATH: omf2/assets/headings
+                # CCU-TABS
+                "DASHBOARD": "visualisierung.svg",  # Dashboard-OVERVIEW
+                "ORDERS": "lieferung-bestellen.svg",  # Orders
+                "PROCESS": "gang.svg",
+                "CONFIGURATION": "system.svg",
+                "MODULES_TAB": "mehrere.svg",  # Modules
+                # ADMIN-tabs
+                "MESSAGE_CENTER": "zentral.svg",  # Message Center
+                "GENERIC_STEERING": "dezentral_1.svg",  # Generic Steering
+                "SYSTEM_LOGS": "log.svg",  # System Logs
+                "ADMIN_SETTINGS": "unterstutzung.svg",  # Admin Settings
+                # ADMIN-Settings-subtabs
+                "DASHBOOARD": "visualisierung.svg",  # Dashboard-OVERVIEW
+                "MQTT_CLIENTS": "satellitenschussel.svg",  # MQTT Broker
+                "GATEWAY": "router_1.svg",  # Gateway
+                "TOPIC": "ettikett.svg",  # Topic
+                "SCHEMAS": "diagramm.svg",  # Schemas
+                "MODULES_TAB_ADMIN": "mehrere.svg",  # Modules
+                "STATIONS": "dezentral.svg",
+                "TXT_CONTROLLERS": "mixer.svg",
+                "WORKPIECES": "empty.svg",
+                # CCU-ORDERS-Subtab
+                "PRODUCTION_ORDERS": "maschine.svg",
+                "STORAGE_ORDERS": "ladung.svg",
+                # CCU-SUBTABS
+                "FACTORY_CONFIGURATION": "grundriss.svg",
+                "SHOPFLOOR_LAYOUT": "grundriss.svg",
+            }
         icon_mapping.update(heading_icons)
 
         # Spezielle Icons - IDs aus shopfloor_layout.json (BINDEND!)
