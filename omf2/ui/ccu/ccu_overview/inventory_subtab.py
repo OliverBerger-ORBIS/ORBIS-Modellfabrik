@@ -206,13 +206,17 @@ def _render_inventory_without_manipulation(inventory_data, asset_manager):
 
 
 def _render_inventory_position_fixed(position: str, workpiece_type: str, asset_manager):
-    """Rendert eine Lagerposition mit fester Größe (200x200) - Standardized"""
+    """Rendert eine Lagerposition mit fester Größe (160x160) - Standardized"""
     if workpiece_type is None:
-        # Leere Position → Palett-SVG mit standardisierter Größe (200x200)
+        # Leere Position → Palett-SVG mit standardisierter Größe (160x160)
         palett_content = asset_manager.get_workpiece_palett()
         if palett_content:
             st.markdown(
-                render_product_svg_container(palett_content, scale=1.0),
+                f"""
+            <div style="border: 1px solid #ccc; padding: 10px; margin: 5px; text-align: center; display: flex; align-items: center; justify-content: center; width: 160px; height: 160px;">
+                {palett_content}
+            </div>
+            """,
                 unsafe_allow_html=True,
             )
             # Position und Inhalt unterhalb zentriert
@@ -222,11 +226,11 @@ def _render_inventory_position_fixed(position: str, workpiece_type: str, asset_m
         else:
             st.error("❌ palett.svg nicht gefunden!")
     else:
-        # Gefüllte Position → Werkstück-SVG mit standardisierter Größe (200x200)
+        # Gefüllte Position → Werkstück-SVG mit standardisierter Größe (160x160)
         svg_content = asset_manager.get_workpiece_svg(workpiece_type, "instock_unprocessed")
         if svg_content:
             st.markdown(
-                render_product_svg_container(svg_content, scale=1.0),
+                render_product_svg_container(svg_content, scale=0.8),
                 unsafe_allow_html=True,
             )
             # Position und Inhalt unterhalb zentriert

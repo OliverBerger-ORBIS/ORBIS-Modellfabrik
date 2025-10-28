@@ -36,19 +36,11 @@ def render_product_svg_container(
     if force_width_only:
         # Fix width, let height be proportional
         container_style = f"border: {border_style}; padding: {padding}; margin: {margin}; text-align: center;"
-        svg_wrapper_style = f"width: {size}px; height: auto; max-width: 100%;"
     else:
         # Square container with object-fit: contain
-        container_style = f"border: {border_style}; padding: {padding}; margin: {margin}; text-align: center; width: {size}px; height: {size}px; display: flex; align-items: center; justify-content: center;"
-        svg_wrapper_style = "max-width: 100%; max-height: 100%; width: 100%; height: 100%; object-fit: contain;"
+        container_style = f"border: {border_style}; padding: {padding}; margin: {margin}; text-align: center; width: {size}px; height: {size}px; display: flex; align-items: center; justify-content: center; overflow: hidden;"
 
-    return f"""
-    <div style="{container_style}">
-        <div style="{svg_wrapper_style}">
-            {svg_content}
-        </div>
-    </div>
-    """
+    return f'<div style="{container_style}">{svg_content}</div>'
 
 
 def render_warehouse_cell(
