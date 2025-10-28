@@ -38,7 +38,7 @@ def _scope_svg(svg: str) -> str:
 # --- Registry: logical keys -> filename (keep simple) -----------------------
 HEADING_ICON_FILES: Dict[str, str] = {
     # CCU-TABS
-    "DASHBOARD": "visualisierung.svg",
+    "DASHBOARD_ADMIN": "visualisierung.svg",
     "ORDERS": "lieferung-bestellen.svg",
     "PROCESS": "gang.svg",
     "CONFIGURATION": "system.svg",
@@ -52,12 +52,12 @@ HEADING_ICON_FILES: Dict[str, str] = {
     "DASHBOOARD": "visualisierung.svg",
     "MQTT_CLIENTS": "satellitenschussel.svg",
     "GATEWAY": "router_1.svg",
-    "TOPIC": "ettikett.svg",
+    "TOPIC": "etikett.svg",
     "SCHEMAS": "diagramm.svg",
-    "MODULES_TAB_ADMIN": "mehrere.svg",
+    "MODULES_ADMIN": "mehrere.svg",
     "STATIONS": "dezentral.svg",
-    "TXT_CONTROLLERS": "mixer.svg",
-    "WORKPIECES": "empty.svg",
+    "TXT_CONTROLLERS": "system.svg",
+    "WORKPIECES": "box.svg",
     # CCU-ORDERS-Subtab
     "PRODUCTION_ORDERS": "maschine.svg",
     "STORAGE_ORDERS": "ladung.svg",
