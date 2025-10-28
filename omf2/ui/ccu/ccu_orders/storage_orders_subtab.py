@@ -112,12 +112,58 @@ def _render_order_card(order, order_manager, i18n, is_completed=False):
         i18n: I18nManager Instanz
         is_completed: True für completed orders (ausgegraut)
     """
-    with st.container():
-        # NEU: Zwei-Spalten-Layout (1:2 - Liste:Shopfloor) - EXAKT wie production_orders_subtab.py
+    # Order Header für Expander
+    order_id = order.get("orderId", "N/A")[:8]  # Kurze ID
+    workpiece_type = order.get("type", "N/A")
+    workpiece_icon = UISymbols.get_workpiece_icon(workpiece_type)
+    state = order.get("state", "N/A")
+    
+    # Compute expanded flag based on order completion state
+    is_order_completed = False
+    try:
+        status = order.get('status') if isinstance(order, dict) else getattr(order, 'status', None)
+        if status == 'COMPLETED':
+            is_order_completed = True
+        else:
+            last_step = None
+            steps = order.get('steps') if isinstance(order, dict) else getattr(order, 'steps', None)
+            if steps:
+                last_step = steps[-1]
+            last_step_state = None
+            if isinstance(last_step, dict):
+                last_step_state = last_step.get('state')
+            else:
+                last_step_state = getattr(last_step, 'state', None) if last_step is not None else None
+            if last_step_state == 'COMPLETED':
+                is_order_completed = status == 'COMPLETED'
+    except Exception:
+        is_order_completed = False
+    
+    expanded = not is_order_completed
+    
+    # Expander label mit Order-Info
+    if is_completed:
+        state_icon = UISymbols.get_status_icon('success')
+        expander_label = f"{workpiece_icon} **{order_id}...** - {workpiece_type} - {state_icon} Completed"
+    else:
+        state_icon = {
+            "IN_PROGRESS": UISymbols.get_status_icon("step_in_progress"),
+            "RUNNING": UISymbols.get_status_icon("step_in_progress"),
+            "FINISHED": UISymbols.get_status_icon("step_finished"),
+            "COMPLETED": UISymbols.get_status_icon("step_finished"),
+            "ENQUEUED": UISymbols.get_status_icon("step_enqueued"),
+            "PENDING": UISymbols.get_status_icon("step_pending"),
+            "FAILED": UISymbols.get_status_icon("step_failed"),
+        }.get(state, "⚪")
+        expander_label = f"{workpiece_icon} **{order_id}...** - {workpiece_type} - {state_icon} {state}"
+    
+    # Gesamte Order Card in Expander (Storage Steps + Shopfloor zusammen)
+    with st.expander(expander_label, expanded=expanded):
+        # Zwei-Spalten-Layout (1:2 - Storage Steps:Shopfloor)
         col1, col2 = st.columns([1, 2])
 
         with col1:
-            # Links: Order-Details und Storage Steps
+            # Links: Order-Details und Storage Steps (immer sichtbar, nicht collapsible)
             _render_order_details(order, order_manager, i18n, is_completed)
 
         with col2:
@@ -129,48 +175,25 @@ def _render_order_card(order, order_manager, i18n, is_completed=False):
 
 
 def _render_order_details(order, order_manager, i18n, is_completed=False):
-    """Render Order-Details (links Spalte) - EXAKT wie production_orders_subtab.py"""
-    # Order Header
-    order_id = order.get("orderId", "N/A")[:8]  # Kurze ID
-    st.write(f"**{order_id}...**")
-
+    """Render Order-Details (links Spalte)"""
     # Order Info Row
-    col1, col2, col3 = st.columns([1, 1, 1])
+    col1, col2 = st.columns([1, 1])
 
     with col1:
-        workpiece_type = order.get("type", "N/A")
-        workpiece_icon = {"RED": "🔴", "BLUE": "🔵", "WHITE": "⚪"}.get(workpiece_type, "⚪")
-        st.write(f"{workpiece_icon} {workpiece_type}")
-
-    with col2:
         order_type = order.get("orderType", "N/A")
         st.write(f"📋 {order_type}")
 
-    with col3:
-        if is_completed:
-            st.write(f"✅ {i18n.t('ccu_orders.card.completed')}")
-        else:
-            state = order.get("state", "N/A")
-            # KONSISTENT mit production_orders_subtab.py
-            state_icon = {
-                # Aktive Zustände
-                "IN_PROGRESS": "🟠",  # ORANGE CIRCLE - konsistent!
-                "RUNNING": "🟠",  # Alias
-                # Abgeschlossene Zustände
-                "FINISHED": "✅",
-                "COMPLETED": "✅",  # Alias
-                # Wartende Zustände
-                "ENQUEUED": "⏳",
-                "PENDING": "⚪",
-                # Fehler-Zustände
-                "FAILED": "❌",
-            }.get(state, "⚪")
-            st.write(f"{state_icon} {state}")
+    with col2:
+        order_id = order.get("orderId", "N/A")
+        st.write(f"ID: {order_id[:16]}...")
 
-    # Storage Steps (immer anzeigen, nicht expandable)
+    st.markdown("---")
+    
+    # Storage Steps (immer sichtbar, nicht collapsible)
     complete_storage_plan = order_manager.get_complete_storage_plan(order)
     if complete_storage_plan:
-        st.markdown(f"**{i18n.t('ccu_orders.card.storage_steps')}:**")
+        steps_label = f"**{i18n.t('ccu_orders.card.storage_steps')}** ({len(complete_storage_plan)})"
+        st.markdown(steps_label)
         _render_storage_steps(complete_storage_plan, i18n, is_completed)
 
 
