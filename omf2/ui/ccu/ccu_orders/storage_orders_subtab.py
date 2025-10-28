@@ -70,8 +70,13 @@ def show_storage_orders_subtab(i18n):
         check_and_reload(group="order_updates", reload_callback=reload_storage_orders, interval_ms=1000)
 
         # Get data from session state (populated by reload_storage_orders callback)
-        # If not yet populated, load it now
+        # If not yet populated OR if empty, load it now
         if "storage_orders_active" not in st.session_state:
+            logger.info("🔄 storage_orders_active not in session state, calling reload_storage_orders()")
+            reload_storage_orders()
+        elif not st.session_state.get("storage_orders_active") and not st.session_state.get("storage_orders_completed"):
+            # Session state exists but is empty - reload to get fresh data
+            logger.info("🔄 storage_orders are empty in session state, calling reload_storage_orders()")
             reload_storage_orders()
 
         active_orders = st.session_state.get("storage_orders_active", [])
