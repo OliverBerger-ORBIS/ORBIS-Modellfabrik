@@ -76,11 +76,7 @@ def _render_workpiece_section(
                 # Using standardized 200x200 size for palett SVGs
                 palett_html = ""
                 for _i in range(need):
-                    palett_html += f"""
-                    <div style="display: inline-block; margin: 2px;">
-                        {render_product_svg_container(palett_content, scale=1.0)}
-                    </div>
-                    """
+                    palett_html += f'<div style="display: inline-block; margin: 2px;">{render_product_svg_container(palett_content, scale=0.5)}</div>'
                 st.markdown(palett_html, unsafe_allow_html=True)
             else:
                 st.error("❌ palett.svg nicht gefunden!")

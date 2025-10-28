@@ -111,9 +111,9 @@ class OMF2AssetManager:
         icon_mapping = {
             # Hauptmodule (Registry-definiert)
             "HBW": "stock.svg",  # High-Bay Warehouse flaticon
-            "DPS": "warehouse.svg",  # Delivery/Pickup Station flaticon
+            "DPS": "robot-arm.svg",  # Delivery/Pickup Station flaticon
             "MILL": "milling-machine.svg",  # Milling Station flaticon
-            "DRILL": "drilling.svg",  # Drilling Station flaticon
+            "DRILL": "bohrer.svg",  # Drilling Station flaticon
             "AIQS": "ai-assistant.svg",  # AI Quality System flaticon
             "CHRG": "fuel.svg",  # Charging Station flaticon
             "FTS": "ic_ft_fts.svg",  # Flexible Transport System
@@ -127,6 +127,41 @@ class OMF2AssetManager:
             "PC_TABLET": "responsive.svg",  # PC/Tablet
             "OPC_UA": "database.svg",  # OPC UA Server
         }
+
+        # HEADING-ICONS
+        heading_icons = {
+            # HEADING-ICONS
+            #  COPILOT: AB HIER KOMMEN HEADING-ICONS, DIE IN EINEM NEUEN VERZEICHNIS ABGELEGT WERDEN:
+            #  PATH: omf2/assets/headings
+            # CCU-TABS
+            "DASHBOARD": "visualisierung.svg",  # Dashboard-OVERVIEW
+            "ORDERS": "lieferung-bestellen.svg",  # Orders
+            "PROCESS": "gang.svg",
+            "CONFIGURATION": "system.svg",
+            "MODULES_TAB": "mehrere.svg",  # Modules
+            # ADMIN-tabs
+            "MESSAGE_CENTER": "zentral.svg",  # Message Center
+            "GENERIC_STEERING": "dezentral_1.svg",  # Generic Steering
+            "SYSTEM_LOGS": "log.svg",  # System Logs
+            "ADMIN_SETTINGS": "unterstutzung.svg",  # Admin Settings
+            # ADMIN-Settings-subtabs
+            "DASHBOOARD": "visualisierung.svg",  # Dashboard-OVERVIEW
+            "MQTT_CLIENTS": "satellitenschussel.svg",  # MQTT Broker
+            "GATEWAY": "router_1.svg",  # Gateway
+            "TOPIC": "ettikett.svg",  # Topic
+            "SCHEMAS": "diagramm.svg",  # Schemas
+            "MODULES_TAB_ADMIN": "mehrere.svg",  # Modules
+            "STATIONS": "dezentral.svg",
+            "TXT_CONTROLLERS": "mixer.svg",
+            "WORKPIECES": "empty.svg",
+            # CCU-ORDERS-Subtab
+            "PRODUCTION_ORDERS": "maschine.svg",
+            "STORAGE_ORDERS": "ladung.svg",
+            # CCU-SUBTABS
+            "FACTORY_CONFIGURATION": "grundriss.svg",
+            "SHOPFLOOR_LAYOUT": "grundriss.svg",
+        }
+        icon_mapping.update(heading_icons)
 
         # Spezielle Icons - IDs aus shopfloor_layout.json (BINDEND!)
         # Each intersection has its number embedded in the SVG for proper route visualization
@@ -148,7 +183,7 @@ class OMF2AssetManager:
             "COMPANY_square2": "conveyor.svg",
             # Canonical SOFTWARE assets
             "SOFTWARE_rectangle": "information-technology.svg",  # DSP logo
-            "SOFTWARE_square1": "robot-arm.svg",
+            "SOFTWARE_square1": "warehouse.svg",
             "SOFTWARE_square2": "order-tracking.svg",
             # Direct name fallback for backward compatibility (minimal)
             "ORBIS": "ORBIS_logo_RGB.svg",
