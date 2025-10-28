@@ -142,7 +142,7 @@ def _find_nearest_intersection_to_goal(graph: Dict, goal_id: str) -> Optional[st
     return nearest_intersection
 
 
-def compute_route(graph: Dict, start_id: str, goal_id: str) -> Optional[List[str]]:
+def compute_route(graph: Dict, start_id: str, goal_id: str, order_type: Optional[str] = None) -> Optional[List[str]]:
     """
     Compute route from start to goal using BFS (Breadth-First Search)
 
@@ -152,6 +152,8 @@ def compute_route(graph: Dict, start_id: str, goal_id: str) -> Optional[List[str
         graph: Graph dictionary from build_graph()
         start_id: Starting node ID (module id, serialNumber, or intersection ID)
         goal_id: Goal node ID (module id, serialNumber, or intersection ID)
+        order_type: Optional order type ("PRODUCTION" or "STORAGE") for determining start intersection
+                    when start_id is unknown. If not provided, uses nearest intersection to goal.
 
     Returns:
         List of node IDs representing the route from start to goal, or None if no route found
@@ -175,22 +177,45 @@ def compute_route(graph: Dict, start_id: str, goal_id: str) -> Optional[List[str
         )
         return None
 
-    # Resolve start node - if unknown, use nearest intersection to goal
+    # Resolve start node - if unknown, use configured intersection based on order type
     resolved_start = id_to_primary.get(start_id, start_id)
     if resolved_start not in graph.get("nodes", {}):
-        # START node not specified or unknown - select nearest intersection to goal
-        # This is normal when FTS location is unknown at order process start
-        nearest_intersection = _find_nearest_intersection_to_goal(graph, resolved_goal)
+        # START node not specified or unknown - this is normal when FTS location is unknown
+        # NOTE: In a future version, this configuration could be retrieved from
+        # config/ccu/process_setting.json (similar to production_setting.json)
 
-        if nearest_intersection:
-            resolved_start = nearest_intersection
+        # Hardcoded start intersections based on order type:
+        # - PRODUCTION orders start at intersection 2
+        # - STORAGE orders start at intersection 1
+        if order_type == "PRODUCTION":
+            preferred_intersection = "2"
+        elif order_type == "STORAGE":
+            preferred_intersection = "1"
+        else:
+            # Fallback to nearest intersection if order type unknown
+            preferred_intersection = _find_nearest_intersection_to_goal(graph, resolved_goal)
+
+        # Check if preferred intersection exists in graph
+        if preferred_intersection and preferred_intersection in graph.get("nodes", {}):
+            resolved_start = preferred_intersection
             logger.debug(
-                f"Start node '{start_id}' not in graph. " f"Using nearest intersection to goal: '{resolved_start}'"
+                f"Start node '{start_id}' not in graph. "
+                f"Using intersection {preferred_intersection} for {order_type or 'unknown'} order type"
             )
         else:
-            # No intersections available - cannot proceed
-            logger.warning(f"Cannot compute route: start node '{start_id}' not found and no intersections available.")
-            return None
+            # Preferred intersection not available - try nearest intersection as fallback
+            nearest_intersection = _find_nearest_intersection_to_goal(graph, resolved_goal)
+            if nearest_intersection:
+                resolved_start = nearest_intersection
+                logger.debug(
+                    f"Start node '{start_id}' not in graph. " f"Using nearest intersection to goal: '{resolved_start}'"
+                )
+            else:
+                # No intersections available - cannot proceed
+                logger.warning(
+                    f"Cannot compute route: start node '{start_id}' not found and no intersections available."
+                )
+                return None
 
     if resolved_start == resolved_goal:
         return [resolved_start]
@@ -383,7 +408,11 @@ def point_on_polyline(polyline_points: List[Tuple[float, float]], progress: floa
 
 
 def get_route_for_navigation_step(
-    shopfloor_layout: dict, source_id: str, target_id: str, cell_size: int = 200
+    shopfloor_layout: dict,
+    source_id: str,
+    target_id: str,
+    cell_size: int = 200,
+    order_type: Optional[str] = None,
 ) -> Optional[List[Tuple[float, float]]]:
     """
     Convenience function to get route points for a navigation step
@@ -393,6 +422,7 @@ def get_route_for_navigation_step(
         source_id: Source module/intersection ID
         target_id: Target module/intersection ID
         cell_size: Size of each grid cell in pixels (default: 200)
+        order_type: Optional order type ("PRODUCTION" or "STORAGE") for determining start intersection
 
     Returns:
         List of (x, y) pixel coordinates for the route, or None if no route found
@@ -401,7 +431,7 @@ def get_route_for_navigation_step(
     graph = build_graph(shopfloor_layout)
 
     # Compute route
-    route = compute_route(graph, source_id, target_id)
+    route = compute_route(graph, source_id, target_id, order_type=order_type)
 
     if not route:
         return None

@@ -146,3 +146,61 @@ class TestStartNodeHandling:
         assert route[0] == "1", f"Route should start from nearest intersection to goal, got {route[0]}"
         # Route should end at the goal
         assert route[-1] == "SN_C", "Route should end at goal SN_C"
+
+    def test_production_order_uses_intersection_2(self):
+        """Test that PRODUCTION orders start at intersection 2"""
+        # Create a graph with intersections 1 and 2
+        shopfloor_layout = {
+            "modules": [
+                {"id": "HBW", "serialNumber": "SN_HBW", "position": [0, 0], "type": "storage"},
+                {"id": "DPS", "serialNumber": "SN_DPS", "position": [3, 3], "type": "storage"},
+            ],
+            "intersections": [
+                {"id": "1", "position": [0, 1]},
+                {"id": "2", "position": [1, 0]},
+            ],
+            "roads": [
+                {"from": "1", "to": "SN_DPS"},
+                {"from": "2", "to": "SN_HBW"},
+                {"from": "1", "to": "2"},
+            ],
+        }
+
+        graph = build_graph(shopfloor_layout)
+
+        # Request with unknown START for PRODUCTION order
+        route = compute_route(graph, "UNKNOWN_START", "HBW", order_type="PRODUCTION")
+
+        # Should return a route starting at intersection 2
+        assert route is not None, "Route should not be None for PRODUCTION order"
+        assert route[0] == "2", f"PRODUCTION order should start at intersection 2, got {route[0]}"
+        assert route[-1] == "SN_HBW", "Route should end at HBW"
+
+    def test_storage_order_uses_intersection_1(self):
+        """Test that STORAGE orders start at intersection 1"""
+        # Create a graph with intersections 1 and 2
+        shopfloor_layout = {
+            "modules": [
+                {"id": "HBW", "serialNumber": "SN_HBW", "position": [0, 0], "type": "storage"},
+                {"id": "DPS", "serialNumber": "SN_DPS", "position": [3, 3], "type": "storage"},
+            ],
+            "intersections": [
+                {"id": "1", "position": [0, 1]},
+                {"id": "2", "position": [1, 0]},
+            ],
+            "roads": [
+                {"from": "1", "to": "SN_DPS"},
+                {"from": "2", "to": "SN_HBW"},
+                {"from": "1", "to": "2"},
+            ],
+        }
+
+        graph = build_graph(shopfloor_layout)
+
+        # Request with unknown START for STORAGE order
+        route = compute_route(graph, "UNKNOWN_START", "DPS", order_type="STORAGE")
+
+        # Should return a route starting at intersection 1
+        assert route is not None, "Route should not be None for STORAGE order"
+        assert route[0] == "1", f"STORAGE order should start at intersection 1, got {route[0]}"
+        assert route[-1] == "SN_DPS", "Route should end at DPS"

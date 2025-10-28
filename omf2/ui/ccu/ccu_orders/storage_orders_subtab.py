@@ -117,33 +117,33 @@ def _render_order_card(order, order_manager, i18n, is_completed=False):
     workpiece_type = order.get("type", "N/A")
     workpiece_icon = UISymbols.get_workpiece_icon(workpiece_type)
     state = order.get("state", "N/A")
-    
+
     # Compute expanded flag based on order completion state
     is_order_completed = False
     try:
-        status = order.get('status') if isinstance(order, dict) else getattr(order, 'status', None)
-        if status == 'COMPLETED':
+        status = order.get("status") if isinstance(order, dict) else getattr(order, "status", None)
+        if status == "COMPLETED":
             is_order_completed = True
         else:
             last_step = None
-            steps = order.get('steps') if isinstance(order, dict) else getattr(order, 'steps', None)
+            steps = order.get("steps") if isinstance(order, dict) else getattr(order, "steps", None)
             if steps:
                 last_step = steps[-1]
             last_step_state = None
             if isinstance(last_step, dict):
-                last_step_state = last_step.get('state')
+                last_step_state = last_step.get("state")
             else:
-                last_step_state = getattr(last_step, 'state', None) if last_step is not None else None
-            if last_step_state == 'COMPLETED':
-                is_order_completed = status == 'COMPLETED'
+                last_step_state = getattr(last_step, "state", None) if last_step is not None else None
+            if last_step_state == "COMPLETED":
+                is_order_completed = status == "COMPLETED"
     except Exception:
         is_order_completed = False
-    
+
     expanded = not is_order_completed
-    
+
     # Expander label mit Order-Info
     if is_completed:
-        state_icon = UISymbols.get_status_icon('success')
+        state_icon = UISymbols.get_status_icon("success")
         expander_label = f"{workpiece_icon} **{order_id}...** - {workpiece_type} - {state_icon} Completed"
     else:
         state_icon = {
@@ -156,7 +156,7 @@ def _render_order_card(order, order_manager, i18n, is_completed=False):
             "FAILED": UISymbols.get_status_icon("step_failed"),
         }.get(state, "⚪")
         expander_label = f"{workpiece_icon} **{order_id}...** - {workpiece_type} - {state_icon} {state}"
-    
+
     # Gesamte Order Card in Expander (Storage Steps + Shopfloor zusammen)
     with st.expander(expander_label, expanded=expanded):
         # Zwei-Spalten-Layout (1:2 - Storage Steps:Shopfloor)
@@ -188,7 +188,7 @@ def _render_order_details(order, order_manager, i18n, is_completed=False):
         st.write(f"ID: {order_id[:16]}...")
 
     st.markdown("---")
-    
+
     # Storage Steps (immer sichtbar, nicht collapsible)
     complete_storage_plan = order_manager.get_complete_storage_plan(order)
     if complete_storage_plan:
@@ -233,9 +233,12 @@ def _render_shopfloor_for_storage_order(order, order_manager, i18n):
 
             source = current_nav_step.get("source")
             target = current_nav_step.get("target")
+            order_type = order.get("orderType")  # Get order type for route calculation
 
             if source and target and layout_config:
-                route_points = get_route_for_navigation_step(layout_config, source, target, cell_size=200)
+                route_points = get_route_for_navigation_step(
+                    layout_config, source, target, cell_size=200, order_type=order_type
+                )
 
                 # Calculate AGV progress (for demo, use 50% if IN_PROGRESS)
                 if step_state == "IN_PROGRESS":
