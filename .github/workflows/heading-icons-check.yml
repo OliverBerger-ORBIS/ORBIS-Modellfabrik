@@ -1,0 +1,16 @@
+name: Heading Icons QA
+on: [push, pull_request]
+jobs:
+  check-heading-svgs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - name: Install deps
+        run: pip install -r requirements.txt || true
+      - name: Run heading icons check
+        run: |
+          python3 scripts/check_heading_svgs.py
