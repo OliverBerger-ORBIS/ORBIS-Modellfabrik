@@ -101,6 +101,47 @@ def build_graph(shopfloor_layout: dict) -> Dict:
     }
 
 
+def _find_nearest_intersection_to_goal(graph: Dict, goal_id: str) -> Optional[str]:
+    """
+    Find the intersection closest to the goal node.
+
+    Args:
+        graph: Graph dictionary from build_graph()
+        goal_id: Resolved goal node ID
+
+    Returns:
+        ID of the nearest intersection, or None if no intersections exist
+    """
+    nodes = graph.get("nodes", {})
+    goal_node = nodes.get(goal_id)
+
+    if not goal_node:
+        return None
+
+    goal_pos = goal_node.get("position", [0, 0])
+
+    # Find all intersections
+    intersections = [(node_id, node) for node_id, node in nodes.items() if node.get("type") == "intersection"]
+
+    if not intersections:
+        return None
+
+    # Calculate distance to each intersection and find the nearest
+    min_distance = float("inf")
+    nearest_intersection = None
+
+    for node_id, node in intersections:
+        pos = node.get("position", [0, 0])
+        # Euclidean distance
+        distance = ((pos[0] - goal_pos[0]) ** 2 + (pos[1] - goal_pos[1]) ** 2) ** 0.5
+
+        if distance < min_distance:
+            min_distance = distance
+            nearest_intersection = node_id
+
+    return nearest_intersection
+
+
 def compute_route(graph: Dict, start_id: str, goal_id: str) -> Optional[List[str]]:
     """
     Compute route from start to goal using BFS (Breadth-First Search)
@@ -123,22 +164,7 @@ def compute_route(graph: Dict, start_id: str, goal_id: str) -> Optional[List[str
     # Flexible lookup: resolve start_id and goal_id to primary keys
     id_to_primary = graph.get("id_to_primary", {})
 
-    # Resolve start node - if unknown, use first available node (normal for order start)
-    resolved_start = id_to_primary.get(start_id, start_id)
-    if resolved_start not in graph.get("nodes", {}):
-        # START node not specified or unknown - select first available node
-        # This is normal when FTS location is unknown at order process start
-        nodes = graph.get("nodes", {})
-        if nodes:
-            # Use first available node in the graph as starting point
-            resolved_start = next(iter(nodes.keys()))
-            logger.debug(f"Start node '{start_id}' not in graph. " f"Using first available node: '{resolved_start}'")
-        else:
-            # No nodes in graph - cannot proceed
-            logger.warning(f"Cannot compute route: start node '{start_id}' not found and graph has no nodes.")
-            return None
-
-    # Resolve goal node
+    # Resolve goal node first (needed to find nearest intersection)
     resolved_goal = id_to_primary.get(goal_id, goal_id)
     if resolved_goal not in graph.get("nodes", {}):
         available_nodes = sorted(id_to_primary.keys())
@@ -148,6 +174,23 @@ def compute_route(graph: Dict, start_id: str, goal_id: str) -> Optional[List[str
             f"{'...' if len(available_nodes) > 10 else ''}"
         )
         return None
+
+    # Resolve start node - if unknown, use nearest intersection to goal
+    resolved_start = id_to_primary.get(start_id, start_id)
+    if resolved_start not in graph.get("nodes", {}):
+        # START node not specified or unknown - select nearest intersection to goal
+        # This is normal when FTS location is unknown at order process start
+        nearest_intersection = _find_nearest_intersection_to_goal(graph, resolved_goal)
+
+        if nearest_intersection:
+            resolved_start = nearest_intersection
+            logger.debug(
+                f"Start node '{start_id}' not in graph. " f"Using nearest intersection to goal: '{resolved_start}'"
+            )
+        else:
+            # No intersections available - cannot proceed
+            logger.warning(f"Cannot compute route: start node '{start_id}' not found and no intersections available.")
+            return None
 
     if resolved_start == resolved_goal:
         return [resolved_start]

@@ -3,8 +3,8 @@
 Unit tests for Route Utils START node handling
 
 Tests cover:
-- START node selection when FTS location is unknown (normal condition)
-- Empty graph handling (returns None with warning)
+- START node selection when FTS location is unknown (uses nearest intersection to goal)
+- Empty graph and no intersection handling
 - Normal routing when START node exists
 """
 
@@ -15,35 +15,63 @@ from omf2.ui.ccu.common.route_utils import build_graph, compute_route
 class TestStartNodeHandling:
     """Test cases for START node handling behavior"""
 
-    def test_unknown_start_uses_first_node(self):
-        """Test using first available node when START node is unknown (normal condition)"""
-        # Create a minimal graph with nodes but unknown START location
+    def test_unknown_start_uses_nearest_intersection_to_goal(self):
+        """Test using nearest intersection to goal when START node is unknown"""
+        # Create a graph with multiple intersections at different distances from goal
         shopfloor_layout = {
             "modules": [
-                {"id": "MODULE_A", "serialNumber": "SN_A", "position": [0, 0], "type": "storage"},
-                {"id": "MODULE_B", "serialNumber": "SN_B", "position": [0, 1], "type": "machine"},
+                {"id": "GOAL", "serialNumber": "SN_GOAL", "position": [0, 0], "type": "storage"},
+                {"id": "MODULE_B", "serialNumber": "SN_B", "position": [2, 2], "type": "machine"},
             ],
-            "intersections": [{"id": "1", "position": [0, 2]}],
+            "intersections": [
+                {"id": "1", "position": [0, 1]},  # Close to goal (distance 1)
+                {"id": "2", "position": [3, 3]},  # Far from goal
+                {"id": "3", "position": [1, 0]},  # Also close to goal (distance 1)
+            ],
             "roads": [
-                {"from": "SN_A", "to": "SN_B"},
-                {"from": "SN_B", "to": "1"},
+                {"from": "1", "to": "SN_GOAL"},
+                {"from": "2", "to": "SN_B"},
+                {"from": "3", "to": "SN_GOAL"},
+                {"from": "1", "to": "3"},
             ],
         }
 
         graph = build_graph(shopfloor_layout)
 
-        # Request with unknown START node - should use first available node (normal operation)
+        # Request with unknown START node - should use nearest intersection to goal
         unknown_start = "UNKNOWN_FTS_LOCATION"
-        goal = "SN_B"
+        goal = "GOAL"
 
         route = compute_route(graph, unknown_start, goal)
 
-        # Should return a route (first node selected)
-        assert route is not None, "Route should not be None when graph has nodes"
-        # Route should start from first available node
-        assert len(route) > 0, "Route should have at least one node"
+        # Should return a route (nearest intersection selected)
+        assert route is not None, "Route should not be None when intersections exist"
+        # Route should start from an intersection (either 1 or 3, both closest to goal)
+        assert route[0] in ["1", "3"], f"Route should start from intersection closest to goal, got {route[0]}"
         # The route should end at the goal
-        assert route[-1] == goal, f"Route should end at goal {goal}"
+        assert route[-1] == "SN_GOAL", "Route should end at goal"
+
+    def test_no_intersections_returns_none(self):
+        """Test that no intersections returns None with clear warning"""
+        # Create a graph without intersections
+        shopfloor_layout = {
+            "modules": [
+                {"id": "MODULE_A", "serialNumber": "SN_A", "position": [0, 0], "type": "storage"},
+                {"id": "MODULE_B", "serialNumber": "SN_B", "position": [0, 1], "type": "machine"},
+            ],
+            "intersections": [],
+            "roads": [
+                {"from": "SN_A", "to": "SN_B"},
+            ],
+        }
+
+        graph = build_graph(shopfloor_layout)
+
+        # Request with unknown START - should return None (no intersections)
+        route = compute_route(graph, "UNKNOWN_START", "SN_B")
+
+        # Should return None since there are no intersections
+        assert route is None, "Route should be None when no intersections available"
 
     def test_empty_graph_returns_none(self):
         """Test that empty graph returns None with clear warning"""
@@ -87,20 +115,23 @@ class TestStartNodeHandling:
         assert route[0] == "SN_START", "Route should start at START node"
         assert route[-1] == "SN_GOAL", "Route should end at GOAL node"
 
-    def test_first_node_can_reach_goal(self):
-        """Test that first node selection can successfully reach the goal"""
-        # Create a connected graph
+    def test_nearest_intersection_reaches_goal(self):
+        """Test that nearest intersection to goal can successfully reach the goal"""
+        # Create a connected graph with intersections at different distances
         shopfloor_layout = {
             "modules": [
                 {"id": "A", "serialNumber": "SN_A", "position": [0, 0], "type": "storage"},
-                {"id": "B", "serialNumber": "SN_B", "position": [0, 1], "type": "machine"},
-                {"id": "C", "serialNumber": "SN_C", "position": [0, 2], "type": "machine"},
+                {"id": "C", "serialNumber": "SN_C", "position": [0, 3], "type": "machine"},
             ],
-            "intersections": [{"id": "1", "position": [1, 0]}],
+            "intersections": [
+                {"id": "1", "position": [0, 1]},  # Closer to C
+                {"id": "2", "position": [1, 0]},  # Farther from C
+            ],
             "roads": [
                 {"from": "SN_A", "to": "1"},
-                {"from": "1", "to": "SN_B"},
-                {"from": "SN_B", "to": "SN_C"},
+                {"from": "SN_A", "to": "2"},
+                {"from": "1", "to": "SN_C"},
+                {"from": "2", "to": "1"},
             ],
         }
 
@@ -109,7 +140,9 @@ class TestStartNodeHandling:
         # Request with unknown START location with valid GOAL
         route = compute_route(graph, "UNKNOWN_START", "SN_C")
 
-        # Should return a route (first node selected and route found)
+        # Should return a route (nearest intersection selected and route found)
         assert route is not None, "Route should not be None when graph is connected"
+        # Route should start from intersection 1 (closest to SN_C)
+        assert route[0] == "1", f"Route should start from nearest intersection to goal, got {route[0]}"
         # Route should end at the goal
         assert route[-1] == "SN_C", "Route should end at goal SN_C"
