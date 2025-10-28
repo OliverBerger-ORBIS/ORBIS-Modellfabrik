@@ -178,7 +178,7 @@ To manually verify the cache is working:
 
 ### Expected Benefits
 
-- **Reduced latency**: 50-90% reduction in dashboard render time (depends on file system speed)
+- **Reduced latency**: Estimated 50-90% reduction in dashboard render time for cached entries (depends on file system speed and cache hit rate)
 - **Reduced I/O**: Files read once per TTL period instead of every view
 - **Better UX**: Faster tab switching and refresh in Admin dashboard
 
@@ -223,10 +223,7 @@ With TTL=60 and 3 config files (MQTT, roles, apps):
    echo $OMF2_ADMIN_CACHE_TTL
    ```
 
-2. Check for import errors in logs:
-   ```
-   grep "Admin cache module not available" logs/streamlit.log
-   ```
+2. Check for import errors in logs (check your application's log output)
 
 3. Ensure cache module exists:
    ```bash
@@ -266,9 +263,7 @@ Potential improvements (not currently implemented):
 
 ## Related Documentation
 
-- [Admin Settings Architecture](../admin/admin_settings.md) (if exists)
-- [Performance Best Practices](./best_practices.md) (if exists)
-- [Configuration Management](../configuration/config_management.md) (if exists)
+For more information on related topics, see the main documentation in the `docs/` directory.
 
 ## References
 
