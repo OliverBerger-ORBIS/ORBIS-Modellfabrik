@@ -5,6 +5,7 @@ Admin Settings - Workpiece Subtab
 
 import streamlit as st
 
+from omf2.assets.heading_icons import get_svg_inline
 from omf2.common.logger import get_logger
 from omf2.ui.common.symbols import UISymbols
 
@@ -21,7 +22,19 @@ def render_workpiece_subtab():
         st.session_state["workpiece_subtab_logged"] = True
 
     try:
-        st.subheader(f"{UISymbols.get_functional_icon('module_control')} Werkstück-Konfiguration")
+        # Initialize i18n
+        i18n = st.session_state.get("i18n_manager")
+        if not i18n:
+            logger.error("❌ I18n Manager not found in session state")
+            return
+
+        # SVG-Header mit Fallback - einfache Lösung mit größerer SVG
+        workpieces_svg = get_svg_inline("WORKPIECES", size_px=32)
+        header_icon = workpieces_svg if workpieces_svg else UISymbols.get_workpiece_icon("all_workpieces")
+        st.markdown(
+            f'<h3 style="margin-top: 0; margin-bottom: 1rem;">{header_icon} <strong>{i18n.t("admin.workpieces")} Konfiguration</strong></h3>',
+            unsafe_allow_html=True,
+        )
         st.markdown("Registry-basierte Werkstück-Verwaltung aus omf2/registry")
 
         # Load workpiece data using WorkpieceManager (as per architecture)

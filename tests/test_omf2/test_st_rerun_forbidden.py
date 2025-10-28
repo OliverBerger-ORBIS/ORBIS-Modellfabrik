@@ -1,4 +1,4 @@
-import pytest
+
 """
 Test for forbidden st.rerun() usage in OMF2
 Prevents CURSOR from accidentally adding st.rerun() calls

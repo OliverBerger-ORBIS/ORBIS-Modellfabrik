@@ -498,7 +498,9 @@ class SettingsUI:
   "timestamp": "2025-10-01T14:30:00.123Z"
 }"""
         st.code(example_json, language="json")
-        st.info("💡 **Verhalten:** Pro Topic wird nur die erste Nachricht gespeichert (valides Test-Beispiel, keine Überschreibung)")
+        st.info(
+            "💡 **Verhalten:** Pro Topic wird nur die erste Nachricht gespeichert (valides Test-Beispiel, keine Überschreibung)"
+        )
 
         st.markdown("---")
 
@@ -512,9 +514,7 @@ class SettingsUI:
         col1, col2 = st.columns([3, 1])
         with col1:
             new_topic = st.text_input(
-                "Neues periodisches Topic hinzufügen:",
-                placeholder="/j1/txt/1/i/cam",
-                key="add_periodic_topic_input"
+                "Neues periodisches Topic hinzufügen:", placeholder="/j1/txt/1/i/cam", key="add_periodic_topic_input"
             )
         with col2:
             if st.button("➕ Hinzufügen", key="add_periodic_topic_btn"):
@@ -538,7 +538,9 @@ class SettingsUI:
         else:
             st.info("📋 Keine periodischen Topics konfiguriert - verwende Analyse-Ergebnisse")
 
-        st.caption("💡 **Hinweis:** Diese Topics werden zusätzlich zu den automatisch erkannten als periodisch behandelt")
+        st.caption(
+            "💡 **Hinweis:** Diese Topics werden zusätzlich zu den automatisch erkannten als periodisch behandelt"
+        )
 
     # def _render_template_analysis_settings(self):
     #     """Rendert die Template Analyse Einstellungen"""

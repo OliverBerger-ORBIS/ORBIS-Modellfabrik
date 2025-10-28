@@ -136,17 +136,18 @@ class TestCCUConfigLoader:
         """Test configuration caching"""
         # First load should populate cache
         workflows1 = self.config_loader.load_production_workflows()
-        
+
         # Test that caching works by checking performance
         # (If cache is working, second load should be faster)
         import time
+
         start_time = time.time()
         workflows2 = self.config_loader.load_production_workflows()
         load_time = time.time() - start_time
-        
+
         # Cache should make subsequent loads very fast (< 0.01 seconds)
         assert load_time < 0.01, f"Load time {load_time}s suggests cache not working"
-        
+
         # Content should be identical (even if not same object reference)
         assert workflows1 == workflows2, "Cached content should be identical"
 
@@ -159,24 +160,24 @@ class TestCCUConfigLoader:
         # Load again to ensure they're cached
         workflows2 = self.config_loader.load_production_workflows()
         settings2 = self.config_loader.load_production_settings()
-        
+
         # Content should be identical
         assert workflows1 == workflows2
         assert settings1 == settings2
 
         # Clear cache - this should force reload from disk
         self.config_loader.clear_cache()
-        
+
         # Load again after cache clear
         workflows3 = self.config_loader.load_production_workflows()
         settings3 = self.config_loader.load_production_settings()
-        
+
         # Content should still be identical (cache clear doesn't change data)
         assert workflows1 == workflows3
         assert settings1 == settings3
-        
+
         # Test that clear_cache() method exists and can be called
-        assert hasattr(self.config_loader, 'clear_cache')
+        assert hasattr(self.config_loader, "clear_cache")
         assert callable(self.config_loader.clear_cache)
 
     def test_list_available_configs(self):

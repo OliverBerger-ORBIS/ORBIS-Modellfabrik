@@ -29,7 +29,7 @@ def generate_mill_status_diagram():
     mermaid.append("    IDLE -->|Calibration| CALIBRATION")
     mermaid.append("    CALIBRATION -->|Complete| IDLE")
 
-    return '\n'.join(mermaid)
+    return "\n".join(mermaid)
 
 
 def generate_drill_status_diagram():
@@ -57,7 +57,7 @@ def generate_drill_status_diagram():
     mermaid.append("    IDLE -->|Calibration| CALIBRATION")
     mermaid.append("    CALIBRATION -->|Complete| IDLE")
 
-    return '\n'.join(mermaid)
+    return "\n".join(mermaid)
 
 
 def generate_aiqs_status_diagram():
@@ -85,7 +85,7 @@ def generate_aiqs_status_diagram():
     mermaid.append("    IDLE -->|Calibration| CALIBRATION")
     mermaid.append("    CALIBRATION -->|Complete| IDLE")
 
-    return '\n'.join(mermaid)
+    return "\n".join(mermaid)
 
 
 def generate_dps_status_diagram():
@@ -110,7 +110,7 @@ def generate_dps_status_diagram():
     mermaid.append("    IDLE -->|Calibration| CALIBRATION")
     mermaid.append("    CALIBRATION -->|Complete| IDLE")
 
-    return '\n'.join(mermaid)
+    return "\n".join(mermaid)
 
 
 def generate_hbw_status_diagram():
@@ -135,7 +135,7 @@ def generate_hbw_status_diagram():
     mermaid.append("    IDLE -->|Calibration| CALIBRATION")
     mermaid.append("    CALIBRATION -->|Complete| IDLE")
 
-    return '\n'.join(mermaid)
+    return "\n".join(mermaid)
 
 
 def generate_oven_status_diagram():
@@ -163,7 +163,7 @@ def generate_oven_status_diagram():
     mermaid.append("    IDLE -->|Calibration| CALIBRATION")
     mermaid.append("    CALIBRATION -->|Complete| IDLE")
 
-    return '\n'.join(mermaid)
+    return "\n".join(mermaid)
 
 
 def generate_production_flow_diagram():
@@ -171,7 +171,7 @@ def generate_production_flow_diagram():
 
     mermaid = []
     mermaid.append("graph TD")
-    mermaid.append("    subgraph \"Production Module Flow\"")
+    mermaid.append('    subgraph "Production Module Flow"')
     mermaid.append("        START([Order Received])")
     mermaid.append("        IDLE[IDLE State]")
     mermaid.append("        PICK[PICK Operation]")
@@ -187,7 +187,7 @@ def generate_production_flow_diagram():
     mermaid.append("        IDLE -->|No More Orders| END")
     mermaid.append("    end")
     mermaid.append("")
-    mermaid.append("    subgraph \"State Details\"")
+    mermaid.append('    subgraph "State Details"')
     mermaid.append("        PICKBUSY[PICKBUSY]")
     mermaid.append("        MILLBUSY[MILLBUSY]")
     mermaid.append("        DRILLBUSY[DRILLBUSY]")
@@ -199,7 +199,7 @@ def generate_production_flow_diagram():
     mermaid.append("    PROCESS -.-> DRILLBUSY")
     mermaid.append("    DROP -.-> DROPBUSY")
 
-    return '\n'.join(mermaid)
+    return "\n".join(mermaid)
 
 
 def generate_system_architecture_diagram():
@@ -207,8 +207,8 @@ def generate_system_architecture_diagram():
 
     mermaid = []
     mermaid.append("graph TB")
-    mermaid.append("    subgraph \"Fischertechnik APS System\"")
-    mermaid.append("        subgraph \"Production Layer\"")
+    mermaid.append('    subgraph "Fischertechnik APS System"')
+    mermaid.append('        subgraph "Production Layer"')
     mermaid.append("            MILL[MILL Module<br/>192.168.0.40:4840]")
     mermaid.append("            DRILL[DRILL Module<br/>192.168.0.50:4840]")
     mermaid.append("            AIQS[AIQS Module<br/>192.168.0.70:4840]")
@@ -217,12 +217,12 @@ def generate_system_architecture_diagram():
     mermaid.append("            OVEN[OVEN Module<br/>192.168.0.60:4840]")
     mermaid.append("        end")
     mermaid.append("")
-    mermaid.append("        subgraph \"Control Layer\"")
+    mermaid.append('        subgraph "Control Layer"')
     mermaid.append("            CCU[Central Control Unit<br/>Node-RED<br/>192.168.0.100:1880]")
     mermaid.append("            MQTT[MQTT Broker<br/>192.168.2.189:1883]")
     mermaid.append("        end")
     mermaid.append("")
-    mermaid.append("        subgraph \"Network Layer\"")
+    mermaid.append('        subgraph "Network Layer"')
     mermaid.append("            SWITCH[Network Switch<br/>192.168.0.1]")
     mermaid.append("            ROUTER[Router<br/>192.168.2.1]")
     mermaid.append("        end")
@@ -251,7 +251,7 @@ def generate_system_architecture_diagram():
     mermaid.append("    SWITCH --> ROUTER")
     mermaid.append("    ROUTER --> MQTT")
 
-    return '\n'.join(mermaid)
+    return "\n".join(mermaid)
 
 
 def generate_opcua_communication_diagram():
@@ -283,7 +283,7 @@ def generate_opcua_communication_diagram():
     mermaid.append("    OPC->>NR: Error Status (ns=4;i=15)")
     mermaid.append("    NR->>NR: Handle Error State")
 
-    return '\n'.join(mermaid)
+    return "\n".join(mermaid)
 
 
 def generate_mqtt_topic_hierarchy_diagram():
@@ -293,7 +293,7 @@ def generate_mqtt_topic_hierarchy_diagram():
     mermaid.append("graph TD")
     mermaid.append("    ROOT[ROOT]")
     mermaid.append("")
-    mermaid.append("    subgraph \"Module Topics\"")
+    mermaid.append('    subgraph "Module Topics"')
     mermaid.append("        MODULE[module/v1/ff/]")
     mermaid.append("        SERIAL[{serialNumber}]")
     mermaid.append("        STATE[/state]")
@@ -302,14 +302,14 @@ def generate_mqtt_topic_hierarchy_diagram():
     mermaid.append("        INSTANTACTION[/instantAction]")
     mermaid.append("    end")
     mermaid.append("")
-    mermaid.append("    subgraph \"CCU Topics\"")
+    mermaid.append('    subgraph "CCU Topics"')
     mermaid.append("        CCU[ccu/]")
     mermaid.append("        GLOBAL[global]")
     mermaid.append("        ORDERREQ[order/request]")
     mermaid.append("        ORDERACT[order/active]")
     mermaid.append("    end")
     mermaid.append("")
-    mermaid.append("    subgraph \"System Topics\"")
+    mermaid.append('    subgraph "System Topics"')
     mermaid.append("        SYSTEM[system/]")
     mermaid.append("        RACK[rack.positions]")
     mermaid.append("        SERIALREAD[readSerial]")
@@ -332,31 +332,31 @@ def generate_mqtt_topic_hierarchy_diagram():
     mermaid.append("    SYSTEM --> RACK")
     mermaid.append("    SYSTEM --> SERIALREAD")
 
-    return '\n'.join(mermaid)
+    return "\n".join(mermaid)
 
 
 def main():
     """Generate all diagrams and save them"""
 
     diagrams = {
-        'mill_status_diagram.mermaid': generate_mill_status_diagram(),
-        'drill_status_diagram.mermaid': generate_drill_status_diagram(),
-        'aiqs_status_diagram.mermaid': generate_aiqs_status_diagram(),
-        'dps_status_diagram.mermaid': generate_dps_status_diagram(),
-        'hbw_status_diagram.mermaid': generate_hbw_status_diagram(),
-        'oven_status_diagram.mermaid': generate_oven_status_diagram(),
-        'production_flow_diagram.mermaid': generate_production_flow_diagram(),
-        'system_architecture_diagram.mermaid': generate_system_architecture_diagram(),
-        'opcua_communication_diagram.mermaid': generate_opcua_communication_diagram(),
-        'mqtt_topic_hierarchy_diagram.mermaid': generate_mqtt_topic_hierarchy_diagram(),
+        "mill_status_diagram.mermaid": generate_mill_status_diagram(),
+        "drill_status_diagram.mermaid": generate_drill_status_diagram(),
+        "aiqs_status_diagram.mermaid": generate_aiqs_status_diagram(),
+        "dps_status_diagram.mermaid": generate_dps_status_diagram(),
+        "hbw_status_diagram.mermaid": generate_hbw_status_diagram(),
+        "oven_status_diagram.mermaid": generate_oven_status_diagram(),
+        "production_flow_diagram.mermaid": generate_production_flow_diagram(),
+        "system_architecture_diagram.mermaid": generate_system_architecture_diagram(),
+        "opcua_communication_diagram.mermaid": generate_opcua_communication_diagram(),
+        "mqtt_topic_hierarchy_diagram.mermaid": generate_mqtt_topic_hierarchy_diagram(),
     }
 
-    output_dir = Path('docs/analysis/node-red/aps_docs')
+    output_dir = Path("docs/analysis/node-red/aps_docs")
     output_dir.mkdir(exist_ok=True)
 
     for filename, content in diagrams.items():
         file_path = output_dir / filename
-        with open(file_path, 'w') as f:
+        with open(file_path, "w") as f:
             f.write(content)
         print(f"Generated: {file_path}")
 

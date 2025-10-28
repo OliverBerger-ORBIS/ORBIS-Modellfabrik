@@ -6,6 +6,7 @@ Zeigt alle Schemas aus der Registry nach Kategorien an - NEUE ARCHITEKTUR: topic
 
 import streamlit as st
 
+from omf2.assets.heading_icons import get_svg_inline
 from omf2.common.logger import get_logger
 from omf2.ui.common.symbols import UISymbols
 
@@ -15,7 +16,19 @@ logger = get_logger(__name__)
 def render_schemas_subtab():
     """Render Schemas Subtab mit Registry-Daten - NEUE ARCHITEKTUR"""
     try:
-        st.subheader(f"{UISymbols.get_functional_icon('logs')} Schemas Konfiguration")
+        # Initialize i18n
+        i18n = st.session_state.get("i18n_manager")
+        if not i18n:
+            logger.error("❌ I18n Manager not found in session state")
+            return
+
+        # SVG-Header mit Fallback - einfache Lösung mit größerer SVG
+        schemas_svg = get_svg_inline("SCHEMAS", size_px=32)
+        header_icon = schemas_svg if schemas_svg else UISymbols.get_functional_icon("schema_driven")
+        st.markdown(
+            f'<h3 style="margin-top: 0; margin-bottom: 1rem;">{header_icon} <strong>{i18n.t("admin.schemas")} Konfiguration</strong></h3>',
+            unsafe_allow_html=True,
+        )
         st.markdown("Registry-basierte Schema-Verwaltung aus omf2/registry - NEUE ARCHITEKTUR: topic-schema-payload")
 
         # Load registry manager from session state (initialized in omf.py)

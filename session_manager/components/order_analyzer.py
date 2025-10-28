@@ -58,7 +58,7 @@ def _show_message_analysis_section():
         st.error("❌ Sessions-Verzeichnis nicht gefunden")
         return
 
-    log_files = [f for f in os.listdir(sessions_dir) if f.endswith('.log')]
+    log_files = [f for f in os.listdir(sessions_dir) if f.endswith(".log")]
 
     if not log_files:
         st.warning("❌ Keine Session-Dateien gefunden")
@@ -144,7 +144,7 @@ def _show_message_analysis_section():
                 # Messages filtern
                 filtered_messages = []
                 for msg in session_data:
-                    if _topic_matches(msg.get('topic', ''), selected_topic):
+                    if _topic_matches(msg.get("topic", ""), selected_topic):
                         filtered_messages.append(msg)
 
                 if not filtered_messages:
@@ -159,9 +159,9 @@ def _show_message_analysis_section():
                         timestamps = []
                         for msg in filtered_messages:
                             try:
-                                timestamp_str = msg.get('timestamp', '')
+                                timestamp_str = msg.get("timestamp", "")
                                 if timestamp_str:
-                                    timestamp = datetime.fromisoformat(timestamp_str.replace('Z', '+00:00'))
+                                    timestamp = datetime.fromisoformat(timestamp_str.replace("Z", "+00:00"))
                                     timestamps.append(timestamp)
                             except (ValueError, TypeError):
                                 continue
@@ -179,7 +179,7 @@ def _show_message_analysis_section():
                                 msg
                                 for msg in filtered_messages
                                 if start_time
-                                <= datetime.fromisoformat(msg.get('timestamp', '').replace('Z', '+00:00'))
+                                <= datetime.fromisoformat(msg.get("timestamp", "").replace("Z", "+00:00"))
                                 <= end_time
                             ]
 
@@ -242,7 +242,7 @@ def _show_message_chains_section():
         st.error("❌ Sessions-Verzeichnis nicht gefunden")
         return
 
-    log_files = [f for f in os.listdir(sessions_dir) if f.endswith('.log')]
+    log_files = [f for f in os.listdir(sessions_dir) if f.endswith(".log")]
 
     if not log_files:
         st.warning("❌ Keine Session-Dateien gefunden")
@@ -330,7 +330,7 @@ def _load_session_data(session_file: str) -> List[Dict[str, Any]]:
     """Lädt Session-Daten aus einer Log-Datei"""
     try:
         messages = []
-        with open(session_file, encoding='utf-8') as f:
+        with open(session_file, encoding="utf-8") as f:
             for line in f:
                 line = line.strip()
                 if line:
@@ -354,8 +354,8 @@ def _topic_matches(topic: str, pattern: str) -> bool:
         return True
 
     # Einfache Wildcard-Unterstützung
-    if '*' in pattern:
-        pattern_parts = pattern.split('*')
+    if "*" in pattern:
+        pattern_parts = pattern.split("*")
         if len(pattern_parts) == 2:
             return topic.startswith(pattern_parts[0]) and topic.endswith(pattern_parts[1])
 
@@ -388,7 +388,7 @@ def _render_simple_message_analysis(messages: List[Dict[str, Any]], topic: str):
     st.info(f"📊 {len(messages)} Messages gefunden")
 
     # Messages nach Timestamp sortieren
-    sorted_messages = sorted(messages, key=lambda x: x.get('timestamp', ''))
+    sorted_messages = sorted(messages, key=lambda x: x.get("timestamp", ""))
 
     # Message-Liste mit aufklappbarem JSON
     for i, msg in enumerate(sorted_messages):
@@ -399,20 +399,20 @@ def _render_simple_message_analysis(messages: List[Dict[str, Any]], topic: str):
                 st.markdown("**Metadaten:**")
                 st.json(
                     {
-                        'topic': msg.get('topic', 'N/A'),
-                        'timestamp': msg.get('timestamp', 'N/A'),
-                        'qos': msg.get('qos', 'N/A'),
-                        'retain': msg.get('retain', 'N/A'),
+                        "topic": msg.get("topic", "N/A"),
+                        "timestamp": msg.get("timestamp", "N/A"),
+                        "qos": msg.get("qos", "N/A"),
+                        "retain": msg.get("retain", "N/A"),
                     }
                 )
 
             with col2:
                 st.markdown("**Payload:**")
                 try:
-                    payload = json.loads(msg.get('payload', '{}'))
+                    payload = json.loads(msg.get("payload", "{}"))
                     st.json(payload)
                 except json.JSONDecodeError:
-                    st.text(msg.get('payload', 'Kein gültiges JSON'))
+                    st.text(msg.get("payload", "Kein gültiges JSON"))
 
 
 def _analyze_order_chain(session_path: str, order_id: str, time_range: Tuple[float, float]) -> Optional[Dict[str, Any]]:
@@ -426,14 +426,14 @@ def _analyze_order_chain(session_path: str, order_id: str, time_range: Tuple[flo
         # Messages nach Order ID filtern
         order_messages = []
         for msg in messages:
-            payload = msg.get('payload', {})
+            payload = msg.get("payload", {})
             if isinstance(payload, str):
                 try:
                     payload = json.loads(payload)
                 except json.JSONDecodeError:
                     continue
 
-            if payload.get('orderId') == order_id:
+            if payload.get("orderId") == order_id:
                 order_messages.append(msg)
 
         if not order_messages:
@@ -441,15 +441,15 @@ def _analyze_order_chain(session_path: str, order_id: str, time_range: Tuple[flo
 
         # Zeitbereich anwenden
         if time_range[1] > 0:
-            start_time = min(msg['timestamp'] for msg in order_messages)
+            start_time = min(msg["timestamp"] for msg in order_messages)
             end_time = start_time + time_range[1]
-            order_messages = [msg for msg in order_messages if start_time <= msg['timestamp'] <= end_time]
+            order_messages = [msg for msg in order_messages if start_time <= msg["timestamp"] <= end_time]
 
         return {
-            'order_id': order_id,
-            'messages': order_messages,
-            'time_range': time_range,
-            'total_messages': len(order_messages),
+            "order_id": order_id,
+            "messages": order_messages,
+            "time_range": time_range,
+            "total_messages": len(order_messages),
         }
 
     except Exception as e:
@@ -464,23 +464,23 @@ def _render_order_chain_analysis(result: Dict[str, Any]):
     # Statistiken
     col1, col2, col3 = st.columns(3)
     with col1:
-        st.metric("Order ID", result['order_id'])
+        st.metric("Order ID", result["order_id"])
     with col2:
-        st.metric("Anzahl Messages", result['total_messages'])
+        st.metric("Anzahl Messages", result["total_messages"])
     with col3:
         st.metric("Zeitbereich", f"{result['time_range'][1]:.1f}s")
 
     # Message-Liste
     st.markdown("#### 📋 Messages")
-    for i, msg in enumerate(result['messages']):
+    for i, msg in enumerate(result["messages"]):
         with st.expander(f"Message {i+1}: {msg.get('topic', 'Unknown')}"):
             st.json(msg)
 
     # Graph-Visualisierung
-    if len(result['messages']) > 1:
+    if len(result["messages"]) > 1:
         st.markdown("#### 📈 Message-Chain Graph")
         try:
-            graph = _create_order_chain_graph(result['messages'], result['order_id'])
+            graph = _create_order_chain_graph(result["messages"], result["order_id"])
             st.plotly_chart(graph, use_container_width=True)
         except Exception as e:
             logger.error(f"❌ Fehler beim Erstellen des Graphs: {e}")
@@ -495,10 +495,10 @@ def _create_order_chain_graph(messages: List[Dict[str, Any]], order_id: str) -> 
     # Nodes hinzufügen
     for i, msg in enumerate(messages):
         node_id = f"msg_{i}"
-        G.add_node(node_id, topic=msg.get('topic', 'Unknown'), timestamp=msg.get('timestamp', 0), message=msg)
+        G.add_node(node_id, topic=msg.get("topic", "Unknown"), timestamp=msg.get("timestamp", 0), message=msg)
 
     # Edges hinzufügen (chronologisch)
-    sorted_messages = sorted(messages, key=lambda x: x.get('timestamp', 0))
+    sorted_messages = sorted(messages, key=lambda x: x.get("timestamp", 0))
     for i in range(len(sorted_messages) - 1):
         G.add_edge(f"msg_{i}", f"msg_{i+1}")
 
@@ -523,7 +523,7 @@ def _create_order_chain_graph(messages: List[Dict[str, Any]], order_id: str) -> 
 
     # Edges hinzufügen
     fig.add_trace(
-        go.Scatter(x=edge_x, y=edge_y, line={"width": 2, "color": '#888'}, hoverinfo='none', mode='lines', name='Edges')
+        go.Scatter(x=edge_x, y=edge_y, line={"width": 2, "color": "#888"}, hoverinfo="none", mode="lines", name="Edges")
     )
 
     # Nodes hinzufügen
@@ -531,12 +531,12 @@ def _create_order_chain_graph(messages: List[Dict[str, Any]], order_id: str) -> 
         go.Scatter(
             x=node_x,
             y=node_y,
-            mode='markers+text',
-            hoverinfo='text',
+            mode="markers+text",
+            hoverinfo="text",
             text=[f"Msg {i+1}" for i in range(len(messages))],
             textposition="middle center",
-            marker={"size": 20, "color": 'lightblue', "line": {"width": 2, "color": 'darkblue'}},
-            name='Messages',
+            marker={"size": 20, "color": "lightblue", "line": {"width": 2, "color": "darkblue"}},
+            name="Messages",
         )
     )
 
@@ -545,7 +545,7 @@ def _create_order_chain_graph(messages: List[Dict[str, Any]], order_id: str) -> 
         title=f"Message Chain für Order: {order_id}",
         titlefont_size=16,
         showlegend=False,
-        hovermode='closest',
+        hovermode="closest",
         margin={"b": 20, "l": 5, "r": 5, "t": 40},
         annotations=[
             {
@@ -555,9 +555,9 @@ def _create_order_chain_graph(messages: List[Dict[str, Any]], order_id: str) -> 
                 "yref": "paper",
                 "x": 0.005,
                 "y": -0.002,
-                "xanchor": 'left',
-                "yanchor": 'bottom',
-                "font": {"color": '#888', "size": 12},
+                "xanchor": "left",
+                "yanchor": "bottom",
+                "font": {"color": "#888", "size": 12},
             }
         ],
         xaxis={"showgrid": False, "zeroline": False, "showticklabels": False},

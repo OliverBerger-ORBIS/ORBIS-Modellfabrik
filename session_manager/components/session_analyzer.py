@@ -47,7 +47,7 @@ class SessionAnalyzer:
             # Lade Session-Daten (vereinfacht für Demo)
             # In der echten Implementierung würde hier die Session-Datenbank abgefragt
             self.session_data = self._parse_session_file(str(full_path))
-            if isinstance(self.session_data, dict) and 'messages' in self.session_data:
+            if isinstance(self.session_data, dict) and "messages" in self.session_data:
                 logger.debug(f"Session-Daten erfolgreich geladen: {len(self.session_data['messages'])} Messages")
             else:
                 logger.debug(f"Session-Daten erfolgreich geladen: {len(self.session_data)} Messages")
@@ -81,7 +81,7 @@ class SessionAnalyzer:
             start_time = None
             end_time = None
 
-            with open(session_path, encoding='utf-8') as f:
+            with open(session_path, encoding="utf-8") as f:
                 for line_num, line in enumerate(f, 1):
                     try:
                         line = line.strip()
@@ -96,10 +96,10 @@ class SessionAnalyzer:
                             if "timestamp" in data and "topic" in data and "payload" in data:
                                 # Parse Timestamp
                                 timestamp_str = data["timestamp"]
-                                if timestamp_str.endswith('Z'):
-                                    timestamp_str = timestamp_str[:-1] + '+00:00'
-                                elif '+' not in timestamp_str and 'Z' not in timestamp_str:
-                                    timestamp_str += '+00:00'
+                                if timestamp_str.endswith("Z"):
+                                    timestamp_str = timestamp_str[:-1] + "+00:00"
+                                elif "+" not in timestamp_str and "Z" not in timestamp_str:
+                                    timestamp_str += "+00:00"
 
                                 timestamp = datetime.fromisoformat(timestamp_str)
 
@@ -118,13 +118,13 @@ class SessionAnalyzer:
 
                         except json.JSONDecodeError:
                             # Fallback: Versuche altes Format [timestamp] topic: payload
-                            if ']' in line and ':' in line:
-                                timestamp_str = line.split(']')[0][1:]  # Entferne [ und ]
-                                timestamp = datetime.fromisoformat(timestamp_str.replace('Z', '+00:00'))
+                            if "]" in line and ":" in line:
+                                timestamp_str = line.split("]")[0][1:]  # Entferne [ und ]
+                                timestamp = datetime.fromisoformat(timestamp_str.replace("Z", "+00:00"))
 
-                                topic_payload = line.split(']')[1].strip()
-                                if ':' in topic_payload:
-                                    topic, payload = topic_payload.split(':', 1)
+                                topic_payload = line.split("]")[1].strip()
+                                if ":" in topic_payload:
+                                    topic, payload = topic_payload.split(":", 1)
                                     topic = topic.strip()
                                     payload = payload.strip()
 
@@ -209,7 +209,7 @@ class SessionAnalyzer:
         try:
             import streamlit as st
 
-            if hasattr(st.session_state, 'settings_manager'):
+            if hasattr(st.session_state, "settings_manager"):
                 return st.session_state.settings_manager.get_prefilter_topics()
         except Exception:
             pass

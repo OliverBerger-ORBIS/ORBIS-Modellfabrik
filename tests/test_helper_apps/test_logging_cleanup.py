@@ -26,6 +26,7 @@ class TestLoggingCleanup(unittest.TestCase):
     def tearDown(self):
         """Test-Cleanup"""
         import shutil
+
         shutil.rmtree(self.temp_dir, ignore_errors=True)
 
     def test_cleanup_old_logs_deletes_files(self):
@@ -85,6 +86,7 @@ class TestRingBufferIntegration(unittest.TestCase):
     def tearDown(self):
         """Test-Cleanup"""
         import shutil
+
         shutil.rmtree(self.temp_dir, ignore_errors=True)
 
         # Logging-Handler aufräumen
@@ -133,6 +135,7 @@ class TestRingBufferIntegration(unittest.TestCase):
 
         # Warten bis Queue geleert ist
         import time
+
         time.sleep(0.1)
 
         # Prüfen dass Nachricht im RingBuffer ist
@@ -166,6 +169,7 @@ class TestRingBufferIntegration(unittest.TestCase):
 
         # Warten bis Queue geleert ist
         import time
+
         time.sleep(0.1)
 
         # Buffer sollte maximal 5 Einträge haben
@@ -196,6 +200,7 @@ class TestRingBufferIntegration(unittest.TestCase):
 
         # Warten bis Queue geleert ist
         import time
+
         time.sleep(0.1)
 
         # Listener stoppen um File zu flushen
@@ -223,6 +228,7 @@ class TestLoggingCleanupIntegration(unittest.TestCase):
     def tearDown(self):
         """Test-Cleanup"""
         import shutil
+
         shutil.rmtree(self.temp_dir, ignore_errors=True)
 
         # Logging-Handler aufräumen
@@ -282,5 +288,5 @@ class TestLoggingCleanupIntegration(unittest.TestCase):
         listener.stop()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

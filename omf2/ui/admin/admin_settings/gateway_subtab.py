@@ -8,6 +8,7 @@ from pathlib import Path
 
 import streamlit as st
 
+from omf2.assets.heading_icons import get_svg_inline
 from omf2.common.logger import get_logger
 
 logger = get_logger(__name__)
@@ -16,7 +17,19 @@ logger = get_logger(__name__)
 def render_gateway_subtab():
     """Render Gateway Configuration Subtab"""
     try:
-        st.markdown("## 🔀 Gateway Configuration")
+        # Initialize i18n
+        i18n = st.session_state.get("i18n_manager")
+        if not i18n:
+            logger.error("❌ I18n Manager not found in session state")
+            return
+
+        # SVG-Header mit Fallback - einfache Lösung mit größerer SVG
+        gateway_svg = get_svg_inline("GATEWAY", size_px=32)
+        header_icon = gateway_svg if gateway_svg else "🔀"
+        st.markdown(
+            f'<h3 style="margin-top: 0; margin-bottom: 1rem;">{header_icon} <strong>{i18n.t("admin.gateway")} Configuration</strong></h3>',
+            unsafe_allow_html=True,
+        )
         st.markdown("Gateway-Routing-Hints und UI-Refresh-Trigger Verwaltung")
 
         # Get registry manager from session state

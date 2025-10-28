@@ -42,18 +42,22 @@ def render_payload_sequence(messages, selected_topics=None):
             payload_str = msg.get("payload", "")
             payload_string = payload_to_full_string(payload_str)
 
-            table_data.append({
-                "Topic": msg.get("topic", ""),
-                "Payload": payload_string,
-                "Raw_Payload": payload_str  # Für Expand-to-JSON
-            })
+            table_data.append(
+                {
+                    "Topic": msg.get("topic", ""),
+                    "Payload": payload_string,
+                    "Raw_Payload": payload_str,  # Für Expand-to-JSON
+                }
+            )
         except Exception as e:
             logger.warning(f"Fehler beim Formatieren von Message {i}: {e}")
-            table_data.append({
-                "Topic": msg.get("topic", ""),
-                "Payload": f"Fehler beim Formatieren: {str(payload_str)}",
-                "Raw_Payload": payload_str
-            })
+            table_data.append(
+                {
+                    "Topic": msg.get("topic", ""),
+                    "Payload": f"Fehler beim Formatieren: {str(payload_str)}",
+                    "Raw_Payload": payload_str,
+                }
+            )
 
     # Tabelle anzeigen
     if table_data:
@@ -112,14 +116,15 @@ def payload_to_string(payload_str):
     if isinstance(payload_str, dict):
         try:
             import json
-            return json.dumps(payload_str, separators=(',', ':'), ensure_ascii=False)
+
+            return json.dumps(payload_str, separators=(",", ":"), ensure_ascii=False)
         except Exception:
             return str(payload_str)
 
     # Wenn String ist, versuche zu kompaktieren
     if isinstance(payload_str, str):
         # Entferne unnötige Leerzeichen und Zeilenumbrüche
-        compact = payload_str.replace('\n', '').replace('\r', '').replace('  ', ' ')
+        compact = payload_str.replace("\n", "").replace("\r", "").replace("  ", " ")
         # Kürze bei sehr langen Strings
         if len(compact) > 100:
             return compact[:97] + "..."
@@ -138,14 +143,15 @@ def payload_to_full_string(payload_str):
     if isinstance(payload_str, dict):
         try:
             import json
-            return json.dumps(payload_str, separators=(',', ':'), ensure_ascii=False)
+
+            return json.dumps(payload_str, separators=(",", ":"), ensure_ascii=False)
         except Exception:
             return str(payload_str)
 
     # Wenn String ist, kompaktieren aber nicht abschneiden
     if isinstance(payload_str, str):
         # Entferne nur Zeilenumbrüche und überflüssige Leerzeichen, aber behalte den vollständigen Inhalt
-        compact = payload_str.replace('\n', '').replace('\r', '').replace('  ', ' ')
+        compact = payload_str.replace("\n", "").replace("\r", "").replace("  ", " ")
         return compact
 
     # Fallback
@@ -185,7 +191,7 @@ def export_payload_sequence(df):
     try:
         # Nur Topic und Payload für Export (Raw_Payload ist nur für interne Verwendung)
         export_df = df[["Topic", "Payload"]].copy()
-        csv_data = export_df.to_csv(index=False, encoding='utf-8')
+        csv_data = export_df.to_csv(index=False, encoding="utf-8")
 
         st.download_button(
             label="📥 Download Payload Sequenz (CSV)",
@@ -207,7 +213,7 @@ def show_session_analysis():
     settings_manager = SettingsManager()
 
     # Session State initialisieren (nur einmal)
-    if 'session_analyzer' not in st.session_state:
+    if "session_analyzer" not in st.session_state:
         logger.debug("Initialisiere Session State")
         st.session_state.session_analyzer = SessionAnalyzer()
         st.session_state.session_loaded = False
@@ -278,7 +284,7 @@ def show_session_analysis():
                         # Stelle sicher, dass beide Timestamps den gleichen Timezone-Status haben
                         if msg_timestamp.tz is None and time_range[0].tz is not None:
                             # msg_timestamp ist timezone-naive, time_range ist timezone-aware
-                            msg_timestamp = msg_timestamp.tz_localize('UTC')
+                            msg_timestamp = msg_timestamp.tz_localize("UTC")
                         elif msg_timestamp.tz is not None and time_range[0].tz is None:
                             # msg_timestamp ist timezone-aware, time_range ist timezone-naive
                             msg_timestamp = msg_timestamp.tz_localize(None)

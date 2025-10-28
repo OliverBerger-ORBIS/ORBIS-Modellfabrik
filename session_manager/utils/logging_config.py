@@ -17,6 +17,7 @@ from typing import Deque
 
 try:
     from rich.logging import RichHandler  # optional dev-Dependency
+
     _HAS_RICH = True
 except ImportError:
     _HAS_RICH = False
@@ -25,7 +26,7 @@ except ImportError:
 def cleanup_old_logs(log_dir: Path, pattern: str = "session_manager.jsonl*"):
     """
     Löscht alte Log-Dateien beim Neustart der Anwendung.
-    
+
     Args:
         log_dir: Verzeichnis mit Log-Dateien
         pattern: Glob-Pattern für Log-Dateien
@@ -57,7 +58,7 @@ def configure_logging(
 ) -> tuple[logging.Logger, QueueListener]:
     """
     Thread-sicheres Logging für Session Manager.
-    
+
     Args:
         app_name: Name der Anwendung für JSON-Logs
         level: Logging-Level (DEBUG=10, INFO=20, WARNING=30, ERROR=40, CRITICAL=50)
@@ -66,7 +67,7 @@ def configure_logging(
         console_pretty: Rich-Konsole verwenden (falls verfügbar)
         ring_buffer: Optional: Deque für Ring-Buffer-Handler (UI-Logs)
         cleanup_on_start: Alte Log-Dateien beim Start löschen
-    
+
     Returns:
         Tuple von (root_logger, queue_listener)
     """
@@ -80,13 +81,14 @@ def configure_logging(
     # 1) Ziel-Handler (werden am Listener betrieben)
     file_json = RotatingFileHandler(log_dir / json_file, maxBytes=5_000_000, backupCount=3, encoding="utf-8")
     file_json.setLevel(level)
-    file_json.setFormatter(logging.Formatter('%(message)s'))  # wir schreiben bereits JSON-Strings
+    file_json.setFormatter(logging.Formatter("%(message)s"))  # wir schreiben bereits JSON-Strings
 
     handlers = [("file_json", file_json)]
 
     # Ring-Buffer-Handler für UI-Logs hinzufügen wenn bereitgestellt
     if ring_buffer is not None:
         from .streamlit_log_buffer import RingBufferHandler
+
         ring_handler = RingBufferHandler(ring_buffer, level=level)
         ring_handler.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(name)s: %(message)s"))
         handlers.append(("ring_buffer", ring_handler))
@@ -140,7 +142,7 @@ def configure_logging(
     # JSON-Formatter für file_json Handler
     class JsonFormatter(logging.Formatter):
         def format(self, record):
-            if hasattr(record, '_json'):
+            if hasattr(record, "_json"):
                 return record._json
             else:
                 # Fallback für normale Logs
@@ -169,14 +171,16 @@ def get_logger(name: str) -> logging.Logger:
     return logging.getLogger(name)
 
 
-def init_logging_once(session_state: dict, ring_buffer: Deque[str] | None = None) -> tuple[logging.Logger, QueueListener | None]:
+def init_logging_once(
+    session_state: dict, ring_buffer: Deque[str] | None = None
+) -> tuple[logging.Logger, QueueListener | None]:
     """
     Initialisiert Logging einmal pro Streamlit-Session.
-    
+
     Args:
         session_state: Streamlit session_state
         ring_buffer: Optional: Deque für Ring-Buffer-Handler (UI-Logs)
-    
+
     Returns:
         Tuple von (root_logger, queue_listener)
     """
@@ -190,7 +194,7 @@ def init_logging_once(session_state: dict, ring_buffer: Deque[str] | None = None
         log_dir="logs/session_manager",
         ring_buffer=ring_buffer,
         cleanup_on_start=True,
-        console_pretty=True
+        console_pretty=True,
     )
 
     # Session-State setzen

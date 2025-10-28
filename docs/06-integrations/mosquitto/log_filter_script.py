@@ -80,8 +80,8 @@ class LogFilter:
             return match.group(1)
 
         # Format 2: "topic payload" (direktes Format)
-        if ' ' in line and not line.startswith(('1758', '2025')):
-            return line.split(' ')[0]
+        if " " in line and not line.startswith(("1758", "2025")):
+            return line.split(" ")[0]
 
         # Format 3: "1758097605: Received PUBLISH from client (d0, q1, r1, m245, 'topic', ... (84 bytes))"
         match = re.search(r"Received PUBLISH.*?'([^']+)'", line)
@@ -103,7 +103,7 @@ class LogFilter:
         print(f"🔍 Filtere Log-Datei: {input_file}")
         print(f"📝 Ausgabe-Datei: {output_file}")
 
-        with open(input_file, encoding='utf-8') as infile, open(output_file, 'w', encoding='utf-8') as outfile:
+        with open(input_file, encoding="utf-8") as infile, open(output_file, "w", encoding="utf-8") as outfile:
 
             for line_num, line in enumerate(infile, 1):
                 stats["total_lines"] += 1
@@ -136,12 +136,12 @@ class LogFilter:
         print(f"   Filter-Rate: {(stats['filtered_lines']/stats['total_lines']*100):.1f}%")
 
         print(f"\n🔍 Periodische Topics gefunden: {len(stats['periodic_topics_found'])}")
-        for topic in sorted(stats['periodic_topics_found']):
+        for topic in sorted(stats["periodic_topics_found"]):
             count = self.topic_counters.get(topic, 0)
             print(f"   - {topic}: {count} Beispiele behalten")
 
         print(f"\n⭐ Wichtige Topics gefunden: {len(stats['important_topics_found'])}")
-        for topic in sorted(stats['important_topics_found']):
+        for topic in sorted(stats["important_topics_found"]):
             print(f"   - {topic}")
 
 

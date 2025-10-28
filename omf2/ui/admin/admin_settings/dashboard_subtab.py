@@ -9,6 +9,7 @@ from pathlib import Path
 import streamlit as st
 import yaml
 
+from omf2.assets.heading_icons import get_svg_inline
 from omf2.common.logger import get_logger
 from omf2.ui.common.symbols import UISymbols
 
@@ -60,7 +61,19 @@ def _load_config_file(file_path: Path) -> dict:
 def render_dashboard_subtab():
     """Rendert das Dashboard Subtab mit Konfigurationsinformationen"""
 
-    st.header(f"{UISymbols.get_functional_icon('dashboard')} Dashboard Konfiguration")
+    # Initialize i18n
+    i18n = st.session_state.get("i18n_manager")
+    if not i18n:
+        logger.error("❌ I18n Manager not found in session state")
+        return
+
+    # SVG-Header mit Fallback - einfache Lösung mit größerer SVG
+    dashboard_svg = get_svg_inline("DASHBOARD_ADMIN", size_px=32)
+    header_icon = dashboard_svg if dashboard_svg else UISymbols.get_functional_icon("dashboard")
+    st.markdown(
+        f'<h3 style="margin-top: 0; margin-bottom: 1rem;">{header_icon} <strong>{i18n.t("admin.dashboard")} Konfiguration</strong></h3>',
+        unsafe_allow_html=True,
+    )
     st.info("ℹ️ **Nur Anzeige** - Konfigurationsänderungen sind zur Laufzeit nicht möglich")
 
     # Projekt-Root ermitteln

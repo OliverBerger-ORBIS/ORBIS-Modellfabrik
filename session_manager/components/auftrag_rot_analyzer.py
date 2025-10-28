@@ -32,7 +32,7 @@ class AuftragRotAnalyzer:
     def load_session_from_log(self, log_file_path: str) -> bool:
         """Lädt Session-Daten aus einer .log Datei"""
         try:
-            with open(log_file_path, encoding='utf-8') as f:
+            with open(log_file_path, encoding="utf-8") as f:
                 for line in f:
                     if line.strip():
                         try:
@@ -50,10 +50,10 @@ class AuftragRotAnalyzer:
     def find_ccu_order_request(self) -> Optional[Dict[str, Any]]:
         """Findet die ccu/order/request Message mit orderType: PRODUCTION"""
         for message in self.messages:
-            if message.get('topic') == 'ccu/order/request' and message.get('payload'):
+            if message.get("topic") == "ccu/order/request" and message.get("payload"):
                 try:
-                    payload = json.loads(message['payload'])
-                    if payload.get('orderType') == 'PRODUCTION':
+                    payload = json.loads(message["payload"])
+                    if payload.get("orderType") == "PRODUCTION":
                         logger.info(f"🎯 CCU Order Request gefunden: {payload}")
                         return message
                 except json.JSONDecodeError:
@@ -63,12 +63,12 @@ class AuftragRotAnalyzer:
     def extract_order_metadata(self, ccu_message: Dict[str, Any]) -> Dict[str, Any]:
         """Extrahiert Metadaten aus der CCU Order Request Message"""
         try:
-            payload = json.loads(ccu_message['payload'])
+            payload = json.loads(ccu_message["payload"])
             metadata = {
-                'order_type': payload.get('orderType'),
-                'workpiece_type': payload.get('type'),
-                'timestamp': payload.get('timestamp'),
-                'ccu_timestamp': ccu_message['timestamp'],
+                "order_type": payload.get("orderType"),
+                "workpiece_type": payload.get("type"),
+                "timestamp": payload.get("timestamp"),
+                "ccu_timestamp": ccu_message["timestamp"],
             }
             logger.info(f"📋 Order Metadaten: {metadata}")
             return metadata
@@ -83,8 +83,8 @@ class AuftragRotAnalyzer:
         time_filter_seconds: Optional[Tuple[float, float]] = None,
     ) -> List[Dict[str, Any]]:
         """Findet alle mit der Root-Message verbundenen Messages"""
-        root_timestamp = root_message['timestamp']
-        root_time = datetime.fromisoformat(root_timestamp.replace('Z', '+00:00'))
+        root_timestamp = root_message["timestamp"]
+        root_time = datetime.fromisoformat(root_timestamp.replace("Z", "+00:00"))
 
         related_messages = []
 
@@ -104,7 +104,7 @@ class AuftragRotAnalyzer:
         # Suche nach Messages im definierten Zeitfenster
         for message in session_data:
             try:
-                msg_time = datetime.fromisoformat(message['timestamp'].replace('Z', '+00:00'))
+                msg_time = datetime.fromisoformat(message["timestamp"].replace("Z", "+00:00"))
 
                 # Prüfe ob Message im Zeitfenster liegt
                 if start_time <= msg_time <= end_time:
@@ -122,11 +122,11 @@ class AuftragRotAnalyzer:
     def extract_order_id_from_messages(self, messages: List[Dict[str, Any]]) -> Optional[str]:
         """Extrahiert orderId aus den Messages"""
         for message in messages:
-            if message.get('payload'):
+            if message.get("payload"):
                 try:
-                    payload = json.loads(message['payload'])
-                    if 'orderId' in payload and payload['orderId']:
-                        order_id = payload['orderId']
+                    payload = json.loads(message["payload"])
+                    if "orderId" in payload and payload["orderId"]:
+                        order_id = payload["orderId"]
                         if order_id != "" and order_id != 0:
                             logger.info(f"🆔 OrderId gefunden: {order_id}")
                             return order_id
@@ -139,9 +139,9 @@ class AuftragRotAnalyzer:
         workpieces = []
 
         for message in messages:
-            if message.get('payload'):
+            if message.get("payload"):
                 try:
-                    payload = json.loads(message['payload'])
+                    payload = json.loads(message["payload"])
 
                     # Suche nach workpieceId in verschiedenen Strukturen
                     workpiece_id = None
@@ -149,41 +149,41 @@ class AuftragRotAnalyzer:
                     load_type = None
 
                     # Direkte workpieceId
-                    if 'workpieceId' in payload:
-                        workpiece_id = payload['workpieceId']
+                    if "workpieceId" in payload:
+                        workpiece_id = payload["workpieceId"]
 
                     # In loads Array
-                    if 'loads' in payload and isinstance(payload['loads'], list):
-                        for load in payload['loads']:
+                    if "loads" in payload and isinstance(payload["loads"], list):
+                        for load in payload["loads"]:
                             if isinstance(load, dict):
-                                if 'loadId' in load and load['loadId']:
-                                    workpiece_id = load['loadId']
-                                if 'loadType' in load and load['loadType']:
-                                    load_type = load['loadType']
+                                if "loadId" in load and load["loadId"]:
+                                    workpiece_id = load["loadId"]
+                                if "loadType" in load and load["loadType"]:
+                                    load_type = load["loadType"]
 
                     # In workpiece Objekt
-                    if 'workpiece' in payload and isinstance(payload['workpiece'], dict):
-                        wp = payload['workpiece']
-                        if 'id' in wp and wp['id']:
-                            workpiece_id = wp['id']
-                        if 'type' in wp and wp['type']:
-                            load_type = wp['type']
+                    if "workpiece" in payload and isinstance(payload["workpiece"], dict):
+                        wp = payload["workpiece"]
+                        if "id" in wp and wp["id"]:
+                            workpiece_id = wp["id"]
+                        if "type" in wp and wp["type"]:
+                            load_type = wp["type"]
 
                     # nfcCode in verschiedenen Strukturen
-                    if 'nfcCode' in payload:
-                        nfc_code = payload['nfcCode']
-                    elif 'loadId' in payload and payload['loadId']:
-                        nfc_code = payload['loadId']
+                    if "nfcCode" in payload:
+                        nfc_code = payload["nfcCode"]
+                    elif "loadId" in payload and payload["loadId"]:
+                        nfc_code = payload["loadId"]
 
                     if workpiece_id or nfc_code or load_type:
                         workpieces.append(
                             {
-                                'message': message,
-                                'workpiece_id': workpiece_id,
-                                'nfc_code': nfc_code,
-                                'load_type': load_type,
-                                'topic': message['topic'],
-                                'timestamp': message['timestamp'],
+                                "message": message,
+                                "workpiece_id": workpiece_id,
+                                "nfc_code": nfc_code,
+                                "load_type": load_type,
+                                "topic": message["topic"],
+                                "timestamp": message["timestamp"],
                             }
                         )
 
@@ -201,65 +201,65 @@ class AuftragRotAnalyzer:
 
         # Root Message als Wurzel
         graph.add_node(
-            'root_message',
-            type='root_message',
-            topic=root_message.get('topic', 'unknown'),
-            timestamp=root_message['timestamp'],
-            payload=root_message.get('payload', ''),
-            color='red',
+            "root_message",
+            type="root_message",
+            topic=root_message.get("topic", "unknown"),
+            timestamp=root_message["timestamp"],
+            payload=root_message.get("payload", ""),
+            color="red",
             size=20,
         )
 
         # OrderId extrahieren
         order_id = self.extract_order_id_from_messages(related_messages)
         if order_id:
-            graph.add_node(f'order_{order_id}', type='order', order_id=order_id, color='blue', size=15)
-            graph.add_edge('root_message', f'order_{order_id}', relation='creates')
+            graph.add_node(f"order_{order_id}", type="order", order_id=order_id, color="blue", size=15)
+            graph.add_edge("root_message", f"order_{order_id}", relation="creates")
 
         # Workpiece-Messages hinzufügen
         workpieces = self.extract_workpiece_metadata(related_messages)
         for i, wp in enumerate(workpieces):
-            node_id = f'workpiece_{i}'
+            node_id = f"workpiece_{i}"
             graph.add_node(
                 node_id,
-                type='workpiece',
-                topic=wp['topic'],
-                timestamp=wp['timestamp'],
-                workpiece_id=wp['workpiece_id'],
-                nfc_code=wp['nfc_code'],
-                load_type=wp['load_type'],
-                color='green',
+                type="workpiece",
+                topic=wp["topic"],
+                timestamp=wp["timestamp"],
+                workpiece_id=wp["workpiece_id"],
+                nfc_code=wp["nfc_code"],
+                load_type=wp["load_type"],
+                color="green",
                 size=10,
             )
 
             # Verbindung zur Order
             if order_id:
-                graph.add_edge(f'order_{order_id}', node_id, relation='processes')
+                graph.add_edge(f"order_{order_id}", node_id, relation="processes")
 
             # Verbindung zur Root Message
-            graph.add_edge('root_message', node_id, relation='triggers')
+            graph.add_edge("root_message", node_id, relation="triggers")
 
         # FTS Messages hinzufügen
-        fts_messages = [msg for msg in related_messages if 'fts/' in msg.get('topic', '')]
+        fts_messages = [msg for msg in related_messages if "fts/" in msg.get("topic", "")]
         for i, fts_msg in enumerate(fts_messages):
-            node_id = f'fts_{i}'
+            node_id = f"fts_{i}"
             graph.add_node(
-                node_id, type='fts', topic=fts_msg['topic'], timestamp=fts_msg['timestamp'], color='orange', size=12
+                node_id, type="fts", topic=fts_msg["topic"], timestamp=fts_msg["timestamp"], color="orange", size=12
             )
 
             if order_id:
-                graph.add_edge(f'order_{order_id}', node_id, relation='transports')
+                graph.add_edge(f"order_{order_id}", node_id, relation="transports")
 
         # Module Messages hinzufügen
-        module_messages = [msg for msg in related_messages if 'module/' in msg.get('topic', '')]
+        module_messages = [msg for msg in related_messages if "module/" in msg.get("topic", "")]
         for i, mod_msg in enumerate(module_messages):
-            node_id = f'module_{i}'
+            node_id = f"module_{i}"
             graph.add_node(
-                node_id, type='module', topic=mod_msg['topic'], timestamp=mod_msg['timestamp'], color='purple', size=8
+                node_id, type="module", topic=mod_msg["topic"], timestamp=mod_msg["timestamp"], color="purple", size=8
             )
 
             if order_id:
-                graph.add_edge(f'order_{order_id}', node_id, relation='controls')
+                graph.add_edge(f"order_{order_id}", node_id, relation="controls")
 
         logger.info(f"📊 Graph erstellt mit {graph.number_of_nodes()} Knoten und {graph.number_of_edges()} Kanten")
         return graph
@@ -292,16 +292,16 @@ class AuftragRotAnalyzer:
 
             # Farbe basierend auf Typ
             color_map = {
-                'ccu_order_request': 'red',
-                'order': 'blue',
-                'workpiece': 'green',
-                'fts': 'orange',
-                'module': 'purple',
+                "ccu_order_request": "red",
+                "order": "blue",
+                "workpiece": "green",
+                "fts": "orange",
+                "module": "purple",
             }
-            node_colors.append(color_map.get(node_data.get('type', 'unknown'), 'gray'))
+            node_colors.append(color_map.get(node_data.get("type", "unknown"), "gray"))
 
             # Größe
-            node_sizes.append(node_data.get('size', 10))
+            node_sizes.append(node_data.get("size", 10))
 
         # Kanten vorbereiten
         edge_x = []
@@ -321,10 +321,10 @@ class AuftragRotAnalyzer:
             go.Scatter(
                 x=edge_x,
                 y=edge_y,
-                line={"width": 2, "color": 'rgba(125,125,125,0.5)'},
-                hoverinfo='none',
-                mode='lines',
-                name='Edges',
+                line={"width": 2, "color": "rgba(125,125,125,0.5)"},
+                hoverinfo="none",
+                mode="lines",
+                name="Edges",
             )
         )
 
@@ -333,20 +333,20 @@ class AuftragRotAnalyzer:
             go.Scatter(
                 x=node_x,
                 y=node_y,
-                mode='markers+text',
-                hoverinfo='text',
+                mode="markers+text",
+                hoverinfo="text",
                 text=node_text,
                 textposition="middle center",
-                marker={"size": node_sizes, "color": node_colors, "line": {"width": 2, "color": 'black'}},
-                name='Nodes',
+                marker={"size": node_sizes, "color": node_colors, "line": {"width": 2, "color": "black"}},
+                name="Nodes",
             )
         )
 
         # Layout anpassen
         fig.update_layout(
-            title={"text": 'Auftrag-Rot Message Chain Graph', "font": {"size": 16}},
+            title={"text": "Auftrag-Rot Message Chain Graph", "font": {"size": 16}},
             showlegend=False,
-            hovermode='closest',
+            hovermode="closest",
             margin={"b": 20, "l": 5, "r": 5, "t": 40},
             annotations=[
                 {
@@ -363,7 +363,7 @@ class AuftragRotAnalyzer:
             ],
             xaxis={"showgrid": False, "zeroline": False, "showticklabels": False},
             yaxis={"showgrid": False, "zeroline": False, "showticklabels": False},
-            plot_bgcolor='white',
+            plot_bgcolor="white",
         )
 
         return fig
@@ -376,12 +376,12 @@ class AuftragRotAnalyzer:
 
         # Session laden
         if not self.load_session_from_log(log_file_path):
-            return {'error': 'Fehler beim Laden der Session'}
+            return {"error": "Fehler beim Laden der Session"}
 
         # CCU Order Request finden
         ccu_message = self.find_ccu_order_request()
         if not ccu_message:
-            return {'error': 'Keine ccu/order/request Message mit orderType: PRODUCTION gefunden'}
+            return {"error": "Keine ccu/order/request Message mit orderType: PRODUCTION gefunden"}
 
         # Metadaten extrahieren
         metadata = self.extract_order_metadata(ccu_message)
@@ -396,20 +396,20 @@ class AuftragRotAnalyzer:
         plotly_fig = self.create_plotly_graph(graph)
 
         return {
-            'success': True,
-            'metadata': metadata,
-            'ccu_message': ccu_message,
-            'related_messages_count': len(related_messages),
-            'graph_nodes': graph.number_of_nodes(),
-            'graph_edges': graph.number_of_edges(),
-            'plotly_figure': plotly_fig,
-            'graph': graph,
-            'time_filter': time_filter_seconds,
+            "success": True,
+            "metadata": metadata,
+            "ccu_message": ccu_message,
+            "related_messages_count": len(related_messages),
+            "graph_nodes": graph.number_of_nodes(),
+            "graph_edges": graph.number_of_edges(),
+            "plotly_figure": plotly_fig,
+            "graph": graph,
+            "time_filter": time_filter_seconds,
         }
 
     def render_analysis_ui(self, analysis_result: Dict[str, Any]) -> None:
         """Rendert die Analyse-UI im Streamlit Dashboard"""
-        if 'error' in analysis_result:
+        if "error" in analysis_result:
             st.error(f"❌ {analysis_result['error']}")
             return
 
@@ -417,26 +417,26 @@ class AuftragRotAnalyzer:
 
         # Metadaten anzeigen
         st.subheader("📋 Order Metadaten")
-        metadata = analysis_result['metadata']
+        metadata = analysis_result["metadata"]
         col1, col2, col3 = st.columns(3)
         with col1:
-            st.metric("Order Type", metadata.get('order_type', 'N/A'))
+            st.metric("Order Type", metadata.get("order_type", "N/A"))
         with col2:
-            st.metric("Workpiece Type", metadata.get('workpiece_type', 'N/A'))
+            st.metric("Workpiece Type", metadata.get("workpiece_type", "N/A"))
         with col3:
-            st.metric("Timestamp", metadata.get('timestamp', 'N/A'))
+            st.metric("Timestamp", metadata.get("timestamp", "N/A"))
 
         # Statistiken
         st.subheader("📊 Analyse Statistiken")
         col1, col2, col3, col4 = st.columns(4)
         with col1:
-            st.metric("Verwandte Messages", analysis_result['related_messages_count'])
+            st.metric("Verwandte Messages", analysis_result["related_messages_count"])
         with col2:
-            st.metric("Graph Knoten", analysis_result['graph_nodes'])
+            st.metric("Graph Knoten", analysis_result["graph_nodes"])
         with col3:
-            st.metric("Graph Kanten", analysis_result['graph_edges'])
+            st.metric("Graph Kanten", analysis_result["graph_edges"])
         with col4:
-            time_filter = analysis_result.get('time_filter')
+            time_filter = analysis_result.get("time_filter")
             if time_filter:
                 st.metric("Zeitfilter", f"{time_filter[0]:.1f}s - {time_filter[1]:.1f}s")
             else:
@@ -444,12 +444,12 @@ class AuftragRotAnalyzer:
 
         # Graph-Visualisierung
         st.subheader("🔗 Message Chain Graph")
-        if 'plotly_figure' in analysis_result:
-            st.plotly_chart(analysis_result['plotly_figure'], use_container_width=True)
+        if "plotly_figure" in analysis_result:
+            st.plotly_chart(analysis_result["plotly_figure"], use_container_width=True)
 
         # Graph-Details
         st.subheader("📋 Graph Details")
-        graph = analysis_result['graph']
+        graph = analysis_result["graph"]
 
         # Knoten-Liste
         st.write("**Knoten:**")
@@ -477,7 +477,7 @@ def load_session_data(session_file: str) -> list:
 
     messages = []
     try:
-        with open(log_path, encoding='utf-8') as f:
+        with open(log_path, encoding="utf-8") as f:
             for line in f:
                 line = line.strip()
                 if line:
@@ -511,20 +511,20 @@ def analyze_auftrag_rot_with_root(session_file: str, root_message: dict, time_ra
     plotly_figure = analyzer.create_plotly_graph(graph)
 
     return {
-        'root_message': root_message,
-        'related_messages': related_messages,
-        'graph': graph,
-        'plotly_figure': plotly_figure,
-        'related_messages_count': len(related_messages),
-        'graph_nodes': graph.number_of_nodes(),
-        'graph_edges': graph.number_of_edges(),
-        'time_filter': time_range,
+        "root_message": root_message,
+        "related_messages": related_messages,
+        "graph": graph,
+        "plotly_figure": plotly_figure,
+        "related_messages_count": len(related_messages),
+        "graph_nodes": graph.number_of_nodes(),
+        "graph_edges": graph.number_of_edges(),
+        "time_filter": time_range,
     }
 
 
 def render_message_list(result: dict) -> None:
     """Rendert die Liste der gefundenen Messages mit aufklappbarem JSON"""
-    related_messages = result.get('related_messages', [])
+    related_messages = result.get("related_messages", [])
 
     if not related_messages:
         st.warning("❌ Keine verwandten Messages gefunden")
@@ -533,7 +533,7 @@ def render_message_list(result: dict) -> None:
     st.info(f"📊 {len(related_messages)} verwandte Messages gefunden")
 
     # Messages nach Timestamp sortieren
-    sorted_messages = sorted(related_messages, key=lambda x: x.get('timestamp', ''))
+    sorted_messages = sorted(related_messages, key=lambda x: x.get("timestamp", ""))
 
     # Message-Liste mit aufklappbarem JSON
     for i, msg in enumerate(sorted_messages):
@@ -544,25 +544,25 @@ def render_message_list(result: dict) -> None:
                 st.markdown("**Metadaten:**")
                 st.json(
                     {
-                        'topic': msg.get('topic', 'N/A'),
-                        'timestamp': msg.get('timestamp', 'N/A'),
-                        'qos': msg.get('qos', 'N/A'),
-                        'retain': msg.get('retain', 'N/A'),
+                        "topic": msg.get("topic", "N/A"),
+                        "timestamp": msg.get("timestamp", "N/A"),
+                        "qos": msg.get("qos", "N/A"),
+                        "retain": msg.get("retain", "N/A"),
                     }
                 )
 
             with col2:
                 st.markdown("**Payload:**")
                 try:
-                    payload = json.loads(msg.get('payload', '{}'))
+                    payload = json.loads(msg.get("payload", "{}"))
                     st.json(payload)
                 except json.JSONDecodeError:
-                    st.text(msg.get('payload', 'Kein gültiges JSON'))
+                    st.text(msg.get("payload", "Kein gültiges JSON"))
 
 
 def render_graph_visualization(result: dict) -> None:
     """Rendert die Graph-Visualisierung"""
-    plotly_figure = result.get('plotly_figure')
+    plotly_figure = result.get("plotly_figure")
 
     if plotly_figure and plotly_figure.data:
         st.plotly_chart(plotly_figure, use_container_width=True)
@@ -571,13 +571,13 @@ def render_graph_visualization(result: dict) -> None:
         col1, col2, col3 = st.columns(3)
 
         with col1:
-            st.metric("Knoten", result.get('graph_nodes', 0))
+            st.metric("Knoten", result.get("graph_nodes", 0))
 
         with col2:
-            st.metric("Kanten", result.get('graph_edges', 0))
+            st.metric("Kanten", result.get("graph_edges", 0))
 
         with col3:
-            st.metric("Messages", result.get('related_messages_count', 0))
+            st.metric("Messages", result.get("related_messages_count", 0))
     else:
         st.warning("❌ Kein Graph verfügbar")
 
@@ -593,7 +593,7 @@ def show_auftrag_rot_analysis():
     import os
 
     if os.path.exists(sessions_dir):
-        log_files = [f for f in os.listdir(sessions_dir) if f.endswith('.log') and 'rot' in f.lower()]
+        log_files = [f for f in os.listdir(sessions_dir) if f.endswith(".log") and "rot" in f.lower()]
 
         if not log_files:
             st.warning("❌ Keine rot-Sessions gefunden")
@@ -614,7 +614,7 @@ def show_auftrag_rot_analysis():
         st.markdown("### 2️⃣ Topic auswählen")
 
         # Verfügbare Topics aus der Session extrahieren
-        available_topics = list({msg.get('topic', '') for msg in session_data if msg.get('topic')})
+        available_topics = list({msg.get("topic", "") for msg in session_data if msg.get("topic")})
         available_topics.sort()
 
         if not available_topics:
@@ -630,7 +630,7 @@ def show_auftrag_rot_analysis():
         st.markdown("### 3️⃣ Message auswählen")
 
         # Messages für das gewählte Topic finden
-        topic_messages = [msg for msg in session_data if msg.get('topic') == selected_topic]
+        topic_messages = [msg for msg in session_data if msg.get("topic") == selected_topic]
 
         if not topic_messages:
             st.warning(f"❌ Keine Messages für Topic '{selected_topic}' gefunden")
@@ -646,11 +646,11 @@ def show_auftrag_rot_analysis():
             # Dropdown für Message-Auswahl
             message_options = []
             for i, msg in enumerate(topic_messages):
-                timestamp = msg.get('timestamp', '')
+                timestamp = msg.get("timestamp", "")
                 payload_preview = (
-                    str(msg.get('payload', ''))[:50] + "..."
-                    if len(str(msg.get('payload', ''))) > 50
-                    else str(msg.get('payload', ''))
+                    str(msg.get("payload", ""))[:50] + "..."
+                    if len(str(msg.get("payload", ""))) > 50
+                    else str(msg.get("payload", ""))
                 )
                 message_options.append(f"Message {i+1}: {timestamp} - {payload_preview}")
 
@@ -698,7 +698,7 @@ def show_auftrag_rot_analysis():
             "⏱️ Zeitbereich (Sekunden)",
             min_value=0.0,
             max_value=600.0,  # 10 Minuten
-            value=st.session_state.get('auftrag_rot_time_range', (0.0, 30.0)),
+            value=st.session_state.get("auftrag_rot_time_range", (0.0, 30.0)),
             step=1.0,
             format="%.1f s",
             key="auftrag_rot_time_slider",
@@ -718,7 +718,7 @@ def show_auftrag_rot_analysis():
                 # Analyse durchführen
                 result = analyze_auftrag_rot_with_root(selected_session, selected_message, time_range)
 
-                if 'error' in result:
+                if "error" in result:
                     st.error(f"❌ Fehler bei der Analyse: {result['error']}")
                 else:
                     # Schritt 6: Message-Liste anzeigen

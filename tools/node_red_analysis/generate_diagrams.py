@@ -11,7 +11,7 @@ def generate_module_flow_diagram():
 
     mermaid = []
     mermaid.append("graph TD")
-    mermaid.append("    subgraph \"Production Module Flow\"")
+    mermaid.append('    subgraph "Production Module Flow"')
     mermaid.append("        START([Order Received])")
     mermaid.append("        IDLE[IDLE State]")
     mermaid.append("        PICK[PICK Operation]")
@@ -27,7 +27,7 @@ def generate_module_flow_diagram():
     mermaid.append("        IDLE -->|No More Orders| END")
     mermaid.append("    end")
     mermaid.append("")
-    mermaid.append("    subgraph \"State Details\"")
+    mermaid.append('    subgraph "State Details"')
     mermaid.append("        PICKBUSY[PICKBUSY]")
     mermaid.append("        MILLBUSY[MILLBUSY]")
     mermaid.append("        DRILLBUSY[DRILLBUSY]")
@@ -39,7 +39,7 @@ def generate_module_flow_diagram():
     mermaid.append("    PROCESS -.-> DRILLBUSY")
     mermaid.append("    DROP -.-> DROPBUSY")
 
-    return '\n'.join(mermaid)
+    return "\n".join(mermaid)
 
 
 def generate_mqtt_topic_hierarchy():
@@ -49,7 +49,7 @@ def generate_mqtt_topic_hierarchy():
     mermaid.append("graph TD")
     mermaid.append("    ROOT[ROOT]")
     mermaid.append("")
-    mermaid.append("    subgraph \"Module Topics\"")
+    mermaid.append('    subgraph "Module Topics"')
     mermaid.append("        MODULE[module/v1/ff/]")
     mermaid.append("        SERIAL[{serialNumber}]")
     mermaid.append("        STATE[/state]")
@@ -58,14 +58,14 @@ def generate_mqtt_topic_hierarchy():
     mermaid.append("        INSTANTACTION[/instantAction]")
     mermaid.append("    end")
     mermaid.append("")
-    mermaid.append("    subgraph \"CCU Topics\"")
+    mermaid.append('    subgraph "CCU Topics"')
     mermaid.append("        CCU[ccu/]")
     mermaid.append("        GLOBAL[global]")
     mermaid.append("        ORDERREQ[order/request]")
     mermaid.append("        ORDERACT[order/active]")
     mermaid.append("    end")
     mermaid.append("")
-    mermaid.append("    subgraph \"System Topics\"")
+    mermaid.append('    subgraph "System Topics"')
     mermaid.append("        SYSTEM[system/]")
     mermaid.append("        RACK[rack.positions]")
     mermaid.append("        SERIALREAD[readSerial]")
@@ -88,7 +88,7 @@ def generate_mqtt_topic_hierarchy():
     mermaid.append("    SYSTEM --> RACK")
     mermaid.append("    SYSTEM --> SERIALREAD")
 
-    return '\n'.join(mermaid)
+    return "\n".join(mermaid)
 
 
 def generate_opcua_communication_flow():
@@ -120,7 +120,7 @@ def generate_opcua_communication_flow():
     mermaid.append("    OPC->>NR: Error Status (ns=4;i=15)")
     mermaid.append("    NR->>NR: Handle Error State")
 
-    return '\n'.join(mermaid)
+    return "\n".join(mermaid)
 
 
 def generate_system_overview():
@@ -128,8 +128,8 @@ def generate_system_overview():
 
     mermaid = []
     mermaid.append("graph TB")
-    mermaid.append("    subgraph \"ORBIS Modellfabrik\"")
-    mermaid.append("        subgraph \"Production Layer\"")
+    mermaid.append('    subgraph "ORBIS Modellfabrik"')
+    mermaid.append('        subgraph "Production Layer"')
     mermaid.append("            MILL[MILL Module<br/>192.168.0.40:4840]")
     mermaid.append("            DRILL[DRILL Module<br/>192.168.0.50:4840]")
     mermaid.append("            AIQS[AIQS Module<br/>192.168.0.70:4840]")
@@ -137,12 +137,12 @@ def generate_system_overview():
     mermaid.append("            HBW[HBW Module<br/>192.168.0.80:4840]")
     mermaid.append("        end")
     mermaid.append("")
-    mermaid.append("        subgraph \"Control Layer\"")
+    mermaid.append('        subgraph "Control Layer"')
     mermaid.append("            NODERED[Node-RED CCU<br/>192.168.0.100:1880]")
     mermaid.append("            MQTT[MQTT Broker<br/>192.168.2.189:1883]")
     mermaid.append("        end")
     mermaid.append("")
-    mermaid.append("        subgraph \"Dashboard Layer\"")
+    mermaid.append('        subgraph "Dashboard Layer"')
     mermaid.append("            OMF[OMF Dashboard<br/>192.168.0.103]")
     mermaid.append("            WEB[Web Dashboard<br/>172.18.0.5]")
     mermaid.append("        end")
@@ -168,31 +168,31 @@ def generate_system_overview():
     mermaid.append("    MQTT -->|Orders| NODERED")
     mermaid.append("    MQTT -->|Status| NODERED")
 
-    return '\n'.join(mermaid)
+    return "\n".join(mermaid)
 
 
 def generate_all_diagrams():
     """Generate all diagrams and save them"""
 
     diagrams = {
-        'module_flow_diagram.mermaid': generate_module_flow_diagram(),
-        'mqtt_topic_hierarchy.mermaid': generate_mqtt_topic_hierarchy(),
-        'opcua_communication_flow.mermaid': generate_opcua_communication_flow(),
-        'system_overview.mermaid': generate_system_overview(),
+        "module_flow_diagram.mermaid": generate_module_flow_diagram(),
+        "mqtt_topic_hierarchy.mermaid": generate_mqtt_topic_hierarchy(),
+        "opcua_communication_flow.mermaid": generate_opcua_communication_flow(),
+        "system_overview.mermaid": generate_system_overview(),
     }
 
-    output_dir = Path('docs/analysis/node-red')
+    output_dir = Path("docs/analysis/node-red")
     output_dir.mkdir(exist_ok=True)
 
     for filename, content in diagrams.items():
         file_path = output_dir / filename
-        with open(file_path, 'w') as f:
+        with open(file_path, "w") as f:
             f.write(content)
         print(f"Generated: {file_path}")
 
     # Create a combined diagrams file
-    combined_file = output_dir / 'all_diagrams.md'
-    with open(combined_file, 'w') as f:
+    combined_file = output_dir / "all_diagrams.md"
+    with open(combined_file, "w") as f:
         f.write("# Node-RED Diagrams - ORBIS Modellfabrik\n\n")
 
         f.write("## Module Flow Diagram\n\n")

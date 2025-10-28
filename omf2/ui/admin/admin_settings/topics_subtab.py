@@ -6,6 +6,7 @@ Zeigt alle Topics aus der Registry nach Kategorien an
 
 import streamlit as st
 
+from omf2.assets.heading_icons import get_svg_inline
 from omf2.common.logger import get_logger
 from omf2.common.message_manager import MessageManager
 from omf2.ui.common.symbols import UISymbols
@@ -16,7 +17,19 @@ logger = get_logger(__name__)
 def render_topics_subtab():
     """Render Topics Subtab mit Registry-Daten"""
     try:
-        st.subheader(f"{UISymbols.get_functional_icon('topic_driven')} Topics Konfiguration")
+        # Initialize i18n
+        i18n = st.session_state.get("i18n_manager")
+        if not i18n:
+            logger.error("❌ I18n Manager not found in session state")
+            return
+
+        # SVG-Header mit Fallback - einfache Lösung mit größerer SVG
+        topics_svg = get_svg_inline("TOPIC", size_px=32)
+        header_icon = topics_svg if topics_svg else UISymbols.get_functional_icon("topic_driven")
+        st.markdown(
+            f'<h3 style="margin-top: 0; margin-bottom: 1rem;">{header_icon} <strong>{i18n.t("admin.topics")} Konfiguration</strong></h3>',
+            unsafe_allow_html=True,
+        )
         st.markdown("Registry-basierte Topics-Verwaltung aus omf2/registry")
 
         # Load registry manager from session state (initialized in omf.py)

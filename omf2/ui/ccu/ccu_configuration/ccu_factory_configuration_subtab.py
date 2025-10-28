@@ -23,11 +23,6 @@ def render_ccu_factory_configuration_subtab():
         st.subheader(f"{UISymbols.get_tab_icon('factory')} Factory Configuration")
         st.markdown("Factory layout configuration and module positioning")
 
-        # Factory Configuration Controls
-        _show_factory_controls()
-
-        st.divider()
-
         # Shopfloor Layout Display
         _show_shopfloor_layout_section()
 
@@ -44,34 +39,6 @@ def render_ccu_factory_configuration_subtab():
         logger.error(f"❌ CCU Factory Configuration Subtab rendering error: {e}")
         st.error(f"❌ CCU Factory Configuration Subtab failed: {e}")
         st.info("💡 This component is currently under development.")
-
-
-def _show_factory_controls():
-    """Show factory configuration controls (collapsed by default, role-based later)"""
-    with st.expander("🎛️ Factory Controls", expanded=False):
-        st.write("Configuration controls for factory layout management")
-
-        col1, col2, col3 = st.columns([1, 1, 1])
-
-        with col1:
-            if st.button(
-                f"{UISymbols.get_status_icon('load')} Load Layout", key="load_factory_layout", use_container_width=True
-            ):
-                _load_factory_layout()
-
-        with col2:
-            if st.button(
-                f"{UISymbols.get_status_icon('save')} Save Layout", key="save_factory_layout", use_container_width=True
-            ):
-                _save_factory_layout()
-
-        with col3:
-            if st.button(
-                f"{UISymbols.get_status_icon('refresh')} Refresh",
-                key="refresh_factory_layout",
-                use_container_width=True,
-            ):
-                _refresh_factory_layout()
 
 
 def _show_shopfloor_layout_section():

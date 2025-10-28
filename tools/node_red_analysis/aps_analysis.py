@@ -18,137 +18,137 @@ def extract_aps_states(flows_file):
     # Tab-Mapping erstellen
     tab_mapping = {}
     for item in flows:
-        if item.get('type') == 'tab':
-            tab_mapping[item['id']] = item.get('label', 'Unknown')
+        if item.get("type") == "tab":
+            tab_mapping[item["id"]] = item.get("label", "Unknown")
 
-    function_nodes = [item for item in flows if item.get('type') == 'function']
+    function_nodes = [item for item in flows if item.get("type") == "function"]
 
     results = {
-        'module_states': set(),
-        'action_states': set(),
-        'commands': set(),
-        'opcua_nodeids': set(),
-        'mqtt_topics': set(),
-        'module_analysis': defaultdict(lambda: {'states': set(), 'commands': set(), 'functions': []}),
-        'all_functions': [],
-        'system_stats': {
-            'total_flows': len(flows),
-            'total_functions': len(function_nodes),
-            'total_tabs': len(tab_mapping),
+        "module_states": set(),
+        "action_states": set(),
+        "commands": set(),
+        "opcua_nodeids": set(),
+        "mqtt_topics": set(),
+        "module_analysis": defaultdict(lambda: {"states": set(), "commands": set(), "functions": []}),
+        "all_functions": [],
+        "system_stats": {
+            "total_flows": len(flows),
+            "total_functions": len(function_nodes),
+            "total_tabs": len(tab_mapping),
         },
     }
 
     for node in function_nodes:
-        if 'func' not in node:
+        if "func" not in node:
             continue
 
-        func_code = node['func']
-        node_name = node.get('name', 'Unnamed')
-        tab_id = node.get('tab', 'Unknown')
-        tab_name = tab_mapping.get(tab_id, 'Unknown')
+        func_code = node["func"]
+        node_name = node.get("name", "Unnamed")
+        tab_id = node.get("tab", "Unknown")
+        tab_name = tab_mapping.get(tab_id, "Unknown")
 
         # Modul-Typ bestimmen
         module_type = None
-        if 'MILL' in tab_name:
-            module_type = 'MILL'
-        elif 'DRILL' in tab_name:
-            module_type = 'DRILL'
-        elif 'AIQS' in tab_name:
-            module_type = 'AIQS'
-        elif 'DPS' in tab_name:
-            module_type = 'DPS'
-        elif 'HBW' in tab_name:
-            module_type = 'HBW'
-        elif 'OVEN' in tab_name:
-            module_type = 'OVEN'
+        if "MILL" in tab_name:
+            module_type = "MILL"
+        elif "DRILL" in tab_name:
+            module_type = "DRILL"
+        elif "AIQS" in tab_name:
+            module_type = "AIQS"
+        elif "DPS" in tab_name:
+            module_type = "DPS"
+        elif "HBW" in tab_name:
+            module_type = "HBW"
+        elif "OVEN" in tab_name:
+            module_type = "OVEN"
 
         # States extrahieren
         state_keywords = [
-            'PICKBUSY',
-            'MILLBUSY',
-            'DRILLBUSY',
-            'DROPBUSY',
-            'FIREBUSY',
-            'IDLE',
-            'CALIBRATION',
-            'WAITING',
-            'WAITING_AFTER_PICK',
-            'WAITING_AFTER_MILL',
-            'WAITING_AFTER_DRILL',
-            'WAITING_AFTER_DROP',
-            'WAITING_AFTER_FIRE',
+            "PICKBUSY",
+            "MILLBUSY",
+            "DRILLBUSY",
+            "DROPBUSY",
+            "FIREBUSY",
+            "IDLE",
+            "CALIBRATION",
+            "WAITING",
+            "WAITING_AFTER_PICK",
+            "WAITING_AFTER_MILL",
+            "WAITING_AFTER_DRILL",
+            "WAITING_AFTER_DROP",
+            "WAITING_AFTER_FIRE",
         ]
 
         found_states = []
         for keyword in state_keywords:
             if keyword in func_code:
-                results['module_states'].add(keyword)
+                results["module_states"].add(keyword)
                 found_states.append(keyword)
                 if module_type:
-                    results['module_analysis'][module_type]['states'].add(keyword)
+                    results["module_analysis"][module_type]["states"].add(keyword)
 
         # Action States extrahieren
-        action_keywords = ['PENDING', 'RUNNING', 'FINISHED', 'FAILED']
+        action_keywords = ["PENDING", "RUNNING", "FINISHED", "FAILED"]
         found_action_states = []
         for keyword in action_keywords:
             if keyword in func_code:
-                results['action_states'].add(keyword)
+                results["action_states"].add(keyword)
                 found_action_states.append(keyword)
 
         # Commands extrahieren
-        command_keywords = ['PICK', 'DROP', 'MILL', 'DRILL', 'FIRE', 'CALIBRATION']
+        command_keywords = ["PICK", "DROP", "MILL", "DRILL", "FIRE", "CALIBRATION"]
         found_commands = []
         for keyword in command_keywords:
             if keyword in func_code:
-                results['commands'].add(keyword)
+                results["commands"].add(keyword)
                 found_commands.append(keyword)
                 if module_type:
-                    results['module_analysis'][module_type]['commands'].add(keyword)
+                    results["module_analysis"][module_type]["commands"].add(keyword)
 
         # OPC-UA NodeIds extrahieren
-        nodeid_matches = re.findall(r'ns=4;i=(\d+)', func_code)
+        nodeid_matches = re.findall(r"ns=4;i=(\d+)", func_code)
         for match in nodeid_matches:
-            results['opcua_nodeids'].add(f'ns=4;i={match}')
+            results["opcua_nodeids"].add(f"ns=4;i={match}")
 
         # MQTT Topics extrahieren
         topic_matches = re.findall(r'topic["\']?\s*:\s*["\']([^"\']+)["\']', func_code)
         for match in topic_matches:
-            if match and not match.startswith('$'):
-                results['mqtt_topics'].add(match)
+            if match and not match.startswith("$"):
+                results["mqtt_topics"].add(match)
 
         # Function-Info speichern
         func_info = {
-            'name': node_name,
-            'tab_id': tab_id,
-            'tab_name': tab_name,
-            'module_type': module_type,
-            'has_states': len(found_states) > 0,
-            'has_commands': len(found_commands) > 0,
-            'has_opcua': 'ns=4;i=' in func_code,
-            'has_mqtt': 'topic' in func_code.lower(),
-            'states': found_states,
-            'commands': found_commands,
-            'opcua_count': len(nodeid_matches),
+            "name": node_name,
+            "tab_id": tab_id,
+            "tab_name": tab_name,
+            "module_type": module_type,
+            "has_states": len(found_states) > 0,
+            "has_commands": len(found_commands) > 0,
+            "has_opcua": "ns=4;i=" in func_code,
+            "has_mqtt": "topic" in func_code.lower(),
+            "states": found_states,
+            "commands": found_commands,
+            "opcua_count": len(nodeid_matches),
         }
 
-        results['all_functions'].append(func_info)
+        results["all_functions"].append(func_info)
 
         if module_type:
-            results['module_analysis'][module_type]['functions'].append(func_info)
+            results["module_analysis"][module_type]["functions"].append(func_info)
 
     # Sets zu Listen konvertieren
-    results['module_states'] = sorted(list(results['module_states']))
-    results['action_states'] = sorted(list(results['action_states']))
-    results['commands'] = sorted(list(results['commands']))
-    results['opcua_nodeids'] = sorted(list(results['opcua_nodeids']))
-    results['mqtt_topics'] = sorted(list(results['mqtt_topics']))
+    results["module_states"] = sorted(list(results["module_states"]))
+    results["action_states"] = sorted(list(results["action_states"]))
+    results["commands"] = sorted(list(results["commands"]))
+    results["opcua_nodeids"] = sorted(list(results["opcua_nodeids"]))
+    results["mqtt_topics"] = sorted(list(results["mqtt_topics"]))
 
-    for module_type in results['module_analysis']:
-        results['module_analysis'][module_type]['states'] = sorted(
-            list(results['module_analysis'][module_type]['states'])
+    for module_type in results["module_analysis"]:
+        results["module_analysis"][module_type]["states"] = sorted(
+            list(results["module_analysis"][module_type]["states"])
         )
-        results['module_analysis'][module_type]['commands'] = sorted(
-            list(results['module_analysis'][module_type]['commands'])
+        results["module_analysis"][module_type]["commands"] = sorted(
+            list(results["module_analysis"][module_type]["commands"])
         )
 
     return results
@@ -172,7 +172,7 @@ def generate_aps_flows_md(analysis_results):
     content.append("")
 
     # Module analysis
-    for module_type, data in analysis_results['module_analysis'].items():
+    for module_type, data in analysis_results["module_analysis"].items():
         content.append(f"#### {module_type} Module")
         content.append(f"- **Functions**: {len(data['functions'])}")
         content.append(f"- **States**: {', '.join(data['states']) if data['states'] else 'Keine'}")
@@ -205,7 +205,7 @@ def generate_aps_flows_md(analysis_results):
     content.append("- System configuration")
     content.append("")
 
-    return '\n'.join(content)
+    return "\n".join(content)
 
 
 def generate_aps_flows_detailed_md(analysis_results):
@@ -226,17 +226,17 @@ def generate_aps_flows_detailed_md(analysis_results):
     content.append("### Module Analysis")
     content.append("")
 
-    for module_type, data in analysis_results['module_analysis'].items():
+    for module_type, data in analysis_results["module_analysis"].items():
         content.append(f"#### {module_type} Module")
         content.append("")
         content.append(f"**Functions**: {len(data['functions'])}")
         content.append("")
 
         # Function details
-        state_functions = [f for f in data['functions'] if f['has_states']]
-        command_functions = [f for f in data['functions'] if f['has_commands']]
-        opcua_functions = [f for f in data['functions'] if f['has_opcua']]
-        mqtt_functions = [f for f in data['functions'] if f['has_mqtt']]
+        state_functions = [f for f in data["functions"] if f["has_states"]]
+        command_functions = [f for f in data["functions"] if f["has_commands"]]
+        opcua_functions = [f for f in data["functions"] if f["has_opcua"]]
+        mqtt_functions = [f for f in data["functions"] if f["has_mqtt"]]
 
         content.append(f"- State Functions: {len(state_functions)}")
         content.append(f"- Command Functions: {len(command_functions)}")
@@ -246,11 +246,11 @@ def generate_aps_flows_detailed_md(analysis_results):
 
         # Show key functions
         content.append("**Key Functions:**")
-        for func in data['functions'][:5]:
+        for func in data["functions"][:5]:
             content.append(f"- {func['name']} (Tab: {func['tab_name']})")
-            if func['states']:
+            if func["states"]:
                 content.append(f"  - States: {', '.join(func['states'])}")
-            if func['commands']:
+            if func["commands"]:
                 content.append(f"  - Commands: {', '.join(func['commands'])}")
         content.append("")
 
@@ -289,7 +289,7 @@ def generate_aps_flows_detailed_md(analysis_results):
     content.append("```")
     content.append("")
 
-    return '\n'.join(content)
+    return "\n".join(content)
 
 
 def generate_aps_opcua_nodes_md(analysis_results):
@@ -315,8 +315,8 @@ def generate_aps_opcua_nodes_md(analysis_results):
     control_nodeids = []
     status_nodeids = []
 
-    for nodeid in analysis_results['opcua_nodeids']:
-        if 'i=5' in nodeid or 'i=6' in nodeid or 'i=52' in nodeid or 'i=56' in nodeid:
+    for nodeid in analysis_results["opcua_nodeids"]:
+        if "i=5" in nodeid or "i=6" in nodeid or "i=52" in nodeid or "i=56" in nodeid:
             control_nodeids.append(nodeid)
         else:
             status_nodeids.append(nodeid)
@@ -359,10 +359,10 @@ def generate_aps_opcua_nodes_md(analysis_results):
     content.append("## Module-Specific Implementations")
     content.append("")
 
-    for module_type, data in analysis_results['module_analysis'].items():
+    for module_type, data in analysis_results["module_analysis"].items():
         content.append(f"### {module_type} Module")
         content.append("")
-        opcua_functions = [f for f in data['functions'] if f['has_opcua']]
+        opcua_functions = [f for f in data["functions"] if f["has_opcua"]]
         content.append(f"- **OPC-UA Functions**: {len(opcua_functions)}")
         content.append(f"- **NodeIds Used**: {data.get('opcua_count', 0)}")
         content.append("")
@@ -384,7 +384,7 @@ def generate_aps_opcua_nodes_md(analysis_results):
     content.append("4. **Error Logging** - Log all connection issues")
     content.append("")
 
-    return '\n'.join(content)
+    return "\n".join(content)
 
 
 def generate_aps_state_machine_md(analysis_results):
@@ -406,8 +406,8 @@ def generate_aps_state_machine_md(analysis_results):
     content.append("    [*] --> IDLE")
     content.append("")
     content.append("    %% Module States")
-    for state in analysis_results['module_states']:
-        if state != 'IDLE':
+    for state in analysis_results["module_states"]:
+        if state != "IDLE":
             content.append(f"    IDLE --> {state}")
 
     content.append("")
@@ -430,7 +430,7 @@ def generate_aps_state_machine_md(analysis_results):
     ]
 
     for from_state, to_state in transitions:
-        if from_state in analysis_results['module_states'] and to_state in analysis_results['module_states']:
+        if from_state in analysis_results["module_states"] and to_state in analysis_results["module_states"]:
             content.append(f"    {from_state} --> {to_state}")
 
     content.append("```")
@@ -440,7 +440,7 @@ def generate_aps_state_machine_md(analysis_results):
     content.append("")
     content.append("### Primary States")
     content.append("")
-    for state in analysis_results['module_states']:
+    for state in analysis_results["module_states"]:
         content.append(f"- **{state}** - {get_state_description(state)}")
     content.append("")
 
@@ -448,7 +448,7 @@ def generate_aps_state_machine_md(analysis_results):
     content.append("")
     content.append("### VDA 5050 Compliant")
     content.append("")
-    for state in analysis_results['action_states']:
+    for state in analysis_results["action_states"]:
         content.append(f"- **{state}** - {get_action_description(state)}")
     content.append("")
 
@@ -456,7 +456,7 @@ def generate_aps_state_machine_md(analysis_results):
     content.append("")
     content.append("### Available Commands")
     content.append("")
-    for cmd in analysis_results['commands']:
+    for cmd in analysis_results["commands"]:
         content.append(f"- **{cmd}** - {get_command_description(cmd)}")
     content.append("")
 
@@ -489,51 +489,51 @@ def generate_aps_state_machine_md(analysis_results):
     content.append("4. **Error Logging** - Log error details")
     content.append("")
 
-    return '\n'.join(content)
+    return "\n".join(content)
 
 
 def get_state_description(state):
     """Get description for module state"""
     descriptions = {
-        'IDLE': 'Module is idle and ready for commands',
-        'PICKBUSY': 'Module is executing PICK operation',
-        'MILLBUSY': 'Module is executing MILL operation',
-        'DRILLBUSY': 'Module is executing DRILL operation',
-        'DROPBUSY': 'Module is executing DROP operation',
-        'FIREBUSY': 'Module is executing FIRE operation',
-        'CALIBRATION': 'Module is in calibration mode',
-        'WAITING': 'Module is waiting for next operation',
-        'WAITING_AFTER_PICK': 'Module waiting after PICK completion',
-        'WAITING_AFTER_MILL': 'Module waiting after MILL completion',
-        'WAITING_AFTER_DRILL': 'Module waiting after DRILL completion',
-        'WAITING_AFTER_DROP': 'Module waiting after DROP completion',
-        'WAITING_AFTER_FIRE': 'Module waiting after FIRE completion',
+        "IDLE": "Module is idle and ready for commands",
+        "PICKBUSY": "Module is executing PICK operation",
+        "MILLBUSY": "Module is executing MILL operation",
+        "DRILLBUSY": "Module is executing DRILL operation",
+        "DROPBUSY": "Module is executing DROP operation",
+        "FIREBUSY": "Module is executing FIRE operation",
+        "CALIBRATION": "Module is in calibration mode",
+        "WAITING": "Module is waiting for next operation",
+        "WAITING_AFTER_PICK": "Module waiting after PICK completion",
+        "WAITING_AFTER_MILL": "Module waiting after MILL completion",
+        "WAITING_AFTER_DRILL": "Module waiting after DRILL completion",
+        "WAITING_AFTER_DROP": "Module waiting after DROP completion",
+        "WAITING_AFTER_FIRE": "Module waiting after FIRE completion",
     }
-    return descriptions.get(state, 'Unknown state')
+    return descriptions.get(state, "Unknown state")
 
 
 def get_action_description(state):
     """Get description for action state"""
     descriptions = {
-        'PENDING': 'Action is queued and waiting to start',
-        'RUNNING': 'Action is currently executing',
-        'FINISHED': 'Action completed successfully',
-        'FAILED': 'Action failed with error',
+        "PENDING": "Action is queued and waiting to start",
+        "RUNNING": "Action is currently executing",
+        "FINISHED": "Action completed successfully",
+        "FAILED": "Action failed with error",
     }
-    return descriptions.get(state, 'Unknown action state')
+    return descriptions.get(state, "Unknown action state")
 
 
 def get_command_description(cmd):
     """Get description for command"""
     descriptions = {
-        'PICK': 'Pick up workpiece from input position',
-        'DROP': 'Drop workpiece to output position',
-        'MILL': 'Execute milling operation on workpiece',
-        'DRILL': 'Execute drilling operation on workpiece',
-        'FIRE': 'Execute firing operation (AIQS module)',
-        'CALIBRATION': 'Calibrate module to reference position',
+        "PICK": "Pick up workpiece from input position",
+        "DROP": "Drop workpiece to output position",
+        "MILL": "Execute milling operation on workpiece",
+        "DRILL": "Execute drilling operation on workpiece",
+        "FIRE": "Execute firing operation (AIQS module)",
+        "CALIBRATION": "Calibrate module to reference position",
     }
-    return descriptions.get(cmd, 'Unknown command')
+    return descriptions.get(cmd, "Unknown command")
 
 
 def generate_aps_integration_guide_md():
@@ -640,7 +640,7 @@ def generate_aps_integration_guide_md():
     content.append("   - Monitor network traffic")
     content.append("")
 
-    return '\n'.join(content)
+    return "\n".join(content)
 
 
 def generate_aps_readme_md(analysis_results):
@@ -750,11 +750,11 @@ def generate_aps_readme_md(analysis_results):
     content.append("")
     content.append("*For technical support, contact the ORBIS Development Team*")
 
-    return '\n'.join(content)
+    return "\n".join(content)
 
 
 def main():
-    flows_file = Path('integrations/node_red/backups/20250915T102133Z/flows.json')
+    flows_file = Path("integrations/node_red/backups/20250915T102133Z/flows.json")
 
     if not flows_file.exists():
         print(f"Error: {flows_file} not found")
@@ -766,54 +766,54 @@ def main():
     analysis_results = extract_aps_states(flows_file)
 
     # Generate all MD files
-    output_dir = Path('docs/analysis/node-red/aps_docs')
+    output_dir = Path("docs/analysis/node-red/aps_docs")
     output_dir.mkdir(exist_ok=True)
 
     # Generate flows.md
     flows_content = generate_aps_flows_md(analysis_results)
-    flows_file = output_dir / 'flows.md'
-    with open(flows_file, 'w') as f:
+    flows_file = output_dir / "flows.md"
+    with open(flows_file, "w") as f:
         f.write(flows_content)
     print(f"Generated: {flows_file}")
 
     # Generate flows-detailed.md
     flows_detailed_content = generate_aps_flows_detailed_md(analysis_results)
-    flows_detailed_file = output_dir / 'flows-detailed.md'
-    with open(flows_detailed_file, 'w') as f:
+    flows_detailed_file = output_dir / "flows-detailed.md"
+    with open(flows_detailed_file, "w") as f:
         f.write(flows_detailed_content)
     print(f"Generated: {flows_detailed_file}")
 
     # Generate opc-ua-nodes.md
     opcua_content = generate_aps_opcua_nodes_md(analysis_results)
-    opcua_file = output_dir / 'opc-ua-nodes.md'
-    with open(opcua_file, 'w') as f:
+    opcua_file = output_dir / "opc-ua-nodes.md"
+    with open(opcua_file, "w") as f:
         f.write(opcua_content)
     print(f"Generated: {opcua_file}")
 
     # Generate state-machine.md
     state_machine_content = generate_aps_state_machine_md(analysis_results)
-    state_machine_file = output_dir / 'state-machine.md'
-    with open(state_machine_file, 'w') as f:
+    state_machine_file = output_dir / "state-machine.md"
+    with open(state_machine_file, "w") as f:
         f.write(state_machine_content)
     print(f"Generated: {state_machine_file}")
 
     # Generate integration-guide.md
     integration_content = generate_aps_integration_guide_md()
-    integration_file = output_dir / 'integration-guide.md'
-    with open(integration_file, 'w') as f:
+    integration_file = output_dir / "integration-guide.md"
+    with open(integration_file, "w") as f:
         f.write(integration_content)
     print(f"Generated: {integration_file}")
 
     # Generate README.md
     readme_content = generate_aps_readme_md(analysis_results)
-    readme_file = output_dir / 'README.md'
-    with open(readme_file, 'w') as f:
+    readme_file = output_dir / "README.md"
+    with open(readme_file, "w") as f:
         f.write(readme_content)
     print(f"Generated: {readme_file}")
 
     # Save analysis data
-    data_file = output_dir / 'aps_analysis_data.json'
-    with open(data_file, 'w') as f:
+    data_file = output_dir / "aps_analysis_data.json"
+    with open(data_file, "w") as f:
         json.dump(analysis_results, f, indent=2)
     print(f"Generated: {data_file}")
 

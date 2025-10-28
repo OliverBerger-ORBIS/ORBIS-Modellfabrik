@@ -69,13 +69,13 @@ def show_session_recorder():
     recording_settings = settings_manager.get_setting("session_recorder", "recording", {})
 
     # Tab-spezifische Session State initialisieren (vollständig unabhängig)
-    if 'session_recorder' not in st.session_state:
+    if "session_recorder" not in st.session_state:
         st.session_state.session_recorder = {
-            'connected': False,
-            'recording': False,
-            'session_name': "",
-            'start_time': None,
-            'mqtt_client': None,
+            "connected": False,
+            "recording": False,
+            "session_name": "",
+            "start_time": None,
+            "mqtt_client": None,
         }
 
     # Status anzeigen
@@ -87,12 +87,12 @@ def show_session_recorder():
         st.info(f"**QoS:** {mqtt_settings['qos']} | **Timeout:** {mqtt_settings['timeout']}s")
 
         # Authentifizierung anzeigen
-        if mqtt_settings.get('username'):
+        if mqtt_settings.get("username"):
             st.info(f"**Auth:** {mqtt_settings['username']} (authentifiziert)")
         else:
             st.info("**Auth:** Keine Authentifizierung")
 
-        if st.session_state.session_recorder['connected']:
+        if st.session_state.session_recorder["connected"]:
             st.success("✅ Verbunden")
         else:
             st.error("❌ Nicht verbunden")
@@ -110,13 +110,13 @@ def show_session_recorder():
     st.subheader("📝 Session-Name")
     session_name = st.text_input(
         "Session-Name eingeben",
-        value=st.session_state.session_recorder['session_name'],
+        value=st.session_state.session_recorder["session_name"],
         placeholder="z.B. auftrag-rot-R1",
         help="Name für die aufzunehmende Session",
     )
 
     if session_name:
-        st.session_state.session_recorder['session_name'] = session_name
+        st.session_state.session_recorder["session_name"] = session_name
         st.success(f"✅ Session-Name gesetzt: {session_name}")
 
     st.markdown("---")
@@ -125,18 +125,18 @@ def show_session_recorder():
     col1, col2 = st.columns(2)
 
     with col1:
-        if st.button("🔌 Broker Verbinden", disabled=st.session_state.session_recorder['connected']):
+        if st.button("🔌 Broker Verbinden", disabled=st.session_state.session_recorder["connected"]):
             if connect_to_broker(mqtt_settings):
-                st.session_state.session_recorder['connected'] = True
+                st.session_state.session_recorder["connected"] = True
                 st.success("✅ MQTT verbunden!")
                 rerun_controller.request_rerun()
             else:
                 st.error("❌ Verbindung fehlgeschlagen!")
 
     with col2:
-        if st.button("🔌 Broker Trennen", disabled=not st.session_state.session_recorder['connected']):
+        if st.button("🔌 Broker Trennen", disabled=not st.session_state.session_recorder["connected"]):
             disconnect_from_broker()
-            st.session_state.session_recorder['connected'] = False
+            st.session_state.session_recorder["connected"] = False
             st.success("✅ MQTT getrennt!")
             rerun_controller.request_rerun()
 
@@ -145,33 +145,33 @@ def show_session_recorder():
     # Recording-Controls
     st.subheader("🔴 Aufnahme")
 
-    if not st.session_state.session_recorder['connected']:
+    if not st.session_state.session_recorder["connected"]:
         st.warning("⚠️ Bitte zuerst MQTT Broker verbinden")
-    elif not st.session_state.session_recorder['session_name']:
+    elif not st.session_state.session_recorder["session_name"]:
         st.warning("⚠️ Bitte Session-Name eingeben")
     else:
         col1, col2 = st.columns(2)
 
         with col1:
-            if st.button("▶️ Aufnahme Starten", disabled=st.session_state.session_recorder['recording'], type="primary"):
+            if st.button("▶️ Aufnahme Starten", disabled=st.session_state.session_recorder["recording"], type="primary"):
                 start_recording()
-                st.session_state.session_recorder['recording'] = True
-                st.session_state.session_recorder['start_time'] = datetime.now()
+                st.session_state.session_recorder["recording"] = True
+                st.session_state.session_recorder["start_time"] = datetime.now()
                 st.success("🔴 Aufnahme gestartet!")
                 rerun_controller.request_rerun()
 
         with col2:
             if st.button(
-                "⏹️ Aufnahme Beenden", disabled=not st.session_state.session_recorder['recording'], type="secondary"
+                "⏹️ Aufnahme Beenden", disabled=not st.session_state.session_recorder["recording"], type="secondary"
             ):
                 stop_recording()
-                st.session_state.session_recorder['recording'] = False
-                st.session_state.session_recorder['start_time'] = None
+                st.session_state.session_recorder["recording"] = False
+                st.session_state.session_recorder["start_time"] = None
                 st.success("⏹️ Aufnahme beendet und gespeichert!")
                 rerun_controller.request_rerun()
 
     # Status anzeigen
-    if st.session_state.session_recorder['recording']:
+    if st.session_state.session_recorder["recording"]:
         st.markdown("---")
         st.subheader("📊 Aufnahme-Status")
 
@@ -182,8 +182,8 @@ def show_session_recorder():
             st.metric("Nachrichten", message_count, delta=None)
 
         with col2:
-            if st.session_state.session_recorder['start_time']:
-                duration = datetime.now() - st.session_state.session_recorder['start_time']
+            if st.session_state.session_recorder["start_time"]:
+                duration = datetime.now() - st.session_state.session_recorder["start_time"]
                 minutes, seconds = divmod(duration.seconds, 60)
                 duration_str = f"{minutes:02d}:{seconds:02d}" if minutes > 0 else f"{seconds}s"
                 st.metric("Dauer", duration_str)
@@ -227,12 +227,12 @@ def connect_to_broker(mqtt_settings: Dict[str, Any]) -> bool:
         mqtt_client.on_message = on_message_received
 
         # Username/Password setzen falls vorhanden
-        if mqtt_settings.get('username') and mqtt_settings.get('password'):
-            mqtt_client.username_pw_set(mqtt_settings['username'], mqtt_settings['password'])
+        if mqtt_settings.get("username") and mqtt_settings.get("password"):
+            mqtt_client.username_pw_set(mqtt_settings["username"], mqtt_settings["password"])
             logger.info(f"🔐 MQTT Authentifizierung: {mqtt_settings['username']}")
 
         # Verbinden
-        mqtt_client.connect(mqtt_settings['host'], mqtt_settings['port'], mqtt_settings['timeout'])
+        mqtt_client.connect(mqtt_settings["host"], mqtt_settings["port"], mqtt_settings["timeout"])
         mqtt_client.loop_start()
 
         # Kurz warten, damit Verbindung etabliert wird
@@ -241,7 +241,7 @@ def connect_to_broker(mqtt_settings: Dict[str, Any]) -> bool:
         time.sleep(0.5)
 
         # MQTT Client in Session State speichern
-        st.session_state.session_recorder['mqtt_client'] = mqtt_client
+        st.session_state.session_recorder["mqtt_client"] = mqtt_client
 
         logger.debug(f"✅ MQTT verbunden: {mqtt_settings['host']}:{mqtt_settings['port']}")
         return True
@@ -254,11 +254,11 @@ def connect_to_broker(mqtt_settings: Dict[str, Any]) -> bool:
 def disconnect_from_broker():
     """Trennt MQTT Verbindung"""
     try:
-        if st.session_state.session_recorder['mqtt_client']:
-            mqtt_client = st.session_state.session_recorder['mqtt_client']
+        if st.session_state.session_recorder["mqtt_client"]:
+            mqtt_client = st.session_state.session_recorder["mqtt_client"]
             mqtt_client.loop_stop()
             mqtt_client.disconnect()
-            st.session_state.session_recorder['mqtt_client'] = None
+            st.session_state.session_recorder["mqtt_client"] = None
             logger.debug("✅ MQTT getrennt")
     except Exception as e:
         logger.error(f"❌ MQTT Trennung Fehler: {e}")
@@ -280,14 +280,14 @@ def start_recording():
         logger.info("🔴 Session-Aufnahme wird gestartet...")
 
         # MQTT Client für Aufnahme konfigurieren
-        if st.session_state.session_recorder['mqtt_client']:
-            mqtt_client = st.session_state.session_recorder['mqtt_client']
+        if st.session_state.session_recorder["mqtt_client"]:
+            mqtt_client = st.session_state.session_recorder["mqtt_client"]
             # Topics abonnieren (falls sie deabonniert waren)
             mqtt_client.subscribe("#")
 
             # Session State aktualisieren
-            st.session_state.session_recorder['recording'] = True
-            st.session_state.session_recorder['message_buffer'].clear()
+            st.session_state.session_recorder["recording"] = True
+            st.session_state.session_recorder["message_buffer"].clear()
 
             logger.info("✅ Session-Aufnahme gestartet - alle Topics abonniert")
         else:
@@ -302,12 +302,12 @@ def pause_recording():
     try:
         logger.info("⏸️ Session-Aufnahme wird pausiert...")
 
-        if st.session_state.session_recorder['mqtt_client']:
-            mqtt_client = st.session_state.session_recorder['mqtt_client']
+        if st.session_state.session_recorder["mqtt_client"]:
+            mqtt_client = st.session_state.session_recorder["mqtt_client"]
             mqtt_client.unsubscribe("#")
 
             # Session State aktualisieren
-            st.session_state.session_recorder['recording'] = False
+            st.session_state.session_recorder["recording"] = False
 
             logger.info("✅ Session-Aufnahme pausiert - Topics deabonniert")
         else:
@@ -322,8 +322,8 @@ def stop_recording():
         logger.info("⏹️ Session-Aufnahme wird gestoppt...")
 
         # Aufnahme stoppen
-        if st.session_state.session_recorder['mqtt_client']:
-            mqtt_client = st.session_state.session_recorder['mqtt_client']
+        if st.session_state.session_recorder["mqtt_client"]:
+            mqtt_client = st.session_state.session_recorder["mqtt_client"]
             mqtt_client.unsubscribe("#")
             logger.info("📡 MQTT Topics deabonniert")
 
@@ -333,14 +333,14 @@ def stop_recording():
             logger.info(f"💾 Session wird gespeichert ({message_count} Messages)...")
             save_session()
             message_buffer.clear()
-            st.session_state.session_recorder['session_name'] = ""
-            st.session_state.session_recorder['start_time'] = None
+            st.session_state.session_recorder["session_name"] = ""
+            st.session_state.session_recorder["start_time"] = None
             logger.info("✅ Session erfolgreich gespeichert")
         else:
             logger.warning("⚠️ Keine Messages zum Speichern vorhanden")
 
         # Session State aktualisieren
-        st.session_state.session_recorder['recording'] = False
+        st.session_state.session_recorder["recording"] = False
         logger.info("✅ Session-Aufnahme beendet")
 
     except Exception as e:
@@ -350,7 +350,7 @@ def stop_recording():
 def on_message_received(client, userdata, msg):
     """Callback für empfangene MQTT-Nachrichten (thread-sicher)"""
     try:
-        message = {"topic": msg.topic, "payload": msg.payload.decode('utf-8'), "timestamp": datetime.now().isoformat()}
+        message = {"topic": msg.topic, "payload": msg.payload.decode("utf-8"), "timestamp": datetime.now().isoformat()}
 
         # Thread-sichere Nachrichten-Sammlung
         message_buffer.add_message(message)
@@ -385,7 +385,7 @@ def save_session():
 
         # Dateiname generieren
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        session_name = st.session_state.session_recorder['session_name']
+        session_name = st.session_state.session_recorder["session_name"]
         # file_format = recording_settings.get("file_format", "sqlite")  # Unused for now
 
         # Beide Formate speichern (SQLite + Log)
@@ -425,22 +425,22 @@ def save_sqlite_session(filepath: Path, messages: List[Dict[str, Any]]):
 
         # Tabelle erstellen
         cursor.execute(
-            '''
+            """
             CREATE TABLE IF NOT EXISTS mqtt_messages (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 topic TEXT NOT NULL,
                 payload TEXT NOT NULL,
                 timestamp TEXT NOT NULL
             )
-        '''
+        """
         )
         logger.debug("📋 SQLite-Tabelle 'mqtt_messages' erstellt/verifiziert")
 
         # Nachrichten einfügen
         for msg in messages:
             cursor.execute(
-                'INSERT INTO mqtt_messages (topic, payload, timestamp) VALUES (?, ?, ?)',
-                (msg['topic'], msg['payload'], msg['timestamp']),
+                "INSERT INTO mqtt_messages (topic, payload, timestamp) VALUES (?, ?, ?)",
+                (msg["topic"], msg["payload"], msg["timestamp"]),
             )
 
         conn.commit()
@@ -458,10 +458,10 @@ def save_log_session(filepath: Path, messages: List[Dict[str, Any]]):
     try:
         logger.debug(f"📝 Log-Datei wird erstellt: {filepath}")
 
-        with open(filepath, 'w', encoding='utf-8') as f:
+        with open(filepath, "w", encoding="utf-8") as f:
             for msg in messages:
-                log_entry = {"topic": msg['topic'], "payload": msg['payload'], "timestamp": msg['timestamp']}
-                f.write(json.dumps(log_entry) + '\n')
+                log_entry = {"topic": msg["topic"], "payload": msg["payload"], "timestamp": msg["timestamp"]}
+                f.write(json.dumps(log_entry) + "\n")
 
         logger.debug(f"✅ Log Session gespeichert: {len(messages)} Messages in {filepath}")
 

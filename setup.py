@@ -16,8 +16,8 @@ long_description = readme_path.read_text(encoding="utf-8") if readme_path.exists
 requirements_path = Path(__file__).parent / "requirements.txt"
 requirements = []
 if requirements_path.exists():
-    requirements = requirements_path.read_text(encoding="utf-8").strip().split('\n')
-    requirements = [req.strip() for req in requirements if req.strip() and not req.startswith('#')]
+    requirements = requirements_path.read_text(encoding="utf-8").strip().split("\n")
+    requirements = [req.strip() for req in requirements if req.strip() and not req.startswith("#")]
 
 setup(
     name="orbis-modellfabrik",

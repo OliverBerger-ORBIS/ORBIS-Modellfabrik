@@ -44,6 +44,7 @@ def _init_logging_once():
     # Ring-Buffer für UI-Logs erstellen wenn nicht vorhanden
     if "session_manager_log_buffer" not in st.session_state:
         from session_manager.utils.streamlit_log_buffer import create_log_buffer
+
         st.session_state.session_manager_log_buffer = create_log_buffer(maxlen=1000)
 
     # Aktuelles Logging-Level aus Session State holen, Default: INFO
@@ -149,12 +150,12 @@ def show_logging_settings(logger):
     st.markdown("### 📋 Live Log-Viewer")
     if log_file.exists():
         try:
-            with open(log_file, encoding='utf-8') as f:
+            with open(log_file, encoding="utf-8") as f:
                 log_lines = f.readlines()
 
             # Letzte 20 Zeilen anzeigen
             recent_lines = log_lines[-20:] if len(log_lines) > 20 else log_lines
-            log_content = ''.join(recent_lines)
+            log_content = "".join(recent_lines)
 
             st.code(log_content, language="text")
         except Exception as e:
@@ -181,10 +182,10 @@ def main():
     st.markdown("Verwaltung und Analyse von MQTT-Sessions für die ORBIS Modellfabrik")
 
     # Settings Manager initialisieren
-    if 'settings_manager' not in st.session_state:
+    if "settings_manager" not in st.session_state:
         st.session_state.settings_manager = SettingsManager()
 
-    if 'settings_ui' not in st.session_state:
+    if "settings_ui" not in st.session_state:
         st.session_state.settings_ui = SettingsUI(st.session_state.settings_manager)
 
     # Sidebar Navigation

@@ -10,6 +10,7 @@ from typing import Callable, Optional
 
 try:
     import paho.mqtt.client as mqtt
+
     MQTT_AVAILABLE = True
 except ImportError:
     MQTT_AVAILABLE = False
@@ -19,6 +20,7 @@ except ImportError:
 @dataclass
 class MQTTMessage:
     """MQTT-Nachricht Datenstruktur"""
+
     topic: str
     payload: str | bytes
     qos: int = 0
@@ -43,7 +45,7 @@ class SessionManagerMQTTClient:
     def connect(self) -> bool:
         """
         Verbindung zum MQTT-Broker herstellen.
-        
+
         Returns:
             True wenn erfolgreich, False bei Fehler
         """
@@ -94,13 +96,13 @@ class SessionManagerMQTTClient:
     def publish(self, topic: str, payload: str | bytes, qos: int = 0, retain: bool = False) -> bool:
         """
         Nachricht publizieren.
-        
+
         Args:
             topic: MQTT-Topic
             payload: Nachrichteninhalt
             qos: Quality of Service (0, 1, 2)
             retain: Retain-Flag
-            
+
         Returns:
             True wenn erfolgreich, False bei Fehler
         """
@@ -116,11 +118,11 @@ class SessionManagerMQTTClient:
     def subscribe(self, topic: str, qos: int = 0) -> bool:
         """
         Topic abonnieren.
-        
+
         Args:
             topic: MQTT-Topic
             qos: Quality of Service
-            
+
         Returns:
             True wenn erfolgreich, False bei Fehler
         """
@@ -157,12 +159,7 @@ class SessionManagerMQTTClient:
 
     def _on_message(self, client, userdata, msg):
         """MQTT on_message Callback"""
-        message = MQTTMessage(
-            topic=msg.topic,
-            payload=msg.payload,
-            qos=msg.qos,
-            retain=msg.retain
-        )
+        message = MQTTMessage(topic=msg.topic, payload=msg.payload, qos=msg.qos, retain=msg.retain)
 
         # Alle Callbacks aufrufen
         with self._lock:
@@ -183,5 +180,5 @@ class SessionManagerMQTTClient:
             "port": self.port,
             "client_id": self.client_id,
             "connected": self.connected,
-            "mqtt_available": MQTT_AVAILABLE
+            "mqtt_available": MQTT_AVAILABLE,
         }

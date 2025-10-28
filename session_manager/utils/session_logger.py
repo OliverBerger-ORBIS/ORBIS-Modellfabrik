@@ -42,7 +42,7 @@ class SessionManagerLogger:
             self._setup_handlers()
 
         # Logger-Adapter mit Session-Kontext
-        self.logger = logging.LoggerAdapter(self.base_logger, {'session_name': session_name})
+        self.logger = logging.LoggerAdapter(self.base_logger, {"session_name": session_name})
 
     def _setup_handlers(self):
         """Setup Logging-Handler für Session-spezifische Logs"""
@@ -50,14 +50,14 @@ class SessionManagerLogger:
         # 1. FileHandler mit Session-spezifischem Namen
         log_file = self.log_dir / f"session_manager_{self.session_name}.log"
         file_handler = logging.handlers.RotatingFileHandler(
-            log_file, maxBytes=10 * 1024 * 1024, backupCount=5, encoding='utf-8'  # 10MB
+            log_file, maxBytes=10 * 1024 * 1024, backupCount=5, encoding="utf-8"  # 10MB
         )
 
         # 2. StreamHandler für Console-Output
         console_handler = logging.StreamHandler()
 
         # 3. Formatter mit Session-Kontext
-        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - [%(session_name)s] - %(message)s')
+        formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - [%(session_name)s] - %(message)s")
 
         # 4. Handler konfigurieren
         file_handler.setFormatter(formatter)

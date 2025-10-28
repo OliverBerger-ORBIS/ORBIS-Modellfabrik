@@ -16,36 +16,36 @@ class MermaidValidator:
     # OMF-Farbpalette (erlaubte Farben)
     ALLOWED_COLORS = {
         # ORBIS (Blau)
-        '#e3f2fd',
-        '#bbdefb',
-        '#90caf9',
+        "#e3f2fd",
+        "#bbdefb",
+        "#90caf9",
         # FT Hardware (Gelb)
-        '#fff8e1',
-        '#ffecb3',
-        '#ffc107',
+        "#fff8e1",
+        "#ffecb3",
+        "#ffc107",
         # FT Software (Rot)
-        '#ffebee',
-        '#ffcdd2',
-        '#ef5350',
+        "#ffebee",
+        "#ffcdd2",
+        "#ef5350",
         # External (Lila)
-        '#f3e5f5',
-        '#e1bee7',
-        '#ce93d8',
+        "#f3e5f5",
+        "#e1bee7",
+        "#ce93d8",
         # Datastore (Weiß)
-        '#fff',
+        "#fff",
     }
 
     # Verbotene Farben (nicht in OMF-Palette)
     FORBIDDEN_COLORS = {
-        '#e8f5e8',  # Grün (nicht in Palette)
-        '#fff3e0',  # Orange (nicht in Palette)
-        '#f2f2f2',  # Grau (nicht in Palette)
-        '#e1f5fe',  # Falsches ORBIS-Blau
+        "#e8f5e8",  # Grün (nicht in Palette)
+        "#fff3e0",  # Orange (nicht in Palette)
+        "#f2f2f2",  # Grau (nicht in Palette)
+        "#e1f5fe",  # Falsches ORBIS-Blau
         # Grün
-        '#ffeb3b',  # Gelb (zu hell)
-        '#f44336',  # Rot (zu dunkel)
-        '#2196f3',  # Blau (zu dunkel)
-        '#9c27b0',  # Lila (zu dunkel)
+        "#ffeb3b",  # Gelb (zu hell)
+        "#f44336",  # Rot (zu dunkel)
+        "#2196f3",  # Blau (zu dunkel)
+        "#9c27b0",  # Lila (zu dunkel)
     }
 
     def __init__(self, project_root: Path):
@@ -56,7 +56,7 @@ class MermaidValidator:
     def validate_file(self, file_path: Path) -> bool:
         """Validiert eine einzelne Markdown-Datei"""
         try:
-            content = file_path.read_text(encoding='utf-8')
+            content = file_path.read_text(encoding="utf-8")
             return self.validate_content(content, file_path)
         except Exception as e:
             self.errors.append(f"❌ Fehler beim Lesen von {file_path}: {e}")
@@ -80,13 +80,13 @@ class MermaidValidator:
 
     def _extract_mermaid_blocks(self, content: str) -> List[str]:
         """Extrahiert alle Mermaid-Code-Blöcke"""
-        pattern = r'```mermaid\n(.*?)\n```'
+        pattern = r"```mermaid\n(.*?)\n```"
         matches = re.findall(pattern, content, re.DOTALL)
         return matches
 
     def _validate_mermaid_block(self, block: str, file_path: Path, block_num: int):
         """Validiert einen einzelnen Mermaid-Block"""
-        lines = block.strip().split('\n')
+        lines = block.strip().split("\n")
 
         # Validiere Farben
         self._validate_colors(lines, file_path, block_num)
@@ -100,9 +100,9 @@ class MermaidValidator:
     def _validate_colors(self, lines: List[str], file_path: Path, block_num: int):
         """Validiert Farben in Mermaid-Diagrammen"""
         for line_num, line in enumerate(lines, 1):
-            if 'style' in line and 'fill:' in line:
+            if "style" in line and "fill:" in line:
                 # Extrahiere Farbe
-                color_match = re.search(r'fill:(#[0-9a-fA-F]{6})', line)
+                color_match = re.search(r"fill:(#[0-9a-fA-F]{6})", line)
                 if color_match:
                     color = color_match.group(1).lower()
 
@@ -123,7 +123,7 @@ class MermaidValidator:
                         )
 
                     # Prüfe auf Kommentare in style-Zeilen
-                    if '#' in line and not line.strip().endswith('#' + color):
+                    if "#" in line and not line.strip().endswith("#" + color):
                         self.errors.append(
                             f"❌ {file_path}:{block_num}:{line_num} - "
                             f"Kommentare in style-Zeilen nicht erlaubt: {line.strip()}"
@@ -133,9 +133,9 @@ class MermaidValidator:
         """Validiert Mermaid-Syntax"""
         for line_num, line in enumerate(lines, 1):
             # Prüfe auf häufige Syntax-Fehler
-            if '-->' in line and ':' in line:
+            if "-->" in line and ":" in line:
                 # Prüfe auf falsche Arrow-Label-Syntax
-                if re.search(r'-->\s*[^|]', line):
+                if re.search(r"-->\s*[^|]", line):
                     self.warnings.append(
                         f"⚠️ {file_path}:{block_num}:{line_num} - "
                         f"Möglicher Syntax-Fehler in Arrow-Label: {line.strip()}"
@@ -144,13 +144,13 @@ class MermaidValidator:
     def _validate_structure(self, lines: List[str], file_path: Path, block_num: int):
         """Validiert Diagramm-Struktur"""
         # Zähle verschiedene Elemente
-        style_lines = [line for line in lines if 'style' in line]
-        node_lines = [line for line in lines if '-->' in line or '[' in line]
+        style_lines = [line for line in lines if "style" in line]
+        node_lines = [line for line in lines if "-->" in line or "[" in line]
 
         # Prüfe auf zu viele Farben
         used_colors = set()
         for line in style_lines:
-            color_match = re.search(r'fill:(#[0-9a-fA-F]{6})', line)
+            color_match = re.search(r"fill:(#[0-9a-fA-F]{6})", line)
             if color_match:
                 used_colors.add(color_match.group(1).lower())
 

@@ -4,6 +4,17 @@
 admin.settings.subtitle: "Dashboard-Konfiguration und Registry-Informationen"
 admin.settings.gateway_not_available: "Admin Gateway nicht verfügbar"
 
+# Admin Settings Subtabs
+admin.settings.subtabs.dashboard: "Dashboard"
+admin.settings.subtabs.mqtt_clients: "MQTT Clients"
+admin.settings.subtabs.gateway: "Gateway"
+admin.settings.subtabs.topics: "Topics"
+admin.settings.subtabs.schemas: "Schemas"
+admin.settings.subtabs.modules: "Modules"
+admin.settings.subtabs.stations: "Stations"
+admin.settings.subtabs.txt_controllers: "TXT Controllers"
+admin.settings.subtabs.workpieces: "Workpieces"
+
 # Generic Steering Tab
 admin.generic_steering.subtitle: "Fabrik-Verwaltung und -Steuerung mit modularer Architektur"
 admin.generic_steering.registry_entities: "Registry: {count} Entitäten geladen"

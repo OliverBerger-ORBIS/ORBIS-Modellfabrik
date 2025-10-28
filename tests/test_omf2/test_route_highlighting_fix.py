@@ -7,8 +7,6 @@ Verifies that routes are only shown during FTS navigation, not during manufactur
 import sys
 from pathlib import Path
 
-import pytest
-
 # Add project root to path
 project_root = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(project_root))
@@ -24,24 +22,24 @@ class TestRouteHighlightingFix:
         """
         # Simulate storage plan at step 2 (MANUFACTURE in progress)
         storage_plan = [
-            {'step': 1, 'type': 'NAVIGATION', 'source': 'START', 'target': 'HBW', 'state': 'FINISHED'},
-            {'step': 2, 'type': 'MANUFACTURE', 'moduleType': 'HBW', 'command': 'PICK', 'state': 'IN_PROGRESS'},
-            {'step': 3, 'type': 'NAVIGATION', 'source': 'HBW', 'target': 'DPS', 'state': 'ENQUEUED'},
-            {'step': 4, 'type': 'MANUFACTURE', 'moduleType': 'DPS', 'command': 'DROP', 'state': 'PENDING'},
+            {"step": 1, "type": "NAVIGATION", "source": "START", "target": "HBW", "state": "FINISHED"},
+            {"step": 2, "type": "MANUFACTURE", "moduleType": "HBW", "command": "PICK", "state": "IN_PROGRESS"},
+            {"step": 3, "type": "NAVIGATION", "source": "HBW", "target": "DPS", "state": "ENQUEUED"},
+            {"step": 4, "type": "MANUFACTURE", "moduleType": "DPS", "command": "DROP", "state": "PENDING"},
         ]
 
         # Simulate _get_current_active_module logic
         active_module = None
         for step in storage_plan:
-            if step['state'] != 'FINISHED':
-                if step['type'] == 'NAVIGATION':
-                    active_module = 'FTS'
-                elif step['type'] == 'MANUFACTURE':
-                    active_module = step.get('moduleType')
+            if step["state"] != "FINISHED":
+                if step["type"] == "NAVIGATION":
+                    active_module = "FTS"
+                elif step["type"] == "MANUFACTURE":
+                    active_module = step.get("moduleType")
                 break
 
         # At step 2, active module should be HBW
-        assert active_module == 'HBW'
+        assert active_module == "HBW"
 
         # NEW BEHAVIOR: Route should NOT be calculated when active_module != "FTS"
         # This simulates the fixed logic in storage_orders_subtab.py lines 167-173
@@ -49,7 +47,7 @@ class TestRouteHighlightingFix:
         if active_module == "FTS":
             # Only look for navigation steps if FTS is active
             for step in storage_plan:
-                if step['state'] == 'IN_PROGRESS' and step['type'] == 'NAVIGATION':
+                if step["state"] == "IN_PROGRESS" and step["type"] == "NAVIGATION":
                     should_show_route = True
                     break
 
@@ -62,24 +60,24 @@ class TestRouteHighlightingFix:
         """
         # Simulate storage plan at step 1 (NAVIGATION in progress)
         storage_plan = [
-            {'step': 1, 'type': 'NAVIGATION', 'source': 'START', 'target': 'HBW', 'state': 'IN_PROGRESS'},
-            {'step': 2, 'type': 'MANUFACTURE', 'moduleType': 'HBW', 'command': 'PICK', 'state': 'ENQUEUED'},
-            {'step': 3, 'type': 'NAVIGATION', 'source': 'HBW', 'target': 'DPS', 'state': 'PENDING'},
-            {'step': 4, 'type': 'MANUFACTURE', 'moduleType': 'DPS', 'command': 'DROP', 'state': 'PENDING'},
+            {"step": 1, "type": "NAVIGATION", "source": "START", "target": "HBW", "state": "IN_PROGRESS"},
+            {"step": 2, "type": "MANUFACTURE", "moduleType": "HBW", "command": "PICK", "state": "ENQUEUED"},
+            {"step": 3, "type": "NAVIGATION", "source": "HBW", "target": "DPS", "state": "PENDING"},
+            {"step": 4, "type": "MANUFACTURE", "moduleType": "DPS", "command": "DROP", "state": "PENDING"},
         ]
 
         # Simulate _get_current_active_module logic
         active_module = None
         for step in storage_plan:
-            if step['state'] != 'FINISHED':
-                if step['type'] == 'NAVIGATION':
-                    active_module = 'FTS'
-                elif step['type'] == 'MANUFACTURE':
-                    active_module = step.get('moduleType')
+            if step["state"] != "FINISHED":
+                if step["type"] == "NAVIGATION":
+                    active_module = "FTS"
+                elif step["type"] == "MANUFACTURE":
+                    active_module = step.get("moduleType")
                 break
 
         # At step 1, active module should be FTS
-        assert active_module == 'FTS'
+        assert active_module == "FTS"
 
         # NEW BEHAVIOR: Route SHOULD be calculated when active_module == "FTS"
         should_show_route = False
@@ -87,7 +85,7 @@ class TestRouteHighlightingFix:
         if active_module == "FTS":
             # Only look for navigation steps if FTS is active
             for step in storage_plan:
-                if step['state'] == 'IN_PROGRESS' and step['type'] == 'NAVIGATION':
+                if step["state"] == "IN_PROGRESS" and step["type"] == "NAVIGATION":
                     should_show_route = True
                     current_nav_step = step
                     break
@@ -95,8 +93,8 @@ class TestRouteHighlightingFix:
         # Result: Route should be shown when FTS is active
         assert should_show_route is True, "Route should be shown when active module is FTS"
         assert current_nav_step is not None
-        assert current_nav_step['source'] == 'START'
-        assert current_nav_step['target'] == 'HBW'
+        assert current_nav_step["source"] == "START"
+        assert current_nav_step["target"] == "HBW"
 
     def test_no_labels_shown_for_clean_layout(self):
         """
@@ -105,33 +103,25 @@ class TestRouteHighlightingFix:
         All identification is done via hover tooltips
         """
         # Test data for an intersection cell
-        intersection_cell = {
-            "type": "intersection",
-            "id": "1",
-            "data": {"id": "1", "position": [1, 1]}
-        }
+        intersection_cell = {"type": "intersection", "id": "1", "data": {"id": "1", "position": [1, 1]}}
 
         # NEW BEHAVIOR: No labels shown for any cell type
         cell_type = intersection_cell.get("type", "unknown")
         cell_id = intersection_cell.get("id", "")
-        
+
         # No labels displayed (regardless of type)
         cell_label = ""
 
         assert cell_label == "", "Intersection label should NOT be shown at bottom"
-        
+
         # Test that module labels are ALSO not shown (unlike before)
-        module_cell_data = {
-            "type": "module",
-            "id": "HBW",
-            "data": {"id": "HBW", "position": [1, 0]}
-        }
+        module_cell_data = {"type": "module", "id": "HBW", "data": {"id": "HBW", "position": [1, 0]}}
         module_type = module_cell_data.get("type", "unknown")
         module_id = module_cell_data.get("id", "")
-        
+
         # No labels for modules either - all identification via tooltips
         module_label = ""
-            
+
         assert module_label == "", "Module labels should also NOT be shown - use tooltips instead"
 
     def test_routes_pass_through_intersection_centers(self):
@@ -148,7 +138,7 @@ class TestRouteHighlightingFix:
         graph = build_graph(layout)
 
         # Test route from DPS to HBW (typical storage order)
-        route = compute_route(graph, 'DPS', 'HBW')
+        route = compute_route(graph, "DPS", "HBW")
         assert route is not None, "Route should be found"
 
         # Convert to points
@@ -169,5 +159,6 @@ class TestRouteHighlightingFix:
             (300.0, 300.0),  # Intersection 1 center
         ]
 
-        assert intersection_points == expected_intersections, \
-            f"Route should pass through intersection centers. Got {intersection_points}"
+        assert (
+            intersection_points == expected_intersections
+        ), f"Route should pass through intersection centers. Got {intersection_points}"

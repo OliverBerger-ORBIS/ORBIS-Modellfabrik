@@ -21,7 +21,7 @@ class TestGraphBuilding:
         """Test that build_graph works with real shopfloor_layout.json"""
         # Load real config
         config_path = Path(__file__).parent.parent.parent / "omf2" / "config" / "ccu" / "shopfloor_layout.json"
-        with open(config_path, "r") as f:
+        with open(config_path) as f:
             layout = json.load(f)
 
         graph = build_graph(layout)
@@ -44,7 +44,7 @@ class TestGraphBuilding:
         """Test that build_graph creates id_to_primary mapping for both id and serialNumber"""
         # Load real config
         config_path = Path(__file__).parent.parent.parent / "omf2" / "config" / "ccu" / "shopfloor_layout.json"
-        with open(config_path, "r") as f:
+        with open(config_path) as f:
             layout = json.load(f)
 
         graph = build_graph(layout)
@@ -99,7 +99,7 @@ class TestRouteComputation:
         """Test route computation with real config"""
         # Load real config
         config_path = Path(__file__).parent.parent.parent / "omf2" / "config" / "ccu" / "shopfloor_layout.json"
-        with open(config_path, "r") as f:
+        with open(config_path) as f:
             layout = json.load(f)
 
         graph = build_graph(layout)
@@ -116,7 +116,7 @@ class TestRouteComputation:
         """Test route computation using module ids instead of serialNumbers"""
         # Load real config
         config_path = Path(__file__).parent.parent.parent / "omf2" / "config" / "ccu" / "shopfloor_layout.json"
-        with open(config_path, "r") as f:
+        with open(config_path) as f:
             layout = json.load(f)
 
         graph = build_graph(layout)
@@ -134,7 +134,7 @@ class TestRouteComputation:
         """Test route computation with mixed id and serialNumber"""
         # Load real config
         config_path = Path(__file__).parent.parent.parent / "omf2" / "config" / "ccu" / "shopfloor_layout.json"
-        with open(config_path, "r") as f:
+        with open(config_path) as f:
             layout = json.load(f)
 
         graph = build_graph(layout)

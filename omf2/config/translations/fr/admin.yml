@@ -4,6 +4,17 @@
 admin.settings.subtitle: "Configuration du tableau de bord et informations du registre"
 admin.settings.gateway_not_available: "Passerelle Admin non disponible"
 
+# Admin Settings Subtabs
+admin.settings.subtabs.dashboard: "Tableau de bord"
+admin.settings.subtabs.mqtt_clients: "Clients MQTT"
+admin.settings.subtabs.gateway: "Passerelle"
+admin.settings.subtabs.topics: "Sujets"
+admin.settings.subtabs.schemas: "Schémas"
+admin.settings.subtabs.modules: "Modules"
+admin.settings.subtabs.stations: "Stations"
+admin.settings.subtabs.txt_controllers: "Contrôleurs TXT"
+admin.settings.subtabs.workpieces: "Pièces"
+
 # Generic Steering Tab
 admin.generic_steering.subtitle: "Gestion et contrôle d'usine avec architecture modulaire"
 admin.generic_steering.registry_entities: "Registre: {count} entités chargées"

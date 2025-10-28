@@ -6,7 +6,9 @@ Zeigt alle MQTT Clients aus der Registry an
 
 import streamlit as st
 
+from omf2.assets.heading_icons import get_svg_inline
 from omf2.common.logger import get_logger
+from omf2.ui.common.symbols import UISymbols
 
 logger = get_logger(__name__)
 
@@ -32,7 +34,19 @@ def _group_topics_by_category(topics, registry_manager):
 def render_mqtt_clients_subtab():
     """Render MQTT Clients Subtab mit Registry-Daten"""
     try:
-        st.markdown("## 📡 MQTT Clients Verwaltung")
+        # Initialize i18n
+        i18n = st.session_state.get("i18n_manager")
+        if not i18n:
+            logger.error("❌ I18n Manager not found in session state")
+            return
+
+        # SVG-Header mit Fallback - einfache Lösung mit größerer SVG
+        mqtt_svg = get_svg_inline("MQTT_CLIENTS", size_px=32)
+        header_icon = mqtt_svg if mqtt_svg else UISymbols.get_functional_icon("mqtt_connect")
+        st.markdown(
+            f'<h3 style="margin-top: 0; margin-bottom: 1rem;">{header_icon} <strong>{i18n.t("admin.mqtt_clients")} Verwaltung</strong></h3>',
+            unsafe_allow_html=True,
+        )
         st.markdown("Verwaltung aller MQTT Clients aus der Registry")
 
         # Get registry manager from session state

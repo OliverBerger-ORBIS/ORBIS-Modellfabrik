@@ -66,7 +66,7 @@
 ## 🔗 Quick Links
 
 - **Registry:** `omf2/registry/` - Single Source of Truth
-- **Source Code:** `omf/` - Runtime & Tools
+- **Source Code:** `omf2/` - Runtime & Tools
 - **Legacy Docs:** [Archive](archive/) - Veraltete Dokumentation
 
 ## 🚀 Getting Started

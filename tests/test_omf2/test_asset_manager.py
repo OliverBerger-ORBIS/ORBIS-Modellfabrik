@@ -556,7 +556,7 @@ class TestProductSvgSizing(unittest.TestCase):
             <style>.cls-1{fill:#0000ff;}</style>
             <g id="svg-test"><rect class="cls-1" width="300" height="200"/></g>
         </svg>"""
-        
+
         (self.workpiece_dir / "blue_product.svg").write_text(test_svg, encoding="utf-8")
         (self.workpiece_dir / "white_3dim.svg").write_text(test_svg, encoding="utf-8")
 
@@ -567,17 +567,19 @@ class TestProductSvgSizing(unittest.TestCase):
     def tearDown(self):
         """Cleanup nach jedem Test"""
         import shutil
+
         shutil.rmtree(self.temp_dir)
 
     def test_product_svg_base_size_constant(self):
         """Test: PRODUCT_SVG_BASE_SIZE constant is defined"""
         from omf2.assets.asset_manager import PRODUCT_SVG_BASE_SIZE
+
         self.assertEqual(PRODUCT_SVG_BASE_SIZE, 200)
 
     def test_get_product_svg_with_sizing_default(self):
         """Test: get_product_svg_with_sizing returns 200x200 container by default"""
         result = self.asset_manager.get_product_svg_with_sizing("BLUE", "product")
-        
+
         self.assertIsNotNone(result)
         # Check for 200x200 container
         self.assertIn("width: 200px", result)
@@ -588,7 +590,7 @@ class TestProductSvgSizing(unittest.TestCase):
     def test_get_product_svg_with_sizing_scaled(self):
         """Test: get_product_svg_with_sizing applies scale factor correctly"""
         result = self.asset_manager.get_product_svg_with_sizing("WHITE", "3dim", scale=1.5)
-        
+
         self.assertIsNotNone(result)
         # Check for 300x300 container (200 * 1.5)
         self.assertIn("width: 300px", result)
@@ -597,13 +599,13 @@ class TestProductSvgSizing(unittest.TestCase):
     def test_get_product_svg_with_sizing_nonexistent(self):
         """Test: get_product_svg_with_sizing returns None for non-existent SVG"""
         result = self.asset_manager.get_product_svg_with_sizing("RED", "invalid_pattern")
-        
+
         self.assertIsNone(result)
 
     def test_get_product_svg_with_sizing_maintains_aspect_ratio(self):
         """Test: Container enforces size while SVG maintains aspect ratio"""
         result = self.asset_manager.get_product_svg_with_sizing("BLUE", "product", scale=1.0)
-        
+
         # Container should be square (200x200)
         self.assertIn("width: 200px", result)
         self.assertIn("height: 200px", result)

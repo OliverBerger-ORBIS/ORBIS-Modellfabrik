@@ -28,16 +28,18 @@ log_dir.mkdir(parents=True, exist_ok=True)
 
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[logging.FileHandler(log_dir / 'session_manager.log'), logging.StreamHandler()],
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    handlers=[logging.FileHandler(log_dir / "session_manager.log"), logging.StreamHandler()],
 )
 logger = get_logger(__name__)
+
 
 # =========================
 # Replay-Controller (neu)
 # =========================
 class _Publisher(Protocol):
     def publish(self, topic: str, payload: str | bytes, qos: int = 0, retain: bool = False) -> None: ...
+
 
 @dataclass(frozen=True)
 class _ReplayItem:
@@ -47,6 +49,7 @@ class _ReplayItem:
     qos: int = 0
     retain: bool = False
 
+
 class ReplayController:
     """
     Thread-sicherer MQTT-Replay-Controller mit persistentem MQTT-Client.
@@ -54,6 +57,7 @@ class ReplayController:
     - Thread-sichere Publishing ohne mosquitto_pub
     - Sauberes Cleanup alter Controller-Instanzen
     """
+
     def __init__(self, host: str, port: int):
         self.host = host
         self.port = int(port)
@@ -158,12 +162,13 @@ class ReplayController:
             # Publish mit persistentem MQTT-Client
             if self._mqtt_client and self._mqtt_client.is_connected():
                 try:
-                    payload_str = item.payload if isinstance(item.payload, (bytes, bytearray)) else str(item.payload).encode("utf-8")
+                    payload_str = (
+                        item.payload
+                        if isinstance(item.payload, (bytes, bytearray))
+                        else str(item.payload).encode("utf-8")
+                    )
                     success = self._mqtt_client.publish(
-                        topic=item.topic,
-                        payload=payload_str,
-                        qos=item.qos,
-                        retain=item.retain
+                        topic=item.topic, payload=payload_str, qos=item.qos, retain=item.retain
                     )
                     if not success:
                         logger.warning(f"⚠️ MQTT-Publish fehlgeschlagen: {item.topic}")
@@ -181,6 +186,7 @@ class ReplayController:
         if self._mqtt_client:
             self._mqtt_client.disconnect()
             self._mqtt_client = None
+
 
 # Einfache Factory, die genau EINE Controller-Instanz je Broker hält
 def _get_replay_controller(mqtt_host: str, mqtt_port: int) -> ReplayController:
@@ -229,7 +235,7 @@ def show_replay_station():
         st.info(f"**Broker:** {mqtt_settings['host']}:{mqtt_settings['port']}")
         st.info(f"**QoS:** {mqtt_settings['qos']} | **Timeout:** {mqtt_settings['timeout']}s")
 
-        if 'mqtt_connected' not in st.session_state:
+        if "mqtt_connected" not in st.session_state:
             st.session_state.mqtt_connected = False
 
         if st.session_state.mqtt_connected:
@@ -249,7 +255,7 @@ def show_replay_station():
     with col1:
         if st.button("🔌 Verbindung testen", key="test_mqtt"):
             logger.debug("🔌 User klickt: Verbindung testen")
-            test_mqtt_connection(mqtt_settings['host'], mqtt_settings['port'], rerun_controller)
+            test_mqtt_connection(mqtt_settings["host"], mqtt_settings["port"], rerun_controller)
 
     with col2:
         if st.button("🔌 Verbindung trennen", key="disconnect_mqtt"):
@@ -257,8 +263,8 @@ def show_replay_station():
             disconnect_mqtt(rerun_controller)
 
     # Session State für MQTT Parameter speichern
-    st.session_state.mqtt_host = mqtt_settings['host']
-    st.session_state.mqtt_port = mqtt_settings['port']
+    st.session_state.mqtt_host = mqtt_settings["host"]
+    st.session_state.mqtt_port = mqtt_settings["port"]
     replay_ctrl = _get_replay_controller(st.session_state.mqtt_host, st.session_state.mqtt_port)
 
     st.markdown("---")
@@ -310,7 +316,7 @@ def show_replay_station():
                         "Wähle Test-Topics zum Senden:",
                         options=test_topic_files,
                         format_func=lambda x: x.name,
-                        help="Wähle eine oder mehrere JSON-Dateien aus data/omf-data/test_topics/"
+                        help="Wähle eine oder mehrere JSON-Dateien aus data/omf-data/test_topics/",
                     )
 
                     col1, col2 = st.columns([2, 1])
@@ -318,8 +324,12 @@ def show_replay_station():
                         if selected_test_topics:
                             st.info(f"✅ {len(selected_test_topics)} Test-Topic(s) ausgewählt")
                     with col2:
-                        if st.button("📤 Ausgewählte jetzt senden", key="send_selected_topics", disabled=not selected_test_topics):
-                            logger.debug(f"📤 User klickt: Ausgewählte Test-Topics senden ({len(selected_test_topics)} Dateien)")
+                        if st.button(
+                            "📤 Ausgewählte jetzt senden", key="send_selected_topics", disabled=not selected_test_topics
+                        ):
+                            logger.debug(
+                                f"📤 User klickt: Ausgewählte Test-Topics senden ({len(selected_test_topics)} Dateien)"
+                            )
                             send_selected_test_topics(selected_test_topics, replay_ctrl)
                 else:
                     st.warning("❌ Keine Test-Topic-Dateien in data/omf-data/test_topics/ gefunden")
@@ -334,7 +344,7 @@ def show_replay_station():
                     send_preloads = st.checkbox(
                         "🚀 Test-Topics vor Session-Replay senden",
                         value=True,
-                        help="Sendet automatisch alle Test-Topics aus data/omf-data/test_topics/preloads/ vor dem Session-Replay"
+                        help="Sendet automatisch alle Test-Topics aus data/omf-data/test_topics/preloads/ vor dem Session-Replay",
                     )
 
                 with col2:
@@ -363,7 +373,7 @@ def show_replay_station():
                     load_session(selected_session, replay_ctrl)
 
                 # Replay-Kontrollen (wenn Session geladen)
-                if 'loaded_session' in st.session_state and st.session_state.loaded_session:
+                if "loaded_session" in st.session_state and st.session_state.loaded_session:
                     show_replay_controls(rerun_controller)
         else:
             st.warning("❌ Keine Sessions gefunden (Regex-Filter)")
@@ -455,9 +465,7 @@ def send_test_message(topic, payload):
     try:
         # Temporären MQTT-Client für Test erstellen
         test_client = SessionManagerMQTTClient(
-            st.session_state.mqtt_host,
-            st.session_state.mqtt_port,
-            "session_manager_test"
+            st.session_state.mqtt_host, st.session_state.mqtt_port, "session_manager_test"
         )
 
         if test_client.connect():
@@ -495,9 +503,7 @@ def send_selected_test_topics(selected_files: List[Path], replay_ctrl: ReplayCon
 
         # Temporären MQTT-Client für Test-Topics erstellen
         test_client = SessionManagerMQTTClient(
-            st.session_state.mqtt_host,
-            st.session_state.mqtt_port,
-            "session_manager_test_topics"
+            st.session_state.mqtt_host, st.session_state.mqtt_port, "session_manager_test_topics"
         )
 
         if not test_client.connect():
@@ -510,7 +516,7 @@ def send_selected_test_topics(selected_files: List[Path], replay_ctrl: ReplayCon
         # Test-Topics laden und senden
         for test_file in selected_files:
             try:
-                with open(test_file, encoding='utf-8') as f:
+                with open(test_file, encoding="utf-8") as f:
                     test_data = json.load(f)
 
                 topic = test_data.get("topic")
@@ -580,9 +586,7 @@ def send_preload_test_topics(replay_ctrl: ReplayController):
 
         # Temporären MQTT-Client für Preloads erstellen
         preload_client = SessionManagerMQTTClient(
-            st.session_state.mqtt_host,
-            st.session_state.mqtt_port,
-            "session_manager_preloads"
+            st.session_state.mqtt_host, st.session_state.mqtt_port, "session_manager_preloads"
         )
 
         if not preload_client.connect():
@@ -595,7 +599,7 @@ def send_preload_test_topics(replay_ctrl: ReplayController):
         # Preloads laden und senden
         for preload_file in preload_files:
             try:
-                with open(preload_file, encoding='utf-8') as f:
+                with open(preload_file, encoding="utf-8") as f:
                     preload_data = json.load(f)
 
                 topic = preload_data.get("topic")
@@ -762,6 +766,7 @@ def load_session(session_file, replay_ctrl: ReplayController):
         if messages:
             # Sequenz vorbereiten: (ts_rel, topic, payload_bytes, qos, retain)
             items: List[Tuple[float, str, bytes, int, bool]] = []
+
             # Timestamps auf Sekunden float normalisieren
             def _to_epoch_s(ts_val):
                 # int/float Epoch
@@ -800,7 +805,7 @@ def load_session(session_file, replay_ctrl: ReplayController):
                 "file": session_file,
                 "messages": messages,
                 "current_index": 0,
-                "is_playing": False,   # UI-Flag; Controller ist maßgeblich
+                "is_playing": False,  # UI-Flag; Controller ist maßgeblich
                 "speed": 1.0,
                 "loop": False,
             }
@@ -878,9 +883,9 @@ def show_replay_controls(rerun_controller: RerunController):
         # Play / Resume
         if st.button("▶️ Play / Resume", key="play_resume_btn"):
             session_name = (
-                session.get('file', {}).get('name', 'Unknown')
-                if isinstance(session.get('file'), dict)
-                else str(session.get('file', 'Unknown'))
+                session.get("file", {}).get("name", "Unknown")
+                if isinstance(session.get("file"), dict)
+                else str(session.get("file", "Unknown"))
             )
             logger.debug(f"▶️ User klickt: Play/Resume - Session: {session_name}")
             # Controller starten (mit aktueller Geschwindigkeit)
@@ -891,9 +896,9 @@ def show_replay_controls(rerun_controller: RerunController):
     with col2:
         if st.button("⏸️ Pause", key="pause_btn"):
             session_name = (
-                session.get('file', {}).get('name', 'Unknown')
-                if isinstance(session.get('file'), dict)
-                else str(session.get('file', 'Unknown'))
+                session.get("file", {}).get("name", "Unknown")
+                if isinstance(session.get("file"), dict)
+                else str(session.get("file", "Unknown"))
             )
             logger.debug(f"⏸️ User klickt: Pause - Session: {session_name}")
             replay_ctrl.pause()
@@ -903,9 +908,9 @@ def show_replay_controls(rerun_controller: RerunController):
     with col3:
         if st.button("⏹️ Stop", key="stop_btn"):
             session_name = (
-                session.get('file', {}).get('name', 'Unknown')
-                if isinstance(session.get('file'), dict)
-                else str(session.get('file', 'Unknown'))
+                session.get("file", {}).get("name", "Unknown")
+                if isinstance(session.get("file"), dict)
+                else str(session.get("file", "Unknown"))
             )
             logger.debug(f"⏹️ User klickt: Stop - Session: {session_name}")
             replay_ctrl.stop()
@@ -916,9 +921,9 @@ def show_replay_controls(rerun_controller: RerunController):
     with col4:
         if st.button("🔄 Reset", key="reset_btn"):
             session_name = (
-                session.get('file', {}).get('name', 'Unknown')
-                if isinstance(session.get('file'), dict)
-                else str(session.get('file', 'Unknown'))
+                session.get("file", {}).get("name", "Unknown")
+                if isinstance(session.get("file"), dict)
+                else str(session.get("file", "Unknown"))
             )
             logger.debug(f"🔄 User klickt: Reset - Session: {session_name}")
             replay_ctrl.stop()
@@ -964,7 +969,7 @@ def show_replay_controls(rerun_controller: RerunController):
 
 def start_replay():
     """Replay starten"""
-    if 'loaded_session' not in st.session_state:
+    if "loaded_session" not in st.session_state:
         logger.error("❌ Start Replay: Keine Session geladen")
         st.error("❌ Keine Session geladen")
         return
@@ -972,9 +977,9 @@ def start_replay():
     session = st.session_state.loaded_session
     session["is_playing"] = True
     session_name = (
-        session.get('file', {}).get('name', 'Unknown')
-        if isinstance(session.get('file'), dict)
-        else str(session.get('file', 'Unknown'))
+        session.get("file", {}).get("name", "Unknown")
+        if isinstance(session.get("file"), dict)
+        else str(session.get("file", "Unknown"))
     )
     logger.debug(
         f"▶️ Start Replay: Session={session_name}, Index={session['current_index']}, Messages={len(session['messages'])}"
@@ -987,7 +992,7 @@ def start_replay():
 
 def pause_replay():
     """Replay pausieren"""
-    if 'loaded_session' in st.session_state:
+    if "loaded_session" in st.session_state:
         st.session_state.loaded_session["is_playing"] = False
         logger.debug("⏸️ Replay pausiert")
         st.info("⏸️ Replay pausiert")
@@ -995,7 +1000,7 @@ def pause_replay():
 
 def stop_replay():
     """Replay stoppen"""
-    if 'loaded_session' in st.session_state:
+    if "loaded_session" in st.session_state:
         session = st.session_state.loaded_session
         session["is_playing"] = False
         session["current_index"] = 0
@@ -1005,7 +1010,7 @@ def stop_replay():
 
 def reset_replay():
     """Replay zurücksetzen"""
-    if 'loaded_session' in st.session_state:
+    if "loaded_session" in st.session_state:
         session = st.session_state.loaded_session
         session["is_playing"] = False
         session["current_index"] = 0
@@ -1055,7 +1060,7 @@ def replay_worker(session_data):
 
     # Loop oder beenden
     try:
-        if 'loaded_session' in st.session_state:
+        if "loaded_session" in st.session_state:
             if loop and st.session_state.loaded_session.get("is_playing", False):
                 logger.debug("🔄 Loop: Starte von vorne")
                 st.session_state.loaded_session["current_index"] = 0

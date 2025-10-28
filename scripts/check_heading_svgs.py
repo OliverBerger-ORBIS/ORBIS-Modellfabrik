@@ -3,8 +3,9 @@
 Check that all files referenced in omf2/assets/heading_icons.HEADING_ICON_FILES exist.
 Exit non-zero on missing files.
 """
-from pathlib import Path
 import sys
+from pathlib import Path
+
 try:
     from omf2.assets import heading_icons as hi
 except Exception as e:

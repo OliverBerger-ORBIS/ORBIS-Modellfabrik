@@ -21,6 +21,7 @@ class SessionManagerMqttClient:
     def __init__(self, client_id: str = "session_manager_replay", host: str = "localhost", port: int = 1883):
         # Eindeutige Client-ID mit Timestamp
         import time
+
         self.client_id = f"{client_id}_{int(time.time())}"
         self.host = host
         self.port = port
@@ -184,7 +185,9 @@ def get_recorder_client() -> SessionManagerMqttClient:
     import streamlit as st
 
     if "session_manager_recorder_mqtt_client" not in st.session_state:
-        st.session_state["session_manager_recorder_mqtt_client"] = SessionManagerMqttClient("session_manager_session_recorder")
+        st.session_state["session_manager_recorder_mqtt_client"] = SessionManagerMqttClient(
+            "session_manager_session_recorder"
+        )
         logger.info("🔌 Session Recorder MQTT-Client erstellt (st.session_state)")
 
     return st.session_state["session_manager_recorder_mqtt_client"]

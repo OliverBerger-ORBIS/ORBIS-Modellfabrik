@@ -81,7 +81,7 @@ class TimelineVisualizer:
                         go.Scatter(
                             x=topic_messages["timestamp"],
                             y=[y_pos] * len(topic_messages),
-                            mode='markers',
+                            mode="markers",
                             name=topic,  # Original Topic-Name statt Friendly Name
                             text=hover_texts,
                             hovertemplate="%{text}<extra></extra>",
@@ -100,13 +100,13 @@ class TimelineVisualizer:
                 yaxis_title="Topics",
                 height=600,
                 showlegend=True,
-                hovermode='closest',
+                hovermode="closest",
             )
 
             # Y-Achse anpassen - Original Topic-Namen
             try:
                 fig.update_yaxes(
-                    tickmode='array',
+                    tickmode="array",
                     tickvals=list(range(len(unique_topics))),
                     ticktext=list(unique_topics),  # Original Topic-Namen
                     showgrid=True,

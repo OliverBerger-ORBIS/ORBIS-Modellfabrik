@@ -5,22 +5,22 @@ This conftest.py provides fixtures to mock Streamlit components for UI tests
 that would otherwise conflict with the DeltaGeneratorSingleton.
 """
 
-import pytest
 from unittest.mock import MagicMock, patch
-import sys
+
+import pytest
 
 
 @pytest.fixture(autouse=True)
 def mock_streamlit():
     """
     Automatically mock Streamlit for all tests to prevent DeltaGeneratorSingleton conflicts.
-    
+
     This fixture runs for every test and provides a complete Streamlit mock
     that allows UI components to be imported and tested without conflicts.
     """
     # Create a comprehensive Streamlit mock
     streamlit_mock = MagicMock()
-    
+
     # Mock common Streamlit components
     streamlit_mock.columns = MagicMock(return_value=[MagicMock() for _ in range(3)])
     streamlit_mock.container = MagicMock()
@@ -55,23 +55,23 @@ def mock_streamlit():
     streamlit_mock.exception = MagicMock()
     streamlit_mock.empty = MagicMock()
     streamlit_mock.rerun = MagicMock()
-    
+
     # Mock session state
     streamlit_mock.session_state = MagicMock()
     streamlit_mock.session_state.get = MagicMock(return_value=None)
     streamlit_mock.session_state.__setitem__ = MagicMock()
     streamlit_mock.session_state.__getitem__ = MagicMock(return_value=None)
     streamlit_mock.session_state.__contains__ = MagicMock(return_value=False)
-    
+
     # Mock cache
     streamlit_mock.cache_data = MagicMock()
     streamlit_mock.cache_resource = MagicMock()
-    
+
     # Mock experimental components
     streamlit_mock.experimental_rerun = MagicMock()
-    
+
     # Mock the main streamlit module
-    with patch.dict('sys.modules', {'streamlit': streamlit_mock}):
+    with patch.dict("sys.modules", {"streamlit": streamlit_mock}):
         yield streamlit_mock
 
 
@@ -79,17 +79,17 @@ def mock_streamlit():
 def mock_streamlit_ui():
     """
     Specific fixture for UI component tests that need more detailed Streamlit mocking.
-    
+
     Use this fixture for tests that specifically test UI component behavior.
     """
     streamlit_mock = MagicMock()
-    
+
     # Enhanced UI-specific mocks
     streamlit_mock.columns = MagicMock(return_value=[MagicMock() for _ in range(5)])
     streamlit_mock.tabs = MagicMock(return_value=[MagicMock() for _ in range(4)])
     streamlit_mock.expander = MagicMock()
     streamlit_mock.container = MagicMock()
-    
+
     # Mock session state with realistic behavior
     session_state = {}
     streamlit_mock.session_state = session_state
@@ -97,8 +97,8 @@ def mock_streamlit_ui():
     streamlit_mock.session_state.__setitem__ = lambda key, value: session_state.update({key: value})
     streamlit_mock.session_state.__getitem__ = lambda key: session_state[key]
     streamlit_mock.session_state.__contains__ = lambda key: key in session_state
-    
-    with patch.dict('sys.modules', {'streamlit': streamlit_mock}):
+
+    with patch.dict("sys.modules", {"streamlit": streamlit_mock}):
         yield streamlit_mock
 
 
@@ -109,9 +109,9 @@ def mock_i18n():
     """
     i18n_mock = MagicMock()
     i18n_mock.t = MagicMock(side_effect=lambda key: f"translated_{key}")
-    
-    with patch.dict('sys.modules', {'omf2.common.i18n': i18n_mock}):
-        with patch('omf2.common.i18n', i18n_mock):
+
+    with patch.dict("sys.modules", {"omf2.common.i18n": i18n_mock}):
+        with patch("omf2.common.i18n", i18n_mock):
             yield i18n_mock
 
 
@@ -124,9 +124,9 @@ def mock_ui_symbols():
     ui_symbols_mock.get_status_icon = MagicMock(return_value="✅")
     ui_symbols_mock.get_module_icon = MagicMock(return_value="🏭")
     ui_symbols_mock.get_order_icon = MagicMock(return_value="📋")
-    
-    with patch.dict('sys.modules', {'omf2.ui.common.ui_symbols': ui_symbols_mock}):
-        with patch('omf2.ui.common.ui_symbols', ui_symbols_mock):
+
+    with patch.dict("sys.modules", {"omf2.ui.common.ui_symbols": ui_symbols_mock}):
+        with patch("omf2.ui.common.ui_symbols", ui_symbols_mock):
             yield ui_symbols_mock
 
 
@@ -139,7 +139,7 @@ def mock_gateway():
     gateway_mock.get_data = MagicMock(return_value=[])
     gateway_mock.publish_message = MagicMock(return_value=True)
     gateway_mock.get_status = MagicMock(return_value="connected")
-    
+
     return gateway_mock
 
 
@@ -152,7 +152,7 @@ def mock_registry_manager():
     registry_mock.get_topics = MagicMock(return_value=[])
     registry_mock.get_schemas = MagicMock(return_value={})
     registry_mock.get_topic_info = MagicMock(return_value={})
-    
+
     return registry_mock
 
 
@@ -165,7 +165,7 @@ def mock_asset_manager():
     asset_mock.get_workpiece_svg = MagicMock(return_value="<svg>mock</svg>")
     asset_mock.get_workpiece_palett = MagicMock(return_value="<svg>palett</svg>")
     asset_mock.get_module_icon = MagicMock(return_value="<svg>module</svg>")
-    
+
     return asset_mock
 
 

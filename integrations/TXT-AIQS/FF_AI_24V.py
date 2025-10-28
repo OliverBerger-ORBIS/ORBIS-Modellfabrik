@@ -8,6 +8,6 @@ from lib.node_red import *
 from lib.sorting_line import *
 from lib.vda5050 import *
 
-display.set_attr("version_label.text", str(f'<h3>APS AI (Version: {vda_get_factsheet_version()})</h3>'))
-print('Starting Module')
+display.set_attr("version_label.text", str(f"<h3>APS AI (Version: {vda_get_factsheet_version()})</h3>"))
+print("Starting Module")
 main_SLD()

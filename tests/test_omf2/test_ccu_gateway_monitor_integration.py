@@ -37,10 +37,7 @@ class TestCCUGatewayMonitorIntegration(unittest.TestCase):
 
         # Mock Registry Manager
         self.mock_registry_manager = Mock()
-        self.mock_registry_manager.get_gateway_config.return_value = {
-            "routing_hints": {},
-            "refresh_triggers": {}
-        }
+        self.mock_registry_manager.get_gateway_config.return_value = {"routing_hints": {}, "refresh_triggers": {}}
 
     def test_ccu_gateway_monitor_manager_initialization(self):
         """Test CCU Gateway Monitor Manager Initialization"""

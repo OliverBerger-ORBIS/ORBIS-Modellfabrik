@@ -30,7 +30,7 @@ class SettingsManager:
         logger.debug(f"Lade Einstellungen aus: {self.settings_file}")
         if self.settings_file.exists():
             try:
-                with open(self.settings_file, encoding='utf-8') as f:
+                with open(self.settings_file, encoding="utf-8") as f:
                     return json.load(f)
             except Exception as e:
                 logger.error(f"Fehler beim Laden der Einstellungen: {e}")
@@ -84,7 +84,7 @@ class SettingsManager:
     def save_settings(self):
         """Speichert die Einstellungen in die JSON-Datei"""
         try:
-            with open(self.settings_file, 'w', encoding='utf-8') as f:
+            with open(self.settings_file, "w", encoding="utf-8") as f:
                 json.dump(self.settings, f, indent=2, ensure_ascii=False)
             logger.debug(f"Einstellungen gespeichert: {self.settings_file}")
         except Exception as e:

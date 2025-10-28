@@ -7,10 +7,10 @@ Heading icons registry and helper.
 - Provides get_svg_inline(key, size_px=None, color=None, locale=None)
 """
 
+import logging
+import re
 from pathlib import Path
 from typing import Dict, Optional
-import re
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -49,7 +49,7 @@ HEADING_ICON_FILES: Dict[str, str] = {
     "SYSTEM_LOGS": "log.svg",
     "ADMIN_SETTINGS": "unterstutzung.svg",
     # ADMIN-Settings-subtabs
-    "DASHBOOARD": "visualisierung.svg",
+    "DASHBOARD": "visualisierung.svg",
     "MQTT_CLIENTS": "satellitenschussel.svg",
     "GATEWAY": "router_1.svg",
     "TOPIC": "etikett.svg",
@@ -89,7 +89,9 @@ def _load_svg_file(filename: str) -> Optional[str]:
         return None
 
 
-def get_svg_inline(key: str, size_px: Optional[int] = None, color: Optional[str] = None, locale: Optional[str] = None) -> Optional[str]:
+def get_svg_inline(
+    key: str, size_px: Optional[int] = None, color: Optional[str] = None, locale: Optional[str] = None
+) -> Optional[str]:
     """Return inline SVG HTML for the given logical key.
 
     - key: logical registry key (from HEADING_ICON_FILES)
@@ -106,14 +108,20 @@ def get_svg_inline(key: str, size_px: Optional[int] = None, color: Optional[str]
     if svg is None:
         return None
 
-    # size injection (only if width/height missing)
+    # size injection - replace existing width/height or add if missing
     if size_px:
-        svg = re.sub(r"<svg\\b(?![^>]*\\bwidth=)(?![^>]*\\bheight=)", f'<svg width="{size_px}" height="{size_px}"', svg, count=1)
+        # First, remove existing width and height attributes
+        svg = re.sub(r'\s+width="[^"]*"', "", svg)
+        svg = re.sub(r'\s+height="[^"]*"', "", svg)
+        # Then add new width only (let height be proportional)
+        svg = re.sub(r"<svg\b", f'<svg width="{size_px}"', svg, count=1)
 
     # color handling (heuristic)
     if color:
         if "currentColor" in svg or "--icon-fill" in svg:
-            return f'<span style="display:inline-block; color:{color}; line-height:0; vertical-align:middle;">{svg}</span>'
+            return (
+                f'<span style="display:inline-block; color:{color}; line-height:0; vertical-align:middle;">{svg}</span>'
+            )
         # naive fallback: replace fill attributes
         svg_colored = re.sub(r'fill="[^"]+"', f'fill="{color}"', svg)
         return f'<span style="display:inline-block; line-height:0; vertical-align:middle;">{svg_colored}</span>'

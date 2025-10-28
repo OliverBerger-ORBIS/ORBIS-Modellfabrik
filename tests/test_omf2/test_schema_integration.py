@@ -135,7 +135,8 @@ class TestSchemaIntegration(unittest.TestCase):
 
         # Validierung sollte funktionieren über MessageManager
         from omf2.common.message_manager import MessageManager
-        message_manager = MessageManager('admin', self.registry_manager)
+
+        message_manager = MessageManager("admin", self.registry_manager)
         result_valid = message_manager.validate_message(test_topic, valid_payload)
         result_invalid = message_manager.validate_message(test_topic, invalid_payload)
 

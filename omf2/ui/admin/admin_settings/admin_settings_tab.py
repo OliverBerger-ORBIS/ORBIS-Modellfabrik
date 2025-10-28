@@ -34,17 +34,17 @@ def render_admin_settings_tab():
         # Get Registry Manager from session state
         st.session_state.get("registry_manager")
 
-        # Create subtabs using UISymbols for consistent icon management
+        # Create subtabs using UISymbols for consistent icon management + i18n
         subtab_labels = [
-            f"{UISymbols.get_functional_icon('dashboard')} Dashboard",
-            f"{UISymbols.get_functional_icon('mqtt_connect')} MQTT Clients",
-            "🔀 Gateway",  # Gateway configuration
-            f"{UISymbols.get_functional_icon('topic_driven')} Topics",
-            f"{UISymbols.get_functional_icon('schema_driven')} Schemas",
-            f"{UISymbols.get_tab_icon('ccu_modules')} Modules",
-            f"{UISymbols.get_functional_icon('stations')} Stations",
-            f"{UISymbols.get_functional_icon('txt_controllers')} TXT Controllers",
-            f"{UISymbols.get_workpiece_icon('all_workpieces')} Workpieces",
+            f"{UISymbols.get_functional_icon('dashboard')} {i18n.t('admin.settings.subtabs.dashboard')}",
+            f"{UISymbols.get_functional_icon('mqtt_connect')} {i18n.t('admin.settings.subtabs.mqtt_clients')}",
+            f"🔀 {i18n.t('admin.settings.subtabs.gateway')}",  # Gateway configuration
+            f"{UISymbols.get_functional_icon('topic_driven')} {i18n.t('admin.settings.subtabs.topics')}",
+            f"{UISymbols.get_functional_icon('schema_driven')} {i18n.t('admin.settings.subtabs.schemas')}",
+            f"{UISymbols.get_tab_icon('ccu_modules')} {i18n.t('admin.settings.subtabs.modules')}",
+            f"{UISymbols.get_functional_icon('stations')} {i18n.t('admin.settings.subtabs.stations')}",
+            f"{UISymbols.get_functional_icon('txt_controllers')} {i18n.t('admin.settings.subtabs.txt_controllers')}",
+            f"{UISymbols.get_workpiece_icon('all_workpieces')} {i18n.t('admin.settings.subtabs.workpieces')}",
         ]
 
         subtabs = st.tabs(subtab_labels)

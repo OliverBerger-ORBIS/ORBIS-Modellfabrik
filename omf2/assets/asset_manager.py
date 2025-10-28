@@ -116,7 +116,7 @@ class OMF2AssetManager:
             "DRILL": "bohrer.svg",  # Drilling Station flaticon
             "AIQS": "ai-assistant.svg",  # AI Quality System flaticon
             "CHRG": "fuel.svg",  # Charging Station flaticon
-            "FTS": "ic_ft_fts.svg",  # Flexible Transport System
+            "FTS": "ic_ft_fts.svg",  # Fahrerloses Transport System
             # Unterstützende Objekte
             "TXT": "mixer.svg",  # TXT Controller
             "ROUTER": "wifi-router.svg",  # Network Router

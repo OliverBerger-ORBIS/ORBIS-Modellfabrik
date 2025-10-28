@@ -67,7 +67,7 @@ class TestSessionManagerLogger(unittest.TestCase):
 
     def test_log_formatting(self):
         """Test Log-Formatierung mit Session-Kontext"""
-        with patch('sys.stdout'):
+        with patch("sys.stdout"):
             # Log-Nachricht schreiben
             self.logger.get_logger().info("Test-Nachricht")
 
@@ -75,7 +75,7 @@ class TestSessionManagerLogger(unittest.TestCase):
             self.assertEqual(len(self.logger.logger.logger.handlers), 2)
 
             # Prüfen dass Logger-Adapter Session-Name enthält
-            self.assertEqual(self.logger.logger.extra['session_name'], self.session_name)
+            self.assertEqual(self.logger.logger.extra["session_name"], self.session_name)
 
     def test_log_level_setting(self):
         """Test Log-Level setzen"""
@@ -164,11 +164,11 @@ class TestSessionLoggerFactory(unittest.TestCase):
         self.assertIsInstance(settings_logger, logging.LoggerAdapter)
 
         # Prüfen dass Session-Namen korrekt sind
-        self.assertEqual(analysis_logger.extra['session_name'], "analysis")
-        self.assertEqual(replay_logger.extra['session_name'], "replay")
-        self.assertEqual(recorder_logger.extra['session_name'], "recorder")
-        self.assertEqual(template_logger.extra['session_name'], "template")
-        self.assertEqual(settings_logger.extra['session_name'], "settings")
+        self.assertEqual(analysis_logger.extra["session_name"], "analysis")
+        self.assertEqual(replay_logger.extra["session_name"], "replay")
+        self.assertEqual(recorder_logger.extra["session_name"], "recorder")
+        self.assertEqual(template_logger.extra["session_name"], "template")
+        self.assertEqual(settings_logger.extra["session_name"], "settings")
 
 
 class TestSessionLoggerIntegration(unittest.TestCase):
@@ -267,5 +267,5 @@ class TestSessionLoggerEdgeCases(unittest.TestCase):
             self.assertEqual(logger.session_name, "")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

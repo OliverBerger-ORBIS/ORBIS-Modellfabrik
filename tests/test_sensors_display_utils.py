@@ -131,11 +131,7 @@ class TestIAQLevel:
 
     def test_iaq_level_custom_config(self):
         """Test IAQ level with custom configuration"""
-        custom_config = {
-            "iaq": {
-                "thresholds": {"good": 30, "moderate": 80, "unhealthy": 120}
-            }
-        }
+        custom_config = {"iaq": {"thresholds": {"good": 30, "moderate": 80, "unhealthy": 120}}}
         assert iaq_level(25.0, custom_config) == "good"
         assert iaq_level(50.0, custom_config) == "moderate"
         assert iaq_level(100.0, custom_config) == "unhealthy"

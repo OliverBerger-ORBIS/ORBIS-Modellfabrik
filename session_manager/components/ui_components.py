@@ -108,7 +108,7 @@ class SessionAnalysisUI:
         st.subheader("🔍 Topic-Filter")
 
         # Vorfilter-Info
-        show_all_topics = getattr(st.session_state, 'show_all_topics', False)
+        show_all_topics = getattr(st.session_state, "show_all_topics", False)
         all_topics = analyzer.get_available_topics(exclude_prefilter=not show_all_topics)
 
         # Vorfilter-UI in einklappbarer Box
@@ -180,7 +180,9 @@ class SessionAnalysisUI:
 
                         for topic, count in sorted_topics:
                             # Fallback: Use topic as friendly name when topic_manager is disabled
-                            friendly_name = analyzer.topic_manager.get_friendly_name(topic) if analyzer.topic_manager else topic
+                            friendly_name = (
+                                analyzer.topic_manager.get_friendly_name(topic) if analyzer.topic_manager else topic
+                            )
                             if friendly_name != topic:
                                 st.write(f"• `{topic}` → {friendly_name} ({count} Messages)")
                             else:
@@ -205,7 +207,9 @@ class SessionAnalysisUI:
                             st.write("**In Settings konfiguriert, aber nicht in dieser Session vorhanden:**")
                             for topic in sorted(prefilter_topics):
                                 # Fallback: Use topic as friendly name when topic_manager is disabled
-                                friendly_name = analyzer.topic_manager.get_friendly_name(topic) if analyzer.topic_manager else topic
+                                friendly_name = (
+                                    analyzer.topic_manager.get_friendly_name(topic) if analyzer.topic_manager else topic
+                                )
                                 if friendly_name != topic:
                                     st.write(f"• `{topic}` → {friendly_name}")
                                 else:
@@ -268,7 +272,7 @@ class SessionAnalysisUI:
                 # st.rerun() entfernt - wird automatisch durch Streamlit gehandhabt
 
         # Filter-Reset prüfen
-        if getattr(st.session_state, 'topic_filter_reset', False):
+        if getattr(st.session_state, "topic_filter_reset", False):
             st.session_state.topic_filter_reset = False
             # Setze alle Topics als ausgewählt für die Filter-Modi
             categories = self.topic_filter_manager.get_topic_categories(all_topics)
@@ -306,7 +310,7 @@ class SessionAnalysisUI:
 
         with col2:
             # Kategorie-Auswahl mit Session State
-            default_categories = getattr(st.session_state, 'selected_categories', list(categories.keys())[:2])
+            default_categories = getattr(st.session_state, "selected_categories", list(categories.keys())[:2])
             selected_categories = st.multiselect(
                 "Kategorien auswählen:",
                 options=list(categories.keys()),
@@ -345,7 +349,7 @@ class SessionAnalysisUI:
                     all_subcategories.append(f"{category} → {subcat}")
 
             # Sub-Kategorie-Auswahl mit Session State
-            default_subcategories = getattr(st.session_state, 'selected_subcategories', all_subcategories[:3])
+            default_subcategories = getattr(st.session_state, "selected_subcategories", all_subcategories[:3])
             selected_subcategories = st.multiselect(
                 "Sub-Kategorien auswählen:",
                 options=all_subcategories,
@@ -383,7 +387,7 @@ class SessionAnalysisUI:
             friendly_names = self.topic_filter_manager.get_friendly_names(filtered_topics)
 
             # Friendly Name Filter mit Session State
-            default_friendly_topics = getattr(st.session_state, 'selected_friendly_topics', filtered_topics[:5])
+            default_friendly_topics = getattr(st.session_state, "selected_friendly_topics", filtered_topics[:5])
             selected_topics = st.multiselect(
                 "Topics auswählen:",
                 options=filtered_topics,
@@ -414,7 +418,7 @@ class SessionAnalysisUI:
         with col2:
             # Topic-Auswahl
             # Topic Name Filter mit Session State
-            default_topic_names = getattr(st.session_state, 'selected_topic_names', filtered_topics[:5])
+            default_topic_names = getattr(st.session_state, "selected_topic_names", filtered_topics[:5])
             selected_topics = st.multiselect(
                 "Topics auswählen:",
                 options=filtered_topics,
@@ -451,7 +455,7 @@ class SessionAnalysisUI:
 
             # Schiebe-Regler für Zeitbereich (mit relativen Sekunden)
             # Verwende gespeicherten Wert oder Standard
-            default_value = st.session_state.get('time_range_seconds', (0.0, total_duration_seconds))
+            default_value = st.session_state.get("time_range_seconds", (0.0, total_duration_seconds))
 
             time_range_seconds = st.slider(
                 "Zeitbereich auswählen (Sekunden):",
@@ -472,8 +476,8 @@ class SessionAnalysisUI:
 
             # Konvertiere zurück zu datetime-Objekten mit Timezone
             time_range = (
-                pd.to_datetime(start_timestamp, unit='s', utc=True),
-                pd.to_datetime(end_timestamp, unit='s', utc=True),
+                pd.to_datetime(start_timestamp, unit="s", utc=True),
+                pd.to_datetime(end_timestamp, unit="s", utc=True),
             )
 
             # Zeige gewählten Zeitbereich an

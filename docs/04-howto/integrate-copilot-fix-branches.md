@@ -58,7 +58,7 @@ git push -u origin feature/neues-feature
 
 ### 6. **Pull Request erstellen**
 
-- Öffne auf GitHub einen neuen Pull Request von deinem neuen Branch auf den Ziel-Branch (meistens `main` oder ggf. direkt auf den ursprünglichen Copilot-Fix-Branch, wenn der Review gestaffelt erfolgen soll).
+- Öffne auf GitHub einen neuen Pull Request von deinem neuen Branch auf den Ziel-Branch (meistens `main`).
 
 ---
 

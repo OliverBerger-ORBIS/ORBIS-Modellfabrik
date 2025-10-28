@@ -16,7 +16,7 @@ class TestSessionManagerLogging(unittest.TestCase):
     def setUp(self):
         """Test-Setup"""
         # Session State zurücksetzen
-        if hasattr(st, 'session_state'):
+        if hasattr(st, "session_state"):
             st.session_state.clear()
 
     def test_init_logging_function_exists(self):
@@ -89,5 +89,5 @@ class TestSessionManagerLogging(unittest.TestCase):
             self.assertIsNotNone(logger)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

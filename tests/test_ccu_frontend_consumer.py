@@ -31,9 +31,9 @@ class TestCcuFrontendConsumer:
 
         # Test Session-Daten
         test_sessions = [
-            'data/omf-data/sessions/auftrag-blau_1.log',
-            'data/omf-data/sessions/auftrag-rot_1.log',
-            'data/omf-data/sessions/auftrag-weiss_1.log'
+            "data/omf-data/sessions/auftrag-blau_1.log",
+            "data/omf-data/sessions/auftrag-rot_1.log",
+            "data/omf-data/sessions/auftrag-weiss_1.log",
         ]
 
         total_orders_processed = 0
@@ -56,16 +56,16 @@ class TestCcuFrontendConsumer:
                     if line.strip():
                         try:
                             message = json.loads(line.strip())
-                            topic = message.get('topic', '')
+                            topic = message.get("topic", "")
 
-                            if 'ccu/order/active' in topic:
-                                payload = message.get('payload', {})
+                            if "ccu/order/active" in topic:
+                                payload = message.get("payload", {})
 
                                 if isinstance(payload, str):
                                     payload = json.loads(payload)
 
                                 if isinstance(payload, list) and len(payload) > 0:
-                                    ccu_active_messages.append((topic, payload, message.get('timestamp', '')))
+                                    ccu_active_messages.append((topic, payload, message.get("timestamp", "")))
 
                         except json.JSONDecodeError:
                             continue
@@ -82,7 +82,7 @@ class TestCcuFrontendConsumer:
                 print(f"Topic: {topic}")
                 print(f"Orders: {len(payload)}")
 
-                meta = {'timestamp': timestamp}
+                meta = {"timestamp": timestamp}
 
                 # Test: Gateway Processing
                 result = self.gateway.on_mqtt_message(topic, payload, meta)
@@ -94,31 +94,31 @@ class TestCcuFrontendConsumer:
 
                 # Zähle verarbeitete Orders und Steps
                 for order in payload:
-                    order_id = order.get('orderId', '')
-                    production_steps = order.get('productionSteps', [])
-                    order_type = order.get('type', '')
+                    order_id = order.get("orderId", "")
+                    production_steps = order.get("productionSteps", [])
+                    order_type = order.get("type", "")
 
                     if order_id and production_steps:
                         total_orders_processed += 1
                         total_steps_processed += len(production_steps)
 
                         processed_orders[order_id] = {
-                            'type': order_type,
-                            'steps': len(production_steps),
-                            'session': session_file
+                            "type": order_type,
+                            "steps": len(production_steps),
+                            "session": session_file,
                         }
 
                         print(f"✅ Order {order_id[:8]}... ({order_type}): {len(production_steps)} steps")
 
                         # Zeige erste 3 Steps
                         for i, step in enumerate(production_steps[:3]):
-                            step_id = step.get('id', 'unknown')
-                            step_state = step.get('state', 'unknown')
-                            step_type = step.get('type', 'unknown')
+                            step_id = step.get("id", "unknown")
+                            step_state = step.get("state", "unknown")
+                            step_type = step.get("type", "unknown")
                             print(f"  {i+1}. {step_id} - {step_state} - {step_type}")
 
                         # Test: get_complete_production_plan
-                        test_order = {'orderId': order_id, 'type': order_type, 'orderType': 'PRODUCTION'}
+                        test_order = {"orderId": order_id, "type": order_type, "orderType": "PRODUCTION"}
                         production_plan = self.manager.get_complete_production_plan(test_order)
                         assert len(production_plan) > 0, f"Production plan should not be empty for {order_type}"
                         print(f"  ✅ Production Plan: {len(production_plan)} steps")
@@ -153,36 +153,30 @@ class TestCcuFrontendConsumer:
         # Test mit korrekter Array-Struktur
         valid_message = [
             {
-                'orderId': 'test-123',
-                'orderType': 'PRODUCTION',
-                'type': 'BLUE',
-                'timestamp': '2025-01-01T12:00:00Z',
-                'productionSteps': [
-                    {
-                        'id': 'step-1',
-                        'type': 'MANUFACTURE',
-                        'state': 'FINISHED',
-                        'moduleType': 'HBW',
-                        'command': 'PICK'
-                    }
+                "orderId": "test-123",
+                "orderType": "PRODUCTION",
+                "type": "BLUE",
+                "timestamp": "2025-01-01T12:00:00Z",
+                "productionSteps": [
+                    {"id": "step-1", "type": "MANUFACTURE", "state": "FINISHED", "moduleType": "HBW", "command": "PICK"}
                 ],
-                'receivedAt': '2025-01-01T12:00:00Z',
-                'startedAt': '2025-01-01T12:00:00Z',
-                'state': 'ACTIVE',
-                'workpieceId': 'wp-123'
+                "receivedAt": "2025-01-01T12:00:00Z",
+                "startedAt": "2025-01-01T12:00:00Z",
+                "state": "ACTIVE",
+                "workpieceId": "wp-123",
             }
         ]
 
         # Test: Gateway Processing (mit Schema-Validierung)
-        result = self.gateway.on_mqtt_message('ccu/order/active', valid_message, {'timestamp': '2025-01-01T12:00:00Z'})
+        result = self.gateway.on_mqtt_message("ccu/order/active", valid_message, {"timestamp": "2025-01-01T12:00:00Z"})
         assert result == True, "Schema validation should pass for valid message"
 
         # Test: OrderManager Processing
-        self.manager.process_ccu_order_active('ccu/order/active', valid_message, {'timestamp': '2025-01-01T12:00:00Z'})
+        self.manager.process_ccu_order_active("ccu/order/active", valid_message, {"timestamp": "2025-01-01T12:00:00Z"})
 
         # Verifizierung
-        assert 'test-123' in self.manager.mqtt_steps, "Order should be stored in manager"
-        assert len(self.manager.mqtt_steps['test-123']) == 1, "Should have 1 production step"
+        assert "test-123" in self.manager.mqtt_steps, "Order should be stored in manager"
+        assert len(self.manager.mqtt_steps["test-123"]) == 1, "Should have 1 production step"
 
         print("✅ Schema-Validierung erfolgreich")
 
@@ -193,12 +187,12 @@ class TestCcuFrontendConsumer:
         empty_message = []
 
         # Test: Gateway Processing
-        result = self.gateway.on_mqtt_message('ccu/order/active', empty_message, {'timestamp': '2025-01-01T12:00:00Z'})
+        result = self.gateway.on_mqtt_message("ccu/order/active", empty_message, {"timestamp": "2025-01-01T12:00:00Z"})
         assert result == True, "Empty array should be valid"
 
         # Test: OrderManager Processing
         initial_count = len(self.manager.mqtt_steps)
-        self.manager.process_ccu_order_active('ccu/order/active', empty_message, {'timestamp': '2025-01-01T12:00:00Z'})
+        self.manager.process_ccu_order_active("ccu/order/active", empty_message, {"timestamp": "2025-01-01T12:00:00Z"})
 
         # Verifizierung: Keine neuen Orders hinzugefügt
         assert len(self.manager.mqtt_steps) == initial_count, "No new orders should be added"
@@ -210,26 +204,26 @@ class TestCcuFrontendConsumer:
 
         # Test BLUE Order - MQTT Steps hinzufügen (16 Steps wie erwartet)
         blue_steps = [
-            {'step': 1, 'module': 'HBW', 'action': 'LOAD', 'status': 'ENQUEUED'},
-            {'step': 2, 'module': 'MILL', 'action': 'PROCESS', 'status': 'ENQUEUED'},
-            {'step': 3, 'module': 'AIQS', 'action': 'INSPECT', 'status': 'ENQUEUED'},
-            {'step': 4, 'module': 'DPS', 'action': 'UNLOAD', 'status': 'ENQUEUED'},
-            {'step': 5, 'module': 'HBW', 'action': 'LOAD', 'status': 'ENQUEUED'},
-            {'step': 6, 'module': 'MILL', 'action': 'PROCESS', 'status': 'ENQUEUED'},
-            {'step': 7, 'module': 'AIQS', 'action': 'INSPECT', 'status': 'ENQUEUED'},
-            {'step': 8, 'module': 'DPS', 'action': 'UNLOAD', 'status': 'ENQUEUED'},
-            {'step': 9, 'module': 'HBW', 'action': 'LOAD', 'status': 'ENQUEUED'},
-            {'step': 10, 'module': 'MILL', 'action': 'PROCESS', 'status': 'ENQUEUED'},
-            {'step': 11, 'module': 'AIQS', 'action': 'INSPECT', 'status': 'ENQUEUED'},
-            {'step': 12, 'module': 'DPS', 'action': 'UNLOAD', 'status': 'ENQUEUED'},
-            {'step': 13, 'module': 'HBW', 'action': 'LOAD', 'status': 'ENQUEUED'},
-            {'step': 14, 'module': 'MILL', 'action': 'PROCESS', 'status': 'ENQUEUED'},
-            {'step': 15, 'module': 'AIQS', 'action': 'INSPECT', 'status': 'ENQUEUED'},
-            {'step': 16, 'module': 'DPS', 'action': 'UNLOAD', 'status': 'ENQUEUED'},
+            {"step": 1, "module": "HBW", "action": "LOAD", "status": "ENQUEUED"},
+            {"step": 2, "module": "MILL", "action": "PROCESS", "status": "ENQUEUED"},
+            {"step": 3, "module": "AIQS", "action": "INSPECT", "status": "ENQUEUED"},
+            {"step": 4, "module": "DPS", "action": "UNLOAD", "status": "ENQUEUED"},
+            {"step": 5, "module": "HBW", "action": "LOAD", "status": "ENQUEUED"},
+            {"step": 6, "module": "MILL", "action": "PROCESS", "status": "ENQUEUED"},
+            {"step": 7, "module": "AIQS", "action": "INSPECT", "status": "ENQUEUED"},
+            {"step": 8, "module": "DPS", "action": "UNLOAD", "status": "ENQUEUED"},
+            {"step": 9, "module": "HBW", "action": "LOAD", "status": "ENQUEUED"},
+            {"step": 10, "module": "MILL", "action": "PROCESS", "status": "ENQUEUED"},
+            {"step": 11, "module": "AIQS", "action": "INSPECT", "status": "ENQUEUED"},
+            {"step": 12, "module": "DPS", "action": "UNLOAD", "status": "ENQUEUED"},
+            {"step": 13, "module": "HBW", "action": "LOAD", "status": "ENQUEUED"},
+            {"step": 14, "module": "MILL", "action": "PROCESS", "status": "ENQUEUED"},
+            {"step": 15, "module": "AIQS", "action": "INSPECT", "status": "ENQUEUED"},
+            {"step": 16, "module": "DPS", "action": "UNLOAD", "status": "ENQUEUED"},
         ]
-        self.manager.mqtt_steps['blue-test-123'] = blue_steps
+        self.manager.mqtt_steps["blue-test-123"] = blue_steps
 
-        test_order = {'orderId': 'blue-test-123', 'type': 'BLUE', 'orderType': 'PRODUCTION'}
+        test_order = {"orderId": "blue-test-123", "type": "BLUE", "orderType": "PRODUCTION"}
         blue_plan = self.manager.get_complete_production_plan(test_order)
 
         # BLUE sollte 16 Steps haben (nicht 15!)
@@ -237,26 +231,26 @@ class TestCcuFrontendConsumer:
 
         # Test RED Order - MQTT Steps hinzufügen (16 Steps wie erwartet)
         red_steps = [
-            {'step': 1, 'module': 'HBW', 'action': 'LOAD', 'status': 'ENQUEUED'},
-            {'step': 2, 'module': 'MILL', 'action': 'PROCESS', 'status': 'ENQUEUED'},
-            {'step': 3, 'module': 'AIQS', 'action': 'INSPECT', 'status': 'ENQUEUED'},
-            {'step': 4, 'module': 'DPS', 'action': 'UNLOAD', 'status': 'ENQUEUED'},
-            {'step': 5, 'module': 'HBW', 'action': 'LOAD', 'status': 'ENQUEUED'},
-            {'step': 6, 'module': 'MILL', 'action': 'PROCESS', 'status': 'ENQUEUED'},
-            {'step': 7, 'module': 'AIQS', 'action': 'INSPECT', 'status': 'ENQUEUED'},
-            {'step': 8, 'module': 'DPS', 'action': 'UNLOAD', 'status': 'ENQUEUED'},
-            {'step': 9, 'module': 'HBW', 'action': 'LOAD', 'status': 'ENQUEUED'},
-            {'step': 10, 'module': 'MILL', 'action': 'PROCESS', 'status': 'ENQUEUED'},
-            {'step': 11, 'module': 'AIQS', 'action': 'INSPECT', 'status': 'ENQUEUED'},
-            {'step': 12, 'module': 'DPS', 'action': 'UNLOAD', 'status': 'ENQUEUED'},
-            {'step': 13, 'module': 'HBW', 'action': 'LOAD', 'status': 'ENQUEUED'},
-            {'step': 14, 'module': 'MILL', 'action': 'PROCESS', 'status': 'ENQUEUED'},
-            {'step': 15, 'module': 'AIQS', 'action': 'INSPECT', 'status': 'ENQUEUED'},
-            {'step': 16, 'module': 'DPS', 'action': 'UNLOAD', 'status': 'ENQUEUED'},
+            {"step": 1, "module": "HBW", "action": "LOAD", "status": "ENQUEUED"},
+            {"step": 2, "module": "MILL", "action": "PROCESS", "status": "ENQUEUED"},
+            {"step": 3, "module": "AIQS", "action": "INSPECT", "status": "ENQUEUED"},
+            {"step": 4, "module": "DPS", "action": "UNLOAD", "status": "ENQUEUED"},
+            {"step": 5, "module": "HBW", "action": "LOAD", "status": "ENQUEUED"},
+            {"step": 6, "module": "MILL", "action": "PROCESS", "status": "ENQUEUED"},
+            {"step": 7, "module": "AIQS", "action": "INSPECT", "status": "ENQUEUED"},
+            {"step": 8, "module": "DPS", "action": "UNLOAD", "status": "ENQUEUED"},
+            {"step": 9, "module": "HBW", "action": "LOAD", "status": "ENQUEUED"},
+            {"step": 10, "module": "MILL", "action": "PROCESS", "status": "ENQUEUED"},
+            {"step": 11, "module": "AIQS", "action": "INSPECT", "status": "ENQUEUED"},
+            {"step": 12, "module": "DPS", "action": "UNLOAD", "status": "ENQUEUED"},
+            {"step": 13, "module": "HBW", "action": "LOAD", "status": "ENQUEUED"},
+            {"step": 14, "module": "MILL", "action": "PROCESS", "status": "ENQUEUED"},
+            {"step": 15, "module": "AIQS", "action": "INSPECT", "status": "ENQUEUED"},
+            {"step": 16, "module": "DPS", "action": "UNLOAD", "status": "ENQUEUED"},
         ]
-        self.manager.mqtt_steps['red-test-123'] = red_steps
+        self.manager.mqtt_steps["red-test-123"] = red_steps
 
-        test_order = {'orderId': 'red-test-123', 'type': 'RED', 'orderType': 'PRODUCTION'}
+        test_order = {"orderId": "red-test-123", "type": "RED", "orderType": "PRODUCTION"}
         red_plan = self.manager.get_complete_production_plan(test_order)
 
         # RED sollte 16 Steps haben (nicht 11!)
@@ -264,26 +258,26 @@ class TestCcuFrontendConsumer:
 
         # Test WHITE Order - MQTT Steps hinzufügen (16 Steps wie erwartet)
         white_steps = [
-            {'step': 1, 'module': 'HBW', 'action': 'LOAD', 'status': 'ENQUEUED'},
-            {'step': 2, 'module': 'MILL', 'action': 'PROCESS', 'status': 'ENQUEUED'},
-            {'step': 3, 'module': 'AIQS', 'action': 'INSPECT', 'status': 'ENQUEUED'},
-            {'step': 4, 'module': 'DPS', 'action': 'UNLOAD', 'status': 'ENQUEUED'},
-            {'step': 5, 'module': 'HBW', 'action': 'LOAD', 'status': 'ENQUEUED'},
-            {'step': 6, 'module': 'MILL', 'action': 'PROCESS', 'status': 'ENQUEUED'},
-            {'step': 7, 'module': 'AIQS', 'action': 'INSPECT', 'status': 'ENQUEUED'},
-            {'step': 8, 'module': 'DPS', 'action': 'UNLOAD', 'status': 'ENQUEUED'},
-            {'step': 9, 'module': 'HBW', 'action': 'LOAD', 'status': 'ENQUEUED'},
-            {'step': 10, 'module': 'MILL', 'action': 'PROCESS', 'status': 'ENQUEUED'},
-            {'step': 11, 'module': 'AIQS', 'action': 'INSPECT', 'status': 'ENQUEUED'},
-            {'step': 12, 'module': 'DPS', 'action': 'UNLOAD', 'status': 'ENQUEUED'},
-            {'step': 13, 'module': 'HBW', 'action': 'LOAD', 'status': 'ENQUEUED'},
-            {'step': 14, 'module': 'MILL', 'action': 'PROCESS', 'status': 'ENQUEUED'},
-            {'step': 15, 'module': 'AIQS', 'action': 'INSPECT', 'status': 'ENQUEUED'},
-            {'step': 16, 'module': 'DPS', 'action': 'UNLOAD', 'status': 'ENQUEUED'},
+            {"step": 1, "module": "HBW", "action": "LOAD", "status": "ENQUEUED"},
+            {"step": 2, "module": "MILL", "action": "PROCESS", "status": "ENQUEUED"},
+            {"step": 3, "module": "AIQS", "action": "INSPECT", "status": "ENQUEUED"},
+            {"step": 4, "module": "DPS", "action": "UNLOAD", "status": "ENQUEUED"},
+            {"step": 5, "module": "HBW", "action": "LOAD", "status": "ENQUEUED"},
+            {"step": 6, "module": "MILL", "action": "PROCESS", "status": "ENQUEUED"},
+            {"step": 7, "module": "AIQS", "action": "INSPECT", "status": "ENQUEUED"},
+            {"step": 8, "module": "DPS", "action": "UNLOAD", "status": "ENQUEUED"},
+            {"step": 9, "module": "HBW", "action": "LOAD", "status": "ENQUEUED"},
+            {"step": 10, "module": "MILL", "action": "PROCESS", "status": "ENQUEUED"},
+            {"step": 11, "module": "AIQS", "action": "INSPECT", "status": "ENQUEUED"},
+            {"step": 12, "module": "DPS", "action": "UNLOAD", "status": "ENQUEUED"},
+            {"step": 13, "module": "HBW", "action": "LOAD", "status": "ENQUEUED"},
+            {"step": 14, "module": "MILL", "action": "PROCESS", "status": "ENQUEUED"},
+            {"step": 15, "module": "AIQS", "action": "INSPECT", "status": "ENQUEUED"},
+            {"step": 16, "module": "DPS", "action": "UNLOAD", "status": "ENQUEUED"},
         ]
-        self.manager.mqtt_steps['white-test-123'] = white_steps
+        self.manager.mqtt_steps["white-test-123"] = white_steps
 
-        test_order = {'orderId': 'white-test-123', 'type': 'WHITE', 'orderType': 'PRODUCTION'}
+        test_order = {"orderId": "white-test-123", "type": "WHITE", "orderType": "PRODUCTION"}
         white_plan = self.manager.get_complete_production_plan(test_order)
 
         # WHITE sollte 16 Steps haben (nicht 11!)

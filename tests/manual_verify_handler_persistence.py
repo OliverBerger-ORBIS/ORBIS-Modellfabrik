@@ -23,6 +23,7 @@ from omf2.common.logging_config import apply_logging_config
 
 class MockSessionState:
     """Mock Streamlit session_state for testing"""
+
     def __init__(self):
         self._data = {}
 
@@ -41,15 +42,15 @@ class MockSessionState:
 
 def simulate_initial_setup(session_state):
     """Simuliert die initiale Dashboard-Initialisierung"""
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("📦 PHASE 1: Initial Dashboard Setup (omf.py)")
-    print("="*70)
+    print("=" * 70)
 
     # Initial setup like in omf.py
-    if 'log_handler' not in session_state:
+    if "log_handler" not in session_state:
         handler, buffers = setup_multilevel_ringbuffer_logging(force_new=True)
-        session_state['log_handler'] = handler
-        session_state['log_buffers'] = buffers
+        session_state["log_handler"] = handler
+        session_state["log_buffers"] = buffers
         print("✅ Initial logging setup complete")
 
     # Apply logging config
@@ -69,8 +70,8 @@ def simulate_initial_setup(session_state):
     logger.info("🚀 Dashboard initialized - MOCK environment")
 
     # Show logs in buffer
-    handler = session_state.get('log_handler')
-    info_logs = handler.get_buffer('INFO')
+    handler = session_state.get("log_handler")
+    info_logs = handler.get_buffer("INFO")
     print(f"\n📋 Logs in UI buffer (INFO): {len(info_logs)} entries")
     for log in info_logs[-3:]:
         print(f"  • {log}")
@@ -78,9 +79,9 @@ def simulate_initial_setup(session_state):
 
 def simulate_environment_switch(session_state, old_env, new_env):
     """Simuliert einen Environment-Switch"""
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print(f"🔄 PHASE 2: Environment Switch ({old_env} → {new_env})")
-    print("="*70)
+    print("=" * 70)
 
     logger = logging.getLogger("omf2.dashboard")
     logger.info(f"🔄 ENV-SWITCH: Environment-Wechsel erkannt: '{old_env}' -> '{new_env}'")
@@ -88,8 +89,8 @@ def simulate_environment_switch(session_state, old_env, new_env):
     # Reconnect logging system (like in _reconnect_logging_system)
     print("🔧 Reconnecting logging system...")
     handler, buffers = setup_multilevel_ringbuffer_logging(force_new=True)
-    session_state['log_handler'] = handler
-    session_state['log_buffers'] = buffers
+    session_state["log_handler"] = handler
+    session_state["log_buffers"] = buffers
 
     # VERIFICATION using new utility function
     result = ensure_ringbufferhandler_attached()
@@ -118,8 +119,8 @@ def simulate_environment_switch(session_state, old_env, new_env):
     logger.info(f"📡 Now in {new_env.upper()} environment")
 
     # Show logs in buffer
-    handler = session_state.get('log_handler')
-    info_logs = handler.get_buffer('INFO')
+    handler = session_state.get("log_handler")
+    info_logs = handler.get_buffer("INFO")
     print(f"\n📋 Logs in UI buffer after switch (INFO): {len(info_logs)} entries")
     for log in info_logs[-5:]:
         print(f"  • {log}")
@@ -127,19 +128,19 @@ def simulate_environment_switch(session_state, old_env, new_env):
 
 def simulate_ui_read_logs(session_state):
     """Simuliert das Lesen der Logs durch die UI"""
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("📺 PHASE 3: UI Reading Logs (system_logs_tab.py)")
-    print("="*70)
+    print("=" * 70)
 
     # Get log handler from session state (like in system_logs_tab.py)
-    log_handler = session_state.get('log_handler')
+    log_handler = session_state.get("log_handler")
     if not log_handler:
         print("❌ ERROR: No log handler available in session state!")
         return
 
     # Get all logs from all levels
     all_logs = []
-    for level in ['ERROR', 'WARNING', 'INFO', 'DEBUG']:
+    for level in ["ERROR", "WARNING", "INFO", "DEBUG"]:
         level_logs = log_handler.get_buffer(level)
         all_logs.extend(level_logs)
         print(f"  • {level}: {len(level_logs)} entries")
@@ -154,9 +155,9 @@ def simulate_ui_read_logs(session_state):
 
 def simulate_additional_logging(session_state):
     """Simuliert zusätzliche Logs nach Environment-Switch"""
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("📝 PHASE 4: Additional Logging After Environment Switch")
-    print("="*70)
+    print("=" * 70)
 
     # Create test loggers
     admin_logger = logging.getLogger("omf2.admin.admin_gateway")
@@ -172,10 +173,10 @@ def simulate_additional_logging(session_state):
     ccu_logger.error("❌ Critical error in CCU")
 
     # Read logs from buffer
-    handler = session_state.get('log_handler')
-    info_logs = handler.get_buffer('INFO')
-    warning_logs = handler.get_buffer('WARNING')
-    error_logs = handler.get_buffer('ERROR')
+    handler = session_state.get("log_handler")
+    info_logs = handler.get_buffer("INFO")
+    warning_logs = handler.get_buffer("WARNING")
+    error_logs = handler.get_buffer("ERROR")
 
     print("\n📊 Buffer Statistics:")
     print(f"  • INFO: {len(info_logs)} entries")
@@ -193,9 +194,9 @@ def simulate_additional_logging(session_state):
 
 def main():
     """Main verification script"""
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("🧪 MANUAL VERIFICATION: MultiLevelRingBufferHandler Persistence")
-    print("="*70)
+    print("=" * 70)
     print("\nThis script simulates:")
     print("1. Initial dashboard setup")
     print("2. Environment switch (mock → replay)")
@@ -212,11 +213,11 @@ def main():
     simulate_additional_logging(session_state)
 
     # Final verification
-    print("\n" + "="*70)
+    print("\n" + "=" * 70)
     print("✅ VERIFICATION COMPLETE")
-    print("="*70)
+    print("=" * 70)
 
-    handler = session_state.get('log_handler')
+    handler = session_state.get("log_handler")
     root_logger = logging.getLogger()
 
     # Check handler is still attached
@@ -231,10 +232,10 @@ def main():
     print(f"  • Handler identity match: {'✅ Yes' if handler is session_state.get('log_handler') else '❌ No'}")
 
     # Buffer statistics
-    info_count = len(handler.get_buffer('INFO'))
-    warning_count = len(handler.get_buffer('WARNING'))
-    error_count = len(handler.get_buffer('ERROR'))
-    debug_count = len(handler.get_buffer('DEBUG'))
+    info_count = len(handler.get_buffer("INFO"))
+    warning_count = len(handler.get_buffer("WARNING"))
+    error_count = len(handler.get_buffer("ERROR"))
+    debug_count = len(handler.get_buffer("DEBUG"))
     total = info_count + warning_count + error_count + debug_count
 
     print(f"\n📊 Total Logs in Buffers: {total}")

@@ -116,7 +116,8 @@ class TestPayloadIntegration(unittest.TestCase):
             if topic in known_topics:
                 # Test Payload-Validation über MessageManager
                 from omf2.common.message_manager import MessageManager
-                message_manager = MessageManager('admin', registry_manager)
+
+                message_manager = MessageManager("admin", registry_manager)
                 validation_result = message_manager.validate_message(topic, payload)
 
                 # Prüfe dass Validation-Result ein Dictionary ist

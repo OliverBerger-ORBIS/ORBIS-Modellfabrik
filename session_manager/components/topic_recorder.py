@@ -52,6 +52,7 @@ class ThreadSafeTopicTracker:
 # Globale Topic-Sammlung (thread-sicher)
 topic_tracker = ThreadSafeTopicTracker()
 
+
 # Globale Recording-Konfiguration (thread-sicher, für MQTT-Callback)
 class RecordingConfig:
     def __init__(self):
@@ -104,6 +105,7 @@ class RecordingConfig:
             self._global_sequence += 1
             return self._global_sequence
 
+
 recording_config = RecordingConfig()
 
 
@@ -116,14 +118,14 @@ def sanitize_topic_name(topic: str) -> str:
       j1/txt/1/i/bme680 -> j1_txt_1_i_bme680
     """
     # Trailing Slashes entfernen (aber führendes "/" behalten für die Konvertierung)
-    topic = topic.rstrip('/')
+    topic = topic.rstrip("/")
 
     # Alle ungültigen Zeichen (inkl. /) durch Underscore ersetzen
     # Erlaubte Zeichen: a-z, A-Z, 0-9, _, -, .
-    sanitized = re.sub(r'[^a-zA-Z0-9_\-.]', '_', topic)
+    sanitized = re.sub(r"[^a-zA-Z0-9_\-.]", "_", topic)
 
     # Mehrfache Underscores durch einen ersetzen
-    sanitized = re.sub(r'_+', '_', sanitized)
+    sanitized = re.sub(r"_+", "_", sanitized)
 
     return sanitized
 
@@ -137,10 +139,7 @@ def show_topic_recorder():
     rerun_controller = RerunController()
 
     st.header("📂 Topic Recorder")
-    st.markdown(
-        "Speichert jedes MQTT-Topic als einzelne Datei - "
-        "**Konfiguration in ⚙️ Einstellungen**"
-    )
+    st.markdown("Speichert jedes MQTT-Topic als einzelne Datei - " "**Konfiguration in ⚙️ Einstellungen**")
 
     # Konfiguration aus Settings laden
     from .settings_manager import SettingsManager
@@ -149,41 +148,41 @@ def show_topic_recorder():
     mqtt_settings = settings_manager.get_session_recorder_mqtt_settings()
 
     # Tab-spezifische Session State initialisieren
-    if 'topic_recorder' not in st.session_state:
+    if "topic_recorder" not in st.session_state:
         st.session_state.topic_recorder = {
-            'connected': False,
-            'recording': False,
-            'analyzing': False,
-            'analysis_start_time': None,
-            'start_time': None,
-            'mqtt_client': None,
-            'topics_directory': PROJECT_ROOT / "data/aps-data/topics",
-            'recording_name': '',
-            'current_recording_dir': None,
-            'periodic_topics': set(),  # Erkannte periodische Topics
-            'analysis_duration': 60,  # Sekunden für Analyse-Phase
-            'frequency_threshold': 60,  # Messages pro MINUTE für "periodisch"
+            "connected": False,
+            "recording": False,
+            "analyzing": False,
+            "analysis_start_time": None,
+            "start_time": None,
+            "mqtt_client": None,
+            "topics_directory": PROJECT_ROOT / "data/aps-data/topics",
+            "recording_name": "",
+            "current_recording_dir": None,
+            "periodic_topics": set(),  # Erkannte periodische Topics
+            "analysis_duration": 60,  # Sekunden für Analyse-Phase
+            "frequency_threshold": 60,  # Messages pro MINUTE für "periodisch"
         }
 
     # Sicherstellen dass Analyse-Phase nicht hängt (falls App neugestartet wurde)
-    if st.session_state.topic_recorder.get('analyzing', False):
-        if st.session_state.topic_recorder.get('analysis_start_time'):
-            elapsed = (datetime.now() - st.session_state.topic_recorder['analysis_start_time']).seconds
+    if st.session_state.topic_recorder.get("analyzing", False):
+        if st.session_state.topic_recorder.get("analysis_start_time"):
+            elapsed = (datetime.now() - st.session_state.topic_recorder["analysis_start_time"]).seconds
             # Wenn Analyse länger als 10 Minuten läuft, zurücksetzen
             if elapsed > 600:
                 logger.warning("⚠️ Analyse-Phase hängt - wird zurückgesetzt")
-                st.session_state.topic_recorder['analyzing'] = False
-                st.session_state.topic_recorder['analysis_start_time'] = None
+                st.session_state.topic_recorder["analyzing"] = False
+                st.session_state.topic_recorder["analysis_start_time"] = None
                 recording_config.stop()
 
     # Prüfe MQTT-Verbindung nach Neustart
-    if st.session_state.topic_recorder.get('connected', False):
-        if st.session_state.topic_recorder.get('mqtt_client') is None:
+    if st.session_state.topic_recorder.get("connected", False):
+        if st.session_state.topic_recorder.get("mqtt_client") is None:
             logger.warning("⚠️ MQTT als 'verbunden' markiert, aber Client fehlt - wird zurückgesetzt")
-            st.session_state.topic_recorder['connected'] = False
+            st.session_state.topic_recorder["connected"] = False
 
     # Topics-Verzeichnis erstellen
-    topics_dir = st.session_state.topic_recorder['topics_directory']
+    topics_dir = st.session_state.topic_recorder["topics_directory"]
     topics_dir.mkdir(parents=True, exist_ok=True)
 
     # Status anzeigen
@@ -195,12 +194,12 @@ def show_topic_recorder():
         st.info(f"**QoS:** {mqtt_settings['qos']} | **Timeout:** {mqtt_settings['timeout']}s")
 
         # Authentifizierung anzeigen
-        if mqtt_settings.get('username'):
+        if mqtt_settings.get("username"):
             st.info(f"**Auth:** {mqtt_settings['username']} (authentifiziert)")
         else:
             st.info("**Auth:** Keine Authentifizierung")
 
-        if st.session_state.topic_recorder['connected']:
+        if st.session_state.topic_recorder["connected"]:
             st.success("✅ Verbunden")
         else:
             st.error("❌ Nicht verbunden")
@@ -217,17 +216,17 @@ def show_topic_recorder():
     st.subheader("📝 Recording-Name")
     recording_name = st.text_input(
         "Name für dieses Recording:",
-        value=st.session_state.topic_recorder['recording_name'],
+        value=st.session_state.topic_recorder["recording_name"],
         placeholder="z.B. rec1, test-session, auftrag-rot",
         help="Name für das Recording-Unterverzeichnis",
-        disabled=st.session_state.topic_recorder['connected'] or st.session_state.topic_recorder['recording']
+        disabled=st.session_state.topic_recorder["connected"] or st.session_state.topic_recorder["recording"],
     )
 
     if recording_name:
-        st.session_state.topic_recorder['recording_name'] = recording_name
+        st.session_state.topic_recorder["recording_name"] = recording_name
         # Recording-Verzeichnis setzen
         recording_dir = topics_dir / recording_name
-        st.session_state.topic_recorder['current_recording_dir'] = recording_dir
+        st.session_state.topic_recorder["current_recording_dir"] = recording_dir
         st.success(f"✅ Recording-Name gesetzt: **{recording_name}**")
         st.info(f"📁 Ziel-Verzeichnis: `{recording_dir.relative_to(PROJECT_ROOT)}`")
     else:
@@ -239,12 +238,12 @@ def show_topic_recorder():
     col1, col2, col3 = st.columns(3)
 
     with col1:
-        can_connect = not st.session_state.topic_recorder['connected'] and recording_name
+        can_connect = not st.session_state.topic_recorder["connected"] and recording_name
         if st.button("🔌 Broker Verbinden", disabled=not can_connect):
             if connect_to_broker(mqtt_settings):
-                st.session_state.topic_recorder['connected'] = True
+                st.session_state.topic_recorder["connected"] = True
                 # Recording-Verzeichnis erstellen
-                recording_dir = st.session_state.topic_recorder['current_recording_dir']
+                recording_dir = st.session_state.topic_recorder["current_recording_dir"]
                 recording_dir.mkdir(parents=True, exist_ok=True)
                 st.success("✅ MQTT verbunden!")
                 rerun_controller.request_rerun()
@@ -252,22 +251,24 @@ def show_topic_recorder():
                 st.error("❌ Verbindung fehlgeschlagen!")
 
     with col2:
-        if st.button("🔌 Broker Trennen", disabled=not st.session_state.topic_recorder['connected']):
+        if st.button("🔌 Broker Trennen", disabled=not st.session_state.topic_recorder["connected"]):
             disconnect_from_broker()
-            st.session_state.topic_recorder['connected'] = False
+            st.session_state.topic_recorder["connected"] = False
             st.success("✅ MQTT getrennt!")
             rerun_controller.request_rerun()
 
     with col3:
         # Neues Recording starten (Disconnect + Reset)
-        can_new_recording = st.session_state.topic_recorder['connected'] and not st.session_state.topic_recorder['recording']
+        can_new_recording = (
+            st.session_state.topic_recorder["connected"] and not st.session_state.topic_recorder["recording"]
+        )
         if st.button("🆕 Neues Recording", disabled=not can_new_recording):
             # Disconnect vom Broker
             disconnect_from_broker()
-            st.session_state.topic_recorder['connected'] = False
+            st.session_state.topic_recorder["connected"] = False
             # Recording-Name und Verzeichnis zurücksetzen
-            st.session_state.topic_recorder['recording_name'] = ''
-            st.session_state.topic_recorder['current_recording_dir'] = None
+            st.session_state.topic_recorder["recording_name"] = ""
+            st.session_state.topic_recorder["current_recording_dir"] = None
             # Topic-Liste leeren
             topic_tracker.clear()
             st.success("✅ Bereit für neues Recording! Bitte neuen Namen eingeben und erneut verbinden.")
@@ -280,21 +281,22 @@ def show_topic_recorder():
 
     if not recording_name:
         st.warning("⚠️ Bitte zuerst Recording-Name eingeben")
-    elif not st.session_state.topic_recorder['connected']:
+    elif not st.session_state.topic_recorder["connected"]:
         st.warning("⚠️ Bitte zuerst MQTT Broker verbinden")
-    elif st.session_state.topic_recorder['recording']:
+    elif st.session_state.topic_recorder["recording"]:
         # Recording läuft
         st.success("📂 **Recording läuft** mit globalen Sequenznummern")
 
         if st.button("⏹️ Recording Beenden", type="secondary"):
             stop_recording()
-            st.session_state.topic_recorder['recording'] = False
-            st.session_state.topic_recorder['start_time'] = None
+            st.session_state.topic_recorder["recording"] = False
+            st.session_state.topic_recorder["start_time"] = None
             st.success("⏹️ Recording beendet!")
             rerun_controller.request_rerun()
     else:
         # Bereit zum Starten
         from .settings_manager import SettingsManager
+
         settings_manager = SettingsManager()
         manual_periodic = settings_manager.get_topic_recorder_periodic_topics()
 
@@ -308,16 +310,16 @@ def show_topic_recorder():
 
         if st.button("▶️ Recording Starten", type="primary", key="start_recording"):
             # Setze leere analyzed_periodic (keine Analyse)
-            st.session_state.topic_recorder['periodic_topics'] = set()
+            st.session_state.topic_recorder["periodic_topics"] = set()
 
             start_recording()
-            st.session_state.topic_recorder['recording'] = True
-            st.session_state.topic_recorder['start_time'] = datetime.now()
+            st.session_state.topic_recorder["recording"] = True
+            st.session_state.topic_recorder["start_time"] = datetime.now()
             st.success("📂 Recording gestartet!")
             rerun_controller.request_rerun()
 
     # Status anzeigen
-    if st.session_state.topic_recorder['recording']:
+    if st.session_state.topic_recorder["recording"]:
         st.markdown("---")
         st.subheader("📊 Recording-Status")
 
@@ -328,8 +330,8 @@ def show_topic_recorder():
             st.metric("Empfangene Topics", topic_count)
 
         with col2:
-            if st.session_state.topic_recorder['start_time']:
-                duration = datetime.now() - st.session_state.topic_recorder['start_time']
+            if st.session_state.topic_recorder["start_time"]:
+                duration = datetime.now() - st.session_state.topic_recorder["start_time"]
                 minutes, seconds = divmod(duration.seconds, 60)
                 duration_str = f"{minutes:02d}:{seconds:02d}" if minutes > 0 else f"{seconds}s"
                 st.metric("Dauer", duration_str)
@@ -363,7 +365,7 @@ def show_topic_recorder():
     st.subheader("📋 Gespeicherte Topic-Dateien")
 
     # Dateien aus dem aktuellen Recording-Verzeichnis anzeigen
-    current_recording_dir = st.session_state.topic_recorder.get('current_recording_dir')
+    current_recording_dir = st.session_state.topic_recorder.get("current_recording_dir")
     if current_recording_dir and current_recording_dir.exists():
         saved_files = list(current_recording_dir.glob("*.json"))
     else:
@@ -378,7 +380,7 @@ def show_topic_recorder():
             sort_option = st.selectbox(
                 "Sortierung:",
                 ["Neueste zuerst", "Älteste zuerst", "Topic-Name A-Z", "Topic-Name Z-A"],
-                key="topic_recorder_sort"
+                key="topic_recorder_sort",
             )
 
         # Sortierung anwenden
@@ -400,7 +402,8 @@ def show_topic_recorder():
                 # JSON-Inhalt laden für Vorschau
                 try:
                     import json
-                    with open(file, encoding='utf-8') as f:
+
+                    with open(file, encoding="utf-8") as f:
                         data = json.load(f)
 
                     col1, col2, col3 = st.columns([3, 1, 1])
@@ -433,20 +436,21 @@ def connect_to_broker(mqtt_settings: Dict[str, Any]) -> bool:
         mqtt_client.on_message = on_message_received
 
         # Username/Password setzen falls vorhanden
-        if mqtt_settings.get('username') and mqtt_settings.get('password'):
-            mqtt_client.username_pw_set(mqtt_settings['username'], mqtt_settings['password'])
+        if mqtt_settings.get("username") and mqtt_settings.get("password"):
+            mqtt_client.username_pw_set(mqtt_settings["username"], mqtt_settings["password"])
             logger.info(f"🔐 MQTT Authentifizierung: {mqtt_settings['username']}")
 
         # Verbinden
-        mqtt_client.connect(mqtt_settings['host'], mqtt_settings['port'], mqtt_settings['timeout'])
+        mqtt_client.connect(mqtt_settings["host"], mqtt_settings["port"], mqtt_settings["timeout"])
         mqtt_client.loop_start()
 
         # Kurz warten, damit Verbindung etabliert wird
         import time
+
         time.sleep(0.5)
 
         # MQTT Client in Session State speichern
-        st.session_state.topic_recorder['mqtt_client'] = mqtt_client
+        st.session_state.topic_recorder["mqtt_client"] = mqtt_client
 
         logger.info(f"✅ MQTT verbunden: {mqtt_settings['host']}:{mqtt_settings['port']}")
         return True
@@ -459,11 +463,11 @@ def connect_to_broker(mqtt_settings: Dict[str, Any]) -> bool:
 def disconnect_from_broker():
     """Trennt MQTT Verbindung"""
     try:
-        if st.session_state.topic_recorder['mqtt_client']:
-            mqtt_client = st.session_state.topic_recorder['mqtt_client']
+        if st.session_state.topic_recorder["mqtt_client"]:
+            mqtt_client = st.session_state.topic_recorder["mqtt_client"]
             mqtt_client.loop_stop()
             mqtt_client.disconnect()
-            st.session_state.topic_recorder['mqtt_client'] = None
+            st.session_state.topic_recorder["mqtt_client"] = None
             logger.info("✅ MQTT getrennt")
     except Exception as e:
         logger.error(f"❌ MQTT Trennung Fehler: {e}")
@@ -489,8 +493,8 @@ def start_analysis():
         topic_tracker.clear()
 
         # MQTT Topics abonnieren (falls noch nicht geschehen)
-        if st.session_state.topic_recorder['mqtt_client']:
-            mqtt_client = st.session_state.topic_recorder['mqtt_client']
+        if st.session_state.topic_recorder["mqtt_client"]:
+            mqtt_client = st.session_state.topic_recorder["mqtt_client"]
             mqtt_client.subscribe("#")
             logger.info("📡 MQTT Topics (#) abonniert für Analyse")
         else:
@@ -519,10 +523,12 @@ def analyze_topic_frequencies():
     """Analysiert gesammelte Topic-Frequenzen und identifiziert periodische Topics"""
     try:
         topic_counts = topic_tracker.get_topic_counts()
-        analysis_duration = st.session_state.topic_recorder['analysis_duration']
-        frequency_threshold = st.session_state.topic_recorder['frequency_threshold']
+        analysis_duration = st.session_state.topic_recorder["analysis_duration"]
+        frequency_threshold = st.session_state.topic_recorder["frequency_threshold"]
 
-        logger.info(f"🔍 Analyse-Start: {len(topic_counts)} Topics, {analysis_duration}s, Schwellenwert: {frequency_threshold} msg/min")
+        logger.info(
+            f"🔍 Analyse-Start: {len(topic_counts)} Topics, {analysis_duration}s, Schwellenwert: {frequency_threshold} msg/min"
+        )
 
         periodic_topics = set()
 
@@ -536,9 +542,11 @@ def analyze_topic_frequencies():
             else:
                 logger.debug(f"✨ Interessant: {topic} ({count} msgs, {frequency_per_min:.1f} msg/min)")
 
-        st.session_state.topic_recorder['periodic_topics'] = periodic_topics
+        st.session_state.topic_recorder["periodic_topics"] = periodic_topics
 
-        logger.info(f"✅ Analyse abgeschlossen: {len(periodic_topics)} periodische, {len(topic_counts) - len(periodic_topics)} interessante Topics")
+        logger.info(
+            f"✅ Analyse abgeschlossen: {len(periodic_topics)} periodische, {len(topic_counts) - len(periodic_topics)} interessante Topics"
+        )
 
     except Exception as e:
         logger.error(f"❌ Fehler bei Frequenz-Analyse: {e}", exc_info=True)
@@ -549,8 +557,8 @@ def show_analysis_results():
     st.subheader("📊 Analyse-Ergebnisse")
 
     topic_counts = topic_tracker.get_topic_counts()
-    periodic_topics = st.session_state.topic_recorder['periodic_topics']
-    analysis_duration = st.session_state.topic_recorder['analysis_duration']
+    periodic_topics = st.session_state.topic_recorder["periodic_topics"]
+    analysis_duration = st.session_state.topic_recorder["analysis_duration"]
 
     # Interessante vs. Periodische Topics
     interesting_topics = set(topic_counts.keys()) - periodic_topics
@@ -598,32 +606,35 @@ def start_recording():
         logger.info("📂 Topic-Recording wird gestartet...")
 
         # MQTT Client für Aufnahme konfigurieren
-        if st.session_state.topic_recorder['mqtt_client']:
-            mqtt_client = st.session_state.topic_recorder['mqtt_client']
+        if st.session_state.topic_recorder["mqtt_client"]:
+            mqtt_client = st.session_state.topic_recorder["mqtt_client"]
             # Topics abonnieren (falls sie deabonniert waren)
             mqtt_client.subscribe("#")
 
             # Session State aktualisieren
-            st.session_state.topic_recorder['recording'] = True
+            st.session_state.topic_recorder["recording"] = True
 
             # Globale Recording-Config für MQTT-Callback setzen
-            recording_dir = st.session_state.topic_recorder['current_recording_dir']
+            recording_dir = st.session_state.topic_recorder["current_recording_dir"]
             if recording_dir is None:
                 logger.error("❌ Kein Recording-Verzeichnis gesetzt")
                 return
 
             # Periodische Topics: Kombination aus Analyse + manuell konfiguriert
             from .settings_manager import SettingsManager
+
             settings_manager = SettingsManager()
             manual_periodic = set(settings_manager.get_topic_recorder_periodic_topics())
-            analyzed_periodic = st.session_state.topic_recorder['periodic_topics']
+            analyzed_periodic = st.session_state.topic_recorder["periodic_topics"]
 
             # Vereinigung beider Sets
             all_periodic_topics = manual_periodic | analyzed_periodic
 
             recording_config.start_recording(recording_dir, all_periodic_topics)
 
-            logger.info(f"✅ Topic-Recording gestartet - {len(all_periodic_topics)} periodische Topics ({len(analyzed_periodic)} analysiert, {len(manual_periodic)} manuell)")
+            logger.info(
+                f"✅ Topic-Recording gestartet - {len(all_periodic_topics)} periodische Topics ({len(analyzed_periodic)} analysiert, {len(manual_periodic)} manuell)"
+            )
         else:
             logger.error("❌ Kein MQTT Client verfügbar für Recording")
 
@@ -640,13 +651,13 @@ def stop_recording():
         recording_config.stop()
 
         # Recording stoppen
-        if st.session_state.topic_recorder['mqtt_client']:
-            mqtt_client = st.session_state.topic_recorder['mqtt_client']
+        if st.session_state.topic_recorder["mqtt_client"]:
+            mqtt_client = st.session_state.topic_recorder["mqtt_client"]
             mqtt_client.unsubscribe("#")
             logger.info("📡 MQTT Topics deabonniert")
 
         # Session State aktualisieren
-        st.session_state.topic_recorder['recording'] = False
+        st.session_state.topic_recorder["recording"] = False
 
         topic_count = topic_tracker.count()
         logger.info(f"✅ Topic-Recording beendet - {topic_count} Topics empfangen")
@@ -661,7 +672,7 @@ def on_message_received(client, userdata, msg):
         import json
 
         topic = msg.topic
-        payload = msg.payload.decode('utf-8', errors='replace')
+        payload = msg.payload.decode("utf-8", errors="replace")
         qos = msg.qos
         retain = msg.retain
 
@@ -702,10 +713,10 @@ def on_message_received(client, userdata, msg):
                     "qos": qos,
                     "retain": retain,
                     "timestamp": datetime.now().isoformat(),
-                    "type": "periodic"
+                    "type": "periodic",
                 }
 
-                with open(filepath, 'w', encoding='utf-8') as f:
+                with open(filepath, "w", encoding="utf-8") as f:
                     json.dump(topic_data, f, indent=2, ensure_ascii=False)
 
                 logger.debug(f"📂 Periodisch gespeichert: {filename}")
@@ -724,14 +735,13 @@ def on_message_received(client, userdata, msg):
                 "retain": retain,
                 "timestamp": datetime.now().isoformat(),
                 "sequence": sequence,
-                "type": "interesting"
+                "type": "interesting",
             }
 
-            with open(filepath, 'w', encoding='utf-8') as f:
+            with open(filepath, "w", encoding="utf-8") as f:
                 json.dump(topic_data, f, indent=2, ensure_ascii=False)
 
             logger.debug(f"📂 Sequenz gespeichert: {filename} (global seq: {sequence})")
 
     except Exception as e:
         logger.error(f"❌ Nachricht Verarbeitung Fehler: {e}")
-
