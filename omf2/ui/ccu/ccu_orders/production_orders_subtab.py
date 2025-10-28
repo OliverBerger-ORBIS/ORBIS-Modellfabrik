@@ -202,7 +202,32 @@ def _render_order_details(order, order_manager, i18n, is_completed=False):
         complete_production_plan = order_manager.get_complete_production_plan(order)
     if complete_production_plan:
         steps_label = f"{i18n.t('ccu_orders.card.production_steps')} ({len(complete_production_plan)})"
-        with st.expander(steps_label, expanded=False):
+        
+        # Compute expanded flag based on order completion state
+        is_order_completed = False
+        try:
+            status = order.get('status') if isinstance(order, dict) else getattr(order, 'status', None)
+            # determine completion by status or by last step
+            if status == 'COMPLETED':
+                is_order_completed = True
+            else:
+                last_step = None
+                steps = order.get('steps') if isinstance(order, dict) else getattr(order, 'steps', None)
+                if steps:
+                    last_step = steps[-1]
+                last_step_state = None
+                if isinstance(last_step, dict):
+                    last_step_state = last_step.get('state')
+                else:
+                    last_step_state = getattr(last_step, 'state', None) if last_step is not None else None
+                if last_step_state == 'COMPLETED':
+                    # if last step completed and overall status completed -> collapsed
+                    is_order_completed = status == 'COMPLETED'
+        except Exception:
+            is_order_completed = False
+        
+        expanded = not is_order_completed
+        with st.expander(steps_label, expanded=expanded):
             _render_production_steps(complete_production_plan, i18n, is_completed)
 
 
