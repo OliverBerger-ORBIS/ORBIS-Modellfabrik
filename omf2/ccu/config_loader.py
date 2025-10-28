@@ -16,6 +16,15 @@ from omf2.common.logger import get_logger
 
 logger = get_logger(__name__)
 
+# Import cache with defensive fallback
+try:
+    from omf2.common.cache import get_cache
+
+    _cache_available = True
+except ImportError:
+    logger.warning("Cache module not available, using direct loading for CCU configs")
+    _cache_available = False
+
 
 class CCUConfigLoader:
     """
@@ -28,6 +37,7 @@ class CCUConfigLoader:
     - Parallel to Registry Manager (system-technical info)
     - Domain-specific (CCU application configurations)
     - Direct access for UI components and Business Managers
+    - Uses TTL cache (OMF2_CACHE_TTL) for performance optimization
     """
 
     def __init__(self, config_path: Optional[Path] = None):
@@ -43,13 +53,11 @@ class CCUConfigLoader:
         else:
             self.config_path = Path(config_path)
 
-        self._cache: Dict[str, Dict[str, Any]] = {}
-
         logger.info(f"CCU Config Loader initialized with path: {self.config_path}")
 
     def _load_json_config(self, filename: str) -> Dict[str, Any]:
         """
-        Load JSON configuration file with caching.
+        Load JSON configuration file with TTL caching.
 
         Args:
             filename: Name of JSON file to load
@@ -61,9 +69,33 @@ class CCUConfigLoader:
             FileNotFoundError: If config file doesn't exist
             json.JSONDecodeError: If JSON is malformed
         """
-        if filename in self._cache:
-            return self._cache[filename]
+        # Use TTL cache if available
+        if _cache_available:
+            cache = get_cache()
+            cache_key = f"ccu_config:{filename}:{self.config_path}"
 
+            def loader():
+                return self._load_json_from_disk(filename)
+
+            return cache.get_or_set(cache_key, loader)
+        else:
+            # Fallback to direct loading
+            return self._load_json_from_disk(filename)
+
+    def _load_json_from_disk(self, filename: str) -> Dict[str, Any]:
+        """
+        Load JSON configuration file from disk.
+
+        Args:
+            filename: Name of JSON file to load
+
+        Returns:
+            Dictionary with configuration data
+
+        Raises:
+            FileNotFoundError: If config file doesn't exist
+            json.JSONDecodeError: If JSON is malformed
+        """
         config_file = self.config_path / filename
 
         if not config_file.exists():
@@ -73,8 +105,7 @@ class CCUConfigLoader:
             with open(config_file, encoding="utf-8") as f:
                 config_data = json.load(f)
 
-            self._cache[filename] = config_data
-            logger.debug(f"Loaded CCU config: {filename}")
+            logger.debug(f"Loaded CCU config from disk: {filename}")
 
             return config_data
 
@@ -125,9 +156,17 @@ class CCUConfigLoader:
         return config_data.get("_meta", {})
 
     def clear_cache(self):
-        """Clear configuration cache."""
-        self._cache.clear()
-        logger.debug("CCU config cache cleared")
+        """
+        Clear configuration cache.
+
+        Note: This clears the TTL cache. To fully clear, use the global cache's clear method.
+        """
+        if _cache_available:
+            cache = get_cache()
+            cache.clear()
+            logger.debug("CCU config TTL cache cleared")
+        else:
+            logger.debug("No cache to clear (cache not available)")
 
     def list_available_configs(self) -> list[str]:
         """
