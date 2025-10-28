@@ -7,10 +7,10 @@ Heading icons registry and helper.
 - Provides get_svg_inline(key, size_px=None, color=None, locale=None)
 """
 
-import logging
-import re
 from pathlib import Path
 from typing import Dict, Optional
+import re
+import logging
 
 logger = logging.getLogger(__name__)
 
@@ -31,34 +31,41 @@ def _scope_svg(svg: str) -> str:
         except Exception:
             logger.exception("scope_svg_styles failed; returning original SVG")
             return svg
+    # minimal fallback: do nothing
     return svg
 
 
 # --- Registry: logical keys -> filename (keep simple) -----------------------
 HEADING_ICON_FILES: Dict[str, str] = {
-    "DASHBOARD_ADMIN": "visualisierung.svg",
+    # CCU-TABS
+    "DASHBOARD": "visualisierung.svg",
     "ORDERS": "lieferung-bestellen.svg",
     "PROCESS": "gang.svg",
     "CONFIGURATION": "system.svg",
     "MODULES_TAB": "mehrere.svg",
+    # ADMIN-tabs
     "MESSAGE_CENTER": "zentral.svg",
     "GENERIC_STEERING": "dezentral_1.svg",
     "SYSTEM_LOGS": "log.svg",
     "ADMIN_SETTINGS": "unterstutzung.svg",
+    # ADMIN-Settings-subtabs
     "DASHBOOARD": "visualisierung.svg",
     "MQTT_CLIENTS": "satellitenschussel.svg",
     "GATEWAY": "router_1.svg",
-    "TOPIC": "etikett.svg",
+    "TOPIC": "ettikett.svg",
     "SCHEMAS": "diagramm.svg",
-    "MODULES_ADMIN": "mehrere.svg",
+    "MODULES_TAB_ADMIN": "mehrere.svg",
     "STATIONS": "dezentral.svg",
-    "TXT_CONTROLLERS": "system.svg",
-    "WORKPIECES": "box.svg",
+    "TXT_CONTROLLERS": "mixer.svg",
+    "WORKPIECES": "empty.svg",
+    # CCU-ORDERS-Subtab
     "PRODUCTION_ORDERS": "maschine.svg",
     "STORAGE_ORDERS": "ladung.svg",
+    # CCU-SUBTABS
     "FACTORY_CONFIGURATION": "grundriss.svg",
     "SHOPFLOOR_LAYOUT": "grundriss.svg",
 }
+
 
 # simple cache for loaded SVG contents
 _SVG_CACHE: Dict[str, str] = {}
@@ -82,15 +89,13 @@ def _load_svg_file(filename: str) -> Optional[str]:
         return None
 
 
-def get_svg_inline(
-    key: str, size_px: Optional[int] = None, color: Optional[str] = None, locale: Optional[str] = None
-) -> Optional[str]:
-    """
-    Return inline SVG HTML for the given logical key.
+def get_svg_inline(key: str, size_px: Optional[int] = None, color: Optional[str] = None, locale: Optional[str] = None) -> Optional[str]:
+    """Return inline SVG HTML for the given logical key.
+
     - key: logical registry key (from HEADING_ICON_FILES)
     - size_px: optional width/height injection
     - color: optional CSS color; if SVG uses currentColor, we wrap with a styled span
-    - locale: reserved (not used here) for API compatibility
+    - locale: not used in simple registry but kept for API compatibility
     """
     filename = HEADING_ICON_FILES.get(key)
     if not filename:
@@ -103,16 +108,13 @@ def get_svg_inline(
 
     # size injection (only if width/height missing)
     if size_px:
-        svg = re.sub(
-            r"<svg\b(?![^>]*\bwidth=)(?![^>]*\bheight=)", f'<svg width="{size_px}" height="{size_px}"', svg, count=1
-        )
+        svg = re.sub(r"<svg\\b(?![^>]*\\bwidth=)(?![^>]*\\bheight=)", f'<svg width="{size_px}" height="{size_px}"', svg, count=1)
 
     # color handling (heuristic)
     if color:
         if "currentColor" in svg or "--icon-fill" in svg:
-            return (
-                f'<span style="display:inline-block; color:{color}; line-height:0; vertical-align:middle;">{svg}</span>'
-            )
+            return f'<span style="display:inline-block; color:{color}; line-height:0; vertical-align:middle;">{svg}</span>'
+        # naive fallback: replace fill attributes
         svg_colored = re.sub(r'fill="[^"]+"', f'fill="{color}"', svg)
         return f'<span style="display:inline-block; line-height:0; vertical-align:middle;">{svg_colored}</span>'
 
@@ -120,5 +122,5 @@ def get_svg_inline(
 
 
 def get_recommended_size(key: str) -> Optional[int]:
-    # no recommendations in this simple registry
+    # No recommendations in this simplified registry; return None
     return None
