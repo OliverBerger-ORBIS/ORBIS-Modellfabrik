@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Unit tests for Route Utils START node fallback handling
+Unit tests for Route Utils START node handling
 
 Tests cover:
-- START node fallback when configured START node is missing
+- START node selection when FTS location is unknown (normal condition)
 - Empty graph handling (returns None with warning)
 - Normal routing when START node exists
 """
@@ -12,12 +12,12 @@ Tests cover:
 from omf2.ui.ccu.common.route_utils import build_graph, compute_route
 
 
-class TestStartNodeFallback:
-    """Test cases for START node fallback behavior"""
+class TestStartNodeHandling:
+    """Test cases for START node handling behavior"""
 
-    def test_start_node_fallback_to_first_node(self):
-        """Test fallback to first available node when START node is missing"""
-        # Create a minimal graph with nodes but missing the requested START node
+    def test_unknown_start_uses_first_node(self):
+        """Test using first available node when START node is unknown (normal condition)"""
+        # Create a minimal graph with nodes but unknown START location
         shopfloor_layout = {
             "modules": [
                 {"id": "MODULE_A", "serialNumber": "SN_A", "position": [0, 0], "type": "storage"},
@@ -32,15 +32,15 @@ class TestStartNodeFallback:
 
         graph = build_graph(shopfloor_layout)
 
-        # Request a START node that doesn't exist - should fallback to first node
-        missing_start = "NONEXISTENT_START"
+        # Request with unknown START node - should use first available node (normal operation)
+        unknown_start = "UNKNOWN_FTS_LOCATION"
         goal = "SN_B"
 
-        route = compute_route(graph, missing_start, goal)
+        route = compute_route(graph, unknown_start, goal)
 
-        # Should return a route (fallback occurred)
-        assert route is not None, "Route should not be None when fallback is possible"
-        # Route should start from a fallback node (first available node)
+        # Should return a route (first node selected)
+        assert route is not None, "Route should not be None when graph has nodes"
+        # Route should start from first available node
         assert len(route) > 0, "Route should have at least one node"
         # The route should end at the goal
         assert route[-1] == goal, f"Route should end at goal {goal}"
@@ -87,8 +87,8 @@ class TestStartNodeFallback:
         assert route[0] == "SN_START", "Route should start at START node"
         assert route[-1] == "SN_GOAL", "Route should end at GOAL node"
 
-    def test_fallback_selects_reachable_node(self):
-        """Test that fallback node can reach the goal"""
+    def test_first_node_can_reach_goal(self):
+        """Test that first node selection can successfully reach the goal"""
         # Create a connected graph
         shopfloor_layout = {
             "modules": [
@@ -106,10 +106,10 @@ class TestStartNodeFallback:
 
         graph = build_graph(shopfloor_layout)
 
-        # Request a missing START node with valid GOAL
-        route = compute_route(graph, "MISSING_START", "SN_C")
+        # Request with unknown START location with valid GOAL
+        route = compute_route(graph, "UNKNOWN_START", "SN_C")
 
-        # Should return a route (fallback occurred and route found)
-        assert route is not None, "Route should not be None when fallback is possible"
+        # Should return a route (first node selected and route found)
+        assert route is not None, "Route should not be None when graph is connected"
         # Route should end at the goal
         assert route[-1] == "SN_C", "Route should end at goal SN_C"

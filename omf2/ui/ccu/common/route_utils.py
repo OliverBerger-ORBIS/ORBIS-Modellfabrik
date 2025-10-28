@@ -123,22 +123,19 @@ def compute_route(graph: Dict, start_id: str, goal_id: str) -> Optional[List[str
     # Flexible lookup: resolve start_id and goal_id to primary keys
     id_to_primary = graph.get("id_to_primary", {})
 
-    # Resolve start node with fallback handling
+    # Resolve start node - if unknown, use first available node (normal for order start)
     resolved_start = id_to_primary.get(start_id, start_id)
     if resolved_start not in graph.get("nodes", {}):
-        # START node missing - implement graceful fallback
+        # START node not specified or unknown - select first available node
+        # This is normal when FTS location is unknown at order process start
         nodes = graph.get("nodes", {})
         if nodes:
-            # Fallback to first available node in the graph
-            fallback_node = next(iter(nodes.keys()))
-            logger.warning(
-                f"Start node '{start_id}' not found in graph. "
-                f"Falling back to first available node: '{fallback_node}'"
-            )
-            resolved_start = fallback_node
+            # Use first available node in the graph as starting point
+            resolved_start = next(iter(nodes.keys()))
+            logger.debug(f"Start node '{start_id}' not in graph. " f"Using first available node: '{resolved_start}'")
         else:
             # No nodes in graph - cannot proceed
-            logger.warning(f"Start node '{start_id}' not found and graph has no nodes. Cannot compute route.")
+            logger.warning(f"Cannot compute route: start node '{start_id}' not found and graph has no nodes.")
             return None
 
     # Resolve goal node
