@@ -16,11 +16,11 @@ logger = get_logger(__name__)
 
 # Import cache with defensive fallback
 try:
-    from omf2.ui.admin.cache import get_cache
+    from omf2.common.cache import get_cache
 
     _cache_available = True
 except ImportError:
-    logger.warning("Admin cache module not available, using direct loading")
+    logger.warning("Cache module not available, using direct loading")
     _cache_available = False
 
 

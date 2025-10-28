@@ -13,13 +13,13 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from omf2.ui.admin.cache import TTLCache, cached, get_cache
+from omf2.common.cache import TTLCache, cached, get_cache
 
 
 @pytest.fixture(autouse=True)
 def reset_cache():
     """Reset the global cache instance before each test."""
-    import omf2.ui.admin.cache as cache_module
+    import omf2.common.cache as cache_module
 
     cache_module._cache_instance = None
     yield
@@ -32,45 +32,61 @@ class TestTTLCache:
     def test_cache_disabled_by_default(self):
         """Test that cache is disabled when env var is not set"""
         with patch.dict(os.environ, {}, clear=False):
+            if "OMF2_CACHE_TTL" in os.environ:
+                del os.environ["OMF2_CACHE_TTL"]
             if "OMF2_ADMIN_CACHE_TTL" in os.environ:
                 del os.environ["OMF2_ADMIN_CACHE_TTL"]
             cache = TTLCache()
             assert not cache.is_enabled()
 
-    def test_cache_enabled_with_env_var(self):
-        """Test that cache is enabled when env var is set"""
+    def test_cache_enabled_with_generic_env_var(self):
+        """Test that cache is enabled with generic OMF2_CACHE_TTL env var"""
+        with patch.dict(os.environ, {"OMF2_CACHE_TTL": "30"}):
+            cache = TTLCache()
+            assert cache.is_enabled()
+
+    def test_cache_enabled_with_legacy_env_var(self):
+        """Test that cache is enabled with legacy OMF2_ADMIN_CACHE_TTL env var"""
         with patch.dict(os.environ, {"OMF2_ADMIN_CACHE_TTL": "30"}):
             cache = TTLCache()
             assert cache.is_enabled()
 
+    def test_cache_generic_env_var_takes_precedence(self):
+        """Test that OMF2_CACHE_TTL takes precedence over legacy env var"""
+        with patch.dict(os.environ, {"OMF2_CACHE_TTL": "30", "OMF2_ADMIN_CACHE_TTL": "60"}):
+            cache = TTLCache()
+            assert cache.is_enabled()
+            # Should use the generic env var value (30)
+            assert cache._default_ttl == 30.0
+
     def test_cache_disabled_with_zero_ttl(self):
         """Test that cache is disabled when TTL is 0"""
-        with patch.dict(os.environ, {"OMF2_ADMIN_CACHE_TTL": "0"}):
+        with patch.dict(os.environ, {"OMF2_CACHE_TTL": "0"}):
             cache = TTLCache()
             assert not cache.is_enabled()
 
     def test_cache_disabled_with_invalid_ttl(self):
         """Test that cache is disabled with invalid TTL value"""
-        with patch.dict(os.environ, {"OMF2_ADMIN_CACHE_TTL": "invalid"}):
+        with patch.dict(os.environ, {"OMF2_CACHE_TTL": "invalid"}):
             cache = TTLCache()
             assert not cache.is_enabled()
 
     def test_cache_stores_and_retrieves_values(self):
         """Test that cache can store and retrieve values"""
-        with patch.dict(os.environ, {"OMF2_ADMIN_CACHE_TTL": "60"}):
+        with patch.dict(os.environ, {"OMF2_CACHE_TTL": "60"}):
             cache = TTLCache()
             cache.set("test_key", "test_value")
             assert cache.get("test_key") == "test_value"
 
     def test_cache_returns_none_for_missing_key(self):
         """Test that cache returns None for non-existent keys"""
-        with patch.dict(os.environ, {"OMF2_ADMIN_CACHE_TTL": "60"}):
+        with patch.dict(os.environ, {"OMF2_CACHE_TTL": "60"}):
             cache = TTLCache()
             assert cache.get("nonexistent_key") is None
 
     def test_cache_expiration(self):
         """Test that cache entries expire after TTL"""
-        with patch.dict(os.environ, {"OMF2_ADMIN_CACHE_TTL": "0.1"}):
+        with patch.dict(os.environ, {"OMF2_CACHE_TTL": "0.1"}):
             cache = TTLCache()
             cache.set("expire_key", "expire_value", ttl=0.1)
 
@@ -85,7 +101,7 @@ class TestTTLCache:
 
     def test_cache_custom_ttl(self):
         """Test that cache respects custom TTL per key"""
-        with patch.dict(os.environ, {"OMF2_ADMIN_CACHE_TTL": "60"}):
+        with patch.dict(os.environ, {"OMF2_CACHE_TTL": "60"}):
             cache = TTLCache()
             cache.set("short_ttl", "value", ttl=0.1)
             cache.set("long_ttl", "value", ttl=60)
@@ -98,7 +114,7 @@ class TestTTLCache:
 
     def test_get_or_set_with_cache_hit(self):
         """Test get_or_set when value is in cache"""
-        with patch.dict(os.environ, {"OMF2_ADMIN_CACHE_TTL": "60"}):
+        with patch.dict(os.environ, {"OMF2_CACHE_TTL": "60"}):
             cache = TTLCache()
             call_count = [0]
 
@@ -118,7 +134,7 @@ class TestTTLCache:
 
     def test_get_or_set_with_cache_miss(self):
         """Test get_or_set when value is not in cache"""
-        with patch.dict(os.environ, {"OMF2_ADMIN_CACHE_TTL": "60"}):
+        with patch.dict(os.environ, {"OMF2_CACHE_TTL": "60"}):
             cache = TTLCache()
             call_count = [0]
 
@@ -137,7 +153,7 @@ class TestTTLCache:
 
     def test_cache_clear(self):
         """Test that cache can be cleared"""
-        with patch.dict(os.environ, {"OMF2_ADMIN_CACHE_TTL": "60"}):
+        with patch.dict(os.environ, {"OMF2_CACHE_TTL": "60"}):
             cache = TTLCache()
             cache.set("key1", "value1")
             cache.set("key2", "value2")
@@ -153,6 +169,8 @@ class TestTTLCache:
     def test_cache_disabled_get_returns_none(self):
         """Test that get returns None when cache is disabled"""
         with patch.dict(os.environ, {}, clear=False):
+            if "OMF2_CACHE_TTL" in os.environ:
+                del os.environ["OMF2_CACHE_TTL"]
             if "OMF2_ADMIN_CACHE_TTL" in os.environ:
                 del os.environ["OMF2_ADMIN_CACHE_TTL"]
             cache = TTLCache()
@@ -162,6 +180,8 @@ class TestTTLCache:
     def test_cache_disabled_get_or_set_always_calls_factory(self):
         """Test that get_or_set always calls factory when cache is disabled"""
         with patch.dict(os.environ, {}, clear=False):
+            if "OMF2_CACHE_TTL" in os.environ:
+                del os.environ["OMF2_CACHE_TTL"]
             if "OMF2_ADMIN_CACHE_TTL" in os.environ:
                 del os.environ["OMF2_ADMIN_CACHE_TTL"]
             cache = TTLCache()
@@ -182,7 +202,7 @@ class TestCachedDecorator:
 
     def test_cached_decorator_with_enabled_cache(self):
         """Test that @cached decorator caches function results"""
-        with patch.dict(os.environ, {"OMF2_ADMIN_CACHE_TTL": "60"}):
+        with patch.dict(os.environ, {"OMF2_CACHE_TTL": "60"}):
             call_count = [0]
 
             @cached(ttl=60)
@@ -203,6 +223,8 @@ class TestCachedDecorator:
     def test_cached_decorator_with_disabled_cache(self):
         """Test that @cached decorator works when cache is disabled"""
         with patch.dict(os.environ, {}, clear=False):
+            if "OMF2_CACHE_TTL" in os.environ:
+                del os.environ["OMF2_CACHE_TTL"]
             if "OMF2_ADMIN_CACHE_TTL" in os.environ:
                 del os.environ["OMF2_ADMIN_CACHE_TTL"]
 
@@ -220,7 +242,7 @@ class TestCachedDecorator:
 
     def test_cached_decorator_with_key_prefix(self):
         """Test @cached decorator with key prefix"""
-        with patch.dict(os.environ, {"OMF2_ADMIN_CACHE_TTL": "60"}):
+        with patch.dict(os.environ, {"OMF2_CACHE_TTL": "60"}):
             call_count = [0]
 
             @cached(ttl=60, key_prefix="test_prefix")
@@ -234,7 +256,7 @@ class TestCachedDecorator:
 
     def test_cached_decorator_with_arguments(self):
         """Test @cached decorator with function arguments"""
-        with patch.dict(os.environ, {"OMF2_ADMIN_CACHE_TTL": "60"}):
+        with patch.dict(os.environ, {"OMF2_CACHE_TTL": "60"}):
             call_count = [0]
 
             @cached(ttl=60)
