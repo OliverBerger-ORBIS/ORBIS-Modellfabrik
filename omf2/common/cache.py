@@ -1,11 +1,29 @@
 """
-Lightweight TTL cache for Admin tab manager/config loader calls.
+Lightweight TTL cache for manager/config loader calls across all modules.
 
 This module provides a simple time-to-live (TTL) cache to reduce latency
-and repeated I/O operations for admin dashboard config/manager loading.
+and repeated I/O operations for config/manager loading throughout the application.
 
-The cache is opt-in via the OMF2_ADMIN_CACHE_TTL environment variable.
+The cache is opt-in via the OMF2_CACHE_TTL environment variable.
 If unset or 0, caching is disabled.
+
+This provides a consistent caching pattern for all managers and config loaders:
+- RegistryManager
+- CCUConfigLoader
+- Admin dashboard config loading
+- Other manager/loader instances
+
+Usage:
+    from omf2.common.cache import get_cache, cached
+
+    # Using get_or_set pattern
+    cache = get_cache()
+    data = cache.get_or_set("key", lambda: expensive_load())
+
+    # Using decorator
+    @cached(ttl=60, key_prefix="mymodule")
+    def load_config():
+        return expensive_load()
 """
 
 import os
@@ -34,11 +52,18 @@ class TTLCache:
         """
         Check if caching is enabled via environment variable.
 
+        Checks OMF2_CACHE_TTL first (general), falls back to OMF2_ADMIN_CACHE_TTL (legacy).
+
         Returns:
             True if caching is enabled, False otherwise
         """
         try:
-            ttl_str = os.environ.get("OMF2_ADMIN_CACHE_TTL", "")
+            # Try generic env var first
+            ttl_str = os.environ.get("OMF2_CACHE_TTL", "")
+            if not ttl_str:
+                # Fall back to legacy admin-specific env var for backwards compatibility
+                ttl_str = os.environ.get("OMF2_ADMIN_CACHE_TTL", "")
+
             if ttl_str:
                 ttl_value = float(ttl_str)
                 if ttl_value > 0:
