@@ -27,9 +27,23 @@ def reload_storage_orders():
         all_active = order_manager.get_active_orders()
         all_completed = order_manager.get_completed_orders()
 
+        # DEBUG: Log all orders before filtering
+        logger.info(f"📦 BEFORE FILTER: {len(all_active)} active orders, {len(all_completed)} completed orders")
+        for order in all_active:
+            order_id = order.get("orderId", "N/A")[:8]
+            order_type = order.get("orderType", "N/A")
+            logger.info(f"  - Active Order {order_id}: orderType={order_type}")
+
         # Filter: Nur STORAGE Orders
         active_orders = [o for o in all_active if o.get("orderType") == "STORAGE"]
         completed_orders = [o for o in all_completed if o.get("orderType") == "STORAGE"]
+
+        # DEBUG: Log filtered results
+        logger.info(f"📦 AFTER FILTER: {len(active_orders)} STORAGE active, {len(completed_orders)} STORAGE completed")
+        for order in active_orders:
+            order_id = order.get("orderId", "N/A")[:8]
+            state = order.get("state", "N/A")
+            logger.info(f"  - STORAGE Order {order_id}: state={state}")
 
         # Store in session state
         st.session_state["storage_orders_active"] = active_orders
@@ -62,6 +76,12 @@ def show_storage_orders_subtab(i18n):
 
         active_orders = st.session_state.get("storage_orders_active", [])
         completed_orders = st.session_state.get("storage_orders_completed", [])
+
+        # DEBUG: Log what we're about to render
+        logger.info(f"📦 RENDERING: {len(active_orders)} active STORAGE orders, {len(completed_orders)} completed")
+        for order in active_orders:
+            order_id = order.get("orderId", "N/A")[:8]
+            logger.info(f"  - Rendering active STORAGE order {order_id}")
 
         st.markdown(f"### {i18n.t('ccu_orders.storage.title')}")
         st.markdown(i18n.t("ccu_orders.storage.subtitle"))
@@ -112,8 +132,11 @@ def _render_order_card(order, order_manager, i18n, is_completed=False):
         i18n: I18nManager Instanz
         is_completed: True für completed orders (ausgegraut)
     """
-    # Order Header für Expander
+    # DEBUG: Log that we're rendering this card
     order_id = order.get("orderId", "N/A")[:8]  # Kurze ID
+    logger.info(f"🎴 Rendering order card for STORAGE order {order_id}, is_completed={is_completed}")
+
+    # Order Header für Expander
     workpiece_type = order.get("type", "N/A")
     workpiece_icon = UISymbols.get_workpiece_icon(workpiece_type)
     state = order.get("state", "N/A")

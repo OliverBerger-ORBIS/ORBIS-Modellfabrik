@@ -111,6 +111,14 @@ class OrderManager:
                 production_steps = order.get("productionSteps", [])
                 order_id = order.get("orderId", "")
                 order_type = order.get("type", "")
+                order_type_classification = order.get("orderType", "")  # PRODUCTION or STORAGE
+
+                # DEBUG: Log order details
+                logger.info(
+                    f"📦 Processing order {order_id[:8] if order_id else 'unknown'}: "
+                    f"type={order_type}, orderType={order_type_classification}, "
+                    f"steps={len(production_steps)}"
+                )
 
                 if not production_steps or not order_id:
                     logger.debug(f"📦 No productionSteps or orderId in order {order_id[:8] if order_id else 'unknown'}")
@@ -259,6 +267,11 @@ class OrderManager:
         with self._lock:
             orders_list = list(self.active_orders.values())
             logger.debug(f"📋 Getting active orders: {len(orders_list)} orders")
+            # DEBUG: Log order types
+            for order in orders_list:
+                order_id = order.get("orderId", "N/A")[:8]
+                order_type = order.get("orderType", "N/A")
+                logger.debug(f"  - Active order {order_id}: orderType={order_type}")
             return orders_list
 
     def get_completed_orders(self) -> List[Dict[str, Any]]:
