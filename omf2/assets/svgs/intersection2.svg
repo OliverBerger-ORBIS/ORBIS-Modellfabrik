@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 960" width="960" height="960">
-  <!-- Intersection 2: Crossing roads with 5px width -->
-  <g fill="none" stroke="#666666" stroke-width="5" stroke-linecap="square">
+  <!-- Intersection 2: Crossing roads with 60px width, lighter gray -->
+  <g fill="none" stroke="#AAAAAA" stroke-width="60" stroke-linecap="square">
     <!-- Horizontal road crossing through center -->
     <line x1="0" y1="480" x2="960" y2="480"/>
     <!-- Vertical road crossing through center -->
