@@ -325,11 +325,13 @@ class TestCanonicalShopfloorAssets(unittest.TestCase):
             # Setup canonical shopfloor assets mapping
             self.asset_manager.module_icons = {
                 "COMPANY_rectangle": str(self.svgs_dir / "ORBIS_logo_RGB.svg"),
-                "COMPANY_square1": str(self.svgs_dir / "shelves.svg"),
-                "COMPANY_square2": str(self.svgs_dir / "conveyor_belt.svg"),
                 "SOFTWARE_rectangle": str(self.svgs_dir / "factory.svg"),
-                "SOFTWARE_square1": str(self.svgs_dir / "warehouse.svg"),
-                "SOFTWARE_square2": str(self.svgs_dir / "delivery_truck_speed.svg"),
+                # New logical attached asset keys
+                "HBW_SQUARE1": str(self.svgs_dir / "factory.svg"),
+                "HBW_SQUARE2": str(self.svgs_dir / "conveyor.svg"),
+                "DPS_SQUARE1": str(self.svgs_dir / "robot-arm.svg"),
+                "DPS_SQUARE2": str(self.svgs_dir / "order-tracking.svg"),
+                # Backward compatibility
                 "ORBIS": str(self.svgs_dir / "ORBIS_logo_RGB.svg"),
                 "DSP": str(self.svgs_dir / "factory.svg"),
             }
@@ -352,17 +354,17 @@ class TestCanonicalShopfloorAssets(unittest.TestCase):
         self.assertIsNotNone(result)
         self.assertIn("ORBIS_logo_RGB.svg", str(result))
 
-    def test_canonical_company_square1(self):
-        """Test: COMPANY_square1 liefert shelves.svg"""
-        result = self.asset_manager.get_module_icon_path("COMPANY_square1")
+    def test_hbw_square1_logical_key(self):
+        """Test: HBW_SQUARE1 liefert factory.svg"""
+        result = self.asset_manager.get_module_icon_path("HBW_SQUARE1")
         self.assertIsNotNone(result)
-        self.assertIn("shelves.svg", str(result))
+        self.assertIn("factory.svg", str(result))
 
-    def test_canonical_company_square2(self):
-        """Test: COMPANY_square2 liefert conveyor_belt.svg"""
-        result = self.asset_manager.get_module_icon_path("COMPANY_square2")
+    def test_hbw_square2_logical_key(self):
+        """Test: HBW_SQUARE2 liefert conveyor.svg"""
+        result = self.asset_manager.get_module_icon_path("HBW_SQUARE2")
         self.assertIsNotNone(result)
-        self.assertIn("conveyor_belt.svg", str(result))
+        self.assertIn("conveyor.svg", str(result))
 
     def test_canonical_software_rectangle(self):
         """Test: SOFTWARE_rectangle liefert factory.svg"""
@@ -370,17 +372,17 @@ class TestCanonicalShopfloorAssets(unittest.TestCase):
         self.assertIsNotNone(result)
         self.assertIn("factory.svg", str(result))
 
-    def test_canonical_software_square1(self):
-        """Test: SOFTWARE_square1 liefert warehouse.svg"""
-        result = self.asset_manager.get_module_icon_path("SOFTWARE_square1")
+    def test_dps_square1_logical_key(self):
+        """Test: DPS_SQUARE1 liefert robot-arm.svg"""
+        result = self.asset_manager.get_module_icon_path("DPS_SQUARE1")
         self.assertIsNotNone(result)
-        self.assertIn("warehouse.svg", str(result))
+        self.assertIn("robot-arm.svg", str(result))
 
-    def test_canonical_software_square2(self):
-        """Test: SOFTWARE_square2 liefert delivery_truck_speed.svg"""
-        result = self.asset_manager.get_module_icon_path("SOFTWARE_square2")
+    def test_dps_square2_logical_key(self):
+        """Test: DPS_SQUARE2 liefert order-tracking.svg"""
+        result = self.asset_manager.get_module_icon_path("DPS_SQUARE2")
         self.assertIsNotNone(result)
-        self.assertIn("delivery_truck_speed.svg", str(result))
+        self.assertIn("order-tracking.svg", str(result))
 
     def test_get_asset_file_company_rectangle(self):
         """Test: get_asset_file für COMPANY_rectangle"""
@@ -388,11 +390,11 @@ class TestCanonicalShopfloorAssets(unittest.TestCase):
         self.assertIsNotNone(result)
         self.assertIn("ORBIS_logo_RGB.svg", result)
 
-    def test_get_asset_file_software_square1(self):
-        """Test: get_asset_file für SOFTWARE_square1"""
-        result = self.asset_manager.get_asset_file("SOFTWARE_square1")
+    def test_get_asset_file_hbw_square1(self):
+        """Test: get_asset_file für HBW_SQUARE1"""
+        result = self.asset_manager.get_asset_file("HBW_SQUARE1")
         self.assertIsNotNone(result)
-        self.assertIn("warehouse.svg", result)
+        self.assertIn("factory.svg", result)
 
     def test_get_asset_file_fallback_to_empty(self):
         """Test: get_asset_file fallback zu empty.svg bei unbekanntem Key"""
@@ -407,10 +409,18 @@ class TestCanonicalShopfloorAssets(unittest.TestCase):
         self.assertIn("ORBIS_logo_RGB.svg", str(result))
 
     def test_get_shopfloor_asset_path_software(self):
-        """Test: get_shopfloor_asset_path für SOFTWARE assets"""
-        result = self.asset_manager.get_shopfloor_asset_path("SOFTWARE", "square1")
+        """Test: get_shopfloor_asset_path für SOFTWARE assets (rectangle only)"""
+        result = self.asset_manager.get_shopfloor_asset_path("SOFTWARE", "rectangle")
         self.assertIsNotNone(result)
-        self.assertIn("warehouse.svg", str(result))
+        self.assertIn("factory.svg", str(result))
+    
+    def test_get_shopfloor_asset_path_square_deprecated(self):
+        """Test: get_shopfloor_asset_path square assets are deprecated"""
+        # square1/square2 are no longer valid for get_shopfloor_asset_path
+        # These should now be accessed via logical keys (HBW_SQUARE1, DPS_SQUARE1, etc.)
+        result = self.asset_manager.get_shopfloor_asset_path("SOFTWARE", "square1")
+        # Should return None since square assets are deprecated in this method
+        self.assertIsNone(result)
 
     def test_legacy_empty1_deprecated(self):
         """Test: EMPTY1 keys are no longer supported in productive code"""
