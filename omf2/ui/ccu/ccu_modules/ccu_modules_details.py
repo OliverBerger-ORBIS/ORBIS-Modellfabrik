@@ -19,17 +19,9 @@ def show_module_details_section(ccu_gateway, i18n):
     try:
         st.markdown("### 🔧 Module Details")
 
-        # CACHING: Alle Manager und Daten nur einmal laden
-        # Cache invalidieren wenn nötig (z.B. bei Refresh)
-        if "module_details_cache" not in st.session_state or st.button(
-            "🔄 Refresh Module Cache", key="refresh_module_cache"
-        ):
-            if "refresh_module_cache" in st.session_state and st.session_state.refresh_module_cache:
-                # Cache löschen
-                if "module_details_cache" in st.session_state:
-                    del st.session_state.module_details_cache
-                st.session_state.refresh_module_cache = False
-
+        # CACHING: Load managers and data once, refresh happens via auto-refresh mechanism
+        # Cache is initialized once per session and refreshed automatically via check_and_reload()
+        if "module_details_cache" not in st.session_state:
             # ALLE MANAGER CACHEN
             module_manager = get_ccu_module_manager()
             from omf2.assets import get_asset_manager
