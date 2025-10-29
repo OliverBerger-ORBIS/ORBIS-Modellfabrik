@@ -3,7 +3,9 @@ OMF2 UI Symbol Definitions
 Centralized symbol management for consistent UI across all components
 """
 
-from typing import Dict
+import re
+from pathlib import Path
+from typing import Dict, Optional
 
 
 class UISymbols:
@@ -226,3 +228,85 @@ def get_status_icon(status: str) -> str:
 def get_functional_icon(function: str) -> str:
     """Convenience function to get functional icon"""
     return UISymbols.get_functional_icon(function)
+
+
+def get_icon_html(key: str, size_px: Optional[int] = 24) -> str:
+    """
+    Get icon as HTML, preferring SVG over emoji fallback.
+
+    This function implements a cascading lookup strategy:
+    1. Try to load heading SVG via omf2.assets.heading_icons.get_svg_inline()
+    2. Fall back to module icon via omf2.assets.asset_manager.get_module_icon_path()
+    3. Final fallback to emoji from registry (TAB_ICONS, STATUS_ICONS, FUNCTIONAL_ICONS)
+
+    Args:
+        key: Icon key (e.g., "DASHBOARD_ADMIN", "HBW", "success", "ccu_dashboard")
+        size_px: Size in pixels for the icon (default: 24)
+
+    Returns:
+        HTML string with either inline SVG or emoji in a span
+
+    Examples:
+        >>> get_icon_html("DASHBOARD_ADMIN", size_px=32)
+        '<svg width="32"...>...</svg>'
+
+        >>> get_icon_html("ccu_dashboard", size_px=24)
+        '<span style="font-size: 24px;">🏭</span>'
+    """
+    # Step 1: Try heading icons first
+    try:
+        from omf2.assets.heading_icons import get_svg_inline
+
+        svg_html = get_svg_inline(key, size_px=size_px)
+        if svg_html:
+            return svg_html
+    except Exception:
+        # heading_icons module not available or key not found
+        pass
+
+    # Step 2: Try module icons via asset_manager
+    try:
+        from omf2.assets.asset_manager import get_asset_manager, scope_svg_styles
+
+        asset_manager = get_asset_manager()
+        icon_path = asset_manager.get_module_icon_path(key.upper())
+
+        if icon_path:
+            icon_file = Path(icon_path)
+            if icon_file.exists():
+                # Read SVG content
+                svg_content = icon_file.read_text(encoding="utf-8")
+
+                # Apply CSS scoping to prevent class conflicts
+                svg_content = scope_svg_styles(svg_content)
+
+                # Remove existing width/height attributes
+                svg_content = re.sub(r'\s+width="[^"]*"', "", svg_content)
+                svg_content = re.sub(r'\s+height="[^"]*"', "", svg_content)
+
+                # Inject new width for proportional scaling
+                svg_content = re.sub(r"<svg\b", f'<svg width="{size_px}"', svg_content, count=1)
+
+                return svg_content
+    except Exception:
+        # asset_manager not available or error loading SVG
+        pass
+
+    # Step 3: Fall back to emoji from registry
+    emoji = None
+
+    # Try TAB_ICONS first
+    if key in UISymbols.TAB_ICONS:
+        emoji = UISymbols.TAB_ICONS[key]
+    # Try STATUS_ICONS
+    elif key in UISymbols.STATUS_ICONS:
+        emoji = UISymbols.STATUS_ICONS[key]
+    # Try FUNCTIONAL_ICONS
+    elif key in UISymbols.FUNCTIONAL_ICONS:
+        emoji = UISymbols.FUNCTIONAL_ICONS[key]
+
+    if emoji:
+        return f'<span style="font-size: {size_px}px;">{emoji}</span>'
+
+    # Ultimate fallback: return a placeholder
+    return f'<span style="font-size: {size_px}px;">⚙️</span>'
