@@ -13,6 +13,7 @@ import yaml
 
 from omf2.common.logger import get_logger
 from omf2.registry.manager.registry_manager import get_registry_manager
+from omf2.ui.utils.ui_refresh import request_refresh
 
 logger = get_logger(__name__)
 
@@ -74,7 +75,7 @@ def show_dashboard_gateway_configuration_subtab(i18n):
         with col2:
             if st.button("🔄 Reset"):
                 st.session_state.edited_refresh_triggers = yaml.dump(refresh_triggers, default_flow_style=False)
-                st.rerun()
+                request_refresh()
 
         # Show example
         st.divider()

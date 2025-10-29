@@ -12,6 +12,7 @@ import yaml
 from omf2.common.logger import get_logger
 from omf2.config.business_functions_loader import BusinessFunctionsLoader
 from omf2.ui.common.symbols import UISymbols
+from omf2.ui.utils.ui_refresh import request_refresh
 
 logger = get_logger(__name__)
 
@@ -302,7 +303,7 @@ def _reload_configuration(loader):
         st.session_state.business_functions_config = config
         st.success("✅ Configuration reloaded successfully!")
         logger.info("Business functions configuration reloaded")
-        st.rerun()
+        request_refresh()
     except Exception as e:
         logger.error(f"Failed to reload configuration: {e}")
         st.error(f"❌ Failed to reload configuration: {e}")
