@@ -277,6 +277,16 @@ def _generate_html_grid(
             background: rgba(255, 152, 0, 0.05);
             z-index: 2;
         }}
+        /* Highlight only squares (bottom) part of split cell for compound regions */
+        .cell-split.cell-highlight-squares .split-bottom {{
+            border: none !important;
+            background: rgba(255, 152, 0, 0.05);
+        }}
+        .cell-split.cell-highlight-squares .split-top {{
+            /* Rectangle remains unhighlighted */
+            border: 1px solid #87CEEB;
+            background: rgba(135, 206, 235, 0.3);
+        }}
         .cell-empty {{
             background: rgba(135, 206, 235, 0.1);
         }}
@@ -742,21 +752,21 @@ def _generate_split_cell_html(
     title_attr = f'title="{tooltip_text}"' if tooltip_text else ""
     
     # Determine highlighting behavior for split cells
-    # If this cell (0,0 or 0,3) is highlighted but the module below (1,0 or 1,3) is NOT highlighted,
-    # then we're highlighting only the rectangle (COMPANY/SOFTWARE selection)
-    # If both are highlighted, we're highlighting the compound region (HBW/DPS selection)
+    # Three cases:
+    # 1. Only rectangle position (0,0 or 0,3) is highlighted → highlight rectangle only (COMPANY/SOFTWARE)
+    # 2. Both rectangle and module below are highlighted → compound region (HBW/DPS), highlight squares only
+    # 3. No highlighting
+    module_below_pos = (row + 1, col)
+    rectangle_highlighted = highlight_cells and (row, col) in highlight_cells
+    module_highlighted = highlight_cells and module_below_pos in highlight_cells
+    
     cell_class = "cell cell-split"
-    if highlight_cells and (row, col) in highlight_cells:
-        module_below_pos = (row + 1, col)
-        if module_below_pos not in highlight_cells:
-            # Only this cell is highlighted → highlight rectangle only
-            cell_class += " highlight-rectangle-only"
-        else:
-            # Both cells are highlighted → compound highlight (will use bounding box)
-            cell_class += " cell-highlight"
-            # If this is part of a compound region (multiple cells), add compound-member class
-            if len(highlight_cells) > 1:
-                cell_class += " compound-member"
+    if rectangle_highlighted and not module_highlighted:
+        # Case 1: Only rectangle is highlighted (COMPANY/SOFTWARE selection)
+        cell_class += " highlight-rectangle-only"
+    elif rectangle_highlighted and module_highlighted:
+        # Case 2: Both highlighted → compound region (HBW/DPS), but show only squares highlighted
+        cell_class += " cell-highlight-squares compound-member"
 
     cell_html = f"""
     <div class="{cell_class}" {data_attr} {title_attr}>
