@@ -113,11 +113,16 @@ class OrderManager:
                 order_type = order.get("type", "")
                 order_type_classification = order.get("orderType", "")  # PRODUCTION or STORAGE
 
-                # DEBUG: Log order details
+                # DEBUG: Log order details with full message structure
                 logger.info(
                     f"📦 Processing order {order_id[:8] if order_id else 'unknown'}: "
                     f"type={order_type}, orderType={order_type_classification}, "
-                    f"steps={len(production_steps)}"
+                    f"steps={len(production_steps)}, full_order_keys={list(order.keys())[:10]}"
+                )
+
+                # DEBUG: Log actual orderType value to catch any case/whitespace issues
+                logger.debug(
+                    f"  🔍 orderType raw value: '{order_type_classification}' (type: {type(order_type_classification)})"
                 )
 
                 if not production_steps or not order_id:

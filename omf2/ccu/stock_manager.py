@@ -101,6 +101,13 @@ class StockManager:
             logger.debug(f"📦 Inventory updated from stock: {self.inventory}")
             logger.info(f"📦 Processed {len(stock_items)} stock items")
 
+            # DEBUG: Log inventory state after processing
+            inventory_count = len([v for v in self.inventory.values() if v is not None])
+            logger.info(
+                f"📦 Stock Manager inventory state: {inventory_count} items, "
+                f"inventory={{k: v for k, v in self.inventory.items() if v is not None}}"
+            )
+
         except Exception as e:
             logger.error(f"❌ Error updating inventory from stock data: {e}")
 
@@ -163,13 +170,23 @@ class StockManager:
             available = self.get_available_workpieces()
             need = self.get_workpiece_need()
 
-            return {
+            inventory_count = len([v for v in self.inventory.values() if v is not None])
+
+            result = {
                 "inventory": self.inventory.copy(),
                 "available": available,
                 "need": need,
                 "max_capacity": self.max_capacity,
                 "last_update": self.last_update_timestamp.isoformat() if self.last_update_timestamp else None,
             }
+
+            # DEBUG: Log what we're returning
+            logger.info(
+                f"📦 get_inventory_status() returning: {inventory_count} items, "
+                f"available={available}, inventory_keys={list(self.inventory.keys())}"
+            )
+
+            return result
 
     def get_formatted_timestamp(self) -> str:
         """Gibt den formatierten Zeitstempel zurück"""

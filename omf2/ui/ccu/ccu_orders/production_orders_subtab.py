@@ -28,9 +28,25 @@ def reload_orders():
         all_active = order_manager.get_active_orders()
         all_completed = order_manager.get_completed_orders()
 
+        # DEBUG: Log all orders before filtering
+        logger.info(f"📦 BEFORE FILTER: {len(all_active)} active orders, {len(all_completed)} completed orders")
+        for order in all_active:
+            order_id = order.get("orderId", "N/A")[:8]
+            order_type = order.get("orderType", "N/A")
+            logger.info(f"  - Active Order {order_id}: orderType={order_type}")
+
         # Filter: Nur PRODUCTION Orders
         active_orders = [o for o in all_active if o.get("orderType") == "PRODUCTION"]
         completed_orders = [o for o in all_completed if o.get("orderType") == "PRODUCTION"]
+
+        # DEBUG: Log filtered results
+        logger.info(
+            f"📦 AFTER FILTER: {len(active_orders)} PRODUCTION active, {len(completed_orders)} PRODUCTION completed"
+        )
+        for order in active_orders:
+            order_id = order.get("orderId", "N/A")[:8]
+            state = order.get("state", "N/A")
+            logger.info(f"  - PRODUCTION Order {order_id}: state={state}")
 
         # Store in session state
         st.session_state["production_orders_active"] = active_orders
@@ -50,45 +66,29 @@ def show_production_orders_subtab(i18n):
     logger.info("📝 Rendering Production Orders Subtab")
 
     try:
-        # NEW: Optional MQTT UI refresh integration (opt-in via configuration)
-        try:
-            from omf2.ui.components.mqtt_subscriber import (
-                get_mqtt_ws_url,
-                is_mqtt_ui_enabled,
-                mqtt_subscriber_component,
-            )
-
-            mqtt_ws_url = get_mqtt_ws_url()
-
-            if mqtt_ws_url and is_mqtt_ui_enabled():
-                # MQTT UI refresh is enabled
-                logger.debug("🔌 MQTT UI refresh enabled for production orders")
-
-                # Subscribe to MQTT refresh topic
-                mqtt_message = mqtt_subscriber_component(
-                    broker_url=mqtt_ws_url,
-                    topic="omf2/ui/refresh/order_updates",
-                    key="ui_mqtt_production_orders",
-                )
-
-                # If we received a message, trigger reload
-                if mqtt_message:
-                    logger.debug(f"📨 MQTT refresh message received: {mqtt_message}")
-                    reload_orders()
-
-        except Exception as mqtt_error:
-            logger.debug(f"⚠️ MQTT UI component not available or error: {mqtt_error}")
-
-        # FALLBACK: Use production_orders_refresh_helper for robust polling + compare
+        # Use production_orders_refresh_helper for consistent auto-refresh (same as storage_orders_subtab)
         check_and_reload(group="order_updates", reload_callback=reload_orders, interval_ms=1000)
 
         # Get data from session state (populated by reload_orders callback)
-        # If not yet populated, load it now
+        # If not yet populated OR if empty, load it now (same pattern as storage_orders_subtab)
         if "production_orders_active" not in st.session_state:
+            logger.info("🔄 production_orders_active not in session state, calling reload_orders()")
+            reload_orders()
+        elif not st.session_state.get("production_orders_active") and not st.session_state.get(
+            "production_orders_completed"
+        ):
+            # Session state exists but is empty - reload to get fresh data (same pattern as storage_orders_subtab)
+            logger.info("🔄 production_orders are empty in session state, calling reload_orders()")
             reload_orders()
 
         active_orders = st.session_state.get("production_orders_active", [])
         completed_orders = st.session_state.get("production_orders_completed", [])
+
+        # DEBUG: Log what we're about to render
+        logger.info(f"📦 RENDERING: {len(active_orders)} active PRODUCTION orders, {len(completed_orders)} completed")
+        for order in active_orders:
+            order_id = order.get("orderId", "N/A")[:8]
+            logger.info(f"  - Rendering active PRODUCTION order {order_id}")
 
         # Get order_manager for rendering operations
         order_manager = get_order_manager()
@@ -139,8 +139,11 @@ def _render_order_card(order, order_manager, i18n, is_completed=False):
         i18n: I18nManager Instanz
         is_completed: True für completed orders (ausgegraut)
     """
-    # Order Header für Expander
+    # DEBUG: Log that we're rendering this card (same as storage_orders_subtab)
     order_id = order.get("orderId", "N/A")[:8]  # Kurze ID
+    logger.info(f"🎴 Rendering order card for PRODUCTION order {order_id}, is_completed={is_completed}")
+
+    # Order Header für Expander
     workpiece_type = order.get("type", "N/A")
     workpiece_icon = UISymbols.get_workpiece_icon(workpiece_type)
     state = order.get("state", "N/A")

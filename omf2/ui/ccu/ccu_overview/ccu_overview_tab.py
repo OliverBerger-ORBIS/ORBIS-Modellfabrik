@@ -50,11 +50,9 @@ def render_ccu_overview_tab(ccu_gateway=None, registry_manager=None):
         st.markdown(i18n.t("ccu_overview.subtitle"))
 
         # Create subtabs (i18n: Alle Tab-Titel übersetzt, Icons bleiben universell)
-        tab1, tab2, tab3, tab4, tab5 = st.tabs(
+        tab1, tab2, tab3 = st.tabs(
             [
                 f"{UISymbols.get_functional_icon('product_catalog')} {i18n.t('ccu_overview.tabs.product_catalog')}",
-                f"{UISymbols.get_functional_icon('customer_order')} {i18n.t('ccu_overview.tabs.customer_orders')}",
-                f"{UISymbols.get_functional_icon('purchase_order')} {i18n.t('ccu_overview.tabs.purchase_orders')}",
                 f"{UISymbols.get_functional_icon('inventory')} {i18n.t('ccu_overview.tabs.inventory')}",
                 f"{UISymbols.get_functional_icon('sensor_data')} {i18n.t('ccu_overview.tabs.sensor_data')}",
             ]
@@ -66,21 +64,11 @@ def render_ccu_overview_tab(ccu_gateway=None, registry_manager=None):
             render_product_catalog_subtab(ccu_gateway, registry_manager, asset_manager)
 
         with tab2:
-            from omf2.ui.ccu.ccu_overview.customer_order_subtab import render_customer_order_subtab
-
-            render_customer_order_subtab(ccu_gateway, registry_manager, asset_manager)
-
-        with tab3:
-            from omf2.ui.ccu.ccu_overview.purchase_order_subtab import render_purchase_order_subtab
-
-            render_purchase_order_subtab(ccu_gateway, registry_manager, asset_manager)
-
-        with tab4:
             from omf2.ui.ccu.ccu_overview.inventory_subtab import render_inventory_subtab
 
             render_inventory_subtab(ccu_gateway, registry_manager, asset_manager)
 
-        with tab5:
+        with tab3:
             from omf2.ui.ccu.ccu_overview.sensor_data_subtab import render_sensor_data_subtab
 
             render_sensor_data_subtab(ccu_gateway, registry_manager, asset_manager)
