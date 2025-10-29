@@ -29,14 +29,16 @@ humidity:
 
 # Brightness/Light configuration
 brightness:
-  max_lux: 4000.0  # Maximum lux value for 100% normalization
+  max_lux: 65000.0  # Maximum lux value for 100% normalization (LDR/BME680 range)
   unit: "lux"
   gauge:
     color_ranges:
-      - [0, 20, "darkblue"]   # Dark
-      - [20, 50, "blue"]      # Dim
-      - [50, 80, "yellow"]    # Bright
-      - [80, 100, "orange"]   # Very bright
+      - [0, 5, "darkblue"]    # Dunkel, Nacht (0-50 lx)
+      - [5, 15, "navy"]       # Innenraum, gedämpft (50-500 lx)
+      - [15, 30, "lightblue"] # Normale Raumbeleuchtung (500-2000 lx)
+      - [30, 60, "yellow"]    # Helles Zimmer (2000-10000 lx)
+      - [60, 80, "orange"]    # Draußen, bewölkt (10000-30000 lx)
+      - [80, 100, "red"]      # Sonnig, pralle Sonne (30000-100000 lx)
 
 # Air pressure configuration
 pressure:
@@ -67,3 +69,22 @@ iaq:
     moderate: "Moderate"
     unhealthy: "Unhealthy"
     hazard: "Hazardous"
+
+# Air Quality Score (AQ) configuration
+aq:
+  min: 0.0    # Minimum AQ score (0 = sehr gut)
+  max: 5.0    # Maximum AQ score (5 = schlecht)
+  unit: "AQ"
+  bar_chart:
+    color_ranges:
+      - [0, 1, "#28a745"]     # 0-1: Sehr gut (Grün)
+      - [1, 2, "#90EE90"]     # 1-2: Gut (Hellgrün)
+      - [2, 3, "#ffc107"]     # 2-3: Mäßig (Gelb)
+      - [3, 4, "#fd7e14"]     # 3-4: Schlecht (Orange)
+      - [4, 5, "#dc3545"]     # 4-5: Sehr schlecht (Rot)
+    labels:
+      - "Sehr gut"
+      - "Gut"
+      - "Mäßig"
+      - "Schlecht"
+      - "Sehr schlecht"

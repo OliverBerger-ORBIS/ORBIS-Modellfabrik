@@ -163,7 +163,10 @@ class SensorManager:
                 "humidity": sensor_payload.get("h", 0.0),  # ✅ Korrekt: "h"
                 "pressure": sensor_payload.get("p", 0.0),  # ✅ Korrekt: "p"
                 "air_quality": sensor_payload.get("iaq", 0.0),  # ✅ Korrekt: "iaq" (nicht "aq")
-                "timestamp": sensor_payload.get("timestamp", ""),
+                "aq_score": sensor_payload.get("aq", 0.0),  # ✅ NEU: AQ Score (0-5)
+                "timestamp": sensor_payload.get(
+                    "ts", sensor_payload.get("timestamp", "")
+                ),  # ✅ Korrekt: "ts" für BME680
                 "message_count": 1,
             }
         elif "/ldr" in topic:
@@ -209,6 +212,7 @@ class SensorManager:
                     "humidity": bme680_data.get("humidity", 0.0),
                     "pressure": bme680_data.get("pressure", 0.0),
                     "air_quality": bme680_data.get("air_quality", 0.0),
+                    "aq_score": bme680_data.get("aq_score", 0.0),  # ✅ NEU: AQ Score
                 }
             )
 

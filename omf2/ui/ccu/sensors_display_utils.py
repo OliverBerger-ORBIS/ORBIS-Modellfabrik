@@ -43,8 +43,9 @@ def _get_default_config() -> Dict:
     return {
         "temperature": {"min": -30.0, "max": 60.0, "unit": "°C"},
         "humidity": {"min": 0.0, "max": 100.0, "unit": "%"},
-        "brightness": {"max_lux": 1000.0, "unit": "lux"},
+        "brightness": {"max_lux": 65000.0, "unit": "lux"},
         "pressure": {"min": 900.0, "max": 1100.0, "unit": "hPa"},
+        "aq": {"min": 0.0, "max": 5.0, "unit": "AQ"},
         "iaq": {
             "thresholds": {"good": 50, "moderate": 100, "unhealthy": 150},
             "colors": {
@@ -104,23 +105,31 @@ def percent_from_range(value: float, min_val: float, max_val: float) -> float:
     return clamp(percent, 0.0, 100.0)
 
 
-def lux_to_percent(lux: float, max_lux: float = 1000.0) -> float:
+def lux_to_percent(lux: float, max_lux: float = 65000.0) -> float:
     """
-    Convert lux value to percentage (0-100%)
+    Convert lux value to percentage (0-100%) using logarithmic scale
+    for better human perception of brightness levels.
 
     Args:
         lux: Light intensity in lux
-        max_lux: Maximum lux value for 100% (default: 1000)
+        max_lux: Maximum lux value for 100% (default: 65000, configurable via sensors_display.yml)
 
     Returns:
         float: Percentage (0-100), never exceeds 100%
     """
     if max_lux <= 0:
-        logger.warning(f"Invalid max_lux: {max_lux}, using default 1000")
-        max_lux = 1000.0
+        logger.warning(f"Invalid max_lux: {max_lux}, using default 65000")
+        max_lux = 65000.0
 
-    # Convert to percentage and clamp to 0-100
-    percent = (lux / max_lux) * 100.0
+    # Logarithmic conversion for better human perception
+    # Formula: log(1 + lux) / log(1 + max_lux) * 100
+    import math
+
+    if lux <= 0:
+        return 0.0
+
+    # Logarithmic scale: more realistic brightness perception
+    percent = (math.log(1 + lux) / math.log(1 + max_lux)) * 100.0
     return clamp(percent, 0.0, 100.0)
 
 
@@ -241,7 +250,7 @@ def normalize_brightness(lux: float, config: Dict = None) -> float:
     if config is None:
         config = _get_default_config()
 
-    max_lux = config.get("brightness", {}).get("max_lux", 1000.0)
+    max_lux = config.get("brightness", {}).get("max_lux", 65000.0)
     return lux_to_percent(lux, max_lux)
 
 
@@ -266,6 +275,111 @@ def normalize_pressure(pressure: float, config: Dict = None) -> float:
     return percent_from_range(pressure, min_pressure, max_pressure)
 
 
+def normalize_aq(aq_value: float, config: Dict = None) -> float:
+    """
+    Normalize AQ (Air Quality Score) to percentage based on configured range
+    AQ scale: 0 = sehr gut, 5 = schlecht
+
+    Args:
+        aq_value: AQ score (0-5)
+        config: Optional configuration dict (uses default if None)
+
+    Returns:
+        float: Percentage (0-100)
+    """
+    if config is None:
+        config = _get_default_config()
+
+    aq_config = config.get("aq", {})
+    min_aq = aq_config.get("min", 0.0)
+    max_aq = aq_config.get("max", 5.0)
+
+    return percent_from_range(aq_value, min_aq, max_aq)
+
+
+def aq_level(aq_value: float, config: Dict = None) -> str:
+    """
+    Determine AQ level based on score (0-5 scale)
+
+    Args:
+        aq_value: AQ score (0-5)
+        config: Optional configuration dict (uses default if None)
+
+    Returns:
+        str: Level name ('sehr_gut', 'gut', 'maessig', 'schlecht', 'sehr_schlecht')
+    """
+    if config is None:
+        config = _get_default_config()
+
+    if aq_value <= 1.0:
+        return "sehr_gut"
+    elif aq_value <= 2.0:
+        return "gut"
+    elif aq_value <= 3.0:
+        return "maessig"
+    elif aq_value <= 4.0:
+        return "schlecht"
+    else:
+        return "sehr_schlecht"
+
+
+def aq_color(aq_value: float, config: Dict = None) -> str:
+    """
+    Get color for AQ value based on bar chart color ranges
+
+    Args:
+        aq_value: AQ score (0-5)
+        config: Optional configuration dict (uses default if None)
+
+    Returns:
+        str: Hex color code
+    """
+    if config is None:
+        config = _get_default_config()
+
+    bar_config = config.get("aq", {}).get("bar_chart", {})
+    color_ranges = bar_config.get(
+        "color_ranges",
+        [
+            [0, 1, "#28a745"],  # Sehr gut
+            [1, 2, "#90EE90"],  # Gut
+            [2, 3, "#ffc107"],  # Mäßig
+            [3, 4, "#fd7e14"],  # Schlecht
+            [4, 5, "#dc3545"],  # Sehr schlecht
+        ],
+    )
+
+    for min_val, max_val, color in color_ranges:
+        if min_val <= aq_value < max_val:
+            return color
+
+    return "#808080"  # Default gray
+
+
+def aq_label(aq_value: float, config: Dict = None) -> str:
+    """
+    Get human-readable label for AQ value
+
+    Args:
+        aq_value: AQ score (0-5)
+        config: Optional configuration dict (uses default if None)
+
+    Returns:
+        str: Human-readable label
+    """
+    if config is None:
+        config = _get_default_config()
+
+    bar_config = config.get("aq", {}).get("bar_chart", {})
+    labels = bar_config.get("labels", ["Sehr gut", "Gut", "Mäßig", "Schlecht", "Sehr schlecht"])
+
+    level = aq_level(aq_value, config)
+    level_map = {"sehr_gut": 0, "gut": 1, "maessig": 2, "schlecht": 3, "sehr_schlecht": 4}
+
+    index = level_map.get(level, 0)
+    return labels[index] if index < len(labels) else "Unknown"
+
+
 def get_iaq_info(iaq_value: float, config: Dict = None) -> Tuple[str, str, str]:
     """
     Get complete IAQ information (level, color, label)
@@ -283,5 +397,26 @@ def get_iaq_info(iaq_value: float, config: Dict = None) -> Tuple[str, str, str]:
     level = iaq_level(iaq_value, config)
     color = iaq_color(iaq_value, config)
     label = iaq_label(iaq_value, config)
+
+    return level, color, label
+
+
+def get_aq_info(aq_value: float, config: Dict = None) -> Tuple[str, str, str]:
+    """
+    Get complete AQ information (level, color, label)
+
+    Args:
+        aq_value: AQ score (0-5)
+        config: Optional configuration dict (uses default if None)
+
+    Returns:
+        Tuple[str, str, str]: (level, color, label)
+    """
+    if config is None:
+        config = _get_default_config()
+
+    level = aq_level(aq_value, config)
+    color = aq_color(aq_value, config)
+    label = aq_label(aq_value, config)
 
     return level, color, label
