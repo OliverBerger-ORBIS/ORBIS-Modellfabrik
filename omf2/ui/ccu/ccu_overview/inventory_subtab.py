@@ -138,10 +138,7 @@ def render_inventory_subtab(ccu_gateway: CcuGateway, registry_manager, asset_man
     # Add auto-refresh support using the same pattern as storage_orders_subtab
     refresh_triggered = False
     try:
-        from omf2.ui.ccu.production_orders_refresh_helper import check_and_reload, ensure_autorefresh_state
-
-        # Ensure auto-refresh is initialized (will use st_autorefresh if available)
-        ensure_autorefresh_state(group="stock_updates", interval_ms=1000)
+        from omf2.ui.ccu.production_orders_refresh_helper import check_and_reload
 
         # Use stock_updates refresh group with polling + compare (same pattern as storage_orders_subtab)
         refresh_triggered = check_and_reload(group="stock_updates", reload_callback=reload_inventory, interval_ms=1000)
