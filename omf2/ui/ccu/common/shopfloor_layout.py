@@ -279,13 +279,16 @@ def _generate_html_grid(
         }}
         /* Highlight only squares (bottom) part of split cell for compound regions */
         .cell-split.cell-highlight-squares .split-bottom {{
-            border: none !important;
             background: rgba(255, 152, 0, 0.05);
         }}
         .cell-split.cell-highlight-squares .split-top {{
             /* Rectangle remains unhighlighted */
-            border: 1px solid #87CEEB;
             background: rgba(135, 206, 235, 0.3);
+        }}
+        .cell-split.cell-highlight-squares {{
+            /* No border on the split cell itself when highlighting squares+module */
+            border: 1px solid #e0e0e0 !important;
+            background: transparent !important;
         }}
         .cell-empty {{
             background: rgba(135, 206, 235, 0.1);
@@ -393,8 +396,12 @@ def _generate_html_grid(
             cells_html.append(cell_html)
 
     # Generate compound region highlight overlay if multiple cells are highlighted
+    # OR if single cell is HBW/DPS (needs squares+module bounding box)
     compound_highlight_html = ""
-    if highlight_cells and len(highlight_cells) > 1:
+    if highlight_cells and (len(highlight_cells) > 1 or 
+                            (len(highlight_cells) == 1 and 
+                             ((highlight_cells[0][0] == 1 and highlight_cells[0][1] == 0) or
+                              (highlight_cells[0][0] == 1 and highlight_cells[0][1] == 3)))):
         compound_highlight_html = _generate_compound_highlight_overlay(
             highlight_cells, cell_width, cell_height
         )
@@ -454,6 +461,10 @@ def _generate_compound_highlight_overlay(
 ) -> str:
     """
     Generate HTML overlay for compound region highlighting (multi-cell bounding box).
+    
+    Special handling for HBW/DPS: when highlighting cell at [1,0] or [1,3],
+    the bounding box should start from the squares (bottom half of split cell at row 0)
+    and extend to the main module cell at row 1.
 
     Args:
         highlight_cells: List of (row, col) tuples to highlight
@@ -463,7 +474,33 @@ def _generate_compound_highlight_overlay(
     Returns:
         HTML string with absolute-positioned div for bounding box
     """
-    if not highlight_cells or len(highlight_cells) < 2:
+    if not highlight_cells or len(highlight_cells) < 1:
+        return ""
+    
+    # Single cell - no compound overlay needed
+    if len(highlight_cells) == 1:
+        # Check if this is HBW (position [1,0]) or DPS (position [1,3])
+        # These need special bounding box from squares to main module
+        row, col = highlight_cells[0]
+        if (row == 1 and col == 0) or (row == 1 and col == 3):
+            # HBW or DPS - draw bounding box from squares (bottom half of row 0) to main module (row 1)
+            # Start from middle of split cell at row 0
+            top_px = 0 * cell_height + (cell_height // 2)  # Start from bottom half of split cell
+            left_px = col * cell_width
+            width_px = cell_width
+            height_px = (1 * cell_height) + (cell_height // 2)  # From middle of row 0 to bottom of row 1
+            
+            return f"""
+            <div class="compound-highlight-overlay" style="
+                top: {top_px}px;
+                left: {left_px}px;
+                width: {width_px}px;
+                height: {height_px}px;
+                border: 4px solid #FF9800;
+                border-radius: 4px;
+                box-shadow: 0 0 12px rgba(255, 152, 0, 0.3);
+            "></div>
+            """
         return ""
 
     # Find bounding box of highlighted cells
@@ -754,18 +791,21 @@ def _generate_split_cell_html(
     # Determine highlighting behavior for split cells
     # Three cases:
     # 1. Only rectangle position (0,0 or 0,3) is highlighted → highlight rectangle only (COMPANY/SOFTWARE)
-    # 2. Both rectangle and module below are highlighted → compound region (HBW/DPS), highlight squares only
+    # 2. Module below ([1,0] or [1,3]) is highlighted → compound region (HBW/DPS), highlight squares only
     # 3. No highlighting
     module_below_pos = (row + 1, col)
     rectangle_highlighted = highlight_cells and (row, col) in highlight_cells
     module_highlighted = highlight_cells and module_below_pos in highlight_cells
     
+    # Check if module below is HBW (col=0) or DPS (col=3)
+    is_compound_module_below = (col == 0 or col == 3)
+    
     cell_class = "cell cell-split"
     if rectangle_highlighted and not module_highlighted:
         # Case 1: Only rectangle is highlighted (COMPANY/SOFTWARE selection)
         cell_class += " highlight-rectangle-only"
-    elif rectangle_highlighted and module_highlighted:
-        # Case 2: Both highlighted → compound region (HBW/DPS), but show only squares highlighted
+    elif module_highlighted and is_compound_module_below:
+        # Case 2: Module below is highlighted (HBW/DPS) → compound region, show squares highlighted
         cell_class += " cell-highlight-squares compound-member"
 
     cell_html = f"""
