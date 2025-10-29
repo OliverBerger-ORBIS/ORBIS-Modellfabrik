@@ -92,7 +92,7 @@ def reload_inventory():
     in session state for use by the UI rendering logic.
     """
     try:
-        logger.debug("🔄 reload_inventory() called - loading fresh stock data")
+        logger.info("🔄 reload_inventory() called - loading fresh stock data")
         stock_manager = get_stock_manager()
         inventory_status = stock_manager.get_inventory_status()
 
@@ -101,24 +101,26 @@ def reload_inventory():
             inventory = inventory_status.get("inventory", {})
             inventory_count = len([v for v in inventory.values() if v is not None])
             available = inventory_status.get("available", {})
+            inventory_items = {k: v for k, v in inventory.items() if v is not None}
             logger.info(
-                f"📦 Stock Manager returned: {inventory_count} items, "
-                f"available={available}, inventory_keys={list(inventory.keys())[:5]}..."
+                f"📦 reload_inventory: Stock Manager returned: {inventory_count} items, "
+                f"available={available}, inventory={inventory_items}"
             )
         else:
-            logger.warning("⚠️ Stock Manager returned None for inventory_status")
+            logger.warning("⚠️ reload_inventory: Stock Manager returned None for inventory_status")
 
         # Store in session state
         st.session_state["inventory_status"] = inventory_status
+        logger.info(f"📦 reload_inventory: Stored inventory_status in session_state")
 
         if inventory_status and inventory_status.get("inventory"):
             inventory_count = len([v for v in inventory_status["inventory"].values() if v is not None])
-            logger.debug(f"✅ Loaded inventory with {inventory_count} items")
+            logger.info(f"✅ reload_inventory: Loaded inventory with {inventory_count} items into session_state")
         else:
-            logger.debug("ℹ️ No inventory data available yet")
+            logger.info("ℹ️ reload_inventory: No inventory data available yet")
 
     except Exception as e:
-        logger.error(f"❌ Error in reload_inventory(): {e}")
+        logger.error(f"❌ Error in reload_inventory(): {e}", exc_info=True)
         # Set empty on error to prevent UI crashes
         st.session_state["inventory_status"] = None
 
@@ -179,10 +181,10 @@ def render_inventory_subtab(ccu_gateway: CcuGateway, registry_manager, asset_man
         logger.info(f"📦 render_inventory_subtab: inventory_status in session_state = {inventory_status is not None}")
         if inventory_status:
             inventory = inventory_status.get("inventory", {})
+            inventory_items = {k: v for k, v in inventory.items() if v is not None}
             logger.info(
-                f"📦 render_inventory_subtab: inventory keys={list(inventory.keys())}, "
-                f"available={inventory_status.get('available', {})}, "
-                f"inventory_values={[v for v in inventory.values() if v is not None]}"
+                f"📦 render_inventory_subtab: inventory items={inventory_items}, "
+                f"available={inventory_status.get('available', {})}"
             )
         else:
             logger.warning("⚠️ render_inventory_subtab: No inventory_status in session_state")
@@ -191,7 +193,8 @@ def render_inventory_subtab(ccu_gateway: CcuGateway, registry_manager, asset_man
             # Echte MQTT-Daten vorhanden
             inventory_data = inventory_status["inventory"]
             available = inventory_status.get("available", {"BLUE": 0, "WHITE": 0, "RED": 0})
-            logger.info(f"✅ Displaying inventory: {len([v for v in inventory_data.values() if v is not None])} items")
+            inventory_count = len([v for v in inventory_data.values() if v is not None])
+            logger.info(f"✅ render_inventory_subtab: Displaying inventory: {inventory_count} items")
         else:
             # Fallback: Leeres Grid
             inventory_data = {

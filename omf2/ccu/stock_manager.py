@@ -103,9 +103,10 @@ class StockManager:
 
             # DEBUG: Log inventory state after processing
             inventory_count = len([v for v in self.inventory.values() if v is not None])
+            inventory_items = {k: v for k, v in self.inventory.items() if v is not None}
             logger.info(
                 f"📦 Stock Manager inventory state: {inventory_count} items, "
-                f"inventory={{k: v for k, v in self.inventory.items() if v is not None}}"
+                f"inventory={inventory_items}"
             )
 
         except Exception as e:
