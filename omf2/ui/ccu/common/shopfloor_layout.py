@@ -252,7 +252,7 @@ def _generate_html_grid(
         }}
         /* Cells that are part of a compound region - no individual borders */
         .cell-highlight.compound-member {{
-            border: 1px solid #e0e0e0 !important;  /* Restore default border */
+            border: none !important;  /* Remove border for seamless compound appearance */
             background: rgba(255, 152, 0, 0.1);
             z-index: 1;
         }}
@@ -263,12 +263,16 @@ def _generate_html_grid(
         }}
         /* Split cells in compound region also get no individual borders */
         .cell-split.cell-highlight.compound-member {{
-            border: 1px solid #e0e0e0 !important;
+            border: none !important;
             background: rgba(255, 152, 0, 0.1);
         }}
         /* Sub-elements of split cells in compound should blend seamlessly */
         .cell-split.compound-member .split-top,
         .cell-split.compound-member .split-bottom {{
+            border: none !important;
+        }}
+        /* When highlighting squares (compound region), remove borders from squares */
+        .cell-split.cell-highlight-squares .split-bottom {{
             border: none !important;
         }}
         /* Highlight only rectangle (top) part of split cell */
@@ -280,6 +284,7 @@ def _generate_html_grid(
         /* Highlight only squares (bottom) part of split cell for compound regions */
         .cell-split.cell-highlight-squares .split-bottom {{
             background: rgba(255, 152, 0, 0.05);
+            border: none !important;  /* Remove border for seamless appearance */
         }}
         .cell-split.cell-highlight-squares .split-top {{
             /* Rectangle remains unhighlighted */
@@ -287,7 +292,7 @@ def _generate_html_grid(
         }}
         .cell-split.cell-highlight-squares {{
             /* No border on the split cell itself when highlighting squares+module */
-            border: 1px solid #e0e0e0 !important;
+            border: none !important;
             background: transparent !important;
         }}
         .cell-empty {{
@@ -651,7 +656,9 @@ def _generate_cell_html(
     if highlight_cells and (row, col) in highlight_cells:
         cell_classes.append("cell-highlight")
         # If this is part of a compound region (multiple cells highlighted), add compound-member class
-        if len(highlight_cells) > 1:
+        # Also treat HBW [1,0] and DPS [1,3] as compound members even if only one cell in highlight_cells
+        is_compound_module = (row == 1 and col == 0) or (row == 1 and col == 3)
+        if len(highlight_cells) > 1 or is_compound_module:
             cell_classes.append("compound-member")
 
     # Check if this module is active (only if highlight_cells wasn't provided)
