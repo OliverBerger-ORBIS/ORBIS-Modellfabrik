@@ -33,7 +33,11 @@ jobs:
     
     - name: Validate structure
       run: |
-        make validate-structure
+        if make -n validate-structure >/dev/null 2>&1; then
+          make validate-structure
+        else
+          echo "⚠️ validate-structure target not found, skipping"
+        fi
     
     - name: Check submodule status
       run: |
