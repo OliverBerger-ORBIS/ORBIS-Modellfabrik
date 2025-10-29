@@ -250,6 +250,11 @@ def _generate_html_grid(
             background: rgba(255, 152, 0, 0.05);
             z-index: 2;
         }}
+        /* Make split cells with cell-highlight more visible */
+        .cell-split.cell-highlight {{
+            border: 3px solid #FF9800 !important;
+            background: rgba(255, 152, 0, 0.1);
+        }}
         /* Highlight only rectangle (top) part of split cell */
         .cell-split.highlight-rectangle-only .split-top {{
             border: 3px solid #FF9800 !important;
