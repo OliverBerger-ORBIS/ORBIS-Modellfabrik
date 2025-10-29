@@ -79,9 +79,16 @@ def _show_shopfloor_layout_section():
 
 
 def _show_shopfloor_position_details():
-    """Show shopfloor position details with dropdown and details box"""
+    """Show shopfloor position details with module/position dropdown and highlighting"""
     try:
-        st.subheader("🔧 Shopfloor Position Details")
+        st.subheader("🔧 Shopfloor Module Selection & Details")
+
+        # Import shopfloor display helpers
+        from omf2.config.ccu.shopfloor_display import (
+            get_dropdown_keys,
+            get_display_region_for_key,
+            find_keys_for_position,
+        )
 
         # Load layout configuration
         config_loader = get_ccu_config_loader()
@@ -91,67 +98,177 @@ def _show_shopfloor_position_details():
             st.warning("⚠️ No shopfloor layout configuration available")
             return
 
-        # Get all grid positions (3x4 = 12 positions)
-        grid_positions = []
-        for row in range(3):
-            for col in range(4):
-                grid_positions.append(f"Position [{row},{col}]")
+        # Get dropdown keys (modules, fixed positions, intersections)
+        dropdown_keys = get_dropdown_keys()
+        dropdown_options = [label for key, label in dropdown_keys]
+        dropdown_key_map = {label: key for key, label in dropdown_keys}
 
-        # Check if a position was clicked (stored in query params or session state)
-        clicked_position = None
-        if "clicked_position" in st.session_state:
-            clicked_position = st.session_state.clicked_position
-            # Show visual feedback for clicked position
-            st.success(f"📍 Selected: {clicked_position} - View details below")
+        # Check if a position was clicked (stored in session state)
+        selected_key = None
+        if "selected_shopfloor_key" in st.session_state:
+            selected_key = st.session_state.selected_shopfloor_key
 
-        # Try to get from component value (experimental)
-        try:
-            component_value = st.session_state.get("ccu_configuration_shopfloor_clicked_position")
-            if component_value:
-                clicked_position = component_value
-                st.session_state.clicked_position = component_value
-                st.success(f"📍 Selected: {clicked_position} - View details below")
-        except Exception:
-            pass
-
-        # Dropdown for position selection
+        # Dropdown for module/position selection
         col1, col2 = st.columns([2, 1])
 
-        # Set default index based on clicked position
+        # Set default index based on selected key
         default_index = 0
-        if clicked_position and clicked_position in grid_positions:
-            default_index = grid_positions.index(clicked_position)
+        if selected_key:
+            # Find the label for the selected key
+            matching_labels = [label for label, key in dropdown_key_map.items() if key == selected_key]
+            if matching_labels and matching_labels[0] in dropdown_options:
+                default_index = dropdown_options.index(matching_labels[0])
 
         with col1:
-            selected_position = st.selectbox(
-                "📍 Select Shopfloor Position:",
-                options=grid_positions,
+            selected_label = st.selectbox(
+                "📍 Select Module or Position:",
+                options=dropdown_options,
                 index=default_index,
-                key="shopfloor_position_selector",
+                key="shopfloor_module_selector",
+                help="Select a module, fixed position, or intersection to view details and highlight on the grid"
             )
 
         with col2:
-            if st.button("🔄 Refresh Position", key="refresh_position_details"):
-                # Clear clicked position on refresh
-                if "clicked_position" in st.session_state:
-                    del st.session_state.clicked_position
+            if st.button("🔄 Refresh", key="refresh_module_details"):
+                # Clear selection on refresh
+                if "selected_shopfloor_key" in st.session_state:
+                    del st.session_state.selected_shopfloor_key
                 request_refresh()
 
-        # Extract row, col from selected position
-        import re
+        # Get the key for the selected label
+        selected_key = dropdown_key_map.get(selected_label)
 
-        match = re.search(r"\[(\d+),(\d+)\]", selected_position)
-        if match:
-            row, col = int(match.group(1)), int(match.group(2))
+        # Store selected key in session state
+        if selected_key:
+            st.session_state.selected_shopfloor_key = selected_key
 
-            # Show details for this position
-            _show_position_details(row, col, layout_config)
+            # Get display region for this key
+            display_region = get_display_region_for_key(selected_key)
+
+            # Show shopfloor layout with highlighting
+            if display_region:
+                st.info(f"💡 Highlighting {len(display_region)} cell(s) for {selected_label}")
+
+                # Import and render shopfloor layout with highlighting
+                from omf2.ui.ccu.common.shopfloor_layout import show_shopfloor_layout
+
+                show_shopfloor_layout(
+                    title=f"Shopfloor Layout - {selected_label}",
+                    unique_key="ccu_configuration_shopfloor_highlight",
+                    mode="ccu_configuration",
+                    enable_click=False,  # Disable click in detail view
+                    highlight_cells=display_region,
+                )
+
+            # Show details for the selected key
+            _show_key_details(selected_key, layout_config)
         else:
-            st.error("❌ Invalid position format")
+            st.error("❌ Invalid selection")
 
     except Exception as e:
         logger.error(f"❌ Failed to show shopfloor position details: {e}")
         st.error(f"❌ Error showing position details: {e}")
+
+
+def _show_key_details(key: str, layout_config: dict):
+    """Show details for a selected module/position key with enhanced formatting"""
+    try:
+        from omf2.config.ccu.shopfloor_display import get_shopfloor_display
+        
+        # Get entry from registry
+        display = get_shopfloor_display()
+        entry = display.registry.get(key)
+        
+        if not entry:
+            st.warning(f"⚠️ No details found for key: {key}")
+            return
+        
+        # Display details in a nice box
+        st.markdown("---")
+        st.markdown(f"### 📍 Details for {key}")
+        
+        # Determine entry type and display accordingly
+        if entry.get("is_module"):
+            # Module entry
+            with st.container():
+                st.success(f"✅ **Module:** {entry.get('id', 'Unknown')}")
+                
+                # Find full module data from layout_config
+                modules = layout_config.get("modules", [])
+                module_data = None
+                for module in modules:
+                    if module.get("id") == key:
+                        module_data = module
+                        break
+                
+                if module_data:
+                    # Details in columns
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        st.markdown("**Properties:**")
+                        st.write(f"- **ID:** {module_data.get('id', 'N/A')}")
+                        st.write(f"- **Type:** {module_data.get('type', 'N/A')}")
+                        st.write(f"- **Position:** {module_data.get('position', 'N/A')}")
+                    
+                    with col2:
+                        st.markdown("**Technical:**")
+                        st.write(f"- **Serial Number:** {module_data.get('serialNumber', 'N/A')}")
+                        
+                        # Show attached assets if available
+                        attached_assets = module_data.get("attached_assets", [])
+                        if attached_assets:
+                            st.write(f"- **Attached Assets:** {', '.join(attached_assets)}")
+                        
+                        # Show display variants
+                        display_variants = module_data.get("display_variants", {})
+                        if display_variants:
+                            st.write(f"- **Display Variants:**")
+                            for variant, region in display_variants.items():
+                                st.write(f"  - {variant}: {region}")
+        
+        elif entry.get("is_fixed"):
+            # Fixed position entry
+            with st.container():
+                position_type = entry.get("type", "Unknown").upper()
+                st.info(f"📦 **Fixed Position:** {entry.get('id', 'Unknown')}")
+                
+                # Details in columns
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.markdown("**Properties:**")
+                    st.write(f"- **ID:** {entry.get('id', 'Unknown')}")
+                    st.write(f"- **Type:** {position_type}")
+                    st.write(f"- **Position:** {entry.get('position', 'N/A')}")
+                
+                with col2:
+                    st.markdown("**Asset Keys:**")
+                    assets = entry.get("assets", {})
+                    if assets:
+                        for asset_type, asset_name in assets.items():
+                            st.write(f"- **{asset_type}:** {asset_name}")
+                    
+                    # Show if this is a rect-only key
+                    if entry.get("is_rect_only"):
+                        st.write("- **Click Behavior:** Rectangle only")
+        
+        elif entry.get("is_intersection"):
+            # Intersection entry
+            with st.container():
+                st.warning(f"➕ **Intersection:** {entry.get('id', 'Unknown')}")
+                
+                st.markdown("**Properties:**")
+                st.write(f"- **ID:** {entry.get('id', 'Unknown')}")
+                st.write(f"- **Type:** Intersection")
+                st.write(f"- **Position:** {entry.get('position', 'N/A')}")
+        
+        else:
+            st.info(f"📄 **Position:** {key}")
+            st.write(f"- **Type:** {entry.get('type', 'Unknown')}")
+            st.write(f"- **Position:** {entry.get('position', 'N/A')}")
+    
+    except Exception as e:
+        logger.error(f"Failed to show key details: {e}")
+        st.error(f"❌ Failed to load details: {e}")
 
 
 def _show_position_details(row: int, col: int, layout_config: dict):
