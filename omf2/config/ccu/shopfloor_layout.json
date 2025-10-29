@@ -83,7 +83,7 @@
       "position": [1, 0],
       "attached_assets": ["HBW_SQUARE1", "HBW_SQUARE2"],
       "display_variants": {
-        "default": [[1, 0]],
+        "default": [[0, 0], [1, 0]],
         "cell_only": [[1, 0]],
         "with_rectangle": [[0, 0], [1, 0]]
       }
@@ -95,7 +95,7 @@
       "position": [1, 3],
       "attached_assets": ["DPS_SQUARE1", "DPS_SQUARE2"],
       "display_variants": {
-        "default": [[1, 3]],
+        "default": [[0, 3], [1, 3]],
         "cell_only": [[1, 3]],
         "with_rectangle": [[0, 3], [1, 3]]
       }

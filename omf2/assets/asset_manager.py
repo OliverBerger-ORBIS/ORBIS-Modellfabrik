@@ -167,7 +167,7 @@ class OMF2AssetManager:
             "HBW_SQUARE1": "factory.svg",
             "HBW_SQUARE2": "conveyor.svg",
             # DPS attached assets (physically at DPS position)
-            "DPS_SQUARE1": "robot-arm.svg",
+            "DPS_SQUARE1": "warehouse.svg",
             "DPS_SQUARE2": "order-tracking.svg",
         }
 

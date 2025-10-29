@@ -111,9 +111,7 @@ class CcuGateway:
                         if success:
                             logger.info(f"🔄 UI refresh triggered for group '{group_name}' (topic: {topic})")
                         else:
-                            logger.warning(
-                                f"⚠️ UI refresh throttled/failed for group '{group_name}' (topic: {topic})"
-                            )
+                            logger.warning(f"⚠️ UI refresh throttled/failed for group '{group_name}' (topic: {topic})")
                         break  # Only trigger once per group
 
         except Exception as e:

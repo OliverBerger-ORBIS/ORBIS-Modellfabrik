@@ -111,7 +111,7 @@ def reload_inventory():
 
         # Store in session state
         st.session_state["inventory_status"] = inventory_status
-        logger.info(f"📦 reload_inventory: Stored inventory_status in session_state")
+        logger.info("📦 reload_inventory: Stored inventory_status in session_state")
 
         if inventory_status and inventory_status.get("inventory"):
             inventory_count = len([v for v in inventory_status["inventory"].values() if v is not None])
@@ -137,24 +137,21 @@ def render_inventory_subtab(ccu_gateway: CcuGateway, registry_manager, asset_man
 
     # Add auto-refresh support using the same pattern as storage_orders_subtab
     refresh_triggered = False
-    api_available = False
     try:
         from omf2.ui.ccu.production_orders_refresh_helper import check_and_reload
 
         # Use stock_updates refresh group with polling + compare (same pattern as storage_orders_subtab)
         refresh_triggered = check_and_reload(group="stock_updates", reload_callback=reload_inventory, interval_ms=1000)
-        
+
         # Log whether backend API was responsive
         if refresh_triggered:
             logger.info("✅ Backend API available: Refresh triggered via Redis timestamp polling")
-            api_available = True
         else:
             # Check if API is reachable by testing if we got a timestamp
-            import time
+
             session_key = "stock_updates_last_refresh_timestamp"
             if session_key in st.session_state:
                 logger.info("✅ Backend API available: No new refresh timestamp detected")
-                api_available = True
             else:
                 logger.info("⚠️ Backend API unavailable: Will use manual refresh fallback")
 
@@ -169,7 +166,7 @@ def render_inventory_subtab(ccu_gateway: CcuGateway, registry_manager, asset_man
         # Fallback: load data directly without auto-refresh (same pattern as storage_orders_subtab)
         if "inventory_status" not in st.session_state:
             reload_inventory()
-    
+
     # BACKEND API UNAVAILABLE FALLBACK:
     # If the backend Flask API (port 5001) is not running, we cannot use Redis-based refresh polling.
     # In this case, always reload inventory data on every page rerun to ensure MQTT updates are visible.

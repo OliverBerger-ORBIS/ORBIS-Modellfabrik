@@ -112,6 +112,7 @@ def show_shopfloor_layout(
     if active_module_id and not highlight_cells:
         try:
             from omf2.config.ccu.shopfloor_display import get_display_region_for_key
+
             # Get the display region for this module (handles compound regions like HBW/DPS)
             highlight_cells = get_display_region_for_key(active_module_id)
             logger.debug(f"Active module {active_module_id} → highlight_cells: {highlight_cells}")
@@ -403,13 +404,17 @@ def _generate_html_grid(
     # Generate compound region highlight overlay if multiple cells are highlighted
     # OR if single cell is HBW/DPS (needs squares+module bounding box)
     compound_highlight_html = ""
-    if highlight_cells and (len(highlight_cells) > 1 or 
-                            (len(highlight_cells) == 1 and 
-                             ((highlight_cells[0][0] == 1 and highlight_cells[0][1] == 0) or
-                              (highlight_cells[0][0] == 1 and highlight_cells[0][1] == 3)))):
-        compound_highlight_html = _generate_compound_highlight_overlay(
-            highlight_cells, cell_width, cell_height
+    if highlight_cells and (
+        len(highlight_cells) > 1
+        or (
+            len(highlight_cells) == 1
+            and (
+                (highlight_cells[0][0] == 1 and highlight_cells[0][1] == 0)
+                or (highlight_cells[0][0] == 1 and highlight_cells[0][1] == 3)
+            )
         )
+    ):
+        compound_highlight_html = _generate_compound_highlight_overlay(highlight_cells, cell_width, cell_height)
 
     # Generate SVG overlay for route visualization
     svg_overlay = ""
@@ -466,7 +471,7 @@ def _generate_compound_highlight_overlay(
 ) -> str:
     """
     Generate HTML overlay for compound region highlighting (multi-cell bounding box).
-    
+
     Special handling for HBW/DPS: when highlighting cell at [1,0] or [1,3],
     the bounding box should start from the squares (bottom half of split cell at row 0)
     and extend to the main module cell at row 1.
@@ -481,7 +486,7 @@ def _generate_compound_highlight_overlay(
     """
     if not highlight_cells or len(highlight_cells) < 1:
         return ""
-    
+
     # Single cell - no compound overlay needed
     if len(highlight_cells) == 1:
         # Check if this is HBW (position [1,0]) or DPS (position [1,3])
@@ -494,7 +499,7 @@ def _generate_compound_highlight_overlay(
             left_px = col * cell_width
             width_px = cell_width
             height_px = (1 * cell_height) + (cell_height // 2)  # From middle of row 0 to bottom of row 1
-            
+
             return f"""
             <div class="compound-highlight-overlay" style="
                 top: {top_px}px;
@@ -633,7 +638,7 @@ def _generate_cell_html(
     highlight_cells: Optional[list] = None,
 ) -> str:
     """Generate HTML for a single grid cell.
-    
+
     Args:
         highlight_cells: Optional list of (row, col) tuples to highlight
     """
@@ -732,10 +737,10 @@ def _generate_split_cell_html(
     modules: Optional[list] = None,
 ) -> str:
     """Generate HTML for split cells (0,0) and (0,3).
-    
+
     These cells contain a rectangle (COMPANY/SOFTWARE logo) at the top
     and two squares below from the attached assets of HBW/DPS modules.
-    
+
     Args:
         highlight_cells: Optional list of (row, col) tuples to highlight
         modules: Optional list of modules to find attached_assets
@@ -750,7 +755,7 @@ def _generate_split_cell_html(
 
     # Default rectangle icon
     rectangle_type = "ORBIS" if col == 0 else "DSP"
-    
+
     if fixed_config:
         assets = fixed_config.get("assets", {})
         rectangle_type = assets.get("rectangle", rectangle_type)
@@ -764,7 +769,7 @@ def _generate_split_cell_html(
             if module.get("position") == [row + 1, col]:
                 module_below = module
                 break
-    
+
     # Get attached assets from the module below
     square1_type = None
     square2_type = None
@@ -794,7 +799,7 @@ def _generate_split_cell_html(
         config_id = fixed_config.get("id", "")
         tooltip_text = config_id
     title_attr = f'title="{tooltip_text}"' if tooltip_text else ""
-    
+
     # Determine highlighting behavior for split cells
     # Three cases:
     # 1. Only rectangle position (0,0 or 0,3) is highlighted → highlight rectangle only (COMPANY/SOFTWARE)
@@ -803,10 +808,10 @@ def _generate_split_cell_html(
     module_below_pos = (row + 1, col)
     rectangle_highlighted = highlight_cells and (row, col) in highlight_cells
     module_highlighted = highlight_cells and module_below_pos in highlight_cells
-    
+
     # Check if module below is HBW (col=0) or DPS (col=3)
-    is_compound_module_below = (col == 0 or col == 3)
-    
+    is_compound_module_below = col == 0 or col == 3
+
     cell_class = "cell cell-split"
     if rectangle_highlighted and not module_highlighted:
         # Case 1: Only rectangle is highlighted (COMPANY/SOFTWARE selection)

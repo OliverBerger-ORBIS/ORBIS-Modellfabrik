@@ -85,9 +85,8 @@ def _show_shopfloor_position_details():
 
         # Import shopfloor display helpers
         from omf2.config.ccu.shopfloor_display import (
-            get_dropdown_keys,
             get_display_region_for_key,
-            find_keys_for_position,
+            get_dropdown_keys,
         )
 
         # Load layout configuration
@@ -125,7 +124,7 @@ def _show_shopfloor_position_details():
                 options=dropdown_options,
                 index=default_index,
                 key="shopfloor_module_selector",
-                help="Select a module, fixed position, or intersection to view details and highlight on the grid"
+                help="Select a module, fixed position, or intersection to view details and highlight on the grid",
             )
 
         with col2:
@@ -174,25 +173,25 @@ def _show_key_details(key: str, layout_config: dict):
     """Show details for a selected module/position key with enhanced formatting"""
     try:
         from omf2.config.ccu.shopfloor_display import get_shopfloor_display
-        
+
         # Get entry from registry
         display = get_shopfloor_display()
         entry = display.registry.get(key)
-        
+
         if not entry:
             st.warning(f"⚠️ No details found for key: {key}")
             return
-        
+
         # Display details in a nice box
         st.markdown("---")
         st.markdown(f"### 📍 Details for {key}")
-        
+
         # Determine entry type and display accordingly
         if entry.get("is_module"):
             # Module entry
             with st.container():
                 st.success(f"✅ **Module:** {entry.get('id', 'Unknown')}")
-                
+
                 # Find full module data from layout_config
                 modules = layout_config.get("modules", [])
                 module_data = None
@@ -200,7 +199,7 @@ def _show_key_details(key: str, layout_config: dict):
                     if module.get("id") == key:
                         module_data = module
                         break
-                
+
                 if module_data:
                     # Details in columns
                     col1, col2 = st.columns(2)
@@ -209,29 +208,29 @@ def _show_key_details(key: str, layout_config: dict):
                         st.write(f"- **ID:** {module_data.get('id', 'N/A')}")
                         st.write(f"- **Type:** {module_data.get('type', 'N/A')}")
                         st.write(f"- **Position:** {module_data.get('position', 'N/A')}")
-                    
+
                     with col2:
                         st.markdown("**Technical:**")
                         st.write(f"- **Serial Number:** {module_data.get('serialNumber', 'N/A')}")
-                        
+
                         # Show attached assets if available
                         attached_assets = module_data.get("attached_assets", [])
                         if attached_assets:
                             st.write(f"- **Attached Assets:** {', '.join(attached_assets)}")
-                        
+
                         # Show display variants
                         display_variants = module_data.get("display_variants", {})
                         if display_variants:
-                            st.write(f"- **Display Variants:**")
+                            st.write("- **Display Variants:**")
                             for variant, region in display_variants.items():
                                 st.write(f"  - {variant}: {region}")
-        
+
         elif entry.get("is_fixed"):
             # Fixed position entry
             with st.container():
                 position_type = entry.get("type", "Unknown").upper()
                 st.info(f"📦 **Fixed Position:** {entry.get('id', 'Unknown')}")
-                
+
                 # Details in columns
                 col1, col2 = st.columns(2)
                 with col1:
@@ -239,33 +238,33 @@ def _show_key_details(key: str, layout_config: dict):
                     st.write(f"- **ID:** {entry.get('id', 'Unknown')}")
                     st.write(f"- **Type:** {position_type}")
                     st.write(f"- **Position:** {entry.get('position', 'N/A')}")
-                
+
                 with col2:
                     st.markdown("**Asset Keys:**")
                     assets = entry.get("assets", {})
                     if assets:
                         for asset_type, asset_name in assets.items():
                             st.write(f"- **{asset_type}:** {asset_name}")
-                    
+
                     # Show if this is a rect-only key
                     if entry.get("is_rect_only"):
                         st.write("- **Click Behavior:** Rectangle only")
-        
+
         elif entry.get("is_intersection"):
             # Intersection entry
             with st.container():
                 st.warning(f"➕ **Intersection:** {entry.get('id', 'Unknown')}")
-                
+
                 st.markdown("**Properties:**")
                 st.write(f"- **ID:** {entry.get('id', 'Unknown')}")
-                st.write(f"- **Type:** Intersection")
+                st.write("- **Type:** Intersection")
                 st.write(f"- **Position:** {entry.get('position', 'N/A')}")
-        
+
         else:
             st.info(f"📄 **Position:** {key}")
             st.write(f"- **Type:** {entry.get('type', 'Unknown')}")
             st.write(f"- **Position:** {entry.get('position', 'N/A')}")
-    
+
     except Exception as e:
         logger.error(f"Failed to show key details: {e}")
         st.error(f"❌ Failed to load details: {e}")
