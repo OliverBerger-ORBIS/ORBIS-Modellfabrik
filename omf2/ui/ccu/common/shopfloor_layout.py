@@ -583,8 +583,9 @@ def _generate_cell_html(
     if highlight_cells and (row, col) in highlight_cells:
         cell_classes.append("cell-highlight")
 
-    # Check if this module is active
-    if cell_data and active_module_id:
+    # Check if this module is active (only if highlight_cells wasn't provided)
+    # If highlight_cells is provided, it takes precedence (e.g., compound regions)
+    elif cell_data and active_module_id:
         cell_id = cell_data.get("id", "")
         if cell_id == active_module_id:
             cell_classes.append("cell-active")
