@@ -136,11 +136,15 @@ def render_inventory_subtab(ccu_gateway: CcuGateway, registry_manager, asset_man
     logger.info("🏬 Rendering Inventory Subtab")
 
     # Add auto-refresh support using the same pattern as storage_orders_subtab
+    refresh_triggered = False
     try:
-        from omf2.ui.ccu.production_orders_refresh_helper import check_and_reload
+        from omf2.ui.ccu.production_orders_refresh_helper import check_and_reload, ensure_autorefresh_state
+
+        # Ensure auto-refresh is initialized (will use st_autorefresh if available)
+        ensure_autorefresh_state(group="stock_updates", interval_ms=1000)
 
         # Use stock_updates refresh group with polling + compare (same pattern as storage_orders_subtab)
-        check_and_reload(group="stock_updates", reload_callback=reload_inventory, interval_ms=1000)
+        refresh_triggered = check_and_reload(group="stock_updates", reload_callback=reload_inventory, interval_ms=1000)
 
         # Get data from session state (populated by reload_inventory callback)
         # If not yet populated, load it now (same pattern as storage_orders_subtab)
@@ -153,6 +157,22 @@ def render_inventory_subtab(ccu_gateway: CcuGateway, registry_manager, asset_man
         # Fallback: load data directly without auto-refresh (same pattern as storage_orders_subtab)
         if "inventory_status" not in st.session_state:
             reload_inventory()
+    
+    # DEV MODE FALLBACK: If backend API is not available, reload on every render
+    # This ensures that MQTT updates are picked up even without the Redis-based refresh mechanism
+    if not refresh_triggered:
+        # Check if we should force reload (e.g., every N seconds or on every render in dev mode)
+        # For DEV mode, we reload every time to ensure MQTT updates are visible
+        last_reload_key = "inventory_last_manual_reload"
+        import time
+        current_time = time.time()
+        last_reload_time = st.session_state.get(last_reload_key, 0)
+        
+        # Reload at most once per second to avoid excessive calls
+        if current_time - last_reload_time >= 1.0:
+            logger.info("🔄 DEV mode: Reloading inventory (backend API unavailable)")
+            reload_inventory()
+            st.session_state[last_reload_key] = current_time
 
     # I18n Manager aus Session State holen
     i18n = st.session_state.get("i18n_manager")
