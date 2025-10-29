@@ -143,21 +143,15 @@ def render_inventory_subtab(ccu_gateway: CcuGateway, registry_manager, asset_man
         check_and_reload(group="stock_updates", reload_callback=reload_inventory, interval_ms=1000)
 
         # Get data from session state (populated by reload_inventory callback)
-        # If not yet populated OR if empty, load it now (same pattern as storage_orders_subtab)
+        # If not yet populated, load it now (same pattern as storage_orders_subtab)
         if "inventory_status" not in st.session_state:
             logger.info("🔄 inventory_status not in session state, calling reload_inventory()")
-            reload_inventory()
-        elif not st.session_state.get("inventory_status"):
-            # Session state exists but is empty/None - reload to get fresh data (exact same pattern as storage_orders_subtab)
-            logger.info("🔄 inventory_status is empty/None in session state, calling reload_inventory()")
             reload_inventory()
 
     except Exception as e:
         logger.debug(f"⚠️ Auto-refresh not available: {e}")
         # Fallback: load data directly without auto-refresh (same pattern as storage_orders_subtab)
         if "inventory_status" not in st.session_state:
-            reload_inventory()
-        elif not st.session_state.get("inventory_status"):
             reload_inventory()
 
     # I18n Manager aus Session State holen

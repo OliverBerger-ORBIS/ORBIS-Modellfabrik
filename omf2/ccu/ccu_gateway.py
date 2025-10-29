@@ -107,12 +107,17 @@ class CcuGateway:
                 for pattern in topic_patterns:
                     if self._topic_matches_pattern(topic, pattern):
                         # Request UI refresh via Redis-backed backend
-                        request_refresh(group_name, min_interval=1.0)
-                        logger.debug(f"🔄 UI refresh triggered for group '{group_name}' (topic: {topic})")
+                        success = request_refresh(group_name, min_interval=1.0)
+                        if success:
+                            logger.info(f"🔄 UI refresh triggered for group '{group_name}' (topic: {topic})")
+                        else:
+                            logger.warning(
+                                f"⚠️ UI refresh throttled/failed for group '{group_name}' (topic: {topic})"
+                            )
                         break  # Only trigger once per group
 
         except Exception as e:
-            logger.debug(f"⚠️ Failed to trigger UI refresh for topic {topic}: {e}")
+            logger.error(f"⚠️ Failed to trigger UI refresh for topic {topic}: {e}", exc_info=True)
 
     def _topic_matches_pattern(self, topic: str, pattern: str) -> bool:
         """
