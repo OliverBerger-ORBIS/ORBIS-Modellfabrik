@@ -49,6 +49,7 @@ def show_shopfloor_layout(
     agv_progress: float = 0.0,
     on_cell_click: Optional[callable] = None,
     enable_click: bool = False,
+    highlight_cells: Optional[list] = None,
 ) -> None:
     """
     Display stable, view-only shopfloor layout with fixed aspect ratio and gapless grid.
@@ -68,6 +69,7 @@ def show_shopfloor_layout(
         agv_progress: Progress along route (0.0 to 1.0) for AGV marker positioning
         on_cell_click: Optional callback function for cell click events
         enable_click: Enable click-to-select functionality (default: False)
+        highlight_cells: Optional list of (row, col) tuples to highlight (for compound regions)
     """
     st.subheader(f"🏭 {title}")
 
@@ -120,6 +122,7 @@ def show_shopfloor_layout(
         agv_progress=agv_progress,
         enable_click=enable_click,
         unique_key=unique_key or "shopfloor",
+        highlight_cells=highlight_cells,
     )
 
     # Render using st.components or fallback to markdown
@@ -156,9 +159,14 @@ def _generate_html_grid(
     agv_progress: float = 0.0,
     enable_click: bool = False,
     unique_key: str = "shopfloor",
+    highlight_cells: Optional[list] = None,
 ) -> str:
     """
     Generate complete HTML grid with inline CSS for gapless layout.
+
+    Args:
+        highlight_cells: Optional list of (row, col) tuples to highlight
+                        If multiple cells are provided, draws a bounding box around the compound region
 
     Returns a single HTML string containing the entire 4x3 grid.
     """
@@ -225,8 +233,20 @@ def _generate_html_grid(
         .cell-intersection-active {{
             border: 3px dashed #FF9800 !important;
         }}
+        .cell-highlight {{
+            border: 3px solid #FF9800 !important;
+            background: rgba(255, 152, 0, 0.05);
+            z-index: 2;
+        }}
         .cell-empty {{
             background: rgba(135, 206, 235, 0.1);
+        }}
+        /* Compound region highlight overlay - draws outer bounding box */
+        .compound-highlight-overlay {{
+            position: absolute;
+            pointer-events: none;
+            z-index: 3;
+            box-sizing: border-box;
         }}
         .cell-split {{
             display: grid;
@@ -319,8 +339,16 @@ def _generate_html_grid(
                 cell_height,
                 enable_click,
                 unique_key,
+                highlight_cells,
             )
             cells_html.append(cell_html)
+
+    # Generate compound region highlight overlay if multiple cells are highlighted
+    compound_highlight_html = ""
+    if highlight_cells and len(highlight_cells) > 1:
+        compound_highlight_html = _generate_compound_highlight_overlay(
+            highlight_cells, cell_width, cell_height
+        )
 
     # Generate SVG overlay for route visualization
     svg_overlay = ""
@@ -361,12 +389,61 @@ def _generate_html_grid(
     {css}
     <div class="shopfloor-container">
         {''.join(cells_html)}
+        {compound_highlight_html}
         {svg_overlay}
     </div>
     {javascript}
     """
 
     return html
+
+
+def _generate_compound_highlight_overlay(
+    highlight_cells: list,
+    cell_width: int,
+    cell_height: int,
+) -> str:
+    """
+    Generate HTML overlay for compound region highlighting (multi-cell bounding box).
+
+    Args:
+        highlight_cells: List of (row, col) tuples to highlight
+        cell_width: Width of each cell in pixels
+        cell_height: Height of each cell in pixels
+
+    Returns:
+        HTML string with absolute-positioned div for bounding box
+    """
+    if not highlight_cells or len(highlight_cells) < 2:
+        return ""
+
+    # Find bounding box of highlighted cells
+    rows = [pos[0] for pos in highlight_cells]
+    cols = [pos[1] for pos in highlight_cells]
+
+    min_row = min(rows)
+    max_row = max(rows)
+    min_col = min(cols)
+    max_col = max(cols)
+
+    # Calculate bounding box position and size
+    top_px = min_row * cell_height
+    left_px = min_col * cell_width
+    width_px = (max_col - min_col + 1) * cell_width
+    height_px = (max_row - min_row + 1) * cell_height
+
+    # Generate div with outer border
+    return f"""
+    <div class="compound-highlight-overlay" style="
+        top: {top_px}px;
+        left: {left_px}px;
+        width: {width_px}px;
+        height: {height_px}px;
+        border: 4px solid #FF9800;
+        border-radius: 4px;
+        box-shadow: 0 0 12px rgba(255, 152, 0, 0.3);
+    "></div>
+    """
 
 
 def _generate_route_overlay(
@@ -462,13 +539,18 @@ def _generate_cell_html(
     cell_height: int,
     enable_click: bool = False,
     unique_key: str = "shopfloor",
+    highlight_cells: Optional[list] = None,
 ) -> str:
-    """Generate HTML for a single grid cell."""
+    """Generate HTML for a single grid cell.
+    
+    Args:
+        highlight_cells: Optional list of (row, col) tuples to highlight
+    """
 
     # Handle special split cells at (0,0) and (0,3)
     if (row == 0 and col == 0) or (row == 0 and col == 3):
         return _generate_split_cell_html(
-            row, col, fixed_positions, asset_manager, cell_width, cell_height, enable_click
+            row, col, fixed_positions, asset_manager, cell_width, cell_height, enable_click, highlight_cells
         )
 
     # Find cell data
@@ -478,6 +560,10 @@ def _generate_cell_html(
     cell_classes = ["cell"]
     if not cell_data:
         cell_classes.append("cell-empty")
+
+    # Check if this cell should be highlighted (via highlight_cells parameter)
+    if highlight_cells and (row, col) in highlight_cells:
+        cell_classes.append("cell-highlight")
 
     # Check if this module is active
     if cell_data and active_module_id:
@@ -545,8 +631,13 @@ def _generate_split_cell_html(
     cell_width: int,
     cell_height: int,
     enable_click: bool = False,
+    highlight_cells: Optional[list] = None,
 ) -> str:
-    """Generate HTML for split cells (0,0) and (0,3)."""
+    """Generate HTML for split cells (0,0) and (0,3).
+    
+    Args:
+        highlight_cells: Optional list of (row, col) tuples to highlight
+    """
 
     # Find fixed position config for this position
     fixed_config = None
@@ -585,9 +676,14 @@ def _generate_split_cell_html(
         config_id = fixed_config.get("id", "")
         tooltip_text = config_id
     title_attr = f'title="{tooltip_text}"' if tooltip_text else ""
+    
+    # Check if this cell should be highlighted
+    cell_class = "cell cell-split"
+    if highlight_cells and (row, col) in highlight_cells:
+        cell_class += " cell-highlight"
 
     cell_html = f"""
-    <div class="cell cell-split" {data_attr} {title_attr}>
+    <div class="{cell_class}" {data_attr} {title_attr}>
         <div class="split-top">
             {rectangle_svg}
         </div>
