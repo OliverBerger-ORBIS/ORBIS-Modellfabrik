@@ -158,21 +158,11 @@ def render_inventory_subtab(ccu_gateway: CcuGateway, registry_manager, asset_man
         if "inventory_status" not in st.session_state:
             reload_inventory()
     
-    # DEV MODE FALLBACK: If backend API is not available, reload on every render
-    # This ensures that MQTT updates are picked up even without the Redis-based refresh mechanism
+    # DEV MODE FALLBACK: If backend API is not available, always reload when page reruns
+    # This ensures that MQTT updates are picked up when user clicks "Refresh Dashboard" button
     if not refresh_triggered:
-        # Check if we should force reload (e.g., every N seconds or on every render in dev mode)
-        # For DEV mode, we reload every time to ensure MQTT updates are visible
-        last_reload_key = "inventory_last_manual_reload"
-        import time
-        current_time = time.time()
-        last_reload_time = st.session_state.get(last_reload_key, 0)
-        
-        # Reload at most once per second to avoid excessive calls
-        if current_time - last_reload_time >= 1.0:
-            logger.info("🔄 DEV mode: Reloading inventory (backend API unavailable)")
-            reload_inventory()
-            st.session_state[last_reload_key] = current_time
+        logger.info("🔄 DEV mode: Reloading inventory (backend API unavailable, manual refresh)")
+        reload_inventory()
 
     # I18n Manager aus Session State holen
     i18n = st.session_state.get("i18n_manager")
