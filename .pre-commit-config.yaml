@@ -74,10 +74,11 @@ repos:
 
       - id: check-st-rerun
         name: check-st-rerun
-        entry: python omf/scripts/check_st_rerun.py
+        entry: python omf2/scripts/check_st_rerun.py
         language: system
         types: [python]
         stages: [commit]
+        pass_filenames: false
 
       - id: check-mqtt-connection-loop
         name: check-mqtt-connection-loop

@@ -135,7 +135,7 @@ def _show_shopfloor_position_details():
                 # Clear clicked position on refresh
                 if "clicked_position" in st.session_state:
                     del st.session_state.clicked_position
-                st.rerun()
+                request_refresh()
 
         # Extract row, col from selected position
         import re
@@ -386,7 +386,7 @@ def _show_module_details_section():
                 st.session_state.show_module_details = False
                 st.session_state.pop("selected_module_id", None)
                 st.session_state.pop("selected_module_type", None)
-                st.rerun()
+                request_refresh()
 
         # Get Registry Manager
         from omf2.registry.manager.registry_manager import get_registry_manager

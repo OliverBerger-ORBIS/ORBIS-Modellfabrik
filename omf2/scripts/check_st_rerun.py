@@ -14,6 +14,10 @@ def check_file_for_st_rerun(file_path: Path) -> list[str]:
     violations = []
 
     try:
+        # Skip ui_refresh.py (it's the controller for st.rerun())
+        if file_path.name == "ui_refresh.py":
+            return violations
+
         with open(file_path, encoding="utf-8") as f:
             content = f.read()
             lines = content.split("\n")
@@ -26,6 +30,10 @@ def check_file_for_st_rerun(file_path: Path) -> list[str]:
         ]
 
         for i, line in enumerate(lines, 1):
+            # Skip comment lines
+            if line.strip().startswith("#"):
+                continue
+
             for pattern in forbidden_patterns:
                 if re.search(pattern, line):
                     # Exception: st.rerun() is allowed in omf.py main() function with consume_refresh
@@ -43,11 +51,20 @@ def main():
     """Main function to check all Python files for st.rerun() usage."""
     violations = []
 
-    # Get all Python files from command line arguments
-    for file_path in sys.argv[1:]:
-        path = Path(file_path)
-        if path.suffix == ".py":
-            violations.extend(check_file_for_st_rerun(path))
+    # If files are provided as arguments, check only those files
+    if len(sys.argv) > 1:
+        for file_path in sys.argv[1:]:
+            path = Path(file_path)
+            if path.suffix == ".py":
+                violations.extend(check_file_for_st_rerun(path))
+    else:
+        # No arguments: scan all UI files automatically
+        project_root = Path(__file__).parent.parent.parent
+        ui_path = project_root / "omf2" / "ui"
+
+        if ui_path.exists():
+            for py_file in ui_path.rglob("*.py"):
+                violations.extend(check_file_for_st_rerun(py_file))
 
     if violations:
         print("🚨 FORBIDDEN st.rerun() USAGE DETECTED!")
