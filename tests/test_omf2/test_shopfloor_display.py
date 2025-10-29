@@ -120,12 +120,12 @@ class TestGetDisplayRegionForKey(unittest.TestCase):
     """Tests for get_display_region_for_key function"""
     
     def test_hbw_default_region(self):
-        """Test: HBW default region includes both compound positions"""
+        """Test: HBW default region includes only module position"""
         region = get_display_region_for_key("HBW")
         
-        # HBW default should include [0,0] (COMPANY) and [1,0] (HBW position)
-        self.assertEqual(len(region), 2, "HBW default region should have 2 positions")
-        self.assertIn((0, 0), region, "HBW default region should include [0,0]")
+        # HBW default should include only [1,0] (HBW position)
+        # The compound highlighting is handled by shopfloor_layout.py logic
+        self.assertEqual(len(region), 1, "HBW default region should have 1 position")
         self.assertIn((1, 0), region, "HBW default region should include [1,0]")
     
     def test_hbw_cell_only_region(self):
@@ -137,12 +137,12 @@ class TestGetDisplayRegionForKey(unittest.TestCase):
         self.assertIn((1, 0), region, "HBW cell_only region should include [1,0]")
     
     def test_dps_default_region(self):
-        """Test: DPS default region includes both compound positions"""
+        """Test: DPS default region includes only module position"""
         region = get_display_region_for_key("DPS")
         
-        # DPS default should include [0,3] (SOFTWARE) and [1,3] (DPS position)
-        self.assertEqual(len(region), 2, "DPS default region should have 2 positions")
-        self.assertIn((0, 3), region, "DPS default region should include [0,3]")
+        # DPS default should include only [1,3] (DPS position)
+        # The compound highlighting is handled by shopfloor_layout.py logic
+        self.assertEqual(len(region), 1, "DPS default region should have 1 position")
         self.assertIn((1, 3), region, "DPS default region should include [1,3]")
     
     def test_dps_cell_only_region(self):
