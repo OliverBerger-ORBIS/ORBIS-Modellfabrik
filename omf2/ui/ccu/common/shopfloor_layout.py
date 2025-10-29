@@ -108,6 +108,18 @@ def show_shopfloor_layout(
         fixed_positions = layout_config.get("empty_positions", [])
     intersections = layout_config.get("intersections", [])
 
+    # If active_module_id is provided and no highlight_cells, convert to highlight_cells for compound regions
+    if active_module_id and not highlight_cells:
+        try:
+            from omf2.config.ccu.shopfloor_display import get_display_region_for_key
+            # Get the display region for this module (handles compound regions like HBW/DPS)
+            highlight_cells = get_display_region_for_key(active_module_id)
+            logger.debug(f"Active module {active_module_id} → highlight_cells: {highlight_cells}")
+        except Exception as e:
+            logger.warning(f"Failed to get display region for {active_module_id}: {e}")
+            # Fallback to old behavior - just use active_module_id
+            pass
+
     # Generate HTML grid
     html_content = _generate_html_grid(
         modules=modules,
@@ -234,6 +246,12 @@ def _generate_html_grid(
             border: 3px dashed #FF9800 !important;
         }}
         .cell-highlight {{
+            border: 3px solid #FF9800 !important;
+            background: rgba(255, 152, 0, 0.05);
+            z-index: 2;
+        }}
+        /* Highlight only rectangle (top) part of split cell */
+        .cell-split.highlight-rectangle-only .split-top {{
             border: 3px solid #FF9800 !important;
             background: rgba(255, 152, 0, 0.05);
             z-index: 2;
@@ -550,7 +568,7 @@ def _generate_cell_html(
     # Handle special split cells at (0,0) and (0,3)
     if (row == 0 and col == 0) or (row == 0 and col == 3):
         return _generate_split_cell_html(
-            row, col, fixed_positions, asset_manager, cell_width, cell_height, enable_click, highlight_cells
+            row, col, fixed_positions, asset_manager, cell_width, cell_height, enable_click, highlight_cells, modules
         )
 
     # Find cell data
@@ -632,30 +650,51 @@ def _generate_split_cell_html(
     cell_height: int,
     enable_click: bool = False,
     highlight_cells: Optional[list] = None,
+    modules: Optional[list] = None,
 ) -> str:
     """Generate HTML for split cells (0,0) and (0,3).
     
+    These cells contain a rectangle (COMPANY/SOFTWARE logo) at the top
+    and two squares below from the attached assets of HBW/DPS modules.
+    
     Args:
         highlight_cells: Optional list of (row, col) tuples to highlight
+        modules: Optional list of modules to find attached_assets
     """
 
-    # Find fixed position config for this position
+    # Find fixed position config for this position (for rectangle)
     fixed_config = None
     for fixed in fixed_positions:
         if fixed.get("position") == [row, col]:
             fixed_config = fixed
             break
 
-    # Default icons if config not found
-    rectangle_type = "ORBIS"
-    square1_type = "shelves"
-    square2_type = "conveyor_belt"
-
+    # Default rectangle icon
+    rectangle_type = "ORBIS" if col == 0 else "DSP"
+    
     if fixed_config:
         assets = fixed_config.get("assets", {})
         rectangle_type = assets.get("rectangle", rectangle_type)
-        square1_type = assets.get("square1", square1_type)
-        square2_type = assets.get("square2", square2_type)
+
+    # Find the module at position (row+1, col) to get attached_assets
+    # HBW is at [1,0] (below COMPANY at [0,0])
+    # DPS is at [1,3] (below SOFTWARE at [0,3])
+    module_below = None
+    if modules:
+        for module in modules:
+            if module.get("position") == [row + 1, col]:
+                module_below = module
+                break
+    
+    # Get attached assets from the module below
+    square1_type = None
+    square2_type = None
+    if module_below:
+        attached_assets = module_below.get("attached_assets", [])
+        if len(attached_assets) >= 1:
+            square1_type = attached_assets[0]  # e.g., "HBW_SQUARE1"
+        if len(attached_assets) >= 2:
+            square2_type = attached_assets[1]  # e.g., "HBW_SQUARE2"
 
     # Generate icons (smaller for split cells)
     rect_width = int(cell_width * 0.8)
@@ -664,8 +703,8 @@ def _generate_split_cell_html(
     square_height = int(cell_height * 0.4)
 
     rectangle_svg = _get_split_cell_icon(asset_manager, rectangle_type, rect_width, rect_height)
-    square1_svg = _get_split_cell_icon(asset_manager, square1_type, square_width, square_height)
-    square2_svg = _get_split_cell_icon(asset_manager, square2_type, square_width, square_height)
+    square1_svg = _get_split_cell_icon(asset_manager, square1_type, square_width, square_height) if square1_type else ""
+    square2_svg = _get_split_cell_icon(asset_manager, square2_type, square_width, square_height) if square2_type else ""
 
     # Add data attribute for position if click is enabled
     data_attr = f'data-position="[{row},{col}]"' if enable_click else ""
@@ -677,10 +716,19 @@ def _generate_split_cell_html(
         tooltip_text = config_id
     title_attr = f'title="{tooltip_text}"' if tooltip_text else ""
     
-    # Check if this cell should be highlighted
+    # Determine highlighting behavior for split cells
+    # If this cell (0,0 or 0,3) is highlighted but the module below (1,0 or 1,3) is NOT highlighted,
+    # then we're highlighting only the rectangle (COMPANY/SOFTWARE selection)
+    # If both are highlighted, we're highlighting the compound region (HBW/DPS selection)
     cell_class = "cell cell-split"
     if highlight_cells and (row, col) in highlight_cells:
-        cell_class += " cell-highlight"
+        module_below_pos = (row + 1, col)
+        if module_below_pos not in highlight_cells:
+            # Only this cell is highlighted → highlight rectangle only
+            cell_class += " highlight-rectangle-only"
+        else:
+            # Both cells are highlighted → compound highlight (will use bounding box)
+            cell_class += " cell-highlight"
 
     cell_html = f"""
     <div class="{cell_class}" {data_attr} {title_attr}>
