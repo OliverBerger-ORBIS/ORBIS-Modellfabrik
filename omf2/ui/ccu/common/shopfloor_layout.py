@@ -250,20 +250,26 @@ def _generate_html_grid(
             background: rgba(255, 152, 0, 0.05);
             z-index: 2;
         }}
-        /* When part of compound region (has sibling with compound-highlight-overlay), hide individual borders */
-        .shopfloor-container:has(.compound-highlight-overlay) .cell-highlight {{
-            border: none !important;
+        /* Cells that are part of a compound region - no individual borders */
+        .cell-highlight.compound-member {{
+            border: 1px solid #e0e0e0 !important;  /* Restore default border */
             background: rgba(255, 152, 0, 0.1);
+            z-index: 1;
         }}
         /* Make split cells with cell-highlight more visible */
         .cell-split.cell-highlight {{
             border: 3px solid #FF9800 !important;
             background: rgba(255, 152, 0, 0.1);
         }}
-        /* When part of compound region, split cells also hide borders */
-        .shopfloor-container:has(.compound-highlight-overlay) .cell-split.cell-highlight {{
-            border: none !important;
+        /* Split cells in compound region also get no individual borders */
+        .cell-split.cell-highlight.compound-member {{
+            border: 1px solid #e0e0e0 !important;
             background: rgba(255, 152, 0, 0.1);
+        }}
+        /* Sub-elements of split cells in compound should blend seamlessly */
+        .cell-split.compound-member .split-top,
+        .cell-split.compound-member .split-bottom {{
+            border: none !important;
         }}
         /* Highlight only rectangle (top) part of split cell */
         .cell-split.highlight-rectangle-only .split-top {{
@@ -597,6 +603,9 @@ def _generate_cell_html(
     # Check if this cell should be highlighted (via highlight_cells parameter)
     if highlight_cells and (row, col) in highlight_cells:
         cell_classes.append("cell-highlight")
+        # If this is part of a compound region (multiple cells highlighted), add compound-member class
+        if len(highlight_cells) > 1:
+            cell_classes.append("compound-member")
 
     # Check if this module is active (only if highlight_cells wasn't provided)
     # If highlight_cells is provided, it takes precedence (e.g., compound regions)
@@ -745,6 +754,9 @@ def _generate_split_cell_html(
         else:
             # Both cells are highlighted → compound highlight (will use bounding box)
             cell_class += " cell-highlight"
+            # If this is part of a compound region (multiple cells), add compound-member class
+            if len(highlight_cells) > 1:
+                cell_class += " compound-member"
 
     cell_html = f"""
     <div class="{cell_class}" {data_attr} {title_attr}>
