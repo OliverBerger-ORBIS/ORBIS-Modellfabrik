@@ -137,11 +137,26 @@ def render_inventory_subtab(ccu_gateway: CcuGateway, registry_manager, asset_man
 
     # Add auto-refresh support using the same pattern as storage_orders_subtab
     refresh_triggered = False
+    api_available = False
     try:
         from omf2.ui.ccu.production_orders_refresh_helper import check_and_reload
 
         # Use stock_updates refresh group with polling + compare (same pattern as storage_orders_subtab)
         refresh_triggered = check_and_reload(group="stock_updates", reload_callback=reload_inventory, interval_ms=1000)
+        
+        # Log whether backend API was responsive
+        if refresh_triggered:
+            logger.info("✅ Backend API available: Refresh triggered via Redis timestamp polling")
+            api_available = True
+        else:
+            # Check if API is reachable by testing if we got a timestamp
+            import time
+            session_key = "stock_updates_last_refresh_timestamp"
+            if session_key in st.session_state:
+                logger.info("✅ Backend API available: No new refresh timestamp detected")
+                api_available = True
+            else:
+                logger.info("⚠️ Backend API unavailable: Will use manual refresh fallback")
 
         # Get data from session state (populated by reload_inventory callback)
         # If not yet populated, load it now (same pattern as storage_orders_subtab)
@@ -155,10 +170,16 @@ def render_inventory_subtab(ccu_gateway: CcuGateway, registry_manager, asset_man
         if "inventory_status" not in st.session_state:
             reload_inventory()
     
-    # DEV MODE FALLBACK: If backend API is not available, always reload when page reruns
-    # This ensures that MQTT updates are picked up when user clicks "Refresh Dashboard" button
+    # BACKEND API UNAVAILABLE FALLBACK:
+    # If the backend Flask API (port 5001) is not running, we cannot use Redis-based refresh polling.
+    # In this case, always reload inventory data on every page rerun to ensure MQTT updates are visible.
+    # This happens when:
+    # - Backend API not running (typical in DEV mode)
+    # - Backend API unreachable (network issues, wrong URL)
+    # - Redis running but Flask API not started
+    # User must manually trigger refresh via "Refresh Dashboard" button or other UI interactions.
     if not refresh_triggered:
-        logger.info("🔄 DEV mode: Reloading inventory (backend API unavailable, manual refresh)")
+        logger.info("🔄 Backend API unavailable: Reloading inventory on manual refresh")
         reload_inventory()
 
     # I18n Manager aus Session State holen
