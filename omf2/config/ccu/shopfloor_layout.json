@@ -80,13 +80,23 @@
       "id": "HBW",
       "type": "HBW", 
       "serialNumber": "SVR3QA0022",
-      "position": [1, 0]
+      "position": [1, 0],
+      "attached_assets": ["HBW_SQUARE1", "HBW_SQUARE2"],
+      "display_variants": {
+        "default": [[0, 0], [1, 0]],
+        "cell_only": [[1, 0]]
+      }
     },
     {
       "id": "DPS",
       "type": "DPS",
       "serialNumber": "SVR4H73275",
-      "position": [1, 3]
+      "position": [1, 3],
+      "attached_assets": ["DPS_SQUARE1", "DPS_SQUARE2"],
+      "display_variants": {
+        "default": [[0, 3], [1, 3]],
+        "cell_only": [[1, 3]]
+      }
     },
     {
       "id": "DRILL",
@@ -108,9 +118,11 @@
       "type": "company",
       "position": [0, 0],
       "assets": {
-        "rectangle": "ORBIS",
-        "square1": "factory",
-        "square2": "conveyor"
+        "rectangle": "ORBIS"
+      },
+      "display_variants": {
+        "default": [[0, 0]],
+        "rectangle_only": [[0, 0]]
       }
     },
     {
@@ -118,9 +130,11 @@
       "type": "software",
       "position": [0, 3],
       "assets": {
-        "rectangle": "DSP",
-        "square1": "robot-arm",
-        "square2": "order-tracking"
+        "rectangle": "DSP"
+      },
+      "display_variants": {
+        "default": [[0, 3]],
+        "rectangle_only": [[0, 3]]
       }
     }
   ],

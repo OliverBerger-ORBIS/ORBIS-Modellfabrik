@@ -149,22 +149,31 @@ class OMF2AssetManager:
         )
 
         # Shopfloor-Assets - canonical keys only (COMPANY_*, SOFTWARE_*)
+        # Rectangle assets remain with COMPANY/SOFTWARE for header logos
         shopfloor_assets = {
-            # Canonical COMPANY assets
+            # Canonical COMPANY assets (rectangle only)
             "COMPANY_rectangle": "ORBIS_logo_RGB.svg",
-            "COMPANY_square1": "factory.svg",
-            "COMPANY_square2": "conveyor.svg",
-            # Canonical SOFTWARE assets
+            # Canonical SOFTWARE assets (rectangle only)
             "SOFTWARE_rectangle": "information-technology.svg",  # DSP logo
-            "SOFTWARE_square1": "warehouse.svg",
-            "SOFTWARE_square2": "order-tracking.svg",
             # Direct name fallback for backward compatibility (minimal)
             "ORBIS": "ORBIS_logo_RGB.svg",
             "DSP": "information-technology.svg",
         }
 
-        # Shopfloor-Assets zu icon_mapping hinzufügen
+        # Attached asset mapping - logical keys for module-attached square assets
+        # These are physically attached to HBW and DPS modules
+        attached_asset_mapping = {
+            # HBW attached assets (physically at HBW position)
+            "HBW_SQUARE1": "factory.svg",
+            "HBW_SQUARE2": "conveyor.svg",
+            # DPS attached assets (physically at DPS position)
+            "DPS_SQUARE1": "robot-arm.svg",
+            "DPS_SQUARE2": "order-tracking.svg",
+        }
+
+        # Merge all shopfloor assets into icon_mapping
         icon_mapping.update(shopfloor_assets)
+        icon_mapping.update(attached_asset_mapping)
 
         for module_name, icon_file in icon_mapping.items():
             if icon_file is None:
@@ -188,14 +197,15 @@ class OMF2AssetManager:
         """Gibt den Pfad zum Modul-Icon zurück
 
         Args:
-            module_name: Name des Moduls oder Assets (z.B. "COMPANY_rectangle", "SOFTWARE_square1")
+            module_name: Name des Moduls oder Assets (z.B. "COMPANY_rectangle", "HBW_SQUARE1", "MILL")
 
         Returns:
             Pfad zum SVG-Icon oder None
 
         Note:
-            - Only canonical keys (COMPANY_*, SOFTWARE_*) are supported in productive code
-            - Legacy EMPTY1/EMPTY2 keys have been removed from productive lookup
+            - Canonical keys: COMPANY_rectangle, SOFTWARE_rectangle (header logos only)
+            - Logical attached keys: HBW_SQUARE1/2, DPS_SQUARE1/2 (module-attached assets)
+            - Legacy EMPTY1/EMPTY2 and COMPANY_square*/SOFTWARE_square* keys removed
             - Fallback to uppercase for module names (MILL, DRILL, etc.)
         """
         # 1. Direct lookup (canonical keys preferred)
@@ -210,14 +220,19 @@ class OMF2AssetManager:
 
         Args:
             asset_type: Typ des Assets ("COMPANY" oder "SOFTWARE") - canonical format
-            position: Position des Assets ("rectangle", "square1", "square2")
+            position: Position des Assets ("rectangle" only - square assets now use logical keys)
 
         Returns:
             Pfad zum SVG-Icon oder None
 
         Examples:
             get_shopfloor_asset_path("COMPANY", "rectangle") -> path to ORBIS_logo_RGB.svg
-            get_shopfloor_asset_path("SOFTWARE", "square1") -> path to warehouse.svg
+            get_shopfloor_asset_path("SOFTWARE", "rectangle") -> path to information-technology.svg
+
+        Note:
+            Square assets (square1/square2) are deprecated. Use logical attached keys instead:
+            - For HBW: use get_module_icon_path("HBW_SQUARE1") or get_module_icon_path("HBW_SQUARE2")
+            - For DPS: use get_module_icon_path("DPS_SQUARE1") or get_module_icon_path("DPS_SQUARE2")
         """
         # Use canonical key format: COMPANY_rectangle, SOFTWARE_square1, etc.
         asset_key = f"{asset_type}_{position}"
@@ -227,14 +242,15 @@ class OMF2AssetManager:
         """Get deterministic asset file path for a given key
 
         Args:
-            key: Asset key (e.g., "COMPANY_rectangle", "SOFTWARE_square1", "MILL")
+            key: Asset key (e.g., "COMPANY_rectangle", "HBW_SQUARE1", "MILL")
 
         Returns:
             Deterministic path to SVG file or empty.svg as fallback
 
         Examples:
             get_asset_file("COMPANY_rectangle") -> "/omf2/assets/svgs/ORBIS_logo_RGB.svg"
-            get_asset_file("SOFTWARE_square1") -> "/omf2/assets/svgs/warehouse.svg"
+            get_asset_file("HBW_SQUARE1") -> "/omf2/assets/svgs/factory.svg"
+            get_asset_file("DPS_SQUARE2") -> "/omf2/assets/svgs/order-tracking.svg"
             get_asset_file("UNKNOWN") -> "/omf2/assets/svgs/empty.svg"
         """
         # Try to get the icon path
