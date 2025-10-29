@@ -6,6 +6,7 @@ Uses sensors_display_utils for normalization and configuration
 """
 
 import base64
+import math
 from datetime import datetime
 from typing import Dict
 
@@ -20,10 +21,7 @@ from omf2.ui.ccu.sensors_display_utils import (
     get_iaq_info,
     load_sensor_display_config,
     normalize_aq,
-    normalize_brightness,
     normalize_humidity,
-    normalize_pressure,
-    normalize_temperature,
 )
 from omf2.ui.common.symbols import UISymbols
 from omf2.ui.utils.ui_refresh import request_refresh
@@ -146,13 +144,21 @@ def _show_sensor_panels(ccu_gateway: CcuGateway, config: Dict, i18n):
 
         if has_data:
             live_data_text = i18n.t("ccu_overview.sensor_data.live_data_available")
-            st.success(f"✅ **{live_data_text}**")
+            timestamp_text = None
+            if sensor_values.get("timestamp"):
+                timestamp_text = _format_timestamp(sensor_values.get("timestamp"))
+
+            # Show live data status + last update in one info box
+            if timestamp_text:
+                st.info(f"✅ **{live_data_text}** | ⏰ **Last update:** {timestamp_text}")
+            else:
+                st.success(f"✅ **{live_data_text}**")
         else:
             no_data_text = i18n.t("ccu_overview.sensor_data.no_data")
             st.warning(f"⚠️ {no_data_text}")
 
-        # Row 1: Temperature + Humidity + IAQ
-        col1, col2, col3 = st.columns(3)
+        # Row 1: Temperature + Humidity + IAQ (2:2:1 ratio)
+        col1, col2, col3 = st.columns([2, 2, 1])
 
         with col1:
             _show_temperature_gauge(sensor_values.get("temperature"), config, i18n)
@@ -165,8 +171,8 @@ def _show_sensor_panels(ccu_gateway: CcuGateway, config: Dict, i18n):
 
         st.divider()
 
-        # Row 2: Pressure + Brightness + AQ
-        col4, col5, col6 = st.columns(3)
+        # Row 2: Pressure + Brightness + AQ (2:2:1 ratio)
+        col4, col5, col6 = st.columns([2, 2, 1])
 
         with col4:
             _show_pressure_gauge(sensor_values.get("pressure"), config, i18n)
@@ -180,12 +186,6 @@ def _show_sensor_panels(ccu_gateway: CcuGateway, config: Dict, i18n):
         st.divider()
 
         # Row 3: Camera (if available)
-
-        # Show timestamp if available
-        if sensor_values.get("timestamp"):
-            st.caption(f"⏰ Last update: {_format_timestamp(sensor_values.get('timestamp'))}")
-
-        st.divider()
 
         # Camera section (restored from e314cf8)
         sensor_manager = get_ccu_sensor_manager()
@@ -201,11 +201,9 @@ def _show_sensor_panels(ccu_gateway: CcuGateway, config: Dict, i18n):
 def _show_temperature_gauge(temperature: float, config: Dict, i18n):
     """Display temperature as OMF-style gauge with normalization"""
     title_text = i18n.t("ccu_overview.sensor_data.current_temperature")
-    st.subheader(f"🌡️ {title_text}")
+    st.markdown(f"<h3 style='text-align: center;'>🌡️ {title_text}</h3>", unsafe_allow_html=True)
 
     if temperature is not None:
-        # Normalize temperature to percentage
-        temp_percent = normalize_temperature(temperature, config)
         temp_config = config.get("temperature", {})
         min_temp = temp_config.get("min", -30.0)
         max_temp = temp_config.get("max", 60.0)
@@ -236,8 +234,7 @@ def _show_temperature_gauge(temperature: float, config: Dict, i18n):
         fig.update_layout(height=250, margin={"l": 20, "r": 20, "t": 50, "b": 20}, font={"size": 12})
         st.plotly_chart(fig, use_container_width=True)
 
-        # Show normalized percentage
-        st.metric("Fill Level", f"{temp_percent:.1f}%")
+        # Show normalized percentage - REMOVED (redundant)
     else:
         st.warning("⚠️ No temperature data")
 
@@ -245,7 +242,7 @@ def _show_temperature_gauge(temperature: float, config: Dict, i18n):
 def _show_humidity_gauge(humidity: float, config: Dict, i18n):
     """Display humidity as OMF-style gauge (already 0-100%)"""
     title_text = i18n.t("ccu_overview.sensor_data.current_humidity")
-    st.subheader(f"💧 {title_text}")
+    st.markdown(f"<h3 style='text-align: center;'>💧 {title_text}</h3>", unsafe_allow_html=True)
 
     if humidity is not None:
         # Normalize humidity (clamp to 0-100)
@@ -274,31 +271,31 @@ def _show_humidity_gauge(humidity: float, config: Dict, i18n):
         fig.update_layout(height=250, margin={"l": 20, "r": 20, "t": 50, "b": 20}, font={"size": 12})
         st.plotly_chart(fig, use_container_width=True)
 
-        st.metric("Humidity Level", f"{humidity_norm:.1f}%")
+        # Show normalized percentage - REMOVED (redundant)
     else:
         st.warning("⚠️ No humidity data")
 
 
 def _show_brightness_gauge(brightness: float, config: Dict, i18n):
-    """Display brightness as OMF-style gauge (normalized to 0-100%)"""
+    """Display brightness as OMF-style gauge with logarithmic scale"""
     title_text = i18n.t("ccu_overview.sensor_data.current_light")
-    st.subheader(f"💡 {title_text}")
+    st.markdown(f"<h3 style='text-align: center;'>💡 {title_text}</h3>", unsafe_allow_html=True)
 
     if brightness is not None:
-        # Normalize brightness to percentage (never > 100%)
-        brightness_percent = normalize_brightness(brightness, config)
+        # Calculate logarithmic percentage for gauge display
         max_lux = config.get("brightness", {}).get("max_lux", 65000.0)
+        log_percent = (math.log(1 + brightness) / math.log(1 + max_lux)) * 100
 
-        # Create Plotly gauge
+        # Create Plotly gauge with logarithmic percentage scale
+        # Use mode="gauge" (without "number") to hide default number, then add custom annotation
         fig = go.Figure(
             go.Indicator(
-                mode="gauge+number",
-                value=brightness_percent,
-                number={"suffix": "%"},
+                mode="gauge",  # Gauge only, no automatic number display
+                value=log_percent,  # Use logarithmic percentage for gauge position
                 domain={"x": [0, 1], "y": [0, 1]},
                 title={"text": f"Brightness (max: {max_lux} lux)"},
                 gauge={
-                    "axis": {"range": [0, 100]},
+                    "axis": {"range": [0, 100]},  # Scale from 0 to 100% (logarithmic)
                     "bar": {"color": "gold"},
                     "steps": [
                         {"range": [0, 5], "color": "darkblue", "name": "Dunkel, Nacht"},
@@ -312,10 +309,23 @@ def _show_brightness_gauge(brightness: float, config: Dict, i18n):
             )
         )
 
-        fig.update_layout(height=250, margin={"l": 20, "r": 20, "t": 50, "b": 20}, font={"size": 12})
-        st.plotly_chart(fig, use_container_width=True)
+        # Add annotation to show absolute lux value in center of gauge
+        fig.add_annotation(
+            x=0.5,
+            y=0.5,
+            text=f"{brightness:.0f} lux",
+            showarrow=False,
+            font={"size": 24, "color": "black", "family": "Arial Black"},
+            xref="paper",
+            yref="paper",
+            bgcolor="rgba(255,255,255,0.8)",
+            bordercolor="rgba(0,0,0,0)",
+            borderpad=4,
+        )
 
-        st.metric("Light Level", f"{brightness_percent:.1f}%", delta=f"{brightness:.1f} lux")
+        fig.update_layout(height=250, margin={"l": 20, "r": 20, "t": 50, "b": 20}, font={"size": 12})
+
+        st.plotly_chart(fig, use_container_width=True)
     else:
         st.warning("⚠️ No brightness data")
 
@@ -323,11 +333,9 @@ def _show_brightness_gauge(brightness: float, config: Dict, i18n):
 def _show_pressure_gauge(pressure: float, config: Dict, i18n):
     """Display air pressure as OMF-style gauge"""
     title_text = i18n.t("ccu_overview.sensor_data.current_pressure")
-    st.subheader(f"🌡️ {title_text}")
+    st.markdown(f"<h3 style='text-align: center;'>🌡️ {title_text}</h3>", unsafe_allow_html=True)
 
     if pressure is not None:
-        # Normalize pressure to percentage
-        pressure_percent = normalize_pressure(pressure, config)
         pressure_config = config.get("pressure", {})
         min_pressure = pressure_config.get("min", 900.0)
         max_pressure = pressure_config.get("max", 1100.0)
@@ -367,7 +375,7 @@ def _show_pressure_gauge(pressure: float, config: Dict, i18n):
         fig.update_layout(height=250, margin={"l": 20, "r": 20, "t": 50, "b": 20}, font={"size": 12})
         st.plotly_chart(fig, use_container_width=True)
 
-        st.metric("Fill Level", f"{pressure_percent:.1f}%")
+        # Show normalized percentage - REMOVED (redundant)
     else:
         st.warning("⚠️ No pressure data")
 
@@ -375,16 +383,16 @@ def _show_pressure_gauge(pressure: float, config: Dict, i18n):
 def _show_iaq_badge(iaq: float, config: Dict, i18n):
     """Display IAQ as traffic light (three-block system without legend)"""
     air_quality_label = i18n.t("ccu_overview.sensor_data.air_quality_label")
-    st.subheader(f"🌬️ {air_quality_label}")
+    st.markdown(f"<h3 style='text-align: center;'>🌬️ {air_quality_label}</h3>", unsafe_allow_html=True)
 
     if iaq is not None:
         # Get IAQ information
         level, color, label = get_iaq_info(iaq, config)
 
-        # Create layout with columns
-        col1, col2 = st.columns([1, 2])
+        # Create centered layout for IAQ display
+        col1, col2, col3 = st.columns([1, 3, 1])
 
-        with col1:
+        with col2:  # Center column for content
             # Three-Block Traffic Light using Streamlit components
             st.markdown("**Status:**")
 
@@ -405,11 +413,6 @@ def _show_iaq_badge(iaq: float, config: Dict, i18n):
                 st.markdown("⚪")  # Empty middle
                 st.markdown("⚪")  # Empty bottom
 
-        with col2:
-            # Info Panel - Current Value Display
-            st.markdown(f"**Current Value:** {iaq:.0f}")
-            st.markdown(f"**Status:** {label}")
-
         # Show IAQ info
         st.caption(f"IAQ: {iaq:.0f} - {label}")
     else:
@@ -419,16 +422,16 @@ def _show_iaq_badge(iaq: float, config: Dict, i18n):
 def _show_aq_bar_chart(aq_value: float, config: Dict, i18n):
     """Display AQ (Air Quality Score) as bar chart (0-5 scale)"""
     title_text = i18n.t("ccu_overview.sensor_data.current_aq")
-    st.subheader(f"📊 {title_text}")
+    st.markdown(f"<h3 style='text-align: center;'>📊 {title_text}</h3>", unsafe_allow_html=True)
 
     if aq_value is not None:
         # Get AQ information
         level, color, label = get_aq_info(aq_value, config)
 
-        # Create layout with columns
-        col1, col2 = st.columns([1, 2])
+        # Create centered layout for AQ Score display
+        col1, col2, col3 = st.columns([1, 3, 1])
 
-        with col1:
+        with col2:  # Center column for content
             # Vertical Bar Chart using Streamlit components
             st.markdown("**Score:**")
 
@@ -449,12 +452,7 @@ def _show_aq_bar_chart(aq_value: float, config: Dict, i18n):
             )
 
             st.markdown("**0**")
-            st.markdown(f"**{aq_percent:.1f}%**")
-
-        with col2:
-            # Info Panel - Current Value Display
-            st.markdown(f"**Current Value:** {aq_value:.1f}/5.0")
-            st.markdown(f"**Status:** {label}")
+            # REMOVED redundant percentage display
 
         # Show AQ score info
         st.caption(f"AQ Score: {aq_value:.1f}/5.0 - {label}")
@@ -623,32 +621,21 @@ def _display_base64_image_compact(base64_data: str, timestamp: str, message_coun
         # Base64 dekodieren
         image_bytes = base64.b64decode(base64_part)
 
-        # Kompakte Darstellung mit fester Breite
-        col1, col2 = st.columns([2, 1])
+        # Format timestamp for caption
+        formatted_time = ""
+        if timestamp:
+            try:
+                if isinstance(timestamp, str):
+                    dt = datetime.fromisoformat(timestamp.replace("Z", "+00:00"))
+                    formatted_time = f" {dt.strftime('%H:%M:%S')}"
+                else:
+                    formatted_time = f" {str(timestamp)}"
+            except Exception:
+                formatted_time = f" {str(timestamp)}"
 
-        with col1:
-            # Bild in kompakter Größe anzeigen (max. 400px breit)
-            st.image(image_bytes, caption=f"📸 Kamera-Bild ({image_format.upper()})", width=400)
-
-        with col2:
-            # Bild-Informationen kompakt anzeigen
-            format_label = i18n.t("ccu_overview.sensor_data.image_format_label")
-            st.metric(format_label, image_format.upper())
-
-            messages_label = i18n.t("ccu_overview.sensor_data.messages_count")
-            st.metric(messages_label, message_count)
-
-            if timestamp:
-                try:
-                    if isinstance(timestamp, str):
-                        dt = datetime.fromisoformat(timestamp.replace("Z", "+00:00"))
-                        formatted_time = dt.strftime("%H:%M:%S")
-                    else:
-                        formatted_time = str(timestamp)
-                except Exception:
-                    formatted_time = str(timestamp)
-                timestamp_label = i18n.t("ccu_overview.sensor_data.timestamp_label")
-                st.metric(timestamp_label, formatted_time)
+        # Bild in kompakter Größe anzeigen mit Zeitstempel in Caption
+        caption_text = f"📸 Kamera-Bild ({image_format.upper()}){formatted_time}"
+        st.image(image_bytes, caption=caption_text, width=400)
 
     except Exception as e:
         logger.error(f"❌ Fehler beim Dekodieren des Kamera-Bildes: {e}")
