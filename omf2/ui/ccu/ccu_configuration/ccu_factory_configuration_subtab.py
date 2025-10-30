@@ -8,6 +8,7 @@ from pathlib import Path
 
 import streamlit as st
 
+from omf2.assets.heading_icons import get_svg_inline
 from omf2.ccu.config_loader import get_ccu_config_loader
 from omf2.common.logger import get_logger
 from omf2.ui.common.symbols import UISymbols
@@ -20,10 +21,20 @@ def render_ccu_factory_configuration_subtab():
     """Render CCU Factory Configuration Subtab"""
     logger.info("🏭 Rendering CCU Factory Configuration Subtab")
     try:
-        st.subheader(f"{UISymbols.get_tab_icon('factory')} Factory Configuration")
-        st.markdown("Factory layout configuration and module positioning")
+        try:
+            factory_icon = get_svg_inline("FACTORY_CONFIGURATION", size_px=32) or ""
+            st.markdown(
+                f"<h3 style='margin: 0.25rem 0 0.25rem 0; display:flex; align-items:center; gap:8px;'>{factory_icon} Factory Configuration</h3>",
+                unsafe_allow_html=True,
+            )
+        except Exception:
+            st.subheader(f"{UISymbols.get_tab_icon('factory')} Factory Configuration")
+        st.markdown(
+            "<p style='margin: 0.25rem 0 0.25rem 0;'>Factory layout configuration and module positioning</p>",
+            unsafe_allow_html=True,
+        )
 
-        # Shopfloor Layout Display
+        # Shopfloor Layout Display (title will be rendered inside component to avoid spacing)
         _show_shopfloor_layout_section()
 
         # Shopfloor Position Details Section
@@ -47,27 +58,11 @@ def _show_shopfloor_layout_section():
         # Import and use the shopfloor layout component
         from omf2.ui.ccu.common.shopfloor_layout import show_shopfloor_layout
 
-        # Add message listener for click events
-        st.components.v1.html(
-            """
-        <script>
-            window.addEventListener('message', function(event) {
-                if (event.data && event.data.type === 'shopfloor_click') {
-                    // Store in sessionStorage which Streamlit can access
-                    sessionStorage.setItem('shopfloor_clicked_position', event.data.position);
-                    // Try to trigger a rerun by setting a value
-                    console.log('Shopfloor position clicked:', event.data.position);
-                }
-            });
-        </script>
-        """,
-            height=0,
-        )
-
         # Show the shopfloor layout with interactive SVG
         # CCU Configuration mode: single/double click for module selection/navigation
+        # Note: Message listener script is integrated into show_shopfloor_layout() component
         show_shopfloor_layout(
-            title="Shopfloor Layout",
+            title="Shopfloor Layout",  # Title will be rendered inside HTML to avoid spacing issues
             unique_key="ccu_configuration_shopfloor",
             mode="ccu_configuration",  # CCU Configuration mode: single click = select, double click = navigate
             enable_click=True,  # Enable click-to-select functionality

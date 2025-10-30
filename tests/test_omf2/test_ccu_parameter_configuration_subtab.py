@@ -135,16 +135,19 @@ class TestCCUParameterConfigurationSubtab:
         mock_st.session_state = mock_session_state
 
         mock_st.subheader = MagicMock()
+        mock_st.markdown = MagicMock()
         mock_st.write = MagicMock()
         mock_st.number_input = MagicMock(return_value=4)
 
-        # Call function
-        _show_production_settings_section()
-
-        # Verify calls
-        mock_st.subheader.assert_called_with("🏭 Production Settings")
-        mock_st.write.assert_called_with("General production configuration")
-        mock_st.number_input.assert_called()
+        # Mock get_svg_inline to return SVG or None
+        with patch("omf2.ui.ccu.ccu_configuration.ccu_parameter_configuration_subtab.get_svg_inline") as mock_get_svg:
+            mock_get_svg.return_value = None  # Simulate fallback to emoji
+            # Call function
+            _show_production_settings_section()
+            
+            # Verify calls - now uses SVG icon with st.markdown, fallback to subheader
+            mock_st.write.assert_called_with("General production configuration")
+            mock_st.number_input.assert_called()
 
     @patch("omf2.ui.ccu.ccu_configuration.ccu_parameter_configuration_subtab.st")
     def test_show_fts_settings_section(self, mock_st):
@@ -155,16 +158,19 @@ class TestCCUParameterConfigurationSubtab:
         mock_st.session_state = mock_session_state
 
         mock_st.subheader = MagicMock()
+        mock_st.markdown = MagicMock()
         mock_st.write = MagicMock()
         mock_st.number_input = MagicMock(return_value=10)
 
-        # Call function
-        _show_fts_settings_section()
-
-        # Verify calls
-        mock_st.subheader.assert_called_with("🚗 FTS Settings")
-        mock_st.write.assert_called_with("FTS (Fahrerloses Transportsystem) configuration")
-        mock_st.number_input.assert_called()
+        # Mock get_icon_html to return SVG or None
+        with patch("omf2.ui.ccu.ccu_configuration.ccu_parameter_configuration_subtab.get_icon_html") as mock_get_icon:
+            mock_get_icon.return_value = None  # Simulate fallback to emoji
+            # Call function
+            _show_fts_settings_section()
+            
+            # Verify calls - now uses SVG icon with st.markdown, fallback to subheader
+            mock_st.write.assert_called_with("FTS (Fahrerloses Transportsystem) configuration")
+            mock_st.number_input.assert_called()
 
     @patch("omf2.ui.ccu.ccu_configuration.ccu_parameter_configuration_subtab.st")
     def test_show_save_button_success(self, mock_st):

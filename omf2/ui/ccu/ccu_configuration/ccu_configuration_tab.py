@@ -5,6 +5,7 @@ CCU Configuration Tab - CCU Configuration UI Component
 
 import streamlit as st
 
+from omf2.assets.heading_icons import get_svg_inline
 from omf2.common.logger import get_logger
 from omf2.ui.common.symbols import UISymbols
 
@@ -42,7 +43,15 @@ def render_ccu_configuration_tab(ccu_gateway=None, registry_manager=None):
             logger.error("❌ I18n Manager not found in session state")
             return
 
-        st.header(f"{UISymbols.get_tab_icon('ccu_configuration')} {i18n.translate('tabs.ccu_configuration')}")
+        # Heading SVG (32px) with fallback to emoji icon
+        try:
+            cfg_icon = get_svg_inline("CONFIGURATION", size_px=32) or ""
+            st.markdown(
+                f"<h2 style='margin: 0.25rem 0 0.5rem 0; display:flex; align-items:center; gap:8px;'>{cfg_icon} {i18n.translate('tabs.ccu_configuration')}</h2>",
+                unsafe_allow_html=True,
+            )
+        except Exception:
+            st.header(f"{UISymbols.get_tab_icon('ccu_configuration')} {i18n.translate('tabs.ccu_configuration')}")
         st.markdown(i18n.t("ccu_configuration.subtitle"))
 
         # Create subtabs

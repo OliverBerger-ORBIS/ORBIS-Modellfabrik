@@ -8,6 +8,7 @@ import html
 import pandas as pd
 import streamlit as st
 
+from omf2.assets.heading_icons import get_svg_inline
 from omf2.ccu.module_manager import get_ccu_module_manager
 from omf2.common.logger import get_logger
 from omf2.ui.common.symbols import UISymbols
@@ -33,12 +34,28 @@ def render_ccu_message_monitor(ccu_gateway, title=None, show_controls=True):
             logger.warning("⚠️ I18n Manager not found in session state - using fallback")
             # Fallback for compatibility
             title = title or "CCU Message Monitor"
-            st.subheader(f"📡 {title}")
+            # Get SVG icon for Message Monitor heading
+            try:
+                msg_icon = get_svg_inline("MESSAGE_CENTER", size_px=32) or ""
+                st.markdown(
+                    f"<h3 style='margin: 0.25rem 0 0.25rem 0; display:flex; align-items:center; gap:8px;'>{msg_icon} {title}</h3>",
+                    unsafe_allow_html=True,
+                )
+            except Exception:
+                st.subheader(f"📡 {title}")
             st.markdown("CCU MQTT Message Monitoring - Echtzeit-Nachrichten über CCU Gateway")
         else:
             # Use i18n
             title = title or i18n.t("ccu_message_monitor.title")
-            st.subheader(f"📡 {title}")
+            # Get SVG icon for Message Monitor heading
+            try:
+                msg_icon = get_svg_inline("MESSAGE_CENTER", size_px=32) or ""
+                st.markdown(
+                    f"<h3 style='margin: 0.25rem 0 0.25rem 0; display:flex; align-items:center; gap:8px;'>{msg_icon} {title}</h3>",
+                    unsafe_allow_html=True,
+                )
+            except Exception:
+                st.subheader(f"📡 {title}")
             st.markdown(i18n.t("ccu_message_monitor.subtitle"))
 
         if not ccu_gateway:
@@ -249,7 +266,15 @@ def _render_table_filters(df, i18n, ccu_gateway, monitor_manager):
             st.session_state["ccu_filter_previous_scope"] = topic_scope
 
         # Abonnierte Topics Anzeige - Auswahlbox
-        st.subheader("📋 Abonnierte Topics")
+        # Get SVG icon for Topics heading
+        try:
+            topics_icon = get_svg_inline("TOPICS", size_px=32) or ""
+            st.markdown(
+                f"<h4 style='margin: 0.25rem 0 0.25rem 0; display:flex; align-items:center; gap:8px;'>{topics_icon} Abonnierte Topics</h4>",
+                unsafe_allow_html=True,
+            )
+        except Exception:
+            st.subheader("📋 Abonnierte Topics")
 
         if topic_scope == "All Topics":
             # Alle abonnierten Topics vom Monitor Manager holen

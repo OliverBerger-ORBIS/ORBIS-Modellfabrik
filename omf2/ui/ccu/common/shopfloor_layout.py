@@ -28,6 +28,7 @@ import streamlit as st
 
 # OMF2 Imports
 from omf2.assets import get_asset_manager
+from omf2.assets.heading_icons import get_svg_inline
 from omf2.ccu.config_loader import get_ccu_config_loader
 from omf2.common.logger import get_logger
 
@@ -71,11 +72,15 @@ def show_shopfloor_layout(
         enable_click: Enable click-to-select functionality (default: False)
         highlight_cells: Optional list of (row, col) tuples to highlight (for compound regions)
     """
-    st.subheader(f"🏭 {title}")
-
-    # Show hint if click is enabled
+    # Generate hint HTML if click is enabled (rendered inside HTML to avoid spacing)
+    hint_html = ""
     if enable_click:
-        st.info("💡 Click on any position in the grid to view its details below")
+        hint_html = """
+        <div style="margin: 0.25rem 0 0.5rem 0; padding: 0.75rem; background-color: #e3f2fd; border-radius: 0.5rem; border-left: 4px solid #2196F3;">
+            <span style="font-size: 1.2em;">💡</span>
+            <span style="margin-left: 0.5rem;">Click on any position in the grid to view its details below</span>
+        </div>
+        """
 
     # Load layout configuration if not provided
     if layout_config is None:
@@ -121,6 +126,25 @@ def show_shopfloor_layout(
             # Fallback to old behavior - just use active_module_id
             pass
 
+    # Generate heading HTML if title is provided (with Streamlit-standard font styling)
+    heading_html = ""
+    if title:
+        try:
+            shop_icon = get_svg_inline("SHOPFLOOR_LAYOUT", size_px=32) or ""
+            heading_html = f"""
+            <div style="margin: 0.25rem 0 0.25rem 0;">
+                <h3 style="margin: 0; padding: 0; font-size: 1.5rem; font-weight: 600; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; display:flex; align-items:center; gap:8px; line-height: 1.4;">
+                    {shop_icon} {title}
+                </h3>
+            </div>
+            """
+        except Exception:
+            heading_html = f"""
+            <div style="margin: 0.25rem 0 0.25rem 0;">
+                <h3 style="margin: 0; padding: 0; font-size: 1.5rem; font-weight: 600; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; line-height: 1.4;">🏭 {title}</h3>
+            </div>
+            """
+
     # Generate HTML grid
     html_content = _generate_html_grid(
         modules=modules,
@@ -138,6 +162,9 @@ def show_shopfloor_layout(
         highlight_cells=highlight_cells,
     )
 
+    # Combine heading + hint + grid in single HTML block
+    combined_html = f"{heading_html}{hint_html}{html_content}"
+
     # Render using st.components or fallback to markdown
     try:
         # Use experimental query params for click communication if enabled
@@ -153,10 +180,16 @@ def show_shopfloor_layout(
             except Exception:
                 pass
 
-        st.components.v1.html(html_content, height=max_height + 20, scrolling=False)
+        # Calculate total height: heading (~50px) + hint (~50px if enabled) + grid (max_height) + bottom border/padding (~10px)
+        extra_height = 60  # heading spacing
+        if enable_click:
+            extra_height += 60  # hint box
+        total_height = max_height + extra_height + 10  # +10px for bottom border/padding
+
+        st.components.v1.html(combined_html, height=total_height, scrolling=False)
     except Exception as e:
         logger.warning(f"st.components.v1.html failed, falling back to markdown: {e}")
-        st.markdown(html_content, unsafe_allow_html=True)
+        st.markdown(combined_html, unsafe_allow_html=True)
 
 
 def _generate_html_grid(
@@ -207,16 +240,7 @@ def _generate_html_grid(
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             position: relative;
             overflow: visible;
-        }}
-        .shopfloor-container::after {{
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: #ddd;
-            pointer-events: none;
+            margin-bottom: 4px;
         }}
         .cell {{
             width: {cell_width}px;
@@ -593,24 +617,47 @@ def _generate_route_overlay(
                     if "<?xml" in fts_svg_content:
                         fts_svg_content = fts_svg_content.split("?>", 1)[1].strip()
 
-                    # Replace SVG tag with g tag for embedding, position at agv_x, agv_y
-                    # FTS icon is 24x24, scale it to 32x32 for better visibility
-                    icon_size = 32
+                    # Extract original SVG size from ViewBox or width/height attributes
+                    original_size = 24  # Default fallback
+                    viewbox_match = re.search(r'viewBox="([^"]*)"', fts_svg_content)
+                    if viewbox_match:
+                        viewbox = viewbox_match.group(1)
+                        viewbox_parts = viewbox.split()
+                        if len(viewbox_parts) >= 4:
+                            # ViewBox format: "x y width height" - use width as reference
+                            original_size = float(viewbox_parts[2])
+                    else:
+                        # Try to extract from width attribute
+                        width_match = re.search(r'width="([^"]*)"', fts_svg_content)
+                        if width_match:
+                            try:
+                                original_size = float(width_match.group(1).replace("px", "").replace("pt", ""))
+                            except ValueError:
+                                pass
+
+                    # Scale to 64px regardless of original SVG size
+                    icon_size = 64
                     half_size = icon_size / 2
+                    scale_factor = icon_size / original_size
 
                     # Create a group with transform to position and scale the icon
+                    # Remove SVG wrapper and width/height attributes for embedding
+                    svg_content_clean = fts_svg_content.replace("<svg", "<g").replace("</svg>", "</g>")
+                    svg_content_clean = re.sub(r'width="[^"]*"', "", svg_content_clean)
+                    svg_content_clean = re.sub(r'height="[^"]*"', "", svg_content_clean)
+
                     agv_marker_svg = f"""
-                    <g transform="translate({agv_x - half_size}, {agv_y - half_size}) scale({icon_size/24})">
-                        {fts_svg_content.replace('<svg', '<g').replace('</svg>', '</g>').replace('width="24"', '').replace('height="24"', '')}
+                    <g transform="translate({agv_x - half_size}, {agv_y - half_size}) scale({scale_factor})">
+                        {svg_content_clean}
                     </g>
                     """
             else:
-                # Fallback to circle if FTS icon not found
-                agv_marker_svg = f'<circle class="agv-marker" cx="{agv_x}" cy="{agv_y}" r="12"/>'
+                # Fallback to circle if FTS icon not found (doubled size: r=24)
+                agv_marker_svg = f'<circle class="agv-marker" cx="{agv_x}" cy="{agv_y}" r="24"/>'
         except Exception as e:
             logger.warning(f"Could not load FTS icon for AGV marker: {e}")
-            # Fallback to circle
-            agv_marker_svg = f'<circle class="agv-marker" cx="{agv_x}" cy="{agv_y}" r="12"/>'
+            # Fallback to circle (doubled size: r=24)
+            agv_marker_svg = f'<circle class="agv-marker" cx="{agv_x}" cy="{agv_y}" r="24"/>'
 
     svg = f"""
     <svg class="route-overlay" viewBox="0 0 {max_width} {max_height}" xmlns="http://www.w3.org/2000/svg">
@@ -691,9 +738,14 @@ def _generate_cell_html(
         # This allows icons to be properly centered and routes to pass through visual centers
         cell_label = ""
 
-        # Get icon SVG (90% of cell width/height for padding)
-        icon_width = int(cell_width * 0.7)
-        icon_height = int(cell_height * 0.7)
+        # Get icon SVG - Intersections use 80% of cell size, other modules use 56%
+        if cell_type == "intersection":
+            icon_width = int(cell_width * 0.8)
+            icon_height = int(cell_height * 0.8)
+        else:
+            # Reduced by ~20%: 0.7 * 0.8 = 0.56
+            icon_width = int(cell_width * 0.56)
+            icon_height = int(cell_height * 0.56)
         icon_svg = _get_module_icon_svg(asset_manager, cell_type, icon_width, icon_height, cell_data)
     else:
         cell_label = ""
@@ -783,8 +835,9 @@ def _generate_split_cell_html(
     # Generate icons (smaller for split cells)
     rect_width = int(cell_width * 0.8)
     rect_height = int(cell_height * 0.4)
-    square_width = int(cell_width * 0.4)
-    square_height = int(cell_height * 0.4)
+    # Square SVGs reduced by 20%: 0.4 * 0.8 = 0.32
+    square_width = int(cell_width * 0.32)
+    square_height = int(cell_height * 0.32)
 
     rectangle_svg = _get_split_cell_icon(asset_manager, rectangle_type, rect_width, rect_height)
     square1_svg = _get_split_cell_icon(asset_manager, square1_type, square_width, square_height) if square1_type else ""
@@ -866,132 +919,6 @@ def _get_split_cell_icon(asset_manager, icon_type: str, width: int, height: int)
 
     # Final fallback: text representation
     return f'<text x="{width//2}" y="{height//2}" text-anchor="middle" font-size="10" fill="#666">{icon_type}</text>'
-
-
-def _render_split_cell(
-    row: int,
-    col: int,
-    asset_manager,
-    active_module_id: Optional[str],
-    mode: str,
-    show_controls: bool,
-    unique_key: Optional[str],
-) -> None:
-    """
-    DEPRECATED: This function is no longer used.
-    Split cells are now rendered as part of the HTML grid.
-    Kept for backward compatibility only.
-    """
-    logger.warning("_render_split_cell is deprecated and should not be called")
-    pass
-
-
-def _render_normal_cell(
-    row: int,
-    col: int,
-    cell_data: Dict[str, Any],
-    asset_manager,
-    active_module_id: Optional[str],
-    active_intersections: Optional[list],
-    mode: str,
-    show_controls: bool,
-    unique_key: Optional[str],
-) -> None:
-    """
-    DEPRECATED: This function is no longer used.
-    Normal cells are now rendered as part of the HTML grid.
-    Kept for backward compatibility only.
-    """
-    logger.warning("_render_normal_cell is deprecated and should not be called")
-    pass
-
-
-def _generate_omf2_svg_grid_with_roads(
-    layout_config: Dict[str, Any],
-    asset_manager,
-    active_module_id: Optional[str] = None,
-    active_intersections: Optional[list] = None,
-    mode: str = "interactive",
-) -> str:
-    """
-    DEPRECATED: This function is no longer used.
-    The shopfloor layout now uses pure Streamlit components (st.columns).
-    Kept for backward compatibility only.
-    """
-    logger.warning("_generate_omf2_svg_grid_with_roads is deprecated and should not be called")
-    return ""
-
-
-# API-Kompatibilität: Ursprüngliche Funktion als Alias
-def _generate_omf2_svg_grid(
-    layout_config: Dict[str, Any],
-    asset_manager,
-    active_module_id: Optional[str] = None,
-    active_intersections: Optional[list] = None,
-) -> str:
-    """
-    DEPRECATED: This function is no longer used.
-    The shopfloor layout now uses pure Streamlit components (st.columns).
-    Kept for backward compatibility only.
-    """
-    logger.warning("_generate_omf2_svg_grid is deprecated and should not be called")
-    return ""
-
-
-def _generate_roads_layer(
-    layout_config: Dict[str, Any],
-    grid_width: int,
-    grid_height: int,
-    cell_width: int,
-    cell_height: int,
-    active_intersections: Optional[list] = None,
-) -> str:
-    """
-    DEPRECATED: This function is no longer used.
-    Roads are not displayed in the new Streamlit-native implementation.
-    Kept for backward compatibility only.
-    """
-    logger.warning("_generate_roads_layer is deprecated and should not be called")
-    return ""
-
-
-def _generate_split_cell_svg(
-    row: int,
-    col: int,
-    x_pos: int,
-    y_pos: int,
-    cell_width: int,
-    cell_height: int,
-    asset_manager,
-    active_module_id: Optional[str],
-) -> str:
-    """
-    DEPRECATED: This function is no longer used.
-    Split cells are now rendered using Streamlit components.
-    Kept for backward compatibility only.
-    """
-    logger.warning("_generate_split_cell_svg is deprecated and should not be called")
-    return ""
-
-
-def _generate_normal_cell_svg(
-    row: int,
-    col: int,
-    x_pos: int,
-    y_pos: int,
-    cell_width: int,
-    cell_height: int,
-    cell_data: Dict[str, Any],
-    asset_manager,
-    active_module_id: Optional[str],
-) -> str:
-    """
-    DEPRECATED: This function is no longer used.
-    Normal cells are now rendered using Streamlit components.
-    Kept for backward compatibility only.
-    """
-    logger.warning("_generate_normal_cell_svg is deprecated and should not be called")
-    return ""
 
 
 def _find_cell_data(
@@ -1169,26 +1096,6 @@ def _get_module_icon_svg(asset_manager, module_type: str, width: int, height: in
 
     # Final fallback: text representation
     return f'<text x="{width//2}" y="{height//2}" text-anchor="middle" font-size="10" fill="#666">{module_type}</text>'
-
-
-def _process_grid_events(unique_key: Optional[str] = None):
-    """
-    DEPRECATED: This function is no longer used.
-    Events are now handled natively by Streamlit buttons.
-    Kept for backward compatibility only.
-    """
-    logger.warning("_process_grid_events is deprecated and should not be called")
-    pass
-
-
-def _handle_grid_event(event_data: Dict[str, Any]):
-    """
-    DEPRECATED: This function is no longer used.
-    Events are now handled natively by Streamlit buttons.
-    Kept for backward compatibility only.
-    """
-    logger.warning("_handle_grid_event is deprecated and should not be called")
-    pass
 
 
 # Export für OMF2-Integration

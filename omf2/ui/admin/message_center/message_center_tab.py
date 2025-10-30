@@ -6,6 +6,7 @@ Gateway-Pattern konform: Nutzt AdminGateway aus Gateway-Factory
 
 import streamlit as st
 
+from omf2.assets.heading_icons import get_svg_inline
 from omf2.common.logger import get_logger
 from omf2.factory.gateway_factory import get_admin_gateway
 from omf2.ui.common.symbols import UISymbols
@@ -25,7 +26,15 @@ def render_message_center_tab():
             return
 
         # Header
-        st.subheader(f"{UISymbols.get_tab_icon('message_center')} {i18n.translate('tabs.message_center')}")
+        # Get SVG icon for Message Center heading
+        try:
+            msg_icon = get_svg_inline("MESSAGE_CENTER", size_px=32) or ""
+            st.markdown(
+                f"<h3 style='margin: 0.25rem 0 0.25rem 0; display:flex; align-items:center; gap:8px;'>{msg_icon} {i18n.translate('tabs.message_center')}</h3>",
+                unsafe_allow_html=True,
+            )
+        except Exception:
+            st.subheader(f"{UISymbols.get_tab_icon('message_center')} {i18n.translate('tabs.message_center')}")
         st.markdown(f"**{i18n.t('admin.message_center.subtitle')}**")
 
         # Gateway-Pattern: Get AdminGateway from Factory

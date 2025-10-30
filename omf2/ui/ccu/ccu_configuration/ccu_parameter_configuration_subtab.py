@@ -6,9 +6,10 @@ Displays production settings from CCU Config Loader
 
 import streamlit as st
 
+from omf2.assets.heading_icons import get_svg_inline
 from omf2.ccu.config_loader import get_ccu_config_loader
 from omf2.common.logger import get_logger
-from omf2.ui.common.symbols import UISymbols
+from omf2.ui.common.symbols import UISymbols, get_icon_html
 from omf2.ui.utils.ui_refresh import request_refresh
 
 logger = get_logger(__name__)
@@ -18,7 +19,15 @@ def render_ccu_parameter_configuration_subtab():
     """Render CCU Parameter Configuration Subtab"""
     logger.info("⚙️ Rendering CCU Parameter Configuration Subtab")
     try:
-        st.subheader(f"{UISymbols.get_tab_icon('parameter')} Parameter Configuration")
+        # Subheading: try heading SVG (32px for subtabs), fallback to emoji
+        try:
+            cfg_icon = get_svg_inline("CONFIGURATION", size_px=32) or ""
+            st.markdown(
+                f"<h3 style='margin: 0.25rem 0 0.5rem 0; display:flex; align-items:center; gap:8px;'>{cfg_icon} Parameter Configuration</h3>",
+                unsafe_allow_html=True,
+            )
+        except Exception:
+            st.subheader(f"{UISymbols.get_tab_icon('parameter')} Parameter Configuration")
         st.markdown("Configure CCU production parameters and settings")
 
         # Load configuration data
@@ -109,7 +118,15 @@ def _show_production_durations_section():
 
 def _show_production_settings_section():
     """Show production settings section"""
-    st.subheader("🏭 Production Settings")
+    # Get SVG icon for Production Settings
+    try:
+        prod_icon = get_svg_inline("PRODUCTION_ORDERS", size_px=32) or ""
+        st.markdown(
+            f"<h4 style='margin: 0.25rem 0 0.25rem 0; display:flex; align-items:center; gap:8px;'>{prod_icon} Production Settings</h4>",
+            unsafe_allow_html=True,
+        )
+    except Exception:
+        st.subheader("🏭 Production Settings")
     st.write("General production configuration")
 
     # Max parallel orders
@@ -126,7 +143,15 @@ def _show_production_settings_section():
 
 def _show_fts_settings_section():
     """Show FTS settings section"""
-    st.subheader("🚗 FTS Settings")
+    # Get SVG icon for FTS Settings (using module icon for FTS)
+    try:
+        fts_icon = get_icon_html("FTS", size_px=32)
+        st.markdown(
+            f"<h4 style='margin: 0.25rem 0 0.25rem 0; display:flex; align-items:center; gap:8px;'>{fts_icon} FTS Settings</h4>",
+            unsafe_allow_html=True,
+        )
+    except Exception:
+        st.subheader("🚗 FTS Settings")
     st.write("FTS (Fahrerloses Transportsystem) configuration")
 
     # Charge threshold

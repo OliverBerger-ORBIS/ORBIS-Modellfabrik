@@ -7,6 +7,7 @@ Gateway-Pattern konform: Nutzt AdminGateway für Log-Zugriff
 
 import streamlit as st
 
+from omf2.assets.heading_icons import get_svg_inline
 from omf2.common.logger import get_logger
 from omf2.ui.common.symbols import UISymbols
 from omf2.ui.utils.ui_refresh import request_refresh
@@ -25,7 +26,15 @@ def render_system_logs_tab():
             logger.error("❌ I18n Manager not found in session state")
             return
 
-        st.header(f"{UISymbols.get_functional_icon('logs')} {i18n.translate('tabs.system_logs')}")
+        # Get SVG icon for System Logs heading
+        try:
+            logs_icon = get_svg_inline("SYSTEM_LOGS", size_px=32) or ""
+            st.markdown(
+                f"<h2 style='margin: 0.25rem 0 0.25rem 0; display:flex; align-items:center; gap:8px;'>{logs_icon} {i18n.translate('tabs.system_logs')}</h2>",
+                unsafe_allow_html=True,
+            )
+        except Exception:
+            st.header(f"{UISymbols.get_functional_icon('logs')} {i18n.translate('tabs.system_logs')}")
         st.markdown("**System log viewer and analysis tools**")
 
         # Display mode toggle

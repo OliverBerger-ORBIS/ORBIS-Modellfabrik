@@ -53,6 +53,7 @@ HEADING_ICON_FILES: Dict[str, str] = {
     "MQTT_CLIENTS": "satellitenschussel.svg",
     "GATEWAY": "router_1.svg",
     "TOPIC": "etikett.svg",
+    "TOPICS": "etikett.svg",
     "SCHEMAS": "diagramm.svg",
     "MODULES_ADMIN": "mehrere.svg",
     "STATIONS": "dezentral.svg",
