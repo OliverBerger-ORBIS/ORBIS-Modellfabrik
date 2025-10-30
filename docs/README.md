@@ -37,6 +37,7 @@
 #### Development
 - [Development Workflow](04-howto/development/workflow.md) - Git-Workflow, Testing, Development Tools
 - [UI Development Guide](04-howto/UI_DEVELOPMENT_GUIDE.md) - Wrapper Pattern, UI-Refresh, MQTT-Integration
+- [Module Icons Usage Guide](04-howto/development/module-icons-usage-guide.md) - SVG/Emoji Patterns, Tables, FTS
 - [Mermaid Setup](04-howto/development/mermaid-setup.md) - Diagramme auslagern, IDE-Einrichtung, Styling-Standards
 - [Mermaid Cursor Instructions](04-howto/development/mermaid-cursor-instructions.md) - Cursor-Anweisungen für Mermaid-Diagramme
 

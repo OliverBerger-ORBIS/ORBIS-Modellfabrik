@@ -59,10 +59,10 @@ def render_ccu_modules_tab(ccu_gateway=None, registry_manager=None):
             return
 
         # Use UISymbols for consistent icon usage - with SVG support
-        header_icon = get_icon_html('MODULES_TAB', size_px=32)
+        header_icon = get_icon_html("MODULES_TAB", size_px=32)
         st.markdown(
             f"{header_icon} <span style='font-size: 32px; vertical-align: middle;'>{i18n.translate('tabs.ccu_modules')}</span>",
-            unsafe_allow_html=True
+            unsafe_allow_html=True,
         )
         st.markdown(i18n.t("ccu_modules.subtitle"))
 
@@ -198,10 +198,10 @@ def _render_module_table_with_svg_icons(modules, status_store, module_manager, i
         ]
         for header in headers:
             table_html += f'<th style="padding: 8px; text-align: left; font-weight: bold;">{header}</th>'
-        table_html += '</tr></thead>'
+        table_html += "</tr></thead>"
 
         # Body rows
-        table_html += '<tbody>'
+        table_html += "<tbody>"
         for module_id, module_info in modules.items():
             if not module_info.get("enabled", True):
                 continue
@@ -241,15 +241,15 @@ def _render_module_table_with_svg_icons(modules, status_store, module_manager, i
             table_html += f'<td style="padding: 8px;">{availability_display}</td>'
             table_html += f'<td style="padding: 8px;">{message_count}</td>'
             table_html += f'<td style="padding: 8px;">{last_update}</td>'
-            table_html += '</tr>'
+            table_html += "</tr>"
 
-        table_html += '</tbody></table>'
+        table_html += "</tbody></table>"
 
         # Render table with HTML
         st.markdown(table_html, unsafe_allow_html=True)
 
         # Show diagnostic information
-        svg_count = table_html.count('<svg')
+        svg_count = table_html.count("<svg")
         span_count = table_html.count('<span style="font-size:')
         st.caption(f"✨ Module icons rendered as SVG graphics ({svg_count} SVG icons, {span_count} emoji fallbacks)")
 
@@ -478,7 +478,7 @@ def _show_module_icons_gallery(modules, i18n):
                                 <div style="font-size: 12px; font-weight: bold;">{module_id}</div>
                             </div>
                             """,
-                            unsafe_allow_html=True
+                            unsafe_allow_html=True,
                         )
 
         st.caption("✨ Icons automatically use SVG graphics when available, with emoji fallback for compatibility")

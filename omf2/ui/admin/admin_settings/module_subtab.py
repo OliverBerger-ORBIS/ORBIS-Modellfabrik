@@ -4,6 +4,8 @@ Module Subtab - Module Verwaltung für Admin Settings
 Zeigt alle Modules aus der Registry an
 """
 
+import html
+
 import streamlit as st
 
 from omf2.assets.heading_icons import get_svg_inline
@@ -72,20 +74,7 @@ def render_module_subtab():
             )
 
         if module_data:
-            st.dataframe(
-                module_data,
-                column_config={
-                    "Serial": st.column_config.TextColumn("Serial", width="medium"),
-                    "Name": st.column_config.TextColumn("Name", width="medium"),
-                    "Type": st.column_config.TextColumn("Type", width="small"),
-                    "Sub Type": st.column_config.TextColumn("Sub Type", width="small"),
-                    "Enabled": st.column_config.TextColumn("Enabled", width="small"),
-                    "Icon": st.column_config.TextColumn("Icon", width="small"),
-                    "Name EN": st.column_config.TextColumn("Name EN", width="medium"),
-                    "Name DE": st.column_config.TextColumn("Name DE", width="medium"),
-                },
-                hide_index=True,
-            )
+            _render_registry_modules_table_with_svg_icons(all_modules, i18n)
 
         # Registry Information
         with st.expander(f"{UISymbols.get_functional_icon('dashboard')} Registry Information", expanded=False):
@@ -114,3 +103,65 @@ def render_module_subtab():
 def show_module_subtab():
     """Wrapper für Module Subtab"""
     render_module_subtab()
+
+
+def _render_registry_modules_table_with_svg_icons(all_modules: dict, i18n):
+    """Render registry modules as HTML table with SVG icons and single-line rows.
+
+    Columns displayed (preserve all original info):
+    - ID | Name | Type | Enabled | Icon | Name EN | Name DE
+    """
+    from omf2.ccu.module_manager import get_ccu_module_manager
+
+    module_manager = get_ccu_module_manager()
+
+    table_html = '<table style="width: 100%; border-collapse: collapse;">'
+
+    headers = [
+        "ID",
+        "Name",
+        "Type",
+        "Enabled",
+        "Icon",
+        "Name EN",
+        "Name DE",
+    ]
+    table_html += '<thead><tr style="background-color: #f0f2f6; border-bottom: 2px solid #ddd;">'
+    for header in headers:
+        table_html += f'<th style="padding: 8px; text-align: left; font-weight: bold;">{html.escape(header)}</th>'
+    table_html += "</tr></thead>"
+
+    table_html += "<tbody>"
+    for module_id, module_info in all_modules.items():
+        name = module_info.get("name", module_id)
+        enabled = module_info.get("enabled", True)
+        enabled_display = "✅" if enabled else "❌"
+        module_type = module_info.get("type", "Unknown")
+        emoji_icon = module_info.get("icon", "")
+        name_en = module_info.get("name_lang_en", "")
+        name_de = module_info.get("name_lang_de", "")
+
+        # SVG icon + name single-line
+        try:
+            icon_html = module_manager.get_module_icon_html(module_id, size_px=20)
+            name_text = html.escape(name)
+            name_cell = (
+                f'<span style="display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;">'
+                f"{icon_html}<span>{name_text}</span></span>"
+            )
+        except Exception:
+            name_cell = html.escape(f"{name} ({module_id})")
+
+        table_html += '<tr style="border-bottom: 1px solid #ddd;">'
+        table_html += f'<td style="padding: 8px; font-family: monospace; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{html.escape(module_id)}</td>'
+        table_html += f'<td style="padding: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{name_cell}</td>'
+        table_html += f'<td style="padding: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{html.escape(module_type)}</td>'
+        table_html += f'<td style="padding: 8px; white-space: nowrap;">{enabled_display}</td>'
+        table_html += f'<td style="padding: 8px; white-space: nowrap;">{html.escape(emoji_icon)}</td>'
+        table_html += f'<td style="padding: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{html.escape(name_en)}</td>'
+        table_html += f'<td style="padding: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{html.escape(name_de)}</td>'
+        table_html += "</tr>"
+
+    table_html += "</tbody></table>"
+
+    st.markdown(table_html, unsafe_allow_html=True)

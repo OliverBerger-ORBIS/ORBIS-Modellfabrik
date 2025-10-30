@@ -384,15 +384,15 @@ class RegistryManager:
             for controller_data in controllers_list:
                 if isinstance(controller_data, dict) and "id" in controller_data:
                     controller_id = controller_data["id"]
-                    # Hole Module-Name für zugeordnet_zu_modul
-                    module_id = controller_data.get("zugeordnet_zu_modul", "")
+                    # Neue Konvention: zugeordnet_zu_modul_serial (Serial-ID)
+                    module_id = controller_data.get("zugeordnet_zu_modul_serial")
                     module_name = self._get_module_name_by_id(module_id) if module_id else ""
 
                     self.txt_controllers[controller_id] = {
                         "id": controller_id,
                         "name": controller_data.get("name", controller_id),
                         "ip_address": controller_data.get("ip_address", ""),
-                        "zugeordnet_zu_modul": module_id,
+                        "zugeordnet_zu_modul_serial": module_id,
                         "zugeordnet_zu_modul_name": module_name,
                         "mqtt_client": controller_data.get("mqtt_client", ""),
                         "description": controller_data.get("description", ""),

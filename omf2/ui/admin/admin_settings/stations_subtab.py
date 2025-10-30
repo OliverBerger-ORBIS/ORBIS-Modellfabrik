@@ -4,6 +4,8 @@ Stations Subtab - Stations Verwaltung für Admin Settings
 Zeigt alle Stations aus der Registry nach Kategorien an
 """
 
+import html
+
 import streamlit as st
 
 from omf2.assets.heading_icons import get_svg_inline
@@ -51,41 +53,7 @@ def render_stations_subtab():
         # Zeige Stations nach Kategorien
         for category, stations in stations_by_category.items():
             with st.expander(f"📂 {category} ({len(stations)} stations)", expanded=False):
-                # Erstelle DataFrame für diese Kategorie
-                station_data = []
-                for station_id, station_info in stations.items():
-                    station_data.append(
-                        {
-                            "ID": station_id,
-                            "Name": station_info.get("name", "Unknown"),
-                            "Type": station_info.get("type", "Unknown"),
-                            "IP Address": station_info.get("ip_address", "N/A"),
-                            "IP Range": station_info.get("ip_range", "N/A"),
-                            "OPC UA Server": (
-                                f"{UISymbols.get_status_icon('success')}"
-                                if station_info.get("opc_ua_server", False)
-                                else f"{UISymbols.get_status_icon('error')}"
-                            ),
-                            "OPC UA Endpoint": station_info.get("opc_ua_endpoint", "N/A"),
-                            "Description": station_info.get("description", "No description"),
-                        }
-                    )
-
-                if station_data:
-                    st.dataframe(
-                        station_data,
-                        column_config={
-                            "ID": st.column_config.TextColumn("Station ID", width="medium"),
-                            "Name": st.column_config.TextColumn("Name", width="medium"),
-                            "Type": st.column_config.TextColumn("Type", width="small"),
-                            "IP Address": st.column_config.TextColumn("IP Address", width="medium"),
-                            "IP Range": st.column_config.TextColumn("IP Range", width="medium"),
-                            "OPC UA Server": st.column_config.TextColumn("OPC UA", width="small"),
-                            "OPC UA Endpoint": st.column_config.TextColumn("OPC UA Endpoint", width="medium"),
-                            "Description": st.column_config.TextColumn("Description", width="large"),
-                        },
-                        hide_index=True,
-                    )
+                _render_stations_table_with_svg_icons(stations, i18n)
 
         # Registry Information
         with st.expander(f"{UISymbols.get_functional_icon('dashboard')} Registry Information", expanded=False):
@@ -123,3 +91,68 @@ def _group_stations_by_category(all_stations):
 def show_stations_subtab():
     """Wrapper für Stations Subtab"""
     render_stations_subtab()
+
+
+def _render_stations_table_with_svg_icons(stations: dict, i18n):
+    """Render stations as HTML table; if a station ID matches a module serial, show module SVG."""
+    from omf2.ccu.module_manager import get_ccu_module_manager
+    from omf2.registry.manager.registry_manager import get_registry_manager
+
+    module_manager = get_ccu_module_manager()
+    registry_manager = get_registry_manager("omf2/registry/")
+    modules = registry_manager.get_modules()
+
+    table_html = '<table style="width: 100%; border-collapse: collapse;">'
+    headers = [
+        "ID",
+        "Name",
+        "Type",
+        "IP Address",
+        "IP Range",
+        "OPC UA",
+        "OPC UA Endpoint",
+        "Description",
+    ]
+    table_html += '<thead><tr style="background-color: #f0f2f6; border-bottom: 2px solid #ddd;">'
+    for header in headers:
+        table_html += f'<th style="padding: 8px; text-align: left; font-weight: bold;">{html.escape(header)}</th>'
+    table_html += "</tr></thead><tbody>"
+
+    for station_id, station_info in stations.items():
+        name = station_info.get("name", "Unknown")
+        st_type = station_info.get("type", "Unknown")
+        ip_addr = station_info.get("ip_address", "N/A")
+        ip_range = station_info.get("ip_range", "N/A")
+        opc_ok = station_info.get("opc_ua_server", False)
+        opc_display = "✅" if opc_ok else "❌"
+        opc_endpoint = station_info.get("opc_ua_endpoint", "N/A")
+        desc = station_info.get("description", "No description")
+
+        # If station_id is also a module serial → render SVG + name
+        if station_id in modules:
+            try:
+                icon_html = module_manager.get_module_icon_html(station_id, size_px=20)
+                name_cell = (
+                    f'<span style="display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;">'
+                    f"{icon_html}<span>{html.escape(name)}</span></span>"
+                )
+            except Exception:
+                name_cell = html.escape(name)
+        else:
+            name_cell = html.escape(name)
+
+        table_html += '<tr style="border-bottom: 1px solid #ddd;">'
+        table_html += (
+            f'<td style="padding: 8px; font-family: monospace; white-space: nowrap;">{html.escape(station_id)}</td>'
+        )
+        table_html += f'<td style="padding: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{name_cell}</td>'
+        table_html += f'<td style="padding: 8px; white-space: nowrap;">{html.escape(st_type)}</td>'
+        table_html += f'<td style="padding: 8px; white-space: nowrap;">{html.escape(ip_addr)}</td>'
+        table_html += f'<td style="padding: 8px; white-space: nowrap;">{html.escape(ip_range)}</td>'
+        table_html += f'<td style="padding: 8px; white-space: nowrap;">{opc_display}</td>'
+        table_html += f'<td style="padding: 8px; white-space: nowrap;">{html.escape(opc_endpoint)}</td>'
+        table_html += f'<td style="padding: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{html.escape(desc)}</td>'
+        table_html += "</tr>"
+
+    table_html += "</tbody></table>"
+    st.markdown(table_html, unsafe_allow_html=True)

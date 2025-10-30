@@ -1,8 +1,6 @@
-# SVG Icons Usage Guide
+Deprecated. This guide has moved.
 
-## Overview
-
-This guide provides comprehensive instructions for consistently using SVG icons across UI components in the ORBIS-Modellfabrik application. It documents technical constraints, best practices, and implementation patterns.
+Please see: `docs/04-howto/development/module-icons-usage-guide.md`
 
 ---
 

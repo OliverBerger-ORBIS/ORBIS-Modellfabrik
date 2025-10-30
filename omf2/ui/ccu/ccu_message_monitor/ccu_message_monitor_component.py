@@ -3,6 +3,8 @@
 CCU Message Monitor Component - Wiederverwendbare Komponente für CCU MQTT Message Monitoring
 """
 
+import html
+
 import pandas as pd
 import streamlit as st
 
@@ -148,28 +150,28 @@ def render_ccu_message_monitor(ccu_gateway, title=None, show_controls=True):
                     # Get module/FTS name for display
                     _get_module_display_name(topic)
 
-                    # Format payload as JSON if possible
+                    # Format payload as JSON if possible (store full + preview)
                     payload = message.get("payload", message)
                     if isinstance(payload, (dict, list)):
                         import json
 
-                        data = (
-                            json.dumps(payload, indent=2)[:200] + "..."
-                            if len(json.dumps(payload)) > 200
-                            else json.dumps(payload, indent=2)
-                        )
+                        full_data = json.dumps(payload, indent=2)
+                        data = full_data[:200] + "..." if len(full_data) > 200 else full_data
                     else:
-                        data = str(payload)[:100] + "..." if len(str(payload)) > 100 else str(payload)
+                        full_data = str(payload)
+                        data = full_data[:200] + "..." if len(full_data) > 200 else full_data
                 else:
                     timestamp = "Unknown"
-                    data = str(message)[:100] + "..." if len(str(message)) > 100 else str(message)
+                    full_data = str(message)
+                    data = full_data[:200] + "..." if len(full_data) > 200 else full_data
 
                 message_table_data.append(
                     {
                         "Topic": topic,
                         "Name": _get_topic_name_with_icon(topic),
                         "Timestamp": timestamp,
-                        "Data": data,
+                        "Data": data,  # preview string
+                        "FullData": full_data,  # full, untruncated content
                     }
                 )
 
@@ -181,7 +183,7 @@ def render_ccu_message_monitor(ccu_gateway, title=None, show_controls=True):
             df = pd.DataFrame(message_table_data)
 
             # Define column order for better display
-            column_order = ["Topic", "Name", "Timestamp", "Data"]
+            column_order = ["Topic", "Name", "Timestamp", "Data", "FullData"]
             df = df.reindex(columns=column_order)
 
             # Render filter controls above table columns and get filter values
@@ -190,8 +192,8 @@ def render_ccu_message_monitor(ccu_gateway, title=None, show_controls=True):
             # Apply filters to the dataframe using current filter values
             filtered_df = _apply_dataframe_filters(df, i18n)
 
-            # Display filtered table
-            st.dataframe(filtered_df, use_container_width=True)
+            # Display filtered table using HTML so module SVG icons can render
+            _render_messages_table_with_svg_icons(filtered_df, i18n)
         else:
             no_msg = i18n.t("ccu_message_monitor.messages.no_messages") if i18n else "Keine CCU Messages verfügbar"
             st.info(f"📋 {no_msg}")
@@ -671,6 +673,7 @@ def _get_module_display_name(topic):
                     logger.warning(f"⚠️ Could not get module icon via Module Manager: {e}")
                     # Fallback to direct registry lookup
                     from omf2.registry.manager.registry_manager import get_registry_manager
+
                     registry_manager = get_registry_manager()
                     modules = registry_manager.get_modules()
 
@@ -901,3 +904,90 @@ def _clear_ccu_message_buffer(ccu_gateway, i18n):
             else f"CCU Message Buffer clear failed: {e}"
         )
         st.error(f"❌ {error_msg}")
+
+
+def _render_messages_table_with_svg_icons(filtered_df: pd.DataFrame, i18n):
+    """Render messages table as HTML so module SVG icons can be displayed.
+
+    Columns: Topic | Name | Timestamp | Data
+    - For module topics (module/v1/ff/{serial}/...), use Module Manager to render SVG icon in Name.
+    - For FTS and other topics, keep existing text/emoji (scope limited to module SVGs).
+    """
+    try:
+        # Build HTML table
+        table_html = '<table style="width: 100%; border-collapse: collapse;">'
+
+        # Header
+        headers = [
+            "Topic",
+            i18n.t("ccu_message_monitor.table.name") if i18n else "Name",
+            i18n.t("ccu_message_monitor.table.timestamp") if i18n else "Timestamp",
+            i18n.t("ccu_message_monitor.table.data") if i18n else "Data",
+        ]
+        table_html += '<thead><tr style="background-color: #f0f2f6; border-bottom: 2px solid #ddd;">'
+        for header in headers:
+            table_html += f'<th style="padding: 8px; text-align: left; font-weight: bold;">{header}</th>'
+        table_html += "</tr></thead>"
+
+        # Body
+        table_html += "<tbody>"
+
+        # Module Manager for SVG rendering
+        module_manager = get_ccu_module_manager()
+        modules = module_manager.get_all_modules()
+
+        for _, row in filtered_df.iterrows():
+            topic = str(row.get("Topic", ""))
+            name_display = str(row.get("Name", ""))
+            timestamp = str(row.get("Timestamp", ""))
+            data = str(row.get("Data", ""))
+            full_data = str(row.get("FullData", data))
+
+            # If module topic, replace name with SVG icon + module name
+            if topic.startswith("module/v1/ff/") or topic.startswith("fts/v1/ff/"):
+                try:
+                    parts = topic.split("/")
+                    module_serial = parts[3] if len(parts) >= 4 else None
+                    if module_serial:
+                        icon_html = module_manager.get_module_icon_html(module_serial, size_px=20)
+                        module_name = modules.get(module_serial, {}).get("name", module_serial)
+                        # Keep SVG and text on one line
+                        name_text = html.escape(f"{module_name} ({module_serial})")
+                        name_display = (
+                            f'<span style="display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;">'
+                            f"{icon_html}<span>{name_text}</span></span>"
+                        )
+                except Exception:
+                    # Keep original name_display on failure
+                    pass
+
+            # Row
+            table_html += '<tr style="border-bottom: 1px solid #ddd;">'
+            table_html += f'<td style="padding: 8px; font-family: monospace; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{html.escape(topic)}</td>'
+            table_html += f'<td style="padding: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{name_display}</td>'
+            table_html += f'<td style="padding: 8px; white-space: nowrap;">{html.escape(timestamp)}</td>'
+            # Data cell: show preview with expandable full content using <details>
+            safe_preview = html.escape(data)
+            safe_full = html.escape(full_data)
+            data_cell = (
+                f'<details style="max-width: 100%;">'
+                f'<summary style="cursor: pointer; color: #444; display: inline-block; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{safe_preview}</summary>'
+                f'<pre style="white-space: pre-wrap; margin-top: 8px;">{safe_full}</pre>'
+                f"</details>"
+            )
+            table_html += f'<td style="padding: 8px;">{data_cell}</td>'
+            table_html += "</tr>"
+
+        table_html += "</tbody></table>"
+
+        # Render
+        st.markdown(table_html, unsafe_allow_html=True)
+
+        # Diagnostics
+        svg_count = table_html.count("<svg")
+        st.caption(f"✨ Messages rendered with SVG icons where available ({svg_count} SVG icons)")
+
+    except Exception as e:
+        logger.error(f"❌ Failed to render messages table with SVG icons: {e}")
+        # Fallback to dataframe if HTML rendering fails
+        st.dataframe(filtered_df, use_container_width=True)

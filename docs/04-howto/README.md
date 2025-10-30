@@ -36,6 +36,7 @@ Die Dokumente beschreiben Implementierungsdetails, Konfiguration und Best Practi
 ### Development Guides
 - [Development Setup](development/) – Entwicklungsumgebung Setup
 - [Testing Guide](testing/) – Testing-Strategien
+- [Module Icons Usage Guide](development/module-icons-usage-guide.md) – SVG/Emoji Patterns, Tabellen, FTS
 
 ### Helper Apps
 - [Session Manager](helper_apps/session-manager/) – Session Manager Dokumentation

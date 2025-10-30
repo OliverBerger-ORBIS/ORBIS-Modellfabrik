@@ -13,6 +13,22 @@ from omf2.common.logger import get_logger
 logger = get_logger(__name__)
 
 
+def _show_module_svg(
+    module_id: str, module_type: str = None, module_info: dict = None, i18n=None, size_px: int = 24
+) -> str:
+    """Return SVG HTML for a module using Module Manager (test helper).
+
+    This small wrapper keeps backward compatibility with integration tests
+    expecting a dedicated function for SVG generation.
+    """
+    try:
+        module_manager = get_ccu_module_manager()
+        return module_manager.get_module_icon_html(module_id, size_px=size_px)
+    except Exception:
+        # Fallback to emoji span to avoid hard failures in tests/UI if icon lookup fails
+        return f'<span style="font-size: {size_px}px;">⚙️</span>'
+
+
 def show_module_details_section(ccu_gateway, i18n):
     """Show module details section with dropdown selection - PERFORMANCE OPTIMIERT"""
     try:
@@ -102,7 +118,7 @@ def _show_module_icons_list(modules, module_manager):
             # Add to list
             html_list += f'<div style="padding: 4px 0;">{icon_html} <strong>{module_name}</strong> ({serial_id})</div>'
 
-        html_list += '</div>'
+        html_list += "</div>"
 
         # Render with st.markdown
         st.markdown(html_list, unsafe_allow_html=True)
@@ -150,8 +166,7 @@ def _show_production_module_details(module_id: str, module_type: str, ccu_gatewa
             # Display large SVG icon using Module Manager
             large_icon_html = module_manager.get_module_icon_html(module_id, size_px=200)
             st.markdown(
-                f'<div style="text-align: center; padding: 20px;">{large_icon_html}</div>',
-                unsafe_allow_html=True
+                f'<div style="text-align: center; padding: 20px;">{large_icon_html}</div>', unsafe_allow_html=True
             )
             st.caption("✨ High-quality SVG icon with CSS scoping")
 
