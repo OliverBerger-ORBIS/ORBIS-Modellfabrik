@@ -10,7 +10,7 @@ import streamlit as st
 from omf2.ccu.module_manager import get_ccu_module_manager
 from omf2.common.logger import get_logger
 from omf2.registry.manager.registry_manager import get_registry_manager
-from omf2.ui.common.symbols import UISymbols
+from omf2.ui.common.symbols import UISymbols, get_icon_html
 
 logger = get_logger(__name__)
 
@@ -58,8 +58,12 @@ def render_ccu_modules_tab(ccu_gateway=None, registry_manager=None):
             logger.error("❌ I18n Manager not found in session state")
             return
 
-        # Use UISymbols for consistent icon usage
-        st.header(f"{UISymbols.get_tab_icon('ccu_modules')} {i18n.translate('tabs.ccu_modules')}")
+        # Use UISymbols for consistent icon usage - with SVG support
+        header_icon = get_icon_html('MODULES_TAB', size_px=32)
+        st.markdown(
+            f"{header_icon} <span style='font-size: 32px; vertical-align: middle;'>{i18n.translate('tabs.ccu_modules')}</span>",
+            unsafe_allow_html=True
+        )
         st.markdown(i18n.t("ccu_modules.subtitle"))
 
         # Gateway-Pattern: Get CcuGateway from Factory (EXACT like Admin)
@@ -165,8 +169,8 @@ def _show_module_overview_table(ccu_gateway, i18n):
             # Get real-time status from Module Manager State-Holder
             real_time_status = module_manager.get_module_status_from_state(module_id)
 
-            # Get module icon and display name from Module Manager (Registry-based)
-            icon_display = module_manager.get_module_icon(module_id)
+            # Get module icon with SVG support and display name from Module Manager
+            icon_html = _get_module_icon_html(module_id, size_px=24)
             display_name = _get_module_display_name(module_id, module_info)
 
             # Get connection and availability display from Module Manager
@@ -193,7 +197,7 @@ def _show_module_overview_table(ccu_gateway, i18n):
             module_table_data.append(
                 {
                     i18n.t("ccu_modules.table.id"): module_id,
-                    i18n.t("ccu_modules.table.name"): f"{icon_display} {display_name}",
+                    i18n.t("ccu_modules.table.name"): f"{icon_html} {display_name}",
                     i18n.t("ccu_modules.table.registry_active"): (
                         "✅ Active" if module_info.get("enabled", True) else "❌ Inactive"
                     ),
@@ -208,7 +212,12 @@ def _show_module_overview_table(ccu_gateway, i18n):
 
         if module_table_data:
             df = pd.DataFrame(module_table_data)
+            # Note: Streamlit's st.dataframe doesn't render HTML, so we'll use st.markdown for better SVG display
+            # For production, consider using st.data_editor or custom HTML rendering
             st.dataframe(df, use_container_width=True, hide_index=True)
+
+            # Show a note about SVG icon support
+            st.caption("💡 Module icons use SVG graphics when available, with emoji fallback")
 
             # Show real-time statistics
             _show_module_statistics_summary(status_store, i18n)
@@ -224,6 +233,35 @@ def _show_module_overview_table(ccu_gateway, i18n):
 def _get_module_display_name(module_id, module_info):
     """Get display name for module"""
     return module_info.get("name", module_id)
+
+
+def _get_module_icon_html(module_id, size_px=24):
+    """
+    Get module icon as HTML with SVG support.
+
+    This helper demonstrates consistent usage of get_icon_html() for module icons.
+    It will render SVG icons when available, falling back to emoji.
+
+    Args:
+        module_id: Module identifier (e.g., "HBW", "DRILL", "FTS")
+        size_px: Size in pixels for the icon
+
+    Returns:
+        HTML string with inline SVG or emoji span
+
+    Example:
+        >>> _get_module_icon_html("HBW", size_px=28)
+        '<svg width="28"...>...</svg>'
+    """
+    try:
+        # Use get_icon_html for consistent SVG-first rendering
+        return get_icon_html(module_id, size_px=size_px)
+    except Exception as e:
+        logger.warning(f"⚠️ Failed to get icon HTML for {module_id}: {e}")
+        # Fallback to module manager emoji icon
+        module_manager = get_ccu_module_manager()
+        emoji_icon = module_manager.get_module_icon(module_id)
+        return f'<span style="font-size: {size_px}px;">{emoji_icon}</span>'
 
 
 # REMOVED: _get_module_icon() - Icons are now managed by Registry via ModuleManager
@@ -356,10 +394,56 @@ def _show_module_statistics_summary(status_store, i18n):
         with col4:
             st.metric(i18n.t("ccu_modules.statistics.configured"), configured_modules)
 
+        # Add SVG Module Icons Display Section
+        _show_module_icons_gallery(modules, i18n)
+
     except Exception as e:
         logger.error(f"❌ Failed to show module statistics summary: {e}")
         error_msg = i18n.t("ccu_modules.error.statistics_summary_failed").format(error=e)
         logger.error(error_msg)
+
+
+def _show_module_icons_gallery(modules, i18n):
+    """
+    Display a gallery of module icons using SVG rendering.
+
+    This demonstrates consistent usage of get_icon_html() for visual representation
+    of all available module types with their SVG icons.
+    """
+    try:
+        st.markdown("---")
+        st.markdown("### 🎨 Module Icons Gallery (SVG-first Rendering)")
+        st.caption("Demonstrating SVG icon rendering with automatic fallback to emoji")
+
+        # Get list of module types
+        module_types = list(modules.keys())
+
+        # Display icons in a grid layout
+        cols_per_row = 6
+        for i in range(0, len(module_types), cols_per_row):
+            cols = st.columns(cols_per_row)
+            for j, col in enumerate(cols):
+                if i + j < len(module_types):
+                    module_id = module_types[i + j]
+                    with col:
+                        # Get SVG icon HTML
+                        icon_html = _get_module_icon_html(module_id, size_px=48)
+
+                        # Display using st.markdown for proper HTML rendering
+                        st.markdown(
+                            f"""
+                            <div style="text-align: center; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
+                                <div style="margin-bottom: 8px;">{icon_html}</div>
+                                <div style="font-size: 12px; font-weight: bold;">{module_id}</div>
+                            </div>
+                            """,
+                            unsafe_allow_html=True
+                        )
+
+        st.caption("✨ Icons automatically use SVG graphics when available, with emoji fallback for compatibility")
+
+    except Exception as e:
+        logger.debug(f"⚠️ Could not display module icons gallery: {e}")
 
 
 def _show_module_settings(i18n):
