@@ -46,7 +46,18 @@ def render_ccu_orders_tab(ccu_gateway=None, registry_manager=None):
             logger.error("❌ I18n Manager not found in session state")
             return
 
-        st.header(f"{UISymbols.get_tab_icon('ccu_orders')} {i18n.translate('tabs.ccu_orders')}")
+        # Use heading SVG for the Orders tab title
+        try:
+            from omf2.assets.heading_icons import get_svg_inline
+
+            orders_icon = get_svg_inline("ORDERS", size_px=32) or ""
+            st.markdown(
+                f"<h2 style='margin-bottom: 0.25rem; display:flex; align-items:center; gap:8px;'>"
+                f"{orders_icon} {i18n.translate('tabs.ccu_orders')}</h2>",
+                unsafe_allow_html=True,
+            )
+        except Exception:
+            st.header(f"{UISymbols.get_tab_icon('ccu_orders')} {i18n.translate('tabs.ccu_orders')}")
         st.markdown(i18n.t("ccu_orders.subtitle"))
 
         # Business Logic über OrderManager

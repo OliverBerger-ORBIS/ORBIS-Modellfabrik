@@ -88,7 +88,16 @@ def show_storage_orders_subtab(i18n):
             order_id = order.get("orderId", "N/A")[:8]
             logger.info(f"  - Rendering active STORAGE order {order_id}")
 
-        st.markdown(f"### {i18n.t('ccu_orders.storage.title')}")
+        try:
+            from omf2.assets.heading_icons import get_svg_inline
+
+            icon = get_svg_inline("STORAGE_ORDERS", size_px=32) or ""
+            st.markdown(
+                f"<h3 style='display:flex; align-items:center; gap:8px;'>{icon} {i18n.t('ccu_orders.storage.title')}</h3>",
+                unsafe_allow_html=True,
+            )
+        except Exception:
+            st.markdown(f"### {i18n.t('ccu_orders.storage.title')}")
         st.markdown(i18n.t("ccu_orders.storage.subtitle"))
 
         # Business Logic über OrderManager (for operations)
@@ -204,22 +213,26 @@ def _render_order_card(order, order_manager, i18n, is_completed=False):
 
 def _render_order_details(order, order_manager, i18n, is_completed=False):
     """Render Order-Details (links Spalte)"""
-    # Order Info Row
-    col1, col2 = st.columns([1, 1])
+    # Order Info
+    order_type = order.get("orderType", "N/A")
+    try:
+        from omf2.assets.heading_icons import get_svg_inline
 
-    with col1:
-        order_type = order.get("orderType", "N/A")
-        st.write(f"📋 {order_type}")
+        order_heading_icon = get_svg_inline("STORAGE_ORDERS", size_px=18) or ""
+        st.markdown(f"{order_heading_icon} <strong>{order_type}</strong>", unsafe_allow_html=True)
+    except Exception:
+        st.write(f"📦 {order_type}")
 
-    with col2:
-        order_id = order.get("orderId", "N/A")
-        st.write(f"ID: {order_id[:16]}...")
+    # Full ID line
+    order_id = order.get("orderId", "N/A")
+    st.write(f"ID: {order_id}")
 
     st.markdown("---")
 
     # Storage Steps (immer sichtbar, nicht collapsible)
     complete_storage_plan = order_manager.get_complete_storage_plan(order)
     if complete_storage_plan:
+        # Plain heading (icon nur bei STORAGE oben)
         steps_label = f"**{i18n.t('ccu_orders.card.storage_steps')}** ({len(complete_storage_plan)})"
         st.markdown(steps_label)
         _render_storage_steps(complete_storage_plan, i18n, is_completed)
@@ -231,7 +244,7 @@ def _render_shopfloor_for_storage_order(order, order_manager, i18n):
     from omf2.ui.ccu.common.route_utils import get_route_for_navigation_step
     from omf2.ui.ccu.common.shopfloor_layout import show_shopfloor_layout
 
-    st.markdown("#### 🗺️ Shopfloor Layout")
+    # Heading removed per requirement
 
     # Aktuelles Modul aus Storage Plan ermitteln
     storage_plan = order_manager.get_complete_storage_plan(order)
@@ -279,9 +292,33 @@ def _render_shopfloor_for_storage_order(order, order_manager, i18n):
 
     if active_module:
         if active_module == "FTS":
-            st.info(
-                f"🚗 **FTS Navigation aktiv:** {active_intersections[0] if active_intersections else 'Unknown'} → {active_intersections[1] if len(active_intersections) > 1 else 'Unknown'}"
-            )
+            try:
+                from omf2.ui.common.symbols import get_icon_html
+
+                src = active_intersections[0] if active_intersections else "?"
+                dst = active_intersections[1] if len(active_intersections) > 1 else "?"
+                fts = get_icon_html("FTS", size_px=18)
+                src_icon = get_icon_html(src, size_px=18)
+                dst_icon = get_icon_html(dst, size_px=18)
+
+                info_html = f"""
+                <div style="background:#fff3e0; border-left:4px solid #ff9800; padding:10px 12px; border-radius:6px;">
+                  <div style="display:flex; align-items:center; gap:8px; font-weight:600; color:#1f1f1f;">
+                    <span>{fts}</span>
+                    <span>FTS Navigation aktiv:</span>
+                    <span style=\"display:inline-flex; align-items:center; gap:6px;\">{src_icon} <span>{src}</span>
+                      <span style=\"margin:0 6px;\">→</span>
+                      {dst_icon} <span>{dst}</span>
+                    </span>
+                  </div>
+                </div>
+                """
+                st.markdown(info_html, unsafe_allow_html=True)
+            except Exception:
+                st.markdown(
+                    f"<div style='background:#fff3e0; border-left:4px solid #ff9800; padding:10px 12px; border-radius:6px;'>🚗 <strong>FTS Navigation aktiv:</strong> {active_intersections[0] if active_intersections else 'Unknown'} → {active_intersections[1] if len(active_intersections) > 1 else 'Unknown'}</div>",
+                    unsafe_allow_html=True,
+                )
         else:
             st.info(f"🔵 **Active Module:** {active_module}")
     else:
@@ -370,134 +407,82 @@ def _get_active_intersections(storage_plan):
 
 
 def _render_storage_steps(storage_plan, i18n, is_completed=False):
-    """Render Storage Steps
+    """Render Storage Steps (SVG + Label Layout, konsistent mit Production)."""
 
-    Args:
-        storage_plan: List of storage steps
-        i18n: I18nManager Instanz
-        is_completed: True für completed orders (ausgegraut)
-    """
+    # Helper for SVG icons
+    def _svg_icon_for_type(module_type: str, size_px: int = 20) -> str:
+        try:
+            from omf2.ui.common.symbols import get_icon_html
+
+            return get_icon_html(module_type, size_px=size_px)
+        except Exception:
+            return ""
+
     for idx, step in enumerate(storage_plan, 1):
         step_state = step.get("state", "PENDING")
         step_type = step.get("type", "N/A")
 
-        # Status-Icons (KONSISTENT mit production_orders_subtab.py _render_production_step_status)
         status_icon = {
-            # Aktive Zustände
-            "IN_PROGRESS": UISymbols.get_status_icon("step_in_progress"),  # 🟠 (ORANGE CIRCLE - konsistent!)
-            "RUNNING": UISymbols.get_status_icon("step_in_progress"),  # 🟠 (Alias)
-            # Abgeschlossene Zustände
-            "FINISHED": UISymbols.get_status_icon("step_finished"),  # ✅
-            "COMPLETED": UISymbols.get_status_icon("step_finished"),  # ✅ (Alias)
-            # Wartende Zustände
-            "ENQUEUED": UISymbols.get_status_icon("step_enqueued"),  # ⏳
-            "PENDING": UISymbols.get_status_icon("step_pending"),  # ⚪
-            # Fehler-Zustände
-            "FAILED": UISymbols.get_status_icon("step_failed"),  # ❌
+            "IN_PROGRESS": UISymbols.get_status_icon("step_in_progress"),
+            "RUNNING": UISymbols.get_status_icon("step_in_progress"),
+            "FINISHED": UISymbols.get_status_icon("step_finished"),
+            "COMPLETED": UISymbols.get_status_icon("step_finished"),
+            "ENQUEUED": UISymbols.get_status_icon("step_enqueued"),
+            "PENDING": UISymbols.get_status_icon("step_pending"),
+            "FAILED": UISymbols.get_status_icon("step_failed"),
         }.get(step_state, "⚪")
 
-        # Station-Icons basierend auf moduleType/source/target (EXAKT wie production_orders_subtab.py)
         module_type = step.get("moduleType", "")
-        source = step.get("source", "")
         target = step.get("target", "")
 
-        # NEU: Module-Icons über vorhandene Funktion holen
-        from omf2.ui.ccu.ccu_process.ccu_production_plan_subtab import _get_module_icon
-
-        # Bestimme Station-Icon über vorhandene Funktion
-        station_icon = _get_module_icon("FTS")  # FTS/AGV Icon für Transport
+        # Build icon area
+        station_icon_svg = _svg_icon_for_type("FTS")
         if step_type == "NAVIGATION":
-            # Bei NAVIGATION: FTS/AGV Icon verwenden
-            station_icon = _get_module_icon("FTS") or "🚗"
+            try:
+                from omf2.ui.common.symbols import get_icon_html
+
+                fts_svg = get_icon_html("FTS", size_px=20)
+                target_svg = get_icon_html(target, size_px=20) if target else ""
+                station_icon_svg = (
+                    f'{fts_svg} <span style="margin-right:6px;">FTS</span>'
+                    f'<span style="margin:0 6px;">→</span>'
+                    f"{target_svg} <span>{target or ''}</span>"
+                )
+            except Exception:
+                station_icon_svg = _svg_icon_for_type("FTS") or ""
         elif step_type == "MANUFACTURE":
-            # Bei MANUFACTURE: Modul-Icon verwenden
-            station_icon = _get_module_icon(module_type) or "🛠️"
+            station_icon_svg = _svg_icon_for_type(module_type) or ""
 
-        # Step-Beschreibung (EXAKT wie production_orders_subtab.py)
+        # Text area
         if step_type == "NAVIGATION":
-            step_desc = i18n.t("ccu_orders.steps.automated_guided_vehicle")
-            if source != target:
-                target_icon = _get_module_icon(target) or "🏭"
-                step_desc += f" > {target_icon} {target}"
-        elif step_type == "MANUFACTURE":
-            command = step.get("command", "")
-            if command == "PICK":  # Storage Orders: PICK = Werkstück aus Modul entnehmen = ENTLADEN AGV
-                step_desc = f"{module_type} : {i18n.t('ccu_orders.steps.unload_agv')}"
-            elif command == "DROP":  # Storage Orders: DROP = Werkstück in Modul einlagern = LADEN AGV
-                step_desc = f"{module_type} : {i18n.t('ccu_orders.steps.load_agv')}"
-            else:
-                step_desc = f"{module_type} : {command}"
-        else:
-            step_desc = step.get("description", f"Step {idx}")
-
-        # Anzeige (EXAKT wie production_orders_subtab.py)
-        # SOLL Format: Step n, [Status Icon] [Station Icon] [Step-description]
-        step_info = f"**Step {idx}:** {status_icon} {station_icon} {step_desc}"
-
-        # Einfache Darstellung ohne zusätzliche Status-Wörter
-        st.markdown(step_info)
-
-
-def _render_production_steps(production_plan, i18n, is_completed=False):
-    """Render Production Steps
-
-    Args:
-        production_plan: List of production steps
-        i18n: I18nManager Instanz
-        is_completed: True für completed orders (ausgegraut)
-    """
-    for _idx, step in enumerate(production_plan, 1):
-        step_state = step.get("state", "PENDING")
-        step_type = step.get("type", "N/A")
-
-        # Status-Icons (KONSISTENT mit production_orders_subtab.py)
-        status_icon = {
-            # Aktive Zustände
-            "IN_PROGRESS": UISymbols.get_status_icon("step_in_progress"),  # 🟠 (ORANGE CIRCLE - konsistent!)
-            "RUNNING": UISymbols.get_status_icon("step_in_progress"),  # 🟠 (Alias)
-            # Abgeschlossene Zustände
-            "FINISHED": UISymbols.get_status_icon("step_finished"),  # ✅
-            "COMPLETED": UISymbols.get_status_icon("step_finished"),  # ✅ (Alias)
-            # Wartende Zustände
-            "ENQUEUED": UISymbols.get_status_icon("step_enqueued"),  # ⏳
-            "PENDING": UISymbols.get_status_icon("step_pending"),  # ⚪
-            # Fehler-Zustände
-            "FAILED": UISymbols.get_status_icon("step_failed"),  # ❌
-        }.get(step_state, "⚪")
-
-        # Station-Icons basierend auf moduleType/source/target (EXAKT wie production_orders_subtab.py)
-        module_type = step.get("moduleType", "")
-        source = step.get("source", "")
-        target = step.get("target", "")
-
-        # NEU: Module-Icons über vorhandene Funktion holen
-        from omf2.ui.ccu.ccu_process.ccu_production_plan_subtab import _get_module_icon
-
-        # Bestimme Station-Icon über vorhandene Funktion
-        station_icon = _get_module_icon("FTS")  # FTS/AGV Icon für Transport
-        if step_type == "NAVIGATION":
-            # Bei NAVIGATION: FTS/AGV Icon verwenden
-            station_icon = _get_module_icon("FTS") or "🚗"
-        elif step_type == "MANUFACTURE":
-            # Bei MANUFACTURE: Modul-Icon verwenden
-            station_icon = _get_module_icon(module_type) or "🛠️"
-
-        # Step-Beschreibung
-        if step_type == "NAVIGATION":
-            step_desc = i18n.t("ccu_orders.steps.automated_guided_vehicle")
-            if source != target:
-                target_icon = _get_module_icon(target) or "🏭"
-                step_desc += f" > {target_icon} {target}"
+            step_desc = ""
         elif step_type == "MANUFACTURE":
             command = step.get("command", "")
-            if command == "PICK":  # Storage Orders: PICK = Werkstück aus Modul entnehmen = ENTLADEN AGV
-                step_desc = f"{module_type} : {i18n.t('ccu_orders.steps.unload_agv')}"
-            elif command == "DROP":  # Storage Orders: DROP = Werkstück in Modul einlagern = LADEN AGV
-                step_desc = f"{module_type} : {i18n.t('ccu_orders.steps.load_agv')}"
+            try:
+                from omf2.ui.common.symbols import get_icon_html
+
+                fts_svg = get_icon_html("FTS", size_px=20)
+            except Exception:
+                fts_svg = "FTS"
+            if command == "PICK":
+                step_desc = f"{module_type} : PICK {fts_svg} FTS"
+            elif command == "DROP":
+                step_desc = f"{module_type} : DROP {fts_svg} FTS"
             else:
                 step_desc = f"{module_type} : {command}"
         else:
             step_desc = f"{step_type}"
 
-        # Anzeige
-        st.write(f"{station_icon} {status_icon} {step_desc}")
+        # Render row
+        station_part = station_icon_svg if station_icon_svg else ""
+        html = (
+            f'<div style="display:flex; align-items:center; gap: 8px; margin-bottom: 12px;">'
+            f'<span style="min-width: 64px; color:#666;"><strong>Step {idx}:</strong></span>'
+            f'<span style="min-width: 22px; text-align:center;">{status_icon}</span>'
+            f'<span style="min-width: 26px; margin-left: 1em; display:inline-block;">{station_part}</span>'
+            f"<span>{step_desc}</span>"
+            f"</div>"
+        )
+        st.markdown(html, unsafe_allow_html=True)
+
+    # (removed unused duplicate renderer)

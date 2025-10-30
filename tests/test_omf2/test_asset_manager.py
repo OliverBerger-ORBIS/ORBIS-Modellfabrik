@@ -636,13 +636,13 @@ class TestFTSIconAccess(unittest.TestCase):
         """Test: FTS icon is accessible via get_module_icon_path"""
         result = self.asset_manager.get_module_icon_path("FTS")
         self.assertIsNotNone(result)
-        self.assertIn("ic_ft_fts.svg", result)
+        self.assertIn("robotic_24_rescaled.svg", result)
 
     def test_fts_icon_accessible_via_get_asset_file(self):
         """Test: FTS icon is accessible via get_asset_file"""
         result = self.asset_manager.get_asset_file("FTS")
         self.assertIsNotNone(result)
-        self.assertIn("ic_ft_fts.svg", result)
+        self.assertIn("robotic_24_rescaled.svg", result)
         # Verify it's not the empty.svg fallback
         self.assertNotIn("empty.svg", result)
 

@@ -1,3 +1,13 @@
+## Agenten-Testpolicy: Produktionscode nicht für Alt-Tests verbiegen
+
+Wenn ein Test nach einer beabsichtigten Änderung am produktiven Verhalten (z. B. Icon-Mapping im Asset-Manager) rot wird, gilt:
+
+- Passe die betroffenen Tests an das neue, gewollte Verhalten an.
+- Ändere NICHT den produktiven Code nur, um bestehende (veraltete) Tests grün zu bekommen.
+- Dokumentiere die Testanpassung im PR kurz (Was/Warum), verweise auf die zugehörige Änderung (z. B. Guide/ADR).
+
+Begründung: Tests spiegeln das gewünschte Verhalten wider. Wenn sich die fachliche Entscheidung ändert (z. B. neue SVGs), müssen die Tests diese neue Wahrheit abbilden – nicht umgekehrt.
+
 # Testing Strategy Guide
 
 **Zielgruppe:** Entwickler  

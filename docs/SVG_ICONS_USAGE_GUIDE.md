@@ -1,6 +1,6 @@
 Deprecated. This guide has moved.
 
-Please see: `docs/04-howto/development/module-icons-usage-guide.md`
+Please see: `docs/04-howto/development/svg-icons-usage-guide.md`
 
 ---
 
