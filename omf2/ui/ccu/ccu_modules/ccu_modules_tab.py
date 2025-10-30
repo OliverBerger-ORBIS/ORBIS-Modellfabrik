@@ -161,73 +161,100 @@ def _show_module_overview_table(ccu_gateway, i18n):
         else:
             st.warning(f"⚠️ {i18n.t('ccu_modules.overview.no_status_data')}")
 
-        module_table_data = []
+        # Render custom table with SVG icons
+        _render_module_table_with_svg_icons(modules, status_store, module_manager, i18n)
+
+        # Show real-time statistics
+        _show_module_statistics_summary(status_store, i18n)
+
+    except Exception as e:
+        logger.error(f"❌ Module Overview Table error: {e}")
+        error_msg = i18n.t("ccu_modules.error.table_failed").format(error=e)
+        st.error(f"❌ {error_msg}")
+
+
+def _render_module_table_with_svg_icons(modules, status_store, module_manager, i18n):
+    """
+    Render module table with SVG icons using st.markdown for proper HTML rendering.
+
+    This approach allows SVG icons to be properly displayed instead of showing HTML as text.
+    """
+    try:
+        # Build HTML table with SVG icons
+        table_html = '<table style="width: 100%; border-collapse: collapse;">'
+
+        # Header row
+        table_html += '<thead><tr style="background-color: #f0f2f6; border-bottom: 2px solid #ddd;">'
+        headers = [
+            i18n.t("ccu_modules.table.id"),
+            i18n.t("ccu_modules.table.name"),
+            i18n.t("ccu_modules.table.registry_active"),
+            i18n.t("ccu_modules.table.position"),
+            i18n.t("ccu_modules.table.configured"),
+            i18n.t("ccu_modules.table.connected"),
+            i18n.t("ccu_modules.table.availability_status"),
+            i18n.t("ccu_modules.table.messages"),
+            i18n.t("ccu_modules.table.last_update"),
+        ]
+        for header in headers:
+            table_html += f'<th style="padding: 8px; text-align: left; font-weight: bold;">{header}</th>'
+        table_html += '</tr></thead>'
+
+        # Body rows
+        table_html += '<tbody>'
         for module_id, module_info in modules.items():
             if not module_info.get("enabled", True):
                 continue
 
-            # Get real-time status from Module Manager State-Holder
+            # Get real-time status
             real_time_status = module_manager.get_module_status_from_state(module_id)
 
-            # Get module icon with SVG support and display name from Module Manager
-            icon_html = _get_module_icon_html(module_id, size_px=24)
+            # Get module icon with SVG support
+            icon_html = _get_module_icon_html(module_id, size_px=20)
             display_name = _get_module_display_name(module_id, module_info)
 
-            # Get connection and availability display from Module Manager
+            # Get status displays
             connected = real_time_status.get("connected", False)
             connection_display = module_manager.get_connection_display(connected)
 
             available = real_time_status.get("available", "Unknown")
             availability_display = module_manager.get_availability_display(available)
 
-            # Get configured status from Module Manager (UISymbols-based)
             factory_config = module_manager.get_factory_configuration()
             configured = module_manager.is_module_configured(module_id, factory_config)
             configured_display = module_manager.get_configuration_display(configured)
-            logger.debug(f"📋 UI: Module {module_id} configured: {configured} -> {configured_display}")
 
-            # Get position from Module Manager
             position_display = module_manager.get_module_position_display(module_id)
-            logger.debug(f"📋 UI: Module {module_id} position: {position_display}")
-
-            # Get message count and last update
             message_count = real_time_status.get("message_count", 0)
             last_update = real_time_status.get("last_update", "Never")
 
-            module_table_data.append(
-                {
-                    i18n.t("ccu_modules.table.id"): module_id,
-                    i18n.t("ccu_modules.table.name"): f"{icon_html} {display_name}",
-                    i18n.t("ccu_modules.table.registry_active"): (
-                        "✅ Active" if module_info.get("enabled", True) else "❌ Inactive"
-                    ),
-                    i18n.t("ccu_modules.table.position"): position_display,
-                    i18n.t("ccu_modules.table.configured"): configured_display,
-                    i18n.t("ccu_modules.table.connected"): connection_display,
-                    i18n.t("ccu_modules.table.availability_status"): availability_display,
-                    i18n.t("ccu_modules.table.messages"): message_count,
-                    i18n.t("ccu_modules.table.last_update"): last_update,
-                }
-            )
+            registry_active = "✅ Active" if module_info.get("enabled", True) else "❌ Inactive"
 
-        if module_table_data:
-            df = pd.DataFrame(module_table_data)
-            # Note: Streamlit's st.dataframe doesn't render HTML, so we'll use st.markdown for better SVG display
-            # For production, consider using st.data_editor or custom HTML rendering
-            st.dataframe(df, use_container_width=True, hide_index=True)
+            # Add row
+            table_html += '<tr style="border-bottom: 1px solid #ddd;">'
+            table_html += f'<td style="padding: 8px;">{module_id}</td>'
+            table_html += f'<td style="padding: 8px;">{icon_html} {display_name}</td>'
+            table_html += f'<td style="padding: 8px;">{registry_active}</td>'
+            table_html += f'<td style="padding: 8px;">{position_display}</td>'
+            table_html += f'<td style="padding: 8px;">{configured_display}</td>'
+            table_html += f'<td style="padding: 8px;">{connection_display}</td>'
+            table_html += f'<td style="padding: 8px;">{availability_display}</td>'
+            table_html += f'<td style="padding: 8px;">{message_count}</td>'
+            table_html += f'<td style="padding: 8px;">{last_update}</td>'
+            table_html += '</tr>'
 
-            # Show a note about SVG icon support
-            st.caption("💡 Module icons use SVG graphics when available, with emoji fallback")
+        table_html += '</tbody></table>'
 
-            # Show real-time statistics
-            _show_module_statistics_summary(status_store, i18n)
-        else:
-            st.info(f"📋 {i18n.t('ccu_modules.overview.no_modules_available')}")
+        # Render table with HTML
+        st.markdown(table_html, unsafe_allow_html=True)
+
+        # Show a note about SVG icon support
+        st.caption("✨ Module icons rendered as high-quality SVG graphics with automatic CSS scoping")
 
     except Exception as e:
-        logger.error(f"❌ Module Overview Table error: {e}")
-        error_msg = i18n.t("ccu_modules.error.table_failed").format(error=e)
-        st.error(f"❌ {error_msg}")
+        logger.error(f"❌ Failed to render custom table: {e}")
+        # Fallback to simple display
+        st.error(f"⚠️ Could not render custom table: {e}")
 
 
 def _get_module_display_name(module_id, module_info):
