@@ -248,8 +248,10 @@ def _render_module_table_with_svg_icons(modules, status_store, module_manager, i
         # Render table with HTML
         st.markdown(table_html, unsafe_allow_html=True)
 
-        # Show a note about SVG icon support
-        st.caption("✨ Module icons rendered as high-quality SVG graphics with automatic CSS scoping")
+        # Show diagnostic information
+        svg_count = table_html.count('<svg')
+        span_count = table_html.count('<span style="font-size:')
+        st.caption(f"✨ Module icons rendered as SVG graphics ({svg_count} SVG icons, {span_count} emoji fallbacks)")
 
     except Exception as e:
         logger.error(f"❌ Failed to render custom table: {e}")
@@ -282,13 +284,25 @@ def _get_module_icon_html(module_id, size_px=24):
     """
     try:
         # Use get_icon_html for consistent SVG-first rendering
-        return get_icon_html(module_id, size_px=size_px)
+        result = get_icon_html(module_id, size_px=size_px)
+
+        # Log success for debugging
+        if "<svg" in result:
+            logger.debug(f"✅ Got SVG icon for {module_id} ({len(result)} chars)")
+        else:
+            logger.warning(f"⚠️ No SVG icon for {module_id}, got fallback: {result[:50]}")
+
+        return result
     except Exception as e:
-        logger.warning(f"⚠️ Failed to get icon HTML for {module_id}: {e}")
+        logger.error(f"❌ Failed to get icon HTML for {module_id}: {type(e).__name__}: {e}")
         # Fallback to module manager emoji icon
-        module_manager = get_ccu_module_manager()
-        emoji_icon = module_manager.get_module_icon(module_id)
-        return f'<span style="font-size: {size_px}px;">{emoji_icon}</span>'
+        try:
+            module_manager = get_ccu_module_manager()
+            emoji_icon = module_manager.get_module_icon(module_id)
+            return f'<span style="font-size: {size_px}px;">{emoji_icon}</span>'
+        except Exception as e2:
+            logger.error(f"❌ Fallback also failed: {e2}")
+            return f'<span style="font-size: {size_px}px;">⚙️</span>'
 
 
 # REMOVED: _get_module_icon() - Icons are now managed by Registry via ModuleManager
