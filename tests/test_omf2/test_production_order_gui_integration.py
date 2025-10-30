@@ -101,7 +101,7 @@ class ProductionOrderGuiIntegrationTest(unittest.TestCase):
         # Teste Production Plan Integration
         test_order = {"orderId": self.order_id, "type": "WHITE", "orderType": "PRODUCTION"}
 
-        production_plan = self.manager.get_complete_production_plan(test_order)
+        production_plan = self.manager.get_complete_order_plan(test_order)
         print(f"   📋 Production Plan: {len(production_plan)} steps")
 
         # Analysiere States für GUI

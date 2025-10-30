@@ -117,9 +117,9 @@ class TestCcuFrontendConsumer:
                             step_type = step.get("type", "unknown")
                             print(f"  {i+1}. {step_id} - {step_state} - {step_type}")
 
-                        # Test: get_complete_production_plan
+                        # Test: get_complete_order_plan
                         test_order = {"orderId": order_id, "type": order_type, "orderType": "PRODUCTION"}
-                        production_plan = self.manager.get_complete_production_plan(test_order)
+                        production_plan = self.manager.get_complete_order_plan(test_order)
                         assert len(production_plan) > 0, f"Production plan should not be empty for {order_type}"
                         print(f"  ✅ Production Plan: {len(production_plan)} steps")
 
@@ -224,7 +224,7 @@ class TestCcuFrontendConsumer:
         self.manager.mqtt_steps["blue-test-123"] = blue_steps
 
         test_order = {"orderId": "blue-test-123", "type": "BLUE", "orderType": "PRODUCTION"}
-        blue_plan = self.manager.get_complete_production_plan(test_order)
+        blue_plan = self.manager.get_complete_order_plan(test_order)
 
         # BLUE sollte 16 Steps haben (nicht 15!)
         assert len(blue_plan) == 16, f"BLUE should have 16 steps, got {len(blue_plan)}"
@@ -251,7 +251,7 @@ class TestCcuFrontendConsumer:
         self.manager.mqtt_steps["red-test-123"] = red_steps
 
         test_order = {"orderId": "red-test-123", "type": "RED", "orderType": "PRODUCTION"}
-        red_plan = self.manager.get_complete_production_plan(test_order)
+        red_plan = self.manager.get_complete_order_plan(test_order)
 
         # RED sollte 16 Steps haben (nicht 11!)
         assert len(red_plan) == 16, f"RED should have 16 steps, got {len(red_plan)}"
@@ -278,7 +278,7 @@ class TestCcuFrontendConsumer:
         self.manager.mqtt_steps["white-test-123"] = white_steps
 
         test_order = {"orderId": "white-test-123", "type": "WHITE", "orderType": "PRODUCTION"}
-        white_plan = self.manager.get_complete_production_plan(test_order)
+        white_plan = self.manager.get_complete_order_plan(test_order)
 
         # WHITE sollte 16 Steps haben (nicht 11!)
         assert len(white_plan) == 16, f"WHITE should have 16 steps, got {len(white_plan)}"

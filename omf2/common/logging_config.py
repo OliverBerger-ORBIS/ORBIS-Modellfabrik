@@ -229,14 +229,3 @@ def update_logging_config(module: str, level: str) -> bool:
     except Exception as e:
         logging.error(f"Failed to update logging config: {e}")
         return False
-
-
-def _ensure_multilevel_handler_attached():
-    """
-    DEPRECATED: Use omf2.common.logger.ensure_ringbufferhandler_attached() instead.
-
-    Kept for backward compatibility but delegates to the new function.
-    """
-    from omf2.common.logger import ensure_ringbufferhandler_attached
-
-    return ensure_ringbufferhandler_attached()

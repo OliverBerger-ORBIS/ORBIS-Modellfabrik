@@ -90,7 +90,7 @@ class ProductionPlanIntegrationTest(unittest.TestCase):
         print("   📋 Testing Production Plan Integration...")
 
         # Generiere Production Plan
-        production_plan = self.manager.get_complete_production_plan(self.test_order)
+        production_plan = self.manager.get_complete_order_plan(self.test_order)
         print(f"      Generated plan: {len(production_plan)} steps")
 
         # Zeige States
@@ -181,7 +181,7 @@ class ProductionPlanIntegrationTest(unittest.TestCase):
         # Teste Production Plan Integration
         test_order = {"orderId": order_id, "type": "WHITE", "orderType": "PRODUCTION"}
 
-        production_plan = self.manager.get_complete_production_plan(test_order)
+        production_plan = self.manager.get_complete_order_plan(test_order)
         print(f"   📋 Production Plan: {len(production_plan)} steps")
 
         # Zeige States

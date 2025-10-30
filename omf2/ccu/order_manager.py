@@ -376,14 +376,6 @@ class OrderManager:
 
         return order_steps
 
-    def get_complete_production_plan(self, order: Dict[str, Any]) -> List[Dict[str, Any]]:
-        """
-        Backward-Compatibility: Ruft get_complete_order_plan() auf
-
-        DEPRECATED: Verwende get_complete_order_plan() für alle Order-Typen
-        """
-        return self.get_complete_order_plan(order)
-
     def get_complete_storage_plan(self, order: Dict[str, Any]) -> List[Dict[str, Any]]:
         """
         Gibt den STORAGE-Plan zurück (gleiche Logik wie Production)
@@ -453,7 +445,7 @@ class OrderManager:
         """
         order = self.get_order_by_id(order_id)
         if order:
-            return self.get_complete_production_plan(order)
+            return self.get_complete_order_plan(order)
         else:
             logger.warning(f"⚠️ No order found for ID: {order_id}")
             return []

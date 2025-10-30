@@ -484,52 +484,6 @@ class OMF2AssetManager:
 
         return f"""<div style="border: {border_width} solid {border_color}; border-radius: 8px; background: #fff; width: {size}px; height: {size}px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: {shadow}; margin: 2px; padding: 4px; transition: all 0.3s ease; position: relative;"><div style="flex: 1; display: flex; align-items: center; justify-content: center;">{icon_html}</div>{text_html}</div>"""
 
-    def get_empty_position_asset(self, empty_id: str, asset_type: str) -> Optional[str]:
-        """DEPRECATED: Use get_shopfloor_asset_path() with canonical keys instead
-
-        Maintained for backward compatibility. Converts old EMPTY1/EMPTY2 format to canonical keys.
-
-        Args:
-            empty_id: Empty-Position ID (e.g. "COMPANY", "SOFTWARE")
-            asset_type: Asset-Typ (e.g. "rectangle", "square1", "square2")
-
-        Returns:
-            Asset-Pfad oder None wenn nicht gefunden
-        """
-        # Convert to canonical format
-        if empty_id in ["COMPANY", "SOFTWARE"]:
-            return self.get_shopfloor_asset_path(empty_id, asset_type)
-
-        # No longer support EMPTY1/EMPTY2 in productive code
-        logger.warning(
-            f"⚠️ DEPRECATED: get_empty_position_asset called with legacy key {empty_id}. Use canonical COMPANY/SOFTWARE keys."
-        )
-        return None
-
-    def get_empty_position_asset_by_name(self, asset_name: str) -> Optional[str]:
-        """DEPRECATED: Use get_module_icon_path() or get_asset_file() instead
-
-        Maintained for backward compatibility. Returns asset path for direct names.
-
-        Args:
-            asset_name: Direkter Asset-Name (z.B. "ORBIS", "shelves")
-
-        Returns:
-            Asset-Pfad oder None wenn nicht gefunden
-        """
-        # Try direct lookup first
-        if asset_name in self.module_icons:
-            icon_file = self.module_icons[asset_name]
-            if icon_file:
-                return str(self.svgs_dir / icon_file)
-
-        # Fallback: try to find in SVG directory
-        potential_path = self.svgs_dir / f"{asset_name}.svg"
-        if potential_path.exists():
-            return str(potential_path)
-
-        return None
-
     # VERALTETE HTML-TEMPLATES ENTFERNT
     # Asset-Manager ist nur für Asset-Loading zuständig, nicht für UI-Darstellung
     # UI-Komponenten verwenden direkte SVG-Darstellung mit st.markdown(..., unsafe_allow_html=True)

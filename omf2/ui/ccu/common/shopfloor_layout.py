@@ -894,11 +894,8 @@ def _get_split_cell_icon(asset_manager, icon_type: str, width: int, height: int)
     """Get icon for split cell components with fallback to empty.svg."""
     try:
         if asset_manager:
-            # Try to get icon from asset manager
-            if icon_type == "ORBIS":
-                icon_path = asset_manager.get_empty_position_asset_by_name("ORBIS")
-            else:
-                icon_path = asset_manager.get_empty_position_asset_by_name(icon_type)
+            # Try to get icon from asset manager using get_asset_file
+            icon_path = asset_manager.get_asset_file(icon_type)
 
             if icon_path and Path(icon_path).exists():
                 with open(icon_path, encoding="utf-8") as f:
@@ -997,7 +994,7 @@ def _get_orbis_logo_svg(asset_manager, width: int, height: int) -> str:
     """Lädt das ORBIS-Logo SVG - VEREINFACHT mit Asset Manager"""
     try:
         # Asset Manager hat bereits ORBIS-Logo-Mapping
-        orbis_logo_path = asset_manager.get_empty_position_asset_by_name("ORBIS")
+        orbis_logo_path = asset_manager.get_asset_file("ORBIS")
         if orbis_logo_path and Path(orbis_logo_path).exists():
             with open(orbis_logo_path, encoding="utf-8") as svg_file:
                 svg_content = svg_file.read()

@@ -233,7 +233,7 @@ def _render_order_details(order, order_manager, i18n, is_completed=False):
     st.markdown("---")
 
     # Production Steps (immer sichtbar, nicht collapsible)
-    complete_production_plan = order_manager.get_complete_production_plan(order)
+    complete_production_plan = order_manager.get_complete_order_plan(order)
     if complete_production_plan:
         # Plain heading (icon only at PRODUCTION title above, not here)
         steps_label = f"**{i18n.t('ccu_orders.card.production_steps')}** ({len(complete_production_plan)})"
@@ -250,7 +250,7 @@ def _render_shopfloor_for_order(order, order_manager, i18n):
     # Heading removed per requirement (icon-only box is shown via custom info when FTS active)
 
     # Aktuelles Modul aus Production Plan ermitteln
-    production_plan = order_manager.get_complete_production_plan(order)
+    production_plan = order_manager.get_complete_order_plan(order)
     active_module = _get_current_active_module(production_plan)
     active_intersections = _get_active_intersections(production_plan)
 
