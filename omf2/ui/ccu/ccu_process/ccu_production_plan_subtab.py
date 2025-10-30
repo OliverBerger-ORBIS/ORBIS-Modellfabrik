@@ -8,9 +8,12 @@ from typing import Any, Dict, List
 
 import streamlit as st
 
+from omf2.assets.asset_manager import get_asset_manager
+from omf2.assets.heading_icons import get_svg_inline
 from omf2.ccu.config_loader import get_ccu_config_loader
 from omf2.common.logger import get_logger
-from omf2.ui.common.symbols import UISymbols
+from omf2.ui.common.product_rendering import render_product_svg_container
+from omf2.ui.common.symbols import UISymbols, get_icon_html
 from omf2.ui.utils.ui_refresh import request_refresh
 
 logger = get_logger(__name__)
@@ -20,7 +23,14 @@ def render_ccu_production_plan_subtab():
     """Render CCU Production Plan Subtab - Interactive Workflow Design"""
     logger.info("📋 Rendering CCU Production Plan Subtab")
     try:
-        st.subheader(f"{UISymbols.get_tab_icon('production_plan')} Production Plan")
+        try:
+            heading_icon = get_svg_inline("PROCESS", size_px=32) or ""
+            st.markdown(
+                f"<h3 style='display:flex; align-items:center; gap:8px;'>{heading_icon} Production Plan</h3>",
+                unsafe_allow_html=True,
+            )
+        except Exception:
+            st.subheader(f"{UISymbols.get_tab_icon('production_plan')} Production Plan")
         st.markdown("Interactive production workflow planning and management")
 
         # Load production workflows
@@ -86,18 +96,18 @@ def _show_interactive_workflow_visualization(workflows: Dict[str, Any]):
 def _show_unified_workflow_section(workflows: Dict[str, Any]):
     """Show unified workflow with Start/End spanning all 3 products"""
 
-    # Start section spanning all 3 columns
-    st.markdown("### 🏬 Retrieve via high-bay warehouse")
+    # Start section: show HBW icon (48px) without extra heading text
+    from omf2.ui.common.symbols import get_icon_html as _get_icon_html
 
-    # High-Bay Warehouse spanning all products
+    hbw_icon = _get_icon_html("HBW", size_px=64)
     st.markdown(
-        """
-    <div style="text-align: center; padding: 20px; background-color: #e3f2fd; border-radius: 10px; margin: 10px 0;">
-        <h3>🏬 High-Bay Warehouse</h3>
-        <p><strong>Retrieve via high-bay warehouse</strong></p>
-        <p>Initial material retrieval and staging for all product types</p>
-    </div>
-    """,
+        f"""
+        <div style='text-align: center; padding: 16px; background-color: #e3f2fd; border-radius: 10px; margin: 10px 0;'>
+          <div style='margin-bottom:8px;'>{hbw_icon}</div>
+          <div style='font-weight:700;'>Retrieve via high-bay warehouse</div>
+          <div style='opacity:0.8;'>Initial material retrieval and staging for all product types</div>
+        </div>
+        """,
         unsafe_allow_html=True,
     )
 
@@ -110,31 +120,32 @@ def _show_unified_workflow_section(workflows: Dict[str, Any]):
     # Arrow up
     st.markdown("<div style='text-align: center; font-size: 24px; margin: 10px 0;'>↑</div>", unsafe_allow_html=True)
 
-    # End section spanning all 3 columns
-    st.markdown("### 📦 Delivery via Goods Outgoing")
-
-    # Goods Outgoing spanning all products
+    # End section: show DPS icon (48px) without extra heading text
+    dps_icon = _get_icon_html("DPS", size_px=64)
+    dps_sq1 = _get_icon_html("DPS_SQUARE1", size_px=64)
+    dps_sq2 = _get_icon_html("DPS_SQUARE2", size_px=64)
     st.markdown(
-        """
-    <div style="text-align: center; padding: 20px; background-color: #e8f5e8; border-radius: 10px; margin: 10px 0;">
-        <h3>📦 Goods Outgoing</h3>
-        <p><strong>Delivery via Goods Outgoing</strong></p>
-        <p>Final product delivery and dispatch for all product types</p>
-    </div>
-    """,
+        f"""
+        <div style='text-align: center; padding: 16px; background-color: #e8f5e8; border-radius: 10px; margin: 10px 0;'>
+          <div style='margin-bottom:8px; display:flex; gap:12px; align-items:center; justify-content:center;'>
+            {dps_icon}{dps_sq1}{dps_sq2}
+          </div>
+          <div style='font-weight:700;'>Delivery via Goods Outgoing</div>
+          <div style='opacity:0.8;'>Final product delivery and dispatch for all product types</div>
+        </div>
+        """,
         unsafe_allow_html=True,
     )
 
 
 def _show_parallel_processing_section(workflows: Dict[str, Any]):
     """Show parallel processing section with 3 product cards"""
-    st.markdown("### Parallel Processing")
+    # Parallel processing section – heading removed per specification
 
     # Create 3 columns for Blue, Red, White products
     col1, col2, col3 = st.columns(3)
 
     products = ["BLUE", "WHITE", "RED"]
-    product_colors = {"BLUE": "🔵", "RED": "🔴", "WHITE": "⚪"}
     product_bg_colors = {"BLUE": "#e3f2fd", "RED": "#ffebee", "WHITE": "#f5f5f5"}
 
     cols = [col1, col2, col3]
@@ -145,14 +156,26 @@ def _show_parallel_processing_section(workflows: Dict[str, Any]):
             workflow = workflows.get(product, {})
             steps = workflow.get("steps", [])
 
-            # Card styling
+            # Card header with workpiece product SVG (3D/product view)
+            asset_mgr = get_asset_manager()
+            # 64px Zielgröße ≈ 200 * 0.32
+            svg_3d_raw = asset_mgr.get_workpiece_svg(product, "3dim")
+            svg_prod_raw = asset_mgr.get_workpiece_svg(product, "product")
+            product_svg_3d = render_product_svg_container(svg_3d_raw, scale=0.32) if svg_3d_raw else None
+            product_svg = render_product_svg_container(svg_prod_raw, scale=0.32) if svg_prod_raw else None
+            if not svg_3d_raw:
+                st.warning(f"{product.lower()}_3dim.svg nicht gefunden – bitte Asset prüfen.")
+            if not svg_prod_raw:
+                st.warning(f"{product.lower()}_product.svg nicht gefunden – bitte Asset prüfen.")
             st.markdown(
                 f"""
-            <div style="padding: 20px; background-color: {product_bg_colors[product]}; border-radius: 10px; margin: 10px 0;">
-                <div style="text-align: center;">
-                    <h3>{product_colors[product]} {product}</h3>
-                    <p><strong>{len(steps)} Processing Steps</strong></p>
+            <div style="padding: 20px; background-color: {product_bg_colors[product]}; border-radius: 10px; margin: 10px 0; text-align:center;">
+                <div style="display:inline-flex; align-items:flex-start; gap:12px; justify-content:center;">
+                    <div style="background:#fff; border-radius:6px; padding:4px;">{product_svg_3d or ''}</div>
+                    <div style="background:#fff; border-radius:6px; padding:4px;">{product_svg or ''}</div>
                 </div>
+                <div style="font-weight:700; font-size:18px; margin-top:8px;">{product} </div>
+                <div style="opacity:0.8;">{len(steps)} Processing Steps</div>
             </div>
             """,
                 unsafe_allow_html=True,
@@ -171,7 +194,7 @@ def _show_parallel_processing_section(workflows: Dict[str, Any]):
                                 padding: 15px; background-color: white; border: 1px solid #ddd;
                                 border-radius: 8px; margin: 10px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                         <div style="flex: 1; text-align: center; font-size: 18px; font-weight: bold;">
-                            <span style="font-size: 24px; margin-right: 10px;">{step_icon}</span>
+                            <span style="font-size: 64px; margin-right: 10px;">{step_icon}</span>
                             {step}
                         </div>
                         <div style="margin-left: 15px;">
@@ -192,12 +215,19 @@ def _show_parallel_processing_section(workflows: Dict[str, Any]):
 
 def _show_product_processing_cards(workflows: Dict[str, Any]):
     """Show detailed product processing cards (like Image 3)"""
+    # Product Processing Details heading with workpiece SVGs per tab
     st.markdown(f"### {UISymbols.get_status_icon('stats')} Product Processing Details")
 
     products = ["BLUE", "WHITE", "RED"]
 
     # Create tabs for each product (BLUE, WHITE, RED order)
-    tabs = st.tabs([f"{_get_product_icon(p)} {p} Product" for p in products])
+    # Enrich tab titles with small workpiece SVGs
+    asset_mgr = get_asset_manager()
+    tab_titles = []
+    for p in products:
+        svg = asset_mgr.get_product_svg_with_sizing(p, state="product", scale=0.18) or ""
+        tab_titles.append(f"{svg} {p} Product")
+    tabs = st.tabs(tab_titles)
 
     for _i, (product, tab) in enumerate(zip(products, tabs)):
         with tab:
@@ -209,8 +239,21 @@ def _show_product_detail_card(product: str, workflow: Dict[str, Any]):
     steps = workflow.get("steps", [])
 
     # Product header
-    color_icon = _get_product_icon(product)
-    st.markdown(f"### {color_icon} {product} Product")
+    asset_mgr = get_asset_manager()
+    # Render both 3DIM and PRODUCT with the same container as in product_catalog
+    header_prod_raw = asset_mgr.get_workpiece_svg(product, "product")
+    header_3d_raw = asset_mgr.get_workpiece_svg(product, "3dim")
+    header_prod = render_product_svg_container(header_prod_raw, scale=0.24) if header_prod_raw else ""
+    header_3d = render_product_svg_container(header_3d_raw, scale=0.24) if header_3d_raw else ""
+    st.markdown(
+        f"""
+        <div style='display:flex; align-items:center; gap:12px;'>
+            <div style='display:inline-flex; gap:8px; align-items:flex-start;'>{header_3d}{header_prod}</div>
+            <h3 style='margin:0;'>{product} Product</h3>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
     st.markdown(f"**{len(steps)} Verarbeitungsschritte** (Processing Steps)")
 
     if not steps:
@@ -224,26 +267,12 @@ def _show_product_detail_card(product: str, workflow: Dict[str, Any]):
             st.markdown(
                 f"""
             <div style="padding: 20px; background-color: white; border: 1px solid #ddd; border-radius: 10px; margin: 15px 0; box-shadow: 0 3px 6px rgba(0,0,0,0.1);">
-                <div style="display: flex; align-items: center; justify-content: space-between;">
-                    <div style="flex: 1; text-align: center;">
-                        <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 10px;">
-                            <span style="font-size: 28px; margin-right: 15px;">{_get_step_status_icon(i, len(steps))}</span>
-                            <span style="font-size: 24px; margin-right: 15px;">{_get_module_icon(step)}</span>
-                        </div>
+                <div style="display:flex; align-items:flex-start; justify-content:flex-start; gap:16px;">
+                    <div style="text-align:left;">
                         <h3 style="margin: 0; font-size: 20px; font-weight: bold;">{i}. {step}</h3>
                         <p style="margin: 8px 0 0 0; color: #666; font-size: 14px;">{_get_step_description(step)}</p>
                     </div>
-                    <div style="margin-left: 20px;">
-                        <button onclick="alert('Delete {step} from {product} workflow')"
-                                style="background: none; border: none; font-size: 20px; cursor: pointer;
-                                       color: #ff4444; padding: 8px; border-radius: 50%;
-                                       transition: background-color 0.3s;"
-                                title="Delete {step} from {product}"
-                                onmouseover="this.style.backgroundColor='#ffebee'"
-                                onmouseout="this.style.backgroundColor='transparent'">
-                            🗑️
-                        </button>
-                    </div>
+                    <div style="min-width: 64px; text-align:center;">{_get_module_icon(step)}</div>
                 </div>
             </div>
             """,
@@ -374,7 +403,7 @@ def _show_workflow_process_flow(product: str, steps: List[str]):
                 st.markdown("**End**")
             else:
                 # Process step
-                st.markdown(f"### {_get_module_icon(part)}")
+                st.markdown(f"### {_get_module_icon(part)}", unsafe_allow_html=True)
                 st.markdown(f"**{part}**")
                 st.caption(f"Step {i}")
 
@@ -440,9 +469,11 @@ def _show_workflow_comparison_section(workflows: Dict[str, Any]):
 
 
 def _get_module_icon(module: str) -> str:
-    """Get emoji icon for module"""
-    icons = {"MILL": "⚙️", "DRILL": "🔩", "AIQS": "🤖", "HBW": "🏬", "DPS": "📦", "CHRG": "🔋", "FTS": "🚗"}
-    return icons.get(module, "🛠️")
+    """Get SVG icon HTML for module (fallback to empty)"""
+    try:
+        return get_icon_html(module, size_px=64)
+    except Exception:
+        return ""
 
 
 def _get_module_info(module: str) -> Dict[str, str]:

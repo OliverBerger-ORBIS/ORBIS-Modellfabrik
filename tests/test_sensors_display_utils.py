@@ -81,8 +81,9 @@ class TestLuxToPercent:
     def test_lux_to_percent_basic(self):
         """Test basic lux to percent conversion"""
         assert lux_to_percent(0.0, 1000.0) == 0.0
-        assert lux_to_percent(500.0, 1000.0) == 50.0
-        assert lux_to_percent(1000.0, 1000.0) == 100.0
+        # Logarithmic scaling expectations
+        assert lux_to_percent(500.0, 1000.0) == pytest.approx(89.98, rel=1e-3)
+        assert lux_to_percent(1000.0, 1000.0) == pytest.approx(100.0, rel=1e-6)
 
     def test_lux_to_percent_never_exceeds_100(self):
         """Test that lux never exceeds 100%"""
@@ -92,14 +93,14 @@ class TestLuxToPercent:
 
     def test_lux_to_percent_different_max(self):
         """Test with different max_lux values"""
-        assert lux_to_percent(500.0, 500.0) == 100.0
-        assert lux_to_percent(1000.0, 2000.0) == 50.0
+        assert lux_to_percent(500.0, 500.0) == pytest.approx(100.0, rel=1e-6)
+        assert lux_to_percent(1000.0, 2000.0) == pytest.approx(90.89, rel=1e-3)
 
     def test_lux_to_percent_invalid_max(self):
         """Test behavior with invalid max_lux"""
-        # Should use default 1000 when max_lux is invalid
+        # Should use default 65000 when max_lux is invalid
         result = lux_to_percent(500.0, 0.0)
-        assert result == 50.0  # Uses default 1000
+        assert result == lux_to_percent(500.0, 65000.0)
 
 
 class TestIAQLevel:
@@ -254,21 +255,22 @@ class TestNormalizeBrightness:
     def test_normalize_brightness_default_max(self):
         """Test brightness normalization with default max_lux"""
         assert normalize_brightness(0.0) == 0.0
-        assert normalize_brightness(500.0) == 50.0
-        assert normalize_brightness(1000.0) == 100.0
+        # Default max_lux is 65000 with logarithmic scaling
+        assert normalize_brightness(500.0) == pytest.approx(lux_to_percent(500.0, 65000.0), rel=1e-6)
+        assert normalize_brightness(1000.0) == pytest.approx(lux_to_percent(1000.0, 65000.0), rel=1e-6)
 
     def test_normalize_brightness_never_exceeds_100(self):
         """Test that brightness never exceeds 100%"""
-        assert normalize_brightness(1500.0) == 100.0
-        assert normalize_brightness(2000.0) == 100.0
-        assert normalize_brightness(10000.0) == 100.0
+        assert 0.0 <= normalize_brightness(1500.0) <= 100.0
+        assert 0.0 <= normalize_brightness(2000.0) <= 100.0
+        assert 0.0 <= normalize_brightness(10000.0) <= 100.0
 
     def test_normalize_brightness_custom_config(self):
         """Test brightness normalization with custom config"""
         custom_config = {"brightness": {"max_lux": 500.0}}
         assert normalize_brightness(0.0, custom_config) == 0.0
-        assert normalize_brightness(250.0, custom_config) == 50.0
-        assert normalize_brightness(500.0, custom_config) == 100.0
+        assert normalize_brightness(250.0, custom_config) == pytest.approx(lux_to_percent(250.0, 500.0), rel=1e-6)
+        assert normalize_brightness(500.0, custom_config) == pytest.approx(100.0, rel=1e-6)
         assert normalize_brightness(1000.0, custom_config) == 100.0
 
 
