@@ -6,6 +6,7 @@ CCU Message Monitor Component - Wiederverwendbare Komponente für CCU MQTT Messa
 import pandas as pd
 import streamlit as st
 
+from omf2.ccu.module_manager import get_ccu_module_manager
 from omf2.common.logger import get_logger
 from omf2.ui.common.symbols import UISymbols
 
@@ -297,10 +298,14 @@ def _render_table_filters(df, i18n, ccu_gateway, monitor_manager):
                 # Add FTS option (hardcoded for now)
                 module_options.append("🚗 FTS (5iO4)")
 
+                # Get Module Manager for consistent icon lookup
+                module_manager = get_ccu_module_manager()
+
                 # Add all modules (including Transport/CHRG0)
                 for module_id, module_data in modules.items():
                     module_name = module_data.get("name", "")
-                    module_icon = module_data.get("icon", "🏗️")
+                    # Use Module Manager for consistent emoji icon (selectbox doesn't support HTML)
+                    module_icon = module_manager.get_module_icon(module_id)
 
                     # Add all modules, including Transport/CHRG0
                     display_name = f"{module_icon} {module_name} ({module_id})"
@@ -650,17 +655,30 @@ def _get_module_display_name(topic):
             if len(parts) >= 4:
                 module_serial = parts[3]
 
-                # Look up in registry
-                from omf2.registry.manager.registry_manager import get_registry_manager
+                # Use Module Manager for consistent icon lookup
+                try:
+                    module_manager = get_ccu_module_manager()
+                    # Get emoji icon (dataframe doesn't support HTML)
+                    module_icon = module_manager.get_module_icon(module_serial)
 
-                registry_manager = get_registry_manager()
-                modules = registry_manager.get_modules()
+                    # Get module info for name
+                    modules = module_manager.get_all_modules()
+                    module_data = modules.get(module_serial, {})
+                    module_name = module_data.get("name", module_serial)
 
-                for module_id, module_data in modules.items():
-                    if module_id == module_serial:
-                        module_name = module_data.get("name", module_id)
-                        module_icon = module_data.get("icon", "🏗️")
-                        return f"{module_icon} {module_name} ({module_id})"
+                    return f"{module_icon} {module_name} ({module_serial})"
+                except Exception as e:
+                    logger.warning(f"⚠️ Could not get module icon via Module Manager: {e}")
+                    # Fallback to direct registry lookup
+                    from omf2.registry.manager.registry_manager import get_registry_manager
+                    registry_manager = get_registry_manager()
+                    modules = registry_manager.get_modules()
+
+                    for module_id, module_data in modules.items():
+                        if module_id == module_serial:
+                            module_name = module_data.get("name", module_id)
+                            module_icon = module_data.get("icon", "🏗️")
+                            return f"{module_icon} {module_name} ({module_id})"
 
                 # Module not found in registry
                 return f"{UISymbols.STATUS_ICONS['available']} Module ({module_serial})"
