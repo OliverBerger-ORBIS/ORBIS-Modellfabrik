@@ -4,7 +4,6 @@ CCU Modules Details - Module Details Section
 Ausgelagerte Funktionalität für Module-Details
 """
 
-from pathlib import Path
 
 import streamlit as st
 
@@ -17,7 +16,9 @@ logger = get_logger(__name__)
 def show_module_details_section(ccu_gateway, i18n):
     """Show module details section with dropdown selection - PERFORMANCE OPTIMIERT"""
     try:
+        # Use SVG icon in header with st.markdown
         st.markdown("### 🔧 Module Details")
+        st.caption("💡 Select a module to view detailed information with SVG icons")
 
         # CACHING: Load managers and data once, refresh happens via auto-refresh mechanism
         # Cache is initialized once per session and refreshed automatically via check_and_reload()
@@ -31,9 +32,11 @@ def show_module_details_section(ccu_gateway, i18n):
             modules = module_manager.get_all_modules()
 
             # Module-Options mit Icons cachen
+            # Note: st.selectbox doesn't render HTML, so we use emoji icons here
+            # SVG icons are shown in the expanded details and visual list below
             module_options = {}
             for module_id, module_info in modules.items():
-                module_icon = module_manager.get_module_icon(module_id)
+                module_icon = module_manager.get_module_icon(module_id)  # Emoji for selectbox
                 module_name = module_info.get("name", module_id)
                 serial_id = module_info.get("serialNumber", module_id)
                 display_name = f"{module_icon} {module_name} ({serial_id})"
@@ -51,11 +54,17 @@ def show_module_details_section(ccu_gateway, i18n):
         cache = st.session_state.module_details_cache
         modules = cache["modules"]
         module_options = cache["module_options"]
+        module_manager = cache["module_manager"]
 
         if not modules:
             st.info("📋 No modules available")
             return
 
+        # Show visual module list with SVG icons before selectbox
+        st.markdown("**Available Modules (with SVG icons):**")
+        _show_module_icons_list(modules, module_manager)
+
+        # Selectbox with emoji icons (HTML not supported in selectbox)
         selected_module_display = st.selectbox(
             "Select Module for Details:", options=list(module_options.keys()), key="module_details_selector"
         )
@@ -72,18 +81,60 @@ def show_module_details_section(ccu_gateway, i18n):
         st.error(f"❌ Error: {e}")
 
 
+def _show_module_icons_list(modules, module_manager):
+    """
+    Display a visual list of all modules with their SVG icons.
+
+    This provides a consistent visual reference using SVG icons,
+    complementing the selectbox which uses emoji icons.
+    """
+    try:
+        # Create HTML list with SVG icons
+        html_list = '<div style="padding: 10px; background-color: #f0f2f6; border-radius: 5px; margin-bottom: 10px;">'
+
+        for module_id, module_info in modules.items():
+            module_name = module_info.get("name", module_id)
+            serial_id = module_info.get("serialNumber", module_id)
+
+            # Get SVG icon using Module Manager's method
+            icon_html = module_manager.get_module_icon_html(module_id, size_px=20)
+
+            # Add to list
+            html_list += f'<div style="padding: 4px 0;">{icon_html} <strong>{module_name}</strong> ({serial_id})</div>'
+
+        html_list += '</div>'
+
+        # Render with st.markdown
+        st.markdown(html_list, unsafe_allow_html=True)
+
+        # Show count
+        svg_count = sum(1 for m in modules.values() if m.get("name"))
+        st.caption(f"✨ Module icons rendered as SVG graphics ({svg_count} modules)")
+
+    except Exception as e:
+        logger.warning(f"⚠️ Could not display module icons list: {e}")
+
+
 def _show_production_module_details(module_id: str, module_type: str, ccu_gateway, i18n):
     """Show details for production modules (MILL, DRILL, AIQS, HBW, DPS, CHRG) - PERFORMANCE OPTIMIERT"""
     try:
-        st.header(f"🏭 {module_type} Module Details")
-
-        # MODULE MANAGER AUS CACHE VERWENDEN
+        # Use Module Manager to get SVG icon for header
         cache = st.session_state.get("module_details_cache", {})
         module_manager = cache.get("module_manager")
 
         if not module_manager:
             # Fallback: Module Manager neu erstellen
             module_manager = get_ccu_module_manager()
+
+        # Get module info
+        module_info = module_manager.get_all_modules().get(module_id, {})
+        module_name = module_info.get("name", module_type)
+
+        # Get SVG icon for header using Module Manager
+        header_icon_html = module_manager.get_module_icon_html(module_id, size_px=32)
+
+        # Render header with SVG icon
+        st.markdown(f"### {header_icon_html} {module_name} Module Details", unsafe_allow_html=True)
 
         # Get module status
         module_status = module_manager.get_module_status_from_state(module_id)
@@ -95,10 +146,14 @@ def _show_production_module_details(module_id: str, module_type: str, ccu_gatewa
         col1, col2 = st.columns([1, 2])
 
         with col1:
-            st.subheader("📊 Module SVG")
-            # Get module_info from Module Manager
-            module_info = module_manager.get_all_modules().get(module_id, {})
-            _show_module_svg(module_id, module_type, module_info, i18n)
+            st.subheader("📊 Module Icon")
+            # Display large SVG icon using Module Manager
+            large_icon_html = module_manager.get_module_icon_html(module_id, size_px=200)
+            st.markdown(
+                f'<div style="text-align: center; padding: 20px;">{large_icon_html}</div>',
+                unsafe_allow_html=True
+            )
+            st.caption("✨ High-quality SVG icon with CSS scoping")
 
         with col2:
             st.subheader("📋 Module Information")
@@ -119,60 +174,6 @@ def _show_generic_module_details(module_id: str, module_type: str, ccu_gateway, 
     """Show details for generic modules"""
     # DELEGATION - KEINE DUPLIKATION
     _show_production_module_details(module_id, module_type, ccu_gateway, i18n)
-
-
-def _show_module_svg(module_id: str, module_type: str, module_info: dict, i18n):
-    """Show module SVG using Asset Manager - PERFORMANCE OPTIMIERT"""
-    try:
-        # ASSET MANAGER AUS CACHE VERWENDEN
-        cache = st.session_state.get("module_details_cache", {})
-        asset_manager = cache.get("asset_manager")
-
-        if not asset_manager:
-            # Fallback: Asset Manager neu erstellen
-            from omf2.assets import get_asset_manager
-
-            asset_manager = get_asset_manager()
-
-        # ICON ÜBER DEN NAMEN SUCHEN - WIE ANGEORDNET
-        module_name = module_info.get("name", module_type)
-        icon_path = asset_manager.get_module_icon_path(module_name)
-
-        if icon_path and Path(icon_path).exists():
-            # SVG laden und skalieren - WIE IN SHOPFLOOR_LAYOUT
-            with open(icon_path, encoding="utf-8") as svg_file:
-                svg_content = svg_file.read()
-                # ViewBox-bewusste Skalierung - keine Verzerrung!
-                svg_content = _scale_svg_properly(svg_content, 200, 200)
-                # IMPORT FEHLT!
-                import streamlit.components.v1 as components
-
-                components.html(svg_content, height=200)
-        else:
-            st.info(f"📋 {i18n.t('ccu_modules.details.no_svg_available')}")
-
-    except Exception as e:
-        logger.error(f"❌ Failed to show module SVG: {e}")
-        st.error(f"❌ Error loading module SVG: {e}")
-
-
-def _scale_svg_properly(svg_content: str, width: int, height: int) -> str:
-    """KORREKTE SVG-Skalierung - EINFACH UND FUNKTIONAL"""
-    try:
-        # EINFACHE LÖSUNG: Direkte width/height setzen
-        # Alle SVGs haben viewBox="0 0 24 24" - das ist standardisiert
-
-        # SVG mit korrekten Dimensionen
-        scaled_svg = svg_content.replace("<svg", f'<svg width="{width}" height="{height}"')
-
-        # DEBUG: Log the scaling
-        logger.info(f"🔍 SVG Scaling: {width}x{height} applied")
-
-        return scaled_svg
-
-    except Exception as e:
-        logger.warning(f"Could not scale SVG properly: {e}")
-        return svg_content
 
 
 def _show_module_info(module_id: str, module_type: str, module_status: dict, factsheet_status: dict, i18n):
