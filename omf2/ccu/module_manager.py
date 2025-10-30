@@ -406,6 +406,58 @@ class CcuModuleManager:
         # Direct lookup in Registry-based MODULE_ICONS
         return self._get_module_icons().get(module_id, "❓")  # Unknown module
 
+    def get_module_icon_html(self, module_id: str, size_px: int = 24) -> str:
+        """
+        Get module icon as SVG HTML from module ID.
+
+        Maps module serial ID → module type name → SVG icon via get_icon_html().
+        Falls back to emoji icon if SVG not available.
+
+        Args:
+            module_id: Module serial ID (e.g., "SVR3QA0022")
+            size_px: Size in pixels for the icon (default: 24)
+
+        Returns:
+            HTML string with inline SVG or emoji in span
+
+        Example:
+            >>> manager.get_module_icon_html("SVR3QA0022", size_px=20)
+            '<svg width="20">...</svg>'  # HBW SVG icon
+        """
+        try:
+            # Import here to avoid circular dependencies
+            from omf2.ui.common.symbols import get_icon_html
+
+            # Get module info from registry to find the type/name
+            modules = self.get_all_modules()
+            module_info = modules.get(module_id)
+
+            if module_info:
+                # Get the module name/type (e.g., "HBW", "DRILL")
+                module_name = module_info.get("name", module_id)
+
+                # Try to get SVG icon using the module type name
+                icon_html = get_icon_html(module_name, size_px=size_px)
+
+                # Check if we got SVG or just emoji fallback
+                if "<svg" in icon_html:
+                    logger.debug(f"✅ Got SVG icon for {module_id} ({module_name})")
+                    return icon_html
+                else:
+                    logger.debug(f"⚠️ No SVG for {module_id} ({module_name}), using emoji")
+                    return icon_html
+            else:
+                logger.warning(f"⚠️ Module {module_id} not found in registry")
+                # Fallback to emoji icon
+                emoji_icon = self.get_module_icon(module_id)
+                return f'<span style="font-size: {size_px}px;">{emoji_icon}</span>'
+
+        except Exception as e:
+            logger.error(f"❌ Failed to get SVG icon for {module_id}: {e}")
+            # Final fallback to emoji
+            emoji_icon = self.get_module_icon(module_id)
+            return f'<span style="font-size: {size_px}px;">{emoji_icon}</span>'
+
     def get_availability_display(self, availability: str) -> str:
         """
         Get availability display with icon (UISymbols-based) - CORRECTED to match aps_modules.py
