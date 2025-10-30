@@ -266,25 +266,25 @@ def _get_module_display_name(module_id, module_info):
 
 def _get_module_icon_html(module_id, size_px=24):
     """
-    Get module icon as HTML with SVG support.
+    Get module icon as HTML with SVG support via Module Manager.
 
-    This helper demonstrates consistent usage of get_icon_html() for module icons.
-    It will render SVG icons when available, falling back to emoji.
+    Uses Module Manager's get_module_icon_html() which maps serial ID → type → SVG.
 
     Args:
-        module_id: Module identifier (e.g., "HBW", "DRILL", "FTS")
+        module_id: Module serial ID (e.g., "SVR3QA0022")
         size_px: Size in pixels for the icon
 
     Returns:
         HTML string with inline SVG or emoji span
 
     Example:
-        >>> _get_module_icon_html("HBW", size_px=28)
-        '<svg width="28"...>...</svg>'
+        >>> _get_module_icon_html("SVR3QA0022", size_px=28)
+        '<svg width="28"...>...</svg>'  # HBW SVG
     """
     try:
-        # Use get_icon_html for consistent SVG-first rendering
-        result = get_icon_html(module_id, size_px=size_px)
+        # Use Module Manager's method which handles serial ID → type mapping
+        module_manager = get_ccu_module_manager()
+        result = module_manager.get_module_icon_html(module_id, size_px=size_px)
 
         # Log success for debugging
         if "<svg" in result:
