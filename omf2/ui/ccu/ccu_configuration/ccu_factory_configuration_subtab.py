@@ -215,7 +215,7 @@ def _show_key_details(key: str, layout_config: dict):
         # Display details in a nice box
         st.markdown("---")
         i18n = st.session_state.get("i18n_manager")
-        details_title = i18n.t("ccu_configuration.factory.details_for", key=key) if i18n else f"📍 Details for {key}"
+        details_title = i18n.t("ccu_configuration.factory.details_for", label=key) if i18n else f"📍 Details for {key}"
         st.markdown(f"### {details_title}")
 
         # Determine entry type and display accordingly

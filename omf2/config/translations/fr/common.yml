@@ -116,4 +116,4 @@ ccu_configuration.factory.select_label: "📍 Sélectionner un module ou une pos
 ccu_configuration.factory.select_help: "Sélectionnez un module, une position fixe ou une intersection pour afficher les détails et la mise en évidence sur la grille"
 ccu_configuration.factory.refresh: "🔄 Actualiser"
 ccu_configuration.factory.highlighting_for: "💡 Mise en évidence de {count} cellule(s) pour {label}"
-ccu_configuration.factory.details_for: "📍 Détails pour {key}"
+ccu_configuration.factory.details_for: "📍 Détails pour {label}"
