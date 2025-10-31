@@ -43,6 +43,14 @@ def switch_ccu_environment(new_env: str):
     # 3. Create new MQTT client with the environment-specific client-id
     client_factory = get_client_factory()
     new_client = client_factory.get_mqtt_client("ccu_mqtt_client", environment=new_env)
+    # Setze Environment und Anzeige-Parameter sofort, damit UI korrekt rendert
+    try:
+        new_client._current_environment = new_env
+        cfg = new_client._load_config(new_env)
+        new_client._host = cfg.get("host", "localhost")
+        new_client._port = cfg.get("port", 1883)
+    except Exception:
+        pass
     st.session_state["ccu_mqtt_client"] = new_client
     logger.info(f"🔌 New CCU MQTT client created for environment '{new_env}'")
 
@@ -94,6 +102,14 @@ def switch_admin_environment(new_env: str):
     # 3. Create new MQTT client with the environment-specific client-id
     client_factory = get_client_factory()
     new_client = client_factory.get_mqtt_client("admin_mqtt_client", environment=new_env)
+    # Setze Environment und Anzeige-Parameter sofort, damit UI korrekt rendert
+    try:
+        new_client._current_environment = new_env
+        cfg = new_client._load_config(new_env)
+        new_client._host = cfg.get("host", "localhost")
+        new_client._port = cfg.get("port", 1883)
+    except Exception:
+        pass
     st.session_state["admin_mqtt_client"] = new_client
     logger.info(f"🔌 New Admin MQTT client created for environment '{new_env}'")
 

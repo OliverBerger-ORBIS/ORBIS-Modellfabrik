@@ -1176,49 +1176,16 @@ def render_system_logs_tab():
 - **Registry Manager** getestet ✅
 - **Performance** optimiert ✅
 
-### **🚀 VERWENDUNG:**
+### **🚀 VERWENDUNG (Sidebar-only Connect):**
 
-```python
-# 🎯 ZENTRALE INITIALISIERUNG in omf.py (beim App-Start):
-# 1. Registry Manager wird initialisiert
-# 2. Admin MQTT Client wird initialisiert
-# 3. MQTT Verbindung wird hergestellt
+> FORBIDDEN: MQTT-Connect/Disconnect in Tabs oder Komponenten ausführen.
+> Connect/Disconnect wird ausschließlich über die Sidebar gesteuert.
 
-# In Tabs/Components: Registry Manager aus Session State holen
-registry_manager = st.session_state.get('registry_manager')
-if registry_manager:
-    # Alle Registry-Daten laden
-    topics = registry_manager.get_topics()
-    schemas = registry_manager.get_schemas()
-    mqtt_clients = registry_manager.get_mqtt_clients()
-    workpieces = registry_manager.get_workpieces()
-    modules = registry_manager.get_modules()
-    stations = registry_manager.get_stations()
-    txt_controllers = registry_manager.get_txt_controllers()
-
-# In Tabs/Components: Admin MQTT Client aus Session State holen
-admin_client = st.session_state.get('admin_mqtt_client')
-if admin_client:
-    # Reconnect nur bei Verbindungsverlust
-    if not admin_client.connected:
-        current_env = st.session_state.get('current_environment', 'mock')
-        admin_client.connect(current_env)
-    
-    # Connection Info holen
-    conn_info = admin_client.get_connection_info()
-
-# Gateway-Factory verwenden
-from omf2.factory.gateway_factory import get_ccu_gateway, get_nodered_gateway, get_admin_gateway
-
-# Gateways erstellen
-ccu_gateway = get_ccu_gateway()
-nodered_gateway = get_nodered_gateway()
-admin_gateway = get_admin_gateway()
-
-# Business-Operationen ausführen
-ccu_gateway.reset_factory()
-ccu_gateway.send_global_command("start", {"line": "1"})
-```
+- Verbindliche Anleitung: `docs/04-howto/mqtt_client_connection.md`
+- Kernpunkte:
+  - Keine Auto-Connects in Komponenten
+  - Connect ausschließlich via „Refresh Dashboard“ in der Sidebar
+  - Beim Environment-Switch nur Disconnect; kein Auto-Reconnect
 
 ---
 

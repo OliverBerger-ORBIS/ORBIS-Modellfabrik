@@ -154,13 +154,12 @@ def render_ccu_modules_tab():
 
 ### **🚨 MUST-READ für alle Cursor Agents:**
 - 📄 **[UI_DEVELOPMENT_GUIDE.md](docs/UI_DEVELOPMENT_GUIDE.md)** - **KRITISCH:** Gateway-Pattern & Environment Switch
-- 📄 **[CONNECTION_LOOP_FIXES_DECISION_RECORD.md](docs/CONNECTION_LOOP_FIXES_DECISION_RECORD.md)** - **KRITISCH:** Connection Loop Prevention
+- 📄 **[mqtt_client_connection.md](../docs/04-howto/mqtt_client_connection.md)** - **KANONISCH:** MQTT-Client Verbindung und Sidebar-Prozess
 - 📄 **[ARCHITECTURE.md](docs/ARCHITECTURE.md)** - Vollständige Architektur-Übersicht
 
 ### **Architektur & Implementierung:**
 - 📄 **[IMPLEMENTATION_STATUS.md](docs/IMPLEMENTATION_STATUS.md)** - Implementierungsstatus
 - 📄 **[PROJECT_STRUCTURE.md](docs/PROJECT_STRUCTURE.md)** - Projektstruktur & Prinzipien
-- 📄 **[ADMIN_CCU_CLIENT_BEHAVIOR_ANALYSIS.md](docs/ADMIN_CCU_CLIENT_BEHAVIOR_ANALYSIS.md)** - MQTT Client Analysis
 
 ### **Entwicklung & Migration:**
 - 📄 **[REFACTORING_BACKLOG.md](docs/REFACTORING_BACKLOG.md)** - Migration von omf/dashboard

@@ -162,14 +162,17 @@ class AdminMqttClient:
                     self._current_environment = environment
                     return True
 
-                # Config für Environment laden
+                # Config für Environment laden und direkt initiale Anzeige-Parameter setzen
                 mqtt_config = self._load_config(environment)
+                # Setze Environment und Anzeige-Parameter VOR Verbindungsaufbau, damit UI nie 'unknown' zeigt
+                self._current_environment = environment
+                self._host = mqtt_config.get("host", "localhost")
+                self._port = mqtt_config.get("port", 1883)
 
                 # Mock-Mode: Keine echte Verbindung
                 if environment == "mock":
                     self.client_id = f"{self.base_client_id}_mock"
                     self.connected = True
-                    self._current_environment = environment
                     logger.info(f"🧪 Mock mode active - no real MQTT connection (Client ID: {self.client_id})")
                     return True
 
@@ -216,8 +219,9 @@ class AdminMqttClient:
                 keepalive = mqtt_config.get("keepalive", 60)
 
                 logger.info(f"🔗 Connecting to {host}:{port} with client_id: {self.client_id}")
-                self.client.loop_start()
+                # Einheitliche Reihenfolge: connect_async → loop_start
                 self.client.connect_async(host, port, keepalive)
+                self.client.loop_start()
 
                 # Warten auf Verbindung
                 import time
@@ -227,10 +231,7 @@ class AdminMqttClient:
                         break
                     time.sleep(0.1)
 
-                self._current_environment = environment
-                # Store connection parameters for get_connection_info()
-                self._host = host
-                self._port = port
+                # Environment und Verbindungsparameter sind bereits gesetzt
                 logger.info(f"✅ Admin MQTT Client connected to {host}:{port} (Environment: {environment})")
                 return True
 
@@ -410,23 +411,22 @@ class AdminMqttClient:
         try:
             current_env = getattr(self, "_current_environment", "mock")
 
-            # Use actual connection parameters if connected, otherwise fallback to config
+            # Use actual connection parameters if connected, otherwise fallback to merged env config
             if self.connected and hasattr(self, "client") and self.client:
                 # Get actual connection parameters from MQTT client
                 host = getattr(self.client, "_host", None) or getattr(self, "_host", None)
                 port = getattr(self.client, "_port", None) or getattr(self, "_port", None)
             else:
-                # Fallback to config if not connected
-                env_config = self.config.get("environments", {}).get(current_env, {})
-                mqtt_config = {**self.config.get("mqtt", {}), **env_config.get("mqtt", {})}
-                host = mqtt_config.get("host", "unknown")
+                # Load merged config for the current environment to avoid 'unknown' before connect
+                mqtt_config = self._load_config(current_env)
+                host = mqtt_config.get("host", "localhost")
                 port = mqtt_config.get("port", 1883)
 
             return {
                 "connected": self.connected,
                 "environment": current_env,
                 "client_id": self.client_id,
-                "host": host or "unknown",
+                "host": host or "localhost",
                 "port": port or 1883,
                 "mock_mode": current_env == "mock" or not self.connected,
             }
