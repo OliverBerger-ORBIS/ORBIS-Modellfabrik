@@ -12,6 +12,7 @@ ccu_message_monitor.controls.clear_buffer: "Clear Buffer"
 # Subscriptions
 ccu_message_monitor.subscriptions.subscribed_to: "MQTT client subscribed to {count} topics"
 ccu_message_monitor.subscriptions.subscribed_topics: "Subscribed Topics"
+ccu_message_monitor.subscriptions.subscribed_topics_count: "Subscribed Topics ({count})"
 ccu_message_monitor.subscriptions.no_topics: "MQTT client has no subscribed topics"
 
 # Messages

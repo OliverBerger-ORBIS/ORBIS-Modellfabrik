@@ -12,6 +12,7 @@ ccu_message_monitor.controls.clear_buffer: "Vider le tampon"
 # Subscriptions
 ccu_message_monitor.subscriptions.subscribed_to: "Client MQTT abonné à {count} topics"
 ccu_message_monitor.subscriptions.subscribed_topics: "Topics abonnés"
+ccu_message_monitor.subscriptions.subscribed_topics_count: "Topics abonnés ({count})"
 ccu_message_monitor.subscriptions.no_topics: "Le client MQTT n'a pas de topics abonnés"
 
 # Messages

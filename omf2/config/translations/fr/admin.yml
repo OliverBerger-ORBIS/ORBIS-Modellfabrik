@@ -37,3 +37,14 @@ admin.error_warning.warnings_tab: "🟡 Avertissements"
 admin.error_warning.no_errors: "Aucun journal ERROR disponible"
 admin.error_warning.no_warnings: "Aucun journal WARNING disponible"
 
+# Simple Admin Labels (used in subtab headers)
+admin.dashboard: "Tableau de bord"
+admin.mqtt_clients: "Clients MQTT"
+admin.gateway: "Passerelle"
+admin.topics: "Sujets"
+admin.schemas: "Schémas"
+admin.modules: "Modules"
+admin.stations: "Stations"
+admin.txt_controllers: "Contrôleurs TXT"
+admin.workpieces: "Pièces"
+

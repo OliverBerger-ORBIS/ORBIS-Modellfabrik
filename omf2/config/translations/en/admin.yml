@@ -37,3 +37,14 @@ admin.error_warning.warnings_tab: "🟡 Warnings"
 admin.error_warning.no_errors: "No ERROR logs available"
 admin.error_warning.no_warnings: "No WARNING logs available"
 
+# Simple Admin Labels (used in subtab headers)
+admin.dashboard: "Dashboard"
+admin.mqtt_clients: "MQTT Clients"
+admin.gateway: "Gateway"
+admin.topics: "Topics"
+admin.schemas: "Schemas"
+admin.modules: "Modules"
+admin.stations: "Stations"
+admin.txt_controllers: "TXT Controllers"
+admin.workpieces: "Workpieces"
+
