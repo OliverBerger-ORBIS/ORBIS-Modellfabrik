@@ -26,6 +26,18 @@ ccu_modules.table.configured: "Configuré"
 ccu_modules.table.messages: "Messages"
 ccu_modules.table.last_update: "Dernière mise à jour"
 
+# Table Values
+ccu_modules.values.connected: "Connecté"
+ccu_modules.values.disconnected: "Déconnecté"
+ccu_modules.values.available: "Disponible"
+ccu_modules.values.busy: "Occupé"
+ccu_modules.values.blocked: "Bloqué"
+ccu_modules.values.unknown: "Inconnu"
+ccu_modules.values.configured_yes: "Configuré"
+ccu_modules.values.configured_no: "Non configuré"
+ccu_modules.values.not_positioned: "Non positionné"
+ccu_modules.values.never: "Jamais"
+
 # Statistics
 ccu_modules.statistics.title: "Statistiques des modules"
 ccu_modules.statistics.total: "Total"

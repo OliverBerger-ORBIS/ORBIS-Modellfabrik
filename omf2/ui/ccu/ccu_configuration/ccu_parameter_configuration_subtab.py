@@ -28,7 +28,12 @@ def render_ccu_parameter_configuration_subtab():
             )
         except Exception:
             st.subheader(f"{UISymbols.get_tab_icon('parameter')} Parameter Configuration")
-        st.markdown("Configure CCU production parameters and settings")
+        # Subtitle (i18n): neutral/OMF wording
+        try:
+            i18n = st.session_state.get("i18n_manager")
+            st.markdown(i18n.t("ccu_configuration.parameter.subtitle"))
+        except Exception:
+            st.markdown("OMF production parameters and settings")
 
         # Load configuration data
         config_loader = get_ccu_config_loader()

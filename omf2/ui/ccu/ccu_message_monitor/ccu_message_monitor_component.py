@@ -33,7 +33,7 @@ def render_ccu_message_monitor(ccu_gateway, title=None, show_controls=True):
         if not i18n:
             logger.warning("⚠️ I18n Manager not found in session state - using fallback")
             # Fallback for compatibility
-            title = title or "CCU Message Monitor"
+            title = title or "Message Monitor"
             # Get SVG icon for Message Monitor heading
             try:
                 msg_icon = get_svg_inline("MESSAGE_CENTER", size_px=32) or ""
@@ -43,7 +43,7 @@ def render_ccu_message_monitor(ccu_gateway, title=None, show_controls=True):
                 )
             except Exception:
                 st.subheader(f"📡 {title}")
-            st.markdown("CCU MQTT Message Monitoring - Echtzeit-Nachrichten über CCU Gateway")
+            st.markdown("MQTT Message Monitoring - Real-time messages")
         else:
             # Use i18n
             title = title or i18n.t("ccu_message_monitor.title")
@@ -78,7 +78,7 @@ def render_ccu_message_monitor(ccu_gateway, title=None, show_controls=True):
             subscribed_msg = (
                 i18n.t("ccu_message_monitor.subscriptions.subscribed_topics_count").format(count=len(subscribed_topics))
                 if i18n
-                else f"CCU MQTT Client subscribed to {len(subscribed_topics)} topics"
+                else f"MQTT client subscribed to {len(subscribed_topics)} topics"
             )
             st.success(f"📡 {subscribed_msg}")
             topics_title = (
@@ -91,7 +91,7 @@ def render_ccu_message_monitor(ccu_gateway, title=None, show_controls=True):
             no_topics_msg = (
                 i18n.t("ccu_message_monitor.subscriptions.no_topics")
                 if i18n
-                else "CCU MQTT Client has no subscribed topics"
+                else "MQTT client has no subscribed topics"
             )
             st.warning(f"⚠️ {no_topics_msg}")
 
@@ -131,7 +131,7 @@ def render_ccu_message_monitor(ccu_gateway, title=None, show_controls=True):
         all_buffers = ccu_gateway.get_all_message_buffers()
 
         if not all_buffers:
-            no_msg = i18n.t("ccu_message_monitor.messages.no_messages") if i18n else "Keine CCU Messages verfügbar"
+            no_msg = i18n.t("ccu_message_monitor.messages.no_messages") if i18n else "No messages available"
             waiting_msg = (
                 i18n.t("ccu_message_monitor.messages.waiting")
                 if i18n
@@ -839,7 +839,7 @@ def _refresh_ccu_messages(ccu_gateway, i18n):
             no_client_msg = i18n.t("ccu_message_monitor.error.no_mqtt_client") if i18n else "No MQTT client provided"
             logger.warning(f"⚠️ {no_client_msg}")
 
-        success_msg = i18n.t("ccu_message_monitor.actions.refresh_success") if i18n else "CCU Messages refreshed!"
+        success_msg = i18n.t("ccu_message_monitor.actions.refresh_success") if i18n else "Messages refreshed!"
         st.success(f"✅ {success_msg}")
 
         # CRITICAL: Request UI refresh to update the display
@@ -851,7 +851,7 @@ def _refresh_ccu_messages(ccu_gateway, i18n):
         error_msg = (
             i18n.t("ccu_message_monitor.error.refresh_failed").format(error=e)
             if i18n
-            else f"CCU Messages refresh failed: {e}"
+            else f"Message refresh failed: {e}"
         )
         st.error(f"❌ {error_msg}")
 
@@ -860,7 +860,7 @@ def _show_ccu_message_statistics(ccu_gateway, i18n):
     """Show CCU Message Statistics - ECHTE MQTT-Daten"""
     try:
         logger.info("📊 Showing CCU Message Statistics")
-        stats_title = i18n.t("ccu_message_monitor.statistics.title") if i18n else "CCU Message Statistics"
+        stats_title = i18n.t("ccu_message_monitor.statistics.title") if i18n else "Message Statistics"
         st.subheader(f"📊 {stats_title}")
 
         # Get all buffers from CCU Gateway
@@ -905,11 +905,11 @@ def _show_ccu_message_statistics(ccu_gateway, i18n):
         logger.info("CCU Message Statistics erfolgreich angezeigt")
 
     except Exception as e:
-        logger.error(f"❌ CCU Message Statistics error: {e}")
+        logger.error(f"❌ Message Statistics error: {e}")
         error_msg = (
             i18n.t("ccu_message_monitor.error.statistics_failed").format(error=e)
             if i18n
-            else f"CCU Message Statistics failed: {e}"
+            else f"Message statistics failed: {e}"
         )
         st.error(f"❌ {error_msg}")
 
@@ -919,14 +919,14 @@ def _clear_ccu_message_buffer(ccu_gateway, i18n):
     try:
         logger.info("🧹 Clearing CCU Message Buffer")
         # TODO: Implement buffer clearing
-        success_msg = i18n.t("ccu_message_monitor.actions.buffer_cleared") if i18n else "CCU Message Buffer cleared!"
+        success_msg = i18n.t("ccu_message_monitor.actions.buffer_cleared") if i18n else "Message buffer cleared!"
         st.success(f"✅ {success_msg}")
     except Exception as e:
         logger.error(f"❌ CCU Message Buffer clear error: {e}")
         error_msg = (
             i18n.t("ccu_message_monitor.error.buffer_clear_failed").format(error=e)
             if i18n
-            else f"CCU Message Buffer clear failed: {e}"
+            else f"Message buffer clear failed: {e}"
         )
         st.error(f"❌ {error_msg}")
 

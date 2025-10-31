@@ -1,8 +1,8 @@
 # CCU Message Monitor - French Translations
 
 # Main Component
-ccu_message_monitor.title: "Moniteur de messages CCU"
-ccu_message_monitor.subtitle: "Surveillance des messages MQTT CCU - Messages en temps réel via CCU Gateway"
+ccu_message_monitor.title: "Moniteur de messages"
+ccu_message_monitor.subtitle: "Surveillance des messages MQTT – messages en temps réel"
 
 # Controls
 ccu_message_monitor.controls.refresh_messages: "Actualiser les messages"
@@ -10,12 +10,12 @@ ccu_message_monitor.controls.show_statistics: "Afficher les statistiques"
 ccu_message_monitor.controls.clear_buffer: "Vider le tampon"
 
 # Subscriptions
-ccu_message_monitor.subscriptions.subscribed_to: "Client MQTT CCU abonné à {count} topics"
+ccu_message_monitor.subscriptions.subscribed_to: "Client MQTT abonné à {count} topics"
 ccu_message_monitor.subscriptions.subscribed_topics: "Topics abonnés"
-ccu_message_monitor.subscriptions.no_topics: "Le client MQTT CCU n'a pas de topics abonnés"
+ccu_message_monitor.subscriptions.no_topics: "Le client MQTT n'a pas de topics abonnés"
 
 # Messages
-ccu_message_monitor.messages.no_messages: "Aucun message CCU disponible"
+ccu_message_monitor.messages.no_messages: "Aucun message disponible"
 ccu_message_monitor.messages.waiting: "Les messages seront affichés une fois que le client sera connecté et recevra des messages"
 
 # Table Headers
@@ -44,16 +44,16 @@ ccu_message_monitor.status.unknown: "⚪ Inconnu"
 ccu_message_monitor.status.message: "📨 Message"
 
 # Statistics
-ccu_message_monitor.statistics.title: "Statistiques des messages CCU"
+ccu_message_monitor.statistics.title: "Statistiques des messages"
 ccu_message_monitor.statistics.total_topics: "Total des topics"
 ccu_message_monitor.statistics.total_messages: "Total des messages"
 ccu_message_monitor.statistics.state_topics: "Topics d'état"
 ccu_message_monitor.statistics.connection_topics: "Topics de connexion"
 
 # Status Messages
-ccu_message_monitor.actions.refresh_success: "Messages CCU actualisés!"
-ccu_message_monitor.actions.resubscribed: "Réabonné à {count} topics CCU"
-ccu_message_monitor.actions.buffer_cleared: "Tampon de messages CCU vidé!"
+ccu_message_monitor.actions.refresh_success: "Messages actualisés !"
+ccu_message_monitor.actions.resubscribed: "Réabonné à {count} topics"
+ccu_message_monitor.actions.buffer_cleared: "Tampon de messages vidé !"
 
 # Filter Controls
 ccu_message_monitor.filter.title: "Filtre"
@@ -73,12 +73,12 @@ ccu_message_monitor.filter.no_selection: "Aucune Sélection"
 ccu_message_monitor.filter.applied: "Filtre appliqué: {count} messages affichés"
 
 # Error Messages
-ccu_message_monitor.error.gateway_not_available: "Passerelle CCU non disponible"
-ccu_message_monitor.error.mqtt_not_available: "Client MQTT CCU non disponible via Gateway"
-ccu_message_monitor.error.component_failed: "Échec du composant Moniteur de messages CCU: {error}"
-ccu_message_monitor.error.refresh_failed: "Échec de l'actualisation des messages CCU: {error}"
-ccu_message_monitor.error.statistics_failed: "Échec des statistiques des messages CCU: {error}"
-ccu_message_monitor.error.buffer_clear_failed: "Échec du vidage du tampon de messages CCU: {error}"
-ccu_message_monitor.error.no_topics: "Aucun topic CCU trouvé dans le registre"
+ccu_message_monitor.error.gateway_not_available: "Passerelle non disponible"
+ccu_message_monitor.error.mqtt_not_available: "Client MQTT non disponible via la passerelle"
+ccu_message_monitor.error.component_failed: "Échec du composant Moniteur de messages : {error}"
+ccu_message_monitor.error.refresh_failed: "Échec de l'actualisation des messages : {error}"
+ccu_message_monitor.error.statistics_failed: "Échec des statistiques des messages : {error}"
+ccu_message_monitor.error.buffer_clear_failed: "Échec du vidage du tampon : {error}"
+ccu_message_monitor.error.no_topics: "Aucun topic trouvé dans le registre"
 ccu_message_monitor.error.no_mqtt_client: "Aucun client MQTT fourni"
 

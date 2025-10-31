@@ -22,15 +22,22 @@ def render_ccu_factory_configuration_subtab():
     logger.info("🏭 Rendering CCU Factory Configuration Subtab")
     try:
         try:
+            i18n = st.session_state.get("i18n_manager")
             factory_icon = get_svg_inline("FACTORY_CONFIGURATION", size_px=32) or ""
+            title = i18n.t("ccu_configuration.factory.title") if i18n else "Factory Configuration"
             st.markdown(
-                f"<h3 style='margin: 0.25rem 0 0.25rem 0; display:flex; align-items:center; gap:8px;'>{factory_icon} Factory Configuration</h3>",
+                f"<h3 style='margin: 0.25rem 0 0.25rem 0; display:flex; align-items:center; gap:8px;'>{factory_icon} {title}</h3>",
                 unsafe_allow_html=True,
             )
         except Exception:
             st.subheader(f"{UISymbols.get_tab_icon('factory')} Factory Configuration")
+        subtitle = (
+            i18n.t("ccu_configuration.factory.subtitle")
+            if "i18n" in locals() and i18n
+            else "Factory layout configuration and module positioning"
+        )
         st.markdown(
-            "<p style='margin: 0.25rem 0 0.25rem 0;'>Factory layout configuration and module positioning</p>",
+            f"<p style='margin: 0.25rem 0 0.25rem 0;'>{subtitle}</p>",
             unsafe_allow_html=True,
         )
 
@@ -58,11 +65,13 @@ def _show_shopfloor_layout_section():
         # Import and use the shopfloor layout component
         from omf2.ui.ccu.common.shopfloor_layout import show_shopfloor_layout
 
+        i18n = st.session_state.get("i18n_manager")
+
         # Show the shopfloor layout with interactive SVG
         # CCU Configuration mode: single/double click for module selection/navigation
         # Note: Message listener script is integrated into show_shopfloor_layout() component
         show_shopfloor_layout(
-            title="Shopfloor Layout",  # Title will be rendered inside HTML to avoid spacing issues
+            title=(i18n.t("ccu_configuration.factory.shopfloor_layout_title") if i18n else "Shopfloor Layout"),
             unique_key="ccu_configuration_shopfloor",
             mode="ccu_configuration",  # CCU Configuration mode: single click = select, double click = navigate
             enable_click=True,  # Enable click-to-select functionality
@@ -76,7 +85,10 @@ def _show_shopfloor_layout_section():
 def _show_shopfloor_position_details():
     """Show shopfloor position details with module/position dropdown and highlighting"""
     try:
-        st.subheader("🔧 Shopfloor Module Selection & Details")
+        i18n = st.session_state.get("i18n_manager")
+        st.subheader(
+            i18n.t("ccu_configuration.factory.selection_title") if i18n else "🔧 Shopfloor Module Selection & Details"
+        )
 
         # Import shopfloor display helpers
         from omf2.config.ccu.shopfloor_display import (
@@ -89,7 +101,11 @@ def _show_shopfloor_position_details():
         layout_config = config_loader.load_shopfloor_layout()
 
         if not layout_config:
-            st.warning("⚠️ No shopfloor layout configuration available")
+            st.warning(
+                i18n.t("ccu_configuration.factory.no_layout")
+                if i18n
+                else "⚠️ No shopfloor layout configuration available"
+            )
             return
 
         # Get dropdown keys (modules, fixed positions, intersections)
@@ -115,15 +131,21 @@ def _show_shopfloor_position_details():
 
         with col1:
             selected_label = st.selectbox(
-                "📍 Select Module or Position:",
+                (i18n.t("ccu_configuration.factory.select_label") if i18n else "📍 Select Module or Position:"),
                 options=dropdown_options,
                 index=default_index,
                 key="shopfloor_module_selector",
-                help="Select a module, fixed position, or intersection to view details and highlight on the grid",
+                help=(
+                    i18n.t("ccu_configuration.factory.select_help")
+                    if i18n
+                    else "Select a module, fixed position, or intersection to view details and highlight on the grid"
+                ),
             )
 
         with col2:
-            if st.button("🔄 Refresh", key="refresh_module_details"):
+            if st.button(
+                i18n.t("ccu_configuration.factory.refresh") if i18n else "🔄 Refresh", key="refresh_module_details"
+            ):
                 # Clear selection on refresh
                 if "selected_shopfloor_key" in st.session_state:
                     del st.session_state.selected_shopfloor_key
@@ -141,13 +163,26 @@ def _show_shopfloor_position_details():
 
             # Show shopfloor layout with highlighting
             if display_region:
-                st.info(f"💡 Highlighting {len(display_region)} cell(s) for {selected_label}")
+                message = (
+                    i18n.t(
+                        "ccu_configuration.factory.highlighting_for",
+                        count=len(display_region),
+                        label=selected_label,
+                    )
+                    if i18n
+                    else f"💡 Highlighting {len(display_region)} cell(s) for {selected_label}"
+                )
+                st.info(message)
 
                 # Import and render shopfloor layout with highlighting
                 from omf2.ui.ccu.common.shopfloor_layout import show_shopfloor_layout
 
                 show_shopfloor_layout(
-                    title=f"Shopfloor Layout - {selected_label}",
+                    title=(
+                        i18n.t("ccu_configuration.factory.shopfloor_layout_title_for", label=selected_label)
+                        if i18n
+                        else f"Shopfloor Layout - {selected_label}"
+                    ),
                     unique_key="ccu_configuration_shopfloor_highlight",
                     mode="ccu_configuration",
                     enable_click=False,  # Disable click in detail view
@@ -179,7 +214,9 @@ def _show_key_details(key: str, layout_config: dict):
 
         # Display details in a nice box
         st.markdown("---")
-        st.markdown(f"### 📍 Details for {key}")
+        i18n = st.session_state.get("i18n_manager")
+        details_title = i18n.t("ccu_configuration.factory.details_for", key=key) if i18n else f"📍 Details for {key}"
+        st.markdown(f"### {details_title}")
 
         # Determine entry type and display accordingly
         if entry.get("is_module"):

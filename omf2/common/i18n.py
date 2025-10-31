@@ -70,8 +70,8 @@ class I18nManager:
             self.translations = {
                 "de": {
                     "dashboard": {
-                        "title": "OMF2 Dashboard",
-                        "subtitle": "ORBIS Modellfabrik Steuerung",
+                        "title": "Modellfabrik Dashboard",
+                        "subtitle": "ORBIS Modellfabrik (OMF)",
                         "welcome": "Willkommen im OMF2 Dashboard",
                     },
                     "roles": {
@@ -80,10 +80,10 @@ class I18nManager:
                         "operator": "Operator",
                     },
                     "tabs": {
-                        "ccu_dashboard": "CCU Dashboard",
-                        "ccu_overview": "CCU Übersicht",
-                        "ccu_orders": "CCU Aufträge",
-                        "ccu_process": "CCU Prozesse",
+                        "ccu_dashboard": "Übersicht",
+                        "ccu_overview": "Übersicht",
+                        "ccu_orders": "Aufträge",
+                        "ccu_process": "Prozess",
                         "production_plan": "Produktionsplan",
                         "production_monitoring": "Produktionsüberwachung",
                         "ccu_configuration": "CCU Konfiguration",
@@ -108,11 +108,38 @@ class I18nManager:
                         "loading": "Wird geladen...",
                         "refresh": "Aktualisieren",
                     },
+                    "ccu_overview": {
+                        "labels": {
+                            "unprocessed_svg": "UNPROCESSED SVG",
+                            "missing_workpieces": "Fehlende Werkstücke",
+                        },
+                        "status": {
+                            "stock_complete": "Bestand vollständig",
+                        },
+                        "errors": {
+                            "palett_not_found": "palett.svg nicht gefunden!",
+                        },
+                    },
+                    "ccu_orders": {
+                        "labels": {
+                            "step": "Schritt {index}:",
+                        },
+                        "info": {
+                            "active_module": "Aktives Modul:",
+                            "order_completed_no_shopfloor": "Auftrag abgeschlossen – kein aktiver Shopfloor",
+                            "fts_navigation_active": "FTS Navigation aktiv:",
+                        },
+                        "status": {
+                            "all_production_steps_completed": "Alle Produktionsschritte abgeschlossen",
+                            "all_storage_steps_completed": "Alle Lager-Schritte abgeschlossen",
+                            "completed": "Abgeschlossen",
+                        },
+                    },
                 },
                 "en": {
                     "dashboard": {
-                        "title": "OMF2 Dashboard",
-                        "subtitle": "ORBIS Model Factory Control",
+                        "title": "Model Factory Dashboard",
+                        "subtitle": "ORBIS Model Factory (OMF)",
                         "welcome": "Welcome to OMF2 Dashboard",
                     },
                     "roles": {
@@ -121,10 +148,10 @@ class I18nManager:
                         "operator": "Operator",
                     },
                     "tabs": {
-                        "ccu_dashboard": "CCU Dashboard",
-                        "ccu_overview": "CCU Overview",
-                        "ccu_orders": "CCU Orders",
-                        "ccu_process": "CCU Processes",
+                        "ccu_dashboard": "Overview",
+                        "ccu_overview": "Overview",
+                        "ccu_orders": "Orders",
+                        "ccu_process": "Process",
                         "production_plan": "Production Plan",
                         "production_monitoring": "Production Monitoring",
                         "ccu_configuration": "CCU Configuration",
@@ -149,11 +176,38 @@ class I18nManager:
                         "loading": "Loading...",
                         "refresh": "Refresh",
                     },
+                    "ccu_overview": {
+                        "labels": {
+                            "unprocessed_svg": "Unprocessed SVG",
+                            "missing_workpieces": "Missing workpieces",
+                        },
+                        "status": {
+                            "stock_complete": "Stock complete",
+                        },
+                        "errors": {
+                            "palett_not_found": "palett.svg not found!",
+                        },
+                    },
+                    "ccu_orders": {
+                        "labels": {
+                            "step": "Step {index}:",
+                        },
+                        "info": {
+                            "active_module": "Active Module:",
+                            "order_completed_no_shopfloor": "Order completed - no active shopfloor",
+                            "fts_navigation_active": "FTS navigation active:",
+                        },
+                        "status": {
+                            "all_production_steps_completed": "All production steps completed",
+                            "all_storage_steps_completed": "All storage steps completed",
+                            "completed": "Completed",
+                        },
+                    },
                 },
                 "fr": {
                     "dashboard": {
-                        "title": "Tableau de bord OMF2",
-                        "subtitle": "Contrôle de la fabrique modèle ORBIS",
+                        "title": "Tableau de bord de l’usine modèle",
+                        "subtitle": "Usine Modèle ORBIS (OMF)",
                         "welcome": "Bienvenue au tableau de bord OMF2",
                     },
                     "roles": {
@@ -162,10 +216,10 @@ class I18nManager:
                         "operator": "Opérateur",
                     },
                     "tabs": {
-                        "ccu_dashboard": "Tableau de bord CCU",
-                        "ccu_overview": "Aperçu CCU",
-                        "ccu_orders": "Commandes CCU",
-                        "ccu_process": "Processus CCU",
+                        "ccu_dashboard": "Aperçu",
+                        "ccu_overview": "Aperçu",
+                        "ccu_orders": "Commandes",
+                        "ccu_process": "Processus",
                         "production_plan": "Plan de Production",
                         "production_monitoring": "Surveillance de Production",
                         "ccu_configuration": "Configuration CCU",
@@ -189,6 +243,33 @@ class I18nManager:
                         "success": "Succès",
                         "loading": "Chargement...",
                         "refresh": "Actualiser",
+                    },
+                    "ccu_overview": {
+                        "labels": {
+                            "unprocessed_svg": "SVG non traité",
+                            "missing_workpieces": "Pièces manquantes",
+                        },
+                        "status": {
+                            "stock_complete": "Stock complet",
+                        },
+                        "errors": {
+                            "palett_not_found": "palett.svg introuvable !",
+                        },
+                    },
+                    "ccu_orders": {
+                        "labels": {
+                            "step": "Étape {index} :",
+                        },
+                        "info": {
+                            "active_module": "Module actif :",
+                            "order_completed_no_shopfloor": "Commande terminée - aucun shopfloor actif",
+                            "fts_navigation_active": "Navigation FTS active :",
+                        },
+                        "status": {
+                            "all_production_steps_completed": "Toutes les étapes de production terminées",
+                            "all_storage_steps_completed": "Toutes les étapes de stockage terminées",
+                            "completed": "Terminé",
+                        },
                     },
                 },
             }

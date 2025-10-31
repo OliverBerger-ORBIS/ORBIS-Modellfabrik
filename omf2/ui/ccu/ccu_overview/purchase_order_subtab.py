@@ -39,7 +39,7 @@ def _render_workpiece_section(
 
     with col1:
         # STANDARDIZED 200x200 CONTAINER
-        st.markdown("**UNPROCESSED SVG:**")
+        st.markdown(f"**{i18n.t('ccu_overview.labels.unprocessed_svg')}:**")
         svg_content = asset_manager.get_workpiece_svg(workpiece_type, "unprocessed")
         if svg_content:
             st.markdown(
@@ -79,9 +79,9 @@ def _render_workpiece_section(
                     palett_html += f'<div style="display: inline-block; margin: 2px;">{render_product_svg_container(palett_content, scale=0.5)}</div>'
                 st.markdown(palett_html, unsafe_allow_html=True)
             else:
-                st.error("❌ palett.svg nicht gefunden!")
+                st.error(f"❌ {i18n.t('ccu_overview.errors.palett_not_found')}")
         else:
-            st.success("✅ Bestand vollständig")
+            st.success(f"✅ {i18n.t('ccu_overview.status.stock_complete')}")
 
     with col4:
         order_button_text = i18n.t("ccu_overview.purchase_orders.order_raw_material")

@@ -81,6 +81,20 @@ class MessageManager:
                 # Fallback for non-dict schemas
                 message = params or {}
 
+            # Ergänze Pflichtfelder, die häufig schemagebunden sind (z.B. timestamp)
+            if isinstance(schema, dict):
+                try:
+                    required_fields = schema.get("required", []) or []
+                    if "timestamp" in required_fields and "timestamp" not in message:
+                        # Nur setzen, wenn top-level timestamp im Schema definiert ist
+                        # und als date-time formatiert werden soll (falls angegeben)
+                        from datetime import datetime
+
+                        message["timestamp"] = datetime.now().isoformat()
+                except Exception:
+                    # Defensive: fehlertolerant bleiben – kein harter Abbruch der Generierung
+                    pass
+
             if message:
                 logger.info(f"📤 [{self.domain}] Generated message for {topic} using schema")
                 # Log topic configuration

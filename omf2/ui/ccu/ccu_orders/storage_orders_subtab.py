@@ -181,7 +181,7 @@ def _render_order_card(order, order_manager, i18n, is_completed=False):
     # Expander label mit Order-Info
     if is_completed:
         state_icon = UISymbols.get_status_icon("success")
-        expander_label = f"{workpiece_icon} **{order_id}...** - {workpiece_type} - {state_icon} Completed"
+        expander_label = f"{workpiece_icon} **{order_id}...** - {workpiece_type} - {state_icon} {i18n.t('ccu_orders.status.completed')}"
     else:
         state_icon = {
             "IN_PROGRESS": UISymbols.get_status_icon("step_in_progress"),
@@ -208,7 +208,7 @@ def _render_order_card(order, order_manager, i18n, is_completed=False):
             if not is_completed:
                 _render_shopfloor_for_storage_order(order, order_manager, i18n)
             else:
-                st.info("🏁 Order completed - no active shopfloor")
+                st.info(f"🏁 {i18n.t('ccu_orders.info.order_completed_no_shopfloor')}")
 
 
 def _render_order_details(order, order_manager, i18n, is_completed=False):
@@ -305,7 +305,7 @@ def _render_shopfloor_for_storage_order(order, order_manager, i18n):
                 <div style="background:#fff3e0; border-left:4px solid #ff9800; padding:10px 12px; border-radius:6px;">
                   <div style="display:flex; align-items:center; gap:8px; font-weight:600; color:#1f1f1f;">
                     <span>{fts}</span>
-                    <span>FTS Navigation aktiv:</span>
+                    <span>{i18n.t('ccu_orders.info.fts_navigation_active')}</span>
                     <span style=\"display:inline-flex; align-items:center; gap:6px;\">{src_icon} <span>{src}</span>
                       <span style=\"margin:0 6px;\">→</span>
                       {dst_icon} <span>{dst}</span>
@@ -320,10 +320,10 @@ def _render_shopfloor_for_storage_order(order, order_manager, i18n):
                     unsafe_allow_html=True,
                 )
         else:
-            st.info(f"🔵 **Active Module:** {active_module}")
+            st.info(f"🔵 **{i18n.t('ccu_orders.info.active_module')}** {active_module}")
     else:
         # Alle Steps abgeschlossen
-        st.success("✅ **Alle Storage Steps abgeschlossen**")
+        st.success(f"✅ **{i18n.t('ccu_orders.status.all_storage_steps_completed')}**")
 
     # Shopfloor Layout mit aktiver Modul-Hervorhebung und AGV-Route (linksbündig)
     with st.container():
@@ -475,9 +475,10 @@ def _render_storage_steps(storage_plan, i18n, is_completed=False):
 
         # Render row
         station_part = station_icon_svg if station_icon_svg else ""
+        step_label = i18n.t("ccu_orders.labels.step", index=idx)
         html = (
             f'<div style="display:flex; align-items:center; gap: 8px; margin-bottom: 12px;">'
-            f'<span style="min-width: 64px; color:#666;"><strong>Step {idx}:</strong></span>'
+            f'<span style="min-width: 64px; color:#666;"><strong>{step_label}</strong></span>'
             f'<span style="min-width: 22px; text-align:center;">{status_icon}</span>'
             f'<span style="min-width: 26px; margin-left: 1em; display:inline-block;">{station_part}</span>'
             f"<span>{step_desc}</span>"

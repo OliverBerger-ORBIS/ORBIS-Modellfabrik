@@ -56,12 +56,10 @@ class MainDashboard:
 
         with col2:
             # Main title (centered)
-            st.markdown("# Modellfabrik Dashboard")
-            if i18n:
-                subtitle = i18n.translate("dashboard.subtitle")
-                st.markdown(f"### {subtitle}")
-            else:
-                st.markdown("### ORBIS Modellfabrik Control System")
+            title = i18n.t("dashboard.title") if i18n else "Model Factory Dashboard"
+            st.markdown(f"# {title}")
+            subtitle = i18n.t("dashboard.subtitle") if i18n else "ORBIS Model Factory (OMF)"
+            st.markdown(f"### {subtitle}")
 
         with col3:
             # Version info and status

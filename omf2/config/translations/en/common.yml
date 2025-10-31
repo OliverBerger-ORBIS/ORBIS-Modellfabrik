@@ -3,7 +3,7 @@
 # FLAT KEY STRUCTURE: common.buttons.order instead of buttons.order
 
 # Dashboard
-dashboard.title: "OMF2 Dashboard"
+dashboard.title: "Model Factory Dashboard"
 
 # Roles
 roles.admin: "Administrator"
@@ -67,15 +67,14 @@ common.forms.yes: "Yes"
 common.forms.no: "No"
 
 # Dashboard
-dashboard.subtitle: "ORBIS Modellfabrik Control System"
+dashboard.subtitle: "ORBIS Model Factory (OMF)"
 
 # Main Navigation Tabs
-tabs.ccu_dashboard: "CCU Dashboard"
-tabs.ccu_overview: "CCU Dashboard"
-tabs.ccu_orders: "CCU Orders"
-tabs.ccu_process: "CCU Process"
-tabs.ccu_configuration: "CCU Configuration"
-tabs.ccu_modules: "CCU Modules"
+tabs.ccu_dashboard: "Overview"
+tabs.ccu_orders: "Orders"
+tabs.ccu_process: "Process"
+tabs.ccu_configuration: "Configuration"
+tabs.ccu_modules: "Modules"
 tabs.nodered_overview: "Node-RED Overview"
 tabs.nodered_processes: "Node-RED Processes"
 tabs.message_center: "Message Center"
@@ -83,3 +82,38 @@ tabs.generic_steering: "Generic Steering"
 tabs.system_logs: "System Logs"
 tabs.admin_settings: "Admin Settings"
 
+# CCU Overview labels
+ccu_overview.labels.unprocessed_svg: "Unprocessed SVG"
+ccu_overview.labels.missing_workpieces: "Missing workpieces"
+
+# CCU Overview status and errors
+ccu_overview.status.stock_complete: "Stock complete"
+ccu_overview.errors.palett_not_found: "palett.svg not found!"
+
+# CCU Orders shared labels/status/info
+ccu_orders.labels.step: "Step {index}:"
+ccu_orders.info.active_module: "Active Module:"
+ccu_orders.info.order_completed_no_shopfloor: "Order completed - no active shopfloor"
+ccu_orders.info.fts_navigation_active: "FTS navigation active:"
+ccu_orders.status.all_production_steps_completed: "All production steps completed"
+ccu_orders.status.all_storage_steps_completed: "All storage steps completed"
+ccu_orders.status.completed: "Completed"
+
+# CCU Modules
+ccu_modules.message_monitor.title: "Message Monitor"
+ccu_modules.table.registry_active_yes: "Active"
+ccu_modules.table.registry_active_no: "Inactive"
+
+# CCU Configuration (Factory)
+ccu_configuration.subtabs.business_functions: "Business Functions"
+ccu_configuration.factory.title: "Factory Configuration"
+ccu_configuration.factory.subtitle: "Factory layout configuration and module positioning"
+ccu_configuration.factory.shopfloor_layout_title: "Shopfloor Layout"
+ccu_configuration.factory.shopfloor_layout_title_for: "Shopfloor Layout – {label}"
+ccu_configuration.factory.selection_title: "🔧 Shopfloor Module Selection & Details"
+ccu_configuration.factory.no_layout: "⚠️ No shopfloor layout configuration available"
+ccu_configuration.factory.select_label: "📍 Select Module or Position:"
+ccu_configuration.factory.select_help: "Select a module, fixed position, or intersection to view details and highlight on the grid"
+ccu_configuration.factory.refresh: "🔄 Refresh"
+ccu_configuration.factory.highlighting_for: "💡 Highlighting {count} cell(s) for {label}"
+ccu_configuration.factory.details_for: "📍 Details for {key}"

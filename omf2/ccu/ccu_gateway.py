@@ -351,13 +351,22 @@ class CcuGateway:
                     validation_result = message_manager.validate_message(topic, message)
                     if validation_result.get("errors"):
                         logger.warning(f"⚠️ Schema validation failed for {topic}: {validation_result['errors']}")
+                        return False
                     else:
                         logger.debug(f"✅ Message validated against schema for topic: {topic}")
                 except Exception as validation_error:
                     logger.warning(f"⚠️ Schema validation failed for {topic}: {validation_error}")
-                    # Continue anyway - validation is not blocking
+                    return False
 
-            # 2. MQTT-Client publish nutzen (Registry-basierte QoS/Retain)
+            # 2. QoS/Retain aus Registry laden, falls nicht explizit übergeben
+            if qos is None or retain is None:
+                topic_cfg = self.registry_manager.get_topic_config(topic) or {}
+                if qos is None:
+                    qos = int(topic_cfg.get("qos", 1))
+                if retain is None:
+                    retain = bool(topic_cfg.get("retain", 0))
+
+            # 3. MQTT-Client publish nutzen (Registry-basierte QoS/Retain)
             success = self.mqtt_client.publish(topic=topic, message=message, qos=qos, retain=retain)
 
             if success:

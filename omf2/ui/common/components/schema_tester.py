@@ -116,6 +116,9 @@ class SchemaTester:
 
     def render_test_ui(self):
         """Renders the schema test UI"""
+        # Ensure i18n manager present (no assignment to avoid linter warnings)
+        st.session_state.get("i18n_manager")
+
         st.markdown("#### 🧪 Schema Test Mode")
         st.markdown("Systematically test all topics for payload generation and schema validation")
 

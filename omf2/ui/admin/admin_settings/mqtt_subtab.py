@@ -17,6 +17,9 @@ def render_mqtt_subtab():
         logger.info("📡 Rendering MQTT Configuration Subtab (init only)")
         st.session_state["mqtt_subtab_logged"] = True
     try:
+        # Ensure i18n manager is present if needed (no assignment to avoid linter warnings)
+        st.session_state.get("i18n_manager")
+
         st.subheader("📡 MQTT Configuration")
         st.markdown("Configure MQTT broker settings and client parameters")
 

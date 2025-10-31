@@ -55,24 +55,10 @@ def render_ccu_process_tab(ccu_gateway=None, registry_manager=None):
             st.header(f"{UISymbols.get_tab_icon('ccu_process')} {i18n.translate('tabs.ccu_process')}")
         st.markdown(i18n.t("ccu_process.subtitle"))
 
-        # Create subtabs
-        subtab_labels = [
-            i18n.t("ccu_process.subtabs.production_plan"),
-            i18n.t("ccu_process.subtabs.production_monitoring"),
-        ]
+        # Render only Production Plan (Production Monitoring removed)
+        from omf2.ui.ccu.ccu_process.ccu_production_plan_subtab import render_ccu_production_plan_subtab
 
-        subtabs = st.tabs(subtab_labels)
-
-        # Render subtab content
-        with subtabs[0]:
-            from omf2.ui.ccu.ccu_process.ccu_production_plan_subtab import render_ccu_production_plan_subtab
-
-            render_ccu_production_plan_subtab()
-
-        with subtabs[1]:
-            from omf2.ui.ccu.ccu_process.ccu_production_monitoring_subtab import render_ccu_production_monitoring_subtab
-
-            render_ccu_production_monitoring_subtab()
+        render_ccu_production_plan_subtab()
 
     except Exception as e:
         logger.error(f"❌ CCU Process Tab rendering error: {e}")

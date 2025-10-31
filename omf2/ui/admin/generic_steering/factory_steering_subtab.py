@@ -22,6 +22,9 @@ def render_factory_steering_subtab(admin_gateway, registry_manager):
     logger.info(f"{UISymbols.get_functional_icon('factory_reset')} Rendering Factory Steering Subtab")
 
     try:
+        # Ensure i18n manager present (no assignment to avoid linter warnings)
+        st.session_state.get("i18n_manager")
+
         st.subheader(f"{UISymbols.get_functional_icon('factory_reset')} Factory Steuerung")
         st.markdown("**Traditionelle Steuerungsfunktionen für die Modellfabrik:**")
 

@@ -133,7 +133,7 @@ omf2/
 │   │   ├── ccu_process/            # CCU Process UI
 │   │   │   ├── ccu_process_tab.py
 │   │   │   ├── ccu_production_plan_subtab.py
-│   │   │   └── ccu_production_monitoring_subtab.py
+│   │   │   └── (removed) ccu_production_monitoring_subtab.py
 │   │       └── shopfloor_layout.py # Reusable Shopfloor Layout Component
 │   ├── nodered/                    # Node-RED UI Components
 │   │   └── nodered_dashboard.py    # Node-RED Dashboard

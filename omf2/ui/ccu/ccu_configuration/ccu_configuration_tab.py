@@ -58,7 +58,7 @@ def render_ccu_configuration_tab(ccu_gateway=None, registry_manager=None):
         subtab_labels = [
             i18n.t("ccu_configuration.subtabs.factory_configuration"),
             i18n.t("ccu_configuration.subtabs.parameter_configuration"),
-            "Business Functions",  # New subtab
+            i18n.t("ccu_configuration.subtabs.business_functions"),
         ]
 
         subtabs = st.tabs(subtab_labels)

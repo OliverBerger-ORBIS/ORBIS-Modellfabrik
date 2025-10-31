@@ -25,6 +25,9 @@ def render_topic_monitor_subtab(admin_gateway):
     logger.info(f"{UISymbols.get_functional_icon('topic_driven')} Rendering Topic Monitor Subtab")
 
     try:
+        # Ensure i18n manager present (no assignment to avoid linter warnings)
+        st.session_state.get("i18n_manager")
+
         st.subheader(f"{UISymbols.get_functional_icon('topic_driven')} Live MQTT Topic Monitor")
         st.markdown("**Real-time monitoring of MQTT topics with category filtering**")
 

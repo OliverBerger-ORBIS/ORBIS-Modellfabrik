@@ -23,6 +23,10 @@ def show_dashboard_gateway_configuration_subtab(i18n):
     logger.info("📝 Rendering Dashboard Gateway Configuration Subtab")
 
     try:
+        # Ensure i18n manager is available (fallback to session state)
+        if not i18n:
+            i18n = st.session_state.get("i18n_manager")
+
         st.markdown("### Gateway Configuration")
         st.markdown("Configure refresh triggers for UI auto-refresh based on MQTT topics.")
 

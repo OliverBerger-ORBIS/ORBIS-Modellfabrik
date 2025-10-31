@@ -1,7 +1,8 @@
 # CCU Configuration Tab - English Translations
 
 # Main Tab
-ccu_configuration.subtitle: "CCU System Configuration and Settings"
+ccu_configuration.subtitle: "OMF System Configuration and Settings"
+ccu_configuration.parameter.subtitle: "OMF production parameters and settings"
 
 # Subtabs
 ccu_configuration.subtabs.factory_configuration: "🏭 Factory Configuration"

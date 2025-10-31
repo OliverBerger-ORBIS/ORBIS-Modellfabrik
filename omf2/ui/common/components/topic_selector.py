@@ -25,6 +25,9 @@ class TopicSelector:
 
     def render_topic_driven_ui(self):
         """Renders the topic-driven approach UI"""
+        # Ensure i18n manager present (no assignment to avoid linter warnings)
+        st.session_state.get("i18n_manager")
+
         st.markdown("#### 📡 Topic-driven Commands")
         st.markdown("Select a topic and generate schema-compliant payload")
 
@@ -42,6 +45,9 @@ class TopicSelector:
 
     def render_schema_driven_ui(self):
         """Renders the schema-driven approach UI"""
+        # Ensure i18n manager present (no assignment to avoid linter warnings)
+        st.session_state.get("i18n_manager")
+
         st.markdown("#### 📋 Schema-driven Commands")
         st.markdown("Select a schema and find related topics")
 

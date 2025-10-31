@@ -32,6 +32,10 @@ def _show_module_svg(
 def show_module_details_section(ccu_gateway, i18n):
     """Show module details section with dropdown selection - PERFORMANCE OPTIMIERT"""
     try:
+        # Ensure i18n manager is available
+        if not i18n:
+            i18n = st.session_state.get("i18n_manager")
+
         # Use SVG icon in header with st.markdown
         st.markdown("### 🔧 Module Details")
         st.caption("💡 Select a module to view detailed information with SVG icons")

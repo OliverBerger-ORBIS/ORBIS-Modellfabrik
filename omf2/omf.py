@@ -88,14 +88,14 @@ if "_cleanup_registered" not in st.session_state:
 def setup_page_config():
     """Configure Streamlit page settings"""
     st.set_page_config(
-        page_title="OMF2 Dashboard - ORBIS Modellfabrik",
+        page_title="Model Factory Dashboard",
         page_icon="🏭",
         layout="wide",
         initial_sidebar_state="expanded",
         menu_items={
             "Get Help": "https://github.com/OliverBerger-ORBIS/ORBIS-Modellfabrik",
             "Report a bug": "https://github.com/OliverBerger-ORBIS/ORBIS-Modellfabrik/issues",
-            "About": "OMF2 Dashboard - ORBIS Modellfabrik Factory Management System",
+            "About": "Model Factory Dashboard – ORBIS Model Factory (OMF)",
         },
     )
 
@@ -104,8 +104,9 @@ def initialize_session_state():
     """Initialize Streamlit session state with default values - EXACT like old dashboard"""
     defaults = {
         "user_role": "administrator",  # DEFAULT: Administrator
-        "current_language": "de",
-        "current_environment": "live",  # DEFAULT: Live (APS)
+        # Use the i18n key expected by I18nManager so EN shows as default in sidebar
+        "i18n_current_language": "en",
+        "current_environment": "replay",  # DEFAULT: replay
         "initialized": False,
         "mqtt_clients": {},
         "ui_managers": {},

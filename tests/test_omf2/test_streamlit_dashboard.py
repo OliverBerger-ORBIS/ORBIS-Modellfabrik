@@ -76,17 +76,17 @@ class TestOMF2Dashboard:
 
         # Test German translations
         i18n.set_language("de")
-        assert i18n.translate("dashboard.title") == "OMF2 Dashboard"
+        assert i18n.translate("dashboard.title") == "Modellfabrik Dashboard"
         assert i18n.translate("roles.admin") == "Administrator"
 
         # Test English translations
         i18n.set_language("en")
-        assert i18n.translate("dashboard.title") == "OMF2 Dashboard"
+        assert i18n.translate("dashboard.title") == "Model Factory Dashboard"
         assert i18n.translate("roles.admin") == "Administrator"
 
         # Test French translations
         i18n.set_language("fr")
-        assert i18n.translate("dashboard.title") == "Tableau de bord OMF2"
+        assert i18n.translate("dashboard.title") == "Tableau de bord de l’usine modèle"
         assert i18n.translate("roles.admin") == "Administrateur"
 
     def test_user_manager_roles(self):

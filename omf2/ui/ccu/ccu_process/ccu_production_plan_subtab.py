@@ -23,6 +23,9 @@ def render_ccu_production_plan_subtab():
     """Render CCU Production Plan Subtab - Interactive Workflow Design"""
     logger.info("📋 Rendering CCU Production Plan Subtab")
     try:
+        # Ensure i18n manager present (no assignment to avoid linter warnings)
+        st.session_state.get("i18n_manager")
+
         try:
             heading_icon = get_svg_inline("PROCESS", size_px=32) or ""
             st.markdown(

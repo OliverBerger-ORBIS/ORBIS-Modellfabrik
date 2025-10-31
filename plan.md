@@ -72,6 +72,7 @@
 **Was wurde gefixt:**
 - ✅ **Haupt-Tabs werden jetzt übersetzt** 🌐
 - ✅ `omf2/ui/main_dashboard.py` - Tab-Namen über `i18n.t()` übersetzt
+- ✅ Tab-Labels ohne "CCU" Prefix: Overview, Orders, Process, Modules, Configuration
 - ✅ **Fehlende Tab-Keys** in allen 3 Sprachen hinzugefügt:
   - `tabs.ccu_dashboard`, `tabs.nodered_overview`, `tabs.nodered_processes`
 - ✅ **Fallback-Mechanismus** funktioniert (hardcodierte Namen wenn i18n nicht verfügbar)
@@ -151,7 +152,7 @@
 
 **Reparierte Tests:**
 - ✅ Test 1-2: `business_manager_pattern` → `gateway_routing_hints` Architektur
-- ✅ Test 3-4: `ccu_production_monitoring` → Streamlit columns Mock mit `side_effect`
+- ✅ Test 3-4: `ccu_production_monitoring` entfernt (Subtab entfernt)
 - ✅ Test 5: `ccu_production_plan` → Workflow-Tests
 - ✅ Test 6-8: `message_monitor_subtab` → Interface-Korrektur (2→1 Parameter)
 - ✅ Test 9-13: `registry_integration` → Registry-Manager-Tests
@@ -552,7 +553,7 @@ Gateway → MQTT Client.publish(topic, payload_clean, qos, retain)
 - `ccu/order/completed` → CCU Orders Tab
 - `module/v1/ff/*/state` → CCU Modules Tab
 - `/j1/txt/1/f/i/stock` → CCU Overview Tab (Inventory) ✅ **TOPIC KORREKT**
-- `fts/v1/ff/*/state` → CCU Process Tab
+  
 
 **Pattern:**
 

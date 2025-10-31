@@ -22,7 +22,7 @@ class UISymbols:
         "ccu_modules": "🏗️",  # Module Control (FINAL: 🏗️)
         # CCU Process Subtabs
         "production_plan": "📋",  # Production Plan (FINAL: 📋)
-        "production_monitoring": "📊",  # Production Monitoring (FINAL: 📊)
+        # removed: production_monitoring
         # CCU Configuration Subtabs
         "factory": "🏭",  # Factory Configuration (FINAL: 🏭)
         "parameter": "⚙️",  # Parameter Configuration (FINAL: ⚙️)

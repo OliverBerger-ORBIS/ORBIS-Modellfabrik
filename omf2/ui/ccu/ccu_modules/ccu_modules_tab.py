@@ -123,7 +123,7 @@ def render_ccu_modules_tab(ccu_gateway=None, registry_manager=None):
         st.divider()
         from omf2.ui.ccu.ccu_message_monitor import render_ccu_message_monitor
 
-        render_ccu_message_monitor(ccu_gateway, "CCU Message Monitor", show_controls=True)
+        render_ccu_message_monitor(ccu_gateway, i18n.t("ccu_modules.message_monitor.title"), show_controls=True)
 
     except Exception as e:
         logger.error(f"❌ CCU Modules Tab error: {e}")
@@ -213,22 +213,54 @@ def _render_module_table_with_svg_icons(modules, status_store, module_manager, i
             icon_html = _get_module_icon_html(module_id, size_px=20)
             display_name = _get_module_display_name(module_id, module_info)
 
-            # Get status displays
+            # Get status displays (i18n)
             connected = real_time_status.get("connected", False)
-            connection_display = module_manager.get_connection_display(connected)
+            if connected:
+                connection_display = (
+                    f"{UISymbols.get_status_icon('connected')} {i18n.t('ccu_modules.values.connected')}"
+                )
+            else:
+                connection_display = (
+                    f"{UISymbols.get_status_icon('disconnected')} {i18n.t('ccu_modules.values.disconnected')}"
+                )
 
             available = real_time_status.get("available", "Unknown")
-            availability_display = module_manager.get_availability_display(available)
+            if available == "READY":
+                availability_display = (
+                    f"{UISymbols.get_status_icon('available')} {i18n.t('ccu_modules.values.available')}"
+                )
+            elif available == "BUSY":
+                availability_display = f"{UISymbols.get_status_icon('busy')} {i18n.t('ccu_modules.values.busy')}"
+            elif available == "BLOCKED":
+                availability_display = f"{UISymbols.get_status_icon('blocked')} {i18n.t('ccu_modules.values.blocked')}"
+            else:
+                availability_display = f"{UISymbols.get_status_icon('unknown')} {i18n.t('ccu_modules.values.unknown')}"
 
             factory_config = module_manager.get_factory_configuration()
             configured = module_manager.is_module_configured(module_id, factory_config)
-            configured_display = module_manager.get_configuration_display(configured)
+            if configured:
+                configured_display = (
+                    f"{UISymbols.get_status_icon('configured')} {i18n.t('ccu_modules.values.configured_yes')}"
+                )
+            else:
+                configured_display = (
+                    f"{UISymbols.get_status_icon('not_configured')} {i18n.t('ccu_modules.values.configured_no')}"
+                )
 
-            position_display = module_manager.get_module_position_display(module_id)
+            position_display_raw = module_manager.get_module_position_display(module_id)
+            position_display = (
+                position_display_raw
+                if position_display_raw and not position_display_raw.startswith("Not Positioned")
+                else i18n.t("ccu_modules.values.not_positioned")
+            )
             message_count = real_time_status.get("message_count", 0)
-            last_update = real_time_status.get("last_update", "Never")
+            last_update = real_time_status.get("last_update", i18n.t("ccu_modules.values.never"))
 
-            registry_active = "✅ Active" if module_info.get("enabled", True) else "❌ Inactive"
+            registry_active = (
+                f"✅ {i18n.t('ccu_modules.table.registry_active_yes')}"
+                if module_info.get("enabled", True)
+                else f"❌ {i18n.t('ccu_modules.table.registry_active_no')}"
+            )
 
             # Add row
             table_html += '<tr style="border-bottom: 1px solid #ddd;">'

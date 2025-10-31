@@ -30,6 +30,9 @@ def render_business_functions_section():
     logger.info("⚙️ Rendering Business Functions Configuration Section")
 
     try:
+        # Ensure i18n manager present (no assignment to avoid linter warnings)
+        st.session_state.get("i18n_manager")
+
         st.subheader(f"{UISymbols.get_tab_icon('configuration')} Business Functions Configuration")
         st.markdown("Configure business function metadata and topic routing")
 

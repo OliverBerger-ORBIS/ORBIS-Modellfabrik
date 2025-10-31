@@ -45,8 +45,17 @@ def render_ccu_overview_tab(ccu_gateway=None, registry_manager=None):
             logger.error("❌ I18n Manager not found in session state")
             return
 
-        # Use UISymbols for consistent icon usage
-        st.header(f"{UISymbols.get_tab_icon('ccu_overview')} {i18n.translate('tabs.ccu_overview')}")
+        # Heading with SVG icon for Overview
+        try:
+            from omf2.assets.heading_icons import get_svg_inline
+
+            overview_icon = get_svg_inline("DASHBOARD", size_px=32) or ""
+            st.markdown(
+                f"<h2 style='margin-bottom: 0.25rem; display:flex; align-items:center; gap:8px;'>{overview_icon} {i18n.t('tabs.ccu_dashboard')}</h2>",
+                unsafe_allow_html=True,
+            )
+        except Exception:
+            st.header(f"{UISymbols.get_tab_icon('ccu_overview')} {i18n.t('tabs.ccu_dashboard')}")
         st.markdown(i18n.t("ccu_overview.subtitle"))
 
         # Create subtabs (i18n: Alle Tab-Titel übersetzt, Icons bleiben universell)

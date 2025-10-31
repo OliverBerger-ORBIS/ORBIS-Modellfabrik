@@ -24,6 +24,9 @@ def render_send_test_message_subtab(admin_gateway):
     logger.info("🚀 Rendering Send Test Message Subtab")
 
     try:
+        # Ensure i18n manager present (no assignment to avoid linter warnings)
+        st.session_state.get("i18n_manager")
+
         st.subheader("🚀 Send Test Messages")
 
         col1, col2 = st.columns(2)

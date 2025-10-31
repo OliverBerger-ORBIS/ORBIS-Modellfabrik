@@ -32,6 +32,9 @@ def render_message_monitor_subtab(admin_gateway):
     logger.info(f"{UISymbols.get_functional_icon('dashboard')} Rendering Message Monitor Subtab")
 
     try:
+        # Ensure i18n manager present (no assignment to avoid linter warnings)
+        st.session_state.get("i18n_manager")
+
         st.subheader(f"{UISymbols.get_functional_icon('dashboard')} Message Monitor (omf/ Style)")
         st.markdown("**Structured table view with filtering and detailed payload inspection**")
 
