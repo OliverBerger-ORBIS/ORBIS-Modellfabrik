@@ -1,5 +1,5 @@
 global:
-  level: DEBUG
+  level: INFO
   buffer_size: 10000
   file_logging: true
 
@@ -22,6 +22,12 @@ modules:
     level: INFO
   omf2.admin:
     level: INFO
+  omf2.admin.admin_gateway:
+    level: INFO
+  omf2.admin.admin_mqtt_client:
+    level: INFO
+  omf2.ui.admin.generic_steering.factory_steering_subtab:
+    level: INFO
 mqtt_clients:
   admin_mqtt_client:
     level: INFO
@@ -29,7 +35,7 @@ mqtt_clients:
     level: INFO
 gateways:
   admin_gateway:
-    level: INFO
+    level: DEBUG
   ccu_gateway:
     level: INFO
 business_managers:

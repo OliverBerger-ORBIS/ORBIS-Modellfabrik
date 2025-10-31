@@ -4,6 +4,7 @@ CCU MQTT Client - Thread-sicherer Singleton für CCU MQTT-Kommunikation
 """
 
 import json
+import platform
 import threading
 import time
 from pathlib import Path
@@ -20,6 +21,7 @@ except ImportError:
     mqtt = None
 
 from omf2.common.logger import get_logger
+from omf2.common.streamlit_runtime import get_streamlit_port
 from omf2.registry.manager.registry_manager import get_registry_manager
 
 logger = get_logger(__name__)
@@ -194,7 +196,17 @@ class CcuMqttClient:
 
                 # Mock-Mode: Keine echte Verbindung
                 if environment == "mock":
-                    self.client_id = f"{self.base_client_id}_mock"
+                    try:
+                        system_name = platform.system()
+                        os_tag = (
+                            "WIN"
+                            if system_name == "Windows"
+                            else ("MAC" if system_name == "Darwin" else ("LNX" if system_name == "Linux" else "UNK"))
+                        )
+                    except Exception:
+                        os_tag = "UNK"
+                    streamlit_port = get_streamlit_port()
+                    self.client_id = f"{self.base_client_id}_{os_tag}_{streamlit_port}_mock"
                     self.connected = True
                     logger.info(f"🧪 Mock mode active - no real MQTT connection (Client ID: {self.client_id})")
                     return True
@@ -221,8 +233,19 @@ class CcuMqttClient:
                         time.sleep(0.1)
 
                 # MQTT-Client initialisieren - NEUE Instanz mit neuer Config
-                client_id_postfix = mqtt_config.get("client_id_postfix", f"_{environment}")
-                client_id = f"{self.base_client_id}{client_id_postfix}"
+                # Build unique client_id: omf_<domain>_<OS>_<streamlitPort>_<env>
+                try:
+                    system_name = platform.system()
+                    os_tag = (
+                        "WIN"
+                        if system_name == "Windows"
+                        else ("MAC" if system_name == "Darwin" else ("LNX" if system_name == "Linux" else "UNK"))
+                    )
+                except Exception:
+                    os_tag = "UNK"
+                streamlit_port = get_streamlit_port()
+                computed_postfix = f"_{os_tag}_{streamlit_port}_{environment}"
+                client_id = f"{self.base_client_id}{computed_postfix}"
                 self.client_id = client_id
                 self.client = mqtt.Client(client_id=client_id)
                 self.client.on_connect = self._on_connect

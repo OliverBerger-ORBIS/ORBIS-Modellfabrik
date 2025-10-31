@@ -105,7 +105,7 @@ def initialize_session_state():
     defaults = {
         "user_role": "administrator",  # DEFAULT: Administrator
         "current_language": "de",
-        "current_environment": "replay",  # DEFAULT: Mock (stabiler)
+        "current_environment": "live",  # DEFAULT: Live (APS)
         "initialized": False,
         "mqtt_clients": {},
         "ui_managers": {},

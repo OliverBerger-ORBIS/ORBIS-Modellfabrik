@@ -82,6 +82,16 @@ class AdminGateway:
             True wenn erfolgreich, False bei Fehler
         """
         try:
+            # Entry log with quick context
+            try:
+                preview = json.dumps(message)[:200] if isinstance(message, (dict, list)) else str(message)[:200]
+            except Exception:
+                preview = "<unserializable>"
+
+            logger.info(
+                f"🟦 AdminGateway.publish | topic={topic} | qos={qos} | retain={retain} | payload_preview={preview}"
+            )
+
             if not self.mqtt_client:
                 logger.warning("⚠️ No MQTT client available")
                 return False
@@ -119,7 +129,17 @@ class AdminGateway:
                     logger.warning(f"⚠️ Failed to log message to registry: {e}")
                     logger.info(f"📤 Message published: {topic}")
             else:
-                logger.error(f"❌ Failed to publish message to {topic}")
+                try:
+                    conn = (
+                        self.mqtt_client.get_connection_info()
+                        if hasattr(self.mqtt_client, "get_connection_info")
+                        else {}
+                    )
+                except Exception:
+                    conn = {}
+                logger.error(
+                    f"❌ Failed to publish message to {topic} | connected={getattr(self.mqtt_client, 'connected', False)} | conn={conn}"
+                )
 
             return success
 

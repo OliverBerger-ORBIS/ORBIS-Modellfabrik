@@ -52,6 +52,8 @@ class CcuGateway:
         gateway_config = self.registry_manager.get_gateway_config()
         self.routing_hints = gateway_config.get("routing_hints", {})
         self.refresh_triggers = gateway_config.get("refresh_triggers", {})
+        # Optional gruppenspezifische Refresh-Intervalle (Sekunden)
+        self.refresh_intervals: dict[str, float] = gateway_config.get("refresh_intervals", {})
 
         # Explizite Topic-Listen für Manager-Routing
         # Diese Listen definieren, welche Topics an welchen Manager weitergeleitet werden
@@ -106,12 +108,15 @@ class CcuGateway:
                 # Check if topic matches any pattern in this group
                 for pattern in topic_patterns:
                     if self._topic_matches_pattern(topic, pattern):
-                        # Request UI refresh via Redis-backed backend
-                        success = request_refresh(group_name, min_interval=1.0)
+                        # Request UI refresh via Redis-backed backend (default throttle)
+                        # Gruppenspezifisches Intervall mit Default 1.0s
+                        min_interval = float(self.refresh_intervals.get(group_name, 1.0))
+                        success = request_refresh(group_name, min_interval=min_interval)
                         if success:
                             logger.info(f"🔄 UI refresh triggered for group '{group_name}' (topic: {topic})")
                         else:
-                            logger.warning(f"⚠️ UI refresh throttled/failed for group '{group_name}' (topic: {topic})")
+                            # Reduce noise: throttled refresh is expected on high-frequency topics
+                            logger.debug(f"⚠️ UI refresh throttled for group '{group_name}' (topic: {topic})")
                         break  # Only trigger once per group
 
         except Exception as e:

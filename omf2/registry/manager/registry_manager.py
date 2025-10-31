@@ -266,6 +266,8 @@ class RegistryManager:
                 self.gateway = {
                     "routing_hints": gateway_data.get("routing_hints", {}),
                     "refresh_triggers": gateway_data.get("refresh_triggers", {}),
+                    # Optional: gruppenspezifische Refresh-Intervalle (Sekunden)
+                    "refresh_intervals": gateway_data.get("refresh_intervals", {}),
                 }
 
             logger.info(

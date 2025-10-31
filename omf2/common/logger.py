@@ -100,19 +100,25 @@ def setup_file_logging(log_dir: Optional[Path] = None) -> Path:
 
     log_dir.mkdir(exist_ok=True)
 
-    # Configure root logger for file output with rotation
+    # Configure root logger for file output with rotation (idempotent)
     log_file = log_dir / "omf2.log"
 
-    # SafeRotatingFileHandler: max 10MB per file, keep 5 files (50MB total)
-    # Thread-safe with graceful error handling for missing log files
-    file_handler = SafeRotatingFileHandler(
-        log_file, maxBytes=10 * 1024 * 1024, backupCount=5, encoding="utf-8"  # 10MB  # Keep 5 backup files
-    )
-    file_formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-    file_handler.setFormatter(file_formatter)
-
     root_logger = logging.getLogger()  # ROOT logger, nicht "omf2"!
-    root_logger.addHandler(file_handler)
+    # Check if a file handler for this log file already exists
+    existing_handlers = [
+        h
+        for h in root_logger.handlers
+        if isinstance(h, SafeRotatingFileHandler) and getattr(h, "baseFilename", None) == str(log_file)
+    ]
+
+    if not existing_handlers:
+        # SafeRotatingFileHandler: max 10MB per file, keep 5 files (50MB total)
+        # Thread-safe with graceful error handling for missing log files
+        file_handler = SafeRotatingFileHandler(log_file, maxBytes=10 * 1024 * 1024, backupCount=5, encoding="utf-8")
+        file_formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+        file_handler.setFormatter(file_formatter)
+        root_logger.addHandler(file_handler)
+
     # FileHandler Level wird dynamisch durch apply_logging_config() gesetzt
     # Initial auf DEBUG setzen, damit alle Log-Level durchgelassen werden
     root_logger.setLevel(logging.DEBUG)

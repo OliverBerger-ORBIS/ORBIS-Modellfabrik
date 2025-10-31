@@ -93,6 +93,12 @@ gateway:
   # Topics die UI-Refresh-Events triggern sollen
   # Wird von Streamlit Dashboard verwendet für Auto-Refresh
   # ==============================================================================
+  # Optional: gruppenspezifische Refresh-Intervalle (Sekunden)
+  refresh_intervals:
+    order_updates: 0.5
+    module_updates: 2.0
+    sensor_updates: 10.0
+
   refresh_triggers:
     # Sensor Data Updates
     sensor_updates:

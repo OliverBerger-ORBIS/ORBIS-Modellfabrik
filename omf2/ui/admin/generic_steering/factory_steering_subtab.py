@@ -34,6 +34,7 @@ def render_factory_steering_subtab(admin_gateway, registry_manager):
                 if st.button(
                     f"{UISymbols.get_functional_icon('factory_reset')} Factory Reset", key="factory_reset_btn"
                 ):
+                    logger.info("🟨 Factory Reset button clicked")
                     _send_factory_reset(admin_gateway)
             with col2:
                 if st.button(
@@ -91,12 +92,14 @@ def _send_factory_reset(admin_gateway):
         # TODO: Integrate with Registry Manager for proper schema validation
         payload = {"timestamp": datetime.now().isoformat(), "withStorage": False}
 
+        logger.info("🟦 Sending Factory Reset via AdminGateway ...")
         success = admin_gateway.publish_message("ccu/set/reset", payload, qos=1, retain=False)
         if success:
             st.success(f"{UISymbols.get_status_icon('success')} Factory Reset gesendet!")
             logger.info(f"{UISymbols.get_functional_icon('factory_reset')} Factory Reset Command sent")
         else:
             st.error(f"{UISymbols.get_status_icon('error')} Factory Reset fehlgeschlagen!")
+            logger.error("❌ Factory Reset publish returned False")
 
     except Exception as e:
         logger.error(f"{UISymbols.get_status_icon('error')} Factory Reset error: {e}")

@@ -4,6 +4,7 @@ Admin MQTT Client - Thread-sicherer Singleton für Admin MQTT-Kommunikation
 """
 
 import json
+import platform
 import threading
 import time
 from pathlib import Path
@@ -20,6 +21,7 @@ except ImportError:
     mqtt = None
 
 from omf2.common.logger import get_logger
+from omf2.common.streamlit_runtime import get_streamlit_port
 from omf2.registry.manager.registry_manager import get_registry_manager
 
 logger = get_logger(__name__)
@@ -171,7 +173,17 @@ class AdminMqttClient:
 
                 # Mock-Mode: Keine echte Verbindung
                 if environment == "mock":
-                    self.client_id = f"{self.base_client_id}_mock"
+                    try:
+                        system_name = platform.system()
+                        os_tag = (
+                            "WIN"
+                            if system_name == "Windows"
+                            else ("MAC" if system_name == "Darwin" else ("LNX" if system_name == "Linux" else "UNK"))
+                        )
+                    except Exception:
+                        os_tag = "UNK"
+                    streamlit_port = get_streamlit_port()
+                    self.client_id = f"{self.base_client_id}_{os_tag}_{streamlit_port}_mock"
                     self.connected = True
                     logger.info(f"🧪 Mock mode active - no real MQTT connection (Client ID: {self.client_id})")
                     return True
@@ -198,8 +210,20 @@ class AdminMqttClient:
                         time.sleep(0.1)
 
                 # MQTT-Client initialisieren - NEUE Instanz mit neuer Config
-                client_id_postfix = mqtt_config.get("client_id_postfix", f"_{environment}")
-                client_id = f"{self.base_client_id}{client_id_postfix}"
+                # Build unique client_id: omf_<domain>_<OS>_<streamlitPort>_<env>
+                try:
+                    system_name = platform.system()
+                    os_tag = (
+                        "WIN"
+                        if system_name == "Windows"
+                        else ("MAC" if system_name == "Darwin" else ("LNX" if system_name == "Linux" else "UNK"))
+                    )
+                except Exception:
+                    os_tag = "UNK"
+
+                streamlit_port = get_streamlit_port()
+                computed_postfix = f"_{os_tag}_{streamlit_port}_{environment}"
+                client_id = f"{self.base_client_id}{computed_postfix}"
                 self.client_id = client_id
                 self.client = mqtt.Client(client_id=client_id)
                 self.client.on_connect = self._on_connect
@@ -279,6 +303,18 @@ class AdminMqttClient:
         """
         with self._client_lock:
             try:
+                # Entry log with current connection status
+                try:
+                    env = getattr(self, "_current_environment", "unknown")
+                    host = getattr(self, "_host", "unknown")
+                    port = getattr(self, "_port", "?")
+                    logger.info(
+                        f"🟦 AdminMQTT publish attempt | topic={topic} | connected={self.connected} | client_present={bool(self.client)} | env={env} | broker={host}:{port} | client_id={getattr(self, 'client_id', 'unknown')}"
+                    )
+                except Exception:
+                    # Best-effort entry log; continue
+                    pass
+
                 # QoS/Retain aus Registry laden wenn nicht angegeben
                 if qos is None or retain is None:
                     try:
@@ -292,8 +328,19 @@ class AdminMqttClient:
                         qos = qos if qos is not None else 1
                         retain = retain if retain is not None else False
 
+                logger.debug(f"🧩 Resolved publish params | topic={topic} | qos={qos} | retain={retain}")
+
                 # Mock-Modus
                 if not self.connected or not self.client:
+                    try:
+                        env = getattr(self, "_current_environment", "unknown")
+                        host = getattr(self, "_host", "unknown")
+                        port = getattr(self, "_port", "?")
+                        logger.warning(
+                            f"⚠️ Not connected - mock publish path | env={env} | broker={host}:{port} | topic={topic} | qos={qos} | retain={retain}"
+                        )
+                    except Exception:
+                        pass
                     logger.info(f"📤 Mock publish to {topic}: {message}")
                     # Auch im Mock-Modus in Buffer hinzufügen
                     self._add_sent_message_to_buffer(topic, message, qos, retain)
@@ -305,6 +352,10 @@ class AdminMqttClient:
                 # MQTT-Publish
                 result = self.client.publish(topic, payload, qos=qos, retain=retain)
 
+                logger.info(
+                    f"🟩 Publish invoked | topic={topic} | qos={qos} | retain={retain} | rc={getattr(result, 'rc', '?')} | mid={getattr(result, 'mid', '?')}"
+                )
+
                 if result.rc == 0:
                     logger.info(f"📤 Published to {topic}: {message}")
 
@@ -313,7 +364,9 @@ class AdminMqttClient:
 
                     return True
                 else:
-                    logger.error(f"❌ Publish failed for topic {topic}: {result.rc}")
+                    logger.error(
+                        f"❌ Publish failed for topic {topic}: rc={result.rc} mid={getattr(result, 'mid', '?')}"
+                    )
                     return False
 
             except Exception as e:
