@@ -4,35 +4,35 @@
 
 metadata:
   version: "1.0.0"
-  description: "OMF2 Produktkatalog für CCU Dashboard"
+  description: "OMF2 product catalog for CCU Dashboard"
   last_updated: "2025-10-04"
 
 # Produktdefinitionen (Reihenfolge: Blau, Weiß, Rot)
 products:
   blue:
     id: "BLUE"
-    name: "Produkt Blau"
+    name: "Product Blue"
     color: "#0066CC"
-    material: "Kunststoff"
-    description: "Komplette Bearbeitung"
+    material: "Plastic"
+    description: "Complete machining"
     enabled: true
     icon: "🔵"
 
   white:
     id: "WHITE"
-    name: "Produkt Weiß"
+    name: "Product White"
     color: "#FFFFFF"
-    material: "Kunststoff"
-    description: "Bohren + Qualitätssicherung"
+    material: "Plastic"
+    description: "Drilling + Quality Assurance"
     enabled: true
     icon: "⚪"
 
   red:
     id: "RED"
-    name: "Produkt Rot"
+    name: "Product Red"
     color: "#CC0000"
-    material: "Kunststoff"
-    description: "Fräsen + Qualitätssicherung"
+    material: "Plastic"
+    description: "Milling + Quality Assurance"
     enabled: true
     icon: "🔴"
 
