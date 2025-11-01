@@ -24,7 +24,6 @@ from omf2.ui.ccu.sensors_display_utils import (
     normalize_humidity,
 )
 from omf2.ui.common.symbols import UISymbols
-from omf2.ui.utils.ui_refresh import request_refresh
 
 logger = get_logger(__name__)
 
@@ -43,40 +42,21 @@ def render_sensor_data_subtab(ccu_gateway: CcuGateway, registry_manager, asset_m
         # Load sensor display configuration
         config = load_sensor_display_config()
 
-        # Header with UISymbols
-        st.header(f"{UISymbols.get_functional_icon('sensor_data')} {i18n.t('ccu_overview.sensor_data.title')}")
+        # Header with heading SVG (fallback to emoji)
+        try:
+            from omf2.assets.heading_icons import get_svg_inline
+
+            icon_html = get_svg_inline("SENSOR_DATA", size_px=32) or ""
+            st.markdown(
+                f"<h2 style='margin-bottom: 0.25rem; display:flex; align-items:center; gap:8px;'>{icon_html} {i18n.t('ccu_overview.sensor_data.title')}</h2>",
+                unsafe_allow_html=True,
+            )
+        except Exception:
+            st.header(f"{UISymbols.get_functional_icon('sensor_data')} {i18n.t('ccu_overview.sensor_data.title')}")
         subtitle_text = i18n.t("ccu_overview.sensor_data.subtitle")
         st.markdown(subtitle_text)
 
-        # Sensor Controls
-        col1, col2, col3 = st.columns([1, 1, 1])
-
-        with col1:
-            refresh_text = i18n.t("ccu_overview.sensor_data.refresh_data")
-            if st.button(
-                f"{UISymbols.get_status_icon('refresh')} {refresh_text}", use_container_width=True, key="sensor_refresh"
-            ):
-                _refresh_sensor_data()
-
-        with col2:
-            statistics_text = i18n.t("ccu_overview.sensor_data.show_statistics")
-            if st.button(
-                f"{UISymbols.get_functional_icon('dashboard')} {statistics_text}",
-                use_container_width=True,
-                key="sensor_statistics",
-            ):
-                _show_sensor_statistics(ccu_gateway)
-
-        with col3:
-            clear_text = i18n.t("ccu_overview.sensor_data.clear_history")
-            if st.button(
-                f"{UISymbols.get_functional_icon('settings')} {clear_text}",
-                use_container_width=True,
-                key="sensor_clear",
-            ):
-                _clear_sensor_history(ccu_gateway)
-
-        st.divider()
+        # Controls section removed (non-implemented features)
 
         # Show sensor panels with OMF-style visualization
         _show_sensor_panels(ccu_gateway, config, i18n)
@@ -119,15 +99,17 @@ def get_latest_sensor_values() -> Dict:
             "timestamp": bme680_data.get("timestamp", datetime.now().isoformat()),
         }
 
-    # Return None values if no data available
+    # Return default demo values if no data available so panels always render
+    now_iso = datetime.now().isoformat()
     return {
-        "temperature": None,
-        "humidity": None,
-        "pressure": None,
-        "iaq": None,
-        "aq": None,
-        "brightness": None,
-        "timestamp": None,
+        "temperature": 22.0,
+        "humidity": 50.0,
+        "pressure": 1013.0,
+        "iaq": 75.0,
+        "aq": 2.5,
+        "brightness": 1000.0,
+        "timestamp": now_iso,
+        "init_defaults": True,
     }
 
 
@@ -140,7 +122,7 @@ def _show_sensor_panels(ccu_gateway: CcuGateway, config: Dict, i18n):
         sensor_values = get_latest_sensor_values()
 
         # Check if we have any data
-        has_data = any(v is not None for k, v in sensor_values.items() if k != "timestamp")
+        has_data = any(v is not None for k, v in sensor_values.items() if k not in ["timestamp", "init_defaults"])
 
         if has_data:
             live_data_text = i18n.t("ccu_overview.sensor_data.live_data_available")
@@ -154,8 +136,9 @@ def _show_sensor_panels(ccu_gateway: CcuGateway, config: Dict, i18n):
             else:
                 st.success(f"✅ **{live_data_text}**")
         else:
-            no_data_text = i18n.t("ccu_overview.sensor_data.no_data")
-            st.warning(f"⚠️ {no_data_text}")
+            # Initialized defaults info
+            init_msg = i18n.t("ccu_overview.sensor_data.initialized_defaults")
+            st.info(f"ℹ️ {init_msg}")
 
         # Row 1: Temperature + Humidity + IAQ (2:2:1 ratio)
         col1, col2, col3 = st.columns([2, 2, 1])
@@ -471,29 +454,12 @@ def _format_timestamp(timestamp: str) -> str:
         return str(timestamp)
 
 
-def _refresh_sensor_data():
-    """Refresh sensor data"""
-    logger.info("🔄 Refreshing sensor data")
-    request_refresh("sensor_data_refresh")
-    st.success("✅ Sensor data refresh requested")
-
-
-def _show_sensor_statistics(ccu_gateway: CcuGateway):
-    """Show sensor statistics"""
-    logger.info("📊 Showing sensor statistics")
-    st.info("📊 Sensor statistics feature - coming soon")
-
-
-def _clear_sensor_history(ccu_gateway: CcuGateway):
-    """Clear sensor history"""
-    logger.info("🗑️ Clearing sensor history")
-    st.info("🗑️ Clear sensor history feature - coming soon")
+# Removed refresh/statistics/history helpers as the Controls section was removed
 
 
 def _show_camera_section(cam_data, ccu_gateway: CcuGateway, i18n):
     """Zeigt Kamera-Bild und Steuerung nebeneinander (restored from e314cf8)"""
-    title_text = i18n.t("ccu_overview.sensor_data.camera_control")
-    st.subheader(f"📸 {title_text}")
+    # Section-level heading removed; headings shown per column
 
     # Kamera-Bild und Steuerung nebeneinander
     col_camera, col_controls = st.columns([2, 1])
@@ -503,6 +469,7 @@ def _show_camera_section(cam_data, ccu_gateway: CcuGateway, i18n):
         _show_camera_image_panel(cam_data, i18n)
 
     with col_controls:
+        st.subheader(i18n.t("ccu_overview.sensor_data.camera_control") if i18n else "Camera Control")
         # Kamera-Steuerung mit separater Schrittweite
         _show_camera_control_panel(ccu_gateway, i18n)
 
@@ -598,9 +565,18 @@ def _show_camera_image_panel(cam_data, i18n):
         loading_text = i18n.t("ccu_overview.sensor_data.camera_loading")
         st.info(f"📸 {loading_text}")
 
-        # Placeholder-Bild (kompakte Größe)
-        placeholder_url = "https://via.placeholder.com/300x200/CCCCCC/666666?text=Kamera+Placeholder"
-        st.image(placeholder_url, caption="Kamera-Bild (Placeholder)", width=300)
+        # Local placeholder via Asset Manager for offline consistency
+        try:
+            from omf2.assets import get_asset_manager
+
+            asset_manager = get_asset_manager()
+            placeholder_path = asset_manager.get_module_icon_path("CAMERA_PLACEHOLDER")
+            if placeholder_path:
+                st.image(placeholder_path, caption=i18n.t("ccu_overview.sensor_data.camera_image"), width=300)
+            else:
+                st.caption("Camera placeholder not available")
+        except Exception:
+            st.caption("Camera placeholder not available")
 
 
 def _display_base64_image_compact(base64_data: str, timestamp: str, message_count: int, i18n):

@@ -126,6 +126,8 @@ class OMF2AssetManager:
             "MACHINE": "robot-arm.svg",  # Generic Machine
             "PC_TABLET": "responsive.svg",  # PC/Tablet
             "OPC_UA": "database.svg",  # OPC UA Server
+            # UI placeholders / generic assets
+            "CAMERA_PLACEHOLDER": "camera-placeholder.svg",
         }
 
         # HEADING-ICONS - Import from dedicated module
