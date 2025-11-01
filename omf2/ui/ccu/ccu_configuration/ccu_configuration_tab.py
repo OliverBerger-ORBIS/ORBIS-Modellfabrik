@@ -55,11 +55,18 @@ def render_ccu_configuration_tab(ccu_gateway=None, registry_manager=None):
         st.markdown(i18n.t("ccu_configuration.subtitle"))
 
         # Create subtabs (mit zentralen Tab-Icons)
+        # Defensive: resolve labels with fallbacks if i18n returns unresolved keys
+        _factory_label = i18n.t("ccu_configuration.subtabs.factory_configuration")
+        if _factory_label == "ccu_configuration.subtabs.factory_configuration":
+            _factory_label = "Factory Configuration"
+        _parameter_label = i18n.t("ccu_configuration.subtabs.parameter_configuration")
+        if _parameter_label == "ccu_configuration.subtabs.parameter_configuration":
+            _parameter_label = "Parameter Configuration"
+
         subtabs = st.tabs(
             [
-                f"{UISymbols.get_tab_icon('factory')} {i18n.t('ccu_configuration.subtabs.factory_configuration')}",
-                f"{UISymbols.get_tab_icon('parameter')} {i18n.t('ccu_configuration.subtabs.parameter_configuration')}",
-                f"{UISymbols.get_tab_icon('business_functions')} {i18n.t('ccu_configuration.subtabs.business_functions')}",
+                f"{UISymbols.get_tab_icon('factory')} {_factory_label}",
+                f"{UISymbols.get_tab_icon('parameter')} {_parameter_label}",
             ]
         )
 
@@ -78,12 +85,7 @@ def render_ccu_configuration_tab(ccu_gateway=None, registry_manager=None):
 
             render_ccu_parameter_configuration_subtab()
 
-        with subtabs[2]:
-            from omf2.ui.ccu.ccu_configuration.dashboard_business_functions_subtab import (
-                render_business_functions_section,
-            )
-
-            render_business_functions_section()
+        # Business Functions moved to Admin Settings tab (not rendered here)
 
     except Exception as e:
         logger.error(f"❌ CCU Configuration Tab rendering error: {e}")

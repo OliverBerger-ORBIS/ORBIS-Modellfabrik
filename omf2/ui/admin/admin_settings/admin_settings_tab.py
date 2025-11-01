@@ -40,6 +40,7 @@ def render_admin_settings_tab():
                 f"{UISymbols.get_tab_icon('admin_dashboard')} {i18n.t('admin.settings.subtabs.dashboard')}",
                 f"{UISymbols.get_tab_icon('mqtt_clients')} {i18n.t('admin.settings.subtabs.mqtt_clients')}",
                 f"{UISymbols.get_tab_icon('gateway')} {i18n.t('admin.settings.subtabs.gateway')}",
+                f"{UISymbols.get_tab_icon('business_functions')} {i18n.t('admin.settings.subtabs.business_functions')}",
                 f"{UISymbols.get_tab_icon('topics')} {i18n.t('admin.settings.subtabs.topics')}",
                 f"{UISymbols.get_tab_icon('schemas')} {i18n.t('admin.settings.subtabs.schemas')}",
                 f"{UISymbols.get_tab_icon('admin_modules')} {i18n.t('admin.settings.subtabs.modules')}",
@@ -65,32 +66,37 @@ def render_admin_settings_tab():
 
             render_gateway_subtab()
 
-        with subtabs[3]:  # Topics
+        with subtabs[3]:  # Business Functions
+            from omf2.ui.admin.admin_settings.business_functions_subtab import render_business_functions_subtab
+
+            render_business_functions_subtab()
+
+        with subtabs[4]:  # Topics
             from omf2.ui.admin.admin_settings.topics_subtab import render_topics_subtab
 
             render_topics_subtab()
 
-        with subtabs[4]:  # Schemas
+        with subtabs[5]:  # Schemas
             from omf2.ui.admin.admin_settings.schemas_subtab import render_schemas_subtab
 
             render_schemas_subtab()
 
-        with subtabs[5]:  # Modules
+        with subtabs[6]:  # Modules
             from omf2.ui.admin.admin_settings.module_subtab import render_module_subtab
 
             render_module_subtab()
 
-        with subtabs[6]:  # Stations
+        with subtabs[7]:  # Stations
             from omf2.ui.admin.admin_settings.stations_subtab import render_stations_subtab
 
             render_stations_subtab()
 
-        with subtabs[7]:  # TXT Controllers
+        with subtabs[8]:  # TXT Controllers
             from omf2.ui.admin.admin_settings.txt_controllers_subtab import render_txt_controllers_subtab
 
             render_txt_controllers_subtab()
 
-        with subtabs[8]:  # Workpieces
+        with subtabs[9]:  # Workpieces
             from omf2.ui.admin.admin_settings.workpiece_subtab import render_workpiece_subtab
 
             render_workpiece_subtab()

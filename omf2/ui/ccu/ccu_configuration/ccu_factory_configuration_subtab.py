@@ -46,7 +46,10 @@ def render_ccu_factory_configuration_subtab():
 
         # Click hint: explain how to view details
         if "i18n_manager" in st.session_state and st.session_state.get("i18n_manager"):
-            st.info(st.session_state["i18n_manager"].t("ccu_configuration.factory.click_hint"))
+            _hint = st.session_state["i18n_manager"].t("ccu_configuration.factory.click_hint")
+            if _hint == "ccu_configuration.factory.click_hint":
+                _hint = "💡 Click on any position in the grid to view its details below"
+            st.info(_hint)
         else:
             st.info("💡 Click on any position in the grid to view its details below")
 
