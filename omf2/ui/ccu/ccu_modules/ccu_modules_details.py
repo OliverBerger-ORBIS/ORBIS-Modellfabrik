@@ -36,9 +36,9 @@ def show_module_details_section(ccu_gateway, i18n):
         if not i18n:
             i18n = st.session_state.get("i18n_manager")
 
-        # Use SVG icon in header with st.markdown
-        st.markdown("### 🔧 Module Details")
-        st.caption("💡 Select a module to view detailed information with SVG icons")
+        # Use SVG icon in header with i18n
+        st.markdown(f"### 🔧 {i18n.t('ccu_modules.details.title')}")
+        st.caption(i18n.t("ccu_modules.details.hint"))
 
         # CACHING: Load managers and data once, refresh happens via auto-refresh mechanism
         # Cache is initialized once per session and refreshed automatically via check_and_reload()
@@ -77,16 +77,18 @@ def show_module_details_section(ccu_gateway, i18n):
         module_manager = cache["module_manager"]
 
         if not modules:
-            st.info("📋 No modules available")
+            st.info(f"📋 {i18n.t('ccu_modules.details.no_modules')}")
             return
 
         # Show visual module list with SVG icons before selectbox
-        st.markdown("**Available Modules (with SVG icons):**")
+        st.markdown(f"**{i18n.t('ccu_modules.details.available_modules')}**")
         _show_module_icons_list(modules, module_manager)
 
         # Selectbox with emoji icons (HTML not supported in selectbox)
         selected_module_display = st.selectbox(
-            "Select Module for Details:", options=list(module_options.keys()), key="module_details_selector"
+            i18n.t("ccu_modules.details.select_label"),
+            options=list(module_options.keys()),
+            key="module_details_selector",
         )
 
         if selected_module_display:
@@ -109,6 +111,7 @@ def _show_module_icons_list(modules, module_manager):
     complementing the selectbox which uses emoji icons.
     """
     try:
+        i18n = st.session_state.get("i18n_manager")
         # Create HTML list with SVG icons
         html_list = '<div style="padding: 10px; background-color: #f0f2f6; border-radius: 5px; margin-bottom: 10px;">'
 
@@ -129,7 +132,10 @@ def _show_module_icons_list(modules, module_manager):
 
         # Show count
         svg_count = sum(1 for m in modules.values() if m.get("name"))
-        st.caption(f"✨ Module icons rendered as SVG graphics ({svg_count} modules)")
+        if i18n:
+            st.caption(i18n.t("ccu_modules.details.svg_count", count=svg_count))
+        else:
+            st.caption(f"✨ Module icons rendered as SVG graphics ({svg_count} modules)")
 
     except Exception as e:
         logger.warning(f"⚠️ Could not display module icons list: {e}")
@@ -154,7 +160,10 @@ def _show_production_module_details(module_id: str, module_type: str, ccu_gatewa
         header_icon_html = module_manager.get_module_icon_html(module_id, size_px=32)
 
         # Render header with SVG icon
-        st.markdown(f"### {header_icon_html} {module_name} Module Details", unsafe_allow_html=True)
+        st.markdown(
+            f"### {header_icon_html} {i18n.t('ccu_modules.details.module_header', name=module_name)}",
+            unsafe_allow_html=True,
+        )
 
         # Get module status
         module_status = module_manager.get_module_status_from_state(module_id)
@@ -166,16 +175,16 @@ def _show_production_module_details(module_id: str, module_type: str, ccu_gatewa
         col1, col2 = st.columns([1, 2])
 
         with col1:
-            st.subheader("📊 Module Icon")
+            st.subheader(f"📊 {i18n.t('ccu_modules.details.module_icon')}")
             # Display large SVG icon using Module Manager
             large_icon_html = module_manager.get_module_icon_html(module_id, size_px=200)
             st.markdown(
                 f'<div style="text-align: center; padding: 20px;">{large_icon_html}</div>', unsafe_allow_html=True
             )
-            st.caption("✨ High-quality SVG icon with CSS scoping")
+            st.caption(i18n.t("ccu_modules.details.icon_note"))
 
         with col2:
-            st.subheader("📋 Module Information")
+            st.subheader(f"📋 {i18n.t('ccu_modules.details.module_info')}")
             _show_module_info(module_id, module_type, module_status, factsheet_status, i18n)
 
     except Exception as e:
@@ -199,28 +208,28 @@ def _show_module_info(module_id: str, module_type: str, module_status: dict, fac
     """Show module information including factsheet data"""
     try:
         # Basic module info
-        st.write(f"**Module ID:** {module_id}")
-        st.write(f"**Module Type:** {module_type}")
+        st.write(f"**{i18n.t('ccu_modules.details.fields.module_id')}** {module_id}")
+        st.write(f"**{i18n.t('ccu_modules.details.fields.module_type')}** {module_type}")
 
         # Module status
         if module_status:
-            st.write("**Status:**")
+            st.write(f"**{i18n.t('ccu_modules.details.fields.status')}**")
             for key, value in module_status.items():
                 st.write(f"  - {key}: {value}")
         else:
-            st.info("📋 No status data available")
+            st.info(f"📋 {i18n.t('ccu_modules.details.no_status')}")
 
         # Factsheet information
         if factsheet_status:
-            st.write("**Factsheet Information:**")
+            st.write(f"**{i18n.t('ccu_modules.details.fields.factsheet')}**")
             factsheet_data = factsheet_status.get("factsheet_data", {})
             if factsheet_data:
                 for key, value in factsheet_data.items():
                     st.write(f"  - {key}: {value}")
             else:
-                st.info("📋 No factsheet data available")
+                st.info(f"📋 {i18n.t('ccu_modules.details.no_factsheet_data')}")
         else:
-            st.info("📋 No factsheet available")
+            st.info(f"📋 {i18n.t('ccu_modules.details.no_factsheet')}")
 
     except Exception as e:
         logger.error(f"❌ Failed to show module info: {e}")
