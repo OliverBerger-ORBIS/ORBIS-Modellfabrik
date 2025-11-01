@@ -27,9 +27,7 @@ ccu_configuration.parameter.durations.help.red: "Production duration for red wor
 ccu_configuration.parameter.settings.title: "Production Settings"
 ccu_configuration.parameter.settings.subtitle: "General production configuration"
 ccu_configuration.parameter.settings.max_parallel_orders: "Max Parallel Orders"
-ccu_configuration.parameter.settings.help.max_parallel_orders: (
-    "Maximum number of orders that can be processed in parallel"
-)
+ccu_configuration.parameter.settings.help.max_parallel_orders: "Maximum number of orders that can be processed in parallel"
 
 # Parameter Configuration – FTS Settings
 ccu_configuration.parameter.fts.title: "FTS Settings"

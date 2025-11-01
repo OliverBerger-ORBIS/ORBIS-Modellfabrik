@@ -27,9 +27,7 @@ ccu_configuration.parameter.durations.help.red: "Durée de production pour les p
 ccu_configuration.parameter.settings.title: "Paramètres de production"
 ccu_configuration.parameter.settings.subtitle: "Configuration générale de la production"
 ccu_configuration.parameter.settings.max_parallel_orders: "Nombre maximal de commandes parallèles"
-ccu_configuration.parameter.settings.help.max_parallel_orders: (
-    "Nombre maximum de commandes pouvant être traitées en parallèle"
-)
+ccu_configuration.parameter.settings.help.max_parallel_orders: "Nombre maximum de commandes pouvant être traitées en parallèle"
 
 # Parameter Configuration – FTS Settings
 ccu_configuration.parameter.fts.title: "Paramètres FTS"

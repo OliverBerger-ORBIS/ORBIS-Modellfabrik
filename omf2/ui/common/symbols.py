@@ -35,18 +35,17 @@ class UISymbols:
         # SUB-TAB (Configuration)
         "factory": "🏭",  # SUB-TAB: Factory Configuration
         "parameter": "⚙️",  # SUB-TAB: Parameter Configuration
-        "business_functions": "🧩",  # SUB-TAB: Business Functions
         "workflow": "🔄",  # SUB-TAB: Workflow / Process Flow
         # === TOP-LEVEL: Modules ===
         "ccu_modules": "🧩",  # TOP-LEVEL: Module Control
         # === TOP-LEVEL: Message Center ===
-        "message_center": "📨",  # TOP-LEVEL: Message Center
+        "message_center": "📡",  # TOP-LEVEL: Message Center
         # SECOND-LEVEL (Message Center)
         "message_monitor": "🔍",  # SECOND-LEVEL: Message Monitor
         "topic_monitor": "🏷️",  # SECOND-LEVEL: Topic Monitor
         "send_test_message": "📤",  # SECOND-LEVEL: Send Test Message
         # === TOP-LEVEL: Generic Steering ===
-        "generic_steering": "🎮",  # TOP-LEVEL: Generic Steering
+        "generic_steering": "🎛️",  # TOP-LEVEL: Generic Steering
         # SECOND-LEVEL (Generic Steering)
         "factory_steering": "🎛️",  # SECOND-LEVEL: Factory Steering
         "topic_steering": "🏷️",  # SECOND-LEVEL: Topic Steering
@@ -64,6 +63,7 @@ class UISymbols:
         "admin_dashboard": "📊",  # SUB-TAB: Dashboard
         "mqtt_clients": "🔌",  # SUB-TAB: MQTT Clients
         "gateway": "🔀",  # SUB-TAB: Gateway
+        "business_functions": "🔁",  # SUB-TAB: Business Functions
         "topics": "🏷️",  # SUB-TAB: Topics
         "schemas": "{}",  # SUB-TAB: Schemas
         "admin_modules": "🧩",  # SUB-TAB: Modules
