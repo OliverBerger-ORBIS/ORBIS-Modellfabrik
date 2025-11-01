@@ -2,6 +2,7 @@
 
 # Main Tab
 ccu_configuration.subtitle: "OMF System‑Konfiguration und Einstellungen"
+ccu_configuration.parameter.title: "Parameter‑Konfiguration"
 ccu_configuration.parameter.subtitle: "OMF Produktionsparameter und Einstellungen"
 
 # Subtabs
@@ -10,6 +11,34 @@ ccu_configuration.subtabs.parameter_configuration: "Parameter-Konfiguration"
 
 # Factory Configuration – UI Hinweise
 ccu_configuration.factory.click_hint: "💡 Klicken Sie auf eine Position im Raster, um Details unten anzuzeigen"
+
+# Parameter Configuration – Durations
+ccu_configuration.parameter.durations.title: "Produktionsdauern"
+ccu_configuration.parameter.durations.subtitle: "Produktionsdauern für verschiedene Werkstücktypen"
+ccu_configuration.parameter.durations.labels.blue: "🔵 Blaues Werkstück"
+ccu_configuration.parameter.durations.labels.white: "⚪ Weißes Werkstück"
+ccu_configuration.parameter.durations.labels.red: "🔴 Rotes Werkstück"
+ccu_configuration.parameter.durations.fields.duration_seconds: "Dauer (Sekunden)"
+ccu_configuration.parameter.durations.help.blue: "Produktionsdauer für blaue Werkstücke in Sekunden"
+ccu_configuration.parameter.durations.help.white: "Produktionsdauer für weiße Werkstücke in Sekunden"
+ccu_configuration.parameter.durations.help.red: "Produktionsdauer für rote Werkstücke in Sekunden"
+
+# Parameter Configuration – Production Settings
+ccu_configuration.parameter.settings.title: "Produktionseinstellungen"
+ccu_configuration.parameter.settings.subtitle: "Allgemeine Produktionseinstellungen"
+ccu_configuration.parameter.settings.max_parallel_orders: "Maximale parallele Aufträge"
+ccu_configuration.parameter.settings.help.max_parallel_orders: "Maximale Anzahl gleichzeitig verarbeitbarer Aufträge"
+
+# Parameter Configuration – FTS Settings
+ccu_configuration.parameter.fts.title: "FTS‑Einstellungen"
+ccu_configuration.parameter.fts.subtitle: "Konfiguration des fahrerlosen Transportsystems (FTS)"
+ccu_configuration.parameter.fts.charge_threshold_percent: "Ladeschwelle (%)"
+ccu_configuration.parameter.fts.help.charge_threshold: "Akkuladungs‑Schwellenwert in Prozent für das FTS"
+
+# Parameter Configuration – Save
+ccu_configuration.parameter.save.button_label: "Konfiguration speichern"
+ccu_configuration.parameter.save.success: "Konfiguration gespeichert!"
+ccu_configuration.parameter.save.failed: "Speichern fehlgeschlagen: {error}"
 
 # Status Messages
 ccu_configuration.status.refresh_success: "Konfiguration aktualisiert via CCU Gateway!"

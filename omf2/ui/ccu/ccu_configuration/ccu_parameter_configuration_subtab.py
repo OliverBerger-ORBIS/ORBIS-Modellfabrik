@@ -21,19 +21,26 @@ def render_ccu_parameter_configuration_subtab():
     try:
         # Subheading: try heading SVG (32px for subtabs), fallback to emoji
         try:
+            i18n = st.session_state.get("i18n_manager")
+        except Exception:
+            i18n = None
+
+        try:
             cfg_icon = get_svg_inline("CONFIGURATION", size_px=32) or ""
+            title = i18n.t("ccu_configuration.parameter.title") if i18n else "Parameter Configuration"
             st.markdown(
-                f"<h3 style='margin: 0.25rem 0 0.5rem 0; display:flex; align-items:center; gap:8px;'>{cfg_icon} Parameter Configuration</h3>",
+                f"<h3 style='margin: 0.25rem 0 0.5rem 0; display:flex; align-items:center; gap:8px;'>{cfg_icon} {title}</h3>",
                 unsafe_allow_html=True,
             )
         except Exception:
-            st.subheader(f"{UISymbols.get_tab_icon('parameter')} Parameter Configuration")
+            st.subheader(
+                f"{UISymbols.get_tab_icon('parameter')} "
+                f"{(i18n.t('ccu_configuration.parameter.title') if i18n else 'Parameter Configuration')}"
+            )
         # Subtitle (i18n): neutral/OMF wording
-        try:
-            i18n = st.session_state.get("i18n_manager")
-            st.markdown(i18n.t("ccu_configuration.parameter.subtitle"))
-        except Exception:
-            st.markdown("OMF production parameters and settings")
+        st.markdown(
+            i18n.t("ccu_configuration.parameter.subtitle") if i18n else "OMF production parameters and settings"
+        )
 
         # Load configuration data
         config_loader = get_ccu_config_loader()
@@ -75,48 +82,82 @@ def _init_configuration_state(production_settings):
 
 def _show_production_durations_section():
     """Show production durations section (BLUE, WHITE, RED order)"""
-    st.subheader("⏱️ Production Durations")
-    st.write("Production durations for different workpiece types")
+    i18n = st.session_state.get("i18n_manager")
+    _title = None
+    _subtitle = None
+    if i18n:
+        try:
+            _title = i18n.t("ccu_configuration.parameter.durations.title")
+            _subtitle = i18n.t("ccu_configuration.parameter.durations.subtitle")
+        except Exception:
+            _title = None
+            _subtitle = None
+    if not isinstance(_title, str) or not _title:
+        _title = "Production Durations"
+    if not isinstance(_subtitle, str) or not _subtitle:
+        _subtitle = "Production durations for different workpiece types"
+    st.subheader(f"⏱️ {_title}")
+    st.write(_subtitle)
 
     # 3 columns for BLUE, WHITE, RED (always in this order)
     col1, col2, col3 = st.columns(3)
 
     # BLUE (Column 1)
     with col1:
-        st.markdown("**🔵 Blue Workpiece**")
+        st.markdown(
+            "**" + (i18n.t("ccu_configuration.parameter.durations.labels.blue") if i18n else "🔵 Blue Workpiece") + "**"
+        )
         blue_duration = st.number_input(
-            "Duration (seconds)",
+            (i18n.t("ccu_configuration.parameter.durations.fields.duration_seconds") if i18n else "Duration (seconds)"),
             min_value=0,
             max_value=3600,
             value=st.session_state.ccu_production_settings["productionDurations"]["BLUE"],
             key="blue_duration",
-            help="Production duration for blue workpieces in seconds",
+            help=(
+                i18n.t("ccu_configuration.parameter.durations.help.blue")
+                if i18n
+                else "Production duration for blue workpieces in seconds"
+            ),
         )
         st.session_state.ccu_production_settings["productionDurations"]["BLUE"] = blue_duration
 
     # WHITE (Column 2)
     with col2:
-        st.markdown("**⚪ White Workpiece**")
+        st.markdown(
+            "**"
+            + (i18n.t("ccu_configuration.parameter.durations.labels.white") if i18n else "⚪ White Workpiece")
+            + "**"
+        )
         white_duration = st.number_input(
-            "Duration (seconds)",
+            (i18n.t("ccu_configuration.parameter.durations.fields.duration_seconds") if i18n else "Duration (seconds)"),
             min_value=0,
             max_value=3600,
             value=st.session_state.ccu_production_settings["productionDurations"]["WHITE"],
             key="white_duration",
-            help="Production duration for white workpieces in seconds",
+            help=(
+                i18n.t("ccu_configuration.parameter.durations.help.white")
+                if i18n
+                else "Production duration for white workpieces in seconds"
+            ),
         )
         st.session_state.ccu_production_settings["productionDurations"]["WHITE"] = white_duration
 
     # RED (Column 3)
     with col3:
-        st.markdown("**🔴 Red Workpiece**")
+        st.markdown(
+            "**" + (i18n.t("ccu_configuration.parameter.durations.labels.red") if i18n else "🔴 Red Workpiece") + "**"
+        )
         red_duration = st.number_input(
-            "Duration (seconds)",
+            (i18n.t("ccu_configuration.parameter.durations.fields.duration_seconds") if i18n else "Duration (seconds)"),
             min_value=0,
             max_value=3600,
             value=st.session_state.ccu_production_settings["productionDurations"]["RED"],
             key="red_duration",
-            help="Production duration for red workpieces in seconds",
+            help=(
+                i18n.t("ccu_configuration.parameter.durations.help.red")
+                if i18n
+                else "Production duration for red workpieces in seconds"
+            ),
         )
         st.session_state.ccu_production_settings["productionDurations"]["RED"] = red_duration
 
@@ -126,22 +167,36 @@ def _show_production_settings_section():
     # Get SVG icon for Production Settings
     try:
         prod_icon = get_svg_inline("PRODUCTION_ORDERS", size_px=32) or ""
+        i18n = st.session_state.get("i18n_manager")
+        title = i18n.t("ccu_configuration.parameter.settings.title") if i18n else "Production Settings"
         st.markdown(
-            f"<h4 style='margin: 0.25rem 0 0.25rem 0; display:flex; align-items:center; gap:8px;'>{prod_icon} Production Settings</h4>",
+            f"<h4 style='margin: 0.25rem 0 0.25rem 0; display:flex; align-items:center; gap:8px;'>{prod_icon} {title}</h4>",
             unsafe_allow_html=True,
         )
     except Exception:
-        st.subheader("🏭 Production Settings")
-    st.write("General production configuration")
+        st.subheader("🏭 " + (i18n.t("ccu_configuration.parameter.settings.title") if i18n else "Production Settings"))
+    _ps_subtitle = None
+    if i18n:
+        try:
+            _ps_subtitle = i18n.t("ccu_configuration.parameter.settings.subtitle")
+        except Exception:
+            _ps_subtitle = None
+    if not isinstance(_ps_subtitle, str) or not _ps_subtitle:
+        _ps_subtitle = "General production configuration"
+    st.write(_ps_subtitle)
 
     # Max parallel orders
     max_parallel_orders = st.number_input(
-        "Max Parallel Orders",
+        (i18n.t("ccu_configuration.parameter.settings.max_parallel_orders") if i18n else "Max Parallel Orders"),
         min_value=1,
         max_value=20,
         value=st.session_state.ccu_production_settings["productionSettings"]["maxParallelOrders"],
         key="max_parallel_orders",
-        help="Maximum number of orders that can be processed in parallel",
+        help=(
+            i18n.t("ccu_configuration.parameter.settings.help.max_parallel_orders")
+            if i18n
+            else "Maximum number of orders that can be processed in parallel"
+        ),
     )
     st.session_state.ccu_production_settings["productionSettings"]["maxParallelOrders"] = max_parallel_orders
 
@@ -151,22 +206,36 @@ def _show_fts_settings_section():
     # Get SVG icon for FTS Settings (using module icon for FTS)
     try:
         fts_icon = get_icon_html("FTS", size_px=32)
+        i18n = st.session_state.get("i18n_manager")
+        title = i18n.t("ccu_configuration.parameter.fts.title") if i18n else "FTS Settings"
         st.markdown(
-            f"<h4 style='margin: 0.25rem 0 0.25rem 0; display:flex; align-items:center; gap:8px;'>{fts_icon} FTS Settings</h4>",
+            f"<h4 style='margin: 0.25rem 0 0.25rem 0; display:flex; align-items:center; gap:8px;'>{fts_icon} {title}</h4>",
             unsafe_allow_html=True,
         )
     except Exception:
-        st.subheader("🚗 FTS Settings")
-    st.write("FTS (Fahrerloses Transportsystem) configuration")
+        st.subheader("🚗 " + (i18n.t("ccu_configuration.parameter.fts.title") if i18n else "FTS Settings"))
+    _fts_subtitle = None
+    if i18n:
+        try:
+            _fts_subtitle = i18n.t("ccu_configuration.parameter.fts.subtitle")
+        except Exception:
+            _fts_subtitle = None
+    if not isinstance(_fts_subtitle, str) or not _fts_subtitle:
+        _fts_subtitle = "FTS (Fahrerloses Transportsystem) configuration"
+    st.write(_fts_subtitle)
 
     # Charge threshold
     charge_threshold = st.number_input(
-        "Charge Threshold (%)",
+        (i18n.t("ccu_configuration.parameter.fts.charge_threshold_percent") if i18n else "Charge Threshold (%)"),
         min_value=0,
         max_value=100,
         value=st.session_state.ccu_production_settings["ftsSettings"]["chargeThresholdPercent"],
         key="charge_threshold",
-        help="Battery charge threshold percentage for FTS",
+        help=(
+            i18n.t("ccu_configuration.parameter.fts.help.charge_threshold")
+            if i18n
+            else "Battery charge threshold percentage for FTS"
+        ),
     )
     st.session_state.ccu_production_settings["ftsSettings"]["chargeThresholdPercent"] = charge_threshold
 
@@ -176,20 +245,28 @@ def _show_save_button():
     col1, col2, col3 = st.columns([1, 1, 1])
 
     with col2:
-        if st.button(
-            f"{UISymbols.get_status_icon('save')} Save Configuration", key="save_ccu_config", use_container_width=True
-        ):
+        i18n = st.session_state.get("i18n_manager")
+        label = f"{UISymbols.get_status_icon('save')} " + (
+            i18n.t("ccu_configuration.parameter.save.button_label") if i18n else "Save Configuration"
+        )
+        if st.button(label, key="save_ccu_config", use_container_width=True):
             try:
                 # TODO: Implement actual save functionality via CCU Gateway
                 # For now, just show success message
-                st.success(f"{UISymbols.get_status_icon('success')} Configuration saved!")
+                st.success(
+                    f"{UISymbols.get_status_icon('success')} "
+                    + (i18n.t("ccu_configuration.parameter.save.success") if i18n else "Configuration saved!")
+                )
                 logger.info("CCU Production Settings saved successfully")
 
                 # Request UI refresh
                 request_refresh()
 
             except Exception as e:
-                st.error(f"{UISymbols.get_status_icon('error')} Save failed: {e}")
+                st.error(
+                    f"{UISymbols.get_status_icon('error')} "
+                    + (i18n.t("ccu_configuration.parameter.save.failed", error=e) if i18n else f"Save failed: {e}")
+                )
                 logger.error(f"Failed to save CCU Production Settings: {e}")
 
 
