@@ -39,6 +39,7 @@ class UISymbols:
         "factory": "🏭",  # Factory Configuration
         "parameter": "⚙️",  # Parameter Configuration
         "workflow": "🔄",  # Workflow / Process Flow
+        "business_functions": "🧩",  # Business Functions
         # --- Admin (three-level) ---
         "admin_settings": "⚙️",  # Admin (container)
         # Subtabs (Admin)

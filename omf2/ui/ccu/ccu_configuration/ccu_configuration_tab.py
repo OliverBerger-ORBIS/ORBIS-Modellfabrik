@@ -54,14 +54,14 @@ def render_ccu_configuration_tab(ccu_gateway=None, registry_manager=None):
             st.header(f"{UISymbols.get_tab_icon('ccu_configuration')} {i18n.translate('tabs.ccu_configuration')}")
         st.markdown(i18n.t("ccu_configuration.subtitle"))
 
-        # Create subtabs
-        subtab_labels = [
-            i18n.t("ccu_configuration.subtabs.factory_configuration"),
-            i18n.t("ccu_configuration.subtabs.parameter_configuration"),
-            i18n.t("ccu_configuration.subtabs.business_functions"),
-        ]
-
-        subtabs = st.tabs(subtab_labels)
+        # Create subtabs (mit zentralen Tab-Icons)
+        subtabs = st.tabs(
+            [
+                f"{UISymbols.get_tab_icon('factory')} {i18n.t('ccu_configuration.subtabs.factory_configuration')}",
+                f"{UISymbols.get_tab_icon('parameter')} {i18n.t('ccu_configuration.subtabs.parameter_configuration')}",
+                f"{UISymbols.get_tab_icon('business_functions')} {i18n.t('ccu_configuration.subtabs.business_functions')}",
+            ]
+        )
 
         # Render subtab content
         with subtabs[0]:

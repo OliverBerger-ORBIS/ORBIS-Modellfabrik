@@ -90,9 +90,12 @@ def render_ccu_orders_tab(ccu_gateway=None, registry_manager=None):
                 )
                 st.metric(i18n.t("ccu_orders.statistics.mode"), stub_mode)
 
-        # Tabs für Production vs Storage Orders
+        # Tabs für Production vs Storage Orders (mit zentralen Tab-Icons)
         tab1, tab2 = st.tabs(
-            [i18n.t("ccu_orders.subtabs.production_orders"), i18n.t("ccu_orders.subtabs.storage_orders")]
+            [
+                f"{UISymbols.get_tab_icon('production_orders')} {i18n.t('ccu_orders.subtabs.production_orders')}",
+                f"{UISymbols.get_tab_icon('storage_orders')} {i18n.t('ccu_orders.subtabs.storage_orders')}",
+            ]
         )
 
         with tab1:

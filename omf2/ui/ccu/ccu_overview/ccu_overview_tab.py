@@ -61,9 +61,9 @@ def render_ccu_overview_tab(ccu_gateway=None, registry_manager=None):
         # Create subtabs (i18n: Alle Tab-Titel übersetzt, Icons bleiben universell)
         tab1, tab2, tab3 = st.tabs(
             [
-                f"{UISymbols.get_functional_icon('product_catalog')} {i18n.t('ccu_overview.tabs.product_catalog')}",
-                f"{UISymbols.get_functional_icon('inventory')} {i18n.t('ccu_overview.tabs.inventory')}",
-                f"{UISymbols.get_functional_icon('sensor_data')} {i18n.t('ccu_overview.tabs.sensor_data')}",
+                f"{UISymbols.get_tab_icon('product_catalog')} {i18n.t('ccu_overview.tabs.product_catalog')}",
+                f"{UISymbols.get_tab_icon('inventory')} {i18n.t('ccu_overview.tabs.inventory')}",
+                f"{UISymbols.get_tab_icon('sensor_data')} {i18n.t('ccu_overview.tabs.sensor_data')}",
             ]
         )
 
