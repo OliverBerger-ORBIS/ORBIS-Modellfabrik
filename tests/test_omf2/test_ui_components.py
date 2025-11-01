@@ -1,4 +1,3 @@
-
 #!/usr/bin/env python3
 """
 Tests für UI-Komponenten (CCU, Node-RED, Admin)

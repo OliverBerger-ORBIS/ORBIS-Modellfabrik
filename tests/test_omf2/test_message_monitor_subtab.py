@@ -1,4 +1,3 @@
-
 #!/usr/bin/env python3
 """
 Test für Enhanced View Subtab - testet die gesamte Funktionalität

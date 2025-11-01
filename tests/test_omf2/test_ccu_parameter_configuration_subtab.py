@@ -144,7 +144,7 @@ class TestCCUParameterConfigurationSubtab:
             mock_get_svg.return_value = None  # Simulate fallback to emoji
             # Call function
             _show_production_settings_section()
-            
+
             # Verify calls - now uses SVG icon with st.markdown, fallback to subheader
             mock_st.write.assert_called_with("General production configuration")
             mock_st.number_input.assert_called()
@@ -167,7 +167,7 @@ class TestCCUParameterConfigurationSubtab:
             mock_get_icon.return_value = None  # Simulate fallback to emoji
             # Call function
             _show_fts_settings_section()
-            
+
             # Verify calls - now uses SVG icon with st.markdown, fallback to subheader
             mock_st.write.assert_called_with("FTS (Fahrerloses Transportsystem) configuration")
             mock_st.number_input.assert_called()

@@ -5,9 +5,10 @@ Focus on testing core logic without complex Streamlit mocking
 """
 
 import base64
-import pytest
 from datetime import datetime
 from unittest.mock import Mock, patch
+
+import pytest
 
 from omf2.ui.ccu.ccu_overview.sensor_data_subtab import (
     _move_camera,
@@ -23,21 +24,21 @@ class TestCameraMovement:
         # Mock CCU Gateway
         mock_gateway = Mock()
         mock_gateway.publish_message.return_value = True
-        
+
         # Mock i18n
         mock_i18n = Mock()
         mock_i18n.t.return_value = "Test"
-        
+
         # Test camera movement
-        with patch('omf2.ui.ccu.ccu_overview.sensor_data_subtab.datetime') as mock_datetime:
+        with patch("omf2.ui.ccu.ccu_overview.sensor_data_subtab.datetime") as mock_datetime:
             mock_datetime.now.return_value.isoformat.return_value = "2025-01-01T12:00:00"
-            
+
             _move_camera(mock_gateway, "relmove_up", 10, mock_i18n)
-            
+
             # Verify gateway was called correctly
             mock_gateway.publish_message.assert_called_once()
             call_args = mock_gateway.publish_message.call_args
-            
+
             assert call_args[0][0] == "/j1/txt/1/o/ptu"  # Topic
             payload = call_args[0][1]
             assert payload["cmd"] == "relmove_up"
@@ -49,17 +50,17 @@ class TestCameraMovement:
         # Mock CCU Gateway that fails
         mock_gateway = Mock()
         mock_gateway.publish_message.return_value = False
-        
+
         # Mock i18n
         mock_i18n = Mock()
         mock_i18n.t.return_value = "Test"
-        
+
         # Test camera movement failure
-        with patch('omf2.ui.ccu.ccu_overview.sensor_data_subtab.datetime') as mock_datetime:
+        with patch("omf2.ui.ccu.ccu_overview.sensor_data_subtab.datetime") as mock_datetime:
             mock_datetime.now.return_value.isoformat.return_value = "2025-01-01T12:00:00"
-            
+
             _move_camera(mock_gateway, "relmove_left", 5, mock_i18n)
-            
+
             # Verify gateway was called
             mock_gateway.publish_message.assert_called_once()
 
@@ -68,15 +69,15 @@ class TestCameraMovement:
         # Mock CCU Gateway that raises exception
         mock_gateway = Mock()
         mock_gateway.publish_message.side_effect = Exception("Network error")
-        
+
         # Mock i18n
         mock_i18n = Mock()
         mock_i18n.t.return_value = "Test"
-        
+
         # Test camera movement exception
-        with patch('omf2.ui.ccu.ccu_overview.sensor_data_subtab.datetime') as mock_datetime:
+        with patch("omf2.ui.ccu.ccu_overview.sensor_data_subtab.datetime") as mock_datetime:
             mock_datetime.now.return_value.isoformat.return_value = "2025-01-01T12:00:00"
-            
+
             # Should not raise exception (handled internally)
             _move_camera(mock_gateway, "relmove_right", 15, mock_i18n)
 
@@ -89,21 +90,21 @@ class TestCameraPhoto:
         # Mock CCU Gateway
         mock_gateway = Mock()
         mock_gateway.publish_message.return_value = True
-        
+
         # Mock i18n
         mock_i18n = Mock()
         mock_i18n.t.return_value = "Photo triggered"
-        
+
         # Test photo capture
-        with patch('omf2.ui.ccu.ccu_overview.sensor_data_subtab.datetime') as mock_datetime:
+        with patch("omf2.ui.ccu.ccu_overview.sensor_data_subtab.datetime") as mock_datetime:
             mock_datetime.now.return_value.isoformat.return_value = "2025-01-01T12:00:00"
-            
+
             _take_camera_photo(mock_gateway, mock_i18n)
-            
+
             # Verify gateway was called correctly
             mock_gateway.publish_message.assert_called_once()
             call_args = mock_gateway.publish_message.call_args
-            
+
             assert call_args[0][0] == "/j1/txt/1/o/ptu"  # Topic
             payload = call_args[0][1]
             assert payload["cmd"] == "photo"
@@ -114,17 +115,17 @@ class TestCameraPhoto:
         # Mock CCU Gateway that fails
         mock_gateway = Mock()
         mock_gateway.publish_message.return_value = False
-        
+
         # Mock i18n
         mock_i18n = Mock()
         mock_i18n.t.return_value = "Photo error"
-        
+
         # Test photo capture failure
-        with patch('omf2.ui.ccu.ccu_overview.sensor_data_subtab.datetime') as mock_datetime:
+        with patch("omf2.ui.ccu.ccu_overview.sensor_data_subtab.datetime") as mock_datetime:
             mock_datetime.now.return_value.isoformat.return_value = "2025-01-01T12:00:00"
-            
+
             _take_camera_photo(mock_gateway, mock_i18n)
-            
+
             # Verify gateway was called
             mock_gateway.publish_message.assert_called_once()
 
@@ -137,7 +138,7 @@ class TestImageProcessing:
         # Test JPEG data URL
         test_image_data = b"fake_jpeg_data"
         base64_data = f"data:image/jpeg;base64,{base64.b64encode(test_image_data).decode()}"
-        
+
         # Extract format and base64 part (simulating the function logic)
         if base64_data.startswith("data:image/"):
             format_part = base64_data.split(";")[0]
@@ -146,10 +147,10 @@ class TestImageProcessing:
         else:
             image_format = "jpeg"
             base64_part = base64_data
-        
+
         assert image_format == "jpeg"
         assert base64_part == base64.b64encode(test_image_data).decode()
-        
+
         # Verify we can decode it
         decoded_data = base64.b64decode(base64_part)
         assert decoded_data == test_image_data
@@ -159,7 +160,7 @@ class TestImageProcessing:
         # Test PNG data URL
         test_image_data = b"fake_png_data"
         base64_data = f"data:image/png;base64,{base64.b64encode(test_image_data).decode()}"
-        
+
         # Extract format and base64 part (simulating the function logic)
         if base64_data.startswith("data:image/"):
             format_part = base64_data.split(";")[0]
@@ -168,10 +169,10 @@ class TestImageProcessing:
         else:
             image_format = "jpeg"
             base64_part = base64_data
-        
+
         assert image_format == "png"
         assert base64_part == base64.b64encode(test_image_data).decode()
-        
+
         # Verify we can decode it
         decoded_data = base64.b64decode(base64_part)
         assert decoded_data == test_image_data
@@ -181,7 +182,7 @@ class TestImageProcessing:
         # Test raw base64 data
         test_image_data = b"fake_image_data"
         base64_data = base64.b64encode(test_image_data).decode()
-        
+
         # Extract format and base64 part (simulating the function logic)
         if base64_data.startswith("data:image/"):
             format_part = base64_data.split(";")[0]
@@ -190,10 +191,10 @@ class TestImageProcessing:
         else:
             image_format = "jpeg"
             base64_part = base64_data
-        
+
         assert image_format == "jpeg"  # Should default to JPEG
         assert base64_part == base64_data
-        
+
         # Verify we can decode it
         decoded_data = base64.b64decode(base64_part)
         assert decoded_data == test_image_data
@@ -202,7 +203,7 @@ class TestImageProcessing:
         """Test handling of invalid base64 data"""
         # Invalid base64 data
         invalid_base64 = "invalid_base64_data!!!"
-        
+
         # Test that it raises an exception when decoded
         with pytest.raises(Exception):
             base64.b64decode(invalid_base64)
@@ -214,7 +215,7 @@ class TestTimestampFormatting:
     def test_timestamp_formatting_iso(self):
         """Test ISO timestamp formatting"""
         timestamp = "2025-01-01T12:00:00Z"
-        
+
         # Simulate the formatting logic from the function
         try:
             if isinstance(timestamp, str):
@@ -224,13 +225,13 @@ class TestTimestampFormatting:
                 formatted_time = str(timestamp)
         except Exception:
             formatted_time = str(timestamp)
-        
+
         assert formatted_time == "12:00:00"
 
     def test_timestamp_formatting_invalid(self):
         """Test invalid timestamp formatting"""
         timestamp = "invalid_timestamp"
-        
+
         # Simulate the formatting logic from the function
         try:
             if isinstance(timestamp, str):
@@ -240,7 +241,7 @@ class TestTimestampFormatting:
                 formatted_time = str(timestamp)
         except Exception:
             formatted_time = str(timestamp)
-        
+
         assert formatted_time == "invalid_timestamp"
 
 

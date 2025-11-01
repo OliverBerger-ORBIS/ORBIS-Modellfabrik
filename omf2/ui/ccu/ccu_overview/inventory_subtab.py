@@ -231,38 +231,55 @@ def render_inventory_subtab(ccu_gateway: CcuGateway, registry_manager, asset_man
             waiting_text = i18n.t("ccu_overview.inventory.waiting_for_stock")
             st.info(f"{UISymbols.get_status_icon('info')} {waiting_text}")
 
-        # SECTION 1: Customer Orders
+        # SECTION 1: Customer Orders (with heading SVG)
         st.markdown("---")
-        st.markdown(
-            f"## {UISymbols.get_functional_icon('customer_order')} {i18n.t('ccu_overview.customer_orders.title')}"
-        )
+        try:
+            from omf2.assets.heading_icons import get_svg_inline
+
+            icon_html = get_svg_inline("CUSTOMER_ORDERS", size_px=28) or ""
+            st.markdown(
+                f"<h3 style='display:flex; align-items:center; gap:8px; margin:0;'>{icon_html} {i18n.t('ccu_overview.customer_orders.title')}</h3>",
+                unsafe_allow_html=True,
+            )
+        except Exception:
+            st.markdown(
+                f"## {UISymbols.get_functional_icon('customer_order')} {i18n.t('ccu_overview.customer_orders.title')}"
+            )
         _render_customer_orders_section(available, ccu_gateway, i18n, asset_manager)
 
-        # SECTION 2: Purchase Orders
+        # SECTION 2: Inventory Grid (Stock) first, then Purchase Orders
         st.markdown("---")
-        st.markdown(
-            f"## {UISymbols.get_functional_icon('purchase_order')} {i18n.t('ccu_overview.purchase_orders.title')}"
-        )
-        _render_purchase_orders_section(available, ccu_gateway, i18n, asset_manager)
+        try:
+            from omf2.assets.heading_icons import get_svg_inline
 
-        # SECTION 3: Inventory Grid
+            icon_html = get_svg_inline("INVENTORY", size_px=28) or ""
+            st.markdown(
+                f"<h3 style='display:flex; align-items:center; gap:8px; margin:0;'>{icon_html} {i18n.t('ccu_overview.inventory.title')}</h3>",
+                unsafe_allow_html=True,
+            )
+        except Exception:
+            st.markdown(f"## {UISymbols.get_functional_icon('inventory')} {i18n.t('ccu_overview.inventory.title')}")
 
-        st.markdown("---")
-        with st.expander("### 🏭 Lager - Konstante Größe (160x160)", expanded=True):
+        with st.expander(i18n.t("ccu_overview.inventory.stock_grid") if i18n else "Stock Grid", expanded=True):
             _render_inventory_with_fixed_size(inventory_data, asset_manager)
 
-        # Verfügbare Werkstücke anzeigen
+        # SECTION 3: Purchase Orders (with heading SVG)
         st.markdown("---")
-        available_workpieces_text = i18n.t("ccu_overview.inventory.available_workpieces")
-        st.markdown(f"**{UISymbols.get_functional_icon('dashboard')} {available_workpieces_text}:**")
+        try:
+            from omf2.assets.heading_icons import get_svg_inline
 
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            st.metric(f"{UISymbols.get_functional_icon('workpiece_blue')} BLUE", available.get("BLUE", 0))
-        with col2:
-            st.metric(f"{UISymbols.get_functional_icon('workpiece_white')} WHITE", available.get("WHITE", 0))
-        with col3:
-            st.metric(f"{UISymbols.get_functional_icon('workpiece_red')} RED", available.get("RED", 0))
+            icon_html = get_svg_inline("PURCHASE_ORDERS", size_px=28) or ""
+            st.markdown(
+                f"<h3 style='display:flex; align-items:center; gap:8px; margin:0;'>{icon_html} {i18n.t('ccu_overview.purchase_orders.title')}</h3>",
+                unsafe_allow_html=True,
+            )
+        except Exception:
+            st.markdown(
+                f"## {UISymbols.get_functional_icon('purchase_order')} {i18n.t('ccu_overview.purchase_orders.title')}"
+            )
+        _render_purchase_orders_section(available, ccu_gateway, i18n, asset_manager)
+
+        # Summary section removed per specification
 
     except Exception as e:
         logger.error(f"{UISymbols.get_status_icon('error')} Error rendering inventory: {e}")
@@ -299,7 +316,8 @@ def _render_customer_orders_section(available, ccu_gateway: CcuGateway, i18n, as
             color_emoji = product.get("icon", "🔵" if product_id == "blue" else "⚪" if product_id == "white" else "🔴")
 
             with columns[i]:
-                st.markdown(f"#### {color_emoji} **{color_name.upper()} Customer Order**")
+                # Remove redundant "Customer Order" after product name
+                st.markdown(f"#### {color_emoji} **{color_name.upper()}**")
 
                 # PRODUCT SVG - STANDARDIZED 200x200 CONTAINER
                 svg_content = asset_manager.get_workpiece_svg(product_id.upper(), "product")
@@ -368,11 +386,11 @@ def _render_workpiece_section(
 
     workpieces_text = i18n.t("ccu_overview.purchase_orders.workpieces").format(workpiece_type=workpiece_type)
     st.markdown(f"#### {icons.get(workpiece_type, '📦')} {workpieces_text}")
-    col1, col2, col3, col4 = st.columns([1, 1, 3, 1])
+    # 3 columns layout per spec: SVG/stock | missing pallets | order button (+ need details)
+    col1, col2, col3 = st.columns([1, 3, 1])
 
     with col1:
-        # STANDARDIZED 200x200 CONTAINER
-        st.markdown(f"**{i18n.t('ccu_overview.labels.unprocessed_svg')}:**")
+        # STANDARDIZED 200x200 CONTAINER (label hidden per spec)
         svg_content = asset_manager.get_workpiece_svg(workpiece_type, "unprocessed")
         if svg_content:
             st.markdown(
@@ -384,39 +402,31 @@ def _render_workpiece_section(
 
         # Bestand anzeigen
         stock_text = i18n.t("ccu_overview.purchase_orders.stock")
-        available_text = i18n.t("ccu_overview.purchase_orders.available")
-        yes_text = i18n.t("ccu_overview.purchase_orders.yes")
-        no_text = i18n.t("ccu_overview.purchase_orders.no")
         st.markdown(f"**{stock_text}: {count}**")
-        st.markdown(f"**{available_text}: {'✅ ' + yes_text if count > 0 else '❌ ' + no_text}**")
 
     with col2:
-        need_text = i18n.t("ccu_overview.purchase_orders.need_of_max").format(need=need, max_capacity=max_capacity)
-        st.markdown(f"**{need_text}**")
-        if need > 0:
-            still_orderable_text = i18n.t("ccu_overview.purchase_orders.still_orderable").format(need=need)
-            st.markdown(f"**{still_orderable_text}**")
-        else:
-            complete_text = i18n.t("ccu_overview.purchase_orders.complete_no_need")
-            st.success(f"{UISymbols.get_status_icon('success')} {complete_text}")
+        # Missing workpieces visualization stays centered
+        pass
 
-    with col3:
+    with col2:
         if need > 0:
-            # STANDARDIZED 200x200 CONTAINERS FOR PALETT
-            st.markdown("**Fehlende Werkstücke:**")
             palett_content = asset_manager.get_workpiece_palett()
             if palett_content:
-                # Using standardized 200x200 size for palett SVGs
-                palett_html = ""
+                items_html = ""
                 for _i in range(need):
-                    palett_html += f'<div style="display: inline-block; margin: 2px;">{render_product_svg_container(palett_content, scale=0.5)}</div>'
-                st.markdown(palett_html, unsafe_allow_html=True)
+                    # smaller scale to improve responsiveness in narrow viewports
+                    items_html += f"<div>{render_product_svg_container(palett_content, scale=0.4)}</div>"
+                wrapper = f"<div style='display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:center; align-content:center; width:100%; max-width:100%; min-width:0; overflow:hidden; text-align:center;'>{items_html}</div>"
+                st.markdown(wrapper, unsafe_allow_html=True)
+                # Description under SVGs
+                desc = i18n.t("ccu_overview.labels.missing_workpieces") if i18n else "Missing workpieces"
+                st.markdown(f"<div style='text-align:center; opacity:0.75;'>{desc}</div>", unsafe_allow_html=True)
             else:
                 st.error(f"❌ {i18n.t('ccu_overview.errors.palett_not_found')}")
         else:
             st.success(f"✅ {i18n.t('ccu_overview.status.stock_complete')}")
 
-    with col4:
+    with col3:
         order_button_text = i18n.t("ccu_overview.purchase_orders.order_raw_material")
         if need > 0:
             if st.button(
@@ -431,6 +441,16 @@ def _render_workpiece_section(
                 key=f"ccu_purchase_order_{workpiece_type.lower()}_disabled",
                 disabled=True,
             )
+
+        # Move need/still-orderable info below the button per spec
+        need_text = i18n.t("ccu_overview.purchase_orders.need_of_max").format(need=need, max_capacity=max_capacity)
+        st.markdown(f"**{need_text}**")
+        if need > 0:
+            still_orderable_text = i18n.t("ccu_overview.purchase_orders.still_orderable").format(need=need)
+            st.markdown(f"**{still_orderable_text}**")
+        else:
+            complete_text = i18n.t("ccu_overview.purchase_orders.complete_no_need")
+            st.success(f"{UISymbols.get_status_icon('success')} {complete_text}")
 
 
 def _render_inventory_with_fixed_size(inventory_data, asset_manager):

@@ -143,6 +143,7 @@ def render_customer_order_subtab(ccu_gateway: CcuGateway, registry_manager, asse
                 )
 
                 with columns[i]:
+                    # Restore colored product heading
                     st.markdown(f"#### {color_emoji} **{color_name.upper()} Customer Order**")
 
                     # PRODUCT SVG - STANDARDIZED 200x200 CONTAINER

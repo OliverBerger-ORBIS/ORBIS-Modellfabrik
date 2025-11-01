@@ -65,6 +65,10 @@ HEADING_ICON_FILES: Dict[str, str] = {
     # CCU-SUBTABS
     "FACTORY_CONFIGURATION": "grundriss.svg",
     "SHOPFLOOR_LAYOUT": "grundriss.svg",
+    "CUSTOMER_ORDERS": "lieferung-bestellen.svg",
+    "PURCHASE_ORDERS": "box.svg",
+    "INVENTORY": "warehouse.svg",
+    "SENSOR_DATA": "smart.svg",
 }
 
 

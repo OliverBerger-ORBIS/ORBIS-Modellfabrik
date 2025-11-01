@@ -73,7 +73,7 @@ ccu_overview.product_catalog.error_loading: "Le panneau du catalogue de produits
 
 # Sensor Data Subtab
 ccu_overview.sensor_data.title: "Données Capteurs"
-ccu_overview.sensor_data.subtitle: "Données de capteurs en temps réel de BME680, LDR et caméra avec modèle Gateway"
+ccu_overview.sensor_data.subtitle: "Données capteurs en temps réel depuis la Station Capteurs avec BME680, LDR et caméra"
 ccu_overview.sensor_data.no_data: "Aucune donnée de capteur disponible"
 ccu_overview.sensor_data.current_temperature: "Température Actuelle"
 ccu_overview.sensor_data.current_humidity: "Humidité Actuelle"
@@ -98,6 +98,7 @@ ccu_overview.sensor_data.photo_error: "Erreur lors du déclenchement de la photo
 ccu_overview.sensor_data.data_refreshed: "Données de capteur actualisées!"
 ccu_overview.sensor_data.statistics: "Statistiques Capteurs"
 ccu_overview.sensor_data.history_cleared: "Historique des messages de capteur effacé!"
+ccu_overview.sensor_data.initialized_defaults: "Affichage de valeurs de démonstration initialisées en attendant les données en direct"
 ccu_overview.sensor_data.temperature_label: "Température"
 ccu_overview.sensor_data.humidity_label: "Humidité"
 ccu_overview.sensor_data.pressure_label: "Pression"

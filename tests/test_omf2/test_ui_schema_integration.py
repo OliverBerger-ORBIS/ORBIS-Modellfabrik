@@ -1,4 +1,3 @@
-
 #!/usr/bin/env python3
 """
 Test UI Schema Integration - Admin Settings mit Schema-Validierung

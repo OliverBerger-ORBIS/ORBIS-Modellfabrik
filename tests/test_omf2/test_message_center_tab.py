@@ -1,4 +1,3 @@
-
 #!/usr/bin/env python3
 """
 Test für Message Center Tab - testet die gesamte Funktionalität

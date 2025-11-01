@@ -88,8 +88,7 @@ def _show_ccu_product_catalog_panel(asset_manager):
                 with columns[i]:
                     st.markdown(f"#### {color_emoji} **{color_name.upper()}**")
 
-                    # 3DIM SVG - STANDARDIZED 200x200 CONTAINER
-                    st.markdown("**3DIM SVG:**")
+                    # 3DIM SVG - standardized container (label removed per spec)
                     svg_content = asset_manager.get_workpiece_svg(product_id.upper(), "3dim")
                     if svg_content:
                         st.markdown(
@@ -97,10 +96,14 @@ def _show_ccu_product_catalog_panel(asset_manager):
                             unsafe_allow_html=True,
                         )
                     else:
-                        st.error(f"❌ {product_id.lower()}_3dim.svg nicht gefunden!")
+                        # Subtle info instead of error
+                        st.info(
+                            i18n.t("ccu_overview.product_catalog.asset_missing_3dim").format(product=product_id.lower())
+                            if i18n
+                            else f"{product_id.lower()}_3dim.svg not found"
+                        )
 
-                    # PRODUCT SVG - STANDARDIZED 200x200 CONTAINER
-                    st.markdown("**Product SVG:**")
+                    # PRODUCT SVG - standardized container (label removed per spec)
                     svg_content = asset_manager.get_workpiece_svg(product_id.upper(), "product")
                     if svg_content:
                         st.markdown(
@@ -108,16 +111,30 @@ def _show_ccu_product_catalog_panel(asset_manager):
                             unsafe_allow_html=True,
                         )
                     else:
-                        st.error(f"❌ {product_id.lower()}_product.svg nicht gefunden!")
+                        # Subtle info instead of error
+                        st.info(
+                            i18n.t("ccu_overview.product_catalog.asset_missing_product").format(
+                                product=product_id.lower()
+                            )
+                            if i18n
+                            else f"{product_id.lower()}_product.svg not found"
+                        )
 
-                    # Produktdaten aus Registry
-                    st.markdown("**Produktdaten:**")
+                    # Product details from registry
+                    st.markdown(
+                        f"**{i18n.t('ccu_overview.product_catalog.details_title')}**"
+                        if i18n
+                        else "**Product Details:**"
+                    )
                     name_label = i18n.t("ccu_overview.product_catalog.name")
                     desc_label = i18n.t("ccu_overview.product_catalog.description")
                     material_label = i18n.t("ccu_overview.product_catalog.material")
-                    st.write(f"**{name_label}:** {product.get('name', 'Kein Name')}")
-                    st.write(f"**{material_label}:** {product.get('material', 'Kein Material')}")
-                    st.write(f"**{desc_label}:** {product.get('description', 'Keine Beschreibung')}")
+                    if product.get("name"):
+                        st.write(f"**{name_label}:** {product.get('name')}")
+                    if product.get("material"):
+                        st.write(f"**{material_label}:** {product.get('material')}")
+                    if product.get("description"):
+                        st.write(f"**{desc_label}:** {product.get('description')}")
 
         # Einfache Produktstatistiken
         summary_text = i18n.t("ccu_overview.product_catalog.summary")

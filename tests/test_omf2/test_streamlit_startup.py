@@ -1,4 +1,3 @@
-
 #!/usr/bin/env python3
 """
 Test for Streamlit startup errors and warnings

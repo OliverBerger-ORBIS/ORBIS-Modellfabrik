@@ -413,7 +413,7 @@ class TestCanonicalShopfloorAssets(unittest.TestCase):
         result = self.asset_manager.get_shopfloor_asset_path("SOFTWARE", "rectangle")
         self.assertIsNotNone(result)
         self.assertIn("factory.svg", str(result))
-    
+
     def test_get_shopfloor_asset_path_square_deprecated(self):
         """Test: get_shopfloor_asset_path square assets are deprecated"""
         # square1/square2 are no longer valid for get_shopfloor_asset_path
