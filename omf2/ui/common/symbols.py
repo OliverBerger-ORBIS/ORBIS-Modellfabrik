@@ -11,39 +11,62 @@ from typing import Dict, Optional
 class UISymbols:
     """Centralized symbol definitions for OMF2 UI"""
 
-    # Tab Navigation Icons - FINALE ENTSCHEIDUNGEN
+    # Tab Navigation Icons - FINAL
+    # Ordering encodes hierarchy: Top-level tabs → subtabs → nested subtabs (e.g., admin)
     TAB_ICONS: Dict[str, str] = {
-        # CCU Module
-        "ccu_dashboard": "🏭",  # Factory/Overview
-        "ccu_overview": "🏭",  # CCU Overview
-        "ccu_orders": "📝",  # Orders/Workpieces (FINAL: 📝)
-        "ccu_process": "🔄",  # Process Control (FINAL: 🔄)
-        "ccu_configuration": "⚙️",  # Configuration
-        "ccu_modules": "🏗️",  # Module Control (FINAL: 🏗️)
-        # CCU Process Subtabs
-        "production_plan": "📋",  # Production Plan (FINAL: 📋)
+        # --- Top-level: CCU Overview ---
+        "ccu_dashboard": "🏭",  # Top Tab: Overview (Dashboard)
+        # Subtabs (Overview)
+        "product_catalog": "📋",  # Product Catalog
+        "inventory": "📚",  # Inventory / Stock Grid
+        "sensor_data": "📊",  # Sensor Data
+        # --- Top-level: Orders ---
+        "ccu_orders": "📝",  # Top Tab: Orders/Workpieces
+        # Subtabs (Orders)
+        "production_orders": "🏭",  # Production Orders
+        "storage_orders": "📦",  # Storage Orders
+        # --- Top-level: Process ---
+        "ccu_process": "🔄",  # Top Tab: Process Control
+        # Subtabs (Process)
+        "production_plan": "📋",  # Production Plan
         # removed: production_monitoring
-        # CCU Configuration Subtabs
-        "factory": "🏭",  # Factory Configuration (FINAL: 🏭)
-        "parameter": "⚙️",  # Parameter Configuration (FINAL: ⚙️)
-        "workflow": "🔄",  # Workflow/Process Flow (FINAL: 🔄)
-        # Node-RED Integration
+        # --- Top-level: Modules ---
+        "ccu_modules": "🏗️",  # Top Tab: Module Control
+        # (no subtabs)
+        # --- Top-level: Configuration ---
+        "ccu_configuration": "⚙️",  # Top Tab: Configuration
+        # Subtabs (Configuration)
+        "factory": "🏭",  # Factory Configuration
+        "parameter": "⚙️",  # Parameter Configuration
+        "workflow": "🔄",  # Workflow / Process Flow
+        # --- Admin (three-level) ---
+        "admin_settings": "⚙️",  # Admin (container)
+        # Subtabs (Admin)
+        "message_center": "📨",  # Message Center
+        # Nested subtabs (Admin → Message Center)
+        "topic_monitor": "📡",  # Topic Monitor
+        "message_monitor": "🔍",  # Message Monitor
+        "send_test_message": "📤",  # Send Test Message
+        # Subtabs (Admin)
+        "generic_steering": "🎮",  # Generic Steering
+        # Nested subtabs (Admin → Generic Steering)
+        "factory_steering": "🎛️",  # Factory Steering
+        # Subtabs (Admin)
+        "mqtt": "🔌",  # MQTT Settings
+        # --- Node-RED Integration (optional/legacy) ---
         "nodered_overview": "🔄",  # Process Overview
         "nodered_processes": "⚙️",  # Process Management
-        # Admin Functions
-        "message_center": "📨",  # Message Center (FINAL: 📨)
-        "generic_steering": "🎮",  # Generic Steering
-        "admin_settings": "⚙️",  # Admin Settings
-        # Legacy Support (omf/dashboard compatibility)
+        # --- Legacy / Compatibility (omf/dashboard) ---
+        "ccu_overview": "🏭",  # Legacy alias for ccu_dashboard
         "aps_overview": "🏭",  # APS Overview
-        "aps_orders": "📝",  # APS Orders (FINAL: 📝)
-        "aps_processes": "🔄",  # APS Processes (FINAL: 🔄)
+        "aps_orders": "📝",  # APS Orders
+        "aps_processes": "🔄",  # APS Processes
         "aps_configuration": "⚙️",  # APS Configuration
-        "aps_modules": "🏗️",  # APS Modules (FINAL: 🏗️)
-        "wl_module_control": "🛠️",  # Werkstückleiter Module Control (FINAL: 🛠️)
-        "wl_system_control": "🎛️",  # Werkstückleiter System Control (FINAL: 🎛️)
-        "steering": "🎮",  # Steering
-        "logs": "📋",  # Logs (FINAL: 📋)
+        "aps_modules": "🏗️",  # APS Modules
+        "wl_module_control": "🛠️",  # Werkstückleiter Module Control
+        "wl_system_control": "🎛️",  # Werkstückleiter System Control
+        "steering": "🎮",  # Steering (generic)
+        "logs": "📋",  # Logs
         "settings": "⚙️",  # Settings
     }
 
