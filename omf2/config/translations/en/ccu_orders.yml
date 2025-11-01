@@ -14,8 +14,8 @@ ccu_orders.statistics.stub_mode: "🔧 STUB"
 ccu_orders.statistics.live_mode: "✅ Live"
 
 # Subtabs
-ccu_orders.subtabs.production_orders: "🏭 Production Orders"
-ccu_orders.subtabs.storage_orders: "📦 Storage Orders"
+ccu_orders.subtabs.production_orders: "Production Orders"
+ccu_orders.subtabs.storage_orders: "Storage Orders"
 
 # Order Actions
 ccu_orders.actions.title: "Order Actions"
@@ -26,7 +26,7 @@ ccu_orders.actions.resume_all: "Resume All Orders"
 
 # Production Orders Subtab
 ccu_orders.production.title: "Production Orders"
-ccu_orders.production.subtitle: "Only orders with **orderType: PRODUCTION**"
+ccu_orders.production.subtitle: ""
 ccu_orders.production.active_title: "Active Production Orders"
 ccu_orders.production.completed_title: "Completed Production Orders"
 ccu_orders.production.no_active: "No active Production Orders available"
@@ -34,7 +34,7 @@ ccu_orders.production.no_completed: "No completed Production Orders available"
 
 # Storage Orders Subtab
 ccu_orders.storage.title: "Storage Orders"
-ccu_orders.storage.subtitle: "Only orders with **orderType: STORAGE**"
+ccu_orders.storage.subtitle: ""
 ccu_orders.storage.active_title: "Active Storage Orders"
 ccu_orders.storage.completed_title: "Completed Storage Orders"
 ccu_orders.storage.no_active: "No active Storage Orders available"

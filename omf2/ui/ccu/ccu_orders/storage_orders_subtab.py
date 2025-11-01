@@ -98,7 +98,7 @@ def show_storage_orders_subtab(i18n):
             )
         except Exception:
             st.markdown(f"### {i18n.t('ccu_orders.storage.title')}")
-        st.markdown(i18n.t("ccu_orders.storage.subtitle"))
+        # Subtitle removed (orderType notice)
 
         # Business Logic über OrderManager (for operations)
         order_manager = get_order_manager()

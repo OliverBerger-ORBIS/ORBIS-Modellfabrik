@@ -103,7 +103,7 @@ def show_production_orders_subtab(i18n):
             )
         except Exception:
             st.markdown(f"### {i18n.t('ccu_orders.production.title')}")
-        st.markdown(i18n.t("ccu_orders.production.subtitle"))
+        # Subtitle removed (orderType notice)
 
         # Active Production Orders
         _show_active_orders_section(active_orders, order_manager, i18n)

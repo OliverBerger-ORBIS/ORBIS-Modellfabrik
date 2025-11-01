@@ -299,6 +299,8 @@ class I18nManager:
                 # Fallback: Nur lokal speichern
                 self.current_language = language
                 logger.info(f"🌐 Language set to: {language} (Local)")
+            # Invalidate cached translations to pick up new/updated YAML and ensure correct language
+            self.translations = None
         else:
             logger.warning(f"⚠️ Unsupported language: {language}")
 

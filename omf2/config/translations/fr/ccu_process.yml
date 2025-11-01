@@ -12,3 +12,35 @@ ccu_process.error.tab_failed: "Échec de l'onglet Processus CCU: {error}"
 # Under Development
 ccu_process.under_development: "Ce composant est actuellement en développement."
 
+# Descriptions d'étapes
+ccu_process.steps.mill: "Fraisage de la pièce"
+ccu_process.steps.drill: "Perçage de la pièce"
+ccu_process.steps.aiqs: "Assurance qualité basée sur l'IA"
+ccu_process.steps.hbw: "Prélèvement et mise en place via magasin grande hauteur"
+ccu_process.steps.dps: "Expédition et sortie des marchandises"
+
+# Titres de section et descriptions
+ccu_process.sections.processing_steps.title: "Étapes de traitement"
+ccu_process.processing.retrieve.title: "Prélèvement via magasin grande hauteur"
+ccu_process.processing.retrieve.subtitle: "Prélèvement initial et mise en place pour tous les types de produits"
+ccu_process.processing.delivery.title: "Expédition via sortie des marchandises"
+ccu_process.processing.delivery.subtitle: "Expédition finale pour tous les types de produits"
+ccu_process.production_plan.description: "Planification et gestion interactives du flux de production"
+ccu_process.dropdown.select_product: "Sélectionner un produit"
+
+# Titre de section
+ccu_process.sections.production_plan.title: "Plan de production"
+
+# Contrôles
+ccu_process.controls.add_step: "Ajouter une étape"
+ccu_process.controls.save: "Enregistrer"
+ccu_process.controls.refresh: "Actualiser"
+ccu_process.controls.toggle_label: "Activer les étapes de traitement avancées"
+ccu_process.controls.toggle_on_info: "Mode de traitement avancé activé"
+ccu_process.controls.saved_success: "Workflow enregistré avec succès !"
+ccu_process.controls.refreshed_info: "Workflow actualisé !"
+
+# Textes de traitement
+ccu_process.processing.steps_count: "{count} étapes de traitement"
+ccu_process.processing.steps_heading: "Étapes de traitement :"
+

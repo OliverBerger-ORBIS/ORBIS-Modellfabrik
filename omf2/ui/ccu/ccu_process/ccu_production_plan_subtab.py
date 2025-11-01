@@ -12,6 +12,7 @@ from omf2.assets.asset_manager import get_asset_manager
 from omf2.assets.heading_icons import get_svg_inline
 from omf2.ccu.config_loader import get_ccu_config_loader
 from omf2.common.logger import get_logger
+from omf2.common.product_manager import get_omf2_product_manager
 from omf2.ui.common.product_rendering import render_product_svg_container
 from omf2.ui.common.symbols import UISymbols, get_icon_html
 from omf2.ui.utils.ui_refresh import request_refresh
@@ -26,15 +27,7 @@ def render_ccu_production_plan_subtab():
         # Ensure i18n manager present (no assignment to avoid linter warnings)
         st.session_state.get("i18n_manager")
 
-        try:
-            heading_icon = get_svg_inline("PROCESS", size_px=32) or ""
-            st.markdown(
-                f"<h3 style='display:flex; align-items:center; gap:8px;'>{heading_icon} Production Plan</h3>",
-                unsafe_allow_html=True,
-            )
-        except Exception:
-            st.subheader(f"{UISymbols.get_tab_icon('production_plan')} Production Plan")
-        st.markdown("Interactive production workflow planning and management")
+        # Top section focuses on Processing Steps; heading style with SVG icon
 
         # Load production workflows
         config_loader = get_ccu_config_loader()
@@ -45,18 +38,46 @@ def render_ccu_production_plan_subtab():
             logger.error("Production workflows could not be loaded.")
             return
 
-        # Workflow Controls Section
-        _show_workflow_controls_section()
-
-        st.divider()
-
-        # Main Workflow Visualization (like Image 2)
+        # Processing Steps (main workflow visualization)
         _show_interactive_workflow_visualization(workflows)
 
         st.divider()
 
-        # Product Processing Details
-        _show_product_processing_cards(workflows)
+        # Section 2: Production Plan (dropdown + controls)
+        try:
+            heading_icon = get_svg_inline("PROCESS", size_px=32) or ""
+            title_txt = (
+                st.session_state.get("i18n_manager").t("ccu_process.sections.production_plan.title")
+                if st.session_state.get("i18n_manager")
+                else "Production Plan"
+            )
+            if title_txt == "ccu_process.sections.production_plan.title":
+                title_txt = "Production Plan"
+            st.markdown(
+                f"<h3 style='display:flex; align-items:center; gap:8px;'>{heading_icon} {title_txt}</h3>",
+                unsafe_allow_html=True,
+            )
+        except Exception:
+            st.subheader(
+                f"{UISymbols.get_tab_icon('production_plan')} "
+                f"{st.session_state.get('i18n_manager').t('ccu_process.sections.production_plan.title') if st.session_state.get('i18n_manager') else 'Production Plan'}"
+            )
+        i18n = st.session_state.get("i18n_manager")
+        plan_desc = (
+            i18n.t("ccu_process.production_plan.description")
+            if i18n
+            else "Interactive production workflow planning and management"
+        )
+        if plan_desc == "ccu_process.production_plan.description":
+            plan_desc = "Interactive production workflow planning and management"
+        st.markdown(plan_desc)
+
+        # Dropdown: Product selection and step details
+        _show_product_processing_details_dropdown(workflows)
+
+        # Controls at the end of the section
+        st.divider()
+        _show_workflow_controls_section()
 
     except Exception as e:
         logger.error(f"❌ CCU Production Plan Subtab rendering error: {e}")
@@ -68,29 +89,49 @@ def _show_workflow_controls_section():
     """Show workflow controls section (Add, Save, Refresh, Toggle)"""
     col1, col2, col3, col4 = st.columns([1, 1, 1, 3])
 
+    i18n = st.session_state.get("i18n_manager")
+    add_label = i18n.t("ccu_process.controls.add_step") if i18n else "Add Step"
+    save_label = i18n.t("ccu_process.controls.save") if i18n else "Save"
+    refresh_label = i18n.t("ccu_process.controls.refresh") if i18n else "Refresh"
+    toggle_label = i18n.t("ccu_process.controls.toggle_label") if i18n else "Activate advanced processing steps"
+    toggle_on_info = i18n.t("ccu_process.controls.toggle_on_info") if i18n else "Advanced processing mode activated"
+    saved_success = i18n.t("ccu_process.controls.saved_success") if i18n else "Workflow saved successfully!"
+    refreshed_info = i18n.t("ccu_process.controls.refreshed_info") if i18n else "Workflow refreshed!"
+
     with col1:
-        if st.button(f"{UISymbols.get_status_icon('add')} Add Step", key="add_workflow_step"):
-            st.info("➕ Add Step functionality coming soon!")
+        if st.button(f"{UISymbols.get_status_icon('add')} {add_label}", key="add_workflow_step"):
+            st.info("➕ " + add_label)
 
     with col2:
-        if st.button(f"{UISymbols.get_status_icon('save')} Save", key="save_workflow"):
-            st.success("💾 Workflow saved successfully!")
+        if st.button(f"{UISymbols.get_status_icon('save')} {save_label}", key="save_workflow"):
+            st.success("💾 " + saved_success)
 
     with col3:
-        if st.button(f"{UISymbols.get_status_icon('refresh')} Refresh", key="refresh_workflow"):
+        if st.button(f"{UISymbols.get_status_icon('refresh')} {refresh_label}", key="refresh_workflow"):
             request_refresh()
-            st.info("🔄 Workflow refreshed!")
+            st.info("🔄 " + refreshed_info)
 
     with col4:
         # Advanced Processing Toggle
-        advanced_mode = st.toggle("Activate advanced processing steps", value=False, key="advanced_processing_toggle")
+        advanced_mode = st.toggle(toggle_label, value=False, key="advanced_processing_toggle")
         if advanced_mode:
-            st.info("🔧 Advanced processing mode activated")
+            st.info("🔧 " + toggle_on_info)
 
 
 def _show_interactive_workflow_visualization(workflows: Dict[str, Any]):
     """Show main interactive workflow visualization (like Image 2)"""
-    st.markdown(f"### {UISymbols.get_tab_icon('workflow')} Processing Steps")
+    try:
+        heading_icon = get_svg_inline("PROCESS", size_px=32) or ""
+        i18n = st.session_state.get("i18n_manager")
+        title_txt = i18n.t("ccu_process.sections.processing_steps.title") if i18n else "Processing Steps"
+        if title_txt == "ccu_process.sections.processing_steps.title":
+            title_txt = "Processing Steps"
+        st.markdown(
+            f"<h3 style='display:flex; align-items:center; gap:8px;'>{heading_icon} {title_txt}</h3>",
+            unsafe_allow_html=True,
+        )
+    except Exception:
+        st.markdown(f"### {UISymbols.get_tab_icon('workflow')} Processing Steps")
 
     # Unified workflow: Start/End spanning all 3 products
     _show_unified_workflow_section(workflows)
@@ -103,38 +144,65 @@ def _show_unified_workflow_section(workflows: Dict[str, Any]):
     from omf2.ui.common.symbols import get_icon_html as _get_icon_html
 
     hbw_icon = _get_icon_html("HBW", size_px=64)
+    i18n = st.session_state.get("i18n_manager")
+    retrieve_title = i18n.t("ccu_process.processing.retrieve.title") if i18n else "Retrieve via high-bay warehouse"
+    if retrieve_title == "ccu_process.processing.retrieve.title":
+        retrieve_title = "Retrieve via high-bay warehouse"
+    retrieve_sub = (
+        i18n.t("ccu_process.processing.retrieve.subtitle")
+        if i18n
+        else "Initial material retrieval and staging for all product types"
+    )
+    if retrieve_sub == "ccu_process.processing.retrieve.subtitle":
+        retrieve_sub = "Initial material retrieval and staging for all product types"
     st.markdown(
         f"""
         <div style='text-align: center; padding: 16px; background-color: #e3f2fd; border-radius: 10px; margin: 10px 0;'>
           <div style='margin-bottom:8px;'>{hbw_icon}</div>
-          <div style='font-weight:700;'>Retrieve via high-bay warehouse</div>
-          <div style='opacity:0.8;'>Initial material retrieval and staging for all product types</div>
+          <div style='font-weight:700;'>{retrieve_title}</div>
+          <div style='opacity:0.8;'>{retrieve_sub}</div>
         </div>
         """,
         unsafe_allow_html=True,
     )
 
-    # Arrow down
-    st.markdown("<div style='text-align: center; font-size: 24px; margin: 10px 0;'>↓</div>", unsafe_allow_html=True)
+    # Arrow down (more prominent, same vertical footprint)
+    st.markdown(
+        "<div style='text-align: center; font-size: 28px; margin: 6px 0;'>⬇️</div>",
+        unsafe_allow_html=True,
+    )
 
     # Parallel processing section with 3 product types
     _show_parallel_processing_section(workflows)
 
-    # Arrow up
-    st.markdown("<div style='text-align: center; font-size: 24px; margin: 10px 0;'>↑</div>", unsafe_allow_html=True)
+    # Arrow down again to emphasize top-to-bottom flow
+    st.markdown(
+        "<div style='text-align: center; font-size: 28px; margin: 6px 0;'>⬇️</div>",
+        unsafe_allow_html=True,
+    )
 
     # End section: show DPS icon (48px) without extra heading text
     dps_icon = _get_icon_html("DPS", size_px=64)
     dps_sq1 = _get_icon_html("DPS_SQUARE1", size_px=64)
     dps_sq2 = _get_icon_html("DPS_SQUARE2", size_px=64)
+    delivery_title = i18n.t("ccu_process.processing.delivery.title") if i18n else "Delivery via Goods Outgoing"
+    if delivery_title == "ccu_process.processing.delivery.title":
+        delivery_title = "Delivery via Goods Outgoing"
+    delivery_sub = (
+        i18n.t("ccu_process.processing.delivery.subtitle")
+        if i18n
+        else "Final product delivery and dispatch for all product types"
+    )
+    if delivery_sub == "ccu_process.processing.delivery.subtitle":
+        delivery_sub = "Final product delivery and dispatch for all product types"
     st.markdown(
         f"""
         <div style='text-align: center; padding: 16px; background-color: #e8f5e8; border-radius: 10px; margin: 10px 0;'>
           <div style='margin-bottom:8px; display:flex; gap:12px; align-items:center; justify-content:center;'>
             {dps_icon}{dps_sq1}{dps_sq2}
           </div>
-          <div style='font-weight:700;'>Delivery via Goods Outgoing</div>
-          <div style='opacity:0.8;'>Final product delivery and dispatch for all product types</div>
+          <div style='font-weight:700;'>{delivery_title}</div>
+          <div style='opacity:0.8;'>{delivery_sub}</div>
         </div>
         """,
         unsafe_allow_html=True,
@@ -143,7 +211,7 @@ def _show_unified_workflow_section(workflows: Dict[str, Any]):
 
 def _show_parallel_processing_section(workflows: Dict[str, Any]):
     """Show parallel processing section with 3 product cards"""
-    # Parallel processing section – heading removed per specification
+    # No section heading; compact layout per specification
 
     # Create 3 columns for Blue, Red, White products
     col1, col2, col3 = st.columns(3)
@@ -170,6 +238,12 @@ def _show_parallel_processing_section(workflows: Dict[str, Any]):
                 st.warning(f"{product.lower()}_3dim.svg nicht gefunden – bitte Asset prüfen.")
             if not svg_prod_raw:
                 st.warning(f"{product.lower()}_product.svg nicht gefunden – bitte Asset prüfen.")
+            _i18n = st.session_state.get("i18n_manager")
+            steps_count = (
+                _i18n.t("ccu_process.processing.steps_count", count=len(steps))
+                if _i18n
+                else f"{len(steps)} Processing Steps"
+            )
             st.markdown(
                 f"""
             <div style="padding: 20px; background-color: {product_bg_colors[product]}; border-radius: 10px; margin: 10px 0; text-align:center;">
@@ -178,15 +252,21 @@ def _show_parallel_processing_section(workflows: Dict[str, Any]):
                     <div style="background:#fff; border-radius:6px; padding:4px;">{product_svg or ''}</div>
                 </div>
                 <div style="font-weight:700; font-size:18px; margin-top:8px;">{product} </div>
-                <div style="opacity:0.8;">{len(steps)} Processing Steps</div>
+                <div style="opacity:0.8;">{steps_count}</div>
             </div>
             """,
                 unsafe_allow_html=True,
             )
 
+            # Down arrow under each product card (compact)
+            st.markdown(
+                "<div style='text-align: center; font-size: 26px; margin: 4px 0;'>⬇️</div>",
+                unsafe_allow_html=True,
+            )
+
             # Processing steps list in centered boxes
             if steps:
-                st.markdown("**Processing Steps:**")
+                # No per-column "Processing Steps" heading; go directly to step cards
                 for _j, step in enumerate(steps, 1):
                     step_icon = _get_module_icon(step)
 
@@ -194,8 +274,8 @@ def _show_parallel_processing_section(workflows: Dict[str, Any]):
                     st.markdown(
                         f"""
                     <div style="display: flex; align-items: center; justify-content: space-between;
-                                padding: 15px; background-color: white; border: 1px solid #ddd;
-                                border-radius: 8px; margin: 10px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                padding: 14px; background-color: white; border: 1px solid #ddd;
+                                border-radius: 8px; margin: 6px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.08);">
                         <div style="flex: 1; text-align: center; font-size: 18px; font-weight: bold;">
                             <span style="font-size: 64px; margin-right: 10px;">{step_icon}</span>
                             {step}
@@ -237,12 +317,56 @@ def _show_product_processing_cards(workflows: Dict[str, Any]):
             _show_product_detail_card(product, workflows.get(product, {}))
 
 
+def _show_product_processing_details_dropdown(workflows: Dict[str, Any]):
+    """Show product processing details using a product selector (dropdown)."""
+
+    # Load enabled products from Registry (single source of truth)
+    pm = get_omf2_product_manager()
+    enabled_products = pm.get_enabled_products()  # keys: lower-case ids
+    if not enabled_products:
+        st.info("No enabled products in registry")
+        return
+
+    # Preferred visual order
+    preferred_order = ["BLUE", "WHITE", "RED"]
+    # Collect uppercase IDs from registry (respect enabled flag)
+    reg_ids = [data.get("id", key.upper()) for key, data in enabled_products.items()]
+    # Keep only those that we have workflows for (to avoid empty details)
+    available_ids = [pid for pid in reg_ids if pid in workflows]
+    if not available_ids:
+        st.info("No product workflows available")
+        return
+    # Order per preference
+    products = [pid for pid in preferred_order if pid in available_ids] + [
+        pid for pid in available_ids if pid not in preferred_order
+    ]
+
+    # Selectbox with format_func (no HTML in options)
+    def _format_product(pid: str) -> str:
+        info = pm.get_product_by_id(pid) or {}
+        name = info.get("name", pid)
+        return f"{UISymbols.get_workpiece_icon(pid)} {name}"
+
+    i18n = st.session_state.get("i18n_manager")
+    select_label = i18n.t("ccu_process.dropdown.select_product") if i18n else "Select product"
+    if select_label == "ccu_process.dropdown.select_product":
+        select_label = "Select product"
+    selected_product = st.selectbox(select_label, products, index=0, format_func=_format_product)
+    _show_product_detail_card(selected_product, workflows.get(selected_product, {}))
+
+
 def _show_product_detail_card(product: str, workflow: Dict[str, Any]):
     """Show detailed card for a specific product"""
     steps = workflow.get("steps", [])
 
     # Product header
     asset_mgr = get_asset_manager()
+    # Resolve display name from registry and remove leading "Product " if present
+    pm = get_omf2_product_manager()
+    pinfo = pm.get_product_by_id(product) or {}
+    pname = pinfo.get("name", product)
+    if isinstance(pname, str) and pname.lower().startswith("product "):
+        pname = pname[8:]
     # Render both 3DIM and PRODUCT with the same container as in product_catalog
     header_prod_raw = asset_mgr.get_workpiece_svg(product, "product")
     header_3d_raw = asset_mgr.get_workpiece_svg(product, "3dim")
@@ -252,12 +376,16 @@ def _show_product_detail_card(product: str, workflow: Dict[str, Any]):
         f"""
         <div style='display:flex; align-items:center; gap:12px;'>
             <div style='display:inline-flex; gap:8px; align-items:flex-start;'>{header_3d}{header_prod}</div>
-            <h3 style='margin:0;'>{product} Product</h3>
+            <h3 style='margin:0;'>{pname}</h3>
         </div>
         """,
         unsafe_allow_html=True,
     )
-    st.markdown(f"**{len(steps)} Verarbeitungsschritte** (Processing Steps)")
+    i18n = st.session_state.get("i18n_manager")
+    steps_count = (
+        i18n.t("ccu_process.processing.steps_count", count=len(steps)) if i18n else f"{len(steps)} Processing Steps"
+    )
+    st.markdown(f"**{steps_count}**")
 
     if not steps:
         st.info(f"No processing steps defined for {product}")
@@ -293,15 +421,17 @@ def _get_step_status_icon(step_num: int, total_steps: int) -> str:
 
 
 def _get_step_description(step: str) -> str:
-    """Get German description for step"""
-    descriptions = {
-        "MILL": "Fräsen des Werkstücks",
-        "DRILL": "Bohren des Werkstücks",
-        "AIQS": "Qualitätskontrolle mittels KI",
-        "HBW": "Materiallager und -bereitstellung",
-        "DPS": "Auftragserfüllung und Versand",
-    }
-    return descriptions.get(step, f"Processing step: {step}")
+    """Get i18n description for a processing step"""
+    i18n = st.session_state.get("i18n_manager")
+    if i18n:
+        key = f"ccu_process.steps.{step.lower()}"
+        try:
+            text = i18n.t(key)
+            if text and text != key:
+                return text
+        except Exception:
+            pass
+    return f"Processing step: {step}"
 
 
 def _get_product_icon(product: str) -> str:

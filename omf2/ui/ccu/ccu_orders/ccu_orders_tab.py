@@ -83,14 +83,17 @@ def render_ccu_orders_tab(ccu_gateway=None, registry_manager=None):
                 st.metric(i18n.t("ccu_orders.statistics.completed_orders"), statistics.get("completed_count", 0))
 
             with col4:
-                stub_mode = (
-                    i18n.t("ccu_orders.statistics.stub_mode")
-                    if statistics.get("stub_mode")
-                    else i18n.t("ccu_orders.statistics.live_mode")
-                )
-                st.metric(i18n.t("ccu_orders.statistics.mode"), stub_mode)
+                # Mode based on environment: live → Live, replay → Test, else Mock
+                current_env = st.session_state.get("current_environment", "mock")
+                if current_env == "live":
+                    mode_label = i18n.t("ccu_orders.statistics.live_mode")
+                elif current_env == "replay":
+                    mode_label = "🧪 Test"
+                else:
+                    mode_label = "🧪 Mock"
+                st.metric(i18n.t("ccu_orders.statistics.mode"), mode_label)
 
-        # Tabs für Production vs Storage Orders (mit zentralen Tab-Icons)
+        # Tabs für Production vs Storage Orders (mit zentralen Tab-Icons, ohne doppelte Emojis in i18n)
         tab1, tab2 = st.tabs(
             [
                 f"{UISymbols.get_tab_icon('production_orders')} {i18n.t('ccu_orders.subtabs.production_orders')}",
@@ -104,24 +107,7 @@ def render_ccu_orders_tab(ccu_gateway=None, registry_manager=None):
         with tab2:
             show_storage_orders_subtab(i18n)
 
-        # Order Actions Section (unterhalb der Tabs)
-        actions_title = i18n.t("ccu_orders.actions.title")
-        with st.expander(f"🎛️ {actions_title}", expanded=False):
-            st.markdown(f"### {i18n.t('ccu_orders.actions.control')}")
-
-            col1, col2, col3 = st.columns(3)
-
-            with col1:
-                if st.button(f"📤 {i18n.t('ccu_orders.actions.create_new')}", key="ccu_orders_create_btn"):
-                    _create_new_order(ccu_gateway, i18n)
-
-            with col2:
-                if st.button(f"⏸️ {i18n.t('ccu_orders.actions.pause_all')}", key="ccu_orders_pause_btn"):
-                    _pause_all_orders(ccu_gateway, i18n)
-
-            with col3:
-                if st.button(f"▶️ {i18n.t('ccu_orders.actions.resume_all')}", key="ccu_orders_resume_btn"):
-                    _resume_all_orders(ccu_gateway, i18n)
+        # Removed "Order Actions" section per specification
 
     except Exception as e:
         logger.error(f"❌ CCU Orders Tab rendering error: {e}")

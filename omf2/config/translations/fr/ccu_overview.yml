@@ -70,6 +70,7 @@ ccu_overview.product_catalog.description: "Description"
 ccu_overview.product_catalog.material: "Matériau"
 ccu_overview.product_catalog.color: "Couleur"
 ccu_overview.product_catalog.error_loading: "Le panneau du catalogue de produits n'a pas pu être chargé."
+ccu_overview.product_catalog.details_title: "Détails du produit"
 
 # Sensor Data Subtab
 ccu_overview.sensor_data.title: "Données Capteurs"

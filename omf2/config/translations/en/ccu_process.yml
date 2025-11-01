@@ -12,3 +12,35 @@ ccu_process.error.tab_failed: "CCU Process Tab failed: {error}"
 # Under Development
 ccu_process.under_development: "This component is currently under development."
 
+# Step descriptions
+ccu_process.steps.mill: "Milling the workpiece"
+ccu_process.steps.drill: "Drilling the workpiece"
+ccu_process.steps.aiqs: "Quality assurance using AI"
+ccu_process.steps.hbw: "High-bay warehouse retrieval and staging"
+ccu_process.steps.dps: "Goods outgoing and dispatch"
+
+# Section titles and descriptions
+ccu_process.sections.processing_steps.title: "Processing Steps"
+ccu_process.processing.retrieve.title: "Retrieve via high-bay warehouse"
+ccu_process.processing.retrieve.subtitle: "Initial material retrieval and staging for all product types"
+ccu_process.processing.delivery.title: "Delivery via Goods Outgoing"
+ccu_process.processing.delivery.subtitle: "Final product delivery and dispatch for all product types"
+ccu_process.production_plan.description: "Interactive production workflow planning and management"
+ccu_process.dropdown.select_product: "Select product"
+
+# Production Plan section title
+ccu_process.sections.production_plan.title: "Production Plan"
+
+# Controls
+ccu_process.controls.add_step: "Add Step"
+ccu_process.controls.save: "Save"
+ccu_process.controls.refresh: "Refresh"
+ccu_process.controls.toggle_label: "Activate advanced processing steps"
+ccu_process.controls.toggle_on_info: "Advanced processing mode activated"
+ccu_process.controls.saved_success: "Workflow saved successfully!"
+ccu_process.controls.refreshed_info: "Workflow refreshed!"
+
+# Processing steps helper texts
+ccu_process.processing.steps_count: "{count} Processing Steps"
+ccu_process.processing.steps_heading: "Processing Steps:"
+
