@@ -44,6 +44,12 @@ def render_ccu_factory_configuration_subtab():
         # Shopfloor Layout Display (title will be rendered inside component to avoid spacing)
         _show_shopfloor_layout_section()
 
+        # Click hint: explain how to view details
+        if "i18n_manager" in st.session_state and st.session_state.get("i18n_manager"):
+            st.info(st.session_state["i18n_manager"].t("ccu_configuration.factory.click_hint"))
+        else:
+            st.info("💡 Click on any position in the grid to view its details below")
+
         # Shopfloor Position Details Section
         st.divider()
         _show_shopfloor_position_details()

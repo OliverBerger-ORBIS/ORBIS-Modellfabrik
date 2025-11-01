@@ -5,8 +5,11 @@ ccu_configuration.subtitle: "OMF System Configuration and Settings"
 ccu_configuration.parameter.subtitle: "OMF production parameters and settings"
 
 # Subtabs
-ccu_configuration.subtabs.factory_configuration: "🏭 Factory Configuration"
-ccu_configuration.subtabs.parameter_configuration: "⚙️ Parameter Configuration"
+ccu_configuration.subtabs.factory_configuration: "Factory Configuration"
+ccu_configuration.subtabs.parameter_configuration: "Parameter Configuration"
+
+# Factory Configuration – UI Hints
+ccu_configuration.factory.click_hint: "💡 Click on any position in the grid to view its details below"
 
 # Status Messages
 ccu_configuration.status.refresh_success: "Configuration refreshed via CCU Gateway!"
@@ -21,4 +24,3 @@ ccu_configuration.error.reset_failed: "Configuration reset failed: {error}"
 
 # Under Development
 ccu_configuration.under_development: "This component is currently under development."
-
