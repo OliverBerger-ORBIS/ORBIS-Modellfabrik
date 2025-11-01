@@ -12,74 +12,74 @@ class UISymbols:
     """Centralized symbol definitions for OMF2 UI"""
 
     # Tab Navigation Icons - FINAL
-    # Ordering encodes hierarchy: Top-level tabs → subtabs → nested subtabs (e.g., admin)
+    # Ordering encodes hierarchy exactly like main_dashboard: TOP-Level → SUB-TAB → THIRD-Level
     TAB_ICONS: Dict[str, str] = {
-        # --- Top-level: CCU Overview ---
-        "ccu_dashboard": "🏭",  # Top Tab: Overview (Dashboard)
-        # Subtabs (Overview)
-        "product_catalog": "📋",  # Product Catalog
-        "inventory": "📚",  # Inventory / Stock Grid
-        "sensor_data": "📊",  # Sensor Data
-        # --- Top-level: Orders ---
-        "ccu_orders": "📝",  # Top Tab: Orders/Workpieces
-        # Subtabs (Orders)
-        "production_orders": "🏭",  # Production Orders
-        "storage_orders": "📦",  # Storage Orders
-        # --- Top-level: Process ---
-        "ccu_process": "🔄",  # Top Tab: Process Control
-        # Subtabs (Process)
-        "production_plan": "📋",  # Production Plan
+        # === TOP-LEVEL: CCU Overview ===
+        "ccu_dashboard": "🏭",  # TOP-LEVEL: Overview (Dashboard)
+        # SUB-TAB (Overview)
+        "product_catalog": "📋",  # SUB-TAB: Product Catalog
+        "inventory": "📚",  # SUB-TAB: Inventory / Stock Grid
+        "sensor_data": "🌡️",  # SUB-TAB: Sensor Data
+        # === TOP-LEVEL: Orders ===
+        "ccu_orders": "📝",  # TOP-LEVEL: Orders/Workpieces
+        # SUB-TAB (Orders)
+        "production_orders": "🏭",  # SUB-TAB: Production Orders
+        "storage_orders": "📦",  # SUB-TAB: Storage Orders
+        # === TOP-LEVEL: Process ===
+        "ccu_process": "🔄",  # TOP-LEVEL: Process Control
+        # SUB-TAB (Process)
+        "production_plan": "📋",  # SUB-TAB: Production Plan
         # removed: production_monitoring
-        # --- Top-level: Modules ---
-        "ccu_modules": "🏗️",  # Top Tab: Module Control
-        # (no subtabs)
-        # --- Top-level: Configuration ---
-        "ccu_configuration": "⚙️",  # Top Tab: Configuration
-        # Subtabs (Configuration)
-        "factory": "🏭",  # Factory Configuration
-        "parameter": "⚙️",  # Parameter Configuration
-        "workflow": "🔄",  # Workflow / Process Flow
-        "business_functions": "🧩",  # Business Functions
-        # --- Admin (three-level) ---
-        "admin_settings": "⚙️",  # Admin (container)
-        # Subtabs (Admin Settings)
-        "admin_dashboard": "📊",  # Admin Settings → Dashboard
-        "mqtt_clients": "🔌",  # Admin Settings → MQTT Clients
-        "gateway": "🔀",  # Admin Settings → Gateway
-        "topics": "📡",  # Admin Settings → Topics
-        "schemas": "🧩",  # Admin Settings → Schemas
-        "admin_modules": "🏗️",  # Admin Settings → Modules
-        "stations": "🏢",  # Admin Settings → Stations
-        "txt_controllers": "🕹️",  # Admin Settings → TXT Controllers
-        "workpieces": "📦",  # Admin Settings → Workpieces
-        # Separate Admin area (Message Center)
-        "message_center": "📨",  # Message Center (own tab)
-        # Nested subtabs (Admin → Message Center)
-        "topic_monitor": "📡",  # Topic Monitor
-        "message_monitor": "🔍",  # Message Monitor
-        "send_test_message": "📤",  # Send Test Message
-        # Subtabs (Admin)
-        "generic_steering": "🎮",  # Generic Steering (own tab)
-        # Nested subtabs (Admin → Generic Steering)
-        "factory_steering": "🎛️",  # Factory Steering
-        "topic_steering": "📡",  # Topic Steering
-        # Subtabs (Admin)
-        "mqtt": "🔌",  # MQTT Settings
-        # --- Node-RED Integration (optional/legacy) ---
-        "nodered_overview": "🔄",  # Process Overview
-        "nodered_processes": "⚙️",  # Process Management
-        # --- Legacy / Compatibility (omf/dashboard) ---
-        "ccu_overview": "🏭",  # Legacy alias for ccu_dashboard
-        "aps_overview": "🏭",  # APS Overview
-        "aps_orders": "📝",  # APS Orders
-        "aps_processes": "🔄",  # APS Processes
-        "aps_configuration": "⚙️",  # APS Configuration
-        "aps_modules": "🏗️",  # APS Modules
-        "wl_module_control": "🛠️",  # Werkstückleiter Module Control
-        "wl_system_control": "🎛️",  # Werkstückleiter System Control
-        "steering": "🎮",  # Steering (generic)
-        "logs": "📋",  # Logs
-        "settings": "⚙️",  # Settings
+        # === TOP-LEVEL: Configuration ===
+        "ccu_configuration": "⚙️",  # TOP-LEVEL: Configuration
+        # SUB-TAB (Configuration)
+        "factory": "🏭",  # SUB-TAB: Factory Configuration
+        "parameter": "⚙️",  # SUB-TAB: Parameter Configuration
+        "business_functions": "🧩",  # SUB-TAB: Business Functions
+        "workflow": "🔄",  # SUB-TAB: Workflow / Process Flow
+        # === TOP-LEVEL: Modules ===
+        "ccu_modules": "🧩",  # TOP-LEVEL: Module Control
+        # === TOP-LEVEL: Message Center ===
+        "message_center": "📨",  # TOP-LEVEL: Message Center
+        # THIRD-Level (Message Center)
+        "message_monitor": "🔍",  # THIRD-LEVEL: Message Monitor
+        "topic_monitor": "📡",  # THIRD-LEVEL: Topic Monitor
+        "send_test_message": "📤",  # THIRD-LEVEL: Send Test Message
+        # === TOP-LEVEL: Generic Steering ===
+        "generic_steering": "🎮",  # TOP-LEVEL: Generic Steering
+        # THIRD-Level (Generic Steering)
+        "factory_steering": "🎛️",  # THIRD-LEVEL: Factory Steering
+        "topic_steering": "📡",  # THIRD-LEVEL: Topic Steering
+        # === TOP-LEVEL: System Logs ===
+        "system_logs": "🧾",  # TOP-LEVEL: System Logs
+        # === TOP-LEVEL: Admin Settings ===
+        "admin_settings": "⚙️",  # TOP-LEVEL: Admin Settings
+        # SUB-TAB (Admin Settings)
+        "admin_dashboard": "📊",  # SUB-TAB: Dashboard
+        "mqtt_clients": "🔌",  # SUB-TAB: MQTT Clients
+        "gateway": "🔀",  # SUB-TAB: Gateway
+        "topics": "📡",  # SUB-TAB: Topics
+        "schemas": "🧩",  # SUB-TAB: Schemas
+        "admin_modules": "🧩",  # SUB-TAB: Modules
+        "stations": "🏢",  # SUB-TAB: Stations
+        "txt_controllers": "🕹️",  # SUB-TAB: TXT Controllers
+        "workpieces": "📦",  # SUB-TAB: Workpieces
+        # === Legacy / Optional ===
+        # Node-RED Integration (keine TOP-Navigation im Messe-Setup)
+        "nodered_overview": "🔄",  # LEGACY: Node-RED Overview
+        "nodered_processes": "⚙️",  # LEGACY: Node-RED Processes
+        # Weitere Legacy-Kompatibilität (omf/dashboard)
+        "ccu_overview": "🏭",  # LEGACY alias for ccu_dashboard
+        "aps_overview": "🏭",
+        "aps_orders": "📝",
+        "aps_processes": "🔄",
+        "aps_configuration": "⚙️",
+        "aps_modules": "🏗️",
+        "wl_module_control": "🛠️",
+        "wl_system_control": "🎛️",
+        "steering": "🎮",
+        "logs": "🧾",
+        "settings": "⚙️",
     }
 
     # Status Feedback Icons - FINALE ENTSCHEIDUNGEN
