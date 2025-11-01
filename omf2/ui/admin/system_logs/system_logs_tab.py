@@ -70,14 +70,14 @@ def render_system_logs_tab():
 
         # Connection status shown in sidebar only
 
-        # Log viewer tabs
+        # Log viewer tabs (use centralized TAB_ICONS order)
         tab1, tab2, tab3, tab4, tab5 = st.tabs(
             [
-                f"{UISymbols.get_functional_icon('history')} Log History",
-                f"{UISymbols.get_functional_icon('search')} Log Search",
-                f"{UISymbols.get_functional_icon('dashboard')} Log Analytics",
-                f"{UISymbols.get_functional_icon('settings')} Log Management",
-                "🚨 Error & Warnings",
+                f"{UISymbols.get_tab_icon('log_history')} Log History",
+                f"{UISymbols.get_tab_icon('log_search')} Log Search",
+                f"{UISymbols.get_tab_icon('log_analytics')} Log Analytics",
+                f"{UISymbols.get_tab_icon('log_management')} Log Management",
+                f"{UISymbols.get_tab_icon('log_errors_warnings')} Error & Warnings",
             ]
         )
 

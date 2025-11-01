@@ -41,25 +41,31 @@ class UISymbols:
         "ccu_modules": "🧩",  # TOP-LEVEL: Module Control
         # === TOP-LEVEL: Message Center ===
         "message_center": "📨",  # TOP-LEVEL: Message Center
-        # THIRD-Level (Message Center)
-        "message_monitor": "🔍",  # THIRD-LEVEL: Message Monitor
-        "topic_monitor": "📡",  # THIRD-LEVEL: Topic Monitor
-        "send_test_message": "📤",  # THIRD-LEVEL: Send Test Message
+        # SECOND-LEVEL (Message Center)
+        "message_monitor": "🔍",  # SECOND-LEVEL: Message Monitor
+        "topic_monitor": "🏷️",  # SECOND-LEVEL: Topic Monitor
+        "send_test_message": "📤",  # SECOND-LEVEL: Send Test Message
         # === TOP-LEVEL: Generic Steering ===
         "generic_steering": "🎮",  # TOP-LEVEL: Generic Steering
-        # THIRD-Level (Generic Steering)
-        "factory_steering": "🎛️",  # THIRD-LEVEL: Factory Steering
-        "topic_steering": "📡",  # THIRD-LEVEL: Topic Steering
+        # SECOND-LEVEL (Generic Steering)
+        "factory_steering": "🎛️",  # SECOND-LEVEL: Factory Steering
+        "topic_steering": "🏷️",  # SECOND-LEVEL: Topic Steering
         # === TOP-LEVEL: System Logs ===
         "system_logs": "🧾",  # TOP-LEVEL: System Logs
+        # SECOND-LEVEL (System Logs)
+        "log_history": "📚",  # SECOND-LEVEL: Log History
+        "log_search": "🔍",  # SECOND-LEVEL: Log Search
+        "log_analytics": "📊",  # SECOND-LEVEL: Log Analytics
+        "log_management": "⚙️",  # SECOND-LEVEL: Log Management
+        "log_errors_warnings": "🚨",  # SECOND-LEVEL: Error & Warnings
         # === TOP-LEVEL: Admin Settings ===
         "admin_settings": "⚙️",  # TOP-LEVEL: Admin Settings
         # SUB-TAB (Admin Settings)
         "admin_dashboard": "📊",  # SUB-TAB: Dashboard
         "mqtt_clients": "🔌",  # SUB-TAB: MQTT Clients
         "gateway": "🔀",  # SUB-TAB: Gateway
-        "topics": "📡",  # SUB-TAB: Topics
-        "schemas": "🧩",  # SUB-TAB: Schemas
+        "topics": "🏷️",  # SUB-TAB: Topics
+        "schemas": "{}",  # SUB-TAB: Schemas
         "admin_modules": "🧩",  # SUB-TAB: Modules
         "stations": "🏢",  # SUB-TAB: Stations
         "txt_controllers": "🕹️",  # SUB-TAB: TXT Controllers
