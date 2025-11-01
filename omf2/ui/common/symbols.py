@@ -42,16 +42,27 @@ class UISymbols:
         "business_functions": "🧩",  # Business Functions
         # --- Admin (three-level) ---
         "admin_settings": "⚙️",  # Admin (container)
-        # Subtabs (Admin)
-        "message_center": "📨",  # Message Center
+        # Subtabs (Admin Settings)
+        "admin_dashboard": "📊",  # Admin Settings → Dashboard
+        "mqtt_clients": "🔌",  # Admin Settings → MQTT Clients
+        "gateway": "🔀",  # Admin Settings → Gateway
+        "topics": "📡",  # Admin Settings → Topics
+        "schemas": "🧩",  # Admin Settings → Schemas
+        "admin_modules": "🏗️",  # Admin Settings → Modules
+        "stations": "🏢",  # Admin Settings → Stations
+        "txt_controllers": "🕹️",  # Admin Settings → TXT Controllers
+        "workpieces": "📦",  # Admin Settings → Workpieces
+        # Separate Admin area (Message Center)
+        "message_center": "📨",  # Message Center (own tab)
         # Nested subtabs (Admin → Message Center)
         "topic_monitor": "📡",  # Topic Monitor
         "message_monitor": "🔍",  # Message Monitor
         "send_test_message": "📤",  # Send Test Message
         # Subtabs (Admin)
-        "generic_steering": "🎮",  # Generic Steering
+        "generic_steering": "🎮",  # Generic Steering (own tab)
         # Nested subtabs (Admin → Generic Steering)
         "factory_steering": "🎛️",  # Factory Steering
+        "topic_steering": "📡",  # Topic Steering
         # Subtabs (Admin)
         "mqtt": "🔌",  # MQTT Settings
         # --- Node-RED Integration (optional/legacy) ---

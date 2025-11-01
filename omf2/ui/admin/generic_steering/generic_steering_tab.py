@@ -66,11 +66,11 @@ def render_generic_steering_tab():
                 f"{UISymbols.get_status_icon('warning')} **{i18n.t('admin.generic_steering.registry_not_available')}**"
             )
 
-        # Tabs for different steering modes using UISymbols
+        # Tabs for different steering modes using centralized TAB_ICONS
         tab1, tab2 = st.tabs(
             [
-                f"{UISymbols.get_tab_icon('ccu_dashboard')} Factory Steering",
-                f"{UISymbols.get_functional_icon('topic_driven')} Topic Steering",
+                f"{UISymbols.get_tab_icon('factory_steering')} Factory Steering",
+                f"{UISymbols.get_tab_icon('topic_steering')} Topic Steering",
             ]
         )
 

@@ -34,20 +34,20 @@ def render_admin_settings_tab():
         # Get Registry Manager from session state
         st.session_state.get("registry_manager")
 
-        # Create subtabs using UISymbols for consistent icon management + i18n
-        subtab_labels = [
-            f"{UISymbols.get_functional_icon('dashboard')} {i18n.t('admin.settings.subtabs.dashboard')}",
-            f"{UISymbols.get_functional_icon('mqtt_connect')} {i18n.t('admin.settings.subtabs.mqtt_clients')}",
-            f"🔀 {i18n.t('admin.settings.subtabs.gateway')}",  # Gateway configuration
-            f"{UISymbols.get_functional_icon('topic_driven')} {i18n.t('admin.settings.subtabs.topics')}",
-            f"{UISymbols.get_functional_icon('schema_driven')} {i18n.t('admin.settings.subtabs.schemas')}",
-            f"{UISymbols.get_tab_icon('ccu_modules')} {i18n.t('admin.settings.subtabs.modules')}",
-            f"{UISymbols.get_functional_icon('stations')} {i18n.t('admin.settings.subtabs.stations')}",
-            f"{UISymbols.get_functional_icon('txt_controllers')} {i18n.t('admin.settings.subtabs.txt_controllers')}",
-            f"{UISymbols.get_workpiece_icon('all_workpieces')} {i18n.t('admin.settings.subtabs.workpieces')}",
-        ]
-
-        subtabs = st.tabs(subtab_labels)
+        # Create subtabs using centralized TAB_ICONS for consistency
+        subtabs = st.tabs(
+            [
+                f"{UISymbols.get_tab_icon('admin_dashboard')} {i18n.t('admin.settings.subtabs.dashboard')}",
+                f"{UISymbols.get_tab_icon('mqtt_clients')} {i18n.t('admin.settings.subtabs.mqtt_clients')}",
+                f"{UISymbols.get_tab_icon('gateway')} {i18n.t('admin.settings.subtabs.gateway')}",
+                f"{UISymbols.get_tab_icon('topics')} {i18n.t('admin.settings.subtabs.topics')}",
+                f"{UISymbols.get_tab_icon('schemas')} {i18n.t('admin.settings.subtabs.schemas')}",
+                f"{UISymbols.get_tab_icon('admin_modules')} {i18n.t('admin.settings.subtabs.modules')}",
+                f"{UISymbols.get_tab_icon('stations')} {i18n.t('admin.settings.subtabs.stations')}",
+                f"{UISymbols.get_tab_icon('txt_controllers')} {i18n.t('admin.settings.subtabs.txt_controllers')}",
+                f"{UISymbols.get_tab_icon('workpieces')} {i18n.t('admin.settings.subtabs.workpieces')}",
+            ]
+        )
 
         # Render subtab content
         with subtabs[0]:  # Dashboard

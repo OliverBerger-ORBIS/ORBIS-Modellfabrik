@@ -45,12 +45,12 @@ def render_message_center_tab():
 
         # Connection status shown in sidebar only
 
-        # Tabs for different functions - Standard konform using UISymbols
+        # Tabs for different functions - centralized TAB_ICONS
         tab1, tab2, tab3 = st.tabs(
             [
-                f"{UISymbols.get_functional_icon('dashboard')} Message Monitor",
-                f"{UISymbols.get_functional_icon('topic_driven')} Topic Monitor",
-                f"{UISymbols.get_status_icon('send')} Send Messages",
+                f"{UISymbols.get_tab_icon('message_monitor')} Message Monitor",
+                f"{UISymbols.get_tab_icon('topic_monitor')} Topic Monitor",
+                f"{UISymbols.get_tab_icon('send_test_message')} Send Messages",
             ]
         )
 
