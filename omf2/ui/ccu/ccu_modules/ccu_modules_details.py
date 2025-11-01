@@ -192,18 +192,6 @@ def _show_production_module_details(module_id: str, module_type: str, ccu_gatewa
         st.error(f"❌ Error showing production module details: {e}")
 
 
-def _show_storage_module_details(module_id: str, module_type: str, ccu_gateway, i18n):
-    """Show details for storage modules (shelves, conveyor_belt, warehouse)"""
-    # DELEGATION - KEINE DUPLIKATION
-    _show_production_module_details(module_id, module_type, ccu_gateway, i18n)
-
-
-def _show_generic_module_details(module_id: str, module_type: str, ccu_gateway, i18n):
-    """Show details for generic modules"""
-    # DELEGATION - KEINE DUPLIKATION
-    _show_production_module_details(module_id, module_type, ccu_gateway, i18n)
-
-
 def _show_module_info(module_id: str, module_type: str, module_status: dict, factsheet_status: dict, i18n):
     """Show module information including factsheet data"""
     try:
