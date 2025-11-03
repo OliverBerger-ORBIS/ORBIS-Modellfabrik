@@ -1,10 +1,10 @@
 # CCU Orders Tab - Deutsche Übersetzungen
 
 # Main Tab
-ccu_orders.subtitle: "Order Management und Verarbeitung"
+ccu_orders.subtitle: "Auftragsverwaltung und Verarbeitung"
 
 # Order Statistics
-ccu_orders.statistics.title: "Order Statistiken"
+ccu_orders.statistics.title: "Auftragsstatistiken"
 ccu_orders.statistics.total_orders: "Gesamtanzahl Aufträge"
 ccu_orders.statistics.active_orders: "Aktive Aufträge"
 ccu_orders.statistics.processing: "In Bearbeitung"
@@ -18,8 +18,8 @@ ccu_orders.subtabs.production_orders: "Production Orders"
 ccu_orders.subtabs.storage_orders: "Storage Orders"
 
 # Order Actions
-ccu_orders.actions.title: "Order Aktionen"
-ccu_orders.actions.control: "Order Steuerung"
+ccu_orders.actions.title: "Auftragsaktionen"
+ccu_orders.actions.control: "Auftragssteuerung"
 ccu_orders.actions.create_new: "Neuen Auftrag erstellen"
 ccu_orders.actions.pause_all: "Alle Aufträge pausieren"
 ccu_orders.actions.resume_all: "Alle Aufträge fortsetzen"
