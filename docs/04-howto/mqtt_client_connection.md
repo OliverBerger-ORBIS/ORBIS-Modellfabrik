@@ -9,9 +9,10 @@ Diese Anleitung beschreibt die verbindliche Implementierung und Bedienlogik für
 - Sidebar-Anzeige: `omf2/ui/main_dashboard.py` (Connection Status)
 
 ## Grundprinzipien
-- Verbindung wird stringent über die Sidebar gesteuert.
+- MQTT-Verbindung wird zentral in `omf.py` beim Render gesteuert.
 - Ein Environment-Switch triggert einen sauberen Disconnect, aber keinen Auto-Reconnect.
-- Ein (Re-)Connect erfolgt über den Sidebar-Button „Refresh Dashboard“, und nur wenn noch keine Verbindung besteht.
+- Ein (Re-)Connect erfolgt zentral beim Render (wenn nicht verbunden), ausgelöst durch `request_refresh()` → `st.rerun()` → Render
+- Refresh-Buttons können überall sein (Sidebar, Header, etc.), solange sie `request_refresh()` verwenden
 - Admin und CCU verhalten sich identisch in der Connect-Reihenfolge und Anzeige-Initialisierung.
 
 ## Initialisierung vor dem ersten Render
@@ -43,12 +44,14 @@ Diese Anleitung beschreibt die verbindliche Implementierung und Bedienlogik für
   - Führt einen Connect nur aus, wenn keine aktive Verbindung besteht.
   - Client-ID ändert sich beim Environment-Switch und wird im Status angezeigt.
 
-## Do / Don’t
-- Do: Connect ausschließlich über die Sidebar („Refresh Dashboard“), nicht implizit an anderer Stelle.
+## Do / Don't
+- Do: MQTT-Connect zentral in `omf.py` beim Render durchführen (automatisch wenn nicht verbunden).
+- Do: Refresh-Buttons überall verwenden, solange sie `request_refresh()` nutzen (Sidebar, Header, etc.).
 - Do: `connect_async()` vor `loop_start()` verwenden (beide Clients identisch).
 - Do: Vor Connect `current_environment` und `host/port` aus `_load_config()` setzen.
-- Don’t: Auto-Connect direkt im Environment-Switch auslösen.
-- Don’t: UI-Render starten, bevor `host/port` gesetzt sind (führt zu "unknown").
+- Don't: Direkte `client.connect()` Aufrufe in Tabs oder Komponenten.
+- Don't: Auto-Connect direkt im Environment-Switch auslösen.
+- Don't: UI-Render starten, bevor `host/port` gesetzt sind (führt zu "unknown").
 
 ## Hinweise zu Plattformunterschieden
 - Unter Windows führt früheres Rendern häufiger zu Race-Conditions. Durch die oben beschriebene Initialisierung vor dem Render wird `unknown` zuverlässig vermieden.

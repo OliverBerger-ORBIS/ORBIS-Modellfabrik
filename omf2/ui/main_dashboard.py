@@ -64,6 +64,13 @@ class MainDashboard:
         with col3:
             # Version info and status
             st.caption("OMF2 v2.0.0")
+
+            # Refresh button (same action as sidebar refresh button)
+            refresh_icon = UISymbols.get_status_icon("refresh")
+            refresh_tooltip = i18n.t("common.buttons.refresh") if i18n else "Refresh Dashboard"
+            if st.button(refresh_icon, help=refresh_tooltip, key="header_refresh_button"):
+                request_refresh()
+
             # Environment status shown in sidebar
 
     def _render_environment_selector(self):

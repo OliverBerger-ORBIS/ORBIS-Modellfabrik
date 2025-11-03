@@ -67,11 +67,12 @@ def render_ccu_tab(ccu_gateway=None, registry_manager=None):
 #### **Environment Switch (verhindert Connection Loops):**
 ```python
 # ✅ KORREKT: Environment Switch mit automatischem UI-Refresh
-### **FORBIDDEN: MQTT-Verbindung außerhalb der Sidebar**
+### **FORBIDDEN: Direkte MQTT-Connect/Disconnect in Komponenten**
 
-- Keine Connect/Disconnect-Aufrufe in Tabs oder UI-Komponenten
-- Kein Auto-Connect im Environment-Switch
-- Connect ausschließlich über die Sidebar (Button „Refresh Dashboard“)
+- Keine direkten `client.connect()` oder `client.disconnect()` Aufrufe in Tabs oder UI-Komponenten
+- Kein Auto-Connect direkt im Environment-Switch
+- MQTT-Connect erfolgt zentral in `omf.py` beim Render (automatisch wenn nicht verbunden)
+- Refresh-Buttons können überall sein (Sidebar, Header, etc.), solange sie `request_refresh()` verwenden
 - Verbindliche Details: `../04-howto/mqtt_client_connection.md`
 
 from omf2.ui.utils.environment_switch import switch_ccu_environment

@@ -1176,15 +1176,16 @@ def render_system_logs_tab():
 - **Registry Manager** getestet ✅
 - **Performance** optimiert ✅
 
-### **🚀 VERWENDUNG (Sidebar-only Connect):**
+### **🚀 VERWENDUNG (Centralized MQTT Connect):**
 
-> FORBIDDEN: MQTT-Connect/Disconnect in Tabs oder Komponenten ausführen.
-> Connect/Disconnect wird ausschließlich über die Sidebar gesteuert.
+> FORBIDDEN: MQTT-Connect/Disconnect direkt in Tabs oder Komponenten ausführen.
+> MQTT-Connect/Disconnect erfolgt zentral in `omf.py` beim Render.
 
 - Verbindliche Anleitung: `docs/04-howto/mqtt_client_connection.md`
 - Kernpunkte:
-  - Keine Auto-Connects in Komponenten
-  - Connect ausschließlich via „Refresh Dashboard“ in der Sidebar
+  - Keine direkten `client.connect()` Aufrufe in Tabs/Komponenten
+  - MQTT-Connect erfolgt zentral in `omf.py` beim Render (wenn nicht verbunden)
+  - Refresh-Buttons können überall sein (Sidebar, Header, etc.), solange sie `request_refresh()` verwenden
   - Beim Environment-Switch nur Disconnect; kein Auto-Reconnect
 
 ---
