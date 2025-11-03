@@ -1,110 +1,77 @@
-# Sprint Aktuell - Messe-Vorbereitung
+# Sprint 08 – Asset-Management Refactoring und Sprachprüfung
 
-**Zeitraum:** 16.10.2025 - 29.10.2025  
+**Zeitraum:** 30.10.2025 - 12.11.2025  
 **Status:** In Bearbeitung  
-**Fokus:** Messe-Vorbereitung und UI-Polish
+**Fokus:** Asset-Management vereinheitlichen, Sprachqualität sicherstellen
 
 ## 🎯 Aktuelle Arbeiten
 
-### 🎯 **Messe-Vorbereitung läuft** (bis 25.11.2025)
-- **Factory Layout** - 3×4 Grid mit echten omf_* SVG-Icons (teilweise implementiert)
-- **Auto-Refresh** - MQTT-Trigger für UI-Refresh (geplant)
-- **Sensor Data UI** - Temperatur-Skala, Kamera-Controls (geplant)
-- **HTML-Templates i18n** - Workpiece-Box übersetzen (geplant)
-- **Live-Test Sessions** - 4 Sessions mit echter Fabrik (geplant)
-- **Status:** Auf Kurs für Messe-Demo am 25.11.2025 🎯
+### ✅ **Asset-Management Refactoring abgeschlossen** (30.10.2025)
+- **Zentrale Asset-Verwaltung:** Einheitlicher Asset-Manager für alle SVGs ✅
+- **Legacy-Code entfernt:** `heading_icons.py` gelöscht, alle Wrapper-Methoden entfernt ✅
+- **Vollständige Migration:** Alle UI-Komponenten nutzen neue Asset-Manager API ✅
+- **Pre-Commit Validation:** Asset-Validierung im Pre-Commit Hook ✅
+- **Tests aktualisiert:** Alle Asset-Manager-Tests refactored ✅
+- **Status:** Asset-Management vollständig konsolidiert ✅
 
-### ✅ **OMF2 Migration abgeschlossen** (16.10.2025)
-- **Drei-Schichten-Architektur** - Vollständig implementiert und getestet ✅
-- **Registry Manager** - Zentrale Konfiguration für alle Schemas und Templates ✅
-- **Gateway-Routing-Pattern** - Schema-Validierung und Topic-Routing ✅
-- **Business Manager** - ModuleManager, WorkpieceManager, SensorManager, OrderManager ✅
-- **Production Order Manager** - Vollständige Order-Lifecycle-Verwaltung ✅
-- **Storage Orders Logic** - PICK/DROP → LADEN/ENTLADEN AGV Logik ✅
-- **i18n-System** - DE/EN/FR Support mit 195+ Translation Keys ✅
-- **Best Practice Logging** - Multi-Level Ringbuffer mit UI-Integration ✅
-- **Tests** - 341/341 Tests bestehen ✅
-- **Status:** OMF2 ist produktionsreif und demo-fähig ✅
+### ✅ **Sprachprüfung abgeschlossen** (03.11.2025)
+- **EN-Übersetzungen:** Keine deutschen Begriffe gefunden ✅
+- **DE-Übersetzungen:** Englische Begriffe korrigiert ✅
+  - "Order Management" → "Auftragsverwaltung"
+  - "Order Statistiken" → "Auftragsstatistiken"
+  - "Order Aktionen" → "Auftragsaktionen"
+  - "Order Steuerung" → "Auftragssteuerung"
+  - "connected ist" → "verbunden ist"
+- **FR-Übersetzungen:** Keine Probleme gefunden ✅
+- **Status:** Alle Übersetzungen geprüft und korrigiert ✅
 
-## 🔧 Technische Prioritäten (Sprint 07)
+## 🔧 Technische Prioritäten (Sprint 08)
 
-### **Factory Layout** - 3×4 Grid mit echten omf_* SVG-Icons
-- **Problem:** Noch ic_ft_* Fallback verwendet
-- **Lösung:** Echte omf_* SVG-Icons implementieren
-- **Integration:** In CCU Configuration Tab
-- **Icon-Test:** Mit `omf2/ui/common/icon_test.py`
+### ✅ **Asset-Management vereinheitlichen**
+- **Problem:** Mehrere Asset-Manager (`heading_icons.py`, `asset_manager.py`) ✅
+- **Lösung:** Zentrale Asset-Verwaltung über `asset_manager.py` ✅
+- **Migration:** Alle UI-Komponenten migriert ✅
+- **Validation:** Pre-Commit Hook für Asset-Validierung ✅
 
-### **Auto-Refresh** - MQTT-Trigger für UI-Refresh
-- **MQTT-Trigger:** `ccu/order/active`, `ccu/order/completed`, `module/v1/ff/*/state`
-- **Pattern:** `request_refresh()` nach Message-Verarbeitung
-- **Performance:** Max 1 Refresh/Sekunde
-- **Integration:** In alle relevanten UI-Komponenten
-
-### **Sensor Data UI** - Temperatur-Skala, Kamera-Controls
-- **Temperatur-Skala:** Mit Farbverlauf (Thermometer)
-- **Kamera-Controls:** 3×3 Grid verbessern (HOCH, LINKS, ZENTRIEREN, RECHTS, RUNTER)
-- **Bild-Anzeige:** Aufgenommene Bilder anzeigen
-- **Integration:** In CCU Overview Tab
-
-### (Legacy) HTML-Templates i18n
-- Ersetzt durch direkte SVG-Darstellung via Asset-Manager (keine weitere Umsetzung nötig)
-- **Integration:** Mit i18n-System
-
-### **Live-Test Session #1** - Mit echter Fabrik
-- **Abhängigkeit:** Task 2.6 abgeschlossen + im Büro
-- **Ziel:** omf2 mit echter Fabrik verbinden
-- **Tests:** Alle CCU Tabs durchklicken, alle Admin Tabs durchklicken
-- **Dokumentation:** Fehler dokumentieren (wie Chat-C Protokoll)
+### ✅ **Sprachqualität sicherstellen**
+- **Prüfung:** Automatische Sprachprüfung für EN/DE/FR ✅
+- **Korrekturen:** Englische Begriffe in deutschen Übersetzungen behoben ✅
+- **Validation:** Script für Sprach-Mischungs-Erkennung ✅
 
 ## 📊 Sprint-Status
 
 ### **Erreichte Ziele:**
-- ✅ OMF2-Architektur vollständig implementiert
-- ✅ Registry Manager als zentrale Konfiguration
-- ✅ Gateway-Routing-Pattern mit Schema-Validierung
-- ✅ Business Manager Pattern implementiert
-- ✅ Production Order Manager vollständig
-- ✅ Storage Orders Logic implementiert
-- ✅ i18n-System vollständig (DE/EN/FR)
-- ✅ Best Practice Logging-System
-- ✅ 341/341 Tests bestehen
-- ✅ Dokumentations-Restrukturierung abgeschlossen
+- ✅ Asset-Management vollständig konsolidiert
+- ✅ Legacy-Code (`heading_icons.py`) entfernt
+- ✅ Alle UI-Komponenten migriert
+- ✅ Pre-Commit Asset-Validation implementiert
+- ✅ Sprachprüfung für alle Sprachen abgeschlossen
+- ✅ Übersetzungsfehler behoben
 
 ### **Technische Meilensteine:**
-- **Vollständige Architektur-Migration** von omf/ zu omf2/
-- **Thread-sichere MQTT-Client** mit Connection Loop Prevention
-- **Schema-driven Payload-Generierung** über Registry
-- **Asymmetrische Architektur** Commands über NodeRed, Telemetry direct
-- **UI-Refresh-Pattern** request_refresh() statt st.rerun()
-- **Meta-Parameter-System** MQTT-Metadaten durch gesamte Architektur
+- **Asset-Manager API:** `get_asset_path()`, `get_asset_content()`, `get_asset_inline()` als zentrale Methoden
+- **Legacy-Cleanup:** Alle Wrapper-Methoden entfernt
+- **Test-Refactoring:** Alle Tests auf neue API umgestellt
+- **Sprachqualität:** Automatische Prüfung implementiert
 
 ## 🎯 Wichtige Doings
 
 ### **Entscheidungen getroffen:**
-- **Drei-Schichten-Architektur** MQTT Client → Gateway → Business Manager
-- **Registry Manager** zentrale Konfiguration für alle Schemas und Templates
-- **Gateway-Routing-Pattern** Schema-Validierung und Topic-Routing
-- **Message Processing Pattern** standardisierte Message-Verarbeitung
-- **i18n-Architektur** Lazy Loading, Session State Integration, 3 Sprachen
-- **Best Practice Logging** Multi-Level Ringbuffer mit Thread-Safety
-- **UI-Refresh-Pattern** request_refresh() statt st.rerun()
-- **Asymmetrische Architektur** Commands über NodeRed, Telemetry direct
+- **Asset-Management:** Zentrale API über `asset_manager.py`
+- **Sprachprüfung:** Automatische Validierung vor Commit
+- **Legacy-Cleanup:** Vollständige Entfernung veralteter Methoden
 
 ### **Offene Punkte:**
-- **Factory Layout Icons** - Echte omf_* SVG-Icons implementieren
-- **Auto-Refresh** - MQTT-Trigger für UI-Refresh
-- **Sensor Data UI** - Temperatur-Skala, Kamera-Controls
-- **HTML-Templates i18n** - Workpiece-Box übersetzen
-- **Live-Test Sessions** - 4 Sessions mit echter Fabrik
+- **Auto-Refresh:** MQTT-Trigger für UI-Refresh (aus Sprint 07)
+- **Sensor Data UI:** Temperatur-Skala, Kamera-Controls (aus Sprint 07)
+- **Live-Test Sessions:** Mit echter Fabrik (geplant)
 
 ## 📋 Next Steps
 
-1. **Factory Layout** - 3×4 Grid mit echten omf_* SVG-Icons
-2. **Auto-Refresh** - MQTT-Trigger für UI-Refresh implementieren
-3. **Sensor Data UI** - Temperatur-Skala, Kamera-Controls verbessern
-4. **HTML-Templates i18n** - Workpiece-Box übersetzen (DE/EN/FR)
-5. **Live-Test Session #1** - Mit echter Fabrik durchführen
+1. **Auto-Refresh implementieren** - MQTT-Trigger für UI-Refresh
+2. **Sensor Data UI verbessern** - Temperatur-Skala, Kamera-Controls
+3. **Live-Test Session #1** - Mit echter Fabrik durchführen
 
 ---
 
-**Status:** Sprint läuft erfolgreich, Messe-Vorbereitung auf Kurs für 25.11.2025 🎯
+**Status:** Asset-Management und Sprachprüfung abgeschlossen, weitere Messe-Vorbereitung in Arbeit 🎯
