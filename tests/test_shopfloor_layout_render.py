@@ -1,7 +1,8 @@
 import json
 from pathlib import Path
-from examples.shopfloor_test_app.app import render_shopfloor_svg
+
 from examples.shopfloor_test_app import route_utils
+from examples.shopfloor_test_app.app import render_shopfloor_svg
 
 HERE = Path(__file__).parent
 LAYOUT_PATH = Path("examples/shopfloor_test_app/shopfloor_layout.json")
@@ -29,4 +30,3 @@ def test_route_utils_basic_path():
     # find a path between intersection 1 and 2
     p = route_utils.find_path(g, "1", "2")
     assert p and isinstance(p, list), "find_path returned empty or non-list"
-
