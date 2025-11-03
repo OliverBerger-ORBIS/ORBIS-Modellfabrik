@@ -1,0 +1,290 @@
+"""
+Streamlit test app: interactive, scalable SVG shopfloor layout demo.
+
+- Uses examples/shopfloor_test_app/shopfloor_layout.json as default layout.
+- Uses omf2.assets.asset_manager.get_asset_manager() to fetch inline SVG icons where available.
+- Implements show_shopfloor_layout(...) API for embedding in other code.
+"""
+
+import html
+import json
+import pathlib
+from typing import List, Optional, Tuple
+
+import streamlit as st
+
+from examples.shopfloor_test_app import route_utils
+
+# try to import asset manager from omf2 (if running in repo environment)
+try:
+    from omf2.assets.asset_manager import get_asset_manager
+
+    ASSET_MANAGER = get_asset_manager()
+except Exception:
+    ASSET_MANAGER = None
+
+HERE = pathlib.Path(__file__).parent
+LAYOUT_PATH = HERE / "shopfloor_layout.json"
+CELL_SIZE = 200
+GRID_W = 4
+GRID_H = 3
+CANVAS_W = CELL_SIZE * GRID_W
+CANVAS_H = CELL_SIZE * GRID_H
+
+# Visual spec derived from user message (colors & sizes)
+VIS_SPEC = {
+    (0, 0): {"name": "COMPANY", "w": 200, "h": 100, "color": "#cfe6ff"},  # blaues Rechteck
+    (0, 1): {"name": "MILL", "w": 200, "h": 200, "color": "#ffd5d5"},  # rotes Quadrat
+    (0, 2): {"name": "AIQS", "w": 200, "h": 200, "color": "#ffd5d5"},
+    (0, 3): {"name": "SOFTWARE", "w": 200, "h": 100, "color": "#cfe6ff"},
+    (1, 0): {"name": "HBW", "w": 200, "h": 300, "color": "#d7f0c8"},  # grünes Compound
+    (1, 1): {"name": "INTERSECTION-1", "w": 200, "h": 200, "color": "#e3d0ff"},
+    (1, 2): {"name": "INTERSECTION-2", "w": 200, "h": 200, "color": "#e3d0ff"},
+    (1, 3): {"name": "DPS", "w": 200, "h": 300, "color": "#d7f0c8"},  # grünes Compound
+    (2, 0): {"name": "DRILL", "w": 200, "h": 200, "color": "#ffd5d5"},
+    (2, 1): {"name": "INTERSECTION-3", "w": 200, "h": 200, "color": "#e3d0ff"},
+    (2, 2): {"name": "INTERSECTION-4", "w": 200, "h": 200, "color": "#e3d0ff"},
+    (2, 3): {"name": "CHRG", "w": 200, "h": 200, "color": "#ffd5d5"},
+}
+
+
+def load_layout(path: pathlib.Path = LAYOUT_PATH) -> dict:
+    with open(path, encoding="utf-8") as f:
+        return json.load(f)
+
+
+def cell_anchor(row: int, col: int) -> Tuple[int, int]:
+    return col * CELL_SIZE, row * CELL_SIZE
+
+
+def center_of_cell(row: int, col: int) -> Tuple[int, int]:
+    x, y = cell_anchor(row, col)
+    return x + CELL_SIZE // 2, y + CELL_SIZE // 2
+
+
+def render_shopfloor_svg(
+    layout: dict,
+    highlight_cells: Optional[List[Tuple[int, int]]] = None,
+    enable_click: bool = True,
+    route_points: Optional[List[Tuple[int, int]]] = None,
+    agv_progress: float = 0.0,
+    scale: float = 1.0,
+) -> str:
+    """
+    Returns an SVG string for embedding. This is a pure renderer (no Streamlit side effects),
+    so it can be tested by pytest.
+    highlight_cells: list of [row,col] tuples that should be highlighted programmatically
+    """
+    highlight_set = set(highlight_cells or [])
+    # build grid cells and components
+    cell_elems = []
+    comp_elems = []
+    inter_elems = []
+
+    for r in range(GRID_H):
+        for c in range(GRID_W):
+            x, y = cell_anchor(r, c)
+            # invisible grid rect (for overlay)
+            cell_elems.append(
+                f'<rect x="{x}" y="{y}" width="{CELL_SIZE}" height="{CELL_SIZE}" fill="none" stroke="none" />'
+            )
+            spec = VIS_SPEC.get((r, c))
+            if spec:
+                w = spec["w"]
+                h = spec["h"]
+                fill = spec["color"]
+                name = spec["name"]
+            else:
+                w, h, fill, name = 180, 180, "#ffffff", f"[{r},{c}]"
+            comp_x = x + (CELL_SIZE - w) / 2
+            comp_y = y + (CELL_SIZE - h) / 2
+
+            # border logic
+            is_active = (r, c) in highlight_set
+            stroke = "#2a7d2a" if fill == "#d7f0c8" else "#d22a2a" if fill == "#ffd5d5" else "#3a6ea5"
+            stroke_width = 8 if is_active else 0
+            # compound inner squares for HBW/DPS
+            compound_inner = ""
+            if (r, c) in ((1, 0), (1, 3)):
+                sx1 = comp_x + 8
+                sy1 = comp_y + 8
+                sx2 = comp_x + 8 + 90
+                sy2 = comp_y + 8
+                compound_inner = (
+                    f'<rect x="{sx1}" y="{sy1}" width="80" height="80" fill="#fff2b2" stroke="#e6b800" />'
+                    f'<rect x="{sx2}" y="{sy2}" width="80" height="80" fill="#fff2b2" stroke="#e6b800" />'
+                )
+            comp_elems.append(
+                f'<g class="cell-group" data-pos="{r},{c}" data-name="{html.escape(name)}">'
+                f'<rect x="{comp_x}" y="{comp_y}" width="{w}" height="{h}" fill="{fill}" stroke="{stroke}" stroke-width="{stroke_width}" rx="6" ry="6" />'
+                f"{compound_inner}"
+                f'<text x="{comp_x+6}" y="{comp_y+16}" style="display:none" class="tooltip">{html.escape(name)} [{r},{c}]</text>'
+                f"</g>"
+            )
+
+    # intersections
+    for inter in layout.get("intersections", []):
+        r, c = inter["position"]
+        cx, cy = center_of_cell(r, c)
+        iid = inter["id"]
+        inter_elems.append(
+            f'<g id="inter_{iid}">'
+            f'<line x1="{cx-40}" y1="{cy}" x2="{cx+40}" y2="{cy}" stroke="#9b6fd6" stroke-width="12" stroke-linecap="round"/>'
+            f'<line x1="{cx}" y1="{cy-40}" x2="{cx}" y2="{cy+40}" stroke="#9b6fd6" stroke-width="12" stroke-linecap="round"/>'
+            f'<circle cx="{cx}" cy="{cy}" r="14" fill="#6f6f6f" />'
+            f'<text x="{cx}" y="{cy+5}" fill="#fff" font-size="14" text-anchor="middle">{iid}</text>'
+            f"</g>"
+        )
+
+    # route drawing (polyline through route_points)
+    route_svg = ""
+    if route_points:
+        pts = " ".join(f"{int(x)},{int(y)}" for (x, y) in route_points)
+        start = route_points[0]
+        end = route_points[-1]
+        route_svg = (
+            f'<polyline points="{pts}" stroke="#ff8c00" stroke-width="8" fill="none" stroke-linejoin="round" stroke-linecap="round" />'
+            f'<circle cx="{start[0]}" cy="{start[1]}" r="8" fill="#ff8c00" stroke="#fff" stroke-width="2" />'
+            f'<circle cx="{end[0]}" cy="{end[1]}" r="8" fill="#ff8c00" stroke="#fff" stroke-width="2" />'
+        )
+
+    svg = (
+        f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {CANVAS_W} {CANVAS_H}" width="{int(CANVAS_W*scale)}" height="{int(CANVAS_H*scale)}">'
+        f"<style>"
+        f".cell-group .tooltip {{ font-family: Arial; font-size: 12px; }}"
+        f"</style>"
+        f'{"".join(cell_elems)}'
+        f'{"".join(comp_elems)}'
+        f'{"".join(inter_elems)}'
+        f"{route_svg}"
+        f"</svg>"
+    )
+    return svg
+
+
+def show_shopfloor_layout(
+    title: str = "Shopfloor Layout",
+    unique_key: str = "shopfloor_layout_demo",
+    mode: str = "view",
+    enable_click: bool = True,
+    highlight_cells: Optional[List[List[int]]] = None,
+    route_points: Optional[List[Tuple[int, int]]] = None,
+    agv_progress: float = 0.0,
+    active_module_id: Optional[str] = None,
+    active_intersections: Optional[List[str]] = None,
+    show_controls: bool = True,
+):
+    """
+    Streamlit wrapper to render the shopfloor SVG and controls.
+    This mirrors the API requested in the PR description.
+    """
+    layout = load_layout()
+    st.header(title)
+    if show_controls:
+        st.columns([3, 1])  # Reserved for future use
+
+    scale = st.sidebar.slider("Scale (100% = 1.0)", 0.25, 2.0, 1.0, 0.05) if show_controls else 1.0
+    # parse highlight_cells
+    highlight = []
+    if highlight_cells:
+        for it in highlight_cells:
+            if isinstance(it, (list, tuple)) and len(it) == 2:
+                highlight.append((int(it[0]), int(it[1])))
+
+    svg = render_shopfloor_svg(
+        layout,
+        highlight_cells=highlight,
+        enable_click=enable_click,
+        route_points=route_points,
+        agv_progress=agv_progress,
+        scale=scale,
+    )
+    # embed HTML with simple JS for hover/click (clientside)
+    html_fragment = f"""
+    <div style="width:{int(CANVAS_W*scale)}px; height:{int(CANVAS_H*scale)}px;">
+      {svg}
+    </div>
+    <script>
+      // Note: Streamlit's HTML embedding may sandbox JS; advanced interactivity may require a Streamlit component.
+      // Basic hover/click behaviors are implemented in the app with overlay in the examples.
+      console.log("Shopfloor SVG rendered");
+    </script>
+    """
+    st.components.v1.html(html_fragment, height=int(CANVAS_H * scale) + 20, scrolling=True)
+
+
+# If run directly, show the demo app
+def main():
+    st.title("Shopfloor Test App (examples/shopfloor_test_app)")
+    layout = load_layout()
+    # Controls
+    enable_click = st.sidebar.checkbox("Enable click to select", value=True)
+    show_route = st.sidebar.checkbox("Show route example", value=False)
+    # Select start/goal from candidate modules (red & green)
+    candidates = []
+    for (r, c), v in VIS_SPEC.items():
+        if v["color"] in ("#ffd5d5", "#d7f0c8"):
+            candidates.append((r, c, v["name"]))
+    opts = ["-- none --"] + [f"{name} [{r},{c}]" for r, c, name in candidates]
+    start_sel = st.sidebar.selectbox("Start", opts, index=0)
+    goal_sel = st.sidebar.selectbox("Goal", opts, index=0)
+
+    # compute route when requested
+    route_pts = None
+    if show_route and start_sel != "-- none --" and goal_sel != "-- none --":
+        # convert selection to id (use module id mapping from layout)
+        def sel_to_id(s):
+            if not s or s == "-- none --":
+                return None
+            name = s.split()[0]
+            # try modules and fixed positions
+            for m in layout.get("modules", []):
+                if m.get("id") == name:
+                    return m.get("serialNumber") or m.get("id")
+            for f in layout.get("fixed_positions", []):
+                if f.get("id") == name:
+                    return f.get("id")
+            return name
+
+        start_id = sel_to_id(start_sel)
+        goal_id = sel_to_id(goal_sel)
+        graph = route_utils.build_graph(layout)
+        # special rules: if no start and goal is HBW -> start is INTERSECTION-2 ; if goal is DPS -> start = INTERSECTION-1
+        if not start_id and goal_id:
+            # find if goal is HBW or DPS
+            goal_name = None
+            for m in layout.get("modules", []):
+                if m.get("serialNumber") == goal_id or m.get("id") == goal_id:
+                    goal_name = m.get("id")
+            if goal_name == "HBW":
+                start_id = "2"
+            if goal_name == "DPS":
+                start_id = "1"
+        if start_id and goal_id:
+            path = route_utils.find_path(graph, start_id, goal_id)
+            if path:
+                # convert path nodes to centers
+                pos_map = route_utils.id_to_position_map(layout, CELL_SIZE)
+                route_pts = []
+                for node in path:
+                    if node in pos_map:
+                        route_pts.append(pos_map[node])
+                if len(route_pts) < 2:
+                    route_pts = None
+
+    # default highlighting example: DRILL [2,0]
+    highlight_default = [[2, 0]]
+    show_shopfloor_layout(
+        title="Shopfloor Layout (Demo)",
+        unique_key="examples_shopfloor",
+        mode="demo",
+        enable_click=enable_click,
+        highlight_cells=highlight_default,
+        route_points=route_pts,
+        agv_progress=0.0,
+        show_controls=True,
+    )
+
+
+if __name__ == "__main__":
+    main()
