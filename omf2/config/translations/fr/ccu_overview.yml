@@ -114,3 +114,35 @@ ccu_overview.sensor_data.refresh_data: "Actualiser Données"
 ccu_overview.sensor_data.show_statistics: "Afficher Statistiques"
 ccu_overview.sensor_data.clear_history: "Effacer Historique"
 
+# Sensor Data - Gauge/Visual Subtitles (used in sensors_display.yml)
+ccu_overview.sensor_data.temperature.subtitle: "Plage: {min}°C à {max}°C"
+ccu_overview.sensor_data.humidity.subtitle: "Humidité Relative"
+ccu_overview.sensor_data.pressure.subtitle: "Plage: {min}-{max} hPa"
+ccu_overview.sensor_data.brightness.subtitle: "Luminosité (max: {max_lux} lux)"
+ccu_overview.sensor_data.iaq.subtitle: "IAQ: {value} - {label}"
+ccu_overview.sensor_data.iaq.label_good: "Bon"
+ccu_overview.sensor_data.iaq.label_moderate: "Modéré"
+ccu_overview.sensor_data.iaq.label_unhealthy: "Malsain"
+ccu_overview.sensor_data.iaq.label_hazard: "Dangereux"
+ccu_overview.sensor_data.aq.subtitle: "Score AQ: {value:.1f}/5.0 - {label}"
+
+# Brightness step labels
+ccu_overview.sensor_data.brightness.step_dark: "Sombre, Nuit"
+ccu_overview.sensor_data.brightness.step_indoor_dim: "Intérieur, tamisé"
+ccu_overview.sensor_data.brightness.step_normal: "Éclairage intérieur normal"
+ccu_overview.sensor_data.brightness.step_bright: "Pièce lumineuse"
+ccu_overview.sensor_data.brightness.step_overcast: "Extérieur, nuageux"
+ccu_overview.sensor_data.brightness.step_sunny: "Ensoleillé, soleil direct"
+
+# Pressure step labels
+ccu_overview.sensor_data.pressure.step_low: "Basse pression"
+ccu_overview.sensor_data.pressure.step_normal: "Normal"
+ccu_overview.sensor_data.pressure.step_high: "Haute pression"
+
+# AQ quality labels
+ccu_overview.sensor_data.aq.label_excellent: "Excellent"
+ccu_overview.sensor_data.aq.label_good: "Bon"
+ccu_overview.sensor_data.aq.label_moderate: "Modéré"
+ccu_overview.sensor_data.aq.label_poor: "Médiocre"
+ccu_overview.sensor_data.aq.label_very_poor: "Très médiocre"
+

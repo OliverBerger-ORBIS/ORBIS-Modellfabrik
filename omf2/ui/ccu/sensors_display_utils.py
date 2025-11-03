@@ -341,43 +341,74 @@ def aq_color(aq_value: float, config: Dict = None) -> str:
     color_ranges = bar_config.get(
         "color_ranges",
         [
-            [0, 1, "#28a745"],  # Sehr gut
-            [1, 2, "#90EE90"],  # Gut
-            [2, 3, "#ffc107"],  # Mäßig
-            [3, 4, "#fd7e14"],  # Schlecht
-            [4, 5, "#dc3545"],  # Sehr schlecht
+            [0, 1, "#28a745"],  # Excellent
+            [1, 2, "#90EE90"],  # Good
+            [2, 3, "#ffc107"],  # Moderate
+            [3, 4, "#fd7e14"],  # Poor
+            [4, 5, "#dc3545"],  # Very Poor
         ],
     )
 
-    for min_val, max_val, color in color_ranges:
-        if min_val <= aq_value < max_val:
-            return color
+    # Support both old format [min, max, color] and new format [min, max, color, i18n_key]
+    for range_item in color_ranges:
+        if len(range_item) >= 3:
+            min_val = range_item[0]
+            max_val = range_item[1]
+            color = range_item[2]
+            if min_val <= aq_value < max_val:
+                return color
 
     return "#808080"  # Default gray
 
 
 def aq_label(aq_value: float, config: Dict = None) -> str:
     """
-    Get human-readable label for AQ value
+    Get i18n key for AQ value label (translation should be done in UI code)
 
     Args:
         aq_value: AQ score (0-5)
         config: Optional configuration dict (uses default if None)
 
     Returns:
-        str: Human-readable label
+        str: i18n key for the label (or fallback label if no key found)
     """
     if config is None:
         config = _get_default_config()
 
     bar_config = config.get("aq", {}).get("bar_chart", {})
-    labels = bar_config.get("labels", ["Sehr gut", "Gut", "Mäßig", "Schlecht", "Sehr schlecht"])
+    color_ranges = bar_config.get(
+        "color_ranges",
+        [
+            [0, 1, "#28a745", "ccu_overview.sensor_data.aq.label_excellent"],
+            [1, 2, "#90EE90", "ccu_overview.sensor_data.aq.label_good"],
+            [2, 3, "#ffc107", "ccu_overview.sensor_data.aq.label_moderate"],
+            [3, 4, "#fd7e14", "ccu_overview.sensor_data.aq.label_poor"],
+            [4, 5, "#dc3545", "ccu_overview.sensor_data.aq.label_very_poor"],
+        ],
+    )
 
-    level = aq_level(aq_value, config)
-    level_map = {"sehr_gut": 0, "gut": 1, "maessig": 2, "schlecht": 3, "sehr_schlecht": 4}
+    # Support both old format [min, max, color] and new format [min, max, color, i18n_key]
+    for range_item in color_ranges:
+        if len(range_item) >= 3:
+            min_val = range_item[0]
+            max_val = range_item[1]
+            if min_val <= aq_value < max_val:
+                # Return i18n key if present (4th element), otherwise fallback to level name
+                if len(range_item) >= 4:
+                    return range_item[3]  # i18n key
+                else:
+                    # Fallback to level-based label
+                    level = aq_level(aq_value, config)
+                    level_map = {
+                        "sehr_gut": "Excellent",
+                        "gut": "Good",
+                        "maessig": "Moderate",
+                        "schlecht": "Poor",
+                        "sehr_schlecht": "Very Poor",
+                    }
+                    return level_map.get(level, "Unknown")
 
-    index = level_map.get(level, 0)
-    return labels[index] if index < len(labels) else "Unknown"
+    return "Unknown"
 
 
 def get_iaq_info(iaq_value: float, config: Dict = None) -> Tuple[str, str, str]:

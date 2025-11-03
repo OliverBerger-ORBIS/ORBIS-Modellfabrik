@@ -121,3 +121,35 @@ ccu_overview.sensor_data.refresh_data: "Daten Aktualisieren"
 ccu_overview.sensor_data.show_statistics: "Statistiken Anzeigen"
 ccu_overview.sensor_data.clear_history: "Verlauf Löschen"
 
+# Sensor Data - Gauge/Visual Subtitles (used in sensors_display.yml)
+ccu_overview.sensor_data.temperature.subtitle: "Bereich: {min}°C bis {max}°C"
+ccu_overview.sensor_data.humidity.subtitle: "Relative Luftfeuchtigkeit"
+ccu_overview.sensor_data.pressure.subtitle: "Bereich: {min}-{max} hPa"
+ccu_overview.sensor_data.brightness.subtitle: "Helligkeit (max: {max_lux} lux)"
+ccu_overview.sensor_data.iaq.subtitle: "IAQ: {value} - {label}"
+ccu_overview.sensor_data.iaq.label_good: "Gut"
+ccu_overview.sensor_data.iaq.label_moderate: "Mäßig"
+ccu_overview.sensor_data.iaq.label_unhealthy: "Ungesund"
+ccu_overview.sensor_data.iaq.label_hazard: "Gefährlich"
+ccu_overview.sensor_data.aq.subtitle: "AQ Score: {value:.1f}/5.0 - {label}"
+
+# Brightness step labels
+ccu_overview.sensor_data.brightness.step_dark: "Dunkel, Nacht"
+ccu_overview.sensor_data.brightness.step_indoor_dim: "Innenraum, gedämpft"
+ccu_overview.sensor_data.brightness.step_normal: "Normale Raumbeleuchtung"
+ccu_overview.sensor_data.brightness.step_bright: "Helles Zimmer"
+ccu_overview.sensor_data.brightness.step_overcast: "Draußen, bewölkt"
+ccu_overview.sensor_data.brightness.step_sunny: "Sonnig, pralle Sonne"
+
+# Pressure step labels
+ccu_overview.sensor_data.pressure.step_low: "Niedrigdruck"
+ccu_overview.sensor_data.pressure.step_normal: "Normal"
+ccu_overview.sensor_data.pressure.step_high: "Hochdruck"
+
+# AQ quality labels
+ccu_overview.sensor_data.aq.label_excellent: "Ausgezeichnet"
+ccu_overview.sensor_data.aq.label_good: "Gut"
+ccu_overview.sensor_data.aq.label_moderate: "Mäßig"
+ccu_overview.sensor_data.aq.label_poor: "Schlecht"
+ccu_overview.sensor_data.aq.label_very_poor: "Sehr schlecht"
+

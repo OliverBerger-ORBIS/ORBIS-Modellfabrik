@@ -54,19 +54,24 @@ class TestAQDisplay:
         assert aq_color(4.5) == "#dc3545"  # sehr_schlecht (rot)
 
     def test_aq_label_assignment(self):
-        """Test AQ label assignment"""
-        # Gut
-        assert aq_label(0.5) == "Sehr gut"
-        assert aq_label(1.0) == "Sehr gut"
+        """Test AQ label assignment - returns i18n keys"""
+        # Excellent range [0, 1) - upper bound exclusive
+        assert aq_label(0.5) == "ccu_overview.sensor_data.aq.label_excellent"
+        assert aq_label(0.9) == "ccu_overview.sensor_data.aq.label_excellent"
+        
+        # Good range [1, 2) - 1.0 belongs to this range
+        assert aq_label(1.0) == "ccu_overview.sensor_data.aq.label_good"
+        assert aq_label(1.1) == "ccu_overview.sensor_data.aq.label_good"
 
         # Mittel
-        assert aq_label(1.5) == "Gut"
-        assert aq_label(2.5) == "Mäßig"
-        assert aq_label(3.0) == "Mäßig"
+        assert aq_label(1.5) == "ccu_overview.sensor_data.aq.label_good"
+        assert aq_label(2.5) == "ccu_overview.sensor_data.aq.label_moderate"
+        assert aq_label(2.9) == "ccu_overview.sensor_data.aq.label_moderate"  # [2, 3)
 
-        # Schlecht
-        assert aq_label(3.5) == "Schlecht"
-        assert aq_label(4.5) == "Sehr schlecht"
+        # Schlecht - 3.0 belongs to [3, 4) range
+        assert aq_label(3.0) == "ccu_overview.sensor_data.aq.label_poor"
+        assert aq_label(3.5) == "ccu_overview.sensor_data.aq.label_poor"
+        assert aq_label(4.5) == "ccu_overview.sensor_data.aq.label_very_poor"
 
     def test_aq_normalization(self):
         """Test AQ normalization to percentage"""
@@ -80,24 +85,24 @@ class TestAQDisplay:
         assert normalize_aq(4.0) == 80.0
 
     def test_get_aq_info_complete(self):
-        """Test complete AQ info retrieval"""
+        """Test complete AQ info retrieval - returns i18n keys"""
         # Test gut
         level, color, label = get_aq_info(0.5)
         assert level == "sehr_gut"
         assert color == "#28a745"
-        assert label == "Sehr gut"
+        assert label == "ccu_overview.sensor_data.aq.label_excellent"
 
         # Test mittel
         level, color, label = get_aq_info(2.5)
         assert level == "maessig"
         assert color == "#ffc107"
-        assert label == "Mäßig"
+        assert label == "ccu_overview.sensor_data.aq.label_moderate"
 
         # Test schlecht
         level, color, label = get_aq_info(4.5)
         assert level == "sehr_schlecht"
         assert color == "#dc3545"
-        assert label == "Sehr schlecht"
+        assert label == "ccu_overview.sensor_data.aq.label_very_poor"
 
     def test_aq_ampel_logic(self):
         """Test Ampel logic for three-block system"""
@@ -137,32 +142,31 @@ class TestAQDisplay:
         assert aq_level(3.1) == "schlecht"
 
     def test_aq_with_custom_config(self):
-        """Test AQ functions with custom configuration"""
+        """Test AQ functions with custom configuration - uses fallback when no i18n keys"""
         custom_config = {
             "aq": {
                 "min": 0.0,
                 "max": 5.0,
                 "bar_chart": {
                     "color_ranges": [
-                        [0, 1, "#00ff00"],  # Custom green
+                        [0, 1, "#00ff00"],  # Custom green (no i18n key - uses fallback)
                         [1, 2, "#ffff00"],  # Custom yellow
                         [2, 3, "#ff8000"],  # Custom orange
                         [3, 4, "#ff4000"],  # Custom red-orange
                         [4, 5, "#ff0000"],  # Custom red
                     ],
-                    "labels": ["Excellent", "Good", "Fair", "Poor", "Very Poor"],
                 },
             }
         }
 
-        # Test with custom config
+        # Test with custom config - falls back to level-based labels
         level, color, label = get_aq_info(0.5, custom_config)
         assert color == "#00ff00"
-        assert label == "Excellent"
+        assert label == "Excellent"  # Fallback from level_map
 
         level, color, label = get_aq_info(2.5, custom_config)
         assert color == "#ff8000"
-        assert label == "Fair"
+        assert label == "Moderate"  # Fallback from level_map (maessig -> Moderate)
 
 
 if __name__ == "__main__":

@@ -121,3 +121,35 @@ ccu_overview.sensor_data.refresh_data: "Refresh Data"
 ccu_overview.sensor_data.show_statistics: "Show Statistics"
 ccu_overview.sensor_data.clear_history: "Clear History"
 
+# Sensor Data - Gauge/Visual Subtitles (used in sensors_display.yml)
+ccu_overview.sensor_data.temperature.subtitle: "Range: {min}°C to {max}°C"
+ccu_overview.sensor_data.humidity.subtitle: "Relative Humidity"
+ccu_overview.sensor_data.pressure.subtitle: "Range: {min}-{max} hPa"
+ccu_overview.sensor_data.brightness.subtitle: "Brightness (max: {max_lux} lux)"
+ccu_overview.sensor_data.iaq.subtitle: "IAQ: {value} - {label}"
+ccu_overview.sensor_data.iaq.label_good: "Good"
+ccu_overview.sensor_data.iaq.label_moderate: "Moderate"
+ccu_overview.sensor_data.iaq.label_unhealthy: "Unhealthy"
+ccu_overview.sensor_data.iaq.label_hazard: "Hazardous"
+ccu_overview.sensor_data.aq.subtitle: "AQ Score: {value:.1f}/5.0 - {label}"
+
+# Brightness step labels
+ccu_overview.sensor_data.brightness.step_dark: "Dark, Night"
+ccu_overview.sensor_data.brightness.step_indoor_dim: "Indoor, dimmed"
+ccu_overview.sensor_data.brightness.step_normal: "Normal room lighting"
+ccu_overview.sensor_data.brightness.step_bright: "Bright room"
+ccu_overview.sensor_data.brightness.step_overcast: "Overcast outdoors"
+ccu_overview.sensor_data.brightness.step_sunny: "Sunny, direct sun"
+
+# Pressure step labels
+ccu_overview.sensor_data.pressure.step_low: "Low pressure"
+ccu_overview.sensor_data.pressure.step_normal: "Normal"
+ccu_overview.sensor_data.pressure.step_high: "High pressure"
+
+# AQ quality labels
+ccu_overview.sensor_data.aq.label_excellent: "Excellent"
+ccu_overview.sensor_data.aq.label_good: "Good"
+ccu_overview.sensor_data.aq.label_moderate: "Moderate"
+ccu_overview.sensor_data.aq.label_poor: "Poor"
+ccu_overview.sensor_data.aq.label_very_poor: "Very Poor"
+

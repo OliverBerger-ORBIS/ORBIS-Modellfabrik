@@ -14,6 +14,7 @@ The configuration provides:
 - **Normalization ranges** for converting raw sensor values to percentages (0-100%)
 - **Display thresholds** for color-coding and alerts
 - **Traffic light mappings** for IAQ indicators
+- **i18n support** for all labels and subtitles (EN/DE/FR)
 - **Configurable parameters** without code changes
 
 ## Configuration Structure
@@ -25,12 +26,14 @@ temperature:
   min: -30.0      # Minimum temperature for 0% fill
   max: 60.0       # Maximum temperature for 100% fill
   unit: "°C"
+  show_subtitle: true
+  subtitle: "ccu_overview.sensor_data.temperature.subtitle"  # i18n key (supports {min}, {max})
   gauge:
-    color_ranges: # Visual color indicators
-      - [0, 20, "blue"]      # Cold (0-20% of range)
-      - [20, 30, "green"]    # Comfortable
-      - [30, 40, "orange"]   # Warm
-      - [40, 100, "red"]     # Hot
+    bar_color: "darkred"
+    steps:
+      - { from: -30.0, to: 6.0, color: "lightblue" }
+      - { from: 6.0, to: 18.0, color: "lightgreen" }
+      - { from: 18.0, to: 60.0, color: "lightyellow" }
 ```
 
 **Normalization**: Temperature values are mapped linearly from the min/max range to 0-100%
@@ -106,32 +109,34 @@ pressure:
 ```yaml
 iaq:
   unit: "IAQ"
+  show_subtitle: true
+  subtitle: "ccu_overview.sensor_data.iaq.subtitle"  # i18n key (supports {value}, {label})
+  show_value_below: true  # Display value below traffic light
   thresholds:
     good: 50         # 0-50: Good air quality
     moderate: 100    # 51-100: Moderate air quality
     unhealthy: 150   # 101-150: Unhealthy for sensitive groups
     # 151+: Unhealthy/Hazardous
   colors:
-    good: "#28a745"       # Green
-    moderate: "#ffc107"   # Yellow/Amber
-    unhealthy: "#fd7e14"  # Orange
-    hazard: "#dc3545"     # Red
+    top: "#e03b3b"    # Red top (unhealthy)
+    mid: "#f3c22a"    # Yellow middle (moderate)
+    bot: "#16b64a"    # Green bottom (good)
   labels:
-    good: "Good"
-    moderate: "Moderate"
-    unhealthy: "Unhealthy"
-    hazard: "Hazardous"
+    good: "ccu_overview.sensor_data.iaq.label_good"       # i18n key
+    moderate: "ccu_overview.sensor_data.iaq.label_moderate"
+    unhealthy: "ccu_overview.sensor_data.iaq.label_unhealthy"
+    hazard: "ccu_overview.sensor_data.iaq.label_hazard"
 ```
 
-**Traffic Light System**:
+**Traffic Light System**: Only the active light (based on IAQ value) is displayed, others are gray
 | IAQ Value | Level | Color | Meaning |
 |-----------|-------|-------|---------|
-| 0-50 | Good | Green | Excellent air quality |
-| 51-100 | Moderate | Yellow | Acceptable air quality |
-| 101-150 | Unhealthy | Orange | Unhealthy for sensitive groups |
-| 151+ | Hazardous | Red | Unhealthy for all |
+| 0-50 | Good | Green (bottom) | Excellent air quality |
+| 51-100 | Moderate | Yellow (middle) | Acceptable air quality |
+| 101-150 | Unhealthy | Yellow (middle) | Unhealthy for sensitive groups |
+| 151+ | Hazardous | Red (top) | Unhealthy for all |
 
-**Use Case**: Displays IAQ as a colored badge with clear health indicators.
+**Use Case**: Displays IAQ as a traffic light with only the active light visible.
 
 ## Usage
 
@@ -156,17 +161,53 @@ humidity_percent = normalize_humidity(65.0)          # Returns 65.0%
 brightness_percent = normalize_brightness(1500.0, config)  # Returns 100.0% (clamped)
 pressure_percent = normalize_pressure(1013.0, config)      # Returns 56.5%
 
-# Get IAQ information
-level, color, label = get_iaq_info(75.0, config)
-# Returns: ("moderate", "#ffc107", "Moderate")
+# Get IAQ information (label is now an i18n key)
+level, color, label_key = get_iaq_info(75.0, config)
+# Returns: ("moderate", "#ffc107", "ccu_overview.sensor_data.iaq.label_moderate")
+# Translate in UI: label = i18n.t(label_key)
+
+# Get AQ information (label is now an i18n key)
+level, color, label_key = get_aq_info(2.5, config)
+# Returns: ("maessig", "#ffc107", "ccu_overview.sensor_data.aq.label_moderate")
+# Translate in UI: label = i18n.t(label_key)
 ```
 
 ### In UI Components
 
 The sensor data subtab (`omf2/ui/ccu/ccu_overview/sensor_data_subtab.py`) automatically uses this configuration to:
 - Display Plotly gauges with normalized values
-- Show IAQ as a traffic light badge
+- Show IAQ as a traffic light badge (only active light visible)
 - Apply color-coded zones to all sensor displays
+- Translate all labels and subtitles based on selected language
+
+## Internationalization (i18n)
+
+All labels and subtitles support i18n through translation keys. The configuration uses i18n keys that are translated by the UI code based on the selected language (EN/DE/FR).
+
+### Subtitle i18n Keys
+
+All sensor types support `subtitle` with i18n keys:
+- Format parameters (e.g., `{min}`, `{max}`, `{value}`, `{label}`) are supported
+- Example: `"ccu_overview.sensor_data.temperature.subtitle"` → "Range: -30°C to 60°C" (EN)
+
+### Label i18n Keys
+
+IAQ and AQ labels use i18n keys:
+- `iaq.labels.*` → `ccu_overview.sensor_data.iaq.label_*`
+- `aq.bar_chart.color_ranges` → Each range can include an i18n key as 4th element
+
+### Step Label i18n Keys
+
+Brightness and Pressure gauge steps support i18n:
+- Each step can have a `label` field with an i18n key
+- Example: `"ccu_overview.sensor_data.brightness.step_dark"`
+
+### Translation Files
+
+i18n keys are defined in:
+- `omf2/config/translations/en/ccu_overview.yml` (English - default)
+- `omf2/config/translations/de/ccu_overview.yml` (German)
+- `omf2/config/translations/fr/ccu_overview.yml` (French)
 
 ## Customization
 
@@ -317,6 +358,14 @@ If you need to integrate with a different state store (Redis, database, etc.), y
 - **Documentation**: `docs/registry/sensors_display.md` (this file)
 
 ## Version History
+
+- **v1.1** (2025-11-01): i18n Support and Enhanced Features
+  - Full i18n support for all labels and subtitles (EN/DE/FR)
+  - IAQ traffic light now shows only active light (inactive lights are gray)
+  - Brightness and Pressure steps moved to YAML with i18n support
+  - Subtitle configuration with i18n keys and format parameters
+  - `show_subtitle` and `show_value_below` flags for all sensors
+  - All sensor labels use i18n keys instead of hardcoded strings
 
 - **v1.0** (2025-10-26): Initial implementation
   - Temperature, humidity, brightness, pressure, IAQ normalization
