@@ -48,9 +48,9 @@ def render_ccu_orders_tab(ccu_gateway=None, registry_manager=None):
 
         # Use heading SVG for the Orders tab title
         try:
-            from omf2.assets.heading_icons import get_svg_inline
+            from omf2.assets.asset_manager import get_asset_manager
 
-            orders_icon = get_svg_inline("ORDERS", size_px=32) or ""
+            orders_icon = get_asset_manager().get_asset_inline("ORDERS", size_px=32) or ""
             st.markdown(
                 f"<h2 style='margin-bottom: 0.25rem; display:flex; align-items:center; gap:8px;'>"
                 f"{orders_icon} {i18n.translate('tabs.ccu_orders')}</h2>",

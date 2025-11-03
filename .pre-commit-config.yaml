@@ -87,3 +87,11 @@ repos:
         types: [python]
         stages: [commit]
 
+      - id: validate-assets
+        name: validate-assets
+        entry: python omf2/scripts/validate_assets.py
+        language: system
+        files: (omf2/assets/|omf2/scripts/validate_assets\.py)
+        pass_filenames: false
+        stages: [commit]
+

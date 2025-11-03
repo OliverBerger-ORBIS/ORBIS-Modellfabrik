@@ -94,9 +94,9 @@ def show_production_orders_subtab(i18n):
         order_manager = get_order_manager()
 
         try:
-            from omf2.assets.heading_icons import get_svg_inline
+            from omf2.assets.asset_manager import get_asset_manager
 
-            icon = get_svg_inline("PRODUCTION_ORDERS", size_px=32) or ""
+            icon = get_asset_manager().get_asset_inline("PRODUCTION_ORDERS", size_px=32) or ""
             st.markdown(
                 f"<h3 style='display:flex; align-items:center; gap:8px;'>{icon} {i18n.t('ccu_orders.production.title')}</h3>",
                 unsafe_allow_html=True,
@@ -218,9 +218,9 @@ def _render_order_details(order, order_manager, i18n, is_completed=False):
     # Order Info
     order_type = order.get("orderType", "N/A")
     try:
-        from omf2.assets.heading_icons import get_svg_inline
+        from omf2.assets.asset_manager import get_asset_manager
 
-        order_heading_icon = get_svg_inline("PRODUCTION_ORDERS", size_px=18) or ""
+        order_heading_icon = get_asset_manager().get_asset_inline("PRODUCTION_ORDERS", size_px=18) or ""
         st.markdown(f"{order_heading_icon} <strong>{order_type}</strong>", unsafe_allow_html=True)
     except Exception:
         order_icon = UISymbols.get_tab_icon("production_plan")

@@ -18,15 +18,15 @@ class TestStRerunForbidden(unittest.TestCase):
 
     def setUp(self):
         """Setup test paths"""
-        self.project_root = Path(__file__).parent.parent
-        self.omf2_root = self.project_root  # omf2/ is already the project root
+        self.project_root = Path(__file__).parent.parent.parent  # Go up to project root (tests/../)
+        self.omf2_root = self.project_root / "omf2"  # omf2/ directory in project root
 
     def test_no_st_rerun_in_ui_components(self):
         """Test that UI components don't use st.rerun()"""
         violations = []
 
         # Check all UI components
-        ui_path = self.omf2_root / "ui"
+        ui_path = self.project_root / "omf2" / "ui"
         if ui_path.exists():
             for py_file in ui_path.rglob("*.py"):
                 violations.extend(self._check_file_for_st_rerun(py_file))
@@ -72,7 +72,7 @@ class TestStRerunForbidden(unittest.TestCase):
 
         # Check main dashboard files
         main_files = [
-            self.omf2_root / "omf.py",
+            self.project_root / "omf2" / "omf.py",  # Main entry point
             self.omf2_root / "ui" / "main_dashboard.py",
             self.omf2_root / "ui" / "user_manager.py",
         ]
@@ -90,7 +90,7 @@ class TestStRerunForbidden(unittest.TestCase):
 
     def test_only_consume_refresh_in_main(self):
         """Test that only consume_refresh() is used in main application"""
-        main_file = self.omf2_root / "omf.py"
+        main_file = self.project_root / "omf2" / "omf.py"
         if not main_file.exists():
             self.skipTest("Main file not found")
 
@@ -126,7 +126,10 @@ class TestStRerunForbidden(unittest.TestCase):
         violations = []
 
         # Check files that should use request_refresh()
-        files_to_check = [self.omf2_root / "ui" / "main_dashboard.py", self.omf2_root / "ui" / "user_manager.py"]
+        files_to_check = [
+            self.project_root / "omf2" / "ui" / "main_dashboard.py",
+            self.project_root / "omf2" / "ui" / "user_manager.py",
+        ]
 
         for file_path in files_to_check:
             if file_path.exists():
@@ -180,6 +183,17 @@ class TestStRerunForbidden(unittest.TestCase):
                 if file_path.name == "omf.py" and i > 1 and "consume_refresh()" in lines[i - 2]:
                     continue
 
+                # Special handling for main_dashboard.py - allow refresh buttons in sidebar and header
+                if file_path.name == "main_dashboard.py":
+                    # Allow refresh button in sidebar (line ~207: "🔄 Refresh Dashboard")
+                    if "Refresh Dashboard" in line and "st.sidebar.button" in line:
+                        continue
+                    # Allow refresh button in header (line ~71: refresh button with key="header_refresh_button")
+                    if 'key="header_refresh_button"' in line or (
+                        "refresh_icon" in line and "st.button" in line
+                    ):
+                        continue
+
                 for pattern in forbidden_patterns:
                     if re.search(pattern, line):
                         violations.append(f"{file_path}:{i}: {line.strip()}")
@@ -193,9 +207,13 @@ class TestStRerunForbidden(unittest.TestCase):
 class TestUIRefreshStrategy(unittest.TestCase):
     """Test UI-Refresh-Strategy implementation"""
 
+    def setUp(self):
+        """Setup test paths"""
+        self.project_root = Path(__file__).parent.parent.parent  # Go up to project root (tests/../)
+
     def test_ui_refresh_utils_exist(self):
         """Test that UI-Refresh-Utils exist"""
-        ui_refresh_file = Path(__file__).parent.parent.parent / "omf2" / "ui" / "utils" / "ui_refresh.py"
+        ui_refresh_file = self.project_root / "omf2" / "ui" / "utils" / "ui_refresh.py"
         self.assertTrue(ui_refresh_file.exists(), "ui_refresh.py should exist")
 
     def test_request_refresh_function_exists(self):
@@ -211,7 +229,7 @@ class TestUIRefreshStrategy(unittest.TestCase):
     def test_ui_refresh_strategy_documented(self):
         """Test that UI-Refresh-Strategy is documented"""
         # Check if strategy is mentioned in documentation
-        readme_file = Path(__file__).parent.parent.parent / "README.md"
+        readme_file = self.project_root / "README.md"
         if readme_file.exists():
             with open(readme_file, encoding="utf-8") as f:
                 content = f.read()

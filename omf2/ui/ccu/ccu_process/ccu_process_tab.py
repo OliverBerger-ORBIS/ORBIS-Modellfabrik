@@ -6,7 +6,7 @@ Wrapper Tab with Subtabs for Production Plan and Production Monitoring
 
 import streamlit as st
 
-from omf2.assets.heading_icons import get_svg_inline
+from omf2.assets.asset_manager import get_asset_manager
 from omf2.common.logger import get_logger
 from omf2.ui.common.symbols import UISymbols
 
@@ -46,7 +46,7 @@ def render_ccu_process_tab(ccu_gateway=None, registry_manager=None):
 
         # Use heading SVG for Process tab (32px)
         try:
-            process_icon = get_svg_inline("PROCESS", size_px=32) or ""
+            process_icon = get_asset_manager().get_asset_inline("PROCESS", size_px=32) or ""
             st.markdown(
                 f"<h2 style='margin-bottom: 0.25rem; display:flex; align-items:center; gap:8px;'>{process_icon} {i18n.translate('tabs.ccu_process')}</h2>",
                 unsafe_allow_html=True,

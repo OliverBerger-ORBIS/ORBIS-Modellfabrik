@@ -6,7 +6,7 @@ Gateway-Pattern konform: Nutzt AdminGateway aus Gateway-Factory
 
 import streamlit as st
 
-from omf2.assets.heading_icons import get_svg_inline
+from omf2.assets.asset_manager import get_asset_manager
 from omf2.common.logger import get_logger
 from omf2.factory.gateway_factory import get_admin_gateway
 from omf2.ui.common.symbols import UISymbols
@@ -27,7 +27,7 @@ def render_generic_steering_tab():
 
         # Get SVG icon for Generic Steering heading
         try:
-            steering_icon = get_svg_inline("GENERIC_STEERING", size_px=32) or ""
+            steering_icon = get_asset_manager().get_asset_inline("GENERIC_STEERING", size_px=32) or ""
             st.markdown(
                 f"<h1 style='margin: 0.25rem 0 0.25rem 0; display:flex; align-items:center; gap:8px;'>{steering_icon} {i18n.translate('tabs.generic_steering')}</h1>",
                 unsafe_allow_html=True,

@@ -58,35 +58,41 @@ class TestUISymbolsBasics(unittest.TestCase):
         self.assertEqual(get_functional_icon("factory_reset"), "🏭🔄")
 
 
-class TestGetIconHtmlWithHeadingIcons(unittest.TestCase):
-    """Tests für get_icon_html mit heading_icons (Priorität 1)"""
+class TestGetIconHtmlWithAssetManager(unittest.TestCase):
+    """Tests für get_icon_html mit asset_manager (Priorität 1)"""
 
-    @patch("omf2.assets.heading_icons.get_svg_inline")
-    def test_heading_icon_found(self, mock_get_svg):
-        """Test: Heading-Icon wird gefunden und zurückgegeben"""
+    @patch("omf2.assets.asset_manager.get_asset_manager")
+    def test_asset_icon_found(self, mock_get_am):
+        """Test: Asset-Icon wird gefunden und zurückgegeben"""
         mock_svg = '<svg width="24"><circle /></svg>'
-        mock_get_svg.return_value = mock_svg
+        mock_am = MagicMock()
+        mock_am.get_asset_inline.return_value = mock_svg
+        mock_get_am.return_value = mock_am
 
         result = get_icon_html("DASHBOARD_ADMIN", size_px=24)
 
         self.assertEqual(result, mock_svg)
-        mock_get_svg.assert_called_once_with("DASHBOARD_ADMIN", size_px=24)
+        mock_am.get_asset_inline.assert_called_once_with("DASHBOARD_ADMIN", size_px=24)
 
-    @patch("omf2.assets.heading_icons.get_svg_inline")
-    def test_heading_icon_with_custom_size(self, mock_get_svg):
-        """Test: Heading-Icon mit benutzerdefinierter Größe"""
+    @patch("omf2.assets.asset_manager.get_asset_manager")
+    def test_asset_icon_with_custom_size(self, mock_get_am):
+        """Test: Asset-Icon mit benutzerdefinierter Größe"""
         mock_svg = '<svg width="48"><circle /></svg>'
-        mock_get_svg.return_value = mock_svg
+        mock_am = MagicMock()
+        mock_am.get_asset_inline.return_value = mock_svg
+        mock_get_am.return_value = mock_am
 
         result = get_icon_html("ORDERS", size_px=48)
 
         self.assertEqual(result, mock_svg)
-        mock_get_svg.assert_called_once_with("ORDERS", size_px=48)
+        mock_am.get_asset_inline.assert_called_once_with("ORDERS", size_px=48)
 
-    @patch("omf2.assets.heading_icons.get_svg_inline")
-    def test_heading_icon_not_found_falls_back(self, mock_get_svg):
-        """Test: Wenn Heading-Icon nicht gefunden wird, wird auf nächste Stufe zurückgefallen"""
-        mock_get_svg.return_value = None
+    @patch("omf2.assets.asset_manager.get_asset_manager")
+    def test_asset_icon_not_found_falls_back(self, mock_get_am):
+        """Test: Wenn Asset-Icon nicht gefunden wird, wird auf nächste Stufe zurückgefallen"""
+        mock_am = MagicMock()
+        mock_am.get_asset_inline.return_value = None
+        mock_get_am.return_value = mock_am
 
         # Should fall back to module icons or emoji
         result = get_icon_html("ccu_dashboard", size_px=24)
@@ -118,131 +124,139 @@ class TestGetIconHtmlWithModuleIcons(unittest.TestCase):
 
         shutil.rmtree(self.temp_dir)
 
-    @patch("omf2.assets.heading_icons.get_svg_inline")
-    def test_module_icon_found(self, mock_heading_svg):
+    @patch("omf2.assets.asset_manager.get_asset_manager")
+    def test_module_icon_found(self, mock_get_am):
         """Test: Module-Icon wird gefunden und zurückgegeben"""
-        # Heading icon returns None -> fall back to module icons
-        mock_heading_svg.return_value = None
+        # Asset icon returns None -> fall back to module icons via get_asset_content
+        mock_am = MagicMock()
+        mock_am.get_asset_inline.return_value = None  # First call returns None
+        
+        # Second call: get_asset_content returns SVG content (new API)
+        svg_content = self.svg_file.read_text(encoding="utf-8")
+        mock_am.get_asset_content.return_value = svg_content
+        mock_get_am.return_value = mock_am
 
-        with patch("omf2.assets.asset_manager.get_asset_manager") as mock_get_am:
-            mock_am = MagicMock()
-            mock_am.get_module_icon_path.return_value = str(self.svg_file)
-            mock_get_am.return_value = mock_am
+        result = get_icon_html("HBW", size_px=32)
 
-            result = get_icon_html("HBW", size_px=32)
+        # Should contain SVG
+        self.assertIn("<svg", result)
+        # Should have new width injected
+        self.assertIn('width="32"', result)
+        # Should NOT have old width/height
+        self.assertNotIn('width="100"', result)
+        self.assertNotIn('height="100"', result)
+        # Should have CSS scoping applied (if SVG has style section)
+        # Note: Simple test SVG might not have style, so scoping might not be visible
 
-            # Should contain SVG
-            self.assertIn("<svg", result)
-            # Should have new width injected
-            self.assertIn('width="32"', result)
-            # Should NOT have old width/height
-            self.assertNotIn('width="100"', result)
-            self.assertNotIn('height="100"', result)
-            # Should have CSS scoping applied
-            self.assertIn("svg-", result)  # scoped ID
-
-    @patch("omf2.assets.heading_icons.get_svg_inline")
-    def test_module_icon_with_scoping(self, mock_heading_svg):
+    @patch("omf2.assets.asset_manager.get_asset_manager")
+    def test_module_icon_with_scoping(self, mock_get_am):
         """Test: CSS-Scoping wird auf Module-Icon angewendet"""
-        mock_heading_svg.return_value = None
+        from omf2.assets.asset_manager import scope_svg_styles
+        
+        mock_am = MagicMock()
+        mock_am.get_asset_inline.return_value = None  # First call returns None
+        
+        # Second call: get_asset_content returns SVG content with style section (already scoped)
+        # get_asset_content(scoped=True) applies scoping in asset_manager, so return scoped version
+        svg_with_style = """<svg viewBox="0 0 24 24" width="100" height="100">
+            <style>.cls-1 { fill: red; }</style>
+            <circle class="cls-1" cx="12" cy="12" r="10" />
+        </svg>"""
+        # Apply scoping (as asset_manager.get_asset_content does)
+        scoped_svg = scope_svg_styles(svg_with_style)
+        mock_am.get_asset_content.return_value = scoped_svg
+        mock_get_am.return_value = mock_am
 
-        with patch("omf2.assets.asset_manager.get_asset_manager") as mock_get_am:
-            mock_am = MagicMock()
-            mock_am.get_module_icon_path.return_value = str(self.svg_file)
-            mock_get_am.return_value = mock_am
+        result = get_icon_html("DRILL", size_px=24)
 
-            result = get_icon_html("DRILL", size_px=24)
+        # Should have scoped styles (if SVG has style section)
+        self.assertIn("<svg", result)
+        # Should have new width injected
+        self.assertIn('width="24"', result)
+        # Should have CSS scoping applied (SVG has style section)
+        self.assertIn("svg-", result)
+        # Should have <g id="svg-...">
+        self.assertIn('<g id="svg-', result)
 
-            # Should have scoped styles
-            self.assertIn("svg-", result)
-            # Should have <g id="svg-...">
-            self.assertIn('<g id="svg-', result)
-
-    @patch("omf2.assets.heading_icons.get_svg_inline")
-    def test_module_icon_case_insensitive(self, mock_heading_svg):
+    @patch("omf2.assets.asset_manager.get_asset_manager")
+    def test_module_icon_case_insensitive(self, mock_get_am):
         """Test: Module-Icon-Key ist case-insensitive (wird zu uppercase konvertiert)"""
-        mock_heading_svg.return_value = None
+        mock_am = MagicMock()
+        mock_am.get_asset_inline.return_value = None  # First call returns None
+        
+        # Second call: get_asset_content returns SVG content (new API)
+        svg_content = self.svg_file.read_text(encoding="utf-8")
+        mock_am.get_asset_content.return_value = svg_content
+        mock_get_am.return_value = mock_am
 
-        with patch("omf2.assets.asset_manager.get_asset_manager") as mock_get_am:
-            mock_am = MagicMock()
-            mock_am.get_module_icon_path.return_value = str(self.svg_file)
-            mock_get_am.return_value = mock_am
+        result = get_icon_html("hbw", size_px=24)  # lowercase
 
-            result = get_icon_html("hbw", size_px=24)  # lowercase
+        # Should call with uppercase
+        mock_am.get_asset_content.assert_called_with("HBW", scoped=True)
+        self.assertIn("<svg", result)
 
-            # Should call with uppercase
-            mock_am.get_module_icon_path.assert_called_with("HBW")
-            self.assertIn("<svg", result)
+    @patch("omf2.assets.asset_manager.get_asset_manager")
+    def test_module_icon_file_not_found(self, mock_get_am):
+        """Test: Wenn Module-Icon nicht existiert, fällt auf Emoji zurück"""
+        mock_am = MagicMock()
+        mock_am.get_asset_inline.return_value = None  # First call returns None
+        # get_asset_content also returns None (not found)
+        mock_am.get_asset_content.return_value = None
+        mock_get_am.return_value = mock_am
 
-    @patch("omf2.assets.heading_icons.get_svg_inline")
-    def test_module_icon_file_not_found(self, mock_heading_svg):
-        """Test: Wenn Module-Icon-Datei nicht existiert, fällt auf Emoji zurück"""
-        mock_heading_svg.return_value = None
+        result = get_icon_html("ccu_dashboard", size_px=24)
 
-        with patch("omf2.assets.asset_manager.get_asset_manager") as mock_get_am:
-            mock_am = MagicMock()
-            # Return non-existent file path
-            mock_am.get_module_icon_path.return_value = "/nonexistent/path.svg"
-            mock_get_am.return_value = mock_am
-
-            result = get_icon_html("ccu_dashboard", size_px=24)
-
-            # Should fall back to emoji
-            self.assertIn('<span style="font-size: 24px;">', result)
-            self.assertIn("🏭", result)
+        # Should fall back to emoji
+        self.assertIn('<span style="font-size: 24px;">', result)
+        self.assertIn("🏭", result)
 
 
 class TestGetIconHtmlWithEmojisFallback(unittest.TestCase):
     """Tests für get_icon_html mit Emoji-Fallback (Priorität 3)"""
 
-    @patch("omf2.assets.heading_icons.get_svg_inline")
     @patch("omf2.assets.asset_manager.get_asset_manager")
-    def test_emoji_fallback_tab_icon(self, mock_get_am, mock_heading_svg):
+    def test_emoji_fallback_tab_icon(self, mock_get_am):
         """Test: Emoji-Fallback für Tab-Icon"""
-        # No heading icon
-        mock_heading_svg.return_value = None
-        # No module icon
+        # No asset icon
         mock_am = MagicMock()
-        mock_am.get_module_icon_path.return_value = None
+        mock_am.get_asset_inline.return_value = None
+        mock_am.get_asset_content.return_value = None  # New API
         mock_get_am.return_value = mock_am
 
         result = get_icon_html("ccu_dashboard", size_px=24)
 
         self.assertIn('<span style="font-size: 24px;">🏭</span>', result)
 
-    @patch("omf2.assets.heading_icons.get_svg_inline")
     @patch("omf2.assets.asset_manager.get_asset_manager")
-    def test_emoji_fallback_status_icon(self, mock_get_am, mock_heading_svg):
+    def test_emoji_fallback_status_icon(self, mock_get_am):
         """Test: Emoji-Fallback für Status-Icon"""
-        mock_heading_svg.return_value = None
         mock_am = MagicMock()
-        mock_am.get_module_icon_path.return_value = None
+        mock_am.get_asset_inline.return_value = None
+        mock_am.get_asset_content.return_value = None  # New API
         mock_get_am.return_value = mock_am
 
         result = get_icon_html("success", size_px=20)
 
         self.assertIn('<span style="font-size: 20px;">✅</span>', result)
 
-    @patch("omf2.assets.heading_icons.get_svg_inline")
     @patch("omf2.assets.asset_manager.get_asset_manager")
-    def test_emoji_fallback_functional_icon(self, mock_get_am, mock_heading_svg):
+    def test_emoji_fallback_functional_icon(self, mock_get_am):
         """Test: Emoji-Fallback für Functional-Icon"""
-        mock_heading_svg.return_value = None
         mock_am = MagicMock()
-        mock_am.get_module_icon_path.return_value = None
+        mock_am.get_asset_inline.return_value = None
+        mock_am.get_asset_content.return_value = None  # New API
         mock_get_am.return_value = mock_am
 
         result = get_icon_html("factory_reset", size_px=28)
 
         self.assertIn('<span style="font-size: 28px;">🏭🔄</span>', result)
 
-    @patch("omf2.assets.heading_icons.get_svg_inline")
     @patch("omf2.assets.asset_manager.get_asset_manager")
-    def test_emoji_fallback_custom_size(self, mock_get_am, mock_heading_svg):
+    def test_emoji_fallback_custom_size(self, mock_get_am):
         """Test: Emoji-Fallback mit benutzerdefinierter Größe"""
-        mock_heading_svg.return_value = None
         mock_am = MagicMock()
-        mock_am.get_module_icon_path.return_value = None
+        mock_am.get_asset_inline.return_value = None
+        mock_am.get_asset_content.return_value = None  # New API
         mock_get_am.return_value = mock_am
 
         result = get_icon_html("error", size_px=36)
@@ -253,13 +267,12 @@ class TestGetIconHtmlWithEmojisFallback(unittest.TestCase):
 class TestGetIconHtmlUltimateFallback(unittest.TestCase):
     """Tests für get_icon_html ultimate fallback (unbekannter Key)"""
 
-    @patch("omf2.assets.heading_icons.get_svg_inline")
     @patch("omf2.assets.asset_manager.get_asset_manager")
-    def test_ultimate_fallback_unknown_key(self, mock_get_am, mock_heading_svg):
+    def test_ultimate_fallback_unknown_key(self, mock_get_am):
         """Test: Ultimate Fallback für unbekannten Key"""
-        mock_heading_svg.return_value = None
         mock_am = MagicMock()
-        mock_am.get_module_icon_path.return_value = None
+        mock_am.get_asset_inline.return_value = None
+        mock_am.get_asset_content.return_value = None  # New API
         mock_get_am.return_value = mock_am
 
         result = get_icon_html("completely_unknown_key_12345", size_px=24)
@@ -267,13 +280,12 @@ class TestGetIconHtmlUltimateFallback(unittest.TestCase):
         # Should return placeholder emoji
         self.assertIn('<span style="font-size: 24px;">⚙️</span>', result)
 
-    @patch("omf2.assets.heading_icons.get_svg_inline")
     @patch("omf2.assets.asset_manager.get_asset_manager")
-    def test_ultimate_fallback_maintains_size(self, mock_get_am, mock_heading_svg):
+    def test_ultimate_fallback_maintains_size(self, mock_get_am):
         """Test: Ultimate Fallback behält benutzerdefinierte Größe bei"""
-        mock_heading_svg.return_value = None
         mock_am = MagicMock()
-        mock_am.get_module_icon_path.return_value = None
+        mock_am.get_asset_inline.return_value = None
+        mock_am.get_asset_content.return_value = None  # New API
         mock_get_am.return_value = mock_am
 
         result = get_icon_html("unknown", size_px=40)
@@ -284,39 +296,26 @@ class TestGetIconHtmlUltimateFallback(unittest.TestCase):
 class TestGetIconHtmlDefaultSize(unittest.TestCase):
     """Tests für get_icon_html default size parameter"""
 
-    @patch("omf2.assets.heading_icons.get_svg_inline")
-    def test_default_size_is_24(self, mock_heading_svg):
+    @patch("omf2.assets.asset_manager.get_asset_manager")
+    def test_default_size_is_24(self, mock_get_am):
         """Test: Standard-Größe ist 24px wenn nicht angegeben"""
         mock_svg = '<svg width="24"><circle /></svg>'
-        mock_heading_svg.return_value = mock_svg
+        mock_am = MagicMock()
+        mock_am.get_asset_inline.return_value = mock_svg
+        mock_get_am.return_value = mock_am
 
         result = get_icon_html("DASHBOARD_ADMIN")  # No size_px specified
 
         # Should call with default size_px=24
-        mock_heading_svg.assert_called_once_with("DASHBOARD_ADMIN", size_px=24)
+        mock_am.get_asset_inline.assert_called_once_with("DASHBOARD_ADMIN", size_px=24)
 
 
 class TestGetIconHtmlErrorHandling(unittest.TestCase):
     """Tests für get_icon_html error handling"""
 
-    @patch("omf2.assets.heading_icons.get_svg_inline")
-    def test_heading_icons_import_error(self, mock_heading_svg):
-        """Test: Import-Fehler bei heading_icons wird abgefangen"""
-        # Simulate import error
-        mock_heading_svg.side_effect = ImportError("Module not found")
-
-        # Should fall back gracefully
-        result = get_icon_html("ccu_dashboard", size_px=24)
-
-        # Should return emoji or module icon, not crash
-        self.assertIsNotNone(result)
-        self.assertTrue(len(result) > 0)
-
-    @patch("omf2.assets.heading_icons.get_svg_inline")
     @patch("omf2.assets.asset_manager.get_asset_manager")
-    def test_asset_manager_error(self, mock_get_am, mock_heading_svg):
+    def test_asset_manager_error(self, mock_get_am):
         """Test: Fehler bei asset_manager wird abgefangen"""
-        mock_heading_svg.return_value = None
         # Simulate error
         mock_get_am.side_effect = Exception("Asset manager error")
 
@@ -333,19 +332,18 @@ class TestGetIconHtmlErrorHandling(unittest.TestCase):
         svg_file.write_bytes(b"\xff\xfe\x00\x00")
 
         try:
-            with patch("omf2.assets.heading_icons.get_svg_inline") as mock_heading_svg:
-                mock_heading_svg.return_value = None
+            with patch("omf2.assets.asset_manager.get_asset_manager") as mock_get_am:
+                mock_am = MagicMock()
+                mock_am.get_asset_inline.return_value = None  # First call returns None
+                # get_asset_content tries to read file but encoding fails, returns None
+                mock_am.get_asset_content.return_value = None
+                mock_get_am.return_value = mock_am
 
-                with patch("omf2.assets.asset_manager.get_asset_manager") as mock_get_am:
-                    mock_am = MagicMock()
-                    mock_am.get_module_icon_path.return_value = str(svg_file)
-                    mock_get_am.return_value = mock_am
+                # Should fall back gracefully, not crash
+                result = get_icon_html("ccu_dashboard", size_px=24)
 
-                    # Should fall back gracefully, not crash
-                    result = get_icon_html("ccu_dashboard", size_px=24)
-
-                    # Should fall back to emoji
-                    self.assertIn('<span style="font-size: 24px;">', result)
+                # Should fall back to emoji (due to invalid encoding)
+                self.assertIn('<span style="font-size: 24px;">', result)
         finally:
             import shutil
 
@@ -355,10 +353,10 @@ class TestGetIconHtmlErrorHandling(unittest.TestCase):
 class TestGetIconHtmlIntegration(unittest.TestCase):
     """Integration tests für get_icon_html mit echtem System"""
 
-    def test_real_heading_icon_if_available(self):
-        """Integration test: Versuche echtes Heading-Icon zu laden"""
+    def test_real_asset_icon_if_available(self):
+        """Integration test: Versuche echtes Asset-Icon zu laden"""
         try:
-            # Try to load a real heading icon
+            # Try to load a real asset icon
             result = get_icon_html("DASHBOARD_ADMIN", size_px=32)
 
             # Should return something
@@ -368,7 +366,7 @@ class TestGetIconHtmlIntegration(unittest.TestCase):
             # Could be SVG or emoji depending on system state
             self.assertTrue("<svg" in result or "<span" in result)
         except Exception:
-            # If heading_icons not available, test passes anyway
+            # If asset_manager not available, test passes anyway
             pass
 
     def test_real_module_icon_if_available(self):

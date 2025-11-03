@@ -8,7 +8,7 @@ from pathlib import Path
 
 import streamlit as st
 
-from omf2.assets.heading_icons import get_svg_inline
+from omf2.assets.asset_manager import get_asset_manager
 from omf2.common.logger import get_logger
 
 logger = get_logger(__name__)
@@ -24,7 +24,7 @@ def render_gateway_subtab():
             return
 
         # SVG-Header mit Fallback - einfache Lösung mit größerer SVG
-        gateway_svg = get_svg_inline("GATEWAY", size_px=32)
+        gateway_svg = get_asset_manager().get_asset_inline("GATEWAY", size_px=32)
         header_icon = gateway_svg if gateway_svg else "🔀"
         st.markdown(
             f'<h3 style="margin-top: 0; margin-bottom: 1rem;">{header_icon} <strong>{i18n.t("admin.gateway")} Configuration</strong></h3>',

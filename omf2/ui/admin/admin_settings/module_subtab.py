@@ -8,7 +8,7 @@ import html
 
 import streamlit as st
 
-from omf2.assets.heading_icons import get_svg_inline
+from omf2.assets.asset_manager import get_asset_manager
 from omf2.common.logger import get_logger
 from omf2.ui.common.symbols import UISymbols
 
@@ -32,7 +32,7 @@ def render_module_subtab():
             return
 
         # SVG-Header mit Fallback - einfache Lösung mit größerer SVG
-        modules_svg = get_svg_inline("MODULES_ADMIN", size_px=32)
+        modules_svg = get_asset_manager().get_asset_inline("MODULES_ADMIN", size_px=32)
         header_icon = modules_svg if modules_svg else UISymbols.get_functional_icon("module_control")
         st.markdown(
             f'<h3 style="margin-top: 0; margin-bottom: 1rem;">{header_icon} <strong>{i18n.t("admin.modules")} Configuration</strong></h3>',

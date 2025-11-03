@@ -8,7 +8,7 @@ import html
 import pandas as pd
 import streamlit as st
 
-from omf2.assets.heading_icons import get_svg_inline
+from omf2.assets.asset_manager import get_asset_manager
 from omf2.ccu.module_manager import get_ccu_module_manager
 from omf2.common.logger import get_logger
 from omf2.ui.common.symbols import UISymbols
@@ -36,7 +36,7 @@ def render_ccu_message_monitor(ccu_gateway, title=None, show_controls=True):
             title = title or "Message Monitor"
             # Get SVG icon for Message Monitor heading
             try:
-                msg_icon = get_svg_inline("MESSAGE_CENTER", size_px=32) or ""
+                msg_icon = get_asset_manager().get_asset_inline("MESSAGE_CENTER", size_px=32) or ""
                 st.markdown(
                     f"<h3 style='margin: 0.25rem 0 0.25rem 0; display:flex; align-items:center; gap:8px;'>{msg_icon} {title}</h3>",
                     unsafe_allow_html=True,
@@ -49,7 +49,7 @@ def render_ccu_message_monitor(ccu_gateway, title=None, show_controls=True):
             title = title or i18n.t("ccu_message_monitor.title")
             # Get SVG icon for Message Monitor heading
             try:
-                msg_icon = get_svg_inline("MESSAGE_CENTER", size_px=32) or ""
+                msg_icon = get_asset_manager().get_asset_inline("MESSAGE_CENTER", size_px=32) or ""
                 st.markdown(
                     f"<h3 style='margin: 0.25rem 0 0.25rem 0; display:flex; align-items:center; gap:8px;'>{msg_icon} {title}</h3>",
                     unsafe_allow_html=True,
@@ -268,7 +268,7 @@ def _render_table_filters(df, i18n, ccu_gateway, monitor_manager):
         # Abonnierte Topics Anzeige - Auswahlbox
         # Get SVG icon for Topics heading
         try:
-            topics_icon = get_svg_inline("TOPICS", size_px=32) or ""
+            topics_icon = get_asset_manager().get_asset_inline("TOPICS", size_px=32) or ""
             st.markdown(
                 f"<h4 style='margin: 0.25rem 0 0.25rem 0; display:flex; align-items:center; gap:8px;'>{topics_icon} Abonnierte Topics</h4>",
                 unsafe_allow_html=True,

@@ -105,9 +105,9 @@ def render_sensor_data_subtab(ccu_gateway: CcuGateway, registry_manager, asset_m
 
         # Header with heading SVG (fallback to emoji)
         try:
-            from omf2.assets.heading_icons import get_svg_inline
+            from omf2.assets.asset_manager import get_asset_manager
 
-            icon_html = get_svg_inline("SENSOR_DATA", size_px=32) or ""
+            icon_html = get_asset_manager().get_asset_inline("SENSOR_DATA", size_px=32) or ""
             st.markdown(
                 f"<h2 style='margin-bottom: 0.25rem; display:flex; align-items:center; gap:8px;'>{icon_html} {i18n.t('ccu_overview.sensor_data.title')}</h2>",
                 unsafe_allow_html=True,
@@ -748,9 +748,9 @@ def _show_camera_image_panel(cam_data, i18n):
             from omf2.assets import get_asset_manager
 
             asset_manager = get_asset_manager()
-            placeholder_path = asset_manager.get_module_icon_path("CAMERA_PLACEHOLDER")
-            if placeholder_path:
-                st.image(placeholder_path, caption=i18n.t("ccu_overview.sensor_data.camera_image"), width=300)
+            placeholder_path = asset_manager.get_asset_path("CAMERA_PLACEHOLDER")
+            if placeholder_path and placeholder_path.exists():
+                st.image(str(placeholder_path), caption=i18n.t("ccu_overview.sensor_data.camera_image"), width=300)
             else:
                 st.caption("Camera placeholder not available")
         except Exception:

@@ -27,8 +27,7 @@ from typing import Any, Dict, Optional
 import streamlit as st
 
 # OMF2 Imports
-from omf2.assets import get_asset_manager
-from omf2.assets.heading_icons import get_svg_inline
+from omf2.assets.asset_manager import get_asset_manager
 from omf2.ccu.config_loader import get_ccu_config_loader
 from omf2.common.logger import get_logger
 
@@ -130,7 +129,7 @@ def show_shopfloor_layout(
     heading_html = ""
     if title:
         try:
-            shop_icon = get_svg_inline("SHOPFLOOR_LAYOUT", size_px=32) or ""
+            shop_icon = get_asset_manager().get_asset_inline("SHOPFLOOR_LAYOUT", size_px=32) or ""
             heading_html = f"""
             <div style="margin: 0.25rem 0 0.25rem 0;">
                 <h3 style="margin: 0; padding: 0; font-size: 1.5rem; font-weight: 600; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; display:flex; align-items:center; gap:8px; line-height: 1.4;">
@@ -603,52 +602,49 @@ def _generate_route_overlay(
         agv_x, agv_y = agv_position
         # Load FTS icon and embed it at the AGV position
         try:
-            from pathlib import Path
 
             from omf2.assets.asset_manager import get_asset_manager
 
             asset_manager = get_asset_manager()
-            fts_icon_path = asset_manager.get_module_icon_path("FTS")
+            fts_svg_content = asset_manager.get_asset_content("FTS", scoped=True)
 
-            if fts_icon_path and Path(fts_icon_path).exists():
-                with open(fts_icon_path, encoding="utf-8") as f:
-                    fts_svg_content = f.read()
-                    # Extract SVG content (without <?xml> declaration)
-                    if "<?xml" in fts_svg_content:
-                        fts_svg_content = fts_svg_content.split("?>", 1)[1].strip()
+            if fts_svg_content:
+                # Extract SVG content (without <?xml> declaration)
+                if "<?xml" in fts_svg_content:
+                    fts_svg_content = fts_svg_content.split("?>", 1)[1].strip()
 
-                    # Extract original SVG size from ViewBox or width/height attributes
-                    original_size = 24  # Default fallback
-                    viewbox_match = re.search(r'viewBox="([^"]*)"', fts_svg_content)
-                    if viewbox_match:
-                        viewbox = viewbox_match.group(1)
-                        viewbox_parts = viewbox.split()
-                        if len(viewbox_parts) >= 4:
-                            # ViewBox format: "x y width height" - use width as reference
-                            original_size = float(viewbox_parts[2])
-                    else:
-                        # Try to extract from width attribute
-                        width_match = re.search(r'width="([^"]*)"', fts_svg_content)
-                        if width_match:
-                            try:
-                                original_size = float(width_match.group(1).replace("px", "").replace("pt", ""))
-                            except ValueError:
-                                pass
+                # Extract original SVG size from ViewBox or width/height attributes
+                original_size = 24  # Default fallback
+                viewbox_match = re.search(r'viewBox="([^"]*)"', fts_svg_content)
+                if viewbox_match:
+                    viewbox = viewbox_match.group(1)
+                    viewbox_parts = viewbox.split()
+                    if len(viewbox_parts) >= 4:
+                        # ViewBox format: "x y width height" - use width as reference
+                        original_size = float(viewbox_parts[2])
+                else:
+                    # Try to extract from width attribute
+                    width_match = re.search(r'width="([^"]*)"', fts_svg_content)
+                    if width_match:
+                        try:
+                            original_size = float(width_match.group(1).replace("px", "").replace("pt", ""))
+                        except ValueError:
+                            pass
 
-                    # Scale to 64px regardless of original SVG size
-                    icon_size = 64
-                    half_size = icon_size / 2
-                    scale_factor = icon_size / original_size
+                # Scale to 64px regardless of original SVG size
+                icon_size = 64
+                half_size = icon_size / 2
+                scale_factor = icon_size / original_size
 
-                    # Create a group with transform to position and scale the icon
-                    # Remove SVG wrapper and width/height attributes for embedding
-                    svg_content_clean = fts_svg_content.replace("<svg", "<g").replace("</svg>", "</g>")
-                    svg_content_clean = re.sub(r'width="[^"]*"', "", svg_content_clean)
-                    svg_content_clean = re.sub(r'height="[^"]*"', "", svg_content_clean)
+                # Create a group with transform to position and scale the icon
+                # Remove SVG wrapper and width/height attributes for embedding
+                svg_content_clean = fts_svg_content.replace("<svg", "<g").replace("</svg>", "</g>")
+                svg_content_clean = re.sub(r'width="[^"]*"', "", svg_content_clean)
+                svg_content_clean = re.sub(r'height="[^"]*"', "", svg_content_clean)
 
-                    agv_marker_svg = f"""
-                    <g transform="translate({agv_x - half_size}, {agv_y - half_size}) scale({scale_factor})">
-                        {svg_content_clean}
+                agv_marker_svg = f"""
+                <g transform="translate({agv_x - half_size}, {agv_y - half_size}) scale({scale_factor})">
+                    {svg_content_clean}
                     </g>
                     """
             else:
@@ -894,22 +890,18 @@ def _get_split_cell_icon(asset_manager, icon_type: str, width: int, height: int)
     """Get icon for split cell components with fallback to empty.svg."""
     try:
         if asset_manager:
-            # Try to get icon from asset manager using get_asset_file
-            icon_path = asset_manager.get_asset_file(icon_type)
+            # Try to get icon from asset manager using new unified API
+            svg_content = asset_manager.get_asset_content(icon_type, scoped=True)
 
-            if icon_path and Path(icon_path).exists():
-                with open(icon_path, encoding="utf-8") as f:
-                    svg_content = f.read()
-                    svg_content = _scale_svg_properly(svg_content, width, height)
-                    return svg_content
+            if svg_content:
+                svg_content = _scale_svg_properly(svg_content, width, height)
+                return svg_content
 
             # Fallback to empty.svg if icon not found
-            empty_svg_path = Path(asset_manager.svgs_dir) / "empty.svg"
-            if empty_svg_path.exists():
-                with open(empty_svg_path, encoding="utf-8") as f:
-                    svg_content = f.read()
-                    svg_content = _scale_svg_properly(svg_content, width, height)
-                    return svg_content
+            empty_svg_content = asset_manager.get_asset_content("EMPTY", scoped=True)
+            if empty_svg_content:
+                empty_svg_content = _scale_svg_properly(empty_svg_content, width, height)
+                return empty_svg_content
 
     except Exception as e:
         logger.debug(f"Could not load split cell icon {icon_type}: {e}")
@@ -964,25 +956,22 @@ def _get_single_intersection_icon(
 
         # Asset Manager verwenden für Icon-Pfad (wie alle anderen Module)
         if asset_manager:
-            icon_path = asset_manager.get_module_icon_path(intersection_id)
+            # Use new unified API - intersection IDs are direct keys (e.g., "1", "2", "3", "4")
+            svg_content = asset_manager.get_asset_content(intersection_id, scoped=True)
         else:
             # Fallback falls kein Asset Manager übergeben wurde
             assets_dir = Path(__file__).parent.parent.parent.parent / "assets"
-            intersection_icons = {
-                "1": "fiber_manual_record_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg",
-                "2": "rotate_right_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg",
-                "3": "rotate_left_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg",
-                "4": "mode_standby_24dp_1F1F1F_FILL0_wght400_GRAD0_opsz24.svg",
-            }
-            icon_file = intersection_icons.get(intersection_id, "add_cross_10px_whitebg.svg")
-            icon_path = assets_dir / "svgs" / icon_file
+            icon_path = assets_dir / "svg" / "shopfloor" / f"intersection{intersection_id}.svg"
+            if icon_path.exists():
+                with open(icon_path, encoding="utf-8") as f:
+                    svg_content = f.read()
+            else:
+                svg_content = None
 
-        if icon_path and Path(icon_path).exists():
-            with open(icon_path, encoding="utf-8") as f:
-                svg_content = f.read()
-                # ViewBox-bewusste Skalierung - keine Verzerrung!
-                svg_content = _scale_svg_properly(svg_content, width, height)
-                return svg_content
+        if svg_content:
+            # ViewBox-bewusste Skalierung - keine Verzerrung!
+            svg_content = _scale_svg_properly(svg_content, width, height)
+            return svg_content
         else:
             return f'<text x="{width//2}" y="{height//2}" text-anchor="middle" font-size="10" fill="#666">+</text>'
     except Exception as e:
@@ -991,18 +980,16 @@ def _get_single_intersection_icon(
 
 
 def _get_orbis_logo_svg(asset_manager, width: int, height: int) -> str:
-    """Lädt das ORBIS-Logo SVG - VEREINFACHT mit Asset Manager"""
+    """Lädt das ORBIS-Logo SVG - VEREINFACHT mit Asset Manager (new unified API)"""
     try:
         # Asset Manager hat bereits ORBIS-Logo-Mapping
-        orbis_logo_path = asset_manager.get_asset_file("ORBIS")
-        if orbis_logo_path and Path(orbis_logo_path).exists():
-            with open(orbis_logo_path, encoding="utf-8") as svg_file:
-                svg_content = svg_file.read()
-                # SVG-Größe anpassen
-                svg_content = re.sub(r'<svg([^>]*)width="[^"]*"', r"<svg\1", svg_content, count=1)
-                svg_content = re.sub(r'<svg([^>]*)height="[^"]*"', r"<svg\1", svg_content, count=1)
-                svg_content = svg_content.replace("<svg", f'<svg width="{width}" height="{height}"', 1)
-                return svg_content
+        svg_content = asset_manager.get_asset_content("ORBIS", scoped=True)
+        if svg_content:
+            # SVG-Größe anpassen
+            svg_content = re.sub(r'<svg([^>]*)width="[^"]*"', r"<svg\1", svg_content, count=1)
+            svg_content = re.sub(r'<svg([^>]*)height="[^"]*"', r"<svg\1", svg_content, count=1)
+            svg_content = svg_content.replace("<svg", f'<svg width="{width}" height="{height}"', 1)
+            return svg_content
     except Exception as e:
         logger.warning(f"Could not load ORBIS logo: {e}")
 
@@ -1070,23 +1057,19 @@ def _get_module_icon_svg(asset_manager, module_type: str, width: int, height: in
             # Ein Icon pro Intersection basierend auf der ID
             return _get_single_intersection_icon(module_type, width, height, cell_data, asset_manager)
 
-        # Für alle anderen Module: Asset Manager verwenden
-        icon_path = asset_manager.get_module_icon_path(module_type)
+        # Für alle anderen Module: Asset Manager verwenden (new unified API)
+        svg_content = asset_manager.get_asset_content(module_type, scoped=True)
 
-        if icon_path and Path(icon_path).exists():
-            with open(icon_path, encoding="utf-8") as svg_file:
-                svg_content = svg_file.read()
-                # ViewBox-bewusste Skalierung - keine Verzerrung!
-                svg_content = _scale_svg_properly(svg_content, width, height)
-                return svg_content
+        if svg_content:
+            # ViewBox-bewusste Skalierung - keine Verzerrung!
+            svg_content = _scale_svg_properly(svg_content, width, height)
+            return svg_content
 
         # Fallback to empty.svg if icon not found
-        empty_svg_path = Path(asset_manager.svgs_dir) / "empty.svg"
-        if empty_svg_path.exists():
-            with open(empty_svg_path, encoding="utf-8") as svg_file:
-                svg_content = svg_file.read()
-                svg_content = _scale_svg_properly(svg_content, width, height)
-                return svg_content
+        empty_svg_content = asset_manager.get_asset_content("EMPTY", scoped=True)
+        if empty_svg_content:
+            empty_svg_content = _scale_svg_properly(empty_svg_content, width, height)
+            return empty_svg_content
 
     except Exception as e:
         logger.warning(f"Could not load icon for {module_type}: {e}")

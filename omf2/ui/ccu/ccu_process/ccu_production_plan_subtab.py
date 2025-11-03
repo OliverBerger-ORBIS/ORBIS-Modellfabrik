@@ -9,7 +9,6 @@ from typing import Any, Dict, List
 import streamlit as st
 
 from omf2.assets.asset_manager import get_asset_manager
-from omf2.assets.heading_icons import get_svg_inline
 from omf2.ccu.config_loader import get_ccu_config_loader
 from omf2.common.logger import get_logger
 from omf2.common.product_manager import get_omf2_product_manager
@@ -45,7 +44,7 @@ def render_ccu_production_plan_subtab():
 
         # Section 2: Production Plan (dropdown + controls)
         try:
-            heading_icon = get_svg_inline("PROCESS", size_px=32) or ""
+            heading_icon = get_asset_manager().get_asset_inline("PROCESS", size_px=32) or ""
             title_txt = (
                 st.session_state.get("i18n_manager").t("ccu_process.sections.production_plan.title")
                 if st.session_state.get("i18n_manager")
@@ -121,7 +120,7 @@ def _show_workflow_controls_section():
 def _show_interactive_workflow_visualization(workflows: Dict[str, Any]):
     """Show main interactive workflow visualization (like Image 2)"""
     try:
-        heading_icon = get_svg_inline("PROCESS", size_px=32) or ""
+        heading_icon = get_asset_manager().get_asset_inline("PROCESS", size_px=32) or ""
         i18n = st.session_state.get("i18n_manager")
         title_txt = i18n.t("ccu_process.sections.processing_steps.title") if i18n else "Processing Steps"
         if title_txt == "ccu_process.sections.processing_steps.title":

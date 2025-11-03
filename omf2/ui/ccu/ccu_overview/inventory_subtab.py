@@ -234,9 +234,9 @@ def render_inventory_subtab(ccu_gateway: CcuGateway, registry_manager, asset_man
         # SECTION 1: Customer Orders (with heading SVG)
         st.markdown("---")
         try:
-            from omf2.assets.heading_icons import get_svg_inline
+            from omf2.assets.asset_manager import get_asset_manager
 
-            icon_html = get_svg_inline("CUSTOMER_ORDERS", size_px=28) or ""
+            icon_html = get_asset_manager().get_asset_inline("CUSTOMER_ORDERS", size_px=28) or ""
             st.markdown(
                 f"<h3 style='display:flex; align-items:center; gap:8px; margin:0;'>{icon_html} {i18n.t('ccu_overview.customer_orders.title')}</h3>",
                 unsafe_allow_html=True,
@@ -250,9 +250,9 @@ def render_inventory_subtab(ccu_gateway: CcuGateway, registry_manager, asset_man
         # SECTION 2: Inventory Grid (Stock) first, then Purchase Orders
         st.markdown("---")
         try:
-            from omf2.assets.heading_icons import get_svg_inline
+            from omf2.assets.asset_manager import get_asset_manager
 
-            icon_html = get_svg_inline("INVENTORY", size_px=28) or ""
+            icon_html = get_asset_manager().get_asset_inline("INVENTORY", size_px=28) or ""
             st.markdown(
                 f"<h3 style='display:flex; align-items:center; gap:8px; margin:0;'>{icon_html} {i18n.t('ccu_overview.inventory.title')}</h3>",
                 unsafe_allow_html=True,
@@ -266,9 +266,9 @@ def render_inventory_subtab(ccu_gateway: CcuGateway, registry_manager, asset_man
         # SECTION 3: Purchase Orders (with heading SVG)
         st.markdown("---")
         try:
-            from omf2.assets.heading_icons import get_svg_inline
+            from omf2.assets.asset_manager import get_asset_manager
 
-            icon_html = get_svg_inline("PURCHASE_ORDERS", size_px=28) or ""
+            icon_html = get_asset_manager().get_asset_inline("PURCHASE_ORDERS", size_px=28) or ""
             st.markdown(
                 f"<h3 style='display:flex; align-items:center; gap:8px; margin:0;'>{icon_html} {i18n.t('ccu_overview.purchase_orders.title')}</h3>",
                 unsafe_allow_html=True,

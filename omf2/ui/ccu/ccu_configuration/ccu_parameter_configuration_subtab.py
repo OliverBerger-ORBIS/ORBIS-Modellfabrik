@@ -6,7 +6,7 @@ Displays production settings from CCU Config Loader
 
 import streamlit as st
 
-from omf2.assets.heading_icons import get_svg_inline
+from omf2.assets.asset_manager import get_asset_manager
 from omf2.ccu.config_loader import get_ccu_config_loader
 from omf2.common.logger import get_logger
 from omf2.ui.common.symbols import UISymbols, get_icon_html
@@ -26,7 +26,7 @@ def render_ccu_parameter_configuration_subtab():
             i18n = None
 
         try:
-            cfg_icon = get_svg_inline("CONFIGURATION", size_px=32) or ""
+            cfg_icon = get_asset_manager().get_asset_inline("CONFIGURATION", size_px=32) or ""
             title = i18n.t("ccu_configuration.parameter.title") if i18n else "Parameter Configuration"
             st.markdown(
                 f"<h3 style='margin: 0.25rem 0 0.5rem 0; display:flex; align-items:center; gap:8px;'>{cfg_icon} {title}</h3>",
@@ -166,7 +166,7 @@ def _show_production_settings_section():
     """Show production settings section"""
     # Get SVG icon for Production Settings
     try:
-        prod_icon = get_svg_inline("PRODUCTION_ORDERS", size_px=32) or ""
+        prod_icon = get_asset_manager().get_asset_inline("PRODUCTION_ORDERS", size_px=32) or ""
         i18n = st.session_state.get("i18n_manager")
         title = i18n.t("ccu_configuration.parameter.settings.title") if i18n else "Production Settings"
         st.markdown(

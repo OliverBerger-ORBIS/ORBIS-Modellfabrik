@@ -74,10 +74,6 @@ class TestStorageOrdersIntegration:
         assert storage_plan[1]["moduleType"] == "HBW"
         assert storage_plan[1]["command"] == "PICK"
 
-    def test_storage_orders_ui_rendering(self):
-        """Test: Storage Orders UI rendert korrekt - SKIP wegen Streamlit-Singleton-Konflikt"""
-        pytest.skip("Skipping UI rendering test due to Streamlit singleton conflict in test suite")
-
     def test_storage_order_completed_processing(self):
         """Test: Storage Order wird korrekt als completed markiert"""
         # Setup active storage order

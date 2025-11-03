@@ -1,15 +1,14 @@
 #!/usr/bin/env python3
 """
 OMF2 Asset Manager
-Verwaltet Module-Icons und HTML-Templates für Dashboard-Visualisierung
-Version: 2.0.0
+Zentraler Asset-Manager für alle SVG-Assets (Module-Icons, Headings, Workpieces, Shopfloor)
+Version: 3.0.0 - Unified Asset Management
 """
 
-import os
 import re
 import uuid
 from pathlib import Path
-from typing import Dict, Optional
+from typing import Dict, Optional, Tuple
 
 import streamlit as st
 
@@ -19,6 +18,84 @@ logger = get_logger(__name__)
 
 # Product SVG sizing constants
 PRODUCT_SVG_BASE_SIZE = 200  # Default base size in pixels for product SVGs (200x200 container)
+
+# Globale Defaults
+ASSET_DEFAULTS = {
+    "fallback": "placeholders/question.svg",
+    "empty": "placeholders/empty.svg",
+}
+
+# Zentrale Mapping-Struktur: logical_key -> (subdirectory, filename)
+# Unter assets/svg/ -> subdirectory/filename
+ASSET_MAPPINGS: Dict[str, Tuple[Optional[str], Optional[str]]] = {
+    # === MODULE ICONS (shopfloor) ===
+    "MILL": ("shopfloor", "milling-machine.svg"),
+    "DRILL": ("shopfloor", "bohrer.svg"),
+    "HBW": ("shopfloor", "stock.svg"),
+    "DPS": ("shopfloor", "robot-arm.svg"),
+    "FTS": ("shopfloor", "robotic.svg"),
+    "AIQS": ("shopfloor", "ai-assistant.svg"),
+    "CHRG": ("shopfloor", "fuel.svg"),
+    # Unterstützende Objekte
+    "TXT": ("shopfloor", "mixer.svg"),
+    "ROUTER": ("shopfloor", "wifi-router.svg"),
+    "PLATINE": ("shopfloor", "cpu.svg"),
+    "RPI": ("shopfloor", "microcontroller.svg"),
+    "MOSQUITTO": ("shopfloor", "wifi.svg"),
+    "MACHINE": ("shopfloor", "robot-arm.svg"),
+    "PC_TABLET": ("shopfloor", "responsive.svg"),
+    "OPC_UA": ("shopfloor", "database.svg"),
+    # === SHOPFLOOR ASSETS ===
+    # Intersections
+    "1": ("shopfloor", "intersection1.svg"),
+    "2": ("shopfloor", "intersection2.svg"),
+    "3": ("shopfloor", "intersection3.svg"),
+    "4": ("shopfloor", "intersection4.svg"),
+    # Company/Software Logos
+    "COMPANY_rectangle": ("shopfloor", "ORBIS_logo_RGB.svg"),
+    "SOFTWARE_rectangle": ("shopfloor", "information-technology.svg"),
+    "ORBIS": ("shopfloor", "ORBIS_logo_RGB.svg"),  # Legacy alias
+    "DSP": ("shopfloor", "information-technology.svg"),  # Legacy alias
+    # Attached Assets
+    "HBW_SQUARE1": ("shopfloor", "factory.svg"),
+    "HBW_SQUARE2": ("shopfloor", "conveyor.svg"),
+    "DPS_SQUARE1": ("shopfloor", "warehouse.svg"),
+    "DPS_SQUARE2": ("shopfloor", "order-tracking.svg"),
+    # === HEADING ICONS ===
+    "DASHBOARD_ADMIN": ("headings", "visualisierung.svg"),
+    "ORDERS": ("headings", "lieferung-bestellen.svg"),
+    "PROCESS": ("headings", "gang.svg"),
+    "CONFIGURATION": ("headings", "system.svg"),
+    "MODULES_TAB": ("headings", "mehrere.svg"),
+    "MESSAGE_CENTER": ("headings", "zentral.svg"),
+    "GENERIC_STEERING": ("headings", "dezentral_1.svg"),
+    "SYSTEM_LOGS": ("headings", "log.svg"),
+    "ADMIN_SETTINGS": ("headings", "unterstutzung.svg"),
+    "DASHBOARD": ("headings", "visualisierung.svg"),
+    "MQTT_CLIENTS": ("headings", "satellitenschussel.svg"),
+    "GATEWAY": ("headings", "router_1.svg"),
+    "TOPIC": ("headings", "etikett.svg"),
+    "TOPICS": ("headings", "etikett.svg"),
+    "SCHEMAS": ("headings", "diagramm.svg"),
+    "MODULES_ADMIN": ("headings", "mehrere.svg"),
+    "STATIONS": ("headings", "dezentral.svg"),
+    "TXT_CONTROLLERS": ("headings", "system.svg"),
+    "WORKPIECES": ("headings", "box.svg"),
+    "PRODUCTION_ORDERS": ("headings", "maschine.svg"),
+    "STORAGE_ORDERS": ("headings", "ladung.svg"),
+    "FACTORY_CONFIGURATION": ("headings", "grundriss.svg"),
+    "SHOPFLOOR_LAYOUT": ("headings", "grundriss.svg"),
+    "CUSTOMER_ORDERS": ("headings", "lieferung-bestellen.svg"),
+    "PURCHASE_ORDERS": ("headings", "box.svg"),
+    "INVENTORY": ("headings", "warehouse.svg"),
+    "SENSOR_DATA": ("headings", "smart.svg"),
+    # === PLACEHOLDERS ===
+    "CAMERA_PLACEHOLDER": ("placeholders", "camera-placeholder.svg"),
+    "EMPTY": ("placeholders", "empty.svg"),
+    "QUESTION": ("placeholders", "question.svg"),
+    # Special
+    "EMPTY_MODULE": (None, None),  # Explizit kein Icon (für leere Shopfloor-Positionen)
+}
 
 
 def scope_svg_styles(svg_content: str) -> str:
@@ -94,180 +171,133 @@ def scope_svg_styles(svg_content: str) -> str:
 
 
 class OMF2AssetManager:
-    """Verwaltet OMF2-Assets (Icons, Templates) für konsistente Visualisierung"""
+    """Zentraler Asset-Manager für alle SVG-Assets (Module-Icons, Headings, Workpieces, Shopfloor)"""
 
     def __init__(self):
-        """Initialisiert den Asset Manager - vereinfacht"""
+        """Initialisiert den Asset Manager mit neuer vereinheitlichten Struktur"""
         self.assets_dir = Path(__file__).parent
-        self.svgs_dir = self.assets_dir / "svgs"  # Alle SVGs (Icons + Logos) in einem Verzeichnis
-        self.module_icons = self._load_module_icons()
-        # HTML-Templates entfernt - Asset-Manager ist nur für Asset-Loading zuständig
+        self.svg_dir = self.assets_dir / "svg"  # Zentrale SVG-Verzeichnis mit Unterverzeichnissen
+        # SVG-Content Cache (key -> SVG content)
+        self._svg_cache: Dict[str, str] = {}
 
-    def _load_module_icons(self) -> Dict[str, str]:
-        """Lädt verfügbare Module-Icons (alle SVGs in svgs/) - vereinfacht"""
-        icons = {}
+    # =========================================================================
+    # CORE ASSET METHODS (neue vereinheitlichte API)
+    # =========================================================================
 
-        # Direktes Icon-Mapping - einfach und klar
-        icon_mapping = {
-            # Hauptmodule (Registry-definiert)
-            "HBW": "stock.svg",  # High-Bay Warehouse flaticon
-            "DPS": "robot-arm.svg",  # Delivery/Pickup Station flaticon
-            "MILL": "milling-machine.svg",  # Milling Station flaticon
-            "DRILL": "bohrer.svg",  # Drilling Station flaticon
-            "AIQS": "ai-assistant.svg",  # AI Quality System flaticon
-            "CHRG": "fuel.svg",  # Charging Station flaticon
-            "FTS": "robotic.svg",  # Fahrerloses Transport System
-            # Unterstützende Objekte
-            "TXT": "mixer.svg",  # TXT Controller
-            "ROUTER": "wifi-router.svg",  # Network Router
-            "PLATINE": "cpu.svg",  # Circuit Board
-            "RPI": "microcontroller.svg",  # Raspberry Pi
-            "MOSQUITTO": "wifi.svg",  # MQTT Broker
-            "MACHINE": "robot-arm.svg",  # Generic Machine
-            "PC_TABLET": "responsive.svg",  # PC/Tablet
-            "OPC_UA": "database.svg",  # OPC UA Server
-            # UI placeholders / generic assets
-            "CAMERA_PLACEHOLDER": "camera-placeholder.svg",
-        }
+    def get_asset_path(self, key: str) -> Optional[Path]:
+        """Gibt Pfad zu Asset zurück oder None (mit Default-Fallback bei unbekannten Keys)
 
-        # HEADING-ICONS - Import from dedicated module
+        Args:
+            key: Logical asset key (z.B. "MILL", "DASHBOARD", "QUESTION")
+
+        Returns:
+            Path zum Asset oder None wenn nicht gefunden
+        """
+        # Direct lookup im Mapping
+        if key not in ASSET_MAPPINGS:
+            # Unbekannter Key - verwende Fallback
+            fallback_key = ASSET_DEFAULTS["fallback"]
+            if fallback_key in ASSET_MAPPINGS:
+                subdir, filename = ASSET_MAPPINGS[fallback_key]
+                if subdir and filename:
+                    path = self.svg_dir / subdir / filename
+                    if path.exists():
+                        logger.warning(f"⚠️ Unknown asset key '{key}', using fallback: {path}")
+                        return path
+            return None
+
+        subdir, filename = ASSET_MAPPINGS[key]
+
+        # Special case: EMPTY_MODULE
+        if subdir is None or filename is None:
+            return None
+
+        # Build path
+        path = self.svg_dir / subdir / filename
+        if path.exists():
+            return path
+
+        # Asset existiert nicht - sollte bei Pre-Commit gefangen werden
+        logger.error(f"❌ Asset missing: {key} -> {path}")
+        # Fallback zu question.svg (direkt Pfad auflösen)
+        fallback_rel = ASSET_DEFAULTS["fallback"]
+        if "/" in fallback_rel:
+            fallback_subdir, fallback_filename = fallback_rel.split("/", 1)
+            fallback_path = self.svg_dir / fallback_subdir / fallback_filename
+            if fallback_path.exists():
+                return fallback_path
+        return None
+
+    def get_asset_content(self, key: str, scoped: bool = True) -> Optional[str]:
+        """Lädt SVG-Inhalt mit optionalem CSS-Scoping
+
+        Args:
+            key: Logical asset key
+            scoped: Ob CSS-Scoping angewendet werden soll (default: True)
+
+        Returns:
+            SVG-Inhalt als String oder None
+        """
+        # Check cache first
+        cache_key = f"{key}_scoped" if scoped else key
+        if cache_key in self._svg_cache:
+            return self._svg_cache[cache_key]
+
+        path = self.get_asset_path(key)
+        if not path or not path.exists():
+            return None
+
         try:
-            from omf2.assets.heading_icons import HEADING_ICON_FILES as heading_icons
-        except Exception:
-            logger.debug("heading_icons module not available; skipping heading icons import")
-            heading_icons = {}
-        icon_mapping.update(heading_icons)
+            with open(path, encoding="utf-8") as f:
+                svg_content = f.read()
+                # Remove XML declaration for inline HTML
+                svg_content = re.sub(r"<\?xml.*?\?>", "", svg_content)
 
-        # Spezielle Icons - IDs aus shopfloor_layout.json (BINDEND!)
-        # Each intersection has its number embedded in the SVG for proper route visualization
-        icon_mapping.update(
-            {
-                "1": "intersection1.svg",  # Intersection 1 with number in center
-                "2": "intersection2.svg",  # Intersection 2 with number in center
-                "3": "intersection3.svg",  # Intersection 3 with number in center
-                "4": "intersection4.svg",  # Intersection 4 with number in center
-                "EMPTY": None,  # Leer - kein Icon
-            }
-        )
+                # Apply scoping if requested
+                if scoped:
+                    svg_content = scope_svg_styles(svg_content)
 
-        # Shopfloor-Assets - canonical keys only (COMPANY_*, SOFTWARE_*)
-        # Rectangle assets remain with COMPANY/SOFTWARE for header logos
-        shopfloor_assets = {
-            # Canonical COMPANY assets (rectangle only)
-            "COMPANY_rectangle": "ORBIS_logo_RGB.svg",
-            # Canonical SOFTWARE assets (rectangle only)
-            "SOFTWARE_rectangle": "information-technology.svg",  # DSP logo
-            # Direct name fallback for backward compatibility (minimal)
-            "ORBIS": "ORBIS_logo_RGB.svg",
-            "DSP": "information-technology.svg",
-        }
+                # Cache result
+                self._svg_cache[cache_key] = svg_content
+                return svg_content
+        except Exception as e:
+            logger.error(f"❌ Error loading asset {key} from {path}: {e}")
+            return None
 
-        # Attached asset mapping - logical keys for module-attached square assets
-        # These are physically attached to HBW and DPS modules
-        attached_asset_mapping = {
-            # HBW attached assets (physically at HBW position)
-            "HBW_SQUARE1": "factory.svg",
-            "HBW_SQUARE2": "conveyor.svg",
-            # DPS attached assets (physically at DPS position)
-            "DPS_SQUARE1": "warehouse.svg",
-            "DPS_SQUARE2": "order-tracking.svg",
-        }
-
-        # Merge all shopfloor assets into icon_mapping
-        icon_mapping.update(shopfloor_assets)
-        icon_mapping.update(attached_asset_mapping)
-
-        for module_name, icon_file in icon_mapping.items():
-            if icon_file is None:
-                icons[module_name] = None  # EMPTY hat kein Icon
-                continue
-
-            # SVG-Icon aus svgs/ Verzeichnis laden
-            svg_path = self.svgs_dir / icon_file
-            if svg_path.exists():
-                icons[module_name] = str(svg_path)
-            else:
-                logger.warning(f"⚠️ No SVG icon found for {module_name}: {icon_file}")
-                icons[module_name] = None
-
-        logger.info(f"📁 Loaded {len(icons)} module icons from {self.svgs_dir}")
-        return icons
-
-    # HTML-Templates entfernt - Asset-Manager ist nur für Asset-Loading zuständig
-
-    def get_module_icon_path(self, module_name: str) -> Optional[str]:
-        """Gibt den Pfad zum Modul-Icon zurück
+    def get_asset_inline(self, key: str, size_px: Optional[int] = None, color: Optional[str] = None) -> Optional[str]:
+        """Lädt SVG als inline HTML (für Headings)
 
         Args:
-            module_name: Name des Moduls oder Assets (z.B. "COMPANY_rectangle", "HBW_SQUARE1", "MILL")
+            key: Logical asset key
+            size_px: Optional width/height injection
+            color: Optional CSS color (if SVG uses currentColor)
 
         Returns:
-            Pfad zum SVG-Icon oder None
-
-        Note:
-            - Canonical keys: COMPANY_rectangle, SOFTWARE_rectangle (header logos only)
-            - Logical attached keys: HBW_SQUARE1/2, DPS_SQUARE1/2 (module-attached assets)
-            - Legacy EMPTY1/EMPTY2 and COMPANY_square*/SOFTWARE_square* keys removed
-            - Fallback to uppercase for module names (MILL, DRILL, etc.)
+            SVG-Inhalt als inline HTML oder None
         """
-        # 1. Direct lookup (canonical keys preferred)
-        if module_name in self.module_icons:
-            return self.module_icons[module_name]
+        svg = self.get_asset_content(key, scoped=True)
+        if svg is None:
+            return None
 
-        # 2. Fallback: uppercase for modules (MILL, DRILL etc.)
-        return self.module_icons.get(module_name.upper())
+        # Size injection - replace existing width/height or add if missing
+        if size_px:
+            svg = re.sub(r'\s+width="[^"]*"', "", svg)
+            svg = re.sub(r'\s+height="[^"]*"', "", svg)
+            svg = re.sub(r"<svg\b", f'<svg width="{size_px}"', svg, count=1)
 
-    def get_shopfloor_asset_path(self, asset_type: str, position: str) -> Optional[str]:
-        """Gibt den Pfad zu einem Shopfloor-Asset zurück
+        # Color handling
+        if color:
+            if "currentColor" in svg or "--icon-fill" in svg:
+                return f'<span style="display:inline-block; color:{color}; line-height:0; vertical-align:middle;">{svg}</span>'
+            # Fallback: replace fill attributes
+            svg_colored = re.sub(r'fill="[^"]+"', f'fill="{color}"', svg)
+            return f'<span style="display:inline-block; line-height:0; vertical-align:middle;">{svg_colored}</span>'
 
-        Args:
-            asset_type: Typ des Assets ("COMPANY" oder "SOFTWARE") - canonical format
-            position: Position des Assets ("rectangle" only - square assets now use logical keys)
+        return svg
 
-        Returns:
-            Pfad zum SVG-Icon oder None
-
-        Examples:
-            get_shopfloor_asset_path("COMPANY", "rectangle") -> path to ORBIS_logo_RGB.svg
-            get_shopfloor_asset_path("SOFTWARE", "rectangle") -> path to information-technology.svg
-
-        Note:
-            Square assets (square1/square2) are deprecated. Use logical attached keys instead:
-            - For HBW: use get_module_icon_path("HBW_SQUARE1") or get_module_icon_path("HBW_SQUARE2")
-            - For DPS: use get_module_icon_path("DPS_SQUARE1") or get_module_icon_path("DPS_SQUARE2")
-        """
-        # Use canonical key format: COMPANY_rectangle, SOFTWARE_square1, etc.
-        asset_key = f"{asset_type}_{position}"
-        return self.get_module_icon_path(asset_key)
-
-    def get_asset_file(self, key: str) -> str:
-        """Get deterministic asset file path for a given key
-
-        Args:
-            key: Asset key (e.g., "COMPANY_rectangle", "HBW_SQUARE1", "MILL")
-
-        Returns:
-            Deterministic path to SVG file or empty.svg as fallback
-
-        Examples:
-            get_asset_file("COMPANY_rectangle") -> "/omf2/assets/svgs/ORBIS_logo_RGB.svg"
-            get_asset_file("HBW_SQUARE1") -> "/omf2/assets/svgs/factory.svg"
-            get_asset_file("DPS_SQUARE2") -> "/omf2/assets/svgs/order-tracking.svg"
-            get_asset_file("UNKNOWN") -> "/omf2/assets/svgs/empty.svg"
-        """
-        # Try to get the icon path
-        icon_path = self.get_module_icon_path(key)
-
-        if icon_path and Path(icon_path).exists():
-            return icon_path
-
-        # Fallback to empty.svg
-        empty_path = self.svgs_dir / "empty.svg"
-        if empty_path.exists():
-            return str(empty_path)
-
-        # Ultimate fallback - return empty.svg path even if it doesn't exist
-        return str(self.svgs_dir / "empty.svg")
+    # =========================================================================
+    # WORKPIECE SVG METHODS
+    # =========================================================================
 
     def get_workpiece_svg_content(self, workpiece_type: str, state: str = "unprocessed") -> Optional[str]:
         """Lädt den Inhalt einer Workpiece-SVG mit CSS-Scoping für korrekte Darstellung"""
@@ -328,7 +358,7 @@ class OMF2AssetManager:
 
     def get_workpiece_palett(self) -> Optional[str]:
         """Lädt die spezielle Palett-SVG für alle Workpieces in ORIGINAL-Größe"""
-        workpiece_dir = self.assets_dir / "workpiece"
+        workpiece_dir = self.svg_dir / "workpiece"
         palett_path = workpiece_dir / "palett.svg"
         if palett_path.exists():
             try:
@@ -342,7 +372,7 @@ class OMF2AssetManager:
 
     def _get_workpiece_svg_with_scoping(self, workpiece_type: str, state: str = "product") -> Optional[str]:
         """Lädt SVG-Inhalt mit CSS-Scoping für korrekte Darstellung"""
-        workpiece_dir = self.assets_dir / "workpiece"
+        workpiece_dir = self.svg_dir / "workpiece"
 
         # Erstelle Dateiname basierend auf Typ und Zustand
         filename = f"{workpiece_type.lower()}_{state}.svg"
@@ -374,10 +404,14 @@ class OMF2AssetManager:
     # Asset-Manager ist nur für Asset-Loading zuständig, nicht für UI-Darstellung
 
     def display_module_icon(self, module_name: str, width: int = 50, caption: str = None) -> None:
-        """Zeigt ein Modul-Icon in Streamlit an"""
-        icon_path = self.get_module_icon_path(module_name)
-        if icon_path and os.path.exists(icon_path):
-            st.image(icon_path, width=width, caption=caption or module_name)
+        """Zeigt ein Modul-Icon in Streamlit an (new unified API)"""
+        icon_path = self.get_asset_path(module_name)
+        if not icon_path:
+            # Fallback: uppercase for modules (MILL, DRILL etc.)
+            icon_path = self.get_asset_path(module_name.upper())
+
+        if icon_path and icon_path.exists():
+            st.image(str(icon_path), width=width, caption=caption or module_name)
         else:
             # Fallback zu Emoji
             fallback_emojis = {
@@ -417,19 +451,23 @@ class OMF2AssetManager:
 
     def get_orbis_logo_path(self) -> Optional[str]:
         """Returns path to ORBIS company logo (SVG)"""
-        logo_path = self.svgs_dir / "ORBIS_logo_RGB.svg"
-        if logo_path.exists():
-            logger.debug(f"🏢 ORBIS logo found: {logo_path}")
-            return str(logo_path)
+        path = self.get_asset_path("COMPANY_rectangle")
+        if path:
+            logger.debug(f"🏢 ORBIS logo found: {path}")
+            return str(path)
         else:
-            logger.warning(f"⚠️ ORBIS logo not found: {logo_path}")
+            logger.warning("⚠️ ORBIS logo not found")
             return None
 
     def get_shopfloor_module_html(
         self, module_type: str, module_id: str = "", is_active: bool = False, size: int = 100
     ) -> str:
-        """Generiert HTML für Shopfloor-Modul mit SVG-Icon und Hervorhebung (quadratisches Grid)"""
-        icon_path = self.get_module_icon_path(module_type)
+        """Generiert HTML für Shopfloor-Modul mit SVG-Icon und Hervorhebung (quadratisches Grid) - new unified API"""
+        # Get SVG content directly (already scoped)
+        svg_content = self.get_asset_content(module_type, scoped=True)
+        if not svg_content:
+            # Fallback: uppercase for modules (MILL, DRILL etc.)
+            svg_content = self.get_asset_content(module_type.upper(), scoped=True)
 
         # Aktive Station hervorheben (gelb wie IN_PROGRESS Icon)
         border_color = "#ff9800" if is_active else "#e0e0e0"  # Orange/Gelb für aktive Module
@@ -441,27 +479,15 @@ class OMF2AssetManager:
 
         # Icon-Generierung
         icon_html = ""
-        if icon_path and os.path.exists(icon_path):
-            # SVG oder PNG Icon
-            if icon_path.endswith(".svg"):
-                # SVG-Icon direkt einbetten
-                with open(icon_path, encoding="utf-8") as svg_file:
-                    svg_content = svg_file.read()
-                    # SVG-Größe anpassen (alle Icons sind 24x24)
-                    if 'viewBox="0 0 24 24"' in svg_content:
-                        # 24x24 Icons - direkt width/height hinzufügen
-                        svg_content = svg_content.replace("<svg", f'<svg width="{icon_size}" height="{icon_size}"')
-                    else:
-                        # Fallback: SVG-Inhalt in div einbetten mit fester Größe
-                        svg_content = f'<div style="width: {icon_size}px; height: {icon_size}px; display: flex; align-items: center; justify-content: center;">{svg_content}</div>'
-                    icon_html = svg_content
-            else:
-                # PNG-Icon als Base64
-                import base64
-
-                with open(icon_path, "rb") as img_file:
-                    img_data = base64.b64encode(img_file.read()).decode()
-                    icon_html = f'<img src="data:image/png;base64,{img_data}" width="{icon_size}" height="{icon_size}" style="object-fit: contain;">'
+        if svg_content:
+            # SVG-Icon direkt einbetten
+            # Remove existing width/height and add new size
+            svg_content_clean = re.sub(r'\s+width="[^"]*"', "", svg_content)
+            svg_content_clean = re.sub(r'\s+height="[^"]*"', "", svg_content_clean)
+            svg_content_clean = re.sub(
+                r"<svg\b", f'<svg width="{icon_size}" height="{icon_size}"', svg_content_clean, count=1
+            )
+            icon_html = svg_content_clean
         else:
             # Fallback zu Emoji (nur für unbekannte Module)
             if module_type.upper() == "EMPTY":

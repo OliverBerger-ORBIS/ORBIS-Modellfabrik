@@ -33,9 +33,12 @@ def render_component():
 ## Enforcement
 
 ### 1. Pre-commit Hook
-- **File:** `omf/scripts/check_st_rerun.py`
+- **File:** `omf2/scripts/check_st_rerun.py`
 - **Action:** Automatically detects and blocks commits with `st.rerun()`
 - **Error Message:** Clear guidance to use `request_refresh()` instead
+- **Exceptions:**
+  - `omf.py`: `st.rerun()` allowed after `consume_refresh()` call
+  - `main_dashboard.py`: Refresh buttons in sidebar and header are allowed
 
 ### 2. Cursor Rules
 - **Rule:** "NIEMALS st.rerun() verwenden - IMMER request_refresh() verwenden"

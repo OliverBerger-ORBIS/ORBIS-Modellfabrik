@@ -47,9 +47,9 @@ def render_ccu_overview_tab(ccu_gateway=None, registry_manager=None):
 
         # Heading with SVG icon for Overview
         try:
-            from omf2.assets.heading_icons import get_svg_inline
+            from omf2.assets.asset_manager import get_asset_manager
 
-            overview_icon = get_svg_inline("DASHBOARD", size_px=32) or ""
+            overview_icon = get_asset_manager().get_asset_inline("DASHBOARD", size_px=32) or ""
             st.markdown(
                 f"<h2 style='margin-bottom: 0.25rem; display:flex; align-items:center; gap:8px;'>{overview_icon} {i18n.t('tabs.ccu_dashboard')}</h2>",
                 unsafe_allow_html=True,

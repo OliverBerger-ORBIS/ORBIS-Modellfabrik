@@ -9,7 +9,7 @@ from pathlib import Path
 import streamlit as st
 import yaml
 
-from omf2.assets.heading_icons import get_svg_inline
+from omf2.assets.asset_manager import get_asset_manager
 from omf2.common.logger import get_logger
 from omf2.ui.common.symbols import UISymbols
 
@@ -68,7 +68,7 @@ def render_dashboard_subtab():
         return
 
     # SVG-Header mit Fallback - einfache Lösung mit größerer SVG
-    dashboard_svg = get_svg_inline("DASHBOARD_ADMIN", size_px=32)
+    dashboard_svg = get_asset_manager().get_asset_inline("DASHBOARD_ADMIN", size_px=32)
     header_icon = dashboard_svg if dashboard_svg else UISymbols.get_functional_icon("dashboard")
     st.markdown(
         f'<h3 style="margin-top: 0; margin-bottom: 1rem;">{header_icon} <strong>{i18n.t("admin.dashboard")} Konfiguration</strong></h3>',

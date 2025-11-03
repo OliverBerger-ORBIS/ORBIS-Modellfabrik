@@ -139,9 +139,11 @@ class TestCCUParameterConfigurationSubtab:
         mock_st.write = MagicMock()
         mock_st.number_input = MagicMock(return_value=4)
 
-        # Mock get_svg_inline to return SVG or None
-        with patch("omf2.ui.ccu.ccu_configuration.ccu_parameter_configuration_subtab.get_svg_inline") as mock_get_svg:
-            mock_get_svg.return_value = None  # Simulate fallback to emoji
+        # Mock get_asset_manager().get_asset_inline() (new API)
+        with patch("omf2.ui.ccu.ccu_configuration.ccu_parameter_configuration_subtab.get_asset_manager") as mock_get_am:
+            mock_am = MagicMock()
+            mock_am.get_asset_inline.return_value = None  # Simulate fallback to emoji
+            mock_get_am.return_value = mock_am
             # Call function
             _show_production_settings_section()
 

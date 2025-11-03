@@ -5,7 +5,7 @@ CCU Configuration Tab - CCU Configuration UI Component
 
 import streamlit as st
 
-from omf2.assets.heading_icons import get_svg_inline
+from omf2.assets.asset_manager import get_asset_manager
 from omf2.common.logger import get_logger
 from omf2.ui.common.symbols import UISymbols
 
@@ -45,7 +45,7 @@ def render_ccu_configuration_tab(ccu_gateway=None, registry_manager=None):
 
         # Heading SVG (32px) with fallback to emoji icon
         try:
-            cfg_icon = get_svg_inline("CONFIGURATION", size_px=32) or ""
+            cfg_icon = get_asset_manager().get_asset_inline("CONFIGURATION", size_px=32) or ""
             st.markdown(
                 f"<h2 style='margin: 0.25rem 0 0.5rem 0; display:flex; align-items:center; gap:8px;'>{cfg_icon} {i18n.translate('tabs.ccu_configuration')}</h2>",
                 unsafe_allow_html=True,

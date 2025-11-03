@@ -4,7 +4,6 @@ Centralized symbol management for consistent UI across all components
 """
 
 import re
-from pathlib import Path
 from typing import Dict, Optional
 
 
@@ -275,10 +274,10 @@ def get_icon_html(key: str, size_px: Optional[int] = 24) -> str:
     """
     Get icon as HTML, preferring SVG over emoji fallback.
 
-    This function implements a cascading lookup strategy:
-    1. Try to load heading SVG via omf2.assets.heading_icons.get_svg_inline()
-    2. Fall back to module icon via omf2.assets.asset_manager.get_module_icon_path()
-    3. Final fallback to emoji from registry (TAB_ICONS, STATUS_ICONS, FUNCTIONAL_ICONS)
+        This function implements a cascading lookup strategy:
+        1. Try to load SVG via omf2.assets.asset_manager.get_asset_inline() (unified asset system)
+        2. Fall back to module icon via omf2.assets.asset_manager.get_asset_content() (unified asset system)
+        3. Final fallback to emoji from registry (TAB_ICONS, STATUS_ICONS, FUNCTIONAL_ICONS)
 
     Args:
         key: Icon key (e.g., "DASHBOARD_ADMIN", "HBW", "success", "ccu_dashboard")
@@ -294,41 +293,34 @@ def get_icon_html(key: str, size_px: Optional[int] = 24) -> str:
         >>> get_icon_html("ccu_dashboard", size_px=24)
         '<span style="font-size: 24px;">🏭</span>'
     """
-    # Step 1: Try heading icons first
+    # Step 1: Try asset manager (unified asset system)
     try:
-        from omf2.assets.heading_icons import get_svg_inline
+        from omf2.assets.asset_manager import get_asset_manager
 
-        svg_html = get_svg_inline(key, size_px=size_px)
+        svg_html = get_asset_manager().get_asset_inline(key, size_px=size_px)
         if svg_html:
             return svg_html
     except Exception:
-        # heading_icons module not available or key not found
+        # asset_manager not available or key not found
         pass
 
-    # Step 2: Try module icons via asset_manager
+    # Step 2: Try module icons via asset_manager (new unified API)
     try:
-        from omf2.assets.asset_manager import get_asset_manager, scope_svg_styles
+        from omf2.assets.asset_manager import get_asset_manager
 
         asset_manager = get_asset_manager()
-        icon_path = asset_manager.get_module_icon_path(key.upper())
+        # Try to get SVG content directly (already scoped)
+        svg_content = asset_manager.get_asset_content(key.upper(), scoped=True)
 
-        if icon_path:
-            icon_file = Path(icon_path)
-            if icon_file.exists():
-                # Read SVG content
-                svg_content = icon_file.read_text(encoding="utf-8")
+        if svg_content:
+            # Remove existing width/height attributes
+            svg_content = re.sub(r'\s+width="[^"]*"', "", svg_content)
+            svg_content = re.sub(r'\s+height="[^"]*"', "", svg_content)
 
-                # Apply CSS scoping to prevent class conflicts
-                svg_content = scope_svg_styles(svg_content)
+            # Inject new width for proportional scaling
+            svg_content = re.sub(r"<svg\b", f'<svg width="{size_px}"', svg_content, count=1)
 
-                # Remove existing width/height attributes
-                svg_content = re.sub(r'\s+width="[^"]*"', "", svg_content)
-                svg_content = re.sub(r'\s+height="[^"]*"', "", svg_content)
-
-                # Inject new width for proportional scaling
-                svg_content = re.sub(r"<svg\b", f'<svg width="{size_px}"', svg_content, count=1)
-
-                return svg_content
+            return svg_content
     except Exception:
         # asset_manager not available or error loading SVG
         pass

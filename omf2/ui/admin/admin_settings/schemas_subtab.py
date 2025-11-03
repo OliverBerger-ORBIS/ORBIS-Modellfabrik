@@ -6,7 +6,7 @@ Zeigt alle Schemas aus der Registry nach Kategorien an - NEUE ARCHITEKTUR: topic
 
 import streamlit as st
 
-from omf2.assets.heading_icons import get_svg_inline
+from omf2.assets.asset_manager import get_asset_manager
 from omf2.common.logger import get_logger
 from omf2.ui.common.symbols import UISymbols
 
@@ -23,7 +23,7 @@ def render_schemas_subtab():
             return
 
         # SVG-Header mit Fallback - einfache Lösung mit größerer SVG
-        schemas_svg = get_svg_inline("SCHEMAS", size_px=32)
+        schemas_svg = get_asset_manager().get_asset_inline("SCHEMAS", size_px=32)
         header_icon = schemas_svg if schemas_svg else UISymbols.get_functional_icon("schema_driven")
         st.markdown(
             f'<h3 style="margin-top: 0; margin-bottom: 1rem;">{header_icon} <strong>{i18n.t("admin.schemas")} Konfiguration</strong></h3>',

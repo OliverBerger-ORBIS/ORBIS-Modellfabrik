@@ -296,7 +296,14 @@ class ShopfloorDisplay:
             from omf2.assets import get_asset_manager
 
             asset_manager = get_asset_manager()
-            return asset_manager.get_asset_file(logical_attached_key)
+            asset_path = asset_manager.get_asset_path(logical_attached_key)
+            if asset_path:
+                return str(asset_path)
+            # Fallback to empty.svg
+            empty_path = asset_manager.get_asset_path("EMPTY")
+            if empty_path:
+                return str(empty_path)
+            return None
         except Exception as e:
             logger.error(f"Failed to resolve asset path for {logical_attached_key}: {e}")
             return None
