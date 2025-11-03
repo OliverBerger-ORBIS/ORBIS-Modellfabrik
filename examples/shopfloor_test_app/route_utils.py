@@ -6,6 +6,7 @@ Functions:
 - find_path(graph, start, goal): BFS path as list of node ids
 - id_to_position_map(layout, cell_size): maps node ids (intersection ids and module ids/serials) to pixel centers
 """
+
 from collections import deque
 
 
@@ -96,4 +97,3 @@ def id_to_position_map(layout, cell_size=200):
             if f.get("id"):
                 m[str(f.get("id"))] = center
     return m
-
