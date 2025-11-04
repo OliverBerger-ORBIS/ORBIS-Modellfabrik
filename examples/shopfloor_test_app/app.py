@@ -28,8 +28,10 @@ LAYOUT_PATH = HERE / "shopfloor_layout.json"
 CELL_SIZE = 200
 GRID_W = 4
 GRID_H = 3
-CANVAS_W = CELL_SIZE * GRID_W
-CANVAS_H = CELL_SIZE * GRID_H
+# Add 4px padding (2px on each side) for uniform highlighting at edges
+CANVAS_W = CELL_SIZE * GRID_W + 4
+CANVAS_H = CELL_SIZE * GRID_H + 4
+CANVAS_PADDING = 2
 
 # Visual spec derived from user message (colors & sizes)
 VIS_SPEC = {
@@ -118,7 +120,7 @@ def _get_icon_svg(module_type: str, target_width: int, target_height: int) -> st
 
 
 def cell_anchor(row: int, col: int) -> Tuple[int, int]:
-    return col * CELL_SIZE, row * CELL_SIZE
+    return col * CELL_SIZE + CANVAS_PADDING, row * CELL_SIZE + CANVAS_PADDING
 
 
 def center_of_cell(row: int, col: int) -> Tuple[int, int]:
@@ -243,31 +245,38 @@ def render_shopfloor_svg(
 
             # Get module icon if available
             module_icon = ""
+            module_label = ""
             if spec and ASSET_MANAGER:
                 module_type = name  # Use the name from VIS_SPEC
                 try:
-                    # Use 70% of cell size (as per feedback based on MILL reference)
-                    icon_size = int(min(w, h) * 0.7)
+                    # Use 56% of cell size (reduced by 20% from 70%)
+                    icon_size = int(min(w, h) * 0.56)
 
                     # For compounds (HBW/DPS), center main icon in the 200×200 main compartment, not full 200×300
                     if (r, c) in ((1, 0), (1, 3)) and h == 300:
                         # Main compartment is 200×200 in the lower portion (y=200 to y=400)
                         # Icon should be centered in that 200×200 area
-                        icon_size = int(200 * 0.7)  # 140px based on 200×200 compartment
+                        icon_size = int(200 * 0.56)  # 112px based on 200×200 compartment (reduced 20%)
                         icon_svg = _get_icon_svg(module_type, icon_size, icon_size)
                         if icon_svg:
                             # Center in the main 200×200 compartment (lower portion)
                             main_comp_y = 200  # Main compartment starts at y=200
                             icon_x = comp_x + (w - icon_size) / 2
-                            icon_y = main_comp_y + (200 - icon_size) / 2  # Center in 200×200 area
+                            icon_y = main_comp_y + (200 - icon_size) / 2 - 10  # Move up 10px to make room for label
                             module_icon = f'<g transform="translate({icon_x},{icon_y})">{icon_svg}</g>'
+                            # Add label below icon
+                            label_y = main_comp_y + (200 + icon_size) / 2 + 15
+                            module_label = f'<text x="{comp_x + w/2}" y="{label_y}" font-family="Arial" font-size="14" fill="#333" text-anchor="middle">{html.escape(name)}</text>'
                     else:
                         icon_svg = _get_icon_svg(module_type, icon_size, icon_size)
                         if icon_svg:
-                            # Center the icon in the cell
+                            # Center the icon in the cell, move up slightly for label
                             icon_x = comp_x + (w - icon_size) / 2
-                            icon_y = comp_y + (h - icon_size) / 2
+                            icon_y = comp_y + (h - icon_size) / 2 - 10
                             module_icon = f'<g transform="translate({icon_x},{icon_y})">{icon_svg}</g>'
+                            # Add label below icon
+                            label_y = comp_y + (h + icon_size) / 2 + 15
+                            module_label = f'<text x="{comp_x + w/2}" y="{label_y}" font-family="Arial" font-size="14" fill="#333" text-anchor="middle">{html.escape(name)}</text>'
                 except Exception:
                     pass  # Silently fail if asset not found
 
@@ -283,12 +292,10 @@ def render_shopfloor_svg(
 
                 # Squares are 100×100px at y=100 (top of compound at row 1)
                 # Position them higher up, not at comp_y + 8
-                square_width = 100
-                square_height = 100
                 sx1 = comp_x  # Left square
-                sy1 = 100  # At top of compound (row 1 starts at y=100 for the main area)
+                sy1 = 100 + CANVAS_PADDING  # At top of compound (row 1 starts at y=100 for the main area)
                 sx2 = comp_x + 100  # Right square
-                sy2 = 100
+                sy2 = 100 + CANVAS_PADDING
 
                 square1_svg = ""
                 square2_svg = ""
@@ -300,19 +307,20 @@ def render_shopfloor_svg(
                     if len(attached_assets) >= 2:
                         square2_svg = _get_icon_svg(attached_assets[1], 60, 60)
 
-                # Render squares with border and centered icons
+                # Render squares WITHOUT yellow borders - only icons (no rectangles, no lines)
                 # Center icons within the 100x100 square
                 icon_offset = (100 - 60) / 2 if square1_svg or square2_svg else 0
 
-                square1_elem = f'<rect x="{sx1}" y="{sy1}" width="100" height="100" fill="#fff2b2" stroke="#e6b800" stroke-width="2" />'
+                # Remove rectangles - only render icons
+                square1_elem = ""
                 if square1_svg:
-                    square1_elem += (
+                    square1_elem = (
                         f'<g transform="translate({sx1 + icon_offset},{sy1 + icon_offset})">{square1_svg}</g>'
                     )
 
-                square2_elem = f'<rect x="{sx2}" y="{sy2}" width="100" height="100" fill="#fff2b2" stroke="#e6b800" stroke-width="2" />'
+                square2_elem = ""
                 if square2_svg:
-                    square2_elem += (
+                    square2_elem = (
                         f'<g transform="translate({sx2 + icon_offset},{sy2 + icon_offset})">{square2_svg}</g>'
                     )
 
@@ -322,6 +330,7 @@ def render_shopfloor_svg(
                 f'<rect x="{comp_x}" y="{comp_y}" width="{w}" height="{h}" fill="none" stroke="{stroke}" stroke-width="{stroke_width}" rx="6" ry="6" />'
                 f"{compound_inner}"
                 f"{module_icon}"
+                f"{module_label}"
                 f'<text x="{comp_x+6}" y="{comp_y+16}" style="display:none" class="tooltip">{html.escape(name)} [{r},{c}]</text>'
                 f"</g>"
             )
@@ -407,8 +416,8 @@ def render_shopfloor_svg(
                         if len(viewbox_parts) >= 4:
                             original_size = float(viewbox_parts[2])
 
-                    # Scale to 48px (smaller than production's 64px for better fit)
-                    icon_size = 48
+                    # Scale to 72px (increased from 48px by 50%)
+                    icon_size = 72
                     half_size = icon_size / 2
                     scale_factor = icon_size / original_size
 
@@ -437,6 +446,10 @@ def render_shopfloor_svg(
         f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {CANVAS_W} {CANVAS_H}" width="{int(CANVAS_W*scale)}" height="{int(CANVAS_H*scale)}">'
         f"<style>"
         f".cell-group .tooltip {{ font-family: Arial; font-size: 12px; }}"
+        f".cell-group:hover .tooltip {{ display: block !important; font-weight: bold; }}"
+        f".cell-group:hover rect {{ stroke-width: 4 !important; stroke: #ff8c00 !important; }}"
+        f".cell-group {{ cursor: {'pointer' if enable_click else 'default'}; }}"
+        f".cell-group.clicked rect {{ stroke-width: 8 !important; }}"
         f"</style>"
         f'{"".join(cell_elems)}'
         f'{"".join(comp_elems)}'
@@ -484,16 +497,44 @@ def show_shopfloor_layout(
         agv_progress=agv_progress,
         scale=scale,
     )
-    # embed HTML with simple JS for hover/click (clientside)
+    # embed HTML with JS for hover/click (clientside)
+    click_script = ""
+    if enable_click:
+        click_script = """
+        <script>
+        (function() {
+            const groups = document.querySelectorAll('.cell-group');
+            let activeGroup = null;
+
+            groups.forEach(group => {
+                group.addEventListener('click', function(e) {
+                    // Remove clicked class from previous active
+                    if (activeGroup && activeGroup !== this) {
+                        activeGroup.classList.remove('clicked');
+                    }
+                    // Toggle clicked class on current
+                    this.classList.toggle('clicked');
+                    activeGroup = this.classList.contains('clicked') ? this : null;
+                    e.stopPropagation();
+                });
+            });
+
+            // Click outside to deselect
+            document.addEventListener('click', function() {
+                if (activeGroup) {
+                    activeGroup.classList.remove('clicked');
+                    activeGroup = null;
+                }
+            });
+        })();
+        </script>
+        """
+
     html_fragment = f"""
     <div style="width:{int(CANVAS_W*scale)}px; height:{int(CANVAS_H*scale)}px;">
       {svg}
     </div>
-    <script>
-      // Note: Streamlit's HTML embedding may sandbox JS; advanced interactivity may require a Streamlit component.
-      // Basic hover/click behaviors are implemented in the app with overlay in the examples.
-      console.log("Shopfloor SVG rendered");
-    </script>
+    {click_script}
     """
     st.components.v1.html(html_fragment, height=int(CANVAS_H * scale) + 20, scrolling=True)
 
@@ -509,7 +550,6 @@ def main():
     )
 
     enable_click = "Mode 1" in mode
-    show_route = "Mode 2" in mode
 
     # Select start/goal from candidate modules (red & green)
     candidates = []
