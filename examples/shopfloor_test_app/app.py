@@ -248,12 +248,26 @@ def render_shopfloor_svg(
                 try:
                     # Use 70% of cell size (as per feedback based on MILL reference)
                     icon_size = int(min(w, h) * 0.7)
-                    icon_svg = _get_icon_svg(module_type, icon_size, icon_size)
-                    if icon_svg:
-                        # Center the icon in the cell
-                        icon_x = comp_x + (w - icon_size) / 2
-                        icon_y = comp_y + (h - icon_size) / 2
-                        module_icon = f'<g transform="translate({icon_x},{icon_y})">{icon_svg}</g>'
+
+                    # For compounds (HBW/DPS), center main icon in the 200×200 main compartment, not full 200×300
+                    if (r, c) in ((1, 0), (1, 3)) and h == 300:
+                        # Main compartment is 200×200 in the lower portion (y=200 to y=400)
+                        # Icon should be centered in that 200×200 area
+                        icon_size = int(200 * 0.7)  # 140px based on 200×200 compartment
+                        icon_svg = _get_icon_svg(module_type, icon_size, icon_size)
+                        if icon_svg:
+                            # Center in the main 200×200 compartment (lower portion)
+                            main_comp_y = 200  # Main compartment starts at y=200
+                            icon_x = comp_x + (w - icon_size) / 2
+                            icon_y = main_comp_y + (200 - icon_size) / 2  # Center in 200×200 area
+                            module_icon = f'<g transform="translate({icon_x},{icon_y})">{icon_svg}</g>'
+                    else:
+                        icon_svg = _get_icon_svg(module_type, icon_size, icon_size)
+                        if icon_svg:
+                            # Center the icon in the cell
+                            icon_x = comp_x + (w - icon_size) / 2
+                            icon_y = comp_y + (h - icon_size) / 2
+                            module_icon = f'<g transform="translate({icon_x},{icon_y})">{icon_svg}</g>'
                 except Exception:
                     pass  # Silently fail if asset not found
 
@@ -267,34 +281,41 @@ def render_shopfloor_svg(
                         module_data = mod
                         break
 
-                # Load square icons from asset manager
+                # Squares are 100×100px at y=100 (top of compound at row 1)
+                # Position them higher up, not at comp_y + 8
                 square_width = 100
                 square_height = 100
-                sx1 = comp_x
-                sy1 = comp_y + 8
-                sx2 = comp_x + 100
-                sy2 = comp_y + 8
+                sx1 = comp_x  # Left square
+                sy1 = 100  # At top of compound (row 1 starts at y=100 for the main area)
+                sx2 = comp_x + 100  # Right square
+                sy2 = 100
 
                 square1_svg = ""
                 square2_svg = ""
                 if module_data and ASSET_MANAGER:
                     attached_assets = module_data.get("attached_assets", [])
                     if len(attached_assets) >= 1:
-                        square1_svg = _get_icon_svg(attached_assets[0], square_width, square_height)
+                        # Use 60% of square size for icons (60px in 100px square) for better fit
+                        square1_svg = _get_icon_svg(attached_assets[0], 60, 60)
                     if len(attached_assets) >= 2:
-                        square2_svg = _get_icon_svg(attached_assets[1], square_width, square_height)
+                        square2_svg = _get_icon_svg(attached_assets[1], 60, 60)
 
-                # Render squares with icons or fallback to yellow fill
-                square1_elem = (
-                    f'<g transform="translate({sx1},{sy1})">{square1_svg}</g>'
-                    if square1_svg
-                    else f'<rect x="{sx1}" y="{sy1}" width="100" height="100" fill="#fff2b2" stroke="#e6b800" stroke-width="2" />'
-                )
-                square2_elem = (
-                    f'<g transform="translate({sx2},{sy2})">{square2_svg}</g>'
-                    if square2_svg
-                    else f'<rect x="{sx2}" y="{sy2}" width="100" height="100" fill="#fff2b2" stroke="#e6b800" stroke-width="2" />'
-                )
+                # Render squares with border and centered icons
+                # Center icons within the 100x100 square
+                icon_offset = (100 - 60) / 2 if square1_svg or square2_svg else 0
+
+                square1_elem = f'<rect x="{sx1}" y="{sy1}" width="100" height="100" fill="#fff2b2" stroke="#e6b800" stroke-width="2" />'
+                if square1_svg:
+                    square1_elem += (
+                        f'<g transform="translate({sx1 + icon_offset},{sy1 + icon_offset})">{square1_svg}</g>'
+                    )
+
+                square2_elem = f'<rect x="{sx2}" y="{sy2}" width="100" height="100" fill="#fff2b2" stroke="#e6b800" stroke-width="2" />'
+                if square2_svg:
+                    square2_elem += (
+                        f'<g transform="translate({sx2 + icon_offset},{sy2 + icon_offset})">{square2_svg}</g>'
+                    )
+
                 compound_inner = square1_elem + square2_elem
             comp_elems.append(
                 f'<g class="cell-group" data-pos="{r},{c}" data-name="{html.escape(name)}">'
@@ -481,65 +502,90 @@ def show_shopfloor_layout(
 def main():
     st.title("Shopfloor Test App (examples/shopfloor_test_app)")
     layout = load_layout()
-    # Controls
-    enable_click = st.sidebar.checkbox("Enable click to select", value=True)
-    show_route = st.sidebar.checkbox("Show route example", value=False)
+
+    # Mode selection
+    mode = st.sidebar.radio(
+        "Display Mode", ["Mode 1: Interactive (Click & Mouse-Over)", "Mode 2: View (Highlighting & Routes)"], index=1
+    )
+
+    enable_click = "Mode 1" in mode
+    show_route = "Mode 2" in mode
+
     # Select start/goal from candidate modules (red & green)
     candidates = []
     for (r, c), v in VIS_SPEC.items():
         if v["color"] in ("#ffd5d5", "#d7f0c8"):
             candidates.append((r, c, v["name"]))
     opts = ["-- none --"] + [f"{name} [{r},{c}]" for r, c, name in candidates]
-    start_sel = st.sidebar.selectbox("Start", opts, index=0)
-    goal_sel = st.sidebar.selectbox("Goal", opts, index=0)
 
-    # compute route when requested
+    # Show route controls only in Mode 2
     route_pts = None
-    if show_route and start_sel != "-- none --" and goal_sel != "-- none --":
-        # convert selection to id (use module id mapping from layout)
-        def sel_to_id(s):
-            if not s or s == "-- none --":
-                return None
-            name = s.split()[0]
-            # try modules and fixed positions
-            for m in layout.get("modules", []):
-                if m.get("id") == name:
-                    return m.get("serialNumber") or m.get("id")
-            for f in layout.get("fixed_positions", []):
-                if f.get("id") == name:
-                    return f.get("id")
-            return name
+    highlight_cells = []
+    if "Mode 2" in mode:
+        st.sidebar.subheader("Route & Highlighting")
+        start_sel = st.sidebar.selectbox("Route Start", opts, index=0)
+        goal_sel = st.sidebar.selectbox("Route Goal", opts, index=0)
 
-        start_id = sel_to_id(start_sel)
-        goal_id = sel_to_id(goal_sel)
-        graph = route_utils.build_graph(layout)
-        # special rules: if no start and goal is HBW -> start is INTERSECTION-2 ; if goal is DPS -> start = INTERSECTION-1
-        if not start_id and goal_id:
-            # find if goal is HBW or DPS
-            goal_name = None
-            for m in layout.get("modules", []):
-                if m.get("serialNumber") == goal_id or m.get("id") == goal_id:
-                    goal_name = m.get("id")
-            if goal_name == "HBW":
-                start_id = "2"
-            if goal_name == "DPS":
-                start_id = "1"
-        if start_id and goal_id:
-            path = route_utils.find_path(graph, start_id, goal_id)
-            if path:
-                # Convert path to edge-based route points (only on intersections)
-                route_pts = compute_route_edge_points(path, layout, CELL_SIZE)
-                if len(route_pts) < 2:
-                    route_pts = None
+        # Highlight selection (multi-select)
+        st.sidebar.subheader("Highlight Cells")
+        highlight_opts = [
+            f"{name} [{r},{c}]" for r, c, name in [(r, c, VIS_SPEC[(r, c)]["name"]) for r, c in VIS_SPEC.keys()]
+        ]
+        highlight_sel = st.sidebar.multiselect("Select cells to highlight", highlight_opts, default=[])
 
-    # default highlighting example: DRILL [2,0]
-    highlight_default = [[2, 0]]
+        # Convert highlight selection to cell coordinates
+        for sel in highlight_sel:
+            # Parse "[r,c]" from the selection string
+            import re
+
+            match = re.search(r"\[(\d+),(\d+)\]", sel)
+            if match:
+                highlight_cells.append([int(match.group(1)), int(match.group(2))])
+
+        # compute route when requested
+        if start_sel != "-- none --" and goal_sel != "-- none --":
+            # convert selection to id (use module id mapping from layout)
+            def sel_to_id(s):
+                if not s or s == "-- none --":
+                    return None
+                name = s.split()[0]
+                # try modules and fixed positions
+                for m in layout.get("modules", []):
+                    if m.get("id") == name:
+                        return m.get("serialNumber") or m.get("id")
+                for f in layout.get("fixed_positions", []):
+                    if f.get("id") == name:
+                        return f.get("id")
+                return name
+
+            start_id = sel_to_id(start_sel)
+            goal_id = sel_to_id(goal_sel)
+            graph = route_utils.build_graph(layout)
+            # special rules: if no start and goal is HBW -> start is INTERSECTION-2 ; if goal is DPS -> start = INTERSECTION-1
+            if not start_id and goal_id:
+                # find if goal is HBW or DPS
+                goal_name = None
+                for m in layout.get("modules", []):
+                    if m.get("serialNumber") == goal_id or m.get("id") == goal_id:
+                        goal_name = m.get("id")
+                if goal_name == "HBW":
+                    start_id = "2"
+                if goal_name == "DPS":
+                    start_id = "1"
+            if start_id and goal_id:
+                path = route_utils.find_path(graph, start_id, goal_id)
+                if path:
+                    # Convert path to edge-based route points (only on intersections)
+                    route_pts = compute_route_edge_points(path, layout, CELL_SIZE)
+                    if len(route_pts) < 2:
+                        route_pts = None
+
     show_shopfloor_layout(
-        title="Shopfloor Layout (Demo)",
+        title=f"Shopfloor Layout - {mode}",
         unique_key="examples_shopfloor",
         mode="demo",
         enable_click=enable_click,
-        highlight_cells=highlight_default,
+        highlight_cells=highlight_cells,
         route_points=route_pts,
         agv_progress=0.0,
         show_controls=True,
