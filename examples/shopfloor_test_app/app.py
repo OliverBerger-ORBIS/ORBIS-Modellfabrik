@@ -32,15 +32,16 @@ CANVAS_W = CELL_SIZE * GRID_W
 CANVAS_H = CELL_SIZE * GRID_H
 
 # Visual spec derived from user message (colors & sizes)
+# All cells are now 200x200 to maintain rectangular grid
 VIS_SPEC = {
-    (0, 0): {"name": "COMPANY", "w": 200, "h": 100, "color": "#cfe6ff"},  # blaues Rechteck
-    (0, 1): {"name": "MILL", "w": 200, "h": 200, "color": "#ffd5d5"},  # rotes Quadrat
+    (0, 0): {"name": "COMPANY", "w": 200, "h": 200, "color": "#cfe6ff"},
+    (0, 1): {"name": "MILL", "w": 200, "h": 200, "color": "#ffd5d5"},
     (0, 2): {"name": "AIQS", "w": 200, "h": 200, "color": "#ffd5d5"},
-    (0, 3): {"name": "SOFTWARE", "w": 200, "h": 100, "color": "#cfe6ff"},
-    (1, 0): {"name": "HBW", "w": 200, "h": 300, "color": "#d7f0c8"},  # grünes Compound
+    (0, 3): {"name": "SOFTWARE", "w": 200, "h": 200, "color": "#cfe6ff"},
+    (1, 0): {"name": "HBW", "w": 200, "h": 200, "color": "#d7f0c8"},  # grünes Compound
     (1, 1): {"name": "INTERSECTION-1", "w": 200, "h": 200, "color": "#e3d0ff"},
     (1, 2): {"name": "INTERSECTION-2", "w": 200, "h": 200, "color": "#e3d0ff"},
-    (1, 3): {"name": "DPS", "w": 200, "h": 300, "color": "#d7f0c8"},  # grünes Compound
+    (1, 3): {"name": "DPS", "w": 200, "h": 200, "color": "#d7f0c8"},  # grünes Compound
     (2, 0): {"name": "DRILL", "w": 200, "h": 200, "color": "#ffd5d5"},
     (2, 1): {"name": "INTERSECTION-3", "w": 200, "h": 200, "color": "#e3d0ff"},
     (2, 2): {"name": "INTERSECTION-4", "w": 200, "h": 200, "color": "#e3d0ff"},
@@ -60,6 +61,69 @@ def cell_anchor(row: int, col: int) -> Tuple[int, int]:
 def center_of_cell(row: int, col: int) -> Tuple[int, int]:
     x, y = cell_anchor(row, col)
     return x + CELL_SIZE // 2, y + CELL_SIZE // 2
+
+
+def compute_route_edge_points(path, layout, cell_size=CELL_SIZE):
+    """
+    Compute route points that start/end at cell edges rather than centers.
+    Routes should only be visible on intersection cells.
+
+    Args:
+        path: List of node IDs in the route
+        layout: Layout configuration dict
+        cell_size: Size of each cell in pixels
+
+    Returns:
+        List of (x, y) tuples for route visualization
+    """
+    if not path or len(path) < 2:
+        return []
+
+    # Get position map
+    pos_map = route_utils.id_to_position_map(layout, cell_size)
+
+    # Identify which nodes are intersections
+    intersection_ids = {str(inter["id"]) for inter in layout.get("intersections", [])}
+
+    route_pts = []
+    for i, node in enumerate(path):
+        if node not in pos_map:
+            continue
+
+        cx, cy = pos_map[node]
+
+        # Only add intersection points or start/end points at edges
+        if i == 0:
+            # Start point - find edge towards next intersection
+            if len(path) > 1 and path[1] in pos_map:
+                next_cx, next_cy = pos_map[path[1]]
+                # Calculate edge point
+                if next_cx > cx:  # Moving right
+                    route_pts.append((cx + cell_size // 2, cy))
+                elif next_cx < cx:  # Moving left
+                    route_pts.append((cx - cell_size // 2, cy))
+                elif next_cy > cy:  # Moving down
+                    route_pts.append((cx, cy + cell_size // 2))
+                else:  # Moving up
+                    route_pts.append((cx, cy - cell_size // 2))
+        elif i == len(path) - 1:
+            # End point - find edge from previous intersection
+            if i > 0 and path[i - 1] in pos_map:
+                prev_cx, prev_cy = pos_map[path[i - 1]]
+                # Calculate edge point
+                if cx > prev_cx:  # Coming from left
+                    route_pts.append((cx - cell_size // 2, cy))
+                elif cx < prev_cx:  # Coming from right
+                    route_pts.append((cx + cell_size // 2, cy))
+                elif cy > prev_cy:  # Coming from top
+                    route_pts.append((cx, cy - cell_size // 2))
+                else:  # Coming from bottom
+                    route_pts.append((cx, cy + cell_size // 2))
+        elif node in intersection_ids:
+            # Intersection - use center point
+            route_pts.append((cx, cy))
+
+    return route_pts
 
 
 def render_shopfloor_svg(
@@ -99,24 +163,32 @@ def render_shopfloor_svg(
             comp_x = x + (CELL_SIZE - w) / 2
             comp_y = y + (CELL_SIZE - h) / 2
 
-            # border logic
+            # border logic - use transparent fill, only colored border
             is_active = (r, c) in highlight_set
             stroke = "#2a7d2a" if fill == "#d7f0c8" else "#d22a2a" if fill == "#ffd5d5" else "#3a6ea5"
-            stroke_width = 8 if is_active else 0
-            # compound inner squares for HBW/DPS
+            # Normal border width is 2, highlighted is 8
+            stroke_width = 8 if is_active else 2
+
+            # compound inner squares for HBW/DPS - arranged vertically (stacked)
             compound_inner = ""
             if (r, c) in ((1, 0), (1, 3)):
-                sx1 = comp_x + 8
-                sy1 = comp_y + 8
-                sx2 = comp_x + 8 + 90
-                sy2 = comp_y + 8
+                # Center the squares in the cell and stack them vertically
+                square_size = 80
+                spacing = 10
+                # Calculate to center both squares vertically
+                total_height = 2 * square_size + spacing
+                start_y = comp_y + (h - total_height) / 2
+                start_x = comp_x + (w - square_size) / 2
+
+                sy1 = start_y
+                sy2 = start_y + square_size + spacing
                 compound_inner = (
-                    f'<rect x="{sx1}" y="{sy1}" width="80" height="80" fill="#fff2b2" stroke="#e6b800" />'
-                    f'<rect x="{sx2}" y="{sy2}" width="80" height="80" fill="#fff2b2" stroke="#e6b800" />'
+                    f'<rect x="{start_x}" y="{sy1}" width="{square_size}" height="{square_size}" fill="#fff2b2" stroke="#e6b800" stroke-width="2" />'
+                    f'<rect x="{start_x}" y="{sy2}" width="{square_size}" height="{square_size}" fill="#fff2b2" stroke="#e6b800" stroke-width="2" />'
                 )
             comp_elems.append(
                 f'<g class="cell-group" data-pos="{r},{c}" data-name="{html.escape(name)}">'
-                f'<rect x="{comp_x}" y="{comp_y}" width="{w}" height="{h}" fill="{fill}" stroke="{stroke}" stroke-width="{stroke_width}" rx="6" ry="6" />'
+                f'<rect x="{comp_x}" y="{comp_y}" width="{w}" height="{h}" fill="none" stroke="{stroke}" stroke-width="{stroke_width}" rx="6" ry="6" />'
                 f"{compound_inner}"
                 f'<text x="{comp_x+6}" y="{comp_y+16}" style="display:none" class="tooltip">{html.escape(name)} [{r},{c}]</text>'
                 f"</g>"
@@ -263,12 +335,8 @@ def main():
         if start_id and goal_id:
             path = route_utils.find_path(graph, start_id, goal_id)
             if path:
-                # convert path nodes to centers
-                pos_map = route_utils.id_to_position_map(layout, CELL_SIZE)
-                route_pts = []
-                for node in path:
-                    if node in pos_map:
-                        route_pts.append(pos_map[node])
+                # Convert path to edge-based route points (only on intersections)
+                route_pts = compute_route_edge_points(path, layout, CELL_SIZE)
                 if len(route_pts) < 2:
                     route_pts = None
 
