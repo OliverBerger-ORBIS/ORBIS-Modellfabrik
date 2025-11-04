@@ -53,6 +53,53 @@ def load_layout(path: pathlib.Path = LAYOUT_PATH) -> dict:
         return json.load(f)
 
 
+def _scale_svg_properly(svg_content: str, target_width: int, target_height: int) -> tuple:
+    """
+    Scale SVG properly based on viewBox to avoid distortion.
+    Returns (scaled_svg_content, actual_width, actual_height)
+    """
+    import re
+
+    try:
+        # Extract viewBox from SVG
+        viewbox_match = re.search(r'viewBox="([^"]*)"', svg_content)
+        if viewbox_match:
+            viewbox = viewbox_match.group(1)
+            viewbox_parts = viewbox.split()
+            if len(viewbox_parts) == 4:
+                vb_x, vb_y, vb_width, vb_height = map(float, viewbox_parts)
+
+                # Calculate aspect ratios
+                vb_aspect_ratio = vb_width / vb_height
+                target_aspect_ratio = target_width / target_height
+
+                # Scale based on aspect ratio to avoid distortion
+                if vb_aspect_ratio > target_aspect_ratio:
+                    # ViewBox is wider - scale by width
+                    scale = target_width / vb_width
+                    new_height = int(vb_height * scale)
+                    new_width = target_width
+                else:
+                    # ViewBox is taller - scale by height
+                    scale = target_height / vb_height
+                    new_width = int(vb_width * scale)
+                    new_height = target_height
+
+                # Remove existing width/height and add new ones
+                svg_content = re.sub(r'<svg([^>]*)width="[^"]*"', r"<svg\1", svg_content, count=1)
+                svg_content = re.sub(r'<svg([^>]*)height="[^"]*"', r"<svg\1", svg_content, count=1)
+                svg_content = svg_content.replace("<svg", f'<svg width="{new_width}" height="{new_height}"', 1)
+                return svg_content, new_width, new_height
+
+        # Fallback: use target dimensions
+        svg_content = re.sub(r'<svg([^>]*)width="[^"]*"', r"<svg\1", svg_content, count=1)
+        svg_content = re.sub(r'<svg([^>]*)height="[^"]*"', r"<svg\1", svg_content, count=1)
+        svg_content = svg_content.replace("<svg", f'<svg width="{target_width}" height="{target_height}"', 1)
+        return svg_content, target_width, target_height
+    except Exception:
+        return svg_content, target_width, target_height
+
+
 def cell_anchor(row: int, col: int) -> Tuple[int, int]:
     return col * CELL_SIZE, row * CELL_SIZE
 
@@ -185,17 +232,22 @@ def render_shopfloor_svg(
                     # Try to get inline SVG from asset manager
                     icon_svg = ASSET_MANAGER.get_asset_inline(module_type)
                     if icon_svg:
-                        # Scale and position the icon within the cell
-                        icon_size = min(w, h) * 0.7  # Use 70% of smaller dimension
-                        icon_x = comp_x + (w - icon_size) / 2
-                        icon_y = comp_y + (h - icon_size) / 2
-                        # Wrap the icon in a group with transform for positioning
-                        module_icon = (
-                            f'<g transform="translate({icon_x},{icon_y})">'
-                            f'<g transform="scale({icon_size/100})">'  # Assume icon is 100x100
-                            f"{icon_svg}"
-                            f"</g></g>"
+                        # Use 50% of cell size for better fit (instead of 70%)
+                        target_icon_size = min(w, h) * 0.5
+                        # Scale SVG properly to avoid distortion
+                        scaled_svg, actual_w, actual_h = _scale_svg_properly(
+                            icon_svg, int(target_icon_size), int(target_icon_size)
                         )
+                        # Center the icon in the cell
+                        icon_x = comp_x + (w - actual_w) / 2
+                        icon_y = comp_y + (h - actual_h) / 2
+                        # Remove SVG wrapper for embedding
+                        import re
+
+                        svg_content_clean = scaled_svg.replace("<svg", "<g").replace("</svg>", "</g>")
+                        svg_content_clean = re.sub(r'width="[^"]*"', "", svg_content_clean)
+                        svg_content_clean = re.sub(r'height="[^"]*"', "", svg_content_clean)
+                        module_icon = f'<g transform="translate({icon_x},{icon_y})">{svg_content_clean}</g>'
                 except Exception:
                     pass  # Silently fail if asset not found
 
@@ -240,10 +292,76 @@ def render_shopfloor_svg(
         pts = " ".join(f"{int(x)},{int(y)}" for (x, y) in route_points)
         start = route_points[0]
         end = route_points[-1]
+
+        # Calculate AGV position at middle of route (or at agv_progress if specified)
+        agv_marker_svg = ""
+        if ASSET_MANAGER and len(route_points) >= 2:
+            try:
+                # Get FTS icon
+                fts_svg_content = ASSET_MANAGER.get_asset_inline("FTS")
+                if fts_svg_content:
+                    # Calculate position along route based on progress (default 0.5 = middle)
+                    progress = agv_progress if agv_progress > 0 else 0.5
+                    total_length = sum(
+                        (
+                            (route_points[i + 1][0] - route_points[i][0]) ** 2
+                            + (route_points[i + 1][1] - route_points[i][1]) ** 2
+                        )
+                        ** 0.5
+                        for i in range(len(route_points) - 1)
+                    )
+                    target_dist = total_length * progress
+
+                    # Find point at target distance
+                    current_dist = 0
+                    agv_x, agv_y = route_points[0]
+                    for i in range(len(route_points) - 1):
+                        segment_length = (
+                            (route_points[i + 1][0] - route_points[i][0]) ** 2
+                            + (route_points[i + 1][1] - route_points[i][1]) ** 2
+                        ) ** 0.5
+                        if current_dist + segment_length >= target_dist:
+                            # Interpolate within this segment
+                            t = (target_dist - current_dist) / segment_length if segment_length > 0 else 0
+                            agv_x = route_points[i][0] + t * (route_points[i + 1][0] - route_points[i][0])
+                            agv_y = route_points[i][1] + t * (route_points[i + 1][1] - route_points[i][1])
+                            break
+                        current_dist += segment_length
+
+                    # Extract original size from viewBox
+                    import re
+
+                    original_size = 24  # Default fallback
+                    viewbox_match = re.search(r'viewBox="([^"]*)"', fts_svg_content)
+                    if viewbox_match:
+                        viewbox_parts = viewbox_match.group(1).split()
+                        if len(viewbox_parts) >= 4:
+                            original_size = float(viewbox_parts[2])
+
+                    # Scale to 48px (smaller than production's 64px for better fit)
+                    icon_size = 48
+                    half_size = icon_size / 2
+                    scale_factor = icon_size / original_size
+
+                    # Remove SVG wrapper for embedding
+                    svg_content_clean = fts_svg_content.replace("<svg", "<g").replace("</svg>", "</g>")
+                    svg_content_clean = re.sub(r'width="[^"]*"', "", svg_content_clean)
+                    svg_content_clean = re.sub(r'height="[^"]*"', "", svg_content_clean)
+
+                    agv_marker_svg = f'<g transform="translate({agv_x - half_size}, {agv_y - half_size}) scale({scale_factor})">{svg_content_clean}</g>'
+            except Exception:
+                # Fallback to circle if FTS icon fails
+                agv_x = route_points[len(route_points) // 2][0]
+                agv_y = route_points[len(route_points) // 2][1]
+                agv_marker_svg = (
+                    f'<circle cx="{agv_x}" cy="{agv_y}" r="16" fill="#4CAF50" stroke="#fff" stroke-width="2" />'
+                )
+
         route_svg = (
             f'<polyline points="{pts}" stroke="#ff8c00" stroke-width="8" fill="none" stroke-linejoin="round" stroke-linecap="round" />'
             f'<circle cx="{start[0]}" cy="{start[1]}" r="8" fill="#ff8c00" stroke="#fff" stroke-width="2" />'
             f'<circle cx="{end[0]}" cy="{end[1]}" r="8" fill="#ff8c00" stroke="#fff" stroke-width="2" />'
+            f"{agv_marker_svg}"
         )
 
     svg = (
