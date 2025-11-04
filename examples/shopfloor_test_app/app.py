@@ -100,6 +100,23 @@ def _scale_svg_properly(svg_content: str, target_width: int, target_height: int)
         return svg_content, target_width, target_height
 
 
+def _get_icon_svg(module_type: str, target_width: int, target_height: int) -> str:
+    """Load and scale icon from asset manager with proper centering."""
+    if not ASSET_MANAGER:
+        return ""
+
+    try:
+        # Use get_asset_content with scoped=True as in production
+        icon_svg = ASSET_MANAGER.get_asset_content(module_type, scoped=True)
+        if icon_svg:
+            scaled_svg, actual_w, actual_h = _scale_svg_properly(icon_svg, target_width, target_height)
+            return scaled_svg
+    except Exception:
+        pass
+
+    return ""
+
+
 def cell_anchor(row: int, col: int) -> Tuple[int, int]:
     return col * CELL_SIZE, row * CELL_SIZE
 
@@ -229,40 +246,56 @@ def render_shopfloor_svg(
             if spec and ASSET_MANAGER:
                 module_type = name  # Use the name from VIS_SPEC
                 try:
-                    # Try to get inline SVG from asset manager
-                    icon_svg = ASSET_MANAGER.get_asset_inline(module_type)
+                    # Use 70% of cell size (as per feedback based on MILL reference)
+                    icon_size = int(min(w, h) * 0.7)
+                    icon_svg = _get_icon_svg(module_type, icon_size, icon_size)
                     if icon_svg:
-                        # Use 50% of cell size for better fit (instead of 70%)
-                        target_icon_size = min(w, h) * 0.5
-                        # Scale SVG properly to avoid distortion
-                        scaled_svg, actual_w, actual_h = _scale_svg_properly(
-                            icon_svg, int(target_icon_size), int(target_icon_size)
-                        )
                         # Center the icon in the cell
-                        icon_x = comp_x + (w - actual_w) / 2
-                        icon_y = comp_y + (h - actual_h) / 2
-                        # Remove SVG wrapper for embedding
-                        import re
-
-                        svg_content_clean = scaled_svg.replace("<svg", "<g").replace("</svg>", "</g>")
-                        svg_content_clean = re.sub(r'width="[^"]*"', "", svg_content_clean)
-                        svg_content_clean = re.sub(r'height="[^"]*"', "", svg_content_clean)
-                        module_icon = f'<g transform="translate({icon_x},{icon_y})">{svg_content_clean}</g>'
+                        icon_x = comp_x + (w - icon_size) / 2
+                        icon_y = comp_y + (h - icon_size) / 2
+                        module_icon = f'<g transform="translate({icon_x},{icon_y})">{icon_svg}</g>'
                 except Exception:
                     pass  # Silently fail if asset not found
 
-            # compound inner squares for HBW/DPS - arranged horizontally (side by side)
+            # compound inner squares for HBW/DPS - load icons from asset manager
             compound_inner = ""
             if (r, c) in ((1, 0), (1, 3)):
-                # Two 100x100px squares side by side, filling the 200px width exactly
+                # Get module data to access attached_assets
+                module_data = None
+                for mod in layout.get("modules", []):
+                    if mod.get("position") == [r, c]:
+                        module_data = mod
+                        break
+
+                # Load square icons from asset manager
+                square_width = 100
+                square_height = 100
                 sx1 = comp_x
                 sy1 = comp_y + 8
                 sx2 = comp_x + 100
                 sy2 = comp_y + 8
-                compound_inner = (
-                    f'<rect x="{sx1}" y="{sy1}" width="100" height="100" fill="#fff2b2" stroke="#e6b800" stroke-width="2" />'
-                    f'<rect x="{sx2}" y="{sy2}" width="100" height="100" fill="#fff2b2" stroke="#e6b800" stroke-width="2" />'
+
+                square1_svg = ""
+                square2_svg = ""
+                if module_data and ASSET_MANAGER:
+                    attached_assets = module_data.get("attached_assets", [])
+                    if len(attached_assets) >= 1:
+                        square1_svg = _get_icon_svg(attached_assets[0], square_width, square_height)
+                    if len(attached_assets) >= 2:
+                        square2_svg = _get_icon_svg(attached_assets[1], square_width, square_height)
+
+                # Render squares with icons or fallback to yellow fill
+                square1_elem = (
+                    f'<g transform="translate({sx1},{sy1})">{square1_svg}</g>'
+                    if square1_svg
+                    else f'<rect x="{sx1}" y="{sy1}" width="100" height="100" fill="#fff2b2" stroke="#e6b800" stroke-width="2" />'
                 )
+                square2_elem = (
+                    f'<g transform="translate({sx2},{sy2})">{square2_svg}</g>'
+                    if square2_svg
+                    else f'<rect x="{sx2}" y="{sy2}" width="100" height="100" fill="#fff2b2" stroke="#e6b800" stroke-width="2" />'
+                )
+                compound_inner = square1_elem + square2_elem
             comp_elems.append(
                 f'<g class="cell-group" data-pos="{r},{c}" data-name="{html.escape(name)}">'
                 f'<rect x="{comp_x}" y="{comp_y}" width="{w}" height="{h}" fill="none" stroke="{stroke}" stroke-width="{stroke_width}" rx="6" ry="6" />'
@@ -272,19 +305,34 @@ def render_shopfloor_svg(
                 f"</g>"
             )
 
-    # intersections
+    # intersections - load icons from asset manager instead of drawing crosses
     for inter in layout.get("intersections", []):
         r, c = inter["position"]
         cx, cy = center_of_cell(r, c)
         iid = inter["id"]
-        inter_elems.append(
-            f'<g id="inter_{iid}">'
-            f'<line x1="{cx-40}" y1="{cy}" x2="{cx+40}" y2="{cy}" stroke="#9b6fd6" stroke-width="12" stroke-linecap="round"/>'
-            f'<line x1="{cx}" y1="{cy-40}" x2="{cx}" y2="{cy+40}" stroke="#9b6fd6" stroke-width="12" stroke-linecap="round"/>'
-            f'<circle cx="{cx}" cy="{cy}" r="14" fill="#6f6f6f" />'
-            f'<text x="{cx}" y="{cy+5}" fill="#fff" font-size="14" text-anchor="middle">{iid}</text>'
-            f"</g>"
-        )
+
+        # Try to load intersection icon from asset manager
+        inter_icon_svg = ""
+        if ASSET_MANAGER:
+            inter_icon_svg = _get_icon_svg(iid, 140, 140)  # 70% of 200px cell
+
+        if inter_icon_svg:
+            # Center the intersection icon
+            icon_x = cx - 70
+            icon_y = cy - 70
+            inter_elems.append(
+                f'<g id="inter_{iid}">' f'<g transform="translate({icon_x},{icon_y})">{inter_icon_svg}</g>' f"</g>"
+            )
+        else:
+            # Fallback to purple crosses if icon not found
+            inter_elems.append(
+                f'<g id="inter_{iid}">'
+                f'<line x1="{cx-40}" y1="{cy}" x2="{cx+40}" y2="{cy}" stroke="#9b6fd6" stroke-width="12" stroke-linecap="round"/>'
+                f'<line x1="{cx}" y1="{cy-40}" x2="{cx}" y2="{cy+40}" stroke="#9b6fd6" stroke-width="12" stroke-linecap="round"/>'
+                f'<circle cx="{cx}" cy="{cy}" r="14" fill="#6f6f6f" />'
+                f'<text x="{cx}" y="{cy+5}" fill="#fff" font-size="14" text-anchor="middle">{iid}</text>'
+                f"</g>"
+            )
 
     # route drawing (polyline through route_points)
     route_svg = ""
