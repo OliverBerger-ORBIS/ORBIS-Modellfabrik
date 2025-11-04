@@ -177,6 +177,28 @@ def render_shopfloor_svg(
             # Normal border width is 2, highlighted is 8
             stroke_width = 8 if is_active else 2
 
+            # Get module icon if available
+            module_icon = ""
+            if spec and ASSET_MANAGER:
+                module_type = name  # Use the name from VIS_SPEC
+                try:
+                    # Try to get inline SVG from asset manager
+                    icon_svg = ASSET_MANAGER.get_asset_inline(module_type)
+                    if icon_svg:
+                        # Scale and position the icon within the cell
+                        icon_size = min(w, h) * 0.7  # Use 70% of smaller dimension
+                        icon_x = comp_x + (w - icon_size) / 2
+                        icon_y = comp_y + (h - icon_size) / 2
+                        # Wrap the icon in a group with transform for positioning
+                        module_icon = (
+                            f'<g transform="translate({icon_x},{icon_y})">'
+                            f'<g transform="scale({icon_size/100})">'  # Assume icon is 100x100
+                            f"{icon_svg}"
+                            f"</g></g>"
+                        )
+                except Exception:
+                    pass  # Silently fail if asset not found
+
             # compound inner squares for HBW/DPS - arranged horizontally (side by side)
             compound_inner = ""
             if (r, c) in ((1, 0), (1, 3)):
@@ -193,6 +215,7 @@ def render_shopfloor_svg(
                 f'<g class="cell-group" data-pos="{r},{c}" data-name="{html.escape(name)}">'
                 f'<rect x="{comp_x}" y="{comp_y}" width="{w}" height="{h}" fill="none" stroke="{stroke}" stroke-width="{stroke_width}" rx="6" ry="6" />'
                 f"{compound_inner}"
+                f"{module_icon}"
                 f'<text x="{comp_x+6}" y="{comp_y+16}" style="display:none" class="tooltip">{html.escape(name)} [{r},{c}]</text>'
                 f"</g>"
             )
