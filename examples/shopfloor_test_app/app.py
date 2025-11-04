@@ -160,7 +160,14 @@ def render_shopfloor_svg(
             else:
                 w, h, fill, name = 180, 180, "#ffffff", f"[{r},{c}]"
             comp_x = x + (CELL_SIZE - w) / 2
-            comp_y = y + (CELL_SIZE - h) / 2
+
+            # Special positioning for compound cells (HBW/DPS)
+            # They should extend upward to fill the gap from COMPANY/SOFTWARE
+            if (r, c) in ((1, 0), (1, 3)) and h == 300:
+                # Position at top of row 0 (y=0) for 300px tall cells in row 1
+                comp_y = 0
+            else:
+                comp_y = y + (CELL_SIZE - h) / 2
 
             # border logic - use transparent fill, only colored border
             is_active = (r, c) in highlight_set
