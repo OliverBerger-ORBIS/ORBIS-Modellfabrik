@@ -32,16 +32,15 @@ CANVAS_W = CELL_SIZE * GRID_W
 CANVAS_H = CELL_SIZE * GRID_H
 
 # Visual spec derived from user message (colors & sizes)
-# All cells are now 200x200 to maintain rectangular grid
 VIS_SPEC = {
-    (0, 0): {"name": "COMPANY", "w": 200, "h": 200, "color": "#cfe6ff"},
-    (0, 1): {"name": "MILL", "w": 200, "h": 200, "color": "#ffd5d5"},
+    (0, 0): {"name": "COMPANY", "w": 200, "h": 100, "color": "#cfe6ff"},  # blaues Rechteck
+    (0, 1): {"name": "MILL", "w": 200, "h": 200, "color": "#ffd5d5"},  # rotes Quadrat
     (0, 2): {"name": "AIQS", "w": 200, "h": 200, "color": "#ffd5d5"},
-    (0, 3): {"name": "SOFTWARE", "w": 200, "h": 200, "color": "#cfe6ff"},
-    (1, 0): {"name": "HBW", "w": 200, "h": 200, "color": "#d7f0c8"},  # grünes Compound
+    (0, 3): {"name": "SOFTWARE", "w": 200, "h": 100, "color": "#cfe6ff"},
+    (1, 0): {"name": "HBW", "w": 200, "h": 300, "color": "#d7f0c8"},  # grünes Compound
     (1, 1): {"name": "INTERSECTION-1", "w": 200, "h": 200, "color": "#e3d0ff"},
     (1, 2): {"name": "INTERSECTION-2", "w": 200, "h": 200, "color": "#e3d0ff"},
-    (1, 3): {"name": "DPS", "w": 200, "h": 200, "color": "#d7f0c8"},  # grünes Compound
+    (1, 3): {"name": "DPS", "w": 200, "h": 300, "color": "#d7f0c8"},  # grünes Compound
     (2, 0): {"name": "DRILL", "w": 200, "h": 200, "color": "#ffd5d5"},
     (2, 1): {"name": "INTERSECTION-3", "w": 200, "h": 200, "color": "#e3d0ff"},
     (2, 2): {"name": "INTERSECTION-4", "w": 200, "h": 200, "color": "#e3d0ff"},
@@ -169,22 +168,17 @@ def render_shopfloor_svg(
             # Normal border width is 2, highlighted is 8
             stroke_width = 8 if is_active else 2
 
-            # compound inner squares for HBW/DPS - arranged vertically (stacked)
+            # compound inner squares for HBW/DPS - arranged horizontally (side by side)
             compound_inner = ""
             if (r, c) in ((1, 0), (1, 3)):
-                # Center the squares in the cell and stack them vertically
-                square_size = 80
-                spacing = 10
-                # Calculate to center both squares vertically
-                total_height = 2 * square_size + spacing
-                start_y = comp_y + (h - total_height) / 2
-                start_x = comp_x + (w - square_size) / 2
-
-                sy1 = start_y
-                sy2 = start_y + square_size + spacing
+                # Position squares horizontally side by side
+                sx1 = comp_x + 8
+                sy1 = comp_y + 8
+                sx2 = comp_x + 8 + 90  # 80px width + 10px spacing
+                sy2 = comp_y + 8
                 compound_inner = (
-                    f'<rect x="{start_x}" y="{sy1}" width="{square_size}" height="{square_size}" fill="#fff2b2" stroke="#e6b800" stroke-width="2" />'
-                    f'<rect x="{start_x}" y="{sy2}" width="{square_size}" height="{square_size}" fill="#fff2b2" stroke="#e6b800" stroke-width="2" />'
+                    f'<rect x="{sx1}" y="{sy1}" width="80" height="80" fill="#fff2b2" stroke="#e6b800" stroke-width="2" />'
+                    f'<rect x="{sx2}" y="{sy2}" width="80" height="80" fill="#fff2b2" stroke="#e6b800" stroke-width="2" />'
                 )
             comp_elems.append(
                 f'<g class="cell-group" data-pos="{r},{c}" data-name="{html.escape(name)}">'
