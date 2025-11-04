@@ -161,11 +161,13 @@ def render_shopfloor_svg(
                 w, h, fill, name = 180, 180, "#ffffff", f"[{r},{c}]"
             comp_x = x + (CELL_SIZE - w) / 2
 
-            # Special positioning for compound cells (HBW/DPS)
-            # They should extend upward to fill the gap from COMPANY/SOFTWARE
-            if (r, c) in ((1, 0), (1, 3)) and h == 300:
-                # Position at top of row 0 (y=0) for 300px tall cells in row 1
-                comp_y = 0
+            # Special positioning for different cell types
+            # COMPANY/SOFTWARE (100px tall in row 0, cols 0 and 3): move up 50px
+            if (r, c) in ((0, 0), (0, 3)) and h == 100:
+                comp_y = y + (CELL_SIZE - h) / 2 - 50
+            # HBW/DPS compounds (300px tall in row 1, cols 0 and 3): start at y=100
+            elif (r, c) in ((1, 0), (1, 3)) and h == 300:
+                comp_y = 100
             else:
                 comp_y = y + (CELL_SIZE - h) / 2
 
@@ -178,14 +180,14 @@ def render_shopfloor_svg(
             # compound inner squares for HBW/DPS - arranged horizontally (side by side)
             compound_inner = ""
             if (r, c) in ((1, 0), (1, 3)):
-                # Position squares horizontally side by side
-                sx1 = comp_x + 8
+                # Two 100x100px squares side by side, filling the 200px width exactly
+                sx1 = comp_x
                 sy1 = comp_y + 8
-                sx2 = comp_x + 8 + 90  # 80px width + 10px spacing
+                sx2 = comp_x + 100
                 sy2 = comp_y + 8
                 compound_inner = (
-                    f'<rect x="{sx1}" y="{sy1}" width="80" height="80" fill="#fff2b2" stroke="#e6b800" stroke-width="2" />'
-                    f'<rect x="{sx2}" y="{sy2}" width="80" height="80" fill="#fff2b2" stroke="#e6b800" stroke-width="2" />'
+                    f'<rect x="{sx1}" y="{sy1}" width="100" height="100" fill="#fff2b2" stroke="#e6b800" stroke-width="2" />'
+                    f'<rect x="{sx2}" y="{sy2}" width="100" height="100" fill="#fff2b2" stroke="#e6b800" stroke-width="2" />'
                 )
             comp_elems.append(
                 f'<g class="cell-group" data-pos="{r},{c}" data-name="{html.escape(name)}">'
