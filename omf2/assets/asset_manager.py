@@ -47,6 +47,11 @@ ASSET_MAPPINGS: Dict[str, Tuple[Optional[str], Optional[str]]] = {
     "OPC_UA": ("shopfloor", "database.svg"),
     # === SHOPFLOOR ASSETS ===
     # Intersections
+    "INTERSECTION-1": ("shopfloor", "intersection1.svg"),
+    "INTERSECTION-2": ("shopfloor", "intersection2.svg"),
+    "INTERSECTION-3": ("shopfloor", "intersection3.svg"),
+    "INTERSECTION-4": ("shopfloor", "intersection4.svg"),
+    # Legacy aliases for backward compatibility
     "1": ("shopfloor", "intersection1.svg"),
     "2": ("shopfloor", "intersection2.svg"),
     "3": ("shopfloor", "intersection3.svg"),

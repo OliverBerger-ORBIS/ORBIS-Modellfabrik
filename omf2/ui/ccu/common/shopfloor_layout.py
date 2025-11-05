@@ -801,12 +801,13 @@ def _generate_split_cell_html(
             fixed_config = fixed
             break
 
-    # Default rectangle icon
+    # Use type field from layout JSON (consistent with modules)
+    # Default fallback for backward compatibility
     rectangle_type = "ORBIS" if col == 0 else "DSP"
 
     if fixed_config:
-        assets = fixed_config.get("assets", {})
-        rectangle_type = assets.get("rectangle", rectangle_type)
+        # Use type field directly (consistent with modules)
+        rectangle_type = fixed_config.get("type", rectangle_type)
 
     # Find the module at position (row+1, col) to get attached_assets
     # HBW is at [1,0] (below COMPANY at [0,0])
@@ -948,20 +949,28 @@ def _get_single_intersection_icon(
     """Lädt ein einzelnes Icon für eine Intersection - VEREINFACHT ohne Spezial-Effekte"""
     try:
         # Intersection-ID aus cell_data ermitteln
-        intersection_id = "1"  # Default
+        # Use type field from layout JSON (consistent with modules/fixed_positions)
+        intersection_type = "INTERSECTION-1"  # Default fallback
         if cell_data and "data" in cell_data:
-            intersection_id = cell_data["data"].get("id", "1")
+            intersection_data = cell_data["data"]
+            intersection_type = intersection_data.get("type", intersection_data.get("id", "INTERSECTION-1"))
         elif cell_data:
-            intersection_id = cell_data.get("id", "1")
+            intersection_type = cell_data.get("type", cell_data.get("id", "INTERSECTION-1"))
 
         # Asset Manager verwenden für Icon-Pfad (wie alle anderen Module)
         if asset_manager:
-            # Use new unified API - intersection IDs are direct keys (e.g., "1", "2", "3", "4")
-            svg_content = asset_manager.get_asset_content(intersection_id, scoped=True)
+            # Use new unified API - intersection types are asset keys (e.g., "INTERSECTION-1", "INTERSECTION-2")
+            svg_content = asset_manager.get_asset_content(intersection_type, scoped=True)
         else:
             # Fallback falls kein Asset Manager übergeben wurde
+            # Extract number from intersection type (e.g., "INTERSECTION-1" -> "1")
+            intersection_num = (
+                intersection_type.replace("INTERSECTION-", "")
+                if "INTERSECTION-" in intersection_type
+                else intersection_type
+            )
             assets_dir = Path(__file__).parent.parent.parent.parent / "assets"
-            icon_path = assets_dir / "svg" / "shopfloor" / f"intersection{intersection_id}.svg"
+            icon_path = assets_dir / "svg" / "shopfloor" / f"intersection{intersection_num}.svg"
             if icon_path.exists():
                 with open(icon_path, encoding="utf-8") as f:
                     svg_content = f.read()

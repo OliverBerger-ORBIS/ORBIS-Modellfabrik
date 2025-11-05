@@ -6,14 +6,23 @@ Streamlit test app: interactive, scalable SVG shopfloor layout demo.
 - Implements show_shopfloor_layout(...) API for embedding in other code.
 """
 
-import html
-import json
-import pathlib
-from typing import List, Optional, Tuple
+import sys
+from pathlib import Path
 
-import streamlit as st
+# Add project root to Python path for imports (must be before other imports)
+_here = Path(__file__).resolve()
+project_root = _here.parent.parent.parent
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
 
-from examples.shopfloor_test_app import route_utils
+import html  # noqa: E402
+import json  # noqa: E402
+import pathlib  # noqa: E402
+from typing import List, Optional, Tuple  # noqa: E402
+
+import streamlit as st  # noqa: E402
+
+from examples.shopfloor_test_app import route_utils  # noqa: E402
 
 # try to import asset manager from omf2 (if running in repo environment)
 try:
@@ -246,42 +255,64 @@ def render_shopfloor_svg(
             # COMPANY and SOFTWARE cells should have blue fill
             cell_fill = "#cfe6ff" if (r, c) in ((0, 0), (0, 3)) else "none"
 
-            # Get module icon if available
+            # Get icon from layout JSON (consistent for modules, fixed_positions, intersections)
             module_icon = ""
             module_label = ""
             if spec and ASSET_MANAGER:
-                module_type = name  # Use the name from VIS_SPEC
-                try:
-                    # Use 56% of cell size (reduced by 20% from 70%)
-                    icon_size = int(min(w, h) * 0.56)
+                # Find entity in layout JSON (module, fixed_position, or intersection)
+                entity_type = None
+                entity_id = None
+                
+                # Check modules first
+                for mod in layout.get("modules", []):
+                    if mod.get("position") == [r, c]:
+                        entity_type = mod.get("type")
+                        entity_id = mod.get("id")
+                        break
+                
+                # Check fixed_positions if not found
+                if not entity_type:
+                    for fixed in layout.get("fixed_positions", []):
+                        if fixed.get("position") == [r, c]:
+                            entity_type = fixed.get("type")
+                            entity_id = fixed.get("id")
+                            break
+                
+                # Use entity_type from layout JSON as asset key (consistent for all)
+                if entity_type:
+                    try:
+                        # Use 56% of cell size (reduced by 20% from 70%)
+                        icon_size = int(min(w, h) * 0.56)
 
-                    # For compounds (HBW/DPS), center main icon in the 200×200 main compartment, not full 200×300
-                    if (r, c) in ((1, 0), (1, 3)) and h == 300:
-                        # Main compartment is 200×200 in the lower portion (y=200 to y=400)
-                        # Icon should be centered in that 200×200 area
-                        icon_size = int(200 * 0.56)  # 112px based on 200×200 compartment (reduced 20%)
-                        icon_svg = _get_icon_svg(module_type, icon_size, icon_size)
-                        if icon_svg:
-                            # Center in the main 200×200 compartment (lower portion)
-                            main_comp_y = 200  # Main compartment starts at y=200
-                            icon_x = comp_x + (w - icon_size) / 2
-                            icon_y = main_comp_y + (200 - icon_size) / 2 - 10  # Move up 10px to make room for label
-                            module_icon = f'<g transform="translate({icon_x},{icon_y})">{icon_svg}</g>'
-                            # Add label below icon
-                            label_y = main_comp_y + (200 + icon_size) / 2 + 15
-                            module_label = f'<text x="{comp_x + w/2}" y="{label_y}" font-family="Arial" font-size="14" fill="#333" text-anchor="middle">{html.escape(name)}</text>'
-                    else:
-                        icon_svg = _get_icon_svg(module_type, icon_size, icon_size)
-                        if icon_svg:
-                            # Center the icon in the cell, move up slightly for label
-                            icon_x = comp_x + (w - icon_size) / 2
-                            icon_y = comp_y + (h - icon_size) / 2 - 10
-                            module_icon = f'<g transform="translate({icon_x},{icon_y})">{icon_svg}</g>'
-                            # Add label below icon
-                            label_y = comp_y + (h + icon_size) / 2 + 15
-                            module_label = f'<text x="{comp_x + w/2}" y="{label_y}" font-family="Arial" font-size="14" fill="#333" text-anchor="middle">{html.escape(name)}</text>'
-                except Exception:
-                    pass  # Silently fail if asset not found
+                        # For compounds (HBW/DPS), center main icon in the 200×200 main compartment, not full 200×300
+                        if (r, c) in ((1, 0), (1, 3)) and h == 300:
+                            # Main compartment is 200×200 in the lower portion (y=200 to y=400)
+                            # Icon should be centered in that 200×200 area
+                            icon_size = int(200 * 0.56)  # 112px based on 200×200 compartment (reduced 20%)
+                            icon_svg = _get_icon_svg(entity_type, icon_size, icon_size)
+                            if icon_svg:
+                                # Center in the main 200×200 compartment (lower portion)
+                                main_comp_y = 200  # Main compartment starts at y=200
+                                icon_x = comp_x + (w - icon_size) / 2
+                                icon_y = main_comp_y + (200 - icon_size) / 2 - 10  # Move up 10px to make room for label
+                                module_icon = f'<g transform="translate({icon_x},{icon_y})">{icon_svg}</g>'
+                                # Add label below icon (use entity_id or name as fallback)
+                                label_text = entity_id or name
+                                label_y = main_comp_y + (200 + icon_size) / 2 + 15
+                                module_label = f'<text x="{comp_x + w/2}" y="{label_y}" font-family="Arial" font-size="14" fill="#333" text-anchor="middle">{html.escape(label_text)}</text>'
+                        else:
+                            icon_svg = _get_icon_svg(entity_type, icon_size, icon_size)
+                            if icon_svg:
+                                # Center the icon in the cell, move up slightly for label
+                                icon_x = comp_x + (w - icon_size) / 2
+                                icon_y = comp_y + (h - icon_size) / 2 - 10
+                                module_icon = f'<g transform="translate({icon_x},{icon_y})">{icon_svg}</g>'
+                                # Add label below icon (use entity_id or name as fallback)
+                                label_text = entity_id or name
+                                label_y = comp_y + (h + icon_size) / 2 + 15
+                                module_label = f'<text x="{comp_x + w/2}" y="{label_y}" font-family="Arial" font-size="14" fill="#333" text-anchor="middle">{html.escape(label_text)}</text>'
+                    except Exception:
+                        pass  # Silently fail if asset not found
 
             # compound inner squares for HBW/DPS - load icons from asset manager
             compound_inner = ""
@@ -338,16 +369,17 @@ def render_shopfloor_svg(
                 f"</g>"
             )
 
-    # intersections - load icons from asset manager instead of drawing crosses
+    # intersections - load icons from asset manager using type field (consistent with modules/fixed_positions)
     for inter in layout.get("intersections", []):
         r, c = inter["position"]
         cx, cy = center_of_cell(r, c)
         iid = inter["id"]
+        inter_type = inter.get("type", iid)  # Use type field, fallback to id
 
-        # Try to load intersection icon from asset manager
+        # Try to load intersection icon from asset manager using type field
         inter_icon_svg = ""
         if ASSET_MANAGER:
-            inter_icon_svg = _get_icon_svg(iid, 112, 112)  # 56% of 200px cell (reduced by 20%)
+            inter_icon_svg = _get_icon_svg(inter_type, 112, 112)  # 56% of 200px cell (reduced by 20%)
 
         if inter_icon_svg:
             # Center the intersection icon
