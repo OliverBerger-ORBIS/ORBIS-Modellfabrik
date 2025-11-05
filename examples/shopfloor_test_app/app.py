@@ -144,8 +144,8 @@ def compute_route_edge_points(path, layout, cell_size=CELL_SIZE):
     if not path or len(path) < 2:
         return []
 
-    # Get position map
-    pos_map = route_utils.id_to_position_map(layout, cell_size)
+    # Get position map (with canvas padding for correct positioning)
+    pos_map = route_utils.id_to_position_map(layout, cell_size, CANVAS_PADDING)
 
     # Identify which nodes are intersections
     intersection_ids = {str(inter["id"]) for inter in layout.get("intersections", [])}
@@ -237,11 +237,14 @@ def render_shopfloor_svg(
             else:
                 comp_y = y + (CELL_SIZE - h) / 2
 
-            # border logic - use transparent fill, only colored border
+            # border logic - COMPANY/SOFTWARE cells have blue fill, others transparent
             is_active = (r, c) in highlight_set
             stroke = "#2a7d2a" if fill == "#d7f0c8" else "#d22a2a" if fill == "#ffd5d5" else "#3a6ea5"
             # Normal border width is 2, highlighted is 8
             stroke_width = 8 if is_active else 2
+
+            # COMPANY and SOFTWARE cells should have blue fill
+            cell_fill = "#cfe6ff" if (r, c) in ((0, 0), (0, 3)) else "none"
 
             # Get module icon if available
             module_icon = ""
@@ -327,7 +330,7 @@ def render_shopfloor_svg(
                 compound_inner = square1_elem + square2_elem
             comp_elems.append(
                 f'<g class="cell-group" data-pos="{r},{c}" data-name="{html.escape(name)}">'
-                f'<rect x="{comp_x}" y="{comp_y}" width="{w}" height="{h}" fill="none" stroke="{stroke}" stroke-width="{stroke_width}" rx="6" ry="6" />'
+                f'<rect x="{comp_x}" y="{comp_y}" width="{w}" height="{h}" fill="{cell_fill}" stroke="{stroke}" stroke-width="{stroke_width}" rx="6" ry="6" />'
                 f"{compound_inner}"
                 f"{module_icon}"
                 f"{module_label}"
@@ -344,12 +347,12 @@ def render_shopfloor_svg(
         # Try to load intersection icon from asset manager
         inter_icon_svg = ""
         if ASSET_MANAGER:
-            inter_icon_svg = _get_icon_svg(iid, 140, 140)  # 70% of 200px cell
+            inter_icon_svg = _get_icon_svg(iid, 112, 112)  # 56% of 200px cell (reduced by 20%)
 
         if inter_icon_svg:
             # Center the intersection icon
-            icon_x = cx - 70
-            icon_y = cy - 70
+            icon_x = cx - 56  # Half of 112px
+            icon_y = cy - 56
             inter_elems.append(
                 f'<g id="inter_{iid}">' f'<g transform="translate({icon_x},{icon_y})">{inter_icon_svg}</g>' f"</g>"
             )
@@ -449,7 +452,7 @@ def render_shopfloor_svg(
         f".cell-group:hover .tooltip {{ display: block !important; font-weight: bold; }}"
         f".cell-group:hover rect {{ stroke-width: 4 !important; stroke: #ff8c00 !important; }}"
         f".cell-group {{ cursor: {'pointer' if enable_click else 'default'}; }}"
-        f".cell-group.clicked rect {{ stroke-width: 8 !important; }}"
+        f".cell-group.clicked rect {{ stroke-width: 8 !important; stroke: #ff8c00 !important; fill: rgba(255, 140, 0, 0.1) !important; }}"
         f"</style>"
         f'{"".join(cell_elems)}'
         f'{"".join(comp_elems)}'

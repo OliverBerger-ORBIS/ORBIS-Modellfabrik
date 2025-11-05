@@ -67,7 +67,7 @@ def find_path(graph, start, goal):
     return []
 
 
-def id_to_position_map(layout, cell_size=200):
+def id_to_position_map(layout, cell_size=200, canvas_padding=0):
     """
     Return mapping node_id -> center_x,center_y in pixel coordinates based on grid positions.
     node_id: intersections use their id as string, modules mapped by id and serialNumber, fixed_positions by id.
@@ -75,8 +75,8 @@ def id_to_position_map(layout, cell_size=200):
     m = {}
 
     def center_of_cell(row, col):
-        x = col * cell_size + cell_size // 2
-        y = row * cell_size + cell_size // 2
+        x = col * cell_size + cell_size // 2 + canvas_padding
+        y = row * cell_size + cell_size // 2 + canvas_padding
         return (x, y)
 
     for inter in layout.get("intersections", []):
