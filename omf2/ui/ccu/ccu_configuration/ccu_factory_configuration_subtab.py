@@ -378,11 +378,11 @@ def _show_position_details(row: int, col: int, layout_config: dict):
                     st.write(f"- **Position:** [{row}, {col}]")
 
                 with col2:
-                    st.markdown("**Asset Keys:**")
-                    assets = fixed_at_position.get("assets", {})
-                    st.write(f"- **Rectangle:** {assets.get('rectangle', 'N/A')}")
-                    st.write(f"- **Square1:** {assets.get('square1', 'N/A')}")
-                    st.write(f"- **Square2:** {assets.get('square2', 'N/A')}")
+                    st.markdown("**Asset Information:**")
+                    # Use type field directly (consistent with modules)
+                    asset_type = fixed_at_position.get("type", "N/A")
+                    st.write(f"- **Asset Type:** {asset_type}")
+                    # Note: Square assets are attached to HBW/DPS modules, not fixed positions
 
                 # Show asset information if available
                 st.markdown("---")
@@ -427,8 +427,6 @@ def _show_position_details(row: int, col: int, layout_config: dict):
 def _show_fixed_position_assets(fixed_position: dict):
     """Show asset information for fixed positions using canonical shopfloor_assets structure"""
     try:
-        position_id = fixed_position.get("id", "Unknown")
-
         # Get Asset Manager
         from omf2.assets import get_asset_manager
 
@@ -437,15 +435,15 @@ def _show_fixed_position_assets(fixed_position: dict):
         # Show available assets
         st.markdown("#### 🎨 Available Assets:")
 
-        # COMPANY and SOFTWARE only have rectangle assets (square assets are for HBW/DPS modules)
-        canonical_type = position_id  # COMPANY or SOFTWARE
-
-        # Rectangle asset (only asset type for COMPANY/SOFTWARE)
-        asset_path = asset_manager.get_asset_path(f"{canonical_type}_rectangle")
+        # Use type field directly for asset key (consistent with modules)
+        asset_type = fixed_position.get("type")
+        asset_path = None
+        if asset_type:
+            asset_path = asset_manager.get_asset_path(asset_type)
         if asset_path:
-            st.write(f"📁 **Rectangle:** {asset_path.name}")
+            st.write(f"📁 **Asset:** {asset_path.name}")
         else:
-            st.write("❌ **Rectangle:** No asset found")
+            st.write(f"❌ **Asset:** No asset found for type '{asset_type}'")
 
     except Exception as e:
         logger.error(f"❌ Failed to show fixed position assets: {e}")

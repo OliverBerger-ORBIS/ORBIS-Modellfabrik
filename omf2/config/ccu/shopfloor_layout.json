@@ -117,11 +117,8 @@
   "fixed_positions": [
     {
       "id": "COMPANY",
-      "type": "company",
+      "type": "ORBIS",
       "position": [0, 0],
-      "assets": {
-        "rectangle": "ORBIS"
-      },
       "display_variants": {
         "default": [[0, 0]],
         "rectangle_only": [[0, 0]]
@@ -129,11 +126,8 @@
     },
     {
       "id": "SOFTWARE",
-      "type": "software",
+      "type": "DSP",
       "position": [0, 3],
-      "assets": {
-        "rectangle": "DSP"
-      },
       "display_variants": {
         "default": [[0, 3]],
         "rectangle_only": [[0, 3]]
@@ -144,21 +138,25 @@
   "intersections": [
     {
       "id": "1",
+      "type": "INTERSECTION-1",
       "position": [1, 1],
       "connected_modules": ["HBW", "MILL"]
     },
     {
-      "id": "2", 
+      "id": "2",
+      "type": "INTERSECTION-2",
       "position": [1, 2],
       "connected_modules": ["MILL", "AIQS", "DPS"]
     },
     {
       "id": "3",
+      "type": "INTERSECTION-3",
       "position": [2, 1], 
       "connected_modules": ["DRILL", "HBW"]
     },
     {
       "id": "4",
+      "type": "INTERSECTION-4",
       "position": [2, 2],
       "connected_modules": ["DRILL", "CHRG", "DPS"]
     }

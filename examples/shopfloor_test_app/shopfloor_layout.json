@@ -23,14 +23,14 @@
     { "id": "CHRG", "type": "CHRG", "serialNumber": "CHRG0", "position": [2,3] }
   ],
   "fixed_positions": [
-    { "id": "COMPANY", "type": "company", "position": [0,0], "assets": { "rectangle": "ORBIS" } },
-    { "id": "SOFTWARE", "type": "software", "position": [0,3], "assets": { "rectangle": "DSP" } }
+    { "id": "COMPANY", "type": "ORBIS", "position": [0,0] },
+    { "id": "SOFTWARE", "type": "DSP", "position": [0,3] }
   ],
   "intersections": [
-    { "id": "1", "position": [1,1], "connected_modules": ["HBW","MILL"] },
-    { "id": "2", "position": [1,2], "connected_modules": ["MILL","AIQS","DPS"] },
-    { "id": "3", "position": [2,1], "connected_modules": ["DRILL","HBW"] },
-    { "id": "4", "position": [2,2], "connected_modules": ["DRILL","CHRG","DPS"] }
+    { "id": "1", "type": "INTERSECTION-1", "position": [1,1], "connected_modules": ["HBW","MILL"] },
+    { "id": "2", "type": "INTERSECTION-2", "position": [1,2], "connected_modules": ["MILL","AIQS","DPS"] },
+    { "id": "3", "type": "INTERSECTION-3", "position": [2,1], "connected_modules": ["DRILL","HBW"] },
+    { "id": "4", "type": "INTERSECTION-4", "position": [2,2], "connected_modules": ["DRILL","CHRG","DPS"] }
   ],
   "roads": [
     { "length": 360, "from": "1", "to": "2", "direction": "EAST" },
@@ -45,4 +45,8 @@
     { "direction": "WEST", "from": "CHRG0", "to": "4", "length": 430 }
   ]
 }
+
+
+
+
 
