@@ -271,7 +271,7 @@ class TestCoreAssetMethods(unittest.TestCase):
             self._create_test_icon("stock.svg")  # HBW
             self._create_test_icon("bohrer.svg")  # DRILL
             self._create_test_icon("milling-machine.svg")  # MILL
-            self._create_test_icon("ORBIS_logo_RGB.svg")  # COMPANY_rectangle
+            self._create_test_icon("ORBIS_logo_RGB.svg")  # ORBIS
             (self.placeholders_dir / "empty.svg").write_text('<svg><circle /></svg>', encoding="utf-8")
             (self.placeholders_dir / "question.svg").write_text('<svg><circle /></svg>', encoding="utf-8")
 
@@ -368,8 +368,8 @@ class TestShopfloorAssets(unittest.TestCase):
         self.placeholders_dir.mkdir(parents=True)
 
         # Create test SVG files (based on ASSET_MAPPINGS)
-        self._create_test_svg("ORBIS_logo_RGB.svg")  # COMPANY_rectangle
-        self._create_test_svg("information-technology.svg")  # SOFTWARE_rectangle
+        self._create_test_svg("ORBIS_logo_RGB.svg")  # ORBIS
+        self._create_test_svg("information-technology.svg")  # DSP
         self._create_test_svg("factory.svg")  # HBW_SQUARE1
         self._create_test_svg("conveyor.svg")  # HBW_SQUARE2
         self._create_test_svg("warehouse.svg")  # DPS_SQUARE1
@@ -398,16 +398,16 @@ class TestShopfloorAssets(unittest.TestCase):
         svg_path.write_text('<svg viewBox="0 0 24 24"><circle /></svg>', encoding="utf-8")
         return svg_path
 
-    def test_company_rectangle_asset_path(self):
-        """Test: COMPANY_rectangle liefert ORBIS_logo_RGB.svg via get_asset_path"""
-        result = self.asset_manager.get_asset_path("COMPANY_rectangle")
+    def test_orbis_asset_path(self):
+        """Test: ORBIS liefert ORBIS_logo_RGB.svg via get_asset_path"""
+        result = self.asset_manager.get_asset_path("ORBIS")
         self.assertIsNotNone(result)
         self.assertIn("ORBIS_logo_RGB.svg", str(result))
         self.assertTrue(result.exists())
 
-    def test_software_rectangle_asset_path(self):
-        """Test: SOFTWARE_rectangle liefert information-technology.svg via get_asset_path"""
-        result = self.asset_manager.get_asset_path("SOFTWARE_rectangle")
+    def test_dsp_asset_path(self):
+        """Test: DSP liefert information-technology.svg via get_asset_path"""
+        result = self.asset_manager.get_asset_path("DSP")
         self.assertIsNotNone(result)
         self.assertIn("information-technology.svg", str(result))
         self.assertTrue(result.exists())
@@ -442,7 +442,7 @@ class TestShopfloorAssets(unittest.TestCase):
 
     def test_shopfloor_asset_content(self):
         """Test: get_asset_content für Shopfloor-Assets"""
-        result = self.asset_manager.get_asset_content("COMPANY_rectangle", scoped=True)
+        result = self.asset_manager.get_asset_content("ORBIS", scoped=True)
         self.assertIsNotNone(result)
         self.assertIn("<svg", result)
         # CSS-Scoping applied (if SVG has style section)
@@ -497,16 +497,16 @@ class TestIconVisibilityAtPositions(unittest.TestCase):
 
     def test_icon_visible_at_position_0_0(self):
         """Test: Icon ist sichtbar an Position [0,0] (COMPANY) - neue API"""
-        # Position [0,0] sollte COMPANY_rectangle icon haben
-        result = self.asset_manager.get_asset_path("COMPANY_rectangle")
+        # Position [0,0] sollte ORBIS icon haben
+        result = self.asset_manager.get_asset_path("ORBIS")
         self.assertIsNotNone(result)
         self.assertTrue(result.exists())
         self.assertIn("ORBIS_logo_RGB.svg", str(result))
 
     def test_icon_visible_at_position_0_3(self):
         """Test: Icon ist sichtbar an Position [0,3] (SOFTWARE) - neue API"""
-        # Position [0,3] sollte SOFTWARE_rectangle icon haben
-        result = self.asset_manager.get_asset_path("SOFTWARE_rectangle")
+        # Position [0,3] sollte DSP icon haben
+        result = self.asset_manager.get_asset_path("DSP")
         self.assertIsNotNone(result)
         self.assertTrue(result.exists())
         self.assertIn("information-technology.svg", str(result))
@@ -514,8 +514,8 @@ class TestIconVisibilityAtPositions(unittest.TestCase):
     def test_get_asset_path_deterministic(self):
         """Test: get_asset_path liefert deterministische Pfade"""
         # Mehrfache Aufrufe sollten denselben Pfad liefern
-        result1 = self.asset_manager.get_asset_path("COMPANY_rectangle")
-        result2 = self.asset_manager.get_asset_path("COMPANY_rectangle")
+        result1 = self.asset_manager.get_asset_path("ORBIS")
+        result2 = self.asset_manager.get_asset_path("ORBIS")
         self.assertEqual(result1, result2)
 
 

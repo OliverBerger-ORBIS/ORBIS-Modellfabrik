@@ -1,28 +1,27 @@
 """
-Shopfloor Layout - Stable View-Only Implementation
-===================================================
+Shopfloor Layout - SVG-Based Rendering Implementation
+=====================================================
 
-Minimal, robust implementation with fixed aspect ratio and gapless grid.
+Scalable, interactive SVG-based shopfloor layout renderer.
 
 Features:
-- Fixed 4:3 aspect ratio (configurable, default 800x600)
-- Gapless 4x3 grid (CSS Grid with gap: 0)
-- Single HTML block rendering (no Streamlit columns creating gaps)
-- View-only highlighting for active modules and intersections
+- SVG-based rendering with scalable output (via scale parameter)
+- JSON-driven configuration (cell_size, background_color, is_compound, etc.)
+- Consistent highlighting across view and interactive modes
+- Route visualization with AGV/FTS marker
+- Compound cell support (HBW/DPS with attached assets)
 - Graceful fallback if config or assets are unavailable
-- No Bokeh, no iframe, no CustomJS dependencies
-- API compatible with existing callers (production/storage subtabs)
 
 Implementation:
-- Uses st.components.v1.html() for rendering
-- Falls back to st.markdown() if components unavailable
-- Inline CSS for complete control over layout
+- Uses st.components.v1.html() for rendering SVG
+- Pure SVG rendering (no HTML/CSS Grid)
+- Client-side JavaScript for interactive highlighting (hover/click)
 - Reuses existing helper functions for config/asset loading
 """
 
+import html
 import re
-from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import List, Optional, Tuple
 
 import streamlit as st
 
@@ -32,6 +31,772 @@ from omf2.ccu.config_loader import get_ccu_config_loader
 from omf2.common.logger import get_logger
 
 logger = get_logger(__name__)
+
+# Constants for SVG rendering
+CELL_SIZE = 200
+GRID_W = 4
+GRID_H = 3
+# Add 4px padding (2px on each side) for uniform highlighting at edges
+CANVAS_W = CELL_SIZE * GRID_W + 4
+CANVAS_H = CELL_SIZE * GRID_H + 4
+CANVAS_PADDING = 2
+
+
+# ============================================================================
+# Helper Functions for SVG Rendering (from Example App)
+# ============================================================================
+
+
+def cell_anchor(row: int, col: int) -> Tuple[int, int]:
+    """Calculate cell anchor position (top-left corner) in pixel coordinates."""
+    return col * CELL_SIZE + CANVAS_PADDING, row * CELL_SIZE + CANVAS_PADDING
+
+
+def center_of_cell(row: int, col: int) -> Tuple[int, int]:
+    """Calculate center of cell in pixel coordinates."""
+    x, y = cell_anchor(row, col)
+    return x + CELL_SIZE // 2, y + CELL_SIZE // 2
+
+
+def _get_entity_at_position(layout: dict, row: int, col: int) -> Optional[dict]:
+    """Find entity (module, fixed_position, or intersection) at given position."""
+    # Check modules first
+    for mod in layout.get("modules", []):
+        if mod.get("position") == [row, col]:
+            return {"type": "module", "data": mod}
+    # Check fixed_positions
+    for fixed in layout.get("fixed_positions", []):
+        if fixed.get("position") == [row, col]:
+            return {"type": "fixed_position", "data": fixed}
+    # Check intersections (last, as they can overlap with modules)
+    for inter in layout.get("intersections", []):
+        if inter.get("position") == [row, col]:
+            return {"type": "intersection", "data": inter}
+    return None
+
+
+def _get_cell_size(entity_data: Optional[dict], default: Tuple[int, int] = (200, 200)) -> Tuple[int, int]:
+    """Get cell size from entity, or return default."""
+    if not entity_data:
+        return default
+    entity = entity_data.get("data", {})
+    cell_size = entity.get("cell_size")
+    if cell_size and isinstance(cell_size, list) and len(cell_size) >= 2:
+        return (int(cell_size[0]), int(cell_size[1]))
+    return default
+
+
+def _is_compound_cell(entity_data: Optional[dict]) -> bool:
+    """Check if entity is a compound cell."""
+    if not entity_data:
+        return False
+    entity = entity_data.get("data", {})
+    return entity.get("is_compound", False)
+
+
+def _get_background_color(entity_data: Optional[dict]) -> str:
+    """Get background color from entity, or return 'none'."""
+    if not entity_data:
+        return "none"
+    entity = entity_data.get("data", {})
+    bg_color = entity.get("background_color")
+    if bg_color:
+        return bg_color
+    return "none"
+
+
+def _should_show_label(entity_data: Optional[dict]) -> bool:
+    """Check if label should be shown."""
+    if not entity_data:
+        return False
+    entity = entity_data.get("data", {})
+    return entity.get("show_label", False)
+
+
+def _get_label_text(entity_data: Optional[dict]) -> str:
+    """Get label text from entity, or return id."""
+    if not entity_data:
+        return ""
+    entity = entity_data.get("data", {})
+    label_text = entity.get("label_text")
+    if label_text:
+        return label_text
+    return entity.get("id", "")
+
+
+def _get_icon_size_ratio(entity_type: str) -> float:
+    """Get icon size ratio based on entity type."""
+    if entity_type == "intersection":
+        return 0.8  # 80%
+    elif entity_type == "module":
+        return 0.56  # 56%
+    elif entity_type == "fixed_position":
+        return 0.8  # 80%
+    return 0.56  # Default fallback
+
+
+def _calculate_icon_size(
+    cell_size: Tuple[int, int], entity_type: str, is_compound: bool = False, svg_content: str = None
+) -> Tuple[int, int]:
+    """
+    Calculate icon size based on cell size and entity type.
+    For fixed_positions: determine limiting factor (width or height) and apply general scaling.
+    For modules: use main component size (200x200 for compounds).
+    """
+    ratio = _get_icon_size_ratio(entity_type)
+    width, height = cell_size
+
+    if entity_type == "fixed_position" and svg_content:
+        # General scaling: find limiting factor and apply 80% ratio
+        cell_aspect_ratio = width / height
+        viewbox_match = re.search(r'viewBox="([^"]*)"', svg_content)
+        if viewbox_match:
+            viewbox_parts = viewbox_match.group(1).split()
+            if len(viewbox_parts) >= 4:
+                vb_width, vb_height = float(viewbox_parts[2]), float(viewbox_parts[3])
+                svg_aspect_ratio = vb_width / vb_height
+
+                # Determine limiting factor
+                if svg_aspect_ratio > cell_aspect_ratio:
+                    # Width is limiting
+                    icon_width = int(width * ratio)
+                    icon_height = int(width / svg_aspect_ratio * ratio)
+                else:
+                    # Height is limiting
+                    icon_height = int(height * ratio)
+                    icon_width = int(height * svg_aspect_ratio * ratio)
+                return (icon_width, icon_height)
+
+        # Fallback: use width as limiting factor
+        icon_size = int(width * ratio)
+        return (icon_size, icon_size)
+    elif entity_type == "module" and is_compound:
+        # For compounds, use main component size (200x200)
+        icon_size = int(200 * ratio)
+        return (icon_size, icon_size)
+    else:
+        # For modules and intersections, use min(width, height)
+        icon_size = int(min(width, height) * ratio)
+        return (icon_size, icon_size)
+
+
+def _get_compound_layout(entity_data: Optional[dict]) -> Optional[dict]:
+    """Get compound layout configuration from entity."""
+    if not entity_data:
+        return None
+    entity = entity_data.get("data", {})
+    return entity.get("compound_layout")
+
+
+def _scale_svg_properly(svg_content: str, target_width: int, target_height: int) -> Tuple[str, int, int]:
+    """
+    Scale SVG properly based on viewBox to avoid distortion.
+    Returns (scaled_svg_content, actual_width, actual_height)
+    """
+    try:
+        # Extract viewBox from SVG
+        viewbox_match = re.search(r'viewBox="([^"]*)"', svg_content)
+        if viewbox_match:
+            viewbox = viewbox_match.group(1)
+            viewbox_parts = viewbox.split()
+            if len(viewbox_parts) == 4:
+                vb_x, vb_y, vb_width, vb_height = map(float, viewbox_parts)
+
+                # Calculate aspect ratios
+                vb_aspect_ratio = vb_width / vb_height
+                target_aspect_ratio = target_width / target_height
+
+                # Scale based on aspect ratio to avoid distortion
+                if vb_aspect_ratio > target_aspect_ratio:
+                    # ViewBox is wider - scale by width
+                    scale = target_width / vb_width
+                    new_height = int(vb_height * scale)
+                    new_width = target_width
+                else:
+                    # ViewBox is taller - scale by height
+                    scale = target_height / vb_height
+                    new_width = int(vb_width * scale)
+                    new_height = target_height
+
+                # Remove existing width/height and add new ones
+                svg_content = re.sub(r'<svg([^>]*)width="[^"]*"', r"<svg\1", svg_content, count=1)
+                svg_content = re.sub(r'<svg([^>]*)height="[^"]*"', r"<svg\1", svg_content, count=1)
+                svg_content = svg_content.replace("<svg", f'<svg width="{new_width}" height="{new_height}"', 1)
+                return svg_content, new_width, new_height
+
+        # Fallback: use target dimensions
+        svg_content = re.sub(r'<svg([^>]*)width="[^"]*"', r"<svg\1", svg_content, count=1)
+        svg_content = re.sub(r'<svg([^>]*)height="[^"]*"', r"<svg\1", svg_content, count=1)
+        svg_content = svg_content.replace("<svg", f'<svg width="{target_width}" height="{target_height}"', 1)
+        return svg_content, target_width, target_height
+    except Exception:
+        return svg_content, target_width, target_height
+
+
+def _get_icon_svg(
+    module_type: str,
+    target_width: int,
+    target_height: int,
+    asset_manager: Optional[object] = None,
+    entity_type: str = None,
+    cell_size: Tuple[int, int] = None,
+) -> str:
+    """
+    Load and scale icon from asset manager with proper centering.
+
+    For fixed_positions: General scaling approach:
+    1. Find limiting factor (width or height) by comparing SVG aspect ratio with cell aspect ratio
+    2. Scale SVG to 100% of limiting factor
+    3. Apply 80% ratio
+    4. Return scaled SVG
+    """
+    if not asset_manager:
+        logger.error(f"❌ asset_manager is None for module_type='{module_type}'")
+        return ""
+
+    try:
+        # Use get_asset_content with scoped=True as in production
+        logger.info(f"🔍 Looking up asset key: '{module_type}' for entity_type={entity_type}")
+        icon_svg = asset_manager.get_asset_content(module_type, scoped=True)
+
+        if icon_svg:
+            logger.info(f"✅ Successfully loaded SVG for '{module_type}': length={len(icon_svg)}")
+        else:
+            # Fallback to QUESTION.svg (fallback) if asset not found
+            logger.warning(f"⚠️ Asset key '{module_type}' returned None/empty, trying QUESTION fallback")
+            icon_svg = asset_manager.get_asset_content("QUESTION", scoped=True)
+            if icon_svg:
+                logger.info(f"✅ QUESTION fallback loaded: length={len(icon_svg)}")
+            else:
+                logger.error(f"❌ Fallback (QUESTION) also returned None/empty for asset key '{module_type}'")
+                return ""
+
+        if icon_svg:
+            logger.debug(f"Successfully loaded SVG for asset key '{module_type}'")
+            # For fixed_positions, use general scaling approach
+            if entity_type == "fixed_position" and cell_size:
+                cell_width, cell_height = cell_size
+                cell_aspect_ratio = cell_width / cell_height
+
+                # Extract viewBox from SVG to determine aspect ratio
+                viewbox_match = re.search(r'viewBox="([^"]*)"', icon_svg)
+                if viewbox_match:
+                    viewbox_parts = viewbox_match.group(1).split()
+                    if len(viewbox_parts) >= 4:
+                        vb_width, vb_height = float(viewbox_parts[2]), float(viewbox_parts[3])
+                        svg_aspect_ratio = vb_width / vb_height
+
+                        # Determine limiting factor: if SVG is wider relative to cell, width is limiting
+                        # Otherwise, height is limiting
+                        if svg_aspect_ratio > cell_aspect_ratio:
+                            # Width is limiting factor
+                            # Step 1: Scale to 100% width
+                            scaled_width_100 = cell_width
+                            scaled_height_100 = int(cell_width / svg_aspect_ratio)
+                        else:
+                            # Height is limiting factor
+                            # Step 1: Scale to 100% height
+                            scaled_height_100 = cell_height
+                            scaled_width_100 = int(cell_height * svg_aspect_ratio)
+
+                        # Step 2: Apply 80% ratio to both dimensions
+                        final_width = int(scaled_width_100 * 0.8)
+                        final_height = int(scaled_height_100 * 0.8)
+
+                        # Scale SVG to final dimensions
+                        scaled_svg, actual_w, actual_h = _scale_svg_properly(icon_svg, final_width, final_height)
+                        logger.info(
+                            f"✅ Scaled fixed_position SVG '{module_type}': {final_width}x{final_height} → {actual_w}x{actual_h}"
+                        )
+                        return scaled_svg
+
+                # Fallback: use target dimensions if viewBox parsing fails
+                logger.warning(f"⚠️ viewBox parsing failed for '{module_type}', using target dimensions")
+                scaled_svg, actual_w, actual_h = _scale_svg_properly(icon_svg, target_width, target_height)
+                return scaled_svg
+            else:
+                scaled_svg, actual_w, actual_h = _scale_svg_properly(icon_svg, target_width, target_height)
+                logger.info(f"✅ Scaled SVG '{module_type}': {target_width}x{target_height} → {actual_w}x{actual_h}")
+                return scaled_svg
+    except Exception as e:
+        logger.error(f"❌ Exception in _get_icon_svg for '{module_type}': {e}", exc_info=True)
+        # Try fallback (QUESTION) even on exception
+        try:
+            fallback_svg = asset_manager.get_asset_content("QUESTION", scoped=True)
+            if fallback_svg:
+                scaled_svg, actual_w, actual_h = _scale_svg_properly(fallback_svg, target_width, target_height)
+                return scaled_svg
+        except Exception:
+            pass
+
+    # Final fallback: try QUESTION if we haven't already
+    try:
+        if asset_manager:
+            fallback_svg = asset_manager.get_asset_content("QUESTION", scoped=True)
+            if fallback_svg:
+                scaled_svg, actual_w, actual_h = _scale_svg_properly(fallback_svg, target_width, target_height)
+                return scaled_svg
+    except Exception:
+        pass
+
+    return ""
+
+
+def render_shopfloor_svg(
+    layout: dict,
+    asset_manager: Optional[object] = None,
+    highlight_cells: Optional[List[Tuple[int, int]]] = None,
+    enable_click: bool = True,
+    route_points: Optional[List[Tuple[int, int]]] = None,
+    agv_progress: float = 0.0,
+    scale: float = 1.0,
+) -> str:
+    """
+    Returns an SVG string for embedding. This is a pure renderer (no Streamlit side effects),
+    so it can be tested by pytest.
+    highlight_cells: list of [row,col] tuples that should be highlighted programmatically
+    """
+    # Debug: Log asset manager status
+    if not asset_manager:
+        logger.warning("render_shopfloor_svg called without asset_manager - SVGs will not be rendered!")
+    else:
+        logger.debug(
+            f"render_shopfloor_svg: asset_manager available, layout has {len(layout.get('modules', []))} modules, {len(layout.get('fixed_positions', []))} fixed positions, {len(layout.get('intersections', []))} intersections"
+        )
+
+    highlight_set = set(highlight_cells or [])
+    # build grid cells and components
+    # Separate normal and highlighted cells for proper z-ordering (SVG renders in order)
+    cell_elems = []
+    comp_elems = []
+    comp_elems_highlighted = []  # Highlighted cells rendered after normal cells
+    inter_elems = []
+
+    for r in range(GRID_H):
+        for c in range(GRID_W):
+            x, y = cell_anchor(r, c)
+            # invisible grid rect (for overlay)
+            cell_elems.append(
+                f'<rect x="{x}" y="{y}" width="{CELL_SIZE}" height="{CELL_SIZE}" fill="none" stroke="none" />'
+            )
+
+            # Get entity at this position (module, fixed_position, or intersection)
+            entity_data = _get_entity_at_position(layout, r, c)
+
+            # Debug logging for entity lookup
+            if entity_data:
+                entity = entity_data.get("data", {})
+                name = entity.get("id", f"[{r},{c}]")
+                entity_type = entity_data.get("type")
+                entity_type_str = entity.get("type")
+                logger.debug(f"Entity at [{r},{c}]: type={entity_type}, entity_type_str={entity_type_str}, id={name}")
+            else:
+                name = f"[{r},{c}]"
+
+            # Get cell size from entity or use default
+            cell_size = _get_cell_size(entity_data)
+            w, h = cell_size
+
+            # Calculate component position (center in cell)
+            comp_x = x + (CELL_SIZE - w) / 2
+
+            # Calculate comp_y based on cell size
+            # For cells smaller than CELL_SIZE, center them vertically
+            # For compound cells (height > CELL_SIZE), position at y=100 (row 0 position)
+            is_compound = _is_compound_cell(entity_data)
+            if h > CELL_SIZE or is_compound:
+                # Compound cell extends beyond cell boundary - start at y=100 (row 0 position)
+                comp_y = 100 + CANVAS_PADDING  # Start at row 0 position
+            elif h < CELL_SIZE:
+                # Smaller cell - center vertically, move up slightly for fixed positions
+                comp_y = y + (CELL_SIZE - h) / 2 - 50 if h == 100 else y + (CELL_SIZE - h) / 2
+            else:
+                # Standard size cell
+                comp_y = y + (CELL_SIZE - h) / 2
+
+            # Border logic - orange stroke for highlighted cells, gray for normal cells
+            is_active = (r, c) in highlight_set
+            stroke = "#ff8c00" if is_active else "#e0e0e0"  # Orange for highlighted, gray for normal
+            stroke_width = 4 if is_active else 2  # 4px for highlighted (same as click), 2px for normal
+
+            # Get background color from entity
+            cell_fill = _get_background_color(entity_data)
+
+            # Get icon from layout JSON (only for modules and fixed_positions, NOT intersections)
+            # Intersections are rendered separately to avoid double rendering
+            module_icon = ""
+            module_label = ""
+            if entity_data and asset_manager:
+                entity = entity_data.get("data", {})
+                entity_type_str = entity.get("type")
+                entity_type = entity_data.get("type")  # "module", "fixed_position", or "intersection"
+
+                # Skip intersections - they are rendered separately
+                if entity_type == "intersection":
+                    pass
+                elif entity_type_str:
+                    # Ensure we have a valid entity_type_str to look up
+                    logger.info(
+                        f"🎨 Rendering {entity_type} '{entity_type_str}' at [{r},{c}] - entity.keys()={list(entity.keys())}, entity['type']={entity.get('type')}"
+                    )
+                    try:
+                        is_compound = _is_compound_cell(entity_data)
+                        # Calculate icon size based on entity type and cell size
+                        icon_width, icon_height = _calculate_icon_size(cell_size, entity_type, is_compound)
+                        show_label = _should_show_label(entity_data)
+
+                        # Get SVG content for fixed_positions to calculate correct size
+                        svg_content_for_calc = None
+                        if entity_type == "fixed_position" and asset_manager:
+                            try:
+                                svg_content_for_calc = asset_manager.get_asset_content(entity_type_str, scoped=True)
+                            except Exception as e:
+                                logger.debug(f"Could not get SVG content for fixed_position {entity_type_str}: {e}")
+
+                        # Recalculate icon size with SVG content for fixed_positions
+                        if svg_content_for_calc:
+                            icon_width, icon_height = _calculate_icon_size(
+                                cell_size, entity_type, is_compound, svg_content_for_calc
+                            )
+
+                        # For compound modules, center icon in main 200×200 compartment (lower portion)
+                        if entity_type == "module" and is_compound:
+                            # Main compartment is 200×200 in the lower portion (y=200 to y=400)
+                            main_comp_y = 200  # Main compartment starts at y=200
+                            icon_svg = _get_icon_svg(
+                                entity_type_str, icon_width, icon_height, asset_manager, entity_type, cell_size
+                            )
+                            if icon_svg:
+                                # Center icon vertically - only move up if label is shown
+                                label_offset = 10 if show_label else 0
+                                icon_x = comp_x + (w - icon_width) / 2
+                                icon_y = main_comp_y + (200 - icon_height) / 2 - label_offset
+                                module_icon = f'<g transform="translate({icon_x},{icon_y})">{icon_svg}</g>'
+                                # Add label if needed
+                                if show_label:
+                                    label_text = _get_label_text(entity_data) or name
+                                    label_y = main_comp_y + (200 + icon_height) / 2 + 15
+                                    module_label = (
+                                        f'<text x="{comp_x + w/2}" y="{label_y}" font-family="Arial" '
+                                        f'font-size="14" fill="#333" text-anchor="middle">{html.escape(label_text)}</text>'
+                                    )
+                            else:
+                                # Icon not loaded - try QUESTION fallback
+                                logger.warning(
+                                    f"Could not load icon for compound module {entity_type_str} at [{r},{c}], trying QUESTION fallback"
+                                )
+                                # Try to load QUESTION fallback
+                                try:
+                                    fallback_svg = _get_icon_svg(
+                                        "QUESTION", icon_width, icon_height, asset_manager, entity_type, cell_size
+                                    )
+                                    if fallback_svg:
+                                        label_offset = 10 if show_label else 0
+                                        icon_x = comp_x + (w - icon_width) / 2
+                                        icon_y = main_comp_y + (200 - icon_height) / 2 - label_offset
+                                        module_icon = f'<g transform="translate({icon_x},{icon_y})">{fallback_svg}</g>'
+                                        logger.debug(
+                                            f"Using QUESTION fallback for compound module {entity_type_str} at [{r},{c}]"
+                                        )
+                                except Exception as e2:
+                                    logger.warning(f"Could not load QUESTION fallback either: {e2}")
+                        else:
+                            # Standard positioning - center icon in cell (including fixed_positions)
+                            icon_svg = _get_icon_svg(
+                                entity_type_str, icon_width, icon_height, asset_manager, entity_type, cell_size
+                            )
+                            if icon_svg:
+                                # Center icon perfectly - no offset for fixed_positions without labels
+                                label_offset = 10 if (show_label and entity_type != "fixed_position") else 0
+                                icon_x = comp_x + (w - icon_width) / 2
+                                icon_y = comp_y + (h - icon_height) / 2 - label_offset
+                                module_icon = f'<g transform="translate({icon_x},{icon_y})">{icon_svg}</g>'
+                                # Add label if needed (only for modules, not fixed_positions)
+                                if show_label and entity_type != "fixed_position":
+                                    label_text = _get_label_text(entity_data) or name
+                                    label_y = comp_y + (h + icon_height) / 2 + 15
+                                    module_label = (
+                                        f'<text x="{comp_x + w/2}" y="{label_y}" font-family="Arial" '
+                                        f'font-size="14" fill="#333" text-anchor="middle">{html.escape(label_text)}</text>'
+                                    )
+                            else:
+                                # Icon not loaded - try QUESTION fallback
+                                logger.warning(
+                                    f"Could not load icon for {entity_type} {entity_type_str} at [{r},{c}], trying QUESTION fallback"
+                                )
+                                # Try to load QUESTION fallback
+                                try:
+                                    fallback_svg = _get_icon_svg(
+                                        "QUESTION", icon_width, icon_height, asset_manager, entity_type, cell_size
+                                    )
+                                    if fallback_svg:
+                                        label_offset = 10 if (show_label and entity_type != "fixed_position") else 0
+                                        icon_x = comp_x + (w - icon_width) / 2
+                                        icon_y = comp_y + (h - icon_height) / 2 - label_offset
+                                        module_icon = f'<g transform="translate({icon_x},{icon_y})">{fallback_svg}</g>'
+                                        logger.debug(f"Using QUESTION fallback for {entity_type_str} at [{r},{c}]")
+                                except Exception as e2:
+                                    logger.warning(f"Could not load QUESTION fallback either: {e2}")
+                    except Exception as e:
+                        logger.error(
+                            f"Error loading icon for {entity_type} {entity_type_str} at [{r},{c}]: {e}",
+                            exc_info=True,
+                        )
+                        # Try QUESTION fallback on exception
+                        try:
+                            if entity_type_str:
+                                icon_width, icon_height = _calculate_icon_size(cell_size, entity_type, False)
+                                fallback_svg = _get_icon_svg("QUESTION", icon_width, icon_height, asset_manager)
+                                if fallback_svg:
+                                    icon_x = comp_x + (w - icon_width) / 2
+                                    icon_y = comp_y + (h - icon_height) / 2
+                                    module_icon = f'<g transform="translate({icon_x},{icon_y})">{fallback_svg}</g>'
+                                    logger.debug(
+                                        f"Using QUESTION fallback after exception for {entity_type_str} at [{r},{c}]"
+                                    )
+                        except Exception:
+                            pass
+
+            # Compound inner assets - load icons from asset manager using positions array
+            compound_inner = ""
+            if entity_data and _is_compound_cell(entity_data):
+                entity = entity_data.get("data", {})
+                attached_assets = entity.get("attached_assets", [])
+                compound_layout = _get_compound_layout(entity_data)
+
+                logger.info(
+                    f"🔧 Compound cell at [{r},{c}]: attached_assets={attached_assets}, compound_layout={compound_layout}"
+                )
+
+                if compound_layout and attached_assets and asset_manager:
+                    positions = compound_layout.get("positions", [])
+                    asset_size = compound_layout.get("size", [100, 100])  # Default 100×100
+                    asset_w, asset_h = asset_size[0], asset_size[1] if len(asset_size) >= 2 else asset_size[0]
+
+                    # Icon size: 60% of asset size
+                    icon_size = int(min(asset_w, asset_h) * 0.6)
+                    icon_offset = (asset_w - icon_size) / 2
+
+                    # For compound cells, attached_assets are positioned at the top
+                    # comp_y is at the cell anchor, but assets should be at row 0 position (y=100)
+                    # Adjust base_y to account for compound cell positioning
+                    base_y = 100 + CANVAS_PADDING  # Top of compound (row 1 starts at y=100)
+
+                    for i, asset_key in enumerate(attached_assets):
+                        if i < len(positions):
+                            pos = positions[i]
+                            rel_x, rel_y = pos[0], pos[1] if len(pos) >= 2 else 0
+
+                            # Absolute position: x relative to comp_x, y relative to base_y
+                            abs_x = comp_x + rel_x
+                            abs_y = base_y + rel_y
+
+                            # Load and render icon
+                            logger.info(f"🔍 Loading compound asset '{asset_key}' at position [{rel_x},{rel_y}]")
+                            # For compound assets, we don't need entity_type or cell_size - they're just icons
+                            asset_svg = _get_icon_svg(asset_key, icon_size, icon_size, asset_manager, None, None)
+                            if asset_svg:
+                                logger.info(f"✅ Successfully loaded compound asset '{asset_key}'")
+                                icon_x = abs_x + icon_offset
+                                icon_y = abs_y + icon_offset
+                                compound_inner += f'<g transform="translate({icon_x},{icon_y})">{asset_svg}</g>'
+                            else:
+                                logger.warning(f"⚠️ Failed to load compound asset '{asset_key}'")
+                        else:
+                            logger.warning(
+                                f"⚠️ No position available for compound asset {i} '{attached_assets[i] if i < len(attached_assets) else 'unknown'}'"
+                            )
+                else:
+                    logger.warning(
+                        f"⚠️ Compound cell at [{r},{c}] missing data: compound_layout={compound_layout}, attached_assets={attached_assets}, asset_manager={asset_manager is not None}"
+                    )
+
+            # Highlight fill for view mode (when is_active is true)
+            highlight_fill = "rgba(255, 140, 0, 0.1)" if is_active else cell_fill
+
+            # Add data attribute for highlighting state to enable CSS targeting
+            highlight_class = " cell-highlighted" if is_active else ""
+            cell_elem = (
+                f'<g class="cell-group{highlight_class}" data-pos="{r},{c}" data-name="{html.escape(name)}">'
+                f'<rect x="{comp_x}" y="{comp_y}" width="{w}" height="{h}" fill="{highlight_fill}" '
+                f'stroke="{stroke}" stroke-width="{stroke_width}" rx="6" ry="6" />'
+                f"{compound_inner}"
+                f"{module_icon}"
+                f"{module_label}"
+                f'<text x="{comp_x+6}" y="{comp_y+16}" style="display:none" class="tooltip">'
+                f"{html.escape(name)} [{r},{c}]</text>"
+                f"</g>"
+            )
+
+            # Render highlighted cells after normal cells for proper z-ordering
+            if is_active:
+                comp_elems_highlighted.append(cell_elem)
+            else:
+                comp_elems.append(cell_elem)
+
+    # intersections - load icons from asset manager using type field ONLY (not ID to avoid double rendering)
+    for inter in layout.get("intersections", []):
+        r, c = inter["position"]
+        cx, cy = center_of_cell(r, c)
+        iid = inter["id"]
+        # Use ONLY type field, NOT id - to avoid double rendering
+        inter_type = inter.get("type")  # Use type field only
+
+        if not inter_type:
+            # Fallback: if no type field, skip asset manager and use fallback rendering
+            inter_elems.append(
+                f'<g id="inter_{iid}">'
+                f'<line x1="{cx-40}" y1="{cy}" x2="{cx+40}" y2="{cy}" stroke="#9b6fd6" '
+                f'stroke-width="12" stroke-linecap="round"/>'
+                f'<line x1="{cx}" y1="{cy-40}" x2="{cx}" y2="{cy+40}" stroke="#9b6fd6" '
+                f'stroke-width="12" stroke-linecap="round"/>'
+                f'<circle cx="{cx}" cy="{cy}" r="14" fill="#6f6f6f" />'
+                f'<text x="{cx}" y="{cy+5}" fill="#fff" font-size="14" text-anchor="middle">{iid}</text>'
+                f"</g>"
+            )
+            continue
+
+        # Calculate icon size: 80% of cell size (200px)
+        icon_size = int(CELL_SIZE * 0.8)  # 160px
+
+        # Try to load intersection icon from asset manager using type field ONLY
+        inter_icon_svg = ""
+        if asset_manager:
+            # For intersections, we don't need entity_type or cell_size - they're just icons
+            inter_icon_svg = _get_icon_svg(inter_type, icon_size, icon_size, asset_manager, None, None)
+
+        if inter_icon_svg:
+            # Center the intersection icon perfectly
+            icon_x = cx - icon_size / 2
+            icon_y = cy - icon_size / 2
+            inter_elems.append(
+                f'<g id="inter_{iid}">' f'<g transform="translate({icon_x},{icon_y})">{inter_icon_svg}</g>' f"</g>"
+            )
+        else:
+            # Fallback to purple crosses if icon not found
+            inter_elems.append(
+                f'<g id="inter_{iid}">'
+                f'<line x1="{cx-40}" y1="{cy}" x2="{cx+40}" y2="{cy}" stroke="#9b6fd6" '
+                f'stroke-width="12" stroke-linecap="round"/>'
+                f'<line x1="{cx}" y1="{cy-40}" x2="{cx}" y2="{cy+40}" stroke="#9b6fd6" '
+                f'stroke-width="12" stroke-linecap="round"/>'
+                f'<circle cx="{cx}" cy="{cy}" r="14" fill="#6f6f6f" />'
+                f'<text x="{cx}" y="{cy+5}" fill="#fff" font-size="14" text-anchor="middle">{iid}</text>'
+                f"</g>"
+            )
+
+    # route drawing (polyline through route_points)
+    route_svg = ""
+    if route_points:
+        pts = " ".join(f"{int(x)},{int(y)}" for (x, y) in route_points)
+        start = route_points[0]
+        end = route_points[-1]
+
+        # Calculate AGV position at middle of route (or at agv_progress if specified)
+        agv_marker_svg = ""
+        if asset_manager and len(route_points) >= 2:
+            try:
+                # Get FTS icon
+                fts_svg_content = asset_manager.get_asset_inline("FTS")
+                if fts_svg_content:
+                    # Calculate position along route based on progress (default 0.5 = middle)
+                    progress = agv_progress if agv_progress > 0 else 0.5
+                    total_length = sum(
+                        (
+                            (route_points[i + 1][0] - route_points[i][0]) ** 2
+                            + (route_points[i + 1][1] - route_points[i][1]) ** 2
+                        )
+                        ** 0.5
+                        for i in range(len(route_points) - 1)
+                    )
+                    target_dist = total_length * progress
+
+                    # Find point at target distance
+                    current_dist = 0
+                    agv_x, agv_y = route_points[0]
+                    for i in range(len(route_points) - 1):
+                        segment_length = (
+                            (route_points[i + 1][0] - route_points[i][0]) ** 2
+                            + (route_points[i + 1][1] - route_points[i][1]) ** 2
+                        ) ** 0.5
+                        if current_dist + segment_length >= target_dist:
+                            # Interpolate within this segment
+                            t = (target_dist - current_dist) / segment_length if segment_length > 0 else 0
+                            agv_x = route_points[i][0] + t * (route_points[i + 1][0] - route_points[i][0])
+                            agv_y = route_points[i][1] + t * (route_points[i + 1][1] - route_points[i][1])
+                            break
+                        current_dist += segment_length
+
+                    # Extract original size from viewBox
+                    original_size = 24  # Default fallback
+                    viewbox_match = re.search(r'viewBox="([^"]*)"', fts_svg_content)
+                    if viewbox_match:
+                        viewbox_parts = viewbox_match.group(1).split()
+                        if len(viewbox_parts) >= 4:
+                            original_size = float(viewbox_parts[2])
+
+                    # Scale to 72px (increased from 48px by 50%)
+                    icon_size = 72
+                    half_size = icon_size / 2
+                    scale_factor = icon_size / original_size
+
+                    # Remove SVG wrapper for embedding
+                    svg_content_clean = fts_svg_content.replace("<svg", "<g").replace("</svg>", "</g>")
+                    svg_content_clean = re.sub(r'width="[^"]*"', "", svg_content_clean)
+                    svg_content_clean = re.sub(r'height="[^"]*"', "", svg_content_clean)
+
+                    agv_marker_svg = (
+                        f'<g transform="translate({agv_x - half_size}, {agv_y - half_size}) '
+                        f'scale({scale_factor})">{svg_content_clean}</g>'
+                    )
+            except Exception:
+                # Fallback to circle if FTS icon fails
+                agv_x = route_points[len(route_points) // 2][0]
+                agv_y = route_points[len(route_points) // 2][1]
+                agv_marker_svg = (
+                    f'<circle cx="{agv_x}" cy="{agv_y}" r="16" fill="#4CAF50" stroke="#fff" stroke-width="2" />'
+                )
+
+        # Route thickness reduced by 25% (from 8 to 6)
+        route_svg = (
+            f'<polyline points="{pts}" stroke="#ff8c00" stroke-width="6" fill="none" '
+            f'stroke-linejoin="round" stroke-linecap="round" />'
+            f'<circle cx="{start[0]}" cy="{start[1]}" r="6" fill="#ff8c00" stroke="#fff" stroke-width="2" />'
+            f'<circle cx="{end[0]}" cy="{end[1]}" r="6" fill="#ff8c00" stroke="#fff" stroke-width="2" />'
+            f"{agv_marker_svg}"
+        )
+
+    # Container border - medium gray
+    container_border = (
+        f'<rect x="0" y="0" width="{CANVAS_W}" height="{CANVAS_H}" fill="none" ' f'stroke="#888888" stroke-width="2" />'
+    )
+
+    svg = (
+        f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {CANVAS_W} {CANVAS_H}" '
+        f'width="{int(CANVAS_W*scale)}" height="{int(CANVAS_H*scale)}">'
+        f"<style>"
+        f".cell-group .tooltip {{ font-family: Arial; font-size: 12px; }}"
+        f".cell-group:hover .tooltip {{ display: block !important; font-weight: bold; }}"
+        f".cell-group {{ cursor: {'pointer' if enable_click else 'default'}; }}"
+        f".cell-group:hover rect {{ stroke: #ff8c00 !important; fill: rgba(255, 152, 0, 0.1) !important; }}"
+        f".cell-group.clicked rect {{ stroke-width: 4 !important; stroke: #ff8c00 !important; "
+        f"fill: rgba(255, 152, 0, 0.1) !important; }}"
+        f".cell-highlighted rect {{ stroke-width: 4 !important; stroke: #ff8c00 !important; }}"
+        f"</style>"
+        f"{container_border}"
+        f'{"".join(cell_elems)}'
+        f'{"".join(comp_elems)}'  # Normal cells first
+        f'{"".join(comp_elems_highlighted)}'  # Highlighted cells after (on top)
+        f'{"".join(inter_elems)}'
+        f"{route_svg}"
+        f"</svg>"
+    )
+    return svg
+
+
+# ============================================================================
+# Main API Function
+# ============================================================================
 
 
 def show_shopfloor_layout(
@@ -50,27 +815,38 @@ def show_shopfloor_layout(
     on_cell_click: Optional[callable] = None,
     enable_click: bool = False,
     highlight_cells: Optional[list] = None,
+    scale: Optional[float] = None,
 ) -> None:
     """
-    Display stable, view-only shopfloor layout with fixed aspect ratio and gapless grid.
+    Display scalable SVG-based shopfloor layout with highlighting and route visualization.
 
     Args:
         active_module_id: ID of active module (for highlighting)
         active_intersections: List of active intersection IDs
         title: Component title
-        show_controls: Show control elements (default: False for stable view-only mode)
+        show_controls: Show control elements (default: False)
         unique_key: Unique key for Streamlit components
         mode: Usage mode (kept for API compatibility, defaults to "view_mode")
-        max_width: Container width in pixels (default: 800)
-        max_height: Container height in pixels (default: 600)
+        max_width: Container width in pixels (default: 800) - used to calculate scale if scale not provided
+        max_height: Container height in pixels (default: 600) - used to calculate scale if scale not provided
         layout_config: Optional layout configuration dict (loads from config if None)
         asset_manager: Optional asset manager instance (loads if None)
         route_points: Optional list of (x, y) pixel coordinates for AGV route visualization
         agv_progress: Progress along route (0.0 to 1.0) for AGV marker positioning
-        on_cell_click: Optional callback function for cell click events
+        on_cell_click: Optional callback function for cell click events (not used, kept for compatibility)
         enable_click: Enable click-to-select functionality (default: False)
         highlight_cells: Optional list of (row, col) tuples to highlight (for compound regions)
+        scale: Optional scale factor (0.25 to 2.0). If not provided, calculated from max_width/max_height.
     """
+    # Calculate scale from max_width/max_height if not provided
+    if scale is None:
+        # Calculate scale based on max_width (default CANVAS_W = 804)
+        scale = max_width / CANVAS_W if max_width else 1.0
+        # Also consider max_height if provided
+        if max_height:
+            scale_from_height = max_height / CANVAS_H if max_height else 1.0
+            scale = min(scale, scale_from_height)  # Use smaller scale to fit both dimensions
+
     # Generate hint HTML if click is enabled (rendered inside HTML to avoid spacing)
     hint_html = ""
     if enable_click:
@@ -94,7 +870,7 @@ def show_shopfloor_layout(
     if not layout_config or not isinstance(layout_config, dict):
         st.error("❌ Shopfloor layout configuration not available. Please check configuration files.")
         # Render empty grid as fallback
-        layout_config = {"modules": [], "empty_positions": [], "intersections": []}
+        layout_config = {"modules": [], "fixed_positions": [], "intersections": []}
 
     # Load asset manager if not provided
     if asset_manager is None:
@@ -103,14 +879,6 @@ def show_shopfloor_layout(
         except Exception as e:
             logger.warning(f"Failed to load asset manager: {e}")
             asset_manager = None
-
-    # Extract data from config
-    modules = layout_config.get("modules", [])
-    fixed_positions = layout_config.get("fixed_positions", [])  # New structure (v2.0)
-    # Fallback for old structure
-    if not fixed_positions:
-        fixed_positions = layout_config.get("empty_positions", [])
-    intersections = layout_config.get("intersections", [])
 
     # If active_module_id is provided and no highlight_cells, convert to highlight_cells for compound regions
     if active_module_id and not highlight_cells:
@@ -124,6 +892,14 @@ def show_shopfloor_layout(
             logger.warning(f"Failed to get display region for {active_module_id}: {e}")
             # Fallback to old behavior - just use active_module_id
             pass
+
+    # Convert highlight_cells to list of tuples if provided
+    highlight_tuples = None
+    if highlight_cells:
+        highlight_tuples = []
+        for cell in highlight_cells:
+            if isinstance(cell, (list, tuple)) and len(cell) >= 2:
+                highlight_tuples.append((int(cell[0]), int(cell[1])))
 
     # Generate heading HTML if title is provided (with Streamlit-standard font styling)
     heading_html = ""
@@ -144,947 +920,125 @@ def show_shopfloor_layout(
             </div>
             """
 
-    # Generate HTML grid
-    html_content = _generate_html_grid(
-        modules=modules,
-        fixed_positions=fixed_positions,
-        intersections=intersections,
-        asset_manager=asset_manager,
-        active_module_id=active_module_id,
-        active_intersections=active_intersections,
-        max_width=max_width,
-        max_height=max_height,
-        route_points=route_points,
-        agv_progress=agv_progress,
-        enable_click=enable_click,
-        unique_key=unique_key or "shopfloor",
-        highlight_cells=highlight_cells,
-    )
+    # Debug: Log asset manager status
+    if asset_manager:
+        logger.debug(f"Asset manager available: {type(asset_manager)}")
+    else:
+        logger.warning("Asset manager is None - SVGs will not be rendered!")
 
-    # Combine heading + hint + grid in single HTML block
-    combined_html = f"{heading_html}{hint_html}{html_content}"
-
-    # Render using st.components or fallback to markdown
+    # Render SVG using new renderer
     try:
-        # Use experimental query params for click communication if enabled
-        if enable_click:
-            # Check for clicked position in query params
-            try:
-                query_params = st.query_params
-                if "pos" in query_params:
-                    clicked_pos = query_params["pos"]
-                    st.session_state.clicked_position = f"Position {clicked_pos}"
-                    # Clear the query param after processing
-                    del st.query_params["pos"]
-            except Exception:
-                pass
-
-        # Calculate total height: heading (~50px) + hint (~50px if enabled) + grid (max_height) + bottom border/padding (~10px)
-        extra_height = 60  # heading spacing
-        if enable_click:
-            extra_height += 60  # hint box
-        total_height = max_height + extra_height + 10  # +10px for bottom border/padding
-
-        st.components.v1.html(combined_html, height=total_height, scrolling=False)
-    except Exception as e:
-        logger.warning(f"st.components.v1.html failed, falling back to markdown: {e}")
-        st.markdown(combined_html, unsafe_allow_html=True)
-
-
-def _generate_html_grid(
-    modules: list,
-    fixed_positions: list,
-    intersections: list,
-    asset_manager,
-    active_module_id: Optional[str],
-    active_intersections: Optional[list],
-    max_width: int,
-    max_height: int,
-    route_points: Optional[list] = None,
-    agv_progress: float = 0.0,
-    enable_click: bool = False,
-    unique_key: str = "shopfloor",
-    highlight_cells: Optional[list] = None,
-) -> str:
-    """
-    Generate complete HTML grid with inline CSS for gapless layout.
-
-    Args:
-        highlight_cells: Optional list of (row, col) tuples to highlight
-                        If multiple cells are provided, draws a bounding box around the compound region
-
-    Returns a single HTML string containing the entire 4x3 grid.
-    """
-    # Calculate cell dimensions - use square cells (200x200px default)
-    cell_size = 200  # Default cell size
-    cell_width = cell_size
-    cell_height = cell_size
-
-    # Update container dimensions to match grid
-    max_width = cell_width * 4
-    max_height = cell_height * 3
-
-    # CSS styles
-    css = f"""
-    <style>
-        .shopfloor-container {{
-            width: {max_width}px;
-            height: {max_height}px;
-            display: grid;
-            grid-template-columns: repeat(4, {cell_width}px);
-            grid-template-rows: repeat(3, {cell_height}px);
-            gap: 0;
-            border: 2px solid #ddd;
-            background: white;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            position: relative;
-            overflow: visible;
-            margin-bottom: 4px;
-        }}
-        .cell {{
-            width: {cell_width}px;
-            height: {cell_height}px;
-            border: 1px solid #e0e0e0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 8px;
-            box-sizing: border-box;
-            background: white;
-            position: relative;
-            {"cursor: pointer; transition: background-color 0.2s ease;" if enable_click else ""}
-        }}
-        {"" if not enable_click else '''
-        .cell:hover {
-            background: rgba(255, 152, 0, 0.1);
-            border-color: #FF9800;
-        }
-        '''}
-        .cell-active {{
-            border: 4px solid #FF9800 !important;
-            background: white;
-            z-index: 1;
-        }}
-        .cell-intersection-active {{
-            border: 3px dashed #FF9800 !important;
-        }}
-        .cell-highlight {{
-            border: 3px solid #FF9800 !important;
-            background: rgba(255, 152, 0, 0.05);
-            z-index: 2;
-        }}
-        /* Cells that are part of a compound region - no individual borders */
-        .cell-highlight.compound-member {{
-            border: none !important;  /* Remove border for seamless compound appearance */
-            background: rgba(255, 152, 0, 0.1);
-            z-index: 1;
-        }}
-        /* Make split cells with cell-highlight more visible */
-        .cell-split.cell-highlight {{
-            border: 3px solid #FF9800 !important;
-            background: rgba(255, 152, 0, 0.1);
-        }}
-        /* Split cells in compound region also get no individual borders */
-        .cell-split.cell-highlight.compound-member {{
-            border: none !important;
-            background: rgba(255, 152, 0, 0.1);
-        }}
-        /* Sub-elements of split cells in compound should blend seamlessly */
-        .cell-split.compound-member .split-top,
-        .cell-split.compound-member .split-bottom {{
-            border: none !important;
-        }}
-        /* When highlighting squares (compound region), remove borders from squares */
-        .cell-split.cell-highlight-squares .split-bottom {{
-            border: none !important;
-        }}
-        /* Highlight only rectangle (top) part of split cell */
-        .cell-split.highlight-rectangle-only .split-top {{
-            border: 3px solid #FF9800 !important;
-            background: rgba(255, 152, 0, 0.05);
-            z-index: 2;
-        }}
-        /* Highlight only squares (bottom) part of split cell for compound regions */
-        .cell-split.cell-highlight-squares .split-bottom {{
-            background: rgba(255, 152, 0, 0.05);
-            border: none !important;  /* Remove border for seamless appearance */
-        }}
-        .cell-split.cell-highlight-squares .split-top {{
-            /* Rectangle remains unhighlighted */
-            background: rgba(135, 206, 235, 0.3);
-        }}
-        .cell-split.cell-highlight-squares {{
-            /* No border on the split cell itself when highlighting squares+module */
-            border: none !important;
-            background: transparent !important;
-        }}
-        .cell-empty {{
-            background: rgba(135, 206, 235, 0.1);
-        }}
-        /* Compound region highlight overlay - draws outer bounding box */
-        .compound-highlight-overlay {{
-            position: absolute;
-            pointer-events: none;
-            z-index: 3;
-            box-sizing: border-box;
-        }}
-        .cell-split {{
-            display: grid;
-            grid-template-rows: 1fr 1fr;
-            grid-template-columns: 1fr 1fr;
-            gap: 2px;
-            padding: 2px;
-        }}
-        .split-top {{
-            grid-column: 1 / 3;
-            background: rgba(135, 206, 235, 0.3);
-            border: 1px solid #87CEEB;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }}
-        .split-bottom {{
-            background: white;
-            border: 1px solid #e0e0e0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }}
-        .cell-label {{
-            font-size: 11px;
-            font-weight: bold;
-            text-align: center;
-            margin-top: 4px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 100%;
-            position: absolute;
-            bottom: 8px;
-            left: 0;
-            right: 0;
-        }}
-        .icon-container {{
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 90%;
-            height: 90%;
-            flex-shrink: 0;
-        }}
-        .icon-container img {{
-            object-fit: contain;
-            max-width: 100%;
-            max-height: 100%;
-        }}
-        /* SVG Overlay for routes */
-        .route-overlay {{
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 10;
-        }}
-        .route-path {{
-            fill: none;
-            stroke: #FF9800;
-            stroke-width: 4;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-        }}
-        .agv-marker {{
-            fill: #FF9800;
-            stroke: white;
-            stroke-width: 2;
-        }}
-    </style>
-    """
-
-    # Generate grid cells
-    cells_html = []
-    for row in range(3):
-        for col in range(4):
-            cell_html = _generate_cell_html(
-                row,
-                col,
-                modules,
-                fixed_positions,
-                intersections,
-                asset_manager,
-                active_module_id,
-                active_intersections,
-                cell_width,
-                cell_height,
-                enable_click,
-                unique_key,
-                highlight_cells,
-            )
-            cells_html.append(cell_html)
-
-    # Generate compound region highlight overlay if multiple cells are highlighted
-    # OR if single cell is HBW/DPS (needs squares+module bounding box)
-    compound_highlight_html = ""
-    if highlight_cells and (
-        len(highlight_cells) > 1
-        or (
-            len(highlight_cells) == 1
-            and (
-                (highlight_cells[0][0] == 1 and highlight_cells[0][1] == 0)
-                or (highlight_cells[0][0] == 1 and highlight_cells[0][1] == 3)
-            )
+        svg_content = render_shopfloor_svg(
+            layout=layout_config,
+            asset_manager=asset_manager,
+            highlight_cells=highlight_tuples,
+            enable_click=enable_click,
+            route_points=route_points,
+            agv_progress=agv_progress,
+            scale=scale,
         )
-    ):
-        compound_highlight_html = _generate_compound_highlight_overlay(highlight_cells, cell_width, cell_height)
+        logger.info(f"✅ SVG content generated: length={len(svg_content) if svg_content else 0}")
+        if not svg_content or len(svg_content) < 100:
+            logger.error(f"❌ SVG content is too short or empty! length={len(svg_content) if svg_content else 0}")
+    except Exception as e:
+        logger.error(f"❌ Error in render_shopfloor_svg: {e}", exc_info=True)
+        svg_content = f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600"><text x="400" y="300" text-anchor="middle" fill="red">Error rendering SVG: {e}</text></svg>'
 
-    # Generate SVG overlay for route visualization
-    svg_overlay = ""
-    if route_points and len(route_points) >= 2:
-        svg_overlay = _generate_route_overlay(route_points, agv_progress, max_width, max_height)
-
-    # Add JavaScript for click handling if enabled
-    javascript = ""
+    # Add JavaScript for interactive highlighting (hover/click)
+    click_script = ""
     if enable_click:
-        javascript = """
+        click_script = """
         <script>
-            // Handle cell clicks by setting URL query parameter
-            document.addEventListener('DOMContentLoaded', function() {
-                const cells = document.querySelectorAll('.cell[data-position]');
-                cells.forEach(cell => {
-                    cell.addEventListener('click', function() {
-                        const position = this.getAttribute('data-position');
-                        // Try to communicate with parent Streamlit app
-                        if (window.parent) {
-                            // Use postMessage to send to parent
-                            window.parent.postMessage({
-                                type: 'shopfloor_click',
-                                position: position
-                            }, '*');
-                        }
-                        // Visual feedback
-                        cells.forEach(c => c.style.outline = 'none');
-                        this.style.outline = '3px solid #FF9800';
-                        this.style.outlineOffset = '-3px';
-                    });
+        (function() {
+            const svg = document.querySelector('svg');
+            const groups = document.querySelectorAll('.cell-group');
+            let activeGroup = null;
+            let hoverGroup = null;
+
+            // Move group to end of SVG for proper z-ordering (like View-Mode)
+            function moveToEnd(group) {
+                if (group && svg && group.parentNode === svg) {
+                    svg.appendChild(group);
+                }
+            }
+
+            groups.forEach(group => {
+                // Handle hover: move to end when hovering
+                group.addEventListener('mouseenter', function(e) {
+                    hoverGroup = this;
+                    moveToEnd(this);
+                });
+
+                // Handle click: move to end and add clicked class
+                group.addEventListener('click', function(e) {
+                    // Remove clicked class from previous active
+                    if (activeGroup && activeGroup !== this) {
+                        activeGroup.classList.remove('clicked');
+                    }
+                    // Toggle clicked class on current
+                    this.classList.toggle('clicked');
+                    activeGroup = this.classList.contains('clicked') ? this : null;
+                    // Move to end for proper z-ordering
+                    moveToEnd(this);
+                    e.stopPropagation();
                 });
             });
+
+            // Click outside to deselect
+            document.addEventListener('click', function(e) {
+                if (activeGroup && !activeGroup.contains(e.target)) {
+                    activeGroup.classList.remove('clicked');
+                    activeGroup = null;
+                }
+            });
+        })();
         </script>
         """
 
-    # Combine into complete HTML
-    html = f"""
-    {css}
-    <div class="shopfloor-container">
-        {''.join(cells_html)}
-        {compound_highlight_html}
-        {svg_overlay}
+    # Combine heading + hint + SVG + JavaScript
+    # Add unique ID to force refresh (prevent caching)
+    import uuid
+
+    unique_id = uuid.uuid4().hex[:8]
+    # Ensure SVG container has proper styling and is visible
+    html_fragment = f"""
+    {heading_html}
+    {hint_html}
+    <div id="shopfloor-svg-{unique_id}" style="width:{int(CANVAS_W*scale)}px; height:{int(CANVAS_H*scale)}px; overflow:visible; position:relative;">
+      {svg_content}
     </div>
-    {javascript}
+    {click_script}
     """
 
-    return html
+    # Debug: Log HTML fragment info
+    logger.info(
+        f"📄 HTML fragment length: {len(html_fragment)}, contains SVG: {'<svg' in html_fragment}, contains cell-group: {'cell-group' in html_fragment}"
+    )
 
-
-def _generate_compound_highlight_overlay(
-    highlight_cells: list,
-    cell_width: int,
-    cell_height: int,
-) -> str:
-    """
-    Generate HTML overlay for compound region highlighting (multi-cell bounding box).
-
-    Special handling for HBW/DPS: when highlighting cell at [1,0] or [1,3],
-    the bounding box should start from the squares (bottom half of split cell at row 0)
-    and extend to the main module cell at row 1.
-
-    Args:
-        highlight_cells: List of (row, col) tuples to highlight
-        cell_width: Width of each cell in pixels
-        cell_height: Height of each cell in pixels
-
-    Returns:
-        HTML string with absolute-positioned div for bounding box
-    """
-    if not highlight_cells or len(highlight_cells) < 1:
-        return ""
-
-    # Single cell - no compound overlay needed
-    if len(highlight_cells) == 1:
-        # Check if this is HBW (position [1,0]) or DPS (position [1,3])
-        # These need special bounding box from squares to main module
-        row, col = highlight_cells[0]
-        if (row == 1 and col == 0) or (row == 1 and col == 3):
-            # HBW or DPS - draw bounding box from squares (bottom half of row 0) to main module (row 1)
-            # Start from middle of split cell at row 0
-            top_px = 0 * cell_height + (cell_height // 2)  # Start from bottom half of split cell
-            left_px = col * cell_width
-            width_px = cell_width
-            height_px = (1 * cell_height) + (cell_height // 2)  # From middle of row 0 to bottom of row 1
-
-            return f"""
-            <div class="compound-highlight-overlay" style="
-                top: {top_px}px;
-                left: {left_px}px;
-                width: {width_px}px;
-                height: {height_px}px;
-                border: 4px solid #FF9800;
-                border-radius: 4px;
-                box-shadow: 0 0 12px rgba(255, 152, 0, 0.3);
-            "></div>
-            """
-        return ""
-
-    # Find bounding box of highlighted cells
-    rows = [pos[0] for pos in highlight_cells]
-    cols = [pos[1] for pos in highlight_cells]
-
-    min_row = min(rows)
-    max_row = max(rows)
-    min_col = min(cols)
-    max_col = max(cols)
-
-    # Calculate bounding box position and size
-    top_px = min_row * cell_height
-    left_px = min_col * cell_width
-    width_px = (max_col - min_col + 1) * cell_width
-    height_px = (max_row - min_row + 1) * cell_height
-
-    # Generate div with outer border
-    return f"""
-    <div class="compound-highlight-overlay" style="
-        top: {top_px}px;
-        left: {left_px}px;
-        width: {width_px}px;
-        height: {height_px}px;
-        border: 4px solid #FF9800;
-        border-radius: 4px;
-        box-shadow: 0 0 12px rgba(255, 152, 0, 0.3);
-    "></div>
-    """
-
-
-def _generate_route_overlay(
-    route_points: list,
-    agv_progress: float,
-    max_width: int,
-    max_height: int,
-) -> str:
-    """
-    Generate SVG overlay with route polyline and AGV/FTS marker icon
-
-    Args:
-        route_points: List of (x, y) pixel coordinates
-        agv_progress: Progress along route (0.0 to 1.0)
-        max_width: Container width
-        max_height: Container height
-
-    Returns:
-        HTML string with SVG overlay
-    """
-    if not route_points or len(route_points) < 2:
-        return ""
-
-    # Convert points to SVG polyline format
-    points_str = " ".join([f"{x},{y}" for x, y in route_points])
-
-    # Calculate AGV marker position based on progress
-    agv_position = None
-    if 0.0 <= agv_progress <= 1.0:
-        from omf2.ui.ccu.common.route_utils import point_on_polyline
-
-        agv_position = point_on_polyline(route_points, agv_progress)
-
-    # Generate AGV marker SVG with FTS icon
-    agv_marker_svg = ""
-    if agv_position:
-        agv_x, agv_y = agv_position
-        # Load FTS icon and embed it at the AGV position
+    # Render using st.components.v1.html (st.markdown doesn't properly render complex HTML with SVG)
+    try:
+        extra_height = 60  # heading spacing
+        if enable_click:
+            extra_height += 60  # hint box
+        total_height = int(CANVAS_H * scale) + extra_height + 20  # +20px padding
+        logger.info(f"🎬 Rendering with st.components.v1.html: height={total_height}")
+        st.components.v1.html(html_fragment, height=total_height, scrolling=False)
+        logger.info("✅ st.components.v1.html rendered successfully")
+    except Exception as e:
+        logger.error(f"❌ st.components.v1.html failed: {e}", exc_info=True)
+        # Fallback: try st.markdown (may not work well for complex HTML)
         try:
-
-            from omf2.assets.asset_manager import get_asset_manager
-
-            asset_manager = get_asset_manager()
-            fts_svg_content = asset_manager.get_asset_content("FTS", scoped=True)
-
-            if fts_svg_content:
-                # Extract SVG content (without <?xml> declaration)
-                if "<?xml" in fts_svg_content:
-                    fts_svg_content = fts_svg_content.split("?>", 1)[1].strip()
-
-                # Extract original SVG size from ViewBox or width/height attributes
-                original_size = 24  # Default fallback
-                viewbox_match = re.search(r'viewBox="([^"]*)"', fts_svg_content)
-                if viewbox_match:
-                    viewbox = viewbox_match.group(1)
-                    viewbox_parts = viewbox.split()
-                    if len(viewbox_parts) >= 4:
-                        # ViewBox format: "x y width height" - use width as reference
-                        original_size = float(viewbox_parts[2])
-                else:
-                    # Try to extract from width attribute
-                    width_match = re.search(r'width="([^"]*)"', fts_svg_content)
-                    if width_match:
-                        try:
-                            original_size = float(width_match.group(1).replace("px", "").replace("pt", ""))
-                        except ValueError:
-                            pass
-
-                # Scale to 64px regardless of original SVG size
-                icon_size = 64
-                half_size = icon_size / 2
-                scale_factor = icon_size / original_size
-
-                # Create a group with transform to position and scale the icon
-                # Remove SVG wrapper and width/height attributes for embedding
-                svg_content_clean = fts_svg_content.replace("<svg", "<g").replace("</svg>", "</g>")
-                svg_content_clean = re.sub(r'width="[^"]*"', "", svg_content_clean)
-                svg_content_clean = re.sub(r'height="[^"]*"', "", svg_content_clean)
-
-                agv_marker_svg = f"""
-                <g transform="translate({agv_x - half_size}, {agv_y - half_size}) scale({scale_factor})">
-                    {svg_content_clean}
-                    </g>
-                    """
-            else:
-                # Fallback to circle if FTS icon not found (doubled size: r=24)
-                agv_marker_svg = f'<circle class="agv-marker" cx="{agv_x}" cy="{agv_y}" r="24"/>'
-        except Exception as e:
-            logger.warning(f"Could not load FTS icon for AGV marker: {e}")
-            # Fallback to circle (doubled size: r=24)
-            agv_marker_svg = f'<circle class="agv-marker" cx="{agv_x}" cy="{agv_y}" r="24"/>'
-
-    svg = f"""
-    <svg class="route-overlay" viewBox="0 0 {max_width} {max_height}" xmlns="http://www.w3.org/2000/svg">
-        <polyline class="route-path" points="{points_str}"/>
-        {agv_marker_svg}
-    </svg>
-    """
-
-    return svg
-
-
-def _generate_cell_html(
-    row: int,
-    col: int,
-    modules: list,
-    fixed_positions: list,
-    intersections: list,
-    asset_manager,
-    active_module_id: Optional[str],
-    active_intersections: Optional[list],
-    cell_width: int,
-    cell_height: int,
-    enable_click: bool = False,
-    unique_key: str = "shopfloor",
-    highlight_cells: Optional[list] = None,
-) -> str:
-    """Generate HTML for a single grid cell.
-
-    Args:
-        highlight_cells: Optional list of (row, col) tuples to highlight
-    """
-
-    # Handle special split cells at (0,0) and (0,3)
-    if (row == 0 and col == 0) or (row == 0 and col == 3):
-        return _generate_split_cell_html(
-            row, col, fixed_positions, asset_manager, cell_width, cell_height, enable_click, highlight_cells, modules
-        )
-
-    # Find cell data
-    cell_data = _find_cell_data(row, col, modules, fixed_positions, intersections)
-
-    # Determine cell classes and styling
-    cell_classes = ["cell"]
-    if not cell_data:
-        cell_classes.append("cell-empty")
-
-    # Check if this cell should be highlighted (via highlight_cells parameter)
-    if highlight_cells and (row, col) in highlight_cells:
-        cell_classes.append("cell-highlight")
-        # If this is part of a compound region (multiple cells highlighted), add compound-member class
-        # Also treat HBW [1,0] and DPS [1,3] as compound members even if only one cell in highlight_cells
-        is_compound_module = (row == 1 and col == 0) or (row == 1 and col == 3)
-        if len(highlight_cells) > 1 or is_compound_module:
-            cell_classes.append("compound-member")
-
-    # Check if this module is active (only if highlight_cells wasn't provided)
-    # If highlight_cells is provided, it takes precedence (e.g., compound regions)
-    elif cell_data and active_module_id:
-        cell_id = cell_data.get("id", "")
-        if cell_id == active_module_id:
-            cell_classes.append("cell-active")
-
-    # Check if this is an active intersection
-    if cell_data and cell_data.get("type") == "intersection" and active_intersections:
-        intersection_id = cell_data.get("id", "")
-        if intersection_id in active_intersections:
-            cell_classes.append("cell-intersection-active")
-
-    # Generate icon
-    icon_svg = ""
-    cell_label = ""
-    if cell_data:
-        cell_type = cell_data.get("type", "unknown")
-        cell_id = cell_data.get("id", "")
-
-        # Don't show labels for any cells (intersections or modules)
-        # Labels are now shown via hover tooltips only
-        # This allows icons to be properly centered and routes to pass through visual centers
-        cell_label = ""
-
-        # Get icon SVG - Intersections use 80% of cell size, other modules use 56%
-        if cell_type == "intersection":
-            icon_width = int(cell_width * 0.8)
-            icon_height = int(cell_height * 0.8)
-        else:
-            # Reduced by ~20%: 0.7 * 0.8 = 0.56
-            icon_width = int(cell_width * 0.56)
-            icon_height = int(cell_height * 0.56)
-        icon_svg = _get_module_icon_svg(asset_manager, cell_type, icon_width, icon_height, cell_data)
-    else:
-        cell_label = ""
-
-    # Add data attribute for position if click is enabled
-    data_attr = f'data-position="[{row},{col}]"' if enable_click else ""
-
-    # Add tooltip (title attribute) for hover - shows the cell ID/name
-    tooltip_text = ""
-    if cell_data:
-        cell_id = cell_data.get("id", "")
-        cell_type = cell_data.get("type", "unknown")
-        if cell_type == "intersection":
-            tooltip_text = f"Intersection {cell_id}"
-        else:
-            tooltip_text = cell_id
-    title_attr = f'title="{tooltip_text}"' if tooltip_text else ""
-
-    # Build cell HTML
-    cell_html = f"""
-    <div class="{' '.join(cell_classes)}" {data_attr} {title_attr}>
-        <div class="icon-container">
-            {icon_svg}
-        </div>
-        {f'<div class="cell-label">{cell_label}</div>' if cell_label else ''}
-    </div>
-    """
-
-    return cell_html
-
-
-def _generate_split_cell_html(
-    row: int,
-    col: int,
-    fixed_positions: list,
-    asset_manager,
-    cell_width: int,
-    cell_height: int,
-    enable_click: bool = False,
-    highlight_cells: Optional[list] = None,
-    modules: Optional[list] = None,
-) -> str:
-    """Generate HTML for split cells (0,0) and (0,3).
-
-    These cells contain a rectangle (COMPANY/SOFTWARE logo) at the top
-    and two squares below from the attached assets of HBW/DPS modules.
-
-    Args:
-        highlight_cells: Optional list of (row, col) tuples to highlight
-        modules: Optional list of modules to find attached_assets
-    """
-
-    # Find fixed position config for this position (for rectangle)
-    fixed_config = None
-    for fixed in fixed_positions:
-        if fixed.get("position") == [row, col]:
-            fixed_config = fixed
-            break
-
-    # Use type field from layout JSON (consistent with modules)
-    # Default fallback for backward compatibility
-    rectangle_type = "ORBIS" if col == 0 else "DSP"
-
-    if fixed_config:
-        # Use type field directly (consistent with modules)
-        rectangle_type = fixed_config.get("type", rectangle_type)
-
-    # Find the module at position (row+1, col) to get attached_assets
-    # HBW is at [1,0] (below COMPANY at [0,0])
-    # DPS is at [1,3] (below SOFTWARE at [0,3])
-    module_below = None
-    if modules:
-        for module in modules:
-            if module.get("position") == [row + 1, col]:
-                module_below = module
-                break
-
-    # Get attached assets from the module below
-    square1_type = None
-    square2_type = None
-    if module_below:
-        attached_assets = module_below.get("attached_assets", [])
-        if len(attached_assets) >= 1:
-            square1_type = attached_assets[0]  # e.g., "HBW_SQUARE1"
-        if len(attached_assets) >= 2:
-            square2_type = attached_assets[1]  # e.g., "HBW_SQUARE2"
-
-    # Generate icons (smaller for split cells)
-    rect_width = int(cell_width * 0.8)
-    rect_height = int(cell_height * 0.4)
-    # Square SVGs reduced by 20%: 0.4 * 0.8 = 0.32
-    square_width = int(cell_width * 0.32)
-    square_height = int(cell_height * 0.32)
-
-    rectangle_svg = _get_split_cell_icon(asset_manager, rectangle_type, rect_width, rect_height)
-    square1_svg = _get_split_cell_icon(asset_manager, square1_type, square_width, square_height) if square1_type else ""
-    square2_svg = _get_split_cell_icon(asset_manager, square2_type, square_width, square_height) if square2_type else ""
-
-    # Add data attribute for position if click is enabled
-    data_attr = f'data-position="[{row},{col}]"' if enable_click else ""
-
-    # Add tooltip for split cells showing what's in this position
-    tooltip_text = ""
-    if fixed_config:
-        config_id = fixed_config.get("id", "")
-        tooltip_text = config_id
-    title_attr = f'title="{tooltip_text}"' if tooltip_text else ""
-
-    # Determine highlighting behavior for split cells
-    # Three cases:
-    # 1. Only rectangle position (0,0 or 0,3) is highlighted → highlight rectangle only (COMPANY/SOFTWARE)
-    # 2. Module below ([1,0] or [1,3]) is highlighted → compound region (HBW/DPS), highlight squares only
-    # 3. No highlighting
-    module_below_pos = (row + 1, col)
-    rectangle_highlighted = highlight_cells and (row, col) in highlight_cells
-    module_highlighted = highlight_cells and module_below_pos in highlight_cells
-
-    # Check if module below is HBW (col=0) or DPS (col=3)
-    is_compound_module_below = col == 0 or col == 3
-
-    cell_class = "cell cell-split"
-    if rectangle_highlighted and not module_highlighted:
-        # Case 1: Only rectangle is highlighted (COMPANY/SOFTWARE selection)
-        cell_class += " highlight-rectangle-only"
-    elif module_highlighted and is_compound_module_below:
-        # Case 2: Module below is highlighted (HBW/DPS) → compound region, show squares highlighted
-        cell_class += " cell-highlight-squares compound-member"
-
-    cell_html = f"""
-    <div class="{cell_class}" {data_attr} {title_attr}>
-        <div class="split-top">
-            {rectangle_svg}
-        </div>
-        <div class="split-bottom">
-            {square1_svg}
-        </div>
-        <div class="split-bottom">
-            {square2_svg}
-        </div>
-    </div>
-    """
-
-    return cell_html
-
-
-def _get_split_cell_icon(asset_manager, icon_type: str, width: int, height: int) -> str:
-    """Get icon for split cell components with fallback to empty.svg."""
-    try:
-        if asset_manager:
-            # Try to get icon from asset manager using new unified API
-            svg_content = asset_manager.get_asset_content(icon_type, scoped=True)
-
-            if svg_content:
-                svg_content = _scale_svg_properly(svg_content, width, height)
-                return svg_content
-
-            # Fallback to empty.svg if icon not found
-            empty_svg_content = asset_manager.get_asset_content("EMPTY", scoped=True)
-            if empty_svg_content:
-                empty_svg_content = _scale_svg_properly(empty_svg_content, width, height)
-                return empty_svg_content
-
-    except Exception as e:
-        logger.debug(f"Could not load split cell icon {icon_type}: {e}")
-
-    # Final fallback: text representation
-    return f'<text x="{width//2}" y="{height//2}" text-anchor="middle" font-size="10" fill="#666">{icon_type}</text>'
-
-
-def _find_cell_data(
-    row: int, col: int, modules: list, fixed_positions: list, intersections: list
-) -> Optional[Dict[str, Any]]:
-    """Findet die Daten für eine Grid-Position"""
-
-    logger.debug(f"🔍 DEBUG: Suche Position [{row},{col}]")
-
-    # Module suchen - JSON: [row, column] -> UI: [row, col] (Matrix-Konvention)
-    for module in modules:
-        position = module.get("position", [])
-        if len(position) == 2 and position[0] == row and position[1] == col:
-            logger.debug(f"✅ Modul gefunden - Position: {position}, ID: {module.get('id')}")
-            return {"type": module.get("type", "unknown"), "id": module.get("id", "unknown"), "data": module}
-
-    # Intersections suchen - JSON: [row, column] -> UI: [row, col] (Matrix-Konvention)
-    for intersection in intersections:
-        position = intersection.get("position", [])
-        if len(position) == 2 and position[0] == row and position[1] == col:
-            logger.debug(f"✅ Intersection gefunden - Position: {position}, ID: {intersection.get('id')}")
-            return {"type": "intersection", "id": intersection.get("id", "unknown"), "data": intersection}
-
-    # Fixed positions suchen - JSON: [row, column] -> UI: [row, col] (Matrix-Konvention)
-    for fixed in fixed_positions:
-        position = fixed.get("position", [])
-        if len(position) == 2 and position[0] == row and position[1] == col:
-            logger.debug(f"✅ Fixed Position gefunden - Position: {position}, ID: {fixed.get('id')}")
-            return {"type": "fixed", "id": fixed.get("id", "unknown"), "data": fixed}
-
-    logger.warning(f"❌ DEBUG: Keine Daten gefunden für Position [{row},{col}]")
-    return None
-
-
-def _get_single_intersection_icon(
-    module_type: str, width: int, height: int, cell_data: dict = None, asset_manager=None
-) -> str:
-    """Lädt ein einzelnes Icon für eine Intersection - VEREINFACHT ohne Spezial-Effekte"""
-    try:
-        # Intersection-ID aus cell_data ermitteln
-        # Use type field from layout JSON (consistent with modules/fixed_positions)
-        intersection_type = "INTERSECTION-1"  # Default fallback
-        if cell_data and "data" in cell_data:
-            intersection_data = cell_data["data"]
-            intersection_type = intersection_data.get("type", intersection_data.get("id", "INTERSECTION-1"))
-        elif cell_data:
-            intersection_type = cell_data.get("type", cell_data.get("id", "INTERSECTION-1"))
-
-        # Asset Manager verwenden für Icon-Pfad (wie alle anderen Module)
-        if asset_manager:
-            # Use new unified API - intersection types are asset keys (e.g., "INTERSECTION-1", "INTERSECTION-2")
-            svg_content = asset_manager.get_asset_content(intersection_type, scoped=True)
-        else:
-            # Fallback falls kein Asset Manager übergeben wurde
-            # Extract number from intersection type (e.g., "INTERSECTION-1" -> "1")
-            intersection_num = (
-                intersection_type.replace("INTERSECTION-", "")
-                if "INTERSECTION-" in intersection_type
-                else intersection_type
-            )
-            assets_dir = Path(__file__).parent.parent.parent.parent / "assets"
-            icon_path = assets_dir / "svg" / "shopfloor" / f"intersection{intersection_num}.svg"
-            if icon_path.exists():
-                with open(icon_path, encoding="utf-8") as f:
-                    svg_content = f.read()
-            else:
-                svg_content = None
-
-        if svg_content:
-            # ViewBox-bewusste Skalierung - keine Verzerrung!
-            svg_content = _scale_svg_properly(svg_content, width, height)
-            return svg_content
-        else:
-            return f'<text x="{width//2}" y="{height//2}" text-anchor="middle" font-size="10" fill="#666">+</text>'
-    except Exception as e:
-        logger.error(f"Error loading intersection icon: {e}")
-        return f'<text x="{width//2}" y="{height//2}" text-anchor="middle" font-size="10" fill="#666">+</text>'
-
-
-def _get_orbis_logo_svg(asset_manager, width: int, height: int) -> str:
-    """Lädt das ORBIS-Logo SVG - VEREINFACHT mit Asset Manager (new unified API)"""
-    try:
-        # Asset Manager hat bereits ORBIS-Logo-Mapping
-        svg_content = asset_manager.get_asset_content("ORBIS", scoped=True)
-        if svg_content:
-            # SVG-Größe anpassen
-            svg_content = re.sub(r'<svg([^>]*)width="[^"]*"', r"<svg\1", svg_content, count=1)
-            svg_content = re.sub(r'<svg([^>]*)height="[^"]*"', r"<svg\1", svg_content, count=1)
-            svg_content = svg_content.replace("<svg", f'<svg width="{width}" height="{height}"', 1)
-            return svg_content
-    except Exception as e:
-        logger.warning(f"Could not load ORBIS logo: {e}")
-
-    return f'<text x="{width//2}" y="{height//2}" text-anchor="middle" font-size="12" fill="#164194">ORBIS</text>'
-
-
-def _scale_svg_properly(svg_content: str, width: int, height: int) -> str:
-    """Skaliert SVG korrekt basierend auf ViewBox - keine Verzerrung!"""
-    try:
-        # ViewBox aus SVG extrahieren
-        viewbox_match = re.search(r'viewBox="([^"]*)"', svg_content)
-        if viewbox_match:
-            viewbox = viewbox_match.group(1)
-            # ViewBox-Parameter extrahieren: "x y width height"
-            viewbox_parts = viewbox.split()
-            if len(viewbox_parts) == 4:
-                vb_x, vb_y, vb_width, vb_height = map(float, viewbox_parts)
-
-                # Seitenverhältnis der ViewBox berechnen
-                vb_aspect_ratio = vb_width / vb_height
-                target_aspect_ratio = width / height
-
-                # Skalierung basierend auf Seitenverhältnis
-                if vb_aspect_ratio > target_aspect_ratio:
-                    # ViewBox ist breiter - Höhe anpassen
-                    scale = width / vb_width
-                    new_height = int(vb_height * scale)
-                    # SVG mit korrekter Skalierung
-                    svg_content = re.sub(r'<svg([^>]*)width="[^"]*"', r"<svg\1", svg_content, count=1)
-                    svg_content = re.sub(r'<svg([^>]*)height="[^"]*"', r"<svg\1", svg_content, count=1)
-                    svg_content = svg_content.replace("<svg", f'<svg width="{width}" height="{new_height}"', 1)
-                else:
-                    # ViewBox ist höher - Breite anpassen
-                    scale = height / vb_height
-                    new_width = int(vb_width * scale)
-                    # SVG mit korrekter Skalierung
-                    svg_content = re.sub(r'<svg([^>]*)width="[^"]*"', r"<svg\1", svg_content, count=1)
-                    svg_content = re.sub(r'<svg([^>]*)height="[^"]*"', r"<svg\1", svg_content, count=1)
-                    svg_content = svg_content.replace("<svg", f'<svg width="{new_width}" height="{height}"', 1)
-            else:
-                # Fallback: Standard-Skalierung
-                svg_content = re.sub(r'<svg([^>]*)width="[^"]*"', r"<svg\1", svg_content, count=1)
-                svg_content = re.sub(r'<svg([^>]*)height="[^"]*"', r"<svg\1", svg_content, count=1)
-                svg_content = svg_content.replace("<svg", f'<svg width="{width}" height="{height}"', 1)
-        else:
-            # Keine ViewBox gefunden - Standard-Skalierung
-            svg_content = re.sub(r'<svg([^>]*)width="[^"]*"', r"<svg\1", svg_content, count=1)
-            svg_content = re.sub(r'<svg([^>]*)height="[^"]*"', r"<svg\1", svg_content, count=1)
-            svg_content = svg_content.replace("<svg", f'<svg width="{width}" height="{height}"', 1)
-
-        return svg_content
-    except Exception as e:
-        logger.warning(f"Error scaling SVG: {e}")
-        # Fallback: Standard-Skalierung
-        svg_content = re.sub(r'<svg([^>]*)width="[^"]*"', r"<svg\1", svg_content, count=1)
-        svg_content = re.sub(r'<svg([^>]*)height="[^"]*"', r"<svg\1", svg_content, count=1)
-        return svg_content.replace("<svg", f'<svg width="{width}" height="{height}"', 1)
-
-
-def _get_module_icon_svg(asset_manager, module_type: str, width: int, height: int, cell_data: dict = None) -> str:
-    """Lädt das SVG-Icon für ein Modul - ViewBox-bewusste Skalierung mit fallback zu empty.svg"""
-    try:
-        # Spezielle Behandlung für Intersections - ein Icon pro Intersection
-        if module_type == "intersection":
-            # Ein Icon pro Intersection basierend auf der ID
-            return _get_single_intersection_icon(module_type, width, height, cell_data, asset_manager)
-
-        # Für alle anderen Module: Asset Manager verwenden (new unified API)
-        svg_content = asset_manager.get_asset_content(module_type, scoped=True)
-
-        if svg_content:
-            # ViewBox-bewusste Skalierung - keine Verzerrung!
-            svg_content = _scale_svg_properly(svg_content, width, height)
-            return svg_content
-
-        # Fallback to empty.svg if icon not found
-        empty_svg_content = asset_manager.get_asset_content("EMPTY", scoped=True)
-        if empty_svg_content:
-            empty_svg_content = _scale_svg_properly(empty_svg_content, width, height)
-            return empty_svg_content
-
-    except Exception as e:
-        logger.warning(f"Could not load icon for {module_type}: {e}")
-
-    # Final fallback: text representation
-    return f'<text x="{width//2}" y="{height//2}" text-anchor="middle" font-size="10" fill="#666">{module_type}</text>'
+            logger.warning("⚠️ Falling back to st.markdown (may not render correctly)")
+            st.markdown(html_fragment, unsafe_allow_html=True)
+        except Exception as e2:
+            logger.error(f"❌ st.markdown also failed: {e2}", exc_info=True)
+
+
+# ============================================================================
+# REMOVED: Legacy HTML/CSS Grid Functions (replaced by SVG rendering)
+# All legacy functions have been removed and replaced by the SVG-based
+# rendering in render_shopfloor_svg()
+# ============================================================================
 
 
 # Export für OMF2-Integration

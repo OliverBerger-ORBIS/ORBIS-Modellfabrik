@@ -80,6 +80,7 @@ def _show_shopfloor_layout_section():
             unique_key="ccu_configuration_shopfloor",
             mode="ccu_configuration",  # CCU Configuration mode: single click = select, double click = navigate
             enable_click=True,  # Enable click-to-select functionality
+            scale=1.0,  # 100% size for factory configuration
         )
 
     except Exception as e:
@@ -124,7 +125,7 @@ def _show_shopfloor_position_details():
             selected_key = st.session_state.selected_shopfloor_key
 
         # Dropdown for module/position selection
-        col1, col2 = st.columns([2, 1])
+        col1, col2 = st.columns([1, 1])
 
         # Set default index based on selected key
         default_index = 0
@@ -146,8 +147,6 @@ def _show_shopfloor_position_details():
                     else "Select a module, fixed position, or intersection to view details and highlight on the grid"
                 ),
             )
-
-        with col2:
             if st.button(
                 i18n.t("ccu_configuration.factory.refresh") if i18n else "🔄 Refresh", key="refresh_module_details"
             ):
@@ -166,36 +165,42 @@ def _show_shopfloor_position_details():
             # Get display region for this key
             display_region = get_display_region_for_key(selected_key)
 
-            # Show shopfloor layout with highlighting
-            if display_region:
-                message = (
-                    i18n.t(
-                        "ccu_configuration.factory.highlighting_for",
-                        count=len(display_region),
-                        label=selected_label,
-                    )
-                    if i18n
-                    else f"💡 Highlighting {len(display_region)} cell(s) for {selected_label}"
-                )
-                st.info(message)
+            # Layout: Col 1 = Details, Col 2 = Shopfloor (50% scale)
+            col1, col2 = st.columns([1, 1])
 
-                # Import and render shopfloor layout with highlighting
-                from omf2.ui.ccu.common.shopfloor_layout import show_shopfloor_layout
+            with col1:
+                # Show details for the selected key
+                _show_key_details(selected_key, layout_config)
 
-                show_shopfloor_layout(
-                    title=(
-                        i18n.t("ccu_configuration.factory.shopfloor_layout_title_for", label=selected_label)
+            with col2:
+                # Show shopfloor layout with highlighting (50% size)
+                if display_region:
+                    message = (
+                        i18n.t(
+                            "ccu_configuration.factory.highlighting_for",
+                            count=len(display_region),
+                            label=selected_label,
+                        )
                         if i18n
-                        else f"Shopfloor Layout - {selected_label}"
-                    ),
-                    unique_key="ccu_configuration_shopfloor_highlight",
-                    mode="ccu_configuration",
-                    enable_click=False,  # Disable click in detail view
-                    highlight_cells=display_region,
-                )
+                        else f"💡 Highlighting {len(display_region)} cell(s) for {selected_label}"
+                    )
+                    st.info(message)
 
-            # Show details for the selected key
-            _show_key_details(selected_key, layout_config)
+                    # Import and render shopfloor layout with highlighting
+                    from omf2.ui.ccu.common.shopfloor_layout import show_shopfloor_layout
+
+                    show_shopfloor_layout(
+                        title=(
+                            i18n.t("ccu_configuration.factory.shopfloor_layout_title_for", label=selected_label)
+                            if i18n
+                            else f"Shopfloor Layout - {selected_label}"
+                        ),
+                        unique_key="ccu_configuration_shopfloor_highlight",
+                        mode="ccu_configuration",
+                        enable_click=False,  # Disable click in detail view
+                        highlight_cells=display_region,
+                        scale=0.5,  # 50% size for detail view in Col 2
+                    )
         else:
             st.error("❌ Invalid selection")
 

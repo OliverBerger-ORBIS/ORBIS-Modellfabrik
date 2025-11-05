@@ -1,227 +1,110 @@
 {
-  "_meta": {
-    "_description": "Shopfloor layout configuration with grid and module positions",
-    "_version": "2.1",
-    "_domain": "ccu",
-    "_source": "Merged from shopfloor-layout.json and shopfloor_omf1.yml",
-    "_usage_omf2": "Used by CCUGateway for physical layout operations and module positioning",
-    "_changelog": {
-      "v2.1": "Enhanced route visualization with FTS/AGV icon rendering. Added PRODUCT_SVG_BASE_SIZE (200px) standard for consistent workpiece rendering. Documented AGV route display implementation.",
-      "v2.0": "BREAKING: Migrated empty_positions to fixed_positions structure with canonical asset keys. Legacy EMPTY1/EMPTY2 keys no longer supported in productive code.",
-      "v1.1": "Renamed EMPTY1/EMPTY2 to COMPANY/SOFTWARE for better domain semantics. Asset Manager maintains backward compatibility.",
-      "v1.0": "Initial configuration with EMPTY1/EMPTY2 naming"
+    "_meta": {
+        "_description": "Shopfloor layout configuration with grid and module positions",
+        "_version": "2.1",
+        "_domain": "ccu",
+        "_source": "Merged from shopfloor-layout.json and shopfloor_omf1.yml",
+        "_usage_omf2": "Used by CCUGateway for physical layout operations and module positioning",
+        "_changelog": {
+            "v2.1": "Enhanced route visualization with FTS/AGV icon rendering. Added PRODUCT_SVG_BASE_SIZE (200px) standard for consistent workpiece rendering. Documented AGV route display implementation.",
+            "v2.0": "BREAKING: Migrated empty_positions to fixed_positions structure with canonical asset keys. Legacy EMPTY1/EMPTY2 keys no longer supported in productive code.",
+            "v1.1": "Renamed EMPTY1/EMPTY2 to COMPANY/SOFTWARE for better domain semantics. Asset Manager maintains backward compatibility.",
+            "v1.0": "Initial configuration with EMPTY1/EMPTY2 naming"
+        },
+        "_migration_notes": {
+            "v2.1": "Route visualization enhanced with FTS icon rendering along AGV paths. Product SVGs now use PRODUCT_SVG_BASE_SIZE=200px standard. Warehouse 3x3 grid enforced via CSS grid-template-columns. No breaking changes to config structure.",
+            "v2.0": "Applications using empty_positions must migrate to fixed_positions structure. Asset keys now use direct names (e.g., 'ORBIS', 'DSP') matching the type field in JSON. Legacy COMPANY_rectangle/SOFTWARE_rectangle keys removed."
+        },
+        "_route_visualization": {
+            "_description": "AGV/FTS route display implementation details",
+            "_implementation": {
+                "route_computation": "route_utils.build_graph() indexes nodes by both id and serialNumber. compute_route() accepts either identifier with flexible lookup.",
+                "identifier_resolution": "Module identifiers support: serialNumber (e.g., 'SVR4H73275'), id (e.g., 'DPS'), and intersection ids (e.g., '1', '2'). Roads connect via primary keys (serialNumbers).",
+                "route_rendering": "SVG overlay with polyline for route path. AGV marker (FTS icon ic_ft_fts.svg) rendered at progress point along route.",
+                "agv_progress": "Float 0.0-1.0 representing position along route. Calculated via point_on_polyline() for smooth animation.",
+                "cell_size": "200x200px grid cells. Route points computed in pixel coordinates for SVG rendering."
+            },
+            "_troubleshooting": {
+                "start_goal_not_found": "Check module.id and module.serialNumber match roads[].from/to. Use flexible lookup in compute_route().",
+                "route_not_displayed": "Verify route_points passed to show_shopfloor_layout() and SVG overlay rendered.",
+                "agv_icon_missing": "Confirm getAssetFile('FTS') returns valid path to ic_ft_fts.svg."
+            }
+        },
+        "_product_svg_sizing": {
+            "_description": "Standardized product/workpiece SVG sizing policy",
+            "_base_size": "PRODUCT_SVG_BASE_SIZE = 200px (defined in omf2/assets/asset_manager.py)",
+            "_container_policy": "All product SVGs rendered in 200x200px container. Non-square SVGs: width=200px, height proportional.",
+            "_scale_support": "Optional scale parameter: scale=1.5 -> 300x300px container, scale=0.5 -> 100x100px container.",
+            "_warehouse_grid": "3x3 grid enforced via CSS grid-template-columns: repeat(3, 200px). Cell size matches PRODUCT_SVG_BASE_SIZE.",
+            "_usage_example": "asset_manager.get_product_svg_with_sizing('BLUE', 'product', scale=1.0)"
+        },
+        "_notes": [
+            "Grid-based layout with 3x4 configuration (3 rows × 4 columns)",
+            "Module positions defined by [row, column] coordinates (Matrix convention)",
+            "Intersections connect modules via roads",
+            "Roads define physical connections between modules and intersections",
+            "Module types use original hardware names for MQTT compatibility",
+            "Registry correlation: type='Processing' (MILL,DRILL), type='Storage' (HBW), type='Quality-Control' (AIQS), type='Input/Output' (DPS), type='Charging' (CHRG)",
+            "Matrix convention: [row, column] - standard mathematical notation",
+            "Fixed positions (COMPANY, SOFTWARE) use canonical asset key structure for consistent SVG mapping",
+            "COMPLETED: Changed EMPTY1 to COMPANY -> Get Details on factory_configuration_tab from Registry: Info about Software Digitalisation-Company ORBIS",
+            "COMPLETED: Changed EMPTY2 to SOFTWARE -> Get Details on factory_configuration_tab from Registry: Info about DSP DISTRIBUTED SHOPFLOOR PROCESSING",
+            "v2.0: Cell size increased to 200x200px for better visibility",
+            "v2.0: Fixed positions only contain rectangle assets, square assets belong physically to HBW and DPS modules",
+            "v2.1: Route visualization with FTS icon rendering along AGV paths",
+            "v2.1: Product SVG sizing standardized to PRODUCT_SVG_BASE_SIZE=200px with scale support",
+            "v2.1: Warehouse 3x3 grid enforced for consistent layout regardless of SVG variations"
+        ]
     },
-    "_migration_notes": {
-      "v2.1": "Route visualization enhanced with FTS icon rendering along AGV paths. Product SVGs now use PRODUCT_SVG_BASE_SIZE=200px standard. Warehouse 3x3 grid enforced via CSS grid-template-columns. No breaking changes to config structure.",
-      "v2.0": "Applications using empty_positions must migrate to fixed_positions structure. Asset keys changed from direct names (e.g., 'ORBIS') to canonical format (e.g., 'COMPANY_rectangle'). Legacy EMPTY1/EMPTY2 keys removed from productive asset lookup."
-    },
-    "_route_visualization": {
-      "_description": "AGV/FTS route display implementation details",
-      "_implementation": {
-        "route_computation": "route_utils.build_graph() indexes nodes by both id and serialNumber. compute_route() accepts either identifier with flexible lookup.",
-        "identifier_resolution": "Module identifiers support: serialNumber (e.g., 'SVR4H73275'), id (e.g., 'DPS'), and intersection ids (e.g., '1', '2'). Roads connect via primary keys (serialNumbers).",
-        "route_rendering": "SVG overlay with polyline for route path. AGV marker (FTS icon ic_ft_fts.svg) rendered at progress point along route.",
-        "agv_progress": "Float 0.0-1.0 representing position along route. Calculated via point_on_polyline() for smooth animation.",
-        "cell_size": "200x200px grid cells. Route points computed in pixel coordinates for SVG rendering."
-      },
-      "_troubleshooting": {
-        "start_goal_not_found": "Check module.id and module.serialNumber match roads[].from/to. Use flexible lookup in compute_route().",
-        "route_not_displayed": "Verify route_points passed to show_shopfloor_layout() and SVG overlay rendered.",
-        "agv_icon_missing": "Confirm getAssetFile('FTS') returns valid path to ic_ft_fts.svg."
-      }
-    },
-    "_product_svg_sizing": {
-      "_description": "Standardized product/workpiece SVG sizing policy",
-      "_base_size": "PRODUCT_SVG_BASE_SIZE = 200px (defined in omf2/assets/asset_manager.py)",
-      "_container_policy": "All product SVGs rendered in 200x200px container. Non-square SVGs: width=200px, height proportional.",
-      "_scale_support": "Optional scale parameter: scale=1.5 -> 300x300px container, scale=0.5 -> 100x100px container.",
-      "_warehouse_grid": "3x3 grid enforced via CSS grid-template-columns: repeat(3, 200px). Cell size matches PRODUCT_SVG_BASE_SIZE.",
-      "_usage_example": "asset_manager.get_product_svg_with_sizing('BLUE', 'product', scale=1.0)"
-    },
-      "_notes": [
-        "Grid-based layout with 3x4 configuration (3 rows × 4 columns)",
-        "Module positions defined by [row, column] coordinates (Matrix convention)",
-        "Intersections connect modules via roads",
-        "Roads define physical connections between modules and intersections",
-        "Module types use original hardware names for MQTT compatibility",
-        "Registry correlation: type='Processing' (MILL,DRILL), type='Storage' (HBW), type='Quality-Control' (AIQS), type='Input/Output' (DPS), type='Charging' (CHRG)",
-        "Matrix convention: [row, column] - standard mathematical notation",
-        "Fixed positions (COMPANY, SOFTWARE) use canonical asset key structure for consistent SVG mapping",
-        "COMPLETED: Changed EMPTY1 to COMPANY -> Get Details on factory_configuration_tab from Registry: Info about Software Digitalisation-Company ORBIS",
-        "COMPLETED: Changed EMPTY2 to SOFTWARE -> Get Details on factory_configuration_tab from Registry: Info about DSP DISTRIBUTED SHOPFLOOR PROCESSING",
-        "v2.0: Cell size increased to 200x200px for better visibility",
-        "v2.0: Fixed positions only contain rectangle assets, square assets belong physically to HBW and DPS modules",
-        "v2.1: Route visualization with FTS icon rendering along AGV paths",
-        "v2.1: Product SVG sizing standardized to PRODUCT_SVG_BASE_SIZE=200px with scale support",
-        "v2.1: Warehouse 3x3 grid enforced for consistent layout regardless of SVG variations"
-      ]
-  },
-  
-  "grid": {
-    "rows": 3,
-    "columns": 4,
-    "cell_size": "200x200"
-  },
-  
-  "modules": [
-    {
-      "id": "MILL",
-      "type": "MILL",
-      "serialNumber": "SVR3QA2098", 
-      "position": [0, 1]
-    },
-    {
-      "id": "AIQS",
-      "type": "AIQS",
-      "serialNumber": "SVR4H76530",
-      "position": [0, 2]
-    },
-    {
-      "id": "HBW",
-      "type": "HBW", 
-      "serialNumber": "SVR3QA0022",
-      "position": [1, 0],
-      "attached_assets": ["HBW_SQUARE1", "HBW_SQUARE2"],
-      "display_variants": {
-        "default": [[1, 0]],
-        "cell_only": [[1, 0]],
-        "with_rectangle": [[0, 0], [1, 0]]
-      }
-    },
-    {
-      "id": "DPS",
-      "type": "DPS",
-      "serialNumber": "SVR4H73275",
-      "position": [1, 3],
-      "attached_assets": ["DPS_SQUARE1", "DPS_SQUARE2"],
-      "display_variants": {
-        "default": [[1, 3]],
-        "cell_only": [[1, 3]],
-        "with_rectangle": [[0, 3], [1, 3]]
-      }
-    },
-    {
-      "id": "DRILL",
-      "type": "DRILL", 
-      "serialNumber": "SVR4H76449",
-      "position": [2, 0]
-    },
-    {
-      "id": "CHRG",
-      "type": "CHRG",
-      "serialNumber": "CHRG0",
-      "position": [2, 3]
-    }
-  ],
-  
-  "fixed_positions": [
-    {
-      "id": "COMPANY",
-      "type": "ORBIS",
-      "position": [0, 0],
-      "display_variants": {
-        "default": [[0, 0]],
-        "rectangle_only": [[0, 0]]
-      }
-    },
-    {
-      "id": "SOFTWARE",
-      "type": "DSP",
-      "position": [0, 3],
-      "display_variants": {
-        "default": [[0, 3]],
-        "rectangle_only": [[0, 3]]
-      }
-    }
-  ],
-  
-  "intersections": [
-    {
-      "id": "1",
-      "type": "INTERSECTION-1",
-      "position": [1, 1],
-      "connected_modules": ["HBW", "MILL"]
-    },
-    {
-      "id": "2",
-      "type": "INTERSECTION-2",
-      "position": [1, 2],
-      "connected_modules": ["MILL", "AIQS", "DPS"]
-    },
-    {
-      "id": "3",
-      "type": "INTERSECTION-3",
-      "position": [2, 1], 
-      "connected_modules": ["DRILL", "HBW"]
-    },
-    {
-      "id": "4",
-      "type": "INTERSECTION-4",
-      "position": [2, 2],
-      "connected_modules": ["DRILL", "CHRG", "DPS"]
-    }
-  ],
-  
-  "roads": [
-    {
-      "length": 360,
-      "from": "1",
-      "to": "2",
-      "direction": "EAST"
-    },
-    {
-      "length": 360,
-      "from": "3",
-      "to": "1",
-      "direction": "NORTH"
-    },
-    {
-      "length": 360,
-      "from": "3",
-      "to": "4",
-      "direction": "EAST"
-    },
-    {
-      "length": 360,
-      "from": "4",
-      "to": "2",
-      "direction": "NORTH"
-    },
-    {
-      "direction": "EAST",
-      "from": "SVR3QA0022",
-      "to": "1",
-      "length": 380
-    },
-    {
-      "direction": "EAST",
-      "from": "SVR4H76449",
-      "to": "3",
-      "length": 380
-    },
-    {
-      "direction": "SOUTH",
-      "from": "SVR3QA2098",
-      "to": "1",
-      "length": 380
-    },
-    {
-      "direction": "WEST",
-      "from": "SVR4H73275",
-      "to": "2",
-      "length": 380
-    },
-    {
-      "direction": "SOUTH",
-      "from": "SVR4H76530",
-      "to": "2",
-      "length": 380
-    },
-    {
-      "direction": "WEST",
-      "from": "CHRG0",
-      "to": "4",
-      "length": 430
-    }
-  ]
+    "grid": {"rows": 3, "columns": 4, "cell_size": "200x200"},
+    "modules": [
+        {"id": "MILL", "type": "MILL", "serialNumber": "SVR3QA2098", "position": [0, 1], "show_label": true},
+        {"id": "AIQS", "type": "AIQS", "serialNumber": "SVR4H76530", "position": [0, 2], "show_label": true},
+        {
+            "id": "HBW",
+            "type": "HBW",
+            "serialNumber": "SVR3QA0022",
+            "position": [1, 0],
+            "cell_size": [200, 300],
+            "is_compound": true,
+            "attached_assets": ["HBW_SQUARE1", "HBW_SQUARE2"],
+            "compound_layout": {"positions": [[0, 0], [100, 0]], "size": [100, 100]},
+            "show_label": true
+        },
+        {
+            "id": "DPS",
+            "type": "DPS",
+            "serialNumber": "SVR4H73275",
+            "position": [1, 3],
+            "cell_size": [200, 300],
+            "is_compound": true,
+            "attached_assets": ["DPS_SQUARE1", "DPS_SQUARE2"],
+            "compound_layout": {"positions": [[0, 0], [100, 0]], "size": [100, 100]},
+            "show_label": true
+        },
+        {"id": "DRILL", "type": "DRILL", "serialNumber": "SVR4H76449", "position": [2, 0], "show_label": true},
+        {"id": "CHRG", "type": "CHRG", "serialNumber": "CHRG0", "position": [2, 3], "show_label": true}
+    ],
+    "fixed_positions": [
+        {"id": "COMPANY", "type": "ORBIS", "position": [0, 0], "cell_size": [200, 100], "background_color": "#cfe6ff"},
+        {"id": "SOFTWARE", "type": "DSP", "position": [0, 3], "cell_size": [200, 100], "background_color": "#cfe6ff"}
+    ],
+    "intersections": [
+        {"id": "1", "type": "INTERSECTION-1", "position": [1, 1], "connected_modules": ["HBW", "MILL"]},
+        {"id": "2", "type": "INTERSECTION-2", "position": [1, 2], "connected_modules": ["MILL", "AIQS", "DPS"]},
+        {"id": "3", "type": "INTERSECTION-3", "position": [2, 1], "connected_modules": ["DRILL", "HBW"]},
+        {"id": "4", "type": "INTERSECTION-4", "position": [2, 2], "connected_modules": ["DRILL", "CHRG", "DPS"]}
+    ],
+    "roads": [
+        {"length": 360, "from": "1", "to": "2", "direction": "EAST"},
+        {"length": 360, "from": "3", "to": "1", "direction": "NORTH"},
+        {"length": 360, "from": "3", "to": "4", "direction": "EAST"},
+        {"length": 360, "from": "4", "to": "2", "direction": "NORTH"},
+        {"direction": "EAST", "from": "SVR3QA0022", "to": "1", "length": 380},
+        {"direction": "EAST", "from": "SVR4H76449", "to": "3", "length": 380},
+        {"direction": "SOUTH", "from": "SVR3QA2098", "to": "1", "length": 380},
+        {"direction": "WEST", "from": "SVR4H73275", "to": "2", "length": 380},
+        {"direction": "SOUTH", "from": "SVR4H76530", "to": "2", "length": 380},
+        {"direction": "WEST", "from": "CHRG0", "to": "4", "length": 430}
+    ]
 }

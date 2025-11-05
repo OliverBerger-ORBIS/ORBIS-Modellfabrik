@@ -51,16 +51,9 @@ ASSET_MAPPINGS: Dict[str, Tuple[Optional[str], Optional[str]]] = {
     "INTERSECTION-2": ("shopfloor", "intersection2.svg"),
     "INTERSECTION-3": ("shopfloor", "intersection3.svg"),
     "INTERSECTION-4": ("shopfloor", "intersection4.svg"),
-    # Legacy aliases for backward compatibility
-    "1": ("shopfloor", "intersection1.svg"),
-    "2": ("shopfloor", "intersection2.svg"),
-    "3": ("shopfloor", "intersection3.svg"),
-    "4": ("shopfloor", "intersection4.svg"),
-    # Company/Software Logos
-    "COMPANY_rectangle": ("shopfloor", "ORBIS_logo_RGB.svg"),
-    "SOFTWARE_rectangle": ("shopfloor", "information-technology.svg"),
-    "ORBIS": ("shopfloor", "ORBIS_logo_RGB.svg"),  # Legacy alias
-    "DSP": ("shopfloor", "information-technology.svg"),  # Legacy alias
+    # Company/Software Logos (direct keys as used in shopfloor_layout.json)
+    "ORBIS": ("shopfloor", "ORBIS_logo_RGB.svg"),
+    "DSP": ("shopfloor", "information-technology.svg"),
     # Attached Assets
     "HBW_SQUARE1": ("shopfloor", "factory.svg"),
     "HBW_SQUARE2": ("shopfloor", "conveyor.svg"),
@@ -456,7 +449,7 @@ class OMF2AssetManager:
 
     def get_orbis_logo_path(self) -> Optional[str]:
         """Returns path to ORBIS company logo (SVG)"""
-        path = self.get_asset_path("COMPANY_rectangle")
+        path = self.get_asset_path("ORBIS")
         if path:
             logger.debug(f"🏢 ORBIS logo found: {path}")
             return str(path)

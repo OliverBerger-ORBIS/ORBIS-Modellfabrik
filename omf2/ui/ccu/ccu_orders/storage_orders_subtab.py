@@ -339,6 +339,8 @@ def _render_shopfloor_for_storage_order(order, order_manager, i18n):
             mode="view_mode",  # View mode: only show active modules, no clicks
             route_points=route_points,
             agv_progress=agv_progress,
+            scale=0.6,  # 60% size for view mode
+            enable_click=False,  # View mode: no clicks
         )
         st.markdown("</div>", unsafe_allow_html=True)
 

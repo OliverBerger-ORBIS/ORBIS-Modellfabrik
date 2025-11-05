@@ -1,88 +1,83 @@
 #!/usr/bin/env python3
 """
-Tests for Shopfloor Layout - Streamlit-native Implementation
+Tests for Shopfloor Layout - SVG Rendering Implementation
+
+Note: Legacy helper functions (_find_cell_data, _get_module_icon_svg) have been removed.
+These tests are updated to use the new _get_entity_at_position function.
 """
 
 
 from omf2.ui.ccu.common.shopfloor_layout import (
-    _find_cell_data,
-    _get_module_icon_svg,
+    _get_entity_at_position,
 )
 
 
 class TestShopfloorLayoutHelpers:
     """Test cases for Shopfloor Layout Helper Functions"""
 
-    def test_find_cell_data_finds_module(self):
-        """Test that _find_cell_data can find a module at a position"""
-        modules = [
-            {"id": "DRILL", "type": "DRILL", "serialNumber": "SVR4H76449", "position": [2, 0]},
-            {"id": "MILL", "type": "MILL", "serialNumber": "SVR3QA2098", "position": [0, 1]},
-        ]
-        fixed_positions = []
-        intersections = []
+    def test_get_entity_at_position_finds_module(self):
+        """Test that _get_entity_at_position can find a module at a position"""
+        layout = {
+            "modules": [
+                {"id": "DRILL", "type": "DRILL", "serialNumber": "SVR4H76449", "position": [2, 0]},
+                {"id": "MILL", "type": "MILL", "serialNumber": "SVR3QA2098", "position": [0, 1]},
+            ],
+            "fixed_positions": [],
+            "intersections": [],
+        }
 
-        result = _find_cell_data(2, 0, modules, fixed_positions, intersections)
+        result = _get_entity_at_position(layout, 2, 0)
 
         assert result is not None
-        assert result["type"] == "DRILL"
-        assert result["id"] == "DRILL"
+        assert result["type"] == "module"
+        assert result["data"]["type"] == "DRILL"
+        assert result["data"]["id"] == "DRILL"
 
-    def test_find_cell_data_finds_intersection(self):
-        """Test that _find_cell_data can find an intersection"""
-        modules = []
-        fixed_positions = []
-        intersections = [
-            {"id": "1", "position": [1, 1]},
-            {"id": "2", "position": [1, 2]},
-        ]
+    def test_get_entity_at_position_finds_intersection(self):
+        """Test that _get_entity_at_position can find an intersection"""
+        layout = {
+            "modules": [],
+            "fixed_positions": [],
+            "intersections": [
+                {"id": "1", "type": "INTERSECTION-1", "position": [1, 1]},
+                {"id": "2", "type": "INTERSECTION-2", "position": [1, 2]},
+            ],
+        }
 
-        result = _find_cell_data(1, 1, modules, fixed_positions, intersections)
+        result = _get_entity_at_position(layout, 1, 1)
 
         assert result is not None
         assert result["type"] == "intersection"
-        assert result["id"] == "1"
+        assert result["data"]["id"] == "1"
 
-    def test_find_cell_data_finds_fixed_position(self):
-        """Test that _find_cell_data can find a fixed position"""
-        modules = []
-        fixed_positions = [
-            {
-                "id": "COMPANY",
-                "type": "company",
-                "position": [0, 0],
-                "assets": {"rectangle": "ORBIS", "square1": "shelves", "square2": "conveyor_belt"},
-            }
-        ]
-        intersections = []
+    def test_get_entity_at_position_finds_fixed_position(self):
+        """Test that _get_entity_at_position can find a fixed position"""
+        layout = {
+            "modules": [],
+            "fixed_positions": [
+                {
+                    "id": "COMPANY",
+                    "type": "ORBIS",
+                    "position": [0, 0],
+                }
+            ],
+            "intersections": [],
+        }
 
-        result = _find_cell_data(0, 0, modules, fixed_positions, intersections)
+        result = _get_entity_at_position(layout, 0, 0)
 
         assert result is not None
-        assert result["type"] == "fixed"
-        assert result["id"] == "COMPANY"
+        assert result["type"] == "fixed_position"
+        assert result["data"]["id"] == "COMPANY"
 
-    def test_find_cell_data_returns_none_for_empty(self):
-        """Test that _find_cell_data returns None for empty cells"""
-        modules = []
-        fixed_positions = []
-        intersections = []
+    def test_get_entity_at_position_returns_none_for_empty(self):
+        """Test that _get_entity_at_position returns None for empty cells"""
+        layout = {
+            "modules": [],
+            "fixed_positions": [],
+            "intersections": [],
+        }
 
-        result = _find_cell_data(2, 2, modules, fixed_positions, intersections)
+        result = _get_entity_at_position(layout, 2, 2)
 
         assert result is None
-
-    def test_get_module_icon_svg_handles_missing_icon(self):
-        """Test that _get_module_icon_svg handles missing icons gracefully"""
-
-        class MockAssetManager:
-            def get_module_icon_path(self, module_type):
-                return None
-
-        asset_manager = MockAssetManager()
-
-        result = _get_module_icon_svg(asset_manager, "NONEXISTENT", 100, 100, None)
-
-        # Should return fallback text element
-        assert "text" in result
-        assert "NONEXISTENT" in result
