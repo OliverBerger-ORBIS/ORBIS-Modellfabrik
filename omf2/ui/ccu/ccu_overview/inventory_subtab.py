@@ -415,7 +415,11 @@ def _render_workpiece_section(
                 items_html = ""
                 for _i in range(need):
                     # smaller scale to improve responsiveness in narrow viewports
-                    items_html += f"<div>{render_product_svg_container(palett_content, scale=0.4)}</div>"
+                    # Use Base64 data URL approach for consistent rendering
+                    import base64
+                    palett_b64 = base64.b64encode(palett_content.encode("utf-8")).decode("utf-8")
+                    palett_data_url = f"data:image/svg+xml;base64,{palett_b64}"
+                    items_html += f"<div>{render_product_svg_as_img(palett_data_url, scale=0.4)}</div>"
                 wrapper = f"<div style='display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:center; align-content:center; width:100%; max-width:100%; min-width:0; overflow:hidden; text-align:center;'>{items_html}</div>"
                 st.markdown(wrapper, unsafe_allow_html=True)
                 # Description under SVGs
