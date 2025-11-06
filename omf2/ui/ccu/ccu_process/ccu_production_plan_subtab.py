@@ -228,11 +228,11 @@ def _show_parallel_processing_section(workflows: Dict[str, Any]):
 
             # Card header with workpiece product SVG (3D/product view)
             asset_mgr = get_asset_manager()
-            # 64px Zielgröße ≈ 200 * 0.32
+            # Use larger scale (0.6 = 120px) for better visibility of 3dim SVGs
             svg_3d_raw = asset_mgr.get_workpiece_svg(product, "3dim")
             svg_prod_raw = asset_mgr.get_workpiece_svg(product, "product")
-            product_svg_3d = render_product_svg_container(svg_3d_raw, scale=0.32) if svg_3d_raw else None
-            product_svg = render_product_svg_container(svg_prod_raw, scale=0.32) if svg_prod_raw else None
+            product_svg_3d = render_product_svg_container(svg_3d_raw, scale=0.6) if svg_3d_raw else None
+            product_svg = render_product_svg_container(svg_prod_raw, scale=0.6) if svg_prod_raw else None
             if not svg_3d_raw:
                 st.warning(f"{product.lower()}_3dim.svg nicht gefunden – bitte Asset prüfen.")
             if not svg_prod_raw:
@@ -366,11 +366,11 @@ def _show_product_detail_card(product: str, workflow: Dict[str, Any]):
     pname = pinfo.get("name", product)
     if isinstance(pname, str) and pname.lower().startswith("product "):
         pname = pname[8:]
-    # Render both 3DIM and PRODUCT with the same container as in product_catalog
+    # Render both 3DIM and PRODUCT with larger scale for better visibility
     header_prod_raw = asset_mgr.get_workpiece_svg(product, "product")
     header_3d_raw = asset_mgr.get_workpiece_svg(product, "3dim")
-    header_prod = render_product_svg_container(header_prod_raw, scale=0.24) if header_prod_raw else ""
-    header_3d = render_product_svg_container(header_3d_raw, scale=0.24) if header_3d_raw else ""
+    header_prod = render_product_svg_container(header_prod_raw, scale=0.5) if header_prod_raw else ""
+    header_3d = render_product_svg_container(header_3d_raw, scale=0.5) if header_3d_raw else ""
     st.markdown(
         f"""
         <div style='display:flex; align-items:center; gap:12px;'>
