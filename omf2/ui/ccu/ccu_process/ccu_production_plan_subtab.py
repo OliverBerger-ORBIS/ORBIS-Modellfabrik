@@ -228,8 +228,7 @@ def _show_parallel_processing_section(workflows: Dict[str, Any]):
 
             # Card header with workpiece product SVG (3D/product view)
             asset_mgr = get_asset_manager()
-            # Get SVGs using render_product_svg_container like product_catalog
-            # Use scale=1.0 (200px) like product_catalog for better Chrome compatibility
+            # Use moderate scale (0.8 = 160px) that fits the layout
             svg_3d_raw = asset_mgr.get_workpiece_svg(product, "3dim")
             svg_prod_raw = asset_mgr.get_workpiece_svg(product, "product")
             if not svg_3d_raw:
@@ -237,12 +236,12 @@ def _show_parallel_processing_section(workflows: Dict[str, Any]):
             if not svg_prod_raw:
                 st.warning(f"{product.lower()}_product.svg nicht gefunden – bitte Asset prüfen.")
             
-            # Use same scale as product_catalog (1.0 = 200px) for Chrome compatibility
+            # Use scale=0.8 (160px) with minimal styling for better layout fit
             product_svg_3d = render_product_svg_container(
-                svg_3d_raw, scale=1.0, border_style="none", padding="0", margin="0"
+                svg_3d_raw, scale=0.8, border_style="none", padding="5px", margin="0"
             ) if svg_3d_raw else ''
             product_svg = render_product_svg_container(
-                svg_prod_raw, scale=1.0, border_style="none", padding="0", margin="0"
+                svg_prod_raw, scale=0.8, border_style="none", padding="5px", margin="0"
             ) if svg_prod_raw else ''
             
             _i18n = st.session_state.get("i18n_manager")
@@ -375,15 +374,15 @@ def _show_product_detail_card(product: str, workflow: Dict[str, Any]):
     if isinstance(pname, str) and pname.lower().startswith("product "):
         pname = pname[8:]
     
-    # Use same scale as product_catalog (1.0 = 200px) for Chrome compatibility
+    # Use scale=0.8 (160px) with minimal styling for better layout fit
     header_prod_raw = asset_mgr.get_workpiece_svg(product, "product")
     header_3d_raw = asset_mgr.get_workpiece_svg(product, "3dim")
     
     header_3d = render_product_svg_container(
-        header_3d_raw, scale=1.0, border_style="none", padding="0", margin="0"
+        header_3d_raw, scale=0.8, border_style="none", padding="5px", margin="0"
     ) if header_3d_raw else ""
     header_prod = render_product_svg_container(
-        header_prod_raw, scale=1.0, border_style="none", padding="0", margin="0"
+        header_prod_raw, scale=0.8, border_style="none", padding="5px", margin="0"
     ) if header_prod_raw else ""
     st.markdown(
         f"""
