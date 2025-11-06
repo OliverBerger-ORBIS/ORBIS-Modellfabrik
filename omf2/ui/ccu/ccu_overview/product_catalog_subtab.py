@@ -7,7 +7,7 @@ import streamlit as st
 
 from omf2.ccu.ccu_gateway import CcuGateway
 from omf2.common.logger import get_logger
-from omf2.ui.common.product_rendering import render_product_svg_container
+from omf2.ui.common.product_rendering import render_product_svg_as_img
 from omf2.ui.common.symbols import UISymbols
 
 logger = get_logger(__name__)
@@ -88,11 +88,11 @@ def _show_ccu_product_catalog_panel(asset_manager):
                 with columns[i]:
                     st.markdown(f"#### {color_emoji} **{color_name.upper()}**")
 
-                    # 3DIM SVG - standardized container (label removed per spec)
-                    svg_content = asset_manager.get_workpiece_svg(product_id.upper(), "3dim")
-                    if svg_content:
+                    # 3DIM SVG - Base64 data URL for universal browser compatibility
+                    svg_data_url = asset_manager.get_workpiece_svg_as_base64_data_url(product_id.upper(), "3dim")
+                    if svg_data_url:
                         st.markdown(
-                            render_product_svg_container(svg_content, scale=1.0),
+                            render_product_svg_as_img(svg_data_url, scale=1.0),
                             unsafe_allow_html=True,
                         )
                     else:
@@ -103,11 +103,11 @@ def _show_ccu_product_catalog_panel(asset_manager):
                             else f"{product_id.lower()}_3dim.svg not found"
                         )
 
-                    # PRODUCT SVG - standardized container (label removed per spec)
-                    svg_content = asset_manager.get_workpiece_svg(product_id.upper(), "product")
-                    if svg_content:
+                    # PRODUCT SVG - Base64 data URL for universal browser compatibility
+                    svg_data_url = asset_manager.get_workpiece_svg_as_base64_data_url(product_id.upper(), "product")
+                    if svg_data_url:
                         st.markdown(
-                            render_product_svg_container(svg_content, scale=1.0),
+                            render_product_svg_as_img(svg_data_url, scale=1.0),
                             unsafe_allow_html=True,
                         )
                     else:

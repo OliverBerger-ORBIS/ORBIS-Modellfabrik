@@ -11,7 +11,7 @@ from omf2.ccu.ccu_gateway import CcuGateway
 from omf2.ccu.stock_manager import get_stock_manager
 from omf2.common.i18n import I18nManager
 from omf2.common.logger import get_logger
-from omf2.ui.common.product_rendering import render_product_svg_container
+from omf2.ui.common.product_rendering import render_product_svg_as_img
 from omf2.ui.common.symbols import UISymbols
 
 # HTML Templates nicht mehr benötigt - Asset-Manager verwendet
@@ -38,12 +38,12 @@ def _render_workpiece_section(
     col1, col2, col3, col4 = st.columns([1, 1, 3, 1])
 
     with col1:
-        # STANDARDIZED 200x200 CONTAINER
+        # Base64 data URL for universal browser compatibility
         st.markdown(f"**{i18n.t('ccu_overview.labels.unprocessed_svg')}:**")
-        svg_content = asset_manager.get_workpiece_svg(workpiece_type, "unprocessed")
-        if svg_content:
+        svg_data_url = asset_manager.get_workpiece_svg_as_base64_data_url(workpiece_type, "unprocessed")
+        if svg_data_url:
             st.markdown(
-                render_product_svg_container(svg_content, scale=1.0),
+                render_product_svg_as_img(svg_data_url, scale=1.0),
                 unsafe_allow_html=True,
             )
         else:
