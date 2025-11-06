@@ -35,16 +35,17 @@ def render_product_svg_container(
     
     size = int(PRODUCT_SVG_BASE_SIZE * scale)
 
-    # Add explicit width/height to SVG for proper rendering
-    # This ensures SVGs render correctly even at small sizes
+    # Add explicit width/height and preserveAspectRatio to SVG for Chrome compatibility
+    # This ensures SVGs render correctly in both Chrome and Safari
     if svg_content and '<svg' in svg_content:
-        # Remove existing width/height attributes if present
+        # Remove existing width/height/preserveAspectRatio attributes if present
         svg_content = re.sub(r'\s+width="[^"]*"', '', svg_content)
         svg_content = re.sub(r'\s+height="[^"]*"', '', svg_content)
-        # Add width/height to fill container (100%)
+        svg_content = re.sub(r'\s+preserveAspectRatio="[^"]*"', '', svg_content)
+        # Add explicit pixel dimensions and preserveAspectRatio for Chrome compatibility
         svg_content = re.sub(
             r'(<svg\s+[^>]*?)(>)',
-            r'\1 width="100%" height="100%"\2',
+            rf'\1 width="{size}px" height="{size}px" preserveAspectRatio="xMidYMid meet"\2',
             svg_content,
             count=1
         )
@@ -53,8 +54,8 @@ def render_product_svg_container(
         # Fix width, let height be proportional
         container_style = f"border: {border_style}; padding: {padding}; margin: {margin}; text-align: center;"
     else:
-        # Square container with object-fit: contain
-        container_style = f"border: {border_style}; padding: {padding}; margin: {margin}; text-align: center; width: {size}px; height: {size}px; display: flex; align-items: center; justify-content: center; overflow: hidden;"
+        # Square container - simplified for better Chrome compatibility
+        container_style = f"border: {border_style}; padding: {padding}; margin: {margin}; text-align: center; width: {size}px; height: {size}px; display: inline-block;"
 
     return f'<div style="{container_style}">{svg_content}</div>'
 
