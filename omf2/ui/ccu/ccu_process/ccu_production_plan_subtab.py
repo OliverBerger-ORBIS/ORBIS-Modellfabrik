@@ -228,7 +228,7 @@ def _show_parallel_processing_section(workflows: Dict[str, Any]):
 
             # Card header with workpiece product SVG (3D/product view)
             asset_mgr = get_asset_manager()
-            # Get raw SVGs without wrapping - render directly like product_catalog
+            # Get SVGs using render_product_svg_container like product_catalog (no border/padding)
             svg_3d_raw = asset_mgr.get_workpiece_svg(product, "3dim")
             svg_prod_raw = asset_mgr.get_workpiece_svg(product, "product")
             if not svg_3d_raw:
@@ -236,18 +236,13 @@ def _show_parallel_processing_section(workflows: Dict[str, Any]):
             if not svg_prod_raw:
                 st.warning(f"{product.lower()}_product.svg nicht gefunden – bitte Asset prüfen.")
             
-            # Inject explicit sizing directly into SVGs for consistent rendering
-            import re
-            def add_svg_size(svg, width_px):
-                if svg and '<svg' in svg:
-                    svg = re.sub(r'\s+width="[^"]*"', '', svg)
-                    svg = re.sub(r'\s+height="[^"]*"', '', svg)
-                    svg = re.sub(r'(<svg\s+[^>]*?)(>)', rf'\1 width="{width_px}px" height="{width_px}px"\2', svg, count=1)
-                return svg
-            
-            # 120px for each SVG (no container overhead)
-            svg_3d_sized = add_svg_size(svg_3d_raw, 120) if svg_3d_raw else ''
-            svg_prod_sized = add_svg_size(svg_prod_raw, 120) if svg_prod_raw else ''
+            # Use render_product_svg_container with no border/padding for clean rendering
+            product_svg_3d = render_product_svg_container(
+                svg_3d_raw, scale=0.6, border_style="none", padding="0", margin="0"
+            ) if svg_3d_raw else ''
+            product_svg = render_product_svg_container(
+                svg_prod_raw, scale=0.6, border_style="none", padding="0", margin="0"
+            ) if svg_prod_raw else ''
             
             _i18n = st.session_state.get("i18n_manager")
             steps_count = (
@@ -259,8 +254,8 @@ def _show_parallel_processing_section(workflows: Dict[str, Any]):
                 f"""
             <div style="padding: 20px; background-color: {product_bg_colors[product]}; border-radius: 10px; margin: 10px 0; text-align:center;">
                 <div style="display:inline-flex; align-items:center; gap:12px; justify-content:center;">
-                    {svg_3d_sized}
-                    {svg_prod_sized}
+                    {product_svg_3d}
+                    {product_svg}
                 </div>
                 <div style="font-weight:700; font-size:18px; margin-top:8px;">{product} </div>
                 <div style="opacity:0.8;">{steps_count}</div>
@@ -379,21 +374,16 @@ def _show_product_detail_card(product: str, workflow: Dict[str, Any]):
     if isinstance(pname, str) and pname.lower().startswith("product "):
         pname = pname[8:]
     
-    # Get raw SVGs and inject sizing directly (like product_catalog approach)
+    # Use render_product_svg_container like product_catalog (no border/padding)
     header_prod_raw = asset_mgr.get_workpiece_svg(product, "product")
     header_3d_raw = asset_mgr.get_workpiece_svg(product, "3dim")
     
-    # Inject explicit sizing directly into SVGs
-    import re
-    def add_svg_size(svg, width_px):
-        if svg and '<svg' in svg:
-            svg = re.sub(r'\s+width="[^"]*"', '', svg)
-            svg = re.sub(r'\s+height="[^"]*"', '', svg)
-            svg = re.sub(r'(<svg\s+[^>]*?)(>)', rf'\1 width="{width_px}px" height="{width_px}px"\2', svg, count=1)
-        return svg
-    
-    header_3d = add_svg_size(header_3d_raw, 100) if header_3d_raw else ""
-    header_prod = add_svg_size(header_prod_raw, 100) if header_prod_raw else ""
+    header_3d = render_product_svg_container(
+        header_3d_raw, scale=0.5, border_style="none", padding="0", margin="0"
+    ) if header_3d_raw else ""
+    header_prod = render_product_svg_container(
+        header_prod_raw, scale=0.5, border_style="none", padding="0", margin="0"
+    ) if header_prod_raw else ""
     st.markdown(
         f"""
         <div style='display:flex; align-items:center; gap:12px;'>
