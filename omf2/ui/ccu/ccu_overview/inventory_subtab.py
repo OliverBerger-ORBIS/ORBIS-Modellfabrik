@@ -11,7 +11,7 @@ from omf2.ccu.ccu_gateway import CcuGateway
 from omf2.ccu.stock_manager import get_stock_manager
 from omf2.common.i18n import I18nManager
 from omf2.common.logger import get_logger
-from omf2.ui.common.product_rendering import render_product_svg_container
+from omf2.ui.common.product_rendering import render_product_svg_as_img
 from omf2.ui.common.symbols import UISymbols
 
 logger = get_logger(__name__)
@@ -319,11 +319,11 @@ def _render_customer_orders_section(available, ccu_gateway: CcuGateway, i18n, as
                 # Remove redundant "Customer Order" after product name
                 st.markdown(f"#### {color_emoji} **{color_name.upper()}**")
 
-                # PRODUCT SVG - STANDARDIZED 200x200 CONTAINER
-                svg_content = asset_manager.get_workpiece_svg(product_id.upper(), "product")
-                if svg_content:
+                # PRODUCT SVG - Base64 data URL for universal browser compatibility
+                svg_data_url = asset_manager.get_workpiece_svg_as_base64_data_url(product_id.upper(), "product")
+                if svg_data_url:
                     st.markdown(
-                        render_product_svg_container(svg_content, scale=1.0),
+                        render_product_svg_as_img(svg_data_url, scale=1.0),
                         unsafe_allow_html=True,
                     )
                 else:
@@ -390,11 +390,11 @@ def _render_workpiece_section(
     col1, col2, col3 = st.columns([1, 3, 1])
 
     with col1:
-        # STANDARDIZED 200x200 CONTAINER (label hidden per spec)
-        svg_content = asset_manager.get_workpiece_svg(workpiece_type, "unprocessed")
-        if svg_content:
+        # Base64 data URL for universal browser compatibility
+        svg_data_url = asset_manager.get_workpiece_svg_as_base64_data_url(workpiece_type, "unprocessed")
+        if svg_data_url:
             st.markdown(
-                render_product_svg_container(svg_content, scale=1.0),
+                render_product_svg_as_img(svg_data_url, scale=1.0),
                 unsafe_allow_html=True,
             )
         else:
@@ -509,13 +509,11 @@ def _render_inventory_position_fixed(position: str, workpiece_type: str, asset_m
         else:
             st.error("❌ palett.svg nicht gefunden!")
     else:
-        # Gefüllte Position → Werkstück-SVG mit standardisierter Größe (160x160)
-        svg_content = asset_manager.get_workpiece_svg(workpiece_type, "instock_unprocessed")
-        if svg_content:
-            # Container und Beschriftung gemeinsam zentriert - bleiben zusammen als Block
-            container_html = render_product_svg_container(svg_content, scale=0.8)
-            # Container zentrieren: margin: 0 auto statt margin: 5px
-            container_html = container_html.replace("margin: 5px;", "margin: 0 auto;")
+        # Gefüllte Position → Werkstück-SVG mit Base64 data URL (scale 0.8 = 160px)
+        svg_data_url = asset_manager.get_workpiece_svg_as_base64_data_url(workpiece_type, "instock_unprocessed")
+        if svg_data_url:
+            # Render SVG as img tag with proper sizing
+            container_html = render_product_svg_as_img(svg_data_url, scale=0.8, margin="0 auto")
             label_html = f"<div style='text-align: center; margin-top: 5px;'><strong>{position} [{workpiece_type}]</strong></div>"
             st.markdown(
                 f"<div style='text-align: center;'>{container_html}{label_html}</div>",
