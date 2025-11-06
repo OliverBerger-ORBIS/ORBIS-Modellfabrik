@@ -69,14 +69,14 @@ def _render_workpiece_section(
 
     with col3:
         if need > 0:
-            # STANDARDIZED 200x200 CONTAINERS FOR PALETT
+            # Base64 data URL rendering for universal browser compatibility
             st.markdown("**Fehlende Werkstücke:**")
-            palett_content = asset_manager.get_workpiece_palett()
-            if palett_content:
-                # Using standardized 200x200 size for palett SVGs
+            palett_data_url = asset_manager.get_workpiece_svg_as_base64_data_url("palett", "palett")
+            if palett_data_url:
+                # Using Base64 data URLs with scale=0.5 (100px) for palett SVGs
                 palett_html = ""
                 for _i in range(need):
-                    palett_html += f'<div style="display: inline-block; margin: 2px;">{render_product_svg_container(palett_content, scale=0.5)}</div>'
+                    palett_html += render_product_svg_as_img(palett_data_url, scale=0.5, border_style="none", padding="2px", margin="2px")
                 st.markdown(palett_html, unsafe_allow_html=True)
             else:
                 st.error(f"❌ {i18n.t('ccu_overview.errors.palett_not_found')}")

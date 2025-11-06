@@ -12,7 +12,7 @@ from omf2.assets.asset_manager import get_asset_manager
 from omf2.ccu.config_loader import get_ccu_config_loader
 from omf2.common.logger import get_logger
 from omf2.common.product_manager import get_omf2_product_manager
-from omf2.ui.common.product_rendering import render_product_svg_container, render_product_svg_as_img
+from omf2.ui.common.product_rendering import render_product_svg_as_img
 from omf2.ui.common.symbols import UISymbols, get_icon_html
 from omf2.ui.utils.ui_refresh import request_refresh
 
