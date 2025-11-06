@@ -31,7 +31,23 @@ def render_product_svg_container(
     Returns:
         HTML string with styled SVG container
     """
+    import re
+    
     size = int(PRODUCT_SVG_BASE_SIZE * scale)
+
+    # Add explicit width/height to SVG for proper rendering
+    # This ensures SVGs render correctly even at small sizes
+    if svg_content and '<svg' in svg_content:
+        # Remove existing width/height attributes if present
+        svg_content = re.sub(r'\s+width="[^"]*"', '', svg_content)
+        svg_content = re.sub(r'\s+height="[^"]*"', '', svg_content)
+        # Add width/height to fill container (100%)
+        svg_content = re.sub(
+            r'(<svg\s+[^>]*?)(>)',
+            r'\1 width="100%" height="100%"\2',
+            svg_content,
+            count=1
+        )
 
     if force_width_only:
         # Fix width, let height be proportional
