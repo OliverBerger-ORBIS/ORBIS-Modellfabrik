@@ -9,22 +9,56 @@
     "cell_size": "200x200"
   },
   "modules": [
-    { "id": "MILL", "type": "MILL", "serialNumber": "SVR3QA2098", "position": [0,1] },
-    { "id": "AIQS", "type": "AIQS", "serialNumber": "SVR4H76530", "position": [0,2] },
-    { "id": "HBW", "type": "HBW", "serialNumber": "SVR3QA0022", "position": [1,0],
-      "attached_assets": ["HBW_SQUARE1","HBW_SQUARE2"],
-      "display_variants": { "default": [[1,0]], "cell_only": [[1,0]], "with_rectangle": [[0,0],[1,0]] }
+    { "id": "MILL", "type": "MILL", "serialNumber": "SVR3QA2098", "position": [0,1], "show_label": true },
+    { "id": "AIQS", "type": "AIQS", "serialNumber": "SVR4H76530", "position": [0,2], "show_label": true },
+    {
+      "id": "HBW",
+      "type": "HBW",
+      "serialNumber": "SVR3QA0022",
+      "position": [1,0],
+      "cell_size": [200, 300],
+      "is_compound": true,
+      "attached_assets": ["HBW_SQUARE1", "HBW_SQUARE2"],
+      "compound_layout": {
+        "positions": [[0, 0], [100, 0]],
+        "size": [100, 100]
+      },
+      "display_variants": { "default": [[1,0]], "cell_only": [[1,0]], "with_rectangle": [[0,0],[1,0]] },
+      "show_label": true
     },
-    { "id": "DPS", "type": "DPS", "serialNumber": "SVR4H73275", "position": [1,3],
-      "attached_assets": ["DPS_SQUARE1","DPS_SQUARE2"],
-      "display_variants": { "default": [[1,3]], "cell_only": [[1,3]], "with_rectangle": [[0,3],[1,3]] }
+    {
+      "id": "DPS",
+      "type": "DPS",
+      "serialNumber": "SVR4H73275",
+      "position": [1,3],
+      "cell_size": [200, 300],
+      "is_compound": true,
+      "attached_assets": ["DPS_SQUARE1", "DPS_SQUARE2"],
+      "compound_layout": {
+        "positions": [[0, 0], [100, 0]],
+        "size": [100, 100]
+      },
+      "display_variants": { "default": [[1,3]], "cell_only": [[1,3]], "with_rectangle": [[0,3],[1,3]] },
+      "show_label": true
     },
-    { "id": "DRILL", "type": "DRILL", "serialNumber": "SVR4H76449", "position": [2,0] },
-    { "id": "CHRG", "type": "CHRG", "serialNumber": "CHRG0", "position": [2,3] }
+    { "id": "DRILL", "type": "DRILL", "serialNumber": "SVR4H76449", "position": [2,0], "show_label": true },
+    { "id": "CHRG", "type": "CHRG", "serialNumber": "CHRG0", "position": [2,3], "show_label": true }
   ],
   "fixed_positions": [
-    { "id": "COMPANY", "type": "ORBIS", "position": [0,0] },
-    { "id": "SOFTWARE", "type": "DSP", "position": [0,3] }
+    {
+      "id": "COMPANY",
+      "type": "ORBIS",
+      "position": [0,0],
+      "cell_size": [200, 100],
+      "background_color": "#cfe6ff"
+    },
+    {
+      "id": "SOFTWARE",
+      "type": "DSP",
+      "position": [0,3],
+      "cell_size": [200, 100],
+      "background_color": "#cfe6ff"
+    }
   ],
   "intersections": [
     { "id": "1", "type": "INTERSECTION-1", "position": [1,1], "connected_modules": ["HBW","MILL"] },

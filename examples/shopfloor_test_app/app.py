@@ -111,8 +111,18 @@ def _scale_svg_properly(svg_content: str, target_width: int, target_height: int)
         return svg_content, target_width, target_height
 
 
-def _get_icon_svg(module_type: str, target_width: int, target_height: int) -> str:
-    """Load and scale icon from asset manager with proper centering."""
+def _get_icon_svg(
+    module_type: str, target_width: int, target_height: int, entity_type: str = None, cell_size: Tuple[int, int] = None
+) -> str:
+    """
+    Load and scale icon from asset manager with proper centering.
+    
+    For fixed_positions: General scaling approach:
+    1. Find limiting factor (width or height) by comparing SVG aspect ratio with cell aspect ratio
+    2. Scale SVG to 100% of limiting factor
+    3. Apply 80% ratio
+    4. Return scaled SVG
+    """
     if not ASSET_MANAGER:
         return ""
 
@@ -120,8 +130,48 @@ def _get_icon_svg(module_type: str, target_width: int, target_height: int) -> st
         # Use get_asset_content with scoped=True as in production
         icon_svg = ASSET_MANAGER.get_asset_content(module_type, scoped=True)
         if icon_svg:
-            scaled_svg, actual_w, actual_h = _scale_svg_properly(icon_svg, target_width, target_height)
-            return scaled_svg
+            # For fixed_positions, use general scaling approach
+            if entity_type == "fixed_position" and cell_size:
+                import re
+
+                cell_width, cell_height = cell_size
+                cell_aspect_ratio = cell_width / cell_height
+
+                # Extract viewBox from SVG to determine aspect ratio
+                viewbox_match = re.search(r'viewBox="([^"]*)"', icon_svg)
+                if viewbox_match:
+                    viewbox_parts = viewbox_match.group(1).split()
+                    if len(viewbox_parts) >= 4:
+                        vb_width, vb_height = float(viewbox_parts[2]), float(viewbox_parts[3])
+                        svg_aspect_ratio = vb_width / vb_height
+
+                        # Determine limiting factor: if SVG is wider relative to cell, width is limiting
+                        # Otherwise, height is limiting
+                        if svg_aspect_ratio > cell_aspect_ratio:
+                            # Width is limiting factor
+                            # Step 1: Scale to 100% width
+                            scaled_width_100 = cell_width
+                            scaled_height_100 = int(cell_width / svg_aspect_ratio)
+                        else:
+                            # Height is limiting factor
+                            # Step 1: Scale to 100% height
+                            scaled_height_100 = cell_height
+                            scaled_width_100 = int(cell_height * svg_aspect_ratio)
+
+                        # Step 2: Apply 80% ratio to both dimensions
+                        final_width = int(scaled_width_100 * 0.8)
+                        final_height = int(scaled_height_100 * 0.8)
+
+                        # Scale SVG to final dimensions
+                        scaled_svg, actual_w, actual_h = _scale_svg_properly(icon_svg, final_width, final_height)
+                        return scaled_svg
+
+                # Fallback: use target dimensions if viewBox parsing fails
+                scaled_svg, actual_w, actual_h = _scale_svg_properly(icon_svg, target_width, target_height)
+                return scaled_svg
+            else:
+                scaled_svg, actual_w, actual_h = _scale_svg_properly(icon_svg, target_width, target_height)
+                return scaled_svg
     except Exception:
         pass
 
@@ -135,6 +185,139 @@ def cell_anchor(row: int, col: int) -> Tuple[int, int]:
 def center_of_cell(row: int, col: int) -> Tuple[int, int]:
     x, y = cell_anchor(row, col)
     return x + CELL_SIZE // 2, y + CELL_SIZE // 2
+
+
+# Helper functions for JSON-based configuration
+def _get_entity_at_position(layout: dict, row: int, col: int) -> Optional[dict]:
+    """Find entity (module, fixed_position, or intersection) at given position."""
+    # Check modules first
+    for mod in layout.get("modules", []):
+        if mod.get("position") == [row, col]:
+            return {"type": "module", "data": mod}
+    # Check fixed_positions
+    for fixed in layout.get("fixed_positions", []):
+        if fixed.get("position") == [row, col]:
+            return {"type": "fixed_position", "data": fixed}
+    # Check intersections
+    for inter in layout.get("intersections", []):
+        if inter.get("position") == [row, col]:
+            return {"type": "intersection", "data": inter}
+    return None
+
+
+def _get_cell_size(entity_data: Optional[dict], default: Tuple[int, int] = (200, 200)) -> Tuple[int, int]:
+    """Get cell size from entity, or return default."""
+    if not entity_data:
+        return default
+    entity = entity_data.get("data", {})
+    cell_size = entity.get("cell_size")
+    if cell_size and isinstance(cell_size, list) and len(cell_size) >= 2:
+        return (int(cell_size[0]), int(cell_size[1]))
+    return default
+
+
+def _is_compound_cell(entity_data: Optional[dict]) -> bool:
+    """Check if entity is a compound cell."""
+    if not entity_data:
+        return False
+    entity = entity_data.get("data", {})
+    return entity.get("is_compound", False)
+
+
+def _get_background_color(entity_data: Optional[dict]) -> str:
+    """Get background color from entity, or return 'none'."""
+    if not entity_data:
+        return "none"
+    entity = entity_data.get("data", {})
+    bg_color = entity.get("background_color")
+    if bg_color:
+        return bg_color
+    return "none"
+
+
+def _should_show_label(entity_data: Optional[dict]) -> bool:
+    """Check if label should be shown."""
+    if not entity_data:
+        return False
+    entity = entity_data.get("data", {})
+    return entity.get("show_label", False)
+
+
+def _get_label_text(entity_data: Optional[dict]) -> str:
+    """Get label text from entity, or return id."""
+    if not entity_data:
+        return ""
+    entity = entity_data.get("data", {})
+    label_text = entity.get("label_text")
+    if label_text:
+        return label_text
+    return entity.get("id", "")
+
+
+def _get_icon_size_ratio(entity_type: str) -> float:
+    """Get icon size ratio based on entity type."""
+    if entity_type == "intersection":
+        return 0.8  # 80%
+    elif entity_type == "module":
+        return 0.56  # 56%
+    elif entity_type == "fixed_position":
+        return 0.8  # 80%
+    return 0.56  # Default fallback
+
+
+def _calculate_icon_size(
+    cell_size: Tuple[int, int], entity_type: str, is_compound: bool = False, svg_content: str = None
+) -> Tuple[int, int]:
+    """
+    Calculate icon size based on cell size and entity type.
+    For fixed_positions: determine limiting factor (width or height) and apply general scaling.
+    For modules: use main component size (200x200 for compounds).
+    """
+    ratio = _get_icon_size_ratio(entity_type)
+    width, height = cell_size
+
+    if entity_type == "fixed_position" and svg_content:
+        # General scaling: find limiting factor and apply 80% ratio
+        import re
+
+        cell_aspect_ratio = width / height
+        viewbox_match = re.search(r'viewBox="([^"]*)"', svg_content)
+        if viewbox_match:
+            viewbox_parts = viewbox_match.group(1).split()
+            if len(viewbox_parts) >= 4:
+                vb_width, vb_height = float(viewbox_parts[2]), float(viewbox_parts[3])
+                svg_aspect_ratio = vb_width / vb_height
+
+                # Determine limiting factor
+                if svg_aspect_ratio > cell_aspect_ratio:
+                    # Width is limiting
+                    icon_width = int(width * ratio)
+                    icon_height = int(width / svg_aspect_ratio * ratio)
+                else:
+                    # Height is limiting
+                    icon_height = int(height * ratio)
+                    icon_width = int(height * svg_aspect_ratio * ratio)
+                return (icon_width, icon_height)
+
+        # Fallback: use width as limiting factor
+        icon_size = int(width * ratio)
+        return (icon_size, icon_size)
+    elif entity_type == "module" and is_compound:
+        # For compounds, use main component size (200x200)
+        icon_size = int(200 * ratio)
+        return (icon_size, icon_size)
+    else:
+        # For modules and intersections, use min(width, height)
+        icon_size = int(min(width, height) * ratio)
+        return (icon_size, icon_size)
+
+
+def _get_compound_layout(entity_data: Optional[dict]) -> Optional[dict]:
+    """Get compound layout configuration from entity."""
+    if not entity_data:
+        return None
+    entity = entity_data.get("data", {})
+    return entity.get("compound_layout")
 
 
 def compute_route_edge_points(path, layout, cell_size=CELL_SIZE):
@@ -215,8 +398,10 @@ def render_shopfloor_svg(
     """
     highlight_set = set(highlight_cells or [])
     # build grid cells and components
+    # Separate normal and highlighted cells for proper z-ordering (SVG renders in order)
     cell_elems = []
     comp_elems = []
+    comp_elems_highlighted = []  # Highlighted cells rendered after normal cells
     inter_elems = []
 
     for r in range(GRID_H):
@@ -226,165 +411,199 @@ def render_shopfloor_svg(
             cell_elems.append(
                 f'<rect x="{x}" y="{y}" width="{CELL_SIZE}" height="{CELL_SIZE}" fill="none" stroke="none" />'
             )
-            spec = VIS_SPEC.get((r, c))
-            if spec:
-                w = spec["w"]
-                h = spec["h"]
-                fill = spec["color"]
-                name = spec["name"]
+            
+            # Get entity at this position (module, fixed_position, or intersection)
+            entity_data = _get_entity_at_position(layout, r, c)
+            
+            # Get cell size from entity or use default
+            cell_size = _get_cell_size(entity_data)
+            w, h = cell_size
+            
+            # Get entity name/id
+            if entity_data:
+                entity = entity_data.get("data", {})
+                name = entity.get("id", f"[{r},{c}]")
             else:
-                w, h, fill, name = 180, 180, "#ffffff", f"[{r},{c}]"
+                name = f"[{r},{c}]"
+            
+            # Calculate component position (center in cell)
             comp_x = x + (CELL_SIZE - w) / 2
-
-            # Special positioning for different cell types
-            # COMPANY/SOFTWARE (100px tall in row 0, cols 0 and 3): move up 50px
-            if (r, c) in ((0, 0), (0, 3)) and h == 100:
-                comp_y = y + (CELL_SIZE - h) / 2 - 50
-            # HBW/DPS compounds (300px tall in row 1, cols 0 and 3): start at y=100
-            elif (r, c) in ((1, 0), (1, 3)) and h == 300:
-                comp_y = 100
+            
+            # Calculate comp_y based on cell size
+            # For cells smaller than CELL_SIZE, center them vertically
+            # For compound cells (height > CELL_SIZE), position at y=100 (row 0 position)
+            is_compound = _is_compound_cell(entity_data)
+            if h > CELL_SIZE or is_compound:
+                # Compound cell extends beyond cell boundary - start at y=100 (row 0 position)
+                comp_y = 100 + CANVAS_PADDING  # Start at row 0 position
+            elif h < CELL_SIZE:
+                # Smaller cell - center vertically, move up slightly for fixed positions
+                comp_y = y + (CELL_SIZE - h) / 2 - 50 if h == 100 else y + (CELL_SIZE - h) / 2
             else:
+                # Standard size cell
                 comp_y = y + (CELL_SIZE - h) / 2
 
-            # border logic - COMPANY/SOFTWARE cells have blue fill, others transparent
+            # Border logic - orange stroke for highlighted cells, gray for normal cells
             is_active = (r, c) in highlight_set
-            stroke = "#2a7d2a" if fill == "#d7f0c8" else "#d22a2a" if fill == "#ffd5d5" else "#3a6ea5"
-            # Normal border width is 2, highlighted is 8
-            stroke_width = 8 if is_active else 2
+            stroke = "#ff8c00" if is_active else "#e0e0e0"  # Orange for highlighted, gray for normal
+            stroke_width = 4 if is_active else 2  # 4px for highlighted (same as click), 2px for normal
 
-            # COMPANY and SOFTWARE cells should have blue fill
-            cell_fill = "#cfe6ff" if (r, c) in ((0, 0), (0, 3)) else "none"
+            # Get background color from entity
+            cell_fill = _get_background_color(entity_data)
 
-            # Get icon from layout JSON (consistent for modules, fixed_positions, intersections)
+            # Get icon from layout JSON (only for modules and fixed_positions, NOT intersections)
+            # Intersections are rendered separately to avoid double rendering
             module_icon = ""
             module_label = ""
-            if spec and ASSET_MANAGER:
-                # Find entity in layout JSON (module, fixed_position, or intersection)
-                entity_type = None
-                entity_id = None
+            if entity_data and ASSET_MANAGER:
+                entity = entity_data.get("data", {})
+                entity_type_str = entity.get("type")
+                entity_type = entity_data.get("type")  # "module", "fixed_position", or "intersection"
                 
-                # Check modules first
-                for mod in layout.get("modules", []):
-                    if mod.get("position") == [r, c]:
-                        entity_type = mod.get("type")
-                        entity_id = mod.get("id")
-                        break
-                
-                # Check fixed_positions if not found
-                if not entity_type:
-                    for fixed in layout.get("fixed_positions", []):
-                        if fixed.get("position") == [r, c]:
-                            entity_type = fixed.get("type")
-                            entity_id = fixed.get("id")
-                            break
-                
-                # Use entity_type from layout JSON as asset key (consistent for all)
-                if entity_type:
+                # Skip intersections - they are rendered separately
+                if entity_type == "intersection":
+                    pass
+                elif entity_type_str:
                     try:
-                        # Use 56% of cell size (reduced by 20% from 70%)
-                        icon_size = int(min(w, h) * 0.56)
-
-                        # For compounds (HBW/DPS), center main icon in the 200×200 main compartment, not full 200×300
-                        if (r, c) in ((1, 0), (1, 3)) and h == 300:
+                        is_compound = _is_compound_cell(entity_data)
+                        # Calculate icon size based on entity type and cell size
+                        icon_width, icon_height = _calculate_icon_size(cell_size, entity_type, is_compound)
+                        show_label = _should_show_label(entity_data)
+                        
+                        # Get SVG content for fixed_positions to calculate correct size
+                        svg_content_for_calc = None
+                        if entity_type == "fixed_position" and ASSET_MANAGER:
+                            try:
+                                svg_content_for_calc = ASSET_MANAGER.get_asset_content(entity_type_str, scoped=True)
+                            except Exception:
+                                pass
+                        
+                        # Recalculate icon size with SVG content for fixed_positions
+                        if svg_content_for_calc:
+                            icon_width, icon_height = _calculate_icon_size(cell_size, entity_type, is_compound, svg_content_for_calc)
+                        
+                        # For compound modules, center icon in main 200×200 compartment (lower portion)
+                        if entity_type == "module" and is_compound:
                             # Main compartment is 200×200 in the lower portion (y=200 to y=400)
-                            # Icon should be centered in that 200×200 area
-                            icon_size = int(200 * 0.56)  # 112px based on 200×200 compartment (reduced 20%)
-                            icon_svg = _get_icon_svg(entity_type, icon_size, icon_size)
+                            main_comp_y = 200  # Main compartment starts at y=200
+                            icon_svg = _get_icon_svg(entity_type_str, icon_width, icon_height, entity_type, cell_size)
                             if icon_svg:
-                                # Center in the main 200×200 compartment (lower portion)
-                                main_comp_y = 200  # Main compartment starts at y=200
-                                icon_x = comp_x + (w - icon_size) / 2
-                                icon_y = main_comp_y + (200 - icon_size) / 2 - 10  # Move up 10px to make room for label
+                                # Center icon vertically - only move up if label is shown
+                                label_offset = 10 if show_label else 0
+                                icon_x = comp_x + (w - icon_width) / 2
+                                icon_y = main_comp_y + (200 - icon_height) / 2 - label_offset
                                 module_icon = f'<g transform="translate({icon_x},{icon_y})">{icon_svg}</g>'
-                                # Add label below icon (use entity_id or name as fallback)
-                                label_text = entity_id or name
-                                label_y = main_comp_y + (200 + icon_size) / 2 + 15
-                                module_label = f'<text x="{comp_x + w/2}" y="{label_y}" font-family="Arial" font-size="14" fill="#333" text-anchor="middle">{html.escape(label_text)}</text>'
+                                # Add label if needed
+                                if show_label:
+                                    label_text = _get_label_text(entity_data) or name
+                                    label_y = main_comp_y + (200 + icon_height) / 2 + 15
+                                    module_label = f'<text x="{comp_x + w/2}" y="{label_y}" font-family="Arial" font-size="14" fill="#333" text-anchor="middle">{html.escape(label_text)}</text>'
                         else:
-                            icon_svg = _get_icon_svg(entity_type, icon_size, icon_size)
+                            # Standard positioning - center icon in cell (including fixed_positions)
+                            icon_svg = _get_icon_svg(entity_type_str, icon_width, icon_height, entity_type, cell_size)
                             if icon_svg:
-                                # Center the icon in the cell, move up slightly for label
-                                icon_x = comp_x + (w - icon_size) / 2
-                                icon_y = comp_y + (h - icon_size) / 2 - 10
+                                # Center icon perfectly - no offset for fixed_positions without labels
+                                label_offset = 10 if (show_label and entity_type != "fixed_position") else 0
+                                icon_x = comp_x + (w - icon_width) / 2
+                                icon_y = comp_y + (h - icon_height) / 2 - label_offset
                                 module_icon = f'<g transform="translate({icon_x},{icon_y})">{icon_svg}</g>'
-                                # Add label below icon (use entity_id or name as fallback)
-                                label_text = entity_id or name
-                                label_y = comp_y + (h + icon_size) / 2 + 15
-                                module_label = f'<text x="{comp_x + w/2}" y="{label_y}" font-family="Arial" font-size="14" fill="#333" text-anchor="middle">{html.escape(label_text)}</text>'
+                                # Add label if needed (only for modules, not fixed_positions)
+                                if show_label and entity_type != "fixed_position":
+                                    label_text = _get_label_text(entity_data) or name
+                                    label_y = comp_y + (h + icon_height) / 2 + 15
+                                    module_label = f'<text x="{comp_x + w/2}" y="{label_y}" font-family="Arial" font-size="14" fill="#333" text-anchor="middle">{html.escape(label_text)}</text>'
                     except Exception:
                         pass  # Silently fail if asset not found
 
-            # compound inner squares for HBW/DPS - load icons from asset manager
+            # Compound inner assets - load icons from asset manager using positions array
             compound_inner = ""
-            if (r, c) in ((1, 0), (1, 3)):
-                # Get module data to access attached_assets
-                module_data = None
-                for mod in layout.get("modules", []):
-                    if mod.get("position") == [r, c]:
-                        module_data = mod
-                        break
-
-                # Squares are 100×100px at y=100 (top of compound at row 1)
-                # Position them higher up, not at comp_y + 8
-                sx1 = comp_x  # Left square
-                sy1 = 100 + CANVAS_PADDING  # At top of compound (row 1 starts at y=100 for the main area)
-                sx2 = comp_x + 100  # Right square
-                sy2 = 100 + CANVAS_PADDING
-
-                square1_svg = ""
-                square2_svg = ""
-                if module_data and ASSET_MANAGER:
-                    attached_assets = module_data.get("attached_assets", [])
-                    if len(attached_assets) >= 1:
-                        # Use 60% of square size for icons (60px in 100px square) for better fit
-                        square1_svg = _get_icon_svg(attached_assets[0], 60, 60)
-                    if len(attached_assets) >= 2:
-                        square2_svg = _get_icon_svg(attached_assets[1], 60, 60)
-
-                # Render squares WITHOUT yellow borders - only icons (no rectangles, no lines)
-                # Center icons within the 100x100 square
-                icon_offset = (100 - 60) / 2 if square1_svg or square2_svg else 0
-
-                # Remove rectangles - only render icons
-                square1_elem = ""
-                if square1_svg:
-                    square1_elem = (
-                        f'<g transform="translate({sx1 + icon_offset},{sy1 + icon_offset})">{square1_svg}</g>'
-                    )
-
-                square2_elem = ""
-                if square2_svg:
-                    square2_elem = (
-                        f'<g transform="translate({sx2 + icon_offset},{sy2 + icon_offset})">{square2_svg}</g>'
-                    )
-
-                compound_inner = square1_elem + square2_elem
-            comp_elems.append(
-                f'<g class="cell-group" data-pos="{r},{c}" data-name="{html.escape(name)}">'
-                f'<rect x="{comp_x}" y="{comp_y}" width="{w}" height="{h}" fill="{cell_fill}" stroke="{stroke}" stroke-width="{stroke_width}" rx="6" ry="6" />'
+            if entity_data and _is_compound_cell(entity_data):
+                entity = entity_data.get("data", {})
+                attached_assets = entity.get("attached_assets", [])
+                compound_layout = _get_compound_layout(entity_data)
+                
+                if compound_layout and attached_assets and ASSET_MANAGER:
+                    positions = compound_layout.get("positions", [])
+                    asset_size = compound_layout.get("size", [100, 100])  # Default 100×100
+                    asset_w, asset_h = asset_size[0], asset_size[1] if len(asset_size) >= 2 else asset_size[0]
+                    
+                    # Icon size: 60% of asset size
+                    icon_size = int(min(asset_w, asset_h) * 0.6)
+                    icon_offset = (asset_w - icon_size) / 2
+                    
+                    # For compound cells, attached_assets are positioned at the top
+                    # comp_y is at the cell anchor, but assets should be at row 0 position (y=100)
+                    # Adjust base_y to account for compound cell positioning
+                    base_y = 100 + CANVAS_PADDING  # Top of compound (row 1 starts at y=100)
+                    
+                    for i, asset_key in enumerate(attached_assets):
+                        if i < len(positions):
+                            pos = positions[i]
+                            rel_x, rel_y = pos[0], pos[1] if len(pos) >= 2 else 0
+                            
+                            # Absolute position: x relative to comp_x, y relative to base_y
+                            abs_x = comp_x + rel_x
+                            abs_y = base_y + rel_y
+                            
+                            # Load and render icon
+                            asset_svg = _get_icon_svg(asset_key, icon_size, icon_size)
+                            if asset_svg:
+                                icon_x = abs_x + icon_offset
+                                icon_y = abs_y + icon_offset
+                                compound_inner += f'<g transform="translate({icon_x},{icon_y})">{asset_svg}</g>'
+            # Highlight fill for view mode (when is_active is true)
+            highlight_fill = "rgba(255, 140, 0, 0.1)" if is_active else cell_fill
+            
+            # Add data attribute for highlighting state to enable CSS targeting
+            highlight_class = " cell-highlighted" if is_active else ""
+            cell_elem = (
+                f'<g class="cell-group{highlight_class}" data-pos="{r},{c}" data-name="{html.escape(name)}">'
+                f'<rect x="{comp_x}" y="{comp_y}" width="{w}" height="{h}" fill="{highlight_fill}" stroke="{stroke}" stroke-width="{stroke_width}" rx="6" ry="6" />'
                 f"{compound_inner}"
                 f"{module_icon}"
                 f"{module_label}"
                 f'<text x="{comp_x+6}" y="{comp_y+16}" style="display:none" class="tooltip">{html.escape(name)} [{r},{c}]</text>'
                 f"</g>"
             )
+            
+            # Render highlighted cells after normal cells for proper z-ordering
+            if is_active:
+                comp_elems_highlighted.append(cell_elem)
+            else:
+                comp_elems.append(cell_elem)
 
-    # intersections - load icons from asset manager using type field (consistent with modules/fixed_positions)
+    # intersections - load icons from asset manager using type field ONLY (not ID to avoid double rendering)
     for inter in layout.get("intersections", []):
         r, c = inter["position"]
         cx, cy = center_of_cell(r, c)
         iid = inter["id"]
-        inter_type = inter.get("type", iid)  # Use type field, fallback to id
+        # Use ONLY type field, NOT id - to avoid double rendering
+        inter_type = inter.get("type")  # Use type field only
+        
+        if not inter_type:
+            # Fallback: if no type field, skip asset manager and use fallback rendering
+            inter_elems.append(
+                f'<g id="inter_{iid}">'
+                f'<line x1="{cx-40}" y1="{cy}" x2="{cx+40}" y2="{cy}" stroke="#9b6fd6" stroke-width="12" stroke-linecap="round"/>'
+                f'<line x1="{cx}" y1="{cy-40}" x2="{cx}" y2="{cy+40}" stroke="#9b6fd6" stroke-width="12" stroke-linecap="round"/>'
+                f'<circle cx="{cx}" cy="{cy}" r="14" fill="#6f6f6f" />'
+                f'<text x="{cx}" y="{cy+5}" fill="#fff" font-size="14" text-anchor="middle">{iid}</text>'
+                f"</g>"
+            )
+            continue
+        
+        # Calculate icon size: 80% of cell size (200px)
+        icon_size = int(CELL_SIZE * 0.8)  # 160px
 
-        # Try to load intersection icon from asset manager using type field
+        # Try to load intersection icon from asset manager using type field ONLY
         inter_icon_svg = ""
         if ASSET_MANAGER:
-            inter_icon_svg = _get_icon_svg(inter_type, 112, 112)  # 56% of 200px cell (reduced by 20%)
+            inter_icon_svg = _get_icon_svg(inter_type, icon_size, icon_size)
 
         if inter_icon_svg:
-            # Center the intersection icon
-            icon_x = cx - 56  # Half of 112px
-            icon_y = cy - 56
+            # Center the intersection icon perfectly
+            icon_x = cx - icon_size / 2
+            icon_y = cy - icon_size / 2
             inter_elems.append(
                 f'<g id="inter_{iid}">' f'<g transform="translate({icon_x},{icon_y})">{inter_icon_svg}</g>' f"</g>"
             )
@@ -470,24 +689,31 @@ def render_shopfloor_svg(
                     f'<circle cx="{agv_x}" cy="{agv_y}" r="16" fill="#4CAF50" stroke="#fff" stroke-width="2" />'
                 )
 
+        # Route thickness reduced by 25% (from 8 to 6)
         route_svg = (
-            f'<polyline points="{pts}" stroke="#ff8c00" stroke-width="8" fill="none" stroke-linejoin="round" stroke-linecap="round" />'
-            f'<circle cx="{start[0]}" cy="{start[1]}" r="8" fill="#ff8c00" stroke="#fff" stroke-width="2" />'
-            f'<circle cx="{end[0]}" cy="{end[1]}" r="8" fill="#ff8c00" stroke="#fff" stroke-width="2" />'
+            f'<polyline points="{pts}" stroke="#ff8c00" stroke-width="6" fill="none" stroke-linejoin="round" stroke-linecap="round" />'
+            f'<circle cx="{start[0]}" cy="{start[1]}" r="6" fill="#ff8c00" stroke="#fff" stroke-width="2" />'
+            f'<circle cx="{end[0]}" cy="{end[1]}" r="6" fill="#ff8c00" stroke="#fff" stroke-width="2" />'
             f"{agv_marker_svg}"
         )
 
+    # Container border - medium gray
+    container_border = f'<rect x="0" y="0" width="{CANVAS_W}" height="{CANVAS_H}" fill="none" stroke="#888888" stroke-width="2" />'
+    
     svg = (
         f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {CANVAS_W} {CANVAS_H}" width="{int(CANVAS_W*scale)}" height="{int(CANVAS_H*scale)}">'
         f"<style>"
         f".cell-group .tooltip {{ font-family: Arial; font-size: 12px; }}"
         f".cell-group:hover .tooltip {{ display: block !important; font-weight: bold; }}"
-        f".cell-group:hover rect {{ stroke-width: 4 !important; stroke: #ff8c00 !important; }}"
         f".cell-group {{ cursor: {'pointer' if enable_click else 'default'}; }}"
-        f".cell-group.clicked rect {{ stroke-width: 8 !important; stroke: #ff8c00 !important; fill: rgba(255, 140, 0, 0.1) !important; }}"
+        f".cell-group:hover rect {{ stroke: #ff8c00 !important; fill: rgba(255, 152, 0, 0.1) !important; }}"
+        f".cell-group.clicked rect {{ stroke-width: 4 !important; stroke: #ff8c00 !important; fill: rgba(255, 152, 0, 0.1) !important; }}"
+        f".cell-highlighted rect {{ stroke-width: 4 !important; stroke: #ff8c00 !important; }}"
         f"</style>"
+        f"{container_border}"
         f'{"".join(cell_elems)}'
-        f'{"".join(comp_elems)}'
+        f'{"".join(comp_elems)}'  # Normal cells first
+        f'{"".join(comp_elems_highlighted)}'  # Highlighted cells after (on top)
         f'{"".join(inter_elems)}'
         f"{route_svg}"
         f"</svg>"
@@ -533,15 +759,32 @@ def show_shopfloor_layout(
         scale=scale,
     )
     # embed HTML with JS for hover/click (clientside)
+    # Use same render-order logic as View-Mode: move hover/click cells to end of SVG
     click_script = ""
     if enable_click:
         click_script = """
         <script>
         (function() {
+            const svg = document.querySelector('svg');
             const groups = document.querySelectorAll('.cell-group');
             let activeGroup = null;
+            let hoverGroup = null;
+
+            // Move group to end of SVG for proper z-ordering (like View-Mode)
+            function moveToEnd(group) {
+                if (group && svg && group.parentNode === svg) {
+                    svg.appendChild(group);
+                }
+            }
 
             groups.forEach(group => {
+                // Handle hover: move to end when hovering
+                group.addEventListener('mouseenter', function(e) {
+                    hoverGroup = this;
+                    moveToEnd(this);
+                });
+
+                // Handle click: move to end and add clicked class
                 group.addEventListener('click', function(e) {
                     // Remove clicked class from previous active
                     if (activeGroup && activeGroup !== this) {
@@ -550,13 +793,15 @@ def show_shopfloor_layout(
                     // Toggle clicked class on current
                     this.classList.toggle('clicked');
                     activeGroup = this.classList.contains('clicked') ? this : null;
+                    // Move to end for proper z-ordering
+                    moveToEnd(this);
                     e.stopPropagation();
                 });
             });
 
             // Click outside to deselect
-            document.addEventListener('click', function() {
-                if (activeGroup) {
+            document.addEventListener('click', function(e) {
+                if (activeGroup && !activeGroup.contains(e.target)) {
                     activeGroup.classList.remove('clicked');
                     activeGroup = null;
                 }
