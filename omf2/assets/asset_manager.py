@@ -5,6 +5,7 @@ Zentraler Asset-Manager für alle SVG-Assets (Module-Icons, Headings, Workpieces
 Version: 3.0.0 - Unified Asset Management
 """
 
+import base64
 import re
 import uuid
 from pathlib import Path
@@ -353,6 +354,33 @@ class OMF2AssetManager:
             SVG-Inhalt mit CSS-Scoping oder None
         """
         return self._get_workpiece_svg_with_scoping(color, pattern)
+
+    def get_workpiece_svg_as_base64_data_url(self, color: str, pattern: str = "product") -> Optional[str]:
+        """Lädt Workpiece-SVG als Base64 data URL für Chrome-Kompatibilität
+
+        Args:
+            color: Farbe des Workpieces (BLUE, WHITE, RED)
+            pattern: SVG-Pattern (product, 3dim, unprocessed, instock_unprocessed, instock_reserved)
+
+        Returns:
+            Base64-encoded data URL (data:image/svg+xml;base64,...) oder None
+        
+        Note:
+            Diese Methode umgeht Chromium's iframe CSS-Klassen-Problem durch
+            Base64-Encoding des kompletten SVG. Dies funktioniert in allen Browsern.
+        """
+        svg_content = self._get_workpiece_svg_with_scoping(color, pattern)
+        if not svg_content:
+            return None
+        
+        try:
+            # Encode SVG content to Base64
+            svg_bytes = svg_content.encode('utf-8')
+            base64_encoded = base64.b64encode(svg_bytes).decode('utf-8')
+            return f"data:image/svg+xml;base64,{base64_encoded}"
+        except Exception as e:
+            logger.error(f"Fehler beim Base64-Encoding der Workpiece-SVG {color}_{pattern}: {e}")
+            return None
 
     def get_workpiece_palett(self) -> Optional[str]:
         """Lädt die spezielle Palett-SVG für alle Workpieces in ORIGINAL-Größe"""

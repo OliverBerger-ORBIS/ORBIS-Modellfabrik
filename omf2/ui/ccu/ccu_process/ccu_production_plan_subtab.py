@@ -12,7 +12,7 @@ from omf2.assets.asset_manager import get_asset_manager
 from omf2.ccu.config_loader import get_ccu_config_loader
 from omf2.common.logger import get_logger
 from omf2.common.product_manager import get_omf2_product_manager
-from omf2.ui.common.product_rendering import render_product_svg_container
+from omf2.ui.common.product_rendering import render_product_svg_container, render_product_svg_as_img
 from omf2.ui.common.symbols import UISymbols, get_icon_html
 from omf2.ui.utils.ui_refresh import request_refresh
 
@@ -228,21 +228,24 @@ def _show_parallel_processing_section(workflows: Dict[str, Any]):
 
             # Card header with workpiece product SVG (3D/product view)
             asset_mgr = get_asset_manager()
-            # Use moderate scale (0.8 = 160px) that fits the layout
-            svg_3d_raw = asset_mgr.get_workpiece_svg(product, "3dim")
-            svg_prod_raw = asset_mgr.get_workpiece_svg(product, "product")
-            if not svg_3d_raw:
+            # Use Base64 data URLs for Chromium compatibility (Chrome/Edge)
+            # This works around iframe CSS class handling issues
+            data_url_3d = asset_mgr.get_workpiece_svg_as_base64_data_url(product, "3dim")
+            data_url_prod = asset_mgr.get_workpiece_svg_as_base64_data_url(product, "product")
+            
+            if not data_url_3d:
                 st.warning(f"{product.lower()}_3dim.svg nicht gefunden – bitte Asset prüfen.")
-            if not svg_prod_raw:
+            if not data_url_prod:
                 st.warning(f"{product.lower()}_product.svg nicht gefunden – bitte Asset prüfen.")
             
             # Use scale=0.8 (160px) with minimal styling for better layout fit
-            product_svg_3d = render_product_svg_container(
-                svg_3d_raw, scale=0.8, border_style="none", padding="5px", margin="0"
-            ) if svg_3d_raw else ''
-            product_svg = render_product_svg_container(
-                svg_prod_raw, scale=0.8, border_style="none", padding="5px", margin="0"
-            ) if svg_prod_raw else ''
+            # Base64 data URLs work in all browsers (Chrome, Safari, Edge, Firefox)
+            product_svg_3d = render_product_svg_as_img(
+                data_url_3d, scale=0.8, border_style="none", padding="5px", margin="0"
+            ) if data_url_3d else ''
+            product_svg = render_product_svg_as_img(
+                data_url_prod, scale=0.8, border_style="none", padding="5px", margin="0"
+            ) if data_url_prod else ''
             
             _i18n = st.session_state.get("i18n_manager")
             steps_count = (
@@ -374,16 +377,17 @@ def _show_product_detail_card(product: str, workflow: Dict[str, Any]):
     if isinstance(pname, str) and pname.lower().startswith("product "):
         pname = pname[8:]
     
-    # Use scale=0.8 (160px) with minimal styling for better layout fit
-    header_prod_raw = asset_mgr.get_workpiece_svg(product, "product")
-    header_3d_raw = asset_mgr.get_workpiece_svg(product, "3dim")
+    # Use Base64 data URLs for Chromium compatibility (Chrome/Edge)
+    # This works around iframe CSS class handling issues
+    data_url_prod = asset_mgr.get_workpiece_svg_as_base64_data_url(product, "product")
+    data_url_3d = asset_mgr.get_workpiece_svg_as_base64_data_url(product, "3dim")
     
-    header_3d = render_product_svg_container(
-        header_3d_raw, scale=0.8, border_style="none", padding="5px", margin="0"
-    ) if header_3d_raw else ""
-    header_prod = render_product_svg_container(
-        header_prod_raw, scale=0.8, border_style="none", padding="5px", margin="0"
-    ) if header_prod_raw else ""
+    header_3d = render_product_svg_as_img(
+        data_url_3d, scale=0.8, border_style="none", padding="5px", margin="0"
+    ) if data_url_3d else ""
+    header_prod = render_product_svg_as_img(
+        data_url_prod, scale=0.8, border_style="none", padding="5px", margin="0"
+    ) if data_url_prod else ""
     st.markdown(
         f"""
         <div style='display:flex; align-items:center; gap:12px;'>
