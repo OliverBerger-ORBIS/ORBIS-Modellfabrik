@@ -228,15 +228,27 @@ def _show_parallel_processing_section(workflows: Dict[str, Any]):
 
             # Card header with workpiece product SVG (3D/product view)
             asset_mgr = get_asset_manager()
-            # Use larger scale (0.6 = 120px) for better visibility of 3dim SVGs
+            # Get raw SVGs without wrapping - render directly like product_catalog
             svg_3d_raw = asset_mgr.get_workpiece_svg(product, "3dim")
             svg_prod_raw = asset_mgr.get_workpiece_svg(product, "product")
-            product_svg_3d = render_product_svg_container(svg_3d_raw, scale=0.6) if svg_3d_raw else None
-            product_svg = render_product_svg_container(svg_prod_raw, scale=0.6) if svg_prod_raw else None
             if not svg_3d_raw:
                 st.warning(f"{product.lower()}_3dim.svg nicht gefunden – bitte Asset prüfen.")
             if not svg_prod_raw:
                 st.warning(f"{product.lower()}_product.svg nicht gefunden – bitte Asset prüfen.")
+            
+            # Inject explicit sizing directly into SVGs for consistent rendering
+            import re
+            def add_svg_size(svg, width_px):
+                if svg and '<svg' in svg:
+                    svg = re.sub(r'\s+width="[^"]*"', '', svg)
+                    svg = re.sub(r'\s+height="[^"]*"', '', svg)
+                    svg = re.sub(r'(<svg\s+[^>]*?)(>)', rf'\1 width="{width_px}px" height="{width_px}px"\2', svg, count=1)
+                return svg
+            
+            # 120px for each SVG (no container overhead)
+            svg_3d_sized = add_svg_size(svg_3d_raw, 120) if svg_3d_raw else ''
+            svg_prod_sized = add_svg_size(svg_prod_raw, 120) if svg_prod_raw else ''
+            
             _i18n = st.session_state.get("i18n_manager")
             steps_count = (
                 _i18n.t("ccu_process.processing.steps_count", count=len(steps))
@@ -246,9 +258,9 @@ def _show_parallel_processing_section(workflows: Dict[str, Any]):
             st.markdown(
                 f"""
             <div style="padding: 20px; background-color: {product_bg_colors[product]}; border-radius: 10px; margin: 10px 0; text-align:center;">
-                <div style="display:inline-flex; align-items:flex-start; gap:12px; justify-content:center;">
-                    <div style="background:#fff; border-radius:6px; padding:4px;">{product_svg_3d or ''}</div>
-                    <div style="background:#fff; border-radius:6px; padding:4px;">{product_svg or ''}</div>
+                <div style="display:inline-flex; align-items:center; gap:12px; justify-content:center;">
+                    {svg_3d_sized}
+                    {svg_prod_sized}
                 </div>
                 <div style="font-weight:700; font-size:18px; margin-top:8px;">{product} </div>
                 <div style="opacity:0.8;">{steps_count}</div>
@@ -366,11 +378,22 @@ def _show_product_detail_card(product: str, workflow: Dict[str, Any]):
     pname = pinfo.get("name", product)
     if isinstance(pname, str) and pname.lower().startswith("product "):
         pname = pname[8:]
-    # Render both 3DIM and PRODUCT with larger scale for better visibility
+    
+    # Get raw SVGs and inject sizing directly (like product_catalog approach)
     header_prod_raw = asset_mgr.get_workpiece_svg(product, "product")
     header_3d_raw = asset_mgr.get_workpiece_svg(product, "3dim")
-    header_prod = render_product_svg_container(header_prod_raw, scale=0.5) if header_prod_raw else ""
-    header_3d = render_product_svg_container(header_3d_raw, scale=0.5) if header_3d_raw else ""
+    
+    # Inject explicit sizing directly into SVGs
+    import re
+    def add_svg_size(svg, width_px):
+        if svg and '<svg' in svg:
+            svg = re.sub(r'\s+width="[^"]*"', '', svg)
+            svg = re.sub(r'\s+height="[^"]*"', '', svg)
+            svg = re.sub(r'(<svg\s+[^>]*?)(>)', rf'\1 width="{width_px}px" height="{width_px}px"\2', svg, count=1)
+        return svg
+    
+    header_3d = add_svg_size(header_3d_raw, 100) if header_3d_raw else ""
+    header_prod = add_svg_size(header_prod_raw, 100) if header_prod_raw else ""
     st.markdown(
         f"""
         <div style='display:flex; align-items:center; gap:12px;'>
