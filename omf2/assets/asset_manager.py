@@ -96,6 +96,87 @@ ASSET_MAPPINGS: Dict[str, Tuple[Optional[str], Optional[str]]] = {
 }
 
 
+def inline_svg_styles(svg_content: str) -> str:
+    """
+    Inlines SVG styles directly into elements for maximum browser compatibility.
+    Converts CSS classes to inline style attributes, which works better in Chromium browsers.
+    
+    This function:
+    1. Extracts CSS rules from <style> tags
+    2. Applies them as inline style attributes to matching elements
+    3. Removes the <style> section
+    
+    This ensures maximum cross-browser compatibility (Chrome, Safari, Edge, etc.)
+    """
+    # Check if SVG has a <style> section
+    if "<style>" not in svg_content and "<style " not in svg_content:
+        return svg_content
+    
+    # Extract the style content
+    style_pattern = r"<style[^>]*>(.*?)</style>"
+    style_match = re.search(style_pattern, svg_content, re.DOTALL)
+    
+    if not style_match:
+        return svg_content
+    
+    style_content = style_match.group(1)
+    
+    # Parse CSS rules into a dictionary: selector -> properties
+    css_rules = {}
+    css_rule_pattern = r"([^{]+)\{([^}]+)\}"
+    
+    for match in re.finditer(css_rule_pattern, style_content):
+        selector = match.group(1).strip()
+        properties = match.group(2).strip()
+        
+        # Handle multiple selectors separated by commas
+        for sel in selector.split(","):
+            sel = sel.strip()
+            if sel:
+                css_rules[sel] = properties
+    
+    # Apply inline styles to elements
+    result_svg = svg_content
+    
+    # Process each CSS class rule
+    for selector, properties in css_rules.items():
+        if selector.startswith("."):
+            # Class selector (e.g., .cls-1)
+            class_name = selector[1:]  # Remove the dot
+            
+            # Find all elements with this class and add inline style
+            # Match elements with the class, capturing everything up to the closing >
+            class_pattern = rf'(<[a-zA-Z]+[^>]*class="[^"]*\b{re.escape(class_name)}\b[^"]*"[^>]*)(/?>)'
+            
+            def add_inline_style(match):
+                element_start = match.group(1)
+                closing = match.group(2)  # either /> or >
+                
+                # Check if element already has a style attribute
+                if 'style="' in element_start:
+                    # Append to existing style (before the closing quote)
+                    element_start = re.sub(
+                        r'style="([^"]*)"',
+                        rf'style="\1;{properties}"',
+                        element_start
+                    )
+                else:
+                    # Add new style attribute before the closing
+                    element_start = f'{element_start} style="{properties}"'
+                
+                return element_start + closing
+            
+            result_svg = re.sub(class_pattern, add_inline_style, result_svg)
+    
+    # Remove the <style> section
+    result_svg = re.sub(style_pattern, "", result_svg, flags=re.DOTALL)
+    
+    # Remove <defs> if it's now empty (only had <style>)
+    result_svg = re.sub(r"<defs>\s*</defs>", "", result_svg)
+    
+    return result_svg
+
+
 def scope_svg_styles(svg_content: str) -> str:
     """
     Scopes SVG styles to prevent CSS class conflicts when multiple SVGs are embedded.
@@ -106,66 +187,11 @@ def scope_svg_styles(svg_content: str) -> str:
     3. Scopes all CSS selectors in the <style> section to that unique ID
 
     This ensures that CSS classes like .cls-1, .cls-2 don't conflict between different SVGs.
+    
+    NOTE: For Chromium browser compatibility, use inline_svg_styles() instead.
     """
-    # Generate unique ID for this SVG instance
-    unique_id = f"svg-{uuid.uuid4().hex[:8]}"
-
-    # Check if SVG has a <style> section that needs scoping
-    if "<style>" not in svg_content and "<style " not in svg_content:
-        # No style section, return as-is
-        return svg_content
-
-    # Extract the style content
-    style_pattern = r"<style[^>]*>(.*?)</style>"
-    style_match = re.search(style_pattern, svg_content, re.DOTALL)
-
-    if not style_match:
-        return svg_content
-
-    style_content = style_match.group(1)
-
-    # Scope all CSS selectors by prepending with #unique_id
-    # Match CSS selectors (e.g., .cls-1, #id, element)
-    # This regex matches CSS rules like: .cls-1{fill:#000;}
-    def scope_selector(match):
-        selector = match.group(1).strip()
-        properties = match.group(2)
-
-        # Split multiple selectors (e.g., ".cls-1, .cls-2")
-        selectors = [s.strip() for s in selector.split(",")]
-
-        # Scope each selector
-        scoped_selectors = []
-        for sel in selectors:
-            # Don't scope @-rules or already scoped selectors
-            if sel.startswith("@") or sel.startswith("#" + unique_id):
-                scoped_selectors.append(sel)
-            else:
-                scoped_selectors.append(f"#{unique_id} {sel}")
-
-        return ",".join(scoped_selectors) + "{" + properties + "}"
-
-    # Pattern to match CSS rules: selector{properties}
-    css_rule_pattern = r"([^{]+)\{([^}]+)\}"
-    scoped_style_content = re.sub(css_rule_pattern, scope_selector, style_content)
-
-    # Replace the style content with scoped version
-    scoped_svg = svg_content.replace(style_content, scoped_style_content)
-
-    # Wrap the SVG content in a group with the unique ID
-    # Find the opening <svg> tag and insert a <g id="unique_id"> after it
-    svg_tag_pattern = r"(<svg[^>]*>)"
-
-    def add_group(match):
-        svg_tag = match.group(1)
-        return f'{svg_tag}<g id="{unique_id}">'
-
-    scoped_svg = re.sub(svg_tag_pattern, add_group, scoped_svg, count=1)
-
-    # Close the group before the closing </svg> tag
-    scoped_svg = scoped_svg.replace("</svg>", "</g></svg>", 1)
-
-    return scoped_svg
+    # For Chromium compatibility, use inline styles instead of scoped classes
+    return inline_svg_styles(svg_content)
 
 
 class OMF2AssetManager:
