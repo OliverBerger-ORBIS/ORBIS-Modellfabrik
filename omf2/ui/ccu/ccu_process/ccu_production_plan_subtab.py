@@ -232,21 +232,25 @@ def _show_parallel_processing_section(workflows: Dict[str, Any]):
             # This works around iframe CSS class handling issues
             data_url_3d = asset_mgr.get_workpiece_svg_as_base64_data_url(product, "3dim")
             data_url_prod = asset_mgr.get_workpiece_svg_as_base64_data_url(product, "product")
-            
+
             if not data_url_3d:
                 st.warning(f"{product.lower()}_3dim.svg nicht gefunden – bitte Asset prüfen.")
             if not data_url_prod:
                 st.warning(f"{product.lower()}_product.svg nicht gefunden – bitte Asset prüfen.")
-            
+
             # Use scale=0.8 (160px) with minimal styling for better layout fit
             # Base64 data URLs work in all browsers (Chrome, Safari, Edge, Firefox)
-            product_svg_3d = render_product_svg_as_img(
-                data_url_3d, scale=0.8, border_style="none", padding="5px", margin="0"
-            ) if data_url_3d else ''
-            product_svg = render_product_svg_as_img(
-                data_url_prod, scale=0.8, border_style="none", padding="5px", margin="0"
-            ) if data_url_prod else ''
-            
+            product_svg_3d = (
+                render_product_svg_as_img(data_url_3d, scale=0.8, border_style="none", padding="5px", margin="0")
+                if data_url_3d
+                else ""
+            )
+            product_svg = (
+                render_product_svg_as_img(data_url_prod, scale=0.8, border_style="none", padding="5px", margin="0")
+                if data_url_prod
+                else ""
+            )
+
             _i18n = st.session_state.get("i18n_manager")
             steps_count = (
                 _i18n.t("ccu_process.processing.steps_count", count=len(steps))
@@ -376,18 +380,22 @@ def _show_product_detail_card(product: str, workflow: Dict[str, Any]):
     pname = pinfo.get("name", product)
     if isinstance(pname, str) and pname.lower().startswith("product "):
         pname = pname[8:]
-    
+
     # Use Base64 data URLs for Chromium compatibility (Chrome/Edge)
     # This works around iframe CSS class handling issues
     data_url_prod = asset_mgr.get_workpiece_svg_as_base64_data_url(product, "product")
     data_url_3d = asset_mgr.get_workpiece_svg_as_base64_data_url(product, "3dim")
-    
-    header_3d = render_product_svg_as_img(
-        data_url_3d, scale=0.8, border_style="none", padding="5px", margin="0"
-    ) if data_url_3d else ""
-    header_prod = render_product_svg_as_img(
-        data_url_prod, scale=0.8, border_style="none", padding="5px", margin="0"
-    ) if data_url_prod else ""
+
+    header_3d = (
+        render_product_svg_as_img(data_url_3d, scale=0.8, border_style="none", padding="5px", margin="0")
+        if data_url_3d
+        else ""
+    )
+    header_prod = (
+        render_product_svg_as_img(data_url_prod, scale=0.8, border_style="none", padding="5px", margin="0")
+        if data_url_prod
+        else ""
+    )
     st.markdown(
         f"""
         <div style='display:flex; align-items:center; gap:12px;'>

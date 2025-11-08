@@ -417,6 +417,7 @@ def _render_workpiece_section(
                     # smaller scale to improve responsiveness in narrow viewports
                     # Use Base64 data URL approach for consistent rendering
                     import base64
+
                     palett_b64 = base64.b64encode(palett_content.encode("utf-8")).decode("utf-8")
                     palett_data_url = f"data:image/svg+xml;base64,{palett_b64}"
                     items_html += f"<div>{render_product_svg_as_img(palett_data_url, scale=0.4)}</div>"
