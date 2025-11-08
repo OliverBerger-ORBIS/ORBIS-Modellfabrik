@@ -364,7 +364,7 @@ class OMF2AssetManager:
 
         Returns:
             Base64-encoded data URL (data:image/svg+xml;base64,...) oder None
-        
+
         Note:
             Diese Methode umgeht Chromium's iframe CSS-Klassen-Problem durch
             Base64-Encoding des kompletten SVG. Dies funktioniert in allen Browsern.
@@ -372,11 +372,11 @@ class OMF2AssetManager:
         svg_content = self._get_workpiece_svg_with_scoping(color, pattern)
         if not svg_content:
             return None
-        
+
         try:
             # Encode SVG content to Base64
-            svg_bytes = svg_content.encode('utf-8')
-            base64_encoded = base64.b64encode(svg_bytes).decode('utf-8')
+            svg_bytes = svg_content.encode("utf-8")
+            base64_encoded = base64.b64encode(svg_bytes).decode("utf-8")
             return f"data:image/svg+xml;base64,{base64_encoded}"
         except Exception as e:
             logger.error(f"Fehler beim Base64-Encoding der Workpiece-SVG {color}_{pattern}: {e}")

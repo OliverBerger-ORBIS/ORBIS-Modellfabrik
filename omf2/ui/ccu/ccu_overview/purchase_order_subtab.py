@@ -76,7 +76,9 @@ def _render_workpiece_section(
                 # Using Base64 data URLs with scale=0.5 (100px) for palett SVGs
                 palett_html = ""
                 for _i in range(need):
-                    palett_html += render_product_svg_as_img(palett_data_url, scale=0.5, border_style="none", padding="2px", margin="2px")
+                    palett_html += render_product_svg_as_img(
+                        palett_data_url, scale=0.5, border_style="none", padding="2px", margin="2px"
+                    )
                 st.markdown(palett_html, unsafe_allow_html=True)
             else:
                 st.error(f"❌ {i18n.t('ccu_overview.errors.palett_not_found')}")
