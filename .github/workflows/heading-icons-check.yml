@@ -1,5 +1,10 @@
 name: Heading Icons QA
-on: [push, pull_request]
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
 jobs:
   check-heading-svgs:
     runs-on: ubuntu-latest
