@@ -10,6 +10,16 @@ Branch‑Konzept
 - Neues Quellverzeichnis: `omf3/` (enthält neue Angular‑Sources, Docs, Skripte)
 - omf2 bleibt bestehen und wird nicht verändert während Migration.
 
+## Nx Workspace
+
+- Node/Nx Setup liegt im Repo-Root (`package.json`, `nx.json`, `tsconfig.base.json`).
+- Libraries werden unter `omf3/libs/*` verwaltet; Apps folgen später unter `omf3/apps/*`.
+- Nützliche Befehle:
+  - `npm install` – Dependencies aufsetzen
+  - `npm run test` – führt `nx test mqtt-client` aus (aktuell einzige Library)
+  - `nx graph` – Abhängigkeitsgraph der OMF3-Module
+  - `nx build mqtt-client` – TypeScript-Build der MQTT-Client-Library
+
 Sofort‑ToDos (MVP)
 1. Projekt‑Scaffold
    - Angular skeleton, CI/CD placeholder, README + CONTRIBUTING.
