@@ -189,9 +189,7 @@ class TestStRerunForbidden(unittest.TestCase):
                     if "Refresh Dashboard" in line and "st.sidebar.button" in line:
                         continue
                     # Allow refresh button in header (line ~71: refresh button with key="header_refresh_button")
-                    if 'key="header_refresh_button"' in line or (
-                        "refresh_icon" in line and "st.button" in line
-                    ):
+                    if 'key="header_refresh_button"' in line or ("refresh_icon" in line and "st.button" in line):
                         continue
 
                 for pattern in forbidden_patterns:
