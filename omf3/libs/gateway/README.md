@@ -27,7 +27,8 @@ gateway.orders$.subscribe((order) => console.log(order.orderId));
 The included unit test shows how to feed a `Subject` with mock messages. Run:
 
 ```bash
-npx tsx omf3/libs/gateway/src/__tests__/gateway.spec.ts
+npm run test -- --target=gateway:test  # or: nx test gateway
+nx build gateway                       # optional TypeScript build
 ```
 
 ## Notes

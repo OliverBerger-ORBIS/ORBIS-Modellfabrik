@@ -3,7 +3,7 @@ import test from 'node:test';
 
 import { Subject, firstValueFrom } from 'rxjs';
 
-import { createGateway, RawMqttMessage } from '../index';
+import { createGateway, RawMqttMessage } from '@omf3/gateway';
 
 const createMessage = (topic: string, payload: unknown): RawMqttMessage => ({
   topic,

@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs';
-import { filter, map, share } from 'rxjs/operators';
+import { filter, map, shareReplay } from 'rxjs/operators';
 
 import {
   safeJsonParse,
@@ -7,7 +7,7 @@ import {
   StockMessage,
   ModuleState,
   FtsState,
-} from '../../entities/src';
+} from '@omf3/entities';
 
 /**
  * Expected incoming message shape (from mqtt-client.messages$)
@@ -37,7 +37,7 @@ const parsePayload = <T>(payload: unknown): T | null => {
 export const createGateway = (
   mqttMessages$: Observable<RawMqttMessage>
 ): GatewayStreams => {
-  const shared = mqttMessages$.pipe(share());
+  const shared = mqttMessages$.pipe(shareReplay({ bufferSize: 1, refCount: true }));
 
   const orders$ = shared.pipe(
     filter((msg) => matchTopic(msg.topic, 'ccu/order')),
