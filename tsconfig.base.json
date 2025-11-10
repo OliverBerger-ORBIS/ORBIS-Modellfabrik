@@ -14,9 +14,9 @@
     "types": ["node"],
     "paths": {
       "@omf3/entities": ["omf3/libs/entities/src/index.ts"],
-      "@omf3/mqtt-client": ["omf3/libs/mqtt-client/src/index.ts"]
+      "@omf3/mqtt-client": ["omf3/libs/mqtt-client/src/index.ts"],
+      "@omf3/gateway": ["omf3/libs/gateway/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
 }
-
