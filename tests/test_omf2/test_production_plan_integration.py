@@ -137,7 +137,7 @@ class ProductionPlanIntegrationTest(unittest.TestCase):
         print(f"   📨 Loaded {len(messages)} messages from session")
 
         # Filtere Module State Messages für eine spezifische Order
-        order_id = "258beef9-6001-43a2-b7d4-01ed50f4b155"
+        order_id = "bd3ac19a-615b-4cea-8527-af10b2ca1eff"
         order_messages = []
 
         for message in messages:

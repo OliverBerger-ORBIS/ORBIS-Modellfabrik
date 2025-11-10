@@ -16,7 +16,7 @@ class ProductionOrderGuiIntegrationTest(unittest.TestCase):
     def setUp(self):
         """Setup Test Environment"""
         self.manager = OrderManager()
-        self.order_id = "258beef9-6001-43a2-b7d4-01ed50f4b155"
+        self.order_id = "bd3ac19a-615b-4cea-8527-af10b2ca1eff"
 
     def test_production_order_gui_display(self):
         """Test: Production Order GUI Display nach MQTT Message Processing"""

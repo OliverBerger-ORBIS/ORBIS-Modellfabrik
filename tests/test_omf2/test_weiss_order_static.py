@@ -118,7 +118,7 @@ class WeissOrderStaticTest(unittest.TestCase):
 
     def test_weiss_order_258beef9_detailed_analysis(self):
         """Detaillierte Analyse der Order 258beef9 (Weiß)"""
-        order_id = "258beef9-6001-43a2-b7d4-01ed50f4b155"
+        order_id = "bd3ac19a-615b-4cea-8527-af10b2ca1eff"
         order_messages = self._extract_order_messages(order_id)
 
         self.assertGreater(len(order_messages), 0, f"Keine Messages für Order {order_id} gefunden")
@@ -241,7 +241,7 @@ class WeissOrderStaticTest(unittest.TestCase):
 
     def test_production_order_manager_integration(self):
         """Test ProductionOrderManager Integration mit echten Daten"""
-        order_id = "258beef9-6001-43a2-b7d4-01ed50f4b155"
+        order_id = "bd3ac19a-615b-4cea-8527-af10b2ca1eff"
         order_messages = self._extract_order_messages(order_id)
 
         print("\n🧪 PRODUCTION ORDER MANAGER INTEGRATION TEST:")

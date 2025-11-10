@@ -1,3 +1,10 @@
 node_modules/
 dist/
 .env
+
+# OS-specific and cache files
+.DS_Store
+__pycache__/
+*.pyc
+logs/
+orbis_modellfabrik.egg-info/
