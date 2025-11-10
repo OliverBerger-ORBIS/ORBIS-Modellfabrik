@@ -52,7 +52,7 @@ class TestCcuFrontendConsumer:
                 ccu_active_messages = []
 
                 # Sammle alle ccu/order/active Messages
-                for line_num, line in enumerate(f, 1):
+                for _line_num, line in enumerate(f, 1):
                     if line.strip():
                         try:
                             message = json.loads(line.strip())
@@ -86,7 +86,7 @@ class TestCcuFrontendConsumer:
 
                 # Test: Gateway Processing
                 result = self.gateway.on_mqtt_message(topic, payload, meta)
-                assert result == True, f"Gateway processing failed for {topic}"
+                assert result, f"Gateway processing failed for {topic}"
                 print(f"✅ Gateway Result: {result}")
 
                 # Test: OrderManager
@@ -169,7 +169,7 @@ class TestCcuFrontendConsumer:
 
         # Test: Gateway Processing (mit Schema-Validierung)
         result = self.gateway.on_mqtt_message("ccu/order/active", valid_message, {"timestamp": "2025-01-01T12:00:00Z"})
-        assert result == True, "Schema validation should pass for valid message"
+        assert result, "Schema validation should pass for valid message"
 
         # Test: OrderManager Processing
         self.manager.process_ccu_order_active("ccu/order/active", valid_message, {"timestamp": "2025-01-01T12:00:00Z"})
@@ -188,7 +188,7 @@ class TestCcuFrontendConsumer:
 
         # Test: Gateway Processing
         result = self.gateway.on_mqtt_message("ccu/order/active", empty_message, {"timestamp": "2025-01-01T12:00:00Z"})
-        assert result == True, "Empty array should be valid"
+        assert result, "Empty array should be valid"
 
         # Test: OrderManager Processing
         initial_count = len(self.manager.mqtt_steps)

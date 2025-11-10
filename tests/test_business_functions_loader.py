@@ -322,7 +322,9 @@ class TestBusinessFunctionsValidation:
             from omf2.config.schemas.business_functions_schema import is_pydantic_available
 
             if is_pydantic_available():
-                with pytest.raises(Exception):
+                from pydantic import ValidationError
+
+                with pytest.raises(ValidationError):
                     self.loader.load_validated()
             else:
                 # Without pydantic, no validation
@@ -347,7 +349,9 @@ class TestBusinessFunctionsValidation:
             from omf2.config.schemas.business_functions_schema import is_pydantic_available
 
             if is_pydantic_available():
-                with pytest.raises(Exception):
+                from pydantic import ValidationError
+
+                with pytest.raises(ValidationError):
                     self.loader.load_validated()
             else:
                 # Without pydantic, loads as-is

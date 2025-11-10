@@ -107,8 +107,8 @@ class TestModuleDetailsIntegration:
                 # Test module manager functionality
                 status = mock_module_manager.get_module_status_from_state("SVR4H73275")
                 factsheet = mock_module_manager.get_module_factsheet_status("SVR4H73275")
-                assert status["connected"] == True
-                assert factsheet["configured"] == True
+                assert status["connected"]
+                assert factsheet["configured"]
             except Exception as e:
                 pytest.fail(f"Module manager integration failed: {e}")
 

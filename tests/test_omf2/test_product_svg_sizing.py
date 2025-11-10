@@ -38,8 +38,8 @@ class TestWarehouseGridLayout(unittest.TestCase):
 
         self.assertEqual(len(expected_positions), 9)
         # Verify structure is 3x3
-        rows = set([pos[0] for pos in expected_positions])
-        cols = set([pos[1] for pos in expected_positions])
+        rows = {pos[0] for pos in expected_positions}
+        cols = {pos[1] for pos in expected_positions}
         self.assertEqual(len(rows), 3)  # 3 rows: A, B, C
         self.assertEqual(len(cols), 3)  # 3 columns: 1, 2, 3
 

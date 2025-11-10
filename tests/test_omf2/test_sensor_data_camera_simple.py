@@ -5,6 +5,7 @@ Focus on testing core logic without complex Streamlit mocking
 """
 
 import base64
+import binascii
 from datetime import datetime
 from unittest.mock import Mock, patch
 
@@ -205,7 +206,7 @@ class TestImageProcessing:
         invalid_base64 = "invalid_base64_data!!!"
 
         # Test that it raises an exception when decoded
-        with pytest.raises(Exception):
+        with pytest.raises(binascii.Error):
             base64.b64decode(invalid_base64)
 
 
