@@ -130,7 +130,7 @@ class TestGetIconHtmlWithModuleIcons(unittest.TestCase):
         # Asset icon returns None -> fall back to module icons via get_asset_content
         mock_am = MagicMock()
         mock_am.get_asset_inline.return_value = None  # First call returns None
-        
+
         # Second call: get_asset_content returns SVG content (new API)
         svg_content = self.svg_file.read_text(encoding="utf-8")
         mock_am.get_asset_content.return_value = svg_content
@@ -152,10 +152,10 @@ class TestGetIconHtmlWithModuleIcons(unittest.TestCase):
     def test_module_icon_with_scoping(self, mock_get_am):
         """Test: CSS-Scoping wird auf Module-Icon angewendet"""
         from omf2.assets.asset_manager import scope_svg_styles
-        
+
         mock_am = MagicMock()
         mock_am.get_asset_inline.return_value = None  # First call returns None
-        
+
         # Second call: get_asset_content returns SVG content with style section (already scoped)
         # get_asset_content(scoped=True) applies scoping in asset_manager, so return scoped version
         svg_with_style = """<svg viewBox="0 0 24 24" width="100" height="100">
@@ -183,7 +183,7 @@ class TestGetIconHtmlWithModuleIcons(unittest.TestCase):
         """Test: Module-Icon-Key ist case-insensitive (wird zu uppercase konvertiert)"""
         mock_am = MagicMock()
         mock_am.get_asset_inline.return_value = None  # First call returns None
-        
+
         # Second call: get_asset_content returns SVG content (new API)
         svg_content = self.svg_file.read_text(encoding="utf-8")
         mock_am.get_asset_content.return_value = svg_content

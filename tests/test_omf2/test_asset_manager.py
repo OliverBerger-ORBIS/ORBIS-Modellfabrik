@@ -272,8 +272,8 @@ class TestCoreAssetMethods(unittest.TestCase):
             self._create_test_icon("bohrer.svg")  # DRILL
             self._create_test_icon("milling-machine.svg")  # MILL
             self._create_test_icon("ORBIS_logo_RGB.svg")  # ORBIS
-            (self.placeholders_dir / "empty.svg").write_text('<svg><circle /></svg>', encoding="utf-8")
-            (self.placeholders_dir / "question.svg").write_text('<svg><circle /></svg>', encoding="utf-8")
+            (self.placeholders_dir / "empty.svg").write_text("<svg><circle /></svg>", encoding="utf-8")
+            (self.placeholders_dir / "question.svg").write_text("<svg><circle /></svg>", encoding="utf-8")
 
     def tearDown(self):
         """Cleanup nach jedem Test"""
@@ -341,7 +341,7 @@ class TestCoreAssetMethods(unittest.TestCase):
         """Test: get_asset_inline mit size_px"""
         result = self.asset_manager.get_asset_inline("HBW", size_px=32)
         self.assertIsNotNone(result)
-        self.assertIn("width=\"32\"", result)
+        self.assertIn('width="32"', result)
 
     def test_get_asset_inline_with_color(self):
         """Test: get_asset_inline mit color"""
@@ -351,7 +351,7 @@ class TestCoreAssetMethods(unittest.TestCase):
         # Simple test SVGs might not use these, so color might not appear
         # This is correct behavior - just verify method doesn't crash
         self.assertIn("<svg", result)
-        self.assertIn("width=\"24\"", result)
+        self.assertIn('width="24"', result)
 
 
 class TestShopfloorAssets(unittest.TestCase):
@@ -375,9 +375,7 @@ class TestShopfloorAssets(unittest.TestCase):
         self._create_test_svg("warehouse.svg")  # DPS_SQUARE1
         self._create_test_svg("order-tracking.svg")  # DPS_SQUARE2
         # Empty in placeholders
-        (self.placeholders_dir / "empty.svg").write_text(
-            '<svg viewBox="0 0 24 24"><circle /></svg>', encoding="utf-8"
-        )
+        (self.placeholders_dir / "empty.svg").write_text('<svg viewBox="0 0 24 24"><circle /></svg>', encoding="utf-8")
 
         # Mock assets_dir and svg_dir, use ASSET_MAPPINGS-based system
         with patch.object(OMF2AssetManager, "__init__", lambda x: None):
@@ -471,9 +469,7 @@ class TestIconVisibilityAtPositions(unittest.TestCase):
         # Create test SVG files for positions [0,0] and [0,3]
         self._create_test_svg("ORBIS_logo_RGB.svg")
         self._create_test_svg("information-technology.svg")
-        (self.placeholders_dir / "empty.svg").write_text(
-            '<svg viewBox="0 0 24 24"><circle /></svg>', encoding="utf-8"
-        )
+        (self.placeholders_dir / "empty.svg").write_text('<svg viewBox="0 0 24 24"><circle /></svg>', encoding="utf-8")
 
         # Mock assets_dir and svg_dir
         with patch.object(OMF2AssetManager, "__init__", lambda x: None):

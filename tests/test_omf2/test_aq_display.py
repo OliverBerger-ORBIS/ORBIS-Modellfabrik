@@ -58,7 +58,7 @@ class TestAQDisplay:
         # Excellent range [0, 1) - upper bound exclusive
         assert aq_label(0.5) == "ccu_overview.sensor_data.aq.label_excellent"
         assert aq_label(0.9) == "ccu_overview.sensor_data.aq.label_excellent"
-        
+
         # Good range [1, 2) - 1.0 belongs to this range
         assert aq_label(1.0) == "ccu_overview.sensor_data.aq.label_good"
         assert aq_label(1.1) == "ccu_overview.sensor_data.aq.label_good"
