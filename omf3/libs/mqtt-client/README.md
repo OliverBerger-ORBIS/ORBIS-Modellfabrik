@@ -32,12 +32,9 @@ await client.publish('ccu/orders/active', { orderId: '42' });
 The library ships with a basic unit test backed by the mock adapter:
 
 ```bash
-node --test omf3/libs/mqtt-client/src/__tests__/mqtt-client.spec.ts
+npm run test          # executes `nx test mqtt-client`
+nx build mqtt-client  # optional TypeScript build output
 ```
-
-When Nx tests are configured you can add a dedicated target or integrate into
-`nx affected --target=test`. For now this simple check ensures the wrapper and
-mock behave as expected.
 
 ## Notes
 
@@ -45,10 +42,3 @@ mock behave as expected.
 - Real MQTT integration (e.g. using `mqtt` npm package) should implement the
   `MqttAdapter` interface and feed the wrapper.
 - Higher-level parsing lives in `libs/gateway`.
-# mqtt-client
-
-This library was generated with [Nx](https://nx.dev).
-
-## Building
-
-Run `nx build mqtt-client` to build the library.

@@ -1,0 +1,21 @@
+{
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "name": "entities",
+  "projectType": "library",
+  "root": "omf3/libs/entities",
+  "sourceRoot": "omf3/libs/entities/src",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/entities",
+        "tsConfig": "omf3/libs/entities/tsconfig.lib.json",
+        "main": "omf3/libs/entities/src/index.ts",
+        "assets": []
+      }
+    }
+  },
+  "tags": ["scope:shared", "type:lib"]
+}
+
