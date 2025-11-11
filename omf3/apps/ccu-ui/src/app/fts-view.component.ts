@@ -13,7 +13,7 @@ import type { Observable } from 'rxjs';
   template: `
     <section class="panel">
       <header>
-        <h2>FTS Fleet</h2>
+        <h2 i18n="@@ftsHeadline">FTS Fleet</h2>
       </header>
 
       <ng-container *ngIf="ftsStates$ | async as fts">
@@ -21,7 +21,7 @@ import type { Observable } from 'rxjs';
           <li *ngFor="let entry of fts | keyvalue">
             <div class="fts-id">{{ entry.key }}</div>
             <div class="status" [class]="entry.value.status">
-              {{ entry.value.status || 'unknown' }}
+              {{ entry.value.status || unknownLabel }}
             </div>
             <div class="coords" *ngIf="entry.value.position as pos">
               ({{ pos.x }}, {{ pos.y }})
@@ -31,7 +31,7 @@ import type { Observable } from 'rxjs';
       </ng-container>
 
       <ng-template #noFts>
-        <p class="empty">No FTS telemetry received yet.</p>
+        <p class="empty" i18n="@@ftsEmptyState">No FTS telemetry received yet.</p>
       </ng-template>
     </section>
   `,
@@ -40,6 +40,8 @@ import type { Observable } from 'rxjs';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FtsViewComponent {
+  readonly unknownLabel = $localize`:@@ftsStatusUnknown:unknown`;
+
   @Input({ required: true })
   ftsStates$!: Observable<Record<string, FtsState>>;
 }

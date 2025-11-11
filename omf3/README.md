@@ -21,6 +21,18 @@ Branch‑Konzept
   - `nx serve ccu-ui` – Mock-Dashboard mit Angular starten
   - `nx test ccu-ui` – Smoke-Test der UI-Komponenten
   - `npm run build:fixtures` – aktualisiert die Replay-Fixtures aus realen Sessions
+  - `nx serve ccu-ui --configuration=development` – Entwicklungsserver (Locale `en`)
+  - `nx build ccu-ui --configuration=production` – erstellt Bundles für `en`, `de`, `fr`
+
+### Dashboard-Navigation & I18n
+
+- Tabs: **Overview**, **Order**, **Process**, **Configuration**, **Module**
+  - Overview zeigt das bestehende Fixture-Dashboard (Orders, Stock, Module, FTS).
+  - Weitere Reiter sind vorbereitet und werden sukzessive mit Funktion gefüllt.
+- Angular-i18n (`@angular/localize`) mit Locale-Dateien unter `omf3/apps/ccu-ui/src/locale/`
+  - Quelle: `en`
+  - Übersetzungen: `de`, `fr`
+  - Build-Konfigurationen erzeugen alle drei Sprachen (`dist/apps/ccu-ui/<locale>`).
 
 ### Fixtures & Replay
 
