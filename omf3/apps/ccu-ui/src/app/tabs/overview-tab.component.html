@@ -1,0 +1,22 @@
+<section class="overview-header">
+  <span class="badge" i18n="@@overviewMockData">Mock Data</span>
+
+  <div class="fixture-switch">
+    <button
+      type="button"
+      *ngFor="let fixture of fixtureOptions"
+      [class.active]="fixture === activeFixture"
+      (click)="loadFixture(fixture)"
+    >
+      {{ fixtureLabels[fixture] }}
+    </button>
+  </div>
+</section>
+
+<div class="overview-grid">
+  <app-orders-view [orders$]="orders$" [counts$]="orderCounts$" />
+  <app-stock-view [stockByPart$]="stockByPart$" />
+  <app-module-map [moduleStates$]="moduleStates$" />
+  <app-fts-view [ftsStates$]="ftsStates$" />
+</div>
+

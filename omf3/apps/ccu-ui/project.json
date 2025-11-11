@@ -5,6 +5,13 @@
   "prefix": "app",
   "sourceRoot": "omf3/apps/ccu-ui/src",
   "tags": [],
+  "i18n": {
+    "sourceLocale": "en",
+    "locales": {
+      "de": "omf3/apps/ccu-ui/src/locale/messages.de.json",
+      "fr": "omf3/apps/ccu-ui/src/locale/messages.fr.json"
+    }
+  },
   "targets": {
     "build": {
       "executor": "@angular-devkit/build-angular:application",
@@ -34,7 +41,10 @@
         "styles": [
           "omf3/apps/ccu-ui/src/styles.scss"
         ],
-        "scripts": []
+        "scripts": [],
+        "localize": [
+          "en"
+        ]
       },
       "configurations": {
         "production": {
@@ -50,12 +60,20 @@
               "maximumError": "4kb"
             }
           ],
-          "outputHashing": "all"
+          "outputHashing": "all",
+          "localize": [
+            "en",
+            "de",
+            "fr"
+          ]
         },
         "development": {
           "optimization": false,
           "extractLicenses": false,
-          "sourceMap": true
+          "sourceMap": true,
+          "localize": [
+            "en"
+          ]
         }
       },
       "defaultConfiguration": "production"

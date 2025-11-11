@@ -12,15 +12,15 @@ import type { Observable } from 'rxjs';
   template: `
     <section class="panel">
       <header>
-        <h2>Stock Levels</h2>
+        <h2 i18n="@@stockHeadline">Stock Levels</h2>
       </header>
 
       <ng-container *ngIf="stockByPart$ | async as stock">
         <table *ngIf="(stock | keyvalue).length; else noStock">
           <thead>
             <tr>
-              <th>Part</th>
-              <th class="amount">Quantity</th>
+              <th i18n="@@stockPartColumn">Part</th>
+              <th class="amount" i18n="@@stockQuantityColumn">Quantity</th>
             </tr>
           </thead>
           <tbody>
@@ -33,7 +33,7 @@ import type { Observable } from 'rxjs';
       </ng-container>
 
       <ng-template #noStock>
-        <p class="empty">No stock movements received.</p>
+        <p class="empty" i18n="@@stockEmptyState">No stock movements received.</p>
       </ng-template>
     </section>
   `,

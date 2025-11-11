@@ -13,16 +13,16 @@ import type { Observable } from 'rxjs';
   template: `
     <section class="panel">
       <header>
-        <h2>Orders</h2>
+        <h2 i18n="@@ordersHeadline">Orders</h2>
         <div class="status-badges" *ngIf="counts$ | async as counts">
-          <span class="badge running">Running: {{ counts.running }}</span>
-          <span class="badge queued">Queued: {{ counts.queued }}</span>
-          <span class="badge completed">Completed: {{ counts.completed }}</span>
+          <span class="badge running" i18n="@@ordersBadgeRunning">Running: {{ counts.running }}</span>
+          <span class="badge queued" i18n="@@ordersBadgeQueued">Queued: {{ counts.queued }}</span>
+          <span class="badge completed" i18n="@@ordersBadgeCompleted">Completed: {{ counts.completed }}</span>
         </div>
       </header>
 
       <p class="empty" *ngIf="(orders$ | async)?.length === 0">
-        No active orders.
+        <span i18n="@@ordersEmptyState">No active orders.</span>
       </p>
 
       <ul *ngIf="orders$ | async as orders">
@@ -30,7 +30,7 @@ import type { Observable } from 'rxjs';
           <div class="order-id">{{ order.orderId }}</div>
           <div class="order-meta">
             <span>{{ order.productId }}</span>
-            <span>Qty {{ order.quantity }}</span>
+            <span i18n="@@ordersQuantity">Qty {{ order.quantity }}</span>
           </div>
           <span class="pill" [class]="order.status">{{ order.status }}</span>
         </li>

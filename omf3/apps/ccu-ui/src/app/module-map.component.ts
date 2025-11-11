@@ -13,7 +13,7 @@ import type { Observable } from 'rxjs';
   template: `
     <section class="panel">
       <header>
-        <h2>Module Status</h2>
+        <h2 i18n="@@moduleStatusHeadline">Module Status</h2>
       </header>
 
       <ng-container *ngIf="moduleStates$ | async as modules">
@@ -41,7 +41,7 @@ import type { Observable } from 'rxjs';
       </ng-container>
 
       <ng-template #noModules>
-        <p class="empty">Awaiting module telemetry.</p>
+        <p class="empty" i18n="@@moduleStatusEmptyState">Awaiting module telemetry.</p>
       </ng-template>
     </section>
   `,
