@@ -2,3 +2,8 @@ node_modules/
 dist/
 .nx/
 .env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
