@@ -20,6 +20,17 @@ Branch‑Konzept
   - `nx build mqtt-client` – TypeScript-Build der MQTT-Client-Library
   - `nx serve ccu-ui` – Mock-Dashboard mit Angular starten
   - `nx test ccu-ui` – Smoke-Test der UI-Komponenten
+  - `npm run build:fixtures` – aktualisiert die Replay-Fixtures aus realen Sessions
+
+### Fixtures & Replay
+
+- Rohdaten liegen unter `data/omf-data/sessions/production_order_*.log`.
+- `scripts/build_order_fixtures.py` filtert die relevanten Topics (Orders/Module/FTS)
+  und schreibt kompakte JSONL-Dateien nach `omf3/testing/fixtures/orders/<name>/orders.log`.
+- `libs/testing-fixtures` stellt `createOrderFixtureStream()` bereit – der Angular Mock-Dashboard
+  lädt diese Dateien als statische Assets (`/fixtures/orders/**`).
+- Neue Aufzeichnungen: `python scripts/build_order_fixtures.py --only mixed` für selektiven Rebuild
+  oder `npm run build:fixtures` für alle Pakete.
 
 Sofort‑ToDos (MVP)
 1. Projekt‑Scaffold

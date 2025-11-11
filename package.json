@@ -7,7 +7,8 @@
     "nx": "nx",
     "graph": "nx graph",
     "test": "nx test mqtt-client",
-    "build": "nx build mqtt-client"
+    "build": "nx build mqtt-client",
+    "build:fixtures": "python scripts/build_order_fixtures.py"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~18.2.0",

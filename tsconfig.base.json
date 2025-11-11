@@ -33,6 +33,10 @@
       "@omf3/mqtt-client": [
         "dist/out-tsc/mqtt-client/index.d.ts",
         "omf3/libs/mqtt-client/src/index.ts"
+      ],
+      "@omf3/testing-fixtures": [
+        "dist/out-tsc/testing-fixtures/index.d.ts",
+        "omf3/libs/testing-fixtures/src/index.ts"
       ]
     }
   },

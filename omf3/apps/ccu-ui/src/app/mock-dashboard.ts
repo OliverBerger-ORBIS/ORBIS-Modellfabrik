@@ -1,59 +1,33 @@
 import { createBusiness } from '@omf3/business';
 import { createGateway, type RawMqttMessage } from '@omf3/gateway';
-import { createMqttClient, MockMqttAdapter } from '@omf3/mqtt-client';
-import type {
-  FtsState,
-  ModuleState,
-  OrderActive,
-  StockMessage,
-} from '@omf3/entities';
+import type { FtsState, ModuleState } from '@omf3/entities';
+import {
+  createOrderFixtureStream,
+  type FixtureStreamOptions,
+  type OrderFixtureName,
+} from '@omf3/testing-fixtures';
+import { Subject, type Observable, Subscription } from 'rxjs';
 import { map, scan, shareReplay } from 'rxjs/operators';
-import { Subject, type Observable } from 'rxjs';
+import type { OrderActive } from '@omf3/entities';
 
-export interface DashboardStreams {
-  activeOrders$: Observable<OrderActive[]>;
+export interface DashboardStreamSet {
+  orders$: Observable<OrderActive[]>;
   orderCounts$: Observable<Record<'running' | 'queued' | 'completed', number>>;
   stockByPart$: Observable<Record<string, number>>;
   moduleStates$: Observable<Record<string, ModuleState>>;
   ftsStates$: Observable<Record<string, FtsState>>;
 }
 
-export const createMockDashboardStreams = (): DashboardStreams => {
-  const adapter = new MockMqttAdapter();
-  const client = createMqttClient(adapter);
+export interface MockDashboardController {
+  streams: DashboardStreamSet;
+  loadFixture: (fixture: OrderFixtureName, options?: FixtureStreamOptions) => Promise<DashboardStreamSet>;
+}
 
-  const rawMessages$ = new Subject<RawMqttMessage>();
-
-  adapter.messages$.subscribe((message) => {
-    rawMessages$.next({
-      topic: message.topic,
-      payload: message.payload,
-      timestamp: message.timestamp,
-      qos: message.options?.qos,
-      retain: message.options?.retain,
-    });
-  });
-
-  void client.connect('mock://ccu-ui');
-
-  const topics = [
-    'ccu/order/active',
-    'warehouse/stock/level',
-    'module/v1/ff/SVR3QA0022/state',
-    'module/v1/ff/SVR4H73275/state',
-    'fts/v1/demo/alpha',
-  ];
-
-  topics.forEach((topic) => {
-    void client.subscribe(topic);
-  });
-
-  const gateway = createGateway(rawMessages$.asObservable());
+const createStreamSet = (messages$: Subject<RawMqttMessage>): DashboardStreamSet => {
+  const gateway = createGateway(messages$.asObservable());
   const business = createBusiness(gateway);
 
-  seedMockData(client);
-
-  const activeOrders$ = gateway.orders$.pipe(
+  const orders$ = gateway.orders$.pipe(
     scan(
       (acc, order) => {
         if (!order.orderId) {
@@ -68,7 +42,7 @@ export const createMockDashboardStreams = (): DashboardStreams => {
   );
 
   return {
-    activeOrders$,
+    orders$,
     orderCounts$: business.orderCounts$,
     stockByPart$: business.stockByPart$,
     moduleStates$: business.moduleStates$,
@@ -76,59 +50,44 @@ export const createMockDashboardStreams = (): DashboardStreams => {
   };
 };
 
-const publish = (
-  client: ReturnType<typeof createMqttClient>,
-  topic: string,
-  payload: unknown
-) => {
-  void client.publish(topic, JSON.stringify(payload));
-};
+export const createMockDashboardController = (): MockDashboardController => {
+  let messageSubject = new Subject<RawMqttMessage>();
+  let streams = createStreamSet(messageSubject);
+  let currentReplay: Subscription | null = null;
 
-const seedMockData = (client: ReturnType<typeof createMqttClient>) => {
-  publish(client, 'ccu/order/active', {
-    orderId: 'ORDER-1001',
-    productId: 'Widget-A',
-    quantity: 2,
-    status: 'running',
-    startedAt: new Date().toISOString(),
-  } satisfies OrderActive);
+  const resetStreams = () => {
+    messageSubject.complete();
+    messageSubject = new Subject<RawMqttMessage>();
+    streams = createStreamSet(messageSubject);
+  };
 
-  publish(client, 'ccu/order/active', {
-    orderId: 'ORDER-1002',
-    productId: 'Widget-B',
-    quantity: 1,
-    status: 'queued',
-  } satisfies OrderActive);
+  const loadFixture = async (
+    fixture: OrderFixtureName,
+    options?: FixtureStreamOptions
+  ): Promise<DashboardStreamSet> => {
+    if (currentReplay) {
+      currentReplay.unsubscribe();
+      currentReplay = null;
+    }
 
-  publish(client, 'warehouse/stock/level', {
-    moduleId: 'HBW',
-    partId: 'Widget-A',
-    amount: 12,
-  } satisfies StockMessage);
+    resetStreams();
 
-  publish(client, 'warehouse/stock/level', {
-    moduleId: 'HBW',
-    partId: 'Widget-B',
-    amount: 5,
-  } satisfies StockMessage);
+    const replay$ = createOrderFixtureStream(fixture, {
+      intervalMs: options?.intervalMs ?? 25,
+      baseUrl: options?.baseUrl,
+      loader: options?.loader,
+      loop: options?.loop,
+    });
 
-  publish(client, 'module/v1/ff/SVR3QA0022/state', {
-    moduleId: 'SVR3QA0022',
-    state: 'working',
-    lastSeen: new Date().toISOString(),
-    details: { orderId: 'ORDER-1001' },
-  } satisfies ModuleState);
+    currentReplay = replay$.subscribe((message) => messageSubject.next(message));
+    return streams;
+  };
 
-  publish(client, 'module/v1/ff/SVR4H73275/state', {
-    moduleId: 'SVR4H73275',
-    state: 'idle',
-    lastSeen: new Date().toISOString(),
-  } satisfies ModuleState);
-
-  publish(client, 'fts/v1/demo/alpha', {
-    ftsId: 'FTS-Alpha',
-    position: { x: 12, y: 6 },
-    status: 'moving',
-  } satisfies FtsState);
+  return {
+    get streams() {
+      return streams;
+    },
+    loadFixture,
+  };
 };
 

@@ -24,6 +24,11 @@
           {
             "glob": "**/*",
             "input": "omf3/apps/ccu-ui/public"
+          },
+          {
+            "glob": "**/*.log",
+            "input": "omf3/testing/fixtures/orders",
+            "output": "fixtures/orders"
           }
         ],
         "styles": [
