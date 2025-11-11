@@ -16,9 +16,10 @@ Branch‑Konzept
 - Libraries werden unter `omf3/libs/*` verwaltet; Apps folgen später unter `omf3/apps/*`.
 - Nützliche Befehle:
   - `npm install` – Dependencies aufsetzen
-  - `npm run test` – führt `nx test mqtt-client` aus (aktuell einzige Library)
   - `nx graph` – Abhängigkeitsgraph der OMF3-Module
   - `nx build mqtt-client` – TypeScript-Build der MQTT-Client-Library
+  - `nx serve ccu-ui` – Mock-Dashboard mit Angular starten
+  - `nx test ccu-ui` – Smoke-Test der UI-Komponenten
 
 Sofort‑ToDos (MVP)
 1. Projekt‑Scaffold
