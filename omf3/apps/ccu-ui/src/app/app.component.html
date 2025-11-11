@@ -4,19 +4,25 @@
       <p class="eyebrow">OMF3 Control Center</p>
       <h1>CCU Mock Dashboard</h1>
     </div>
-    <span class="badge">Mock Data</span>
+    <div class="header-controls">
+      <span class="badge">Mock Data</span>
+      <div class="fixture-switch">
+        <button
+          type="button"
+          *ngFor="let fixture of fixtureOptions"
+          [class.active]="fixture === activeFixture"
+          (click)="loadFixture(fixture)"
+        >
+          {{ fixture | titlecase }}
+        </button>
+      </div>
+    </div>
   </header>
 
   <main class="grid">
-    <app-orders-view
-      [orders$]="streams.activeOrders$"
-      [counts$]="streams.orderCounts$"
-    />
-
-    <app-stock-view [stockByPart$]="streams.stockByPart$" />
-
-    <app-module-map [moduleStates$]="streams.moduleStates$" />
-
-    <app-fts-view [ftsStates$]="streams.ftsStates$" />
+    <app-orders-view [orders$]="orders$" [counts$]="orderCounts$" />
+    <app-stock-view [stockByPart$]="stockByPart$" />
+    <app-module-map [moduleStates$]="moduleStates$" />
+    <app-fts-view [ftsStates$]="ftsStates$" />
   </main>
 </div>
