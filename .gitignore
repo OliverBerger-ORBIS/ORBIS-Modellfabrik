@@ -7,3 +7,6 @@ dist/
 __pycache__/
 *.py[cod]
 *$py.class
+
+.angular
+.DS_Store

@@ -1,0 +1,104 @@
+{
+  "name": "ccu-ui",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "prefix": "app",
+  "sourceRoot": "omf3/apps/ccu-ui/src",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@angular-devkit/build-angular:application",
+      "outputs": [
+        "{options.outputPath}"
+      ],
+      "options": {
+        "outputPath": "dist/apps/ccu-ui",
+        "index": "omf3/apps/ccu-ui/src/index.html",
+        "browser": "omf3/apps/ccu-ui/src/main.ts",
+        "polyfills": [
+          "zone.js"
+        ],
+        "tsConfig": "omf3/apps/ccu-ui/tsconfig.app.json",
+        "inlineStyleLanguage": "scss",
+        "assets": [
+          {
+            "glob": "**/*",
+            "input": "omf3/apps/ccu-ui/public"
+          }
+        ],
+        "styles": [
+          "omf3/apps/ccu-ui/src/styles.scss"
+        ],
+        "scripts": []
+      },
+      "configurations": {
+        "production": {
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "500kb",
+              "maximumError": "1mb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "2kb",
+              "maximumError": "4kb"
+            }
+          ],
+          "outputHashing": "all"
+        },
+        "development": {
+          "optimization": false,
+          "extractLicenses": false,
+          "sourceMap": true
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "serve": {
+      "executor": "@angular-devkit/build-angular:dev-server",
+      "configurations": {
+        "production": {
+          "buildTarget": "ccu-ui:build:production"
+        },
+        "development": {
+          "buildTarget": "ccu-ui:build:development"
+        }
+      },
+      "defaultConfiguration": "development"
+    },
+    "extract-i18n": {
+      "executor": "@angular-devkit/build-angular:extract-i18n",
+      "options": {
+        "buildTarget": "ccu-ui:build"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "options": {
+        "lintFilePatterns": [
+          "omf3/apps/ccu-ui/**/*.ts",
+          "omf3/apps/ccu-ui/**/*.html"
+        ]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": [
+        "{workspaceRoot}/coverage/omf3/apps/ccu-ui"
+      ],
+      "options": {
+        "jestConfig": "omf3/apps/ccu-ui/jest.config.ts"
+      }
+    },
+    "serve-static": {
+      "executor": "@nx/web:file-server",
+      "options": {
+        "buildTarget": "ccu-ui:build",
+        "port": 4200,
+        "staticFilePath": "dist/apps/ccu-ui/browser",
+        "spa": true
+      }
+    }
+  }
+}

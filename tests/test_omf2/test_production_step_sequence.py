@@ -22,9 +22,18 @@ class ProductionStepSequenceTest(unittest.TestCase):
     def setUp(self):
         """Setup für jeden Test"""
         self.session_files = {
-            "blau": "data/omf-data/sessions/auftrag-blau_1.log",
-            "weiss": "data/omf-data/sessions/auftrag-weiss_1.log",
-            "rot": "data/omf-data/sessions/auftrag-rot_1.log",
+            "blau": [
+                "data/omf-data/sessions/production_order_blue_20251110_180619.log",
+                "data/omf-data/sessions/auftrag-blau_1.log",
+            ],
+            "weiss": [
+                "data/omf-data/sessions/production_order_white_20251110_184459.log",
+                "data/omf-data/sessions/auftrag-weiss_1.log",
+            ],
+            "rot": [
+                "data/omf-data/sessions/production_order_red_20251110_180152.log",
+                "data/omf-data/sessions/auftrag-rot_1.log",
+            ],
         }
 
         # Relevante Topics für Production Orders
@@ -54,19 +63,26 @@ class ProductionStepSequenceTest(unittest.TestCase):
             "5iO4": "FTS",  # FTS (AGV) Serial Number
         }
 
-    def load_session_data(self, session_file: str) -> List[Dict[str, Any]]:
-        """Lade Session-Daten aus Log-Datei"""
+    def load_session_data(self, session_files: List[str]) -> List[Dict[str, Any]]:
+        """Lade Session-Daten aus Log-Datei, probiert mehrere Kandidaten."""
         messages = []
-        try:
-            with open(session_file) as f:
-                for line in f:
-                    if line.strip():
-                        message = json.loads(line.strip())
-                        messages.append(message)
-        except FileNotFoundError:
-            self.fail(f"Session-Datei nicht gefunden: {session_file}")
-        except json.JSONDecodeError as e:
-            self.fail(f"JSON Parse Error in {session_file}: {e}")
+        tried_files: List[str] = []
+
+        for session_file in session_files:
+            try:
+                with open(session_file) as f:  # pragma: no cover - file IO
+                    for line in f:
+                        if line.strip():
+                            message = json.loads(line.strip())
+                            messages.append(message)
+                return messages
+            except FileNotFoundError:
+                tried_files.append(session_file)
+                continue
+            except json.JSONDecodeError as e:
+                self.fail(f"JSON Parse Error in {session_file}: {e}")
+
+        self.fail(f"Session-Datei nicht gefunden: {', '.join(tried_files)}")
 
         return messages
 

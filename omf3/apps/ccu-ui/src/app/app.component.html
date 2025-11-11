@@ -1,0 +1,22 @@
+<div class="app-shell">
+  <header class="app-header">
+    <div>
+      <p class="eyebrow">OMF3 Control Center</p>
+      <h1>CCU Mock Dashboard</h1>
+    </div>
+    <span class="badge">Mock Data</span>
+  </header>
+
+  <main class="grid">
+    <app-orders-view
+      [orders$]="streams.activeOrders$"
+      [counts$]="streams.orderCounts$"
+    />
+
+    <app-stock-view [stockByPart$]="streams.stockByPart$" />
+
+    <app-module-map [moduleStates$]="streams.moduleStates$" />
+
+    <app-fts-view [ftsStates$]="streams.ftsStates$" />
+  </main>
+</div>

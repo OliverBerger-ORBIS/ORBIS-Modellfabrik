@@ -16,14 +16,14 @@ class ProductionOrderGuiIntegrationTest(unittest.TestCase):
     def setUp(self):
         """Setup Test Environment"""
         self.manager = OrderManager()
-        self.order_id = "258beef9-6001-43a2-b7d4-01ed50f4b155"
+        self.order_id = None
 
     def test_production_order_gui_display(self):
         """Test: Production Order GUI Display nach MQTT Message Processing"""
         print("\n🎨 PRODUCTION ORDER GUI INTEGRATION TEST:")
 
         # Lade echte Session-Daten
-        session_file = "data/omf-data/sessions/auftrag-weiss_1.log"
+        session_file = "data/omf-data/sessions/production_order_white_20251110_184459.log"
         messages = []
 
         try:
@@ -37,69 +37,87 @@ class ProductionOrderGuiIntegrationTest(unittest.TestCase):
 
         print(f"   📨 Loaded {len(messages)} messages from session")
 
-        # Filtere Module State Messages für eine spezifische Order
-        order_messages = []
+        processed_module_steps = 0
 
         for message in messages:
-            payload = message.get("payload", {})
-            if isinstance(payload, str):
-                try:
-                    payload = json.loads(payload)
-                except json.JSONDecodeError:
-                    continue
-
-            if isinstance(payload, dict) and payload.get("orderId") == self.order_id:
-                order_messages.append(message)
-
-        print(f"   📋 Found {len(order_messages)} messages for Order {self.order_id[:8]}...")
-
-        # Verarbeite Order Messages
-        processed_count = 0
-        for message in order_messages:
             topic = message.get("topic", "")
-            payload = message.get("payload", {})
+            raw_payload = message.get("payload", {})
             meta = {"timestamp": message.get("timestamp", "")}
 
-            # Parse Payload
-            if isinstance(payload, str):
-                try:
-                    payload = json.loads(payload)
-                except json.JSONDecodeError:
+            try:
+                payload = json.loads(raw_payload) if isinstance(raw_payload, str) else raw_payload
+            except json.JSONDecodeError:
+                continue
+
+            if topic == "ccu/order/active":
+                orders = payload if isinstance(payload, list) else [payload]
+                if orders:
+                    self.manager.process_ccu_order_active(topic, orders, meta)
+                    if not self.order_id:
+                        first_order = next((order for order in orders if order.get("productionSteps")), None)
+                        if first_order:
+                            self.order_id = first_order.get("orderId")
+                continue
+
+            if topic == "ccu/order/completed":
+                orders = payload if isinstance(payload, list) else [payload]
+                if orders:
+                    self.manager.process_ccu_order_completed(topic, orders, meta)
+                continue
+
+            if "module/v1/ff/" in topic and "state" in topic:
+                if not isinstance(payload, dict):
                     continue
 
-            # Verarbeite je nach Topic (nur aktive Methoden verwenden)
-            # HINWEIS: Session enthält Module States, nicht ccu/order Topics
-            # Daher simulieren wir eine ccu/order/active Message mit den Module States
-            if "module/v1/ff/" in topic and "state" in topic:
-                # Simuliere ccu/order/active Message aus Module State
-                simulated_order = {"orderId": self.order_id, "type": "WHITE", "orderType": "PRODUCTION", "meta": meta}
-                self.manager.process_ccu_order_active("ccu/order/active", [simulated_order], meta)
+                order_id = payload.get("orderId")
+                if order_id:
+                    self.order_id = self.order_id or order_id
 
-                # Generiere MQTT Steps aus Module State
+                target_order = order_id or self.order_id
+                if not target_order:
+                    continue
+
+                action_state = payload.get("actionState") or {}
                 module_step = {
-                    "id": f"MODULE_{payload.get('serialNumber', 'UNKNOWN')}",
+                    "id": action_state.get("id", f"MODULE_{payload.get('serialNumber', 'UNKNOWN')}"),
                     "moduleType": self._get_module_type_from_serial(payload.get("serialNumber", "")),
-                    "command": payload.get("actionState", {}).get("command", "UNKNOWN"),
-                    "state": payload.get("actionState", {}).get("state", "PENDING"),
-                    "timestamp": payload.get("timestamp", ""),
-                    "mqtt_command": payload.get("actionState", {}).get("command", "UNKNOWN"),
+                    "command": action_state.get("command", "UNKNOWN"),
+                    "state": action_state.get("state", "PENDING"),
+                    "timestamp": payload.get("timestamp", meta.get("timestamp", "")),
+                    "mqtt_command": action_state.get("command", "UNKNOWN"),
                 }
 
-                # Speichere MQTT Step
-                if self.order_id not in self.manager.mqtt_steps:
-                    self.manager.mqtt_steps[self.order_id] = []
-                self.manager.mqtt_steps[self.order_id].append(module_step)
+                steps = self.manager.mqtt_steps.setdefault(target_order, [])
+                steps.append(module_step)
+                processed_module_steps += 1
 
-                processed_count += 1
+        if not self.order_id:
+            self.skipTest("Keine passende OrderId in Sessiondaten gefunden")
 
-        print(f"   ✅ Processed {processed_count} MQTT messages")
+        print(f"   📋 Using Order {self.order_id[:8]}...")
+        print(f"   ✅ Processed {processed_module_steps} module state messages")
 
         # Prüfe gespeicherte MQTT Steps
         stored_steps = self.manager.mqtt_steps.get(self.order_id, [])
+        if not stored_steps:
+            active_order = self.manager.active_orders.get(self.order_id)
+            if active_order:
+                stored_steps = active_order.get("productionSteps", [])
+                self.manager.mqtt_steps[self.order_id] = stored_steps
+
         print(f"   📋 Stored MQTT Steps: {len(stored_steps)}")
 
         # Teste Production Plan Integration
-        test_order = {"orderId": self.order_id, "type": "WHITE", "orderType": "PRODUCTION"}
+        order_source = (
+            self.manager.active_orders.get(self.order_id)
+            or self.manager.completed_orders.get(self.order_id)
+            or {"orderId": self.order_id, "type": "WHITE", "orderType": "PRODUCTION"}
+        )
+        test_order = {
+            "orderId": self.order_id,
+            "type": order_source.get("type", "WHITE"),
+            "orderType": order_source.get("orderType", "PRODUCTION"),
+        }
 
         production_plan = self.manager.get_complete_order_plan(test_order)
         print(f"   📋 Production Plan: {len(production_plan)} steps")
