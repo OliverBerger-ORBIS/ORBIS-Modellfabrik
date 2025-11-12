@@ -6,7 +6,8 @@
     "types": [],
     "rootDir": "src",
     "composite": true,
-    "declarationMap": true
+    "declarationMap": true,
+    "tsBuildInfoFile": "../../../dist/out-tsc/mqtt-client/tsconfig.lib.tsbuildinfo"
   },
   "include": [
     "src/**/*.ts"

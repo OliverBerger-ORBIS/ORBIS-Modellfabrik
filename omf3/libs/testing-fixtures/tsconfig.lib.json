@@ -6,9 +6,15 @@
     "types": [],
     "rootDir": "src",
     "composite": true,
-    "declarationMap": true
+    "declarationMap": true,
+    "tsBuildInfoFile": "../../../dist/out-tsc/testing-fixtures/tsconfig.lib.tsbuildinfo"
   },
   "include": ["src/**/*.ts"],
-  "exclude": ["src/**/*.spec.ts"]
+  "exclude": ["src/**/*.spec.ts"],
+  "references": [
+    {
+      "path": "../gateway/tsconfig.lib.json"
+    }
+  ]
 }
 

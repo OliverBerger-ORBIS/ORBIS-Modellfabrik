@@ -104,8 +104,7 @@ export class OrderCardComponent implements OnChanges {
       return null;
     }
 
-    const end = this.headerStatus.label === 'Finished' ? this.order?.updatedAt : undefined;
-    return this.formatDuration(startedAt, end ?? new Date().toISOString());
+    return this.formatDuration(startedAt, this.getOrderEndTimestamp());
   }
 
   get workpieceId(): string | null {
@@ -254,6 +253,33 @@ export class OrderCardComponent implements OnChanges {
 
   toggleCollapse(): void {
     this.collapsed = !this.collapsed;
+  }
+
+  private getOrderEndTimestamp(): string | null {
+    const candidates: (string | undefined)[] = [
+      this.order?.stoppedAt,
+      this.order?.updatedAt,
+      this.order?.receivedAt,
+    ];
+
+    for (const candidate of candidates) {
+      if (candidate && !Number.isNaN(new Date(candidate).getTime())) {
+        return candidate;
+      }
+    }
+
+    let latest: string | null = null;
+    for (const step of this.steps) {
+      const candidate = step.stoppedAt ?? step.startedAt;
+      if (!candidate) {
+        continue;
+      }
+      if (!latest || new Date(candidate).getTime() > new Date(latest).getTime()) {
+        latest = candidate;
+      }
+    }
+
+    return latest;
   }
 }
 

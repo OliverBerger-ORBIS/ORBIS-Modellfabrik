@@ -8,9 +8,10 @@ import type {
   ProductionStep,
   StockMessage,
 } from '@omf3/entities';
+import { OrderStreamPayload } from '@omf3/gateway';
 
 export interface GatewayStreams {
-  orders$: Observable<OrderActive>;
+  orders$: Observable<OrderStreamPayload>;
   stock$: Observable<StockMessage>;
   modules$: Observable<ModuleState>;
   fts$: Observable<FtsState>;
@@ -39,24 +40,25 @@ const harmonizeOrder = (order: OrderActive): OrderActive => ({
   state: normalizeState(order),
 });
 
-const updateOrdersState = (acc: OrdersAccumulator, order: OrderActive): OrdersAccumulator => {
+const accumulateOrders = (acc: OrdersAccumulator, payload: OrderStreamPayload): OrdersAccumulator => {
+  const { order } = payload;
   if (!order.orderId) {
     return acc;
   }
 
-  const normalized = normalizeState(order);
   const harmonized = harmonizeOrder(order);
+  const state = harmonized.state ?? '';
 
   const nextActive = { ...acc.active };
   const nextCompleted = { ...acc.completed };
 
-  if (COMPLETION_STATES.has(normalized)) {
-    nextCompleted[order.orderId] = harmonized;
-    delete nextActive[order.orderId];
+  if (COMPLETION_STATES.has(state) || payload.topic.includes('/completed')) {
+    nextCompleted[harmonized.orderId] = harmonized;
+    delete nextActive[harmonized.orderId];
   } else {
-    nextActive[order.orderId] = harmonized;
-    if (nextCompleted[order.orderId]) {
-      delete nextCompleted[order.orderId];
+    nextActive[harmonized.orderId] = harmonized;
+    if (nextCompleted[harmonized.orderId]) {
+      delete nextCompleted[harmonized.orderId];
     }
   }
 
@@ -68,7 +70,7 @@ const updateOrdersState = (acc: OrdersAccumulator, order: OrderActive): OrdersAc
 
 export const createBusiness = (gateway: GatewayStreams): BusinessStreams => {
   const ordersState$ = gateway.orders$.pipe(
-    scan(updateOrdersState, { active: {}, completed: {} } as OrdersAccumulator),
+    scan(accumulateOrders, { active: {}, completed: {} } as OrdersAccumulator),
     startWith({ active: {}, completed: {} } as OrdersAccumulator),
     shareReplay({ bufferSize: 1, refCount: true })
   );

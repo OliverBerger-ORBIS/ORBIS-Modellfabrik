@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs';
-import { filter, map, shareReplay } from 'rxjs/operators';
+import { filter, map, mergeMap, shareReplay } from 'rxjs/operators';
 
 import {
   safeJsonParse,
@@ -9,9 +9,11 @@ import {
   FtsState,
 } from '@omf3/entities';
 
-/**
- * Expected incoming message shape (from mqtt-client.messages$)
- */
+export type OrderStreamPayload = {
+  order: OrderActive;
+  topic: 'ccu/order/active' | 'ccu/order/completed' | string;
+};
+
 export interface RawMqttMessage<T = unknown> {
   topic: string;
   payload: T;
@@ -21,7 +23,7 @@ export interface RawMqttMessage<T = unknown> {
 }
 
 export interface GatewayStreams {
-  orders$: Observable<OrderActive>;
+  orders$: Observable<OrderStreamPayload>;
   stock$: Observable<StockMessage>;
   modules$: Observable<ModuleState>;
   fts$: Observable<FtsState>;
@@ -41,7 +43,9 @@ export const createGateway = (
 
   const orders$ = shared.pipe(
     filter((msg) => matchTopic(msg.topic, 'ccu/order')),
-    map((msg) => parsePayload<OrderActive>(msg.payload)),
+    map((msg) => parsePayload<OrderActive | OrderActive[]>(msg.payload)),
+    filter((payload): payload is OrderActive | OrderActive[] => payload !== null),
+    mergeMap((payload) => (Array.isArray(payload) ? payload : [payload])),
     filter((payload): payload is OrderActive => payload !== null)
   );
 

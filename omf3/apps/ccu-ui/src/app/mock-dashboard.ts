@@ -1,5 +1,5 @@
 import { createBusiness } from '@omf3/business';
-import { createGateway, type RawMqttMessage } from '@omf3/gateway';
+import { createGateway, type RawMqttMessage, type OrderStreamPayload } from '@omf3/gateway';
 import type { FtsState, ModuleState } from '@omf3/entities';
 import {
   createOrderFixtureStream,
@@ -43,7 +43,8 @@ const normalizeOrder = (order: OrderActive): OrderActive => {
   };
 };
 
-const accumulateOrders = (acc: OrdersAccumulator, order: OrderActive): OrdersAccumulator => {
+const accumulateOrders = (acc: OrdersAccumulator, payload: OrderStreamPayload): OrdersAccumulator => {
+  const { order } = payload;
   if (!order.orderId) {
     return acc;
   }
@@ -54,7 +55,7 @@ const accumulateOrders = (acc: OrdersAccumulator, order: OrderActive): OrdersAcc
   const nextActive = { ...acc.active };
   const nextCompleted = { ...acc.completed };
 
-  if (COMPLETION_STATES.has(state)) {
+  if (COMPLETION_STATES.has(state) || payload.topic.includes('/completed')) {
     nextCompleted[harmonized.orderId] = harmonized;
     delete nextActive[harmonized.orderId];
   } else {
@@ -75,7 +76,6 @@ const createStreamSet = (messages$: Subject<RawMqttMessage>): DashboardStreamSet
   const business = createBusiness(gateway);
 
   const ordersState$ = gateway.orders$.pipe(
-    map(normalizeOrder),
     scan(accumulateOrders, { active: {}, completed: {} } as OrdersAccumulator),
     startWith({ active: {}, completed: {} } as OrdersAccumulator),
     shareReplay({ bufferSize: 1, refCount: true })
