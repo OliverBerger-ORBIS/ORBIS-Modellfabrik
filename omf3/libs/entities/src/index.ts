@@ -34,6 +34,7 @@ export interface OrderActive {
   receivedAt?: string;
   startedAt?: string;
   updatedAt?: string;
+  stoppedAt?: string;
 }
 
 export interface StockMessage {

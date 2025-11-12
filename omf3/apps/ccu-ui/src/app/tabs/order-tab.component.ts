@@ -51,46 +51,37 @@ export class OrderTabComponent implements OnInit {
   activeFixture: OrderFixtureName = this.dashboard.getCurrentFixture();
 
   private bindOrderStreams(): void {
-    const orders$ = this.dashboard.streams.orders$.pipe(
-      shareReplay({ bufferSize: 1, refCount: true })
-    );
+    const orders$ = this.dashboard.streams.orders$.pipe(shareReplay({ bufferSize: 1, refCount: true }));
+    const completed$ = this.dashboard.streams.completedOrders$.pipe(shareReplay({ bufferSize: 1, refCount: true }));
 
     const orderList$ = orders$.pipe(
-      map((record) => Object.values(record ?? {})),
-      map((orders) => orders.sort((a, b) => getOrderTimestamp(b) - getOrderTimestamp(a))),
-      shareReplay({ bufferSize: 1, refCount: true })
+      map((list) => [...list]),
+      map((orders) => orders.sort((a, b) => getOrderTimestamp(b) - getOrderTimestamp(a)))
+    );
+
+    const completedList$ = completed$.pipe(
+      map((list) => [...list]),
+      map((orders) => orders.sort((a, b) => getOrderTimestamp(b) - getOrderTimestamp(a)))
     );
 
     this.productionActive$ = orderList$.pipe(
       map((orders) =>
-        orders.filter(
-          (order) => inferType(order) === ORDER_TYPES.PRODUCTION && !isCompleted(order)
-        )
+        orders.filter((order) => inferType(order) === ORDER_TYPES.PRODUCTION && !isCompleted(order))
       )
     );
 
-    this.productionCompleted$ = orderList$.pipe(
-      map((orders) =>
-        orders.filter(
-          (order) => inferType(order) === ORDER_TYPES.PRODUCTION && isCompleted(order)
-        )
-      )
+    this.productionCompleted$ = completedList$.pipe(
+      map((orders) => orders.filter((order) => inferType(order) === ORDER_TYPES.PRODUCTION))
     );
 
     this.storageActive$ = orderList$.pipe(
       map((orders) =>
-        orders.filter(
-          (order) => inferType(order) === ORDER_TYPES.STORAGE && !isCompleted(order)
-        )
+        orders.filter((order) => inferType(order) === ORDER_TYPES.STORAGE && !isCompleted(order))
       )
     );
 
-    this.storageCompleted$ = orderList$.pipe(
-      map((orders) =>
-        orders.filter(
-          (order) => inferType(order) === ORDER_TYPES.STORAGE && isCompleted(order)
-        )
-      )
+    this.storageCompleted$ = completedList$.pipe(
+      map((orders) => orders.filter((order) => inferType(order) === ORDER_TYPES.STORAGE))
     );
   }
 

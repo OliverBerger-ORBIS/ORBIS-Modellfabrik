@@ -11,19 +11,20 @@ import type {
   OrderActive,
   StockMessage,
 } from '@omf3/entities';
+import type { OrderStreamPayload } from '@omf3/gateway';
 
 const subject = <T>() => new Subject<T>();
 
 const createGateway = (): {
   streams: GatewayStreams;
   subjects: {
-    orders$: Subject<OrderActive>;
+    orders$: Subject<OrderStreamPayload>;
     stock$: Subject<StockMessage>;
     modules$: Subject<ModuleState>;
     fts$: Subject<FtsState>;
   };
 } => {
-  const orders$ = subject<OrderActive>();
+  const orders$ = subject<OrderStreamPayload>();
   const stock$ = subject<StockMessage>();
   const modules$ = subject<ModuleState>();
   const fts$ = subject<FtsState>();
@@ -50,9 +51,9 @@ test('aggregates order counts', async () => {
 
   const countsPromise = firstValueFrom(business.orderCounts$.pipe(skip(3)));
 
-  subjects.orders$.next({ orderId: 'o1', productId: 'A', quantity: 1, status: 'running' });
-  subjects.orders$.next({ orderId: 'o2', productId: 'B', quantity: 2, status: 'queued' });
-  subjects.orders$.next({ orderId: 'o3', productId: 'C', quantity: 1, status: 'completed' });
+  subjects.orders$.next({ order: { orderId: 'o1', productId: 'A', quantity: 1, status: 'running' }, topic: 'ccu/order/active' });
+  subjects.orders$.next({ order: { orderId: 'o2', productId: 'B', quantity: 2, status: 'queued' }, topic: 'ccu/order/active' });
+  subjects.orders$.next({ order: { orderId: 'o3', productId: 'C', quantity: 1, status: 'completed' }, topic: 'ccu/order/completed' });
 
   const counts = await countsPromise;
   assert.equal(counts.running, 1);
@@ -88,5 +89,22 @@ test('captures latest module and fts states', async () => {
 
   assert.equal(moduleStates.SVR3QA0022?.state, 'working');
   assert.equal(ftsStates['5iO4']?.status, 'moving');
+});
+
+test('moves completed orders to completed stream', async () => {
+  const { streams, subjects } = createGateway();
+  const business = createBusiness(streams);
+
+  const activePromise = firstValueFrom(business.orders$.pipe(skip(2)));
+  const completedPromise = firstValueFrom(business.completedOrders$.pipe(skip(2)));
+
+  subjects.orders$.next({ order: { orderId: 'o1', productId: 'X', quantity: 1, status: 'running' }, topic: 'ccu/order/active' });
+  subjects.orders$.next({ order: { orderId: 'o1', productId: 'X', quantity: 1, status: 'completed' }, topic: 'ccu/order/completed' });
+
+  const active = await activePromise;
+  const completed = await completedPromise;
+
+  assert.equal(active['o1'], undefined);
+  assert.equal(completed['o1']?.status, 'completed');
 });
 

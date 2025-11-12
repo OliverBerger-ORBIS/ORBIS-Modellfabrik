@@ -1,5 +1,5 @@
 import { createBusiness } from '@omf3/business';
-import { createGateway, type RawMqttMessage } from '@omf3/gateway';
+import { createGateway, type RawMqttMessage, type OrderStreamPayload } from '@omf3/gateway';
 import type { FtsState, ModuleState } from '@omf3/entities';
 import {
   createOrderFixtureStream,
@@ -7,11 +7,12 @@ import {
   type OrderFixtureName,
 } from '@omf3/testing-fixtures';
 import { Subject, type Observable, Subscription } from 'rxjs';
-import { map, scan, shareReplay } from 'rxjs/operators';
+import { map, scan, shareReplay, startWith } from 'rxjs/operators';
 import type { OrderActive } from '@omf3/entities';
 
 export interface DashboardStreamSet {
   orders$: Observable<OrderActive[]>;
+  completedOrders$: Observable<OrderActive[]>;
   orderCounts$: Observable<Record<'running' | 'queued' | 'completed', number>>;
   stockByPart$: Observable<Record<string, number>>;
   moduleStates$: Observable<Record<string, ModuleState>>;
@@ -26,27 +27,96 @@ export interface MockDashboardController {
 
 const FIXTURE_DEFAULT_INTERVAL = 25;
 
+interface OrdersAccumulator {
+  active: Record<string, OrderActive>;
+  completed: Record<string, OrderActive>;
+}
+
+const COMPLETION_STATES = new Set(['COMPLETED', 'FINISHED']);
+
+const normalizeOrder = (order: OrderActive): OrderActive => {
+  const normalizedState = (order.state ?? order.status ?? '').toUpperCase();
+  return {
+    ...order,
+    state: normalizedState,
+    status: order.status ?? order.state ?? normalizedState.toLowerCase(),
+  };
+};
+
+const accumulateOrders = (acc: OrdersAccumulator, payload: OrderStreamPayload): OrdersAccumulator => {
+  const { order } = payload;
+  if (!order.orderId) {
+    return acc;
+  }
+
+  const harmonized = normalizeOrder(order);
+  const state = harmonized.state ?? '';
+
+  const nextActive = { ...acc.active };
+  const nextCompleted = { ...acc.completed };
+
+  if (COMPLETION_STATES.has(state) || payload.topic.includes('/completed')) {
+    nextCompleted[harmonized.orderId] = harmonized;
+    delete nextActive[harmonized.orderId];
+  } else {
+    nextActive[harmonized.orderId] = harmonized;
+    if (nextCompleted[harmonized.orderId]) {
+      delete nextCompleted[harmonized.orderId];
+    }
+  }
+
+  return {
+    active: nextActive,
+    completed: nextCompleted,
+  };
+};
+
 const createStreamSet = (messages$: Subject<RawMqttMessage>): DashboardStreamSet => {
   const gateway = createGateway(messages$.asObservable());
   const business = createBusiness(gateway);
 
-  const orders$ = gateway.orders$.pipe(
-    scan(
-      (acc, order) => {
-        if (!order.orderId) {
-          return acc;
+  const ordersState$ = gateway.orders$.pipe(
+    scan(accumulateOrders, { active: {}, completed: {} } as OrdersAccumulator),
+    startWith({ active: {}, completed: {} } as OrdersAccumulator),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
+
+  const orders$ = ordersState$.pipe(
+    map((state) => Object.values(state.active)),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
+
+  const completedOrders$ = ordersState$.pipe(
+    map((state) => Object.values(state.completed)),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
+
+  const orderCounts$ = ordersState$.pipe(
+    map((state) => {
+      const counts = {
+        running: 0,
+        queued: 0,
+        completed: Object.keys(state.completed).length,
+      };
+
+      Object.values(state.active).forEach((order) => {
+        const stateValue = (order.state ?? '').toUpperCase();
+        if (stateValue === 'RUNNING' || stateValue === 'IN_PROGRESS') {
+          counts.running += 1;
+        } else {
+          counts.queued += 1;
         }
-        return { ...acc, [order.orderId]: order };
-      },
-      {} as Record<string, OrderActive>
-    ),
-    map((orders) => Object.values(orders)),
+      });
+
+      return counts;
+    }),
     shareReplay({ bufferSize: 1, refCount: true })
   );
 
   return {
     orders$,
-    orderCounts$: business.orderCounts$,
+    completedOrders$,
+    orderCounts$,
     stockByPart$: business.stockByPart$,
     moduleStates$: business.moduleStates$,
     ftsStates$: business.ftsStates$,

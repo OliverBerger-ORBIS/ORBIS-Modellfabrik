@@ -151,6 +151,10 @@ def build_fixture(config: FixtureConfig, dry_run: bool = False) -> int:
             continue
 
         for normalized in normalize_message(message, payload):
+            if config.order_ids:
+                normalized_payload = decode_payload(normalized.get("payload"))
+                if not (extract_order_ids(normalized_payload) & config.order_ids):
+                    continue
             retained.append(json.dumps(normalized, ensure_ascii=False))
 
     if dry_run:
@@ -255,7 +259,16 @@ def load_default_configs() -> List[FixtureConfig]:
                 "warehouse/stock/*",
                 "fts/v1/ff/*",
             ],
+<<<<<<< HEAD
             order_ids={"2413eb6e-fb6b-4ed1-b93f-fb17143a4593"},
+=======
+            order_ids={
+                "3adc738c-c149-4fed-8f83-8b00f84f5b92",
+                "2413eb6e-fb6b-4ed1-b93f-fb17143a4593",
+                "eb4d90bc-f842-4c59-9cff-07299bb78aa4",
+                "efd17d7a-efb2-4892-9c6e-ed7bba7af3d5",
+            },
+>>>>>>> PR-09-completed-orders
             passthrough_patterns=["warehouse/stock"],
         ),
     ]

@@ -4,9 +4,10 @@
     "outDir": "../../../dist/out-tsc/business",
     "declaration": true,
     "types": [],
-    "rootDir": "..",
+    "rootDir": "src",
     "composite": true,
-    "declarationMap": true
+    "declarationMap": true,
+    "tsBuildInfoFile": "../../../dist/out-tsc/business/tsconfig.lib.tsbuildinfo"
   },
   "include": [
     "src/**/*.ts"
