@@ -11,14 +11,16 @@
     "src/**/*.d.ts",
     "../../libs/gateway/src/**/*.ts",
     "../../libs/testing-fixtures/src/**/*.ts",
-    "../../libs/entities/src/**/*.ts"
+    "../../libs/entities/src/**/*.ts",
+    "../../libs/business/src/**/*.ts"
   ],
   "exclude": [
     "jest.config.ts",
     "src/**/*.test.ts",
     "src/**/*.spec.ts",
     "../../libs/gateway/src/__tests__/**/*.ts",
-    "../../libs/testing-fixtures/src/__tests__/**/*.ts"
+    "../../libs/testing-fixtures/src/__tests__/**/*.ts",
+    "../../libs/business/src/__tests__/**/*.ts"
   ],
   "references": [
     {
@@ -26,6 +28,9 @@
     },
     {
       "path": "../../libs/testing-fixtures/tsconfig.lib.json"
+    },
+    {
+      "path": "../../libs/business/tsconfig.lib.json"
     }
   ]
 }

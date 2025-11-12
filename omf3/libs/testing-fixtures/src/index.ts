@@ -3,9 +3,18 @@ import { concatMap, delay, repeat, switchMap } from 'rxjs/operators';
 
 import type { RawMqttMessage } from '@omf3/gateway';
 
-export type OrderFixtureName = 'white' | 'blue' | 'red' | 'mixed' | 'storage';
+export type OrderFixtureName = 'white' | 'blue' | 'red' | 'mixed' | 'storage' | 'startup';
+export type ModuleFixtureName =
+  | 'default'
+  | 'white'
+  | 'blue'
+  | 'red'
+  | 'mixed'
+  | 'storage'
+  | 'startup';
 
 const DEFAULT_BASE_URL = '/fixtures/orders';
+const DEFAULT_MODULE_BASE_URL = '/fixtures/modules';
 
 export interface LoadFixtureOptions {
   /**
@@ -40,6 +49,17 @@ const FIXTURE_PATHS: Record<OrderFixtureName, string> = {
   red: 'red/orders.log',
   mixed: 'mixed/orders.log',
   storage: 'storage/orders.log',
+  startup: 'startup/orders.log',
+};
+
+const MODULE_FIXTURE_PATHS: Record<ModuleFixtureName, string> = {
+  default: 'default.log',
+  white: 'default.log',
+  blue: 'default.log',
+  red: 'default.log',
+  mixed: 'default.log',
+  storage: 'default.log',
+  startup: 'startup.log',
 };
 
 const defaultLoader = async (resolvedPath: string): Promise<string> => {
@@ -71,6 +91,12 @@ const resolvePath = (name: OrderFixtureName, baseUrl: string | undefined): strin
   return base.endsWith('/') ? `${base}${suffix}` : `${base}/${suffix}`;
 };
 
+const resolveModulePath = (name: ModuleFixtureName, baseUrl: string | undefined): string => {
+  const base = baseUrl ?? DEFAULT_MODULE_BASE_URL;
+  const suffix = MODULE_FIXTURE_PATHS[name];
+  return base.endsWith('/') ? `${base}${suffix}` : `${base}/${suffix}`;
+};
+
 export const loadOrderFixture = async (
   name: OrderFixtureName,
   options?: LoadFixtureOptions
@@ -79,6 +105,21 @@ export const loadOrderFixture = async (
   const loader = options?.loader ?? defaultLoader;
   const contents = await loader(path);
   return parseLines(contents);
+};
+
+export const loadModulePairingFixture = async (
+  name: ModuleFixtureName,
+  options?: LoadFixtureOptions
+): Promise<RawMqttMessage[]> => {
+  const path = resolveModulePath(name, options?.baseUrl);
+  const loader = options?.loader ?? defaultLoader;
+  try {
+    const contents = await loader(path);
+    return parseLines(contents);
+  } catch (error) {
+    console.warn(`[testing-fixtures] Failed to load module pairing fixture "${name}" from ${path}`, error);
+    return [];
+  }
 };
 
 const withInterval = (intervalMs: number | undefined): OperatorFunction<RawMqttMessage, RawMqttMessage> =>
@@ -98,6 +139,20 @@ export const createOrderFixtureStream = (
 };
 
 export const listAvailableOrderFixtures = (): OrderFixtureName[] => Object.keys(FIXTURE_PATHS) as OrderFixtureName[];
+
+export const createModulePairingFixtureStream = (
+  name: ModuleFixtureName,
+  options?: FixtureStreamOptions
+): Observable<RawMqttMessage> => {
+  return defer(() => from(loadModulePairingFixture(name, options))).pipe(
+    switchMap((messages) => from(messages)),
+    withInterval(options?.intervalMs),
+    options?.loop ? repeat() : (source) => source
+  );
+};
+
+export const listAvailableModuleFixtures = (): ModuleFixtureName[] =>
+  Object.keys(MODULE_FIXTURE_PATHS) as ModuleFixtureName[];
 
 export const SHOPFLOOR_ASSET_MAP: Record<string, string> = {
   MILL: '/shopfloor/milling-machine.svg',

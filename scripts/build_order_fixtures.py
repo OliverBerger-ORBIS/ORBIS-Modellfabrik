@@ -153,7 +153,10 @@ def build_fixture(config: FixtureConfig, dry_run: bool = False) -> int:
         for normalized in normalize_message(message, payload):
             if config.order_ids:
                 normalized_payload = decode_payload(normalized.get("payload"))
-                if not (extract_order_ids(normalized_payload) & config.order_ids):
+                topic = normalized.get("topic", "")
+                if not (
+                    extract_order_ids(normalized_payload) & config.order_ids
+                ) and not any(topic_matches(topic, [pattern]) for pattern in config.passthrough_patterns):
                     continue
             retained.append(json.dumps(normalized, ensure_ascii=False))
 
@@ -182,12 +185,13 @@ def load_default_configs() -> List[FixtureConfig]:
                 "ccu/order/active",
                 "ccu/order/completed",
                 "module/v1/ff/*",
+                "ccu/pairing/state",
                 "warehouse/stock",
                 "warehouse/stock/*",
                 "fts/v1/ff/*",
             ],
             order_ids={"bc51e53d-413a-4cd7-b128-b4407fba3c23"},
-            passthrough_patterns=["warehouse/stock"],
+            passthrough_patterns=["warehouse/stock", "ccu/pairing/state"],
         ),
         FixtureConfig(
             name="blue",
@@ -199,12 +203,13 @@ def load_default_configs() -> List[FixtureConfig]:
                 "ccu/order/active",
                 "ccu/order/completed",
                 "module/v1/ff/*",
+                "ccu/pairing/state",
                 "warehouse/stock",
                 "warehouse/stock/*",
                 "fts/v1/ff/*",
             ],
             order_ids={"ceca8bef-bbe8-4012-aa18-725d7af68a10"},
-            passthrough_patterns=["warehouse/stock"],
+            passthrough_patterns=["warehouse/stock", "ccu/pairing/state"],
         ),
         FixtureConfig(
             name="red",
@@ -216,12 +221,13 @@ def load_default_configs() -> List[FixtureConfig]:
                 "ccu/order/active",
                 "ccu/order/completed",
                 "module/v1/ff/*",
+                "ccu/pairing/state",
                 "warehouse/stock",
                 "warehouse/stock/*",
                 "fts/v1/ff/*",
             ],
             order_ids={"c9da720e-98e6-4d96-84d3-7baad5c5383d"},
-            passthrough_patterns=["warehouse/stock"],
+            passthrough_patterns=["warehouse/stock", "ccu/pairing/state"],
         ),
         FixtureConfig(
             name="mixed",
@@ -233,6 +239,7 @@ def load_default_configs() -> List[FixtureConfig]:
                 "ccu/order/active",
                 "ccu/order/completed",
                 "module/v1/ff/*",
+                "ccu/pairing/state",
                 "warehouse/stock",
                 "warehouse/stock/*",
                 "fts/v1/ff/*",
@@ -243,7 +250,7 @@ def load_default_configs() -> List[FixtureConfig]:
                 "8fd237e5-2170-4570-8023-36e8b4cd9b30",
                 "dc7b8963-68b6-4b8b-9c94-c271d11b64dc",
             },
-            passthrough_patterns=["warehouse/stock"],
+            passthrough_patterns=["warehouse/stock", "ccu/pairing/state"],
         ),
         FixtureConfig(
             name="storage",
@@ -255,21 +262,18 @@ def load_default_configs() -> List[FixtureConfig]:
                 "ccu/order/active",
                 "ccu/order/completed",
                 "module/v1/ff/*",
+                "ccu/pairing/state",
                 "warehouse/stock",
                 "warehouse/stock/*",
                 "fts/v1/ff/*",
             ],
-<<<<<<< HEAD
-            order_ids={"2413eb6e-fb6b-4ed1-b93f-fb17143a4593"},
-=======
             order_ids={
                 "3adc738c-c149-4fed-8f83-8b00f84f5b92",
                 "2413eb6e-fb6b-4ed1-b93f-fb17143a4593",
                 "eb4d90bc-f842-4c59-9cff-07299bb78aa4",
                 "efd17d7a-efb2-4892-9c6e-ed7bba7af3d5",
             },
->>>>>>> PR-09-completed-orders
-            passthrough_patterns=["warehouse/stock"],
+            passthrough_patterns=["warehouse/stock", "ccu/pairing/state"],
         ),
     ]
 

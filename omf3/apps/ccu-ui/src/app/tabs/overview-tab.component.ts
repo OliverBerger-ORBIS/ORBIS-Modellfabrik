@@ -20,10 +20,11 @@ import type { Observable } from 'rxjs';
 export class OverviewTabComponent implements OnInit {
   private dashboard = getDashboardController();
 
-  readonly fixtureOptions: OrderFixtureName[] = ['white', 'blue', 'red', 'mixed', 'storage'];
+  readonly fixtureOptions: OrderFixtureName[] = ['startup', 'white', 'blue', 'red', 'mixed', 'storage'];
   activeFixture: OrderFixtureName = this.dashboard.getCurrentFixture();
 
   readonly fixtureLabels: Record<OrderFixtureName, string> = {
+    startup: $localize`:@@fixtureLabelStartup:Startup`,
     white: $localize`:@@fixtureLabelWhite:White`,
     blue: $localize`:@@fixtureLabelBlue:Blue`,
     red: $localize`:@@fixtureLabelRed:Red`,

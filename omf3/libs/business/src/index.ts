@@ -1,4 +1,4 @@
-import { Observable } from 'rxjs';
+import { merge, Observable } from 'rxjs';
 import { map, scan, shareReplay, startWith } from 'rxjs/operators';
 
 import type {
@@ -6,14 +6,21 @@ import type {
   ModuleState,
   OrderActive,
   StockMessage,
+  ModulePairingState,
+  ModuleOverviewState,
+  ModuleAvailabilityStatus,
+  ModuleFactsheetSnapshot,
 } from '@omf3/entities';
-import { OrderStreamPayload } from '@omf3/gateway';
+import { OrderStreamPayload, type GatewayPublishFn } from '@omf3/gateway';
 
 export interface GatewayStreams {
   orders$: Observable<OrderStreamPayload>;
   stock$: Observable<StockMessage>;
   modules$: Observable<ModuleState>;
   fts$: Observable<FtsState>;
+  pairing$: Observable<ModulePairingState>;
+  moduleFactsheets$: Observable<ModuleFactsheetSnapshot>;
+  publish: GatewayPublishFn;
 }
 
 export interface BusinessStreams {
@@ -23,7 +30,16 @@ export interface BusinessStreams {
   stockByPart$: Observable<Record<string, number>>;
   moduleStates$: Observable<Record<string, ModuleState>>;
   ftsStates$: Observable<Record<string, FtsState>>;
+  moduleOverview$: Observable<ModuleOverviewState>;
 }
+
+export interface BusinessCommands {
+  calibrateModule: (serialNumber: string) => Promise<void>;
+  setFtsCharge: (serialNumber: string, charge: boolean) => Promise<void>;
+  dockFts: (serialNumber: string, nodeId?: string) => Promise<void>;
+}
+
+export type BusinessFacade = BusinessStreams & BusinessCommands;
 
 const COMPLETION_STATES = new Set(['COMPLETED', 'FINISHED']);
 
@@ -38,6 +54,121 @@ const harmonizeOrder = (order: OrderActive): OrderActive => ({
   ...order,
   state: normalizeState(order),
 });
+
+const formatTimestamp = (value?: string): string => {
+  if (!value) {
+    return 'N/A';
+  }
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+  return date.toLocaleTimeString('de-DE', {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+  });
+};
+
+const initializeModuleOverview = (): ModuleOverviewState => ({
+  modules: {},
+  transports: {},
+});
+
+const applyPairingSnapshot = (state: ModuleOverviewState, snapshot: ModulePairingState): ModuleOverviewState => {
+  const timestamp = snapshot.timestamp ?? new Date().toISOString();
+  const nextModules = { ...state.modules };
+  const nextTransports = { ...state.transports };
+
+  snapshot.modules.forEach((module) => {
+    const prev = nextModules[module.serialNumber];
+    if (!module.serialNumber) {
+      return;
+    }
+
+    nextModules[module.serialNumber] = {
+      id: module.serialNumber,
+      subType: module.subType ?? prev?.subType,
+      connected: Boolean(module.connected),
+      availability: (module.available ?? prev?.availability ?? 'Unknown') as ModuleAvailabilityStatus,
+      hasCalibration: module.hasCalibration ?? prev?.hasCalibration ?? false,
+      assigned: module.assigned ?? prev?.assigned ?? false,
+      ip: module.ip ?? prev?.ip,
+      version: module.version ?? prev?.version,
+      pairedSince: module.pairedSince ?? prev?.pairedSince,
+      lastSeen: module.lastSeen ?? prev?.lastSeen,
+      configured: prev?.configured ?? false,
+      factsheetTimestamp: prev?.factsheetTimestamp,
+      messageCount: (prev?.messageCount ?? 0) + 1,
+      lastUpdate: formatTimestamp(timestamp),
+    };
+  });
+
+  snapshot.transports.forEach((transport) => {
+    const prev = nextTransports[transport.serialNumber];
+    if (!transport.serialNumber) {
+      return;
+    }
+
+    nextTransports[transport.serialNumber] = {
+      id: transport.serialNumber,
+      connected: Boolean(transport.connected),
+      availability: (transport.available ?? prev?.availability ?? 'Unknown') as ModuleAvailabilityStatus,
+      ip: transport.ip ?? prev?.ip,
+      version: transport.version ?? prev?.version,
+      lastSeen: transport.lastSeen ?? prev?.lastSeen,
+      charging: transport.charging ?? prev?.charging ?? false,
+      batteryVoltage: transport.batteryVoltage ?? prev?.batteryVoltage,
+      batteryPercentage: transport.batteryPercentage ?? prev?.batteryPercentage,
+      lastNodeId: transport.lastNodeId ?? prev?.lastNodeId,
+      lastModuleSerialNumber: transport.lastModuleSerialNumber ?? prev?.lastModuleSerialNumber,
+      lastLoadPosition: transport.lastLoadPosition ?? prev?.lastLoadPosition,
+      messageCount: (prev?.messageCount ?? 0) + 1,
+      lastUpdate: formatTimestamp(timestamp),
+    };
+  });
+
+  return {
+    modules: nextModules,
+    transports: nextTransports,
+  };
+};
+
+const applyFactsheetSnapshot = (
+  state: ModuleOverviewState,
+  snapshot: ModuleFactsheetSnapshot
+): ModuleOverviewState => {
+  const serial = snapshot.serialNumber;
+  if (!serial) {
+    return state;
+  }
+
+  const nextModules = { ...state.modules };
+  const prev = nextModules[serial] ?? {
+    id: serial,
+    connected: false,
+    availability: 'Unknown' as ModuleAvailabilityStatus,
+    hasCalibration: false,
+    assigned: false,
+    messageCount: 0,
+    configured: false,
+    lastUpdate: 'N/A',
+  };
+
+  nextModules[serial] = {
+    ...prev,
+    configured: true,
+    factsheetTimestamp: formatTimestamp(snapshot.timestamp ?? new Date().toISOString()),
+    messageCount: (prev.messageCount ?? 0) + 1,
+    lastUpdate: formatTimestamp(snapshot.timestamp ?? prev.lastUpdate),
+  };
+
+  return {
+    ...state,
+    modules: nextModules,
+  };
+};
 
 const accumulateOrders = (acc: OrdersAccumulator, payload: OrderStreamPayload): OrdersAccumulator => {
   const { order } = payload;
@@ -67,7 +198,8 @@ const accumulateOrders = (acc: OrdersAccumulator, payload: OrderStreamPayload): 
   };
 };
 
-export const createBusiness = (gateway: GatewayStreams): BusinessStreams => {
+export const createBusiness = (gateway: GatewayStreams): BusinessStreams & BusinessCommands => {
+  const publish = gateway.publish;
   const ordersState$ = gateway.orders$.pipe(
     scan(accumulateOrders, { active: {}, completed: {} } as OrdersAccumulator),
     startWith({ active: {}, completed: {} } as OrdersAccumulator),
@@ -150,6 +282,82 @@ export const createBusiness = (gateway: GatewayStreams): BusinessStreams => {
     shareReplay({ bufferSize: 1, refCount: true })
   );
 
+  const moduleOverview$ = merge(
+    gateway.pairing$.pipe(
+      map(
+        (snapshot) =>
+          (state: ModuleOverviewState): ModuleOverviewState =>
+            applyPairingSnapshot(state, snapshot)
+      )
+    ),
+    gateway.moduleFactsheets$.pipe(
+      map(
+        (factsheet) =>
+          (state: ModuleOverviewState): ModuleOverviewState =>
+            applyFactsheetSnapshot(state, factsheet)
+      )
+    )
+  ).pipe(
+    scan(
+      (acc, reducer) => reducer(acc),
+      initializeModuleOverview()
+    ),
+    startWith(initializeModuleOverview()),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
+
+  const calibrateModule: BusinessCommands['calibrateModule'] = async (serialNumber) => {
+    if (!serialNumber) {
+      return;
+    }
+
+    const payload = {
+      timestamp: new Date().toISOString(),
+      serialNumber,
+      command: 'startCalibration',
+    };
+
+    await publish('ccu/set/calibration', payload, { qos: 1, retain: false });
+  };
+
+  const setFtsCharge: BusinessCommands['setFtsCharge'] = async (serialNumber, charge) => {
+    if (!serialNumber) {
+      return;
+    }
+
+    const payload = {
+      serialNumber,
+      charge,
+      timestamp: new Date().toISOString(),
+    };
+
+    await publish('ccu/set/charge', payload, { qos: 1, retain: false });
+  };
+
+  const dockFts: BusinessCommands['dockFts'] = async (serialNumber, nodeId) => {
+    if (!serialNumber) {
+      return;
+    }
+
+    const targetNodeId = nodeId && nodeId !== 'UNKNOWN' ? nodeId : 'SVR4H73275';
+
+    const payload = {
+      timestamp: new Date().toISOString(),
+      serialNumber,
+      actions: [
+        {
+          actionType: 'findInitialDockPosition',
+          actionId: `dock-${Date.now()}`,
+          metadata: {
+            nodeId: targetNodeId,
+          },
+        },
+      ],
+    };
+
+    await publish(`fts/v1/ff/${serialNumber}/instantAction`, payload, { qos: 1, retain: false });
+  };
+
   return {
     orders$,
     completedOrders$,
@@ -157,6 +365,10 @@ export const createBusiness = (gateway: GatewayStreams): BusinessStreams => {
     stockByPart$,
     moduleStates$,
     ftsStates$,
+    moduleOverview$,
+    calibrateModule,
+    setFtsCharge,
+    dockFts,
   };
 };
 

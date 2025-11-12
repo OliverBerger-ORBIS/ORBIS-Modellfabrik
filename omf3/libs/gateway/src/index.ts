@@ -7,7 +7,20 @@ import {
   StockMessage,
   ModuleState,
   FtsState,
+  ModulePairingState,
+  ModuleFactsheetSnapshot,
 } from '@omf3/entities';
+
+export interface GatewayPublishOptions {
+  qos?: 0 | 1 | 2;
+  retain?: boolean;
+}
+
+export type GatewayPublishFn = (
+  topic: string,
+  payload: unknown,
+  options?: GatewayPublishOptions
+) => Promise<void>;
 
 export type OrderStreamPayload = {
   order: OrderActive;
@@ -27,6 +40,9 @@ export interface GatewayStreams {
   stock$: Observable<StockMessage>;
   modules$: Observable<ModuleState>;
   fts$: Observable<FtsState>;
+  pairing$: Observable<ModulePairingState>;
+  moduleFactsheets$: Observable<ModuleFactsheetSnapshot>;
+  publish: GatewayPublishFn;
 }
 
 const matchTopic = (topic: string, prefix: string) => topic.startsWith(prefix);
@@ -36,9 +52,44 @@ const parsePayload = <T>(payload: unknown): T | null => {
   return typeof parsed === 'object' && parsed !== null ? (parsed as T) : null;
 };
 
+const extractModuleSerialFromTopic = (topic: string): string | null => {
+  const parts = topic.split('/');
+  if (parts.length < 4) {
+    return null;
+  }
+
+  // Patterns we expect:
+  // module/v1/ff/<serial>/factsheet
+  // module/v1/ff/NodeRed/<serial>/factsheet
+  if (parts[0] !== 'module' || parts[1] !== 'v1') {
+    return null;
+  }
+
+  if (parts[2] === 'ff' && parts.length >= 5) {
+    if (parts[3] === 'NodeRed' && parts.length >= 6) {
+      return parts[4];
+    }
+    return parts[3];
+  }
+
+  return null;
+};
+
 export const createGateway = (
-  mqttMessages$: Observable<RawMqttMessage>
+  mqttMessages$: Observable<RawMqttMessage>,
+  options?: {
+    publish?: GatewayPublishFn;
+  }
 ): GatewayStreams => {
+  const publish: GatewayPublishFn =
+    options?.publish ??
+    (async (topic, payload) => {
+      console.warn('[gateway] publish called without implementation', {
+        topic,
+        payload,
+      });
+    });
+
   const shared = mqttMessages$.pipe(shareReplay({ bufferSize: 1, refCount: true }));
 
   const orders$ = shared.pipe(
@@ -77,11 +128,62 @@ export const createGateway = (
     filter((payload): payload is FtsState => payload !== null)
   );
 
+  const pairing$ = shared.pipe(
+    filter((msg) => msg.topic === 'ccu/pairing/state'),
+    map((msg) => ({
+      payload: parsePayload<ModulePairingState>(msg.payload),
+      fallbackTimestamp: msg.timestamp ?? new Date().toISOString(),
+    })),
+    filter(
+      (
+        entry
+      ): entry is {
+        payload: ModulePairingState;
+        fallbackTimestamp: string;
+      } => entry.payload !== null
+    ),
+    map(({ payload, fallbackTimestamp }) => ({
+      ...payload,
+      timestamp: payload.timestamp ?? fallbackTimestamp,
+    })),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
+
+  const moduleFactsheets$ = shared.pipe(
+    filter((msg) => msg.topic.startsWith('module/v1/') && msg.topic.endsWith('/factsheet')),
+    map((msg) => {
+      const parsed = parsePayload<ModuleFactsheetSnapshot>(msg.payload);
+      if (!parsed) {
+        return null;
+      }
+
+      const serial = parsed.serialNumber ?? extractModuleSerialFromTopic(msg.topic);
+      if (!serial) {
+        return null;
+      }
+
+      return {
+        ...parsed,
+        serialNumber: serial,
+        timestamp: parsed.timestamp ?? msg.timestamp ?? new Date().toISOString(),
+        topic: msg.topic,
+      } as ModuleFactsheetSnapshot;
+    }),
+    filter(
+      (snapshot): snapshot is ModuleFactsheetSnapshot =>
+        snapshot !== null && typeof snapshot.serialNumber === 'string'
+    ),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
+
   return {
     orders$,
     stock$,
     modules$,
     fts$,
+    pairing$,
+    moduleFactsheets$,
+    publish,
   };
 };
 

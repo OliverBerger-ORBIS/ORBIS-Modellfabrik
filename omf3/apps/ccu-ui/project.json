@@ -36,6 +36,11 @@
             "glob": "**/*.log",
             "input": "omf3/testing/fixtures/orders",
             "output": "fixtures/orders"
+          },
+          {
+            "glob": "**/*.log",
+            "input": "omf3/testing/fixtures/modules",
+            "output": "fixtures/modules"
           }
         ],
         "styles": [

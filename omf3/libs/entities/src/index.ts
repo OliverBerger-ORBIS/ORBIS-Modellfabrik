@@ -60,6 +60,91 @@ export interface FtsState {
   lastSeen?: string;
 }
 
+export type ModuleAvailabilityStatus = 'READY' | 'BUSY' | 'BLOCKED' | 'Unknown' | string;
+
+export interface PairingModuleSnapshot {
+  serialNumber: string;
+  type?: string;
+  subType?: string;
+  connected?: boolean;
+  available?: ModuleAvailabilityStatus;
+  pairedSince?: string;
+  assigned?: boolean;
+  ip?: string;
+  version?: string;
+  lastSeen?: string;
+  hasCalibration?: boolean;
+}
+
+export interface PairingTransportSnapshot {
+  serialNumber: string;
+  type?: string;
+  connected?: boolean;
+  available?: ModuleAvailabilityStatus;
+  ip?: string;
+  version?: string;
+  lastSeen?: string;
+  charging?: boolean;
+  batteryVoltage?: number;
+  batteryPercentage?: number;
+  lastNodeId?: string;
+  lastModuleSerialNumber?: string;
+  lastLoadPosition?: string;
+}
+
+export interface ModuleFactsheetSnapshot {
+  serialNumber: string;
+  timestamp?: string;
+  topic?: string;
+  payload?: Record<string, unknown>;
+  [key: string]: unknown;
+}
+
+export interface ModulePairingState {
+  modules: PairingModuleSnapshot[];
+  transports: PairingTransportSnapshot[];
+  timestamp?: string;
+}
+
+export interface ModuleOverviewStatus {
+  id: string;
+  subType?: string;
+  connected: boolean;
+  availability: ModuleAvailabilityStatus;
+  hasCalibration?: boolean;
+  assigned?: boolean;
+  ip?: string;
+  version?: string;
+  pairedSince?: string;
+  lastSeen?: string;
+  configured: boolean;
+  factsheetTimestamp?: string;
+  messageCount: number;
+  lastUpdate: string;
+}
+
+export interface TransportOverviewStatus {
+  id: string;
+  connected: boolean;
+  availability: ModuleAvailabilityStatus;
+  ip?: string;
+  version?: string;
+  lastSeen?: string;
+  charging?: boolean;
+  batteryVoltage?: number;
+  batteryPercentage?: number;
+  lastNodeId?: string;
+  lastModuleSerialNumber?: string;
+  lastLoadPosition?: string;
+  messageCount: number;
+  lastUpdate: string;
+}
+
+export interface ModuleOverviewState {
+  modules: Record<string, ModuleOverviewStatus>;
+  transports: Record<string, TransportOverviewStatus>;
+}
+
 export interface ReplayEnvelope {
   topic: string;
   payload: any;

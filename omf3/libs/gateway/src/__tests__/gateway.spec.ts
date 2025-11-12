@@ -84,3 +84,24 @@ test('emits each order when payload is an array', async () => {
   assert.equal(orderOne.topic, 'ccu/order/completed');
 });
 
+test('maps pairing state messages with timestamp', async () => {
+  const subject = new Subject<RawMqttMessage>();
+  const gateway = createGateway(subject.asObservable());
+
+  const result = firstValueFrom(gateway.pairing$);
+  subject.next({
+    topic: 'ccu/pairing/state',
+    payload: JSON.stringify({
+      modules: [{ serialNumber: 'SVR3QA0022', connected: true, available: 'READY', hasCalibration: true }],
+      transports: [{ serialNumber: '5iO4', connected: true, charging: false }],
+    }),
+    timestamp: '2025-11-10T18:02:09.702936',
+  });
+
+  const pairing = await result;
+  assert.equal(pairing.modules.length, 1);
+  assert.equal(pairing.modules[0].serialNumber, 'SVR3QA0022');
+  assert.equal(pairing.transports.length, 1);
+  assert.equal(pairing.timestamp, '2025-11-10T18:02:09.702936');
+});
+

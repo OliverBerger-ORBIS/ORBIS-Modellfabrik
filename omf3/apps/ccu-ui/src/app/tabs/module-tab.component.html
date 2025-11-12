@@ -1,0 +1,121 @@
+<section class="module-tab">
+  <header class="module-tab__toolbar">
+    <div class="module-tab__title">
+      <img [src]="headingIcon" alt="Modules icon" class="module-tab__icon" />
+      <div>
+        <h1>Modules</h1>
+        <p class="module-tab__subtitle">
+          Module overview with status, connections and actions.
+        </p>
+      </div>
+    </div>
+
+    <div class="module-fixture-switch">
+      <button
+        type="button"
+        *ngFor="let fixture of fixtureOptions"
+        [class.active]="fixture === activeFixture"
+        (click)="loadFixture(fixture)"
+        [disabled]="loading && fixture !== activeFixture"
+      >
+        {{ fixtureLabels[fixture] }}
+      </button>
+    </div>
+  </header>
+
+  <span class="module-tab__hint">Data updates automatically from pairing state snapshots.</span>
+
+  <ng-container *ngIf="rows$ | async as rows; else loading">
+    <div class="module-table__wrapper" *ngIf="rows.length; else empty">
+      <table class="module-table">
+        <thead>
+          <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Name</th>
+            <th scope="col">Registry Active</th>
+            <th scope="col">Configured</th>
+            <th scope="col">Connected</th>
+            <th scope="col">Availability Status</th>
+            <th scope="col">Messages</th>
+            <th scope="col">Last Update</th>
+            <th scope="col">Command</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let row of rows; trackBy: trackById">
+            <td class="module-id">{{ row.id }}</td>
+            <td class="module-name">
+              <ng-container *ngIf="row.iconPath as icon">
+                <img [src]="icon" [alt]="row.name" class="module-icon" />
+              </ng-container>
+              <span>{{ row.name }}</span>
+            </td>
+            <td>
+              <span
+                class="status-pill"
+                [class.status-pill--positive]="row.registryActive"
+                [class.status-pill--negative]="!row.registryActive"
+              >
+                <span class="status-pill__icon">{{ row.registryIcon }}</span>
+                <span>{{ row.registryActive ? 'Active' : 'Inactive' }}</span>
+              </span>
+            </td>
+            <td>
+              <span
+                class="status-pill"
+                [class.status-pill--positive]="row.configured"
+                [class.status-pill--negative]="!row.configured"
+              >
+                <span class="status-pill__icon">{{ row.configuredIcon }}</span>
+                <span>{{ row.configured ? 'Configured' : 'Not Configured' }}</span>
+              </span>
+            </td>
+            <td>
+              <span class="status-indicator" [class.status-indicator--online]="row.connected">
+                <span class="status-indicator__icon">{{ row.connectedIcon }}</span>
+                <span>{{ row.connected ? 'Connected' : 'Disconnected' }}</span>
+              </span>
+            </td>
+            <td>
+              <span [class]="row.availabilityClass">
+                <span class="availability__icon">{{ row.availabilityIcon }}</span>
+                <span>{{ row.availabilityLabel }}</span>
+              </span>
+            </td>
+            <td>{{ row.messageCount }}</td>
+            <td>{{ row.lastUpdate }}</td>
+            <td>
+              <div class="command-button-group">
+                <button
+                  type="button"
+                  class="command-button"
+                  *ngFor="let action of row.actions"
+                  [class.command-button--secondary]="action.secondary"
+                  (click)="onCommand(action)"
+                >
+                  {{ action.label }}
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </ng-container>
+</section>
+
+<ng-template #loading>
+  <div class="module-tab__info">
+    <p *ngIf="loading; else idle">Loading module telemetry …</p>
+    <ng-template #idle>
+      <p>Awaiting module telemetry …</p>
+    </ng-template>
+  </div>
+</ng-template>
+
+<ng-template #empty>
+  <div class="module-tab__info module-tab__info--empty">
+    <p>No module status data available.</p>
+  </div>
+</ng-template>
+

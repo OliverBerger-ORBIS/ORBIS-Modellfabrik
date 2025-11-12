@@ -10,8 +10,9 @@ import type {
   ModuleState,
   OrderActive,
   StockMessage,
+  ModulePairingState,
 } from '@omf3/entities';
-import type { OrderStreamPayload } from '@omf3/gateway';
+import type { OrderStreamPayload, GatewayPublishFn } from '@omf3/gateway';
 
 const subject = <T>() => new Subject<T>();
 
@@ -22,12 +23,17 @@ const createGateway = (): {
     stock$: Subject<StockMessage>;
     modules$: Subject<ModuleState>;
     fts$: Subject<FtsState>;
+    pairing$: Subject<ModulePairingState>;
   };
 } => {
   const orders$ = subject<OrderStreamPayload>();
   const stock$ = subject<StockMessage>();
   const modules$ = subject<ModuleState>();
   const fts$ = subject<FtsState>();
+  const pairing$ = subject<ModulePairingState>();
+  const publish: GatewayPublishFn = async () => {
+    // noop for tests
+  };
 
   return {
     streams: {
@@ -35,12 +41,15 @@ const createGateway = (): {
       stock$: stock$.asObservable(),
       modules$: modules$.asObservable(),
       fts$: fts$.asObservable(),
+      pairing$: pairing$.asObservable(),
+      publish,
     },
     subjects: {
       orders$,
       stock$,
       modules$,
       fts$,
+      pairing$,
     },
   };
 };
@@ -106,5 +115,39 @@ test('moves completed orders to completed stream', async () => {
 
   assert.equal(active['o1'], undefined);
   assert.equal(completed['o1']?.status, 'completed');
+});
+
+test('aggregates module pairing overview', async () => {
+  const { streams, subjects } = createGateway();
+  const business = createBusiness(streams);
+
+  const overviewPromise = firstValueFrom(business.moduleOverview$.pipe(skip(1)));
+
+  subjects.pairing$.next({
+    modules: [
+      {
+        serialNumber: 'SVR3QA0022',
+        connected: true,
+        available: 'READY',
+        hasCalibration: true,
+        subType: 'HBW',
+      },
+    ],
+    transports: [
+      {
+        serialNumber: '5iO4',
+        connected: true,
+        available: 'READY',
+        charging: false,
+      },
+    ],
+    timestamp: '2025-11-10T18:02:09.702936',
+  });
+
+  const overview = await overviewPromise;
+  assert.equal(overview.modules['SVR3QA0022'].connected, true);
+  assert.equal(overview.modules['SVR3QA0022'].messageCount, 1);
+  assert.equal(overview.modules['SVR3QA0022'].lastUpdate, '2025-11-10T18:02:09.702936');
+  assert.equal(overview.transports['5iO4'].availability, 'READY');
 });
 
