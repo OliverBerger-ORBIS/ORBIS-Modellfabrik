@@ -90,3 +90,20 @@ test('captures latest module and fts states', async () => {
   assert.equal(ftsStates['5iO4']?.status, 'moving');
 });
 
+test('moves completed orders to completed stream', async () => {
+  const { streams, subjects } = createGateway();
+  const business = createBusiness(streams);
+
+  const activePromise = firstValueFrom(business.orders$.pipe(skip(2)));
+  const completedPromise = firstValueFrom(business.completedOrders$.pipe(skip(2)));
+
+  subjects.orders$.next({ orderId: 'o1', productId: 'X', quantity: 1, status: 'running' });
+  subjects.orders$.next({ orderId: 'o1', productId: 'X', quantity: 1, status: 'completed' });
+
+  const active = await activePromise;
+  const completed = await completedPromise;
+
+  assert.equal(active['o1'], undefined);
+  assert.equal(completed['o1']?.status, 'completed');
+});
+

@@ -12,6 +12,7 @@ import type { OrderActive } from '@omf3/entities';
 
 export interface DashboardStreamSet {
   orders$: Observable<OrderActive[]>;
+  completedOrders$: Observable<OrderActive[]>;
   orderCounts$: Observable<Record<'running' | 'queued' | 'completed', number>>;
   stockByPart$: Observable<Record<string, number>>;
   moduleStates$: Observable<Record<string, ModuleState>>;
@@ -30,22 +31,19 @@ const createStreamSet = (messages$: Subject<RawMqttMessage>): DashboardStreamSet
   const gateway = createGateway(messages$.asObservable());
   const business = createBusiness(gateway);
 
-  const orders$ = gateway.orders$.pipe(
-    scan(
-      (acc, order) => {
-        if (!order.orderId) {
-          return acc;
-        }
-        return { ...acc, [order.orderId]: order };
-      },
-      {} as Record<string, OrderActive>
-    ),
+  const orders$ = business.orders$.pipe(
+    map((orders) => Object.values(orders)),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
+
+  const completedOrders$ = business.completedOrders$.pipe(
     map((orders) => Object.values(orders)),
     shareReplay({ bufferSize: 1, refCount: true })
   );
 
   return {
     orders$,
+    completedOrders$,
     orderCounts$: business.orderCounts$,
     stockByPart$: business.stockByPart$,
     moduleStates$: business.moduleStates$,
