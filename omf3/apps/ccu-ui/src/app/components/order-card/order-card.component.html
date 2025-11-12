@@ -1,0 +1,89 @@
+<ng-container *ngIf="order as currentOrder">
+<article class="order-card" [class.order-card--completed]="isCompleted">
+  <header class="order-card__header">
+    <div class="order-card__title">
+      <img class="order-card__type-icon" [src]="orderTypeIcon" alt="" aria-hidden="true" />
+      <div>
+        <p class="order-card__id">
+          <strong>{{ currentOrder.orderId }}</strong>
+        </p>
+        <p class="order-card__meta">
+          <span>{{ currentOrder.orderType }}</span>
+          <span>•</span>
+          <span>{{ currentOrder.type }}</span>
+        </p>
+      </div>
+    </div>
+    <div class="order-card__status" [ngClass]="headerStatus.class">
+      {{ headerStatus.label }}
+    </div>
+    <button
+      type="button"
+      class="order-card__toggle"
+      (click)="toggleCollapse()"
+      [attr.aria-expanded]="!collapsed"
+      aria-label="Toggle order details"
+    >
+      <span [class]="collapsed ? 'toggle-icon toggle-icon--closed' : 'toggle-icon toggle-icon--open'"></span>
+    </button>
+  </header>
+
+  <section class="order-card__content" *ngIf="!collapsed">
+    <div class="order-card__steps">
+      <h3 i18n="@@orderCardStepsHeadline">Steps</h3>
+      <ul>
+        <li
+          *ngFor="let step of steps; index as idx; trackBy: trackStep"
+          [class]="'step-row ' + stepBackgroundClass(step)"
+        >
+          <span class="step__number">STEP {{ idx + 1 | number: '2.0' }}</span>
+          <span
+            class="step__status-icon"
+            [class]="stepStatusClass(step)"
+            [attr.aria-label]="stepStateLabel(step)"
+          >
+            {{ stepStatusIcon(step) }}
+          </span>
+          <span class="step__module">
+            <img
+              *ngIf="moduleIcon(step) as moduleIconPath"
+              [src]="moduleIconPath"
+              class="step__module-icon"
+              alt=""
+            />
+            <span class="step__module-name">{{ moduleName(step) }}</span>
+          </span>
+          <span class="step__command-text">{{ commandLabel(step) }}</span>
+        </li>
+      </ul>
+    </div>
+
+    <div class="order-card__shopfloor">
+      <app-shopfloor-preview
+        [order]="currentOrder"
+        [activeStep]="previewStep"
+      />
+    </div>
+
+    <footer class="order-card__details">
+      <div class="detail-group" *ngIf="orderStartedAt as started">
+        <span class="detail-label">Started</span>
+        <span class="detail-value">{{ started }}</span>
+      </div>
+      <div class="detail-group" *ngIf="orderDuration as duration">
+        <span class="detail-label">Duration</span>
+        <span class="detail-value">{{ duration }}</span>
+      </div>
+      <div class="detail-group" *ngIf="workpieceId as workpiece">
+        <span class="detail-label">Workpiece</span>
+        <span class="detail-value">{{ workpiece }}</span>
+      </div>
+      <div class="detail-group" *ngIf="activeStepStartedAt as stepStart">
+        <span class="detail-label">Active step started</span>
+        <span class="detail-value">{{ stepStart }}</span>
+      </div>
+    </footer>
+  </section>
+</article>
+</ng-container>
+

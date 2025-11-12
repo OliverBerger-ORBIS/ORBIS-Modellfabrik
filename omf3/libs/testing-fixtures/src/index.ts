@@ -3,7 +3,7 @@ import { concatMap, delay, repeat, switchMap } from 'rxjs/operators';
 
 import type { RawMqttMessage } from '@omf3/gateway';
 
-export type OrderFixtureName = 'white' | 'blue' | 'red' | 'mixed';
+export type OrderFixtureName = 'white' | 'blue' | 'red' | 'mixed' | 'storage';
 
 const DEFAULT_BASE_URL = '/fixtures/orders';
 
@@ -39,6 +39,7 @@ const FIXTURE_PATHS: Record<OrderFixtureName, string> = {
   blue: 'blue/orders.log',
   red: 'red/orders.log',
   mixed: 'mixed/orders.log',
+  storage: 'storage/orders.log',
 };
 
 const defaultLoader = async (resolvedPath: string): Promise<string> => {
@@ -97,4 +98,20 @@ export const createOrderFixtureStream = (
 };
 
 export const listAvailableOrderFixtures = (): OrderFixtureName[] => Object.keys(FIXTURE_PATHS) as OrderFixtureName[];
+
+export const SHOPFLOOR_ASSET_MAP: Record<string, string> = {
+  MILL: '/shopfloor/milling-machine.svg',
+  AIQS: '/shopfloor/ai-assistant.svg',
+  HBW: '/shopfloor/stock.svg',
+  DPS: '/shopfloor/robot-arm.svg',
+  DRILL: '/shopfloor/bohrer.svg',
+  CHRG: '/shopfloor/fuel.svg',
+  FTS: '/shopfloor/robotic.svg',
+  HBW_SQUARE1: '/shopfloor/factory.svg',
+  HBW_SQUARE2: '/shopfloor/conveyor.svg',
+  DPS_SQUARE1: '/shopfloor/warehouse.svg',
+  DPS_SQUARE2: '/shopfloor/order-tracking.svg',
+  ORBIS: '/shopfloor/ORBIS_logo_RGB.svg',
+  DSP: '/shopfloor/information-technology.svg',
+};
 

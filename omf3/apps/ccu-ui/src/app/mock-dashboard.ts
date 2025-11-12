@@ -21,7 +21,10 @@ export interface DashboardStreamSet {
 export interface MockDashboardController {
   streams: DashboardStreamSet;
   loadFixture: (fixture: OrderFixtureName, options?: FixtureStreamOptions) => Promise<DashboardStreamSet>;
+  getCurrentFixture: () => OrderFixtureName;
 }
+
+const FIXTURE_DEFAULT_INTERVAL = 25;
 
 const createStreamSet = (messages$: Subject<RawMqttMessage>): DashboardStreamSet => {
   const gateway = createGateway(messages$.asObservable());
@@ -54,6 +57,7 @@ export const createMockDashboardController = (): MockDashboardController => {
   let messageSubject = new Subject<RawMqttMessage>();
   let streams = createStreamSet(messageSubject);
   let currentReplay: Subscription | null = null;
+  let currentFixture: OrderFixtureName = 'white';
 
   const resetStreams = () => {
     messageSubject.complete();
@@ -73,13 +77,14 @@ export const createMockDashboardController = (): MockDashboardController => {
     resetStreams();
 
     const replay$ = createOrderFixtureStream(fixture, {
-      intervalMs: options?.intervalMs ?? 25,
+      intervalMs: options?.intervalMs ?? FIXTURE_DEFAULT_INTERVAL,
       baseUrl: options?.baseUrl,
       loader: options?.loader,
       loop: options?.loop,
     });
 
     currentReplay = replay$.subscribe((message) => messageSubject.next(message));
+    currentFixture = fixture;
     return streams;
   };
 
@@ -88,6 +93,18 @@ export const createMockDashboardController = (): MockDashboardController => {
       return streams;
     },
     loadFixture,
+    getCurrentFixture() {
+      return currentFixture;
+    },
   };
+};
+
+let sharedController: MockDashboardController | null = null;
+
+export const getDashboardController = (): MockDashboardController => {
+  if (!sharedController) {
+    sharedController = createMockDashboardController();
+  }
+  return sharedController;
 };
 

@@ -1,0 +1,109 @@
+<div class="preview" *ngIf="viewModel as vm">
+  <header class="preview__header">
+    <strong>{{ badgeLabel }}</strong>
+    <span>{{ infoLabel }}</span>
+  </header>
+
+  <div class="preview__canvas-wrapper" [style.width.px]="vm.width * scale" [style.height.px]="vm.height * scale">
+    <div
+      class="preview__canvas"
+      [style.width.px]="vm.width"
+      [style.height.px]="vm.height"
+      [style.transform]="'scale(' + scale + ')'"
+    >
+    <svg class="preview__roads" [attr.width]="vm.width" [attr.height]="vm.height">
+      <line
+        *ngFor="let road of vm.roads"
+        [attr.x1]="road.x1"
+        [attr.y1]="road.y1"
+        [attr.x2]="road.x2"
+        [attr.y2]="road.y2"
+      />
+      <ng-container *ngIf="vm.activeRouteSegments as segments">
+        <line
+          *ngFor="let segment of segments"
+          class="preview__route"
+          [attr.x1]="segment.x1"
+          [attr.y1]="segment.y1"
+          [attr.x2]="segment.x2"
+          [attr.y2]="segment.y2"
+        />
+      </ng-container>
+      <circle
+        *ngFor="let marker of vm.routeEndpoints"
+        class="preview__route-marker"
+        [attr.cx]="marker.x"
+        [attr.cy]="marker.y"
+        r="8"
+      />
+    </svg>
+
+    <ng-container *ngFor="let fixed of vm.fixedPositions">
+      <div
+        class="preview__fixed"
+        [class.preview__element--highlight]="fixed.highlighted"
+        [style.top.px]="fixed.top"
+        [style.left.px]="fixed.left"
+        [style.width.px]="fixed.width"
+        [style.height.px]="fixed.height"
+        [style.background]="fixed.background"
+      >
+        <img *ngIf="fixed.icon" [src]="fixed.icon" [alt]="fixed.label" />
+        <span>{{ fixed.label }}</span>
+      </div>
+    </ng-container>
+
+    <ng-container *ngFor="let module of vm.modules">
+      <div
+        class="preview__module"
+        [class.preview__element--highlight]="module.highlighted"
+        [class.preview__module--compound]="module.compound"
+        [style.top.px]="module.top"
+        [style.left.px]="module.left"
+        [style.width.px]="module.width"
+        [style.height.px]="module.height"
+      >
+        <div
+          class="preview__module-main"
+          [style.marginTop.px]="module.compoundOffset ?? 0"
+          [style.height.px]="module.mainHeight ?? module.height"
+          [style.width.px]="module.mainWidth ?? module.width"
+        >
+          <img *ngIf="module.icon" [src]="module.icon" [alt]="module.label" />
+        </div>
+        <span>{{ module.label }}</span>
+
+        <img
+          *ngFor="let attached of module.attached"
+          class="preview__attached"
+          [style.top.px]="attached.top"
+          [style.left.px]="attached.left"
+          [style.width.px]="attached.width"
+          [style.height.px]="attached.height"
+          [src]="attached.icon"
+          [alt]="attached.label"
+        />
+      </div>
+    </ng-container>
+
+    <div
+      *ngFor="let node of vm.intersections"
+      class="preview__intersection"
+      [class.preview__element--highlight]="node.highlighted"
+      [style.top.px]="node.top"
+      [style.left.px]="node.left"
+    >
+      <span class="preview__intersection-dot"></span>
+    </div>
+    <img
+      *ngIf="vm.routeOverlay"
+      class="preview__fts"
+      [src]="vm.routeOverlay.icon"
+      alt=""
+      [style.left.px]="vm.routeOverlay.x"
+      [style.top.px]="vm.routeOverlay.y"
+    />
+    </div>
+  </div>
+</div>
+

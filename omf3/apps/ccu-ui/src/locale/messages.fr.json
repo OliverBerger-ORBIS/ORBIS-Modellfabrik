@@ -14,6 +14,7 @@
     "fixtureLabelBlue": "Bleu",
     "fixtureLabelRed": "Rouge",
     "fixtureLabelMixed": "Mixte",
+    "fixtureLabelStorage": "Stockage",
     "ordersHeadline": "Commandes",
     "ordersBadgeRunning": "En cours : {$INTERPOLATION}",
     "ordersBadgeQueued": "En attente : {$INTERPOLATION}",
@@ -31,12 +32,28 @@
     "ftsStatusUnknown": "inconnu",
     "orderTabHeadline": "Planification des commandes",
     "orderTabDescription": "Les détails des commandes de production et de stockage seront affichés ici.",
+    "orderTabFixtureLabel": "Fixture",
+    "orderTabProductionHeadline": "Commandes de production",
+    "orderTabProductionActive": "Actives",
+    "orderTabProductionActiveEmpty": "Aucune commande de production active.",
+    "orderTabProductionCompleted": "Terminées",
+    "orderTabProductionCompletedEmpty": "Aucune commande de production terminée.",
+    "orderTabStorageHeadline": "Commandes de stockage",
+    "orderTabStorageActive": "Actives",
+    "orderTabStorageActiveEmpty": "Aucune commande de stockage active.",
+    "orderTabStorageCompleted": "Terminées",
+    "orderTabStorageCompletedEmpty": "Aucune commande de stockage terminée.",
+    "orderTabLoading": "Chargement des commandes…",
     "processTabHeadline": "Vue processus",
     "processTabDescription": "Analyses et visualisations des processus seront prochainement disponibles.",
     "configurationTabHeadline": "Configuration",
     "configurationTabDescription": "Gérez ici la configuration de l'usine, les cartographies et les assets.",
     "moduleTabHeadline": "Vue modules",
-    "moduleTabDescription": "Diagnostics détaillés des modules et cartographie shopfloor seront intégrés ici."
+    "moduleTabDescription": "Diagnostics détaillés des modules et cartographie shopfloor seront intégrés ici.",
+    "orderCardStepsHeadline": "Étapes",
+    "shopfloorPreviewNoActiveStep": "Toutes les étapes sont terminées.",
+    "shopfloorPreviewNavLabel": "Navigation ${INTERPOLATION} → ${INTERPOLATION_1}",
+    "shopfloorPreviewModuleLabel": "Module ${INTERPOLATION}"
   }
 }
 

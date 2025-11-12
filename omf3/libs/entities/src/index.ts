@@ -1,9 +1,38 @@
+export type OrderLifecycleState =
+  | 'ENQUEUED'
+  | 'PENDING'
+  | 'IN_PROGRESS'
+  | 'RUNNING'
+  | 'FINISHED'
+  | 'COMPLETED'
+  | 'FAILED'
+  | string;
+
+export interface ProductionStep {
+  id: string;
+  type: 'NAVIGATION' | 'MANUFACTURE' | string;
+  state: OrderLifecycleState;
+  command?: string;
+  moduleType?: string;
+  dependentActionId?: string;
+  source?: string;
+  target?: string;
+  description?: string;
+  startedAt?: string;
+  stoppedAt?: string;
+}
+
 export interface OrderActive {
   orderId: string;
-  productId: string;
-  quantity: number;
-  status: 'queued' | 'running' | 'paused' | 'completed';
-  startedAt?: string; // ISO timestamp
+  type?: string;
+  orderType?: 'PRODUCTION' | 'STORAGE' | string;
+  productId?: string;
+  quantity?: number;
+  state?: OrderLifecycleState;
+  status?: OrderLifecycleState;
+  productionSteps?: ProductionStep[];
+  receivedAt?: string;
+  startedAt?: string;
   updatedAt?: string;
 }
 

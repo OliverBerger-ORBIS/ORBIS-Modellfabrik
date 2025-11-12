@@ -1,33 +1,108 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import type { OrderActive } from '@omf3/entities';
+import { getDashboardController } from '../mock-dashboard';
+import { OrderCardComponent } from '../components/order-card/order-card.component';
+import type { OrderFixtureName } from '@omf3/testing-fixtures';
+import { map, shareReplay } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+
+const ORDER_TYPES = {
+  PRODUCTION: 'PRODUCTION',
+  STORAGE: 'STORAGE',
+};
+
+const isCompleted = (order: OrderActive) =>
+  (order.state ?? order.status ?? '').toUpperCase() === 'COMPLETED';
+
+const inferType = (order: OrderActive) =>
+  (order.orderType ?? '').toUpperCase() === ORDER_TYPES.STORAGE ? ORDER_TYPES.STORAGE : ORDER_TYPES.PRODUCTION;
+
+const getOrderTimestamp = (order: OrderActive): number => {
+  const candidates = [order.updatedAt, order.startedAt];
+  for (const value of candidates) {
+    if (value) {
+      const date = new Date(value).getTime();
+      if (!Number.isNaN(date)) {
+        return date;
+      }
+    }
+  }
+  return 0;
+};
 
 @Component({
   standalone: true,
   selector: 'app-order-tab',
-  template: `
-    <section class="placeholder">
-      <h2 i18n="@@orderTabHeadline">Order planning</h2>
-      <p i18n="@@orderTabDescription">
-        Detailed order information and production/storage differentiation will appear here.
-      </p>
-    </section>
-  `,
-  styles: [
-    `
-      .placeholder {
-        display: grid;
-        gap: 0.75rem;
-        padding: 1.5rem;
-        border-radius: 1rem;
-        background: #fff;
-        box-shadow: 0 12px 40px -24px rgba(20, 63, 107, 0.4);
-      }
-
-      h2 {
-        margin: 0;
-      }
-    `,
-  ],
+  imports: [CommonModule, OrderCardComponent],
+  templateUrl: './order-tab.component.html',
+  styleUrl: './order-tab.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class OrderTabComponent {}
+export class OrderTabComponent implements OnInit {
+  private readonly dashboard = getDashboardController();
+
+  productionActive$: Observable<OrderActive[]> = of([]);
+  productionCompleted$: Observable<OrderActive[]> = of([]);
+  storageActive$: Observable<OrderActive[]> = of([]);
+  storageCompleted$: Observable<OrderActive[]> = of([]);
+
+  readonly fixtureOptions: OrderFixtureName[] = ['white', 'blue', 'red', 'mixed', 'storage'];
+  activeFixture: OrderFixtureName = this.dashboard.getCurrentFixture();
+
+  private bindOrderStreams(): void {
+    const orders$ = this.dashboard.streams.orders$.pipe(
+      shareReplay({ bufferSize: 1, refCount: true })
+    );
+
+    const orderList$ = orders$.pipe(
+      map((record) => Object.values(record ?? {})),
+      map((orders) => orders.sort((a, b) => getOrderTimestamp(b) - getOrderTimestamp(a))),
+      shareReplay({ bufferSize: 1, refCount: true })
+    );
+
+    this.productionActive$ = orderList$.pipe(
+      map((orders) =>
+        orders.filter(
+          (order) => inferType(order) === ORDER_TYPES.PRODUCTION && !isCompleted(order)
+        )
+      )
+    );
+
+    this.productionCompleted$ = orderList$.pipe(
+      map((orders) =>
+        orders.filter(
+          (order) => inferType(order) === ORDER_TYPES.PRODUCTION && isCompleted(order)
+        )
+      )
+    );
+
+    this.storageActive$ = orderList$.pipe(
+      map((orders) =>
+        orders.filter(
+          (order) => inferType(order) === ORDER_TYPES.STORAGE && !isCompleted(order)
+        )
+      )
+    );
+
+    this.storageCompleted$ = orderList$.pipe(
+      map((orders) =>
+        orders.filter(
+          (order) => inferType(order) === ORDER_TYPES.STORAGE && isCompleted(order)
+        )
+      )
+    );
+  }
+
+  ngOnInit(): void {
+    this.bindOrderStreams();
+    void this.loadFixture(this.activeFixture);
+  }
+
+  async loadFixture(fixture: OrderFixtureName) {
+    this.activeFixture = fixture;
+    await this.dashboard.loadFixture(fixture);
+    this.bindOrderStreams();
+  }
+}
 
