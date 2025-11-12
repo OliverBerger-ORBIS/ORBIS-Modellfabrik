@@ -26,9 +26,10 @@ test('maps orders topic to OrderActive', async () => {
     })
   );
 
-  const order = await result;
-  assert.equal(order.orderId, '123');
-  assert.equal(order.status, 'running');
+  const payload = await result;
+  assert.equal(payload.order.orderId, '123');
+  assert.equal(payload.order.status, 'running');
+  assert.equal(payload.topic, 'ccu/order/active');
 });
 
 test('maps module state messages', async () => {
@@ -78,7 +79,8 @@ test('emits each order when payload is an array', async () => {
 
   const orderOne = await first;
   const orderTwo = await second;
-  assert.equal(orderOne.orderId, '123');
-  assert.equal(orderTwo.orderId, '456');
+  assert.equal(orderOne.order.orderId, '123');
+  assert.equal(orderTwo.order.orderId, '456');
+  assert.equal(orderOne.topic, 'ccu/order/completed');
 });
 

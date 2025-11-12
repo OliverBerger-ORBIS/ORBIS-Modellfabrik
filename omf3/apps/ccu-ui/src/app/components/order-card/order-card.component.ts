@@ -104,7 +104,16 @@ export class OrderCardComponent implements OnChanges {
       return null;
     }
 
-    return this.formatDuration(startedAt, this.getOrderEndTimestamp());
+    const finishedAt = this.getOrderEndTimestamp();
+    if (finishedAt) {
+      return this.formatDuration(startedAt, finishedAt);
+    }
+
+    if (!this.isOrderFinished()) {
+      return this.formatDuration(startedAt, new Date().toISOString());
+    }
+
+    return null;
   }
 
   get workpieceId(): string | null {
@@ -256,30 +265,60 @@ export class OrderCardComponent implements OnChanges {
   }
 
   private getOrderEndTimestamp(): string | null {
-    const candidates: (string | undefined)[] = [
-      this.order?.stoppedAt,
-      this.order?.updatedAt,
-      this.order?.receivedAt,
-    ];
+    if (!this.order) {
+      return null;
+    }
 
-    for (const candidate of candidates) {
-      if (candidate && !Number.isNaN(new Date(candidate).getTime())) {
-        return candidate;
+    const primaryKeys = ['stoppedAt', 'updatedAt', 'finishedAt', 'timestamp', 'receivedAt'] as const;
+
+    for (const key of primaryKeys) {
+      const candidate = this.readStringProp(this.order, key);
+      if (this.isValidTimestamp(candidate)) {
+        return candidate!;
       }
     }
 
+    const stepCandidates = this.order.productionSteps ?? [];
     let latest: string | null = null;
-    for (const step of this.steps) {
-      const candidate = step.stoppedAt ?? step.startedAt;
-      if (!candidate) {
-        continue;
-      }
-      if (!latest || new Date(candidate).getTime() > new Date(latest).getTime()) {
-        latest = candidate;
+    for (const step of stepCandidates) {
+      for (const key of ['finishedAt', 'stoppedAt', 'startedAt'] as const) {
+        const candidate = this.readStringProp(step, key);
+        if (!this.isValidTimestamp(candidate)) {
+          continue;
+        }
+
+        if (!latest || new Date(candidate!).getTime() > new Date(latest).getTime()) {
+          latest = candidate!;
+        }
+        break;
       }
     }
 
     return latest;
+  }
+
+  private readStringProp(
+    source: unknown,
+    key: string
+  ): string | null {
+    if (!source || typeof source !== 'object') {
+      return null;
+    }
+    const value = (source as Record<string, unknown>)[key];
+    return typeof value === 'string' ? value : null;
+  }
+
+  private isValidTimestamp(value?: string | null): value is string {
+    if (!value) {
+      return false;
+    }
+    const time = new Date(value).getTime();
+    return Number.isFinite(time);
+  }
+
+  private isOrderFinished(): boolean {
+    const state = (this.order?.state ?? this.order?.status ?? '').toUpperCase();
+    return ['COMPLETED', 'FINISHED', 'ERROR', 'FAILED'].includes(state);
   }
 }
 

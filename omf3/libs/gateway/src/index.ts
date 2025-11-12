@@ -43,10 +43,20 @@ export const createGateway = (
 
   const orders$ = shared.pipe(
     filter((msg) => matchTopic(msg.topic, 'ccu/order')),
-    map((msg) => parsePayload<OrderActive | OrderActive[]>(msg.payload)),
-    filter((payload): payload is OrderActive | OrderActive[] => payload !== null),
-    mergeMap((payload) => (Array.isArray(payload) ? payload : [payload])),
-    filter((payload): payload is OrderActive => payload !== null)
+    map((msg) => ({
+      topic: msg.topic,
+      payload: parsePayload<OrderActive | OrderActive[]>(msg.payload),
+    })),
+    filter(
+      (entry): entry is { topic: string; payload: OrderActive | OrderActive[] } =>
+        entry.payload !== null
+    ),
+    mergeMap((entry) =>
+      Array.isArray(entry.payload)
+        ? entry.payload.map((order) => ({ topic: entry.topic, order }))
+        : [{ topic: entry.topic, order: entry.payload }]
+    ),
+    filter((entry): entry is OrderStreamPayload => entry.order !== null)
   );
 
   const stock$ = shared.pipe(
