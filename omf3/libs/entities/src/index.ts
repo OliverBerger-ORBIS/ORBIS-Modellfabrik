@@ -45,6 +45,26 @@ export interface StockMessage {
   timestamp?: string;
 }
 
+export type WorkpieceType = 'BLUE' | 'WHITE' | 'RED' | string;
+export type WorkpieceInventoryState = 'RAW' | 'RESERVED' | 'FINISHED' | 'PROCESSING' | string;
+
+export interface StockWorkpiece {
+  id?: string;
+  type?: WorkpieceType;
+  state?: WorkpieceInventoryState;
+}
+
+export interface StockSnapshotItem {
+  workpiece?: StockWorkpiece | null;
+  location: string;
+  hbw?: string;
+}
+
+export interface StockSnapshot {
+  ts?: string;
+  stockItems: StockSnapshotItem[];
+}
+
 export interface ModuleState {
   moduleId: string;
   state: 'idle' | 'working' | 'error' | 'maintenance';
@@ -143,6 +163,18 @@ export interface TransportOverviewStatus {
 export interface ModuleOverviewState {
   modules: Record<string, ModuleOverviewStatus>;
   transports: Record<string, TransportOverviewStatus>;
+}
+
+export interface InventorySlotState {
+  location: string;
+  workpiece: StockWorkpiece | null;
+}
+
+export interface InventoryOverviewState {
+  slots: Record<string, InventorySlotState>;
+  availableCounts: Record<WorkpieceType, number>;
+  reservedCounts: Record<WorkpieceType, number>;
+  lastUpdated: string;
 }
 
 export interface ReplayEnvelope {

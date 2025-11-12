@@ -9,6 +9,7 @@ import {
   FtsState,
   ModulePairingState,
   ModuleFactsheetSnapshot,
+  StockSnapshot,
 } from '@omf3/entities';
 
 export interface GatewayPublishOptions {
@@ -42,6 +43,7 @@ export interface GatewayStreams {
   fts$: Observable<FtsState>;
   pairing$: Observable<ModulePairingState>;
   moduleFactsheets$: Observable<ModuleFactsheetSnapshot>;
+  stockSnapshots$: Observable<StockSnapshot>;
   publish: GatewayPublishFn;
 }
 
@@ -176,6 +178,23 @@ export const createGateway = (
     shareReplay({ bufferSize: 1, refCount: true })
   );
 
+  const stockSnapshots$ = shared.pipe(
+    filter((msg) => msg.topic === 'ccu/state/stock'),
+    map((msg) => {
+      const parsed = parsePayload<StockSnapshot>(msg.payload);
+      if (!parsed) {
+        return null;
+      }
+
+      return {
+        ...parsed,
+        ts: parsed.ts ?? msg.timestamp ?? new Date().toISOString(),
+      } as StockSnapshot;
+    }),
+    filter((snapshot): snapshot is StockSnapshot => snapshot !== null && Array.isArray(snapshot.stockItems)),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
+
   return {
     orders$,
     stock$,
@@ -183,6 +202,7 @@ export const createGateway = (
     fts$,
     pairing$,
     moduleFactsheets$,
+    stockSnapshots$,
     publish,
   };
 };

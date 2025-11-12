@@ -11,6 +11,7 @@ import type {
   OrderActive,
   StockMessage,
   ModulePairingState,
+  StockSnapshot,
 } from '@omf3/entities';
 import type { OrderStreamPayload, GatewayPublishFn } from '@omf3/gateway';
 
@@ -24,15 +25,19 @@ const createGateway = (): {
     modules$: Subject<ModuleState>;
     fts$: Subject<FtsState>;
     pairing$: Subject<ModulePairingState>;
+    stockSnapshots$: Subject<StockSnapshot>;
   };
+  publishLog: Array<{ topic: string; payload: unknown }>;
 } => {
   const orders$ = subject<OrderStreamPayload>();
   const stock$ = subject<StockMessage>();
   const modules$ = subject<ModuleState>();
   const fts$ = subject<FtsState>();
   const pairing$ = subject<ModulePairingState>();
-  const publish: GatewayPublishFn = async () => {
-    // noop for tests
+  const stockSnapshots$ = subject<StockSnapshot>();
+  const publishLog: Array<{ topic: string; payload: unknown }> = [];
+  const publish: GatewayPublishFn = async (topic, payload) => {
+    publishLog.push({ topic, payload });
   };
 
   return {
@@ -42,6 +47,7 @@ const createGateway = (): {
       modules$: modules$.asObservable(),
       fts$: fts$.asObservable(),
       pairing$: pairing$.asObservable(),
+      stockSnapshots$: stockSnapshots$.asObservable(),
       publish,
     },
     subjects: {
@@ -50,7 +56,9 @@ const createGateway = (): {
       modules$,
       fts$,
       pairing$,
+      stockSnapshots$,
     },
+    publishLog,
   };
 };
 
@@ -149,5 +157,37 @@ test('aggregates module pairing overview', async () => {
   assert.equal(overview.modules['SVR3QA0022'].messageCount, 1);
   assert.equal(overview.modules['SVR3QA0022'].lastUpdate, '2025-11-10T18:02:09.702936');
   assert.equal(overview.transports['5iO4'].availability, 'READY');
+});
+
+test('aggregates inventory overview', async () => {
+  const { streams, subjects } = createGateway();
+  const business = createBusiness(streams);
+
+  const inventoryPromise = firstValueFrom(business.inventoryOverview$.pipe(skip(1)));
+
+  subjects.stockSnapshots$.next({
+    ts: '2025-11-10T16:47:29.479Z',
+    stockItems: [
+      { location: 'A1', workpiece: { id: 'w1', type: 'BLUE', state: 'RAW' } },
+      { location: 'B2', workpiece: { id: 'w2', type: 'RED', state: 'RESERVED' } },
+    ],
+  });
+
+  const inventory = await inventoryPromise;
+  assert.equal(inventory.availableCounts.BLUE, 1);
+  assert.equal(inventory.reservedCounts.RED, 1);
+  assert.equal(inventory.slots.A1?.workpiece?.type, 'BLUE');
+  assert.equal(inventory.slots.B2?.workpiece?.state, 'RESERVED');
+});
+
+test('sends customer order via publish', async () => {
+  const { streams, publishLog } = createGateway();
+  const business = createBusiness(streams);
+
+  await business.sendCustomerOrder('BLUE');
+
+  assert.equal(publishLog.length, 1);
+  assert.equal(publishLog[0]?.topic, 'ccu/order/request');
+  assert.equal((publishLog[0]?.payload as any)?.type, 'BLUE');
 });
 

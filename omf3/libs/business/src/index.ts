@@ -10,8 +10,15 @@ import type {
   ModuleOverviewState,
   ModuleAvailabilityStatus,
   ModuleFactsheetSnapshot,
+  StockSnapshot,
+  InventoryOverviewState,
+  InventorySlotState,
+  StockWorkpiece,
+  WorkpieceType,
 } from '@omf3/entities';
 import { OrderStreamPayload, type GatewayPublishFn } from '@omf3/gateway';
+
+const DEFAULT_WORKPIECE_TYPES: WorkpieceType[] = ['BLUE', 'WHITE', 'RED'];
 
 export interface GatewayStreams {
   orders$: Observable<OrderStreamPayload>;
@@ -20,6 +27,7 @@ export interface GatewayStreams {
   fts$: Observable<FtsState>;
   pairing$: Observable<ModulePairingState>;
   moduleFactsheets$: Observable<ModuleFactsheetSnapshot>;
+  stockSnapshots$: Observable<StockSnapshot>;
   publish: GatewayPublishFn;
 }
 
@@ -31,12 +39,15 @@ export interface BusinessStreams {
   moduleStates$: Observable<Record<string, ModuleState>>;
   ftsStates$: Observable<Record<string, FtsState>>;
   moduleOverview$: Observable<ModuleOverviewState>;
+  inventoryOverview$: Observable<InventoryOverviewState>;
 }
 
 export interface BusinessCommands {
   calibrateModule: (serialNumber: string) => Promise<void>;
   setFtsCharge: (serialNumber: string, charge: boolean) => Promise<void>;
   dockFts: (serialNumber: string, nodeId?: string) => Promise<void>;
+  sendCustomerOrder: (workpieceType: WorkpieceType) => Promise<void>;
+  requestRawMaterial: (workpieceType: WorkpieceType) => Promise<void>;
 }
 
 export type BusinessFacade = BusinessStreams & BusinessCommands;
@@ -75,6 +86,73 @@ const initializeModuleOverview = (): ModuleOverviewState => ({
   modules: {},
   transports: {},
 });
+
+const INVENTORY_LOCATIONS = ['A1', 'A2', 'A3', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3'];
+
+const createEmptyInventory = (): Record<string, InventorySlotState> => {
+  return INVENTORY_LOCATIONS.reduce<Record<string, InventorySlotState>>((acc, location) => {
+    acc[location] = { location, workpiece: null };
+    return acc;
+  }, {});
+};
+
+const createCountRecord = (): Record<WorkpieceType, number> => {
+  const counts: Record<string, number> = {};
+  DEFAULT_WORKPIECE_TYPES.forEach((type) => {
+    counts[type] = 0;
+  });
+  return counts as Record<WorkpieceType, number>;
+};
+
+const normalizeWorkpiece = (workpiece?: StockWorkpiece | null): StockWorkpiece | null => {
+  if (!workpiece) {
+    return null;
+  }
+
+  return {
+    id: workpiece.id ?? undefined,
+    type: workpiece.type ? (workpiece.type.toUpperCase() as WorkpieceType) : undefined,
+    state: workpiece.state ? workpiece.state.toUpperCase() : undefined,
+  };
+};
+
+const buildInventoryOverview = (snapshot: StockSnapshot | null | undefined): InventoryOverviewState => {
+  const slots = createEmptyInventory();
+  const availableCounts = createCountRecord();
+  const reservedCounts = createCountRecord();
+
+  if (snapshot && Array.isArray(snapshot.stockItems)) {
+    snapshot.stockItems.forEach((item) => {
+      const location = item.location?.toUpperCase();
+      if (!location || !slots[location]) {
+        return;
+      }
+
+      const normalized = normalizeWorkpiece(item.workpiece ?? null);
+      slots[location] = {
+        location,
+        workpiece: normalized,
+      };
+
+      if (normalized?.type) {
+        const workpieceType = normalized.type;
+        const state = normalized.state?.toUpperCase();
+        if (state === 'RAW') {
+          availableCounts[workpieceType] = (availableCounts[workpieceType] ?? 0) + 1;
+        } else if (state === 'RESERVED') {
+          reservedCounts[workpieceType] = (reservedCounts[workpieceType] ?? 0) + 1;
+        }
+      }
+    });
+  }
+
+  return {
+    slots,
+    availableCounts,
+    reservedCounts,
+    lastUpdated: snapshot?.ts ?? new Date().toISOString(),
+  };
+};
 
 const applyPairingSnapshot = (state: ModuleOverviewState, snapshot: ModulePairingState): ModuleOverviewState => {
   const timestamp = snapshot.timestamp ?? new Date().toISOString();
@@ -306,6 +384,12 @@ export const createBusiness = (gateway: GatewayStreams): BusinessStreams & Busin
     shareReplay({ bufferSize: 1, refCount: true })
   );
 
+  const inventoryOverview$ = gateway.stockSnapshots$.pipe(
+    map((snapshot) => buildInventoryOverview(snapshot)),
+    startWith(buildInventoryOverview(null)),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
+
   const calibrateModule: BusinessCommands['calibrateModule'] = async (serialNumber) => {
     if (!serialNumber) {
       return;
@@ -358,6 +442,35 @@ export const createBusiness = (gateway: GatewayStreams): BusinessStreams & Busin
     await publish(`fts/v1/ff/${serialNumber}/instantAction`, payload, { qos: 1, retain: false });
   };
 
+  const sendCustomerOrder: BusinessCommands['sendCustomerOrder'] = async (workpieceType) => {
+    if (!workpieceType) {
+      return;
+    }
+
+    const payload = {
+      type: workpieceType,
+      timestamp: new Date().toISOString(),
+      orderType: 'PRODUCTION',
+    };
+
+    await publish('ccu/order/request', payload, { qos: 1, retain: false });
+  };
+
+  const requestRawMaterial: BusinessCommands['requestRawMaterial'] = async (workpieceType) => {
+    if (!workpieceType) {
+      return;
+    }
+
+    const payload = {
+      type: workpieceType,
+      timestamp: new Date().toISOString(),
+      orderType: 'RAW_MATERIAL',
+      workpieceType,
+    };
+
+    await publish('ccu/order/raw_material', payload, { qos: 1, retain: false });
+  };
+
   return {
     orders$,
     completedOrders$,
@@ -366,9 +479,12 @@ export const createBusiness = (gateway: GatewayStreams): BusinessStreams & Busin
     moduleStates$,
     ftsStates$,
     moduleOverview$,
+    inventoryOverview$,
     calibrateModule,
     setFtsCharge,
     dockFts,
+    sendCustomerOrder,
+    requestRawMaterial,
   };
 };
 

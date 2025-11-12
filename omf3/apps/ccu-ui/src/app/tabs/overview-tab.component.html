@@ -13,10 +13,152 @@
   </div>
 </section>
 
+<section class="overview-section customer-orders" *ngIf="availableCounts$ | async as available">
+  <header>
+    <h2>
+      <img [src]="customerOrdersIcon" alt="Customer Orders" width="32" height="32" />
+      <span i18n="@@overviewCustomerOrders">Customer Orders</span>
+    </h2>
+    <p i18n="@@overviewCustomerOrdersHint">Place production orders directly if stock is available.</p>
+  </header>
+
+  <div class="customer-grid">
+    <article class="customer-card" *ngFor="let type of workpieceTypes">
+      <h3>
+        <span class="dot" [class]="type.toLowerCase()"></span>
+        {{ getWorkpieceLabel(type) | uppercase }}
+      </h3>
+      <div class="workpiece-stack">
+        <img
+          class="workpiece-image"
+          [src]="productIcons[type]"
+          [alt]="getWorkpieceLabel(type)"
+          width="120"
+          height="120"
+        />
+        <img
+          class="workpiece-image three-d"
+          [src]="threeDIcons[type]"
+          [alt]="getWorkpieceLabel(type)"
+          width="120"
+          height="120"
+        />
+      </div>
+      <dl>
+        <div>
+          <dt i18n="@@overviewStockLabel">Stock</dt>
+          <dd>{{ available[type] ?? 0 }}</dd>
+        </div>
+        <div>
+          <dt i18n="@@overviewAvailableLabel">Available</dt>
+          <dd>{{ isAvailable(available, type) ? yesLabel : noLabel }}</dd>
+        </div>
+      </dl>
+      <button
+        type="button"
+        class="primary"
+        (click)="orderWorkpiece(type)"
+        [disabled]="!isAvailable(available, type)"
+      >
+        {{ orderButtonLabel }}
+      </button>
+    </article>
+  </div>
+</section>
+
+<section class="overview-section inventory" *ngIf="inventoryOverview$ | async as overview">
+  <header>
+    <h2>
+      <img [src]="inventoryIcon" alt="Inventory" width="32" height="32" />
+      <span i18n="@@overviewInventory">Inventory</span>
+    </h2>
+    <p class="meta" i18n="@@overviewInventoryUpdated">Last update: {{ overview.lastUpdated | date: 'shortTime' }}</p>
+  </header>
+
+  <details class="inventory-expander" open>
+    <summary i18n="@@overviewInventoryGrid">Stock (A1–C3)</summary>
+    <div class="inventory-grid" *ngIf="inventorySlots$ | async as slots">
+      <div class="corner"></div>
+      <div class="column-label" *ngFor="let column of ['1', '2', '3']">{{ column }}</div>
+      <ng-container *ngFor="let row of ['A', 'B', 'C']; let rowIndex = index">
+        <div class="row-label">{{ row }}</div>
+        <ng-container *ngFor="let columnIndex of [0, 1, 2]">
+          <ng-container
+            *ngIf="slots[rowIndex * 3 + columnIndex] as slot"
+          >
+            <figure
+              [title]="getSlotTooltip(slot)"
+              class="inventory-slot"
+            >
+              <img
+                [src]="getSlotIcon(slot)"
+                [alt]="getSlotLabel(slot)"
+                width="120"
+                height="120"
+              />
+              <figcaption>{{ slot.location }}</figcaption>
+            </figure>
+          </ng-container>
+        </ng-container>
+      </ng-container>
+    </div>
+  </details>
+</section>
+
+<section class="overview-section purchase-orders" *ngIf="availableCounts$ | async as available">
+  <header>
+    <h2>
+      <img [src]="purchaseOrdersIcon" alt="Purchase Orders" width="32" height="32" />
+      <span i18n="@@overviewPurchaseOrders">Purchase Orders</span>
+    </h2>
+    <p i18n="@@overviewPurchaseOrdersHint">Raw material replenishment requires ERP integration.</p>
+  </header>
+
+  <div class="purchase-grid">
+    <article class="purchase-card" *ngFor="let type of workpieceTypes">
+      <div class="purchase-header">
+        <h3>
+          <span class="dot" [class]="type.toLowerCase()"></span>
+          {{ getWorkpieceLabel(type) }}
+        </h3>
+        <p class="stock" i18n="@@overviewCurrentStock">Stock: {{ available[type] ?? 0 }}</p>
+      </div>
+      <div class="purchase-body">
+        <img
+          class="workpiece-image"
+          [src]="threeDIcons[type]"
+          [alt]="getWorkpieceLabel(type)"
+          width="120"
+          height="120"
+        />
+        <div class="missing">
+          <p i18n="@@overviewMissingWorkpieces">Missing workpieces</p>
+          <div class="missing-slots">
+            <img
+              *ngFor="let _ of asArray(getNeed(available, type))"
+              [src]="emptySlotIcon"
+              alt="missing"
+            />
+          </div>
+        </div>
+        <div class="purchase-action">
+          <button
+            type="button"
+            [class.primary]="getNeed(available, type) > 0"
+            [class.secondary]="getNeed(available, type) === 0"
+            [disabled]="getNeed(available, type) === 0"
+          >
+            {{ orderRawMaterialLabel }}
+          </button>
+          <small>{{ erpRequiredLabel }}</small>
+        </div>
+      </div>
+    </article>
+  </div>
+</section>
+
 <div class="overview-grid">
   <app-orders-view [orders$]="orders$" [counts$]="orderCounts$" />
-  <app-stock-view [stockByPart$]="stockByPart$" />
-  <app-module-map [moduleStates$]="moduleStates$" />
   <app-fts-view [ftsStates$]="ftsStates$" />
 </div>
 

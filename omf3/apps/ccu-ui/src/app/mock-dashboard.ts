@@ -1,12 +1,14 @@
 import { createBusiness } from '@omf3/business';
 import { createGateway, type RawMqttMessage, type OrderStreamPayload, type GatewayPublishFn } from '@omf3/gateway';
-import type { FtsState, ModuleState, ModuleOverviewState } from '@omf3/entities';
+import type { FtsState, ModuleState, ModuleOverviewState, InventoryOverviewState } from '@omf3/entities';
 import {
   createModulePairingFixtureStream,
   createOrderFixtureStream,
+  createStockFixtureStream,
   type FixtureStreamOptions,
   type ModuleFixtureName,
   type OrderFixtureName,
+  type StockFixtureName,
 } from '@omf3/testing-fixtures';
 import { Subject, type Observable, Subscription } from 'rxjs';
 import { map, scan, shareReplay, startWith } from 'rxjs/operators';
@@ -20,12 +22,15 @@ export interface DashboardStreamSet {
   moduleStates$: Observable<Record<string, ModuleState>>;
   ftsStates$: Observable<Record<string, FtsState>>;
   moduleOverview$: Observable<ModuleOverviewState>;
+  inventoryOverview$: Observable<InventoryOverviewState>;
 }
 
 export interface DashboardCommandSet {
   calibrateModule: (serialNumber: string) => Promise<void>;
   setFtsCharge: (serialNumber: string, charge: boolean) => Promise<void>;
   dockFts: (serialNumber: string, nodeId?: string) => Promise<void>;
+  sendCustomerOrder: (workpieceType: string) => Promise<void>;
+  requestRawMaterial: (workpieceType: string) => Promise<void>;
 }
 
 export interface MockDashboardController {
@@ -46,6 +51,13 @@ const resolveModuleFixture = (fixture: OrderFixtureName): ModuleFixtureName => {
     fixture === 'startup'
   ) {
     return fixture;
+  }
+  return 'default';
+};
+
+const resolveStockFixture = (fixture: OrderFixtureName): StockFixtureName => {
+  if (fixture === 'startup') {
+    return 'startup';
   }
   return 'default';
 };
@@ -152,11 +164,14 @@ const createStreamSet = (messages$: Subject<RawMqttMessage>): {
       moduleStates$: business.moduleStates$,
       ftsStates$: business.ftsStates$,
       moduleOverview$: business.moduleOverview$,
+      inventoryOverview$: business.inventoryOverview$,
     },
     commands: {
       calibrateModule: business.calibrateModule,
       setFtsCharge: business.setFtsCharge,
       dockFts: business.dockFts,
+      sendCustomerOrder: business.sendCustomerOrder,
+      requestRawMaterial: business.requestRawMaterial,
     },
   };
 };
@@ -193,7 +208,7 @@ export const createMockDashboardController = (): MockDashboardController => {
       loop: options?.loop,
     });
 
-    currentReplays.push(replay$.subscribe((message) => messageSubject.next(message)));
+    currentReplays.push(replay$.subscribe((message: RawMqttMessage) => messageSubject.next(message)));
 
     const moduleFixtureName = resolveModuleFixture(fixture);
     const moduleReplay$ = createModulePairingFixtureStream(moduleFixtureName, {
@@ -201,7 +216,15 @@ export const createMockDashboardController = (): MockDashboardController => {
       loader: options?.loader,
       loop: options?.loop,
     });
-    currentReplays.push(moduleReplay$.subscribe((message) => messageSubject.next(message)));
+    currentReplays.push(moduleReplay$.subscribe((message: RawMqttMessage) => messageSubject.next(message)));
+
+    const stockFixtureName = resolveStockFixture(fixture);
+    const stockReplay$ = createStockFixtureStream(stockFixtureName, {
+      intervalMs: options?.intervalMs ?? FIXTURE_DEFAULT_INTERVAL,
+      loader: options?.loader,
+      loop: options?.loop,
+    });
+    currentReplays.push(stockReplay$.subscribe((message: RawMqttMessage) => messageSubject.next(message)));
 
     currentFixture = fixture;
     return bundle.streams;

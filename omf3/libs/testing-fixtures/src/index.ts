@@ -12,9 +12,11 @@ export type ModuleFixtureName =
   | 'mixed'
   | 'storage'
   | 'startup';
+export type StockFixtureName = 'default' | 'startup';
 
 const DEFAULT_BASE_URL = '/fixtures/orders';
 const DEFAULT_MODULE_BASE_URL = '/fixtures/modules';
+const DEFAULT_STOCK_BASE_URL = '/fixtures/stock';
 
 export interface LoadFixtureOptions {
   /**
@@ -62,6 +64,11 @@ const MODULE_FIXTURE_PATHS: Record<ModuleFixtureName, string> = {
   startup: 'startup.log',
 };
 
+const STOCK_FIXTURE_PATHS: Record<StockFixtureName, string> = {
+  default: 'default.log',
+  startup: 'startup.log',
+};
+
 const defaultLoader = async (resolvedPath: string): Promise<string> => {
   if (typeof fetch !== 'function') {
     throw new Error(
@@ -97,6 +104,12 @@ const resolveModulePath = (name: ModuleFixtureName, baseUrl: string | undefined)
   return base.endsWith('/') ? `${base}${suffix}` : `${base}/${suffix}`;
 };
 
+const resolveStockPath = (name: StockFixtureName, baseUrl: string | undefined): string => {
+  const base = baseUrl ?? DEFAULT_STOCK_BASE_URL;
+  const suffix = STOCK_FIXTURE_PATHS[name];
+  return base.endsWith('/') ? `${base}${suffix}` : `${base}/${suffix}`;
+};
+
 export const loadOrderFixture = async (
   name: OrderFixtureName,
   options?: LoadFixtureOptions
@@ -118,6 +131,21 @@ export const loadModulePairingFixture = async (
     return parseLines(contents);
   } catch (error) {
     console.warn(`[testing-fixtures] Failed to load module pairing fixture "${name}" from ${path}`, error);
+    return [];
+  }
+};
+
+export const loadStockFixture = async (
+  name: StockFixtureName,
+  options?: LoadFixtureOptions
+): Promise<RawMqttMessage[]> => {
+  const path = resolveStockPath(name, options?.baseUrl);
+  const loader = options?.loader ?? defaultLoader;
+  try {
+    const contents = await loader(path);
+    return parseLines(contents);
+  } catch (error) {
+    console.warn(`[testing-fixtures] Failed to load stock fixture "${name}" from ${path}`, error);
     return [];
   }
 };
@@ -153,6 +181,20 @@ export const createModulePairingFixtureStream = (
 
 export const listAvailableModuleFixtures = (): ModuleFixtureName[] =>
   Object.keys(MODULE_FIXTURE_PATHS) as ModuleFixtureName[];
+
+export const createStockFixtureStream = (
+  name: StockFixtureName,
+  options?: FixtureStreamOptions
+): Observable<RawMqttMessage> => {
+  return defer(() => from(loadStockFixture(name, options))).pipe(
+    switchMap((messages) => from(messages)),
+    withInterval(options?.intervalMs),
+    options?.loop ? repeat() : (source) => source
+  );
+};
+
+export const listAvailableStockFixtures = (): StockFixtureName[] =>
+  Object.keys(STOCK_FIXTURE_PATHS) as StockFixtureName[];
 
 export const SHOPFLOOR_ASSET_MAP: Record<string, string> = {
   MILL: '/shopfloor/milling-machine.svg',
