@@ -14,6 +14,7 @@
     "fixtureLabelBlue": "Blau",
     "fixtureLabelRed": "Rot",
     "fixtureLabelMixed": "Gemischt",
+    "fixtureLabelStorage": "Lager",
     "ordersHeadline": "Aufträge",
     "ordersBadgeRunning": "Laufend: {$INTERPOLATION}",
     "ordersBadgeQueued": "Wartend: {$INTERPOLATION}",
@@ -31,12 +32,28 @@
     "ftsStatusUnknown": "unbekannt",
     "orderTabHeadline": "Auftragsplanung",
     "orderTabDescription": "Detailinformationen zu Produktions- und Lageraufträgen werden hier angezeigt.",
+    "orderTabFixtureLabel": "Fixture",
+    "orderTabProductionHeadline": "Produktionsaufträge",
+    "orderTabProductionActive": "Aktiv",
+    "orderTabProductionActiveEmpty": "Keine aktiven Produktionsaufträge.",
+    "orderTabProductionCompleted": "Abgeschlossen",
+    "orderTabProductionCompletedEmpty": "Keine abgeschlossenen Produktionsaufträge.",
+    "orderTabStorageHeadline": "Lageraufträge",
+    "orderTabStorageActive": "Aktiv",
+    "orderTabStorageActiveEmpty": "Keine aktiven Lageraufträge.",
+    "orderTabStorageCompleted": "Abgeschlossen",
+    "orderTabStorageCompletedEmpty": "Keine abgeschlossenen Lageraufträge.",
+    "orderTabLoading": "Lade Aufträge …",
     "processTabHeadline": "Prozessperspektive",
     "processTabDescription": "Hier folgen Analysen und Visualisierungen der Prozessabläufe.",
     "configurationTabHeadline": "Konfiguration",
     "configurationTabDescription": "Verwalte hier Factory-Konfiguration, Layout-Mappings und Assets.",
     "moduleTabHeadline": "Modulübersicht",
-    "moduleTabDescription": "Moduldiagnosen und Shopfloor-Zuordnung werden in dieser Ansicht bereitgestellt."
+    "moduleTabDescription": "Moduldiagnosen und Shopfloor-Zuordnung werden in dieser Ansicht bereitgestellt.",
+    "orderCardStepsHeadline": "Schritte",
+    "shopfloorPreviewNoActiveStep": "Alle Schritte abgeschlossen.",
+    "shopfloorPreviewNavLabel": "Route ${INTERPOLATION} → ${INTERPOLATION_1}",
+    "shopfloorPreviewModuleLabel": "Modul ${INTERPOLATION}"
   }
 }
 

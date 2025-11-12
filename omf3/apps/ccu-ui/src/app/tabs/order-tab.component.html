@@ -1,0 +1,97 @@
+<section class="order-tab">
+  <header class="order-tab__header">
+    <div>
+      <div class="order-tab__heading">
+        <img src="headings/lieferung-bestellen.svg" alt="" aria-hidden="true" />
+        <h2 i18n="@@orderTabHeadline">Order planning</h2>
+      </div>
+      <p i18n="@@orderTabDescription">
+        Detailed order information and production/storage differentiation are displayed for each active
+        order.
+      </p>
+    </div>
+
+    <div class="order-tab__fixtures">
+      <span class="badge" i18n="@@orderTabFixtureLabel">Fixture</span>
+      <div class="fixture-switch">
+        <button
+          *ngFor="let fixture of fixtureOptions"
+          type="button"
+          [class.active]="fixture === activeFixture"
+          (click)="loadFixture(fixture)"
+        >
+          {{ fixture | titlecase }}
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="order-tab__grid">
+    <section>
+      <div class="order-tab__section-heading">
+        <img src="headings/maschine.svg" alt="" aria-hidden="true" />
+        <h3 i18n="@@orderTabProductionHeadline">Production orders</h3>
+      </div>
+
+      <article class="order-section">
+        <h4 i18n="@@orderTabProductionActive">Active</h4>
+        <ng-container *ngIf="productionActive$ | async as orders; else loading">
+          <p class="empty" *ngIf="orders.length === 0" i18n="@@orderTabProductionActiveEmpty">
+            No active production orders.
+          </p>
+          <app-order-card *ngFor="let order of orders" [order]="order" />
+        </ng-container>
+      </article>
+
+      <article class="order-section">
+        <h4 i18n="@@orderTabProductionCompleted">Completed</h4>
+        <ng-container *ngIf="productionCompleted$ | async as orders; else loading">
+          <p class="empty" *ngIf="orders.length === 0" i18n="@@orderTabProductionCompletedEmpty">
+            No completed production orders.
+          </p>
+          <app-order-card
+            *ngFor="let order of orders"
+            [order]="order"
+            [isCompleted]="true"
+          />
+        </ng-container>
+      </article>
+    </section>
+
+    <section>
+      <div class="order-tab__section-heading">
+        <img src="headings/ladung.svg" alt="" aria-hidden="true" />
+        <h3 i18n="@@orderTabStorageHeadline">Storage orders</h3>
+      </div>
+
+      <article class="order-section">
+        <h4 i18n="@@orderTabStorageActive">Active</h4>
+        <ng-container *ngIf="storageActive$ | async as orders; else loading">
+          <p class="empty" *ngIf="orders.length === 0" i18n="@@orderTabStorageActiveEmpty">
+            No active storage orders.
+          </p>
+          <app-order-card *ngFor="let order of orders" [order]="order" />
+        </ng-container>
+      </article>
+
+      <article class="order-section">
+        <h4 i18n="@@orderTabStorageCompleted">Completed</h4>
+        <ng-container *ngIf="storageCompleted$ | async as orders; else loading">
+          <p class="empty" *ngIf="orders.length === 0" i18n="@@orderTabStorageCompletedEmpty">
+            No completed storage orders.
+          </p>
+          <app-order-card
+            *ngFor="let order of orders"
+            [order]="order"
+            [isCompleted]="true"
+          />
+        </ng-container>
+      </article>
+    </section>
+  </div>
+</section>
+
+<ng-template #loading>
+  <p class="empty" i18n="@@orderTabLoading">Loading orders…</p>
+</ng-template>
+

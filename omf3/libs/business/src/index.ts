@@ -22,6 +22,27 @@ export interface BusinessStreams {
   ftsStates$: Observable<Record<string, FtsState>>;
 }
 
+const mapOrderState = (order: OrderActive): 'running' | 'queued' | 'completed' => {
+  const raw = (order.status ?? order.state ?? '').toUpperCase();
+
+  switch (raw) {
+    case 'IN_PROGRESS':
+    case 'RUNNING':
+    case 'PROCESSING':
+      return 'running';
+    case 'COMPLETED':
+    case 'FINISHED':
+      return 'completed';
+    case 'FAILED':
+    case 'ERROR':
+      return 'completed';
+    case 'ENQUEUED':
+    case 'PENDING':
+    default:
+      return 'queued';
+  }
+};
+
 export const createBusiness = (gateway: GatewayStreams): BusinessStreams => {
   const ordersState$ = gateway.orders$.pipe(
     scan(
@@ -47,9 +68,8 @@ export const createBusiness = (gateway: GatewayStreams): BusinessStreams => {
       };
 
       Object.values(orders).forEach((order) => {
-        if (order.status === 'running') counts.running += 1;
-        if (order.status === 'queued') counts.queued += 1;
-        if (order.status === 'completed') counts.completed += 1;
+        const bucket = mapOrderState(order);
+        counts[bucket] += 1;
       });
 
       return counts;

@@ -241,6 +241,23 @@ def load_default_configs() -> List[FixtureConfig]:
             },
             passthrough_patterns=["warehouse/stock"],
         ),
+        FixtureConfig(
+            name="storage",
+            sources=[
+                Path("data/omf-data/sessions/storage_order_white_20251110_181619.log"),
+            ],
+            output=Path("omf3/testing/fixtures/orders/storage/orders.log"),
+            topic_patterns=[
+                "ccu/order/active",
+                "ccu/order/completed",
+                "module/v1/ff/*",
+                "warehouse/stock",
+                "warehouse/stock/*",
+                "fts/v1/ff/*",
+            ],
+            order_ids={"2413eb6e-fb6b-4ed1-b93f-fb17143a4593"},
+            passthrough_patterns=["warehouse/stock"],
+        ),
     ]
 
 

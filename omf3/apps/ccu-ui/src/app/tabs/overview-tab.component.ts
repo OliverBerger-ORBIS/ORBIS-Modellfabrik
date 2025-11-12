@@ -1,10 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import type { FtsState, ModuleState, OrderActive } from '@omf3/entities';
-import {
-  createMockDashboardController,
-  type DashboardStreamSet,
-} from '../mock-dashboard';
+import { getDashboardController, type DashboardStreamSet } from '../mock-dashboard';
 import { OrdersViewComponent } from '../orders-view.component';
 import { StockViewComponent } from '../stock-view.component';
 import { ModuleMapComponent } from '../module-map.component';
@@ -21,16 +18,17 @@ import type { Observable } from 'rxjs';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OverviewTabComponent implements OnInit {
-  private dashboard = createMockDashboardController();
+  private dashboard = getDashboardController();
 
-  readonly fixtureOptions: OrderFixtureName[] = ['white', 'blue', 'red', 'mixed'];
-  activeFixture: OrderFixtureName = 'white';
+  readonly fixtureOptions: OrderFixtureName[] = ['white', 'blue', 'red', 'mixed', 'storage'];
+  activeFixture: OrderFixtureName = this.dashboard.getCurrentFixture();
 
   readonly fixtureLabels: Record<OrderFixtureName, string> = {
     white: $localize`:@@fixtureLabelWhite:White`,
     blue: $localize`:@@fixtureLabelBlue:Blue`,
     red: $localize`:@@fixtureLabelRed:Red`,
     mixed: $localize`:@@fixtureLabelMixed:Mixed`,
+    storage: $localize`:@@fixtureLabelStorage:Storage`,
   };
 
   orders$: Observable<OrderActive[]> = this.dashboard.streams.orders$;
