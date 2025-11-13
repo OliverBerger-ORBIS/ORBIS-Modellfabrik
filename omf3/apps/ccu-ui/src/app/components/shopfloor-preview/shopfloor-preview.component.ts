@@ -13,56 +13,25 @@ import {
 import { HttpClient } from '@angular/common/http';
 import type { OrderActive, ProductionStep } from '@omf3/entities';
 import { SHOPFLOOR_ASSET_MAP } from '@omf3/testing-fixtures';
+import type {
+  ParsedRoad,
+  ShopfloorCellConfig,
+  ShopfloorLayoutConfig,
+  ShopfloorPoint,
+  ShopfloorCellRole,
+  ShopfloorRoadEndpoint,
+} from './shopfloor-layout.types';
 
-type GridTuple = [number, number];
-
-interface ShopfloorModule {
+interface RenderAttachment {
   id: string;
-  type: string;
-  serialNumber?: string;
-  position: GridTuple;
-  cell_size?: GridTuple;
-  is_compound?: boolean;
-  attached_assets?: string[];
-  compound_layout?: {
-    positions: GridTuple[];
-    size: GridTuple;
-  };
-  show_label?: boolean;
+  top: number;
+  left: number;
+  width: number;
+  height: number;
+  icon: string;
 }
 
-interface ShopfloorFixedPosition {
-  id: string;
-  type: string;
-  position: GridTuple;
-  cell_size?: GridTuple;
-  background_color?: string;
-}
-
-interface ShopfloorIntersection {
-  id: string;
-  type: string;
-  position: GridTuple;
-}
-
-interface ShopfloorRoad {
-  from: string;
-  to: string;
-}
-
-interface ShopfloorLayout {
-  grid: {
-    rows: number;
-    columns: number;
-    cell_size?: string;
-  };
-  modules: ShopfloorModule[];
-  fixed_positions: ShopfloorFixedPosition[];
-  intersections: ShopfloorIntersection[];
-  roads: ShopfloorRoad[];
-}
-
-interface RenderBox {
+interface RenderModule {
   id: string;
   label: string;
   top: number;
@@ -70,30 +39,36 @@ interface RenderBox {
   width: number;
   height: number;
   icon?: string;
-  background?: string;
-  attached?: RenderAttachment[];
+  iconWidth: number;
+  iconHeight: number;
+  iconTop: number;
+  iconLeft: number;
   highlighted: boolean;
-  compound?: boolean;
-  compoundOffset?: number;
-  mainHeight?: number;
-  mainWidth?: number;
+  showLabel: boolean;
+  attachments: RenderAttachment[];
 }
 
-interface RenderAttachment {
+interface RenderFixed {
   id: string;
   label: string;
   top: number;
   left: number;
   width: number;
   height: number;
-  icon: string;
+  background?: string;
+  icon?: string;
   highlighted: boolean;
+  showLabel: boolean;
 }
 
 interface RenderIntersection {
   id: string;
   top: number;
   left: number;
+  width: number;
+  height: number;
+  icon?: string;
+  iconScale: number;
   highlighted: boolean;
 }
 
@@ -111,34 +86,29 @@ interface RouteSegment {
   y2: number;
 }
 
-interface RoutePoint {
-  x: number;
-  y: number;
-}
-
 interface RouteOverlay {
   x: number;
   y: number;
   icon: string;
-}
-
-interface RouteComputation {
-  segments?: RouteSegment[];
-  endpoints?: RoutePoint[];
-  overlay?: RouteOverlay;
-  intersections?: string[];
+  width?: number;
+  height?: number;
 }
 
 interface ShopfloorView {
   width: number;
   height: number;
-  modules: RenderBox[];
-  fixedPositions: RenderBox[];
+  modules: RenderModule[];
+  fixedPositions: RenderFixed[];
   intersections: RenderIntersection[];
   roads: RenderRoad[];
   activeRouteSegments?: RouteSegment[];
-  routeEndpoints?: RoutePoint[];
+  routeEndpoints?: ShopfloorPoint[];
   routeOverlay?: RouteOverlay;
+}
+
+interface RouteGraphEdge {
+  from: string;
+  to: string;
 }
 
 @Component({
@@ -158,10 +128,19 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
   @Input() selectionEnabled = false;
   @Input() badgeText?: string;
   @Input() infoText?: string;
+  @Input() showBaseRoads = true;
   @Output() cellSelected = new EventEmitter<{ id: string; kind: 'module' | 'fixed' }>();
+  @Output() cellDoubleClicked = new EventEmitter<{ id: string; kind: 'module' | 'fixed' }>();
 
   viewModel: ShopfloorView | null = null;
-  private layout?: ShopfloorLayout;
+
+  private layoutConfig?: ShopfloorLayoutConfig;
+  private parsedRoads: ParsedRoad[] = [];
+  private cellById = new Map<string, ShopfloorCellConfig>();
+  private aliasToNodeKey = new Map<string, string>();
+  private nodePoints = new Map<string, ShopfloorPoint>();
+  private cellByRouteRef = new Map<string, ShopfloorCellConfig>();
+  private iconSizing = new Map<string, number>();
 
   constructor(
     private readonly http: HttpClient,
@@ -169,104 +148,216 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
   ) {}
 
   ngOnInit(): void {
-    this.http
-      .get<ShopfloorLayout>('shopfloor/shopfloor_layout.json')
-      .subscribe({
-        next: (layout) => {
-          this.layout = layout;
-          this.updateViewModel();
-          this.cdr.markForCheck();
-        },
-        error: (err) => {
-          console.error('Failed to load shopfloor layout', err);
-        },
-      });
+    this.http.get<ShopfloorLayoutConfig>('shopfloor/shopfloor_layout.json').subscribe({
+      next: (config) => {
+        this.layoutConfig = config;
+        this.parsedRoads = config.parsed_roads ?? [];
+        this.indexLayout(config);
+        if (config.scaling && this.scale === 0.6) {
+          this.scale = config.scaling.default_percent / 100;
+        }
+        this.updateViewModel();
+        this.cdr.markForCheck();
+      },
+      error: (error) => {
+        console.error('Failed to load shopfloor layout', error);
+      },
+    });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (
-      changes['activeStep'] ||
-      changes['order'] ||
-      changes['highlightModulesOverride'] ||
-      changes['highlightFixedOverride']
-    ) {
+    if (changes['activeStep'] || changes['order'] || changes['highlightModulesOverride'] || changes['highlightFixedOverride']) {
       this.updateViewModel();
     }
   }
 
-  private updateViewModel(): void {
-    if (!this.layout) {
+  get infoLabel(): string {
+    if (this.infoText) {
+      return this.infoText;
+    }
+    const step = this.activeStep;
+    if (!step) {
+      return $localize`:@@shopfloorPreviewNoActiveStep:All steps completed.`;
+    }
+    if (step.type === 'NAVIGATION') {
+      return $localize`:@@shopfloorPreviewNavLabel:Route ${step.source} → ${step.target}`;
+    }
+    if (step.moduleType) {
+      return $localize`:@@shopfloorPreviewModuleLabel:Module ${step.moduleType}`;
+    }
+    return step.type;
+  }
+
+  get badgeLabel(): string {
+    if (this.badgeText) {
+      return this.badgeText;
+    }
+    const activeStep = this.activeStep;
+    if (activeStep?.type === 'NAVIGATION') {
+      return 'FTS';
+    }
+    const orderType = (this.order?.orderType ?? '').toUpperCase();
+    if (orderType === 'STORAGE') {
+      return $localize`:@@shopfloorPreviewBadgeStorage:STORAGE`;
+    }
+    return $localize`:@@shopfloorPreviewBadgeProduction:PRODUCTION`;
+  }
+
+  onModuleActivate(module: RenderModule, event: Event): void {
+    if (!this.selectionEnabled) {
       return;
     }
+    event.stopPropagation();
+    this.cellSelected.emit({ id: module.id, kind: 'module' });
+  }
 
-    const [cellWidth, cellHeight] = this.parseCellSize(this.layout.grid.cell_size);
-    const width = Math.max(1, this.layout.grid.columns) * cellWidth;
-    const height = Math.max(1, this.layout.grid.rows) * cellHeight;
+  onModuleDouble(module: RenderModule, event: Event): void {
+    if (!this.selectionEnabled) {
+      return;
+    }
+    event.stopPropagation();
+    this.cellDoubleClicked.emit({ id: module.id, kind: 'module' });
+  }
 
-    const highlightModules = new Set<string>();
-    const highlightIntersections = new Set<string>();
-    let routeSegments: RouteSegment[] | undefined;
-    let routeEndpoints: RoutePoint[] | undefined;
-    let routeOverlay: RouteOverlay | undefined;
+  onFixedActivate(fixed: RenderFixed, event: Event): void {
+    if (!this.selectionEnabled) {
+      return;
+    }
+    event.stopPropagation();
+    this.cellSelected.emit({ id: fixed.id, kind: 'fixed' });
+  }
 
-    const nodeLookup = new Map<string, RoutePoint>();
-    const intersectionLookup = new Map<string, RoutePoint>();
+  onFixedDouble(fixed: RenderFixed, event: Event): void {
+    if (!this.selectionEnabled) {
+      return;
+    }
+    event.stopPropagation();
+    this.cellDoubleClicked.emit({ id: fixed.id, kind: 'fixed' });
+  }
 
-    this.layout.intersections.forEach((intersection) => {
-      const center = this.computeCellCenter(intersection.position, cellWidth, cellHeight);
-      nodeLookup.set(intersection.id, center);
-      nodeLookup.set(intersection.type, center);
-      intersectionLookup.set(intersection.id, center);
-      intersectionLookup.set(intersection.type, center);
+  private indexLayout(config: ShopfloorLayoutConfig): void {
+    this.cellById.clear();
+    this.aliasToNodeKey.clear();
+    this.nodePoints.clear();
+    this.cellByRouteRef.clear();
+    this.iconSizing.clear();
+
+    Object.entries(config.icon_sizing_rules?.by_role ?? {}).forEach(([role, factor]) => {
+      this.iconSizing.set(role, factor);
+    });
+    if (!this.iconSizing.has('default')) {
+      this.iconSizing.set('default', 0.75);
+    }
+
+    for (const cell of config.cells) {
+      this.cellById.set(cell.id, cell);
+    }
+
+    const serialToCellId = new Map<string, string>();
+    Object.entries(config.modules_by_serial ?? {}).forEach(([serial, meta]) => {
+      serialToCellId.set(serial, meta.cell_id);
     });
 
-    const step = this.activeStep ?? null;
-    if (step) {
-      if (step.type === 'MANUFACTURE') {
-        if (step.moduleType) {
-          highlightModules.add(step.moduleType);
-        }
-        if (step.dependentActionId === 'FTS' || step.moduleType === 'FTS') {
-          highlightModules.add('FTS');
-        }
-      } else if (step.type === 'NAVIGATION') {
-        highlightModules.add('FTS');
+    const registerModuleAliases = (serial: string, cell: ShopfloorCellConfig) => {
+      const canonical = `serial:${serial}`;
+      this.cellByRouteRef.set(canonical, cell);
+      this.aliasToNodeKey.set(canonical, canonical);
+      [serial, cell.id, cell.name, cell.icon]
+        .filter((alias): alias is string => Boolean(alias))
+        .forEach((alias) => {
+          this.aliasToNodeKey.set(alias, canonical);
+          this.aliasToNodeKey.set(alias.toLowerCase(), canonical);
+          this.aliasToNodeKey.set(alias.toUpperCase(), canonical);
+        });
+    };
+
+    const registerIntersectionAliases = (intersectionId: string, cell: ShopfloorCellConfig) => {
+      const canonical = `intersection:${intersectionId}`;
+      this.cellByRouteRef.set(canonical, cell);
+      this.aliasToNodeKey.set(canonical, canonical);
+      [intersectionId, cell.id, cell.name]
+        .filter((alias): alias is string => Boolean(alias))
+        .forEach((alias) => {
+          this.aliasToNodeKey.set(alias, canonical);
+          this.aliasToNodeKey.set(alias.toLowerCase(), canonical);
+          this.aliasToNodeKey.set(alias.toUpperCase(), canonical);
+        });
+    };
+
+    const intersectionById = new Map<string, ShopfloorCellConfig>();
+    Object.entries(config.intersection_map ?? {}).forEach(([id, cellId]) => {
+      const cell = this.cellById.get(cellId);
+      if (cell) {
+        intersectionById.set(id, cell);
+        registerIntersectionAliases(id, cell);
+      }
+    });
+
+    for (const [serial, cellId] of serialToCellId.entries()) {
+      const cell = this.cellById.get(cellId);
+      if (cell) {
+        registerModuleAliases(serial, cell);
       }
     }
 
-    const moduleHighlightSet =
-      this.highlightModulesOverride && this.highlightModulesOverride.length > 0
-        ? new Set(this.highlightModulesOverride)
-        : highlightModules;
+    const registerNode = (ref: string, point: ShopfloorPoint) => {
+      if (!this.nodePoints.has(ref)) {
+        const canonical = this.aliasToNodeKey.get(ref) ?? ref;
+        const cell = this.cellByRouteRef.get(canonical) ?? this.cellByRouteRef.get(ref);
+        let adjustedPoint: ShopfloorPoint = { ...point };
+        if (cell?.is_compound && cell.subcells) {
+          const main = cell.subcells.find((sub) => sub.is_main);
+          if (main) {
+            adjustedPoint = {
+              x: cell.position.x + main.position.x + main.size.w / 2,
+              y: cell.position.y + main.position.y + main.size.h / 2,
+            };
+          }
+        }
+        this.nodePoints.set(ref, adjustedPoint);
+      }
+      if (!this.aliasToNodeKey.has(ref)) {
+        this.aliasToNodeKey.set(ref, ref);
+      }
+    };
 
-    const fixedHighlightSet =
-      this.highlightFixedOverride && this.highlightFixedOverride.length > 0
-        ? new Set(this.highlightFixedOverride)
-        : highlightModules;
+    for (const road of this.parsedRoads) {
+      registerNode(road.from.ref, road.from.center);
+      registerNode(road.to.ref, road.to.center);
+    }
+  }
 
-    const modules = this.layout.modules.map((mod) =>
-      this.buildBox(mod, cellWidth, cellHeight, moduleHighlightSet, nodeLookup)
-    );
-
-    const fixedPositions = this.layout.fixed_positions.map((pos) =>
-      this.buildFixedPosition(pos, cellWidth, cellHeight, fixedHighlightSet, nodeLookup)
-    );
-
-    const roads = this.layout.roads
-      .map((road) => this.buildRoad(road, nodeLookup))
-      .filter((road): road is RenderRoad => road !== null);
-
-    if (step && step.type === 'NAVIGATION') {
-      const route = this.computeRoute(step, intersectionLookup);
-      routeSegments = route.segments;
-      routeEndpoints = route.endpoints;
-      routeOverlay = route.overlay;
-      route.intersections?.forEach((key) => highlightIntersections.add(key));
+  private updateViewModel(): void {
+    if (!this.layoutConfig) {
+      return;
     }
 
-    const intersections = this.layout.intersections.map((node) =>
-      this.buildIntersection(node, cellWidth, cellHeight, highlightIntersections, nodeLookup)
-    );
+    const width = this.layoutConfig.metadata.canvas.width;
+    const height = this.layoutConfig.metadata.canvas.height;
+
+    const moduleHighlightSet = this.buildHighlightAliasSet(this.highlightModulesOverride);
+    const fixedHighlightSet = this.buildHighlightAliasSet(this.highlightFixedOverride);
+    this.applyActiveStepHighlights(moduleHighlightSet, fixedHighlightSet);
+
+    const modules = this.layoutConfig.cells
+      .filter((cell) => cell.role === 'module')
+      .map((cell) => this.createModuleRender(cell, moduleHighlightSet));
+
+    const fixedPositions = this.layoutConfig.cells
+      .filter((cell) => cell.role === 'company' || cell.role === 'software')
+      .map((cell) => this.createFixedRender(cell, fixedHighlightSet));
+
+    const intersections = this.layoutConfig.cells
+      .filter((cell) => cell.role === 'intersection')
+      .map((cell) => this.createIntersectionRender(cell));
+
+    const roads = this.showBaseRoads
+      ? this.parsedRoads
+          .map((road) => this.buildRoadSegment(road))
+          .filter((segment): segment is RenderRoad => segment !== null)
+      : [];
+
+    const route = this.computeActiveRoute();
 
     this.viewModel = {
       width,
@@ -275,157 +366,147 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
       fixedPositions,
       intersections,
       roads,
-      activeRouteSegments: routeSegments,
-      routeEndpoints,
-      routeOverlay,
+      activeRouteSegments: route?.segments,
+      routeEndpoints: route?.endpoints,
+      routeOverlay: route?.overlay,
     };
   }
 
-  private parseCellSize(cellSize?: string): [number, number] {
-    if (!cellSize) {
-      return [200, 200];
+  private buildHighlightAliasSet(values: string[] | null): Set<string> {
+    const set = new Set<string>();
+    if (!values) {
+      return set;
     }
-
-    const [width, height] = cellSize.split('x').map((value) => Number.parseInt(value, 10));
-    return [Number.isFinite(width) ? width : 200, Number.isFinite(height) ? height : 200];
+    values.forEach((value) => this.addHighlightAlias(set, value));
+    return set;
   }
 
-  private buildBox(
-    mod: ShopfloorModule,
-    cellWidth: number,
-    cellHeight: number,
-    highlightModules: Set<string>,
-    nodeLookup: Map<string, { x: number; y: number }>
-  ): RenderBox {
-    const cellTop = mod.position[0] * cellHeight;
-    const cellLeft = mod.position[1] * cellWidth;
-    const width = mod.cell_size?.[0] ?? cellWidth;
-    const compoundOffset = mod.is_compound ? (mod.compound_layout?.size?.[1] ?? 100) : 0;
-    const height = mod.is_compound ? mod.cell_size?.[1] ?? cellHeight : cellHeight;
-    const top = mod.is_compound ? Math.max(0, cellTop - compoundOffset) : cellTop;
-    const left = cellLeft;
+  private addHighlightAlias(target: Set<string>, value: string | null | undefined): void {
+    if (!value) {
+      return;
+    }
+    target.add(value);
+    const canonical = this.aliasToNodeKey.get(value) ?? this.aliasToNodeKey.get(value.toLowerCase());
+    if (canonical) {
+      target.add(canonical);
+    }
+  }
 
-    const icon = this.getAssetPath(mod.type) ?? this.getAssetPath(mod.id);
-
-    const highlighted =
-      highlightModules.has(mod.id) ||
-      highlightModules.has(mod.type) ||
-      (!!mod.serialNumber && highlightModules.has(mod.serialNumber));
-
-    const mainHeight = height - compoundOffset;
-    const mainWidth = width;
-
-    const centerX = left + mainWidth / 2;
-    const centerY = mod.is_compound ? top + compoundOffset + mainHeight / 2 : top + height / 2;
-
-    nodeLookup.set(mod.id, { x: centerX, y: centerY });
-    nodeLookup.set(mod.type, { x: centerX, y: centerY });
-    if (mod.serialNumber) {
-      nodeLookup.set(mod.serialNumber, { x: centerX, y: centerY });
+  private applyActiveStepHighlights(moduleSet: Set<string>, fixedSet: Set<string>): void {
+    const step = this.activeStep;
+    if (!step) {
+      return;
     }
 
-    const attached =
-      mod.attached_assets
-        ?.map((asset, index) => {
-          const iconPath = this.getAssetPath(asset);
-          if (!iconPath) return null;
+    if (step.type !== 'NAVIGATION' && step.moduleType) {
+      this.addHighlightAlias(moduleSet, step.moduleType);
+    }
+  }
 
-          const [offsetX, offsetY] = mod.compound_layout?.positions?.[index] ?? [index * 100, 0];
-          const [childWidth, childHeight] = mod.compound_layout?.size ?? [100, 100];
-          const scaleFactor = 0.56;
-          const scaledWidth = childWidth * scaleFactor;
-          const scaledHeight = childHeight * scaleFactor;
+  private createModuleRender(cell: ShopfloorCellConfig, highlightAliases: Set<string>): RenderModule {
+    const mainSubcell = cell.subcells?.find((sub) => sub.is_main);
+    const iconArea = mainSubcell
+      ? {
+          x: mainSubcell.position.x,
+          y: mainSubcell.position.y,
+          width: mainSubcell.size.w,
+          height: mainSubcell.size.h,
+        }
+      : { x: 0, y: 0, width: cell.size.w, height: cell.size.h };
 
-          const attachmentTop = offsetY + (childHeight - scaledHeight) / 2;
-          const attachmentLeft = offsetX + (childWidth - scaledWidth) / 2;
+    const mainScale = this.getRoleScale('module_main_compartment');
+    const iconWidth = iconArea.width * mainScale;
+    const iconHeight = iconArea.height * mainScale;
+    const iconLeft = iconArea.x + (iconArea.width - iconWidth) / 2;
+    const iconTop = iconArea.y + (iconArea.height - iconHeight) / 2;
 
-          return {
-            id: `${mod.id}-${asset}-${index}`,
-            label: asset,
-            top: attachmentTop,
-            left: attachmentLeft,
-            width: scaledWidth,
-            height: scaledHeight,
-            icon: iconPath,
-            highlighted,
-          } as RenderAttachment;
-        })
-        .filter((item): item is RenderAttachment => item !== null) ?? [];
+    const iconKey = mainSubcell?.icon ?? cell.icon ?? cell.name ?? cell.id;
+    const icon = this.getAssetPath(iconKey);
+
+    const attachmentScale = this.getRoleScale('module_sub_non_main');
+    const attachments: RenderAttachment[] = (cell.subcells ?? [])
+      .filter((sub) => !sub.is_main)
+      .map((sub) => {
+        const scaledWidth = sub.size.w * attachmentScale;
+        const scaledHeight = sub.size.h * attachmentScale;
+        return {
+          id: sub.id,
+          top: sub.position.y + (sub.size.h - scaledHeight) / 2,
+          left: sub.position.x + (sub.size.w - scaledWidth) / 2,
+          width: scaledWidth,
+          height: scaledHeight,
+          icon: this.getAssetPath(sub.icon ?? sub.id) ?? '',
+        };
+      })
+      .filter((attachment) => attachment.icon.length > 0);
+
+    const highlightCandidates = [cell.id, cell.name ?? '', iconKey];
+    if (cell.serial_number) {
+      highlightCandidates.push(`serial:${cell.serial_number}`);
+      highlightCandidates.push(cell.serial_number);
+    }
+    const highlighted = highlightCandidates.some((candidate) => candidate && highlightAliases.has(candidate));
 
     return {
-      id: mod.id,
-      label: mod.id,
-      top,
-      left,
-      width,
-      height,
+      id: cell.id,
+      label: cell.name ?? cell.id,
+      top: cell.position.y,
+      left: cell.position.x,
+      width: cell.size.w,
+      height: cell.size.h,
+      icon,
+      iconWidth,
+      iconHeight,
+      iconTop,
+      iconLeft,
+      highlighted,
+      showLabel: cell.show_name !== false,
+      attachments,
+    };
+  }
+
+  private createFixedRender(cell: ShopfloorCellConfig, highlightAliases: Set<string>): RenderFixed {
+    const iconKey = cell.icon ?? cell.name ?? cell.id;
+    const icon = this.getAssetPath(iconKey);
+    const highlightCandidates = [cell.id, cell.name ?? '', iconKey];
+    const highlighted = highlightCandidates.some((candidate) => candidate && highlightAliases.has(candidate));
+
+    return {
+      id: cell.id,
+      label: cell.name ?? cell.id,
+      top: cell.position.y,
+      left: cell.position.x,
+      width: cell.size.w,
+      height: cell.size.h,
+      background: cell.background_color,
       icon,
       highlighted,
-      attached,
-      compound: Boolean(mod.is_compound),
-      compoundOffset,
-      mainHeight,
-      mainWidth,
+      showLabel: cell.show_name !== false,
     };
   }
 
-  private buildFixedPosition(
-    pos: ShopfloorFixedPosition,
-    cellWidth: number,
-    cellHeight: number,
-    highlightModules: Set<string>,
-    nodeLookup: Map<string, RoutePoint>
-  ): RenderBox {
-    const width = pos.cell_size?.[0] ?? cellWidth;
-    const height = pos.cell_size?.[1] ?? cellHeight / 2;
-    const top = pos.position[0] * cellHeight;
-    const left = pos.position[1] * cellWidth;
-    const icon = this.getAssetPath(pos.type);
-
-    nodeLookup.set(pos.id, { x: left + width / 2, y: top + height / 2 });
-    nodeLookup.set(pos.type, { x: left + width / 2, y: top + height / 2 });
-
+  private createIntersectionRender(cell: ShopfloorCellConfig): RenderIntersection {
+    const iconScale = this.getRoleScale('intersection');
     return {
-      id: pos.id,
-      label: pos.type,
-      top,
-      left,
-      width,
-      height,
-      icon,
-      background: pos.background_color,
-      highlighted: highlightModules.has(pos.id) || highlightModules.has(pos.type),
+      id: cell.id,
+      top: cell.position.y,
+      left: cell.position.x,
+      width: cell.size.w,
+      height: cell.size.h,
+      icon: this.getAssetPath(cell.icon ?? cell.name ?? cell.id),
+      iconScale,
+      highlighted: false,
     };
   }
 
-  private buildIntersection(
-    node: ShopfloorIntersection,
-    cellWidth: number,
-    cellHeight: number,
-    highlight: Set<string>,
-    lookup: Map<string, RoutePoint>
-  ): RenderIntersection {
-    const top = node.position[0] * cellHeight + cellHeight / 2;
-    const left = node.position[1] * cellWidth + cellWidth / 2;
-
-    lookup.set(node.id, { x: left, y: top });
-    lookup.set(node.type, { x: left, y: top });
-
-    return {
-      id: node.id,
-      top,
-      left,
-      highlighted: highlight.has(node.id) || highlight.has(node.type),
-    };
-  }
-
-  private buildRoad(road: ShopfloorRoad, lookup: Map<string, RoutePoint>): RenderRoad | null {
-    const start = this.lookupCoordinate(road.from, lookup);
-    const end = this.lookupCoordinate(road.to, lookup);
+  private buildRoadSegment(road: ParsedRoad): RenderRoad | null {
+    const fromPoint = this.resolveRoutePoint(road.from);
+    const toPoint = this.resolveRoutePoint(road.to);
+    const start = this.trimPointTowards(road.from.ref, fromPoint, toPoint);
+    const end = this.trimPointTowards(road.to.ref, toPoint, fromPoint);
     if (!start || !end) {
       return null;
     }
-
     return {
       x1: start.x,
       y1: start.y,
@@ -434,212 +515,202 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
     };
   }
 
-  private findInLookup(
-    key: string,
-    lookup: Map<string, RoutePoint>
-  ): RoutePoint | undefined {
-    for (const variant of [key, key.toUpperCase(), key.toLowerCase()]) {
-      const point = lookup.get(variant);
-      if (point) {
-        return point;
+  private trimPointTowards(ref: string, point: ShopfloorPoint, target: ShopfloorPoint): ShopfloorPoint | null {
+    const cell = this.cellByRouteRef.get(ref);
+    if (!cell) {
+      return { ...point };
+    }
+    const direction = { x: target.x - point.x, y: target.y - point.y };
+    const length = Math.hypot(direction.x, direction.y);
+    if (length === 0) {
+      return { ...point };
+    }
+
+    const insetFraction = this.getTrimInsetFraction(cell);
+    if (insetFraction <= 0) {
+      return { ...point };
+    }
+
+    const bounds = this.getCellBounds(cell);
+    const distanceToEdge = this.distanceToBounds(point, direction, bounds);
+    if (distanceToEdge <= 0) {
+      return { ...point };
+    }
+
+    const margin = distanceToEdge * insetFraction;
+    const travel = Math.max(0, distanceToEdge - margin);
+    const ux = direction.x / length;
+    const uy = direction.y / length;
+
+    return {
+      x: point.x + ux * travel,
+      y: point.y + uy * travel,
+    };
+  }
+
+  private getTrimInsetFraction(cell: ShopfloorCellConfig): number {
+    if (cell.role === 'intersection') {
+      return 0;
+    }
+    return 0.2;
+  }
+
+  private getCellBounds(cell: ShopfloorCellConfig): { left: number; top: number; width: number; height: number } {
+    if (cell.is_compound && cell.subcells) {
+      const main = cell.subcells.find((sub) => sub.is_main);
+      if (main) {
+        return {
+          left: cell.position.x + main.position.x,
+          top: cell.position.y + main.position.y,
+          width: main.size.w,
+          height: main.size.h,
+        };
       }
     }
-    return undefined;
+    return {
+      left: cell.position.x,
+      top: cell.position.y,
+      width: cell.size.w,
+      height: cell.size.h,
+    };
   }
 
-  private lookupCoordinate(
-    key: string,
-    lookup: Map<string, RoutePoint>,
-    preferIntersection = false
-  ): RoutePoint | undefined {
-    const direct = this.findInLookup(key, lookup);
+  private distanceToBounds(point: ShopfloorPoint, direction: ShopfloorPoint, bounds: { left: number; top: number; width: number; height: number }): number {
+    const { left, top, width, height } = bounds;
+    const right = left + width;
+    const bottom = top + height;
+    const length = Math.hypot(direction.x, direction.y);
+    if (length === 0) {
+      return 0;
+    }
+    const ux = direction.x / length;
+    const uy = direction.y / length;
+    const distances: number[] = [];
 
-    if (preferIntersection) {
-      const intersection = this.findConnectedIntersection(key, lookup);
-      return intersection ?? direct;
+    if (Math.abs(ux) > 1e-6) {
+      const boundaryX = ux > 0 ? right : left;
+      const t = (boundaryX - point.x) / ux;
+      if (t > 0) {
+        distances.push(t);
+      }
     }
 
-    if (direct) {
-      return direct;
+    if (Math.abs(uy) > 1e-6) {
+      const boundaryY = uy > 0 ? bottom : top;
+      const t = (boundaryY - point.y) / uy;
+      if (t > 0) {
+        distances.push(t);
+      }
     }
 
-    return this.findConnectedIntersection(key, lookup);
+    return distances.length ? Math.min(...distances) : 0;
   }
 
-  private findConnectedIntersection(
-    key: string,
-    lookup: Map<string, RoutePoint>
-  ): RoutePoint | undefined {
-    const linkedRoad = this.layout?.roads.find((r) => r.from === key || r.to === key);
-    if (!linkedRoad) {
-      return undefined;
+  private getRoleScale(role: ShopfloorCellRole): number {
+    const key = role.toLowerCase();
+    if (this.iconSizing.has(role)) {
+      return this.iconSizing.get(role)!;
     }
-
-    const intersectionKey = linkedRoad.from === key ? linkedRoad.to : linkedRoad.from;
-    return this.findInLookup(intersectionKey, lookup);
+    if (this.iconSizing.has(key)) {
+      return this.iconSizing.get(key)!;
+    }
+    return this.iconSizing.get('default') ?? 0.75;
   }
 
   private getAssetPath(key?: string | null): string | undefined {
     if (!key) {
       return undefined;
     }
-    const asset = SHOPFLOOR_ASSET_MAP[key];
+    const asset = SHOPFLOOR_ASSET_MAP[key] ?? SHOPFLOOR_ASSET_MAP[key.toUpperCase()];
     if (!asset) {
       return undefined;
     }
     return asset.startsWith('/') ? asset.slice(1) : asset;
   }
 
-  private computeRouteMidpoint(segments: RouteSegment[]): RoutePoint | null {
-    let totalLength = 0;
-    for (const segment of segments) {
-      totalLength += Math.hypot(segment.x2 - segment.x1, segment.y2 - segment.y1);
-    }
-
-    if (totalLength === 0) {
+  private computeActiveRoute(): { segments: RouteSegment[]; endpoints: ShopfloorPoint[]; overlay?: RouteOverlay } | null {
+    if (!this.activeStep || this.activeStep.type !== 'NAVIGATION' || !this.layoutConfig) {
       return null;
     }
 
-    const target = totalLength / 2;
-    let accumulated = 0;
-
-    for (const segment of segments) {
-      const segmentLength = Math.hypot(segment.x2 - segment.x1, segment.y2 - segment.y1);
-      if (accumulated + segmentLength >= target) {
-        const remaining = target - accumulated;
-        const ratio = remaining / segmentLength;
-        return {
-          x: segment.x1 + (segment.x2 - segment.x1) * ratio,
-          y: segment.y1 + (segment.y2 - segment.y1) * ratio,
-        };
-      }
-      accumulated += segmentLength;
+    const startRef = this.resolveNodeRef(this.activeStep.source);
+    const targetRef = this.resolveNodeRef(this.activeStep.target);
+    if (!startRef || !targetRef) {
+      return null;
     }
 
-    const last = segments[segments.length - 1];
-    return { x: last.x2, y: last.y2 };
-  }
-
-  private computeRoute(
-    step: ProductionStep | null,
-    intersectionLookup: Map<string, RoutePoint>
-  ): RouteComputation {
-    if (!step || step.type !== 'NAVIGATION') {
-      return {};
-    }
-
-    const graph = this.buildGraphFromLayout();
-    if (!graph) {
-      return {};
-    }
-
-    const startKey = this.resolveRouteNodeKey(step.source, graph);
-    const targetKey = this.resolveRouteNodeKey(step.target, graph);
-
-    if (!startKey || !targetKey) {
-      return {};
-    }
-
-    const path = this.findShortestPath(startKey, targetKey, graph);
+    const path = this.findRoutePath(startRef, targetRef);
     if (!path || path.length < 2) {
-      return {};
+      return null;
     }
 
-    const intersectionPath = this.extractIntersectionPath(path);
-    if (intersectionPath.length < 2) {
-      return {};
+    const segments: RouteSegment[] = [];
+    const endpoints: ShopfloorPoint[] = [];
+
+    for (let i = 0; i < path.length - 1; i += 1) {
+      const from = path[i];
+      const to = path[i + 1];
+      const road = this.findRoadBetween(from, to);
+      if (!road) {
+        continue;
+      }
+      const segment = this.buildRoadSegment(road);
+      if (!segment) {
+        continue;
+      }
+      if (segments.length === 0) {
+        endpoints.push({ x: segment.x1, y: segment.y1 });
+      }
+      segments.push(segment);
+      if (i === path.length - 2) {
+        endpoints.push({ x: segment.x2, y: segment.y2 });
+      }
     }
 
-    const segments = this.buildSegmentsFromIntersectionPath(intersectionPath, intersectionLookup);
     if (segments.length === 0) {
-      return {};
+      return null;
     }
-
-    const startPoint = intersectionLookup.get(
-      this.canonicalIntersectionKey(intersectionPath[0]) ?? intersectionPath[0]
-    );
-    const endPoint = intersectionLookup.get(
-      this.canonicalIntersectionKey(intersectionPath[intersectionPath.length - 1]) ??
-        intersectionPath[intersectionPath.length - 1]
-    );
-    const endpoints = [startPoint, endPoint].filter((point): point is RoutePoint => Boolean(point));
 
     const overlayPoint = this.computeRouteMidpoint(segments);
-    const ftsIcon = this.getAssetPath('FTS');
-    const overlay = overlayPoint && ftsIcon ? { x: overlayPoint.x, y: overlayPoint.y, icon: ftsIcon } : undefined;
+    const overlayIcon = this.getAssetPath('FTS');
 
     return {
       segments,
       endpoints,
-      overlay,
-      intersections: intersectionPath,
+      overlay:
+        overlayPoint && overlayIcon
+          ? { x: overlayPoint.x, y: overlayPoint.y, icon: overlayIcon, width: 80, height: 80 }
+          : undefined,
     };
   }
 
-  private buildGraphFromLayout(): Map<string, Set<string>> | null {
-    if (!this.layout) {
+  private resolveNodeRef(value: string | undefined): string | null {
+    if (!value) {
       return null;
     }
+    const direct = this.aliasToNodeKey.get(value) ?? this.aliasToNodeKey.get(value.toLowerCase()) ?? this.aliasToNodeKey.get(value.toUpperCase());
+    if (direct) {
+      return direct;
+    }
+    if (value.startsWith('serial:') || value.startsWith('intersection:')) {
+      return value;
+    }
+    return null;
+  }
 
+  private resolveRoutePoint(node: ShopfloorRoadEndpoint): ShopfloorPoint {
+    const canonical = this.aliasToNodeKey.get(node.ref) ?? node.ref;
+    const point = this.nodePoints.get(canonical) ?? node.center;
+    return { ...point };
+  }
+
+  private findRoutePath(start: string, target: string): string[] | null {
     const graph = new Map<string, Set<string>>();
-
-    const ensureNode = (key: string) => {
-      if (!graph.has(key)) {
-        graph.set(key, new Set());
-      }
-    };
-
-    for (const road of this.layout.roads) {
-      ensureNode(road.from);
-      ensureNode(road.to);
-      graph.get(road.from)!.add(road.to);
-      graph.get(road.to)!.add(road.from);
+    for (const road of this.parsedRoads) {
+      this.addEdge(graph, road.from.ref, road.to.ref);
+      this.addEdge(graph, road.to.ref, road.from.ref);
     }
 
-    return graph;
-  }
-
-  private resolveRouteNodeKey(key: string | undefined, graph: Map<string, Set<string>>): string | null {
-    if (!this.layout || !key) {
-      return null;
-    }
-
-    for (const variant of [key, key.toUpperCase(), key.toLowerCase()]) {
-      if (graph.has(variant)) {
-        return variant;
-      }
-    }
-
-    const module = this.layout.modules.find((mod) =>
-      [mod.id, mod.type, mod.serialNumber]
-        .filter((alias): alias is string => typeof alias === 'string' && alias.length > 0)
-        .map((alias) => alias.toLowerCase())
-        .includes(key.toLowerCase())
-    );
-
-    if (module) {
-      const connected = this.layout.roads.find((road) => road.from === module.serialNumber || road.to === module.serialNumber);
-      if (connected) {
-        const intersectionKey = this.canonicalIntersectionKey(connected.from === module.serialNumber ? connected.to : connected.from);
-        if (intersectionKey && graph.has(intersectionKey)) {
-          return intersectionKey;
-        }
-      }
-    }
-
-    const intersectionKey = this.canonicalIntersectionKey(key);
-    if (intersectionKey && graph.has(intersectionKey)) {
-      return intersectionKey;
-    }
-
-    return graph.has(key) ? key : null;
-  }
-
-  private findShortestPath(
-    start: string,
-    target: string,
-    graph: Map<string, Set<string>>
-  ): string[] | null {
     const queue: string[] = [start];
     const visited = new Set<string>([start]);
     const previous = new Map<string, string>();
@@ -649,7 +720,6 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
       if (current === target) {
         break;
       }
-
       for (const neighbor of graph.get(current) ?? []) {
         if (visited.has(neighbor)) {
           continue;
@@ -670,152 +740,51 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
       path.unshift(cursor);
       cursor = previous.get(cursor);
     }
-
     return path;
   }
 
-  private extractIntersectionPath(path: string[]): string[] {
-    if (!this.layout) {
-      return [];
+  private addEdge(graph: Map<string, Set<string>>, from: string, to: string): void {
+    if (!graph.has(from)) {
+      graph.set(from, new Set());
     }
-
-    const intersections: string[] = [];
-
-    for (let i = 0; i < path.length; i += 1) {
-      const currentIntersection = this.canonicalIntersectionKey(path[i]);
-      if (currentIntersection) {
-        if (intersections[intersections.length - 1] !== currentIntersection) {
-          intersections.push(currentIntersection);
-        }
-        continue;
-      }
-
-      const next = path[i + 1];
-      const nextIntersection = next ? this.canonicalIntersectionKey(next) : null;
-      if (nextIntersection) {
-        if (intersections[intersections.length - 1] !== nextIntersection) {
-          intersections.push(nextIntersection);
-        }
-      }
-    }
-
-    return intersections;
+    graph.get(from)!.add(to);
   }
 
-  private buildSegmentsFromIntersectionPath(
-    intersectionPath: string[],
-    intersectionLookup: Map<string, RoutePoint>
-  ): RouteSegment[] {
-    const segments: RouteSegment[] = [];
-
-    for (let i = 0; i < intersectionPath.length - 1; i += 1) {
-      const fromKey = this.canonicalIntersectionKey(intersectionPath[i]) ?? intersectionPath[i];
-      const toKey = this.canonicalIntersectionKey(intersectionPath[i + 1]) ?? intersectionPath[i + 1];
-
-      const fromPoint = intersectionLookup.get(fromKey);
-      const toPoint = intersectionLookup.get(toKey);
-
-      if (!fromPoint || !toPoint) {
-        continue;
-      }
-
-      segments.push({ x1: fromPoint.x, y1: fromPoint.y, x2: toPoint.x, y2: toPoint.y });
-    }
-
-    return segments;
-  }
-
-  private canonicalIntersectionKey(key: string): string | null {
-    if (!this.layout) {
-      return null;
-    }
-
-    const match = this.layout.intersections.find(
-      (intersection) =>
-        intersection.id === key ||
-        intersection.type === key ||
-        intersection.id === key.toUpperCase() ||
-        intersection.id === key.toLowerCase()
+  private findRoadBetween(a: string, b: string): ParsedRoad | null {
+    return (
+      this.parsedRoads.find((road) => road.from.ref === a && road.to.ref === b) ??
+      this.parsedRoads.find((road) => road.from.ref === b && road.to.ref === a) ??
+      null
     );
-
-    return match?.id ?? null;
   }
 
-  private trimSegmentAtIntersection(from: RoutePoint, to: RoutePoint): RouteSegment | null {
-    const dx = to.x - from.x;
-    const dy = to.y - from.y;
-    const length = Math.hypot(dx, dy);
-
-    if (length === 0) {
+  private computeRouteMidpoint(segments: RouteSegment[]): ShopfloorPoint | null {
+    if (segments.length === 0) {
       return null;
     }
 
-    const inset = 24; // keep a small gap to intersection center
-    const ux = dx / length;
-    const uy = dy / length;
-
-    return {
-      x1: from.x + ux * inset,
-      y1: from.y + uy * inset,
-      x2: to.x - ux * inset,
-      y2: to.y - uy * inset,
-    };
-  }
-
-  private computeCellCenter(position: GridTuple, cellWidth: number, cellHeight: number): RoutePoint {
-    const [row, col] = position;
-    return {
-      x: col * cellWidth + cellWidth / 2,
-      y: row * cellHeight + cellHeight / 2,
-    };
-  }
-
-  get infoLabel(): string {
-    if (this.infoText) {
-      return this.infoText;
-    }
-    const step = this.activeStep;
-    if (!step) {
-      return $localize`:@@shopfloorPreviewNoActiveStep:All steps completed.`;
+    const lengths = segments.map((segment) => Math.hypot(segment.x2 - segment.x1, segment.y2 - segment.y1));
+    const totalLength = lengths.reduce((acc, value) => acc + value, 0);
+    if (totalLength === 0) {
+      return null;
     }
 
-    if (step.type === 'NAVIGATION') {
-      return $localize`:@@shopfloorPreviewNavLabel:Route ${step.source} → ${step.target}`;
+    let remaining = totalLength / 2;
+    for (let i = 0; i < segments.length; i += 1) {
+      const length = lengths[i];
+      const segment = segments[i];
+      if (remaining <= length) {
+        const ratio = remaining / length;
+        return {
+          x: segment.x1 + (segment.x2 - segment.x1) * ratio,
+          y: segment.y1 + (segment.y2 - segment.y1) * ratio,
+        };
+      }
+      remaining -= length;
     }
 
-    if (step.moduleType) {
-      return $localize`:@@shopfloorPreviewModuleLabel:Module ${step.moduleType}`;
-    }
-
-    return step.type;
-  }
-
-  get badgeLabel(): string {
-    if (this.badgeText) {
-      return this.badgeText;
-    }
-    if (this.activeStep?.type === 'NAVIGATION') {
-      return 'FTS';
-    }
-    return (this.order?.orderType ?? '').toUpperCase() || 'ORDER';
-  }
-
-  onModuleClick(box: RenderBox, event: MouseEvent): void {
-    if (!this.selectionEnabled) {
-      return;
-    }
-    event.preventDefault();
-    event.stopPropagation();
-    this.cellSelected.emit({ id: box.id, kind: 'module' });
-  }
-
-  onFixedClick(box: RenderBox, event: MouseEvent): void {
-    if (!this.selectionEnabled) {
-      return;
-    }
-    event.preventDefault();
-    event.stopPropagation();
-    this.cellSelected.emit({ id: box.id, kind: 'fixed' });
+    const last = segments[segments.length - 1];
+    return { x: last.x2, y: last.y2 };
   }
 }
 

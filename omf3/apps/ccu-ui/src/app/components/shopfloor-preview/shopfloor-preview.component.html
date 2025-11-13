@@ -11,102 +11,122 @@
       [style.height.px]="vm.height"
       [style.transform]="'scale(' + scale + ')'"
     >
-    <svg class="preview__roads" [attr.width]="vm.width" [attr.height]="vm.height">
-      <line
-        *ngFor="let road of vm.roads"
-        [attr.x1]="road.x1"
-        [attr.y1]="road.y1"
-        [attr.x2]="road.x2"
-        [attr.y2]="road.y2"
-      />
-      <ng-container *ngIf="vm.activeRouteSegments as segments">
+      <svg class="preview__roads" [attr.width]="vm.width" [attr.height]="vm.height" *ngIf="vm.roads.length">
         <line
-          *ngFor="let segment of segments"
-          class="preview__route"
+          *ngFor="let road of vm.roads"
+          [attr.x1]="road.x1"
+          [attr.y1]="road.y1"
+          [attr.x2]="road.x2"
+          [attr.y2]="road.y2"
+        />
+      </svg>
+
+      <ng-container *ngFor="let fixed of vm.fixedPositions">
+        <div
+          class="preview__fixed"
+          [class.preview__element--highlight]="fixed.highlighted"
+          [class.preview__element--selectable]="selectionEnabled"
+          [style.top.px]="fixed.top"
+          [style.left.px]="fixed.left"
+          [style.width.px]="fixed.width"
+          [style.height.px]="fixed.height"
+          [style.background]="fixed.background"
+          role="button"
+          tabindex="0"
+          (click)="onFixedActivate(fixed, $event)"
+          (keydown.enter)="onFixedActivate(fixed, $event)"
+          (keydown.space)="onFixedActivate(fixed, $event)"
+          (dblclick)="onFixedDouble(fixed, $event)"
+        >
+          <img *ngIf="fixed.icon" [src]="fixed.icon" [alt]="fixed.label" />
+          <span *ngIf="fixed.showLabel" class="preview__module-label preview__fixed-label">{{ fixed.label }}</span>
+        </div>
+      </ng-container>
+
+      <ng-container *ngFor="let module of vm.modules">
+        <div
+          class="preview__module"
+          [class.preview__element--highlight]="module.highlighted"
+          [class.preview__element--selectable]="selectionEnabled"
+          [style.top.px]="module.top"
+          [style.left.px]="module.left"
+          [style.width.px]="module.width"
+          [style.height.px]="module.height"
+          role="button"
+          tabindex="0"
+          (click)="onModuleActivate(module, $event)"
+          (keydown.enter)="onModuleActivate(module, $event)"
+          (keydown.space)="onModuleActivate(module, $event)"
+          (dblclick)="onModuleDouble(module, $event)"
+        >
+          <img
+            *ngIf="module.icon"
+            class="preview__module-icon"
+            [src]="module.icon"
+            [alt]="module.label"
+            [style.top.px]="module.iconTop"
+            [style.left.px]="module.iconLeft"
+            [style.width.px]="module.iconWidth"
+            [style.height.px]="module.iconHeight"
+          />
+          <img
+            *ngFor="let attachment of module.attachments"
+            class="preview__attached"
+            [style.top.px]="attachment.top"
+            [style.left.px]="attachment.left"
+            [style.width.px]="attachment.width"
+            [style.height.px]="attachment.height"
+            [src]="attachment.icon"
+            alt=""
+          />
+          <span *ngIf="module.showLabel" class="preview__module-label">{{ module.label }}</span>
+        </div>
+      </ng-container>
+
+      <div
+        *ngFor="let node of vm.intersections"
+        class="preview__intersection"
+        [style.top.px]="node.top"
+        [style.left.px]="node.left"
+        [style.width.px]="node.width"
+        [style.height.px]="node.height"
+      >
+        <img
+          *ngIf="node.icon"
+          class="preview__intersection-icon"
+          [src]="node.icon"
+          alt=""
+          [style.width.%]="node.iconScale * 100"
+          [style.height.%]="node.iconScale * 100"
+        />
+        <span *ngIf="!node.icon" class="preview__intersection-dot"></span>
+      </div>
+
+      <svg
+        *ngIf="vm.activeRouteSegments?.length"
+        class="preview__route-overlay"
+        [attr.width]="vm.width"
+        [attr.height]="vm.height"
+      >
+        <line
+          *ngFor="let segment of vm.activeRouteSegments"
           [attr.x1]="segment.x1"
           [attr.y1]="segment.y1"
           [attr.x2]="segment.x2"
           [attr.y2]="segment.y2"
         />
-      </ng-container>
-      <circle
-        *ngFor="let marker of vm.routeEndpoints"
-        class="preview__route-marker"
-        [attr.cx]="marker.x"
-        [attr.cy]="marker.y"
-        r="8"
+      </svg>
+
+      <img
+        *ngIf="vm.routeOverlay"
+        class="preview__fts"
+        [src]="vm.routeOverlay.icon"
+        alt=""
+        [style.left.px]="vm.routeOverlay.x"
+        [style.top.px]="vm.routeOverlay.y"
+        [style.width.px]="vm.routeOverlay.width ?? 48"
+        [style.height.px]="vm.routeOverlay.height ?? 48"
       />
-    </svg>
-
-    <ng-container *ngFor="let fixed of vm.fixedPositions">
-      <div
-        class="preview__fixed"
-        [class.preview__element--highlight]="fixed.highlighted"
-        [class.preview__element--selectable]="selectionEnabled"
-        [style.top.px]="fixed.top"
-        [style.left.px]="fixed.left"
-        [style.width.px]="fixed.width"
-        [style.height.px]="fixed.height"
-        [style.background]="fixed.background"
-        (click)="onFixedClick(fixed, $event)"
-      >
-        <img *ngIf="fixed.icon" [src]="fixed.icon" [alt]="fixed.label" />
-        <span>{{ fixed.label }}</span>
-      </div>
-    </ng-container>
-
-    <ng-container *ngFor="let module of vm.modules">
-      <div
-        class="preview__module"
-        [class.preview__element--highlight]="module.highlighted"
-        [class.preview__module--compound]="module.compound"
-        [class.preview__element--selectable]="selectionEnabled"
-        [style.top.px]="module.top"
-        [style.left.px]="module.left"
-        [style.width.px]="module.width"
-        [style.height.px]="module.height"
-        (click)="onModuleClick(module, $event)"
-      >
-        <div
-          class="preview__module-main"
-          [style.marginTop.px]="module.compoundOffset ?? 0"
-          [style.height.px]="module.mainHeight ?? module.height"
-          [style.width.px]="module.mainWidth ?? module.width"
-        >
-          <img *ngIf="module.icon" [src]="module.icon" [alt]="module.label" />
-        </div>
-        <span>{{ module.label }}</span>
-
-        <img
-          *ngFor="let attached of module.attached"
-          class="preview__attached"
-          [style.top.px]="attached.top"
-          [style.left.px]="attached.left"
-          [style.width.px]="attached.width"
-          [style.height.px]="attached.height"
-          [src]="attached.icon"
-          [alt]="attached.label"
-        />
-      </div>
-    </ng-container>
-
-    <div
-      *ngFor="let node of vm.intersections"
-      class="preview__intersection"
-      [class.preview__element--highlight]="node.highlighted"
-      [style.top.px]="node.top"
-      [style.left.px]="node.left"
-    >
-      <span class="preview__intersection-dot"></span>
-    </div>
-    <img
-      *ngIf="vm.routeOverlay"
-      class="preview__fts"
-      [src]="vm.routeOverlay.icon"
-      alt=""
-      [style.left.px]="vm.routeOverlay.x"
-      [style.top.px]="vm.routeOverlay.y"
-    />
     </div>
   </div>
 </div>

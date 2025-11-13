@@ -47,7 +47,16 @@ export class OrderTabComponent implements OnInit {
   storageActive$: Observable<OrderActive[]> = of([]);
   storageCompleted$: Observable<OrderActive[]> = of([]);
 
-  readonly fixtureOptions: OrderFixtureName[] = ['white', 'blue', 'red', 'mixed', 'storage'];
+  readonly fixtureOptions: OrderFixtureName[] = ['white', 'white_step3', 'blue', 'red', 'mixed', 'storage'];
+  readonly fixtureLabels: Record<OrderFixtureName, string> = {
+    white: $localize`:@@fixtureLabelWhite:White`,
+    white_step3: $localize`:@@fixtureLabelWhiteStep3:White • Step 3`,
+    blue: $localize`:@@fixtureLabelBlue:Blue`,
+    red: $localize`:@@fixtureLabelRed:Red`,
+    mixed: $localize`:@@fixtureLabelMixed:Mixed`,
+    storage: $localize`:@@fixtureLabelStorage:Storage`,
+    startup: $localize`:@@fixtureLabelStartup:Startup`,
+  };
   activeFixture: OrderFixtureName = this.dashboard.getCurrentFixture();
 
   private bindOrderStreams(): void {

@@ -7,35 +7,7 @@ import { BehaviorSubject, type Observable, combineLatest } from 'rxjs';
 import { map, shareReplay, switchMap, tap, startWith } from 'rxjs/operators';
 import { getDashboardController } from '../mock-dashboard';
 import { ShopfloorPreviewComponent } from '../components/shopfloor-preview/shopfloor-preview.component';
-
-type GridTuple = [number, number];
-
-interface ShopfloorModuleLayout {
-  id: string;
-  type: string;
-  serialNumber?: string;
-  position: GridTuple;
-  cell_size?: GridTuple;
-  show_label?: boolean;
-}
-
-interface ShopfloorFixedPositionLayout {
-  id: string;
-  type: string;
-  position: GridTuple;
-  cell_size?: GridTuple;
-  background_color?: string;
-}
-
-interface ShopfloorLayout {
-  grid: {
-    rows: number;
-    columns: number;
-    cell_size?: string;
-  };
-  modules: ShopfloorModuleLayout[];
-  fixed_positions: ShopfloorFixedPositionLayout[];
-}
+import type { ShopfloorLayoutConfig, ShopfloorCellConfig } from '../components/shopfloor-preview/shopfloor-layout.types';
 
 type LayoutCellKind = 'module' | 'fixed';
 
@@ -160,7 +132,7 @@ export class ConfigurationTabComponent {
   readonly viewModel$: Observable<ConfigurationViewModel>;
 
   constructor(private readonly http: HttpClient) {
-    this.layoutInfo$ = this.http.get<ShopfloorLayout>('shopfloor/shopfloor_layout.json').pipe(
+    this.layoutInfo$ = this.http.get<ShopfloorLayoutConfig>('shopfloor/shopfloor_layout.json').pipe(
       map((layout) => this.buildLayout(layout)),
       tap((layout) => {
         if (!this.selectedCellSubject.value && layout.cells.length > 0) {
@@ -197,7 +169,7 @@ export class ConfigurationTabComponent {
               highlightModules.push(selectedCell.type);
             }
             if (selectedCell.serialNumber) {
-              highlightModules.push(selectedCell.serialNumber);
+              highlightModules.push(`serial:${selectedCell.serialNumber}`);
             }
           } else if (selectedCell.kind === 'fixed') {
             highlightFixed.push(selectedCell.id);
@@ -207,7 +179,7 @@ export class ConfigurationTabComponent {
           }
         }
 
-        const badgeText = $localize`:@@configurationBadgeProduction:Production`;
+        const badgeText = $localize`:@@configurationBadgeShopfloor:SHOPFLOOR LAYOUT`;
         const infoText = selectedCell
           ? selectedCell.kind === 'module'
             ? $localize`:@@configurationInfoModule:Module ${selectedCell.label}`
@@ -239,6 +211,10 @@ export class ConfigurationTabComponent {
     this.selectCell(event.id);
   }
 
+  onCellDoubleClick(event: { id: string; kind: LayoutCellKind }): void {
+    console.info('[configuration-tab] double click placeholder', event);
+  }
+
   get factoryIcon(): string {
     return this.resolveAssetPath(
       SHOPFLOOR_ASSET_MAP['FACTORY_CONFIGURATION'] ?? SHOPFLOOR_ASSET_MAP['SHOPFLOOR_LAYOUT']
@@ -251,35 +227,45 @@ export class ConfigurationTabComponent {
     );
   }
 
-  private buildLayout(layout: ShopfloorLayout): LayoutViewModel {
-    const [baseWidth, baseHeight] = this.parseCellSize(layout.grid.cell_size);
-    const columns = layout.grid.columns ?? 1;
-    const rows = layout.grid.rows ?? 1;
+  private buildLayout(layout: ShopfloorLayoutConfig): LayoutViewModel {
+    const baseWidth = 200;
+    const baseHeight = 200;
+    const columns = Math.max(1, Math.round(layout.metadata.canvas.width / baseWidth));
+    const rows = Math.max(1, Math.round(layout.metadata.canvas.height / baseHeight));
 
-    const moduleCells = layout.modules.map((mod) =>
-      this.createLayoutCell(mod.position, mod.cell_size, baseWidth, baseHeight, {
-        id: mod.id,
-        label: mod.show_label ? mod.id : mod.type,
-        kind: 'module',
-        icon: this.resolveAssetPath(SHOPFLOOR_ASSET_MAP[mod.type] ?? SHOPFLOOR_ASSET_MAP[mod.id]),
-        serialNumber: mod.serialNumber,
-        type: mod.type,
-        tooltip: mod.serialNumber
-          ? `${mod.id} • ${mod.serialNumber}`
-          : `${mod.id} • ${$localize`:@@configurationNoSerial:No serial`}`,
-      })
-    );
+    const moduleCells = layout.cells
+      .filter((cell) => cell.role === 'module')
+      .map((cell) =>
+        this.createLayoutCell(cell, baseWidth, baseHeight, {
+          id: cell.id,
+          label: cell.show_name === false ? cell.id : cell.name ?? cell.id,
+          kind: 'module',
+          icon: this.resolveAssetPath(
+            SHOPFLOOR_ASSET_MAP[cell.icon ?? cell.name ?? cell.id] ?? SHOPFLOOR_ASSET_MAP[cell.name ?? cell.id] ?? ''
+          ),
+          serialNumber: cell.serial_number,
+          type: cell.name ?? cell.id,
+          tooltip: cell.serial_number
+            ? `${cell.name ?? cell.id} • ${cell.serial_number}`
+            : `${cell.name ?? cell.id} • ${$localize`:@@configurationNoSerial:No serial`}`,
+        })
+      );
 
-    const fixedCells = layout.fixed_positions.map((pos) =>
-      this.createLayoutCell(pos.position, pos.cell_size, baseWidth, baseHeight, {
-        id: pos.id,
-        label: pos.type,
-        kind: 'fixed',
-        icon: this.resolveAssetPath(SHOPFLOOR_ASSET_MAP[pos.type] ?? ''),
-        tooltip: pos.type,
-        background: pos.background_color,
-      })
-    );
+    const fixedCells = layout.cells
+      .filter((cell) => cell.role === 'company' || cell.role === 'software')
+      .map((cell) =>
+        this.createLayoutCell(cell, baseWidth, baseHeight, {
+          id: cell.id,
+          label: cell.name ?? cell.id,
+          kind: 'fixed',
+          icon: this.resolveAssetPath(
+            SHOPFLOOR_ASSET_MAP[cell.icon ?? cell.name ?? cell.id] ?? SHOPFLOOR_ASSET_MAP[cell.name ?? cell.id] ?? ''
+          ),
+          tooltip: cell.name ?? cell.id,
+          background: cell.background_color,
+          type: cell.name ?? cell.id,
+        })
+      );
 
     return {
       columns,
@@ -289,19 +275,16 @@ export class ConfigurationTabComponent {
   }
 
   private createLayoutCell(
-    position: GridTuple,
-    cellSize: GridTuple | undefined,
+    cell: ShopfloorCellConfig,
     baseWidth: number,
     baseHeight: number,
     meta: Omit<LayoutCell, 'row' | 'column' | 'rowSpan' | 'columnSpan'>
   ): LayoutCell {
-    const column = position?.[1] ?? 0;
-    const row = position?.[0] ?? 0;
-    const targetWidth = cellSize?.[0] ?? baseWidth;
-    const targetHeight = cellSize?.[1] ?? baseHeight;
-
-    const columnSpan = Math.max(1, Math.round(targetWidth / baseWidth));
-    const rowSpan = Math.max(1, Math.round(targetHeight / baseHeight));
+    const column = Math.max(0, Math.floor(cell.position.x / baseWidth));
+    const row = Math.max(0, Math.floor(cell.position.y / baseHeight));
+    const columnSpan = Math.max(1, Math.round(cell.size.w / baseWidth));
+    const rowSpan = Math.max(1, Math.round(cell.size.h / baseHeight));
+    const iconKey = cell.icon ?? cell.name ?? cell.id;
 
     return {
       ...meta,
@@ -309,7 +292,7 @@ export class ConfigurationTabComponent {
       column,
       rowSpan,
       columnSpan,
-      icon: meta.icon || this.resolveAssetPath(SHOPFLOOR_ASSET_MAP[meta.id] ?? ''),
+      icon: meta.icon || this.resolveAssetPath(SHOPFLOOR_ASSET_MAP[iconKey] ?? iconKey),
     };
   }
 
@@ -438,15 +421,6 @@ export class ConfigurationTabComponent {
         items: ftsItems,
       },
     ];
-  }
-
-  private parseCellSize(cellSize?: string): [number, number] {
-    if (!cellSize) {
-      return [200, 200];
-    }
-
-    const [width, height] = cellSize.split('x').map((value) => Number.parseInt(value, 10));
-    return [Number.isFinite(width) ? width : 200, Number.isFinite(height) ? height : 200];
   }
 
   private resolveAssetPath(path?: string): string {

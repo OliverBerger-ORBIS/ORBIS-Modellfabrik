@@ -13,13 +13,15 @@
     <div class="shopfloor-wrapper">
       <app-shopfloor-preview
         [order]="null"
-        [scale]="0.8"
+        [scale]="1"
         [badgeText]="vm.badgeText"
         [infoText]="vm.infoText"
         [highlightModulesOverride]="vm.highlightModules"
         [highlightFixedOverride]="vm.highlightFixed"
         [selectionEnabled]="true"
+        [showBaseRoads]="false"
         (cellSelected)="onCellSelected($event)"
+        (cellDoubleClicked)="onCellDoubleClick($event)"
       ></app-shopfloor-preview>
     </div>
 

@@ -47,7 +47,7 @@
       <dl>
         <div>
           <dt i18n="@@overviewStockLabel">Stock</dt>
-          <dd>{{ available[type] ?? 0 }}</dd>
+          <dd>{{ available[type] === undefined ? 0 : available[type] }}</dd>
         </div>
         <div>
           <dt i18n="@@overviewAvailableLabel">Available</dt>
@@ -121,7 +121,7 @@
           <span class="dot" [class]="type.toLowerCase()"></span>
           {{ getWorkpieceLabel(type) }}
         </h3>
-        <p class="stock" i18n="@@overviewCurrentStock">Stock: {{ available[type] ?? 0 }}</p>
+        <p class="stock" i18n="@@overviewCurrentStock">Stock: {{ available[type] === undefined ? 0 : available[type] }}</p>
       </div>
       <div class="purchase-body">
         <img

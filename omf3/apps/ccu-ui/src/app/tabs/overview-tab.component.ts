@@ -44,12 +44,13 @@ const MAX_CAPACITY = 3;
 export class OverviewTabComponent implements OnInit {
   private dashboard = getDashboardController();
 
-  readonly fixtureOptions: OrderFixtureName[] = ['startup', 'white', 'blue', 'red', 'mixed', 'storage'];
+  readonly fixtureOptions: OrderFixtureName[] = ['startup', 'white', 'white_step3', 'blue', 'red', 'mixed', 'storage'];
   activeFixture: OrderFixtureName = this.dashboard.getCurrentFixture();
 
   readonly fixtureLabels: Record<OrderFixtureName, string> = {
     startup: $localize`:@@fixtureLabelStartup:Startup`,
     white: $localize`:@@fixtureLabelWhite:White`,
+    white_step3: $localize`:@@fixtureLabelWhiteStep3:White • Step 3`,
     blue: $localize`:@@fixtureLabelBlue:Blue`,
     red: $localize`:@@fixtureLabelRed:Red`,
     mixed: $localize`:@@fixtureLabelMixed:Mixed`,

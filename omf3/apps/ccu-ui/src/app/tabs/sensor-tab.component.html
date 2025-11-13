@@ -55,7 +55,7 @@
         </svg>
       </div>
       <p class="gauge-card__value">
-        {{ sensor.temperatureC != null ? (sensor.temperatureC | number:'1.1-1') : '—' }}°C
+        {{ sensor.temperatureC === null || sensor.temperatureC === undefined ? '—' : (sensor.temperatureC | number:'1.1-1') }}°C
       </p>
     </article>
 
@@ -102,7 +102,7 @@
         </svg>
       </div>
       <p class="gauge-card__value">
-        {{ sensor.humidityPercent != null ? (sensor.humidityPercent | number:'1.1-1') : '—' }}%
+        {{ sensor.humidityPercent === null || sensor.humidityPercent === undefined ? '—' : (sensor.humidityPercent | number:'1.1-1') }}%
       </p>
     </article>
 
@@ -149,7 +149,7 @@
         </svg>
       </div>
       <p class="gauge-card__value">
-        {{ sensor.pressureHpa != null ? (sensor.pressureHpa | number:'1.1-1') : '—' }} hPa
+        {{ sensor.pressureHpa === null || sensor.pressureHpa === undefined ? '—' : (sensor.pressureHpa | number:'1.1-1') }} hPa
       </p>
     </article>
 
@@ -196,7 +196,7 @@
         </svg>
       </div>
       <p class="gauge-card__value">
-        {{ sensor.lightLux != null ? (sensor.lightLux | number:'1.0-0') : '—' }} lux
+        {{ sensor.lightLux === null || sensor.lightLux === undefined ? '—' : (sensor.lightLux | number:'1.0-0') }} lux
       </p>
     </article>
 
@@ -216,7 +216,7 @@
           <div class="air-quality__mask" [style.width]="airQualityRemaining(sensor)"></div>
         </div>
         <p class="gauge-card__value">
-          {{ sensor.airQualityScore != null ? (sensor.airQualityScore | number:'1.1-1') : '—' }} / 5
+          {{ sensor.airQualityScore === null || sensor.airQualityScore === undefined ? '—' : (sensor.airQualityScore | number:'1.1-1') }} / 5
         </p>
         <p class="air-quality__iaq">IAQ: {{ sensor.iaq ?? '—' }}</p>
       </div>

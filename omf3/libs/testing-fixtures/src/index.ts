@@ -3,7 +3,14 @@ import { concatMap, delay, repeat, switchMap } from 'rxjs/operators';
 
 import type { RawMqttMessage } from '@omf3/gateway';
 
-export type OrderFixtureName = 'white' | 'blue' | 'red' | 'mixed' | 'storage' | 'startup';
+export type OrderFixtureName =
+  | 'white'
+  | 'white_step3'
+  | 'blue'
+  | 'red'
+  | 'mixed'
+  | 'storage'
+  | 'startup';
 export type ModuleFixtureName =
   | 'default'
   | 'white'
@@ -53,6 +60,7 @@ export interface FixtureStreamOptions extends LoadFixtureOptions {
 
 const FIXTURE_PATHS: Record<OrderFixtureName, string> = {
   white: 'white/orders.log',
+  white_step3: 'white/step3.json',
   blue: 'blue/orders.log',
   red: 'red/orders.log',
   mixed: 'mixed/orders.log',
@@ -336,6 +344,11 @@ export const SHOPFLOOR_ASSET_MAP: Record<string, string> = {
   DPS_SQUARE2: '/shopfloor/order-tracking.svg',
   ORBIS: '/shopfloor/ORBIS_logo_RGB.svg',
   DSP: '/shopfloor/information-technology.svg',
+  'INTERSECTION-1': '/shopfloor/intersection1.svg',
+  'INTERSECTION-2': '/shopfloor/intersection2.svg',
+  'INTERSECTION-3': '/shopfloor/intersection3.svg',
+  'INTERSECTION-4': '/shopfloor/intersection4.svg',
+  FTS_ICON: '/shopfloor/robotic.svg',
   FACTORY_CONFIGURATION: '/headings/grundriss.svg',
   SHOPFLOOR_LAYOUT: '/headings/grundriss.svg',
   PARAMETER_CONFIGURATION: '/headings/system.svg',

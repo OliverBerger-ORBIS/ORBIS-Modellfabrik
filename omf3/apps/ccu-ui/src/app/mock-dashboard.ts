@@ -62,6 +62,9 @@ export interface MockDashboardController {
 
 const FIXTURE_DEFAULT_INTERVAL = 25;
 const resolveModuleFixture = (fixture: OrderFixtureName): ModuleFixtureName => {
+  if (fixture === 'white_step3') {
+    return 'white';
+  }
   if (
     fixture === 'white' ||
     fixture === 'blue' ||
