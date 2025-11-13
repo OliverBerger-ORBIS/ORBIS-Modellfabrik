@@ -177,6 +177,12 @@ export interface InventoryOverviewState {
   lastUpdated: string;
 }
 
+export interface FlowDefinition {
+  steps: string[];
+}
+
+export type ProductionFlowMap = Record<WorkpieceType, FlowDefinition>;
+
 export interface ReplayEnvelope {
   topic: string;
   payload: any;

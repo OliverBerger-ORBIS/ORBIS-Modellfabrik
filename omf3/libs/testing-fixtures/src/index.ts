@@ -13,10 +13,12 @@ export type ModuleFixtureName =
   | 'storage'
   | 'startup';
 export type StockFixtureName = 'default' | 'startup';
+export type FlowFixtureName = 'default' | 'startup';
 
 const DEFAULT_BASE_URL = '/fixtures/orders';
 const DEFAULT_MODULE_BASE_URL = '/fixtures/modules';
 const DEFAULT_STOCK_BASE_URL = '/fixtures/stock';
+const DEFAULT_FLOW_BASE_URL = '/fixtures/flows';
 
 export interface LoadFixtureOptions {
   /**
@@ -69,6 +71,11 @@ const STOCK_FIXTURE_PATHS: Record<StockFixtureName, string> = {
   startup: 'startup.log',
 };
 
+const FLOW_FIXTURE_PATHS: Record<FlowFixtureName, string> = {
+  default: 'default.log',
+  startup: 'startup.log',
+};
+
 const defaultLoader = async (resolvedPath: string): Promise<string> => {
   if (typeof fetch !== 'function') {
     throw new Error(
@@ -107,6 +114,12 @@ const resolveModulePath = (name: ModuleFixtureName, baseUrl: string | undefined)
 const resolveStockPath = (name: StockFixtureName, baseUrl: string | undefined): string => {
   const base = baseUrl ?? DEFAULT_STOCK_BASE_URL;
   const suffix = STOCK_FIXTURE_PATHS[name];
+  return base.endsWith('/') ? `${base}${suffix}` : `${base}/${suffix}`;
+};
+
+const resolveFlowPath = (name: FlowFixtureName, baseUrl: string | undefined): string => {
+  const base = baseUrl ?? DEFAULT_FLOW_BASE_URL;
+  const suffix = FLOW_FIXTURE_PATHS[name];
   return base.endsWith('/') ? `${base}${suffix}` : `${base}/${suffix}`;
 };
 
@@ -150,6 +163,21 @@ export const loadStockFixture = async (
   }
 };
 
+export const loadFlowFixture = async (
+  name: FlowFixtureName,
+  options?: LoadFixtureOptions
+): Promise<RawMqttMessage[]> => {
+  const path = resolveFlowPath(name, options?.baseUrl);
+  const loader = options?.loader ?? defaultLoader;
+  try {
+    const contents = await loader(path);
+    return parseLines(contents);
+  } catch (error) {
+    console.warn(`[testing-fixtures] Failed to load flow fixture "${name}" from ${path}`, error);
+    return [];
+  }
+};
+
 const withInterval = (intervalMs: number | undefined): OperatorFunction<RawMqttMessage, RawMqttMessage> =>
   intervalMs && intervalMs > 0
     ? concatMap((message: RawMqttMessage) => of(message).pipe(delay(intervalMs)))
@@ -166,8 +194,6 @@ export const createOrderFixtureStream = (
   );
 };
 
-export const listAvailableOrderFixtures = (): OrderFixtureName[] => Object.keys(FIXTURE_PATHS) as OrderFixtureName[];
-
 export const createModulePairingFixtureStream = (
   name: ModuleFixtureName,
   options?: FixtureStreamOptions
@@ -178,9 +204,6 @@ export const createModulePairingFixtureStream = (
     options?.loop ? repeat() : (source) => source
   );
 };
-
-export const listAvailableModuleFixtures = (): ModuleFixtureName[] =>
-  Object.keys(MODULE_FIXTURE_PATHS) as ModuleFixtureName[];
 
 export const createStockFixtureStream = (
   name: StockFixtureName,
@@ -193,8 +216,27 @@ export const createStockFixtureStream = (
   );
 };
 
+export const createFlowFixtureStream = (
+  name: FlowFixtureName,
+  options?: FixtureStreamOptions
+): Observable<RawMqttMessage> => {
+  return defer(() => from(loadFlowFixture(name, options))).pipe(
+    switchMap((messages) => from(messages)),
+    withInterval(options?.intervalMs),
+    options?.loop ? repeat() : (source) => source
+  );
+};
+
+export const listAvailableOrderFixtures = (): OrderFixtureName[] => Object.keys(FIXTURE_PATHS) as OrderFixtureName[];
+
+export const listAvailableModuleFixtures = (): ModuleFixtureName[] =>
+  Object.keys(MODULE_FIXTURE_PATHS) as ModuleFixtureName[];
+
 export const listAvailableStockFixtures = (): StockFixtureName[] =>
   Object.keys(STOCK_FIXTURE_PATHS) as StockFixtureName[];
+
+export const listAvailableFlowFixtures = (): FlowFixtureName[] =>
+  Object.keys(FLOW_FIXTURE_PATHS) as FlowFixtureName[];
 
 export const SHOPFLOOR_ASSET_MAP: Record<string, string> = {
   MILL: '/shopfloor/milling-machine.svg',

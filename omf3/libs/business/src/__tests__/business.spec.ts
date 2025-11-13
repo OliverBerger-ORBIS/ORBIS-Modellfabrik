@@ -12,6 +12,7 @@ import type {
   StockMessage,
   ModulePairingState,
   StockSnapshot,
+  ProductionFlowMap,
 } from '@omf3/entities';
 import type { OrderStreamPayload, GatewayPublishFn } from '@omf3/gateway';
 
@@ -26,6 +27,7 @@ const createGateway = (): {
     fts$: Subject<FtsState>;
     pairing$: Subject<ModulePairingState>;
     stockSnapshots$: Subject<StockSnapshot>;
+    flows$: Subject<ProductionFlowMap>;
   };
   publishLog: Array<{ topic: string; payload: unknown }>;
 } => {
@@ -35,6 +37,7 @@ const createGateway = (): {
   const fts$ = subject<FtsState>();
   const pairing$ = subject<ModulePairingState>();
   const stockSnapshots$ = subject<StockSnapshot>();
+  const flows$ = subject<ProductionFlowMap>();
   const publishLog: Array<{ topic: string; payload: unknown }> = [];
   const publish: GatewayPublishFn = async (topic, payload) => {
     publishLog.push({ topic, payload });
@@ -48,6 +51,7 @@ const createGateway = (): {
       fts$: fts$.asObservable(),
       pairing$: pairing$.asObservable(),
       stockSnapshots$: stockSnapshots$.asObservable(),
+      flows$: flows$.asObservable(),
       publish,
     },
     subjects: {
@@ -57,6 +61,7 @@ const createGateway = (): {
       fts$,
       pairing$,
       stockSnapshots$,
+      flows$,
     },
     publishLog,
   };
@@ -189,5 +194,21 @@ test('sends customer order via publish', async () => {
   assert.equal(publishLog.length, 1);
   assert.equal(publishLog[0]?.topic, 'ccu/order/request');
   assert.equal((publishLog[0]?.payload as any)?.type, 'BLUE');
+});
+
+test('exposes flows stream', async () => {
+  const { streams, subjects } = createGateway();
+  const business = createBusiness(streams);
+
+  const flowsPromise = firstValueFrom(business.flows$.pipe(skip(1)));
+
+  subjects.flows$.next({
+    BLUE: { steps: ['DRILL', 'MILL', 'AIQS'] },
+    RED: { steps: ['MILL', 'AIQS'] },
+  });
+
+  const flows = await flowsPromise;
+  assert.equal(flows.BLUE.steps.length, 3);
+  assert.equal(flows.RED.steps[0], 'MILL');
 });
 

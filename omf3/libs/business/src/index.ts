@@ -15,6 +15,7 @@ import type {
   InventorySlotState,
   StockWorkpiece,
   WorkpieceType,
+  ProductionFlowMap,
 } from '@omf3/entities';
 import { OrderStreamPayload, type GatewayPublishFn } from '@omf3/gateway';
 
@@ -28,6 +29,7 @@ export interface GatewayStreams {
   pairing$: Observable<ModulePairingState>;
   moduleFactsheets$: Observable<ModuleFactsheetSnapshot>;
   stockSnapshots$: Observable<StockSnapshot>;
+  flows$: Observable<ProductionFlowMap>;
   publish: GatewayPublishFn;
 }
 
@@ -40,6 +42,7 @@ export interface BusinessStreams {
   ftsStates$: Observable<Record<string, FtsState>>;
   moduleOverview$: Observable<ModuleOverviewState>;
   inventoryOverview$: Observable<InventoryOverviewState>;
+  flows$: Observable<ProductionFlowMap>;
 }
 
 export interface BusinessCommands {
@@ -480,6 +483,7 @@ export const createBusiness = (gateway: GatewayStreams): BusinessStreams & Busin
     ftsStates$,
     moduleOverview$,
     inventoryOverview$,
+    flows$: gateway.flows$,
     calibrateModule,
     setFtsCharge,
     dockFts,

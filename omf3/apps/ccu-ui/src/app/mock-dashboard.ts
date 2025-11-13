@@ -1,16 +1,24 @@
 import { createBusiness } from '@omf3/business';
 import { createGateway, type RawMqttMessage, type OrderStreamPayload, type GatewayPublishFn } from '@omf3/gateway';
-import type { FtsState, ModuleState, ModuleOverviewState, InventoryOverviewState } from '@omf3/entities';
+import type {
+  FtsState,
+  ModuleState,
+  ModuleOverviewState,
+  InventoryOverviewState,
+  ProductionFlowMap,
+} from '@omf3/entities';
 import {
   createModulePairingFixtureStream,
   createOrderFixtureStream,
   createStockFixtureStream,
+  createFlowFixtureStream,
   type FixtureStreamOptions,
   type ModuleFixtureName,
   type OrderFixtureName,
   type StockFixtureName,
+  type FlowFixtureName,
 } from '@omf3/testing-fixtures';
-import { Subject, type Observable, Subscription } from 'rxjs';
+import { BehaviorSubject, Subject, type Observable, Subscription } from 'rxjs';
 import { map, scan, shareReplay, startWith } from 'rxjs/operators';
 import type { OrderActive } from '@omf3/entities';
 
@@ -23,6 +31,7 @@ export interface DashboardStreamSet {
   ftsStates$: Observable<Record<string, FtsState>>;
   moduleOverview$: Observable<ModuleOverviewState>;
   inventoryOverview$: Observable<InventoryOverviewState>;
+  flows$: Observable<ProductionFlowMap>;
 }
 
 export interface DashboardCommandSet {
@@ -35,6 +44,7 @@ export interface DashboardCommandSet {
 
 export interface MockDashboardController {
   streams: DashboardStreamSet;
+  streams$: Observable<DashboardStreamSet>;
   commands: DashboardCommandSet;
   loadFixture: (fixture: OrderFixtureName, options?: FixtureStreamOptions) => Promise<DashboardStreamSet>;
   getCurrentFixture: () => OrderFixtureName;
@@ -56,6 +66,13 @@ const resolveModuleFixture = (fixture: OrderFixtureName): ModuleFixtureName => {
 };
 
 const resolveStockFixture = (fixture: OrderFixtureName): StockFixtureName => {
+  if (fixture === 'startup') {
+    return 'startup';
+  }
+  return 'default';
+};
+
+const resolveFlowFixture = (fixture: OrderFixtureName): FlowFixtureName => {
   if (fixture === 'startup') {
     return 'startup';
   }
@@ -165,6 +182,7 @@ const createStreamSet = (messages$: Subject<RawMqttMessage>): {
       ftsStates$: business.ftsStates$,
       moduleOverview$: business.moduleOverview$,
       inventoryOverview$: business.inventoryOverview$,
+      flows$: business.flows$,
     },
     commands: {
       calibrateModule: business.calibrateModule,
@@ -181,6 +199,7 @@ export const createMockDashboardController = (): MockDashboardController => {
   let bundle = createStreamSet(messageSubject);
   let currentReplays: Subscription[] = [];
   let currentFixture: OrderFixtureName = 'startup';
+  const streamsSubject = new BehaviorSubject<DashboardStreamSet>(bundle.streams);
 
   const unsubscribeReplays = () => {
     currentReplays.forEach((sub) => sub.unsubscribe());
@@ -192,6 +211,7 @@ export const createMockDashboardController = (): MockDashboardController => {
     messageSubject.complete();
     messageSubject = new Subject<RawMqttMessage>();
     bundle = createStreamSet(messageSubject);
+    streamsSubject.next(bundle.streams);
   };
 
   const loadFixture = async (
@@ -226,13 +246,25 @@ export const createMockDashboardController = (): MockDashboardController => {
     });
     currentReplays.push(stockReplay$.subscribe((message: RawMqttMessage) => messageSubject.next(message)));
 
+    const flowFixtureName = resolveFlowFixture(fixture);
+    const flowReplay$ = createFlowFixtureStream(flowFixtureName, {
+      intervalMs: options?.intervalMs ?? FIXTURE_DEFAULT_INTERVAL,
+      loader: options?.loader,
+      loop: options?.loop,
+    });
+    currentReplays.push(flowReplay$.subscribe((message: RawMqttMessage) => messageSubject.next(message)));
+
     currentFixture = fixture;
+    streamsSubject.next(bundle.streams);
     return bundle.streams;
   };
 
   return {
     get streams() {
       return bundle.streams;
+    },
+    get streams$() {
+      return streamsSubject.asObservable();
     },
     get commands() {
       return bundle.commands;

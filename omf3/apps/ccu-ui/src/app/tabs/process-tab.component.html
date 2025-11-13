@@ -1,0 +1,70 @@
+<section class="process-header">
+  <img [src]="processIcon" alt="Process icon" width="56" height="56" />
+  <div>
+    <h1 i18n="@@processTitle">Process</h1>
+    <p i18n="@@processSubtitle">Production planning</p>
+  </div>
+</section>
+
+<section class="process-section" *ngIf="products$ | async as products; else noFlows">
+  <header class="section-header">
+    <h2>
+      <span i18n="@@processStepsTitle">Processing Steps</span>
+    </h2>
+    <p i18n="@@processStepsSubtitle">Unified material flow for all product types</p>
+  </header>
+
+  <div class="stage-card start">
+    <div class="icon xlarge"><img [src]="startIcon" alt="High-bay warehouse" width="96" height="96" /></div>
+    <div class="text">
+      <strong i18n="@@processStageStartTitle">Retrieve via high-bay warehouse (HBW)</strong>
+    </div>
+  </div>
+
+  <div class="arrow" aria-hidden="true">⬇️</div>
+
+  <div class="product-grid">
+    <article *ngFor="let product of products" class="product-card" [ngClass]="product.backgroundClass">
+      <header>
+        <div class="icons">
+          <img [src]="product.product3dIcon" [alt]="product.label" width="110" height="110" />
+          <img [src]="product.productIcon" [alt]="product.label" width="110" height="110" />
+        </div>
+        <div class="meta">
+          <div class="primary-line">
+            <span class="dot" [class]="product.dotClass"></span>
+            <span class="label">{{ product.label | uppercase }}</span>
+          </div>
+          <span class="count">{{ product.stepCount | i18nPlural: stepCountI18nMap }}</span>
+        </div>
+      </header>
+      <ul>
+        <li *ngFor="let step of product.steps" [class.placeholder]="step.isPlaceholder">
+          <div class="step-icon">
+            <img *ngIf="!step.isPlaceholder" [src]="step.icon" [alt]="step.label" width="72" height="72" />
+          </div>
+          <span class="step-label">{{ step.label }}</span>
+          <span class="delete-icon" aria-hidden="true" *ngIf="!step.isPlaceholder">{{ deleteIcon }}</span>
+        </li>
+      </ul>
+    </article>
+  </div>
+
+  <div class="arrow" aria-hidden="true">⬇️</div>
+
+  <div class="stage-card end">
+    <div class="icon xlarge multi">
+      <img *ngFor="let icon of endIcons" [src]="icon" alt="Delivery icon" width="96" height="96" />
+    </div>
+    <div class="text">
+      <strong i18n="@@processStageEndTitle">Delivery via Delivery and Pickup Station (DPS)</strong>
+    </div>
+  </div>
+</section>
+
+<ng-template #noFlows>
+  <section class="empty-state">
+    <h2 i18n="@@processNoFlowsHeadline">No production flows available</h2>
+    <p i18n="@@processNoFlowsHint">Load a fixture or connect to live data to see the configured processing steps.</p>
+  </section>
+</ng-template>

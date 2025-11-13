@@ -10,6 +10,7 @@ import {
   ModulePairingState,
   ModuleFactsheetSnapshot,
   StockSnapshot,
+  ProductionFlowMap,
 } from '@omf3/entities';
 
 export interface GatewayPublishOptions {
@@ -44,6 +45,7 @@ export interface GatewayStreams {
   pairing$: Observable<ModulePairingState>;
   moduleFactsheets$: Observable<ModuleFactsheetSnapshot>;
   stockSnapshots$: Observable<StockSnapshot>;
+  flows$: Observable<ProductionFlowMap>;
   publish: GatewayPublishFn;
 }
 
@@ -195,6 +197,13 @@ export const createGateway = (
     shareReplay({ bufferSize: 1, refCount: true })
   );
 
+  const flows$ = shared.pipe(
+    filter((msg) => msg.topic === 'ccu/state/flows'),
+    map((msg) => parsePayload<ProductionFlowMap>(msg.payload)),
+    filter((payload): payload is ProductionFlowMap => payload !== null),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
+
   return {
     orders$,
     stock$,
@@ -203,6 +212,7 @@ export const createGateway = (
     pairing$,
     moduleFactsheets$,
     stockSnapshots$,
+    flows$,
     publish,
   };
 };
