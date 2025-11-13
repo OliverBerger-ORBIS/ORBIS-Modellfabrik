@@ -57,6 +57,16 @@
         ]
     },
     "grid": {"rows": 3, "columns": 4, "cell_size": "200x200"},
+    "icon_sizing_rules": {
+        "by_role": {
+            "intersection": 0.8,
+            "module_main_compartment": 0.8,
+            "module_sub_non_main": 0.9,
+            "company": 0.6,
+            "software": 0.6,
+            "default": 0.75
+        }
+    },
     "modules": [
         {"id": "MILL", "type": "MILL", "serialNumber": "SVR3QA2098", "position": [0, 1], "show_label": true},
         {"id": "AIQS", "type": "AIQS", "serialNumber": "SVR4H76530", "position": [0, 2], "show_label": true},
