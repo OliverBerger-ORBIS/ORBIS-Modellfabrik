@@ -32,6 +32,11 @@ export const appRoutes: Routes = [
       import('./tabs/module-tab.component').then((m) => m.ModuleTabComponent),
   },
   {
+    path: 'shopfloor-demo',
+    loadComponent: () =>
+      import('./shopfloor-demo/shopfloor-demo.component').then((m) => m.ShopfloorDemoComponent),
+  },
+  {
     path: '**',
     redirectTo: 'overview',
   },

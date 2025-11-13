@@ -1,0 +1,124 @@
+.shopfloor-demo-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: #f5f5f5;
+}
+
+.controls-panel {
+  padding: 1.5rem;
+  background: white;
+  border-bottom: 1px solid #e0e0e0;
+
+  h1 {
+    margin: 0 0 1rem;
+    font-size: 1.5rem;
+  }
+}
+
+.control-group {
+  margin-bottom: 1rem;
+}
+
+.zoom-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  button {
+    padding: 0.5rem 1rem;
+    background: #2196f3;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+
+    &:hover:not(:disabled) {
+      background: #1976d2;
+    }
+
+    &:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+  }
+
+  .scale-slider {
+    flex: 1;
+    max-width: 300px;
+  }
+}
+
+.info-panel {
+  padding: 0.75rem;
+  background: #e3f2fd;
+  border-left: 4px solid #2196f3;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.shopfloor-viewport {
+  flex: 1;
+  overflow: auto;
+  padding: 2rem;
+  display: flex;
+  justify-content: center;
+}
+
+.shopfloor-content {
+  background: white;
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.shopfloor-svg {
+  border: 1px solid #e0e0e0;
+}
+
+.road-line {
+  fill: none;
+  stroke: #bdbdbd;
+  stroke-width: 3;
+}
+
+.cell-background {
+  stroke: #e0e0e0;
+  stroke-width: 2;
+  cursor: pointer;
+
+  &:hover {
+    stroke: #2196f3;
+    stroke-width: 3;
+  }
+
+  &.cell-selected {
+    stroke: #2196f3;
+    stroke-width: 3;
+  }
+
+  &.cell-highlighted {
+    stroke: #ff9800;
+    stroke-width: 4;
+  }
+}
+
+.cell-label {
+  font-size: 12px;
+  fill: #333;
+  pointer-events: none;
+}
+
+.highlight-inset {
+  pointer-events: none;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}

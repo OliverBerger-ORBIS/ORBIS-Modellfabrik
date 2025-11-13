@@ -1,0 +1,139 @@
+<div class="shopfloor-demo-container">
+  <div class="controls-panel">
+    <h1>Shopfloor Layout Demo</h1>
+    
+    <div class="control-group">
+      <label for="scale-slider">Zoom: {{ scalePercent }}%</label>
+      <div class="zoom-controls">
+        <button (click)="zoomOut()" [disabled]="scale <= minScale">-</button>
+        <input
+          id="scale-slider"
+          type="range"
+          [(ngModel)]="scale"
+          [min]="minScale"
+          [max]="maxScale"
+          [step]="0.05"
+          (change)="onScaleChange()"
+          class="scale-slider"
+        />
+        <button (click)="zoomIn()" [disabled]="scale >= maxScale">+</button>
+        <button (click)="resetZoom()">Reset</button>
+      </div>
+    </div>
+
+    <div class="control-group">
+      <button (click)="clearHighlights()">Clear Highlights</button>
+    </div>
+
+    <div class="info-panel" *ngIf="selectedCellId">
+      <strong>Selected:</strong> {{ selectedCellId }}
+      <p class="hint">Double-click cells to toggle highlight</p>
+    </div>
+
+    <div class="info-panel" *ngIf="!selectedCellId">
+      <p class="hint">Click to select, double-click to highlight</p>
+    </div>
+  </div>
+
+  <div class="shopfloor-viewport">
+    <div *ngIf="loading" class="loading-message">
+      Loading shopfloor layout...
+    </div>
+
+    <div *ngIf="error" class="error-message">
+      {{ error }}
+    </div>
+
+    <div *ngIf="renderModel && !loading" class="shopfloor-content">
+      <svg
+        [attr.width]="scaledWidth"
+        [attr.height]="scaledHeight"
+        [attr.viewBox]="'0 0 ' + renderModel.width + ' ' + renderModel.height"
+        class="shopfloor-svg"
+      >
+        <!-- Draw roads first (background layer) -->
+        <g class="roads-layer">
+          <ng-container *ngFor="let road of renderModel.roads">
+            <polyline
+              [attr.points]="getRoadPoints(road.points)"
+              class="road-line"
+            />
+          </ng-container>
+        </g>
+
+        <!-- Draw cells on top -->
+        <g class="cells-layer">
+          <ng-container *ngFor="let cell of renderModel.cells">
+            <!-- Cell background -->
+            <rect
+              [attr.x]="cell.x"
+              [attr.y]="cell.y"
+              [attr.width]="cell.width"
+              [attr.height]="cell.height"
+              [attr.fill]="cell.backgroundColor || '#ffffff'"
+              [class.cell-highlighted]="cell.highlighted"
+              [class.cell-selected]="selectedCellId === cell.id"
+              class="cell-background"
+              (click)="onCellClick(cell.id)"
+              (dblclick)="onCellDoubleClick(cell.id)"
+            />
+
+            <!-- Compound module subcells -->
+            <g *ngIf="cell.is_compound && cell.subcells">
+              <ng-container *ngFor="let subcell of cell.subcells">
+                <rect
+                  [attr.x]="cell.x + subcell.x"
+                  [attr.y]="cell.y + subcell.y"
+                  [attr.width]="subcell.width"
+                  [attr.height]="subcell.height"
+                  fill="transparent"
+                  stroke="#e0e0e0"
+                  stroke-width="1"
+                  class="subcell-border"
+                />
+                <g
+                  *ngIf="subcell.iconSvg && subcell.iconSize"
+                  [attr.transform]="getTransform(cell.x + subcell.x + subcell.iconSize.x, cell.y + subcell.y + subcell.iconSize.y)"
+                  [innerHTML]="subcell.iconSvg"
+                  class="subcell-icon"
+                ></g>
+              </ng-container>
+            </g>
+
+            <!-- Main cell icon -->
+            <g
+              *ngIf="cell.iconSvg && cell.iconSize"
+              [attr.transform]="getTransform(cell.x + cell.iconSize.x, cell.y + cell.iconSize.y)"
+              [innerHTML]="cell.iconSvg"
+              class="cell-icon"
+            ></g>
+
+            <!-- Cell label -->
+            <text
+              *ngIf="cell.label"
+              [attr.x]="cell.x + cell.width / 2"
+              [attr.y]="cell.y + cell.height - 8"
+              text-anchor="middle"
+              class="cell-label"
+            >
+              {{ cell.label }}
+            </text>
+
+            <!-- Highlight inset border -->
+            <rect
+              *ngIf="cell.highlighted"
+              [attr.x]="cell.x + 4"
+              [attr.y]="cell.y + 4"
+              [attr.width]="cell.width - 8"
+              [attr.height]="cell.height - 8"
+              fill="none"
+              stroke="#ff9800"
+              stroke-width="4"
+              class="highlight-inset"
+            />
+          </ng-container>
+        </g>
+      </svg>
+    </div>
+  </div>
+</div>

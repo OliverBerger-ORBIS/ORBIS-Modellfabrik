@@ -1,0 +1,198 @@
+{
+  "_meta": {
+    "_description": "Shopfloor layout configuration for omf3 Angular demo",
+    "_version": "3.0",
+    "_domain": "ccu-ui",
+    "_source": "Normalized from public/shopfloor/shopfloor_layout.json for Angular demo",
+    "_notes": [
+      "English-normalized layout with parsed_roads, intersection_map and modules_by_serial",
+      "Icon sizing computed dynamically based on roleFactor from icon_sizing_rules",
+      "Grid-based layout with 3x4 configuration (3 rows × 4 columns)",
+      "Cell size: 200x200px"
+    ]
+  },
+  "grid": {
+    "rows": 3,
+    "columns": 4,
+    "cell_width": 200,
+    "cell_height": 200
+  },
+  "icon_sizing_rules": {
+    "by_role": {
+      "module": 0.66,
+      "fixed": 0.75,
+      "intersection": 0.4,
+      "attachment": 0.56
+    }
+  },
+  "modules": [
+    {
+      "id": "MILL",
+      "type": "MILL",
+      "serialNumber": "SVR3QA2098",
+      "position": [0, 1],
+      "cell_w": 200,
+      "cell_h": 200,
+      "roleFactor": 0.66,
+      "show_label": true
+    },
+    {
+      "id": "AIQS",
+      "type": "AIQS",
+      "serialNumber": "SVR4H76530",
+      "position": [0, 2],
+      "cell_w": 200,
+      "cell_h": 200,
+      "roleFactor": 0.66,
+      "show_label": true
+    },
+    {
+      "id": "HBW",
+      "type": "HBW",
+      "serialNumber": "SVR3QA0022",
+      "position": [1, 0],
+      "cell_w": 200,
+      "cell_h": 300,
+      "roleFactor": 0.66,
+      "is_compound": true,
+      "attached_assets": ["HBW_SQUARE1", "HBW_SQUARE2"],
+      "compound_layout": {
+        "positions": [[0, 0], [100, 0]],
+        "size": [100, 100]
+      },
+      "show_label": true
+    },
+    {
+      "id": "DPS",
+      "type": "DPS",
+      "serialNumber": "SVR4H73275",
+      "position": [1, 3],
+      "cell_w": 200,
+      "cell_h": 300,
+      "roleFactor": 0.66,
+      "is_compound": true,
+      "attached_assets": ["DPS_SQUARE1", "DPS_SQUARE2"],
+      "compound_layout": {
+        "positions": [[0, 0], [100, 0]],
+        "size": [100, 100]
+      },
+      "show_label": true
+    },
+    {
+      "id": "DRILL",
+      "type": "DRILL",
+      "serialNumber": "SVR4H76449",
+      "position": [2, 0],
+      "cell_w": 200,
+      "cell_h": 200,
+      "roleFactor": 0.66,
+      "show_label": true
+    },
+    {
+      "id": "CHRG",
+      "type": "CHRG",
+      "serialNumber": "CHRG0",
+      "position": [2, 3],
+      "cell_w": 200,
+      "cell_h": 200,
+      "roleFactor": 0.66,
+      "show_label": true
+    }
+  ],
+  "fixed_positions": [
+    {
+      "id": "COMPANY",
+      "type": "ORBIS",
+      "position": [0, 0],
+      "cell_w": 200,
+      "cell_h": 100,
+      "roleFactor": 0.75,
+      "background_color": "#cfe6ff"
+    },
+    {
+      "id": "SOFTWARE",
+      "type": "DSP",
+      "position": [0, 3],
+      "cell_w": 200,
+      "cell_h": 100,
+      "roleFactor": 0.75,
+      "background_color": "#cfe6ff"
+    }
+  ],
+  "intersections": [
+    {
+      "id": "1",
+      "type": "INTERSECTION-1",
+      "position": [1, 1],
+      "cell_w": 200,
+      "cell_h": 200,
+      "roleFactor": 0.4,
+      "connected_modules": ["HBW", "MILL"]
+    },
+    {
+      "id": "2",
+      "type": "INTERSECTION-2",
+      "position": [1, 2],
+      "cell_w": 200,
+      "cell_h": 200,
+      "roleFactor": 0.4,
+      "connected_modules": ["MILL", "AIQS", "DPS"]
+    },
+    {
+      "id": "3",
+      "type": "INTERSECTION-3",
+      "position": [2, 1],
+      "cell_w": 200,
+      "cell_h": 200,
+      "roleFactor": 0.4,
+      "connected_modules": ["DRILL", "HBW"]
+    },
+    {
+      "id": "4",
+      "type": "INTERSECTION-4",
+      "position": [2, 2],
+      "cell_w": 200,
+      "cell_h": 200,
+      "roleFactor": 0.4,
+      "connected_modules": ["DRILL", "CHRG", "DPS"]
+    }
+  ],
+  "roads": [
+    { "from": "1", "to": "2", "direction": "EAST", "length": 360 },
+    { "from": "3", "to": "1", "direction": "NORTH", "length": 360 },
+    { "from": "3", "to": "4", "direction": "EAST", "length": 360 },
+    { "from": "4", "to": "2", "direction": "NORTH", "length": 360 },
+    { "from": "SVR3QA0022", "to": "1", "direction": "EAST", "length": 380 },
+    { "from": "SVR4H76449", "to": "3", "direction": "EAST", "length": 380 },
+    { "from": "SVR3QA2098", "to": "1", "direction": "SOUTH", "length": 380 },
+    { "from": "SVR4H73275", "to": "2", "direction": "WEST", "length": 380 },
+    { "from": "SVR4H76530", "to": "2", "direction": "SOUTH", "length": 380 },
+    { "from": "CHRG0", "to": "4", "direction": "WEST", "length": 430 }
+  ],
+  "parsed_roads": [
+    { "from": "1", "to": "2", "points": [[300, 300], [400, 300]] },
+    { "from": "3", "to": "1", "points": [[300, 500], [300, 300]] },
+    { "from": "3", "to": "4", "points": [[300, 500], [400, 500]] },
+    { "from": "4", "to": "2", "points": [[400, 500], [400, 300]] },
+    { "from": "SVR3QA0022", "to": "1", "points": [[100, 300], [300, 300]] },
+    { "from": "SVR4H76449", "to": "3", "points": [[100, 500], [300, 500]] },
+    { "from": "SVR3QA2098", "to": "1", "points": [[300, 100], [300, 300]] },
+    { "from": "SVR4H73275", "to": "2", "points": [[700, 300], [400, 300]] },
+    { "from": "SVR4H76530", "to": "2", "points": [[400, 100], [400, 300]] },
+    { "from": "CHRG0", "to": "4", "points": [[700, 500], [400, 500]] }
+  ],
+  "intersection_map": {
+    "1": { "id": "1", "position": [1, 1], "center": [300, 300] },
+    "2": { "id": "2", "position": [1, 2], "center": [400, 300] },
+    "3": { "id": "3", "position": [2, 1], "center": [300, 500] },
+    "4": { "id": "4", "position": [2, 2], "center": [400, 500] }
+  },
+  "modules_by_serial": {
+    "SVR3QA2098": { "id": "MILL", "type": "MILL", "position": [0, 1], "center": [300, 100] },
+    "SVR4H76530": { "id": "AIQS", "type": "AIQS", "position": [0, 2], "center": [400, 100] },
+    "SVR3QA0022": { "id": "HBW", "type": "HBW", "position": [1, 0], "center": [100, 300] },
+    "SVR4H73275": { "id": "DPS", "type": "DPS", "position": [1, 3], "center": [700, 300] },
+    "SVR4H76449": { "id": "DRILL", "type": "DRILL", "position": [2, 0], "center": [100, 500] },
+    "CHRG0": { "id": "CHRG", "type": "CHRG", "position": [2, 3], "center": [700, 500] }
+  }
+}
