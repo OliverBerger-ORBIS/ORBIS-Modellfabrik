@@ -42,11 +42,13 @@
       <div
         class="preview__fixed"
         [class.preview__element--highlight]="fixed.highlighted"
+        [class.preview__element--selectable]="selectionEnabled"
         [style.top.px]="fixed.top"
         [style.left.px]="fixed.left"
         [style.width.px]="fixed.width"
         [style.height.px]="fixed.height"
         [style.background]="fixed.background"
+        (click)="onFixedClick(fixed, $event)"
       >
         <img *ngIf="fixed.icon" [src]="fixed.icon" [alt]="fixed.label" />
         <span>{{ fixed.label }}</span>
@@ -58,10 +60,12 @@
         class="preview__module"
         [class.preview__element--highlight]="module.highlighted"
         [class.preview__module--compound]="module.compound"
+        [class.preview__element--selectable]="selectionEnabled"
         [style.top.px]="module.top"
         [style.left.px]="module.left"
         [style.width.px]="module.width"
         [style.height.px]="module.height"
+        (click)="onModuleClick(module, $event)"
       >
         <div
           class="preview__module-main"

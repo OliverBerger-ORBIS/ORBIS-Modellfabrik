@@ -11,6 +11,7 @@ import {
   ModuleFactsheetSnapshot,
   StockSnapshot,
   ProductionFlowMap,
+  CcuConfigSnapshot,
 } from '@omf3/entities';
 
 export interface GatewayPublishOptions {
@@ -46,6 +47,7 @@ export interface GatewayStreams {
   moduleFactsheets$: Observable<ModuleFactsheetSnapshot>;
   stockSnapshots$: Observable<StockSnapshot>;
   flows$: Observable<ProductionFlowMap>;
+  config$: Observable<CcuConfigSnapshot>;
   publish: GatewayPublishFn;
 }
 
@@ -204,6 +206,22 @@ export const createGateway = (
     shareReplay({ bufferSize: 1, refCount: true })
   );
 
+  const config$ = shared.pipe(
+    filter((msg) => msg.topic === 'ccu/state/config'),
+    map((msg) => {
+      const parsed = parsePayload<CcuConfigSnapshot>(msg.payload);
+      if (!parsed) {
+        return null;
+      }
+      return {
+        ...parsed,
+        timestamp: parsed.timestamp ?? msg.timestamp ?? new Date().toISOString(),
+      } as CcuConfigSnapshot;
+    }),
+    filter((payload): payload is CcuConfigSnapshot => payload !== null),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
+
   return {
     orders$,
     stock$,
@@ -213,6 +231,7 @@ export const createGateway = (
     moduleFactsheets$,
     stockSnapshots$,
     flows$,
+    config$,
     publish,
   };
 };

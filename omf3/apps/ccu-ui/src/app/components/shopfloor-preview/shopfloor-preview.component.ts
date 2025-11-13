@@ -3,9 +3,11 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
+  EventEmitter,
   Input,
   OnChanges,
   OnInit,
+  Output,
   SimpleChanges,
 } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
@@ -151,6 +153,12 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
   @Input({ required: true }) order: OrderActive | null | undefined;
   @Input() activeStep?: ProductionStep | null;
   @Input() scale = 0.6;
+  @Input() highlightModulesOverride: string[] | null = null;
+  @Input() highlightFixedOverride: string[] | null = null;
+  @Input() selectionEnabled = false;
+  @Input() badgeText?: string;
+  @Input() infoText?: string;
+  @Output() cellSelected = new EventEmitter<{ id: string; kind: 'module' | 'fixed' }>();
 
   viewModel: ShopfloorView | null = null;
   private layout?: ShopfloorLayout;
@@ -176,7 +184,12 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['activeStep'] || changes['order']) {
+    if (
+      changes['activeStep'] ||
+      changes['order'] ||
+      changes['highlightModulesOverride'] ||
+      changes['highlightFixedOverride']
+    ) {
       this.updateViewModel();
     }
   }
@@ -221,12 +234,22 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
       }
     }
 
+    const moduleHighlightSet =
+      this.highlightModulesOverride && this.highlightModulesOverride.length > 0
+        ? new Set(this.highlightModulesOverride)
+        : highlightModules;
+
+    const fixedHighlightSet =
+      this.highlightFixedOverride && this.highlightFixedOverride.length > 0
+        ? new Set(this.highlightFixedOverride)
+        : highlightModules;
+
     const modules = this.layout.modules.map((mod) =>
-      this.buildBox(mod, cellWidth, cellHeight, highlightModules, nodeLookup)
+      this.buildBox(mod, cellWidth, cellHeight, moduleHighlightSet, nodeLookup)
     );
 
     const fixedPositions = this.layout.fixed_positions.map((pos) =>
-      this.buildFixedPosition(pos, cellWidth, cellHeight, highlightModules, nodeLookup)
+      this.buildFixedPosition(pos, cellWidth, cellHeight, fixedHighlightSet, nodeLookup)
     );
 
     const roads = this.layout.roads
@@ -748,6 +771,9 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
   }
 
   get infoLabel(): string {
+    if (this.infoText) {
+      return this.infoText;
+    }
     const step = this.activeStep;
     if (!step) {
       return $localize`:@@shopfloorPreviewNoActiveStep:All steps completed.`;
@@ -765,10 +791,31 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
   }
 
   get badgeLabel(): string {
+    if (this.badgeText) {
+      return this.badgeText;
+    }
     if (this.activeStep?.type === 'NAVIGATION') {
       return 'FTS';
     }
     return (this.order?.orderType ?? '').toUpperCase() || 'ORDER';
+  }
+
+  onModuleClick(box: RenderBox, event: MouseEvent): void {
+    if (!this.selectionEnabled) {
+      return;
+    }
+    event.preventDefault();
+    event.stopPropagation();
+    this.cellSelected.emit({ id: box.id, kind: 'module' });
+  }
+
+  onFixedClick(box: RenderBox, event: MouseEvent): void {
+    if (!this.selectionEnabled) {
+      return;
+    }
+    event.preventDefault();
+    event.stopPropagation();
+    this.cellSelected.emit({ id: box.id, kind: 'fixed' });
   }
 }
 

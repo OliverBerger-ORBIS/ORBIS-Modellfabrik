@@ -13,6 +13,7 @@ import type {
   ModulePairingState,
   StockSnapshot,
   ProductionFlowMap,
+  CcuConfigSnapshot,
 } from '@omf3/entities';
 import type { OrderStreamPayload, GatewayPublishFn } from '@omf3/gateway';
 
@@ -28,6 +29,7 @@ const createGateway = (): {
     pairing$: Subject<ModulePairingState>;
     stockSnapshots$: Subject<StockSnapshot>;
     flows$: Subject<ProductionFlowMap>;
+    config$: Subject<CcuConfigSnapshot>;
   };
   publishLog: Array<{ topic: string; payload: unknown }>;
 } => {
@@ -38,6 +40,7 @@ const createGateway = (): {
   const pairing$ = subject<ModulePairingState>();
   const stockSnapshots$ = subject<StockSnapshot>();
   const flows$ = subject<ProductionFlowMap>();
+  const config$ = subject<CcuConfigSnapshot>();
   const publishLog: Array<{ topic: string; payload: unknown }> = [];
   const publish: GatewayPublishFn = async (topic, payload) => {
     publishLog.push({ topic, payload });
@@ -52,6 +55,7 @@ const createGateway = (): {
       pairing$: pairing$.asObservable(),
       stockSnapshots$: stockSnapshots$.asObservable(),
       flows$: flows$.asObservable(),
+      config$: config$.asObservable(),
       publish,
     },
     subjects: {
@@ -62,6 +66,7 @@ const createGateway = (): {
       pairing$,
       stockSnapshots$,
       flows$,
+      config$,
     },
     publishLog,
   };
@@ -210,5 +215,24 @@ test('exposes flows stream', async () => {
   const flows = await flowsPromise;
   assert.equal(flows.BLUE.steps.length, 3);
   assert.equal(flows.RED.steps[0], 'MILL');
+});
+
+test('exposes config stream', async () => {
+  const { streams, subjects } = createGateway();
+  const business = createBusiness(streams);
+
+  const configPromise = firstValueFrom(business.config$.pipe(skip(1)));
+
+  subjects.config$.next({
+    productionDurations: { BLUE: 550, WHITE: 580, RED: 560 },
+    productionSettings: { maxParallelOrders: 4 },
+    ftsSettings: { chargeThresholdPercent: 10 },
+    timestamp: '2025-11-10T17:48:46.094154',
+  });
+
+  const config = await configPromise;
+  assert.equal(config.productionSettings?.maxParallelOrders, 4);
+  assert.equal(config.productionDurations?.BLUE, 550);
+  assert.equal(config.ftsSettings?.chargeThresholdPercent, 10);
 });
 

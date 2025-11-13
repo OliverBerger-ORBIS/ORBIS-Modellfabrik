@@ -16,6 +16,7 @@ import type {
   StockWorkpiece,
   WorkpieceType,
   ProductionFlowMap,
+  CcuConfigSnapshot,
 } from '@omf3/entities';
 import { OrderStreamPayload, type GatewayPublishFn } from '@omf3/gateway';
 
@@ -30,6 +31,7 @@ export interface GatewayStreams {
   moduleFactsheets$: Observable<ModuleFactsheetSnapshot>;
   stockSnapshots$: Observable<StockSnapshot>;
   flows$: Observable<ProductionFlowMap>;
+  config$: Observable<CcuConfigSnapshot>;
   publish: GatewayPublishFn;
 }
 
@@ -43,6 +45,7 @@ export interface BusinessStreams {
   moduleOverview$: Observable<ModuleOverviewState>;
   inventoryOverview$: Observable<InventoryOverviewState>;
   flows$: Observable<ProductionFlowMap>;
+  config$: Observable<CcuConfigSnapshot>;
 }
 
 export interface BusinessCommands {
@@ -393,6 +396,8 @@ export const createBusiness = (gateway: GatewayStreams): BusinessStreams & Busin
     shareReplay({ bufferSize: 1, refCount: true })
   );
 
+  const config$ = gateway.config$.pipe(shareReplay({ bufferSize: 1, refCount: true }));
+
   const calibrateModule: BusinessCommands['calibrateModule'] = async (serialNumber) => {
     if (!serialNumber) {
       return;
@@ -484,6 +489,7 @@ export const createBusiness = (gateway: GatewayStreams): BusinessStreams & Busin
     moduleOverview$,
     inventoryOverview$,
     flows$: gateway.flows$,
+    config$,
     calibrateModule,
     setFtsCharge,
     dockFts,

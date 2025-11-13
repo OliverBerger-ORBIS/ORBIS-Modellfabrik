@@ -74,6 +74,10 @@
   padding: 0 0.75rem;
 }
 
+.preview__element--selectable {
+  cursor: pointer;
+}
+
 .preview__module-main {
   display: flex;
   align-items: center;

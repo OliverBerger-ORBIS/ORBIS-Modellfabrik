@@ -1,0 +1,78 @@
+<section class="configuration-tab" *ngIf="viewModel$ | async as vm; else loading">
+  <section class="card">
+    <header class="section-header">
+      <img [src]="factoryIcon" alt="Factory icon" width="56" height="56" />
+      <div>
+        <h2 i18n="@@configurationFactoryHeadline">Factory Configuration</h2>
+        <p i18n="@@configurationFactoryDescription">
+          Factory layout configuration and module positioning
+        </p>
+      </div>
+    </header>
+
+    <div class="shopfloor-wrapper">
+      <app-shopfloor-preview
+        [order]="null"
+        [scale]="0.8"
+        [badgeText]="vm.badgeText"
+        [infoText]="vm.infoText"
+        [highlightModulesOverride]="vm.highlightModules"
+        [highlightFixedOverride]="vm.highlightFixed"
+        [selectionEnabled]="true"
+        (cellSelected)="onCellSelected($event)"
+      ></app-shopfloor-preview>
+    </div>
+
+    <section class="selection-panel" *ngIf="vm.selection as selection">
+      <header>
+        <h3>{{ selection.title }}</h3>
+        <p *ngIf="selection.subtitle">{{ selection.subtitle }}</p>
+      </header>
+      <ul>
+        <li *ngFor="let item of selection.items">
+          <span class="label">{{ item.label }}</span>
+          <span class="value">{{ item.value }}</span>
+        </li>
+      </ul>
+    </section>
+  </section>
+
+  <section class="card">
+    <header class="section-header">
+      <img [src]="parametersIcon" alt="Parameters icon" width="48" height="48" />
+      <div>
+        <h2 i18n="@@configurationParametersHeadline">Parameter Configuration</h2>
+        <p i18n="@@configurationParametersDescription">
+          OMF production parameters and settings
+        </p>
+      </div>
+    </header>
+
+    <div class="parameter-grid">
+      <article class="parameter-card" *ngFor="let card of vm.parameterCards">
+        <header>
+          <img [src]="card.icon" [alt]="card.title" width="40" height="40" />
+          <div>
+            <h3>{{ card.title }}</h3>
+            <p *ngIf="card.description">{{ card.description }}</p>
+          </div>
+        </header>
+        <ul>
+          <li *ngFor="let item of card.items">
+            <div class="item-icon" *ngIf="item.icon">
+              <img [src]="item.icon" [alt]="item.label" width="36" height="36" />
+            </div>
+            <span class="label">{{ item.label }}</span>
+            <span class="value">{{ item.value }}</span>
+          </li>
+        </ul>
+      </article>
+    </div>
+  </section>
+</section>
+
+<ng-template #loading>
+  <section class="card placeholder">
+    <p i18n="@@configurationLoading">Loading configuration…</p>
+  </section>
+</ng-template>

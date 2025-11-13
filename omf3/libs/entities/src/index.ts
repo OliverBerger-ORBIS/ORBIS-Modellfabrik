@@ -183,6 +183,27 @@ export interface FlowDefinition {
 
 export type ProductionFlowMap = Record<WorkpieceType, FlowDefinition>;
 
+export interface ProductionDurationsConfig {
+  [key: string]: number;
+}
+
+export interface ProductionSettingsConfig {
+  maxParallelOrders?: number;
+  [key: string]: unknown;
+}
+
+export interface FtsSettingsConfig {
+  chargeThresholdPercent?: number;
+  [key: string]: unknown;
+}
+
+export interface CcuConfigSnapshot {
+  productionDurations?: ProductionDurationsConfig;
+  productionSettings?: ProductionSettingsConfig;
+  ftsSettings?: FtsSettingsConfig;
+  timestamp?: string;
+}
+
 export interface ReplayEnvelope {
   topic: string;
   payload: any;
