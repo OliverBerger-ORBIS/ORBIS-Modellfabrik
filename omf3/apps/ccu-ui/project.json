@@ -56,6 +56,11 @@
             "glob": "**/*.log",
             "input": "omf3/testing/fixtures/config",
             "output": "fixtures/config"
+          },
+          {
+            "glob": "**/*.log",
+            "input": "omf3/testing/fixtures/sensors",
+            "output": "fixtures/sensors"
           }
         ],
         "styles": [

@@ -1,0 +1,326 @@
+<section class="sensor-tab" *ngIf="sensorOverview$ | async as sensor">
+  <header class="sensor-header">
+    <img [src]="sensorHeadingIcon" alt="Sensor icon" />
+    <div>
+      <h2 i18n="@@sensorHeading">Sensor Data</h2>
+      <p i18n="@@sensorSubheading">Live data from CCU environment sensors</p>
+      <small class="sensor-header__timestamp">
+        <span i18n="@@sensorLastUpdate">Last update</span>:
+        {{ formatTimestamp(sensor.timestamp) }}
+      </small>
+    </div>
+  </header>
+
+  <div class="gauge-grid">
+    <article class="gauge-card">
+      <header>
+        <div class="title">
+          <span class="emoji">🌡️</span>
+          <div>
+            <h3 i18n="@@sensorTemperature">Current Temperature</h3>
+            <p i18n="@@sensorTemperatureRange">Range: -30.0°C to 60.0°C</p>
+          </div>
+        </div>
+      </header>
+      <div class="gauge-wrapper">
+        <svg class="gauge-svg" viewBox="0 0 220 150" role="presentation">
+          <path class="gauge-svg__track" d="M45 95 A65 65 0 0 1 175 95"></path>
+          <ng-container *ngFor="let tick of gaugeTicks(-30, 60, 10)">
+            <line
+              class="gauge-svg__tick"
+              [attr.x1]="tick.x1"
+              [attr.y1]="tick.y1"
+              [attr.x2]="tick.x2"
+              [attr.y2]="tick.y2"
+            ></line>
+            <text class="gauge-svg__tick-label" [attr.x]="tick.labelX" [attr.y]="tick.labelY">
+              {{ formatTickLabel(tick.value, 'linear') }}
+            </text>
+          </ng-container>
+          <path
+            class="gauge-svg__value gauge-svg__value--temperature"
+            d="M45 95 A65 65 0 0 1 175 95"
+            [attr.stroke-dasharray]="gaugeCircumference"
+            [attr.stroke-dashoffset]="gaugeDashOffset(sensor.temperatureC, -30, 60)"
+          ></path>
+          <line
+            class="gauge-svg__needle"
+            x1="110"
+            y1="95"
+            x2="110"
+            y2="30"
+            [attr.transform]="needleTransform(sensor.temperatureC, -30, 60)"
+          ></line>
+          <circle class="gauge-svg__pivot" cx="110" cy="95" r="3"></circle>
+        </svg>
+      </div>
+      <p class="gauge-card__value">
+        {{ sensor.temperatureC != null ? (sensor.temperatureC | number:'1.1-1') : '—' }}°C
+      </p>
+    </article>
+
+    <article class="gauge-card">
+      <header>
+        <div class="title">
+          <span class="emoji">💧</span>
+          <div>
+            <h3 i18n="@@sensorHumidity">Current Humidity</h3>
+            <p i18n="@@sensorHumiditySubtitle">Relative Humidity</p>
+          </div>
+        </div>
+      </header>
+      <div class="gauge-wrapper">
+        <svg class="gauge-svg" viewBox="0 0 220 150" role="presentation">
+          <path class="gauge-svg__track" d="M45 95 A65 65 0 0 1 175 95"></path>
+          <ng-container *ngFor="let tick of gaugeTicks(0, 100, 20)">
+            <line
+              class="gauge-svg__tick"
+              [attr.x1]="tick.x1"
+              [attr.y1]="tick.y1"
+              [attr.x2]="tick.x2"
+              [attr.y2]="tick.y2"
+            ></line>
+            <text class="gauge-svg__tick-label" [attr.x]="tick.labelX" [attr.y]="tick.labelY">
+              {{ formatTickLabel(tick.value, 'linear') }}
+            </text>
+          </ng-container>
+          <path
+            class="gauge-svg__value gauge-svg__value--humidity"
+            d="M45 95 A65 65 0 0 1 175 95"
+            [attr.stroke-dasharray]="gaugeCircumference"
+            [attr.stroke-dashoffset]="gaugeDashOffset(sensor.humidityPercent, 0, 100)"
+          ></path>
+          <line
+            class="gauge-svg__needle"
+            x1="110"
+            y1="95"
+            x2="110"
+            y2="30"
+            [attr.transform]="needleTransform(sensor.humidityPercent, 0, 100)"
+          ></line>
+          <circle class="gauge-svg__pivot" cx="110" cy="95" r="3"></circle>
+        </svg>
+      </div>
+      <p class="gauge-card__value">
+        {{ sensor.humidityPercent != null ? (sensor.humidityPercent | number:'1.1-1') : '—' }}%
+      </p>
+    </article>
+
+    <article class="gauge-card">
+      <header>
+        <div class="title">
+          <span class="emoji">🧭</span>
+          <div>
+            <h3 i18n="@@sensorPressure">Current Pressure</h3>
+            <p i18n="@@sensorPressureRange">Range: 900.0-1100.0 hPa</p>
+          </div>
+        </div>
+      </header>
+      <div class="gauge-wrapper">
+        <svg class="gauge-svg" viewBox="0 0 220 150" role="presentation">
+          <path class="gauge-svg__track" d="M45 95 A65 65 0 0 1 175 95"></path>
+          <ng-container *ngFor="let tick of gaugeTicks(900, 1100, 50)">
+            <line
+              class="gauge-svg__tick"
+              [attr.x1]="tick.x1"
+              [attr.y1]="tick.y1"
+              [attr.x2]="tick.x2"
+              [attr.y2]="tick.y2"
+            ></line>
+            <text class="gauge-svg__tick-label" [attr.x]="tick.labelX" [attr.y]="tick.labelY">
+              {{ formatTickLabel(tick.value, 'linear') }}
+            </text>
+          </ng-container>
+          <path
+            class="gauge-svg__value gauge-svg__value--pressure"
+            d="M45 95 A65 65 0 0 1 175 95"
+            [attr.stroke-dasharray]="gaugeCircumference"
+            [attr.stroke-dashoffset]="gaugeDashOffset(sensor.pressureHpa, 900, 1100)"
+          ></path>
+          <line
+            class="gauge-svg__needle"
+            x1="110"
+            y1="95"
+            x2="110"
+            y2="30"
+            [attr.transform]="needleTransform(sensor.pressureHpa, 900, 1100)"
+          ></line>
+          <circle class="gauge-svg__pivot" cx="110" cy="95" r="3"></circle>
+        </svg>
+      </div>
+      <p class="gauge-card__value">
+        {{ sensor.pressureHpa != null ? (sensor.pressureHpa | number:'1.1-1') : '—' }} hPa
+      </p>
+    </article>
+
+    <article class="gauge-card">
+      <header>
+        <div class="title">
+          <span class="emoji">💡</span>
+          <div>
+            <h3 i18n="@@sensorLightIntensity">Current Light Intensity</h3>
+            <p i18n="@@sensorLightSubtitle">Brightness (max: 100000.0 lux)</p>
+          </div>
+        </div>
+      </header>
+      <div class="gauge-wrapper">
+        <svg class="gauge-svg" viewBox="0 0 220 150" role="presentation">
+          <path class="gauge-svg__track" d="M45 95 A65 65 0 0 1 175 95"></path>
+          <ng-container *ngFor="let tick of gaugeTicks(1, 100000, 1, 'log', [1, 10, 100, 1000, 10000, 100000])">
+            <line
+              class="gauge-svg__tick"
+              [attr.x1]="tick.x1"
+              [attr.y1]="tick.y1"
+              [attr.x2]="tick.x2"
+              [attr.y2]="tick.y2"
+            ></line>
+            <text class="gauge-svg__tick-label" [attr.x]="tick.labelX" [attr.y]="tick.labelY">
+              {{ formatTickLabel(tick.value, 'exponent') }}
+            </text>
+          </ng-container>
+          <path
+            class="gauge-svg__value gauge-svg__value--light"
+            d="M45 95 A65 65 0 0 1 175 95"
+            [attr.stroke-dasharray]="gaugeCircumference"
+            [attr.stroke-dashoffset]="gaugeDashOffset(sensor.lightLux, 1, 100000, 'log')"
+          ></path>
+          <line
+            class="gauge-svg__needle"
+            x1="110"
+            y1="95"
+            x2="110"
+            y2="30"
+            [attr.transform]="needleTransform(sensor.lightLux, 1, 100000, 'log')"
+          ></line>
+          <circle class="gauge-svg__pivot" cx="110" cy="95" r="3"></circle>
+        </svg>
+      </div>
+      <p class="gauge-card__value">
+        {{ sensor.lightLux != null ? (sensor.lightLux | number:'1.0-0') : '—' }} lux
+      </p>
+    </article>
+
+    <article class="gauge-card gauge-card--air-quality">
+      <header>
+        <div class="title">
+          <span class="emoji">📊</span>
+          <div>
+            <h3 i18n="@@sensorAirQuality">Air Quality Score</h3>
+            <p>{{ airQualityStatus(sensor) }}</p>
+          </div>
+        </div>
+      </header>
+      <div class="air-quality">
+        <div class="air-quality__bar">
+          <div class="air-quality__gradient"></div>
+          <div class="air-quality__mask" [style.width]="airQualityRemaining(sensor)"></div>
+        </div>
+        <p class="gauge-card__value">
+          {{ sensor.airQualityScore != null ? (sensor.airQualityScore | number:'1.1-1') : '—' }} / 5
+        </p>
+        <p class="air-quality__iaq">IAQ: {{ sensor.iaq ?? '—' }}</p>
+      </div>
+    </article>
+
+    <article class="traffic-card">
+      <header>
+        <div class="title">
+          <span class="emoji">🚦</span>
+          <div>
+            <h3 i18n="@@sensorTrafficHeading">Air Quality Traffic Light</h3>
+            <p i18n="@@sensorTrafficSubtitle">Visual indicator for IAQ</p>
+          </div>
+        </div>
+      </header>
+      <div class="traffic-light" [attr.data-level]="airQualityLevel(sensor)">
+        <span
+          class="light light--red"
+          [class.active]="['poor', 'critical'].includes(airQualityLevel(sensor))"
+        ></span>
+        <span
+          class="light light--yellow"
+          [class.active]="airQualityLevel(sensor) === 'moderate'"
+        ></span>
+        <span
+          class="light light--green"
+          [class.active]="['excellent', 'good'].includes(airQualityLevel(sensor))"
+        ></span>
+      </div>
+    </article>
+  </div>
+
+  <section class="camera-section">
+    <header>
+      <img [src]="cameraHeadingIcon" alt="Camera icon" />
+      <div>
+        <h3 i18n="@@sensorCameraHeading">Camera Image</h3>
+        <p i18n="@@sensorCameraSubtitle">Live camera feed from TXT controller</p>
+      </div>
+    </header>
+
+    <div class="camera-content" *ngIf="cameraFrame$ | async as frame; else cameraLoading">
+      <div class="camera-image" *ngIf="frame; else cameraWaiting">
+        <img [src]="frame.dataUrl" alt="Sensor camera" />
+        <p class="camera-timestamp">
+          <span i18n="@@sensorCameraLastUpdate">Last camera update</span>:
+          {{ formatTimestamp(frame.timestamp) }}
+        </p>
+      </div>
+      <ng-template #cameraWaiting>
+        <div class="camera-placeholder" i18n="@@sensorCameraLoading">Camera image loading…</div>
+      </ng-template>
+
+      <div class="camera-controls">
+        <h4 i18n="@@sensorCameraControl">Camera Control</h4>
+        <div class="camera-settings">
+          <label>
+            <span i18n="@@sensorStepSizeLabel">Step size (°)</span>
+            <input type="number" min="1" max="45" [value]="stepSize" (input)="onStepSizeChange($event)" />
+          </label>
+        </div>
+        <div class="controls-grid">
+          <button type="button" class="control-up" (click)="cameraControl('up')" i18n="@@sensorControlUp">
+            Up
+          </button>
+          <button
+            type="button"
+            class="control-left"
+            (click)="cameraControl('left')"
+            i18n="@@sensorControlLeft"
+          >
+            Left
+          </button>
+          <button
+            type="button"
+            class="control-center"
+            (click)="cameraControl('center')"
+            i18n="@@sensorControlCenter"
+          >
+            Center
+          </button>
+          <button
+            type="button"
+            class="control-right"
+            (click)="cameraControl('right')"
+            i18n="@@sensorControlRight"
+          >
+            Right
+          </button>
+          <button
+            type="button"
+            class="control-down"
+            (click)="cameraControl('down')"
+            i18n="@@sensorControlDown"
+          >
+            Down
+          </button>
+        </div>
+        <p class="control-hint" i18n="@@sensorControlHint">Controls are placeholders for future integration.</p>
+      </div>
+    </div>
+  </section>
+</section>
+
+<ng-template #cameraLoading>
+  <section class="camera-loading" i18n="@@sensorCameraLoading">Camera image loading…</section>
+</ng-template>

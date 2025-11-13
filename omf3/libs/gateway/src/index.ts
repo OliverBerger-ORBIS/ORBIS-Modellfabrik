@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs';
-import { filter, map, mergeMap, shareReplay } from 'rxjs/operators';
+import { filter, map, mergeMap, shareReplay, throttleTime } from 'rxjs/operators';
 
 import {
   safeJsonParse,
@@ -12,6 +12,10 @@ import {
   StockSnapshot,
   ProductionFlowMap,
   CcuConfigSnapshot,
+  Bme680Snapshot,
+  LdrSnapshot,
+  CameraFrameSnapshot,
+  CameraFrame,
 } from '@omf3/entities';
 
 export interface GatewayPublishOptions {
@@ -48,6 +52,9 @@ export interface GatewayStreams {
   stockSnapshots$: Observable<StockSnapshot>;
   flows$: Observable<ProductionFlowMap>;
   config$: Observable<CcuConfigSnapshot>;
+  sensorBme680$: Observable<Bme680Snapshot>;
+  sensorLdr$: Observable<LdrSnapshot>;
+  cameraFrames$: Observable<CameraFrame>;
   publish: GatewayPublishFn;
 }
 
@@ -222,6 +229,37 @@ export const createGateway = (
     shareReplay({ bufferSize: 1, refCount: true })
   );
 
+  const sensorBme680$ = shared.pipe(
+    filter((msg) => msg.topic === '/j1/txt/1/i/bme680'),
+    map((msg) => parsePayload<Bme680Snapshot>(msg.payload)),
+    filter((payload): payload is Bme680Snapshot => payload !== null),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
+
+  const sensorLdr$ = shared.pipe(
+    filter((msg) => msg.topic === '/j1/txt/1/i/ldr'),
+    map((msg) => parsePayload<LdrSnapshot>(msg.payload)),
+    filter((payload): payload is LdrSnapshot => payload !== null),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
+
+  const cameraFrames$ = shared.pipe(
+    filter((msg) => msg.topic === '/j1/txt/1/i/cam'),
+    map((msg) => {
+      const parsed = parsePayload<CameraFrameSnapshot>(msg.payload);
+      if (!parsed?.data) {
+        return null;
+      }
+      return {
+        timestamp: parsed.ts ?? msg.timestamp ?? new Date().toISOString(),
+        dataUrl: parsed.data,
+      } as CameraFrame;
+    }),
+    filter((payload): payload is CameraFrame => payload !== null),
+    throttleTime(1000, undefined, { leading: true, trailing: true }),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
+
   return {
     orders$,
     stock$,
@@ -232,6 +270,9 @@ export const createGateway = (
     stockSnapshots$,
     flows$,
     config$,
+    sensorBme680$,
+    sensorLdr$,
+    cameraFrames$,
     publish,
   };
 };

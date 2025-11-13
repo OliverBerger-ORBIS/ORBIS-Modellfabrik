@@ -15,12 +15,14 @@ export type ModuleFixtureName =
 export type StockFixtureName = 'default' | 'startup';
 export type FlowFixtureName = 'default' | 'startup';
 export type ConfigFixtureName = 'default' | 'startup';
+export type SensorFixtureName = 'default' | 'startup';
 
 const DEFAULT_BASE_URL = '/fixtures/orders';
 const DEFAULT_MODULE_BASE_URL = '/fixtures/modules';
 const DEFAULT_STOCK_BASE_URL = '/fixtures/stock';
 const DEFAULT_FLOW_BASE_URL = '/fixtures/flows';
 const DEFAULT_CONFIG_BASE_URL = '/fixtures/config';
+const DEFAULT_SENSOR_BASE_URL = '/fixtures/sensors';
 
 export interface LoadFixtureOptions {
   /**
@@ -83,6 +85,11 @@ const CONFIG_FIXTURE_PATHS: Record<ConfigFixtureName, string> = {
   startup: 'startup.log',
 };
 
+const SENSOR_FIXTURE_PATHS: Record<SensorFixtureName, string> = {
+  default: 'default.log',
+  startup: 'startup.log',
+};
+
 const defaultLoader = async (resolvedPath: string): Promise<string> => {
   if (typeof fetch !== 'function') {
     throw new Error(
@@ -133,6 +140,12 @@ const resolveFlowPath = (name: FlowFixtureName, baseUrl: string | undefined): st
 const resolveConfigPath = (name: ConfigFixtureName, baseUrl: string | undefined): string => {
   const base = baseUrl ?? DEFAULT_CONFIG_BASE_URL;
   const suffix = CONFIG_FIXTURE_PATHS[name];
+  return base.endsWith('/') ? `${base}${suffix}` : `${base}/${suffix}`;
+};
+
+const resolveSensorPath = (name: SensorFixtureName, baseUrl: string | undefined): string => {
+  const base = baseUrl ?? DEFAULT_SENSOR_BASE_URL;
+  const suffix = SENSOR_FIXTURE_PATHS[name];
   return base.endsWith('/') ? `${base}${suffix}` : `${base}/${suffix}`;
 };
 
@@ -206,6 +219,21 @@ export const loadConfigFixture = async (
   }
 };
 
+export const loadSensorFixture = async (
+  name: SensorFixtureName,
+  options?: LoadFixtureOptions
+): Promise<RawMqttMessage[]> => {
+  const path = resolveSensorPath(name, options?.baseUrl);
+  const loader = options?.loader ?? defaultLoader;
+  try {
+    const contents = await loader(path);
+    return parseLines(contents);
+  } catch (error) {
+    console.warn(`[testing-fixtures] Failed to load sensor fixture "${name}" from ${path}`, error);
+    return [];
+  }
+};
+
 const withInterval = (intervalMs: number | undefined): OperatorFunction<RawMqttMessage, RawMqttMessage> =>
   intervalMs && intervalMs > 0
     ? concatMap((message: RawMqttMessage) => of(message).pipe(delay(intervalMs)))
@@ -266,6 +294,17 @@ export const createConfigFixtureStream = (
   );
 };
 
+export const createSensorFixtureStream = (
+  name: SensorFixtureName,
+  options?: FixtureStreamOptions
+): Observable<RawMqttMessage> => {
+  return defer(() => from(loadSensorFixture(name, options))).pipe(
+    switchMap((messages) => from(messages)),
+    withInterval(options?.intervalMs),
+    options?.loop ? repeat() : (source) => source
+  );
+};
+
 export const listAvailableOrderFixtures = (): OrderFixtureName[] => Object.keys(FIXTURE_PATHS) as OrderFixtureName[];
 
 export const listAvailableModuleFixtures = (): ModuleFixtureName[] =>
@@ -279,6 +318,9 @@ export const listAvailableFlowFixtures = (): FlowFixtureName[] =>
 
 export const listAvailableConfigFixtures = (): ConfigFixtureName[] =>
   Object.keys(CONFIG_FIXTURE_PATHS) as ConfigFixtureName[];
+
+export const listAvailableSensorFixtures = (): SensorFixtureName[] =>
+  Object.keys(SENSOR_FIXTURE_PATHS) as SensorFixtureName[];
 
 export const SHOPFLOOR_ASSET_MAP: Record<string, string> = {
   MILL: '/shopfloor/milling-machine.svg',
@@ -296,6 +338,8 @@ export const SHOPFLOOR_ASSET_MAP: Record<string, string> = {
   DSP: '/shopfloor/information-technology.svg',
   FACTORY_CONFIGURATION: '/headings/grundriss.svg',
   SHOPFLOOR_LAYOUT: '/headings/grundriss.svg',
+  PARAMETER_CONFIGURATION: '/headings/system.svg',
+  PRODUCTION_SETTINGS: '/headings/system.svg',
   CONFIGURATION: '/headings/system.svg',
   QUESTION: '/shopfloor/question.svg',
 };

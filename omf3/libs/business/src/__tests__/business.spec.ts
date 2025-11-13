@@ -14,6 +14,9 @@ import type {
   StockSnapshot,
   ProductionFlowMap,
   CcuConfigSnapshot,
+  Bme680Snapshot,
+  LdrSnapshot,
+  CameraFrame,
 } from '@omf3/entities';
 import type { OrderStreamPayload, GatewayPublishFn } from '@omf3/gateway';
 
@@ -30,6 +33,9 @@ const createGateway = (): {
     stockSnapshots$: Subject<StockSnapshot>;
     flows$: Subject<ProductionFlowMap>;
     config$: Subject<CcuConfigSnapshot>;
+    sensorBme680$: Subject<Bme680Snapshot>;
+    sensorLdr$: Subject<LdrSnapshot>;
+    cameraFrames$: Subject<CameraFrame>;
   };
   publishLog: Array<{ topic: string; payload: unknown }>;
 } => {
@@ -41,6 +47,9 @@ const createGateway = (): {
   const stockSnapshots$ = subject<StockSnapshot>();
   const flows$ = subject<ProductionFlowMap>();
   const config$ = subject<CcuConfigSnapshot>();
+  const sensorBme680$ = subject<Bme680Snapshot>();
+  const sensorLdr$ = subject<LdrSnapshot>();
+  const cameraFrames$ = subject<CameraFrame>();
   const publishLog: Array<{ topic: string; payload: unknown }> = [];
   const publish: GatewayPublishFn = async (topic, payload) => {
     publishLog.push({ topic, payload });
@@ -56,6 +65,9 @@ const createGateway = (): {
       stockSnapshots$: stockSnapshots$.asObservable(),
       flows$: flows$.asObservable(),
       config$: config$.asObservable(),
+      sensorBme680$: sensorBme680$.asObservable(),
+      sensorLdr$: sensorLdr$.asObservable(),
+      cameraFrames$: cameraFrames$.asObservable(),
       publish,
     },
     subjects: {
@@ -67,6 +79,9 @@ const createGateway = (): {
       stockSnapshots$,
       flows$,
       config$,
+      sensorBme680$,
+      sensorLdr$,
+      cameraFrames$,
     },
     publishLog,
   };
@@ -234,5 +249,48 @@ test('exposes config stream', async () => {
   assert.equal(config.productionSettings?.maxParallelOrders, 4);
   assert.equal(config.productionDurations?.BLUE, 550);
   assert.equal(config.ftsSettings?.chargeThresholdPercent, 10);
+});
+
+test('aggregates sensor overview', async () => {
+  const { streams, subjects } = createGateway();
+  const business = createBusiness(streams);
+
+  const sensorPromise = firstValueFrom(business.sensorOverview$.pipe(skip(1)));
+
+  subjects.sensorBme680$.next({
+    ts: '2025-11-10T16:48:42.378Z',
+    t: 22,
+    h: 48,
+    p: 1013,
+    aq: 2.5,
+  });
+  subjects.sensorLdr$.next({
+    ts: '2025-11-10T16:48:41.961Z',
+    ldr: 9500,
+  });
+
+  const overview = await sensorPromise;
+  assert.equal(overview.temperatureC, 22);
+  assert.equal(overview.humidityPercent, 48);
+  assert.equal(overview.pressureHpa, 1013);
+  assert.equal(overview.lightLux, 9500);
+  assert.equal(overview.airQualityScore, 2.5);
+  assert.equal(overview.airQualityClassification, 'Moderate');
+});
+
+test('passes through camera frames', async () => {
+  const { streams, subjects } = createGateway();
+  const business = createBusiness(streams);
+
+  const framePromise = firstValueFrom(business.cameraFrames$);
+
+  subjects.cameraFrames$.next({
+    timestamp: '2025-11-10T16:48:45.975Z',
+    dataUrl: 'data:image/jpeg;base64,AAA',
+  });
+
+  const frame = await framePromise;
+  assert.equal(frame.timestamp, '2025-11-10T16:48:45.975Z');
+  assert.equal(frame.dataUrl, 'data:image/jpeg;base64,AAA');
 });
 

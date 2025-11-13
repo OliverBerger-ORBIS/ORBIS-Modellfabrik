@@ -22,6 +22,11 @@ export const appRoutes: Routes = [
       import('./tabs/process-tab.component').then((m) => m.ProcessTabComponent),
   },
   {
+    path: 'sensor',
+    loadComponent: () =>
+      import('./tabs/sensor-tab.component').then((m) => m.SensorTabComponent),
+  },
+  {
     path: 'configuration',
     loadComponent: () =>
       import('./tabs/configuration-tab.component').then((m) => m.ConfigurationTabComponent),

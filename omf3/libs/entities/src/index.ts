@@ -183,6 +183,45 @@ export interface FlowDefinition {
 
 export type ProductionFlowMap = Record<WorkpieceType, FlowDefinition>;
 
+export interface Bme680Snapshot {
+  ts?: string;
+  t?: number;
+  rt?: number;
+  h?: number;
+  rh?: number;
+  p?: number;
+  iaq?: number;
+  aq?: number;
+  gr?: number;
+}
+
+export interface LdrSnapshot {
+  ts?: string;
+  br?: number;
+  ldr?: number;
+}
+
+export interface CameraFrameSnapshot {
+  ts?: string;
+  data?: string;
+}
+
+export interface SensorOverviewState {
+  timestamp?: string;
+  temperatureC?: number;
+  humidityPercent?: number;
+  pressureHpa?: number;
+  lightLux?: number;
+  iaq?: number;
+  airQualityScore?: number;
+  airQualityClassification?: string;
+}
+
+export interface CameraFrame {
+  timestamp?: string;
+  dataUrl: string;
+}
+
 export interface ProductionDurationsConfig {
   [key: string]: number;
 }
