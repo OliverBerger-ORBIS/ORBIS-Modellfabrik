@@ -241,12 +241,14 @@ export class ConfigurationTabComponent {
 
   get factoryIcon(): string {
     return this.resolveAssetPath(
-      SHOPFLOOR_ASSET_MAP['SHOPFLOOR_LAYOUT'] ?? SHOPFLOOR_ASSET_MAP['FACTORY_CONFIGURATION']
+      SHOPFLOOR_ASSET_MAP['FACTORY_CONFIGURATION'] ?? SHOPFLOOR_ASSET_MAP['SHOPFLOOR_LAYOUT']
     );
   }
 
   get parametersIcon(): string {
-    return this.resolveAssetPath(SHOPFLOOR_ASSET_MAP['CONFIGURATION']);
+    return this.resolveAssetPath(
+      SHOPFLOOR_ASSET_MAP['PARAMETER_CONFIGURATION'] ?? SHOPFLOOR_ASSET_MAP['CONFIGURATION']
+    );
   }
 
   private buildLayout(layout: ShopfloorLayout): LayoutViewModel {
@@ -423,7 +425,9 @@ export class ConfigurationTabComponent {
       },
       {
         title: $localize`:@@configurationProductionSettings:Production Settings`,
-        icon: 'headings/dezentral.svg',
+        icon: this.resolveAssetPath(
+          SHOPFLOOR_ASSET_MAP['PRODUCTION_SETTINGS'] ?? SHOPFLOOR_ASSET_MAP['CONFIGURATION']
+        ),
         description: $localize`:@@configurationProductionSettingsDescription:Global production parameters for the CCU`,
         items: productionSettingsItems,
       },

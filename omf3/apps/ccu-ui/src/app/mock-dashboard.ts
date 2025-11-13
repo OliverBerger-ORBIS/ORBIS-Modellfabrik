@@ -7,6 +7,8 @@ import type {
   InventoryOverviewState,
   ProductionFlowMap,
   CcuConfigSnapshot,
+  SensorOverviewState,
+  CameraFrame,
 } from '@omf3/entities';
 import {
   createModulePairingFixtureStream,
@@ -14,12 +16,14 @@ import {
   createStockFixtureStream,
   createFlowFixtureStream,
   createConfigFixtureStream,
+  createSensorFixtureStream,
   type FixtureStreamOptions,
   type ModuleFixtureName,
   type OrderFixtureName,
   type StockFixtureName,
   type FlowFixtureName,
   type ConfigFixtureName,
+  type SensorFixtureName,
 } from '@omf3/testing-fixtures';
 import { BehaviorSubject, Subject, type Observable, Subscription } from 'rxjs';
 import { map, scan, shareReplay, startWith } from 'rxjs/operators';
@@ -36,6 +40,8 @@ export interface DashboardStreamSet {
   inventoryOverview$: Observable<InventoryOverviewState>;
   flows$: Observable<ProductionFlowMap>;
   config$: Observable<CcuConfigSnapshot>;
+  sensorOverview$: Observable<SensorOverviewState>;
+  cameraFrames$: Observable<CameraFrame>;
 }
 
 export interface DashboardCommandSet {
@@ -84,6 +90,13 @@ const resolveFlowFixture = (fixture: OrderFixtureName): FlowFixtureName => {
 };
 
 const resolveConfigFixture = (fixture: OrderFixtureName): ConfigFixtureName => {
+  if (fixture === 'startup') {
+    return 'startup';
+  }
+  return 'default';
+};
+
+const resolveSensorFixture = (fixture: OrderFixtureName): SensorFixtureName => {
   if (fixture === 'startup') {
     return 'startup';
   }
@@ -195,6 +208,8 @@ const createStreamSet = (messages$: Subject<RawMqttMessage>): {
       inventoryOverview$: business.inventoryOverview$,
       flows$: business.flows$,
       config$: business.config$,
+      sensorOverview$: business.sensorOverview$,
+      cameraFrames$: business.cameraFrames$,
     },
     commands: {
       calibrateModule: business.calibrateModule,
@@ -273,6 +288,14 @@ export const createMockDashboardController = (): MockDashboardController => {
       loop: options?.loop,
     });
     currentReplays.push(configReplay$.subscribe((message: RawMqttMessage) => messageSubject.next(message)));
+
+    const sensorFixtureName = resolveSensorFixture(fixture);
+    const sensorReplay$ = createSensorFixtureStream(sensorFixtureName, {
+      intervalMs: options?.intervalMs ?? FIXTURE_DEFAULT_INTERVAL,
+      loader: options?.loader,
+      loop: options?.loop,
+    });
+    currentReplays.push(sensorReplay$.subscribe((message: RawMqttMessage) => messageSubject.next(message)));
 
     currentFixture = fixture;
     streamsSubject.next(bundle.streams);

@@ -1,4 +1,4 @@
-import { merge, Observable } from 'rxjs';
+import { combineLatest, merge, Observable } from 'rxjs';
 import { map, scan, shareReplay, startWith } from 'rxjs/operators';
 
 import type {
@@ -17,6 +17,10 @@ import type {
   WorkpieceType,
   ProductionFlowMap,
   CcuConfigSnapshot,
+  Bme680Snapshot,
+  LdrSnapshot,
+  SensorOverviewState,
+  CameraFrame,
 } from '@omf3/entities';
 import { OrderStreamPayload, type GatewayPublishFn } from '@omf3/gateway';
 
@@ -32,6 +36,9 @@ export interface GatewayStreams {
   stockSnapshots$: Observable<StockSnapshot>;
   flows$: Observable<ProductionFlowMap>;
   config$: Observable<CcuConfigSnapshot>;
+  sensorBme680$: Observable<Bme680Snapshot>;
+  sensorLdr$: Observable<LdrSnapshot>;
+  cameraFrames$: Observable<CameraFrame>;
   publish: GatewayPublishFn;
 }
 
@@ -46,6 +53,8 @@ export interface BusinessStreams {
   inventoryOverview$: Observable<InventoryOverviewState>;
   flows$: Observable<ProductionFlowMap>;
   config$: Observable<CcuConfigSnapshot>;
+  sensorOverview$: Observable<SensorOverviewState>;
+  cameraFrames$: Observable<CameraFrame>;
 }
 
 export interface BusinessCommands {
@@ -108,6 +117,49 @@ const createCountRecord = (): Record<WorkpieceType, number> => {
     counts[type] = 0;
   });
   return counts as Record<WorkpieceType, number>;
+};
+
+const classifyAirQuality = (score?: number): string => {
+  if (score == null || Number.isNaN(score)) {
+    return 'Unknown';
+  }
+  if (score < 1) {
+    return 'Excellent';
+  }
+  if (score < 2) {
+    return 'Good';
+  }
+  if (score < 3) {
+    return 'Moderate';
+  }
+  if (score < 4) {
+    return 'Poor';
+  }
+  return 'Critical';
+};
+
+const buildSensorOverviewState = (
+  bme680: Bme680Snapshot | null,
+  ldr: LdrSnapshot | null
+): SensorOverviewState => {
+  const temperatureC = bme680?.t ?? undefined;
+  const humidityPercent = bme680?.h ?? undefined;
+  const pressureHpa = bme680?.p ?? undefined;
+  const lightLux = ldr?.ldr ?? ldr?.br ?? undefined;
+  const iaq = bme680?.iaq ?? undefined;
+  const airQualityScore = bme680?.aq ?? undefined;
+  const airQualityClassification = classifyAirQuality(airQualityScore);
+
+  return {
+    timestamp: bme680?.ts ?? ldr?.ts,
+    temperatureC,
+    humidityPercent,
+    pressureHpa,
+    lightLux,
+    iaq,
+    airQualityScore,
+    airQualityClassification,
+  };
 };
 
 const normalizeWorkpiece = (workpiece?: StockWorkpiece | null): StockWorkpiece | null => {
@@ -396,6 +448,17 @@ export const createBusiness = (gateway: GatewayStreams): BusinessStreams & Busin
     shareReplay({ bufferSize: 1, refCount: true })
   );
 
+  const sensorOverview$ = combineLatest([
+    gateway.sensorBme680$.pipe(startWith(null)),
+    gateway.sensorLdr$.pipe(startWith(null)),
+  ]).pipe(
+    map(([bme, ldr]) => buildSensorOverviewState(bme, ldr)),
+    startWith(buildSensorOverviewState(null, null)),
+    shareReplay({ bufferSize: 1, refCount: true })
+  );
+
+  const cameraFrames$ = gateway.cameraFrames$.pipe(shareReplay({ bufferSize: 1, refCount: true }));
+
   const config$ = gateway.config$.pipe(shareReplay({ bufferSize: 1, refCount: true }));
 
   const calibrateModule: BusinessCommands['calibrateModule'] = async (serialNumber) => {
@@ -490,6 +553,8 @@ export const createBusiness = (gateway: GatewayStreams): BusinessStreams & Busin
     inventoryOverview$,
     flows$: gateway.flows$,
     config$,
+    sensorOverview$,
+    cameraFrames$,
     calibrateModule,
     setFtsCharge,
     dockFts,
@@ -497,4 +562,3 @@ export const createBusiness = (gateway: GatewayStreams): BusinessStreams & Busin
     requestRawMaterial,
   };
 };
-
