@@ -96,9 +96,15 @@
   .route-line {
     fill: none;
     stroke: #2196f3;
-    stroke-dasharray: 5, 5;
+    stroke-width: 3;
+    stroke-dasharray: 8, 4;
     stroke-linecap: round;
-    opacity: 0.6;
+    opacity: 0.8;
+  }
+
+  .fts-icon {
+    pointer-events: none;
+    opacity: 0.9;
   }
 }
 

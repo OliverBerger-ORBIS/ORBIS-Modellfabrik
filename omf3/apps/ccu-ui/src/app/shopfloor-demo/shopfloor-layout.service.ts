@@ -458,8 +458,14 @@ export class ShopfloorLayoutService {
    * Map subcell asset ID to SVG filename
    */
   private getSubcellSvgName(assetId: string): string {
-    // For now, we don't have separate square SVGs, use stock as placeholder
-    return 'stock.svg';
+    // Map specific subcell assets to their SVG files
+    const assetMap: Record<string, string> = {
+      'HBW_SQUARE1': 'factory.svg',
+      'HBW_SQUARE2': 'conveyor.svg',
+      'DPS_SQUARE1': 'stock.svg',
+      'DPS_SQUARE2': 'order-tracking.svg',
+    };
+    return assetMap[assetId] || 'stock.svg';
   }
 
   /**
