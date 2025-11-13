@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Observable, forkJoin, map, switchMap, of } from 'rxjs';
 import {
   ShopfloorLayout,
@@ -47,7 +48,10 @@ export class ShopfloorService {
   private svgDimensionsCache = new Map<string, SvgDimensions>();
   private highlightedCellIds = new Set<string>();
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private sanitizer: DomSanitizer
+  ) {}
 
   /**
    * Load shopfloor layout JSON
@@ -57,7 +61,7 @@ export class ShopfloorService {
       return of(this.layout);
     }
 
-    return this.http.get<ShopfloorLayout>('assets/shopfloor-layout.json').pipe(
+    return this.http.get<ShopfloorLayout>('shopfloor-layout.json').pipe(
       map((layout) => {
         this.layout = layout;
         return layout;
@@ -205,7 +209,7 @@ export class ShopfloorService {
             width: module.cell_w,
             height: module.cell_h,
             icon: assetPath,
-            iconSvg: svgContent,
+            iconSvg: this.sanitizer.bypassSecurityTrustHtml(svgContent),
             iconSize,
             highlighted: this.highlightedCellIds.has(module.id),
             is_compound: module.is_compound,
@@ -237,7 +241,7 @@ export class ShopfloorService {
                     width: subcellW,
                     height: subcellH,
                     icon: subcellAssetPath,
-                    iconSvg: svgContent,
+                    iconSvg: this.sanitizer.bypassSecurityTrustHtml(svgContent),
                     iconSize,
                     highlighted: this.highlightedCellIds.has(module.id),
                   } as RenderSubcell;
@@ -304,7 +308,7 @@ export class ShopfloorService {
             width: pos.cell_w,
             height: pos.cell_h,
             icon: assetPath,
-            iconSvg: svgContent,
+            iconSvg: this.sanitizer.bypassSecurityTrustHtml(svgContent),
             iconSize,
             backgroundColor: pos.background_color,
             highlighted: this.highlightedCellIds.has(pos.id),
@@ -364,7 +368,7 @@ export class ShopfloorService {
             width: intersection.cell_w,
             height: intersection.cell_h,
             icon: assetPath,
-            iconSvg: svgContent,
+            iconSvg: this.sanitizer.bypassSecurityTrustHtml(svgContent),
             iconSize,
             highlighted: this.highlightedCellIds.has(intersection.id),
           } as RenderCell;

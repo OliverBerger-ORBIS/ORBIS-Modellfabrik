@@ -125,7 +125,7 @@ export interface RenderCell {
   width: number;
   height: number;
   icon?: string;
-  iconSvg?: string;
+  iconSvg?: any;
   iconSize?: ComputedIconSize;
   backgroundColor?: string;
   highlighted: boolean;
@@ -141,7 +141,7 @@ export interface RenderSubcell {
   width: number;
   height: number;
   icon?: string;
-  iconSvg?: string;
+  iconSvg?: any;
   iconSize?: ComputedIconSize;
   highlighted: boolean;
 }
