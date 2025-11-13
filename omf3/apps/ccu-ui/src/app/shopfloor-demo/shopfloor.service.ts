@@ -162,6 +162,20 @@ export class ShopfloorService {
   }
 
   /**
+   * Apply computed dimensions to SVG content
+   */
+  private applySvgDimensions(svgContent: string, width: number, height: number): string {
+    // Remove existing width and height attributes
+    let modifiedSvg = svgContent.replace(/\s+width=["'][^"']*["']/gi, '');
+    modifiedSvg = modifiedSvg.replace(/\s+height=["'][^"']*["']/gi, '');
+    
+    // Add computed dimensions to the SVG tag
+    modifiedSvg = modifiedSvg.replace(/<svg\b/i, `<svg width="${width}" height="${height}"`);
+    
+    return modifiedSvg;
+  }
+
+  /**
    * Build render model for modules
    */
   private buildModuleCells(
@@ -200,6 +214,9 @@ export class ShopfloorService {
             dimensions.height
           );
 
+          // Apply computed dimensions to SVG
+          const scaledSvg = this.applySvgDimensions(svgContent, iconSize.width, iconSize.height);
+
           const cell: RenderCell = {
             id: module.id,
             type: module.type,
@@ -209,7 +226,7 @@ export class ShopfloorService {
             width: module.cell_w,
             height: module.cell_h,
             icon: assetPath,
-            iconSvg: this.sanitizer.bypassSecurityTrustHtml(svgContent),
+            iconSvg: this.sanitizer.bypassSecurityTrustHtml(scaledSvg),
             iconSize,
             highlighted: this.highlightedCellIds.has(module.id),
             is_compound: module.is_compound,
@@ -233,6 +250,9 @@ export class ShopfloorService {
                   const roleFactor = this.layout?.icon_sizing_rules.by_role.attachment || 0.56;
                   const iconSize = this.computeIconSize(subcellW, subcellH, roleFactor, dimensions.width, dimensions.height);
 
+                  // Apply computed dimensions to SVG
+                  const scaledSvg = this.applySvgDimensions(svgContent, iconSize.width, iconSize.height);
+
                   return {
                     id: `${module.id}-${assetKey}`,
                     type: assetKey,
@@ -241,7 +261,7 @@ export class ShopfloorService {
                     width: subcellW,
                     height: subcellH,
                     icon: subcellAssetPath,
-                    iconSvg: this.sanitizer.bypassSecurityTrustHtml(svgContent),
+                    iconSvg: this.sanitizer.bypassSecurityTrustHtml(scaledSvg),
                     iconSize,
                     highlighted: this.highlightedCellIds.has(module.id),
                   } as RenderSubcell;
@@ -299,6 +319,9 @@ export class ShopfloorService {
         map(({ svgContent, dimensions }) => {
           const iconSize = this.computeIconSize(pos.cell_w, pos.cell_h, pos.roleFactor, dimensions.width, dimensions.height);
 
+          // Apply computed dimensions to SVG
+          const scaledSvg = this.applySvgDimensions(svgContent, iconSize.width, iconSize.height);
+
           return {
             id: pos.id,
             type: pos.type,
@@ -308,7 +331,7 @@ export class ShopfloorService {
             width: pos.cell_w,
             height: pos.cell_h,
             icon: assetPath,
-            iconSvg: this.sanitizer.bypassSecurityTrustHtml(svgContent),
+            iconSvg: this.sanitizer.bypassSecurityTrustHtml(scaledSvg),
             iconSize,
             backgroundColor: pos.background_color,
             highlighted: this.highlightedCellIds.has(pos.id),
@@ -359,6 +382,9 @@ export class ShopfloorService {
             dimensions.height
           );
 
+          // Apply computed dimensions to SVG
+          const scaledSvg = this.applySvgDimensions(svgContent, iconSize.width, iconSize.height);
+
           return {
             id: intersection.id,
             type: intersection.type,
@@ -368,7 +394,7 @@ export class ShopfloorService {
             width: intersection.cell_w,
             height: intersection.cell_h,
             icon: assetPath,
-            iconSvg: this.sanitizer.bypassSecurityTrustHtml(svgContent),
+            iconSvg: this.sanitizer.bypassSecurityTrustHtml(scaledSvg),
             iconSize,
             highlighted: this.highlightedCellIds.has(intersection.id),
           } as RenderCell;
