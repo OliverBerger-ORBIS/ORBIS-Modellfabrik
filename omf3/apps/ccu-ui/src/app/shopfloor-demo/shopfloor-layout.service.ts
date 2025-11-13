@@ -410,18 +410,26 @@ export class ShopfloorLayoutService {
     const cellCenters = new Map<string, [number, number]>();
     
     for (const cell of cells) {
-      cellCenters.set(cell.id, [
-        cell.x + cell.width / 2,
-        cell.y + cell.height / 2,
-      ]);
-      
-      // Also add by type for modules (serialNumber lookup)
+      // Find if this is a compound module
       const module = config.modules.find(m => m.id === cell.id);
+      
+      let centerX = cell.x + cell.width / 2;
+      let centerY = cell.y + cell.height / 2;
+      
+      // For compound modules, use the center of the main compartment (not entire cell)
+      if (module?.is_compound && module.compound_layout) {
+        const subcellHeight = module.compound_layout.size[1];
+        // Main compartment starts below subcells
+        const mainCompartmentY = cell.y + subcellHeight;
+        const mainCompartmentHeight = cell.height - subcellHeight;
+        centerY = mainCompartmentY + mainCompartmentHeight / 2;
+      }
+      
+      cellCenters.set(cell.id, [centerX, centerY]);
+      
+      // Also add by serialNumber for modules
       if (module?.serialNumber) {
-        cellCenters.set(module.serialNumber, [
-          cell.x + cell.width / 2,
-          cell.y + cell.height / 2,
-        ]);
+        cellCenters.set(module.serialNumber, [centerX, centerY]);
       }
     }
 

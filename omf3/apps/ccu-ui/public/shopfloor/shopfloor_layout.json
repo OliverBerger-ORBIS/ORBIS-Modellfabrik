@@ -60,8 +60,8 @@
     "icon_sizing_rules": {
         "by_role": {
             "intersection": 0.9,
-            "module_main_compartment": 0.7,
-            "module_sub_non_main": 0.7,
+            "module_main_compartment": 0.6,
+            "module_sub_non_main": 0.6,
             "company": 0.8,
             "software": 0.8,
             "default": 0.75
