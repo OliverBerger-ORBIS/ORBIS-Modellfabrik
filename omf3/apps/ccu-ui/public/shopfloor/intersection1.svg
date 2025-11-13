@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 960" width="960" height="960">
+  <!-- Intersection 1: Crossing roads with 60px width, lighter gray -->
+  <g fill="none" stroke="#AAAAAA" stroke-width="60" stroke-linecap="square">
+    <!-- Horizontal road crossing through center -->
+    <line x1="0" y1="480" x2="960" y2="480"/>
+    <!-- Vertical road crossing through center -->
+    <line x1="480" y1="0" x2="480" y2="960"/>
+  </g>
+  <!-- Zentrum: Grauer Kreis -->
+  <circle cx="480" cy="480" r="80" fill="#666666"/>
+  <!-- Intersection number in center -->
+  <text x="480" y="520" text-anchor="middle" font-size="120" font-weight="bold" fill="#FFFFFF" font-family="Arial, sans-serif">1</text>
+</svg>
