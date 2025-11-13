@@ -146,12 +146,28 @@ export class ShopfloorLayoutService {
 
     // Get SVG file name for the module type
     const svgFileName = this.getModuleSvgName(module.type);
+    
+    // For compound modules, center the main icon in the main compartment (bottom area)
+    // not the entire compound cell
+    let iconCellX = x;
+    let iconCellY = y;
+    let iconCellWidth = width;
+    let iconCellHeight = height;
+    
+    if (module.is_compound && module.compound_layout) {
+      // The main compartment is below the subcells
+      // Subcells occupy the top portion (height = subcell size)
+      const subcellHeight = module.compound_layout.size[1];
+      iconCellY = y + subcellHeight;
+      iconCellHeight = height - subcellHeight;
+    }
+    
     const icon = await this.createIconRenderModel(
       svgFileName,
-      x,
-      y,
-      width,
-      height,
+      iconCellX,
+      iconCellY,
+      iconCellWidth,
+      iconCellHeight,
       'module_main_compartment',
       config
     );

@@ -59,11 +59,11 @@
     "grid": {"rows": 3, "columns": 4, "cell_size": "200x200"},
     "icon_sizing_rules": {
         "by_role": {
-            "intersection": 0.8,
-            "module_main_compartment": 0.8,
-            "module_sub_non_main": 0.9,
-            "company": 0.6,
-            "software": 0.6,
+            "intersection": 0.9,
+            "module_main_compartment": 0.7,
+            "module_sub_non_main": 0.7,
+            "company": 0.8,
+            "software": 0.8,
             "default": 0.75
         }
     },
