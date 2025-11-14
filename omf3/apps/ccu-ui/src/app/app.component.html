@@ -1,37 +1,102 @@
-<div class="app-shell">
-  <header class="app-header">
-    <div class="title-group">
-      <p class="eyebrow" i18n="@@appHeaderEyebrow">OMF3 Control Center</p>
-      <h1 i18n="@@appHeaderTitle">CCU Mock Dashboard</h1>
+<div
+  class="app-frame"
+  *ngIf="environment$ | async as currentEnvironment; else loading"
+  [class.app-frame--collapsed]="sidebarCollapsed"
+>
+  <aside class="app-sidebar" [class.app-sidebar--collapsed]="sidebarCollapsed">
+    <button type="button" class="sidebar__toggle" (click)="toggleSidebar()">
+      <span *ngIf="!sidebarCollapsed" aria-hidden="true">⟨</span>
+      <span *ngIf="sidebarCollapsed" aria-hidden="true">⟩</span>
+      <span class="sr-only" i18n="@@sidebarToggleLabel">Toggle sidebar</span>
+    </button>
+
+    <div class="sidebar__logo" *ngIf="!sidebarCollapsed">
+      <img [src]="orbitLogoPath" alt="ORBIS" />
     </div>
-  </header>
 
-  <nav class="app-tabs" aria-label="Main navigation" i18n-aria-label="@@appNavAriaLabel">
-    <a
-      routerLink="/overview"
-      routerLinkActive="active"
-      [routerLinkActiveOptions]="{ exact: true }"
-    >
-      <span i18n="@@navOverview">Overview</span>
-    </a>
-    <a routerLink="/order" routerLinkActive="active">
-      <span i18n="@@navOrder">Order</span>
-    </a>
-    <a routerLink="/process" routerLinkActive="active">
-      <span i18n="@@navProcess">Process</span>
-    </a>
-    <a routerLink="/sensor" routerLinkActive="active">
-      <span i18n="@@navSensor">Sensor Data</span>
-    </a>
-    <a routerLink="/configuration" routerLinkActive="active">
-      <span i18n="@@navConfiguration">Configuration</span>
-    </a>
-    <a routerLink="/module" routerLinkActive="active">
-      <span i18n="@@navModule">Module</span>
-    </a>
-  </nav>
+    <div class="sidebar__controls" *ngIf="!sidebarCollapsed">
+      <section class="control-group">
+        <h3 i18n="@@sidebarEnvironmentHeading">Environment</h3>
+        <select [(ngModel)]="selectedEnvironment" (ngModelChange)="setEnvironment($event)">
+          <option *ngFor="let environment of environments" [value]="environment.key">
+            {{ environment.label }}
+          </option>
+        </select>
+        <p class="control-description">{{ currentEnvironment.description }}</p>
+      </section>
 
-  <main class="app-content">
-    <router-outlet />
-  </main>
+      <section class="control-group">
+        <h3 i18n="@@sidebarRoleHeading">Role</h3>
+        <select [(ngModel)]="selectedRole" (ngModelChange)="setRole($event)">
+          <option *ngFor="let option of roleOptions" [value]="option.key">
+            {{ option.label }}
+          </option>
+        </select>
+      </section>
+
+      <section class="control-group">
+        <h3 i18n="@@sidebarLanguageHeading">Language</h3>
+        <div class="language-buttons">
+          <button
+            *ngFor="let locale of locales"
+            type="button"
+            [class.active]="locale === selectedLocale"
+            (click)="changeLanguage(locale)"
+          >
+            {{ languageLabels[locale] }}
+          </button>
+        </div>
+      </section>
+
+      <section class="control-group">
+        <h3>{{ mqttStatusLabel }}</h3>
+        <div class="status-pill" [class.status-pill--mock]="currentEnvironment.key === 'mock'">
+          {{ currentEnvironment.key === 'mock' ? mqttStatusSimulated : mqttStatusPending }}
+        </div>
+      </section>
+    </div>
+  </aside>
+
+  <div class="app-main">
+    <header class="app-header">
+      <div class="header__title">
+        <img [src]="orbitLogoPath" alt="ORBIS" />
+        <div>
+          <h1>{{ headerTitle }}</h1>
+          <p>{{ headerSubtitle }}</p>
+        </div>
+      </div>
+      <div class="header__actions">
+        <div class="connection-status">
+          <span class="status-label">{{ connectionStatusLabels[(connectionState$ | async) ?? 'disconnected'] }}</span>
+          <ng-container *ngIf="currentError as error">
+            <span class="status-error">{{ error }}</span>
+          </ng-container>
+        </div>
+        <button type="button" class="reset-btn" (click)="resetFactory()">
+          {{ resetLabel }}
+        </button>
+      </div>
+    </header>
+
+    <nav class="app-nav" aria-label="Main navigation" i18n-aria-label="@@appNavAriaLabel">
+      <a
+        *ngFor="let item of navigation; trackBy: trackNav"
+        [routerLink]="item.route"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        [class.hidden]="!isNavVisible(item, (role$ | async) ?? null)"
+      >
+        <span>{{ item.label }}</span>
+      </a>
+    </nav>
+
+    <main class="app-content">
+      <router-outlet />
+    </main>
+  </div>
 </div>
+
+<ng-template #loading>
+  <div class="app-loading" i18n="@@appLoading">Loading…</div>
+</ng-template>

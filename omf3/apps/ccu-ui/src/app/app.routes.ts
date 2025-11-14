@@ -37,6 +37,11 @@ export const appRoutes: Routes = [
       import('./tabs/module-tab.component').then((m) => m.ModuleTabComponent),
   },
   {
+    path: 'settings',
+    loadComponent: () =>
+      import('./tabs/settings-tab.component').then((m) => m.SettingsTabComponent),
+  },
+  {
     path: '**',
     redirectTo: 'overview',
   },
