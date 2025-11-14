@@ -15,10 +15,10 @@ describe('AppComponent', () => {
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelector('h1')?.textContent).toContain(
-      'CCU Mock Dashboard'
+      'SmartFactory'
     );
     expect(
       Array.from(compiled.querySelectorAll('nav a')).map((el) => el.textContent?.trim())
-    ).toEqual(['Overview', 'Order', 'Process', 'Configuration', 'Module']);
+    ).toEqual(['Overview', 'Order', 'Process', 'Sensor Data', 'Module', 'Configuration', 'Settings']);
   });
 });

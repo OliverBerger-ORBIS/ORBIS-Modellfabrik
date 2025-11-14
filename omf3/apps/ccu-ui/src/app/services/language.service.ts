@@ -17,6 +17,7 @@ export class LanguageService {
       return;
     }
     localStorage?.setItem(STORAGE_KEY, locale);
-    window.location.reload();
+    // Force a hard reload to ensure main.ts re-executes and loads the correct locale
+    window.location.href = window.location.href;
   }
 }
