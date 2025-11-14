@@ -61,6 +61,12 @@ const NAVIGATION_ITEMS: NavigationItem[] = [
     route: '/settings',
     roles: ['admin'],
   },
+  {
+    id: 'message-monitor',
+    label: $localize`:@@navMessageMonitor:Message Monitor`,
+    route: '/message-monitor',
+    roles: ['admin'],
+  },
 ];
 
 @Component({
