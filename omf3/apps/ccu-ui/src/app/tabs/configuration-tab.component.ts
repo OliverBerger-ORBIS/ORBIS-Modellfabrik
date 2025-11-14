@@ -4,8 +4,9 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import type { CcuConfigSnapshot, ModuleOverviewState } from '@omf3/entities';
 import { SHOPFLOOR_ASSET_MAP } from '@omf3/testing-fixtures';
 import { BehaviorSubject, type Observable, combineLatest } from 'rxjs';
-import { map, shareReplay, switchMap, tap, startWith } from 'rxjs/operators';
+import { map, shareReplay, switchMap, tap, startWith, filter } from 'rxjs/operators';
 import { getDashboardController } from '../mock-dashboard';
+import { MessageMonitorService } from '../services/message-monitor.service';
 import { ShopfloorPreviewComponent } from '../components/shopfloor-preview/shopfloor-preview.component';
 import type { ShopfloorLayoutConfig, ShopfloorCellConfig } from '../components/shopfloor-preview/shopfloor-layout.types';
 
@@ -121,17 +122,23 @@ export class ConfigurationTabComponent {
     shareReplay({ bufferSize: 1, refCount: true })
   );
 
-  private readonly configSnapshot$: Observable<CcuConfigSnapshot> = this.dashboard.streams$.pipe(
-    map((streams) => streams.config$),
-    switchMap((stream$) => stream$.pipe(startWith({} as CcuConfigSnapshot))),
-    shareReplay({ bufferSize: 1, refCount: true })
-  );
+  // Enhanced configSnapshot$ that immediately emits the last received config from MessageMonitor
+  private readonly configSnapshot$: Observable<CcuConfigSnapshot> = this.messageMonitor
+    .getLastMessage<CcuConfigSnapshot>('ccu/state/config')
+    .pipe(
+      filter((msg) => msg !== null && msg.valid),
+      map((msg) => msg!.payload),
+      shareReplay({ bufferSize: 1, refCount: true })
+    );
 
   readonly selectedCell$ = this.selectedCellSubject.asObservable();
 
   readonly viewModel$: Observable<ConfigurationViewModel>;
 
-  constructor(private readonly http: HttpClient) {
+  constructor(
+    private readonly http: HttpClient,
+    private readonly messageMonitor: MessageMonitorService
+  ) {
     this.layoutInfo$ = this.http.get<ShopfloorLayoutConfig>('shopfloor/shopfloor_layout.json').pipe(
       map((layout) => this.buildLayout(layout)),
       tap((layout) => {
