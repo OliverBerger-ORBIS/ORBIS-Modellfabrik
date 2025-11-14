@@ -10,6 +10,7 @@ import { SHOPFLOOR_ASSET_MAP, type OrderFixtureName } from '@omf3/testing-fixtur
 import { getDashboardController } from '../mock-dashboard';
 import type { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { EnvironmentService } from '../services/environment.service';
 
 interface ModuleCommand {
   label: string;
@@ -91,6 +92,12 @@ const STATUS_ICONS = {
 export class ModuleTabComponent implements OnInit {
   private readonly dashboard = getDashboardController();
 
+  constructor(private readonly environmentService: EnvironmentService) {}
+
+  get isMockMode(): boolean {
+    return this.environmentService.current.key === 'mock';
+  }
+
   readonly fixtureOptions: OrderFixtureName[] = ['startup', 'white', 'white_step3', 'blue', 'red', 'mixed', 'storage'];
   readonly fixtureLabels: Record<OrderFixtureName, string> = {
     startup: $localize`:@@fixtureLabelStartup:Startup`,
@@ -111,7 +118,10 @@ export class ModuleTabComponent implements OnInit {
   readonly headingIcon = 'headings/mehrere.svg';
 
   ngOnInit(): void {
-    void this.loadFixture(this.activeFixture);
+    // Only load fixture in mock mode; in live/replay mode, streams are already connected
+    if (this.isMockMode) {
+      void this.loadFixture(this.activeFixture);
+    }
   }
 
   trackById(_: number, row: ModuleRow): string {
@@ -127,6 +137,9 @@ export class ModuleTabComponent implements OnInit {
   }
 
   async loadFixture(fixture: OrderFixtureName): Promise<void> {
+    if (!this.isMockMode) {
+      return; // Don't load fixtures in live/replay mode
+    }
     if (this.loading) {
       return;
     }

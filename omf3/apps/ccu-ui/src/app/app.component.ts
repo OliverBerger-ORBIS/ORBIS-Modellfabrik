@@ -146,6 +146,20 @@ export class AppComponent implements OnDestroy {
         this.selectedRole = role;
       })
     );
+
+    // Update dashboard controller when MQTT client becomes available
+    this.subscriptions.add(
+      this.connectionService.state$.subscribe((state) => {
+        if (state === 'connected') {
+          const mqttClient = this.connectionService.mqttClient;
+          if (mqttClient) {
+            // Recreate dashboard controller with MQTT client for live/replay mode
+            getDashboardController(mqttClient);
+            console.log('[app] Dashboard controller updated with MQTT client');
+          }
+        }
+      })
+    );
   }
 
   setEnvironment(value: EnvironmentKey): void {
@@ -206,5 +220,16 @@ export class AppComponent implements OnDestroy {
 
   get currentError(): string | null {
     return this.connectionService.currentError;
+  }
+
+  manualConnect(): void {
+    const environment = this.environmentService.getDefinition(this.environmentService.current.key);
+    if (environment) {
+      this.connectionService.connect(environment);
+    }
+  }
+
+  manualDisconnect(): void {
+    this.connectionService.disconnect();
   }
 }

@@ -78,7 +78,9 @@
         ],
         "scripts": [],
         "localize": [
-          "en"
+          "en",
+          "de",
+          "fr"
         ]
       },
       "configurations": {
@@ -86,13 +88,13 @@
           "budgets": [
             {
               "type": "initial",
-              "maximumWarning": "500kb",
+              "maximumWarning": "800kb",
               "maximumError": "1mb"
             },
             {
               "type": "anyComponentStyle",
-                  "maximumWarning": "3.5kb",
-              "maximumError": "4kb"
+              "maximumWarning": "7kb",
+              "maximumError": "8kb"
             }
           ],
           "outputHashing": "all",

@@ -10,7 +10,7 @@
       </div>
     </div>
 
-    <div class="module-fixture-switch">
+    <div class="module-fixture-switch" *ngIf="isMockMode">
       <button
         type="button"
         *ngFor="let fixture of fixtureOptions"

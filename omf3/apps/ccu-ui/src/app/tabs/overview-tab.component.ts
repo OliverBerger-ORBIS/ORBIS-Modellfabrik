@@ -7,6 +7,7 @@ import { FtsViewComponent } from '../fts-view.component';
 import type { OrderFixtureName } from '@omf3/testing-fixtures';
 import type { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { EnvironmentService } from '../services/environment.service';
 
 const INVENTORY_LOCATIONS = ['A1', 'A2', 'A3', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3'];
 const WORKPIECE_TYPES = ['BLUE', 'WHITE', 'RED'] as const;
@@ -43,6 +44,12 @@ const MAX_CAPACITY = 3;
 })
 export class OverviewTabComponent implements OnInit {
   private dashboard = getDashboardController();
+
+  constructor(private readonly environmentService: EnvironmentService) {}
+
+  get isMockMode(): boolean {
+    return this.environmentService.current.key === 'mock';
+  }
 
   readonly fixtureOptions: OrderFixtureName[] = ['startup', 'white', 'white_step3', 'blue', 'red', 'mixed', 'storage'];
   activeFixture: OrderFixtureName = this.dashboard.getCurrentFixture();
@@ -88,10 +95,27 @@ export class OverviewTabComponent implements OnInit {
   readonly purchaseOrdersIcon = 'headings/box.svg';
 
   ngOnInit(): void {
-    void this.loadFixture(this.activeFixture);
+    // Only load fixture in mock mode; in live/replay mode, use streams directly
+    if (this.isMockMode) {
+      void this.loadFixture(this.activeFixture);
+    } else {
+      // In live/replay mode, bind to streams directly (they're already connected to MQTT)
+      this.orders$ = this.dashboard.streams.orders$;
+      this.orderCounts$ = this.dashboard.streams.orderCounts$;
+      this.ftsStates$ = this.dashboard.streams.ftsStates$;
+      this.inventoryOverview$ = this.dashboard.streams.inventoryOverview$;
+      this.availableCounts$ = this.inventoryOverview$.pipe(map((state) => state.availableCounts));
+      this.reservedCounts$ = this.inventoryOverview$.pipe(map((state) => state.reservedCounts));
+      this.inventorySlots$ = this.inventoryOverview$.pipe(
+        map((state) => INVENTORY_LOCATIONS.map((location) => state.slots[location] ?? { location, workpiece: null }))
+      );
+    }
   }
 
   async loadFixture(fixture: OrderFixtureName) {
+    if (!this.isMockMode) {
+      return; // Don't load fixtures in live/replay mode
+    }
     this.activeFixture = fixture;
     try {
       const streams: DashboardStreamSet = await this.dashboard.loadFixture(fixture);

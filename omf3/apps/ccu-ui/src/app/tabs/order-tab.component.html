@@ -11,7 +11,7 @@
       </p>
     </div>
 
-    <div class="order-tab__fixtures">
+    <div class="order-tab__fixtures" *ngIf="isMockMode">
       <span class="badge" i18n="@@orderTabFixtureLabel">Fixture</span>
       <div class="fixture-switch">
         <button

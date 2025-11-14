@@ -6,6 +6,8 @@ export const appRoutes: Routes = [
     pathMatch: 'full',
     redirectTo: 'overview',
   },
+  // Note: Locale prefix (/:locale) is handled by Angular's --localize build
+  // Each locale gets its own build with baseHref set to /:locale/
   {
     path: 'overview',
     loadComponent: () =>

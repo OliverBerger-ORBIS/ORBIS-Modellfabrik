@@ -6,6 +6,7 @@ export type EnvironmentKey = 'mock' | 'replay' | 'live';
 interface EnvironmentConnection {
   mqttHost: string;
   mqttPort: number;
+  mqttPath?: string;
   mqttUsername?: string;
   mqttPassword?: string;
 }
@@ -28,13 +29,15 @@ const DEFAULT_CONNECTIONS: Record<EnvironmentKey, EnvironmentConnection> = {
   },
   replay: {
     mqttHost: 'localhost',
-    mqttPort: 1883,
+    mqttPort: 9001, // WebSocket MQTT port (Browser requires WebSocket, not TCP)
+    mqttPath: '',
     mqttUsername: undefined,
     mqttPassword: undefined,
   },
   live: {
     mqttHost: '192.168.0.100',
-    mqttPort: 1883,
+    mqttPort: 9001, // WebSocket MQTT port (Browser requires WebSocket, not TCP MQTT on 1883)
+    mqttPath: '',
     mqttUsername: 'default',
     mqttPassword: 'default',
   },
@@ -68,6 +71,9 @@ export class EnvironmentService {
         connection: storedConnections.live,
       },
     } satisfies Record<EnvironmentKey, EnvironmentDefinition>;
+
+    // Migrate old TCP port (1883) to WebSocket port (9001) if needed
+    this.migratePortsIfNeeded();
 
     const initial = this.loadInitialEnvironment();
     this.environmentSubject = new BehaviorSubject<EnvironmentDefinition>({ ...this.definitions[initial] });
@@ -134,6 +140,27 @@ export class EnvironmentService {
       console.warn('[environment] Failed to parse stored connections', error);
     }
     return { ...DEFAULT_CONNECTIONS };
+  }
+
+  private migratePortsIfNeeded(): void {
+    let needsMigration = false;
+    
+    // Migrate old TCP port (1883) to WebSocket port (9001) for browser compatibility
+    if (this.definitions.replay.connection.mqttPort === 1883) {
+      console.log('[environment] Migrating replay port from 1883 to 9001 (WebSocket)');
+      this.definitions.replay.connection.mqttPort = 9001;
+      needsMigration = true;
+    }
+    if (this.definitions.live.connection.mqttPort === 1883) {
+      console.log('[environment] Migrating live port from 1883 to 9001 (WebSocket)');
+      this.definitions.live.connection.mqttPort = 9001;
+      needsMigration = true;
+    }
+    
+    // Persist migrated connections if any changes were made
+    if (needsMigration) {
+      this.persistConnections();
+    }
   }
 
   private persistConnections(): void {

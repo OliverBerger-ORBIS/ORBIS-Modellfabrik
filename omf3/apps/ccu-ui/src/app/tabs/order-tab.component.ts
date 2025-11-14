@@ -6,6 +6,7 @@ import { OrderCardComponent } from '../components/order-card/order-card.componen
 import type { OrderFixtureName } from '@omf3/testing-fixtures';
 import { map, shareReplay } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
+import { EnvironmentService } from '../services/environment.service';
 
 const ORDER_TYPES = {
   PRODUCTION: 'PRODUCTION',
@@ -41,6 +42,12 @@ const getOrderTimestamp = (order: OrderActive): number => {
 })
 export class OrderTabComponent implements OnInit {
   private readonly dashboard = getDashboardController();
+
+  constructor(private readonly environmentService: EnvironmentService) {}
+
+  get isMockMode(): boolean {
+    return this.environmentService.current.key === 'mock';
+  }
 
   productionActive$: Observable<OrderActive[]> = of([]);
   productionCompleted$: Observable<OrderActive[]> = of([]);
@@ -96,10 +103,16 @@ export class OrderTabComponent implements OnInit {
 
   ngOnInit(): void {
     this.bindOrderStreams();
-    void this.loadFixture(this.activeFixture);
+    // Only load fixture in mock mode; in live/replay mode, streams are already connected
+    if (this.isMockMode) {
+      void this.loadFixture(this.activeFixture);
+    }
   }
 
   async loadFixture(fixture: OrderFixtureName) {
+    if (!this.isMockMode) {
+      return; // Don't load fixtures in live/replay mode
+    }
     this.activeFixture = fixture;
     await this.dashboard.loadFixture(fixture);
     this.bindOrderStreams();
