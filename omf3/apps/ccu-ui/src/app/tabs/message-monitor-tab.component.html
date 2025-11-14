@@ -55,119 +55,74 @@
   </div>
 
   <div class="monitor-content">
-    <aside class="topics-panel">
-      <header class="panel-header">
-        <h3 i18n="@@messageMonitorTopics">Topics</h3>
-        <span class="topic-count" *ngIf="topics$ | async as topics">
-          {{ topics.length }}
-        </span>
-      </header>
-      
-      <ul class="topics-list" *ngIf="topics$ | async as topics; else topicsLoading">
-        <li 
-          *ngFor="let topic of topics; trackBy: trackByTopic"
-          class="topic-item"
-          [class.selected]="topic.topic === selectedTopic"
-          [class.invalid]="!topic.valid"
-          (click)="selectTopic(topic.topic)"
-        >
-          <div class="topic-name">{{ topic.topic }}</div>
-          <div class="topic-meta">
-            <span class="message-count">{{ topic.messageCount }}</span>
-            <span class="validity-indicator" [class.valid]="topic.valid" [class.invalid]="!topic.valid">
-              {{ topic.valid ? '✓' : '✗' }}
-            </span>
-          </div>
-        </li>
-        
-        <li *ngIf="topics.length === 0" class="empty-state" i18n="@@messageMonitorNoTopics">
-          No topics found. Messages will appear here as they arrive.
-        </li>
-      </ul>
-      
-      <ng-template #topicsLoading>
-        <div class="loading-state" i18n="@@messageMonitorLoadingTopics">Loading topics...</div>
-      </ng-template>
-    </aside>
-
-    <main class="details-panel">
-      <div *ngIf="selectedTopic; else noSelection" class="topic-details">
-        <header class="details-header">
-          <div>
-            <h3>{{ selectedTopic }}</h3>
-            <p class="retention-info">
-              <span i18n="@@messageMonitorRetention">Retention</span>: 
-              {{ getRetentionLimit() }} 
-              <span i18n="@@messageMonitorMessages">messages</span>
-            </p>
-          </div>
-          <button 
-            type="button" 
-            class="btn-danger-small" 
-            (click)="clearTopicData()"
-            i18n="@@messageMonitorClearTopic"
+    <div class="table-container" *ngIf="messages$ | async as messages; else messagesLoading">
+      <table class="messages-table">
+        <thead>
+          <tr>
+            <th i18n="@@messageMonitorColumnTopic">Topic</th>
+            <th i18n="@@messageMonitorColumnTimestamp">Timestamp</th>
+            <th i18n="@@messageMonitorColumnPayload">Payload</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr 
+            *ngFor="let message of messages; trackBy: trackByMessage"
+            [class.invalid]="!message.valid"
+            (click)="selectMessage(message)"
+            [class.selected]="selectedMessage === message"
           >
-            Clear Topic
-          </button>
-        </header>
-
-        <div class="message-history">
-          <h4 i18n="@@messageMonitorHistory">Message History</h4>
-          <ul class="history-list">
-            <li 
-              *ngFor="let message of messageHistory; trackBy: trackByMessage"
-              class="history-item"
-              [class.selected]="message === selectedMessage"
-              [class.invalid]="!message.valid"
-              (click)="selectMessage(message)"
-            >
-              <span class="timestamp">{{ formatTimestamp(message.timestamp) }}</span>
-              <span class="validity" [class.valid]="message.valid" [class.invalid]="!message.valid">
+            <td class="topic-cell">
+              <div class="topic-name">{{ message.topic }}</div>
+              <span 
+                class="validity-indicator" 
+                [class.valid]="message.valid" 
+                [class.invalid]="!message.valid"
+              >
                 {{ message.valid ? '✓' : '✗' }}
               </span>
-            </li>
-            
-            <li *ngIf="messageHistory.length === 0" class="empty-state" i18n="@@messageMonitorNoHistory">
-              No messages in history for this topic.
-            </li>
+            </td>
+            <td class="timestamp-cell">{{ formatTimestamp(message.timestamp) }}</td>
+            <td class="payload-cell">
+              <code class="payload-preview">{{ formatPayloadPreview(message.payload) }}</code>
+            </td>
+          </tr>
+          
+          <tr *ngIf="messages.length === 0">
+            <td colspan="3" class="empty-state" i18n="@@messageMonitorNoMessages">
+              No messages found. Messages will appear here as they arrive.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    
+    <ng-template #messagesLoading>
+      <div class="loading-state" i18n="@@messageMonitorLoadingMessages">Loading messages...</div>
+    </ng-template>
+
+    <!-- Detailed payload view modal/panel when a message is selected -->
+    <div class="payload-detail-panel" *ngIf="selectedMessage" (click)="closeDetailPanel()">
+      <div class="payload-detail-content" (click)="$event.stopPropagation()">
+        <header class="detail-header">
+          <div>
+            <h4>{{ selectedMessage.topic }}</h4>
+            <p class="detail-timestamp">{{ formatTimestamp(selectedMessage.timestamp) }}</p>
+          </div>
+          <button type="button" class="close-btn" (click)="closeDetailPanel()" aria-label="Close">×</button>
+        </header>
+        
+        <div 
+          *ngIf="!selectedMessage.valid && selectedMessage.validationErrors" 
+          class="validation-errors"
+        >
+          <h5 i18n="@@messageMonitorValidationErrors">Validation Errors:</h5>
+          <ul>
+            <li *ngFor="let error of selectedMessage.validationErrors">{{ error }}</li>
           </ul>
         </div>
-
-        <div class="message-payload" *ngIf="selectedMessage">
-          <header class="payload-header">
-            <h4 i18n="@@messageMonitorPayload">Message Payload</h4>
-            <div class="payload-meta">
-              <span class="timestamp">{{ formatTimestamp(selectedMessage.timestamp) }}</span>
-              <span 
-                class="validity-badge" 
-                [class.valid]="selectedMessage.valid" 
-                [class.invalid]="!selectedMessage.valid"
-              >
-                <ng-container *ngIf="selectedMessage.valid; else invalidBadge" i18n="@@messageMonitorValidPayload">Valid</ng-container>
-                <ng-template #invalidBadge><span i18n="@@messageMonitorInvalidPayload">Invalid</span></ng-template>
-              </span>
-            </div>
-          </header>
-          
-          <div 
-            *ngIf="!selectedMessage.valid && selectedMessage.validationErrors" 
-            class="validation-errors"
-          >
-            <h5 i18n="@@messageMonitorValidationErrors">Validation Errors:</h5>
-            <ul>
-              <li *ngFor="let error of selectedMessage.validationErrors">{{ error }}</li>
-            </ul>
-          </div>
-          
-          <pre class="payload-json"><code>{{ formatJsonPayload(selectedMessage.payload) }}</code></pre>
-        </div>
+        
+        <pre class="payload-json"><code>{{ formatJsonPayload(selectedMessage.payload) }}</code></pre>
       </div>
-
-      <ng-template #noSelection>
-        <div class="no-selection">
-          <p i18n="@@messageMonitorSelectTopic">Select a topic from the list to view its messages and payloads.</p>
-        </div>
-      </ng-template>
-    </main>
+    </div>
   </div>
 </section>

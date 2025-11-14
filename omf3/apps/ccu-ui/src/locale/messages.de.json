@@ -113,7 +113,12 @@
     "messageMonitorValidationErrors": "Validierungsfehler:",
     "messageMonitorSelectTopic": "Wählen Sie ein Topic aus der Liste, um dessen Nachrichten und Payloads anzuzeigen.",
     "messageMonitorClearConfirm": "Sind Sie sicher, dass Sie alle überwachten Daten löschen möchten?",
-    "messageMonitorClearTopicConfirm": "Alle Daten für Topic ${INTERPOLATION} löschen?"
+    "messageMonitorClearTopicConfirm": "Alle Daten für Topic ${INTERPOLATION} löschen?",
+    "messageMonitorColumnTopic": "Topic",
+    "messageMonitorColumnTimestamp": "Zeitstempel",
+    "messageMonitorColumnPayload": "Payload",
+    "messageMonitorNoMessages": "Keine Nachrichten gefunden. Nachrichten werden hier angezeigt, sobald sie eintreffen.",
+    "messageMonitorLoadingMessages": "Lade Nachrichten..."
   }
 }
 

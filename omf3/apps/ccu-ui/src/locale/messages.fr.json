@@ -113,7 +113,12 @@
     "messageMonitorValidationErrors": "Erreurs de validation:",
     "messageMonitorSelectTopic": "Sélectionnez un topic dans la liste pour afficher ses messages et charges utiles.",
     "messageMonitorClearConfirm": "Êtes-vous sûr de vouloir effacer toutes les données surveillées?",
-    "messageMonitorClearTopicConfirm": "Effacer toutes les données pour le topic ${INTERPOLATION}?"
+    "messageMonitorClearTopicConfirm": "Effacer toutes les données pour le topic ${INTERPOLATION}?",
+    "messageMonitorColumnTopic": "Topic",
+    "messageMonitorColumnTimestamp": "Horodatage",
+    "messageMonitorColumnPayload": "Charge utile",
+    "messageMonitorNoMessages": "Aucun message trouvé. Les messages apparaîtront ici dès leur arrivée.",
+    "messageMonitorLoadingMessages": "Chargement des messages..."
   }
 }
 
