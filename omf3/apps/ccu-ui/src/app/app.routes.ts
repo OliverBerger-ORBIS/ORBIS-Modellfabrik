@@ -44,6 +44,11 @@ export const appRoutes: Routes = [
       import('./tabs/settings-tab.component').then((m) => m.SettingsTabComponent),
   },
   {
+    path: 'message-monitor',
+    loadComponent: () =>
+      import('./tabs/message-monitor-tab.component').then((m) => m.MessageMonitorTabComponent),
+  },
+  {
     path: '**',
     redirectTo: 'overview',
   },
