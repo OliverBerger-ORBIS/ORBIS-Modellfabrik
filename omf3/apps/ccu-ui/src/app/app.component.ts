@@ -18,6 +18,56 @@ interface NavigationItem {
   icon?: string;
 }
 
+const NAVIGATION_ITEMS: NavigationItem[] = [
+  {
+    id: 'overview',
+    label: $localize`:@@navOverview:Overview`,
+    route: '/overview',
+    roles: ['operator', 'admin'],
+  },
+  {
+    id: 'order',
+    label: $localize`:@@navOrder:Order`,
+    route: '/order',
+    roles: ['operator', 'admin'],
+  },
+  {
+    id: 'process',
+    label: $localize`:@@navProcess:Process`,
+    route: '/process',
+    roles: ['operator', 'admin'],
+  },
+  {
+    id: 'sensor',
+    label: $localize`:@@navSensor:Sensor Data`,
+    route: '/sensor',
+    roles: ['operator', 'admin'],
+  },
+  {
+    id: 'module',
+    label: $localize`:@@navModule:Module`,
+    route: '/module',
+    roles: ['operator', 'admin'],
+  },
+  {
+    id: 'configuration',
+    label: $localize`:@@navConfiguration:Configuration`,
+    route: '/configuration',
+    roles: ['admin'],
+  },
+  {
+    id: 'settings',
+    label: $localize`:@@navSettings:Settings`,
+    route: '/settings',
+    roles: ['admin'],
+  },
+  {
+    id: 'message-monitor',
+    label: $localize`:@@navMessageMonitor:Message Monitor`,
+    route: '/message-monitor',
+    roles: ['admin'],
+  },
+];
 @Component({
   standalone: true,
   imports: [
@@ -41,50 +91,7 @@ export class AppComponent implements OnDestroy {
   readonly environment$;
   readonly role$;
   readonly locales;
-  readonly navigation: NavigationItem[] = [
-    {
-      id: 'overview',
-      label: $localize`:@@navOverview:Overview`,
-      route: '/overview',
-      roles: ['operator', 'admin'],
-    },
-    {
-      id: 'order',
-      label: $localize`:@@navOrder:Order`,
-      route: '/order',
-      roles: ['operator', 'admin'],
-    },
-    {
-      id: 'process',
-      label: $localize`:@@navProcess:Process`,
-      route: '/process',
-      roles: ['operator', 'admin'],
-    },
-    {
-      id: 'sensor',
-      label: $localize`:@@navSensor:Sensor Data`,
-      route: '/sensor',
-      roles: ['operator', 'admin'],
-    },
-    {
-      id: 'module',
-      label: $localize`:@@navModule:Module`,
-      route: '/module',
-      roles: ['operator', 'admin'],
-    },
-    {
-      id: 'configuration',
-      label: $localize`:@@navConfiguration:Configuration`,
-      route: '/configuration',
-      roles: ['admin'],
-    },
-    {
-      id: 'settings',
-      label: $localize`:@@navSettings:Settings`,
-      route: '/settings',
-      roles: ['admin'],
-    },
-  ];
+  readonly navigation = NAVIGATION_ITEMS;
   sidebarCollapsed = false;
   selectedEnvironment: EnvironmentKey;
   selectedRole: UserRole;

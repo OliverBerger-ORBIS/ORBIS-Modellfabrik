@@ -1,0 +1,128 @@
+<section class="message-monitor-tab">
+  <header class="monitor-header">
+    <img [src]="monitorHeadingIcon" alt="Message Monitor icon" />
+    <div>
+      <h2 i18n="@@messageMonitorHeading">Message Monitor</h2>
+      <p i18n="@@messageMonitorSubheading">Real-time MQTT message monitoring and history</p>
+      <small class="monitor-header__environment">
+        <span i18n="@@messageMonitorEnvironment">Environment</span>: {{ environmentLabel }}
+      </small>
+    </div>
+  </header>
+
+  <div class="monitor-controls">
+    <div class="filter-group">
+      <h3 i18n="@@messageMonitorFilters">Filters</h3>
+      <div class="filter-inputs">
+        <label>
+          <span i18n="@@messageMonitorFilterText">Topic search</span>
+          <input 
+            type="text" 
+            [(ngModel)]="filterText" 
+            placeholder="Filter by topic name..."
+            i18n-placeholder="@@messageMonitorFilterTextPlaceholder"
+          />
+        </label>
+        
+        <label>
+          <span i18n="@@messageMonitorFilterModule">Module/Serial filter</span>
+          <input 
+            type="text" 
+            [(ngModel)]="filterModule" 
+            placeholder="e.g., SVR3QA0022, 5iO4..."
+            i18n-placeholder="@@messageMonitorFilterModulePlaceholder"
+          />
+        </label>
+        
+        <label class="checkbox-label">
+          <input 
+            type="checkbox" 
+            [(ngModel)]="filterConnectionState"
+          />
+          <span i18n="@@messageMonitorFilterConnectionState">Show only connection/state topics</span>
+        </label>
+      </div>
+      
+      <div class="filter-actions">
+        <button type="button" class="btn-secondary" (click)="clearFilters()">
+          <span i18n="@@messageMonitorClearFilters">Clear Filters</span>
+        </button>
+        <button type="button" class="btn-danger" (click)="clearAllData()">
+          <span i18n="@@messageMonitorClearAll">Clear All Data</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="monitor-content">
+    <div class="table-container" *ngIf="messages$ | async as messages; else messagesLoading">
+      <table class="messages-table">
+        <thead>
+          <tr>
+            <th i18n="@@messageMonitorColumnTopic">Topic</th>
+            <th i18n="@@messageMonitorColumnTimestamp">Timestamp</th>
+            <th i18n="@@messageMonitorColumnPayload">Payload</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr 
+            *ngFor="let message of messages; trackBy: trackByMessage"
+            [class.invalid]="!message.valid"
+            (click)="selectMessage(message)"
+            [class.selected]="selectedMessage === message"
+          >
+            <td class="topic-cell">
+              <div class="topic-name">{{ message.topic }}</div>
+              <span 
+                class="validity-indicator" 
+                [class.valid]="message.valid" 
+                [class.invalid]="!message.valid"
+              >
+                {{ message.valid ? '✓' : '✗' }}
+              </span>
+            </td>
+            <td class="timestamp-cell">{{ formatTimestamp(message.timestamp) }}</td>
+            <td class="payload-cell">
+              <code class="payload-preview">{{ formatPayloadPreview(message.payload) }}</code>
+            </td>
+          </tr>
+          
+          <tr *ngIf="messages.length === 0">
+            <td colspan="3" class="empty-state" i18n="@@messageMonitorNoMessages">
+              No messages found. Messages will appear here as they arrive.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    
+    <ng-template #messagesLoading>
+      <div class="loading-state" i18n="@@messageMonitorLoadingMessages">Loading messages...</div>
+    </ng-template>
+
+    <!-- Detailed payload view modal/panel when a message is selected -->
+    <div class="payload-detail-panel" *ngIf="selectedMessage" (click)="closeDetailPanel()">
+      <div class="payload-detail-content" (click)="$event.stopPropagation()">
+        <header class="detail-header">
+          <div>
+            <h4>{{ selectedMessage.topic }}</h4>
+            <p class="detail-timestamp">{{ formatTimestamp(selectedMessage.timestamp) }}</p>
+          </div>
+          <button type="button" class="close-btn" (click)="closeDetailPanel()" aria-label="Close">×</button>
+        </header>
+        
+        <div 
+          *ngIf="!selectedMessage.valid && selectedMessage.validationErrors" 
+          class="validation-errors"
+        >
+          <h5 i18n="@@messageMonitorValidationErrors">Validation Errors:</h5>
+          <ul>
+            <li *ngFor="let error of selectedMessage.validationErrors">{{ error }}</li>
+          </ul>
+        </div>
+        
+        <pre class="payload-json"><code>{{ formatJsonPayload(selectedMessage.payload) }}</code></pre>
+      </div>
+    </div>
+  </div>
+</section>

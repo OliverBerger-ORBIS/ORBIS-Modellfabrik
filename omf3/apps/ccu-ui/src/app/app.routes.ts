@@ -52,6 +52,11 @@ export const appRoutes: Routes = [
     ],
   },
   {
+    path: 'message-monitor',
+    loadComponent: () =>
+      import('./tabs/message-monitor-tab.component').then((m) => m.MessageMonitorTabComponent),
+  },
+  {
     path: '**',
     redirectTo: 'en/overview',
   },

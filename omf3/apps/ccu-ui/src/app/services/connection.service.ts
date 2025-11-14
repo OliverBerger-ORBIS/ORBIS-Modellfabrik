@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, interval, Subscription } from 'rxjs';
 import { EnvironmentDefinition, EnvironmentService } from './environment.service';
 import { createMqttClient, MockMqttAdapter, WebSocketMqttAdapter, MqttClientWrapper } from '@omf3/mqtt-client';
+import { MessageMonitorService } from './message-monitor.service';
 
 export type ConnectionState = 'disconnected' | 'connecting' | 'connected' | 'error';
 
@@ -27,8 +28,12 @@ export class ConnectionService {
   private retrySub?: Subscription;
   private _mqttClient?: MqttClientWrapper;
   private connectionStateSub?: Subscription;
+  private messagesSub?: Subscription;
 
-  constructor(private readonly environmentService: EnvironmentService) {
+  constructor(
+    private readonly environmentService: EnvironmentService,
+    private readonly messageMonitor: MessageMonitorService
+  ) {
     this.environmentService.environment$.subscribe((environment) => {
       const definition = this.environmentService.getDefinition(environment.key);
       if (!definition) {
@@ -117,6 +122,8 @@ export class ConnectionService {
         this.clearRetry();
         // Subscribe to all required topics after successful connection
         this.subscribeToRequiredTopics();
+        // Start monitoring MQTT messages
+        this.startMessageMonitoring();
       })
       .catch((error) => {
         console.error('[connection] Failed to connect:', error);
@@ -129,6 +136,10 @@ export class ConnectionService {
     if (this.connectionStateSub) {
       this.connectionStateSub.unsubscribe();
       this.connectionStateSub = undefined;
+    }
+    if (this.messagesSub) {
+      this.messagesSub.unsubscribe();
+      this.messagesSub = undefined;
     }
     if (this._mqttClient) {
       this._mqttClient.disconnect().catch((error) => {
@@ -206,6 +217,38 @@ export class ConnectionService {
       this.retrySub.unsubscribe();
       this.retrySub = undefined;
     }
+  }
+
+  private startMessageMonitoring(): void {
+    if (!this._mqttClient) {
+      return;
+    }
+
+    // Subscribe to all MQTT messages and feed them to MessageMonitorService
+    if (this.messagesSub) {
+      this.messagesSub.unsubscribe();
+    }
+
+    this.messagesSub = this._mqttClient.messages$.subscribe((message) => {
+      try {
+        // Parse JSON payload if it's a string
+        let payload = message.payload;
+        if (typeof payload === 'string') {
+          try {
+            payload = JSON.parse(payload);
+          } catch {
+            // Keep as string if not valid JSON
+          }
+        }
+        
+        // Feed message to monitor service
+        this.messageMonitor.addMessage(message.topic, payload, message.timestamp);
+      } catch (error) {
+        console.error('[connection] Failed to process message:', error);
+      }
+    });
+
+    console.log('[connection] Started message monitoring');
   }
 
   private loadSettings(): ConnectionSettings {
