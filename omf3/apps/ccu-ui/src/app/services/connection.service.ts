@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, interval, Subscription } from 'rxjs';
 import { EnvironmentDefinition, EnvironmentService } from './environment.service';
+import { createMqttClient, MockMqttAdapter, WebSocketMqttAdapter, MqttClientWrapper } from '@omf3/mqtt-client';
 
 export type ConnectionState = 'disconnected' | 'connecting' | 'connected' | 'error';
 
@@ -24,6 +25,8 @@ export class ConnectionService {
   private readonly errorSubject = new BehaviorSubject<string | null>(null);
   private settings: ConnectionSettings = this.loadSettings();
   private retrySub?: Subscription;
+  private mqttClient?: MqttClientWrapper;
+  private connectionStateSub?: Subscription;
 
   constructor(private readonly environmentService: EnvironmentService) {
     this.environmentService.environment$.subscribe((environment) => {
@@ -80,20 +83,53 @@ export class ConnectionService {
     this.updateState('connecting');
     this.errorSubject.next(null);
 
-    // TODO: integrate real MQTT client. For now simulate async connection.
-    setTimeout(() => {
-      const success = true;
-      if (success) {
-        this.updateState('connected');
+    // Create WebSocket MQTT client for replay/live environments
+    const adapter = new WebSocketMqttAdapter();
+    this.mqttClient = createMqttClient(adapter);
+
+    // Subscribe to connection state changes
+    if (this.connectionStateSub) {
+      this.connectionStateSub.unsubscribe();
+    }
+    this.connectionStateSub = this.mqttClient.connectionState$.subscribe((state) => {
+      this.updateState(state as ConnectionState);
+    });
+
+    // Build connection URL
+    const { mqttHost, mqttPort, mqttUsername, mqttPassword } = environment.connection;
+    const wsUrl = `${mqttHost}:${mqttPort}`;
+    const options: Record<string, unknown> = {};
+    
+    if (mqttUsername) {
+      options['username'] = mqttUsername;
+    }
+    if (mqttPassword) {
+      options['password'] = mqttPassword;
+    }
+
+    // Attempt connection
+    this.mqttClient.connect(wsUrl, options)
+      .then(() => {
         this.clearRetry();
-      } else {
-        this.handleConnectionFailure('Unable to connect');
-      }
-    }, 300);
+      })
+      .catch((error) => {
+        console.error('[connection] Failed to connect:', error);
+        this.handleConnectionFailure(error?.message || 'Unable to connect');
+      });
   }
 
   disconnect(): void {
     this.clearRetry();
+    if (this.connectionStateSub) {
+      this.connectionStateSub.unsubscribe();
+      this.connectionStateSub = undefined;
+    }
+    if (this.mqttClient) {
+      this.mqttClient.disconnect().catch((error) => {
+        console.error('[connection] Failed to disconnect:', error);
+      });
+      this.mqttClient = undefined;
+    }
     this.updateState('disconnected');
     this.errorSubject.next(null);
   }

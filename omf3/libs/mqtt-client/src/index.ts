@@ -95,3 +95,4 @@ export const createMqttClient = (adapter: MqttAdapter) =>
   new MqttClientWrapper(adapter);
 
 export { MockMqttAdapter } from './mock-adapter';
+export { WebSocketMqttAdapter } from './websocket-adapter';

@@ -50,8 +50,14 @@
 
       <section class="control-group">
         <h3>{{ mqttStatusLabel }}</h3>
-        <div class="status-pill" [class.status-pill--mock]="currentEnvironment.key === 'mock'">
-          {{ currentEnvironment.key === 'mock' ? mqttStatusSimulated : mqttStatusPending }}
+        <div 
+          class="status-pill" 
+          [class.status-pill--mock]="currentEnvironment.key === 'mock'"
+          [class.status-pill--connected]="(connectionState$ | async) === 'connected'"
+          [class.status-pill--connecting]="(connectionState$ | async) === 'connecting'"
+          [class.status-pill--error]="(connectionState$ | async) === 'error'"
+        >
+          {{ currentEnvironment.key === 'mock' ? mqttStatusSimulated : connectionStatusLabels[(connectionState$ | async) ?? 'disconnected'] }}
         </div>
       </section>
     </div>
