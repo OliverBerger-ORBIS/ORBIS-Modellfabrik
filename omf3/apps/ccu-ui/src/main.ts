@@ -1,3 +1,4 @@
+// Import @angular/localize/init explicitly to control initialization order
 import '@angular/localize/init';
 
 import { ɵsetLocaleId as setLocaleId } from '@angular/core';
@@ -16,28 +17,55 @@ async function loadLocaleFile(locale: LocaleKey): Promise<Record<string, string>
     throw new Error(`Failed to load translations for ${locale}`);
   }
   const json = await response.json();
-  return json.translations ?? json.default?.translations ?? json;
+  const translations = json.translations ?? json.default?.translations ?? json;
+  
+  // Convert @@key format to key format for loadTranslations API
+  const formattedTranslations: Record<string, string> = {};
+  for (const [key, value] of Object.entries(translations)) {
+    // Remove @@ prefix if present
+    const normalizedKey = key.startsWith('@@') ? key.slice(2) : key;
+    formattedTranslations[normalizedKey] = value as string;
+  }
+  
+  return formattedTranslations;
+}
+
+function getLocaleFromUrl(): LocaleKey {
+  const pathSegments = window.location.pathname.split('/').filter(Boolean);
+  const localeFromUrl = pathSegments[0] as LocaleKey;
+  const supportedLocales: LocaleKey[] = ['en', 'de', 'fr'];
+  if (supportedLocales.includes(localeFromUrl)) {
+    return localeFromUrl;
+  }
+  return 'en';
 }
 
 async function prepareLocale(): Promise<void> {
-  const storedLocale = (localStorage?.getItem(LOCALE_STORAGE_KEY) as LocaleKey | null) ?? 'en';
-  if (storedLocale === 'en') {
-    setLocaleId('en');
-    return;
-  }
-
-  try {
-    const translations = await loadLocaleFile(storedLocale);
-    loadTranslations(translations);
-    setLocaleId(storedLocale);
-  } catch (error) {
-    console.warn('[locale] Failed to load translations for', storedLocale, error);
-    setLocaleId('en');
+  // Priority: URL > localStorage > default 'en'
+  const urlLocale = getLocaleFromUrl();
+  
+  // URL has highest priority
+  const targetLocale = urlLocale;
+  
+  // Store in localStorage for next visit
+  localStorage?.setItem(LOCALE_STORAGE_KEY, targetLocale);
+  
+  // Set locale ID for Angular FIRST
+  setLocaleId(targetLocale);
+  
+  // Load translations for non-English locales
+  if (targetLocale !== 'en') {
+    try {
+      const translations = await loadLocaleFile(targetLocale);
+      loadTranslations(translations);
+    } catch (error) {
+      console.warn('[locale] Failed to load translations for', targetLocale, error);
+    }
   }
 }
 
 prepareLocale()
-  .finally(() => {
-    bootstrapApplication(AppComponent, appConfig).catch((err) => console.error(err));
+  .then(() => {
+    return bootstrapApplication(AppComponent, appConfig);
   })
   .catch((err) => console.error(err));
