@@ -30,7 +30,7 @@
     "max_topics_display": 50
   },
   "replay_station": {
-    "session_directory": "data/omf-data/sessions",
+    "session_directory": "../sessions",
     "mqtt_broker": {
       "host": "localhost",
       "port": 1883,
