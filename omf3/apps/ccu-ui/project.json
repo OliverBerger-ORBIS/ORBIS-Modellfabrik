@@ -108,9 +108,7 @@
           "optimization": false,
           "extractLicenses": false,
           "sourceMap": true,
-          "localize": [
-            "en"
-          ]
+          "localize": false
         }
       },
       "defaultConfiguration": "production"
