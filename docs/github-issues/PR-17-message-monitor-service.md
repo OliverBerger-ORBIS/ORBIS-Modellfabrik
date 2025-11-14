@@ -56,10 +56,11 @@ UI Components (consume business streams)
 ```
 
 ### Wichtige Constraints
-- **NICHT alle Topics subscriben** (wie Admin in OMF2)
-- **Nur spezifische Topics** (wie CCU in OMF2) - bereits in `ConnectionService.subscribeToRequiredTopics()`
-- **Throttling für Camera-Daten:** Bereits implementiert (`throttleTime(1000)`), beibehalten
-- **UI-Komponenten:** Sollen nicht unter Overloading leiden
+- **Subscription-Strategie:** `#` (alle Topics) - möglich, da Retention pro Topic konfigurierbar ist
+- **Retention pro Topic:** Individuelle Konfiguration verhindert Volumen-Probleme
+- **Camera-Daten:** Retention=10, NICHT persistieren, Throttling beibehalten (`throttleTime(1000)`)
+- **Unbekannte Topics:** Werden mit Default-Retention (50) behandelt
+- **UI-Komponenten:** Sollen nicht unter Overloading leiden (durch Retention-Limits geschützt)
 
 ## 📝 Implementation Details
 
@@ -152,8 +153,14 @@ function validateMessage(topic: string, message: any, schema: JSONSchema): Valid
 
 ```typescript
 // In ConnectionService.subscribeToRequiredTopics()
+// ÄNDERUNG: Statt spezifische Topics → subscribe to "#" (alle Topics)
+this._mqttClient.subscribe('#', { qos: 0 }).then(() => {
+  console.log('[connection] Subscribed to all topics (#)');
+});
+
+// Forward all messages to MessageMonitorService
 this._mqttClient.messages$.subscribe((message) => {
-  // Forward to MessageMonitorService
+  // MessageMonitorService entscheidet pro Topic über Retention
   this.messageMonitorService.onMessage(message);
 });
 ```
@@ -197,8 +204,8 @@ export const createGateway = (
 
 - **OMF2 Architektur:** `omf2/common/message_manager.py` (Schema-Validierung)
 - **OMF2 Registry:** `omf2/registry/schemas/` (JSON-Schemas)
-- **Entscheidungsdokumentation:** `docs/03-decision-records/09-message-monitor-service.md`
-- **GitHub Vorschlag:** Original Copilot-Vorschlag (siehe Conversation)
+- **Aktuelle Gateway-Implementierung:** `omf3/libs/gateway/src/index.ts`
+- **Aktuelle ConnectionService:** `omf3/apps/ccu-ui/src/app/services/connection.service.ts`
 
 ## ✅ Acceptance Criteria
 
@@ -238,6 +245,7 @@ export const createGateway = (
 
 - **Camera-Daten:** Bereits throttled (`throttleTime(1000)`), beibehalten
 - **Registry-Integration:** Schemas aus `omf2/registry/schemas/` (wie OMF2)
-- **Subscription-Strategie:** Nur spezifische Topics (kein Wildcard wie Admin in OMF2)
-- **UI-Overloading:** Sollte nicht auftreten, da nur spezifische Topics subscribed
-
+- **Subscription-Strategie:** `#` (alle Topics) - möglich durch Retention-Konfiguration pro Topic
+- **Volumen-Problem gelöst:** Individuelle Retention pro Topic verhindert Überlastung
+- **Unbekannte Topics:** Werden mit Default-Retention (50) behandelt, kein Problem da System bekannt
+- **UI-Overloading:** Verhindert durch Retention-Limits pro Topic
