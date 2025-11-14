@@ -25,18 +25,16 @@ export class MessageMonitorTabComponent implements OnInit, OnDestroy {
   private readonly subscriptions = new Subscription();
   private readonly refreshTrigger = new BehaviorSubject<number>(0);
 
-  // Observable state
-  readonly topics$ = combineLatest([
+  // Observable state - get all messages from all topics, sorted newest first
+  readonly messages$ = combineLatest([
     this.refreshTrigger,
     interval(1000).pipe(startWith(0))
   ]).pipe(
-    map(() => this.getTopicsInfo())
+    map(() => this.getAllMessages())
   );
 
   // UI state
-  selectedTopic: string | null = null;
   selectedMessage: MonitoredMessage | null = null;
-  messageHistory: MonitoredMessage[] = [];
   
   // Filter state
   filterText = '';
@@ -67,64 +65,49 @@ export class MessageMonitorTabComponent implements OnInit, OnDestroy {
     this.subscriptions.unsubscribe();
   }
 
-  getTopicsInfo(): TopicInfo[] {
+  getAllMessages(): MonitoredMessage[] {
     const allTopics = this.messageMonitor.getTopics();
+    const allMessages: MonitoredMessage[] = [];
     
-    return allTopics
-      .map(topic => {
-        const history = this.messageMonitor.getHistory(topic);
-        const lastMessage = history.length > 0 ? history[history.length - 1] : null;
-        
-        return {
-          topic,
-          messageCount: history.length,
-          lastTimestamp: lastMessage?.timestamp || '',
-          valid: lastMessage?.valid ?? true,
-        };
-      })
-      .filter(info => this.filterTopic(info))
-      .sort((a, b) => {
-        // Sort by last timestamp (most recent first)
-        if (!a.lastTimestamp) return 1;
-        if (!b.lastTimestamp) return -1;
-        return b.lastTimestamp.localeCompare(a.lastTimestamp);
-      });
+    // Collect all messages from all topics
+    allTopics.forEach(topic => {
+      const history = this.messageMonitor.getHistory(topic);
+      allMessages.push(...history);
+    });
+    
+    // Filter messages
+    const filtered = allMessages.filter(msg => this.filterMessage(msg));
+    
+    // Sort by timestamp, newest first (as per new requirement "Die Neuste zuoberst")
+    return filtered.sort((a, b) => {
+      if (!a.timestamp) return 1;
+      if (!b.timestamp) return -1;
+      return b.timestamp.localeCompare(a.timestamp);
+    });
   }
 
-  filterTopic(info: TopicInfo): boolean {
+  filterMessage(message: MonitoredMessage): boolean {
     // Text filter
-    if (this.filterText && !info.topic.toLowerCase().includes(this.filterText.toLowerCase())) {
+    if (this.filterText && !message.topic.toLowerCase().includes(this.filterText.toLowerCase())) {
       return false;
     }
 
     // Module/Serial filter
     if (this.filterModule) {
       const filterLower = this.filterModule.toLowerCase();
-      if (!info.topic.toLowerCase().includes(filterLower)) {
+      if (!message.topic.toLowerCase().includes(filterLower)) {
         return false;
       }
     }
 
     // Connection/State filter
     if (this.filterConnectionState) {
-      if (!info.topic.includes('/connection') && !info.topic.includes('/state')) {
+      if (!message.topic.includes('/connection') && !message.topic.includes('/state')) {
         return false;
       }
     }
 
     return true;
-  }
-
-  selectTopic(topic: string): void {
-    this.selectedTopic = topic;
-    this.messageHistory = this.messageMonitor.getHistory(topic);
-    
-    // Select the last message by default
-    if (this.messageHistory.length > 0) {
-      this.selectedMessage = this.messageHistory[this.messageHistory.length - 1];
-    } else {
-      this.selectedMessage = null;
-    }
   }
 
   selectMessage(message: MonitoredMessage): void {
@@ -164,34 +147,26 @@ export class MessageMonitorTabComponent implements OnInit, OnDestroy {
   clearAllData(): void {
     if (confirm($localize`:@@messageMonitorClearConfirm:Are you sure you want to clear all monitored data?`)) {
       this.messageMonitor.clearAll();
-      this.selectedTopic = null;
       this.selectedMessage = null;
-      this.messageHistory = [];
       this.refreshTrigger.next(Date.now());
     }
   }
 
-  clearTopicData(): void {
-    if (this.selectedTopic) {
-      if (confirm($localize`:@@messageMonitorClearTopicConfirm:Clear all data for topic ${this.selectedTopic}?`)) {
-        this.messageMonitor.clearTopic(this.selectedTopic);
-        this.selectedTopic = null;
-        this.selectedMessage = null;
-        this.messageHistory = [];
-        this.refreshTrigger.next(Date.now());
-      }
+  closeDetailPanel(): void {
+    this.selectedMessage = null;
+  }
+
+  formatPayloadPreview(payload: unknown): string {
+    try {
+      const str = JSON.stringify(payload);
+      // Show first 100 characters
+      return str.length > 100 ? str.substring(0, 100) + '...' : str;
+    } catch {
+      return String(payload);
     }
   }
 
-  getRetentionLimit(): number {
-    return this.selectedTopic ? this.messageMonitor.getRetention(this.selectedTopic) : 0;
-  }
-
-  trackByTopic(_index: number, item: TopicInfo): string {
-    return item.topic;
-  }
-
-  trackByMessage(index: number, _message: MonitoredMessage): number {
-    return index;
+  trackByMessage(_index: number, message: MonitoredMessage): string {
+    return `${message.topic}-${message.timestamp}`;
   }
 }
