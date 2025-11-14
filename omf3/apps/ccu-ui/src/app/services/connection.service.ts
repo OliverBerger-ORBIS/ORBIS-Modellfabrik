@@ -96,8 +96,8 @@ export class ConnectionService {
     });
 
     // Build connection URL
-    const { mqttHost, mqttPort, mqttUsername, mqttPassword } = environment.connection;
-    const wsUrl = `${mqttHost}:${mqttPort}`;
+    const { mqttHost, mqttPort, mqttPath, mqttUsername, mqttPassword } = environment.connection;
+    const wsUrl = `${mqttHost}:${mqttPort}${mqttPath || ''}`;
     const options: Record<string, unknown> = {};
     
     if (mqttUsername) {

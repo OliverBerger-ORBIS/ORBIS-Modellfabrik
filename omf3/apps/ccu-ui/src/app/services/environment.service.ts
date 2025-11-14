@@ -6,6 +6,7 @@ export type EnvironmentKey = 'mock' | 'replay' | 'live';
 interface EnvironmentConnection {
   mqttHost: string;
   mqttPort: number;
+  mqttPath?: string;
   mqttUsername?: string;
   mqttPassword?: string;
 }
@@ -29,12 +30,14 @@ const DEFAULT_CONNECTIONS: Record<EnvironmentKey, EnvironmentConnection> = {
   replay: {
     mqttHost: 'localhost',
     mqttPort: 1883,
+    mqttPath: '/mqtt',
     mqttUsername: undefined,
     mqttPassword: undefined,
   },
   live: {
     mqttHost: '192.168.0.100',
     mqttPort: 1883,
+    mqttPath: '/mqtt',
     mqttUsername: 'default',
     mqttPassword: 'default',
   },
