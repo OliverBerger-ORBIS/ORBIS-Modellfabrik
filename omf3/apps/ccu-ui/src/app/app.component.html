@@ -59,6 +59,24 @@
         >
           {{ currentEnvironment.key === 'mock' ? mqttStatusSimulated : connectionStatusLabels[(connectionState$ | async) ?? 'disconnected'] }}
         </div>
+        <button 
+          *ngIf="currentEnvironment.key !== 'mock' && (connectionState$ | async) !== 'connected' && (connectionState$ | async) !== 'connecting'"
+          type="button" 
+          class="connect-btn"
+          (click)="manualConnect()"
+          i18n="@@sidebarConnectButton"
+        >
+          Connect
+        </button>
+        <button 
+          *ngIf="currentEnvironment.key !== 'mock' && (connectionState$ | async) === 'connected'"
+          type="button" 
+          class="disconnect-btn"
+          (click)="manualDisconnect()"
+          i18n="@@sidebarDisconnectButton"
+        >
+          Disconnect
+        </button>
       </section>
     </div>
   </aside>

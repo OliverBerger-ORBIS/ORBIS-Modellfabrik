@@ -97,9 +97,7 @@
           ],
           "outputHashing": "all",
           "localize": [
-            "en",
-            "de",
-            "fr"
+            "en"
           ]
         },
         "development": {

@@ -207,4 +207,15 @@ export class AppComponent implements OnDestroy {
   get currentError(): string | null {
     return this.connectionService.currentError;
   }
+
+  manualConnect(): void {
+    const environment = this.environmentService.getDefinition(this.environmentService.current.key);
+    if (environment) {
+      this.connectionService.connect(environment);
+    }
+  }
+
+  manualDisconnect(): void {
+    this.connectionService.disconnect();
+  }
 }

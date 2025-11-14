@@ -20,6 +20,8 @@
     "sidebarMqttStatusLabel": "Connexion MQTT",
     "sidebarMqttStatusMock": "Simulé (mock)",
     "sidebarMqttStatusPending": "Non connecté",
+    "sidebarConnectButton": "Connecter",
+    "sidebarDisconnectButton": "Déconnecter",
     "appLoading": "Chargement…",
     "environmentMock": "Environnement mock",
     "environmentMockDescription": "Fixtures locales et flux de données simulés pour le développement.",
