@@ -30,14 +30,14 @@ const DEFAULT_CONNECTIONS: Record<EnvironmentKey, EnvironmentConnection> = {
   replay: {
     mqttHost: 'localhost',
     mqttPort: 1883,
-    mqttPath: '/mqtt',
+    mqttPath: '',
     mqttUsername: undefined,
     mqttPassword: undefined,
   },
   live: {
     mqttHost: '192.168.0.100',
     mqttPort: 1883,
-    mqttPath: '/mqtt',
+    mqttPath: '',
     mqttUsername: 'default',
     mqttPassword: 'default',
   },

@@ -21,18 +21,25 @@ async function loadLocaleFile(locale: LocaleKey): Promise<Record<string, string>
 
 async function prepareLocale(): Promise<void> {
   const storedLocale = (localStorage?.getItem(LOCALE_STORAGE_KEY) as LocaleKey | null) ?? 'en';
+  console.log('[locale] Stored locale:', storedLocale);
+  
   if (storedLocale === 'en') {
     setLocaleId('en');
+    console.log('[locale] Using English (default)');
     return;
   }
 
   try {
+    console.log('[locale] Loading translations for:', storedLocale);
     const translations = await loadLocaleFile(storedLocale);
+    console.log('[locale] Translations loaded, keys:', Object.keys(translations).length);
     loadTranslations(translations);
     setLocaleId(storedLocale);
+    console.log('[locale] Locale set to:', storedLocale);
   } catch (error) {
-    console.warn('[locale] Failed to load translations for', storedLocale, error);
+    console.error('[locale] Failed to load translations for', storedLocale, error);
     setLocaleId('en');
+    console.log('[locale] Fallback to English due to error');
   }
 }
 

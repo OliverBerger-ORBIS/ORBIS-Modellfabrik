@@ -37,6 +37,8 @@ export class WebSocketMqttAdapter implements MqttAdapter {
           url = `ws://${url}`;
         }
 
+        console.log('[WebSocketMqttAdapter] Attempting to connect to:', url);
+
         // Prepare MQTT.js connection options
         const mqttOptions: IClientOptions = {
           connectTimeout: 10000,
@@ -46,6 +48,7 @@ export class WebSocketMqttAdapter implements MqttAdapter {
         // Add authentication if provided
         if (options?.['username']) {
           mqttOptions.username = String(options['username']);
+          console.log('[WebSocketMqttAdapter] Using authentication with username:', mqttOptions.username);
         }
         if (options?.['password']) {
           mqttOptions.password = String(options['password']);
@@ -53,9 +56,11 @@ export class WebSocketMqttAdapter implements MqttAdapter {
 
         // Create MQTT client
         this.client = mqtt.connect(url, mqttOptions);
+        console.log('[WebSocketMqttAdapter] MQTT client created, waiting for connection...');
 
         // Set up event handlers
         this.client.on('connect', () => {
+          console.log('[WebSocketMqttAdapter] Successfully connected!');
           this.transition('connected');
           resolve();
         });
@@ -67,6 +72,7 @@ export class WebSocketMqttAdapter implements MqttAdapter {
         });
 
         this.client.on('close', () => {
+          console.log('[WebSocketMqttAdapter] Connection closed');
           this.transition('disconnected');
         });
 
