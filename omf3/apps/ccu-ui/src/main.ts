@@ -19,8 +19,28 @@ async function loadLocaleFile(locale: LocaleKey): Promise<Record<string, string>
   return json.translations ?? json.default?.translations ?? json;
 }
 
+function getLocaleFromUrl(): LocaleKey {
+  const pathSegments = window.location.pathname.split('/').filter(Boolean);
+  const localeFromUrl = pathSegments[0] as LocaleKey;
+  const supportedLocales: LocaleKey[] = ['en', 'de', 'fr'];
+  if (supportedLocales.includes(localeFromUrl)) {
+    return localeFromUrl;
+  }
+  return 'en';
+}
+
 async function prepareLocale(): Promise<void> {
-  const storedLocale = (localStorage?.getItem(LOCALE_STORAGE_KEY) as LocaleKey | null) ?? 'en';
+  // Try to get locale from URL first, then localStorage, then default to 'en'
+  const urlLocale = getLocaleFromUrl();
+  const storedLocale = urlLocale !== 'en' 
+    ? urlLocale 
+    : ((localStorage?.getItem(LOCALE_STORAGE_KEY) as LocaleKey | null) ?? 'en');
+  
+  // Store in localStorage for fallback
+  if (urlLocale !== 'en') {
+    localStorage?.setItem(LOCALE_STORAGE_KEY, urlLocale);
+  }
+  
   if (storedLocale === 'en') {
     setLocaleId('en');
     return;

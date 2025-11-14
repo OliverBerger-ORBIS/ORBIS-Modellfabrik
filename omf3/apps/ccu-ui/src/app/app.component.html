@@ -82,7 +82,7 @@
     <nav class="app-nav" aria-label="Main navigation" i18n-aria-label="@@appNavAriaLabel">
       <a
         *ngFor="let item of navigation; trackBy: trackNav"
-        [routerLink]="item.route"
+        [routerLink]="getRouteWithLocale(item.route)"
         routerLinkActive="active"
         [routerLinkActiveOptions]="{ exact: true }"
         [class.hidden]="!isNavVisible(item, (role$ | async) ?? null)"

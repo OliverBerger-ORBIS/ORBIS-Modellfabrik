@@ -136,6 +136,17 @@ export class AppComponent implements OnDestroy {
     this.selectedEnvironment = this.environmentService.current.key;
     this.selectedRole = this.roleService.current;
     this.selectedLocale = this.languageService.current;
+    
+    // Redirect to locale-prefixed route if not already there
+    const urlSegments = window.location.pathname.split('/').filter(Boolean);
+    const currentLocale = urlSegments[0] as LocaleKey;
+    if (!this.languageService.supportedLocales.includes(currentLocale)) {
+      const storedLocale = this.languageService.current;
+      const currentRoute = urlSegments.length > 0 ? urlSegments.join('/') : 'overview';
+      // Always redirect to locale-prefixed route
+      window.location.href = `/${storedLocale}/${currentRoute}`;
+    }
+    
     this.subscriptions.add(
       this.environmentService.environment$.subscribe((environment) => {
         this.selectedEnvironment = environment.key;
@@ -176,6 +187,14 @@ export class AppComponent implements OnDestroy {
 
   trackNav(_index: number, item: NavigationItem): string {
     return item.id;
+  }
+
+  getRouteWithLocale(route: string): string[] {
+    const currentLocale = this.languageService.current;
+    // Remove leading slash from route if present
+    const cleanRoute = route.startsWith('/') ? route.slice(1) : route;
+    // Return as array for routerLink
+    return [currentLocale, cleanRoute];
   }
 
   onEnvironmentChange(event: Event): void {
