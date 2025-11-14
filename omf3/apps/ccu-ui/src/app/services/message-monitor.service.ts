@@ -192,15 +192,20 @@ export class MessageMonitorService {
 
   private loadSchemas(): void {
     // Load JSON schemas from registry
-    // For now, we'll implement a basic loader that can be extended
-    // In a real implementation, this would fetch schemas from the omf2/registry/schemas/ directory
+    // TODO: Implement schema loading from omf2/registry/schemas/
+    // 
+    // Implementation options:
+    // 1. Bundle schemas as assets in project.json and fetch via HttpClient
+    // 2. Import schemas as JSON modules at build time
+    // 3. Fetch schemas from a backend API endpoint
+    // 
+    // For now, the service operates in fallback mode (accepts all messages).
+    // Schema validation can be added by:
+    // - Adding schemas to project.json assets configuration
+    // - Using HttpClient to load schemas on service init
+    // - Registering schemas with this.ajv.addSchema(schema)
     
-    // Note: In Angular, we need to either:
-    // 1. Bundle schemas as assets and fetch them via HTTP
-    // 2. Import them as JSON modules
-    // 3. Have them provided by a backend API
-    // For this implementation, we'll prepare the structure to load them
-    console.log('[MessageMonitor] Schema loading prepared - schemas should be loaded from registry');
+    console.log('[MessageMonitor] Schema validation in fallback mode - all messages accepted');
   }
 
   private topicToSchemaKey(topic: string): string {
