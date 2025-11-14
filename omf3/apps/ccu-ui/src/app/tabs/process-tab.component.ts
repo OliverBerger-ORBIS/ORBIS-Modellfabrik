@@ -3,8 +3,9 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import type { ProductionFlowMap } from '@omf3/entities';
 import { SHOPFLOOR_ASSET_MAP } from '@omf3/testing-fixtures';
 import { getDashboardController } from '../mock-dashboard';
+import { MessageMonitorService } from '../services/message-monitor.service';
 import type { Observable } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import { map, switchMap, startWith, filter, mergeMap } from 'rxjs/operators';
 
 interface ProcessStepView {
   id: string;
@@ -35,10 +36,17 @@ interface ProcessProductView {
 export class ProcessTabComponent {
   private readonly dashboard = getDashboardController();
 
-  flows$: Observable<ProductionFlowMap> = this.dashboard.streams$.pipe(
-    map((streams) => streams.flows$),
-    switchMap((flows$) => flows$)
-  );
+  constructor(private readonly messageMonitor: MessageMonitorService) {}
+
+  // Enhanced flows$ that immediately emits the last received message from MessageMonitor
+  // then continues with real-time updates from the dashboard stream
+  flows$: Observable<ProductionFlowMap> = this.messageMonitor
+    .getLastMessage<ProductionFlowMap>('ccu/state/flows')
+    .pipe(
+      filter((msg) => msg !== null && msg.valid),
+      map((msg) => msg!.payload)
+    );
+  
   products$: Observable<ProcessProductView[]> = this.flows$.pipe(map((flows) => this.buildProductViews(flows)));
 
   readonly processIcon = 'headings/gang.svg';
