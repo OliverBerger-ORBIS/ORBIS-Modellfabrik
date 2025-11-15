@@ -137,15 +137,12 @@ export class ConfigurationTabComponent {
   ) {
     // config$ doesn't have startWith in gateway layer, so merge MessageMonitor last value with dashboard stream
     const lastConfig = this.messageMonitor.getLastMessage<CcuConfigSnapshot>('ccu/state/config').pipe(
-      map((msg) => {
-        // If message exists and is valid, use it; otherwise return null
-        if (msg !== null && msg.valid) {
-          return msg.payload;
-        }
-        return null;
-      }),
-      // Only emit non-null values, but keep null for filter below
-      startWith(null as CcuConfigSnapshot | null)
+      // Filter first: only process valid messages
+      filter((msg) => msg !== null && msg.valid),
+      // Map second: extract payload from valid messages
+      map((msg) => msg!.payload)
+      // Note: No startWith here - let merge handle the stream combination
+      // The filter in the merge below ensures we only emit valid configs
     );
     this.configSnapshot$ = merge(lastConfig, this.dashboard.streams.config$).pipe(
       filter((config): config is CcuConfigSnapshot => config !== null),

@@ -54,16 +54,11 @@ export class OverviewTabComponent implements OnInit {
     // Pattern 2: inventoryOverview$ comes from gateway.stockSnapshots$ which has NO startWith
     // Therefore we need MessageMonitorService to get the last value immediately
     const lastInventory = this.messageMonitor.getLastMessage<StockSnapshot>('ccu/state/stock').pipe(
-      map((msg) => {
-        // If message exists and is valid, use it; otherwise return null
-        if (msg !== null && msg.valid) {
-          return this.buildInventoryOverviewFromSnapshot(msg.payload);
-        }
-        return null;
-      }),
-      // Only emit non-null values, but keep the stream alive
-      filter((state) => state !== null),
-      // Provide empty state as fallback if no message is available yet
+      // Filter first: only process valid messages
+      filter((msg) => msg !== null && msg.valid),
+      // Map second: transform valid messages to InventoryOverviewState
+      map((msg) => this.buildInventoryOverviewFromSnapshot(msg!.payload)),
+      // StartWith last: provide empty state as fallback only if no valid message exists
       startWith({ slots: {}, availableCounts: {}, reservedCounts: {}, lastUpdated: new Date().toISOString() } as InventoryOverviewState)
     );
     // Merge MessageMonitor last value with dashboard stream
