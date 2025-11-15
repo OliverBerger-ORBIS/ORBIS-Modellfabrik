@@ -11,6 +11,8 @@ import {
   SimpleChanges,
 } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { firstValueFrom } from 'rxjs';
 import type { OrderActive, ProductionStep } from '@omf3/entities';
 import { SHOPFLOOR_ASSET_MAP } from '@omf3/testing-fixtures';
 import type {
@@ -90,6 +92,7 @@ interface RouteOverlay {
   x: number;
   y: number;
   icon: string;
+  svgContent?: SafeHtml; // SVG content for inline rendering with color change
   width?: number;
   height?: number;
 }
@@ -144,7 +147,8 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
 
   constructor(
     private readonly http: HttpClient,
-    private readonly cdr: ChangeDetectorRef
+    private readonly cdr: ChangeDetectorRef,
+    private readonly sanitizer: DomSanitizer
   ) {}
 
   ngOnInit(): void {
@@ -180,7 +184,13 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
       return $localize`:@@shopfloorPreviewNoActiveStep:All steps completed.`;
     }
     if (step.type === 'NAVIGATION') {
-      return $localize`:@@shopfloorPreviewNavLabel:Route ${step.source} → ${step.target}`;
+      // Resolve source and target to readable names
+      const source = step.source ?? '';
+      const target = step.target ?? '';
+      // Use direct values (e.g., "HBW", "DRILL") or resolve if needed
+      const sourceName = source === 'START' ? $localize`:@@shopfloorPreviewStart:START` : source;
+      const targetName = target === 'END' ? $localize`:@@shopfloorPreviewEnd:END` : target;
+      return `${sourceName} → ${targetName}`;
     }
     if (step.moduleType) {
       return $localize`:@@shopfloorPreviewModuleLabel:Module ${step.moduleType}`;
@@ -628,6 +638,38 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
     return asset.startsWith('/') ? asset.slice(1) : asset;
   }
 
+  /**
+   * Load SVG and change fill color from #154194 to orange (#f97316)
+   * Returns SafeHtml for inline rendering
+   */
+  private async loadSvgWithOrangeFill(svgPath: string): Promise<SafeHtml | undefined> {
+    try {
+      const response = await firstValueFrom(this.http.get(svgPath, { responseType: 'text' }));
+      if (!response) {
+        return undefined;
+      }
+      // Replace all occurrences of #154194 (blue) with #f97316 (orange) in SVG
+      // Also replace RGB equivalent rgb(21, 65, 148) and any stroke/fill attributes
+      let orangeSvg = response.replace(/#154194/g, '#f97316');
+      orangeSvg = orangeSvg.replace(/rgb\(21,\s*65,\s*148\)/gi, 'rgb(249, 115, 22)');
+      orangeSvg = orangeSvg.replace(/fill="#154194"/g, 'fill="#f97316"');
+      orangeSvg = orangeSvg.replace(/stroke="#154194"/g, 'stroke="#f97316"');
+      orangeSvg = orangeSvg.replace(/fill:#154194/g, 'fill:#f97316');
+      orangeSvg = orangeSvg.replace(/stroke:#154194/g, 'stroke:#f97316');
+      
+      // Debug: Check if replacement worked
+      if (orangeSvg.includes('#154194')) {
+        console.warn('[ShopfloorPreview] SVG color replacement may have failed, still contains #154194');
+      }
+      
+      // Use bypassSecurityTrustHtml to preserve SVG content (SVG is safe)
+      return this.sanitizer.bypassSecurityTrustHtml(orangeSvg);
+    } catch (error) {
+      console.error('Failed to load SVG:', error);
+      return undefined;
+    }
+  }
+
   private computeActiveRoute(): { segments: RouteSegment[]; endpoints: ShopfloorPoint[]; overlay?: RouteOverlay } | null {
     if (!this.activeStep || this.activeStep.type !== 'NAVIGATION' || !this.layoutConfig) {
       return null;
@@ -674,12 +716,26 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
     const overlayPoint = this.computeRouteMidpoint(segments);
     const overlayIcon = this.getAssetPath('FTS');
 
+    // Load SVG with orange fill color for FTS
+    let svgContent: SafeHtml | undefined;
+    if (overlayIcon) {
+      // Ensure path starts with / for HttpClient
+      const svgPath = overlayIcon.startsWith('/') ? overlayIcon : `/${overlayIcon}`;
+      // Load SVG asynchronously - we'll handle this in updateViewModel
+      this.loadSvgWithOrangeFill(svgPath).then((content) => {
+        if (content && this.viewModel?.routeOverlay) {
+          this.viewModel.routeOverlay.svgContent = content;
+          this.cdr.markForCheck();
+        }
+      });
+    }
+
     return {
       segments,
       endpoints,
       overlay:
         overlayPoint && overlayIcon
-          ? { x: overlayPoint.x, y: overlayPoint.y, icon: overlayIcon, width: 80, height: 80 }
+          ? { x: overlayPoint.x, y: overlayPoint.y, icon: overlayIcon, svgContent, width: 80, height: 80 }
           : undefined,
     };
   }

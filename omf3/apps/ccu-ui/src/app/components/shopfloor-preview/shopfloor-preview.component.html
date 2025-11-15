@@ -117,8 +117,18 @@
         />
       </svg>
 
+      <!-- FTS Icon: Use inline SVG with orange fill if available, otherwise fallback to img -->
+      <div
+        *ngIf="vm.routeOverlay && vm.routeOverlay.svgContent"
+        class="preview__fts preview__fts--inline"
+        [style.left.px]="vm.routeOverlay.x"
+        [style.top.px]="vm.routeOverlay.y"
+        [style.width.px]="vm.routeOverlay.width ?? 48"
+        [style.height.px]="vm.routeOverlay.height ?? 48"
+        [innerHTML]="vm.routeOverlay.svgContent"
+      ></div>
       <img
-        *ngIf="vm.routeOverlay"
+        *ngIf="vm.routeOverlay && !vm.routeOverlay.svgContent"
         class="preview__fts"
         [src]="vm.routeOverlay.icon"
         alt=""

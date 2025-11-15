@@ -327,7 +327,7 @@
     {
       "id": "FTS-1",
       "label": "FTS-01",
-      "icon": "FTS_ICON",
+      "icon": "FTS",
       "capacity": 1,
       "current_position": { "x": 100, "y": 150 },
       "status": "idle"

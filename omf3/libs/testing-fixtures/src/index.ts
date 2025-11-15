@@ -348,7 +348,6 @@ export const SHOPFLOOR_ASSET_MAP: Record<string, string> = {
   'INTERSECTION-2': '/shopfloor/intersection2.svg',
   'INTERSECTION-3': '/shopfloor/intersection3.svg',
   'INTERSECTION-4': '/shopfloor/intersection4.svg',
-  FTS_ICON: '/shopfloor/robotic.svg',
   FACTORY_CONFIGURATION: '/headings/grundriss.svg',
   SHOPFLOOR_LAYOUT: '/headings/grundriss.svg',
   PARAMETER_CONFIGURATION: '/headings/system.svg',

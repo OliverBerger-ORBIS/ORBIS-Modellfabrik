@@ -50,8 +50,15 @@
 
       <section class="control-group">
         <h3>{{ mqttStatusLabel }}</h3>
-        <div class="status-pill" [class.status-pill--mock]="currentEnvironment.key === 'mock'">
-          {{ currentEnvironment.key === 'mock' ? mqttStatusSimulated : mqttStatusPending }}
+        <div 
+          class="status-pill" 
+          [class.status-pill--mock]="currentEnvironment.key === 'mock'"
+          [class.status-pill--connected]="(connectionState$ | async) === 'connected'"
+          [class.status-pill--disconnected]="(connectionState$ | async) === 'disconnected'"
+        >
+          {{ currentEnvironment.key === 'mock' 
+            ? mqttStatusSimulated 
+            : connectionStatusLabels[(connectionState$ | async) ?? 'disconnected'] }}
         </div>
       </section>
     </div>
@@ -68,7 +75,15 @@
       </div>
       <div class="header__actions">
         <div class="connection-status">
-          <span class="status-label">{{ connectionStatusLabels[(connectionState$ | async) ?? 'disconnected'] }}</span>
+          <span 
+            class="status-label"
+            [class.status-label--connected]="(connectionState$ | async) === 'connected'"
+            [class.status-label--disconnected]="(connectionState$ | async) === 'disconnected'"
+            [class.status-label--connecting]="(connectionState$ | async) === 'connecting'"
+            [class.status-label--error]="(connectionState$ | async) === 'error'"
+          >
+            {{ connectionStatusLabels[(connectionState$ | async) ?? 'disconnected'] }}
+          </span>
           <ng-container *ngIf="currentError as error">
             <span class="status-error">{{ error }}</span>
           </ng-container>
