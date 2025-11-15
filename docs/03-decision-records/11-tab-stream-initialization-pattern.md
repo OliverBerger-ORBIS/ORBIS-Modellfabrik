@@ -2,11 +2,15 @@
 
 ## Problem
 
-Wenn Tabs später geöffnet werden, nachdem MQTT-Nachrichten bereits empfangen wurden, zeigen sie keine Daten an, weil die Dashboard-Streams bereits emittiert haben und mit `refCount: true` beendet wurden, wenn keine Subscriber vorhanden waren.
+Wenn Tabs später geöffnet werden, nachdem MQTT-Nachrichten bereits empfangen wurden, zeigen sie keine Daten an. Dies tritt auf, weil:
 
-## Lösung: Hybrid Pattern
+1. Gateway-Streams ohne `startWith` nur emittieren, wenn eine neue Nachricht ankommt
+2. Wenn die Nachricht bereits vor dem Tab-Öffnen empfangen wurde, bleibt der Tab leer
+3. Der Tab zeigt erst Daten an, wenn eine neue Nachricht eintrifft
 
-Wir verwenden ein zweistufiges Pattern, abhängig davon, ob der Gateway-Stream `startWith` hat:
+## Lösung: Timing-Unabhängiges Pattern
+
+Wir verwenden ein zweistufiges Pattern, abhängig davon, ob der Business-Layer-Stream `startWith` hat:
 
 ### Pattern 1: Streams mit `startWith` in Business-Layer
 
@@ -30,7 +34,7 @@ this.stream$ = this.dashboard.streams.stream$.pipe(
 - `refCount: false` hält den Stream aktiv, auch wenn keine Subscriber vorhanden sind
 - Der letzte Wert bleibt verfügbar, auch wenn der Tab später geöffnet wird
 
-### Pattern 2: Streams ohne `startWith` in Gateway-Layer
+### Pattern 2: Streams ohne `startWith` in Business-Layer
 
 **Anwendbar auf:**
 - `inventoryOverview$` (kommt von `gateway.stockSnapshots$`, kein `startWith` in Gateway)
@@ -40,10 +44,11 @@ this.stream$ = this.dashboard.streams.stream$.pipe(
 **Implementierung:**
 ```typescript
 // Hole letzten Wert aus MessageMonitorService
+// WICHTIG: Operator-Reihenfolge ist kritisch für korrektes Timing-Verhalten
 const lastValue = this.messageMonitor.getLastMessage<PayloadType>('topic/name').pipe(
-  filter((msg) => msg !== null && msg.valid),
-  map((msg) => msg!.payload),
-  startWith(defaultValue)
+  filter((msg) => msg !== null && msg.valid),  // 1. Filter: Nur gültige Nachrichten
+  map((msg) => msg!.payload),                   // 2. Map: Payload extrahieren
+  startWith(defaultValue)                       // 3. StartWith: Fallback für leeren State
 );
 
 // Merge mit Dashboard-Stream für Echtzeit-Updates
@@ -54,9 +59,10 @@ this.stream$ = merge(lastValue, this.dashboard.streams.stream$).pipe(
 
 **Warum:**
 - Gateway-Streams ohne `startWith` emittieren erst, wenn eine Nachricht ankommt
-- Wenn die Nachricht bereits empfangen wurde, bevor der Tab geöffnet wird, ist der Stream bereits beendet
+- Wenn die Nachricht bereits empfangen wurde, bevor der Tab geöffnet wird, funktioniert der Stream nicht
 - MessageMonitorService speichert alle empfangenen Nachrichten, daher können wir den letzten Wert sofort abrufen
 - Merge mit Dashboard-Stream stellt sicher, dass wir weiterhin Echtzeit-Updates erhalten
+- **Operator-Reihenfolge**: `filter` → `map` → `startWith` ist kritisch, damit `startWith` nur als Fallback dient
 
 ### Spezialfall: Transformation erforderlich
 
@@ -67,19 +73,51 @@ this.stream$ = merge(lastValue, this.dashboard.streams.stream$).pipe(
 
 ```typescript
 const lastInventory = this.messageMonitor.getLastMessage<StockSnapshot>('ccu/state/stock').pipe(
+  filter((msg) => msg !== null && msg.valid),        // 1. Filter gültige Nachrichten
+  map((msg) => this.buildInventoryOverviewFromSnapshot(msg!.payload)), // 2. Transform
+  startWith(defaultInventoryOverview)                 // 3. Fallback
+);
+```
+
+### Spezialfall: Mehrere Topics kombinieren
+
+**Für `sensorOverview$`:**
+- Benötigt Daten von zwei separaten Topics (`bme680`, `ldr`)
+- Verwendet `combineLatest` um beide Streams zu kombinieren
+- `startWith` wird auf einzelnen Streams UND dem kombinierten Stream verwendet:
+
+```typescript
+const lastBme680 = this.messageMonitor.getLastMessage<Bme680Snapshot>('/j1/txt/1/i/bme680').pipe(
   filter((msg) => msg !== null && msg.valid),
-  map((msg) => this.buildInventoryOverviewFromSnapshot(msg!.payload)),
-  startWith(defaultInventoryOverview)
+  map((msg) => msg!.payload)
+);
+const lastLdr = this.messageMonitor.getLastMessage<LdrSnapshot>('/j1/txt/1/i/ldr').pipe(
+  filter((msg) => msg !== null && msg.valid),
+  map((msg) => msg!.payload)
+);
+
+// Wichtig: startWith AUSSERHALB von combineLatest Array für korrekte Test-Kompatibilität
+const bme680WithDefault = lastBme680.pipe(startWith(null));
+const ldrWithDefault = lastLdr.pipe(startWith(null));
+
+const lastSensorOverview = combineLatest([
+  bme680WithDefault,
+  ldrWithDefault
+]).pipe(
+  map(([bme, ldr]) => this.buildSensorOverviewState(bme, ldr)),  // 1. Transform
+  startWith(this.buildSensorOverviewState(null, null))            // 2. Fallback
 );
 ```
 
 ## Regeln
 
 1. **Immer `refCount: false` verwenden** in Tab-Komponenten, um Streams aktiv zu halten
-2. **Prüfe Gateway-Streams** auf `startWith` - wenn vorhanden, Pattern 1 verwenden
-3. **Wenn kein `startWith`** in Gateway-Layer, Pattern 2 verwenden
+2. **Prüfe Business-Layer-Streams** auf `startWith` - wenn vorhanden, Pattern 1 verwenden
+3. **Wenn kein `startWith`** in Business-Layer, Pattern 2 verwenden
 4. **Bei Transformation erforderlich**, Transformationslogik im Tab implementieren
-5. **Konsistentes Pattern** in allen Tabs anwenden
+5. **Operator-Reihenfolge ist kritisch**: `filter` → `map` → `startWith` (niemals `map` → `filter`)
+6. **Bei `combineLatest`**: `startWith` AUSSERHALB des Arrays für Test-Kompatibilität
+7. **Timing-Unabhängigkeit**: Pattern funktioniert egal ob Tab oder Nachricht zuerst da ist
 
 ## Betroffene Tabs
 
