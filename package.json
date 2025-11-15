@@ -6,7 +6,9 @@
   "scripts": {
     "nx": "nx",
     "graph": "nx graph",
-    "test": "nx test mqtt-client",
+    "test": "nx test --all",
+    "test:ccu-ui": "nx test ccu-ui",
+    "test:mqtt-client": "nx test mqtt-client",
     "build": "nx build mqtt-client",
     "build:fixtures": "python scripts/build_order_fixtures.py"
   },

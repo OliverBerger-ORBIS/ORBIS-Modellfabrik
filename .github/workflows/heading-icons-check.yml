@@ -1,7 +1,19 @@
-name: Heading Icons QA
-on: [push, pull_request]
+name: Heading Icons QA (OMF3)
+on: 
+  push:
+    paths:
+      - 'omf3/**/*.ts'
+      - 'omf3/**/*.html'
+      - 'omf3/apps/ccu-ui/public/headings/**'
+      - 'scripts/check_heading_svgs_omf3.py'
+  pull_request:
+    paths:
+      - 'omf3/**/*.ts'
+      - 'omf3/**/*.html'
+      - 'omf3/apps/ccu-ui/public/headings/**'
+      - 'scripts/check_heading_svgs_omf3.py'
 jobs:
-  check-heading-svgs:
+  check-heading-svgs-omf3:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -9,12 +21,6 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
-      - name: Install deps
-        run: pip install -r requirements.txt || true
-      - name: Set PYTHONPATH to repository root
-        run: echo "PYTHONPATH=${{ github.workspace }}" >> $GITHUB_ENV
-      - name: Install local omf2 package
-        run: pip install -e .
-      - name: Run heading icons check
+      - name: Run heading icons check (OMF3)
         run: |
-          python3 scripts/check_heading_svgs.py
+          python3 scripts/check_heading_svgs_omf3.py

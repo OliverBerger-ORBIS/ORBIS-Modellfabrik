@@ -31,9 +31,18 @@ jobs:
           echo "⚠️ Structure validation script not found, skipping"
         fi
     
-    - name: Run tests
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+    
+    - name: Install Node.js dependencies
       run: |
-        python -m pytest tests/ -v
+        npm ci
+    
+    - name: Run OMF3 tests
+      run: |
+        npx nx test --all
     
     - name: Check code formatting
       run: |

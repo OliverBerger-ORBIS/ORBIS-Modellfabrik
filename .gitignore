@@ -10,3 +10,11 @@ __pycache__/
 
 .angular
 .DS_Store
+# Python egg-info
+*.egg-info/
+orbis_modellfabrik.egg-info/
+
+# Logs
+logs/omf2.log
+logs/session_manager.jsonl
+logs/session_manager/

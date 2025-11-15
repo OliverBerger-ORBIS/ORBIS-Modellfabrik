@@ -22,16 +22,9 @@ repos:
         language: system
         types: [python]
 
-      - id: pytest
-        name: pytest
-        entry: python -m pytest -q
-        language: system
-        pass_filenames: false
-        stages: [commit]
-
-      - id: streamlit-startup-test
-        name: streamlit-startup-test
-        entry: python -m pytest omf2/tests/test_streamlit_startup.py -v
+      - id: pytest-omf3
+        name: pytest-omf3
+        entry: npx nx test --all
         language: system
         pass_filenames: false
         stages: [commit]
@@ -57,12 +50,13 @@ repos:
         pass_filenames: false
         stages: [commit]
 
-      - id: validate-i18n-compliance
-        name: validate-i18n-compliance
-        entry: python omf2/scripts/validate_i18n_compliance.py
-        language: system
-        pass_filenames: false
-        stages: [commit]
+      # OMF2-specific validation removed - using omf3 now
+      # - id: validate-i18n-compliance
+      #   name: validate-i18n-compliance
+      #   entry: python omf2/scripts/validate_i18n_compliance.py
+      #   language: system
+      #   pass_filenames: false
+      #   stages: [commit]
 
       - id: validate-mermaid-diagrams
         name: validate-mermaid-diagrams
@@ -72,13 +66,14 @@ repos:
         pass_filenames: false
         stages: [commit]
 
-      - id: check-st-rerun
-        name: check-st-rerun
-        entry: python omf2/scripts/check_st_rerun.py
-        language: system
-        types: [python]
-        stages: [commit]
-        pass_filenames: false
+      # OMF2-specific validation removed - using omf3 now
+      # - id: check-st-rerun
+      #   name: check-st-rerun
+      #   entry: python omf2/scripts/check_st_rerun.py
+      #   language: system
+      #   types: [python]
+      #   stages: [commit]
+      #   pass_filenames: false
 
       - id: check-mqtt-connection-loop
         name: check-mqtt-connection-loop
@@ -87,11 +82,12 @@ repos:
         types: [python]
         stages: [commit]
 
-      - id: validate-assets
-        name: validate-assets
-        entry: python omf2/scripts/validate_assets.py
-        language: system
-        files: (omf2/assets/|omf2/scripts/validate_assets\.py)
-        pass_filenames: false
-        stages: [commit]
+      # OMF2-specific validation removed - using omf3 now
+      # - id: validate-assets
+      #   name: validate-assets
+      #   entry: python omf2/scripts/validate_assets.py
+      #   language: system
+      #   files: (omf2/assets/|omf2/scripts/validate_assets\.py)
+      #   pass_filenames: false
+      #   stages: [commit]
 

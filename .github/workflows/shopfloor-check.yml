@@ -1,29 +1,23 @@
-name: Shopfloor Display Tests
+name: Shopfloor Component Tests (OMF3)
 
 on:
   push:
     branches: [ main, develop, 'feature/shopfloor-*' ]
     paths:
-      - 'omf2/config/ccu/shopfloor_*.py'
-      - 'omf2/config/ccu/shopfloor_layout.json'
-      - 'omf2/assets/asset_manager.py'
-      - 'omf2/ui/ccu/common/shopfloor_layout.py'
-      - 'tests/test_omf2/test_shopfloor_display.py'
-      - 'tests/test_omf2/test_asset_manager.py'
+      - 'omf3/apps/ccu-ui/src/app/components/shopfloor-preview/**'
+      - 'omf3/apps/ccu-ui/public/shopfloor/**'
+      - 'omf3/libs/testing-fixtures/**'
   pull_request:
     branches: [ main, develop ]
     paths:
-      - 'omf2/config/ccu/shopfloor_*.py'
-      - 'omf2/config/ccu/shopfloor_layout.json'
-      - 'omf2/assets/asset_manager.py'
-      - 'omf2/ui/ccu/common/shopfloor_layout.py'
-      - 'tests/test_omf2/test_shopfloor_display.py'
-      - 'tests/test_omf2/test_asset_manager.py'
+      - 'omf3/apps/ccu-ui/src/app/components/shopfloor-preview/**'
+      - 'omf3/apps/ccu-ui/public/shopfloor/**'
+      - 'omf3/libs/testing-fixtures/**'
 
 jobs:
-  test-shopfloor:
+  test-shopfloor-omf3:
     runs-on: ubuntu-latest
-    name: Test Shopfloor Display Module
+    name: Test Shopfloor Component (OMF3)
     
     steps:
     - name: Checkout repository
@@ -31,41 +25,33 @@ jobs:
       with:
         submodules: recursive
     
-    - name: Set up Python
-      uses: actions/setup-python@v4
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
       with:
-        python-version: '3.11'
+        node-version: '20'
     
-    - name: Install dependencies
+    - name: Install Node.js dependencies
       run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
+        npm ci
     
-    - name: Run shopfloor display tests
+    - name: Run OMF3 tests (includes shopfloor component tests)
       run: |
-        echo "🧪 Testing shopfloor display module..."
-        python -m pytest tests/test_omf2/test_shopfloor_display.py -v --tb=short
+        echo "🧪 Running OMF3 tests (includes shopfloor component)..."
+        npx nx test --all
     
-    - name: Run asset manager tests
+    - name: Verify shopfloor layout JSON exists
       run: |
-        echo "🧪 Testing asset manager (shopfloor-related)..."
-        python -m pytest tests/test_omf2/test_asset_manager.py -v --tb=short
-    
-    - name: Verify no deprecated keys in codebase
-      run: |
-        echo "🔍 Checking for deprecated COMPANY_square*/SOFTWARE_square* keys..."
-        if grep -r "COMPANY_square\|SOFTWARE_square" --include="*.py" --include="*.json" omf2/ tests/ 2>/dev/null | grep -v "# DEPRECATED" | grep -v "deprecated"; then
-          echo "❌ Found deprecated keys in code (excluding comments)"
+        if [ ! -f "omf3/apps/ccu-ui/public/shopfloor/shopfloor_layout.json" ]; then
+          echo "❌ shopfloor_layout.json not found"
           exit 1
         else
-          echo "✅ No deprecated keys found"
+          echo "✅ shopfloor_layout.json exists"
         fi
     
     - name: Test summary
       if: always()
       run: |
-        echo "📊 Shopfloor Display Test Summary"
-        echo "================================="
-        echo "✅ Shopfloor display module tests completed"
-        echo "✅ Asset manager tests completed"
-        echo "✅ Deprecated key check completed"
+        echo "📊 Shopfloor Component Test Summary (OMF3)"
+        echo "=========================================="
+        echo "✅ OMF3 tests completed (includes shopfloor component)"
+        echo "✅ Shopfloor layout JSON verified"
