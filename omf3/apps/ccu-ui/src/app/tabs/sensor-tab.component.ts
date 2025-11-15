@@ -2,8 +2,9 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { getDashboardController } from '../mock-dashboard';
 import type { Observable } from 'rxjs';
-import { map, shareReplay, switchMap, startWith } from 'rxjs/operators';
-import type { SensorOverviewState, CameraFrame } from '@omf3/entities';
+import { map, shareReplay, filter, startWith } from 'rxjs/operators';
+import { merge, combineLatest } from 'rxjs';
+import type { SensorOverviewState, CameraFrame, Bme680Snapshot, LdrSnapshot } from '@omf3/entities';
 import { MessageMonitorService } from '../services/message-monitor.service';
 
 @Component({
@@ -29,10 +30,40 @@ export class SensorTabComponent {
   readonly cameraFrame$: Observable<CameraFrame | null>;
 
   constructor(private readonly messageMonitor: MessageMonitorService) {
-    // Subscribe directly to dashboard streams - they already have shareReplay with startWith
-    // The business layer streams have startWith and shareReplay, so they should emit immediately
-    this.sensorOverview$ = this.dashboard.streams.sensorOverview$.pipe(
-      shareReplay({ bufferSize: 1, refCount: false }) // refCount: false to keep stream alive
+    // For sensorOverview$, merge MessageMonitor last values with dashboard stream
+    // MessageMonitor stores raw Bme680Snapshot and LdrSnapshot, need to transform to SensorOverviewState
+    // IMPORTANT: MessageMonitor streams come first in merge to ensure they have priority over dashboard stream
+    const lastBme680 = this.messageMonitor.getLastMessage<Bme680Snapshot>('/j1/txt/1/i/bme680').pipe(
+      filter((msg) => msg !== null && msg.valid),
+      map((msg) => msg!.payload)
+    );
+    const lastLdr = this.messageMonitor.getLastMessage<LdrSnapshot>('/j1/txt/1/i/ldr').pipe(
+      filter((msg) => msg !== null && msg.valid),
+      map((msg) => msg!.payload)
+    );
+    
+    // Pattern 2: sensorOverview$ comes from gateway.sensorBme680$ and sensorLdr$ which have NO startWith
+    // Combine last BME680 and LDR values from MessageMonitor
+    // Use startWith(null) so combineLatest emits even if one stream has no value yet
+    const lastSensorOverview = combineLatest([
+      lastBme680.pipe(
+        map((bme) => bme ?? null),
+        startWith(null as Bme680Snapshot | null)
+      ),
+      lastLdr.pipe(
+        map((ldr) => ldr ?? null),
+        startWith(null as LdrSnapshot | null)
+      )
+    ]).pipe(
+      map(([bme, ldr]) => this.buildSensorOverviewState(bme, ldr)),
+      startWith(this.buildSensorOverviewState(null, null))
+    );
+    
+    // Merge MessageMonitor last values with dashboard stream
+    // MessageMonitor streams come first to ensure they take priority when messages are available
+    // If MessageMonitor has no values yet, dashboard stream will provide the initial empty state
+    this.sensorOverview$ = merge(lastSensorOverview, this.dashboard.streams.sensorOverview$).pipe(
+      shareReplay({ bufferSize: 1, refCount: false })
     );
 
     this.cameraFrame$ = this.dashboard.streams.cameraFrames$.pipe(
@@ -121,7 +152,10 @@ export class SensorTabComponent {
 
     return values.map((value) => {
       const ratio = this.computeRatio(value, min, max, scale);
-      const angleDeg = ratio * 180 - 90;
+      // Rotate ticks 90° counter-clockwise so they start at bottom-left
+      // Original: ratio * 180 - 90 (starts at top)
+      // Fixed: ratio * 180 - 180 (starts at bottom-left)
+      const angleDeg = ratio * 180 - 180;
       const angleRad = (angleDeg * Math.PI) / 180;
       const outerX = this.gaugeCenterX + this.gaugeRadius * Math.cos(angleRad);
       const outerY = this.gaugeCenterY + this.gaugeRadius * Math.sin(angleRad);
@@ -201,5 +235,56 @@ export class SensorTabComponent {
 
     const ratio = (clamped - min) / (max - min);
     return Math.min(1, Math.max(0, Number(ratio.toFixed(3))));
+  }
+
+  /**
+   * Build SensorOverviewState from Bme680Snapshot and LdrSnapshot
+   * This matches the logic in business layer buildSensorOverviewState
+   */
+  private buildSensorOverviewState(
+    bme680: Bme680Snapshot | null,
+    ldr: LdrSnapshot | null
+  ): SensorOverviewState {
+    const temperatureC = bme680?.t ?? undefined;
+    const humidityPercent = bme680?.h ?? undefined;
+    const pressureHpa = bme680?.p ?? undefined;
+    const lightLux = ldr?.ldr ?? ldr?.br ?? undefined;
+    const iaq = bme680?.iaq ?? undefined;
+    const airQualityScore = bme680?.aq ?? undefined;
+    const airQualityClassification = this.classifyAirQuality(airQualityScore);
+
+    return {
+      timestamp: bme680?.ts ?? ldr?.ts,
+      temperatureC,
+      humidityPercent,
+      pressureHpa,
+      lightLux,
+      iaq,
+      airQualityScore,
+      airQualityClassification,
+    };
+  }
+
+  /**
+   * Classify air quality based on score
+   * This matches the logic in business layer classifyAirQuality
+   */
+  private classifyAirQuality(score: number | undefined): string | undefined {
+    if (score === undefined || score === null) {
+      return undefined;
+    }
+    if (score >= 4.5) {
+      return 'excellent';
+    }
+    if (score >= 3.5) {
+      return 'good';
+    }
+    if (score >= 2.5) {
+      return 'moderate';
+    }
+    if (score >= 1.5) {
+      return 'poor';
+    }
+    return 'critical';
   }
 }

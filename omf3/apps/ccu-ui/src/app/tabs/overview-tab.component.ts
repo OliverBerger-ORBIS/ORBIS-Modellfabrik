@@ -51,13 +51,15 @@ export class OverviewTabComponent implements OnInit {
     private readonly environmentService: EnvironmentService,
     private readonly messageMonitor: MessageMonitorService
   ) {
-    // For streams that might have already emitted (like inventory), merge MessageMonitor last value with dashboard stream
-    // MessageMonitor stores raw StockSnapshot, need to transform it to InventoryOverviewState
+    // Pattern 2: inventoryOverview$ comes from gateway.stockSnapshots$ which has NO startWith
+    // Therefore we need MessageMonitorService to get the last value immediately
     const lastInventory = this.messageMonitor.getLastMessage<StockSnapshot>('ccu/state/stock').pipe(
       filter((msg) => msg !== null && msg.valid),
       map((msg) => this.buildInventoryOverviewFromSnapshot(msg!.payload)),
       startWith({ slots: {}, availableCounts: {}, reservedCounts: {}, lastUpdated: new Date().toISOString() } as InventoryOverviewState)
     );
+    // Merge MessageMonitor last value with dashboard stream
+    // MessageMonitor stream comes first to ensure it takes priority when messages are available
     this.inventoryOverview$ = merge(lastInventory, this.dashboard.streams.inventoryOverview$).pipe(
       shareReplay({ bufferSize: 1, refCount: false })
     );

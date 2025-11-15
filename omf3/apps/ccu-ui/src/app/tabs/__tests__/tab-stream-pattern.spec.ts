@@ -44,10 +44,9 @@ describe('Tab Stream Initialization Pattern - Code Structure Validation', () => 
       expect(content).toMatch(/shareReplay\(\s*\{\s*bufferSize:\s*1,\s*refCount:\s*false\s*\}\s*\)/);
     });
 
-    it('SensorTab: sensorOverview$ and cameraFrame$ should use dashboard.streams directly', () => {
+    it('SensorTab: cameraFrame$ should use dashboard.streams directly', () => {
       const content = readFileContent(path.join(tabsDir, 'sensor-tab.component.ts'));
       
-      expect(content).toMatch(/this\.sensorOverview\$ = this\.dashboard\.streams\.sensorOverview\$\.pipe/);
       expect(content).toMatch(/this\.cameraFrame\$ = this\.dashboard\.streams\.cameraFrames\$\.pipe/);
       expect(content).toMatch(/shareReplay\(\s*\{\s*bufferSize:\s*1,\s*refCount:\s*false\s*\}\s*\)/);
     });
@@ -68,6 +67,39 @@ describe('Tab Stream Initialization Pattern - Code Structure Validation', () => 
       
       // Check transformation method exists
       expect(content).toMatch(/buildInventoryOverviewFromSnapshot/);
+      
+      // CRITICAL: Check that startWith comes AFTER filter and map (Pattern 2 requirement)
+      // Find the section with getLastMessage and extract the pipe chain (may span multiple lines)
+      const getLastMessageStart = content.indexOf('getLastMessage');
+      expect(getLastMessageStart).toBeGreaterThan(-1);
+      if (getLastMessageStart > -1) {
+        // Extract from getLastMessage to the closing parenthesis of the pipe
+        const section = content.substring(getLastMessageStart);
+        const pipeStart = section.indexOf('.pipe(');
+        expect(pipeStart).toBeGreaterThan(-1);
+        if (pipeStart > -1) {
+          // Find the matching closing parenthesis
+          let depth = 0;
+          let pipeEnd = pipeStart + 6; // Start after '.pipe('
+          for (let i = pipeEnd; i < section.length; i++) {
+            if (section[i] === '(') depth++;
+            if (section[i] === ')') {
+              if (depth === 0) {
+                pipeEnd = i + 1;
+                break;
+              }
+              depth--;
+            }
+          }
+          const pipeChain = section.substring(pipeStart, pipeEnd);
+          const filterIndex = pipeChain.indexOf('filter');
+          const mapIndex = pipeChain.indexOf('map');
+          const startWithIndex = pipeChain.indexOf('startWith');
+          expect(filterIndex).toBeGreaterThan(-1);
+          expect(mapIndex).toBeGreaterThan(filterIndex);
+          expect(startWithIndex).toBeGreaterThan(mapIndex);
+        }
+      }
     });
 
     it('ProcessTab: flows$ should merge MessageMonitorService with dashboard.streams', () => {
@@ -81,6 +113,36 @@ describe('Tab Stream Initialization Pattern - Code Structure Validation', () => 
       
       // Check shareReplay with refCount: false
       expect(content).toMatch(/shareReplay\(\s*\{\s*bufferSize:\s*1,\s*refCount:\s*false\s*\}\s*\)/);
+      
+      // CRITICAL: Check that startWith comes AFTER filter and map (Pattern 2 requirement)
+      const getLastMessageStart = content.indexOf('getLastMessage');
+      expect(getLastMessageStart).toBeGreaterThan(-1);
+      if (getLastMessageStart > -1) {
+        const section = content.substring(getLastMessageStart);
+        const pipeStart = section.indexOf('.pipe(');
+        expect(pipeStart).toBeGreaterThan(-1);
+        if (pipeStart > -1) {
+          let depth = 0;
+          let pipeEnd = pipeStart + 6;
+          for (let i = pipeEnd; i < section.length; i++) {
+            if (section[i] === '(') depth++;
+            if (section[i] === ')') {
+              if (depth === 0) {
+                pipeEnd = i + 1;
+                break;
+              }
+              depth--;
+            }
+          }
+          const pipeChain = section.substring(pipeStart, pipeEnd);
+          const filterIndex = pipeChain.indexOf('filter');
+          const mapIndex = pipeChain.indexOf('map');
+          const startWithIndex = pipeChain.indexOf('startWith');
+          expect(filterIndex).toBeGreaterThan(-1);
+          expect(mapIndex).toBeGreaterThan(filterIndex);
+          expect(startWithIndex).toBeGreaterThan(mapIndex);
+        }
+      }
     });
 
     it('ConfigurationTab: configSnapshot$ should merge MessageMonitorService with dashboard.streams', () => {
@@ -94,6 +156,66 @@ describe('Tab Stream Initialization Pattern - Code Structure Validation', () => 
       
       // Check shareReplay with refCount: false
       expect(content).toMatch(/shareReplay\(\s*\{\s*bufferSize:\s*1,\s*refCount:\s*false\s*\}\s*\)/);
+      
+      // CRITICAL: Check that startWith comes AFTER filter and map (Pattern 2 requirement)
+      const getLastMessageStart = content.indexOf('getLastMessage');
+      expect(getLastMessageStart).toBeGreaterThan(-1);
+      if (getLastMessageStart > -1) {
+        const section = content.substring(getLastMessageStart);
+        const pipeStart = section.indexOf('.pipe(');
+        expect(pipeStart).toBeGreaterThan(-1);
+        if (pipeStart > -1) {
+          let depth = 0;
+          let pipeEnd = pipeStart + 6;
+          for (let i = pipeEnd; i < section.length; i++) {
+            if (section[i] === '(') depth++;
+            if (section[i] === ')') {
+              if (depth === 0) {
+                pipeEnd = i + 1;
+                break;
+              }
+              depth--;
+            }
+          }
+          const pipeChain = section.substring(pipeStart, pipeEnd);
+          const filterIndex = pipeChain.indexOf('filter');
+          const mapIndex = pipeChain.indexOf('map');
+          const startWithIndex = pipeChain.indexOf('startWith');
+          expect(filterIndex).toBeGreaterThan(-1);
+          expect(mapIndex).toBeGreaterThan(filterIndex);
+          expect(startWithIndex).toBeGreaterThan(mapIndex);
+        }
+      }
+    });
+
+    it('SensorTab: sensorOverview$ should merge MessageMonitorService with dashboard.streams', () => {
+      const content = readFileContent(path.join(tabsDir, 'sensor-tab.component.ts'));
+      
+      // Check MessageMonitorService.getLastMessage is called for sensor topics
+      expect(content).toMatch(/this\.messageMonitor\.getLastMessage.*\/j1\/txt\/1\/i\/bme680/);
+      expect(content).toMatch(/this\.messageMonitor\.getLastMessage.*\/j1\/txt\/1\/i\/ldr/);
+      
+      // Check merge is used
+      expect(content).toMatch(/merge\(.*this\.dashboard\.streams\.sensorOverview\$/);
+      
+      // Check shareReplay with refCount: false
+      expect(content).toMatch(/shareReplay\(\s*\{\s*bufferSize:\s*1,\s*refCount:\s*false\s*\}\s*\)/);
+      
+      // Check transformation method exists
+      expect(content).toMatch(/buildSensorOverviewState/);
+      
+      // CRITICAL: Check that startWith is used in combineLatest and after map (Pattern 2 requirement)
+      // SensorTab uses combineLatest, so we check that startWith is used in the combineLatest pipe
+      const combineLatestSection = content.match(/combineLatest\s*\([^)]+\)[^}]*\.pipe\s*\([^)]+\)/);
+      expect(combineLatestSection).toBeTruthy();
+      if (combineLatestSection) {
+        const pipeChain = combineLatestSection[0];
+        const mapIndex = pipeChain.indexOf('map');
+        const startWithIndex = pipeChain.indexOf('startWith');
+        expect(mapIndex).toBeGreaterThan(-1);
+        expect(startWithIndex).toBeGreaterThan(mapIndex);
+        expect(pipeChain).toMatch(/buildSensorOverviewState/);
+      }
     });
   });
 
@@ -129,6 +251,7 @@ describe('Tab Stream Initialization Pattern - Code Structure Validation', () => 
         { file: 'overview-tab.component.ts', topic: 'ccu/state/stock' },
         { file: 'process-tab.component.ts', topic: 'ccu/state/flows' },
         { file: 'configuration-tab.component.ts', topic: 'ccu/state/config' },
+        { file: 'sensor-tab.component.ts', topic: '/j1/txt/1/i/bme680' },
       ];
 
       pattern2Files.forEach(({ file, topic }) => {
@@ -142,20 +265,62 @@ describe('Tab Stream Initialization Pattern - Code Structure Validation', () => 
       });
     });
 
+    it('Pattern 2: startWith must come AFTER filter and map (critical pattern requirement)', () => {
+      const pattern2Files = [
+        'overview-tab.component.ts',
+        'process-tab.component.ts',
+        'configuration-tab.component.ts',
+      ];
+
+      pattern2Files.forEach((file) => {
+        const content = readFileContent(path.join(tabsDir, file));
+        
+        // Extract the getLastMessage pipe chain (may span multiple lines)
+        const getLastMessageStart = content.indexOf('getLastMessage');
+        expect(getLastMessageStart).toBeGreaterThan(-1);
+        if (getLastMessageStart > -1) {
+          const section = content.substring(getLastMessageStart);
+          const pipeStart = section.indexOf('.pipe(');
+          expect(pipeStart).toBeGreaterThan(-1);
+          if (pipeStart > -1) {
+            let depth = 0;
+            let pipeEnd = pipeStart + 6;
+            for (let i = pipeEnd; i < section.length; i++) {
+              if (section[i] === '(') depth++;
+              if (section[i] === ')') {
+                if (depth === 0) {
+                  pipeEnd = i + 1;
+                  break;
+                }
+                depth--;
+              }
+            }
+            const pipeChain = section.substring(pipeStart, pipeEnd);
+            const filterIndex = pipeChain.indexOf('filter');
+            const mapIndex = pipeChain.indexOf('map');
+            const startWithIndex = pipeChain.indexOf('startWith');
+            expect(filterIndex).toBeGreaterThan(-1);
+            expect(mapIndex).toBeGreaterThan(-1);
+            expect(startWithIndex).toBeGreaterThan(-1);
+            expect(startWithIndex).toBeGreaterThan(filterIndex);
+            expect(startWithIndex).toBeGreaterThan(mapIndex);
+          }
+        }
+      });
+    });
+
     it('Streams with startWith should NOT use MessageMonitorService for their main streams', () => {
       const pattern1Files = [
         'module-tab.component.ts',
-        'sensor-tab.component.ts',
       ];
 
       pattern1Files.forEach((file) => {
         const content = readFileContent(path.join(tabsDir, file));
         
         // Check that getLastMessage is NOT called for main stream topics
-        // (ModuleTab and SensorTab should only use dashboard.streams directly)
+        // (ModuleTab should only use dashboard.streams directly)
         const hasGetLastMessageForMainStream = 
-          /getLastMessage.*module\/v1\/overview/.test(content) ||
-          /getLastMessage.*\/j1\/txt\/1\/i\/(bme680|ldr|cam)/.test(content);
+          /getLastMessage.*module\/v1\/overview/.test(content);
         
         expect(hasGetLastMessageForMainStream).toBe(false);
       });
