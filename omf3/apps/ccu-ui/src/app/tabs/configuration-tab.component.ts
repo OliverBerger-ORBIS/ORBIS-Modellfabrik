@@ -140,12 +140,11 @@ export class ConfigurationTabComponent {
       // Filter first: only process valid messages
       filter((msg) => msg !== null && msg.valid),
       // Map second: extract payload from valid messages
-      map((msg) => msg!.payload)
-      // Note: No startWith here - let merge handle the stream combination
-      // The filter in the merge below ensures we only emit valid configs
+      map((msg) => msg!.payload),
+      // StartWith last: provide empty config as fallback if no valid message exists
+      startWith({} as CcuConfigSnapshot)
     );
     this.configSnapshot$ = merge(lastConfig, this.dashboard.streams.config$).pipe(
-      filter((config): config is CcuConfigSnapshot => config !== null),
       shareReplay({ bufferSize: 1, refCount: false })
     );
     this.layoutInfo$ = this.http.get<ShopfloorLayoutConfig>('shopfloor/shopfloor_layout.json').pipe(

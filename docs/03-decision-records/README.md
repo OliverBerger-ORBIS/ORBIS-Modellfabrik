@@ -75,6 +75,16 @@
 **Datum:** 2025-10-19  
 **Kurzbeschreibung:** Architektur-Validierung vor Umstellung - Schrittweise Implementierung für komplexe Refactoring-Aufgaben.
 
+### 15. [Tab Stream Initialization Pattern](11-tab-stream-initialization-pattern.md) *(OMF3)*
+**Status:** Accepted  
+**Datum:** 2025-11-15  
+**Kurzbeschreibung:** Timing-unabhängige Tab-Stream-Initialisierung mit MessageMonitorService für sofortige Datenanzeige.
+
+### 16. [MessageMonitorService - Speicherverwaltung](12-message-monitor-service-storage.md) *(OMF3)*
+**Status:** Accepted  
+**Datum:** 2025-11-15  
+**Kurzbeschreibung:** Circular Buffer System mit konfigurierbarer Retention, 5MB localStorage-Limit und Überlauf-Prävention.
+
 ## Verwendung
 
 ### Neue Komponente hinzufügen:
