@@ -15,31 +15,55 @@
       <h3 i18n="@@messageMonitorFilters">Filters</h3>
       <div class="filter-inputs">
         <label>
+          <span i18n="@@messageMonitorFilterTopicType">Topic Type</span>
+          <select 
+            [(ngModel)]="filterTopicType" 
+            (ngModelChange)="onTopicTypeChange()"
+            class="filter-select"
+          >
+            <option value="all" i18n="@@messageMonitorFilterAllTopics">All Topics</option>
+            <option value="ccu" i18n="@@messageMonitorFilterCcuTopics">CCU Topics</option>
+            <option value="module-fts" i18n="@@messageMonitorFilterModuleFtsTopics">Module/FTS Topics</option>
+          </select>
+        </label>
+
+        <label *ngIf="filterTopicType === 'module-fts'">
+          <span i18n="@@messageMonitorFilterModuleFts">Module/FTS Filter</span>
+          <select 
+            [(ngModel)]="filterModule" 
+            (ngModelChange)="onFilterChange()"
+            class="filter-select"
+          >
+            <option value="" i18n="@@messageMonitorFilterAllModules">All Modules/FTS</option>
+            <option *ngFor="let module of availableModules" [value]="module.serial">
+              {{ module.name }} ({{ module.serial }})
+            </option>
+          </select>
+        </label>
+
+        <label *ngIf="filterTopicType === 'module-fts'">
+          <span i18n="@@messageMonitorFilterStatus">Status Filter</span>
+          <select 
+            [(ngModel)]="filterStatus" 
+            (ngModelChange)="onFilterChange()"
+            class="filter-select"
+          >
+            <option value="all" i18n="@@messageMonitorFilterAllStatus">All Status</option>
+            <option value="connection" i18n="@@messageMonitorFilterConnection">Connection</option>
+            <option value="state" i18n="@@messageMonitorFilterState">State</option>
+            <option value="factsheet" i18n="@@messageMonitorFilterFactsheet">Factsheet</option>
+          </select>
+        </label>
+        
+        <label>
           <span i18n="@@messageMonitorFilterText">Topic search</span>
           <input 
             type="text" 
             [(ngModel)]="filterText" 
+            (ngModelChange)="onFilterChange()"
             placeholder="Filter by topic name..."
             i18n-placeholder="@@messageMonitorFilterTextPlaceholder"
           />
-        </label>
-        
-        <label>
-          <span i18n="@@messageMonitorFilterModule">Module/Serial filter</span>
-          <input 
-            type="text" 
-            [(ngModel)]="filterModule" 
-            placeholder="e.g., SVR3QA0022, 5iO4..."
-            i18n-placeholder="@@messageMonitorFilterModulePlaceholder"
-          />
-        </label>
-        
-        <label class="checkbox-label">
-          <input 
-            type="checkbox" 
-            [(ngModel)]="filterConnectionState"
-          />
-          <span i18n="@@messageMonitorFilterConnectionState">Show only connection/state topics</span>
         </label>
       </div>
       
@@ -60,6 +84,7 @@
         <thead>
           <tr>
             <th i18n="@@messageMonitorColumnTopic">Topic</th>
+            <th i18n="@@messageMonitorColumnName">Name</th>
             <th i18n="@@messageMonitorColumnTimestamp">Timestamp</th>
             <th i18n="@@messageMonitorColumnPayload">Payload</th>
           </tr>
@@ -72,14 +97,28 @@
             [class.selected]="selectedMessage === message"
           >
             <td class="topic-cell">
-              <div class="topic-name">{{ message.topic }}</div>
-              <span 
-                class="validity-indicator" 
-                [class.valid]="message.valid" 
-                [class.invalid]="!message.valid"
-              >
-                {{ message.valid ? '✓' : '✗' }}
-              </span>
+              <div class="topic-content">
+                <div class="topic-name">{{ message.topic }}</div>
+                <span 
+                  class="validity-indicator" 
+                  [class.valid]="message.valid" 
+                  [class.invalid]="!message.valid"
+                  [title]="message.valid ? 'Message is valid' : 'Message validation failed'"
+                >
+                  {{ message.valid ? '✓' : '✗' }}
+                </span>
+              </div>
+            </td>
+            <td class="name-cell">
+              <div class="name-content">
+                <img 
+                  [src]="getTopicName(message.topic).icon" 
+                  [alt]="getTopicName(message.topic).name"
+                  class="name-icon"
+                  onerror="this.style.display='none'"
+                />
+                <span class="name-text">{{ getTopicName(message.topic).name }}</span>
+              </div>
             </td>
             <td class="timestamp-cell">{{ formatTimestamp(message.timestamp) }}</td>
             <td class="payload-cell">
@@ -88,7 +127,7 @@
           </tr>
           
           <tr *ngIf="messages.length === 0">
-            <td colspan="3" class="empty-state" i18n="@@messageMonitorNoMessages">
+            <td colspan="4" class="empty-state" i18n="@@messageMonitorNoMessages">
               No messages found. Messages will appear here as they arrive.
             </td>
           </tr>
@@ -121,7 +160,7 @@
           </ul>
         </div>
         
-        <pre class="payload-json"><code>{{ formatJsonPayload(selectedMessage.payload) }}</code></pre>
+        <pre class="payload-json"><code #jsonCodeBlock class="language-json">{{ formatJsonPayload(selectedMessage.payload) }}</code></pre>
       </div>
     </div>
   </div>

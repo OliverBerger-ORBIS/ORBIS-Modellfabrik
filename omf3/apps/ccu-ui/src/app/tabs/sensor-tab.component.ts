@@ -34,12 +34,22 @@ export class SensorTabComponent {
     // MessageMonitor stores raw Bme680Snapshot and LdrSnapshot, need to transform to SensorOverviewState
     // IMPORTANT: MessageMonitor streams come first in merge to ensure they have priority over dashboard stream
     const lastBme680 = this.messageMonitor.getLastMessage<Bme680Snapshot>('/j1/txt/1/i/bme680').pipe(
-      filter((msg) => msg !== null && msg.valid),
-      map((msg) => msg!.payload)
+      map((msg) => {
+        // If message exists and is valid, use it; otherwise return null
+        if (msg !== null && msg.valid) {
+          return msg.payload;
+        }
+        return null;
+      })
     );
     const lastLdr = this.messageMonitor.getLastMessage<LdrSnapshot>('/j1/txt/1/i/ldr').pipe(
-      filter((msg) => msg !== null && msg.valid),
-      map((msg) => msg!.payload)
+      map((msg) => {
+        // If message exists and is valid, use it; otherwise return null
+        if (msg !== null && msg.valid) {
+          return msg.payload;
+        }
+        return null;
+      })
     );
     
     // Pattern 2: sensorOverview$ comes from gateway.sensorBme680$ and sensorLdr$ which have NO startWith

@@ -70,17 +70,28 @@
         color: var(--color-text-secondary, #666);
       }
 
-      input[type="text"] {
+      input[type="text"],
+      select.filter-select {
         padding: 0.5rem;
         border: 1px solid var(--color-border, #ddd);
         border-radius: 4px;
         font-size: 0.875rem;
+        background: white;
+        cursor: pointer;
 
         &:focus {
           outline: none;
           border-color: var(--color-primary, #1a73e8);
           box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.1);
         }
+      }
+
+      select.filter-select {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 0.5rem center;
+        padding-right: 2rem;
       }
     }
 
@@ -224,18 +235,28 @@
 }
 
 .topic-cell {
-  width: 30%;
+  width: 40%;
   
+  .topic-content {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+  }
+
   .topic-name {
     font-weight: 500;
-    word-break: break-all;
-    margin-bottom: 0.25rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
+    min-width: 0; // Allows text-overflow to work in flex container
   }
 
   .validity-indicator {
     font-size: 0.75rem;
     font-weight: 600;
-    margin-left: 0.5rem;
+    flex-shrink: 0;
+    cursor: help;
 
     &.valid {
       color: var(--color-success, #28a745);
@@ -247,6 +268,29 @@
   }
 }
 
+.name-cell {
+  width: 15%;
+  
+  .name-content {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap;
+  }
+
+  .name-icon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    object-fit: contain;
+  }
+
+  .name-text {
+    font-weight: 500;
+    color: var(--color-text-primary, #333);
+  }
+}
+
 .timestamp-cell {
   width: 20%;
   color: var(--color-text-secondary, #666);
@@ -254,7 +298,7 @@
 }
 
 .payload-cell {
-  width: 50%;
+  width: 30%;
   
   .payload-preview {
     display: block;

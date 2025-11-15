@@ -51,9 +51,25 @@ export class MessageMonitorService {
    * Returns null if no message has been received yet
    */
   getLastMessage<T = unknown>(topic: string): Observable<MonitoredMessage<T> | null> {
+    // Always check buffer for current value, even if subject already exists
+    // This ensures we get the latest message even if subject was created before message arrived
+    const buffer = this.buffers.get(topic);
+    const lastMessage = buffer && buffer.items.length > 0 
+      ? buffer.items[buffer.items.length - 1] 
+      : null;
+    
     if (!this.subjects.has(topic)) {
-      this.subjects.set(topic, new BehaviorSubject<MonitoredMessage | null>(null));
+      // Initialize BehaviorSubject with last message if available, otherwise null
+      this.subjects.set(topic, new BehaviorSubject<MonitoredMessage | null>(lastMessage));
+    } else {
+      // Subject already exists - update it with current buffer value if different
+      // This handles the case where message arrived after subject was created
+      const currentValue = this.subjects.get(topic)!.value;
+      if (currentValue !== lastMessage) {
+        this.subjects.get(topic)!.next(lastMessage);
+      }
     }
+    
     return this.subjects.get(topic)!.asObservable() as Observable<MonitoredMessage<T> | null>;
   }
 

@@ -46,8 +46,16 @@ export class ProcessTabComponent {
   constructor(private readonly messageMonitor: MessageMonitorService) {
     // flows$ doesn't have startWith in gateway layer, so merge MessageMonitor last value with dashboard stream
     const lastFlows = this.messageMonitor.getLastMessage<ProductionFlowMap>('ccu/state/flows').pipe(
-      filter((msg) => msg !== null && msg.valid),
-      map((msg) => msg!.payload),
+      map((msg) => {
+        // If message exists and is valid, use it; otherwise return null
+        if (msg !== null && msg.valid) {
+          return msg.payload;
+        }
+        return null;
+      }),
+      // Only emit non-null values
+      filter((payload) => payload !== null),
+      // Provide empty state as fallback if no message is available yet
       startWith({} as ProductionFlowMap)
     );
     this.flows$ = merge(lastFlows, this.dashboard.streams.flows$).pipe(

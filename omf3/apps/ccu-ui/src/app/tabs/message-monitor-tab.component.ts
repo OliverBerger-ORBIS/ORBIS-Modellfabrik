@@ -1,10 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, AfterViewChecked, ElementRef, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MessageMonitorService, MonitoredMessage } from '../services/message-monitor.service';
 import { EnvironmentService } from '../services/environment.service';
 import { BehaviorSubject, combineLatest, interval, Subscription } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
+import hljs from 'highlight.js';
+import 'highlight.js/styles/github.css';
 
 interface TopicInfo {
   topic: string;
@@ -12,6 +14,28 @@ interface TopicInfo {
   lastTimestamp: string;
   valid: boolean;
 }
+
+interface ModuleInfo {
+  serial: string;
+  name: string;
+  icon: string;
+}
+
+type TopicTypeFilter = 'all' | 'ccu' | 'module-fts';
+type StatusFilter = 'all' | 'connection' | 'state' | 'factsheet';
+
+// Module/Serial Mapping based on docs/06-integrations/00-REFERENCE/module-serial-mapping.md
+const MODULE_MAPPING: Record<string, ModuleInfo> = {
+  'SVR3QA0022': { serial: 'SVR3QA0022', name: 'HBW', icon: 'shopfloor/stock.svg' },
+  'SVR4H76449': { serial: 'SVR4H76449', name: 'DRILL', icon: 'shopfloor/bohrer.svg' },
+  'SVR3QA2098': { serial: 'SVR3QA2098', name: 'MILL', icon: 'shopfloor/milling-machine.svg' },
+  'SVR4H73275': { serial: 'SVR4H73275', name: 'DPS', icon: 'shopfloor/robot-arm.svg' },
+  'SVR4H76530': { serial: 'SVR4H76530', name: 'AIQS', icon: 'shopfloor/ai-assistant.svg' },
+  '5iO4': { serial: '5iO4', name: 'FTS', icon: 'shopfloor/robotic.svg' },
+};
+
+const CCU_ICON = 'headings/dezentral_1.svg';
+const TXT_ICON = 'shopfloor/mixer.svg';
 
 @Component({
   standalone: true,
@@ -21,9 +45,12 @@ interface TopicInfo {
   styleUrl: './message-monitor-tab.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MessageMonitorTabComponent implements OnInit, OnDestroy {
+export class MessageMonitorTabComponent implements OnInit, OnDestroy, AfterViewChecked {
   private readonly subscriptions = new Subscription();
   private readonly refreshTrigger = new BehaviorSubject<number>(0);
+  
+  @ViewChild('jsonCodeBlock', { static: false }) jsonCodeBlock?: ElementRef<HTMLElement>;
+  private shouldHighlight = false;
 
   // Observable state - get all messages from all topics, sorted newest first
   readonly messages$ = combineLatest([
@@ -38,10 +65,16 @@ export class MessageMonitorTabComponent implements OnInit, OnDestroy {
   
   // Filter state
   filterText = '';
+  filterTopicType: TopicTypeFilter = 'all';
   filterModule = '';
-  filterConnectionState = false;
+  filterStatus: StatusFilter = 'all';
   
-  readonly monitorHeadingIcon = 'headings/smart.svg';
+  // Available modules/FTS for dropdown (extracted from topics)
+  availableModules: ModuleInfo[] = [];
+  
+  readonly monitorHeadingIcon = 'headings/zentral.svg';
+  
+  private readonly STORAGE_KEY = 'omf3.message-monitor.filters';
 
   constructor(
     private readonly messageMonitor: MessageMonitorService,
@@ -57,11 +90,19 @@ export class MessageMonitorTabComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    // Load persisted filter settings
+    this.loadFilterSettings();
+    
+    // Extract available modules/FTS from topics
+    this.updateAvailableModules();
+    
     // Trigger initial refresh
     this.refreshTrigger.next(Date.now());
   }
 
   ngOnDestroy(): void {
+    // Save filter settings when leaving tab
+    this.saveFilterSettings();
     this.subscriptions.unsubscribe();
   }
 
@@ -75,6 +116,9 @@ export class MessageMonitorTabComponent implements OnInit, OnDestroy {
       allMessages.push(...history);
     });
     
+    // Update available modules/FTS when topics change
+    this.updateAvailableModules();
+    
     // Filter messages
     const filtered = allMessages.filter(msg => this.filterMessage(msg));
     
@@ -87,24 +131,43 @@ export class MessageMonitorTabComponent implements OnInit, OnDestroy {
   }
 
   filterMessage(message: MonitoredMessage): boolean {
-    // Text filter
+    // Topic type filter (All Topics, ccu-topics, Module/FTS topics)
+    if (this.filterTopicType === 'ccu') {
+      if (!message.topic.startsWith('ccu/')) {
+        return false;
+      }
+    } else if (this.filterTopicType === 'module-fts') {
+      const isModuleTopic = message.topic.startsWith('module/v1/');
+      const isFtsTopic = message.topic.startsWith('fts/v1/');
+      if (!isModuleTopic && !isFtsTopic) {
+        return false;
+      }
+    }
+    // 'all' shows everything, no filter needed
+
+    // Module/FTS filter (only when Topic Type is Module/FTS)
+    if (this.filterTopicType === 'module-fts' && this.filterModule) {
+      if (!message.topic.includes(this.filterModule)) {
+        return false;
+      }
+    }
+
+    // Status filter (only when Topic Type is Module/FTS)
+    if (this.filterTopicType === 'module-fts' && this.filterStatus !== 'all') {
+      if (this.filterStatus === 'connection' && !message.topic.includes('/connection')) {
+        return false;
+      }
+      if (this.filterStatus === 'state' && !message.topic.includes('/state')) {
+        return false;
+      }
+      if (this.filterStatus === 'factsheet' && !message.topic.includes('/factsheet')) {
+        return false;
+      }
+    }
+
+    // Text filter (always applies)
     if (this.filterText && !message.topic.toLowerCase().includes(this.filterText.toLowerCase())) {
       return false;
-    }
-
-    // Module/Serial filter
-    if (this.filterModule) {
-      const filterLower = this.filterModule.toLowerCase();
-      if (!message.topic.toLowerCase().includes(filterLower)) {
-        return false;
-      }
-    }
-
-    // Connection/State filter
-    if (this.filterConnectionState) {
-      if (!message.topic.includes('/connection') && !message.topic.includes('/state')) {
-        return false;
-      }
     }
 
     return true;
@@ -112,6 +175,7 @@ export class MessageMonitorTabComponent implements OnInit, OnDestroy {
 
   selectMessage(message: MonitoredMessage): void {
     this.selectedMessage = message;
+    this.shouldHighlight = true;
   }
 
   formatTimestamp(ts: string): string {
@@ -139,9 +203,130 @@ export class MessageMonitorTabComponent implements OnInit, OnDestroy {
 
   clearFilters(): void {
     this.filterText = '';
+    this.filterTopicType = 'all';
     this.filterModule = '';
-    this.filterConnectionState = false;
+    this.filterStatus = 'all';
     this.refreshTrigger.next(Date.now());
+  }
+
+  onTopicTypeChange(): void {
+    // Reset module filter when switching topic type
+    if (this.filterTopicType !== 'module-fts') {
+      this.filterModule = '';
+    }
+    this.refreshTrigger.next(Date.now());
+  }
+
+  onFilterChange(): void {
+    this.refreshTrigger.next(Date.now());
+  }
+
+  updateAvailableModules(): void {
+    const allTopics = this.messageMonitor.getTopics();
+    const moduleSerials = new Set<string>();
+
+    // Extract module/FTS serials from topics
+    allTopics.forEach(topic => {
+      // Module topics: module/v1/ff/<serial>/... or module/v1/ff/NodeRed/<serial>/...
+      if (topic.startsWith('module/v1/ff/')) {
+        const parts = topic.split('/');
+        // Check for NodeRed pattern: module/v1/ff/NodeRed/<serial>/...
+        if (parts.length >= 5 && parts[3] === 'NodeRed') {
+          moduleSerials.add(parts[4]);
+        } else if (parts.length >= 4) {
+          // Direct pattern: module/v1/ff/<serial>/...
+          moduleSerials.add(parts[3]);
+        }
+      }
+      // FTS topics: fts/v1/ff/<serial>/...
+      else if (topic.startsWith('fts/v1/ff/')) {
+        const parts = topic.split('/');
+        if (parts.length >= 4) {
+          moduleSerials.add(parts[3]);
+        }
+      }
+    });
+
+    // Build module info list
+    this.availableModules = Array.from(moduleSerials)
+      .map(serial => MODULE_MAPPING[serial] || { serial, name: serial, icon: 'shopfloor/robot-arm.svg' })
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  getTopicName(topic: string): { name: string; icon: string } {
+    // CCU topics
+    if (topic.startsWith('ccu/')) {
+      return { name: 'CCU', icon: CCU_ICON };
+    }
+
+    // TXT topics
+    if (topic.startsWith('/j1/txt/')) {
+      return { name: 'TXT', icon: TXT_ICON };
+    }
+
+    // Module topics: extract serial and get module info
+    if (topic.startsWith('module/v1/ff/')) {
+      const parts = topic.split('/');
+      let serial: string | undefined;
+      
+      // Check for NodeRed pattern: module/v1/ff/NodeRed/<serial>/...
+      if (parts.length >= 5 && parts[3] === 'NodeRed') {
+        serial = parts[4];
+      } else if (parts.length >= 4) {
+        // Direct pattern: module/v1/ff/<serial>/...
+        serial = parts[3];
+      }
+
+      if (serial && MODULE_MAPPING[serial]) {
+        const module = MODULE_MAPPING[serial];
+        return { name: module.name, icon: module.icon };
+      }
+    }
+
+    // FTS topics: fts/v1/ff/<serial>/...
+    if (topic.startsWith('fts/v1/ff/')) {
+      const parts = topic.split('/');
+      if (parts.length >= 4) {
+        const serial = parts[3];
+        if (MODULE_MAPPING[serial]) {
+          const module = MODULE_MAPPING[serial];
+          return { name: `${module.name} (${module.serial})`, icon: module.icon };
+        }
+      }
+    }
+
+    // Default: use first element of topic path
+    const firstElement = topic.split('/')[0] || topic;
+    return { name: firstElement, icon: 'shopfloor/robot-arm.svg' };
+  }
+
+  private loadFilterSettings(): void {
+    try {
+      const stored = localStorage.getItem(this.STORAGE_KEY);
+      if (stored) {
+        const settings = JSON.parse(stored);
+        this.filterTopicType = settings.filterTopicType || 'all';
+        this.filterModule = settings.filterModule || '';
+        this.filterStatus = settings.filterStatus || 'all';
+        this.filterText = settings.filterText || '';
+      }
+    } catch (error) {
+      console.warn('[MessageMonitor] Failed to load filter settings:', error);
+    }
+  }
+
+  private saveFilterSettings(): void {
+    try {
+      const settings = {
+        filterTopicType: this.filterTopicType,
+        filterModule: this.filterModule,
+        filterStatus: this.filterStatus,
+        filterText: this.filterText,
+      };
+      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(settings));
+    } catch (error) {
+      console.warn('[MessageMonitor] Failed to save filter settings:', error);
+    }
   }
 
   clearAllData(): void {
@@ -154,6 +339,15 @@ export class MessageMonitorTabComponent implements OnInit, OnDestroy {
 
   closeDetailPanel(): void {
     this.selectedMessage = null;
+    this.shouldHighlight = false;
+  }
+
+  ngAfterViewChecked(): void {
+    // Highlight JSON when code block is rendered
+    if (this.shouldHighlight && this.jsonCodeBlock) {
+      hljs.highlightElement(this.jsonCodeBlock.nativeElement);
+      this.shouldHighlight = false;
+    }
   }
 
   formatPayloadPreview(payload: unknown): string {
