@@ -2,20 +2,19 @@
 
 ## 🚨 KRITISCHE VERBOTE (POSITION 1 - HÖCHSTE PRIORITÄT)
 
-### Streamlit-App-Verbot (ABSOLUT KRITISCH)
-- **NIEMALS Streamlit-Apps starten:** `streamlit run` ❌
-- **Grund:** Verursacht Race-Conditions, Connection-Probleme, MQTT-Konflikte
-- **Verboten:** `streamlit run omf2/omf.py`, `streamlit run omf/helper_apps/...`
-- **Erlaubt:** Nur User startet Streamlit-Apps
-- **Konsequenz:** Mehrere Instanzen führen zu MQTT-Connection-Chaos
-- **Regel:** Agent startet KEINE Streamlit-Apps - NUR User!
+### Angular-App-Verbot (ABSOLUT KRITISCH)
+- **NIEMALS Angular-Apps starten ohne User-Freigabe:** `nx serve ccu-ui` ❌
+- **Grund:** Verursacht Port-Konflikte, Development-Server-Probleme
+- **Verboten:** `nx serve ccu-ui` ohne explizite User-Bestätigung
+- **Erlaubt:** Nur User startet Angular-Apps
+- **Regel:** Agent startet KEINE Angular-Apps ohne explizite Freigabe!
 
 ## 🎯 ZENTRALE ENTWICKLUNGSREGELN
 
 ### Import-Standards (KRITISCH)
-- **Absolute Imports für externe Module:** `from omf.dashboard.tools.logging_config import get_logger` ✅
-- **Relative Imports für Paket-interne Module:** `from .graph_analyzer import GraphAnalyzer` ✅
-- **Standard Library Imports:** `import json, from pathlib import Path` ✅
+- **Absolute Imports für externe Libraries:** `from '@omf3/gateway'` ✅
+- **Relative Imports für Paket-interne Module:** `from './component'` ✅
+- **Standard Library Imports:** `import { Observable } from 'rxjs'` ✅
 - **KEINE sys.path.append Hacks:** `sys.path.append(...)` ❌
 - **Import-Reihenfolge:** Standard Library → Third Party → Local (absolute) → Local (relative)
 
@@ -27,33 +26,38 @@
 - **Unterscheidung:** Source-Pfade vs. Data-Pfade je nach Verwendungszweck
 
 ### Projekt-Struktur
-- **Aktive Sourcen:** `omf/dashboard/` (Produktiv-Dashboard)
-- **Helper-Apps:** `omf/helper_apps/`, `omf/analysis_tools/` (Separate Anwendungen)
+- **Aktive Sourcen:** `omf3/` (OMF3 Angular Dashboard - aktuell in Entwicklung)
+- **Legacy Sourcen:** `omf2/` (OMF2 Streamlit Dashboard - wird durch OMF3 ersetzt)
+- **Helper-Apps:** `session_manager/` (Session-Replay Helper-App)
 - **Dokumentation:** `docs/` (Alle Projekt-Dokumente)
 - **Session-Daten:** `data/omf-data/sessions/` (SQLite + Log-Dateien)
 - **Log-Dateien:** `data/logs/` (nicht mehr ins Projekt-Root)
 
-### Code-Qualität
-- **Black:** Line-length 120, Ruff ignoriert E501
+### Code-Qualität (OMF3 - Produktiver Code)
+- **TypeScript:** Strikte Typisierung, keine `any` ohne Begründung
+- **ESLint:** Alle Linting-Regeln müssen erfüllt sein (Pre-commit Hook)
+- **Type Check:** TypeScript Type Checking muss bestehen
+- **RxJS:** Observable Patterns korrekt verwenden (`shareReplay`, `refCount: false` für persistente Streams)
+- **Angular:** Component-basierte Architektur, Services für Business Logic
 - **Pre-commit Hooks:** Immer befolgen, nie mit --no-verify überspringen
-- **Tests:** Nach jeder Änderung ausführen
+- **Tests:** Nach jeder Änderung ausführen, MÜSSEN vor Commit bestehen
 - **Commits:** Häufig und mit funktionierendem Stand
 
-### Test-Standards
-- **Test-Verzeichnis:** `tests/` (Alle Tests hier)
-- **Test-Struktur:** `tests/test_omf/`, `tests/test_helper_apps/`
+### Test-Standards (OMF3 - Produktiver Code)
+- **Test-Verzeichnis:** `omf3/` Libraries haben Tests in `src/__tests__/`
+- **Test-Struktur:** `*.spec.ts` für Angular Components, `*.spec.ts` für Libraries
 - **Test-Imports:** Absolute Imports auch in Tests verwenden
-- **Test-Namen:** `test_*.py` oder `*_test.py`
-- **Test-Ausführung:** `python -m pytest tests/`
-- **Virtual Environment:** Immer `.venv` aktivieren: `source .venv/bin/activate`
-- **Test-Environment:** Alle Tests mit aktiviertem .venv ausführen
-- **Terminal Commands:** Immer `.venv` aktivieren vor pip install, git commit, etc.
+- **Test-Namen:** `*.spec.ts` oder `*_test.ts`
+- **Test-Ausführung:** `nx test <project>` oder `nx test --all`
+- **Pre-commit:** OMF3 Tests MÜSSEN vor jedem Commit bestehen
+- **Virtual Environment:** Für Python-Tests (Session Manager) immer `.venv` aktivieren
 
-### Branch-spezifische Test-Regeln
-- **Helper-Branches:** Nur `tests/test_helper_apps/` ausführen
-- **Main-Branch:** Alle Tests in `tests/` ausführen
-- **Helper-Test-Befehl:** `python -m pytest tests/test_helper_apps/`
-- **Automatische Ausführung:** `python run_tests_by_branch.py`
+### OMF3-spezifische Regeln
+- **Tab Stream Pattern:** Pattern 1 oder Pattern 2 korrekt anwenden (siehe [Tab Stream Initialization Pattern](docs/03-decision-records/11-tab-stream-initialization-pattern.md))
+- **MessageMonitorService:** Für Timing-unabhängige Datenanzeige verwenden
+- **RxJS Streams:** `shareReplay({ bufferSize: 1, refCount: false })` für persistente Streams
+- **Angular Services:** Injectable Services für Business Logic
+- **Component Lifecycle:** OnInit, OnDestroy korrekt implementieren
 
 ### Entwicklungsprozess-Regeln
 - **Neue Anforderungen:** Erst Analyse, dann Zusammenfassung, dann Implementierung
@@ -61,8 +65,6 @@
 - **Zusammenfassung:** Kurze Übersicht der geplanten Änderungen
 - **Freigabe:** Warten auf explizite Bestätigung vor Implementierung
 - **Keine direkte Implementierung** ohne vorherige Analyse und Freigabe
-- **Virtual Environment:** Immer `.venv` aktivieren vor Tests und Entwicklung
-- **Dependencies:** Alle Tests mit aktiviertem .venv ausführen
 
 ### Git-Workflow-Regeln
 - **Commits:** NUR nach expliziter Bestätigung des Users
@@ -71,20 +73,19 @@
 - **Push:** Nur nach User-Bestätigung
 - **Workflow:** Änderungen → User-Freigabe → Commit → Push
 
-### Dashboard-Komponenten-Regeln (KRITISCH)
-- **Wrapper-Komponenten:** `show_<component_name>()` mit Tabs
-- **Unterkomponenten:** `show_<specific_function>()` mit expandable sections
-- **Private Funktionen:** `_show_<function>_section()` mit `_` Prefix
-- **MQTT-Singleton:** `st.session_state.get("mqtt_client")` verwenden
-- **Per-topic subscription:** `subscribe_many()` und `get_buffer()` verwenden
-- **Error-Handling:** Try-catch für alle Gateway-Calls
-- **UI-Standards:** Icons, expandable sections, Spalten-Layout
-- **UI-Refresh:** Verwende `request_refresh()` statt `st.rerun()` in Komponenten
-- **Logging-System:** Verwende `_init_logging_once()` für Logging-Initialisierung
+### Angular-Komponenten-Regeln (KRITISCH)
+- **Component-basierte Architektur:** Services für Business Logic, Components für UI
+- **RxJS Observable Patterns:** Korrekte Verwendung von `shareReplay`, `refCount`, `startWith`
+- **MessageMonitorService:** Für Timing-unabhängige Datenanzeige verwenden
+- **Tab Stream Pattern:** Pattern 1 oder Pattern 2 korrekt anwenden
+- **Error-Handling:** Try-catch für alle Service-Calls
+- **UI-Standards:** SVG Icons, Component-basierte Struktur
+- **I18n:** `$localize` für Übersetzungen verwenden
 
 ### Vollständige Regeln
-- **Allgemein:** `docs/03-decision-records/07-development-rules-compliance.md`
-- **Dashboard-Komponenten:** `docs/03-decision-records/07-development-rules-compliance.md`
+- **Allgemein:** `docs/03-decision-records/` - OMF3 Decision Records
+- **Architektur:** `docs/02-architecture/project-structure.md` - OMF3 Project Structure
+- **Tab Stream Pattern:** `docs/03-decision-records/11-tab-stream-initialization-pattern.md`
 
 ## 🚨 AUTOMATISCHE REGEL-BEFOLGUNG (KRITISCH)
 
@@ -92,10 +93,10 @@
 - **JEDE Code-Änderung** MUSS diese Regeln automatisch befolgen
 - **KEINE Ausnahmen** ohne explizite User-Freigabe
 - **Immer prüfen** vor jeder Implementierung:
-  - ✅ Absolute Imports verwendet?
-  - ✅ Absolute Pfade verwendet?
-  - ✅ OMF-Logging-System verwendet?
-  - ✅ UI-Refresh Pattern verwendet?
+  - ✅ TypeScript Typisierung korrekt?
+  - ✅ RxJS Observable Patterns korrekt?
+  - ✅ Tab Stream Pattern korrekt angewendet?
+  - ✅ MessageMonitorService verwendet (wenn nötig)?
   - ✅ Pre-commit Hooks kompatibel?
   - ✅ Tests erstellt/aktualisiert?
 
@@ -112,19 +113,14 @@
 4. **Validierung:** Pre-commit Hooks, Tests, Linting
 5. **Freigabe:** User-Bestätigung vor Commit
 
-### AUTOMATISCHE REGEL-ANWENDUNG
-- **VOR jeder Code-Änderung:** Development Rules prüfen
-- **WÄHREND der Implementierung:** Regeln automatisch befolgen
-- **NACH jeder Änderung:** `python omf/scripts/validate_development_rules.py` ausführen
-- **Bei Regel-Verletzungen:** Sofort korrigieren, nicht ignorieren
-- **Bei Unsicherheit:** User fragen, nicht raten
-
 ### ZWINGENDE REGELN (NIEMALS IGNORIEREN)
-- **Import-Struktur:** Korrekte Reihenfolge und Paket-relative Imports
-- **Pfad-Handling:** Source-Pfade (paket-relativ) vs. Data-Pfade (projekt-root-relativ)
-- **OMF-Logging:** `get_logger("module.component")` statt `logging.getLogger()`
-- **UI-Refresh:** `request_refresh()` statt `st.rerun()`
-- **Pre-commit:** Black (120 Zeichen), Ruff, Tests
+- **TypeScript:** Strikte Typisierung, keine `any` ohne Begründung
+- **ESLint:** Alle Linting-Regeln müssen erfüllt sein
+- **Type Check:** TypeScript Type Checking muss bestehen
+- **RxJS:** Observable Patterns korrekt verwenden
+- **Tab Stream Pattern:** Pattern 1 oder Pattern 2 korrekt anwenden
+- **MessageMonitorService:** Für Timing-unabhängige Datenanzeige verwenden
+- **Pre-commit:** OMF3 Tests MÜSSEN bestehen, ESLint MUSS bestehen
 
 ## 🚨 WICHTIG
 Bei jeder Code-Änderung diese Regeln befolgen!

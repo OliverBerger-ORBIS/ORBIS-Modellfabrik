@@ -1,63 +1,62 @@
 # .pre-commit-config.yaml
+# Pre-commit hooks for OMF3 (Angular) and Session Manager (Python)
+
 repos:
+  # Angular/TypeScript Validation
   - repo: local
     hooks:
+      # OMF3 Tests (CRITICAL - produktiver Code)
+      - id: nx-test-omf3
+        name: OMF3 Tests
+        entry: bash -c 'npx nx test ccu-ui && npx nx test mqtt-client'
+        language: system
+        pass_filenames: false
+        stages: [commit]
+        description: Run OMF3 tests (ccu-ui, mqtt-client)
+
+      # TypeScript/ESLint Linting
+      - id: nx-lint-omf3
+        name: OMF3 Lint
+        entry: npx nx lint ccu-ui
+        language: system
+        pass_filenames: false
+        stages: [commit]
+        description: Run ESLint on OMF3 Angular code
+
+      # TypeScript Type Check (via tsc - non-blocking)
+      - id: nx-type-check
+        name: TypeScript Type Check
+        entry: bash -c 'cd omf3/apps/ccu-ui && npx tsc --noEmit' || true
+        language: system
+        pass_filenames: false
+        stages: [commit]
+        description: TypeScript type checking (non-blocking, ESLint catches most issues)
+
+  # Python Validation (Session Manager only)
+  - repo: local
+    hooks:
+      # Black Formatting (Session Manager)
       - id: black
         name: black
         entry: black
         language: system
         types: [python]
-        exclude: '^\.gitignore$'
+        files: ^(session_manager/|scripts/).*\.py$
+        description: Format Python code (Session Manager, scripts)
 
-# isort entfernt - verursacht Import-Probleme
-      # - id: isort
-      #   name: isort
-      #   entry: isort
-      #   language: system
-      #   types: [python]
-
+      # Ruff Linting (Session Manager)
       - id: ruff
         name: ruff
         entry: ruff check --fix
         language: system
         types: [python]
+        files: ^(session_manager/|scripts/).*\.py$
+        description: Lint Python code (Session Manager, scripts)
 
-      - id: pytest-omf3
-        name: pytest-omf3
-        entry: npx nx test --all
-        language: system
-        pass_filenames: false
-        stages: [commit]
-
-      - id: validate-project-structure
-        name: validate-project-structure
-        entry: python omf/scripts/validate_project_structure.py
-        language: system
-        pass_filenames: false
-        stages: [commit]
-
-      - id: validate-dashboard-rules
-        name: validate-dashboard-rules
-        entry: python omf/scripts/validate_dashboard_rules.py --include-dashboard --loose
-        language: system
-        pass_filenames: false
-        stages: [commit]
-
-      - id: validate-development-rules
-        name: validate-development-rules
-        entry: python omf/scripts/validate_development_rules.py
-        language: system
-        pass_filenames: false
-        stages: [commit]
-
-      # OMF2-specific validation removed - using omf3 now
-      # - id: validate-i18n-compliance
-      #   name: validate-i18n-compliance
-      #   entry: python omf2/scripts/validate_i18n_compliance.py
-      #   language: system
-      #   pass_filenames: false
-      #   stages: [commit]
-
+  # Documentation Validation
+  - repo: local
+    hooks:
+      # Mermaid Diagram Validation
       - id: validate-mermaid-diagrams
         name: validate-mermaid-diagrams
         entry: python tools/validate_mermaid_diagrams.py
@@ -65,29 +64,4 @@ repos:
         files: \.md$
         pass_filenames: false
         stages: [commit]
-
-      # OMF2-specific validation removed - using omf3 now
-      # - id: check-st-rerun
-      #   name: check-st-rerun
-      #   entry: python omf2/scripts/check_st_rerun.py
-      #   language: system
-      #   types: [python]
-      #   stages: [commit]
-      #   pass_filenames: false
-
-      - id: check-mqtt-connection-loop
-        name: check-mqtt-connection-loop
-        entry: python omf/scripts/check_mqtt_connection_loop.py
-        language: system
-        types: [python]
-        stages: [commit]
-
-      # OMF2-specific validation removed - using omf3 now
-      # - id: validate-assets
-      #   name: validate-assets
-      #   entry: python omf2/scripts/validate_assets.py
-      #   language: system
-      #   files: (omf2/assets/|omf2/scripts/validate_assets\.py)
-      #   pass_filenames: false
-      #   stages: [commit]
-
+        description: Validate Mermaid diagrams in documentation

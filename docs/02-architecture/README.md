@@ -1,18 +1,27 @@
 # Architecture Documentation Index
 
-Version: 0.1 (Draft)  
-Last updated: 2025-09-14  
+Version: 0.2  
+Last updated: 2025-11-15  
 Author: OMF Development Team  
 
 ---
 
 ## 📑 Overview
+
 Dieses Verzeichnis enthält die Architektur-Dokumentation der ORBIS Modellfabrik (OMF).  
-Die Dokumente beschreiben den Systemkontext, die Message Flows, das Registry-Modell und die Namenskonventionen.  
+Die Dokumente beschreiben den Systemkontext, die Message Flows, und die Namenskonventionen.  
 
 ---
 
 ## 🔗 Dokumente
+
+### OMF3 Architecture (aktuell)
+- [OMF3 Project Structure](project-structure.md) – Nx Workspace Struktur und OMF3 Architektur
+- [Naming Conventions](naming-conventions.md) – Topics, Template-Keys, IDs
+
+### APS Physical Architecture
+- [APS Physical Architecture](../../06-integrations/APS-Ecosystem/system-overview.md) – Fischertechnik Netzwerk & Hardware
+- [APS Data Flow](aps-data-flow.md) – Datenverarbeitung & Storage
 
 ### Legacy Architecture (archiviert)
 - [OMF Dashboard Architecture](../archive/02-architecture_omf_legacy/omf-dashboard-architecture.md) – Legacy Dashboard-Architektur
@@ -21,38 +30,17 @@ Die Dokumente beschreiben den Systemkontext, die Message Flows, das Registry-Mod
 - [System Context](../archive/02-architecture_omf_legacy/system-context.md) – Legacy System-Überblick
 - [Message Flow](../archive/02-architecture_omf_legacy/message-flow.md) – Legacy Message-Flows
 
-### Implemented Architecture (omf2)
-- [OMF2 Architecture](omf2-architecture.md) – Implementierte Architektur
-- [Project Structure](project-structure.md) – Implementierte Projektstruktur
-- [Implementation Status](implementation-status.md) – Aktueller Implementierungsstatus
-- [Message Processing Pattern](message-processing-pattern.md) – Implementiertes Message-Pattern
-
-### Core Architecture
-- [OMF2 Registry System](omf2-registry-system.md) – **KRITISCH** - RegistryManager, OMF-Entitäten, API
-- [Naming Conventions](naming-conventions.md) – Topics, Template-Keys, IDs
-
-### APS Physical Architecture
-- [APS Physical Architecture](../../06-integrations/APS-Ecosystem/system-overview.md) – Fischertechnik Netzwerk & Hardware
-- [APS Data Flow](aps-data-flow.md) – Datenverarbeitung & Storage
-
-### Implementierungs-Details
-- [Module State Manager](implementation/module-state-manager.md) – Modul-Status-Management Implementierung
-- [CCU Module Manager](implementation/ccu-module-manager.md) – CCU Module-Status-Verarbeitung mit 5-Spalten-Architektur
-- [Monitor Manager](implementation/monitor-manager.md) – CCU Message Monitor Topic-Klassifizierung und Filter-Management
-
-### Message Architecture
-- [Message Sending Architecture](message-sending-architecture.md) – **NEU** - MQTT Message Sending Architektur mit Schema-Validation
-
 ---
 
 ## 📌 Hinweise
+
 - Alle Dokumente sind Work-in-Progress und werden sprintweise erweitert.  
-- Änderungen an Registry und Templates sollen **immer auch hier dokumentiert** werden.  
+- Änderungen an Architektur sollen **immer auch hier dokumentiert** werden.  
 - Ziel: Architektur bleibt konsistent mit Implementierung und CI-Validierungen.
 
+---
 
 ## 📊 Top-Level Architekturdiagramm
-
 
 ```mermaid
 %%{init: {'theme':'neutral'}}%%
@@ -73,8 +61,7 @@ classDef external fill:#f5f5f5,stroke:#e0e0e0,stroke-width:2px,color:#333;
   end
 
   subgraph OMF [OMF Umgebung]
-    DASH["OMF Dashboard<br/>Streamlit App"]:::orbis
-    REG["Registry<br/>(Schemas, Templates, Enums)"]:::orbis
+    DASH["OMF3 Dashboard<br/>Angular App"]:::orbis
     SM["Session Manager<br/>Replay/Recording"]:::orbis
   end
 
@@ -84,6 +71,4 @@ classDef external fill:#f5f5f5,stroke:#e0e0e0,stroke-width:2px,color:#333;
   CCU <-->|mqtt| NR
   DASH <-->|mqtt| CCU
   DASH <-->|session data| SM
-  DASH -->|templates| REG
-  REG -->|config| SM
 ```

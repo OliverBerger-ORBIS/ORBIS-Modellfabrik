@@ -140,11 +140,11 @@
     </ng-template>
 
     <!-- Detailed payload view modal/panel when a message is selected -->
-    <div class="payload-detail-panel" *ngIf="selectedMessage" (click)="closeDetailPanel()">
-      <div class="payload-detail-content" (click)="$event.stopPropagation()">
+    <div class="payload-detail-panel" *ngIf="selectedMessage" (click)="closeDetailPanel()" (keyup.escape)="closeDetailPanel()" tabindex="0" role="dialog" aria-modal="true" aria-labelledby="payload-detail-title">
+      <div class="payload-detail-content" (click)="$event.stopPropagation()" (keyup.escape)="closeDetailPanel()" tabindex="0">
         <header class="detail-header">
           <div>
-            <h4>{{ selectedMessage.topic }}</h4>
+            <h4 id="payload-detail-title">{{ selectedMessage.topic }}</h4>
             <p class="detail-timestamp">{{ formatTimestamp(selectedMessage.timestamp) }}</p>
           </div>
           <button type="button" class="close-btn" (click)="closeDetailPanel()" aria-label="Close">×</button>

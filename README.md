@@ -10,17 +10,17 @@
 - **APS-Module** - Physische Module (DRILL, HBW, etc.)
 
 ### **OMF (ORBIS-Modellfabrik) - To-Be System**
-- **OMF-Dashboard** - Streamlit-basierte Steuerung
+- **OMF3-Dashboard** - Angular-basierte Steuerung (aktuell in Entwicklung)
+- **OMF2-Dashboard** - Streamlit-basierte Steuerung (Legacy, wird durch OMF3 ersetzt)
+- **Session Manager** - Helper-App für Session-Replay (Streamlit)
 - **OMF-CCU** - Nachbau der APS-CCU Funktionalität
-- **OMF-NodeRED** - Ersatz für APS-NodeRED
-- **OMF-Module** - Software-Simulation der APS-Module
 
-> **📋 Namenskonvention:** Groß-Schreibweise mit Bindestrich (z.B. APS-CCU, OMF-Dashboard)
+> **📋 Namenskonvention:** Groß-Schreibweise mit Bindestrich (z.B. APS-CCU, OMF3-Dashboard)
 
 ## 🎯 Quick Start
 
-- **Neue Teammitglieder:** Starte mit [Strategy Vision](docs/01-strategy/vision.md) → [System Context](docs/02-architecture/system-context.md)
-- **Entwickler:** [Registry Model](docs/02-architecture/registry-model.md) → [How-Tos](docs/04-howto/)
+- **Neue Teammitglieder:** Starte mit [Strategy Vision](docs/01-strategy/vision.md) → [Project Structure](docs/02-architecture/project-structure.md)
+- **Entwickler:** [Project Structure](docs/02-architecture/project-structure.md) → [How-Tos](docs/04-howto/)
 - **Architekten:** [Decision Records](docs/03-decision-records/) → [Architecture](docs/02-architecture/)
 
 ## 🤖 **Cursor AI / Agent Einweisung**
@@ -48,6 +48,7 @@
 ### **🚨 KRITISCHE VERBOTE (HÖCHSTE PRIORITÄT)**
 - **NIEMALS Streamlit-Apps starten:** `streamlit run` ❌ (Verursacht Race-Conditions, MQTT-Konflikte)
 - **NUR User startet Streamlit-Apps** - Agent startet KEINE Streamlit-Apps
+- **NIEMALS Angular-Apps starten ohne User-Freigabe:** `nx serve ccu-ui` nur nach expliziter Bestätigung
 
 ### **📋 Dokumentations-Workflow für neue Agenten/Chats**
 1. **🚨 MANDATORY DEVELOPMENT METHODOLOGY:** [Development Workflow](docs/04-howto/development/workflow.md) - **MUSS GELESEN WERDEN!**
@@ -56,9 +57,9 @@
 4. **Strategische Übersicht:** [Roadmap](docs/01-strategy/roadmap.md) - Alle Entwicklungsphasen
 5. **Konkrete ToDos:** [plan.md](plan.md) - Messe-Vorbereitung und aktuelle Aufgaben
 6. **Sprint-Details:** [docs/sprints/](docs/sprints/) - Detaillierte Sprint-Dokumentation
-7. **Architektur verstehen:** [OMF2 Architecture](docs/02-architecture/omf2-architecture.md) - Technische Grundlagen
-8. **Registry System:** [OMF2 Registry System](docs/02-architecture/omf2-registry-system.md) - **KRITISCH** - OMF-Entitäten-Zugriff
-9. **Logging System:** [Logging Implementation Guide](docs/04-howto/logging-implementation-guide.md) - **KRITISCH** - Log-Analyse und Debugging
+7. **Architektur verstehen:** [OMF3 Project Structure](docs/02-architecture/project-structure.md) - Technische Grundlagen
+8. **MQTT Client:** [MQTT Client Connection](docs/04-howto/mqtt_client_connection.md) - MQTT-Integration
+9. **Tab Stream Pattern:** [Tab Stream Initialization Pattern](docs/03-decision-records/11-tab-stream-initialization-pattern.md) - **KRITISCH** - Timing-unabhängige Datenanzeige
 
 ### **🎯 Dokumentations-Prinzipien**
 - **roadmap.md** = Strategischer Überblick (keine konkreten ToDos)
@@ -66,10 +67,9 @@
 - **plan.md** = Konkrete Messe-Vorbereitung + Post-Messe Tasks
 - **docs/sprints/** = Detaillierte Sprint-Dokumentation
 - **docs/01-strategy/** = Strategische Grundlagen
-- **docs/02-architecture/** = Technische Architektur
-- **docs/03-decision-records/** = Architektur-Entscheidungen
+- **docs/02-architecture/** = Technische Architektur (OMF3)
+- **docs/03-decision-records/** = Architektur-Entscheidungen (OMF3)
 - **docs/04-howto/** = Praktische Anleitungen
-- **docs/04-howto/logging-implementation-guide.md** = **EINZIGE** Logging-Dokumentation
 
 ### **🔄 MANDATORY AGENT WORKFLOW (KRITISCH)**
 
@@ -121,47 +121,40 @@
 - **Fehlende Tests ergänzen** vor der Implementierung
 
 #### **2. ARCHITEKTUR-VERSTÄNDNIS (OBLIGATORISCH)**
-**Asymmetrische Architektur-Kette:** (siehe [OMF2 Architecture](docs/02-architecture/omf2-architecture.md))
+**OMF3 Architektur-Kette:** (siehe [OMF3 Project Structure](docs/02-architecture/project-structure.md))
 ```
-mqtt_client → gateway → business_function (*manager) → ui_komponente
+mqtt_client → gateway → business → angular_components
 ```
 **Metadaten-Quellen:**
-- Registry-Komponenten
-- Code-Anpassungen (onMessage Handler im Gateway)
+- Entity Types (`omf3/libs/entities/`)
+- Gateway Topic Mapping (`omf3/libs/gateway/`)
+- Business Logic (`omf3/libs/business/`)
 
 #### **3. IMPLEMENTIERUNG (NUR NACH TEST-VORBEREITUNG)**
 - **Alle Komponenten anpassen** in der Architektur-Kette
-- **Registry-Referenzen** aktualisieren
-- **Gateway Message Handler** anpassen
-- **UI-Komponenten** anpassen
+- **Entity Types** aktualisieren
+- **Gateway Topic Mapping** anpassen
+- **Business Logic** anpassen
+- **Angular Components** anpassen
 
 #### **4. VALIDIERUNG (OBLIGATORISCH)**
 - **Tests erneut durchführen** → Alles muss grün sein
 - **UI-Integrationstest:** [Session Manager Replay Station](docs/04-howto/helper_apps/session-manager/README.md)
-- **Log-File-Analyse:** Agent kontrolliert parallel
+- **Browser-Test:** Angular App im Browser testen
 - **UI-Ergebnis:** User kontrolliert in der UI
 
 #### **5. TEST-DATEN**
 - **Test-Payloads** aus Sessions oder `data/*` Quellen
 - **Session-Manager Replay-Station** für UI-Integrationstests
-
-#### **🎯 Beispiel: Manager-Renaming**
-```
-1. Tests der zu renamenden Komponenten prüfen
-2. Test-Coverage für alle Architektur-Stufen bewerten
-3. Fehlende Tests ergänzen vor dem Renaming
-4. Renaming durchführen (alle Architektur-Komponenten)
-5. Tests erneut durchführen → muss grün sein
-6. UI-Integrationstest mit Session Manager
-```
+- **Testing Fixtures** (`omf3/testing/fixtures/`)
 
 ### **🔧 Entwicklung-Regeln (AUTOMATISCH BEFOLGEN)**
-- **Absolute Imports:** `from omf.dashboard.tools.logging_config import get_logger`
-- **Absolute Pfade:** `project_root / "data/omf-data/sessions"`
-- **OMF-Logging:** `get_logger("module.component")` statt `logging.getLogger()`
-- **UI-Refresh:** `request_refresh()` statt `st.rerun()`
+- **TypeScript:** Strikte Typisierung, keine `any` ohne Begründung
+- **RxJS:** Observable Patterns korrekt verwenden
+- **Angular:** Component-basierte Architektur
+- **Nx Workspace:** Library-basierte Struktur
 - **Pre-commit Hooks:** Immer befolgen, nie mit `--no-verify` überspringen
-- **Tests:** Nach jeder Änderung ausführen mit aktiviertem `.venv`
+- **Tests:** Nach jeder Änderung ausführen
 
 > **📚 Vollständige Regeln:** Siehe [Development Rules Compliance](docs/03-decision-records/07-development-rules-compliance.md)
 
@@ -169,133 +162,147 @@ mqtt_client → gateway → business_function (*manager) → ui_komponente
 
 ### 01-Strategy
 - [Vision](docs/01-strategy/vision.md) - MQTT-first Leitidee & v1-Zielbild
-- [Goals](docs/01-strategy/goals.md) - Erfolgskriterien & Qualitätsmerkmale
-- [Scope](docs/01-strategy/scope.md) - v1 vs. v1.1/2.0 Ausblick
+- [Project Overview](docs/01-strategy/project-overview.md) - Projekt-Übersicht
+- [Roadmap](docs/01-strategy/roadmap.md) - Entwicklungsphasen
 
 ### 02-Architecture
-- [System Context](docs/02-architecture/system-context.md) - Kontextdiagramm (CCU, Module, Node-RED, OMF)
-- [Message Flow](docs/02-architecture/message-flow.md) - End-to-End-Flows (Order→Module, State→Dashboard)
-- [Registry Model](docs/02-architecture/registry-model.md) - Registry-Prinzipien & Versionierung
+- [OMF3 Project Structure](docs/02-architecture/project-structure.md) - Nx Workspace Struktur und Architektur
 - [Naming Conventions](docs/02-architecture/naming-conventions.md) - Topics, Template-Keys, IDs
+- [APS Data Flow](docs/02-architecture/aps-data-flow.md) - APS Datenverarbeitung & Storage
 
 ### 03-Decision Records (ADRs)
-- [ADR-0001: Topic-free Templates](docs/03-decision-records/ADR-0001-registry-topic-free-templates.md)
-- [ADR-0002: Exact Overrides per Serial](docs/03-decision-records/ADR-0002-exact-overrides-per-serial.md)
+- [Tab Stream Initialization Pattern](docs/03-decision-records/11-tab-stream-initialization-pattern.md) - Timing-unabhängige Tab-Stream-Initialisierung
+- [MessageMonitorService Storage](docs/03-decision-records/12-message-monitor-service-storage.md) - Speicherverwaltung
+- [MQTT Connection Loop Prevention](docs/03-decision-records/13-mqtt-connection-loop-prevention.md) - Connection Loop Prävention
 
 ### 04-How-To
-- [Add a New Module](docs/04-howto/add-a-new-module.md) - Template → Mapping → Tests
-- [Define a New Topic](docs/04-howto/define-a-new-topic.md) - Pattern vs. Exact
-- [Build and Run](docs/04-howto/build-and-run.md) - OMF Dashboard & Session-Manager
-- [Validate and Release](docs/04-howto/validate-and-release.md) - Make-Targets & Versioning
-
-### 05-Reference
-- [Topics](docs/05-reference/topics.md) - Logische Topic-Gruppen
-- [Templates](docs/05-reference/templates.md) - Template-Index & Migration Mapping
-- [Enums](docs/05-reference/enums.md) - Zentrale Listen (Availability/Action/Workpiece)
+- [MQTT Client Connection](docs/04-howto/mqtt_client_connection.md) - MQTT-Client Integration
+- [UI Symbols Usage Guide](docs/04-howto/ui_symbols.md) - SVG Icons für Headings und Shopfloor
+- [Shopfloor Layout Guide](docs/04-howto/SHOPFLOOR_LAYOUT_GUIDE.md) - Shopfloor-Layout Konfiguration
+- [Session Manager](docs/04-howto/helper_apps/session-manager/README.md) - Session-Replay Funktionalität
 
 ### 06-Integrations
-- [Node-RED](docs/06-integrations/node-red/) - Node-RED Integration & Management
+- [APS AS-IS Documentation](docs/06-integrations/00-REFERENCE/README.md) - APS Referenz-Dokumentation
+- [APS-CCU](docs/06-integrations/APS-CCU/README.md) - APS CCU Dokumentation
+- [APS-NodeRED](docs/06-integrations/APS-NodeRED/README.md) - APS NodeRED Dokumentation
 
 ### 99-Glossary
 - [Glossary](docs/99-glossary.md) - Eindeutige Begrifflichkeiten & IDs
 
 ## 🔗 Quick Links
 
-- **Registry:** `registry/model/v1/` - Single Source of Truth
-- **Source Code:** `omf2/` - Runtime & Tools
-- **Integrations:** `integrations/` - Externe Systeme (Node-RED, etc.)
+- **OMF3 Source Code:** `omf3/` - Angular Dashboard & Libraries
+- **OMF2 Source Code:** `omf2/` - Legacy Streamlit Dashboard
+- **Session Manager:** `session_manager/` - Helper-App für Session-Replay
+- **APS Integrations:** `integrations/` - APS AS-IS Komponenten
 - **Legacy Docs:** [Archive](docs/archive/) - Veraltete Dokumentation
 
 ## 🚀 Getting Started
 
-1. **Repository klonen:** `git clone --recursive <repo-url>` (inkl. Submodule)
+1. **Repository klonen:** `git clone <repo-url>`
 2. **Verstehe das System:** [Vision](docs/01-strategy/vision.md) (5 Min)
-3. **Architektur verstehen:** [System Context](docs/02-architecture/system-context.md) (10 Min)
-4. **Registry-Prinzipien:** [Registry Model](docs/02-architecture/registry-model.md) (5 Min)
+3. **Architektur verstehen:** [OMF3 Project Structure](docs/02-architecture/project-structure.md) (10 Min)
+4. **Naming Conventions:** [Naming Conventions](docs/02-architecture/naming-conventions.md) (5 Min)
 5. **Praktisch arbeiten:** [How-Tos](docs/04-howto/) (je nach Aufgabe)
 
-### Upstream (Submodule)
-- **Nach dem Klonen:** `git submodule update --init --recursive`
-- **Upstream aktualisieren:** 
-  ```bash
-  cd vendor/fischertechnik && git fetch && git checkout main && cd ../..
-  git add vendor/fischertechnik && git commit -m "chore: bump upstream"
-  ```
+### OMF3 Development Setup
+
+```bash
+# Dependencies installieren
+npm install
+
+# Development Server starten
+nx serve ccu-ui
+
+# Tests ausführen
+nx test ccu-ui
+nx test mqtt-client
+nx test gateway
+nx test business
+
+# Build
+nx build ccu-ui
+```
+
+Die OMF3-Anwendung ist dann unter `http://localhost:4200` verfügbar.
+
+### Session Manager (Helper-App)
+
+```bash
+# Virtual Environment aktivieren
+source .venv/bin/activate
+
+# Session Manager starten
+streamlit run session_manager/app.py
+```
+
+Die Session Manager-Anwendung ist dann unter `http://localhost:8501` verfügbar.
 
 ---
 
-**"Code as Doc" - Registry ist die Quelle der Wahrheit, Docs erklären das Warum und Wie.**
+**"Code as Doc" - Docs erklären das Warum und Wie.**
 
 ## 🎯 Entwicklungshinweise
 
-### **STATE-OF-THE-ART REGELN:**
-- **Robuste Pfad-Konstanten:** `from omf.dashboard.tools.path_constants import PROJECT_ROOT, SESSIONS_DIR, CONFIG_DIR`
-- **Absolute Imports für externe Module:** `from omf.dashboard.tools.logging_config import get_logger`
-- **Relative Imports für Paket-interne Module:** `from .aps_overview_commands import show_aps_overview_commands`
-- **OMF-Logging-System:** `get_logger("omf.module.component")` statt `logging.getLogger()`
-- **UI-Refresh Pattern:** `request_refresh()` statt `st.rerun()`
-- **Keine sys.path.append Hacks:** Absolute Imports verwenden
+### **OMF3 STATE-OF-THE-ART REGELN:**
+- **TypeScript:** Strikte Typisierung, keine `any` ohne Begründung
+- **RxJS:** Observable Patterns korrekt verwenden (`shareReplay`, `refCount: false` für persistente Streams)
+- **Angular:** Component-basierte Architektur, Services für Business Logic
+- **Nx Workspace:** Library-basierte Struktur, klare Abhängigkeiten
+- **MessageMonitorService:** Für Timing-unabhängige Datenanzeige verwenden
+- **Tab Stream Pattern:** Pattern 1 oder Pattern 2 korrekt anwenden
 - **Automatische Regel-Erzwingung:** Pre-commit Hooks sorgen für Einhaltung
-
-> **📚 State-of-the-Art Standards:** Siehe [Decision Record: Development Rules Compliance](docs/03-decision-records/07-development-rules-compliance.md)
 
 ### **Cursor AI Konfiguration:**
 - `.cursorrules` - Projekt-spezifische Regeln
 - `.vscode/settings.json` - Cursor-spezifische Einstellungen
-- `pyproject.toml` - Python-spezifische Konfiguration
+- `tsconfig.base.json` - TypeScript-Konfiguration
 
 ## 📁 Project Structure
 
-### Upstream (Submodule)
-- `vendor/fischertechnik/` - Original fischertechnik Repository als Submodule
-  - `PLC-programs/` - Original PLC programs  
-  - `TXT4.0-programs/` - Original TXT4.0 programs
-  - `Node-RED/` - Original Node-RED flows
-  - `doc/` - Original documentation
+### OMF3 (Aktuell in Entwicklung)
+- `omf3/apps/ccu-ui/` - **Angular Dashboard Application**
+  - Angular-basierte UI
+  - MQTT Client Integration (WebSocket)
+  - MessageMonitorService für State Persistence
+  - I18n Support (DE, EN, FR)
+- `omf3/libs/` - **Libraries**
+  - `mqtt-client/` - MQTT Client Library (WebSocket, Mock)
+  - `gateway/` - Gateway Library (Topic Mapping)
+  - `business/` - Business Logic Library (Derived Streams)
+  - `entities/` - Entity Types Library
+  - `testing-fixtures/` - Testing Fixtures Library
+- `omf3/testing/fixtures/` - Test Fixtures (JSON/JSONL)
 
-### Orbis Customizations
-- `docs/` - Orbis documentation and analysis
-- `omf2/` - **OMF2 Architektur** (Aktuelle Hauptanwendung)
-  - `omf2/omf.py` - Streamlit Dashboard Entry Point
-  - `omf2/admin/` - Admin Domain (MQTT Client + Gateway + Manager)
-  - `omf2/ccu/` - CCU Domain (MQTT Client + Gateway + Manager)
-  - `omf2/nodered/` - Node-RED Domain (Gateway + Manager)
-  - `omf2/common/` - Shared Components (Logger, Registry, Manager)
-  - `omf2/factory/` - Factory Pattern für Singleton-Erstellung
-  - `omf2/ui/` - Streamlit UI Components
-  - `omf2/registry/` - Registry v2 (Topics, Schemas, MQTT Clients)
-  - `omf2/config/` - Konfigurationsdateien (MQTT, Logging)
-  - `omf2/docs/` - OMF2-spezifische Dokumentation
-  - `tests/test_omf2/` - OMF2 Test Suite
-- `tests/` - Orbis tests
-- `data/` - Unsere Daten (`mqtt-data/`, `omf-data/`)
+### OMF2 (Legacy)
+- `omf2/` - **Legacy Streamlit Dashboard**
+  - Wird durch OMF3 ersetzt
+  - Bleibt bis zur vollständigen Migration produktiv
+
+### Session Manager (Helper-App)
+- `session_manager/` - **Session-Replay Helper-App**
+  - Unabhängige Streamlit-App
+  - Session-Replay über lokalen MQTT-Broker
+  - Wird weiterhin verwendet
+
+### APS AS-IS (Integrations)
+- `integrations/` - **APS AS-IS Komponenten**
+  - APS-CCU, APS-NodeRED, TXT-Controller
+  - Original fischertechnik Komponenten
 
 ### System-Architektur
 
-#### **OMF2 (Empfohlen) - Moderne Architektur**
-- **Drei-Schichten-Architektur**: MQTT Client → Gateway → Business Manager
-- **Thread-sichere Singleton**: Alle Komponenten sind thread-safe
-- **Schema-driven**: Registry-basierte Validierung und Routing
-- **Best Practice Logging**: Level-spezifische Ringbuffer mit UI-Integration
-- **Vollständige Test-Abdeckung**: Alle Tests bestehen
+#### **OMF3 (Aktuell) - Angular-basierte Architektur**
+- **Nx Workspace**: Monorepo-Struktur für bessere Code-Organisation
+- **RxJS**: Reactive Programming mit Observables
+- **TypeScript**: Type Safety über alle Libraries
+- **Angular**: Modern UI Framework mit Component-based Architecture
+- **MessageMonitorService**: State Persistence für sofortige Datenanzeige
+- **Tab Stream Pattern**: Timing-unabhängige Initialisierung
 
 #### **Session Manager - Helper-Anwendung**
 - **Session Manager**: Unabhängige Helper-App für Session-Replay
 - **Replay-Funktionalität**: Session Manager spielt Sessions über lokalen MQTT-Broker ab
-
-### Struktur-Validierung
-```bash
-# Struktur validieren
-make validate-structure
-
-# Automatische Korrektur versuchen
-make fix-structure
-
-# Alle Checks ausführen
-make all-checks
-```
-
-Siehe [Decision Record: Development Rules Compliance](docs/03-decision-records/07-development-rules-compliance.md) für detaillierte Entwicklungsregeln und Import-Standards.
 
 ## External Links
 - [Product Page](https://www.fischertechnik.de/en/products/industry-and-universities/training-models/569289-agile-production-simulation-24v)
@@ -322,12 +329,6 @@ The `Node-RED` folder contains the flows of Node-RED as a Json file
 
 For detailed documentation of the Node-RED flows, system architecture, and development guidelines, see the [Orbis Documentation Directory](./docs/).
 
-- **[Node-RED Documentation](./docs/node-red/)** - Complete flow analysis, state machine, and development guides
-- **[System Architecture](./docs/node-red/architecture.md)** - Overall system design and components
-- **[Flows Overview](./docs/node-red/flows-overview.md)** - Detailed tab and module structure
-- **[State Machine](./docs/node-red/state-machine.md)** - VDA 5050 compliant state transitions
-
-
 ### Raspberry PI Image / Central Control Unit (CCU)
 
 The Raspberry PI image can be found under the following link: https://short.omm.cloud/rpi-v130
@@ -351,80 +352,3 @@ A [Node-RED](https://nodered.org/) container is running on the Raspberry PI of t
 TIAv18 is required to access the PLC programs.
 
 As soon as TIAv18 is installed, the project files can be loaded and edited.
-
----
-
-## OMF2 Streamlit Dashboard
-
-Das OMF2 Dashboard ist eine moderne, webbasierte Anwendung zur Steuerung und Überwachung der ORBIS Modellfabrik. Die Anwendung ist als Streamlit-App implementiert und bietet eine rollenbasierte, mehrsprachige Benutzeroberfläche.
-
-### Schnellstart OMF2
-
-```bash
-# Virtual Environment aktivieren
-source .venv/bin/activate
-
-# Installation der Abhängigkeiten
-pip install -r requirements.txt
-
-# Starten der OMF2 Streamlit-App
-streamlit run omf2/omf.py
-```
-
-Die OMF2-Anwendung ist dann unter `http://localhost:8501` verfügbar.
-
-### OMF2 Core-Architektur
-
-Das OMF2 Dashboard folgt einer professionellen **Drei-Schichten-Architektur**:
-
-#### **🔌 MQTT CLIENT LAYER (Transport)**
-- **Thread-sichere Singleton** für alle Domänen (Admin, CCU, Node-RED)
-- **Raw MQTT → Clean JSON** Transformation
-- **Meta-Parameter-System** (timestamp, qos, retain)
-- **Robust Payload-Handling** für alle JSON-Typen
-- **Buffer-Management** für UI-Monitoring
-
-#### **🚪 GATEWAY LAYER (Validation & Routing)**
-- **Schema-Validation** mit Registry-Schemas
-- **Topic-Routing** (Set-basiert + Präfix-basiert)
-- **Error-Handling** mit detailliertem Logging
-- **Clean Data Contract** (NIE raw bytes an Manager)
-- **Domain-spezifische Gateways** (Admin, CCU, Node-RED)
-
-#### **🏢 BUSINESS MANAGER LAYER (Business Logic)**
-- **State-Holder Pattern** für Business-Daten
-- **Schema-basierte Verarbeitung** mit Registry-Integration
-- **Domain-agnostic Manager** (Message, Topic, Sensor, Module)
-- **Clean API** für UI-Komponenten
-- **Thread-safe Operations** für MQTT-Callbacks
-
-### OMF2 Features
-
-- **Best Practice Logging-System** mit Level-spezifischen Ringbuffern
-- **UI-Logging Integration** mit dedizierten Error & Warning Tabs
-- **Registry v2 Integration** für alle Komponenten
-- **Schema-driven Architecture** mit JSON-Schema-Validierung
-- **Thread-safe Singleton Pattern** für alle Komponenten
-- **Vollständige Test-Abdeckung** für die gesamte Architektur
-
-### OMF2 Tests
-
-```bash
-# Alle OMF2-Tests ausführen
-python -m pytest tests/test_omf2 -v
-
-# Spezifische Test-Suites
-python -m pytest tests/test_omf2/test_comprehensive_architecture.py -v
-python -m pytest tests/test_omf2/test_gateway_factory.py -v
-python -m pytest tests/test_omf2/test_registry_manager_comprehensive.py -v
-```
-
-### OMF2 Konfiguration
-
-- **MQTT-Einstellungen**: `omf2/config/mqtt_settings.yml`
-- **Logging-Konfiguration**: `omf2/config/logging_config.yml`
-- **Registry-Schemas**: `omf2/registry/schemas/`
-- **Topic-Definitionen**: `omf2/registry/topics/`
-
-Für detaillierte Architektur-Informationen siehe `omf2/docs/ARCHITECTURE.md`.
-

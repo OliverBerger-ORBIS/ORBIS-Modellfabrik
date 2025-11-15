@@ -1,21 +1,21 @@
 # How-To Guides
 
 - [Agent Onboarding & Architecture](agent-onboarding-architecture.md)
-- [UI Symbols Usage Guide](../04-howto/ui_symbols.md)
+- [UI Symbols Usage Guide](ui_symbols.md)
 - Development
   - [Cursor AI Mermaid Rules](development/cursor-ai-mermaid-rules.md)
-  - [Workflow](development/workflow.md)
 - Setup
   - [Project Setup](setup/project-setup.md)
-  - [Repository Structure](setup/repository-structure.md)
-- Logging
-  - [Logging Implementation Guide](../04-howto/logging-implementation-guide.md)
+  - [Mosquitto Setup](setup/mosquitto/README.md)
 - MQTT
-  - [MQTT Client Connection](../04-howto/mqtt_client_connection.md)
+  - [MQTT Client Connection](mqtt_client_connection.md)
 - Shopfloor
-  - [Shopfloor Layout Guide](../04-howto/SHOPFLOOR_LAYOUT_GUIDE.md)
+  - [Shopfloor Layout Guide](SHOPFLOOR_LAYOUT_GUIDE.md)
 - Testing
   - [Testing How-To](testing/README.md)
+  - [Integration Testing Workflow](testing/integration-testing-workflow.md)
+- Helper Apps
+  - [Session Manager](helper_apps/session-manager/README.md)
 - Troubleshooting
   - [Troubleshooting](troubleshooting/README.md)
 

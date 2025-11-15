@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import Ajv from 'ajv';
 import type { ValidateFunction } from 'ajv';
@@ -31,7 +31,7 @@ const RETENTION_CONFIG: Record<string, number> = {
 };
 
 @Injectable({ providedIn: 'root' })
-export class MessageMonitorService {
+export class MessageMonitorService implements OnDestroy {
   private readonly subjects = new Map<string, BehaviorSubject<MonitoredMessage | null>>();
   private readonly buffers = new Map<string, CircularBuffer<MonitoredMessage>>();
   private readonly retentionConfig = new Map<string, number>(Object.entries(RETENTION_CONFIG));
