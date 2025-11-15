@@ -34,38 +34,30 @@ export class SensorTabComponent {
     // MessageMonitor stores raw Bme680Snapshot and LdrSnapshot, need to transform to SensorOverviewState
     // IMPORTANT: MessageMonitor streams come first in merge to ensure they have priority over dashboard stream
     const lastBme680 = this.messageMonitor.getLastMessage<Bme680Snapshot>('/j1/txt/1/i/bme680').pipe(
-      map((msg) => {
-        // If message exists and is valid, use it; otherwise return null
-        if (msg !== null && msg.valid) {
-          return msg.payload;
-        }
-        return null;
-      })
+      // Filter first: only process valid messages
+      filter((msg) => msg !== null && msg.valid),
+      // Map second: extract payload from valid messages
+      map((msg) => msg!.payload)
     );
     const lastLdr = this.messageMonitor.getLastMessage<LdrSnapshot>('/j1/txt/1/i/ldr').pipe(
-      map((msg) => {
-        // If message exists and is valid, use it; otherwise return null
-        if (msg !== null && msg.valid) {
-          return msg.payload;
-        }
-        return null;
-      })
+      // Filter first: only process valid messages
+      filter((msg) => msg !== null && msg.valid),
+      // Map second: extract payload from valid messages
+      map((msg) => msg!.payload)
     );
     
     // Pattern 2: sensorOverview$ comes from gateway.sensorBme680$ and sensorLdr$ which have NO startWith
     // Combine last BME680 and LDR values from MessageMonitor
-    // Use startWith(null) so combineLatest emits even if one stream has no value yet
+    // combineLatest will emit when both streams have values, or when startWith provides defaults
+    const bme680WithDefault = lastBme680.pipe(startWith(null as Bme680Snapshot | null));
+    const ldrWithDefault = lastLdr.pipe(startWith(null as LdrSnapshot | null));
     const lastSensorOverview = combineLatest([
-      lastBme680.pipe(
-        map((bme) => bme ?? null),
-        startWith(null as Bme680Snapshot | null)
-      ),
-      lastLdr.pipe(
-        map((ldr) => ldr ?? null),
-        startWith(null as LdrSnapshot | null)
-      )
+      bme680WithDefault,
+      ldrWithDefault
     ]).pipe(
+      // Map combined values to SensorOverviewState
       map(([bme, ldr]) => this.buildSensorOverviewState(bme, ldr)),
+      // StartWith last: provide empty state as fallback only if no valid messages exist
       startWith(this.buildSensorOverviewState(null, null))
     );
     
