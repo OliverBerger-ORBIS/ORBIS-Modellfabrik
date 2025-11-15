@@ -39,8 +39,11 @@ pip install -r requirements.txt
 
 ### **MQTT Broker Setup**
 - **Mosquitto** für lokale Entwicklung
-- **Port:** 1883 (Standard)
-- **Authentication:** Optional für Produktion
+- **Port:** 1883 (TCP) und 9001 (WebSocket)
+- **Konfiguration:** Siehe [Mosquitto Setup Guide](./mosquitto/README.md)
+- **Config-Dateien:** `docs/04-howto/setup/mosquitto/`
+  - `mosquitto.conf.local` - Mit Authentifizierung
+  - `mosquitto.conf.local-simple` - Ohne Authentifizierung (für schnelles Testing)
 
 ### **Node-RED Setup**
 - **Port:** 1880 (Standard)

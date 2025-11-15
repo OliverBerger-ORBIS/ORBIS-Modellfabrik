@@ -1,0 +1,22 @@
+# Mosquitto Konfiguration für lokale Entwicklung (Homebrew)
+# Vereinfachte Version ohne Passwort-Authentifizierung
+# Unterstützt sowohl TCP MQTT (1883) als auch WebSocket MQTT (9001)
+
+# TCP MQTT (Port 1883) - für Backend-Services wie Session Manager
+listener 1883
+persistence true
+# Log-Datei im Homebrew-Verzeichnis
+log_dest file /opt/homebrew/var/log/mosquitto/mosquitto.log
+log_type all
+connection_messages true
+log_timestamp true
+
+# Authentifizierung deaktiviert für lokale Entwicklung
+allow_anonymous true
+
+# WebSocket MQTT (Port 9001) - für Browser-Anwendungen
+listener 9001
+protocol websockets
+# WebSocket ohne Authentifizierung (für lokale Entwicklung)
+allow_anonymous true
+
