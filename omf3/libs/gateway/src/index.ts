@@ -3,19 +3,19 @@ import { filter, map, mergeMap, shareReplay, throttleTime } from 'rxjs/operators
 
 import {
   safeJsonParse,
-  OrderActive,
-  StockMessage,
-  ModuleState,
-  FtsState,
-  ModulePairingState,
-  ModuleFactsheetSnapshot,
-  StockSnapshot,
-  ProductionFlowMap,
-  CcuConfigSnapshot,
-  Bme680Snapshot,
-  LdrSnapshot,
-  CameraFrameSnapshot,
-  CameraFrame,
+  type OrderActive,
+  type StockMessage,
+  type ModuleState,
+  type FtsState,
+  type ModulePairingState,
+  type ModuleFactsheetSnapshot,
+  type StockSnapshot,
+  type ProductionFlowMap,
+  type CcuConfigSnapshot,
+  type Bme680Snapshot,
+  type LdrSnapshot,
+  type CameraFrameSnapshot,
+  type CameraFrame,
 } from '@omf3/entities';
 
 export interface GatewayPublishOptions {

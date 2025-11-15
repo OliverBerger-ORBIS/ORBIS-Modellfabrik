@@ -4,7 +4,7 @@ import test from 'node:test';
 import { Subject, firstValueFrom } from 'rxjs';
 import { skip } from 'rxjs/operators';
 
-import { createBusiness, type GatewayStreams } from '@omf3/business';
+import { createBusiness, type GatewayStreams } from '../index';
 import type {
   FtsState,
   ModuleState,

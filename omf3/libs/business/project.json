@@ -18,7 +18,7 @@
     "test": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "tsx omf3/libs/business/src/__tests__/business.spec.ts"
+        "command": "tsx --tsconfig omf3/libs/business/tsconfig.spec.json omf3/libs/business/src/__tests__/business.spec.ts"
       }
     }
   },

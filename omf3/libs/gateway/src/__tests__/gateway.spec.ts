@@ -4,7 +4,7 @@ import test from 'node:test';
 import { Subject, firstValueFrom } from 'rxjs';
 import { skip } from 'rxjs/operators';
 
-import { createGateway, RawMqttMessage } from '@omf3/gateway';
+import { createGateway, type RawMqttMessage } from '../index';
 
 const createMessage = (topic: string, payload: unknown): RawMqttMessage => ({
   topic,
