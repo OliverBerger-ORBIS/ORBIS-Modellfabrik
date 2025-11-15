@@ -18,3 +18,4 @@ orbis_modellfabrik.egg-info/
 logs/omf2.log
 logs/session_manager.jsonl
 logs/session_manager/
+coverage/
