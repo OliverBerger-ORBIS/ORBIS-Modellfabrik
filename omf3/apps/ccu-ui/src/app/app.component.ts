@@ -56,15 +56,16 @@ const NAVIGATION_ITEMS: NavigationItem[] = [
     roles: ['admin'],
   },
   {
-    id: 'settings',
-    label: $localize`:@@navSettings:Settings`,
-    route: '/settings',
-    roles: ['admin'],
-  },
-  {
     id: 'message-monitor',
     label: $localize`:@@navMessageMonitor:Message Monitor`,
     route: '/message-monitor',
+    roles: ['admin'],
+    icon: 'headings/zentral.svg',
+  },
+  {
+    id: 'settings',
+    label: $localize`:@@navSettings:Settings`,
+    route: '/settings',
     roles: ['admin'],
   },
 ];

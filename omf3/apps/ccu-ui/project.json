@@ -43,11 +43,6 @@
             "output": "fixtures/orders"
           },
           {
-            "glob": "**/*.json",
-            "input": "omf3/apps/ccu-ui/src/locale",
-            "output": "locale"
-          },
-          {
             "glob": "**/*.log",
             "input": "omf3/testing/fixtures/modules",
             "output": "fixtures/modules"

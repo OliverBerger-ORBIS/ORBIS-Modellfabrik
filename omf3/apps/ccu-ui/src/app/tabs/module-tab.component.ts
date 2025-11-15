@@ -9,8 +9,9 @@ import type {
 import { SHOPFLOOR_ASSET_MAP, type OrderFixtureName } from '@omf3/testing-fixtures';
 import { getDashboardController } from '../mock-dashboard';
 import type { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, shareReplay } from 'rxjs/operators';
 import { EnvironmentService } from '../services/environment.service';
+import { MessageMonitorService } from '../services/message-monitor.service';
 
 interface ModuleCommand {
   label: string;
@@ -92,7 +93,17 @@ const STATUS_ICONS = {
 export class ModuleTabComponent implements OnInit {
   private readonly dashboard = getDashboardController();
 
-  constructor(private readonly environmentService: EnvironmentService) {}
+  constructor(
+    private readonly environmentService: EnvironmentService,
+    private readonly messageMonitor: MessageMonitorService
+  ) {
+    // Subscribe directly to dashboard streams - they already have shareReplay with startWith
+    // Use refCount: false to keep streams alive even when no subscribers
+    this.moduleOverview$ = this.dashboard.streams.moduleOverview$.pipe(
+      shareReplay({ bufferSize: 1, refCount: false })
+    );
+    this.rows$ = this.createRowsStream(this.moduleOverview$);
+  }
 
   get isMockMode(): boolean {
     return this.environmentService.current.key === 'mock';
@@ -112,8 +123,8 @@ export class ModuleTabComponent implements OnInit {
   activeFixture: OrderFixtureName = this.dashboard.getCurrentFixture();
   loading = false;
 
-  moduleOverview$: Observable<ModuleOverviewState> = this.dashboard.streams.moduleOverview$;
-  rows$: Observable<ModuleRow[]> = this.createRowsStream(this.moduleOverview$);
+  moduleOverview$: Observable<ModuleOverviewState>;
+  rows$: Observable<ModuleRow[]>;
 
   readonly headingIcon = 'headings/mehrere.svg';
 

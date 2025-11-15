@@ -7,6 +7,7 @@ import type { OrderFixtureName } from '@omf3/testing-fixtures';
 import { map, shareReplay } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
 import { EnvironmentService } from '../services/environment.service';
+import { MessageMonitorService } from '../services/message-monitor.service';
 
 const ORDER_TYPES = {
   PRODUCTION: 'PRODUCTION',
@@ -43,7 +44,10 @@ const getOrderTimestamp = (order: OrderActive): number => {
 export class OrderTabComponent implements OnInit {
   private readonly dashboard = getDashboardController();
 
-  constructor(private readonly environmentService: EnvironmentService) {}
+  constructor(
+    private readonly environmentService: EnvironmentService,
+    private readonly messageMonitor: MessageMonitorService
+  ) {}
 
   get isMockMode(): boolean {
     return this.environmentService.current.key === 'mock';
@@ -67,8 +71,14 @@ export class OrderTabComponent implements OnInit {
   activeFixture: OrderFixtureName = this.dashboard.getCurrentFixture();
 
   private bindOrderStreams(): void {
-    const orders$ = this.dashboard.streams.orders$.pipe(shareReplay({ bufferSize: 1, refCount: true }));
-    const completed$ = this.dashboard.streams.completedOrders$.pipe(shareReplay({ bufferSize: 1, refCount: true }));
+    // Subscribe directly to dashboard streams - they already have shareReplay with startWith
+    // Use refCount: false to keep streams alive even when no subscribers
+    const orders$ = this.dashboard.streams.orders$.pipe(
+      shareReplay({ bufferSize: 1, refCount: false })
+    );
+    const completed$ = this.dashboard.streams.completedOrders$.pipe(
+      shareReplay({ bufferSize: 1, refCount: false })
+    );
 
     const orderList$ = orders$.pipe(
       map((list) => [...list]),

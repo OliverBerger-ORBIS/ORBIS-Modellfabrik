@@ -4,6 +4,7 @@ import { getDashboardController } from '../mock-dashboard';
 import type { Observable } from 'rxjs';
 import { map, shareReplay, switchMap, startWith } from 'rxjs/operators';
 import type { SensorOverviewState, CameraFrame } from '@omf3/entities';
+import { MessageMonitorService } from '../services/message-monitor.service';
 
 @Component({
   standalone: true,
@@ -24,18 +25,20 @@ export class SensorTabComponent {
   readonly cameraHeadingIcon = 'headings/camera.svg';
   stepSize = 10;
 
-  readonly sensorOverview$: Observable<SensorOverviewState> = this.dashboard.streams$.pipe(
-    map((streams) => streams.sensorOverview$),
-    switchMap((stream$) => stream$),
-    startWith({} as SensorOverviewState),
-    shareReplay({ bufferSize: 1, refCount: true })
-  );
+  readonly sensorOverview$: Observable<SensorOverviewState>;
+  readonly cameraFrame$: Observable<CameraFrame | null>;
 
-  readonly cameraFrame$: Observable<CameraFrame | null> = this.dashboard.streams$.pipe(
-    map((streams) => streams.cameraFrames$),
-    switchMap((stream$) => stream$.pipe(startWith(null))),
-    shareReplay({ bufferSize: 1, refCount: true })
-  );
+  constructor(private readonly messageMonitor: MessageMonitorService) {
+    // Subscribe directly to dashboard streams - they already have shareReplay with startWith
+    // The business layer streams have startWith and shareReplay, so they should emit immediately
+    this.sensorOverview$ = this.dashboard.streams.sensorOverview$.pipe(
+      shareReplay({ bufferSize: 1, refCount: false }) // refCount: false to keep stream alive
+    );
+
+    this.cameraFrame$ = this.dashboard.streams.cameraFrames$.pipe(
+      shareReplay({ bufferSize: 1, refCount: false }) // refCount: false to keep stream alive
+    );
+  }
 
   gaugeRatio(value: number | undefined, min: number, max: number): number {
     return this.computeRatio(value, min, max, 'linear');

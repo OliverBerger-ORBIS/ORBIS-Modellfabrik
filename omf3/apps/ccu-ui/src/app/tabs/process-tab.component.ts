@@ -5,7 +5,8 @@ import { SHOPFLOOR_ASSET_MAP } from '@omf3/testing-fixtures';
 import { getDashboardController } from '../mock-dashboard';
 import { MessageMonitorService } from '../services/message-monitor.service';
 import type { Observable } from 'rxjs';
-import { map, switchMap, startWith, filter, mergeMap } from 'rxjs/operators';
+import { map, shareReplay, filter, startWith } from 'rxjs/operators';
+import { merge } from 'rxjs';
 
 interface ProcessStepView {
   id: string;
@@ -36,18 +37,25 @@ interface ProcessProductView {
 export class ProcessTabComponent {
   private readonly dashboard = getDashboardController();
 
-  constructor(private readonly messageMonitor: MessageMonitorService) {}
-
-  // Enhanced flows$ that immediately emits the last received message from MessageMonitor
-  // then continues with real-time updates from the dashboard stream
-  flows$: Observable<ProductionFlowMap> = this.messageMonitor
-    .getLastMessage<ProductionFlowMap>('ccu/state/flows')
-    .pipe(
-      filter((msg) => msg !== null && msg.valid),
-      map((msg) => msg!.payload)
-    );
+  // Subscribe directly to dashboard streams - they already have shareReplay with startWith
+  // Use refCount: false to keep streams alive even when no subscribers
+  flows$: Observable<ProductionFlowMap>;
   
-  products$: Observable<ProcessProductView[]> = this.flows$.pipe(map((flows) => this.buildProductViews(flows)));
+  products$: Observable<ProcessProductView[]>;
+
+  constructor(private readonly messageMonitor: MessageMonitorService) {
+    // flows$ doesn't have startWith in gateway layer, so merge MessageMonitor last value with dashboard stream
+    const lastFlows = this.messageMonitor.getLastMessage<ProductionFlowMap>('ccu/state/flows').pipe(
+      filter((msg) => msg !== null && msg.valid),
+      map((msg) => msg!.payload),
+      startWith({} as ProductionFlowMap)
+    );
+    this.flows$ = merge(lastFlows, this.dashboard.streams.flows$).pipe(
+      shareReplay({ bufferSize: 1, refCount: false })
+    );
+    
+    this.products$ = this.flows$.pipe(map((flows) => this.buildProductViews(flows)));
+  }
 
   readonly processIcon = 'headings/gang.svg';
   readonly startIcon = this.resolveAssetPath(SHOPFLOOR_ASSET_MAP['HBW'] ?? '/shopfloor/stock.svg');

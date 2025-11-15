@@ -4,7 +4,8 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
 import type { CcuConfigSnapshot, ModuleOverviewState } from '@omf3/entities';
 import { SHOPFLOOR_ASSET_MAP } from '@omf3/testing-fixtures';
 import { BehaviorSubject, type Observable, combineLatest } from 'rxjs';
-import { map, shareReplay, switchMap, tap, startWith, filter } from 'rxjs/operators';
+import { map, shareReplay, tap, filter, startWith } from 'rxjs/operators';
+import { merge } from 'rxjs';
 import { getDashboardController } from '../mock-dashboard';
 import { MessageMonitorService } from '../services/message-monitor.service';
 import { ShopfloorPreviewComponent } from '../components/shopfloor-preview/shopfloor-preview.component';
@@ -116,20 +117,15 @@ export class ConfigurationTabComponent {
 
   private readonly layoutInfo$: Observable<LayoutViewModel>;
 
-  private readonly moduleOverview$: Observable<ModuleOverviewState> = this.dashboard.streams$.pipe(
-    map((streams) => streams.moduleOverview$),
-    switchMap((stream$) => stream$),
-    shareReplay({ bufferSize: 1, refCount: true })
+  // Subscribe directly to dashboard streams - they already have shareReplay with startWith
+  // Use refCount: false to keep streams alive even when no subscribers
+  private readonly moduleOverview$: Observable<ModuleOverviewState> = this.dashboard.streams.moduleOverview$.pipe(
+    shareReplay({ bufferSize: 1, refCount: false })
   );
 
-  // Enhanced configSnapshot$ that immediately emits the last received config from MessageMonitor
-  private readonly configSnapshot$: Observable<CcuConfigSnapshot> = this.messageMonitor
-    .getLastMessage<CcuConfigSnapshot>('ccu/state/config')
-    .pipe(
-      filter((msg) => msg !== null && msg.valid),
-      map((msg) => msg!.payload),
-      shareReplay({ bufferSize: 1, refCount: true })
-    );
+  // Subscribe directly to dashboard streams - they already have shareReplay with startWith
+  // Use refCount: false to keep streams alive even when no subscribers
+  private readonly configSnapshot$: Observable<CcuConfigSnapshot>;
 
   readonly selectedCell$ = this.selectedCellSubject.asObservable();
 
@@ -139,6 +135,16 @@ export class ConfigurationTabComponent {
     private readonly http: HttpClient,
     private readonly messageMonitor: MessageMonitorService
   ) {
+    // config$ doesn't have startWith in gateway layer, so merge MessageMonitor last value with dashboard stream
+    const lastConfig = this.messageMonitor.getLastMessage<CcuConfigSnapshot>('ccu/state/config').pipe(
+      filter((msg) => msg !== null && msg.valid),
+      map((msg) => msg!.payload),
+      startWith(null as CcuConfigSnapshot | null)
+    );
+    this.configSnapshot$ = merge(lastConfig, this.dashboard.streams.config$).pipe(
+      filter((config): config is CcuConfigSnapshot => config !== null),
+      shareReplay({ bufferSize: 1, refCount: false })
+    );
     this.layoutInfo$ = this.http.get<ShopfloorLayoutConfig>('shopfloor/shopfloor_layout.json').pipe(
       map((layout) => this.buildLayout(layout)),
       tap((layout) => {

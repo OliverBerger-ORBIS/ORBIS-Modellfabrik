@@ -49,12 +49,12 @@ export const appRoutes: Routes = [
         loadComponent: () =>
           import('./tabs/settings-tab.component').then((m) => m.SettingsTabComponent),
       },
+      {
+        path: 'message-monitor',
+        loadComponent: () =>
+          import('./tabs/message-monitor-tab.component').then((m) => m.MessageMonitorTabComponent),
+      },
     ],
-  },
-  {
-    path: 'message-monitor',
-    loadComponent: () =>
-      import('./tabs/message-monitor-tab.component').then((m) => m.MessageMonitorTabComponent),
   },
   {
     path: '**',
