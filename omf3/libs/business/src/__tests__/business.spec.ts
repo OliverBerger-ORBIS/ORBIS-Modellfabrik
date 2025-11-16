@@ -11,6 +11,7 @@ import type {
   OrderActive,
   StockMessage,
   ModulePairingState,
+  ModuleFactsheetSnapshot,
   StockSnapshot,
   ProductionFlowMap,
   CcuConfigSnapshot,
@@ -30,6 +31,7 @@ const createGateway = (): {
     modules$: Subject<ModuleState>;
     fts$: Subject<FtsState>;
     pairing$: Subject<ModulePairingState>;
+    moduleFactsheets$: Subject<ModuleFactsheetSnapshot>;
     stockSnapshots$: Subject<StockSnapshot>;
     flows$: Subject<ProductionFlowMap>;
     config$: Subject<CcuConfigSnapshot>;
@@ -44,6 +46,7 @@ const createGateway = (): {
   const modules$ = subject<ModuleState>();
   const fts$ = subject<FtsState>();
   const pairing$ = subject<ModulePairingState>();
+  const moduleFactsheets$ = subject<ModuleFactsheetSnapshot>();
   const stockSnapshots$ = subject<StockSnapshot>();
   const flows$ = subject<ProductionFlowMap>();
   const config$ = subject<CcuConfigSnapshot>();
@@ -62,6 +65,7 @@ const createGateway = (): {
       modules$: modules$.asObservable(),
       fts$: fts$.asObservable(),
       pairing$: pairing$.asObservable(),
+      moduleFactsheets$: moduleFactsheets$.asObservable(),
       stockSnapshots$: stockSnapshots$.asObservable(),
       flows$: flows$.asObservable(),
       config$: config$.asObservable(),
@@ -76,6 +80,7 @@ const createGateway = (): {
       modules$,
       fts$,
       pairing$,
+      moduleFactsheets$,
       stockSnapshots$,
       flows$,
       config$,
@@ -180,7 +185,7 @@ test('aggregates module pairing overview', async () => {
   const overview = await overviewPromise;
   assert.equal(overview.modules['SVR3QA0022'].connected, true);
   assert.equal(overview.modules['SVR3QA0022'].messageCount, 1);
-  assert.equal(overview.modules['SVR3QA0022'].lastUpdate, '2025-11-10T18:02:09.702936');
+  assert.equal(overview.modules['SVR3QA0022'].lastUpdate, '18:02:09');
   assert.equal(overview.transports['5iO4'].availability, 'READY');
 });
 
@@ -220,7 +225,7 @@ test('exposes flows stream', async () => {
   const { streams, subjects } = createGateway();
   const business = createBusiness(streams);
 
-  const flowsPromise = firstValueFrom(business.flows$.pipe(skip(1)));
+  const flowsPromise = firstValueFrom(business.flows$);
 
   subjects.flows$.next({
     BLUE: { steps: ['DRILL', 'MILL', 'AIQS'] },
@@ -236,7 +241,7 @@ test('exposes config stream', async () => {
   const { streams, subjects } = createGateway();
   const business = createBusiness(streams);
 
-  const configPromise = firstValueFrom(business.config$.pipe(skip(1)));
+  const configPromise = firstValueFrom(business.config$);
 
   subjects.config$.next({
     productionDurations: { BLUE: 550, WHITE: 580, RED: 560 },
@@ -255,7 +260,7 @@ test('aggregates sensor overview', async () => {
   const { streams, subjects } = createGateway();
   const business = createBusiness(streams);
 
-  const sensorPromise = firstValueFrom(business.sensorOverview$.pipe(skip(1)));
+  const sensorPromise = firstValueFrom(business.sensorOverview$.pipe(skip(3)));
 
   subjects.sensorBme680$.next({
     ts: '2025-11-10T16:48:42.378Z',
