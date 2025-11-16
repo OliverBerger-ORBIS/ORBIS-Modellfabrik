@@ -260,7 +260,32 @@ npm run deploy:gh-pages-test
 # 2. In GitHub Settings → Pages aktivieren (Branch: gh-pages-test)
 
 # 3. Warten und testen:
-# https://oliverberger-orbis.github.io/ORBIS-Modellfabrik/
+# https://oliverberger-orbis.github.io/ORBIS-Modellfabrik/#/en/overview
+```
+
+### Deployment-Optionen
+
+Falls der Branch bereits existiert, gibt es mehrere Optionen:
+
+**Option 1: Force-Mode (automatisch löschen und neu erstellen)**
+```bash
+npm run deploy:gh-pages-test:force
+# oder
+bash scripts/deploy-gh-pages-test.sh --force
+```
+
+**Option 2: Versionierter Branch (mit Zeitstempel)**
+```bash
+npm run deploy:gh-pages-test:version
+# oder
+bash scripts/deploy-gh-pages-test.sh --version
+# Erstellt: gh-pages-test-20231116-143052
+```
+
+**Option 3: Interaktiv (fragt nach Bestätigung)**
+```bash
+npm run deploy:gh-pages-test
+# Script fragt: "Möchten Sie ihn löschen und neu erstellen? (y/n)"
 ```
 
 **Oder manuell:**
