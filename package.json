@@ -12,6 +12,7 @@
     "build": "nx build mqtt-client",
     "build:fixtures": "python scripts/build_order_fixtures.py",
     "build:netlify": "nx build ccu-ui --configuration=netlify",
+    "build:github-pages": "nx build ccu-ui --configuration=github-pages",
     "serve:local": "npm run build:netlify && npx serve dist/apps/ccu-ui/browser -p 4200",
     "deploy:gh-pages-test": "bash scripts/deploy-gh-pages-test.sh"
   },

@@ -31,7 +31,7 @@ if git show-ref --quiet refs/heads/$BRANCH_NAME; then
 fi
 
 echo "🔨 Schritt 1/5: Build erstellen..."
-npm run build:netlify
+npm run build:github-pages
 
 if [ ! -d "$BUILD_DIR" ]; then
     echo "❌ Build fehlgeschlagen: $BUILD_DIR nicht gefunden"
