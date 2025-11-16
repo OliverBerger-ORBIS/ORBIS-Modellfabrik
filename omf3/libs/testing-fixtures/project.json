@@ -12,7 +12,8 @@
         "outputPath": "dist/libs/testing-fixtures",
         "tsConfig": "omf3/libs/testing-fixtures/tsconfig.lib.json",
         "main": "omf3/libs/testing-fixtures/src/index.ts",
-        "assets": []
+        "assets": [],
+        "rootDir": "."
       }
     },
     "test": {

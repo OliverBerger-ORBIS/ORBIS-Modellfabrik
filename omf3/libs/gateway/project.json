@@ -12,7 +12,8 @@
         "outputPath": "dist/libs/gateway",
         "tsConfig": "omf3/libs/gateway/tsconfig.lib.json",
         "main": "omf3/libs/gateway/src/index.ts",
-        "assets": []
+        "assets": [],
+        "rootDir": "."
       }
     },
     "test": {

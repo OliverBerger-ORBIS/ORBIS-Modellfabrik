@@ -10,7 +10,8 @@
     "test:ccu-ui": "nx test ccu-ui",
     "test:mqtt-client": "nx test mqtt-client",
     "build": "nx build mqtt-client",
-    "build:fixtures": "python scripts/build_order_fixtures.py"
+    "build:fixtures": "python scripts/build_order_fixtures.py",
+    "build:netlify": "nx build ccu-ui --configuration=netlify"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~18.2.0",

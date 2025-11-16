@@ -12,7 +12,8 @@
         "outputPath": "dist/libs/business",
         "tsConfig": "omf3/libs/business/tsconfig.lib.json",
         "main": "omf3/libs/business/src/index.ts",
-        "assets": []
+        "assets": [],
+        "rootDir": "."
       }
     },
     "test": {

@@ -4,13 +4,13 @@
     "outDir": "../../../dist/out-tsc/gateway",
     "declaration": true,
     "types": [],
-    "rootDir": "src",
     "composite": true,
     "declarationMap": true,
     "tsBuildInfoFile": "../../../dist/out-tsc/gateway/tsconfig.lib.tsbuildinfo"
   },
   "include": [
-    "src/**/*.ts"
+    "src/**/*.ts",
+    "../entities/src/index.ts"
   ],
   "exclude": [
     "src/**/*.spec.ts"
