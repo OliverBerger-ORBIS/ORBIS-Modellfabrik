@@ -37,7 +37,7 @@ jobs:
     - name: Run OMF3 tests (includes shopfloor component tests)
       run: |
         echo "🧪 Running OMF3 tests (includes shopfloor component)..."
-        npx nx test --all
+        npm test
     
     - name: Verify shopfloor layout JSON exists
       run: |
