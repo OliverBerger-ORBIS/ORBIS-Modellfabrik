@@ -111,6 +111,13 @@
           "sourceMap": false,
           "baseHref": "/",
           "localize": false
+        },
+        "github-pages": {
+          "outputHashing": "all",
+          "optimization": true,
+          "sourceMap": false,
+          "baseHref": "/ORBIS-Modellfabrik/",
+          "localize": false
         }
       },
       "defaultConfiguration": "production"
