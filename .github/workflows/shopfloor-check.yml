@@ -34,6 +34,9 @@ jobs:
       run: |
         npm ci
     
+    # IMPORTANT: Use 'npm test' (NOT 'npx nx test --all')
+    # See .github/WORKFLOW_GUIDELINES.md for details
+    # This was fixed in commit b4e130c - do not change back!
     - name: Run OMF3 tests (includes shopfloor component tests)
       run: |
         echo "🧪 Running OMF3 tests (includes shopfloor component)..."
