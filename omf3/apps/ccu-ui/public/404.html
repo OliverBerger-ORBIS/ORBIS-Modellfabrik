@@ -3,25 +3,28 @@
   <head>
     <meta charset="utf-8" />
     <title>OMF3 Dashboard</title>
+    <base href="/ORBIS-Modellfabrik/" />
     <script type="text/javascript">
-      // Single Page Apps for GitHub Pages
-      // https://github.com/rafgraph/spa-github-pages
-      // This script redirects to the root page with the path encoded as a query parameter.
-      // This allows the index.html to handle client-side routing.
-      
-      var pathSegmentsToKeep = 1; // Keep /ORBIS-Modellfabrik/
-      
+      // Redirect to base path with hash routing
+      // With HashLocationStrategy, all routes are client-side
       var l = window.location;
-      l.replace(
-        l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
-        l.pathname.split('/').slice(0, 1 + pathSegmentsToKeep).join('/') + 
-        '/?/' +
-        l.pathname.slice(1).split('/').slice(pathSegmentsToKeep).join('/').replace(/&/g, '~and~') +
-        (l.search ? '&' + l.search.slice(1).replace(/&/g, '~and~') : '') +
-        l.hash
-      );
+      var basePath = '/ORBIS-Modellfabrik/';
+      
+      // If pathname doesn't start with basePath, redirect
+      if (!l.pathname.startsWith(basePath)) {
+        // Extract hash if present
+        var hash = l.hash || '#/en/overview';
+        // Redirect to base path with hash
+        l.replace(l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') + basePath + hash);
+      } else {
+        // Already on correct path, just ensure hash is present
+        if (!l.hash || l.hash === '') {
+          l.replace(l.href + '#/en/overview');
+        }
+      }
     </script>
   </head>
   <body>
+    <p>Redirecting...</p>
   </body>
 </html>
