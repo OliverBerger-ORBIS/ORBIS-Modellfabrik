@@ -1,13 +1,42 @@
-# Netlify Deployment Quick Start
+# OMF3 Dashboard Deployment Guide
 
-This guide provides a quick start for deploying the OMF3 Dashboard to Netlify.
+This guide provides options for deploying and testing the OMF3 Dashboard.
 
-## Prerequisites
+## 🚀 Quick Start: Local Testing (Empfohlen)
+
+**Am einfachsten für lokale Tests ohne externe Services:**
+
+```bash
+npm run serve:local
+```
+
+Das war's! Die Anwendung läuft jetzt unter `http://localhost:4200` im Mock-Modus.
+
+**Alternative Methoden:**
+```bash
+# Mit Shell-Script (Linux/Mac)
+./scripts/serve-local.sh
+
+# Mit Batch-Script (Windows)
+scripts\serve-local.bat
+
+# Oder manuell
+npm run build:netlify
+npx serve dist/apps/ccu-ui/browser -p 4200
+```
+
+**Hinweis:** Lokales Testing ist ideal wenn Firewall-Einschränkungen den Zugang zu Netlify oder anderen Cloud-Services verhindern.
+
+## ☁️ Netlify Deployment (Optional)
+
+Nur notwendig wenn die Anwendung für Remote-Kollegen erreichbar sein soll.
+
+### Prerequisites
 
 - Node.js and npm installed
 - Netlify account (free tier is sufficient)
 
-## Quick Deployment Steps
+### Deployment Steps
 
 ### 1. Build the Application
 
@@ -19,7 +48,7 @@ This creates an optimized build in `dist/apps/ccu-ui/browser/`.
 
 ### 2. Deploy to Netlify
 
-#### Option A: CLI Deployment (Recommended)
+#### Option A: CLI Deployment
 
 ```bash
 # Install Netlify CLI (one-time)
@@ -61,6 +90,18 @@ The application will:
 - Work without any backend or MQTT connection
 - Allow navigation between all tabs
 
+## 🔄 Alternative Deployment Options
+
+Wenn Netlify aufgrund von Firewall-Einschränkungen nicht verfügbar ist, siehe:
+
+**`docs/deployment-alternatives.md`** für detaillierte Alternativen:
+- Local Testing mit Static Server (einfachste Option)
+- GitHub Pages
+- Vercel
+- Docker Container (für Intranet-Hosting)
+- Internes Server-Hosting (Apache/Nginx)
+- Zip-Datei zum Teilen mit Kollegen
+
 ## Troubleshooting
 
 **Build fails?**
@@ -77,7 +118,9 @@ The application will:
 
 ## Full Documentation
 
-For detailed documentation, see: `docs/netlify-deployment.md`
+For detailed documentation, see:
+- `docs/netlify-deployment.md` - Netlify-specific guide
+- `docs/deployment-alternatives.md` - Alternative hosting options
 
 ## Support
 
