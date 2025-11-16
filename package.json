@@ -6,7 +6,7 @@
   "scripts": {
     "nx": "nx",
     "graph": "nx graph",
-    "test": "nx test --all",
+    "test": "nx run-many -t test",
     "test:ccu-ui": "nx test ccu-ui",
     "test:mqtt-client": "nx test mqtt-client",
     "build": "nx build mqtt-client",
