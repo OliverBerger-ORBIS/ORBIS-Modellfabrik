@@ -3,24 +3,35 @@
   <head>
     <meta charset="utf-8" />
     <title>OMF3 Dashboard</title>
-    <base href="/ORBIS-Modellfabrik/" />
     <script type="text/javascript">
       // Redirect to base path with hash routing
       // With HashLocationStrategy, all routes are client-side
       var l = window.location;
-      var basePath = '/ORBIS-Modellfabrik/';
       
-      // If pathname doesn't start with basePath, redirect
-      if (!l.pathname.startsWith(basePath)) {
-        // Extract hash if present
-        var hash = l.hash || '#/en/overview';
-        // Redirect to base path with hash
-        l.replace(l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') + basePath + hash);
-      } else {
-        // Already on correct path, just ensure hash is present
-        if (!l.hash || l.hash === '') {
-          l.replace(l.href + '#/en/overview');
+      // Detect if running on GitHub Pages or locally
+      var isGitHubPages = l.hostname === 'oliverberger-orbis.github.io';
+      var basePath = isGitHubPages ? '/ORBIS-Modellfabrik/' : '/';
+      
+      // Check if we need to redirect
+      var needsRedirect = false;
+      var targetHash = l.hash || '#/en/overview';
+      
+      if (isGitHubPages) {
+        // GitHub Pages: Check if path starts with base path
+        if (!l.pathname.startsWith(basePath)) {
+          needsRedirect = true;
+        } else if (!l.hash || l.hash === '') {
+          needsRedirect = true;
         }
+      } else {
+        // Local dev: Only redirect if not on root or missing hash
+        if (l.pathname !== '/' || !l.hash || l.hash === '') {
+          needsRedirect = true;
+        }
+      }
+      
+      if (needsRedirect) {
+        l.replace(l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') + basePath + targetHash);
       }
     </script>
   </head>
