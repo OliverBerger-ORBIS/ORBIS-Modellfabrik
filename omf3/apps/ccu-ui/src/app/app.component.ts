@@ -101,7 +101,7 @@ export class AppComponent implements OnDestroy {
 
   readonly headerTitle = $localize`:@@headerTitle:SmartFactory`;
   readonly headerSubtitle =
-    $localize`:@@headerSubtitle:ORBIS Modelfactory managed by Distributed Shopfloor Processing with IT/OT Integration, Interoperability and AI`;
+    $localize`:@@headerSubtitle:Fischertechnik Model Factory (APS) orchestrated by ORBIS DSP — IT/OT integration, ERP connectivity and AI-enabled shopfloor intelligence.`;
   readonly resetLabel = $localize`:@@headerResetButton:Reset factory`;
   readonly orbitLogoPath = 'shopfloor/ORBIS_logo_RGB.svg';
 

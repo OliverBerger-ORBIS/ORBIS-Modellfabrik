@@ -181,23 +181,37 @@
 
 .header__title {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 1.5rem;
 
   img {
-    width: 120px;
+    width: 220px;
     height: auto;
+    /* Logo-Grundlinie wird durch margin-top auf h1-Baseline ausgerichtet */
+    /* Anpassen: Größerer negativer Wert = Logo weiter nach oben */
+    margin-top: -2.0rem;
+  }
+
+  > div {
+    display: flex;
+    flex-direction: column;
+    /* Text-Container wird verschoben, damit h1-Baseline mit Logo-Grundlinie übereinstimmt */
+    /* Anpassen: Größerer negativer Wert = Titel weiter nach oben */
+    margin-top: -0.5rem;
   }
 
   h1 {
     margin: 0;
-    font-size: clamp(2.2rem, 1.8rem + 0.8vw, 2.9rem);
+    font-size: 2.5rem;
+    line-height: 1.2;
   }
 
   p {
     margin: 0.25rem 0 0;
     color: #4b6584;
     max-width: none;
+    font-size: 1.3rem;
+    line-height: 1.5;
   }
 }
 
