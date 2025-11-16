@@ -4,13 +4,14 @@
     "outDir": "../../../dist/out-tsc/business",
     "declaration": true,
     "types": [],
-    "rootDir": "src",
     "composite": true,
     "declarationMap": true,
     "tsBuildInfoFile": "../../../dist/out-tsc/business/tsconfig.lib.tsbuildinfo"
   },
   "include": [
-    "src/**/*.ts"
+    "src/**/*.ts",
+    "../entities/src/index.ts",
+    "../gateway/src/index.ts"
   ],
   "exclude": [
     "src/**/*.spec.ts"

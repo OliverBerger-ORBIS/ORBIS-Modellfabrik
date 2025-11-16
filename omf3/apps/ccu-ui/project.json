@@ -104,6 +104,13 @@
           "extractLicenses": false,
           "sourceMap": true,
           "localize": false
+        },
+        "netlify": {
+          "outputHashing": "all",
+          "optimization": true,
+          "sourceMap": false,
+          "baseHref": "/",
+          "localize": false
         }
       },
       "defaultConfiguration": "production"

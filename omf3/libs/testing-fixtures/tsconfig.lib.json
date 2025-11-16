@@ -4,12 +4,11 @@
     "outDir": "../../../dist/out-tsc/testing-fixtures",
     "declaration": true,
     "types": [],
-    "rootDir": "src",
     "composite": true,
     "declarationMap": true,
     "tsBuildInfoFile": "../../../dist/out-tsc/testing-fixtures/tsconfig.lib.tsbuildinfo"
   },
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*.ts", "../gateway/src/index.ts", "../entities/src/index.ts"],
   "exclude": ["src/**/*.spec.ts"],
   "references": [
     {
