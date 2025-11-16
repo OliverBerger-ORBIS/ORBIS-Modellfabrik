@@ -38,7 +38,7 @@ jobs:
     
     - name: Run OMF3 tests
       run: |
-        npx nx test --all
+        npm test
     
     - name: Validate structure
       run: |
