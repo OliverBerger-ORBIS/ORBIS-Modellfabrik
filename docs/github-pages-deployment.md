@@ -2,6 +2,20 @@
 
 Dieser Guide erklärt, wie das OMF3 Dashboard über GitHub Pages bereitgestellt werden kann.
 
+## ✅ Aktuelle Implementierung
+
+Das OMF3 Dashboard ist **vollständig für GitHub Pages konfiguriert** und einsatzbereit:
+
+- **Hash-basiertes Routing:** URLs verwenden `#` (z.B. `/#/en/overview`)
+  - ✅ Funktioniert automatisch auf GitHub Pages
+  - ✅ Keine Server-Konfiguration erforderlich
+  - ✅ Direkte Links zu Unterseiten funktionieren
+- **Base Href:** Korrekt auf `/ORBIS-Modellfabrik/` gesetzt
+- **i18n:** Runtime-Loading (Deutsch, Englisch, Französisch)
+- **Mock-Mode:** Funktioniert vollständig mit lokalen Fixtures
+- **Build-Befehl:** `npm run build:github-pages`
+- **Deploy-Befehl:** `npm run deploy:gh-pages-test`
+
 ## Voraussetzungen
 
 - Zugriff auf das GitHub Repository
@@ -31,7 +45,7 @@ Sie können auch eine minimale Test-Seite erstellen, um die Erreichbarkeit zu pr
 
 1. **Build erstellen:**
    ```bash
-   npm run build:netlify
+   npm run build:github-pages
    ```
 
 2. **Testbranch erstellen und wechseln:**
@@ -77,7 +91,7 @@ Nach erfolgreichem Test können Sie einen dedizierten `gh-pages` Branch erstelle
 
 1. **Build erstellen:**
    ```bash
-   npm run build:netlify
+   npm run build:github-pages
    ```
 
 2. **Neuen gh-pages Branch erstellen (ohne History):**
@@ -116,36 +130,22 @@ https://oliverberger-orbis.github.io/ORBIS-Modellfabrik/
 
 Falls der Repository-Name im Pfad stört, gibt es zwei Optionen:
 
-### Option A: Base Href anpassen
+### Option A: Base Href anpassen (bereits konfiguriert)
 
-Falls die App unter einem Subpath läuft (z.B. `/ORBIS-Modellfabrik/`), muss die Build-Konfiguration angepasst werden:
+Die App ist bereits für GitHub Pages konfiguriert mit:
 
-**In `omf3/apps/ccu-ui/project.json`:**
+- **Build-Konfiguration:** `github-pages` in `omf3/apps/ccu-ui/project.json`
+- **Base Href:** `/ORBIS-Modellfabrik/`
+- **Routing:** Hash-basiert (URLs wie `/#/en/overview`)
+- **i18n:** Runtime-Loading (keine Locale-Unterverzeichnisse)
 
-```json
-"configurations": {
-  "github-pages": {
-    "outputHashing": "all",
-    "optimization": true,
-    "sourceMap": false,
-    "baseHref": "/ORBIS-Modellfabrik/",
-    "localize": false
-  }
-}
-```
+Die Konfiguration ist bereits vorhanden und kann direkt verwendet werden:
 
-**Neues Build-Script in `package.json`:**
-
-```json
-"scripts": {
-  "build:github-pages": "nx build ccu-ui --configuration=github-pages"
-}
-```
-
-Dann build mit:
 ```bash
 npm run build:github-pages
 ```
+
+**Wichtig:** Die App verwendet Hash-basiertes Routing (`/#/en/overview`), daher funktioniert die Navigation auf GitHub Pages automatisch ohne zusätzliche Konfiguration.
 
 ### Option B: Custom Domain verwenden
 
@@ -199,7 +199,7 @@ jobs:
         run: npm ci
 
       - name: Build
-        run: npm run build:netlify  # oder build:github-pages
+        run: npm run build:github-pages
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
@@ -226,45 +226,9 @@ Nach dem Deployment prüfen Sie:
 
 **Problem: 404 Fehler bei Unterseiten**
 
-GitHub Pages unterstützt keine nativen SPA-Redirects. Lösungen:
+✅ **Bereits gelöst:** Die App verwendet Hash-basiertes Routing (`/#/en/overview`), daher gibt es keine 404-Fehler bei direkten Links zu Unterseiten. GitHub Pages muss nur die `index.html` ausliefern, und Angular übernimmt das Routing im Browser.
 
-**Lösung A: 404.html Trick**
-
-Erstelle `404.html` im gh-pages Branch mit folgendem Inhalt:
-
-```html
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>OMF3 Dashboard</title>
-  <script>
-    // GitHub Pages SPA redirect trick
-    sessionStorage.redirect = location.href;
-  </script>
-  <meta http-equiv="refresh" content="0;URL='/'">
-</head>
-<body></body>
-</html>
-```
-
-Und in `index.html` (vor dem schließenden `</head>` Tag):
-
-```html
-<script>
-  (function(){
-    var redirect = sessionStorage.redirect;
-    delete sessionStorage.redirect;
-    if (redirect && redirect != location.href) {
-      history.replaceState(null, null, redirect);
-    }
-  })();
-</script>
-```
-
-**Lösung B: Hash-basiertes Routing** (nicht empfohlen)
-
-Alternativ könnte Hash-Routing verwendet werden (`/#/en/overview`), aber das ist nicht die bevorzugte Lösung.
+**Zusätzliche Absicherung:** Eine `404.html` ist bereits im Build enthalten und leitet Benutzer zur Hauptseite um, falls dennoch ein 404-Fehler auftritt.
 
 **Problem: Base Href falsch**
 
@@ -283,8 +247,27 @@ Lösung: `.nojekyll` Datei im Root erstellen.
 Für einen schnellen Test ob GitHub Pages funktioniert:
 
 ```bash
+# 1. Automatisches Deployment-Script verwenden
+npm run deploy:gh-pages-test
+
+# Das Script führt automatisch aus:
+# - Build mit github-pages Konfiguration
+# - Erstellt gh-pages-test Branch
+# - Kopiert Build-Dateien
+# - Erstellt .nojekyll
+# - Committed und pusht
+
+# 2. In GitHub Settings → Pages aktivieren (Branch: gh-pages-test)
+
+# 3. Warten und testen:
+# https://oliverberger-orbis.github.io/ORBIS-Modellfabrik/
+```
+
+**Oder manuell:**
+
+```bash
 # 1. Build erstellen
-npm run build:netlify
+npm run build:github-pages
 
 # 2. Testbranch erstellen
 git checkout -b gh-pages-test
@@ -301,7 +284,7 @@ git push origin gh-pages-test
 # 5. In GitHub Settings → Pages aktivieren (Branch: gh-pages-test)
 
 # 6. Warten und testen:
-# https://oliverberger-orbis.github.io/ORBIS-Modellfabrik/
+# https://oliverberger-orbis.github.io/ORBIS-Modellfabrik/#/en/overview
 ```
 
 Falls die URL erreichbar ist: ✅ GitHub Pages funktioniert bei Ihnen!
