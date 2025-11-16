@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, AfterViewChecked
 import { FormsModule } from '@angular/forms';
 import { MessageMonitorService, MonitoredMessage } from '../services/message-monitor.service';
 import { EnvironmentService } from '../services/environment.service';
+import { ModuleNameService } from '../services/module-name.service';
 import { BehaviorSubject, combineLatest, interval, Subscription } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import hljs from 'highlight.js';
@@ -78,7 +79,8 @@ export class MessageMonitorTabComponent implements OnInit, OnDestroy, AfterViewC
 
   constructor(
     private readonly messageMonitor: MessageMonitorService,
-    private readonly environmentService: EnvironmentService
+    private readonly environmentService: EnvironmentService,
+    private readonly moduleNameService: ModuleNameService
   ) {}
 
   get isMockMode(): boolean {
@@ -249,7 +251,17 @@ export class MessageMonitorTabComponent implements OnInit, OnDestroy, AfterViewC
 
     // Build module info list
     this.availableModules = Array.from(moduleSerials)
-      .map(serial => MODULE_MAPPING[serial] || { serial, name: serial, icon: 'shopfloor/robot-arm.svg' })
+      .map(serial => {
+        const module = MODULE_MAPPING[serial];
+        if (module) {
+          return {
+            serial: module.serial,
+            name: this.moduleNameService.getModuleDisplayText(module.name, 'id-full'),
+            icon: module.icon
+          };
+        }
+        return { serial, name: serial, icon: 'shopfloor/robot-arm.svg' };
+      })
       .sort((a, b) => a.name.localeCompare(b.name));
   }
 
@@ -279,7 +291,9 @@ export class MessageMonitorTabComponent implements OnInit, OnDestroy, AfterViewC
 
       if (serial && MODULE_MAPPING[serial]) {
         const module = MODULE_MAPPING[serial];
-        return { name: module.name, icon: module.icon };
+        // For table display, show only ID (short version)
+        const displayName = this.moduleNameService.getModuleDisplayText(module.name, 'id-only');
+        return { name: displayName, icon: module.icon };
       }
     }
 
@@ -290,7 +304,9 @@ export class MessageMonitorTabComponent implements OnInit, OnDestroy, AfterViewC
         const serial = parts[3];
         if (MODULE_MAPPING[serial]) {
           const module = MODULE_MAPPING[serial];
-          return { name: `${module.name} (${module.serial})`, icon: module.icon };
+          // For table display, show only ID (short version)
+          const displayName = this.moduleNameService.getModuleDisplayText(module.name, 'id-only');
+          return { name: displayName, icon: module.icon };
         }
       }
     }

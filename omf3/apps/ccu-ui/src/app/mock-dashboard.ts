@@ -245,10 +245,31 @@ const createStreamSet = (
 
 export const createMockDashboardController = (options?: {
   mqttClient?: MqttClientWrapper;
+  messageMonitor?: { addMessage: (topic: string, payload: unknown, timestamp?: string) => void };
 }): MockDashboardController => {
   let messageSubject = new Subject<RawMqttMessage>();
   const mqttClient = options?.mqttClient; // Store in closure
+  const messageMonitor = options?.messageMonitor; // Store in closure
   let bundle = createStreamSet(messageSubject, mqttClient);
+  
+  // In mock mode (no MQTT client), forward fixture messages to MessageMonitor
+  if (!mqttClient && messageMonitor) {
+    messageSubject.subscribe((message: RawMqttMessage) => {
+      try {
+        let payload: unknown = message.payload;
+        if (typeof payload === 'string') {
+          try {
+            payload = JSON.parse(payload);
+          } catch {
+            // Keep as string if not valid JSON
+          }
+        }
+        messageMonitor.addMessage(message.topic, payload, message.timestamp);
+      } catch (error) {
+        console.error('[mock-dashboard] Failed to forward message to MessageMonitor:', error);
+      }
+    });
+  }
   let currentReplays: Subscription[] = [];
   let currentFixture: OrderFixtureName = 'startup';
   const streamsSubject = new BehaviorSubject<DashboardStreamSet>(bundle.streams);
@@ -383,12 +404,17 @@ export const createMockDashboardController = (options?: {
 
 let sharedController: MockDashboardController | null = null;
 let mqttClientRef: MqttClientWrapper | undefined;
+let messageMonitorRef: { addMessage: (topic: string, payload: unknown, timestamp?: string) => void } | undefined;
 
-export const getDashboardController = (mqttClient?: MqttClientWrapper): MockDashboardController => {
+export const getDashboardController = (
+  mqttClient?: MqttClientWrapper,
+  messageMonitor?: { addMessage: (topic: string, payload: unknown, timestamp?: string) => void }
+): MockDashboardController => {
   // If MQTT client changed or controller doesn't exist, recreate it
-  if (!sharedController || (mqttClient && mqttClient !== mqttClientRef)) {
+  if (!sharedController || (mqttClient && mqttClient !== mqttClientRef) || (messageMonitor && messageMonitor !== messageMonitorRef)) {
     mqttClientRef = mqttClient;
-    sharedController = createMockDashboardController({ mqttClient });
+    messageMonitorRef = messageMonitor;
+    sharedController = createMockDashboardController({ mqttClient, messageMonitor });
   }
   return sharedController;
 };

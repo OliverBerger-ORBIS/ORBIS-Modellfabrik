@@ -51,7 +51,7 @@
               class="step__module-icon"
               alt=""
             />
-            <span class="step__module-name">{{ moduleName(step) }}</span>
+            <span class="step__module-name" [title]="moduleFullName(step)">{{ moduleName(step) }}</span>
           </span>
           <span class="step__command-text">{{ commandLabel(step) }}</span>
         </li>
@@ -68,19 +68,19 @@
 
     <footer class="order-card__details">
       <div class="detail-group" *ngIf="orderStartedAt as started">
-        <span class="detail-label">Started</span>
+        <span class="detail-label" i18n="@@orderCardStarted">Started</span>
         <span class="detail-value">{{ started }}</span>
       </div>
       <div class="detail-group" *ngIf="orderDuration as duration">
-        <span class="detail-label">Duration</span>
+        <span class="detail-label" i18n="@@orderCardDuration">Duration</span>
         <span class="detail-value">{{ duration }}</span>
       </div>
       <div class="detail-group" *ngIf="workpieceId as workpiece">
-        <span class="detail-label">Workpiece</span>
+        <span class="detail-label" i18n="@@orderCardWorkpiece">Workpiece</span>
         <span class="detail-value">{{ workpiece }}</span>
       </div>
       <div class="detail-group" *ngIf="activeStepStartedAt as stepStart">
-        <span class="detail-label">Active step started</span>
+        <span class="detail-label" i18n="@@orderCardActiveStepStarted">Active step started</span>
         <span class="detail-value">{{ stepStart }}</span>
       </div>
     </footer>

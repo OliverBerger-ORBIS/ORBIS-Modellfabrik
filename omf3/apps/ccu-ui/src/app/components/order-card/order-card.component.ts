@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges } f
 import type { OrderActive, ProductionStep } from '@omf3/entities';
 import { SHOPFLOOR_ASSET_MAP } from '@omf3/testing-fixtures';
 import { ShopfloorPreviewComponent } from '../shopfloor-preview/shopfloor-preview.component';
+import { ModuleNameService } from '../../services/module-name.service';
 
 type StepState = 'queued' | 'running' | 'completed' | 'failed';
 
@@ -32,6 +33,8 @@ export class OrderCardComponent implements OnChanges {
 
   steps: ProductionStep[] = [];
   collapsed = false;
+
+  constructor(private readonly moduleNameService: ModuleNameService) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['order']) {
@@ -244,9 +247,18 @@ export class OrderCardComponent implements OnChanges {
 
   moduleName(step: ProductionStep): string {
     if (step.type === 'NAVIGATION') {
-      return 'FTS';
+      return this.moduleNameService.getModuleDisplayText('FTS', 'id-full');
     }
-    return step.moduleType ?? step.type ?? '';
+    const moduleType = step.moduleType ?? step.type ?? '';
+    return this.moduleNameService.getModuleDisplayText(moduleType, 'id-full');
+  }
+
+  moduleFullName(step: ProductionStep): string {
+    if (step.type === 'NAVIGATION') {
+      return this.moduleNameService.getModuleFullName('FTS');
+    }
+    const moduleType = step.moduleType ?? step.type ?? '';
+    return this.moduleNameService.getModuleFullName(moduleType);
   }
 
   private assetPath(key?: string | null): string | null {

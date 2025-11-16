@@ -15,6 +15,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { firstValueFrom } from 'rxjs';
 import type { OrderActive, ProductionStep } from '@omf3/entities';
 import { SHOPFLOOR_ASSET_MAP } from '@omf3/testing-fixtures';
+import { ModuleNameService } from '../../services/module-name.service';
 import type {
   ParsedRoad,
   ShopfloorCellConfig,
@@ -148,7 +149,8 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
   constructor(
     private readonly http: HttpClient,
     private readonly cdr: ChangeDetectorRef,
-    private readonly sanitizer: DomSanitizer
+    private readonly sanitizer: DomSanitizer,
+    private readonly moduleNameService: ModuleNameService
   ) {}
 
   ngOnInit(): void {
@@ -193,7 +195,9 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
       return `${sourceName} → ${targetName}`;
     }
     if (step.moduleType) {
-      return $localize`:@@shopfloorPreviewModuleLabel:Module ${step.moduleType}`;
+      const moduleDisplay = this.moduleNameService.getModuleDisplayName(step.moduleType);
+      // Use direct string concatenation to avoid $localize interpolation issues
+      return `Module ${moduleDisplay.fullName}`;
     }
     return step.type;
   }

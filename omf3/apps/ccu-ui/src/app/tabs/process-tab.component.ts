@@ -4,6 +4,7 @@ import type { ProductionFlowMap } from '@omf3/entities';
 import { SHOPFLOOR_ASSET_MAP } from '@omf3/testing-fixtures';
 import { getDashboardController } from '../mock-dashboard';
 import { MessageMonitorService } from '../services/message-monitor.service';
+import { ModuleNameService } from '../services/module-name.service';
 import type { Observable } from 'rxjs';
 import { map, shareReplay, filter, startWith } from 'rxjs/operators';
 import { merge } from 'rxjs';
@@ -43,7 +44,10 @@ export class ProcessTabComponent {
   
   products$: Observable<ProcessProductView[]>;
 
-  constructor(private readonly messageMonitor: MessageMonitorService) {
+  constructor(
+    private readonly messageMonitor: MessageMonitorService,
+    private readonly moduleNameService: ModuleNameService
+  ) {
     // flows$ doesn't have startWith in gateway layer, so merge MessageMonitor last value with dashboard stream
     const lastFlows = this.messageMonitor.getLastMessage<ProductionFlowMap>('ccu/state/flows').pipe(
       // Filter first: only process valid messages
@@ -100,16 +104,12 @@ export class ProcessTabComponent {
     },
   } as const;
 
-  private readonly moduleMeta: Record<string, { label: string; icon: string }> = {
-    HBW: { label: $localize`:@@processModuleHBW:High-bay warehouse`, icon: this.startIcon },
-    DRILL: { label: $localize`:@@processModuleDrill:Drill`, icon: this.resolveAssetPath(SHOPFLOOR_ASSET_MAP['DRILL']) },
-    MILL: { label: $localize`:@@processModuleMill:Mill`, icon: this.resolveAssetPath(SHOPFLOOR_ASSET_MAP['MILL']) },
-    AIQS: {
-      label: $localize`:@@processModuleAiQs:AI Quality Station`,
-      icon: this.resolveAssetPath(SHOPFLOOR_ASSET_MAP['AIQS']),
-    },
-    DPS: { label: $localize`:@@processModuleDps:Goods outgoing`, icon: this.resolveAssetPath(SHOPFLOOR_ASSET_MAP['DPS']) },
-  };
+  private getModuleMeta(key: string): { label: string; icon: string } {
+    return {
+      label: this.moduleNameService.getModuleFullName(key),
+      icon: this.resolveAssetPath(SHOPFLOOR_ASSET_MAP[key as keyof typeof SHOPFLOOR_ASSET_MAP] ?? ''),
+    };
+  }
 
   private resolveAssetPath(path?: string): string {
     if (!path) {
@@ -165,10 +165,7 @@ export class ProcessTabComponent {
 
   private mapStep(step: string, index: number): ProcessStepView {
     const key = step.toUpperCase();
-    const moduleMeta = this.moduleMeta[key] ?? {
-      label: step,
-      icon: this.resolveAssetPath(SHOPFLOOR_ASSET_MAP['DPS'] ?? 'shopfloor/robotic.svg'),
-    };
+    const moduleMeta = this.getModuleMeta(key);
 
     return {
       id: `${key}-${index}`,

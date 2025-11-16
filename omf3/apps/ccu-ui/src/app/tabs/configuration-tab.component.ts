@@ -8,6 +8,7 @@ import { map, shareReplay, tap, filter, startWith } from 'rxjs/operators';
 import { merge } from 'rxjs';
 import { getDashboardController } from '../mock-dashboard';
 import { MessageMonitorService } from '../services/message-monitor.service';
+import { ModuleNameService } from '../services/module-name.service';
 import { ShopfloorPreviewComponent } from '../components/shopfloor-preview/shopfloor-preview.component';
 import type { ShopfloorLayoutConfig, ShopfloorCellConfig } from '../components/shopfloor-preview/shopfloor-layout.types';
 
@@ -133,7 +134,8 @@ export class ConfigurationTabComponent {
 
   constructor(
     private readonly http: HttpClient,
-    private readonly messageMonitor: MessageMonitorService
+    private readonly messageMonitor: MessageMonitorService,
+    private readonly moduleNameService: ModuleNameService
   ) {
     // config$ doesn't have startWith in gateway layer, so merge MessageMonitor last value with dashboard stream
     const lastConfig = this.messageMonitor.getLastMessage<CcuConfigSnapshot>('ccu/state/config').pipe(
@@ -197,7 +199,10 @@ export class ConfigurationTabComponent {
         const badgeText = $localize`:@@configurationBadgeShopfloor:SHOPFLOOR LAYOUT`;
         const infoText = selectedCell
           ? selectedCell.kind === 'module'
-            ? $localize`:@@configurationInfoModule:Module ${selectedCell.label}`
+            ? (() => {
+                const moduleDisplay = this.moduleNameService.getModuleDisplayName(selectedCell.type ?? selectedCell.label);
+                return `Module ${moduleDisplay.fullName}`;
+              })()
             : $localize`:@@configurationInfoArea:Area ${selectedCell.label}`
           : $localize`:@@configurationInfoDefault:Shopfloor layout overview`;
 
@@ -328,9 +333,12 @@ export class ConfigurationTabComponent {
         overview.modules[cell.id] ??
         (cell.serialNumber ? overview.modules[cell.serialNumber] : undefined);
 
+      const moduleType = moduleDetails?.subType ?? cell.type ?? 'UNKNOWN';
+      const moduleDisplay = this.moduleNameService.getModuleDisplayName(moduleType);
+
       return {
-        title: cell.label,
-        subtitle: moduleDetails?.subType ?? cell.type ?? '',
+        title: moduleDisplay.fullName,
+        subtitle: `${moduleDisplay.id}${moduleDetails?.subType ? ` • ${moduleDetails.subType}` : ''}`,
         items: [
           {
             label: this.serialLabel,

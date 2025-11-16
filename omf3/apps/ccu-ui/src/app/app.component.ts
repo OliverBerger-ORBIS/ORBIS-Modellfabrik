@@ -8,6 +8,7 @@ import { RoleService, UserRole } from './services/role.service';
 import { LanguageService, LocaleKey } from './services/language.service';
 import { ConnectionService, ConnectionState } from './services/connection.service';
 import { getDashboardController } from './mock-dashboard';
+import { MessageMonitorService } from './services/message-monitor.service';
 import { Subscription } from 'rxjs';
 
 interface NavigationItem {
@@ -18,53 +19,45 @@ interface NavigationItem {
   icon?: string;
 }
 
-const NAVIGATION_ITEMS: NavigationItem[] = [
+const NAVIGATION_ITEMS: Omit<NavigationItem, 'label'>[] = [
   {
     id: 'overview',
-    label: $localize`:@@navOverview:Overview`,
     route: '/overview',
     roles: ['operator', 'admin'],
   },
   {
     id: 'order',
-    label: $localize`:@@navOrder:Order`,
     route: '/order',
     roles: ['operator', 'admin'],
   },
   {
     id: 'process',
-    label: $localize`:@@navProcess:Process`,
     route: '/process',
     roles: ['operator', 'admin'],
   },
   {
     id: 'sensor',
-    label: $localize`:@@navSensor:Sensor Data`,
     route: '/sensor',
     roles: ['operator', 'admin'],
   },
   {
     id: 'module',
-    label: $localize`:@@navModule:Module`,
     route: '/module',
     roles: ['operator', 'admin'],
   },
   {
     id: 'configuration',
-    label: $localize`:@@navConfiguration:Configuration`,
     route: '/configuration',
     roles: ['admin'],
   },
   {
     id: 'message-monitor',
-    label: $localize`:@@navMessageMonitor:Message Monitor`,
     route: '/message-monitor',
     roles: ['admin'],
     icon: 'headings/zentral.svg',
   },
   {
     id: 'settings',
-    label: $localize`:@@navSettings:Settings`,
     route: '/settings',
     roles: ['admin'],
   },
@@ -92,7 +85,25 @@ export class AppComponent implements OnDestroy {
   readonly environment$;
   readonly role$;
   readonly locales;
-  readonly navigation = NAVIGATION_ITEMS;
+  get navigation(): NavigationItem[] {
+    const labelMap: Record<string, string> = {
+      'overview': $localize`:@@navOverview:Overview`,
+      'order': $localize`:@@navOrder:Orders`,
+      'process': $localize`:@@navProcess:Processes`,
+      'sensor': $localize`:@@navSensor:Environment Data`,
+      'module': $localize`:@@navModule:Modules`,
+      'configuration': $localize`:@@navConfiguration:Configuration`,
+      'message-monitor': $localize`:@@navMessageMonitor:Message Monitor`,
+      'settings': $localize`:@@navSettings:Settings`,
+    };
+    
+    return NAVIGATION_ITEMS
+      .filter((item) => this.isNavVisible({ ...item, label: labelMap[item.id] || item.id } as NavigationItem, this.selectedRole))
+      .map((item) => ({
+        ...item,
+        label: labelMap[item.id] || item.id,
+      })) as NavigationItem[];
+  }
   sidebarCollapsed = false;
   selectedEnvironment: EnvironmentKey;
   selectedRole: UserRole;
@@ -132,7 +143,8 @@ export class AppComponent implements OnDestroy {
     private readonly environmentService: EnvironmentService,
     private readonly roleService: RoleService,
     private readonly connectionService: ConnectionService,
-    public readonly languageService: LanguageService
+    public readonly languageService: LanguageService,
+    private readonly messageMonitor: MessageMonitorService
   ) {
     this.environments = this.environmentService.environments;
     this.environment$ = this.environmentService.environment$;
@@ -164,6 +176,14 @@ export class AppComponent implements OnDestroy {
       })
     );
 
+    // Initialize dashboard controller for mock mode with MessageMonitor
+    if (this.environmentService.current.key === 'mock') {
+      getDashboardController(undefined, { 
+        addMessage: (topic: string, payload: unknown, timestamp?: string) => 
+          this.messageMonitor.addMessage(topic, payload, timestamp)
+      });
+    }
+    
     // Update dashboard controller when MQTT client becomes available
     this.subscriptions.add(
       this.connectionService.state$.subscribe((state) => {
@@ -174,6 +194,18 @@ export class AppComponent implements OnDestroy {
             getDashboardController(mqttClient);
             console.log('[app] Dashboard controller updated with MQTT client');
           }
+        }
+      })
+    );
+    
+    // Update dashboard controller when environment changes to mock
+    this.subscriptions.add(
+      this.environmentService.environment$.subscribe((environment) => {
+        if (environment.key === 'mock') {
+          getDashboardController(undefined, { 
+            addMessage: (topic: string, payload: unknown, timestamp?: string) => 
+              this.messageMonitor.addMessage(topic, payload, timestamp)
+          });
         }
       })
     );
@@ -225,7 +257,10 @@ export class AppComponent implements OnDestroy {
   resetFactory(): void {
     const environment = this.environmentService.current.key;
     if (environment === 'mock') {
-      const controller = getDashboardController();
+      const controller = getDashboardController(undefined, { 
+        addMessage: (topic: string, payload: unknown, timestamp?: string) => 
+          this.messageMonitor.addMessage(topic, payload, timestamp)
+      });
       void controller.loadFixture('startup');
       return;
     }

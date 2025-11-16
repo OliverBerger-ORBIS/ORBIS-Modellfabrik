@@ -12,6 +12,7 @@ import type { Observable } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
 import { EnvironmentService } from '../services/environment.service';
 import { MessageMonitorService } from '../services/message-monitor.service';
+import { ModuleNameService } from '../services/module-name.service';
 
 interface ModuleCommand {
   label: string;
@@ -95,7 +96,8 @@ export class ModuleTabComponent implements OnInit {
 
   constructor(
     private readonly environmentService: EnvironmentService,
-    private readonly messageMonitor: MessageMonitorService
+    private readonly messageMonitor: MessageMonitorService,
+    private readonly moduleNameService: ModuleNameService
   ) {
     // Subscribe directly to dashboard streams - they already have shareReplay with startWith
     // Use refCount: false to keep streams alive even when no subscribers
@@ -203,14 +205,15 @@ export class ModuleTabComponent implements OnInit {
   }
 
   private createModuleRow(module: ModuleOverviewStatus): ModuleRow {
-    const name = MODULE_NAME_MAP[module.subType ?? ''] ?? module.subType ?? module.id;
-    const iconPath = this.resolveIconPath(module.subType ?? module.id);
+    const moduleType = module.subType ?? 'UNKNOWN';
+    const name = this.moduleNameService.getModuleDisplayText(moduleType, 'id-full');
+    const iconPath = this.resolveIconPath(moduleType);
     const availabilityLabel = this.getAvailabilityLabel(module.availability);
 
     const actions: ModuleCommand[] = [];
     if (module.hasCalibration) {
       actions.push({
-        label: 'Calibrate',
+        label: $localize`:@@moduleCommandCalibrate:Calibrate`,
         handler: () => this.dashboard.commands.calibrateModule(module.id),
       });
     }
@@ -244,13 +247,15 @@ export class ModuleTabComponent implements OnInit {
 
     if (needsInitialDock) {
       actions.push({
-        label: 'Dock',
+        label: $localize`:@@moduleCommandDock:Dock`,
         handler: () => this.dashboard.commands.dockFts(transport.id, transport.lastNodeId),
       });
     }
 
     actions.push({
-      label: transport.charging ? 'Stop Charging' : 'Charge',
+      label: transport.charging 
+        ? $localize`:@@moduleCommandStopCharging:Stop Charging`
+        : $localize`:@@moduleCommandCharge:Charge`,
       secondary: transport.charging ?? false,
       handler: () =>
         this.dashboard.commands.setFtsCharge(transport.id, !(transport.charging ?? false)),
@@ -259,7 +264,7 @@ export class ModuleTabComponent implements OnInit {
     return {
       id: transport.id,
       kind: 'transport',
-      name: MODULE_NAME_MAP['FTS'],
+      name: this.moduleNameService.getModuleDisplayText('FTS', 'id-full'),
       iconPath: this.resolveIconPath('FTS'),
       registryActive: true,
       configured: true,
@@ -292,14 +297,14 @@ export class ModuleTabComponent implements OnInit {
   private getAvailabilityLabel(status: ModuleAvailabilityStatus): string {
     switch (status) {
       case 'READY':
-        return 'Available';
+        return $localize`:@@moduleAvailabilityAvailable:Available`;
       case 'BUSY':
-        return 'Busy';
+        return $localize`:@@moduleAvailabilityBusy:Busy`;
       case 'BLOCKED':
-        return 'Blocked';
+        return $localize`:@@moduleAvailabilityBlocked:Blocked`;
       case 'Unknown':
       default:
-        return status && status !== '' ? status : 'Unknown';
+        return status && status !== '' ? status : $localize`:@@moduleAvailabilityUnknown:Unknown`;
     }
   }
 

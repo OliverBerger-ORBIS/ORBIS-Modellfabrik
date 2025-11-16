@@ -3,8 +3,8 @@
     <div class="module-tab__title">
       <img [src]="headingIcon" alt="Modules icon" class="module-tab__icon" />
       <div>
-        <h1>Modules</h1>
-        <p class="module-tab__subtitle">
+        <h1 i18n="@@moduleTabHeadline">Modules</h1>
+        <p class="module-tab__subtitle" i18n="@@moduleTabDescription">
           Module overview with status, connections and actions.
         </p>
       </div>
@@ -23,22 +23,22 @@
     </div>
   </header>
 
-  <span class="module-tab__hint">Data updates automatically from pairing state snapshots.</span>
+  <span class="module-tab__hint" i18n="@@moduleTabHint">Data updates automatically from pairing state snapshots.</span>
 
   <ng-container *ngIf="rows$ | async as rows; else loading">
     <div class="module-table__wrapper" *ngIf="rows.length; else empty">
       <table class="module-table">
         <thead>
           <tr>
-            <th scope="col">ID</th>
-            <th scope="col">Name</th>
-            <th scope="col">Registry Active</th>
-            <th scope="col">Configured</th>
-            <th scope="col">Connected</th>
-            <th scope="col">Availability Status</th>
-            <th scope="col">Messages</th>
-            <th scope="col">Last Update</th>
-            <th scope="col">Command</th>
+            <th scope="col" i18n="@@moduleTableColumnId">ID</th>
+            <th scope="col" i18n="@@moduleTableColumnName">Name</th>
+            <th scope="col" i18n="@@moduleTableColumnRegistryActive">Registry Active</th>
+            <th scope="col" i18n="@@moduleTableColumnConfigured">Configured</th>
+            <th scope="col" i18n="@@moduleTableColumnConnected">Connected</th>
+            <th scope="col" i18n="@@moduleTableColumnAvailabilityStatus">Availability Status</th>
+            <th scope="col" i18n="@@moduleTableColumnMessages">Messages</th>
+            <th scope="col" i18n="@@moduleTableColumnLastUpdate">Last Update</th>
+            <th scope="col" i18n="@@moduleTableColumnCommand">Command</th>
           </tr>
         </thead>
         <tbody>
@@ -57,7 +57,8 @@
                 [class.status-pill--negative]="!row.registryActive"
               >
                 <span class="status-pill__icon">{{ row.registryIcon }}</span>
-                <span>{{ row.registryActive ? 'Active' : 'Inactive' }}</span>
+                <span *ngIf="row.registryActive" i18n="@@moduleStatusActive">Active</span>
+                <span *ngIf="!row.registryActive" i18n="@@moduleStatusInactive">Inactive</span>
               </span>
             </td>
             <td>
@@ -67,13 +68,15 @@
                 [class.status-pill--negative]="!row.configured"
               >
                 <span class="status-pill__icon">{{ row.configuredIcon }}</span>
-                <span>{{ row.configured ? 'Configured' : 'Not Configured' }}</span>
+                <span *ngIf="row.configured" i18n="@@moduleStatusConfigured">Configured</span>
+                <span *ngIf="!row.configured" i18n="@@moduleStatusNotConfigured">Not Configured</span>
               </span>
             </td>
             <td>
               <span class="status-indicator" [class.status-indicator--online]="row.connected">
                 <span class="status-indicator__icon">{{ row.connectedIcon }}</span>
-                <span>{{ row.connected ? 'Connected' : 'Disconnected' }}</span>
+                <span *ngIf="row.connected" i18n="@@moduleStatusConnected">Connected</span>
+                <span *ngIf="!row.connected" i18n="@@moduleStatusDisconnected">Disconnected</span>
               </span>
             </td>
             <td>
@@ -106,16 +109,16 @@
 
 <ng-template #loading>
   <div class="module-tab__info">
-    <p *ngIf="loading; else idle">Loading module telemetry …</p>
+    <p *ngIf="loading; else idle" i18n="@@moduleTabLoading">Loading module telemetry …</p>
     <ng-template #idle>
-      <p>Awaiting module telemetry …</p>
+      <p i18n="@@moduleTabAwaiting">Awaiting module telemetry …</p>
     </ng-template>
   </div>
 </ng-template>
 
 <ng-template #empty>
   <div class="module-tab__info module-tab__info--empty">
-    <p>No module status data available.</p>
+    <p i18n="@@moduleTabEmpty">No module status data available.</p>
   </div>
 </ng-template>
 
