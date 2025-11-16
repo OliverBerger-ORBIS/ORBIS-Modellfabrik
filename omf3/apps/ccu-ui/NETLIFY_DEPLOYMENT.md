@@ -27,9 +27,38 @@ npx serve dist/apps/ccu-ui/browser -p 4200
 
 **Hinweis:** Lokales Testing ist ideal wenn Firewall-Einschränkungen den Zugang zu Netlify oder anderen Cloud-Services verhindern.
 
+## 🌐 GitHub Pages Test (Empfohlen für öffentliche Sites)
+
+**Falls Sie eine öffentlich zugängliche Site benötigen und Netlify blockiert ist:**
+
+### Schnelltest ob GitHub Pages erreichbar ist:
+
+```bash
+# Linux/Mac
+npm run deploy:gh-pages-test
+
+# Windows (manuell)
+scripts\deploy-gh-pages-test.bat
+```
+
+Dieser Befehl:
+1. Erstellt einen Build
+2. Erstellt Branch `gh-pages-test`
+3. Kopiert Build-Dateien
+4. Pusht zum Repository
+
+**Dann:**
+1. Gehe zu: https://github.com/OliverBerger-ORBIS/ORBIS-Modellfabrik/settings/pages
+2. Wähle Branch `gh-pages-test` / `/ (root)`
+3. Nach 1-2 Minuten teste: https://oliverberger-orbis.github.io/ORBIS-Modellfabrik/
+
+Falls erreichbar → **GitHub Pages funktioniert!** ✅
+
+**Detaillierte Anleitung:** Siehe `docs/github-pages-deployment.md`
+
 ## ☁️ Netlify Deployment (Optional)
 
-Nur notwendig wenn die Anwendung für Remote-Kollegen erreichbar sein soll.
+Nur notwendig wenn GitHub Pages nicht verfügbar ist.
 
 ### Prerequisites
 

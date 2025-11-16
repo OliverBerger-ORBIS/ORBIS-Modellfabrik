@@ -54,11 +54,47 @@ Lösung: Nutze Hash-basiertes Routing oder Methode A.
 2. VSCode öffnen im Verzeichnis `dist/apps/ccu-ui/browser`
 3. Rechtsklick auf `index.html` → "Open with Live Server"
 
-## Option 2: GitHub Pages
+## Option 2: GitHub Pages (Empfohlen für öffentlich zugängliche Sites)
 
-Falls GitHub zugelassen ist, kann GitHub Pages verwendet werden:
+Falls GitHub zugelassen ist, kann GitHub Pages verwendet werden. Dies ist ideal wenn eine öffentlich zugängliche URL benötigt wird.
 
-### Setup
+### Test ob GitHub Pages erreichbar ist
+
+**Vor dem Setup prüfen, ob GitHub Pages von Ihren Firmenrechnern aus erreichbar ist:**
+
+1. Testen Sie diese URLs:
+   - https://pages.github.com
+   - https://docs.github.com (läuft auf GitHub Pages)
+   - https://angular.io (läuft auf GitHub Pages)
+
+2. **Oder: Schnelltest mit Script erstellen:**
+
+```bash
+# Linux/Mac
+./scripts/deploy-gh-pages-test.sh
+
+# Windows
+scripts\deploy-gh-pages-test.bat
+```
+
+Das Script erstellt automatisch einen `gh-pages-test` Branch mit dem Build.
+
+3. **In GitHub aktivieren:**
+   - Gehe zu: https://github.com/OliverBerger-ORBIS/ORBIS-Modellfabrik/settings/pages
+   - Source: "Deploy from a branch"
+   - Branch: `gh-pages-test` / `/ (root)`
+   - Save
+
+4. **Nach 1-2 Minuten testen:**
+   - URL: https://oliverberger-orbis.github.io/ORBIS-Modellfabrik/
+
+Falls die URL erreichbar ist → GitHub Pages funktioniert! ✅
+
+### Produktives Setup (nach erfolgreichem Test)
+
+**Detaillierte Anleitung:** Siehe `docs/github-pages-deployment.md`
+
+**Kurzversion:**
 
 1. Build erstellen:
 ```bash
@@ -72,6 +108,7 @@ git checkout --orphan gh-pages
 
 # Build-Dateien kopieren
 cp -r dist/apps/ccu-ui/browser/* .
+touch .nojekyll
 
 # Committen und pushen
 git add .
@@ -85,16 +122,18 @@ git push origin gh-pages
    - Branch: `gh-pages` / `(root)`
    - Save
 
-Die Anwendung ist dann unter `https://<username>.github.io/<repo-name>/` verfügbar.
+Die Anwendung ist dann unter `https://oliverberger-orbis.github.io/ORBIS-Modellfabrik/` verfügbar.
 
 **Vorteile:**
 - ✅ Kostenlos
-- ✅ HTTPS
-- ✅ Für Kollegen erreichbar (mit Repository-Zugriff)
+- ✅ HTTPS automatisch
+- ✅ Öffentlich erreichbar (auch ohne Repository-Zugriff)
+- ✅ Schnelles CDN
+- ✅ Automatisches Deployment mit GitHub Actions möglich
 
 **Nachteile:**
-- ❌ Benötigt GitHub-Zugriff
-- ❌ Manuelles Deployment
+- ❌ Repository muss öffentlich sein (oder GitHub Pro)
+- ❌ Erfordert GitHub-Zugriff zum Deployen
 
 ## Option 3: Vercel
 
