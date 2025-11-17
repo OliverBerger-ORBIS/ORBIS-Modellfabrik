@@ -12,8 +12,11 @@
       var isGitHubPages = l.hostname === 'oliverberger-orbis.github.io';
       var basePath = isGitHubPages ? '/ORBIS-Modellfabrik/' : '/';
       
-      // Remove /en/ prefix if present (GitHub Pages i18n routing issue)
+      // Get current pathname and hash
       var pathname = l.pathname;
+      var hash = l.hash || '#/en/overview';
+      
+      // Remove /en/ prefix if present in pathname (GitHub Pages i18n routing issue)
       var hasEnPrefix = false;
       if (isGitHubPages && pathname.startsWith('/en/')) {
         pathname = pathname.replace('/en/', '/');
@@ -22,15 +25,17 @@
       
       // Check if we need to redirect
       var needsRedirect = false;
-      var targetHash = l.hash || '#/en/overview';
       
       if (isGitHubPages) {
-        // GitHub Pages: Always redirect if /en/ prefix was found
+        // GitHub Pages: Redirect if:
+        // 1. /en/ prefix was found in pathname
+        // 2. pathname doesn't start with basePath
+        // 3. pathname is exactly basePath but hash is missing
         if (hasEnPrefix) {
           needsRedirect = true;
         } else if (!pathname.startsWith(basePath)) {
           needsRedirect = true;
-        } else if (!l.hash || l.hash === '') {
+        } else if (pathname === basePath && (!l.hash || l.hash === '')) {
           needsRedirect = true;
         }
       } else {
@@ -41,7 +46,13 @@
       }
       
       if (needsRedirect) {
-        l.replace(l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') + basePath + targetHash);
+        // Construct correct URL: protocol + hostname + port + basePath + hash
+        var newUrl = l.protocol + '//' + l.hostname;
+        if (l.port) {
+          newUrl += ':' + l.port;
+        }
+        newUrl += basePath + hash;
+        l.replace(newUrl);
       }
     </script>
   </head>
