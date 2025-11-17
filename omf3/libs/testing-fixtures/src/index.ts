@@ -40,7 +40,22 @@ const getBaseHref = (): string => {
     const href = baseTag.getAttribute('href');
     if (href) {
       // Ensure href ends with '/' for proper path concatenation
-      return href.endsWith('/') ? href : `${href}/`;
+      const baseHref = href.endsWith('/') ? href : `${href}/`;
+      // Debug logging for GitHub Pages
+      if (typeof window !== 'undefined' && window.location.hostname === 'oliverberger-orbis.github.io') {
+        console.log('[testing-fixtures] getBaseHref() detected:', baseHref, 'from baseTag.getAttribute("href"):', href);
+      }
+      return baseHref;
+    } else {
+      // Debug logging if href attribute is missing
+      if (typeof window !== 'undefined' && window.location.hostname === 'oliverberger-orbis.github.io') {
+        console.warn('[testing-fixtures] getBaseHref() baseTag found but href attribute is null/empty');
+      }
+    }
+  } else {
+    // Debug logging if base tag is missing
+    if (typeof window !== 'undefined' && window.location.hostname === 'oliverberger-orbis.github.io') {
+      console.warn('[testing-fixtures] getBaseHref() baseTag not found in document');
     }
   }
   return '/';
@@ -230,6 +245,11 @@ export const loadModulePairingFixture = async (
   options?: LoadFixtureOptions
 ): Promise<RawMqttMessage[]> => {
   const path = resolveModulePath(name, options?.baseUrl);
+  // Debug logging for GitHub Pages fixture loading
+  if (typeof window !== 'undefined' && window.location.hostname === 'oliverberger-orbis.github.io') {
+    console.log('[testing-fixtures] Loading module fixture:', name, 'from path:', path);
+    console.log('[testing-fixtures] baseHref:', getBaseHref());
+  }
   const loader = options?.loader ?? defaultLoader;
   try {
     const contents = await loader(path);
@@ -245,6 +265,11 @@ export const loadStockFixture = async (
   options?: LoadFixtureOptions
 ): Promise<RawMqttMessage[]> => {
   const path = resolveStockPath(name, options?.baseUrl);
+  // Debug logging for GitHub Pages fixture loading
+  if (typeof window !== 'undefined' && window.location.hostname === 'oliverberger-orbis.github.io') {
+    console.log('[testing-fixtures] Loading stock fixture:', name, 'from path:', path);
+    console.log('[testing-fixtures] baseHref:', getBaseHref());
+  }
   const loader = options?.loader ?? defaultLoader;
   try {
     const contents = await loader(path);
@@ -260,6 +285,11 @@ export const loadFlowFixture = async (
   options?: LoadFixtureOptions
 ): Promise<RawMqttMessage[]> => {
   const path = resolveFlowPath(name, options?.baseUrl);
+  // Debug logging for GitHub Pages fixture loading
+  if (typeof window !== 'undefined' && window.location.hostname === 'oliverberger-orbis.github.io') {
+    console.log('[testing-fixtures] Loading flow fixture:', name, 'from path:', path);
+    console.log('[testing-fixtures] baseHref:', getBaseHref());
+  }
   const loader = options?.loader ?? defaultLoader;
   try {
     const contents = await loader(path);
@@ -275,6 +305,11 @@ export const loadConfigFixture = async (
   options?: LoadFixtureOptions
 ): Promise<RawMqttMessage[]> => {
   const path = resolveConfigPath(name, options?.baseUrl);
+  // Debug logging for GitHub Pages fixture loading
+  if (typeof window !== 'undefined' && window.location.hostname === 'oliverberger-orbis.github.io') {
+    console.log('[testing-fixtures] Loading config fixture:', name, 'from path:', path);
+    console.log('[testing-fixtures] baseHref:', getBaseHref());
+  }
   const loader = options?.loader ?? defaultLoader;
   try {
     const contents = await loader(path);
@@ -290,6 +325,11 @@ export const loadSensorFixture = async (
   options?: LoadFixtureOptions
 ): Promise<RawMqttMessage[]> => {
   const path = resolveSensorPath(name, options?.baseUrl);
+  // Debug logging for GitHub Pages fixture loading
+  if (typeof window !== 'undefined' && window.location.hostname === 'oliverberger-orbis.github.io') {
+    console.log('[testing-fixtures] Loading sensor fixture:', name, 'from path:', path);
+    console.log('[testing-fixtures] baseHref:', getBaseHref());
+  }
   const loader = options?.loader ?? defaultLoader;
   try {
     const contents = await loader(path);
