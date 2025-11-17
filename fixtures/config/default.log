@@ -1,0 +1,1 @@
+{"topic":"ccu/state/config","payload":"{\"productionDurations\":{\"WHITE\":580,\"BLUE\":550,\"RED\":560},\"productionSettings\":{\"maxParallelOrders\":4},\"ftsSettings\":{\"chargeThresholdPercent\":10}}","timestamp":"2025-11-10T17:48:46.094154"}
