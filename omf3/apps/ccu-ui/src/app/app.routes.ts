@@ -4,7 +4,7 @@ export const appRoutes: Routes = [
   {
     path: '',
     pathMatch: 'full',
-    redirectTo: '/en/overview',
+    redirectTo: 'en/overview',
   },
   {
     path: ':locale',
@@ -58,6 +58,6 @@ export const appRoutes: Routes = [
   },
   {
     path: '**',
-    redirectTo: '/en/overview',
+    redirectTo: 'en/overview',
   },
 ];
