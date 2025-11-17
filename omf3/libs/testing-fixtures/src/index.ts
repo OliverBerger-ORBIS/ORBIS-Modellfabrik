@@ -33,31 +33,55 @@ const getBaseHref = (): string => {
   if (typeof document === 'undefined') {
     return '/';
   }
+  
+  // Debug logging for GitHub Pages - always log to diagnose
+  const isGitHubPages = typeof window !== 'undefined' && window.location.hostname === 'oliverberger-orbis.github.io';
+  
+  // Try multiple methods to get baseHref
   const baseTag = document.querySelector('base');
   if (baseTag) {
-    // Use getAttribute('href') to get the raw href value (e.g., '/ORBIS-Modellfabrik/')
-    // baseTag.href returns the full resolved URL which we don't need
-    const href = baseTag.getAttribute('href');
-    if (href) {
-      // Ensure href ends with '/' for proper path concatenation
-      const baseHref = href.endsWith('/') ? href : `${href}/`;
-      // Debug logging for GitHub Pages
-      if (typeof window !== 'undefined' && window.location.hostname === 'oliverberger-orbis.github.io') {
-        console.log('[testing-fixtures] getBaseHref() detected:', baseHref, 'from baseTag.getAttribute("href"):', href);
+    // Method 1: getAttribute('href') - preferred for relative paths
+    const hrefAttr = baseTag.getAttribute('href');
+    if (hrefAttr) {
+      const baseHref = hrefAttr.endsWith('/') ? hrefAttr : `${hrefAttr}/`;
+      if (isGitHubPages) {
+        console.log('[testing-fixtures] getBaseHref() Method 1 (getAttribute):', baseHref);
       }
       return baseHref;
-    } else {
-      // Debug logging if href attribute is missing
-      if (typeof window !== 'undefined' && window.location.hostname === 'oliverberger-orbis.github.io') {
-        console.warn('[testing-fixtures] getBaseHref() baseTag found but href attribute is null/empty');
+    }
+    
+    // Method 2: Use baseTag.href and extract pathname
+    // This works even if getAttribute returns null
+    try {
+      const baseUrl = new URL(baseTag.href, window.location.href);
+      const pathname = baseUrl.pathname;
+      const baseHref = pathname.endsWith('/') ? pathname : `${pathname}/`;
+      if (isGitHubPages) {
+        console.log('[testing-fixtures] getBaseHref() Method 2 (baseTag.href):', baseHref, 'from full URL:', baseTag.href);
+      }
+      return baseHref;
+    } catch (e) {
+      if (isGitHubPages) {
+        console.warn('[testing-fixtures] getBaseHref() Method 2 failed:', e);
       }
     }
+    
+    if (isGitHubPages) {
+      console.warn('[testing-fixtures] getBaseHref() baseTag found but both methods failed');
+    }
   } else {
-    // Debug logging if base tag is missing
-    if (typeof window !== 'undefined' && window.location.hostname === 'oliverberger-orbis.github.io') {
+    if (isGitHubPages) {
       console.warn('[testing-fixtures] getBaseHref() baseTag not found in document');
     }
   }
+  
+  // Fallback: Detect from window.location.pathname for GitHub Pages
+  if (isGitHubPages && window.location.pathname.startsWith('/ORBIS-Modellfabrik')) {
+    const detectedBase = '/ORBIS-Modellfabrik/';
+    console.log('[testing-fixtures] getBaseHref() Fallback (pathname detection):', detectedBase);
+    return detectedBase;
+  }
+  
   return '/';
 };
 
