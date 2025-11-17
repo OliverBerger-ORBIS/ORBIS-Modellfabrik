@@ -127,9 +127,21 @@ const defaultLoader = async (resolvedPath: string): Promise<string> => {
     );
   }
 
+  // Debug logging for GitHub Pages
+  if (typeof window !== 'undefined' && window.location.hostname === 'oliverberger-orbis.github.io') {
+    console.log('[testing-fixtures] Fetching fixture from:', resolvedPath);
+  }
+
   const response = await fetch(resolvedPath);
   if (!response.ok) {
-    throw new Error(`Failed to fetch fixture from ${resolvedPath}: ${response.status} ${response.statusText}`);
+    const errorMsg = `Failed to fetch fixture from ${resolvedPath}: ${response.status} ${response.statusText}`;
+    // Enhanced error logging for GitHub Pages
+    if (typeof window !== 'undefined' && window.location.hostname === 'oliverberger-orbis.github.io') {
+      console.error('[testing-fixtures]', errorMsg);
+      console.error('[testing-fixtures] Current URL:', window.location.href);
+      console.error('[testing-fixtures] Base href:', getBaseHref());
+    }
+    throw new Error(errorMsg);
   }
 
   return response.text();
@@ -203,6 +215,11 @@ export const loadOrderFixture = async (
   options?: LoadFixtureOptions
 ): Promise<RawMqttMessage[]> => {
   const path = resolvePath(name, options?.baseUrl);
+  // Debug logging for GitHub Pages fixture loading
+  if (typeof window !== 'undefined' && window.location.hostname === 'oliverberger-orbis.github.io') {
+    console.log('[testing-fixtures] Loading fixture:', name, 'from path:', path);
+    console.log('[testing-fixtures] baseHref:', getBaseHref());
+  }
   const loader = options?.loader ?? defaultLoader;
   const contents = await loader(path);
   return parseLines(contents);
