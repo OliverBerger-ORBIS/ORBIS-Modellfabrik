@@ -12,13 +12,23 @@
       var isGitHubPages = l.hostname === 'oliverberger-orbis.github.io';
       var basePath = isGitHubPages ? '/ORBIS-Modellfabrik/' : '/';
       
+      // Remove /en/ prefix if present (GitHub Pages i18n routing issue)
+      var pathname = l.pathname;
+      var hasEnPrefix = false;
+      if (isGitHubPages && pathname.startsWith('/en/')) {
+        pathname = pathname.replace('/en/', '/');
+        hasEnPrefix = true;
+      }
+      
       // Check if we need to redirect
       var needsRedirect = false;
       var targetHash = l.hash || '#/en/overview';
       
       if (isGitHubPages) {
-        // GitHub Pages: Check if path starts with base path
-        if (!l.pathname.startsWith(basePath)) {
+        // GitHub Pages: Always redirect if /en/ prefix was found
+        if (hasEnPrefix) {
+          needsRedirect = true;
+        } else if (!pathname.startsWith(basePath)) {
           needsRedirect = true;
         } else if (!l.hash || l.hash === '') {
           needsRedirect = true;
