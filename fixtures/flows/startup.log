@@ -1,0 +1,1 @@
+{"topic": "ccu/state/flows", "payload": "{\"BLUE\":{\"steps\":[\"DRILL\",\"MILL\",\"AIQS\"]},\"RED\":{\"steps\":[\"MILL\",\"AIQS\"]},\"WHITE\":{\"steps\":[\"DRILL\",\"AIQS\"]}}"}
