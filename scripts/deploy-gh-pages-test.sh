@@ -107,8 +107,8 @@ if ! git show-ref --quiet refs/heads/$BRANCH_NAME; then
     cd "$WORKTREE_DIR"
     git checkout --orphan $BRANCH_NAME
     git rm -rf . 2>/dev/null || true
-    # Create an initial empty commit so the branch exists
-    git commit --allow-empty -m "Initial commit for GitHub Pages deployment"
+    # Create an initial empty commit so the branch exists (skip hooks)
+    git commit --allow-empty --no-verify -m "Initial commit for GitHub Pages deployment"
     cd ..
     git worktree remove -f "$WORKTREE_DIR"
     rm -rf "$WORKTREE_DIR"
@@ -133,7 +133,8 @@ git add .
 if git diff --staged --quiet; then
     echo "ℹ️  Keine Änderungen zu committen"
 else
-    git commit -m "Deploy: GitHub Pages deployment for accessibility check"
+    # Skip pre-commit hooks for deployment commits (only build artifacts)
+    git commit --no-verify -m "Deploy: GitHub Pages deployment for accessibility check"
 fi
 
 echo "🚀 Schritt 5/6: Branch pushen..."

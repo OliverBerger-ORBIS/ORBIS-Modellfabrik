@@ -57,8 +57,8 @@ if %errorlevel% neq 0 (
     cd "%WORKTREE_DIR%"
     git checkout --orphan %BRANCH_NAME%
     git rm -rf . 2>nul
-    REM Create an initial empty commit so the branch exists
-    git commit --allow-empty -m "Initial commit for GitHub Pages deployment"
+    REM Create an initial empty commit so the branch exists (skip hooks)
+    git commit --allow-empty --no-verify -m "Initial commit for GitHub Pages deployment"
     cd ..
     git worktree remove -f "%WORKTREE_DIR%"
     if exist "%WORKTREE_DIR%" rmdir /s /q "%WORKTREE_DIR%"
@@ -88,7 +88,8 @@ echo Schritt 4/6: Aenderungen committen...
 git add .
 git diff --staged --quiet
 if %errorlevel% neq 0 (
-    git commit -m "Deploy: GitHub Pages deployment for accessibility check"
+    REM Skip pre-commit hooks for deployment commits (only build artifacts)
+    git commit --no-verify -m "Deploy: GitHub Pages deployment for accessibility check"
 ) else (
     echo Keine Aenderungen zu committen
 )
