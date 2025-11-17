@@ -43,6 +43,16 @@ function getLocaleFromUrl(): LocaleKey {
   return 'en';
 }
 
+function ensureHashRoute(): void {
+  // If there's no hash, redirect to the default route
+  if (!window.location.hash || window.location.hash === '#' || window.location.hash === '#/') {
+    const defaultLocale = getLocaleFromUrl(); // Will return 'en' if no hash
+    const currentPath = window.location.pathname;
+    const newUrl = `${window.location.origin}${currentPath}#/${defaultLocale}/overview`;
+    window.location.replace(newUrl);
+  }
+}
+
 async function prepareLocale(): Promise<void> {
   // Priority: URL > localStorage > default 'en'
   const urlLocale = getLocaleFromUrl();
@@ -66,6 +76,9 @@ async function prepareLocale(): Promise<void> {
     }
   }
 }
+
+// Ensure hash route exists before bootstrapping to prevent absolute path navigation
+ensureHashRoute();
 
 prepareLocale()
   .then(() => {
