@@ -24,6 +24,27 @@ export type FlowFixtureName = 'default' | 'startup';
 export type ConfigFixtureName = 'default' | 'startup';
 export type SensorFixtureName = 'default' | 'startup';
 
+/**
+ * Get the base href from the document, falling back to '/'.
+ * This ensures fixtures work correctly with baseHref configurations
+ * (e.g., '/ORBIS-Modellfabrik/' for GitHub Pages).
+ */
+const getBaseHref = (): string => {
+  if (typeof document === 'undefined') {
+    return '/';
+  }
+  const baseTag = document.querySelector('base');
+  if (baseTag?.href) {
+    try {
+      const url = new URL(baseTag.href);
+      return url.pathname.endsWith('/') ? url.pathname : `${url.pathname}/`;
+    } catch {
+      return '/';
+    }
+  }
+  return '/';
+};
+
 const DEFAULT_BASE_URL = '/fixtures/orders';
 const DEFAULT_MODULE_BASE_URL = '/fixtures/modules';
 const DEFAULT_STOCK_BASE_URL = '/fixtures/stock';
@@ -122,39 +143,58 @@ const parseLines = (contents: string): RawMqttMessage[] => {
 };
 
 const resolvePath = (name: OrderFixtureName, baseUrl: string | undefined): string => {
-  const base = baseUrl ?? DEFAULT_BASE_URL;
+  const baseHref = getBaseHref();
+  const relativePath = baseUrl ?? DEFAULT_BASE_URL;
+  // Remove leading slash from relativePath to combine with baseHref
+  const cleanPath = relativePath.startsWith('/') ? relativePath.slice(1) : relativePath;
+  const fullBase = `${baseHref}${cleanPath}`;
   const suffix = FIXTURE_PATHS[name];
-  return base.endsWith('/') ? `${base}${suffix}` : `${base}/${suffix}`;
+  return fullBase.endsWith('/') ? `${fullBase}${suffix}` : `${fullBase}/${suffix}`;
 };
 
 const resolveModulePath = (name: ModuleFixtureName, baseUrl: string | undefined): string => {
-  const base = baseUrl ?? DEFAULT_MODULE_BASE_URL;
+  const baseHref = getBaseHref();
+  const relativePath = baseUrl ?? DEFAULT_MODULE_BASE_URL;
+  const cleanPath = relativePath.startsWith('/') ? relativePath.slice(1) : relativePath;
+  const fullBase = `${baseHref}${cleanPath}`;
   const suffix = MODULE_FIXTURE_PATHS[name];
-  return base.endsWith('/') ? `${base}${suffix}` : `${base}/${suffix}`;
+  return fullBase.endsWith('/') ? `${fullBase}${suffix}` : `${fullBase}/${suffix}`;
 };
 
 const resolveStockPath = (name: StockFixtureName, baseUrl: string | undefined): string => {
-  const base = baseUrl ?? DEFAULT_STOCK_BASE_URL;
+  const baseHref = getBaseHref();
+  const relativePath = baseUrl ?? DEFAULT_STOCK_BASE_URL;
+  const cleanPath = relativePath.startsWith('/') ? relativePath.slice(1) : relativePath;
+  const fullBase = `${baseHref}${cleanPath}`;
   const suffix = STOCK_FIXTURE_PATHS[name];
-  return base.endsWith('/') ? `${base}${suffix}` : `${base}/${suffix}`;
+  return fullBase.endsWith('/') ? `${fullBase}${suffix}` : `${fullBase}/${suffix}`;
 };
 
 const resolveFlowPath = (name: FlowFixtureName, baseUrl: string | undefined): string => {
-  const base = baseUrl ?? DEFAULT_FLOW_BASE_URL;
+  const baseHref = getBaseHref();
+  const relativePath = baseUrl ?? DEFAULT_FLOW_BASE_URL;
+  const cleanPath = relativePath.startsWith('/') ? relativePath.slice(1) : relativePath;
+  const fullBase = `${baseHref}${cleanPath}`;
   const suffix = FLOW_FIXTURE_PATHS[name];
-  return base.endsWith('/') ? `${base}${suffix}` : `${base}/${suffix}`;
+  return fullBase.endsWith('/') ? `${fullBase}${suffix}` : `${fullBase}/${suffix}`;
 };
 
 const resolveConfigPath = (name: ConfigFixtureName, baseUrl: string | undefined): string => {
-  const base = baseUrl ?? DEFAULT_CONFIG_BASE_URL;
+  const baseHref = getBaseHref();
+  const relativePath = baseUrl ?? DEFAULT_CONFIG_BASE_URL;
+  const cleanPath = relativePath.startsWith('/') ? relativePath.slice(1) : relativePath;
+  const fullBase = `${baseHref}${cleanPath}`;
   const suffix = CONFIG_FIXTURE_PATHS[name];
-  return base.endsWith('/') ? `${base}${suffix}` : `${base}/${suffix}`;
+  return fullBase.endsWith('/') ? `${fullBase}${suffix}` : `${fullBase}/${suffix}`;
 };
 
 const resolveSensorPath = (name: SensorFixtureName, baseUrl: string | undefined): string => {
-  const base = baseUrl ?? DEFAULT_SENSOR_BASE_URL;
+  const baseHref = getBaseHref();
+  const relativePath = baseUrl ?? DEFAULT_SENSOR_BASE_URL;
+  const cleanPath = relativePath.startsWith('/') ? relativePath.slice(1) : relativePath;
+  const fullBase = `${baseHref}${cleanPath}`;
   const suffix = SENSOR_FIXTURE_PATHS[name];
-  return base.endsWith('/') ? `${base}${suffix}` : `${base}/${suffix}`;
+  return fullBase.endsWith('/') ? `${fullBase}${suffix}` : `${fullBase}/${suffix}`;
 };
 
 export const loadOrderFixture = async (
