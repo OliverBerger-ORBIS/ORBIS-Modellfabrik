@@ -57,6 +57,8 @@ if %errorlevel% neq 0 (
     cd "%WORKTREE_DIR%"
     git checkout --orphan %BRANCH_NAME%
     git rm -rf . 2>nul
+    REM Create an initial empty commit so the branch exists
+    git commit --allow-empty -m "Initial commit for GitHub Pages deployment"
     cd ..
     git worktree remove -f "%WORKTREE_DIR%"
     if exist "%WORKTREE_DIR%" rmdir /s /q "%WORKTREE_DIR%"

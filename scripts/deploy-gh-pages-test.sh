@@ -107,6 +107,8 @@ if ! git show-ref --quiet refs/heads/$BRANCH_NAME; then
     cd "$WORKTREE_DIR"
     git checkout --orphan $BRANCH_NAME
     git rm -rf . 2>/dev/null || true
+    # Create an initial empty commit so the branch exists
+    git commit --allow-empty -m "Initial commit for GitHub Pages deployment"
     cd ..
     git worktree remove -f "$WORKTREE_DIR"
     rm -rf "$WORKTREE_DIR"
