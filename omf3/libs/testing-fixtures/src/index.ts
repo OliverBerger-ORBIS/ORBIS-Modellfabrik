@@ -34,12 +34,13 @@ const getBaseHref = (): string => {
     return '/';
   }
   const baseTag = document.querySelector('base');
-  if (baseTag?.href) {
-    try {
-      const url = new URL(baseTag.href);
-      return url.pathname.endsWith('/') ? url.pathname : `${url.pathname}/`;
-    } catch {
-      return '/';
+  if (baseTag) {
+    // Use getAttribute('href') to get the raw href value (e.g., '/ORBIS-Modellfabrik/')
+    // baseTag.href returns the full resolved URL which we don't need
+    const href = baseTag.getAttribute('href');
+    if (href) {
+      // Ensure href ends with '/' for proper path concatenation
+      return href.endsWith('/') ? href : `${href}/`;
     }
   }
   return '/';
