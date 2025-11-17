@@ -31,11 +31,14 @@ async function loadLocaleFile(locale: LocaleKey): Promise<Record<string, string>
 }
 
 function getLocaleFromUrl(): LocaleKey {
-  const pathSegments = window.location.pathname.split('/').filter(Boolean);
-  const localeFromUrl = pathSegments[0] as LocaleKey;
+  // With hash routing, the locale is in the hash fragment, not the pathname
+  // e.g., https://example.com/ORBIS-Modellfabrik/#/en/overview
+  const hash = window.location.hash;
+  const hashSegments = hash.replace(/^#\/?/, '').split('/').filter(Boolean);
+  const localeFromHash = hashSegments[0] as LocaleKey;
   const supportedLocales: LocaleKey[] = ['en', 'de', 'fr'];
-  if (supportedLocales.includes(localeFromUrl)) {
-    return localeFromUrl;
+  if (supportedLocales.includes(localeFromHash)) {
+    return localeFromHash;
   }
   return 'en';
 }
