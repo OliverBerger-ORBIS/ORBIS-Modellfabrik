@@ -203,7 +203,17 @@ const resolvePath = (name: OrderFixtureName, baseUrl: string | undefined): strin
   const cleanPath = relativePath.startsWith('/') ? relativePath.slice(1) : relativePath;
   const fullBase = `${baseHref}${cleanPath}`;
   const suffix = FIXTURE_PATHS[name];
-  return fullBase.endsWith('/') ? `${fullBase}${suffix}` : `${fullBase}/${suffix}`;
+  const resolvedPath = fullBase.endsWith('/') ? `${fullBase}${suffix}` : `${fullBase}/${suffix}`;
+  // Always log resolved path for debugging (use console.error so it's visible in Safari)
+  console.error('[testing-fixtures] resolvePath() for', name, ':', {
+    baseHref,
+    relativePath,
+    cleanPath,
+    fullBase,
+    suffix,
+    resolvedPath
+  });
+  return resolvedPath;
 };
 
 const resolveModulePath = (name: ModuleFixtureName, baseUrl: string | undefined): string => {
