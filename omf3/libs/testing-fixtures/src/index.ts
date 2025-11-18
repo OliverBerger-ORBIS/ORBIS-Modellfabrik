@@ -31,65 +31,38 @@ export type SensorFixtureName = 'default' | 'startup';
  */
 const getBaseHref = (): string => {
   if (typeof document === 'undefined') {
-    console.warn('[testing-fixtures] getBaseHref() called but document is undefined');
     return '/';
   }
   
-  // Debug logging - ALWAYS log to diagnose issues
+  // CRITICAL FIX: For GitHub Pages, always return the correct baseHref
+  // This is more reliable than trying to read from the <base> tag
   const isGitHubPages = typeof window !== 'undefined' && window.location.hostname === 'oliverberger-orbis.github.io';
   
-  // Make logs VERY visible - use multiple methods
-  const hostname = typeof window !== 'undefined' ? window.location.hostname : 'undefined';
-  console.error('🔍 [testing-fixtures] getBaseHref() CALLED on hostname:', hostname, 'isGitHubPages:', isGitHubPages);
-  console.log('[testing-fixtures] getBaseHref() called on hostname:', hostname, 'isGitHubPages:', isGitHubPages);
-  console.warn('[testing-fixtures] getBaseHref() called on hostname:', hostname, 'isGitHubPages:', isGitHubPages);
+  if (isGitHubPages) {
+    // For GitHub Pages, the baseHref is always /ORBIS-Modellfabrik/
+    return '/ORBIS-Modellfabrik/';
+  }
   
-  // Try multiple methods to get baseHref
+  // For local development, try to read from <base> tag
   const baseTag = document.querySelector('base');
-  console.error('🔍 [testing-fixtures] getBaseHref() baseTag found:', !!baseTag);
-  console.log('[testing-fixtures] getBaseHref() baseTag found:', !!baseTag);
-  
   if (baseTag) {
     // Method 1: getAttribute('href') - preferred for relative paths
     const hrefAttr = baseTag.getAttribute('href');
-    console.log('[testing-fixtures] getBaseHref() Method 1 - getAttribute("href"):', hrefAttr);
     if (hrefAttr) {
-      const baseHref = hrefAttr.endsWith('/') ? hrefAttr : `${hrefAttr}/`;
-      console.log('[testing-fixtures] getBaseHref() Method 1 SUCCESS:', baseHref);
-      return baseHref;
+      return hrefAttr.endsWith('/') ? hrefAttr : `${hrefAttr}/`;
     }
     
     // Method 2: Use baseTag.href and extract pathname
-    // This works even if getAttribute returns null
     try {
-      const baseHrefFull = baseTag.href;
-      console.log('[testing-fixtures] getBaseHref() Method 2 - baseTag.href:', baseHrefFull);
-      const baseUrl = new URL(baseHrefFull, window.location.href);
+      const baseUrl = new URL(baseTag.href, window.location.href);
       const pathname = baseUrl.pathname;
-      const baseHref = pathname.endsWith('/') ? pathname : `${pathname}/`;
-      console.log('[testing-fixtures] getBaseHref() Method 2 SUCCESS:', baseHref, 'from pathname:', pathname);
-      return baseHref;
+      return pathname.endsWith('/') ? pathname : `${pathname}/`;
     } catch (e) {
-      console.warn('[testing-fixtures] getBaseHref() Method 2 failed:', e);
-    }
-    
-    console.warn('[testing-fixtures] getBaseHref() baseTag found but both methods failed');
-  } else {
-    console.warn('[testing-fixtures] getBaseHref() baseTag not found in document');
-  }
-  
-  // Fallback: Detect from window.location.pathname for GitHub Pages
-  if (typeof window !== 'undefined') {
-    const pathname = window.location.pathname;
-    console.log('[testing-fixtures] getBaseHref() Fallback - pathname:', pathname);
-    if (isGitHubPages && pathname.startsWith('/ORBIS-Modellfabrik')) {
-      const detectedBase = '/ORBIS-Modellfabrik/';
-      console.log('[testing-fixtures] getBaseHref() Fallback SUCCESS:', detectedBase);
-      return detectedBase;
+      // Fall through to default
     }
   }
   
-  console.warn('[testing-fixtures] getBaseHref() returning fallback "/"');
+  // Default fallback
   return '/';
 };
 
