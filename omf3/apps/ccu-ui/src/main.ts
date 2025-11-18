@@ -31,13 +31,26 @@ async function loadLocaleFile(locale: LocaleKey): Promise<Record<string, string>
 }
 
 function getLocaleFromUrl(): LocaleKey {
-  const pathSegments = window.location.pathname.split('/').filter(Boolean);
-  const localeFromUrl = pathSegments[0] as LocaleKey;
+  // With hash routing, the locale is in the hash fragment, not the pathname
+  // e.g., https://example.com/ORBIS-Modellfabrik/#/en/overview
+  const hash = window.location.hash;
+  const hashSegments = hash.replace(/^#\/?/, '').split('/').filter(Boolean);
+  const localeFromHash = hashSegments[0] as LocaleKey;
   const supportedLocales: LocaleKey[] = ['en', 'de', 'fr'];
-  if (supportedLocales.includes(localeFromUrl)) {
-    return localeFromUrl;
+  if (supportedLocales.includes(localeFromHash)) {
+    return localeFromHash;
   }
   return 'en';
+}
+
+function ensureHashRoute(): void {
+  // If there's no hash, redirect to the default route
+  if (!window.location.hash || window.location.hash === '#' || window.location.hash === '#/') {
+    const defaultLocale = getLocaleFromUrl(); // Will return 'en' if no hash
+    const currentPath = window.location.pathname;
+    const newUrl = `${window.location.origin}${currentPath}#/${defaultLocale}/overview`;
+    window.location.replace(newUrl);
+  }
 }
 
 async function prepareLocale(): Promise<void> {
@@ -63,6 +76,9 @@ async function prepareLocale(): Promise<void> {
     }
   }
 }
+
+// Ensure hash route exists before bootstrapping to prevent absolute path navigation
+ensureHashRoute();
 
 prepareLocale()
   .then(() => {

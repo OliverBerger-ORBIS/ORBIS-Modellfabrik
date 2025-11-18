@@ -155,15 +155,10 @@ export class AppComponent implements OnDestroy {
     this.selectedRole = this.roleService.current;
     this.selectedLocale = this.languageService.current;
     
-    // Redirect to locale-prefixed route if not already there
-    const urlSegments = window.location.pathname.split('/').filter(Boolean);
-    const currentLocale = urlSegments[0] as LocaleKey;
-    if (!this.languageService.supportedLocales.includes(currentLocale)) {
-      const storedLocale = this.languageService.current;
-      const currentRoute = urlSegments.length > 0 ? urlSegments.join('/') : 'overview';
-      // Always redirect to locale-prefixed route
-      window.location.href = `/${storedLocale}/${currentRoute}`;
-    }
+    // Note: With hash routing, locale detection and redirects are handled by:
+    // 1. ensureHashRoute() in main.ts (ensures hash exists before bootstrap)
+    // 2. Router redirectTo configuration in app.routes.ts
+    // No need for pathname-based redirect logic here
     
     this.subscriptions.add(
       this.environmentService.environment$.subscribe((environment) => {

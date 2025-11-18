@@ -24,6 +24,48 @@ export type FlowFixtureName = 'default' | 'startup';
 export type ConfigFixtureName = 'default' | 'startup';
 export type SensorFixtureName = 'default' | 'startup';
 
+/**
+ * Get the base href from the document, falling back to '/'.
+ * This ensures fixtures work correctly with baseHref configurations
+ * (e.g., '/ORBIS-Modellfabrik/' for GitHub Pages).
+ */
+const getBaseHref = (): string => {
+  if (typeof document === 'undefined') {
+    return '/';
+  }
+  
+  // CRITICAL FIX: For GitHub Pages, always return the correct baseHref
+  // This is more reliable than trying to read from the <base> tag
+  const isGitHubPages = typeof window !== 'undefined' && window.location.hostname === 'oliverberger-orbis.github.io';
+  
+  if (isGitHubPages) {
+    // For GitHub Pages, the baseHref is always /ORBIS-Modellfabrik/
+    return '/ORBIS-Modellfabrik/';
+  }
+  
+  // For local development, try to read from <base> tag
+  const baseTag = document.querySelector('base');
+  if (baseTag) {
+    // Method 1: getAttribute('href') - preferred for relative paths
+    const hrefAttr = baseTag.getAttribute('href');
+    if (hrefAttr) {
+      return hrefAttr.endsWith('/') ? hrefAttr : `${hrefAttr}/`;
+    }
+    
+    // Method 2: Use baseTag.href and extract pathname
+    try {
+      const baseUrl = new URL(baseTag.href, window.location.href);
+      const pathname = baseUrl.pathname;
+      return pathname.endsWith('/') ? pathname : `${pathname}/`;
+    } catch (e) {
+      // Fall through to default
+    }
+  }
+  
+  // Default fallback
+  return '/';
+};
+
 const DEFAULT_BASE_URL = '/fixtures/orders';
 const DEFAULT_MODULE_BASE_URL = '/fixtures/modules';
 const DEFAULT_STOCK_BASE_URL = '/fixtures/stock';
@@ -105,9 +147,21 @@ const defaultLoader = async (resolvedPath: string): Promise<string> => {
     );
   }
 
+  // Debug logging for GitHub Pages
+  if (typeof window !== 'undefined' && window.location.hostname === 'oliverberger-orbis.github.io') {
+    console.log('[testing-fixtures] Fetching fixture from:', resolvedPath);
+  }
+
   const response = await fetch(resolvedPath);
   if (!response.ok) {
-    throw new Error(`Failed to fetch fixture from ${resolvedPath}: ${response.status} ${response.statusText}`);
+    const errorMsg = `Failed to fetch fixture from ${resolvedPath}: ${response.status} ${response.statusText}`;
+    // Enhanced error logging for GitHub Pages
+    if (typeof window !== 'undefined' && window.location.hostname === 'oliverberger-orbis.github.io') {
+      console.error('[testing-fixtures]', errorMsg);
+      console.error('[testing-fixtures] Current URL:', window.location.href);
+      console.error('[testing-fixtures] Base href:', getBaseHref());
+    }
+    throw new Error(errorMsg);
   }
 
   return response.text();
@@ -122,39 +176,78 @@ const parseLines = (contents: string): RawMqttMessage[] => {
 };
 
 const resolvePath = (name: OrderFixtureName, baseUrl: string | undefined): string => {
-  const base = baseUrl ?? DEFAULT_BASE_URL;
+  // Make it VERY visible that this function is called
+  console.error('🔍 [testing-fixtures] resolvePath() CALLED for:', name);
+  console.log('[testing-fixtures] resolvePath() called for:', name);
+  console.warn('[testing-fixtures] resolvePath() called for:', name);
+  
+  const baseHref = getBaseHref();
+  const relativePath = baseUrl ?? DEFAULT_BASE_URL;
+  // Remove leading slash from relativePath to combine with baseHref
+  const cleanPath = relativePath.startsWith('/') ? relativePath.slice(1) : relativePath;
+  const fullBase = `${baseHref}${cleanPath}`;
   const suffix = FIXTURE_PATHS[name];
-  return base.endsWith('/') ? `${base}${suffix}` : `${base}/${suffix}`;
+  const resolvedPath = fullBase.endsWith('/') ? `${fullBase}${suffix}` : `${fullBase}/${suffix}`;
+  
+  // Always log resolved path for debugging (use console.error so it's visible in Safari)
+  const debugInfo = {
+    baseHref,
+    relativePath,
+    cleanPath,
+    fullBase,
+    suffix,
+    resolvedPath
+  };
+  console.error('🔍 [testing-fixtures] resolvePath() RESULT for', name, ':', debugInfo);
+  console.log('[testing-fixtures] resolvePath() result for', name, ':', debugInfo);
+  console.warn('[testing-fixtures] resolvePath() result for', name, ':', debugInfo);
+  
+  return resolvedPath;
 };
 
 const resolveModulePath = (name: ModuleFixtureName, baseUrl: string | undefined): string => {
-  const base = baseUrl ?? DEFAULT_MODULE_BASE_URL;
+  const baseHref = getBaseHref();
+  const relativePath = baseUrl ?? DEFAULT_MODULE_BASE_URL;
+  const cleanPath = relativePath.startsWith('/') ? relativePath.slice(1) : relativePath;
+  const fullBase = `${baseHref}${cleanPath}`;
   const suffix = MODULE_FIXTURE_PATHS[name];
-  return base.endsWith('/') ? `${base}${suffix}` : `${base}/${suffix}`;
+  return fullBase.endsWith('/') ? `${fullBase}${suffix}` : `${fullBase}/${suffix}`;
 };
 
 const resolveStockPath = (name: StockFixtureName, baseUrl: string | undefined): string => {
-  const base = baseUrl ?? DEFAULT_STOCK_BASE_URL;
+  const baseHref = getBaseHref();
+  const relativePath = baseUrl ?? DEFAULT_STOCK_BASE_URL;
+  const cleanPath = relativePath.startsWith('/') ? relativePath.slice(1) : relativePath;
+  const fullBase = `${baseHref}${cleanPath}`;
   const suffix = STOCK_FIXTURE_PATHS[name];
-  return base.endsWith('/') ? `${base}${suffix}` : `${base}/${suffix}`;
+  return fullBase.endsWith('/') ? `${fullBase}${suffix}` : `${fullBase}/${suffix}`;
 };
 
 const resolveFlowPath = (name: FlowFixtureName, baseUrl: string | undefined): string => {
-  const base = baseUrl ?? DEFAULT_FLOW_BASE_URL;
+  const baseHref = getBaseHref();
+  const relativePath = baseUrl ?? DEFAULT_FLOW_BASE_URL;
+  const cleanPath = relativePath.startsWith('/') ? relativePath.slice(1) : relativePath;
+  const fullBase = `${baseHref}${cleanPath}`;
   const suffix = FLOW_FIXTURE_PATHS[name];
-  return base.endsWith('/') ? `${base}${suffix}` : `${base}/${suffix}`;
+  return fullBase.endsWith('/') ? `${fullBase}${suffix}` : `${fullBase}/${suffix}`;
 };
 
 const resolveConfigPath = (name: ConfigFixtureName, baseUrl: string | undefined): string => {
-  const base = baseUrl ?? DEFAULT_CONFIG_BASE_URL;
+  const baseHref = getBaseHref();
+  const relativePath = baseUrl ?? DEFAULT_CONFIG_BASE_URL;
+  const cleanPath = relativePath.startsWith('/') ? relativePath.slice(1) : relativePath;
+  const fullBase = `${baseHref}${cleanPath}`;
   const suffix = CONFIG_FIXTURE_PATHS[name];
-  return base.endsWith('/') ? `${base}${suffix}` : `${base}/${suffix}`;
+  return fullBase.endsWith('/') ? `${fullBase}${suffix}` : `${fullBase}/${suffix}`;
 };
 
 const resolveSensorPath = (name: SensorFixtureName, baseUrl: string | undefined): string => {
-  const base = baseUrl ?? DEFAULT_SENSOR_BASE_URL;
+  const baseHref = getBaseHref();
+  const relativePath = baseUrl ?? DEFAULT_SENSOR_BASE_URL;
+  const cleanPath = relativePath.startsWith('/') ? relativePath.slice(1) : relativePath;
+  const fullBase = `${baseHref}${cleanPath}`;
   const suffix = SENSOR_FIXTURE_PATHS[name];
-  return base.endsWith('/') ? `${base}${suffix}` : `${base}/${suffix}`;
+  return fullBase.endsWith('/') ? `${fullBase}${suffix}` : `${fullBase}/${suffix}`;
 };
 
 export const loadOrderFixture = async (
@@ -162,6 +255,11 @@ export const loadOrderFixture = async (
   options?: LoadFixtureOptions
 ): Promise<RawMqttMessage[]> => {
   const path = resolvePath(name, options?.baseUrl);
+  // Debug logging for GitHub Pages fixture loading
+  if (typeof window !== 'undefined' && window.location.hostname === 'oliverberger-orbis.github.io') {
+    console.log('[testing-fixtures] Loading fixture:', name, 'from path:', path);
+    console.log('[testing-fixtures] baseHref:', getBaseHref());
+  }
   const loader = options?.loader ?? defaultLoader;
   const contents = await loader(path);
   return parseLines(contents);
@@ -172,6 +270,11 @@ export const loadModulePairingFixture = async (
   options?: LoadFixtureOptions
 ): Promise<RawMqttMessage[]> => {
   const path = resolveModulePath(name, options?.baseUrl);
+  // Debug logging for GitHub Pages fixture loading
+  if (typeof window !== 'undefined' && window.location.hostname === 'oliverberger-orbis.github.io') {
+    console.log('[testing-fixtures] Loading module fixture:', name, 'from path:', path);
+    console.log('[testing-fixtures] baseHref:', getBaseHref());
+  }
   const loader = options?.loader ?? defaultLoader;
   try {
     const contents = await loader(path);
@@ -187,6 +290,11 @@ export const loadStockFixture = async (
   options?: LoadFixtureOptions
 ): Promise<RawMqttMessage[]> => {
   const path = resolveStockPath(name, options?.baseUrl);
+  // Debug logging for GitHub Pages fixture loading
+  if (typeof window !== 'undefined' && window.location.hostname === 'oliverberger-orbis.github.io') {
+    console.log('[testing-fixtures] Loading stock fixture:', name, 'from path:', path);
+    console.log('[testing-fixtures] baseHref:', getBaseHref());
+  }
   const loader = options?.loader ?? defaultLoader;
   try {
     const contents = await loader(path);
@@ -202,6 +310,11 @@ export const loadFlowFixture = async (
   options?: LoadFixtureOptions
 ): Promise<RawMqttMessage[]> => {
   const path = resolveFlowPath(name, options?.baseUrl);
+  // Debug logging for GitHub Pages fixture loading
+  if (typeof window !== 'undefined' && window.location.hostname === 'oliverberger-orbis.github.io') {
+    console.log('[testing-fixtures] Loading flow fixture:', name, 'from path:', path);
+    console.log('[testing-fixtures] baseHref:', getBaseHref());
+  }
   const loader = options?.loader ?? defaultLoader;
   try {
     const contents = await loader(path);
@@ -217,6 +330,11 @@ export const loadConfigFixture = async (
   options?: LoadFixtureOptions
 ): Promise<RawMqttMessage[]> => {
   const path = resolveConfigPath(name, options?.baseUrl);
+  // Debug logging for GitHub Pages fixture loading
+  if (typeof window !== 'undefined' && window.location.hostname === 'oliverberger-orbis.github.io') {
+    console.log('[testing-fixtures] Loading config fixture:', name, 'from path:', path);
+    console.log('[testing-fixtures] baseHref:', getBaseHref());
+  }
   const loader = options?.loader ?? defaultLoader;
   try {
     const contents = await loader(path);
@@ -232,6 +350,11 @@ export const loadSensorFixture = async (
   options?: LoadFixtureOptions
 ): Promise<RawMqttMessage[]> => {
   const path = resolveSensorPath(name, options?.baseUrl);
+  // Debug logging for GitHub Pages fixture loading
+  if (typeof window !== 'undefined' && window.location.hostname === 'oliverberger-orbis.github.io') {
+    console.log('[testing-fixtures] Loading sensor fixture:', name, 'from path:', path);
+    console.log('[testing-fixtures] baseHref:', getBaseHref());
+  }
   const loader = options?.loader ?? defaultLoader;
   try {
     const contents = await loader(path);
