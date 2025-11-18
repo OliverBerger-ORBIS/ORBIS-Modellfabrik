@@ -343,3 +343,15 @@ Falls GitHub Pages nicht funktioniert, siehe `docs/deployment-alternatives.md` f
 2. **Erreichbarkeit prüfen** von Firmenrechnern
 3. Falls erfolgreich: **Produktives Deployment** einrichten
 4. Optional: **GitHub Actions** für automatisches Deployment einrichten
+
+## Wichtiger Hinweis: GitHub Pages Build-Trigger
+
+**Problem:** Nach einem neuen Deployment wird GitHub Pages nicht automatisch neu gebaut.
+
+**Lösung:** Manuell in GitHub Settings einen neuen Build triggern:
+1. Gehen Sie zu: `https://github.com/OliverBerger-ORBIS/ORBIS-Modellfabrik/settings/pages`
+2. Ändern Sie die Branch-Einstellung (z.B. von `gh-pages-test` zu einem anderen Branch und zurück)
+3. Oder: Warten Sie auf den automatischen "pages build and deployment" Workflow
+
+**Alternative:** Ein leerer Commit auf den `gh-pages-test` Branch kann auch einen neuen Build triggern.
+
