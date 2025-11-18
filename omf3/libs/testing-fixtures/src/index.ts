@@ -37,10 +37,16 @@ const getBaseHref = (): string => {
   
   // Debug logging - ALWAYS log to diagnose issues
   const isGitHubPages = typeof window !== 'undefined' && window.location.hostname === 'oliverberger-orbis.github.io';
-  console.log('[testing-fixtures] getBaseHref() called on hostname:', typeof window !== 'undefined' ? window.location.hostname : 'undefined', 'isGitHubPages:', isGitHubPages);
+  
+  // Make logs VERY visible - use multiple methods
+  const hostname = typeof window !== 'undefined' ? window.location.hostname : 'undefined';
+  console.error('🔍 [testing-fixtures] getBaseHref() CALLED on hostname:', hostname, 'isGitHubPages:', isGitHubPages);
+  console.log('[testing-fixtures] getBaseHref() called on hostname:', hostname, 'isGitHubPages:', isGitHubPages);
+  console.warn('[testing-fixtures] getBaseHref() called on hostname:', hostname, 'isGitHubPages:', isGitHubPages);
   
   // Try multiple methods to get baseHref
   const baseTag = document.querySelector('base');
+  console.error('🔍 [testing-fixtures] getBaseHref() baseTag found:', !!baseTag);
   console.log('[testing-fixtures] getBaseHref() baseTag found:', !!baseTag);
   
   if (baseTag) {
@@ -197,6 +203,11 @@ const parseLines = (contents: string): RawMqttMessage[] => {
 };
 
 const resolvePath = (name: OrderFixtureName, baseUrl: string | undefined): string => {
+  // Make it VERY visible that this function is called
+  console.error('🔍 [testing-fixtures] resolvePath() CALLED for:', name);
+  console.log('[testing-fixtures] resolvePath() called for:', name);
+  console.warn('[testing-fixtures] resolvePath() called for:', name);
+  
   const baseHref = getBaseHref();
   const relativePath = baseUrl ?? DEFAULT_BASE_URL;
   // Remove leading slash from relativePath to combine with baseHref
@@ -204,15 +215,20 @@ const resolvePath = (name: OrderFixtureName, baseUrl: string | undefined): strin
   const fullBase = `${baseHref}${cleanPath}`;
   const suffix = FIXTURE_PATHS[name];
   const resolvedPath = fullBase.endsWith('/') ? `${fullBase}${suffix}` : `${fullBase}/${suffix}`;
+  
   // Always log resolved path for debugging (use console.error so it's visible in Safari)
-  console.error('[testing-fixtures] resolvePath() for', name, ':', {
+  const debugInfo = {
     baseHref,
     relativePath,
     cleanPath,
     fullBase,
     suffix,
     resolvedPath
-  });
+  };
+  console.error('🔍 [testing-fixtures] resolvePath() RESULT for', name, ':', debugInfo);
+  console.log('[testing-fixtures] resolvePath() result for', name, ':', debugInfo);
+  console.warn('[testing-fixtures] resolvePath() result for', name, ':', debugInfo);
+  
   return resolvedPath;
 };
 
