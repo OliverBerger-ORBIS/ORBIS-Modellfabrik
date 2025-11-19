@@ -249,7 +249,7 @@ export class AppComponent implements OnDestroy {
     this.languageService.setLocale(locale);
   }
 
-  resetFactory(): void {
+  async resetFactory(): Promise<void> {
     const environment = this.environmentService.current.key;
     if (environment === 'mock') {
       const controller = getDashboardController(undefined, { 
@@ -259,7 +259,14 @@ export class AppComponent implements OnDestroy {
       void controller.loadFixture('startup');
       return;
     }
-    console.info('[reset]', environment, 'reset not implemented yet');
+    
+    // For live/replay environments, use business layer command
+    try {
+      const dashboard = getDashboardController();
+      await dashboard.commands.resetFactory();
+    } catch (error) {
+      console.warn('Failed to reset factory', error);
+    }
   }
 
   isNavVisible(item: NavigationItem, role: UserRole | null): boolean {

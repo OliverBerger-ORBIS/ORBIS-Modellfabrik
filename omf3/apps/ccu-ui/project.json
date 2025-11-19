@@ -23,7 +23,8 @@
         "index": "omf3/apps/ccu-ui/src/index.html",
         "browser": "omf3/apps/ccu-ui/src/main.ts",
         "polyfills": [
-          "zone.js"
+          "zone.js",
+          "@angular/localize/init"
         ],
         "tsConfig": "omf3/apps/ccu-ui/tsconfig.app.json",
         "inlineStyleLanguage": "scss",

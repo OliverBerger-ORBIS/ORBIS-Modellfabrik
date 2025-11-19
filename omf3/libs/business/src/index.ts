@@ -63,6 +63,8 @@ export interface BusinessCommands {
   dockFts: (serialNumber: string, nodeId?: string) => Promise<void>;
   sendCustomerOrder: (workpieceType: WorkpieceType) => Promise<void>;
   requestRawMaterial: (workpieceType: WorkpieceType) => Promise<void>;
+  moveCamera: (command: 'relmove_up' | 'relmove_down' | 'relmove_left' | 'relmove_right' | 'home' | 'stop', degree: number) => Promise<void>;
+  resetFactory: (withStorage?: boolean) => Promise<void>;
 }
 
 export type BusinessFacade = BusinessStreams & BusinessCommands;
@@ -480,10 +482,10 @@ export const createBusiness = (gateway: GatewayStreams): BusinessStreams & Busin
       return;
     }
 
+    // Note: ccu/set/charge does NOT include timestamp in payload (based on session logs)
     const payload = {
       serialNumber,
       charge,
-      timestamp: new Date().toISOString(),
     };
 
     await publish('ccu/set/charge', payload, { qos: 1, retain: false });
@@ -539,7 +541,39 @@ export const createBusiness = (gateway: GatewayStreams): BusinessStreams & Busin
       workpieceType,
     };
 
-    await publish('ccu/order/raw_material', payload, { qos: 1, retain: false });
+    await publish('omf/order/raw_material', payload, { qos: 1, retain: false });
+  };
+
+  const moveCamera: BusinessCommands['moveCamera'] = async (command, degree) => {
+    // Format: ISO timestamp with milliseconds ending with Z
+    // Based on session logs: "ts":"2025-11-10T16:48:45.975Z"
+    // Based on examples: 'home' and 'stop' don't have 'degree' field
+    const ts = new Date().toISOString();
+    
+    const payload: { ts: string; cmd: string; degree?: number } = {
+      ts,
+      cmd: command,
+    };
+
+    // Only include degree for movement commands (not for 'home' or 'stop')
+    if (command !== 'home' && command !== 'stop') {
+      payload.degree = degree;
+    }
+
+    await publish('/j1/txt/1/o/ptu', payload, { qos: 1, retain: false });
+  };
+
+  const resetFactory: BusinessCommands['resetFactory'] = async (withStorage = false) => {
+    // Based on OMF2: omf2/ui/admin/generic_steering/factory_steering_subtab.py
+    // Topic: ccu/set/reset
+    // Payload: {"timestamp": datetime.now().isoformat(), "withStorage": False}
+    // QoS: 1, Retain: False
+    const payload = {
+      timestamp: new Date().toISOString(),
+      withStorage,
+    };
+
+    await publish('ccu/set/reset', payload, { qos: 1, retain: false });
   };
 
   return {
@@ -560,5 +594,7 @@ export const createBusiness = (gateway: GatewayStreams): BusinessStreams & Busin
     dockFts,
     sendCustomerOrder,
     requestRawMaterial,
+    moveCamera,
+    resetFactory,
   };
 };

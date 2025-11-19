@@ -120,8 +120,49 @@ export class SensorTabComponent {
     return sensor.airQualityClassification;
   }
 
-  cameraControl(action: 'up' | 'down' | 'left' | 'right' | 'center'): void {
-    console.info('[sensor-tab] camera control action', action, 'step', this.stepSize);
+  async cameraControl(action: 'up' | 'down' | 'left' | 'right' | 'center'): Promise<void> {
+    try {
+      const commandMap: Record<'up' | 'down' | 'left' | 'right' | 'center', 'relmove_up' | 'relmove_down' | 'relmove_left' | 'relmove_right' | 'home'> = {
+        up: 'relmove_up',
+        down: 'relmove_down',
+        left: 'relmove_left',
+        right: 'relmove_right',
+        center: 'home', // Changed from 'center' to 'home' based on OMF2 examples
+      };
+      
+      const command = commandMap[action];
+      // For 'home', degree is not sent (based on examples)
+      // For movement commands, use stepSize from UI (default: 10)
+      const degree = action === 'center' ? 0 : this.stepSize;
+      
+      await this.dashboard.commands.moveCamera(command, degree);
+    } catch (error) {
+      console.warn('Failed to move camera', action, error);
+    }
+  }
+
+  async stopCamera(): Promise<void> {
+    try {
+      // 'stop' command doesn't require degree parameter
+      await this.dashboard.commands.moveCamera('stop', 0);
+    } catch (error) {
+      console.warn('Failed to stop camera', error);
+    }
+  }
+
+  getAriaLabel(action: 'up' | 'left' | 'center' | 'right' | 'down'): string {
+    switch (action) {
+      case 'up':
+        return $localize`:@@sensorControlUp:Up`;
+      case 'left':
+        return $localize`:@@sensorControlLeft:Left`;
+      case 'center':
+        return $localize`:@@sensorControlCenter:Center`;
+      case 'right':
+        return $localize`:@@sensorControlRight:Right`;
+      case 'down':
+        return $localize`:@@sensorControlDown:Down`;
+    }
   }
 
   onStepSizeChange(event: Event): void {

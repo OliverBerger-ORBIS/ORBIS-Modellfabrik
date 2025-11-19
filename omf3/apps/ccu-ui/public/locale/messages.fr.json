@@ -203,6 +203,7 @@
     "@@sensorCameraLoading": "Chargement de l'image caméra…",
     "@@sensorCameraControl": "Contrôle caméra",
     "@@sensorStepSizeLabel": "Taille de pas (°)",
+    "@@sensorControlStop": "Arrêter",
     "@@sensorControlUp": "Haut",
     "@@sensorControlLeft": "Gauche",
     "@@sensorControlCenter": "Centrer",

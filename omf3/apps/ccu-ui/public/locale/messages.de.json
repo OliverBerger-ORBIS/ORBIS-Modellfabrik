@@ -203,6 +203,7 @@
     "@@sensorCameraLoading": "Kamerabild wird geladen…",
     "@@sensorCameraControl": "Kamera-Steuerung",
     "@@sensorStepSizeLabel": "Schrittweite (°)",
+    "@@sensorControlStop": "Stopp",
     "@@sensorControlUp": "Hoch",
     "@@sensorControlLeft": "Links",
     "@@sensorControlCenter": "Zentrieren",
