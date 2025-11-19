@@ -7,11 +7,11 @@ import { ModuleNameService } from '../../services/module-name.service';
 
 type StepState = 'queued' | 'running' | 'completed' | 'failed';
 
-const STEP_STATE_MAP: Record<StepState, { class: string; label: string; icon: string }> = {
-  queued: { class: 'queued', label: 'Queued', icon: '⏳' },
-  running: { class: 'running', label: 'In progress', icon: '🟠' },
-  completed: { class: 'completed', label: 'Finished', icon: '✅' },
-  failed: { class: 'failed', label: 'Failed', icon: '❌' },
+const STEP_STATE_MAP: Record<StepState, { class: string; label: () => string; icon: string }> = {
+  queued: { class: 'queued', label: () => $localize`:@@orderCardStepQueued:Queued`, icon: '⏳' },
+  running: { class: 'running', label: () => $localize`:@@orderCardStepInProgress:In progress`, icon: '🟠' },
+  completed: { class: 'completed', label: () => $localize`:@@orderCardStepFinished:Finished`, icon: '✅' },
+  failed: { class: 'failed', label: () => $localize`:@@orderCardStepFailed:Failed`, icon: '❌' },
 };
 
 const ORDER_TYPE_ICONS: Record<'PRODUCTION' | 'STORAGE', string> = {
@@ -81,20 +81,53 @@ export class OrderCardComponent implements OnChanges {
     const state = (this.order?.state ?? this.order?.status ?? '').toUpperCase();
 
     if (['IN_PROGRESS', 'RUNNING'].includes(state)) {
-      return { class: 'state--running', label: 'In progress' };
+      return { class: 'state--running', label: $localize`:@@orderCardStatusInProgress:In progress` };
     }
     if (['COMPLETED', 'FINISHED'].includes(state)) {
-      return { class: 'state--completed', label: 'Finished' };
+      return { class: 'state--completed', label: $localize`:@@orderCardStatusFinished:Finished` };
     }
     if (state === 'FAILED') {
-      return { class: 'state--failed', label: 'Failed' };
+      return { class: 'state--failed', label: $localize`:@@orderCardStatusFailed:Failed` };
     }
-    return { class: 'state--queued', label: 'Queued' };
+    return { class: 'state--queued', label: $localize`:@@orderCardStatusQueued:Queued` };
   }
 
   get orderTypeIcon(): string {
     const key = (this.order?.orderType ?? '').toUpperCase() === 'STORAGE' ? 'STORAGE' : 'PRODUCTION';
     return ORDER_TYPE_ICONS[key];
+  }
+
+  getOrderTypeLabel(): string {
+    const orderType = (this.order?.orderType ?? '').toUpperCase();
+    if (orderType === 'STORAGE') {
+      return $localize`:@@orderCardOrderTypeStorage:Storage`;
+    }
+    return $localize`:@@orderCardOrderTypeProduction:Production`;
+  }
+
+  getWorkpieceTypeLabel(): string {
+    const type = (this.order?.type ?? '').toUpperCase();
+    switch (type) {
+      case 'BLUE':
+        return $localize`:@@orderCardWorkpieceTypeBlue:Blue`;
+      case 'WHITE':
+        return $localize`:@@orderCardWorkpieceTypeWhite:White`;
+      case 'RED':
+        return $localize`:@@orderCardWorkpieceTypeRed:Red`;
+      default:
+        return type;
+    }
+  }
+
+  getStepNumberLabel(stepNumber: number): string {
+    const formatted = stepNumber.toString().padStart(2, '0');
+    // Use template literal with $localize for interpolation
+    const stepLabel = $localize`:@@orderCardStepLabel:STEP`;
+    return `${stepLabel} ${formatted}`;
+  }
+
+  getToggleDetailsLabel(): string {
+    return $localize`:@@orderCardToggleDetails:Toggle order details`;
   }
 
   get orderStartedAt(): string | null {
@@ -144,7 +177,7 @@ export class OrderCardComponent implements OnChanges {
 
   stepStateLabel(step: ProductionStep): string {
     const state = this.resolveStepState(step);
-    return STEP_STATE_MAP[state].label;
+    return STEP_STATE_MAP[state].label();
   }
 
   private resolveStepState(step: ProductionStep): StepState {

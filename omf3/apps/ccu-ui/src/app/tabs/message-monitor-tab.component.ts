@@ -379,4 +379,16 @@ export class MessageMonitorTabComponent implements OnInit, OnDestroy, AfterViewC
   trackByMessage(_index: number, message: MonitoredMessage): string {
     return `${message.topic}-${message.timestamp}`;
   }
+
+  getCloseLabel(): string {
+    return $localize`:@@messageMonitorClose:Close`;
+  }
+
+  getValidMessageTooltip(): string {
+    return $localize`:@@messageMonitorValidPayload:Valid`;
+  }
+
+  getInvalidMessageTooltip(): string {
+    return $localize`:@@messageMonitorInvalidPayload:Invalid`;
+  }
 }

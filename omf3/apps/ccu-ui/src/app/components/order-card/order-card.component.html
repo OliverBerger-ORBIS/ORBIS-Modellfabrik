@@ -8,9 +8,9 @@
           <strong>{{ currentOrder.orderId }}</strong>
         </p>
         <p class="order-card__meta">
-          <span>{{ currentOrder.orderType }}</span>
+          <span>{{ getOrderTypeLabel() }}</span>
           <span>•</span>
-          <span>{{ currentOrder.type }}</span>
+          <span>{{ getWorkpieceTypeLabel() }}</span>
         </p>
       </div>
     </div>
@@ -22,7 +22,7 @@
       class="order-card__toggle"
       (click)="toggleCollapse()"
       [attr.aria-expanded]="!collapsed"
-      aria-label="Toggle order details"
+      [attr.aria-label]="getToggleDetailsLabel()"
     >
       <span [class]="collapsed ? 'toggle-icon toggle-icon--closed' : 'toggle-icon toggle-icon--open'"></span>
     </button>
@@ -36,7 +36,7 @@
           *ngFor="let step of steps; index as idx; trackBy: trackStep"
           [class]="'step-row ' + stepBackgroundClass(step)"
         >
-          <span class="step__number">STEP {{ idx + 1 | number: '2.0' }}</span>
+          <span class="step__number">{{ getStepNumberLabel(idx + 1) }}</span>
           <span
             class="step__status-icon"
             [class]="stepStatusClass(step)"

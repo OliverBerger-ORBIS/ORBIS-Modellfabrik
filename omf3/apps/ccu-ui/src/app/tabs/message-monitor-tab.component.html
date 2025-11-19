@@ -23,18 +23,18 @@
           >
             <option value="all" i18n="@@messageMonitorFilterAllTopics">All Topics</option>
             <option value="ccu" i18n="@@messageMonitorFilterCcuTopics">CCU Topics</option>
-            <option value="module-fts" i18n="@@messageMonitorFilterModuleFtsTopics">Module/FTS Topics</option>
+            <option value="module-fts" i18n="@@messageMonitorFilterModuleFtsTopics">Module/AGV Topics</option>
           </select>
         </label>
 
         <label *ngIf="filterTopicType === 'module-fts'">
-          <span i18n="@@messageMonitorFilterModuleFts">Module/FTS Filter</span>
+          <span i18n="@@messageMonitorFilterModuleFts">Module/AGV Filter</span>
           <select 
             [(ngModel)]="filterModule" 
             (ngModelChange)="onFilterChange()"
             class="filter-select"
           >
-            <option value="" i18n="@@messageMonitorFilterAllModules">All Modules/FTS</option>
+            <option value="" i18n="@@messageMonitorFilterAllModules">All Modules/AGV</option>
             <option *ngFor="let module of availableModules" [value]="module.serial">
               {{ module.name }}
             </option>
@@ -103,7 +103,7 @@
                   class="validity-indicator" 
                   [class.valid]="message.valid" 
                   [class.invalid]="!message.valid"
-                  [title]="message.valid ? 'Message is valid' : 'Message validation failed'"
+                  [title]="message.valid ? getValidMessageTooltip() : getInvalidMessageTooltip()"
                 >
                   {{ message.valid ? '✓' : '✗' }}
                 </span>
@@ -147,7 +147,7 @@
             <h4 id="payload-detail-title">{{ selectedMessage.topic }}</h4>
             <p class="detail-timestamp">{{ formatTimestamp(selectedMessage.timestamp) }}</p>
           </div>
-          <button type="button" class="close-btn" (click)="closeDetailPanel()" aria-label="Close">×</button>
+          <button type="button" class="close-btn" (click)="closeDetailPanel()" [attr.aria-label]="getCloseLabel()">×</button>
         </header>
         
         <div 

@@ -272,6 +272,22 @@
     "@@moduleNameDRILL": "Bohrstation",
     "@@moduleNameDPS": "Warenein- und ausgang",
     "@@moduleNameAIQS": "KI-Qualitätsstation",
-    "@@moduleNameCHRG": "Ladestation"
+    "@@moduleNameCHRG": "Ladestation",
+    "@@orderCardStepQueued": "Wartend",
+    "@@orderCardStepInProgress": "In Bearbeitung",
+    "@@orderCardStepFinished": "Abgeschlossen",
+    "@@orderCardStepFailed": "Fehlgeschlagen",
+    "@@orderCardStatusInProgress": "In Bearbeitung",
+    "@@orderCardStatusFinished": "Abgeschlossen",
+    "@@orderCardStatusFailed": "Fehlgeschlagen",
+    "@@orderCardStatusQueued": "Wartend",
+    "@@orderCardOrderTypeStorage": "Lagerung",
+    "@@orderCardOrderTypeProduction": "Produktion",
+    "@@orderCardWorkpieceTypeBlue": "Blau",
+    "@@orderCardWorkpieceTypeWhite": "Weiß",
+    "@@orderCardWorkpieceTypeRed": "Rot",
+    "@@orderCardStepLabel": "SCHRITT",
+    "@@orderCardToggleDetails": "Bestelldetails ein-/ausblenden",
+    "@@messageMonitorClose": "Schließen"
   }
 }

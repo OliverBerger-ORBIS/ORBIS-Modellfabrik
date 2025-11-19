@@ -13,7 +13,7 @@ import type { Observable } from 'rxjs';
   template: `
     <section class="panel">
       <header>
-        <h2 i18n="@@ftsHeadline">FTS Fleet</h2>
+        <h2 i18n="@@ftsHeadline">AGV Fleet</h2>
       </header>
 
       <ng-container *ngIf="ftsStates$ | async as fts">
@@ -31,7 +31,7 @@ import type { Observable } from 'rxjs';
       </ng-container>
 
       <ng-template #noFts>
-        <p class="empty" i18n="@@ftsEmptyState">No FTS telemetry received yet.</p>
+        <p class="empty" i18n="@@ftsEmptyState">No AGV telemetry received yet.</p>
       </ng-template>
     </section>
   `,

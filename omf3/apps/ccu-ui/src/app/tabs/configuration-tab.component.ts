@@ -438,9 +438,9 @@ export class ConfigurationTabComponent {
         items: productionSettingsItems,
       },
       {
-        title: $localize`:@@configurationFtsSettings:FTS Settings`,
+        title: $localize`:@@configurationFtsSettings:AGV Settings`,
         icon: this.resolveAssetPath(SHOPFLOOR_ASSET_MAP['FTS']),
-        description: $localize`:@@configurationFtsSettingsDescription:Driverless transport system thresholds`,
+        description: $localize`:@@configurationFtsSettingsDescription:AGV system thresholds`,
         items: ftsItems,
       },
     ];
