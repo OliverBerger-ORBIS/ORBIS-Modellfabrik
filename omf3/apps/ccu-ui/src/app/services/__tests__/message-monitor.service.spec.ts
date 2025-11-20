@@ -242,6 +242,46 @@ describe('MessageMonitorService', () => {
       
       newService.clearAll();
     });
+
+    it('should handle corrupted persisted data gracefully', () => {
+      const topic = 'test/corrupted';
+      const key = 'omf3.message-monitor.test/corrupted';
+      
+      // Manually inject corrupted data
+      localStorage.setItem(key, '{"not": "an array"}');
+      
+      // Create new service - should skip corrupted entry and not crash
+      const newService = new MessageMonitorService();
+      
+      // Should have empty history for corrupted topic
+      const history = newService.getHistory(topic);
+      expect(history.length).toBe(0);
+      
+      // Corrupted entry should be removed from localStorage
+      expect(localStorage.getItem(key)).toBeNull();
+      
+      newService.clearAll();
+    });
+
+    it('should handle invalid JSON in persisted data', () => {
+      const topic = 'test/invalid-json';
+      const key = 'omf3.message-monitor.test/invalid-json';
+      
+      // Manually inject invalid JSON
+      localStorage.setItem(key, 'not valid json at all{{{');
+      
+      // Create new service - should skip invalid entry and not crash
+      const newService = new MessageMonitorService();
+      
+      // Should have empty history
+      const history = newService.getHistory(topic);
+      expect(history.length).toBe(0);
+      
+      // Invalid entry should be removed from localStorage
+      expect(localStorage.getItem(key)).toBeNull();
+      
+      newService.clearAll();
+    });
   });
 
   describe('clearTopic', () => {

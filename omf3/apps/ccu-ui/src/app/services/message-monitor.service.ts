@@ -281,6 +281,7 @@ export class MessageMonitorService implements OnDestroy {
       const prefix = STORAGE_KEY_PREFIX + '.';
       let loadedTopics = 0;
       let trimmedTopics = 0;
+      let corruptedTopics = 0;
       
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
@@ -288,9 +289,21 @@ export class MessageMonitorService implements OnDestroy {
           const topic = key.substring(prefix.length);
           const data = localStorage.getItem(key);
           
-          if (data) {
+          if (!data) {
+            continue;
+          }
+
+          try {
             const messages = JSON.parse(data) as MonitoredMessage[];
             
+            // Defensive: ensure it's an array
+            if (!Array.isArray(messages)) {
+              console.warn(`[MessageMonitor] Persisted data for ${topic} is not an array, skipping.`);
+              localStorage.removeItem(key);
+              corruptedTopics++;
+              continue;
+            }
+
             // Get retention limit for this topic
             const retention = this.getRetention(topic);
             
@@ -313,14 +326,30 @@ export class MessageMonitorService implements OnDestroy {
             // This ensures subscribers immediately get the last persisted value
             if (trimmedMessages.length > 0) {
               const lastMessage = trimmedMessages[trimmedMessages.length - 1];
-              this.subjects.set(topic, new BehaviorSubject<MonitoredMessage | null>(lastMessage));
+              
+              // Initialize BehaviorSubject with lastMessage directly to avoid transient nulls
+              if (!this.subjects.has(topic)) {
+                this.subjects.set(topic, new BehaviorSubject<MonitoredMessage | null>(lastMessage));
+              } else {
+                // If subject exists (rare), ensure its current value is in sync
+                const subj = this.subjects.get(topic)!;
+                const cur = subj.value;
+                if (!cur || cur.timestamp !== lastMessage.timestamp) {
+                  subj.next(lastMessage);
+                }
+              }
               loadedTopics++;
             }
+          } catch (err) {
+            console.warn(`[MessageMonitor] Failed parsing persisted data for ${topic}, removing corrupt entry.`, err);
+            // If parse fails, remove the corrupt persisted key to prevent repeated failures
+            localStorage.removeItem(key);
+            corruptedTopics++;
           }
         }
       }
 
-      console.log(`[MessageMonitor] Loaded persisted data for ${loadedTopics} topics${trimmedTopics > 0 ? ` (trimmed ${trimmedTopics} topics)` : ''}`);
+      console.log(`[MessageMonitor] Loaded persisted data for ${loadedTopics} topics${trimmedTopics > 0 ? ` (trimmed ${trimmedTopics} topics)` : ''}${corruptedTopics > 0 ? ` (removed ${corruptedTopics} corrupted entries)` : ''}`);
     } catch (error) {
       console.error('[MessageMonitor] Failed to load persisted data:', error);
     }
