@@ -8,21 +8,46 @@
 import { defer, from, merge, Observable } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import type { RawMqttMessage } from '@omf3/gateway';
-import {
-  createOrderFixtureStream,
-  createModulePairingFixtureStream,
-  createStockFixtureStream,
-  createFlowFixtureStream,
-  createConfigFixtureStream,
-  createSensorFixtureStream,
-  type FixtureStreamOptions,
-  type OrderFixtureName,
-  type ModuleFixtureName,
-  type StockFixtureName,
-  type FlowFixtureName,
-  type ConfigFixtureName,
-  type SensorFixtureName,
+
+// Re-export types to avoid consumers needing to import from multiple files
+export type {
+  FixtureStreamOptions,
+  OrderFixtureName,
+  ModuleFixtureName,
+  StockFixtureName,
+  FlowFixtureName,
+  ConfigFixtureName,
+  SensorFixtureName,
 } from './index';
+
+// These will be injected by index.ts to avoid circular dependency
+let createOrderFixtureStreamImpl: any;
+let createModulePairingFixtureStreamImpl: any;
+let createStockFixtureStreamImpl: any;
+let createFlowFixtureStreamImpl: any;
+let createConfigFixtureStreamImpl: any;
+let createSensorFixtureStreamImpl: any;
+
+/**
+ * Internal function to set the fixture stream implementations
+ * Called by index.ts during module initialization
+ * @internal
+ */
+export function _setFixtureStreamImpls(impls: {
+  createOrderFixtureStream: any;
+  createModulePairingFixtureStream: any;
+  createStockFixtureStream: any;
+  createFlowFixtureStream: any;
+  createConfigFixtureStream: any;
+  createSensorFixtureStream: any;
+}) {
+  createOrderFixtureStreamImpl = impls.createOrderFixtureStream;
+  createModulePairingFixtureStreamImpl = impls.createModulePairingFixtureStream;
+  createStockFixtureStreamImpl = impls.createStockFixtureStream;
+  createFlowFixtureStreamImpl = impls.createFlowFixtureStream;
+  createConfigFixtureStreamImpl = impls.createConfigFixtureStream;
+  createSensorFixtureStreamImpl = impls.createSensorFixtureStream;
+}
 
 /**
  * Tab-specific fixture configuration
@@ -154,33 +179,33 @@ export const createTabFixtureStream = (
   const streams: Observable<RawMqttMessage>[] = [];
 
   // Add order fixtures if specified
-  if (config.orders) {
-    streams.push(createOrderFixtureStream(config.orders, options));
+  if (config.orders && createOrderFixtureStreamImpl) {
+    streams.push(createOrderFixtureStreamImpl(config.orders, options));
   }
 
   // Add module fixtures if specified
-  if (config.modules) {
-    streams.push(createModulePairingFixtureStream(config.modules, options));
+  if (config.modules && createModulePairingFixtureStreamImpl) {
+    streams.push(createModulePairingFixtureStreamImpl(config.modules, options));
   }
 
   // Add stock fixtures if specified
-  if (config.stock) {
-    streams.push(createStockFixtureStream(config.stock, options));
+  if (config.stock && createStockFixtureStreamImpl) {
+    streams.push(createStockFixtureStreamImpl(config.stock, options));
   }
 
   // Add flow fixtures if specified
-  if (config.flows) {
-    streams.push(createFlowFixtureStream(config.flows, options));
+  if (config.flows && createFlowFixtureStreamImpl) {
+    streams.push(createFlowFixtureStreamImpl(config.flows, options));
   }
 
   // Add config fixtures if specified
-  if (config.config) {
-    streams.push(createConfigFixtureStream(config.config, options));
+  if (config.config && createConfigFixtureStreamImpl) {
+    streams.push(createConfigFixtureStreamImpl(config.config, options));
   }
 
   // Add sensor fixtures if specified
-  if (config.sensors) {
-    streams.push(createSensorFixtureStream(config.sensors, options));
+  if (config.sensors && createSensorFixtureStreamImpl) {
+    streams.push(createSensorFixtureStreamImpl(config.sensors, options));
   }
 
   // Merge all streams into a single stream

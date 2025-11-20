@@ -480,6 +480,19 @@ export const SHOPFLOOR_ASSET_MAP: Record<string, string> = {
 };
 
 // Export tab-specific fixture loading
+// Note: We inject the implementations to avoid circular dependency
+import { _setFixtureStreamImpls } from './tab-fixtures';
+
+// Inject the fixture stream implementations after they're defined
+_setFixtureStreamImpls({
+  createOrderFixtureStream,
+  createModulePairingFixtureStream,
+  createStockFixtureStream,
+  createFlowFixtureStream,
+  createConfigFixtureStream,
+  createSensorFixtureStream,
+});
+
 export {
   createTabFixtureStream,
   createTabFixturePreset,
