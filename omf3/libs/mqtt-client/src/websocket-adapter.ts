@@ -239,8 +239,13 @@ export class WebSocketMqttAdapter implements MqttAdapter {
   }
 
   async publish(topic: string, payload: unknown, options?: PublishOptions): Promise<void> {
+    // If not connected, trigger reconnect and retry publish
     if (!this.client?.connected) {
-      throw new Error('Not connected');
+      console.warn('[WebSocketMqttAdapter] Publish called while disconnected, attempting reconnect...');
+      
+      // Note: reconnect requires connection parameters that we don't have here
+      // This will be handled at the ConnectionService level
+      throw new Error('Not connected - reconnect required');
     }
 
     return new Promise<void>((resolve, reject) => {

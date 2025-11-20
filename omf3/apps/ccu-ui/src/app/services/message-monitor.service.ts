@@ -279,6 +279,8 @@ export class MessageMonitorService implements OnDestroy {
   private loadPersistedData(): void {
     try {
       const prefix = STORAGE_KEY_PREFIX + '.';
+      let loadedTopics = 0;
+      let trimmedTopics = 0;
       
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
@@ -289,26 +291,36 @@ export class MessageMonitorService implements OnDestroy {
           if (data) {
             const messages = JSON.parse(data) as MonitoredMessage[];
             
-            // Restore buffer
+            // Get retention limit for this topic
             const retention = this.getRetention(topic);
+            
+            // Trim messages that exceed retention before storing
+            const trimmedMessages = messages.slice(-retention);
+            
+            // Track if trimming occurred
+            if (messages.length > trimmedMessages.length) {
+              trimmedTopics++;
+              console.log(`[MessageMonitor] Trimmed ${messages.length - trimmedMessages.length} old messages from topic: ${topic}`);
+            }
+            
+            // Restore buffer with trimmed messages
             this.buffers.set(topic, {
-              items: messages.slice(-retention), // Only keep up to retention limit
+              items: trimmedMessages,
               maxSize: retention,
             });
 
-            // Restore last message
-            if (messages.length > 0) {
-              const lastMessage = messages[messages.length - 1];
-              if (!this.subjects.has(topic)) {
-                this.subjects.set(topic, new BehaviorSubject<MonitoredMessage | null>(null));
-              }
-              this.subjects.get(topic)!.next(lastMessage);
+            // Initialize BehaviorSubject directly with last message (no intermediate null)
+            // This ensures subscribers immediately get the last persisted value
+            if (trimmedMessages.length > 0) {
+              const lastMessage = trimmedMessages[trimmedMessages.length - 1];
+              this.subjects.set(topic, new BehaviorSubject<MonitoredMessage | null>(lastMessage));
+              loadedTopics++;
             }
           }
         }
       }
 
-      console.log('[MessageMonitor] Loaded persisted data for', this.buffers.size, 'topics');
+      console.log(`[MessageMonitor] Loaded persisted data for ${loadedTopics} topics${trimmedTopics > 0 ? ` (trimmed ${trimmedTopics} topics)` : ''}`);
     } catch (error) {
       console.error('[MessageMonitor] Failed to load persisted data:', error);
     }

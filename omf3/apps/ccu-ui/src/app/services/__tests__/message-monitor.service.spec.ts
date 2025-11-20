@@ -197,6 +197,51 @@ describe('MessageMonitorService', () => {
       
       expect(stored).toBeNull();
     });
+
+    it('should initialize BehaviorSubject with last persisted message (no intermediate null)', async () => {
+      const topic = 'test/restore';
+      const payload = { data: 'persisted-value', id: 123 };
+      
+      // Setup: persist data via first service instance
+      service.addMessage(topic, payload);
+      
+      // Simulate app restart: create new service instance
+      const newService = new MessageMonitorService();
+      
+      // Get observable IMMEDIATELY after construction (before any messages arrive)
+      const lastMessage$ = newService.getLastMessage(topic);
+      
+      // First emission should be the persisted value, NOT null
+      const firstValue = await firstValueFrom(lastMessage$);
+      expect(firstValue).not.toBeNull();
+      expect(firstValue?.payload).toEqual(payload);
+      expect(firstValue?.topic).toBe(topic);
+      
+      newService.clearAll();
+    });
+
+    it('should trim messages exceeding retention when loading persisted data', () => {
+      const topic = 'test/retention-trim';
+      
+      // Add 60 messages (exceeds default retention of 50)
+      for (let i = 0; i < 60; i++) {
+        service.addMessage(topic, { id: i });
+      }
+      
+      // Verify all 60 are in current service (trimmed to 50 due to circular buffer)
+      expect(service.getHistory(topic).length).toBe(50);
+      
+      // Create new service instance (simulates app restart)
+      const newService = new MessageMonitorService();
+      
+      // Should only load the last 50 messages
+      const history = newService.getHistory(topic);
+      expect(history.length).toBe(50);
+      expect(history[0].payload).toEqual({ id: 10 });
+      expect(history[49].payload).toEqual({ id: 59 });
+      
+      newService.clearAll();
+    });
   });
 
   describe('clearTopic', () => {
