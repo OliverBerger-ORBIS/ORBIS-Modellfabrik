@@ -4,12 +4,44 @@
     <span>{{ infoLabel }}</span>
   </header>
 
-  <div class="preview__canvas-wrapper" [style.width.px]="vm.width * scale" [style.height.px]="vm.height * scale">
+  <div class="preview__zoom-controls" *ngIf="showZoomControls">
+    <button
+      type="button"
+      class="preview__zoom-button"
+      (click)="zoomOut()"
+      [disabled]="!canZoomOut"
+      [attr.aria-label]="zoomOutLabel"
+      [attr.title]="zoomOutLabel"
+    >
+      &lt;
+    </button>
+    <button
+      type="button"
+      class="preview__zoom-button"
+      (click)="resetZoom()"
+      [attr.aria-label]="resetZoomLabel"
+      [attr.title]="resetZoomLabel"
+    >
+      +
+    </button>
+    <button
+      type="button"
+      class="preview__zoom-button"
+      (click)="zoomIn()"
+      [disabled]="!canZoomIn"
+      [attr.aria-label]="zoomInLabel"
+      [attr.title]="zoomInLabel"
+    >
+      &gt;
+    </button>
+  </div>
+
+  <div class="preview__canvas-wrapper" [style.width.px]="vm.width * currentScale" [style.height.px]="vm.height * currentScale">
     <div
       class="preview__canvas"
       [style.width.px]="vm.width"
       [style.height.px]="vm.height"
-      [style.transform]="'scale(' + scale + ')'"
+      [style.transform]="'scale(' + currentScale + ')'"
     >
       <svg class="preview__roads" [attr.width]="vm.width" [attr.height]="vm.height" *ngIf="vm.roads.length">
         <line

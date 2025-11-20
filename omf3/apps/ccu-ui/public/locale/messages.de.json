@@ -86,6 +86,8 @@
     "@@orderTabStorageActiveEmpty": "Keine aktiven Lageraufträge.",
     "@@orderTabStorageCompleted": "Abgeschlossen",
     "@@orderTabStorageCompletedEmpty": "Keine abgeschlossenen Lageraufträge.",
+    "@@orderTabExpandCompleted": "Abgeschlossene Aufträge einblenden",
+    "@@orderTabCollapseCompleted": "Abgeschlossene Aufträge ausblenden",
     "@@orderTabLoading": "Lade Aufträge …",
     "@@processTabHeadline": "Prozessperspektive",
     "@@processTabDescription": "Hier folgen Analysen und Visualisierungen der Prozessabläufe.",
@@ -288,6 +290,10 @@
     "@@orderCardWorkpieceTypeRed": "Rot",
     "@@orderCardStepLabel": "SCHRITT",
     "@@orderCardToggleDetails": "Bestelldetails ein-/ausblenden",
+    "@@orderCardOrderId": "Auftrags-ID",
+    "@@shopfloorPreviewZoomIn": "Vergrößern",
+    "@@shopfloorPreviewZoomOut": "Verkleinern",
+    "@@shopfloorPreviewResetZoom": "Zoom zurücksetzen",
     "@@messageMonitorClose": "Schließen"
   }
 }

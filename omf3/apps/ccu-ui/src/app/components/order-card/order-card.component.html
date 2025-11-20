@@ -3,15 +3,15 @@
   <header class="order-card__header">
     <div class="order-card__title">
       <img class="order-card__type-icon" [src]="orderTypeIcon" alt="" aria-hidden="true" />
-      <div>
-        <p class="order-card__id">
-          <strong>{{ currentOrder.orderId }}</strong>
-        </p>
-        <p class="order-card__meta">
-          <span>{{ getOrderTypeLabel() }}</span>
-          <span>•</span>
-          <span>{{ getWorkpieceTypeLabel() }}</span>
-        </p>
+      <img
+        *ngIf="workpieceIcon as icon"
+        class="order-card__workpiece-icon"
+        [src]="icon"
+        alt=""
+        aria-hidden="true"
+      />
+      <div *ngIf="orderStartedAt as started" class="order-card__time">
+        {{ started }}
       </div>
     </div>
     <div class="order-card__status" [ngClass]="headerStatus.class">
@@ -53,7 +53,15 @@
             />
             <span class="step__module-name" [title]="moduleFullName(step)">{{ moduleName(step) }}</span>
           </span>
-          <span class="step__command-text">{{ commandLabel(step) }}</span>
+          <span class="step__command-text">
+            {{ commandLabel(step) }}
+            <img
+              *ngIf="targetModuleIcon(step) as targetIconPath"
+              [src]="targetIconPath"
+              class="step__target-module-icon"
+              alt=""
+            />
+          </span>
         </li>
       </ul>
     </div>
@@ -63,13 +71,14 @@
         [order]="currentOrder"
         [activeStep]="previewStep"
         [scale]="0.7"
+        [showZoomControls]="true"
       />
     </div>
 
     <footer class="order-card__details">
-      <div class="detail-group" *ngIf="orderStartedAt as started">
-        <span class="detail-label" i18n="@@orderCardStarted">Started</span>
-        <span class="detail-value">{{ started }}</span>
+      <div class="detail-group" *ngIf="currentOrder.orderId as orderId">
+        <span class="detail-label" i18n="@@orderCardOrderId">Order ID</span>
+        <span class="detail-value">{{ orderId }}</span>
       </div>
       <div class="detail-group" *ngIf="orderDuration as duration">
         <span class="detail-label" i18n="@@orderCardDuration">Duration</span>

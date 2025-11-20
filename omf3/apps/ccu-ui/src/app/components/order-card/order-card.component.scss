@@ -22,12 +22,26 @@
   display: flex;
   align-items: center;
   gap: 1rem;
+  flex: 1;
 }
 
 .order-card__type-icon {
   width: 2.5rem;
   height: 2.5rem;
   object-fit: contain;
+}
+
+.order-card__workpiece-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  object-fit: contain;
+}
+
+.order-card__time {
+  font-size: 0.85rem;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
 }
 
 .order-card__id {
@@ -229,6 +243,16 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.step__target-module-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  object-fit: contain;
+  flex-shrink: 0;
 }
 
 .order-card__shopfloor {

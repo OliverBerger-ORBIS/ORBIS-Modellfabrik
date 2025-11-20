@@ -70,6 +70,29 @@ export class OrderTabComponent implements OnInit {
   };
   activeFixture: OrderFixtureName = this.dashboard.getCurrentFixture();
 
+  productionCompletedCollapsed = true;
+  storageCompletedCollapsed = true;
+
+  toggleProductionCompleted(): void {
+    this.productionCompletedCollapsed = !this.productionCompletedCollapsed;
+  }
+
+  toggleStorageCompleted(): void {
+    this.storageCompletedCollapsed = !this.storageCompletedCollapsed;
+  }
+
+  get productionCompletedToggleLabel(): string {
+    return this.productionCompletedCollapsed
+      ? $localize`:@@orderTabExpandCompleted:Expand completed orders`
+      : $localize`:@@orderTabCollapseCompleted:Collapse completed orders`;
+  }
+
+  get storageCompletedToggleLabel(): string {
+    return this.storageCompletedCollapsed
+      ? $localize`:@@orderTabExpandCompleted:Expand completed orders`
+      : $localize`:@@orderTabCollapseCompleted:Collapse completed orders`;
+  }
+
   private bindOrderStreams(): void {
     // Subscribe directly to dashboard streams - they already have shareReplay with startWith
     // Use refCount: false to keep streams alive even when no subscribers

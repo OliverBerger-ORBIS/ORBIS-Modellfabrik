@@ -19,6 +19,18 @@ const ORDER_TYPE_ICONS: Record<'PRODUCTION' | 'STORAGE', string> = {
   STORAGE: 'headings/ladung.svg',
 };
 
+const PRODUCT_ICON_MAP: Record<'BLUE' | 'WHITE' | 'RED', string> = {
+  BLUE: 'workpieces/blue_product.svg',
+  WHITE: 'workpieces/white_product.svg',
+  RED: 'workpieces/red_product.svg',
+};
+
+const THREE_D_ICON_MAP: Record<'BLUE' | 'WHITE' | 'RED', string> = {
+  BLUE: 'workpieces/blue_3dim.svg',
+  WHITE: 'workpieces/white_3dim.svg',
+  RED: 'workpieces/red_3dim.svg',
+};
+
 @Component({
   standalone: true,
   selector: 'app-order-card',
@@ -97,6 +109,17 @@ export class OrderCardComponent implements OnChanges {
     return ORDER_TYPE_ICONS[key];
   }
 
+  get workpieceIcon(): string | null {
+    const orderType = (this.order?.orderType ?? '').toUpperCase();
+    const workpieceType = (this.order?.type ?? '').toUpperCase() as 'BLUE' | 'WHITE' | 'RED';
+    
+    if (orderType === 'STORAGE') {
+      return THREE_D_ICON_MAP[workpieceType] ?? null;
+    }
+    // PRODUCTION
+    return PRODUCT_ICON_MAP[workpieceType] ?? null;
+  }
+
   getOrderTypeLabel(): string {
     const orderType = (this.order?.orderType ?? '').toUpperCase();
     if (orderType === 'STORAGE') {
@@ -157,7 +180,7 @@ export class OrderCardComponent implements OnChanges {
   }
 
   get activeStepStartedAt(): string | null {
-    return this.formatTimestamp(this.activeStep?.startedAt);
+    return this.formatTimestampWithDate(this.activeStep?.startedAt);
   }
 
   stepBackgroundClass(step: ProductionStep): string {
@@ -195,6 +218,21 @@ export class OrderCardComponent implements OnChanges {
   }
 
   private formatTimestamp(value?: string | null): string | null {
+    if (!value) {
+      return null;
+    }
+
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) {
+      return null;
+    }
+
+    return new Intl.DateTimeFormat('de-DE', {
+      timeStyle: 'medium',
+    }).format(date);
+  }
+
+  private formatTimestampWithDate(value?: string | null): string | null {
     if (!value) {
       return null;
     }
@@ -276,6 +314,20 @@ export class OrderCardComponent implements OnChanges {
         ? 'FTS'
         : step.moduleType ?? step.type ?? '';
     return this.assetPath(key);
+  }
+
+  targetModuleIcon(step: ProductionStep): string | null {
+    // Nur bei NAVIGATION-Schritten und wenn target vorhanden und nicht "START"
+    if (step.type !== 'NAVIGATION' || !step.target) {
+      return null;
+    }
+    
+    const target = (step.target ?? '').toUpperCase();
+    if (target === 'START' || target === '') {
+      return null;
+    }
+    
+    return this.assetPath(target);
   }
 
   moduleName(step: ProductionStep): string {

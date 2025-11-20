@@ -133,10 +133,15 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
   @Input() badgeText?: string;
   @Input() infoText?: string;
   @Input() showBaseRoads = true;
+  @Input() showZoomControls = false;
   @Output() cellSelected = new EventEmitter<{ id: string; kind: 'module' | 'fixed' }>();
   @Output() cellDoubleClicked = new EventEmitter<{ id: string; kind: 'module' | 'fixed' }>();
 
   viewModel: ShopfloorView | null = null;
+  currentScale = 0.6;
+  readonly minScale = 0.3;
+  readonly maxScale = 2.0;
+  readonly scaleStep = 0.1;
 
   private layoutConfig?: ShopfloorLayoutConfig;
   private parsedRoads: ParsedRoad[] = [];
@@ -154,6 +159,7 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
   ) {}
 
   ngOnInit(): void {
+    this.currentScale = this.scale;
     this.http.get<ShopfloorLayoutConfig>('shopfloor/shopfloor_layout.json').subscribe({
       next: (config) => {
         this.layoutConfig = config;
@@ -161,6 +167,7 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
         this.indexLayout(config);
         if (config.scaling && this.scale === 0.6) {
           this.scale = config.scaling.default_percent / 100;
+          this.currentScale = this.scale;
         }
         this.updateViewModel();
         this.cdr.markForCheck();
@@ -172,9 +179,47 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    if (changes['scale'] && !changes['scale'].firstChange) {
+      this.currentScale = this.scale;
+    }
     if (changes['activeStep'] || changes['order'] || changes['highlightModulesOverride'] || changes['highlightFixedOverride']) {
       this.updateViewModel();
     }
+  }
+
+  zoomIn(): void {
+    this.currentScale = Math.min(this.currentScale + this.scaleStep, this.maxScale);
+    this.cdr.markForCheck();
+  }
+
+  zoomOut(): void {
+    this.currentScale = Math.max(this.currentScale - this.scaleStep, this.minScale);
+    this.cdr.markForCheck();
+  }
+
+  resetZoom(): void {
+    this.currentScale = this.scale;
+    this.cdr.markForCheck();
+  }
+
+  get canZoomIn(): boolean {
+    return this.currentScale < this.maxScale;
+  }
+
+  get canZoomOut(): boolean {
+    return this.currentScale > this.minScale;
+  }
+
+  get zoomInLabel(): string {
+    return $localize`:@@shopfloorPreviewZoomIn:Zoom in`;
+  }
+
+  get zoomOutLabel(): string {
+    return $localize`:@@shopfloorPreviewZoomOut:Zoom out`;
+  }
+
+  get resetZoomLabel(): string {
+    return $localize`:@@shopfloorPreviewResetZoom:Reset zoom`;
   }
 
   get infoLabel(): string {

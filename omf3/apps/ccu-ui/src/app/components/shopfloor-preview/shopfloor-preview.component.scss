@@ -204,3 +204,45 @@
   background: rgba(148, 163, 184, 0.8);
 }
 
+.preview__zoom-controls {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-start;
+  align-items: center;
+  margin-top: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.preview__zoom-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  border-radius: 0.375rem;
+  background: #ffffff;
+  color: #1f2933;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1;
+
+  &:hover:not(:disabled) {
+    background: rgba(31, 83, 178, 0.08);
+    border-color: rgba(31, 83, 178, 0.3);
+    color: #1f54b2;
+  }
+
+  &:active:not(:disabled) {
+    background: rgba(31, 83, 178, 0.15);
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+

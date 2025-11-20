@@ -44,16 +44,32 @@
       </article>
 
       <article class="order-section">
-        <h4 i18n="@@orderTabProductionCompleted">Completed</h4>
-        <ng-container *ngIf="productionCompleted$ | async as orders; else loading">
-          <p class="empty" *ngIf="orders.length === 0" i18n="@@orderTabProductionCompletedEmpty">
-            No completed production orders.
-          </p>
-          <app-order-card
-            *ngFor="let order of orders"
-            [order]="order"
-            [isCompleted]="true"
-          />
+        <div class="order-section__header">
+          <h4 i18n="@@orderTabProductionCompleted">Completed</h4>
+          <button
+            type="button"
+            class="order-section__toggle"
+            (click)="toggleProductionCompleted()"
+            [attr.aria-expanded]="!productionCompletedCollapsed"
+            [attr.aria-label]="productionCompletedToggleLabel"
+            [title]="productionCompletedToggleLabel"
+          >
+            <span
+              [class]="productionCompletedCollapsed ? 'toggle-icon toggle-icon--closed' : 'toggle-icon toggle-icon--open'"
+            ></span>
+          </button>
+        </div>
+        <ng-container *ngIf="!productionCompletedCollapsed">
+          <ng-container *ngIf="productionCompleted$ | async as orders; else loading">
+            <p class="empty" *ngIf="orders.length === 0" i18n="@@orderTabProductionCompletedEmpty">
+              No completed production orders.
+            </p>
+            <app-order-card
+              *ngFor="let order of orders"
+              [order]="order"
+              [isCompleted]="true"
+            />
+          </ng-container>
         </ng-container>
       </article>
     </section>
@@ -75,16 +91,32 @@
       </article>
 
       <article class="order-section">
-        <h4 i18n="@@orderTabStorageCompleted">Completed</h4>
-        <ng-container *ngIf="storageCompleted$ | async as orders; else loading">
-          <p class="empty" *ngIf="orders.length === 0" i18n="@@orderTabStorageCompletedEmpty">
-            No completed storage orders.
-          </p>
-          <app-order-card
-            *ngFor="let order of orders"
-            [order]="order"
-            [isCompleted]="true"
-          />
+        <div class="order-section__header">
+          <h4 i18n="@@orderTabStorageCompleted">Completed</h4>
+          <button
+            type="button"
+            class="order-section__toggle"
+            (click)="toggleStorageCompleted()"
+            [attr.aria-expanded]="!storageCompletedCollapsed"
+            [attr.aria-label]="storageCompletedToggleLabel"
+            [title]="storageCompletedToggleLabel"
+          >
+            <span
+              [class]="storageCompletedCollapsed ? 'toggle-icon toggle-icon--closed' : 'toggle-icon toggle-icon--open'"
+            ></span>
+          </button>
+        </div>
+        <ng-container *ngIf="!storageCompletedCollapsed">
+          <ng-container *ngIf="storageCompleted$ | async as orders; else loading">
+            <p class="empty" *ngIf="orders.length === 0" i18n="@@orderTabStorageCompletedEmpty">
+              No completed storage orders.
+            </p>
+            <app-order-card
+              *ngFor="let order of orders"
+              [order]="order"
+              [isCompleted]="true"
+            />
+          </ng-container>
         </ng-container>
       </article>
     </section>

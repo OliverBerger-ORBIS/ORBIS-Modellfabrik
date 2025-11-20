@@ -86,6 +86,8 @@
     "@@orderTabStorageActiveEmpty": "Aucune commande de stockage active.",
     "@@orderTabStorageCompleted": "Terminées",
     "@@orderTabStorageCompletedEmpty": "Aucune commande de stockage terminée.",
+    "@@orderTabExpandCompleted": "Afficher les commandes terminées",
+    "@@orderTabCollapseCompleted": "Masquer les commandes terminées",
     "@@orderTabLoading": "Chargement des commandes…",
     "@@processTabHeadline": "Vue processus",
     "@@processTabDescription": "Analyses et visualisations des processus seront prochainement disponibles.",
@@ -288,6 +290,10 @@
     "@@orderCardWorkpieceTypeRed": "Rouge",
     "@@orderCardStepLabel": "ÉTAPE",
     "@@orderCardToggleDetails": "Basculer les détails de la commande",
+    "@@orderCardOrderId": "ID de commande",
+    "@@shopfloorPreviewZoomIn": "Zoom avant",
+    "@@shopfloorPreviewZoomOut": "Zoom arrière",
+    "@@shopfloorPreviewResetZoom": "Réinitialiser le zoom",
     "@@messageMonitorClose": "Fermer"
   }
 }
