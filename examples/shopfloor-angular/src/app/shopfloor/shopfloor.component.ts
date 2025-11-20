@@ -70,7 +70,12 @@ export class ShopfloorComponent implements OnInit, OnDestroy {
         this.cdr.markForCheck();
       },
       error: (error) => {
-        console.error('Failed to load shopfloor layout', error);
+        console.error('Failed to load shopfloor layout configuration:', error);
+        console.error('Error details:', {
+          message: error.message,
+          status: error.status,
+          url: error.url
+        });
       }
     });
   }

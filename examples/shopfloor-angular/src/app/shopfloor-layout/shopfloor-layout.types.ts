@@ -1,7 +1,10 @@
 /**
  * Shopfloor Layout Types
- * Based on OMF3 shopfloor-preview types
- * Simplified for example purposes
+ * Based on OMF3 shopfloor-preview types from:
+ * omf3/apps/ccu-ui/src/app/components/shopfloor-preview/shopfloor-layout.types.ts
+ * 
+ * Simplified for example purposes - subset of full OMF3 types
+ * Compatible with OMF3 layout configuration format
  */
 
 export interface ShopfloorLayoutMetadata {
