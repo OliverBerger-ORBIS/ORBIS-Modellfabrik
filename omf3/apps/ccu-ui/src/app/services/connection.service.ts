@@ -243,6 +243,8 @@ export class ConnectionService {
       try {
         await this._mqttClient.publish(topic, payload, options);
         console.log(`[connection] Published to ${topic}`);
+        // Reset reconnect attempts on successful publish
+        this.reconnectAttempts = 0;
         return;
       } catch (error) {
         console.error('[connection] Publish failed:', error);
@@ -256,6 +258,8 @@ export class ConnectionService {
     }
 
     if (this.reconnectAttempts >= this.MAX_RECONNECT_ATTEMPTS) {
+      // Reset counter so next publish operation can try again
+      this.reconnectAttempts = 0;
       throw new Error(`Publish failed: max reconnect attempts (${this.MAX_RECONNECT_ATTEMPTS}) exceeded`);
     }
 
@@ -270,6 +274,8 @@ export class ConnectionService {
       if (this._mqttClient && this.currentState === 'connected') {
         await this._mqttClient.publish(topic, payload, options);
         console.log(`[connection] Published to ${topic} after reconnect`);
+        // Reset reconnect attempts on successful publish
+        this.reconnectAttempts = 0;
         return;
       } else {
         throw new Error('Reconnect succeeded but client not ready');

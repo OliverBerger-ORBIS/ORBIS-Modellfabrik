@@ -331,7 +331,9 @@ export class MessageMonitorService implements OnDestroy {
               if (!this.subjects.has(topic)) {
                 this.subjects.set(topic, new BehaviorSubject<MonitoredMessage | null>(lastMessage));
               } else {
-                // If subject exists (rare), ensure its current value is in sync
+                // Defensive: if subject already exists (shouldn't happen during init, but
+                // could occur if service is reinitialized without proper cleanup), ensure
+                // its current value is in sync with the last persisted message
                 const subj = this.subjects.get(topic)!;
                 const cur = subj.value;
                 if (!cur || cur.timestamp !== lastMessage.timestamp) {

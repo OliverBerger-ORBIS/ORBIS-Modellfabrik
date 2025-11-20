@@ -115,27 +115,25 @@ class SessionReplayer {
   private async replayOnce(): Promise<void> {
     if (this.entries.length === 0) return;
 
-    // Calculate time deltas between messages
-    const baseTimestamp = new Date(this.entries[0].timestamp).getTime();
+    let previousTimestamp = new Date(this.entries[0].timestamp).getTime();
     
     for (let i = 0; i < this.entries.length; i++) {
       if (!this.isRunning) break;
 
       const entry = this.entries[i];
       const currentTimestamp = new Date(entry.timestamp).getTime();
-      const delta = currentTimestamp - baseTimestamp;
       
-      // Calculate delay with speed factor
-      const delay = i === 0 ? 0 : delta / this.options.speedFactor;
-      
-      // Wait for the calculated delay (from first message)
-      if (delay > 0) {
-        const nextTimestamp = i > 0 ? new Date(this.entries[i - 1].timestamp).getTime() : baseTimestamp;
-        const actualDelay = (currentTimestamp - nextTimestamp) / this.options.speedFactor;
-        if (actualDelay > 0) {
-          await this.sleep(actualDelay);
+      // Calculate delay between this message and the previous one
+      if (i > 0) {
+        const deltaMs = currentTimestamp - previousTimestamp;
+        const adjustedDelay = deltaMs / this.options.speedFactor;
+        
+        if (adjustedDelay > 0) {
+          await this.sleep(adjustedDelay);
         }
       }
+      
+      previousTimestamp = currentTimestamp;
 
       // Publish the message
       try {
