@@ -64,11 +64,13 @@ This example is based on the OMF3 shopfloor system:
    - Click on phases to see detailed activities
    - Visual representation of the development cycle
 
-### DSP Cell Content
-- Simplified architecture diagram
-- IT/OT integration overview
-- MQTT orchestrator functionality
-- Links to DSP resources
+### DSP Cell Content (Distributed Shopfloor Processing)
+- Interoperability: Bi-directional communication between systems
+- Decentralized Control: Object-oriented process choreography
+- Digital Twin: Real-time asset mapping
+- Edge & Cloud Architecture: Local processing + centralized management
+- Industry 4.0 capabilities (IIoT, AI, big data analytics)
+- Links to ORBIS DSP resources
 
 ### Dynamic Cells
 - Live status indicator

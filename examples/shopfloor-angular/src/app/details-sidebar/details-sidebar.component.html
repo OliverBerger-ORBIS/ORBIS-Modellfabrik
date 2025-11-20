@@ -57,25 +57,30 @@
     <!-- DSP Content -->
     <div *ngIf="cellType === 'dsp'" class="dsp-content">
       <section class="content-section">
-        <h3>💻 Digital Service Platform (DSP)</h3>
-        <p>The ORBIS DSP serves as the central orchestrator for IT/OT integration, connecting manufacturing systems with enterprise applications.</p>
+        <h3>💻 Distributed Shopfloor Processing (DSP)</h3>
+        <p>ORBIS DSP enables interoperability, decentralized control, and real-time data exchange across production and logistics processes for smart factory environments.</p>
       </section>
 
       <section class="content-section">
         <h4>Architecture Overview</h4>
         <div class="architecture-diagram">
           <div class="arch-layer">
-            <div class="arch-box erp">ERP Systems</div>
+            <div class="arch-box erp">ERP / SAP</div>
             <div class="arch-box mes">MES</div>
           </div>
           <div class="arch-arrow">↕️</div>
           <div class="arch-layer">
-            <div class="arch-box dsp-box">DSP - Orchestrator</div>
+            <div class="arch-box dsp-box">DSP Cloud Management</div>
           </div>
           <div class="arch-arrow">↕️</div>
           <div class="arch-layer">
-            <div class="arch-box shopfloor">Shopfloor Devices</div>
-            <div class="arch-box iot">IoT Sensors</div>
+            <div class="arch-box dsp-edge">DSP Edge (Local)</div>
+          </div>
+          <div class="arch-arrow">↕️</div>
+          <div class="arch-layer">
+            <div class="arch-box shopfloor">Machines</div>
+            <div class="arch-box iot">Sensors</div>
+            <div class="arch-box ctrl">Controllers</div>
           </div>
         </div>
       </section>
@@ -83,19 +88,25 @@
       <section class="content-section">
         <h4>Key Features</h4>
         <ul>
-          <li>🔗 <strong>Integration Hub:</strong> Connects MES, ERP, and shopfloor systems</li>
-          <li>📡 <strong>MQTT Broker:</strong> Real-time message routing and distribution</li>
-          <li>🔄 <strong>Data Transformation:</strong> Protocol conversion and data mapping</li>
-          <li>📊 <strong>Analytics Engine:</strong> Real-time processing and KPI calculation</li>
-          <li>🛡️ <strong>Security:</strong> Authentication, authorization, and encryption</li>
+          <li>🔗 <strong>Interoperability:</strong> Bi-directional communication between machines, systems, and platforms</li>
+          <li>🏭 <strong>Decentralized Control:</strong> Object-oriented process choreography and autonomous system interaction</li>
+          <li>🔄 <strong>Digital Twin:</strong> Real-time asset mapping and comprehensive monitoring</li>
+          <li>⚡ <strong>Edge Processing:</strong> Low-latency local data processing near production equipment</li>
+          <li>☁️ <strong>Cloud Integration:</strong> Centralized process modeling, analytics, and rule definition</li>
+          <li>📊 <strong>Real-time Data:</strong> Transparent shopfloor visibility and adaptive response to changes</li>
         </ul>
+      </section>
+
+      <section class="content-section">
+        <h4>Industry 4.0 Ready</h4>
+        <p>DSP leverages IIoT, AI, big data analytics, and cloud computing to form the digital backbone of smart factories. Award-winning solution (Factory Innovation Award 2024).</p>
       </section>
 
       <section class="content-section">
         <h4>Resources</h4>
         <div class="resource-links">
-          <a href="https://www.orbis.de/digital-service-platform" target="_blank" class="resource-link">
-            📱 Visit DSP Application
+          <a href="https://www.orbis.de/en-de/solutions/orbis-dsp.html" target="_blank" class="resource-link">
+            📱 Learn More About DSP
           </a>
           <a href="https://www.orbis.de" target="_blank" class="resource-link">
             🌐 ORBIS Website
