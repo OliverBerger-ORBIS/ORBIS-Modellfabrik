@@ -4,6 +4,19 @@
     <h1 i18n="@@processTitle">Process</h1>
     <p i18n="@@processSubtitle">Production planning</p>
   </div>
+  <div class="process-tab__fixtures" *ngIf="isMockMode">
+    <span class="badge" i18n="@@orderTabFixtureLabel">Fixture</span>
+    <div class="fixture-switch">
+      <button
+        *ngFor="let fixture of fixtureOptions"
+        type="button"
+        [class.active]="fixture === activeFixture"
+        (click)="loadFixture(fixture)"
+      >
+        {{ fixtureLabels[fixture] }}
+      </button>
+    </div>
+  </div>
 </section>
 
 <section class="process-section" *ngIf="products$ | async as products; else noFlows">

@@ -1,11 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { getDashboardController } from '../mock-dashboard';
 import type { Observable } from 'rxjs';
 import { map, shareReplay, filter, startWith } from 'rxjs/operators';
 import { merge, combineLatest } from 'rxjs';
 import type { SensorOverviewState, CameraFrame, Bme680Snapshot, LdrSnapshot } from '@omf3/entities';
 import { MessageMonitorService } from '../services/message-monitor.service';
+import { EnvironmentService } from '../services/environment.service';
+import type { OrderFixtureName } from '@omf3/testing-fixtures';
 
 @Component({
   standalone: true,
@@ -15,7 +17,7 @@ import { MessageMonitorService } from '../services/message-monitor.service';
   styleUrl: './sensor-tab.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SensorTabComponent {
+export class SensorTabComponent implements OnInit {
   private readonly dashboard = getDashboardController();
   readonly gaugeRadius = 65;
   readonly gaugeCircumference = Math.PI * this.gaugeRadius;
@@ -26,10 +28,25 @@ export class SensorTabComponent {
   readonly cameraHeadingIcon = 'headings/camera.svg';
   stepSize = 10;
 
-  readonly sensorOverview$: Observable<SensorOverviewState>;
-  readonly cameraFrame$: Observable<CameraFrame | null>;
+  readonly fixtureOptions: OrderFixtureName[] = ['startup', 'white', 'white_step3', 'blue', 'red', 'mixed', 'storage'];
+  readonly fixtureLabels: Record<OrderFixtureName, string> = {
+    startup: $localize`:@@fixtureLabelStartup:Startup`,
+    white: $localize`:@@fixtureLabelWhite:White`,
+    white_step3: $localize`:@@fixtureLabelWhiteStep3:White • Step 3`,
+    blue: $localize`:@@fixtureLabelBlue:Blue`,
+    red: $localize`:@@fixtureLabelRed:Red`,
+    mixed: $localize`:@@fixtureLabelMixed:Mixed`,
+    storage: $localize`:@@fixtureLabelStorage:Storage`,
+  };
+  activeFixture: OrderFixtureName = this.dashboard.getCurrentFixture();
 
-  constructor(private readonly messageMonitor: MessageMonitorService) {
+  sensorOverview$!: Observable<SensorOverviewState>;
+  cameraFrame$!: Observable<CameraFrame | null>;
+
+  constructor(
+    private readonly messageMonitor: MessageMonitorService,
+    private readonly environmentService: EnvironmentService
+  ) {
     // For sensorOverview$, merge MessageMonitor last values with dashboard stream
     // MessageMonitor stores raw Bme680Snapshot and LdrSnapshot, need to transform to SensorOverviewState
     // IMPORTANT: MessageMonitor streams come first in merge to ensure they have priority over dashboard stream
@@ -329,5 +346,53 @@ export class SensorTabComponent {
       return 'poor';
     }
     return 'critical';
+  }
+
+  get isMockMode(): boolean {
+    return this.environmentService.current.key === 'mock';
+  }
+
+  ngOnInit(): void {
+    // Only load fixture in mock mode; in live/replay mode, streams are already connected
+    if (this.isMockMode) {
+      void this.loadFixture(this.activeFixture);
+    }
+  }
+
+  async loadFixture(fixture: OrderFixtureName): Promise<void> {
+    if (!this.isMockMode) {
+      return; // Don't load fixtures in live/replay mode
+    }
+    this.activeFixture = fixture;
+    try {
+      const streams = await this.dashboard.loadFixture(fixture);
+      // Rebind sensorOverview$ with MessageMonitor merge
+      const lastBme680 = this.messageMonitor.getLastMessage<Bme680Snapshot>('/j1/txt/1/i/bme680').pipe(
+        filter((msg) => msg !== null && msg.valid),
+        map((msg) => msg!.payload)
+      );
+      const lastLdr = this.messageMonitor.getLastMessage<LdrSnapshot>('/j1/txt/1/i/ldr').pipe(
+        filter((msg) => msg !== null && msg.valid),
+        map((msg) => msg!.payload)
+      );
+      const bme680WithDefault = lastBme680.pipe(startWith(null as Bme680Snapshot | null));
+      const ldrWithDefault = lastLdr.pipe(startWith(null as LdrSnapshot | null));
+      const lastSensorOverview = combineLatest([
+        bme680WithDefault,
+        ldrWithDefault
+      ]).pipe(
+        map(([bme, ldr]) => this.buildSensorOverviewState(bme, ldr)),
+        startWith(this.buildSensorOverviewState(null, null))
+      );
+      this.sensorOverview$ = merge(lastSensorOverview, streams.sensorOverview$).pipe(
+        shareReplay({ bufferSize: 1, refCount: false })
+      );
+      // Rebind cameraFrame$
+      this.cameraFrame$ = streams.cameraFrames$.pipe(
+        shareReplay({ bufferSize: 1, refCount: false })
+      );
+    } catch (error) {
+      console.warn('Failed to load sensor fixture', fixture, error);
+    }
   }
 }

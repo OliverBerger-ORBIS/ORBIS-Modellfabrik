@@ -120,10 +120,11 @@ export class ConnectionService {
     this._mqttClient.connect(wsUrl, options)
       .then(() => {
         this.clearRetry();
-        // Subscribe to all required topics after successful connection
-        this.subscribeToRequiredTopics();
-        // Start monitoring MQTT messages
+        // Start monitoring MQTT messages FIRST to ensure all messages are captured
+        // This must be done before subscribing to topics to avoid missing any messages
         this.startMessageMonitoring();
+        // Subscribe to all required topics after message monitoring is set up
+        this.subscribeToRequiredTopics();
       })
       .catch((error) => {
         console.error('[connection] Failed to connect:', error);

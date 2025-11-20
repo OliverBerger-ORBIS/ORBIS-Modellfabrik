@@ -145,7 +145,15 @@ export class OverviewTabComponent implements OnInit {
       this.orders$ = streams.orders$;
       this.orderCounts$ = streams.orderCounts$;
       this.ftsStates$ = streams.ftsStates$;
-      this.inventoryOverview$ = streams.inventoryOverview$;
+      // Rebind inventoryOverview$ with MessageMonitor merge (same pattern as constructor)
+      const lastInventory = this.messageMonitor.getLastMessage<StockSnapshot>('ccu/state/stock').pipe(
+        filter((msg) => msg !== null && msg.valid),
+        map((msg) => this.buildInventoryOverviewFromSnapshot(msg!.payload)),
+        startWith({ slots: {}, availableCounts: {}, reservedCounts: {}, lastUpdated: new Date().toISOString() } as InventoryOverviewState)
+      );
+      this.inventoryOverview$ = merge(lastInventory, streams.inventoryOverview$).pipe(
+        shareReplay({ bufferSize: 1, refCount: false })
+      );
       this.availableCounts$ = this.inventoryOverview$.pipe(map((state) => state.availableCounts));
       this.reservedCounts$ = this.inventoryOverview$.pipe(map((state) => state.reservedCounts));
       this.inventorySlots$ = this.inventoryOverview$.pipe(

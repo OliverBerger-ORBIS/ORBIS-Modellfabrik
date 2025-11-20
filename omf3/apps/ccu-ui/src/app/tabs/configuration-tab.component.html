@@ -8,6 +8,19 @@
           Factory layout configuration and module positioning
         </p>
       </div>
+      <div class="configuration-tab__fixtures" *ngIf="isMockMode">
+        <span class="badge" i18n="@@orderTabFixtureLabel">Fixture</span>
+        <div class="fixture-switch">
+          <button
+            *ngFor="let fixture of fixtureOptions"
+            type="button"
+            [class.active]="fixture === activeFixture"
+            (click)="loadFixture(fixture)"
+          >
+            {{ fixtureLabels[fixture] }}
+          </button>
+        </div>
+      </div>
     </header>
 
     <div class="shopfloor-wrapper">

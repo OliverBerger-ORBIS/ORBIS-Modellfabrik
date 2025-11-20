@@ -4,8 +4,8 @@ import type { OrderActive } from '@omf3/entities';
 import { getDashboardController } from '../mock-dashboard';
 import { OrderCardComponent } from '../components/order-card/order-card.component';
 import type { OrderFixtureName } from '@omf3/testing-fixtures';
-import { map, shareReplay } from 'rxjs/operators';
-import { Observable, of } from 'rxjs';
+import { filter, map, shareReplay, startWith } from 'rxjs/operators';
+import { combineLatest, merge, Observable, of } from 'rxjs';
 import { EnvironmentService } from '../services/environment.service';
 import { MessageMonitorService } from '../services/message-monitor.service';
 
@@ -94,43 +94,113 @@ export class OrderTabComponent implements OnInit {
   }
 
   private bindOrderStreams(): void {
-    // Subscribe directly to dashboard streams - they already have shareReplay with startWith
-    // Use refCount: false to keep streams alive even when no subscribers
-    const orders$ = this.dashboard.streams.orders$.pipe(
+    // Pattern: Merge MessageMonitor last messages with dashboard streams
+    // This ensures we get the latest orders even when connecting while factory is already running
+    // Get last messages for both order topics
+    const lastActive = this.messageMonitor.getLastMessage<OrderActive | OrderActive[]>('ccu/order/active').pipe(
+      filter((msg) => msg !== null && msg.valid),
+      map((msg) => {
+        const payload = msg!.payload;
+        return Array.isArray(payload) ? payload : [payload];
+      }),
+      startWith([] as OrderActive[])
+    );
+    
+    const lastCompleted = this.messageMonitor.getLastMessage<OrderActive | OrderActive[]>('ccu/order/completed').pipe(
+      filter((msg) => msg !== null && msg.valid),
+      map((msg) => {
+        const payload = msg!.payload;
+        return Array.isArray(payload) ? payload : [payload];
+      }),
+      startWith([] as OrderActive[])
+    );
+    
+    // Combine last messages from both topics and merge with dashboard streams
+    // MessageMonitor streams come first to ensure they take priority
+    const lastOrders = combineLatest([lastActive, lastCompleted]).pipe(
+      map(([active, completed]) => {
+        // Build orders state from last messages (similar to business layer logic)
+        const activeMap: Record<string, OrderActive> = {};
+        const completedMap: Record<string, OrderActive> = {};
+        
+        active.forEach((order) => {
+          if (order && order.orderId) {
+            activeMap[order.orderId] = order;
+          }
+        });
+        
+        completed.forEach((order) => {
+          if (order && order.orderId) {
+            completedMap[order.orderId] = order;
+            // Remove from active if it's completed
+            delete activeMap[order.orderId];
+          }
+        });
+        
+        return { active: activeMap, completed: completedMap };
+      })
+    );
+    
+    // Merge with dashboard streams - MessageMonitor first to ensure latest data
+    // Dashboard streams are Record<string, OrderActive>, so we convert MessageMonitor data to match
+    const lastActiveOrders$ = lastOrders.pipe(map((state) => state.active));
+    const lastCompletedOrders$ = lastOrders.pipe(map((state) => state.completed));
+    
+    const ordersState$ = merge(
+      lastActiveOrders$,
+      this.dashboard.streams.orders$
+    ).pipe(
       shareReplay({ bufferSize: 1, refCount: false })
     );
-    const completed$ = this.dashboard.streams.completedOrders$.pipe(
+    
+    const completedState$ = merge(
+      lastCompletedOrders$,
+      this.dashboard.streams.completedOrders$
+    ).pipe(
       shareReplay({ bufferSize: 1, refCount: false })
     );
-
-    const orderList$ = orders$.pipe(
-      map((list) => [...list]),
-      map((orders) => orders.sort((a, b) => getOrderTimestamp(b) - getOrderTimestamp(a)))
+    
+    // Convert Record<string, OrderActive> to OrderActive[]
+    const orderList$ = ordersState$.pipe(
+      map((ordersMap) => {
+        // Handle both Record and array types (merge can emit either)
+        if (Array.isArray(ordersMap)) {
+          return ordersMap;
+        }
+        return Object.values(ordersMap) as OrderActive[];
+      }),
+      map((orders: OrderActive[]) => orders.sort((a, b) => getOrderTimestamp(b) - getOrderTimestamp(a)))
     );
 
-    const completedList$ = completed$.pipe(
-      map((list) => [...list]),
-      map((orders) => orders.sort((a, b) => getOrderTimestamp(b) - getOrderTimestamp(a)))
+    const completedList$ = completedState$.pipe(
+      map((ordersMap) => {
+        // Handle both Record and array types (merge can emit either)
+        if (Array.isArray(ordersMap)) {
+          return ordersMap;
+        }
+        return Object.values(ordersMap) as OrderActive[];
+      }),
+      map((orders: OrderActive[]) => orders.sort((a, b) => getOrderTimestamp(b) - getOrderTimestamp(a)))
     );
 
     this.productionActive$ = orderList$.pipe(
-      map((orders) =>
-        orders.filter((order) => inferType(order) === ORDER_TYPES.PRODUCTION && !isCompleted(order))
+      map((orders: OrderActive[]) =>
+        orders.filter((order: OrderActive) => inferType(order) === ORDER_TYPES.PRODUCTION && !isCompleted(order))
       )
     );
 
     this.productionCompleted$ = completedList$.pipe(
-      map((orders) => orders.filter((order) => inferType(order) === ORDER_TYPES.PRODUCTION))
+      map((orders: OrderActive[]) => orders.filter((order: OrderActive) => inferType(order) === ORDER_TYPES.PRODUCTION))
     );
 
     this.storageActive$ = orderList$.pipe(
-      map((orders) =>
-        orders.filter((order) => inferType(order) === ORDER_TYPES.STORAGE && !isCompleted(order))
+      map((orders: OrderActive[]) =>
+        orders.filter((order: OrderActive) => inferType(order) === ORDER_TYPES.STORAGE && !isCompleted(order))
       )
     );
 
     this.storageCompleted$ = completedList$.pipe(
-      map((orders) => orders.filter((order) => inferType(order) === ORDER_TYPES.STORAGE))
+      map((orders: OrderActive[]) => orders.filter((order: OrderActive) => inferType(order) === ORDER_TYPES.STORAGE))
     );
   }
 

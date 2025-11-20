@@ -9,6 +9,19 @@
         {{ formatTimestamp(sensor.timestamp) }}
       </small>
     </div>
+    <div class="sensor-tab__fixtures" *ngIf="isMockMode">
+      <span class="badge" i18n="@@orderTabFixtureLabel">Fixture</span>
+      <div class="fixture-switch">
+        <button
+          *ngFor="let fixture of fixtureOptions"
+          type="button"
+          [class.active]="fixture === activeFixture"
+          (click)="loadFixture(fixture)"
+        >
+          {{ fixtureLabels[fixture] }}
+        </button>
+      </div>
+    </div>
   </header>
 
   <div class="gauge-grid">

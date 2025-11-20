@@ -51,7 +51,7 @@ export class MessageMonitorService implements OnDestroy {
    * Returns null if no message has been received yet
    */
   getLastMessage<T = unknown>(topic: string): Observable<MonitoredMessage<T> | null> {
-    // Always check buffer for current value, even if subject already exists
+    // Always check buffer for current value FIRST, even if subject already exists
     // This ensures we get the latest message even if subject was created before message arrived
     const buffer = this.buffers.get(topic);
     const lastMessage = buffer && buffer.items.length > 0 
@@ -62,11 +62,24 @@ export class MessageMonitorService implements OnDestroy {
       // Initialize BehaviorSubject with last message if available, otherwise null
       this.subjects.set(topic, new BehaviorSubject<MonitoredMessage | null>(lastMessage));
     } else {
-      // Subject already exists - update it with current buffer value if different
-      // This handles the case where message arrived after subject was created
+      // Subject already exists - ALWAYS sync it with current buffer value
+      // This is critical to handle race conditions where:
+      // 1. Tab calls getLastMessage() before connection is established -> Subject initialized with null
+      // 2. Connection established and messages arrive -> Buffer updated, but Subject might still be null
+      // 3. Tab subscribes -> Should get the latest message from buffer, not null
       const currentValue = this.subjects.get(topic)!.value;
+      
+      // Update if different (by reference or by timestamp to catch new messages)
       if (currentValue !== lastMessage) {
-        this.subjects.get(topic)!.next(lastMessage);
+        // If both are non-null, compare timestamps to detect new messages
+        if (currentValue && lastMessage) {
+          if (currentValue.timestamp !== lastMessage.timestamp) {
+            this.subjects.get(topic)!.next(lastMessage);
+          }
+        } else {
+          // One is null or they're different references - always update
+          this.subjects.get(topic)!.next(lastMessage);
+        }
       }
     }
     
@@ -105,14 +118,17 @@ export class MessageMonitorService implements OnDestroy {
       console.warn(`[MessageMonitor] Validation failed for topic ${topic}:`, validation.errors);
     }
 
-    // Update BehaviorSubject for immediate access
-    if (!this.subjects.has(topic)) {
-      this.subjects.set(topic, new BehaviorSubject<MonitoredMessage | null>(null));
-    }
-    this.subjects.get(topic)!.next(message);
-
-    // Add to circular buffer with retention limit
+    // Add to circular buffer FIRST to ensure buffer is always up-to-date
+    // This ensures getLastMessage() can always retrieve the latest message
     this.addToBuffer(topic, message);
+
+    // Update BehaviorSubject for immediate access
+    // This ensures all subscribers get the new message immediately
+    if (!this.subjects.has(topic)) {
+      this.subjects.set(topic, new BehaviorSubject<MonitoredMessage | null>(message));
+    } else {
+      this.subjects.get(topic)!.next(message);
+    }
 
     // Persist to localStorage (if allowed for this topic)
     this.persistMessage(topic, message);

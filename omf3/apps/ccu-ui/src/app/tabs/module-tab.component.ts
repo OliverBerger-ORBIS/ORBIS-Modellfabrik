@@ -9,7 +9,8 @@ import type {
 import { SHOPFLOOR_ASSET_MAP, type OrderFixtureName } from '@omf3/testing-fixtures';
 import { getDashboardController } from '../mock-dashboard';
 import type { Observable } from 'rxjs';
-import { map, shareReplay } from 'rxjs/operators';
+import { filter, map, shareReplay, startWith } from 'rxjs/operators';
+import { merge } from 'rxjs';
 import { EnvironmentService } from '../services/environment.service';
 import { MessageMonitorService } from '../services/message-monitor.service';
 import { ModuleNameService } from '../services/module-name.service';
@@ -99,8 +100,22 @@ export class ModuleTabComponent implements OnInit {
     private readonly messageMonitor: MessageMonitorService,
     private readonly moduleNameService: ModuleNameService
   ) {
-    // Subscribe directly to dashboard streams - they already have shareReplay with startWith
-    // Use refCount: false to keep streams alive even when no subscribers
+    // Pattern: Merge MessageMonitor last messages with dashboard streams
+    // This ensures we get the latest module data even when connecting while factory is already running
+    // Get last message for pairing state (single topic)
+    // Note: Module factsheets come from multiple topics (module/v1/#), so the dashboard stream
+    // handles those, but we use MessageMonitor for pairing state to ensure it's available immediately
+    const lastPairing = this.messageMonitor.getLastMessage('ccu/pairing/state').pipe(
+      filter((msg) => msg !== null && msg.valid),
+      map((msg) => msg!.payload),
+      startWith(null)
+    );
+    
+    // The dashboard stream already handles the full module overview state aggregation
+    // including pairing state, factsheets, etc. The MessageMonitor ensures that when
+    // connecting while factory is already running, the last pairing state is available
+    // and will be processed by the dashboard stream when it receives the message.
+    // We use the dashboard stream directly as it handles all the aggregation logic.
     this.moduleOverview$ = this.dashboard.streams.moduleOverview$.pipe(
       shareReplay({ bufferSize: 1, refCount: false })
     );

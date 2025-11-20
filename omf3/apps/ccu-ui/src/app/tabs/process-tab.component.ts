@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import type { ProductionFlowMap } from '@omf3/entities';
-import { SHOPFLOOR_ASSET_MAP } from '@omf3/testing-fixtures';
+import { SHOPFLOOR_ASSET_MAP, type OrderFixtureName } from '@omf3/testing-fixtures';
 import { getDashboardController } from '../mock-dashboard';
 import { MessageMonitorService } from '../services/message-monitor.service';
 import { ModuleNameService } from '../services/module-name.service';
+import { EnvironmentService } from '../services/environment.service';
 import type { Observable } from 'rxjs';
 import { map, shareReplay, filter, startWith } from 'rxjs/operators';
 import { merge } from 'rxjs';
@@ -35,8 +36,20 @@ interface ProcessProductView {
   styleUrl: './process-tab.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProcessTabComponent {
+export class ProcessTabComponent implements OnInit {
   private readonly dashboard = getDashboardController();
+
+  readonly fixtureOptions: OrderFixtureName[] = ['startup', 'white', 'white_step3', 'blue', 'red', 'mixed', 'storage'];
+  readonly fixtureLabels: Record<OrderFixtureName, string> = {
+    startup: $localize`:@@fixtureLabelStartup:Startup`,
+    white: $localize`:@@fixtureLabelWhite:White`,
+    white_step3: $localize`:@@fixtureLabelWhiteStep3:White • Step 3`,
+    blue: $localize`:@@fixtureLabelBlue:Blue`,
+    red: $localize`:@@fixtureLabelRed:Red`,
+    mixed: $localize`:@@fixtureLabelMixed:Mixed`,
+    storage: $localize`:@@fixtureLabelStorage:Storage`,
+  };
+  activeFixture: OrderFixtureName = this.dashboard.getCurrentFixture();
 
   // Subscribe directly to dashboard streams - they already have shareReplay with startWith
   // Use refCount: false to keep streams alive even when no subscribers
@@ -46,7 +59,8 @@ export class ProcessTabComponent {
 
   constructor(
     private readonly messageMonitor: MessageMonitorService,
-    private readonly moduleNameService: ModuleNameService
+    private readonly moduleNameService: ModuleNameService,
+    private readonly environmentService: EnvironmentService
   ) {
     // flows$ doesn't have startWith in gateway layer, so merge MessageMonitor last value with dashboard stream
     const lastFlows = this.messageMonitor.getLastMessage<ProductionFlowMap>('ccu/state/flows').pipe(
@@ -173,6 +187,40 @@ export class ProcessTabComponent {
       icon: moduleMeta.icon,
       isPlaceholder: false,
     };
+  }
+
+  get isMockMode(): boolean {
+    return this.environmentService.current.key === 'mock';
+  }
+
+  ngOnInit(): void {
+    // Only load fixture in mock mode; in live/replay mode, streams are already connected
+    if (this.isMockMode) {
+      void this.loadFixture(this.activeFixture);
+    }
+  }
+
+  async loadFixture(fixture: OrderFixtureName): Promise<void> {
+    if (!this.isMockMode) {
+      return; // Don't load fixtures in live/replay mode
+    }
+    this.activeFixture = fixture;
+    try {
+      const streams = await this.dashboard.loadFixture(fixture);
+      // Rebind flows$ with MessageMonitor merge
+      const lastFlows = this.messageMonitor.getLastMessage<ProductionFlowMap>('ccu/state/flows').pipe(
+        filter((msg) => msg !== null && msg.valid),
+        map((msg) => msg!.payload),
+        startWith({} as ProductionFlowMap)
+      );
+      this.flows$ = merge(lastFlows, streams.flows$).pipe(
+        shareReplay({ bufferSize: 1, refCount: false })
+      );
+      // Rebind products$ from flows$
+      this.products$ = this.flows$.pipe(map((flows) => this.buildProductViews(flows)));
+    } catch (error) {
+      console.warn('Failed to load process fixture', fixture, error);
+    }
   }
 }
 
