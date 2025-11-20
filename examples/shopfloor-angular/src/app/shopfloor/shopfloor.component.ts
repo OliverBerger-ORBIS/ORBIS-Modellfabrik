@@ -1,15 +1,31 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 import { Subscription } from 'rxjs';
 import { MqttMockService, CellData } from '../services/mqtt-mock.service';
 import { DetailsSidebarComponent, CellType } from '../details-sidebar/details-sidebar.component';
+import { 
+  ShopfloorLayoutConfig, 
+  ShopfloorCellConfig 
+} from '../shopfloor-layout/shopfloor-layout.types';
 
-interface ShopfloorCell {
+interface RenderCell {
   id: string;
   name: string;
-  type: 'orbis' | 'dsp' | 'dynamic';
-  row: number;
-  col: number;
+  top: number;
+  left: number;
+  width: number;
+  height: number;
+  role: 'module' | 'company' | 'software';
+  background?: string;
+  serial?: string;
+  showLabel: boolean;
+}
+
+interface ShopfloorView {
+  width: number;
+  height: number;
+  cells: RenderCell[];
 }
 
 @Component({
@@ -22,6 +38,10 @@ interface ShopfloorCell {
 export class ShopfloorComponent implements OnInit, OnDestroy {
   private subscriptions = new Subscription();
   
+  // Layout and view model
+  viewModel: ShopfloorView | null = null;
+  private layoutConfig?: ShopfloorLayoutConfig;
+  
   // Cell data from MQTT service
   cellDataMap = new Map<string, CellData>();
   
@@ -29,55 +49,96 @@ export class ShopfloorComponent implements OnInit, OnDestroy {
   sidebarOpen = false;
   selectedCellType: CellType = null;
   selectedCellData: CellData | null = null;
+  selectedCellName = '';
+  
+  // Scale
+  currentScale = 0.8;
 
-  // Grid layout configuration - matching the reference image
-  readonly cells: ShopfloorCell[] = [
-    // Row 1
-    { id: 'MILL', name: 'MILL', type: 'dynamic', row: 0, col: 0 },
-    { id: 'DRILL', name: 'DRILL', type: 'dynamic', row: 0, col: 1 },
-    { id: 'AIQS', name: 'AIQS', type: 'dynamic', row: 0, col: 2 },
-    
-    // Row 2
-    { id: 'HBW', name: 'HBW', type: 'dynamic', row: 1, col: 0 },
-    { id: 'ORBIS', name: 'ORBIS', type: 'orbis', row: 1, col: 1 },
-    { id: 'VGR', name: 'VGR', type: 'dynamic', row: 1, col: 2 },
-    
-    // Row 3
-    { id: 'SLD', name: 'SLD', type: 'dynamic', row: 2, col: 0 },
-    { id: 'DSP', name: 'DSP', type: 'dsp', row: 2, col: 1 },
-    { id: 'MPO', name: 'MPO', type: 'dynamic', row: 2, col: 2 },
-    
-    // Row 4
-    { id: 'SSC', name: 'SSC', type: 'dynamic', row: 3, col: 0 },
-  ];
-
-  constructor(private mqttService: MqttMockService) {}
+  constructor(
+    private http: HttpClient,
+    private mqttService: MqttMockService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
-    // Subscribe to all dynamic cells
-    this.cells
-      .filter(cell => cell.type === 'dynamic')
-      .forEach(cell => {
-        const sub = this.mqttService.getCellData(cell.id).subscribe(data => {
-          if (data) {
-            this.cellDataMap.set(cell.id, data);
-          }
-        });
-        this.subscriptions.add(sub);
-      });
+    // Load shopfloor layout from JSON
+    this.http.get<ShopfloorLayoutConfig>('assets/shopfloor/shopfloor_layout.json').subscribe({
+      next: (config) => {
+        this.layoutConfig = config;
+        this.updateViewModel();
+        this.subscribeToModules();
+        this.cdr.markForCheck();
+      },
+      error: (error) => {
+        console.error('Failed to load shopfloor layout', error);
+      }
+    });
   }
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
 
-  onCellClick(cell: ShopfloorCell): void {
-    this.selectedCellType = cell.type;
+  private subscribeToModules(): void {
+    if (!this.layoutConfig) return;
     
-    if (cell.type === 'dynamic') {
-      this.selectedCellData = this.cellDataMap.get(cell.id) || null;
-    } else {
+    // Subscribe to all module cells
+    this.layoutConfig.cells
+      .filter(cell => cell.role === 'module' && cell.serial_number)
+      .forEach(cell => {
+        const serial = cell.serial_number!;
+        const sub = this.mqttService.getCellData(serial).subscribe(data => {
+          if (data) {
+            this.cellDataMap.set(cell.id, data);
+            this.cdr.markForCheck();
+          }
+        });
+        this.subscriptions.add(sub);
+      });
+  }
+
+  private updateViewModel(): void {
+    if (!this.layoutConfig) return;
+
+    const width = this.layoutConfig.metadata.canvas.width;
+    const height = this.layoutConfig.metadata.canvas.height;
+
+    const cells = this.layoutConfig.cells.map(cell => this.createRenderCell(cell));
+
+    this.viewModel = {
+      width,
+      height,
+      cells
+    };
+  }
+
+  private createRenderCell(cell: ShopfloorCellConfig): RenderCell {
+    return {
+      id: cell.id,
+      name: cell.name,
+      top: cell.position.y,
+      left: cell.position.x,
+      width: cell.size.w,
+      height: cell.size.h,
+      role: cell.role,
+      background: cell.background_color,
+      serial: cell.serial_number,
+      showLabel: cell.show_name !== false
+    };
+  }
+
+  onCellClick(cell: RenderCell): void {
+    this.selectedCellName = cell.name;
+    
+    if (cell.role === 'company') {
+      this.selectedCellType = 'orbis';
       this.selectedCellData = null;
+    } else if (cell.role === 'software') {
+      this.selectedCellType = 'dsp';
+      this.selectedCellData = null;
+    } else if (cell.role === 'module') {
+      this.selectedCellType = 'dynamic';
+      this.selectedCellData = this.cellDataMap.get(cell.id) || null;
     }
     
     this.sidebarOpen = true;
@@ -93,24 +154,16 @@ export class ShopfloorComponent implements OnInit, OnDestroy {
     return this.cellDataMap.get(cellId);
   }
 
-  getCellStatusClass(cell: ShopfloorCell): string {
-    if (cell.type === 'orbis' || cell.type === 'dsp') {
+  getCellStatusClass(cell: RenderCell): string {
+    if (cell.role === 'company' || cell.role === 'software') {
       return 'special';
     }
     
     const data = this.getCellData(cell.id);
     if (!data) {
-      return 'unknown';
+      return 'idle';
     }
     
     return data.status;
-  }
-
-  getGridRow(cell: ShopfloorCell): number {
-    return cell.row + 1; // CSS grid is 1-indexed
-  }
-
-  getGridCol(cell: ShopfloorCell): number {
-    return cell.col + 1; // CSS grid is 1-indexed
   }
 }

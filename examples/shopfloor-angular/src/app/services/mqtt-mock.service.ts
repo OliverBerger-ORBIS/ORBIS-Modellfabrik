@@ -31,16 +31,17 @@ export interface CellData {
 export class MqttMockService {
   private cellDataSubjects: Map<string, BehaviorSubject<CellData>> = new Map();
   
-  // Initial mock data for dynamic cells
+  // Initial mock data for dynamic cells (using serial numbers from layout)
   private readonly initialData: CellData[] = [
-    { id: 'MILL', name: 'Milling Machine', status: 'running', temperature: 45, cycleTime: 120, partsProduced: 234 },
-    { id: 'DRILL', name: 'Drilling Station', status: 'running', temperature: 38, cycleTime: 90, partsProduced: 189 },
-    { id: 'AIQS', name: 'AI Quality System', status: 'idle', temperature: 25, cycleTime: 0, partsProduced: 0 },
-    { id: 'HBW', name: 'High-Bay Warehouse', status: 'running', temperature: 22, cycleTime: 45, partsProduced: 567 },
-    { id: 'VGR', name: 'Vacuum Gripper Robot', status: 'running', temperature: 30, cycleTime: 15, partsProduced: 890 },
-    { id: 'SLD', name: 'Sorting Line with Camera', status: 'maintenance', temperature: 0, cycleTime: 0, partsProduced: 156 },
-    { id: 'MPO', name: 'Multi-Processing Station', status: 'running', temperature: 42, cycleTime: 105, partsProduced: 345 },
-    { id: 'SSC', name: 'Smart Sensor Cluster', status: 'running', temperature: 28, cycleTime: 5, partsProduced: 1230 }
+    { id: 'MILL01', name: 'Milling Machine', status: 'running', temperature: 45, cycleTime: 120, partsProduced: 234 },
+    { id: 'DRILL01', name: 'Drilling Station', status: 'running', temperature: 38, cycleTime: 90, partsProduced: 189 },
+    { id: 'AIQS01', name: 'AI Quality System', status: 'idle', temperature: 25, cycleTime: 0, partsProduced: 0 },
+    { id: 'HBW01', name: 'High-Bay Warehouse', status: 'running', temperature: 22, cycleTime: 45, partsProduced: 567 },
+    { id: 'VGR01', name: 'Vacuum Gripper Robot', status: 'running', temperature: 30, cycleTime: 15, partsProduced: 890 },
+    { id: 'SLD01', name: 'Sorting Line with Camera', status: 'maintenance', temperature: 0, cycleTime: 0, partsProduced: 156 },
+    { id: 'MPO01', name: 'Multi-Processing Station', status: 'running', temperature: 42, cycleTime: 105, partsProduced: 345 },
+    { id: 'SSC01', name: 'Smart Sensor Cluster', status: 'running', temperature: 28, cycleTime: 5, partsProduced: 1230 },
+    { id: 'DPS01', name: 'Digital Processing Station', status: 'running', temperature: 35, cycleTime: 80, partsProduced: 456 }
   ];
 
   constructor() {

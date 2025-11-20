@@ -1,26 +1,45 @@
 # Angular Shopfloor Example - OMF3 Prototype
 
-This is a standalone Angular example application that demonstrates the OMF3 Shopfloor layout with ORBIS and DSP special cells. It's designed as a prototype that can be easily integrated into the main OMF3 application.
+This standalone Angular example demonstrates the OMF3 Shopfloor layout architecture with ORBIS and DSP special cells. **Based on the actual OMF3 shopfloor-preview component**, it's designed for seamless integration into the main OMF3 application after approval.
 
 ## 🎯 Overview
 
 This example implements:
 
-- **Shopfloor Grid Layout**: A visual grid of cells representing different stations/modules
-- **ORBIS Cell (Company)**: Special cell with light blue background showing consulting services, use cases, and incremental development methodology
+- **OMF3-Based Architecture**: Uses the same JSON-based layout configuration as `omf3/apps/ccu-ui/src/app/components/shopfloor-preview`
+- **Shopfloor Layout**: Absolute-positioned cells based on JSON configuration (`shopfloor_layout.json`)
+- **ORBIS Cell (Company)**: Special cell with light blue background (`#cfe6ff`) showing consulting services, use cases, and incremental development methodology
 - **DSP Cell (Software)**: Special cell with light blue background showing architecture and platform information
-- **Dynamic Cells**: Clickable cells displaying simulated MQTT data (MILL, DRILL, AIQS, HBW, VGR, SLD, MPO, SSC)
+- **Dynamic Module Cells**: Clickable cells displaying simulated MQTT data (MILL, DRILL, AIQS, HBW, VGR, SLD, MPO, SSC, DPS)
 - **Mock MQTT Service**: Simulates real-time data updates for demonstration purposes
 - **Details Sidebar**: Slides in from the right to show detailed information about selected cells
 - **Incremental Phases Component**: Interactive SVG diagram showing the 5 phases of incremental development
 
+## 🏗️ Architecture
+
+This example is based on the OMF3 shopfloor system:
+
+### JSON-Based Layout Configuration
+- **Configuration File**: `src/assets/shopfloor/shopfloor_layout.json`
+- **Type Definitions**: `src/app/shopfloor-layout/shopfloor-layout.types.ts`
+- **Cell Roles**: `module`, `company`, `software`
+- **Background Color**: ORBIS and DSP use `#cfe6ff` (exact match to OMF3)
+
+### Component Structure
+- **Shopfloor Component**: Loads JSON config, renders cells with absolute positioning
+- **Details Sidebar**: Shows cell-specific content (ORBIS, DSP, or dynamic MQTT data)
+- **Incremental Component**: Interactive 5-phase development methodology diagram
+- **MQTT Mock Service**: Observable-based simulation matching OMF3 patterns
+
 ## 📋 Features
 
-### Shopfloor Grid
-- 3x4 grid layout with clickable cells
+### Shopfloor Layout
+- JSON-configured cell positions and sizes
+- Absolute positioning (800x600px canvas)
 - Real-time status updates every 3 seconds (simulated)
 - Color-coded cell borders based on status (running, idle, error, maintenance)
-- Hover effects and smooth animations
+- Scalable viewport (0.8x default scale)
+- OMF3-compatible cell structure
 
 ### ORBIS Cell Content
 1. **Data Aggregation**
@@ -244,31 +263,48 @@ Expected payload format:
 
 ## 🔗 Integration into OMF3
 
-To integrate this example into the main OMF3 application:
+This example is designed for **seamless integration** into OMF3:
 
-1. **Copy Components**: Copy the component folders to `omf3/apps/ccu-ui/src/app/components/`
+### Architecture Compatibility
 
-2. **Add Routes**: Update `omf3/apps/ccu-ui/src/app/app.routes.ts`:
-```typescript
-{
-  path: 'shopfloor',
-  component: ShopfloorComponent,
-  roles: ['operator', 'admin']
-}
-```
+The example is based on OMF3's actual shopfloor system:
+- Uses the same JSON configuration format as `omf3/apps/ccu-ui/public/shopfloor/shopfloor_layout.json`
+- Implements the same type definitions as `omf3/apps/ccu-ui/src/app/components/shopfloor-preview/shopfloor-layout.types.ts`
+- Uses `#cfe6ff` background color for ORBIS/DSP cells (exact match to OMF3 config)
+- Cell roles: `module`, `company`, `software` match OMF3 types
 
-3. **Update Navigation**: Add to navigation items in `app.component.ts`:
-```typescript
-{
-  id: 'shopfloor',
-  route: '/shopfloor',
-  roles: ['operator', 'admin'],
-}
-```
+### Integration Steps
 
-4. **Replace Mock Service**: Integrate with the existing MQTT infrastructure in OMF3
+1. **Extend Existing Shopfloor Component**: 
+   - Add details sidebar functionality to `omf3/apps/ccu-ui/src/app/components/shopfloor-preview`
+   - Add click handlers for `company` and `software` role cells
+   - Integrate `IncrementalComponent` and `DetailsSidebarComponent`
 
-5. **Styling**: The SCSS styles are compatible with the OMF3 design system
+2. **Update Layout Configuration**:
+   - ORBIS and DSP cells are already in `omf3/apps/ccu-ui/public/shopfloor/shopfloor_layout.json`
+   - Add `has_details: true` flag if needed
+   - No structural changes required
+
+3. **Add Components**:
+   - Copy `incremental/` to `omf3/apps/ccu-ui/src/app/components/incremental/`
+   - Copy `details-sidebar/` to `omf3/apps/ccu-ui/src/app/components/details-sidebar/`
+
+4. **Replace Mock Service**:
+   - The example uses Observable patterns compatible with OMF3's MQTT client
+   - Replace `MqttMockService.getCellData()` with real MQTT subscriptions
+   - Map serial numbers to MQTT topics
+
+5. **Add Navigation** (Optional):
+   - If creating a dedicated shopfloor page, add route in `app.routes.ts`
+   - Or enhance existing Overview tab with sidebar functionality
+
+### Why This Approach Works
+
+- **Same Architecture**: Built on OMF3's actual shopfloor-preview component
+- **JSON-Driven**: Uses the same layout configuration format
+- **Type-Safe**: Shares type definitions with OMF3
+- **Style-Compatible**: Uses OMF3's color scheme and styling patterns
+- **Observable-Based**: MQTT mock service matches OMF3's reactive patterns
 
 ## 📚 Technologies Used
 
