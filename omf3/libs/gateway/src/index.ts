@@ -163,7 +163,16 @@ export const createGateway = (
   );
 
   const moduleFactsheets$ = shared.pipe(
-    filter((msg) => msg.topic.startsWith('module/v1/') && msg.topic.endsWith('/factsheet')),
+    filter((msg) => {
+      // Only process factsheet topics WITHOUT NodeRed in the path
+      // Accept: module/v1/ff/<serial>/factsheet
+      // Reject: module/v1/ff/NodeRed/<serial>/factsheet
+      if (!msg.topic.startsWith('module/v1/') || !msg.topic.endsWith('/factsheet')) {
+        return false;
+      }
+      // Reject topics that contain NodeRed in the path
+      return !msg.topic.includes('/NodeRed/');
+    }),
     map((msg) => {
       const parsed = parsePayload<ModuleFactsheetSnapshot>(msg.payload);
       if (!parsed) {

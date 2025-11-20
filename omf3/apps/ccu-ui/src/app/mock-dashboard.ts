@@ -61,6 +61,7 @@ export interface MockDashboardController {
   commands: DashboardCommandSet;
   loadFixture: (fixture: OrderFixtureName, options?: FixtureStreamOptions) => Promise<DashboardStreamSet>;
   getCurrentFixture: () => OrderFixtureName;
+  updateMqttClient?: (mqttClient?: MqttClientWrapper) => void;
 }
 
 const FIXTURE_DEFAULT_INTERVAL = 25;
@@ -164,13 +165,14 @@ const createStreamSet = (
     if (mqttClient) {
       // Use real MQTT client for live/replay mode
       try {
+        console.info('[mock-dashboard] Publishing to MQTT:', topic, payload, options);
         await mqttClient.publish(topic, payload, {
           qos: options?.qos ?? 0,
           retain: options?.retain ?? false,
         });
-        console.info('[mock-dashboard] Published to MQTT:', topic, payload);
+        console.info('[mock-dashboard] Published to MQTT successfully:', topic);
       } catch (error) {
-        console.error('[mock-dashboard] Failed to publish to MQTT:', error);
+        console.error('[mock-dashboard] Failed to publish to MQTT:', topic, error);
         throw error;
       }
     } else {
@@ -252,7 +254,7 @@ export const createMockDashboardController = (options?: {
   messageMonitor?: { addMessage: (topic: string, payload: unknown, timestamp?: string) => void };
 }): MockDashboardController => {
   let messageSubject = new Subject<RawMqttMessage>();
-  const mqttClient = options?.mqttClient; // Store in closure
+  let mqttClient = options?.mqttClient; // Store in closure (mutable)
   const messageMonitor = options?.messageMonitor; // Store in closure
   let bundle = createStreamSet(messageSubject, mqttClient);
   
@@ -389,6 +391,31 @@ export const createMockDashboardController = (options?: {
     return bundle.streams;
   };
 
+  // Update bundle when MQTT client changes (for live/replay mode)
+  const updateMqttClient = (newMqttClient?: MqttClientWrapper) => {
+    if (newMqttClient !== mqttClient) {
+      mqttClient = newMqttClient;
+      // Recreate bundle with new MQTT client
+      bundle = createStreamSet(messageSubject, mqttClient);
+      // Update MQTT subscription if needed
+      if (mqttSubscription) {
+        mqttSubscription.unsubscribe();
+      }
+      if (mqttClient) {
+        mqttSubscription = mqttClient.messages$.subscribe((mqttMsg: MqttMessage) => {
+          const rawMessage: RawMqttMessage = {
+            topic: mqttMsg.topic,
+            payload: mqttMsg.payload,
+            timestamp: mqttMsg.timestamp,
+            qos: mqttMsg.options?.qos,
+            retain: mqttMsg.options?.retain,
+          };
+          messageSubject.next(rawMessage);
+        });
+      }
+    }
+  };
+
   return {
     get streams() {
       return bundle.streams;
@@ -397,12 +424,14 @@ export const createMockDashboardController = (options?: {
       return streamsSubject.asObservable();
     },
     get commands() {
+      // Always return fresh bundle.commands to ensure we have the latest MQTT client
       return bundle.commands;
     },
     loadFixture,
     getCurrentFixture() {
       return currentFixture;
     },
+    updateMqttClient, // Expose method to update MQTT client
   };
 };
 

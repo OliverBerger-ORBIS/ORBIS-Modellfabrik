@@ -186,7 +186,11 @@ export class AppComponent implements OnDestroy {
           const mqttClient = this.connectionService.mqttClient;
           if (mqttClient) {
             // Recreate dashboard controller with MQTT client for live/replay mode
-            getDashboardController(mqttClient);
+            const controller = getDashboardController(mqttClient);
+            // Also update existing controller if it has updateMqttClient method
+            if (controller.updateMqttClient) {
+              controller.updateMqttClient(mqttClient);
+            }
             console.log('[app] Dashboard controller updated with MQTT client');
           }
         }

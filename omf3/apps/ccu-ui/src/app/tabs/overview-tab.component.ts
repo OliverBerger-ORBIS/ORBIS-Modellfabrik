@@ -166,9 +166,15 @@ export class OverviewTabComponent implements OnInit {
 
   async orderWorkpiece(type: (typeof WORKPIECE_TYPES)[number]) {
     try {
-      await this.dashboard.commands.sendCustomerOrder(type);
+      console.info('[overview-tab] Sending customer order:', type);
+      // Get fresh dashboard controller to ensure we have the latest MQTT client
+      const dashboard = getDashboardController();
+      console.info('[overview-tab] Dashboard controller:', dashboard, 'has commands:', !!dashboard.commands);
+      console.info('[overview-tab] sendCustomerOrder function:', dashboard.commands.sendCustomerOrder);
+      await dashboard.commands.sendCustomerOrder(type);
+      console.info('[overview-tab] Customer order sent successfully:', type);
     } catch (error) {
-      console.warn('Failed to send customer order', type, error);
+      console.error('[overview-tab] Failed to send customer order', type, error);
     }
   }
 

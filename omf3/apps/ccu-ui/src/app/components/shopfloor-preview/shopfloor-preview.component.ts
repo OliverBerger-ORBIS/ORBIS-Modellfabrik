@@ -159,7 +159,9 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
   ) {}
 
   ngOnInit(): void {
-    this.currentScale = this.scale;
+    // Load saved scale from localStorage, or use input scale
+    const savedScale = this.loadSavedScale();
+    this.currentScale = savedScale ?? this.scale;
     this.http.get<ShopfloorLayoutConfig>('shopfloor/shopfloor_layout.json').subscribe({
       next: (config) => {
         this.layoutConfig = config;
@@ -167,7 +169,10 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
         this.indexLayout(config);
         if (config.scaling && this.scale === 0.6) {
           this.scale = config.scaling.default_percent / 100;
-          this.currentScale = this.scale;
+          // Only use default scale if no saved scale exists
+          if (!savedScale) {
+            this.currentScale = this.scale;
+          }
         }
         this.updateViewModel();
         this.cdr.markForCheck();
@@ -179,8 +184,12 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    // Only reset scale from input if it's the first change and no saved scale exists
     if (changes['scale'] && !changes['scale'].firstChange) {
-      this.currentScale = this.scale;
+      const savedScale = this.loadSavedScale();
+      if (!savedScale) {
+        this.currentScale = this.scale;
+      }
     }
     if (changes['activeStep'] || changes['order'] || changes['highlightModulesOverride'] || changes['highlightFixedOverride']) {
       this.updateViewModel();
@@ -189,17 +198,51 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
 
   zoomIn(): void {
     this.currentScale = Math.min(this.currentScale + this.scaleStep, this.maxScale);
+    this.saveScale();
     this.cdr.markForCheck();
   }
 
   zoomOut(): void {
     this.currentScale = Math.max(this.currentScale - this.scaleStep, this.minScale);
+    this.saveScale();
     this.cdr.markForCheck();
   }
 
   resetZoom(): void {
     this.currentScale = this.scale;
+    this.clearSavedScale();
     this.cdr.markForCheck();
+  }
+
+  private saveScale(): void {
+    try {
+      localStorage.setItem('shopfloor-preview-scale', this.currentScale.toString());
+    } catch (error) {
+      // Ignore localStorage errors (e.g., in private browsing mode)
+    }
+  }
+
+  private loadSavedScale(): number | null {
+    try {
+      const saved = localStorage.getItem('shopfloor-preview-scale');
+      if (saved) {
+        const scale = parseFloat(saved);
+        if (!Number.isNaN(scale) && scale >= this.minScale && scale <= this.maxScale) {
+          return scale;
+        }
+      }
+    } catch (error) {
+      // Ignore localStorage errors
+    }
+    return null;
+  }
+
+  private clearSavedScale(): void {
+    try {
+      localStorage.removeItem('shopfloor-preview-scale');
+    } catch (error) {
+      // Ignore localStorage errors
+    }
   }
 
   get canZoomIn(): boolean {

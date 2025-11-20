@@ -139,8 +139,9 @@ export class MessageMonitorTabComponent implements OnInit, OnDestroy, AfterViewC
         return false;
       }
     } else if (this.filterTopicType === 'module-fts') {
-      const isModuleTopic = message.topic.startsWith('module/v1/');
-      const isFtsTopic = message.topic.startsWith('fts/v1/');
+      // Filter for module/* and fts/* topics (with or without /v1/)
+      const isModuleTopic = message.topic.startsWith('module/');
+      const isFtsTopic = message.topic.startsWith('fts/');
       if (!isModuleTopic && !isFtsTopic) {
         return false;
       }
@@ -149,8 +150,16 @@ export class MessageMonitorTabComponent implements OnInit, OnDestroy, AfterViewC
 
     // Module/FTS filter (only when Topic Type is Module/FTS)
     if (this.filterTopicType === 'module-fts' && this.filterModule) {
-      if (!message.topic.includes(this.filterModule)) {
-        return false;
+      // Special case: "AGV" filter shows all fts/* topics
+      if (this.filterModule === 'AGV') {
+        if (!message.topic.startsWith('fts/')) {
+          return false;
+        }
+      } else {
+        // Filter by module serial (for module topics)
+        if (!message.topic.includes(this.filterModule)) {
+          return false;
+        }
       }
     }
 
@@ -226,31 +235,63 @@ export class MessageMonitorTabComponent implements OnInit, OnDestroy, AfterViewC
   updateAvailableModules(): void {
     const allTopics = this.messageMonitor.getTopics();
     const moduleSerials = new Set<string>();
+    let hasFtsTopics = false;
+
+    // Known topic suffixes that should NOT be treated as module serials
+    const topicSuffixes = new Set(['status', 'connection', 'factsheet', 'state', 'order', 'instantAction']);
 
     // Extract module/FTS serials from topics
     allTopics.forEach(topic => {
-      // Module topics: module/v1/ff/<serial>/... or module/v1/ff/NodeRed/<serial>/...
-      if (topic.startsWith('module/v1/ff/')) {
+      // Module topics: module/* (with or without /v1/)
+      if (topic.startsWith('module/')) {
         const parts = topic.split('/');
         // Check for NodeRed pattern: module/v1/ff/NodeRed/<serial>/...
         if (parts.length >= 5 && parts[3] === 'NodeRed') {
-          moduleSerials.add(parts[4]);
-        } else if (parts.length >= 4) {
+          const potentialSerial = parts[4];
+          // Only add if it's not a known topic suffix
+          if (!topicSuffixes.has(potentialSerial)) {
+            moduleSerials.add(potentialSerial);
+          }
+        } else if (parts.length >= 4 && parts[1] === 'v1' && parts[2] === 'ff') {
           // Direct pattern: module/v1/ff/<serial>/...
-          moduleSerials.add(parts[3]);
+          const potentialSerial = parts[3];
+          // Only add if it's not a known topic suffix
+          if (!topicSuffixes.has(potentialSerial)) {
+            moduleSerials.add(potentialSerial);
+          }
+        } else if (parts.length >= 2) {
+          // Generic pattern: module/<serial>/...
+          const potentialSerial = parts[1];
+          // Only add if it's not a known topic suffix
+          if (!topicSuffixes.has(potentialSerial)) {
+            moduleSerials.add(potentialSerial);
+          }
         }
       }
-      // FTS topics: fts/v1/ff/<serial>/...
-      else if (topic.startsWith('fts/v1/ff/')) {
+      // FTS topics: fts/* (with or without /v1/)
+      else if (topic.startsWith('fts/')) {
+        hasFtsTopics = true;
         const parts = topic.split('/');
-        if (parts.length >= 4) {
-          moduleSerials.add(parts[3]);
+        if (parts.length >= 4 && parts[1] === 'v1' && parts[2] === 'ff') {
+          // Pattern: fts/v1/ff/<serial>/...
+          const potentialSerial = parts[3];
+          // Only add if it's not a known topic suffix
+          if (!topicSuffixes.has(potentialSerial)) {
+            moduleSerials.add(potentialSerial);
+          }
+        } else if (parts.length >= 2) {
+          // Generic pattern: fts/<serial>/...
+          const potentialSerial = parts[1];
+          // Only add if it's not a known topic suffix
+          if (!topicSuffixes.has(potentialSerial)) {
+            moduleSerials.add(potentialSerial);
+          }
         }
       }
     });
 
     // Build module info list
-    this.availableModules = Array.from(moduleSerials)
+    const moduleList = Array.from(moduleSerials)
       .map(serial => {
         const module = MODULE_MAPPING[serial];
         if (module) {
@@ -263,6 +304,22 @@ export class MessageMonitorTabComponent implements OnInit, OnDestroy, AfterViewC
         return { serial, name: serial, icon: 'shopfloor/robot-arm.svg' };
       })
       .sort((a, b) => a.name.localeCompare(b.name));
+
+    // Add "AGV" option if FTS topics exist
+    if (hasFtsTopics) {
+      // Check if AGV is already in the list (by serial '5iO4')
+      const hasAgv = moduleList.some(m => m.serial === '5iO4' || m.name.toUpperCase().includes('AGV'));
+      if (!hasAgv) {
+        // Add AGV option at the beginning
+        moduleList.unshift({
+          serial: 'AGV',
+          name: this.moduleNameService.getModuleDisplayText('FTS', 'id-full'),
+          icon: 'shopfloor/robotic.svg'
+        });
+      }
+    }
+
+    this.availableModules = moduleList;
   }
 
   getTopicName(topic: string): { name: string; icon: string } {

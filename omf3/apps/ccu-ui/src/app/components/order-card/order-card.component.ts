@@ -158,21 +158,27 @@ export class OrderCardComponent implements OnChanges {
   }
 
   get orderDuration(): string | null {
-    const startedAt = this.order?.startedAt;
-    if (!startedAt) {
+    const orderStartedAt = this.order?.startedAt;
+    if (!orderStartedAt) {
       return null;
     }
 
-    const finishedAt = this.getOrderEndTimestamp();
-    if (finishedAt) {
-      return this.formatDuration(startedAt, finishedAt);
+    // Duration = difference between order start and current active step start
+    const activeStepStartedAt = this.activeStep?.startedAt;
+    if (activeStepStartedAt) {
+      return this.formatDuration(orderStartedAt, activeStepStartedAt);
     }
 
-    if (!this.isOrderFinished()) {
-      return this.formatDuration(startedAt, new Date().toISOString());
+    // If order is finished, use the end timestamp
+    if (this.isOrderFinished()) {
+      const finishedAt = this.getOrderEndTimestamp();
+      if (finishedAt) {
+        return this.formatDuration(orderStartedAt, finishedAt);
+      }
     }
 
-    return null;
+    // If no active step yet, show duration from start to now
+    return this.formatDuration(orderStartedAt, new Date().toISOString());
   }
 
   get workpieceId(): string | null {
