@@ -479,3 +479,13 @@ export const SHOPFLOOR_ASSET_MAP: Record<string, string> = {
   QUESTION: '/shopfloor/question.svg',
 };
 
+// Export tab-specific fixture loading
+export {
+  createTabFixtureStream,
+  createTabFixturePreset,
+  createCustomTabFixture,
+  listTabFixturePresets,
+  TAB_FIXTURE_PRESETS,
+  type TabFixtureConfig,
+} from './tab-fixtures';
+
