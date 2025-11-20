@@ -195,6 +195,8 @@ mqtt_client → gateway → business → angular_components
 - **OMF2 Source Code:** `omf2/` - Legacy Streamlit Dashboard
 - **Session Manager:** `session_manager/` - Helper-App für Session-Replay
 - **APS Integrations:** `integrations/` - APS AS-IS Komponenten
+- **Examples:** `examples/` - Beispiel-Prototypen und Demos
+  - [Angular Shopfloor Example](examples/shopfloor-angular/README.md) - OMF3 Shopfloor-Layout mit ORBIS und DSP Zellen
 - **Legacy Docs:** [Archive](docs/archive/) - Veraltete Dokumentation
 
 ## 🚀 Getting Started

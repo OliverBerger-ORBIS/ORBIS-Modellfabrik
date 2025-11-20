@@ -1,0 +1,111 @@
+<div class="shopfloor-container">
+  <header class="shopfloor-header">
+    <h1>OMF3 Shopfloor Layout</h1>
+    <p class="subtitle">Click on any cell to view details</p>
+  </header>
+
+  <div class="shopfloor-grid">
+    <div *ngFor="let cell of cells" 
+         class="cell"
+         [class]="'cell-' + getCellStatusClass(cell)"
+         [style.grid-row]="getGridRow(cell)"
+         [style.grid-column]="getGridCol(cell)"
+         (click)="onCellClick(cell)">
+      
+      <div class="cell-header">
+        <h3>{{ cell.name }}</h3>
+        <span class="cell-type-badge" *ngIf="cell.type === 'orbis'">🏢 Company</span>
+        <span class="cell-type-badge" *ngIf="cell.type === 'dsp'">💻 Software</span>
+      </div>
+      
+      <div class="cell-content">
+        <!-- Dynamic cell content -->
+        <div *ngIf="cell.type === 'dynamic'" class="dynamic-info">
+          <ng-container *ngIf="getCellData(cell.id) as data; else loading">
+            <div class="info-row">
+              <span class="info-label">Status:</span>
+              <span class="status-indicator" [class]="'status-' + data.status">
+                {{ data.status | uppercase }}
+              </span>
+            </div>
+            <div class="info-row" *ngIf="data.temperature !== undefined">
+              <span class="info-label">Temp:</span>
+              <span class="info-value">{{ data.temperature }}°C</span>
+            </div>
+            <div class="info-row" *ngIf="data.partsProduced !== undefined">
+              <span class="info-label">Parts:</span>
+              <span class="info-value">{{ data.partsProduced }}</span>
+            </div>
+          </ng-container>
+          <ng-template #loading>
+            <div class="loading">Loading...</div>
+          </ng-template>
+        </div>
+        
+        <!-- ORBIS cell content -->
+        <div *ngIf="cell.type === 'orbis'" class="static-info">
+          <p class="cell-description">Consulting & Integration</p>
+          <div class="features">
+            <span class="feature-tag">📊 Data Aggregation</span>
+            <span class="feature-tag">🔍 Track & Trace</span>
+            <span class="feature-tag">🔧 Predictive Maintenance</span>
+          </div>
+        </div>
+        
+        <!-- DSP cell content -->
+        <div *ngIf="cell.type === 'dsp'" class="static-info">
+          <p class="cell-description">Digital Service Platform</p>
+          <div class="features">
+            <span class="feature-tag">🔗 IT/OT Integration</span>
+            <span class="feature-tag">📡 MQTT Orchestrator</span>
+            <span class="feature-tag">🛡️ Secure Gateway</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="cell-footer">
+        <span class="click-hint">Click for details →</span>
+      </div>
+    </div>
+  </div>
+
+  <footer class="shopfloor-footer">
+    <div class="legend">
+      <h4>Legend:</h4>
+      <div class="legend-items">
+        <div class="legend-item">
+          <span class="legend-box special"></span>
+          <span>Special Cells (ORBIS/DSP)</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-box running"></span>
+          <span>Running</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-box idle"></span>
+          <span>Idle</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-box error"></span>
+          <span>Error</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-box maintenance"></span>
+          <span>Maintenance</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="info-box">
+      <p>📡 This demo uses a <strong>Mock MQTT Service</strong> for simulation.</p>
+      <p>To integrate with real MQTT: Replace <code>MqttMockService</code> with <code>ngx-mqtt</code>.</p>
+    </div>
+  </footer>
+</div>
+
+<app-details-sidebar
+  [isOpen]="sidebarOpen"
+  [cellType]="selectedCellType"
+  [cellData]="selectedCellData"
+  (close)="onSidebarClose()">
+</app-details-sidebar>
