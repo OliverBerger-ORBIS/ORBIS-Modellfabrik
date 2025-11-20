@@ -9,16 +9,52 @@ import { defer, from, merge, Observable } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
 import type { RawMqttMessage } from '@omf3/gateway';
 
-// Re-export types to avoid consumers needing to import from multiple files
-export type {
-  FixtureStreamOptions,
-  OrderFixtureName,
-  ModuleFixtureName,
-  StockFixtureName,
-  FlowFixtureName,
-  ConfigFixtureName,
-  SensorFixtureName,
-} from './index';
+// Define types locally to avoid circular dependency with index.ts
+// These are duplicated from index.ts but necessary to avoid circular import
+export type OrderFixtureName =
+  | 'white'
+  | 'white_step3'
+  | 'blue'
+  | 'red'
+  | 'mixed'
+  | 'storage'
+  | 'startup';
+
+export type ModuleFixtureName =
+  | 'default'
+  | 'white'
+  | 'blue'
+  | 'red'
+  | 'mixed'
+  | 'storage'
+  | 'startup';
+
+export type StockFixtureName = 'default' | 'startup';
+export type FlowFixtureName = 'default' | 'startup';
+export type ConfigFixtureName = 'default' | 'startup';
+export type SensorFixtureName = 'default' | 'startup';
+
+export interface FixtureStreamOptions {
+  /**
+   * Override the base URL used to fetch fixture files.
+   */
+  baseUrl?: string;
+
+  /**
+   * Custom loader implementation.
+   */
+  loader?: (resolvedPath: string) => Promise<string>;
+
+  /**
+   * Delay between emitted messages. Defaults to emitting as fast as possible.
+   */
+  intervalMs?: number;
+
+  /**
+   * When true the stream restarts from the beginning after the last message.
+   */
+  loop?: boolean;
+}
 
 // These will be injected by index.ts to avoid circular dependency
 let createOrderFixtureStreamImpl: any;
@@ -226,7 +262,7 @@ export const createTabFixturePreset = (
   const config = TAB_FIXTURE_PRESETS[presetName];
   if (!config) {
     console.warn(`[tab-fixtures] Unknown preset: ${presetName}, using startup default`);
-    return createTabFixtureStream(TAB_FIXTURE_PRESETS.startup, options);
+    return createTabFixtureStream(TAB_FIXTURE_PRESETS['startup'], options);
   }
   return createTabFixtureStream(config, options);
 };

@@ -493,6 +493,8 @@ _setFixtureStreamImpls({
   createSensorFixtureStream,
 });
 
+// Export tab-fixtures functions and types
+// Note: Types are defined in tab-fixtures.ts to avoid circular dependency
 export {
   createTabFixtureStream,
   createTabFixturePreset,
@@ -500,5 +502,6 @@ export {
   listTabFixturePresets,
   TAB_FIXTURE_PRESETS,
   type TabFixtureConfig,
+  type FixtureStreamOptions as TabFixtureStreamOptions,
 } from './tab-fixtures';
 
