@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MQTT WebSocket Debug Tool</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            border-bottom: 3px solid #007bff;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #555;
+            margin-top: 0;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #555;
+        }
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        button.disconnect {
+            background-color: #dc3545;
+        }
+        button.disconnect:hover {
+            background-color: #c82333;
+        }
+        button.clear {
+            background-color: #6c757d;
+        }
+        button.clear:hover {
+            background-color: #545b62;
+        }
+        button.copy {
+            background-color: #28a745;
+        }
+        button.copy:hover {
+            background-color: #218838;
+        }
+        .log-output {
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 15px;
+            min-height: 300px;
+            max-height: 500px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        .log-entry {
+            margin-bottom: 5px;
+            padding: 3px 0;
+        }
+        .log-entry.success {
+            color: #28a745;
+        }
+        .log-entry.error {
+            color: #dc3545;
+            font-weight: bold;
+        }
+        .log-entry.info {
+            color: #007bff;
+        }
+        .log-entry.warning {
+            color: #ffc107;
+        }
+        .status {
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+        .status.disconnected {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .status.connecting {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        .status.connected {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .status.error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .info-box {
+            background-color: #e7f3ff;
+            border-left: 4px solid #007bff;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .info-box ul {
+            margin: 10px 0 0 0;
+            padding-left: 20px;
+        }
+        .test-section {
+            margin-bottom: 30px;
+        }
+        .button-group {
+            margin-top: 15px;
+        }
+        .timestamp {
+            color: #6c757d;
+            font-size: 11px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 MQTT WebSocket Connection Debug Tool</h1>
+    
+    <div class="info-box">
+        <strong>Purpose:</strong> This tool helps diagnose WebSocket MQTT connection issues by testing raw WebSocket connectivity
+        separate from MQTT.js library behavior.
+        <ul>
+            <li>Test raw WebSocket connection to broker</li>
+            <li>Identify browser-specific issues (CORS, Mixed Content, Private Network Access)</li>
+            <li>Compare results with MQTT.js behavior in the main application</li>
+            <li>Collect diagnostic logs for troubleshooting</li>
+        </ul>
+    </div>
+
+    <!-- Raw WebSocket Test -->
+    <div class="container test-section">
+        <h2>1. Raw WebSocket Connection Test</h2>
+        <div class="input-group">
+            <label for="ws-url">WebSocket URL:</label>
+            <input type="text" id="ws-url" placeholder="ws://192.168.0.100:9001" value="ws://192.168.0.100:9001">
+            <small style="color: #6c757d;">Enter the WebSocket URL (e.g., ws://192.168.0.100:9001 or ws://192.168.0.100:9001/)</small>
+        </div>
+        <div>
+            <span class="status disconnected" id="ws-status">Disconnected</span>
+        </div>
+        <div class="button-group">
+            <button id="ws-test-btn" onclick="testRawWebSocket()">Test Connection</button>
+            <button class="disconnect" id="ws-disconnect-btn" onclick="disconnectRawWebSocket()" disabled>Disconnect</button>
+            <button class="clear" onclick="clearWSLog()">Clear Log</button>
+            <button class="copy" onclick="copyWSLog()">Copy Log</button>
+        </div>
+        <div class="log-output" id="ws-log"></div>
+    </div>
+
+    <!-- MQTT.js WebSocket Test -->
+    <div class="container test-section">
+        <h2>2. MQTT.js Connection Test</h2>
+        <div class="input-group">
+            <label for="mqtt-url">Broker URL:</label>
+            <input type="text" id="mqtt-url" placeholder="192.168.0.100:9001" value="192.168.0.100:9001">
+            <small style="color: #6c757d;">Enter host:port (will be converted to ws:// automatically)</small>
+        </div>
+        <div class="input-group">
+            <label for="mqtt-username">Username (optional):</label>
+            <input type="text" id="mqtt-username" placeholder="default">
+        </div>
+        <div class="input-group">
+            <label for="mqtt-password">Password (optional):</label>
+            <input type="password" id="mqtt-password" placeholder="">
+        </div>
+        <div>
+            <span class="status disconnected" id="mqtt-status">Disconnected</span>
+        </div>
+        <div class="button-group">
+            <button id="mqtt-test-btn" onclick="testMQTTConnection()">Test MQTT Connection</button>
+            <button class="disconnect" id="mqtt-disconnect-btn" onclick="disconnectMQTT()" disabled>Disconnect</button>
+            <button class="clear" onclick="clearMQTTLog()">Clear Log</button>
+            <button class="copy" onclick="copyMQTTLog()">Copy Log</button>
+        </div>
+        <div class="log-output" id="mqtt-log"></div>
+    </div>
+
+    <!-- System Information -->
+    <div class="container">
+        <h2>3. System Information</h2>
+        <button onclick="showSystemInfo()">Show System Info</button>
+        <button class="copy" onclick="copySystemInfo()">Copy System Info</button>
+        <div class="log-output" id="system-info"></div>
+    </div>
+
+    <script>
+        let rawWS = null;
+        let mqttClient = null;
+        let wsLogEntries = [];
+        let mqttLogEntries = [];
+
+        // Raw WebSocket Test Functions
+        function testRawWebSocket() {
+            const url = document.getElementById('ws-url').value.trim();
+            if (!url) {
+                addWSLog('error', 'Please enter a WebSocket URL');
+                return;
+            }
+
+            addWSLog('info', '=== Starting Raw WebSocket Test ===');
+            addWSLog('info', `Target URL: ${url}`);
+            addWSLog('info', `Browser: ${navigator.userAgent}`);
+            addWSLog('info', `Timestamp: ${new Date().toISOString()}`);
+            
+            updateWSStatus('connecting');
+            document.getElementById('ws-test-btn').disabled = true;
+            document.getElementById('ws-disconnect-btn').disabled = false;
+
+            try {
+                rawWS = new WebSocket(url);
+                addWSLog('info', 'WebSocket object created');
+
+                rawWS.onopen = (event) => {
+                    addWSLog('success', '✓ WebSocket connection opened successfully!');
+                    addWSLog('info', `Event: ${JSON.stringify({type: event.type})}`);
+                    addWSLog('info', `ReadyState: ${rawWS.readyState} (OPEN)`);
+                    addWSLog('info', `URL: ${rawWS.url}`);
+                    addWSLog('info', `Protocol: ${rawWS.protocol || '(none)'}`);
+                    addWSLog('info', `Extensions: ${rawWS.extensions || '(none)'}`);
+                    updateWSStatus('connected');
+                };
+
+                rawWS.onerror = (event) => {
+                    addWSLog('error', '✗ WebSocket error occurred');
+                    addWSLog('error', `Event type: ${event.type}`);
+                    addWSLog('error', `ReadyState: ${rawWS ? rawWS.readyState : 'unknown'}`);
+                    updateWSStatus('error');
+                };
+
+                rawWS.onclose = (event) => {
+                    addWSLog('warning', 'WebSocket connection closed');
+                    addWSLog('info', `Code: ${event.code}`);
+                    addWSLog('info', `Reason: ${event.reason || '(no reason provided)'}`);
+                    addWSLog('info', `Was Clean: ${event.wasClean}`);
+                    updateWSStatus('disconnected');
+                    document.getElementById('ws-test-btn').disabled = false;
+                    document.getElementById('ws-disconnect-btn').disabled = true;
+                };
+
+                rawWS.onmessage = (event) => {
+                    addWSLog('info', `Message received: ${event.data.substring(0, 100)}`);
+                };
+
+                // Connection timeout
+                setTimeout(() => {
+                    if (rawWS && rawWS.readyState === WebSocket.CONNECTING) {
+                        addWSLog('error', 'Connection timeout (10 seconds)');
+                        rawWS.close();
+                    }
+                }, 10000);
+
+            } catch (error) {
+                addWSLog('error', `Exception creating WebSocket: ${error.message}`);
+                addWSLog('error', `Stack: ${error.stack}`);
+                updateWSStatus('error');
+                document.getElementById('ws-test-btn').disabled = false;
+                document.getElementById('ws-disconnect-btn').disabled = true;
+            }
+        }
+
+        function disconnectRawWebSocket() {
+            if (rawWS) {
+                addWSLog('info', 'Closing WebSocket connection...');
+                rawWS.close();
+                rawWS = null;
+            }
+        }
+
+        function addWSLog(type, message) {
+            const timestamp = new Date().toISOString();
+            const entry = { type, message, timestamp };
+            wsLogEntries.push(entry);
+            
+            const logDiv = document.getElementById('ws-log');
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry ${type}`;
+            logEntry.innerHTML = `<span class="timestamp">[${timestamp}]</span> ${message}`;
+            logDiv.appendChild(logEntry);
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        function updateWSStatus(status) {
+            const statusEl = document.getElementById('ws-status');
+            statusEl.className = `status ${status}`;
+            statusEl.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+        }
+
+        function clearWSLog() {
+            document.getElementById('ws-log').innerHTML = '';
+            wsLogEntries = [];
+        }
+
+        function copyWSLog() {
+            const text = wsLogEntries.map(e => `[${e.timestamp}] [${e.type.toUpperCase()}] ${e.message}`).join('\n');
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Log copied to clipboard!');
+            });
+        }
+
+        // MQTT.js Test Functions
+        function testMQTTConnection() {
+            // Check if mqtt.js is loaded
+            if (typeof mqtt === 'undefined') {
+                addMQTTLog('error', 'MQTT.js library not loaded. Please include it in the page.');
+                addMQTTLog('info', 'Add: <script src="https://unpkg.com/mqtt@5.14.1/dist/mqtt.min.js"></script>');
+                return;
+            }
+
+            const urlInput = document.getElementById('mqtt-url').value.trim();
+            const username = document.getElementById('mqtt-username').value.trim();
+            const password = document.getElementById('mqtt-password').value.trim();
+
+            if (!urlInput) {
+                addMQTTLog('error', 'Please enter a broker URL');
+                return;
+            }
+
+            let url = urlInput;
+            if (!url.startsWith('ws://') && !url.startsWith('wss://')) {
+                url = `ws://${url}`;
+            }
+
+            addMQTTLog('info', '=== Starting MQTT.js Connection Test ===');
+            addMQTTLog('info', `Original input: ${urlInput}`);
+            addMQTTLog('info', `Constructed URL: ${url}`);
+            addMQTTLog('info', `Username: ${username || '(none)'}`);
+            addMQTTLog('info', `Password: ${password ? '***' : '(none)'}`);
+            addMQTTLog('info', `Browser: ${navigator.userAgent}`);
+            addMQTTLog('info', `Timestamp: ${new Date().toISOString()}`);
+
+            updateMQTTStatus('connecting');
+            document.getElementById('mqtt-test-btn').disabled = true;
+            document.getElementById('mqtt-disconnect-btn').disabled = false;
+
+            const options = {
+                connectTimeout: 10000,
+                reconnectPeriod: 0,
+            };
+
+            if (username) {
+                options.username = username;
+            }
+            if (password) {
+                options.password = password;
+            }
+
+            addMQTTLog('info', `MQTT.js options: ${JSON.stringify(options, null, 2)}`);
+
+            try {
+                mqttClient = mqtt.connect(url, options);
+                addMQTTLog('info', 'MQTT client created');
+
+                mqttClient.on('connect', (connack) => {
+                    addMQTTLog('success', '✓ MQTT connection established!');
+                    addMQTTLog('info', `CONNACK: ${JSON.stringify(connack)}`);
+                    updateMQTTStatus('connected');
+                });
+
+                mqttClient.on('error', (error) => {
+                    addMQTTLog('error', `✗ MQTT error: ${error.message}`);
+                    addMQTTLog('error', `Stack: ${error.stack}`);
+                    updateMQTTStatus('error');
+                });
+
+                mqttClient.on('close', () => {
+                    addMQTTLog('warning', 'MQTT connection closed');
+                    updateMQTTStatus('disconnected');
+                    document.getElementById('mqtt-test-btn').disabled = false;
+                    document.getElementById('mqtt-disconnect-btn').disabled = true;
+                });
+
+                mqttClient.on('offline', () => {
+                    addMQTTLog('warning', 'MQTT client went offline');
+                });
+
+                mqttClient.on('reconnect', () => {
+                    addMQTTLog('info', 'MQTT client attempting to reconnect');
+                });
+
+                // Connection timeout
+                setTimeout(() => {
+                    if (mqttClient && !mqttClient.connected) {
+                        addMQTTLog('error', 'Connection timeout (10 seconds)');
+                        mqttClient.end(true);
+                    }
+                }, 10000);
+
+            } catch (error) {
+                addMQTTLog('error', `Exception creating MQTT client: ${error.message}`);
+                addMQTTLog('error', `Stack: ${error.stack}`);
+                updateMQTTStatus('error');
+                document.getElementById('mqtt-test-btn').disabled = false;
+                document.getElementById('mqtt-disconnect-btn').disabled = true;
+            }
+        }
+
+        function disconnectMQTT() {
+            if (mqttClient) {
+                addMQTTLog('info', 'Disconnecting MQTT client...');
+                mqttClient.end(true);
+                mqttClient = null;
+            }
+        }
+
+        function addMQTTLog(type, message) {
+            const timestamp = new Date().toISOString();
+            const entry = { type, message, timestamp };
+            mqttLogEntries.push(entry);
+            
+            const logDiv = document.getElementById('mqtt-log');
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry ${type}`;
+            logEntry.innerHTML = `<span class="timestamp">[${timestamp}]</span> ${message}`;
+            logDiv.appendChild(logEntry);
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        function updateMQTTStatus(status) {
+            const statusEl = document.getElementById('mqtt-status');
+            statusEl.className = `status ${status}`;
+            statusEl.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+        }
+
+        function clearMQTTLog() {
+            document.getElementById('mqtt-log').innerHTML = '';
+            mqttLogEntries = [];
+        }
+
+        function copyMQTTLog() {
+            const text = mqttLogEntries.map(e => `[${e.timestamp}] [${e.type.toUpperCase()}] ${e.message}`).join('\n');
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Log copied to clipboard!');
+            });
+        }
+
+        // System Information
+        function showSystemInfo() {
+            const info = {
+                'User Agent': navigator.userAgent,
+                'Platform': navigator.platform,
+                'Language': navigator.language,
+                'Online': navigator.onLine,
+                'Cookies Enabled': navigator.cookieEnabled,
+                'Screen Resolution': `${screen.width}x${screen.height}`,
+                'Window Size': `${window.innerWidth}x${window.innerHeight}`,
+                'Color Depth': `${screen.colorDepth} bits`,
+                'Timezone Offset': `${new Date().getTimezoneOffset()} minutes`,
+                'Current Time': new Date().toISOString(),
+                'WebSocket Support': 'WebSocket' in window ? 'Yes' : 'No',
+                'Service Workers': 'serviceWorker' in navigator ? 'Supported' : 'Not supported',
+                'Location Protocol': window.location.protocol,
+                'Location Host': window.location.host,
+            };
+
+            const infoDiv = document.getElementById('system-info');
+            infoDiv.innerHTML = '';
+            
+            for (const [key, value] of Object.entries(info)) {
+                const entry = document.createElement('div');
+                entry.className = 'log-entry info';
+                entry.textContent = `${key}: ${value}`;
+                infoDiv.appendChild(entry);
+            }
+
+            // Check for active Service Workers
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistrations().then(registrations => {
+                    const entry = document.createElement('div');
+                    entry.className = 'log-entry info';
+                    entry.textContent = `Active Service Workers: ${registrations.length}`;
+                    infoDiv.appendChild(entry);
+                    
+                    registrations.forEach((reg, index) => {
+                        const regEntry = document.createElement('div');
+                        regEntry.className = 'log-entry info';
+                        regEntry.textContent = `  SW ${index + 1}: ${reg.scope}`;
+                        infoDiv.appendChild(regEntry);
+                    });
+                });
+            }
+        }
+
+        function copySystemInfo() {
+            const text = Array.from(document.getElementById('system-info').children)
+                .map(el => el.textContent)
+                .join('\n');
+            navigator.clipboard.writeText(text).then(() => {
+                alert('System info copied to clipboard!');
+            });
+        }
+
+        // Show system info on load
+        window.addEventListener('load', () => {
+            showSystemInfo();
+        });
+    </script>
+
+    <!-- Optional: Include MQTT.js from CDN for testing -->
+    <script src="https://unpkg.com/mqtt@5.14.1/dist/mqtt.min.js"></script>
+</body>
+</html>
