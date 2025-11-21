@@ -135,7 +135,8 @@ describe('MessageMonitorService', () => {
 
     it('should use special retention for camera topic', () => {
       const topic = '/j1/txt/1/i/cam';
-      expect(service.getRetention(topic)).toBe(10);
+      // Camera topic uses bypass mode with 0 retention (no buffer)
+      expect(service.getRetention(topic)).toBe(0);
     });
 
     it('should use special retention for sensor topics', () => {

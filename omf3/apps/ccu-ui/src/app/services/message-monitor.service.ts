@@ -30,6 +30,7 @@ const SKIP_BUFFER_TOPICS = ['/j1/txt/1/i/cam'];
 
 // Default retention configuration for specific topics
 const RETENTION_CONFIG: Record<string, number> = {
+  '/j1/txt/1/i/cam': 0,       // Camera frames: bypass mode (no buffer)
   '/j1/txt/1/i/bme680': 100,  // BME680 sensor: high retention
   '/j1/txt/1/i/ldr': 100,     // LDR sensor: high retention
 };
@@ -55,7 +56,15 @@ export class MessageMonitorService implements OnDestroy {
    * Returns null if no message has been received yet
    */
   getLastMessage<T = unknown>(topic: string): Observable<MonitoredMessage<T> | null> {
-    // Always check buffer for current value FIRST, even if subject already exists
+    // For bypass topics (e.g., camera), there's no buffer - just return/create the subject
+    if (SKIP_BUFFER_TOPICS.includes(topic)) {
+      if (!this.subjects.has(topic)) {
+        this.subjects.set(topic, new BehaviorSubject<MonitoredMessage | null>(null));
+      }
+      return this.subjects.get(topic)!.asObservable() as Observable<MonitoredMessage<T> | null>;
+    }
+
+    // Standard topics: Always check buffer for current value FIRST, even if subject already exists
     // This ensures we get the latest message even if subject was created before message arrived
     const buffer = this.buffers.get(topic);
     const lastMessage = buffer && buffer.items.length > 0 
