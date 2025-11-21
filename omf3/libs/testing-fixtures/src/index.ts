@@ -479,3 +479,29 @@ export const SHOPFLOOR_ASSET_MAP: Record<string, string> = {
   QUESTION: '/shopfloor/question.svg',
 };
 
+// Export tab-specific fixture loading
+// Note: We inject the implementations to avoid circular dependency
+import { _setFixtureStreamImpls } from './tab-fixtures';
+
+// Inject the fixture stream implementations after they're defined
+_setFixtureStreamImpls({
+  createOrderFixtureStream,
+  createModulePairingFixtureStream,
+  createStockFixtureStream,
+  createFlowFixtureStream,
+  createConfigFixtureStream,
+  createSensorFixtureStream,
+});
+
+// Export tab-fixtures functions and types
+// Note: Types are defined in tab-fixtures.ts to avoid circular dependency
+export {
+  createTabFixtureStream,
+  createTabFixturePreset,
+  createCustomTabFixture,
+  listTabFixturePresets,
+  TAB_FIXTURE_PRESETS,
+  type TabFixtureConfig,
+  type FixtureStreamOptions as TabFixtureStreamOptions,
+} from './tab-fixtures';
+

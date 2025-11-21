@@ -17,6 +17,7 @@ import {
   createFlowFixtureStream,
   createConfigFixtureStream,
   createSensorFixtureStream,
+  createTabFixturePreset,
   type FixtureStreamOptions,
   type ModuleFixtureName,
   type OrderFixtureName,
@@ -60,6 +61,7 @@ export interface MockDashboardController {
   streams$: Observable<DashboardStreamSet>;
   commands: DashboardCommandSet;
   loadFixture: (fixture: OrderFixtureName, options?: FixtureStreamOptions) => Promise<DashboardStreamSet>;
+  loadTabFixture: (presetName: string, options?: FixtureStreamOptions) => Promise<DashboardStreamSet>;
   getCurrentFixture: () => OrderFixtureName;
   updateMqttClient?: (mqttClient?: MqttClientWrapper) => void;
 }
@@ -391,6 +393,48 @@ export const createMockDashboardController = (options?: {
     return bundle.streams;
   };
 
+  /**
+   * Load tab-specific fixture preset
+   * Allows independent fixture loading per tab with relevant topics
+   */
+  const loadTabFixture = async (
+    presetName: string,
+    options?: FixtureStreamOptions
+  ): Promise<DashboardStreamSet> => {
+    unsubscribeReplays();
+    resetStreams();
+
+    console.log(`[mock-dashboard] Loading tab fixture preset: ${presetName}`);
+
+    // Use the tab-specific fixture preset stream
+    const tabFixtureStream$ = createTabFixturePreset(presetName, {
+      intervalMs: options?.intervalMs ?? FIXTURE_DEFAULT_INTERVAL,
+      baseUrl: options?.baseUrl,
+      loader: options?.loader,
+      loop: options?.loop,
+    });
+
+    // Subscribe to the combined tab fixture stream
+    currentReplays.push(
+      tabFixtureStream$.subscribe((message: RawMqttMessage) => messageSubject.next(message))
+    );
+
+    // Update current fixture name for backwards compatibility
+    // Map preset name to OrderFixtureName if possible
+    const presetToFixture: Record<string, OrderFixtureName> = {
+      startup: 'startup',
+      'order-white': 'white',
+      'order-blue': 'blue',
+      'order-red': 'red',
+      'order-mixed': 'mixed',
+      'order-storage': 'storage',
+    };
+    currentFixture = presetToFixture[presetName] || 'startup';
+
+    streamsSubject.next(bundle.streams);
+    return bundle.streams;
+  };
+
   // Update bundle when MQTT client changes (for live/replay mode)
   const updateMqttClient = (newMqttClient?: MqttClientWrapper) => {
     if (newMqttClient !== mqttClient) {
@@ -428,6 +472,7 @@ export const createMockDashboardController = (options?: {
       return bundle.commands;
     },
     loadFixture,
+    loadTabFixture, // New: tab-specific fixture loading
     getCurrentFixture() {
       return currentFixture;
     },

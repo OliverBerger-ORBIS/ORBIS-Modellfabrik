@@ -135,7 +135,8 @@ describe('MessageMonitorService', () => {
 
     it('should use special retention for camera topic', () => {
       const topic = '/j1/txt/1/i/cam';
-      expect(service.getRetention(topic)).toBe(10);
+      // Camera topic uses bypass mode with 0 retention (no buffer)
+      expect(service.getRetention(topic)).toBe(0);
     });
 
     it('should use special retention for sensor topics', () => {
@@ -197,6 +198,91 @@ describe('MessageMonitorService', () => {
       
       expect(stored).toBeNull();
     });
+
+    it('should initialize BehaviorSubject with last persisted message (no intermediate null)', async () => {
+      const topic = 'test/restore';
+      const payload = { data: 'persisted-value', id: 123 };
+      
+      // Setup: persist data via first service instance
+      service.addMessage(topic, payload);
+      
+      // Simulate app restart: create new service instance
+      const newService = new MessageMonitorService();
+      
+      // Get observable IMMEDIATELY after construction (before any messages arrive)
+      const lastMessage$ = newService.getLastMessage(topic);
+      
+      // First emission should be the persisted value, NOT null
+      const firstValue = await firstValueFrom(lastMessage$);
+      expect(firstValue).not.toBeNull();
+      expect(firstValue?.payload).toEqual(payload);
+      expect(firstValue?.topic).toBe(topic);
+      
+      newService.clearAll();
+    });
+
+    it('should trim messages exceeding retention when loading persisted data', () => {
+      const topic = 'test/retention-trim';
+      
+      // Add 60 messages (exceeds default retention of 50)
+      for (let i = 0; i < 60; i++) {
+        service.addMessage(topic, { id: i });
+      }
+      
+      // Verify all 60 are in current service (trimmed to 50 due to circular buffer)
+      expect(service.getHistory(topic).length).toBe(50);
+      
+      // Create new service instance (simulates app restart)
+      const newService = new MessageMonitorService();
+      
+      // Should only load the last 50 messages
+      const history = newService.getHistory(topic);
+      expect(history.length).toBe(50);
+      expect(history[0].payload).toEqual({ id: 10 });
+      expect(history[49].payload).toEqual({ id: 59 });
+      
+      newService.clearAll();
+    });
+
+    it('should handle corrupted persisted data gracefully', () => {
+      const topic = 'test/corrupted';
+      const key = 'omf3.message-monitor.test/corrupted';
+      
+      // Manually inject corrupted data
+      localStorage.setItem(key, '{"not": "an array"}');
+      
+      // Create new service - should skip corrupted entry and not crash
+      const newService = new MessageMonitorService();
+      
+      // Should have empty history for corrupted topic
+      const history = newService.getHistory(topic);
+      expect(history.length).toBe(0);
+      
+      // Corrupted entry should be removed from localStorage
+      expect(localStorage.getItem(key)).toBeNull();
+      
+      newService.clearAll();
+    });
+
+    it('should handle invalid JSON in persisted data', () => {
+      const topic = 'test/invalid-json';
+      const key = 'omf3.message-monitor.test/invalid-json';
+      
+      // Manually inject invalid JSON
+      localStorage.setItem(key, 'not valid json at all{{{');
+      
+      // Create new service - should skip invalid entry and not crash
+      const newService = new MessageMonitorService();
+      
+      // Should have empty history
+      const history = newService.getHistory(topic);
+      expect(history.length).toBe(0);
+      
+      // Invalid entry should be removed from localStorage
+      expect(localStorage.getItem(key)).toBeNull();
+      
+      newService.clearAll();
+    });
   });
 
   describe('clearTopic', () => {
@@ -227,6 +313,72 @@ describe('MessageMonitorService', () => {
       expect(topics).toContain('topic/a');
       expect(topics).toContain('topic/b');
       expect(topics).toContain('topic/c');
+    });
+  });
+
+  describe('Camera topic bypass mode', () => {
+    it('should handle camera topic without buffer or persistence', async () => {
+      const cameraTopic = '/j1/txt/1/i/cam';
+      const frame1 = { image: 'base64_data_1', timestamp: '2024-01-01T00:00:00Z' };
+      const frame2 = { image: 'base64_data_2', timestamp: '2024-01-01T00:00:01Z' };
+      
+      // Add first frame
+      service.addMessage(cameraTopic, frame1);
+      
+      // Verify subject exists and has the message
+      const lastMessage$ = service.getLastMessage(cameraTopic);
+      let value = await firstValueFrom(lastMessage$);
+      expect(value).not.toBeNull();
+      expect(value?.payload).toEqual(frame1);
+      
+      // Add second frame
+      service.addMessage(cameraTopic, frame2);
+      
+      // Verify subject updated
+      value = await firstValueFrom(lastMessage$);
+      expect(value).not.toBeNull();
+      expect(value?.payload).toEqual(frame2);
+      
+      // Verify no persistence (localStorage should be empty)
+      expect(localStorage.length).toBe(0);
+      
+      // Verify no buffer (getTopics should exclude camera)
+      expect(service.getTopics()).not.toContain(cameraTopic);
+    });
+
+    it('should provide last camera frame via getLastMessage', async () => {
+      const cameraTopic = '/j1/txt/1/i/cam';
+      const latestFrame = { image: 'base64_latest', timestamp: '2024-01-01T00:00:05Z' };
+      
+      // Add multiple frames
+      service.addMessage(cameraTopic, { image: 'base64_1' });
+      service.addMessage(cameraTopic, { image: 'base64_2' });
+      service.addMessage(cameraTopic, { image: 'base64_3' });
+      service.addMessage(cameraTopic, latestFrame);
+      
+      // Tabs can still use getLastMessage() - maintains architectural consistency
+      const lastMessage$ = service.getLastMessage(cameraTopic);
+      const value = await firstValueFrom(lastMessage$);
+      
+      expect(value).not.toBeNull();
+      expect(value?.payload).toEqual(latestFrame);
+      expect(value?.topic).toBe(cameraTopic);
+    });
+
+    it('should not show camera topic in MessageMonitor tab list', () => {
+      const cameraTopic = '/j1/txt/1/i/cam';
+      const regularTopic = '/j1/txt/1/i/bme680';
+      
+      service.addMessage(cameraTopic, { image: 'base64' });
+      service.addMessage(regularTopic, { temperature: 25 });
+      
+      const topics = service.getTopics();
+      
+      // Regular topic should be in the list
+      expect(topics).toContain(regularTopic);
+      
+      // Camera topic should not be in the list (no history to show)
+      expect(topics).not.toContain(cameraTopic);
     });
   });
 });

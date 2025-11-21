@@ -23,9 +23,14 @@ const STORAGE_SIZE_LIMIT = 5 * 1024 * 1024; // 5MB
 // Topics that should NOT be persisted
 const NO_PERSIST_TOPICS = ['/j1/txt/1/i/cam'];
 
+// Topics that bypass buffer (no history, only current value in Subject)
+// These topics maintain architectural consistency by staying in MessageMonitor
+// but skip buffer/persistence to optimize memory for high-frequency data
+const SKIP_BUFFER_TOPICS = ['/j1/txt/1/i/cam'];
+
 // Default retention configuration for specific topics
 const RETENTION_CONFIG: Record<string, number> = {
-  '/j1/txt/1/i/cam': 10,      // Camera frames: low retention
+  '/j1/txt/1/i/cam': 0,       // Camera frames: bypass mode (no buffer)
   '/j1/txt/1/i/bme680': 100,  // BME680 sensor: high retention
   '/j1/txt/1/i/ldr': 100,     // LDR sensor: high retention
 };
@@ -51,7 +56,15 @@ export class MessageMonitorService implements OnDestroy {
    * Returns null if no message has been received yet
    */
   getLastMessage<T = unknown>(topic: string): Observable<MonitoredMessage<T> | null> {
-    // Always check buffer for current value FIRST, even if subject already exists
+    // For bypass topics (e.g., camera), there's no buffer - just return/create the subject
+    if (SKIP_BUFFER_TOPICS.includes(topic)) {
+      if (!this.subjects.has(topic)) {
+        this.subjects.set(topic, new BehaviorSubject<MonitoredMessage | null>(null));
+      }
+      return this.subjects.get(topic)!.asObservable() as Observable<MonitoredMessage<T> | null>;
+    }
+
+    // Standard topics: Always check buffer for current value FIRST, even if subject already exists
     // This ensures we get the latest message even if subject was created before message arrived
     const buffer = this.buffers.get(topic);
     const lastMessage = buffer && buffer.items.length > 0 
@@ -118,6 +131,21 @@ export class MessageMonitorService implements OnDestroy {
       console.warn(`[MessageMonitor] Validation failed for topic ${topic}:`, validation.errors);
     }
 
+    // Bypass mode for high-frequency topics (e.g., camera frames)
+    // Maintains architectural consistency - tabs still use getLastMessage()
+    // But skips buffer/persistence to optimize memory
+    if (SKIP_BUFFER_TOPICS.includes(topic)) {
+      // Only update BehaviorSubject with current value - no buffer, no persistence
+      if (!this.subjects.has(topic)) {
+        this.subjects.set(topic, new BehaviorSubject<MonitoredMessage | null>(message));
+      } else {
+        this.subjects.get(topic)!.next(message);
+      }
+      // No broadcast for bypass topics to avoid cross-tab traffic
+      return;
+    }
+
+    // Standard path for all other topics:
     // Add to circular buffer FIRST to ensure buffer is always up-to-date
     // This ensures getLastMessage() can always retrieve the latest message
     this.addToBuffer(topic, message);
@@ -155,7 +183,7 @@ export class MessageMonitorService implements OnDestroy {
    * Get retention limit for a topic
    */
   getRetention(topic: string): number {
-    return this.retentionConfig.get(topic) || DEFAULT_RETENTION;
+    return this.retentionConfig.get(topic) ?? DEFAULT_RETENTION;
   }
 
   /**
@@ -177,10 +205,12 @@ export class MessageMonitorService implements OnDestroy {
   }
 
   /**
-   * Get all monitored topics
+   * Get all monitored topics (excludes bypass topics that have no buffer)
+   * Bypass topics are not shown in MessageMonitor tab as they have no history
    */
   getTopics(): string[] {
-    return Array.from(this.subjects.keys());
+    return Array.from(this.subjects.keys())
+      .filter(topic => !SKIP_BUFFER_TOPICS.includes(topic));
   }
 
   private validateMessage(topic: string, payload: unknown): { valid: boolean; errors?: string[] } {
@@ -279,6 +309,9 @@ export class MessageMonitorService implements OnDestroy {
   private loadPersistedData(): void {
     try {
       const prefix = STORAGE_KEY_PREFIX + '.';
+      let loadedTopics = 0;
+      let trimmedTopics = 0;
+      let corruptedTopics = 0;
       
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
@@ -286,29 +319,69 @@ export class MessageMonitorService implements OnDestroy {
           const topic = key.substring(prefix.length);
           const data = localStorage.getItem(key);
           
-          if (data) {
+          if (!data) {
+            continue;
+          }
+
+          try {
             const messages = JSON.parse(data) as MonitoredMessage[];
             
-            // Restore buffer
+            // Defensive: ensure it's an array
+            if (!Array.isArray(messages)) {
+              console.warn(`[MessageMonitor] Persisted data for ${topic} is not an array, skipping.`);
+              localStorage.removeItem(key);
+              corruptedTopics++;
+              continue;
+            }
+
+            // Get retention limit for this topic
             const retention = this.getRetention(topic);
+            
+            // Trim messages that exceed retention before storing
+            const trimmedMessages = messages.slice(-retention);
+            
+            // Track if trimming occurred
+            if (messages.length > trimmedMessages.length) {
+              trimmedTopics++;
+              console.log(`[MessageMonitor] Trimmed ${messages.length - trimmedMessages.length} old messages from topic: ${topic}`);
+            }
+            
+            // Restore buffer with trimmed messages
             this.buffers.set(topic, {
-              items: messages.slice(-retention), // Only keep up to retention limit
+              items: trimmedMessages,
               maxSize: retention,
             });
 
-            // Restore last message
-            if (messages.length > 0) {
-              const lastMessage = messages[messages.length - 1];
+            // Initialize BehaviorSubject directly with last message (no intermediate null)
+            // This ensures subscribers immediately get the last persisted value
+            if (trimmedMessages.length > 0) {
+              const lastMessage = trimmedMessages[trimmedMessages.length - 1];
+              
+              // Initialize BehaviorSubject with lastMessage directly to avoid transient nulls
               if (!this.subjects.has(topic)) {
-                this.subjects.set(topic, new BehaviorSubject<MonitoredMessage | null>(null));
+                this.subjects.set(topic, new BehaviorSubject<MonitoredMessage | null>(lastMessage));
+              } else {
+                // Defensive: if subject already exists (shouldn't happen during init, but
+                // could occur if service is reinitialized without proper cleanup), ensure
+                // its current value is in sync with the last persisted message
+                const subj = this.subjects.get(topic)!;
+                const cur = subj.value;
+                if (!cur || cur.timestamp !== lastMessage.timestamp) {
+                  subj.next(lastMessage);
+                }
               }
-              this.subjects.get(topic)!.next(lastMessage);
+              loadedTopics++;
             }
+          } catch (err) {
+            console.warn(`[MessageMonitor] Failed parsing persisted data for ${topic}, removing corrupt entry.`, err);
+            // If parse fails, remove the corrupt persisted key to prevent repeated failures
+            localStorage.removeItem(key);
+            corruptedTopics++;
           }
         }
       }
 
-      console.log('[MessageMonitor] Loaded persisted data for', this.buffers.size, 'topics');
+      console.log(`[MessageMonitor] Loaded persisted data for ${loadedTopics} topics${trimmedTopics > 0 ? ` (trimmed ${trimmedTopics} topics)` : ''}${corruptedTopics > 0 ? ` (removed ${corruptedTopics} corrupted entries)` : ''}`);
     } catch (error) {
       console.error('[MessageMonitor] Failed to load persisted data:', error);
     }

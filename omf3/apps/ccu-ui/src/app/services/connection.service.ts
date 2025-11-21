@@ -29,6 +29,10 @@ export class ConnectionService {
   private _mqttClient?: MqttClientWrapper;
   private connectionStateSub?: Subscription;
   private messagesSub?: Subscription;
+  private currentEnvironment?: EnvironmentDefinition;
+  private reconnectAttempts = 0;
+  private readonly RECONNECT_TIMEOUT_MS = 10000;
+  private readonly MAX_RECONNECT_ATTEMPTS = 3;
 
   constructor(
     private readonly environmentService: EnvironmentService,
@@ -89,6 +93,9 @@ export class ConnectionService {
       return;
     }
 
+    // Store environment for potential reconnect attempts
+    this.currentEnvironment = environment;
+
     this.updateState('connecting');
     this.errorSubject.next(null);
 
@@ -102,6 +109,12 @@ export class ConnectionService {
     }
     this.connectionStateSub = this._mqttClient.connectionState$.subscribe((state) => {
       this.updateState(state as ConnectionState);
+      
+      // Reset reconnect attempts on successful connection
+      if (state === 'connected') {
+        this.reconnectAttempts = 0;
+        console.log('[connection] Connected successfully, reset reconnect attempts');
+      }
     });
 
     // Build connection URL
@@ -218,6 +231,91 @@ export class ConnectionService {
       this.retrySub.unsubscribe();
       this.retrySub = undefined;
     }
+  }
+
+  /**
+   * Publish a message with automatic reconnect on disconnect
+   * If disconnected, triggers immediate reconnect attempt and retries publish
+   */
+  async publish(topic: string, payload: unknown, options?: { qos?: 0 | 1 | 2; retain?: boolean }): Promise<void> {
+    // If connected, publish immediately
+    if (this.currentState === 'connected' && this._mqttClient) {
+      try {
+        await this._mqttClient.publish(topic, payload, options);
+        console.log(`[connection] Published to ${topic}`);
+        // Reset reconnect attempts on successful publish
+        this.reconnectAttempts = 0;
+        return;
+      } catch (error) {
+        console.error('[connection] Publish failed:', error);
+        // Fall through to reconnect logic
+      }
+    }
+
+    // Not connected or publish failed - attempt reconnect
+    if (!this.currentEnvironment) {
+      throw new Error('Cannot reconnect: no environment available');
+    }
+
+    if (this.reconnectAttempts >= this.MAX_RECONNECT_ATTEMPTS) {
+      // Reset counter so next publish operation can try again
+      this.reconnectAttempts = 0;
+      throw new Error(`Publish failed: max reconnect attempts (${this.MAX_RECONNECT_ATTEMPTS}) exceeded`);
+    }
+
+    console.warn(`[connection] Publish called while disconnected (attempt ${this.reconnectAttempts + 1}/${this.MAX_RECONNECT_ATTEMPTS}), triggering reconnect...`);
+    this.reconnectAttempts++;
+
+    // Attempt immediate reconnect
+    try {
+      await this.reconnectWithTimeout();
+      
+      // Retry publish after successful reconnect
+      if (this._mqttClient && this.currentState === 'connected') {
+        await this._mqttClient.publish(topic, payload, options);
+        console.log(`[connection] Published to ${topic} after reconnect`);
+        // Reset reconnect attempts on successful publish
+        this.reconnectAttempts = 0;
+        return;
+      } else {
+        throw new Error('Reconnect succeeded but client not ready');
+      }
+    } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+      console.error('[connection] Reconnect and publish failed:', errorMsg);
+      throw new Error(`Publish failed after reconnect attempt: ${errorMsg}`);
+    }
+  }
+
+  /**
+   * Attempt to reconnect with a timeout
+   */
+  private async reconnectWithTimeout(): Promise<void> {
+    if (!this.currentEnvironment) {
+      throw new Error('No environment available for reconnect');
+    }
+
+    return new Promise<void>((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        reject(new Error(`Reconnect timeout after ${this.RECONNECT_TIMEOUT_MS}ms`));
+      }, this.RECONNECT_TIMEOUT_MS);
+
+      // Subscribe to state changes to detect successful connection
+      const stateSub = this.stateSubject.subscribe((state) => {
+        if (state === 'connected') {
+          clearTimeout(timeout);
+          stateSub.unsubscribe();
+          resolve();
+        } else if (state === 'error') {
+          clearTimeout(timeout);
+          stateSub.unsubscribe();
+          reject(new Error('Reconnect failed with error state'));
+        }
+      });
+
+      // Trigger reconnect
+      this.connect(this.currentEnvironment!);
+    });
   }
 
   private startMessageMonitoring(): void {
