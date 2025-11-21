@@ -314,4 +314,70 @@ describe('MessageMonitorService', () => {
       expect(topics).toContain('topic/c');
     });
   });
+
+  describe('Camera topic bypass mode', () => {
+    it('should handle camera topic without buffer or persistence', async () => {
+      const cameraTopic = '/j1/txt/1/i/cam';
+      const frame1 = { image: 'base64_data_1', timestamp: '2024-01-01T00:00:00Z' };
+      const frame2 = { image: 'base64_data_2', timestamp: '2024-01-01T00:00:01Z' };
+      
+      // Add first frame
+      service.addMessage(cameraTopic, frame1);
+      
+      // Verify subject exists and has the message
+      const lastMessage$ = service.getLastMessage(cameraTopic);
+      let value = await firstValueFrom(lastMessage$);
+      expect(value).not.toBeNull();
+      expect(value?.payload).toEqual(frame1);
+      
+      // Add second frame
+      service.addMessage(cameraTopic, frame2);
+      
+      // Verify subject updated
+      value = await firstValueFrom(lastMessage$);
+      expect(value).not.toBeNull();
+      expect(value?.payload).toEqual(frame2);
+      
+      // Verify no persistence (localStorage should be empty)
+      expect(localStorage.length).toBe(0);
+      
+      // Verify no buffer (getTopics should exclude camera)
+      expect(service.getTopics()).not.toContain(cameraTopic);
+    });
+
+    it('should provide last camera frame via getLastMessage', async () => {
+      const cameraTopic = '/j1/txt/1/i/cam';
+      const latestFrame = { image: 'base64_latest', timestamp: '2024-01-01T00:00:05Z' };
+      
+      // Add multiple frames
+      service.addMessage(cameraTopic, { image: 'base64_1' });
+      service.addMessage(cameraTopic, { image: 'base64_2' });
+      service.addMessage(cameraTopic, { image: 'base64_3' });
+      service.addMessage(cameraTopic, latestFrame);
+      
+      // Tabs can still use getLastMessage() - maintains architectural consistency
+      const lastMessage$ = service.getLastMessage(cameraTopic);
+      const value = await firstValueFrom(lastMessage$);
+      
+      expect(value).not.toBeNull();
+      expect(value?.payload).toEqual(latestFrame);
+      expect(value?.topic).toBe(cameraTopic);
+    });
+
+    it('should not show camera topic in MessageMonitor tab list', () => {
+      const cameraTopic = '/j1/txt/1/i/cam';
+      const regularTopic = '/j1/txt/1/i/bme680';
+      
+      service.addMessage(cameraTopic, { image: 'base64' });
+      service.addMessage(regularTopic, { temperature: 25 });
+      
+      const topics = service.getTopics();
+      
+      // Regular topic should be in the list
+      expect(topics).toContain(regularTopic);
+      
+      // Camera topic should not be in the list (no history to show)
+      expect(topics).not.toContain(cameraTopic);
+    });
+  });
 });

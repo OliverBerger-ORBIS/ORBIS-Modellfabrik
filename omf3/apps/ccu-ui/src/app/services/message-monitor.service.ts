@@ -23,9 +23,13 @@ const STORAGE_SIZE_LIMIT = 5 * 1024 * 1024; // 5MB
 // Topics that should NOT be persisted
 const NO_PERSIST_TOPICS = ['/j1/txt/1/i/cam'];
 
+// Topics that bypass buffer (no history, only current value in Subject)
+// These topics maintain architectural consistency by staying in MessageMonitor
+// but skip buffer/persistence to optimize memory for high-frequency data
+const SKIP_BUFFER_TOPICS = ['/j1/txt/1/i/cam'];
+
 // Default retention configuration for specific topics
 const RETENTION_CONFIG: Record<string, number> = {
-  '/j1/txt/1/i/cam': 10,      // Camera frames: low retention
   '/j1/txt/1/i/bme680': 100,  // BME680 sensor: high retention
   '/j1/txt/1/i/ldr': 100,     // LDR sensor: high retention
 };
@@ -118,6 +122,21 @@ export class MessageMonitorService implements OnDestroy {
       console.warn(`[MessageMonitor] Validation failed for topic ${topic}:`, validation.errors);
     }
 
+    // Bypass mode for high-frequency topics (e.g., camera frames)
+    // Maintains architectural consistency - tabs still use getLastMessage()
+    // But skips buffer/persistence to optimize memory
+    if (SKIP_BUFFER_TOPICS.includes(topic)) {
+      // Only update BehaviorSubject with current value - no buffer, no persistence
+      if (!this.subjects.has(topic)) {
+        this.subjects.set(topic, new BehaviorSubject<MonitoredMessage | null>(message));
+      } else {
+        this.subjects.get(topic)!.next(message);
+      }
+      // No broadcast for bypass topics to avoid cross-tab traffic
+      return;
+    }
+
+    // Standard path for all other topics:
     // Add to circular buffer FIRST to ensure buffer is always up-to-date
     // This ensures getLastMessage() can always retrieve the latest message
     this.addToBuffer(topic, message);
@@ -177,10 +196,12 @@ export class MessageMonitorService implements OnDestroy {
   }
 
   /**
-   * Get all monitored topics
+   * Get all monitored topics (excludes bypass topics that have no buffer)
+   * Bypass topics are not shown in MessageMonitor tab as they have no history
    */
   getTopics(): string[] {
-    return Array.from(this.subjects.keys());
+    return Array.from(this.subjects.keys())
+      .filter(topic => !SKIP_BUFFER_TOPICS.includes(topic));
   }
 
   private validateMessage(topic: string, payload: unknown): { valid: boolean; errors?: string[] } {
