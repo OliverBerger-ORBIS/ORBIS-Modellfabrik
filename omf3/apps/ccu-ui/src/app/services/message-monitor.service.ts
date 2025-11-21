@@ -183,7 +183,7 @@ export class MessageMonitorService implements OnDestroy {
    * Get retention limit for a topic
    */
   getRetention(topic: string): number {
-    return this.retentionConfig.get(topic) || DEFAULT_RETENTION;
+    return this.retentionConfig.get(topic) ?? DEFAULT_RETENTION;
   }
 
   /**
