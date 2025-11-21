@@ -30,6 +30,7 @@ import { BehaviorSubject, Subject, type Observable, Subscription, merge } from '
 import { map, scan, shareReplay, startWith, filter } from 'rxjs/operators';
 import type { OrderActive } from '@omf3/entities';
 import type { MqttClientWrapper, MqttMessage } from '@omf3/mqtt-client';
+import type { MonitoredMessage } from './services/message-monitor.service';
 
 export interface DashboardStreamSet {
   orders$: Observable<OrderActive[]>;
@@ -54,6 +55,12 @@ export interface DashboardCommandSet {
   requestRawMaterial: (workpieceType: string) => Promise<void>;
   moveCamera: (command: 'relmove_up' | 'relmove_down' | 'relmove_left' | 'relmove_right' | 'home' | 'stop', degree: number) => Promise<void>;
   resetFactory: (withStorage?: boolean) => Promise<void>;
+}
+
+export interface DashboardMessageMonitor {
+  addMessage: (topic: string, payload: unknown, timestamp?: string) => void;
+  getTopics?: () => string[];
+  getHistory?: <T = unknown>(topic: string) => MonitoredMessage<T>[];
 }
 
 export interface MockDashboardController {
@@ -251,9 +258,19 @@ const createStreamSet = (
   };
 };
 
+const REPLAY_TOPIC_MATCHERS: RegExp[] = [
+  /^module\/v1\//,
+  /^ccu\/pairing\/state$/,
+  /^ccu\/state\//,
+  /^fts\/v1\//,
+  /^warehouse\/stock/,
+];
+
+const shouldReplayTopic = (topic: string): boolean => REPLAY_TOPIC_MATCHERS.some((matcher) => matcher.test(topic));
+
 export const createMockDashboardController = (options?: {
   mqttClient?: MqttClientWrapper;
-  messageMonitor?: { addMessage: (topic: string, payload: unknown, timestamp?: string) => void };
+  messageMonitor?: DashboardMessageMonitor;
 }): MockDashboardController => {
   let messageSubject = new Subject<RawMqttMessage>();
   let mqttClient = options?.mqttClient; // Store in closure (mutable)
@@ -278,6 +295,39 @@ export const createMockDashboardController = (options?: {
       }
     });
   }
+  const shouldReplayPersistedMessages = (): boolean =>
+    Boolean(mqttClient && messageMonitor?.getTopics && messageMonitor.getHistory);
+
+  const replayPersistedMessages = () => {
+    if (!shouldReplayPersistedMessages()) {
+      return;
+    }
+    try {
+      const topics = messageMonitor!.getTopics!();
+      topics.forEach((topic) => {
+        if (!shouldReplayTopic(topic)) {
+          return;
+        }
+        const history = messageMonitor!.getHistory!(topic);
+        if (!history || history.length === 0) {
+          return;
+        }
+        const lastMessage = history[history.length - 1];
+        messageSubject.next({
+          topic,
+          payload: lastMessage.payload,
+          timestamp: lastMessage.timestamp,
+        });
+      });
+    } catch (error) {
+      console.warn('[mock-dashboard] Failed to replay persisted messages', error);
+    }
+  };
+
+  if (shouldReplayPersistedMessages()) {
+    replayPersistedMessages();
+  }
+
   let currentReplays: Subscription[] = [];
   let currentFixture: OrderFixtureName = 'startup';
   const streamsSubject = new BehaviorSubject<DashboardStreamSet>(bundle.streams);
@@ -329,6 +379,9 @@ export const createMockDashboardController = (options?: {
       });
     }
     bundle = createStreamSet(messageSubject, mqttClient);
+    if (shouldReplayPersistedMessages()) {
+      replayPersistedMessages();
+    }
     streamsSubject.next(bundle.streams);
   };
 
@@ -441,6 +494,9 @@ export const createMockDashboardController = (options?: {
       mqttClient = newMqttClient;
       // Recreate bundle with new MQTT client
       bundle = createStreamSet(messageSubject, mqttClient);
+      if (shouldReplayPersistedMessages()) {
+        replayPersistedMessages();
+      }
       // Update MQTT subscription if needed
       if (mqttSubscription) {
         mqttSubscription.unsubscribe();
@@ -482,18 +538,34 @@ export const createMockDashboardController = (options?: {
 
 let sharedController: MockDashboardController | null = null;
 let mqttClientRef: MqttClientWrapper | undefined;
-let messageMonitorRef: { addMessage: (topic: string, payload: unknown, timestamp?: string) => void } | undefined;
+let messageMonitorRef: DashboardMessageMonitor | undefined;
 
 export const getDashboardController = (
   mqttClient?: MqttClientWrapper,
-  messageMonitor?: { addMessage: (topic: string, payload: unknown, timestamp?: string) => void }
+  messageMonitor?: DashboardMessageMonitor
 ): MockDashboardController => {
-  // If MQTT client changed or controller doesn't exist, recreate it
-  if (!sharedController || (mqttClient && mqttClient !== mqttClientRef) || (messageMonitor && messageMonitor !== messageMonitorRef)) {
+  // Create controller once
+  if (!sharedController) {
     mqttClientRef = mqttClient;
     messageMonitorRef = messageMonitor;
     sharedController = createMockDashboardController({ mqttClient, messageMonitor });
+    return sharedController;
   }
+
+  // Update MQTT client for existing controller without recreating streams
+  if (mqttClient && mqttClient !== mqttClientRef) {
+    mqttClientRef = mqttClient;
+    if (sharedController.updateMqttClient) {
+      sharedController.updateMqttClient(mqttClient);
+    }
+  }
+
+  // MessageMonitor is only relevant in mock mode; if it changes recreate controller
+  if (messageMonitor && messageMonitor !== messageMonitorRef) {
+    messageMonitorRef = messageMonitor;
+    sharedController = createMockDashboardController({ mqttClient: mqttClientRef, messageMonitor });
+  }
+
   return sharedController;
 };
 

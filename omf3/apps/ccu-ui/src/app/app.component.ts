@@ -7,7 +7,7 @@ import { EnvironmentKey, EnvironmentService } from './services/environment.servi
 import { RoleService, UserRole } from './services/role.service';
 import { LanguageService, LocaleKey } from './services/language.service';
 import { ConnectionService, ConnectionState } from './services/connection.service';
-import { getDashboardController } from './mock-dashboard';
+import { getDashboardController, type DashboardMessageMonitor } from './mock-dashboard';
 import { MessageMonitorService } from './services/message-monitor.service';
 import { Subscription } from 'rxjs';
 
@@ -138,6 +138,7 @@ export class AppComponent implements OnDestroy {
   };
 
   private readonly subscriptions = new Subscription();
+  private readonly dashboardMessageMonitor: DashboardMessageMonitor;
 
   constructor(
     private readonly environmentService: EnvironmentService,
@@ -171,12 +172,16 @@ export class AppComponent implements OnDestroy {
       })
     );
 
+    this.dashboardMessageMonitor = {
+      addMessage: (topic: string, payload: unknown, timestamp?: string) =>
+        this.messageMonitor.addMessage(topic, payload, timestamp),
+      getTopics: () => this.messageMonitor.getTopics(),
+      getHistory: <T>(topic: string) => this.messageMonitor.getHistory<T>(topic),
+    };
+
     // Initialize dashboard controller for mock mode with MessageMonitor
     if (this.environmentService.current.key === 'mock') {
-      getDashboardController(undefined, { 
-        addMessage: (topic: string, payload: unknown, timestamp?: string) => 
-          this.messageMonitor.addMessage(topic, payload, timestamp)
-      });
+      getDashboardController(undefined, this.dashboardMessageMonitor);
     }
     
     // Update dashboard controller when MQTT client becomes available
@@ -186,7 +191,7 @@ export class AppComponent implements OnDestroy {
           const mqttClient = this.connectionService.mqttClient;
           if (mqttClient) {
             // Recreate dashboard controller with MQTT client for live/replay mode
-            const controller = getDashboardController(mqttClient);
+            const controller = getDashboardController(mqttClient, this.dashboardMessageMonitor);
             // Also update existing controller if it has updateMqttClient method
             if (controller.updateMqttClient) {
               controller.updateMqttClient(mqttClient);
@@ -201,10 +206,7 @@ export class AppComponent implements OnDestroy {
     this.subscriptions.add(
       this.environmentService.environment$.subscribe((environment) => {
         if (environment.key === 'mock') {
-          getDashboardController(undefined, { 
-            addMessage: (topic: string, payload: unknown, timestamp?: string) => 
-              this.messageMonitor.addMessage(topic, payload, timestamp)
-          });
+          getDashboardController(undefined, this.dashboardMessageMonitor);
         }
       })
     );
@@ -256,10 +258,7 @@ export class AppComponent implements OnDestroy {
   async resetFactory(): Promise<void> {
     const environment = this.environmentService.current.key;
     if (environment === 'mock') {
-      const controller = getDashboardController(undefined, { 
-        addMessage: (topic: string, payload: unknown, timestamp?: string) => 
-          this.messageMonitor.addMessage(topic, payload, timestamp)
-      });
+      const controller = getDashboardController(undefined, this.dashboardMessageMonitor);
       void controller.loadFixture('startup');
       return;
     }

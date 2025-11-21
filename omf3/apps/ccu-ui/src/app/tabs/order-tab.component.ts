@@ -1,13 +1,14 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import type { OrderActive } from '@omf3/entities';
 import { getDashboardController } from '../mock-dashboard';
 import { OrderCardComponent } from '../components/order-card/order-card.component';
 import type { OrderFixtureName } from '@omf3/testing-fixtures';
-import { filter, map, shareReplay, startWith } from 'rxjs/operators';
-import { combineLatest, merge, Observable, of } from 'rxjs';
+import { filter, map, shareReplay, startWith, distinctUntilChanged } from 'rxjs/operators';
+import { combineLatest, merge, Observable, of, Subscription } from 'rxjs';
 import { EnvironmentService } from '../services/environment.service';
 import { MessageMonitorService } from '../services/message-monitor.service';
+import { ConnectionService } from '../services/connection.service';
 
 const ORDER_TYPES = {
   PRODUCTION: 'PRODUCTION',
@@ -41,13 +42,17 @@ const getOrderTimestamp = (order: OrderActive): number => {
   styleUrl: './order-tab.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class OrderTabComponent implements OnInit {
-  private readonly dashboard = getDashboardController();
+export class OrderTabComponent implements OnInit, OnDestroy {
+  private dashboard = getDashboardController();
+  private readonly subscriptions = new Subscription();
 
   constructor(
     private readonly environmentService: EnvironmentService,
-    private readonly messageMonitor: MessageMonitorService
-  ) {}
+    private readonly messageMonitor: MessageMonitorService,
+    private readonly connectionService: ConnectionService
+  ) {
+    this.initializeStreams();
+  }
 
   get isMockMode(): boolean {
     return this.environmentService.current.key === 'mock';
@@ -205,11 +210,34 @@ export class OrderTabComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.bindOrderStreams();
-    // Only load fixture in mock mode; in live/replay mode, streams are already connected
+    this.subscriptions.add(
+      this.connectionService.state$
+        .pipe(distinctUntilChanged())
+        .subscribe((state) => {
+          if (state === 'connected') {
+            this.initializeStreams();
+          }
+        })
+    );
+
+    this.subscriptions.add(
+      this.environmentService.environment$
+        .pipe(distinctUntilChanged((prev, next) => prev.key === next.key))
+        .subscribe((environment) => {
+          this.initializeStreams();
+          if (environment.key === 'mock') {
+            void this.loadFixture(this.activeFixture);
+          }
+        })
+    );
+
     if (this.isMockMode) {
       void this.loadFixture(this.activeFixture);
     }
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 
   async loadFixture(fixture: OrderFixtureName) {
@@ -218,6 +246,13 @@ export class OrderTabComponent implements OnInit {
     }
     this.activeFixture = fixture;
     await this.dashboard.loadFixture(fixture);
+    this.bindOrderStreams();
+  }
+
+  private initializeStreams(): void {
+    const controller = getDashboardController();
+    this.dashboard = controller;
+    this.activeFixture = controller.getCurrentFixture();
     this.bindOrderStreams();
   }
 }

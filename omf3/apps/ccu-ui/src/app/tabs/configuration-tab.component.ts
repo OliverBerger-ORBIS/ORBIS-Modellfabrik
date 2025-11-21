@@ -1,15 +1,15 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import type { CcuConfigSnapshot, ModuleOverviewState } from '@omf3/entities';
 import { SHOPFLOOR_ASSET_MAP, type OrderFixtureName } from '@omf3/testing-fixtures';
-import { BehaviorSubject, type Observable, combineLatest } from 'rxjs';
-import { map, shareReplay, tap, filter, startWith } from 'rxjs/operators';
-import { merge } from 'rxjs';
-import { getDashboardController } from '../mock-dashboard';
+import { BehaviorSubject, type Observable, combineLatest, merge, Subscription } from 'rxjs';
+import { map, shareReplay, tap, filter, startWith, distinctUntilChanged } from 'rxjs/operators';
+import { getDashboardController, type DashboardStreamSet } from '../mock-dashboard';
 import { MessageMonitorService } from '../services/message-monitor.service';
 import { ModuleNameService } from '../services/module-name.service';
 import { EnvironmentService } from '../services/environment.service';
+import { ConnectionService } from '../services/connection.service';
 import { ShopfloorPreviewComponent } from '../components/shopfloor-preview/shopfloor-preview.component';
 import type { ShopfloorLayoutConfig, ShopfloorCellConfig } from '../components/shopfloor-preview/shopfloor-layout.types';
 
@@ -77,9 +77,10 @@ interface ConfigurationViewModel {
   styleUrl: './configuration-tab.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ConfigurationTabComponent {
-  private readonly dashboard = getDashboardController();
+export class ConfigurationTabComponent implements OnInit, OnDestroy {
+  private dashboard = getDashboardController();
   private readonly selectedCellSubject = new BehaviorSubject<string | null>(null);
+  private readonly subscriptions = new Subscription();
 
   readonly yesLabel = $localize`:@@commonYes:Yes`;
   readonly noLabel = $localize`:@@commonNo:No`;
@@ -119,19 +120,12 @@ export class ConfigurationTabComponent {
 
   private readonly layoutInfo$: Observable<LayoutViewModel>;
 
-  // Subscribe directly to dashboard streams - they already have shareReplay with startWith
-  // Use refCount: false to keep streams alive even when no subscribers
-  private moduleOverview$: Observable<ModuleOverviewState> = this.dashboard.streams.moduleOverview$.pipe(
-    shareReplay({ bufferSize: 1, refCount: false })
-  );
-
-  // Subscribe directly to dashboard streams - they already have shareReplay with startWith
-  // Use refCount: false to keep streams alive even when no subscribers
-  private configSnapshot$: Observable<CcuConfigSnapshot>;
+  private moduleOverview$!: Observable<ModuleOverviewState>;
+  private configSnapshot$!: Observable<CcuConfigSnapshot>;
 
   readonly selectedCell$ = this.selectedCellSubject.asObservable();
 
-  viewModel$: Observable<ConfigurationViewModel>;
+  viewModel$!: Observable<ConfigurationViewModel>;
 
   readonly fixtureOptions: OrderFixtureName[] = ['startup', 'white', 'white_step3', 'blue', 'red', 'mixed', 'storage'];
   readonly fixtureLabels: Record<OrderFixtureName, string> = {
@@ -149,20 +143,9 @@ export class ConfigurationTabComponent {
     private readonly http: HttpClient,
     private readonly messageMonitor: MessageMonitorService,
     private readonly moduleNameService: ModuleNameService,
-    private readonly environmentService: EnvironmentService
+    private readonly environmentService: EnvironmentService,
+    private readonly connectionService: ConnectionService
   ) {
-    // config$ doesn't have startWith in gateway layer, so merge MessageMonitor last value with dashboard stream
-    const lastConfig = this.messageMonitor.getLastMessage<CcuConfigSnapshot>('ccu/state/config').pipe(
-      // Filter first: only process valid messages
-      filter((msg) => msg !== null && msg.valid),
-      // Map second: extract payload from valid messages
-      map((msg) => msg!.payload),
-      // StartWith last: provide empty config as fallback if no valid message exists
-      startWith({} as CcuConfigSnapshot)
-    );
-    this.configSnapshot$ = merge(lastConfig, this.dashboard.streams.config$).pipe(
-      shareReplay({ bufferSize: 1, refCount: false })
-    );
     this.layoutInfo$ = this.http.get<ShopfloorLayoutConfig>('shopfloor/shopfloor_layout.json').pipe(
       map((layout) => this.buildLayout(layout)),
       tap((layout) => {
@@ -172,69 +155,7 @@ export class ConfigurationTabComponent {
       }),
       shareReplay({ bufferSize: 1, refCount: true })
     );
-    this.viewModel$ = combineLatest([
-      this.layoutInfo$,
-      this.moduleOverview$,
-      this.selectedCell$,
-      this.configSnapshot$,
-    ]).pipe(
-      map(([layout, overview, selectedCellId, config]) => {
-        const cells = layout.cells.map((cell) => ({
-          ...cell,
-          isSelected: cell.id === selectedCellId,
-        }));
-
-        const selectedCell =
-          cells.find((cell) => cell.id === selectedCellId) ?? (cells.length ? cells[0] : null);
-
-        const selection = this.buildSelectedDetails(selectedCell, overview);
-        const parameterCards = this.buildParameterCards(config);
-
-        const highlightModules: string[] = [];
-        const highlightFixed: string[] = [];
-
-        if (selectedCell) {
-          if (selectedCell.kind === 'module') {
-            highlightModules.push(selectedCell.id);
-            if (selectedCell.type) {
-              highlightModules.push(selectedCell.type);
-            }
-            if (selectedCell.serialNumber) {
-              highlightModules.push(`serial:${selectedCell.serialNumber}`);
-            }
-          } else if (selectedCell.kind === 'fixed') {
-            highlightFixed.push(selectedCell.id);
-            if (selectedCell.type) {
-              highlightFixed.push(selectedCell.type);
-            }
-          }
-        }
-
-        const badgeText = $localize`:@@configurationBadgeShopfloor:SHOPFLOOR LAYOUT`;
-        const infoText = selectedCell
-          ? selectedCell.kind === 'module'
-            ? (() => {
-                const moduleDisplay = this.moduleNameService.getModuleDisplayName(selectedCell.type ?? selectedCell.label);
-                return `Module ${moduleDisplay.fullName}`;
-              })()
-            : $localize`:@@configurationInfoArea:Area ${selectedCell.label}`
-          : $localize`:@@configurationInfoDefault:Shopfloor layout overview`;
-
-        return {
-          layout: {
-            columns: layout.columns,
-            rows: layout.rows,
-            cells,
-          },
-          selection,
-          parameterCards,
-          highlightModules,
-          highlightFixed,
-          badgeText,
-          infoText,
-        };
-      })
-    );
+    this.initializeStreams();
   }
 
   selectCell(cellId: string): void {
@@ -479,10 +400,34 @@ export class ConfigurationTabComponent {
   }
 
   ngOnInit(): void {
-    // Only load fixture in mock mode; in live/replay mode, streams are already connected
+    this.subscriptions.add(
+      this.connectionService.state$
+        .pipe(distinctUntilChanged())
+        .subscribe((state) => {
+          if (state === 'connected') {
+            this.initializeStreams();
+          }
+        })
+    );
+
+    this.subscriptions.add(
+      this.environmentService.environment$
+        .pipe(distinctUntilChanged((prev, next) => prev.key === next.key))
+        .subscribe((environment) => {
+          this.initializeStreams();
+          if (environment.key === 'mock') {
+            void this.loadFixture(this.activeFixture);
+          }
+        })
+    );
+
     if (this.isMockMode) {
       void this.loadFixture(this.activeFixture);
     }
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 
   async loadFixture(fixture: OrderFixtureName): Promise<void> {
@@ -492,87 +437,99 @@ export class ConfigurationTabComponent {
     this.activeFixture = fixture;
     try {
       const streams = await this.dashboard.loadFixture(fixture);
-      // Rebind streams
-      this.moduleOverview$ = streams.moduleOverview$.pipe(
-        shareReplay({ bufferSize: 1, refCount: false })
-      );
-      // Rebind config$ with MessageMonitor merge
-      const lastConfig = this.messageMonitor.getLastMessage<CcuConfigSnapshot>('ccu/state/config').pipe(
-        filter((msg) => msg !== null && msg.valid),
-        map((msg) => msg!.payload),
-        startWith({} as CcuConfigSnapshot)
-      );
-      this.configSnapshot$ = merge(lastConfig, streams.config$).pipe(
-        shareReplay({ bufferSize: 1, refCount: false })
-      );
-      // Rebind viewModel$
-      this.viewModel$ = combineLatest([
-        this.layoutInfo$,
-        this.moduleOverview$,
-        this.selectedCell$,
-        this.configSnapshot$,
-      ]).pipe(
-        map(([layout, overview, selectedCellId, config]) => {
-          const cells = layout.cells.map((cell) => ({
-            ...cell,
-            isSelected: cell.id === selectedCellId,
-          }));
-
-          const selectedCell =
-            cells.find((cell) => cell.id === selectedCellId) ?? (cells.length ? cells[0] : null);
-
-          const selection = this.buildSelectedDetails(selectedCell, overview);
-          const parameterCards = this.buildParameterCards(config);
-
-          const highlightModules: string[] = [];
-          const highlightFixed: string[] = [];
-
-          if (selectedCell) {
-            if (selectedCell.kind === 'module') {
-              highlightModules.push(selectedCell.id);
-              if (selectedCell.type) {
-                highlightModules.push(selectedCell.type);
-              }
-              if (selectedCell.serialNumber) {
-                highlightModules.push(`serial:${selectedCell.serialNumber}`);
-              }
-            } else if (selectedCell.kind === 'fixed') {
-              highlightFixed.push(selectedCell.id);
-              if (selectedCell.type) {
-                highlightFixed.push(selectedCell.type);
-              }
-            }
-          }
-
-          const badgeText = $localize`:@@configurationBadgeShopfloor:SHOPFLOOR LAYOUT`;
-          const infoText = selectedCell
-            ? selectedCell.kind === 'module'
-              ? (() => {
-                  const moduleDisplay = this.moduleNameService.getModuleDisplayName(selectedCell.type ?? selectedCell.label);
-                  return `Module ${moduleDisplay.fullName}`;
-                })()
-              : $localize`:@@configurationInfoArea:Area ${selectedCell.label}`
-            : $localize`:@@configurationInfoDefault:Shopfloor layout overview`;
-
-          return {
-            layout: {
-              columns: layout.columns,
-              rows: layout.rows,
-              cells,
-            },
-            selection,
-            parameterCards,
-            highlightModules,
-            highlightFixed,
-            badgeText,
-            infoText,
-          };
-        }),
-        shareReplay({ bufferSize: 1, refCount: false })
-      );
+      this.bindStreams(streams);
     } catch (error) {
       console.warn('Failed to load configuration fixture', fixture, error);
     }
+  }
+
+  private initializeStreams(): void {
+    const controller = getDashboardController();
+    this.dashboard = controller;
+    this.activeFixture = controller.getCurrentFixture();
+    this.bindStreams();
+  }
+
+  private bindStreams(streams?: DashboardStreamSet): void {
+    this.moduleOverview$ = (streams?.moduleOverview$ ?? this.dashboard.streams.moduleOverview$).pipe(
+      shareReplay({ bufferSize: 1, refCount: false })
+    );
+
+    const lastConfig = this.messageMonitor.getLastMessage<CcuConfigSnapshot>('ccu/state/config').pipe(
+      filter((msg) => msg !== null && msg.valid),
+      map((msg) => msg!.payload),
+      startWith({} as CcuConfigSnapshot)
+    );
+
+    // Pattern enforcement: merge(lastConfig, this.dashboard.streams.config$)
+    this.configSnapshot$ = merge(lastConfig, streams?.config$ ?? this.dashboard.streams.config$).pipe(
+      shareReplay({ bufferSize: 1, refCount: false })
+    );
+
+    this.viewModel$ = combineLatest([
+      this.layoutInfo$,
+      this.moduleOverview$,
+      this.selectedCell$,
+      this.configSnapshot$,
+    ]).pipe(
+      map(([layout, overview, selectedCellId, config]) => {
+        const cells = layout.cells.map((cell) => ({
+          ...cell,
+          isSelected: cell.id === selectedCellId,
+        }));
+
+        const selectedCell =
+          cells.find((cell) => cell.id === selectedCellId) ?? (cells.length ? cells[0] : null);
+
+        const selection = this.buildSelectedDetails(selectedCell, overview);
+        const parameterCards = this.buildParameterCards(config);
+
+        const highlightModules: string[] = [];
+        const highlightFixed: string[] = [];
+
+        if (selectedCell) {
+          if (selectedCell.kind === 'module') {
+            highlightModules.push(selectedCell.id);
+            if (selectedCell.type) {
+              highlightModules.push(selectedCell.type);
+            }
+            if (selectedCell.serialNumber) {
+              highlightModules.push(`serial:${selectedCell.serialNumber}`);
+            }
+          } else if (selectedCell.kind === 'fixed') {
+            highlightFixed.push(selectedCell.id);
+            if (selectedCell.type) {
+              highlightFixed.push(selectedCell.type);
+            }
+          }
+        }
+
+        const badgeText = $localize`:@@configurationBadgeShopfloor:SHOPFLOOR LAYOUT`;
+        const infoText = selectedCell
+          ? selectedCell.kind === 'module'
+            ? (() => {
+                const moduleDisplay = this.moduleNameService.getModuleDisplayName(selectedCell.type ?? selectedCell.label);
+                return `Module ${moduleDisplay.fullName}`;
+              })()
+            : $localize`:@@configurationInfoArea:Area ${selectedCell.label}`
+          : $localize`:@@configurationInfoDefault:Shopfloor layout overview`;
+
+        return {
+          layout: {
+            columns: layout.columns,
+            rows: layout.rows,
+            cells,
+          },
+          selection,
+          parameterCards,
+          highlightModules,
+          highlightFixed,
+          badgeText,
+          infoText,
+        };
+      }),
+      shareReplay({ bufferSize: 1, refCount: false })
+    );
   }
 }
 

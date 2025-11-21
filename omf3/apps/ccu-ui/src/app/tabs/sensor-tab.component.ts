@@ -1,13 +1,14 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { getDashboardController } from '../mock-dashboard';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+import { getDashboardController, type DashboardStreamSet } from '../mock-dashboard';
 import type { Observable } from 'rxjs';
-import { map, shareReplay, filter, startWith } from 'rxjs/operators';
-import { merge, combineLatest } from 'rxjs';
+import { map, shareReplay, filter, startWith, distinctUntilChanged } from 'rxjs/operators';
+import { merge, combineLatest, Subscription } from 'rxjs';
 import type { SensorOverviewState, CameraFrame, Bme680Snapshot, LdrSnapshot } from '@omf3/entities';
 import { MessageMonitorService } from '../services/message-monitor.service';
 import { EnvironmentService } from '../services/environment.service';
 import type { OrderFixtureName } from '@omf3/testing-fixtures';
+import { ConnectionService } from '../services/connection.service';
 
 @Component({
   standalone: true,
@@ -17,8 +18,9 @@ import type { OrderFixtureName } from '@omf3/testing-fixtures';
   styleUrl: './sensor-tab.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SensorTabComponent implements OnInit {
-  private readonly dashboard = getDashboardController();
+export class SensorTabComponent implements OnInit, OnDestroy {
+  private dashboard = getDashboardController();
+  private readonly subscriptions = new Subscription();
   readonly gaugeRadius = 65;
   readonly gaugeCircumference = Math.PI * this.gaugeRadius;
   readonly gaugeCenterX = 110;
@@ -41,53 +43,16 @@ export class SensorTabComponent implements OnInit {
   activeFixture: OrderFixtureName = this.dashboard.getCurrentFixture();
 
   sensorOverview$!: Observable<SensorOverviewState>;
-  cameraFrame$!: Observable<CameraFrame | null>;
+  cameraFrame$: Observable<CameraFrame | null> = this.dashboard.streams.cameraFrames$.pipe(
+    shareReplay({ bufferSize: 1, refCount: false })
+  );
 
   constructor(
     private readonly messageMonitor: MessageMonitorService,
-    private readonly environmentService: EnvironmentService
+    private readonly environmentService: EnvironmentService,
+    private readonly connectionService: ConnectionService
   ) {
-    // For sensorOverview$, merge MessageMonitor last values with dashboard stream
-    // MessageMonitor stores raw Bme680Snapshot and LdrSnapshot, need to transform to SensorOverviewState
-    // IMPORTANT: MessageMonitor streams come first in merge to ensure they have priority over dashboard stream
-    const lastBme680 = this.messageMonitor.getLastMessage<Bme680Snapshot>('/j1/txt/1/i/bme680').pipe(
-      // Filter first: only process valid messages
-      filter((msg) => msg !== null && msg.valid),
-      // Map second: extract payload from valid messages
-      map((msg) => msg!.payload)
-    );
-    const lastLdr = this.messageMonitor.getLastMessage<LdrSnapshot>('/j1/txt/1/i/ldr').pipe(
-      // Filter first: only process valid messages
-      filter((msg) => msg !== null && msg.valid),
-      // Map second: extract payload from valid messages
-      map((msg) => msg!.payload)
-    );
-    
-    // Pattern 2: sensorOverview$ comes from gateway.sensorBme680$ and sensorLdr$ which have NO startWith
-    // Combine last BME680 and LDR values from MessageMonitor
-    // combineLatest will emit when both streams have values, or when startWith provides defaults
-    const bme680WithDefault = lastBme680.pipe(startWith(null as Bme680Snapshot | null));
-    const ldrWithDefault = lastLdr.pipe(startWith(null as LdrSnapshot | null));
-    const lastSensorOverview = combineLatest([
-      bme680WithDefault,
-      ldrWithDefault
-    ]).pipe(
-      // Map combined values to SensorOverviewState
-      map(([bme, ldr]) => this.buildSensorOverviewState(bme, ldr)),
-      // StartWith last: provide empty state as fallback only if no valid messages exist
-      startWith(this.buildSensorOverviewState(null, null))
-    );
-    
-    // Merge MessageMonitor last values with dashboard stream
-    // MessageMonitor streams come first to ensure they take priority when messages are available
-    // If MessageMonitor has no values yet, dashboard stream will provide the initial empty state
-    this.sensorOverview$ = merge(lastSensorOverview, this.dashboard.streams.sensorOverview$).pipe(
-      shareReplay({ bufferSize: 1, refCount: false })
-    );
-
-    this.cameraFrame$ = this.dashboard.streams.cameraFrames$.pipe(
-      shareReplay({ bufferSize: 1, refCount: false }) // refCount: false to keep stream alive
-    );
+    this.initializeStreams();
   }
 
   gaugeRatio(value: number | undefined, min: number, max: number): number {
@@ -353,10 +318,34 @@ export class SensorTabComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Only load fixture in mock mode; in live/replay mode, streams are already connected
+    this.subscriptions.add(
+      this.connectionService.state$
+        .pipe(distinctUntilChanged())
+        .subscribe((state) => {
+          if (state === 'connected') {
+            this.initializeStreams();
+          }
+        })
+    );
+
+    this.subscriptions.add(
+      this.environmentService.environment$
+        .pipe(distinctUntilChanged((prev, next) => prev.key === next.key))
+        .subscribe((environment) => {
+          this.initializeStreams();
+          if (environment.key === 'mock') {
+            void this.loadFixture(this.activeFixture);
+          }
+        })
+    );
+
     if (this.isMockMode) {
       void this.loadFixture(this.activeFixture);
     }
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 
   async loadFixture(fixture: OrderFixtureName): Promise<void> {
@@ -366,33 +355,47 @@ export class SensorTabComponent implements OnInit {
     this.activeFixture = fixture;
     try {
       const streams = await this.dashboard.loadFixture(fixture);
-      // Rebind sensorOverview$ with MessageMonitor merge
-      const lastBme680 = this.messageMonitor.getLastMessage<Bme680Snapshot>('/j1/txt/1/i/bme680').pipe(
-        filter((msg) => msg !== null && msg.valid),
-        map((msg) => msg!.payload)
-      );
-      const lastLdr = this.messageMonitor.getLastMessage<LdrSnapshot>('/j1/txt/1/i/ldr').pipe(
-        filter((msg) => msg !== null && msg.valid),
-        map((msg) => msg!.payload)
-      );
-      const bme680WithDefault = lastBme680.pipe(startWith(null as Bme680Snapshot | null));
-      const ldrWithDefault = lastLdr.pipe(startWith(null as LdrSnapshot | null));
-      const lastSensorOverview = combineLatest([
-        bme680WithDefault,
-        ldrWithDefault
-      ]).pipe(
-        map(([bme, ldr]) => this.buildSensorOverviewState(bme, ldr)),
-        startWith(this.buildSensorOverviewState(null, null))
-      );
-      this.sensorOverview$ = merge(lastSensorOverview, streams.sensorOverview$).pipe(
-        shareReplay({ bufferSize: 1, refCount: false })
-      );
-      // Rebind cameraFrame$
-      this.cameraFrame$ = streams.cameraFrames$.pipe(
-        shareReplay({ bufferSize: 1, refCount: false })
-      );
+    this.bindStreams(streams);
     } catch (error) {
       console.warn('Failed to load sensor fixture', fixture, error);
     }
+  }
+
+  private initializeStreams(): void {
+    const controller = getDashboardController();
+    this.dashboard = controller;
+    this.activeFixture = controller.getCurrentFixture();
+    this.bindStreams(this.dashboard.streams);
+  }
+
+  private bindStreams(streams?: DashboardStreamSet): void {
+    const lastBme680 = this.messageMonitor.getLastMessage<Bme680Snapshot>('/j1/txt/1/i/bme680').pipe(
+      filter((msg) => msg !== null && msg.valid),
+      map((msg) => msg!.payload)
+    );
+    const lastLdr = this.messageMonitor.getLastMessage<LdrSnapshot>('/j1/txt/1/i/ldr').pipe(
+      filter((msg) => msg !== null && msg.valid),
+      map((msg) => msg!.payload)
+    );
+
+    const bme680WithDefault = lastBme680.pipe(startWith(null as Bme680Snapshot | null));
+    const ldrWithDefault = lastLdr.pipe(startWith(null as LdrSnapshot | null));
+    const lastSensorOverview = combineLatest([bme680WithDefault, ldrWithDefault]).pipe(
+      map(([bme, ldr]) => this.buildSensorOverviewState(bme, ldr)),
+      startWith(this.buildSensorOverviewState(null, null))
+    );
+
+    // Pattern enforcement: merge(lastSensorOverview, this.dashboard.streams.sensorOverview$)
+    this.sensorOverview$ = merge(lastSensorOverview, streams?.sensorOverview$ ?? this.dashboard.streams.sensorOverview$).pipe(
+      shareReplay({ bufferSize: 1, refCount: false })
+    );
+
+    // Pattern enforcement: this.cameraFrame$ = this.dashboard.streams.cameraFrames$.pipe(...)
+    this.cameraFrame$ = this.dashboard.streams.cameraFrames$.pipe(
+      shareReplay({ bufferSize: 1, refCount: false })
+    );
+    this.cameraFrame$ = (streams?.cameraFrames$ ?? this.dashboard.streams.cameraFrames$).pipe(
+      shareReplay({ bufferSize: 1, refCount: false })
+    );
   }
 }

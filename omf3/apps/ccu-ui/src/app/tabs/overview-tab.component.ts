@@ -1,15 +1,16 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import type { FtsState, OrderActive, InventoryOverviewState, InventorySlotState, StockSnapshot } from '@omf3/entities';
 import { getDashboardController, type DashboardStreamSet } from '../mock-dashboard';
 import { OrdersViewComponent } from '../orders-view.component';
 import { FtsViewComponent } from '../fts-view.component';
 import type { OrderFixtureName } from '@omf3/testing-fixtures';
 import type { Observable } from 'rxjs';
-import { map, shareReplay, filter, startWith } from 'rxjs/operators';
-import { merge } from 'rxjs';
+import { map, shareReplay, filter, startWith, distinctUntilChanged } from 'rxjs/operators';
+import { merge, Subscription } from 'rxjs';
 import { EnvironmentService } from '../services/environment.service';
 import { MessageMonitorService } from '../services/message-monitor.service';
+import { ConnectionService } from '../services/connection.service';
 
 const INVENTORY_LOCATIONS = ['A1', 'A2', 'A3', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3'];
 const WORKPIECE_TYPES = ['BLUE', 'WHITE', 'RED'] as const;
@@ -44,44 +45,16 @@ const MAX_CAPACITY = 3;
   styleUrl: './overview-tab.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class OverviewTabComponent implements OnInit {
+export class OverviewTabComponent implements OnInit, OnDestroy {
   private dashboard = getDashboardController();
+  private readonly subscriptions = new Subscription();
 
   constructor(
     private readonly environmentService: EnvironmentService,
-    private readonly messageMonitor: MessageMonitorService
+    private readonly messageMonitor: MessageMonitorService,
+    private readonly connectionService: ConnectionService
   ) {
-    // Pattern 2: inventoryOverview$ comes from gateway.stockSnapshots$ which has NO startWith
-    // Therefore we need MessageMonitorService to get the last value immediately
-    const lastInventory = this.messageMonitor.getLastMessage<StockSnapshot>('ccu/state/stock').pipe(
-      // Filter first: only process valid messages
-      filter((msg) => msg !== null && msg.valid),
-      // Map second: transform valid messages to InventoryOverviewState
-      map((msg) => this.buildInventoryOverviewFromSnapshot(msg!.payload)),
-      // StartWith last: provide empty state as fallback only if no valid message exists
-      startWith({ slots: {}, availableCounts: {}, reservedCounts: {}, lastUpdated: new Date().toISOString() } as InventoryOverviewState)
-    );
-    // Merge MessageMonitor last value with dashboard stream
-    // MessageMonitor stream comes first to ensure it takes priority when messages are available
-    this.inventoryOverview$ = merge(lastInventory, this.dashboard.streams.inventoryOverview$).pipe(
-      shareReplay({ bufferSize: 1, refCount: false })
-    );
-    this.availableCounts$ = this.inventoryOverview$.pipe(map((state) => state.availableCounts));
-    this.reservedCounts$ = this.inventoryOverview$.pipe(map((state) => state.reservedCounts));
-    this.inventorySlots$ = this.inventoryOverview$.pipe(
-      map((state) => INVENTORY_LOCATIONS.map((location) => state.slots[location] ?? { location, workpiece: null }))
-    );
-
-    // Other streams that have startWith in business layer should work fine
-    this.orders$ = this.dashboard.streams.orders$.pipe(
-      shareReplay({ bufferSize: 1, refCount: false })
-    );
-    this.orderCounts$ = this.dashboard.streams.orderCounts$.pipe(
-      shareReplay({ bufferSize: 1, refCount: false })
-    );
-    this.ftsStates$ = this.dashboard.streams.ftsStates$.pipe(
-      shareReplay({ bufferSize: 1, refCount: false })
-    );
+    this.initializeStreams();
   }
 
   get isMockMode(): boolean {
@@ -101,13 +74,13 @@ export class OverviewTabComponent implements OnInit {
     storage: $localize`:@@fixtureLabelStorage:Storage`,
   };
 
-  orders$: Observable<OrderActive[]>;
-  orderCounts$: Observable<Record<'running' | 'queued' | 'completed', number>>;
-  ftsStates$: Observable<Record<string, FtsState>>;
-  inventoryOverview$: Observable<InventoryOverviewState>;
-  availableCounts$: Observable<Record<string, number>>;
-  reservedCounts$: Observable<Record<string, number>>;
-  inventorySlots$: Observable<InventorySlotState[]>;
+  orders$!: Observable<OrderActive[]>;
+  orderCounts$!: Observable<Record<'running' | 'queued' | 'completed', number>>;
+  ftsStates$!: Observable<Record<string, FtsState>>;
+  inventoryOverview$!: Observable<InventoryOverviewState>;
+  availableCounts$!: Observable<Record<string, number>>;
+  reservedCounts$!: Observable<Record<string, number>>;
+  inventorySlots$!: Observable<InventorySlotState[]>;
 
   productIcons = PRODUCT_ICON_MAP;
   rawIcons = RAW_ICON_MAP;
@@ -129,10 +102,34 @@ export class OverviewTabComponent implements OnInit {
   readonly purchaseOrdersIcon = 'headings/box.svg';
 
   ngOnInit(): void {
-    // Only load fixture in mock mode; in live/replay mode, streams are already initialized in constructor
+    this.subscriptions.add(
+      this.connectionService.state$
+        .pipe(distinctUntilChanged())
+        .subscribe((state) => {
+          if (state === 'connected') {
+            this.initializeStreams();
+          }
+        })
+    );
+
+    this.subscriptions.add(
+      this.environmentService.environment$
+        .pipe(distinctUntilChanged((prev, next) => prev.key === next.key))
+        .subscribe((environment) => {
+          this.initializeStreams();
+          if (environment.key === 'mock') {
+            void this.loadFixture(this.activeFixture);
+          }
+        })
+    );
+
     if (this.isMockMode) {
       void this.loadFixture(this.activeFixture);
     }
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 
   async loadFixture(fixture: OrderFixtureName) {
@@ -146,11 +143,7 @@ export class OverviewTabComponent implements OnInit {
       this.orderCounts$ = streams.orderCounts$;
       this.ftsStates$ = streams.ftsStates$;
       // Rebind inventoryOverview$ with MessageMonitor merge (same pattern as constructor)
-      const lastInventory = this.messageMonitor.getLastMessage<StockSnapshot>('ccu/state/stock').pipe(
-        filter((msg) => msg !== null && msg.valid),
-        map((msg) => this.buildInventoryOverviewFromSnapshot(msg!.payload)),
-        startWith({ slots: {}, availableCounts: {}, reservedCounts: {}, lastUpdated: new Date().toISOString() } as InventoryOverviewState)
-      );
+      const lastInventory = this.createInventoryPrefillStream();
       this.inventoryOverview$ = merge(lastInventory, streams.inventoryOverview$).pipe(
         shareReplay({ bufferSize: 1, refCount: false })
       );
@@ -312,6 +305,39 @@ export class OverviewTabComponent implements OnInit {
       reservedCounts,
       lastUpdated: snapshot?.ts ?? new Date().toISOString(),
     };
+  }
+
+  private initializeStreams(): void {
+    const controller = getDashboardController();
+    this.dashboard = controller;
+    this.activeFixture = controller.getCurrentFixture();
+
+    const lastInventory = this.createInventoryPrefillStream();
+    this.inventoryOverview$ = merge(lastInventory, this.dashboard.streams.inventoryOverview$).pipe(
+      shareReplay({ bufferSize: 1, refCount: false })
+    );
+    this.availableCounts$ = this.inventoryOverview$.pipe(map((state) => state.availableCounts));
+    this.reservedCounts$ = this.inventoryOverview$.pipe(map((state) => state.reservedCounts));
+    this.inventorySlots$ = this.inventoryOverview$.pipe(
+      map((state) => INVENTORY_LOCATIONS.map((location) => state.slots[location] ?? { location, workpiece: null }))
+    );
+
+    this.orders$ = this.dashboard.streams.orders$.pipe(shareReplay({ bufferSize: 1, refCount: false }));
+    this.orderCounts$ = this.dashboard.streams.orderCounts$.pipe(shareReplay({ bufferSize: 1, refCount: false }));
+    this.ftsStates$ = this.dashboard.streams.ftsStates$.pipe(shareReplay({ bufferSize: 1, refCount: false }));
+  }
+
+  private createInventoryPrefillStream(): Observable<InventoryOverviewState> {
+    return this.messageMonitor.getLastMessage<StockSnapshot>('ccu/state/stock').pipe(
+      filter((msg) => msg !== null && msg.valid),
+      map((msg) => this.buildInventoryOverviewFromSnapshot(msg!.payload)),
+      startWith({
+        slots: {},
+        availableCounts: {},
+        reservedCounts: {},
+        lastUpdated: new Date().toISOString(),
+      } as InventoryOverviewState)
+    );
   }
 }
 

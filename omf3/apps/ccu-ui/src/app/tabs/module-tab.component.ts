@@ -1,5 +1,5 @@
 import { AsyncPipe, NgFor, NgIf } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import type {
   ModuleOverviewState,
   ModuleAvailabilityStatus,
@@ -9,11 +9,11 @@ import type {
 import { SHOPFLOOR_ASSET_MAP, type OrderFixtureName } from '@omf3/testing-fixtures';
 import { getDashboardController } from '../mock-dashboard';
 import type { Observable } from 'rxjs';
-import { filter, map, shareReplay, startWith } from 'rxjs/operators';
-import { merge } from 'rxjs';
+import { distinctUntilChanged, map, shareReplay } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
 import { EnvironmentService } from '../services/environment.service';
-import { MessageMonitorService } from '../services/message-monitor.service';
 import { ModuleNameService } from '../services/module-name.service';
+import { ConnectionService } from '../services/connection.service';
 
 interface ModuleCommand {
   label: string;
@@ -92,34 +92,21 @@ const STATUS_ICONS = {
   styleUrls: ['./module-tab.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ModuleTabComponent implements OnInit {
-  private readonly dashboard = getDashboardController();
+export class ModuleTabComponent implements OnInit, OnDestroy {
+  private dashboard = getDashboardController();
+  private readonly subscriptions = new Subscription();
 
   constructor(
     private readonly environmentService: EnvironmentService,
-    private readonly messageMonitor: MessageMonitorService,
-    private readonly moduleNameService: ModuleNameService
+    private readonly moduleNameService: ModuleNameService,
+    private readonly connectionService: ConnectionService
   ) {
     // Pattern: Merge MessageMonitor last messages with dashboard streams
     // This ensures we get the latest module data even when connecting while factory is already running
     // Get last message for pairing state (single topic)
     // Note: Module factsheets come from multiple topics (module/v1/#), so the dashboard stream
     // handles those, but we use MessageMonitor for pairing state to ensure it's available immediately
-    const lastPairing = this.messageMonitor.getLastMessage('ccu/pairing/state').pipe(
-      filter((msg) => msg !== null && msg.valid),
-      map((msg) => msg!.payload),
-      startWith(null)
-    );
-    
-    // The dashboard stream already handles the full module overview state aggregation
-    // including pairing state, factsheets, etc. The MessageMonitor ensures that when
-    // connecting while factory is already running, the last pairing state is available
-    // and will be processed by the dashboard stream when it receives the message.
-    // We use the dashboard stream directly as it handles all the aggregation logic.
-    this.moduleOverview$ = this.dashboard.streams.moduleOverview$.pipe(
-      shareReplay({ bufferSize: 1, refCount: false })
-    );
-    this.rows$ = this.createRowsStream(this.moduleOverview$);
+    this.initializeStreams();
   }
 
   get isMockMode(): boolean {
@@ -140,16 +127,41 @@ export class ModuleTabComponent implements OnInit {
   activeFixture: OrderFixtureName = this.dashboard.getCurrentFixture();
   loading = false;
 
-  moduleOverview$: Observable<ModuleOverviewState>;
-  rows$: Observable<ModuleRow[]>;
+  moduleOverview$!: Observable<ModuleOverviewState>;
+  rows$!: Observable<ModuleRow[]>;
 
   readonly headingIcon = 'headings/mehrere.svg';
 
   ngOnInit(): void {
+    this.subscriptions.add(
+      this.connectionService.state$
+        .pipe(distinctUntilChanged())
+        .subscribe((state) => {
+          if (state === 'connected') {
+            this.initializeStreams();
+          }
+        })
+    );
+
+    this.subscriptions.add(
+      this.environmentService.environment$
+        .pipe(distinctUntilChanged((prev, next) => prev.key === next.key))
+        .subscribe((environment) => {
+          this.initializeStreams();
+          if (environment.key === 'mock') {
+            void this.loadFixture(this.activeFixture);
+          }
+        })
+    );
+
     // Only load fixture in mock mode; in live/replay mode, streams are already connected
     if (this.isMockMode) {
       void this.loadFixture(this.activeFixture);
     }
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 
   trackById(_: number, row: ModuleRow): string {
@@ -182,6 +194,17 @@ export class ModuleTabComponent implements OnInit {
     } finally {
       this.loading = false;
     }
+  }
+
+  private initializeStreams(): void {
+    const controller = getDashboardController();
+    this.dashboard = controller;
+    this.activeFixture = controller.getCurrentFixture();
+
+    this.moduleOverview$ = this.dashboard.streams.moduleOverview$.pipe(
+      shareReplay({ bufferSize: 1, refCount: false })
+    );
+    this.rows$ = this.createRowsStream(this.moduleOverview$);
   }
 
   private buildRows(state: ModuleOverviewState): ModuleRow[] {
