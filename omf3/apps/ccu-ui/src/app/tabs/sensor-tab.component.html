@@ -287,10 +287,10 @@
         <h4 i18n="@@sensorCameraControl">Camera Control</h4>
         <div class="camera-settings">
           <div class="camera-settings__left">
-            <label>
-              <span i18n="@@sensorStepSizeLabel">Step size (°)</span>
-              <input type="number" min="1" max="45" [value]="stepSize" (input)="onStepSizeChange($event)" />
-            </label>
+          <label>
+            <span i18n="@@sensorStepSizeLabel">Step size (°)</span>
+            <input type="number" min="1" max="45" [value]="stepSize" (input)="onStepSizeChange($event)" />
+          </label>
           </div>
           <div class="camera-settings__right">
             <button type="button" class="control-stop" (click)="stopCamera()" i18n="@@sensorControlStop">

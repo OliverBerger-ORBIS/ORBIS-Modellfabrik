@@ -173,7 +173,7 @@ export class ConnectionService {
     // List of all topics that need to be subscribed
     // MQTT wildcards: + = single level, # = multi-level
     const topics = [
-      'ccu/order/+',           // ccu/order/active, ccu/order/completed
+      'ccu/order/#',           // Capture all order-related topics (active, completed, future)
       'ccu/state/stock',       // Stock snapshots
       'ccu/state/flows',       // Process flows
       'ccu/state/config',      // Configuration

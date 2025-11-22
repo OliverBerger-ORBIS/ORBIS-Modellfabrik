@@ -164,7 +164,7 @@ export class OrderTabComponent implements OnInit, OnDestroy {
     ).pipe(
       shareReplay({ bufferSize: 1, refCount: false })
     );
-    
+
     // Convert Record<string, OrderActive> to OrderActive[]
     const orderList$ = ordersState$.pipe(
       map((ordersMap) => {

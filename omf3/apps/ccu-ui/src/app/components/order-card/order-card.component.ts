@@ -173,10 +173,10 @@ export class OrderCardComponent implements OnChanges {
 
     // If order is finished, use the end timestamp
     if (this.isOrderFinished()) {
-      const finishedAt = this.getOrderEndTimestamp();
-      if (finishedAt) {
+    const finishedAt = this.getOrderEndTimestamp();
+    if (finishedAt) {
         return this.formatDuration(orderStartedAt, finishedAt);
-      }
+    }
     }
 
     // If no active step yet, show duration from start to now

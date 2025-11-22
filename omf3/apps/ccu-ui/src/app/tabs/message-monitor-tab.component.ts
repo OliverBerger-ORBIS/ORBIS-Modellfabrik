@@ -157,8 +157,8 @@ export class MessageMonitorTabComponent implements OnInit, OnDestroy, AfterViewC
         }
       } else {
         // Filter by module serial (for module topics)
-        if (!message.topic.includes(this.filterModule)) {
-          return false;
+      if (!message.topic.includes(this.filterModule)) {
+        return false;
         }
       }
     }
