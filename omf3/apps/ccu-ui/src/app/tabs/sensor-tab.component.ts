@@ -9,6 +9,7 @@ import { MessageMonitorService } from '../services/message-monitor.service';
 import { EnvironmentService } from '../services/environment.service';
 import type { OrderFixtureName } from '@omf3/testing-fixtures';
 import { ConnectionService } from '../services/connection.service';
+import { SensorStateService } from '../services/sensor-state.service';
 
 @Component({
   standalone: true,
@@ -21,6 +22,8 @@ import { ConnectionService } from '../services/connection.service';
 export class SensorTabComponent implements OnInit, OnDestroy {
   private dashboard = getDashboardController();
   private readonly subscriptions = new Subscription();
+  private sensorOverviewSub?: Subscription;
+  private currentEnvironmentKey: string;
   readonly gaugeRadius = 65;
   readonly gaugeCircumference = Math.PI * this.gaugeRadius;
   readonly gaugeCenterX = 110;
@@ -44,14 +47,17 @@ export class SensorTabComponent implements OnInit, OnDestroy {
 
   sensorOverview$!: Observable<SensorOverviewState>;
   cameraFrame$: Observable<CameraFrame | null> = this.dashboard.streams.cameraFrames$.pipe(
-    shareReplay({ bufferSize: 1, refCount: false })
-  );
+      shareReplay({ bufferSize: 1, refCount: false })
+    );
 
   constructor(
     private readonly messageMonitor: MessageMonitorService,
     private readonly environmentService: EnvironmentService,
-    private readonly connectionService: ConnectionService
+    private readonly connectionService: ConnectionService,
+    private readonly sensorState: SensorStateService
   ) {
+    this.currentEnvironmentKey = this.environmentService.current.key;
+    this.bindCacheOutputs();
     this.initializeStreams();
   }
 
@@ -332,6 +338,9 @@ export class SensorTabComponent implements OnInit, OnDestroy {
       this.environmentService.environment$
         .pipe(distinctUntilChanged((prev, next) => prev.key === next.key))
         .subscribe((environment) => {
+          this.currentEnvironmentKey = environment.key;
+          this.sensorState.clear(this.currentEnvironmentKey);
+          this.bindCacheOutputs();
           this.initializeStreams();
           if (environment.key === 'mock') {
             void this.loadFixture(this.activeFixture);
@@ -346,6 +355,7 @@ export class SensorTabComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
+    this.sensorOverviewSub?.unsubscribe();
   }
 
   async loadFixture(fixture: OrderFixtureName): Promise<void> {
@@ -355,7 +365,8 @@ export class SensorTabComponent implements OnInit, OnDestroy {
     this.activeFixture = fixture;
     try {
       const streams = await this.dashboard.loadFixture(fixture);
-    this.bindStreams(streams);
+      this.sensorState.clear(this.currentEnvironmentKey);
+      this.bindStreams(streams);
     } catch (error) {
       console.warn('Failed to load sensor fixture', fixture, error);
     }
@@ -386,9 +397,17 @@ export class SensorTabComponent implements OnInit, OnDestroy {
     );
 
     // Pattern enforcement: merge(lastSensorOverview, this.dashboard.streams.sensorOverview$)
-    this.sensorOverview$ = merge(lastSensorOverview, streams?.sensorOverview$ ?? this.dashboard.streams.sensorOverview$).pipe(
-      shareReplay({ bufferSize: 1, refCount: false })
-    );
+    const mergedSensorOverview$ = merge(
+      lastSensorOverview,
+      streams?.sensorOverview$ ?? this.dashboard.streams.sensorOverview$
+    ).pipe(shareReplay({ bufferSize: 1, refCount: false }));
+
+    this.sensorOverview$ = mergedSensorOverview$;
+    this.sensorOverviewSub?.unsubscribe();
+    this.sensorOverviewSub = mergedSensorOverview$.subscribe((state) => {
+      this.sensorState.setState(this.currentEnvironmentKey, state);
+    });
+    this.bindCacheOutputs();
 
     // Pattern enforcement: this.cameraFrame$ = this.dashboard.streams.cameraFrames$.pipe(...)
     this.cameraFrame$ = this.dashboard.streams.cameraFrames$.pipe(
@@ -397,5 +416,14 @@ export class SensorTabComponent implements OnInit, OnDestroy {
     this.cameraFrame$ = (streams?.cameraFrames$ ?? this.dashboard.streams.cameraFrames$).pipe(
       shareReplay({ bufferSize: 1, refCount: false })
     );
+  }
+
+  private bindCacheOutputs(): void {
+    this.sensorOverview$ = this.sensorState
+      .getState$(this.currentEnvironmentKey)
+      .pipe(
+        map((state) => state ?? this.buildSensorOverviewState(null, null)),
+        shareReplay({ bufferSize: 1, refCount: true })
+      );
   }
 }

@@ -1,9 +1,10 @@
 import { BehaviorSubject } from 'rxjs';
-import type { ModuleOverviewStatus, TransportOverviewStatus } from '@omf3/entities';
+import type { ModuleOverviewState, ModuleOverviewStatus, TransportOverviewStatus } from '@omf3/entities';
 import { ModuleTabComponent } from '../module-tab.component';
 import type { EnvironmentService } from '../../services/environment.service';
 import type { ModuleNameService } from '../../services/module-name.service';
 import type { ConnectionService } from '../../services/connection.service';
+import type { ModuleOverviewStateService } from '../../services/module-overview-state.service';
 
 jest.mock('../../mock-dashboard', () => {
   const mockCommands = {
@@ -42,11 +43,23 @@ const createComponent = () => {
     state$: new BehaviorSubject<'disconnected'>('disconnected'),
   } as unknown as ConnectionService;
 
+  const moduleOverviewStateStub = {
+    getState$: jest.fn(() => new BehaviorSubject<ModuleOverviewState | null>(null)),
+    getSnapshot: jest.fn(() => null),
+    setState: jest.fn(),
+    clear: jest.fn(),
+  } as unknown as ModuleOverviewStateService;
+
   const initSpy = jest
     .spyOn(ModuleTabComponent.prototype as any, 'initializeStreams')
     .mockImplementation(() => {});
 
-  const component = new ModuleTabComponent(environmentStub, moduleNameServiceStub, connectionServiceStub);
+  const component = new ModuleTabComponent(
+    environmentStub,
+    moduleNameServiceStub,
+    connectionServiceStub,
+    moduleOverviewStateStub
+  );
   initSpy.mockRestore();
   return component;
 };

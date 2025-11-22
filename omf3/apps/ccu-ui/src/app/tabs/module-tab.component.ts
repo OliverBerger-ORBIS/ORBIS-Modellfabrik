@@ -14,6 +14,7 @@ import { Subscription } from 'rxjs';
 import { EnvironmentService } from '../services/environment.service';
 import { ModuleNameService } from '../services/module-name.service';
 import { ConnectionService } from '../services/connection.service';
+import { ModuleOverviewStateService } from '../services/module-overview-state.service';
 
 interface ModuleCommand {
   label: string;
@@ -102,17 +103,17 @@ const STATUS_ICONS = {
 export class ModuleTabComponent implements OnInit, OnDestroy {
   private dashboard = getDashboardController();
   private readonly subscriptions = new Subscription();
+  private moduleOverviewSub?: Subscription;
+  private currentEnvironmentKey: string;
 
   constructor(
     private readonly environmentService: EnvironmentService,
     private readonly moduleNameService: ModuleNameService,
-    private readonly connectionService: ConnectionService
+    private readonly connectionService: ConnectionService,
+    private readonly moduleOverviewState: ModuleOverviewStateService
   ) {
-    // Pattern: Merge MessageMonitor last messages with dashboard streams
-    // This ensures we get the latest module data even when connecting while factory is already running
-    // Get last message for pairing state (single topic)
-    // Note: Module factsheets come from multiple topics (module/v1/#), so the dashboard stream
-    // handles those, but we use MessageMonitor for pairing state to ensure it's available immediately
+    this.currentEnvironmentKey = this.environmentService.current.key;
+    this.bindCacheOutputs();
     this.initializeStreams();
   }
 
@@ -154,6 +155,9 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
       this.environmentService.environment$
         .pipe(distinctUntilChanged((prev, next) => prev.key === next.key))
         .subscribe((environment) => {
+          this.currentEnvironmentKey = environment.key;
+          this.moduleOverviewState.clear(this.currentEnvironmentKey);
+          this.bindCacheOutputs();
           this.initializeStreams();
           if (environment.key === 'mock') {
             void this.loadFixture(this.activeFixture);
@@ -169,6 +173,7 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
+    this.moduleOverviewSub?.unsubscribe();
   }
 
   trackById(_: number, row: ModuleRow): string {
@@ -194,8 +199,12 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
     this.loading = true;
     try {
       const streams = await this.dashboard.loadFixture(fixture);
-      this.moduleOverview$ = streams.moduleOverview$;
-      this.rows$ = this.createRowsStream(this.moduleOverview$);
+      this.moduleOverviewState.clear(this.currentEnvironmentKey);
+      this.moduleOverview$ = streams.moduleOverview$.pipe(
+        shareReplay({ bufferSize: 1, refCount: false })
+      );
+      const fixtureModuleStream$ = this.moduleOverview$;
+      this.bindModuleOverviewStream(fixtureModuleStream$);
     } catch (error) {
       console.warn('Failed to load module fixture', fixture, error);
     } finally {
@@ -211,7 +220,33 @@ export class ModuleTabComponent implements OnInit, OnDestroy {
     this.moduleOverview$ = this.dashboard.streams.moduleOverview$.pipe(
       shareReplay({ bufferSize: 1, refCount: false })
     );
-    this.rows$ = this.createRowsStream(this.moduleOverview$);
+    const dashboardModuleStream$ = this.moduleOverview$;
+    this.bindModuleOverviewStream(dashboardModuleStream$);
+    this.bindCacheOutputs();
+  }
+
+  private bindModuleOverviewStream(source: Observable<ModuleOverviewState>): void {
+    this.moduleOverviewSub?.unsubscribe();
+    this.moduleOverviewSub = source.subscribe((state) => {
+      this.moduleOverviewState.setState(this.currentEnvironmentKey, state);
+    });
+  }
+
+  private bindCacheOutputs(): void {
+    const state$ = this.moduleOverviewState
+      .getState$(this.currentEnvironmentKey)
+      .pipe(
+        map((state) => state ?? this.createEmptyModuleOverviewState()),
+        shareReplay({ bufferSize: 1, refCount: true })
+      );
+    this.rows$ = this.createRowsStream(state$);
+  }
+
+  private createEmptyModuleOverviewState(): ModuleOverviewState {
+    return {
+      modules: {},
+      transports: {},
+    };
   }
 
   private buildRows(state: ModuleOverviewState): ModuleRow[] {

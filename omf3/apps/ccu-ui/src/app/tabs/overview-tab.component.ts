@@ -6,11 +6,12 @@ import { OrdersViewComponent } from '../orders-view.component';
 import { FtsViewComponent } from '../fts-view.component';
 import type { OrderFixtureName } from '@omf3/testing-fixtures';
 import type { Observable } from 'rxjs';
-import { map, shareReplay, filter, startWith, distinctUntilChanged } from 'rxjs/operators';
+import { distinctUntilChanged, filter, map, shareReplay, startWith } from 'rxjs/operators';
 import { merge, Subscription } from 'rxjs';
 import { EnvironmentService } from '../services/environment.service';
 import { MessageMonitorService } from '../services/message-monitor.service';
 import { ConnectionService } from '../services/connection.service';
+import { InventoryStateService } from '../services/inventory-state.service';
 
 const INVENTORY_LOCATIONS = ['A1', 'A2', 'A3', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3'];
 const WORKPIECE_TYPES = ['BLUE', 'WHITE', 'RED'] as const;
@@ -48,12 +49,17 @@ const MAX_CAPACITY = 3;
 export class OverviewTabComponent implements OnInit, OnDestroy {
   private dashboard = getDashboardController();
   private readonly subscriptions = new Subscription();
+  private inventoryStreamSub?: Subscription;
+  private currentEnvironmentKey: string;
 
   constructor(
     private readonly environmentService: EnvironmentService,
     private readonly messageMonitor: MessageMonitorService,
-    private readonly connectionService: ConnectionService
+    private readonly connectionService: ConnectionService,
+    private readonly inventoryState: InventoryStateService
   ) {
+    this.currentEnvironmentKey = this.environmentService.current.key;
+    this.bindInventoryOutputs();
     this.initializeStreams();
   }
 
@@ -116,6 +122,9 @@ export class OverviewTabComponent implements OnInit, OnDestroy {
       this.environmentService.environment$
         .pipe(distinctUntilChanged((prev, next) => prev.key === next.key))
         .subscribe((environment) => {
+          this.currentEnvironmentKey = environment.key;
+          this.bindInventoryOutputs();
+          this.resetInventoryTracking();
           this.initializeStreams();
           if (environment.key === 'mock') {
             void this.loadFixture(this.activeFixture);
@@ -130,6 +139,7 @@ export class OverviewTabComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
+    this.inventoryStreamSub?.unsubscribe();
   }
 
   async loadFixture(fixture: OrderFixtureName) {
@@ -138,20 +148,9 @@ export class OverviewTabComponent implements OnInit, OnDestroy {
     }
     this.activeFixture = fixture;
     try {
-      const streams: DashboardStreamSet = await this.dashboard.loadFixture(fixture);
-      this.orders$ = streams.orders$;
-      this.orderCounts$ = streams.orderCounts$;
-      this.ftsStates$ = streams.ftsStates$;
-      // Rebind inventoryOverview$ with MessageMonitor merge (same pattern as constructor)
-      const lastInventory = this.createInventoryPrefillStream();
-      this.inventoryOverview$ = merge(lastInventory, streams.inventoryOverview$).pipe(
-        shareReplay({ bufferSize: 1, refCount: false })
-      );
-      this.availableCounts$ = this.inventoryOverview$.pipe(map((state) => state.availableCounts));
-      this.reservedCounts$ = this.inventoryOverview$.pipe(map((state) => state.reservedCounts));
-      this.inventorySlots$ = this.inventoryOverview$.pipe(
-        map((state) => INVENTORY_LOCATIONS.map((location) => state.slots[location] ?? { location, workpiece: null }))
-      );
+      this.resetInventoryTracking();
+      await this.dashboard.loadFixture(fixture);
+      this.initializeStreams();
     } catch (error) {
       console.warn('Failed to load fixture', fixture, error);
     }
@@ -169,6 +168,31 @@ export class OverviewTabComponent implements OnInit, OnDestroy {
     } catch (error) {
       console.error('[overview-tab] Failed to send customer order', type, error);
     }
+  }
+
+  private bindInventoryOutputs(): void {
+    const inventory$ = this.inventoryState
+      .getState$(this.currentEnvironmentKey)
+      .pipe(
+        map((state) => state ?? this.createEmptyInventoryState()),
+        shareReplay({ bufferSize: 1, refCount: true })
+      );
+
+    this.inventoryOverview$ = inventory$;
+    this.availableCounts$ = inventory$.pipe(map((state) => state.availableCounts));
+    this.reservedCounts$ = inventory$.pipe(map((state) => state.reservedCounts));
+    this.inventorySlots$ = inventory$.pipe(
+      map((state) =>
+        INVENTORY_LOCATIONS.map((location) => state.slots[location] ?? { location, workpiece: null })
+      )
+    );
+  }
+
+  private resetInventoryTracking(): void {
+    this.inventoryState.clear(this.currentEnvironmentKey);
+    this.messageMonitor.clearTopic('ccu/state/stock');
+    this.inventoryStreamSub?.unsubscribe();
+    this.inventoryStreamSub = undefined;
   }
 
   getSlotIcon(slot: InventorySlotState): string {
@@ -241,6 +265,27 @@ export class OverviewTabComponent implements OnInit, OnDestroy {
 
   asArray(length: number): number[] {
     return Array.from({ length }, (_, index) => index);
+  }
+
+  private createEmptyInventoryState(): InventoryOverviewState {
+    const slots: Record<string, InventorySlotState> = {};
+    INVENTORY_LOCATIONS.forEach((location) => {
+      slots[location] = { location, workpiece: null };
+    });
+
+    const availableCounts: Record<string, number> = {};
+    const reservedCounts: Record<string, number> = {};
+    WORKPIECE_TYPES.forEach((type) => {
+      availableCounts[type] = 0;
+      reservedCounts[type] = 0;
+    });
+
+    return {
+      slots,
+      availableCounts,
+      reservedCounts,
+      lastUpdated: '',
+    };
   }
 
   private normalizeType(input?: string): (typeof WORKPIECE_TYPES)[number] | null {
@@ -326,31 +371,33 @@ export class OverviewTabComponent implements OnInit, OnDestroy {
     this.dashboard = controller;
     this.activeFixture = controller.getCurrentFixture();
 
-    const lastInventory = this.createInventoryPrefillStream();
-    this.inventoryOverview$ = merge(lastInventory, this.dashboard.streams.inventoryOverview$).pipe(
-      shareReplay({ bufferSize: 1, refCount: false })
-    );
-    this.availableCounts$ = this.inventoryOverview$.pipe(map((state) => state.availableCounts));
-    this.reservedCounts$ = this.inventoryOverview$.pipe(map((state) => state.reservedCounts));
-    this.inventorySlots$ = this.inventoryOverview$.pipe(
-      map((state) => INVENTORY_LOCATIONS.map((location) => state.slots[location] ?? { location, workpiece: null }))
-    );
+    this.setupInventoryStreamSubscription();
 
     this.orders$ = this.dashboard.streams.orders$.pipe(shareReplay({ bufferSize: 1, refCount: false }));
     this.orderCounts$ = this.dashboard.streams.orderCounts$.pipe(shareReplay({ bufferSize: 1, refCount: false }));
     this.ftsStates$ = this.dashboard.streams.ftsStates$.pipe(shareReplay({ bufferSize: 1, refCount: false }));
   }
 
-  private createInventoryPrefillStream(): Observable<InventoryOverviewState> {
-    return this.messageMonitor.getLastMessage<StockSnapshot>('ccu/state/stock').pipe(
+  private setupInventoryStreamSubscription(): void {
+    const inventorySource$ = this.createInventorySourceStream();
+    this.inventoryStreamSub?.unsubscribe();
+    this.inventoryStreamSub = inventorySource$.subscribe((state) => {
+      this.inventoryState.setState(this.currentEnvironmentKey, state);
+    });
+  }
+
+  private createInventorySourceStream(): Observable<InventoryOverviewState> {
+    const cachedState = this.inventoryState.getSnapshot(this.currentEnvironmentKey);
+    const initialState = cachedState ?? this.createEmptyInventoryState();
+
+    const lastInventory = this.messageMonitor.getLastMessage<StockSnapshot>('ccu/state/stock').pipe(
       filter((msg) => msg !== null && msg.valid),
       map((msg) => this.buildInventoryOverviewFromSnapshot(msg!.payload)),
-      startWith({
-        slots: {},
-        availableCounts: {},
-        reservedCounts: {},
-        lastUpdated: new Date().toISOString(),
-      } as InventoryOverviewState)
+      startWith(initialState)
+    );
+
+    return merge(lastInventory, this.dashboard.streams.inventoryOverview$).pipe(
+      shareReplay({ bufferSize: 1, refCount: false })
     );
   }
 }
