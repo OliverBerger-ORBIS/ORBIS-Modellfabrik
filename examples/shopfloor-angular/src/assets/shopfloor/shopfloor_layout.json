@@ -1,0 +1,148 @@
+{
+  "metadata": {
+    "canvas": { "width": 800, "height": 600, "units": "px" },
+    "created_by": "ORBIS Modellfabrik Example",
+    "description": "Simplified shopfloor layout for demonstration"
+  },
+  "scaling": {
+    "default_percent": 100,
+    "min_percent": 50,
+    "max_percent": 150,
+    "mode": "viewBox"
+  },
+  "cells": [
+    {
+      "id": "CELL_0_0",
+      "name": "ORBIS",
+      "position": { "x": 0, "y": 0 },
+      "size": { "w": 200, "h": 100 },
+      "center": { "x": 100, "y": 50 },
+      "role": "company",
+      "icon": "ORBIS",
+      "background_color": "#cfe6ff",
+      "show_name": true,
+      "has_details": true
+    },
+    {
+      "id": "CELL_0_1",
+      "name": "MILL",
+      "position": { "x": 200, "y": 0 },
+      "size": { "w": 200, "h": 200 },
+      "center": { "x": 300, "y": 100 },
+      "role": "module",
+      "serial_number": "MILL01",
+      "show_name": true,
+      "has_details": true
+    },
+    {
+      "id": "CELL_0_2",
+      "name": "AIQS",
+      "position": { "x": 400, "y": 0 },
+      "size": { "w": 200, "h": 200 },
+      "center": { "x": 500, "y": 100 },
+      "role": "module",
+      "serial_number": "AIQS01",
+      "show_name": true,
+      "has_details": true
+    },
+    {
+      "id": "CELL_0_3",
+      "name": "DSP",
+      "position": { "x": 600, "y": 0 },
+      "size": { "w": 200, "h": 100 },
+      "center": { "x": 700, "y": 50 },
+      "role": "software",
+      "background_color": "#cfe6ff",
+      "show_name": true,
+      "has_details": true
+    },
+    {
+      "id": "CELL_1_0",
+      "name": "HBW",
+      "position": { "x": 0, "y": 100 },
+      "size": { "w": 200, "h": 200 },
+      "center": { "x": 100, "y": 200 },
+      "role": "module",
+      "serial_number": "HBW01",
+      "show_name": true,
+      "has_details": true
+    },
+    {
+      "id": "CELL_1_1",
+      "name": "VGR",
+      "position": { "x": 200, "y": 200 },
+      "size": { "w": 200, "h": 200 },
+      "center": { "x": 300, "y": 300 },
+      "role": "module",
+      "serial_number": "VGR01",
+      "show_name": true,
+      "has_details": true
+    },
+    {
+      "id": "CELL_1_2",
+      "name": "MPO",
+      "position": { "x": 400, "y": 200 },
+      "size": { "w": 200, "h": 200 },
+      "center": { "x": 500, "y": 300 },
+      "role": "module",
+      "serial_number": "MPO01",
+      "show_name": true,
+      "has_details": true
+    },
+    {
+      "id": "CELL_1_3",
+      "name": "DPS",
+      "position": { "x": 600, "y": 100 },
+      "size": { "w": 200, "h": 200 },
+      "center": { "x": 700, "y": 200 },
+      "role": "module",
+      "serial_number": "DPS01",
+      "show_name": true,
+      "has_details": true
+    },
+    {
+      "id": "CELL_2_0",
+      "name": "DRILL",
+      "position": { "x": 0, "y": 300 },
+      "size": { "w": 200, "h": 200 },
+      "center": { "x": 100, "y": 400 },
+      "role": "module",
+      "serial_number": "DRILL01",
+      "show_name": true,
+      "has_details": true
+    },
+    {
+      "id": "CELL_2_1",
+      "name": "SLD",
+      "position": { "x": 200, "y": 400 },
+      "size": { "w": 200, "h": 200 },
+      "center": { "x": 300, "y": 500 },
+      "role": "module",
+      "serial_number": "SLD01",
+      "show_name": true,
+      "has_details": true
+    },
+    {
+      "id": "CELL_2_2",
+      "name": "SSC",
+      "position": { "x": 400, "y": 400 },
+      "size": { "w": 200, "h": 200 },
+      "center": { "x": 500, "y": 500 },
+      "role": "module",
+      "serial_number": "SSC01",
+      "show_name": true,
+      "has_details": true
+    }
+  ],
+  "modules_by_serial": {
+    "MILL01": { "type": "MILL", "cell_id": "CELL_0_1" },
+    "AIQS01": { "type": "AIQS", "cell_id": "CELL_0_2" },
+    "HBW01": { "type": "HBW", "cell_id": "CELL_1_0" },
+    "VGR01": { "type": "VGR", "cell_id": "CELL_1_1" },
+    "MPO01": { "type": "MPO", "cell_id": "CELL_1_2" },
+    "DPS01": { "type": "DPS", "cell_id": "CELL_1_3" },
+    "DRILL01": { "type": "DRILL", "cell_id": "CELL_2_0" },
+    "SLD01": { "type": "SLD", "cell_id": "CELL_2_1" },
+    "SSC01": { "type": "SSC", "cell_id": "CELL_2_2" }
+  }
+}

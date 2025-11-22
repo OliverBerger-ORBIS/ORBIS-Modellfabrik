@@ -1,0 +1,134 @@
+<div class="shopfloor-container">
+  <header class="shopfloor-header">
+    <h1>OMF3 Shopfloor Layout</h1>
+    <p class="subtitle">Click on any cell to view details</p>
+    <p class="note">Based on OMF3 shopfloor-preview component architecture</p>
+  </header>
+
+  <div class="shopfloor-canvas-wrapper" *ngIf="viewModel as vm">
+    <div 
+      class="shopfloor-canvas"
+      [style.width.px]="vm.width * currentScale"
+      [style.height.px]="vm.height * currentScale">
+      
+      <div 
+        class="shopfloor-viewport"
+        [style.width.px]="vm.width"
+        [style.height.px]="vm.height"
+        [style.transform]="'scale(' + currentScale + ')'">
+        
+        <!-- Render all cells -->
+        <div *ngFor="let cell of vm.cells"
+             class="cell"
+             [class.cell-module]="cell.role === 'module'"
+             [class.cell-company]="cell.role === 'company'"
+             [class.cell-software]="cell.role === 'software'"
+             [class]="'cell-status-' + getCellStatusClass(cell)"
+             [style.top.px]="cell.top"
+             [style.left.px]="cell.left"
+             [style.width.px]="cell.width"
+             [style.height.px]="cell.height"
+             [style.background]="cell.background"
+             (click)="onCellClick(cell)">
+          
+          <!-- Cell header with name and badge -->
+          <div class="cell-header">
+            <h3 class="cell-name" *ngIf="cell.showLabel">{{ cell.name }}</h3>
+            <span class="cell-badge company-badge" *ngIf="cell.role === 'company'">🏢 Company</span>
+            <span class="cell-badge software-badge" *ngIf="cell.role === 'software'">💻 Software</span>
+          </div>
+          
+          <!-- Cell content -->
+          <div class="cell-content">
+            <!-- Module cells (dynamic) -->
+            <div *ngIf="cell.role === 'module'" class="module-content">
+              <ng-container *ngIf="getCellData(cell.id) as data; else noData">
+                <div class="data-row">
+                  <span class="data-label">Status:</span>
+                  <span class="status-badge" [class]="'status-' + data.status">
+                    {{ data.status | uppercase }}
+                  </span>
+                </div>
+                <div class="data-row" *ngIf="data.temperature !== undefined">
+                  <span class="data-label">Temp:</span>
+                  <span class="data-value">{{ data.temperature }}°C</span>
+                </div>
+                <div class="data-row" *ngIf="data.partsProduced !== undefined">
+                  <span class="data-label">Parts:</span>
+                  <span class="data-value">{{ data.partsProduced }}</span>
+                </div>
+              </ng-container>
+              <ng-template #noData>
+                <div class="no-data">Connecting...</div>
+              </ng-template>
+            </div>
+            
+            <!-- Company cell (ORBIS) -->
+            <div *ngIf="cell.role === 'company'" class="company-content">
+              <p class="cell-description">Consulting & Integration</p>
+              <div class="features-compact">
+                <span class="feature-item">📊 Data Aggregation</span>
+                <span class="feature-item">🔍 Track & Trace</span>
+                <span class="feature-item">🔧 Predictive Maintenance</span>
+              </div>
+            </div>
+            
+            <!-- Software cell (DSP) -->
+            <div *ngIf="cell.role === 'software'" class="software-content">
+              <p class="cell-description">Distributed Shopfloor Processing</p>
+              <div class="features-compact">
+                <span class="feature-item">🔗 Interoperability</span>
+                <span class="feature-item">🏭 Decentralized Control</span>
+                <span class="feature-item">⚡ Edge Processing</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="cell-footer">
+            <span class="click-hint">Click for details →</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="shopfloor-footer">
+    <div class="legend">
+      <h4>Legend:</h4>
+      <div class="legend-items">
+        <div class="legend-item">
+          <span class="legend-box special"></span>
+          <span>Special Cells (ORBIS/DSP)</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-box running"></span>
+          <span>Running</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-box idle"></span>
+          <span>Idle</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-box error"></span>
+          <span>Error</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-box maintenance"></span>
+          <span>Maintenance</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="info-box">
+      <p>📡 Based on OMF3 shopfloor-preview with JSON-based layout configuration</p>
+      <p>🔧 Uses <strong>Mock MQTT Service</strong> - Replace with ngx-mqtt for production</p>
+    </div>
+  </footer>
+</div>
+
+<app-details-sidebar
+  [isOpen]="sidebarOpen"
+  [cellType]="selectedCellType"
+  [cellData]="selectedCellData"
+  (close)="onSidebarClose()">
+</app-details-sidebar>
