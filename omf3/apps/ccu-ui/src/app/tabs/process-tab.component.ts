@@ -40,6 +40,7 @@ interface ProcessProductView {
 export class ProcessTabComponent implements OnInit, OnDestroy {
   private dashboard = getDashboardController();
   private readonly subscriptions = new Subscription();
+  private readonly defaultShopfloorIcon = SHOPFLOOR_ASSET_MAP['QUESTION'] ?? '/shopfloor/question.svg';
 
   readonly fixtureOptions: OrderFixtureName[] = ['startup', 'white', 'white_step3', 'blue', 'red', 'mixed', 'storage'];
   readonly fixtureLabels: Record<OrderFixtureName, string> = {
@@ -109,15 +110,14 @@ export class ProcessTabComponent implements OnInit, OnDestroy {
   private getModuleMeta(key: string): { label: string; icon: string } {
     return {
       label: this.moduleNameService.getModuleFullName(key),
-      icon: this.resolveAssetPath(SHOPFLOOR_ASSET_MAP[key as keyof typeof SHOPFLOOR_ASSET_MAP] ?? ''),
+      icon: this.resolveAssetPath(SHOPFLOOR_ASSET_MAP[key as keyof typeof SHOPFLOOR_ASSET_MAP]),
     };
   }
 
   private resolveAssetPath(path?: string): string {
-    if (!path) {
-      return '';
-    }
-    return path.startsWith('/') ? path.slice(1) : path;
+    const candidate = path && path.length > 0 ? path : this.defaultShopfloorIcon;
+    const normalized = candidate.startsWith('/') ? candidate.slice(1) : candidate;
+    return normalized;
   }
 
   private buildProductViews(flows: ProductionFlowMap): ProcessProductView[] {

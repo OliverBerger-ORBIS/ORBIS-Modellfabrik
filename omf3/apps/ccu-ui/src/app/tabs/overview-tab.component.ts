@@ -251,7 +251,21 @@ export class OverviewTabComponent implements OnInit, OnDestroy {
     return WORKPIECE_TYPES.find((type) => type === normalized) ?? null;
   }
 
-  private buildInventoryOverviewFromSnapshot(snapshot: StockSnapshot | null | undefined): InventoryOverviewState {
+  private buildInventoryOverviewFromSnapshot(
+    snapshot: StockSnapshot | string | null | undefined
+  ): InventoryOverviewState {
+    let normalizedSnapshot: StockSnapshot | null | undefined = null;
+    if (typeof snapshot === 'string') {
+      try {
+        normalizedSnapshot = JSON.parse(snapshot) as StockSnapshot;
+      } catch (error) {
+        console.warn('[overview-tab] Failed to parse stock snapshot payload', error);
+        normalizedSnapshot = null;
+      }
+    } else {
+      normalizedSnapshot = snapshot;
+    }
+
     const slots: Record<string, InventorySlotState> = {};
     const availableCounts: Record<string, number> = {};
     const reservedCounts: Record<string, number> = {};
@@ -267,8 +281,8 @@ export class OverviewTabComponent implements OnInit, OnDestroy {
       reservedCounts[type] = 0;
     });
 
-    if (snapshot && Array.isArray(snapshot.stockItems)) {
-      snapshot.stockItems.forEach((item) => {
+    if (normalizedSnapshot && Array.isArray(normalizedSnapshot.stockItems)) {
+      normalizedSnapshot.stockItems.forEach((item) => {
         const location = item.location?.toUpperCase();
         if (!location || !slots[location]) {
           return;
@@ -303,7 +317,7 @@ export class OverviewTabComponent implements OnInit, OnDestroy {
       slots,
       availableCounts,
       reservedCounts,
-      lastUpdated: snapshot?.ts ?? new Date().toISOString(),
+      lastUpdated: normalizedSnapshot?.ts ?? new Date().toISOString(),
     };
   }
 

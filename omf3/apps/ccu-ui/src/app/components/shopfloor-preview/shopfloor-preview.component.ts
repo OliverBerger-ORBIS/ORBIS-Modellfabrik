@@ -98,6 +98,8 @@ interface RouteOverlay {
   height?: number;
 }
 
+const DEFAULT_SHOPFLOOR_ICON = SHOPFLOOR_ASSET_MAP['QUESTION'] ?? '/shopfloor/question.svg';
+
 interface ShopfloorView {
   width: number;
   height: number;
@@ -720,10 +722,12 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
   }
 
   private getAssetPath(key?: string | null): string | undefined {
-    if (!key) {
-      return undefined;
-    }
-    const asset = SHOPFLOOR_ASSET_MAP[key] ?? SHOPFLOOR_ASSET_MAP[key.toUpperCase()];
+    const candidateKey = key ?? '';
+    const normalizedKey = candidateKey.toUpperCase();
+    const asset =
+      SHOPFLOOR_ASSET_MAP[candidateKey] ??
+      SHOPFLOOR_ASSET_MAP[normalizedKey] ??
+      DEFAULT_SHOPFLOOR_ICON;
     if (!asset) {
       return undefined;
     }

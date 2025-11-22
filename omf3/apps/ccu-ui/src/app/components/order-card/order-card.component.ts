@@ -31,6 +31,8 @@ const THREE_D_ICON_MAP: Record<'BLUE' | 'WHITE' | 'RED', string> = {
   RED: 'workpieces/red_3dim.svg',
 };
 
+const DEFAULT_SHOPFLOOR_ICON = SHOPFLOOR_ASSET_MAP['QUESTION'] ?? '/shopfloor/question.svg';
+
 @Component({
   standalone: true,
   selector: 'app-order-card',
@@ -353,10 +355,12 @@ export class OrderCardComponent implements OnChanges {
   }
 
   private assetPath(key?: string | null): string | null {
-    if (!key) {
-      return null;
-    }
-    const asset = SHOPFLOOR_ASSET_MAP[key];
+    const candidateKey = key ?? '';
+    const normalizedKey = candidateKey.toUpperCase();
+    const asset =
+      SHOPFLOOR_ASSET_MAP[candidateKey] ??
+      SHOPFLOOR_ASSET_MAP[normalizedKey] ??
+      DEFAULT_SHOPFLOOR_ICON;
     if (!asset) {
       return null;
     }

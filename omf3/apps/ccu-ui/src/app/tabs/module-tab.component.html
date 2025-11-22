@@ -33,7 +33,6 @@
             <th scope="col" i18n="@@moduleTableColumnId">ID</th>
             <th scope="col" i18n="@@moduleTableColumnName">Name</th>
             <th scope="col" i18n="@@moduleTableColumnRegistryActive">Registry Active</th>
-            <th scope="col" i18n="@@moduleTableColumnConfigured">Configured</th>
             <th scope="col" i18n="@@moduleTableColumnConnected">Connected</th>
             <th scope="col" i18n="@@moduleTableColumnAvailabilityStatus">Availability Status</th>
             <th scope="col" i18n="@@moduleTableColumnMessages">Messages</th>
@@ -59,17 +58,6 @@
                 <span class="status-pill__icon">{{ row.registryIcon }}</span>
                 <span *ngIf="row.registryActive" i18n="@@moduleStatusActive">Active</span>
                 <span *ngIf="!row.registryActive" i18n="@@moduleStatusInactive">Inactive</span>
-              </span>
-            </td>
-            <td>
-              <span
-                class="status-pill"
-                [class.status-pill--positive]="row.configured"
-                [class.status-pill--negative]="!row.configured"
-              >
-                <span class="status-pill__icon">{{ row.configuredIcon }}</span>
-                <span *ngIf="row.configured" i18n="@@moduleStatusConfigured">Configured</span>
-                <span *ngIf="!row.configured" i18n="@@moduleStatusNotConfigured">Not Configured</span>
               </span>
             </td>
             <td>
