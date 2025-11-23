@@ -11,9 +11,9 @@ import logging
 import logging.config
 import queue
 import sys
+from collections import deque
 from logging.handlers import QueueHandler, QueueListener, RotatingFileHandler
 from pathlib import Path
-from typing import Deque
 
 try:
     from rich.logging import RichHandler  # optional dev-Dependency
@@ -53,7 +53,7 @@ def configure_logging(
     log_dir: str | Path = "logs/session_manager",
     json_file: str = "session_manager.jsonl",
     console_pretty: bool = True,
-    ring_buffer: Deque[str] | None = None,
+    ring_buffer: deque[str] | None = None,
     cleanup_on_start: bool = True,
 ) -> tuple[logging.Logger, QueueListener]:
     """
@@ -172,7 +172,7 @@ def get_logger(name: str) -> logging.Logger:
 
 
 def init_logging_once(
-    session_state: dict, ring_buffer: Deque[str] | None = None
+    session_state: dict, ring_buffer: deque[str] | None = None
 ) -> tuple[logging.Logger, QueueListener | None]:
     """
     Initialisiert Logging einmal pro Streamlit-Session.

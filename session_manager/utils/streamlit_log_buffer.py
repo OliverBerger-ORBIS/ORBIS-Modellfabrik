@@ -6,7 +6,6 @@ Ermöglicht die Anzeige von Logs direkt im Streamlit-UI.
 
 import logging
 from collections import deque
-from typing import Deque
 
 
 class RingBufferHandler(logging.Handler):
@@ -16,7 +15,7 @@ class RingBufferHandler(logging.Handler):
     Thread-sicher für MQTT-Callbacks und Streamlit-UI.
     """
 
-    def __init__(self, buf: Deque[str], level: int = logging.INFO):
+    def __init__(self, buf: deque[str], level: int = logging.INFO):
         """
         Initialisiert den Ring-Buffer-Handler.
 
@@ -42,7 +41,7 @@ class RingBufferHandler(logging.Handler):
             pass
 
 
-def create_log_buffer(maxlen: int = 1000) -> Deque[str]:
+def create_log_buffer(maxlen: int = 1000) -> deque[str]:
     """
     Erstellt einen neuen Log-Buffer.
 
@@ -55,7 +54,7 @@ def create_log_buffer(maxlen: int = 1000) -> Deque[str]:
     return deque(maxlen=maxlen)
 
 
-def add_buffer_handler(logger: logging.Logger, buffer: Deque[str], level: int = logging.INFO):
+def add_buffer_handler(logger: logging.Logger, buffer: deque[str], level: int = logging.INFO):
     """
     Fügt einen Ring-Buffer-Handler zu einem Logger hinzu.
 
@@ -69,7 +68,7 @@ def add_buffer_handler(logger: logging.Logger, buffer: Deque[str], level: int = 
     logger.addHandler(handler)
 
 
-def render_logs_panel(buffer: Deque[str], max_lines: int = 200) -> str:
+def render_logs_panel(buffer: deque[str], max_lines: int = 200) -> str:
     """
     Rendert Logs für Streamlit-UI.
 
