@@ -19,3 +19,9 @@ logs/omf2.log
 logs/session_manager.jsonl
 logs/session_manager/
 coverage/
+
+# Backend metrics-service
+backend/metrics-service/node_modules/
+backend/metrics-service/dist/
+backend/metrics-service/.env
+backend/metrics-service/*.log
