@@ -261,43 +261,43 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
 
   private readonly dspArchitecture: DspArchitectureLayer[] = [
     {
-      id: 'cloud',
-      title: $localize`:@@dspLayerCloudTitle:Cloud Management`,
-      description: $localize`:@@dspLayerCloudDescription:Central governance, modeling, and analytics services.`,
-      capabilities: [
-        $localize`:@@dspLayerCloudCapability1:Process orchestration and business rule management.`,
-        $localize`:@@dspLayerCloudCapability2:Digital twin synchronization with enterprise data.`,
-        $localize`:@@dspLayerCloudCapability3:AI/analytics workloads for predictive KPIs.`,
-      ],
+      id: 'ux',
+      title: $localize`:@@dspLayerUxTitle:UX`,
+      description: $localize`:@@dspLayerUxDescription:Visual access for operators and planners.`,
+      capabilities: [],
     },
     {
       id: 'edge',
-      title: $localize`:@@dspLayerEdgeTitle:DSP Edge`,
-      description: $localize`:@@dspLayerEdgeDescription:Low-latency processing close to machines.`,
+      title: $localize`:@@dspLayerEdgeTitle:EDGE`,
+      description: $localize`:@@dspLayerEdgeDescription:Low-latency processing close to the machines.`,
       capabilities: [
-        $localize`:@@dspLayerEdgeCapability1:Object-oriented choreography with decentralized control.`,
-        $localize`:@@dspLayerEdgeCapability2:Protocol conversion (OPC UA, MQTT, REST).`,
-        $localize`:@@dspLayerEdgeCapability3:Streaming analytics and buffering during disconnections.`,
+        $localize`:@@dspEdgeBullet1:Low-latency processing close to the machines.`,
+        $localize`:@@dspEdgeBullet2:Object-oriented choreography with decentralized control.`,
+        $localize`:@@dspEdgeBullet3:Protocol conversion (OPC UA, MQTT, REST).`,
+        $localize`:@@dspEdgeBullet4:Streaming analytics and buffering during connectivity issues.`,
       ],
+      actionId: 'edge',
     },
     {
-      id: 'shopfloor',
-      title: $localize`:@@dspLayerShopfloorTitle:Shopfloor Assets`,
-      description: $localize`:@@dspLayerShopfloorDescription:Machines, sensors, and controllers connected bi-directionally.`,
+      id: 'management',
+      title: $localize`:@@dspLayerManagementTitle:Management Cockpit`,
+      description: $localize`:@@dspLayerManagementDescription:Cloud-based control and KPI monitoring.`,
       capabilities: [
-        $localize`:@@dspLayerShopfloorCapability1:Machine states mirrored in real time.`,
-        $localize`:@@dspLayerShopfloorCapability2:Sensors feeding quality and condition dashboards.`,
-        $localize`:@@dspLayerShopfloorCapability3:Controllers receiving orchestration commands.`,
+        $localize`:@@dspManagementBullet1:Cloud-based control and KPI monitoring.`,
+        $localize`:@@dspManagementBullet2:Governance, rules, and automation.`,
+        $localize`:@@dspManagementBullet3:Digital twins enriched with enterprise data.`,
+        $localize`:@@dspManagementBullet4:Analytics workloads for KPIs.`,
       ],
+      actionId: 'management',
     },
   ];
 
   private readonly dspFeatures: string[] = [
-    $localize`:@@dspFeatureInteroperability:Interoperability for IT/OT landscapes with bi-directional topics.`,
-    $localize`:@@dspFeatureDecentralized:Decentralized control through object-oriented process choreography.`,
-    $localize`:@@dspFeatureDigitalTwin:Digital twin mirroring assets with contextual KPIs.`,
-    $localize`:@@dspFeatureEdgeProcessing:Edge + cloud hybrid processing for latency-sensitive flows.`,
-    $localize`:@@dspFeatureIndustry4:Built-in Industry 4.0 capabilities (IIoT, AI, analytics).`,
+    $localize`:@@dspGeneralBullet1:Interoperability for IT/OT landscapes with bi-directional topics.`,
+    $localize`:@@dspGeneralBullet2:Decentralized control through object-oriented process choreography.`,
+    $localize`:@@dspGeneralBullet3:Digital twins mirroring assets with contextual KPIs.`,
+    $localize`:@@dspGeneralBullet4:Hybrid edge–cloud processing for latency-sensitive flows.`,
+    $localize`:@@dspGeneralBullet5:Built-in Industry 4.0 capabilities (IIoT, AI, analytics).`,
   ];
 
   private readonly layoutInfo$: Observable<LayoutViewModel>;
@@ -824,27 +824,27 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
     const actions: DspActionLink[] = [
       {
         id: 'edge',
-        label: $localize`:@@dspActionEdge:EDGE Steuerung`,
-        description: $localize`:@@dspActionEdgeDescription:Zum konfigurierten EDGE-Endpunkt wechseln`,
+        label: $localize`:@@dspActionEdge:Open EDGE control`,
+        description: $localize`:@@dspActionEdgeDescription:Launch the configured EDGE endpoint in a new tab.`,
         url: links.dspControlUrl,
       },
       {
         id: 'management',
-        label: $localize`:@@dspActionManagement:Management Cockpit`,
-        description: $localize`:@@dspActionManagementDescription:Cloud Cockpit mit KPI- und Regelverwaltung öffnen`,
+        label: $localize`:@@dspActionManagement:Open management cockpit`,
+        description: $localize`:@@dspActionManagementDescription:Navigate to the cloud cockpit for KPI and workflow management.`,
         url: links.managementCockpitUrl,
       },
       {
         id: 'grafana',
-        label: $localize`:@@dspActionGrafana:Grafana Dashboard`,
-        description: $localize`:@@dspActionGrafanaDescription:Beobachtungsdashboard in neuem Tab öffnen`,
+        label: $localize`:@@dspActionGrafana:Open Grafana dashboard`,
+        description: $localize`:@@dspActionGrafanaDescription:Switch to the analytics dashboard (Grafana) in a new window.`,
         url: links.grafanaDashboardUrl,
       },
     ];
 
     const resources = [
       {
-        label: $localize`:@@dspResourceOrbisWebsite:ORBIS Website`,
+        label: $localize`:@@dspResourceOrbisWebsite:ORBIS website`,
         url: 'https://www.orbis.de',
       },
       {
@@ -854,32 +854,60 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
     ];
 
     const businessProcesses = [
-      $localize`:@@dspBusinessShopfloor:Shopfloor`,
-      $localize`:@@dspBusinessCloudApps:Cloud Anwendungen`,
-      $localize`:@@dspBusinessAnalytics:Analytische Anwendungen`,
-      $localize`:@@dspBusinessDataLake:Data Lake`,
+      {
+        id: 'shopfloor',
+        label: $localize`:@@dspBusinessShopfloor:Shopfloor`,
+        icon: this.resolveAssetPath(DETAIL_ASSET_MAP.DSP_BUSINESS_SAP),
+      },
+      {
+        id: 'cloud-apps',
+        label: $localize`:@@dspBusinessCloudApps:Cloud Applications`,
+        icon: this.resolveAssetPath(DETAIL_ASSET_MAP.DSP_BUSINESS_CLOUD),
+      },
+      {
+        id: 'analytics',
+        label: $localize`:@@dspBusinessAnalytics:Analytics Applications`,
+        icon: this.resolveAssetPath(DETAIL_ASSET_MAP.DSP_BUSINESS_ANALYTICS),
+        actionId: 'grafana',
+      },
+      {
+        id: 'data-lake',
+        label: $localize`:@@dspBusinessDataLake:Data Lake`,
+        icon: this.resolveAssetPath(DETAIL_ASSET_MAP.DSP_BUSINESS_DATA_LAKE),
+      },
+    ];
+
+    const shopfloorPlatforms = [
+      {
+        label: $localize`:@@dspPlatformUnknown:Additional Integration`,
+        icon: this.resolveAssetPath(SHOPFLOOR_ASSET_MAP['QUESTION']),
+      },
+      {
+        label: $localize`:@@dspPlatformFts:FTS`,
+        icon: this.resolveAssetPath(SHOPFLOOR_ASSET_MAP['FTS']),
+      },
     ];
 
     const shopfloorSystems = [
       {
-        label: $localize`:@@dspDeviceMill:Fräsmodul`,
-        icon: this.resolveAssetPath(SHOPFLOOR_ASSET_MAP['MILL']),
+        label: $localize`:@@dspDeviceDps:DPS`,
+        icon: this.resolveAssetPath(SHOPFLOOR_ASSET_MAP['DPS']),
       },
       {
-        label: $localize`:@@dspDeviceDrill:Bohreinheit`,
-        icon: this.resolveAssetPath(SHOPFLOOR_ASSET_MAP['DRILL']),
-      },
-      {
-        label: $localize`:@@dspDeviceHbw:HBW Lager`,
+        label: $localize`:@@dspDeviceHbw:HBW`,
         icon: this.resolveAssetPath(SHOPFLOOR_ASSET_MAP['HBW']),
       },
       {
-        label: $localize`:@@dspDeviceAiqs:Qualitätssicherung`,
-        icon: this.resolveAssetPath(SHOPFLOOR_ASSET_MAP['AIQS']),
+        label: $localize`:@@dspDeviceMill:Mill Station`,
+        icon: this.resolveAssetPath(SHOPFLOOR_ASSET_MAP['MILL']),
       },
       {
-        label: $localize`:@@dspDeviceChrg:Ladestation`,
-        icon: this.resolveAssetPath(SHOPFLOOR_ASSET_MAP['CHRG']),
+        label: $localize`:@@dspDeviceDrill:Drill Station`,
+        icon: this.resolveAssetPath(SHOPFLOOR_ASSET_MAP['DRILL']),
+      },
+      {
+        label: $localize`:@@dspDeviceAiqs:AIQS`,
+        icon: this.resolveAssetPath(SHOPFLOOR_ASSET_MAP['AIQS']),
       },
     ];
 
@@ -889,6 +917,7 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
       actions,
       resources,
       businessProcesses,
+      shopfloorPlatforms,
       shopfloorSystems,
       edgeUrl: links.dspControlUrl,
       managementUrl: links.managementCockpitUrl,

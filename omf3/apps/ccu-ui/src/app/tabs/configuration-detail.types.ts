@@ -47,6 +47,7 @@ export interface DspArchitectureLayer {
   title: string;
   description: string;
   capabilities: string[];
+  actionId?: string;
 }
 
 export interface DspActionLink {
@@ -56,13 +57,26 @@ export interface DspActionLink {
   url: string;
 }
 
+export interface DspBusinessProcess {
+  id: string;
+  label: string;
+  icon?: string;
+  actionId?: string;
+}
+
+export interface DspShopfloorItem {
+  label: string;
+  icon: string;
+}
+
 export interface DspDetailView {
   architecture: DspArchitectureLayer[];
   features: string[];
   actions: DspActionLink[];
   resources: { label: string; url: string }[];
-  businessProcesses: string[];
-  shopfloorSystems: { label: string; icon: string }[];
+  businessProcesses: DspBusinessProcess[];
+  shopfloorPlatforms: DspShopfloorItem[];
+  shopfloorSystems: DspShopfloorItem[];
   edgeUrl: string;
   managementUrl: string;
 }

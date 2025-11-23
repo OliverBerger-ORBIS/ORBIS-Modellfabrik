@@ -1,76 +1,166 @@
 <section class="dsp-detail">
   <header class="dsp-detail__header">
-    <p class="eyebrow" i18n="@@dspHeaderEyebrow">Referenzarchitektur</p>
-    <h3 i18n="@@dspHeaderTitle">DSP als Rückgrat zwischen Shopfloor und Business-Prozessen</h3>
+    <p class="eyebrow" i18n="@@dspHeaderEyebrow">Reference architecture</p>
+    <h3 i18n="@@dspHeaderTitle">DSP as backbone between shopfloor and business processes</h3>
     <p i18n="@@dspHeaderLead">
-      Abgerundete Layer zeigen Business-Anwendungen, DSP (On-Premise / Cloud) und angebundene Shopfloor-Systeme.
-      EDGE und Management Cockpit können direkt geöffnet werden.
+      Three layers show business orchestration, DSP core (edge &amp; cloud) and connected shopfloor assets. Components can be
+      clicked to open the corresponding tool.
     </p>
   </header>
 
-  <section class="dsp-detail__business">
-    <div
-      *ngFor="let box of view.businessProcesses; trackBy: businessTrackBy"
-      class="business-card"
-    >
-      {{ box }}
-    </div>
-  </section>
-
-  <div class="dsp-detail__connector dsp-detail__connector--down"></div>
-
-  <section class="dsp-detail__core">
-    <div class="core-label core-label--left">
-      <span i18n="@@dspCoreOnPrem">On Premise</span>
-    </div>
-    <div class="core-zone">
-      <div class="ux-panel">
-        <span>UX</span>
-      </div>
-      <div class="edge-panel" (click)="triggerAction('edge', view.edgeUrl)">
-        <header>
-          <h4>EDGE</h4>
-          <p i18n="@@dspEdgeSubline">ORBIS DSP • Realtime Orchestrierung</p>
-        </header>
-        <ul>
-          <li i18n="@@dspEdgePoint1">Regelwerke &amp; Protokoll-Übersetzung</li>
-          <li i18n="@@dspEdgePoint2">Datenpersistenz &amp; Buffering</li>
-          <li i18n="@@dspEdgePoint3">Bidirektionale Kopplung zu Geräten</li>
-        </ul>
-      </div>
-      <div class="management-panel" (click)="triggerAction('management', view.managementUrl)">
-        <header>
-          <h4 i18n="@@dspManagementTitle">Management Cockpit</h4>
-          <p i18n="@@dspManagementSubline">Azure / Cloud</p>
-        </header>
-        <ul>
-          <li i18n="@@dspManagementPoint1">Dashboards &amp; KPI</li>
-          <li i18n="@@dspManagementPoint2">Workflows, KI &amp; Alerts</li>
-          <li i18n="@@dspManagementPoint3">Rollenbasierte Steuerung</li>
-        </ul>
-      </div>
-    </div>
-    <div class="core-label core-label--right">
-      <span>Cloud</span>
-    </div>
-  </section>
-
-  <div class="dsp-detail__connector dsp-detail__connector--down"></div>
-
-  <section class="dsp-detail__shopfloor">
-    <article class="shopfloor-card">
-      <header>
-        <h4 i18n="@@dspShopfloorTitle">Shopfloor Systeme &amp; Geräte</h4>
-        <p i18n="@@dspShopfloorDescription">Anbindung über MQTT, OPC UA und proprietäre Schnittstellen.</p>
-      </header>
-      <div class="device-grid">
-        <figure *ngFor="let device of view.shopfloorSystems; trackBy: shopfloorTrackBy">
-          <div class="device-icon">
-            <img [src]="device.icon" [alt]="device.label" width="46" height="46" />
+  <section class="dsp-detail__architecture">
+    <div class="layer layer--business">
+      <div class="layer__badge" i18n="@@dspBadgeBusiness">Business Processes</div>
+      <div class="business-row" role="list">
+        <article
+          class="business-card"
+          role="listitem"
+          *ngFor="let process of view.businessProcesses; trackBy: businessTrackBy"
+          [class.business-card--interactive]="process.actionId"
+          [attr.role]="process.actionId ? 'button' : 'listitem'"
+          [attr.tabindex]="process.actionId ? 0 : null"
+          (click)="process.actionId && onProcessClick(process.actionId)"
+          (keydown.enter)="process.actionId && onProcessKey($event, process.actionId)"
+          (keydown.space)="process.actionId && onProcessKey($event, process.actionId)"
+        >
+          <div class="business-card__icon" aria-hidden="true" *ngIf="process.icon; else processInitial">
+            <img [src]="process.icon" alt="" />
           </div>
-          <figcaption>{{ device.label }}</figcaption>
-        </figure>
+          <ng-template #processInitial>
+            <span class="business-card__initial">{{ process.label | slice: 0 : 1 }}</span>
+          </ng-template>
+          <span class="business-card__label">{{ process.label }}</span>
+        </article>
       </div>
+    </div>
+
+    <div class="connector connector--vertical" aria-hidden="true">
+      <svg width="60" height="60" viewBox="0 0 60 60" focusable="false">
+        <line x1="30" y1="10" x2="30" y2="50" stroke="rgba(127, 141, 165, 0.6)" stroke-width="3" />
+        <polygon points="30,0 22,14 38,14" fill="rgba(127, 141, 165, 0.6)" />
+        <polygon points="30,60 22,46 38,46" fill="rgba(127, 141, 165, 0.6)" />
+      </svg>
+    </div>
+
+    <div class="layer layer--dsp">
+      <div class="layer__badge" i18n="@@dspBadgeCore">DSP</div>
+      <div class="dsp-band">
+        <div class="dsp-band__labels">
+          <span class="band-label band-label--left" i18n="@@dspCoreOnPrem">On Premise</span>
+          <span class="band-label band-label--right" i18n="@@dspCoreCloud">Cloud</span>
+        </div>
+        <div class="dsp-band__content" role="list">
+          <ng-container *ngFor="let layer of view.architecture; let last = last; trackBy: architectureTrackBy">
+            <article
+              class="dsp-node"
+              [ngClass]="'dsp-node--' + layer.id"
+              role="listitem"
+              [class.dsp-node--interactive]="getLayerActionId(layer.id)"
+              [attr.role]="getLayerActionId(layer.id) ? 'button' : 'listitem'"
+              [attr.tabindex]="getLayerActionId(layer.id) ? 0 : null"
+              (click)="getLayerActionId(layer.id) && onLayerClick(layer.id)"
+              (keydown.enter)="getLayerActionId(layer.id) && onLayerKey($event, layer.id)"
+              (keydown.space)="getLayerActionId(layer.id) && onLayerKey($event, layer.id)"
+            >
+              <div class="dsp-node__body">
+                <div class="dsp-node__icon" aria-hidden="true" *ngIf="layer.id !== 'edge'">
+                  <img [src]="getLayerIcon(layer.id)" [alt]="layer.title" />
+                </div>
+                <div class="edge-icon-grid" *ngIf="layer.id === 'edge'">
+                  <img *ngFor="let icon of edgeIcons" [src]="icon" alt="" aria-hidden="true" />
+                </div>
+                <h5 class="dsp-node__label">{{ layer.title }}</h5>
+              </div>
+            </article>
+            <div class="node-connector" *ngIf="!last" aria-hidden="true"></div>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+
+    <div class="connector connector--vertical connector--bold" aria-hidden="true">
+      <svg width="60" height="60" viewBox="0 0 60 60" focusable="false">
+        <line x1="30" y1="10" x2="30" y2="50" stroke="rgba(127, 141, 165, 0.75)" stroke-width="3" />
+        <polygon points="30,0 22,14 38,14" fill="rgba(127, 141, 165, 0.75)" />
+        <polygon points="30,60 22,46 38,46" fill="rgba(127, 141, 165, 0.75)" />
+      </svg>
+    </div>
+
+    <div class="layer layer--shopfloor">
+      <div class="layer__badge" i18n="@@dspBadgeShopfloor">Shopfloor Systems &amp; Devices</div>
+      <div class="shopfloor-strip">
+        <div class="shopfloor-strip__group">
+          <p i18n="@@dspShopfloorSystemsLabel">Shopfloor Systems</p>
+          <div class="icon-line" role="list">
+            <figure role="listitem" *ngFor="let platform of view.shopfloorPlatforms; trackBy: platformTrackBy">
+              <img [src]="platform.icon" [alt]="platform.label" />
+              <figcaption>{{ platform.label }}</figcaption>
+            </figure>
+          </div>
+        </div>
+        <div class="shopfloor-strip__group">
+          <p i18n="@@dspShopfloorDevicesLabel">Devices</p>
+          <div class="icon-line" role="list">
+            <figure role="listitem" *ngFor="let device of view.shopfloorSystems; trackBy: shopfloorTrackBy">
+              <img [src]="device.icon" [alt]="device.label" />
+              <figcaption>{{ device.label }}</figcaption>
+            </figure>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="dsp-detail__accordion" aria-label="DSP details">
+    <article class="accordion-item" [class.is-open]="isExpanded('edge')">
+      <button
+        type="button"
+        class="accordion-trigger"
+        (click)="togglePanel('edge')"
+        i18n="@@dspEdgeTitle"
+      >
+        DSP Edge Orchestration
+        <span class="chevron" aria-hidden="true"></span>
+      </button>
+      <ng-container *ngIf="isExpanded('edge')">
+        <div class="accordion-panel" *ngIf="getLayerById('edge') as edgeLayer">
+          <p>{{ edgeLayer.description }}</p>
+          <ul>
+            <li *ngFor="let capability of edgeLayer.capabilities">{{ capability }}</li>
+          </ul>
+          <button type="button" class="cta" (click)="triggerAction('edge', view.edgeUrl)" i18n="@@dspAccordionEdgeCta">
+            Open EDGE control
+          </button>
+        </div>
+      </ng-container>
+    </article>
+
+    <article class="accordion-item" [class.is-open]="isExpanded('management')">
+      <button
+        type="button"
+        class="accordion-trigger"
+        (click)="togglePanel('management')"
+        i18n="@@dspManagementTitle"
+      >
+        Management Cockpit
+        <span class="chevron" aria-hidden="true"></span>
+      </button>
+      <ng-container *ngIf="isExpanded('management')">
+        <div class="accordion-panel" *ngIf="getLayerById('management') as cloudLayer">
+          <p>{{ cloudLayer.description }}</p>
+          <ul>
+            <li *ngFor="let capability of cloudLayer.capabilities">{{ capability }}</li>
+          </ul>
+          <button
+            type="button"
+            class="cta"
+            (click)="triggerAction('management', view.managementUrl)"
+            i18n="@@dspAccordionManagementCta"
+          >
+            Open management cockpit
+          </button>
+        </div>
+      </ng-container>
     </article>
   </section>
 
@@ -102,4 +192,3 @@
     </div>
   </section>
 </section>
-
