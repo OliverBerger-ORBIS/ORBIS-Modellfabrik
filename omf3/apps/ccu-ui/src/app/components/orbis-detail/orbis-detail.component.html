@@ -1,0 +1,94 @@
+<section class="orbis-detail">
+  <header class="orbis-detail__header">
+    <div>
+      <p class="eyebrow" i18n="@@orbisMethodologyEyebrow">Methodology</p>
+      <h3 i18n="@@orbisMethodologyTitle">Incremental Development Phases</h3>
+      <p i18n="@@orbisMethodologyLead">Five incremental phases toward an autonomous &amp; adaptive enterprise.</p>
+    </div>
+    <a class="external-link" [href]="view.websiteUrl" target="_blank" rel="noreferrer noopener">
+      <span i18n="@@orbisLinkLabel">Open ORBIS website</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
+        <path
+          d="M8 5h11v11h-2V8.41l-9.29 9.3-1.42-1.42 9.3-9.29H8z"
+          fill="currentColor"
+        ></path>
+      </svg>
+    </a>
+  </header>
+
+  <section class="orbis-detail__phases">
+    <article
+      *ngFor="let phase of view.phases; trackBy: phaseTrackBy"
+      class="phase-card"
+      [class.phase-card--active]="phase.active"
+      role="button"
+      tabindex="0"
+      (click)="selectPhase(phase.id)"
+      (keydown.enter)="selectPhase(phase.id)"
+      (keydown.space)="selectPhase(phase.id)"
+    >
+      <div class="phase-preview">
+        <span class="phase-step">{{ phase.id.slice(-1) }}</span>
+        <div class="phase-icon">
+          <img [src]="getPhaseIcon(phase.id)" [alt]="phase.title" width="64" height="64" />
+        </div>
+        <div class="phase-text">
+          <span class="phase-label" i18n="@@orbisPhaseLabel">Phase {{ phase.id.slice(-1) }}</span>
+          <strong>{{ getPhaseName(phase.title) }}</strong>
+        </div>
+        <span class="phase-arrow" aria-hidden="true">›</span>
+      </div>
+    </article>
+  </section>
+
+  <section class="phase-overlay" *ngIf="view.activePhase as activePhase">
+    <header>
+      <div class="phase-overlay__icon">
+        <img [src]="getPhaseIcon(activePhase.id)" [alt]="activePhase.title" width="56" height="56" />
+      </div>
+      <div class="phase-overlay__text">
+        <span class="phase-label" i18n="@@orbisPhaseOverlayLabel">Phase {{ activePhase.id.slice(-1) }}</span>
+        <h4>{{ getPhaseName(activePhase.title) }}</h4>
+      </div>
+    </header>
+    <p>{{ activePhase.summary }}</p>
+    <ul>
+      <li *ngFor="let activity of activePhase.activities">{{ activity }}</li>
+    </ul>
+    <footer>
+      <strong i18n="@@orbisPhaseOutcomeLabel">Outcome:</strong>
+      <span>{{ activePhase.outcome }}</span>
+    </footer>
+  </section>
+
+  <section class="orbis-detail__usecases">
+    <header>
+      <p class="eyebrow" i18n="@@orbisUseCaseEyebrow">Use Cases</p>
+      <h3 i18n="@@orbisUseCaseTitle">From strategy to predictive maintenance</h3>
+    </header>
+    <div class="usecase-accordion">
+      <article
+        *ngFor="let useCase of view.useCases; trackBy: useCaseTrackBy"
+        class="usecase-card"
+        [class.usecase-card--expanded]="useCase.expanded"
+      >
+        <button type="button" (click)="toggleUseCase(useCase.id)">
+          <div class="usecase-meta">
+            <div class="usecase-icon">
+              <img [src]="useCase.icon" [alt]="useCase.title" width="40" height="40" />
+            </div>
+            <div>
+              <h4>{{ useCase.title }}</h4>
+              <p>{{ useCase.description }}</p>
+            </div>
+          </div>
+          <span aria-hidden="true">▾</span>
+        </button>
+        <ul *ngIf="useCase.expanded">
+          <li *ngFor="let highlight of useCase.highlights">{{ highlight }}</li>
+        </ul>
+      </article>
+    </div>
+  </section>
+</section>
+

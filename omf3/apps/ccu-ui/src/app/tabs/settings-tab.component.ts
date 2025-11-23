@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { EnvironmentDefinition, EnvironmentService, EnvironmentKey } from '../services/environment.service';
 import { ConnectionService, ConnectionSettings } from '../services/connection.service';
+import { ExternalLinksService, ExternalLinksSettings } from '../services/external-links.service';
 
 @Component({
   standalone: true,
@@ -119,6 +120,43 @@ import { ConnectionService, ConnectionSettings } from '../services/connection.se
           </footer>
         </form>
       </section>
+
+      <section class="link-settings">
+        <header>
+          <h3 i18n="@@settingsLinksHeadline">External links</h3>
+          <p i18n="@@settingsLinksDescription">
+            Configure the URLs used for ORBIS and DSP detail views in the configuration tab.
+          </p>
+        </header>
+
+        <form [formGroup]="linksForm" (ngSubmit)="saveExternalLinks()" class="links-form">
+          <label>
+            <span i18n="@@settingsOrbisLinkLabel">ORBIS website URL</span>
+            <input type="url" formControlName="orbisWebsiteUrl" placeholder="https://www.orbis.de" />
+          </label>
+
+          <label>
+            <span i18n="@@settingsDspLinkLabel">DSP landing URL</span>
+            <input type="url" formControlName="dspControlUrl" placeholder="https://dsp.example.com" />
+          </label>
+
+          <label>
+            <span i18n="@@settingsManagementLinkLabel">Management Cockpit URL</span>
+            <input type="url" formControlName="managementCockpitUrl" placeholder="https://management.example.com" />
+          </label>
+
+          <label>
+            <span i18n="@@settingsGrafanaLinkLabel">Grafana dashboard URL</span>
+            <input type="url" formControlName="grafanaDashboardUrl" placeholder="https://grafana.example.com" />
+          </label>
+
+          <footer>
+            <button type="submit" class="primary" [disabled]="linksForm.pristine || linksForm.invalid" i18n="@@settingsSaveButton">
+              Save changes
+            </button>
+          </footer>
+        </form>
+      </section>
     </section>
   `,
   styleUrl: './settings-tab.component.scss',
@@ -128,10 +166,12 @@ export class SettingsTabComponent implements OnInit {
   environments: EnvironmentDefinition[] = [];
   readonly forms = new Map<EnvironmentDefinition['key'], FormGroup>();
   connectionForm!: FormGroup;
+  linksForm!: FormGroup;
 
   constructor(
     private readonly environmentService: EnvironmentService,
     private readonly connectionService: ConnectionService,
+    private readonly externalLinksService: ExternalLinksService,
     private readonly fb: FormBuilder
   ) {}
 
@@ -153,6 +193,14 @@ export class SettingsTabComponent implements OnInit {
       autoConnect: [settings.autoConnect],
       retryEnabled: [settings.retryEnabled],
       retryIntervalMs: [settings.retryIntervalMs, [Validators.required, Validators.min(1000)]],
+    });
+
+    const linkSettings = this.externalLinksService.current;
+    this.linksForm = this.fb.group({
+      orbisWebsiteUrl: [linkSettings.orbisWebsiteUrl, [Validators.required]],
+      dspControlUrl: [linkSettings.dspControlUrl, [Validators.required]],
+      managementCockpitUrl: [linkSettings.managementCockpitUrl, [Validators.required]],
+      grafanaDashboardUrl: [linkSettings.grafanaDashboardUrl, [Validators.required]],
     });
   }
 
@@ -180,5 +228,14 @@ export class SettingsTabComponent implements OnInit {
     const value = this.connectionForm.value as ConnectionSettings;
     this.connectionService.updateSettings(value);
     this.connectionForm.markAsPristine();
+  }
+
+  saveExternalLinks(): void {
+    if (!this.linksForm || this.linksForm.invalid) {
+      return;
+    }
+    const value = this.linksForm.value as ExternalLinksSettings;
+    this.externalLinksService.updateSettings(value);
+    this.linksForm.markAsPristine();
   }
 }

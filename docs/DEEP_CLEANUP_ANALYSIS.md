@@ -3,6 +3,25 @@
 **Datum:** 2025-11-13  
 **Zweck:** Vollständige Analyse aller .md Dateien und Quellen auf OMF2/Streamlit-Bezug und Veraltung
 
+## 🔄 UI-/Integration-Aufgabenstatus (Stand 2025-11-22)
+
+| # | Aufgabe | Status | Notizen |
+|---|---------|--------|---------|
+| 1 | Publish-Buttons, Topics & Payloads mit OMF2 abgeglichen (inkl. Tests & Assert-Review) | ✅ erledigt | Buttons publizieren korrekt, Assertions überprüft |
+| 2 | Tests für `resetFactory(withStorage)` (Default `false`) ergänzen | ⛔ offen | Testfälle fehlen noch |
+| 3 | Kamera-Steuerung (SVG-Buttons, Stop, `home`, Step-Size-Parameter, Layout, Photo entfernt) | ✅ erledigt | Umsetzung live |
+| 4 | I18n/Terminologie (AGV statt FTS, HBW-Text, „Finished“-Button, Produktfarben) | ✅ erledigt | Übersetzungen aktualisiert |
+| 5 | Publish-/Camera-Testsuite (bereits umgesetzt, nicht rückgängig zu machen) | ✅ erledigt | Läuft in CI |
+| 6 | Chrome‑Mac Live-Verbindungsanalyse (Vergleich `v0.3.0-pre-cleanup`, Diagnostic-Tool, GitHub-Summary) | ❓ offen | Ursache weiter untersuchen, Logging ggf. ausbauen |
+| 7 | Tabs (Configuration, Sensor, Process etc.) auf Overview-Caching-Pattern bringen, alle Topics unabhängig vom Tab-Status anzeigen | ❓ offen (**Top-Priorität**) | Orders & Overview fertig, restliche Tabs nachziehen, Fixtures „Startup“ prüfen |
+| 8 | Message-Monitor-Filter (Safari, AGV-Auswahl) | ✅ erledigt | Filter-UI konsistent |
+| 9 | Faktenblätter ohne „NodeRed“ für Module-Status nutzen | ✅ erledigt | Gateway-/Tab-Logik angepasst |
+|10 | Stock-Anzeige bleibt nach Tab-/Language-Wechsel stabil | ✅ erledigt | Inventory-State-Service aktiv |
+|11 | Mock-/Live-/Replay-Controller-Benennung & -Verwendung klären | ❓ offen | Benennung/Doku abstimmen |
+|12 | Orders-Tab-Icons, Workpiece-Darstellung & Zoom-Controls | ✅ erledigt | UI entspricht Spezifikation |
+
+**Aktuelle Priorität:** Aufgabe 7 – sämtliche übrigen Tabs (außer Orders) auf das Persistenzmuster aus dem Overview-Tab (Pattern 2 + Cache-Service) umstellen und sicherstellen, dass alle Topics auch ohne aktiven Tab angezeigt werden.
+
 ## 📋 Analyse-Methodik
 
 1. **Alle .md Dateien** im Projekt durchsucht

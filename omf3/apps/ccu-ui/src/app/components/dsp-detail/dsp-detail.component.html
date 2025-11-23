@@ -1,0 +1,105 @@
+<section class="dsp-detail">
+  <header class="dsp-detail__header">
+    <p class="eyebrow" i18n="@@dspHeaderEyebrow">Referenzarchitektur</p>
+    <h3 i18n="@@dspHeaderTitle">DSP als Rückgrat zwischen Shopfloor und Business-Prozessen</h3>
+    <p i18n="@@dspHeaderLead">
+      Abgerundete Layer zeigen Business-Anwendungen, DSP (On-Premise / Cloud) und angebundene Shopfloor-Systeme.
+      EDGE und Management Cockpit können direkt geöffnet werden.
+    </p>
+  </header>
+
+  <section class="dsp-detail__business">
+    <div
+      *ngFor="let box of view.businessProcesses; trackBy: businessTrackBy"
+      class="business-card"
+    >
+      {{ box }}
+    </div>
+  </section>
+
+  <div class="dsp-detail__connector dsp-detail__connector--down"></div>
+
+  <section class="dsp-detail__core">
+    <div class="core-label core-label--left">
+      <span i18n="@@dspCoreOnPrem">On Premise</span>
+    </div>
+    <div class="core-zone">
+      <div class="ux-panel">
+        <span>UX</span>
+      </div>
+      <div class="edge-panel" (click)="triggerAction('edge', view.edgeUrl)">
+        <header>
+          <h4>EDGE</h4>
+          <p i18n="@@dspEdgeSubline">ORBIS DSP • Realtime Orchestrierung</p>
+        </header>
+        <ul>
+          <li i18n="@@dspEdgePoint1">Regelwerke &amp; Protokoll-Übersetzung</li>
+          <li i18n="@@dspEdgePoint2">Datenpersistenz &amp; Buffering</li>
+          <li i18n="@@dspEdgePoint3">Bidirektionale Kopplung zu Geräten</li>
+        </ul>
+      </div>
+      <div class="management-panel" (click)="triggerAction('management', view.managementUrl)">
+        <header>
+          <h4 i18n="@@dspManagementTitle">Management Cockpit</h4>
+          <p i18n="@@dspManagementSubline">Azure / Cloud</p>
+        </header>
+        <ul>
+          <li i18n="@@dspManagementPoint1">Dashboards &amp; KPI</li>
+          <li i18n="@@dspManagementPoint2">Workflows, KI &amp; Alerts</li>
+          <li i18n="@@dspManagementPoint3">Rollenbasierte Steuerung</li>
+        </ul>
+      </div>
+    </div>
+    <div class="core-label core-label--right">
+      <span>Cloud</span>
+    </div>
+  </section>
+
+  <div class="dsp-detail__connector dsp-detail__connector--down"></div>
+
+  <section class="dsp-detail__shopfloor">
+    <article class="shopfloor-card">
+      <header>
+        <h4 i18n="@@dspShopfloorTitle">Shopfloor Systeme &amp; Geräte</h4>
+        <p i18n="@@dspShopfloorDescription">Anbindung über MQTT, OPC UA und proprietäre Schnittstellen.</p>
+      </header>
+      <div class="device-grid">
+        <figure *ngFor="let device of view.shopfloorSystems; trackBy: shopfloorTrackBy">
+          <div class="device-icon">
+            <img [src]="device.icon" [alt]="device.label" width="46" height="46" />
+          </div>
+          <figcaption>{{ device.label }}</figcaption>
+        </figure>
+      </div>
+    </article>
+  </section>
+
+  <section class="dsp-detail__features">
+    <ul>
+      <li *ngFor="let feature of view.features; trackBy: featureTrackBy">
+        {{ feature }}
+      </li>
+    </ul>
+    <div class="action-buttons">
+      <button
+        *ngFor="let action of view.actions; trackBy: actionTrackBy"
+        type="button"
+        (click)="triggerAction(action.id, action.url)"
+      >
+        <strong>{{ action.label }}</strong>
+        <small>{{ action.description }}</small>
+      </button>
+    </div>
+    <div class="resource-links">
+      <a
+        *ngFor="let resource of view.resources; trackBy: resourceTrackBy"
+        [href]="resource.url"
+        target="_blank"
+        rel="noreferrer noopener"
+      >
+        {{ resource.label }}
+      </a>
+    </div>
+  </section>
+</section>
+

@@ -38,17 +38,34 @@
       ></app-shopfloor-preview>
     </div>
 
-    <section class="selection-panel" *ngIf="vm.selection as selection">
-      <header>
-        <h3>{{ selection.title }}</h3>
-        <p *ngIf="selection.subtitle">{{ selection.subtitle }}</p>
-      </header>
-      <ul>
-        <li *ngFor="let item of selection.items">
-          <span class="label">{{ item.label }}</span>
-          <span class="value">{{ item.value }}</span>
-        </li>
-      </ul>
+    <section class="detail-panel" *ngIf="vm.detailPanel as panel">
+      <ng-container *ngIf="panel.kind === 'default'">
+        <section class="selection-panel">
+          <header>
+            <h3>{{ panel.selection.title }}</h3>
+            <p *ngIf="panel.selection.subtitle">{{ panel.selection.subtitle }}</p>
+          </header>
+          <ul>
+            <li *ngFor="let item of panel.selection.items">
+              <span class="label">{{ item.label }}</span>
+              <span class="value">{{ item.value }}</span>
+            </li>
+          </ul>
+        </section>
+      </ng-container>
+
+      <app-orbis-detail
+        *ngIf="panel.kind === 'orbis'"
+        [view]="panel.view"
+        (phaseSelected)="selectOrbisPhase($event)"
+        (useCaseToggled)="toggleOrbisUseCase($event)"
+      ></app-orbis-detail>
+
+      <app-dsp-detail
+        *ngIf="panel.kind === 'dsp'"
+        [view]="panel.view"
+        (actionTriggered)="openExternalLink($event.url)"
+      ></app-dsp-detail>
     </section>
   </section>
 
@@ -84,6 +101,7 @@
       </article>
     </div>
   </section>
+
 </section>
 
 <ng-template #loading>

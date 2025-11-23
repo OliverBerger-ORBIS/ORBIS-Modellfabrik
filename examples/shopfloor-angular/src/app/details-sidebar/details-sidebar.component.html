@@ -1,0 +1,161 @@
+<div class="sidebar-overlay" *ngIf="isOpen" (click)="onClose()"></div>
+
+<div class="sidebar" [class.open]="isOpen">
+  <div class="sidebar-header">
+    <h2>{{ cellType === 'orbis' ? 'ORBIS Company' : cellType === 'dsp' ? 'DSP Software' : cellData?.name || 'Cell Details' }}</h2>
+    <button class="close-btn" (click)="onClose()">×</button>
+  </div>
+
+  <div class="sidebar-content">
+    <!-- ORBIS Content -->
+    <div *ngIf="cellType === 'orbis'" class="orbis-content">
+      <section class="content-section">
+        <h3>🏢 Consulting & Services</h3>
+        <p>ORBIS helps manufacturing companies digitize their operations and optimize production processes through innovative IT solutions.</p>
+      </section>
+
+      <section class="content-section">
+        <h3>📊 Use Cases</h3>
+        
+        <div class="use-case">
+          <h4>1. Data Aggregation</h4>
+          <ul>
+            <li><strong>A) Business Process Data:</strong> ERP integration (order processing, customer orders, inventory)</li>
+            <li><strong>B) Shopfloor Process Data:</strong> Real-time data from MILL, DRILL, AIQS and other machines</li>
+            <li><strong>C) Single-part Information:</strong> NFC tag aggregation for tracking individual components</li>
+            <li><strong>D) Environmental Sensors:</strong> Time-series data from temperature, humidity, and other sensors</li>
+          </ul>
+        </div>
+
+        <div class="use-case">
+          <h4>2. Track & Trace</h4>
+          <ul>
+            <li>Real-time object location tracking</li>
+            <li>Process data correlation</li>
+            <li>Sensor data integration</li>
+            <li>Quality impact analysis</li>
+          </ul>
+        </div>
+
+        <div class="use-case">
+          <h4>3. Predictive Maintenance</h4>
+          <ul>
+            <li>Pattern recognition in machine data</li>
+            <li>Anomaly detection</li>
+            <li>Maintenance forecasting</li>
+            <li>Downtime prevention</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="content-section">
+        <h3>🔄 Development Methodology</h3>
+        <app-incremental></app-incremental>
+      </section>
+    </div>
+
+    <!-- DSP Content -->
+    <div *ngIf="cellType === 'dsp'" class="dsp-content">
+      <section class="content-section">
+        <h3>💻 Distributed Shopfloor Processing (DSP)</h3>
+        <p>ORBIS DSP enables interoperability, decentralized control, and real-time data exchange across production and logistics processes for smart factory environments.</p>
+      </section>
+
+      <section class="content-section">
+        <h4>Architecture Overview</h4>
+        <div class="architecture-diagram">
+          <div class="arch-layer">
+            <div class="arch-box erp">ERP / SAP</div>
+            <div class="arch-box mes">MES</div>
+          </div>
+          <div class="arch-arrow">↕️</div>
+          <div class="arch-layer">
+            <div class="arch-box dsp-box">DSP Cloud Management</div>
+          </div>
+          <div class="arch-arrow">↕️</div>
+          <div class="arch-layer">
+            <div class="arch-box dsp-edge">DSP Edge (Local)</div>
+          </div>
+          <div class="arch-arrow">↕️</div>
+          <div class="arch-layer">
+            <div class="arch-box shopfloor">Machines</div>
+            <div class="arch-box iot">Sensors</div>
+            <div class="arch-box ctrl">Controllers</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="content-section">
+        <h4>Key Features</h4>
+        <ul>
+          <li>🔗 <strong>Interoperability:</strong> Bi-directional communication between machines, systems, and platforms</li>
+          <li>🏭 <strong>Decentralized Control:</strong> Object-oriented process choreography and autonomous system interaction</li>
+          <li>🔄 <strong>Digital Twin:</strong> Real-time asset mapping and comprehensive monitoring</li>
+          <li>⚡ <strong>Edge Processing:</strong> Low-latency local data processing near production equipment</li>
+          <li>☁️ <strong>Cloud Integration:</strong> Centralized process modeling, analytics, and rule definition</li>
+          <li>📊 <strong>Real-time Data:</strong> Transparent shopfloor visibility and adaptive response to changes</li>
+        </ul>
+      </section>
+
+      <section class="content-section">
+        <h4>Industry 4.0 Ready</h4>
+        <p>DSP leverages IIoT, AI, big data analytics, and cloud computing to form the digital backbone of smart factories. Award-winning solution (Factory Innovation Award 2024).</p>
+      </section>
+
+      <section class="content-section">
+        <h4>Resources</h4>
+        <div class="resource-links">
+          <a href="https://www.orbis.de/en-de/solutions/orbis-dsp.html" target="_blank" class="resource-link">
+            📱 Learn More About DSP
+          </a>
+          <a href="https://www.orbis.de" target="_blank" class="resource-link">
+            🌐 ORBIS Website
+          </a>
+        </div>
+      </section>
+    </div>
+
+    <!-- Dynamic Cell Content -->
+    <div *ngIf="cellType === 'dynamic' && cellData" class="dynamic-content">
+      <section class="content-section">
+        <h3>📡 Live Data</h3>
+        <div class="data-grid">
+          <div class="data-item">
+            <span class="data-label">Status:</span>
+            <span class="data-value status-badge" [style.background-color]="getStatusColor(cellData.status)">
+              {{ cellData.status | uppercase }}
+            </span>
+          </div>
+          
+          <div class="data-item" *ngIf="cellData.temperature !== undefined">
+            <span class="data-label">Temperature:</span>
+            <span class="data-value">{{ cellData.temperature }}°C</span>
+          </div>
+          
+          <div class="data-item" *ngIf="cellData.cycleTime !== undefined">
+            <span class="data-label">Cycle Time:</span>
+            <span class="data-value">{{ cellData.cycleTime }}s</span>
+          </div>
+          
+          <div class="data-item" *ngIf="cellData.partsProduced !== undefined">
+            <span class="data-label">Parts Produced:</span>
+            <span class="data-value">{{ cellData.partsProduced }}</span>
+          </div>
+          
+          <div class="data-item" *ngIf="cellData.lastUpdate">
+            <span class="data-label">Last Update:</span>
+            <span class="data-value timestamp">{{ cellData.lastUpdate | date:'short' }}</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="content-section">
+        <h4>ℹ️ About This Cell</h4>
+        <p>This cell represents a {{ cellData.name }} on the shopfloor. The data shown is simulated by the Mock MQTT Service.</p>
+        <p class="info-note">
+          <strong>Note:</strong> In production, this would display real-time data from the actual MQTT broker.
+        </p>
+      </section>
+    </div>
+  </div>
+</div>

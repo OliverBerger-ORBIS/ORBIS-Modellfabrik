@@ -262,6 +262,18 @@
   }
 }
 
+.detail-panel {
+  margin-top: 1.5rem;
+  padding: 1.25rem;
+  border-radius: 1.25rem;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: inset 0 0 0 1px rgba(15, 52, 95, 0.08);
+
+  .selection-panel {
+    margin: 0;
+  }
+}
+
 @media (max-width: 720px) {
   .parameter-grid {
     grid-template-columns: minmax(0, 1fr);

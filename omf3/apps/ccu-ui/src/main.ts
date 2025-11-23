@@ -1,5 +1,7 @@
 // Import @angular/localize/init explicitly to control initialization order
 import '@angular/localize/init';
+import '@angular/common/locales/global/de';
+import '@angular/common/locales/global/fr';
 
 import { ɵsetLocaleId as setLocaleId } from '@angular/core';
 import { loadTranslations } from '@angular/localize';
