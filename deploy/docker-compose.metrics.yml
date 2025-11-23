@@ -1,0 +1,75 @@
+version: '3.8'
+
+services:
+  # InfluxDB 2.x - Time Series Database
+  influxdb:
+    image: influxdb:2.7
+    container_name: omf-influxdb
+    ports:
+      - "8086:8086"
+    environment:
+      # Initial setup - these create the initial user and bucket
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_USERNAME=admin
+      - DOCKER_INFLUXDB_INIT_PASSWORD=adminpassword
+      - DOCKER_INFLUXDB_INIT_ORG=orbis
+      - DOCKER_INFLUXDB_INIT_BUCKET=omf-metrics
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=dev-token-please-change
+    volumes:
+      # Persist InfluxDB data (optional, comment out for ephemeral storage)
+      - influxdb-data:/var/lib/influxdb2
+      - influxdb-config:/etc/influxdb2
+    networks:
+      - omf-metrics-network
+    restart: unless-stopped
+
+  # Grafana - Visualization and Dashboarding
+  grafana:
+    image: grafana/grafana:10.2.2
+    container_name: omf-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_INSTALL_PLUGINS=
+    volumes:
+      # Persist Grafana data (optional)
+      - grafana-data:/var/lib/grafana
+      # Optional: provision datasources and dashboards
+      # - ./grafana/provisioning:/etc/grafana/provisioning
+    networks:
+      - omf-metrics-network
+    depends_on:
+      - influxdb
+    restart: unless-stopped
+
+  # Optional: Metrics Service as a container
+  # Uncomment this section if you want to run the metrics service in Docker
+  # metrics-service:
+  #   build:
+  #     context: ../backend/metrics-service
+  #     dockerfile: Dockerfile
+  #   container_name: omf-metrics-service
+  #   environment:
+  #     # MQTT broker - adjust for your environment
+  #     - MQTT_URL=mqtt://host.docker.internal:1883
+  #     # InfluxDB connection
+  #     - INFLUX_URL=http://influxdb:8086
+  #     - INFLUX_TOKEN=dev-token-please-change
+  #     - INFLUX_ORG=orbis
+  #     - INFLUX_BUCKET=omf-metrics
+  #   networks:
+  #     - omf-metrics-network
+  #   depends_on:
+  #     - influxdb
+  #   restart: unless-stopped
+
+networks:
+  omf-metrics-network:
+    driver: bridge
+
+volumes:
+  influxdb-data:
+  influxdb-config:
+  grafana-data:
