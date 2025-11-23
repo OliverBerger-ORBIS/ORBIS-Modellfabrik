@@ -66,6 +66,8 @@ export function handleOrderCompleted(topic: string, payloadStr: string): Point[]
       }
 
       points.push(point);
+      
+      const orderPointsCount = 1; // Track points for this order
 
       // Also create individual points for each production step
       if (order.productionSteps && order.productionSteps.length > 0) {
@@ -97,9 +99,11 @@ export function handleOrderCompleted(topic: string, payloadStr: string): Point[]
             points.push(stepPoint);
           }
         }
+        
+        logger.debug(`Created ${orderPointsCount + order.productionSteps.length} points for order ${order.orderId}`);
+      } else {
+        logger.debug(`Created ${orderPointsCount} points for order ${order.orderId}`);
       }
-
-      logger.debug(`Created ${points.length} points for order ${order.orderId}`);
     }
   } catch (error) {
     logger.error('Failed to parse order completed message', error);

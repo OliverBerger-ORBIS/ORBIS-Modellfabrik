@@ -41,6 +41,18 @@ const TOPICS = [
   '/j1/txt/1/f/i/stock',
 ];
 
+/**
+ * Topic routing patterns
+ */
+const TOPIC_PATTERNS = {
+  FTS_STATE: /^fts\/v1\/ff\/[^/]+\/state$/,
+  FTS_CONNECTION: /^fts\/v1\/ff\/[^/]+\/connection$/,
+  FTS_ORDER: /^fts\/v1\/ff\/[^/]+\/order$/,
+  FTS_INSTANT_ACTION: /^fts\/v1\/ff\/[^/]+\/instantAction$/,
+  FTS_FACTSHEET: /^fts\/v1\/ff\/[^/]+\/factsheet$/,
+  MODULE_STATE: /^module\/v1\/ff\/(NodeRed\/)?[^/]+\/state$/,
+};
+
 export class OmfMqttClient {
   private client: MqttClient;
   private influxWriter: InfluxWriter;
@@ -120,26 +132,31 @@ export class OmfMqttClient {
       if (topic === 'ccu/order/completed') {
         points = handleOrderCompleted(topic, payloadStr);
       }
+      else if (topic === 'ccu/order/active') {
+        // Log but don't process yet - could be added if needed
+        logger.debug(`Received active order on ${topic}`);
+        return;
+      }
       // FTS topics
-      else if (topic.match(/^fts\/v1\/ff\/[^/]+\/state$/)) {
+      else if (TOPIC_PATTERNS.FTS_STATE.test(topic)) {
         points = handleFtsState(topic, payloadStr);
       }
-      else if (topic.match(/^fts\/v1\/ff\/[^/]+\/connection$/)) {
+      else if (TOPIC_PATTERNS.FTS_CONNECTION.test(topic)) {
         points = handleFtsConnection(topic, payloadStr);
       }
-      else if (topic.match(/^fts\/v1\/ff\/[^/]+\/order$/)) {
+      else if (TOPIC_PATTERNS.FTS_ORDER.test(topic)) {
         points = handleFtsOrder(topic, payloadStr);
       }
-      else if (topic.match(/^fts\/v1\/ff\/[^/]+\/instantAction$/)) {
+      else if (TOPIC_PATTERNS.FTS_INSTANT_ACTION.test(topic)) {
         points = handleFtsInstantAction(topic, payloadStr);
       }
-      else if (topic.match(/^fts\/v1\/ff\/[^/]+\/factsheet$/)) {
+      else if (TOPIC_PATTERNS.FTS_FACTSHEET.test(topic)) {
         // Factsheets are informational, could be stored but not as time-series
         logger.debug(`Received FTS factsheet on ${topic}`);
         return;
       }
       // Module topics
-      else if (topic.match(/^module\/v1\/ff\/(NodeRed\/)?[^/]+\/state$/)) {
+      else if (TOPIC_PATTERNS.MODULE_STATE.test(topic)) {
         points = handleModuleState(topic, payloadStr);
       }
       // Environment topics
@@ -149,12 +166,6 @@ export class OmfMqttClient {
       // Stock topics
       else if (topic === '/j1/txt/1/f/i/stock') {
         points = handleStock(topic, payloadStr);
-      }
-      // CCU order active - could be handled similarly to completed
-      else if (topic === 'ccu/order/active') {
-        // Log but don't process yet - could be added if needed
-        logger.debug(`Received active order on ${topic}`);
-        return;
       }
       else {
         logger.warn(`No handler for topic: ${topic}`);
