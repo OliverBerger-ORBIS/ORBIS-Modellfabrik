@@ -83,7 +83,7 @@ def render_payload_sequence(messages, selected_topics=None):
                 st.markdown("**Expand**")
 
             # Tabelle zeilenweise rendern mit neuer Spalten-Anordnung
-            for idx, row in df.iterrows():
+            for _idx, row in df.iterrows():
                 col1, col2, col3 = st.columns([2, 5, 2])  # Gleiche Gewichtungen
 
                 with col1:
