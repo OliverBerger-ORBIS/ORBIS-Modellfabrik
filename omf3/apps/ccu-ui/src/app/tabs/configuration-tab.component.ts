@@ -262,7 +262,7 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
   private readonly dspArchitecture: DspArchitectureLayer[] = [
     {
       id: 'ux',
-      title: $localize`:@@dspLayerUxTitle:UX`,
+      title: $localize`:@@dspLayerUxTitle:SmartFactory Dashboard`,
       description: $localize`:@@dspLayerUxDescription:Visual access for operators and planners.`,
       capabilities: [],
     },

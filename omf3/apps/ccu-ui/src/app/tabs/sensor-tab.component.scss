@@ -4,6 +4,35 @@
   background: linear-gradient(180deg, rgba(236, 244, 255, 0.6) 0%, rgba(255, 255, 255, 0.85) 100%);
 }
 
+%panel-card {
+  padding: 1.5rem;
+  border-radius: 1.5rem;
+  background: #ffffff;
+  box-shadow: 0 24px 60px -34px rgba(15, 52, 95, 0.45);
+}
+
+%card-title {
+  display: flex;
+  gap: 0.85rem;
+  align-items: center;
+
+  .emoji {
+    font-size: 1.6rem;
+  }
+
+  h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #0f325c;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #5b6d84;
+  }
+}
+
 .sensor-tab {
   display: grid;
   gap: 2rem;
@@ -21,7 +50,6 @@
     border-radius: 1.25rem;
     background: linear-gradient(135deg, rgba(56, 132, 255, 0.18), rgba(255, 255, 255, 0.92));
     padding: 0.85rem;
-    box-shadow: 0 18px 48px -28px rgba(14, 36, 72, 0.55);
   }
 
   > div:first-of-type {
@@ -118,33 +146,12 @@
 }
 
 .gauge-card {
+  @extend %panel-card;
   display: grid;
   gap: 1rem;
-  padding: 1.5rem;
-  border-radius: 1.5rem;
-  background: #ffffff;
-  box-shadow: 0 24px 60px -34px rgba(15, 52, 95, 0.45);
 
   header .title {
-    display: flex;
-    gap: 0.85rem;
-    align-items: center;
-
-    .emoji {
-      font-size: 1.65rem;
-    }
-
-    h3 {
-      margin: 0;
-      font-size: 1.1rem;
-      color: #0f325c;
-    }
-
-    p {
-      margin: 0;
-      font-size: 0.9rem;
-      color: #5b6d84;
-    }
+    @extend %card-title;
   }
 
   .gauge-card__value {
@@ -212,7 +219,6 @@
   stroke: #0f172a;
   stroke-width: 3;
   stroke-linecap: round;
-  filter: drop-shadow(0 2px 4px rgba(15, 23, 42, 0.35));
 }
 
 .gauge-svg__pivot {
@@ -262,33 +268,12 @@
 }
 
 .traffic-card {
+  @extend %panel-card;
   display: grid;
   gap: 1rem;
-  padding: 1.5rem;
-  border-radius: 1.5rem;
-  background: #ffffff;
-  box-shadow: 0 24px 60px -34px rgba(15, 52, 95, 0.45);
 
   header .title {
-    display: flex;
-    gap: 0.85rem;
-    align-items: center;
-
-    .emoji {
-      font-size: 1.6rem;
-    }
-
-    h3 {
-      margin: 0;
-      font-size: 1.1rem;
-      color: #0f325c;
-    }
-
-    p {
-      margin: 0;
-      font-size: 0.9rem;
-      color: #5b6d84;
-    }
+    @extend %card-title;
   }
 
   .traffic-light {
@@ -330,12 +315,9 @@
 }
 
 .camera-section {
+  @extend %panel-card;
   display: grid;
   gap: 1.5rem;
-  padding: 1.5rem;
-  border-radius: 1.5rem;
-  background: #ffffff;
-  box-shadow: 0 24px 60px -34px rgba(15, 52, 95, 0.45);
 
   header {
     display: flex;
@@ -348,7 +330,6 @@
       border-radius: 1.25rem;
       background: linear-gradient(135deg, rgba(56, 132, 255, 0.18), rgba(255, 255, 255, 0.92));
       padding: 0.75rem;
-      box-shadow: 0 18px 48px -28px rgba(14, 36, 72, 0.55);
     }
 
     h3 {
@@ -381,7 +362,6 @@
     img {
       width: min(100%, 480px);
       border-radius: 1.25rem;
-      box-shadow: 0 24px 60px -34px rgba(15, 52, 95, 0.38);
       background: rgba(240, 244, 250, 0.8);
     }
 
@@ -419,66 +399,63 @@
 
     .controls-grid {
       display: grid;
-      grid-template-columns: 48px 48px 48px;
-      grid-template-rows: 48px 48px 48px;
-    gap: 0.75rem;
+      grid-template-columns: repeat(3, 48px);
+      grid-template-rows: repeat(3, 48px);
+      gap: 0.75rem;
       width: fit-content;
       margin: 0;
 
-    button {
+      button {
         width: 48px;
         height: 48px;
-        min-width: 48px;
-        max-width: 48px;
         padding: 0;
-      border-radius: 0.75rem;
-      border: none;
+        border-radius: 0.75rem;
+        border: none;
         background: #2563eb;
-      color: #ffffff;
-      font-weight: 600;
-      cursor: pointer;
+        color: #fff;
+        font-weight: 600;
+        cursor: pointer;
         transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.2s ease;
         display: flex;
         align-items: center;
         justify-content: center;
 
-      &:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 12px 26px -18px rgba(29, 78, 216, 0.55);
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 12px 26px -18px rgba(29, 78, 216, 0.55);
           background: #1d4ed8;
         }
 
         svg {
           width: 24px;
           height: 24px;
-          flex-shrink: 0;
-      }
+        }
 
-      &.control-up {
+        &.control-up {
           grid-column: 2;
           grid-row: 1;
-      }
+        }
 
-      &.control-left {
+        &.control-left {
           grid-column: 1;
           grid-row: 2;
-      }
+        }
 
-      &.control-center {
+        &.control-center {
           grid-column: 2;
           grid-row: 2;
-      }
+        }
 
-      &.control-right {
+        &.control-right {
           grid-column: 3;
           grid-row: 2;
-      }
+        }
 
-      &.control-down {
+        &.control-down {
           grid-column: 2;
           grid-row: 3;
+        }
       }
-    }
   }
 
   .camera-settings {

@@ -362,6 +362,7 @@
     "@@orbisUseCaseOptimizationHighlight6": "Amélioration en boucle fermée via exécutants DSP et workflows MES/DSP",
     "@@dspBadgeBusiness": "Processus métiers",
     "@@dspBadgeShopfloor": "Systèmes et équipements shopfloor",
+    "@@dspLayerUxTitle": "Tableau de bord SmartFactory",
     "@@dspShopfloorSystemsLabel": "Systèmes shopfloor",
     "@@dspShopfloorDevicesLabel": "Équipements",
     "@@dspBusinessCloudApps": "Applications cloud",
