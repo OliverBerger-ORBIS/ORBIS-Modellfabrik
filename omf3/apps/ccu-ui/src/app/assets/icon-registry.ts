@@ -63,6 +63,7 @@ export const ICON_MAP: Record<IconKey, string> = {
   'logo-orbis': 'shopfloor/ORBIS_logo_RGB.svg',
   'logo-sap': 'details/dsp/sap.svg',
   'logo-azure': 'details/dsp/azure.svg',
+  // DSP uses ORBIS logo as DSP is an ORBIS product; can be swapped to dedicated DSP logo later
   'logo-dsp': 'shopfloor/ORBIS_logo_RGB.svg',
 
   // Edge function icons
