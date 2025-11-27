@@ -265,6 +265,8 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
       title: $localize`:@@dspLayerUxTitle:SmartFactory Dashboard`,
       description: $localize`:@@dspLayerUxDescription:Visual access for operators and planners.`,
       capabilities: [],
+      logoIconKey: 'logo-orbis',
+      position: 'left',
     },
     {
       id: 'edge',
@@ -277,6 +279,15 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
         $localize`:@@dspEdgeBullet4:Streaming analytics and buffering during connectivity issues.`,
       ],
       actionId: 'edge',
+      logoIconKey: 'logo-dsp',
+      functionIcons: [
+        { iconKey: 'edge-data-storage', size: 48 },
+        { iconKey: 'edge-digital-twin', size: 48 },
+        { iconKey: 'edge-connectivity', size: 48 },
+        { iconKey: 'edge-workflow', size: 48 },
+        { iconKey: 'edge-analytics', size: 48 },
+      ],
+      position: 'center',
     },
     {
       id: 'management',
@@ -289,6 +300,9 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
         $localize`:@@dspManagementBullet4:Analytics workloads for KPIs.`,
       ],
       actionId: 'management',
+      logoIconKey: 'logo-dsp',
+      secondaryLogoIconKey: 'logo-azure',
+      position: 'right',
     },
   ];
 
