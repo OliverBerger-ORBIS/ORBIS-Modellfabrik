@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
-import type { DspDetailView } from '../../tabs/configuration-detail.types';
+import type { DspDetailView, FunctionIconConfig, IconKey } from '../../tabs/configuration-detail.types';
 import { DETAIL_ASSET_MAP } from '../../assets/detail-asset-map';
+import { getIconPath } from '../../assets/icon-registry';
 
 type DetailAccordionPanel = 'edge' | 'management';
 
@@ -133,6 +134,20 @@ export class DspDetailComponent {
 
   protected isExpanded(panel: DetailAccordionPanel): boolean {
     return this.expandedPanel === panel;
+  }
+
+  /**
+   * Resolves an IconKey to its asset path using the central icon registry.
+   */
+  protected resolveIconKey(key: IconKey | undefined | null): string {
+    return getIconPath(key);
+  }
+
+  /**
+   * TrackBy function for function icons in a layer.
+   */
+  protected functionIconTrackBy(index: number, icon: FunctionIconConfig): string {
+    return `${icon.iconKey}-${index}`;
   }
 }
 

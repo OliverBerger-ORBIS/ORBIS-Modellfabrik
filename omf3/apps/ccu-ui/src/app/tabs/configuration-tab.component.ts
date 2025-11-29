@@ -13,6 +13,7 @@ import { ConnectionService } from '../services/connection.service';
 import { ShopfloorPreviewComponent } from '../components/shopfloor-preview/shopfloor-preview.component';
 import { OrbisDetailComponent } from '../components/orbis-detail/orbis-detail.component';
 import { DspDetailComponent } from '../components/dsp-detail/dsp-detail.component';
+import { DspArchitectureComponent } from '../components/dsp-architecture/dsp-architecture.component';
 import type { ShopfloorLayoutConfig, ShopfloorCellConfig } from '../components/shopfloor-preview/shopfloor-layout.types';
 import { ExternalLinksService, type ExternalLinksSettings } from '../services/external-links.service';
 import {
@@ -79,7 +80,7 @@ interface ConfigurationViewModel {
 @Component({
   standalone: true,
   selector: 'app-configuration-tab',
-  imports: [CommonModule, ShopfloorPreviewComponent, OrbisDetailComponent, DspDetailComponent],
+  imports: [CommonModule, ShopfloorPreviewComponent, OrbisDetailComponent, DspDetailComponent, DspArchitectureComponent],
   templateUrl: './configuration-tab.component.html',
   styleUrl: './configuration-tab.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -265,6 +266,8 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
       title: $localize`:@@dspLayerUxTitle:SmartFactory Dashboard`,
       description: $localize`:@@dspLayerUxDescription:Visual access for operators and planners.`,
       capabilities: [],
+      logoIconKey: 'logo-orbis',
+      position: 'left',
     },
     {
       id: 'edge',
@@ -277,6 +280,15 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
         $localize`:@@dspEdgeBullet4:Streaming analytics and buffering during connectivity issues.`,
       ],
       actionId: 'edge',
+      logoIconKey: 'logo-dsp',
+      functionIcons: [
+        { iconKey: 'edge-data-storage', size: 48 },
+        { iconKey: 'edge-digital-twin', size: 48 },
+        { iconKey: 'edge-connectivity', size: 48 },
+        { iconKey: 'edge-workflow', size: 48 },
+        { iconKey: 'edge-analytics', size: 48 },
+      ],
+      position: 'center',
     },
     {
       id: 'management',
@@ -289,6 +301,9 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
         $localize`:@@dspManagementBullet4:Analytics workloads for KPIs.`,
       ],
       actionId: 'management',
+      logoIconKey: 'logo-dsp',
+      secondaryLogoIconKey: 'logo-azure',
+      position: 'right',
     },
   ];
 
@@ -921,6 +936,8 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
       shopfloorSystems,
       edgeUrl: links.dspControlUrl,
       managementUrl: links.managementCockpitUrl,
+      analyticsUrl: links.grafanaDashboardUrl,
+      smartfactoryDashboardUrl: links.smartfactoryDashboardUrl,
     };
   }
 

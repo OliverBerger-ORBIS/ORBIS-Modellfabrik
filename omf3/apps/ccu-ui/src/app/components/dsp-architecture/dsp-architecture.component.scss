@@ -1,0 +1,441 @@
+.dsp-architecture {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  background: #fff;
+  border-radius: 1.5rem;
+  padding: 1.5rem;
+  box-shadow: 0 18px 40px -32px rgba(15, 35, 66, 0.25);
+  position: relative;
+
+  // Header
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 1rem;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: #fff;
+    padding-bottom: 0.5rem;
+    margin-bottom: -0.5rem;
+
+    .header__title {
+      h2 {
+        margin: 0;
+        font-size: 1.5rem;
+        color: #1f54b2;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+      }
+
+      .subtitle {
+        margin: 0.25rem 0 0;
+        font-size: 0.875rem;
+        color: #7f8da5;
+        font-weight: 500;
+      }
+    }
+
+    .header__zoom {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #f4f7fb;
+      border-radius: 999px;
+      padding: 0.25rem;
+
+      .zoom-btn {
+        width: 32px;
+        height: 32px;
+        border: none;
+        border-radius: 50%;
+        background: #fff;
+        color: #1f54b2;
+        font-size: 1.25rem;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+
+        &:hover:not(:disabled) {
+          background: #e8eef8;
+        }
+
+        &:disabled {
+          opacity: 0.4;
+          cursor: not-allowed;
+        }
+
+        &--reset {
+          font-size: 1rem;
+        }
+      }
+
+      .zoom-level {
+        min-width: 50px;
+        text-align: center;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #1e2d3d;
+      }
+    }
+  }
+
+  // Diagram wrapper - contains scrollable zoom area
+  &__diagram-wrapper {
+    position: relative;
+    overflow: auto;
+    max-height: 70vh;
+    border: 1px solid rgba(23, 43, 77, 0.08);
+    border-radius: 1.25rem;
+    background: linear-gradient(135deg, #fafbfd 0%, #f4f7fb 100%);
+  }
+
+  // Diagram area
+  &__diagram {
+    padding: 1rem;
+    transform-origin: top left;
+    transition: transform 0.3s ease;
+
+    .diagram-svg {
+      width: 100%;
+      height: auto;
+      min-height: 400px;
+      max-height: none;  // Allow full height when zoomed
+    }
+  }
+
+  // Controls - sticky at bottom so they don't get covered by zoom
+  &__controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+    background: #fff;
+    padding-top: 1rem;
+    margin-top: -0.5rem;
+
+    .controls__step-indicator {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      .step-label {
+        font-weight: 600;
+        color: #1e2d3d;
+      }
+
+      .step-count {
+        font-size: 0.875rem;
+        color: #7f8da5;
+      }
+    }
+
+    .controls__buttons {
+      display: flex;
+      gap: 0.75rem;
+
+      .nav-btn {
+        padding: 0.6rem 1.25rem;
+        border-radius: 999px;
+        border: 1px solid rgba(31, 84, 178, 0.35);
+        background: transparent;
+        color: #1f54b2;
+        font-weight: 600;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:hover:not(:disabled) {
+          background: rgba(31, 84, 178, 0.08);
+        }
+
+        &:disabled {
+          opacity: 0.4;
+          cursor: not-allowed;
+        }
+
+        &--primary {
+          background: #1f54b2;
+          color: #fff;
+          border-color: #1f54b2;
+
+          &:hover:not(:disabled) {
+            background: #163d8a;
+          }
+        }
+      }
+    }
+
+    .controls__step-dots {
+      display: flex;
+      gap: 0.5rem;
+
+      .step-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        border: 2px solid rgba(31, 84, 178, 0.3);
+        background: transparent;
+        cursor: pointer;
+        padding: 0;
+        transition: all 0.2s ease;
+
+        &:hover {
+          border-color: #1f54b2;
+        }
+
+        &--active {
+          background: #1f54b2;
+          border-color: #1f54b2;
+          transform: scale(1.2);
+        }
+
+        &--completed {
+          background: rgba(31, 84, 178, 0.3);
+          border-color: rgba(31, 84, 178, 0.3);
+        }
+      }
+    }
+  }
+
+  // Accordion section (DSP Edge and Management Cockpit details)
+  &__accordion {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 1rem;
+
+    .accordion-item {
+      border: 1px solid rgba(31, 84, 178, 0.15);
+      border-radius: 0.75rem;
+      overflow: hidden;
+      background: #fff;
+
+      &.is-open {
+        border-color: rgba(31, 84, 178, 0.3);
+
+        .accordion-trigger .chevron {
+          transform: rotate(180deg);
+        }
+      }
+    }
+
+    .accordion-trigger {
+      width: 100%;
+      padding: 1rem 1.25rem;
+      border: none;
+      background: transparent;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #1e2d3d;
+      cursor: pointer;
+      transition: background 0.2s ease;
+
+      &:hover {
+        background: rgba(31, 84, 178, 0.04);
+      }
+
+      .chevron {
+        width: 20px;
+        height: 20px;
+        transition: transform 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        // CSS-based chevron icon for better accessibility
+        &::before {
+          content: '';
+          width: 8px;
+          height: 8px;
+          border: solid #7f8da5;
+          border-width: 0 2px 2px 0;
+          transform: rotate(45deg);
+          margin-top: -2px;
+        }
+      }
+    }
+
+    .accordion-panel {
+      padding: 0 1.25rem 1.25rem;
+      animation: slideDown 0.3s ease;
+
+      p {
+        margin: 0 0 1rem;
+        color: #5a6a7d;
+        line-height: 1.6;
+      }
+
+      ul {
+        margin: 0 0 1rem;
+        padding-left: 1.5rem;
+
+        li {
+          color: #5a6a7d;
+          line-height: 1.6;
+          margin-bottom: 0.5rem;
+        }
+      }
+
+      .cta {
+        padding: 0.6rem 1.25rem;
+        border-radius: 999px;
+        border: 1px solid #1f54b2;
+        background: #1f54b2;
+        color: #fff;
+        font-weight: 600;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:hover {
+          background: #163d8a;
+        }
+      }
+    }
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// SVG Elements styling
+.container {
+  cursor: default;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+
+  &__bg {
+    transition: fill 0.3s ease, stroke 0.3s ease, stroke-width 0.3s ease;
+  }
+
+  &__label {
+    pointer-events: none;
+    user-select: none;
+  }
+
+  &__logo,
+  &__function-icon,
+  &__ux-icon {
+    pointer-events: none;
+  }
+
+  &--box,
+  &--business,
+  &--dsp-edge,
+  &--dsp-cloud,
+  &--ux {
+    cursor: pointer;
+
+    &:hover .container__bg {
+      filter: brightness(0.98);
+    }
+
+    &:focus {
+      outline: none;
+
+      .container__bg {
+        stroke-width: 3;
+      }
+    }
+  }
+
+  // Clickable containers with URL
+  &--clickable {
+    cursor: pointer;
+
+    &:hover .container__bg {
+      filter: brightness(0.95);
+      stroke-width: 3;
+    }
+
+    &:focus {
+      outline: none;
+
+      .container__bg {
+        stroke-width: 3;
+      }
+    }
+
+    &:focus-visible {
+      outline: none;
+
+      .container__bg {
+        stroke: #1f54b2;
+        stroke-width: 3;
+        filter: drop-shadow(0 0 6px rgba(31, 84, 178, 0.4));
+      }
+    }
+  }
+
+  &--highlight {
+    .container__bg {
+      filter: drop-shadow(0 4px 12px rgba(31, 84, 178, 0.2));
+    }
+  }
+
+  &--dimmed {
+    opacity: 0.5;
+  }
+
+  &--group {
+    pointer-events: none;
+  }
+}
+
+.connection {
+  transition: stroke 0.3s ease, stroke-width 0.3s ease, opacity 0.3s ease;
+  pointer-events: none;
+
+  &--highlight {
+    filter: drop-shadow(0 0 4px rgba(255, 153, 0, 0.4));
+  }
+
+  &--dimmed {
+    opacity: 0.3;
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .dsp-architecture {
+    padding: 1rem;
+
+    &__header {
+      .header__title h2 {
+        font-size: 1.25rem;
+      }
+    }
+
+    &__controls {
+      .controls__buttons {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .nav-btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+      }
+    }
+  }
+}

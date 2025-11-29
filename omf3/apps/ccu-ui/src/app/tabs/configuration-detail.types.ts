@@ -1,3 +1,7 @@
+import type { IconKey, FunctionIconConfig } from '../assets/icon-registry';
+
+export type { IconKey, FunctionIconConfig };
+
 export type DetailPanelKind = 'default' | 'orbis' | 'dsp';
 
 export interface DetailItem {
@@ -48,6 +52,14 @@ export interface DspArchitectureLayer {
   description: string;
   capabilities: string[];
   actionId?: string;
+  /** Logo icon key displayed in the corner of the container */
+  logoIconKey?: IconKey;
+  /** Secondary logo icon key (e.g., Azure logo) */
+  secondaryLogoIconKey?: IconKey;
+  /** Function icons displayed centered in the container */
+  functionIcons?: FunctionIconConfig[];
+  /** Position hint for layout: 'left' | 'center' | 'right' */
+  position?: 'left' | 'center' | 'right';
 }
 
 export interface DspActionLink {
@@ -61,12 +73,16 @@ export interface DspBusinessProcess {
   id: string;
   label: string;
   icon?: string;
+  /** Icon key for logo resolution via ICON_MAP */
+  iconKey?: IconKey;
   actionId?: string;
 }
 
 export interface DspShopfloorItem {
   label: string;
   icon: string;
+  /** Icon key for icon resolution via ICON_MAP */
+  iconKey?: IconKey;
 }
 
 export interface DspDetailView {
@@ -79,6 +95,8 @@ export interface DspDetailView {
   shopfloorSystems: DspShopfloorItem[];
   edgeUrl: string;
   managementUrl: string;
+  analyticsUrl: string;
+  smartfactoryDashboardUrl: string;
 }
 
 export type DetailPanelView =

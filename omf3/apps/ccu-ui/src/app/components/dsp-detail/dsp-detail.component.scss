@@ -198,10 +198,31 @@
     text-align: center;
     font-weight: 600;
     align-self: stretch;
+    position: relative;
 
     &--edge {
       flex: 1.2 1 0;
       min-width: 220px;
+      border: 2px solid #009B77;
+      background: rgba(0, 155, 119, 0.03);
+    }
+
+    &--management {
+      border: 2px solid #0078D4;
+      background: rgba(0, 120, 212, 0.03);
+    }
+
+    &--ux {
+      flex: 0 0 auto;
+      min-width: 140px;
+      max-width: 180px;
+      border: 2px solid rgba(31, 84, 178, 0.35);
+      border-radius: 1.25rem;
+      background: #fff;
+    }
+
+    &--has-logos {
+      padding-top: 2.5rem;
     }
 
     &--interactive {
@@ -211,6 +232,22 @@
       &:hover {
         transform: translateY(-2px);
       }
+    }
+
+    &__logos {
+      position: absolute;
+      top: 0.5rem;
+      left: 0.5rem;
+      right: 0.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    &__logo {
+      width: 32px;
+      height: 32px;
+      object-fit: contain;
     }
 
     &__body {
@@ -245,6 +282,23 @@
 
     &__label {
       font-size: 0.95rem;
+    }
+  }
+
+  .function-icon-grid {
+    display: flex;
+    gap: 0.6rem;
+    margin-top: 0.35rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+
+    img {
+      padding: 0.35rem;
+      border-radius: 0.75rem;
+      border: 1px solid rgba(31, 84, 178, 0.2);
+      background: #f7faff;
+      object-fit: contain;
     }
   }
 

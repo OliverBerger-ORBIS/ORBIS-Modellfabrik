@@ -6,6 +6,7 @@ export interface ExternalLinksSettings {
   readonly dspControlUrl: string;
   readonly managementCockpitUrl: string;
   readonly grafanaDashboardUrl: string;
+  readonly smartfactoryDashboardUrl: string;
 }
 
 const STORAGE_KEY = 'omf3.externalLinks';
@@ -15,6 +16,7 @@ const DEFAULT_SETTINGS: ExternalLinksSettings = {
   dspControlUrl: 'https://www.orbis.de/en-de/solutions/orbis-dsp.html',
   managementCockpitUrl: 'https://www.orbis.de/en-de/solutions/orbis-dsp.html',
   grafanaDashboardUrl: 'https://grafana.example.com',
+  smartfactoryDashboardUrl: '/dsp-status',
 };
 
 @Injectable({ providedIn: 'root' })

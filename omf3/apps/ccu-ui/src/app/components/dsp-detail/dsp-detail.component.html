@@ -23,8 +23,8 @@
           (keydown.enter)="process.actionId && onProcessKey($event, process.actionId)"
           (keydown.space)="process.actionId && onProcessKey($event, process.actionId)"
         >
-          <div class="business-card__icon" aria-hidden="true" *ngIf="process.icon; else processInitial">
-            <img [src]="process.icon" alt="" />
+          <div class="business-card__icon" aria-hidden="true" *ngIf="process.icon || process.iconKey; else processInitial">
+            <img [src]="process.iconKey ? resolveIconKey(process.iconKey) : process.icon" alt="" />
           </div>
           <ng-template #processInitial>
             <span class="business-card__initial">{{ process.label | slice: 0 : 1 }}</span>
@@ -53,22 +53,57 @@
           <ng-container *ngFor="let layer of view.architecture; let last = last; trackBy: architectureTrackBy">
             <article
               class="dsp-node"
-              [ngClass]="'dsp-node--' + layer.id"
+              [ngClass]="['dsp-node--' + layer.id, layer.position ? 'dsp-node--position-' + layer.position : '']"
               role="listitem"
               [class.dsp-node--interactive]="getLayerActionId(layer.id)"
+              [class.dsp-node--has-logos]="layer.logoIconKey || layer.secondaryLogoIconKey"
               [attr.role]="getLayerActionId(layer.id) ? 'button' : 'listitem'"
               [attr.tabindex]="getLayerActionId(layer.id) ? 0 : null"
               (click)="getLayerActionId(layer.id) && onLayerClick(layer.id)"
               (keydown.enter)="getLayerActionId(layer.id) && onLayerKey($event, layer.id)"
               (keydown.space)="getLayerActionId(layer.id) && onLayerKey($event, layer.id)"
             >
+              <!-- Logo icons in corners -->
+              <div class="dsp-node__logos" *ngIf="layer.logoIconKey || layer.secondaryLogoIconKey">
+                <img
+                  *ngIf="layer.logoIconKey"
+                  class="dsp-node__logo dsp-node__logo--primary"
+                  [src]="resolveIconKey(layer.logoIconKey)"
+                  alt=""
+                  aria-hidden="true"
+                />
+                <img
+                  *ngIf="layer.secondaryLogoIconKey"
+                  class="dsp-node__logo dsp-node__logo--secondary"
+                  [src]="resolveIconKey(layer.secondaryLogoIconKey)"
+                  alt=""
+                  aria-hidden="true"
+                />
+              </div>
+
               <div class="dsp-node__body">
-                <div class="dsp-node__icon" aria-hidden="true" *ngIf="layer.id !== 'edge'">
-                  <img [src]="getLayerIcon(layer.id)" [alt]="layer.title" />
+                <!-- Function icons grid (for layers with functionIcons) -->
+                <div class="function-icon-grid" *ngIf="layer.functionIcons && layer.functionIcons.length > 0">
+                  <img
+                    *ngFor="let icon of layer.functionIcons; trackBy: functionIconTrackBy"
+                    [src]="resolveIconKey(icon.iconKey)"
+                    [style.width.px]="icon.size"
+                    [style.height.px]="icon.size"
+                    alt=""
+                    aria-hidden="true"
+                  />
                 </div>
-                <div class="edge-icon-grid" *ngIf="layer.id === 'edge'">
+
+                <!-- Legacy edge icons (backward compatibility) -->
+                <div class="edge-icon-grid" *ngIf="layer.id === 'edge' && (!layer.functionIcons || layer.functionIcons.length === 0)">
                   <img *ngFor="let icon of edgeIcons" [src]="icon" alt="" aria-hidden="true" />
                 </div>
+
+                <!-- Default icon for layers without function icons -->
+                <div class="dsp-node__icon" aria-hidden="true" *ngIf="layer.id !== 'edge' && (!layer.functionIcons || layer.functionIcons.length === 0)">
+                  <img [src]="getLayerIcon(layer.id)" [alt]="layer.title" />
+                </div>
+
                 <h5 class="dsp-node__label">{{ layer.title }}</h5>
               </div>
             </article>
@@ -93,7 +128,7 @@
           <p i18n="@@dspShopfloorSystemsLabel">Shopfloor Systems</p>
           <div class="icon-line" role="list">
             <figure role="listitem" *ngFor="let platform of view.shopfloorPlatforms; trackBy: platformTrackBy">
-              <img [src]="platform.icon" [alt]="platform.label" />
+              <img [src]="platform.iconKey ? resolveIconKey(platform.iconKey) : platform.icon" [alt]="platform.label" />
               <figcaption>{{ platform.label }}</figcaption>
             </figure>
           </div>
@@ -102,7 +137,7 @@
           <p i18n="@@dspShopfloorDevicesLabel">Devices</p>
           <div class="icon-line" role="list">
             <figure role="listitem" *ngFor="let device of view.shopfloorSystems; trackBy: shopfloorTrackBy">
-              <img [src]="device.icon" [alt]="device.label" />
+              <img [src]="device.iconKey ? resolveIconKey(device.iconKey) : device.icon" [alt]="device.label" />
               <figcaption>{{ device.label }}</figcaption>
             </figure>
           </div>
