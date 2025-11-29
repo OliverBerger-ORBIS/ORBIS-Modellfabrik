@@ -73,32 +73,33 @@ export class DspArchitectureComponent implements OnInit, OnDestroy {
   protected readonly viewBoxWidth = VIEWBOX_WIDTH;
   protected readonly viewBoxHeight = VIEWBOX_HEIGHT;
 
-  // i18n labels
+  // i18n labels - English default with translation keys
   protected readonly title = $localize`:@@dspArchTitle:DISTRIBUTED SHOP FLOOR PROCESSING (DSP)`;
-  protected readonly subtitle = $localize`:@@dspArchSubtitle:Referenzarchitektur`;
-  protected readonly labelBusinessProcesses = $localize`:@@dspArchLabelBusiness:Business\nProzesse`;
+  protected readonly subtitle = $localize`:@@dspArchSubtitle:Reference Architecture`;
+  protected readonly labelBusinessProcesses = $localize`:@@dspArchLabelBusiness:Business\nProcesses`;
   protected readonly labelDsp = $localize`:@@dspArchLabelDsp:DSP`;
-  protected readonly labelShopfloor = $localize`:@@dspArchLabelShopfloor:Shopfloor`;  // Changed: no "Systeme und Geräte"
+  protected readonly labelShopfloor = $localize`:@@dspArchLabelShopfloor:Shopfloor`;
   protected readonly labelOnPremise = $localize`:@@dspArchLabelOnPremise:On Premise`;
   protected readonly labelCloud = $localize`:@@dspArchLabelCloud:Cloud`;
-  protected readonly labelDevices = $localize`:@@dspArchLabelDevices:Geräte`;  // Label at bottom, centered
-  protected readonly labelSystems = $localize`:@@dspArchLabelSystems:Systeme`;  // Label at bottom, centered
+  protected readonly labelDevices = $localize`:@@dspArchLabelDevices:Devices`;  // Label at bottom, centered
+  protected readonly labelSystems = $localize`:@@dspArchLabelSystems:Systems`;  // Label at bottom, centered
   protected readonly labelSmartfactoryDashboard = $localize`:@@dspArchLabelUX:Smartfactory\nDashboard`;  // Two-line label
-  protected readonly btnPrev = $localize`:@@dspArchPrev:Zurück`;
-  protected readonly btnNext = $localize`:@@dspArchNext:Weiter`;
+  protected readonly btnPrev = $localize`:@@dspArchPrev:Previous`;
+  protected readonly btnNext = $localize`:@@dspArchNext:Next`;
   protected readonly btnAutoPlay = $localize`:@@dspArchAutoPlay:Auto Play`;
   protected readonly btnStopPlay = $localize`:@@dspArchStopPlay:Stop`;
 
-  // Step labels (8 steps)
+  // Step labels (9 steps)
   protected readonly stepLabels = [
-    $localize`:@@dspArchStep1:Geräte`,
-    $localize`:@@dspArchStep2:Shopfloor Systeme`,
+    $localize`:@@dspArchStep1:Devices`,
+    $localize`:@@dspArchStep2:Shopfloor Systems`,
     $localize`:@@dspArchStep3:DSP EDGE`,
-    $localize`:@@dspArchStep4:EDGE Funktionen`,
-    $localize`:@@dspArchStep5:Shopfloor Verbindungen`,
-    $localize`:@@dspArchStep6:Dashboard & Cockpit`,
-    $localize`:@@dspArchStep7:SAP Integration`,
-    $localize`:@@dspArchStep8:Business Prozesse`,
+    $localize`:@@dspArchStep4:EDGE Functions`,
+    $localize`:@@dspArchStep5:Shopfloor Connections`,
+    $localize`:@@dspArchStep6:SAP Integration`,
+    $localize`:@@dspArchStep7:Business Processes`,
+    $localize`:@@dspArchStep8:Management Cockpit`,
+    $localize`:@@dspArchStep9:Smartfactory Dashboard`,
   ];
 
   // Container labels from view
@@ -297,6 +298,15 @@ export class DspArchitectureComponent implements OnInit, OnDestroy {
   /**
    * Apply a specific animation step.
    */
+  /**
+   * Check if function icons should be shown in the current step.
+   */
+  protected shouldShowFunctionIcons(): boolean {
+    const step = this.steps[this.currentStepIndex];
+    // Default to true unless explicitly set to false
+    return step?.showFunctionIcons !== false;
+  }
+
   /**
    * Apply a specific animation step (public for template use).
    */

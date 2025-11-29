@@ -104,6 +104,8 @@ export interface StepConfig {
   visibleConnectionIds: string[];
   /** Connection IDs that should be highlighted in this step */
   highlightedConnectionIds: string[];
+  /** Whether to show function icons in containers (default true) */
+  showFunctionIcons?: boolean;
 }
 
 /**

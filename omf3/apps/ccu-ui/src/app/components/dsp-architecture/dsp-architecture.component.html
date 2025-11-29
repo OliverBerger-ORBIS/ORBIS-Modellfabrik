@@ -215,9 +215,9 @@
               class="container__device-icon"
             />
 
-            <!-- Function Icons (centered in row) -->
+            <!-- Function Icons (centered in row) - only shown when step allows -->
             <g
-              *ngIf="container.functionIcons && container.functionIcons.length > 0"
+              *ngIf="container.functionIcons && container.functionIcons.length > 0 && shouldShowFunctionIcons()"
               class="container__icons"
             >
               <ng-container *ngFor="let icon of container.functionIcons; let i = index; trackBy: iconTrackBy">

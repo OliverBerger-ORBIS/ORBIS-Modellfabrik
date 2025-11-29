@@ -557,19 +557,20 @@ export function createDefaultConnections(): ConnectionConfig[] {
 
 /**
  * Default animation steps based on PowerPoint slides.
- * 8 animation steps as specified:
- * 1. Shopfloor layer with device icons
+ * 9 animation steps as specified:
+ * 1. Devices only with highlighting
  * 2. Shopfloor systems added
- * 3. DSP layer (blue) with Edge container, "On Premise" label
- * 4. Edge function icons
+ * 3. DSP layer with Edge only (no function icons yet)
+ * 4. Edge function icons shown with highlight
  * 5. Arrows from Edge to all Shopfloor icons (bidirectional)
- * 6. Shopfloor Dashboard and Management Cockpit with arrows to Edge, "Cloud" label
- * 7. Business Process layer with SAP Shopfloor → Edge arrow
- * 8. Remaining BP components with arrows to Edge
+ * 6. Business Process layer with SAP Shopfloor and connection highlight
+ * 7. Remaining BP components with connection highlight
+ * 8. Management Cockpit with highlight and connection to Edge
+ * 9. Smartfactory Dashboard with highlight and connection to Edge
  */
 export function createDefaultSteps(): StepConfig[] {
   return [
-    // Step 1: Shopfloor layer with device icons only
+    // Step 1: Devices only with highlighting (like step 2 previously)
     {
       id: 'step-1',
       label: '',
@@ -583,7 +584,7 @@ export function createDefaultSteps(): StepConfig[] {
         'shopfloor-device-5',
         'shopfloor-device-6',
       ],
-      highlightedContainerIds: [],
+      highlightedContainerIds: ['shopfloor-devices-group', 'shopfloor-device-1', 'shopfloor-device-2', 'shopfloor-device-3', 'shopfloor-device-4', 'shopfloor-device-5', 'shopfloor-device-6'],
       visibleConnectionIds: [],
       highlightedConnectionIds: [],
     },
@@ -610,7 +611,7 @@ export function createDefaultSteps(): StepConfig[] {
       highlightedConnectionIds: [],
     },
 
-    // Step 3: DSP layer with Edge container
+    // Step 3: DSP layer with Edge only (NO function icons yet - they appear in step 4)
     {
       id: 'step-3',
       label: '',
@@ -633,9 +634,11 @@ export function createDefaultSteps(): StepConfig[] {
       highlightedContainerIds: ['layer-dsp', 'edge'],
       visibleConnectionIds: [],
       highlightedConnectionIds: [],
+      // Note: Edge function icons are controlled by showFunctionIcons flag
+      showFunctionIcons: false,  // Hide function icons in this step
     },
 
-    // Step 4: Edge function icons (icons are always shown in edge container)
+    // Step 4: Edge function icons shown with highlight
     {
       id: 'step-4',
       label: '',
@@ -658,6 +661,7 @@ export function createDefaultSteps(): StepConfig[] {
       highlightedContainerIds: ['edge'],
       visibleConnectionIds: [],
       highlightedConnectionIds: [],
+      showFunctionIcons: true,  // Show function icons in this step
     },
 
     // Step 5: Arrows from Edge to all Shopfloor icons
@@ -701,61 +705,20 @@ export function createDefaultSteps(): StepConfig[] {
         'conn-edge-device-5',
         'conn-edge-device-6',
       ],
+      showFunctionIcons: true,
     },
 
-    // Step 6: Shopfloor Dashboard and Management Cockpit
+    // Step 6: Business Process layer with SAP Shopfloor and connection highlight
     {
       id: 'step-6',
-      label: '',
-      visibleContainerIds: [
-        'layer-dsp',
-        'layer-shopfloor',
-        'dsp-label-onpremise',
-        'dsp-label-cloud',
-        'ux',
-        'edge',
-        'management',
-        'shopfloor-systems-group',
-        'shopfloor-system-bp',
-        'shopfloor-system-fts',
-        'shopfloor-devices-group',
-        'shopfloor-device-1',
-        'shopfloor-device-2',
-        'shopfloor-device-3',
-        'shopfloor-device-4',
-        'shopfloor-device-5',
-        'shopfloor-device-6',
-      ],
-      highlightedContainerIds: ['ux', 'management'],
-      visibleConnectionIds: [
-        'conn-ux-edge',
-        'conn-edge-management',
-        'conn-edge-system-bp',
-        'conn-edge-system-fts',
-        'conn-edge-device-1',
-        'conn-edge-device-2',
-        'conn-edge-device-3',
-        'conn-edge-device-4',
-        'conn-edge-device-5',
-        'conn-edge-device-6',
-      ],
-      highlightedConnectionIds: ['conn-ux-edge', 'conn-edge-management'],
-    },
-
-    // Step 7: Business Process layer with SAP Shopfloor
-    {
-      id: 'step-7',
       label: '',
       visibleContainerIds: [
         'layer-business',
         'layer-dsp',
         'layer-shopfloor',
         'dsp-label-onpremise',
-        'dsp-label-cloud',
         'bp-sap-shopfloor',
-        'ux',
         'edge',
-        'management',
         'shopfloor-systems-group',
         'shopfloor-system-bp',
         'shopfloor-system-fts',
@@ -769,8 +732,6 @@ export function createDefaultSteps(): StepConfig[] {
       ],
       highlightedContainerIds: ['layer-business', 'bp-sap-shopfloor'],
       visibleConnectionIds: [
-        'conn-ux-edge',
-        'conn-edge-management',
         'conn-sap-edge',
         'conn-edge-system-bp',
         'conn-edge-system-fts',
@@ -782,11 +743,103 @@ export function createDefaultSteps(): StepConfig[] {
         'conn-edge-device-6',
       ],
       highlightedConnectionIds: ['conn-sap-edge'],
+      showFunctionIcons: true,
     },
 
-    // Step 8: All remaining BP components - NO HIGHLIGHTING at end of animation
+    // Step 7: Remaining BP components with connection highlight
+    {
+      id: 'step-7',
+      label: '',
+      visibleContainerIds: [
+        'layer-business',
+        'layer-dsp',
+        'layer-shopfloor',
+        'dsp-label-onpremise',
+        'bp-sap-shopfloor',
+        'bp-cloud-apps',
+        'bp-analytics',
+        'bp-data-lake',
+        'edge',
+        'shopfloor-systems-group',
+        'shopfloor-system-bp',
+        'shopfloor-system-fts',
+        'shopfloor-devices-group',
+        'shopfloor-device-1',
+        'shopfloor-device-2',
+        'shopfloor-device-3',
+        'shopfloor-device-4',
+        'shopfloor-device-5',
+        'shopfloor-device-6',
+      ],
+      highlightedContainerIds: ['bp-cloud-apps', 'bp-analytics', 'bp-data-lake'],
+      visibleConnectionIds: [
+        'conn-sap-edge',
+        'conn-cloud-edge',
+        'conn-analytics-edge',
+        'conn-datalake-edge',
+        'conn-edge-system-bp',
+        'conn-edge-system-fts',
+        'conn-edge-device-1',
+        'conn-edge-device-2',
+        'conn-edge-device-3',
+        'conn-edge-device-4',
+        'conn-edge-device-5',
+        'conn-edge-device-6',
+      ],
+      highlightedConnectionIds: ['conn-cloud-edge', 'conn-analytics-edge', 'conn-datalake-edge'],
+      showFunctionIcons: true,
+    },
+
+    // Step 8: Management Cockpit with highlight and connection to Edge
     {
       id: 'step-8',
+      label: '',
+      visibleContainerIds: [
+        'layer-business',
+        'layer-dsp',
+        'layer-shopfloor',
+        'dsp-label-onpremise',
+        'dsp-label-cloud',
+        'bp-sap-shopfloor',
+        'bp-cloud-apps',
+        'bp-analytics',
+        'bp-data-lake',
+        'edge',
+        'management',
+        'shopfloor-systems-group',
+        'shopfloor-system-bp',
+        'shopfloor-system-fts',
+        'shopfloor-devices-group',
+        'shopfloor-device-1',
+        'shopfloor-device-2',
+        'shopfloor-device-3',
+        'shopfloor-device-4',
+        'shopfloor-device-5',
+        'shopfloor-device-6',
+      ],
+      highlightedContainerIds: ['management'],
+      visibleConnectionIds: [
+        'conn-edge-management',
+        'conn-sap-edge',
+        'conn-cloud-edge',
+        'conn-analytics-edge',
+        'conn-datalake-edge',
+        'conn-edge-system-bp',
+        'conn-edge-system-fts',
+        'conn-edge-device-1',
+        'conn-edge-device-2',
+        'conn-edge-device-3',
+        'conn-edge-device-4',
+        'conn-edge-device-5',
+        'conn-edge-device-6',
+      ],
+      highlightedConnectionIds: ['conn-edge-management'],
+      showFunctionIcons: true,
+    },
+
+    // Step 9: Smartfactory Dashboard with highlight and connection to Edge (final state - no highlighting at end)
+    {
+      id: 'step-9',
       label: '',
       visibleContainerIds: [
         'layer-business',
@@ -830,6 +883,7 @@ export function createDefaultSteps(): StepConfig[] {
         'conn-edge-device-6',
       ],
       highlightedConnectionIds: [],  // No highlighting at end
+      showFunctionIcons: true,
     },
   ];
 }
