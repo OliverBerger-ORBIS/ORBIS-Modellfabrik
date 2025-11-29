@@ -83,35 +83,68 @@
         >
           <polygon points="10 0, 0 3.5, 10 7" fill="#7f8da5" />
         </marker>
+        <marker
+          id="arrow-head-reverse-highlight"
+          markerWidth="10"
+          markerHeight="7"
+          refX="1"
+          refY="3.5"
+          orient="auto"
+          markerUnits="strokeWidth"
+        >
+          <polygon points="10 0, 0 3.5, 10 7" fill="#ff9900" />
+        </marker>
       </defs>
 
-      <!-- Connections (drawn first, below containers) -->
-      <g class="connections">
-        <ng-container *ngFor="let conn of connections; trackBy: connectionTrackBy">
-          <path
-            *ngIf="isConnectionVisible(conn)"
-            [attr.d]="getConnectionPath(conn)"
-            [class]="getConnectionClass(conn)"
-            fill="none"
-            [attr.stroke]="conn.state === 'highlight' ? '#ff9900' : '#7f8da5'"
-            [attr.stroke-width]="conn.state === 'highlight' ? 2.5 : 2"
-            [attr.marker-end]="conn.hasArrow ? (conn.state === 'highlight' ? 'url(#arrow-head-highlight)' : 'url(#arrow-head)') : null"
-            [attr.marker-start]="conn.bidirectional ? 'url(#arrow-head-reverse)' : null"
-          />
+      <!-- Layer backgrounds (drawn first, at bottom z-level) -->
+      <g class="layer-backgrounds">
+        <ng-container *ngFor="let container of containers; trackBy: containerTrackBy">
+          <g
+            *ngIf="isContainerVisible(container) && container.type === 'layer'"
+            [attr.transform]="'translate(' + container.x + ',' + container.y + ')'"
+          >
+            <!-- Layer background rect -->
+            <rect
+              [attr.width]="container.width"
+              [attr.height]="container.height"
+              [attr.fill]="getContainerFill(container)"
+              [attr.stroke]="getContainerStroke(container)"
+              [attr.stroke-width]="1"
+              rx="0"
+              ry="0"
+              class="layer__bg"
+            />
+            <!-- Layer label (left side, vertically centered, multi-line support) -->
+            <text
+              *ngIf="getContainerLabel(container.id)"
+              [attr.x]="20"
+              [attr.y]="container.height / 2 - 10"
+              text-anchor="start"
+              dominant-baseline="middle"
+              font-size="14"
+              font-weight="600"
+              fill="#1e2d3d"
+              class="layer__label"
+            >
+              <ng-container *ngFor="let line of getMultilineLabel(container.id); let i = index">
+                <tspan [attr.x]="20" [attr.dy]="i === 0 ? '0' : '1.2em'">{{ line }}</tspan>
+              </ng-container>
+            </text>
+          </g>
         </ng-container>
       </g>
 
-      <!-- Containers -->
+      <!-- Containers (middle z-level) -->
       <g class="containers">
         <ng-container *ngFor="let container of containers; trackBy: containerTrackBy">
           <g
-            *ngIf="isContainerVisible(container)"
+            *ngIf="isContainerVisible(container) && container.type !== 'layer'"
             [class]="getContainerClass(container)"
             [attr.transform]="'translate(' + container.x + ',' + container.y + ')'"
             (click)="onContainerClick(container)"
             (keydown)="onContainerKeydown($event, container)"
-            [attr.tabindex]="container.type !== 'label' && container.type !== 'layer' ? 0 : null"
-            [attr.role]="container.type !== 'label' && container.type !== 'layer' ? 'button' : null"
+            [attr.tabindex]="container.type !== 'label' ? 0 : null"
+            [attr.role]="container.type !== 'label' ? 'button' : null"
           >
             <!-- Container background -->
             <rect
@@ -121,19 +154,19 @@
               [attr.fill]="getContainerFill(container)"
               [attr.stroke]="getContainerStroke(container)"
               [attr.stroke-width]="getContainerStrokeWidth(container)"
-              [attr.rx]="container.isGroup ? 16 : 12"
-              [attr.ry]="container.isGroup ? 16 : 12"
+              [attr.rx]="container.isGroup ? 16 : 8"
+              [attr.ry]="container.isGroup ? 16 : 8"
               class="container__bg"
             />
 
-            <!-- Logo (top-left) -->
+            <!-- Logo (top-left) for non-device containers -->
             <image
-              *ngIf="container.logoIconKey && container.logoPosition !== 'top-right'"
+              *ngIf="container.logoIconKey && container.logoPosition === 'top-left' && container.type !== 'device' && container.type !== 'ux'"
               [attr.href]="resolveIconPath(container.logoIconKey)"
               [attr.x]="8"
               [attr.y]="8"
-              width="32"
-              height="32"
+              width="28"
+              height="28"
               class="container__logo"
             />
 
@@ -141,14 +174,25 @@
             <image
               *ngIf="container.secondaryLogoIconKey"
               [attr.href]="resolveIconPath(container.secondaryLogoIconKey)"
-              [attr.x]="container.width - 40"
+              [attr.x]="container.width - 36"
               [attr.y]="8"
-              width="32"
-              height="32"
+              width="28"
+              height="28"
               class="container__logo container__logo--secondary"
             />
 
-            <!-- Function Icons (centered) -->
+            <!-- Device/System Icon (centered, with label below) -->
+            <image
+              *ngIf="container.type === 'device' && container.logoIconKey"
+              [attr.href]="resolveIconPath(container.logoIconKey)"
+              [attr.x]="(container.width - 50) / 2"
+              [attr.y]="8"
+              width="50"
+              height="50"
+              class="container__device-icon"
+            />
+
+            <!-- Function Icons (centered in row) -->
             <g
               *ngIf="container.functionIcons && container.functionIcons.length > 0"
               class="container__icons"
@@ -156,8 +200,8 @@
               <ng-container *ngFor="let icon of container.functionIcons; let i = index; trackBy: iconTrackBy">
                 <image
                   [attr.href]="resolveIconPath(icon.iconKey)"
-                  [attr.x]="(container.width / 2) - ((container.functionIcons!.length * (icon.size + 10)) / 2) + (i * (icon.size + 10)) + 5"
-                  [attr.y]="(container.height / 2) - (icon.size / 2) + 10"
+                  [attr.x]="(container.width / 2) - ((container.functionIcons!.length * (icon.size + 8)) / 2) + (i * (icon.size + 8)) + 4"
+                  [attr.y]="(container.height / 2) - (icon.size / 2) + 5"
                   [attr.width]="icon.size"
                   [attr.height]="icon.size"
                   class="container__function-icon"
@@ -169,27 +213,71 @@
             <image
               *ngIf="container.type === 'ux' && container.logoIconKey"
               [attr.href]="resolveIconPath(container.logoIconKey)"
-              [attr.x]="(container.width - 60) / 2"
-              [attr.y]="10"
-              width="60"
-              height="60"
+              [attr.x]="(container.width - 55) / 2"
+              [attr.y]="15"
+              width="55"
+              height="55"
               class="container__ux-icon"
             />
 
-            <!-- Label -->
+            <!-- Label - positioned based on labelPosition -->
             <text
               *ngIf="getContainerLabel(container.id)"
-              [attr.x]="container.width / 2"
-              [attr.y]="container.type === 'label' ? 14 : (container.functionIcons?.length ? container.height - 15 : container.height / 2 + 5)"
-              text-anchor="middle"
-              [attr.font-size]="container.fontSize || 14"
+              [attr.x]="getLabelX(container)"
+              [attr.y]="getLabelY(container)"
+              [attr.text-anchor]="getLabelAnchor(container)"
+              [attr.font-size]="container.fontSize || 12"
               [attr.fill]="container.textColor || '#1e2d3d'"
               [attr.font-weight]="container.type === 'label' ? 600 : 500"
               class="container__label"
             >
               {{ getContainerLabel(container.id) }}
             </text>
+
+            <!-- Shopfloor group labels (inside, left or right) -->
+            <text
+              *ngIf="container.type === 'shopfloor' && container.labelPosition === 'left-inside'"
+              x="15"
+              [attr.y]="container.height / 2"
+              text-anchor="start"
+              font-size="12"
+              font-weight="600"
+              fill="#1e2d3d"
+              class="container__group-label"
+            >
+              <tspan x="15" dy="-0.6em">Shopfloor</tspan>
+              <tspan x="15" dy="1.2em">Systeme</tspan>
+            </text>
+
+            <text
+              *ngIf="container.type === 'shopfloor' && container.labelPosition === 'right-inside'"
+              [attr.x]="container.width - 15"
+              [attr.y]="container.height / 2"
+              text-anchor="end"
+              font-size="12"
+              font-weight="600"
+              fill="#1e2d3d"
+              class="container__group-label"
+            >
+              Geräte
+            </text>
           </g>
+        </ng-container>
+      </g>
+
+      <!-- Connections (drawn last, on top of everything) -->
+      <g class="connections">
+        <ng-container *ngFor="let conn of connections; trackBy: connectionTrackBy">
+          <path
+            *ngIf="isConnectionVisible(conn)"
+            [attr.d]="getConnectionPath(conn)"
+            [class]="getConnectionClass(conn)"
+            fill="none"
+            [attr.stroke]="conn.state === 'highlight' ? '#ff9900' : '#7f8da5'"
+            [attr.stroke-width]="conn.state === 'highlight' ? 2.5 : 2"
+            [attr.marker-end]="conn.hasArrow ? (conn.state === 'highlight' ? 'url(#arrow-head-highlight)' : 'url(#arrow-head)') : null"
+            [attr.marker-start]="conn.bidirectional ? (conn.state === 'highlight' ? 'url(#arrow-head-reverse-highlight)' : 'url(#arrow-head-reverse)') : null"
+          />
         </ng-container>
       </g>
     </svg>

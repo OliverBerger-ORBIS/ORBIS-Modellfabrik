@@ -19,6 +19,10 @@ export const LAYOUT = {
   LAYER_HEIGHT: 180,
   LAYER_START_Y: 80,
 
+  // Labels inside layers (left edge)
+  LABEL_X: 10,
+  LABEL_WIDTH: 130,
+
   // Business Process layer (top - white)
   BUSINESS_Y: 80,
 
@@ -30,15 +34,14 @@ export const LAYOUT = {
 
   // Box dimensions
   BUSINESS_BOX_WIDTH: 150,
-  BUSINESS_BOX_HEIGHT: 70,
-  DSP_BOX_HEIGHT: 120,
+  BUSINESS_BOX_HEIGHT: 80,
+  DSP_BOX_HEIGHT: 110,
 
-  // Margins and spacing
-  LABEL_WIDTH: 120,
-  MARGIN_LEFT: 150,
+  // Margins and spacing (content starts after label area)
+  CONTENT_START_X: 150,
   MARGIN_RIGHT: 50,
-  CONTENT_WIDTH: 1000,
-  BOX_GAP: 20,
+  CONTENT_WIDTH: 1040,
+  BOX_GAP: 30,
 };
 
 /**
@@ -48,92 +51,61 @@ export const LAYOUT = {
 export function createDefaultContainers(): ContainerConfig[] {
   const containers: ContainerConfig[] = [];
 
-  // ========== LAYER BACKGROUNDS ==========
+  // ========== LAYER BACKGROUNDS (with labels inside, extending to left edge) ==========
 
-  // Business Process layer background (white)
+  // Business Process layer background (white) - label "Business\nProzesse" inside
   containers.push({
     id: 'layer-business',
-    x: LAYOUT.MARGIN_LEFT,
+    label: '',  // "Business\nProzesse" - set via i18n, two lines
+    x: 0,  // Extends to left edge
     y: LAYOUT.BUSINESS_Y,
-    width: LAYOUT.CONTENT_WIDTH,
+    width: VIEWBOX_WIDTH,
     height: LAYOUT.LAYER_HEIGHT,
     type: 'layer',
     state: 'hidden',
     backgroundColor: '#ffffff',
     borderColor: 'rgba(31, 84, 178, 0.1)',
     isGroup: true,
+    labelPosition: 'left',  // Label on left side
   });
 
-  // DSP layer background (blue)
+  // DSP layer background (blue) - label "DSP" inside
   containers.push({
     id: 'layer-dsp',
-    x: LAYOUT.MARGIN_LEFT,
+    label: '',  // "DSP"
+    x: 0,
     y: LAYOUT.DSP_LAYER_Y,
-    width: LAYOUT.CONTENT_WIDTH,
+    width: VIEWBOX_WIDTH,
     height: LAYOUT.LAYER_HEIGHT,
     type: 'layer',
     state: 'hidden',
     backgroundColor: 'rgba(207, 230, 255, 0.5)',
     borderColor: 'rgba(31, 84, 178, 0.15)',
     isGroup: true,
+    labelPosition: 'left',
   });
 
-  // Shopfloor layer background (gray)
+  // Shopfloor layer background (gray) - label "Shopfloor\nSysteme und\nGeräte" inside
   containers.push({
     id: 'layer-shopfloor',
-    x: LAYOUT.MARGIN_LEFT,
+    label: '',  // "Shopfloor\nSysteme und\nGeräte" - three lines
+    x: 0,
     y: LAYOUT.SHOPFLOOR_Y,
-    width: LAYOUT.CONTENT_WIDTH,
+    width: VIEWBOX_WIDTH,
     height: LAYOUT.LAYER_HEIGHT,
     type: 'layer',
     state: 'normal',
     backgroundColor: 'rgba(241, 243, 247, 0.8)',
     borderColor: 'rgba(31, 54, 91, 0.12)',
     isGroup: true,
-  });
-
-  // ========== LAYER LABELS (left-aligned, vertically centered) ==========
-  containers.push({
-    id: 'label-business',
-    label: '',  // "Business Process"
-    x: 10,
-    y: LAYOUT.BUSINESS_Y + (LAYOUT.LAYER_HEIGHT / 2) - 10,
-    width: LAYOUT.LABEL_WIDTH,
-    height: 30,
-    type: 'label',
-    state: 'hidden',
-    fontSize: 14,
-  });
-
-  containers.push({
-    id: 'label-dsp',
-    label: '',  // "DSP"
-    x: 10,
-    y: LAYOUT.DSP_LAYER_Y + (LAYOUT.LAYER_HEIGHT / 2) - 10,
-    width: LAYOUT.LABEL_WIDTH,
-    height: 30,
-    type: 'label',
-    state: 'hidden',
-    fontSize: 14,
-  });
-
-  containers.push({
-    id: 'label-shopfloor',
-    label: '',  // "Shopfloor"
-    x: 10,
-    y: LAYOUT.SHOPFLOOR_Y + (LAYOUT.LAYER_HEIGHT / 2) - 10,
-    width: LAYOUT.LABEL_WIDTH,
-    height: 30,
-    type: 'label',
-    state: 'normal',
-    fontSize: 14,
+    labelPosition: 'left',
   });
 
   // ========== DSP LAYER LABELS ("On Premise" and "Cloud") ==========
   containers.push({
     id: 'dsp-label-onpremise',
     label: '',  // "On Premise"
-    x: LAYOUT.MARGIN_LEFT + 160,
+    x: LAYOUT.CONTENT_START_X + 120,
     y: LAYOUT.DSP_LAYER_Y + 8,
     width: 100,
     height: 20,
@@ -145,7 +117,7 @@ export function createDefaultContainers(): ContainerConfig[] {
   containers.push({
     id: 'dsp-label-cloud',
     label: '',  // "Cloud"
-    x: LAYOUT.MARGIN_LEFT + LAYOUT.CONTENT_WIDTH - 220,
+    x: LAYOUT.CONTENT_START_X + 720,
     y: LAYOUT.DSP_LAYER_Y + 8,
     width: 60,
     height: 20,
@@ -154,13 +126,29 @@ export function createDefaultContainers(): ContainerConfig[] {
     fontSize: 12,
   });
 
+  // ========== DSP UX BOX (Smartfactory Dashboard) - larger, with spacing ==========
+  containers.push({
+    id: 'ux',
+    label: '',  // "UX" - label at top, centered
+    x: LAYOUT.CONTENT_START_X,
+    y: LAYOUT.DSP_LAYER_Y + 35,
+    width: 100,
+    height: 110,
+    type: 'ux',
+    state: 'hidden',
+    logoIconKey: 'ux-monitor' as IconKey,
+    borderColor: 'rgba(31, 84, 178, 0.3)',
+    backgroundColor: '#ffffff',
+    labelPosition: 'top-center',
+  });
+
   // ========== DSP EDGE BOX ==========
   containers.push({
     id: 'edge',
-    label: '',  // "EDGE"
-    x: LAYOUT.MARGIN_LEFT + 100,
+    label: '',  // "EDGE" - label at top center
+    x: LAYOUT.CONTENT_START_X + 130,
     y: LAYOUT.DSP_LAYER_Y + 35,
-    width: 450,
+    width: 420,
     height: LAYOUT.DSP_BOX_HEIGHT,
     type: 'dsp-edge',
     state: 'hidden',
@@ -168,36 +156,22 @@ export function createDefaultContainers(): ContainerConfig[] {
     logoPosition: 'top-left',
     borderColor: '#009B77',
     backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    labelPosition: 'bottom-center',
     functionIcons: [
-      { iconKey: 'edge-data-storage' as IconKey, size: 40 },
-      { iconKey: 'edge-digital-twin' as IconKey, size: 40 },
-      { iconKey: 'edge-network' as IconKey, size: 40 },
-      { iconKey: 'edge-workflow' as IconKey, size: 40 },
+      { iconKey: 'edge-data-storage' as IconKey, size: 36 },
+      { iconKey: 'edge-digital-twin' as IconKey, size: 36 },
+      { iconKey: 'edge-network' as IconKey, size: 36 },
+      { iconKey: 'edge-workflow' as IconKey, size: 36 },
     ],
-  });
-
-  // ========== UX BOX (Shopfloor Dashboard) ==========
-  containers.push({
-    id: 'ux',
-    label: '',  // "UX" with monitor icon
-    x: LAYOUT.MARGIN_LEFT + 10,
-    y: LAYOUT.DSP_LAYER_Y + 45,
-    width: 80,
-    height: 100,
-    type: 'ux',
-    state: 'hidden',
-    logoIconKey: 'ux-monitor' as IconKey,
-    borderColor: 'rgba(31, 84, 178, 0.3)',
-    backgroundColor: '#ffffff',
   });
 
   // ========== DSP MANAGEMENT COCKPIT BOX ==========
   containers.push({
     id: 'management',
-    label: '',  // "Management Cockpit"
-    x: LAYOUT.MARGIN_LEFT + 600,
+    label: '',  // "Management Cockpit" - label at top center
+    x: LAYOUT.CONTENT_START_X + 590,
     y: LAYOUT.DSP_LAYER_Y + 35,
-    width: 350,
+    width: 300,
     height: LAYOUT.DSP_BOX_HEIGHT,
     type: 'dsp-cloud',
     state: 'hidden',
@@ -207,17 +181,18 @@ export function createDefaultContainers(): ContainerConfig[] {
     secondaryLogoPosition: 'top-right',
     borderColor: '#0078D4',
     backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    labelPosition: 'bottom-center',
   });
 
-  // ========== BUSINESS PROCESSES ==========
-  const businessStartX = LAYOUT.MARGIN_LEFT + 50;
-  const businessBoxWidth = 160;
-  const businessGap = 30;
-  const businessBoxY = LAYOUT.BUSINESS_Y + 55;
+  // ========== BUSINESS PROCESSES (labels centered at top) ==========
+  const businessStartX = LAYOUT.CONTENT_START_X + 20;
+  const businessBoxWidth = 165;
+  const businessGap = 25;
+  const businessBoxY = LAYOUT.BUSINESS_Y + 50;
 
   containers.push({
     id: 'bp-sap-shopfloor',
-    label: '',  // "SAP Shopfloor"
+    label: '',  // "Shopfloor" - label at top center
     x: businessStartX,
     y: businessBoxY,
     width: businessBoxWidth,
@@ -228,25 +203,27 @@ export function createDefaultContainers(): ContainerConfig[] {
     logoPosition: 'top-left',
     borderColor: 'rgba(31, 84, 178, 0.25)',
     backgroundColor: '#ffffff',
+    labelPosition: 'top-center',
   });
 
   containers.push({
     id: 'bp-cloud-apps',
-    label: '',  // "Cloud Anwendungen"
+    label: '',  // "Cloud Anwendungen" - label at top center
     x: businessStartX + businessBoxWidth + businessGap,
     y: businessBoxY,
-    width: businessBoxWidth + 10,
+    width: businessBoxWidth + 20,
     height: LAYOUT.BUSINESS_BOX_HEIGHT,
     type: 'business',
     state: 'hidden',
     borderColor: 'rgba(31, 84, 178, 0.25)',
     backgroundColor: '#ffffff',
+    labelPosition: 'top-center',
   });
 
   containers.push({
     id: 'bp-analytics',
-    label: '',  // "Analytische Anwendungen"
-    x: businessStartX + (businessBoxWidth + businessGap) * 2 + 10,
+    label: '',  // "Analytische\nAnwendungen" - label at top center
+    x: businessStartX + (businessBoxWidth + businessGap) * 2 + 20,
     y: businessBoxY,
     width: businessBoxWidth + 30,
     height: LAYOUT.BUSINESS_BOX_HEIGHT,
@@ -254,106 +231,115 @@ export function createDefaultContainers(): ContainerConfig[] {
     state: 'hidden',
     borderColor: 'rgba(31, 84, 178, 0.25)',
     backgroundColor: '#ffffff',
+    labelPosition: 'top-center',
   });
 
   containers.push({
     id: 'bp-data-lake',
-    label: '',  // "Data Lake"
-    x: businessStartX + (businessBoxWidth + businessGap) * 3 + 40,
+    label: '',  // "Data Lake" - label at top center
+    x: businessStartX + (businessBoxWidth + businessGap) * 3 + 50,
     y: businessBoxY,
-    width: businessBoxWidth - 30,
+    width: businessBoxWidth - 20,
     height: LAYOUT.BUSINESS_BOX_HEIGHT,
     type: 'business',
     state: 'hidden',
     borderColor: 'rgba(31, 84, 178, 0.25)',
     backgroundColor: '#ffffff',
+    labelPosition: 'top-center',
   });
 
   // ========== SHOPFLOOR LAYER CONTENT ==========
 
-  // Shopfloor Systeme group (left)
+  // Shopfloor Systeme container (left) - label at left
   containers.push({
     id: 'shopfloor-systems-group',
-    label: '',  // "Shopfloor Systeme"
-    x: LAYOUT.MARGIN_LEFT + 20,
-    y: LAYOUT.SHOPFLOOR_Y + 30,
-    width: 250,
-    height: 120,
+    label: '',  // "Shopfloor\nSysteme" - label at left side
+    x: LAYOUT.CONTENT_START_X,
+    y: LAYOUT.SHOPFLOOR_Y + 25,
+    width: 280,
+    height: 130,
     type: 'shopfloor',
     state: 'hidden',
     borderColor: 'rgba(31, 84, 178, 0.2)',
     backgroundColor: '#ffffff',
+    labelPosition: 'left-inside',
   });
 
-  // Shopfloor System icons (inside group)
+  // Shopfloor System icons with labels below
   containers.push({
     id: 'shopfloor-system-bp',
-    x: LAYOUT.MARGIN_LEFT + 40,
-    y: LAYOUT.SHOPFLOOR_Y + 60,
-    width: 60,
-    height: 60,
+    label: 'FTS',  // Label below icon
+    x: LAYOUT.CONTENT_START_X + 120,
+    y: LAYOUT.SHOPFLOOR_Y + 45,
+    width: 70,
+    height: 85,
     type: 'device',
     state: 'hidden',
     logoIconKey: 'bp-business-process' as IconKey,
-    borderColor: 'transparent',
-    backgroundColor: 'transparent',
+    borderColor: 'rgba(31, 84, 178, 0.1)',
+    backgroundColor: '#ffffff',
+    labelPosition: 'bottom',
   });
 
   containers.push({
     id: 'shopfloor-system-fts',
-    x: LAYOUT.MARGIN_LEFT + 120,
-    y: LAYOUT.SHOPFLOOR_Y + 60,
-    width: 60,
-    height: 60,
+    label: 'MES',  // Label below icon
+    x: LAYOUT.CONTENT_START_X + 200,
+    y: LAYOUT.SHOPFLOOR_Y + 45,
+    width: 70,
+    height: 85,
     type: 'device',
     state: 'hidden',
     logoIconKey: 'device-conveyor' as IconKey,
-    borderColor: 'transparent',
-    backgroundColor: 'transparent',
+    borderColor: 'rgba(31, 84, 178, 0.1)',
+    backgroundColor: '#ffffff',
+    labelPosition: 'bottom',
   });
 
-  // Geräte group (right)
+  // Geräte container (right) - label at right
   containers.push({
     id: 'shopfloor-devices-group',
-    label: '',  // "Geräte"
-    x: LAYOUT.MARGIN_LEFT + 300,
-    y: LAYOUT.SHOPFLOOR_Y + 30,
-    width: 650,
-    height: 120,
+    label: '',  // "Geräte" - label at right side
+    x: LAYOUT.CONTENT_START_X + 310,
+    y: LAYOUT.SHOPFLOOR_Y + 25,
+    width: 580,
+    height: 130,
     type: 'shopfloor',
     state: 'normal',
     borderColor: 'rgba(31, 84, 178, 0.2)',
     backgroundColor: '#ffffff',
+    labelPosition: 'right-inside',
   });
 
-  // Device icons - representing various shopfloor equipment
-  // Icons are mapped to available assets from the icon registry
-  const deviceStartX = LAYOUT.MARGIN_LEFT + 330;
-  const deviceWidth = 70;
-  const deviceGap = 25;
-  const deviceY = LAYOUT.SHOPFLOOR_Y + 55;
+  // Device icons with labels below (DRILL, HBW, MILL, AIQS, DPS, CHRG as per screenshot)
+  const deviceStartX = LAYOUT.CONTENT_START_X + 330;
+  const deviceWidth = 75;
+  const deviceGap = 15;
+  const deviceY = LAYOUT.SHOPFLOOR_Y + 40;
 
-  const deviceIconKeys: IconKey[] = [
-    'device-plc' as IconKey,
-    'device-conveyor' as IconKey,
-    'device-sensor' as IconKey,
-    'device-camera' as IconKey,
-    'device-robot-arm' as IconKey,
-    'device-printer' as IconKey,
+  const deviceConfigs = [
+    { iconKey: 'device-plc' as IconKey, label: 'DRILL' },
+    { iconKey: 'device-conveyor' as IconKey, label: 'HBW' },
+    { iconKey: 'device-sensor' as IconKey, label: 'MILL' },
+    { iconKey: 'device-camera' as IconKey, label: 'AIQS' },
+    { iconKey: 'device-robot-arm' as IconKey, label: 'DPS' },
+    { iconKey: 'device-printer' as IconKey, label: 'CHRG' },
   ];
 
-  deviceIconKeys.forEach((iconKey, index) => {
+  deviceConfigs.forEach((config, index) => {
     containers.push({
       id: `shopfloor-device-${index + 1}`,
+      label: config.label,  // Label below icon
       x: deviceStartX + (deviceWidth + deviceGap) * index,
       y: deviceY,
       width: deviceWidth,
-      height: 70,
+      height: 90,
       type: 'device',
       state: 'normal',
-      logoIconKey: iconKey,
-      borderColor: 'rgba(31, 84, 178, 0.15)',
+      logoIconKey: config.iconKey,
+      borderColor: 'rgba(31, 84, 178, 0.1)',
       backgroundColor: '#ffffff',
+      labelPosition: 'bottom',
     });
   });
 
@@ -522,7 +508,6 @@ export function createDefaultSteps(): StepConfig[] {
       label: '',
       visibleContainerIds: [
         'layer-shopfloor',
-        'label-shopfloor',
         'shopfloor-devices-group',
         'shopfloor-device-1',
         'shopfloor-device-2',
@@ -542,7 +527,6 @@ export function createDefaultSteps(): StepConfig[] {
       label: '',
       visibleContainerIds: [
         'layer-shopfloor',
-        'label-shopfloor',
         'shopfloor-systems-group',
         'shopfloor-system-bp',
         'shopfloor-system-fts',
@@ -566,8 +550,6 @@ export function createDefaultSteps(): StepConfig[] {
       visibleContainerIds: [
         'layer-dsp',
         'layer-shopfloor',
-        'label-dsp',
-        'label-shopfloor',
         'dsp-label-onpremise',
         'edge',
         'shopfloor-systems-group',
@@ -586,15 +568,13 @@ export function createDefaultSteps(): StepConfig[] {
       highlightedConnectionIds: [],
     },
 
-    // Step 4: Edge function icons
+    // Step 4: Edge function icons (icons are always shown in edge container)
     {
       id: 'step-4',
       label: '',
       visibleContainerIds: [
         'layer-dsp',
         'layer-shopfloor',
-        'label-dsp',
-        'label-shopfloor',
         'dsp-label-onpremise',
         'edge',
         'shopfloor-systems-group',
@@ -620,8 +600,6 @@ export function createDefaultSteps(): StepConfig[] {
       visibleContainerIds: [
         'layer-dsp',
         'layer-shopfloor',
-        'label-dsp',
-        'label-shopfloor',
         'dsp-label-onpremise',
         'edge',
         'shopfloor-systems-group',
@@ -663,8 +641,6 @@ export function createDefaultSteps(): StepConfig[] {
       visibleContainerIds: [
         'layer-dsp',
         'layer-shopfloor',
-        'label-dsp',
-        'label-shopfloor',
         'dsp-label-onpremise',
         'dsp-label-cloud',
         'ux',
@@ -704,9 +680,6 @@ export function createDefaultSteps(): StepConfig[] {
         'layer-business',
         'layer-dsp',
         'layer-shopfloor',
-        'label-business',
-        'label-dsp',
-        'label-shopfloor',
         'dsp-label-onpremise',
         'dsp-label-cloud',
         'bp-sap-shopfloor',
@@ -748,9 +721,6 @@ export function createDefaultSteps(): StepConfig[] {
         'layer-business',
         'layer-dsp',
         'layer-shopfloor',
-        'label-business',
-        'label-dsp',
-        'label-shopfloor',
         'dsp-label-onpremise',
         'dsp-label-cloud',
         'bp-sap-shopfloor',

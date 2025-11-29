@@ -7,6 +7,9 @@ import type { IconKey } from '../../assets/icon-registry';
 /** Position for logo icons within a container */
 export type LogoPosition = 'top-left' | 'top-right';
 
+/** Position for label text within a container */
+export type LabelPosition = 'top-center' | 'bottom-center' | 'left' | 'left-inside' | 'right-inside' | 'bottom';
+
 /** Visual state of a container */
 export type ContainerState = 'normal' | 'highlight' | 'dimmed' | 'hidden';
 
@@ -65,6 +68,8 @@ export interface ContainerConfig {
   fontSize?: number;
   /** Whether this is a group/layer container */
   isGroup?: boolean;
+  /** Position of the label within the container */
+  labelPosition?: LabelPosition;
 }
 
 /**

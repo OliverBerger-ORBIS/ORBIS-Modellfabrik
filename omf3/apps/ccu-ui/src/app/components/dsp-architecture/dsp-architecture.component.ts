@@ -73,9 +73,9 @@ export class DspArchitectureComponent implements OnInit, OnDestroy {
   // i18n labels
   protected readonly title = $localize`:@@dspArchTitle:DISTRIBUTED SHOP FLOOR PROCESSING (DSP)`;
   protected readonly subtitle = $localize`:@@dspArchSubtitle:Referenzarchitektur`;
-  protected readonly labelBusinessProcesses = $localize`:@@dspArchLabelBusiness:Business Process`;
+  protected readonly labelBusinessProcesses = $localize`:@@dspArchLabelBusiness:Business\nProzesse`;
   protected readonly labelDsp = $localize`:@@dspArchLabelDsp:DSP`;
-  protected readonly labelShopfloor = $localize`:@@dspArchLabelShopfloor:Shopfloor`;
+  protected readonly labelShopfloor = $localize`:@@dspArchLabelShopfloor:Shopfloor\nSysteme und\nGeräte`;
   protected readonly labelOnPremise = $localize`:@@dspArchLabelOnPremise:On Premise`;
   protected readonly labelCloud = $localize`:@@dspArchLabelCloud:Cloud`;
   protected readonly labelDevices = $localize`:@@dspArchLabelDevices:Geräte`;
@@ -144,10 +144,10 @@ export class DspArchitectureComponent implements OnInit, OnDestroy {
       this.containerLabels[mappedId] = bp.label;
     });
 
-    // Set static labels
-    this.containerLabels['label-business'] = this.labelBusinessProcesses;
-    this.containerLabels['label-dsp'] = this.labelDsp;
-    this.containerLabels['label-shopfloor'] = this.labelShopfloor;
+    // Set static labels for layer backgrounds (multiline)
+    this.containerLabels['layer-business'] = this.labelBusinessProcesses;
+    this.containerLabels['layer-dsp'] = this.labelDsp;
+    this.containerLabels['layer-shopfloor'] = this.labelShopfloor;
     this.containerLabels['dsp-label-onpremise'] = this.labelOnPremise;
     this.containerLabels['dsp-label-cloud'] = this.labelCloud;
     this.containerLabels['shopfloor-systems-group'] = this.labelShopfloorSystems;
@@ -171,7 +171,79 @@ export class DspArchitectureComponent implements OnInit, OnDestroy {
    * Get container label.
    */
   protected getContainerLabel(containerId: string): string {
+    // Get label from container config if it has one
+    const container = this.containers.find(c => c.id === containerId);
+    if (container?.label) {
+      return container.label;
+    }
     return this.containerLabels[containerId] || '';
+  }
+
+  /**
+   * Get multiline label as array of lines.
+   */
+  protected getMultilineLabel(containerId: string): string[] {
+    const label = this.containerLabels[containerId] || '';
+    return label.split('\n');
+  }
+
+  /**
+   * Get label X position based on labelPosition.
+   */
+  protected getLabelX(container: ContainerConfig): number {
+    const position = container.labelPosition || 'bottom-center';
+    switch (position) {
+      case 'left':
+      case 'left-inside':
+        return 10;
+      case 'right-inside':
+        return container.width - 10;
+      case 'top-center':
+      case 'bottom-center':
+      case 'bottom':
+      default:
+        return container.width / 2;
+    }
+  }
+
+  /**
+   * Get label Y position based on labelPosition.
+   */
+  protected getLabelY(container: ContainerConfig): number {
+    const position = container.labelPosition || 'bottom-center';
+    switch (position) {
+      case 'top-center':
+        return container.logoIconKey && container.logoPosition === 'top-left' ? 24 : 18;
+      case 'bottom':
+        return container.height - 8;
+      case 'bottom-center':
+        return container.functionIcons?.length ? container.height - 12 : container.height - 15;
+      case 'left':
+      case 'left-inside':
+      case 'right-inside':
+        return container.height / 2;
+      default:
+        return container.height / 2 + 5;
+    }
+  }
+
+  /**
+   * Get label text-anchor based on labelPosition.
+   */
+  protected getLabelAnchor(container: ContainerConfig): string {
+    const position = container.labelPosition || 'bottom-center';
+    switch (position) {
+      case 'left':
+      case 'left-inside':
+        return 'start';
+      case 'right-inside':
+        return 'end';
+      case 'top-center':
+      case 'bottom-center':
+      case 'bottom':
+      default:
+        return 'middle';
+    }
   }
 
   /**
