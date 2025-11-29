@@ -95,6 +95,8 @@ export interface DspDetailView {
   shopfloorSystems: DspShopfloorItem[];
   edgeUrl: string;
   managementUrl: string;
+  analyticsUrl: string;
+  smartfactoryDashboardUrl: string;
 }
 
 export type DetailPanelView =

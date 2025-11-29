@@ -115,14 +115,14 @@
               ry="0"
               class="layer__bg"
             />
-            <!-- Layer label (left side, vertically centered, multi-line support) -->
+            <!-- Layer label (left side, vertically centered, multi-line support) - increased font size for BP and DSP layers -->
             <text
               *ngIf="getContainerLabel(container.id)"
               [attr.x]="20"
               [attr.y]="container.height / 2 - 10"
               text-anchor="start"
               dominant-baseline="middle"
-              font-size="14"
+              [attr.font-size]="container.id === 'layer-business' || container.id === 'layer-dsp' ? 18 : 14"
               font-weight="600"
               fill="#1e2d3d"
               class="layer__label"
@@ -160,9 +160,20 @@
               class="container__bg"
             />
 
-            <!-- Logo (top-left) for non-device containers -->
+            <!-- Logo (top-left) for DSP containers - 2x bigger (56px instead of 28px) -->
             <image
-              *ngIf="container.logoIconKey && container.logoPosition === 'top-left' && container.type !== 'device' && container.type !== 'ux'"
+              *ngIf="container.logoIconKey && container.logoPosition === 'top-left' && (container.type === 'dsp-edge' || container.type === 'dsp-cloud')"
+              [attr.href]="resolveIconPath(container.logoIconKey)"
+              [attr.x]="8"
+              [attr.y]="8"
+              width="48"
+              height="48"
+              class="container__logo container__logo--large"
+            />
+
+            <!-- Logo (top-left) for non-DSP, non-device containers -->
+            <image
+              *ngIf="container.logoIconKey && container.logoPosition === 'top-left' && container.type !== 'device' && container.type !== 'ux' && container.type !== 'dsp-edge' && container.type !== 'dsp-cloud'"
               [attr.href]="resolveIconPath(container.logoIconKey)"
               [attr.x]="8"
               [attr.y]="8"
@@ -171,9 +182,20 @@
               class="container__logo"
             />
 
-            <!-- Secondary Logo (top-right) -->
+            <!-- Secondary Logo (top-right) for dsp-cloud - Azure logo -->
             <image
-              *ngIf="container.secondaryLogoIconKey"
+              *ngIf="container.secondaryLogoIconKey && container.type === 'dsp-cloud'"
+              [attr.href]="resolveIconPath(container.secondaryLogoIconKey)"
+              [attr.x]="container.width - 44"
+              [attr.y]="8"
+              width="36"
+              height="36"
+              class="container__logo container__logo--secondary"
+            />
+
+            <!-- Secondary Logo (top-right) for other containers -->
+            <image
+              *ngIf="container.secondaryLogoIconKey && container.type !== 'dsp-cloud'"
               [attr.href]="resolveIconPath(container.secondaryLogoIconKey)"
               [attr.x]="container.width - 36"
               [attr.y]="8"
@@ -182,14 +204,14 @@
               class="container__logo container__logo--secondary"
             />
 
-            <!-- Device/System Icon (centered, with label below) -->
+            <!-- Device/System Icon (centered, with label below) - larger icons -->
             <image
               *ngIf="container.type === 'device' && container.logoIconKey"
               [attr.href]="resolveIconPath(container.logoIconKey)"
-              [attr.x]="(container.width - 50) / 2"
+              [attr.x]="(container.width - 70) / 2"
               [attr.y]="8"
-              width="50"
-              height="50"
+              width="70"
+              height="70"
               class="container__device-icon"
             />
 
@@ -334,4 +356,58 @@
       ></button>
     </div>
   </footer>
+
+  <!-- Accordion Section: DSP Edge and Management Cockpit Details -->
+  <section class="dsp-architecture__accordion" aria-label="DSP details">
+    <article class="accordion-item" [class.is-open]="isExpanded('edge')">
+      <button
+        type="button"
+        class="accordion-trigger"
+        (click)="togglePanel('edge')"
+        i18n="@@dspEdgeTitle"
+      >
+        DSP Edge Orchestration
+        <span class="chevron" aria-hidden="true"></span>
+      </button>
+      <ng-container *ngIf="isExpanded('edge')">
+        <div class="accordion-panel" *ngIf="getLayerById('edge') as edgeLayer">
+          <p>{{ edgeLayer.description }}</p>
+          <ul>
+            <li *ngFor="let capability of edgeLayer.capabilities; trackBy: capabilityTrackBy">{{ capability }}</li>
+          </ul>
+          <button type="button" class="cta" (click)="triggerAccordionAction('edge', view.edgeUrl)" i18n="@@dspAccordionEdgeCta">
+            Open EDGE control
+          </button>
+        </div>
+      </ng-container>
+    </article>
+
+    <article class="accordion-item" [class.is-open]="isExpanded('management')">
+      <button
+        type="button"
+        class="accordion-trigger"
+        (click)="togglePanel('management')"
+        i18n="@@dspManagementTitle"
+      >
+        Management Cockpit
+        <span class="chevron" aria-hidden="true"></span>
+      </button>
+      <ng-container *ngIf="isExpanded('management')">
+        <div class="accordion-panel" *ngIf="getLayerById('management') as cloudLayer">
+          <p>{{ cloudLayer.description }}</p>
+          <ul>
+            <li *ngFor="let capability of cloudLayer.capabilities; trackBy: capabilityTrackBy">{{ capability }}</li>
+          </ul>
+          <button
+            type="button"
+            class="cta"
+            (click)="triggerAccordionAction('management', view.managementUrl)"
+            i18n="@@dspAccordionManagementCta"
+          >
+            Open management cockpit
+          </button>
+        </div>
+      </ng-container>
+    </article>
+  </section>
 </div>

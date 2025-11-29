@@ -132,7 +132,7 @@ export function createDefaultContainers(): ContainerConfig[] {
   const dspBoxGap = 50;  // Increased gap between boxes for better visibility of arrows
 
   // UX box width calculated for optimal space usage
-  const uxBoxWidth = 160;
+  const uxBoxWidth = 175;  // Slightly larger
   const edgeBoxWidth = 480;  // Wider for more icons
   const managementBoxWidth = dspAvailableWidth - uxBoxWidth - edgeBoxWidth - (dspBoxGap * 2);
 
@@ -149,7 +149,7 @@ export function createDefaultContainers(): ContainerConfig[] {
     borderColor: 'rgba(31, 84, 178, 0.3)',
     backgroundColor: '#ffffff',
     labelPosition: 'top-center',
-    fontSize: 14,  // Increased font size
+    fontSize: 16,  // Increased font size for DSP layer
     url: '/dashboard',  // Default URL for Smartfactory Dashboard
   });
 
@@ -168,17 +168,17 @@ export function createDefaultContainers(): ContainerConfig[] {
     borderColor: '#009B77',
     backgroundColor: 'rgba(255, 255, 255, 0.95)',
     labelPosition: 'top-center',
-    fontSize: 14,  // Increased font size
+    fontSize: 16,  // Increased font size for DSP layer
     functionIcons: [
-      { iconKey: 'edge-data-storage' as IconKey, size: 55 },  // Increased icon size
-      { iconKey: 'edge-digital-twin' as IconKey, size: 55 },
-      { iconKey: 'edge-network' as IconKey, size: 55 },
-      { iconKey: 'edge-workflow' as IconKey, size: 55 },
+      { iconKey: 'edge-data-storage' as IconKey, size: 60 },  // Larger icon size
+      { iconKey: 'edge-digital-twin' as IconKey, size: 60 },
+      { iconKey: 'edge-network' as IconKey, size: 60 },
+      { iconKey: 'edge-workflow' as IconKey, size: 60 },
     ],
     url: '/edge',  // Default URL for DSP Edge
   });
 
-  // ========== DSP MANAGEMENT COCKPIT BOX - Azure icon top-right ==========
+  // ========== DSP MANAGEMENT COCKPIT BOX - Azure icon top-right, 2 function icons ==========
   containers.push({
     id: 'management',
     label: '',  // "Management Cockpit" - label at top center
@@ -195,7 +195,11 @@ export function createDefaultContainers(): ContainerConfig[] {
     borderColor: '#0078D4',
     backgroundColor: 'rgba(255, 255, 255, 0.95)',
     labelPosition: 'top-center',
-    fontSize: 14,  // Increased font size
+    fontSize: 16,  // Increased font size for DSP layer
+    functionIcons: [
+      { iconKey: 'shopfloor-it' as IconKey, size: 50 },  // Information technology icon
+      { iconKey: 'bp-analytics' as IconKey, size: 50 },  // Analytics icon
+    ],
     url: '/management-cockpit',  // Default URL for Management Cockpit
   });
 
@@ -221,7 +225,7 @@ export function createDefaultContainers(): ContainerConfig[] {
     borderColor: 'rgba(31, 84, 178, 0.25)',
     backgroundColor: '#ffffff',
     labelPosition: 'top-center',
-    fontSize: 14,  // Increased font size
+    fontSize: 16,  // Increased font size for BP layer
   });
 
   containers.push({
@@ -237,7 +241,7 @@ export function createDefaultContainers(): ContainerConfig[] {
     borderColor: 'rgba(31, 84, 178, 0.25)',
     backgroundColor: '#ffffff',
     labelPosition: 'top-center',
-    fontSize: 14,  // Increased font size
+    fontSize: 16,  // Increased font size for BP layer
   });
 
   containers.push({
@@ -253,7 +257,7 @@ export function createDefaultContainers(): ContainerConfig[] {
     borderColor: 'rgba(31, 84, 178, 0.25)',
     backgroundColor: '#ffffff',
     labelPosition: 'top-center',
-    fontSize: 14,  // Increased font size
+    fontSize: 16,  // Increased font size for BP layer
     url: '/analytics',  // Default URL for Analytische Anwendungen
   });
 
@@ -270,7 +274,7 @@ export function createDefaultContainers(): ContainerConfig[] {
     borderColor: 'rgba(31, 84, 178, 0.25)',
     backgroundColor: '#ffffff',
     labelPosition: 'top-center',
-    fontSize: 14,  // Increased font size
+    fontSize: 16,  // Increased font size for BP layer
   });
 
   // ========== SHOPFLOOR LAYER CONTENT ==========

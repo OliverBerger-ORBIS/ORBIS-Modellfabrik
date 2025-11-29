@@ -936,6 +936,8 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
       shopfloorSystems,
       edgeUrl: links.dspControlUrl,
       managementUrl: links.managementCockpitUrl,
+      analyticsUrl: links.grafanaDashboardUrl,
+      smartfactoryDashboardUrl: links.smartfactoryDashboardUrl,
     };
   }
 

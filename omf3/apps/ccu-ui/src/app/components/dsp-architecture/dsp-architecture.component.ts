@@ -66,6 +66,9 @@ export class DspArchitectureComponent implements OnInit, OnDestroy {
   protected readonly maxZoom = 2;
   protected readonly zoomStep = 0.1;
 
+  // Accordion state for Edge and Management Cockpit panels
+  protected expandedPanels = new Set<string>();
+
   // ViewBox dimensions
   protected readonly viewBoxWidth = VIEWBOX_WIDTH;
   protected readonly viewBoxHeight = VIEWBOX_HEIGHT;
@@ -106,6 +109,7 @@ export class DspArchitectureComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.initializeDiagram();
     this.initializeLabelsFromView();
+    this.initializeUrlsFromView();
   }
 
   ngOnDestroy(): void {
@@ -154,6 +158,29 @@ export class DspArchitectureComponent implements OnInit, OnDestroy {
     this.containerLabels['shopfloor-systems-group'] = this.labelSystems;  // Label at bottom
     this.containerLabels['shopfloor-devices-group'] = this.labelDevices;  // Label at bottom
     this.containerLabels['ux'] = this.labelSmartfactoryDashboard;  // Two-line label
+  }
+
+  /**
+   * Initialize container URLs from DspDetailView (settings-based).
+   */
+  private initializeUrlsFromView(): void {
+    // Update container URLs from view settings
+    this.containers.forEach((container) => {
+      switch (container.id) {
+        case 'edge':
+          container.url = this.view.edgeUrl;
+          break;
+        case 'management':
+          container.url = this.view.managementUrl;
+          break;
+        case 'bp-analytics':
+          container.url = this.view.analyticsUrl;
+          break;
+        case 'ux':
+          container.url = this.view.smartfactoryDashboardUrl;
+          break;
+      }
+    });
   }
 
   /**
@@ -580,6 +607,50 @@ export class DspArchitectureComponent implements OnInit, OnDestroy {
    * TrackBy function for function icons.
    */
   protected iconTrackBy(index: number): number {
+    return index;
+  }
+
+  // ========== Accordion Methods ==========
+
+  /**
+   * Check if an accordion panel is expanded.
+   */
+  protected isExpanded(panelId: string): boolean {
+    return this.expandedPanels.has(panelId);
+  }
+
+  /**
+   * Toggle an accordion panel.
+   */
+  protected togglePanel(panelId: string): void {
+    if (this.expandedPanels.has(panelId)) {
+      this.expandedPanels.delete(panelId);
+    } else {
+      this.expandedPanels.add(panelId);
+    }
+    this.cdr.markForCheck();
+  }
+
+  /**
+   * Get architecture layer by ID.
+   */
+  protected getLayerById(layerId: string) {
+    return this.view.architecture.find((layer) => layer.id === layerId);
+  }
+
+  /**
+   * Trigger an action with URL (for accordion buttons).
+   */
+  protected triggerAccordionAction(actionId: string, url: string): void {
+    if (url) {
+      this.actionTriggered.emit({ id: actionId, url });
+    }
+  }
+
+  /**
+   * TrackBy function for capabilities.
+   */
+  protected capabilityTrackBy(index: number): number {
     return index;
   }
 }
