@@ -140,6 +140,7 @@ export function createDefaultContainers(): ContainerConfig[] {
     borderColor: 'rgba(31, 84, 178, 0.3)',
     backgroundColor: '#ffffff',
     labelPosition: 'top-center',
+    url: '/dashboard',  // Default URL for Smartfactory Dashboard
   });
 
   // ========== DSP EDGE BOX - equal spacing with other boxes ==========
@@ -164,6 +165,7 @@ export function createDefaultContainers(): ContainerConfig[] {
       { iconKey: 'edge-network' as IconKey, size: 40 },
       { iconKey: 'edge-workflow' as IconKey, size: 40 },
     ],
+    url: '/edge',  // Default URL for DSP Edge
   });
 
   // ========== DSP MANAGEMENT COCKPIT BOX - two icons ==========
@@ -183,6 +185,7 @@ export function createDefaultContainers(): ContainerConfig[] {
     borderColor: '#0078D4',
     backgroundColor: 'rgba(255, 255, 255, 0.95)',
     labelPosition: 'top-center',  // Changed to top-center
+    url: '/management-cockpit',  // Default URL for Management Cockpit
   });
 
   // ========== BUSINESS PROCESSES (equal-sized boxes, labels at top centered, with icons) ==========
@@ -237,6 +240,7 @@ export function createDefaultContainers(): ContainerConfig[] {
     borderColor: 'rgba(31, 84, 178, 0.25)',
     backgroundColor: '#ffffff',
     labelPosition: 'top-center',
+    url: '/analytics',  // Default URL for Analytische Anwendungen
   });
 
   containers.push({

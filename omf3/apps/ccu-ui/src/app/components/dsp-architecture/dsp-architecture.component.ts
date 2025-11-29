@@ -406,6 +406,11 @@ export class DspArchitectureComponent implements OnInit, OnDestroy {
       classes.push('container--group');
     }
 
+    // Add clickable class if container has a URL
+    if (container.url) {
+      classes.push('container--clickable');
+    }
+
     return classes.join(' ');
   }
 
@@ -528,10 +533,16 @@ export class DspArchitectureComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Handle container click for actions.
+   * Handle container click for actions/URL navigation.
    */
   protected onContainerClick(container: ContainerConfig): void {
-    // Find matching action from view
+    // Check if container has a direct URL configured
+    if (container.url) {
+      this.actionTriggered.emit({ id: container.id, url: container.url });
+      return;
+    }
+
+    // Fall back to checking view actions for legacy support
     const layer = this.view.architecture.find((l) => l.id === container.id);
     if (layer?.actionId) {
       const action = this.view.actions.find((a) => a.id === layer.actionId);

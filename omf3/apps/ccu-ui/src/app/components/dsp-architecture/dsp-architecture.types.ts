@@ -70,6 +70,8 @@ export interface ContainerConfig {
   isGroup?: boolean;
   /** Position of the label within the container */
   labelPosition?: LabelPosition;
+  /** Clickable URL for navigation when container is clicked */
+  url?: string;
 }
 
 /**
