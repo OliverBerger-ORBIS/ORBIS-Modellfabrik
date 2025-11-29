@@ -73,9 +73,9 @@ export class DspArchitectureComponent implements OnInit, OnDestroy {
   // i18n labels
   protected readonly title = $localize`:@@dspArchTitle:DISTRIBUTED SHOP FLOOR PROCESSING (DSP)`;
   protected readonly subtitle = $localize`:@@dspArchSubtitle:Referenzarchitektur`;
-  protected readonly labelBusinessProcesses = $localize`:@@dspArchLabelBusiness:Business Prozesse`;
+  protected readonly labelBusinessProcesses = $localize`:@@dspArchLabelBusiness:Business Process`;
   protected readonly labelDsp = $localize`:@@dspArchLabelDsp:DSP`;
-  protected readonly labelShopfloor = $localize`:@@dspArchLabelShopfloor:Shopfloor Systeme und Geräte`;
+  protected readonly labelShopfloor = $localize`:@@dspArchLabelShopfloor:Shopfloor`;
   protected readonly labelOnPremise = $localize`:@@dspArchLabelOnPremise:On Premise`;
   protected readonly labelCloud = $localize`:@@dspArchLabelCloud:Cloud`;
   protected readonly labelDevices = $localize`:@@dspArchLabelDevices:Geräte`;
@@ -85,14 +85,16 @@ export class DspArchitectureComponent implements OnInit, OnDestroy {
   protected readonly btnAutoPlay = $localize`:@@dspArchAutoPlay:Auto Play`;
   protected readonly btnStopPlay = $localize`:@@dspArchStopPlay:Stop`;
 
-  // Step labels
+  // Step labels (8 steps)
   protected readonly stepLabels = [
-    $localize`:@@dspArchStep1:Shopfloor Overview`,
-    $localize`:@@dspArchStep2:DSP Layer`,
-    $localize`:@@dspArchStep3:Edge Functions`,
-    $localize`:@@dspArchStep4:SAP Integration`,
-    $localize`:@@dspArchStep5:Business Processes`,
-    $localize`:@@dspArchStep6:Complete Architecture`,
+    $localize`:@@dspArchStep1:Geräte`,
+    $localize`:@@dspArchStep2:Shopfloor Systeme`,
+    $localize`:@@dspArchStep3:DSP EDGE`,
+    $localize`:@@dspArchStep4:EDGE Funktionen`,
+    $localize`:@@dspArchStep5:Shopfloor Verbindungen`,
+    $localize`:@@dspArchStep6:Dashboard & Cockpit`,
+    $localize`:@@dspArchStep7:SAP Integration`,
+    $localize`:@@dspArchStep8:Business Prozesse`,
   ];
 
   // Container labels from view
@@ -148,8 +150,8 @@ export class DspArchitectureComponent implements OnInit, OnDestroy {
     this.containerLabels['label-shopfloor'] = this.labelShopfloor;
     this.containerLabels['dsp-label-onpremise'] = this.labelOnPremise;
     this.containerLabels['dsp-label-cloud'] = this.labelCloud;
-    this.containerLabels['shopfloor-devices-label'] = this.labelDevices;
-    this.containerLabels['shopfloor-systems'] = this.labelShopfloorSystems;
+    this.containerLabels['shopfloor-systems-group'] = this.labelShopfloorSystems;
+    this.containerLabels['shopfloor-devices-group'] = this.labelDevices;
   }
 
   /**

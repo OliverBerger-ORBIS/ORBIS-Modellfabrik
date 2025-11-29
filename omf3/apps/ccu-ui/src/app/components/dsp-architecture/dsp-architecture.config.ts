@@ -9,32 +9,35 @@ import type { IconKey } from '../../assets/icon-registry';
 export const VIEWBOX_WIDTH = 1200;
 export const VIEWBOX_HEIGHT = 700;
 
-/** Layout constants */
+/** Layout constants - three equal-height layers */
 export const LAYOUT = {
   // Title area
   TITLE_Y: 30,
   SUBTITLE_Y: 55,
 
-  // Business Processes layer
-  BUSINESS_Y: 90,
-  BUSINESS_HEIGHT: 80,
-  BUSINESS_BOX_WIDTH: 140,
-  BUSINESS_BOX_HEIGHT: 60,
+  // Layer dimensions (equal height for all three)
+  LAYER_HEIGHT: 180,
+  LAYER_START_Y: 80,
 
-  // DSP layer
-  DSP_LAYER_Y: 220,
-  DSP_LAYER_HEIGHT: 180,
-  DSP_BOX_Y: 260,
+  // Business Process layer (top - white)
+  BUSINESS_Y: 80,
+
+  // DSP layer (middle - blue)
+  DSP_LAYER_Y: 260,
+
+  // Shopfloor layer (bottom - gray)
+  SHOPFLOOR_Y: 440,
+
+  // Box dimensions
+  BUSINESS_BOX_WIDTH: 150,
+  BUSINESS_BOX_HEIGHT: 70,
   DSP_BOX_HEIGHT: 120,
 
-  // Shopfloor layer
-  SHOPFLOOR_Y: 520,
-  SHOPFLOOR_HEIGHT: 100,
-
   // Margins and spacing
-  MARGIN_LEFT: 180,
+  LABEL_WIDTH: 120,
+  MARGIN_LEFT: 150,
   MARGIN_RIGHT: 50,
-  CONTENT_WIDTH: 970,
+  CONTENT_WIDTH: 1000,
   BOX_GAP: 20,
 };
 
@@ -45,63 +48,93 @@ export const LAYOUT = {
 export function createDefaultContainers(): ContainerConfig[] {
   const containers: ContainerConfig[] = [];
 
-  // ========== LABELS (always visible) ==========
+  // ========== LAYER BACKGROUNDS ==========
+
+  // Business Process layer background (white)
+  containers.push({
+    id: 'layer-business',
+    x: LAYOUT.MARGIN_LEFT,
+    y: LAYOUT.BUSINESS_Y,
+    width: LAYOUT.CONTENT_WIDTH,
+    height: LAYOUT.LAYER_HEIGHT,
+    type: 'layer',
+    state: 'hidden',
+    backgroundColor: '#ffffff',
+    borderColor: 'rgba(31, 84, 178, 0.1)',
+    isGroup: true,
+  });
+
+  // DSP layer background (blue)
+  containers.push({
+    id: 'layer-dsp',
+    x: LAYOUT.MARGIN_LEFT,
+    y: LAYOUT.DSP_LAYER_Y,
+    width: LAYOUT.CONTENT_WIDTH,
+    height: LAYOUT.LAYER_HEIGHT,
+    type: 'layer',
+    state: 'hidden',
+    backgroundColor: 'rgba(207, 230, 255, 0.5)',
+    borderColor: 'rgba(31, 84, 178, 0.15)',
+    isGroup: true,
+  });
+
+  // Shopfloor layer background (gray)
+  containers.push({
+    id: 'layer-shopfloor',
+    x: LAYOUT.MARGIN_LEFT,
+    y: LAYOUT.SHOPFLOOR_Y,
+    width: LAYOUT.CONTENT_WIDTH,
+    height: LAYOUT.LAYER_HEIGHT,
+    type: 'layer',
+    state: 'normal',
+    backgroundColor: 'rgba(241, 243, 247, 0.8)',
+    borderColor: 'rgba(31, 54, 91, 0.12)',
+    isGroup: true,
+  });
+
+  // ========== LAYER LABELS (left-aligned, vertically centered) ==========
   containers.push({
     id: 'label-business',
-    label: '',  // Will be set via i18n
-    x: 20,
-    y: LAYOUT.BUSINESS_Y + 20,
-    width: 140,
-    height: 60,
+    label: '',  // "Business Process"
+    x: 10,
+    y: LAYOUT.BUSINESS_Y + (LAYOUT.LAYER_HEIGHT / 2) - 10,
+    width: LAYOUT.LABEL_WIDTH,
+    height: 30,
     type: 'label',
-    state: 'normal',
+    state: 'hidden',
     fontSize: 14,
   });
 
   containers.push({
     id: 'label-dsp',
-    label: '',
-    x: 20,
-    y: LAYOUT.DSP_LAYER_Y + 10,
-    width: 140,
+    label: '',  // "DSP"
+    x: 10,
+    y: LAYOUT.DSP_LAYER_Y + (LAYOUT.LAYER_HEIGHT / 2) - 10,
+    width: LAYOUT.LABEL_WIDTH,
+    height: 30,
+    type: 'label',
+    state: 'hidden',
+    fontSize: 14,
+  });
+
+  containers.push({
+    id: 'label-shopfloor',
+    label: '',  // "Shopfloor"
+    x: 10,
+    y: LAYOUT.SHOPFLOOR_Y + (LAYOUT.LAYER_HEIGHT / 2) - 10,
+    width: LAYOUT.LABEL_WIDTH,
     height: 30,
     type: 'label',
     state: 'normal',
     fontSize: 14,
   });
 
-  containers.push({
-    id: 'label-shopfloor',
-    label: '',
-    x: 20,
-    y: LAYOUT.SHOPFLOOR_Y + 20,
-    width: 140,
-    height: 60,
-    type: 'label',
-    state: 'normal',
-    fontSize: 14,
-  });
-
-  // ========== DSP LAYER BACKGROUND ==========
-  containers.push({
-    id: 'dsp-layer-bg',
-    x: LAYOUT.MARGIN_LEFT - 10,
-    y: LAYOUT.DSP_LAYER_Y,
-    width: LAYOUT.CONTENT_WIDTH + 20,
-    height: LAYOUT.DSP_LAYER_HEIGHT,
-    type: 'layer',
-    state: 'hidden',
-    backgroundColor: 'rgba(207, 230, 255, 0.3)',
-    borderColor: 'transparent',
-    isGroup: true,
-  });
-
-  // ========== DSP LAYER LABELS ==========
+  // ========== DSP LAYER LABELS ("On Premise" and "Cloud") ==========
   containers.push({
     id: 'dsp-label-onpremise',
     label: '',  // "On Premise"
     x: LAYOUT.MARGIN_LEFT + 160,
-    y: LAYOUT.DSP_LAYER_Y + 10,
+    y: LAYOUT.DSP_LAYER_Y + 8,
     width: 100,
     height: 20,
     type: 'label',
@@ -112,8 +145,8 @@ export function createDefaultContainers(): ContainerConfig[] {
   containers.push({
     id: 'dsp-label-cloud',
     label: '',  // "Cloud"
-    x: LAYOUT.MARGIN_LEFT + LAYOUT.CONTENT_WIDTH - 200,
-    y: LAYOUT.DSP_LAYER_Y + 10,
+    x: LAYOUT.MARGIN_LEFT + LAYOUT.CONTENT_WIDTH - 220,
+    y: LAYOUT.DSP_LAYER_Y + 8,
     width: 60,
     height: 20,
     type: 'label',
@@ -121,35 +154,20 @@ export function createDefaultContainers(): ContainerConfig[] {
     fontSize: 12,
   });
 
-  // ========== UX BOX (SmartFactory Dashboard) ==========
-  containers.push({
-    id: 'ux',
-    label: '',  // "SmartFactory Dashboard" or just icon
-    x: LAYOUT.MARGIN_LEFT - 70,
-    y: LAYOUT.DSP_BOX_Y + 10,
-    width: 100,
-    height: 100,
-    type: 'ux',
-    state: 'hidden',
-    logoIconKey: 'ux-monitor' as IconKey,
-    borderColor: 'rgba(31, 84, 178, 0.3)',
-    backgroundColor: '#ffffff',
-  });
-
   // ========== DSP EDGE BOX ==========
   containers.push({
     id: 'edge',
     label: '',  // "EDGE"
-    x: LAYOUT.MARGIN_LEFT + 80,
-    y: LAYOUT.DSP_BOX_Y,
-    width: 400,
+    x: LAYOUT.MARGIN_LEFT + 100,
+    y: LAYOUT.DSP_LAYER_Y + 35,
+    width: 450,
     height: LAYOUT.DSP_BOX_HEIGHT,
     type: 'dsp-edge',
     state: 'hidden',
     logoIconKey: 'logo-dsp' as IconKey,
     logoPosition: 'top-left',
     borderColor: '#009B77',
-    backgroundColor: 'rgba(0, 155, 119, 0.03)',
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
     functionIcons: [
       { iconKey: 'edge-data-storage' as IconKey, size: 40 },
       { iconKey: 'edge-digital-twin' as IconKey, size: 40 },
@@ -158,13 +176,28 @@ export function createDefaultContainers(): ContainerConfig[] {
     ],
   });
 
+  // ========== UX BOX (Shopfloor Dashboard) ==========
+  containers.push({
+    id: 'ux',
+    label: '',  // "UX" with monitor icon
+    x: LAYOUT.MARGIN_LEFT + 10,
+    y: LAYOUT.DSP_LAYER_Y + 45,
+    width: 80,
+    height: 100,
+    type: 'ux',
+    state: 'hidden',
+    logoIconKey: 'ux-monitor' as IconKey,
+    borderColor: 'rgba(31, 84, 178, 0.3)',
+    backgroundColor: '#ffffff',
+  });
+
   // ========== DSP MANAGEMENT COCKPIT BOX ==========
   containers.push({
     id: 'management',
     label: '',  // "Management Cockpit"
-    x: LAYOUT.MARGIN_LEFT + 520,
-    y: LAYOUT.DSP_BOX_Y,
-    width: 280,
+    x: LAYOUT.MARGIN_LEFT + 600,
+    y: LAYOUT.DSP_LAYER_Y + 35,
+    width: 350,
     height: LAYOUT.DSP_BOX_HEIGHT,
     type: 'dsp-cloud',
     state: 'hidden',
@@ -173,19 +206,20 @@ export function createDefaultContainers(): ContainerConfig[] {
     secondaryLogoIconKey: 'logo-azure' as IconKey,
     secondaryLogoPosition: 'top-right',
     borderColor: '#0078D4',
-    backgroundColor: 'rgba(0, 120, 212, 0.03)',
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
   });
 
   // ========== BUSINESS PROCESSES ==========
   const businessStartX = LAYOUT.MARGIN_LEFT + 50;
-  const businessBoxWidth = 150;
+  const businessBoxWidth = 160;
   const businessGap = 30;
+  const businessBoxY = LAYOUT.BUSINESS_Y + 55;
 
   containers.push({
     id: 'bp-sap-shopfloor',
     label: '',  // "SAP Shopfloor"
     x: businessStartX,
-    y: LAYOUT.BUSINESS_Y + 10,
+    y: businessBoxY,
     width: businessBoxWidth,
     height: LAYOUT.BUSINESS_BOX_HEIGHT,
     type: 'business',
@@ -193,109 +227,134 @@ export function createDefaultContainers(): ContainerConfig[] {
     logoIconKey: 'bp-sap-shopfloor' as IconKey,
     logoPosition: 'top-left',
     borderColor: 'rgba(31, 84, 178, 0.25)',
-    backgroundColor: '#fdfefe',
+    backgroundColor: '#ffffff',
   });
 
   containers.push({
     id: 'bp-cloud-apps',
     label: '',  // "Cloud Anwendungen"
     x: businessStartX + businessBoxWidth + businessGap,
-    y: LAYOUT.BUSINESS_Y + 10,
-    width: businessBoxWidth,
+    y: businessBoxY,
+    width: businessBoxWidth + 10,
     height: LAYOUT.BUSINESS_BOX_HEIGHT,
     type: 'business',
     state: 'hidden',
     borderColor: 'rgba(31, 84, 178, 0.25)',
-    backgroundColor: '#fdfefe',
+    backgroundColor: '#ffffff',
   });
 
   containers.push({
     id: 'bp-analytics',
     label: '',  // "Analytische Anwendungen"
-    x: businessStartX + (businessBoxWidth + businessGap) * 2,
-    y: LAYOUT.BUSINESS_Y + 10,
-    width: businessBoxWidth + 20,
+    x: businessStartX + (businessBoxWidth + businessGap) * 2 + 10,
+    y: businessBoxY,
+    width: businessBoxWidth + 30,
     height: LAYOUT.BUSINESS_BOX_HEIGHT,
     type: 'business',
     state: 'hidden',
     borderColor: 'rgba(31, 84, 178, 0.25)',
-    backgroundColor: '#fdfefe',
+    backgroundColor: '#ffffff',
   });
 
   containers.push({
     id: 'bp-data-lake',
     label: '',  // "Data Lake"
-    x: businessStartX + (businessBoxWidth + businessGap) * 3 + 20,
-    y: LAYOUT.BUSINESS_Y + 10,
-    width: businessBoxWidth - 20,
+    x: businessStartX + (businessBoxWidth + businessGap) * 3 + 40,
+    y: businessBoxY,
+    width: businessBoxWidth - 30,
     height: LAYOUT.BUSINESS_BOX_HEIGHT,
     type: 'business',
     state: 'hidden',
     borderColor: 'rgba(31, 84, 178, 0.25)',
-    backgroundColor: '#fdfefe',
+    backgroundColor: '#ffffff',
   });
 
-  // ========== SHOPFLOOR LAYER ==========
-  containers.push({
-    id: 'shopfloor-strip',
-    x: LAYOUT.MARGIN_LEFT,
-    y: LAYOUT.SHOPFLOOR_Y,
-    width: LAYOUT.CONTENT_WIDTH,
-    height: LAYOUT.SHOPFLOOR_HEIGHT,
-    type: 'shopfloor',
-    state: 'normal',
-    borderColor: 'rgba(31, 54, 91, 0.12)',
-    backgroundColor: 'linear-gradient(180deg, #fbfbfd 0%, #f1f3f7 100%)',
-    isGroup: true,
-  });
+  // ========== SHOPFLOOR LAYER CONTENT ==========
 
-  // Shopfloor Systems box
+  // Shopfloor Systeme group (left)
   containers.push({
-    id: 'shopfloor-systems',
+    id: 'shopfloor-systems-group',
     label: '',  // "Shopfloor Systeme"
     x: LAYOUT.MARGIN_LEFT + 20,
     y: LAYOUT.SHOPFLOOR_Y + 30,
-    width: 160,
-    height: 50,
+    width: 250,
+    height: 120,
+    type: 'shopfloor',
+    state: 'hidden',
+    borderColor: 'rgba(31, 84, 178, 0.2)',
+    backgroundColor: '#ffffff',
+  });
+
+  // Shopfloor System icons (inside group)
+  containers.push({
+    id: 'shopfloor-system-bp',
+    x: LAYOUT.MARGIN_LEFT + 40,
+    y: LAYOUT.SHOPFLOOR_Y + 60,
+    width: 60,
+    height: 60,
+    type: 'device',
+    state: 'hidden',
+    logoIconKey: 'bp-business-process' as IconKey,
+    borderColor: 'transparent',
+    backgroundColor: 'transparent',
+  });
+
+  containers.push({
+    id: 'shopfloor-system-fts',
+    x: LAYOUT.MARGIN_LEFT + 120,
+    y: LAYOUT.SHOPFLOOR_Y + 60,
+    width: 60,
+    height: 60,
+    type: 'device',
+    state: 'hidden',
+    logoIconKey: 'device-conveyor' as IconKey,
+    borderColor: 'transparent',
+    backgroundColor: 'transparent',
+  });
+
+  // Geräte group (right)
+  containers.push({
+    id: 'shopfloor-devices-group',
+    label: '',  // "Geräte"
+    x: LAYOUT.MARGIN_LEFT + 300,
+    y: LAYOUT.SHOPFLOOR_Y + 30,
+    width: 650,
+    height: 120,
     type: 'shopfloor',
     state: 'normal',
     borderColor: 'rgba(31, 84, 178, 0.2)',
     backgroundColor: '#ffffff',
   });
 
-  // Shopfloor devices
-  const deviceStartX = LAYOUT.MARGIN_LEFT + 200;
-  const deviceWidth = 60;
-  const deviceGap = 15;
+  // Device icons - representing various shopfloor equipment
+  // Icons are mapped to available assets from the icon registry
+  const deviceStartX = LAYOUT.MARGIN_LEFT + 330;
+  const deviceWidth = 70;
+  const deviceGap = 25;
+  const deviceY = LAYOUT.SHOPFLOOR_Y + 55;
 
-  // Use valid IconKeys from icon-registry
-  const deviceIconKeys: IconKey[] = ['device-plc', 'device-conveyor', 'device-sensor', 'device-printer'];
+  const deviceIconKeys: IconKey[] = [
+    'device-plc' as IconKey,
+    'device-conveyor' as IconKey,
+    'device-sensor' as IconKey,
+    'device-camera' as IconKey,
+    'device-robot-arm' as IconKey,
+    'device-printer' as IconKey,
+  ];
+
   deviceIconKeys.forEach((iconKey, index) => {
     containers.push({
       id: `shopfloor-device-${index + 1}`,
       x: deviceStartX + (deviceWidth + deviceGap) * index,
-      y: LAYOUT.SHOPFLOOR_Y + 25,
+      y: deviceY,
       width: deviceWidth,
-      height: 60,
+      height: 70,
       type: 'device',
       state: 'normal',
       logoIconKey: iconKey,
-      borderColor: 'rgba(31, 84, 178, 0.2)',
+      borderColor: 'rgba(31, 84, 178, 0.15)',
       backgroundColor: '#ffffff',
     });
-  });
-
-  // Geräte label
-  containers.push({
-    id: 'shopfloor-devices-label',
-    label: '',  // "Geräte"
-    x: LAYOUT.MARGIN_LEFT + LAYOUT.CONTENT_WIDTH - 100,
-    y: LAYOUT.SHOPFLOOR_Y + 45,
-    width: 80,
-    height: 20,
-    type: 'label',
-    state: 'normal',
-    fontSize: 12,
   });
 
   return containers;
@@ -328,6 +387,80 @@ export function createDefaultConnections(): ConnectionConfig[] {
       bidirectional: true,
     },
 
+    // Edge to all shopfloor devices (bidirectional)
+    {
+      id: 'conn-edge-device-1',
+      fromId: 'edge',
+      toId: 'shopfloor-device-1',
+      fromSide: 'bottom',
+      toSide: 'top',
+      state: 'hidden',
+      hasArrow: true,
+      bidirectional: true,
+    },
+    {
+      id: 'conn-edge-device-2',
+      fromId: 'edge',
+      toId: 'shopfloor-device-2',
+      fromSide: 'bottom',
+      toSide: 'top',
+      state: 'hidden',
+      hasArrow: true,
+      bidirectional: true,
+    },
+    {
+      id: 'conn-edge-device-3',
+      fromId: 'edge',
+      toId: 'shopfloor-device-3',
+      fromSide: 'bottom',
+      toSide: 'top',
+      state: 'hidden',
+      hasArrow: true,
+      bidirectional: true,
+    },
+    {
+      id: 'conn-edge-device-4',
+      fromId: 'edge',
+      toId: 'shopfloor-device-4',
+      fromSide: 'bottom',
+      toSide: 'top',
+      state: 'hidden',
+      hasArrow: true,
+      bidirectional: true,
+    },
+    {
+      id: 'conn-edge-device-5',
+      fromId: 'edge',
+      toId: 'shopfloor-device-5',
+      fromSide: 'bottom',
+      toSide: 'top',
+      state: 'hidden',
+      hasArrow: true,
+      bidirectional: true,
+    },
+    {
+      id: 'conn-edge-device-6',
+      fromId: 'edge',
+      toId: 'shopfloor-device-6',
+      fromSide: 'bottom',
+      toSide: 'top',
+      state: 'hidden',
+      hasArrow: true,
+      bidirectional: true,
+    },
+
+    // Edge to shopfloor systems
+    {
+      id: 'conn-edge-systems',
+      fromId: 'edge',
+      toId: 'shopfloor-systems-group',
+      fromSide: 'bottom',
+      toSide: 'top',
+      state: 'hidden',
+      hasArrow: true,
+      bidirectional: true,
+    },
+
     // Business to DSP connections
     {
       id: 'conn-sap-edge',
@@ -340,226 +473,321 @@ export function createDefaultConnections(): ConnectionConfig[] {
       bidirectional: true,
     },
     {
-      id: 'conn-cloud-management',
+      id: 'conn-cloud-edge',
       fromId: 'bp-cloud-apps',
-      toId: 'management',
+      toId: 'edge',
       fromSide: 'bottom',
       toSide: 'top',
       state: 'hidden',
       hasArrow: true,
     },
     {
-      id: 'conn-analytics-management',
+      id: 'conn-analytics-edge',
       fromId: 'bp-analytics',
-      toId: 'management',
+      toId: 'edge',
       fromSide: 'bottom',
       toSide: 'top',
       state: 'hidden',
       hasArrow: true,
     },
     {
-      id: 'conn-datalake-management',
+      id: 'conn-datalake-edge',
       fromId: 'bp-data-lake',
-      toId: 'management',
+      toId: 'edge',
       fromSide: 'bottom',
       toSide: 'top',
       state: 'hidden',
       hasArrow: true,
-    },
-
-    // DSP to Shopfloor connections
-    {
-      id: 'conn-edge-shopfloor',
-      fromId: 'edge',
-      toId: 'shopfloor-strip',
-      fromSide: 'bottom',
-      toSide: 'top',
-      state: 'hidden',
-      hasArrow: true,
-      bidirectional: true,
     },
   ];
 }
 
 /**
  * Default animation steps based on PowerPoint slides.
- * Order: 1, 2, 4, 5, 6, 3 (as specified)
+ * 8 animation steps as specified:
+ * 1. Shopfloor layer with device icons
+ * 2. Shopfloor systems added
+ * 3. DSP layer (blue) with Edge container, "On Premise" label
+ * 4. Edge function icons
+ * 5. Arrows from Edge to all Shopfloor icons (bidirectional)
+ * 6. Shopfloor Dashboard and Management Cockpit with arrows to Edge, "Cloud" label
+ * 7. Business Process layer with SAP Shopfloor → Edge arrow
+ * 8. Remaining BP components with arrows to Edge
  */
 export function createDefaultSteps(): StepConfig[] {
   return [
-    // Step 1: Shopfloor Overview (Screenshot 1)
+    // Step 1: Shopfloor layer with device icons only
     {
       id: 'step-1',
-      label: '',  // Will be set via i18n
+      label: '',
       visibleContainerIds: [
-        'label-business',
+        'layer-shopfloor',
         'label-shopfloor',
-        'shopfloor-strip',
-        'shopfloor-systems',
+        'shopfloor-devices-group',
         'shopfloor-device-1',
         'shopfloor-device-2',
         'shopfloor-device-3',
         'shopfloor-device-4',
-        'shopfloor-devices-label',
+        'shopfloor-device-5',
+        'shopfloor-device-6',
       ],
       highlightedContainerIds: [],
       visibleConnectionIds: [],
       highlightedConnectionIds: [],
     },
 
-    // Step 2: DSP Layer appears (Screenshot 2)
+    // Step 2: Shopfloor systems added
     {
       id: 'step-2',
       label: '',
       visibleContainerIds: [
-        'label-business',
-        'label-dsp',
+        'layer-shopfloor',
         'label-shopfloor',
-        'dsp-layer-bg',
-        'dsp-label-onpremise',
-        'dsp-label-cloud',
-        'edge',
-        'management',
-        'shopfloor-strip',
-        'shopfloor-systems',
+        'shopfloor-systems-group',
+        'shopfloor-system-bp',
+        'shopfloor-system-fts',
+        'shopfloor-devices-group',
         'shopfloor-device-1',
         'shopfloor-device-2',
         'shopfloor-device-3',
         'shopfloor-device-4',
-        'shopfloor-devices-label',
+        'shopfloor-device-5',
+        'shopfloor-device-6',
       ],
-      highlightedContainerIds: ['edge', 'management'],
-      visibleConnectionIds: ['conn-edge-management'],
-      highlightedConnectionIds: ['conn-edge-management'],
+      highlightedContainerIds: ['shopfloor-systems-group', 'shopfloor-system-bp', 'shopfloor-system-fts'],
+      visibleConnectionIds: [],
+      highlightedConnectionIds: [],
     },
 
-    // Step 3: Edge with more function icons (Screenshot 4)
+    // Step 3: DSP layer with Edge container
     {
       id: 'step-3',
       label: '',
       visibleContainerIds: [
-        'label-business',
+        'layer-dsp',
+        'layer-shopfloor',
         'label-dsp',
         'label-shopfloor',
-        'dsp-layer-bg',
         'dsp-label-onpremise',
-        'dsp-label-cloud',
         'edge',
-        'management',
-        'shopfloor-strip',
-        'shopfloor-systems',
+        'shopfloor-systems-group',
+        'shopfloor-system-bp',
+        'shopfloor-system-fts',
+        'shopfloor-devices-group',
         'shopfloor-device-1',
         'shopfloor-device-2',
         'shopfloor-device-3',
         'shopfloor-device-4',
-        'shopfloor-devices-label',
+        'shopfloor-device-5',
+        'shopfloor-device-6',
       ],
-      highlightedContainerIds: ['edge'],
-      visibleConnectionIds: ['conn-edge-management'],
+      highlightedContainerIds: ['layer-dsp', 'edge'],
+      visibleConnectionIds: [],
       highlightedConnectionIds: [],
     },
 
-    // Step 4: SAP Shopfloor appears with connection (Screenshot 5)
+    // Step 4: Edge function icons
     {
       id: 'step-4',
       label: '',
       visibleContainerIds: [
-        'label-business',
+        'layer-dsp',
+        'layer-shopfloor',
         'label-dsp',
         'label-shopfloor',
-        'dsp-layer-bg',
         'dsp-label-onpremise',
-        'dsp-label-cloud',
         'edge',
-        'management',
-        'bp-sap-shopfloor',
-        'shopfloor-strip',
-        'shopfloor-systems',
+        'shopfloor-systems-group',
+        'shopfloor-system-bp',
+        'shopfloor-system-fts',
+        'shopfloor-devices-group',
         'shopfloor-device-1',
         'shopfloor-device-2',
         'shopfloor-device-3',
         'shopfloor-device-4',
-        'shopfloor-devices-label',
+        'shopfloor-device-5',
+        'shopfloor-device-6',
       ],
-      highlightedContainerIds: ['bp-sap-shopfloor'],
-      visibleConnectionIds: ['conn-edge-management', 'conn-sap-edge', 'conn-edge-shopfloor'],
-      highlightedConnectionIds: ['conn-sap-edge', 'conn-edge-shopfloor'],
+      highlightedContainerIds: ['edge'],
+      visibleConnectionIds: [],
+      highlightedConnectionIds: [],
     },
 
-    // Step 5: More business processes appear (Screenshot 6)
+    // Step 5: Arrows from Edge to all Shopfloor icons
     {
       id: 'step-5',
       label: '',
       visibleContainerIds: [
-        'label-business',
+        'layer-dsp',
+        'layer-shopfloor',
         'label-dsp',
         'label-shopfloor',
-        'dsp-layer-bg',
         'dsp-label-onpremise',
-        'dsp-label-cloud',
         'edge',
-        'management',
-        'bp-sap-shopfloor',
-        'bp-cloud-apps',
-        'bp-analytics',
-        'bp-data-lake',
-        'shopfloor-strip',
-        'shopfloor-systems',
+        'shopfloor-systems-group',
+        'shopfloor-system-bp',
+        'shopfloor-system-fts',
+        'shopfloor-devices-group',
         'shopfloor-device-1',
         'shopfloor-device-2',
         'shopfloor-device-3',
         'shopfloor-device-4',
-        'shopfloor-devices-label',
+        'shopfloor-device-5',
+        'shopfloor-device-6',
       ],
-      highlightedContainerIds: ['bp-cloud-apps', 'bp-analytics', 'bp-data-lake'],
+      highlightedContainerIds: [],
       visibleConnectionIds: [
-        'conn-edge-management',
-        'conn-sap-edge',
-        'conn-edge-shopfloor',
-        'conn-cloud-management',
-        'conn-analytics-management',
-        'conn-datalake-management',
+        'conn-edge-systems',
+        'conn-edge-device-1',
+        'conn-edge-device-2',
+        'conn-edge-device-3',
+        'conn-edge-device-4',
+        'conn-edge-device-5',
+        'conn-edge-device-6',
       ],
-      highlightedConnectionIds: ['conn-cloud-management', 'conn-analytics-management', 'conn-datalake-management'],
+      highlightedConnectionIds: [
+        'conn-edge-systems',
+        'conn-edge-device-1',
+        'conn-edge-device-2',
+        'conn-edge-device-3',
+        'conn-edge-device-4',
+        'conn-edge-device-5',
+        'conn-edge-device-6',
+      ],
     },
 
-    // Step 6: Final state with UX (Screenshot 3)
+    // Step 6: Shopfloor Dashboard and Management Cockpit
     {
       id: 'step-6',
       label: '',
       visibleContainerIds: [
-        'label-business',
+        'layer-dsp',
+        'layer-shopfloor',
         'label-dsp',
         'label-shopfloor',
-        'dsp-layer-bg',
         'dsp-label-onpremise',
         'dsp-label-cloud',
         'ux',
         'edge',
         'management',
-        'bp-sap-shopfloor',
-        'bp-cloud-apps',
-        'bp-analytics',
-        'bp-data-lake',
-        'shopfloor-strip',
-        'shopfloor-systems',
+        'shopfloor-systems-group',
+        'shopfloor-system-bp',
+        'shopfloor-system-fts',
+        'shopfloor-devices-group',
         'shopfloor-device-1',
         'shopfloor-device-2',
         'shopfloor-device-3',
         'shopfloor-device-4',
-        'shopfloor-devices-label',
+        'shopfloor-device-5',
+        'shopfloor-device-6',
       ],
-      highlightedContainerIds: ['ux'],
+      highlightedContainerIds: ['ux', 'management'],
+      visibleConnectionIds: [
+        'conn-ux-edge',
+        'conn-edge-management',
+        'conn-edge-systems',
+        'conn-edge-device-1',
+        'conn-edge-device-2',
+        'conn-edge-device-3',
+        'conn-edge-device-4',
+        'conn-edge-device-5',
+        'conn-edge-device-6',
+      ],
+      highlightedConnectionIds: ['conn-ux-edge', 'conn-edge-management'],
+    },
+
+    // Step 7: Business Process layer with SAP Shopfloor
+    {
+      id: 'step-7',
+      label: '',
+      visibleContainerIds: [
+        'layer-business',
+        'layer-dsp',
+        'layer-shopfloor',
+        'label-business',
+        'label-dsp',
+        'label-shopfloor',
+        'dsp-label-onpremise',
+        'dsp-label-cloud',
+        'bp-sap-shopfloor',
+        'ux',
+        'edge',
+        'management',
+        'shopfloor-systems-group',
+        'shopfloor-system-bp',
+        'shopfloor-system-fts',
+        'shopfloor-devices-group',
+        'shopfloor-device-1',
+        'shopfloor-device-2',
+        'shopfloor-device-3',
+        'shopfloor-device-4',
+        'shopfloor-device-5',
+        'shopfloor-device-6',
+      ],
+      highlightedContainerIds: ['layer-business', 'bp-sap-shopfloor'],
       visibleConnectionIds: [
         'conn-ux-edge',
         'conn-edge-management',
         'conn-sap-edge',
-        'conn-edge-shopfloor',
-        'conn-cloud-management',
-        'conn-analytics-management',
-        'conn-datalake-management',
+        'conn-edge-systems',
+        'conn-edge-device-1',
+        'conn-edge-device-2',
+        'conn-edge-device-3',
+        'conn-edge-device-4',
+        'conn-edge-device-5',
+        'conn-edge-device-6',
       ],
-      highlightedConnectionIds: ['conn-ux-edge'],
+      highlightedConnectionIds: ['conn-sap-edge'],
+    },
+
+    // Step 8: All remaining BP components
+    {
+      id: 'step-8',
+      label: '',
+      visibleContainerIds: [
+        'layer-business',
+        'layer-dsp',
+        'layer-shopfloor',
+        'label-business',
+        'label-dsp',
+        'label-shopfloor',
+        'dsp-label-onpremise',
+        'dsp-label-cloud',
+        'bp-sap-shopfloor',
+        'bp-cloud-apps',
+        'bp-analytics',
+        'bp-data-lake',
+        'ux',
+        'edge',
+        'management',
+        'shopfloor-systems-group',
+        'shopfloor-system-bp',
+        'shopfloor-system-fts',
+        'shopfloor-devices-group',
+        'shopfloor-device-1',
+        'shopfloor-device-2',
+        'shopfloor-device-3',
+        'shopfloor-device-4',
+        'shopfloor-device-5',
+        'shopfloor-device-6',
+      ],
+      highlightedContainerIds: ['bp-cloud-apps', 'bp-analytics', 'bp-data-lake'],
+      visibleConnectionIds: [
+        'conn-ux-edge',
+        'conn-edge-management',
+        'conn-sap-edge',
+        'conn-cloud-edge',
+        'conn-analytics-edge',
+        'conn-datalake-edge',
+        'conn-edge-systems',
+        'conn-edge-device-1',
+        'conn-edge-device-2',
+        'conn-edge-device-3',
+        'conn-edge-device-4',
+        'conn-edge-device-5',
+        'conn-edge-device-6',
+      ],
+      highlightedConnectionIds: ['conn-cloud-edge', 'conn-analytics-edge', 'conn-datalake-edge'],
     },
   ];
 }
