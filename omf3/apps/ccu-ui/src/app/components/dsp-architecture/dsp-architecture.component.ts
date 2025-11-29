@@ -533,7 +533,7 @@ export class DspArchitectureComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Handle container click for actions/URL navigation.
+   * Handle container click for URL navigation or legacy action-based navigation.
    */
   protected onContainerClick(container: ContainerConfig): void {
     // Check if container has a direct URL configured

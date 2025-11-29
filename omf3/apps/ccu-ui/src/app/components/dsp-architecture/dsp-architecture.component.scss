@@ -264,6 +264,16 @@
         stroke-width: 3;
       }
     }
+
+    &:focus-visible {
+      outline: none;
+
+      .container__bg {
+        stroke: #1f54b2;
+        stroke-width: 3;
+        filter: drop-shadow(0 0 6px rgba(31, 84, 178, 0.4));
+      }
+    }
   }
 
   &--highlight {
