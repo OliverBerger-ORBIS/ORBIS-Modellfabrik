@@ -231,36 +231,40 @@
               [attr.font-weight]="container.type === 'label' ? 600 : 500"
               class="container__label"
             >
+              <ng-container *ngIf="getContainerLabel(container.id).includes('\\n')">
+                <ng-container *ngFor="let line of getMultilineLabel(container.id); let i = index">
+                  <tspan [attr.x]="getLabelX(container)" [attr.dy]="i === 0 ? '0' : '1.2em'">{{ line }}</tspan>
+                </ng-container>
+              </ng-container>
+              <ng-container *ngIf="!getContainerLabel(container.id).includes('\\n')">
+                {{ getContainerLabel(container.id) }}
+              </ng-container>
+            </text>
+
+            <!-- Shopfloor group labels at bottom center -->
+            <text
+              *ngIf="container.type === 'shopfloor' && container.labelPosition === 'bottom-center'"
+              [attr.x]="container.width / 2"
+              [attr.y]="container.height - 12"
+              text-anchor="middle"
+              font-size="13"
+              font-weight="600"
+              fill="#1e2d3d"
+              class="container__group-label"
+            >
               {{ getContainerLabel(container.id) }}
             </text>
 
-            <!-- Shopfloor group labels (inside, left or right) -->
-            <text
-              *ngIf="container.type === 'shopfloor' && container.labelPosition === 'left-inside'"
-              x="15"
-              [attr.y]="container.height / 2"
-              text-anchor="start"
-              font-size="12"
-              font-weight="600"
-              fill="#1e2d3d"
-              class="container__group-label"
-            >
-              <tspan x="15" dy="-0.6em">Shopfloor</tspan>
-              <tspan x="15" dy="1.2em">Systeme</tspan>
-            </text>
-
-            <text
-              *ngIf="container.type === 'shopfloor' && container.labelPosition === 'right-inside'"
-              [attr.x]="container.width - 15"
-              [attr.y]="container.height / 2"
-              text-anchor="end"
-              font-size="12"
-              font-weight="600"
-              fill="#1e2d3d"
-              class="container__group-label"
-            >
-              Geräte
-            </text>
+            <!-- Business process icon (centered, below label) -->
+            <image
+              *ngIf="container.type === 'business' && container.logoIconKey && !container.logoPosition"
+              [attr.href]="resolveIconPath(container.logoIconKey)"
+              [attr.x]="(container.width - 50) / 2"
+              [attr.y]="35"
+              width="50"
+              height="50"
+              class="container__bp-icon"
+            />
           </g>
         </ng-container>
       </g>

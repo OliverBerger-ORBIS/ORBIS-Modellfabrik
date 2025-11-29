@@ -5,42 +5,42 @@
 import type { ContainerConfig, ConnectionConfig, StepConfig, DiagramConfig } from './dsp-architecture.types';
 import type { IconKey } from '../../assets/icon-registry';
 
-/** SVG viewBox dimensions */
+/** SVG viewBox dimensions - increased height for better screen fit */
 export const VIEWBOX_WIDTH = 1200;
-export const VIEWBOX_HEIGHT = 700;
+export const VIEWBOX_HEIGHT = 850;
 
-/** Layout constants - three equal-height layers */
+/** Layout constants - three equal-height layers with increased size */
 export const LAYOUT = {
   // Title area
   TITLE_Y: 30,
   SUBTITLE_Y: 55,
 
-  // Layer dimensions (equal height for all three)
-  LAYER_HEIGHT: 180,
+  // Layer dimensions (equal height for all three - increased)
+  LAYER_HEIGHT: 230,
   LAYER_START_Y: 80,
 
   // Labels inside layers (left edge)
   LABEL_X: 10,
-  LABEL_WIDTH: 130,
+  LABEL_WIDTH: 100,
 
   // Business Process layer (top - white)
   BUSINESS_Y: 80,
 
   // DSP layer (middle - blue)
-  DSP_LAYER_Y: 260,
+  DSP_LAYER_Y: 310,
 
   // Shopfloor layer (bottom - gray)
-  SHOPFLOOR_Y: 440,
+  SHOPFLOOR_Y: 540,
 
   // Box dimensions
-  BUSINESS_BOX_WIDTH: 150,
-  BUSINESS_BOX_HEIGHT: 80,
-  DSP_BOX_HEIGHT: 110,
+  BUSINESS_BOX_WIDTH: 200,
+  BUSINESS_BOX_HEIGHT: 130,
+  DSP_BOX_HEIGHT: 150,
 
   // Margins and spacing (content starts after label area)
-  CONTENT_START_X: 150,
+  CONTENT_START_X: 120,
   MARGIN_RIGHT: 50,
-  CONTENT_WIDTH: 1040,
+  CONTENT_WIDTH: 1070,
   BOX_GAP: 30,
 };
 
@@ -85,10 +85,10 @@ export function createDefaultContainers(): ContainerConfig[] {
     labelPosition: 'left',
   });
 
-  // Shopfloor layer background (gray) - label "Shopfloor\nSysteme und\nGeräte" inside
+  // Shopfloor layer background (gray) - label "Shopfloor" inside (without "Systeme und Geräte")
   containers.push({
     id: 'layer-shopfloor',
-    label: '',  // "Shopfloor\nSysteme und\nGeräte" - three lines
+    label: '',  // "Shopfloor" - single line now
     x: 0,
     y: LAYOUT.SHOPFLOOR_Y,
     width: VIEWBOX_WIDTH,
@@ -105,8 +105,8 @@ export function createDefaultContainers(): ContainerConfig[] {
   containers.push({
     id: 'dsp-label-onpremise',
     label: '',  // "On Premise"
-    x: LAYOUT.CONTENT_START_X + 120,
-    y: LAYOUT.DSP_LAYER_Y + 8,
+    x: LAYOUT.CONTENT_START_X + 180,
+    y: LAYOUT.DSP_LAYER_Y + 12,
     width: 100,
     height: 20,
     type: 'label',
@@ -117,8 +117,8 @@ export function createDefaultContainers(): ContainerConfig[] {
   containers.push({
     id: 'dsp-label-cloud',
     label: '',  // "Cloud"
-    x: LAYOUT.CONTENT_START_X + 720,
-    y: LAYOUT.DSP_LAYER_Y + 8,
+    x: LAYOUT.CONTENT_START_X + 780,
+    y: LAYOUT.DSP_LAYER_Y + 12,
     width: 60,
     height: 20,
     type: 'label',
@@ -126,28 +126,29 @@ export function createDefaultContainers(): ContainerConfig[] {
     fontSize: 12,
   });
 
-  // ========== DSP UX BOX (Smartfactory Dashboard) - larger, with spacing ==========
+  // ========== DSP UX BOX (Smartfactory Dashboard) - larger box, two-line label ==========
   containers.push({
     id: 'ux',
-    label: '',  // "UX" - label at top, centered
+    label: '',  // "Smartfactory\nDashboard" - two-line label at top, centered
     x: LAYOUT.CONTENT_START_X,
-    y: LAYOUT.DSP_LAYER_Y + 35,
-    width: 100,
-    height: 110,
+    y: LAYOUT.DSP_LAYER_Y + 40,
+    width: 140,
+    height: LAYOUT.DSP_BOX_HEIGHT,
     type: 'ux',
     state: 'hidden',
-    logoIconKey: 'ux-monitor' as IconKey,
+    logoIconKey: 'ux-dashboard' as IconKey,  // dsp/dashboard.svg
     borderColor: 'rgba(31, 84, 178, 0.3)',
     backgroundColor: '#ffffff',
     labelPosition: 'top-center',
   });
 
-  // ========== DSP EDGE BOX ==========
+  // ========== DSP EDGE BOX - equal spacing with other boxes ==========
+  const dspBoxGap = 40;  // Equal spacing between all DSP boxes
   containers.push({
     id: 'edge',
     label: '',  // "EDGE" - label at top center
-    x: LAYOUT.CONTENT_START_X + 130,
-    y: LAYOUT.DSP_LAYER_Y + 35,
+    x: LAYOUT.CONTENT_START_X + 140 + dspBoxGap,
+    y: LAYOUT.DSP_LAYER_Y + 40,
     width: 420,
     height: LAYOUT.DSP_BOX_HEIGHT,
     type: 'dsp-edge',
@@ -156,39 +157,41 @@ export function createDefaultContainers(): ContainerConfig[] {
     logoPosition: 'top-left',
     borderColor: '#009B77',
     backgroundColor: 'rgba(255, 255, 255, 0.95)',
-    labelPosition: 'bottom-center',
+    labelPosition: 'top-center',  // Changed to top-center
     functionIcons: [
-      { iconKey: 'edge-data-storage' as IconKey, size: 36 },
-      { iconKey: 'edge-digital-twin' as IconKey, size: 36 },
-      { iconKey: 'edge-network' as IconKey, size: 36 },
-      { iconKey: 'edge-workflow' as IconKey, size: 36 },
+      { iconKey: 'edge-data-storage' as IconKey, size: 40 },
+      { iconKey: 'edge-digital-twin' as IconKey, size: 40 },
+      { iconKey: 'edge-network' as IconKey, size: 40 },
+      { iconKey: 'edge-workflow' as IconKey, size: 40 },
     ],
   });
 
-  // ========== DSP MANAGEMENT COCKPIT BOX ==========
+  // ========== DSP MANAGEMENT COCKPIT BOX - two icons ==========
   containers.push({
     id: 'management',
     label: '',  // "Management Cockpit" - label at top center
-    x: LAYOUT.CONTENT_START_X + 590,
-    y: LAYOUT.DSP_LAYER_Y + 35,
-    width: 300,
+    x: LAYOUT.CONTENT_START_X + 140 + dspBoxGap + 420 + dspBoxGap,
+    y: LAYOUT.DSP_LAYER_Y + 40,
+    width: 280,
     height: LAYOUT.DSP_BOX_HEIGHT,
     type: 'dsp-cloud',
     state: 'hidden',
-    logoIconKey: 'logo-dsp' as IconKey,
+    logoIconKey: 'logo-distributed' as IconKey,  // orbis/distributed.svg
     logoPosition: 'top-left',
-    secondaryLogoIconKey: 'logo-azure' as IconKey,
+    secondaryLogoIconKey: 'shopfloor-it' as IconKey,  // shopfloor/information-technology.svg
     secondaryLogoPosition: 'top-right',
     borderColor: '#0078D4',
     backgroundColor: 'rgba(255, 255, 255, 0.95)',
-    labelPosition: 'bottom-center',
+    labelPosition: 'top-center',  // Changed to top-center
   });
 
-  // ========== BUSINESS PROCESSES (labels centered at top) ==========
-  const businessStartX = LAYOUT.CONTENT_START_X + 20;
-  const businessBoxWidth = 165;
-  const businessGap = 25;
+  // ========== BUSINESS PROCESSES (equal-sized boxes, labels at top centered, with icons) ==========
+  const businessAvailableWidth = VIEWBOX_WIDTH - LAYOUT.CONTENT_START_X - 30;
+  const businessBoxCount = 4;
+  const businessGap = 20;
+  const businessBoxWidth = (businessAvailableWidth - (businessBoxCount - 1) * businessGap) / businessBoxCount;
   const businessBoxY = LAYOUT.BUSINESS_Y + 50;
+  const businessStartX = LAYOUT.CONTENT_START_X;
 
   containers.push({
     id: 'bp-sap-shopfloor',
@@ -209,12 +212,13 @@ export function createDefaultContainers(): ContainerConfig[] {
   containers.push({
     id: 'bp-cloud-apps',
     label: '',  // "Cloud Anwendungen" - label at top center
-    x: businessStartX + businessBoxWidth + businessGap,
+    x: businessStartX + (businessBoxWidth + businessGap),
     y: businessBoxY,
-    width: businessBoxWidth + 20,
+    width: businessBoxWidth,
     height: LAYOUT.BUSINESS_BOX_HEIGHT,
     type: 'business',
     state: 'hidden',
+    logoIconKey: 'bp-cloud-apps' as IconKey,  // dsp/cloud-computing.svg
     borderColor: 'rgba(31, 84, 178, 0.25)',
     backgroundColor: '#ffffff',
     labelPosition: 'top-center',
@@ -223,12 +227,13 @@ export function createDefaultContainers(): ContainerConfig[] {
   containers.push({
     id: 'bp-analytics',
     label: '',  // "Analytische\nAnwendungen" - label at top center
-    x: businessStartX + (businessBoxWidth + businessGap) * 2 + 20,
+    x: businessStartX + (businessBoxWidth + businessGap) * 2,
     y: businessBoxY,
-    width: businessBoxWidth + 30,
+    width: businessBoxWidth,
     height: LAYOUT.BUSINESS_BOX_HEIGHT,
     type: 'business',
     state: 'hidden',
+    logoIconKey: 'bp-analytics' as IconKey,  // dsp/dashboard.svg
     borderColor: 'rgba(31, 84, 178, 0.25)',
     backgroundColor: '#ffffff',
     labelPosition: 'top-center',
@@ -237,12 +242,13 @@ export function createDefaultContainers(): ContainerConfig[] {
   containers.push({
     id: 'bp-data-lake',
     label: '',  // "Data Lake" - label at top center
-    x: businessStartX + (businessBoxWidth + businessGap) * 3 + 50,
+    x: businessStartX + (businessBoxWidth + businessGap) * 3,
     y: businessBoxY,
-    width: businessBoxWidth - 20,
+    width: businessBoxWidth,
     height: LAYOUT.BUSINESS_BOX_HEIGHT,
     type: 'business',
     state: 'hidden',
+    logoIconKey: 'bp-data-lake' as IconKey,  // dsp/data-lake.svg
     borderColor: 'rgba(31, 84, 178, 0.25)',
     backgroundColor: '#ffffff',
     labelPosition: 'top-center',
@@ -250,32 +256,39 @@ export function createDefaultContainers(): ContainerConfig[] {
 
   // ========== SHOPFLOOR LAYER CONTENT ==========
 
-  // Shopfloor Systeme container (left) - label at left
+  // Shopfloor Systeme container (left) - label at bottom, horizontally centered
+  const shopfloorGroupHeight = 170;
+  const shopfloorGroupY = LAYOUT.SHOPFLOOR_Y + 30;
+
   containers.push({
     id: 'shopfloor-systems-group',
-    label: '',  // "Shopfloor\nSysteme" - label at left side
+    label: '',  // "Systeme" - label at bottom center
     x: LAYOUT.CONTENT_START_X,
-    y: LAYOUT.SHOPFLOOR_Y + 25,
+    y: shopfloorGroupY,
     width: 280,
-    height: 130,
+    height: shopfloorGroupHeight,
     type: 'shopfloor',
     state: 'hidden',
     borderColor: 'rgba(31, 84, 178, 0.2)',
     backgroundColor: '#ffffff',
-    labelPosition: 'left-inside',
+    labelPosition: 'bottom-center',  // Changed to bottom-center
   });
 
-  // Shopfloor System icons with labels below
+  // Shopfloor System icons with labels below - arrows should go to these icons
+  const systemIconY = shopfloorGroupY + 20;
+  const systemIconWidth = 90;
+  const systemIconHeight = 100;
+
   containers.push({
     id: 'shopfloor-system-bp',
     label: 'FTS',  // Label below icon
-    x: LAYOUT.CONTENT_START_X + 120,
-    y: LAYOUT.SHOPFLOOR_Y + 45,
-    width: 70,
-    height: 85,
+    x: LAYOUT.CONTENT_START_X + 30,
+    y: systemIconY,
+    width: systemIconWidth,
+    height: systemIconHeight,
     type: 'device',
     state: 'hidden',
-    logoIconKey: 'bp-business-process' as IconKey,
+    logoIconKey: 'shopfloor-fts' as IconKey,
     borderColor: 'rgba(31, 84, 178, 0.1)',
     backgroundColor: '#ffffff',
     labelPosition: 'bottom',
@@ -284,46 +297,47 @@ export function createDefaultContainers(): ContainerConfig[] {
   containers.push({
     id: 'shopfloor-system-fts',
     label: 'MES',  // Label below icon
-    x: LAYOUT.CONTENT_START_X + 200,
-    y: LAYOUT.SHOPFLOOR_Y + 45,
-    width: 70,
-    height: 85,
+    x: LAYOUT.CONTENT_START_X + 30 + systemIconWidth + 30,
+    y: systemIconY,
+    width: systemIconWidth,
+    height: systemIconHeight,
     type: 'device',
     state: 'hidden',
-    logoIconKey: 'device-conveyor' as IconKey,
+    logoIconKey: 'shopfloor-mes' as IconKey,
     borderColor: 'rgba(31, 84, 178, 0.1)',
     backgroundColor: '#ffffff',
     labelPosition: 'bottom',
   });
 
-  // Geräte container (right) - label at right
+  // Geräte container (right) - label at bottom, horizontally centered
   containers.push({
     id: 'shopfloor-devices-group',
-    label: '',  // "Geräte" - label at right side
+    label: '',  // "Geräte" - label at bottom center
     x: LAYOUT.CONTENT_START_X + 310,
-    y: LAYOUT.SHOPFLOOR_Y + 25,
+    y: shopfloorGroupY,
     width: 580,
-    height: 130,
+    height: shopfloorGroupHeight,
     type: 'shopfloor',
     state: 'normal',
     borderColor: 'rgba(31, 84, 178, 0.2)',
     backgroundColor: '#ffffff',
-    labelPosition: 'right-inside',
+    labelPosition: 'bottom-center',  // Changed to bottom-center
   });
 
-  // Device icons with labels below (DRILL, HBW, MILL, AIQS, DPS, CHRG as per screenshot)
+  // Device icons with labels below (DRILL, HBW, MILL, AIQS, DPS, CHRG) using shopfloor/*.svg
   const deviceStartX = LAYOUT.CONTENT_START_X + 330;
-  const deviceWidth = 75;
-  const deviceGap = 15;
-  const deviceY = LAYOUT.SHOPFLOOR_Y + 40;
+  const deviceWidth = 80;
+  const deviceGap = 10;
+  const deviceY = shopfloorGroupY + 15;
+  const deviceHeight = 110;
 
   const deviceConfigs = [
-    { iconKey: 'device-plc' as IconKey, label: 'DRILL' },
-    { iconKey: 'device-conveyor' as IconKey, label: 'HBW' },
-    { iconKey: 'device-sensor' as IconKey, label: 'MILL' },
-    { iconKey: 'device-camera' as IconKey, label: 'AIQS' },
-    { iconKey: 'device-robot-arm' as IconKey, label: 'DPS' },
-    { iconKey: 'device-printer' as IconKey, label: 'CHRG' },
+    { iconKey: 'device-drill' as IconKey, label: 'DRILL' },
+    { iconKey: 'device-hbw' as IconKey, label: 'HBW' },
+    { iconKey: 'device-mill' as IconKey, label: 'MILL' },
+    { iconKey: 'device-aiqs' as IconKey, label: 'AIQS' },
+    { iconKey: 'device-dps' as IconKey, label: 'DPS' },
+    { iconKey: 'device-chrg' as IconKey, label: 'CHRG' },
   ];
 
   deviceConfigs.forEach((config, index) => {
@@ -333,7 +347,7 @@ export function createDefaultContainers(): ContainerConfig[] {
       x: deviceStartX + (deviceWidth + deviceGap) * index,
       y: deviceY,
       width: deviceWidth,
-      height: 90,
+      height: deviceHeight,
       type: 'device',
       state: 'normal',
       logoIconKey: config.iconKey,
@@ -348,6 +362,7 @@ export function createDefaultContainers(): ContainerConfig[] {
 
 /**
  * Default connections between containers.
+ * All arrows are bidirectional as per requirements.
  */
 export function createDefaultConnections(): ConnectionConfig[] {
   return [
@@ -435,11 +450,21 @@ export function createDefaultConnections(): ConnectionConfig[] {
       bidirectional: true,
     },
 
-    // Edge to shopfloor systems
+    // Edge to shopfloor system icons (not to group - arrows go to individual icons)
     {
-      id: 'conn-edge-systems',
+      id: 'conn-edge-system-bp',
       fromId: 'edge',
-      toId: 'shopfloor-systems-group',
+      toId: 'shopfloor-system-bp',
+      fromSide: 'bottom',
+      toSide: 'top',
+      state: 'hidden',
+      hasArrow: true,
+      bidirectional: true,
+    },
+    {
+      id: 'conn-edge-system-fts',
+      fromId: 'edge',
+      toId: 'shopfloor-system-fts',
       fromSide: 'bottom',
       toSide: 'top',
       state: 'hidden',
@@ -447,7 +472,7 @@ export function createDefaultConnections(): ConnectionConfig[] {
       bidirectional: true,
     },
 
-    // Business to DSP connections
+    // Business to DSP connections (all bidirectional)
     {
       id: 'conn-sap-edge',
       fromId: 'bp-sap-shopfloor',
@@ -466,6 +491,7 @@ export function createDefaultConnections(): ConnectionConfig[] {
       toSide: 'top',
       state: 'hidden',
       hasArrow: true,
+      bidirectional: true,  // All bidirectional now
     },
     {
       id: 'conn-analytics-edge',
@@ -475,6 +501,7 @@ export function createDefaultConnections(): ConnectionConfig[] {
       toSide: 'top',
       state: 'hidden',
       hasArrow: true,
+      bidirectional: true,  // All bidirectional now
     },
     {
       id: 'conn-datalake-edge',
@@ -484,6 +511,7 @@ export function createDefaultConnections(): ConnectionConfig[] {
       toSide: 'top',
       state: 'hidden',
       hasArrow: true,
+      bidirectional: true,  // All bidirectional now
     },
   ];
 }
@@ -615,7 +643,8 @@ export function createDefaultSteps(): StepConfig[] {
       ],
       highlightedContainerIds: [],
       visibleConnectionIds: [
-        'conn-edge-systems',
+        'conn-edge-system-bp',
+        'conn-edge-system-fts',
         'conn-edge-device-1',
         'conn-edge-device-2',
         'conn-edge-device-3',
@@ -624,7 +653,8 @@ export function createDefaultSteps(): StepConfig[] {
         'conn-edge-device-6',
       ],
       highlightedConnectionIds: [
-        'conn-edge-systems',
+        'conn-edge-system-bp',
+        'conn-edge-system-fts',
         'conn-edge-device-1',
         'conn-edge-device-2',
         'conn-edge-device-3',
@@ -661,7 +691,8 @@ export function createDefaultSteps(): StepConfig[] {
       visibleConnectionIds: [
         'conn-ux-edge',
         'conn-edge-management',
-        'conn-edge-systems',
+        'conn-edge-system-bp',
+        'conn-edge-system-fts',
         'conn-edge-device-1',
         'conn-edge-device-2',
         'conn-edge-device-3',
@@ -702,7 +733,8 @@ export function createDefaultSteps(): StepConfig[] {
         'conn-ux-edge',
         'conn-edge-management',
         'conn-sap-edge',
-        'conn-edge-systems',
+        'conn-edge-system-bp',
+        'conn-edge-system-fts',
         'conn-edge-device-1',
         'conn-edge-device-2',
         'conn-edge-device-3',
@@ -713,7 +745,7 @@ export function createDefaultSteps(): StepConfig[] {
       highlightedConnectionIds: ['conn-sap-edge'],
     },
 
-    // Step 8: All remaining BP components
+    // Step 8: All remaining BP components - NO HIGHLIGHTING at end of animation
     {
       id: 'step-8',
       label: '',
@@ -741,7 +773,7 @@ export function createDefaultSteps(): StepConfig[] {
         'shopfloor-device-5',
         'shopfloor-device-6',
       ],
-      highlightedContainerIds: ['bp-cloud-apps', 'bp-analytics', 'bp-data-lake'],
+      highlightedContainerIds: [],  // No highlighting at end
       visibleConnectionIds: [
         'conn-ux-edge',
         'conn-edge-management',
@@ -749,7 +781,8 @@ export function createDefaultSteps(): StepConfig[] {
         'conn-cloud-edge',
         'conn-analytics-edge',
         'conn-datalake-edge',
-        'conn-edge-systems',
+        'conn-edge-system-bp',
+        'conn-edge-system-fts',
         'conn-edge-device-1',
         'conn-edge-device-2',
         'conn-edge-device-3',
@@ -757,7 +790,7 @@ export function createDefaultSteps(): StepConfig[] {
         'conn-edge-device-5',
         'conn-edge-device-6',
       ],
-      highlightedConnectionIds: ['conn-cloud-edge', 'conn-analytics-edge', 'conn-datalake-edge'],
+      highlightedConnectionIds: [],  // No highlighting at end
     },
   ];
 }

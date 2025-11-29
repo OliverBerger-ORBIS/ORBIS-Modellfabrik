@@ -75,11 +75,12 @@ export class DspArchitectureComponent implements OnInit, OnDestroy {
   protected readonly subtitle = $localize`:@@dspArchSubtitle:Referenzarchitektur`;
   protected readonly labelBusinessProcesses = $localize`:@@dspArchLabelBusiness:Business\nProzesse`;
   protected readonly labelDsp = $localize`:@@dspArchLabelDsp:DSP`;
-  protected readonly labelShopfloor = $localize`:@@dspArchLabelShopfloor:Shopfloor\nSysteme und\nGeräte`;
+  protected readonly labelShopfloor = $localize`:@@dspArchLabelShopfloor:Shopfloor`;  // Changed: no "Systeme und Geräte"
   protected readonly labelOnPremise = $localize`:@@dspArchLabelOnPremise:On Premise`;
   protected readonly labelCloud = $localize`:@@dspArchLabelCloud:Cloud`;
-  protected readonly labelDevices = $localize`:@@dspArchLabelDevices:Geräte`;
-  protected readonly labelShopfloorSystems = $localize`:@@dspArchLabelShopfloorSystems:Shopfloor Systeme`;
+  protected readonly labelDevices = $localize`:@@dspArchLabelDevices:Geräte`;  // Label at bottom, centered
+  protected readonly labelSystems = $localize`:@@dspArchLabelSystems:Systeme`;  // Label at bottom, centered
+  protected readonly labelSmartfactoryDashboard = $localize`:@@dspArchLabelUX:Smartfactory\nDashboard`;  // Two-line label
   protected readonly btnPrev = $localize`:@@dspArchPrev:Zurück`;
   protected readonly btnNext = $localize`:@@dspArchNext:Weiter`;
   protected readonly btnAutoPlay = $localize`:@@dspArchAutoPlay:Auto Play`;
@@ -150,8 +151,9 @@ export class DspArchitectureComponent implements OnInit, OnDestroy {
     this.containerLabels['layer-shopfloor'] = this.labelShopfloor;
     this.containerLabels['dsp-label-onpremise'] = this.labelOnPremise;
     this.containerLabels['dsp-label-cloud'] = this.labelCloud;
-    this.containerLabels['shopfloor-systems-group'] = this.labelShopfloorSystems;
-    this.containerLabels['shopfloor-devices-group'] = this.labelDevices;
+    this.containerLabels['shopfloor-systems-group'] = this.labelSystems;  // Label at bottom
+    this.containerLabels['shopfloor-devices-group'] = this.labelDevices;  // Label at bottom
+    this.containerLabels['ux'] = this.labelSmartfactoryDashboard;  // Two-line label
   }
 
   /**

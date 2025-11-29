@@ -16,6 +16,7 @@ export type IconKey =
   | 'logo-sap'
   | 'logo-azure'
   | 'logo-dsp'
+  | 'logo-distributed'
   // Edge function icons
   | 'edge-connectivity'
   | 'edge-digital-twin'
@@ -23,7 +24,13 @@ export type IconKey =
   | 'edge-analytics'
   | 'edge-workflow'
   | 'edge-network'
-  // Device icons
+  // Device icons (using shopfloor/*.svg)
+  | 'device-drill'
+  | 'device-hbw'
+  | 'device-mill'
+  | 'device-aiqs'
+  | 'device-dps'
+  | 'device-chrg'
   | 'device-plc'
   | 'device-robot-arm'
   | 'device-conveyor'
@@ -32,10 +39,12 @@ export type IconKey =
   | 'device-printer'
   // Shopfloor system icons
   | 'shopfloor-systems'
+  | 'shopfloor-fts'
   | 'shopfloor-mes'
   | 'shopfloor-scada'
   | 'shopfloor-aps'
   | 'shopfloor-warehouse'
+  | 'shopfloor-it'
   // UX icons
   | 'ux-dashboard'
   | 'ux-monitor'
@@ -65,6 +74,7 @@ export const ICON_MAP: Record<IconKey, string> = {
   'logo-azure': 'details/dsp/azure.svg',
   // DSP uses ORBIS logo as DSP is an ORBIS product; can be swapped to dedicated DSP logo later
   'logo-dsp': 'shopfloor/ORBIS_logo_RGB.svg',
+  'logo-distributed': 'details/orbis/distributed.svg',
 
   // Edge function icons
   'edge-connectivity': 'details/dsp/network.svg',
@@ -74,7 +84,13 @@ export const ICON_MAP: Record<IconKey, string> = {
   'edge-workflow': 'details/dsp/workflow.svg',
   'edge-network': 'details/dsp/network.svg',
 
-  // Device icons
+  // Device icons (using shopfloor/*.svg as specified)
+  'device-drill': 'shopfloor/bohrer.svg',
+  'device-hbw': 'shopfloor/warehouse.svg',
+  'device-mill': 'shopfloor/milling-machine.svg',
+  'device-aiqs': 'shopfloor/ai-assistant.svg',
+  'device-dps': 'shopfloor/robotic.svg',
+  'device-chrg': 'shopfloor/fuel.svg',
   'device-plc': 'shopfloor/information-technology.svg',
   'device-robot-arm': 'shopfloor/robot-arm.svg',
   'device-conveyor': 'shopfloor/conveyor.svg',
@@ -84,13 +100,15 @@ export const ICON_MAP: Record<IconKey, string> = {
 
   // Shopfloor system icons
   'shopfloor-systems': 'shopfloor/factory.svg',
+  'shopfloor-fts': 'shopfloor/conveyor.svg',
   'shopfloor-mes': 'shopfloor/information-technology.svg',
   'shopfloor-scada': 'shopfloor/information-technology.svg',
   'shopfloor-aps': 'shopfloor/order-tracking.svg',
   'shopfloor-warehouse': 'shopfloor/warehouse.svg',
+  'shopfloor-it': 'shopfloor/information-technology.svg',
 
   // UX icons
-  'ux-dashboard': 'details/orbis/dashboard.svg',
+  'ux-dashboard': 'details/dsp/dashboard.svg',
   'ux-monitor': 'details/orbis/work.svg',
 
   // Business process icons
