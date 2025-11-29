@@ -251,11 +251,19 @@
         width: 20px;
         height: 20px;
         transition: transform 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
 
+        // CSS-based chevron icon for better accessibility
         &::before {
-          content: '▼';
-          font-size: 0.75rem;
-          color: #7f8da5;
+          content: '';
+          width: 8px;
+          height: 8px;
+          border: solid #7f8da5;
+          border-width: 0 2px 2px 0;
+          transform: rotate(45deg);
+          margin-top: -2px;
         }
       }
     }

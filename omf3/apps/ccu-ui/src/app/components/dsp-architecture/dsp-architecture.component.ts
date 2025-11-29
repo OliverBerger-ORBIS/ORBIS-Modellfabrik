@@ -9,7 +9,7 @@ import {
   OnInit,
   Output,
 } from '@angular/core';
-import type { DspDetailView } from '../../tabs/configuration-detail.types';
+import type { DspDetailView, DspArchitectureLayer } from '../../tabs/configuration-detail.types';
 import { getIconPath, type IconKey } from '../../assets/icon-registry';
 import type {
   ContainerConfig,
@@ -281,6 +281,17 @@ export class DspArchitectureComponent implements OnInit, OnDestroy {
       default:
         return 'middle';
     }
+  }
+
+  // Layer IDs that should use larger fonts (18px vs 14px)
+  protected readonly largerFontLayerIds = new Set(['layer-business', 'layer-dsp']);
+
+  /**
+   * Get font size for layer labels.
+   * Business Process and DSP layers use 18px, others use 14px.
+   */
+  protected getLayerFontSize(containerId: string): number {
+    return this.largerFontLayerIds.has(containerId) ? 18 : 14;
   }
 
   /**
@@ -634,7 +645,7 @@ export class DspArchitectureComponent implements OnInit, OnDestroy {
   /**
    * Get architecture layer by ID.
    */
-  protected getLayerById(layerId: string) {
+  protected getLayerById(layerId: string): DspArchitectureLayer | undefined {
     return this.view.architecture.find((layer) => layer.id === layerId);
   }
 

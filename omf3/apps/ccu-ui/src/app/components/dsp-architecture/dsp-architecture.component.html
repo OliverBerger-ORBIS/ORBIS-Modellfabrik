@@ -115,14 +115,14 @@
               ry="0"
               class="layer__bg"
             />
-            <!-- Layer label (left side, vertically centered, multi-line support) - increased font size for BP and DSP layers -->
+            <!-- Layer label (left side, vertically centered, multi-line support) - uses helper method for font size -->
             <text
               *ngIf="getContainerLabel(container.id)"
               [attr.x]="20"
               [attr.y]="container.height / 2 - 10"
               text-anchor="start"
               dominant-baseline="middle"
-              [attr.font-size]="container.id === 'layer-business' || container.id === 'layer-dsp' ? 18 : 14"
+              [attr.font-size]="getLayerFontSize(container.id)"
               font-weight="600"
               fill="#1e2d3d"
               class="layer__label"
