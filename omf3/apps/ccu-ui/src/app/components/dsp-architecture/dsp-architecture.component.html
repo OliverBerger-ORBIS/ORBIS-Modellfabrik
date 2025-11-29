@@ -1,0 +1,242 @@
+<div class="dsp-architecture">
+  <!-- Header with title and zoom controls -->
+  <header class="dsp-architecture__header">
+    <div class="header__title">
+      <h2>{{ title }}</h2>
+      <p class="subtitle">{{ subtitle }}</p>
+    </div>
+    <div class="header__zoom">
+      <button
+        type="button"
+        class="zoom-btn"
+        (click)="zoomOut()"
+        [disabled]="zoom <= minZoom"
+        title="Zoom out"
+        aria-label="Zoom out"
+      >
+        −
+      </button>
+      <span class="zoom-level">{{ (zoom * 100) | number:'1.0-0' }}%</span>
+      <button
+        type="button"
+        class="zoom-btn"
+        (click)="zoomIn()"
+        [disabled]="zoom >= maxZoom"
+        title="Zoom in"
+        aria-label="Zoom in"
+      >
+        +
+      </button>
+      <button
+        type="button"
+        class="zoom-btn zoom-btn--reset"
+        (click)="resetZoom()"
+        title="Reset zoom"
+        aria-label="Reset zoom"
+      >
+        ↺
+      </button>
+    </div>
+  </header>
+
+  <!-- SVG Diagram -->
+  <div class="dsp-architecture__diagram" [style.transform]="'scale(' + zoom + ')'">
+    <svg
+      [attr.viewBox]="'0 0 ' + viewBoxWidth + ' ' + viewBoxHeight"
+      preserveAspectRatio="xMidYMid meet"
+      class="diagram-svg"
+      role="img"
+      [attr.aria-label]="title"
+    >
+      <!-- Defs for markers (arrows) -->
+      <defs>
+        <marker
+          id="arrow-head"
+          markerWidth="10"
+          markerHeight="7"
+          refX="9"
+          refY="3.5"
+          orient="auto"
+          markerUnits="strokeWidth"
+        >
+          <polygon points="0 0, 10 3.5, 0 7" fill="#7f8da5" />
+        </marker>
+        <marker
+          id="arrow-head-highlight"
+          markerWidth="10"
+          markerHeight="7"
+          refX="9"
+          refY="3.5"
+          orient="auto"
+          markerUnits="strokeWidth"
+        >
+          <polygon points="0 0, 10 3.5, 0 7" fill="#ff9900" />
+        </marker>
+        <marker
+          id="arrow-head-reverse"
+          markerWidth="10"
+          markerHeight="7"
+          refX="1"
+          refY="3.5"
+          orient="auto"
+          markerUnits="strokeWidth"
+        >
+          <polygon points="10 0, 0 3.5, 10 7" fill="#7f8da5" />
+        </marker>
+      </defs>
+
+      <!-- Connections (drawn first, below containers) -->
+      <g class="connections">
+        <ng-container *ngFor="let conn of connections; trackBy: connectionTrackBy">
+          <path
+            *ngIf="isConnectionVisible(conn)"
+            [attr.d]="getConnectionPath(conn)"
+            [class]="getConnectionClass(conn)"
+            fill="none"
+            [attr.stroke]="conn.state === 'highlight' ? '#ff9900' : '#7f8da5'"
+            [attr.stroke-width]="conn.state === 'highlight' ? 2.5 : 2"
+            [attr.marker-end]="conn.hasArrow ? (conn.state === 'highlight' ? 'url(#arrow-head-highlight)' : 'url(#arrow-head)') : null"
+            [attr.marker-start]="conn.bidirectional ? 'url(#arrow-head-reverse)' : null"
+          />
+        </ng-container>
+      </g>
+
+      <!-- Containers -->
+      <g class="containers">
+        <ng-container *ngFor="let container of containers; trackBy: containerTrackBy">
+          <g
+            *ngIf="isContainerVisible(container)"
+            [class]="getContainerClass(container)"
+            [attr.transform]="'translate(' + container.x + ',' + container.y + ')'"
+            (click)="onContainerClick(container)"
+            (keydown)="onContainerKeydown($event, container)"
+            [attr.tabindex]="container.type !== 'label' && container.type !== 'layer' ? 0 : null"
+            [attr.role]="container.type !== 'label' && container.type !== 'layer' ? 'button' : null"
+          >
+            <!-- Container background -->
+            <rect
+              *ngIf="container.type !== 'label'"
+              [attr.width]="container.width"
+              [attr.height]="container.height"
+              [attr.fill]="getContainerFill(container)"
+              [attr.stroke]="getContainerStroke(container)"
+              [attr.stroke-width]="getContainerStrokeWidth(container)"
+              [attr.rx]="container.isGroup ? 16 : 12"
+              [attr.ry]="container.isGroup ? 16 : 12"
+              class="container__bg"
+            />
+
+            <!-- Logo (top-left) -->
+            <image
+              *ngIf="container.logoIconKey && container.logoPosition !== 'top-right'"
+              [attr.href]="resolveIconPath(container.logoIconKey)"
+              [attr.x]="8"
+              [attr.y]="8"
+              width="32"
+              height="32"
+              class="container__logo"
+            />
+
+            <!-- Secondary Logo (top-right) -->
+            <image
+              *ngIf="container.secondaryLogoIconKey"
+              [attr.href]="resolveIconPath(container.secondaryLogoIconKey)"
+              [attr.x]="container.width - 40"
+              [attr.y]="8"
+              width="32"
+              height="32"
+              class="container__logo container__logo--secondary"
+            />
+
+            <!-- Function Icons (centered) -->
+            <g
+              *ngIf="container.functionIcons && container.functionIcons.length > 0"
+              class="container__icons"
+            >
+              <ng-container *ngFor="let icon of container.functionIcons; let i = index; trackBy: iconTrackBy">
+                <image
+                  [attr.href]="resolveIconPath(icon.iconKey)"
+                  [attr.x]="(container.width / 2) - ((container.functionIcons!.length * (icon.size + 10)) / 2) + (i * (icon.size + 10)) + 5"
+                  [attr.y]="(container.height / 2) - (icon.size / 2) + 10"
+                  [attr.width]="icon.size"
+                  [attr.height]="icon.size"
+                  class="container__function-icon"
+                />
+              </ng-container>
+            </g>
+
+            <!-- UX Icon (for ux type containers) -->
+            <image
+              *ngIf="container.type === 'ux' && container.logoIconKey"
+              [attr.href]="resolveIconPath(container.logoIconKey)"
+              [attr.x]="(container.width - 60) / 2"
+              [attr.y]="10"
+              width="60"
+              height="60"
+              class="container__ux-icon"
+            />
+
+            <!-- Label -->
+            <text
+              *ngIf="getContainerLabel(container.id)"
+              [attr.x]="container.width / 2"
+              [attr.y]="container.type === 'label' ? 14 : (container.functionIcons?.length ? container.height - 15 : container.height / 2 + 5)"
+              text-anchor="middle"
+              [attr.font-size]="container.fontSize || 14"
+              [attr.fill]="container.textColor || '#1e2d3d'"
+              [attr.font-weight]="container.type === 'label' ? 600 : 500"
+              class="container__label"
+            >
+              {{ getContainerLabel(container.id) }}
+            </text>
+          </g>
+        </ng-container>
+      </g>
+    </svg>
+  </div>
+
+  <!-- Navigation Controls -->
+  <footer class="dsp-architecture__controls">
+    <div class="controls__step-indicator">
+      <span class="step-label">{{ steps[currentStepIndex].label }}</span>
+      <span class="step-count">({{ currentStepIndex + 1 }} / {{ steps.length }})</span>
+    </div>
+    <div class="controls__buttons">
+      <button
+        type="button"
+        class="nav-btn"
+        (click)="prevStep()"
+        [disabled]="currentStepIndex === 0"
+      >
+        {{ btnPrev }}
+      </button>
+      <button
+        type="button"
+        class="nav-btn nav-btn--primary"
+        (click)="toggleAutoPlay()"
+      >
+        {{ isAutoPlaying ? btnStopPlay : btnAutoPlay }}
+      </button>
+      <button
+        type="button"
+        class="nav-btn"
+        (click)="nextStep()"
+        [disabled]="currentStepIndex === steps.length - 1"
+      >
+        {{ btnNext }}
+      </button>
+    </div>
+    <div class="controls__step-dots">
+      <button
+        *ngFor="let step of steps; let i = index"
+        type="button"
+        class="step-dot"
+        [class.step-dot--active]="i === currentStepIndex"
+        [class.step-dot--completed]="i < currentStepIndex"
+        (click)="goToStep(i)"
+        [attr.aria-label]="step.label"
+        [attr.title]="step.label"
+      ></button>
+    </div>
+  </footer>
+</div>

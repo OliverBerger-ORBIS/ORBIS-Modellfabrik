@@ -61,11 +61,20 @@
         (useCaseToggled)="toggleOrbisUseCase($event)"
       ></app-orbis-detail>
 
+      <!-- New animated SVG-based architecture component (default) -->
+      <app-dsp-architecture
+        *ngIf="panel.kind === 'dsp'"
+        [view]="panel.view"
+        (actionTriggered)="openExternalLink($event.url)"
+      ></app-dsp-architecture>
+
+      <!-- Legacy component (kept as fallback, uncomment to use):
       <app-dsp-detail
         *ngIf="panel.kind === 'dsp'"
         [view]="panel.view"
         (actionTriggered)="openExternalLink($event.url)"
       ></app-dsp-detail>
+      -->
     </section>
   </section>
 

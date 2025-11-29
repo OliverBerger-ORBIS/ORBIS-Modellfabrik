@@ -13,6 +13,7 @@ import { ConnectionService } from '../services/connection.service';
 import { ShopfloorPreviewComponent } from '../components/shopfloor-preview/shopfloor-preview.component';
 import { OrbisDetailComponent } from '../components/orbis-detail/orbis-detail.component';
 import { DspDetailComponent } from '../components/dsp-detail/dsp-detail.component';
+import { DspArchitectureComponent } from '../components/dsp-architecture/dsp-architecture.component';
 import type { ShopfloorLayoutConfig, ShopfloorCellConfig } from '../components/shopfloor-preview/shopfloor-layout.types';
 import { ExternalLinksService, type ExternalLinksSettings } from '../services/external-links.service';
 import {
@@ -79,7 +80,7 @@ interface ConfigurationViewModel {
 @Component({
   standalone: true,
   selector: 'app-configuration-tab',
-  imports: [CommonModule, ShopfloorPreviewComponent, OrbisDetailComponent, DspDetailComponent],
+  imports: [CommonModule, ShopfloorPreviewComponent, OrbisDetailComponent, DspDetailComponent, DspArchitectureComponent],
   templateUrl: './configuration-tab.component.html',
   styleUrl: './configuration-tab.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
