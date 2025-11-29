@@ -10,15 +10,13 @@ import {
   Output,
 } from '@angular/core';
 import type { DspDetailView } from '../../tabs/configuration-detail.types';
-import { DETAIL_ASSET_MAP } from '../../assets/detail-asset-map';
+import { getIconPath, type IconKey } from '../../assets/icon-registry';
 import type {
   ContainerConfig,
   ConnectionConfig,
   StepConfig,
   Point,
   AnchorSide,
-  ContainerState,
-  ConnectionState,
 } from './dsp-architecture.types';
 import {
   createDiagramConfig,
@@ -380,12 +378,10 @@ export class DspArchitectureComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Resolve icon key to asset path.
+   * Resolve icon key to asset path using the icon registry.
    */
-  protected resolveIconPath(iconKey: string | undefined): string {
-    if (!iconKey) return '';
-    const path = DETAIL_ASSET_MAP[iconKey as keyof typeof DETAIL_ASSET_MAP];
-    return path ? (path.startsWith('/') ? path.slice(1) : path) : '';
+  protected resolveIconPath(iconKey: IconKey | undefined): string {
+    return getIconPath(iconKey);
   }
 
   /**

@@ -3,6 +3,7 @@
  * Defines default containers, connections, and animation steps based on PowerPoint reference.
  */
 import type { ContainerConfig, ConnectionConfig, StepConfig, DiagramConfig } from './dsp-architecture.types';
+import type { IconKey } from '../../assets/icon-registry';
 
 /** SVG viewBox dimensions */
 export const VIEWBOX_WIDTH = 1200;
@@ -130,7 +131,7 @@ export function createDefaultContainers(): ContainerConfig[] {
     height: 100,
     type: 'ux',
     state: 'hidden',
-    logoIconKey: 'DSP_UX_MONITOR',
+    logoIconKey: 'ux-monitor' as IconKey,
     borderColor: 'rgba(31, 84, 178, 0.3)',
     backgroundColor: '#ffffff',
   });
@@ -145,15 +146,15 @@ export function createDefaultContainers(): ContainerConfig[] {
     height: LAYOUT.DSP_BOX_HEIGHT,
     type: 'dsp-edge',
     state: 'hidden',
-    logoIconKey: 'DSP_LOGO_ORBIS',
+    logoIconKey: 'logo-dsp' as IconKey,
     logoPosition: 'top-left',
     borderColor: '#009B77',
     backgroundColor: 'rgba(0, 155, 119, 0.03)',
     functionIcons: [
-      { iconKey: 'DSP_EDGE_DATABASE', size: 40 },
-      { iconKey: 'DSP_EDGE_DIGITAL_TWIN', size: 40 },
-      { iconKey: 'DSP_EDGE_NETWORK', size: 40 },
-      { iconKey: 'DSP_EDGE_WORKFLOW', size: 40 },
+      { iconKey: 'edge-data-storage' as IconKey, size: 40 },
+      { iconKey: 'edge-digital-twin' as IconKey, size: 40 },
+      { iconKey: 'edge-network' as IconKey, size: 40 },
+      { iconKey: 'edge-workflow' as IconKey, size: 40 },
     ],
   });
 
@@ -167,9 +168,9 @@ export function createDefaultContainers(): ContainerConfig[] {
     height: LAYOUT.DSP_BOX_HEIGHT,
     type: 'dsp-cloud',
     state: 'hidden',
-    logoIconKey: 'DSP_LOGO_ORBIS',
+    logoIconKey: 'logo-dsp' as IconKey,
     logoPosition: 'top-left',
-    secondaryLogoIconKey: 'DSP_LOGO_AZURE',
+    secondaryLogoIconKey: 'logo-azure' as IconKey,
     secondaryLogoPosition: 'top-right',
     borderColor: '#0078D4',
     backgroundColor: 'rgba(0, 120, 212, 0.03)',
@@ -189,7 +190,7 @@ export function createDefaultContainers(): ContainerConfig[] {
     height: LAYOUT.BUSINESS_BOX_HEIGHT,
     type: 'business',
     state: 'hidden',
-    logoIconKey: 'DSP_BUSINESS_SAP',
+    logoIconKey: 'bp-sap-shopfloor' as IconKey,
     logoPosition: 'top-left',
     borderColor: 'rgba(31, 84, 178, 0.25)',
     backgroundColor: '#fdfefe',
@@ -267,8 +268,9 @@ export function createDefaultContainers(): ContainerConfig[] {
   const deviceWidth = 60;
   const deviceGap = 15;
 
-  const deviceIcons = ['device-plc', 'device-plc-2', 'device-scanner', 'device-printer'];
-  deviceIcons.forEach((iconId, index) => {
+  // Use valid IconKeys from icon-registry
+  const deviceIconKeys: IconKey[] = ['device-plc', 'device-conveyor', 'device-sensor', 'device-printer'];
+  deviceIconKeys.forEach((iconKey, index) => {
     containers.push({
       id: `shopfloor-device-${index + 1}`,
       x: deviceStartX + (deviceWidth + deviceGap) * index,
@@ -277,7 +279,7 @@ export function createDefaultContainers(): ContainerConfig[] {
       height: 60,
       type: 'device',
       state: 'normal',
-      logoIconKey: `SHOPFLOOR_${iconId.toUpperCase().replace('-', '_')}`,
+      logoIconKey: iconKey,
       borderColor: 'rgba(31, 84, 178, 0.2)',
       backgroundColor: '#ffffff',
     });

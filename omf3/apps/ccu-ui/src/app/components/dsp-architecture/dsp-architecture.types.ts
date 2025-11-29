@@ -2,6 +2,7 @@
  * Type definitions for the DSP Architecture SVG component.
  * These types define the data structures for containers, connections, and animation steps.
  */
+import type { IconKey } from '../../assets/icon-registry';
 
 /** Position for logo icons within a container */
 export type LogoPosition = 'top-left' | 'top-right';
@@ -22,7 +23,7 @@ export type ContainerType = 'layer' | 'box' | 'device' | 'ux' | 'business' | 'sh
  * Configuration for function icons displayed inside containers.
  */
 export interface FunctionIconConfig {
-  iconKey: string;
+  iconKey: IconKey;
   size: number;
 }
 
@@ -38,12 +39,12 @@ export interface ContainerConfig {
   height: number;
   type: ContainerType;
 
-  /** Optional logo icon key (from DETAIL_ASSET_MAP) */
-  logoIconKey?: string;
+  /** Optional logo icon key (from icon-registry) */
+  logoIconKey?: IconKey;
   /** Position of the logo within the container */
   logoPosition?: LogoPosition;
-  /** Optional secondary logo (e.g., Azure logo) */
-  secondaryLogoIconKey?: string;
+  /** Optional secondary logo (e.g., Azure logo) from icon-registry */
+  secondaryLogoIconKey?: IconKey;
   /** Position of the secondary logo */
   secondaryLogoPosition?: LogoPosition;
 
