@@ -145,7 +145,7 @@ export function createDefaultContainers(): ContainerConfig[] {
     height: LAYOUT.DSP_BOX_HEIGHT,
     type: 'ux',
     state: 'hidden',
-    logoIconKey: 'ux-dashboard' as IconKey,  // dsp/dashboard.svg
+    logoIconKey: 'ux-dashboard' as IconKey,  // dsp/dashboard.svg - now centered like Edge
     borderColor: 'rgba(31, 84, 178, 0.3)',
     backgroundColor: '#ffffff',
     labelPosition: 'top-center',
@@ -178,7 +178,7 @@ export function createDefaultContainers(): ContainerConfig[] {
     url: '/edge',  // Default URL for DSP Edge
   });
 
-  // ========== DSP MANAGEMENT COCKPIT BOX - Azure icon top-right, 2 function icons ==========
+  // ========== DSP MANAGEMENT COCKPIT BOX - ORBIS logo top-left like Edge, Azure icon top-right, 2 function icons ==========
   containers.push({
     id: 'management',
     label: '',  // "Management Cockpit" - label at top center
@@ -188,7 +188,7 @@ export function createDefaultContainers(): ContainerConfig[] {
     height: LAYOUT.DSP_BOX_HEIGHT,
     type: 'dsp-cloud',
     state: 'hidden',
-    logoIconKey: 'logo-distributed' as IconKey,  // orbis/distributed.svg - top-left
+    logoIconKey: 'logo-dsp' as IconKey,  // ORBIS logo - top-left like Edge
     logoPosition: 'top-left',
     secondaryLogoIconKey: 'logo-azure' as IconKey,  // Azure logo - top-right corner
     secondaryLogoPosition: 'top-right',
@@ -197,8 +197,8 @@ export function createDefaultContainers(): ContainerConfig[] {
     labelPosition: 'top-center',
     fontSize: 16,  // Increased font size for DSP layer
     functionIcons: [
-      { iconKey: 'shopfloor-it' as IconKey, size: 50 },  // Information technology icon
-      { iconKey: 'bp-analytics' as IconKey, size: 50 },  // Analytics icon
+      { iconKey: 'logo-distributed' as IconKey, size: 60 },  // distributed.svg icon - larger
+      { iconKey: 'shopfloor-it' as IconKey, size: 60 },  // Information technology icon - larger
     ],
     url: '/management-cockpit',  // Default URL for Management Cockpit
   });
@@ -302,7 +302,7 @@ export function createDefaultContainers(): ContainerConfig[] {
     borderColor: 'rgba(31, 84, 178, 0.2)',
     backgroundColor: '#ffffff',
     labelPosition: 'bottom-center',
-    fontSize: 14,  // Increased font size
+    fontSize: 18,  // Same font size as DSP and BP layers
   });
 
   // Shopfloor System icons with labels below - larger icons
@@ -356,7 +356,7 @@ export function createDefaultContainers(): ContainerConfig[] {
     borderColor: 'rgba(31, 84, 178, 0.2)',
     backgroundColor: '#ffffff',
     labelPosition: 'bottom-center',
-    fontSize: 14,  // Increased font size
+    fontSize: 18,  // Same font size as DSP and BP layers
   });
 
   // Device icons with labels below (DRILL, HBW, MILL, AIQS, DPS, CHRG) using shopfloor/*.svg

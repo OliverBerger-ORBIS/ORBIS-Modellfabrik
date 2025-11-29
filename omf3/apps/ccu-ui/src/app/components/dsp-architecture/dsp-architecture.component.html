@@ -232,14 +232,14 @@
               </ng-container>
             </g>
 
-            <!-- UX Icon (for ux type containers) -->
+            <!-- UX Icon (for ux type containers) - centered, larger like Shopfloor icons -->
             <image
               *ngIf="container.type === 'ux' && container.logoIconKey"
               [attr.href]="resolveIconPath(container.logoIconKey)"
-              [attr.x]="(container.width - 55) / 2"
-              [attr.y]="15"
-              width="55"
-              height="55"
+              [attr.x]="(container.width - 70) / 2"
+              [attr.y]="(container.height / 2) - 20"
+              width="70"
+              height="70"
               class="container__ux-icon"
             />
 
@@ -279,14 +279,14 @@
               {{ getContainerLabel(container.id) }}
             </text>
 
-            <!-- Business process icon (centered, below label) -->
+            <!-- Business process icon (centered, below label) - larger icons like Shopfloor -->
             <image
               *ngIf="container.type === 'business' && container.logoIconKey && !container.logoPosition"
               [attr.href]="resolveIconPath(container.logoIconKey)"
-              [attr.x]="(container.width - 50) / 2"
+              [attr.x]="(container.width - 70) / 2"
               [attr.y]="35"
-              width="50"
-              height="50"
+              width="70"
+              height="70"
               class="container__bp-icon"
             />
           </g>
