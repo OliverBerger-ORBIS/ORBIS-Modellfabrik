@@ -190,6 +190,14 @@ export class DspArchitectureComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Check if a label is multiline.
+   */
+  protected isMultilineLabel(containerId: string): boolean {
+    const label = this.containerLabels[containerId] || '';
+    return label.includes('\n');
+  }
+
+  /**
    * Get label X position based on labelPosition.
    */
   protected getLabelX(container: ContainerConfig): number {

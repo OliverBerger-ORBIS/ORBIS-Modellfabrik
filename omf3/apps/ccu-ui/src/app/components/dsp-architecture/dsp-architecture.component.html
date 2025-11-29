@@ -231,12 +231,12 @@
               [attr.font-weight]="container.type === 'label' ? 600 : 500"
               class="container__label"
             >
-              <ng-container *ngIf="getContainerLabel(container.id).includes('\\n')">
+              <ng-container *ngIf="isMultilineLabel(container.id)">
                 <ng-container *ngFor="let line of getMultilineLabel(container.id); let i = index">
                   <tspan [attr.x]="getLabelX(container)" [attr.dy]="i === 0 ? '0' : '1.2em'">{{ line }}</tspan>
                 </ng-container>
               </ng-container>
-              <ng-container *ngIf="!getContainerLabel(container.id).includes('\\n')">
+              <ng-container *ngIf="!isMultilineLabel(container.id)">
                 {{ getContainerLabel(container.id) }}
               </ng-container>
             </text>
