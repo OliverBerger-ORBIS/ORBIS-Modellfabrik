@@ -21,7 +21,7 @@ export const LAYOUT = {
 
   // Labels inside layers (left edge)
   LABEL_X: 10,
-  LABEL_WIDTH: 100,
+  LABEL_WIDTH: 90,  // Reduced to allow more content space
 
   // Business Process layer (top - white)
   BUSINESS_Y: 80,
@@ -32,16 +32,16 @@ export const LAYOUT = {
   // Shopfloor layer (bottom - gray)
   SHOPFLOOR_Y: 540,
 
-  // Box dimensions
+  // Box dimensions - increased heights for larger icons
   BUSINESS_BOX_WIDTH: 200,
-  BUSINESS_BOX_HEIGHT: 130,
-  DSP_BOX_HEIGHT: 150,
+  BUSINESS_BOX_HEIGHT: 140,
+  DSP_BOX_HEIGHT: 165,  // Increased for larger icons
 
-  // Margins and spacing (content starts after label area)
-  CONTENT_START_X: 120,
-  MARGIN_RIGHT: 50,
-  CONTENT_WIDTH: 1070,
-  BOX_GAP: 30,
+  // Margins and spacing (content starts after label area) - maximized horizontal space
+  CONTENT_START_X: 100,  // Reduced for more content space
+  MARGIN_RIGHT: 30,
+  CONTENT_WIDTH: 1090,  // Increased content width
+  BOX_GAP: 25,
 };
 
 /**
@@ -105,34 +105,43 @@ export function createDefaultContainers(): ContainerConfig[] {
   containers.push({
     id: 'dsp-label-onpremise',
     label: '',  // "On Premise"
-    x: LAYOUT.CONTENT_START_X + 180,
+    x: LAYOUT.CONTENT_START_X + 200,
     y: LAYOUT.DSP_LAYER_Y + 12,
     width: 100,
     height: 20,
     type: 'label',
     state: 'hidden',
-    fontSize: 12,
+    fontSize: 14,  // Increased font size
   });
 
   containers.push({
     id: 'dsp-label-cloud',
     label: '',  // "Cloud"
-    x: LAYOUT.CONTENT_START_X + 780,
+    x: LAYOUT.CONTENT_START_X + 850,
     y: LAYOUT.DSP_LAYER_Y + 12,
     width: 60,
     height: 20,
     type: 'label',
     state: 'hidden',
-    fontSize: 12,
+    fontSize: 14,  // Increased font size
   });
 
   // ========== DSP UX BOX (Smartfactory Dashboard) - larger box, two-line label ==========
+  // Calculate available width for DSP boxes (maximize horizontal space)
+  const dspAvailableWidth = VIEWBOX_WIDTH - LAYOUT.CONTENT_START_X - LAYOUT.MARGIN_RIGHT;
+  const dspBoxGap = 50;  // Increased gap between boxes for better visibility of arrows
+
+  // UX box width calculated for optimal space usage
+  const uxBoxWidth = 160;
+  const edgeBoxWidth = 480;  // Wider for more icons
+  const managementBoxWidth = dspAvailableWidth - uxBoxWidth - edgeBoxWidth - (dspBoxGap * 2);
+
   containers.push({
     id: 'ux',
     label: '',  // "Smartfactory\nDashboard" - two-line label at top, centered
     x: LAYOUT.CONTENT_START_X,
-    y: LAYOUT.DSP_LAYER_Y + 40,
-    width: 140,
+    y: LAYOUT.DSP_LAYER_Y + 35,
+    width: uxBoxWidth,
     height: LAYOUT.DSP_BOX_HEIGHT,
     type: 'ux',
     state: 'hidden',
@@ -140,17 +149,17 @@ export function createDefaultContainers(): ContainerConfig[] {
     borderColor: 'rgba(31, 84, 178, 0.3)',
     backgroundColor: '#ffffff',
     labelPosition: 'top-center',
+    fontSize: 14,  // Increased font size
     url: '/dashboard',  // Default URL for Smartfactory Dashboard
   });
 
-  // ========== DSP EDGE BOX - equal spacing with other boxes ==========
-  const dspBoxGap = 40;  // Equal spacing between all DSP boxes
+  // ========== DSP EDGE BOX - wider for larger icons ==========
   containers.push({
     id: 'edge',
     label: '',  // "EDGE" - label at top center
-    x: LAYOUT.CONTENT_START_X + 140 + dspBoxGap,
-    y: LAYOUT.DSP_LAYER_Y + 40,
-    width: 420,
+    x: LAYOUT.CONTENT_START_X + uxBoxWidth + dspBoxGap,
+    y: LAYOUT.DSP_LAYER_Y + 35,
+    width: edgeBoxWidth,
     height: LAYOUT.DSP_BOX_HEIGHT,
     type: 'dsp-edge',
     state: 'hidden',
@@ -158,42 +167,44 @@ export function createDefaultContainers(): ContainerConfig[] {
     logoPosition: 'top-left',
     borderColor: '#009B77',
     backgroundColor: 'rgba(255, 255, 255, 0.95)',
-    labelPosition: 'top-center',  // Changed to top-center
+    labelPosition: 'top-center',
+    fontSize: 14,  // Increased font size
     functionIcons: [
-      { iconKey: 'edge-data-storage' as IconKey, size: 40 },
-      { iconKey: 'edge-digital-twin' as IconKey, size: 40 },
-      { iconKey: 'edge-network' as IconKey, size: 40 },
-      { iconKey: 'edge-workflow' as IconKey, size: 40 },
+      { iconKey: 'edge-data-storage' as IconKey, size: 55 },  // Increased icon size
+      { iconKey: 'edge-digital-twin' as IconKey, size: 55 },
+      { iconKey: 'edge-network' as IconKey, size: 55 },
+      { iconKey: 'edge-workflow' as IconKey, size: 55 },
     ],
     url: '/edge',  // Default URL for DSP Edge
   });
 
-  // ========== DSP MANAGEMENT COCKPIT BOX - two icons ==========
+  // ========== DSP MANAGEMENT COCKPIT BOX - Azure icon top-right ==========
   containers.push({
     id: 'management',
     label: '',  // "Management Cockpit" - label at top center
-    x: LAYOUT.CONTENT_START_X + 140 + dspBoxGap + 420 + dspBoxGap,
-    y: LAYOUT.DSP_LAYER_Y + 40,
-    width: 280,
+    x: LAYOUT.CONTENT_START_X + uxBoxWidth + dspBoxGap + edgeBoxWidth + dspBoxGap,
+    y: LAYOUT.DSP_LAYER_Y + 35,
+    width: managementBoxWidth,
     height: LAYOUT.DSP_BOX_HEIGHT,
     type: 'dsp-cloud',
     state: 'hidden',
-    logoIconKey: 'logo-distributed' as IconKey,  // orbis/distributed.svg
+    logoIconKey: 'logo-distributed' as IconKey,  // orbis/distributed.svg - top-left
     logoPosition: 'top-left',
-    secondaryLogoIconKey: 'shopfloor-it' as IconKey,  // shopfloor/information-technology.svg
+    secondaryLogoIconKey: 'logo-azure' as IconKey,  // Azure logo - top-right corner
     secondaryLogoPosition: 'top-right',
     borderColor: '#0078D4',
     backgroundColor: 'rgba(255, 255, 255, 0.95)',
-    labelPosition: 'top-center',  // Changed to top-center
+    labelPosition: 'top-center',
+    fontSize: 14,  // Increased font size
     url: '/management-cockpit',  // Default URL for Management Cockpit
   });
 
   // ========== BUSINESS PROCESSES (equal-sized boxes, labels at top centered, with icons) ==========
-  const businessAvailableWidth = VIEWBOX_WIDTH - LAYOUT.CONTENT_START_X - 30;
+  const businessAvailableWidth = VIEWBOX_WIDTH - LAYOUT.CONTENT_START_X - LAYOUT.MARGIN_RIGHT;
   const businessBoxCount = 4;
-  const businessGap = 20;
+  const businessGap = 30;  // Increased gap for better visibility
   const businessBoxWidth = (businessAvailableWidth - (businessBoxCount - 1) * businessGap) / businessBoxCount;
-  const businessBoxY = LAYOUT.BUSINESS_Y + 50;
+  const businessBoxY = LAYOUT.BUSINESS_Y + 45;
   const businessStartX = LAYOUT.CONTENT_START_X;
 
   containers.push({
@@ -210,6 +221,7 @@ export function createDefaultContainers(): ContainerConfig[] {
     borderColor: 'rgba(31, 84, 178, 0.25)',
     backgroundColor: '#ffffff',
     labelPosition: 'top-center',
+    fontSize: 14,  // Increased font size
   });
 
   containers.push({
@@ -225,6 +237,7 @@ export function createDefaultContainers(): ContainerConfig[] {
     borderColor: 'rgba(31, 84, 178, 0.25)',
     backgroundColor: '#ffffff',
     labelPosition: 'top-center',
+    fontSize: 14,  // Increased font size
   });
 
   containers.push({
@@ -240,6 +253,7 @@ export function createDefaultContainers(): ContainerConfig[] {
     borderColor: 'rgba(31, 84, 178, 0.25)',
     backgroundColor: '#ffffff',
     labelPosition: 'top-center',
+    fontSize: 14,  // Increased font size
     url: '/analytics',  // Default URL for Analytische Anwendungen
   });
 
@@ -256,37 +270,47 @@ export function createDefaultContainers(): ContainerConfig[] {
     borderColor: 'rgba(31, 84, 178, 0.25)',
     backgroundColor: '#ffffff',
     labelPosition: 'top-center',
+    fontSize: 14,  // Increased font size
   });
 
   // ========== SHOPFLOOR LAYER CONTENT ==========
 
-  // Shopfloor Systeme container (left) - label at bottom, horizontally centered
-  const shopfloorGroupHeight = 170;
-  const shopfloorGroupY = LAYOUT.SHOPFLOOR_Y + 30;
+  // Calculate shopfloor available width (maximize horizontal space)
+  const shopfloorAvailableWidth = VIEWBOX_WIDTH - LAYOUT.CONTENT_START_X - LAYOUT.MARGIN_RIGHT;
+  const shopfloorGap = 40;  // Gap between systems and devices groups
+  const shopfloorGroupHeight = 175;
+  const shopfloorGroupY = LAYOUT.SHOPFLOOR_Y + 28;
+
+  // Systems group takes ~30% of available width
+  const systemsGroupWidth = 300;
+  // Devices group takes remaining width
+  const devicesGroupWidth = shopfloorAvailableWidth - systemsGroupWidth - shopfloorGap;
 
   containers.push({
     id: 'shopfloor-systems-group',
     label: '',  // "Systeme" - label at bottom center
     x: LAYOUT.CONTENT_START_X,
     y: shopfloorGroupY,
-    width: 280,
+    width: systemsGroupWidth,
     height: shopfloorGroupHeight,
     type: 'shopfloor',
     state: 'hidden',
     borderColor: 'rgba(31, 84, 178, 0.2)',
     backgroundColor: '#ffffff',
-    labelPosition: 'bottom-center',  // Changed to bottom-center
+    labelPosition: 'bottom-center',
+    fontSize: 14,  // Increased font size
   });
 
-  // Shopfloor System icons with labels below - arrows should go to these icons
-  const systemIconY = shopfloorGroupY + 20;
-  const systemIconWidth = 90;
-  const systemIconHeight = 100;
+  // Shopfloor System icons with labels below - larger icons
+  const systemIconY = shopfloorGroupY + 15;
+  const systemIconWidth = 110;  // Increased
+  const systemIconHeight = 115;  // Increased
+  const systemIconGap = 35;
 
   containers.push({
     id: 'shopfloor-system-bp',
     label: 'FTS',  // Label below icon
-    x: LAYOUT.CONTENT_START_X + 30,
+    x: LAYOUT.CONTENT_START_X + 25,
     y: systemIconY,
     width: systemIconWidth,
     height: systemIconHeight,
@@ -296,12 +320,13 @@ export function createDefaultContainers(): ContainerConfig[] {
     borderColor: 'rgba(31, 84, 178, 0.1)',
     backgroundColor: '#ffffff',
     labelPosition: 'bottom',
+    fontSize: 13,  // Increased font size
   });
 
   containers.push({
     id: 'shopfloor-system-fts',
     label: 'MES',  // Label below icon
-    x: LAYOUT.CONTENT_START_X + 30 + systemIconWidth + 30,
+    x: LAYOUT.CONTENT_START_X + 25 + systemIconWidth + systemIconGap,
     y: systemIconY,
     width: systemIconWidth,
     height: systemIconHeight,
@@ -311,29 +336,34 @@ export function createDefaultContainers(): ContainerConfig[] {
     borderColor: 'rgba(31, 84, 178, 0.1)',
     backgroundColor: '#ffffff',
     labelPosition: 'bottom',
+    fontSize: 13,  // Increased font size
   });
 
   // Geräte container (right) - label at bottom, horizontally centered
   containers.push({
     id: 'shopfloor-devices-group',
     label: '',  // "Geräte" - label at bottom center
-    x: LAYOUT.CONTENT_START_X + 310,
+    x: LAYOUT.CONTENT_START_X + systemsGroupWidth + shopfloorGap,
     y: shopfloorGroupY,
-    width: 580,
+    width: devicesGroupWidth,
     height: shopfloorGroupHeight,
     type: 'shopfloor',
     state: 'normal',
     borderColor: 'rgba(31, 84, 178, 0.2)',
     backgroundColor: '#ffffff',
-    labelPosition: 'bottom-center',  // Changed to bottom-center
+    labelPosition: 'bottom-center',
+    fontSize: 14,  // Increased font size
   });
 
   // Device icons with labels below (DRILL, HBW, MILL, AIQS, DPS, CHRG) using shopfloor/*.svg
-  const deviceStartX = LAYOUT.CONTENT_START_X + 330;
-  const deviceWidth = 80;
-  const deviceGap = 10;
-  const deviceY = shopfloorGroupY + 15;
-  const deviceHeight = 110;
+  // Calculate device dimensions to fill available space
+  const deviceCount = 6;
+  const deviceGap = 15;
+  const deviceGroupPadding = 20;
+  const deviceWidth = (devicesGroupWidth - (deviceCount - 1) * deviceGap - deviceGroupPadding * 2) / deviceCount;
+  const deviceStartX = LAYOUT.CONTENT_START_X + systemsGroupWidth + shopfloorGap + deviceGroupPadding;
+  const deviceY = shopfloorGroupY + 12;
+  const deviceHeight = 120;  // Increased height for larger icons
 
   const deviceConfigs = [
     { iconKey: 'device-drill' as IconKey, label: 'DRILL' },
@@ -358,6 +388,7 @@ export function createDefaultContainers(): ContainerConfig[] {
       borderColor: 'rgba(31, 84, 178, 0.1)',
       backgroundColor: '#ffffff',
       labelPosition: 'bottom',
+      fontSize: 13,  // Increased font size
     });
   });
 
