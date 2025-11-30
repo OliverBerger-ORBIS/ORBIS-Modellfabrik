@@ -1,0 +1,100 @@
+<div class="route-card card">
+  <h3>
+    <span class="icon">🗺️</span>
+    Route & Position
+  </h3>
+  
+  <div class="shopfloor-map">
+    <svg viewBox="0 0 420 220" class="map-svg">
+      <!-- Background grid -->
+      <defs>
+        <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+          <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#e0e0e0" stroke-width="0.5"/>
+        </pattern>
+      </defs>
+      <rect width="420" height="220" fill="url(#grid)"/>
+      
+      <!-- Edges (connections between nodes) -->
+      <g class="edges">
+        <!-- HBW to Node 1 -->
+        <line x1="60" y1="60" x2="140" y2="60" stroke="#ccc" stroke-width="3"/>
+        <!-- Node 1 to Node 3 -->
+        <line x1="160" y1="60" x2="240" y2="60" stroke="#ccc" stroke-width="3"/>
+        <!-- Node 3 to DRILL -->
+        <line x1="260" y1="60" x2="340" y2="60" stroke="#ccc" stroke-width="3"/>
+        <!-- Node 1 to MILL -->
+        <line x1="150" y1="70" x2="60" y2="140" stroke="#ccc" stroke-width="3"/>
+        <!-- Node 1 to Node 2 -->
+        <line x1="160" y1="70" x2="160" y2="140" stroke="#ccc" stroke-width="3"/>
+        <!-- Node 2 to AIQS -->
+        <line x1="170" y1="160" x2="240" y2="160" stroke="#ccc" stroke-width="3"/>
+        <!-- Node 2 to DPS -->
+        <line x1="170" y1="160" x2="340" y2="160" stroke="#ccc" stroke-width="3"/>
+        <!-- AIQS to DPS -->
+        <line x1="260" y1="160" x2="340" y2="160" stroke="#ccc" stroke-width="3"/>
+      </g>
+      
+      <!-- Nodes -->
+      <g class="nodes">
+        <g *ngFor="let node of nodes" 
+           [attr.transform]="'translate(' + node.x + ',' + node.y + ')'"
+           [class]="getNodeClass(node.id)">
+          <circle r="16" class="node-circle"/>
+          <text y="4" class="node-label">{{ node.label }}</text>
+        </g>
+      </g>
+      
+      <!-- FTS Position Indicator -->
+      <g *ngIf="currentPosition" 
+         [attr.transform]="'translate(' + currentPosition.x + ',' + currentPosition.y + ')'"
+         class="fts-indicator"
+         [class.driving]="isDriving">
+        <circle r="22" class="fts-outer"/>
+        <circle r="12" class="fts-inner"/>
+        <text y="4" class="fts-icon">🚗</text>
+      </g>
+    </svg>
+    
+    <div class="map-legend">
+      <div class="legend-item">
+        <span class="legend-dot current"></span>
+        <span>Current Position</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-dot driving"></span>
+        <span>In Motion</span>
+      </div>
+    </div>
+  </div>
+  
+  <div class="route-info">
+    <div class="info-row">
+      <span class="label">Current Node</span>
+      <span class="value node-id">{{ currentNodeId || 'Unknown' }}</span>
+    </div>
+    <div class="info-row">
+      <span class="label">Status</span>
+      <span class="value" [class.driving]="isDriving">
+        {{ isDriving ? 'In Transit' : 'Stationary' }}
+      </span>
+    </div>
+  </div>
+  
+  <div class="action-timeline" *ngIf="actionStates.length > 0">
+    <h4>Action Timeline</h4>
+    <div class="timeline">
+      <div 
+        *ngFor="let action of actionStates; let last = last" 
+        class="timeline-item"
+        [class]="action.command.toLowerCase()">
+        <span class="timeline-time">{{ action.timestamp | date:'HH:mm:ss' }}</span>
+        <div class="timeline-content">
+          <strong>{{ action.command }}</strong>
+          <span class="status-badge small" [class]="getStateClass(action.state)">
+            {{ action.state }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

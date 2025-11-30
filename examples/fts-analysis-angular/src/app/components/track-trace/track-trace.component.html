@@ -1,0 +1,104 @@
+<div class="track-trace-card card">
+  <h3>
+    <span class="icon">🔍</span>
+    Track & Trace
+  </h3>
+  
+  <div class="search-section">
+    <div class="search-input">
+      <input 
+        type="text" 
+        [(ngModel)]="searchTerm"
+        placeholder="Search workpiece ID..."
+        class="search-field">
+      <button class="clear-btn" *ngIf="searchTerm" (click)="clearSelection()">✕</button>
+    </div>
+  </div>
+  
+  <div class="workpieces-list" *ngIf="(workpieces$ | async) as workpieces">
+    <div class="section-title">Tracked Workpieces ({{ workpieces.length }})</div>
+    
+    <div class="workpiece-items" *ngIf="workpieces.length > 0">
+      <div 
+        *ngFor="let wp of workpieces; trackBy: trackByWorkpieceId"
+        class="workpiece-item"
+        [class.selected]="selectedWorkpieceId === wp.workpieceId"
+        [class]="getTypeClass(wp.workpieceType)"
+        (click)="selectWorkpiece(wp.workpieceId)">
+        
+        <div class="workpiece-badge" [class]="getTypeClass(wp.workpieceType)">
+          {{ wp.workpieceType }}
+        </div>
+        
+        <div class="workpiece-info">
+          <span class="workpiece-id">{{ wp.workpieceId }}</span>
+          <span class="workpiece-location">{{ getLocationLabel(wp.currentLocation || '') }}</span>
+        </div>
+        
+        <div class="workpiece-events">
+          {{ wp.events.length }} events
+        </div>
+      </div>
+    </div>
+    
+    <div class="empty-state" *ngIf="workpieces.length === 0">
+      <p>No workpieces tracked yet.</p>
+      <p class="hint">Workpieces will appear here as they are loaded on the AGV.</p>
+    </div>
+  </div>
+  
+  <div class="history-section" *ngIf="selectedWorkpieceId && (selectedHistory$ | async) as history">
+    <div class="section-title">
+      <span>Event History</span>
+      <button class="close-btn" (click)="clearSelection()">✕ Close</button>
+    </div>
+    
+    <div class="history-header">
+      <div class="workpiece-badge large" [class]="getTypeClass(history.workpieceType)">
+        {{ history.workpieceType }}
+      </div>
+      <div class="header-info">
+        <span class="id-label">ID:</span>
+        <span class="id-value">{{ history.workpieceId }}</span>
+      </div>
+    </div>
+    
+    <div class="timeline">
+      <div 
+        *ngFor="let event of history.events; trackBy: trackByEventTimestamp; let last = last"
+        class="timeline-item"
+        [class]="event.eventType.toLowerCase()">
+        
+        <div class="timeline-marker">
+          <span class="event-icon">{{ getEventIcon(event.eventType) }}</span>
+        </div>
+        
+        <div class="timeline-content">
+          <div class="event-header">
+            <span class="event-type">{{ event.eventType }}</span>
+            <span class="event-time">{{ formatTimestamp(event.timestamp) }}</span>
+          </div>
+          
+          <div class="event-details">
+            <span class="location" *ngIf="event.location">
+              📍 {{ getLocationLabel(event.location) }}
+            </span>
+            <span class="order" *ngIf="event.orderId">
+              Order: {{ event.orderId.substring(0, 8) }}...
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="info-banner" *ngIf="!selectedWorkpieceId">
+    <p>
+      <strong>💡 Track & Trace</strong>
+    </p>
+    <p>
+      Select a workpiece from the list to view its complete journey through the production process.
+      Each event shows the location, timestamp, and action performed.
+    </p>
+  </div>
+</div>

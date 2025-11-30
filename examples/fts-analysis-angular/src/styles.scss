@@ -1,0 +1,281 @@
+/* FTS Analysis Angular Example - Global Styles */
+
+:root {
+  --primary-color: #2196f3;
+  --success-color: #4caf50;
+  --warning-color: #ff9800;
+  --error-color: #f44336;
+  --neutral-color: #607d8b;
+  --background-color: #f5f5f5;
+  --card-background: #ffffff;
+  --text-primary: #212121;
+  --text-secondary: #757575;
+  --border-color: #e0e0e0;
+  --shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--background-color);
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  margin-bottom: 0.5em;
+}
+
+.card {
+  background: var(--card-background);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  
+  &.waiting {
+    background-color: #fff3e0;
+    color: #e65100;
+  }
+  
+  &.initializing {
+    background-color: #e3f2fd;
+    color: #1565c0;
+  }
+  
+  &.running {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+  }
+  
+  &.finished {
+    background-color: #f3e5f5;
+    color: #7b1fa2;
+  }
+  
+  &.failed {
+    background-color: #ffebee;
+    color: #c62828;
+  }
+}
+
+.battery-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  
+  .battery-bar {
+    width: 60px;
+    height: 24px;
+    border: 2px solid var(--text-secondary);
+    border-radius: 4px;
+    position: relative;
+    overflow: hidden;
+    
+    &::after {
+      content: '';
+      position: absolute;
+      right: -6px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 4px;
+      height: 10px;
+      background: var(--text-secondary);
+      border-radius: 0 2px 2px 0;
+    }
+    
+    .battery-fill {
+      height: 100%;
+      transition: width 0.3s ease, background-color 0.3s ease;
+      
+      &.high {
+        background: linear-gradient(90deg, #4caf50, #8bc34a);
+      }
+      
+      &.medium {
+        background: linear-gradient(90deg, #ff9800, #ffc107);
+      }
+      
+      &.low {
+        background: linear-gradient(90deg, #f44336, #ff5722);
+      }
+    }
+  }
+  
+  .battery-text {
+    font-weight: 600;
+    min-width: 3rem;
+  }
+  
+  .battery-charging {
+    color: var(--success-color);
+    font-size: 1rem;
+  }
+}
+
+.grid-container {
+  display: grid;
+  gap: 1rem;
+  
+  &.cols-2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  &.cols-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  @media (max-width: 768px) {
+    &.cols-2, &.cols-3 {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border-color);
+  
+  &:last-child {
+    border-bottom: none;
+  }
+  
+  .label {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+  }
+  
+  .value {
+    font-weight: 500;
+  }
+}
+
+.action-list {
+  list-style: none;
+  
+  li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    border-radius: 4px;
+    margin-bottom: 0.25rem;
+    background: var(--background-color);
+    
+    .action-command {
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    
+    .action-timestamp {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      margin-left: auto;
+    }
+  }
+}
+
+.load-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border-radius: 4px;
+  background: var(--background-color);
+  
+  .load-position {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--primary-color);
+    color: white;
+    font-weight: bold;
+  }
+  
+  .load-info {
+    flex: 1;
+    
+    .load-type {
+      font-weight: 600;
+      text-transform: uppercase;
+      
+      &.blue { color: #1976d2; }
+      &.white { color: #455a64; }
+      &.red { color: #c62828; }
+    }
+    
+    .load-id {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+  }
+}
+
+.timeline {
+  position: relative;
+  padding-left: 2rem;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0.75rem;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--border-color);
+  }
+  
+  .timeline-item {
+    position: relative;
+    padding-bottom: 1.5rem;
+    
+    &::before {
+      content: '';
+      position: absolute;
+      left: -1.5rem;
+      top: 0.25rem;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--primary-color);
+      border: 2px solid white;
+      box-shadow: 0 0 0 2px var(--primary-color);
+    }
+    
+    &.dock::before { background: #4caf50; box-shadow: 0 0 0 2px #4caf50; }
+    &.turn::before { background: #ff9800; box-shadow: 0 0 0 2px #ff9800; }
+    &.pass::before { background: #2196f3; box-shadow: 0 0 0 2px #2196f3; }
+    &.pick::before { background: #9c27b0; box-shadow: 0 0 0 2px #9c27b0; }
+    &.drop::before { background: #e91e63; box-shadow: 0 0 0 2px #e91e63; }
+    
+    .timeline-time {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+    
+    .timeline-content {
+      margin-top: 0.25rem;
+    }
+  }
+}

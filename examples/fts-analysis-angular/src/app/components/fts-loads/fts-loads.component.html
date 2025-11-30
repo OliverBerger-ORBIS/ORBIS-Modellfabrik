@@ -1,0 +1,35 @@
+<div class="loads-card card">
+  <h3>
+    <span class="icon">📦</span>
+    Load Information
+    <span class="badge">{{ loadedCount }}/{{ totalPositions }}</span>
+  </h3>
+  
+  <div class="loads-list">
+    <div 
+      class="load-item" 
+      *ngFor="let load of loads"
+      [class.empty]="!load.loadType"
+      [class]="getLoadTypeClass(load.loadType)">
+      
+      <div class="load-position">{{ load.loadPosition }}</div>
+      
+      <div class="load-info">
+        <span class="load-type" [class]="getLoadTypeClass(load.loadType)">
+          {{ getLoadDisplay(load) }}
+        </span>
+        <span class="load-id" *ngIf="load.loadId">
+          ID: {{ getLoadIdDisplay(load) }}
+        </span>
+      </div>
+      
+      <div class="load-status">
+        <span class="status-dot" [class.loaded]="load.loadType"></span>
+      </div>
+    </div>
+  </div>
+  
+  <div class="loads-empty" *ngIf="loads.length === 0">
+    <p>No load positions configured</p>
+  </div>
+</div>

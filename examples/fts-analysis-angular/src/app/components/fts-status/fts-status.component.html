@@ -1,0 +1,66 @@
+<div class="status-card card" *ngIf="ftsState">
+  <h3>
+    <span class="icon">🚗</span>
+    AGV Status
+    <span class="serial">{{ serialNumber }}</span>
+  </h3>
+  
+  <div class="status-overview">
+    <div class="status-item">
+      <span class="status-label">Status</span>
+      <div class="status-badges">
+        <span class="status-badge" [class.active]="isDriving">
+          {{ isDriving ? '🚀 Driving' : '🛑 Stopped' }}
+        </span>
+        <span class="status-badge warning" *ngIf="isPaused">⏸️ Paused</span>
+        <span class="status-badge info" *ngIf="isWaitingForLoad">📦 Loading</span>
+      </div>
+    </div>
+    
+    <div class="status-item">
+      <span class="status-label">Current Location</span>
+      <span class="status-value location">{{ lastNodeId }}</span>
+    </div>
+    
+    <div class="status-item">
+      <span class="status-label">Active Order</span>
+      <span class="status-value order-id">{{ orderId }}</span>
+    </div>
+    
+    <div class="status-item">
+      <span class="status-label">Last Update</span>
+      <span class="status-value timestamp">{{ lastUpdate }}</span>
+    </div>
+  </div>
+  
+  <div class="current-action" *ngIf="currentAction">
+    <h4>Current Action</h4>
+    <div class="action-display">
+      <span class="action-command">{{ currentAction.command }}</span>
+      <span class="status-badge" [class]="getStateClass(currentAction.state)">
+        {{ currentAction.state }}
+      </span>
+    </div>
+  </div>
+  
+  <div class="recent-actions" *ngIf="recentActions.length > 0">
+    <h4>Recent Actions</h4>
+    <ul class="action-list">
+      <li *ngFor="let action of recentActions; trackBy: trackByActionId" [class]="getStateClass(action.state)">
+        <span class="action-command">{{ action.command }}</span>
+        <span class="status-badge small" [class]="getStateClass(action.state)">
+          {{ action.state }}
+        </span>
+        <span class="action-timestamp">{{ formatTimestamp(action.timestamp) }}</span>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="status-card card empty" *ngIf="!ftsState">
+  <h3>
+    <span class="icon">🚗</span>
+    AGV Status
+  </h3>
+  <p class="no-data">No FTS data available</p>
+</div>
