@@ -83,10 +83,17 @@
           class="preview__module"
           [class.preview__element--highlight]="module.highlighted"
           [class.preview__element--selectable]="selectionEnabled"
+          [class.preview__module--connected]="module.status?.connected"
+          [class.preview__module--disconnected]="module.status && !module.status.connected"
+          [class.preview__module--available]="module.status?.availability === 'READY'"
+          [class.preview__module--busy]="module.status?.availability === 'BUSY'"
+          [class.preview__module--blocked]="module.status?.availability === 'BLOCKED'"
+          [class.preview__module--unknown]="isUnknownAvailability(module.status?.availability)"
           [style.top.px]="module.top"
           [style.left.px]="module.left"
           [style.width.px]="module.width"
           [style.height.px]="module.height"
+          [style.background-color]="getModuleBackgroundColor(module.status?.availability)"
           role="button"
           tabindex="0"
           (click)="onModuleActivate(module, $event)"
@@ -114,6 +121,19 @@
             [src]="attachment.icon"
             alt=""
           />
+          <!-- Status Overlays -->
+          <div *ngIf="module.status" class="preview__module-status-overlay">
+            <!-- Connected/Disconnected icon in top-left corner -->
+            <span *ngIf="module.status.connected" class="preview__status-badge preview__status-badge--connected" title="Connected">📶</span>
+            <span *ngIf="module.status.connected === false" class="preview__status-badge preview__status-badge--disconnected" title="Disconnected">🚫</span>
+          </div>
+          <!-- Availability status in top-right corner -->
+          <div *ngIf="module.status" class="preview__module-availability-overlay">
+            <span *ngIf="module.status.availability === 'READY'" class="preview__status-badge preview__status-badge--available" title="Available">🟢</span>
+            <span *ngIf="module.status.availability === 'BUSY'" class="preview__status-badge preview__status-badge--busy" title="Busy">🟠</span>
+            <span *ngIf="module.status.availability === 'BLOCKED'" class="preview__status-badge preview__status-badge--blocked" title="Blocked">🔴</span>
+            <span *ngIf="isUnknownAvailability(module.status?.availability)" class="preview__status-badge preview__status-badge--unknown" title="Unknown">⚫</span>
+          </div>
           <span *ngIf="module.showLabel" class="preview__module-label">{{ module.label }}</span>
         </div>
       </ng-container>
@@ -153,6 +173,7 @@
       </svg>
 
       <!-- FTS Icon: Use inline SVG with orange fill if available, otherwise fallback to img -->
+      <!-- FTS from active route -->
       <div
         *ngIf="vm.routeOverlay && vm.routeOverlay.svgContent"
         class="preview__fts preview__fts--inline"
@@ -171,6 +192,26 @@
         [style.top.px]="vm.routeOverlay.y"
         [style.width.px]="vm.routeOverlay.width ?? 48"
         [style.height.px]="vm.routeOverlay.height ?? 48"
+      />
+      <!-- FTS from position (when no active route) -->
+      <div
+        *ngIf="vm.ftsOverlay && vm.ftsOverlay.svgContent"
+        class="preview__fts preview__fts--inline"
+        [style.left.px]="vm.ftsOverlay.x"
+        [style.top.px]="vm.ftsOverlay.y"
+        [style.width.px]="vm.ftsOverlay.width ?? 48"
+        [style.height.px]="vm.ftsOverlay.height ?? 48"
+        [innerHTML]="vm.ftsOverlay.svgContent"
+      ></div>
+      <img
+        *ngIf="vm.ftsOverlay && !vm.ftsOverlay.svgContent"
+        class="preview__fts"
+        [src]="vm.ftsOverlay.icon"
+        alt=""
+        [style.left.px]="vm.ftsOverlay.x"
+        [style.top.px]="vm.ftsOverlay.y"
+        [style.width.px]="vm.ftsOverlay.width ?? 48"
+        [style.height.px]="vm.ftsOverlay.height ?? 48"
       />
     </div>
   </div>

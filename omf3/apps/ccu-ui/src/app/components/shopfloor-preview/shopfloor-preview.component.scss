@@ -87,6 +87,9 @@
 
 .preview__module {
   padding: 0;
+  // Base border (like intersection cells) - hauchdünn
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .preview__fixed {
@@ -188,6 +191,103 @@
   box-shadow: inset 0 0 0 5px rgba(249, 115, 22, 0.7);
   // Dezentes Orange-Fill für Configuration Tab und Orders
   background-color: rgba(249, 115, 22, 0.12);
+}
+
+// Module status highlighting (availability-based border colors)
+// Base border is defined above, these override it when status is present
+.preview__module {
+  &--available {
+    border: 3px solid var(--status-success-strong) !important;
+    box-shadow: 
+      0 0 0 1px rgba(var(--status-success-strong-rgb), 0.2),
+      inset 0 0 0 2px rgba(var(--status-success-strong-rgb), 0.15);
+  }
+
+  &--busy {
+    border: 3px solid var(--status-warning-strong) !important;
+    box-shadow: 
+      0 0 0 1px rgba(var(--status-warning-strong-rgb), 0.2),
+      inset 0 0 0 2px rgba(var(--status-warning-strong-rgb), 0.15);
+  }
+
+  &--blocked {
+    border: 3px solid var(--status-error-strong) !important;
+    box-shadow: 
+      0 0 0 1px rgba(var(--status-error-strong-rgb), 0.2),
+      inset 0 0 0 2px rgba(var(--status-error-strong-rgb), 0.15);
+  }
+
+  &--unknown {
+    border: 1px solid rgba(var(--orbis-grey-medium-rgb), 0.5) !important;
+    background-color: rgba(var(--orbis-grey-light-rgb), 0.3) !important;
+  }
+
+  &--connected {
+    // Additional visual indicator for connected state
+  }
+
+  &--disconnected {
+    opacity: 0.6;
+  }
+}
+
+// Status overlay badges - Connected/Disconnected in top-left
+.preview__module-status-overlay {
+  position: absolute;
+  top: 0.25rem;
+  left: 0.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  z-index: 10;
+  pointer-events: none;
+}
+
+// Availability overlay badges - in top-right
+.preview__module-availability-overlay {
+  position: absolute;
+  top: 0.25rem;
+  right: 0.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.preview__status-badge {
+  display: inline-block;
+  font-size: 0.875rem;
+  line-height: 1;
+  padding: 0.125rem;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 0.25rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(4px);
+
+  &--connected {
+    color: var(--status-success-strong);
+  }
+
+  &--disconnected {
+    color: var(--status-error-strong);
+  }
+
+  &--available {
+    color: var(--status-success-strong);
+  }
+
+  &--busy {
+    color: var(--status-warning-strong);
+  }
+
+  &--blocked {
+    color: var(--status-error-strong);
+  }
+
+  &--unknown {
+    color: #000000;
+  }
 }
 
 .preview__route {

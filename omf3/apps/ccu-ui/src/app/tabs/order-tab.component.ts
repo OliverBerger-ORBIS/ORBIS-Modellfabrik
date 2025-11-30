@@ -245,7 +245,20 @@ export class OrderTabComponent implements OnInit, OnDestroy {
       return; // Don't load fixtures in live/replay mode
     }
     this.activeFixture = fixture;
-    await this.dashboard.loadFixture(fixture);
+    
+    // Map OrderFixtureName to tab-specific preset
+    const presetMap: Record<OrderFixtureName, string> = {
+      startup: 'startup',
+      white: 'order-white',
+      white_step3: 'order-white-step3', // Stops at step 3
+      blue: 'order-blue',
+      red: 'order-red',
+      mixed: 'order-mixed',
+      storage: 'order-storage',
+    };
+    
+    const preset = presetMap[fixture] || 'startup';
+    await this.dashboard.loadTabFixture(preset);
     this.bindOrderStreams();
   }
 

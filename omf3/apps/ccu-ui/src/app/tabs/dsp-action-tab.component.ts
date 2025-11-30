@@ -39,6 +39,7 @@ export class DspActionTabComponent implements OnInit, OnDestroy {
   // Filter state
   filterTopic = '';
   showDeveloperMode = false;
+  activeFixture = false;
 
   // changeLight visualization
   currentLightValue: string | null = null;
@@ -179,6 +180,7 @@ export class DspActionTabComponent implements OnInit, OnDestroy {
     if (!this.isMockMode) {
       return;
     }
+    this.activeFixture = true;
     try {
       const { createDspActionFixtureStream } = await import('@omf3/testing-fixtures');
       const stream$ = createDspActionFixtureStream({
@@ -201,6 +203,7 @@ export class DspActionTabComponent implements OnInit, OnDestroy {
       this.subscriptions.add(subscription);
     } catch (error) {
       console.error('[dsp-action] Failed to load drill action fixture:', error);
+      this.activeFixture = false;
     }
   }
 }

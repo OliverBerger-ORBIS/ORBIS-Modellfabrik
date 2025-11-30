@@ -149,7 +149,20 @@ export class OverviewTabComponent implements OnInit, OnDestroy {
     this.activeFixture = fixture;
     try {
       this.resetInventoryTracking();
-      await this.dashboard.loadFixture(fixture);
+      
+      // Map OrderFixtureName to tab-specific preset
+      const presetMap: Record<OrderFixtureName, string> = {
+        startup: 'overview-startup',
+        white: 'overview-active',
+        white_step3: 'overview-active',
+        blue: 'overview-active',
+        red: 'overview-active',
+        mixed: 'overview-active',
+        storage: 'overview-active',
+      };
+      
+      const preset = presetMap[fixture] || 'overview-startup';
+      await this.dashboard.loadTabFixture(preset);
       this.initializeStreams();
     } catch (error) {
       console.warn('Failed to load fixture', fixture, error);

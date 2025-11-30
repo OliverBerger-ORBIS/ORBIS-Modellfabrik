@@ -4,16 +4,18 @@
       <h2 i18n="@@dspActionTabTitle">DSP Actions</h2>
       <p i18n="@@dspActionTabDescription">Visualization of DSP Edge control for Drill module</p>
     </div>
-    <div class="dsp-action-tab__fixture-control" *ngIf="isMockMode">
+    <div class="dsp-action-tab__fixtures" *ngIf="isMockMode">
       <span class="badge" i18n="@@orderTabFixtureLabel">Fixture</span>
-      <button
-        type="button"
-        class="dsp-action-tab__load-fixture-btn"
-        (click)="loadDrillActionFixture()"
-        i18n="@@dspActionFixtureLabel"
-      >
-        Drill Action
-      </button>
+      <div class="fixture-switch">
+        <button
+          type="button"
+          [class.active]="activeFixture"
+          (click)="loadDrillActionFixture()"
+          i18n="@@dspActionFixtureLabel"
+        >
+          Drill Action
+        </button>
+      </div>
     </div>
   </header>
 

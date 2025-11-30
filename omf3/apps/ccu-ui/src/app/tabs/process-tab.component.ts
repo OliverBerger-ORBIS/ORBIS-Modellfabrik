@@ -218,7 +218,10 @@ export class ProcessTabComponent implements OnInit, OnDestroy {
     }
     this.activeFixture = fixture;
     try {
-      const streams = await this.dashboard.loadFixture(fixture);
+      // Always use process-startup preset (only startup fixtures needed for Process tab)
+      // The fixture parameter is kept for UI consistency, but we always load startup
+      await this.dashboard.loadTabFixture('process-startup');
+      const streams = this.dashboard.streams;
       this.bindStreams(streams);
     } catch (error) {
       console.warn('Failed to load process fixture', fixture, error);

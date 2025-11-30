@@ -1,0 +1,45 @@
+<div class="sidebar-overlay" *ngIf="isOpen" (click)="closeSidebar()" (keydown.enter)="closeSidebar()" (keydown.escape)="closeSidebar()" tabindex="0" role="button" [attr.aria-label]="closeLabel"></div>
+
+<div class="module-details-sidebar" [class.open]="isOpen">
+  <div class="sidebar-header">
+    <h2>
+      <span *ngIf="moduleName">{{ moduleName }}</span>
+      <span *ngIf="!moduleName && serialId">{{ serialId }}</span>
+      <span *ngIf="!moduleName && !serialId" i18n="@@moduleDetailsTitle">Module Details</span>
+    </h2>
+    <button class="close-btn" (click)="closeSidebar()" [attr.aria-label]="closeLabel">×</button>
+  </div>
+
+  <div class="sidebar-content">
+    <div *ngIf="serialId; else noSelection">
+      <p class="sidebar-description" i18n="@@moduleDetailsDescription">
+        Latest messages for this module (Connection, State, Factsheet)
+      </p>
+
+      <div class="messages-list" *ngIf="messages$ | async as messages; else noMessages">
+        <div *ngFor="let message of messages" class="message-card">
+          <div class="message-header">
+            <h3 class="message-topic">{{ message.topic }}</h3>
+            <span class="message-timestamp">{{ formatTimestamp(message.timestamp) }}</span>
+          </div>
+          <div class="message-payload">
+            <pre class="payload-json"><code #jsonCodeBlock class="language-json">{{ formatJsonPayload(message.payload) }}</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <ng-template #noMessages>
+        <div class="no-messages" i18n="@@moduleDetailsNoMessages">
+          No messages available for this module.
+        </div>
+      </ng-template>
+    </div>
+
+    <ng-template #noSelection>
+      <div class="no-selection" i18n="@@moduleDetailsNoSelection">
+        Click on a module cell to view its details.
+      </div>
+    </ng-template>
+  </div>
+</div>
+

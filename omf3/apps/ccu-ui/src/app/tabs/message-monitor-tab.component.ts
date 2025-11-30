@@ -328,6 +328,11 @@ export class MessageMonitorTabComponent implements OnInit, OnDestroy, AfterViewC
       return { name: 'CCU', icon: CCU_ICON };
     }
 
+    // DSP topics (use DSP icon)
+    if (topic.startsWith('dsp/')) {
+      return { name: 'DSP', icon: 'shopfloor/information-technology.svg' };
+    }
+
     // TXT topics
     if (topic.startsWith('/j1/txt/')) {
       return { name: 'TXT', icon: TXT_ICON };

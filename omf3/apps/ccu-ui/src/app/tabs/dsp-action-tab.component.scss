@@ -29,18 +29,53 @@
     }
   }
 
-  &__fixture-control {
+  &__fixtures {
     display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    align-items: flex-end;
+    align-items: center;
+    gap: 0.75rem;
+  }
 
-    .badge {
-      font-size: 0.75rem;
+  .badge {
+    padding: 0.35rem 0.75rem;
+    border-radius: 999px;
+    background: rgba(var(--orbis-blue-strong-rgb), 0.12);
+    color: var(--orbis-blue-strong);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+  }
+
+  .fixture-switch {
+    display: inline-flex;
+    padding: 0.25rem;
+    border-radius: 999px;
+    background: rgba(var(--orbis-blue-strong-rgb), 0.08);
+    box-shadow: inset 0 0 0 1px rgba(var(--orbis-blue-strong-rgb), 0.1);
+    gap: 0.25rem;
+
+    button {
+      border: none;
+      background: transparent;
+      color: var(--orbis-darkgrey);
       font-weight: 600;
-      color: var(--orbis-grey-strong);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
+      padding: 0.35rem 0.9rem;
+      border-radius: 999px;
+      cursor: pointer;
+      transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        box-shadow 0.2s ease;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.7);
+      }
+
+      &.active {
+        background: var(--orbis-blue-strong);
+        color: #fff;
+        box-shadow: 0 6px 18px -12px rgba(var(--orbis-blue-strong-rgb), 0.9);
+      }
     }
   }
 

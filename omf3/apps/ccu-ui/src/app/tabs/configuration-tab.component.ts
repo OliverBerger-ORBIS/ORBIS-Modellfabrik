@@ -739,8 +739,13 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
     }
     this.activeFixture = fixture;
     try {
-      const streams = await this.dashboard.loadFixture(fixture);
+      // Use config-default preset (focused on configuration data)
+      await this.dashboard.loadTabFixture('config-default');
+      const streams = this.dashboard.streams;
       this.bindStreams(streams);
+      
+      // Automatically load Drill Action fixture
+      await this.loadDrillActionFixture();
     } catch (error) {
       console.warn('Failed to load configuration fixture', fixture, error);
     }

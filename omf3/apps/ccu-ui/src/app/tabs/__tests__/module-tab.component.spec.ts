@@ -1,10 +1,13 @@
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, of } from 'rxjs';
 import type { ModuleOverviewState, ModuleOverviewStatus, TransportOverviewStatus } from '@omf3/entities';
 import { ModuleTabComponent } from '../module-tab.component';
 import type { EnvironmentService } from '../../services/environment.service';
 import type { ModuleNameService } from '../../services/module-name.service';
 import type { ConnectionService } from '../../services/connection.service';
 import type { ModuleOverviewStateService } from '../../services/module-overview-state.service';
+import type { MessageMonitorService } from '../../services/message-monitor.service';
+import type { HttpClient } from '@angular/common/http';
+import type { ChangeDetectorRef } from '@angular/core';
 
 jest.mock('../../mock-dashboard', () => {
   const mockCommands = {
@@ -50,6 +53,21 @@ const createComponent = () => {
     clear: jest.fn(),
   } as unknown as ModuleOverviewStateService;
 
+  const messageMonitorStub = {
+    getLastMessage: jest.fn(),
+    getHistory: jest.fn(),
+    getTopics: jest.fn(() => []),
+    addMessage: jest.fn(),
+  } as unknown as MessageMonitorService;
+
+  const httpStub = {
+    get: jest.fn(() => of({ cells: [] })),
+  } as unknown as HttpClient;
+
+  const cdrStub = {
+    markForCheck: jest.fn(),
+  } as unknown as ChangeDetectorRef;
+
   const initSpy = jest
     .spyOn(ModuleTabComponent.prototype as any, 'initializeStreams')
     .mockImplementation(() => {});
@@ -58,7 +76,10 @@ const createComponent = () => {
     environmentStub,
     moduleNameServiceStub,
     connectionServiceStub,
-    moduleOverviewStateStub
+    moduleOverviewStateStub,
+    messageMonitorStub,
+    cdrStub,
+    httpStub
   );
   initSpy.mockRestore();
   return component;

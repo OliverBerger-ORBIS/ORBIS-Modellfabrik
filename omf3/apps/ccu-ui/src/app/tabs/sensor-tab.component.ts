@@ -364,7 +364,10 @@ export class SensorTabComponent implements OnInit, OnDestroy {
     }
     this.activeFixture = fixture;
     try {
-      const streams = await this.dashboard.loadFixture(fixture);
+      // Always use sensor-startup preset (only startup fixtures needed for Sensor/Environmental Data tab)
+      // The fixture parameter is kept for UI consistency, but we always load startup
+      await this.dashboard.loadTabFixture('sensor-startup');
+      const streams = this.dashboard.streams;
       this.sensorState.clear(this.currentEnvironmentKey);
       this.bindStreams(streams);
     } catch (error) {

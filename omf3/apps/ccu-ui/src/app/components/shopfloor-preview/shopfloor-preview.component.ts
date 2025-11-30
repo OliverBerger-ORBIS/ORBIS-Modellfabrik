@@ -14,7 +14,7 @@ import { HttpClient } from '@angular/common/http';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { firstValueFrom } from 'rxjs';
 import { ORBIS_COLORS } from '../../assets/color-palette';
-import type { OrderActive, ProductionStep } from '@omf3/entities';
+import type { OrderActive, ProductionStep, ModuleAvailabilityStatus } from '@omf3/entities';
 import { SHOPFLOOR_ASSET_MAP } from '@omf3/testing-fixtures';
 import { ModuleNameService } from '../../services/module-name.service';
 import type {
@@ -35,6 +35,11 @@ interface RenderAttachment {
   icon: string;
 }
 
+interface ModuleStatus {
+  connected: boolean;
+  availability: 'READY' | 'BUSY' | 'BLOCKED' | 'Unknown' | string;
+}
+
 interface RenderModule {
   id: string;
   label: string;
@@ -50,6 +55,7 @@ interface RenderModule {
   highlighted: boolean;
   showLabel: boolean;
   attachments: RenderAttachment[];
+  status?: ModuleStatus; // Module status for overlays and highlighting
 }
 
 interface RenderFixed {
@@ -112,6 +118,7 @@ interface ShopfloorView {
   activeRouteSegments?: RouteSegment[];
   routeEndpoints?: ShopfloorPoint[];
   routeOverlay?: RouteOverlay;
+  ftsOverlay?: RouteOverlay; // FTS position overlay (when no active route)
 }
 
 interface RouteGraphEdge {
@@ -138,6 +145,8 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
   @Input() infoText?: string;
   @Input() showBaseRoads = true;
   @Input() showZoomControls = false;
+  @Input() moduleStatusMap: Map<string, ModuleStatus> | null = null; // Module status data for overlays
+  @Input() ftsPosition: { x: number; y: number } | null = null; // FTS position for display (when no active route)
   @Output() cellSelected = new EventEmitter<{ id: string; kind: 'module' | 'fixed' }>();
   @Output() cellDoubleClicked = new EventEmitter<{ id: string; kind: 'module' | 'fixed' }>();
 
@@ -198,7 +207,7 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
         this.currentScale = this.scale;
       }
     }
-    if (changes['activeStep'] || changes['order'] || changes['highlightModulesOverride'] || changes['highlightFixedOverride']) {
+    if (changes['activeStep'] || changes['order'] || changes['highlightModulesOverride'] || changes['highlightFixedOverride'] || changes['moduleStatusMap'] || changes['ftsPosition']) {
       this.updateViewModel();
     }
   }
@@ -283,12 +292,12 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
   }
 
   get infoLabel(): string {
-    if (this.infoText) {
+    if (this.infoText !== undefined) {
       return this.infoText;
     }
     const step = this.activeStep;
     if (!step) {
-      return $localize`:@@shopfloorPreviewNoActiveStep:All steps completed.`;
+      return ''; // Empty string instead of "All steps completed"
     }
     if (step.type === 'NAVIGATION') {
       // Resolve source and target to readable names
@@ -328,6 +337,33 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
     }
     event.stopPropagation();
     this.cellSelected.emit({ id: module.id, kind: 'module' });
+  }
+
+  getModuleBackgroundColor(availability: ModuleAvailabilityStatus | undefined): string | undefined {
+    if (!availability) {
+      return undefined;
+    }
+    const normalized = availability.toString().toLowerCase();
+    if (normalized === 'ready') {
+      return 'rgba(var(--status-success-light-rgb), 0.3)';
+    }
+    if (normalized === 'busy') {
+      return 'rgba(var(--status-warning-light-rgb), 0.3)';
+    }
+    if (normalized === 'blocked') {
+      return 'rgba(var(--status-error-light-rgb), 0.3)';
+    }
+    if (normalized === 'unknown') {
+      return 'rgba(var(--orbis-grey-light-rgb), 0.3)';
+    }
+    return undefined;
+  }
+
+  isUnknownAvailability(availability: string | undefined | null): boolean {
+    if (!availability) {
+      return false;
+    }
+    return availability === 'Unknown' || String(availability).toLowerCase() === 'unknown';
   }
 
   onModuleDouble(module: RenderModule, event: Event): void {
@@ -451,8 +487,9 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
       return;
     }
 
-    const width = this.layoutConfig.metadata.canvas.width;
-    const height = this.layoutConfig.metadata.canvas.height;
+    // Increase canvas size by 2px to the right and bottom to make borders visible
+    const width = this.layoutConfig.metadata.canvas.width + 2;
+    const height = this.layoutConfig.metadata.canvas.height + 2;
 
     const moduleHighlightSet = this.buildHighlightAliasSet(this.highlightModulesOverride);
     const fixedHighlightSet = this.buildHighlightAliasSet(this.highlightFixedOverride);
@@ -477,6 +514,29 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
       : [];
 
     const route = this.computeActiveRoute();
+    
+    // Compute FTS overlay if position is provided and no active route exists
+    let ftsOverlay: RouteOverlay | undefined;
+    if (!route && this.ftsPosition) {
+      const ftsIcon = this.getAssetPath('FTS');
+      if (ftsIcon) {
+        ftsOverlay = {
+          x: this.ftsPosition.x,
+          y: this.ftsPosition.y,
+          icon: ftsIcon,
+          width: 48,
+          height: 48,
+        };
+        // Load SVG with orange fill color for FTS
+        const svgPath = ftsIcon.startsWith('/') ? ftsIcon : `/${ftsIcon}`;
+        this.loadSvgWithOrangeFill(svgPath).then((content) => {
+          if (content && this.viewModel?.ftsOverlay) {
+            this.viewModel.ftsOverlay.svgContent = content;
+            this.cdr.markForCheck();
+          }
+        });
+      }
+    }
 
     this.viewModel = {
       width,
@@ -488,6 +548,7 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
       activeRouteSegments: route?.segments,
       routeEndpoints: route?.endpoints,
       routeOverlay: route?.overlay,
+      ftsOverlay,
     };
   }
 
@@ -580,6 +641,27 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
       ? this.moduleNameService.getModuleFullName(cell.name ?? cell.id)
       : (cell.name ?? cell.id);
 
+    // Get module status from moduleStatusMap (for module tab integration)
+    // Priority: 1) serial_number (most reliable), 2) cell.name (module type), 3) cell.id
+    let status: ModuleStatus | undefined;
+    
+    // First try serial_number (most reliable match)
+    if (cell.serial_number) {
+      status = this.moduleStatusMap?.get(cell.serial_number);
+    }
+    
+    // If no match by serial_number, try by module type/name
+    if (!status && cell.name) {
+      status = this.moduleStatusMap?.get(cell.name) ?? 
+               this.moduleStatusMap?.get(cell.name.toUpperCase()) ?? 
+               this.moduleStatusMap?.get(cell.name.toLowerCase());
+    }
+    
+    // Last resort: try by cell.id
+    if (!status) {
+      status = this.moduleStatusMap?.get(cell.id);
+    }
+
     return {
       id: cell.id,
       label,
@@ -595,6 +677,7 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
       highlighted,
       showLabel: cell.show_name !== false,
       attachments,
+      status, // Include status for overlays and highlighting
     };
   }
 

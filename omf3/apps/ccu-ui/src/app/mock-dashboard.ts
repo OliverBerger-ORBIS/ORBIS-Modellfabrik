@@ -71,6 +71,7 @@ export interface MockDashboardController {
   loadTabFixture: (presetName: string, options?: FixtureStreamOptions) => Promise<DashboardStreamSet>;
   getCurrentFixture: () => OrderFixtureName;
   updateMqttClient?: (mqttClient?: MqttClientWrapper) => void;
+  injectMessage?: (message: RawMqttMessage) => void; // Inject a message into the message stream
 }
 
 const FIXTURE_DEFAULT_INTERVAL = 25;
@@ -524,6 +525,10 @@ export const createMockDashboardController = (options?: {
     }
   };
 
+  const injectMessage = (message: RawMqttMessage): void => {
+    messageSubject.next(message);
+  };
+
   return {
     get streams() {
       return bundle.streams;
@@ -541,6 +546,7 @@ export const createMockDashboardController = (options?: {
       return currentFixture;
     },
     updateMqttClient, // Expose method to update MQTT client
+    injectMessage, // Expose method to inject messages into the stream
   };
 };
 

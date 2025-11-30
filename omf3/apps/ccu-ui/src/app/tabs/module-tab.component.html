@@ -10,16 +10,18 @@
       </div>
     </div>
 
-    <div class="module-fixture-switch" *ngIf="isMockMode">
-      <button
-        type="button"
-        *ngFor="let fixture of fixtureOptions"
-        [class.active]="fixture === activeFixture"
-        (click)="loadFixture(fixture)"
-        [disabled]="loading && fixture !== activeFixture"
-      >
-        {{ fixtureLabels[fixture] }}
-      </button>
+    <div class="module-tab__fixtures" *ngIf="isMockMode">
+      <span class="badge" i18n="@@orderTabFixtureLabel">Fixture</span>
+      <div class="fixture-switch">
+        <button
+          type="button"
+          *ngFor="let fixture of fixtureOptions"
+          [class.active]="fixture === activeFixture"
+          (click)="loadFixture(fixture)"
+        >
+          {{ fixtureLabels[fixture] }}
+        </button>
+      </div>
     </div>
   </header>
 
@@ -97,10 +99,7 @@
 
 <ng-template #loading>
   <div class="module-tab__info">
-    <p *ngIf="loading; else idle" i18n="@@moduleTabLoading">Loading module telemetry …</p>
-    <ng-template #idle>
-      <p i18n="@@moduleTabAwaiting">Awaiting module telemetry …</p>
-    </ng-template>
+    <p i18n="@@moduleTabAwaiting">Awaiting module telemetry …</p>
   </div>
 </ng-template>
 
@@ -109,4 +108,48 @@
     <p i18n="@@moduleTabEmpty">No module status data available.</p>
   </div>
 </ng-template>
+
+<!-- Shopfloor Preview Section (Collapsible) -->
+<div class="module-tab__shopfloor-section" *ngIf="rows$ | async as rows">
+  <button
+    type="button"
+    class="module-tab__shopfloor-toggle"
+    (click)="toggleShopfloorPreview()"
+    [attr.aria-expanded]="shopfloorPreviewExpanded"
+    [attr.aria-label]="shopfloorPreviewExpanded ? shopfloorPreviewCollapseLabel : shopfloorPreviewExpandLabel"
+  >
+    <span class="toggle-icon" [class.toggle-icon--expanded]="shopfloorPreviewExpanded">▼</span>
+    <span i18n="@@moduleTabShopfloorPreviewTitle">Shopfloor Layout</span>
+  </button>
+
+  <div class="module-tab__shopfloor-content" *ngIf="shopfloorPreviewExpanded">
+    <p class="module-tab__shopfloor-description" i18n="@@moduleTabShopfloorPreviewDescription">
+      Visual representation of module status on the shopfloor. Connected modules show a connection indicator, and availability is indicated by colored borders (green: Available, orange: Busy, red: Blocked).
+    </p>
+    <div class="module-tab__shopfloor-preview-wrapper">
+      <app-shopfloor-preview
+        [order]="null"
+        [scale]="0.6"
+        [highlightModulesOverride]="null"
+        [highlightFixedOverride]="null"
+        [selectionEnabled]="true"
+        [showBaseRoads]="true"
+        [showZoomControls]="true"
+        [moduleStatusMap]="currentModuleStatusMap"
+        [badgeText]="'Modules Status'"
+        [infoText]="''"
+        [ftsPosition]="ftsPosition"
+        (cellSelected)="onModuleCellSelected($event)"
+      ></app-shopfloor-preview>
+    </div>
+  </div>
+</div>
+
+<!-- Module Details Sidebar -->
+<app-module-details-sidebar
+  [isOpen]="sidebarOpen"
+  [serialId]="selectedModuleSerialId"
+  [moduleName]="selectedModuleName"
+  (close)="closeSidebar()"
+></app-module-details-sidebar>
 

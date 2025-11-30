@@ -102,6 +102,8 @@ export interface TabFixtureConfig {
   config?: ConfigFixtureName;
   /** Sensor fixtures (BME680, LDR, camera) */
   sensors?: SensorFixtureName;
+  /** Custom fixture streams (DSP Actions, Module Status, etc.) */
+  customFixtures?: Array<() => Observable<RawMqttMessage>>;
 }
 
 /**
@@ -159,6 +161,14 @@ export const TAB_FIXTURE_PRESETS: Record<string, TabFixtureConfig> = {
     config: 'default',
     sensors: 'default',
   },
+  'order-white-step3': {
+    orders: 'white_step3',
+    modules: 'white',
+    stock: 'default',
+    flows: 'default',
+    config: 'default',
+    sensors: 'default',
+  },
   
   // Module tab presets
   'module-default': {
@@ -169,19 +179,7 @@ export const TAB_FIXTURE_PRESETS: Record<string, TabFixtureConfig> = {
     config: 'default',
     sensors: 'default',
   },
-  
-  // Process/Flow tab presets
-  'process-active': {
-    orders: 'mixed',
-    modules: 'default',
-    stock: 'default',
-    flows: 'default',
-    config: 'default',
-    sensors: 'default',
-  },
-  
-  // Sensor tab presets
-  'sensor-active': {
+  'module-status-test': {
     orders: 'startup',
     modules: 'default',
     stock: 'default',
@@ -190,8 +188,56 @@ export const TAB_FIXTURE_PRESETS: Record<string, TabFixtureConfig> = {
     sensors: 'default',
   },
   
+  // Process/Flow tab presets
+  'process-startup': {
+    orders: 'startup',
+    modules: 'startup',
+    stock: 'startup',
+    flows: 'startup',
+    config: 'startup',
+    sensors: 'startup',
+  },
+  
+  // Sensor tab presets (Environmental Data)
+  'sensor-startup': {
+    orders: 'startup',
+    modules: 'startup',
+    stock: 'startup',
+    flows: 'startup',
+    config: 'startup',
+    sensors: 'startup',
+  },
+  
   // Configuration tab presets
   'config-default': {
+    orders: 'startup',
+    modules: 'default',
+    stock: 'default',
+    flows: 'default',
+    config: 'default',
+    sensors: 'default',
+  },
+  
+  // Overview tab presets
+  'overview-startup': {
+    orders: 'startup',
+    modules: 'startup',
+    stock: 'startup',
+    flows: 'startup',
+    config: 'startup',
+    sensors: 'startup',
+  },
+  'overview-active': {
+    orders: 'mixed',
+    modules: 'default',
+    stock: 'default',
+    flows: 'default',
+    config: 'default',
+    sensors: 'default',
+  },
+  
+  // DSP Action tab presets
+  'dsp-action-default': {
     orders: 'startup',
     modules: 'default',
     stock: 'default',
@@ -242,6 +288,13 @@ export const createTabFixtureStream = (
   // Add sensor fixtures if specified
   if (config.sensors && createSensorFixtureStreamImpl) {
     streams.push(createSensorFixtureStreamImpl(config.sensors, options));
+  }
+
+  // Add custom fixture streams if specified
+  if (config.customFixtures && config.customFixtures.length > 0) {
+    config.customFixtures.forEach((createCustomStream) => {
+      streams.push(createCustomStream());
+    });
   }
 
   // Merge all streams into a single stream

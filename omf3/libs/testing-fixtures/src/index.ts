@@ -427,6 +427,8 @@ export const createConfigFixtureStream = (
 
 // Re-export DSP action fixtures
 export { loadDspActionFixtures, createDspActionFixtureStream } from './dsp-action-fixtures';
+export { loadModuleStatusFixtures, createModuleStatusFixtureStream } from './module-status-fixtures';
+export { loadModuleShopfloorStatusFixtures, createModuleShopfloorStatusFixtureStream } from './module-shopfloor-status-fixtures';
 
 export const createSensorFixtureStream = (
   name: SensorFixtureName,
@@ -463,6 +465,7 @@ export const SHOPFLOOR_ASSET_MAP: Record<string, string> = {
   DPS: '/shopfloor/robot-arm.svg',
   DRILL: '/shopfloor/bohrer.svg',
   CHRG: '/shopfloor/fuel.svg',
+  OVEN: '/shopfloor/stone-oven.svg',
   FTS: '/shopfloor/robotic.svg',
   HBW_SQUARE1: '/shopfloor/factory.svg',
   HBW_SQUARE2: '/shopfloor/conveyor.svg',
