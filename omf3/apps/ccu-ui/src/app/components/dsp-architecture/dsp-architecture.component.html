@@ -275,7 +275,12 @@
                   <tspan [attr.x]="getLabelX(container)" [attr.dy]="i === 0 ? '0' : '1.2em'">{{ line }}</tspan>
                 </ng-container>
               </ng-container>
-              <ng-container *ngIf="!isMultilineLabel(container.id)">
+              <ng-container *ngIf="!isMultilineLabel(container.id) && shouldWrapLabel(container)">
+                <ng-container *ngFor="let line of getWrappedLabelLines(container); let i = index">
+                  <tspan [attr.x]="getLabelX(container)" [attr.dy]="i === 0 ? '0' : '1.2em'">{{ line }}</tspan>
+                </ng-container>
+              </ng-container>
+              <ng-container *ngIf="!isMultilineLabel(container.id) && !shouldWrapLabel(container)">
                 {{ getContainerLabel(container.id) }}
               </ng-container>
             </text>

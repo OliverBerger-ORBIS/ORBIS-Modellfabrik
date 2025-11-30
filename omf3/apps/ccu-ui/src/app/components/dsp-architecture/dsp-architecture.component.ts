@@ -249,6 +249,73 @@ export class DspArchitectureComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Get wrapped label lines for device containers based on container width.
+   * Automatically wraps long labels to fit within the container width.
+   */
+  protected getWrappedLabelLines(container: ContainerConfig): string[] {
+    const label = this.containerLabels[container.id || ''] || container.label || '';
+    if (!label) {
+      return [];
+    }
+
+    // Only wrap for device containers
+    if (container.type !== 'device') {
+      return [label];
+    }
+
+    // Estimate character width (approximate: fontSize * 0.6 for average character width)
+    const fontSize = container.fontSize || 10;
+    const charWidth = fontSize * 0.6;
+    const maxWidth = container.width - 16; // Leave some padding (8px on each side)
+    const maxCharsPerLine = Math.floor(maxWidth / charWidth);
+
+    // If label fits on one line, return as is
+    if (label.length <= maxCharsPerLine) {
+      return [label];
+    }
+
+    // Split label into words
+    const words = label.split(/\s+/);
+    const lines: string[] = [];
+    let currentLine = '';
+
+    for (const word of words) {
+      const testLine = currentLine ? `${currentLine} ${word}` : word;
+      
+      // If adding this word would exceed the line length, start a new line
+      if (testLine.length > maxCharsPerLine && currentLine) {
+        lines.push(currentLine);
+        currentLine = word;
+      } else {
+        currentLine = testLine;
+      }
+    }
+
+    // Add the last line
+    if (currentLine) {
+      lines.push(currentLine);
+    }
+
+    // Limit to 2 lines maximum
+    return lines.slice(0, 2);
+  }
+
+  /**
+   * Check if a label should be wrapped (for device containers with long labels).
+   */
+  protected shouldWrapLabel(container: ContainerConfig): boolean {
+    if (container.type !== 'device') {
+      return false;
+    }
+    const label = this.containerLabels[container.id || ''] || container.label || '';
+    if (!label) {
+      return false;
+    }
+    const wrappedLines = this.getWrappedLabelLines(container);
+    return wrappedLines.length > 1;
+  }
+
+  /**
    * Get label X position based on labelPosition.
    */
   protected getLabelX(container: ContainerConfig): number {
@@ -276,6 +343,10 @@ export class DspArchitectureComponent implements OnInit, OnDestroy {
       case 'top-center':
         return container.logoIconKey && container.logoPosition === 'top-left' ? 24 : 18;
       case 'bottom':
+        // For device containers with wrapped labels, adjust Y position to accommodate 2 lines
+        if (container.type === 'device' && this.shouldWrapLabel(container)) {
+          return container.height - 20; // More space for 2 lines
+        }
         return container.height - 8;
       case 'bottom-center':
         return container.functionIcons?.length ? container.height - 12 : container.height - 15;

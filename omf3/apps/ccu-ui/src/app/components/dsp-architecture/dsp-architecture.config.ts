@@ -393,7 +393,7 @@ export function createDefaultContainers(): ContainerConfig[] {
       borderColor: 'rgba(128, 128, 128, 0.25)',  // Dezenter grauer Rahmen
       backgroundColor: '#f8f9fa',  // Leichte graue Füllung
       labelPosition: 'bottom',
-      fontSize: 13,  // Increased font size
+      fontSize: 10,  // Reduced font size for better fit with long labels
     });
   });
 
