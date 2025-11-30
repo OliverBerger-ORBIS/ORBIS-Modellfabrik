@@ -8,37 +8,84 @@
 
 ## Documents in this Directory
 
-### 1. [omf3-code-quality-report.md](./omf3-code-quality-report.md)
-**Comprehensive Code Quality Analysis Report**
+### 1. [code-optimization-test-coverage-plan.md](./code-optimization-test-coverage-plan.md) ⭐ **PRIMARY**
+**Focused Code Optimization & Test Coverage Plan**
 
-A detailed 22KB document covering:
-- Code quality metrics and scoring (8/10)
-- TypeScript strictness evaluation (Excellent)
-- Angular best practices assessment (100% OnPush ✅)
-- RxJS patterns analysis (Documented and consistent ✅)
-- Test coverage breakdown (49% - needs improvement ⚠️)
-- Architecture review (9/10 - Excellent structure)
-- Performance analysis (8/10)
-- Security assessment (56 vulnerabilities found ❌)
-- Documentation review (9/10 - Excellent decision records)
+A focused 7-week implementation plan prioritizing:
+- **Phase 1 (Week 1):** Critical code optimizations (Memory leaks, Build issues) ✅
+- **Phase 2 (Weeks 2-3):** Test coverage improvement to 60%+ (22-30 hours) ✅
+- **Phase 3 (Weeks 4-5):** Code optimization & refactoring (7-10 hours) ✅
+- **Phase 4 (Weeks 6-7):** Advanced test coverage to 40%+ branches (10-14 hours) ✅
 
-**Overall Project Score: 7.5/10** - Good, Production-Ready with Minor Improvements
+**Key Features:**
+- Security issues treated as secondary priority
+- Detailed test implementation guides for all components/services
+- Step-by-step code fixes with before/after examples
+- Coverage monitoring setup
+- Total effort: 43-61 hours over 7 weeks
 
-### 2. [omf3-optimization-suggestions.md](./omf3-optimization-suggestions.md)
-**Prioritized Optimization Roadmap**
+**Note:** This plan consolidates the information from the previous `omf3-code-quality-report.md` and `omf3-optimization-suggestions.md` documents.
 
-A 19KB action plan with:
-- 🔴 **Critical** (3 items, 4-7 hours): Security vulnerabilities, memory leaks, build fixes
-- 🟠 **High** (5 items, 4-6 days): Test coverage, lazy loading, ESLint rules
-- 🟡 **Medium** (6 items, 1-2 weeks): Refactoring, validation, documentation
-- 🟢 **Low** (5 items, 3-8 weeks): Future enhancements, PWA, accessibility
+### 2. [test-coverage-status.md](./test-coverage-status.md)
+**Test Coverage Tracking** 📊 **ACTIVE**
 
-Each suggestion includes:
-- Concrete code examples
-- Effort estimates
-- Risk assessment
-- Expected benefits
-- Implementation guidance
+Current test coverage status and progress tracking:
+- Coverage metrics (Lines, Branches, Statements, Functions)
+- Progress since plan start
+- Remaining gaps to target values
+- Phase completion status
+
+### 3. [test-coverage-summary.md](./test-coverage-summary.md)
+**Test Coverage Final Summary** ✅
+
+Final summary of test coverage improvements:
+- Final coverage values
+- Completed work summary
+- Test statistics
+- Achieved improvements
+
+### 4. [mock-environment-fixtures-removal-risk.md](./mock-environment-fixtures-removal-risk.md)
+**Fixtures Removal Risk Assessment** ✅ **IMPLEMENTED**
+
+Risk assessment and implementation guide for removing fixtures from production build:
+- Option 1: Remove fixtures only (✅ Implemented)
+- Option 2: Remove mock environment (❌ Not recommended)
+- Implementation details and verification steps
+- Build configuration changes
+
+### 5. [lazy-loading-risk-assessment.md](./lazy-loading-risk-assessment.md)
+**Lazy Loading Risk Assessment** ✅ **CONFIRMED**
+
+Assessment confirming lazy loading is already implemented:
+- Current lazy loading status
+- Risk analysis (low risk)
+- Optional improvements (preloading, error boundaries)
+
+### 6. [build-commands-guide.md](./build-commands-guide.md)
+**Build Commands Guide** 📖
+
+Guide for creating production and development builds:
+- Production build commands
+- Development build commands
+- Build configuration details
+- Deployment configurations
+
+### 7. [fixture-system-analysis.md](./fixture-system-analysis.md)
+**Fixture System Analysis** 🔍
+
+Analysis of the fixture system:
+- Fixture types and usage
+- Tab-to-fixture mapping
+- Recommendations for improvements
+
+### 8. [documentation-importance-analysis.md](./documentation-importance-analysis.md)
+**Documentation Importance Analysis** 📋
+
+Analysis of which documentation files are critical vs. redundant:
+- Critical documentation (must keep)
+- Important documentation (should keep)
+- Optional documentation (can consolidate)
+- Redundant/outdated documentation (can remove)
 
 ---
 
@@ -61,24 +108,37 @@ Each suggestion includes:
 
 ### Immediate Action Items
 
-From the optimization suggestions document:
+**🎯 Focus: Code Optimization & Test Coverage (Security secondary)**
 
-**Week 1 (4-7 hours):**
-```bash
-# 1. Fix security vulnerabilities
-npm audit fix
-npm install esbuild@latest --save-dev
+From the [Code Optimization & Test Coverage Plan](./code-optimization-test-coverage-plan.md):
 
-# 2. Fix subscription leaks (see C2 in optimization doc)
+**Phase 1 - Week 1 (4-7 hours):**
+- ✅ Fix memory leaks in AppComponent (3 unmanaged subscriptions)
+- ✅ Fix Gateway library build issue
+- ✅ Strengthen ESLint rules (subscription management, type safety)
 
-# 3. Fix gateway build (see C3 in optimization doc)
-```
+**Phase 2 - Weeks 2-3 (22-30 hours):**
+- ✅ Service tests (ConnectionService, EnvironmentService, etc.)
+- ✅ View component tests (OrdersView, FtsView, StockView, ModuleMap)
+- ✅ Tab component tests (all 7 tabs)
+- ✅ Coverage monitoring setup
 
-**Week 2-4 (4-6 days):**
-- Implement lazy loading for routes
-- Add test coverage to reach 60%
-- Remove fixtures from production build
-- Add stricter ESLint rules
+**Phase 3 - Weeks 4-5 (7-10 hours):**
+- ✅ Implement lazy loading for routes
+- ✅ Remove test fixtures from production build
+- ✅ Service refactoring (MessageMonitorService)
+
+**Phase 4 - Weeks 6-7 (10-14 hours):**
+- ✅ Branch coverage to 40%+
+- ✅ Edge case tests
+- ✅ Integration tests
+
+**Expected Results:**
+- ✅ 60%+ line coverage (from 49%)
+- ✅ 40%+ branch coverage (from 17%)
+- ✅ No memory leaks
+- ✅ Production build working
+- ✅ -20-30% bundle size
 
 ---
 

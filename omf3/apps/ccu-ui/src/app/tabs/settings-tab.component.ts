@@ -206,6 +206,7 @@ export class SettingsTabComponent implements OnInit {
       dspControlUrl: [linkSettings.dspControlUrl, [Validators.required]],
       managementCockpitUrl: [linkSettings.managementCockpitUrl, [Validators.required]],
       grafanaDashboardUrl: [linkSettings.grafanaDashboardUrl, [Validators.required]],
+      smartfactoryDashboardUrl: [linkSettings.smartfactoryDashboardUrl],
     });
   }
 
