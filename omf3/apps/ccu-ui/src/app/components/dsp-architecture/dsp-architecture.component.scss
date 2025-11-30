@@ -26,7 +26,7 @@
       h2 {
         margin: 0;
         font-size: 1.5rem;
-        color: #1f54b2;
+        color: var(--orbis-blue-strong);
         font-weight: 700;
         letter-spacing: -0.02em;
       }
@@ -53,7 +53,7 @@
         border: none;
         border-radius: 50%;
         background: #fff;
-        color: #1f54b2;
+        color: var(--orbis-blue-strong);
         font-size: 1.25rem;
         font-weight: 600;
         cursor: pointer;
@@ -146,16 +146,16 @@
       .nav-btn {
         padding: 0.6rem 1.25rem;
         border-radius: 999px;
-        border: 1px solid rgba(31, 84, 178, 0.35);
+        border: 1px solid rgba(var(--orbis-blue-strong-rgb), 0.35);
         background: transparent;
-        color: #1f54b2;
+        color: var(--orbis-blue-strong);
         font-weight: 600;
         font-size: 0.9rem;
         cursor: pointer;
         transition: all 0.2s ease;
 
         &:hover:not(:disabled) {
-          background: rgba(31, 84, 178, 0.08);
+          background: rgba(var(--orbis-blue-strong-rgb), 0.08);
         }
 
         &:disabled {
@@ -164,9 +164,9 @@
         }
 
         &--primary {
-          background: #1f54b2;
+          background: var(--orbis-blue-strong);
           color: #fff;
-          border-color: #1f54b2;
+          border-color: var(--orbis-blue-strong);
 
           &:hover:not(:disabled) {
             background: #163d8a;
@@ -183,25 +183,25 @@
         width: 12px;
         height: 12px;
         border-radius: 50%;
-        border: 2px solid rgba(31, 84, 178, 0.3);
+        border: 2px solid rgba(var(--orbis-blue-strong-rgb), 0.3);
         background: transparent;
         cursor: pointer;
         padding: 0;
         transition: all 0.2s ease;
 
         &:hover {
-          border-color: #1f54b2;
+          border-color: var(--orbis-blue-strong);
         }
 
         &--active {
-          background: #1f54b2;
-          border-color: #1f54b2;
+          background: var(--orbis-blue-strong);
+          border-color: var(--orbis-blue-strong);
           transform: scale(1.2);
         }
 
         &--completed {
-          background: rgba(31, 84, 178, 0.3);
-          border-color: rgba(31, 84, 178, 0.3);
+          background: rgba(var(--orbis-blue-strong-rgb), 0.3);
+          border-color: rgba(var(--orbis-blue-strong-rgb), 0.3);
         }
       }
     }
@@ -215,13 +215,13 @@
     margin-top: 1rem;
 
     .accordion-item {
-      border: 1px solid rgba(31, 84, 178, 0.15);
+      border: 1px solid rgba(var(--orbis-blue-strong-rgb), 0.15);
       border-radius: 0.75rem;
       overflow: hidden;
       background: #fff;
 
       &.is-open {
-        border-color: rgba(31, 84, 178, 0.3);
+        border-color: rgba(var(--orbis-blue-strong-rgb), 0.3);
 
         .accordion-trigger .chevron {
           transform: rotate(180deg);
@@ -244,7 +244,7 @@
       transition: background 0.2s ease;
 
       &:hover {
-        background: rgba(31, 84, 178, 0.04);
+        background: rgba(var(--orbis-blue-strong-rgb), 0.04);
       }
 
       .chevron {
@@ -292,8 +292,8 @@
       .cta {
         padding: 0.6rem 1.25rem;
         border-radius: 999px;
-        border: 1px solid #1f54b2;
-        background: #1f54b2;
+        border: 1px solid var(--orbis-blue-strong);
+        background: var(--orbis-blue-strong);
         color: #fff;
         font-weight: 600;
         font-size: 0.9rem;
@@ -364,9 +364,9 @@
     cursor: pointer;
 
     &:hover .container__bg {
-      stroke: #009681;
+      stroke: var(--solution-petrol-strong);
       stroke-width: 3;
-      fill: #8fccc4;
+      fill: var(--solution-petrol-light);
     }
 
     &:focus {
@@ -381,16 +381,16 @@
       outline: none;
 
       .container__bg {
-        stroke: #1f54b2;
+        stroke: var(--orbis-blue-strong);
         stroke-width: 3;
-        filter: drop-shadow(0 0 6px rgba(31, 84, 178, 0.4));
+        filter: drop-shadow(0 0 6px rgba(var(--orbis-blue-strong-rgb), 0.4));
       }
     }
   }
 
   &--highlight {
     .container__bg {
-      filter: drop-shadow(0 4px 12px rgba(31, 84, 178, 0.2));
+      filter: drop-shadow(0 4px 12px rgba(var(--orbis-blue-strong-rgb), 0.2));
     }
   }
 

@@ -42,7 +42,7 @@ li {
 }
 
 .status.idle {
-  background: #6b7280;
+  background: var(--orbis-grey-strong);
 }
 
 .status.moving {
@@ -56,13 +56,13 @@ li {
 .coords {
   grid-column: 1 / -1;
   font-size: 0.8rem;
-  color: #4b5563;
+  color: var(--orbis-grey-strong);
   font-variant-numeric: tabular-nums;
 }
 
 .empty {
   margin: 0;
-  color: #6b7280;
+  color: var(--orbis-grey-strong);
   font-style: italic;
 }
 

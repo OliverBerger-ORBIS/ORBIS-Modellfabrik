@@ -30,12 +30,12 @@
 
 .module-tab__subtitle {
   margin: 0.25rem 0 0;
-  color: #4b5563;
+  color: var(--orbis-grey-strong);
 }
 
 .module-tab__hint {
   font-size: 0.85rem;
-  color: #6b7280;
+  color: var(--orbis-grey-strong);
   margin-top: -0.25rem;
 }
 
@@ -164,7 +164,7 @@
   align-items: center;
   gap: 0.35rem;
   font-weight: 600;
-  color: #b91c1c;
+  color: var(--status-error-strong);
 
   &--online {
     color: #15803d;
@@ -199,7 +199,7 @@
 
   &--unknown {
     background: #e5e7eb;
-    color: #4b5563;
+    color: var(--orbis-grey-strong);
   }
 }
 
@@ -235,7 +235,7 @@
   }
 
   &--secondary {
-    background: #f97316;
+    background: var(--shopfloor-highlight-strong);
 
     &:hover {
       background: #ea580c;
@@ -247,7 +247,7 @@
   padding: 1.25rem;
   border-radius: 0.75rem;
   background: #f3f4f6;
-  color: #4b5563;
+  color: var(--orbis-grey-strong);
   text-align: center;
 
   &--empty {

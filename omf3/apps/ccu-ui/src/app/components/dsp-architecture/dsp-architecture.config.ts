@@ -64,7 +64,7 @@ export function createDefaultContainers(): ContainerConfig[] {
     type: 'layer',
     state: 'hidden',
     backgroundColor: '#ffffff',
-    borderColor: 'rgba(31, 84, 178, 0.1)',
+    borderColor: 'rgba(22, 65, 148, 0.1)', // ORBIS Blue Strong RGB
     isGroup: true,
     labelPosition: 'left',  // Label on left side
   });
@@ -80,7 +80,7 @@ export function createDefaultContainers(): ContainerConfig[] {
     type: 'layer',
     state: 'hidden',
     backgroundColor: 'rgba(207, 230, 255, 0.5)',
-    borderColor: 'rgba(31, 84, 178, 0.15)',
+    borderColor: 'rgba(22, 65, 148, 0.15)', // ORBIS Blue Strong RGB
     isGroup: true,
     labelPosition: 'left',
   });
@@ -126,7 +126,7 @@ export function createDefaultContainers(): ContainerConfig[] {
     fontSize: 14,  // Increased font size
   });
 
-  // ========== DSP UX BOX (Smartfactory Dashboard) - larger box, two-line label ==========
+  // ========== DSP UX BOX (SmartFactory Dashboard) - larger box, two-line label ==========
   // Calculate available width for DSP boxes (maximize horizontal space)
   const dspAvailableWidth = VIEWBOX_WIDTH - LAYOUT.CONTENT_START_X - LAYOUT.MARGIN_RIGHT;
   const dspBoxGap = 50;  // Increased gap between boxes for better visibility of arrows
@@ -138,7 +138,7 @@ export function createDefaultContainers(): ContainerConfig[] {
 
   containers.push({
     id: 'ux',
-    label: '',  // "Smartfactory\nDashboard" - two-line label at top, centered
+    label: '',  // "SmartFactory\nDashboard" - two-line label at top, centered
     x: LAYOUT.CONTENT_START_X,
     y: LAYOUT.DSP_LAYER_Y + 55,  // Moved down by 20px to accommodate top-aligned layer label
     width: uxBoxWidth,
@@ -146,11 +146,11 @@ export function createDefaultContainers(): ContainerConfig[] {
     type: 'ux',
     state: 'hidden',
     logoIconKey: 'ux-dashboard' as IconKey,  // dsp/dashboard.svg - now centered like Edge
-    borderColor: '#0078D4',  // Same blue as Management Cockpit
+    borderColor: '#009681',  // Solution Petrol (ORBIS CI)
     backgroundColor: '#ffffff',
     labelPosition: 'top-center',
     fontSize: 20,  // Increased font size for DSP layer (16 + 4pt)
-    url: '/dashboard',  // Default URL for Smartfactory Dashboard
+    url: '/dashboard',  // Default URL for SmartFactory Dashboard
   });
 
   // ========== DSP EDGE BOX - wider for larger icons ==========
@@ -165,7 +165,7 @@ export function createDefaultContainers(): ContainerConfig[] {
     state: 'hidden',
     logoIconKey: 'logo-dsp' as IconKey,
     logoPosition: 'top-left',
-    borderColor: '#009B77',
+    borderColor: '#009681',  // Solution Petrol (ORBIS CI)
     backgroundColor: 'rgba(255, 255, 255, 0.95)',
     labelPosition: 'top-center',
     fontSize: 20,  // Increased font size for DSP layer (16 + 4pt)
@@ -193,7 +193,7 @@ export function createDefaultContainers(): ContainerConfig[] {
     logoPosition: 'top-left',
     secondaryLogoIconKey: 'logo-azure' as IconKey,  // Azure logo - top-right corner
     secondaryLogoPosition: 'top-right',
-    borderColor: '#0078D4',
+    borderColor: '#009681',  // Solution Petrol (ORBIS CI)
     backgroundColor: 'rgba(255, 255, 255, 0.95)',
     labelPosition: 'top-center',
     fontSize: 20,  // Increased font size for DSP layer (16 + 4pt)
@@ -223,7 +223,7 @@ export function createDefaultContainers(): ContainerConfig[] {
     state: 'hidden',
     logoIconKey: 'logo-sap' as IconKey,  // SAP logo, centered
     // logoPosition not set = centered icon
-    borderColor: 'rgba(31, 84, 178, 0.25)',
+    borderColor: 'rgba(22, 65, 148, 0.25)', // ORBIS Blue Strong RGB
     backgroundColor: '#ffffff',
     labelPosition: 'top-center',
     fontSize: 20,  // Increased font size for BP layer (16 + 4pt)
@@ -239,7 +239,7 @@ export function createDefaultContainers(): ContainerConfig[] {
     type: 'business',
     state: 'hidden',
     logoIconKey: 'bp-cloud-apps' as IconKey,  // dsp/cloud-computing.svg
-    borderColor: 'rgba(31, 84, 178, 0.25)',
+    borderColor: 'rgba(22, 65, 148, 0.25)', // ORBIS Blue Strong RGB
     backgroundColor: '#ffffff',
     labelPosition: 'top-center',
     fontSize: 20,  // Increased font size for BP layer (16 + 4pt)
@@ -255,7 +255,7 @@ export function createDefaultContainers(): ContainerConfig[] {
     type: 'business',
     state: 'hidden',
     logoIconKey: 'bp-analytics' as IconKey,  // dsp/dashboard.svg
-    borderColor: 'rgba(31, 84, 178, 0.25)',
+    borderColor: 'rgba(22, 65, 148, 0.25)', // ORBIS Blue Strong RGB
     backgroundColor: '#ffffff',
     labelPosition: 'top-center',
     fontSize: 20,  // Increased font size for BP layer (16 + 4pt)
@@ -272,7 +272,7 @@ export function createDefaultContainers(): ContainerConfig[] {
     type: 'business',
     state: 'hidden',
     logoIconKey: 'bp-data-lake' as IconKey,  // dsp/data-lake.svg
-    borderColor: 'rgba(31, 84, 178, 0.25)',
+    borderColor: 'rgba(22, 65, 148, 0.25)', // ORBIS Blue Strong RGB
     backgroundColor: '#ffffff',
     labelPosition: 'top-center',
     fontSize: 20,  // Increased font size for BP layer (16 + 4pt)
@@ -300,7 +300,7 @@ export function createDefaultContainers(): ContainerConfig[] {
     height: shopfloorGroupHeight,
     type: 'shopfloor',
     state: 'hidden',
-    borderColor: 'rgba(31, 84, 178, 0.2)',
+    borderColor: 'rgba(22, 65, 148, 0.2)', // ORBIS Blue Strong RGB
     backgroundColor: '#ffffff',
     labelPosition: 'bottom-center',
     fontSize: 18,  // Same font size as DSP and BP layers
@@ -354,7 +354,7 @@ export function createDefaultContainers(): ContainerConfig[] {
     height: shopfloorGroupHeight,
     type: 'shopfloor',
     state: 'normal',
-    borderColor: 'rgba(31, 84, 178, 0.2)',
+    borderColor: 'rgba(22, 65, 148, 0.2)', // ORBIS Blue Strong RGB
     backgroundColor: '#ffffff',
     labelPosition: 'bottom-center',
     fontSize: 18,  // Same font size as DSP and BP layers
@@ -567,7 +567,7 @@ export function createDefaultConnections(): ConnectionConfig[] {
  * 6. Business Process layer with SAP Shopfloor and connection highlight
  * 7. Remaining BP components with connection highlight
  * 8. Management Cockpit with highlight and connection to Edge
- * 9. Smartfactory Dashboard with highlight and connection to Edge
+ * 9. SmartFactory Dashboard with highlight and connection to Edge
  */
 export function createDefaultSteps(): StepConfig[] {
   return [
@@ -838,7 +838,7 @@ export function createDefaultSteps(): StepConfig[] {
       showFunctionIcons: true,
     },
 
-    // Step 9: Smartfactory Dashboard with highlight and connection to Edge (final state - no highlighting at end)
+    // Step 9: SmartFactory Dashboard with highlight and connection to Edge (final state - no highlighting at end)
     {
       id: 'step-9',
       label: '',

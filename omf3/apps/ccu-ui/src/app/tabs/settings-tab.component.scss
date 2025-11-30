@@ -44,7 +44,7 @@
 
     p {
       margin: 0.25rem 0 0;
-      color: #526480;
+      color: var(--orbis-grey-strong);
     }
   }
 
@@ -78,8 +78,8 @@
 
         &:focus {
           outline: none;
-          border-color: #1f54b2;
-          box-shadow: 0 0 0 3px rgba(31, 84, 178, 0.15);
+          border-color: var(--orbis-blue-strong);
+          box-shadow: 0 0 0 3px rgba(var(--orbis-blue-strong-rgb), 0.15);
         }
 
         &:read-only {
@@ -97,7 +97,7 @@
 
     &.note {
       justify-content: flex-start;
-      color: #526480;
+      color: var(--orbis-grey-strong);
       font-size: 0.85rem;
     }
   }
@@ -105,11 +105,11 @@
   button.primary {
     padding: 0.65rem 1.5rem;
     border-radius: 999px;
-    background: #1f54b2;
+    background: var(--orbis-blue-strong);
     color: #fff;
     border: none;
     font-weight: 600;
-    box-shadow: 0 12px 32px -24px rgba(31, 84, 178, 0.9);
+    box-shadow: 0 12px 32px -24px rgba(var(--orbis-blue-strong-rgb), 0.9);
     cursor: pointer;
     transition: transform 0.2s ease;
 
@@ -141,7 +141,7 @@
 
     p {
       margin: 0.25rem 0 0;
-      color: #526480;
+      color: var(--orbis-grey-strong);
     }
   }
 
@@ -155,7 +155,7 @@
       align-items: center;
       padding: 0.75rem 1rem;
       border-radius: 1rem;
-      border: 1px solid rgba(31, 84, 178, 0.15);
+      border: 1px solid rgba(var(--orbis-blue-strong-rgb), 0.15);
       background: rgba(248, 250, 255, 0.75);
 
       input[type='checkbox'] {
@@ -173,7 +173,7 @@
         }
 
         small {
-          color: #526480;
+          color: var(--orbis-grey-strong);
           font-size: 0.85rem;
         }
       }
@@ -220,7 +220,7 @@
 
     p {
       margin: 0.25rem 0 0;
-      color: #526480;
+      color: var(--orbis-grey-strong);
     }
   }
 

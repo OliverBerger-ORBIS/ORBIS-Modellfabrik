@@ -60,6 +60,22 @@
             ? mqttStatusSimulated 
             : connectionStatusLabels[(connectionState$ | async) ?? 'disconnected'] }}
         </div>
+        <button
+          *ngIf="(connectionState$ | async) !== 'connected' && currentEnvironment.key !== 'mock'"
+          type="button"
+          class="sidebar-connect-btn"
+          (click)="manualConnect()"
+          [disabled]="(connectionState$ | async) === 'connecting'"
+          [attr.aria-label]="connectButtonLabel"
+          i18n-aria-label="@@sidebarConnectButtonAriaLabel"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="8" y="2" width="8" height="12" rx="1" />
+            <path d="M10 6h4M10 10h4" />
+            <path d="M12 14v6M9 18h6" />
+          </svg>
+          <span i18n="@@sidebarConnectButtonLabel">Connect</span>
+        </button>
       </section>
     </div>
   </aside>
@@ -88,6 +104,22 @@
             <span class="status-error">{{ error }}</span>
           </ng-container>
         </div>
+        <button
+          *ngIf="(connectionState$ | async) !== 'connected' && (environment$ | async)?.key !== 'mock'"
+          type="button"
+          class="connect-btn"
+          (click)="manualConnect()"
+          [disabled]="(connectionState$ | async) === 'connecting'"
+          [attr.aria-label]="connectButtonLabel"
+          i18n-aria-label="@@headerConnectButtonAriaLabel"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="8" y="2" width="8" height="12" rx="1" />
+            <path d="M10 6h4M10 10h4" />
+            <path d="M12 14v6M9 18h6" />
+          </svg>
+          <span i18n="@@headerConnectButtonLabel">Connect</span>
+        </button>
         <button type="button" class="reset-btn" (click)="resetFactory()">
           {{ resetLabel }}
         </button>

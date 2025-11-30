@@ -43,7 +43,7 @@ h2 {
 
 .badge.completed {
   background: #d1d5db;
-  color: #1f2933;
+  color: var(--orbis-darkgrey);
 }
 
 ul {
@@ -101,7 +101,7 @@ li {
 
 .empty {
   margin: 0;
-  color: #6b7280;
+  color: var(--orbis-grey-strong);
   font-style: italic;
 }
 

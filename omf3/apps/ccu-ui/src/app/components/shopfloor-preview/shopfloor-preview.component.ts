@@ -13,6 +13,7 @@ import {
 import { HttpClient } from '@angular/common/http';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { firstValueFrom } from 'rxjs';
+import { ORBIS_COLORS } from '../../assets/color-palette';
 import type { OrderActive, ProductionStep } from '@omf3/entities';
 import { SHOPFLOOR_ASSET_MAP } from '@omf3/testing-fixtures';
 import { ModuleNameService } from '../../services/module-name.service';
@@ -744,14 +745,16 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
       if (!response) {
         return undefined;
       }
-      // Replace all occurrences of #154194 (blue) with #f97316 (orange) in SVG
+      // Replace all occurrences of #154194 (blue) with shopfloor highlight orange in SVG
       // Also replace RGB equivalent rgb(21, 65, 148) and any stroke/fill attributes
-      let orangeSvg = response.replace(/#154194/g, '#f97316');
-      orangeSvg = orangeSvg.replace(/rgb\(21,\s*65,\s*148\)/gi, 'rgb(249, 115, 22)');
-      orangeSvg = orangeSvg.replace(/fill="#154194"/g, 'fill="#f97316"');
-      orangeSvg = orangeSvg.replace(/stroke="#154194"/g, 'stroke="#f97316"');
-      orangeSvg = orangeSvg.replace(/fill:#154194/g, 'fill:#f97316');
-      orangeSvg = orangeSvg.replace(/stroke:#154194/g, 'stroke:#f97316');
+      const shopfloorOrange = ORBIS_COLORS.shopfloorHighlight.strong;
+      const shopfloorOrangeRgb = '249, 115, 22'; // RGB for shopfloor-highlight-strong
+      let orangeSvg = response.replace(/#154194/g, shopfloorOrange);
+      orangeSvg = orangeSvg.replace(/rgb\(21,\s*65,\s*148\)/gi, `rgb(${shopfloorOrangeRgb})`);
+      orangeSvg = orangeSvg.replace(/fill="#154194"/g, `fill="${shopfloorOrange}"`);
+      orangeSvg = orangeSvg.replace(/stroke="#154194"/g, `stroke="${shopfloorOrange}"`);
+      orangeSvg = orangeSvg.replace(/fill:#154194/g, `fill:${shopfloorOrange}`);
+      orangeSvg = orangeSvg.replace(/stroke:#154194/g, `stroke:${shopfloorOrange}`);
       
       // Debug: Check if replacement worked
       if (orangeSvg.includes('#154194')) {

@@ -83,7 +83,7 @@ export class DspArchitectureComponent implements OnInit, OnDestroy {
   protected readonly labelCloud = $localize`:@@dspArchLabelCloud:Cloud`;
   protected readonly labelDevices = $localize`:@@dspArchLabelDevices:Devices`;  // Label at bottom, centered
   protected readonly labelSystems = $localize`:@@dspArchLabelSystems:Systems`;  // Label at bottom, centered
-  protected readonly labelSmartfactoryDashboard = $localize`:@@dspArchLabelUX:Smartfactory\nDashboard`;  // Two-line label
+  protected readonly labelSmartfactoryDashboard = $localize`:@@dspArchLabelUX:SmartFactory\nDashboard`;  // Two-line label
   protected readonly btnPrev = $localize`:@@dspArchPrev:Previous`;
   protected readonly btnNext = $localize`:@@dspArchNext:Next`;
   protected readonly btnAutoPlay = $localize`:@@dspArchAutoPlay:Auto Play`;
@@ -99,7 +99,7 @@ export class DspArchitectureComponent implements OnInit, OnDestroy {
     $localize`:@@dspArchStep6:SAP Integration`,
     $localize`:@@dspArchStep7:Business Processes`,
     $localize`:@@dspArchStep8:Management Cockpit`,
-    $localize`:@@dspArchStep9:Smartfactory Dashboard`,
+    $localize`:@@dspArchStep9:SmartFactory Dashboard`,
   ];
 
   // Container labels from view
@@ -500,12 +500,13 @@ export class DspArchitectureComponent implements OnInit, OnDestroy {
     }
     if (container.state === 'highlight') {
       // Highlight color based on type
-      if (container.type === 'dsp-edge') return '#009B77';
-      if (container.type === 'dsp-cloud') return '#0078D4';
+      if (container.type === 'dsp-edge') return '#009681';  // Solution Petrol (keep as hex for SVG)
+      if (container.type === 'dsp-cloud') return '#009681';  // Solution Petrol (keep as hex for SVG)
+      if (container.type === 'ux') return '#009681';  // Solution Petrol (keep as hex for SVG)
       if (container.type === 'business') return '#ff9900';
-      return '#1f54b2';
+      return '#154194'; // ORBIS Blue Strong (keep as hex for SVG)
     }
-    return container.borderColor || 'rgba(31, 84, 178, 0.25)';
+    return container.borderColor || 'rgba(22, 65, 148, 0.25)'; // ORBIS Blue Strong RGB
   }
 
   /**

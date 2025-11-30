@@ -39,7 +39,7 @@
 
 .order-card__time {
   font-size: 0.85rem;
-  color: #6b7280;
+  color: var(--orbis-grey-strong);
   display: flex;
   align-items: center;
 }
@@ -52,7 +52,7 @@
 .order-card__meta {
   margin: 0;
   font-size: 0.85rem;
-  color: #6b7280;
+  color: var(--orbis-grey-strong);
   display: flex;
   gap: 0.5rem;
   align-items: center;
@@ -69,22 +69,22 @@
 
 .order-card__status.state--queued {
   background: rgba(148, 163, 184, 0.18);
-  color: #475569;
+  color: var(--orbis-grey-strong);
 }
 
 .order-card__status.state--running {
-  background: rgba(249, 115, 22, 0.12);
-  color: #b45309;
+  background: rgba(var(--shopfloor-highlight-strong-rgb), 0.12);
+  color: var(--status-warning-strong);
 }
 
 .order-card__status.state--completed {
-  background: rgba(16, 185, 129, 0.12);
-  color: #047857;
+  background: rgba(var(--status-success-medium-rgb), 0.12);
+  color: var(--status-success-strong);
 }
 
 .order-card__status.state--failed {
-  background: rgba(239, 68, 68, 0.12);
-  color: #b91c1c;
+  background: rgba(var(--status-error-medium-rgb), 0.12);
+  color: var(--status-error-strong);
 }
 
 .order-card__toggle {
@@ -100,7 +100,7 @@
 .toggle-icon {
   width: 1rem;
   height: 1rem;
-  border: 2px solid #4b5563;
+  border: 2px solid var(--orbis-grey-strong);
   border-radius: 999px;
   position: relative;
 
@@ -108,7 +108,7 @@
   &::after {
     content: '';
     position: absolute;
-    background: #4b5563;
+    background: var(--orbis-grey-strong);
     border-radius: 2px;
   }
 
@@ -164,22 +164,22 @@
 
 .step-row.step--queued {
   background: rgba(148, 163, 184, 0.2);
-  color: #475569;
+  color: var(--orbis-grey-strong);
 }
 
 .step-row.step--running {
-  background: rgba(249, 115, 22, 0.12);
-  color: #b45309;
+  background: rgba(var(--shopfloor-highlight-strong-rgb), 0.12);
+  color: var(--status-warning-strong);
 }
 
 .step-row.step--completed {
-  background: rgba(16, 185, 129, 0.12);
-  color: #047857;
+  background: rgba(var(--status-success-medium-rgb), 0.12);
+  color: var(--status-success-strong);
 }
 
 .step-row.step--failed {
-  background: rgba(239, 68, 68, 0.12);
-  color: #b91c1c;
+  background: rgba(var(--status-error-medium-rgb), 0.12);
+  color: var(--status-error-strong);
 }
 
 .step__number {
@@ -200,11 +200,11 @@
 }
 
 .step__status-icon--queued {
-  color: #475569;
+  color: var(--orbis-grey-strong);
 }
 
 .step__status-icon--running {
-  color: #f97316;
+  color: var(--shopfloor-highlight-strong);
 }
 
 .step__status-icon--completed {
@@ -287,6 +287,6 @@
 .detail-value {
   font-size: 0.85rem;
   font-weight: 600;
-  color: #1f2933;
+  color: var(--orbis-darkgrey);
 }
 

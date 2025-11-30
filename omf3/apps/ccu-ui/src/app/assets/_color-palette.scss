@@ -1,0 +1,143 @@
+/**
+ * ORBIS Corporate Identity Color Palette - SCSS Variables
+ * 
+ * This file defines CSS custom properties (variables) for all ORBIS CI colors.
+ * These variables can be used throughout the application in SCSS files.
+ * 
+ * Usage in SCSS:
+ *   .my-element {
+ *     color: var(--orbis-blue-strong);
+ *     background: var(--orbis-grey-light);
+ *     border-color: var(--solution-petrol-medium);
+ *   }
+ * 
+ * Usage with opacity:
+ *   .my-element {
+ *     background: rgba(var(--orbis-blue-strong-rgb), 0.1);
+ *   }
+ */
+
+:root {
+  // ========== ORBIS Blue (Primary Corporate Color) ==========
+  // Pantone 287 C, 7683 C, 7681 C
+  --orbis-blue-strong: #154194;
+  --orbis-blue-medium: #5071af;
+  --orbis-blue-light: #8aa0ca;
+  
+  // RGB values for opacity usage
+  --orbis-blue-strong-rgb: 22, 65, 148;
+  --orbis-blue-medium-rgb: 80, 113, 175;
+  --orbis-blue-light-rgb: 138, 160, 202;
+
+  // ========== ORBIS Grey (Complementary Neutral) ==========
+  // Cool Gray 6, 4, 2
+  --orbis-grey-strong: #a7a8aa;
+  --orbis-grey-medium: #bbbcbc;
+  --orbis-grey-light: #d0d0ce;
+  
+  // RGB values for opacity usage
+  --orbis-grey-strong-rgb: 167, 168, 170;
+  --orbis-grey-medium-rgb: 187, 188, 188;
+  --orbis-grey-light-rgb: 208, 208, 206;
+
+  // ========== ORBIS Special Colors ==========
+  // Pantone 289 C
+  --orbis-nightblue: #16203b;
+  --orbis-nightblue-rgb: 22, 32, 59;
+  
+  // Dark Grey
+  --orbis-darkgrey: #1c1c1c;
+  --orbis-darkgrey-rgb: 28, 28, 28;
+
+  // ========== SAP Blue (SAP Area Branding) ==========
+  // Pantone 7689 C, 298 C, 2905 C
+  --sap-blue-strong: #298fc2;
+  --sap-blue-medium: #40b8e7;
+  --sap-blue-light: #80d0ef;
+  
+  // RGB values for opacity usage
+  --sap-blue-strong-rgb: 41, 143, 194;
+  --sap-blue-medium-rgb: 64, 184, 231;
+  --sap-blue-light-rgb: 128, 208, 239;
+
+  // ========== Microsoft Orange (Microsoft Area Branding) ==========
+  // Pantone 1655 C, 164 C, 1565 C
+  --microsoft-orange-strong: #fc4c02;
+  --microsoft-orange-medium: #ff7f41;
+  --microsoft-orange-light: #ffa06a;
+  
+  // RGB values for opacity usage
+  --microsoft-orange-strong-rgb: 252, 76, 2;
+  --microsoft-orange-medium-rgb: 255, 127, 65;
+  --microsoft-orange-light-rgb: 255, 160, 106;
+
+  // ========== Shopfloor Highlight Orange (Shopfloor Layout Highlighting) ==========
+  --shopfloor-highlight-strong: #f97316;
+  --shopfloor-highlight-medium: #fb923c;
+  --shopfloor-highlight-light: #fdba74;
+  
+  // RGB values for opacity usage
+  --shopfloor-highlight-strong-rgb: 249, 115, 22;
+  --shopfloor-highlight-medium-rgb: 251, 146, 60;
+  --shopfloor-highlight-light-rgb: 253, 186, 116;
+
+  // ========== Solution Petrol (Solution Highlighting) ==========
+  // Pantone 3285 C, 7472 C, 564 C
+  --solution-petrol-strong: #009681;
+  --solution-petrol-medium: #56b2a7;
+  --solution-petrol-light: #8fccc4;
+  
+  // RGB values for opacity usage
+  --solution-petrol-strong-rgb: 0, 150, 129;
+  --solution-petrol-medium-rgb: 86, 178, 167;
+  --solution-petrol-light-rgb: 143, 204, 196;
+
+  // ========== Highlight Green (Accent Color) ==========
+  // Pantone 369 C, 367 C, 7486 C
+  --highlight-green-strong: #64a70b;
+  --highlight-green-medium: #99cd57;
+  --highlight-green-light: #bbde8f;
+  
+  // RGB values for opacity usage
+  --highlight-green-strong-rgb: 100, 167, 11;
+  --highlight-green-medium-rgb: 153, 205, 87;
+  --highlight-green-light-rgb: 187, 222, 143;
+
+  // ========== Neutral Additional Colors ==========
+  // 80% K
+  --neutral-darkgrey: #555555;
+  --neutral-darkgrey-rgb: 86, 86, 85;
+  
+  // 10% K
+  --neutral-lightgrey: #eeeeee;
+  --neutral-lightgrey-rgb: 238, 238, 238;
+
+  // ========== Status Colors (Error, Success, Warning) ==========
+  --status-error-strong: #dc2626;
+  --status-error-medium: #ef4444;
+  --status-error-light: #fca5a5;
+  
+  // RGB values for opacity usage
+  --status-error-strong-rgb: 220, 38, 38;
+  --status-error-medium-rgb: 239, 68, 68;
+  --status-error-light-rgb: 252, 165, 165;
+
+  --status-success-strong: #047857;
+  --status-success-medium: #10b981;
+  --status-success-light: #86efac;
+  
+  // RGB values for opacity usage
+  --status-success-strong-rgb: 4, 120, 87;
+  --status-success-medium-rgb: 16, 185, 129;
+  --status-success-light-rgb: 134, 239, 172;
+
+  --status-warning-strong: #b45309;
+  --status-warning-medium: #f59e0b;
+  --status-warning-light: #fde68a;
+  
+  // RGB values for opacity usage
+  --status-warning-strong-rgb: 180, 83, 9;
+  --status-warning-medium-rgb: 245, 158, 11;
+  --status-warning-light-rgb: 253, 230, 138;
+}
+
