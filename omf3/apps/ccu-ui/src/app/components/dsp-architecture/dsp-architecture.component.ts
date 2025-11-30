@@ -76,7 +76,7 @@ export class DspArchitectureComponent implements OnInit, OnDestroy {
   // i18n labels - English default with translation keys
   protected readonly title = $localize`:@@dspArchTitle:DISTRIBUTED SHOP FLOOR PROCESSING (DSP)`;
   protected readonly subtitle = $localize`:@@dspArchSubtitle:Reference Architecture`;
-  protected readonly labelBusinessProcesses = $localize`:@@dspArchLabelBusiness:Business\nProcesses`;
+  protected readonly labelBusinessProcesses = $localize`:@@dspArchLabelBusiness:Business Processes`;
   protected readonly labelDsp = $localize`:@@dspArchLabelDsp:DSP`;
   protected readonly labelShopfloor = $localize`:@@dspArchLabelShopfloor:Shopfloor`;
   protected readonly labelOnPremise = $localize`:@@dspArchLabelOnPremise:On Premise`;
@@ -292,7 +292,7 @@ export class DspArchitectureComponent implements OnInit, OnDestroy {
    * Business Process and DSP layers use 18px, others use 14px.
    */
   protected getLayerFontSize(containerId: string): number {
-    return this.largerFontLayerIds.has(containerId) ? 18 : 14;
+    return this.largerFontLayerIds.has(containerId) ? 18 : 18;
   }
 
   /**
@@ -483,6 +483,10 @@ export class DspArchitectureComponent implements OnInit, OnDestroy {
   protected getContainerFill(container: ContainerConfig): string {
     if (container.type === 'label') {
       return 'transparent';
+    }
+    // Use gradient for shopfloor device containers
+    if (container.type === 'device' && container.id?.startsWith('shopfloor-')) {
+      return 'url(#shopfloor-gradient)';
     }
     return container.backgroundColor || '#ffffff';
   }

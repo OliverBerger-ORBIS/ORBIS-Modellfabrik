@@ -364,8 +364,9 @@
     cursor: pointer;
 
     &:hover .container__bg {
-      filter: brightness(0.95);
+      stroke: #009681;
       stroke-width: 3;
+      fill: #8fccc4;
     }
 
     &:focus {

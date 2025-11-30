@@ -49,8 +49,13 @@
       role="img"
       [attr.aria-label]="title"
     >
-      <!-- Defs for markers (arrows) -->
+      <!-- Defs for markers (arrows) and gradients -->
       <defs>
+        <!-- Gradient for shopfloor device containers -->
+        <linearGradient id="shopfloor-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" style="stop-color:#f8f9fa;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#e9ecef;stop-opacity:1" />
+        </linearGradient>
         <marker
           id="arrow-head"
           markerWidth="10"
@@ -115,20 +120,30 @@
               ry="0"
               class="layer__bg"
             />
-            <!-- Layer label (left side, vertically centered, multi-line support) - uses helper method for font size -->
+            <!-- ORBIS Logo for DSP layer (before label) -->
+            <image
+              *ngIf="container.id === 'layer-dsp'"
+              [attr.href]="resolveIconPath('logo-orbis')"
+              [attr.x]="20"
+              [attr.y]="-5"
+              width="72"
+              height="72"
+              class="layer__logo"
+            />
+            <!-- Layer label (left side, top-aligned, multi-line support) - uses helper method for font size -->
             <text
               *ngIf="getContainerLabel(container.id)"
-              [attr.x]="20"
-              [attr.y]="container.height / 2 - 10"
+              [attr.x]="container.id === 'layer-dsp' ? 100 : 20"
+              [attr.y]="25"
               text-anchor="start"
-              dominant-baseline="middle"
+              dominant-baseline="hanging"
               [attr.font-size]="getLayerFontSize(container.id)"
               font-weight="600"
               fill="#1e2d3d"
               class="layer__label"
             >
               <ng-container *ngFor="let line of getMultilineLabel(container.id); let i = index">
-                <tspan [attr.x]="20" [attr.dy]="i === 0 ? '0' : '1.2em'">{{ line }}</tspan>
+                <tspan [attr.x]="container.id === 'layer-dsp' ? 100 : 20" [attr.dy]="i === 0 ? '0' : '1.2em'">{{ line }}</tspan>
               </ng-container>
             </text>
           </g>
@@ -160,12 +175,12 @@
               class="container__bg"
             />
 
-            <!-- Logo (top-left) for DSP containers - 2x bigger (56px instead of 28px) -->
+            <!-- Logo (top-left) for DSP containers - original size (48px) -->
             <image
               *ngIf="container.logoIconKey && container.logoPosition === 'top-left' && (container.type === 'dsp-edge' || container.type === 'dsp-cloud')"
               [attr.href]="resolveIconPath(container.logoIconKey)"
               [attr.x]="8"
-              [attr.y]="8"
+              [attr.y]="-4"
               width="48"
               height="48"
               class="container__logo container__logo--large"

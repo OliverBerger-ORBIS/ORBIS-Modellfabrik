@@ -79,17 +79,17 @@ export const ICON_MAP: Record<IconKey, string> = {
   // Edge function icons
   'edge-connectivity': 'details/dsp/network.svg',
   'edge-digital-twin': 'details/dsp/digital-twin.svg',
-  'edge-data-storage': 'details/dsp/database.svg',
+  'edge-data-storage': 'details/dsp/database-storage.svg',
   'edge-analytics': 'details/dsp/dashboard.svg',
   'edge-workflow': 'details/dsp/workflow.svg',
   'edge-network': 'details/dsp/network.svg',
 
   // Device icons (using shopfloor/*.svg as specified)
   'device-drill': 'shopfloor/bohrer.svg',
-  'device-hbw': 'shopfloor/warehouse.svg',
+  'device-hbw': 'shopfloor/stock.svg',
   'device-mill': 'shopfloor/milling-machine.svg',
   'device-aiqs': 'shopfloor/ai-assistant.svg',
-  'device-dps': 'shopfloor/robotic.svg',
+  'device-dps': 'shopfloor/robot-arm.svg',
   'device-chrg': 'shopfloor/fuel.svg',
   'device-plc': 'shopfloor/information-technology.svg',
   'device-robot-arm': 'shopfloor/robot-arm.svg',
@@ -100,8 +100,8 @@ export const ICON_MAP: Record<IconKey, string> = {
 
   // Shopfloor system icons
   'shopfloor-systems': 'shopfloor/factory.svg',
-  'shopfloor-fts': 'shopfloor/conveyor.svg',
-  'shopfloor-mes': 'shopfloor/information-technology.svg',
+  'shopfloor-fts': 'shopfloor/robotic.svg',
+  'shopfloor-mes': 'shopfloor/question.svg',
   'shopfloor-scada': 'shopfloor/information-technology.svg',
   'shopfloor-aps': 'shopfloor/order-tracking.svg',
   'shopfloor-warehouse': 'shopfloor/warehouse.svg',
