@@ -21,10 +21,11 @@ async function loadLocaleFile(locale: LocaleKey): Promise<Record<string, string>
   const json = await response.json();
   const translations = json.translations ?? json.default?.translations ?? json;
   
-  // Convert @@key format to key format for loadTranslations API
+  // Angular's loadTranslations expects keys WITHOUT @@ prefix
+  // The i18n attributes use @@key format, but loadTranslations expects just the key
   const formattedTranslations: Record<string, string> = {};
   for (const [key, value] of Object.entries(translations)) {
-    // Remove @@ prefix if present
+    // Remove @@ prefix if present - loadTranslations expects keys without @@
     const normalizedKey = key.startsWith('@@') ? key.slice(2) : key;
     formattedTranslations[normalizedKey] = value as string;
   }
@@ -74,7 +75,7 @@ async function prepareLocale(): Promise<void> {
       const translations = await loadLocaleFile(targetLocale);
       loadTranslations(translations);
     } catch (error) {
-      console.warn('[locale] Failed to load translations for', targetLocale, error);
+      console.error('[locale] Failed to load translations for', targetLocale, error);
     }
   }
 }

@@ -11,6 +11,7 @@ import {
 } from '@angular/core';
 import type { DspDetailView, DspArchitectureLayer } from '../../tabs/configuration-detail.types';
 import { getIconPath, type IconKey } from '../../assets/icon-registry';
+import { ModuleNameService } from '../../services/module-name.service';
 import type {
   ContainerConfig,
   ConnectionConfig,
@@ -65,6 +66,7 @@ export class DspArchitectureComponent implements OnInit, OnDestroy {
   protected readonly minZoom = 0.5;
   protected readonly maxZoom = 2;
   protected readonly zoomStep = 0.1;
+  private readonly zoomStorageKey = 'dsp-architecture-zoom';
 
   // Accordion state for Edge and Management Cockpit panels
   protected expandedPanels = new Set<string>();
@@ -88,6 +90,9 @@ export class DspArchitectureComponent implements OnInit, OnDestroy {
   protected readonly btnNext = $localize`:@@dspArchNext:Next`;
   protected readonly btnAutoPlay = $localize`:@@dspArchAutoPlay:Auto Play`;
   protected readonly btnStopPlay = $localize`:@@dspArchStopPlay:Stop`;
+  protected readonly zoomOutLabel = $localize`:@@shopfloorPreviewZoomOut:Zoom out`;
+  protected readonly zoomInLabel = $localize`:@@shopfloorPreviewZoomIn:Zoom in`;
+  protected readonly resetZoomLabel = $localize`:@@shopfloorPreviewResetZoom:Reset zoom`;
 
   // Step labels (9 steps)
   protected readonly stepLabels = [
@@ -105,7 +110,10 @@ export class DspArchitectureComponent implements OnInit, OnDestroy {
   // Container labels from view
   protected readonly containerLabels: Record<string, string> = {};
 
-  constructor(private readonly cdr: ChangeDetectorRef) {}
+  constructor(
+    private readonly cdr: ChangeDetectorRef,
+    private readonly moduleNameService: ModuleNameService
+  ) {}
 
   ngOnInit(): void {
     this.initializeDiagram();
@@ -131,8 +139,23 @@ export class DspArchitectureComponent implements OnInit, OnDestroy {
       step.label = this.stepLabels[index] || `Step ${index + 1}`;
     });
 
-    // Apply initial step
-    this.applyStepInternal(0);
+    // Replace hardcoded module labels with i18n names
+    this.containers.forEach((container) => {
+      // Check if this is a shopfloor device container with a hardcoded module label
+      if (container.id?.startsWith('shopfloor-device-') && container.label) {
+        const moduleId = container.label.toUpperCase();
+        // Only replace if it's a known module (DRILL, HBW, MILL, AIQS, DPS, CHRG)
+        if (['DRILL', 'HBW', 'MILL', 'AIQS', 'DPS', 'CHRG'].includes(moduleId)) {
+          container.label = this.moduleNameService.getModuleFullName(moduleId);
+        }
+      }
+    });
+
+    // Load saved zoom from localStorage
+    this.loadSavedZoom();
+    
+    // Apply initial step (step 9/9 - final state)
+    this.applyStepInternal(this.steps.length - 1);
   }
 
   /**
@@ -386,7 +409,8 @@ export class DspArchitectureComponent implements OnInit, OnDestroy {
       if (this.currentStepIndex < this.steps.length - 1) {
         this.nextStep();
       } else {
-        this.stopAutoPlay();
+        // Loop back to step 1 when reaching the last step
+        this.applyStepInternal(0);
       }
     }, 2500);
   }
@@ -408,6 +432,7 @@ export class DspArchitectureComponent implements OnInit, OnDestroy {
    */
   protected zoomIn(): void {
     this.zoom = Math.min(this.maxZoom, this.zoom + this.zoomStep);
+    this.saveZoom();
   }
 
   /**
@@ -415,6 +440,7 @@ export class DspArchitectureComponent implements OnInit, OnDestroy {
    */
   protected zoomOut(): void {
     this.zoom = Math.max(this.minZoom, this.zoom - this.zoomStep);
+    this.saveZoom();
   }
 
   /**
@@ -422,6 +448,46 @@ export class DspArchitectureComponent implements OnInit, OnDestroy {
    */
   protected resetZoom(): void {
     this.zoom = 1;
+    this.clearSavedZoom();
+  }
+
+  /**
+   * Load saved zoom from localStorage.
+   */
+  private loadSavedZoom(): void {
+    try {
+      const saved = localStorage.getItem(this.zoomStorageKey);
+      if (saved) {
+        const zoom = parseFloat(saved);
+        if (!Number.isNaN(zoom) && zoom >= this.minZoom && zoom <= this.maxZoom) {
+          this.zoom = zoom;
+        }
+      }
+    } catch (error) {
+      // Ignore localStorage errors
+    }
+  }
+
+  /**
+   * Save current zoom to localStorage.
+   */
+  private saveZoom(): void {
+    try {
+      localStorage.setItem(this.zoomStorageKey, this.zoom.toString());
+    } catch (error) {
+      // Ignore localStorage errors
+    }
+  }
+
+  /**
+   * Clear saved zoom from localStorage.
+   */
+  private clearSavedZoom(): void {
+    try {
+      localStorage.removeItem(this.zoomStorageKey);
+    } catch (error) {
+      // Ignore localStorage errors
+    }
   }
 
   /**

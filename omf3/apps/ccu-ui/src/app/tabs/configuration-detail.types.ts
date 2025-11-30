@@ -13,6 +13,8 @@ export interface SelectedDetailView {
   title: string;
   subtitle?: string;
   items: DetailItem[];
+  /** Module type for conditional rendering (e.g., DRILL for DSP-Edge section) */
+  moduleType?: string;
 }
 
 export interface OrbisPhaseDefinition {

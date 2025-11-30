@@ -57,6 +57,11 @@ const NAVIGATION_ITEMS: Omit<NavigationItem, 'label'>[] = [
     icon: 'headings/zentral.svg',
   },
   {
+    id: 'dsp-action',
+    route: '/dsp-action',
+    roles: ['admin'],
+  },
+  {
     id: 'settings',
     route: '/settings',
     roles: ['admin'],
@@ -94,6 +99,7 @@ export class AppComponent implements OnDestroy {
       'module': $localize`:@@navModule:Modules`,
       'configuration': $localize`:@@navConfiguration:Configuration`,
       'message-monitor': $localize`:@@navMessageMonitor:Message Monitor`,
+      'dsp-action': $localize`:@@navDspAction:DSP Actions`,
       'settings': $localize`:@@navSettings:Settings`,
     };
     

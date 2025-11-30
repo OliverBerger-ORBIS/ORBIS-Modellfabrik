@@ -11,8 +11,8 @@
         class="zoom-btn"
         (click)="zoomOut()"
         [disabled]="zoom <= minZoom"
-        title="Zoom out"
-        aria-label="Zoom out"
+        [attr.title]="zoomOutLabel"
+        [attr.aria-label]="zoomOutLabel"
       >
         −
       </button>
@@ -22,8 +22,8 @@
         class="zoom-btn"
         (click)="zoomIn()"
         [disabled]="zoom >= maxZoom"
-        title="Zoom in"
-        aria-label="Zoom in"
+        [attr.title]="zoomInLabel"
+        [attr.aria-label]="zoomInLabel"
       >
         +
       </button>
@@ -31,8 +31,8 @@
         type="button"
         class="zoom-btn zoom-btn--reset"
         (click)="resetZoom()"
-        title="Reset zoom"
-        aria-label="Reset zoom"
+        [attr.title]="resetZoomLabel"
+        [attr.aria-label]="resetZoomLabel"
       >
         ↺
       </button>

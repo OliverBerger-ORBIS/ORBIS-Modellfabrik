@@ -425,6 +425,9 @@ export const createConfigFixtureStream = (
   );
 };
 
+// Re-export DSP action fixtures
+export { loadDspActionFixtures, createDspActionFixtureStream } from './dsp-action-fixtures';
+
 export const createSensorFixtureStream = (
   name: SensorFixtureName,
   options?: FixtureStreamOptions

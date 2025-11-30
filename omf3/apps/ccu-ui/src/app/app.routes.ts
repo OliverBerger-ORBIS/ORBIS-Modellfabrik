@@ -54,6 +54,11 @@ export const appRoutes: Routes = [
         loadComponent: () =>
           import('./tabs/message-monitor-tab.component').then((m) => m.MessageMonitorTabComponent),
       },
+      {
+        path: 'dsp-action',
+        loadComponent: () =>
+          import('./tabs/dsp-action-tab.component').then((m) => m.DspActionTabComponent),
+      },
     ],
   },
   {

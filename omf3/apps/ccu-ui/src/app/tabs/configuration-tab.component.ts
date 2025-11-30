@@ -1,12 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
+import { Router, ActivatedRoute } from '@angular/router';
 import type { CcuConfigSnapshot, ModuleOverviewState } from '@omf3/entities';
 import { SHOPFLOOR_ASSET_MAP, type OrderFixtureName } from '@omf3/testing-fixtures';
 import { BehaviorSubject, type Observable, combineLatest, merge, Subscription } from 'rxjs';
 import { map, shareReplay, tap, filter, startWith, distinctUntilChanged } from 'rxjs/operators';
 import { getDashboardController, type DashboardStreamSet } from '../mock-dashboard';
-import { MessageMonitorService } from '../services/message-monitor.service';
+import { MessageMonitorService, MonitoredMessage } from '../services/message-monitor.service';
 import { ModuleNameService } from '../services/module-name.service';
 import { EnvironmentService } from '../services/environment.service';
 import { ConnectionService } from '../services/connection.service';
@@ -345,14 +346,20 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
     private readonly moduleNameService: ModuleNameService,
     private readonly environmentService: EnvironmentService,
     private readonly connectionService: ConnectionService,
-    private readonly externalLinksService: ExternalLinksService
+    private readonly externalLinksService: ExternalLinksService,
+    private readonly router: Router,
+    private readonly route: ActivatedRoute
   ) {
     this.externalLinks$ = this.externalLinksService.settings$;
     this.layoutInfo$ = this.http.get<ShopfloorLayoutConfig>('shopfloor/shopfloor_layout.json').pipe(
       map((layout) => this.buildLayout(layout)),
       tap((layout) => {
         if (!this.selectedCellSubject.value && layout.cells.length > 0) {
-          this.selectedCellSubject.next(layout.cells[0]?.id ?? null);
+          // Default to DSP cell if available, otherwise first cell
+          const dspCell = layout.cells.find(
+            (cell) => cell.kind === 'fixed' && (cell.label === 'DSP' || cell.type === 'DSP')
+          );
+          this.selectedCellSubject.next(dspCell?.id ?? layout.cells[0]?.id ?? null);
         }
       }),
       shareReplay({ bufferSize: 1, refCount: true })
@@ -473,35 +480,49 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
       const moduleType = moduleDetails?.subType ?? cell.type ?? 'UNKNOWN';
       const moduleDisplay = this.moduleNameService.getModuleDisplayName(moduleType);
 
+      const items: DetailItem[] = [
+        {
+          label: this.serialLabel,
+          value: moduleDetails?.id ?? cell.serialNumber ?? this.unknownLabel,
+        },
+        {
+          label: this.availabilityLabel,
+          value: moduleDetails?.availability ?? this.unknownLabel,
+        },
+        {
+          label: this.connectedLabel,
+          value: moduleDetails ? (moduleDetails.connected ? this.yesLabel : this.noLabel) : this.unknownLabel,
+        },
+        {
+          label: this.configuredLabel,
+          value: moduleDetails ? (moduleDetails.configured ? this.yesLabel : this.noLabel) : this.unknownLabel,
+        },
+        {
+          label: this.lastUpdateLabel,
+          value: moduleDetails?.lastUpdate ?? this.unknownLabel,
+        },
+        {
+          label: this.positionLabel,
+          value: this.formatPosition(cell),
+        },
+      ];
+
+      // Add DSP-Edge information for DRILL module
+      if (moduleType === 'DRILL') {
+        const dspActionMsg = this.messageMonitor.getLastMessage('dsp/drill/action');
+        // Note: This is a synchronous call, but we need async data
+        // We'll handle this in the template with async pipe
+        items.push({
+          label: $localize`:@@configurationDspEdgeControlled:Controlled by DSP Edge`,
+          value: $localize`:@@configurationDspEdgeStatus:Loading status...`,
+        });
+      }
+
       return {
         title: moduleDisplay.fullName,
         subtitle: `${moduleDisplay.id}${moduleDetails?.subType ? ` • ${moduleDetails.subType}` : ''}`,
-        items: [
-          {
-            label: this.serialLabel,
-            value: moduleDetails?.id ?? cell.serialNumber ?? this.unknownLabel,
-          },
-          {
-            label: this.availabilityLabel,
-            value: moduleDetails?.availability ?? this.unknownLabel,
-          },
-          {
-            label: this.connectedLabel,
-            value: moduleDetails ? (moduleDetails.connected ? this.yesLabel : this.noLabel) : this.unknownLabel,
-          },
-          {
-            label: this.configuredLabel,
-            value: moduleDetails ? (moduleDetails.configured ? this.yesLabel : this.noLabel) : this.unknownLabel,
-          },
-          {
-            label: this.lastUpdateLabel,
-            value: moduleDetails?.lastUpdate ?? this.unknownLabel,
-          },
-          {
-            label: this.positionLabel,
-            value: this.formatPosition(cell),
-          },
-        ],
+        items,
+        moduleType: moduleType,
       };
     }
 
@@ -609,7 +630,55 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
     if (!url) {
       return;
     }
-    window.open(url, '_blank', 'noreferrer noopener');
+    // If URL starts with '/', treat it as internal route and navigate
+    if (url.startsWith('/')) {
+      // Get current locale from route
+      const locale = this.route.snapshot.paramMap.get('locale') || 'en';
+      // Build full path with locale prefix
+      const fullPath = `/${locale}${url}`;
+      this.router.navigateByUrl(fullPath);
+    } else {
+      // External URL - open in new tab
+      window.open(url, '_blank', 'noreferrer noopener');
+    }
+  }
+
+  getDspActionMessage(): Observable<MonitoredMessage | null> {
+    return this.messageMonitor.getLastMessage('dsp/drill/action');
+  }
+
+  getChangeLightValue(msg: MonitoredMessage | null): string | null {
+    if (!msg || !msg.payload) {
+      return null;
+    }
+    try {
+      const payload = typeof msg.payload === 'object' && msg.payload !== null
+        ? msg.payload as { command?: string; value?: string }
+        : JSON.parse(String(msg.payload));
+      
+      if (payload.command === 'changeLight' && payload.value) {
+        return payload.value;
+      }
+    } catch (error) {
+      console.error('[configuration] Failed to parse DSP action message:', error);
+    }
+    return null;
+  }
+
+  formatTimestamp(timestamp: string): string {
+    try {
+      const date = new Date(timestamp);
+      return date.toLocaleString('de-DE', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+      });
+    } catch {
+      return timestamp;
+    }
   }
 
   selectOrbisPhase(phaseId: string): void {
@@ -677,6 +746,35 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
     }
   }
 
+  async loadDrillActionFixture(): Promise<void> {
+    if (!this.isMockMode) {
+      return; // Don't load fixtures in live/replay mode
+    }
+    try {
+      const { createDspActionFixtureStream } = await import('@omf3/testing-fixtures');
+      const stream$ = createDspActionFixtureStream({
+        intervalMs: 1000,
+        loop: true,
+      });
+      // Subscribe to the stream and add messages directly to MessageMonitor
+      const subscription = stream$.subscribe((message) => {
+        try {
+          const payload = typeof message.payload === 'string' 
+            ? JSON.parse(message.payload) 
+            : message.payload;
+          this.messageMonitor.addMessage(message.topic, payload, message.timestamp);
+        } catch (error) {
+          console.error('[configuration] Failed to parse message payload:', error);
+        }
+      });
+      // Store subscription to clean up later if needed
+      // Note: This subscription will persist until component destruction
+      // In a real implementation, you might want to manage this differently
+    } catch (error) {
+      console.error('[configuration] Failed to load drill action fixture:', error);
+    }
+  }
+
   private initializeStreams(): void {
     const controller = getDashboardController();
     this.dashboard = controller;
@@ -689,6 +787,8 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
       shareReplay({ bufferSize: 1, refCount: false })
     );
 
+    // Pattern enforcement: getLastMessage with filter, map, startWith in pipe chain
+    // Then merge with dashboard.streams.config$
     const lastConfig = this.messageMonitor.getLastMessage<CcuConfigSnapshot>('ccu/state/config').pipe(
       filter((msg) => msg !== null && msg.valid),
       map((msg) => msg!.payload),

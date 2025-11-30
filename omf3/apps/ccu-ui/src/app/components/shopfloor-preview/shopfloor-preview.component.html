@@ -13,17 +13,9 @@
       [attr.aria-label]="zoomOutLabel"
       [attr.title]="zoomOutLabel"
     >
-      &lt;
+      −
     </button>
-    <button
-      type="button"
-      class="preview__zoom-button"
-      (click)="resetZoom()"
-      [attr.aria-label]="resetZoomLabel"
-      [attr.title]="resetZoomLabel"
-    >
-      +
-    </button>
+    <span class="preview__zoom-level">{{ (currentScale * 100) | number:'1.0-0' }}%</span>
     <button
       type="button"
       class="preview__zoom-button"
@@ -32,7 +24,16 @@
       [attr.aria-label]="zoomInLabel"
       [attr.title]="zoomInLabel"
     >
-      &gt;
+      +
+    </button>
+    <button
+      type="button"
+      class="preview__zoom-button preview__zoom-button--reset"
+      (click)="resetZoom()"
+      [attr.aria-label]="resetZoomLabel"
+      [attr.title]="resetZoomLabel"
+    >
+      ↺
     </button>
   </div>
 
@@ -58,6 +59,8 @@
           class="preview__fixed"
           [class.preview__element--highlight]="fixed.highlighted"
           [class.preview__element--selectable]="selectionEnabled"
+          [class.preview__fixed--label-right]="fixed.labelPosition === 'right'"
+          [class.preview__fixed--label-left]="fixed.labelPosition === 'left'"
           [style.top.px]="fixed.top"
           [style.left.px]="fixed.left"
           [style.width.px]="fixed.width"

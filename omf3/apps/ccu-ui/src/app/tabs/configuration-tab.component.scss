@@ -107,6 +107,17 @@
       box-shadow: 0 6px 18px -12px rgba(var(--orbis-blue-strong-rgb), 0.9);
     }
   }
+
+  &__drill-action {
+    border: 1px solid rgba(var(--solution-petrol-strong-rgb), 0.3) !important;
+    background: rgba(var(--solution-petrol-light-rgb), 0.1) !important;
+    color: var(--solution-petrol-strong) !important;
+
+    &:hover {
+      background: rgba(var(--solution-petrol-light-rgb), 0.2) !important;
+      border-color: var(--solution-petrol-strong) !important;
+    }
+  }
 }
 
 .shopfloor-wrapper {
@@ -271,6 +282,90 @@
 
   .selection-panel {
     margin: 0;
+  }
+}
+
+// DSP-Edge Section for DRILL module
+.dsp-edge-section {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  background: rgba(var(--solution-petrol-light-rgb), 0.1);
+  border: 1px solid rgba(var(--solution-petrol-strong-rgb), 0.2);
+
+  h4 {
+    margin: 0 0 0.75rem 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--solution-petrol-strong);
+  }
+
+  .dsp-edge-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .dsp-edge-light-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+
+    label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--orbis-darkgrey);
+      min-width: 120px;
+    }
+  }
+
+  .dsp-edge-color-badge {
+    width: 48px;
+    height: 48px;
+    border-radius: 0.5rem;
+    border: 2px solid rgba(var(--solution-petrol-strong-rgb), 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px -4px rgba(0, 0, 0, 0.15);
+  }
+
+  .dsp-edge-no-value {
+    color: var(--orbis-grey-strong);
+    font-size: 1.5rem;
+    font-weight: 300;
+  }
+
+  .dsp-edge-color-value {
+    font-family: 'Courier New', monospace;
+    font-size: 0.85rem;
+    color: var(--orbis-darkgrey);
+    font-weight: 600;
+  }
+
+  .dsp-edge-timestamp {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+
+    small {
+      font-size: 0.8rem;
+      color: var(--orbis-grey-strong);
+
+      &:first-child {
+        font-weight: 600;
+      }
+    }
+  }
+
+  .dsp-edge-no-data {
+    margin: 0;
+    padding: 0.75rem;
+    color: var(--orbis-grey-strong);
+    font-size: 0.9rem;
+    text-align: center;
+    background: rgba(var(--orbis-grey-light-rgb), 0.3);
+    border-radius: 0.5rem;
   }
 }
 

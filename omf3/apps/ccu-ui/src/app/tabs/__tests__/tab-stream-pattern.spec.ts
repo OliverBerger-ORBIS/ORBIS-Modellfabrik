@@ -158,7 +158,8 @@ describe('Tab Stream Initialization Pattern - Code Structure Validation', () => 
       expect(content).toMatch(/shareReplay\(\s*\{\s*bufferSize:\s*1,\s*refCount:\s*false\s*\}\s*\)/);
       
       // CRITICAL: Check that startWith comes AFTER filter and map (Pattern 2 requirement)
-      const getLastMessageStart = content.indexOf('getLastMessage');
+      // Find the specific getLastMessage call for 'ccu/state/config'
+      const getLastMessageStart = content.indexOf("getLastMessage<CcuConfigSnapshot>('ccu/state/config')");
       expect(getLastMessageStart).toBeGreaterThan(-1);
       if (getLastMessageStart > -1) {
         const section = content.substring(getLastMessageStart);
@@ -276,7 +277,13 @@ describe('Tab Stream Initialization Pattern - Code Structure Validation', () => 
         const content = readFileContent(path.join(tabsDir, file));
         
         // Extract the getLastMessage pipe chain (may span multiple lines)
-        const getLastMessageStart = content.indexOf('getLastMessage');
+        // For configuration-tab, find the specific 'ccu/state/config' call
+        let getLastMessageStart = -1;
+        if (file === 'configuration-tab.component.ts') {
+          getLastMessageStart = content.indexOf("getLastMessage<CcuConfigSnapshot>('ccu/state/config')");
+        } else {
+          getLastMessageStart = content.indexOf('getLastMessage');
+        }
         expect(getLastMessageStart).toBeGreaterThan(-1);
         if (getLastMessageStart > -1) {
           const section = content.substring(getLastMessageStart);

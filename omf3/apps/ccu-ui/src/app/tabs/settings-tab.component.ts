@@ -150,6 +150,11 @@ import { ExternalLinksService, ExternalLinksSettings } from '../services/externa
             <input type="url" formControlName="grafanaDashboardUrl" placeholder="https://grafana.example.com" />
           </label>
 
+          <label>
+            <span i18n="@@settingsSmartFactoryLinkLabel">SmartFactory Dashboard URL</span>
+            <input type="text" formControlName="smartfactoryDashboardUrl" placeholder="/dsp-action" />
+          </label>
+
           <footer>
             <button type="submit" class="primary" [disabled]="linksForm.pristine || linksForm.invalid" i18n="@@settingsSaveButton">
               Save changes

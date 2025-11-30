@@ -63,6 +63,7 @@ interface RenderFixed {
   icon?: string;
   highlighted: boolean;
   showLabel: boolean;
+  labelPosition?: 'bottom' | 'right' | 'left'; // Label position relative to icon
 }
 
 interface RenderIntersection {
@@ -163,7 +164,9 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     // Load saved scale from localStorage, or use input scale
-    const savedScale = this.loadSavedScale();
+    // Use different storage key based on context (configuration tab vs orders tab)
+    const storageKey = this.getStorageKey();
+    const savedScale = this.loadSavedScale(storageKey);
     this.currentScale = savedScale ?? this.scale;
     this.http.get<ShopfloorLayoutConfig>('shopfloor/shopfloor_layout.json').subscribe({
       next: (config) => {
@@ -189,7 +192,8 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     // Only reset scale from input if it's the first change and no saved scale exists
     if (changes['scale'] && !changes['scale'].firstChange) {
-      const savedScale = this.loadSavedScale();
+      const storageKey = this.getStorageKey();
+      const savedScale = this.loadSavedScale(storageKey);
       if (!savedScale) {
         this.currentScale = this.scale;
       }
@@ -201,33 +205,43 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
 
   zoomIn(): void {
     this.currentScale = Math.min(this.currentScale + this.scaleStep, this.maxScale);
-    this.saveScale();
+    this.saveScale(this.getStorageKey());
     this.cdr.markForCheck();
   }
 
   zoomOut(): void {
     this.currentScale = Math.max(this.currentScale - this.scaleStep, this.minScale);
-    this.saveScale();
+    this.saveScale(this.getStorageKey());
     this.cdr.markForCheck();
   }
 
   resetZoom(): void {
     this.currentScale = this.scale;
-    this.clearSavedScale();
+    this.clearSavedScale(this.getStorageKey());
     this.cdr.markForCheck();
   }
 
-  private saveScale(): void {
+  /**
+   * Get storage key based on context (configuration tab vs orders tab)
+   * This allows separate zoom settings for different use cases
+   */
+  private getStorageKey(): string {
+    // If order is provided, we're in orders tab context
+    // Otherwise, we're in configuration tab context
+    return this.order ? 'shopfloor-preview-scale' : 'shopfloor-config-scale';
+  }
+
+  private saveScale(storageKey: string): void {
     try {
-      localStorage.setItem('shopfloor-preview-scale', this.currentScale.toString());
+      localStorage.setItem(storageKey, this.currentScale.toString());
     } catch (error) {
       // Ignore localStorage errors (e.g., in private browsing mode)
     }
   }
 
-  private loadSavedScale(): number | null {
+  private loadSavedScale(storageKey: string): number | null {
     try {
-      const saved = localStorage.getItem('shopfloor-preview-scale');
+      const saved = localStorage.getItem(storageKey);
       if (saved) {
         const scale = parseFloat(saved);
         if (!Number.isNaN(scale) && scale >= this.minScale && scale <= this.maxScale) {
@@ -240,9 +254,9 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
     return null;
   }
 
-  private clearSavedScale(): void {
+  private clearSavedScale(storageKey: string): void {
     try {
-      localStorage.removeItem('shopfloor-preview-scale');
+      localStorage.removeItem(storageKey);
     } catch (error) {
       // Ignore localStorage errors
     }
@@ -520,10 +534,19 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
       : { x: 0, y: 0, width: cell.size.w, height: cell.size.h };
 
     const mainScale = this.getRoleScale('module_main_compartment');
-    const iconWidth = iconArea.width * mainScale;
-    const iconHeight = iconArea.height * mainScale;
+    // Reduce icon size by 10% (0.9 factor)
+    const iconScale = mainScale * 0.9;
+    const iconWidth = iconArea.width * iconScale;
+    const iconHeight = iconArea.height * iconScale;
     const iconLeft = iconArea.x + (iconArea.width - iconWidth) / 2;
-    const iconTop = iconArea.y + (iconArea.height - iconHeight) / 2;
+    
+    // Shift icon up by approximately one line height
+    // Label font-size is 0.75rem, which is ~12px at default 16px base
+    // Line height for single-line text is approximately font-size * 1.2
+    // We shift up by this amount to prevent overlap with two-line labels
+    const labelFontSizePx = 12; // 0.75rem ≈ 12px at default scale
+    const labelLineHeight = labelFontSizePx * 1.2; // ~14.4px for single line
+    const iconTop = iconArea.y + (iconArea.height - iconHeight) / 2 - labelLineHeight;
 
     const iconKey = mainSubcell?.icon ?? cell.icon ?? cell.name ?? cell.id;
     const icon = this.getAssetPath(iconKey);
@@ -552,9 +575,14 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
     }
     const highlighted = highlightCandidates.some((candidate) => candidate && highlightAliases.has(candidate));
 
+    // Use i18n name for modules, keep original name for fixed cells (ORBIS, DSP, etc.)
+    const label = cell.role === 'module' || cell.role === 'module_main_compartment'
+      ? this.moduleNameService.getModuleFullName(cell.name ?? cell.id)
+      : (cell.name ?? cell.id);
+
     return {
       id: cell.id,
-      label: cell.name ?? cell.id,
+      label,
       top: cell.position.y,
       left: cell.position.x,
       width: cell.size.w,
@@ -576,6 +604,10 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
     const highlightCandidates = [cell.id, cell.name ?? '', iconKey];
     const highlighted = highlightCandidates.some((candidate) => candidate && highlightAliases.has(candidate));
 
+    // DSP gets label on the right, ORBIS and others keep label below
+    const isDsp = cell.name?.toUpperCase() === 'DSP' || cell.id?.toUpperCase().includes('DSP');
+    const labelPosition: 'bottom' | 'right' | 'left' = isDsp ? 'right' : 'bottom';
+
     return {
       id: cell.id,
       label: cell.name ?? cell.id,
@@ -587,6 +619,7 @@ export class ShopfloorPreviewComponent implements OnInit, OnChanges {
       icon,
       highlighted,
       showLabel: cell.show_name !== false,
+      labelPosition,
     };
   }
 

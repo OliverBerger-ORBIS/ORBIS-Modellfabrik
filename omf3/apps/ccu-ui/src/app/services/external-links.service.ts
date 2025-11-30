@@ -16,7 +16,7 @@ const DEFAULT_SETTINGS: ExternalLinksSettings = {
   dspControlUrl: 'https://www.orbis.de/en-de/solutions/orbis-dsp.html',
   managementCockpitUrl: 'https://www.orbis.de/en-de/solutions/orbis-dsp.html',
   grafanaDashboardUrl: 'https://grafana.example.com',
-  smartfactoryDashboardUrl: '/dsp-status',
+  smartfactoryDashboardUrl: '/dsp-action',
 };
 
 @Injectable({ providedIn: 'root' })

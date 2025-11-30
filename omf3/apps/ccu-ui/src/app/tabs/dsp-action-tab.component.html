@@ -1,0 +1,133 @@
+<div class="dsp-action-tab">
+  <header class="dsp-action-tab__header">
+    <div>
+      <h2 i18n="@@dspActionTabTitle">DSP Actions</h2>
+      <p i18n="@@dspActionTabDescription">Visualization of DSP Edge control for Drill module</p>
+    </div>
+    <div class="dsp-action-tab__fixture-control" *ngIf="isMockMode">
+      <span class="badge" i18n="@@orderTabFixtureLabel">Fixture</span>
+      <button
+        type="button"
+        class="dsp-action-tab__load-fixture-btn"
+        (click)="loadDrillActionFixture()"
+        i18n="@@dspActionFixtureLabel"
+      >
+        Drill Action
+      </button>
+    </div>
+  </header>
+
+  <div class="dsp-action-tab__content">
+    <!-- Left: Topic List -->
+    <div class="dsp-action-tab__left">
+      <div class="dsp-action-tab__filters">
+        <input
+          type="text"
+          class="dsp-action-tab__filter-input"
+          [(ngModel)]="filterTopic"
+          placeholder="Filter topic..."
+          i18n-placeholder="@@dspActionFilterPlaceholder"
+        />
+      </div>
+
+      <div class="dsp-action-tab__message-list">
+        <div
+          *ngFor="let message of filteredMessages; trackBy: trackByTopic"
+          class="dsp-action-tab__message-item"
+        >
+          <div class="dsp-action-tab__message-row">
+            <div class="dsp-action-tab__message-info">
+              <div class="dsp-action-tab__message-header">
+                <span class="dsp-action-tab__message-topic">
+                  {{ message.topic }}
+                  <span class="dsp-action-tab__checkmark" aria-label="Received">✓</span>
+                </span>
+              </div>
+              <div class="dsp-action-tab__message-timestamp">
+                {{ formatTimestamp(message.timestamp) }}
+              </div>
+            </div>
+            <div class="dsp-action-tab__message-payload">
+              <code>{{ message.rawPayload }}</code>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="filteredMessages.length === 0" class="dsp-action-tab__empty">
+          <p i18n="@@dspActionNoMessages">No messages received</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: changeLight Visualization -->
+    <div class="dsp-action-tab__right">
+      <div class="dsp-action-tab__visualization">
+        <h3 i18n="@@dspActionVisualizationTitle">changeLight</h3>
+        <p class="dsp-action-tab__description" i18n="@@dspActionDescription">
+          DSP Edge controls the Drill light signal live here
+        </p>
+
+        <div class="dsp-action-tab__light-display">
+          <!-- Current Value -->
+          <div class="dsp-action-tab__light-current">
+                  <span i18n="@@dspActionCurrentValue">Current Value</span>
+            <div
+              class="dsp-action-tab__color-block dsp-action-tab__color-block--current"
+              [style.background-color]="currentLightValue || '#cccccc'"
+              [attr.aria-label]="'Current color: ' + (currentLightValue || 'none')"
+            >
+              <span *ngIf="!currentLightValue" class="dsp-action-tab__no-value">—</span>
+            </div>
+            <div *ngIf="currentLightValue" class="dsp-action-tab__color-value">
+              {{ currentLightValue }}
+            </div>
+          </div>
+
+          <!-- Previous Value -->
+          <div class="dsp-action-tab__light-previous">
+                  <span i18n="@@dspActionPreviousValue">Previous Value</span>
+            <div
+              class="dsp-action-tab__color-block dsp-action-tab__color-block--previous"
+              [style.background-color]="previousLightValue || '#cccccc'"
+              [attr.aria-label]="'Previous color: ' + (previousLightValue || 'none')"
+            >
+              <span *ngIf="!previousLightValue" class="dsp-action-tab__no-value">—</span>
+            </div>
+            <div *ngIf="previousLightValue" class="dsp-action-tab__color-value">
+              {{ previousLightValue }}
+            </div>
+          </div>
+        </div>
+
+        <!-- Developer Mode: Raw Payload -->
+        <div *ngIf="showDeveloperMode && lastCommandTimestamp" class="dsp-action-tab__developer">
+          <button
+            type="button"
+            class="dsp-action-tab__dev-toggle"
+            (click)="showDeveloperMode = !showDeveloperMode"
+            i18n="@@dspActionHideDeveloperMode"
+          >
+            Hide Developer Mode
+          </button>
+          <div class="dsp-action-tab__raw-payload">
+            <strong i18n="@@dspActionLastCommand">Last Command:</strong>
+            <div class="dsp-action-tab__timestamp">{{ formatTimestamp(lastCommandTimestamp) }}</div>
+            <pre><code>{{ (filteredMessages.length > 0 ? filteredMessages[0].rawPayload : '{}') }}</code></pre>
+          </div>
+        </div>
+
+        <div *ngIf="!showDeveloperMode" class="dsp-action-tab__developer-toggle">
+          <button
+            type="button"
+            class="dsp-action-tab__dev-toggle"
+            (click)="showDeveloperMode = true"
+            i18n="@@dspActionShowDeveloperMode"
+          >
+            Show Developer Mode
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+

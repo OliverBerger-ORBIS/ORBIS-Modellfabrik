@@ -19,6 +19,14 @@
           >
             {{ fixtureLabels[fixture] }}
           </button>
+          <button
+            type="button"
+            class="fixture-switch__drill-action"
+            (click)="loadDrillActionFixture()"
+            i18n="@@dspActionFixtureLabel"
+          >
+            Drill Action
+          </button>
         </div>
       </div>
     </header>
@@ -33,6 +41,7 @@
         [highlightFixedOverride]="vm.highlightFixed"
         [selectionEnabled]="true"
         [showBaseRoads]="false"
+        [showZoomControls]="true"
         (cellSelected)="onCellSelected($event)"
         (cellDoubleClicked)="onCellDoubleClick($event)"
       ></app-shopfloor-preview>
@@ -51,6 +60,37 @@
               <span class="value">{{ item.value }}</span>
             </li>
           </ul>
+          
+          <!-- DSP-Edge Section for DRILL module -->
+          <section *ngIf="panel.selection.moduleType === 'DRILL'" class="dsp-edge-section">
+            <h4 i18n="@@configurationDspEdgeHeading">Controlled by DSP Edge</h4>
+            <ng-container *ngIf="getDspActionMessage() | async as msg; else noDspMessage">
+              <div class="dsp-edge-info">
+                <div class="dsp-edge-light-badge">
+                  <span i18n="@@configurationDspEdgeCurrentLight">Current changeLight</span>
+                  <div
+                    class="dsp-edge-color-badge"
+                    [style.background-color]="getChangeLightValue(msg) || '#cccccc'"
+                    [attr.aria-label]="'Current color: ' + (getChangeLightValue(msg) || 'none')"
+                  >
+                    <span *ngIf="!getChangeLightValue(msg)" class="dsp-edge-no-value">—</span>
+                  </div>
+                  <span *ngIf="getChangeLightValue(msg)" class="dsp-edge-color-value">
+                    {{ getChangeLightValue(msg) }}
+                  </span>
+                </div>
+                <div class="dsp-edge-timestamp">
+                  <small i18n="@@configurationDspEdgeLastCommand">Last Command:</small>
+                  <small>{{ formatTimestamp(msg.timestamp) }}</small>
+                </div>
+              </div>
+            </ng-container>
+            <ng-template #noDspMessage>
+              <p class="dsp-edge-no-data" i18n="@@configurationDspEdgeNoData">
+                No DSP Edge commands received
+              </p>
+            </ng-template>
+          </section>
         </section>
       </ng-container>
 

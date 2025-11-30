@@ -433,6 +433,14 @@ export const createMockDashboardController = (options?: {
     });
     currentReplays.push(configReplay$.subscribe((message: RawMqttMessage) => messageSubject.next(message)));
 
+    // Add DSP action fixtures
+    const { createDspActionFixtureStream } = await import('@omf3/testing-fixtures');
+    const dspActionReplay$ = createDspActionFixtureStream({
+      intervalMs: options?.intervalMs ?? FIXTURE_DEFAULT_INTERVAL,
+      loop: options?.loop,
+    });
+    currentReplays.push(dspActionReplay$.subscribe((message: RawMqttMessage) => messageSubject.next(message)));
+
     const sensorFixtureName = resolveSensorFixture(fixture);
     const sensorReplay$ = createSensorFixtureStream(sensorFixtureName, {
       intervalMs: options?.intervalMs ?? FIXTURE_DEFAULT_INTERVAL,
