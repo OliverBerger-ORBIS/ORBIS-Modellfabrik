@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import type { OrbisDetailView } from '../../tabs/configuration-detail.types';
-import { DETAIL_ASSET_MAP } from '../../assets/detail-asset-map';
 
 @Component({
   standalone: true,
@@ -16,12 +15,14 @@ export class OrbisDetailComponent {
   @Output() phaseSelected = new EventEmitter<string>();
   @Output() useCaseToggled = new EventEmitter<string>();
 
+  // Map phase IDs to relative asset paths (from ASSET_PATHS in detail-asset-map.ts)
+  // Use relative paths without leading slash - Angular will combine with baseHref automatically
   private readonly phaseIconMap: Record<string, string> = {
-    phase1: DETAIL_ASSET_MAP.ORBIS_PHASE_1,
-    phase2: DETAIL_ASSET_MAP.ORBIS_PHASE_2,
-    phase3: DETAIL_ASSET_MAP.ORBIS_PHASE_3,
-    phase4: DETAIL_ASSET_MAP.ORBIS_PHASE_4,
-    phase5: DETAIL_ASSET_MAP.ORBIS_PHASE_5,
+    phase1: 'details/orbis/data-lake.svg',
+    phase2: 'details/orbis/semantic.svg',
+    phase3: 'details/orbis/dashboard.svg',
+    phase4: 'details/orbis/workflow_1.svg',
+    phase5: 'details/orbis/ai.svg',
   };
 
   selectPhase(phaseId: string): void {
@@ -41,7 +42,13 @@ export class OrbisDetailComponent {
   }
 
   protected getPhaseIcon(phaseId: string): string {
-    return this.phaseIconMap[phaseId] ?? DETAIL_ASSET_MAP.ORBIS_FALLBACK;
+    // Return relative path without leading slash - Angular will combine with baseHref automatically
+    // This matches the pattern used in DSP-Architecture component
+    const relativePath = this.phaseIconMap[phaseId];
+    if (relativePath) {
+      return relativePath;
+    }
+    return 'details/orbis/stack.svg';
   }
 
   protected getPhaseName(title: string): string {
@@ -50,6 +57,21 @@ export class OrbisDetailComponent {
       return title;
     }
     return title.slice(separatorIndex + 1).trim();
+  }
+
+  protected getUseCaseIcon(iconPath: string): string {
+    // Return relative path without leading slash - Angular will combine with baseHref automatically
+    // This matches the pattern used in DSP-Architecture component
+    // If iconPath already has baseHref (starts with '/ORBIS-Modellfabrik/'), extract relative path
+    if (iconPath.startsWith('/ORBIS-Modellfabrik/')) {
+      return iconPath.slice('/ORBIS-Modellfabrik/'.length);
+    }
+    // If it's an absolute path (starts with '/'), remove leading slash
+    if (iconPath.startsWith('/')) {
+      return iconPath.slice(1);
+    }
+    // If it's already a relative path, use as-is
+    return iconPath;
   }
 }
 

@@ -73,7 +73,7 @@
         <button type="button" (click)="toggleUseCase(useCase.id)">
           <div class="usecase-meta">
             <div class="usecase-icon">
-              <img [src]="useCase.icon" [alt]="useCase.title" width="40" height="40" />
+              <img [src]="getUseCaseIcon(useCase.icon)" [alt]="useCase.title" width="40" height="40" />
             </div>
             <div>
               <h4>{{ useCase.title }}</h4>

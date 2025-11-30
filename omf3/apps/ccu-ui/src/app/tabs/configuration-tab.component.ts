@@ -30,7 +30,7 @@ import {
   type DspArchitectureLayer,
   type DspActionLink,
 } from './configuration-detail.types';
-import { DETAIL_ASSET_MAP } from '../assets/detail-asset-map';
+import { DETAIL_ASSET_MAP, getAssetPath } from '../assets/detail-asset-map';
 
 type LayoutCellKind = 'module' | 'fixed';
 
@@ -221,7 +221,7 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
         $localize`:@@orbisUseCaseAggregationHighlight3:Environmental data (temperature, humidity, air quality) linked to production sequences and genealogy.`,
         $localize`:@@orbisUseCaseAggregationHighlight4:Process optimization via analysis of cycle times, takt variability, energy consumption, and machine utilization.`,
       ],
-      icon: DETAIL_ASSET_MAP.ORBIS_USECASE_AGGREGATION,
+      icon: 'details/orbis/consolidate.svg',
     },
     {
       id: 'track-trace',
@@ -232,7 +232,7 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
         $localize`:@@orbisUseCaseTrackTraceHighlight2:Correlation of process parameters (DRILL, MILL, AIQS) with ERP/MES customer orders.`,
         $localize`:@@orbisUseCaseTrackTraceHighlight3:Sensor and telemetry data linked to quality outcomes, rework decisions, and root-cause analysis.`,
       ],
-      icon: DETAIL_ASSET_MAP.ORBIS_USECASE_TRACKTRACE,
+      icon: 'details/orbis/integration.svg',
     },
     {
       id: 'predictive-maintenance',
@@ -243,7 +243,7 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
         $localize`:@@orbisUseCasePredictiveHighlight2:Anomaly scoring with automated escalation to maintenance bots or SAP notifications.`,
         $localize`:@@orbisUseCasePredictiveHighlight3:Predictive forecasts feeding SAP maintenance plans, spare-part logistics, and operator guidance.`,
       ],
-      icon: DETAIL_ASSET_MAP.ORBIS_USECASE_PREDICTIVE,
+      icon: 'details/orbis/ai-algorithm.svg',
     },
     {
       id: 'process-optimization',
@@ -257,7 +257,7 @@ export class ConfigurationTabComponent implements OnInit, OnDestroy {
         $localize`:@@orbisUseCaseOptimizationHighlight5:Simulation of what-if scenarios before applying changes to the physical line.`,
         $localize`:@@orbisUseCaseOptimizationHighlight6:Closed-loop improvements via DSP executors and MES/DSP workflows.`,
       ],
-      icon: DETAIL_ASSET_MAP.ORBIS_USECASE_OPTIMIZATION,
+      icon: 'details/orbis/database-management.svg',
     },
   ];
 
