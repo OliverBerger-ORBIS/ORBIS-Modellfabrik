@@ -5,43 +5,62 @@
   </h3>
   
   <div class="shopfloor-map">
-    <svg viewBox="0 0 420 220" class="map-svg">
+    <svg viewBox="0 0 800 600" class="map-svg">
       <!-- Background grid -->
       <defs>
-        <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
-          <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#e0e0e0" stroke-width="0.5"/>
+        <pattern id="grid" width="100" height="100" patternUnits="userSpaceOnUse">
+          <path d="M 100 0 L 0 0 0 100" fill="none" stroke="#e8e8e8" stroke-width="1"/>
         </pattern>
+        <!-- Gradient for module boxes -->
+        <linearGradient id="moduleGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" style="stop-color:#f8f9fa;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#e9ecef;stop-opacity:1" />
+        </linearGradient>
       </defs>
-      <rect width="420" height="220" fill="url(#grid)"/>
+      <rect width="800" height="600" fill="url(#grid)"/>
       
       <!-- Edges (connections between nodes) -->
       <g class="edges">
-        <!-- HBW to Node 1 -->
-        <line x1="60" y1="60" x2="140" y2="60" stroke="#ccc" stroke-width="3"/>
-        <!-- Node 1 to Node 3 -->
-        <line x1="160" y1="60" x2="240" y2="60" stroke="#ccc" stroke-width="3"/>
-        <!-- Node 3 to DRILL -->
-        <line x1="260" y1="60" x2="340" y2="60" stroke="#ccc" stroke-width="3"/>
-        <!-- Node 1 to MILL -->
-        <line x1="150" y1="70" x2="60" y2="140" stroke="#ccc" stroke-width="3"/>
-        <!-- Node 1 to Node 2 -->
-        <line x1="160" y1="70" x2="160" y2="140" stroke="#ccc" stroke-width="3"/>
-        <!-- Node 2 to AIQS -->
-        <line x1="170" y1="160" x2="240" y2="160" stroke="#ccc" stroke-width="3"/>
-        <!-- Node 2 to DPS -->
-        <line x1="170" y1="160" x2="340" y2="160" stroke="#ccc" stroke-width="3"/>
-        <!-- AIQS to DPS -->
-        <line x1="260" y1="160" x2="340" y2="160" stroke="#ccc" stroke-width="3"/>
+        <ng-container *ngFor="let edge of edges">
+          <line *ngIf="getEdgeCoords(edge) as coords"
+                [attr.x1]="coords.x1" 
+                [attr.y1]="coords.y1" 
+                [attr.x2]="coords.x2" 
+                [attr.y2]="coords.y2" 
+                stroke="#cbd5e1" 
+                stroke-width="6"
+                stroke-linecap="round"/>
+        </ng-container>
       </g>
       
-      <!-- Nodes -->
-      <g class="nodes">
-        <g *ngFor="let node of nodes" 
-           [attr.transform]="'translate(' + node.x + ',' + node.y + ')'"
-           [class]="getNodeClass(node.id)">
-          <circle r="16" class="node-circle"/>
-          <text y="4" class="node-label">{{ node.label }}</text>
-        </g>
+      <!-- Module boxes (stations) -->
+      <g class="modules">
+        <ng-container *ngFor="let node of nodes">
+          <g *ngIf="isModule(node.id)"
+             [attr.transform]="'translate(' + node.x + ',' + node.y + ')'"
+             [class]="getNodeClass(node.id)"
+             class="module-node">
+            <rect x="-50" y="-35" width="100" height="70" rx="10" 
+                  fill="url(#moduleGradient)" 
+                  stroke="#94a3b8" 
+                  stroke-width="3"
+                  class="module-rect"/>
+            <text y="8" class="module-label">{{ node.label }}</text>
+          </g>
+        </ng-container>
+      </g>
+      
+      <!-- Intersection nodes -->
+      <g class="intersections">
+        <ng-container *ngFor="let node of nodes">
+          <g *ngIf="!isModule(node.id)"
+             [attr.transform]="'translate(' + node.x + ',' + node.y + ')'"
+             [class]="getNodeClass(node.id)"
+             class="intersection-node">
+            <circle r="28" class="intersection-circle"/>
+            <text y="10" class="intersection-label">{{ node.label }}</text>
+          </g>
+        </ng-container>
       </g>
       
       <!-- FTS Position Indicator -->
@@ -49,13 +68,21 @@
          [attr.transform]="'translate(' + currentPosition.x + ',' + currentPosition.y + ')'"
          class="fts-indicator"
          [class.driving]="isDriving">
-        <circle r="22" class="fts-outer"/>
-        <circle r="12" class="fts-inner"/>
-        <text y="4" class="fts-icon">🚗</text>
+        <circle r="45" class="fts-outer"/>
+        <circle r="25" class="fts-inner"/>
+        <text y="8" class="fts-icon">🚗</text>
       </g>
     </svg>
     
     <div class="map-legend">
+      <div class="legend-item">
+        <span class="legend-box module"></span>
+        <span>Station</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-dot intersection"></span>
+        <span>Intersection</span>
+      </div>
       <div class="legend-item">
         <span class="legend-dot current"></span>
         <span>Current Position</span>
